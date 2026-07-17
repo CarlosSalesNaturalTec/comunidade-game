@@ -15,4 +15,5 @@ Público geral / visitantes: Interessados em acompanhar resultados das batalhas,
 ## Outros
 
 * Batalhas: Disputa de ideias e realizações entre os Jogadores.
+* Backend deve funcionar em forma de API de modo que os mais diversos formatos de frontend e aplicações de terceiros possam acessá-lo. Rotas de consulta devem ser abertas sem necessidade de autenticação.
 * 
