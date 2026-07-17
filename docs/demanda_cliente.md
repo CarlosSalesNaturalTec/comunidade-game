@@ -30,3 +30,22 @@
 * Acesso público sem autenticação por usuário e senha. Apresentando a plataforma : Jogadores, Poderes (competências), Mestres (mentores), Batalhas (competições), Apoiadores e Comunidades Virtuais. Ao selecionar um destes itens ir para seção específica com cards individuais
 * Cards rotativos com avatares que representam os jogadores. atualizados a cada 5s — exibe imagem/avatar, nomes, badges representando poderes , links para Instagram, WhatsApp, YouTube, TikTok e e-mail (habilita contato direto)
 * Quem somos, Contatos (editável pelos Organizadores/Equipe técnica)
+
+
+comunidades virtuais: existe na medida que são registrados dados reais da comunidade em que vivem (temperatura, coleta de lixo, fotos, transito, transporte público)
+pra ser mentor tem que especificar a habilidade e provar com conteúdo (aulas presenciais e/ou gravadas)
+jogador só ganha pontos de determinada habilidade na medida que realiza as atividades propostas pelos mestres
+habilidades:
+mestre: tem que ter uma habilidade
+atividades: 
+
+valores e causas: humanismo, educação como fator transformador da sociedade, anti-racista, contra o feminicídio, reconhecimento e valorização dos povos originários/indígenas, território e identidade das comunidades
+
+
+
+====
+
+
+orquestrador para disparar ações do explore ao merge
+Como usar o Slack
+Ferramentas Git utilizadas para comunicação entre os agentes e um humano . Seriam Issues ?
