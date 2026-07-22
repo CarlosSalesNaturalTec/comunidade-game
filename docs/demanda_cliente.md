@@ -8,8 +8,16 @@
 * Os recursos necessários para realização de atividades: hora aula do mentor, lanche, recompensas, insumos (leds,baterias,papel, etc)  serão fornecidos por mentores ou apoiadores
 * Cada recurso alocado em atividades deve ser computado para o respectivo provedor. Será computado como 'moeda' aportada na plataforma e acumulada no histórico do provedor.
 * Cada atividade só acontece se tiverem os recursos necessários providos por mentor ou apoiador
+* formação de mentores
+* formação de equipe de divulgação nas redes sociais
+* GOAT / The Best / Somos os melhores (mentira de quem sempre disse o contrário)
 * Backend deve funcionar em forma de API de modo que os mais diversos formatos de frontend e aplicações de terceiros possam acessá-lo. Rotas de consulta devem ser abertas sem necessidade de autenticação.
 * Os Frontends terão dominios diferentes
+
+## Aulas
+* Presenciais com treinamento
+* Presenciais para apresentação de trabalhos
+* assincronas / on line. conteúdo dos desafios. conteúdo entre encontros presenciais
 
 ## Personas
 * Jogadores (primária): Crianças e jovens moradores de comunidades periféricas — participantes das oficinas, batalhas e projetos.
