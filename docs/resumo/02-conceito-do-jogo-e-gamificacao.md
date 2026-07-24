@@ -1,6 +1,6 @@
 # 02 — Conceito do Jogo e Gamificação
 
-O Comunidade Game é um "jogo" cuja partida acontece na vida real: aprender, criar, ajudar
+O Comunidade Game é um "jogo" cujas partidas acontecem na vida real: aprender, criar, ajudar
 os colegas e realizar atividades gera pontos, poderes e reconhecimento. Este documento reúne
 todos os elementos do jogo.
 
@@ -47,8 +47,9 @@ oficinas. Regras de admissão:
 > **Exemplo de referência — o Mestre fundador.** É considerado mestre em Programação e
 > Robótica porque **construiu o software da plataforma**, propõe as atividades que os
 > jogadores realizam e publica conteúdo (vídeo-aulas, exemplos de código). Suas
-> atividades-modelo são o [Robô Educa](06-robo-educa.md) e a
-> [Batalha de Laser](07-batalha-de-laser.md).
+> atividades-modelo são o [Robô Educa](06-robo-educa.md) a
+> [Batalha de Laser](07-batalha-de-laser.md)
+> além da Idealização e implementação da Plataforma em sí.
 
 ### Apoiadores / Patrocinadores
 Pessoas e instituições que financiam ou divulgam o projeto. Regras de admissão:
