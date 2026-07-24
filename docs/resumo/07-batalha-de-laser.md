@@ -1,12 +1,13 @@
-# 06 — Batalha de Laser (Atividade-Modelo: Poder da IA e Robótica)
+# 07 — Batalha de Laser (2ª Atividade-Modelo: Poder da IA e Robótica)
 
-> Fonte: `README.md` (docs) — "Comunidade GAME: Enredo e Regras Oficiais"
+> Enredo e regras oficiais: [`../batalha_laser.md`](../batalha_laser.md)
 >
-> Este jogo é uma das atividades/desafios reais a serem implementados pelos jogadores e
-> mestres do Projeto Comunidade Game. É a **atividade-modelo do primeiro Mestre** para os
-> poderes de **Programação e Robótica**: os jogadores constroem os artefatos (eletrônica +
-> código), aprendem os conceitos e disputam a **Batalha** presencial — fechando o ciclo
-> aprender → construir → batalhar → pontuar descrito em
+> Esta é a **segunda atividade-modelo** da plataforma, criada pelo primeiro Mestre para os
+> poderes de **Programação e Robótica** — sucessora natural do
+> [Robô Educa](06-robo-educa.md), com um degrau a mais de complexidade (eletrônica,
+> sensores e rede). Os jogadores constroem os artefatos (eletrônica + código), aprendem os
+> conceitos e disputam a **Batalha** presencial — fechando o ciclo aprender → construir →
+> batalhar → pontuar descrito em
 > [02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md#6-batalhas).
 
 ## 🌌 O Ecossistema (Os 4 Elementos do Jogo)
@@ -248,7 +249,7 @@ client.loop_forever()
 | Nexus | Notebook (Python + Mosquitto MQTT) | 1 |
 | Roteador | TP-Link TD-VG5611 (rede isolada, sem internet) | 1 |
 
-## Integração com a plataforma **[Sugestão nova]**
+## Integração com a plataforma **[Proposta]**
 
 - **Segurança do laser**: documentar classe do laser utilizada e regras de segurança ocular
   (nunca apontar para o rosto; preferir módulos de baixa potência classe 1/2) — requisito

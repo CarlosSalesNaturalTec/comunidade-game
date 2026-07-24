@@ -1,7 +1,5 @@
 # 04 — Modelo Econômico e Sustentabilidade
 
-> Fontes: `linhas_gerais.md`, `Comunidade Game - Linhas Gerais 2025.txt`, `Implantação Jun 2024.rtf`, `premissas.txt`
-
 ## 1. A economia de recursos da plataforma
 
 Princípio central (a "moeda" do Comunidade Game):
@@ -24,7 +22,7 @@ Regras derivadas:
   ([02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades)):
   o reconhecimento público de quem sustenta o projeto.
 
-**[Sugestão nova]** Modelar isso tecnicamente como um **livro-razão (ledger)** de dupla
+**[Proposta]** Modelar isso tecnicamente como um **livro-razão (ledger)** de dupla
 entrada: cada atividade consome recursos (débito) aportados por provedores (crédito). Isso
 viabiliza relatórios públicos de prestação de contas por atividade, por comunidade e por
 provedor — transparência auditável, essencial para captar doações e editais.
@@ -33,8 +31,9 @@ provedor — transparência auditável, essencial para captar doações e editai
 
 - **Doações de parceiros** (pessoas físicas e jurídicas).
 - **Publicidade.**
-- **Pesquisas** (geração de dados para tomada de decisões — com os devidos cuidados de
-  anonimização).
+- **Pesquisas** — os dados de território gerados pelas Comunidades Virtuais
+  ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)) podem sustentar
+  estudos e diagnósticos, sempre **anonimizados** e com retorno para a própria comunidade.
 - **Projetos** e **editais**.
 - **Monetizações web.**
 - **Campanhas de crowdfunding** para:
@@ -65,7 +64,7 @@ Modelo de parceria previsto:
 - Ao final dos módulos, **os alunos gravam vídeo com suas realizações e agradecimentos aos
   parceiros** — prestação de contas afetiva e material de divulgação.
 
-**[Sugestão nova]** Definir limites claros dessa "interação" patrocinador–aluno para
+**[Proposta]** Definir limites claros dessa "interação" patrocinador–aluno para
 proteger crianças e adolescentes (comunicação sempre mediada pela plataforma/organizadores,
 nunca contato direto privado). Isso protege os jovens e também os parceiros.
 
@@ -73,16 +72,18 @@ nunca contato direto privado). Isso protege os jovens e também os parceiros.
 
 - **Cursos/Bootcamps para comunidades sem cobrança para os alunos.**
 - **Case real: Guerreira Zeferina** (referência de implantação/piloto).
-- **Caça-talentos**: identificar jovens talentos e encaminhá-los (premissa de
-  encaminhamento para a área de TI e economia criativa).
+- **Oficinas do Robô Educa desde 2018**: centenas de crianças impactadas em comunidades de
+  Salvador (BA) — ver [06-robo-educa.md](06-robo-educa.md).
+- **Dados para a comunidade**: as Comunidades Virtuais devolvem ao território evidência
+  para tomada de decisões ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
 - **Multiplicadores**: alunos formados viram instrutores de novos cursos em comunidades —
   fecha o ciclo com o Nível 5 da gamificação
   ([02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md#7-níveis-e-badges-gamificação)).
 
-**[Sugestão nova]** Definir **indicadores de impacto** desde o início (nº de alunos ativos,
-retenção, trilhas concluídas, jovens encaminhados para cursos/empregos de TI, recursos
-movimentados por comunidade). Além de guiar o projeto, são exatamente os números exigidos
-por editais e grandes doadores.
+**[Proposta]** Definir **indicadores de impacto** desde o início (nº de alunos ativos,
+retenção, trilhas concluídas, atividades realizadas, volume de dados de território
+registrados, recursos movimentados por comunidade). Além de guiar o projeto, são
+exatamente os números exigidos por editais e grandes doadores.
 
 ## 6. Sustentabilidade (síntese)
 

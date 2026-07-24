@@ -1,11 +1,9 @@
 # 01 — Visão, Valores e Propósito
 
-> Fontes: `premissas.txt`, `linhas_gerais.md`, `Comunidade Game - Linhas Gerais 2025.txt`, `Implantação Jun 2024.rtf`
-
 ## 1. O que é o Comunidade Game
 
 O **Comunidade Game** é uma plataforma educacional gamificada, de código aberto, que conecta
-jovens, mentores e apoiadores para promover educação, tecnologia e cidadania em comunidades
+jovens, mestres e apoiadores para promover educação, tecnologia e cidadania em comunidades
 periféricas. É a vitrine interativa de um "jogo" ligado à vida real: apresenta **Jogadores**,
 **Poderes** (competências), **Mestres** (mentores), **Batalhas** (competições), **Apoiadores**
 e **Comunidades Virtuais**.
@@ -15,11 +13,18 @@ Em uma frase:
 > Interação digital com comunidades para oferecer orientação educacional, informação e geração
 > de dados que auxiliem na tomada de decisões.
 
-### Nomes considerados para o projeto
+### A motivação do fundador
 
-Registrados na fase de concepção (Jun/2024):
+O projeto nasce da convicção de um desenvolvedor no potencial transformador da própria
+habilidade: **usar código, software e dados para produzir impacto positivo na sociedade** —
+a postura de um *hacker* no sentido original da palavra, alguém que entende o
+funcionamento das coisas e as reconfigura para servir às pessoas. A tecnologia aqui não é
+fim nem vitrine: é ferramenta de intervenção social.
+
+### Nomes do projeto
 
 - **Comunidade Game** (nome adotado)
+- **Inova Comunidade** (alternativa em avaliação)
 - Rôbróders
 - Robô Educa
 
@@ -27,11 +32,9 @@ Registrados na fase de concepção (Jun/2024):
 
 O projeto nasce para:
 
-- **Ensinar conceitos de programação e Inteligência Artificial** para crianças e jovens
-  entre 8 e 18 anos, em comunidades carentes de acesso à educação digital e em escolas
-  do ensino fundamental.
-- Gerar um **primeiro contato com a tecnologia** e encaminhar jovens para a área de TI por
-  meio de trilhas de capacitação próprias e de terceiros.
+- **Ensinar conceitos de programação e Inteligência Artificial** para crianças e jovens,
+  em comunidades carentes de acesso à educação digital e em escolas do ensino fundamental.
+- Gerar um **primeiro contato com a tecnologia**, despertando interesse e repertório.
 - Tornar conhecidos os **riscos e as oportunidades da Inteligência Artificial**, incluindo
   o letramento contra os riscos inerentes ao uso de redes sociais e IA.
 - Estimular o **empreendedorismo e a economia criativa** nas comunidades, a partir dos
@@ -42,6 +45,9 @@ O projeto nasce para:
   carentes no Brasil e no mundo.
 - Ser **sustentável** por meio de doações de pessoas físicas, parceiros, editais e
   monetizações web (detalhes em [04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md)).
+
+> **Fora de escopo:** a plataforma **não se propõe a gerar encaminhamento profissional**.
+> Ela forma repertório, habilidade e confiança; o que o jovem faz com isso é escolha dele.
 
 ## 3. Valores e causas
 
@@ -61,23 +67,36 @@ governança da plataforma:
    Cada Comunidade Virtual existe na medida em que registra dados e memórias reais do seu
    território (ver [02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
 
-**[Sugestão nova]** Materializar os valores em mecânicas do jogo, não só em texto: por
+**[Proposta]** Materializar os valores em mecânicas do jogo, não só em texto: por
 exemplo, trilhas e desafios temáticos ("Poder da Ancestralidade", "Poder do Respeito"),
 badges por participação em atividades ligadas às causas, e um código de conduta do jogador
 cuja violação gera pontuação negativa (já prevista em
 [02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md#pontuação-negativa)).
 
-**[Sugestão nova]** Criar um documento de **Código de Conduta** e um de **Governança Open
+**[Proposta]** Criar um documento de **Código de Conduta** e um de **Governança Open
 Source** (padrões `CODE_OF_CONDUCT.md` e `GOVERNANCE.md`) que traduzam esses valores para a
 comunidade de desenvolvedores e colaboradores do projeto, não só para os jogadores.
 
 ## 4. Objetivos
 
+A plataforma é **educacional e *tech first***: a tecnologia é a porta de entrada e a
+linguagem principal. Mas ela não termina em si mesma — cada conteúdo técnico abre
+**paralelos com outras áreas do conhecimento** (ciências, matemática, linguagens, artes,
+história, meio ambiente) e com **valores e temas necessários ao cenário atual da nossa
+sociedade**: racismo, violência contra mulheres, identidade, povos originários,
+sustentabilidade, convivência e cidadania.
+
+Objetivos concretos:
+
 - Através da **experimentação**, transmitir conceitos de IA e programação.
-- Despertar o interesse e incentivar o ingresso na área de TI.
-- Evitar crenças limitantes.
-- Promover letramento digital e proteção contra os riscos de redes sociais e IA.
-- Expor conquistas locais: dar visibilidade ao talento que já existe nas comunidades.
+- **Despertar o interesse pela tecnologia** e mostrar que aquele espaço também é do jogador.
+- **Evitar crenças limitantes.**
+- Promover **letramento digital** e proteção contra os riscos de redes sociais e IA.
+- Usar a tecnologia como ponte para **temas transversais e valores** — a atividade técnica
+  carrega conteúdo humano, nunca é neutra.
+- **Expor conquistas locais**: dar visibilidade ao talento que já existe nas comunidades.
+- **Gerar dados sobre o território** que auxiliem a comunidade na tomada de decisões
+  ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
 
 ### O lema
 
@@ -85,16 +104,21 @@ comunidade de desenvolvedores e colaboradores do projeto, não só para os jogad
 > disseram o contrário. A plataforma existe para provar, com realizações concretas, que os
 > jovens das comunidades são capazes de ser os melhores no que fizerem.
 
+O lema também é um **momento fixo das aulas presenciais**: apresentação de personalidades
+mulheres, negras e indígenas que impactaram positivamente a sociedade
+([05 §3](05-implantacao-e-operacao.md#3-roteiro-da-aula-presencial)).
+
 ## 5. Público-alvo
 
 | Público | Faixa | Papel na plataforma |
 |---|---|---|
-| Crianças e jovens | **6 a 16 anos** (definição oficial) | Jogadores — do primeiro contato lúdico com tecnologia às trilhas de capacitação e encaminhamento profissional |
-| Especialistas e educadores | — | Mestres (mentores) |
-| Pessoas e instituições | — | Apoiadores / Patrocinadores |
+| Crianças e jovens | **6 a 16 anos** | Jogadores — do primeiro contato lúdico com tecnologia às trilhas de aprendizado |
+| Especialistas e educadores | — | Mestres (mentores) — cadastrados pelos Admins, mediante comprovação de habilidade |
+| Pessoas e instituições | — | Apoiadores / Patrocinadores — cadastrados pelos Admins |
+| Organizadores / Equipe técnica | — | Admins da plataforma |
 | Comunidade em geral | — | Visitantes / público das batalhas e portfólios |
 
-**Definições oficiais (jul/2026):**
+**Definições vigentes:**
 
 - Faixa etária dos jogadores: **6 a 16 anos**.
 - As atividades devem ser criadas com **níveis de dificuldade graduais**, acessíveis por
@@ -106,25 +130,36 @@ comunidade de desenvolvedores e colaboradores do projeto, não só para os jogad
   atividades; porém, seu **histórico e perfil só são divulgados na plataforma após a
   autorização dos pais ou responsáveis**.
 - A **LGPD deve ser considerada em TODO o projeto**: os jogadores serão representados por
-  seus **avatares**, e não por suas imagens reais.
+  seus **avatares**, e não por suas imagens reais. A única exceção é a foto captada no
+  onboarding, usada **exclusivamente** para registro de presença — dado sensível, nunca
+  exibido publicamente ([03 §5](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença)).
 
 ## 6. Diferenciais
 
-- Contato inicial com programação e robótica **sem exigência de um computador** (kits de
-  robótica + atividades presenciais + WhatsApp).
+- Contato inicial com programação e robótica **sem exigência de um computador** (material
+  reciclado, kits de robótica, atividades presenciais e WhatsApp).
 - Abordagem **lúdica e experimental**: ambiente descontraído, "sem miséria".
 - Modelo de **jogo ligado à vida real**: pontos, poderes e batalhas correspondem a
   aprendizado e realizações concretas.
 - **Transparência radical dos recursos** movimentados (ver
   [04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md)).
+- **Comunidades Virtuais como central de dados** do território, alimentada pelos próprios
+  jogadores ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
 - **Open Source e replicável** em qualquer comunidade do país (ver
-  [05-implantacao-e-operacao.md](05-implantacao-e-operacao.md#replicabilidade)).
+  [05-implantacao-e-operacao.md](05-implantacao-e-operacao.md#9-replicabilidade)).
 
-## 7. O primeiro Mestre
+## 7. O fundador: primeiro Admin e primeiro Mestre
 
-O fundador do projeto será o primeiro **Mestre** cadastrado na plataforma, responsável por
-criar os conteúdos dos poderes/habilidades de **Programação** e **Robótica**. A primeira
-atividade-modelo desses poderes é a **Batalha de Laser**
-([06-batalha-de-laser.md](06-batalha-de-laser.md)), que demonstra na prática o ciclo
-completo: mestre cria conteúdo → jogadores aprendem construindo → batalha presencial →
-pontuação e visibilidade na plataforma.
+- **Admin.** O fundador será o **primeiro Admin** da plataforma
+  (perfil Organizadores / Equipe técnica). **Novos Admins são incluídos manualmente**,
+  por um Admin existente — não há autocadastro de administradores.
+- **Mestre.** O fundador é também o **primeiro Mestre** cadastrado, responsável pelos
+  poderes de **Programação e Robótica**. Sua habilidade é comprovada por artefatos reais
+  disponibilizados na plataforma: **o próprio software da plataforma**, as atividades
+  propostas aos jogadores, vídeo-aulas e exemplos de código.
+- **Atividades-modelo criadas por ele:**
+  1. [Robô Educa](06-robo-educa.md) — construir o próprio robô e dar vida a ele com IA por voz.
+  2. [Batalha de Laser](07-batalha-de-laser.md) — eletrônica, MQTT e batalha presencial.
+
+Ambas demonstram o ciclo completo: mestre cria conteúdo → jogadores aprendem construindo →
+atividade/batalha presencial → pontuação e visibilidade na plataforma.

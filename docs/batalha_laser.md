@@ -1,6 +1,6 @@
-# 📖 Comunidade GAME: Enredo e Regras Oficiais
+# 📖 Batalha de Laser — Enredo e Regras Oficiais
 
-Este jogo é uma das atividades/desafios reais a serem implementados pelos jogadores e mestres do PRojeto Comunidade Game
+**Segunda atividade-modelo** do Comunidade Game (a primeira é o [Robô Educa](robo_Educa.md)). Este jogo é uma das atividades/desafios reais a serem implementados pelos jogadores e mestres do projeto.
 
 
 ## 🌌 O Ecossistema (Os 4 Elementos do Jogo)
