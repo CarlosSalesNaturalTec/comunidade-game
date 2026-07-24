@@ -13,6 +13,9 @@
 * GOAT / The Best / Somos os melhores (mentira de quem sempre disse o contrário)
 * Backend deve funcionar em forma de API de modo que os mais diversos formatos de frontend e aplicações de terceiros possam acessá-lo. Rotas de consulta devem ser abertas sem necessidade de autenticação.
 * Os Frontends terão dominios diferentes
+* Todas as ações ocorridas na plataforma( aulas , lanches, ate a hospedagem de servidores,  prestadores de serviços,  etc) deverao ter seus custos computados e atribuidos a um personagem (jogador,mestre ou apoiador) e assim se registra a riqueza movimentada pela plataforma . Desta forma trazendo transparência sobre os recursos movimentados.
+
+
 
 ## Aulas
 * Presenciais com treinamento
