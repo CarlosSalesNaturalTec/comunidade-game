@@ -10,8 +10,32 @@ e **Comunidades Virtuais**.
 
 Em uma frase:
 
-> Interação digital com comunidades para oferecer orientação educacional, informação e geração
-> de dados que auxiliem na tomada de decisões.
+> Interação digital com comunidades para oferecer orientação educacional, informação e
+> geração de dados que auxiliem na tomada de decisões — e para que essas ações e esses dados
+> **retornem como impacto positivo para a própria comunidade**, formando um **ciclo de
+> evolução positiva**.
+
+### O ciclo de evolução positiva
+
+O que a plataforma produz não sai da comunidade: volta para ela. O jogador aprende, e o que
+aprende vira realização concreta; ao registrar dados do lugar onde mora, ele dá à sua própria
+comunidade **evidência para decidir**, em vez de apenas percepção; as conquistas ganham
+visibilidade e atraem apoio; o apoio custeia novas atividades; e o jogador que chegou ao topo
+volta como multiplicador para formar os próximos.
+
+```
+Jogador aprende e realiza ──► Comunidade ganha dados, talento e visibilidade
+        ▲                                          │
+        │                                          ▼
+Novos multiplicadores locais ◄── Apoio e recursos chegam ao território
+```
+
+Cada volta desse ciclo deixa a comunidade em condição melhor do que na anterior — e é por
+isso que a Comunidade Virtual
+([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)), a transparência dos
+recursos ([04](04-modelo-economico-e-sustentabilidade.md)) e a formação de multiplicadores
+([05 §7](05-implantacao-e-operacao.md#7-formação-de-mestres-e-multiplicadores)) não são
+módulos separados: são as três engrenagens que fecham o ciclo.
 
 ### A motivação do fundador
 
