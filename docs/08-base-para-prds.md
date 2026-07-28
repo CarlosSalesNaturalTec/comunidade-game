@@ -16,6 +16,10 @@
   habilidade; não intermedeia colocação no mercado.
 - **Restrições transversais (obrigatórias em todos os PRDs):**
   - Backend como API; rotas de consulta públicas sem autenticação; escrita autenticada.
+  - **Todas as aplicações desta etapa são Web Apps responsivos, Mobile First.** Não há
+    aplicativo nativo nem aplicação construída sobre WhatsApp ou outra plataforma de
+    mensageria de terceiros
+    ([03 §2](03-plataforma-e-arquitetura.md#2-canais--meios-de-acesso)).
   - Frontends em domínios separados.
   - Código open source.
   - Registro de custo/lastro de recursos em todas as ações.
@@ -35,6 +39,21 @@
   - Valores do projeto refletidos em conteúdo, conduta e representatividade
     ([01-visao-valores-e-proposito.md](01-visao-valores-e-proposito.md#3-valores-e-causas)).
 
+### Aplicações desta etapa e seus PRDs
+
+As cinco aplicações definidas em
+[03 §2.1](03-plataforma-e-arquitetura.md#21-aplicações-a-serem-desenvolvidas) correspondem
+aos PRDs abaixo:
+
+| Aplicação | PRD |
+|---|---|
+| **App 01** — Onboarding (áudio ou texto, cadastro, presença) | PRD-04 |
+| **App 02** — Assistente por voz e Modo Ouvinte | PRD-06 |
+| **App 03** — Gestão administrativa | PRD-02 |
+| **App 04** — Jogo em JavaScript | PRD-12 |
+| **App 05** — Área do Jogador (guia das trilhas) | PRD-05 |
+| Vitrine pública (já especificada) | PRD-03 |
+
 ---
 
 ## PRD-01 — Backend API (núcleo)
@@ -44,7 +63,7 @@
 **Requisitos:**
 - Entidades: Jogador, Mestre, Apoiador, Admin, Comunidade Virtual, Poder, Trilha,
   Atividade, Aula/Agenda, Presença, Batalha, Equipe, Recurso, Recompensa,
-  Ponto/Badge/Nível, Registro de dado do território.
+  Ponto/Badge/Nível, Registro de dado do território, Pergunta de quiz e Partida de quiz.
 - Rotas de consulta abertas (vitrine, rankings, painéis de comunidade) sem autenticação.
 - Suporte a múltiplos frontends e aplicações de terceiros.
 - Papéis e permissões: Admin (total), Mestre (conteúdo e lançamentos das suas atividades),
@@ -55,23 +74,34 @@
 - Regra de negócio: pontos de habilidade só via atividades realizadas propostas por Mestres.
 - Resultados de atividade: realizada / com mérito / mérito extra por auxílio; pontuação
   negativa por má conduta.
+- Regra de negócio: **níveis 1 a 5 por trilha/poder**; a conclusão do Nível 5 marca o
+  jogador como **Mestre Aprendiz**, apto ao treinamento de multiplicador e ao voluntariado
+  nos pontos de apoio ([02 §7](02-conceito-do-jogo-e-gamificacao.md#7-níveis-e-badges-gamificação)).
 
 **Questões em aberto:** estratégia de autenticação; versionamento da API; multi-tenant por
 comunidade (uma instância nacional ou uma por comunidade?).
 
-## PRD-02 — Frontend de Gestão
+## PRD-02 — App 03: Frontend de Gestão
 
 **Escopo:** aplicação autenticada para Admins e Mestres.
 
-**Requisitos:** CRUDs de personas; cadastro de Mestres/Apoiadores com upload dos artefatos
+**Requisitos:** CRUDs de mestres, poderes, jogadores e apoiadores (além de admins e
+comunidades virtuais); cadastro de Mestres/Apoiadores com upload dos artefatos
 comprobatórios; inclusão manual de Admins; cadastro de atividades (pontuação, recompensas,
 recursos necessários); agenda de aulas on-line/presenciais; lançamento de atividades
-realizadas (data, mentores, jogadores, resultados); conferência e ajuste de presenças
-vindas do onboarding; lançamento de pontuação negativa; gestão de recursos (aportes e
-consumo).
+realizadas (data, mentores, jogadores, resultados); **entradas manuais** — registro de
+presença, infrações ocorridas nas aulas e pontuação extra ao jogador que ajudou o colega;
+conferência e ajuste de presenças vindas do onboarding; gestão de recursos (aportes e
+consumo); **painéis do dia** com a visão operacional do encontro em andamento (presenças,
+atividade prevista, recursos providos, lançamentos pendentes); **operação do Quiz ao Vivo**
+([05 §4](05-implantacao-e-operacao.md#4-atividade-modelo-quiz-ao-vivo)); **controle do
+acervo didático** — tombamento dos exemplares, empréstimo e devolução por jogador, estado de
+conservação e devoluções pendentes no painel do dia
+([05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)).
 
 **Questões em aberto:** quem pode lançar pontuação negativa e com que auditoria; trilha de
-auditoria das ações de Admin.
+auditoria das ações de Admin; se o Quiz ao Vivo é módulo desta aplicação ou aplicação
+separada.
 
 ## PRD-03 — Frontend de Apresentação (vitrine pública)
 
@@ -90,14 +120,15 @@ exibe **somente jogadores cujo responsável autorizou a divulgação** do histó
 perfil; jogadores sem autorização participam das atividades mas não aparecem publicamente.
 Os perfis de Mestres exibem os artefatos que comprovam suas habilidades.
 
-## PRD-04 — Onboarding: cadastro e registro de presença
+## PRD-04 — App 01: Onboarding (cadastro e registro de presença)
 
-**Escopo:** interface web mobile-first (smartphone/tablet) que cadastra novos jogadores e
-registra presença dos já cadastrados, por **voz ou chat**, com IA — detalhamento em
+**Escopo:** Web App responsivo Mobile First (smartphone/tablet) que cadastra novos jogadores
+e registra a presença dos já cadastrados, por **áudio ou texto**, com IA — detalhamento em
 [03 §5](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença).
 
 **Requisitos:**
-- Tela de boas-vindas com **botão start por áudio** e **botão start por chat**.
+- Tela inicial em que o usuário escolhe a interação: **começar por áudio** ou **começar por
+  texto (chat)**.
 - Interação cognitiva conduzida por **IA**, tolerante a respostas fora de ordem, capaz de
   repetir e confirmar dados.
 - Captação e reprodução de áudio via **`mediadevices.js`**
@@ -121,35 +152,57 @@ não reversível; criptografia e acesso auditado; prazo de retenção com exclus
 processamento no dispositivo x nuvem); política de retenção em números; roteiro exato da
 conversa de cadastro.
 
-## PRD-05 — Área do Jogador (jornada gamificada)
+## PRD-05 — App 05: Área do Jogador (jornada gamificada)
 
-**Escopo:** experiência logada do jogador (web/app).
+**Escopo:** experiência logada do jogador, com **guia e apoio nas trilhas** — qual é o
+próximo ponto, o que precisa ser feito, o que já foi conquistado e o que está bloqueado.
 
 **Requisitos:** escolha de poder; trilhas com desbloqueio por quiz/desafio; desafios
 semanais (on-line 10 pts, presencial 10 pts, equipe 10 pts, família 20 pts); equipes
 mistas de até 5 e Equipe Familiar; registro de dados do território; ranking; troca de
 pontos por recompensas (kits de alimentos; catálogo a expandir); pedido de ajuda para
-atividades escolares; níveis 1–5 (assíduo → instrutor); badges.
+atividades escolares; níveis 1–5 (assíduo → **Mestre Aprendiz**, apto ao treinamento de
+multiplicador); badges por trilha e por poder.
 
 **Requisitos adicionais:** estado de **perfil público** desbloqueado apenas com
 autorização do responsável (sem ela, histórico e perfil não são divulgados); representação
 exclusivamente por avatar; desafios com níveis de dificuldade graduais acessíveis a toda a
-faixa de 6 a 16 anos.
+faixa de 6 a 16 anos; **acervo do jogador** — quais exemplares estão sob sua guarda, prazo
+de devolução, a **ficha de vida do livro** (quem cuidou dele antes) e o badge
+**Guardião do Acervo**
+([05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)).
 
 **Questões em aberto:** definição da tabela de pontos das recompensas (os valores atuais
-são apenas sugestão); mecânica anti-fraude de pontos; acessibilidade para quem só tem
-celular ou só WhatsApp.
+são apenas sugestão); mecânica antifraude de pontos; acessibilidade para quem só tem
+celular, com aparelho compartilhado ou sem dados móveis (uso no ponto de apoio).
 
-## PRD-06 — Canal WhatsApp (chatbot IA)
+## PRD-06 — App 02: Assistente por voz e Modo Ouvinte
 
-**Escopo:** chatbot baseado em IA no WhatsApp — canal de menor barreira de acesso.
+**Escopo:** Web App de áudio nos moldes do [Robô Educa](06-robo-educa.md) — **JavaScript no
+frontend + IA no backend** — com dois modos de operação
+([03 §2.1.1](03-plataforma-e-arquitetura.md#211-app-02--assistente-por-voz-e-modo-ouvinte)).
 
-**Requisitos:** interação educacional ("converse com seu robô"); envio da evolução do
-aluno para os responsáveis; participação em desafios on-line; captação de perfil para
-personalização.
+**Requisitos:**
+- **Modo Conversa:** interação educacional por voz ("converse com seu robô") — quiz,
+  explicação de conceitos e apoio às atividades escolares.
+- **Modo Ouvinte:** a aplicação acompanha o que é falado durante a aula e, **quando
+  acionada**, opina sobre o tema em discussão ou responde a perguntas dirigidas a ela.
+- Captação e reprodução de áudio via `navigator.mediaDevices.getUserMedia`; reconhecimento
+  de fala e síntese de voz em pt-BR.
+- Ativação do Modo Ouvinte pelo Mestre, com **indicação visível e permanente** de que está
+  ativo e desligamento a qualquer momento.
+- **Sem gravação persistente do áudio da turma**; retenção mínima e definida da transcrição
+  estritamente necessária.
+- Aviso prévio a jogadores e responsáveis, com **direito de recusa e alternativa
+  equivalente** de participação na aula.
+- Filtros de segurança de conteúdo no nível mais restritivo.
+- Captação de perfil para personalização ([PRD-11](#prd-11--personalização-por-ia)).
+- Envio da evolução do aluno aos responsáveis pela própria plataforma.
 
-**Questões em aberto:** custo de API do WhatsApp; política de dados de menores em
-plataforma de terceiros; fallback para quem não tem WhatsApp.
+**Questões em aberto:** provedor e custo do modelo de IA; processamento de áudio no
+dispositivo x nuvem; base legal e prazo de retenção da transcrição de aula com menores;
+critério de acionamento do Modo Ouvinte (palavra-chave, botão do Mestre ou ambos);
+comportamento em salas barulhentas.
 
 ## PRD-07 — Economia de Recursos e Transparência (ledger)
 
@@ -160,8 +213,25 @@ computado como "moeda" no histórico do provedor; atividade condicionada a lastr
 recurso: hora-aula, lanche, recompensas, insumos, cloud, serviços; visibilidade pública da
 riqueza movimentada.
 
-**Questões em aberto:** unidade de conta (R$? pontos?); valoração da hora-aula;
-relatórios públicos por atividade/comunidade/provedor.
+**Recursos duráveis (patrimônio) e empréstimo:** além dos consumíveis, o ledger precisa
+tratar material que **não se consome no uso e é reaproveitado a cada turma** — o caso
+concreto é o acervo de 298 livros doado pelo Goethe-Institut. Requisitos:
+
+- Registro por **exemplar tombado**: título, número de tombo, ponto de apoio, estado de
+  conservação e movimentações entre pontos.
+- **Empréstimo e devolução** vinculados a jogador e a módulo/trilha, com histórico de quem
+  usou cada exemplar e devoluções pendentes no painel do dia.
+- O aporte credita o Poder Econômico do Apoiador **uma única vez**, sem baixa por consumo.
+- Suporte aos dois destinos possíveis do exemplar: **doação ao jogador** (baixa definitiva,
+  tratada como recompensa entregue) ou **reaproveitamento** (patrimônio permanente)
+  ([04 §1](04-modelo-economico-e-sustentabilidade.md#primeiro-aporte-registrado--acervo-didático-do-goethe-institut)).
+- **Perda ou dano não gera débito para o jogador nem para a família**: gera uma
+  **necessidade de reposição** a ser aportada por Apoiador
+  ([05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)).
+
+**Questões em aberto:** unidade de conta (R$? pontos?); valoração da hora-aula; valoração de
+acervo doado (valor de mercado, simbólico ou apenas contagem física); relatórios públicos por
+atividade/comunidade/provedor.
 
 ## PRD-08 — Comunidades Virtuais e dados do território
 
@@ -191,10 +261,24 @@ endereço de criança; modelo de séries temporais.
 **Requisitos:** trilhas mensais; conteúdo próprio e de terceiros; quiz/desafio para
 desbloqueio; **publicação dos artefatos que comprovam a habilidade do Mestre**; catálogo
 inicial de poderes (IA/Robótica, Rima, Redes, Capoeira com ML/TensorFlow, Soft Skills,
-PNED/BNCC); paralelos obrigatórios com outras áreas do conhecimento e com os valores do
-projeto; primeiro conteúdo: trilha de Programação e Robótica do fundador, com o
-[Robô Educa](06-robo-educa.md) como primeira atividade e a
-[Batalha de Laser](07-batalha-de-laser.md) como culminância.
+PNED/BNCC); demais trilhas previstas, incluindo a de **Social Media / Geração de Áudio e
+Vídeo para Redes Sociais**
+([02 §3](02-conceito-do-jogo-e-gamificacao.md#demais-trilhas-previstas)); banco de perguntas
+do **Quiz ao Vivo** cadastrado pelo curador da aula; paralelos obrigatórios com outras áreas
+do conhecimento e com os valores do projeto.
+
+**Primeiras trilhas (conteúdo já existente):** **[Robô Educa](06-robo-educa.md)** (1ª) e
+**[Batalha de Laser](07-batalha-de-laser.md)** (2ª), ambas de autoria do Mestre fundador
+([02 §3](02-conceito-do-jogo-e-gamificacao.md#as-duas-primeiras-trilhas-da-plataforma)).
+São o conteúdo de validação do módulo: se a ferramenta modela essas duas, modela as demais.
+
+**Material de apoio impresso:** o modelo de trilha precisa suportar **bibliografia de apoio
+por ponto de trilha** — a coleção Include doada pelo Goethe-Institut é material de apoio das
+duas trilhas acima, **não trilha própria**
+([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut)).
+Requisitos decorrentes: vincular um ponto de trilha a **título e capítulo recomendados**;
+indicar ao jogador se há **exemplar disponível no seu ponto de apoio**; e creditar o
+**Apoiador que forneceu o material** onde ele é indicado.
 
 **Questões em aberto:** formato dos conteúdos (vídeo, texto, interativo); revisão/curadoria
 pedagógica; licença dos conteúdos (Creative Commons?).
@@ -220,6 +304,20 @@ com crianças.
 **Questões em aberto:** modelo/stack de IA; limites éticos e LGPD para perfis de menores;
 explicabilidade para responsáveis.
 
+## PRD-12 — App 04: Jogo em JavaScript
+
+**Escopo:** jogo executado no navegador, construído sobre a **base de personagens da
+plataforma**
+([03 §2.1.3](03-plataforma-e-arquitetura.md#213-app-04--jogo-em-javascript)).
+
+**Requisitos:** uso dos avatares, poderes, badges e níveis já conquistados como elementos do
+jogo; representação exclusivamente por **avatar, nunca por imagem real**; código aberto e
+legível, apto a virar conteúdo de trilha do Poder da IA e Robótica; execução em navegador de
+celular modesto e tolerância a rede instável.
+
+**Questões em aberto:** gênero e mecânica do jogo; se o progresso no jogo gera pontuação na
+plataforma ou apenas consome pontos; modo offline; multiplayer local nas aulas presenciais.
+
 ---
 
 ## Ordem sugerida de elaboração **[Proposta]**
@@ -229,11 +327,14 @@ explicabilidade para responsáveis.
 2. **PRD-04 (onboarding)** — é a porta de entrada real das aulas presenciais; sem ele não
    há cadastro nem registro de presença.
 3. **PRD-03 (vitrine)** — entrega visibilidade rápida e material para captar apoiadores.
-4. **PRD-02 (gestão)** — necessário para operar o primeiro ciclo presencial.
-5. **PRD-05 (área do jogador)** — o jogo em si.
-6. **PRD-09/10** — conteúdo do primeiro Mestre + primeira batalha.
-7. **PRD-06, 07, 08, 11** — em ondas seguintes, conforme
-   [05-implantacao-e-operacao.md](05-implantacao-e-operacao.md#10-fases-sugeridas-de-implantação-do-piloto-proposta).
+4. **PRD-02 (App 03 — gestão)** — necessário para operar o primeiro ciclo presencial,
+   inclusive os painéis do dia e o Quiz ao Vivo.
+5. **PRD-06 (App 02 — assistente por voz)** — reaproveita a base do Robô Educa, já em
+   produção, e entra em uso já nas primeiras aulas.
+6. **PRD-05 (App 05 — área do jogador)** — a jornada gamificada em si.
+7. **PRD-09/10** — conteúdo do primeiro Mestre + primeira batalha.
+8. **PRD-12 (App 04 — jogo)**, **PRD-07, 08 e 11** — em ondas seguintes, conforme
+   [05-implantacao-e-operacao.md](05-implantacao-e-operacao.md#11-fases-sugeridas-de-implantação-do-piloto-proposta).
 
 > Dica operacional: este repositório já dispõe de skills de PRD (fases 1–5: elicitação,
 > geração, revisão, patch e gestão de mudanças). Cada bloco acima pode alimentar a Fase 1

@@ -38,7 +38,7 @@ oficinas. Regras de admissão:
   autocadastro de Mestres.
 - Todo Mestre **tem que ter pelo menos uma habilidade** declarada.
 - A habilidade precisa estar **comprovada por materiais ou artefatos disponibilizados na
-  plataforma** — aulas presenciais e/ou gravadas, atividades propostas, vídeo-aulas,
+  plataforma** — aulas presenciais e/ou gravadas, atividades propostas, videoaulas,
   exemplos de código, projetos construídos. A prova é pública e verificável por qualquer
   visitante.
 - Mestres também proveem recursos para atividades (ver
@@ -46,10 +46,10 @@ oficinas. Regras de admissão:
 
 > **Exemplo de referência — o Mestre fundador.** É considerado mestre em Programação e
 > Robótica porque **construiu o software da plataforma**, propõe as atividades que os
-> jogadores realizam e publica conteúdo (vídeo-aulas, exemplos de código). Suas
-> atividades-modelo são o [Robô Educa](06-robo-educa.md) a
-> [Batalha de Laser](07-batalha-de-laser.md)
-> além da Idealização e implementação da Plataforma em sí.
+> jogadores realizam e publica conteúdo (videoaulas, exemplos de código). É autor das
+> **duas primeiras trilhas da plataforma** — [Robô Educa](06-robo-educa.md) e
+> [Batalha de Laser](07-batalha-de-laser.md) ([§3](#as-duas-primeiras-trilhas-da-plataforma))
+> — além da **idealização e implementação da própria plataforma**.
 
 ### Apoiadores / Patrocinadores
 Pessoas e instituições que financiam ou divulgam o projeto. Regras de admissão:
@@ -107,9 +107,9 @@ Catálogo inicial previsto:
 
 | Poder | Descrição |
 |---|---|
-| **Poder da IA e Robótica** | Programação, eletrônica, robótica e IA — conteúdos do primeiro Mestre. Atividades-modelo: [Robô Educa](06-robo-educa.md) e [Batalha de Laser](07-batalha-de-laser.md) |
+| **Poder da IA e Robótica** | Programação, eletrônica, robótica e IA — conteúdos do primeiro Mestre. Trilhas: [Robô Educa](06-robo-educa.md) (1ª) e [Batalha de Laser](07-batalha-de-laser.md) (2ª), apoiadas pelo acervo Include ([§3](#acervo-didático-de-apoio--coleção-include-goethe-institut)) |
 | **Poder da Rima** | Expressão artística — rima, rap, batalhas de rima |
-| **Poder das Redes** | Produção de conteúdo / "Monte seu Canal" — comunicação digital |
+| **Poder das Redes** | Produção de conteúdo / "Monte seu Canal" — comunicação digital, geração de áudio e vídeo para redes sociais e letramento crítico sobre seus riscos (trilha em [§3](#demais-trilhas-previstas)) |
 | **Poder da Capoeira** | Cultura e movimento; com componente tecnológico: modelo de ML (TensorFlow) para análise de movimentos — contador de polichinelos e de movimentos executados com sucesso |
 | **Poder Econômico** | O quanto Mestres e Apoiadores investiram na plataforma (tempo, recursos etc.) — o poder dos provedores |
 | **Outros conteúdos PNED / BNCC** | Alinhamento com políticas educacionais (Política Nacional de Educação Digital e Base Nacional Comum Curricular) |
@@ -138,6 +138,85 @@ comunidade). Assim as causas viram conteúdo jogável, não apenas declaração 
 - Trilhas de conhecimento com cadência **mensal**.
 - Quanto mais usa a plataforma e realiza atividades/desafios, mais pontos acumula.
 - Trilhas podem ser **próprias ou de terceiros** (conteúdos externos curados pelos Mestres).
+- O jogador é acompanhado na trilha pela **Área do Jogador (App 05)**, que mostra o próximo
+  ponto, o que já foi conquistado e o que ainda está bloqueado
+  ([03 §2.1.4](03-plataforma-e-arquitetura.md#214-app-05--área-do-jogador)).
+
+### As duas primeiras trilhas da plataforma
+
+**Robô Educa** e **Batalha de Laser** são **trilhas** — as duas primeiras da plataforma —, e
+não atividades isoladas. Ambas são de **autoria do Mestre fundador**, autor deste
+repositório, e são os artefatos que comprovam sua habilidade em Programação e Robótica
+([01 §7](01-visao-valores-e-proposito.md#7-o-fundador-primeiro-admin-e-primeiro-mestre)).
+
+| # | Trilha | Poder associado | Do que se trata | Detalhamento |
+|---|---|---|---|---|
+| **1ª** | **Robô Educa** | Poder da IA e Robótica | Construir o próprio robô com material reciclado ou kit e dar vida a ele com IA por voz; da montagem física à leitura e alteração do código | [06-robo-educa.md](06-robo-educa.md) |
+| **2ª** | **Batalha de Laser** | Poder da IA e Robótica | Eletrônica, sensores, MQTT e rede: os jogadores constroem os artefatos e disputam a batalha presencial | [07-batalha-de-laser.md](07-batalha-de-laser.md) |
+
+A 2ª trilha é a **sucessora natural** da 1ª: mesmo poder, um degrau a mais de complexidade.
+Juntas, demonstram o ciclo completo do jogo — mestre publica a trilha → jogador aprende
+construindo → apresentação ou batalha presencial → pontuação e visibilidade na plataforma.
+
+### Acervo didático de apoio — coleção Include (Goethe-Institut)
+
+O projeto recebeu do **Goethe-Institut** — que passa a ser um dos **primeiros Apoiadores da
+plataforma** ([04 §1](04-modelo-economico-e-sustentabilidade.md#1-a-economia-de-recursos-da-plataforma))
+— uma coleção de livros do projeto **Include**, da **Campus Party**.
+
+> **Definição vigente:** os livros **não constituem trilhas próprias**. São **material de
+> apoio** das duas trilhas existentes — [Robô Educa](06-robo-educa.md) e
+> [Batalha de Laser](07-batalha-de-laser.md) —, usados como referência de consulta nos
+> pontos de trilha em que o conteúdo se encaixa.
+
+| Título | Exemplares | Apoia principalmente |
+|---|---:|---|
+| Robótica Educativa — **Eletrônica** (Alpha) | 110 | Batalha de Laser |
+| Robótica Educativa — **Sensores** (Alpha) | 73 | Batalha de Laser |
+| Robótica Educativa — **Mecânica** (Alpha) | 69 | Robô Educa (montagem do corpo) |
+| Include — **Programação I** | 25 | Robô Educa (código) |
+| Include — **Sensores I** | 10 | Batalha de Laser |
+| Include — **Mecânica I** | 7 | Robô Educa |
+| Include — **Eletrônica I** | 4 | Batalha de Laser |
+| **Total** | **298** | |
+
+**Por que material de apoio e não trilha.** As duas trilhas já existem, têm autoria e
+sequência definidas. O acervo entra para **aprofundar** os pontos dessas trilhas — quem
+quiser ir além do que a aula cobre tem o livro na mão —, sem criar percursos paralelos que
+concorreriam com o conteúdo do Mestre fundador. O vínculo é **ponto de trilha → capítulo
+recomendado**, não livro → trilha nova.
+
+**Observações operacionais que já se pode extrair do inventário:**
+
+- Os três títulos da linha **Alpha** (252 exemplares) têm volume suficiente para **um livro
+  por jogador** em turmas inteiras e em mais de um ponto de apoio.
+- Os títulos da linha **Include I** (46 exemplares, sendo apenas 4 de Eletrônica I) são
+  **material escasso**: servem melhor como referência de bancada, uso compartilhado em
+  equipe ou formação de mestres, voluntários e multiplicadores — não como distribuição
+  individual.
+- Cada exemplar é um **recurso aportado por Apoiador** e entra no livro-razão da plataforma,
+  compondo o **Poder Econômico** do Goethe-Institut
+  ([04 §1](04-modelo-economico-e-sustentabilidade.md#1-a-economia-de-recursos-da-plataforma)).
+
+> **Decisão pendente:** se os livros serão **doados aos jogadores** ou **reaproveitados**
+> entre turmas. A escolha muda o modelo de guarda, o registro no livro-razão e a estratégia
+> de conservação — ver [05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)
+> e [09 §1](09-topicos-em-aberto-e-sugestoes.md#1-decisões-pendentes).
+
+### Demais trilhas previstas
+
+| Trilha | Poder associado | Conteúdo |
+|---|---|---|
+| **Social Media / Geração de Áudio e Vídeo para Redes Sociais** | Poder das Redes | Roteiro, captação, edição e publicação; uso de ferramentas de IA para geração e edição de áudio e vídeo; direitos de imagem e proteção de dados; **letramento crítico sobre os riscos das redes sociais** |
+| **Rima** | Poder da Rima | Escrita, métrica e batalhas de rima |
+| **Capoeira** | Poder da Capoeira | Cultura e movimento, com análise de movimentos por ML (TensorFlow) |
+
+A trilha de **Social Media** tem função dupla: forma o jogador em produção de conteúdo e
+alimenta a **equipe de divulgação do projeto nas redes**, produzindo material real
+([05 §8](05-implantacao-e-operacao.md#8-comunicação-e-divulgação)). Nela vale integralmente
+a regra de LGPD do projeto: os jogadores aparecem por seus **avatares**, nunca por imagens
+reais, e qualquer publicação com criança identificável exige consentimento específico do
+responsável.
 
 ## 4. Atividades e desafios
 
@@ -174,6 +253,7 @@ idade que tem.
 | Coleta de dados do território | Temperatura, chuva, resíduos, buracos — alimenta a Comunidade Virtual |
 | Desplugadas (Computer Science Unplugged) | Lógica e algoritmos sem computador |
 | Valores e temas transversais | Racismo, violência contra a mulher, identidade, povos originários |
+| Competição ao vivo | **Quiz ao Vivo** entre equipes na aula presencial ([05 §4](05-implantacao-e-operacao.md#4-atividade-modelo-quiz-ao-vivo)) |
 | Culminância | Apresentação livre do que foi construído/aprendido |
 
 ### Resultados de atividade (lançados pela gestão)
@@ -210,21 +290,27 @@ Os resultados das batalhas alimentam o ranking e o portfólio público dos jogad
 
 ## 7. Níveis e badges (gamificação)
 
-| Nível | Critério |
-|---|---|
-| Nível 1 | Inscrito na oficina e assíduo |
-| Nível 2 | Bom rendimento |
-| Nível 3 | Ótimo rendimento |
-| Nível 4 | Apoio aos colegas nas aulas |
-| Nível 5 | Instrutor |
+| Nível | Critério | O que destrava |
+|---|---|---|
+| Nível 1 | Inscrito na oficina e assíduo | Participação nas atividades |
+| Nível 2 | Bom rendimento | — |
+| Nível 3 | Ótimo rendimento | — |
+| Nível 4 | Apoio aos colegas nas aulas | — |
+| **Nível 5** | **Mestre Aprendiz** | Ao concluir este nível, o jogador é considerado **Mestre Aprendiz** e fica **apto ao treinamento de multiplicador** |
 
 Observações:
 
-- A progressão culmina em **Instrutor**: o jogador que chega ao topo passa a ensinar —
-  é a engrenagem de formação de multiplicadores
-  ([05-implantacao-e-operacao.md](05-implantacao-e-operacao.md#6-formação-de-mestres-e-multiplicadores)).
-  O reconhecimento como **Mestre** na plataforma, contudo, continua dependendo de cadastro
-  por um Admin e de habilidade comprovada por artefatos publicados.
+- A progressão culmina no **Mestre Aprendiz**: o jogador que chega ao topo de um poder ou
+  de uma trilha passa a poder ensinar — é a engrenagem de formação de multiplicadores
+  ([05 §7](05-implantacao-e-operacao.md#7-formação-de-mestres-e-multiplicadores)).
+  Ser Mestre Aprendiz **não** equivale a ser Mestre: o reconhecimento como **Mestre** na
+  plataforma continua dependendo de cadastro por um Admin e de habilidade comprovada por
+  artefatos publicados ([§1](#1-os-elementos-do-jogo-personas)).
+- O **badge de Mestre Aprendiz é por trilha ou por poder**, não global — um jogador pode ser
+  Mestre Aprendiz em Robótica e estar no Nível 2 em Rima.
+- O badge de Mestre Aprendiz também é o critério para a **formação de voluntários de suporte
+  diário nos pontos de apoio**
+  ([05 §7](05-implantacao-e-operacao.md#7-formação-de-mestres-e-multiplicadores)).
 - **Badges** representam poderes e conquistas, e aparecem nos cards públicos dos jogadores
   ([03-plataforma-e-arquitetura.md](03-plataforma-e-arquitetura.md)).
 

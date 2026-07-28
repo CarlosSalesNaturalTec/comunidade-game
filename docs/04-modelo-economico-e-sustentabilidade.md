@@ -27,6 +27,39 @@ entrada: cada atividade consome recursos (débito) aportados por provedores (cr�
 viabiliza relatórios públicos de prestação de contas por atividade, por comunidade e por
 provedor — transparência auditável, essencial para captar doações e editais.
 
+### Primeiro aporte registrado — acervo didático do Goethe-Institut
+
+O **Goethe-Institut** doou ao projeto uma coleção de **298 livros** do projeto **Include**,
+da **Campus Party** (robótica educativa: mecânica, eletrônica, sensores e programação), e
+passa a ser um dos **primeiros Apoiadores** da plataforma. Os livros são **material de apoio**
+das trilhas Robô Educa e Batalha de Laser — inventário completo em
+[02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut).
+
+É o **primeiro caso concreto** da economia descrita acima e serve de referência para todos
+os aportes seguintes:
+
+- Entra no histórico do provedor e compõe o **Poder Econômico** do Goethe-Institut, visível
+  publicamente na plataforma.
+- Dá **lastro material** às duas trilhas existentes: material didático de apoio que já está
+  disponível, sem custo adicional para o primeiro ciclo.
+
+**O tratamento no livro-razão depende de uma decisão ainda pendente:**
+
+| Destino do exemplar | Como entra no ledger |
+|---|---|
+| **Doado ao jogador** | **Recompensa entregue** — baixa definitiva do acervo, como qualquer prêmio durável ([02 §8](02-conceito-do-jogo-e-gamificacao.md#8-recompensas)) |
+| **Reaproveitado entre turmas** | **Patrimônio permanente** — sem baixa por consumo, com controle de guarda por ponto de apoio (quantos exemplares, onde, em que estado) |
+
+O encaminhamento sugerido é um **regime misto** — doação dos títulos abundantes a quem
+concluir a trilha e retenção dos títulos escassos como acervo do ponto de apoio —, detalhado
+com a respectiva estratégia de conservação em
+[05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação).
+
+> **A definir:** doação x reaproveitamento; critério de valoração do acervo no livro-razão
+> (valor de mercado dos exemplares, valor simbólico ou apenas contagem física); e responsável
+> pela guarda em cada ponto de apoio
+> ([09 §1](09-topicos-em-aberto-e-sugestoes.md#1-decisões-pendentes)).
+
 ## 2. Fontes de receita
 
 - **Doações de parceiros** (pessoas físicas e jurídicas).
@@ -58,7 +91,7 @@ provedor — transparência auditável, essencial para captar doações e editai
 Modelo de parceria previsto:
 
 - O parceiro **financia a implementação de cursos presenciais** (professor + material +
-  ajuda de custos para estagiários + lanche).
+  ajuda de custo para estagiários + lanche).
 - Em contrapartida, **ganha o direito de "interagir" com seus alunos patrocinados** (alunos
   e pais) — relação direta e humanizada entre quem financia e quem é beneficiado.
 - Ao final dos módulos, **os alunos gravam vídeo com suas realizações e agradecimentos aos
@@ -72,13 +105,15 @@ nunca contato direto privado). Isso protege os jovens e também os parceiros.
 
 - **Cursos/Bootcamps para comunidades sem cobrança para os alunos.**
 - **Case real: Guerreira Zeferina** (referência de implantação/piloto).
+- **Acervo didático de 298 livros** doado pelo Goethe-Institut, que vira trilhas abertas na
+  plataforma — material que atende turmas inteiras sem custo para o aluno (§1).
 - **Oficinas do Robô Educa desde 2018**: centenas de crianças impactadas em comunidades de
   Salvador (BA) — ver [06-robo-educa.md](06-robo-educa.md).
 - **Dados para a comunidade**: as Comunidades Virtuais devolvem ao território evidência
   para tomada de decisões ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
 - **Multiplicadores**: alunos formados viram instrutores de novos cursos em comunidades —
-  fecha o ciclo com o Nível 5 da gamificação
-  ([02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md#7-níveis-e-badges-gamificação)).
+  fecha o ciclo com o **Nível 5 (Mestre Aprendiz)** da gamificação
+  ([02 §7](02-conceito-do-jogo-e-gamificacao.md#7-níveis-e-badges-gamificação)).
 
 **[Proposta]** Definir **indicadores de impacto** desde o início (nº de alunos ativos,
 retenção, trilhas concluídas, atividades realizadas, volume de dados de território

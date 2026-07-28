@@ -57,7 +57,7 @@ governança da plataforma:
 1. **Humanismo** — as pessoas vêm antes da tecnologia; a plataforma serve à dignidade e ao
    desenvolvimento humano.
 2. **Educação como fator transformador da sociedade** — a aposta central do projeto.
-3. **Causa anti-racista** — combate ativo ao racismo, presente na curadoria de conteúdos,
+3. **Causa antirracista** — combate ativo ao racismo, presente na curadoria de conteúdos,
    nas regras de convivência e na representatividade de mestres e jogadores.
 4. **Combate ao feminicídio e à violência contra a mulher** — conscientização e proteção,
    com espaço seguro para meninas e mulheres na plataforma e nas atividades presenciais.
@@ -137,7 +137,7 @@ mulheres, negras e indígenas que impactaram positivamente a sociedade
 ## 6. Diferenciais
 
 - Contato inicial com programação e robótica **sem exigência de um computador** (material
-  reciclado, kits de robótica, atividades presenciais e WhatsApp).
+  reciclado, kits de robótica, atividades presenciais e Web App acessível pelo celular).
 - Abordagem **lúdica e experimental**: ambiente descontraído, "sem miséria".
 - Modelo de **jogo ligado à vida real**: pontos, poderes e batalhas correspondem a
   aprendizado e realizações concretas.
@@ -146,7 +146,7 @@ mulheres, negras e indígenas que impactaram positivamente a sociedade
 - **Comunidades Virtuais como central de dados** do território, alimentada pelos próprios
   jogadores ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
 - **Open Source e replicável** em qualquer comunidade do país (ver
-  [05-implantacao-e-operacao.md](05-implantacao-e-operacao.md#9-replicabilidade)).
+  [05-implantacao-e-operacao.md](05-implantacao-e-operacao.md#10-replicabilidade)).
 
 ## 7. O fundador: primeiro Admin e primeiro Mestre
 
@@ -155,11 +155,27 @@ mulheres, negras e indígenas que impactaram positivamente a sociedade
   por um Admin existente — não há autocadastro de administradores.
 - **Mestre.** O fundador é também o **primeiro Mestre** cadastrado, responsável pelos
   poderes de **Programação e Robótica**. Sua habilidade é comprovada por artefatos reais
-  disponibilizados na plataforma: **o próprio software da plataforma**, as atividades
-  propostas aos jogadores, vídeo-aulas e exemplos de código.
-- **Atividades-modelo criadas por ele:**
-  1. [Robô Educa](06-robo-educa.md) — construir o próprio robô e dar vida a ele com IA por voz.
-  2. [Batalha de Laser](07-batalha-de-laser.md) — eletrônica, MQTT e batalha presencial.
+  disponibilizados na plataforma: **o próprio software da plataforma**, as trilhas e
+  atividades propostas aos jogadores, videoaulas e exemplos de código.
+- **Autor das duas primeiras trilhas da plataforma**
+  ([02 §3](02-conceito-do-jogo-e-gamificacao.md#as-duas-primeiras-trilhas-da-plataforma)):
+  1. **[Robô Educa](06-robo-educa.md)** — construir o próprio robô e dar vida a ele com IA
+     por voz.
+  2. **[Batalha de Laser](07-batalha-de-laser.md)** — eletrônica, sensores, MQTT e batalha
+     presencial.
 
-Ambas demonstram o ciclo completo: mestre cria conteúdo → jogadores aprendem construindo →
+Ambas demonstram o ciclo completo: mestre publica a trilha → jogadores aprendem construindo →
 atividade/batalha presencial → pontuação e visibilidade na plataforma.
+
+### Primeiro acervo didático e primeiro Apoiador
+
+O projeto recebeu do **Goethe-Institut** uma coleção de **298 livros** do projeto
+**Include**, da **Campus Party** (robótica educativa: mecânica, eletrônica, sensores e
+programação). O Goethe-Institut passa, com isso, a ser um dos **primeiros Apoiadores** da
+plataforma, com o aporte registrado e contabilizado em seu **Poder Econômico**
+([04 §1](04-modelo-economico-e-sustentabilidade.md#1-a-economia-de-recursos-da-plataforma)).
+
+O acervo é **material de apoio das duas trilhas acima** — inventário em
+[02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut);
+guarda e conservação em
+[05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação).

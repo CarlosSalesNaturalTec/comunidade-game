@@ -1,14 +1,19 @@
-# 07 — Batalha de Laser (2ª Atividade-Modelo: Poder da IA e Robótica)
+# 07 — Trilha Batalha de Laser (2ª Trilha da plataforma — Poder da IA e Robótica)
 
-> Enredo e regras oficiais: [`../batalha_laser.md`](../batalha_laser.md)
+> Enredo e regras oficiais da trilha — este documento é a fonte única.
 >
-> Esta é a **segunda atividade-modelo** da plataforma, criada pelo primeiro Mestre para os
-> poderes de **Programação e Robótica** — sucessora natural do
+> **Autoria:** Mestre fundador. É a **segunda trilha** da plataforma
+> ([02 §3](02-conceito-do-jogo-e-gamificacao.md#as-duas-primeiras-trilhas-da-plataforma)),
+> criada para os poderes de **Programação e Robótica** — sucessora natural do
 > [Robô Educa](06-robo-educa.md), com um degrau a mais de complexidade (eletrônica,
 > sensores e rede). Os jogadores constroem os artefatos (eletrônica + código), aprendem os
 > conceitos e disputam a **Batalha** presencial — fechando o ciclo aprender → construir →
 > batalhar → pontuar descrito em
 > [02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md#6-batalhas).
+>
+> Os títulos de **Eletrônica** e **Sensores** do acervo Include são o **material de apoio**
+> desta trilha, para quem quiser aprofundar os conceitos usados aqui
+> ([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut)).
 
 ## 🌌 O Ecossistema (Os 4 Elementos do Jogo)
 

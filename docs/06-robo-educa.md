@@ -1,10 +1,18 @@
-# 06 — Robô Educa (1ª Atividade-Modelo: Poder da IA e Robótica)
+# 06 — Trilha Robô Educa (1ª Trilha da plataforma — Poder da IA e Robótica)
 
-> Documentação técnica completa da aplicação: [`../robo_Educa.md`](../robo_Educa.md)
+> **Autoria:** Mestre fundador. É a **primeira trilha** da plataforma
+> ([02 §3](02-conceito-do-jogo-e-gamificacao.md#as-duas-primeiras-trilhas-da-plataforma)).
+>
+> O Robô Educa é também a base técnica da **App 02 — Assistente por voz e Modo Ouvinte**
+> ([03 §2.1.1](03-plataforma-e-arquitetura.md#211-app-02--assistente-por-voz-e-modo-ouvinte)).
+>
+> Os títulos de **Mecânica** e **Programação** do acervo Include são o **material de apoio**
+> desta trilha
+> ([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut)).
 
-O **Robô Educa** é a **primeira atividade-modelo** da plataforma. Ela demonstra o ciclo
-completo do Comunidade Game — mestre disponibiliza conteúdo → jogador constrói algo real →
-aprende conceitos → pontua e ganha visibilidade — e é também a base tecnológica do
+O **Robô Educa** é a **primeira trilha** da plataforma. Ela demonstra o ciclo completo do
+Comunidade Game — mestre publica a trilha → jogador constrói algo real → aprende conceitos →
+pontua e ganha visibilidade — e é também a base tecnológica do
 [Onboarding por voz](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença).
 
 ## 1. O que o jogador faz
@@ -21,7 +29,7 @@ Aprender a programar **construindo o próprio robô**:
 Habilidades trabalhadas: coordenação motora, criatividade, reuso de materiais
 (sustentabilidade), lógica de programação, noções de IA generativa e de nuvem.
 
-## 2. Por que é a primeira atividade
+## 2. Por que é a primeira trilha
 
 | Critério | Como o Robô Educa atende |
 |---|---|
@@ -31,7 +39,7 @@ Habilidades trabalhadas: coordenação motora, criatividade, reuso de materiais
 | Faixa 6 a 16 anos | Níveis de dificuldade graduais: da montagem física até a leitura e alteração do código |
 | Reaproveitamento | A plataforma já existe e está em produção; serve de base para o Onboarding e para o "converse com seu robô" |
 
-## 3. Anatomia da atividade
+## 3. Anatomia da trilha
 
 ### 👤 CORPO — montagem física
 Robô humanoide em garrafa PET ou MDF. Atividade presencial de oficina, com material de
@@ -58,7 +66,7 @@ segurança do modelo ativos no nível mais restritivo, bloqueando assédio, disc
 conteúdo sexual e conteúdo perigoso. O histórico persistido permite **moderação e controle
 de qualidade** das conversas.
 
-## 4. Trilha associada (Poder da IA e Robótica)
+## 4. Pontos da trilha (Poder da IA e Robótica)
 
 Decomposição sugerida em pontos de trilha, cada um com desafio de desbloqueio:
 

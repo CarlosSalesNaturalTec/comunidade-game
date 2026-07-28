@@ -1,8 +1,8 @@
 Analise os documentos da pasta docs e faça as seguintes ajustes/melhorias:
 
-## Aplicações a serem desenvolvidas: 
+## Em Canais / Meios de acesso - Aplicações a serem desenvolvidas: 
 
-* Remover referências ao desenvolvimento de aplicações ou recursos com uso de WhatsApp
+* em Canais / Meios de acesso Remover referências ao desenvolvimento de aplicações ou recursos com uso de WhatsApp
 * Nesta etapa todas as aplicações desenvolvidas serão no formato Web App responsivo. Mobile First.
 
 ### Aplicação Web 01: 
@@ -30,20 +30,21 @@ Analise os documentos da pasta docs e faça as seguintes ajustes/melhorias:
 
 ------------
 
-## Níveis do aluno:
-* Nível 5 -> Mestre aprendiz
+## Em Formação de Mestres e multiplicadores:
+* Nível 5 -> Ao concluir este nível o jogador é considerado Mestre aprendiz e estará apto a treinamento de multiplicador
 
 ------
 
-* Formação de Equipe de Social Media
-* Formação de voluntários para suporte diário nos pontos de apoio
+* Trilha: Social Media / Geração de Audio e Vídeo para Redes Sociais
+* Formação de voluntários para suporte diário nos pontos de apoio (Jogadores que atingirem badges de Mestre Aprendiz em Trilhas ou Poderes específicos)
 
 ----- Sugestão de conteúdo de Aulas
 
-## Quiz ao vivo . 
+## Exemplo de atividade para aulas presenciais - Quiz ao vivo
 * Jogadores presentes na aula organizados em equipes
 * Perguntas pré cadastrados pelo curador da aula (mentor). Multiescolha : a) resposta 1. b) resposta 2. c) resposta 3, etc.
 * Ao dar o start no quiz, Uma pergunta é exibida  e enviada para os dispositivos logados na aula
 * Equipes devem se consultar entre si, definir resposta correta, e clicar na respectiva opção que achar correta
 * Sistema analisa primeira equipe que deu a resposta correta e registra a respectiva pontuação 
 
+-----
