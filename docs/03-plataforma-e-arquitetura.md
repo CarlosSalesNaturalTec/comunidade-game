@@ -61,7 +61,7 @@ First**, consumindo o mesmo Backend API (§1).
 | **App 01** | **Onboarding** — escolha entre áudio ou texto, cadastro de novo aluno e registro de presença | Jogadores (na chegada da aula) | §5 |
 | **App 02** | **Assistente por voz** — ChatBot de áudio nos moldes do Robô Educa, com **Modo Ouvinte** | Jogadores e Mestres (durante a aula) | §2.1.1 e [06-robo-educa.md](06-robo-educa.md) |
 | **App 03** | **Gestão administrativa** — CRUDs, lançamentos manuais e painéis do dia | Admins e Mestres | §3 e §2.1.2 |
-| **App 04** | **Jogo em JavaScript** — jogo que reaproveita a base de personagens da plataforma | Jogadores | §2.1.3 |
+| **App 04** | **Jogo em JavaScript** — jogo que reaproveita a base de personagens da plataforma (engine sugerida: **Phaser.js**) | Jogadores | §2.1.3 |
 | **App 05** | **Área do Jogador** — guia e apoio nas trilhas | Jogadores | §2.1.4 |
 
 > A **vitrine pública** (§4) já está especificada e permanece no escopo do produto, como
@@ -119,6 +119,12 @@ Detalhamento completo em §3. Escopo específico desta etapa:
 
 Jogo executado no navegador, construído sobre a **base de personagens da plataforma**: os
 avatares, poderes, badges e níveis já conquistados pelos jogadores são os elementos do jogo.
+
+> **Engine sugerida: [Phaser.js](https://phaser.io/)** — framework de jogos 2D em JavaScript
+> que roda no próprio navegador, sem plugin nem instalação, e funciona bem em celular
+> modesto. Escolha coerente com o restante da etapa (Web App, Mobile First) e com o objetivo
+> de que o **código do jogo seja legível e alterável pelos próprios jogadores**.
+
 Objetivos:
 
 - Dar utilidade lúdica ao progresso obtido nas trilhas — o que se conquista aprendendo vale
@@ -333,8 +339,11 @@ Características previstas para a plataforma:
 - **Envio de resultados com a evolução do aluno aos responsáveis pela própria plataforma**
   (área do responsável no Web App e/ou e-mail), sem dependência de aplicativos de
   mensageria de terceiros.
-- Componentes de ML aplicados a conteúdos (ex.: análise de movimentos da capoeira com
-  TensorFlow — contador de polichinelos/movimentos corretos).
+- Componentes de visão computacional e ML aplicados a conteúdos (ex.: análise de movimentos
+  da capoeira — contador de polichinelos/movimentos corretos). **Sugestão técnica para a
+  captação dos movimentos: biblioteca MediaPipe (Python)**, que entrega detecção de pose
+  pronta; TensorFlow fica como alternativa para classificar movimentos a partir dos pontos
+  captados ([02 §2](02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades)).
 
 **[Proposta]** Definir uma política de uso de IA e dados de menores (o que é coletado,
 onde fica, quem acessa, retenção) alinhada à LGPD — além de obrigação legal, é coerente com

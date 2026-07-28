@@ -15,7 +15,9 @@ de novos tópicos e abordagens. Nada aqui é decisão tomada — é pauta.
 | **Modo Ouvinte do App 02** | O assistente acompanha o que é falado na aula. Definir formalmente: critério de acionamento, o que é transcrito e por quanto tempo é retido, base legal e forma do aviso/consentimento a jogadores e responsáveis, e a alternativa para quem recusar ([03 §2.1.1](03-plataforma-e-arquitetura.md#211-app-02--assistente-por-voz-e-modo-ouvinte)). **Prioridade alta** — envolve captação de voz de crianças. |
 | Canal de comunicação com os responsáveis | Com a saída do WhatsApp do escopo ([03 §2](03-plataforma-e-arquitetura.md#2-canais--meios-de-acesso)), definir por onde a evolução do aluno chega à família: área do responsável no Web App, e-mail, ou ambos. |
 | Pontuação e regras do Quiz ao Vivo | Pontos da vitória, formato de resposta (equipe x representante), critério de desempate e nº de dispositivos por equipe ([05 §4](05-implantacao-e-operacao.md#4-atividade-modelo-quiz-ao-vivo)). |
-| Mecânica do jogo (App 04) | Gênero do jogo e se o progresso nele gera ou apenas consome pontos da plataforma ([08 PRD-12](08-base-para-prds.md#prd-12--app-04-jogo-em-javascript)). |
+| Mecânica do jogo (App 04) | Gênero do jogo e se o progresso nele gera ou apenas consome pontos da plataforma. **Engine sugerida: Phaser.js** — confirmar ([08 PRD-12](08-base-para-prds.md#prd-12--app-04-jogo-em-javascript)). |
+| Stack de análise de movimentos (Poder da Capoeira) | **Sugestão: MediaPipe (Python)** para captação da pose, com TensorFlow como alternativa para classificar os movimentos. Confirmar, e definir se o processamento roda no dispositivo ou no servidor — é vídeo de criança, e a resposta muda a exposição de dados ([02 §2](02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades)). |
+| **Desafios extras de Apoiadores** | Definir: se o desafio extra também gera pontos além da recompensa; teto de desafios simultâneos por trilha; se a recompensa extra pode ser exclusiva de um jogador ou aberta a todos os que concluírem; e o formato do relatório de efetividade entregue ao Apoiador ([04 §5](04-modelo-economico-e-sustentabilidade.md#5-interação-apoiadores-x-jogadores-desafios-extras)). |
 | **Acervo Include: doar ou reaproveitar** | Definir se os 298 livros doados pelo Goethe-Institut serão **doados aos jogadores** ou **reaproveitados** entre turmas. Sugestão em avaliação: **regime misto** — doar os títulos abundantes da linha Alpha a quem concluir a trilha e manter os títulos escassos da linha Include I como acervo do ponto de apoio ([05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)). **Decisão anterior à primeira turma.** |
 | Estratégia de conservação do acervo | Caso haja reaproveitamento: validar a estratégia proposta (tombamento, ficha de vida do exemplar, ritual de posse na 1ª aula, badge "Guardião do Acervo", guarda por equipe, reposição solidária) e escrever no código de conduta a **distinção entre descuido deliberado e dano acidental** ([05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)). |
 | Valoração e guarda do acervo | Como o acervo entra no livro-razão (valor de mercado, simbólico ou contagem física) e quem responde pela guarda em cada ponto de apoio ([04 §1](04-modelo-economico-e-sustentabilidade.md#primeiro-aporte-registrado--acervo-didático-do-goethe-institut)). |
@@ -26,7 +28,7 @@ de novos tópicos e abordagens. Nada aqui é decisão tomada — é pauta.
 | Git como canal entre agentes e humanos | Proposta: GitHub Issues + labels como canal padrão; Discussions para debate; Projects para roadmap. |
 | Submarcas | **Rôbróders** e **Robô Educa** podem nomear subprodutos (ex.: os kits "Rôbróders"). |
 | Universo dos personagens | Susy, Otávio, Rôbróders e prof. Carlos Trenell — formalizar roteiro e identidade da narrativa. |
-| Case Guerreira Zeferina | Documentar como referência de implantação do piloto. |
+| **Case 01 — Guerreira Zeferina** | Documentado em [10](10-case-01-guerreira-zeferina.md). Pendentes do case: ponto de apoio físico, calendário do Ciclo 01 (ago–dez/2026), tamanho da turma, **metas numéricas das hipóteses H1 e H2** e resgate da memória da edição de 2024 (Inova Comunidade) ([10 §7](10-case-01-guerreira-zeferina.md#7-pontos-a-definir-do-case)). |
 
 ## 2. Propostas de novos tópicos **[Proposta]**
 
@@ -118,4 +120,9 @@ de novos tópicos e abordagens. Nada aqui é decisão tomada — é pauta.
    ([05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)).
 8. **Ler o acervo Include**, título a título, e mapear qual capítulo apoia qual ponto das
    trilhas Robô Educa e Batalha de Laser.
-8. Documentar o case Guerreira Zeferina enquanto a memória está fresca.
+9. **Fechar o planejamento do [Ciclo 01](10-case-01-guerreira-zeferina.md)** antes de agosto
+   de 2026: ponto de apoio definido, calendário dos encontros, metas numéricas das hipóteses
+   H1 e H2 e conferência do lastro necessário (H3).
+10. **Resgatar a memória da edição de 2024** (Inova Comunidade) na Guerreira Zeferina — o que
+    existe de registro, contatos e aprendizados — como linha de base do relacionamento com a
+    comunidade.

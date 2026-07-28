@@ -4,7 +4,13 @@
 
 O projeto será implantado **inicialmente em uma comunidade próxima à residência do
 fundador** (piloto), e deve servir de **modelo de implantação para qualquer comunidade do
-país**. O case de referência é a **Guerreira Zeferina**.
+país**.
+
+> **Case de referência: [Comunidade Guerreira Zeferina](10-case-01-guerreira-zeferina.md)**,
+> em Salvador (BA) — **Ciclo 01, de agosto a dezembro de 2026**. A comunidade já foi palco da
+> edição de 2024 do Robô Educa (então chamada *Inova Comunidade*), o que significa começar
+> com relação prévia e memória do território. Hipóteses, metas e critérios de avaliação do
+> ciclo estão no [documento 10](10-case-01-guerreira-zeferina.md).
 
 A implantação combina presença física (pontos de apoio, encontros) com presença digital
 (Web App responsivo, acessível pelo celular), justamente porque o público-alvo tem acesso
@@ -14,6 +20,13 @@ desigual a equipamentos.
 
 - **Pontos de apoio nas comunidades**: hackerspace, fab lab, coworking.
 - São a base para aulas presenciais, montagem de kits, batalhas e atividades de culminância.
+- **Equipamentos disponíveis no ponto de apoio** — notebooks, smartphones e tablets — são o
+  que viabiliza a **dinâmica assíncrona dos encontros** (§3): o jogador usa o aparelho
+  disponível quando chega a sua vez, sem exigir que cada um traga o seu. O parque de
+  equipamentos é recurso com lastro como qualquer outro
+  ([04](04-modelo-economico-e-sustentabilidade.md)) e é uma das finalidades previstas de
+  campanha de financiamento
+  ([04 §2](04-modelo-economico-e-sustentabilidade.md#2-fontes-de-receita)).
 - Custo operacional previsto: diária do professor para o ponto de apoio
   ([04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md#3-despesas-para-funcionamento)).
 - **Guarda do acervo didático.** Os 298 livros doados pelo Goethe-Institut ficam distribuídos
@@ -89,19 +102,65 @@ O princípio é **conservação por cuidado e orgulho, não por medo de puniçã
 
 ## 3. Roteiro da aula presencial
 
-Momentos sugeridos para compor um encontro presencial. Não é camisa de força — é a espinha
-dorsal que garante que cada aula tenha acolhimento, prática, inspiração e voz do jogador.
+### Definição vigente: o encontro é assíncrono
 
-| # | Momento | O que acontece |
-|---|---|---|
-| 1 | **Onboarding** | Cadastro de novos jogadores e registro de presença, pela **App 01** — interação por áudio ou texto ([03 §5](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença)) |
-| 2 | **Atividades práticas — Computer Science Unplugged** | Lógica, algoritmos e pensamento computacional **sem computador**: papel, corpo, jogos, materiais do dia a dia |
-| 3 | **Bate-papo on-line com mentores e convidados** | Conversa ao vivo com profissionais e referências — aproxima o mundo da tecnologia da realidade do jogador |
-| 4 | **Momento GOAT / The Best / "Podemos nos tornar os melhores"** | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade. Momento inspirador e de identificação ([01 §4](01-visao-valores-e-proposito.md#o-lema)) |
-| 5 | **Desafio do dia** | A atividade pontuada do encontro — individual, em equipe, de coleta de dados do território ou o **Quiz ao Vivo** (§4) |
-| 6 | **Encerramento com apresentação livre** | Cada jogador (ou equipe) mostra o que construiu e/ou aprendeu na aula. Fecha o ciclo e treina expressão pública |
+**Os encontros presenciais têm dinâmica assíncrona.** Não há uma turma única avançando em
+bloco: **à medida que os jogadores vão chegando** e se organizando em equipes, eles **começam
+a realizar as atividades da trilha em que estão atuando, no seu próprio ritmo**, usando os
+**notebooks, smartphones e tablets disponíveis**, com a ajuda do(s) **Mestre(s) presente(s)**.
+
+Por que assim:
+
+- **A chegada é escalonada na vida real** — transporte, escola, tarefa de casa, irmão menor.
+  Um roteiro em bloco pune quem chega atrasado; o assíncrono simplesmente o acolhe no ponto
+  em que ele está.
+- **Cada jogador está em um ponto diferente da trilha.** A progressão do jogo é por
+  **nível de dificuldade, não por idade nem por data de entrada**
+  ([02 §4](02-conceito-do-jogo-e-gamificacao.md#4-atividades-e-desafios)) — o encontro
+  precisa refletir isso.
+- **Os equipamentos são compartilhados e limitados.** Atividade assíncrona distribui o uso
+  dos aparelhos ao longo do encontro, em vez de exigir um dispositivo por jogador ao mesmo
+  tempo.
+- **O Mestre vira mentor de bancada**, e não palestrante: circula entre equipes, atende quem
+  travou e libera quem está adiantado — que passa a ajudar o colega, o que já é
+  **mérito extra por auxílio aos colegas**
+  ([02 §4](02-conceito-do-jogo-e-gamificacao.md#resultados-de-atividade-lançados-pela-gestão)).
+
+Consequências operacionais:
+
+- O **onboarding roda continuamente** durante o encontro, não só na abertura — a App 01
+  atende quem chega a qualquer hora ([03 §5](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença)).
+- A **App 05 (Área do Jogador)** é o que sustenta a autonomia: é ela que diz a cada jogador
+  qual é o próximo ponto da sua trilha, sem depender do Mestre para saber o que fazer
+  ([03 §2.1.4](03-plataforma-e-arquitetura.md#214-app-05--área-do-jogador)).
+- O **painel do dia** (App 03) é o instrumento de controle do encontro assíncrono: quem
+  chegou, quem está em qual atividade, o que já foi lançado e o que ainda falta
+  ([03 §3](03-plataforma-e-arquitetura.md#3-frontend-01--gestão-app-03)).
+
+### Momentos do encontro
+
+Os momentos abaixo compõem o encontro, mas **nem todos são simultâneos para todos**. Os
+momentos **2 e 5 são assíncronos** — cada equipe os realiza quando chega e no seu ritmo. Os
+momentos **3, 4 e 6 são coletivos**, com horário marcado dentro do encontro, e é neles que a
+turma inteira se junta.
+
+Não é camisa de força — é a espinha dorsal que garante que cada aula tenha acolhimento,
+prática, inspiração e voz do jogador.
+
+| # | Momento | Ritmo | O que acontece |
+|---|---|---|---|
+| 1 | **Onboarding** | **Contínuo** | Cadastro de novos jogadores e registro de presença, pela **App 01** — interação por áudio ou texto, conforme os jogadores chegam ([03 §5](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença)) |
+| 2 | **Atividades práticas — Computer Science Unplugged** | **Assíncrono** | Lógica, algoritmos e pensamento computacional **sem computador**: papel, corpo, jogos, materiais do dia a dia. Boa porta de entrada para quem chegou e ainda não pegou um aparelho |
+| 3 | **Bate-papo on-line com mentores e convidados** | Coletivo | Conversa ao vivo com profissionais e referências — aproxima o mundo da tecnologia da realidade do jogador |
+| 4 | **Momento GOAT / The Best / "Podemos nos tornar os melhores"** | Coletivo | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade. Momento inspirador e de identificação ([01 §4](01-visao-valores-e-proposito.md#o-lema)) |
+| 5 | **Trabalho de trilha / Desafio do dia** | **Assíncrono** | O grosso do encontro: cada equipe avança nos **pontos da sua trilha** e na atividade pontuada — individual, em equipe, de coleta de dados do território — com apoio do Mestre. O **Quiz ao Vivo** (§4) é a exceção coletiva deste momento |
+| 6 | **Encerramento com apresentação livre** | Coletivo | Cada jogador (ou equipe) mostra o que construiu e/ou aprendeu na aula. Fecha o ciclo e treina expressão pública |
 
 Observações operacionais:
+
+- **Os momentos coletivos são âncoras, não interrupções arbitrárias.** Convém concentrá-los
+  na segunda metade do encontro, quando a maior parte da turma já chegou — assim quem chega
+  cedo não fica esperando e quem chega tarde não perde o essencial.
 
 - O **momento GOAT** é onde os valores do projeto (antirracismo, combate à violência
   contra a mulher, valorização dos povos originários, identidade) entram de forma direta e
@@ -264,6 +323,13 @@ participar de editais.
 
 Todas as entregas de software desta etapa são **Web Apps responsivos, Mobile First**
 ([03 §2](03-plataforma-e-arquitetura.md#2-canais--meios-de-acesso)).
+
+O piloto a que estas fases se referem é o
+**[Case 01 — Guerreira Zeferina](10-case-01-guerreira-zeferina.md)**. O **Ciclo 01
+(ago–dez/2026)** tem como meta o **MVP**: credenciamento de jogadores, cadastro da comunidade
+digital e as **trilhas 1 e 2** em operação de agosto a novembro — o que corresponde, em
+termos das fases abaixo, a **chegar até a Fase 3** dentro do ciclo. As fases seguintes ficam
+para ciclos posteriores.
 
 | Fase | Entrega | Depende de |
 |---|---|---|

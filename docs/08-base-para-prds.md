@@ -7,6 +7,12 @@
 ## Visão de produto (comum a todos os PRDs)
 
 - **Produto:** plataforma educacional gamificada open source para comunidades periféricas.
+- **Primeira implantação (contexto de todos os PRDs):**
+  **[Case 01 — Comunidade Guerreira Zeferina](10-case-01-guerreira-zeferina.md)**, Salvador
+  (BA), **Ciclo 01 de ago a dez/2026**. O MVP do ciclo é: credenciamento de jogadores,
+  cadastro da comunidade digital e **trilhas 1 e 2 em operação**. Todo PRD deve poder ser
+  respondido com a pergunta *"isto é necessário para o Ciclo 01?"* — o que não for, é onda
+  seguinte.
 - **Posicionamento:** educacional e *tech first*, com paralelos obrigatórios para outras
   áreas do conhecimento e para valores e temas necessários à sociedade (racismo, violência
   contra mulheres, identidade, povos originários).
@@ -97,7 +103,15 @@ atividade prevista, recursos providos, lançamentos pendentes); **operação do 
 ([05 §4](05-implantacao-e-operacao.md#4-atividade-modelo-quiz-ao-vivo)); **controle do
 acervo didático** — tombamento dos exemplares, empréstimo e devolução por jogador, estado de
 conservação e devoluções pendentes no painel do dia
-([05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)).
+([05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)); **validação de
+desafios extras propostos por Apoiadores** pelo Mestre da trilha
+([04 §5](04-modelo-economico-e-sustentabilidade.md#5-interação-apoiadores-x-jogadores-desafios-extras)).
+
+**Painel do dia em encontro assíncrono:** como os jogadores chegam e avançam em ritmos
+diferentes ([05 §3](05-implantacao-e-operacao.md#definição-vigente-o-encontro-é-assíncrono)),
+o painel precisa mostrar, em tempo real, **quem já chegou, em que ponto de trilha cada equipe
+está, quem está aguardando aparelho e quais lançamentos ainda faltam** — é o instrumento que
+substitui o controle visual de uma turma em bloco.
 
 **Questões em aberto:** quem pode lançar pontuação negativa e com que auditoria; trilha de
 auditoria das ações de Admin; se o Quiz ao Vivo é módulo desta aplicação ou aplicação
@@ -158,11 +172,19 @@ conversa de cadastro.
 próximo ponto, o que precisa ser feito, o que já foi conquistado e o que está bloqueado.
 
 **Requisitos:** escolha de poder; trilhas com desbloqueio por quiz/desafio; desafios
-semanais (on-line 10 pts, presencial 10 pts, equipe 10 pts, família 20 pts); equipes
-mistas de até 5 e Equipe Familiar; registro de dados do território; ranking; troca de
+semanais (on-line 10 pts, presencial 10 pts, equipe 10 pts, família 20 pts); **desafios
+extras propostos por Apoiadores**, vinculados à trilha em andamento e com recompensa extra
+([04 §5](04-modelo-economico-e-sustentabilidade.md#5-interação-apoiadores-x-jogadores-desafios-extras));
+equipes mistas de até 5 e Equipe Familiar; registro de dados do território; ranking; troca de
 pontos por recompensas (kits de alimentos; catálogo a expandir); pedido de ajuda para
 atividades escolares; níveis 1–5 (assíduo → **Mestre Aprendiz**, apto ao treinamento de
 multiplicador); badges por trilha e por poder.
+
+**Autonomia no encontro assíncrono:** a App 05 é o que permite ao jogador saber **o que fazer
+em seguida sem depender do Mestre** — requisito direto da dinâmica assíncrona dos encontros
+presenciais ([05 §3](05-implantacao-e-operacao.md#definição-vigente-o-encontro-é-assíncrono)).
+Precisa funcionar em **aparelho compartilhado do ponto de apoio** (troca rápida de sessão) e
+mostrar com clareza o próximo ponto da trilha e o que está bloqueado.
 
 **Requisitos adicionais:** estado de **perfil público** desbloqueado apenas com
 autorização do responsável (sem ela, histórico e perfil não são divulgados); representação
@@ -229,9 +251,25 @@ concreto é o acervo de 298 livros doado pelo Goethe-Institut. Requisitos:
   **necessidade de reposição** a ser aportada por Apoiador
   ([05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)).
 
+**Desafios extras de Apoiadores e rastreio de efetividade:** o ledger precisa registrar não
+só o aporte, mas **o que aconteceu por causa dele**
+([04 §5](04-modelo-economico-e-sustentabilidade.md#5-interação-apoiadores-x-jogadores-desafios-extras)).
+Requisitos:
+
+- **Desafio extra** como entidade: Apoiador proponente, trilha vinculada, Mestre validador,
+  recompensa oferecida, período de vigência.
+- Recompensa extra **creditada no histórico do Apoiador** e computada no Poder Econômico,
+  com lastro exigido **antes** da publicação do desafio.
+- **Realizações dos jogadores** naquele desafio vinculadas ao histórico do Apoiador — a base
+  para relatórios de **efetividade do apoio ao longo do tempo** (quantos concluíram, em que
+  trilhas, com que retenção).
+- Nenhum dado de contato de jogador exposto ao Apoiador: o relatório é **agregado e por
+  avatar**, respeitando a regra de mediação e a LGPD.
+
 **Questões em aberto:** unidade de conta (R$? pontos?); valoração da hora-aula; valoração de
 acervo doado (valor de mercado, simbólico ou apenas contagem física); relatórios públicos por
-atividade/comunidade/provedor.
+atividade/comunidade/provedor; se o desafio extra também gera pontos além da recompensa e
+qual o teto de desafios extras simultâneos por trilha.
 
 ## PRD-08 — Comunidades Virtuais e dados do território
 
@@ -260,12 +298,14 @@ endereço de criança; modelo de séries temporais.
 
 **Requisitos:** trilhas mensais; conteúdo próprio e de terceiros; quiz/desafio para
 desbloqueio; **publicação dos artefatos que comprovam a habilidade do Mestre**; catálogo
-inicial de poderes (IA/Robótica, Rima, Redes, Capoeira com ML/TensorFlow, Soft Skills,
+inicial de poderes (IA/Robótica, Rima, Redes, Capoeira com visão computacional, Soft Skills,
 PNED/BNCC); demais trilhas previstas, incluindo a de **Social Media / Geração de Áudio e
 Vídeo para Redes Sociais**
 ([02 §3](02-conceito-do-jogo-e-gamificacao.md#demais-trilhas-previstas)); banco de perguntas
-do **Quiz ao Vivo** cadastrado pelo curador da aula; paralelos obrigatórios com outras áreas
-do conhecimento e com os valores do projeto.
+do **Quiz ao Vivo** cadastrado pelo curador da aula; **fluxo de desafio extra proposto por
+Apoiador**, com validação obrigatória do Mestre da trilha antes da publicação
+([02 §4](02-conceito-do-jogo-e-gamificacao.md#desafios-extras-propostos-por-apoiadores));
+paralelos obrigatórios com outras áreas do conhecimento e com os valores do projeto.
 
 **Primeiras trilhas (conteúdo já existente):** **[Robô Educa](06-robo-educa.md)** (1ª) e
 **[Batalha de Laser](07-batalha-de-laser.md)** (2ª), ambas de autoria do Mestre fundador
@@ -297,9 +337,10 @@ portfólio; integração Nexus → API **[Proposta]**.
 
 **Requisitos:** plataforma capta o perfil conforme o aluno interage e entrega informação
 personalizada; usar habilidade que o aluno já possui para ensinar outros assuntos
-(interdisciplinaridade); ML aplicado a conteúdos (análise de movimentos de capoeira com
-TensorFlow); filtros de segurança de conteúdo no nível mais restritivo em toda interação
-com crianças.
+(interdisciplinaridade); visão computacional aplicada a conteúdos (análise de movimentos de
+capoeira — **captação sugerida com MediaPipe (Python)**, com TensorFlow como alternativa para
+classificar os movimentos a partir dos pontos captados); filtros de segurança de conteúdo no
+nível mais restritivo em toda interação com crianças.
 
 **Questões em aberto:** modelo/stack de IA; limites éticos e LGPD para perfis de menores;
 explicabilidade para responsáveis.
@@ -314,6 +355,11 @@ plataforma**
 jogo; representação exclusivamente por **avatar, nunca por imagem real**; código aberto e
 legível, apto a virar conteúdo de trilha do Poder da IA e Robótica; execução em navegador de
 celular modesto e tolerância a rede instável.
+
+**Sugestão técnica:** engine **Phaser.js** — jogos 2D em JavaScript rodando no próprio
+navegador, sem instalação, com desempenho adequado a aparelhos modestos e código legível o
+bastante para virar material de trilha
+([03 §2.1.3](03-plataforma-e-arquitetura.md#213-app-04--jogo-em-javascript)).
 
 **Questões em aberto:** gênero e mecânica do jogo; se o progresso no jogo gera pontuação na
 plataforma ou apenas consome pontos; modo offline; multiplayer local nas aulas presenciais.

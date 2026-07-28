@@ -110,7 +110,7 @@ Catálogo inicial previsto:
 | **Poder da IA e Robótica** | Programação, eletrônica, robótica e IA — conteúdos do primeiro Mestre. Trilhas: [Robô Educa](06-robo-educa.md) (1ª) e [Batalha de Laser](07-batalha-de-laser.md) (2ª), apoiadas pelo acervo Include ([§3](#acervo-didático-de-apoio--coleção-include-goethe-institut)) |
 | **Poder da Rima** | Expressão artística — rima, rap, batalhas de rima |
 | **Poder das Redes** | Produção de conteúdo / "Monte seu Canal" — comunicação digital, geração de áudio e vídeo para redes sociais e letramento crítico sobre seus riscos (trilha em [§3](#demais-trilhas-previstas)) |
-| **Poder da Capoeira** | Cultura e movimento; com componente tecnológico: modelo de ML (TensorFlow) para análise de movimentos — contador de polichinelos e de movimentos executados com sucesso |
+| **Poder da Capoeira** | Cultura e movimento; com componente tecnológico: análise de movimentos por visão computacional — contador de polichinelos e de movimentos executados com sucesso. **Sugestão técnica para a captação dos movimentos: biblioteca [MediaPipe](https://ai.google.dev/edge/mediapipe) (Python)**, que já entrega detecção de pose pronta; TensorFlow fica como alternativa para modelos próprios de classificação sobre os pontos captados |
 | **Poder Econômico** | O quanto Mestres e Apoiadores investiram na plataforma (tempo, recursos etc.) — o poder dos provedores |
 | **Outros conteúdos PNED / BNCC** | Alinhamento com políticas educacionais (Política Nacional de Educação Digital e Base Nacional Comum Curricular) |
 | **Soft Skills** | Habilidades socioemocionais |
@@ -168,6 +168,9 @@ plataforma** ([04 §1](04-modelo-economico-e-sustentabilidade.md#1-a-economia-de
 > [Robô Educa](06-robo-educa.md) e [Batalha de Laser](07-batalha-de-laser.md), usados como
 > referência de consulta nos pontos de trilha em que o conteúdo se encaixa. O vínculo é
 > **ponto de trilha → capítulo recomendado**.
+>
+> O acervo está **vinculado ao MVP do [Case 01 — Comunidade Guerreira Zeferina](10-case-01-guerreira-zeferina.md#5-o-acervo-include-neste-mvp)**:
+> é no Ciclo 01 (ago–dez/2026) que ele entra em uso pela primeira vez.
 
 | Título | Exemplares | Apoia principalmente |
 |---|---:|---|
@@ -206,7 +209,7 @@ tem o livro na mão.
 |---|---|---|
 | **Social Media / Geração de Áudio e Vídeo para Redes Sociais** | Poder das Redes | Roteiro, captação, edição e publicação; uso de ferramentas de IA para geração e edição de áudio e vídeo; direitos de imagem e proteção de dados; **letramento crítico sobre os riscos das redes sociais** |
 | **Rima** | Poder da Rima | Escrita, métrica e batalhas de rima |
-| **Capoeira** | Poder da Capoeira | Cultura e movimento, com análise de movimentos por ML (TensorFlow) |
+| **Capoeira** | Poder da Capoeira | Cultura e movimento, com análise de movimentos por visão computacional (captação sugerida: **MediaPipe**) |
 
 A trilha de **Social Media** tem função dupla: forma o jogador em produção de conteúdo e
 alimenta a **equipe de divulgação do projeto nas redes**, produzindo material real
@@ -240,6 +243,30 @@ idade que tem.
 - Os desafios são **semanais**.
 - A atividade em família vale mais: o engajamento da família é estratégico para a
   permanência da criança no projeto.
+
+### Desafios extras propostos por Apoiadores
+
+Além dos desafios semanais dos Mestres, **Apoiadores podem propor desafios extras** ao longo
+de um ciclo, sempre **vinculados a uma trilha em andamento**. Concluir um desafio extra dá
+direito a **recompensas extras**, custeadas pelo próprio Apoiador que o propôs.
+
+O ponto central é o **rastro**: tanto a recompensa oferecida quanto as **realizações dos
+jogadores** naquele desafio ficam registradas **no histórico do Apoiador**. Com isso é
+possível acompanhar, ao longo do tempo, **a efetividade do apoio oferecido** — não só quanto
+alguém aportou, mas o que aconteceu por causa daquele aporte.
+
+Regras que se aplicam:
+
+- O desafio extra é **conteúdo de trilha**, não paralelo a ela — precisa ser **validado pelo
+  Mestre** responsável pela trilha antes de ir ao ar.
+- Vale a regra de lastro: a recompensa extra precisa estar **provida** antes de o desafio ser
+  publicado ([04 §1](04-modelo-economico-e-sustentabilidade.md#1-a-economia-de-recursos-da-plataforma)).
+- Vale a regra de proteção de menores: **nenhum contato direto** entre Apoiador e jogador —
+  a proposta, a entrega e o reconhecimento passam pela plataforma
+  ([04 §4](04-modelo-economico-e-sustentabilidade.md#4-parcerias)).
+
+Mecânica e histórico detalhados em
+[04 §5](04-modelo-economico-e-sustentabilidade.md#5-interação-apoiadores-x-jogadores-desafios-extras).
 
 ### Categorias de atividade
 
@@ -313,7 +340,11 @@ Observações:
 
 ## 8. Recompensas
 
-Os pontos podem ser trocados por recompensas concretas:
+**Regra vigente:** à medida que avançam nas trilhas, os jogadores **acumulam pontos, e esses
+pontos podem ser trocados por recompensas**. É o que fecha o vínculo entre o jogo e a vida
+real: o esforço de aprender converte-se em algo concreto na mão do jogador.
+
+Catálogo inicial:
 
 | Recompensa | Custo em pontos (a definir) |
 |---|---|

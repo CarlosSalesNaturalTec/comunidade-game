@@ -3,6 +3,13 @@
 > Documentação de referência do projeto, organizada por temas. Cada documento é
 > autocontido e se conecta aos demais por links.
 
+## Situação do projeto
+
+Em **2026** o projeto está em **formato de ideação**: esta documentação compila ideias e
+materiais produzidos em datas anteriores e os organiza como projeto. O primeiro case real
+previsto é a **[Comunidade Guerreira Zeferina](10-case-01-guerreira-zeferina.md)**, em
+Salvador (BA), com o **Ciclo 01 de agosto a dezembro de 2026**.
+
 ## Estrutura
 
 1. **[01-visao-valores-e-proposito.md](01-visao-valores-e-proposito.md)** — O que é o projeto, por que existe, valores e causas, objetivos, público-alvo e premissas.
@@ -14,6 +21,7 @@
 7. **[07-batalha-de-laser.md](07-batalha-de-laser.md)** — **2ª trilha da plataforma**: enredo, regras e projeto técnico completo da batalha presencial com NodeMCU e MQTT.
 8. **[08-base-para-prds.md](08-base-para-prds.md)** — Conteúdo estruturado como insumo para elaboração de PRDs (Product Requirements Documents).
 9. **[09-topicos-em-aberto-e-sugestoes.md](09-topicos-em-aberto-e-sugestoes.md)** — Decisões pendentes e propostas em avaliação.
+10. **[10-case-01-guerreira-zeferina.md](10-case-01-guerreira-zeferina.md)** — **Case 01**: o piloto real na Comunidade Guerreira Zeferina (Salvador/BA), Ciclo 01 — ago a dez/2026: hipóteses, metas e critérios de avaliação.
 
 ## As 5 aplicações desta etapa
 
@@ -25,7 +33,7 @@ Mobile First** ([03 §2](03-plataforma-e-arquitetura.md#2-canais--meios-de-acess
 | **App 01 — Onboarding** | Escolha entre áudio ou texto, cadastro de novo aluno e registro de presença | PRD-04 |
 | **App 02 — Assistente por voz** | ChatBot de áudio nos moldes do Robô Educa, com **Modo Ouvinte** na aula | PRD-06 |
 | **App 03 — Gestão** | CRUDs, entradas manuais e painéis do dia | PRD-02 |
-| **App 04 — Jogo** | Jogo em JavaScript sobre a base de personagens da plataforma | PRD-12 |
+| **App 04 — Jogo** | Jogo em JavaScript sobre a base de personagens da plataforma (engine sugerida: **Phaser.js**) | PRD-12 |
 | **App 05 — Área do Jogador** | Guia e apoio nas trilhas | PRD-05 |
 
 A **vitrine pública** (PRD-03) permanece no escopo do produto e já está especificada em
@@ -39,7 +47,8 @@ deste repositório: **[Robô Educa](06-robo-educa.md)** (1ª) e
 
 O **acervo de 298 livros do projeto Include (Campus Party)**, doado pelo
 **Goethe-Institut** — um dos primeiros Apoiadores da plataforma —, é **material de apoio
-dessas duas trilhas**. Inventário em
+dessas duas trilhas** e está **vinculado ao MVP do
+[Case 01](10-case-01-guerreira-zeferina.md#5-o-acervo-include-neste-mvp)**. Inventário em
 [02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut);
 guarda, decisão sobre doação x reaproveitamento e estratégia de conservação em
 [05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação).

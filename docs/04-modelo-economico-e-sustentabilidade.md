@@ -101,10 +101,60 @@ Modelo de parceria previsto:
 proteger crianças e adolescentes (comunicação sempre mediada pela plataforma/organizadores,
 nunca contato direto privado). Isso protege os jovens e também os parceiros.
 
-## 5. Impacto social
+## 5. Interação Apoiadores x Jogadores (desafios extras)
+
+Aportar recurso é o começo da relação do Apoiador com a plataforma, não o fim dela. A
+**interação Apoiador–Jogador** acontece por meio de **desafios extras**: durante um ciclo em
+andamento, o Apoiador propõe um desafio ligado a uma trilha em curso e oferece uma
+**recompensa extra** a quem o concluir
+([02 §4](02-conceito-do-jogo-e-gamificacao.md#desafios-extras-propostos-por-apoiadores)).
+
+**Como funciona no ciclo:**
+
+1. O Apoiador propõe o desafio extra, vinculado a uma **trilha em andamento**, e indica a
+   recompensa que vai custear.
+2. O **Mestre da trilha valida** — o desafio precisa fazer sentido pedagógico no ponto em que
+   os jogadores estão.
+3. O desafio é publicado para os jogadores daquela trilha, com a recompensa visível.
+4. Os jogadores que concluem recebem a **recompensa extra**, além dos pontos da atividade.
+
+**O que fica registrado no histórico do Apoiador:**
+
+| Registro | Para que serve |
+|---|---|
+| **Recompensas creditadas** — o que ele custeou e entregou | Compõe o **Poder Econômico** (§1), como qualquer outro aporte |
+| **Realizações dos jogadores** nos desafios que ele propôs | Mostra **o que aconteceu** por causa daquele apoio |
+
+É essa segunda linha que muda o jogo: o histórico deixa de responder apenas *"quanto foi
+aportado"* e passa a responder *"o que esse apoio produziu"*. Ao longo do tempo, torna-se
+possível **rastrear a efetividade do apoio oferecido** — quais desafios engajaram, quantos
+jogadores concluíram, em que trilhas o apoio rendeu mais.
+
+Para o projeto, é o argumento de captação mais forte que existe: um Apoiador que vê o efeito
+concreto do que financiou tem motivo para financiar de novo. Para o jogador, é a prova de que
+há gente de fora torcendo pelo que ele está construindo.
+
+**Salvaguardas obrigatórias:**
+
+- **Sem contato direto** entre Apoiador e criança. Proposta, entrega e reconhecimento são
+  sempre **mediados pela plataforma**, como em toda relação patrocinador–aluno (§4).
+- **Lastro antes da publicação**: a recompensa extra é recurso como qualquer outro — precisa
+  estar provida antes de o desafio ir ao ar (§1).
+- **Curadoria do Mestre é condição, não formalidade**: desafio extra sem validação pedagógica
+  vira publicidade dentro de uma trilha infantil, o que o projeto não admite.
+- Recompensas seguem o cuidado de dignidade já previsto para o catálogo
+  ([02 §8](02-conceito-do-jogo-e-gamificacao.md#8-recompensas)).
+
+> **A definir:** se o desafio extra vale pontos além da recompensa; teto de desafios extras
+> simultâneos por trilha (para não descaracterizar a trilha do Mestre); e se a recompensa
+> extra pode ser exclusiva de um jogador ou precisa estar aberta a todos os que concluírem
+> ([09 §1](09-topicos-em-aberto-e-sugestoes.md#1-decisões-pendentes)).
+
+## 6. Impacto social
 
 - **Cursos/Bootcamps para comunidades sem cobrança para os alunos.**
-- **Case real: Guerreira Zeferina** (referência de implantação/piloto).
+- **[Case 01 — Comunidade Guerreira Zeferina](10-case-01-guerreira-zeferina.md)**, Salvador
+  (BA): primeiro piloto real, Ciclo 01 de **agosto a dezembro de 2026**.
 - **Acervo didático de 298 livros** doado pelo Goethe-Institut, que vira trilhas abertas na
   plataforma — material que atende turmas inteiras sem custo para o aluno (§1).
 - **Oficinas do Robô Educa desde 2018**: centenas de crianças impactadas em comunidades de
@@ -120,7 +170,7 @@ retenção, trilhas concluídas, atividades realizadas, volume de dados de terri
 registrados, recursos movimentados por comunidade). Além de guiar o projeto, são
 exatamente os números exigidos por editais e grandes doadores.
 
-## 6. Sustentabilidade (síntese)
+## 7. Sustentabilidade (síntese)
 
 O projeto é sustentável quando o ciclo se fecha:
 

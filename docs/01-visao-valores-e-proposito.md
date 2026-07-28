@@ -48,9 +48,18 @@ fim nem vitrine: é ferramenta de intervenção social.
 ### Nomes do projeto
 
 - **Comunidade Game** (nome adotado)
-- **Inova Comunidade** (alternativa em avaliação)
-- Rôbróders
-- Robô Educa
+- **Inova Comunidade** — nome usado na **edição de 2024 do Robô Educa na Comunidade
+  Guerreira Zeferina** ([10](10-case-01-guerreira-zeferina.md)); segue como alternativa em
+  avaliação
+
+### Estágio atual
+
+Em **2026** o projeto está em **formato de ideação** — esta documentação compila ideias e
+materiais de datas anteriores e os organiza como projeto. O que já foi validado na prática
+são as **oficinas presenciais do Robô Educa desde 2018** ([06 §6](06-robo-educa.md#6-impacto-já-comprovado)).
+O primeiro case real da plataforma é a
+**[Comunidade Guerreira Zeferina](10-case-01-guerreira-zeferina.md)**, com o **Ciclo 01 de
+agosto a dezembro de 2026**.
 
 ## 2. Premissas fundadoras
 
@@ -119,12 +128,12 @@ Objetivos concretos:
 - Usar a tecnologia como ponte para **temas transversais e valores** — a atividade técnica
   carrega conteúdo humano, nunca é neutra.
 - **Expor conquistas locais**: dar visibilidade ao talento que já existe nas comunidades.
-- **Gerar dados sobre o território** que auxiliem a comunidade na tomada de decisões
+- **Gerar dados sobre o território** que auxiliem a comunidade e o poder público na tomada de decisões
   ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
 
 ### O lema
 
-> **GOAT / The Best / "Podemos nos tornar os melhores"** — a desconstrução da mentira que
+> **GOAT / The Best / "Podemos ser os melhores"** — a desconstrução da mentira que
 > sempre disseram o contrário. A plataforma existe para provar, com realizações concretas,
 > que os jovens das comunidades são capazes de ser os melhores no que fizerem.
 
@@ -179,6 +188,21 @@ mulheres, negras e indígenas que impactaram positivamente a sociedade
   [05-implantacao-e-operacao.md](05-implantacao-e-operacao.md#10-replicabilidade)).
 
 ## 7. O fundador: primeiro Admin e primeiro Mestre
+
+**Carlos Sales** — desenvolvedor, idealizador do Comunidade Game e **responsável pela
+construção inicial do ecossistema digital**: o universo em que as Comunidades Virtuais existem —
+backend, aplicações, trilhas e a própria narrativa do jogo.
+
+| Referência | Link |
+|---|---|
+| GitHub | <https://github.com/CarlosSalesNaturalTec> |
+| LinkedIn | <https://www.linkedin.com/in/carlossalesti/> |
+| Portfólio | <https://drive.google.com/file/d/1KPPJQhNn_YsWYK6qllP6muns6WlSRyM1/view?usp=drive_link> |
+
+Esses links não são vitrine pessoal: são o **artefato comprobatório** exigido de qualquer
+Mestre da plataforma ([02 §1](02-conceito-do-jogo-e-gamificacao.md#mestres-persona-secundária)).
+A regra vale para o fundador como vale para todos — habilidade se comprova com trabalho
+publicado e verificável.
 
 - **Admin.** O fundador será o **primeiro Admin** da plataforma
   (perfil Organizadores / Equipe técnica). **Novos Admins são incluídos manualmente**,
