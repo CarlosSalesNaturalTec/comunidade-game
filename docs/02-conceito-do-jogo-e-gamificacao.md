@@ -41,7 +41,7 @@ oficinas. Regras de admissão:
   plataforma** — aulas presenciais e/ou gravadas, atividades propostas, videoaulas,
   exemplos de código, projetos construídos. A prova é pública e verificável por qualquer
   visitante.
-- Mestres também proveem recursos para atividades (ver
+- Mestres também podem prover recursos para atividades (ver
   [04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md)).
 
 > **Exemplo de referência — o Mestre fundador.** É considerado mestre em Programação e

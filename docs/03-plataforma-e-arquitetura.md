@@ -147,7 +147,7 @@ trilhas, desafios semanais, equipes, ranking, recompensas e registro de dados do
 Requisitos consolidados em
 [08 PRD-05](08-base-para-prds.md#prd-05--app-05-área-do-jogador-jornada-gamificada).
 
-## 3. Frontend 01 — Gestão (App 03)
+## 3. App 03
 
 Aplicação **web responsiva, Mobile First**, autenticada, para Admins (Organizadores/Equipe
 técnica) e, conforme permissão, Mestres:
@@ -191,9 +191,8 @@ Web App **responsivo, Mobile First**, de acesso público e **sem autenticação*
 - Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins.
 - Identidade visual: **background com imagem de comunidade, cores, grafite** — estética de
   território, não corporativa.
-- **Botões "Criar Conta" e "Entrar".**
 - **Vídeo de apresentação**: os irmãos Susy e Otávio, os Rôbróders e o professor Carlos
-  Trenell (narrativa/personagens da comunicação do projeto).
+  Trenell (narrativa/personagens da trilha Robô Educa).
 
 **LGPD em todo o projeto:**
 
@@ -313,61 +312,3 @@ A foto é **dado pessoal sensível de criança e adolescente**. Regras obrigató
   pode travar na porta).
 - Acessibilidade: a modalidade áudio atende quem ainda não lê com fluência e pessoas com
   deficiência visual.
-
-## 6. Dashboard (Backend API + Frontend)
-
-Estrutura de navegação prevista:
-
-- **Jogadores** — lista de jogadores; classificação/ranking.
-- **Mestres** — professores e seus artefatos comprobatórios.
-- **Poderes (habilidades)** — catálogo (ver [02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades)).
-- **Trilhas** — progressão e desbloqueio de poderes.
-- **Apoiadores / Mantenedores.**
-- **Comunidades Virtuais** — dados do território e painéis.
-- **Apoio/Auxiliar nas atividades escolares** — o aluno pede ajuda para tarefas da escola.
-
-## 7. Inteligência e personalização
-
-Características previstas para a plataforma:
-
-- Na medida em que o aluno interage, a plataforma **capta seu perfil e se adapta** para
-  entregar informação personalizada e relevante.
-- **Interdisciplinaridade dirigida**: captar uma habilidade que o aluno já possui e
-  utilizá-la para ensinar outros assuntos.
-- **IA conversacional** no onboarding (App 01) e no "converse com seu robô" (App 02) — com
-  filtros de segurança de conteúdo no nível mais restritivo, por se tratar de crianças.
-- **Envio de resultados com a evolução do aluno aos responsáveis pela própria plataforma**
-  (área do responsável no Web App e/ou e-mail), sem dependência de aplicativos de
-  mensageria de terceiros.
-- Componentes de visão computacional e ML aplicados a conteúdos (ex.: análise de movimentos
-  da capoeira — contador de polichinelos/movimentos corretos). **Sugestão técnica para a
-  captação dos movimentos: biblioteca MediaPipe (Python)**, que entrega detecção de pose
-  pronta; TensorFlow fica como alternativa para classificar movimentos a partir dos pontos
-  captados ([02 §2](02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades)).
-
-**[Proposta]** Definir uma política de uso de IA e dados de menores (o que é coletado,
-onde fica, quem acessa, retenção) alinhada à LGPD — além de obrigação legal, é coerente com
-a premissa de "letramento contra os riscos da IA": a plataforma deve ser exemplo do que
-ensina.
-
-## 8. Kits e hardware educacional
-
-- **Kits para ensino de programação e robótica** — o diferencial "sem exigência de um
-  computador": o aluno monta o robô com material reciclado ou kit, personaliza e acessa a
-  plataforma a partir do celular ([06-robo-educa.md](06-robo-educa.md)).
-- **Professor Auxiliar / Ensino personalizado** — o robô/assistente como tutor.
-- **Plataforma para letramento digital.**
-- Hardware de referência das atividades: NodeMCU/ESP8266, sensores, LEDs, Raspberry Pi
-  (projeto completo de exemplo em [07-batalha-de-laser.md](07-batalha-de-laser.md)).
-- **Sensores de território** para as Comunidades Virtuais (temperatura, pluviômetro) —
-  podem ser construídos pelos próprios jogadores como atividade.
-
-## 9. Notas de engenharia (a desenvolver)
-
-Anotações sobre o processo de desenvolvimento do próprio software (detalhamento em
-[09-topicos-em-aberto-e-sugestoes.md](09-topicos-em-aberto-e-sugestoes.md)):
-
-- Orquestrador para disparar ações "do explore ao merge" (automação do fluxo de
-  desenvolvimento com agentes).
-- Como usar o Slack no fluxo.
-- Ferramentas Git para comunicação entre agentes e humanos — seriam Issues?

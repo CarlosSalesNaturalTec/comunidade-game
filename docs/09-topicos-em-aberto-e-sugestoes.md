@@ -8,7 +8,7 @@ de novos tópicos e abordagens. Nada aqui é decisão tomada — é pauta.
 | Tema | Situação / encaminhamento |
 |---|---|
 | Nome do projeto | Adotado: **Comunidade Game**. Alternativa em avaliação: **Inova Comunidade**. Decidir antes de registrar domínio, marca e identidade visual. |
-| Lema "GOAT / The Best / Podemos nos tornar os melhores" | Já é momento fixo da aula presencial ([05 §3](05-implantacao-e-operacao.md#3-roteiro-da-aula-presencial)). Decidir se vira também slogan oficial de comunicação e se a versão longa precisa de uma forma curta para peças gráficas (ex.: **"Vamos ser os melhores"**, **"O melhor se constrói"**). |
+| Lema "GOAT / The Best / Podemos ser os melhores" | Já é momento fixo da aula presencial ([05 §3](05-implantacao-e-operacao.md#3-roteiro-da-aula-presencial)). Decidir se vira também slogan oficial de comunicação e se a versão longa precisa de uma forma curta para peças gráficas (ex.: **"Vamos ser os melhores"**, **"O melhor se constrói"**). |
 | Pontuação das recompensas | Kits de alimentos e demais recompensas: valores atuais são apenas sugestão ([02 §8](02-conceito-do-jogo-e-gamificacao.md#8-recompensas)). |
 | Provedor de IA e de reconhecimento facial do onboarding | Custo, privacidade e processamento no dispositivo x nuvem ([08 PRD-04](08-base-para-prds.md#prd-04--app-01-onboarding-cadastro-e-registro-de-presença)). |
 | Prazo de retenção da foto de presença | Definir número em dias/meses e rotina de exclusão automática. |

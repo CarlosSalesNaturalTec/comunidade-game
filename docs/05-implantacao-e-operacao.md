@@ -152,7 +152,7 @@ prática, inspiração e voz do jogador.
 | 1 | **Onboarding** | **Contínuo** | Cadastro de novos jogadores e registro de presença, pela **App 01** — interação por áudio ou texto, conforme os jogadores chegam ([03 §5](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença)) |
 | 2 | **Atividades práticas — Computer Science Unplugged** | **Assíncrono** | Lógica, algoritmos e pensamento computacional **sem computador**: papel, corpo, jogos, materiais do dia a dia. Boa porta de entrada para quem chegou e ainda não pegou um aparelho |
 | 3 | **Bate-papo on-line com mentores e convidados** | Coletivo | Conversa ao vivo com profissionais e referências — aproxima o mundo da tecnologia da realidade do jogador |
-| 4 | **Momento GOAT / The Best / "Podemos nos tornar os melhores"** | Coletivo | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade. Momento inspirador e de identificação ([01 §4](01-visao-valores-e-proposito.md#o-lema)) |
+| 4 | **Momento GOAT / The Best / "Podemos ser os melhores"** | Coletivo | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade. Momento inspirador e de identificação ([01 §4](01-visao-valores-e-proposito.md#o-lema)) |
 | 5 | **Trabalho de trilha / Desafio do dia** | **Assíncrono** | O grosso do encontro: cada equipe avança nos **pontos da sua trilha** e na atividade pontuada — individual, em equipe, de coleta de dados do território — com apoio do Mestre. O **Quiz ao Vivo** (§4) é a exceção coletiva deste momento |
 | 6 | **Encerramento com apresentação livre** | Coletivo | Cada jogador (ou equipe) mostra o que construiu e/ou aprendeu na aula. Fecha o ciclo e treina expressão pública |
 
@@ -209,33 +209,6 @@ aprendizado acontece — quem sabe explica para quem não sabe, o que se conecta
 > chegam praticamente juntas; se o quiz roda com um único dispositivo por equipe ou um por
 > jogador.
 
-## 5. Formatos de atividade
-
-| Formato | Descrição |
-|---|---|
-| Encontros presenciais | Oficinas e treinamentos nos pontos de apoio |
-| Atividades on-line | Conteúdo entre encontros; trilhas |
-| Desafios on-line | Semanais, pontuados |
-| Desafios presenciais | Semanais, pontuados; batalhas |
-| Coleta de dados do território | Contínua, alimenta a Comunidade Virtual |
-| Quiz ao Vivo | Competição entre equipes durante a aula presencial (§4) |
-| Atividades de culminância | Apresentação pública de trabalhos, encerramento de módulos |
-
-## 6. Cursos presenciais
-
-- **Duração:** conforme as trilhas.
-- **Formato:** aulas presenciais + desafios.
-- **Material didático:** as trilhas do Poder da IA e Robótica contam com o **acervo Include
-  doado pelo Goethe-Institut** — 252 exemplares da linha Alpha permitem **um livro por
-  jogador** em turmas inteiras; os 46 exemplares da linha Include I são material escasso, de
-  uso compartilhado ou de formação de mestres e voluntários
-  ([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut)).
-- **Custos a levantar por curso:** professor + material + ajuda de custo para
-  estagiários + lanche.
-- **Gratuitos para os alunos** das comunidades (financiados por parceiros/doações —
-  ver [04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md#4-parcerias)).
-- Ao final dos módulos, alunos gravam vídeo com realizações e agradecimentos aos parceiros.
-
 ## 7. Formação de Mestres e multiplicadores
 
 - **Formação de mentores** é linha de ação explícita do projeto.
@@ -269,31 +242,6 @@ aprendizado acontece — quem sabe explica para quem não sabe, o que se conecta
   voluntário sozinho com criança, e canal de denúncia disponível
   ([09 §2](09-topicos-em-aberto-e-sugestoes.md#proteção-da-criança-e-do-adolescente-prioridade-máxima)).
 
-## 8. Comunicação e divulgação
-
-- **Formação de equipe de divulgação nas redes sociais** (linha de ação explícita).
-- Canais: Instagram, Facebook, YouTube e TikTok — **canais institucionais** de divulgação do
-  projeto, não canais de uso da plataforma (os cards dos jogadores não exibem redes sociais
-  pessoais, por proteção de menores/LGPD).
-- Narrativa/personagens: **os irmãos Susy e Otávio, os Rôbróders e o professor Carlos
-  Trenell** (vídeo de apresentação da plataforma).
-- O **"Poder das Redes"** conecta divulgação e formação: os próprios jogadores aprendem
-  produção de conteúdo produzindo para o projeto. A trilha correspondente é a de
-  **Social Media / Geração de Áudio e Vídeo para Redes Sociais**
-  ([02 §3](02-conceito-do-jogo-e-gamificacao.md#demais-trilhas-previstas)), que forma a equipe de
-  divulgação com os próprios jogadores.
-- Vídeos de culminância dos alunos são material de divulgação e prestação de contas.
-
-## 9. Papel dos responsáveis e da família
-
-- Envio da **evolução do aluno aos responsáveis pela própria plataforma** (área do
-  responsável no Web App e/ou e-mail).
-- **Atividades em família** valem pontuação dobrada (20 pts) — engajar a família é
-  estratégia de permanência.
-- **Equipe Familiar** como modalidade de equipe.
-- Consentimentos sob responsabilidade da família: divulgação do perfil na vitrine e
-  captura de imagem para registro de presença
-  ([03 §5.3](03-plataforma-e-arquitetura.md#53-requisitos-de-proteção-de-dados-lgpd-aplicada)).
 
 ## 10. Replicabilidade
 

@@ -63,43 +63,17 @@ com a respectiva estratégia de conservação em
 ## 2. Fontes de receita
 
 - **Doações de parceiros** (pessoas físicas e jurídicas).
-- **Publicidade.**
+- **Publicidade.** - Vitrine Pública
 - **Pesquisas** — os dados de território gerados pelas Comunidades Virtuais
   ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)) podem sustentar
   estudos e diagnósticos, sempre **anonimizados** e com retorno para a própria comunidade.
 - **Projetos** e **editais**.
-- **Monetizações web.**
 - **Campanhas de crowdfunding** para:
   - Financiamento das aulas e kits;
   - Financiamento de equipamentos (celulares, notebooks, tablets etc.).
 - **Venda de kits** de robótica ("Compre o Kit" na jornada do aluno) — para públicos que
   podem pagar, subsidiando as comunidades atendidas gratuitamente.
 
-## 3. Despesas para funcionamento
-
-- Hora do professor nas aulas presenciais.
-- Hora do professor na gravação de conteúdo.
-- Diária do professor para ponto de apoio.
-- Prêmios/consumíveis.
-- Prêmios/duráveis.
-- Despesas com plataforma (cloud).
-- Custos de cursos presenciais: professor + material + ajuda de custo para estagiários +
-  lanche.
-
-## 4. Parcerias
-
-Modelo de parceria previsto:
-
-- O parceiro **financia a implementação de cursos presenciais** (professor + material +
-  ajuda de custo para estagiários + lanche).
-- Em contrapartida, **ganha o direito de "interagir" com seus alunos patrocinados** (alunos
-  e pais) — relação direta e humanizada entre quem financia e quem é beneficiado.
-- Ao final dos módulos, **os alunos gravam vídeo com suas realizações e agradecimentos aos
-  parceiros** — prestação de contas afetiva e material de divulgação.
-
-**[Proposta]** Definir limites claros dessa "interação" patrocinador–aluno para
-proteger crianças e adolescentes (comunicação sempre mediada pela plataforma/organizadores,
-nunca contato direto privado). Isso protege os jovens e também os parceiros.
 
 ## 5. Interação Apoiadores x Jogadores (desafios extras)
 
@@ -152,7 +126,6 @@ há gente de fora torcendo pelo que ele está construindo.
 
 ## 6. Impacto social
 
-- **Cursos/Bootcamps para comunidades sem cobrança para os alunos.**
 - **[Case 01 — Comunidade Guerreira Zeferina](10-case-01-guerreira-zeferina.md)**, Salvador
   (BA): primeiro piloto real, Ciclo 01 de **agosto a dezembro de 2026**.
 - **Acervo didático de 298 livros** doado pelo Goethe-Institut, que vira trilhas abertas na

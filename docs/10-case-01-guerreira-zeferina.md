@@ -5,7 +5,7 @@
 
 ## 1. Estado do projeto e do case
 
-O **Comunidade Game** está, em 2026, em **formato de ideação**: a documentação deste
+O **Comunidade Game** está, em Julho de 2026, em **formato de ideação**: a documentação deste
 repositório compila ideias, materiais e experiências acumulados em datas anteriores e os
 organiza como projeto. Nada do que está aqui foi ainda validado em operação da plataforma —
 o que já foi validado é a **prática presencial** (oficinas do [Robô Educa](06-robo-educa.md)
