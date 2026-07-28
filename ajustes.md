@@ -1,50 +1,27 @@
 Analise os documentos da pasta docs e faça as seguintes ajustes/melhorias:
 
-## Em Canais / Meios de acesso - Aplicações a serem desenvolvidas: 
+## Adicionar Case 01 da Plataforma - Comunidade Guerreira Zeferina
 
-* em Canais / Meios de acesso Remover referências ao desenvolvimento de aplicações ou recursos com uso de WhatsApp
-* Nesta etapa todas as aplicações desenvolvidas serão no formato Web App responsivo. Mobile First.
+Este projeto está em 2026 em formato de ideação (ideias compiladas de outras datas)
 
-### Aplicação Web 01: 
-* Tela inicial em que o usuário escolhe interação por Audio ou Texto.
-* Cadastro de novo aluno 
-* Registro de presença
+O primeiro case real previsto é na Comunidade Guerreira Zeferina , localizada na cidade de Salvador, estado da Bahia, Brasil.
 
-### Aplicação 02:
-* Audio ChatBot nos moldes do RoboEduca (Js no frontend + IA no backend)
-* Modo Ouvinte: ouvindo tudo que as fala durante a aula.
-* Dar opnião sobre o tema discutido, ou responder a perguntas quando solicitado.
+Este local já foi palco da edição do projeto Robô Educa no ano  de 2024, oportunidade em que o projeto se chamava Inova Comunidade.
 
-### Aplicação 03:
-* Gestão admin
-* CRUD (mestres,poderes,jogadores,apoiadores)
-* Entradas manuais (registro de presenças, infrações ocorridas nas aulas, pontuação extra em aluno que ajudou o colega)
-* Paineis do dia
+Hipóteses em Jul/2026: 
 
-### Aplicação 04:
-* Jogo em JavaScript utilizando a base de personagens da plataforma 
+* O público alvo inicial que são as crianças 6-16 anos irá se interessar pelo tema e irá se inscrever para participar da plataforma e das trilhas
 
-### Aplicação 05
-* Web App de uso dos jogadores com guia/apoio nas trilhas
+* OS pais ou responsáveis irão permitir a participação, tomar conhecimento da LGPD relacionado ao projeto, irá aceitar e aprovar os termos em relação a criança de sua responsabilidade.
 
+* OS recursos relacionados a implantação do MVP serão supridos pela equipe de mestres e apoiadores
 
-------------
+Desafio/Meta: 
+* Implantação do MVP: 
+* credenciamento de jogadores, cadastro da comunidade digital, implementação das trilhas 1 e 2 na comunidade Guerreira Zeferina no período de 08 a novembro de 2026
+* Construir artefatos digitais referentes aos  PRDs deste projeto: backend, aplicações da etapa
+* Conseguir recursos básicos para implementação dos recursos digitais da plataforma (servidores, armazenamento, aplicações) 
 
-## Em Formação de Mestres e multiplicadores:
-* Nível 5 -> Ao concluir este nível o jogador é considerado Mestre aprendiz e estará apto a treinamento de multiplicador
+Obs:
+A coleção de livros deve estar relacionada a esta COmunidade e MVP
 
-------
-
-* Trilha: Social Media / Geração de Audio e Vídeo para Redes Sociais
-* Formação de voluntários para suporte diário nos pontos de apoio (Jogadores que atingirem badges de Mestre Aprendiz em Trilhas ou Poderes específicos)
-
------ Sugestão de conteúdo de Aulas
-
-## Exemplo de atividade para aulas presenciais - Quiz ao vivo
-* Jogadores presentes na aula organizados em equipes
-* Perguntas pré cadastrados pelo curador da aula (mentor). Multiescolha : a) resposta 1. b) resposta 2. c) resposta 3, etc.
-* Ao dar o start no quiz, Uma pergunta é exibida  e enviada para os dispositivos logados na aula
-* Equipes devem se consultar entre si, definir resposta correta, e clicar na respectiva opção que achar correta
-* Sistema analisa primeira equipe que deu a resposta correta e registra a respectiva pontuação 
-
------
