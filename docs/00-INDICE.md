@@ -3,13 +3,6 @@
 > Documentação de referência do projeto, organizada por temas. Cada documento é
 > autocontido e se conecta aos demais por links.
 
-## Situação do projeto
-
-Em **2026** o projeto está em **formato de ideação**: esta documentação compila ideias e
-materiais produzidos em datas anteriores e os organiza como projeto. O primeiro case real
-previsto é a **[Comunidade Guerreira Zeferina](10-case-01-guerreira-zeferina.md)**, em
-Salvador (BA), com o **Ciclo 01 de agosto a dezembro de 2026**.
-
 ## Estrutura
 
 1. **[01-visao-valores-e-proposito.md](01-visao-valores-e-proposito.md)** — O que é o projeto, por que existe, valores e causas, objetivos, público-alvo e premissas.
