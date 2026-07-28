@@ -49,7 +49,7 @@ cada uma se confirmou.
 | # | Hipótese | Como se verifica |
 |---|---|---|
 | **H1** | O público-alvo inicial — **crianças e jovens de 6 a 16 anos** — vai se interessar pelo tema e **se inscrever** na plataforma e nas trilhas | Nº de cadastros efetivados no onboarding (App 01) e nº de jogadores que iniciam uma trilha |
-| **H2** | Os **pais ou responsáveis** vão permitir a participação, tomar conhecimento do tratamento de dados (LGPD) e **aceitar os termos** relativos à criança sob sua responsabilidade | Nº de autorizações de responsável concedidas / nº de jogadores ativos |
+| **H2** | Os **pais ou responsáveis** vão permitir a participação, tomar conhecimento do tratamento de dados (LGPD) e **aceitar os termos** relativos à criança sob sua responsabilidade | Nº de autorizações de responsável concedidas / nº de jogadores ativos, medido na **App 07** ([03 §9](03-plataforma-e-arquitetura.md#9-app-07--área-dos-pais-e-responsáveis)) |
 | **H3** | Os **recursos de implantação do MVP** serão supridos pela equipe de **mestres e apoiadores** | Lastro registrado no livro-razão x recursos necessários às atividades previstas ([04](04-modelo-economico-e-sustentabilidade.md)) |
 
 Observações sobre as hipóteses:
@@ -69,10 +69,14 @@ Observações sobre as hipóteses:
 ### 4.1 Operação na comunidade — agosto a novembro de 2026
 
 - **Credenciamento de jogadores** — cadastro pelo App 01 (áudio ou texto) e registro de
-  presença ([03 §5](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença)).
-- **Cadastro da comunidade digital** — a Comunidade Virtual "Guerreira Zeferina" passa a
-  existir na medida em que os jogadores registram dados reais do território
-  ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
+  presença ([03 §3](03-plataforma-e-arquitetura.md#3-app-01--onboarding-cadastro-e-registro-de-presença)).
+- **Cadastro da comunidade digital** — a Comunidade Virtual "Guerreira Zeferina" é **criada
+  vazia por um Admin antes do primeiro onboarding** (sem ela não há como vincular jogador) e
+  passa a existir de fato na medida em que os jogadores registram dados reais do território
+  ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)). **Toda trilha do
+  ciclo precisa ter ao menos um desafio de coleta**, com cadência definida — é o que faz a
+  comunidade digital ganhar corpo dentro do Ciclo 01
+  ([02 §3](02-conceito-do-jogo-e-gamificacao.md#regra-vigente-toda-trilha-coleta-dados-reais)).
 - **Implementação das trilhas 1 e 2** — [Robô Educa](06-robo-educa.md) e
   [Batalha de Laser](07-batalha-de-laser.md), com os encontros presenciais em **dinâmica
   assíncrona** ([05 §3](05-implantacao-e-operacao.md#3-roteiro-da-aula-presencial)).
@@ -100,23 +104,29 @@ e compõem o **Poder Econômico** de quem os aportar
 > **dezembro**, reservado à culminância, à conferência de inventário e à avaliação das
 > hipóteses.
 
-## 5. O acervo Include neste MVP
+## 5. O acervo Include e os kits MDF neste MVP
 
-A coleção de **298 livros doada pelo Goethe-Institut** está **vinculada ao MVP do Case 01**:
-é neste ciclo, e nesta comunidade, que o acervo entra em uso pela primeira vez como material
-de apoio das trilhas 1 e 2
-([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut)).
+A coleção de **298 livros** e os **30 kits em MDF** doados pelo **Goethe-Institut
+(Salvador)** estão **vinculados ao MVP do Case 01**: é neste ciclo, e nesta comunidade, que
+entram em uso pela primeira vez como material de apoio e insumo das trilhas 1 e 2
+([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-e-kits-mdf-goethe-institut)).
 
 Consequências práticas para o ciclo:
 
-- A decisão **doar x reaproveitar** precisa estar tomada **antes da primeira turma**
-  ([09 §1](09-topicos-em-aberto-e-sugestoes.md#1-decisões-pendentes)).
-- O **tombamento** e a estratégia de conservação são atividade do próprio ciclo
+- **Regime misto já decidido:** os 252 exemplares da **linha Alpha são entregues ao jogador
+  na abertura da trilha** — providenciar a logística da entrega e o kit de encapar antes da
+  primeira aula. Os 46 da **linha Include I** ficam como acervo permanente do ponto de apoio
   ([05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)).
+- O **tombamento dos 46 exemplares permanentes** e a estratégia de conservação são atividade
+  do próprio ciclo.
+- Os **30 kits MDF** dimensionam a primeira turma que monta o robô em MDF; o saldo precisa
+  estar visível no painel do dia.
 - O **mapeamento capítulo → ponto de trilha** deve cobrir, no mínimo, os pontos das trilhas
   1 e 2 efetivamente aplicados aqui — não o acervo inteiro.
 - A prestação de contas do acervo ao fim do ciclo é o primeiro relatório real de
-  transparência da plataforma, devido ao Apoiador que doou.
+  transparência da plataforma, devido ao Apoiador que doou — que assinou **Termo de Doação**
+  com a **Robô Educa — Kits Robóticos Educacionais**
+  ([04 §1](04-modelo-economico-e-sustentabilidade.md#pessoa-jurídica-vinculada-ao-projeto)).
 
 ## 6. Como o ciclo é avaliado
 

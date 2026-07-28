@@ -13,7 +13,7 @@
 >
 > Os títulos de **Eletrônica** e **Sensores** do acervo Include são o **material de apoio**
 > desta trilha, para quem quiser aprofundar os conceitos usados aqui
-> ([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut)).
+> ([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-e-kits-mdf-goethe-institut)).
 
 ## 🌌 O Ecossistema (Os 4 Elementos do Jogo)
 
@@ -267,3 +267,11 @@ client.loop_forever()
 - **Trilha associada**: decompor a construção dos artefatos em pontos de trilha do Poder da
   IA e Robótica (eletrônica básica → LDR e LEDs → Wi-Fi/MQTT → lógica do jogo → dashboard
   Python), cada um com desafio de desbloqueio.
+- **Desafio de coleta de dados** — obrigatório em toda trilha
+  ([02 §3](02-conceito-do-jogo-e-gamificacao.md#regra-vigente-toda-trilha-coleta-dados-reais)).
+  Aqui o encaixe é direto: o mesmo **LDR** que detecta o laser mede **luminosidade**, e o
+  NodeMCU que publica telemetria por MQTT publica igualmente uma leitura de sensor. A trilha
+  pode terminar com o jogador instalando um **sensor de território** — iluminação pública,
+  temperatura, chuva — construído por ele e alimentando a série temporal da sua Comunidade
+  Virtual
+  ([02 §1](02-conceito-do-jogo-e-gamificacao.md#registro-temporal-e-pontuação-enquanto-a-coleta-durar)).

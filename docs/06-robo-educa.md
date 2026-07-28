@@ -4,16 +4,16 @@
 > ([02 §3](02-conceito-do-jogo-e-gamificacao.md#as-duas-primeiras-trilhas-da-plataforma)).
 >
 > O Robô Educa é também a base técnica da **App 02 — Assistente por voz e Modo Ouvinte**
-> ([03 §2.1.1](03-plataforma-e-arquitetura.md#211-app-02--assistente-por-voz-e-modo-ouvinte)).
+> ([03 §4](03-plataforma-e-arquitetura.md#4-app-02--assistente-por-voz-e-modo-ouvinte)).
 >
 > Os títulos de **Mecânica** e **Programação** do acervo Include são o **material de apoio**
 > desta trilha
-> ([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut)).
+> ([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-e-kits-mdf-goethe-institut)).
 
 O **Robô Educa** é a **primeira trilha** da plataforma. Ela demonstra o ciclo completo do
 Comunidade Game — mestre publica a trilha → jogador constrói algo real → aprende conceitos →
 pontua e ganha visibilidade — e é também a base tecnológica do
-[Onboarding por voz](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença).
+[Onboarding por voz](03-plataforma-e-arquitetura.md#3-app-01--onboarding-cadastro-e-registro-de-presença).
 
 ## 1. O que o jogador faz
 
@@ -46,6 +46,11 @@ Robô humanoide em garrafa PET ou MDF. Atividade presencial de oficina, com mate
 baixo custo fornecido por mestres/apoiadores (regra de lastro em
 [04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md)).
 
+> **Lastro já disponível:** o **Goethe-Institut doou 30 kits em MDF** para esta trilha
+> ([02 §3](02-conceito-do-jogo-e-gamificacao.md#os-30-kits-em-mdf)). São 30 montagens em MDF
+> garantidas; esgotado o estoque, a oficina volta ao material reciclado — que é, de todo
+> modo, a versão de menor barreira de entrada e a que ensina reuso.
+
 ### 🧠 CÉREBRO — o Web App
 Aplicação web acessível por qualquer smartphone, que dá ao robô funções cognitivas:
 **ouvir, pensar e falar**.
@@ -76,18 +81,27 @@ Decomposição sugerida em pontos de trilha, cada um com desafio de desbloqueio:
 4. O que é um *prompt* e como ele muda as respostas do robô.
 5. Limites e riscos da IA — alucinação, viés, dados pessoais (letramento crítico).
 6. Ler e alterar um trecho de código do robô.
-7. Publicar sua versão do robô e apresentá-la aos colegas (culminância).
+7. **Coleta de dados da sua comunidade pelo robô** — desafio obrigatório de toda trilha
+   ([02 §3](02-conceito-do-jogo-e-gamificacao.md#regra-vigente-toda-trilha-coleta-dados-reais)):
+   o jogador escolhe o que medir no seu território, define com o Mestre a cadência e passa a
+   registrar por voz. Enquanto mantiver a série, continua pontuando.
+8. Publicar sua versão do robô e apresentá-la aos colegas (culminância).
 
 ## 5. Ganchos com a plataforma
 
 - **Onboarding**: o mesmo motor de voz (mediaDevices + reconhecimento + síntese + IA)
   sustenta a tela de cadastro e registro de presença
-  ([03 §5](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença)).
+  ([03 §3](03-plataforma-e-arquitetura.md#3-app-01--onboarding-cadastro-e-registro-de-presença)).
 - **Apoio às atividades escolares**: o robô é o canal do "peça ajuda para a lição de casa"
   previsto na área do jogador.
 - **Comunidades Virtuais**: por voz, o jogador pode registrar dados do território
   (temperatura, ocorrências, resíduos) sem precisar digitar
-  ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
+  ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)). Como **toda trilha
+  precisa ter desafios de coleta de dados reais**
+  ([02 §3](02-conceito-do-jogo-e-gamificacao.md#regra-vigente-toda-trilha-coleta-dados-reais)),
+  o registro por voz é o caminho mais acessível para o jogador que ainda não lê com fluência
+  manter uma **série de coleta ativa** — e a série ativa é o que rende pontos de forma
+  recorrente.
 - **Lançamento automático de pontos**: a conclusão de um quiz pode lançar a atividade
   realizada na API do Comunidade Game.
 

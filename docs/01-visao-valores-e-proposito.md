@@ -163,15 +163,19 @@ mulheres, negras e indígenas que impactaram positivamente a sociedade
 - As atividades devem ser criadas com **níveis de dificuldade graduais**, acessíveis por
   todos os alunos/jogadores **independentemente da idade** — a progressão é por nível de
   dificuldade, não por faixa etária.
+- **Todo jogador é vinculado a uma Comunidade Virtual**, escolhida no cadastro entre as
+  comunidades criadas por um Admin. É o vínculo que define a que território os dados
+  coletados por ele pertencem
+  ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
 - **Adesão em duas etapas:** o primeiro acesso do jogador à plataforma é **livre, sem
   exigência de autorização de responsável** — bastam nome do jogador, data de nascimento,
-  nick e características do avatar. A partir daí o jogador já pode participar das
+  nick, comunidade e características do avatar. A partir daí o jogador já pode participar das
   atividades; porém, seu **histórico e perfil só são divulgados na plataforma após a
   autorização dos pais ou responsáveis**.
 - A **LGPD deve ser considerada em TODO o projeto**: os jogadores serão representados por
   seus **avatares**, e não por suas imagens reais. A única exceção é a foto captada no
   onboarding, usada **exclusivamente** para registro de presença — dado sensível, nunca
-  exibido publicamente ([03 §5](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença)).
+  exibido publicamente ([03 §3](03-plataforma-e-arquitetura.md#3-app-01--onboarding-cadastro-e-registro-de-presença)).
 
 ## 6. Diferenciais
 
@@ -221,15 +225,37 @@ publicado e verificável.
 Ambas demonstram o ciclo completo: mestre publica a trilha → jogadores aprendem construindo →
 atividade/batalha presencial → pontuação e visibilidade na plataforma.
 
+### Pessoa jurídica vinculada ao projeto
+
+O projeto tem uma pessoa jurídica que o representa perante terceiros — quem recebe doações,
+assina termos e responde formalmente pelos aportes:
+
+| | |
+|---|---|
+| **Razão social / nome** | Robô Educa — Kits Robóticos Educacionais |
+| **CNPJ** | 51.730.395/0001-19 |
+| **Responsável legal** | **Carlos Antonio Sales** — o mesmo fundador e autor deste projeto |
+
+O fundador acumula, portanto, três papéis: **primeiro Admin**, **primeiro Mestre** e
+**responsável legal** da pessoa jurídica vinculada. Detalhes de doações, PIX e do
+enquadramento jurídico ainda em aberto para editais em
+[04 §1](04-modelo-economico-e-sustentabilidade.md#pessoa-jurídica-vinculada-ao-projeto) e
+[09 §2](09-topicos-em-aberto-e-sugestoes.md#entidade-jurídica-e-compliance).
+
 ### Primeiro acervo didático e primeiro Apoiador
 
-O projeto recebeu do **Goethe-Institut** uma coleção de **298 livros** do projeto
+O projeto recebeu do **Goethe-Institut (Salvador)** uma coleção de **298 livros** do projeto
 **Include**, da **Campus Party** (robótica educativa: mecânica, eletrônica, sensores e
-programação). O Goethe-Institut passa, com isso, a ser um dos **primeiros Apoiadores** da
-plataforma, com o aporte registrado e contabilizado em seu **Poder Econômico**
+programação), e **30 kits em MDF** para as trilhas do Robô Educa. O Goethe-Institut passa,
+com isso, a ser um dos **primeiros Apoiadores** da plataforma, com os aportes registrados e
+contabilizados em seu **Poder Econômico**
 ([04 §1](04-modelo-economico-e-sustentabilidade.md#1-a-economia-de-recursos-da-plataforma)).
 
+A doação dos livros foi formalizada por **Termo de Doação assinado** entre o
+**Goethe-Institut (Salvador)** e a **Robô Educa — Kits Robóticos Educacionais** (acima) — o
+primeiro artefato comprobatório de aporte da plataforma.
+
 O acervo é **material de apoio das duas trilhas acima** — inventário em
-[02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut);
+[02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-e-kits-mdf-goethe-institut);
 guarda e conservação em
 [05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação).

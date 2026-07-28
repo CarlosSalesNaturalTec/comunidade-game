@@ -28,38 +28,51 @@ desigual a equipamentos.
   campanha de financiamento
   ([04 §2](04-modelo-economico-e-sustentabilidade.md#2-fontes-de-receita)).
 - Custo operacional previsto: diária do professor para o ponto de apoio
-  ([04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md#3-despesas-para-funcionamento)).
-- **Guarda do acervo didático.** Os 298 livros doados pelo Goethe-Institut ficam distribuídos
-  entre os pontos de apoio, com **controle de quantos exemplares estão em cada local e em que
-  estado**, dimensionado pelo tamanho das turmas de cada ponto (ver abaixo).
+  ([04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md)).
+- **Guarda do acervo didático.** Os **46 exemplares da linha Include I** — a parte do acervo
+  que fica sendo patrimônio do projeto — são distribuídos entre os pontos de apoio, com
+  **controle de quantos exemplares estão em cada local e em que estado**, dimensionado pelo
+  tamanho das turmas de cada ponto. Os **252 da linha Alpha** não são guardados: vão para as
+  mãos dos jogadores no início da trilha (ver abaixo). Os **30 kits MDF** ficam em estoque de
+  oficina, com saldo visível no painel do dia.
 
 ### Acervo didático: guarda e conservação
 
 Os livros são **material de apoio** das trilhas [Robô Educa](06-robo-educa.md) e
 [Batalha de Laser](07-batalha-de-laser.md)
-([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut)).
+([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-e-kits-mdf-goethe-institut)).
 
-**Decisão pendente: doar ou reaproveitar.** Não está definido se os exemplares serão
-**doados aos jogadores** ou **reaproveitados** entre turmas. As duas hipóteses:
+**Definição vigente — regime misto.** A decisão está tomada e aproveita a assimetria do
+inventário
+([02 §3](02-conceito-do-jogo-e-gamificacao.md#definição-vigente-posse-dos-livros--regime-misto)):
 
-| | Doação ao jogador | Reaproveitamento |
-|---|---|---|
-| Efeito no jogador | Livro próprio em casa; a família ganha um bem cultural | Acesso durante o módulo; devolve ao final |
-| Alcance | ~298 jogadores, uma única vez | Turmas sucessivas, por anos |
-| Registro no ledger | Baixa definitiva do acervo | Patrimônio permanente, com controle de guarda |
-| Risco | Acervo se esgota; turmas seguintes ficam sem material | Perda e desgaste ao longo do tempo |
+| Linha | Exemplares | Regime |
+|---|---:|---|
+| **Alpha** (Eletrônica, Sensores, Mecânica) | 252 | **Doados ao jogador quando ele começa a trilha** — livro próprio, sem devolução |
+| **Include I** (Programação, Sensores, Mecânica, Eletrônica) | 46 | **Acervo permanente do ponto de apoio** — consulta em bancada, sem saída |
 
-**Encaminhamento sugerido — regime misto**, que aproveita a assimetria do inventário:
+O jogador leva o livro para casa **no início do percurso**, e não no fim: durante a trilha
+ele é ferramenta de trabalho, e depois dela fica como bem cultural da família. O material
+raro continua disponível para todas as turmas seguintes.
 
-- **Linha Alpha (252 exemplares, volume alto):** empréstimo com **doação ao final da
-  trilha** para quem a concluir. O livro vira **recompensa e troféu**, não item de controle.
-- **Linha Include I (46 exemplares, escassa):** **acervo permanente do ponto de apoio**,
-  consulta em bancada, sem saída.
+Cada regime tem um tratamento operacional próprio.
 
-Assim o jogador leva um livro para casa como marca da conquista, e o material raro continua
-disponível para todas as turmas seguintes.
+#### A. Livro do jogador — linha Alpha (252 exemplares)
 
-#### Estratégia de conservação (caso haja reaproveitamento)
+- **Entrega na primeira aula do módulo, como ritual.** Identificar o exemplar com o próprio
+  nome ou nick, encapar e registrar que o recebeu é a **primeira atividade pontuada** da
+  trilha. Ensina cuidado com material e marca a entrada no percurso.
+- **Sem devolução, sem controle de guarda, sem cobrança.** O livro é do jogador desde o
+  primeiro dia — conclua ele a trilha ou não. Perder ou estragar o próprio livro **não é
+  infração** e não gera dívida alguma.
+- **Baixa definitiva no livro-razão** no momento da entrega, como recompensa entregue
+  ([04 §1](04-modelo-economico-e-sustentabilidade.md#primeiro-aporte-registrado--acervo-didático-e-kits-do-goethe-institut)).
+- **O estoque é finito e dimensiona o alcance.** 252 exemplares equivalem, na prática, ao
+  número de jogadores que podem iniciar as trilhas com livro próprio. A conferência de
+  estoque a cada módulo indica quando a **reposição** precisa virar necessidade de recurso a
+  ser aportada por Apoiador — antes de faltar, não depois.
+
+#### B. Acervo permanente do ponto de apoio — linha Include I (46 exemplares)
 
 O princípio é **conservação por cuidado e orgulho, não por medo de punição**:
 
@@ -68,37 +81,44 @@ O princípio é **conservação por cuidado e orgulho, não por medo de puniçã
    usou. O jogador vê na Área do Jogador (App 05) **quais jogadores cuidaram daquele livro
    antes dele** — o exemplar carrega uma linhagem, e ninguém quer ser o elo que quebrou a
    corrente.
-2. **Primeira aula do módulo = ritual de posse.** Encapar o livro, identificar o exemplar e
-   registrar o estado em que o recebeu é a **primeira atividade pontuada** da trilha. Ensina
-   cuidado com material e coloca o jogador como responsável desde o início.
-3. **Empréstimo registrado no painel do dia.** Retirada e devolução são lançadas pelo Mestre
-   na gestão; o painel do dia mostra as **devoluções pendentes** antes do fim da aula
-   ([03 §3](03-plataforma-e-arquitetura.md#3-frontend-01--gestão-app-03)).
-4. **Badge "Guardião do Acervo".** Devolver em bom estado ao fim do módulo rende badge e
-   pontos. Guardiões reincidentes ganham prioridade para **levar livro para casa** e podem
-   ser convidados a **cuidar do acervo do ponto de apoio** como voluntários
-   ([§7](#7-formação-de-mestres-e-multiplicadores)).
-5. **Guarda compartilhada pela equipe.** Cada equipe responde por um conjunto de exemplares,
+2. **Uso em bancada, com retirada registrada.** O exemplar não sai do ponto de apoio.
+   Retirada e devolução dentro do encontro são lançadas pelo Mestre na gestão; o painel do
+   dia mostra as **devoluções pendentes** antes do fim da aula
+   ([03 §5](03-plataforma-e-arquitetura.md#5-app-03--gestão-administrativa)).
+3. **Badge "Guardião do Acervo".** Cuidar bem do material comum ao longo do módulo rende
+   badge e pontos. Guardiões reincidentes podem ser convidados a **cuidar do acervo do ponto
+   de apoio** como voluntários ([§7](#7-formação-de-mestres-e-multiplicadores)).
+4. **Guarda compartilhada pela equipe.** Cada equipe responde por um conjunto de exemplares,
    como já responde por um desafio. Cuidar do material do colega conta como
    **mérito extra por auxílio aos colegas**
    ([02 §4](02-conceito-do-jogo-e-gamificacao.md#resultados-de-atividade-lançados-pela-gestão)).
-6. **Kit de conservação com lastro.** Papel para encapar, fita e etiquetas são **recursos
+5. **Kit de conservação com lastro.** Papel para encapar, fita e etiquetas são **recursos
    como qualquer outro**: precisam ser providos por Mestre ou Apoiador para a atividade
    acontecer ([04](04-modelo-economico-e-sustentabilidade.md)).
-7. **Reposição solidária, nunca cobrança à família.** Perda ou dano **não gera dívida para o
+6. **Reposição solidária, nunca cobrança à família.** Perda ou dano **não gera dívida para o
    jogador nem para os responsáveis** e não impede a participação. A reposição entra como
    **necessidade de recurso** a ser aportada por Apoiador. Cobrar de família em situação de
    vulnerabilidade contradiz o "sem miséria" e afastaria justamente quem o projeto quer
    alcançar.
-8. **Conferência de inventário a cada módulo**, com o resultado publicado na prestação de
+7. **Conferência de inventário a cada módulo**, com o resultado publicado na prestação de
    contas do acervo — transparência que também presta contas ao Apoiador que doou.
 
-> **Sobre pontuação negativa:** o descuido reiterado e deliberado com o material é
+> **Sobre pontuação negativa:** o descuido reiterado e deliberado com o **material comum** é
 > descumprimento de regra e cabe no dispositivo já previsto
 > ([02 §4](02-conceito-do-jogo-e-gamificacao.md#pontuação-negativa)). Livro rasgado por
 > acidente, chuva ou casa sem espaço adequado **não é infração** — é custo previsto de operar
 > em território real. A distinção precisa estar explícita no código de conduta, senão a regra
-> vira instrumento de exclusão.
+> vira instrumento de exclusão. Sobre o **livro próprio do jogador** (linha Alpha) não incide
+> pontuação negativa em hipótese alguma: o que é dele, é dele.
+
+#### C. Kits em MDF (30 unidades)
+
+Os **30 kits doados pelo Goethe-Institut** são insumo de oficina, não acervo: são montados
+pelo jogador e viram o corpo do seu robô
+([06-robo-educa.md](06-robo-educa.md)). Entram no livro-razão como **consumível de
+atividade**, com baixa a cada montagem, e o saldo restante precisa constar do painel do dia —
+é ele que diz quantos jogadores ainda podem montar em MDF antes de a oficina voltar ao
+material reciclado.
 
 ## 3. Roteiro da aula presencial
 
@@ -129,13 +149,13 @@ Por que assim:
 Consequências operacionais:
 
 - O **onboarding roda continuamente** durante o encontro, não só na abertura — a App 01
-  atende quem chega a qualquer hora ([03 §5](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença)).
+  atende quem chega a qualquer hora ([03 §3](03-plataforma-e-arquitetura.md#3-app-01--onboarding-cadastro-e-registro-de-presença)).
 - A **App 05 (Área do Jogador)** é o que sustenta a autonomia: é ela que diz a cada jogador
   qual é o próximo ponto da sua trilha, sem depender do Mestre para saber o que fazer
-  ([03 §2.1.4](03-plataforma-e-arquitetura.md#214-app-05--área-do-jogador)).
+  ([03 §7](03-plataforma-e-arquitetura.md#7-app-05--área-do-jogador)).
 - O **painel do dia** (App 03) é o instrumento de controle do encontro assíncrono: quem
   chegou, quem está em qual atividade, o que já foi lançado e o que ainda falta
-  ([03 §3](03-plataforma-e-arquitetura.md#3-frontend-01--gestão-app-03)).
+  ([03 §5](03-plataforma-e-arquitetura.md#5-app-03--gestão-administrativa)).
 
 ### Momentos do encontro
 
@@ -149,7 +169,7 @@ prática, inspiração e voz do jogador.
 
 | # | Momento | Ritmo | O que acontece |
 |---|---|---|---|
-| 1 | **Onboarding** | **Contínuo** | Cadastro de novos jogadores e registro de presença, pela **App 01** — interação por áudio ou texto, conforme os jogadores chegam ([03 §5](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença)) |
+| 1 | **Onboarding** | **Contínuo** | Cadastro de novos jogadores e registro de presença, pela **App 01** — interação por áudio ou texto, conforme os jogadores chegam ([03 §3](03-plataforma-e-arquitetura.md#3-app-01--onboarding-cadastro-e-registro-de-presença)) |
 | 2 | **Atividades práticas — Computer Science Unplugged** | **Assíncrono** | Lógica, algoritmos e pensamento computacional **sem computador**: papel, corpo, jogos, materiais do dia a dia. Boa porta de entrada para quem chegou e ainda não pegou um aparelho |
 | 3 | **Bate-papo on-line com mentores e convidados** | Coletivo | Conversa ao vivo com profissionais e referências — aproxima o mundo da tecnologia da realidade do jogador |
 | 4 | **Momento GOAT / The Best / "Podemos ser os melhores"** | Coletivo | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade. Momento inspirador e de identificação ([01 §4](01-visao-valores-e-proposito.md#o-lema)) |
@@ -197,7 +217,7 @@ aprendizado acontece — quem sabe explica para quem não sabe, o que se conecta
 
 - **App 03 (gestão)** — cadastro do banco de perguntas pelo curador e condução da partida
   (start, avanço de pergunta, encerramento, apuração)
-  ([03 §3](03-plataforma-e-arquitetura.md#3-frontend-01--gestão-app-03)).
+  ([03 §5](03-plataforma-e-arquitetura.md#5-app-03--gestão-administrativa)).
 - **App 05 (área do jogador)** — recebimento da pergunta e envio da resposta pelo celular da
   equipe.
 - **Sincronização em tempo real** entre os dispositivos logados na aula e critério de
@@ -242,7 +262,6 @@ aprendizado acontece — quem sabe explica para quem não sabe, o que se conecta
   voluntário sozinho com criança, e canal de denúncia disponível
   ([09 §2](09-topicos-em-aberto-e-sugestoes.md#proteção-da-criança-e-do-adolescente-prioridade-máxima)).
 
-
 ## 10. Replicabilidade
 
 Condições para que qualquer comunidade replique o modelo:
@@ -282,10 +301,11 @@ para ciclos posteriores.
 | Fase | Entrega | Depende de |
 |---|---|---|
 | 0 — Fundação | Código de conduta, termos de consentimento, identidade visual, comunidade piloto definida | — |
-| 1 — Onboarding + vitrine | **App 01** (cadastro/presença por áudio ou texto) + vitrine pública + API de personas | PRD-01/02/03 ([08-base-para-prds.md](08-base-para-prds.md)) |
+| 1 — Onboarding + vitrine | **App 01** (cadastro/presença por áudio ou texto, com vínculo à comunidade) + **App 06** (vitrine pública) + API de personas e de **Comunidades Virtuais criadas pelos Admins** | PRD-01/02/03 ([08-base-para-prds.md](08-base-para-prds.md)) |
 | 2 — Jogo mínimo | **App 03** (gestão, entradas manuais e painéis do dia), poderes e a **1ª trilha — Robô Educa** publicada e pontuando | Fase 1 |
+| 2.5 — Canal da família | **App 07** (evolução do jogador, autorizações, direitos de recusa e transparência de dados) — é o que torna a hipótese **H2** mensurável ([10 §3](10-case-01-guerreira-zeferina.md#3-hipóteses-do-ciclo-01-formuladas-em-jul2026)) | Fase 2 |
 | 3 — Primeiro ciclo presencial completo | Aulas com o roteiro da §3 + **App 02** (assistente por voz e Modo Ouvinte) + Quiz ao Vivo + **2ª trilha — Batalha de Laser** + culminância com vídeo | Fase 2 + ponto de apoio + recursos com lastro |
-| 3.5 — Acervo em operação | Tombamento dos livros, mapeamento capítulo → ponto de trilha e estratégia de conservação implantada | Fase 2 + decisão doação x reaproveitamento |
+| 3.5 — Acervo em operação | Entrega dos livros da linha Alpha na abertura de cada trilha, tombamento dos 46 exemplares permanentes, mapeamento capítulo → ponto de trilha e estratégia de conservação implantada (§2) | Fase 2 |
 | 4 — Área do jogador e jogo | **App 05** (guia das trilhas) e **App 04** (jogo em JavaScript) | Fase 2 |
 | 5 — Comunidade Virtual | Coleta de dados do território e painel público por comunidade | Fase 2 |
 | 6 — Economia visível | Livro-razão público, Poder Econômico, relatórios de transparência | Fase 3 |
