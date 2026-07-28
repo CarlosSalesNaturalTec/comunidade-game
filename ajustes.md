@@ -25,3 +25,8 @@ Desafio/Meta:
 Obs:
 A coleção de livros deve estar relacionada a esta COmunidade e MVP
 
+os encontros presenciais devem possuir uma dinâmica assíncrona,  aonde os jogadores a medida que forem chegando e se organizando em equipes , vao realizando as atividades relacionadas às trilhas em que estão atuando , à seu ritmo.  utilizando notebook, smartphones e tablets disponíveis,  com a ajuda do(s) mestre(s) presentes
+
+destaque para o fundador,  seu curriculum, responsável pela construção do ecossistema, o universo em que existem as comunidades virtuais.
+
+
