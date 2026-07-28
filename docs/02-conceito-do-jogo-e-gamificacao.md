@@ -144,9 +144,9 @@ comunidade). Assim as causas viram conteúdo jogável, não apenas declaração 
 
 ### As duas primeiras trilhas da plataforma
 
-**Robô Educa** e **Batalha de Laser** são **trilhas** — as duas primeiras da plataforma —, e
-não atividades isoladas. Ambas são de **autoria do Mestre fundador**, autor deste
-repositório, e são os artefatos que comprovam sua habilidade em Programação e Robótica
+**Robô Educa** e **Batalha de Laser** são as duas primeiras trilhas da plataforma, ambas de
+**autoria do Mestre fundador**, autor deste repositório, e são os artefatos que comprovam sua
+habilidade em Programação e Robótica
 ([01 §7](01-visao-valores-e-proposito.md#7-o-fundador-primeiro-admin-e-primeiro-mestre)).
 
 | # | Trilha | Poder associado | Do que se trata | Detalhamento |
@@ -164,10 +164,10 @@ O projeto recebeu do **Goethe-Institut** — que passa a ser um dos **primeiros 
 plataforma** ([04 §1](04-modelo-economico-e-sustentabilidade.md#1-a-economia-de-recursos-da-plataforma))
 — uma coleção de livros do projeto **Include**, da **Campus Party**.
 
-> **Definição vigente:** os livros **não constituem trilhas próprias**. São **material de
-> apoio** das duas trilhas existentes — [Robô Educa](06-robo-educa.md) e
-> [Batalha de Laser](07-batalha-de-laser.md) —, usados como referência de consulta nos
-> pontos de trilha em que o conteúdo se encaixa.
+> **Definição vigente:** os livros são **material de apoio** das trilhas
+> [Robô Educa](06-robo-educa.md) e [Batalha de Laser](07-batalha-de-laser.md), usados como
+> referência de consulta nos pontos de trilha em que o conteúdo se encaixa. O vínculo é
+> **ponto de trilha → capítulo recomendado**.
 
 | Título | Exemplares | Apoia principalmente |
 |---|---:|---|
@@ -180,13 +180,10 @@ plataforma** ([04 §1](04-modelo-economico-e-sustentabilidade.md#1-a-economia-de
 | Include — **Eletrônica I** | 4 | Batalha de Laser |
 | **Total** | **298** | |
 
-**Por que material de apoio e não trilha.** As duas trilhas já existem, têm autoria e
-sequência definidas. O acervo entra para **aprofundar** os pontos dessas trilhas — quem
-quiser ir além do que a aula cobre tem o livro na mão —, sem criar percursos paralelos que
-concorreriam com o conteúdo do Mestre fundador. O vínculo é **ponto de trilha → capítulo
-recomendado**, não livro → trilha nova.
+O acervo **aprofunda** os pontos das duas trilhas: quem quiser ir além do que a aula cobre
+tem o livro na mão.
 
-**Observações operacionais que já se pode extrair do inventário:**
+**Observações operacionais extraídas do inventário:**
 
 - Os três títulos da linha **Alpha** (252 exemplares) têm volume suficiente para **um livro
   por jogador** em turmas inteiras e em mais de um ponto de apoio.

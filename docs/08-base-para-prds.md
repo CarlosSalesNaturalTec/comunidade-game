@@ -273,10 +273,10 @@ do conhecimento e com os valores do projeto.
 São o conteúdo de validação do módulo: se a ferramenta modela essas duas, modela as demais.
 
 **Material de apoio impresso:** o modelo de trilha precisa suportar **bibliografia de apoio
-por ponto de trilha** — a coleção Include doada pelo Goethe-Institut é material de apoio das
-duas trilhas acima, **não trilha própria**
+por ponto de trilha** — a coleção Include doada pelo Goethe-Institut apoia as duas trilhas
+acima
 ([02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut)).
-Requisitos decorrentes: vincular um ponto de trilha a **título e capítulo recomendados**;
+Requisitos: vincular um ponto de trilha a **título e capítulo recomendados**;
 indicar ao jogador se há **exemplar disponível no seu ponto de apoio**; e creditar o
 **Apoiador que forneceu o material** onde ele é indicado.
 

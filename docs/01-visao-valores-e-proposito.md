@@ -124,9 +124,15 @@ Objetivos concretos:
 
 ### O lema
 
-> **GOAT / The Best / "Somos os melhores"** — a desconstrução da mentira que sempre
-> disseram o contrário. A plataforma existe para provar, com realizações concretas, que os
-> jovens das comunidades são capazes de ser os melhores no que fizerem.
+> **GOAT / The Best / "Podemos nos tornar os melhores"** — a desconstrução da mentira que
+> sempre disseram o contrário. A plataforma existe para provar, com realizações concretas,
+> que os jovens das comunidades são capazes de ser os melhores no que fizerem.
+
+O lema afirma **potencial e caminho**, no plural e no coletivo: o melhor é resultado de
+trabalho, e cada ponto de trilha percorrido é prova de que o caminho existe — em linha com a
+mecânica de progressão do jogo (níveis, poderes desbloqueados e o
+[Mestre Aprendiz](02-conceito-do-jogo-e-gamificacao.md#7-níveis-e-badges-gamificação) no
+topo).
 
 O lema também é um **momento fixo das aulas presenciais**: apresentação de personalidades
 mulheres, negras e indígenas que impactaram positivamente a sociedade

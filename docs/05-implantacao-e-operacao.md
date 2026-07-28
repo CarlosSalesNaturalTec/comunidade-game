@@ -97,7 +97,7 @@ dorsal que garante que cada aula tenha acolhimento, prática, inspiração e voz
 | 1 | **Onboarding** | Cadastro de novos jogadores e registro de presença, pela **App 01** — interação por áudio ou texto ([03 §5](03-plataforma-e-arquitetura.md#5-frontend-03--onboarding-cadastro-e-registro-de-presença)) |
 | 2 | **Atividades práticas — Computer Science Unplugged** | Lógica, algoritmos e pensamento computacional **sem computador**: papel, corpo, jogos, materiais do dia a dia |
 | 3 | **Bate-papo on-line com mentores e convidados** | Conversa ao vivo com profissionais e referências — aproxima o mundo da tecnologia da realidade do jogador |
-| 4 | **Momento GOAT / The Best / "Somos os melhores"** | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade. Momento inspirador e de identificação ([01 §4](01-visao-valores-e-proposito.md#o-lema)) |
+| 4 | **Momento GOAT / The Best / "Podemos nos tornar os melhores"** | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade. Momento inspirador e de identificação ([01 §4](01-visao-valores-e-proposito.md#o-lema)) |
 | 5 | **Desafio do dia** | A atividade pontuada do encontro — individual, em equipe, de coleta de dados do território ou o **Quiz ao Vivo** (§4) |
 | 6 | **Encerramento com apresentação livre** | Cada jogador (ou equipe) mostra o que construiu e/ou aprendeu na aula. Fecha o ciclo e treina expressão pública |
 

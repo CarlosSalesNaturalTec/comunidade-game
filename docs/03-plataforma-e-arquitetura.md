@@ -47,10 +47,9 @@ deve estar acessível a partir de qualquer navegador — smartphone, tablet ou c
 conversar com os dispositivos embarcados construídos nas oficinas
 ([06-robo-educa.md](06-robo-educa.md)).
 
-**Por que essa restrição.** Um único formato de entrega (Web App responsivo) mantém a
-barreira de acesso baixa sem multiplicar bases de código, dispensa loja de aplicativos e
-atualização pelo usuário, e evita submeter dados de crianças a plataformas de terceiros —
-coerente com a regra de LGPD em todo o projeto (§4).
+Formato único de entrega: **uma base de código, sem loja de aplicativos, sem atualização
+pelo usuário e sem tráfego de dados de crianças por plataformas de terceiros** — coerente com
+a regra de LGPD em todo o projeto (§4).
 
 ### 2.1 Aplicações a serem desenvolvidas
 

@@ -39,7 +39,7 @@ deste repositório: **[Robô Educa](06-robo-educa.md)** (1ª) e
 
 O **acervo de 298 livros do projeto Include (Campus Party)**, doado pelo
 **Goethe-Institut** — um dos primeiros Apoiadores da plataforma —, é **material de apoio
-dessas duas trilhas**, e não trilha própria. Inventário em
+dessas duas trilhas**. Inventário em
 [02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-goethe-institut);
 guarda, decisão sobre doação x reaproveitamento e estratégia de conservação em
 [05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação).
