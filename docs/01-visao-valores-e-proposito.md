@@ -40,7 +40,7 @@ módulos separados: são as três engrenagens que fecham o ciclo.
 ### A motivação do fundador
 
 O projeto nasce da convicção de um desenvolvedor no potencial transformador da própria
-habilidade: **usar código, software e dados para produzir impacto positivo na sociedade** —
+habilidade: **usar software e dados para produzir impacto positivo na sociedade** —
 a postura de um *hacker* no sentido original da palavra, alguém que entende o
 funcionamento das coisas e as reconfigura para servir às pessoas. A tecnologia aqui não é
 fim nem vitrine: é ferramenta de intervenção social.
@@ -54,7 +54,7 @@ fim nem vitrine: é ferramenta de intervenção social.
 
 ### Estágio atual
 
-Em **2026** o projeto está em **formato de ideação** — esta documentação compila ideias e
+Em **Julho de 2026** o projeto está em **formato de ideação** — esta documentação compila ideias e
 materiais de datas anteriores e os organiza como projeto. O que já foi validado na prática
 são as **oficinas presenciais do Robô Educa desde 2018** ([06 §6](06-robo-educa.md#6-impacto-já-comprovado)).
 O primeiro case real da plataforma é a
@@ -115,7 +115,7 @@ comunidade de desenvolvedores e colaboradores do projeto, não só para os jogad
 A plataforma é **educacional e *tech first***: a tecnologia é a porta de entrada e a
 linguagem principal. Mas ela não termina em si mesma — cada conteúdo técnico abre
 **paralelos com outras áreas do conhecimento** (ciências, matemática, linguagens, artes,
-história, meio ambiente) e com **valores e temas necessários ao cenário atual da nossa
+história, meio ambiente, relações humanas e sociais) e com **valores e temas necessários ao cenário atual da nossa
 sociedade**: racismo, violência contra mulheres, identidade, povos originários,
 sustentabilidade, convivência e cidadania.
 
@@ -194,14 +194,15 @@ mulheres, negras e indígenas que impactaram positivamente a sociedade
 ## 7. O fundador: primeiro Admin e primeiro Mestre
 
 **Carlos Sales** — desenvolvedor, idealizador do Comunidade Game e **responsável pela
-construção inicial do ecossistema digital**: o universo em que as Comunidades Virtuais existem —
+construção dos primeiros artefatos do ecossistema digital**: o universo em que as Comunidades Virtuais existem —
 backend, aplicações, trilhas e a própria narrativa do jogo.
 
 | Referência | Link |
 |---|---|
-| GitHub | <https://github.com/CarlosSalesNaturalTec> |
+| Repositório Robô Educa | <https://github.com/Robo-Educa> |
+| GitHub Pessoal | <https://github.com/CarlosSalesNaturalTec> |
 | LinkedIn | <https://www.linkedin.com/in/carlossalesti/> |
-| Portfólio | <https://drive.google.com/file/d/1KPPJQhNn_YsWYK6qllP6muns6WlSRyM1/view?usp=drive_link> |
+| Portfólio em Cultura Digital | <https://drive.google.com/file/d/1KPPJQhNn_YsWYK6qllP6muns6WlSRyM1/view?usp=drive_link> |
 
 Esses links não são vitrine pessoal: são o **artefato comprobatório** exigido de qualquer
 Mestre da plataforma ([02 §1](02-conceito-do-jogo-e-gamificacao.md#mestres-persona-secundária)).
@@ -237,7 +238,7 @@ assina termos e responde formalmente pelos aportes:
 | **Responsável legal** | **Carlos Antonio Sales** — o mesmo fundador e autor deste projeto |
 
 O fundador acumula, portanto, três papéis: **primeiro Admin**, **primeiro Mestre** e
-**responsável legal** da pessoa jurídica vinculada. Detalhes de doações, PIX e do
+**responsável legal** da pessoa jurídica vinculada. Detalhes de doações e do
 enquadramento jurídico ainda em aberto para editais em
 [04 §1](04-modelo-economico-e-sustentabilidade.md#pessoa-jurídica-vinculada-ao-projeto) e
 [09 §2](09-topicos-em-aberto-e-sugestoes.md#entidade-jurídica-e-compliance).
@@ -248,7 +249,7 @@ O projeto recebeu do **Goethe-Institut (Salvador)** uma coleção de **298 livro
 **Include**, da **Campus Party** (robótica educativa: mecânica, eletrônica, sensores e
 programação), e **30 kits em MDF** para as trilhas do Robô Educa. O Goethe-Institut passa,
 com isso, a ser um dos **primeiros Apoiadores** da plataforma, com os aportes registrados e
-contabilizados em seu **Poder Econômico**
+contabilizados em seu **Poder Econômico** na respectiva plataforma digital
 ([04 §1](04-modelo-economico-e-sustentabilidade.md#1-a-economia-de-recursos-da-plataforma)).
 
 A doação dos livros foi formalizada por **Termo de Doação assinado** entre o

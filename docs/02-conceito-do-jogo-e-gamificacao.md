@@ -14,7 +14,7 @@ batalhas e projetos. O jogador:
 - Escolhe **Poderes** e segue **Trilhas** para desenvolvê-los.
 - Só ganha pontos de uma habilidade **na medida em que realiza as atividades propostas
   pelos Mestres** — não há pontos por presença passiva.
-- Pode montar **Equipes** e participar de **Batalhas**.
+- Pode montar **Equipes** e participar de **Batalhas** e **Desafios**.
 
 O jogador é a **única persona com autocadastro** na plataforma
 ([03 §3](03-plataforma-e-arquitetura.md#3-app-01--onboarding-cadastro-e-registro-de-presença)).
@@ -31,7 +31,7 @@ Regras de admissão:
   autocadastro nem solicitação aberta de acesso administrativo.
 
 ### Mestres (persona secundária)
-Especialistas/mentores nas áreas de tecnologia, artes e esportes que orientam e ministram
+Especialistas/mentores nas áreas de educação, tecnologia, artes e esportes que orientam e ministram
 oficinas. Regras de admissão:
 
 - **Todo Mestre é cadastrado exclusivamente pelos Admins da plataforma.** Não há
@@ -182,7 +182,7 @@ Regras dos poderes:
 
 - Jogador ganha pontos de um poder **apenas realizando as atividades propostas pelos
   Mestres** daquele poder.
-- A **ativação/desbloqueio** de poderes acontece por meio de **quiz ou desafios**.
+- A **ativação/desbloqueio** de níveis de poderes acontece por meio de **quiz ou desafios**.
 - Todo poder, mesmo o mais técnico, deve abrir **paralelos com outras áreas do
   conhecimento e com os valores do projeto**
   ([01 §4](01-visao-valores-e-proposito.md#4-objetivos)).
@@ -197,14 +197,13 @@ comunidade). Assim as causas viram conteúdo jogável, não apenas declaração 
 - O aluno é **guiado pelos conhecimentos desejados**: cada trilha é uma sequência de
   conteúdos e atividades.
 - Ao seguir os pontos da trilha, o jogador vai **adquirindo/desbloqueando
-  habilidades/poderes**.
-- Trilhas de conhecimento com cadência **mensal**.
+  níveis de habilidades/poderes**.
 - Quanto mais usa a plataforma e realiza atividades/desafios, mais pontos acumula.
-- Trilhas podem ser **próprias ou de terceiros** (conteúdos externos curados pelos Mestres).
+- Trilhas podem conter conteúdos de **terceiros** (conteúdos externos curados pelos Mestres).
 - **Toda trilha deve conter desafios de coleta de dados reais** da comunidade do jogador —
   ver abaixo.
 - O jogador é acompanhado na trilha pela **Área do Jogador (App 05)**, que mostra o próximo
-  ponto, o que já foi conquistado e o que ainda está bloqueado
+  ponto, o que já foi conquistado e o que ainda está bloqueado, além de apoiá-lo
   ([03 §7](03-plataforma-e-arquitetura.md#7-app-05--área-do-jogador)).
 
 ### Regra vigente: toda trilha coleta dados reais
@@ -304,10 +303,9 @@ Por serem **30 unidades**, os kits dimensionam na prática o tamanho da primeira
 pode montar o robô em MDF simultaneamente — a partir daí, ou se repõe o estoque, ou a
 montagem volta a ser em material reciclado.
 
-#### Definição vigente: posse dos livros — regime misto
+#### Posse dos livros — regime misto
 
-**Decisão tomada.** Os exemplares seguem **regime misto**, aproveitando a assimetria do
-inventário:
+Os exemplares seguem **regime misto**, aproveitando a assimetria do inventário:
 
 | Linha | Exemplares | Destino |
 |---|---:|---|
@@ -348,16 +346,15 @@ responsável.
 
 ## 4. Atividades e desafios
 
-**Regra vigente:** as atividades devem ser criadas com **níveis de dificuldade graduais**,
+As atividades devem ser criadas com **níveis de dificuldade graduais**,
 acessíveis por todos os alunos/jogadores **independentemente de sua idade** (faixa de 6 a
 16 anos). O jogador progride pelo nível de dificuldade que consegue realizar, não pela
 idade que tem.
 
-### Tipos de aula
-- **Presenciais com treinamento** (oficinas) — roteiro em
+### Tipos de atividades
+- **Presenciais** roteiro em
   [05 §3](05-implantacao-e-operacao.md#3-roteiro-da-aula-presencial).
-- **Presenciais para apresentação de trabalhos** (culminância).
-- **Assíncronas / on-line**: conteúdo dos desafios e conteúdo entre encontros presenciais.
+- **Assíncronas / on-line**: a serem realizadas no intervalo entre os encontros preenciais.
 
 ### Tipos de desafio e pontuação
 
