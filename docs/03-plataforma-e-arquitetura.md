@@ -67,10 +67,6 @@ First**, consumindo o mesmo Backend API (§1).
 | **App 06** | **Vitrine pública** — apresentação da plataforma, sem login | Público geral / visitantes | §8 |
 | **App 07** | **Área dos pais e responsáveis** — evolução do jogador, solicitações, direitos de recusa e transparência sobre os dados | Pais e responsáveis | §9 |
 
-Correspondência com a nomenclatura anterior deste documento: **App 01 = Frontend 03**
-(onboarding), **App 03 = Frontend 01** (gestão) e **App 06 = Frontend 02** (vitrine
-pública). Os apps 02, 04, 05 e 07 são novos desta etapa.
-
 ## 3. App 01 — Onboarding (cadastro e registro de presença)
 
 Web App **responsivo, Mobile First**, acessível por smartphone ou tablet, usado no início de

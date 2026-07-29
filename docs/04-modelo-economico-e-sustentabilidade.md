@@ -90,16 +90,14 @@ A estratégia de guarda e conservação correspondente está em
 ## 2. Fontes de receita
 
 - **Doações de parceiros** (pessoas físicas e jurídicas).
-- **Publicidade.** - Vitrine Pública
+- **Publicidade** - Vitrine Pública
 - **Pesquisas** — os dados de território gerados pelas Comunidades Virtuais
   ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)) podem sustentar
   estudos e diagnósticos, sempre **anonimizados** e com retorno para a própria comunidade.
-- **Projetos** e **editais**.
+- **Editais**.
 - **Campanhas de crowdfunding** para:
   - Financiamento das aulas e kits;
   - Financiamento de equipamentos (celulares, notebooks, tablets etc.).
-- **Venda de kits** de robótica ("Compre o Kit" na jornada do aluno) — para públicos que
-  podem pagar, subsidiando as comunidades atendidas gratuitamente.
 
 ### Doações em espécie — canal oficial
 
