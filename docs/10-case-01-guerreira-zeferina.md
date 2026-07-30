@@ -24,8 +24,11 @@ realidade: a primeira comunidade em que a plataforma será implantada e medida.
 
 ## 2. Por que Guerreira Zeferina
 
-A comunidade **já foi palco do projeto Robô Educa em 2024**, quando a iniciativa se chamava
-**Inova Comunidade** ([01 §1](01-visao-valores-e-proposito.md#nomes-do-projeto)). Isso
+A comunidade **já foi palco do projeto em 2024**, quando a iniciativa se chamava
+**Inova Comunidade** ([01 §1](01-visao-valores-e-proposito.md#nomes-do-projeto)). Aquela
+edição reuniu o **Robô Educa**, o **Poder da Rima** e o **Poder da Capoeira** — os três
+realizados e validados na própria comunidade; Rima e Capoeira serão retomados em ciclo
+futuro ([02 §3](02-conceito-do-jogo-e-gamificacao.md#demais-trilhas-previstas)). Isso
 significa que o piloto **não começa do zero**:
 
 - Existe **relação prévia** com moradores, lideranças e famílias.
@@ -127,6 +130,35 @@ Consequências práticas para o ciclo:
   transparência da plataforma, devido ao Apoiador que doou — que assinou **Termo de Doação**
   com a **Robô Educa — Kits Robóticos Educacionais**
   ([04 §1](04-modelo-economico-e-sustentabilidade.md#pessoa-jurídica-vinculada-ao-projeto)).
+
+### 5.1 [Proposta] Distribuição das trilhas e do acervo no Ciclo 01
+
+Aplicação do modelo de distribuição de trilha por etapas do ciclo
+([11 §2.3](11-modelo-de-gamificacao.md#23-distribuição-da-trilha-pelas-etapas-do-ciclo))
+ao calendário ago–dez/2026. Marcada como proposta porque o calendário dos encontros ainda
+é pendência do case ([§7](#7-pontos-a-definir-do-case)).
+
+| Período | Etapa | Trilha em foco | Conteúdo e acervo |
+|---|---|---|---|
+| **Agosto** | Abertura | **Trilha 1 — Robô Educa** (início) | Onboarding e credenciamento; Comunidade Virtual criada antes do 1º encontro; ritual de entrada — entrega dos livros **Alpha Mecânica** (montagem do corpo) e do **kit MDF ou PET**; abertura das **séries de coleta** com cadência definida |
+| **Setembro** | Desenvolvimento | Trilha 1 — pontos intermediários | Voz, prompts, limites da IA; **Include Programação I** e **Include Mecânica I** em bancada; séries de coleta rendendo pontos; desafios extras de Apoiadores |
+| **Outubro** | Desenvolvimento / transição | Conclusão da trilha 1 → **Trilha 2 — Batalha de Laser** (início) | Publicação da versão do robô (fecho da trilha 1); entrega dos livros **Alpha Eletrônica** e **Alpha Sensores** na abertura da trilha 2; construção dos artefatos; **Include Eletrônica I** e **Include Sensores I** em bancada |
+| **Novembro** | Desenvolvimento + marco | Trilha 2 completa | Wi-Fi/MQTT, lógica do jogo, sensor de território instalado; **Batalha de Laser** presencial como marco do ciclo, com telemetria alimentando ranking e portfólio |
+| **Dezembro** | Fechamento | — | **Culminância** (apresentação pública, com consentimentos), conferência de inventário do acervo, prestação de contas ao Apoiador e avaliação das hipóteses H1–H3 |
+
+Notas de paginação:
+
+- A dinâmica é **assíncrona**: os meses indicam onde o **planejamento de recursos e de
+  bancada** se concentra, não uma exigência de que todos os jogadores estejam no mesmo
+  ponto — quem entra em outubro começa pela abertura da trilha 1 normalmente.
+- A transição trilha 1 → trilha 2 é **por jogador/equipe**, ao concluir a trilha 1; o mês
+  de outubro é apenas o centro de gravidade esperado.
+- Os **30 kits MDF** limitam as montagens em MDF da trilha 1; o saldo no painel do dia
+  define quando a oficina passa ao material reciclado
+  ([05 §2](05-implantacao-e-operacao.md#c-kits-em-mdf-30-unidades)).
+- O **mapeamento capítulo → ponto de trilha** precisa estar pronto para os pontos de cada
+  mês antes de o mês começar — cobre só o que o ciclo usa, não o acervo inteiro
+  ([09 §1](09-topicos-em-aberto-e-sugestoes.md#1-decisões-pendentes)).
 
 ## 6. Como o ciclo é avaliado
 

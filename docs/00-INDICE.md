@@ -15,6 +15,9 @@
 8. **[08-base-para-prds.md](08-base-para-prds.md)** — Conteúdo estruturado como insumo para elaboração de PRDs (Product Requirements Documents).
 9. **[09-topicos-em-aberto-e-sugestoes.md](09-topicos-em-aberto-e-sugestoes.md)** — Decisões pendentes e propostas em avaliação.
 10. **[10-case-01-guerreira-zeferina.md](10-case-01-guerreira-zeferina.md)** — **Case 01**: o piloto real na Comunidade Guerreira Zeferina (Salvador/BA), Ciclo 01 — ago a dez/2026: hipóteses, metas e critérios de avaliação.
+11. **[11-modelo-de-gamificacao.md](11-modelo-de-gamificacao.md)** — **Fonte única do motor do jogo**: anatomia da trilha (conteúdo, atividades, desafios, encontros, batalhas, culminâncias), motor de pontuação, níveis, badges, recompensas, distribuição pelas etapas do ciclo e os **reflexos no ecossistema** (vitrine, cards, representação visual da comunidade, jogos sobre o backend), com matriz de rastreabilidade para os PRDs.
+12. **[12-guia-do-apoiador.md](12-guia-do-apoiador.md)** — **Guia do Apoiador**: linhas gerais, por que apoiar, estrutura necessária para o Ciclo 01, como apoiar e desafios extras.
+13. **[13-codigo-de-conduta-versao-previa.md](13-codigo-de-conduta-versao-previa.md)** — **Código de Conduta (versão prévia)**: modelo básico a ser co-criado com os jogadores na primeira interação presencial.
 
 ## As 7 aplicações desta etapa
 
@@ -56,3 +59,7 @@ linha Include I como acervo permanente) e estratégia de conservação em
 - **[Proposta]** marca ideias ainda **não decididas** pelo fundador — avalie e adote se
   fizer sentido. Todo o resto é definição vigente do projeto.
 - Links entre documentos conectam decisões que se sustentam mutuamente.
+- O **[doc 11](11-modelo-de-gamificacao.md)** é a fonte normativa de **como os elementos
+  do jogo se integram** — trilhas, pontuações, níveis, badges, recompensas e seus reflexos
+  na vitrine, nos cards e nos jogos; os PRDs ([doc 08](08-base-para-prds.md)) partem da
+  sua [matriz de rastreabilidade](11-modelo-de-gamificacao.md#9-matriz-de-rastreabilidade--prds).

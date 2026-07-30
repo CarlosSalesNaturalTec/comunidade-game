@@ -99,6 +99,13 @@ governança da plataforma:
 6. **Território e identidade das comunidades** — a comunidade não é cenário, é protagonista.
    Cada Comunidade Virtual existe na medida em que registra dados e memórias reais do seu
    território (ver [02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
+7. **Despertamento e letramento sobre a crise ambiental** — alerta e consciência sobre a
+   crise climática e os eventos extremos que vêm ocorrendo em todo o mundo — e que atingem
+   primeiro e com mais força as comunidades periféricas. O tema não fica só no discurso:
+   as atividades de coleta de dados do território (temperatura, chuva, resíduos) são a
+   prática direta desse letramento — o jogador mede o clima do lugar onde vive e produz a
+   evidência local da crise global
+   ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
 
 **[Proposta]** Materializar os valores em mecânicas do jogo, não só em texto: por
 exemplo, trilhas e desafios temáticos ("Poder da Ancestralidade", "Poder do Respeito"),
@@ -106,8 +113,15 @@ badges por participação em atividades ligadas às causas, e um código de cond
 cuja violação gera pontuação negativa (já prevista em
 [02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md#pontuação-negativa)).
 
-**[Proposta]** Criar um documento de **Código de Conduta** e um de **Governança Open
-Source** (padrões `CODE_OF_CONDUCT.md` e `GOVERNANCE.md`) que traduzam esses valores para a
+**Definição vigente — Código de Conduta co-criado com os jogadores.** O Código de Conduta
+do jogo é **construído em conjunto com os jogadores na primeira interação presencial** de
+cada comunidade. A plataforma fornece uma **versão prévia como modelo básico**
+([13-codigo-de-conduta-versao-previa.md](13-codigo-de-conduta-versao-previa.md)), a ser
+discutida, revisada, complementada e corrigida pelos próprios jogadores — regra que se
+combina não se impõe, e conduta pactuada engaja mais do que conduta decretada.
+
+**[Proposta]** Criar também um documento de **Governança Open Source** (padrões
+`CODE_OF_CONDUCT.md` e `GOVERNANCE.md` no repositório) que traduza esses valores para a
 comunidade de desenvolvedores e colaboradores do projeto, não só para os jogadores.
 
 ## 4. Objetivos
@@ -181,7 +195,9 @@ mulheres, negras e indígenas que impactaram positivamente a sociedade
 
 - Contato inicial com programação e robótica **sem exigência de um computador** (material
   reciclado, kits de robótica, atividades presenciais e Web App acessível pelo celular).
-- Abordagem **lúdica e experimental**: ambiente descontraído, "sem miséria".
+- Abordagem **lúdica e experimental**: ambiente descontraído, **"sem miséria"** — na
+  expressão baiana: fartura, bem-estar, ambiente agradável, alimentos em abundância. É o
+  clima que o projeto promete em toda atividade.
 - Modelo de **jogo ligado à vida real**: pontos, poderes e batalhas correspondem a
   aprendizado e realizações concretas.
 - **Transparência radical dos recursos** movimentados (ver

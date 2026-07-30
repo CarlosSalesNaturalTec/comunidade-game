@@ -52,6 +52,15 @@
     ([02 §3](02-conceito-do-jogo-e-gamificacao.md#regra-vigente-toda-trilha-coleta-dados-reais)).
   - Valores do projeto refletidos em conteúdo, conduta e representatividade
     ([01-visao-valores-e-proposito.md](01-visao-valores-e-proposito.md#3-valores-e-causas)).
+  - **Modelo de gamificação integrado como fonte normativa:** a anatomia da trilha, a
+    taxonomia de atividades, o motor de pontuação, níveis, badges, recompensas e os
+    reflexos no ecossistema (vitrine, cards, representação visual da comunidade, contrato
+    dos jogos) seguem o **[doc 11](11-modelo-de-gamificacao.md)** — a
+    [matriz de rastreabilidade](11-modelo-de-gamificacao.md#9-matriz-de-rastreabilidade--prds)
+    indica quais conceitos cada PRD implementa.
+  - **Mestres de qualquer área do conhecimento** — inclusive humanas, artes, esportes e
+    cultura: nenhum modelo de dados ou fluxo pode pressupor habilidade técnica de TI
+    ([02 §1](02-conceito-do-jogo-e-gamificacao.md#mestres-persona-secundária)).
 
 ### Aplicações desta etapa e seus PRDs
 
@@ -102,9 +111,12 @@ aos PRDs abaixo:
   O **App 04 (jogo) consome pontos e não os gera**
   ([03 §6](03-plataforma-e-arquitetura.md#6-app-04--jogo-em-javascript)).
 - Regra de negócio: **desafio extra** exige validação do Mestre da trilha **e aprovação de um
-  Admin**; gera **pontos extras** computados isoladamente; é **aberto a todos**, com
-  **quantidade de recompensas** declarada (uma ou várias, por ordem de conclusão)
-  ([04 §5](04-modelo-economico-e-sustentabilidade.md#5-interação-apoiadores-x-jogadores-desafios-extras)).
+  Admin**; gera **pontos extras** computados isoladamente; nas duas modalidades — **aberto**
+  (a todos, com **quantidade de recompensas** declarada, uma ou várias, por ordem de
+  conclusão) e **direcionado** (a um jogador específico, único elegível à recompensa, com
+  **justificativa do vínculo registrada** e aprovada pelo Admin)
+  ([04 §5](04-modelo-economico-e-sustentabilidade.md#5-interação-apoiadores-x-jogadores-desafios-extras),
+  [02 §4](02-conceito-do-jogo-e-gamificacao.md#desafio-extra-direcionado)).
 - Entidades e permissões da **área do responsável**: vínculo responsável ↔ jogador,
   consentimentos versionados com data/hora, solicitações com protocolo e status
   ([PRD-13](#prd-13--app-07-área-dos-pais-e-responsáveis)).
@@ -113,6 +125,9 @@ aos PRDs abaixo:
 - Regra de negócio: **níveis 1 a 5 por trilha/poder**; a conclusão do Nível 5 marca o
   jogador como **Mestre Aprendiz**, apto ao treinamento de multiplicador e ao voluntariado
   nos pontos de apoio ([02 §7](02-conceito-do-jogo-e-gamificacao.md#7-níveis-e-badges-gamificação)).
+- **Poder do Território** no catálogo de poderes: progressão e badges próprios por
+  sustentar séries de coleta de dados do território
+  ([02 §2](02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades)).
 
 **Questões em aberto:** estratégia de autenticação; versionamento da API; multi-tenant por
 comunidade (uma instância nacional ou uma por comunidade?).
@@ -178,6 +193,11 @@ exibe **somente jogadores cujo responsável autorizou a divulgação** do histó
 perfil; jogadores sem autorização participam das atividades mas não aparecem publicamente.
 Os perfis de Mestres exibem os artefatos que comprovam suas habilidades.
 
+**Fonte normativa dos reflexos:** o mapeamento elemento do motor → vitrine, a composição
+dos **cards de cada personagem** e a **representação visual da Comunidade Virtual**
+(dado registrado → elemento visual) estão em
+[11 §8](11-modelo-de-gamificacao.md#8-reflexos-no-ecossistema).
+
 ## PRD-04 — App 01: Onboarding (cadastro e registro de presença)
 
 **Escopo:** Web App responsivo Mobile First (smartphone/tablet) que cadastra novos jogadores
@@ -219,10 +239,12 @@ conversa de cadastro.
 **Escopo:** experiência logada do jogador, com **guia e apoio nas trilhas** — qual é o
 próximo ponto, o que precisa ser feito, o que já foi conquistado e o que está bloqueado.
 
-**Requisitos:** escolha de poder; trilhas com desbloqueio por quiz/desafio; desafios
+**Requisitos:** escolha de poder; trilhas com desbloqueio por quiz/desafio, seguindo a
+anatomia e o motor de pontuação do
+[modelo de gamificação](11-modelo-de-gamificacao.md); desafios
 semanais (on-line 10 pts, presencial 10 pts, equipe 10 pts, família 20 pts); **desafios
-extras propostos por Apoiadores**, vinculados à trilha em andamento, com **pontos extras** e
-recompensa extra em quantidade declarada
+extras propostos por Apoiadores** — abertos ou **direcionados ao jogador** —, vinculados à
+trilha em andamento, com **pontos extras** e recompensa extra em quantidade declarada
 ([04 §5](04-modelo-economico-e-sustentabilidade.md#5-interação-apoiadores-x-jogadores-desafios-extras));
 equipes mistas de até 5 e Equipe Familiar; **séries de coleta de dados do território** —
 próxima medição, histórico do que já foi registrado, situação da série (ativa/interrompida) e
@@ -316,7 +338,9 @@ Requisitos:
 
 - **Desafio extra** como entidade: Apoiador proponente, trilha vinculada, Mestre validador,
   **Admin aprovador**, recompensa oferecida, **quantidade disponível**, critério de
-  atribuição (ordem de conclusão), **pontos extras** e período de vigência.
+  atribuição (ordem de conclusão), **pontos extras**, período de vigência, **modalidade
+  (aberto ou direcionado)** e — no direcionado — **jogador destinatário e justificativa do
+  vínculo aprovada** ([02 §4](02-conceito-do-jogo-e-gamificacao.md#desafio-extra-direcionado)).
 - Recompensa extra **creditada no histórico do Apoiador** e computada no Poder Econômico,
   com lastro exigido **antes** da publicação do desafio.
 - **Realizações dos jogadores** naquele desafio vinculadas ao histórico do Apoiador — a base
@@ -359,7 +383,11 @@ pelos próprios jogadores — a base *Data Driven* da plataforma
   plataforma.
 - **Granularidade hierárquica** do registro: comunidade → bairro → rua → condomínio →
   bloco → quadra.
-- Cada registro alimenta e "constrói" visualmente a comunidade digital.
+- Cada registro alimenta e "constrói" visualmente a comunidade digital — mapeamento
+  dado → elemento visual em
+  [11 §8.3](11-modelo-de-gamificacao.md#83-representação-visual-da-comunidade-virtual).
+- **Poder do Território**: as séries sustentadas pelo jogador alimentam a progressão e os
+  badges desse poder ([02 §2](02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades)).
 - Painéis públicos por comunidade; dados como **insumo para tomada de decisões** por
   moradores, associações, escolas, poder público e pesquisas.
 - Exportação/API aberta dos dados agregados e anonimizados.
@@ -374,15 +402,19 @@ armazenamento das séries temporais.
 
 **Escopo:** ferramenta para Mestres criarem trilhas, conteúdos, quizzes e desafios.
 
-**Requisitos:** trilhas mensais; conteúdo próprio e de terceiros; quiz/desafio para
+**Requisitos:** trilhas mensais seguindo a **anatomia formal do
+[modelo de gamificação](11-modelo-de-gamificacao.md#2-anatomia-da-trilha)** — em modelo
+**agnóstico de área do conhecimento**, apto a trilhas de humanas, artes, esportes e cultura
+tanto quanto às técnicas — incluindo a **paginação da trilha pelas etapas do ciclo**
+([11 §2.3](11-modelo-de-gamificacao.md#23-distribuição-da-trilha-pelas-etapas-do-ciclo));
+conteúdo próprio e de terceiros; quiz/desafio para
 desbloqueio; **publicação dos artefatos que comprovam a habilidade do Mestre**; catálogo
-inicial de poderes (IA/Robótica, Redes, Soft Skills, PNED/BNCC — **Rima e Capoeira ficam para
-ciclo futuro**, [02 §3](02-conceito-do-jogo-e-gamificacao.md#demais-trilhas-previstas));
-demais trilhas previstas, incluindo a de **Social Media / Geração de Áudio e Vídeo para Redes
-Sociais**; banco de perguntas
+inicial de poderes: **IA/Robótica e Poder do Território** nesta etapa — **Redes, Soft
+Skills, PNED/BNCC, Rima e Capoeira ficam para ciclo futuro**
+([02 §3](02-conceito-do-jogo-e-gamificacao.md#demais-trilhas-previstas)); banco de perguntas
 do **Quiz ao Vivo** cadastrado pelo curador da aula; **fluxo de desafio extra proposto por
-Apoiador**, com validação obrigatória do Mestre da trilha e **aprovação de Admin** antes da
-publicação
+Apoiador** — aberto ou **direcionado** —, com validação obrigatória do Mestre da trilha e
+**aprovação de Admin** antes da publicação
 ([02 §4](02-conceito-do-jogo-e-gamificacao.md#desafios-extras-propostos-por-apoiadores));
 paralelos obrigatórios com outras áreas do conhecimento e com os valores do projeto.
 
@@ -414,7 +446,12 @@ pedagógica; licença dos conteúdos (Creative Commons?).
 
 **Requisitos:** batalhas presenciais e de projetos; culminância; estatísticas de partida
 (ex.: telemetria do Nexus na Batalha de Laser); resultados alimentando ranking e
-portfólio; integração Nexus → API **[Proposta]**.
+portfólio; integração Nexus → API **[Proposta]** — padrão de integração de batalhas
+físicas com o backend em
+[11 §8.4](11-modelo-de-gamificacao.md#84-jogos-sobre-o-backend-app-04-e-terceiros).
+Batalhas são marcos de trilha de **qualquer área** (disputa de laser, batalha de rima,
+roda de capoeira), não apenas técnicas
+([11 §2](11-modelo-de-gamificacao.md#2-anatomia-da-trilha)).
 
 ## PRD-11 — Personalização por IA
 
@@ -440,7 +477,11 @@ plataforma**
 ([03 §6](03-plataforma-e-arquitetura.md#6-app-04--jogo-em-javascript)).
 
 **Requisitos:** uso dos avatares, poderes, badges e níveis já conquistados como elementos do
-jogo; representação exclusivamente por **avatar, nunca por imagem real**; código aberto e
+jogo — a composição dos **cards dos personagens** e o **contrato do jogo com o motor**
+(leitura de progresso + débito de pontos, nunca crédito) seguem
+[11 §8.2](11-modelo-de-gamificacao.md#82-cards-dos-personagens) e
+[11 §8.4](11-modelo-de-gamificacao.md#84-jogos-sobre-o-backend-app-04-e-terceiros);
+representação exclusivamente por **avatar, nunca por imagem real**; código aberto e
 legível, apto a virar conteúdo de trilha do Poder da IA e Robótica; execução em navegador de
 celular modesto e tolerância a rede instável.
 

@@ -288,6 +288,11 @@ Objetivos:
 - Respeitar a regra de representação: personagens são **avatares, nunca imagens reais** dos
   jogadores (§10).
 
+O **contrato completo entre o motor do jogo e qualquer jogo construído sobre o backend** —
+o que um jogo pode ler, o que pode debitar e o que nunca pode fazer, incluindo o padrão de
+integração das batalhas físicas (ponte Nexus → API) — está em
+[11 §8.4](11-modelo-de-gamificacao.md#84-jogos-sobre-o-backend-app-04-e-terceiros).
+
 > **A definir:** gênero e mecânica do jogo.
 
 ## 7. App 05 — Área do Jogador
@@ -331,6 +336,11 @@ Web App **responsivo, Mobile First**, de acesso público e **sem autenticação*
 - É também o espaço da **publicidade** prevista como fonte de receita
   ([04 §2](04-modelo-economico-e-sustentabilidade.md#2-fontes-de-receita)) — sempre fora das
   áreas de uso das crianças e sem qualquer coleta de dados de menores para fins publicitários.
+
+O mapeamento completo do que cada elemento do motor do jogo exibe na vitrine — composição
+dos **cards de cada personagem** (jogador, Mestre, Apoiador, comunidade) e a
+**representação visual da Comunidade Virtual** que "ganha corpo" com os dados registrados —
+está em [11 §8](11-modelo-de-gamificacao.md#8-reflexos-no-ecossistema).
 
 ## 9. App 07 — Área dos pais e responsáveis
 

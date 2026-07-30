@@ -1,12 +1,20 @@
-* Em valores e causas , adicionar a despertamento/alerta/letramento acerca da crise ambiental vivida ultimamente, eventos climátivos extremos ocorridos em todo o mundo.  
-* Guia do apoiador: Linhas gerais do projeto, Porque apoiar, estrutura necessária para ciclo1, como apoiar, desafios extras.
-* Código de Conduta criado em conjunto com os jogadores na primeira interação presencial. Versão prévia como modelo básico, a ser discutida, revisada, complementada, corrigida.
-* a expressão "sem miséria" na Bahia representa : fartura, bem estar, ambiente agradável, alimentos em abundância. Ajustar os textos aonde esta expressão aparece nos documentos
-* o apoiador pode direcionar um desafio extra a um jogador específico em que só o mesmo pode conseguir a respectiva recompensa caso atinja aos requisitos do desafio. assim como os demais desafios extras, sujeito  aprovação de um Admin, com justificativa, ex: parente próximo (tio(a),padrinho ou madrinha, etc) propõe desafio para determinado jogador de sua parentela e interesse direto. 
-* No Capítulo 2 - COnceitos do Jogo. Decisão: o registro de dados também será um poder próprio. Ex: "Poder do Território" , "Poder dos Dados", "Data Science"
-* Trilhas: Poder das Redes, Outros conteúdos PNED/BNCC, Soft Skills : Ciclo Futuro
-* Poder da Rima e Poder da Capoeira , fizeram parte juntamente com o Robô Educa da projeto Inova Comunidade ocorrido e validado em 2024 na mesma Comunidade Guerreira Zeferina, no entanto irão ser retomados em ciclo futuro.
+# Ajustes — incorporados à documentação
 
-/explore
-* amarrar melhor os conceitos de: trilhas, pontuações, níveis e badges, recompensas
-* do que sao compostas as trilhas : conteúdo, atividades, desafios, encontros presenciais, batalhas, culminâncias
+Todos os ajustes listados neste arquivo foram incorporados aos documentos de `/docs`.
+Mapa de onde cada um foi aplicado:
+
+| Ajuste | Onde foi aplicado |
+|---|---|
+| Valor/causa: despertamento e letramento sobre a crise ambiental e eventos climáticos extremos | [01 §3](docs/01-visao-valores-e-proposito.md#3-valores-e-causas) (valor 7) |
+| Guia do Apoiador (linhas gerais, por que apoiar, estrutura do Ciclo 01, como apoiar, desafios extras) | [12-guia-do-apoiador.md](docs/12-guia-do-apoiador.md) |
+| Código de Conduta co-criado com os jogadores no 1º encontro presencial; versão prévia como modelo básico | [13-codigo-de-conduta-versao-previa.md](docs/13-codigo-de-conduta-versao-previa.md); decisão registrada em [01 §3](docs/01-visao-valores-e-proposito.md#3-valores-e-causas) |
+| Sentido baiano de "sem miséria" (fartura, bem-estar, ambiente agradável, alimentos em abundância) | [01 §6](docs/01-visao-valores-e-proposito.md#6-diferenciais), [02 §8](docs/02-conceito-do-jogo-e-gamificacao.md#8-recompensas), [05 §2](docs/05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação) |
+| Desafio extra direcionado a um jogador específico (aprovação de Admin com justificativa; ex.: parente próximo) | [02 §4](docs/02-conceito-do-jogo-e-gamificacao.md#desafio-extra-direcionado), [04 §5](docs/04-modelo-economico-e-sustentabilidade.md#definições-vigentes-dos-desafios-extras), PRDs 01/05/07/09 em [08](docs/08-base-para-prds.md) |
+| Registro de dados como poder próprio — **Poder do Território** (Data Science) | [02 §1–§2](docs/02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades), [11 §7](docs/11-modelo-de-gamificacao.md#7-badges), PRDs 01/08 em [08](docs/08-base-para-prds.md) |
+| Trilhas Poder das Redes, PNED/BNCC e Soft Skills → ciclo futuro | [02 §2–§3](docs/02-conceito-do-jogo-e-gamificacao.md#demais-trilhas-previstas), PRD-09 em [08](docs/08-base-para-prds.md) |
+| Poder da Rima e Poder da Capoeira integraram o Inova Comunidade (2024, Guerreira Zeferina) com o Robô Educa; retomada em ciclo futuro | [02 §2–§3](docs/02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades), [10 §2](docs/10-case-01-guerreira-zeferina.md#2-por-que-guerreira-zeferina) |
+| Amarração dos conceitos: trilhas, pontuações, níveis, badges, recompensas — e composição das trilhas (conteúdo, atividades, desafios, encontros presenciais, batalhas, culminâncias) | [11-modelo-de-gamificacao.md](docs/11-modelo-de-gamificacao.md) (fonte única do motor do jogo, com reflexos na vitrine, cards, comunidade visual e jogos, e matriz de rastreabilidade → PRDs) |
+
+Novas ideias e ajustes futuros podem ser anotados abaixo, para incorporação posterior:
+
+*(vazio)*

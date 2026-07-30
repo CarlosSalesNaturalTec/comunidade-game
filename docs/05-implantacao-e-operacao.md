@@ -44,7 +44,7 @@ Os livros são **material de apoio** das trilhas [Robô Educa](06-robo-educa.md)
 
 **Definição vigente — regime misto.** A decisão está tomada e aproveita a assimetria do
 inventário
-([02 §3](02-conceito-do-jogo-e-gamificacao.md#definição-vigente-posse-dos-livros--regime-misto)):
+([02 §3](02-conceito-do-jogo-e-gamificacao.md#posse-dos-livros--regime-misto)):
 
 | Linha | Exemplares | Regime |
 |---|---:|---|
@@ -98,8 +98,9 @@ O princípio é **conservação por cuidado e orgulho, não por medo de puniçã
 6. **Reposição solidária, nunca cobrança à família.** Perda ou dano **não gera dívida para o
    jogador nem para os responsáveis** e não impede a participação. A reposição entra como
    **necessidade de recurso** a ser aportada por Apoiador. Cobrar de família em situação de
-   vulnerabilidade contradiz o "sem miséria" e afastaria justamente quem o projeto quer
-   alcançar.
+   vulnerabilidade contradiz o **"sem miséria"** — que, na expressão baiana, é a promessa de
+   fartura, bem-estar, ambiente agradável e alimentos em abundância — e afastaria justamente
+   quem o projeto quer alcançar.
 7. **Conferência de inventário a cada módulo**, com o resultado publicado na prestação de
    contas do acervo — transparência que também presta contas ao Apoiador que doou.
 
@@ -107,9 +108,10 @@ O princípio é **conservação por cuidado e orgulho, não por medo de puniçã
 > descumprimento de regra e cabe no dispositivo já previsto
 > ([02 §4](02-conceito-do-jogo-e-gamificacao.md#pontuação-negativa)). Livro rasgado por
 > acidente, chuva ou casa sem espaço adequado **não é infração** — é custo previsto de operar
-> em território real. A distinção precisa estar explícita no código de conduta, senão a regra
-> vira instrumento de exclusão. Sobre o **livro próprio do jogador** (linha Alpha) não incide
-> pontuação negativa em hipótese alguma: o que é dele, é dele.
+> em território real. A distinção está explícita no
+> **[Código de Conduta (versão prévia)](13-codigo-de-conduta-versao-previa.md)**, senão a
+> regra vira instrumento de exclusão. Sobre o **livro próprio do jogador** (linha Alpha) não
+> incide pontuação negativa em hipótese alguma: o que é dele, é dele.
 
 #### C. Kits em MDF (30 unidades)
 
@@ -158,6 +160,12 @@ Consequências operacionais:
   ([03 §5](03-plataforma-e-arquitetura.md#5-app-03--gestão-administrativa)).
 
 ### Momentos do encontro
+
+> O encontro presencial é um dos **marcos da trilha** — ao lado das batalhas e da
+> culminância — na anatomia formalizada em
+> [11 §2](11-modelo-de-gamificacao.md#2-anatomia-da-trilha); a distribuição desses marcos
+> pelas etapas do ciclo está em
+> [11 §2.3](11-modelo-de-gamificacao.md#23-distribuição-da-trilha-pelas-etapas-do-ciclo).
 
 Os momentos abaixo compõem o encontro, mas **nem todos são simultâneos para todos**. Os
 momentos **2 e 5 são assíncronos** — cada equipe os realiza quando chega e no seu ritmo. Os
@@ -300,7 +308,7 @@ para ciclos posteriores.
 
 | Fase | Entrega | Depende de |
 |---|---|---|
-| 0 — Fundação | Código de conduta, termos de consentimento, identidade visual, comunidade piloto definida | — |
+| 0 — Fundação | [Código de conduta — versão prévia](13-codigo-de-conduta-versao-previa.md) (a co-criar com os jogadores no 1º encontro), termos de consentimento, identidade visual, comunidade piloto definida | — |
 | 1 — Onboarding + vitrine | **App 01** (cadastro/presença por áudio ou texto, com vínculo à comunidade) + **App 06** (vitrine pública) + API de personas e de **Comunidades Virtuais criadas pelos Admins** | PRD-01/02/03 ([08-base-para-prds.md](08-base-para-prds.md)) |
 | 2 — Jogo mínimo | **App 03** (gestão, entradas manuais e painéis do dia), poderes e a **1ª trilha — Robô Educa** publicada e pontuando | Fase 1 |
 | 2.5 — Canal da família | **App 07** (evolução do jogador, autorizações, direitos de recusa e transparência de dados) — é o que torna a hipótese **H2** mensurável ([10 §3](10-case-01-guerreira-zeferina.md#3-hipóteses-do-ciclo-01-formuladas-em-jul2026)) | Fase 2 |

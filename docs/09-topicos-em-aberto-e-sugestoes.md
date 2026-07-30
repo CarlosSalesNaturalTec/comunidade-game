@@ -18,9 +18,11 @@ de novos tópicos e abordagens. Nada aqui é decisão tomada — é pauta.
 | Pontuação e regras do Quiz ao Vivo | Pontos da vitória, formato de resposta (equipe x representante), critério de desempate e nº de dispositivos por equipe ([05 §4](05-implantacao-e-operacao.md#4-atividade-modelo-quiz-ao-vivo)). |
 | Mecânica do jogo (App 04) | **Decidido:** o jogo **não gera pontuação na plataforma, apenas a consome** ([03 §6](03-plataforma-e-arquitetura.md#6-app-04--jogo-em-javascript)). Seguem em aberto: **gênero e mecânica** do jogo, o que os pontos compram dentro dele e a confirmação da **engine Phaser.js** ([08 PRD-12](08-base-para-prds.md#prd-12--app-04-jogo-em-javascript)). |
 | Stack de análise de movimentos (Poder da Capoeira) | **Adiado — ciclo futuro.** As trilhas de **Rima** e **Capoeira** só serão definidas e implementadas depois desta etapa ([02 §3](02-conceito-do-jogo-e-gamificacao.md#demais-trilhas-previstas)), então a escolha da stack sai do caminho crítico. Quando voltar à pauta: **sugestão MediaPipe (Python)** para captação da pose, TensorFlow como alternativa para classificar os movimentos, e a decisão pendente de processar **no dispositivo ou no servidor** — é vídeo de criança, e a resposta muda a exposição de dados. |
-| **Desafios extras de Apoiadores** | **Decidido:** valem **pontos extras** além da recompensa, computados isoladamente; **sem teto** de desafios simultâneos, porque cada um é **aprovado ou não por um Admin**; a disputa é **aberta a todos os que concluírem**, com **quantidade** de recompensas declarada (uma, para quem concluir primeiro, ou várias, até esgotar) ([04 §5](04-modelo-economico-e-sustentabilidade.md#definições-vigentes-dos-desafios-extras)). Segue em aberto **apenas** o **formato do relatório de efetividade** entregue ao Apoiador. |
-| ~~Acervo Include: doar ou reaproveitar~~ | **Decidido: regime misto.** Os 252 exemplares da **linha Alpha são doados ao jogador quando ele começa a trilha**; os 46 da **linha Include I ficam como acervo permanente** do ponto de apoio ([02 §3](02-conceito-do-jogo-e-gamificacao.md#definição-vigente-posse-dos-livros--regime-misto), [05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)). |
-| Estratégia de conservação do acervo permanente | Validar a estratégia da linha Include I (tombamento, ficha de vida do exemplar, uso de bancada com retirada registrada, badge "Guardião do Acervo", guarda por equipe, reposição solidária) e escrever no código de conduta a **distinção entre descuido deliberado e dano acidental** ([05 §2](05-implantacao-e-operacao.md#b-acervo-permanente-do-ponto-de-apoio--linha-include-i-46-exemplares)). |
+| **Desafios extras de Apoiadores** | **Decidido:** valem **pontos extras** além da recompensa, computados isoladamente; **sem teto** de desafios simultâneos, porque cada um é **aprovado ou não por um Admin**; nos desafios **abertos**, a disputa é para **todos os que concluírem**, com **quantidade** de recompensas declarada (uma, para quem concluir primeiro, ou várias, até esgotar); existe também a modalidade **direcionada** — desafio destinado a um jogador específico, com justificativa do vínculo registrada e aprovada por Admin ([04 §5](04-modelo-economico-e-sustentabilidade.md#definições-vigentes-dos-desafios-extras), [02 §4](02-conceito-do-jogo-e-gamificacao.md#desafio-extra-direcionado)). Segue em aberto **apenas** o **formato do relatório de efetividade** entregue ao Apoiador. |
+| **Poder do Território** | **Decidido:** o registro de dados do território é um **poder próprio** — "Poder do Território" (registro e ciência de dados, *Data Science*), com progressão e badges por sustentar séries de coleta ([02 §2](02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades)). |
+| **Código de Conduta** | **Decidido:** co-criado com os jogadores na **primeira interação presencial**; a **versão prévia (modelo básico)** está em [13-codigo-de-conduta-versao-previa.md](13-codigo-de-conduta-versao-previa.md), a ser discutida, revisada e complementada com a turma. |
+| ~~Acervo Include: doar ou reaproveitar~~ | **Decidido: regime misto.** Os 252 exemplares da **linha Alpha são doados ao jogador quando ele começa a trilha**; os 46 da **linha Include I ficam como acervo permanente** do ponto de apoio ([02 §3](02-conceito-do-jogo-e-gamificacao.md#posse-dos-livros--regime-misto), [05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)). |
+| Estratégia de conservação do acervo permanente | Validar a estratégia da linha Include I (tombamento, ficha de vida do exemplar, uso de bancada com retirada registrada, badge "Guardião do Acervo", guarda por equipe, reposição solidária) ([05 §2](05-implantacao-e-operacao.md#b-acervo-permanente-do-ponto-de-apoio--linha-include-i-46-exemplares)). A **distinção entre descuido deliberado e dano acidental** está no [Código de Conduta — versão prévia](13-codigo-de-conduta-versao-previa.md#descuido-deliberado--dano-acidental). |
 | Valoração e guarda do acervo e dos kits | Como o acervo e os **30 kits MDF** entram no livro-razão (valor de mercado, simbólico ou contagem física) e quem responde pela guarda em cada ponto de apoio ([04 §1](04-modelo-economico-e-sustentabilidade.md#primeiro-aporte-registrado--acervo-didático-e-kits-do-goethe-institut)). |
 | Mapeamento dos livros nas trilhas | Identificar o conteúdo de cada título e indicar **qual capítulo apoia qual ponto** das trilhas Robô Educa e Batalha de Laser. Trabalho de leitura, não de criação de trilha nova. |
 | Licenças | Código (AGPL/MIT?) e conteúdo educacional (Creative Commons?). |
@@ -103,8 +105,9 @@ de novos tópicos e abordagens. Nada aqui é decisão tomada — é pauta.
   ([07](07-batalha-de-laser.md#integração-com-a-plataforma-proposta)).
 
 ### Poderes alinhados aos valores
-- "Poder da Ancestralidade", "Poder do Cuidado", "Poder do Território"
-  ([02 §2](02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades)).
+- "Poder da Ancestralidade" e "Poder do Cuidado"
+  ([02 §2](02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades)) — o **Poder do
+  Território** já integra o catálogo como definição vigente.
 
 ### Currículo de temas transversais
 - Como cada atividade técnica abre paralelo com outras áreas do conhecimento e com os
@@ -129,9 +132,11 @@ de novos tópicos e abordagens. Nada aqui é decisão tomada — é pauta.
 3. Rodar a Fase 1 de elicitação de PRD com o
    [PRD-01 (API)](08-base-para-prds.md#prd-01--backend-api-núcleo) e o
    [PRD-04 (Onboarding)](08-base-para-prds.md#prd-04--app-01-onboarding-cadastro-e-registro-de-presença).
-4. Redigir o Código de Conduta, o termo de autorização dos responsáveis e o termo de
-   consentimento para captura de imagem (necessários antes da primeira aula com
-   onboarding).
+4. Redigir o termo de autorização dos responsáveis e o termo de consentimento para captura
+   de imagem (necessários antes da primeira aula com onboarding). A versão prévia do
+   Código de Conduta está em
+   [13-codigo-de-conduta-versao-previa.md](13-codigo-de-conduta-versao-previa.md), para
+   pactuação com os jogadores no primeiro encontro.
 5. Escrever o roteiro pedagógico da oficina do [Robô Educa](06-robo-educa.md), primeira
    trilha do piloto.
 6. **Cadastrar o Goethe-Institut como Apoiador** e registrar os aportes — **298 livros e 30

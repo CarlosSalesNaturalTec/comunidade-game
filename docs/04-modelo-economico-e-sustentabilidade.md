@@ -127,6 +127,12 @@ Aportar recurso é o começo da relação do Apoiador com a plataforma, não o f
 andamento, o Apoiador propõe um desafio ligado a uma trilha em curso e oferece uma
 **recompensa extra** a quem o concluir
 ([02 §4](02-conceito-do-jogo-e-gamificacao.md#desafios-extras-propostos-por-apoiadores)).
+O desafio extra pode ser **aberto** (a todos os jogadores da trilha) ou **direcionado** a
+um jogador específico
+([02 §4](02-conceito-do-jogo-e-gamificacao.md#desafio-extra-direcionado)).
+
+> Um resumo prático de toda a relação do Apoiador com a plataforma está no
+> **[Guia do Apoiador](12-guia-do-apoiador.md)**.
 
 **Como funciona no ciclo:**
 
@@ -136,7 +142,8 @@ andamento, o Apoiador propõe um desafio ligado a uma trilha em curso e oferece 
    os jogadores estão.
 3. Um **Admin aprova** (ou não) a publicação
    ([03 §5](03-plataforma-e-arquitetura.md#5-app-03--gestão-administrativa)).
-4. O desafio é publicado para **todos os jogadores daquela trilha**, com a recompensa, a
+4. O desafio é publicado para **todos os jogadores daquela trilha** — ou, no caso do
+   **desafio direcionado**, entregue ao jogador destinatário — com a recompensa, a
    quantidade disponível e o critério de atribuição visíveis desde o início.
 5. Os jogadores que concluem recebem **pontos extras** e, até esgotar a quantidade ofertada,
    a **recompensa extra**.
@@ -147,7 +154,8 @@ andamento, o Apoiador propõe um desafio ligado a uma trilha em curso e oferece 
 |---|---|
 | **Pontos** | O desafio extra **vale pontos além da recompensa**, computados **isoladamente como pontos extras** — não se misturam à pontuação regular da trilha |
 | **Teto de desafios simultâneos** | **Não há teto por trilha.** O controle é qualitativo: cada desafio é **aprovado ou não por um Admin**, caso a caso, após a validação pedagógica do Mestre |
-| **Exclusividade** | **Proibida.** O desafio é **aberto a todos os que concluírem** — ninguém é barrado de disputar |
+| **Exclusividade** | **Proibida nos desafios abertos**: o desafio é **aberto a todos os que concluírem** — ninguém é barrado de disputar. A exceção controlada é o **desafio direcionado** (linha abaixo) |
+| **Desafio direcionado** | O Apoiador pode **direcionar um desafio a um jogador específico** — só ele recebe a recompensa se atingir os requisitos. Exige **justificativa registrada** do vínculo/interesse (ex.: parente próximo — tio(a), padrinho, madrinha) e **aprovação de um Admin**, além da validação do Mestre. Mediação total mantida: nenhum contato direto ([02 §4](02-conceito-do-jogo-e-gamificacao.md#desafio-extra-direcionado)) |
 | **Quantidade de recompensas** | **Uma única** (para quem cumprir primeiro o desafio com sucesso) **ou várias** — todos que concluírem recebem, até o limite disponibilizado pelo Apoiador |
 
 Por que o teto foi substituído por aprovação: um número fixo protegeria a trilha do excesso,
