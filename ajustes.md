@@ -1,17 +1,31 @@
-# Ajustes — incorporados à documentação
+# Criar um documento de Governança Open Source (padrões CODE_OF_CONDUCT.md e GOVERNANCE.md no repositório) que traduza esses valores para a comunidade de desenvolvedores e colaboradores do projeto, não só para os jogadores. aproveitar conceitos e textos existentes
 
-Todos os ajustes listados neste arquivo foram incorporados aos documentos de `/docs`.
-Mapa de onde cada um foi aplicado:
+# Revisar textos: 
+* removendo duplicidades desnecessárias, 
+* melhorar redações mantendo o sentido original
+* corrigir eventuais incoerências em relação aos demais documentos
 
-| Ajuste | Onde foi aplicado |
-|---|---|
-| **Protagonismo dos jogadores** — destacar e incentivar, nas atividades e na plataforma, o protagonismo dos jogadores, suas ideias e criações | Valor 8 e **Definição vigente — Protagonismo dos jogadores** em [01 §3](docs/01-visao-valores-e-proposito.md#3-valores-e-causas); voz e autoria do Jogador em [02 §1](docs/02-conceito-do-jogo-e-gamificacao.md#jogadores-persona-primária); papel do Jogador no motor em [11 §3](docs/11-modelo-de-gamificacao.md#3-papéis-no-motor); diferencial em [01 §6](docs/01-visao-valores-e-proposito.md#6-diferenciais); argumento de apoio em [12 §2](docs/12-guia-do-apoiador.md#2-por-que-apoiar); avaliação do ciclo em [10 §6](docs/10-case-01-guerreira-zeferina.md#6-como-o-ciclo-é-avaliado) |
-| Criações originais baseadas no conteúdo aprendido, com autoria creditada, pontuação e vitrine | [02 §4](docs/02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores) (definição vigente); natureza, pontuação e badge de autoria em [11 §4–§7](docs/11-modelo-de-gamificacao.md#4-taxonomia-de-atividades-e-desafios); portfólio na vitrine em [03 §8](docs/03-plataforma-e-arquitetura.md#8-app-06--vitrine-pública-apresentação-da-plataforma) e [11 §8](docs/11-modelo-de-gamificacao.md#8-reflexos-no-ecossistema); culminâncias das trilhas em [06 §4](docs/06-robo-educa.md#4-pontos-da-trilha-poder-da-ia-e-robótica) e [07](docs/07-batalha-de-laser.md#integração-com-a-plataforma-proposta); requisitos em PRDs 01/02/03/05/09 em [08](docs/08-base-para-prds.md); pendências (pontos, badge) em [09 §1](docs/09-topicos-em-aberto-e-sugestoes.md#1-decisões-pendentes) |
-| Diferença de idades entre os jogadores tratada como força — papéis e mediação, sem quebrar a progressão por nível de dificuldade | [01 §5](docs/01-visao-valores-e-proposito.md#5-público-alvo) (definição vigente); equipes mistas de idade em [02 §5](docs/02-conceito-do-jogo-e-gamificacao.md#5-equipes); mediação como degrau de multiplicador em [05 §7](docs/05-implantacao-e-operacao.md#7-formação-de-mestres-e-multiplicadores); compromisso 10 do [Código de Conduta §2](docs/13-codigo-de-conduta-versao-previa.md#2-compromissos-do-jogador); nas trilhas em [06 §2](docs/06-robo-educa.md#2-por-que-é-a-primeira-trilha) e [07](docs/07-batalha-de-laser.md#integração-com-a-plataforma-proposta) |
-| Protagonismo nas atividades em equipe — papel ativo e crédito individual preservado | [02 §5](docs/02-conceito-do-jogo-e-gamificacao.md#5-equipes) (definição vigente); encerramento/apresentação livre em [05 §3](docs/05-implantacao-e-operacao.md#momentos-do-encontro) |
-| Protagonismo na construção da plataforma, que deve estar sempre em evolução | Princípio 8 de [03 §1](docs/03-plataforma-e-arquitetura.md#1-princípios-de-arquitetura); canal de sugestões do jogador em [03 §7](docs/03-plataforma-e-arquitetura.md#7-app-05--área-do-jogador) (com fila de avaliação no PRD-02 e entidade no PRD-01 em [08](docs/08-base-para-prds.md)); roda de ideias em [05 §3](docs/05-implantacao-e-operacao.md#momentos-do-encontro); alterar o código do jogo como atividade de trilha em [03 §6](docs/03-plataforma-e-arquitetura.md#6-app-04--jogo-em-javascript) e [11 §8.4](docs/11-modelo-de-gamificacao.md#84-jogos-sobre-o-backend-app-04-e-terceiros); extensão do mecanismo do Código de Conduta em [13 §5](docs/13-codigo-de-conduta-versao-previa.md#5-como-este-código-evolui); ciclo de evolução positiva em [01 §1](docs/01-visao-valores-e-proposito.md#o-ciclo-de-evolução-positiva) |
-| **Transparência sobre IA** — os artefatos da plataforma são construídos com auxílio e potencialização de IA; o contexto humano e social é idealizado e implementado pelo humano, que usa a tecnologia como alavanca (texto melhorado) | [01 §7 — Como os artefatos são construídos — IA como alavanca](docs/01-visao-valores-e-proposito.md#como-os-artefatos-são-construídos--ia-como-alavanca) (texto-fonte); princípio 9 de [03 §1](docs/03-plataforma-e-arquitetura.md#1-princípios-de-arquitetura); nota pública na vitrine em [03 §8](docs/03-plataforma-e-arquitetura.md#8-app-06--vitrine-pública-apresentação-da-plataforma) e PRD-03 em [08](docs/08-base-para-prds.md); restrição transversal dos PRDs em [08](docs/08-base-para-prds.md#visão-de-produto-comum-a-todos-os-prds); método do Ciclo 01 em [10 §4.2](docs/10-case-01-guerreira-zeferina.md#42-construção-dos-artefatos-digitais); versão em linguagem de criança em [13 §5](docs/13-codigo-de-conduta-versao-previa.md#5-como-este-código-evolui); para Apoiadores em [12 §1](docs/12-guia-do-apoiador.md#1-linhas-gerais-do-projeto); pendências (texto final e local da nota) em [09 §1](docs/09-topicos-em-aberto-e-sugestoes.md#1-decisões-pendentes) |
+# Ao Final de cada documento, a partir do índice , adicionar link para o documento seguinte (1 -> 2 -> 3 ... )
 
-Novas ideias e ajustes futuros podem ser anotados abaixo, para incorporação posterior:
+# Na página pública, criar formulário para solicitação de inclusão como Mestre ou Apoiador da plataforma. Para pessoas e instituições que se interessarem pelo projeto e desejarem participar do mesmo. As solicitações devem ser gravadas em banco de dados e ficarem disponíveis para avaliação por um Admin no App 003
 
-*(vazio)*
+# A Vitrine pública deve possuir além dos 'Cards' dos personagens (jogadores, mestres, poderes e comunidades) uma 'Página Individual' detalhada para os mesmos
+
+# O curriculum, portifólios, redes sociais e quaisquer documentos comprobatórios externos relativos aos Mestres e Apoiadores devem ser exibidos na sua respectiva página na Vitrine pública.
+
+# Em 2. Poderes (habilidades) na tabela:
+* ordenar os poderes colocando os de ciclo futuro por último. remover Soft Skills . adicionar os poderes citados na [Proposta] como ciclo futuro
+* "Todo jogador o exercita, pois toda trilha tem desafio de coleta". Ajustar o conceito. Os desafios, badges, batalhas são opcionais NÃO SÃO OBRIGATÓRIOS para TODO JOGADOR, toda trilha deve ter todos estes elementos, porém o sua realização é facultativa.  O Jogador, se desejar, pode iniciar uma trilha e alcançar todos os badges, realizar todos os desafios e participar de todas as batalhas, COMO TAMBÈM SE QUISER pode ficar no nível mínimo sem participar de batalhas, desafios ou até mesmo realizar atividades, no entanto este desempenho ficará registrado em seu perfil. 
+* Poder da Capoeira (ciclo futuro): a captação dos movimentos com biblioteca MediaPipe (Python) ainda não existe, é uma evolução prevista em relação ao que de fato ocorreu na versão inicial do Inova Comunidade em 2024. ajustar descrição contida na tabela
+
+# No App de apoio ao jogador devem ser exibidos os desafios vigentes (normais da trilha, extras, direcionados) , respectivas premiações, informações de como participar, solicitação de participação. 
+
+# No app do Apoiador, visualizar dados dos desafios criados pelo mesmo e os respectivos jogadores inscritos. 
+
+# Neste Ciclo 1, uma vez que o jogador cumpra o desafio a validação do mesmo deve ser feita por um Admin. Ou seja, um desafio só pode ser considerado como executado e aprovado após validação do Admin. Futuramente serão avaliados meios de aprovação dos desafios de forma automática por meio de IA ou outra técnica de automação.
+
+# Amarrar dentro do conceito de: trilhas X atividades X Níveis X badges x desafios x batalhas
+* Distribuir ao longo do tempo do ciclo 1. Os pontos podem ser trocados por recompensas a cada encontro presencial . Inicialmente os encontros presenciais ocorrerão uma vez por semana aos sábados no horário das 15hs as 18hs. 
+* Ciclo 1: 
+a) Todos irão começar na trilha 1 que acontecerá no período de Ago-Set/2026, com atividade de culminância em Set/26. Trilha 2 Bloqueada neste período.
+b) após culminância da trilha 1, todos passam para a trilha 2 que terão suas atividades liberadas a partir dai com respectiva culminância em Dez/2026
