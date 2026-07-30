@@ -96,6 +96,11 @@ Construir o que os **PRDs deste projeto** especificam
 - **Ecossistema digital** — o universo em que as Comunidades Virtuais existem
   ([01 §7](01-visao-valores-e-proposito.md#7-o-fundador-primeiro-admin-e-primeiro-mestre)).
 
+> **Transparência de método:** os artefatos digitais do Ciclo 01 são construídos com o
+> **auxílio e a potencialização de ferramentas de IA**, sob idealização e direção humanas —
+> a IA é a alavanca que permite ao fundador entregar o escopo acima dentro do prazo do
+> ciclo ([01 §7](01-visao-valores-e-proposito.md#como-os-artefatos-são-construídos--ia-como-alavanca)).
+
 ### 4.3 Captação de recursos de infraestrutura
 
 Conseguir os **recursos básicos dos recursos digitais da plataforma**: servidores,
@@ -174,8 +179,11 @@ Ao fim de dezembro de 2026, o ciclo responde:
    rede instável e aparelhos modestos.
 5. **Território** — quantos registros de dados alimentaram a Comunidade Virtual e o que eles
    já permitem dizer sobre o lugar.
+6. **Protagonismo** — quantas criações originais os jogadores apresentaram na culminância e
+   quantas sugestões de melhoria registraram para as atividades e para a plataforma
+   ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)).
 
-Esses cinco pontos são a base dos **indicadores de impacto** que o projeto ainda precisa
+Esses seis pontos são a base dos **indicadores de impacto** que o projeto ainda precisa
 formalizar ([09 §2](09-topicos-em-aberto-e-sugestoes.md#indicadores-de-impacto)) — e o
 *baseline* contra o qual a segunda comunidade será comparada.
 

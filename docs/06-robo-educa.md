@@ -36,7 +36,7 @@ Habilidades trabalhadas: coordenação motora, criatividade, reuso de materiais
 | Baixa barreira de entrada | Não exige computador nem kit caro — garrafa PET + qualquer smartphone |
 | Inclusão | Interação por **áudio**, acessível inclusive a pessoas com deficiência visual e a quem ainda não lê com fluência |
 | Resultado tangível no 1º dia | O jogador sai com um robô montado e funcionando |
-| Faixa 6 a 16 anos | Níveis de dificuldade graduais: da montagem física até a leitura e alteração do código |
+| Faixa 6 a 16 anos | Níveis de dificuldade graduais: da montagem física até a leitura e alteração do código. Nas equipes mistas, os mais velhos ou mais avançados apoiam os mais novos ([02 §5](02-conceito-do-jogo-e-gamificacao.md#5-equipes)) |
 | Reaproveitamento | A plataforma já existe e está em produção; serve de base para o Onboarding e para o "converse com seu robô" |
 
 ## 3. Anatomia da trilha
@@ -85,7 +85,10 @@ Decomposição sugerida em pontos de trilha, cada um com desafio de desbloqueio:
    ([02 §3](02-conceito-do-jogo-e-gamificacao.md#regra-vigente-toda-trilha-coleta-dados-reais)):
    o jogador escolhe o que medir no seu território, define com o Mestre a cadência e passa a
    registrar por voz. Enquanto mantiver a série, continua pontuando.
-8. Publicar sua versão do robô e apresentá-la aos colegas (culminância).
+8. Publicar sua versão do robô e apresentá-la aos colegas (culminância) — é a **criação
+   original** do jogador nesta trilha: seu robô, seu nome, sua pintura, suas alterações de
+   código, com autoria creditada e lugar no portfólio público
+   ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)).
 
 ## 5. Ganchos com a plataforma
 

@@ -155,7 +155,7 @@ A aplicação concreta desse modelo ao Ciclo 01 (trilhas 1 e 2 + acervo Include)
 
 | Persona | Papel no motor do jogo |
 |---|---|
-| **Jogador** | Percorre trilhas, realiza atividades e desafios, acumula pontos/níveis/badges, troca pontos por recompensas |
+| **Jogador** | Percorre trilhas, realiza atividades e desafios, **produz criações originais** com autoria creditada ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)), acumula pontos/níveis/badges, troca pontos por recompensas e **propõe melhorias** para atividades e para a própria plataforma ([03 §7](03-plataforma-e-arquitetura.md#7-app-05--área-do-jogador)) |
 | **Mestre** | Autor da trilha: define pontos, conteúdos, atividades, desafios e a paginação no ciclo; lança resultados; valida desafios extras. Mestres podem ser de **qualquer área do conhecimento** — exatas, humanas, artes, esportes, cultura — com habilidade comprovada por artefatos publicados |
 | **Apoiador** | Provê lastro e propõe **desafios extras** (abertos ou direcionados); acompanha a efetividade do apoio |
 | **Admin** | Aprova desafios extras, opera lançamentos e painéis, cria Comunidades Virtuais |
@@ -171,7 +171,7 @@ construção*):
 |---|---|---|
 | **Modalidade** | **Individual** · **Em equipe** (mista, até 5) · **Em família** (Equipe Familiar) | A modalidade define a pontuação-base ([§5](#5-motor-de-pontuação)); família vale mais por ser estratégica para a permanência |
 | **Formato** | **Presencial** (nos encontros) · **On-line/assíncrona** (entre encontros) | O desafio de coleta é contínuo: atravessa os dois formatos |
-| **Natureza** | Construção/making · Programação e IA · **Coleta de dados do território** · Desplugada · Valores e temas transversais · Competição ao vivo (Quiz) · Culminância | Lista aberta: novas trilhas de outras áreas acrescentam naturezas (ex.: expressão artística, movimento e corpo) |
+| **Natureza** | Construção/making · Programação e IA · **Coleta de dados do território** · Desplugada · Valores e temas transversais · Competição ao vivo (Quiz) · Culminância · **Criação original** ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)) | Lista aberta: novas trilhas de outras áreas acrescentam naturezas (ex.: expressão artística, movimento e corpo) |
 
 Regras transversais:
 
@@ -196,6 +196,7 @@ Tabela única das fontes de pontos da plataforma:
 | **Coleta de dados do território** | A definir por tipo de coleta | **Recorrente** — pontua a cada registro válido enquanto a série está ativa; interrompeu, parou de render ([02 §1](02-conceito-do-jogo-e-gamificacao.md#registro-temporal-e-pontuação-enquanto-a-coleta-durar)) | Automático (registro do jogador) |
 | **Quiz ao Vivo** | A definir | Regular | Automático (partida) |
 | Mérito extra por auxílio aos colegas | A definir | Regular | Mestre/gestão |
+| **Criação original** — culminância da trilha com autoria creditada | A definir | Regular | Mestre/gestão ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)) |
 | Badge de conduta (ex.: Guardião do Acervo) | Pontos + badge | Regular | Mestre/gestão |
 | **Desafio extra de Apoiador** (aberto ou direcionado) | Definidos no desafio | **Extra** — computado isoladamente, não se mistura à pontuação regular da trilha | Automático na conclusão validada |
 | **Batalha** (resultado/estatísticas) | A definir por batalha | Regular | Automático (ex.: ponte Nexus → API) ou gestão |
@@ -210,8 +211,8 @@ Três naturezas de saldo, que nunca se confundem:
 | **Pontos consumidos** | Débitos por troca de recompensa e por uso dentro do App 04 | O jogo **só debita, nunca credita** ([03 §6](03-plataforma-e-arquitetura.md#6-app-04--jogo-em-javascript)) — pontos gastos não afetam níveis nem badges já conquistados |
 
 > **A definir** ([09 §1](09-topicos-em-aberto-e-sugestoes.md#1-decisões-pendentes)):
-> valores da coleta por tipo, do Quiz ao Vivo, dos méritos e da pontuação negativa; janela
-> de tolerância e teto da coleta; mecânica antifraude.
+> valores da coleta por tipo, do Quiz ao Vivo, dos méritos, da criação original e da
+> pontuação negativa; janela de tolerância e teto da coleta; mecânica antifraude.
 
 ## 6. Níveis
 
@@ -241,6 +242,7 @@ elementos exibidos nos cards públicos ([§8.2](#82-cards-dos-personagens)):
 | **De conquista** | **Mestre Aprendiz** (por trilha ou poder) · **Guardião do Acervo** | Conclusão do Nível 5 · cuidado com o material comum ([05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação)) |
 | **De valores/causas** | Participação em atividades ligadas às causas do projeto ([01 §3](01-visao-valores-e-proposito.md#3-valores-e-causas)) | Atividades de natureza "valores e temas transversais" |
 | **De território** | Progressão no **Poder do Território** — séries de coleta sustentadas | Manutenção de séries ativas ([02 §2](02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades)) |
+| **De autoria/criação** | Badge de autoria — criações originais apresentadas em culminância | Criação original validada pelo Mestre ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)) |
 
 Regra geral: **badge é por trilha ou por poder, não global** — um jogador pode ser Mestre
 Aprendiz no Robô Educa e estar no Nível 2 na Batalha de Laser.
@@ -257,6 +259,7 @@ nunca reescrito — pelas quatro superfícies públicas do ecossistema.
 | Jogadores (com autorização do responsável) | **Cards rotativos** (rotação a cada 5 s) — composição em [§8.2](#82-cards-dos-personagens) |
 | Poderes | Seção de poderes, com trilhas e Mestres de cada um |
 | Trilhas e realizações | Portfólio público dos jogadores autorizados |
+| **Criações originais** | Portfólio de autoria: a criação exposta com o nick do autor (ou dos autores, em equipe) ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)) |
 | **Batalhas** | Resultados e estatísticas de partida (ex.: telemetria do Nexus) alimentando ranking e portfólio |
 | **Culminâncias** | Vídeos e registros (com consentimento específico registrado na App 07) |
 | Comunidades Virtuais | **Painel público por comunidade em série histórica**, com dados agregados e anonimizados |
@@ -271,7 +274,7 @@ mesma composição serve de base para o App 04 ([§8.4](#84-jogos-sobre-o-backen
 
 | Card | O que exibe | O que **nunca** exibe |
 |---|---|---|
-| **Jogador** | Avatar, nick, badges, poderes adquiridos com níveis, desempenho na plataforma | Imagem real, nome civil, redes sociais, qualquer canal de contato (LGPD/proteção de menores) |
+| **Jogador** | Avatar, nick, badges, poderes adquiridos com níveis, desempenho na plataforma e **criações originais** do portfólio | Imagem real, nome civil, redes sociais, qualquer canal de contato (LGPD/proteção de menores) |
 | **Mestre** | Nome/identidade, área(s) de habilidade, artefatos comprobatórios, trilhas de autoria | — |
 | **Apoiador** | Identidade, Poder Econômico, desafios extras propostos e efetividade (agregada, por avatar) | Dados de contato de jogadores |
 | **Comunidade Virtual** | Nome, território, representação visual ([§8.3](#83-representação-visual-da-comunidade-virtual)), séries ativas, nº de jogadores vinculados | Granularidade que permita inferir endereço de criança |
@@ -317,6 +320,11 @@ Contrato entre o motor e qualquer jogo construído sobre a plataforma:
   modelo de referência para qualquer jogo/batalha presencial futura, de qualquer área.
 - A API pública e aberta permite que **terceiros** construam novos jogos sob o mesmo
   contrato ([03 §1](03-plataforma-e-arquitetura.md#1-princípios-de-arquitetura)).
+- **O protagonismo dos jogadores vale também aqui**: o código do App 04 é aberto e legível,
+  alterá-lo é atividade de trilha
+  ([03 §6](03-plataforma-e-arquitetura.md#6-app-04--jogo-em-javascript)) — o jogador não é
+  só usuário do jogo, é um dos seus construtores, e a plataforma está sempre em evolução
+  com essa participação ([01 §3](01-visao-valores-e-proposito.md#3-valores-e-causas)).
 
 ## 9. Matriz de rastreabilidade → PRDs
 
@@ -343,3 +351,5 @@ Cada conceito do motor, onde está definido e quais PRDs o implementam
 | Representação visual da comunidade ([§8.3](#83-representação-visual-da-comunidade-virtual)) | Este doc + [02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais) | PRD-08, PRD-03 |
 | Contrato dos jogos ([§8.4](#84-jogos-sobre-o-backend-app-04-e-terceiros)) | [03 §6](03-plataforma-e-arquitetura.md#6-app-04--jogo-em-javascript) + este doc | PRD-12, PRD-01, PRD-10 |
 | Distribuição da trilha no ciclo ([§2.3](#23-distribuição-da-trilha-pelas-etapas-do-ciclo)) | Este doc + [10 §5](10-case-01-guerreira-zeferina.md#5-o-acervo-include-e-os-kits-mdf-neste-mvp) | PRD-09, PRD-02 |
+| Criação original e protagonismo do jogador ([§4](#4-taxonomia-de-atividades-e-desafios), [§5](#5-motor-de-pontuação), [§7](#7-badges)) | [02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores) + [01 §3](01-visao-valores-e-proposito.md#3-valores-e-causas) + este doc | PRD-01, PRD-02, PRD-03, PRD-05, PRD-09, PRD-12 |
+| Canal de sugestões do jogador | [03 §7](03-plataforma-e-arquitetura.md#7-app-05--área-do-jogador) + [13 §5](13-codigo-de-conduta-versao-previa.md#5-como-este-código-evolui) | PRD-01, PRD-02, PRD-05 |

@@ -5,8 +5,8 @@
 
 ## Estrutura
 
-1. **[01-visao-valores-e-proposito.md](01-visao-valores-e-proposito.md)** — O que é o projeto, por que existe, valores e causas, objetivos, público-alvo e premissas.
-2. **[02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md)** — O "jogo ligado à vida real": personas, poderes, trilhas, batalhas, pontos, níveis, recompensas e o Manual do Jogador.
+1. **[01-visao-valores-e-proposito.md](01-visao-valores-e-proposito.md)** — O que é o projeto, por que existe, valores e causas (incluindo o **protagonismo dos jogadores**), objetivos, público-alvo, premissas e a **transparência sobre o uso de IA na construção dos artefatos**.
+2. **[02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md)** — O "jogo ligado à vida real": personas, poderes, trilhas, batalhas, **criações originais dos jogadores**, equipes, pontos, níveis, recompensas e o Manual do Jogador.
 3. **[03-plataforma-e-arquitetura.md](03-plataforma-e-arquitetura.md)** — Backend API, **as 7 aplicações a serem desenvolvidas** (todas Web Apps responsivos, Mobile First), canais de acesso, princípios técnicos e proteção de dados.
 4. **[04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md)** — Economia de recursos ("moeda" da plataforma), pessoa jurídica vinculada, transparência, receitas, desafios extras de Apoiadores e impacto social.
 5. **[05-implantacao-e-operacao.md](05-implantacao-e-operacao.md)** — Como implantar em uma comunidade: pontos de apoio, acervo didático, roteiro das aulas, Quiz ao Vivo, formação de mestres, multiplicadores e voluntários, replicabilidade e fases do piloto.
@@ -15,7 +15,7 @@
 8. **[08-base-para-prds.md](08-base-para-prds.md)** — Conteúdo estruturado como insumo para elaboração de PRDs (Product Requirements Documents).
 9. **[09-topicos-em-aberto-e-sugestoes.md](09-topicos-em-aberto-e-sugestoes.md)** — Decisões pendentes e propostas em avaliação.
 10. **[10-case-01-guerreira-zeferina.md](10-case-01-guerreira-zeferina.md)** — **Case 01**: o piloto real na Comunidade Guerreira Zeferina (Salvador/BA), Ciclo 01 — ago a dez/2026: hipóteses, metas e critérios de avaliação.
-11. **[11-modelo-de-gamificacao.md](11-modelo-de-gamificacao.md)** — **Fonte única do motor do jogo**: anatomia da trilha (conteúdo, atividades, desafios, encontros, batalhas, culminâncias), motor de pontuação, níveis, badges, recompensas, distribuição pelas etapas do ciclo e os **reflexos no ecossistema** (vitrine, cards, representação visual da comunidade, jogos sobre o backend), com matriz de rastreabilidade para os PRDs.
+11. **[11-modelo-de-gamificacao.md](11-modelo-de-gamificacao.md)** — **Fonte única do motor do jogo**: anatomia da trilha (conteúdo, atividades, desafios, encontros, batalhas, culminâncias com **criação original**), motor de pontuação, níveis, badges, recompensas, distribuição pelas etapas do ciclo e os **reflexos no ecossistema** (vitrine, cards, representação visual da comunidade, jogos sobre o backend), com matriz de rastreabilidade para os PRDs.
 12. **[12-guia-do-apoiador.md](12-guia-do-apoiador.md)** — **Guia do Apoiador**: linhas gerais, por que apoiar, estrutura necessária para o Ciclo 01, como apoiar e desafios extras.
 13. **[13-codigo-de-conduta-versao-previa.md](13-codigo-de-conduta-versao-previa.md)** — **Código de Conduta (versão prévia)**: modelo básico a ser co-criado com os jogadores na primeira interação presencial.
 

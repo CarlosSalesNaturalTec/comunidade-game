@@ -22,6 +22,16 @@
 7. **Web App responsivo, Mobile First** — nesta etapa, **toda** aplicação é entregue como
    Web App responsivo projetado primeiro para o celular. Sem aplicativos nativos e sem
    aplicações construídas sobre plataformas de mensageria de terceiros (§2).
+8. **Plataforma em evolução contínua, com os jogadores** — a plataforma nunca está
+   "pronta": os jogadores propõem melhorias pela Área do Jogador (§7) e alteram o código do
+   jogo como atividade de trilha (§6). O protagonismo do jogador é valor do projeto
+   ([01 §3](01-visao-valores-e-proposito.md#3-valores-e-causas)) e a arquitetura precisa
+   comportar essa evolução permanente.
+9. **Construção assistida por IA, sob direção humana** — os artefatos da plataforma
+   (código, documentação, conteúdo) são construídos com o auxílio e a potencialização de
+   ferramentas de IA; a idealização, o contexto humano e social e as decisões são humanas,
+   e a transparência sobre esse uso é pública
+   ([01 §7](01-visao-valores-e-proposito.md#como-os-artefatos-são-construídos--ia-como-alavanca)).
 
 **[Proposta]** Documentar a API com OpenAPI/Swagger desde o primeiro endpoint — é
 condição prática para que "aplicações de terceiros" e novos frontends realmente surjam em um
@@ -284,7 +294,9 @@ Objetivos:
 - Dar utilidade lúdica ao progresso obtido nas trilhas — o que se conquista aprendendo vale
   dentro do jogo.
 - Servir, ele próprio, de conteúdo do **Poder da IA e Robótica**: o código é aberto e
-  legível, e alterá-lo é atividade de trilha.
+  legível, e alterá-lo é atividade de trilha — o jogador é um dos **construtores do próprio
+  jogo**, exercício direto do protagonismo
+  ([01 §3](01-visao-valores-e-proposito.md#3-valores-e-causas)).
 - Respeitar a regra de representação: personagens são **avatares, nunca imagens reais** dos
   jogadores (§10).
 
@@ -308,6 +320,13 @@ coleta ativas, quando é a próxima medição, o que já foi registrado e **quan
 série está rendendo enquanto se mantém ativa**
 ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
 
+É também o **canal de sugestões do jogador**: ideias de melhoria para atividades, trilhas e
+para a própria plataforma são registradas aqui e caem na fila de avaliação da gestão
+(App 03, §5) — o mesmo mecanismo de evolução pactuada do Código de Conduta
+([13 §5](13-codigo-de-conduta-versao-previa.md#5-como-este-código-evolui)), estendido à
+plataforma inteira. A plataforma está **sempre em evolução**, e quem joga participa dessa
+evolução ([01 §3](01-visao-valores-e-proposito.md#3-valores-e-causas)).
+
 Requisitos consolidados em
 [08 PRD-05](08-base-para-prds.md#prd-05--app-05-área-do-jogador-jornada-gamificada).
 
@@ -326,7 +345,13 @@ Web App **responsivo, Mobile First**, de acesso público e **sem autenticação*
 - **Painel público da Comunidade Virtual** — dados do território coletados pelos jogadores,
   abertos à consulta da comunidade e de instituições, em **série histórica** e
   **anonimizados quando necessário** ([§10](#10-proteção-de-dados-em-toda-a-plataforma-lgpd)).
-- Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins.
+- **Portfólio de criações originais** — as criações dos jogadores autorizados, expostas com
+  o nick do autor (ou dos autores, em equipe)
+  ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)).
+- Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins — incluindo a **nota de
+  transparência sobre IA**: a construção dos artefatos da plataforma conta com auxílio e
+  potencialização de IA, sob idealização e direção humanas
+  ([01 §7](01-visao-valores-e-proposito.md#como-os-artefatos-são-construídos--ia-como-alavanca)).
 - **Como apoiar** — canais de doação do projeto, incluindo a chave PIX da pessoa jurídica
   vinculada ([04 §2](04-modelo-economico-e-sustentabilidade.md#2-fontes-de-receita)).
 - Identidade visual: **background com imagem de comunidade, cores, grafite** — estética de
