@@ -31,16 +31,21 @@ Regras de admissão:
   autocadastro nem solicitação aberta de acesso administrativo.
 
 ### Mestres (persona secundária)
-Especialistas/mentores nas áreas de educação, tecnologia, artes e esportes que orientam e ministram
-oficinas. Regras de admissão:
+Especialistas/mentores que orientam e ministram oficinas. Os Mestres podem ser de
+**qualquer área do conhecimento** — tecnologia, educação, artes, esportes, cultura,
+ciências humanas e sociais — e não necessariamente representam poderes/habilidades
+técnicas de TI: o motor do jogo é agnóstico de área
+([11 §2](11-modelo-de-gamificacao.md#2-anatomia-da-trilha)). Regras de admissão:
 
 - **Todo Mestre é cadastrado exclusivamente pelos Admins da plataforma.** Não há
   autocadastro de Mestres.
 - Todo Mestre **tem que ter pelo menos uma habilidade** declarada.
 - A habilidade precisa estar **comprovada por materiais ou artefatos disponibilizados na
   plataforma** — aulas presenciais e/ou gravadas, atividades propostas, videoaulas,
-  exemplos de código, projetos construídos. A prova é pública e verificável por qualquer
-  visitante.
+  projetos construídos, obras, registros de prática ou qualquer produção verificável da
+  sua área (em tecnologia, por exemplo, exemplos de código; em artes, obras e
+  apresentações; em esportes e cultura, registros de prática e formação). A prova é
+  pública e verificável por qualquer visitante.
 - Mestres também podem prover recursos para atividades (ver
   [04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md)).
 
@@ -153,13 +158,15 @@ ciência de dados, método científico, cidadania e meio ambiente — e conecta 
 de **território e identidade**
 ([01-visao-valores-e-proposito.md](01-visao-valores-e-proposito.md#3-valores-e-causas)).
 
-**[Proposta]** Com a coleta periódica já obrigatória em toda trilha
-([§3](#regra-vigente-toda-trilha-coleta-dados-reais)) e o painel público por comunidade já
-previsto na vitrine
+**Definição vigente — o registro de dados é um poder próprio.** O registro de dados do
+território constitui o **Poder do Território** (registro e ciência de dados — *Data
+Science*), com lugar no catálogo de poderes ([§2](#2-poderes-habilidades)): o jogador tem
+um caminho de progressão e badges específicos por sustentar séries de coleta, e não apenas
+pontos avulsos. Com a coleta obrigatória em toda trilha
+([§3](#regra-vigente-toda-trilha-coleta-dados-reais)) e o painel público por comunidade na
+vitrine
 ([03 §8](03-plataforma-e-arquitetura.md#8-app-06--vitrine-pública-apresentação-da-plataforma)),
-resta avaliar se o registro de dados também merece um **poder próprio** ("Poder do
-Território") — o que daria ao jogador um caminho de progressão e um badge específicos por
-sustentar séries de coleta, e não apenas pontos avulsos.
+é o poder que todo jogador exercita, qualquer que seja a trilha escolhida.
 
 ## 2. Poderes (habilidades)
 
@@ -171,12 +178,13 @@ trilha nem atividade previstas para o Ciclo 01
 | Poder | Descrição |
 |---|---|
 | **Poder da IA e Robótica** | Programação, eletrônica, robótica e IA — conteúdos do primeiro Mestre. Trilhas: [Robô Educa](06-robo-educa.md) (1ª) e [Batalha de Laser](07-batalha-de-laser.md) (2ª), apoiadas pelo acervo Include ([§3](#acervo-didático-de-apoio--coleção-include-e-kits-mdf-goethe-institut)) |
-| **Poder da Rima** *(ciclo futuro)* | Expressão artística — rima, rap, batalhas de rima |
-| **Poder das Redes** | Produção de conteúdo / "Monte seu Canal" — comunicação digital, geração de áudio e vídeo para redes sociais e letramento crítico sobre seus riscos (trilha em [§3](#demais-trilhas-previstas)) |
-| **Poder da Capoeira** *(ciclo futuro)* | Cultura e movimento; com componente tecnológico: análise de movimentos por visão computacional — contador de polichinelos e de movimentos executados com sucesso. **Sugestão técnica para a captação dos movimentos: biblioteca [MediaPipe](https://ai.google.dev/edge/mediapipe) (Python)**, que já entrega detecção de pose pronta; TensorFlow fica como alternativa para modelos próprios de classificação sobre os pontos captados |
+| **Poder do Território** | Registro e ciência de dados do território (*Data Science*): sustentar séries de coleta de dados reais da comunidade, com progressão e badges próprios. Todo jogador o exercita, pois toda trilha tem desafio de coleta ([§3](#regra-vigente-toda-trilha-coleta-dados-reais)) |
+| **Poder da Rima** *(ciclo futuro)* | Expressão artística — rima, rap, batalhas de rima. Integrou, com o Robô Educa, o projeto **Inova Comunidade**, realizado e validado em **2024 na Comunidade Guerreira Zeferina** ([10 §2](10-case-01-guerreira-zeferina.md#2-por-que-guerreira-zeferina)); será retomado em ciclo futuro |
+| **Poder das Redes** *(ciclo futuro)* | Produção de conteúdo / "Monte seu Canal" — comunicação digital, geração de áudio e vídeo para redes sociais e letramento crítico sobre seus riscos (trilha em [§3](#demais-trilhas-previstas)) |
+| **Poder da Capoeira** *(ciclo futuro)* | Cultura e movimento; com componente tecnológico: análise de movimentos por visão computacional — contador de polichinelos e de movimentos executados com sucesso. Integrou, com o Robô Educa, o projeto **Inova Comunidade** (2024, Guerreira Zeferina); será retomado em ciclo futuro. **Sugestão técnica para a captação dos movimentos: biblioteca [MediaPipe](https://ai.google.dev/edge/mediapipe) (Python)**, que já entrega detecção de pose pronta; TensorFlow fica como alternativa para modelos próprios de classificação sobre os pontos captados |
 | **Poder Econômico** | O quanto Mestres e Apoiadores investiram na plataforma (tempo, recursos etc.) — o poder dos provedores |
-| **Outros conteúdos PNED / BNCC** | Alinhamento com políticas educacionais (Política Nacional de Educação Digital e Base Nacional Comum Curricular) |
-| **Soft Skills** | Habilidades socioemocionais |
+| **Outros conteúdos PNED / BNCC** *(ciclo futuro)* | Alinhamento com políticas educacionais (Política Nacional de Educação Digital e Base Nacional Comum Curricular) |
+| **Soft Skills** *(ciclo futuro)* | Habilidades socioemocionais |
 
 Regras dos poderes:
 
@@ -187,12 +195,19 @@ Regras dos poderes:
   conhecimento e com os valores do projeto**
   ([01 §4](01-visao-valores-e-proposito.md#4-objetivos)).
 
-**[Proposta]** Poderes alinhados aos valores do projeto: "Poder da Ancestralidade"
-(cultura afro-brasileira e povos originários), "Poder do Cuidado" (respeito, combate ao
-racismo e à violência de gênero, mediação de conflitos), "Poder do Território" (dados da
-comunidade). Assim as causas viram conteúdo jogável, não apenas declaração de princípios.
+**[Proposta]** Outros poderes alinhados aos valores do projeto: "Poder da Ancestralidade"
+(cultura afro-brasileira e povos originários) e "Poder do Cuidado" (respeito, combate ao
+racismo e à violência de gênero, mediação de conflitos). Assim as causas viram conteúdo
+jogável, não apenas declaração de princípios — como já ocorre com o **Poder do Território**
+e o valor de território e identidade.
 
 ## 3. Trilhas
+
+> A **anatomia formal da trilha** — do que ela é composta (conteúdo, atividades, desafios,
+> encontros presenciais, batalhas, culminâncias), como pontua e como se distribui pelas
+> etapas de um ciclo — está no
+> **[modelo de gamificação integrado](11-modelo-de-gamificacao.md#2-anatomia-da-trilha)**,
+> em modelo agnóstico de área do conhecimento.
 
 - O aluno é **guiado pelos conhecimentos desejados**: cada trilha é uma sequência de
   conteúdos e atividades.
@@ -325,17 +340,22 @@ livro-razão em
 
 | Trilha | Poder associado | Conteúdo | Quando |
 |---|---|---|---|
-| **Social Media / Geração de Áudio e Vídeo para Redes Sociais** | Poder das Redes | Roteiro, captação, edição e publicação; uso de ferramentas de IA para geração e edição de áudio e vídeo; direitos de imagem e proteção de dados; **letramento crítico sobre os riscos das redes sociais** | Prevista |
-| **Rima** | Poder da Rima | Escrita, métrica e batalhas de rima | **Ciclo futuro** |
-| **Capoeira** | Poder da Capoeira | Cultura e movimento, com análise de movimentos por visão computacional (captação sugerida: **MediaPipe**) | **Ciclo futuro** |
+| **Social Media / Geração de Áudio e Vídeo para Redes Sociais** | Poder das Redes | Roteiro, captação, edição e publicação; uso de ferramentas de IA para geração e edição de áudio e vídeo; direitos de imagem e proteção de dados; **letramento crítico sobre os riscos das redes sociais** | **Ciclo futuro** |
+| **Rima** | Poder da Rima | Escrita, métrica e batalhas de rima. Integrou o **Inova Comunidade** (2024, Guerreira Zeferina) ao lado do Robô Educa | **Ciclo futuro** |
+| **Capoeira** | Poder da Capoeira | Cultura e movimento, com análise de movimentos por visão computacional (captação sugerida: **MediaPipe**). Integrou o **Inova Comunidade** (2024, Guerreira Zeferina) ao lado do Robô Educa | **Ciclo futuro** |
 
-> **Definição vigente:** as trilhas de **Rima** e **Capoeira** — e os poderes correspondentes
-> — serão **definidas e implementadas em ciclo futuro**. Não integram o escopo do
+> **Definição vigente:** as trilhas de **Social Media (Poder das Redes)**, **Rima** e
+> **Capoeira** — e os demais conteúdos de **PNED/BNCC** e **Soft Skills** — serão
+> **definidas e implementadas em ciclo futuro**. Não integram o escopo do
 > [Ciclo 01](10-case-01-guerreira-zeferina.md), cujas trilhas em operação são apenas
 > [Robô Educa](06-robo-educa.md) e [Batalha de Laser](07-batalha-de-laser.md). Seguem no
 > catálogo como direção assumida do projeto, não como entrega desta etapa — o que também
 > adia as decisões técnicas que dependiam delas, como a stack de análise de movimentos
-> ([09 §1](09-topicos-em-aberto-e-sugestoes.md#1-decisões-pendentes)).
+> ([09 §1](09-topicos-em-aberto-e-sugestoes.md#1-decisões-pendentes)). **Rima e Capoeira
+> têm validação prévia de campo**: participaram, junto com o Robô Educa, do projeto
+> **Inova Comunidade**, realizado em **2024 na própria Comunidade Guerreira Zeferina**
+> ([10 §2](10-case-01-guerreira-zeferina.md#2-por-que-guerreira-zeferina)) — a retomada em
+> ciclo futuro parte de experiência já testada, não do zero.
 
 A trilha de **Social Media** tem função dupla: forma o jogador em produção de conteúdo e
 alimenta a **equipe de divulgação do projeto nas redes**, produzindo material real. Nela vale
@@ -345,6 +365,10 @@ reais, e qualquer publicação com criança identificável exige consentimento e
 responsável.
 
 ## 4. Atividades e desafios
+
+> A **taxonomia completa** (modalidade × formato × natureza) e a **tabela única de todas
+> as fontes de pontos** estão no
+> [modelo de gamificação integrado](11-modelo-de-gamificacao.md#4-taxonomia-de-atividades-e-desafios).
 
 As atividades devem ser criadas com **níveis de dificuldade graduais**,
 acessíveis por todos os alunos/jogadores **independentemente de sua idade** (faixa de 6 a
@@ -385,13 +409,33 @@ extras** na plataforma.
 |---|---|
 | **O desafio extra vale pontos?** | **Sim** — vale **pontos além da recompensa**. Os pontos são computados **isoladamente, como pontos extras**, sem se confundir com a pontuação regular da trilha |
 | **Há teto de desafios extras simultâneos por trilha?** | **Não.** O controle não é numérico: cada desafio é **aprovado ou não pelos Admins**, caso a caso, depois da validação pedagógica do Mestre da trilha. A curadoria é o limite |
-| **A recompensa extra pode ser exclusiva?** | **Não.** O desafio é **aberto a todos os que concluírem**. O que é limitado é a **quantidade** de recompensas disponibilizadas |
+| **A recompensa extra pode ser exclusiva?** | **Nos desafios abertos, não** — o desafio é **aberto a todos os que concluírem**; o que é limitado é a **quantidade** de recompensas. A exceção controlada é o **desafio extra direcionado** (abaixo) |
 | **Quantas recompensas?** | Uma **única** (para quem cumprir primeiro o desafio com sucesso) **ou várias** — todos que concluírem recebem, até esgotar a quantidade que o Apoiador disponibilizou |
 
 A distinção entre "aberto a todos" e "quantidade limitada" é o ponto que sustenta a regra:
 ninguém é impedido de disputar, e a escassez, quando existe, é declarada de antemão na
 publicação do desafio — o jogador sabe, antes de começar, quantas recompensas existem e por
 qual critério serão atribuídas.
+
+#### Desafio extra direcionado
+
+O Apoiador pode **direcionar um desafio extra a um jogador específico**: somente esse
+jogador pode conseguir a respectiva recompensa, caso atinja os requisitos do desafio. É o
+caminho para o apoio de interesse direto e legítimo — por exemplo, um **parente próximo**
+(tio ou tia, padrinho ou madrinha) que propõe um desafio para um jogador da sua parentela.
+
+Regras do desafio direcionado:
+
+- Como os demais desafios extras, está **sujeito à validação pedagógica do Mestre da
+  trilha e à aprovação de um Admin** — e, no direcionado, a aprovação exige
+  **justificativa registrada** do vínculo ou interesse do proponente (ex.: parentesco).
+- Vale a regra de lastro (recompensa provida antes da publicação) e a regra de mediação:
+  **nenhum contato direto** entre Apoiador e jogador — proposta, entrega e reconhecimento
+  passam pela plataforma
+  ([04 §5](04-modelo-economico-e-sustentabilidade.md#5-interação-apoiadores-x-jogadores-desafios-extras)).
+- Os pontos são **extras**, computados isoladamente, como em qualquer desafio extra.
+- O rastro é o mesmo: o desafio, a justificativa aprovada e a realização do jogador ficam
+  registrados no histórico do Apoiador.
 
 O ponto central é o **rastro**: tanto a recompensa oferecida quanto as **realizações dos
 jogadores** naquele desafio ficam registradas **no histórico do Apoiador**. Com isso é
@@ -455,7 +499,10 @@ saudáveis que dão visibilidade ao que foi aprendido e construído. Podem ser:
   trilha correspondente entrar, em ciclo futuro).
 - De projetos/ideias (apresentação de trabalhos, culminância).
 
-Os resultados das batalhas alimentam o ranking e o portfólio público dos jogadores.
+Os resultados das batalhas alimentam o ranking e o portfólio público dos jogadores. O
+padrão de integração entre uma batalha física e o backend (telemetria → API → lançamento
+da atividade) está em
+[11 §8.4](11-modelo-de-gamificacao.md#84-jogos-sobre-o-backend-app-04-e-terceiros).
 
 ## 7. Níveis e badges (gamificação)
 
@@ -481,7 +528,10 @@ Observações:
   diário nos pontos de apoio**
   ([05 §7](05-implantacao-e-operacao.md#7-formação-de-mestres-e-multiplicadores)).
 - **Badges** representam poderes e conquistas, e aparecem nos cards públicos dos jogadores
-  ([03-plataforma-e-arquitetura.md](03-plataforma-e-arquitetura.md)).
+  ([03-plataforma-e-arquitetura.md](03-plataforma-e-arquitetura.md)). Catálogo de badges
+  por tipo e composição dos cards em
+  [11 §7](11-modelo-de-gamificacao.md#7-badges) e
+  [11 §8.2](11-modelo-de-gamificacao.md#82-cards-dos-personagens).
 
 ## 8. Recompensas
 
@@ -503,7 +553,9 @@ fechada.
 **[Proposta]** Ao definir a tabela, ampliar o catálogo com recompensas não alimentares
 (material escolar, componentes de robótica, ingressos culturais), mantendo o cuidado de
 que a troca de pontos por alimento é sensível socialmente e deve ser tratada com dignidade
-("sem miséria").
+— no espírito do **"sem miséria"** baiano: fartura, bem-estar, ambiente agradável,
+alimentos em abundância. A recompensa celebra a conquista do jogador; nunca pode soar como
+assistencialismo.
 
 Prêmios também aparecem no orçamento como **consumíveis** e **duráveis**
 ([04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md)).
@@ -519,7 +571,7 @@ Prêmios também aparecem no orçamento como **consumíveis** e **duráveis**
 3. **Acesse a plataforma.**
 4. **Escolha um Poder.**
 5. **Siga uma Trilha** — e receba o **livro de apoio** da linha Alpha, que passa a ser seu
-   ([§3](#definição-vigente-posse-dos-livros--regime-misto)).
+   ([§3](#posse-dos-livros--regime-misto)).
 6. **Monte equipes** (mistas de até 5 membros, ou Equipe Familiar).
 7. **Realize os desafios semanais** (on-line, presenciais, em equipe, em família).
 8. **Registre dados da sua comunidade** e ajude a construir sua Comunidade Virtual — a
