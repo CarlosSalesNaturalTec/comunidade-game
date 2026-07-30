@@ -21,7 +21,9 @@ O que a plataforma produz não sai da comunidade: volta para ela. O jogador apre
 aprende vira realização concreta; ao registrar dados do lugar onde mora, ele dá à sua própria
 comunidade **evidência para decidir**, em vez de apenas percepção; as conquistas ganham
 visibilidade e atraem apoio; o apoio custeia novas atividades; e o jogador que chegou ao topo
-volta como multiplicador para formar os próximos.
+volta como multiplicador para formar os próximos. O ciclo alcança a própria plataforma: as
+ideias, criações e sugestões dos jogadores realimentam trilhas, regras e aplicações — **quem
+joga também constrói o jogo** ([§3](#3-valores-e-causas)).
 
 ```
 Jogador aprende e realiza ──► Comunidade ganha dados, talento e visibilidade
@@ -44,6 +46,11 @@ habilidade: **usar software e dados para produzir impacto positivo na sociedade*
 a postura de um *hacker* no sentido original da palavra, alguém que entende o
 funcionamento das coisas e as reconfigura para servir às pessoas. A tecnologia aqui não é
 fim nem vitrine: é ferramenta de intervenção social.
+
+Essa postura vale também para a construção do próprio projeto: os artefatos da plataforma
+são produzidos com o **auxílio e a potencialização de ferramentas de inteligência
+artificial**, sob idealização e direção humanas
+([§7](#como-os-artefatos-são-construídos--ia-como-alavanca)).
 
 ### Nomes do projeto
 
@@ -106,6 +113,11 @@ governança da plataforma:
    prática direta desse letramento — o jogador mede o clima do lugar onde vive e produz a
    evidência local da crise global
    ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
+8. **Protagonismo dos jogadores** — as ideias e criações dos jogadores são **conteúdo do
+   jogo, não subproduto**: toda trilha desemboca em criação original apresentada
+   publicamente, e a própria plataforma — regras, trilhas e software — está sempre em
+   evolução com a participação de quem joga
+   ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)).
 
 **[Proposta]** Materializar os valores em mecânicas do jogo, não só em texto: por
 exemplo, trilhas e desafios temáticos ("Poder da Ancestralidade", "Poder do Respeito"),
@@ -119,6 +131,26 @@ cada comunidade. A plataforma fornece uma **versão prévia como modelo básico*
 ([13-codigo-de-conduta-versao-previa.md](13-codigo-de-conduta-versao-previa.md)), a ser
 discutida, revisada, complementada e corrigida pelos próprios jogadores — regra que se
 combina não se impõe, e conduta pactuada engaja mais do que conduta decretada.
+
+**Definição vigente — Protagonismo dos jogadores.** O jogo destaca e incentiva o
+protagonismo dos jogadores — suas ideias e suas criações — nas atividades e na própria
+plataforma:
+
+- **Criações originais baseadas no conteúdo aprendido** são atividade valorizada do jogo,
+  com autoria sempre creditada e vitrine pública
+  ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores);
+  [11 §5](11-modelo-de-gamificacao.md#5-motor-de-pontuação)).
+- Nas **atividades em equipe**, cada jogador tem papel ativo e crédito individual
+  preservado — a equipe realiza junta, mas ninguém desaparece no coletivo
+  ([02 §5](02-conceito-do-jogo-e-gamificacao.md#5-equipes)).
+- A **diferença de idades** da faixa (6 a 16 anos) é tratada como força, não como
+  obstáculo: jogadores mais velhos ou mais avançados atuam como mediadores dos mais novos,
+  sem quebrar a regra de progressão por nível de dificuldade ([§5](#5-público-alvo)).
+- A **construção da plataforma é, ela própria, atividade do jogo**: como no Código de
+  Conduta, os jogadores propõem melhorias, alteram o código do jogo e sugerem rumos — a
+  plataforma deve estar **sempre em evolução**, e quem joga é parte de quem a evolui
+  ([03 §7](03-plataforma-e-arquitetura.md#7-app-05--área-do-jogador);
+  [13 §5](13-codigo-de-conduta-versao-previa.md#5-como-este-código-evolui)).
 
 **[Proposta]** Criar também um documento de **Governança Open Source** (padrões
 `CODE_OF_CONDUCT.md` e `GOVERNANCE.md` no repositório) que traduza esses valores para a
@@ -177,6 +209,11 @@ mulheres, negras e indígenas que impactaram positivamente a sociedade
 - As atividades devem ser criadas com **níveis de dificuldade graduais**, acessíveis por
   todos os alunos/jogadores **independentemente da idade** — a progressão é por nível de
   dificuldade, não por faixa etária.
+- A **convivência entre idades diferentes é tratada com papéis, não com segmentação**: as
+  atividades em equipe misturam idades deliberadamente, e jogadores mais velhos ou mais
+  avançados são incentivados a mediar e apoiar os mais novos — colaborar vale mais que
+  competir ([02 §5](02-conceito-do-jogo-e-gamificacao.md#5-equipes);
+  [05 §7](05-implantacao-e-operacao.md#7-formação-de-mestres-e-multiplicadores)).
 - **Todo jogador é vinculado a uma Comunidade Virtual**, escolhida no cadastro entre as
   comunidades criadas por um Admin. É o vínculo que define a que território os dados
   coletados por ele pertencem
@@ -206,6 +243,9 @@ mulheres, negras e indígenas que impactaram positivamente a sociedade
   jogadores ([02 §1](02-conceito-do-jogo-e-gamificacao.md#comunidades-virtuais)).
 - **Open Source e replicável** em qualquer comunidade do país (ver
   [05-implantacao-e-operacao.md](05-implantacao-e-operacao.md#10-replicabilidade)).
+- **Jogadores coautores da plataforma**: criações originais com autoria creditada e vitrine
+  pública, e uma plataforma em evolução contínua com as ideias e sugestões de quem joga
+  ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)).
 
 ## 7. O fundador: primeiro Admin e primeiro Mestre
 
@@ -241,6 +281,22 @@ publicado e verificável.
 
 Ambas demonstram o ciclo completo: mestre publica a trilha → jogadores aprendem construindo →
 atividade/batalha presencial → pontuação e visibilidade na plataforma.
+
+### Como os artefatos são construídos — IA como alavanca
+
+A construção dos artefatos desta plataforma — documentação, software, trilhas e conteúdos —
+conta com o **auxílio e a potencialização de ferramentas de inteligência artificial**. A
+declaração é de transparência, mas é também de método: o **contexto humano e social do
+projeto é idealizado, decidido e implementado por pessoas**. A IA não define causas, valores
+nem rumos — ela multiplica a capacidade de realização de quem os define. É o mesmo princípio
+que o projeto ensina aos jogadores: **a tecnologia é alavanca; quem move o mundo é o humano
+que a empunha** ([§1](#a-motivação-do-fundador)).
+
+A coerência aqui importa: uma plataforma que ensina crianças a usar IA com consciência dos
+seus riscos e oportunidades ([§2](#2-premissas-fundadoras)) deve dar o exemplo, dizendo
+abertamente onde e como a usa. Por isso a declaração de transparência acompanha os artefatos
+públicos do projeto, a começar pela vitrine
+([03 §8](03-plataforma-e-arquitetura.md#8-app-06--vitrine-pública-apresentação-da-plataforma)).
 
 ### Pessoa jurídica vinculada ao projeto
 

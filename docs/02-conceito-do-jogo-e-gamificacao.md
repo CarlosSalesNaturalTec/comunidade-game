@@ -15,6 +15,10 @@ batalhas e projetos. O jogador:
 - Só ganha pontos de uma habilidade **na medida em que realiza as atividades propostas
   pelos Mestres** — não há pontos por presença passiva.
 - Pode montar **Equipes** e participar de **Batalhas** e **Desafios**.
+- Tem **voz e autoria**: cria a partir do que aprende
+  ([§4](#criações-originais-dos-jogadores)), propõe ideias e sugere melhorias para as
+  atividades e para a própria plataforma — o protagonismo do jogador é valor do projeto
+  ([01 §3](01-visao-valores-e-proposito.md#3-valores-e-causas)).
 
 O jogador é a **única persona com autocadastro** na plataforma
 ([03 §3](03-plataforma-e-arquitetura.md#3-app-01--onboarding-cadastro-e-registro-de-presença)).
@@ -456,6 +460,33 @@ Regras que se aplicam:
 Mecânica e histórico detalhados em
 [04 §5](04-modelo-economico-e-sustentabilidade.md#5-interação-apoiadores-x-jogadores-desafios-extras).
 
+### Criações originais dos jogadores
+
+**Definição vigente — toda trilha desemboca em criação original.** A culminância de cada
+trilha é a apresentação pública de algo **criado pelo jogador (ou pela equipe) a partir do
+conteúdo aprendido** — a versão própria do robô, um artefato remixado, um trecho de código
+alterado, uma ideia nova sobre o que a trilha ensinou. A criação original é o que distingue
+quem **aprendeu** de quem apenas **executou**: aplicar o conteúdo em algo seu é a prova mais
+forte de aprendizado que o jogo reconhece — e é ela que o jogo destaca e incentiva.
+
+Regras da criação original:
+
+- **Autoria sempre creditada** — a criação carrega o nick do autor (ou dos autores, em
+  equipe) por toda a vida do registro, pela mesma razão que vale para a coleta de dados:
+  apagar o nome apagaria o crédito
+  ([§1](#guarda-permanente-dos-dados-com-o-coletor-identificado)).
+- **Vitrine pública** — as criações de jogadores autorizados compõem o portfólio público na
+  vitrine ([03 §8](03-plataforma-e-arquitetura.md#8-app-06--vitrine-pública-apresentação-da-plataforma);
+  [11 §8.1](11-modelo-de-gamificacao.md#81-vitrine-pública-app-06)).
+- Em **equipe**, o crédito é da equipe **e** de cada membro, com o papel que cada um teve na
+  criação ([§5](#5-equipes)).
+- A criação original **pontua e rende badge de autoria**
+  ([11 §5](11-modelo-de-gamificacao.md#5-motor-de-pontuação);
+  [11 §7](11-modelo-de-gamificacao.md#7-badges)).
+
+> **A definir:** valor em pontos da criação original e critérios do badge de autoria
+> ([09 §1](09-topicos-em-aberto-e-sugestoes.md#1-decisões-pendentes)).
+
 ### Categorias de atividade
 
 | Categoria | Exemplos |
@@ -466,7 +497,7 @@ Mecânica e histórico detalhados em
 | Desplugadas (Computer Science Unplugged) | Lógica e algoritmos sem computador |
 | Valores e temas transversais | Racismo, violência contra a mulher, identidade, povos originários |
 | Competição ao vivo | **Quiz ao Vivo** entre equipes na aula presencial ([05 §4](05-implantacao-e-operacao.md#4-atividade-modelo-quiz-ao-vivo)) |
-| Culminância | Apresentação livre do que foi construído/aprendido |
+| Culminância | Apresentação livre do que foi construído/aprendido — a **criação original** do jogador ou da equipe ([acima](#criações-originais-dos-jogadores)) |
 
 ### Resultados de atividade (lançados pela gestão)
 Cada participação em atividade realizada recebe um resultado:
@@ -489,6 +520,23 @@ do projeto.
 
 - Equipes **mistas** com até **5 membros**.
 - **Equipe Familiar** — modalidade específica para jogar com a família.
+
+**Definição vigente — "mista" inclui a mistura de idades.** A equipe é o principal
+instrumento do jogo para transformar a diferença de idades da faixa (6 a 16 anos) em força:
+
+- As equipes **misturam idades e níveis deliberadamente**. A progressão individual segue
+  sendo por nível de dificuldade ([§4](#4-atividades-e-desafios)); é a convivência que é
+  heterogênea de propósito.
+- **Cada membro tem papel ativo** na atividade — quem constrói, quem registra, quem
+  apresenta, quem media — e os papéis giram entre as atividades, para que ninguém fique
+  sempre no mesmo lugar.
+- Jogadores **mais velhos ou mais avançados atuam como mediadores dos mais novos** — o
+  exercício prático do "colaborar vale mais que competir"
+  ([§4](#resultados-de-atividade-lançados-pela-gestão)) e o primeiro degrau do caminho de
+  multiplicador ([05 §7](05-implantacao-e-operacao.md#7-formação-de-mestres-e-multiplicadores)).
+- **O crédito individual é preservado**: a realização é da equipe, e o registro guarda o
+  papel de cada membro — ninguém desaparece no coletivo
+  ([§4](#criações-originais-dos-jogadores)).
 
 ## 6. Batalhas
 
@@ -577,10 +625,13 @@ Prêmios também aparecem no orçamento como **consumíveis** e **duráveis**
 8. **Registre dados da sua comunidade** e ajude a construir sua Comunidade Virtual — a
    coleta rende pontos **enquanto você a mantiver**
    ([§1](#registro-temporal-e-pontuação-enquanto-a-coleta-durar)).
-9. **Troque seus pontos por recompensas.**
-10. **Peça ajuda para a realização de atividades escolares** (apoio escolar pela
+9. **Crie algo seu a partir do que aprendeu e apresente** — toda trilha termina com uma
+   criação original, com o seu crédito de autoria
+   ([§4](#criações-originais-dos-jogadores)).
+10. **Troque seus pontos por recompensas.**
+11. **Peça ajuda para a realização de atividades escolares** (apoio escolar pela
     plataforma/robô assistente).
-11. **Autorização dos pais ou responsáveis** — necessária apenas para que o **histórico e
+12. **Autorização dos pais ou responsáveis** — necessária apenas para que o **histórico e
     o perfil do jogador sejam divulgados na plataforma** (vitrine, rankings públicos).
     Sem ela, o jogador continua participando normalmente, mas seus dados não são exibidos
     publicamente. A autorização é dada — e pode ser revogada — na **App 07**

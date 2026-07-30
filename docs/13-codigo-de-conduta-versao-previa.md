@@ -40,6 +40,10 @@ ambiente agradável — lugar onde dá gosto de estar e aprender.
    espaço da oficina e do bairro com o mesmo capricho do meu robô.
 9. **Segurança primeiro.** Sigo as orientações de segurança das oficinas (eletrônica,
    laser, ferramentas) e nunca aponto laser para o rosto de ninguém.
+10. **Valorizo a criação dos colegas e cuido dos mais novos.** Toda criação apresentada
+    merece respeito — não zombo, não desmereço, não copio sem dar crédito. E se sou mais
+    velho ou estou mais adiantado, ajudo quem está começando: aqui, quem sabe mais puxa
+    quem sabe menos ([02 §5](02-conceito-do-jogo-e-gamificacao.md#5-equipes)).
 
 ## 3. O que acontece quando a regra é descumprida
 
@@ -83,3 +87,16 @@ projeto.
    ela própria, uma atividade do jogo.
 3. A versão pactuada é registrada na plataforma como o **código vigente da comunidade**.
 4. Revisões podem ser propostas em qualquer encontro, pelo mesmo processo.
+
+O mesmo espírito vale para **a plataforma inteira**: assim como este código, as trilhas, as
+atividades e as aplicações estão sempre em evolução, e os jogadores propõem melhorias pela
+Área do Jogador ([03 §7](03-plataforma-e-arquitetura.md#7-app-05--área-do-jogador)) e na
+roda de ideias dos encontros
+([05 §3](05-implantacao-e-operacao.md#momentos-do-encontro)). Quem joga também constrói o
+jogo ([01 §3](01-visao-valores-e-proposito.md#3-valores-e-causas)).
+
+> **Transparência com você, jogador:** parte do que existe nesta plataforma — textos,
+> códigos e conteúdos — foi construída com a ajuda de inteligência artificial, a mesma
+> tecnologia que você aprende a usar aqui. As ideias, as escolhas e o cuidado com as
+> pessoas são sempre de humanos: a IA é ferramenta, como o martelo e o computador
+> ([01 §7](01-visao-valores-e-proposito.md#como-os-artefatos-são-construídos--ia-como-alavanca)).

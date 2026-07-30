@@ -42,6 +42,19 @@
     dos pais ou responsáveis.
   - **Faixa etária dos jogadores: 6 a 16 anos**, com atividades em **níveis de
     dificuldade graduais** acessíveis independentemente da idade.
+  - **Protagonismo e autoria do jogador como requisito de produto:** criações originais
+    com autoria creditada e vitrine pública
+    ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)),
+    papéis ativos e crédito individual preservado nas equipes
+    ([02 §5](02-conceito-do-jogo-e-gamificacao.md#5-equipes)) e **canal de sugestões do
+    jogador** para a evolução contínua da plataforma
+    ([03 §7](03-plataforma-e-arquitetura.md#7-app-05--área-do-jogador)). A convivência
+    entre idades é tratada com **papéis de mediação, nunca com segmentação por faixa**
+    ([01 §5](01-visao-valores-e-proposito.md#5-público-alvo)).
+  - **Transparência sobre IA na construção dos artefatos:** a plataforma declara
+    publicamente que seus artefatos (código, documentação, conteúdo) são construídos com
+    auxílio e potencialização de IA, sob idealização e direção humanas
+    ([01 §7](01-visao-valores-e-proposito.md#como-os-artefatos-são-construídos--ia-como-alavanca)).
   - **Comunidade Virtual obrigatória:** a comunidade é **criada vazia por um Admin** e
     **todo jogador é vinculado a uma delas** no cadastro. Os dados de território são
     **temporais**, **guardados permanentemente com o jogador coletor identificado** (sem
@@ -87,7 +100,8 @@ aos PRDs abaixo:
 **Requisitos:**
 - Entidades: Jogador, Mestre, Apoiador, Admin, Comunidade Virtual, Poder, Trilha,
   Atividade, Aula/Agenda, Presença, Batalha, Equipe, Recurso, Recompensa,
-  Ponto/Badge/Nível, Registro de dado do território, Pergunta de quiz e Partida de quiz.
+  Ponto/Badge/Nível, Registro de dado do território, Pergunta de quiz, Partida de quiz,
+  **Criação original do jogador** e **Sugestão do jogador**.
 - Rotas de consulta abertas (vitrine, rankings, painéis de comunidade) sem autenticação.
 - Suporte a múltiplos frontends e aplicações de terceiros.
 - Papéis e permissões: Admin (total), Mestre (conteúdo e lançamentos das suas atividades),
@@ -128,6 +142,13 @@ aos PRDs abaixo:
 - **Poder do Território** no catálogo de poderes: progressão e badges próprios por
   sustentar séries de coleta de dados do território
   ([02 §2](02-conceito-do-jogo-e-gamificacao.md#2-poderes-habilidades)).
+- Regra de negócio: **criação original com autoria creditada** — a criação carrega o(s)
+  autor(es) por toda a vida do registro, individual ou em equipe (com o papel de cada
+  membro), e alimenta o portfólio público quando autorizada
+  ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)).
+- Regra de negócio: **sugestão do jogador** — registrada pela App 05, com autor, data e
+  status de avaliação pela gestão; é o mecanismo que mantém a plataforma em evolução com a
+  participação de quem joga ([03 §7](03-plataforma-e-arquitetura.md#7-app-05--área-do-jogador)).
 
 **Questões em aberto:** estratégia de autenticação; versionamento da API; multi-tenant por
 comunidade (uma instância nacional ou uma por comunidade?).
@@ -160,7 +181,9 @@ por Admin**
 ([04 §5](04-modelo-economico-e-sustentabilidade.md#5-interação-apoiadores-x-jogadores-desafios-extras));
 **fila de solicitações dos responsáveis** vindas da App 07 (autorizações, revogações,
 recusas, acesso, correção e exclusão de dados), com registro de quem tratou e quando
-([PRD-13](#prd-13--app-07-área-dos-pais-e-responsáveis)).
+([PRD-13](#prd-13--app-07-área-dos-pais-e-responsáveis)); **fila de avaliação das
+sugestões dos jogadores** registradas pela App 05, com status e retorno a quem sugeriu
+([03 §7](03-plataforma-e-arquitetura.md#7-app-05--área-do-jogador)).
 
 **Painel do dia em encontro assíncrono:** como os jogadores chegam e avançam em ritmos
 diferentes ([05 §3](05-implantacao-e-operacao.md#definição-vigente-o-encontro-é-assíncrono)),
@@ -184,7 +207,12 @@ seção **"Como apoiar"** com a chave PIX do projeto
 ([04 §2](04-modelo-economico-e-sustentabilidade.md#doações-em-espécie--canal-oficial));
 espaço de **publicidade** fora das áreas de uso das crianças; vídeo de apresentação (Susy,
 Otávio, Rôbróders, prof. Carlos Trenell); estética de comunidade (grafite, cores, imagens do
-território).
+território); **portfólio de criações originais** dos jogadores autorizados, com o nick
+do(s) autor(es)
+([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)); **nota de
+transparência sobre IA** nas seções institucionais — a construção dos artefatos da
+plataforma conta com auxílio de IA, sob idealização e direção humanas
+([01 §7](01-visao-valores-e-proposito.md#como-os-artefatos-são-construídos--ia-como-alavanca)).
 
 **Definições vigentes:** cards de jogadores exibem **apenas** avatar (nunca imagem real),
 nick, badges, poderes adquiridos e informações da plataforma/desempenho; **sem links para
@@ -252,7 +280,12 @@ pontos que ela está rendendo
 ([02 §1](02-conceito-do-jogo-e-gamificacao.md#registro-temporal-e-pontuação-enquanto-a-coleta-durar));
 ranking; troca de pontos por recompensas (kits de alimentos; catálogo a expandir); pedido de
 ajuda para atividades escolares; níveis 1–5 (assíduo → **Mestre Aprendiz**, apto ao
-treinamento de multiplicador); badges por trilha e por poder.
+treinamento de multiplicador); badges por trilha e por poder; **portfólio de criações
+originais do jogador**, com autoria creditada
+([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)); **canal
+de sugestões** — o jogador registra ideias de melhoria para atividades, trilhas e para a
+própria plataforma, com acompanhamento do status de avaliação
+([03 §7](03-plataforma-e-arquitetura.md#7-app-05--área-do-jogador)).
 
 **Autonomia no encontro assíncrono:** a App 05 é o que permite ao jogador saber **o que fazer
 em seguida sem depender do Mestre** — requisito direto da dinâmica assíncrona dos encontros
@@ -424,6 +457,13 @@ de uma trilha sem ao menos um desafio de coleta de dados reais**
 O Mestre define, no desafio, **o que se mede, com que cadência e por quanto tempo** — os três
 parâmetros que a série temporal precisa para existir e para pontuar de forma recorrente.
 
+**Criação original como fechamento de toda trilha:** a culminância de toda trilha é a
+apresentação pública de uma **criação original** do jogador ou da equipe, baseada no
+conteúdo aprendido, com autoria creditada
+([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)).
+**[Proposta]** Tratar como regra dura na ferramenta, no mesmo padrão da coleta de dados:
+impedir a publicação de uma trilha cuja culminância não preveja a criação original.
+
 **Primeiras trilhas (conteúdo já existente):** **[Robô Educa](06-robo-educa.md)** (1ª) e
 **[Batalha de Laser](07-batalha-de-laser.md)** (2ª), ambas de autoria do Mestre fundador
 ([02 §3](02-conceito-do-jogo-e-gamificacao.md#as-duas-primeiras-trilhas-da-plataforma)).
@@ -482,8 +522,10 @@ jogo — a composição dos **cards dos personagens** e o **contrato do jogo com
 [11 §8.2](11-modelo-de-gamificacao.md#82-cards-dos-personagens) e
 [11 §8.4](11-modelo-de-gamificacao.md#84-jogos-sobre-o-backend-app-04-e-terceiros);
 representação exclusivamente por **avatar, nunca por imagem real**; código aberto e
-legível, apto a virar conteúdo de trilha do Poder da IA e Robótica; execução em navegador de
-celular modesto e tolerância a rede instável.
+legível, apto a virar conteúdo de trilha do Poder da IA e Robótica — **alterá-lo é
+atividade de trilha**: o jogador é um dos construtores do próprio jogo, exercício direto do
+protagonismo ([01 §3](01-visao-valores-e-proposito.md#3-valores-e-causas)); execução em
+navegador de celular modesto e tolerância a rede instável.
 
 **Definição vigente — o jogo consome pontuação, não a gera.** O progresso no App 04 **não
 produz pontos na plataforma**: os pontos vêm das atividades propostas pelos Mestres e da

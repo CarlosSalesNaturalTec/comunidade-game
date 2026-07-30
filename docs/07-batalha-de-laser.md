@@ -275,3 +275,11 @@ client.loop_forever()
   temperatura, chuva — construído por ele e alimentando a série temporal da sua Comunidade
   Virtual
   ([02 §1](02-conceito-do-jogo-e-gamificacao.md#registro-temporal-e-pontuação-enquanto-a-coleta-durar)).
+- **Protagonismo na batalha**: variações de regra propostas pelos próprios jogadores (novos
+  modos de partida, penalidades, tempos), avaliadas pelo Mestre antes de valerem em campo;
+  artefatos personalizados — pintura, carcaça, nome do atacante e da torre — como
+  **criação original** da trilha
+  ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)); e
+  papéis de equipe que misturam idades: os mais velhos operam o que exige mais cuidado
+  (laser, Nexus) e apoiam os mais novos
+  ([02 §5](02-conceito-do-jogo-e-gamificacao.md#5-equipes)).

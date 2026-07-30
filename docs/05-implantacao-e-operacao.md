@@ -182,7 +182,7 @@ prática, inspiração e voz do jogador.
 | 3 | **Bate-papo on-line com mentores e convidados** | Coletivo | Conversa ao vivo com profissionais e referências — aproxima o mundo da tecnologia da realidade do jogador |
 | 4 | **Momento GOAT / The Best / "Podemos ser os melhores"** | Coletivo | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade. Momento inspirador e de identificação ([01 §4](01-visao-valores-e-proposito.md#o-lema)) |
 | 5 | **Trabalho de trilha / Desafio do dia** | **Assíncrono** | O grosso do encontro: cada equipe avança nos **pontos da sua trilha** e na atividade pontuada — individual, em equipe, de coleta de dados do território — com apoio do Mestre. O **Quiz ao Vivo** (§4) é a exceção coletiva deste momento |
-| 6 | **Encerramento com apresentação livre** | Coletivo | Cada jogador (ou equipe) mostra o que construiu e/ou aprendeu na aula. Fecha o ciclo e treina expressão pública |
+| 6 | **Encerramento com apresentação livre** | Coletivo | Cada jogador (ou equipe) mostra o que construiu e/ou aprendeu na aula — inclusive suas **criações originais** ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)). Fecha o ciclo, treina expressão pública e é a vitrine do protagonismo do jogador |
 
 Observações operacionais:
 
@@ -195,6 +195,13 @@ Observações operacionais:
   concreta, ligados a pessoas reais.
 - O **encerramento** alimenta o portfólio: é dele que saem fotos, vídeos e registros de
   culminância (sempre respeitando as regras de consentimento e LGPD).
+- O encerramento é também a **roda de ideias**: espaço para os jogadores sugerirem
+  melhorias nas atividades, nas trilhas e na própria plataforma. As sugestões são
+  registradas pelo canal da Área do Jogador
+  ([03 §7](03-plataforma-e-arquitetura.md#7-app-05--área-do-jogador)) e seguem o mesmo
+  processo de evolução pactuada do Código de Conduta
+  ([13 §5](13-codigo-de-conduta-versao-previa.md#5-como-este-código-evolui)) — a voz do
+  jogador não termina na apresentação, ela muda o jogo.
 - Cada aula só acontece com os **recursos providos** por mestres/apoiadores
   ([04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md)).
 
@@ -246,6 +253,11 @@ aprendizado acontece — quem sabe explica para quem não sabe, o que se conecta
   ([02 §7](02-conceito-do-jogo-e-gamificacao.md#7-níveis-e-badges-gamificação)).
 - O reconhecimento é **por trilha ou por poder**: o badge de Mestre Aprendiz é conquistado
   no conteúdo específico em que o jogador se destacou.
+- A **mediação entre idades faz parte do caminho**: nas equipes mistas, o jogador mais
+  velho ou mais avançado apoia os mais novos
+  ([02 §5](02-conceito-do-jogo-e-gamificacao.md#5-equipes)) — é o exercício prático que
+  forma o Nível 4 (apoio aos colegas) e prepara o Mestre Aprendiz. A diferença de idades da
+  faixa vira, assim, o primeiro degrau da formação de multiplicadores.
 - **Multiplicadores** formados abrem novos cursos em novas comunidades — é o mecanismo de
   escala do projeto.
 - **Admissão como Mestre na plataforma** exige dois requisitos, sem exceção:

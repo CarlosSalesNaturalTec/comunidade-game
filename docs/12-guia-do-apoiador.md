@@ -19,8 +19,12 @@ dados do próprio território gera pontos, poderes e reconhecimento
   Salvador (BA), **Ciclo 01 de agosto a dezembro de 2026**.
 - **Valores inegociáveis:** humanismo, educação transformadora, causa antirracista,
   combate à violência contra a mulher, valorização dos povos originários, território e
-  identidade, e letramento sobre a crise ambiental
+  identidade, letramento sobre a crise ambiental e protagonismo dos jogadores
   ([01 §3](01-visao-valores-e-proposito.md#3-valores-e-causas)).
+- **Transparência sobre IA:** os artefatos da plataforma são construídos com auxílio e
+  potencialização de inteligência artificial, sob idealização e direção humanas —
+  declaração pública do projeto
+  ([01 §7](01-visao-valores-e-proposito.md#como-os-artefatos-são-construídos--ia-como-alavanca)).
 
 ## 2. Por que apoiar
 
@@ -35,6 +39,10 @@ dados do próprio território gera pontos, poderes e reconhecimento
   aportado, mas **o que aconteceu por causa do aporte** — as realizações dos jogadores nos
   desafios que ele propôs
   ([04 §5](04-modelo-economico-e-sustentabilidade.md#5-interação-apoiadores-x-jogadores-desafios-extras)).
+- **Protagonismo dos jogadores**: o apoio não financia assistência, financia **autoria** —
+  criações originais com crédito público na vitrine e jogadores que participam da evolução
+  da própria plataforma
+  ([02 §4](02-conceito-do-jogo-e-gamificacao.md#criações-originais-dos-jogadores)).
 - **Precedente concreto**: o **Goethe-Institut (Salvador)** é um dos primeiros Apoiadores —
   doou 298 livros e 30 kits MDF, com Termo de Doação assinado, que dão lastro material às
   duas primeiras trilhas
