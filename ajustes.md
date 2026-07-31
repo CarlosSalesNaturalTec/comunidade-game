@@ -1,11 +1,14 @@
-# Criar um documento de Governança Open Source (padrões CODE_OF_CONDUCT.md e GOVERNANCE.md no repositório) que traduza esses valores para a comunidade de desenvolvedores e colaboradores do projeto, não só para os jogadores. aproveitar conceitos e textos existentes
-
 # Revisar textos: 
 * removendo duplicidades desnecessárias, 
 * melhorar redações mantendo o sentido original
-* corrigir eventuais incoerências em relação aos demais documentos
+* corrigir eventuais incoerências
+* e PRINCIPALMENTE: deixar os documentos mais concisos.
+* Mover as referências e relações entre documentos para uma página específica apenas para orientar a IA sobre a relação entre os documentos.
+* Detalhemento extenso somente no capítulo referente aos PRDs.
 
 # Ao Final de cada documento, a partir do índice , adicionar link para o documento seguinte (1 -> 2 -> 3 ... )
+
+# Criar um documento de Governança Open Source (padrões CODE_OF_CONDUCT.md e GOVERNANCE.md no repositório) que traduza esses valores para a comunidade de desenvolvedores e colaboradores do projeto, não só para os jogadores. aproveitar conceitos e textos existentes
 
 # Na página pública, criar formulário para solicitação de inclusão como Mestre ou Apoiador da plataforma. Para pessoas e instituições que se interessarem pelo projeto e desejarem participar do mesmo. As solicitações devem ser gravadas em banco de dados e ficarem disponíveis para avaliação por um Admin no App 003
 
@@ -20,12 +23,6 @@
 
 # No App de apoio ao jogador devem ser exibidos os desafios vigentes (normais da trilha, extras, direcionados) , respectivas premiações, informações de como participar, solicitação de participação. 
 
-# No app do Apoiador, visualizar dados dos desafios criados pelo mesmo e os respectivos jogadores inscritos. 
+# No app do Apoiador, visualizar dados dos desafios criados pelo mesmo e os respectivos jogadores inscritos. Bem como histórico de desafios já realizados.
 
 # Neste Ciclo 1, uma vez que o jogador cumpra o desafio a validação do mesmo deve ser feita por um Admin. Ou seja, um desafio só pode ser considerado como executado e aprovado após validação do Admin. Futuramente serão avaliados meios de aprovação dos desafios de forma automática por meio de IA ou outra técnica de automação.
-
-# Amarrar dentro do conceito de: trilhas X atividades X Níveis X badges x desafios x batalhas
-* Distribuir ao longo do tempo do ciclo 1. Os pontos podem ser trocados por recompensas a cada encontro presencial . Inicialmente os encontros presenciais ocorrerão uma vez por semana aos sábados no horário das 15hs as 18hs. 
-* Ciclo 1: 
-a) Todos irão começar na trilha 1 que acontecerá no período de Ago-Set/2026, com atividade de culminância em Set/26. Trilha 2 Bloqueada neste período.
-b) após culminância da trilha 1, todos passam para a trilha 2 que terão suas atividades liberadas a partir dai com respectiva culminância em Dez/2026
