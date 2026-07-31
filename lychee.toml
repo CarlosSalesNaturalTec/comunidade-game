@@ -13,7 +13,7 @@ user_agent = "Mozilla/5.0 (compatible; lychee link checker; comunidade-game docs
 # Só 2xx é sucesso; 429 é limite de taxa, não link quebrado.
 accept = ["200..=299", "429"]
 
-# Links internos entre arquivos .md e âncoras de cabeçalho.
-include_fragments = true
+# Verifica também as âncoras (#secao) dos links, não só o arquivo de destino.
+include_fragments = "full"
 
 exclude_path = ["node_modules", "site", ".venv"]
