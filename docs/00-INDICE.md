@@ -1,65 +1,45 @@
 # Comunidade Game — Documentação do Projeto
 
-> Documentação de referência do projeto, organizada por temas. Cada documento é
-> autocontido e se conecta aos demais por links.
+Plataforma educacional gamificada, open source, para comunidades periféricas: um "jogo"
+cujas partidas acontecem na vida real. Esta pasta é a documentação de referência do
+projeto — cada documento tem um assunto próprio e não repete o que já está definido em
+outro.
 
-## Estrutura
+## Índice
 
-1. **[01-visao-valores-e-proposito.md](01-visao-valores-e-proposito.md)** — O que é o projeto, por que existe, valores e causas (incluindo o **protagonismo dos jogadores**), objetivos, público-alvo, premissas e a **transparência sobre o uso de IA na construção dos artefatos**.
-2. **[02-conceito-do-jogo-e-gamificacao.md](02-conceito-do-jogo-e-gamificacao.md)** — O "jogo ligado à vida real": personas, poderes, trilhas, batalhas, **criações originais dos jogadores**, equipes, pontos, níveis, recompensas e o Manual do Jogador.
-3. **[03-plataforma-e-arquitetura.md](03-plataforma-e-arquitetura.md)** — Backend API, **as 7 aplicações a serem desenvolvidas** (todas Web Apps responsivos, Mobile First), canais de acesso, princípios técnicos e proteção de dados.
-4. **[04-modelo-economico-e-sustentabilidade.md](04-modelo-economico-e-sustentabilidade.md)** — Economia de recursos ("moeda" da plataforma), pessoa jurídica vinculada, transparência, receitas, desafios extras de Apoiadores e impacto social.
-5. **[05-implantacao-e-operacao.md](05-implantacao-e-operacao.md)** — Como implantar em uma comunidade: pontos de apoio, acervo didático, roteiro das aulas, Quiz ao Vivo, formação de mestres, multiplicadores e voluntários, replicabilidade e fases do piloto.
-6. **[06-robo-educa.md](06-robo-educa.md)** — **1ª trilha da plataforma**: construir o próprio robô e dar vida a ele com IA por voz.
-7. **[07-batalha-de-laser.md](07-batalha-de-laser.md)** — **2ª trilha da plataforma**: enredo, regras e projeto técnico completo da batalha presencial com NodeMCU e MQTT.
-8. **[08-base-para-prds.md](08-base-para-prds.md)** — Conteúdo estruturado como insumo para elaboração de PRDs (Product Requirements Documents).
-9. **[09-topicos-em-aberto-e-sugestoes.md](09-topicos-em-aberto-e-sugestoes.md)** — Decisões pendentes e propostas em avaliação.
-10. **[10-case-01-guerreira-zeferina.md](10-case-01-guerreira-zeferina.md)** — **Case 01**: o piloto real na Comunidade Guerreira Zeferina (Salvador/BA), Ciclo 01 — ago a dez/2026: hipóteses, metas e critérios de avaliação.
-11. **[11-modelo-de-gamificacao.md](11-modelo-de-gamificacao.md)** — **Fonte única do motor do jogo**: anatomia da trilha (conteúdo, atividades, desafios, encontros, batalhas, culminâncias com **criação original**), motor de pontuação, níveis, badges, recompensas, distribuição pelas etapas do ciclo e os **reflexos no ecossistema** (vitrine, cards, representação visual da comunidade, jogos sobre o backend), com matriz de rastreabilidade para os PRDs.
-12. **[12-guia-do-apoiador.md](12-guia-do-apoiador.md)** — **Guia do Apoiador**: linhas gerais, por que apoiar, estrutura necessária para o Ciclo 01, como apoiar e desafios extras.
-13. **[13-codigo-de-conduta-versao-previa.md](13-codigo-de-conduta-versao-previa.md)** — **Código de Conduta (versão prévia)**: modelo básico a ser co-criado com os jogadores na primeira interação presencial.
-
-## As 7 aplicações desta etapa
-
-Definição vigente: **todas as aplicações serão desenvolvidas como Web Apps responsivos,
-Mobile First** ([03 §2](03-plataforma-e-arquitetura.md#2-canais--meios-de-acesso)).
-
-| Aplicação | O que faz | PRD |
+| # | Documento | Assunto |
 |---|---|---|
-| **App 01 — Onboarding** | Escolha entre áudio ou texto, cadastro de novo jogador (com vínculo à sua Comunidade Virtual) e registro de presença | PRD-04 |
-| **App 02 — Assistente por voz** | ChatBot de áudio nos moldes do Robô Educa, com **Modo Ouvinte** na aula | PRD-06 |
-| **App 03 — Gestão** | CRUDs, criação das Comunidades Virtuais, entradas manuais e painéis do dia | PRD-02 |
-| **App 04 — Jogo** | Jogo em JavaScript sobre a base de personagens da plataforma — **consome pontos, não os gera** (engine sugerida: **Phaser.js**) | PRD-12 |
-| **App 05 — Área do Jogador** | Guia e apoio nas trilhas, e acompanhamento das séries de coleta de dados | PRD-05 |
-| **App 06 — Vitrine pública** | Apresentação da plataforma, sem login: jogadores, poderes, mestres, batalhas, apoiadores e painéis das comunidades | PRD-03 |
-| **App 07 — Pais e responsáveis** | Evolução do jogador, solicitações, direitos de recusa e transparência sobre os dados armazenados | PRD-13 |
-
-## Trilhas
-
-As **duas primeiras trilhas** da plataforma são de autoria do **Mestre fundador**, autor
-deste repositório: **[Robô Educa](06-robo-educa.md)** (1ª) e
-**[Batalha de Laser](07-batalha-de-laser.md)** (2ª), ambas do Poder da IA e Robótica.
-
-**Toda trilha da plataforma contém desafios de coleta de dados reais** do território do
-jogador, e essa coleta **pontua de forma recorrente enquanto a série se mantiver ativa**
-([02 §3](02-conceito-do-jogo-e-gamificacao.md#regra-vigente-toda-trilha-coleta-dados-reais)).
-
-O **acervo de 298 livros do projeto Include (Campus Party)** e os **30 kits em MDF**, doados
-pelo **Goethe-Institut (Salvador)** — um dos primeiros Apoiadores da plataforma —, são
-**material de apoio e insumo dessas duas trilhas** e estão **vinculados ao MVP do
-[Case 01](10-case-01-guerreira-zeferina.md#5-o-acervo-include-e-os-kits-mdf-neste-mvp)**.
-Inventário em
-[02 §3](02-conceito-do-jogo-e-gamificacao.md#acervo-didático-de-apoio--coleção-include-e-kits-mdf-goethe-institut);
-posse dos livros em **regime misto** (linha Alpha doada ao jogador na abertura da trilha,
-linha Include I como acervo permanente) e estratégia de conservação em
-[05 §2](05-implantacao-e-operacao.md#acervo-didático-guarda-e-conservação).
+| 01 | [Visão, valores e propósito](01-visao-valores-e-proposito.md) | O que é o projeto, por que existe, valores, objetivos, público-alvo e o fundador |
+| 02 | [Conceito do jogo e gamificação](02-conceito-do-jogo-e-gamificacao.md) | Personas, Comunidades Virtuais, poderes, trilhas, atividades, equipes, batalhas, recompensas e Manual do Jogador |
+| 03 | [Plataforma e arquitetura](03-plataforma-e-arquitetura.md) | Backend API, as 7 aplicações desta etapa e proteção de dados |
+| 04 | [Modelo econômico e sustentabilidade](04-modelo-economico-e-sustentabilidade.md) | Economia de recursos, livro-razão, receitas, desafios extras e impacto social |
+| 05 | [Implantação e operação](05-implantacao-e-operacao.md) | Pontos de apoio, acervo didático, roteiro do encontro, Quiz ao Vivo, multiplicadores e fases do piloto |
+| 06 | [Trilha 1 — Robô Educa](06-robo-educa.md) | Construir o próprio robô e dar vida a ele com IA por voz |
+| 07 | [Trilha 2 — Batalha de Laser](07-batalha-de-laser.md) | Enredo, regras e projeto técnico da batalha presencial com NodeMCU e MQTT |
+| 08 | [Base para PRDs](08-base-para-prds.md) | Requisitos organizados por PRD — **único documento com detalhamento extenso** |
+| 09 | [Tópicos em aberto](09-topicos-em-aberto-e-sugestoes.md) | Decisões pendentes, propostas e próximos passos |
+| 10 | [Case 01 — Guerreira Zeferina](10-case-01-guerreira-zeferina.md) | O piloto real em Salvador (BA): Ciclo 01, ago–dez/2026 |
+| 11 | [Modelo de gamificação](11-modelo-de-gamificacao.md) | O motor do jogo: anatomia da trilha, pontuação, níveis, badges e reflexos no ecossistema |
+| 12 | [Guia do Apoiador](12-guia-do-apoiador.md) | Resumo prático da relação do Apoiador com a plataforma |
+| 13 | [Código de Conduta (versão prévia)](13-codigo-de-conduta-versao-previa.md) | Modelo básico, a ser co-criado com os jogadores no primeiro encontro |
+| 99 | [Mapa de referências](99-mapa-de-referencias.md) | Relação entre os documentos — página técnica, para orientação de agentes de IA |
 
 ## Como ler
 
-- **[Proposta]** marca ideias ainda **não decididas** pelo fundador — avalie e adote se
-  fizer sentido. Todo o resto é definição vigente do projeto.
-- Links entre documentos conectam decisões que se sustentam mutuamente.
-- O **[doc 11](11-modelo-de-gamificacao.md)** é a fonte normativa de **como os elementos
-  do jogo se integram** — trilhas, pontuações, níveis, badges, recompensas e seus reflexos
-  na vitrine, nos cards e nos jogos; os PRDs ([doc 08](08-base-para-prds.md)) partem da
-  sua [matriz de rastreabilidade](11-modelo-de-gamificacao.md#9-matriz-de-rastreabilidade--prds).
+- **[Proposta]** marca ideia ainda **não decidida** pelo fundador. Todo o resto é definição
+  vigente do projeto.
+- **A definir** marca lacuna que ainda precisa de número ou critério; a lista consolidada
+  está no documento 09.
+- Os documentos são **sintéticos por decisão**. Detalhamento extenso existe apenas no
+  documento 08, que serve de insumo aos PRDs.
+- O documento 99 não é leitura para humanos: existe para orientar agentes de IA sobre a
+  relação entre os documentos.
+
+## Situação
+
+**Julho de 2026 — projeto em ideação.** A prática já validada são as oficinas presenciais do
+Robô Educa desde 2018. A primeira implantação da plataforma é o **Case 01 — Comunidade
+Guerreira Zeferina** (Salvador/BA), no **Ciclo 01, de agosto a dezembro de 2026**.
+
+Após a validação humana de todos os documentos desta pasta, inicia-se a **geração dos PRDs**
+que orientarão o desenvolvimento das aplicações.
