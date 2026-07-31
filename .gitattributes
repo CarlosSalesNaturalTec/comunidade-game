@@ -1,0 +1,3 @@
+# Fim de linha LF em todo o repositório, para que Prettier e markdownlint
+# vejam o mesmo conteúdo no Windows, no macOS e no CI (Linux).
+* text=auto eol=lf

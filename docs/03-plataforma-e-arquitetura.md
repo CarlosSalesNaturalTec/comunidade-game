@@ -34,13 +34,13 @@ prática para que aplicações de terceiros e novos frontends realmente surjam.
 > First**. Não há desenvolvimento sobre WhatsApp nem aplicativos nativos (Android/iOS). O
 > navegador do celular é a plataforma-alvo; telas maiores são atendidas pela mesma aplicação.
 
-| Canal | Uso |
-|---|---|
-| **Web App responsivo (Mobile First)** | Canal único de todas as aplicações |
-| **Smartphone / tablet** | Dispositivo primário — é para ele que as telas são projetadas |
-| **PC / Notebook** | O mesmo Web App em telas maiores; uso típico da gestão |
-| **Embarcados** | Raspberry Pi, NodeMCU, vestíveis. São o **hardware das atividades**, não um canal de acesso à plataforma |
-| **Redes sociais** | Presença institucional e divulgação — não são canal de uso da plataforma |
+| Canal                                 | Uso                                                                                                      |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Web App responsivo (Mobile First)** | Canal único de todas as aplicações                                                                       |
+| **Smartphone / tablet**               | Dispositivo primário — é para ele que as telas são projetadas                                            |
+| **PC / Notebook**                     | O mesmo Web App em telas maiores; uso típico da gestão                                                   |
+| **Embarcados**                        | Raspberry Pi, NodeMCU, vestíveis. São o **hardware das atividades**, não um canal de acesso à plataforma |
+| **Redes sociais**                     | Presença institucional e divulgação — não são canal de uso da plataforma                                 |
 
 O conceito **"Converse com seu robô"** perpassa os dispositivos: o assistente do aluno deve
 estar acessível a partir de qualquer navegador e conversar com os dispositivos embarcados
@@ -51,15 +51,15 @@ usuário e sem tráfego de dados de crianças por plataformas de terceiros**.
 
 ### 2.1 As sete aplicações desta etapa
 
-| # | Aplicação | Público | Seção |
-|---|---|---|---|
-| **App 01** | **Onboarding** — cadastro de novo jogador e registro de presença, por áudio ou texto | Jogadores (na chegada da aula) | §3 |
-| **App 02** | **Assistente por voz** — ChatBot de áudio nos moldes do Robô Educa, com **Modo Ouvinte** | Jogadores e Mestres (durante a aula) | §4 |
-| **App 03** | **Gestão administrativa** — CRUDs, lançamentos manuais e painéis do dia | Admins e Mestres | §5 |
-| **App 04** | **Jogo em JavaScript** — sobre a base de personagens da plataforma | Jogadores | §6 |
-| **App 05** | **Área do Jogador** — guia e apoio nas trilhas | Jogadores | §7 |
-| **App 06** | **Vitrine pública** — apresentação da plataforma, sem login | Público geral | §8 |
-| **App 07** | **Área dos pais e responsáveis** — evolução do jogador, solicitações e transparência de dados | Pais e responsáveis | §9 |
+| #          | Aplicação                                                                                     | Público                              | Seção |
+| ---------- | --------------------------------------------------------------------------------------------- | ------------------------------------ | ----- |
+| **App 01** | **Onboarding** — cadastro de novo jogador e registro de presença, por áudio ou texto          | Jogadores (na chegada da aula)       | §3    |
+| **App 02** | **Assistente por voz** — ChatBot de áudio nos moldes do Robô Educa, com **Modo Ouvinte**      | Jogadores e Mestres (durante a aula) | §4    |
+| **App 03** | **Gestão administrativa** — CRUDs, lançamentos manuais e painéis do dia                       | Admins e Mestres                     | §5    |
+| **App 04** | **Jogo em JavaScript** — sobre a base de personagens da plataforma                            | Jogadores                            | §6    |
+| **App 05** | **Área do Jogador** — guia e apoio nas trilhas                                                | Jogadores                            | §7    |
+| **App 06** | **Vitrine pública** — apresentação da plataforma, sem login                                   | Público geral                        | §8    |
+| **App 07** | **Área dos pais e responsáveis** — evolução do jogador, solicitações e transparência de dados | Pais e responsáveis                  | §9    |
 
 ## 3. App 01 — Onboarding (cadastro e registro de presença)
 
@@ -72,7 +72,7 @@ cadastrados — por conversa, sem formulário.
 
 ### 3.1 Jornada
 
-```
+```text
 [Tela de Boas-Vindas]
    ├── botão "Começar com ÁUDIO"  ──┐
    └── botão "Começar com CHAT"   ──┤
@@ -104,16 +104,16 @@ barulhentos ou jogadores que preferem digitar.
 **Captura de imagem** — pela câmera do dispositivo, com **finalidade única: identificação de
 presença**. Não é avatar, não vai para a vitrine, não aparece em ranking, não é compartilhada.
 
-**Novo jogador — dados coletados**
+#### Novo jogador — dados coletados
 
-| Dado | Uso |
-|---|---|
-| Nome | Identificação interna e comunicação com responsáveis |
-| Nick | Identidade pública do jogador |
-| Data de nascimento ou idade | Adequação de conteúdo e faixa (6 a 16 anos) |
-| **Comunidade Virtual** | **Vínculo obrigatório** — define a que comunidade os dados de território serão creditados |
-| Características do avatar | Geração do avatar público |
-| Foto | **Exclusivamente** registro de presença futuro |
+| Dado                        | Uso                                                                                       |
+| --------------------------- | ----------------------------------------------------------------------------------------- |
+| Nome                        | Identificação interna e comunicação com responsáveis                                      |
+| Nick                        | Identidade pública do jogador                                                             |
+| Data de nascimento ou idade | Adequação de conteúdo e faixa (6 a 16 anos)                                               |
+| **Comunidade Virtual**      | **Vínculo obrigatório** — define a que comunidade os dados de território serão creditados |
+| Características do avatar   | Geração do avatar público                                                                 |
+| Foto                        | **Exclusivamente** registro de presença futuro                                            |
 
 **Vínculo com a Comunidade Virtual (regra vigente).** Nenhum jogador existe sem comunidade: a
 conversa oferece a lista das comunidades já criadas pelos Admins e o jogador escolhe a sua. Se
@@ -123,7 +123,7 @@ vínculo.
 Ao final, o jogador já está **ativo** e pode participar das atividades — sem exigência de
 autorização do responsável nesta etapa.
 
-**Jogador já cadastrado — registro de presença**
+#### Jogador já cadastrado — registro de presença
 
 1. Captura da imagem na chegada.
 2. Comparação com a base **combinada ao nick informado** (dois fatores: o nick restringe a
@@ -140,7 +140,7 @@ A foto é **dado pessoal sensível de criança e adolescente**. Regras obrigató
   base legal e novo consentimento.
 - **Consentimento informado** do responsável para a captura e o tratamento biométrico, colhido
   de forma legível e registrado com data e hora.
-- **Minimização**: preferir *template* biométrico (representação matemática não reversível) à
+- **Minimização**: preferir _template_ biométrico (representação matemática não reversível) à
   fotografia original.
 - **Segurança**: armazenamento criptografado, acesso restrito e auditado.
 - **Retenção**: prazo definido e exclusão automática ao fim do vínculo do jogador com o
@@ -286,13 +286,13 @@ comunicação da evolução do aluno sem depender de aplicativos de mensageria d
 responsável acessa apenas os dados dos jogadores sob sua responsabilidade, com vínculo
 conferido por um Admin.
 
-| Função | O que o responsável faz |
-|---|---|
-| **Evolução do jogador** | Acompanha presença, atividades realizadas, pontos, poderes, badges, nível e progresso nas trilhas |
-| **Solicitações** | Autoriza ou **revoga** a divulgação pública do perfil; pede correção ou exclusão de dados; solicita esclarecimentos — cada pedido com protocolo e prazo |
-| **Direitos de recusa** | Recusa, a qualquer tempo, a **foto de presença**, o **Modo Ouvinte** e o uso de imagem em vídeos e fotos de eventos |
-| **Transparência de dados** | Vê **quais dados da criança estão armazenados**, para que servem, por quanto tempo ficam e quem os acessou |
-| **Termos e consentimentos** | Lê, aceita e consulta o histórico dos termos assinados, com data e hora |
+| Função                      | O que o responsável faz                                                                                                                                 |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Evolução do jogador**     | Acompanha presença, atividades realizadas, pontos, poderes, badges, nível e progresso nas trilhas                                                       |
+| **Solicitações**            | Autoriza ou **revoga** a divulgação pública do perfil; pede correção ou exclusão de dados; solicita esclarecimentos — cada pedido com protocolo e prazo |
+| **Direitos de recusa**      | Recusa, a qualquer tempo, a **foto de presença**, o **Modo Ouvinte** e o uso de imagem em vídeos e fotos de eventos                                     |
+| **Transparência de dados**  | Vê **quais dados da criança estão armazenados**, para que servem, por quanto tempo ficam e quem os acessou                                              |
+| **Termos e consentimentos** | Lê, aceita e consulta o histórico dos termos assinados, com data e hora                                                                                 |
 
 **Regras obrigatórias:**
 

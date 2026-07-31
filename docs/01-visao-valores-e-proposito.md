@@ -24,7 +24,7 @@ atraem apoio; o apoio custeia novas atividades; quem chega ao topo volta como mu
 O ciclo alcança a própria plataforma: as ideias e criações dos jogadores realimentam
 trilhas, regras e aplicações — **quem joga também constrói o jogo**.
 
-```
+```text
 Jogador aprende e realiza ──► Comunidade ganha dados, talento e visibilidade
         ▲                                          │
         │                                          ▼
@@ -114,7 +114,7 @@ e `GOVERNANCE.md`) traduzindo esses valores para a comunidade de desenvolvedores
 
 ## 4. Objetivos
 
-A plataforma é **educacional e *tech first***: a tecnologia é a porta de entrada e a
+A plataforma é **educacional e _tech first_**: a tecnologia é a porta de entrada e a
 linguagem principal, mas não termina em si mesma. Cada conteúdo técnico abre **paralelos com
 outras áreas do conhecimento** (ciências, matemática, linguagens, artes, história, meio
 ambiente, relações humanas) e com **temas necessários ao cenário atual**: racismo, violência
@@ -143,13 +143,13 @@ negras e indígenas que impactaram positivamente a sociedade.
 
 ## 5. Público-alvo
 
-| Público | Faixa | Papel na plataforma |
-|---|---|---|
-| Crianças e jovens | **6 a 16 anos** | Jogadores |
-| Especialistas e educadores | — | Mestres (mentores), cadastrados pelos Admins mediante comprovação de habilidade |
-| Pessoas e instituições | — | Apoiadores / Patrocinadores, cadastrados pelos Admins |
-| Organizadores / Equipe técnica | — | Admins da plataforma |
-| Comunidade em geral | — | Visitantes / público das batalhas e portfólios |
+| Público                        | Faixa           | Papel na plataforma                                                             |
+| ------------------------------ | --------------- | ------------------------------------------------------------------------------- |
+| Crianças e jovens              | **6 a 16 anos** | Jogadores                                                                       |
+| Especialistas e educadores     | —               | Mestres (mentores), cadastrados pelos Admins mediante comprovação de habilidade |
+| Pessoas e instituições         | —               | Apoiadores / Patrocinadores, cadastrados pelos Admins                           |
+| Organizadores / Equipe técnica | —               | Admins da plataforma                                                            |
+| Comunidade em geral            | —               | Visitantes / público das batalhas e portfólios                                  |
 
 **Definições vigentes:**
 
@@ -188,15 +188,15 @@ narrativa do jogo.
 
 O projeto nasce da convicção de um desenvolvedor no potencial transformador da própria
 habilidade: **usar software e dados para produzir impacto positivo na sociedade** — a
-postura de um *hacker* no sentido original, alguém que entende o funcionamento das coisas e
+postura de um _hacker_ no sentido original, alguém que entende o funcionamento das coisas e
 as reconfigura para servir às pessoas. A tecnologia aqui não é fim nem vitrine: é ferramenta
 de intervenção social.
 
-| Referência | Link |
-|---|---|
-| Repositório Robô Educa | <https://github.com/Robo-Educa> |
-| GitHub pessoal | <https://github.com/CarlosSalesNaturalTec> |
-| LinkedIn | <https://www.linkedin.com/in/carlossalesti/> |
+| Referência                   | Link                                                                                    |
+| ---------------------------- | --------------------------------------------------------------------------------------- |
+| Repositório Robô Educa       | <https://github.com/Robo-Educa>                                                         |
+| GitHub pessoal               | <https://github.com/CarlosSalesNaturalTec>                                              |
+| LinkedIn                     | <https://www.linkedin.com/in/carlossalesti/>                                            |
 | Portfólio em Cultura Digital | <https://drive.google.com/file/d/1KPPJQhNn_YsWYK6qllP6muns6WlSRyM1/view?usp=drive_link> |
 
 Esses links não são vitrine pessoal: são o **artefato comprobatório** exigido de qualquer

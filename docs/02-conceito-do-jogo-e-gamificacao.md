@@ -122,7 +122,7 @@ pesquisas, painéis públicos e instituições é agregado e anonimizado conform
 
 **Para que serve.** Os dados podem ser usados como **insumo para tomada de decisões** — pela
 própria comunidade, por associações de moradores, escolas, poder público e pesquisas. O
-objetivo é que a plataforma se torne uma **central *Data Driven* das comunidades onde está
+objetivo é que a plataforma se torne uma **central _Data Driven_ das comunidades onde está
 presente**. Uma série de anos só existe se o dado tiver sido guardado desde o primeiro dia —
 daí a guarda permanente ser regra, e não opção.
 
@@ -134,16 +134,16 @@ dados, método científico, cidadania e meio ambiente.
 Catálogo inicial. Os poderes marcados como **(ciclo futuro)** permanecem como direção do
 projeto, sem trilha nem atividade previstas para o Ciclo 01.
 
-| Poder | Descrição |
-|---|---|
-| **Poder da IA e Robótica** | Programação, eletrônica, robótica e IA. Trilhas: Robô Educa (1ª) e Batalha de Laser (2ª) |
-| **Poder do Território** | Registro e ciência de dados do território (*Data Science*): sustentar séries de coleta reais da comunidade, com progressão e badges próprios. Todo jogador o exercita, pois toda trilha tem desafio de coleta |
-| **Poder Econômico** | O quanto Mestres e Apoiadores investiram na plataforma — o poder dos provedores |
-| **Poder da Rima** *(ciclo futuro)* | Expressão artística: rima, rap, batalhas de rima. Validado em 2024 na Guerreira Zeferina, dentro do Inova Comunidade |
-| **Poder das Redes** *(ciclo futuro)* | Produção de conteúdo / "Monte seu Canal": comunicação digital, geração de áudio e vídeo e letramento crítico sobre riscos |
-| **Poder da Capoeira** *(ciclo futuro)* | Cultura e movimento, com análise de movimentos por visão computacional (contador de polichinelos e de movimentos corretos). Também validado em 2024. Sugestão técnica de captação: **MediaPipe**; TensorFlow como alternativa para classificação |
-| **Outros conteúdos PNED / BNCC** *(ciclo futuro)* | Alinhamento com políticas educacionais |
-| **Soft Skills** *(ciclo futuro)* | Habilidades socioemocionais |
+| Poder                                             | Descrição                                                                                                                                                                                                                                        |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Poder da IA e Robótica**                        | Programação, eletrônica, robótica e IA. Trilhas: Robô Educa (1ª) e Batalha de Laser (2ª)                                                                                                                                                         |
+| **Poder do Território**                           | Registro e ciência de dados do território (_Data Science_): sustentar séries de coleta reais da comunidade, com progressão e badges próprios. Todo jogador o exercita, pois toda trilha tem desafio de coleta                                    |
+| **Poder Econômico**                               | O quanto Mestres e Apoiadores investiram na plataforma — o poder dos provedores                                                                                                                                                                  |
+| **Poder da Rima** _(ciclo futuro)_                | Expressão artística: rima, rap, batalhas de rima. Validado em 2024 na Guerreira Zeferina, dentro do Inova Comunidade                                                                                                                             |
+| **Poder das Redes** _(ciclo futuro)_              | Produção de conteúdo / "Monte seu Canal": comunicação digital, geração de áudio e vídeo e letramento crítico sobre riscos                                                                                                                        |
+| **Poder da Capoeira** _(ciclo futuro)_            | Cultura e movimento, com análise de movimentos por visão computacional (contador de polichinelos e de movimentos corretos). Também validado em 2024. Sugestão técnica de captação: **MediaPipe**; TensorFlow como alternativa para classificação |
+| **Outros conteúdos PNED / BNCC** _(ciclo futuro)_ | Alinhamento com políticas educacionais                                                                                                                                                                                                           |
+| **Soft Skills** _(ciclo futuro)_                  | Habilidades socioemocionais                                                                                                                                                                                                                      |
 
 Regras dos poderes:
 
@@ -189,10 +189,10 @@ trilha encontra o método científico: medir, registrar, comparar ao longo do te
 Ambas de **autoria do Mestre fundador**, são os artefatos que comprovam sua habilidade em
 Programação e Robótica.
 
-| # | Trilha | Poder | Do que se trata |
-|---|---|---|---|
-| **1ª** | **Robô Educa** | IA e Robótica | Construir o próprio robô com material reciclado ou kit e dar vida a ele com IA por voz; da montagem física à alteração do código |
-| **2ª** | **Batalha de Laser** | IA e Robótica | Eletrônica, sensores, MQTT e rede: os jogadores constroem os artefatos e disputam a batalha presencial |
+| #      | Trilha               | Poder         | Do que se trata                                                                                                                  |
+| ------ | -------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **1ª** | **Robô Educa**       | IA e Robótica | Construir o próprio robô com material reciclado ou kit e dar vida a ele com IA por voz; da montagem física à alteração do código |
+| **2ª** | **Batalha de Laser** | IA e Robótica | Eletrônica, sensores, MQTT e rede: os jogadores constroem os artefatos e disputam a batalha presencial                           |
 
 A 2ª trilha é a **sucessora natural** da 1ª: mesmo poder, um degrau a mais de complexidade.
 Juntas demonstram o ciclo completo do jogo — mestre publica a trilha → jogador aprende
@@ -203,11 +203,11 @@ Goethe-Institut (inventário, posse e guarda no documento 05).
 
 ### Demais trilhas previstas
 
-| Trilha | Poder | Conteúdo | Quando |
-|---|---|---|---|
-| **Social Media / Áudio e Vídeo para Redes** | Poder das Redes | Roteiro, captação, edição e publicação; IA para geração de áudio e vídeo; direitos de imagem; **letramento crítico sobre os riscos das redes** | Ciclo futuro |
-| **Rima** | Poder da Rima | Escrita, métrica e batalhas de rima | Ciclo futuro |
-| **Capoeira** | Poder da Capoeira | Cultura e movimento, com análise de movimentos por visão computacional | Ciclo futuro |
+| Trilha                                      | Poder             | Conteúdo                                                                                                                                       | Quando       |
+| ------------------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| **Social Media / Áudio e Vídeo para Redes** | Poder das Redes   | Roteiro, captação, edição e publicação; IA para geração de áudio e vídeo; direitos de imagem; **letramento crítico sobre os riscos das redes** | Ciclo futuro |
+| **Rima**                                    | Poder da Rima     | Escrita, métrica e batalhas de rima                                                                                                            | Ciclo futuro |
+| **Capoeira**                                | Poder da Capoeira | Cultura e movimento, com análise de movimentos por visão computacional                                                                         | Ciclo futuro |
 
 > **Definição vigente:** essas trilhas — e os conteúdos de PNED/BNCC e Soft Skills — serão
 > definidas e implementadas em **ciclo futuro**. Não integram o escopo do Ciclo 01, cujas
@@ -233,15 +233,15 @@ contínua.
 
 ### Categorias de atividade
 
-| Categoria | Exemplos |
-|---|---|
-| Construção / making | Robô Educa, artefatos da Batalha de Laser |
-| Programação e IA | Quizzes, alteração de código, prompts |
-| Coleta de dados do território | Temperatura, chuva, resíduos, buracos — alimenta a Comunidade Virtual |
-| Desplugadas (*Computer Science Unplugged*) | Lógica e algoritmos sem computador |
-| Valores e temas transversais | Racismo, violência contra a mulher, identidade, povos originários |
-| Competição ao vivo | **Quiz ao Vivo** entre equipes na aula presencial |
-| Culminância | Apresentação da **criação original** do jogador ou da equipe |
+| Categoria                                  | Exemplos                                                              |
+| ------------------------------------------ | --------------------------------------------------------------------- |
+| Construção / making                        | Robô Educa, artefatos da Batalha de Laser                             |
+| Programação e IA                           | Quizzes, alteração de código, prompts                                 |
+| Coleta de dados do território              | Temperatura, chuva, resíduos, buracos — alimenta a Comunidade Virtual |
+| Desplugadas (_Computer Science Unplugged_) | Lógica e algoritmos sem computador                                    |
+| Valores e temas transversais               | Racismo, violência contra a mulher, identidade, povos originários     |
+| Competição ao vivo                         | **Quiz ao Vivo** entre equipes na aula presencial                     |
+| Culminância                                | Apresentação da **criação original** do jogador ou da equipe          |
 
 ### Criações originais dos jogadores
 
@@ -335,10 +335,10 @@ real: o esforço de aprender converte-se em algo concreto na mão do jogador.
 
 Catálogo inicial — **valores ainda são sugestão, a definir**:
 
-| Recompensa | Custo em pontos (a definir) |
-|---|---|
-| Kit alimentos 1 (3 itens) | 20 |
-| Kit alimentos 2 (6 itens) | 20 |
+| Recompensa                | Custo em pontos (a definir) |
+| ------------------------- | --------------------------- |
+| Kit alimentos 1 (3 itens) | 20                          |
+| Kit alimentos 2 (6 itens) | 20                          |
 
 **[Proposta]** Ao definir a tabela, ampliar o catálogo com recompensas não alimentares
 (material escolar, componentes de robótica, ingressos culturais). A troca de pontos por

@@ -28,7 +28,7 @@ ajudar os colegas e registrar dados do próprio território gera pontos, poderes
   custeia novas atividades; quem chega ao topo volta como multiplicador.
 - **Transparência radical**: todo recurso aportado é registrado em livro-razão público e compõe
   o **Poder Econômico** do Apoiador — reconhecimento visível de quem sustenta o projeto.
-- **Efetividade rastreável**: o histórico registra não só *quanto* foi aportado, mas **o que
+- **Efetividade rastreável**: o histórico registra não só _quanto_ foi aportado, mas **o que
   aconteceu por causa do aporte** — as realizações dos jogadores nos desafios propostos.
 - **Protagonismo dos jogadores**: o apoio não financia assistência, financia **autoria** —
   criações originais com crédito público na vitrine e jogadores que participam da evolução da
@@ -42,14 +42,14 @@ ajudar os colegas e registrar dados do próprio território gera pontos, poderes
 Pela regra de lastro, **nenhuma atividade acontece sem os recursos providos** — e a hipótese
 **H3** do ciclo mede exatamente se mestres e apoiadores conseguem supri-los.
 
-| Frente | Recursos |
-|---|---|
-| **Ponto de apoio** | Espaço físico na comunidade (hackerspace, fab lab, sala cedida) com guarda do acervo |
-| **Equipamentos** | Notebooks, smartphones e tablets de uso compartilhado — viabilizam a dinâmica assíncrona dos encontros |
-| **Operação dos encontros** | Hora-aula dos mentores, lanche dos jogadores, insumos das oficinas (LEDs, baterias, papel, kit de encapar) |
-| **Recompensas** | Catálogo de troca de pontos (kits de alimentos e itens não alimentares) |
-| **Infraestrutura digital** | Servidores, armazenamento e execução das aplicações |
-| **Reposições** | Acervo e materiais — perda ou dano nunca gera cobrança à família; vira necessidade de reposição a ser aportada |
+| Frente                     | Recursos                                                                                                       |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Ponto de apoio**         | Espaço físico na comunidade (hackerspace, fab lab, sala cedida) com guarda do acervo                           |
+| **Equipamentos**           | Notebooks, smartphones e tablets de uso compartilhado — viabilizam a dinâmica assíncrona dos encontros         |
+| **Operação dos encontros** | Hora-aula dos mentores, lanche dos jogadores, insumos das oficinas (LEDs, baterias, papel, kit de encapar)     |
+| **Recompensas**            | Catálogo de troca de pontos (kits de alimentos e itens não alimentares)                                        |
+| **Infraestrutura digital** | Servidores, armazenamento e execução das aplicações                                                            |
+| **Reposições**             | Acervo e materiais — perda ou dano nunca gera cobrança à família; vira necessidade de reposição a ser aportada |
 
 ## 4. Como apoiar
 

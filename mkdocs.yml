@@ -1,0 +1,100 @@
+site_name: Comunidade Game — Documentação
+site_description: >-
+  Documentação do Comunidade Game: plataforma educacional gamificada, open source,
+  para comunidades periféricas.
+site_author: Carlos Sales
+site_url: https://carlossalesnaturaltec.github.io/comunidade-game/
+
+repo_url: https://github.com/CarlosSalesNaturalTec/comunidade-game
+repo_name: CarlosSalesNaturalTec/comunidade-game
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+strict: true
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+
+theme:
+  name: material
+  language: pt-BR
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - navigation.indexes
+    - toc.follow
+    - content.action.edit
+    - search.highlight
+    - search.suggest
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: green
+      accent: light green
+      toggle:
+        icon: material/weather-night
+        name: Alternar para o modo escuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: green
+      accent: light green
+      toggle:
+        icon: material/weather-sunny
+        name: Alternar para o modo claro
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+
+plugins:
+  - search:
+      lang: pt
+
+nav:
+  - "Início": index.md
+  - "Fundação":
+      - "01 — Visão, valores e propósito": 01-visao-valores-e-proposito.md
+      - "02 — Conceito do jogo e gamificação": 02-conceito-do-jogo-e-gamificacao.md
+      - "11 — Modelo de gamificação": 11-modelo-de-gamificacao.md
+  - "Plataforma":
+      - "03 — Plataforma e arquitetura": 03-plataforma-e-arquitetura.md
+      - "08 — Base para PRDs": 08-base-para-prds.md
+  - "Operação":
+      - "04 — Modelo econômico e sustentabilidade": 04-modelo-economico-e-sustentabilidade.md
+      - "05 — Implantação e operação": 05-implantacao-e-operacao.md
+      - "13 — Código de Conduta (versão prévia)": 13-codigo-de-conduta-versao-previa.md
+  - "Trilhas":
+      - "06 — Robô Educa": 06-robo-educa.md
+      - "07 — Batalha de Laser": 07-batalha-de-laser.md
+  - "Piloto e pendências":
+      - "10 — Case 01: Guerreira Zeferina": 10-case-01-guerreira-zeferina.md
+      - "09 — Tópicos em aberto": 09-topicos-em-aberto-e-sugestoes.md
+      - "12 — Guia do Apoiador": 12-guia-do-apoiador.md
+  - "Referência técnica":
+      - "99 — Mapa de referências (IA)": 99-mapa-de-referencias.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/CarlosSalesNaturalTec/comunidade-game
+      name: Repositório no GitHub
+
+copyright: >-
+  Comunidade Game — projeto open source. Documentação construída com auxílio de
+  inteligência artificial, sob idealização e direção humanas.

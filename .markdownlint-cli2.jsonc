@@ -1,0 +1,36 @@
+{
+  // Regras de estilo dos documentos. Ver CLAUDE.md para as regras de redação.
+  "config": {
+    "default": true,
+
+    // Linha de até 95 caracteres (CLAUDE.md §7). Tabelas e blocos de código
+    // ficam livres: quebrá-los tornaria o texto ilegível.
+    "MD013": {
+      "line_length": 95,
+      "heading_line_length": 95,
+      "code_blocks": false,
+      "tables": false,
+    },
+
+    // Títulos iguais só são erro quando irmãos na mesma seção.
+    "MD024": { "siblings_only": true },
+
+    // Emoji e pontuação nos títulos são usados de propósito (ex.: "🌌 Os 4 elementos").
+    "MD026": false,
+
+    // Ordem dos itens de lista ordenada: 1. 2. 3. — os documentos usam numeração real.
+    "MD029": { "style": "ordered" },
+
+    // Blocos de código sempre cercados por ```.
+    "MD046": { "style": "fenced" },
+
+    // Prettier já normaliza ênfase, listas e espaçamento; evitar regras conflitantes.
+    "MD004": false,
+    "MD007": false,
+    "MD012": false,
+    "MD049": false,
+    "MD050": false,
+  },
+  "globs": ["**/*.md"],
+  "ignores": ["node_modules/**", "site/**", ".venv/**"],
+}

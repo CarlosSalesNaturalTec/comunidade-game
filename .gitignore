@@ -1,0 +1,16 @@
+# Node (ferramentas de lint da documentação)
+node_modules/
+
+# MkDocs
+site/
+
+# Python
+.venv/
+venv/
+__pycache__/
+
+# Editores e SO
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

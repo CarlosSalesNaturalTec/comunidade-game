@@ -51,10 +51,10 @@ registro de quem lançou e por quê.
 
 A distinção é parte do código, para que a regra não vire instrumento de exclusão:
 
-| Situação | Tratamento |
-|---|---|
-| **Dano acidental** — livro molhado pela chuva, equipamento que caiu durante o uso correto, desgaste natural, casa sem espaço adequado de guarda | **Não é infração.** Não gera pontuação negativa nem dívida; a reposição entra como necessidade de recurso a ser aportada por Apoiador |
-| **Descuido deliberado e reiterado** — uso consciente fora das regras, dano proposital, desaparecimento repetido sob a guarda do mesmo jogador após conversa | **É descumprimento de regra** e cabe pontuação negativa, sempre depois de diálogo com o Mestre |
+| Situação                                                                                                                                                    | Tratamento                                                                                                                            |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Dano acidental** — livro molhado pela chuva, equipamento que caiu durante o uso correto, desgaste natural, casa sem espaço adequado de guarda             | **Não é infração.** Não gera pontuação negativa nem dívida; a reposição entra como necessidade de recurso a ser aportada por Apoiador |
+| **Descuido deliberado e reiterado** — uso consciente fora das regras, dano proposital, desaparecimento repetido sob a guarda do mesmo jogador após conversa | **É descumprimento de regra** e cabe pontuação negativa, sempre depois de diálogo com o Mestre                                        |
 
 Sobre o **livro próprio do jogador** (linha Alpha) não incide pontuação negativa em hipótese
 alguma: o que é dele, é dele.
