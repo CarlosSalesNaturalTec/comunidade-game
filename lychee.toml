@@ -1,0 +1,19 @@
+# Verificação de links da documentação (lychee).
+# Executado no CI e disponível localmente: lychee --config lychee.toml .
+
+max_concurrency = 8
+max_retries = 3
+retry_wait_time = 5
+timeout = 20
+
+# Alguns sites respondem 403 a HEAD, mas aceitam GET.
+method = "get"
+user_agent = "Mozilla/5.0 (compatible; lychee link checker; comunidade-game docs)"
+
+# Só 2xx é sucesso; 429 é limite de taxa, não link quebrado.
+accept = ["200..=299", "429"]
+
+# Links internos entre arquivos .md e âncoras de cabeçalho.
+include_fragments = true
+
+exclude_path = ["node_modules", "site", ".venv"]

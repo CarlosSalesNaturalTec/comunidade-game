@@ -28,19 +28,19 @@ auditável, essencial para captar doações e editais.
 
 **Definição vigente.** A pessoa jurídica que representa o projeto perante terceiros:
 
-| | |
-|---|---|
-| **Razão social / nome** | Robô Educa — Kits Robóticos Educacionais |
-| **CNPJ** | 51.730.395/0001-19 |
-| **Responsável legal** | Carlos Antonio Sales — o mesmo fundador e autor do projeto |
+|                         |                                                            |
+| ----------------------- | ---------------------------------------------------------- |
+| **Razão social / nome** | Robô Educa — Kits Robóticos Educacionais                   |
+| **CNPJ**                | 51.730.395/0001-19                                         |
+| **Responsável legal**   | Carlos Antonio Sales — o mesmo fundador e autor do projeto |
 
 É ela que **recebe doações, assina termos e responde formalmente** pelos aportes registrados
 no livro-razão.
 
 > **Nota de governança:** o CNPJ resolve o problema imediato — receber doação e assinar termo
 > hoje —, mas **não encerra** a discussão da forma jurídica adequada para editais e recursos
-> públicos, que normalmente exigem entidade sem fins lucrativos (associação, OSCIP ou *fiscal
-> sponsor*). Os dois assuntos coexistem (documento 09).
+> públicos, que normalmente exigem entidade sem fins lucrativos (associação, OSCIP ou _fiscal
+> sponsor_). Os dois assuntos coexistem (documento 09).
 
 ### Primeiro aporte registrado — acervo e kits do Goethe-Institut
 
@@ -57,11 +57,11 @@ existentes, sem custo adicional para o primeiro ciclo.
 
 **Tratamento no livro-razão — regime misto (definição vigente):**
 
-| Item | Destino | Como entra no ledger |
-|---|---|---|
-| **Livros da linha Alpha** (252) | Doados ao jogador quando ele começa a trilha | **Recompensa entregue** — baixa definitiva do acervo |
-| **Livros da linha Include I** (46) | Acervo permanente do ponto de apoio | **Patrimônio permanente** — sem baixa por consumo, com controle de guarda |
-| **Kits MDF** (30) | Insumo das oficinas do Robô Educa | **Consumível de atividade** — baixa a cada montagem |
+| Item                               | Destino                                      | Como entra no ledger                                                      |
+| ---------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------- |
+| **Livros da linha Alpha** (252)    | Doados ao jogador quando ele começa a trilha | **Recompensa entregue** — baixa definitiva do acervo                      |
+| **Livros da linha Include I** (46) | Acervo permanente do ponto de apoio          | **Patrimônio permanente** — sem baixa por consumo, com controle de guarda |
+| **Kits MDF** (30)                  | Insumo das oficinas do Robô Educa            | **Consumível de atividade** — baixa a cada montagem                       |
 
 Inventário completo, regime de posse e estratégia de conservação: documento 05.
 
@@ -83,10 +83,10 @@ Inventário completo, regime de posse e estratégia de conservação: documento 
 **Definição vigente.** As doações em dinheiro são feitas por **PIX**, em nome da pessoa
 jurídica vinculada:
 
-| | |
-|---|---|
-| **Chave PIX** | `51.730.395/0001-19` (CNPJ) |
-| **Titular** | Robô Educa — Kits Robóticos Educacionais |
+|               |                                          |
+| ------------- | ---------------------------------------- |
+| **Chave PIX** | `51.730.395/0001-19` (CNPJ)              |
+| **Titular**   | Robô Educa — Kits Robóticos Educacionais |
 
 - Toda doação recebida é **registrada no livro-razão** e compõe o **Poder Econômico** do
   doador — dinheiro não é exceção à regra de transparência, é o caso em que ela mais importa.
@@ -114,13 +114,13 @@ concluir.
 
 ### Definições vigentes
 
-| Questão | Definição |
-|---|---|
-| **Pontos** | O desafio extra vale **pontos além da recompensa**, computados **isoladamente como pontos extras** — não se misturam à pontuação regular da trilha |
-| **Teto de desafios simultâneos** | **Não há teto por trilha.** O controle é qualitativo: cada desafio é aprovado ou não por um Admin, caso a caso, após a validação do Mestre |
-| **Exclusividade** | **Proibida nos desafios abertos**: ninguém é barrado de disputar. O que é limitado é a **quantidade** de recompensas, declarada de antemão |
-| **Desafio direcionado** | O Apoiador pode **direcionar um desafio a um jogador específico** — só ele recebe a recompensa se atingir os requisitos. Exige **justificativa registrada** do vínculo (ex.: parente próximo — tio(a), padrinho, madrinha) e aprovação de Admin, além da validação do Mestre |
-| **Quantidade de recompensas** | **Uma única** (para quem concluir primeiro) **ou várias** — todos que concluírem recebem, até o limite disponibilizado |
+| Questão                          | Definição                                                                                                                                                                                                                                                                    |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pontos**                       | O desafio extra vale **pontos além da recompensa**, computados **isoladamente como pontos extras** — não se misturam à pontuação regular da trilha                                                                                                                           |
+| **Teto de desafios simultâneos** | **Não há teto por trilha.** O controle é qualitativo: cada desafio é aprovado ou não por um Admin, caso a caso, após a validação do Mestre                                                                                                                                   |
+| **Exclusividade**                | **Proibida nos desafios abertos**: ninguém é barrado de disputar. O que é limitado é a **quantidade** de recompensas, declarada de antemão                                                                                                                                   |
+| **Desafio direcionado**          | O Apoiador pode **direcionar um desafio a um jogador específico** — só ele recebe a recompensa se atingir os requisitos. Exige **justificativa registrada** do vínculo (ex.: parente próximo — tio(a), padrinho, madrinha) e aprovação de Admin, além da validação do Mestre |
+| **Quantidade de recompensas**    | **Uma única** (para quem concluir primeiro) **ou várias** — todos que concluírem recebem, até o limite disponibilizado                                                                                                                                                       |
 
 Por que o teto foi substituído por aprovação: um número fixo protegeria a trilha do excesso,
 mas barraria um bom desafio pela razão errada — a ordem de chegada. A aprovação caso a caso
@@ -134,13 +134,13 @@ nas salvaguardas.
 
 **O que fica registrado no histórico do Apoiador:**
 
-| Registro | Para que serve |
-|---|---|
+| Registro                                                  | Para que serve                                           |
+| --------------------------------------------------------- | -------------------------------------------------------- |
 | **Recompensas creditadas** — o que ele custeou e entregou | Compõe o **Poder Econômico**, como qualquer outro aporte |
-| **Realizações dos jogadores** nos desafios que ele propôs | Mostra **o que aconteceu** por causa daquele apoio |
+| **Realizações dos jogadores** nos desafios que ele propôs | Mostra **o que aconteceu** por causa daquele apoio       |
 
-É a segunda linha que muda o jogo: o histórico deixa de responder apenas *"quanto foi
-aportado"* e passa a responder *"o que esse apoio produziu"* — quais desafios engajaram,
+É a segunda linha que muda o jogo: o histórico deixa de responder apenas _"quanto foi
+aportado"_ e passa a responder _"o que esse apoio produziu"_ — quais desafios engajaram,
 quantos jogadores concluíram, em que trilhas o apoio rendeu mais. Para o projeto, é o
 argumento de captação mais forte que existe; para o jogador, é a prova de que há gente de fora
 torcendo pelo que ele está construindo.
@@ -181,7 +181,7 @@ grandes doadores.
 
 O projeto é sustentável quando o ciclo se fecha:
 
-```
+```text
 Apoiadores/Parceiros aportam recursos ──► Atividades acontecem (com lastro)
         ▲                                          │
         │                                          ▼

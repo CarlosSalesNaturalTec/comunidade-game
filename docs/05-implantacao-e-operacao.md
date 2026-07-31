@@ -7,7 +7,7 @@ O projeto será implantado **inicialmente em uma comunidade próxima à residên
 
 > **Case de referência: Comunidade Guerreira Zeferina**, Salvador (BA) — **Ciclo 01, de agosto
 > a dezembro de 2026**. A comunidade já foi palco da edição de 2024 do Robô Educa (então
-> chamada *Inova Comunidade*), o que significa começar com relação prévia e memória do
+> chamada _Inova Comunidade_), o que significa começar com relação prévia e memória do
 > território. Hipóteses, metas e critérios estão no documento 10.
 
 A implantação combina presença física (pontos de apoio, encontros) com presença digital (Web
@@ -35,26 +35,26 @@ kits em MDF**. Os livros são **material de apoio** das trilhas Robô Educa e Ba
 vinculados a pontos de trilha específicos (**ponto de trilha → capítulo recomendado**), e
 entram em uso pela primeira vez no Ciclo 01.
 
-| Título | Exemplares | Apoia principalmente |
-|---|---:|---|
-| Robótica Educativa — **Eletrônica** (Alpha) | 110 | Batalha de Laser |
-| Robótica Educativa — **Sensores** (Alpha) | 73 | Batalha de Laser |
-| Robótica Educativa — **Mecânica** (Alpha) | 69 | Robô Educa (montagem do corpo) |
-| Include — **Programação I** | 25 | Robô Educa (código) |
-| Include — **Sensores I** | 10 | Batalha de Laser |
-| Include — **Mecânica I** | 7 | Robô Educa |
-| Include — **Eletrônica I** | 4 | Batalha de Laser |
-| **Total** | **298** | |
+| Título                                      | Exemplares | Apoia principalmente           |
+| ------------------------------------------- | ---------: | ------------------------------ |
+| Robótica Educativa — **Eletrônica** (Alpha) |        110 | Batalha de Laser               |
+| Robótica Educativa — **Sensores** (Alpha)   |         73 | Batalha de Laser               |
+| Robótica Educativa — **Mecânica** (Alpha)   |         69 | Robô Educa (montagem do corpo) |
+| Include — **Programação I**                 |         25 | Robô Educa (código)            |
+| Include — **Sensores I**                    |         10 | Batalha de Laser               |
+| Include — **Mecânica I**                    |          7 | Robô Educa                     |
+| Include — **Eletrônica I**                  |          4 | Batalha de Laser               |
+| **Total**                                   |    **298** |                                |
 
 O acervo **aprofunda** os pontos das duas trilhas: quem quiser ir além do que a aula cobre tem
 o livro na mão. A assimetria do inventário define o regime de posse.
 
 ### Definição vigente — regime misto
 
-| Linha | Exemplares | Regime |
-|---|---:|---|
-| **Alpha** (Eletrônica, Sensores, Mecânica) | 252 | **Doados ao jogador quando ele começa a trilha** — livro próprio, sem devolução |
-| **Include I** (Programação, Sensores, Mecânica, Eletrônica) | 46 | **Acervo permanente do ponto de apoio** — consulta em bancada, sem saída |
+| Linha                                                       | Exemplares | Regime                                                                          |
+| ----------------------------------------------------------- | ---------: | ------------------------------------------------------------------------------- |
+| **Alpha** (Eletrônica, Sensores, Mecânica)                  |        252 | **Doados ao jogador quando ele começa a trilha** — livro próprio, sem devolução |
+| **Include I** (Programação, Sensores, Mecânica, Eletrônica) |         46 | **Acervo permanente do ponto de apoio** — consulta em bancada, sem saída        |
 
 O livro abundante é entregue **na entrada da trilha**, e não como prêmio de conclusão: é
 material de trabalho durante todo o percurso, e depois fica como bem cultural da família. O
@@ -142,14 +142,14 @@ momentos **2 e 5 são assíncronos**; os momentos **3, 4 e 6 são coletivos**, c
 marcado, e é neles que a turma inteira se junta. Não é camisa de força — é a espinha dorsal
 que garante acolhimento, prática, inspiração e voz do jogador em toda aula.
 
-| # | Momento | Ritmo | O que acontece |
-|---|---|---|---|
-| 1 | **Onboarding** | Contínuo | Cadastro de novos jogadores e registro de presença pela App 01, por áudio ou texto, conforme chegam |
-| 2 | **Atividades desplugadas** (*Computer Science Unplugged*) | Assíncrono | Lógica, algoritmos e pensamento computacional **sem computador**: papel, corpo, jogos, materiais do dia a dia. Boa porta de entrada para quem chegou e ainda não pegou um aparelho |
-| 3 | **Bate-papo on-line com mentores e convidados** | Coletivo | Conversa ao vivo com profissionais e referências |
-| 4 | **Momento GOAT / "Podemos ser os melhores"** | Coletivo | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade |
-| 5 | **Trabalho de trilha / Desafio do dia** | Assíncrono | O grosso do encontro: cada equipe avança nos pontos da sua trilha e na atividade pontuada, com apoio do Mestre. O **Quiz ao Vivo** (§5) é a exceção coletiva deste momento |
-| 6 | **Encerramento com apresentação livre** | Coletivo | Cada jogador ou equipe mostra o que construiu e aprendeu, inclusive suas **criações originais**. Treina expressão pública e é a vitrine do protagonismo do jogador |
+| #   | Momento                                                   | Ritmo      | O que acontece                                                                                                                                                                     |
+| --- | --------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Onboarding**                                            | Contínuo   | Cadastro de novos jogadores e registro de presença pela App 01, por áudio ou texto, conforme chegam                                                                                |
+| 2   | **Atividades desplugadas** (_Computer Science Unplugged_) | Assíncrono | Lógica, algoritmos e pensamento computacional **sem computador**: papel, corpo, jogos, materiais do dia a dia. Boa porta de entrada para quem chegou e ainda não pegou um aparelho |
+| 3   | **Bate-papo on-line com mentores e convidados**           | Coletivo   | Conversa ao vivo com profissionais e referências                                                                                                                                   |
+| 4   | **Momento GOAT / "Podemos ser os melhores"**              | Coletivo   | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade                                                                     |
+| 5   | **Trabalho de trilha / Desafio do dia**                   | Assíncrono | O grosso do encontro: cada equipe avança nos pontos da sua trilha e na atividade pontuada, com apoio do Mestre. O **Quiz ao Vivo** (§5) é a exceção coletiva deste momento         |
+| 6   | **Encerramento com apresentação livre**                   | Coletivo   | Cada jogador ou equipe mostra o que construiu e aprendeu, inclusive suas **criações originais**. Treina expressão pública e é a vitrine do protagonismo do jogador                 |
 
 Observações operacionais:
 
@@ -170,7 +170,7 @@ automaticamente.
 
 1. Os jogadores presentes são organizados em **equipes**.
 2. As perguntas são **pré-cadastradas pelo curador da aula (Mestre)**, em múltipla escolha.
-3. Ao dar o *start*, **uma pergunta é exibida simultaneamente em todos os dispositivos logados
+3. Ao dar o _start_, **uma pergunta é exibida simultaneamente em todos os dispositivos logados
    na aula**.
 4. Cada equipe **se consulta internamente** e clica na opção escolhida.
 5. O sistema identifica a **primeira equipe que respondeu corretamente** e registra a
@@ -235,7 +235,7 @@ divulgação editáveis e orçamento-modelo de um primeiro ciclo. É o documento
 "open source" em "replicável de fato".
 
 **[Proposta]** Definir a **entidade jurídica/governança** da iniciativa (associação, OSCIP,
-coletivo com *fiscal sponsor*) — necessária para editais e recursos públicos.
+coletivo com _fiscal sponsor_) — necessária para editais e recursos públicos.
 
 ## 8. Fases sugeridas de implantação do piloto **[Proposta]**
 
@@ -245,15 +245,15 @@ operação — o que corresponde a **chegar até a Fase 3** dentro do ciclo. As 
 ficam para ciclos posteriores. Todas as entregas de software são Web Apps responsivos, Mobile
 First.
 
-| Fase | Entrega | Depende de |
-|---|---|---|
-| 0 — Fundação | Código de conduta (versão prévia, a co-criar no 1º encontro), termos de consentimento, identidade visual, comunidade piloto definida | — |
-| 1 — Onboarding + vitrine | **App 01** + **App 06** + API de personas e de Comunidades Virtuais | PRD-01/02/03 |
-| 2 — Jogo mínimo | **App 03** (gestão, entradas manuais e painéis do dia), poderes e a **1ª trilha — Robô Educa** publicada e pontuando | Fase 1 |
-| 2.5 — Canal da família | **App 07** — é o que torna a hipótese **H2** mensurável | Fase 2 |
-| 3 — Primeiro ciclo presencial completo | Aulas com o roteiro da §4 + **App 02** + Quiz ao Vivo + **2ª trilha — Batalha de Laser** + culminância com vídeo | Fase 2 + ponto de apoio + recursos com lastro |
-| 3.5 — Acervo em operação | Entrega dos livros Alpha na abertura de cada trilha, tombamento dos 46 permanentes, mapeamento capítulo → ponto de trilha e conservação implantada | Fase 2 |
-| 4 — Área do jogador e jogo | **App 05** e **App 04** | Fase 2 |
-| 5 — Comunidade Virtual | Coleta de dados do território e painel público por comunidade | Fase 2 |
-| 6 — Economia visível | Livro-razão público, Poder Econômico, relatórios de transparência | Fase 3 |
-| 7 — Escala | Personalização por IA, formação de multiplicadores e voluntários, kit de implantação para a 2ª comunidade | Fases 3–6 |
+| Fase                                   | Entrega                                                                                                                                            | Depende de                                    |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| 0 — Fundação                           | Código de conduta (versão prévia, a co-criar no 1º encontro), termos de consentimento, identidade visual, comunidade piloto definida               | —                                             |
+| 1 — Onboarding + vitrine               | **App 01** + **App 06** + API de personas e de Comunidades Virtuais                                                                                | PRD-01/02/03                                  |
+| 2 — Jogo mínimo                        | **App 03** (gestão, entradas manuais e painéis do dia), poderes e a **1ª trilha — Robô Educa** publicada e pontuando                               | Fase 1                                        |
+| 2.5 — Canal da família                 | **App 07** — é o que torna a hipótese **H2** mensurável                                                                                            | Fase 2                                        |
+| 3 — Primeiro ciclo presencial completo | Aulas com o roteiro da §4 + **App 02** + Quiz ao Vivo + **2ª trilha — Batalha de Laser** + culminância com vídeo                                   | Fase 2 + ponto de apoio + recursos com lastro |
+| 3.5 — Acervo em operação               | Entrega dos livros Alpha na abertura de cada trilha, tombamento dos 46 permanentes, mapeamento capítulo → ponto de trilha e conservação implantada | Fase 2                                        |
+| 4 — Área do jogador e jogo             | **App 05** e **App 04**                                                                                                                            | Fase 2                                        |
+| 5 — Comunidade Virtual                 | Coleta de dados do território e painel público por comunidade                                                                                      | Fase 2                                        |
+| 6 — Economia visível                   | Livro-razão público, Poder Econômico, relatórios de transparência                                                                                  | Fase 3                                        |
+| 7 — Escala                             | Personalização por IA, formação de multiplicadores e voluntários, kit de implantação para a 2ª comunidade                                          | Fases 3–6                                     |

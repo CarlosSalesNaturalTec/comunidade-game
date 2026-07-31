@@ -1,7 +1,7 @@
 # 08 — Base para Elaboração de PRDs
 
 > **Este é o único documento com detalhamento extenso.** Ele estrutura o conteúdo do projeto
-> como insumo direto para os PRDs (*Product Requirements Documents*): cada bloco abaixo é
+> como insumo direto para os PRDs (_Product Requirements Documents_): cada bloco abaixo é
 > candidato a um PRD, com escopo, requisitos e questões em aberto que o PRD precisará
 > responder. A rastreabilidade entre conceitos, documentos-fonte e PRDs está no documento 99.
 
@@ -11,9 +11,9 @@
 - **Primeira implantação (contexto de todos os PRDs):** Case 01 — Comunidade Guerreira
   Zeferina, Salvador (BA), **Ciclo 01 de ago a dez/2026**. O MVP do ciclo é: credenciamento de
   jogadores, cadastro da comunidade digital e **trilhas 1 e 2 em operação**. Todo PRD deve
-  poder ser respondido com a pergunta *"isto é necessário para o Ciclo 01?"* — o que não for, é
+  poder ser respondido com a pergunta _"isto é necessário para o Ciclo 01?"_ — o que não for, é
   onda seguinte.
-- **Posicionamento:** educacional e *tech first*, com paralelos obrigatórios para outras áreas
+- **Posicionamento:** educacional e _tech first_, com paralelos obrigatórios para outras áreas
   do conhecimento e para valores e temas necessários à sociedade (racismo, violência contra
   mulheres, identidade, povos originários).
 - **Usuários:** Jogadores (crianças e jovens), Mestres, Apoiadores, Admins, Visitantes,
@@ -53,22 +53,21 @@
 - **Toda trilha contém desafios de coleta de dados reais** e **termina em criação original**.
 - Valores do projeto refletidos em conteúdo, conduta e representatividade.
 - **Modelo de gamificação como fonte normativa:** anatomia da trilha, taxonomia de atividades,
-  motor de pontuação, níveis, badges, recompensas e reflexos no ecossistema seguem o documento
-  11.
+  motor de pontuação, níveis, badges, recompensas e reflexos no ecossistema seguem o documento 11.
 - **Mestres de qualquer área do conhecimento** — inclusive humanas, artes, esportes e cultura:
   nenhum modelo de dados ou fluxo pode pressupor habilidade técnica de TI.
 
 ### Aplicações desta etapa e seus PRDs
 
-| Aplicação | PRD |
-|---|---|
+| Aplicação                                                    | PRD    |
+| ------------------------------------------------------------ | ------ |
 | **App 01** — Onboarding (áudio ou texto, cadastro, presença) | PRD-04 |
-| **App 02** — Assistente por voz e Modo Ouvinte | PRD-06 |
-| **App 03** — Gestão administrativa | PRD-02 |
-| **App 04** — Jogo em JavaScript | PRD-12 |
-| **App 05** — Área do Jogador | PRD-05 |
-| **App 06** — Vitrine pública | PRD-03 |
-| **App 07** — Área dos pais e responsáveis | PRD-13 |
+| **App 02** — Assistente por voz e Modo Ouvinte               | PRD-06 |
+| **App 03** — Gestão administrativa                           | PRD-02 |
+| **App 04** — Jogo em JavaScript                              | PRD-12 |
+| **App 05** — Área do Jogador                                 | PRD-05 |
+| **App 06** — Vitrine pública                                 | PRD-03 |
+| **App 07** — Área dos pais e responsáveis                    | PRD-13 |
 
 ---
 
@@ -204,7 +203,7 @@ dos já cadastrados, por **áudio ou texto**, com IA.
 - Registro de presença de jogador conhecido em poucos segundos.
 
 **Requisitos de proteção de dados (obrigatórios):** finalidade única da foto (presença);
-consentimento informado do responsável registrado; preferência por *template* biométrico não
+consentimento informado do responsável registrado; preferência por _template_ biométrico não
 reversível; criptografia e acesso auditado; prazo de retenção com exclusão automática;
 **alternativa de presença sem biometria** para quem recusar.
 
@@ -269,9 +268,10 @@ backend** — com dois modos de operação.
 - Registro de dados do território **por voz**, alimentando as séries da Comunidade Virtual sem
   exigir digitação.
 
-**Questões em aberto:** provedor e custo do modelo de IA; processamento de áudio no dispositivo ×
-nuvem; base legal e prazo de retenção da transcrição de aula com menores; critério de acionamento
-do Modo Ouvinte (palavra-chave, botão do Mestre ou ambos); comportamento em salas barulhentas.
+**Questões em aberto:** provedor e custo do modelo de IA; processamento de áudio no
+dispositivo × nuvem; base legal e prazo de retenção da transcrição de aula com menores;
+critério de acionamento do Modo Ouvinte (palavra-chave, botão do Mestre ou ambos);
+comportamento em salas barulhentas.
 
 **Fontes:** docs 03, 06.
 
@@ -323,7 +323,7 @@ relatório de efetividade** entregue ao Apoiador.
 ## PRD-08 — Comunidades Virtuais e dados do território
 
 **Escopo:** representação digital da comunidade real em que o jogador vive, construída pelos
-próprios jogadores — a base *Data Driven* da plataforma.
+próprios jogadores — a base _Data Driven_ da plataforma.
 
 **Requisitos:**
 

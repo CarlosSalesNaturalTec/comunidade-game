@@ -5,44 +5,44 @@ Nada aqui é decisão tomada — é pauta.
 
 ## 1. Decisões pendentes
 
-| Tema | Situação / encaminhamento |
-|---|---|
+| Tema                                           | Situação / encaminhamento                                                                                                                                                                                                                                                                                                                                                                |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Pontuação da coleta de dados do território** | **Prioridade alta.** A coleta pontua de forma recorrente enquanto a série estiver ativa; faltam os números: **cadência e valor em pontos por tipo de coleta**, **janela de tolerância** antes de considerar a série interrompida, **teto por período** e **mecânica de verificação da veracidade** do dado. É a mecânica que sustenta a Comunidade Virtual e a que mais convida à fraude |
-| **Modo Ouvinte do App 02** | **Prioridade alta** — envolve captação de voz de crianças. Definir formalmente: critério de acionamento, o que é transcrito e por quanto tempo é retido, base legal, forma do aviso e do consentimento, e a alternativa para quem recusar |
-| Nome do projeto | Adotado **Comunidade Game**; alternativa em avaliação **Inova Comunidade**. Decidir antes de registrar domínio, marca e identidade visual |
-| Lema "GOAT / Podemos ser os melhores" | Já é momento fixo da aula presencial. Decidir se vira slogan oficial e se precisa de forma curta para peças gráficas |
-| Pontuação das recompensas | Kits de alimentos e demais recompensas: os valores atuais são apenas sugestão |
-| Provedor de IA e de reconhecimento facial | Custo, privacidade e processamento no dispositivo × nuvem |
-| Prazo de retenção da foto de presença | Definir número em dias ou meses e rotina de exclusão automática |
-| Pontuação e regras do Quiz ao Vivo | Pontos da vitória, formato de resposta (equipe × representante), critério de desempate e nº de dispositivos por equipe |
-| Criação original — pontos e badge | Falta definir valor em pontos, critérios de validação pelo Mestre e formato da exposição no portfólio |
-| Canal de sugestões do jogador | Falta definir formato do registro (texto ou áudio), se sugestão adotada pontua, e prazo e forma do retorno a quem sugeriu |
-| Nota de transparência sobre IA na vitrine | Falta definir texto final, localização exata e a conexão com a linha "Licenças" quanto a conteúdo gerado com auxílio de IA |
-| Valoração e guarda do acervo e dos kits | Como o acervo e os 30 kits MDF entram no livro-razão (valor de mercado, simbólico ou contagem física) e quem responde pela guarda em cada ponto de apoio |
-| Estratégia de conservação do acervo permanente | Validar a estratégia da linha Include I (tombamento, ficha de vida, uso de bancada, badge "Guardião do Acervo", guarda por equipe, reposição solidária) |
-| Mapeamento dos livros nas trilhas | Identificar o conteúdo de cada título e indicar qual capítulo apoia qual ponto das trilhas 1 e 2. Trabalho de leitura, não de criação de trilha |
-| Relatório de efetividade ao Apoiador | Quais números, com que periodicidade e em que nível de agregação |
-| Licenças | Código (AGPL/MIT?) e conteúdo educacional (Creative Commons?) |
-| Stack de análise de movimentos (Capoeira) | **Adiado — ciclo futuro.** Quando voltar à pauta: MediaPipe para captação da pose, TensorFlow como alternativa para classificação, e a decisão de processar **no dispositivo ou no servidor** — é vídeo de criança, e a resposta muda a exposição de dados |
-| Orquestrador "do explore ao merge" | Automação do fluxo de desenvolvimento com agentes de IA. Definir se entra em `CONTRIBUTING.md` |
-| Uso do Slack no fluxo de desenvolvimento | Decidir |
-| Git como canal entre agentes e humanos | Proposta: GitHub Issues + labels como canal padrão; Discussions para debate; Projects para roadmap |
-| Submarcas | **Rôbróders** e **Robô Educa** podem nomear subprodutos (ex.: os kits "Rôbróders") |
-| Universo dos personagens | Susy, Otávio, Rôbróders e prof. Carlos Trenell — formalizar roteiro e identidade da narrativa |
-| Pendências do Case 01 | Ponto de apoio físico, calendário do Ciclo 01, tamanho da turma, metas numéricas de H1 e H2 e resgate da memória da edição de 2024 (documento 10) |
+| **Modo Ouvinte do App 02**                     | **Prioridade alta** — envolve captação de voz de crianças. Definir formalmente: critério de acionamento, o que é transcrito e por quanto tempo é retido, base legal, forma do aviso e do consentimento, e a alternativa para quem recusar                                                                                                                                                |
+| Nome do projeto                                | Adotado **Comunidade Game**; alternativa em avaliação **Inova Comunidade**. Decidir antes de registrar domínio, marca e identidade visual                                                                                                                                                                                                                                                |
+| Lema "GOAT / Podemos ser os melhores"          | Já é momento fixo da aula presencial. Decidir se vira slogan oficial e se precisa de forma curta para peças gráficas                                                                                                                                                                                                                                                                     |
+| Pontuação das recompensas                      | Kits de alimentos e demais recompensas: os valores atuais são apenas sugestão                                                                                                                                                                                                                                                                                                            |
+| Provedor de IA e de reconhecimento facial      | Custo, privacidade e processamento no dispositivo × nuvem                                                                                                                                                                                                                                                                                                                                |
+| Prazo de retenção da foto de presença          | Definir número em dias ou meses e rotina de exclusão automática                                                                                                                                                                                                                                                                                                                          |
+| Pontuação e regras do Quiz ao Vivo             | Pontos da vitória, formato de resposta (equipe × representante), critério de desempate e nº de dispositivos por equipe                                                                                                                                                                                                                                                                   |
+| Criação original — pontos e badge              | Falta definir valor em pontos, critérios de validação pelo Mestre e formato da exposição no portfólio                                                                                                                                                                                                                                                                                    |
+| Canal de sugestões do jogador                  | Falta definir formato do registro (texto ou áudio), se sugestão adotada pontua, e prazo e forma do retorno a quem sugeriu                                                                                                                                                                                                                                                                |
+| Nota de transparência sobre IA na vitrine      | Falta definir texto final, localização exata e a conexão com a linha "Licenças" quanto a conteúdo gerado com auxílio de IA                                                                                                                                                                                                                                                               |
+| Valoração e guarda do acervo e dos kits        | Como o acervo e os 30 kits MDF entram no livro-razão (valor de mercado, simbólico ou contagem física) e quem responde pela guarda em cada ponto de apoio                                                                                                                                                                                                                                 |
+| Estratégia de conservação do acervo permanente | Validar a estratégia da linha Include I (tombamento, ficha de vida, uso de bancada, badge "Guardião do Acervo", guarda por equipe, reposição solidária)                                                                                                                                                                                                                                  |
+| Mapeamento dos livros nas trilhas              | Identificar o conteúdo de cada título e indicar qual capítulo apoia qual ponto das trilhas 1 e 2. Trabalho de leitura, não de criação de trilha                                                                                                                                                                                                                                          |
+| Relatório de efetividade ao Apoiador           | Quais números, com que periodicidade e em que nível de agregação                                                                                                                                                                                                                                                                                                                         |
+| Licenças                                       | Código (AGPL/MIT?) e conteúdo educacional (Creative Commons?)                                                                                                                                                                                                                                                                                                                            |
+| Stack de análise de movimentos (Capoeira)      | **Adiado — ciclo futuro.** Quando voltar à pauta: MediaPipe para captação da pose, TensorFlow como alternativa para classificação, e a decisão de processar **no dispositivo ou no servidor** — é vídeo de criança, e a resposta muda a exposição de dados                                                                                                                               |
+| Orquestrador "do explore ao merge"             | Automação do fluxo de desenvolvimento com agentes de IA. Definir se entra em `CONTRIBUTING.md`                                                                                                                                                                                                                                                                                           |
+| Uso do Slack no fluxo de desenvolvimento       | Decidir                                                                                                                                                                                                                                                                                                                                                                                  |
+| Git como canal entre agentes e humanos         | Proposta: GitHub Issues + labels como canal padrão; Discussions para debate; Projects para roadmap                                                                                                                                                                                                                                                                                       |
+| Submarcas                                      | **Rôbróders** e **Robô Educa** podem nomear subprodutos (ex.: os kits "Rôbróders")                                                                                                                                                                                                                                                                                                       |
+| Universo dos personagens                       | Susy, Otávio, Rôbróders e prof. Carlos Trenell — formalizar roteiro e identidade da narrativa                                                                                                                                                                                                                                                                                            |
+| Pendências do Case 01                          | Ponto de apoio físico, calendário do Ciclo 01, tamanho da turma, metas numéricas de H1 e H2 e resgate da memória da edição de 2024 (documento 10)                                                                                                                                                                                                                                        |
 
 ### Já decididos — registrados aqui para não voltarem à pauta
 
-| Tema | Decisão |
-|---|---|
-| Canal de comunicação com os responsáveis | A **App 07** é o canal oficial. Segue em aberto apenas a forma de acesso, os prazos de resposta e a notificação ativa |
-| Mecânica do jogo (App 04) | O jogo **não gera pontuação, apenas a consome**. Seguem em aberto gênero, mecânica, o que os pontos compram e a confirmação da engine Phaser.js |
-| Desafios extras de Apoiadores | Valem **pontos extras** isolados; **sem teto** de desafios simultâneos, porque cada um é aprovado por Admin; nos abertos, a disputa é para todos os que concluírem, com quantidade declarada; existe a modalidade **direcionada** |
-| Poder do Território | O registro de dados do território é um **poder próprio**, com progressão e badges por sustentar séries de coleta |
-| Código de Conduta | **Co-criado com os jogadores** na primeira interação presencial, a partir da versão prévia do documento 13 |
-| Criação original | **Toda trilha desemboca em criação original**, com autoria creditada, vitrine, pontos e badge de autoria |
-| Acervo Include: doar ou reaproveitar | **Regime misto**: 252 exemplares da linha Alpha doados ao jogador na abertura da trilha; 46 da linha Include I como acervo permanente |
-| Rima e Capoeira | **Ciclo futuro** — fora do escopo do Ciclo 01 |
+| Tema                                     | Decisão                                                                                                                                                                                                                           |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Canal de comunicação com os responsáveis | A **App 07** é o canal oficial. Segue em aberto apenas a forma de acesso, os prazos de resposta e a notificação ativa                                                                                                             |
+| Mecânica do jogo (App 04)                | O jogo **não gera pontuação, apenas a consome**. Seguem em aberto gênero, mecânica, o que os pontos compram e a confirmação da engine Phaser.js                                                                                   |
+| Desafios extras de Apoiadores            | Valem **pontos extras** isolados; **sem teto** de desafios simultâneos, porque cada um é aprovado por Admin; nos abertos, a disputa é para todos os que concluírem, com quantidade declarada; existe a modalidade **direcionada** |
+| Poder do Território                      | O registro de dados do território é um **poder próprio**, com progressão e badges por sustentar séries de coleta                                                                                                                  |
+| Código de Conduta                        | **Co-criado com os jogadores** na primeira interação presencial, a partir da versão prévia do documento 13                                                                                                                        |
+| Criação original                         | **Toda trilha desemboca em criação original**, com autoria creditada, vitrine, pontos e badge de autoria                                                                                                                          |
+| Acervo Include: doar ou reaproveitar     | **Regime misto**: 252 exemplares da linha Alpha doados ao jogador na abertura da trilha; 46 da linha Include I como acervo permanente                                                                                             |
+| Rima e Capoeira                          | **Ciclo futuro** — fora do escopo do Ciclo 01                                                                                                                                                                                     |
 
 ## 2. Propostas de novos tópicos **[Proposta]**
 
@@ -66,7 +66,7 @@ A detalhar:
 - **Verificação e supervisão dos voluntários** recrutados entre jogadores Mestres Aprendizes,
   muitos deles ainda menores de idade.
 - Mediação de toda interação adulto–criança pela plataforma, inclusive patrocinadores.
-- Política de *safeguarding* para atividades presenciais: verificação de mestres e voluntários,
+- Política de _safeguarding_ para atividades presenciais: verificação de mestres e voluntários,
   adulto nunca sozinho com criança, canal de denúncia.
 - **Dados de território × privacidade**: registrar rua, bloco e quadra sem permitir inferir o
   endereço de uma criança específica.
@@ -83,7 +83,7 @@ A detalhar:
   (CNPJ 51.730.395/0001-19), responsável legal Carlos Antonio Sales. É ela que recebe doações e
   assina termos, como o Termo de Doação do acervo Include.
 - **Em aberto:** forma jurídica **sem fins lucrativos** para editais e recursos públicos
-  (associação, OSCIP, *fiscal sponsor*), que normalmente não aceitam empresa como proponente. Os
+  (associação, OSCIP, _fiscal sponsor_), que normalmente não aceitam empresa como proponente. Os
   dois arranjos podem coexistir — decidir quando e como.
 - **Em aberto:** separação contábil entre a atividade comercial da empresa e os recursos do
   projeto — sem ela, a "transparência radical" do livro-razão fica sem contrapartida real.
@@ -92,7 +92,7 @@ A detalhar:
 ### Indicadores de impacto
 
 Métricas de aprendizado, retenção, atividades realizadas, dados de território registrados e
-recursos movimentados — definidas antes do piloto, para permitir comparação (*baseline*).
+recursos movimentados — definidas antes do piloto, para permitir comparação (_baseline_).
 
 ### Acessibilidade e inclusão
 

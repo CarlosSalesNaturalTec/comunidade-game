@@ -1,0 +1,6 @@
+# Site de documentação (MkDocs). Uso local:
+#   python -m venv .venv && .venv/Scripts/activate   (Windows)
+#   pip install -r requirements-docs.txt
+#   mkdocs serve
+mkdocs==1.6.1
+mkdocs-material==9.5.44

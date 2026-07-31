@@ -54,19 +54,19 @@
 > **Decisão de projeto:** o laser atingindo o LDR é sempre o gatilho real do jogo. A rede
 > Wi-Fi serve **exclusivamente como telemetria**.
 
-```
+```text
 [Atacante NodeMCU]  ─────────────────────────────┐
 [Defensor NodeMCU]  ──── Wi-Fi / MQTT ────────────┼──► [TP-Link Dedicado] ──► [Notebook/Nexus]
 [Torre NodeMCU]     ─────────────────────────────┘      Broker: Mosquitto
 ```
 
-| Componente | Tópico | Payload exemplo |
-|---|---|---|
-| Atacante | `game/atacante/stamina` | `{"stamina": 75, "status": "ativo"}` |
-| Defensor | `game/defensor/hp` | `{"hp": 3, "status": "ativo"}` |
-| Defensor | `game/defensor/punicao` | `{"tipo": "DANO_DUPLO"}` |
-| Torre | `game/torre/hp` | `{"hp": 60}` |
-| Nexus | `game/nexus/comando` | `{"cmd": "START"}` |
+| Componente | Tópico                  | Payload exemplo                      |
+| ---------- | ----------------------- | ------------------------------------ |
+| Atacante   | `game/atacante/stamina` | `{"stamina": 75, "status": "ativo"}` |
+| Defensor   | `game/defensor/hp`      | `{"hp": 3, "status": "ativo"}`       |
+| Defensor   | `game/defensor/punicao` | `{"tipo": "DANO_DUPLO"}`             |
+| Torre      | `game/torre/hp`         | `{"hp": 60}`                         |
+| Nexus      | `game/nexus/comando`    | `{"cmd": "START"}`                   |
 
 **Fluxo da penalidade de Dano Duplo:** escudo com HP 0 detecta hit no LDR → publica
 `game/defensor/punicao` → a Torre, assinante do tópico, aplica dano × 2 localmente → publica
@@ -96,12 +96,12 @@ Mosquitto no IP fixo `192.168.1.100` (o notebook).
 ## 🎭 A partida
 
 - **Pre-game.** O Controlador aciona "Start" no painel; o Nexus publica `{"cmd": "START"}`. As
-  30 luzes da Torre acendem, o DFPlayer anuncia *"Batalha iniciada! Protejam a base."* e os
+  30 luzes da Torre acendem, o DFPlayer anuncia _"Batalha iniciada! Protejam a base."_ e os
   escudos acendem os 5 LEDs em azul.
 - **Mid-game.** O Atacante avança disparando; o Defensor se coloca na frente. Cada impacto
   absorvido apaga um LED do escudo e é registrado no painel. Rajadas rápidas demais fazem a
   arma "engasgar": stamina 0, luz vermelha piscando e aviso de reinicialização de energia.
-- **Punição.** Escudo em HP 0, controlador avisa *"Escudo quebrado! Sai da frente!"*. Se o
+- **Punição.** Escudo em HP 0, controlador avisa _"Escudo quebrado! Sai da frente!"_. Se o
   defensor não recua e o laser acerta, o alarme dispara, os 30 LEDs da torre piscam em vermelho
   e soa a explosão: **dano duplo aplicado**.
 - **Game over e telemetria.** A torre zera, o Nexus pausa o sistema e exibe o resumo da partida
@@ -147,13 +147,13 @@ tópico de punição.
 
 ## 📦 Hardware do projeto
 
-| Componente | Hardware | Qtd |
-|---|---|---|
-| Atacante | NodeMCU ESP8266 + módulo laser | 1 |
-| Defensor | NodeMCU ESP8266 + 2× LDR + fita 5 LEDs | 1 |
-| Torre | NodeMCU ESP8266 + 2× LDR + fita 30 LEDs + DFPlayer Mini | 1 |
-| Nexus | Notebook (Python + Mosquitto MQTT) | 1 |
-| Roteador | TP-Link TD-VG5611 (rede isolada) | 1 |
+| Componente | Hardware                                                | Qtd |
+| ---------- | ------------------------------------------------------- | --- |
+| Atacante   | NodeMCU ESP8266 + módulo laser                          | 1   |
+| Defensor   | NodeMCU ESP8266 + 2× LDR + fita 5 LEDs                  | 1   |
+| Torre      | NodeMCU ESP8266 + 2× LDR + fita 30 LEDs + DFPlayer Mini | 1   |
+| Nexus      | Notebook (Python + Mosquitto MQTT)                      | 1   |
+| Roteador   | TP-Link TD-VG5611 (rede isolada)                        | 1   |
 
 ## Integração com a plataforma **[Proposta]**
 

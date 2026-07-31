@@ -1,0 +1,18 @@
+{
+  "name": "comunidade-game-docs",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Documentação do projeto Comunidade Game — ferramentas de qualidade de texto",
+  "scripts": {
+    "lint": "npm run lint:md && npm run lint:format",
+    "lint:md": "markdownlint-cli2",
+    "lint:format": "prettier --check .",
+    "fix": "npm run fix:format && npm run fix:md",
+    "fix:format": "prettier --write .",
+    "fix:md": "markdownlint-cli2 --fix"
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "0.14.0",
+    "prettier": "3.3.3"
+  }
+}

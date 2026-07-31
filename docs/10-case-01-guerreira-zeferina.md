@@ -13,12 +13,12 @@ presencial** (oficinas do Robô Educa desde 2018).
 O Case 01 é o ponto em que a ideação encontra a realidade: a primeira comunidade em que a
 plataforma será implantada e medida.
 
-| | |
-|---|---|
-| **Comunidade** | Guerreira Zeferina |
-| **Localização** | Salvador — Bahia — Brasil |
-| **Ciclo 01** | **Agosto a dezembro de 2026** |
-| **Escopo do ciclo** | Implantação do **MVP** da plataforma + trilhas 1 e 2 |
+|                          |                                                            |
+| ------------------------ | ---------------------------------------------------------- |
+| **Comunidade**           | Guerreira Zeferina                                         |
+| **Localização**          | Salvador — Bahia — Brasil                                  |
+| **Ciclo 01**             | **Agosto a dezembro de 2026**                              |
+| **Escopo do ciclo**      | Implantação do **MVP** da plataforma + trilhas 1 e 2       |
 | **Situação em jul/2026** | Ideação concluída; hipóteses formuladas; ciclo por iniciar |
 
 ## 2. Por que Guerreira Zeferina
@@ -43,11 +43,11 @@ O ciclo é, antes de tudo, um **teste de hipóteses**. Elas estão escritas aqui
 foram formuladas, para que ao fim do ciclo seja possível dizer, sem reescrever a história, se
 cada uma se confirmou.
 
-| # | Hipótese | Como se verifica |
-|---|---|---|
+| #      | Hipótese                                                                                                                       | Como se verifica                                                                           |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | **H1** | O público-alvo — crianças e jovens de 6 a 16 anos — vai se interessar pelo tema e **se inscrever** na plataforma e nas trilhas | Nº de cadastros efetivados no onboarding (App 01) e nº de jogadores que iniciam uma trilha |
-| **H2** | Os **pais ou responsáveis** vão permitir a participação, tomar conhecimento do tratamento de dados e **aceitar os termos** | Nº de autorizações concedidas / nº de jogadores ativos, medido na App 07 |
-| **H3** | Os **recursos de implantação do MVP** serão supridos por mestres e apoiadores | Lastro registrado no livro-razão × recursos necessários às atividades previstas |
+| **H2** | Os **pais ou responsáveis** vão permitir a participação, tomar conhecimento do tratamento de dados e **aceitar os termos**     | Nº de autorizações concedidas / nº de jogadores ativos, medido na App 07                   |
+| **H3** | Os **recursos de implantação do MVP** serão supridos por mestres e apoiadores                                                  | Lastro registrado no livro-razão × recursos necessários às atividades previstas            |
 
 - **H1 e H2 são independentes.** A adesão em duas etapas foi desenhada exatamente para isso: o
   jogador participa com cadastro livre (H1), e a autorização do responsável (H2) libera apenas a
@@ -102,8 +102,8 @@ Consequências práticas:
   próprio ciclo.
 - Os **30 kits MDF** dimensionam a primeira turma que monta o robô em MDF; o saldo precisa estar
   visível no painel do dia.
-- O **mapeamento capítulo → ponto de trilha** deve cobrir, no mínimo, os pontos das trilhas 1 e 2
-  efetivamente aplicados aqui — não o acervo inteiro.
+- O **mapeamento capítulo → ponto de trilha** deve cobrir, no mínimo, os pontos das trilhas
+  1 e 2 efetivamente aplicados aqui — não o acervo inteiro.
 - A prestação de contas do acervo ao fim do ciclo é o **primeiro relatório real de transparência
   da plataforma**, devido ao Apoiador que doou.
 
@@ -112,13 +112,13 @@ Consequências práticas:
 Aplicação do modelo de distribuição de trilha por etapas do ciclo ao calendário ago–dez/2026.
 Marcada como proposta porque o calendário dos encontros ainda é pendência do case (§7).
 
-| Período | Etapa | Trilha em foco | Conteúdo e acervo |
-|---|---|---|---|
-| **Agosto** | Abertura | **Trilha 1 — Robô Educa** (início) | Onboarding e credenciamento; Comunidade Virtual criada antes do 1º encontro; ritual de entrada — entrega do livro **Alpha Mecânica** e do kit MDF ou PET; abertura das **séries de coleta** |
-| **Setembro** | Desenvolvimento | Trilha 1 — pontos intermediários | Voz, prompts, limites da IA; **Include Programação I** e **Mecânica I** em bancada; séries de coleta rendendo pontos; desafios extras de Apoiadores |
-| **Outubro** | Transição | Conclusão da trilha 1 → **Trilha 2** (início) | Publicação da versão do robô; entrega dos livros **Alpha Eletrônica** e **Alpha Sensores**; construção dos artefatos; **Include Eletrônica I** e **Sensores I** em bancada |
-| **Novembro** | Desenvolvimento + marco | Trilha 2 completa | Wi-Fi/MQTT, lógica do jogo, sensor de território instalado; **Batalha de Laser** presencial como marco do ciclo, com telemetria alimentando ranking e portfólio |
-| **Dezembro** | Fechamento | — | **Culminância** (apresentação pública, com consentimentos), conferência de inventário, prestação de contas ao Apoiador e avaliação de H1–H3 |
+| Período      | Etapa                   | Trilha em foco                                | Conteúdo e acervo                                                                                                                                                                           |
+| ------------ | ----------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Agosto**   | Abertura                | **Trilha 1 — Robô Educa** (início)            | Onboarding e credenciamento; Comunidade Virtual criada antes do 1º encontro; ritual de entrada — entrega do livro **Alpha Mecânica** e do kit MDF ou PET; abertura das **séries de coleta** |
+| **Setembro** | Desenvolvimento         | Trilha 1 — pontos intermediários              | Voz, prompts, limites da IA; **Include Programação I** e **Mecânica I** em bancada; séries de coleta rendendo pontos; desafios extras de Apoiadores                                         |
+| **Outubro**  | Transição               | Conclusão da trilha 1 → **Trilha 2** (início) | Publicação da versão do robô; entrega dos livros **Alpha Eletrônica** e **Alpha Sensores**; construção dos artefatos; **Include Eletrônica I** e **Sensores I** em bancada                  |
+| **Novembro** | Desenvolvimento + marco | Trilha 2 completa                             | Wi-Fi/MQTT, lógica do jogo, sensor de território instalado; **Batalha de Laser** presencial como marco do ciclo, com telemetria alimentando ranking e portfólio                             |
+| **Dezembro** | Fechamento              | —                                             | **Culminância** (apresentação pública, com consentimentos), conferência de inventário, prestação de contas ao Apoiador e avaliação de H1–H3                                                 |
 
 Notas de paginação:
 
@@ -150,7 +150,7 @@ Ao fim de dezembro de 2026, o ciclo responde:
    sugestões de melhoria os jogadores registraram.
 
 Esses seis pontos são a base dos **indicadores de impacto** que o projeto ainda precisa
-formalizar — e o *baseline* contra o qual a segunda comunidade será comparada.
+formalizar — e o _baseline_ contra o qual a segunda comunidade será comparada.
 
 ## 7. Pontos a definir do case
 

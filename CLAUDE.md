@@ -7,7 +7,7 @@ documentação do projeto, na pasta `docs/`.
 ## Estado atual e próxima etapa
 
 1. **Agora:** revisão e validação humana de todos os documentos de `docs/`.
-2. **Depois da validação:** geração dos **PRDs** (*Product Requirements Documents*), a partir
+2. **Depois da validação:** geração dos **PRDs** (_Product Requirements Documents_), a partir
    do documento `docs/08-base-para-prds.md`.
 3. **Depois dos PRDs:** desenvolvimento das sete aplicações e do Backend API.
 
@@ -43,8 +43,9 @@ Cada assunto tem **um** documento normativo, listado em `docs/99-mapa-de-referen
 
 ### 3. Referências entre documentos ficam no doc 99
 
-- Os documentos 00–13 **não** carregam links `[XX §Y](arquivo.md#ancora)` entre si. Quando o
-  leitor humano precisar mesmo ser encaminhado, escreva em texto simples: *"(documento 05)"*.
+- Os documentos 01–13 **não** carregam links `[XX §Y](arquivo.md#ancora)` entre si. Quando o
+  leitor humano precisar mesmo ser encaminhado, escreva em texto simples: _"(documento 05)"_.
+  A exceção é `docs/index.md`, cuja função é justamente indexar e linkar os demais.
 - Todo o mapa de relações — fonte única, dependências, conceitos, aplicações → PRDs,
   rastreabilidade e invariantes — vive em `docs/99-mapa-de-referencias.md`, que existe para
   orientar agentes de IA, não humanos.
@@ -78,8 +79,8 @@ só do Jogador, coleta obrigatória em toda trilha, jogo que não credita pontos
 permanente com anonimização na saída, escopo do Ciclo 01, entre outros). Contradizer um deles é
 erro de documentação, não variação de redação.
 
-Confira também numeração de seções contínua, títulos coerentes com o índice do documento 00 e
-tabelas com totais que fecham.
+Confira também numeração de seções contínua, títulos coerentes com o índice
+(`docs/index.md`) e com a `nav` do `mkdocs.yml`, e tabelas com totais que fecham.
 
 ### 7. Idioma e formatação
 
@@ -89,12 +90,52 @@ tabelas com totais que fecham.
 - Tabelas para catálogos e regras comparativas; blocos de código apenas para diagramas ASCII,
   trechos de código e payloads.
 
+## Esteira de CI da documentação
+
+Quatro verificações rodam a cada pull request (`.github/workflows/docs-ci.yml`). Todas
+podem — e devem — ser rodadas localmente antes de abrir o PR.
+
+| Ferramenta       | O que verifica                                         | Comando local                   |
+| ---------------- | ------------------------------------------------------ | ------------------------------- |
+| **markdownlint** | Estilo do Markdown, incluindo a linha de 95 caracteres | `npm run lint:md`               |
+| **Prettier**     | Formatação (tabelas, listas, espaçamento, ênfase)      | `npm run lint:format`           |
+| **Lychee**       | Links internos e externos quebrados                    | `lychee --config lychee.toml .` |
+| **MkDocs**       | O site compila em modo `--strict`                      | `mkdocs build --strict`         |
+
+Atalhos: `npm run lint` roda markdownlint + Prettier; **`npm run fix` corrige
+automaticamente** o que for corrigível. Rode `npm run fix` antes de commitar — é o caminho
+mais rápido para o CI ficar verde.
+
+Preparação do ambiente local (uma vez):
+
+```bash
+npm install
+python -m venv .venv && .venv/Scripts/activate   # Linux/macOS: source .venv/bin/activate
+pip install -r requirements-docs.txt
+mkdocs serve                                     # prévia em http://127.0.0.1:8000
+```
+
+Regras que a esteira impõe e que valem ao escrever:
+
+- **Blocos de código sempre com linguagem.** Diagramas ASCII usam ` ```text `.
+- **Não usar negrito como se fosse título** — se é título, use `####`.
+- **Linha de até 95 caracteres** fora de tabelas e blocos de código.
+- **Todo arquivo novo em `docs/` precisa entrar na `nav` do `mkdocs.yml`**, senão o build
+  `--strict` falha.
+- Links para domínios que bloqueiam robôs (LinkedIn, Google Drive) ficam em `.lycheeignore`
+  e precisam ser conferidos à mão quando mudarem.
+
+O deploy do site no GitHub Pages (`.github/workflows/docs-deploy.yml`) acontece **somente
+após merge em `main`** — nunca a partir de um PR.
+
 ## Checklist antes de entregar uma revisão de documentação
 
 - [ ] O texto ficou **menor** que antes, sem perder definição?
 - [ ] Nenhuma regra foi duplicada — cada assunto está no seu documento-fonte?
-- [ ] Nenhum link cruzado entre documentos 00–13 foi introduzido?
+- [ ] Nenhum link cruzado entre documentos 01–13 foi introduzido?
 - [ ] O doc 99 foi atualizado, se alguma relação entre documentos mudou?
 - [ ] Pendências novas entraram no doc 09?
 - [ ] Os invariantes do doc 99 §6 continuam válidos?
-- [ ] A numeração de seções está contínua e o doc 00 reflete a estrutura atual?
+- [ ] A numeração de seções está contínua e `docs/index.md` reflete a estrutura atual?
+- [ ] `npm run lint` e `mkdocs build --strict` passam?
+- [ ] Documento novo ou renomeado foi acrescentado à `nav` do `mkdocs.yml`?
