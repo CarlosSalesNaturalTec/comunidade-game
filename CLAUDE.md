@@ -122,8 +122,8 @@ Regras que a esteira impõe e que valem ao escrever:
 - **Linha de até 95 caracteres** fora de tabelas e blocos de código.
 - **Todo arquivo novo em `docs/` precisa entrar na `nav` do `mkdocs.yml`**, senão o build
   `--strict` falha.
-- Links para domínios que bloqueiam robôs (LinkedIn, Google Drive) ficam em `.lycheeignore`
-  e precisam ser conferidos à mão quando mudarem.
+- Links para domínios que bloqueiam robôs (LinkedIn, Google Drive, Phaser) ficam em
+  `.lycheeignore` e precisam ser conferidos à mão quando mudarem.
 
 O deploy do site no GitHub Pages (`.github/workflows/docs-deploy.yml`) acontece **somente
 após merge em `main`** — nunca a partir de um PR.
