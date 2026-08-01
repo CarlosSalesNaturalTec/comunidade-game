@@ -159,8 +159,9 @@ negras e indígenas que impactaram positivamente a sociedade.
 - A **convivência entre idades é tratada com papéis, não com segmentação**: as equipes
   misturam idades deliberadamente, e os mais velhos ou mais avançados mediam e apoiam os
   mais novos.
-- **Todo jogador é vinculado a uma Comunidade Virtual**, escolhida no cadastro. É esse
-  vínculo que define a que território seus dados coletados pertencem.
+- **Todo jogador é vinculado a uma Comunidade Virtual**, atribuída no cadastro pela
+  comunidade default que a gestão define. É esse vínculo que define a que território seus
+  dados coletados pertencem.
 - **Adesão em duas etapas:** o primeiro acesso é **livre**, sem exigência de autorização de
   responsável; o **histórico e o perfil só são divulgados publicamente após autorização dos
   pais ou responsáveis**.

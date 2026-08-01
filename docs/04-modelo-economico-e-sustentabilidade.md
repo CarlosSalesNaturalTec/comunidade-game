@@ -19,6 +19,25 @@ Regras derivadas:
 - O acumulado forma o **"Poder Econômico"** do provedor, visível na plataforma: o
   reconhecimento público de quem sustenta o projeto.
 
+### A moeda da plataforma
+
+**Definição vigente.** A unidade de conta do livro-razão é a **moeda da plataforma**: todo
+aporte — em dinheiro, material ou serviço — é convertido em moedas, e **1 moeda equivale a
+R$ 100,00**.
+
+- Nas **vitrines públicas** exibe-se a **quantidade de moedas** aportada, **nunca o valor em
+  reais**.
+- A moeda mede **aporte de recurso** e compõe o Poder Econômico. Não se confunde com os
+  **pontos**, que são do jogador e vêm de realização.
+
+Por que assim: a plataforma é educativa e seu público inclui crianças e terceiros sem
+familiaridade com custos de operação, custeio e despesas. A moeda dá a **noção visual do
+montante** investido por cada apoiador em relação aos seus pares, sem expor valores
+monetários isolados.
+
+Aportes em material e serviço são convertidos em moedas pelo valor que a valoração do
+livro-razão lhes atribuir — critério ainda pendente para acervo, kits e hora-aula.
+
 **[Proposta]** Modelar tecnicamente como um **livro-razão (ledger) de dupla entrada**: cada
 atividade consome recursos (débito) aportados por provedores (crédito). Viabiliza relatórios
 públicos de prestação de contas por atividade, por comunidade e por provedor — transparência
@@ -42,14 +61,14 @@ no livro-razão.
 > públicos, que normalmente exigem entidade sem fins lucrativos (associação, OSCIP ou _fiscal
 > sponsor_). Os dois assuntos coexistem (documento 09).
 
-### Primeiro aporte registrado — acervo e kits do Goethe-Institut
+### Primeiro aporte registrado — acervo, kits e camisas do Goethe-Institut
 
 O **Goethe-Institut (Salvador)** doou **298 livros** do projeto **Include**, da **Campus
-Party**, e **30 kits em MDF** para as trilhas do Robô Educa — tornando-se um dos **primeiros
-Apoiadores** da plataforma. A doação dos livros foi formalizada por **Termo de Doação
-assinado** com a Robô Educa — Kits Robóticos Educacionais: o **documento comprobatório do
-aporte**, exatamente o tipo de artefato que a plataforma exige de todo Apoiador, e que fica
-anexado ao cadastro do Apoiador na App 03.
+Party**, **30 kits em MDF** para as trilhas do Robô Educa e **50 camisas** — tornando-se um
+dos **primeiros Apoiadores** da plataforma. A doação dos livros foi formalizada por **Termo
+de Doação assinado** com a Robô Educa — Kits Robóticos Educacionais: o **documento
+comprobatório do aporte**, exatamente o tipo de artefato que a plataforma exige de todo
+Apoiador, e que fica anexado ao cadastro do Apoiador na App 03.
 
 É o **primeiro caso concreto** da economia descrita acima: entra no histórico do provedor,
 compõe o **Poder Econômico** do Goethe-Institut e dá **lastro material** às duas trilhas
@@ -57,16 +76,18 @@ existentes, sem custo adicional para o primeiro ciclo.
 
 **Tratamento no livro-razão — regime misto (definição vigente):**
 
-| Item                               | Destino                                      | Como entra no ledger                                                      |
-| ---------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------- |
-| **Livros da linha Alpha** (252)    | Doados ao jogador quando ele começa a trilha | **Recompensa entregue** — baixa definitiva do acervo                      |
-| **Livros da linha Include I** (46) | Acervo permanente do ponto de apoio          | **Patrimônio permanente** — sem baixa por consumo, com controle de guarda |
-| **Kits MDF** (30)                  | Insumo das oficinas do Robô Educa            | **Consumível de atividade** — baixa a cada montagem                       |
+| Item                               | Destino                                                             | Como entra no ledger                                                      |
+| ---------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **Livros da linha Alpha** (252)    | Doados ao jogador quando ele começa a trilha                        | **Recompensa entregue** — baixa definitiva do acervo                      |
+| **Livros da linha Include I** (46) | Acervo permanente do ponto de apoio                                 | **Patrimônio permanente** — sem baixa por consumo, com controle de guarda |
+| **Kits MDF** (30)                  | Insumo das oficinas do Robô Educa                                   | **Consumível de atividade** — baixa a cada montagem                       |
+| **Camisas** (50)                   | Doadas aos jogadores inscritos no Ciclo 01, até o limite disponível | **Recompensa entregue** — baixa definitiva na entrega                     |
 
 Inventário completo, regime de posse e estratégia de conservação: documento 05.
 
-> **A definir:** critério de valoração do acervo e dos kits no livro-razão (valor de mercado,
-> valor simbólico ou apenas contagem física) e responsável pela guarda em cada ponto de apoio.
+> **A definir:** critério de valoração do acervo, dos kits e das camisas no livro-razão (valor
+> de mercado, valor simbólico ou apenas contagem física) e responsável pela guarda em cada
+> ponto de apoio.
 
 ## 2. Fontes de receita
 
@@ -77,6 +98,16 @@ Inventário completo, regime de posse e estratégia de conservação: documento 
 - **Editais.**
 - **Campanhas de crowdfunding** para financiar aulas, kits e equipamentos (celulares,
   notebooks, tablets).
+
+### Titularidade dos dados publicados
+
+**Definição vigente.** Com a plataforma em produção, a entidade responsável por ela é
+**coproprietária dos dados publicados**, junto com o jogador que gerou o dado. Havendo
+monetização desses dados, o resultado é rateado **50% para a entidade responsável e 50% para
+o jogador**, pagos **ao responsável legal** do jogador.
+
+> **A definir:** redação da regra no termo assinado pelo responsável, base legal e
+> periodicidade do pagamento.
 
 ### Doações em espécie — canal oficial
 
@@ -163,9 +194,9 @@ torcendo pelo que ele está construindo.
 
 - **Case 01 — Comunidade Guerreira Zeferina**, Salvador (BA): primeiro piloto real, Ciclo 01
   de agosto a dezembro de 2026.
-- **Acervo de 298 livros e 30 kits MDF** doados pelo Goethe-Institut, que viram trilhas
-  abertas na plataforma — material que atende turmas inteiras sem custo para o aluno, com o
-  livro da linha Alpha ficando com o jogador.
+- **Acervo de 298 livros, 30 kits MDF e 50 camisas** doados pelo Goethe-Institut, que viram
+  trilhas abertas na plataforma — material que atende turmas inteiras sem custo para o aluno,
+  com o livro da linha Alpha ficando com o jogador.
 - **Oficinas do Robô Educa desde 2018**: centenas de crianças impactadas em comunidades de
   Salvador (BA).
 - **Dados para a comunidade**: as Comunidades Virtuais devolvem ao território evidência para

@@ -18,9 +18,9 @@
 7. **Web App responsivo, Mobile First** — nesta etapa, **toda** aplicação é entregue como Web
    App projetado primeiro para o celular. Sem aplicativos nativos e sem aplicações construídas
    sobre plataformas de mensageria de terceiros.
-8. **Plataforma em evolução contínua, com os jogadores** — os jogadores propõem melhorias pela
-   Área do Jogador e alteram o código do jogo como atividade de trilha; a arquitetura precisa
-   comportar essa evolução permanente.
+8. **Plataforma em evolução contínua, com jogadores, Mestres e Apoiadores** — os três propõem
+   melhorias, e os jogadores ainda alteram o código do jogo como atividade de trilha; a
+   arquitetura precisa comportar essa evolução permanente.
 9. **Construção assistida por IA, sob direção humana** — os artefatos da plataforma são
    construídos com auxílio de ferramentas de IA; a idealização, o contexto humano e social e
    as decisões são humanas, e a transparência sobre esse uso é pública.
@@ -49,7 +49,7 @@ construídos nas oficinas.
 Formato único de entrega: **uma base de código, sem loja de aplicativos, sem atualização pelo
 usuário e sem tráfego de dados de crianças por plataformas de terceiros**.
 
-### 2.1 As sete aplicações desta etapa
+### 2.1 As nove aplicações desta etapa
 
 | #          | Aplicação                                                                                     | Público                              | Seção |
 | ---------- | --------------------------------------------------------------------------------------------- | ------------------------------------ | ----- |
@@ -60,6 +60,8 @@ usuário e sem tráfego de dados de crianças por plataformas de terceiros**.
 | **App 05** | **Área do Jogador** — guia e apoio nas trilhas                                                | Jogadores                            | §7    |
 | **App 06** | **Vitrine pública** — apresentação da plataforma, sem login                                   | Público geral                        | §8    |
 | **App 07** | **Área dos pais e responsáveis** — evolução do jogador, solicitações e transparência de dados | Pais e responsáveis                  | §9    |
+| **App 08** | **Área do Apoiador** — aportes, desafios extras, efetividade e propostas                      | Apoiadores cadastrados               | §10   |
+| **App 09** | **Área do Mestre** — autoria de trilhas e conteúdos, suas turmas e lançamentos                | Mestres cadastrados                  | §11   |
 
 ## 3. App 01 — Onboarding (cadastro e registro de presença)
 
@@ -83,7 +85,7 @@ cadastrados — por conversa, sem formulário.
                     ▼                               ▼
             Jogador NOVO                    Jogador JÁ CADASTRADO
      nome, nick, nascimento/idade,        captura da imagem + nick
-     comunidade virtual, avatar, foto     → comparação com a base
+     avatar, foto                         → comparação com a base
                     │                               │
                     ▼                               ▼
             cadastro criado +              presença registrada
@@ -106,19 +108,19 @@ presença**. Não é avatar, não vai para a vitrine, não aparece em ranking, n
 
 #### Novo jogador — dados coletados
 
-| Dado                        | Uso                                                                                       |
-| --------------------------- | ----------------------------------------------------------------------------------------- |
-| Nome                        | Identificação interna e comunicação com responsáveis                                      |
-| Nick                        | Identidade pública do jogador                                                             |
-| Data de nascimento ou idade | Adequação de conteúdo e faixa (6 a 16 anos)                                               |
-| **Comunidade Virtual**      | **Vínculo obrigatório** — define a que comunidade os dados de território serão creditados |
-| Características do avatar   | Geração do avatar público                                                                 |
-| Foto                        | **Exclusivamente** registro de presença futuro                                            |
+| Dado                        | Uso                                                  |
+| --------------------------- | ---------------------------------------------------- |
+| Nome                        | Identificação interna e comunicação com responsáveis |
+| Nick                        | Identidade pública do jogador                        |
+| Data de nascimento ou idade | Adequação de conteúdo e faixa (6 a 16 anos)          |
+| Características do avatar   | Geração do avatar público                            |
+| Foto                        | **Exclusivamente** registro de presença futuro       |
 
-**Vínculo com a Comunidade Virtual (regra vigente).** Nenhum jogador existe sem comunidade: a
-conversa oferece a lista das comunidades já criadas pelos Admins e o jogador escolhe a sua. Se
-nenhuma servir, o caso é escalado a um Admin, que cria a comunidade antes de concluir o
-vínculo.
+**Vínculo com a Comunidade Virtual (regra vigente).** O jogador **não informa a comunidade**:
+o Admin define na App 03 a **comunidade default do onboarding**, e todo cadastro feito ali é
+vinculado a ela. **O App 01 só fica disponível depois que o Admin define essa comunidade e
+libera o funcionamento da aplicação** — é o que simplifica a conversa de cadastro e garante
+que nenhum jogador exista sem comunidade.
 
 Ao final, o jogador já está **ativo** e pode participar das atividades — sem exigência de
 autorização do responsável nesta etapa.
@@ -192,12 +194,17 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
 - **CRUDs de personas e catálogo**: jogadores, mestres, apoiadores, admins, comunidades
   virtuais e poderes.
 - **Criação das Comunidades Virtuais** — **exclusiva de Admins**, nascendo vazias.
+- **Definição da comunidade default do onboarding e liberação do App 01** — enquanto não
+  houver comunidade default definida, a aplicação de onboarding não opera.
 - **Vínculo do jogador à comunidade** — conferência e transferência entre comunidades
   (mudança de endereço, cadastro equivocado), com registro da data, já que os dados coletados
   são temporais.
 - **Cadastro de Mestres e Apoiadores** — exclusivo de Admins, com anexação dos artefatos
-  comprobatórios.
+  comprobatórios, do currículo, do portfólio e dos links de redes sociais.
+- **Fila de solicitações de participação** como Mestre ou Apoiador, vindas do formulário
+  público da App 06.
 - **Inclusão manual de novos Admins** por um Admin existente.
+- **Cadastro de equipes**, conforme o plano de aulas e a formação livre dos jogadores.
 - **Cadastro de atividades** com pontuação, recompensas e recursos necessários.
 - **Agenda de aulas** (on-line e presenciais) e atividades previstas.
 - **Lançamento de atividades realizadas**: data, mentores, jogadores e resultados.
@@ -206,14 +213,20 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
   jogador que ajudou o colega.
 - **Lançamento de pontuação negativa.**
 - **Gestão de recursos** necessários às atividades (aportes e baixa de consumo).
-- **Aprovação de desafios extras propostos por Apoiadores**, após validação pedagógica do
-  Mestre da trilha.
+- **Aprovação de desafios extras** propostos pelos Apoiadores na App 08, após validação
+  pedagógica do Mestre da trilha.
 - **Painéis do dia** — visão operacional do encontro em andamento: presenças confirmadas,
   atividade prevista, recursos providos e lançamentos pendentes.
-- **Operação do Quiz ao Vivo** — cadastro das perguntas pelo curador e condução da partida.
+- **Condução do Quiz ao Vivo** — as perguntas vêm do banco que o Mestre curador cadastra na
+  App 09.
 - **Atendimento às solicitações dos responsáveis** vindas da App 07, com registro de quem
   tratou e quando.
-- **Fila de avaliação das sugestões dos jogadores** vindas da App 05.
+- **Fila de avaliação das sugestões e propostas** vindas das Apps 05, 07, 08 e 09, com status
+  e retorno a quem propôs.
+
+A autoria de trilhas e conteúdos e as validações pedagógicas são do Mestre e vivem na App 09;
+esta aplicação continua sendo a da **gestão** — cadastros, lançamentos, aprovações de Admin e
+painéis do dia.
 
 ## 6. App 04 — Jogo em JavaScript
 
@@ -262,9 +275,16 @@ Web App de acesso público e **sem autenticação**:
 
 - Apresenta **Jogadores, Poderes, Mestres, Batalhas, Apoiadores e Comunidades Virtuais**, com
   navegação para seções específicas com cards individuais.
+- **Cada card abre a página individual do personagem** — jogador, Mestre, poder, apoiador ou
+  comunidade —, com a versão detalhada do que o card resume (composição no documento 11).
 - **Cards rotativos** com avatares dos jogadores, atualizados a cada 5 segundos. Exibem
   **apenas** avatar, nick, badges, poderes adquiridos e desempenho na plataforma — **sem links
   para redes sociais dos jogadores** nem qualquer canal de contato direto.
+- **Página de Mestres e Apoiadores** com **currículo, portfólios, redes sociais e documentos
+  comprobatórios externos** — a prova pública de habilidade e de apoio.
+- **Formulário de solicitação de participação** como Mestre ou Apoiador, aberto a pessoas e
+  instituições: a solicitação é gravada e cai na fila de avaliação dos Admins na App 03.
+- **Aportes exibidos em moedas da plataforma**, nunca em reais (documento 04).
 - **Painel público da Comunidade Virtual** — dados do território em **série histórica**,
   agregados e anonimizados, abertos à consulta da comunidade e de instituições.
 - **Portfólio de criações originais** — as criações dos jogadores autorizados, com o nick do
@@ -293,6 +313,7 @@ conferido por um Admin.
 | **Direitos de recusa**      | Recusa, a qualquer tempo, a **foto de presença**, o **Modo Ouvinte** e o uso de imagem em vídeos e fotos de eventos                                     |
 | **Transparência de dados**  | Vê **quais dados da criança estão armazenados**, para que servem, por quanto tempo ficam e quem os acessou                                              |
 | **Termos e consentimentos** | Lê, aceita e consulta o histórico dos termos assinados, com data e hora                                                                                 |
+| **Propostas**               | Registra propostas de evolução da plataforma, na mesma fila de avaliação das sugestões dos jogadores                                                    |
 
 **Regras obrigatórias:**
 
@@ -311,7 +332,52 @@ conferido por um Admin.
 > **A definir:** se o acesso é por login próprio ou por vínculo ao cadastro do jogador; prazos
 > formais de resposta; se há notificação ativa por e-mail além da consulta no Web App.
 
-## 10. Proteção de dados em toda a plataforma (LGPD)
+## 10. App 08 — Área do Apoiador
+
+Web App autenticado dos **Apoiadores já cadastrados** por um Admin. É onde o apoio deixa de
+ser um lançamento feito por terceiros e passa a ter canal próprio:
+
+| Função                        | O que o Apoiador faz                                                                                 |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Meus aportes**              | Acompanha o que aportou, em **moedas**, e o **Poder Econômico** acumulado                            |
+| **Desafios extras**           | Propõe desafios abertos ou direcionados e acompanha validação do Mestre e aprovação do Admin         |
+| **Efetividade do apoio**      | Vê o que os desafios produziram — sempre **agregado e por avatar**                                   |
+| **Documentos comprobatórios** | Envia currículo, portfólio, redes sociais, termos e comprovantes para o Admin anexar ao seu cadastro |
+| **Propostas**                 | Registra propostas de evolução da plataforma, que caem na fila de avaliação da gestão                |
+
+**Regras obrigatórias:**
+
+- **Nenhum contato direto com jogador ou família.** Proposta, entrega e reconhecimento seguem
+  mediados pela plataforma; a App 07 não é compartilhada com Apoiadores.
+- **O app não cadastra Apoiador.** O cadastro continua exclusivo de Admin; quem ainda não é
+  Apoiador usa o formulário de solicitação da vitrine.
+- Toda proposta de desafio extra segue o fluxo vigente: validação do Mestre da trilha,
+  aprovação de Admin e **lastro antes da publicação**.
+
+## 11. App 09 — Área do Mestre
+
+Web App autenticado dos **Mestres cadastrados** por um Admin. É a bancada de trabalho de quem
+ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
+
+| Função                    | O que o Mestre faz                                                                                           |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Autoria de trilhas**    | Cria trilhas, pontos de trilha, conteúdos, bibliografia de apoio, quizzes e desafios — inclusive o de coleta |
+| **Prova de habilidade**   | Publica os artefatos que comprovam sua habilidade, além de currículo, portfólio e redes sociais              |
+| **Minhas atividades**     | Acompanha as suas turmas e lança resultados, presenças e méritos das atividades que propôs                   |
+| **Validação pedagógica**  | Valida os desafios extras que os Apoiadores propõem para as suas trilhas, antes da aprovação do Admin        |
+| **Banco do Quiz ao Vivo** | Cadastra as perguntas das suas aulas; a partida é conduzida na App 03                                        |
+| **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                           |
+
+**Regras obrigatórias:**
+
+- **O app não cadastra Mestre.** O cadastro segue exclusivo de Admin, com habilidade
+  comprovada; quem ainda não é Mestre usa o formulário de solicitação da vitrine.
+- **O Mestre lança apenas o que é seu** — as atividades que propôs e as turmas em que atua.
+  Cadastros de personas, aprovações e painéis gerais continuam na App 03.
+- **Nenhum modelo ou fluxo pressupõe habilidade técnica de TI**: o Mestre pode ser de humanas,
+  artes, esportes ou cultura.
+
+## 12. Proteção de dados em toda a plataforma (LGPD)
 
 - Jogadores são representados **por avatares, nunca por imagens reais**, em toda a plataforma.
 - Cards de jogadores **sem links para redes sociais nem contato direto**.
@@ -330,6 +396,11 @@ conferido por um Admin.
   pelo responsável.
 - **Georreferenciamento sem expor endereço de criança**: a granularidade publicada nunca pode
   permitir inferir onde um jogador específico mora.
+- **Aviso visível em toda aplicação:** onde há coleta de dado, o app indica ao usuário — de
+  forma discreta e elegante, sem interromper o uso — o que está sendo coletado e quais são os
+  seus direitos, com acesso a uma **área detalhada** que explica destino e uso de cada dado.
+- **Coproprietariedade dos dados publicados**: em produção, a entidade responsável pela
+  plataforma é coproprietária, com o jogador que gerou o dado (documento 04).
 - A LGPD deve ser considerada em **todos** os módulos e PRDs, não como item pontual.
 
 **[Proposta]** Aplicar o mesmo cuidado a vídeos de culminância e fotos de eventos em que

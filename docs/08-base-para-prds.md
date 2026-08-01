@@ -30,14 +30,20 @@
 - Registro de custo e lastro de recursos em todas as ações.
 - **Governança de personas:** só o **Jogador** tem autocadastro. **Mestres e Apoiadores são
   cadastrados exclusivamente por Admins**, com habilidade ou apoio comprovados por materiais ou
-  artefatos publicados na plataforma. **Novos Admins são incluídos manualmente** por um Admin
-  existente.
+  artefatos publicados na plataforma. Pessoas e instituições podem **solicitar** inclusão como
+  Mestre ou Apoiador pela vitrine — solicitação registrada não é cadastro, e a avaliação é
+  sempre de um Admin. **Novos Admins são incluídos manualmente** por um Admin existente.
 - **LGPD em todo o projeto:** jogadores representados por **avatares, nunca por imagens reais**.
   A **foto captada no onboarding** é dado sensível de finalidade única (registro de presença),
   com consentimento, minimização, criptografia, retenção definida e alternativa para quem
-  recusar. **Adesão em duas etapas:** o cadastro livre (nome, data de nascimento ou idade, nick,
-  comunidade, características do avatar) já permite participar das atividades; a **divulgação
-  pública do histórico e do perfil** exige autorização dos pais ou responsáveis.
+  recusar. **Adesão em duas etapas:** o cadastro livre (nome, data de nascimento ou idade, nick
+  e características do avatar) já permite participar das atividades; a **divulgação
+  pública do histórico e do perfil** exige autorização dos pais ou responsáveis. **Toda
+  aplicação indica visualmente**, de forma discreta, o que coleta e quais são os direitos do
+  usuário, com acesso a uma **área detalhada** sobre destino e uso de cada dado.
+- **Coproprietariedade dos dados publicados:** em produção, a entidade responsável pela
+  plataforma é coproprietária, com o jogador que gerou o dado; havendo monetização, ambos são
+  remunerados.
 - **Faixa etária dos jogadores: 6 a 16 anos**, com atividades em **níveis de dificuldade
   graduais** acessíveis independentemente da idade. A convivência entre idades é tratada com
   **papéis de mediação, nunca com segmentação por faixa**.
@@ -47,8 +53,9 @@
 - **Transparência sobre IA:** a plataforma declara publicamente que seus artefatos (código,
   documentação, conteúdo) são construídos com auxílio de IA, sob idealização e direção humanas.
 - **Comunidade Virtual obrigatória:** criada **vazia por um Admin**, com **todo jogador
-  vinculado a uma delas** no cadastro. Os dados de território são **temporais** e **guardados
-  permanentemente com o jogador coletor identificado** (sem anonimização no armazenamento); a
+  vinculado a uma delas** no cadastro, pela **comunidade default** que o Admin define para o
+  onboarding. Os dados de território são **temporais** e **guardados permanentemente com o
+  jogador coletor identificado** (sem anonimização no armazenamento); a
   anonimização se aplica **na saída** — painéis públicos, exportações e pesquisas.
 - **Toda trilha contém desafios de coleta de dados reais** e **termina em criação original**.
 - Valores do projeto refletidos em conteúdo, conduta e representatividade.
@@ -68,6 +75,8 @@
 | **App 05** — Área do Jogador                                 | PRD-05 |
 | **App 06** — Vitrine pública                                 | PRD-03 |
 | **App 07** — Área dos pais e responsáveis                    | PRD-13 |
+| **App 08** — Área do Apoiador                                | PRD-14 |
+| **App 09** — Área do Mestre                                  | PRD-09 |
 
 ---
 
@@ -79,17 +88,30 @@
 
 - Entidades: Jogador, Mestre, Apoiador, Admin, Comunidade Virtual, Poder, Trilha, Atividade,
   Aula/Agenda, Presença, Batalha, Equipe, Recurso, Recompensa, Ponto/Badge/Nível, Registro de
-  dado do território, Pergunta de quiz, Partida de quiz, **Criação original do jogador** e
-  **Sugestão do jogador**.
+  dado do território, Pergunta de quiz, Partida de quiz, **Criação original do jogador**,
+  **Sugestão ou proposta de evolução** e **Solicitação de participação como Mestre ou
+  Apoiador**.
 - Rotas de consulta abertas (vitrine, rankings, painéis de comunidade) sem autenticação.
 - Suporte a múltiplos frontends e a aplicações de terceiros.
 - Papéis e permissões: Admin (total), Mestre (conteúdo e lançamentos das suas atividades),
   Jogador (próprios dados), Visitante (leitura pública).
 - Regra de negócio: **cadastro de Mestre e Apoiador restrito a Admin**, com anexos
-  comprobatórios obrigatórios; **inclusão de Admin apenas por outro Admin**.
+  comprobatórios obrigatórios — currículo, portfólios, redes sociais e documentos externos —;
+  **inclusão de Admin apenas por outro Admin**.
+- Regra de negócio: **solicitação de participação** como Mestre ou Apoiador, aberta a pessoas e
+  instituições pela rota pública da vitrine: gravada com data, dados de contato, pretensão
+  (Mestre ou Apoiador), justificativa e status de avaliação; **não gera cadastro**.
 - Regra de negócio: **Comunidade Virtual criada apenas por Admin**, nascendo vazia; **todo
-  jogador tem vínculo obrigatório a exatamente uma**, com histórico das transferências — o dado
-  coletado pertence à comunidade vigente na data do registro.
+  jogador tem vínculo obrigatório a exatamente uma**, atribuída pela **comunidade default do
+  onboarding**, com histórico das transferências — o dado coletado pertence à comunidade
+  vigente na data do registro.
+- Regra de negócio: **equipe é grupo livre de até 5 pessoas**; um jogador pode integrar
+  **várias equipes** e pontua em todas as atividades em que participa; a composição admite **no
+  máximo 1 familiar com 17 anos ou mais**, conforme a atividade, o desafio ou a batalha
+  determinar. Equipes são cadastradas por Admin.
+- Regra de negócio: **coproprietariedade dos dados publicados** entre a entidade responsável
+  pela plataforma e o jogador que gerou o dado; monetizados, o resultado é rateado **50% / 50%**,
+  com a parte do jogador paga **ao responsável legal**.
 - Regra de negócio: **registro de dado do território é uma série temporal** — cadência, janela
   de validade, jogador coletor e comunidade. **Série ativa gera pontos recorrentes; série
   interrompida cessa o cômputo**, sem perda dos pontos já creditados.
@@ -116,8 +138,9 @@
 - Regra de negócio: **criação original com autoria creditada** — a criação carrega o autor ou
   autores por toda a vida do registro, individual ou em equipe (com o papel de cada membro), e
   alimenta o portfólio público quando autorizada.
-- Regra de negócio: **sugestão do jogador** — registrada pela App 05, com autor, data e status
-  de avaliação pela gestão.
+- Regra de negócio: **sugestões e propostas de evolução** — registradas pelo jogador (App 05),
+  pelo responsável (App 07), pelo Apoiador (App 08) e pelo Mestre (App 09), com autor, persona,
+  data e status de avaliação pela gestão, em fila única.
 
 **Questões em aberto:** estratégia de autenticação; versionamento da API; multi-tenant por
 comunidade (uma instância nacional ou uma por comunidade?).
@@ -126,13 +149,21 @@ comunidade (uma instância nacional ou uma por comunidade?).
 
 ## PRD-02 — App 03: Frontend de Gestão
 
-**Escopo:** aplicação autenticada para Admins e Mestres.
+**Escopo:** aplicação autenticada da gestão — Admins e, conforme permissão, Mestres. A
+**fronteira com a App 09** é o critério: aqui ficam cadastros, aprovações de Admin, painéis do
+dia e filas; a autoria de trilhas e os lançamentos das atividades do próprio Mestre ficam lá.
 
-**Requisitos:** CRUDs de mestres, poderes, jogadores, apoiadores, admins e comunidades
+**Requisitos:** CRUDs de mestres, poderes, jogadores, apoiadores, admins, equipes e comunidades
 virtuais; **criação das Comunidades Virtuais — exclusiva de Admin, nascendo vazias — e gestão do
-vínculo e transferência de jogadores entre comunidades**; cadastro de Mestres e Apoiadores com
-upload dos artefatos comprobatórios (incluindo **termos de doação**); inclusão manual de Admins;
-cadastro de atividades (pontuação, recompensas, recursos necessários); **cadastro de desafios de
+vínculo e transferência de jogadores entre comunidades**; **definição da comunidade default do
+onboarding e liberação do App 01**, sem a qual a aplicação de onboarding não opera; **cadastro
+de equipes** conforme o plano de aulas e a formação livre dos jogadores, com a composição
+permitida pela atividade (só jogadores ou com no máximo 1 familiar de 17 anos ou mais);
+cadastro de Mestres e Apoiadores com upload dos artefatos comprobatórios — **currículo,
+portfólios, redes sociais, documentos externos e termos de doação**; **fila de solicitações de
+participação como Mestre ou Apoiador** vindas do formulário público da App 06, com avaliação,
+status e registro de quem tratou; inclusão manual de Admins; cadastro de atividades
+(pontuação, recompensas, recursos necessários); **cadastro de desafios de
 coleta com cadência e regra de pontuação recorrente**; agenda de aulas on-line e presenciais;
 lançamento de atividades realizadas (data, mentores, jogadores, resultados); **entradas
 manuais** — presença, infrações ocorridas nas aulas e pontuação extra a quem ajudou o colega;
@@ -144,8 +175,9 @@ providos, lançamentos pendentes, **saldo de kits MDF**); **operação do Quiz a
 conservação e devoluções pendentes no painel do dia; **validação de desafios extras propostos
 por Apoiadores** pelo Mestre da trilha e aprovação caso a caso por Admin; **fila de solicitações
 dos responsáveis** vindas da App 07 (autorizações, revogações, recusas, acesso, correção e
-exclusão de dados), com registro de quem tratou e quando; **fila de avaliação das sugestões dos
-jogadores** registradas pela App 05, com status e retorno a quem sugeriu.
+exclusão de dados), com registro de quem tratou e quando; **fila única de avaliação das
+sugestões e propostas** vindas das Apps 05 (jogador), 07 (responsável), 08 (Apoiador) e 09
+(Mestre), com status e retorno a quem propôs.
 
 **Painel do dia em encontro assíncrono:** como os jogadores chegam e avançam em ritmos
 diferentes, o painel precisa mostrar em tempo real **quem já chegou, em que ponto de trilha cada
@@ -162,21 +194,33 @@ auditoria das ações de Admin; se o Quiz ao Vivo é módulo desta aplicação o
 **Escopo:** site público, sem login, em domínio próprio.
 
 **Requisitos:** seções Jogadores, Poderes, Mestres, Batalhas, Apoiadores e Comunidades Virtuais
-com cards individuais; cards rotativos de jogadores (rotação a cada 5 s); painel público de
-dados por comunidade **em série histórica**; "Quem somos" e "Contatos" editáveis; seção **"Como
+com cards individuais; **página individual detalhada** aberta a partir de cada card — jogador,
+Mestre, poder, apoiador e comunidade —, com a composição do documento 11; cards rotativos de
+jogadores (rotação a cada 5 s); painel público de dados por comunidade **em série histórica**;
+"Quem somos" e "Contatos" editáveis; seção **"Como
 apoiar"** com a chave PIX do projeto; espaço de **publicidade** fora das áreas de uso das
 crianças; vídeo de apresentação (Susy, Otávio, Rôbróders, prof. Carlos Trenell); estética de
 comunidade (grafite, cores, imagens do território); **portfólio de criações originais** dos
 jogadores autorizados, com o nick dos autores; **nota de transparência sobre IA** nas seções
 institucionais.
 
+**Formulário de solicitação de participação:** pessoas e instituições
+interessadas em participar como **Mestre ou Apoiador** preenchem um formulário público —
+identificação, contato, pretensão, área de habilidade ou tipo de apoio, links comprobatórios e
+justificativa. A solicitação é **gravada em banco de dados** e disponibilizada para avaliação
+por um Admin na App 03 (PRD-02). O envio **não cria cadastro nem acesso**; a resposta é
+registrada com status.
+
 **Definições vigentes:** cards de jogadores exibem **apenas** avatar (nunca imagem real), nick,
 badges, poderes adquiridos e desempenho na plataforma; **sem links para redes sociais dos
-jogadores nem contato direto**. A vitrine exibe **somente jogadores cujo responsável autorizou a
-divulgação**; jogadores sem autorização participam das atividades mas não aparecem publicamente.
-Os perfis de Mestres exibem os artefatos que comprovam suas habilidades.
+jogadores nem contato direto** — a página individual do jogador segue a mesma restrição. A
+vitrine exibe **somente jogadores cujo responsável autorizou a divulgação**; jogadores sem
+autorização participam das atividades mas não aparecem publicamente. As páginas de **Mestres e
+Apoiadores** exibem **currículo, portfólios, redes sociais e documentos comprobatórios
+externos**. Aportes aparecem em **moedas da plataforma**, nunca em reais.
 
-**Fontes:** docs 03, 04, 11 (composição dos cards e representação visual da comunidade).
+**Fontes:** docs 02, 03, 04, 11 (composição dos cards, páginas individuais e representação
+visual da comunidade).
 
 ## PRD-04 — App 01: Onboarding (cadastro e registro de presença)
 
@@ -191,11 +235,13 @@ dos já cadastrados, por **áudio ou texto**, com IA.
 - Captação e reprodução de áudio via `navigator.mediaDevices.getUserMedia`, com reconhecimento
   e síntese de fala.
 - Captura da **imagem do jogador** pela câmera do dispositivo.
-- **Novo jogador:** salvar nome, nick, data de nascimento ou idade, **Comunidade Virtual de
-  vínculo (obrigatória, escolhida entre as já criadas pelos Admins)**, características do avatar
+- **Novo jogador:** salvar nome, nick, data de nascimento ou idade, características do avatar
   e foto. O jogador fica **ativo** ao final, sem exigir autorização do responsável nesta etapa.
-- **Vínculo à comunidade:** a conversa oferece a lista de comunidades existentes; se nenhuma
-  servir, o caso é escalado a um Admin, que cria a comunidade antes de concluir o cadastro.
+- **Vínculo à comunidade:** atribuído automaticamente pela **comunidade default** que o Admin
+  define na App 03 — o jogador **não informa a comunidade**, o que encurta a conversa de
+  cadastro.
+- **Disponibilidade condicionada:** o App 01 só abre depois que um Admin define a comunidade
+  default e **libera o funcionamento da aplicação** na App 03.
 - **Jogador já cadastrado:** capturar imagem, comparar com a base **somada ao nick informado** e
   **registrar presença automaticamente** na atividade — presencial ou on-line.
 - Fallback manual (Admin ou Mestre confirma) quando a identificação falhar.
@@ -220,9 +266,10 @@ ponto, o que precisa ser feito, o que já foi conquistado e o que está bloquead
 
 **Requisitos:** escolha de poder; trilhas com desbloqueio por quiz ou desafio, seguindo a
 anatomia e o motor de pontuação do documento 11; desafios semanais (on-line 10 pts, presencial
-10 pts, equipe 10 pts, família 20 pts); **desafios extras propostos por Apoiadores** — abertos ou
-direcionados —, vinculados à trilha em andamento, com pontos extras e recompensa em quantidade
-declarada; equipes mistas de até 5 e Equipe Familiar; **séries de coleta de dados do território**
+10 pts, equipe 10 pts, equipe com familiar 20 pts); **desafios extras propostos por Apoiadores**
+— abertos ou direcionados —, vinculados à trilha em andamento, com pontos extras e recompensa
+em quantidade declarada; **equipes** — grupos livres de até 5, participação em mais de uma, com
+a pontuação de todas as atividades em que colaborar; **séries de coleta de dados do território**
 — próxima medição, histórico do que já foi registrado, situação da série (ativa ou interrompida)
 e pontos que ela está rendendo; ranking; troca de pontos por recompensas; pedido de ajuda para
 atividades escolares; níveis 1–5 (assíduo → **Mestre Aprendiz**); badges por trilha e por poder;
@@ -279,10 +326,19 @@ comportamento em salas barulhentas.
 
 **Escopo:** livro-razão de recursos aportados e consumidos; "Poder Econômico".
 
-**Requisitos:** todo custo de toda ação atribuído a um personagem; recurso alocado computado
-como "moeda" no histórico do provedor; atividade condicionada a lastro; tipos de recurso:
-hora-aula, lanche, recompensas, insumos, cloud, serviços; visibilidade pública da riqueza
-movimentada.
+**Requisitos:** todo custo de toda ação atribuído a um personagem; atividade condicionada a
+lastro; tipos de recurso: hora-aula, lanche, recompensas, insumos, cloud, serviços;
+visibilidade pública da riqueza movimentada.
+
+**Moeda da plataforma como unidade de conta:** todo aporte — dinheiro, material ou serviço — é
+convertido em **moedas**, com **1 moeda = R$ 100,00**. O ledger guarda as duas
+faces (moedas e valor de origem), mas **toda saída pública exibe apenas moedas**: é plataforma
+educativa, com público infantil e terceiros sem familiaridade com custeio, e o que se quer
+mostrar é o **montante relativo entre apoiadores**, nunca o valor monetário isolado.
+
+**Coproprietariedade dos dados publicados:** a entidade responsável pela plataforma e o jogador
+que gerou o dado são coproprietários; havendo monetização, o ledger registra o rateio **50% /
+50%**, com a parte do jogador paga **ao responsável legal**.
 
 **Recursos duráveis (patrimônio) e empréstimo:** além dos consumíveis, o ledger precisa tratar
 material que **não se consome no uso e é reaproveitado a cada turma** — o caso concreto é o
@@ -314,9 +370,10 @@ acervo de 298 livros doado pelo Goethe-Institut:
   relatórios de **efetividade do apoio ao longo do tempo**.
 - Nenhum dado de contato de jogador exposto ao Apoiador: o relatório é **agregado e por avatar**.
 
-**Questões em aberto:** unidade de conta (R$? pontos?); valoração da hora-aula; valoração de
-acervo e kits doados; relatórios públicos por atividade, comunidade e provedor; **formato do
-relatório de efetividade** entregue ao Apoiador.
+**Questões em aberto:** valoração da hora-aula, do acervo, dos kits e das camisas doados —
+critério que define a conversão desses aportes em moedas; relatórios públicos por atividade,
+comunidade e provedor; **formato do relatório de efetividade** entregue ao Apoiador;
+periodicidade e forma de pagamento do rateio da monetização dos dados.
 
 **Fontes:** docs 04, 05.
 
@@ -328,9 +385,9 @@ próprios jogadores — a base _Data Driven_ da plataforma.
 **Requisitos:**
 
 - **Criação exclusiva por Admin**, com a comunidade nascendo **vazia** (nome, localização,
-  granularidade).
-- **Vínculo obrigatório do jogador a uma comunidade**, colhido no onboarding e alterável apenas
-  pela gestão, com data da mudança preservada.
+  granularidade), e **marcação de qual delas é a comunidade default do onboarding**.
+- **Vínculo obrigatório do jogador a uma comunidade**, atribuído no onboarding pela comunidade
+  default e alterável apenas pela gestão, com data da mudança preservada.
 - A comunidade virtual **existe na medida em que dados reais são registrados**.
 - Atividades de coleta: temperatura local, precipitação pluviométrica, coleta de resíduos,
   buracos na via, iluminação, trânsito, transporte público, fotos e memórias.
@@ -358,20 +415,33 @@ séries temporais.
 
 **Fontes:** docs 02, 03, 11.
 
-## PRD-09 — Conteúdo e Trilhas (autoria dos Mestres)
+## PRD-09 — App 09: Área do Mestre (autoria e operação)
 
-**Escopo:** ferramenta para Mestres criarem trilhas, conteúdos, quizzes e desafios.
+**Escopo:** Web App autenticado dos Mestres cadastrados — onde o Mestre **cria** trilhas,
+conteúdos, quizzes e desafios e **conduz** as suas atividades. É a bancada de trabalho de quem
+ensina; a gestão administrativa segue na App 03.
 
-**Requisitos:** trilhas seguindo a **anatomia formal do documento 11** — em modelo **agnóstico
+**Requisitos de operação do Mestre:**
+
+- **Minhas atividades e turmas**: lançamento de resultados, presenças e méritos das atividades
+  que ele propôs — e apenas delas.
+- **Validação pedagógica dos desafios extras** propostos por Apoiadores para as suas trilhas,
+  etapa obrigatória antes da aprovação do Admin.
+- **Publicação dos artefatos comprobatórios** da sua habilidade, com currículo, portfólio e
+  redes sociais, que alimentam a sua página na vitrine (PRD-03).
+- **Registro de propostas** de evolução da plataforma, na mesma fila da gestão que recebe as
+  sugestões dos jogadores.
+- **Sem cadastro pelo app**: o cadastro de Mestre segue exclusivo de Admin; quem ainda não é
+  Mestre usa o formulário de solicitação da vitrine.
+
+**Requisitos de autoria:** trilhas seguindo a **anatomia formal do documento 11** — em modelo **agnóstico
 de área do conhecimento**, apto a trilhas de humanas, artes, esportes e cultura tanto quanto às
 técnicas —, incluindo a **paginação da trilha pelas etapas do ciclo**; conteúdo próprio e de
 terceiros; quiz ou desafio para desbloqueio; **publicação dos artefatos que comprovam a
 habilidade do Mestre**; catálogo inicial de poderes: **IA/Robótica e Poder do Território** nesta
-etapa — Redes, Soft Skills, PNED/BNCC, Rima e Capoeira ficam para ciclo futuro; banco de
-perguntas do **Quiz ao Vivo** cadastrado pelo curador da aula; **fluxo de desafio extra proposto
-por Apoiador** — aberto ou direcionado —, com validação obrigatória do Mestre e aprovação de
-Admin antes da publicação; paralelos obrigatórios com outras áreas do conhecimento e com os
-valores do projeto.
+etapa — Redes, Soft Skills, PNED/BNCC, Rima e Capoeira ficam para ciclo futuro; **banco de
+perguntas do Quiz ao Vivo** cadastrado aqui pelo Mestre curador, com a partida conduzida na
+App 03; paralelos obrigatórios com outras áreas do conhecimento e com os valores do projeto.
 
 **Coleta de dados como requisito de toda trilha:** a ferramenta deve **impedir a publicação de
 uma trilha sem ao menos um desafio de coleta de dados reais**. O Mestre define, no desafio, **o
@@ -393,9 +463,10 @@ indicar ao jogador se há **exemplar disponível no seu ponto de apoio**; e cred
 que forneceu o material** onde ele é indicado.
 
 **Questões em aberto:** formato dos conteúdos (vídeo, texto, interativo); revisão e curadoria
-pedagógica; licença dos conteúdos (Creative Commons?).
+pedagógica; licença dos conteúdos (Creative Commons?); forma de acesso do Mestre e permissões
+que ele mantém na App 03.
 
-**Fontes:** docs 02, 05, 06, 07, 11.
+**Fontes:** docs 02, 03, 05, 06, 07, 11.
 
 ## PRD-10 — Batalhas e eventos presenciais
 
@@ -476,7 +547,11 @@ família. Substitui a comunicação por mensageria de terceiros, fora do escopo 
 - **Limite explícito do pedido de exclusão**: os registros de dados do território têm guarda
   permanente com autoria preservada e **não são apagados**; a tela e o termo precisam dizer isso
   antes do aceite.
-- **Termos e consentimentos versionados**, com data e hora e histórico consultável.
+- **Termos e consentimentos versionados**, com data e hora e histórico consultável, incluindo a
+  declaração de **coproprietariedade dos dados publicados** e o que ela implica em caso de
+  monetização.
+- **Registro de propostas** de evolução da plataforma pelo responsável, com acompanhamento do
+  status, na mesma fila da gestão que recebe as sugestões dos jogadores.
 - **Linguagem simples**, no mesmo padrão exigido da política de privacidade.
 - **Sem qualquer canal com Apoiadores ou terceiros.**
 
@@ -489,6 +564,34 @@ formais de resposta; notificação ativa (e-mail) além da consulta no Web App; 
 responsável sem smartphone ou sem e-mail.
 
 **Fontes:** docs 02, 03, 10.
+
+## PRD-14 — App 08: Área do Apoiador
+
+**Escopo:** Web App autenticado dos Apoiadores já cadastrados por Admin — canal próprio de
+quem sustenta o projeto, sem nenhum contato com jogadores ou famílias.
+
+**Requisitos:**
+
+- **Meus aportes**: histórico do que aportou, em **moedas da plataforma**, e Poder Econômico
+  acumulado; leitura do mesmo ledger do PRD-07, sem edição.
+- **Proposição de desafios extras** — abertos ou direcionados —, com recompensa, quantidade
+  declarada, período e, no direcionado, destinatário e justificativa do vínculo. O
+  acompanhamento mostra o estado no fluxo: validação do Mestre da trilha → aprovação de Admin
+  → publicado, com **lastro exigido antes da publicação**.
+- **Relatório de efetividade** dos desafios propostos, **agregado e por avatar** — nunca com
+  dado de contato ou identificação de jogador.
+- **Envio de documentos comprobatórios** — currículo, portfólio, redes sociais, termos de
+  doação e comprovantes —, que um Admin anexa ao cadastro e que alimentam a página pública do
+  Apoiador na vitrine (PRD-03).
+- **Registro de propostas** de evolução da plataforma, com acompanhamento do status, na mesma
+  fila de avaliação da gestão que recebe as sugestões e propostas das Apps 05, 07 e 09.
+- **Sem cadastro pelo app**: quem ainda não é Apoiador usa o formulário de solicitação da
+  vitrine; o cadastro segue exclusivo de Admin.
+
+**Questões em aberto:** forma de acesso e autenticação do Apoiador; se instituição tem mais de
+um usuário no mesmo cadastro; periodicidade do relatório de efetividade.
+
+**Fontes:** docs 03, 04, 12.
 
 ---
 
@@ -503,8 +606,11 @@ responsável sem smartphone ou sem e-mail.
    aos direitos de recusa já prometidos.
 6. **PRD-06 (assistente por voz)** — reaproveita a base do Robô Educa, já em produção.
 7. **PRD-05 (área do jogador)** — a jornada gamificada em si.
-8. **PRD-09 e PRD-10** — conteúdo do primeiro Mestre + primeira batalha.
-9. **PRD-12, PRD-07, PRD-08 e PRD-11** — em ondas seguintes, conforme as fases do piloto.
+8. **PRD-09 (área do Mestre) e PRD-10** — sem a autoria de trilhas não há conteúdo para o
+   ciclo; a primeira batalha vem em seguida.
+9. **PRD-14 (área do apoiador)** — depende do ledger em moedas (PRD-07) e do fluxo de desafios
+   extras já operante na gestão.
+10. **PRD-12, PRD-07, PRD-08 e PRD-11** — em ondas seguintes, conforme as fases do piloto.
 
 > Dica operacional: este repositório dispõe de skills de PRD (fases 1–5: elicitação, geração,
 > revisão, patch e gestão de mudanças). Cada bloco acima pode alimentar a Fase 1 diretamente.

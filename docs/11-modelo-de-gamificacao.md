@@ -145,13 +145,15 @@ atividade pode ser _em equipe + presencial + de construção_):
 
 | Eixo           | Valores                                                                                                                                                                               | Observações                                                                                                |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Modalidade** | Individual · Em equipe (mista, até 5) · Em família (Equipe Familiar)                                                                                                                  | Define a pontuação-base; família vale mais por ser estratégica para a permanência                          |
+| **Modalidade** | Individual · Em equipe (grupo livre, até 5) · Em equipe com familiar (no máximo 1, com 17 anos ou mais)                                                                               | Define a pontuação-base; a presença do familiar vale mais por ser estratégica para a permanência           |
 | **Formato**    | Presencial (nos encontros) · On-line/assíncrona (entre encontros)                                                                                                                     | O desafio de coleta é contínuo: atravessa os dois formatos                                                 |
 | **Natureza**   | Construção/making · Programação e IA · **Coleta de dados do território** · Desplugada · Valores e temas transversais · Competição ao vivo (Quiz) · Culminância · **Criação original** | Lista aberta: novas trilhas de outras áreas acrescentam naturezas (expressão artística, movimento e corpo) |
 
 Regras transversais:
 
 - **Dificuldade gradual, independente de idade** (faixa 6–16).
+- **Um jogador pode integrar mais de uma equipe** e pontua em **todas** as atividades em que
+  participa e colabora.
 - **Lastro**: nenhuma atividade acontece sem os recursos providos.
 - **Resultado lançado pela gestão**: realizada / realizada com mérito / mérito extra por auxílio
   aos colegas.
@@ -165,7 +167,7 @@ Tabela única das fontes de pontos da plataforma:
 | Desafio semanal — atividade on-line                   | 10                    | Regular                                                                                                  | Mestre/gestão                              |
 | Desafio semanal — atividade presencial                | 10                    | Regular                                                                                                  | Mestre/gestão                              |
 | Desafio semanal — atividade em equipe                 | 10                    | Regular                                                                                                  | Mestre/gestão                              |
-| Desafio semanal — atividade em família                | 20                    | Regular                                                                                                  | Mestre/gestão                              |
+| Desafio semanal — atividade em equipe com familiar    | 20                    | Regular                                                                                                  | Mestre/gestão                              |
 | **Coleta de dados do território**                     | A definir por tipo    | **Recorrente** — pontua a cada registro válido enquanto a série está ativa; interrompeu, parou de render | Automático (registro do jogador)           |
 | **Quiz ao Vivo**                                      | A definir             | Regular                                                                                                  | Automático (partida)                       |
 | Mérito extra por auxílio aos colegas                  | A definir             | Regular                                                                                                  | Mestre/gestão                              |
@@ -236,7 +238,7 @@ reescrito, pelas quatro superfícies públicas do ecossistema.
 | Apoiadores                                 | Poder Econômico e desafios extras propostos, com as realizações que o apoio produziu |
 | Rankings                                   | Somente pontos regulares; jogadores sem autorização não aparecem                     |
 
-### 8.2 Cards dos personagens
+### 8.2 Cards e páginas individuais dos personagens
 
 O card é a "carta do personagem" do universo do jogo, e a mesma composição serve de base para o
 App 04:
@@ -245,8 +247,19 @@ App 04:
 | ---------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
 | **Jogador**            | Avatar, nick, badges, poderes com níveis, desempenho e **criações originais**        | Imagem real, nome civil, redes sociais, qualquer canal de contato |
 | **Mestre**             | Nome/identidade, áreas de habilidade, artefatos comprobatórios, trilhas de autoria   | —                                                                 |
-| **Apoiador**           | Identidade, Poder Econômico, desafios propostos e efetividade (agregada, por avatar) | Dados de contato de jogadores                                     |
+| **Apoiador**           | Identidade, Poder Econômico **em moedas**, desafios propostos e efetividade agregada | Dados de contato de jogadores; valores em reais                   |
 | **Comunidade Virtual** | Nome, território, representação visual, séries ativas, nº de jogadores vinculados    | Granularidade que permita inferir endereço de criança             |
+
+**Definição vigente — todo card abre uma página individual.** O card é o resumo; a página é a
+versão detalhada, com as mesmas restrições de exibição da tabela acima:
+
+| Página individual      | O que detalha                                                                                                                                  |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Jogador**            | Trajetória nas trilhas, badges e níveis por poder, portfólio de criações originais com autoria e participação em batalhas                      |
+| **Mestre**             | Habilidades, trilhas de autoria e a prova pública: **currículo, portfólios, redes sociais e documentos comprobatórios externos**               |
+| **Poder**              | Trilhas do poder, Mestres responsáveis, níveis e badges possíveis                                                                              |
+| **Apoiador**           | Aportes em moedas, desafios extras propostos com sua efetividade e a prova do apoio: **currículo, portfólios, redes sociais e comprobatórios** |
+| **Comunidade Virtual** | Séries históricas do território, representação visual, vitalidade e criações originais dos jogadores vinculados                                |
 
 ### 8.3 Representação visual da Comunidade Virtual
 
