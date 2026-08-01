@@ -76,6 +76,7 @@
 | **App 06** — Vitrine pública                                 | PRD-03 |
 | **App 07** — Área dos pais e responsáveis                    | PRD-13 |
 | **App 08** — Área do Apoiador                                | PRD-14 |
+| **App 09** — Área do Mestre                                  | PRD-09 |
 
 ---
 
@@ -138,8 +139,8 @@
   autores por toda a vida do registro, individual ou em equipe (com o papel de cada membro), e
   alimenta o portfólio público quando autorizada.
 - Regra de negócio: **sugestões e propostas de evolução** — registradas pelo jogador (App 05),
-  pelo responsável (App 07) e pelo Apoiador (App 08), com autor, persona, data e status de
-  avaliação pela gestão, em fila única.
+  pelo responsável (App 07), pelo Apoiador (App 08) e pelo Mestre (App 09), com autor, persona,
+  data e status de avaliação pela gestão, em fila única.
 
 **Questões em aberto:** estratégia de autenticação; versionamento da API; multi-tenant por
 comunidade (uma instância nacional ou uma por comunidade?).
@@ -148,7 +149,9 @@ comunidade (uma instância nacional ou uma por comunidade?).
 
 ## PRD-02 — App 03: Frontend de Gestão
 
-**Escopo:** aplicação autenticada para Admins e Mestres.
+**Escopo:** aplicação autenticada da gestão — Admins e, conforme permissão, Mestres. A
+**fronteira com a App 09** é o critério: aqui ficam cadastros, aprovações de Admin, painéis do
+dia e filas; a autoria de trilhas e os lançamentos das atividades do próprio Mestre ficam lá.
 
 **Requisitos:** CRUDs de mestres, poderes, jogadores, apoiadores, admins, equipes e comunidades
 virtuais; **criação das Comunidades Virtuais — exclusiva de Admin, nascendo vazias — e gestão do
@@ -173,8 +176,8 @@ conservação e devoluções pendentes no painel do dia; **validação de desafi
 por Apoiadores** pelo Mestre da trilha e aprovação caso a caso por Admin; **fila de solicitações
 dos responsáveis** vindas da App 07 (autorizações, revogações, recusas, acesso, correção e
 exclusão de dados), com registro de quem tratou e quando; **fila única de avaliação das
-sugestões e propostas** vindas das Apps 05 (jogador), 07 (responsável) e 08 (Apoiador), com
-status e retorno a quem propôs.
+sugestões e propostas** vindas das Apps 05 (jogador), 07 (responsável), 08 (Apoiador) e 09
+(Mestre), com status e retorno a quem propôs.
 
 **Painel do dia em encontro assíncrono:** como os jogadores chegam e avançam em ritmos
 diferentes, o painel precisa mostrar em tempo real **quem já chegou, em que ponto de trilha cada
@@ -412,20 +415,33 @@ séries temporais.
 
 **Fontes:** docs 02, 03, 11.
 
-## PRD-09 — Conteúdo e Trilhas (autoria dos Mestres)
+## PRD-09 — App 09: Área do Mestre (autoria e operação)
 
-**Escopo:** ferramenta para Mestres criarem trilhas, conteúdos, quizzes e desafios.
+**Escopo:** Web App autenticado dos Mestres cadastrados — onde o Mestre **cria** trilhas,
+conteúdos, quizzes e desafios e **conduz** as suas atividades. É a bancada de trabalho de quem
+ensina; a gestão administrativa segue na App 03.
 
-**Requisitos:** trilhas seguindo a **anatomia formal do documento 11** — em modelo **agnóstico
+**Requisitos de operação do Mestre:**
+
+- **Minhas atividades e turmas**: lançamento de resultados, presenças e méritos das atividades
+  que ele propôs — e apenas delas.
+- **Validação pedagógica dos desafios extras** propostos por Apoiadores para as suas trilhas,
+  etapa obrigatória antes da aprovação do Admin.
+- **Publicação dos artefatos comprobatórios** da sua habilidade, com currículo, portfólio e
+  redes sociais, que alimentam a sua página na vitrine (PRD-03).
+- **Registro de propostas** de evolução da plataforma, na mesma fila da gestão que recebe as
+  sugestões dos jogadores.
+- **Sem cadastro pelo app**: o cadastro de Mestre segue exclusivo de Admin; quem ainda não é
+  Mestre usa o formulário de solicitação da vitrine.
+
+**Requisitos de autoria:** trilhas seguindo a **anatomia formal do documento 11** — em modelo **agnóstico
 de área do conhecimento**, apto a trilhas de humanas, artes, esportes e cultura tanto quanto às
 técnicas —, incluindo a **paginação da trilha pelas etapas do ciclo**; conteúdo próprio e de
 terceiros; quiz ou desafio para desbloqueio; **publicação dos artefatos que comprovam a
 habilidade do Mestre**; catálogo inicial de poderes: **IA/Robótica e Poder do Território** nesta
-etapa — Redes, Soft Skills, PNED/BNCC, Rima e Capoeira ficam para ciclo futuro; banco de
-perguntas do **Quiz ao Vivo** cadastrado pelo curador da aula; **fluxo de desafio extra proposto
-por Apoiador na App 08** — aberto ou direcionado —, com validação obrigatória do Mestre e
-aprovação de Admin antes da publicação; paralelos obrigatórios com outras áreas do
-conhecimento e com os valores do projeto.
+etapa — Redes, Soft Skills, PNED/BNCC, Rima e Capoeira ficam para ciclo futuro; **banco de
+perguntas do Quiz ao Vivo** cadastrado aqui pelo Mestre curador, com a partida conduzida na
+App 03; paralelos obrigatórios com outras áreas do conhecimento e com os valores do projeto.
 
 **Coleta de dados como requisito de toda trilha:** a ferramenta deve **impedir a publicação de
 uma trilha sem ao menos um desafio de coleta de dados reais**. O Mestre define, no desafio, **o
@@ -447,9 +463,10 @@ indicar ao jogador se há **exemplar disponível no seu ponto de apoio**; e cred
 que forneceu o material** onde ele é indicado.
 
 **Questões em aberto:** formato dos conteúdos (vídeo, texto, interativo); revisão e curadoria
-pedagógica; licença dos conteúdos (Creative Commons?).
+pedagógica; licença dos conteúdos (Creative Commons?); forma de acesso do Mestre e permissões
+que ele mantém na App 03.
 
-**Fontes:** docs 02, 05, 06, 07, 11.
+**Fontes:** docs 02, 03, 05, 06, 07, 11.
 
 ## PRD-10 — Batalhas e eventos presenciais
 
@@ -567,8 +584,7 @@ quem sustenta o projeto, sem nenhum contato com jogadores ou famílias.
   doação e comprovantes —, que um Admin anexa ao cadastro e que alimentam a página pública do
   Apoiador na vitrine (PRD-03).
 - **Registro de propostas** de evolução da plataforma, com acompanhamento do status, na mesma
-  fila de avaliação da gestão que recebe as sugestões dos jogadores (App 05) e as propostas dos
-  responsáveis (App 07).
+  fila de avaliação da gestão que recebe as sugestões e propostas das Apps 05, 07 e 09.
 - **Sem cadastro pelo app**: quem ainda não é Apoiador usa o formulário de solicitação da
   vitrine; o cadastro segue exclusivo de Admin.
 
@@ -590,7 +606,8 @@ um usuário no mesmo cadastro; periodicidade do relatório de efetividade.
    aos direitos de recusa já prometidos.
 6. **PRD-06 (assistente por voz)** — reaproveita a base do Robô Educa, já em produção.
 7. **PRD-05 (área do jogador)** — a jornada gamificada em si.
-8. **PRD-09 e PRD-10** — conteúdo do primeiro Mestre + primeira batalha.
+8. **PRD-09 (área do Mestre) e PRD-10** — sem a autoria de trilhas não há conteúdo para o
+   ciclo; a primeira batalha vem em seguida.
 9. **PRD-14 (área do apoiador)** — depende do ledger em moedas (PRD-07) e do fluxo de desafios
    extras já operante na gestão.
 10. **PRD-12, PRD-07, PRD-08 e PRD-11** — em ondas seguintes, conforme as fases do piloto.

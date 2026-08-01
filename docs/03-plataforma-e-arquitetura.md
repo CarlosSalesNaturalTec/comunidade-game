@@ -49,7 +49,7 @@ construídos nas oficinas.
 Formato único de entrega: **uma base de código, sem loja de aplicativos, sem atualização pelo
 usuário e sem tráfego de dados de crianças por plataformas de terceiros**.
 
-### 2.1 As oito aplicações desta etapa
+### 2.1 As nove aplicações desta etapa
 
 | #          | Aplicação                                                                                     | Público                              | Seção |
 | ---------- | --------------------------------------------------------------------------------------------- | ------------------------------------ | ----- |
@@ -61,6 +61,7 @@ usuário e sem tráfego de dados de crianças por plataformas de terceiros**.
 | **App 06** | **Vitrine pública** — apresentação da plataforma, sem login                                   | Público geral                        | §8    |
 | **App 07** | **Área dos pais e responsáveis** — evolução do jogador, solicitações e transparência de dados | Pais e responsáveis                  | §9    |
 | **App 08** | **Área do Apoiador** — aportes, desafios extras, efetividade e propostas                      | Apoiadores cadastrados               | §10   |
+| **App 09** | **Área do Mestre** — autoria de trilhas e conteúdos, suas turmas e lançamentos                | Mestres cadastrados                  | §11   |
 
 ## 3. App 01 — Onboarding (cadastro e registro de presença)
 
@@ -216,11 +217,16 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
   pedagógica do Mestre da trilha.
 - **Painéis do dia** — visão operacional do encontro em andamento: presenças confirmadas,
   atividade prevista, recursos providos e lançamentos pendentes.
-- **Operação do Quiz ao Vivo** — cadastro das perguntas pelo curador e condução da partida.
+- **Condução do Quiz ao Vivo** — as perguntas vêm do banco que o Mestre curador cadastra na
+  App 09.
 - **Atendimento às solicitações dos responsáveis** vindas da App 07, com registro de quem
   tratou e quando.
-- **Fila de avaliação das sugestões e propostas** vindas das Apps 05, 07 e 08, com status e
-  retorno a quem propôs.
+- **Fila de avaliação das sugestões e propostas** vindas das Apps 05, 07, 08 e 09, com status
+  e retorno a quem propôs.
+
+A autoria de trilhas e conteúdos e as validações pedagógicas são do Mestre e vivem na App 09;
+esta aplicação continua sendo a da **gestão** — cadastros, lançamentos, aprovações de Admin e
+painéis do dia.
 
 ## 6. App 04 — Jogo em JavaScript
 
@@ -348,7 +354,30 @@ ser um lançamento feito por terceiros e passa a ter canal próprio:
 - Toda proposta de desafio extra segue o fluxo vigente: validação do Mestre da trilha,
   aprovação de Admin e **lastro antes da publicação**.
 
-## 11. Proteção de dados em toda a plataforma (LGPD)
+## 11. App 09 — Área do Mestre
+
+Web App autenticado dos **Mestres cadastrados** por um Admin. É a bancada de trabalho de quem
+ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
+
+| Função                    | O que o Mestre faz                                                                                           |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Autoria de trilhas**    | Cria trilhas, pontos de trilha, conteúdos, bibliografia de apoio, quizzes e desafios — inclusive o de coleta |
+| **Prova de habilidade**   | Publica os artefatos que comprovam sua habilidade, além de currículo, portfólio e redes sociais              |
+| **Minhas atividades**     | Acompanha as suas turmas e lança resultados, presenças e méritos das atividades que propôs                   |
+| **Validação pedagógica**  | Valida os desafios extras que os Apoiadores propõem para as suas trilhas, antes da aprovação do Admin        |
+| **Banco do Quiz ao Vivo** | Cadastra as perguntas das suas aulas; a partida é conduzida na App 03                                        |
+| **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                           |
+
+**Regras obrigatórias:**
+
+- **O app não cadastra Mestre.** O cadastro segue exclusivo de Admin, com habilidade
+  comprovada; quem ainda não é Mestre usa o formulário de solicitação da vitrine.
+- **O Mestre lança apenas o que é seu** — as atividades que propôs e as turmas em que atua.
+  Cadastros de personas, aprovações e painéis gerais continuam na App 03.
+- **Nenhum modelo ou fluxo pressupõe habilidade técnica de TI**: o Mestre pode ser de humanas,
+  artes, esportes ou cultura.
+
+## 12. Proteção de dados em toda a plataforma (LGPD)
 
 - Jogadores são representados **por avatares, nunca por imagens reais**, em toda a plataforma.
 - Cards de jogadores **sem links para redes sociais nem contato direto**.

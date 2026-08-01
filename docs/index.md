@@ -11,7 +11,7 @@ outro.
 | --- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | 01  | [Visão, valores e propósito](01-visao-valores-e-proposito.md)                    | O que é o projeto, por que existe, valores, objetivos, público-alvo e o fundador                                 |
 | 02  | [Conceito do jogo e gamificação](02-conceito-do-jogo-e-gamificacao.md)           | Personas, Comunidades Virtuais, poderes, trilhas, atividades, equipes, batalhas, recompensas e Manual do Jogador |
-| 03  | [Plataforma e arquitetura](03-plataforma-e-arquitetura.md)                       | Backend API, as 8 aplicações desta etapa e proteção de dados                                                     |
+| 03  | [Plataforma e arquitetura](03-plataforma-e-arquitetura.md)                       | Backend API, as 9 aplicações desta etapa e proteção de dados                                                     |
 | 04  | [Modelo econômico e sustentabilidade](04-modelo-economico-e-sustentabilidade.md) | Economia de recursos, livro-razão, receitas, desafios extras e impacto social                                    |
 | 05  | [Implantação e operação](05-implantacao-e-operacao.md)                           | Pontos de apoio, acervo didático, roteiro do encontro, Quiz ao Vivo, multiplicadores e fases do piloto           |
 | 06  | [Trilha 1 — Robô Educa](06-robo-educa.md)                                        | Construir o próprio robô e dar vida a ele com IA por voz                                                         |

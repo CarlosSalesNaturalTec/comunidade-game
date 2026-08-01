@@ -187,7 +187,8 @@ automaticamente.
 acontece — quem sabe explica para quem não sabe, o que se conecta ao mérito extra por auxílio
 aos colegas.
 
-**O que exige das aplicações:** cadastro do banco de perguntas e condução da partida na App 03;
+**O que exige das aplicações:** cadastro do banco de perguntas na App 09 (autoria do Mestre
+curador) e condução da partida na App 03;
 recebimento da pergunta e envio da resposta na App 05; **sincronização em tempo real** entre os
 dispositivos e desempate por ordem de chegada da resposta, com tolerância a rede instável —
 que é a regra nos pontos de apoio.
@@ -252,15 +253,15 @@ operação — o que corresponde a **chegar até a Fase 3** dentro do ciclo. As 
 ficam para ciclos posteriores. Todas as entregas de software são Web Apps responsivos, Mobile
 First.
 
-| Fase                                   | Entrega                                                                                                                                            | Depende de                                    |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| 0 — Fundação                           | Código de conduta (versão prévia, a co-criar no 1º encontro), termos de consentimento, identidade visual, comunidade piloto definida               | —                                             |
-| 1 — Onboarding + vitrine               | **App 01** + **App 06** + API de personas e de Comunidades Virtuais                                                                                | PRD-01/02/03                                  |
-| 2 — Jogo mínimo                        | **App 03** (gestão, entradas manuais e painéis do dia), poderes e a **1ª trilha — Robô Educa** publicada e pontuando                               | Fase 1                                        |
-| 2.5 — Canal da família                 | **App 07** — é o que torna a hipótese **H2** mensurável                                                                                            | Fase 2                                        |
-| 3 — Primeiro ciclo presencial completo | Aulas com o roteiro da §4 + **App 02** + Quiz ao Vivo + **2ª trilha — Batalha de Laser** + culminância com vídeo                                   | Fase 2 + ponto de apoio + recursos com lastro |
-| 3.5 — Acervo em operação               | Entrega dos livros Alpha na abertura de cada trilha, tombamento dos 46 permanentes, mapeamento capítulo → ponto de trilha e conservação implantada | Fase 2                                        |
-| 4 — Área do jogador e jogo             | **App 05** e **App 04**                                                                                                                            | Fase 2                                        |
-| 5 — Comunidade Virtual                 | Coleta de dados do território e painel público por comunidade                                                                                      | Fase 2                                        |
-| 6 — Economia visível                   | Livro-razão público em moedas, Poder Econômico, relatórios de transparência e **App 08** — Área do Apoiador                                        | Fase 3                                        |
-| 7 — Escala                             | Personalização por IA, formação de multiplicadores e voluntários, kit de implantação para a 2ª comunidade                                          | Fases 3–6                                     |
+| Fase                                   | Entrega                                                                                                                                              | Depende de                                    |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| 0 — Fundação                           | Código de conduta (versão prévia, a co-criar no 1º encontro), termos de consentimento, identidade visual, comunidade piloto definida                 | —                                             |
+| 1 — Onboarding + vitrine               | **App 01** + **App 06** + API de personas e de Comunidades Virtuais                                                                                  | PRD-01/02/03                                  |
+| 2 — Jogo mínimo                        | **App 03** (gestão, entradas manuais e painéis do dia), **App 09** (autoria do Mestre), poderes e a **1ª trilha — Robô Educa** publicada e pontuando | Fase 1                                        |
+| 2.5 — Canal da família                 | **App 07** — é o que torna a hipótese **H2** mensurável                                                                                              | Fase 2                                        |
+| 3 — Primeiro ciclo presencial completo | Aulas com o roteiro da §4 + **App 02** + Quiz ao Vivo + **2ª trilha — Batalha de Laser** + culminância com vídeo                                     | Fase 2 + ponto de apoio + recursos com lastro |
+| 3.5 — Acervo em operação               | Entrega dos livros Alpha na abertura de cada trilha, tombamento dos 46 permanentes, mapeamento capítulo → ponto de trilha e conservação implantada   | Fase 2                                        |
+| 4 — Área do jogador e jogo             | **App 05** e **App 04**                                                                                                                              | Fase 2                                        |
+| 5 — Comunidade Virtual                 | Coleta de dados do território e painel público por comunidade                                                                                        | Fase 2                                        |
+| 6 — Economia visível                   | Livro-razão público em moedas, Poder Econômico, relatórios de transparência e **App 08** — Área do Apoiador                                          | Fase 3                                        |
+| 7 — Escala                             | Personalização por IA, formação de multiplicadores e voluntários, kit de implantação para a 2ª comunidade                                            | Fases 3–6                                     |
