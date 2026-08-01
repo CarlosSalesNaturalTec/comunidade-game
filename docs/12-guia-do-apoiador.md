@@ -89,6 +89,11 @@ Aportar é o começo da relação; a interação com os jogadores acontece pelos
 
 ## 6. O que o Apoiador acompanha
 
+A **App 08 — Área do Apoiador** é o canal próprio de quem apoia: aportes em moedas, proposição
+e acompanhamento dos desafios extras, relatório de efetividade, envio de documentos
+comprobatórios e **registro de propostas** de evolução da plataforma. Nada nela dá acesso a
+jogadores ou famílias.
+
 - **Seu card público** na vitrine e a **página individual** que ele abre: identidade, Poder
   Econômico em moedas, desafios propostos, o que o apoio produziu e os documentos que o
   comprovam.

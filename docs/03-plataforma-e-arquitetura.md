@@ -49,7 +49,7 @@ construídos nas oficinas.
 Formato único de entrega: **uma base de código, sem loja de aplicativos, sem atualização pelo
 usuário e sem tráfego de dados de crianças por plataformas de terceiros**.
 
-### 2.1 As sete aplicações desta etapa
+### 2.1 As oito aplicações desta etapa
 
 | #          | Aplicação                                                                                     | Público                              | Seção |
 | ---------- | --------------------------------------------------------------------------------------------- | ------------------------------------ | ----- |
@@ -60,6 +60,7 @@ usuário e sem tráfego de dados de crianças por plataformas de terceiros**.
 | **App 05** | **Área do Jogador** — guia e apoio nas trilhas                                                | Jogadores                            | §7    |
 | **App 06** | **Vitrine pública** — apresentação da plataforma, sem login                                   | Público geral                        | §8    |
 | **App 07** | **Área dos pais e responsáveis** — evolução do jogador, solicitações e transparência de dados | Pais e responsáveis                  | §9    |
+| **App 08** | **Área do Apoiador** — aportes, desafios extras, efetividade e propostas                      | Apoiadores cadastrados               | §10   |
 
 ## 3. App 01 — Onboarding (cadastro e registro de presença)
 
@@ -211,14 +212,15 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
   jogador que ajudou o colega.
 - **Lançamento de pontuação negativa.**
 - **Gestão de recursos** necessários às atividades (aportes e baixa de consumo).
-- **Aprovação de desafios extras propostos por Apoiadores**, após validação pedagógica do
-  Mestre da trilha.
+- **Aprovação de desafios extras** propostos pelos Apoiadores na App 08, após validação
+  pedagógica do Mestre da trilha.
 - **Painéis do dia** — visão operacional do encontro em andamento: presenças confirmadas,
   atividade prevista, recursos providos e lançamentos pendentes.
 - **Operação do Quiz ao Vivo** — cadastro das perguntas pelo curador e condução da partida.
 - **Atendimento às solicitações dos responsáveis** vindas da App 07, com registro de quem
   tratou e quando.
-- **Fila de avaliação das sugestões dos jogadores** vindas da App 05.
+- **Fila de avaliação das sugestões e propostas** vindas das Apps 05, 07 e 08, com status e
+  retorno a quem propôs.
 
 ## 6. App 04 — Jogo em JavaScript
 
@@ -305,6 +307,7 @@ conferido por um Admin.
 | **Direitos de recusa**      | Recusa, a qualquer tempo, a **foto de presença**, o **Modo Ouvinte** e o uso de imagem em vídeos e fotos de eventos                                     |
 | **Transparência de dados**  | Vê **quais dados da criança estão armazenados**, para que servem, por quanto tempo ficam e quem os acessou                                              |
 | **Termos e consentimentos** | Lê, aceita e consulta o histórico dos termos assinados, com data e hora                                                                                 |
+| **Propostas**               | Registra propostas de evolução da plataforma, na mesma fila de avaliação das sugestões dos jogadores                                                    |
 
 **Regras obrigatórias:**
 
@@ -323,7 +326,29 @@ conferido por um Admin.
 > **A definir:** se o acesso é por login próprio ou por vínculo ao cadastro do jogador; prazos
 > formais de resposta; se há notificação ativa por e-mail além da consulta no Web App.
 
-## 10. Proteção de dados em toda a plataforma (LGPD)
+## 10. App 08 — Área do Apoiador
+
+Web App autenticado dos **Apoiadores já cadastrados** por um Admin. É onde o apoio deixa de
+ser um lançamento feito por terceiros e passa a ter canal próprio:
+
+| Função                        | O que o Apoiador faz                                                                                 |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Meus aportes**              | Acompanha o que aportou, em **moedas**, e o **Poder Econômico** acumulado                            |
+| **Desafios extras**           | Propõe desafios abertos ou direcionados e acompanha validação do Mestre e aprovação do Admin         |
+| **Efetividade do apoio**      | Vê o que os desafios produziram — sempre **agregado e por avatar**                                   |
+| **Documentos comprobatórios** | Envia currículo, portfólio, redes sociais, termos e comprovantes para o Admin anexar ao seu cadastro |
+| **Propostas**                 | Registra propostas de evolução da plataforma, que caem na fila de avaliação da gestão                |
+
+**Regras obrigatórias:**
+
+- **Nenhum contato direto com jogador ou família.** Proposta, entrega e reconhecimento seguem
+  mediados pela plataforma; a App 07 não é compartilhada com Apoiadores.
+- **O app não cadastra Apoiador.** O cadastro continua exclusivo de Admin; quem ainda não é
+  Apoiador usa o formulário de solicitação da vitrine.
+- Toda proposta de desafio extra segue o fluxo vigente: validação do Mestre da trilha,
+  aprovação de Admin e **lastro antes da publicação**.
+
+## 11. Proteção de dados em toda a plataforma (LGPD)
 
 - Jogadores são representados **por avatares, nunca por imagens reais**, em toda a plataforma.
 - Cards de jogadores **sem links para redes sociais nem contato direto**.

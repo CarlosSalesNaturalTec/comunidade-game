@@ -23,7 +23,7 @@ Regras derivadas:
 
 **Definição vigente.** A unidade de conta do livro-razão é a **moeda da plataforma**: todo
 aporte — em dinheiro, material ou serviço — é convertido em moedas, e **1 moeda equivale a
-R$ X,00**.
+R$ 100,00**.
 
 - Nas **vitrines públicas** exibe-se a **quantidade de moedas** aportada, **nunca o valor em
   reais**.
@@ -35,8 +35,8 @@ familiaridade com custos de operação, custeio e despesas. A moeda dá a **noç
 montante** investido por cada apoiador em relação aos seus pares, sem expor valores
 monetários isolados.
 
-> **A definir:** o valor de R$ X,00 da moeda e o critério de conversão dos aportes em
-> material e em serviço.
+Aportes em material e serviço são convertidos em moedas pelo valor que a valoração do
+livro-razão lhes atribuir — critério ainda pendente para acervo, kits e hora-aula.
 
 **[Proposta]** Modelar tecnicamente como um **livro-razão (ledger) de dupla entrada**: cada
 atividade consome recursos (débito) aportados por provedores (crédito). Viabiliza relatórios
@@ -76,17 +76,18 @@ existentes, sem custo adicional para o primeiro ciclo.
 
 **Tratamento no livro-razão — regime misto (definição vigente):**
 
-| Item                               | Destino                                      | Como entra no ledger                                                      |
-| ---------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------- |
-| **Livros da linha Alpha** (252)    | Doados ao jogador quando ele começa a trilha | **Recompensa entregue** — baixa definitiva do acervo                      |
-| **Livros da linha Include I** (46) | Acervo permanente do ponto de apoio          | **Patrimônio permanente** — sem baixa por consumo, com controle de guarda |
-| **Kits MDF** (30)                  | Insumo das oficinas do Robô Educa            | **Consumível de atividade** — baixa a cada montagem                       |
+| Item                               | Destino                                                             | Como entra no ledger                                                      |
+| ---------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **Livros da linha Alpha** (252)    | Doados ao jogador quando ele começa a trilha                        | **Recompensa entregue** — baixa definitiva do acervo                      |
+| **Livros da linha Include I** (46) | Acervo permanente do ponto de apoio                                 | **Patrimônio permanente** — sem baixa por consumo, com controle de guarda |
+| **Kits MDF** (30)                  | Insumo das oficinas do Robô Educa                                   | **Consumível de atividade** — baixa a cada montagem                       |
+| **Camisas** (50)                   | Doadas aos jogadores inscritos no Ciclo 01, até o limite disponível | **Recompensa entregue** — baixa definitiva na entrega                     |
 
 Inventário completo, regime de posse e estratégia de conservação: documento 05.
 
-> **A definir:** critério de valoração do acervo e dos kits no livro-razão (valor de mercado,
-> valor simbólico ou apenas contagem física), responsável pela guarda em cada ponto de apoio e
-> o destino das **50 camisas**, com o regime correspondente.
+> **A definir:** critério de valoração do acervo, dos kits e das camisas no livro-razão (valor
+> de mercado, valor simbólico ou apenas contagem física) e responsável pela guarda em cada
+> ponto de apoio.
 
 ## 2. Fontes de receita
 
@@ -102,10 +103,11 @@ Inventário completo, regime de posse e estratégia de conservação: documento 
 
 **Definição vigente.** Com a plataforma em produção, a entidade responsável por ela é
 **coproprietária dos dados publicados**, junto com o jogador que gerou o dado. Havendo
-monetização desses dados, **ambos são remunerados**.
+monetização desses dados, o resultado é rateado **50% para a entidade responsável e 50% para
+o jogador**, pagos **ao responsável legal** do jogador.
 
-> **A definir:** critério de rateio, forma de pagamento a jogador menor de idade e como a
-> regra é apresentada no termo assinado pelo responsável.
+> **A definir:** redação da regra no termo assinado pelo responsável, base legal e
+> periodicidade do pagamento.
 
 ### Doações em espécie — canal oficial
 

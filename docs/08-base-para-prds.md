@@ -75,6 +75,7 @@
 | **App 05** — Área do Jogador                                 | PRD-05 |
 | **App 06** — Vitrine pública                                 | PRD-03 |
 | **App 07** — Área dos pais e responsáveis                    | PRD-13 |
+| **App 08** — Área do Apoiador                                | PRD-14 |
 
 ---
 
@@ -87,7 +88,8 @@
 - Entidades: Jogador, Mestre, Apoiador, Admin, Comunidade Virtual, Poder, Trilha, Atividade,
   Aula/Agenda, Presença, Batalha, Equipe, Recurso, Recompensa, Ponto/Badge/Nível, Registro de
   dado do território, Pergunta de quiz, Partida de quiz, **Criação original do jogador**,
-  **Sugestão do jogador** e **Solicitação de participação como Mestre ou Apoiador**.
+  **Sugestão ou proposta de evolução** e **Solicitação de participação como Mestre ou
+  Apoiador**.
 - Rotas de consulta abertas (vitrine, rankings, painéis de comunidade) sem autenticação.
 - Suporte a múltiplos frontends e a aplicações de terceiros.
 - Papéis e permissões: Admin (total), Mestre (conteúdo e lançamentos das suas atividades),
@@ -107,8 +109,8 @@
   máximo 1 familiar com 17 anos ou mais**, conforme a atividade, o desafio ou a batalha
   determinar. Equipes são cadastradas por Admin.
 - Regra de negócio: **coproprietariedade dos dados publicados** entre a entidade responsável
-  pela plataforma e o jogador que gerou o dado, com remuneração de ambos em caso de
-  monetização.
+  pela plataforma e o jogador que gerou o dado; monetizados, o resultado é rateado **50% / 50%**,
+  com a parte do jogador paga **ao responsável legal**.
 - Regra de negócio: **registro de dado do território é uma série temporal** — cadência, janela
   de validade, jogador coletor e comunidade. **Série ativa gera pontos recorrentes; série
   interrompida cessa o cômputo**, sem perda dos pontos já creditados.
@@ -135,8 +137,9 @@
 - Regra de negócio: **criação original com autoria creditada** — a criação carrega o autor ou
   autores por toda a vida do registro, individual ou em equipe (com o papel de cada membro), e
   alimenta o portfólio público quando autorizada.
-- Regra de negócio: **sugestão do jogador** — registrada pela App 05, com autor, data e status
-  de avaliação pela gestão.
+- Regra de negócio: **sugestões e propostas de evolução** — registradas pelo jogador (App 05),
+  pelo responsável (App 07) e pelo Apoiador (App 08), com autor, persona, data e status de
+  avaliação pela gestão, em fila única.
 
 **Questões em aberto:** estratégia de autenticação; versionamento da API; multi-tenant por
 comunidade (uma instância nacional ou uma por comunidade?).
@@ -169,8 +172,9 @@ providos, lançamentos pendentes, **saldo de kits MDF**); **operação do Quiz a
 conservação e devoluções pendentes no painel do dia; **validação de desafios extras propostos
 por Apoiadores** pelo Mestre da trilha e aprovação caso a caso por Admin; **fila de solicitações
 dos responsáveis** vindas da App 07 (autorizações, revogações, recusas, acesso, correção e
-exclusão de dados), com registro de quem tratou e quando; **fila de avaliação das sugestões dos
-jogadores** registradas pela App 05, com status e retorno a quem sugeriu.
+exclusão de dados), com registro de quem tratou e quando; **fila única de avaliação das
+sugestões e propostas** vindas das Apps 05 (jogador), 07 (responsável) e 08 (Apoiador), com
+status e retorno a quem propôs.
 
 **Painel do dia em encontro assíncrono:** como os jogadores chegam e avançam em ritmos
 diferentes, o painel precisa mostrar em tempo real **quem já chegou, em que ponto de trilha cada
@@ -324,14 +328,14 @@ lastro; tipos de recurso: hora-aula, lanche, recompensas, insumos, cloud, servi�
 visibilidade pública da riqueza movimentada.
 
 **Moeda da plataforma como unidade de conta:** todo aporte — dinheiro, material ou serviço — é
-convertido em **moedas**, com **1 moeda = R$ X,00** (valor a definir). O ledger guarda as duas
+convertido em **moedas**, com **1 moeda = R$ 100,00**. O ledger guarda as duas
 faces (moedas e valor de origem), mas **toda saída pública exibe apenas moedas**: é plataforma
 educativa, com público infantil e terceiros sem familiaridade com custeio, e o que se quer
 mostrar é o **montante relativo entre apoiadores**, nunca o valor monetário isolado.
 
 **Coproprietariedade dos dados publicados:** a entidade responsável pela plataforma e o jogador
-que gerou o dado são coproprietários; havendo monetização, o ledger precisa registrar a
-**remuneração devida a ambos**.
+que gerou o dado são coproprietários; havendo monetização, o ledger registra o rateio **50% /
+50%**, com a parte do jogador paga **ao responsável legal**.
 
 **Recursos duráveis (patrimônio) e empréstimo:** além dos consumíveis, o ledger precisa tratar
 material que **não se consome no uso e é reaproveitado a cada turma** — o caso concreto é o
@@ -363,11 +367,10 @@ acervo de 298 livros doado pelo Goethe-Institut:
   relatórios de **efetividade do apoio ao longo do tempo**.
 - Nenhum dado de contato de jogador exposto ao Apoiador: o relatório é **agregado e por avatar**.
 
-**Questões em aberto:** valor em reais da moeda e critério de conversão dos aportes em material
-e serviço; valoração da hora-aula; valoração de acervo, kits e camisas doados; relatórios
-públicos por atividade, comunidade e provedor; **formato do relatório de efetividade** entregue
-ao Apoiador; critério de rateio da monetização dos dados e forma de pagamento a jogador menor
-de idade.
+**Questões em aberto:** valoração da hora-aula, do acervo, dos kits e das camisas doados —
+critério que define a conversão desses aportes em moedas; relatórios públicos por atividade,
+comunidade e provedor; **formato do relatório de efetividade** entregue ao Apoiador;
+periodicidade e forma de pagamento do rateio da monetização dos dados.
 
 **Fontes:** docs 04, 05.
 
@@ -420,9 +423,9 @@ terceiros; quiz ou desafio para desbloqueio; **publicação dos artefatos que co
 habilidade do Mestre**; catálogo inicial de poderes: **IA/Robótica e Poder do Território** nesta
 etapa — Redes, Soft Skills, PNED/BNCC, Rima e Capoeira ficam para ciclo futuro; banco de
 perguntas do **Quiz ao Vivo** cadastrado pelo curador da aula; **fluxo de desafio extra proposto
-por Apoiador** — aberto ou direcionado —, com validação obrigatória do Mestre e aprovação de
-Admin antes da publicação; paralelos obrigatórios com outras áreas do conhecimento e com os
-valores do projeto.
+por Apoiador na App 08** — aberto ou direcionado —, com validação obrigatória do Mestre e
+aprovação de Admin antes da publicação; paralelos obrigatórios com outras áreas do
+conhecimento e com os valores do projeto.
 
 **Coleta de dados como requisito de toda trilha:** a ferramenta deve **impedir a publicação de
 uma trilha sem ao menos um desafio de coleta de dados reais**. O Mestre define, no desafio, **o
@@ -530,6 +533,8 @@ família. Substitui a comunicação por mensageria de terceiros, fora do escopo 
 - **Termos e consentimentos versionados**, com data e hora e histórico consultável, incluindo a
   declaração de **coproprietariedade dos dados publicados** e o que ela implica em caso de
   monetização.
+- **Registro de propostas** de evolução da plataforma pelo responsável, com acompanhamento do
+  status, na mesma fila da gestão que recebe as sugestões dos jogadores.
 - **Linguagem simples**, no mesmo padrão exigido da política de privacidade.
 - **Sem qualquer canal com Apoiadores ou terceiros.**
 
@@ -542,6 +547,35 @@ formais de resposta; notificação ativa (e-mail) além da consulta no Web App; 
 responsável sem smartphone ou sem e-mail.
 
 **Fontes:** docs 02, 03, 10.
+
+## PRD-14 — App 08: Área do Apoiador
+
+**Escopo:** Web App autenticado dos Apoiadores já cadastrados por Admin — canal próprio de
+quem sustenta o projeto, sem nenhum contato com jogadores ou famílias.
+
+**Requisitos:**
+
+- **Meus aportes**: histórico do que aportou, em **moedas da plataforma**, e Poder Econômico
+  acumulado; leitura do mesmo ledger do PRD-07, sem edição.
+- **Proposição de desafios extras** — abertos ou direcionados —, com recompensa, quantidade
+  declarada, período e, no direcionado, destinatário e justificativa do vínculo. O
+  acompanhamento mostra o estado no fluxo: validação do Mestre da trilha → aprovação de Admin
+  → publicado, com **lastro exigido antes da publicação**.
+- **Relatório de efetividade** dos desafios propostos, **agregado e por avatar** — nunca com
+  dado de contato ou identificação de jogador.
+- **Envio de documentos comprobatórios** — currículo, portfólio, redes sociais, termos de
+  doação e comprovantes —, que um Admin anexa ao cadastro e que alimentam a página pública do
+  Apoiador na vitrine (PRD-03).
+- **Registro de propostas** de evolução da plataforma, com acompanhamento do status, na mesma
+  fila de avaliação da gestão que recebe as sugestões dos jogadores (App 05) e as propostas dos
+  responsáveis (App 07).
+- **Sem cadastro pelo app**: quem ainda não é Apoiador usa o formulário de solicitação da
+  vitrine; o cadastro segue exclusivo de Admin.
+
+**Questões em aberto:** forma de acesso e autenticação do Apoiador; se instituição tem mais de
+um usuário no mesmo cadastro; periodicidade do relatório de efetividade.
+
+**Fontes:** docs 03, 04, 12.
 
 ---
 
@@ -557,7 +591,9 @@ responsável sem smartphone ou sem e-mail.
 6. **PRD-06 (assistente por voz)** — reaproveita a base do Robô Educa, já em produção.
 7. **PRD-05 (área do jogador)** — a jornada gamificada em si.
 8. **PRD-09 e PRD-10** — conteúdo do primeiro Mestre + primeira batalha.
-9. **PRD-12, PRD-07, PRD-08 e PRD-11** — em ondas seguintes, conforme as fases do piloto.
+9. **PRD-14 (área do apoiador)** — depende do ledger em moedas (PRD-07) e do fluxo de desafios
+   extras já operante na gestão.
+10. **PRD-12, PRD-07, PRD-08 e PRD-11** — em ondas seguintes, conforme as fases do piloto.
 
 > Dica operacional: este repositório dispõe de skills de PRD (fases 1–5: elicitação, geração,
 > revisão, patch e gestão de mudanças). Cada bloco acima pode alimentar a Fase 1 diretamente.

@@ -16,7 +16,7 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
 | Visão, valores, causas, objetivos, público-alvo, fundador, transparência sobre IA                                                                                                                         | 01          |
 | Personas, solicitação de participação, Comunidades Virtuais (conceito e regras de coleta), poderes, trilhas, atividades e desafios, criações originais, equipes, batalhas, recompensas, manual do jogador | 02          |
-| Princípios de arquitetura, canais, as 7 aplicações, LGPD da plataforma                                                                                                                                    | 03          |
+| Princípios de arquitetura, canais, as 8 aplicações, LGPD da plataforma                                                                                                                                    | 03          |
 | Economia de recursos, moeda da plataforma, livro-razão, pessoa jurídica, receitas, titularidade dos dados publicados, desafios extras (regras completas), impacto social                                  | 04          |
 | Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto                                     | 05          |
 | Trilha 1 — Robô Educa                                                                                                                                                                                     | 06          |
@@ -58,19 +58,20 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Ciclo de evolução positiva                                         | 01 §1                            | 12                             |
 | Protagonismo dos jogadores / criação original                      | 01 §3 (valor) e 02 §4 (mecânica) | 03, 05, 06, 07, 08, 11, 12, 13 |
 | Transparência sobre uso de IA                                      | 01 §7                            | 03, 08, 10, 12, 13             |
-| Adesão em duas etapas (cadastro livre × divulgação autorizada)     | 03 §10                           | 01, 02, 08, 09, 10             |
+| Adesão em duas etapas (cadastro livre × divulgação autorizada)     | 03 §11                           | 01, 02, 08, 09, 10             |
 | Comunidade Virtual (criação, vínculo, granularidade)               | 02 §1                            | 03, 05, 08, 10, 11             |
 | Série temporal de coleta e pontuação recorrente                    | 02 §1                            | 03, 06, 07, 08, 11             |
-| Guarda permanente com coletor identificado / anonimização na saída | 02 §1                            | 03 §10, 08, 09                 |
+| Guarda permanente com coletor identificado / anonimização na saída | 02 §1                            | 03 §11, 08, 09                 |
 | Regra "toda trilha coleta dados reais"                             | 02 §3                            | 06, 07, 08, 10, 11             |
 | Poder do Território                                                | 02 §2                            | 08, 11                         |
 | Governança de personas (só Jogador tem autocadastro)               | 02 §1                            | 01, 05, 08                     |
 | Solicitação de participação como Mestre ou Apoiador                | 02 §1                            | 03 §§5, 8, 08, 12              |
 | Equipes (grupo livre até 5, várias por jogador, 1 familiar 17+)    | 02 §5                            | 03 §5, 08, 11 §4               |
 | Comunidade default do onboarding                                   | 02 §1                            | 01, 03 §§3, 5, 08, 10          |
-| Moeda da plataforma (unidade de conta e exibição pública)          | 04 §1                            | 03 §8, 08, 11 §8.2, 12         |
-| Coproprietariedade dos dados publicados e monetização              | 04 §2                            | 03 §10, 08, 09                 |
-| Aviso de LGPD visível nas aplicações e área detalhada              | 03 §10                           | 08, 09                         |
+| Moeda da plataforma (1 moeda = R$ 100,00; vitrine em moedas)       | 04 §1                            | 03 §8, 08, 11 §8.2, 12         |
+| Coproprietariedade dos dados publicados e monetização (50% / 50%)  | 04 §2                            | 03 §11, 08, 09                 |
+| Aviso de LGPD visível nas aplicações e área detalhada              | 03 §11                           | 08, 09                         |
+| Área do Apoiador (App 08) e registro de propostas                  | 03 §10                           | 04, 08, 09, 12                 |
 | Regra de lastro (atividade só com recurso provido)                 | 04 §1                            | 02, 05, 10, 11, 12             |
 | Poder Econômico                                                    | 04 §1                            | 02, 12                         |
 | Desafios extras (aberto e direcionado)                             | 04 §3                            | 02, 08, 11, 12                 |
@@ -80,11 +81,11 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Mestre Aprendiz (nível 5) e multiplicadores                        | 11 §6 (motor) e 05 §6 (operação) | 02, 08                         |
 | Níveis, badges, tabela de pontos, taxonomia de atividades          | 11 §§4–7                         | 02, 08                         |
 | Contrato dos jogos (lê progresso, debita, nunca credita)           | 11 §8.4                          | 03 §6, 08                      |
-| LGPD, avatares, foto de presença, Modo Ouvinte                     | 03 §§3.3, 4, 10                  | 02, 08, 09, 13                 |
+| LGPD, avatares, foto de presença, Modo Ouvinte                     | 03 §§3.3, 4, 11                  | 02, 08, 09, 13                 |
 
 ## 4. Aplicações → PRDs
 
-As sete aplicações desta etapa (doc 03 §2.1) correspondem aos PRDs do doc 08:
+As oito aplicações desta etapa (doc 03 §2.1) correspondem aos PRDs do doc 08:
 
 | Aplicação                                  | PRD    |
 | ------------------------------------------ | ------ |
@@ -95,6 +96,7 @@ As sete aplicações desta etapa (doc 03 §2.1) correspondem aos PRDs do doc 08:
 | App 05 — Área do Jogador                   | PRD-05 |
 | App 06 — Vitrine pública                   | PRD-03 |
 | App 07 — Área dos pais e responsáveis      | PRD-13 |
+| App 08 — Área do Apoiador                  | PRD-14 |
 
 PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **PRD-08**
 (Comunidades Virtuais), **PRD-09** (autoria de trilhas), **PRD-10** (batalhas), **PRD-11**
@@ -102,41 +104,42 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 
 ## 5. Matriz de rastreabilidade — conceito → PRDs
 
-| Conceito                                    | Definição       | PRDs                           |
-| ------------------------------------------- | --------------- | ------------------------------ |
-| Trilha e pontos de trilha                   | 02 §3 + 11 §2   | PRD-01, 09, 05                 |
-| Conteúdo e bibliografia por ponto           | 05 §3 + 11 §2   | PRD-09, 07                     |
-| Atividades e taxonomia                      | 02 §4 + 11 §4   | PRD-01, 02, 05                 |
-| Desafios de desbloqueio                     | 02 §2           | PRD-01, 09, 05                 |
-| Desafio de coleta (série temporal)          | 02 §1           | PRD-01, 08, 05, 06             |
-| Desafios extras (abertos e direcionados)    | 04 §3           | PRD-01, 02, 07, 09             |
-| Encontros presenciais (dinâmica assíncrona) | 05 §4           | PRD-02, 04, 05                 |
-| Quiz ao Vivo                                | 05 §5           | PRD-02, 05, 09                 |
-| Batalhas e telemetria                       | 02 §6 + 07      | PRD-10, 01                     |
-| Culminância e criação original              | 02 §4           | PRD-01, 02, 03, 05, 09, 12, 10 |
-| Motor de pontuação                          | 11 §5           | PRD-01, 02, 05                 |
-| Níveis 1–5 / Mestre Aprendiz                | 11 §6           | PRD-01, 05                     |
-| Badges                                      | 11 §7           | PRD-01, 03, 05, 12             |
-| Recompensas e troca de pontos               | 02 §8           | PRD-01, 05, 07                 |
-| Vitrine e rankings                          | 03 §8 + 11 §8.1 | PRD-03                         |
-| Cards e páginas individuais dos personagens | 11 §8.2         | PRD-03, 12                     |
-| Solicitação de Mestre ou Apoiador           | 02 §1 + 03 §8   | PRD-03, 02, 01                 |
-| Equipes                                     | 02 §5 + 11 §4   | PRD-01, 02, 05                 |
-| Comunidade default do onboarding            | 02 §1 + 03 §3   | PRD-04, 02, 01, 08             |
-| Moeda da plataforma                         | 04 §1           | PRD-07, 03, 01                 |
-| Coproprietariedade dos dados publicados     | 04 §2           | PRD-01, 07, 13                 |
-| Representação visual da comunidade          | 11 §8.3         | PRD-08, 03                     |
-| Contrato dos jogos                          | 11 §8.4         | PRD-12, 01, 10                 |
-| Distribuição da trilha no ciclo             | 11 §2.3 + 10 §5 | PRD-09, 02                     |
-| Canal de sugestões do jogador               | 03 §7 + 13 §5   | PRD-01, 02, 05                 |
-| Acervo didático (patrimônio e doação)       | 05 §3           | PRD-07, 02, 05, 09             |
-| Área do responsável e consentimentos        | 03 §9           | PRD-13, 01, 02                 |
+| Conceito                                    | Definição             | PRDs                           |
+| ------------------------------------------- | --------------------- | ------------------------------ |
+| Trilha e pontos de trilha                   | 02 §3 + 11 §2         | PRD-01, 09, 05                 |
+| Conteúdo e bibliografia por ponto           | 05 §3 + 11 §2         | PRD-09, 07                     |
+| Atividades e taxonomia                      | 02 §4 + 11 §4         | PRD-01, 02, 05                 |
+| Desafios de desbloqueio                     | 02 §2                 | PRD-01, 09, 05                 |
+| Desafio de coleta (série temporal)          | 02 §1                 | PRD-01, 08, 05, 06             |
+| Desafios extras (abertos e direcionados)    | 04 §3                 | PRD-01, 02, 07, 09             |
+| Encontros presenciais (dinâmica assíncrona) | 05 §4                 | PRD-02, 04, 05                 |
+| Quiz ao Vivo                                | 05 §5                 | PRD-02, 05, 09                 |
+| Batalhas e telemetria                       | 02 §6 + 07            | PRD-10, 01                     |
+| Culminância e criação original              | 02 §4                 | PRD-01, 02, 03, 05, 09, 12, 10 |
+| Motor de pontuação                          | 11 §5                 | PRD-01, 02, 05                 |
+| Níveis 1–5 / Mestre Aprendiz                | 11 §6                 | PRD-01, 05                     |
+| Badges                                      | 11 §7                 | PRD-01, 03, 05, 12             |
+| Recompensas e troca de pontos               | 02 §8                 | PRD-01, 05, 07                 |
+| Vitrine e rankings                          | 03 §8 + 11 §8.1       | PRD-03                         |
+| Cards e páginas individuais dos personagens | 11 §8.2               | PRD-03, 12                     |
+| Solicitação de Mestre ou Apoiador           | 02 §1 + 03 §8         | PRD-03, 02, 01                 |
+| Equipes                                     | 02 §5 + 11 §4         | PRD-01, 02, 05                 |
+| Comunidade default do onboarding            | 02 §1 + 03 §3         | PRD-04, 02, 01, 08             |
+| Moeda da plataforma                         | 04 §1                 | PRD-07, 03, 01                 |
+| Coproprietariedade dos dados publicados     | 04 §2                 | PRD-01, 07, 13                 |
+| Representação visual da comunidade          | 11 §8.3               | PRD-08, 03                     |
+| Contrato dos jogos                          | 11 §8.4               | PRD-12, 01, 10                 |
+| Distribuição da trilha no ciclo             | 11 §2.3 + 10 §5       | PRD-09, 02                     |
+| Sugestões e propostas de evolução           | 03 §§7, 9, 10 + 13 §5 | PRD-01, 02, 05, 13, 14         |
+| Área do Apoiador                            | 03 §10 + 04 §3        | PRD-14, 07, 02                 |
+| Acervo didático (patrimônio e doação)       | 05 §3                 | PRD-07, 02, 05, 09             |
+| Área do responsável e consentimentos        | 03 §9                 | PRD-13, 01, 02                 |
 
 ## 6. Invariantes — coerências que qualquer edição precisa preservar
 
 Contradizer qualquer item abaixo é erro de documentação, não variação de redação:
 
-1. **Sete aplicações**, todas **Web Apps responsivos, Mobile First**. Sem app nativo, sem
+1. **Oito aplicações**, todas **Web Apps responsivos, Mobile First**. Sem app nativo, sem
    aplicação sobre WhatsApp ou outra mensageria de terceiros.
 2. **Faixa etária 6 a 16 anos**; progressão por **nível de dificuldade, nunca por idade**.
 3. **Só o Jogador tem autocadastro.** Mestres e Apoiadores são cadastrados por Admin, com

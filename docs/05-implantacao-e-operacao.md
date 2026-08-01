@@ -114,11 +114,10 @@ a oficina voltar ao material reciclado.
 
 ### D. Camisas (50 unidades)
 
-Doadas no mesmo aporte do Goethe-Institut, entram no inventário como qualquer outro material
-recebido.
-
-> **A definir:** destino das camisas — entrega ao jogador, uniforme de equipe ou uso em
-> eventos — e o regime correspondente no livro-razão.
+**Definição vigente — doadas aos jogadores inscritos no Ciclo 01**, até o limite disponível.
+Como o livro da linha Alpha: a camisa é do jogador, sem devolução, com **baixa definitiva no
+livro-razão** na entrega. As 50 unidades atendem os primeiros inscritos; o saldo entra no
+painel do dia, e a reposição, se desejada, vira necessidade de recurso a ser aportada.
 
 ## 4. Roteiro do encontro presencial
 
@@ -263,5 +262,5 @@ First.
 | 3.5 — Acervo em operação               | Entrega dos livros Alpha na abertura de cada trilha, tombamento dos 46 permanentes, mapeamento capítulo → ponto de trilha e conservação implantada | Fase 2                                        |
 | 4 — Área do jogador e jogo             | **App 05** e **App 04**                                                                                                                            | Fase 2                                        |
 | 5 — Comunidade Virtual                 | Coleta de dados do território e painel público por comunidade                                                                                      | Fase 2                                        |
-| 6 — Economia visível                   | Livro-razão público, Poder Econômico, relatórios de transparência                                                                                  | Fase 3                                        |
+| 6 — Economia visível                   | Livro-razão público em moedas, Poder Econômico, relatórios de transparência e **App 08** — Área do Apoiador                                        | Fase 3                                        |
 | 7 — Escala                             | Personalização por IA, formação de multiplicadores e voluntários, kit de implantação para a 2ª comunidade                                          | Fases 3–6                                     |

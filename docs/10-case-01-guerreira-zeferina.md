@@ -80,7 +80,7 @@ cada uma se confirmou.
 ### 4.2 Construção dos artefatos digitais
 
 Construir o que os PRDs especificam: o **Backend API** (PRD-01), núcleo do qual tudo depende, e
-as **sete aplicações desta etapa**, priorizadas conforme as fases do piloto.
+as **oito aplicações desta etapa**, priorizadas conforme as fases do piloto.
 
 > **Transparência de método:** os artefatos digitais do Ciclo 01 são construídos com o auxílio e
 > a potencialização de ferramentas de IA, sob idealização e direção humanas — a IA é a alavanca
