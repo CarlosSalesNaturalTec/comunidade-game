@@ -30,10 +30,10 @@ equipamentos.
 
 ## 3. Acervo didático — inventário, posse e conservação
 
-O **Goethe-Institut (Salvador)** doou **298 livros** do projeto Include (Campus Party) e **30
-kits em MDF**. Os livros são **material de apoio** das trilhas Robô Educa e Batalha de Laser,
-vinculados a pontos de trilha específicos (**ponto de trilha → capítulo recomendado**), e
-entram em uso pela primeira vez no Ciclo 01.
+O **Goethe-Institut (Salvador)** doou **298 livros** do projeto Include (Campus Party), **30
+kits em MDF** e **50 camisas**. Os livros são **material de apoio** das trilhas Robô Educa e
+Batalha de Laser, vinculados a pontos de trilha específicos (**ponto de trilha → capítulo
+recomendado**), e entram em uso pela primeira vez no Ciclo 01.
 
 | Título                                      | Exemplares | Apoia principalmente           |
 | ------------------------------------------- | ---------: | ------------------------------ |
@@ -111,6 +111,14 @@ São insumo de oficina, não acervo: montados pelo jogador, viram o corpo do seu
 livro-razão como **consumível de atividade**, com baixa a cada montagem, e o saldo precisa
 constar do painel do dia — é ele que diz quantos jogadores ainda podem montar em MDF antes de
 a oficina voltar ao material reciclado.
+
+### D. Camisas (50 unidades)
+
+Doadas no mesmo aporte do Goethe-Institut, entram no inventário como qualquer outro material
+recebido.
+
+> **A definir:** destino das camisas — entrega ao jogador, uniforme de equipe ou uso em
+> eventos — e o regime correspondente no livro-razão.
 
 ## 4. Roteiro do encontro presencial
 

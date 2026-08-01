@@ -18,9 +18,9 @@
 7. **Web App responsivo, Mobile First** — nesta etapa, **toda** aplicação é entregue como Web
    App projetado primeiro para o celular. Sem aplicativos nativos e sem aplicações construídas
    sobre plataformas de mensageria de terceiros.
-8. **Plataforma em evolução contínua, com os jogadores** — os jogadores propõem melhorias pela
-   Área do Jogador e alteram o código do jogo como atividade de trilha; a arquitetura precisa
-   comportar essa evolução permanente.
+8. **Plataforma em evolução contínua, com jogadores, Mestres e Apoiadores** — os três propõem
+   melhorias, e os jogadores ainda alteram o código do jogo como atividade de trilha; a
+   arquitetura precisa comportar essa evolução permanente.
 9. **Construção assistida por IA, sob direção humana** — os artefatos da plataforma são
    construídos com auxílio de ferramentas de IA; a idealização, o contexto humano e social e
    as decisões são humanas, e a transparência sobre esse uso é pública.
@@ -83,7 +83,7 @@ cadastrados — por conversa, sem formulário.
                     ▼                               ▼
             Jogador NOVO                    Jogador JÁ CADASTRADO
      nome, nick, nascimento/idade,        captura da imagem + nick
-     comunidade virtual, avatar, foto     → comparação com a base
+     avatar, foto                         → comparação com a base
                     │                               │
                     ▼                               ▼
             cadastro criado +              presença registrada
@@ -106,19 +106,19 @@ presença**. Não é avatar, não vai para a vitrine, não aparece em ranking, n
 
 #### Novo jogador — dados coletados
 
-| Dado                        | Uso                                                                                       |
-| --------------------------- | ----------------------------------------------------------------------------------------- |
-| Nome                        | Identificação interna e comunicação com responsáveis                                      |
-| Nick                        | Identidade pública do jogador                                                             |
-| Data de nascimento ou idade | Adequação de conteúdo e faixa (6 a 16 anos)                                               |
-| **Comunidade Virtual**      | **Vínculo obrigatório** — define a que comunidade os dados de território serão creditados |
-| Características do avatar   | Geração do avatar público                                                                 |
-| Foto                        | **Exclusivamente** registro de presença futuro                                            |
+| Dado                        | Uso                                                  |
+| --------------------------- | ---------------------------------------------------- |
+| Nome                        | Identificação interna e comunicação com responsáveis |
+| Nick                        | Identidade pública do jogador                        |
+| Data de nascimento ou idade | Adequação de conteúdo e faixa (6 a 16 anos)          |
+| Características do avatar   | Geração do avatar público                            |
+| Foto                        | **Exclusivamente** registro de presença futuro       |
 
-**Vínculo com a Comunidade Virtual (regra vigente).** Nenhum jogador existe sem comunidade: a
-conversa oferece a lista das comunidades já criadas pelos Admins e o jogador escolhe a sua. Se
-nenhuma servir, o caso é escalado a um Admin, que cria a comunidade antes de concluir o
-vínculo.
+**Vínculo com a Comunidade Virtual (regra vigente).** O jogador **não informa a comunidade**:
+o Admin define na App 03 a **comunidade default do onboarding**, e todo cadastro feito ali é
+vinculado a ela. **O App 01 só fica disponível depois que o Admin define essa comunidade e
+libera o funcionamento da aplicação** — é o que simplifica a conversa de cadastro e garante
+que nenhum jogador exista sem comunidade.
 
 Ao final, o jogador já está **ativo** e pode participar das atividades — sem exigência de
 autorização do responsável nesta etapa.
@@ -192,12 +192,17 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
 - **CRUDs de personas e catálogo**: jogadores, mestres, apoiadores, admins, comunidades
   virtuais e poderes.
 - **Criação das Comunidades Virtuais** — **exclusiva de Admins**, nascendo vazias.
+- **Definição da comunidade default do onboarding e liberação do App 01** — enquanto não
+  houver comunidade default definida, a aplicação de onboarding não opera.
 - **Vínculo do jogador à comunidade** — conferência e transferência entre comunidades
   (mudança de endereço, cadastro equivocado), com registro da data, já que os dados coletados
   são temporais.
 - **Cadastro de Mestres e Apoiadores** — exclusivo de Admins, com anexação dos artefatos
-  comprobatórios.
+  comprobatórios, do currículo, do portfólio e dos links de redes sociais.
+- **Fila de solicitações de participação** como Mestre ou Apoiador, vindas do formulário
+  público da App 06.
 - **Inclusão manual de novos Admins** por um Admin existente.
+- **Cadastro de equipes**, conforme o plano de aulas e a formação livre dos jogadores.
 - **Cadastro de atividades** com pontuação, recompensas e recursos necessários.
 - **Agenda de aulas** (on-line e presenciais) e atividades previstas.
 - **Lançamento de atividades realizadas**: data, mentores, jogadores e resultados.
@@ -262,9 +267,16 @@ Web App de acesso público e **sem autenticação**:
 
 - Apresenta **Jogadores, Poderes, Mestres, Batalhas, Apoiadores e Comunidades Virtuais**, com
   navegação para seções específicas com cards individuais.
+- **Cada card abre a página individual do personagem** — jogador, Mestre, poder, apoiador ou
+  comunidade —, com a versão detalhada do que o card resume (composição no documento 11).
 - **Cards rotativos** com avatares dos jogadores, atualizados a cada 5 segundos. Exibem
   **apenas** avatar, nick, badges, poderes adquiridos e desempenho na plataforma — **sem links
   para redes sociais dos jogadores** nem qualquer canal de contato direto.
+- **Página de Mestres e Apoiadores** com **currículo, portfólios, redes sociais e documentos
+  comprobatórios externos** — a prova pública de habilidade e de apoio.
+- **Formulário de solicitação de participação** como Mestre ou Apoiador, aberto a pessoas e
+  instituições: a solicitação é gravada e cai na fila de avaliação dos Admins na App 03.
+- **Aportes exibidos em moedas da plataforma**, nunca em reais (documento 04).
 - **Painel público da Comunidade Virtual** — dados do território em **série histórica**,
   agregados e anonimizados, abertos à consulta da comunidade e de instituições.
 - **Portfólio de criações originais** — as criações dos jogadores autorizados, com o nick do
@@ -330,6 +342,11 @@ conferido por um Admin.
   pelo responsável.
 - **Georreferenciamento sem expor endereço de criança**: a granularidade publicada nunca pode
   permitir inferir onde um jogador específico mora.
+- **Aviso visível em toda aplicação:** onde há coleta de dado, o app indica ao usuário — de
+  forma discreta e elegante, sem interromper o uso — o que está sendo coletado e quais são os
+  seus direitos, com acesso a uma **área detalhada** que explica destino e uso de cada dado.
+- **Coproprietariedade dos dados publicados**: em produção, a entidade responsável pela
+  plataforma é coproprietária, com o jogador que gerou o dado (documento 04).
 - A LGPD deve ser considerada em **todos** os módulos e PRDs, não como item pontual.
 
 **[Proposta]** Aplicar o mesmo cuidado a vídeos de culminância e fotos de eventos em que

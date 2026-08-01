@@ -27,15 +27,18 @@ ajudar os colegas e registrar dados do próprio território gera pontos, poderes
   ela. O jogador aprende e realiza; a comunidade ganha dados, talento e visibilidade; o apoio
   custeia novas atividades; quem chega ao topo volta como multiplicador.
 - **Transparência radical**: todo recurso aportado é registrado em livro-razão público e compõe
-  o **Poder Econômico** do Apoiador — reconhecimento visível de quem sustenta o projeto.
+  o **Poder Econômico** do Apoiador — reconhecimento visível de quem sustenta o projeto. Na
+  vitrine, o aporte aparece em **moedas da plataforma**, nunca em reais: a plataforma é
+  educativa e o público inclui crianças, então o que se mostra é o montante relativo entre
+  apoiadores, não o valor monetário.
 - **Efetividade rastreável**: o histórico registra não só _quanto_ foi aportado, mas **o que
   aconteceu por causa do aporte** — as realizações dos jogadores nos desafios propostos.
 - **Protagonismo dos jogadores**: o apoio não financia assistência, financia **autoria** —
   criações originais com crédito público na vitrine e jogadores que participam da evolução da
   própria plataforma.
 - **Precedente concreto**: o **Goethe-Institut (Salvador)** é um dos primeiros Apoiadores —
-  doou 298 livros e 30 kits MDF, com Termo de Doação assinado, dando lastro material às duas
-  primeiras trilhas.
+  doou 298 livros, 30 kits MDF e 50 camisas, com Termo de Doação assinado, dando lastro
+  material às duas primeiras trilhas.
 
 ## 3. Estrutura necessária para o Ciclo 01
 
@@ -53,14 +56,19 @@ Pela regra de lastro, **nenhuma atividade acontece sem os recursos providos** �
 
 ## 4. Como apoiar
 
-1. **Cadastro por um Admin.** Todo Apoiador — pessoa física ou jurídica — é cadastrado
+1. **Solicitação pela vitrine.** Pessoas e instituições interessadas preenchem o formulário
+   público de solicitação de participação como Mestre ou Apoiador. A solicitação é gravada e
+   avaliada por um Admin.
+2. **Cadastro por um Admin.** Todo Apoiador — pessoa física ou jurídica — é cadastrado
    exclusivamente pelos Admins, com o apoio **comprovado por materiais ou artefatos registrados
-   na plataforma** (termo de doação, comprovante, registro do material).
-2. **Doações em dinheiro** — por **PIX**, no canal oficial: chave `51.730.395/0001-19` (CNPJ),
+   na plataforma** (termo de doação, comprovante, registro do material, currículo, portfólio e
+   redes sociais), que ficam visíveis na sua página da vitrine.
+3. **Doações em dinheiro** — por **PIX**, no canal oficial: chave `51.730.395/0001-19` (CNPJ),
    titular **Robô Educa — Kits Robóticos Educacionais**, pessoa jurídica vinculada ao projeto.
-3. **Doações de materiais e serviços** — equipamentos, insumos, acervo, hora de trabalho: tudo
+4. **Doações de materiais e serviços** — equipamentos, insumos, acervo, hora de trabalho: tudo
    entra no livro-razão com o mesmo rigor do dinheiro.
-4. **Todo aporte compõe o Poder Econômico** do Apoiador, visível publicamente na vitrine.
+5. **Todo aporte compõe o Poder Econômico** do Apoiador, convertido em **moedas da plataforma**
+   e visível publicamente na vitrine.
 
 ## 5. Desafios extras
 
@@ -81,8 +89,9 @@ Aportar é o começo da relação; a interação com os jogadores acontece pelos
 
 ## 6. O que o Apoiador acompanha
 
-- **Seu card público** na vitrine: identidade, Poder Econômico, desafios propostos e o que o
-  apoio produziu.
+- **Seu card público** na vitrine e a **página individual** que ele abre: identidade, Poder
+  Econômico em moedas, desafios propostos, o que o apoio produziu e os documentos que o
+  comprovam.
 - **Relatório de efetividade** dos seus desafios — quantos concluíram, em que trilhas, com que
   retenção (formato ainda em definição).
 - **Prestação de contas** dos recursos: o primeiro relatório real será o do acervo do

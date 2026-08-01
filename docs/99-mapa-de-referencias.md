@@ -12,21 +12,21 @@ Cada assunto tem **um** documento normativo. Alterar o assunto significa alterar
 documento. Os demais, quando precisam citar o assunto, resumem em uma frase e **nunca
 repetem a regra completa** — repetição é o defeito que esta documentação combate.
 
-| Assunto                                                                                                                                                                      | Fonte única |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| Visão, valores, causas, objetivos, público-alvo, fundador, transparência sobre IA                                                                                            | 01          |
-| Personas, Comunidades Virtuais (conceito e regras de coleta), poderes, trilhas, atividades e desafios, criações originais, equipes, batalhas, recompensas, manual do jogador | 02          |
-| Princípios de arquitetura, canais, as 7 aplicações, LGPD da plataforma                                                                                                       | 03          |
-| Economia de recursos, livro-razão, pessoa jurídica, receitas, desafios extras (regras completas), impacto social                                                             | 04          |
-| Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto        | 05          |
-| Trilha 1 — Robô Educa                                                                                                                                                        | 06          |
-| Trilha 2 — Batalha de Laser                                                                                                                                                  | 07          |
-| Requisitos por PRD (**único documento com detalhamento extenso**)                                                                                                            | 08          |
-| Decisões pendentes e propostas                                                                                                                                               | 09          |
-| Case 01 — Guerreira Zeferina, Ciclo 01                                                                                                                                       | 10          |
-| Motor do jogo: anatomia da trilha, taxonomia, pontuação, níveis, badges, reflexos no ecossistema                                                                             | 11          |
-| Guia do Apoiador (documento **derivado**, sem regra própria)                                                                                                                 | 12          |
-| Código de Conduta do jogador                                                                                                                                                 | 13          |
+| Assunto                                                                                                                                                                                                   | Fonte única |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| Visão, valores, causas, objetivos, público-alvo, fundador, transparência sobre IA                                                                                                                         | 01          |
+| Personas, solicitação de participação, Comunidades Virtuais (conceito e regras de coleta), poderes, trilhas, atividades e desafios, criações originais, equipes, batalhas, recompensas, manual do jogador | 02          |
+| Princípios de arquitetura, canais, as 7 aplicações, LGPD da plataforma                                                                                                                                    | 03          |
+| Economia de recursos, moeda da plataforma, livro-razão, pessoa jurídica, receitas, titularidade dos dados publicados, desafios extras (regras completas), impacto social                                  | 04          |
+| Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto                                     | 05          |
+| Trilha 1 — Robô Educa                                                                                                                                                                                     | 06          |
+| Trilha 2 — Batalha de Laser                                                                                                                                                                               | 07          |
+| Requisitos por PRD (**único documento com detalhamento extenso**)                                                                                                                                         | 08          |
+| Decisões pendentes e propostas                                                                                                                                                                            | 09          |
+| Case 01 — Guerreira Zeferina, Ciclo 01                                                                                                                                                                    | 10          |
+| Motor do jogo: anatomia da trilha, taxonomia, pontuação, níveis, badges, reflexos no ecossistema                                                                                                          | 11          |
+| Guia do Apoiador (documento **derivado**, sem regra própria)                                                                                                                                              | 12          |
+| Código de Conduta do jogador                                                                                                                                                                              | 13          |
 
 ## 2. Papel e dependência dos documentos
 
@@ -65,6 +65,12 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Regra "toda trilha coleta dados reais"                             | 02 §3                            | 06, 07, 08, 10, 11             |
 | Poder do Território                                                | 02 §2                            | 08, 11                         |
 | Governança de personas (só Jogador tem autocadastro)               | 02 §1                            | 01, 05, 08                     |
+| Solicitação de participação como Mestre ou Apoiador                | 02 §1                            | 03 §§5, 8, 08, 12              |
+| Equipes (grupo livre até 5, várias por jogador, 1 familiar 17+)    | 02 §5                            | 03 §5, 08, 11 §4               |
+| Comunidade default do onboarding                                   | 02 §1                            | 01, 03 §§3, 5, 08, 10          |
+| Moeda da plataforma (unidade de conta e exibição pública)          | 04 §1                            | 03 §8, 08, 11 §8.2, 12         |
+| Coproprietariedade dos dados publicados e monetização              | 04 §2                            | 03 §10, 08, 09                 |
+| Aviso de LGPD visível nas aplicações e área detalhada              | 03 §10                           | 08, 09                         |
 | Regra de lastro (atividade só com recurso provido)                 | 04 §1                            | 02, 05, 10, 11, 12             |
 | Poder Econômico                                                    | 04 §1                            | 02, 12                         |
 | Desafios extras (aberto e direcionado)                             | 04 §3                            | 02, 08, 11, 12                 |
@@ -113,7 +119,12 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Badges                                      | 11 §7           | PRD-01, 03, 05, 12             |
 | Recompensas e troca de pontos               | 02 §8           | PRD-01, 05, 07                 |
 | Vitrine e rankings                          | 03 §8 + 11 §8.1 | PRD-03                         |
-| Cards dos personagens                       | 11 §8.2         | PRD-03, 12                     |
+| Cards e páginas individuais dos personagens | 11 §8.2         | PRD-03, 12                     |
+| Solicitação de Mestre ou Apoiador           | 02 §1 + 03 §8   | PRD-03, 02, 01                 |
+| Equipes                                     | 02 §5 + 11 §4   | PRD-01, 02, 05                 |
+| Comunidade default do onboarding            | 02 §1 + 03 §3   | PRD-04, 02, 01, 08             |
+| Moeda da plataforma                         | 04 §1           | PRD-07, 03, 01                 |
+| Coproprietariedade dos dados publicados     | 04 §2           | PRD-01, 07, 13                 |
 | Representação visual da comunidade          | 11 §8.3         | PRD-08, 03                     |
 | Contrato dos jogos                          | 11 §8.4         | PRD-12, 01, 10                 |
 | Distribuição da trilha no ciclo             | 11 §2.3 + 10 §5 | PRD-09, 02                     |
@@ -129,9 +140,10 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
    aplicação sobre WhatsApp ou outra mensageria de terceiros.
 2. **Faixa etária 6 a 16 anos**; progressão por **nível de dificuldade, nunca por idade**.
 3. **Só o Jogador tem autocadastro.** Mestres e Apoiadores são cadastrados por Admin, com
-   artefato comprobatório; novos Admins entram manualmente por outro Admin.
+   artefato comprobatório; a solicitação pela vitrine é apenas pedido de avaliação, nunca
+   cadastro; novos Admins entram manualmente por outro Admin.
 4. **Comunidade Virtual é criada vazia por Admin**; todo jogador é vinculado a exatamente
-   uma.
+   uma, pela **comunidade default** que o Admin define — e sem ela o App 01 não opera.
 5. **Toda trilha tem ao menos um desafio de coleta de dados reais** e termina em
    **criação original** apresentada publicamente, com autoria creditada.
 6. **A coleta pontua de forma recorrente enquanto a série estiver ativa**; interrompida,
@@ -150,6 +162,11 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
 13. **Ciclo 01 = ago–dez/2026, Guerreira Zeferina, trilhas 1 e 2 apenas.** Rima, Capoeira,
     Redes, PNED/BNCC e Soft Skills são ciclo futuro.
 14. **Detalhamento extenso só no doc 08.** Os demais documentos são sintéticos.
+15. **Equipe é grupo livre de até 5 pessoas**, cadastrada por Admin; o jogador pode integrar
+    várias e pontua em todas em que colabora; no máximo **1 familiar com 17 anos ou mais**.
+16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.**
+17. **Dados publicados têm coproprietariedade** entre a entidade responsável e o jogador que
+    os gerou; monetizados, remuneram ambos.
 
 ## 7. Como esta documentação deve ser editada
 

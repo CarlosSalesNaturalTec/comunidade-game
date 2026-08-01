@@ -48,6 +48,7 @@ cada uma se confirmou.
 | **H1** | O público-alvo — crianças e jovens de 6 a 16 anos — vai se interessar pelo tema e **se inscrever** na plataforma e nas trilhas | Nº de cadastros efetivados no onboarding (App 01) e nº de jogadores que iniciam uma trilha |
 | **H2** | Os **pais ou responsáveis** vão permitir a participação, tomar conhecimento do tratamento de dados e **aceitar os termos**     | Nº de autorizações concedidas / nº de jogadores ativos, medido na App 07                   |
 | **H3** | Os **recursos de implantação do MVP** serão supridos por mestres e apoiadores                                                  | Lastro registrado no livro-razão × recursos necessários às atividades previstas            |
+| **H4** | A turma reunirá jogadores de **toda a faixa de 6 a 16 anos**, e não uma faixa estreita                                         | Distribuição etária dos cadastros do Ciclo 01, por idade e por trilha iniciada             |
 
 - **H1 e H2 são independentes.** A adesão em duas etapas foi desenhada exatamente para isso: o
   jogador participa com cadastro livre (H1), e a autorização do responsável (H2) libera apenas a
@@ -55,6 +56,10 @@ cada uma se confirmou.
   não acontece é a vitrine.
 - **H3 é condição de existência.** Pela regra de lastro, atividade sem recurso provido não
   ocorre. H3 falhar não degrada o ciclo: interrompe-o. É a hipótese a monitorar mais de perto.
+- **H4 testa a premissa da faixa etária.** O desenho do jogo — dificuldade gradual, equipes
+  misturando idades, mais velhos mediando mais novos — pressupõe uma turma etariamente diversa.
+  Se a adesão real se concentrar em poucas idades, o que muda não é a faixa declarada: é a
+  expectativa sobre as equipes e a mediação, que precisa ser revista no ciclo seguinte.
 
 ## 4. Meta do Ciclo 01
 
@@ -64,7 +69,8 @@ cada uma se confirmou.
 
 - **Credenciamento de jogadores** — cadastro pelo App 01 (áudio ou texto) e registro de presença.
 - **Cadastro da comunidade digital** — a Comunidade Virtual "Guerreira Zeferina" é **criada vazia
-  por um Admin antes do primeiro onboarding** (sem ela não há como vincular jogador) e passa a
+  por um Admin antes do primeiro onboarding** e definida como **comunidade default**, o que
+  libera o funcionamento do App 01 (sem ela não há onboarding nem vínculo de jogador), e passa a
   existir de fato à medida que os jogadores registram dados reais. **Toda trilha do ciclo precisa
   ter ao menos um desafio de coleta**, com cadência definida — é o que faz a comunidade digital
   ganhar corpo dentro do Ciclo 01.
@@ -136,8 +142,8 @@ Notas de paginação:
 
 Ao fim de dezembro de 2026, o ciclo responde:
 
-1. **Adesão (H1)** — quantos jogadores se cadastraram, quantos iniciaram trilha, quantos
-   permaneceram até a culminância.
+1. **Adesão (H1 e H4)** — quantos jogadores se cadastraram, quantos iniciaram trilha, quantos
+   permaneceram até a culminância e **como as idades se distribuíram na faixa de 6 a 16 anos**.
 2. **Consentimento (H2)** — quantos responsáveis autorizaram a divulgação do perfil; quais foram
    as dúvidas e objeções recorrentes sobre dados da criança.
 3. **Lastro (H3)** — quais atividades aconteceram, quais não aconteceram por falta de recurso, e
@@ -159,7 +165,7 @@ formalizar — e o _baseline_ contra o qual a segunda comunidade será comparada
 - **Calendário do ciclo**: datas dos encontros presenciais entre agosto e novembro e data da
   culminância.
 - **Tamanho da turma** e número de mestres e voluntários necessários por encontro.
-- **Metas numéricas de H1 e H2** — quantos cadastros e quantas autorizações caracterizam
-  hipótese confirmada.
+- **Metas numéricas de H1, H2 e H4** — quantos cadastros, quantas autorizações e que
+  distribuição etária caracterizam hipótese confirmada.
 - **Registro da edição de 2024**: reunir memória, fotos e contatos daquela edição como linha de
   base do relacionamento com a comunidade.

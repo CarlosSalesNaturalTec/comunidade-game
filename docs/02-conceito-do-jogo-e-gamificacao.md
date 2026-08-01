@@ -41,8 +41,9 @@ o motor do jogo é agnóstico de área. Regras de admissão:
 - Todo Mestre **tem que ter pelo menos uma habilidade declarada**.
 - A habilidade precisa estar **comprovada por materiais ou artefatos disponibilizados na
   plataforma** — aulas presenciais ou gravadas, atividades propostas, videoaulas, projetos,
-  obras, registros de prática ou qualquer produção verificável da sua área. A prova é pública
-  e verificável por qualquer visitante.
+  obras, registros de prática, **currículo, portfólio, redes sociais e documentos externos**
+  ou qualquer produção verificável da sua área. A prova é pública e verificável por qualquer
+  visitante.
 - Mestres também podem prover recursos para atividades.
 
 > **Exemplo de referência — o Mestre fundador.** É mestre em Programação e Robótica porque
@@ -54,8 +55,17 @@ o motor do jogo é agnóstico de área. Regras de admissão:
 Pessoas e instituições que financiam ou divulgam o projeto.
 
 - **Cadastrados exclusivamente pelos Admins**, com o mesmo critério dos Mestres: o apoio
-  precisa estar **comprovado por materiais ou artefatos registrados na plataforma**.
+  precisa estar **comprovado por materiais ou artefatos registrados na plataforma** —
+  incluindo currículo, portfólio, redes sociais e documentos externos da pessoa ou
+  instituição.
 - Cada recurso aportado é registrado e contabilizado no seu **Poder Econômico**.
+
+### Solicitação de participação (Mestres e Apoiadores)
+
+Pessoas e instituições interessadas no projeto podem **solicitar sua inclusão como Mestre ou
+Apoiador** por formulário público da vitrine. A solicitação é gravada e entra na fila de
+avaliação dos Admins. **Ela não cria cadastro e não abre exceção à regra**: quem avalia e
+cadastra continua sendo um Admin.
 
 ### Público geral / Visitantes
 
@@ -75,8 +85,10 @@ vazio — nome, localização e granularidade, sem nenhum dado — e é **preenc
 jogadores**. Não há autocadastro de comunidades, pela mesma razão que não há autocadastro de
 Mestres: a unidade territorial é estrutura da plataforma, não conteúdo gerado por usuário.
 
-**Todo jogador pertence a uma comunidade.** O vínculo é **obrigatório** e colhido já no
-cadastro; é ele que define a que território os dados coletados são creditados.
+**Todo jogador pertence a uma comunidade.** O vínculo é **obrigatório** e atribuído
+automaticamente no cadastro: o Admin define na gestão a **comunidade default do onboarding**,
+e é ela que o jogador recebe — sem precisar informá-la. É esse vínculo que define a que
+território os dados coletados são creditados.
 
 **Como se constrói.** Parte das atividades é de coleta de dados locais — temperatura,
 precipitação pluviométrica, coleta de resíduos, buracos na via, iluminação pública, trânsito,
@@ -289,11 +301,18 @@ descumprimento de regras. É a aplicação prática do código de conduta e dos 
 
 ## 5. Equipes
 
-- Equipes **mistas** com até **5 membros**.
-- **Equipe Familiar** — modalidade específica para jogar com a família.
+**Definição vigente.** Equipes são **grupos livres de até 5 pessoas**, formados de maneira
+espontânea pelos jogadores:
 
-**Definição vigente — "mista" inclui a mistura de idades.** A equipe é o principal
-instrumento do jogo para transformar a diferença de idades (6 a 16 anos) em força:
+- Cada jogador pode participar de **uma ou mais equipes** e **pontua em todas as atividades
+  em que participar e colaborar**.
+- As equipes são **cadastradas pelo Admin na App 03**, conforme o plano de aulas e a formação
+  livre dos jogadores.
+- A composição segue o que a **atividade, o desafio ou a batalha determinar**: só jogadores
+  **ou** com **no máximo 1 familiar, de 17 anos ou mais**.
+
+**A equipe mistura idades.** É o principal instrumento do jogo para transformar a diferença
+de idades (6 a 16 anos) em força:
 
 - As equipes **misturam idades e níveis deliberadamente**. A progressão individual segue por
   nível de dificuldade; é a convivência que é heterogênea de propósito.
@@ -349,14 +368,14 @@ assistencialismo.
 ## 9. Manual do Jogador (fluxo de entrada)
 
 1. **Cadastro livre** — sem autorização de responsável. Informe apenas nome, data de
-   nascimento (ou idade), nick, sua Comunidade Virtual e características do avatar. O cadastro
-   pode ser feito por **voz ou chat**, com apoio de IA.
+   nascimento (ou idade), nick e características do avatar; sua Comunidade Virtual já vem
+   definida pela gestão. O cadastro pode ser feito por **voz ou chat**, com apoio de IA.
 2. (Se houver kit) **Receba e monte seu robô, e personalize-o.**
 3. **Acesse a plataforma.**
 4. **Escolha um Poder.**
 5. **Siga uma Trilha** — e receba o **livro de apoio** que passa a ser seu.
-6. **Monte equipes** (mistas de até 5 membros, ou Equipe Familiar).
-7. **Realize os desafios semanais** (on-line, presenciais, em equipe, em família).
+6. **Monte equipes** — grupos livres de até 5 pessoas; você pode estar em mais de uma.
+7. **Realize os desafios semanais** (on-line, presenciais, em equipe, em equipe com familiar).
 8. **Registre dados da sua comunidade** — a coleta rende pontos **enquanto você a mantiver**.
 9. **Crie algo seu a partir do que aprendeu e apresente** — toda trilha termina com uma
    criação original, com o seu crédito de autoria.
