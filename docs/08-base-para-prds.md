@@ -390,7 +390,7 @@ próprios jogadores — a base _Data Driven_ da plataforma.
   default e alterável apenas pela gestão, com data da mudança preservada.
 - A comunidade virtual **existe na medida em que dados reais são registrados**.
 - Atividades de coleta: temperatura local, precipitação pluviométrica, coleta de resíduos,
-  buracos na via, iluminação, trânsito, transporte público, fotos e memórias.
+  buracos na via, iluminação, trânsito, transporte público, fotos, vídeos e memórias.
 - **Toda trilha tem ao menos um desafio de coleta.**
 - **Série temporal como unidade do modelo**: cadência declarada, registros datados, jogador
   coletor, comunidade e estado da série (ativa / interrompida / retomada).

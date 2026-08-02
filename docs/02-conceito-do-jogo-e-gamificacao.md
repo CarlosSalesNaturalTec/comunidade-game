@@ -92,7 +92,7 @@ território os dados coletados são creditados.
 
 **Como se constrói.** Parte das atividades é de coleta de dados locais — temperatura,
 precipitação pluviométrica, coleta de resíduos, buracos na via, iluminação pública, trânsito,
-transporte público, fotos e memórias de pontos de referência.
+transporte público, fotos, vídeos e memórias de pontos de referência.
 
 **Em que granularidade.** O jogador registra no nível em que vive o problema: **comunidade →
 bairro → rua → condomínio → bloco → quadra**. Cada registro adiciona uma peça à comunidade
@@ -115,6 +115,8 @@ correspondente também é temporal:
 - A retomada reativa o cômputo, sem recuperar o período parado.
 - O registro é **manual** (digitado ou por voz) ou vem de **sensor construído pelo jogador**;
   a origem fica gravada no registro.
+- O registro pode ser **foto ou vídeo** — é assim que se registra lixo acumulado, buraco na
+  via ou poste apagado, que se medem por evidência e não por número.
 - O registro **nasce válido e pontua na hora**. O Mestre audita por **amostragem** e pode
   invalidar registro inverossímil, o que retira os pontos correspondentes.
 
