@@ -105,19 +105,24 @@ temporal** na Comunidade Virtual e **vinculados ao jogador responsável**. A pon
 correspondente também é temporal:
 
 - Cada série de coleta tem uma **cadência** (diária, semanal, mensal) definida no desafio.
+- **A série é individual**: cada jogador abre a sua no ponto que escolheu medir, e a
+  Comunidade Virtual é a soma das séries de todos.
 - **Enquanto a série se mantém ativa**, cada registro válido no prazo **rende pontos**. É
   pontuação recorrente, não de entrega única.
+- **Duas cadências seguidas sem registro interrompem a série** — uma falha isolada não.
 - **Interrompida a coleta, interrompe-se o cômputo.** Os pontos já ganhos permanecem, mas a
   série deixa de render.
 - A retomada reativa o cômputo, sem recuperar o período parado.
+- O registro é **manual** (digitado ou por voz) ou vem de **sensor construído pelo jogador**;
+  a origem fica gravada no registro.
+- O registro **nasce válido e pontua na hora**. O Mestre audita por **amostragem** e pode
+  invalidar registro inverossímil, o que retira os pontos correspondentes.
 
 É o desenho que traduz o valor real do dado de território: uma medição isolada é curiosidade;
 uma **série contínua** é evidência. A plataforma paga pela continuidade, porque é a
 continuidade que serve à comunidade.
 
-> **A definir:** cadência e valor em pontos por tipo de coleta; janela de tolerância antes de
-> considerar a série interrompida; teto de pontos por período; mecânica de verificação da
-> veracidade do dado.
+O valor em pontos do registro está no documento 11.
 
 #### Guarda permanente dos dados, com o coletor identificado
 
@@ -130,7 +135,12 @@ Por que a autoria fica: um dado de território sem autor conhecido é um dado se
 E o registro é **realização do jogador**: apagar o nome apagaria o crédito.
 
 A anonimização vale **na saída, não no armazenamento**: o que sai da plataforma para
-pesquisas, painéis públicos e instituições é agregado e anonimizado conforme a finalidade.
+pesquisas, painéis públicos e instituições é agregado e anonimizado conforme a finalidade. A
+saída pública chega **até o nível da rua**; condomínio, bloco e quadra ficam para uso interno
+e para entregas com acordo formal.
+
+> **A definir:** como evitar que uma série diária em rua com um único coletor indique onde a
+> criança mora.
 
 **Para que serve.** Os dados podem ser usados como **insumo para tomada de decisões** — pela
 própria comunidade, por associações de moradores, escolas, poder público e pesquisas. O

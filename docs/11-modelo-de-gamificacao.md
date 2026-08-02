@@ -162,20 +162,20 @@ Regras transversais:
 
 Tabela única das fontes de pontos da plataforma:
 
-| Fonte                                                 | Pontos                | Tipo                                                                                                     | Quem lança                                 |
-| ----------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| Desafio semanal — atividade on-line                   | 10                    | Regular                                                                                                  | Mestre/gestão                              |
-| Desafio semanal — atividade presencial                | 10                    | Regular                                                                                                  | Mestre/gestão                              |
-| Desafio semanal — atividade em equipe                 | 10                    | Regular                                                                                                  | Mestre/gestão                              |
-| Desafio semanal — atividade em equipe com familiar    | 20                    | Regular                                                                                                  | Mestre/gestão                              |
-| **Coleta de dados do território**                     | A definir por tipo    | **Recorrente** — pontua a cada registro válido enquanto a série está ativa; interrompeu, parou de render | Automático (registro do jogador)           |
-| **Quiz ao Vivo**                                      | A definir             | Regular                                                                                                  | Automático (partida)                       |
-| Mérito extra por auxílio aos colegas                  | A definir             | Regular                                                                                                  | Mestre/gestão                              |
-| **Criação original** — culminância da trilha          | A definir             | Regular                                                                                                  | Mestre/gestão                              |
-| Badge de conduta (ex.: Guardião do Acervo)            | Pontos + badge        | Regular                                                                                                  | Mestre/gestão                              |
-| **Desafio extra de Apoiador** (aberto ou direcionado) | Definidos no desafio  | **Extra** — computado isoladamente                                                                       | Automático na conclusão validada           |
-| **Batalha** (resultado e estatísticas)                | A definir por batalha | Regular                                                                                                  | Automático (ponte Nexus → API) ou gestão   |
-| Pontuação negativa (má conduta)                       | Negativo, a definir   | Regular                                                                                                  | Admin/gestão, conforme o Código de Conduta |
+| Fonte                                                 | Pontos                | Tipo                                                                                        | Quem lança                                 |
+| ----------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Desafio semanal — atividade on-line                   | 10                    | Regular                                                                                     | Mestre/gestão                              |
+| Desafio semanal — atividade presencial                | 10                    | Regular                                                                                     | Mestre/gestão                              |
+| Desafio semanal — atividade em equipe                 | 10                    | Regular                                                                                     | Mestre/gestão                              |
+| Desafio semanal — atividade em equipe com familiar    | 20                    | Regular                                                                                     | Mestre/gestão                              |
+| **Coleta de dados do território**                     | 5 por registro válido | **Recorrente** — pontua enquanto a série está ativa, sem teto; interrompeu, parou de render | Automático (registro do jogador)           |
+| **Quiz ao Vivo**                                      | A definir             | Regular                                                                                     | Automático (partida)                       |
+| Mérito extra por auxílio aos colegas                  | A definir             | Regular                                                                                     | Mestre/gestão                              |
+| **Criação original** — culminância da trilha          | A definir             | Regular                                                                                     | Mestre/gestão                              |
+| Badge de conduta (ex.: Guardião do Acervo)            | Pontos + badge        | Regular                                                                                     | Mestre/gestão                              |
+| **Desafio extra de Apoiador** (aberto ou direcionado) | Definidos no desafio  | **Extra** — computado isoladamente                                                          | Automático na conclusão validada           |
+| **Batalha** (resultado e estatísticas)                | A definir por batalha | Regular                                                                                     | Automático (ponte Nexus → API) ou gestão   |
+| Pontuação negativa (má conduta)                       | Negativo, a definir   | Regular                                                                                     | Admin/gestão, conforme o Código de Conduta |
 
 Três naturezas de saldo, que nunca se confundem:
 
@@ -185,8 +185,12 @@ Três naturezas de saldo, que nunca se confundem:
 | **Pontos extras**     | De desafios extras de Apoiadores                           | Computados isoladamente; rastreados no histórico do Apoiador                                    |
 | **Pontos consumidos** | Débitos por troca de recompensa e por uso dentro do App 04 | O jogo **só debita, nunca credita**; pontos gastos não afetam níveis nem badges já conquistados |
 
-> **A definir:** valores da coleta por tipo, do Quiz ao Vivo, dos méritos, da criação original e
-> da pontuação negativa; janela de tolerância e teto da coleta; mecânica antifraude.
+A coleta vale o mesmo por registro, qualquer que seja o tipo medido, e **não tem teto**:
+**quantos registros de um mesmo período de cadência pontuam é declarado no desafio** pelo
+Mestre que o cria.
+
+> **A definir:** valores do Quiz ao Vivo, dos méritos, da criação original e da pontuação
+> negativa; mecânica antifraude dos pontos em geral.
 
 ## 6. Níveis
 
