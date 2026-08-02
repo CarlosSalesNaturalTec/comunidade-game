@@ -21,7 +21,8 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 | Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto                                     | 05          |
 | Trilha 1 — Robô Educa                                                                                                                                                                                     | 06          |
 | Trilha 2 — Batalha de Laser                                                                                                                                                                               | 07          |
-| Requisitos por PRD (**único documento com detalhamento extenso**)                                                                                                                                         | 08          |
+| Requisitos por PRD (**único documento extenso entre os 01–13**)                                                                                                                                           | 08          |
+| Requisitos de produto por aplicação (**derivados — nenhum PRD é fonte única**)                                                                                                                            | `prds/`     |
 | Decisões pendentes e propostas                                                                                                                                                                            | 09          |
 | Case 01 — Guerreira Zeferina, Ciclo 01                                                                                                                                                                    | 10          |
 | Motor do jogo: anatomia da trilha, taxonomia, pontuação, níveis, badges, reflexos no ecossistema                                                                                                          | 11          |
@@ -30,22 +31,23 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 
 ## 2. Papel e dependência dos documentos
 
-| Doc   | Tipo                       | Depende de         | Alimenta       |
-| ----- | -------------------------- | ------------------ | -------------- |
-| index | Índice (home do site)      | —                  | —              |
-| 01    | Normativo (fundação)       | —                  | 02, 03, 12, 13 |
-| 02    | Normativo (conceito)       | 01                 | 03, 05, 08, 11 |
-| 03    | Normativo (técnico)        | 02                 | 08             |
-| 04    | Normativo (econômico)      | 02                 | 08, 12         |
-| 05    | Normativo (operação)       | 02, 04             | 08, 10         |
-| 06    | Normativo (conteúdo)       | 02                 | 03 §4, 08, 10  |
-| 07    | Normativo (conteúdo)       | 02, 06             | 08, 10         |
-| 08    | **Derivado** — requisitos  | 01–07, 11          | PRDs a gerar   |
-| 09    | Pauta                      | todos              | 08             |
-| 10    | Normativo (case)           | 02–08, 11          | 08, 09         |
-| 11    | Normativo (motor)          | 02                 | 08             |
-| 12    | **Derivado** — comunicação | 01, 02, 04, 05, 10 | —              |
-| 13    | Normativo (conduta)        | 01, 02             | 05             |
+| Doc   | Tipo                                 | Depende de         | Alimenta        |
+| ----- | ------------------------------------ | ------------------ | --------------- |
+| index | Índice (home do site)                | —                  | —               |
+| 01    | Normativo (fundação)                 | —                  | 02, 03, 12, 13  |
+| 02    | Normativo (conceito)                 | 01                 | 03, 05, 08, 11  |
+| 03    | Normativo (técnico)                  | 02                 | 08              |
+| 04    | Normativo (econômico)                | 02                 | 08, 12          |
+| 05    | Normativo (operação)                 | 02, 04             | 08, 10          |
+| 06    | Normativo (conteúdo)                 | 02                 | 03 §4, 08, 10   |
+| 07    | Normativo (conteúdo)                 | 02, 06             | 08, 10          |
+| 08    | **Derivado** — requisitos            | 01–07, 11          | PRDs a gerar    |
+| 09    | Pauta                                | todos              | 08              |
+| 10    | Normativo (case)                     | 02–08, 11          | 08, 09          |
+| 11    | Normativo (motor)                    | 02                 | 08              |
+| 12    | **Derivado** — comunicação           | 01, 02, 04, 05, 10 | —               |
+| 13    | Normativo (conduta)                  | 01, 02             | 05              |
+| prds/ | **Derivado** — requisitos de produto | 08, 01–07, 11, 13  | desenvolvimento |
 
 **Divisão 02 × 11 (a confusão mais provável):** o doc 02 define **o que são** os elementos
 do jogo; o doc 11 define **como eles se ligam e quanto valem**. Tabelas de pontuação,
@@ -166,7 +168,8 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     finalidade única de presença.
 13. **Ciclo 01 = ago–dez/2026, Guerreira Zeferina, trilhas 1 e 2 apenas.** Rima, Capoeira,
     Redes, PNED/BNCC e Soft Skills são ciclo futuro.
-14. **Detalhamento extenso só no doc 08.** Os demais documentos são sintéticos.
+14. **Detalhamento extenso só no doc 08 e nos PRDs.** Os documentos 01–07 e 09–13 são
+    sintéticos.
 15. **Equipe é grupo livre de até 5 pessoas**, cadastrada por Admin; o jogador pode integrar
     várias e pontua em todas em que colabora; no máximo **1 familiar com 17 anos ou mais**.
 16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.**
@@ -187,5 +190,35 @@ que valem para qualquer edição:
   linguagem declarada (diagramas ASCII usam `text`); negrito não substitui título.
 - `docs/index.md` é a home do site e o **único** documento que linka os demais.
 - **Arquivo novo ou renomeado em `docs/` precisa entrar na `nav` do `mkdocs.yml`**, senão o
-  build `--strict` falha.
+  build `--strict` falha. Vale igualmente para `docs/prds/`.
 - `npm run fix` corrige automaticamente o que for corrigível de formatação.
+
+## 8. PRDs — arquivos, dependências e governança
+
+Os PRDs ficam em `docs/prds/`, um arquivo por PRD, nomeado `prd-XX-<assunto>.md`. A pasta tem
+ainda `index.md` (situação de cada PRD) e `00-modelo-de-prd.md` (estrutura obrigatória).
+
+O PRD é **derivado**: aplica as regras dos documentos 01–13 e nunca é fonte única de nenhuma
+delas. Decisão nova tomada durante a escrita de um PRD é gravada primeiro no documento-fonte
+do assunto (§1) e movida no documento 09 para "Já decididos"; só então o PRD a aplica. Regra
+que existe apenas dentro de um PRD está no lugar errado.
+
+| PRD    | Arquivo                           | Depende de     | Documentos-fonte       |
+| ------ | --------------------------------- | -------------- | ---------------------- |
+| PRD-01 | `prd-01-backend-api.md`           | PRD-07, PRD-08 | 02, 03, 04, 11         |
+| PRD-02 | `prd-02-frontend-de-gestao.md`    | PRD-01         | 03, 04, 05             |
+| PRD-03 | `prd-03-vitrine-publica.md`       | PRD-01, PRD-13 | 02, 03, 04, 11         |
+| PRD-04 | `prd-04-onboarding.md`            | PRD-01, PRD-02 | 02, 03, 06             |
+| PRD-05 | `prd-05-area-do-jogador.md`       | PRD-01, PRD-09 | 02, 03, 05, 11         |
+| PRD-06 | `prd-06-assistente-por-voz.md`    | PRD-01         | 03, 06                 |
+| PRD-07 | `prd-07-economia-e-ledger.md`     | PRD-08         | 04, 05                 |
+| PRD-08 | `prd-08-comunidades-virtuais.md`  | —              | 02, 03, 11             |
+| PRD-09 | `prd-09-area-do-mestre.md`        | PRD-01         | 02, 03, 05, 06, 07, 11 |
+| PRD-10 | `prd-10-batalhas.md`              | PRD-01, PRD-09 | 02, 07, 11             |
+| PRD-11 | `prd-11-personalizacao-por-ia.md` | PRD-01, PRD-06 | 02, 03                 |
+| PRD-12 | `prd-12-jogo-em-javascript.md`    | PRD-01, PRD-05 | 03, 11                 |
+| PRD-13 | `prd-13-area-dos-responsaveis.md` | PRD-01, PRD-02 | 02, 03, 10             |
+| PRD-14 | `prd-14-area-do-apoiador.md`      | PRD-07, PRD-02 | 03, 04, 12             |
+
+A correspondência entre as nove aplicações e os PRDs está na §4; a ordem de elaboração e o
+motivo de cada onda estão no documento 08.
