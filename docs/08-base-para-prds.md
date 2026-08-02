@@ -162,8 +162,9 @@ permitida pela atividade (só jogadores ou com no máximo 1 familiar de 17 anos 
 cadastro de Mestres e Apoiadores com upload dos artefatos comprobatórios — **currículo,
 portfólios, redes sociais, documentos externos e termos de doação**; **fila de solicitações de
 participação como Mestre ou Apoiador** vindas do formulário público da App 06, com avaliação,
-status e registro de quem tratou; inclusão manual de Admins; cadastro de atividades
-(pontuação, recompensas, recursos necessários); **cadastro de desafios de
+status e registro de quem tratou; **cadastro dos locais do território e fila de solicitações de
+novo local** vindas da App 05, com alerta das que estão em aberto; inclusão manual de Admins;
+cadastro de atividades (pontuação, recompensas, recursos necessários); **cadastro de desafios de
 coleta com cadência e regra de pontuação recorrente**; agenda de aulas on-line e presenciais;
 lançamento de atividades realizadas (data, mentores, jogadores, resultados); **entradas
 manuais** — presença, infrações ocorridas nas aulas e pontuação extra a quem ajudou o colega;
@@ -390,7 +391,7 @@ próprios jogadores — a base _Data Driven_ da plataforma.
   default e alterável apenas pela gestão, com data da mudança preservada.
 - A comunidade virtual **existe na medida em que dados reais são registrados**.
 - Atividades de coleta: temperatura local, precipitação pluviométrica, coleta de resíduos,
-  buracos na via, iluminação, trânsito, transporte público, fotos e memórias.
+  buracos na via, iluminação, trânsito, transporte público, fotos, vídeos e memórias.
 - **Toda trilha tem ao menos um desafio de coleta.**
 - **Série temporal como unidade do modelo**: cadência declarada, registros datados, jogador
   coletor, comunidade e estado da série (ativa / interrompida / retomada).
@@ -401,6 +402,9 @@ próprios jogadores — a base _Data Driven_ da plataforma.
 - **Anonimização na saída**: exportações, painéis públicos, pesquisas e entregas a instituições
   recebem dados agregados e anonimizados.
 - **Granularidade hierárquica**: comunidade → bairro → rua → condomínio → bloco → quadra.
+- **Locais cadastrados previamente por Admin**; o jogador seleciona o local do dado e, faltando
+  um, solicita a inclusão pela App 05. A solicitação é aprovada pelo **Mestre da trilha** ou por
+  um **Admin**, ambos alertados das solicitações em aberto.
 - Cada registro alimenta e "constrói" visualmente a comunidade digital.
 - **Poder do Território**: as séries sustentadas alimentam a progressão e os badges desse poder.
 - Painéis públicos por comunidade; dados como insumo para tomada de decisões por moradores,
@@ -427,6 +431,8 @@ ensina; a gestão administrativa segue na App 03.
   que ele propôs — e apenas delas.
 - **Validação pedagógica dos desafios extras** propostos por Apoiadores para as suas trilhas,
   etapa obrigatória antes da aprovação do Admin.
+- **Aprovação das solicitações de novo local** dos jogadores das suas trilhas, com alerta das
+  solicitações em aberto.
 - **Publicação dos artefatos comprobatórios** da sua habilidade, com currículo, portfólio e
   redes sociais, que alimentam a sua página na vitrine (PRD-03).
 - **Registro de propostas** de evolução da plataforma, na mesma fila da gestão que recebe as

@@ -92,11 +92,17 @@ território os dados coletados são creditados.
 
 **Como se constrói.** Parte das atividades é de coleta de dados locais — temperatura,
 precipitação pluviométrica, coleta de resíduos, buracos na via, iluminação pública, trânsito,
-transporte público, fotos e memórias de pontos de referência.
+transporte público, fotos, vídeos e memórias de pontos de referência.
 
 **Em que granularidade.** O jogador registra no nível em que vive o problema: **comunidade →
 bairro → rua → condomínio → bloco → quadra**. Cada registro adiciona uma peça à comunidade
 digital, que vai ganhando corpo conforme a participação cresce.
+
+**Quem cadastra os locais.** Os locais são **cadastrados previamente pelos Admins**, e o
+jogador **seleciona** a qual deles o dado se refere. Faltando o local, o jogador **solicita a
+inclusão** pelo aplicativo — mesma lógica das demais solicitações: pedido registrado não é
+cadastro. A solicitação é aprovada pelo **Mestre da trilha** ou por um **Admin**, ambos
+alertados das solicitações em aberto.
 
 #### Registro temporal e pontuação enquanto a coleta durar
 
@@ -105,19 +111,26 @@ temporal** na Comunidade Virtual e **vinculados ao jogador responsável**. A pon
 correspondente também é temporal:
 
 - Cada série de coleta tem uma **cadência** (diária, semanal, mensal) definida no desafio.
+- **A série é individual**: cada jogador abre a sua no ponto que escolheu medir, e a
+  Comunidade Virtual é a soma das séries de todos.
 - **Enquanto a série se mantém ativa**, cada registro válido no prazo **rende pontos**. É
   pontuação recorrente, não de entrega única.
+- **Duas cadências seguidas sem registro interrompem a série** — uma falha isolada não.
 - **Interrompida a coleta, interrompe-se o cômputo.** Os pontos já ganhos permanecem, mas a
   série deixa de render.
 - A retomada reativa o cômputo, sem recuperar o período parado.
+- O registro é **manual** (digitado ou por voz) ou vem de **sensor construído pelo jogador**;
+  a origem fica gravada no registro.
+- O registro pode ser **foto ou vídeo** — é assim que se registra lixo acumulado, buraco na
+  via ou poste apagado, que se medem por evidência e não por número.
+- O registro **nasce válido e pontua na hora**. O Mestre audita por **amostragem** e pode
+  invalidar registro inverossímil, o que retira os pontos correspondentes.
 
 É o desenho que traduz o valor real do dado de território: uma medição isolada é curiosidade;
 uma **série contínua** é evidência. A plataforma paga pela continuidade, porque é a
 continuidade que serve à comunidade.
 
-> **A definir:** cadência e valor em pontos por tipo de coleta; janela de tolerância antes de
-> considerar a série interrompida; teto de pontos por período; mecânica de verificação da
-> veracidade do dado.
+O valor em pontos do registro está no documento 11.
 
 #### Guarda permanente dos dados, com o coletor identificado
 
@@ -130,7 +143,12 @@ Por que a autoria fica: um dado de território sem autor conhecido é um dado se
 E o registro é **realização do jogador**: apagar o nome apagaria o crédito.
 
 A anonimização vale **na saída, não no armazenamento**: o que sai da plataforma para
-pesquisas, painéis públicos e instituições é agregado e anonimizado conforme a finalidade.
+pesquisas, painéis públicos e instituições é agregado e anonimizado conforme a finalidade. A
+saída pública chega **até o nível da rua**; condomínio, bloco e quadra ficam para uso interno
+e para entregas com acordo formal.
+
+> **A definir:** como evitar que uma série diária em rua com um único coletor indique onde a
+> criança mora.
 
 **Para que serve.** Os dados podem ser usados como **insumo para tomada de decisões** — pela
 própria comunidade, por associações de moradores, escolas, poder público e pesquisas. O

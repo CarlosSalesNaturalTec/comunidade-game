@@ -203,6 +203,9 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
   comprobatórios, do currículo, do portfólio e dos links de redes sociais.
 - **Fila de solicitações de participação** como Mestre ou Apoiador, vindas do formulário
   público da App 06.
+- **Cadastro dos locais do território** e **fila de solicitações de novo local** vindas da
+  App 05, com alerta das solicitações em aberto — o Mestre da trilha também pode aprová-las,
+  pela App 09.
 - **Inclusão manual de novos Admins** por um Admin existente.
 - **Cadastro de equipes**, conforme o plano de aulas e a formação livre dos jogadores.
 - **Cadastro de atividades** com pontuação, recompensas e recursos necessários.
@@ -264,6 +267,7 @@ dados do território.
 
 É também o instrumento de **coleta de dados da Comunidade Virtual**: as séries ativas, quando
 é a próxima medição, o que já foi registrado e **quantos pontos aquela série está rendendo**.
+O jogador seleciona o local do dado entre os cadastrados e, faltando um, solicita a inclusão.
 
 E é o **canal de sugestões do jogador**: ideias de melhoria para atividades, trilhas e para a
 própria plataforma são registradas aqui e caem na fila de avaliação da gestão — o mesmo
@@ -366,6 +370,7 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 | **Minhas atividades**     | Acompanha as suas turmas e lança resultados, presenças e méritos das atividades que propôs                   |
 | **Validação pedagógica**  | Valida os desafios extras que os Apoiadores propõem para as suas trilhas, antes da aprovação do Admin        |
 | **Banco do Quiz ao Vivo** | Cadastra as perguntas das suas aulas; a partida é conduzida na App 03                                        |
+| **Locais do território**  | Aprova as solicitações de novo local dos jogadores das suas trilhas, com alerta das que estão em aberto      |
 | **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                           |
 
 **Regras obrigatórias:**
@@ -373,7 +378,7 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 - **O app não cadastra Mestre.** O cadastro segue exclusivo de Admin, com habilidade
   comprovada; quem ainda não é Mestre usa o formulário de solicitação da vitrine.
 - **O Mestre lança apenas o que é seu** — as atividades que propôs e as turmas em que atua.
-  Cadastros de personas, aprovações e painéis gerais continuam na App 03.
+  Cadastros de personas, aprovações privativas de Admin e painéis gerais continuam na App 03.
 - **Nenhum modelo ou fluxo pressupõe habilidade técnica de TI**: o Mestre pode ser de humanas,
   artes, esportes ou cultura.
 
