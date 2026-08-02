@@ -1,6 +1,6 @@
 # 08 — Base para Elaboração de PRDs
 
-> **Este é o único documento com detalhamento extenso.** Ele estrutura o conteúdo do projeto
+> **Este é o único documento extenso entre os 01–13.** Ele estrutura o conteúdo do projeto
 > como insumo direto para os PRDs (_Product Requirements Documents_): cada bloco abaixo é
 > candidato a um PRD, com escopo, requisitos e questões em aberto que o PRD precisará
 > responder. A rastreabilidade entre conceitos, documentos-fonte e PRDs está no documento 99.
@@ -595,22 +595,15 @@ um usuário no mesmo cadastro; periodicidade do relatório de efetividade.
 
 ---
 
-## Ordem sugerida de elaboração **[Proposta]**
+## Ordem de elaboração
 
-1. **PRD-01 (API)** — tudo depende dele; incluir desde já o modelo do ledger (PRD-07) e das
-   Comunidades Virtuais (PRD-08) no domínio, mesmo que a UI venha depois.
-2. **PRD-04 (onboarding)** — porta de entrada real das aulas presenciais.
-3. **PRD-03 (vitrine)** — entrega visibilidade rápida e material para captar apoiadores.
-4. **PRD-02 (gestão)** — necessário para operar o primeiro ciclo presencial.
-5. **PRD-13 (área dos responsáveis)** — condição para medir a hipótese H2 e dar efeito prático
-   aos direitos de recusa já prometidos.
-6. **PRD-06 (assistente por voz)** — reaproveita a base do Robô Educa, já em produção.
-7. **PRD-05 (área do jogador)** — a jornada gamificada em si.
-8. **PRD-09 (área do Mestre) e PRD-10** — sem a autoria de trilhas não há conteúdo para o
-   ciclo; a primeira batalha vem em seguida.
-9. **PRD-14 (área do apoiador)** — depende do ledger em moedas (PRD-07) e do fluxo de desafios
-   extras já operante na gestão.
-10. **PRD-12, PRD-07, PRD-08 e PRD-11** — em ondas seguintes, conforme as fases do piloto.
+Os PRDs são escritos em cinco ondas, um de cada vez, na sequência abaixo. A situação de cada
+um está na página de PRDs; o mapa de arquivos e dependências, no documento 99.
 
-> Dica operacional: este repositório dispõe de skills de PRD (fases 1–5: elicitação, geração,
-> revisão, patch e gestão de mudanças). Cada bloco acima pode alimentar a Fase 1 diretamente.
+| Onda | PRDs, em ordem                         | Por que nesta ordem                                                                                                |
+| ---- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 1    | PRD-08, PRD-07, PRD-01                 | Território e ledger definem as entidades que o Backend API consolida — o PRD-01 escrito antes teria de ser refeito |
+| 2    | PRD-02, PRD-04                         | O App 01 não opera enquanto um Admin não definir a comunidade default e liberar a aplicação na App 03              |
+| 3    | PRD-09, PRD-05                         | Sem autoria de trilha não há o que a Área do Jogador guie; as trilhas 1 e 2 são o teste do modelo de autoria       |
+| 4    | PRD-13, PRD-03                         | A vitrine só exibe jogador cujo responsável autorizou, e a autorização nasce na App 07                             |
+| 5    | PRD-06, PRD-14, PRD-10, PRD-12, PRD-11 | Dependem de decisões ainda em aberto ou de fluxos que só existem depois das ondas anteriores                       |

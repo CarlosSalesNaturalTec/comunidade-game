@@ -6,13 +6,12 @@ documentação do projeto, na pasta `docs/`.
 
 ## Estado atual e próxima etapa
 
-1. **Agora:** revisão e validação humana de todos os documentos de `docs/`.
-2. **Depois da validação:** geração dos **PRDs** (_Product Requirements Documents_), a partir
-   do documento `docs/08-base-para-prds.md`.
-3. **Depois dos PRDs:** desenvolvimento das sete aplicações e do Backend API.
+1. **Feito:** revisão e validação humana de todos os documentos de `docs/` (agosto de 2026).
+2. **Agora:** geração dos **PRDs** (_Product Requirements Documents_) em `docs/prds/`, a
+   partir do documento `docs/08-base-para-prds.md`, na ordem de ondas definida lá.
+3. **Depois dos PRDs:** desenvolvimento das nove aplicações e do Backend API.
 
-Não iniciar geração de PRD nem de código sem sinal explícito do fundador de que a documentação
-foi validada.
+Não iniciar a escrita de código sem sinal explícito do fundador.
 
 ## Regras de redação e revisão dos documentos de `docs/`
 
@@ -29,8 +28,8 @@ Os documentos são lidos por **pessoas**. Escreva o mínimo necessário para a d
   guarde-a em **uma** frase.
 - Não repita a mesma ideia em abertura, corpo e fechamento de seção.
 - Evite ênfase decorativa: negrito só no que é definição, regra ou termo do domínio.
-- **Exceção única:** `docs/08-base-para-prds.md` é o capítulo dos PRDs e **pode** ter
-  detalhamento extenso. Só ele.
+- **Exceções:** `docs/08-base-para-prds.md` e os arquivos de `docs/prds/` **podem** ter
+  detalhamento extenso. Só eles.
 
 ### 2. Fonte única — nunca duplicar
 
@@ -90,6 +89,42 @@ Confira também numeração de seções contínua, títulos coerentes com o índ
 - Tabelas para catálogos e regras comparativas; blocos de código apenas para diagramas ASCII,
   trechos de código e payloads.
 
+## Regras dos PRDs (`docs/prds/`)
+
+Valem todas as regras acima, com as diferenças abaixo.
+
+### 1. O PRD é derivado — nunca fonte única
+
+O PRD **aplica** as regras dos documentos 01–13; não cria regra própria. Quando uma decisão
+nova for tomada durante a escrita de um PRD:
+
+1. gravar a regra no **documento-fonte** dela (doc 99 §1);
+2. mover a linha no **documento 09** de "Decisões pendentes" para "Já decididos";
+3. só então o PRD a aplica, **sem repetir** tabela, número ou texto normativo.
+
+Regra que existe apenas dentro de um PRD está no lugar errado.
+
+### 2. Elicitação antes da redação
+
+Antes de escrever um PRD, listar as pendências do documento 09 e as questões em aberto do
+documento 08 que **travam** aquele PRD e perguntá-las ao fundador. Não preencher lacuna com
+suposição nem escrever o PRD inteiro marcado como `[Proposta]`.
+
+### 3. Estrutura e extensão
+
+- Estrutura obrigatória: `docs/prds/00-modelo-de-prd.md`. Nenhuma seção é suprimida; seção
+  sem conteúdo recebe "não se aplica" com o motivo em uma linha.
+- Requisitos e regras recebem identificador (`RF-XX-nn`, `RN-XX-nn`) e enunciado verificável.
+- Detalhamento extenso é permitido; a **linha de 95 caracteres continua valendo**.
+- Um PRD cita outro pelo identificador (_"PRD-01"_), em texto simples, sem link. O mapa de
+  arquivos e dependências fica no documento 99 §8.
+
+### 4. Entrega
+
+Um branch e um PR por PRD, aprovado antes do próximo. No mesmo PR: o arquivo do PRD, a
+situação atualizada em `docs/prds/index.md`, a entrada na `nav` do `mkdocs.yml`, o documento
+99 §8 e o que a decisão nova mudou nos documentos-fonte e no documento 09.
+
 ## Esteira de CI da documentação
 
 Quatro verificações rodam a cada pull request (`.github/workflows/docs-ci.yml`). Todas
@@ -139,3 +174,6 @@ após merge em `main`** — nunca a partir de um PR.
 - [ ] A numeração de seções está contínua e `docs/index.md` reflete a estrutura atual?
 - [ ] `npm run lint` e `mkdocs build --strict` passam?
 - [ ] Documento novo ou renomeado foi acrescentado à `nav` do `mkdocs.yml`?
+- [ ] Se for PRD: todas as seções do modelo estão preenchidas, e cada decisão nova foi gravada
+      no documento-fonte e movida no documento 09?
+- [ ] Se for PRD: `docs/prds/index.md` e o documento 99 §8 refletem a situação atual?

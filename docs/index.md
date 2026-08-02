@@ -23,6 +23,7 @@ outro.
 | 12  | [Guia do Apoiador](12-guia-do-apoiador.md)                                       | Resumo prático da relação do Apoiador com a plataforma                                                           |
 | 13  | [Código de Conduta (versão prévia)](13-codigo-de-conduta-versao-previa.md)       | Modelo básico, a ser co-criado com os jogadores no primeiro encontro                                             |
 | 99  | [Mapa de referências](99-mapa-de-referencias.md)                                 | Relação entre os documentos — página técnica, para orientação de agentes de IA                                   |
+| —   | [PRDs](prds/index.md)                                                            | Requisitos de produto por aplicação, derivados do documento 08 — a esteira que orienta o desenvolvimento         |
 
 ## Como ler
 
@@ -31,15 +32,16 @@ outro.
 - **A definir** marca lacuna que ainda precisa de número ou critério; a lista consolidada
   está no documento 09.
 - Os documentos são **sintéticos por decisão**. Detalhamento extenso existe apenas no
-  documento 08, que serve de insumo aos PRDs.
+  documento 08 e nos PRDs, que dele derivam.
 - O documento 99 não é leitura para humanos: existe para orientar agentes de IA sobre a
   relação entre os documentos.
 
 ## Situação
 
-**Julho de 2026 — projeto em ideação.** A prática já validada são as oficinas presenciais do
-Robô Educa desde 2018. A primeira implantação da plataforma é o **Case 01 — Comunidade
+**Agosto de 2026 — documentação validada.** A prática já validada são as oficinas presenciais
+do Robô Educa desde 2018. A primeira implantação da plataforma é o **Case 01 — Comunidade
 Guerreira Zeferina** (Salvador/BA), no **Ciclo 01, de agosto a dezembro de 2026**.
 
-Após a validação humana de todos os documentos desta pasta, inicia-se a **geração dos PRDs**
-que orientarão o desenvolvimento das aplicações.
+Com a validação humana dos documentos desta pasta concluída, o projeto está na **geração dos
+PRDs**, que orientarão o desenvolvimento das aplicações. A situação de cada um está na
+[esteira de PRDs](prds/index.md).

@@ -75,6 +75,9 @@ nav:
   - "Plataforma":
       - "03 — Plataforma e arquitetura": 03-plataforma-e-arquitetura.md
       - "08 — Base para PRDs": 08-base-para-prds.md
+  - "PRDs":
+      - prds/index.md
+      - "00 — Modelo de PRD": prds/00-modelo-de-prd.md
   - "Operação":
       - "04 — Modelo econômico e sustentabilidade": 04-modelo-economico-e-sustentabilidade.md
       - "05 — Implantação e operação": 05-implantacao-e-operacao.md
