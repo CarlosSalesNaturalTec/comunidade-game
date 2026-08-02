@@ -372,6 +372,7 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 | **Banco do Quiz ao Vivo** | Cadastra as perguntas das suas aulas; a partida é conduzida na App 03                                        |
 | **Locais do território**  | Aprova as solicitações de novo local dos jogadores das suas trilhas, com alerta das que estão em aberto      |
 | **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                           |
+| **Dados de recebimento**  | Cadastra chave PIX, banco e nome do favorecido, para o caso de haver ressarcimento de recurso que absorveu   |
 
 **Regras obrigatórias:**
 

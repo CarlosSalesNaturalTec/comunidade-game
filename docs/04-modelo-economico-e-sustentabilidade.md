@@ -21,7 +21,13 @@ Regras derivadas:
 - **Aporte por absorção.** Faltando saldo, um Mestre ou Admin pode **prover ele mesmo** o
   recurso — dar a aula sem receber, comprar o lanche, ceder o insumo. A plataforma registra
   isso como **aporte dele**, valorado pela tabela de referência, e o crédito entra no seu
-  Poder Econômico.
+  Poder Econômico. O aporte nasce marcado como **ressarcível**, e quem absorveu ganha
+  **destaque público** pelo ato.
+- **Ressarcimento não é direito nem promessa.** Não há fila permanente nem expectativa de
+  devolução: o ressarcimento só existe quando entra receita destinada a ele. Havendo essa
+  receita, os aportes ressarcíveis são pagos **por antiguidade**, por decisão de um Admin.
+  Ressarcido o aporte, as moedas **revertem** — quem recebeu de volta adiantou recurso, não
+  doou —, mas o registro do ato e o destaque público **permanecem**.
 - O acumulado forma o **"Poder Econômico"** do provedor, visível na plataforma: o
   reconhecimento público de quem sustenta o projeto.
 
@@ -107,6 +113,8 @@ Acervo, kits e camisas são valorados pela tabela de referência, como qualquer 
 - **Editais.**
 - **Campanhas de crowdfunding** para financiar aulas, kits e equipamentos (celulares,
   notebooks, tablets).
+- **Ressarcimento de recursos absorvidos** — doação destinada especificamente a devolver o
+  que Mestres e Admins bancaram do próprio bolso para que a atividade acontecesse.
 
 ### Titularidade dos dados publicados
 

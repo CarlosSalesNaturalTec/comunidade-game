@@ -337,6 +337,11 @@ faces (moedas e valor de origem), mas **toda saída pública exibe apenas moedas
 educativa, com público infantil e terceiros sem familiaridade com custeio, e o que se quer
 mostrar é o **montante relativo entre apoiadores**, nunca o valor monetário isolado.
 
+**Aporte por absorção e ressarcimento:** Mestre ou Admin que provê o recurso sem receber tem o
+aporte registrado em seu nome, marcado como **ressarcível**, com destaque público pelo ato.
+Ressarcimento não é direito: só ocorre havendo receita destinada a ele, por antiguidade e por
+decisão de Admin, e reverte as moedas creditadas.
+
 **Coproprietariedade dos dados publicados:** a entidade responsável pela plataforma e o jogador
 que gerou o dado são coproprietários; havendo monetização, o ledger registra o rateio **50% /
 50%**, com a parte do jogador paga **ao responsável legal**.
@@ -437,6 +442,8 @@ ensina; a gestão administrativa segue na App 03.
   redes sociais, que alimentam a sua página na vitrine (PRD-03).
 - **Registro de propostas** de evolução da plataforma, na mesma fila da gestão que recebe as
   sugestões dos jogadores.
+- **Dados de recebimento** — chave PIX, banco e nome do favorecido, para o caso de haver
+  ressarcimento de recurso que ele absorveu.
 - **Sem cadastro pelo app**: o cadastro de Mestre segue exclusivo de Admin; quem ainda não é
   Mestre usa o formulário de solicitação da vitrine.
 

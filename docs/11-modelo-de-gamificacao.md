@@ -247,23 +247,23 @@ reescrito, pelas quatro superfícies públicas do ecossistema.
 O card é a "carta do personagem" do universo do jogo, e a mesma composição serve de base para o
 App 04:
 
-| Card                   | O que exibe                                                                          | O que **nunca** exibe                                             |
-| ---------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
-| **Jogador**            | Avatar, nick, badges, poderes com níveis, desempenho e **criações originais**        | Imagem real, nome civil, redes sociais, qualquer canal de contato |
-| **Mestre**             | Nome/identidade, áreas de habilidade, artefatos comprobatórios, trilhas de autoria   | —                                                                 |
-| **Apoiador**           | Identidade, Poder Econômico **em moedas**, desafios propostos e efetividade agregada | Dados de contato de jogadores; valores em reais                   |
-| **Comunidade Virtual** | Nome, território, representação visual, séries ativas, nº de jogadores vinculados    | Granularidade que permita inferir endereço de criança             |
+| Card                   | O que exibe                                                                                                                           | O que **nunca** exibe                                             |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **Jogador**            | Avatar, nick, badges, poderes com níveis, desempenho e **criações originais**                                                         | Imagem real, nome civil, redes sociais, qualquer canal de contato |
+| **Mestre**             | Nome/identidade, áreas de habilidade, artefatos comprobatórios, trilhas de autoria e **selo de quem sustentou atividade sem recurso** | —                                                                 |
+| **Apoiador**           | Identidade, Poder Econômico **em moedas**, desafios propostos e efetividade agregada                                                  | Dados de contato de jogadores; valores em reais                   |
+| **Comunidade Virtual** | Nome, território, representação visual, séries ativas, nº de jogadores vinculados                                                     | Granularidade que permita inferir endereço de criança             |
 
 **Definição vigente — todo card abre uma página individual.** O card é o resumo; a página é a
 versão detalhada, com as mesmas restrições de exibição da tabela acima:
 
-| Página individual      | O que detalha                                                                                                                                  |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Jogador**            | Trajetória nas trilhas, badges e níveis por poder, portfólio de criações originais com autoria e participação em batalhas                      |
-| **Mestre**             | Habilidades, trilhas de autoria e a prova pública: **currículo, portfólios, redes sociais e documentos comprobatórios externos**               |
-| **Poder**              | Trilhas do poder, Mestres responsáveis, níveis e badges possíveis                                                                              |
-| **Apoiador**           | Aportes em moedas, desafios extras propostos com sua efetividade e a prova do apoio: **currículo, portfólios, redes sociais e comprobatórios** |
-| **Comunidade Virtual** | Séries históricas do território, representação visual, vitalidade e criações originais dos jogadores vinculados                                |
+| Página individual      | O que detalha                                                                                                                                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Jogador**            | Trajetória nas trilhas, badges e níveis por poder, portfólio de criações originais com autoria e participação em batalhas                                                                         |
+| **Mestre**             | Habilidades, trilhas de autoria, a prova pública — **currículo, portfólios, redes sociais e documentos comprobatórios externos** — e quantas vezes sustentou uma atividade que estava sem recurso |
+| **Poder**              | Trilhas do poder, Mestres responsáveis, níveis e badges possíveis                                                                                                                                 |
+| **Apoiador**           | Aportes em moedas, desafios extras propostos com sua efetividade e a prova do apoio: **currículo, portfólios, redes sociais e comprobatórios**                                                    |
+| **Comunidade Virtual** | Séries históricas do território, representação visual, vitalidade e criações originais dos jogadores vinculados                                                                                   |
 
 ### 8.3 Representação visual da Comunidade Virtual
 
