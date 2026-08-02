@@ -203,6 +203,8 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
   comprobatórios, do currículo, do portfólio e dos links de redes sociais.
 - **Fila de solicitações de participação** como Mestre ou Apoiador, vindas do formulário
   público da App 06.
+- **Cadastro dos locais do território** e **fila de solicitações de novo local** vindas da
+  App 05.
 - **Inclusão manual de novos Admins** por um Admin existente.
 - **Cadastro de equipes**, conforme o plano de aulas e a formação livre dos jogadores.
 - **Cadastro de atividades** com pontuação, recompensas e recursos necessários.
@@ -264,6 +266,7 @@ dados do território.
 
 É também o instrumento de **coleta de dados da Comunidade Virtual**: as séries ativas, quando
 é a próxima medição, o que já foi registrado e **quantos pontos aquela série está rendendo**.
+O jogador seleciona o local do dado entre os cadastrados e, faltando um, solicita a inclusão.
 
 E é o **canal de sugestões do jogador**: ideias de melhoria para atividades, trilhas e para a
 própria plataforma são registradas aqui e caem na fila de avaliação da gestão — o mesmo

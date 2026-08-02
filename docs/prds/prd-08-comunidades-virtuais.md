@@ -34,7 +34,9 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 - Cadastro da Comunidade Virtual por Admin, nascendo vazia, e marcação da comunidade default
   do onboarding.
 - Vínculo obrigatório do jogador a exatamente uma comunidade, com histórico de transferências.
-- Hierarquia de locais da comunidade: comunidade → bairro → rua → condomínio → bloco → quadra.
+- Hierarquia de locais da comunidade: comunidade → bairro → rua → condomínio → bloco → quadra,
+  cadastrada por Admin.
+- Solicitação de novo local pelo jogador, avaliada pela gestão.
 - Catálogo de tipos de coleta, com forma de registro, unidade de medida e faixa esperada.
 - Desafio de coleta criado pelo Mestre dentro da trilha, com cadência, vigência e quantidade
   de registros que pontuam por período.
@@ -58,13 +60,13 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 
 ## 4. Personas e permissões
 
-| Persona     | O que faz neste domínio                                                               | O que não pode fazer                                           |
-| ----------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Admin       | Cria comunidades, define a default do onboarding, transfere jogador entre comunidades | Registrar coleta no lugar do jogador                           |
-| Mestre      | Cria o desafio de coleta da sua trilha, audita registros por amostragem e os invalida | Alterar o valor registrado por um jogador                      |
-| Jogador     | Abre séries, registra medições, acompanha a situação e os pontos das suas séries      | Apagar registro já gravado; abrir série fora da sua comunidade |
-| Responsável | Consulta, pela App 07, o que a criança sob sua responsabilidade coletou               | Registrar, corrigir ou apagar dado do território               |
-| Visitante   | Consulta o painel público da comunidade, agregado e anonimizado                       | Ver coletor, granularidade abaixo de rua ou dado bruto         |
+| Persona     | O que faz neste domínio                                                                                                            | O que não pode fazer                                                        |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Admin       | Cria comunidades e locais, define a default do onboarding, transfere jogador entre comunidades e avalia solicitações de novo local | Registrar coleta no lugar do jogador                                        |
+| Mestre      | Cria o desafio de coleta da sua trilha, audita registros por amostragem e os invalida                                              | Alterar o valor registrado por um jogador                                   |
+| Jogador     | Abre séries, seleciona o local, solicita novo local, registra medições e acompanha os pontos das suas séries                       | Apagar registro já gravado; criar local; abrir série fora da sua comunidade |
+| Responsável | Consulta, pela App 07, o que a criança sob sua responsabilidade coletou                                                            | Registrar, corrigir ou apagar dado do território                            |
+| Visitante   | Consulta o painel público da comunidade, agregado e anonimizado                                                                    | Ver coletor, granularidade abaixo de rua ou dado bruto                      |
 
 ## 5. Jornadas principais
 
@@ -72,8 +74,8 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 
 1. Admin cria a Comunidade Virtual com nome, localização e granularidade máxima permitida.
 2. A comunidade nasce **vazia**: sem locais, sem séries, sem jogadores.
-3. Os locais do território são criados **sob demanda**, quando um jogador abre a primeira
-   série ali — o Admin não os pré-cadastra.
+3. Admin cadastra os locais do território, na hierarquia — é a lista que o jogador escolhe
+   depois.
 4. Admin marca uma comunidade como **default do onboarding** — sem isso, o App 01 não opera.
 
 ### 5.2 Mestre cria o desafio de coleta
@@ -85,14 +87,16 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 
 ### 5.3 Jogador abre a série e registra
 
-1. Jogador aceita o desafio de coleta e escolhe **o que vai medir e onde** — um local da sua
+1. Jogador aceita o desafio de coleta e **seleciona o local** entre os cadastrados na sua
    comunidade, na granularidade exigida.
-2. O sistema abre a **série**, individual, com a cadência herdada do desafio.
-3. A cada período, o jogador registra por texto, por voz (App 02), por **foto ou vídeo** ou
+2. Faltando o local, o jogador **solicita a inclusão**: o pedido vai para a fila da gestão
+   (App 03) e a série só abre depois que um Admin cadastra o local.
+3. O sistema abre a **série**, individual, com a cadência herdada do desafio.
+4. A cada período, o jogador registra por texto, por voz (App 02), por **foto ou vídeo** ou
    pelo sensor que construiu (Robô Educa), conforme o tipo de coleta exigir.
-4. O registro nasce **válido** e credita os pontos na hora, até o limite de registros que
+5. O registro nasce **válido** e credita os pontos na hora, até o limite de registros que
    pontuam naquele período.
-5. Registro fora da faixa esperada do tipo de coleta é aceito e gravado, mas **marcado para
+6. Registro fora da faixa esperada do tipo de coleta é aceito e gravado, mas **marcado para
    auditoria** — a medição estranha pode ser a mais valiosa da série.
 
 Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado depois, com a
@@ -122,29 +126,30 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 
 ## 6. Requisitos funcionais
 
-| ID         | Requisito                                                                                                                              | Prioridade |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-08-01` | Admin cria Comunidade Virtual com nome, localização e granularidade máxima                                                             | essencial  |
-| `RF-08-02` | Admin marca exatamente uma comunidade como default do onboarding                                                                       | essencial  |
-| `RF-08-03` | Admin transfere jogador entre comunidades, preservando a data da mudança                                                               | essencial  |
-| `RF-08-04` | Sistema cria o local sob demanda, na abertura da primeira série, na hierarquia comunidade → bairro → rua → condomínio → bloco → quadra | essencial  |
-| `RF-08-05` | Sistema mantém catálogo de tipos de coleta, com unidade e faixa esperada                                                               | essencial  |
-| `RF-08-06` | Mestre cria desafio de coleta com tipo, cadência, vigência, granularidade e registros que pontuam                                      | essencial  |
-| `RF-08-07` | Jogador abre série individual vinculada a um desafio e a um local da sua comunidade                                                    | essencial  |
-| `RF-08-08` | Jogador registra medição com valor, data e hora da medição e origem                                                                    | essencial  |
-| `RF-08-09` | Sistema credita, por registro válido, o valor do documento 11 §5 ao Poder do Território                                                | essencial  |
-| `RF-08-10` | Sistema marca a série como interrompida após dois períodos de cadência seguidos sem registro                                           | essencial  |
-| `RF-08-11` | Sistema retoma a série ao receber novo registro, sem recompor o período parado                                                         | essencial  |
-| `RF-08-12` | Sistema marca para auditoria registro fora da faixa esperada do tipo de coleta                                                         | essencial  |
-| `RF-08-13` | Mestre invalida registro com motivo, estornando os pontos e mantendo o registro gravado                                                | essencial  |
-| `RF-08-14` | Sistema aceita registro vindo de sensor do jogador, identificando o dispositivo de origem                                              | essencial  |
-| `RF-08-15` | Sistema enfileira registro feito sem rede e sincroniza depois, preservando a hora da medição                                           | essencial  |
-| `RF-08-16` | Rota pública devolve a série histórica da comunidade agregada até rua, sem identificar coletor                                         | essencial  |
-| `RF-08-17` | Jogador consulta suas séries, a situação de cada uma e os pontos que estão rendendo                                                    | essencial  |
-| `RF-08-18` | Responsável consulta, pela App 07, as séries da criança sob sua responsabilidade                                                       | desejável  |
-| `RF-08-19` | Exportação de dados agregados e anonimizados por comunidade e período                                                                  | desejável  |
-| `RF-08-20` | Painel reflete visualmente o crescimento da comunidade conforme o documento 11 §8.3                                                    | desejável  |
-| `RF-08-21` | Sistema aceita foto ou vídeo como o próprio registro, quando o tipo de coleta assim o define                                           | essencial  |
+| ID         | Requisito                                                                                         | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-08-01` | Admin cria Comunidade Virtual com nome, localização e granularidade máxima                        | essencial  |
+| `RF-08-02` | Admin marca exatamente uma comunidade como default do onboarding                                  | essencial  |
+| `RF-08-03` | Admin transfere jogador entre comunidades, preservando a data da mudança                          | essencial  |
+| `RF-08-04` | Admin cadastra locais na hierarquia comunidade → bairro → rua → condomínio → bloco → quadra       | essencial  |
+| `RF-08-05` | Sistema mantém catálogo de tipos de coleta, com unidade e faixa esperada                          | essencial  |
+| `RF-08-06` | Mestre cria desafio de coleta com tipo, cadência, vigência, granularidade e registros que pontuam | essencial  |
+| `RF-08-07` | Jogador abre série individual selecionando um desafio e um local cadastrado da sua comunidade     | essencial  |
+| `RF-08-08` | Jogador registra medição com valor, data e hora da medição e origem                               | essencial  |
+| `RF-08-09` | Sistema credita, por registro válido, o valor do documento 11 §5 ao Poder do Território           | essencial  |
+| `RF-08-10` | Sistema marca a série como interrompida após dois períodos de cadência seguidos sem registro      | essencial  |
+| `RF-08-11` | Sistema retoma a série ao receber novo registro, sem recompor o período parado                    | essencial  |
+| `RF-08-12` | Sistema marca para auditoria registro fora da faixa esperada do tipo de coleta                    | essencial  |
+| `RF-08-13` | Mestre invalida registro com motivo, estornando os pontos e mantendo o registro gravado           | essencial  |
+| `RF-08-14` | Sistema aceita registro vindo de sensor do jogador, identificando o dispositivo de origem         | essencial  |
+| `RF-08-15` | Sistema enfileira registro feito sem rede e sincroniza depois, preservando a hora da medição      | essencial  |
+| `RF-08-16` | Rota pública devolve a série histórica da comunidade agregada até rua, sem identificar coletor    | essencial  |
+| `RF-08-17` | Jogador consulta suas séries, a situação de cada uma e os pontos que estão rendendo               | essencial  |
+| `RF-08-18` | Responsável consulta, pela App 07, as séries da criança sob sua responsabilidade                  | desejável  |
+| `RF-08-19` | Exportação de dados agregados e anonimizados por comunidade e período                             | desejável  |
+| `RF-08-20` | Painel reflete visualmente o crescimento da comunidade conforme o documento 11 §8.3               | desejável  |
+| `RF-08-21` | Sistema aceita foto ou vídeo como o próprio registro, quando o tipo de coleta assim o define      | essencial  |
+| `RF-08-22` | Jogador solicita a inclusão de local ausente, e a solicitação entra na fila da gestão             | essencial  |
 
 ## 7. Regras de negócio
 
@@ -167,11 +172,13 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 | `RN-08-15` | Pontos da coleta creditam o Poder do Território, não o poder da trilha em que o desafio nasceu  | —          | 02 §2   |
 | `RN-08-16` | Registro em foto ou vídeo que contenha pessoa identificável é invalidado na auditoria           | 12         | 03 §12  |
 | `RN-08-17` | O jogo nunca credita pontos de coleta; o crédito vem do registro validado                       | 8          | 11 §8.4 |
+| `RN-08-18` | Locais são cadastrados por Admin; solicitação do jogador não cria local                         | 4          | 02 §1   |
 
 ## 8. Modelo de dados
 
 ```text
 ComunidadeVirtual 1 ──── N Local            (hierarquia: parent opcional)
+ComunidadeVirtual 1 ──── N SolicitacaoDeLocal (do jogador; vira Local se aprovada)
 ComunidadeVirtual 1 ──── N VinculoJogador   (histórico; um vínculo vigente por jogador)
 Trilha            1 ──── N DesafioDeColeta
 DesafioDeColeta   1 ──── N SerieDeColeta    (uma por jogador que aceita o desafio)
@@ -181,17 +188,18 @@ RegistroDeColeta  0..1 ── 1 Dispositivo     (quando a origem é sensor)
 TipoDeColeta      1 ──── N DesafioDeColeta
 ```
 
-| Entidade            | Atributos essenciais                                                                                                            |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `ComunidadeVirtual` | nome, localização, granularidade máxima, é_default, admin criador, data de criação                                              |
-| `Local`             | comunidade, nível (comunidade, bairro, rua, condomínio, bloco, quadra), rótulo, local pai                                       |
-| `VinculoJogador`    | jogador, comunidade, data de início, data de fim, admin responsável pela transferência                                          |
-| `TipoDeColeta`      | nome, forma de registro (número, foto ou vídeo), unidade de medida, faixa esperada (mínimo e máximo)                            |
-| `DesafioDeColeta`   | trilha, ponto de trilha, mestre autor, tipo, cadência, vigência, granularidade exigida, registros que pontuam por período       |
-| `SerieDeColeta`     | desafio, jogador coletor, local, cadência, estado, data de abertura, data da última medição válida                              |
-| `RegistroDeColeta`  | série, valor, unidade, data e hora da medição, data e hora do registro, origem, dispositivo, mídia, situação, pontos creditados |
-| `Invalidacao`       | registro, mestre, motivo, data e hora                                                                                           |
-| `Dispositivo`       | jogador dono, identificação, trilha em que foi construído, situação                                                             |
+| Entidade             | Atributos essenciais                                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `ComunidadeVirtual`  | nome, localização, granularidade máxima, é_default, admin criador, data de criação                                              |
+| `Local`              | comunidade, nível (comunidade, bairro, rua, condomínio, bloco, quadra), rótulo, local pai                                       |
+| `VinculoJogador`     | jogador, comunidade, data de início, data de fim, admin responsável pela transferência                                          |
+| `TipoDeColeta`       | nome, forma de registro (número, foto ou vídeo), unidade de medida, faixa esperada (mínimo e máximo)                            |
+| `DesafioDeColeta`    | trilha, ponto de trilha, mestre autor, tipo, cadência, vigência, granularidade exigida, registros que pontuam por período       |
+| `SerieDeColeta`      | desafio, jogador coletor, local, cadência, estado, data de abertura, data da última medição válida                              |
+| `RegistroDeColeta`   | série, valor, unidade, data e hora da medição, data e hora do registro, origem, dispositivo, mídia, situação, pontos creditados |
+| `SolicitacaoDeLocal` | jogador solicitante, comunidade, nível pretendido, rótulo, justificativa, situação, admin avaliador                             |
+| `Invalidacao`        | registro, mestre, motivo, data e hora                                                                                           |
+| `Dispositivo`        | jogador dono, identificação, trilha em que foi construído, situação                                                             |
 
 Imutabilidade: `RegistroDeColeta` é **somente inserção**. Valor, data da medição e coletor
 nunca mudam depois de gravados; a situação (válido, invalidado, em auditoria) é o único campo
@@ -211,6 +219,8 @@ Rotas de consulta são **públicas e sem autenticação**; escrita é autenticad
 | GET    | `/comunidades/{id}`             | pública      | Comunidade, locais até rua e tipos de coleta ativos       |
 | GET    | `/comunidades/{id}/series`      | pública      | Séries históricas agregadas, sem coletor                  |
 | GET    | `/comunidades/{id}/exportacao`  | pública      | Exportação agregada e anonimizada por período             |
+| POST   | `/comunidades/{id}/locais`      | Admin        | Cadastra local na hierarquia da comunidade                |
+| POST   | `/solicitacoes-de-local`        | Jogador      | Solicita a inclusão de local ausente                      |
 | POST   | `/comunidades`                  | Admin        | Cria comunidade vazia                                     |
 | PATCH  | `/comunidades/{id}/default`     | Admin        | Marca a comunidade default do onboarding                  |
 | POST   | `/jogadores/{id}/transferencia` | Admin        | Transfere jogador de comunidade, preservando o histórico  |
@@ -321,3 +331,4 @@ a base da avaliação do Poder do Território e entram no conjunto de indicadore
 | `RF-08-17` e `RF-08-18` | 08 (PRD-05 e PRD-13)                  |
 | `RF-08-20`              | 11 §8.3                               |
 | `RF-08-21`              | 02 §1 (registro por foto ou vídeo)    |
+| `RF-08-22`              | 02 §1 (solicitação de novo local)     |

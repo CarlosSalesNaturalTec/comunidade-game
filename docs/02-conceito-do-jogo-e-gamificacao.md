@@ -98,6 +98,11 @@ transporte público, fotos, vídeos e memórias de pontos de referência.
 bairro → rua → condomínio → bloco → quadra**. Cada registro adiciona uma peça à comunidade
 digital, que vai ganhando corpo conforme a participação cresce.
 
+**Quem cadastra os locais.** Os locais são **cadastrados previamente pelos Admins**, e o
+jogador **seleciona** a qual deles o dado se refere. Faltando o local, o jogador **solicita a
+inclusão** pelo aplicativo, e a gestão avalia — mesma lógica das demais solicitações: pedido
+registrado não é cadastro.
+
 #### Registro temporal e pontuação enquanto a coleta durar
 
 **Regra vigente.** Os dados gerados nos desafios de coleta são **registrados de forma
