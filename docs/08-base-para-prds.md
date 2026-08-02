@@ -163,8 +163,8 @@ cadastro de Mestres e Apoiadores com upload dos artefatos comprobatórios — **
 portfólios, redes sociais, documentos externos e termos de doação**; **fila de solicitações de
 participação como Mestre ou Apoiador** vindas do formulário público da App 06, com avaliação,
 status e registro de quem tratou; **cadastro dos locais do território e fila de solicitações de
-novo local** vindas da App 05; inclusão manual de Admins; cadastro de atividades
-(pontuação, recompensas, recursos necessários); **cadastro de desafios de
+novo local** vindas da App 05, com alerta das que estão em aberto; inclusão manual de Admins;
+cadastro de atividades (pontuação, recompensas, recursos necessários); **cadastro de desafios de
 coleta com cadência e regra de pontuação recorrente**; agenda de aulas on-line e presenciais;
 lançamento de atividades realizadas (data, mentores, jogadores, resultados); **entradas
 manuais** — presença, infrações ocorridas nas aulas e pontuação extra a quem ajudou o colega;
@@ -403,7 +403,8 @@ próprios jogadores — a base _Data Driven_ da plataforma.
   recebem dados agregados e anonimizados.
 - **Granularidade hierárquica**: comunidade → bairro → rua → condomínio → bloco → quadra.
 - **Locais cadastrados previamente por Admin**; o jogador seleciona o local do dado e, faltando
-  um, solicita a inclusão pela App 05.
+  um, solicita a inclusão pela App 05. A solicitação é aprovada pelo **Mestre da trilha** ou por
+  um **Admin**, ambos alertados das solicitações em aberto.
 - Cada registro alimenta e "constrói" visualmente a comunidade digital.
 - **Poder do Território**: as séries sustentadas alimentam a progressão e os badges desse poder.
 - Painéis públicos por comunidade; dados como insumo para tomada de decisões por moradores,
@@ -430,6 +431,8 @@ ensina; a gestão administrativa segue na App 03.
   que ele propôs — e apenas delas.
 - **Validação pedagógica dos desafios extras** propostos por Apoiadores para as suas trilhas,
   etapa obrigatória antes da aprovação do Admin.
+- **Aprovação das solicitações de novo local** dos jogadores das suas trilhas, com alerta das
+  solicitações em aberto.
 - **Publicação dos artefatos comprobatórios** da sua habilidade, com currículo, portfólio e
   redes sociais, que alimentam a sua página na vitrine (PRD-03).
 - **Registro de propostas** de evolução da plataforma, na mesma fila da gestão que recebe as

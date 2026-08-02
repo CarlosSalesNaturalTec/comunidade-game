@@ -100,8 +100,9 @@ digital, que vai ganhando corpo conforme a participação cresce.
 
 **Quem cadastra os locais.** Os locais são **cadastrados previamente pelos Admins**, e o
 jogador **seleciona** a qual deles o dado se refere. Faltando o local, o jogador **solicita a
-inclusão** pelo aplicativo, e a gestão avalia — mesma lógica das demais solicitações: pedido
-registrado não é cadastro.
+inclusão** pelo aplicativo — mesma lógica das demais solicitações: pedido registrado não é
+cadastro. A solicitação é aprovada pelo **Mestre da trilha** ou por um **Admin**, ambos
+alertados das solicitações em aberto.
 
 #### Registro temporal e pontuação enquanto a coleta durar
 
