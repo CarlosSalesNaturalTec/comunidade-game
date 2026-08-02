@@ -16,6 +16,12 @@ Regras derivadas:
 - Cada recurso alocado é **computado para o respectivo provedor** e acumulado no seu
   histórico.
 - **Cada atividade só acontece se tiver os recursos providos** — não há atividade sem lastro.
+  O livro-razão mantém **saldo por tipo de recurso**; agendar uma atividade **reserva** o que
+  ela consome, e a realização converte a reserva em baixa.
+- **Aporte por absorção.** Faltando saldo, um Mestre ou Admin pode **prover ele mesmo** o
+  recurso — dar a aula sem receber, comprar o lanche, ceder o insumo. A plataforma registra
+  isso como **aporte dele**, valorado pela tabela de referência, e o crédito entra no seu
+  Poder Econômico.
 - O acumulado forma o **"Poder Econômico"** do provedor, visível na plataforma: o
   reconhecimento público de quem sustenta o projeto.
 
@@ -29,14 +35,19 @@ R$ 100,00**.
   reais**.
 - A moeda mede **aporte de recurso** e compõe o Poder Econômico. Não se confunde com os
   **pontos**, que são do jogador e vêm de realização.
+- A moeda admite **fração, com duas casas** — R$ 50,00 são 0,50 moeda —, para que nenhum
+  aporte pequeno se perca no arredondamento.
 
 Por que assim: a plataforma é educativa e seu público inclui crianças e terceiros sem
 familiaridade com custos de operação, custeio e despesas. A moeda dá a **noção visual do
 montante** investido por cada apoiador em relação aos seus pares, sem expor valores
 monetários isolados.
 
-Aportes em material e serviço são convertidos em moedas pelo valor que a valoração do
-livro-razão lhes atribuir — critério ainda pendente para acervo, kits e hora-aula.
+Aportes em material e serviço são convertidos em moedas por uma **tabela de referência**
+mantida pela gestão: cada tipo de aporte — hora-aula, kit, livro, camisa, lanche, insumo —
+tem um valor padrão, e todo aporte do mesmo tipo vale o mesmo, o que torna comparável o
+Poder Econômico entre apoiadores. **Tipo novo é cadastrado na hora por um Admin**, com o seu
+valor de referência, para que nenhum aporte fique represado.
 
 **[Proposta]** Modelar tecnicamente como um **livro-razão (ledger) de dupla entrada**: cada
 atividade consome recursos (débito) aportados por provedores (crédito). Viabiliza relatórios
@@ -85,9 +96,7 @@ existentes, sem custo adicional para o primeiro ciclo.
 
 Inventário completo, regime de posse e estratégia de conservação: documento 05.
 
-> **A definir:** critério de valoração do acervo, dos kits e das camisas no livro-razão (valor
-> de mercado, valor simbólico ou apenas contagem física) e responsável pela guarda em cada
-> ponto de apoio.
+Acervo, kits e camisas são valorados pela tabela de referência, como qualquer outro aporte.
 
 ## 2. Fontes de receita
 
