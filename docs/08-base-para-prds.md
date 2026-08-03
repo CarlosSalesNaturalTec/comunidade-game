@@ -142,8 +142,8 @@
   pelo responsável (App 07), pelo Apoiador (App 08) e pelo Mestre (App 09), com autor, persona,
   data e status de avaliação pela gestão, em fila única.
 
-**Questões em aberto:** estratégia de autenticação; versionamento da API; multi-tenant por
-comunidade (uma instância nacional ou uma por comunidade?).
+**Questões em aberto:** nenhuma — autenticação, versionamento e instância única foram
+definidos no documento 03.
 
 **Fontes:** docs 02, 03, 04, 11.
 
@@ -186,7 +186,8 @@ equipe está, quem está aguardando aparelho e quais lançamentos ainda faltam**
 que substitui o controle visual de uma turma em bloco.
 
 **Questões em aberto:** quem pode lançar pontuação negativa e com que auditoria; trilha de
-auditoria das ações de Admin; se o Quiz ao Vivo é módulo desta aplicação ou aplicação separada.
+auditoria das ações de Admin; se o Quiz ao Vivo é módulo desta aplicação ou aplicação
+separada.
 
 **Fontes:** docs 03, 04, 05.
 
@@ -477,8 +478,7 @@ indicar ao jogador se há **exemplar disponível no seu ponto de apoio**; e cred
 que forneceu o material** onde ele é indicado.
 
 **Questões em aberto:** formato dos conteúdos (vídeo, texto, interativo); revisão e curadoria
-pedagógica; licença dos conteúdos (Creative Commons?); forma de acesso do Mestre e permissões
-que ele mantém na App 03.
+pedagógica; licença dos conteúdos (Creative Commons?).
 
 **Fontes:** docs 02, 03, 05, 06, 07, 11.
 
@@ -573,9 +573,8 @@ família. Substitui a comunicação por mensageria de terceiros, fora do escopo 
 responsáveis tomam conhecimento do tratamento de dados e aceitam os termos. Sem esta aplicação,
 H2 não é mensurável — é anedota.
 
-**Questões em aberto:** login próprio do responsável × vínculo ao cadastro do jogador; prazos
-formais de resposta; notificação ativa (e-mail) além da consulta no Web App; como atender
-responsável sem smartphone ou sem e-mail.
+**Questões em aberto:** prazos formais de resposta; notificação ativa (e-mail) além da
+consulta no Web App; como atender responsável sem smartphone.
 
 **Fontes:** docs 02, 03, 10.
 
@@ -602,8 +601,8 @@ quem sustenta o projeto, sem nenhum contato com jogadores ou famílias.
 - **Sem cadastro pelo app**: quem ainda não é Apoiador usa o formulário de solicitação da
   vitrine; o cadastro segue exclusivo de Admin.
 
-**Questões em aberto:** forma de acesso e autenticação do Apoiador; se instituição tem mais de
-um usuário no mesmo cadastro; periodicidade do relatório de efetividade.
+**Questões em aberto:** se instituição tem mais de um usuário no mesmo cadastro;
+periodicidade do relatório de efetividade.
 
 **Fontes:** docs 03, 04, 12.
 

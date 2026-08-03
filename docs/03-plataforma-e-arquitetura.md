@@ -24,6 +24,26 @@
 9. **Construção assistida por IA, sob direção humana** — os artefatos da plataforma são
    construídos com auxílio de ferramentas de IA; a idealização, o contexto humano e social e
    as decisões são humanas, e a transparência sobre esse uso é pública.
+10. **Uma instância para todas as comunidades** — a Comunidade Virtual é um vínculo nos
+    registros, não uma cópia da plataforma. É o que permite comparar territórios e somar o
+    aporte de quem sustenta mais de uma comunidade; em troca, toda consulta filtra por
+    comunidade.
+11. **API versionada na rota**, começando em `/v1`. Quebra de contrato abre uma versão nova,
+    e a anterior segue no ar por prazo declarado.
+
+### 1.1 Como cada persona entra
+
+| Persona                                   | Como autentica                                                                                                     |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Jogador**                               | **Nick + PIN**, escolhido por ele no onboarding; sessão curta, porque o aparelho do ponto de apoio é compartilhado |
+| **Mestre, Apoiador, responsável e Admin** | **Login social (Google)**                                                                                          |
+
+- **PIN esquecido** é redefinido pelo Mestre ou por um Admin, no encontro. Não há e-mail nem
+  pergunta secreta: a criança resolve com quem está na sala.
+- **Quem não tem conta Google** recebe de um Admin uma credencial de e-mail e senha. O login
+  social é o caminho normal; esta é a exceção que impede alguém de ficar de fora.
+- **O responsável tem login próprio**, vinculado a um ou mais jogadores — é o que dá autoria
+  clara ao consentimento e separa o que é dele do que é da criança.
 
 **[Proposta]** Documentar a API com OpenAPI/Swagger desde o primeiro endpoint — condição
 prática para que aplicações de terceiros e novos frontends realmente surjam.
@@ -230,6 +250,9 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
 A autoria de trilhas e conteúdos e as validações pedagógicas são do Mestre e vivem na App 09;
 esta aplicação continua sendo a da **gestão** — cadastros, lançamentos, aprovações de Admin e
 painéis do dia.
+
+**Acesso do Mestre a esta aplicação:** apenas **leitura do painel do dia**, para conduzir o
+encontro em andamento. Tudo o que ele escreve continua na App 09.
 
 ## 6. App 04 — Jogo em JavaScript
 
