@@ -67,10 +67,11 @@ consentimentos, e têm acesso próprio à plataforma.
 
 - **Cadastrados por um Admin ou por um Mestre** — não há autocadastro nem solicitação aberta.
   O responsável se apresenta **pessoalmente** em atividade presencial, na primeira vez, e
-  informa seu e-mail e as crianças sob sua responsabilidade.
-- O vínculo é feito com jogadores **já cadastrados** no onboarding, e cada jogador tem no
-  máximo **dois responsáveis**.
-- Todo vínculo declara o **grau de parentesco** do responsável com o jogador.
+  informa seu e-mail e as crianças sob sua responsabilidade. Espera-se que isso aconteça no
+  **primeiro dia de aula da criança**, a quem ele acompanha.
+- O vínculo é feito com jogadores **já cadastrados** no onboarding — qualquer um deles, não só
+  os das turmas de quem cadastra —, e cada jogador tem no máximo **três responsáveis**.
+- Todo vínculo declara o **grau de parentesco** do responsável com o jogador, em texto livre.
 
 ### Solicitação de participação (Mestres e Apoiadores)
 

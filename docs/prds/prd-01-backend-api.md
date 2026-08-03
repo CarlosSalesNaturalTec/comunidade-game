@@ -72,16 +72,19 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 
 ### 5.1 Jogador entra pelo aparelho compartilhado
 
-1. O jogador informa o **nick** e captura a **imagem** pela câmera do aparelho.
+1. O jogador informa o **nick** e captura a **imagem** pela câmera do aparelho. É assim em
+   **todas** as aplicações do jogador, não só na chegada da aula: é o que garante que a
+   atividade foi feita pela própria criança.
 2. O núcleo confere a imagem contra o _template_ biométrico gravado no onboarding — o nick
    restringe a busca, a imagem confirma — e devolve uma sessão **curta**, que expira sozinha:
    o aparelho é do ponto de apoio, não dele.
-3. Falhando o reconhecimento — ou tendo o responsável recusado a biometria —, o Mestre ou um
-   Admin confirma a identidade na hora, no encontro, e a sessão abre com registro de quem
-   confirmou. A criança não tem PIN nem senha para esquecer.
-4. Imagem que envelheceu ou captura ruim: o Mestre ou um Admin recadastra a imagem de
+3. **Sem câmera não há entrada.** A criança não tem PIN nem senha para substituir a imagem.
+4. Enquanto o jogador **não tem imagem gravada** — onboarding feito sem o responsável —, quem
+   abre a sessão dele é o Mestre ou um Admin, no encontro, e fica registrado quem confirmou.
+   Mesmo caminho para a falha de reconhecimento e para quem recusou a biometria.
+5. Imagem que envelheceu ou captura ruim: o Mestre ou um Admin recadastra a imagem de
    referência, e a substituição fica registrada.
-5. Toda escrita do jogador é gravada com autoria dele, nunca do aparelho.
+6. Toda escrita do jogador é gravada com autoria dele, nunca do aparelho.
 
 ### 5.2 Adulto entra por login social
 
@@ -97,15 +100,18 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 
 ### 5.3 Responsável é cadastrado e acessa os seus jogadores
 
-1. O responsável se apresenta **pessoalmente** em atividade presencial, na primeira vez, e
-   informa seu e-mail e as crianças sob sua responsabilidade.
-2. Um Admin (App 03) ou um Mestre (App 09) cadastra o responsável e vincula a ele os jogadores
-   **já cadastrados** no onboarding, declarando o **grau de parentesco** de cada vínculo.
-3. O núcleo recusa o vínculo quando o jogador já tem **dois responsáveis**.
+1. O responsável se apresenta **pessoalmente** em atividade presencial, na primeira vez —
+   normalmente no primeiro dia de aula da criança, que ele acompanha —, e informa seu e-mail e
+   as crianças sob sua responsabilidade.
+2. Um Admin (App 03) ou um Mestre (App 09) cadastra o responsável e vincula a ele **qualquer**
+   jogador **já cadastrado** no onboarding, declarando o **grau de parentesco**, em texto
+   livre, de cada vínculo.
+3. O núcleo recusa o vínculo quando o jogador já tem **três responsáveis**.
 4. O responsável entra com o **seu** login — social ou usuário e senha — e vê apenas os
    jogadores vinculados a ele.
 5. Cada consentimento que concede ou revoga é gravado com autoria, data e hora e versão do
-   termo.
+   termo. É a aprovação dele que **libera o cadastro biométrico** do jogador que ainda não o
+   tem.
 
 ### 5.4 Visitante consulta sem login
 
@@ -121,38 +127,39 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 
 ## 6. Requisitos funcionais
 
-| ID         | Requisito                                                                                                                                                       | Prioridade |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-01-01` | Núcleo expõe todas as rotas sob prefixo de versão, começando em `/v1`                                                                                           | essencial  |
-| `RF-01-02` | Rotas de consulta pública respondem sem autenticação                                                                                                            | essencial  |
-| `RF-01-03` | Toda rota de escrita exige autenticação e registra autoria, data e hora                                                                                         | essencial  |
-| `RF-01-04` | Jogador autentica com nick e imagem e recebe sessão de duração curta                                                                                            | essencial  |
-| `RF-01-05` | Núcleo guarda o _template_ biométrico do jogador e o confere no login, sem devolvê-lo                                                                           | essencial  |
-| `RF-01-06` | Mestre ou Admin confirma a identidade do jogador e abre a sessão dele quando o reconhecimento falha ou a biometria foi recusada, com registro de quem confirmou | essencial  |
-| `RF-01-07` | Mestre ou Admin recadastra a imagem de referência do jogador, com registro de quem recadastrou                                                                  | essencial  |
-| `RF-01-08` | Adulto autentica por login social vinculado a cadastro existente                                                                                                | essencial  |
-| `RF-01-09` | Login social ou usuário sem cadastro correspondente é recusado, sem criar persona                                                                               | essencial  |
-| `RF-01-10` | Admin ou Mestre cria credencial de usuário e senha provisória para adulto sem conta social                                                                      | essencial  |
-| `RF-01-11` | Credencial provisória exige troca de senha no primeiro acesso, antes de qualquer outra operação                                                                 | essencial  |
-| `RF-01-12` | Admin ou Mestre cadastra responsável e vincula a ele jogadores já cadastrados, com grau de parentesco                                                           | essencial  |
-| `RF-01-13` | Núcleo recusa o vínculo que passaria de dois responsáveis para o mesmo jogador                                                                                  | essencial  |
-| `RF-01-14` | Responsável autentica com login próprio e enxerga apenas os jogadores vinculados                                                                                | essencial  |
-| `RF-01-15` | Núcleo aplica a matriz de permissões por papel em toda operação                                                                                                 | essencial  |
-| `RF-01-16` | Mestre lê o painel do dia sem poder escrever nas rotas de gestão                                                                                                | essencial  |
-| `RF-01-17` | Toda consulta de dado de comunidade aceita e aplica filtro por comunidade                                                                                       | essencial  |
-| `RF-01-18` | Núcleo mantém as entidades de personas, vínculos e consentimentos versionados                                                                                   | essencial  |
-| `RF-01-19` | Núcleo mantém as entidades de trilha, ponto de trilha, atividade, equipe, presença e resultado                                                                  | essencial  |
-| `RF-01-20` | Núcleo mantém pontos, níveis e badges por trilha ou poder, derivados das realizações                                                                            | essencial  |
-| `RF-01-21` | Núcleo expõe leitura de progresso e **débito** de pontos, sem nenhuma rota de crédito para jogos                                                                | essencial  |
-| `RF-01-22` | Núcleo mantém as entidades do território definidas no PRD-08                                                                                                    | essencial  |
-| `RF-01-23` | Núcleo mantém as entidades do livro-razão definidas no PRD-07                                                                                                   | essencial  |
-| `RF-01-24` | Núcleo mantém solicitação de participação, sugestões e propostas em fila única de avaliação                                                                     | essencial  |
-| `RF-01-25` | Núcleo mantém criação original com autoria creditada por toda a vida do registro                                                                                | essencial  |
-| `RF-01-26` | Erro segue formato único, com código, mensagem em linguagem simples e campo em falta                                                                            | essencial  |
-| `RF-01-27` | Listagens são paginadas e aceitam filtro por comunidade, período e persona                                                                                      | essencial  |
-| `RF-01-28` | Núcleo registra trilha de auditoria consultável das ações de Admin                                                                                              | essencial  |
-| `RF-01-29` | Núcleo documenta as rotas públicas para uso por aplicações de terceiros                                                                                         | desejável  |
-| `RF-01-30` | Versão anterior da API segue disponível por prazo declarado após a abertura da seguinte                                                                         | desejável  |
+| ID         | Requisito                                                                                                                                                                                  | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `RF-01-01` | Núcleo expõe todas as rotas sob prefixo de versão, começando em `/v1`                                                                                                                      | essencial  |
+| `RF-01-02` | Rotas de consulta pública respondem sem autenticação                                                                                                                                       | essencial  |
+| `RF-01-03` | Toda rota de escrita exige autenticação e registra autoria, data e hora                                                                                                                    | essencial  |
+| `RF-01-04` | Jogador autentica com nick e imagem e recebe sessão de duração curta                                                                                                                       | essencial  |
+| `RF-01-05` | Núcleo guarda o _template_ biométrico do jogador e o confere no login, sem devolvê-lo                                                                                                      | essencial  |
+| `RF-01-06` | Mestre ou Admin confirma a identidade do jogador e abre a sessão dele quando não há _template_ gravado, o reconhecimento falha ou a biometria foi recusada, com registro de quem confirmou | essencial  |
+| `RF-01-07` | Núcleo grava o _template_ do jogador cadastrado sem imagem assim que o responsável aprova a participação                                                                                   | essencial  |
+| `RF-01-08` | Mestre ou Admin recadastra a imagem de referência do jogador, com registro de quem recadastrou                                                                                             | essencial  |
+| `RF-01-09` | Adulto autentica por login social vinculado a cadastro existente                                                                                                                           | essencial  |
+| `RF-01-10` | Login social ou usuário sem cadastro correspondente é recusado, sem criar persona                                                                                                          | essencial  |
+| `RF-01-11` | Admin ou Mestre cria credencial de usuário e senha provisória para adulto sem conta social                                                                                                 | essencial  |
+| `RF-01-12` | Credencial provisória exige troca de senha no primeiro acesso, antes de qualquer outra operação                                                                                            | essencial  |
+| `RF-01-13` | Admin ou Mestre cadastra responsável e vincula a ele jogadores já cadastrados, com grau de parentesco                                                                                      | essencial  |
+| `RF-01-14` | Núcleo recusa o vínculo que passaria de três responsáveis para o mesmo jogador                                                                                                             | essencial  |
+| `RF-01-15` | Responsável autentica com login próprio e enxerga apenas os jogadores vinculados                                                                                                           | essencial  |
+| `RF-01-16` | Núcleo aplica a matriz de permissões por papel em toda operação                                                                                                                            | essencial  |
+| `RF-01-17` | Mestre lê o painel do dia sem poder escrever nas rotas de gestão                                                                                                                           | essencial  |
+| `RF-01-18` | Toda consulta de dado de comunidade aceita e aplica filtro por comunidade                                                                                                                  | essencial  |
+| `RF-01-19` | Núcleo mantém as entidades de personas, vínculos e consentimentos versionados                                                                                                              | essencial  |
+| `RF-01-20` | Núcleo mantém as entidades de trilha, ponto de trilha, atividade, equipe, presença e resultado                                                                                             | essencial  |
+| `RF-01-21` | Núcleo mantém pontos, níveis e badges por trilha ou poder, derivados das realizações                                                                                                       | essencial  |
+| `RF-01-22` | Núcleo expõe leitura de progresso e **débito** de pontos, sem nenhuma rota de crédito para jogos                                                                                           | essencial  |
+| `RF-01-23` | Núcleo mantém as entidades do território definidas no PRD-08                                                                                                                               | essencial  |
+| `RF-01-24` | Núcleo mantém as entidades do livro-razão definidas no PRD-07                                                                                                                              | essencial  |
+| `RF-01-25` | Núcleo mantém solicitação de participação, sugestões e propostas em fila única de avaliação                                                                                                | essencial  |
+| `RF-01-26` | Núcleo mantém criação original com autoria creditada por toda a vida do registro                                                                                                           | essencial  |
+| `RF-01-27` | Erro segue formato único, com código, mensagem em linguagem simples e campo em falta                                                                                                       | essencial  |
+| `RF-01-28` | Listagens são paginadas e aceitam filtro por comunidade, período e persona                                                                                                                 | essencial  |
+| `RF-01-29` | Núcleo registra trilha de auditoria consultável das ações de Admin                                                                                                                         | essencial  |
+| `RF-01-30` | Núcleo documenta as rotas públicas para uso por aplicações de terceiros                                                                                                                    | desejável  |
+| `RF-01-31` | Versão anterior da API segue disponível por prazo declarado após a abertura da seguinte                                                                                                    | desejável  |
 
 ## 7. Regras de negócio
 
@@ -173,11 +180,12 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RN-01-13` | Criação original carrega o autor por toda a vida do registro                                                            | 5          | 02 §4       |
 | `RN-01-14` | O _template_ biométrico é guardado cifrado, com acesso auditado, e nenhuma rota o devolve nem devolve a imagem original | 12         | 03 §3.3     |
 | `RN-01-15` | A imagem do jogador serve só para identificá-lo — presença e autenticação; outro uso exige nova base legal              | 12         | 03 §3.3     |
-| `RN-01-16` | Recusar a biometria não impede o acesso: a confirmação do Mestre ou Admin é a alternativa equivalente                   | 11         | 03 §3.3     |
-| `RN-01-17` | Senha provisória é guardada com hash, vale para um único acesso e é trocada pelo próprio adulto                         | —          | 03 §1.1     |
-| `RN-01-18` | Cada jogador tem no máximo dois responsáveis vinculados, cada vínculo com grau de parentesco                            | 3          | 02 §1       |
-| `RN-01-19` | Responsável só é vinculado a jogador já cadastrado no onboarding                                                        | 3          | 02 §1       |
-| `RN-01-20` | Recusa de consentimento nunca exclui o jogador da atividade                                                             | 11         | 03 §12      |
+| `RN-01-16` | Recusar a biometria não impede o acesso: a confirmação do Mestre ou Admin, no encontro, é a alternativa equivalente     | 11         | 03 §3.3     |
+| `RN-01-17` | O _template_ só é gravado com consentimento do responsável registrado                                                   | 11         | 03 §3.3     |
+| `RN-01-18` | Senha provisória é guardada com hash, vale para um único acesso e é trocada pelo próprio adulto                         | —          | 03 §1.1     |
+| `RN-01-19` | Cada jogador tem no máximo três responsáveis vinculados, com grau de parentesco em texto livre                          | 3          | 02 §1       |
+| `RN-01-20` | Responsável só é vinculado a jogador já cadastrado no onboarding                                                        | 3          | 02 §1       |
+| `RN-01-21` | Recusa de consentimento nunca exclui o jogador da atividade                                                             | 11         | 03 §12      |
 
 ## 8. Modelo de dados
 
@@ -225,21 +233,21 @@ Convenções válidas para todas as rotas:
 | Listagem     | paginada, com filtros de comunidade, período e persona                  |
 | Data e hora  | sempre com fuso, e a data do fato nunca é substituída pela do registro  |
 
-| Método | Rota                              | Autenticação    | Descrição                                              |
-| ------ | --------------------------------- | --------------- | ------------------------------------------------------ |
-| POST   | `/v1/sessoes/jogador`             | pública         | Autentica com nick e imagem e abre sessão curta        |
-| POST   | `/v1/sessoes/jogador/confirmacao` | Mestre ou Admin | Abre a sessão do jogador por confirmação humana        |
-| POST   | `/v1/sessoes/social`              | pública         | Autentica adulto por login social                      |
-| POST   | `/v1/sessoes/credencial`          | pública         | Autentica adulto por usuário e senha                   |
-| DELETE | `/v1/sessoes/atual`               | autenticada     | Encerra a sessão                                       |
-| POST   | `/v1/jogadores/{id}/imagem`       | Mestre ou Admin | Recadastra a imagem de referência, com registro        |
-| POST   | `/v1/credenciais`                 | Admin ou Mestre | Cria credencial de usuário e senha provisória          |
-| POST   | `/v1/credenciais/senha`           | autenticada     | Troca a senha; obrigatória no primeiro acesso          |
-| POST   | `/v1/responsaveis`                | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele       |
-| POST   | `/v1/responsaveis/{id}/vinculos`  | Admin ou Mestre | Vincula jogador ao responsável, com grau de parentesco |
-| GET    | `/v1/eu`                          | autenticada     | Persona, papéis e permissões da sessão                 |
-| GET    | `/v1/vitrine/...`                 | pública         | Consultas públicas de vitrine e rankings               |
-| GET    | `/v1/auditoria`                   | Admin           | Trilha de auditoria das ações de gestão                |
+| Método | Rota                              | Autenticação    | Descrição                                                |
+| ------ | --------------------------------- | --------------- | -------------------------------------------------------- |
+| POST   | `/v1/sessoes/jogador`             | pública         | Autentica com nick e imagem e abre sessão curta          |
+| POST   | `/v1/sessoes/jogador/confirmacao` | Mestre ou Admin | Abre a sessão do jogador por confirmação humana          |
+| POST   | `/v1/sessoes/social`              | pública         | Autentica adulto por login social                        |
+| POST   | `/v1/sessoes/credencial`          | pública         | Autentica adulto por usuário e senha                     |
+| DELETE | `/v1/sessoes/atual`               | autenticada     | Encerra a sessão                                         |
+| POST   | `/v1/jogadores/{id}/imagem`       | Mestre ou Admin | Grava ou recadastra a imagem de referência, com registro |
+| POST   | `/v1/credenciais`                 | Admin ou Mestre | Cria credencial de usuário e senha provisória            |
+| POST   | `/v1/credenciais/senha`           | autenticada     | Troca a senha; obrigatória no primeiro acesso            |
+| POST   | `/v1/responsaveis`                | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele         |
+| POST   | `/v1/responsaveis/{id}/vinculos`  | Admin ou Mestre | Vincula jogador ao responsável, com grau de parentesco   |
+| GET    | `/v1/eu`                          | autenticada     | Persona, papéis e permissões da sessão                   |
+| GET    | `/v1/vitrine/...`                 | pública         | Consultas públicas de vitrine e rankings                 |
+| GET    | `/v1/auditoria`                   | Admin           | Trilha de auditoria das ações de gestão                  |
 
 As rotas de domínio — território, ledger, trilhas, atividades — estão nos PRDs que as definem
 e seguem estas mesmas convenções.
@@ -247,9 +255,9 @@ e seguem estas mesmas convenções.
 Erros previstos: imagem não reconhecida (401, sem revelar se o nick existe, e com a orientação
 de chamar o Mestre); login social ou usuário sem cadastro (403, com orientação de solicitar
 participação pela vitrine); senha provisória ainda não trocada (403 em qualquer rota que não
-seja a da troca); terceiro vínculo de responsável para o mesmo jogador (422); escrita sem
-permissão do papel (403); sessão expirada (401); filtro de comunidade ausente onde é
-obrigatório (422).
+seja a da troca); quarto vínculo de responsável para o mesmo jogador (422); cadastro de imagem
+sem consentimento do responsável registrado (422); escrita sem permissão do papel (403);
+sessão expirada (401); filtro de comunidade ausente onde é obrigatório (422).
 
 ## 10. Requisitos não funcionais
 
@@ -278,8 +286,9 @@ obrigatório (422).
 
 - O _template_ é guardado **cifrado**, a senha com **hash**, e nenhuma rota devolve um nem
   outro. A imagem original não é a credencial: o que autentica é o _template_.
-- **Recusar a biometria não fecha porta**: o Mestre ou um Admin confirma a identidade e a
-  sessão abre do mesmo jeito.
+- **O _template_ só nasce com o consentimento do responsável.** Até lá — criança que fez o
+  onboarding sozinha — o jogador participa igual, e quem abre a sessão dele é o Mestre ou um
+  Admin, no encontro. Mesma saída para quem recusa a biometria.
 - **Adesão em duas etapas**: o cadastro livre permite participar; a divulgação pública do
   perfil depende de autorização do responsável, registrada como consentimento versionado.
 - O responsável consulta, pela App 07, **quem acessou** os dados da criança — a trilha de
@@ -297,8 +306,12 @@ obrigatório (422).
 - Nenhuma resposta da API devolve o _template_ biométrico nem a imagem do jogador.
 - Login social ou usuário sem cadastro é recusado e **nenhuma persona é criada**.
 - Adulto com senha provisória só consegue trocar a senha; qualquer outra rota devolve 403.
-- Tentativa de vincular um terceiro responsável ao mesmo jogador é recusada, e os dois
-  vínculos existentes continuam válidos, cada um com o seu grau de parentesco.
+- Tentativa de vincular um quarto responsável ao mesmo jogador é recusada, e os três vínculos
+  existentes continuam válidos, cada um com o seu grau de parentesco.
+- Jogador sem _template_ não entra sozinho, e entra com a confirmação do Mestre; gravado o
+  consentimento do responsável, a imagem é registrada e ele passa a entrar sozinho.
+- Requisição de sessão de jogador sem imagem é recusada — não há caminho alternativo por
+  senha em nenhuma aplicação.
 - Mestre que tenta escrever em rota de gestão recebe 403, e a leitura do painel do dia
   responde normalmente.
 - Toda escrita bem-sucedida gera registro de auditoria com autor, papel e data e hora.
@@ -315,30 +328,26 @@ pelas aplicações que as verificam.
 | Instância única, com a comunidade como vínculo nos registros                                     | 03 §1             | Já decididos |
 | API versionada na rota, a partir de `/v1`                                                        | 03 §1             | Já decididos |
 | Jogador entra com nick e imagem, conferida contra o _template_ do onboarding                     | 03 §1.1           | Já decididos |
-| Sem PIN nem senha para a criança: falha ou recusa cai na confirmação humana                      | 03 §§1.1, 3.3     | Já decididos |
+| Sem PIN nem senha para a criança, e sem câmera não há entrada                                    | 03 §§1.1, 3.2     | Já decididos |
+| Nick e imagem valem em **todas** as aplicações do jogador, para garantir que a atividade é dele  | 03 §1.1           | Já decididos |
+| Falha, ausência de _template_ ou recusa da biometria caem na confirmação humana, no encontro     | 03 §§1.1, 3.3     | Já decididos |
+| App 01 exige câmera e Mestre ou Admin presente; sem isso não há onboarding                       | 03 §3.2           | Já decididos |
+| Criança sem o responsável: onboarding sem imagem, e cadastro biométrico após a aprovação dele    | 03 §§3.2, 3.3     | Já decididos |
+| Mestre cadastra e vincula responsável de qualquer jogador                                        | 02 §1, 03 §11     | Já decididos |
 | A imagem do onboarding identifica o jogador: presença **e** autenticação                         | 03 §§3.2, 3.3, 12 | Já decididos |
 | Adultos entram por login social                                                                  | 03 §1.1           | Já decididos |
 | Credencial de usuário e senha provisória, criada por Admin ou Mestre, trocada no primeiro acesso | 03 §1.1           | Já decididos |
 | Responsável tem login próprio, vinculado a um ou mais jogadores                                  | 03 §1.1           | Já decididos |
 | Responsável é cadastrado por Admin ou Mestre, depois de se apresentar pessoalmente               | 02 §1             | Já decididos |
-| No máximo dois responsáveis por jogador, cada vínculo com grau de parentesco                     | 02 §1             | Já decididos |
+| No máximo três responsáveis por jogador, com grau de parentesco em texto livre                   | 02 §1             | Já decididos |
 | Mestre cadastra responsável pela App 09 — única persona que ele cadastra                         | 03 §11            | Já decididos |
 | Mestre acessa a App 03 apenas em leitura do painel do dia                                        | 03 §5             | Já decididos |
 
 ## 14. Pendências que permanecem
 
-- **Entrada do jogador fora do encontro presencial**: sem câmera no aparelho, ou sem Mestre
-  para confirmar quando o reconhecimento falha, ainda não há caminho definido.
-- **Consentimento da biometria × cadastro livre**: o jogador fica ativo no onboarding sem
-  autorização do responsável, mas o tratamento biométrico exige consentimento dele — falta
-  definir o que vale entre o onboarding da criança e o cadastro do responsável.
 - **Provedor de reconhecimento facial** e o lugar da extração do _template_ (dispositivo ×
   servidor), com o prazo de retenção em números — sabendo que apagar o _template_ apaga
   também a credencial de acesso do jogador.
-- **Escopo do Mestre sobre responsáveis**: se cadastra e vincula qualquer jogador ou apenas os
-  das suas turmas.
-- **Grau de parentesco**: lista controlada ou texto livre, e o que fazer quando a criança tem
-  mais de dois adultos de referência.
 - **Stack do backend**: linguagem, framework e banco de dados, incluindo o armazenamento das
   séries temporais do território. É decisão de implementação e não altera os requisitos.
 - **Instituição com mais de um usuário** no mesmo cadastro de Apoiador, e como se registra
@@ -352,17 +361,17 @@ pelas aplicações que as verificam.
 
 | Requisito               | Origem                                           |
 | ----------------------- | ------------------------------------------------ |
-| `RF-01-01`, `RF-01-30`  | 03 §1 (API versionada)                           |
+| `RF-01-01`, `RF-01-31`  | 03 §1 (API versionada)                           |
 | `RF-01-02` e `RF-01-03` | 03 §1 (rotas abertas, escrita autenticada)       |
-| `RF-01-04` a `RF-01-07` | 03 §§1.1, 3.2 e 3.3 (nick e imagem, alternativa) |
-| `RF-01-08` a `RF-01-11` | 03 §1.1 (como o adulto entra)                    |
-| `RF-01-12` a `RF-01-14` | 02 §1 e 03 §§1.1, 5, 9, 11 (responsável)         |
-| `RF-01-15` e `RF-01-16` | 03 §§5, 11 (fronteira App 03 × App 09)           |
-| `RF-01-17`              | 03 §1 (instância única)                          |
-| `RF-01-18`              | 03 §12 (LGPD e consentimentos)                   |
-| `RF-01-19` e `RF-01-20` | 02 §§3–5 e 11 §§2, 4–7                           |
-| `RF-01-21`              | 11 §8.4 (contrato dos jogos)                     |
-| `RF-01-22`              | PRD-08                                           |
-| `RF-01-23`              | PRD-07                                           |
-| `RF-01-24` e `RF-01-25` | 02 §§1, 4 e 03 §§7, 9–11                         |
-| `RF-01-26` a `RF-01-29` | 03 §1 (princípios de arquitetura)                |
+| `RF-01-04` a `RF-01-08` | 03 §§1.1, 3.2 e 3.3 (nick e imagem, alternativa) |
+| `RF-01-09` a `RF-01-12` | 03 §1.1 (como o adulto entra)                    |
+| `RF-01-13` a `RF-01-15` | 02 §1 e 03 §§1.1, 5, 9, 11 (responsável)         |
+| `RF-01-16` e `RF-01-17` | 03 §§5, 11 (fronteira App 03 × App 09)           |
+| `RF-01-18`              | 03 §1 (instância única)                          |
+| `RF-01-19`              | 03 §12 (LGPD e consentimentos)                   |
+| `RF-01-20` e `RF-01-21` | 02 §§3–5 e 11 §§2, 4–7                           |
+| `RF-01-22`              | 11 §8.4 (contrato dos jogos)                     |
+| `RF-01-23`              | PRD-08                                           |
+| `RF-01-24`              | PRD-07                                           |
+| `RF-01-25` e `RF-01-26` | 02 §§1, 4 e 03 §§7, 9–11                         |
+| `RF-01-27` a `RF-01-30` | 03 §1 (princípios de arquitetura)                |

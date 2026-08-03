@@ -38,8 +38,8 @@
   jogador, para presença e autenticação —, com consentimento, minimização, criptografia,
   retenção definida e alternativa para quem recusar. **Adesão em duas etapas:** o cadastro
   livre (nome, data de nascimento ou idade, nick e características do avatar) já permite
-  participar das atividades; a **divulgação
-  pública do histórico e do perfil** exige autorização dos pais ou responsáveis. **Toda
+  participar das atividades; a **divulgação pública do histórico e do perfil** exige
+  autorização dos pais ou responsáveis. **Toda
   aplicação indica visualmente**, de forma discreta, o que coleta e quais são os direitos do
   usuário, com acesso a uma **área detalhada** sobre destino e uso de cada dado.
 - **Coproprietariedade dos dados publicados:** em produção, a entidade responsável pela
@@ -128,7 +128,7 @@
   **direcionado** (a um jogador específico, único elegível à recompensa, com justificativa do
   vínculo registrada e aprovada).
 - Entidades e permissões da **área do responsável**: vínculo responsável ↔ jogador — cadastrado
-  por Admin ou Mestre, com grau de parentesco e no máximo dois responsáveis por jogador —,
+  por Admin ou Mestre, com grau de parentesco e no máximo três responsáveis por jogador —,
   consentimentos versionados com data e hora, solicitações com protocolo e status.
 - Resultados de atividade: realizada / com mérito / mérito extra por auxílio; pontuação negativa
   por má conduta.
@@ -157,7 +157,7 @@ dia e filas; a autoria de trilhas e os lançamentos das atividades do próprio M
 
 **Requisitos:** CRUDs de mestres, poderes, jogadores, apoiadores, responsáveis, admins, equipes
 e comunidades virtuais, incluindo o **cadastro do responsável e o vínculo com os jogadores**
-(grau de parentesco, no máximo dois por jogador); **criação das Comunidades Virtuais —
+(grau de parentesco, no máximo três por jogador); **criação das Comunidades Virtuais —
 exclusiva de Admin, nascendo vazias — e gestão do vínculo e transferência de jogadores entre
 comunidades**; **definição da comunidade default do
 onboarding e liberação do App 01**, sem a qual a aplicação de onboarding não opera; **cadastro
@@ -240,10 +240,16 @@ dos já cadastrados, por **áudio ou texto**, com IA.
   repetir e confirmar dados.
 - Captação e reprodução de áudio via `navigator.mediaDevices.getUserMedia`, com reconhecimento
   e síntese de fala.
-- Captura da **imagem do jogador** pela câmera do dispositivo.
+- Captura da **imagem do jogador** pela câmera do dispositivo, **só com o responsável presente
+  e de acordo**.
+- **Condição de funcionamento:** câmera no aparelho e Mestre ou Admin presente. Faltando um dos
+  dois, não há onboarding.
 - **Novo jogador:** salvar nome, nick, data de nascimento ou idade, características do avatar
   e imagem. O jogador fica **ativo** ao final, sem exigir autorização do responsável nesta
   etapa.
+- **Criança sem o responsável:** onboarding com intervenção do Mestre ou Admin e **sem imagem**;
+  o jogador fica ativo e entra com a confirmação de quem está na sala. O **cadastro biométrico
+  acontece depois**, quando o responsável aprova a participação.
 - **Vínculo à comunidade:** atribuído automaticamente pela **comunidade default** que o Admin
   define na App 03 — o jogador **não informa a comunidade**, o que encurta a conversa de
   cadastro.
@@ -287,6 +293,8 @@ com acompanhamento do status de avaliação.
 **Autonomia no encontro assíncrono:** a App 05 é o que permite ao jogador saber **o que fazer em
 seguida sem depender do Mestre**. Precisa funcionar em **aparelho compartilhado do ponto de
 apoio** (troca rápida de sessão) e mostrar com clareza o próximo ponto e o que está bloqueado.
+A entrada é por **nick e imagem**, como em toda aplicação do jogador — é o que garante que a
+atividade foi feita pela própria criança, e não por terceiros.
 
 **Requisitos adicionais:** estado de **perfil público** desbloqueado apenas com autorização do
 responsável; representação exclusivamente por avatar; desafios com níveis de dificuldade
@@ -552,7 +560,7 @@ família. Substitui a comunicação por mensageria de terceiros, fora do escopo 
 **Requisitos:**
 
 - **Vínculo responsável ↔ jogadores**, cadastrado por Admin ou Mestre, com grau de parentesco e
-  no máximo dois responsáveis por jogador; o responsável só enxerga os jogadores sob sua
+  no máximo três responsáveis por jogador; o responsável só enxerga os jogadores sob sua
   responsabilidade.
 - **Evolução do jogador**: presença, atividades realizadas, pontos, poderes, badges, nível e
   progresso nas trilhas.

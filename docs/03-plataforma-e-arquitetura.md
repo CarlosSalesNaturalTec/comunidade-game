@@ -33,15 +33,17 @@
 
 ### 1.1 Como cada persona entra
 
-| Persona                      | Como autentica                                                                                                                                                                |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Jogador**                  | **Nick + imagem**: o nick localiza, a imagem confirma contra o _template_ biométrico gravado no onboarding; sessão curta, porque o aparelho do ponto de apoio é compartilhado |
-| **Mestre, Apoiador e Admin** | **Login social (Google)**                                                                                                                                                     |
-| **Responsável**              | **Login social (Google)** ou **usuário e senha** criados por Admin ou Mestre                                                                                                  |
+| Persona                      | Como autentica                                                                                                                                                                                            |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Jogador**                  | **Nick + imagem**, em **todas** as aplicações: o nick localiza, a imagem confirma contra o _template_ biométrico gravado no onboarding; sessão curta, porque o aparelho do ponto de apoio é compartilhado |
+| **Mestre, Apoiador e Admin** | **Login social (Google)**                                                                                                                                                                                 |
+| **Responsável**              | **Login social (Google)** ou **usuário e senha** criados por Admin ou Mestre                                                                                                                              |
 
-- **Não há PIN, senha nem pergunta secreta para a criança.** Falhando o reconhecimento — ou
-  tendo o responsável recusado a biometria —, o Mestre ou um Admin confirma a identidade na
-  hora, no encontro: a criança resolve com quem está na sala.
+- **Não há PIN, senha nem pergunta secreta para a criança, e sem câmera não há entrada.** É a
+  imagem que garante que quem faz a atividade é a própria criança, e não um terceiro.
+- **Enquanto o jogador não tem imagem gravada** — onboarding feito sem o responsável —, quem
+  abre a sessão dele é o Mestre ou um Admin, no encontro. Vale igualmente para a falha de
+  reconhecimento e para quem recusou a biometria: a criança resolve com quem está na sala.
 - **Login não cria cadastro.** Conta social ou usuário sem cadastro prévio recebe recusa.
 - **Quem não tem conta Google** recebe uma credencial de **usuário e senha provisória**, criada
   por Admin ou Mestre, com **troca de senha obrigatória no primeiro acesso**. O usuário não
@@ -110,11 +112,12 @@ cadastrados — por conversa, sem formulário.
                     ▼                               ▼
             Jogador NOVO                    Jogador JÁ CADASTRADO
      nome, nick, nascimento/idade,        captura da imagem + nick
-     avatar, imagem                       → comparação com a base
-                    │                               │
-                    ▼                               ▼
-            cadastro criado +              presença registrada
-            presença registrada            automaticamente
+     avatar + imagem, se o                → comparação com a base
+     responsável estiver junto                      │
+                    │                               ▼
+                    ▼                      presença registrada
+            cadastro criado +              automaticamente
+            presença registrada
 ```
 
 ### 3.2 Requisitos funcionais
@@ -133,15 +136,26 @@ jogador**, o que abrange o registro de presença e a autenticação dele nas apl
 _template_ gerado nesta captura que faz as vezes de senha, já que a criança não tem PIN nem
 senha. Não é avatar, não vai para a vitrine, não aparece em ranking, não é compartilhada.
 
+**Condição de funcionamento** — o App 01 exige **câmera no aparelho** e um **Mestre ou Admin
+presente**. Faltando um dos dois, o onboarding não acontece: é o encontro presencial que dá
+garantia ao cadastro.
+
+**A criança comparece com o responsável no primeiro dia de aula.** É nesse encontro que o
+responsável é cadastrado (documento 02) e autoriza a biometria. Vindo a criança sozinha, o
+onboarding é feito com intervenção do Mestre ou de um Admin e **sem registro de imagem** — o
+jogador fica ativo e participa das atividades, entrando com a confirmação de quem está na
+sala. **Assim que o responsável aprova a participação, a imagem é registrada** e o jogador
+passa a entrar sozinho.
+
 #### Novo jogador — dados coletados
 
-| Dado                        | Uso                                                                      |
-| --------------------------- | ------------------------------------------------------------------------ |
-| Nome                        | Identificação interna e comunicação com responsáveis                     |
-| Nick                        | Identidade pública do jogador                                            |
-| Data de nascimento ou idade | Adequação de conteúdo e faixa (6 a 16 anos)                              |
-| Características do avatar   | Geração do avatar público                                                |
-| Imagem                      | **Exclusivamente** identificar o jogador depois: presença e autenticação |
+| Dado                        | Uso                                                                                                                           |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Nome                        | Identificação interna e comunicação com responsáveis                                                                          |
+| Nick                        | Identidade pública do jogador                                                                                                 |
+| Data de nascimento ou idade | Adequação de conteúdo e faixa (6 a 16 anos)                                                                                   |
+| Características do avatar   | Geração do avatar público                                                                                                     |
+| Imagem                      | **Exclusivamente** identificar o jogador depois: presença e autenticação. Só é captada com o responsável presente e de acordo |
 
 **Vínculo com a Comunidade Virtual (regra vigente).** O jogador **não informa a comunidade**:
 o Admin define na App 03 a **comunidade default do onboarding**, e todo cadastro feito ali é
@@ -168,15 +182,16 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
 - **Finalidade declarada e única**: identificar o jogador — registro de presença e autenticação
   nas aplicações. Qualquer outro uso exige nova base legal e novo consentimento.
 - **Consentimento informado** do responsável para a captura e o tratamento biométrico, colhido
-  de forma legível e registrado com data e hora.
+  de forma legível e registrado com data e hora. **Sem ele não há captura** — e é por isso que
+  o cadastro biométrico só acontece depois que o responsável aprova a participação.
 - **Minimização**: preferir _template_ biométrico (representação matemática não reversível) à
   fotografia original.
 - **Segurança**: armazenamento criptografado, acesso restrito e auditado.
 - **Retenção**: prazo definido e exclusão automática ao fim do vínculo do jogador com o
   projeto, ou a pedido do responsável.
 - **Direito de recusa**: quem não autoriza a imagem tem **alternativa equivalente** — nick mais
-  confirmação do Mestre ou de um Admin, tanto para registrar presença quanto para entrar nas
-  aplicações. Recusar biometria nunca pode significar exclusão da atividade.
+  confirmação do Mestre ou de um Admin, **no encontro**, tanto para registrar presença quanto
+  para entrar nas aplicações. Recusar biometria nunca pode significar exclusão da atividade.
 - **Transparência**: política de privacidade em linguagem simples — para o responsável **e
   para a criança**.
 
@@ -221,7 +236,7 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
 - **CRUDs de personas e catálogo**: jogadores, mestres, apoiadores, responsáveis, admins,
   comunidades virtuais e poderes.
 - **Cadastro de responsáveis e vínculo com os jogadores** — e-mail da conta Google ou
-  credencial de usuário e senha provisória, grau de parentesco e no máximo dois responsáveis
+  credencial de usuário e senha provisória, grau de parentesco e no máximo três responsáveis
   por jogador. O Mestre faz o mesmo cadastro pela App 09.
 - **Criação das Comunidades Virtuais** — **exclusiva de Admins**, nascendo vazias.
 - **Definição da comunidade default do onboarding e liberação do App 01** — enquanto não
@@ -404,7 +419,7 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 | **Validação pedagógica**  | Valida os desafios extras que os Apoiadores propõem para as suas trilhas, antes da aprovação do Admin                                |
 | **Banco do Quiz ao Vivo** | Cadastra as perguntas das suas aulas; a partida é conduzida na App 03                                                                |
 | **Locais do território**  | Aprova as solicitações de novo local dos jogadores das suas trilhas, com alerta das que estão em aberto                              |
-| **Responsáveis**          | Cadastra o responsável que se apresentou no encontro e vincula a ele os jogadores já cadastrados, com o grau de parentesco           |
+| **Responsáveis**          | Cadastra o responsável que se apresentou no encontro e vincula a ele **qualquer** jogador já cadastrado, com o grau de parentesco    |
 | **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                                                   |
 | **Ressarcimento**         | Acompanha a situação do que absorveu; havendo receita, envia a chave PIX por e-mail ao Admin — a plataforma não guarda dado bancário |
 
@@ -413,8 +428,8 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 - **O app não cadastra Mestre.** O cadastro segue exclusivo de Admin, com habilidade
   comprovada; quem ainda não é Mestre usa o formulário de solicitação da vitrine.
 - **O Mestre lança apenas o que é seu** — as atividades que propôs e as turmas em que atua.
-  Cadastros de personas — salvo o do responsável —, aprovações privativas de Admin e painéis
-  gerais continuam na App 03.
+  Cadastros de personas — salvo o do responsável, que ele cadastra e vincula para qualquer
+  jogador —, aprovações privativas de Admin e painéis gerais continuam na App 03.
 - **Nenhum modelo ou fluxo pressupõe habilidade técnica de TI**: o Mestre pode ser de humanas,
   artes, esportes ou cultura.
 
