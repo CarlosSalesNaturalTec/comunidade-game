@@ -28,6 +28,9 @@ Regras derivadas:
   receita, os aportes ressarcíveis são pagos **por antiguidade**, por decisão de um Admin.
   Ressarcido o aporte, as moedas **revertem** — quem recebeu de volta adiantou recurso, não
   doou —, mas o registro do ato e o destaque público **permanecem**.
+- **A plataforma não guarda dado bancário.** Todo o trâmite corre na plataforma; na última
+  etapa a pessoa envia a chave PIX **por e-mail ao Admin**, que faz a transferência e anexa
+  o **comprovante** ao registro. Nem chave, nem banco, nem conta ficam armazenados.
 - O acumulado forma o **"Poder Econômico"** do provedor, visível na plataforma: o
   reconhecimento público de quem sustenta o projeto.
 

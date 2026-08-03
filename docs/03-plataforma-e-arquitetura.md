@@ -363,16 +363,16 @@ ser um lançamento feito por terceiros e passa a ter canal próprio:
 Web App autenticado dos **Mestres cadastrados** por um Admin. É a bancada de trabalho de quem
 ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 
-| Função                    | O que o Mestre faz                                                                                           |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Autoria de trilhas**    | Cria trilhas, pontos de trilha, conteúdos, bibliografia de apoio, quizzes e desafios — inclusive o de coleta |
-| **Prova de habilidade**   | Publica os artefatos que comprovam sua habilidade, além de currículo, portfólio e redes sociais              |
-| **Minhas atividades**     | Acompanha as suas turmas e lança resultados, presenças e méritos das atividades que propôs                   |
-| **Validação pedagógica**  | Valida os desafios extras que os Apoiadores propõem para as suas trilhas, antes da aprovação do Admin        |
-| **Banco do Quiz ao Vivo** | Cadastra as perguntas das suas aulas; a partida é conduzida na App 03                                        |
-| **Locais do território**  | Aprova as solicitações de novo local dos jogadores das suas trilhas, com alerta das que estão em aberto      |
-| **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                           |
-| **Dados de recebimento**  | Cadastra chave PIX, banco e nome do favorecido, para o caso de haver ressarcimento de recurso que absorveu   |
+| Função                    | O que o Mestre faz                                                                                                                   |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Autoria de trilhas**    | Cria trilhas, pontos de trilha, conteúdos, bibliografia de apoio, quizzes e desafios — inclusive o de coleta                         |
+| **Prova de habilidade**   | Publica os artefatos que comprovam sua habilidade, além de currículo, portfólio e redes sociais                                      |
+| **Minhas atividades**     | Acompanha as suas turmas e lança resultados, presenças e méritos das atividades que propôs                                           |
+| **Validação pedagógica**  | Valida os desafios extras que os Apoiadores propõem para as suas trilhas, antes da aprovação do Admin                                |
+| **Banco do Quiz ao Vivo** | Cadastra as perguntas das suas aulas; a partida é conduzida na App 03                                                                |
+| **Locais do território**  | Aprova as solicitações de novo local dos jogadores das suas trilhas, com alerta das que estão em aberto                              |
+| **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                                                   |
+| **Ressarcimento**         | Acompanha a situação do que absorveu; havendo receita, envia a chave PIX por e-mail ao Admin — a plataforma não guarda dado bancário |
 
 **Regras obrigatórias:**
 

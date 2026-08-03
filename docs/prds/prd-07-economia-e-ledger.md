@@ -40,8 +40,7 @@ atividades previstas.
   registrado em seu nome, marcado como **ressarcível** e com destaque público pelo ato.
 - Receita destinada a **ressarcir recursos absorvidos**, com fila por antiguidade e pagamento
   por decisão de Admin.
-- Dados de recebimento do Mestre ou Admin — chave PIX, banco e favorecido — para o eventual
-  ressarcimento.
+- Comprovante da transferência anexado ao ressarcimento — **sem armazenar dado bancário**.
 - Saldo por tipo de recurso e ponto de apoio, com **reserva no agendamento** e baixa na
   realização da atividade.
 - Bloqueio do agendamento de atividade sem lastro.
@@ -65,13 +64,13 @@ atividades previstas.
 
 ## 4. Personas e permissões
 
-| Persona   | O que faz neste domínio                                                                                                  | O que não pode fazer                                             |
-| --------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
-| Admin     | Cadastra tipos de recurso e valores de referência, registra e homologa aportes, designa responsável de ponto de apoio    | Alterar aporte já homologado; apagar lançamento                  |
-| Mestre    | Aporta recurso, inclusive por absorção, cadastra seus dados de recebimento e registra empréstimo e devolução de exemplar | Homologar o próprio aporte; exigir ressarcimento                 |
-| Apoiador  | Consulta seus aportes e seu Poder Econômico; provê o lastro dos desafios extras                                          | Editar o ledger; ver dado de contato de jogador                  |
-| Jogador   | Vê o que recebeu como recompensa e o acervo em seu uso                                                                   | Ver valores em reais; assumir dívida por perda ou dano           |
-| Visitante | Lê a prestação de contas pública, em moedas                                                                              | Ver valor em reais, comprovante ou dado de doador não publicável |
+| Persona   | O que faz neste domínio                                                                                                     | O que não pode fazer                                             |
+| --------- | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Admin     | Cadastra tipos de recurso e valores de referência, registra e homologa aportes, designa responsável de ponto de apoio       | Alterar aporte já homologado; apagar lançamento                  |
+| Mestre    | Aporta recurso, inclusive por absorção, acompanha a situação do ressarcimento e registra empréstimo e devolução de exemplar | Homologar o próprio aporte; exigir ressarcimento                 |
+| Apoiador  | Consulta seus aportes e seu Poder Econômico; provê o lastro dos desafios extras                                             | Editar o ledger; ver dado de contato de jogador                  |
+| Jogador   | Vê o que recebeu como recompensa e o acervo em seu uso                                                                      | Ver valores em reais; assumir dívida por perda ou dano           |
+| Visitante | Lê a prestação de contas pública, em moedas                                                                                 | Ver valor em reais, comprovante ou dado de doador não publicável |
 
 ## 5. Jornadas principais
 
@@ -124,10 +123,14 @@ atividades previstas.
 1. Um Apoiador doa com destinação **ressarcir recursos absorvidos** — é o que cria o dinheiro
    para isso; não há fila permanente nem promessa de devolução sem essa receita.
 2. O sistema lista os aportes ressarcíveis em aberto, **do mais antigo ao mais novo**.
-3. Admin decide quais paga, dentro do que a receita destinada cobre.
-4. Pago o ressarcimento, as **moedas revertem**: o Poder Econômico de quem absorveu volta ao
+3. Admin decide quais paga, dentro do que a receita destinada cobre, e comunica quem será
+   ressarcido.
+4. **Só nesta etapa e fora da plataforma**, a pessoa envia a chave PIX por **e-mail ao Admin**.
+5. Admin faz a transferência e **anexa o comprovante** (PDF ou imagem) ao registro. Nenhuma
+   chave, banco ou conta é gravada em campo da plataforma.
+6. Pago o ressarcimento, as **moedas revertem**: o Poder Econômico de quem absorveu volta ao
    que era antes daquele aporte.
-5. O registro do ato e o **selo público permanecem** — o reconhecimento é por ter sustentado a
+7. O registro do ato e o **selo público permanecem** — o reconhecimento é por ter sustentado a
    atividade quando faltou recurso, não pelo valor.
 
 ## 6. Requisitos funcionais
@@ -156,7 +159,7 @@ atividades previstas.
 | `RF-07-20` | Sistema registra a coproprietariedade do dado publicado, sem calcular ou pagar rateio             | desejável  |
 | `RF-07-21` | Conferência de inventário por módulo, com resultado publicável na prestação de contas             | desejável  |
 | `RF-07-22` | Aporte por absorção nasce marcado como ressarcível, com situação de ressarcimento                 | essencial  |
-| `RF-07-23` | Mestre e Admin cadastram chave PIX, banco e nome do favorecido para eventual ressarcimento        | essencial  |
+| `RF-07-23` | Ressarcimento pago exige comprovante anexado, e a plataforma não guarda dado bancário             | essencial  |
 | `RF-07-24` | Sistema aceita doação com destinação a ressarcir recursos absorvidos                              | essencial  |
 | `RF-07-25` | Sistema lista os aportes ressarcíveis em aberto por antiguidade, e o Admin decide o pagamento     | essencial  |
 | `RF-07-26` | Ressarcimento pago reverte as moedas do aporte e mantém o registro do ato                         | essencial  |
@@ -185,6 +188,7 @@ atividades previstas.
 | `RN-07-17` | Ressarcimento não é direito nem promessa: só ocorre havendo receita destinada a ele     | —          | 04 §1   |
 | `RN-07-18` | Ressarcimento pago reverte as moedas; o registro do ato e o destaque público permanecem | —          | 04 §1   |
 | `RN-07-19` | O selo público mostra o número de absorções, nunca o valor em reais                     | 16         | 11 §8.2 |
+| `RN-07-20` | Chave PIX, banco e conta nunca são armazenados; o trâmite guarda apenas o comprovante   | —          | 04 §1   |
 
 ## 8. Modelo de dados
 
@@ -212,8 +216,7 @@ ItemPatrimonial 0..1 ─ 1 NecessidadeDeReposicao
 | `ItemPatrimonial`        | aporte de origem, título, número de tombo, ponto de apoio, responsável designado, estado de conservação                                                                                                                                |
 | `Emprestimo`             | item, jogador, ponto de trilha, saída, devolução, estado de conservação na devolução                                                                                                                                                   |
 | `NecessidadeDeReposicao` | item ou tipo de recurso, quantidade, motivo, situação, aporte que a supriu                                                                                                                                                             |
-| `Ressarcimento`          | aporte absorvido, valor em reais, receita destinada de origem, admin pagador, data, comprovante                                                                                                                                        |
-| `DadosDeRecebimento`     | pessoa (Mestre ou Admin), chave PIX, banco, agência, conta, nome do favorecido, atualizado em                                                                                                                                          |
+| `Ressarcimento`          | aporte absorvido, valor em reais, receita destinada de origem, admin pagador, data, comprovante anexado (PDF ou imagem)                                                                                                                |
 
 Imutabilidade: `Lancamento` é **somente inserção**. Erro se corrige por lançamento de **ajuste**,
 que referencia o original e guarda motivo e autor. O saldo é sempre **derivado** dos lançamentos,
@@ -224,25 +227,28 @@ pública lê apenas a primeira.
 
 ## 9. Contratos de API
 
-| Método | Rota                                   | Autenticação    | Descrição                                             |
-| ------ | -------------------------------------- | --------------- | ----------------------------------------------------- |
-| GET    | `/prestacao-de-contas`                 | pública         | Movimentado total e por provedor, em moedas           |
-| GET    | `/prestacao-de-contas/atividades`      | pública         | Consumo por atividade e por comunidade, em moedas     |
-| GET    | `/provedores/{id}/poder-economico`     | pública         | Poder Econômico do provedor, em moedas                |
-| GET    | `/necessidades`                        | pública         | O que falta de recurso para as atividades previstas   |
-| POST   | `/tipos-de-recurso`                    | Admin           | Cadastra tipo e valor de referência                   |
-| POST   | `/aportes`                             | Admin           | Registra e homologa aporte, com comprovante           |
-| POST   | `/aportes/absorcao`                    | Mestre ou Admin | Registra aporte por absorção de quem proveu o recurso |
-| POST   | `/atividades/{id}/reservas`            | gestão          | Reserva os recursos no agendamento                    |
-| POST   | `/atividades/{id}/baixa`               | gestão          | Converte reservas em baixa na realização              |
-| POST   | `/itens-patrimoniais/{id}/emprestimos` | Mestre          | Registra retirada de bancada                          |
-| POST   | `/emprestimos/{id}/devolucao`          | Mestre          | Registra devolução e estado de conservação            |
-| POST   | `/lancamentos/{id}/ajuste`             | Admin           | Lança ajuste referenciando o lançamento original      |
-| GET    | `/meus-aportes`                        | Apoiador        | Aportes e Poder Econômico do próprio Apoiador         |
+| Método | Rota                                   | Autenticação    | Descrição                                                            |
+| ------ | -------------------------------------- | --------------- | -------------------------------------------------------------------- |
+| GET    | `/prestacao-de-contas`                 | pública         | Movimentado total e por provedor, em moedas                          |
+| GET    | `/prestacao-de-contas/atividades`      | pública         | Consumo por atividade e por comunidade, em moedas                    |
+| GET    | `/provedores/{id}/poder-economico`     | pública         | Poder Econômico do provedor, em moedas                               |
+| GET    | `/necessidades`                        | pública         | O que falta de recurso para as atividades previstas                  |
+| POST   | `/tipos-de-recurso`                    | Admin           | Cadastra tipo e valor de referência                                  |
+| POST   | `/aportes`                             | Admin           | Registra e homologa aporte, com comprovante                          |
+| POST   | `/aportes/absorcao`                    | Mestre ou Admin | Registra aporte por absorção de quem proveu o recurso                |
+| GET    | `/aportes/ressarciveis`                | Admin           | Aportes absorvidos em aberto, do mais antigo ao mais novo            |
+| POST   | `/aportes/{id}/ressarcimento`          | Admin           | Registra o ressarcimento com comprovante anexado e reverte as moedas |
+| POST   | `/atividades/{id}/reservas`            | gestão          | Reserva os recursos no agendamento                                   |
+| POST   | `/atividades/{id}/baixa`               | gestão          | Converte reservas em baixa na realização                             |
+| POST   | `/itens-patrimoniais/{id}/emprestimos` | Mestre          | Registra retirada de bancada                                         |
+| POST   | `/emprestimos/{id}/devolucao`          | Mestre          | Registra devolução e estado de conservação                           |
+| POST   | `/lancamentos/{id}/ajuste`             | Admin           | Lança ajuste referenciando o lançamento original                     |
+| GET    | `/meus-aportes`                        | Apoiador        | Aportes e Poder Econômico do próprio Apoiador                        |
+| GET    | `/meus-aportes/ressarciveis`           | Mestre ou Admin | Situação dos aportes que absorveu                                    |
 
 Erros previstos: agendamento sem saldo (422, com a lista do que falta); homologação pelo
 próprio provedor (403); aporte de tipo inexistente (422, com a rota de cadastro do tipo);
-tentativa de editar lançamento (405).
+tentativa de editar lançamento (405); ressarcimento sem comprovante anexado (422).
 
 ## 10. Requisitos não funcionais
 
@@ -255,13 +261,18 @@ tentativa de editar lançamento (405).
 
 ## 11. LGPD e proteção da criança
 
-| Dado                      | Finalidade                | Base legal        | Retenção   | Quem acessa             |
-| ------------------------- | ------------------------- | ----------------- | ---------- | ----------------------- |
-| Identificação do provedor | Crédito público do aporte | consentimento     | permanente | público (nome e moedas) |
-| Comprovante do aporte     | Auditoria do livro-razão  | obrigação legal   | permanente | gestão                  |
-| Valor de origem em reais  | Conversão e auditoria     | obrigação legal   | permanente | gestão                  |
-| Jogador que usou exemplar | Ficha de vida do acervo   | interesse público | permanente | gestão e o próprio      |
+| Dado                         | Finalidade                | Base legal        | Retenção   | Quem acessa             |
+| ---------------------------- | ------------------------- | ----------------- | ---------- | ----------------------- |
+| Identificação do provedor    | Crédito público do aporte | consentimento     | permanente | público (nome e moedas) |
+| Comprovante do aporte        | Auditoria do livro-razão  | obrigação legal   | permanente | gestão                  |
+| Valor de origem em reais     | Conversão e auditoria     | obrigação legal   | permanente | gestão                  |
+| Jogador que usou exemplar    | Ficha de vida do acervo   | interesse público | permanente | gestão e o próprio      |
+| Comprovante de ressarcimento | Auditoria do pagamento    | obrigação legal   | permanente | gestão                  |
 
+- **Nenhum dado bancário é armazenado em campo da plataforma.** A chave PIX chega ao Admin
+  por e-mail, fora da plataforma, e não é transcrita para cá. O que fica é o comprovante da
+  transferência — que, sendo imagem de documento bancário, é **anexo de acesso restrito à
+  gestão**, nunca servido por rota pública.
 - Este domínio **não trata dado pessoal de criança** além do vínculo com o exemplar
   emprestado e com a recompensa recebida.
 - O Apoiador nunca recebe dado de contato de jogador: o que ele vê é agregado e por avatar.
@@ -285,6 +296,8 @@ tentativa de editar lançamento (405).
   é pago.
 - Ressarcimento pago devolve o Poder Econômico ao valor anterior ao aporte, e o selo público
   continua contando aquela absorção.
+- Registro de ressarcimento sem comprovante anexado é recusado; nenhum campo da API aceita
+  chave PIX, banco ou conta.
 - Nenhuma rota pública devolve valor em reais nem dado bancário.
 
 Métrica de ciclo: este PRD é o que torna a hipótese **H3** verificável — lastro registrado no
@@ -292,15 +305,19 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                           | Gravada em | Doc 09       |
-| ----------------------------------------------------------------- | ---------- | ------------ |
-| Aporte não financeiro valorado por tabela de referência da gestão | 04 §1      | Já decididos |
-| Tipo de aporte novo cadastrado na hora por um Admin               | 04 §1      | Já decididos |
-| Moeda com duas casas decimais                                     | 04 §1      | Já decididos |
-| Lastro por saldo de tipo de recurso, com reserva no agendamento   | 04 §1      | Já decididos |
-| Aporte por absorção de Mestre ou Admin                            | 04 §1      | Já decididos |
-| Responsável designado pelo acervo em cada ponto de apoio          | 05 §3      | Já decididos |
-| Rateio da monetização sem implementação no Ciclo 01               | —          | Pendente     |
+| Decisão                                                                        | Gravada em     | Doc 09       |
+| ------------------------------------------------------------------------------ | -------------- | ------------ |
+| Aporte não financeiro valorado por tabela de referência da gestão              | 04 §1          | Já decididos |
+| Tipo de aporte novo cadastrado na hora por um Admin                            | 04 §1          | Já decididos |
+| Moeda com duas casas decimais                                                  | 04 §1          | Já decididos |
+| Lastro por saldo de tipo de recurso, com reserva no agendamento                | 04 §1          | Já decididos |
+| Aporte por absorção de Mestre ou Admin                                         | 04 §1          | Já decididos |
+| Responsável designado pelo acervo em cada ponto de apoio                       | 05 §3          | Já decididos |
+| Aporte por absorção marcado como ressarcível, com destaque público pelo ato    | 04 §1, 11 §8.2 | Já decididos |
+| Ressarcimento só com receita destinada, por antiguidade e decisão de Admin     | 04 §1          | Já decididos |
+| Ressarcimento reverte as moedas; o registro do ato permanece                   | 04 §1          | Já decididos |
+| Sem armazenar dado bancário: chave PIX por e-mail e apenas comprovante anexado | 04 §1, 03 §11  | Já decididos |
+| Rateio da monetização sem implementação no Ciclo 01                            | —              | Pendente     |
 
 ## 14. Pendências que permanecem
 
@@ -312,24 +329,23 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
   este ledger.
 - **Modelagem formal em dupla entrada**: segue como `[Proposta]` no documento 04. Os
   requisitos deste PRD não dependem dela.
-- **Guarda dos dados bancários** de Mestres e Admins: criptografia, quem acessa, retenção e o
-  que acontece quando a pessoa deixa o projeto. Trava a implementação do `RF-07-23`.
 - **Valores da tabela de referência**: deixaram de ser pendência de documentação e passaram a
   ser cadastro da gestão, alimentado por Admin antes do primeiro aporte do ciclo.
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                      |
-| ----------------------- | ------------------------------------------- |
-| `RF-07-01` a `RF-07-05` | 04 §1 (moeda e tabela de referência)        |
-| `RF-07-06`              | 04 §1 (aporte por absorção)                 |
-| `RF-07-07` a `RF-07-09` | 04 §1 (regra de lastro)                     |
-| `RF-07-10`              | 04 §1 (Poder Econômico)                     |
-| `RF-07-11` a `RF-07-14` | 05 §3 (acervo, guarda e reposição)          |
-| `RF-07-15`              | 04 §3 (desafios extras)                     |
-| `RF-07-16` a `RF-07-18` | 04 §1 (transparência) e 10 §3 (hipótese H3) |
-| `RF-07-19`              | 04 §1 (livro-razão auditável)               |
-| `RF-07-20`              | 04 §2 (titularidade dos dados publicados)   |
-| `RF-07-21`              | 05 §3 (conferência de inventário)           |
-| `RF-07-22` a `RF-07-26` | 04 §§1–2 (absorção e ressarcimento)         |
-| `RF-07-27`              | 11 §8.2 (cards e páginas individuais)       |
+| Requisito               | Origem                                           |
+| ----------------------- | ------------------------------------------------ |
+| `RF-07-01` a `RF-07-05` | 04 §1 (moeda e tabela de referência)             |
+| `RF-07-06`              | 04 §1 (aporte por absorção)                      |
+| `RF-07-07` a `RF-07-09` | 04 §1 (regra de lastro)                          |
+| `RF-07-10`              | 04 §1 (Poder Econômico)                          |
+| `RF-07-11` a `RF-07-14` | 05 §3 (acervo, guarda e reposição)               |
+| `RF-07-15`              | 04 §3 (desafios extras)                          |
+| `RF-07-16` a `RF-07-18` | 04 §1 (transparência) e 10 §3 (hipótese H3)      |
+| `RF-07-19`              | 04 §1 (livro-razão auditável)                    |
+| `RF-07-20`              | 04 §2 (titularidade dos dados publicados)        |
+| `RF-07-21`              | 05 §3 (conferência de inventário)                |
+| `RF-07-22` a `RF-07-26` | 04 §§1–2 (absorção, ressarcimento e comprovante) |
+| `RF-07-27`              | 11 §8.2 (cards e páginas individuais)            |
+| `RN-07-20`              | 04 §1 (sem armazenamento de dado bancário)       |
