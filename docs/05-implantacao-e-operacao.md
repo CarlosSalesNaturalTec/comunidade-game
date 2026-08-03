@@ -86,8 +86,11 @@ O princípio é **conservação por cuidado e orgulho, não por medo de puniçã
    antes do fim da aula.
 3. **Badge "Guardião do Acervo".** Cuidar bem do material comum rende badge e pontos.
    Guardiões reincidentes podem ser convidados a cuidar do acervo como voluntários.
-4. **Guarda compartilhada pela equipe.** Cada equipe responde por um conjunto de exemplares;
-   cuidar do material do colega conta como **mérito extra por auxílio aos colegas**.
+4. **Responsável designado, com guarda compartilhada pela equipe.** Cada ponto de apoio tem
+   uma **pessoa designada** que responde pelo acervo permanente e pelos kits ali guardados —
+   é ela que consta do inventário, e a responsabilidade sobrevive à troca de turma e de
+   Mestre. Sobre essa base, cada equipe responde por um conjunto de exemplares; cuidar do
+   material do colega conta como **mérito extra por auxílio aos colegas**.
 5. **Kit de conservação com lastro.** Papel para encapar, fita e etiquetas são recursos como
    qualquer outro: precisam ser providos para a atividade acontecer.
 6. **Reposição solidária, nunca cobrança à família.** Perda ou dano **não gera dívida** para o

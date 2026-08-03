@@ -79,6 +79,7 @@ nav:
       - prds/index.md
       - "00 — Modelo de PRD": prds/00-modelo-de-prd.md
       - "PRD-08 — Comunidades Virtuais e território": prds/prd-08-comunidades-virtuais.md
+      - "PRD-07 — Economia de recursos e livro-razão": prds/prd-07-economia-e-ledger.md
   - "Operação":
       - "04 — Modelo econômico e sustentabilidade": 04-modelo-economico-e-sustentabilidade.md
       - "05 — Implantação e operação": 05-implantacao-e-operacao.md
