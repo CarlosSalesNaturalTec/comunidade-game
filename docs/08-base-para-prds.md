@@ -34,11 +34,12 @@
   Mestre ou Apoiador pela vitrine — solicitação registrada não é cadastro, e a avaliação é
   sempre de um Admin. **Novos Admins são incluídos manualmente** por um Admin existente.
 - **LGPD em todo o projeto:** jogadores representados por **avatares, nunca por imagens reais**.
-  A **foto captada no onboarding** é dado sensível de finalidade única (registro de presença),
-  com consentimento, minimização, criptografia, retenção definida e alternativa para quem
-  recusar. **Adesão em duas etapas:** o cadastro livre (nome, data de nascimento ou idade, nick
-  e características do avatar) já permite participar das atividades; a **divulgação
-  pública do histórico e do perfil** exige autorização dos pais ou responsáveis. **Toda
+  A **imagem captada no onboarding** é dado sensível de finalidade única — identificar o
+  jogador, para presença e autenticação —, com consentimento, minimização, criptografia,
+  retenção definida e alternativa para quem recusar. **Adesão em duas etapas:** o cadastro
+  livre (nome, data de nascimento ou idade, nick e características do avatar) já permite
+  participar das atividades; a **divulgação pública do histórico e do perfil** exige
+  autorização dos pais ou responsáveis. **Toda
   aplicação indica visualmente**, de forma discreta, o que coleta e quais são os direitos do
   usuário, com acesso a uma **área detalhada** sobre destino e uso de cada dado.
 - **Coproprietariedade dos dados publicados:** em produção, a entidade responsável pela
@@ -126,7 +127,8 @@
   todos, com quantidade de recompensas declarada, uma ou várias, por ordem de conclusão) e
   **direcionado** (a um jogador específico, único elegível à recompensa, com justificativa do
   vínculo registrada e aprovada).
-- Entidades e permissões da **área do responsável**: vínculo responsável ↔ jogador,
+- Entidades e permissões da **área do responsável**: vínculo responsável ↔ jogador — cadastrado
+  por Admin ou Mestre, com grau de parentesco e no máximo três responsáveis por jogador —,
   consentimentos versionados com data e hora, solicitações com protocolo e status.
 - Resultados de atividade: realizada / com mérito / mérito extra por auxílio; pontuação negativa
   por má conduta.
@@ -153,9 +155,11 @@ definidos no documento 03.
 **fronteira com a App 09** é o critério: aqui ficam cadastros, aprovações de Admin, painéis do
 dia e filas; a autoria de trilhas e os lançamentos das atividades do próprio Mestre ficam lá.
 
-**Requisitos:** CRUDs de mestres, poderes, jogadores, apoiadores, admins, equipes e comunidades
-virtuais; **criação das Comunidades Virtuais — exclusiva de Admin, nascendo vazias — e gestão do
-vínculo e transferência de jogadores entre comunidades**; **definição da comunidade default do
+**Requisitos:** CRUDs de mestres, poderes, jogadores, apoiadores, responsáveis, admins, equipes
+e comunidades virtuais, incluindo o **cadastro do responsável e o vínculo com os jogadores**
+(grau de parentesco, no máximo três por jogador); **criação das Comunidades Virtuais —
+exclusiva de Admin, nascendo vazias — e gestão do vínculo e transferência de jogadores entre
+comunidades**; **definição da comunidade default do
 onboarding e liberação do App 01**, sem a qual a aplicação de onboarding não opera; **cadastro
 de equipes** conforme o plano de aulas e a formação livre dos jogadores, com a composição
 permitida pela atividade (só jogadores ou com no máximo 1 familiar de 17 anos ou mais);
@@ -236,9 +240,16 @@ dos já cadastrados, por **áudio ou texto**, com IA.
   repetir e confirmar dados.
 - Captação e reprodução de áudio via `navigator.mediaDevices.getUserMedia`, com reconhecimento
   e síntese de fala.
-- Captura da **imagem do jogador** pela câmera do dispositivo.
+- Captura da **imagem do jogador** pela câmera do dispositivo, **só com o responsável presente
+  e de acordo**.
+- **Condição de funcionamento:** câmera no aparelho e Mestre ou Admin presente. Faltando um dos
+  dois, não há onboarding.
 - **Novo jogador:** salvar nome, nick, data de nascimento ou idade, características do avatar
-  e foto. O jogador fica **ativo** ao final, sem exigir autorização do responsável nesta etapa.
+  e imagem. O jogador fica **ativo** ao final, sem exigir autorização do responsável nesta
+  etapa.
+- **Criança sem o responsável:** onboarding com intervenção do Mestre ou Admin e **sem imagem**;
+  o jogador fica ativo e entra com a confirmação de quem está na sala. O **cadastro biométrico
+  acontece depois**, quando o responsável aprova a participação.
 - **Vínculo à comunidade:** atribuído automaticamente pela **comunidade default** que o Admin
   define na App 03 — o jogador **não informa a comunidade**, o que encurta a conversa de
   cadastro.
@@ -250,10 +261,11 @@ dos já cadastrados, por **áudio ou texto**, com IA.
 - Operação com rede instável: fila local e sincronização posterior.
 - Registro de presença de jogador conhecido em poucos segundos.
 
-**Requisitos de proteção de dados (obrigatórios):** finalidade única da foto (presença);
-consentimento informado do responsável registrado; preferência por _template_ biométrico não
-reversível; criptografia e acesso auditado; prazo de retenção com exclusão automática;
-**alternativa de presença sem biometria** para quem recusar.
+**Requisitos de proteção de dados (obrigatórios):** finalidade única da imagem (identificar o
+jogador — presença e autenticação); consentimento informado do responsável registrado;
+preferência por _template_ biométrico não reversível; criptografia e acesso auditado; prazo de
+retenção com exclusão automática; **alternativa sem biometria** para quem recusar, com
+confirmação do Mestre ou Admin.
 
 **Questões em aberto:** provedor de IA e de reconhecimento facial (custo, privacidade,
 processamento no dispositivo × nuvem); política de retenção em números; roteiro exato da conversa
@@ -281,6 +293,8 @@ com acompanhamento do status de avaliação.
 **Autonomia no encontro assíncrono:** a App 05 é o que permite ao jogador saber **o que fazer em
 seguida sem depender do Mestre**. Precisa funcionar em **aparelho compartilhado do ponto de
 apoio** (troca rápida de sessão) e mostrar com clareza o próximo ponto e o que está bloqueado.
+A entrada é por **nick e imagem**, como em toda aplicação do jogador — é o que garante que a
+atividade foi feita pela própria criança, e não por terceiros.
 
 **Requisitos adicionais:** estado de **perfil público** desbloqueado apenas com autorização do
 responsável; representação exclusivamente por avatar; desafios com níveis de dificuldade
@@ -545,13 +559,14 @@ família. Substitui a comunicação por mensageria de terceiros, fora do escopo 
 
 **Requisitos:**
 
-- **Vínculo responsável ↔ jogadores**, conferido por Admin; o responsável só enxerga os
-  jogadores sob sua responsabilidade.
+- **Vínculo responsável ↔ jogadores**, cadastrado por Admin ou Mestre, com grau de parentesco e
+  no máximo três responsáveis por jogador; o responsável só enxerga os jogadores sob sua
+  responsabilidade.
 - **Evolução do jogador**: presença, atividades realizadas, pontos, poderes, badges, nível e
   progresso nas trilhas.
 - **Autorização de divulgação pública** do histórico e do perfil — concessão e **revogação**,
   com efeito imediato na vitrine e nos rankings públicos.
-- **Direitos de recusa** exercíveis a qualquer tempo: foto de presença (PRD-04), Modo Ouvinte em
+- **Direitos de recusa** exercíveis a qualquer tempo: imagem do jogador (PRD-04), Modo Ouvinte em
   sala (PRD-06) e uso de imagem em vídeos e fotos de eventos — **sempre com alternativa
   equivalente**, nunca com exclusão da atividade.
 - **Transparência de dados**: quais dados da criança estão armazenados, para que servem, por

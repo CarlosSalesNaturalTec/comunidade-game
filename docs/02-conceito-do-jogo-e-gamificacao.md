@@ -60,6 +60,19 @@ Pessoas e instituições que financiam ou divulgam o projeto.
   instituição.
 - Cada recurso aportado é registrado e contabilizado no seu **Poder Econômico**.
 
+### Pais e responsáveis
+
+Adultos responsáveis pelos jogadores. Acompanham a evolução da criança, autorizam e revogam
+consentimentos, e têm acesso próprio à plataforma.
+
+- **Cadastrados por um Admin ou por um Mestre** — não há autocadastro nem solicitação aberta.
+  O responsável se apresenta **pessoalmente** em atividade presencial, na primeira vez, e
+  informa seu e-mail e as crianças sob sua responsabilidade. Espera-se que isso aconteça no
+  **primeiro dia de aula da criança**, a quem ele acompanha.
+- O vínculo é feito com jogadores **já cadastrados** no onboarding — qualquer um deles, não só
+  os das turmas de quem cadastra —, e cada jogador tem no máximo **três responsáveis**.
+- Todo vínculo declara o **grau de parentesco** do responsável com o jogador, em texto livre.
+
 ### Solicitação de participação (Mestres e Apoiadores)
 
 Pessoas e instituições interessadas no projeto podem **solicitar sua inclusão como Mestre ou

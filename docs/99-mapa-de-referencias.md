@@ -67,6 +67,8 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Regra "toda trilha coleta dados reais"                             | 02 §3                            | 06, 07, 08, 10, 11             |
 | Poder do Território                                                | 02 §2                            | 08, 11                         |
 | Governança de personas (só Jogador tem autocadastro)               | 02 §1                            | 01, 05, 08                     |
+| Cadastro do responsável e vínculo com os jogadores                 | 02 §1                            | 03 §§1.1, 5, 9, 11, 08, 09     |
+| Autenticação por persona (jogador por nick e imagem)               | 03 §1.1                          | 02, 08, 09                     |
 | Solicitação de participação como Mestre ou Apoiador                | 02 §1                            | 03 §§5, 8, 08, 12              |
 | Equipes (grupo livre até 5, várias por jogador, 1 familiar 17+)    | 02 §5                            | 03 §5, 08, 11 §4               |
 | Comunidade default do onboarding                                   | 02 §1                            | 01, 03 §§3, 5, 08, 10          |
@@ -84,7 +86,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Mestre Aprendiz (nível 5) e multiplicadores                        | 11 §6 (motor) e 05 §6 (operação) | 02, 08                         |
 | Níveis, badges, tabela de pontos, taxonomia de atividades          | 11 §§4–7                         | 02, 08                         |
 | Contrato dos jogos (lê progresso, debita, nunca credita)           | 11 §8.4                          | 03 §6, 08                      |
-| LGPD, avatares, foto de presença, Modo Ouvinte                     | 03 §§3.3, 4, 12                  | 02, 08, 09, 13                 |
+| LGPD, avatares, imagem do jogador, Modo Ouvinte                    | 03 §§3.3, 4, 12                  | 02, 08, 09, 13                 |
 
 ## 4. Aplicações → PRDs
 
@@ -147,8 +149,9 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
    aplicação sobre WhatsApp ou outra mensageria de terceiros.
 2. **Faixa etária 6 a 16 anos**; progressão por **nível de dificuldade, nunca por idade**.
 3. **Só o Jogador tem autocadastro.** Mestres e Apoiadores são cadastrados por Admin, com
-   artefato comprobatório; a solicitação pela vitrine é apenas pedido de avaliação, nunca
-   cadastro; novos Admins entram manualmente por outro Admin.
+   artefato comprobatório; responsáveis, por Admin ou Mestre, depois de se apresentarem
+   pessoalmente; a solicitação pela vitrine é apenas pedido de avaliação, nunca cadastro;
+   novos Admins entram manualmente por outro Admin. **Login não cria cadastro.**
 4. **Comunidade Virtual é criada vazia por Admin**; todo jogador é vinculado a exatamente
    uma, pela **comunidade default** que o Admin define — e sem ela o App 01 não opera.
 5. **Toda trilha tem ao menos um desafio de coleta de dados reais** e termina em
@@ -164,8 +167,8 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     mediada pela plataforma.
 11. **Nenhuma recusa de consentimento exclui o jogador da atividade** — sempre há
     alternativa equivalente.
-12. **Jogadores aparecem publicamente só por avatar e nick.** A foto do onboarding tem
-    finalidade única de presença.
+12. **Jogadores aparecem publicamente só por avatar e nick.** A imagem do onboarding tem
+    finalidade única de identificar o jogador — presença e autenticação — e nunca é exibida.
 13. **Ciclo 01 = ago–dez/2026, Guerreira Zeferina, trilhas 1 e 2 apenas.** Rima, Capoeira,
     Redes, PNED/BNCC e Soft Skills são ciclo futuro.
 14. **Detalhamento extenso só no doc 08 e nos PRDs.** Os documentos 01–07 e 09–13 são
