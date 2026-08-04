@@ -5,9 +5,9 @@
 Princípio central — a "moeda" do Comunidade Game:
 
 > **Todas as ações ocorridas na plataforma — aulas, lanches, hospedagem de servidores,
-> prestadores de serviço — têm seus custos computados e atribuídos a um personagem (Jogador,
-> Mestre ou Apoiador).** Assim se registra a riqueza movimentada, trazendo transparência sobre
-> os recursos.
+> prestadores de serviço — têm seus custos computados e atribuídos a um personagem
+> (Guerreiro(a), Mestre ou Apoiador).** Assim se registra a riqueza movimentada, trazendo
+> transparência sobre os recursos.
 
 Regras derivadas:
 
@@ -18,11 +18,16 @@ Regras derivadas:
 - **Cada atividade só acontece se tiver os recursos providos** — não há atividade sem lastro.
   O livro-razão mantém **saldo por tipo de recurso**; agendar uma atividade **reserva** o que
   ela consome, e a realização converte a reserva em baixa.
+- **Falta de lastro vira pedido, não recusa silenciosa.** Cadastrada a atividade sem saldo
+  para o que ela consome, a diferença é publicada como **necessidade de recurso** em três
+  lugares: na vitrine pública, na área do Apoiador e na área dos Mestres da trilha. A
+  atividade fica **pendente de lastro** e só é confirmada quando a necessidade é suprida.
 - **Aporte por absorção.** Faltando saldo, um Mestre ou Admin pode **prover ele mesmo** o
-  recurso — dar a aula sem receber, comprar o lanche, ceder o insumo. A plataforma registra
-  isso como **aporte dele**, valorado pela tabela de referência, e o crédito entra no seu
-  Poder Econômico. O aporte nasce marcado como **ressarcível**, e quem absorveu ganha
-  **destaque público** pelo ato.
+  recurso — dar a aula sem receber, comprar o lanche, ceder o insumo —, e faz isso **a partir
+  da própria necessidade publicada**, com um ato de confirmação. A plataforma registra como
+  **aporte dele**, valorado pela tabela de referência, e o crédito entra no seu Poder
+  Econômico. O aporte nasce marcado como **ressarcível**, e quem absorveu ganha **destaque
+  público** pelo ato.
 - **Ressarcimento não é direito nem promessa.** Não há fila permanente nem expectativa de
   devolução: o ressarcimento só existe quando entra receita destinada a ele. Havendo essa
   receita, os aportes ressarcíveis são pagos **por antiguidade**, por decisão de um Admin.
@@ -43,7 +48,7 @@ R$ 100,00**.
 - Nas **vitrines públicas** exibe-se a **quantidade de moedas** aportada, **nunca o valor em
   reais**.
 - A moeda mede **aporte de recurso** e compõe o Poder Econômico. Não se confunde com os
-  **pontos**, que são do jogador e vêm de realização.
+  **pontos**, que são do Guerreiro(a) e vêm de realização.
 - A moeda admite **fração, com duas casas** — R$ 50,00 são 0,50 moeda —, para que nenhum
   aporte pequeno se perca no arredondamento.
 
@@ -96,12 +101,12 @@ existentes, sem custo adicional para o primeiro ciclo.
 
 **Tratamento no livro-razão — regime misto (definição vigente):**
 
-| Item                               | Destino                                                             | Como entra no ledger                                                      |
-| ---------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| **Livros da linha Alpha** (252)    | Doados ao jogador quando ele começa a trilha                        | **Recompensa entregue** — baixa definitiva do acervo                      |
-| **Livros da linha Include I** (46) | Acervo permanente do ponto de apoio                                 | **Patrimônio permanente** — sem baixa por consumo, com controle de guarda |
-| **Kits MDF** (30)                  | Insumo das oficinas do Robô Educa                                   | **Consumível de atividade** — baixa a cada montagem                       |
-| **Camisas** (50)                   | Doadas aos jogadores inscritos no Ciclo 01, até o limite disponível | **Recompensa entregue** — baixa definitiva na entrega                     |
+| Item                               | Destino                                                                           | Como entra no ledger                                                      |
+| ---------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **Livros da linha Alpha** (252)    | Doados ao Guerreiro(a) quando ele começa a trilha                                 | **Recompensa entregue** — baixa definitiva do acervo                      |
+| **Livros da linha Include I** (46) | Acervo permanente do ponto de apoio                                               | **Patrimônio permanente** — sem baixa por consumo, com controle de guarda |
+| **Kits MDF** (30)                  | Insumo das oficinas do Robô Educa                                                 | **Consumível de atividade** — baixa a cada montagem                       |
+| **Camisas** (50)                   | Doadas aos Guerreiros e Guerreiras inscritos no Ciclo 01, até o limite disponível | **Recompensa entregue** — baixa definitiva na entrega                     |
 
 Inventário completo, regime de posse e estratégia de conservação: documento 05.
 
@@ -122,9 +127,9 @@ Acervo, kits e camisas são valorados pela tabela de referência, como qualquer 
 ### Titularidade dos dados publicados
 
 **Definição vigente.** Com a plataforma em produção, a entidade responsável por ela é
-**coproprietária dos dados publicados**, junto com o jogador que gerou o dado. Havendo
+**coproprietária dos dados publicados**, junto com o Guerreiro(a) que gerou o dado. Havendo
 monetização desses dados, o resultado é rateado **50% para a entidade responsável e 50% para
-o jogador**, pagos **ao responsável legal** do jogador.
+o Guerreiro(a)**, pagos **ao responsável legal** do Guerreiro(a).
 
 > **A definir:** redação da regra no termo assinado pelo responsável, base legal e
 > periodicidade do pagamento.
@@ -144,57 +149,57 @@ jurídica vinculada:
 - O doador é cadastrado como Apoiador por um Admin, com o comprovante anexado.
 - A chave é publicada na vitrine pública, na seção "Como apoiar".
 
-## 3. Interação Apoiadores × Jogadores: desafios extras
+## 3. Interação Apoiadores × Guerreiros e Guerreiras: desafios extras
 
 Aportar recurso é o começo da relação do Apoiador com a plataforma, não o fim. A interação
-Apoiador–Jogador acontece por **desafios extras**: durante um ciclo em andamento, o Apoiador
-propõe um desafio ligado a uma trilha em curso e oferece uma **recompensa extra** a quem o
-concluir.
+Apoiador–Guerreiro(a) acontece por **desafios extras**: durante um ciclo em andamento, o
+Apoiador propõe um desafio ligado a uma trilha em curso e oferece uma **recompensa extra** a
+quem o concluir.
 
 **Como funciona no ciclo:**
 
 1. O Apoiador propõe o desafio, vinculado a uma **trilha em andamento**, e indica a recompensa
    que vai custear e **em que quantidade**.
 2. O **Mestre da trilha valida** — o desafio precisa fazer sentido pedagógico no ponto em que
-   os jogadores estão.
+   os Guerreiros e Guerreiras estão.
 3. Um **Admin aprova** (ou não) a publicação.
-4. O desafio é publicado para todos os jogadores daquela trilha — ou, no caso do direcionado,
-   entregue ao destinatário — com recompensa, quantidade disponível e critério de atribuição
-   visíveis desde o início.
+4. O desafio é publicado para todos os Guerreiros e Guerreiras daquela trilha — ou, no caso do
+   direcionado, entregue ao destinatário — com recompensa, quantidade disponível e critério de
+   atribuição visíveis desde o início.
 5. Quem conclui recebe **pontos extras** e, até esgotar a quantidade ofertada, a recompensa.
 
 ### Definições vigentes
 
-| Questão                          | Definição                                                                                                                                                                                                                                                                    |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Pontos**                       | O desafio extra vale **pontos além da recompensa**, computados **isoladamente como pontos extras** — não se misturam à pontuação regular da trilha                                                                                                                           |
-| **Teto de desafios simultâneos** | **Não há teto por trilha.** O controle é qualitativo: cada desafio é aprovado ou não por um Admin, caso a caso, após a validação do Mestre                                                                                                                                   |
-| **Exclusividade**                | **Proibida nos desafios abertos**: ninguém é barrado de disputar. O que é limitado é a **quantidade** de recompensas, declarada de antemão                                                                                                                                   |
-| **Desafio direcionado**          | O Apoiador pode **direcionar um desafio a um jogador específico** — só ele recebe a recompensa se atingir os requisitos. Exige **justificativa registrada** do vínculo (ex.: parente próximo — tio(a), padrinho, madrinha) e aprovação de Admin, além da validação do Mestre |
-| **Quantidade de recompensas**    | **Uma única** (para quem concluir primeiro) **ou várias** — todos que concluírem recebem, até o limite disponibilizado                                                                                                                                                       |
+| Questão                          | Definição                                                                                                                                                                                                                                                                         |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pontos**                       | O desafio extra vale **pontos além da recompensa**, computados **isoladamente como pontos extras** — não se misturam à pontuação regular da trilha                                                                                                                                |
+| **Teto de desafios simultâneos** | **Não há teto por trilha.** O controle é qualitativo: cada desafio é aprovado ou não por um Admin, caso a caso, após a validação do Mestre                                                                                                                                        |
+| **Exclusividade**                | **Proibida nos desafios abertos**: ninguém é barrado de disputar. O que é limitado é a **quantidade** de recompensas, declarada de antemão                                                                                                                                        |
+| **Desafio direcionado**          | O Apoiador pode **direcionar um desafio a um Guerreiro(a) específico** — só ele recebe a recompensa se atingir os requisitos. Exige **justificativa registrada** do vínculo (ex.: parente próximo — tio(a), padrinho, madrinha) e aprovação de Admin, além da validação do Mestre |
+| **Quantidade de recompensas**    | **Uma única** (para quem concluir primeiro) **ou várias** — todos que concluírem recebem, até o limite disponibilizado                                                                                                                                                            |
 
 Por que o teto foi substituído por aprovação: um número fixo protegeria a trilha do excesso,
 mas barraria um bom desafio pela razão errada — a ordem de chegada. A aprovação caso a caso
 protege a trilha pelo motivo certo: **o mérito pedagógico da proposta**.
 
-O desafio direcionado é o caminho para o apoio de interesse direto e legítimo — por exemplo,
-um parente próximo que propõe um desafio para um jogador da sua parentela — sem abrir exceção
+O desafio direcionado é o caminho para o apoio de interesse direto e legítimo — por exemplo, um
+parente próximo que propõe um desafio para um Guerreiro(a) da sua parentela — sem abrir exceção
 nas salvaguardas.
 
 ### Rastreio de efetividade
 
 **O que fica registrado no histórico do Apoiador:**
 
-| Registro                                                  | Para que serve                                           |
-| --------------------------------------------------------- | -------------------------------------------------------- |
-| **Recompensas creditadas** — o que ele custeou e entregou | Compõe o **Poder Econômico**, como qualquer outro aporte |
-| **Realizações dos jogadores** nos desafios que ele propôs | Mostra **o que aconteceu** por causa daquele apoio       |
+| Registro                                                                | Para que serve                                           |
+| ----------------------------------------------------------------------- | -------------------------------------------------------- |
+| **Recompensas creditadas** — o que ele custeou e entregou               | Compõe o **Poder Econômico**, como qualquer outro aporte |
+| **Realizações dos Guerreiros e Guerreiras** nos desafios que ele propôs | Mostra **o que aconteceu** por causa daquele apoio       |
 
 É a segunda linha que muda o jogo: o histórico deixa de responder apenas _"quanto foi
 aportado"_ e passa a responder _"o que esse apoio produziu"_ — quais desafios engajaram,
-quantos jogadores concluíram, em que trilhas o apoio rendeu mais. Para o projeto, é o
-argumento de captação mais forte que existe; para o jogador, é a prova de que há gente de fora
-torcendo pelo que ele está construindo.
+quantos Guerreiros e Guerreiras concluíram, em que trilhas o apoio rendeu mais. Para o projeto,
+é o argumento de captação mais forte que existe; para o Guerreiro(a), é a prova de que há gente
+de fora torcendo pelo que ele está construindo.
 
 ### Salvaguardas obrigatórias
 
@@ -216,7 +221,7 @@ torcendo pelo que ele está construindo.
   de agosto a dezembro de 2026.
 - **Acervo de 298 livros, 30 kits MDF e 50 camisas** doados pelo Goethe-Institut, que viram
   trilhas abertas na plataforma — material que atende turmas inteiras sem custo para o aluno,
-  com o livro da linha Alpha ficando com o jogador.
+  com o livro da linha Alpha ficando com o Guerreiro(a).
 - **Oficinas do Robô Educa desde 2018**: centenas de crianças impactadas em comunidades de
   Salvador (BA).
 - **Dados para a comunidade**: as Comunidades Virtuais devolvem ao território evidência para
@@ -236,7 +241,7 @@ O projeto é sustentável quando o ciclo se fecha:
 Apoiadores/Parceiros aportam recursos ──► Atividades acontecem (com lastro)
         ▲                                          │
         │                                          ▼
-Transparência + vídeos + Poder Econômico ◄── Jogadores aprendem, pontuam e realizam
+Transparência + vídeos + Poder Econômico ◄── Guerreiros e Guerreiras aprendem, pontuam e realizam
         ▲                                          │
         └────────── novos multiplicadores ◄────────┘
 ```

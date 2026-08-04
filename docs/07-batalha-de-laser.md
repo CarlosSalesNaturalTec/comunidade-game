@@ -1,9 +1,9 @@
 # 07 — Trilha Batalha de Laser (2ª trilha — Poder da IA e Robótica)
 
 > **Autoria:** Mestre fundador. Sucessora natural do Robô Educa, com um degrau a mais de
-> complexidade: eletrônica, sensores e rede. Os jogadores constroem os artefatos, aprendem os
-> conceitos e disputam a **Batalha** presencial — fechando o ciclo aprender → construir →
-> batalhar → pontuar.
+> complexidade: eletrônica, sensores e rede. Os Guerreiros e Guerreiras constroem os artefatos,
+> aprendem os conceitos e disputam a **Batalha** presencial — fechando o ciclo aprender →
+> construir → batalhar → pontuar.
 >
 > Os títulos de **Eletrônica** e **Sensores** do acervo Include são a bibliografia de apoio
 > desta trilha (documento 05).
@@ -51,8 +51,8 @@
 
 ## 📡 Arquitetura de comunicação
 
-> **Decisão de projeto:** o laser atingindo o LDR é sempre o gatilho real do jogo. A rede
-> Wi-Fi serve **exclusivamente como telemetria**.
+> **Decisão de projeto:** o laser atingindo o LDR é sempre o gatilho real do jogo. A rede Wi-Fi
+> serve **exclusivamente como telemetria**.
 
 ```text
 [Atacante NodeMCU]  ─────────────────────────────┐
@@ -90,8 +90,8 @@ Mosquitto no IP fixo `192.168.1.100` (o notebook).
    de penalidade e a Torre **aplica Dano Duplo imediatamente**. A lição prática: posicionamento
    estratégico, ética no esporte e limites de sistema — sobrecarregar um sistema já sem energia
    explode algo maior.
-4. **Vitória.** O jogo não termina por tempo: termina quando a energia vital da Torre adversária
-   chega a 0%.
+4. **Vitória.** O jogo não termina por tempo: termina quando a energia vital da Torre
+   adversária chega a 0%.
 
 ## 🎭 A partida
 
@@ -168,11 +168,11 @@ tópico de punição.
   desbloqueio.
 - **Desafio de coleta de dados** — obrigatório em toda trilha, e aqui o encaixe é direto: o
   mesmo **LDR** que detecta o laser mede **luminosidade**, e o NodeMCU que publica telemetria
-  publica igualmente uma leitura de sensor. A trilha pode terminar com o jogador instalando um
-  **sensor de território** — iluminação pública, temperatura, chuva — construído por ele e
-  alimentando a série temporal da sua Comunidade Virtual.
-- **Protagonismo na batalha**: variações de regra propostas pelos próprios jogadores (novos
-  modos de partida, penalidades, tempos), avaliadas pelo Mestre antes de valerem em campo;
-  artefatos personalizados — pintura, carcaça, nomes — como **criação original** da trilha; e
-  papéis de equipe que misturam idades, com os mais velhos operando o que exige mais cuidado
-  (laser, Nexus) e apoiando os mais novos.
+  publica igualmente uma leitura de sensor. A trilha pode terminar com o Guerreiro(a)
+  instalando um **sensor de território** — iluminação pública, temperatura, chuva — construído
+  por ele e alimentando a série temporal da sua Comunidade Virtual.
+- **Protagonismo na batalha**: variações de regra propostas pelos próprios Guerreiros e
+  Guerreiras (novos modos de partida, penalidades, tempos), avaliadas pelo Mestre antes de
+  valerem em campo; artefatos personalizados — pintura, carcaça, nomes — como **criação
+  original** da trilha; e papéis de equipe que misturam idades, com os mais velhos operando o
+  que exige mais cuidado (laser, Nexus) e apoiando os mais novos.

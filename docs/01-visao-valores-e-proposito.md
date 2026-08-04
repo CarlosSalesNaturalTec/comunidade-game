@@ -2,30 +2,30 @@
 
 ## 1. O que é o Comunidade Game
 
-Plataforma educacional gamificada, de código aberto, que conecta jovens, mestres e
-apoiadores para promover educação, tecnologia e cidadania em comunidades periféricas. É a
-vitrine interativa de um "jogo" ligado à vida real, com **Jogadores**, **Poderes**
+Plataforma educacional gamificada, de código aberto, que conecta jovens, mestres e apoiadores
+para promover educação, tecnologia e cidadania em comunidades periféricas. É a vitrine
+interativa de um "jogo" ligado à vida real, com **Guerreiros e Guerreiras**, **Poderes**
 (competências), **Mestres** (mentores), **Batalhas**, **Apoiadores** e **Comunidades
 Virtuais**.
 
 Em uma frase:
 
-> Interação digital com comunidades para oferecer orientação educacional, informação e
-> geração de dados que auxiliem na tomada de decisões — e para que essas ações e esses dados
-> **retornem como impacto positivo para a própria comunidade**, formando um **ciclo de
-> evolução positiva**.
+> Interação digital com comunidades para oferecer orientação educacional, informação e geração
+> de dados que auxiliem na tomada de decisões — e para que essas ações e esses dados **retornem
+> como impacto positivo para a própria comunidade**, formando um **ciclo de evolução
+> positiva**.
 
 ### O ciclo de evolução positiva
 
-O que a plataforma produz não sai da comunidade: volta para ela. O jogador aprende, e o que
-aprende vira realização concreta; ao registrar dados do lugar onde mora, dá à sua comunidade
-**evidência para decidir**, em vez de apenas percepção; as conquistas ganham visibilidade e
-atraem apoio; o apoio custeia novas atividades; quem chega ao topo volta como multiplicador.
-O ciclo alcança a própria plataforma: as ideias e criações dos jogadores realimentam
-trilhas, regras e aplicações — **quem joga também constrói o jogo**.
+O que a plataforma produz não sai da comunidade: volta para ela. O Guerreiro(a) aprende, e o
+que aprende vira realização concreta; ao registrar dados do lugar onde mora, dá à sua
+comunidade **evidência para decidir**, em vez de apenas percepção; as conquistas ganham
+visibilidade e atraem apoio; o apoio custeia novas atividades; quem chega ao topo volta como
+multiplicador. O ciclo alcança a própria plataforma: as ideias e criações dos Guerreiros e
+Guerreiras realimentam trilhas, regras e aplicações — **quem joga também constrói o jogo**.
 
 ```text
-Jogador aprende e realiza ──► Comunidade ganha dados, talento e visibilidade
+Guerreiro(a) aprende e realiza ──► Comunidade ganha dados, talento e visibilidade
         ▲                                          │
         │                                          ▼
 Novos multiplicadores locais ◄── Apoio e recursos chegam ao território
@@ -61,8 +61,8 @@ O projeto nasce para:
 - Ser **Open Source**, para alcançar o maior número possível de escolas e comunidades.
 - Ser **sustentável** por doações, parceiros, editais e monetizações web.
 
-> **Fora de escopo:** a plataforma **não se propõe a gerar encaminhamento profissional**.
-> Ela forma repertório, habilidade e confiança; o que o jovem faz com isso é escolha dele.
+> **Fora de escopo:** a plataforma **não se propõe a gerar encaminhamento profissional**. Ela
+> forma repertório, habilidade e confiança; o que o jovem faz com isso é escolha dele.
 
 ## 3. Valores e causas
 
@@ -71,7 +71,7 @@ Inegociáveis, devem permear conteúdos, regras do jogo, comunicação e governa
 1. **Humanismo** — as pessoas vêm antes da tecnologia.
 2. **Educação como fator transformador da sociedade** — a aposta central do projeto.
 3. **Causa antirracista** — combate ativo ao racismo, na curadoria de conteúdos, nas regras
-   de convivência e na representatividade de mestres e jogadores.
+   de convivência e na representatividade de mestres, Guerreiros e Guerreiras.
 4. **Combate ao feminicídio e à violência contra a mulher** — conscientização e espaço
    seguro para meninas e mulheres, na plataforma e nas atividades presenciais.
 5. **Reconhecimento dos povos originários/indígenas brasileiros** — seus saberes, histórias
@@ -80,10 +80,10 @@ Inegociáveis, devem permear conteúdos, regras do jogo, comunicação e governa
    Virtual existe na medida em que registra dados e memórias reais do seu território.
 7. **Letramento sobre a crise ambiental** — a crise climática atinge primeiro e com mais
    força as comunidades periféricas. O tema não fica no discurso: as atividades de coleta de
-   dados (temperatura, chuva, resíduos) são a prática direta desse letramento — o jogador
+   dados (temperatura, chuva, resíduos) são a prática direta desse letramento — o Guerreiro(a)
    mede o clima do lugar onde vive e produz a evidência local da crise global.
-8. **Protagonismo dos jogadores** — as ideias e criações dos jogadores são **conteúdo do
-   jogo, não subproduto**.
+8. **Protagonismo dos Guerreiros e Guerreiras** — as ideias e criações dos Guerreiros e
+   Guerreiras são **conteúdo do jogo, não subproduto**.
 
 **[Proposta]** Materializar os valores em mecânicas, não só em texto: trilhas e desafios
 temáticos ("Poder da Ancestralidade", "Poder do Respeito"), badges por participação em
@@ -91,23 +91,24 @@ atividades ligadas às causas e pontuação negativa por violação do código d
 
 ### Definição vigente — Código de Conduta co-criado
 
-O Código de Conduta do jogo é **construído em conjunto com os jogadores na primeira
-interação presencial** de cada comunidade. A plataforma fornece uma **versão prévia como
-modelo básico** (documento 13), a ser discutida, revisada e complementada pelos próprios
-jogadores — regra que se combina não se impõe, e conduta pactuada engaja mais do que conduta
-decretada.
+O Código de Conduta do jogo é **construído em conjunto com os Guerreiros e Guerreiras na
+primeira interação presencial** de cada comunidade. A plataforma fornece uma **versão prévia
+como modelo básico** (documento 13), a ser discutida, revisada e complementada pelos próprios
+Guerreiros e Guerreiras — regra que se combina não se impõe, e conduta pactuada engaja mais do
+que conduta decretada.
 
-### Definição vigente — Protagonismo dos jogadores
+### Definição vigente — Protagonismo dos Guerreiros e Guerreiras
 
 - **Criações originais baseadas no conteúdo aprendido** são atividade valorizada do jogo,
   com autoria sempre creditada e vitrine pública.
-- Nas **atividades em equipe**, cada jogador tem papel ativo e crédito individual preservado.
+- Nas **atividades em equipe**, cada Guerreiro(a) tem papel ativo e crédito individual
+  preservado.
 - A **diferença de idades** (6 a 16 anos) é tratada como força: os mais velhos ou mais
   avançados atuam como mediadores dos mais novos, sem quebrar a progressão por nível de
   dificuldade.
-- A **construção da plataforma é, ela própria, atividade do jogo**: os jogadores propõem
-  melhorias, alteram o código do jogo e sugerem rumos. A plataforma deve estar **sempre em
-  evolução**, e quem joga é parte de quem a evolui.
+- A **construção da plataforma é, ela própria, atividade do jogo**: os Guerreiros e Guerreiras
+  propõem melhorias, alteram o código do jogo e sugerem rumos. A plataforma deve estar **sempre
+  em evolução**, e quem joga é parte de quem a evolui.
 
 **[Proposta]** Criar também documentos de **governança open source** (`CODE_OF_CONDUCT.md`
 e `GOVERNANCE.md`) traduzindo esses valores para a comunidade de desenvolvedores.
@@ -123,7 +124,8 @@ contra mulheres, identidade, povos originários, sustentabilidade, convivência 
 Objetivos concretos:
 
 - Transmitir conceitos de IA e programação pela **experimentação**.
-- **Despertar o interesse pela tecnologia** e mostrar que aquele espaço também é do jogador.
+- **Despertar o interesse pela tecnologia** e mostrar que aquele espaço também é do
+  Guerreiro(a).
 - **Evitar crenças limitantes.**
 - Promover **letramento digital** e proteção contra os riscos de redes sociais e IA.
 - Usar a tecnologia como ponte para **temas transversais e valores** — a atividade técnica
@@ -145,7 +147,7 @@ negras e indígenas que impactaram positivamente a sociedade.
 
 | Público                        | Faixa           | Papel na plataforma                                                             |
 | ------------------------------ | --------------- | ------------------------------------------------------------------------------- |
-| Crianças e jovens              | **6 a 16 anos** | Jogadores                                                                       |
+| Crianças e jovens              | **6 a 16 anos** | Guerreiros e Guerreiras                                                         |
 | Especialistas e educadores     | —               | Mestres (mentores), cadastrados pelos Admins mediante comprovação de habilidade |
 | Pessoas e instituições         | —               | Apoiadores / Patrocinadores, cadastrados pelos Admins                           |
 | Organizadores / Equipe técnica | —               | Admins da plataforma                                                            |
@@ -153,19 +155,19 @@ negras e indígenas que impactaram positivamente a sociedade.
 
 **Definições vigentes:**
 
-- Faixa etária dos jogadores: **6 a 16 anos**.
+- Faixa etária dos Guerreiros e Guerreiras: **6 a 16 anos**.
 - Atividades com **níveis de dificuldade graduais**, acessíveis a todos **independentemente
   da idade** — a progressão é por dificuldade, não por faixa etária.
 - A **convivência entre idades é tratada com papéis, não com segmentação**: as equipes
   misturam idades deliberadamente, e os mais velhos ou mais avançados mediam e apoiam os
   mais novos.
-- **Todo jogador é vinculado a uma Comunidade Virtual**, atribuída no cadastro pela
-  comunidade default que a gestão define. É esse vínculo que define a que território seus
+- **Todo Guerreiro(a) é vinculado a uma Comunidade Virtual**, atribuída no cadastro pela
+  comunidade da aula em que ele entra. É esse vínculo que define a que território seus
   dados coletados pertencem.
 - **Adesão em duas etapas:** o primeiro acesso é **livre**, sem exigência de autorização de
   responsável; o **histórico e o perfil só são divulgados publicamente após autorização dos
   pais ou responsáveis**.
-- A **LGPD é considerada em todo o projeto**: os jogadores são representados por
+- A **LGPD é considerada em todo o projeto**: os Guerreiros e Guerreiras são representados por
   **avatares**, nunca por imagens reais.
 
 ## 6. Diferenciais
@@ -177,9 +179,11 @@ negras e indígenas que impactaram positivamente a sociedade.
 - **Jogo ligado à vida real**: pontos, poderes e batalhas correspondem a aprendizado e
   realizações concretas.
 - **Transparência radical dos recursos** movimentados.
-- **Comunidades Virtuais como central de dados** do território, alimentada pelos jogadores.
+- **Comunidades Virtuais como central de dados** do território, alimentada pelos Guerreiros e
+  Guerreiras.
 - **Open Source e replicável** em qualquer comunidade do país.
-- **Jogadores coautores da plataforma**, com criações creditadas e vitrine pública.
+- **Guerreiros e Guerreiras coautores da plataforma**, com criações creditadas e vitrine
+  pública.
 
 ## 7. O fundador: primeiro Admin e primeiro Mestre
 
@@ -220,9 +224,9 @@ Os três papéis acumulados:
 A construção dos artefatos desta plataforma — documentação, software, trilhas e conteúdos —
 conta com o **auxílio e a potencialização de ferramentas de inteligência artificial**. A
 declaração é de transparência e também de método: o **contexto humano e social do projeto é
-idealizado, decidido e implementado por pessoas**. A IA não define causas, valores nem
-rumos — ela multiplica a capacidade de realização de quem os define. É o mesmo princípio que
-o projeto ensina aos jogadores: **a tecnologia é alavanca; quem move o mundo é o humano que
+idealizado, decidido e implementado por pessoas**. A IA não define causas, valores nem rumos —
+ela multiplica a capacidade de realização de quem os define. É o mesmo princípio que o projeto
+ensina aos Guerreiros e Guerreiras: **a tecnologia é alavanca; quem move o mundo é o humano que
 a empunha**.
 
 A coerência importa: uma plataforma que ensina crianças a usar IA com consciência dos seus

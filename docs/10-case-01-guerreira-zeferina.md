@@ -43,17 +43,17 @@ O ciclo é, antes de tudo, um **teste de hipóteses**. Elas estão escritas aqui
 foram formuladas, para que ao fim do ciclo seja possível dizer, sem reescrever a história, se
 cada uma se confirmou.
 
-| #      | Hipótese                                                                                                                       | Como se verifica                                                                           |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| **H1** | O público-alvo — crianças e jovens de 6 a 16 anos — vai se interessar pelo tema e **se inscrever** na plataforma e nas trilhas | Nº de cadastros efetivados no onboarding (App 01) e nº de jogadores que iniciam uma trilha |
-| **H2** | Os **pais ou responsáveis** vão permitir a participação, tomar conhecimento do tratamento de dados e **aceitar os termos**     | Nº de autorizações concedidas / nº de jogadores ativos, medido na App 07                   |
-| **H3** | Os **recursos de implantação do MVP** serão supridos por mestres e apoiadores                                                  | Lastro registrado no livro-razão × recursos necessários às atividades previstas            |
-| **H4** | A turma reunirá jogadores de **toda a faixa de 6 a 16 anos**, e não uma faixa estreita                                         | Distribuição etária dos cadastros do Ciclo 01, por idade e por trilha iniciada             |
+| #      | Hipótese                                                                                                                       | Como se verifica                                                                                         |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| **H1** | O público-alvo — crianças e jovens de 6 a 16 anos — vai se interessar pelo tema e **se inscrever** na plataforma e nas trilhas | Nº de cadastros efetivados no onboarding (App 01) e nº de Guerreiros e Guerreiras que iniciam uma trilha |
+| **H2** | Os **pais ou responsáveis** vão permitir a participação, tomar conhecimento do tratamento de dados e **aceitar os termos**     | Nº de autorizações concedidas / nº de Guerreiros e Guerreiras ativos, medido na App 07                   |
+| **H3** | Os **recursos de implantação do MVP** serão supridos por mestres e apoiadores                                                  | Lastro registrado no livro-razão × recursos necessários às atividades previstas                          |
+| **H4** | A turma reunirá Guerreiros e Guerreiras de **toda a faixa de 6 a 16 anos**, e não uma faixa estreita                           | Distribuição etária dos cadastros do Ciclo 01, por idade e por trilha iniciada                           |
 
 - **H1 e H2 são independentes.** A adesão em duas etapas foi desenhada exatamente para isso: o
-  jogador participa com cadastro livre (H1), e a autorização do responsável (H2) libera apenas a
-  **divulgação pública** do perfil. Se H1 se confirmar e H2 não, o ciclo ainda acontece — o que
-  não acontece é a vitrine.
+  Guerreiro(a) participa com cadastro livre (H1), e a autorização do responsável (H2) libera
+  apenas a **divulgação pública** do perfil. Se H1 se confirmar e H2 não, o ciclo ainda
+  acontece — o que não acontece é a vitrine.
 - **H3 é condição de existência.** Pela regra de lastro, atividade sem recurso provido não
   ocorre. H3 falhar não degrada o ciclo: interrompe-o. É a hipótese a monitorar mais de perto.
 - **H4 testa a premissa da faixa etária.** O desenho do jogo — dificuldade gradual, equipes
@@ -67,13 +67,14 @@ cada uma se confirmou.
 
 ### 4.1 Operação na comunidade — agosto a novembro de 2026
 
-- **Credenciamento de jogadores** — cadastro pelo App 01 (áudio ou texto) e registro de presença.
-- **Cadastro da comunidade digital** — a Comunidade Virtual "Guerreira Zeferina" é **criada vazia
-  por um Admin antes do primeiro onboarding** e definida como **comunidade default**, o que
-  libera o funcionamento do App 01 (sem ela não há onboarding nem vínculo de jogador), e passa a
-  existir de fato à medida que os jogadores registram dados reais. **Toda trilha do ciclo precisa
-  ter ao menos um desafio de coleta**, com cadência definida — é o que faz a comunidade digital
-  ganhar corpo dentro do Ciclo 01.
+- **Credenciamento de Guerreiros e Guerreiras** — cadastro pelo App 01 (áudio ou texto) e
+  registro de presença.
+- **Cadastro da comunidade digital** — a Comunidade Virtual "Guerreira Zeferina" é **criada
+  vazia por um Admin antes do primeiro onboarding** e usada nas **aulas agendadas** do ciclo; é
+  dessa aula que sai o vínculo de cada novo Guerreiro(a), e sem aula agendada não há
+  onboarding. Ela passa a existir de fato à medida que os Guerreiros e Guerreiras registram
+  dados reais. **Toda trilha do ciclo precisa ter ao menos um desafio de coleta**, com cadência
+  definida — é o que faz a comunidade digital ganhar corpo dentro do Ciclo 01.
 - **Implementação das trilhas 1 e 2** — Robô Educa e Batalha de Laser, com os encontros
   presenciais em **dinâmica assíncrona**.
 
@@ -82,9 +83,9 @@ cada uma se confirmou.
 Construir o que os PRDs especificam: o **Backend API** (PRD-01), núcleo do qual tudo depende, e
 as **nove aplicações desta etapa**, priorizadas conforme as fases do piloto.
 
-> **Transparência de método:** os artefatos digitais do Ciclo 01 são construídos com o auxílio e
-> a potencialização de ferramentas de IA, sob idealização e direção humanas — a IA é a alavanca
-> que permite ao fundador entregar esse escopo dentro do prazo do ciclo.
+> **Transparência de método:** os artefatos digitais do Ciclo 01 são construídos com o auxílio
+> e a potencialização de ferramentas de IA, sob idealização e direção humanas — a IA é a
+> alavanca que permite ao fundador entregar esse escopo dentro do prazo do ciclo.
 
 ### 4.3 Captação de recursos de infraestrutura
 
@@ -92,8 +93,9 @@ Conseguir os recursos digitais básicos: servidores, armazenamento e execução 
 Como qualquer outro recurso, entram no livro-razão e compõem o **Poder Econômico** de quem os
 aportar.
 
-> **Nota de escopo:** a operação vai de **agosto a novembro**; o ciclo se estende a **dezembro**,
-> reservado à culminância, à conferência de inventário e à avaliação das hipóteses.
+> **Nota de escopo:** a operação vai de **agosto a novembro**; o ciclo se estende a
+> **dezembro**, reservado à culminância, à conferência de inventário e à avaliação das
+> hipóteses.
 
 ## 5. O acervo Include e os kits MDF neste MVP
 
@@ -101,17 +103,17 @@ Os **298 livros** e os **30 kits em MDF** doados pelo Goethe-Institut estão **v
 do Case 01**: é neste ciclo, e nesta comunidade, que entram em uso pela primeira vez.
 Consequências práticas:
 
-- **Regime misto já decidido:** os 252 exemplares da linha Alpha são entregues ao jogador na
-  abertura da trilha — providenciar a logística da entrega e o kit de encapar antes da primeira
-  aula. Os 46 da linha Include I ficam como acervo permanente do ponto de apoio.
+- **Regime misto já decidido:** os 252 exemplares da linha Alpha são entregues ao Guerreiro(a)
+  na abertura da trilha — providenciar a logística da entrega e o kit de encapar antes da
+  primeira aula. Os 46 da linha Include I ficam como acervo permanente do ponto de apoio.
 - O **tombamento dos 46 exemplares permanentes** e a estratégia de conservação são atividade do
   próprio ciclo.
-- Os **30 kits MDF** dimensionam a primeira turma que monta o robô em MDF; o saldo precisa estar
-  visível no painel do dia.
+- Os **30 kits MDF** dimensionam a primeira turma que monta o robô em MDF; o saldo precisa
+  estar visível no painel do dia.
 - O **mapeamento capítulo → ponto de trilha** deve cobrir, no mínimo, os pontos das trilhas
   1 e 2 efetivamente aplicados aqui — não o acervo inteiro.
-- A prestação de contas do acervo ao fim do ciclo é o **primeiro relatório real de transparência
-  da plataforma**, devido ao Apoiador que doou.
+- A prestação de contas do acervo ao fim do ciclo é o **primeiro relatório real de
+  transparência da plataforma**, devido ao Apoiador que doou.
 
 ### 5.1 [Proposta] Distribuição das trilhas e do acervo no Ciclo 01
 
@@ -129,10 +131,10 @@ Marcada como proposta porque o calendário dos encontros ainda é pendência do 
 Notas de paginação:
 
 - A dinâmica é **assíncrona**: os meses indicam onde o planejamento de recursos e de bancada se
-  concentra, não uma exigência de que todos estejam no mesmo ponto — quem entra em outubro começa
-  pela abertura da trilha 1 normalmente.
-- A transição trilha 1 → trilha 2 é **por jogador ou equipe**; outubro é apenas o centro de
-  gravidade esperado.
+  concentra, não uma exigência de que todos estejam no mesmo ponto — quem entra em outubro
+  começa pela abertura da trilha 1 normalmente.
+- A transição trilha 1 → trilha 2 é **por Guerreiro(a) ou equipe**; outubro é apenas o centro
+  de gravidade esperado.
 - Os **30 kits MDF** limitam as montagens em MDF da trilha 1; o saldo no painel do dia define
   quando a oficina passa ao material reciclado.
 - O **mapeamento capítulo → ponto de trilha** precisa estar pronto para os pontos de cada mês
@@ -142,26 +144,27 @@ Notas de paginação:
 
 Ao fim de dezembro de 2026, o ciclo responde:
 
-1. **Adesão (H1 e H4)** — quantos jogadores se cadastraram, quantos iniciaram trilha, quantos
-   permaneceram até a culminância e **como as idades se distribuíram na faixa de 6 a 16 anos**.
-2. **Consentimento (H2)** — quantos responsáveis autorizaram a divulgação do perfil; quais foram
-   as dúvidas e objeções recorrentes sobre dados da criança.
-3. **Lastro (H3)** — quais atividades aconteceram, quais não aconteceram por falta de recurso, e
-   quem proveu o quê.
+1. **Adesão (H1 e H4)** — quantos Guerreiros e Guerreiras se cadastraram, quantos iniciaram
+   trilha, quantos permaneceram até a culminância e **como as idades se distribuíram na faixa
+   de 6 a 16 anos**.
+2. **Consentimento (H2)** — quantos responsáveis autorizaram a divulgação do perfil; quais
+   foram as dúvidas e objeções recorrentes sobre dados da criança.
+3. **Lastro (H3)** — quais atividades aconteceram, quais não aconteceram por falta de recurso,
+   e quem proveu o quê.
 4. **Entrega técnica** — quais aplicações chegaram a rodar em condição real de aula, com rede
    instável e aparelhos modestos.
 5. **Território** — quantos registros alimentaram a Comunidade Virtual e o que eles já permitem
    dizer sobre o lugar.
 6. **Protagonismo** — quantas criações originais foram apresentadas na culminância e quantas
-   sugestões de melhoria os jogadores registraram.
+   sugestões de melhoria os Guerreiros e Guerreiras registraram.
 
 Esses seis pontos são a base dos **indicadores de impacto** que o projeto ainda precisa
 formalizar — e o _baseline_ contra o qual a segunda comunidade será comparada.
 
 ## 7. Pontos a definir do case
 
-- **Ponto de apoio físico**: qual espaço, com que disponibilidade e quem responde pela guarda do
-  acervo.
+- **Ponto de apoio físico**: qual espaço, com que disponibilidade e quem responde pela guarda
+  do acervo.
 - **Calendário do ciclo**: datas dos encontros presenciais entre agosto e novembro e data da
   culminância.
 - **Tamanho da turma** e número de mestres e voluntários necessários por encontro.

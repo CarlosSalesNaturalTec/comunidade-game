@@ -81,6 +81,7 @@ nav:
       - "PRD-08 — Comunidades Virtuais e território": prds/prd-08-comunidades-virtuais.md
       - "PRD-07 — Economia de recursos e livro-razão": prds/prd-07-economia-e-ledger.md
       - "PRD-01 — Backend API (núcleo)": prds/prd-01-backend-api.md
+      - "PRD-02 — App 03: Frontend de Gestão": prds/prd-02-frontend-de-gestao.md
   - "Operação":
       - "04 — Modelo econômico e sustentabilidade": 04-modelo-economico-e-sustentabilidade.md
       - "05 — Implantação e operação": 05-implantacao-e-operacao.md

@@ -15,11 +15,11 @@ no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs est�
 | ---------------------------------------- | ----------------------------------- | --------- | ---- | ------------ |
 | [PRD-08](prd-08-comunidades-virtuais.md) | Comunidades Virtuais e território   | —         | 1    | aprovado     |
 | [PRD-07](prd-07-economia-e-ledger.md)    | Economia de recursos e ledger       | —         | 1    | aprovado     |
-| [PRD-01](prd-01-backend-api.md)          | Backend API (núcleo)                | —         | 1    | em revisão   |
-| PRD-02                                   | Frontend de gestão                  | App 03    | 2    | não iniciado |
+| [PRD-01](prd-01-backend-api.md)          | Backend API (núcleo)                | —         | 1    | aprovado     |
+| [PRD-02](prd-02-frontend-de-gestao.md)   | Frontend de gestão                  | App 03    | 2    | em revisão   |
 | PRD-04                                   | Onboarding e registro de presença   | App 01    | 2    | não iniciado |
 | PRD-09                                   | Área do Mestre (autoria e operação) | App 09    | 3    | não iniciado |
-| PRD-05                                   | Área do Jogador                     | App 05    | 3    | não iniciado |
+| PRD-05                                   | Área do Guerreiro(a)                | App 05    | 3    | não iniciado |
 | PRD-13                                   | Área dos pais e responsáveis        | App 07    | 4    | não iniciado |
 | PRD-03                                   | Vitrine pública                     | App 06    | 4    | não iniciado |
 | PRD-06                                   | Assistente por voz e Modo Ouvinte   | App 02    | 5    | não iniciado |
