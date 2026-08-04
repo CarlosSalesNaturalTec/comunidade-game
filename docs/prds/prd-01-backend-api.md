@@ -7,8 +7,8 @@
 | PRD              | PRD-01                                                     |
 | Aplicação        | — (núcleo consumido pelas nove aplicações e por terceiros) |
 | Onda             | 1                                                          |
-| Situação         | em revisão                                                 |
-| Versão e data    | v2 — 2026-08-03                                            |
+| Situação         | aprovado                                                   |
+| Versão e data    | v3 — 2026-08-04                                            |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 9, 11 e 12, 04, 11                        |
 
@@ -160,6 +160,7 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RF-01-29` | Núcleo registra trilha de auditoria consultável das ações de Admin                                                                                                                         | essencial  |
 | `RF-01-30` | Núcleo documenta as rotas públicas para uso por aplicações de terceiros                                                                                                                    | desejável  |
 | `RF-01-31` | Versão anterior da API segue disponível por prazo declarado após a abertura da seguinte                                                                                                    | desejável  |
+| `RF-01-32` | Núcleo guarda a liberação de aplicação como registro somente-inserção, com quem liberou e quando                                                                                           | essencial  |
 
 ## 7. Regras de negócio
 
@@ -203,23 +204,26 @@ VinculoResponsavel  DesafioExtra          PerguntaDeQuiz
 Credencial          Ponto/Nivel/Badge     PartidaDeQuiz
 Consentimento       CriacaoOriginal
 Sessao
-                    PARTICIPAÇÃO          TERRITÓRIO (PRD-08)    ECONOMIA (PRD-07)
-                    SolicitacaoDeParticipacao  ComunidadeVirtual  TipoDeRecurso
-                    SugestaoOuProposta         Local              Aporte
-                    Auditoria                  SerieDeColeta      Lancamento
-                                               RegistroDeColeta   ItemPatrimonial
+                    PARTICIPAÇÃO               TERRITÓRIO (PRD-08)  ECONOMIA (PRD-07)
+                    SolicitacaoDeParticipacao  ComunidadeVirtual    TipoDeRecurso
+                    SolicitacaoDoResponsavel   Local                Aporte
+                    SugestaoOuProposta         SerieDeColeta        Lancamento
+                    Auditoria                  RegistroDeColeta     ItemPatrimonial
+                    ParametroDeOperacao
 ```
 
-| Entidade             | Atributos essenciais                                                                                                                             |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `Credencial`         | persona, tipo (biometria, login social, usuário e senha), identificador, segredo (_template_ cifrado ou hash), criada por, troca pendente, ativa |
-| `Sessao`             | persona, início, expiração, origem (aplicação), como autenticou, quem confirmou, encerrada em                                                    |
-| `VinculoResponsavel` | responsável, jogador, grau de parentesco, cadastrado por (Admin ou Mestre), início, fim                                                          |
-| `Consentimento`      | responsável, jogador, tipo, versão do termo, decisão, data e hora                                                                                |
-| `Auditoria`          | autor, papel, ação, entidade afetada, data e hora, origem                                                                                        |
+| Entidade              | Atributos essenciais                                                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Credencial`          | persona, tipo (biometria, login social, usuário e senha), identificador, segredo (_template_ cifrado ou hash), criada por, troca pendente, ativa |
+| `Sessao`              | persona, início, expiração, origem (aplicação), como autenticou, quem confirmou, encerrada em                                                    |
+| `VinculoResponsavel`  | responsável, jogador, grau de parentesco, cadastrado por (Admin ou Mestre), início, fim                                                          |
+| `Consentimento`       | responsável, jogador, tipo, versão do termo, decisão, data e hora                                                                                |
+| `Auditoria`           | autor, papel, ação, entidade afetada, data e hora, origem                                                                                        |
+| `ParametroDeOperacao` | aplicação, liberada, quem liberou, data e hora, motivo da suspensão                                                                              |
 
-Imutabilidade: `Consentimento` e `Auditoria` são **somente inserção**. Revogação é um novo
-registro, não a edição do anterior — é o que permite responder "o que valia naquela data".
+Imutabilidade: `Consentimento`, `Auditoria` e `ParametroDeOperacao` são **somente inserção**.
+Revogação é um novo registro, não a edição do anterior — é o que permite responder "o que
+valia naquela data".
 
 ## 9. Contratos de API
 
@@ -375,3 +379,4 @@ pelas aplicações que as verificam.
 | `RF-01-24`              | PRD-07                                           |
 | `RF-01-25` e `RF-01-26` | 02 §§1, 4 e 03 §§7, 9–11                         |
 | `RF-01-27` a `RF-01-30` | 03 §1 (princípios de arquitetura)                |
+| `RF-01-32`              | 03 §5 (liberação do App 01 pela gestão)          |

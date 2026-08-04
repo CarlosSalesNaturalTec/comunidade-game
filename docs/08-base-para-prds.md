@@ -168,8 +168,9 @@ portfólios, redes sociais, documentos externos e termos de doação**; **fila d
 participação como Mestre ou Apoiador** vindas do formulário público da App 06, com avaliação,
 status e registro de quem tratou; **cadastro dos locais do território e fila de solicitações de
 novo local** vindas da App 05, com alerta das que estão em aberto; inclusão manual de Admins;
-cadastro de atividades (pontuação, recompensas, recursos necessários); **cadastro de desafios de
-coleta com cadência e regra de pontuação recorrente**; agenda de aulas on-line e presenciais;
+cadastro de atividades (pontuação, recompensas, recursos necessários); **acompanhamento dos
+desafios de coleta publicados** — cadência, vigência e séries ativas —, cuja autoria é do
+Mestre na App 09; agenda de aulas on-line e presenciais;
 lançamento de atividades realizadas (data, mentores, jogadores, resultados); **entradas
 manuais** — presença, infrações ocorridas nas aulas e pontuação extra a quem ajudou o colega;
 conferência e ajuste de presenças vindas do onboarding; gestão de recursos (aportes e consumo);
@@ -189,9 +190,9 @@ diferentes, o painel precisa mostrar em tempo real **quem já chegou, em que pon
 equipe está, quem está aguardando aparelho e quais lançamentos ainda faltam** — é o instrumento
 que substitui o controle visual de uma turma em bloco.
 
-**Questões em aberto:** quem pode lançar pontuação negativa e com que auditoria; trilha de
-auditoria das ações de Admin; se o Quiz ao Vivo é módulo desta aplicação ou aplicação
-separada.
+**Questões em aberto:** quem pode lançar pontuação negativa e com que auditoria. A trilha de
+auditoria das ações de Admin ficou definida no PRD-01, e o Quiz ao Vivo é módulo desta
+aplicação — o banco de perguntas é da App 09 e a partida é conduzida aqui.
 
 **Fontes:** docs 03, 04, 05.
 

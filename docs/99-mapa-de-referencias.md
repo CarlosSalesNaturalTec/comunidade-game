@@ -209,7 +209,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD    | Arquivo                           | Depende de     | Documentos-fonte       |
 | ------ | --------------------------------- | -------------- | ---------------------- |
 | PRD-01 | `prd-01-backend-api.md`           | PRD-07, PRD-08 | 02, 03, 04, 11         |
-| PRD-02 | `prd-02-frontend-de-gestao.md`    | PRD-01         | 03, 04, 05             |
+| PRD-02 | `prd-02-frontend-de-gestao.md`    | PRD-01         | 02, 03, 04, 05         |
 | PRD-03 | `prd-03-vitrine-publica.md`       | PRD-01, PRD-13 | 02, 03, 04, 11         |
 | PRD-04 | `prd-04-onboarding.md`            | PRD-01, PRD-02 | 02, 03, 06             |
 | PRD-05 | `prd-05-area-do-jogador.md`       | PRD-01, PRD-09 | 02, 03, 05, 11         |

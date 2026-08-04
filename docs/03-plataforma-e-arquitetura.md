@@ -239,8 +239,9 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
   credencial de usuário e senha provisória, grau de parentesco e no máximo três responsáveis
   por jogador. O Mestre faz o mesmo cadastro pela App 09.
 - **Criação das Comunidades Virtuais** — **exclusiva de Admins**, nascendo vazias.
-- **Definição da comunidade default do onboarding e liberação do App 01** — enquanto não
-  houver comunidade default definida, a aplicação de onboarding não opera.
+- **Definição da comunidade default do onboarding e liberação do App 01** — a liberação é
+  **ato próprio do Admin**, registrado e reversível, e é recusada enquanto não houver
+  comunidade default definida. Sem ela, a aplicação de onboarding não opera.
 - **Vínculo do jogador à comunidade** — conferência e transferência entre comunidades
   (mudança de endereço, cadastro equivocado), com registro da data, já que os dados coletados
   são temporais.
