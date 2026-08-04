@@ -8,7 +8,7 @@
 | Aplicação        | — (núcleo consumido pelas nove aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | aprovado                                                   |
-| Versão e data    | v4 — 2026-08-04                                            |
+| Versão e data    | v5 — 2026-08-04                                            |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 9, 11 e 12, 04, 11                        |
 
@@ -218,7 +218,7 @@ Sessao
 | `Credencial`         | persona, tipo (biometria, login social, usuário e senha), identificador, segredo (_template_ cifrado ou hash), criada por, troca pendente, ativa |
 | `Sessao`             | persona, início, expiração, origem (aplicação), como autenticou, quem confirmou, encerrada em                                                    |
 | `VinculoResponsavel` | responsável, Guerreiro(a), grau de parentesco, cadastrado por (Admin ou Mestre), início, fim                                                     |
-| `Consentimento`      | responsável, Guerreiro(a), tipo, versão do termo, decisão, data e hora                                                                           |
+| `Consentimento`      | responsável, Guerreiro(a), tipo, versão do termo, decisão, data e hora, testemunha (Mestre ou Admin), anexo do termo assinado                    |
 | `Auditoria`          | autor, papel, ação, entidade afetada, data e hora, origem                                                                                        |
 
 A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela que o App 01 tira
@@ -240,21 +240,21 @@ Convenções válidas para todas as rotas:
 | Listagem     | paginada, com filtros de comunidade, período e persona                  |
 | Data e hora  | sempre com fuso, e a data do fato nunca é substituída pela do registro  |
 
-| Método | Rota                                      | Autenticação    | Descrição                                                   |
-| ------ | ----------------------------------------- | --------------- | ----------------------------------------------------------- |
-| POST   | `/v1/sessoes/Guerreiro(a)`                | pública         | Autentica com nick e imagem e abre sessão curta             |
-| POST   | `/v1/sessoes/Guerreiro(a)/confirmacao`    | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana        |
-| POST   | `/v1/sessoes/social`                      | pública         | Autentica adulto por login social                           |
-| POST   | `/v1/sessoes/credencial`                  | pública         | Autentica adulto por usuário e senha                        |
-| DELETE | `/v1/sessoes/atual`                       | autenticada     | Encerra a sessão                                            |
-| POST   | `/v1/Guerreiros e Guerreiras/{id}/imagem` | Mestre ou Admin | Grava ou recadastra a imagem de referência, com registro    |
-| POST   | `/v1/credenciais`                         | Admin ou Mestre | Cria credencial de usuário e senha provisória               |
-| POST   | `/v1/credenciais/senha`                   | autenticada     | Troca a senha; obrigatória no primeiro acesso               |
-| POST   | `/v1/responsaveis`                        | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele            |
-| POST   | `/v1/responsaveis/{id}/vinculos`          | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco |
-| GET    | `/v1/eu`                                  | autenticada     | Persona, papéis e permissões da sessão                      |
-| GET    | `/v1/vitrine/...`                         | pública         | Consultas públicas de vitrine e rankings                    |
-| GET    | `/v1/auditoria`                           | Admin           | Trilha de auditoria das ações de gestão                     |
+| Método | Rota                                | Autenticação    | Descrição                                                   |
+| ------ | ----------------------------------- | --------------- | ----------------------------------------------------------- |
+| POST   | `/v1/sessoes/guerreiro`             | pública         | Autentica com nick e imagem e abre sessão curta             |
+| POST   | `/v1/sessoes/guerreiro/confirmacao` | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana        |
+| POST   | `/v1/sessoes/social`                | pública         | Autentica adulto por login social                           |
+| POST   | `/v1/sessoes/credencial`            | pública         | Autentica adulto por usuário e senha                        |
+| DELETE | `/v1/sessoes/atual`                 | autenticada     | Encerra a sessão                                            |
+| POST   | `/v1/guerreiros/{id}/imagem`        | Mestre ou Admin | Grava ou recadastra a imagem de referência, com registro    |
+| POST   | `/v1/credenciais`                   | Admin ou Mestre | Cria credencial de usuário e senha provisória               |
+| POST   | `/v1/credenciais/senha`             | autenticada     | Troca a senha; obrigatória no primeiro acesso               |
+| POST   | `/v1/responsaveis`                  | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele            |
+| POST   | `/v1/responsaveis/{id}/vinculos`    | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco |
+| GET    | `/v1/eu`                            | autenticada     | Persona, papéis e permissões da sessão                      |
+| GET    | `/v1/vitrine/...`                   | pública         | Consultas públicas de vitrine e rankings                    |
+| GET    | `/v1/auditoria`                     | Admin           | Trilha de auditoria das ações de gestão                     |
 
 As rotas de domínio — território, ledger, trilhas, atividades — estão nos PRDs que as definem
 e seguem estas mesmas convenções.

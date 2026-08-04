@@ -8,7 +8,7 @@
 | Aplicação        | App 03 — Gestão administrativa            |
 | Onda             | 2                                         |
 | Situação         | aprovado                                  |
-| Versão e data    | v2 — 2026-08-04                           |
+| Versão e data    | v3 — 2026-08-04                           |
 | Depende de       | PRD-01                                    |
 | Documentos-fonte | 03 §§5, 11, 12, 04 §§1–3, 05 §§2–5, 02 §4 |
 
@@ -232,6 +232,7 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RF-02-34` | Lançamento atribui a cada participante realizada, com mérito ou mérito extra por auxílio           | essencial  |
 | `RF-02-35` | Lançamento da atividade realizada converte a reserva em baixa de recursos                          | essencial  |
 | `RF-02-36` | Admin confere as presenças vindas do App 01 e ajusta manualmente, com registro do ajuste           | essencial  |
+| `RF-02-68` | Admin anexa ao consentimento a digitalização do termo de biometria assinado no encontro            | essencial  |
 | `RF-02-37` | Admin registra infração ocorrida na aula, vinculada ao encontro e ao Guerreiro(a)                  | essencial  |
 | `RF-02-38` | Admin lança pontuação negativa com motivo e item do Código de Conduta, sem revisão de terceiro     | essencial  |
 | `RF-02-39` | Admin lança pontuação extra ao Guerreiro(a) que ajudou o colega                                    | essencial  |
@@ -248,6 +249,7 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RF-02-45` | Painel mostra o saldo de kits MDF e de exemplares da linha Alpha                         | essencial  |
 | `RF-02-46` | Painel mostra as devoluções de bancada pendentes antes do fim da aula                    | essencial  |
 | `RF-02-47` | Painel lista os lançamentos pendentes do encontro                                        | essencial  |
+| `RF-02-69` | Painel lista os termos de biometria assinados e ainda sem digitalização anexada          | essencial  |
 | `RF-02-48` | Painel atualiza sozinho durante o encontro, sem recarga manual                           | essencial  |
 | `RF-02-49` | Mestre lê o painel do dia e recebe recusa em toda escrita que não seja a do Quiz ao Vivo | essencial  |
 
@@ -343,7 +345,8 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 
 | Método | Rota                                              | Autenticação    | Descrição                                                             |
 | ------ | ------------------------------------------------- | --------------- | --------------------------------------------------------------------- |
-| POST   | `/v1/Guerreiros e Guerreiras`                     | Admin           | Cadastra Guerreiro(a) pela gestão                                     |
+| POST   | `/v1/guerreiros`                                  | Admin           | Cadastra Guerreiro(a) pela gestão                                     |
+| POST   | `/v1/consentimentos/{id}/anexo`                   | Admin           | Anexa a digitalização do termo assinado no encontro                   |
 | POST   | `/v1/mestres`                                     | Admin           | Cadastra Mestre com artefatos comprobatórios                          |
 | POST   | `/v1/apoiadores`                                  | Admin           | Cadastra Apoiador com artefatos e termos de doação                    |
 | POST   | `/v1/admins`                                      | Admin           | Inclui novo Admin manualmente                                         |

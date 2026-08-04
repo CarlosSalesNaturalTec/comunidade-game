@@ -188,13 +188,19 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
 - **Finalidade declarada e única**: identificar o Guerreiro(a) — registro de presença e
   autenticação nas aplicações. Qualquer outro uso exige nova base legal e novo consentimento.
 - **Consentimento informado** do responsável para a captura e o tratamento biométrico, colhido
-  de forma legível e registrado com data e hora. **Sem ele não há captura** — e é por isso que
-  o cadastro biométrico só acontece depois que o responsável aprova a participação.
-- **Minimização**: preferir _template_ biométrico (representação matemática não reversível) à
-  fotografia original.
+  em **termo impresso, assinado pelo responsável presente no encontro**, antes da captura. O
+  App 01 registra o consentimento com data, hora e quem testemunhou; a **digitalização do termo
+  assinado é anexada ao cadastro pela gestão**, e o anexo em falta aparece como pendência no
+  painel do dia. **Sem termo assinado não há captura** — e é por isso que o cadastro biométrico
+  só acontece depois que o responsável aprova a participação.
+- **Minimização**: a **fotografia original é apagada assim que o _template_ biométrico**
+  (representação matemática não reversível) é gerado. A plataforma não guarda rosto de criança.
 - **Segurança**: armazenamento criptografado, acesso restrito e auditado.
-- **Retenção**: prazo definido e exclusão automática ao fim do vínculo do Guerreiro(a) com o
-  projeto, ou a pedido do responsável.
+- **Retenção**: o _template_ é guardado enquanto durar o vínculo do Guerreiro(a) com o projeto
+  e excluído automaticamente ao fim dele, ou a pedido do responsável.
+
+> **A definir:** prazo, em dias, entre o fim do vínculo e a exclusão automática do _template_.
+
 - **Direito de recusa**: quem não autoriza a imagem tem **alternativa equivalente** — nick mais
   confirmação do Mestre ou de um Admin, **no encontro**, tanto para registrar presença quanto
   para entrar nas aplicações. Recusar biometria nunca pode significar exclusão da atividade.
@@ -204,6 +210,9 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
 ### 3.4 Requisitos não funcionais
 
 - Funcionar em **rede instável** e em aparelhos modestos, com fila local de sincronização.
+- **Rede fora:** a **presença** entra na fila local, confirmada pelo Mestre ou por um Admin
+  pelo nick, e sincroniza quando a rede voltar. **Cadastro novo e reconhecimento facial exigem
+  rede** — nenhuma imagem de criança fica guardada no aparelho compartilhado.
 - Registro de presença de Guerreiro(a) conhecido em **poucos segundos** — a aula não pode
   travar na porta.
 - Acessibilidade: a modalidade áudio atende quem ainda não lê com fluência e pessoas com

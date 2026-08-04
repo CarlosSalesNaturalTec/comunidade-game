@@ -22,7 +22,8 @@ levam marca de gênero.
 
 O Guerreiro(a):
 
-- Define seu **Nick** e as características do seu personagem (avatar).
+- Define seu **Nick** — **único em toda a plataforma** — e as características do seu
+  personagem (avatar).
 - Escolhe **Poderes** e segue **Trilhas** para desenvolvê-los.
 - Só ganha pontos de uma habilidade **na medida em que realiza as atividades propostas pelos
   Mestres** — não há pontos por presença passiva.
