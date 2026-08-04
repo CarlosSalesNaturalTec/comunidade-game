@@ -7,7 +7,7 @@
 | PRD              | PRD-04                                                |
 | Aplicação        | App 01 — Onboarding (cadastro e registro de presença) |
 | Onda             | 2                                                     |
-| Situação         | em revisão                                            |
+| Situação         | aprovado                                              |
 | Versão e data    | v1 — 2026-08-04                                       |
 | Depende de       | PRD-01, PRD-02                                        |
 | Documentos-fonte | 02 §§1, 9, 03 §§1.1, 3, 12, 06 §3                     |

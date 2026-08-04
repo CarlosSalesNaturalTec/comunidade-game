@@ -150,7 +150,8 @@ recursos movimentados — definidas antes do piloto, para permitir comparação 
 
 1. Validar esta documentação e corrigir o que estiver incoerente com a visão do fundador.
 2. Decidir os itens da tabela §1 — em especial nome do projeto, licenças e provedor de IA.
-3. Rodar a Fase 1 de elicitação de PRD com o **PRD-01 (API)** e o **PRD-04 (Onboarding)**.
+3. Seguir a esteira de PRDs: as Ondas 1 e 2 estão aprovadas e a Onda 3 abre com o
+   **PRD-09 (Área do Mestre)**, em elicitação.
 4. Redigir o termo de autorização dos responsáveis e o termo de consentimento para captura de
    imagem, necessários antes da primeira aula com onboarding.
 5. Escrever o roteiro pedagógico da oficina do Robô Educa.
