@@ -7,7 +7,7 @@
 | PRD              | PRD-02                                    |
 | Aplicação        | App 03 — Gestão administrativa            |
 | Onda             | 2                                         |
-| Situação         | em revisão                                |
+| Situação         | aprovado                                  |
 | Versão e data    | v2 — 2026-08-04                           |
 | Depende de       | PRD-01                                    |
 | Documentos-fonte | 03 §§5, 11, 12, 04 §§1–3, 05 §§2–5, 02 §4 |
