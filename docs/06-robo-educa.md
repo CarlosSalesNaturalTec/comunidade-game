@@ -3,11 +3,11 @@
 > **Autoria:** Mestre fundador. É a **primeira trilha** da plataforma e também a base técnica
 > da **App 02 — Assistente por voz e Modo Ouvinte**.
 
-O Robô Educa demonstra o ciclo completo do Comunidade Game — mestre publica a trilha → jogador
-constrói algo real → aprende conceitos → pontua e ganha visibilidade — e é a base tecnológica
-do onboarding por voz.
+O Robô Educa demonstra o ciclo completo do Comunidade Game — mestre publica a trilha →
+Guerreiro(a) constrói algo real → aprende conceitos → pontua e ganha visibilidade — e é a base
+tecnológica do onboarding por voz.
 
-## 1. O que o jogador faz
+## 1. O que o Guerreiro(a) faz
 
 Aprender a programar **construindo o próprio robô**:
 
@@ -27,7 +27,7 @@ programação, noções de IA generativa e de nuvem.
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | Baixa barreira de entrada    | Não exige computador nem kit caro — garrafa PET + qualquer smartphone                                              |
 | Inclusão                     | Interação por **áudio**, acessível a pessoas com deficiência visual e a quem ainda não lê com fluência             |
-| Resultado tangível no 1º dia | O jogador sai com um robô montado e funcionando                                                                    |
+| Resultado tangível no 1º dia | O Guerreiro(a) sai com um robô montado e funcionando                                                               |
 | Faixa 6 a 16 anos            | Níveis graduais, da montagem física à alteração do código; nas equipes mistas, os mais velhos apoiam os mais novos |
 | Reaproveitamento             | A plataforma já existe e está em produção; serve de base para o onboarding e para o "converse com seu robô"        |
 
@@ -75,8 +75,8 @@ Decomposição sugerida, cada ponto com desafio de desbloqueio:
 5. Limites e riscos da IA — alucinação, viés, dados pessoais (letramento crítico).
 6. Ler e alterar um trecho de código do robô.
 7. **Coleta de dados da sua comunidade pelo robô** — o desafio de coleta obrigatório de toda
-   trilha: o jogador escolhe o que medir no seu território, define com o Mestre a cadência e
-   passa a registrar por voz. Enquanto mantiver a série, continua pontuando.
+   trilha: o Guerreiro(a) escolhe o que medir no seu território, define com o Mestre a cadência
+   e passa a registrar por voz. Enquanto mantiver a série, continua pontuando.
 8. **Publicar sua versão do robô e apresentá-la aos colegas** — a **criação original** desta
    trilha: seu robô, seu nome, sua pintura, suas alterações de código, com autoria creditada e
    lugar no portfólio público.
@@ -88,7 +88,7 @@ desta trilha (documento 05).
 
 - **Onboarding**: o mesmo motor de voz sustenta a tela de cadastro e registro de presença.
 - **Apoio às atividades escolares**: o robô é o canal do "peça ajuda para a lição de casa".
-- **Comunidades Virtuais**: por voz, o jogador registra dados do território sem precisar
+- **Comunidades Virtuais**: por voz, o Guerreiro(a) registra dados do território sem precisar
   digitar — o caminho mais acessível para quem ainda não lê com fluência manter uma **série de
   coleta ativa**, que é o que rende pontos de forma recorrente.
 - **Lançamento automático de pontos**: a conclusão de um quiz pode lançar a atividade
@@ -106,5 +106,5 @@ comprova a habilidade do Mestre fundador em Programação e Robótica.
 - Roteiro pedagógico oficial da oficina (duração, materiais por turma, passo a passo).
 - Custo por kit (PET × MDF) para entrar no orçamento de lastro da atividade.
 - Integração técnica entre o app do Robô Educa e a API do Comunidade Game (autenticação do
-  jogador e lançamento de pontuação).
+  Guerreiro(a) e lançamento de pontuação).
 - Política de retenção do histórico de conversas de menores (LGPD).

@@ -42,8 +42,8 @@ Regras estruturais:
    propostos por Mestres e da coleta de dados do território — nunca de presença passiva e nunca
    de dentro do jogo digital.
 2. **A acumulação é por trilha ou poder**, não global.
-3. **Todo reflexo público é derivado, nunca editado à mão**: o que aparece na vitrine, nos cards
-   e nos painéis é leitura do mesmo motor — uma única fonte de verdade no backend.
+3. **Todo reflexo público é derivado, nunca editado à mão**: o que aparece na vitrine, nos
+   cards e nos painéis é leitura do mesmo motor — uma única fonte de verdade no backend.
 
 ## 2. Anatomia da trilha
 
@@ -60,7 +60,7 @@ TRILHA (autoria de um Mestre, vinculada a um Poder)
 │     └── cada ponto contém:
 │           ├── CONTEÚDO — próprio do Mestre, de terceiros (curado) e
 │           │   bibliografia de apoio (título/capítulo do acervo)
-│           ├── ATIVIDADES — o que o jogador realiza para aprender
+│           ├── ATIVIDADES — o que o Guerreiro(a) realiza para aprender
 │           └── DESAFIO DE DESBLOQUEIO — quiz ou desafio que abre o
 │               próximo ponto e os níveis do poder
 │
@@ -68,7 +68,7 @@ TRILHA (autoria de um Mestre, vinculada a um Poder)
 │     └── série temporal com cadência; pontua enquanto ativa
 │
 ├── DESAFIOS EXTRAS — propostos por Apoiadores, vinculados à trilha
-│     └── abertos a todos ou direcionados a um jogador específico
+│     └── abertos a todos ou direcionados a um Guerreiro(a) específico
 │
 └── MARCOS — eventos que pontuam o percurso no calendário do ciclo
       ├── ENCONTROS PRESENCIAIS — dinâmica assíncrona
@@ -81,7 +81,7 @@ TRILHA (autoria de um Mestre, vinculada a um Poder)
 | -------------------------- | ---------------------------------------------------------------------------------------- |
 | **Ponto de trilha**        | Menor unidade de progressão: conteúdo + atividades + desafio de desbloqueio              |
 | **Conteúdo**               | Material do Mestre, conteúdo de terceiros curado e bibliografia de apoio por ponto       |
-| **Atividade**              | O que o jogador realiza, classificado pela taxonomia da §4                               |
+| **Atividade**              | O que o Guerreiro(a) realiza, classificado pela taxonomia da §4                          |
 | **Desafio de desbloqueio** | Quiz ou desafio que abre o próximo ponto e ativa níveis do poder                         |
 | **Desafio de coleta**      | Série temporal de dados reais do território; requisito de **toda** trilha                |
 | **Desafio extra**          | Proposto por Apoiador, validado pelo Mestre e aprovado por Admin; pontos extras isolados |
@@ -94,14 +94,14 @@ TRILHA (autoria de um Mestre, vinculada a um Poder)
 A tabela valida a estrutura contra as duas trilhas existentes e contra uma trilha de área não
 técnica, mostrando que o modelo não pressupõe tecnologia:
 
-| Componente             | Robô Educa (técnica)                        | Batalha de Laser (técnica)                                              | Capoeira (cultura e movimento — ciclo futuro)             |
-| ---------------------- | ------------------------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------- |
-| Conteúdo               | Montagem, voz, prompts, código              | Eletrônica, sensores, MQTT, lógica                                      | História da capoeira, ritmo, movimentos, roda             |
-| Atividades práticas    | Montar e personalizar o robô                | Construir atacante, escudo e torre                                      | Treinar sequências, tocar instrumentos                    |
-| Desafio de desbloqueio | Quiz com o próprio robô                     | Testar o artefato construído                                            | Executar a sequência diante do Mestre                     |
-| Coleta de dados reais  | Registro por voz (temperatura, ocorrências) | Sensor de território construído pelo jogador (LDR → iluminação pública) | Registro dos espaços, rodas, mestres e memórias do bairro |
-| Batalha                | — (apresentação)                            | **Batalha de Laser** presencial                                         | Roda / jogo de capoeira entre equipes                     |
-| Culminância            | Publicar e apresentar sua versão do robô    | Partida final com telemetria no telão                                   | Apresentação da roda para a comunidade                    |
+| Componente             | Robô Educa (técnica)                        | Batalha de Laser (técnica)                                                   | Capoeira (cultura e movimento — ciclo futuro)             |
+| ---------------------- | ------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Conteúdo               | Montagem, voz, prompts, código              | Eletrônica, sensores, MQTT, lógica                                           | História da capoeira, ritmo, movimentos, roda             |
+| Atividades práticas    | Montar e personalizar o robô                | Construir atacante, escudo e torre                                           | Treinar sequências, tocar instrumentos                    |
+| Desafio de desbloqueio | Quiz com o próprio robô                     | Testar o artefato construído                                                 | Executar a sequência diante do Mestre                     |
+| Coleta de dados reais  | Registro por voz (temperatura, ocorrências) | Sensor de território construído pelo Guerreiro(a) (LDR → iluminação pública) | Registro dos espaços, rodas, mestres e memórias do bairro |
+| Batalha                | — (apresentação)                            | **Batalha de Laser** presencial                                              | Roda / jogo de capoeira entre equipes                     |
+| Culminância            | Publicar e apresentar sua versão do robô    | Partida final com telemetria no telão                                        | Apresentação da roda para a comunidade                    |
 
 ### 2.3 Distribuição da trilha pelas etapas do ciclo
 
@@ -119,9 +119,9 @@ Diretrizes de paginação para o Mestre (autor da trilha):
 
 - **O ritual de abertura não se adia**: livro próprio na mão e série de coleta aberta já na
   primeira etapa — é o que dá material de trabalho e pontuação recorrente desde o primeiro dia.
-- **Um ponto de trilha por encontro é o passo de referência**, mas a dinâmica assíncrona permite
-  que cada jogador ou equipe esteja em pontos diferentes: a paginação orienta o planejamento de
-  recursos, não o ritmo individual.
+- **Um ponto de trilha por encontro é o passo de referência**, mas a dinâmica assíncrona
+  permite que cada Guerreiro(a) ou equipe esteja em pontos diferentes: a paginação orienta o
+  planejamento de recursos, não o ritmo individual.
 - **A bibliografia acompanha o ponto, não a trilha inteira.**
 - **Batalha depois da construção, culminância depois de tudo**: os marcos ficam na segunda
   metade do ciclo, quando há o que disputar e o que mostrar.
@@ -132,7 +132,7 @@ Diretrizes de paginação para o Mestre (autor da trilha):
 
 | Persona                | Papel                                                                                                                                                                                      |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Jogador**            | Percorre trilhas, realiza atividades e desafios, **produz criações originais** com autoria creditada, acumula pontos, níveis e badges, troca pontos por recompensas e **propõe melhorias** |
+| **Guerreiro(a)**       | Percorre trilhas, realiza atividades e desafios, **produz criações originais** com autoria creditada, acumula pontos, níveis e badges, troca pontos por recompensas e **propõe melhorias** |
 | **Mestre**             | Autor da trilha: define pontos, conteúdos, atividades, desafios e a paginação no ciclo; lança resultados; valida desafios extras. Pode ser de **qualquer área do conhecimento**            |
 | **Apoiador**           | Provê lastro e propõe **desafios extras** (abertos ou direcionados); acompanha a efetividade do apoio                                                                                      |
 | **Admin**              | Aprova desafios extras, opera lançamentos e painéis, cria Comunidades Virtuais                                                                                                             |
@@ -152,11 +152,11 @@ atividade pode ser _em equipe + presencial + de construção_):
 Regras transversais:
 
 - **Dificuldade gradual, independente de idade** (faixa 6–16).
-- **Um jogador pode integrar mais de uma equipe** e pontua em **todas** as atividades em que
-  participa e colabora.
+- **Um Guerreiro(a) pode integrar mais de uma equipe** e pontua em **todas** as atividades em
+  que participa e colabora.
 - **Lastro**: nenhuma atividade acontece sem os recursos providos.
-- **Resultado lançado pela gestão**: realizada / realizada com mérito / mérito extra por auxílio
-  aos colegas.
+- **Resultado lançado pela gestão**: realizada / realizada com mérito / mérito extra por
+  auxílio aos colegas.
 
 ## 5. Motor de pontuação
 
@@ -168,7 +168,7 @@ Tabela única das fontes de pontos da plataforma:
 | Desafio semanal — atividade presencial                | 10                    | Regular                                                                                     | Mestre/gestão                              |
 | Desafio semanal — atividade em equipe                 | 10                    | Regular                                                                                     | Mestre/gestão                              |
 | Desafio semanal — atividade em equipe com familiar    | 20                    | Regular                                                                                     | Mestre/gestão                              |
-| **Coleta de dados do território**                     | 5 por registro válido | **Recorrente** — pontua enquanto a série está ativa, sem teto; interrompeu, parou de render | Automático (registro do jogador)           |
+| **Coleta de dados do território**                     | 5 por registro válido | **Recorrente** — pontua enquanto a série está ativa, sem teto; interrompeu, parou de render | Automático (registro do Guerreiro(a))      |
 | **Quiz ao Vivo**                                      | A definir             | Regular                                                                                     | Automático (partida)                       |
 | Mérito extra por auxílio aos colegas                  | A definir             | Regular                                                                                     | Mestre/gestão                              |
 | **Criação original** — culminância da trilha          | A definir             | Regular                                                                                     | Mestre/gestão                              |
@@ -204,7 +204,7 @@ Progressão **por trilha ou poder** (nunca global), destravada por quiz ou desaf
 | 4     | Apoio aos colegas   | —                                                                        |
 | **5** | **Mestre Aprendiz** | Apto ao treinamento de multiplicador e ao voluntariado no ponto de apoio |
 
-O Nível 5 é a engrenagem de escala do projeto: o jogador que chega ao topo volta como
+O Nível 5 é a engrenagem de escala do projeto: o Guerreiro(a) que chega ao topo volta como
 multiplicador. Ser Mestre Aprendiz **não** equivale a ser Mestre — o reconhecimento como Mestre
 exige cadastro por Admin e habilidade comprovada por artefatos.
 
@@ -224,23 +224,23 @@ Regra geral: **badge é por trilha ou por poder, não global.**
 
 ## 8. Reflexos no ecossistema
 
-Tudo o que o motor produz — pontos, níveis, badges, resultados, séries de coleta — é lido, nunca
-reescrito, pelas quatro superfícies públicas do ecossistema.
+Tudo o que o motor produz — pontos, níveis, badges, resultados, séries de coleta — é lido,
+nunca reescrito, pelas quatro superfícies públicas do ecossistema.
 
 ### 8.1 Vitrine pública (App 06)
 
-| Elemento do motor                          | Como aparece na vitrine                                                              |
-| ------------------------------------------ | ------------------------------------------------------------------------------------ |
-| Jogadores (com autorização do responsável) | **Cards rotativos** (a cada 5 s) — composição em §8.2                                |
-| Poderes                                    | Seção de poderes, com trilhas e Mestres de cada um                                   |
-| Trilhas e realizações                      | Portfólio público dos jogadores autorizados                                          |
-| **Criações originais**                     | Portfólio de autoria: a criação exposta com o nick do autor ou autores               |
-| **Batalhas**                               | Resultados e estatísticas de partida alimentando ranking e portfólio                 |
-| **Culminâncias**                           | Vídeos e registros, com consentimento específico registrado na App 07                |
-| Comunidades Virtuais                       | Painel público por comunidade em série histórica, agregado e anonimizado             |
-| Mestres                                    | Cards com os **artefatos que comprovam a habilidade** — de qualquer área             |
-| Apoiadores                                 | Poder Econômico e desafios extras propostos, com as realizações que o apoio produziu |
-| Rankings                                   | Somente pontos regulares; jogadores sem autorização não aparecem                     |
+| Elemento do motor                                        | Como aparece na vitrine                                                              |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Guerreiros e Guerreiras (com autorização do responsável) | **Cards rotativos** (a cada 5 s) — composição em §8.2                                |
+| Poderes                                                  | Seção de poderes, com trilhas e Mestres de cada um                                   |
+| Trilhas e realizações                                    | Portfólio público dos Guerreiros e Guerreiras autorizados                            |
+| **Criações originais**                                   | Portfólio de autoria: a criação exposta com o nick do autor ou autores               |
+| **Batalhas**                                             | Resultados e estatísticas de partida alimentando ranking e portfólio                 |
+| **Culminâncias**                                         | Vídeos e registros, com consentimento específico registrado na App 07                |
+| Comunidades Virtuais                                     | Painel público por comunidade em série histórica, agregado e anonimizado             |
+| Mestres                                                  | Cards com os **artefatos que comprovam a habilidade** — de qualquer área             |
+| Apoiadores                                               | Poder Econômico e desafios extras propostos, com as realizações que o apoio produziu |
+| Rankings                                                 | Somente pontos regulares; Guerreiros e Guerreiras sem autorização não aparecem       |
 
 ### 8.2 Cards e páginas individuais dos personagens
 
@@ -249,35 +249,35 @@ App 04:
 
 | Card                   | O que exibe                                                                                                                           | O que **nunca** exibe                                             |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| **Jogador**            | Avatar, nick, badges, poderes com níveis, desempenho e **criações originais**                                                         | Imagem real, nome civil, redes sociais, qualquer canal de contato |
+| **Guerreiro(a)**       | Avatar, nick, badges, poderes com níveis, desempenho e **criações originais**                                                         | Imagem real, nome civil, redes sociais, qualquer canal de contato |
 | **Mestre**             | Nome/identidade, áreas de habilidade, artefatos comprobatórios, trilhas de autoria e **selo de quem sustentou atividade sem recurso** | —                                                                 |
-| **Apoiador**           | Identidade, Poder Econômico **em moedas**, desafios propostos e efetividade agregada                                                  | Dados de contato de jogadores; valores em reais                   |
-| **Comunidade Virtual** | Nome, território, representação visual, séries ativas, nº de jogadores vinculados                                                     | Granularidade que permita inferir endereço de criança             |
+| **Apoiador**           | Identidade, Poder Econômico **em moedas**, desafios propostos e efetividade agregada                                                  | Dados de contato de Guerreiros e Guerreiras; valores em reais     |
+| **Comunidade Virtual** | Nome, território, representação visual, séries ativas, nº de Guerreiros e Guerreiras vinculados                                       | Granularidade que permita inferir endereço de criança             |
 
 **Definição vigente — todo card abre uma página individual.** O card é o resumo; a página é a
 versão detalhada, com as mesmas restrições de exibição da tabela acima:
 
 | Página individual      | O que detalha                                                                                                                                                                                     |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Jogador**            | Trajetória nas trilhas, badges e níveis por poder, portfólio de criações originais com autoria e participação em batalhas                                                                         |
+| **Guerreiro(a)**       | Trajetória nas trilhas, badges e níveis por poder, portfólio de criações originais com autoria e participação em batalhas                                                                         |
 | **Mestre**             | Habilidades, trilhas de autoria, a prova pública — **currículo, portfólios, redes sociais e documentos comprobatórios externos** — e quantas vezes sustentou uma atividade que estava sem recurso |
 | **Poder**              | Trilhas do poder, Mestres responsáveis, níveis e badges possíveis                                                                                                                                 |
 | **Apoiador**           | Aportes em moedas, desafios extras propostos com sua efetividade e a prova do apoio: **currículo, portfólios, redes sociais e comprobatórios**                                                    |
-| **Comunidade Virtual** | Séries históricas do território, representação visual, vitalidade e criações originais dos jogadores vinculados                                                                                   |
+| **Comunidade Virtual** | Séries históricas do território, representação visual, vitalidade e criações originais dos Guerreiros e Guerreiras vinculados                                                                     |
 
 ### 8.3 Representação visual da Comunidade Virtual
 
 A Comunidade Virtual "ganha corpo" visualmente na medida da participação — o mapeamento entre
 dado registrado e elemento visual é requisito de produto:
 
-| O que acontece no motor             | Reflexo visual                                                                                  |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Comunidade criada por Admin         | Território **vazio** — nome e contorno, sem preenchimento                                       |
-| Primeira série de coleta aberta     | O tipo de dado ganha presença no painel (termômetro, pluviômetro, mapa de vias)                 |
-| Registros acumulados em série ativa | O elemento visual **cresce e ganha detalhe**: série histórica visível, granularidade preenchida |
-| Série interrompida                  | Elemento permanece (dados são permanentes), sinalizado como série inativa                       |
-| Fotos e memórias registradas        | Galeria e linha do tempo dos pontos de referência do território                                 |
-| Jogadores vinculados ativos         | Indicador de vitalidade da comunidade (agregado, sem expor indivíduos)                          |
+| O que acontece no motor                   | Reflexo visual                                                                                  |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Comunidade criada por Admin               | Território **vazio** — nome e contorno, sem preenchimento                                       |
+| Primeira série de coleta aberta           | O tipo de dado ganha presença no painel (termômetro, pluviômetro, mapa de vias)                 |
+| Registros acumulados em série ativa       | O elemento visual **cresce e ganha detalhe**: série histórica visível, granularidade preenchida |
+| Série interrompida                        | Elemento permanece (dados são permanentes), sinalizado como série inativa                       |
+| Fotos e memórias registradas              | Galeria e linha do tempo dos pontos de referência do território                                 |
+| Guerreiros e Guerreiras vinculados ativos | Indicador de vitalidade da comunidade (agregado, sem expor indivíduos)                          |
 
 Princípios: o visual **representa dados reais, nunca decoração**; a saída pública é sempre
 **agregada e anonimizada**.
@@ -286,19 +286,19 @@ Princípios: o visual **representa dados reais, nunca decoração**; a saída p�
 
 Contrato entre o motor e qualquer jogo construído sobre a plataforma:
 
-| O jogo pode                                                     | O jogo não pode                                                 |
-| --------------------------------------------------------------- | --------------------------------------------------------------- |
-| **Ler** o progresso do jogador: avatar, poderes, badges, níveis | **Creditar** pontos — não existe endpoint de crédito para jogos |
-| **Debitar** pontos (consumo declarado dentro do jogo)           | Alterar níveis, badges ou histórico                             |
-| Usar os cards (§8.2) como base dos personagens                  | Exibir imagem real ou dados pessoais do jogador                 |
+| O jogo pode                                                          | O jogo não pode                                                 |
+| -------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **Ler** o progresso do Guerreiro(a): avatar, poderes, badges, níveis | **Creditar** pontos — não existe endpoint de crédito para jogos |
+| **Debitar** pontos (consumo declarado dentro do jogo)                | Alterar níveis, badges ou histórico                             |
+| Usar os cards (§8.2) como base dos personagens                       | Exibir imagem real ou dados pessoais do Guerreiro(a)            |
 
-- O que se conquista aprendendo **desbloqueia e alimenta** o que o jogador pode fazer no jogo;
-  jogar muito não sobe ninguém no ranking — e a ausência de endpoint de crédito elimina, por
-  construção, a fraude por automação.
+- O que se conquista aprendendo **desbloqueia e alimenta** o que o Guerreiro(a) pode fazer no
+  jogo; jogar muito não sobe ninguém no ranking — e a ausência de endpoint de crédito elimina,
+  por construção, a fraude por automação.
 - **Batalhas físicas seguem o mesmo padrão**: a ponte Nexus → API da Batalha de Laser envia as
   estatísticas da partida para a API, que **lança a atividade realizada** — o crédito de
   pontos é da atividade validada, não do jogo. É o modelo de referência para qualquer batalha
   presencial futura, de qualquer área.
 - A API pública e aberta permite que **terceiros** construam novos jogos sob o mesmo contrato.
 - **O protagonismo vale também aqui**: o código do App 04 é aberto e legível, e alterá-lo é
-  atividade de trilha — o jogador não é só usuário do jogo, é um dos seus construtores.
+  atividade de trilha — o Guerreiro(a) não é só usuário do jogo, é um dos seus construtores.

@@ -8,7 +8,7 @@
 | Aplicação        | — (domínio consumido pelas Apps 03, 05, 06, 08 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v1 — 2026-08-02                                      |
+| Versão e data    | v2 — 2026-08-04                                      |
 | Depende de       | PRD-08                                               |
 | Documentos-fonte | 04 §§1–3, 05 §3, 11 §5                               |
 
@@ -43,12 +43,14 @@ atividades previstas.
 - Comprovante da transferência anexado ao ressarcimento — **sem armazenar dado bancário**.
 - Saldo por tipo de recurso e ponto de apoio, com **reserva no agendamento** e baixa na
   realização da atividade.
-- Bloqueio do agendamento de atividade sem lastro.
+- Atividade sem lastro fica **pendente de lastro**, e a falta é publicada como necessidade de
+  recurso na vitrine (App 06), na área do Apoiador (App 08) e na área dos Mestres da trilha
+  (App 09), de onde o aporte pode ser assumido.
 - Poder Econômico do provedor, derivado da soma de moedas aportadas.
 - Patrimônio permanente: exemplar tombado, responsável designado, estado de conservação,
   empréstimo de bancada e devolução.
 - Baixa definitiva de recompensa entregue — livro da linha Alpha e camisa.
-- Necessidade de reposição por perda ou dano, sem débito para o jogador ou a família.
+- Necessidade de reposição por perda ou dano, sem débito para o Guerreiro(a) ou a família.
 - Lastro do desafio extra do Apoiador, exigido antes da publicação.
 - Rotas públicas de prestação de contas, sempre em moedas.
 
@@ -64,13 +66,13 @@ atividades previstas.
 
 ## 4. Personas e permissões
 
-| Persona   | O que faz neste domínio                                                                                                     | O que não pode fazer                                             |
-| --------- | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Admin     | Cadastra tipos de recurso e valores de referência, registra e homologa aportes, designa responsável de ponto de apoio       | Alterar aporte já homologado; apagar lançamento                  |
-| Mestre    | Aporta recurso, inclusive por absorção, acompanha a situação do ressarcimento e registra empréstimo e devolução de exemplar | Homologar o próprio aporte; exigir ressarcimento                 |
-| Apoiador  | Consulta seus aportes e seu Poder Econômico; provê o lastro dos desafios extras                                             | Editar o ledger; ver dado de contato de jogador                  |
-| Jogador   | Vê o que recebeu como recompensa e o acervo em seu uso                                                                      | Ver valores em reais; assumir dívida por perda ou dano           |
-| Visitante | Lê a prestação de contas pública, em moedas                                                                                 | Ver valor em reais, comprovante ou dado de doador não publicável |
+| Persona      | O que faz neste domínio                                                                                                     | O que não pode fazer                                             |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Admin        | Cadastra tipos de recurso e valores de referência, registra e homologa aportes, designa responsável de ponto de apoio       | Alterar aporte já homologado; apagar lançamento                  |
+| Mestre       | Aporta recurso, inclusive por absorção, acompanha a situação do ressarcimento e registra empréstimo e devolução de exemplar | Homologar o próprio aporte; exigir ressarcimento                 |
+| Apoiador     | Consulta seus aportes e seu Poder Econômico; provê o lastro dos desafios extras                                             | Editar o ledger; ver dado de contato de Guerreiro(a)             |
+| Guerreiro(a) | Vê o que recebeu como recompensa e o acervo em seu uso                                                                      | Ver valores em reais; assumir dívida por perda ou dano           |
+| Visitante    | Lê a prestação de contas pública, em moedas                                                                                 | Ver valor em reais, comprovante ou dado de doador não publicável |
 
 ## 5. Jornadas principais
 
@@ -87,8 +89,10 @@ atividades previstas.
 
 ### 5.2 Mestre ou Admin absorve um recurso
 
-1. Falta saldo do recurso necessário — não há hora-aula provida, não há lanche.
-2. O Mestre (ou o Admin) provê ele mesmo: dá a aula sem receber, leva o lanche, cede o insumo.
+1. Falta saldo do recurso necessário — não há hora-aula provida, não há lanche. A falta está
+   publicada como **necessidade**, e o Mestre da trilha a vê na App 09.
+2. O Mestre (ou o Admin) provê ele mesmo: dá a aula sem receber, leva o lanche, cede o insumo,
+   e **assume o aporte a partir da própria necessidade**, em um ato de confirmação.
 3. O sistema registra um **aporte por absorção** em nome de quem proveu, valorado pela tabela.
 4. O saldo é creditado e imediatamente reservado pela atividade — que passa a ter lastro.
 5. O aporte entra no Poder Econômico de quem absorveu, nasce marcado como **ressarcível** e
@@ -98,18 +102,21 @@ atividades previstas.
 
 1. A gestão agenda uma atividade que declara os recursos que consome.
 2. O sistema verifica o saldo de cada tipo no ponto de apoio.
-3. Havendo saldo, **reserva** as quantidades; faltando, **o agendamento é recusado** e o que
-   falta aparece como necessidade de recurso.
-4. Realizada a atividade, a reserva vira **baixa**.
-5. Atividade cancelada **libera** a reserva, devolvendo o saldo.
+3. Havendo saldo, **reserva** as quantidades; faltando, a atividade fica **pendente de
+   lastro** e o que falta é publicado como necessidade de recurso — na vitrine, na área do
+   Apoiador e na dos Mestres da trilha.
+4. Suprida a necessidade, por aporte ou por absorção, a atividade é confirmada e a reserva
+   acontece.
+5. Realizada a atividade, a reserva vira **baixa**.
+6. Atividade cancelada **libera** a reserva, devolvendo o saldo.
 
 ### 5.4 Empréstimo e devolução de exemplar do acervo
 
 1. O exemplar permanente está tombado, com ponto de apoio e responsável designado.
-2. O Mestre registra a retirada de bancada vinculada a um jogador e a um ponto de trilha.
+2. O Mestre registra a retirada de bancada vinculada a um Guerreiro(a) e a um ponto de trilha.
 3. A devolução é registrada com o estado de conservação.
 4. Devolução pendente aparece no painel do dia (PRD-02).
-5. Perda ou dano **não gera débito** ao jogador nem à família: gera **necessidade de
+5. Perda ou dano **não gera débito** ao Guerreiro(a) nem à família: gera **necessidade de
    reposição**, a ser aportada por um Apoiador.
 
 ### 5.5 Visitante lê a prestação de contas
@@ -144,13 +151,15 @@ atividades previstas.
 | `RF-07-05` | Sistema converte todo aporte em moedas pela tabela vigente na data do aporte                      | essencial  |
 | `RF-07-06` | Sistema registra aporte por absorção em nome do Mestre ou Admin que proveu o recurso              | essencial  |
 | `RF-07-07` | Sistema mantém saldo por tipo de recurso e ponto de apoio                                         | essencial  |
-| `RF-07-08` | Agendamento de atividade reserva os recursos declarados e é recusado sem saldo                    | essencial  |
+| `RF-07-08` | Agendamento de atividade reserva os recursos declarados; sem saldo, fica pendente de lastro       | essencial  |
+| `RF-07-28` | Falta de lastro é publicada como necessidade na vitrine e nas áreas do Apoiador e do Mestre       | essencial  |
+| `RF-07-29` | Mestre ou Admin assume o aporte por absorção a partir da necessidade publicada                    | essencial  |
 | `RF-07-09` | Realização da atividade converte a reserva em baixa; cancelamento libera a reserva                | essencial  |
 | `RF-07-10` | Sistema calcula o Poder Econômico de cada provedor pela soma de moedas aportadas                  | essencial  |
 | `RF-07-11` | Sistema registra exemplar tombado com ponto de apoio, responsável designado e conservação         | essencial  |
 | `RF-07-12` | Mestre registra empréstimo de bancada e devolução, com estado de conservação                      | essencial  |
 | `RF-07-13` | Sistema registra baixa definitiva de recompensa entregue, sem devolução                           | essencial  |
-| `RF-07-14` | Perda ou dano gera necessidade de reposição, nunca débito ao jogador ou à família                 | essencial  |
+| `RF-07-14` | Perda ou dano gera necessidade de reposição, nunca débito ao Guerreiro(a) ou à família            | essencial  |
 | `RF-07-15` | Sistema exige lastro da recompensa do desafio extra antes da publicação                           | essencial  |
 | `RF-07-16` | Rota pública devolve o movimentado por provedor, atividade e comunidade, em moedas                | essencial  |
 | `RF-07-17` | Apoiador consulta seus aportes e seu Poder Econômico, sem edição                                  | essencial  |
@@ -176,13 +185,13 @@ atividades previstas.
 | `RN-07-05` | Toda saída pública exibe moedas, nunca reais                                            | 16         | 04 §1   |
 | `RN-07-06` | Recurso provido sem contrapartida financeira por Mestre ou Admin é aporte em nome dele  | —          | 04 §1   |
 | `RN-07-07` | Aporte de patrimônio credita o Poder Econômico uma única vez, sem baixa por consumo     | —          | 04 §1   |
-| `RN-07-08` | Livro da linha Alpha e camisa entregues ao jogador têm baixa definitiva                 | —          | 05 §3   |
-| `RN-07-09` | Perda ou dano de material comum não gera dívida ao jogador nem à família                | 11         | 05 §3   |
+| `RN-07-08` | Livro da linha Alpha e camisa entregues ao Guerreiro(a) têm baixa definitiva            | —          | 05 §3   |
+| `RN-07-09` | Perda ou dano de material comum não gera dívida ao Guerreiro(a) nem à família           | 11         | 05 §3   |
 | `RN-07-10` | Cada ponto de apoio tem responsável designado pelo acervo permanente e pelos kits       | —          | 05 §3   |
 | `RN-07-11` | O exemplar permanente não sai do ponto de apoio; uso é de bancada, com registro         | —          | 05 §3   |
 | `RN-07-12` | A recompensa do desafio extra precisa de lastro antes da publicação do desafio          | 9          | 04 §3   |
-| `RN-07-13` | O Apoiador não recebe dado de contato nem identificação de jogador                      | 10         | 04 §3   |
-| `RN-07-14` | Dados publicados são coproprietários da entidade e do jogador que os gerou              | 17         | 04 §2   |
+| `RN-07-13` | O Apoiador não recebe dado de contato nem identificação de Guerreiro(a)                 | 10         | 04 §3   |
+| `RN-07-14` | Dados publicados são coproprietários da entidade e do Guerreiro(a) que os gerou         | 17         | 04 §2   |
 | `RN-07-15` | Lançamento do livro-razão nunca é apagado nem editado                                   | —          | 04 §1   |
 | `RN-07-16` | Quem homologa o aporte não pode ser o próprio provedor                                  | —          | 04 §1   |
 | `RN-07-17` | Ressarcimento não é direito nem promessa: só ocorre havendo receita destinada a ele     | —          | 04 §1   |
@@ -214,13 +223,13 @@ ItemPatrimonial 0..1 ─ 1 NecessidadeDeReposicao
 | `Reserva`                | atividade, tipo de recurso, quantidade, ponto de apoio, estado (reservada, consumida, liberada)                                                                                                                                        |
 | `SaldoDeRecurso`         | tipo, ponto de apoio, quantidade disponível, quantidade reservada                                                                                                                                                                      |
 | `ItemPatrimonial`        | aporte de origem, título, número de tombo, ponto de apoio, responsável designado, estado de conservação                                                                                                                                |
-| `Emprestimo`             | item, jogador, ponto de trilha, saída, devolução, estado de conservação na devolução                                                                                                                                                   |
+| `Emprestimo`             | item, Guerreiro(a), ponto de trilha, saída, devolução, estado de conservação na devolução                                                                                                                                              |
 | `NecessidadeDeReposicao` | item ou tipo de recurso, quantidade, motivo, situação, aporte que a supriu                                                                                                                                                             |
 | `Ressarcimento`          | aporte absorvido, valor em reais, receita destinada de origem, admin pagador, data, comprovante anexado (PDF ou imagem)                                                                                                                |
 
-Imutabilidade: `Lancamento` é **somente inserção**. Erro se corrige por lançamento de **ajuste**,
-que referencia o original e guarda motivo e autor. O saldo é sempre **derivado** dos lançamentos,
-nunca um número editável.
+Imutabilidade: `Lancamento` é **somente inserção**. Erro se corrige por lançamento de
+**ajuste**, que referencia o original e guarda motivo e autor. O saldo é sempre **derivado**
+dos lançamentos, nunca um número editável.
 
 Duas faces do valor: o `Aporte` guarda **moedas** e **valor de origem em reais**. Toda saída
 pública lê apenas a primeira.
@@ -233,6 +242,7 @@ pública lê apenas a primeira.
 | GET    | `/prestacao-de-contas/atividades`      | pública         | Consumo por atividade e por comunidade, em moedas                    |
 | GET    | `/provedores/{id}/poder-economico`     | pública         | Poder Econômico do provedor, em moedas                               |
 | GET    | `/necessidades`                        | pública         | O que falta de recurso para as atividades previstas                  |
+| GET    | `/necessidades/minhas`                 | Mestre          | Necessidades das atividades das trilhas do próprio Mestre            |
 | POST   | `/tipos-de-recurso`                    | Admin           | Cadastra tipo e valor de referência                                  |
 | POST   | `/aportes`                             | Admin           | Registra e homologa aporte, com comprovante                          |
 | POST   | `/aportes/absorcao`                    | Mestre ou Admin | Registra aporte por absorção de quem proveu o recurso                |
@@ -261,13 +271,13 @@ tentativa de editar lançamento (405); ressarcimento sem comprovante anexado (42
 
 ## 11. LGPD e proteção da criança
 
-| Dado                         | Finalidade                | Base legal        | Retenção   | Quem acessa             |
-| ---------------------------- | ------------------------- | ----------------- | ---------- | ----------------------- |
-| Identificação do provedor    | Crédito público do aporte | consentimento     | permanente | público (nome e moedas) |
-| Comprovante do aporte        | Auditoria do livro-razão  | obrigação legal   | permanente | gestão                  |
-| Valor de origem em reais     | Conversão e auditoria     | obrigação legal   | permanente | gestão                  |
-| Jogador que usou exemplar    | Ficha de vida do acervo   | interesse público | permanente | gestão e o próprio      |
-| Comprovante de ressarcimento | Auditoria do pagamento    | obrigação legal   | permanente | gestão                  |
+| Dado                           | Finalidade                | Base legal        | Retenção   | Quem acessa             |
+| ------------------------------ | ------------------------- | ----------------- | ---------- | ----------------------- |
+| Identificação do provedor      | Crédito público do aporte | consentimento     | permanente | público (nome e moedas) |
+| Comprovante do aporte          | Auditoria do livro-razão  | obrigação legal   | permanente | gestão                  |
+| Valor de origem em reais       | Conversão e auditoria     | obrigação legal   | permanente | gestão                  |
+| Guerreiro(a) que usou exemplar | Ficha de vida do acervo   | interesse público | permanente | gestão e o próprio      |
+| Comprovante de ressarcimento   | Auditoria do pagamento    | obrigação legal   | permanente | gestão                  |
 
 - **Nenhum dado bancário é armazenado em campo da plataforma.** A chave PIX chega ao Admin
   por e-mail, fora da plataforma, e não é transcrita para cá. O que fica é o comprovante da
@@ -275,8 +285,9 @@ tentativa de editar lançamento (405); ressarcimento sem comprovante anexado (42
   gestão**, nunca servido por rota pública.
 - Este domínio **não trata dado pessoal de criança** além do vínculo com o exemplar
   emprestado e com a recompensa recebida.
-- O Apoiador nunca recebe dado de contato de jogador: o que ele vê é agregado e por avatar.
-- Nenhuma dívida é atribuída a jogador ou família, o que impede o uso do ledger como
+- O Apoiador nunca recebe dado de contato de Guerreiro(a): o que ele vê é agregado e por
+  avatar.
+- Nenhuma dívida é atribuída a Guerreiro(a) ou família, o que impede o uso do ledger como
   instrumento de cobrança sobre quem o projeto quer proteger.
 
 ## 12. Critérios de aceite e métricas
@@ -291,7 +302,7 @@ tentativa de editar lançamento (405); ressarcimento sem comprovante anexado (42
   atividade passa a ter lastro.
 - Cancelamento de atividade devolve ao saldo exatamente a quantidade reservada.
 - Exemplar emprestado e não devolvido aparece como pendência; registrado como perdido, gera
-  necessidade de reposição e **nenhum** débito ao jogador.
+  necessidade de reposição e **nenhum** débito ao Guerreiro(a).
 - Aporte por absorção nasce com situação de ressarcimento **em aberto** e some da lista quando
   é pago.
 - Ressarcimento pago devolve o Poder Econômico ao valor anterior ao aporte, e o selo público
@@ -348,4 +359,5 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | `RF-07-21`              | 05 §3 (conferência de inventário)                |
 | `RF-07-22` a `RF-07-26` | 04 §§1–2 (absorção, ressarcimento e comprovante) |
 | `RF-07-27`              | 11 §8.2 (cards e páginas individuais)            |
+| `RF-07-28` e `RF-07-29` | 04 §1 (necessidade publicada e absorção)         |
 | `RN-07-20`              | 04 §1 (sem armazenamento de dado bancário)       |

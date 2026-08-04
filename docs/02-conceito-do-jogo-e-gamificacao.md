@@ -9,9 +9,18 @@ os colegas e realizar atividades gera pontos, poderes e reconhecimento.
 
 ## 1. Os elementos do jogo (personas)
 
-### Jogadores (persona primária)
+### Guerreiros e Guerreiras (persona primária)
 
-Crianças e jovens moradores de comunidades periféricas. O jogador:
+Crianças e jovens moradores de comunidades periféricas.
+
+**Como a persona se chama.** Ela é a **Guerreira** ou o **Guerreiro**, conforme a **forma de
+tratamento** que a própria pessoa escolhe no cadastro do onboarding — o mesmo nome da
+Comunidade Guerreira Zeferina, onde o Ciclo 01 acontece. As aplicações tratam cada pessoa pela
+forma que ela escolheu. Nesta documentação, a referência genérica é **Guerreiro(a)** e o
+coletivo é **Guerreiros e Guerreiras**; identificadores técnicos — entidades e rotas — não
+levam marca de gênero.
+
+O Guerreiro(a):
 
 - Define seu **Nick** e as características do seu personagem (avatar).
 - Escolhe **Poderes** e segue **Trilhas** para desenvolvê-los.
@@ -21,7 +30,7 @@ Crianças e jovens moradores de comunidades periféricas. O jogador:
 - Tem **voz e autoria**: cria a partir do que aprende, propõe ideias e sugere melhorias para
   as atividades e para a própria plataforma.
 
-O jogador é a **única persona com autocadastro** na plataforma.
+O Guerreiro(a) é a **única persona com autocadastro** na plataforma.
 
 ### Admins (Organizadores / Equipe técnica)
 
@@ -47,8 +56,8 @@ o motor do jogo é agnóstico de área. Regras de admissão:
 - Mestres também podem prover recursos para atividades.
 
 > **Exemplo de referência — o Mestre fundador.** É mestre em Programação e Robótica porque
-> construiu o software da plataforma, propõe as atividades que os jogadores realizam e
-> publica conteúdo. É autor das duas primeiras trilhas.
+> construiu o software da plataforma, propõe as atividades que os Guerreiros e Guerreiras
+> realizam e publica conteúdo. É autor das duas primeiras trilhas.
 
 ### Apoiadores / Patrocinadores
 
@@ -62,16 +71,18 @@ Pessoas e instituições que financiam ou divulgam o projeto.
 
 ### Pais e responsáveis
 
-Adultos responsáveis pelos jogadores. Acompanham a evolução da criança, autorizam e revogam
-consentimentos, e têm acesso próprio à plataforma.
+Adultos responsáveis pelos Guerreiros e Guerreiras. Acompanham a evolução da criança, autorizam
+e revogam consentimentos, e têm acesso próprio à plataforma.
 
 - **Cadastrados por um Admin ou por um Mestre** — não há autocadastro nem solicitação aberta.
   O responsável se apresenta **pessoalmente** em atividade presencial, na primeira vez, e
   informa seu e-mail e as crianças sob sua responsabilidade. Espera-se que isso aconteça no
   **primeiro dia de aula da criança**, a quem ele acompanha.
-- O vínculo é feito com jogadores **já cadastrados** no onboarding — qualquer um deles, não só
-  os das turmas de quem cadastra —, e cada jogador tem no máximo **três responsáveis**.
-- Todo vínculo declara o **grau de parentesco** do responsável com o jogador, em texto livre.
+- O vínculo é feito com Guerreiros e Guerreiras **já cadastrados** no onboarding — qualquer um
+  deles, não só os das turmas de quem cadastra —, e cada Guerreiro(a) tem no máximo **três
+  responsáveis**.
+- Todo vínculo declara o **grau de parentesco** do responsável com o Guerreiro(a), em texto
+  livre.
 
 ### Solicitação de participação (Mestres e Apoiadores)
 
@@ -80,6 +91,10 @@ Apoiador** por formulário público da vitrine. A solicitação é gravada e ent
 avaliação dos Admins. **Ela não cria cadastro e não abre exceção à regra**: quem avalia e
 cadastra continua sendo um Admin.
 
+**Dados mínimos do formulário:** nome, e-mail, WhatsApp, pretensão (Mestre ou Apoiador) e um
+texto livre de apresentação. Instituição representada e links comprobatórios são opcionais.
+**Prazo de resposta ao solicitante: 7 dias.**
+
 ### Público geral / Visitantes
 
 Interessados em acompanhar batalhas, ver o portfólio dos jovens e apoiar o trabalho. Todo o
@@ -87,44 +102,47 @@ conteúdo de vitrine é público, sem login.
 
 ### Comunidades Virtuais
 
-A Comunidade Virtual é a **representação digital da comunidade em que o jogador vive na
+A Comunidade Virtual é a **representação digital da comunidade em que o Guerreiro(a) vive na
 realidade**.
 
-> Uma Comunidade Virtual **existe na medida em que são registrados dados reais** do
-> território.
+> Uma Comunidade Virtual **existe na medida em que são registrados dados reais** do território.
 
-**Quem cria.** A criação é **exclusiva dos Admins**. A comunidade nasce como território
-vazio — nome, localização e granularidade, sem nenhum dado — e é **preenchida pelos
-jogadores**. Não há autocadastro de comunidades, pela mesma razão que não há autocadastro de
+**Quem cria.** A criação é **exclusiva dos Admins**. A comunidade nasce como território vazio —
+nome, localização e granularidade, sem nenhum dado — e é **preenchida pelos Guerreiros e
+Guerreiras**. Não há autocadastro de comunidades, pela mesma razão que não há autocadastro de
 Mestres: a unidade territorial é estrutura da plataforma, não conteúdo gerado por usuário.
 
-**Todo jogador pertence a uma comunidade.** O vínculo é **obrigatório** e atribuído
-automaticamente no cadastro: o Admin define na gestão a **comunidade default do onboarding**,
-e é ela que o jogador recebe — sem precisar informá-la. É esse vínculo que define a que
-território os dados coletados são creditados.
+**Todo Guerreiro(a) pertence a uma comunidade.** O vínculo é **obrigatório** e atribuído
+automaticamente no cadastro, **pela comunidade da aula em que a pessoa está entrando** — o
+Admin declara a comunidade, a data e o horário de cada aula na gestão, e o onboarding usa a
+aula vigente naquele momento. O Guerreiro(a) não informa a comunidade. É esse vínculo que
+define a que território os dados coletados são creditados.
+
+**No Ciclo 01 o Guerreiro(a) não muda de comunidade.** A transferência entre comunidades existe
+no modelo, com a data da mudança preservada, mas só é operada em ciclo futuro.
 
 **Como se constrói.** Parte das atividades é de coleta de dados locais — temperatura,
 precipitação pluviométrica, coleta de resíduos, buracos na via, iluminação pública, trânsito,
 transporte público, fotos, vídeos e memórias de pontos de referência.
 
-**Em que granularidade.** O jogador registra no nível em que vive o problema: **comunidade →
-bairro → rua → condomínio → bloco → quadra**. Cada registro adiciona uma peça à comunidade
+**Em que granularidade.** O Guerreiro(a) registra no nível em que vive o problema: **comunidade
+→ bairro → rua → condomínio → bloco → quadra**. Cada registro adiciona uma peça à comunidade
 digital, que vai ganhando corpo conforme a participação cresce.
 
 **Quem cadastra os locais.** Os locais são **cadastrados previamente pelos Admins**, e o
-jogador **seleciona** a qual deles o dado se refere. Faltando o local, o jogador **solicita a
-inclusão** pelo aplicativo — mesma lógica das demais solicitações: pedido registrado não é
-cadastro. A solicitação é aprovada pelo **Mestre da trilha** ou por um **Admin**, ambos
-alertados das solicitações em aberto.
+Guerreiro(a) **seleciona** a qual deles o dado se refere. Faltando o local, o Guerreiro(a)
+**solicita a inclusão** pelo aplicativo — mesma lógica das demais solicitações: pedido
+registrado não é cadastro. A solicitação é aprovada pelo **Mestre da trilha** ou por um
+**Admin**, ambos alertados das solicitações em aberto.
 
 #### Registro temporal e pontuação enquanto a coleta durar
 
 **Regra vigente.** Os dados gerados nos desafios de coleta são **registrados de forma
-temporal** na Comunidade Virtual e **vinculados ao jogador responsável**. A pontuação
+temporal** na Comunidade Virtual e **vinculados ao Guerreiro(a) responsável**. A pontuação
 correspondente também é temporal:
 
 - Cada série de coleta tem uma **cadência** (diária, semanal, mensal) definida no desafio.
-- **A série é individual**: cada jogador abre a sua no ponto que escolheu medir, e a
+- **A série é individual**: cada Guerreiro(a) abre a sua no ponto que escolheu medir, e a
   Comunidade Virtual é a soma das séries de todos.
 - **Enquanto a série se mantém ativa**, cada registro válido no prazo **rende pontos**. É
   pontuação recorrente, não de entrega única.
@@ -132,8 +150,8 @@ correspondente também é temporal:
 - **Interrompida a coleta, interrompe-se o cômputo.** Os pontos já ganhos permanecem, mas a
   série deixa de render.
 - A retomada reativa o cômputo, sem recuperar o período parado.
-- O registro é **manual** (digitado ou por voz) ou vem de **sensor construído pelo jogador**;
-  a origem fica gravada no registro.
+- O registro é **manual** (digitado ou por voz) ou vem de **sensor construído pelo
+  Guerreiro(a)**; a origem fica gravada no registro.
 - O registro pode ser **foto ou vídeo** — é assim que se registra lixo acumulado, buraco na
   via ou poste apagado, que se medem por evidência e não por número.
 - O registro **nasce válido e pontua na hora**. O Mestre audita por **amostragem** e pode
@@ -148,12 +166,12 @@ O valor em pontos do registro está no documento 11.
 #### Guarda permanente dos dados, com o coletor identificado
 
 Todos os dados coletados são **armazenados de forma permanente**, para avaliações e análises
-futuras — inclusive depois que o jogador que os coletou deixar o projeto. **O vínculo com o
-jogador responsável é preservado, sem anonimização.**
+futuras — inclusive depois que o Guerreiro(a) que os coletou deixar o projeto. **O vínculo com
+o Guerreiro(a) responsável é preservado, sem anonimização.**
 
 Por que a autoria fica: um dado de território sem autor conhecido é um dado sem
 **procedência** — não há como auditar a série nem refazer o percurso de uma medição duvidosa.
-E o registro é **realização do jogador**: apagar o nome apagaria o crédito.
+E o registro é **realização do Guerreiro(a)**: apagar o nome apagaria o crédito.
 
 A anonimização vale **na saída, não no armazenamento**: o que sai da plataforma para
 pesquisas, painéis públicos e instituições é agregado e anonimizado conforme a finalidade. A
@@ -180,7 +198,7 @@ projeto, sem trilha nem atividade previstas para o Ciclo 01.
 | Poder                                             | Descrição                                                                                                                                                                                                                                        |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Poder da IA e Robótica**                        | Programação, eletrônica, robótica e IA. Trilhas: Robô Educa (1ª) e Batalha de Laser (2ª)                                                                                                                                                         |
-| **Poder do Território**                           | Registro e ciência de dados do território (_Data Science_): sustentar séries de coleta reais da comunidade, com progressão e badges próprios. Todo jogador o exercita, pois toda trilha tem desafio de coleta                                    |
+| **Poder do Território**                           | Registro e ciência de dados do território (_Data Science_): sustentar séries de coleta reais da comunidade, com progressão e badges próprios. Todo Guerreiro(a) o exercita, pois toda trilha tem desafio de coleta                               |
 | **Poder Econômico**                               | O quanto Mestres e Apoiadores investiram na plataforma — o poder dos provedores                                                                                                                                                                  |
 | **Poder da Rima** _(ciclo futuro)_                | Expressão artística: rima, rap, batalhas de rima. Validado em 2024 na Guerreira Zeferina, dentro do Inova Comunidade                                                                                                                             |
 | **Poder das Redes** _(ciclo futuro)_              | Produção de conteúdo / "Monte seu Canal": comunicação digital, geração de áudio e vídeo e letramento crítico sobre riscos                                                                                                                        |
@@ -201,25 +219,25 @@ violência de gênero, mediação de conflitos).
 
 ## 3. Trilhas
 
-- Cada trilha é uma **sequência de conteúdos e atividades** que guia o jogador pelos
+- Cada trilha é uma **sequência de conteúdos e atividades** que guia o Guerreiro(a) pelos
   conhecimentos desejados.
-- Ao avançar nos pontos da trilha, o jogador vai **desbloqueando níveis de poderes**.
+- Ao avançar nos pontos da trilha, o Guerreiro(a) vai **desbloqueando níveis de poderes**.
 - Trilhas podem conter **conteúdos de terceiros**, curados pelos Mestres, e **bibliografia de
   apoio** impressa por ponto de trilha.
-- **Toda trilha deve conter desafios de coleta de dados reais** da comunidade do jogador.
+- **Toda trilha deve conter desafios de coleta de dados reais** da comunidade do Guerreiro(a).
 - **Toda trilha termina em criação original** apresentada publicamente (§4).
-- O jogador é acompanhado pela **Área do Jogador (App 05)**, que mostra o próximo ponto, o
-  que já foi conquistado e o que ainda está bloqueado.
+- O Guerreiro(a) é acompanhado pela **Área do Guerreiro(a) (App 05)**, que mostra o próximo
+  ponto, o que já foi conquistado e o que ainda está bloqueado.
 
 ### Regra vigente: toda trilha coleta dados reais
 
-Não é um tipo de trilha — é requisito de **todas** elas. Cada trilha precisa prever ao menos
-um desafio em que o jogador registra algo verificável do território onde vive, na Comunidade
+Não é um tipo de trilha — é requisito de **todas** elas. Cada trilha precisa prever ao menos um
+desafio em que o Guerreiro(a) registra algo verificável do território onde vive, na Comunidade
 Virtual à qual está vinculado. Por que a regra é geral:
 
 - Garante que **toda comunidade ganhe corpo**, qualquer que seja o poder escolhido pelos
-  jogadores daquele ponto de apoio.
-- Dá ao jogador **pontuação recorrente** que não depende de estar em aula.
+  Guerreiros e Guerreiras daquele ponto de apoio.
+- Dá ao Guerreiro(a) **pontuação recorrente** que não depende de estar em aula.
 - Conecta qualquer conteúdo ao **território e identidade**: nas trilhas técnicas de hoje a
   coleta é medição (temperatura, iluminação, resíduos); numa trilha cultural, seria o registro
   dos espaços, rodas e memórias do bairro. A regra é a mesma; muda o que se mede.
@@ -235,10 +253,10 @@ Programação e Robótica.
 | #      | Trilha               | Poder         | Do que se trata                                                                                                                  |
 | ------ | -------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | **1ª** | **Robô Educa**       | IA e Robótica | Construir o próprio robô com material reciclado ou kit e dar vida a ele com IA por voz; da montagem física à alteração do código |
-| **2ª** | **Batalha de Laser** | IA e Robótica | Eletrônica, sensores, MQTT e rede: os jogadores constroem os artefatos e disputam a batalha presencial                           |
+| **2ª** | **Batalha de Laser** | IA e Robótica | Eletrônica, sensores, MQTT e rede: os Guerreiros e Guerreiras constroem os artefatos e disputam a batalha presencial             |
 
 A 2ª trilha é a **sucessora natural** da 1ª: mesmo poder, um degrau a mais de complexidade.
-Juntas demonstram o ciclo completo do jogo — mestre publica a trilha → jogador aprende
+Juntas demonstram o ciclo completo do jogo — mestre publica a trilha → Guerreiro(a) aprende
 construindo → apresentação ou batalha presencial → pontuação e visibilidade.
 
 As duas contam com **material de apoio impresso** do acervo Include, doado pelo
@@ -256,18 +274,18 @@ Goethe-Institut (inventário, posse e guarda no documento 05).
 > definidas e implementadas em **ciclo futuro**. Não integram o escopo do Ciclo 01, cujas
 > trilhas em operação são apenas Robô Educa e Batalha de Laser. Isso também adia as decisões
 > técnicas que dependiam delas, como a stack de análise de movimentos. **Rima e Capoeira têm
-> validação prévia de campo**: participaram, com o Robô Educa, do projeto **Inova
-> Comunidade** (2024, Guerreira Zeferina) — a retomada parte de experiência já testada.
+> validação prévia de campo**: participaram, com o Robô Educa, do projeto **Inova Comunidade**
+> (2024, Guerreira Zeferina) — a retomada parte de experiência já testada.
 
-A trilha de **Social Media** terá função dupla: forma o jogador em produção de conteúdo e
-alimenta a equipe de divulgação do projeto nas redes. Nela vale integralmente a regra de
-LGPD: jogadores aparecem por **avatares**, nunca por imagens reais, e qualquer publicação com
-criança identificável exige consentimento específico do responsável.
+A trilha de **Social Media** terá função dupla: forma o Guerreiro(a) em produção de conteúdo e
+alimenta a equipe de divulgação do projeto nas redes. Nela vale integralmente a regra de LGPD:
+Guerreiros e Guerreiras aparecem por **avatares**, nunca por imagens reais, e qualquer
+publicação com criança identificável exige consentimento específico do responsável.
 
 ## 4. Atividades e desafios
 
 As atividades devem ser criadas com **níveis de dificuldade graduais**, acessíveis por todos
-**independentemente da idade** (6 a 16 anos). O jogador progride pelo nível de dificuldade
+**independentemente da idade** (6 a 16 anos). O Guerreiro(a) progride pelo nível de dificuldade
 que consegue realizar, não pela idade que tem.
 
 **Tipos:** **presenciais** (nos encontros) e **assíncronas / on-line** (no intervalo entre os
@@ -284,19 +302,20 @@ contínua.
 | Desplugadas (_Computer Science Unplugged_) | Lógica e algoritmos sem computador                                    |
 | Valores e temas transversais               | Racismo, violência contra a mulher, identidade, povos originários     |
 | Competição ao vivo                         | **Quiz ao Vivo** entre equipes na aula presencial                     |
-| Culminância                                | Apresentação da **criação original** do jogador ou da equipe          |
+| Culminância                                | Apresentação da **criação original** do Guerreiro(a) ou da equipe     |
 
-### Criações originais dos jogadores
+### Criações originais dos Guerreiros e Guerreiras
 
 **Definição vigente — toda trilha desemboca em criação original.** A culminância de cada
-trilha é a apresentação pública de algo **criado pelo jogador (ou pela equipe) a partir do
+trilha é a apresentação pública de algo **criado pelo Guerreiro(a) (ou pela equipe) a partir do
 conteúdo aprendido**: a versão própria do robô, um artefato remixado, um trecho de código
 alterado, uma ideia nova sobre o que a trilha ensinou. A criação original distingue quem
 **aprendeu** de quem apenas **executou**.
 
 - **Autoria sempre creditada** — a criação carrega o nick do autor (ou dos autores) por toda
   a vida do registro, pela mesma razão que vale para a coleta de dados.
-- **Vitrine pública** — as criações de jogadores autorizados compõem o portfólio público.
+- **Vitrine pública** — as criações de Guerreiros e Guerreiras autorizados compõem o portfólio
+  público.
 - Em **equipe**, o crédito é da equipe **e** de cada membro, com o papel que teve.
 - A criação original **pontua e rende badge de autoria**.
 
@@ -304,13 +323,13 @@ alterado, uma ideia nova sobre o que a trilha ensinou. A criação original dist
 
 ### Desafios extras propostos por Apoiadores
 
-Além dos desafios semanais dos Mestres, **Apoiadores podem propor desafios extras** ao longo
-de um ciclo, sempre vinculados a uma trilha em andamento, com **recompensa custeada pelo
+Além dos desafios semanais dos Mestres, **Apoiadores podem propor desafios extras** ao longo de
+um ciclo, sempre vinculados a uma trilha em andamento, com **recompensa custeada pelo
 proponente** e **pontos extras** computados isoladamente. Existem duas modalidades — **aberto**
-(a todos os jogadores da trilha) e **direcionado** (a um jogador específico, mediante
-justificativa registrada do vínculo). Todo desafio extra exige **validação pedagógica do
-Mestre da trilha e aprovação de um Admin**, recompensa **provida antes da publicação** e
-**nenhum contato direto** entre Apoiador e jogador.
+(a todos os Guerreiros e Guerreiras da trilha) e **direcionado** (a um Guerreiro(a) específico,
+mediante justificativa registrada do vínculo). Todo desafio extra exige **validação pedagógica
+do Mestre da trilha e aprovação de um Admin**, recompensa **provida antes da publicação** e
+**nenhum contato direto** entre Apoiador e Guerreiro(a).
 
 > Regras completas, mecânica no ciclo e rastreio de efetividade: documento 04.
 
@@ -325,6 +344,10 @@ Mestre da trilha e aprovação de um Admin**, recompensa **provida antes da publ
 Está prevista pontuação negativa por mau comportamento, agressões verbais ou físicas e
 descumprimento de regras. É a aplicação prática do código de conduta e dos valores do projeto.
 
+**Quem lança.** O **Mestre**, pela App 09, e o **Admin**, pela App 03. O lançamento exige
+motivo registrado e **não depende de revisão de outro Admin** — quem estava na sala é quem
+viu o que aconteceu.
+
 ### Condição de existência da atividade
 
 > **Cada atividade só acontece se tiver os recursos necessários providos por Mestre ou
@@ -333,14 +356,14 @@ descumprimento de regras. É a aplicação prática do código de conduta e dos 
 ## 5. Equipes
 
 **Definição vigente.** Equipes são **grupos livres de até 5 pessoas**, formados de maneira
-espontânea pelos jogadores:
+espontânea pelos Guerreiros e Guerreiras:
 
-- Cada jogador pode participar de **uma ou mais equipes** e **pontua em todas as atividades
-  em que participar e colaborar**.
+- Cada Guerreiro(a) pode participar de **uma ou mais equipes** e **pontua em todas as
+  atividades em que participar e colaborar**.
 - As equipes são **cadastradas pelo Admin na App 03**, conforme o plano de aulas e a formação
-  livre dos jogadores.
-- A composição segue o que a **atividade, o desafio ou a batalha determinar**: só jogadores
-  **ou** com **no máximo 1 familiar, de 17 anos ou mais**.
+  livre dos Guerreiros e Guerreiras.
+- A composição segue o que a **atividade, o desafio ou a batalha determinar**: só Guerreiros e
+  Guerreiras **ou** com **no máximo 1 familiar, de 17 anos ou mais**.
 
 **A equipe mistura idades.** É o principal instrumento do jogo para transformar a diferença
 de idades (6 a 16 anos) em força:
@@ -349,29 +372,29 @@ de idades (6 a 16 anos) em força:
   nível de dificuldade; é a convivência que é heterogênea de propósito.
 - **Cada membro tem papel ativo** — quem constrói, quem registra, quem apresenta, quem
   media — e os papéis giram entre as atividades.
-- Jogadores **mais velhos ou mais avançados mediam os mais novos**: exercício prático do
-  "colaborar vale mais que competir" e primeiro degrau do caminho de multiplicador.
+- Guerreiros e Guerreiras **mais velhos ou mais avançados mediam os mais novos**: exercício
+  prático do "colaborar vale mais que competir" e primeiro degrau do caminho de multiplicador.
 - **O crédito individual é preservado**: a realização é da equipe, e o registro guarda o
   papel de cada membro.
 
 ## 6. Batalhas
 
-**Batalhas são disputas de ideias e realizações entre os Jogadores** — competições saudáveis
-que dão visibilidade ao que foi aprendido e construído:
+**Batalhas são disputas de ideias e realizações entre os Guerreiros e Guerreiras** —
+competições saudáveis que dão visibilidade ao que foi aprendido e construído:
 
 - **Presenciais** (ex.: Batalha de Laser; batalhas de rima, em ciclo futuro).
 - **De projetos e ideias** (apresentação de trabalhos, culminância).
 
-Os resultados alimentam o ranking e o portfólio público dos jogadores.
+Os resultados alimentam o ranking e o portfólio público dos Guerreiros e Guerreiras.
 
 ## 7. Níveis e badges
 
 A progressão vai do **Nível 1** (inscrito e assíduo) ao **Nível 5 — Mestre Aprendiz**, que
-deixa o jogador **apto ao treinamento de multiplicador** e ao voluntariado nos pontos de
+deixa o Guerreiro(a) **apto ao treinamento de multiplicador** e ao voluntariado nos pontos de
 apoio. Duas regras estruturais:
 
-- **Níveis e badges são por trilha ou por poder, nunca globais** — um jogador pode ser Mestre
-  Aprendiz no Robô Educa e estar no Nível 2 na Batalha de Laser.
+- **Níveis e badges são por trilha ou por poder, nunca globais** — um Guerreiro(a) pode ser
+  Mestre Aprendiz no Robô Educa e estar no Nível 2 na Batalha de Laser.
 - Ser Mestre Aprendiz **não** equivale a ser Mestre: o reconhecimento como Mestre continua
   dependendo de cadastro por Admin e de habilidade comprovada por artefatos publicados.
 
@@ -379,9 +402,9 @@ apoio. Duas regras estruturais:
 
 ## 8. Recompensas
 
-**Regra vigente:** à medida que avançam nas trilhas, os jogadores **acumulam pontos, e esses
-pontos podem ser trocados por recompensas**. É o que fecha o vínculo entre o jogo e a vida
-real: o esforço de aprender converte-se em algo concreto na mão do jogador.
+**Regra vigente:** à medida que avançam nas trilhas, os Guerreiros e Guerreiras **acumulam
+pontos, e esses pontos podem ser trocados por recompensas**. É o que fecha o vínculo entre o
+jogo e a vida real: o esforço de aprender converte-se em algo concreto na mão do Guerreiro(a).
 
 Catálogo inicial — **valores ainda são sugestão, a definir**:
 
@@ -393,10 +416,10 @@ Catálogo inicial — **valores ainda são sugestão, a definir**:
 **[Proposta]** Ao definir a tabela, ampliar o catálogo com recompensas não alimentares
 (material escolar, componentes de robótica, ingressos culturais). A troca de pontos por
 alimento é socialmente sensível e deve ser tratada com dignidade, no espírito do **"sem
-miséria"** baiano: a recompensa celebra a conquista do jogador; nunca pode soar como
+miséria"** baiano: a recompensa celebra a conquista do Guerreiro(a); nunca pode soar como
 assistencialismo.
 
-## 9. Manual do Jogador (fluxo de entrada)
+## 9. Manual do Guerreiro(a) (fluxo de entrada)
 
 1. **Cadastro livre** — sem autorização de responsável. Informe apenas nome, data de
    nascimento (ou idade), nick e características do avatar; sua Comunidade Virtual já vem
@@ -413,8 +436,8 @@ assistencialismo.
 10. **Troque seus pontos por recompensas.**
 11. **Peça ajuda para as atividades escolares** ao robô assistente.
 12. **Autorização dos pais ou responsáveis** — necessária apenas para que o **histórico e o
-    perfil sejam divulgados publicamente**. Sem ela, o jogador participa normalmente, mas não
-    aparece na vitrine nem nos rankings. A autorização é dada — e revogada — na App 07.
+    perfil sejam divulgados publicamente**. Sem ela, o Guerreiro(a) participa normalmente, mas
+    não aparece na vitrine nem nos rankings. A autorização é dada — e revogada — na App 07.
 
-**[Proposta]** Modelar o estado do jogador em dois níveis: **"ativo"** (cadastro livre,
+**[Proposta]** Modelar o estado do Guerreiro(a) em dois níveis: **"ativo"** (cadastro livre,
 participa de tudo) e **"público"** (com autorização do responsável, aparece na vitrine).

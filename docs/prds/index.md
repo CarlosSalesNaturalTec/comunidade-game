@@ -19,7 +19,7 @@ no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs est�
 | [PRD-02](prd-02-frontend-de-gestao.md)   | Frontend de gestão                  | App 03    | 2    | em revisão   |
 | PRD-04                                   | Onboarding e registro de presença   | App 01    | 2    | não iniciado |
 | PRD-09                                   | Área do Mestre (autoria e operação) | App 09    | 3    | não iniciado |
-| PRD-05                                   | Área do Jogador                     | App 05    | 3    | não iniciado |
+| PRD-05                                   | Área do Guerreiro(a)                | App 05    | 3    | não iniciado |
 | PRD-13                                   | Área dos pais e responsáveis        | App 07    | 4    | não iniciado |
 | PRD-03                                   | Vitrine pública                     | App 06    | 4    | não iniciado |
 | PRD-06                                   | Assistente por voz e Modo Ouvinte   | App 02    | 5    | não iniciado |

@@ -19,7 +19,7 @@ equipamentos.
 - **Pontos de apoio nas comunidades**: hackerspace, fab lab, coworking. São a base para aulas
   presenciais, montagem de kits, batalhas e culminâncias.
 - **Equipamentos disponíveis no ponto de apoio** — notebooks, smartphones e tablets — são o
-  que viabiliza a **dinâmica assíncrona dos encontros** (§4): o jogador usa o aparelho
+  que viabiliza a **dinâmica assíncrona dos encontros** (§4): o Guerreiro(a) usa o aparelho
   disponível quando chega a sua vez, sem precisar trazer o seu. O parque de equipamentos é
   recurso com lastro como qualquer outro e é uma das finalidades previstas de campanha de
   financiamento.
@@ -51,36 +51,37 @@ o livro na mão. A assimetria do inventário define o regime de posse.
 
 ### Definição vigente — regime misto
 
-| Linha                                                       | Exemplares | Regime                                                                          |
-| ----------------------------------------------------------- | ---------: | ------------------------------------------------------------------------------- |
-| **Alpha** (Eletrônica, Sensores, Mecânica)                  |        252 | **Doados ao jogador quando ele começa a trilha** — livro próprio, sem devolução |
-| **Include I** (Programação, Sensores, Mecânica, Eletrônica) |         46 | **Acervo permanente do ponto de apoio** — consulta em bancada, sem saída        |
+| Linha                                                       | Exemplares | Regime                                                                               |
+| ----------------------------------------------------------- | ---------: | ------------------------------------------------------------------------------------ |
+| **Alpha** (Eletrônica, Sensores, Mecânica)                  |        252 | **Doados ao Guerreiro(a) quando ele começa a trilha** — livro próprio, sem devolução |
+| **Include I** (Programação, Sensores, Mecânica, Eletrônica) |         46 | **Acervo permanente do ponto de apoio** — consulta em bancada, sem saída             |
 
 O livro abundante é entregue **na entrada da trilha**, e não como prêmio de conclusão: é
 material de trabalho durante todo o percurso, e depois fica como bem cultural da família. O
 material escasso — apenas 4 exemplares de Eletrônica I — continua servindo às turmas seguintes.
 
-### A. Livro do jogador — linha Alpha (252 exemplares)
+### A. Livro do Guerreiro(a) — linha Alpha (252 exemplares)
 
 - **Entrega na primeira aula do módulo, como ritual.** Identificar o exemplar com o próprio
   nome ou nick, encapar e registrar que o recebeu é a **primeira atividade pontuada** da
   trilha. Ensina cuidado com material e marca a entrada no percurso.
-- **Sem devolução, sem controle de guarda, sem cobrança.** O livro é do jogador desde o
-  primeiro dia — conclua ele a trilha ou não. Perder ou estragar o próprio livro **não é
+- **Sem devolução, sem controle de guarda, sem cobrança.** O livro é do Guerreiro(a) desde o
+  primeiro dia — conclua a trilha ou não. Perder ou estragar o próprio livro **não é
   infração** e não gera dívida.
 - **Baixa definitiva no livro-razão** no momento da entrega, como recompensa entregue.
 - **O estoque é finito e dimensiona o alcance.** 252 exemplares equivalem ao número de
-  jogadores que podem iniciar as trilhas com livro próprio; a conferência a cada módulo indica
-  quando a reposição precisa virar necessidade de recurso — antes de faltar, não depois.
+  Guerreiros e Guerreiras que podem iniciar as trilhas com livro próprio; a conferência a cada
+  módulo indica quando a reposição precisa virar necessidade de recurso — antes de faltar, não
+  depois.
 
 ### B. Acervo permanente — linha Include I (46 exemplares)
 
 O princípio é **conservação por cuidado e orgulho, não por medo de punição**:
 
 1. **Tombamento e ficha de vida.** Cada exemplar recebe número de tombo e registro na gestão:
-   título, ponto de apoio, estado de conservação e histórico de quem o usou. O jogador vê na
-   Área do Jogador **quais jogadores cuidaram daquele livro antes dele** — o exemplar carrega
-   uma linhagem, e ninguém quer ser o elo que quebrou a corrente.
+   título, ponto de apoio, estado de conservação e histórico de quem o usou. O Guerreiro(a) vê
+   na Área do Guerreiro(a) **quais Guerreiros e Guerreiras cuidaram daquele livro antes**
+   — o exemplar carrega uma linhagem, e ninguém quer ser o elo que quebrou a corrente.
 2. **Uso em bancada, com retirada registrada.** O exemplar não sai do ponto de apoio; retirada
    e devolução são lançadas pelo Mestre, e o painel do dia mostra as devoluções pendentes
    antes do fim da aula.
@@ -94,7 +95,7 @@ O princípio é **conservação por cuidado e orgulho, não por medo de puniçã
 5. **Kit de conservação com lastro.** Papel para encapar, fita e etiquetas são recursos como
    qualquer outro: precisam ser providos para a atividade acontecer.
 6. **Reposição solidária, nunca cobrança à família.** Perda ou dano **não gera dívida** para o
-   jogador nem para os responsáveis e não impede a participação: a reposição entra como
+   Guerreiro(a) nem para os responsáveis e não impede a participação: a reposição entra como
    necessidade de recurso a ser aportada por Apoiador. Cobrar de família em situação de
    vulnerabilidade contradiz o **"sem miséria"** e afastaria justamente quem o projeto quer
    alcançar.
@@ -102,39 +103,40 @@ O princípio é **conservação por cuidado e orgulho, não por medo de puniçã
    — transparência que também presta contas ao Apoiador que doou.
 
 > **Sobre pontuação negativa:** o descuido **reiterado e deliberado** com o material comum é
-> descumprimento de regra e cabe no dispositivo previsto. Livro molhado pela chuva, acidente
-> ou casa sem espaço adequado **não é infração** — é custo previsto de operar em território
-> real. A distinção está explícita no Código de Conduta, senão a regra vira instrumento de
-> exclusão. Sobre o **livro próprio do jogador** não incide pontuação negativa em hipótese
-> alguma: o que é dele, é dele.
+> descumprimento de regra e cabe no dispositivo previsto. Livro molhado pela chuva, acidente ou
+> casa sem espaço adequado **não é infração** — é custo previsto de operar em território real.
+> A distinção está explícita no Código de Conduta, senão a regra vira instrumento de exclusão.
+> Sobre o **livro próprio do Guerreiro(a)** não incide pontuação negativa em hipótese alguma: o
+> que é dele, é dele.
 
 ### C. Kits em MDF (30 unidades)
 
-São insumo de oficina, não acervo: montados pelo jogador, viram o corpo do seu robô. Entram no
-livro-razão como **consumível de atividade**, com baixa a cada montagem, e o saldo precisa
-constar do painel do dia — é ele que diz quantos jogadores ainda podem montar em MDF antes de
-a oficina voltar ao material reciclado.
+São insumo de oficina, não acervo: montados pelo Guerreiro(a), viram o corpo do seu robô.
+Entram no livro-razão como **consumível de atividade**, com baixa a cada montagem, e o saldo
+precisa constar do painel do dia — é ele que diz quantos Guerreiros e Guerreiras ainda podem
+montar em MDF antes de a oficina voltar ao material reciclado.
 
 ### D. Camisas (50 unidades)
 
-**Definição vigente — doadas aos jogadores inscritos no Ciclo 01**, até o limite disponível.
-Como o livro da linha Alpha: a camisa é do jogador, sem devolução, com **baixa definitiva no
-livro-razão** na entrega. As 50 unidades atendem os primeiros inscritos; o saldo entra no
-painel do dia, e a reposição, se desejada, vira necessidade de recurso a ser aportada.
+**Definição vigente — doadas aos Guerreiros e Guerreiras inscritos no Ciclo 01**, até o limite
+disponível. Como o livro da linha Alpha: a camisa é do Guerreiro(a), sem devolução, com **baixa
+definitiva no livro-razão** na entrega. As 50 unidades atendem os primeiros inscritos; o saldo
+entra no painel do dia, e a reposição, se desejada, vira necessidade de recurso a ser aportada.
 
 ## 4. Roteiro do encontro presencial
 
 ### Definição vigente: o encontro é assíncrono
 
-Não há uma turma única avançando em bloco: **à medida que os jogadores vão chegando** e se
-organizando em equipes, eles **começam a realizar as atividades da trilha em que estão, no seu
-próprio ritmo**, usando os equipamentos disponíveis, com a ajuda dos Mestres presentes.
+Não há uma turma única avançando em bloco: **à medida que os Guerreiros e Guerreiras vão
+chegando** e se organizando em equipes, eles **começam a realizar as atividades da trilha em
+que estão, no seu próprio ritmo**, usando os equipamentos disponíveis, com a ajuda dos Mestres
+presentes.
 
 Por que assim:
 
 - **A chegada é escalonada na vida real** — transporte, escola, tarefa de casa, irmão menor.
   Um roteiro em bloco pune quem chega atrasado; o assíncrono o acolhe no ponto em que está.
-- **Cada jogador está em um ponto diferente da trilha.** A progressão é por nível de
+- **Cada Guerreiro(a) está em um ponto diferente da trilha.** A progressão é por nível de
   dificuldade, não por idade nem por data de entrada.
 - **Os equipamentos são compartilhados e limitados.** A atividade assíncrona distribui o uso
   dos aparelhos ao longo do encontro.
@@ -142,7 +144,7 @@ Por que assim:
   travou e libera quem está adiantado — que passa a ajudar o colega, o que já é mérito extra.
 
 Consequências operacionais: o **onboarding roda continuamente**; a **App 05** é o que sustenta
-a autonomia, dizendo a cada jogador qual é o próximo ponto sem depender do Mestre; e o
+a autonomia, dizendo a cada Guerreiro(a) qual é o próximo ponto sem depender do Mestre; e o
 **painel do dia (App 03)** é o instrumento de controle do encontro.
 
 ### Momentos do encontro
@@ -150,16 +152,16 @@ a autonomia, dizendo a cada jogador qual é o próximo ponto sem depender do Mes
 Os momentos abaixo compõem o encontro, mas **nem todos são simultâneos para todos**. Os
 momentos **2 e 5 são assíncronos**; os momentos **3, 4 e 6 são coletivos**, com horário
 marcado, e é neles que a turma inteira se junta. Não é camisa de força — é a espinha dorsal
-que garante acolhimento, prática, inspiração e voz do jogador em toda aula.
+que garante acolhimento, prática, inspiração e voz do Guerreiro(a) em toda aula.
 
 | #   | Momento                                                   | Ritmo      | O que acontece                                                                                                                                                                     |
 | --- | --------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Onboarding**                                            | Contínuo   | Cadastro de novos jogadores e registro de presença pela App 01, por áudio ou texto, conforme chegam                                                                                |
+| 1   | **Onboarding**                                            | Contínuo   | Cadastro de novos Guerreiros e Guerreiras, e registro de presença pela App 01, por áudio ou texto, conforme chegam                                                                 |
 | 2   | **Atividades desplugadas** (_Computer Science Unplugged_) | Assíncrono | Lógica, algoritmos e pensamento computacional **sem computador**: papel, corpo, jogos, materiais do dia a dia. Boa porta de entrada para quem chegou e ainda não pegou um aparelho |
 | 3   | **Bate-papo on-line com mentores e convidados**           | Coletivo   | Conversa ao vivo com profissionais e referências                                                                                                                                   |
 | 4   | **Momento GOAT / "Podemos ser os melhores"**              | Coletivo   | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade                                                                     |
 | 5   | **Trabalho de trilha / Desafio do dia**                   | Assíncrono | O grosso do encontro: cada equipe avança nos pontos da sua trilha e na atividade pontuada, com apoio do Mestre. O **Quiz ao Vivo** (§5) é a exceção coletiva deste momento         |
-| 6   | **Encerramento com apresentação livre**                   | Coletivo   | Cada jogador ou equipe mostra o que construiu e aprendeu, inclusive suas **criações originais**. Treina expressão pública e é a vitrine do protagonismo do jogador                 |
+| 6   | **Encerramento com apresentação livre**                   | Coletivo   | Cada Guerreiro(a) ou equipe mostra o que construiu e aprendeu, inclusive suas **criações originais**. Treina expressão pública e é a vitrine do protagonismo do Guerreiro(a)       |
 
 Observações operacionais:
 
@@ -168,9 +170,10 @@ Observações operacionais:
 - O **momento GOAT** é onde os valores do projeto entram de forma direta e concreta, ligados a
   pessoas reais.
 - O **encerramento** alimenta o portfólio (fotos, vídeos e registros de culminância, sempre
-  respeitando consentimento e LGPD) e é também a **roda de ideias**: espaço para os jogadores
-  sugerirem melhorias nas atividades, nas trilhas e na plataforma. As sugestões são registradas
-  pela Área do Jogador — a voz do jogador não termina na apresentação, ela muda o jogo.
+  respeitando consentimento e LGPD) e é também a **roda de ideias**: espaço para os Guerreiros
+  e Guerreiras sugerirem melhorias nas atividades, nas trilhas e na plataforma. As sugestões
+  são registradas pela Área do Guerreiro(a) — a voz do Guerreiro(a) não termina na
+  apresentação, ela muda o jogo.
 - Cada aula só acontece com os **recursos providos** por mestres ou apoiadores.
 
 ## 5. Atividade-modelo: Quiz ao Vivo
@@ -178,7 +181,7 @@ Observações operacionais:
 Competição rápida entre equipes, encaixável no "Desafio do dia", com pontuação lançada
 automaticamente.
 
-1. Os jogadores presentes são organizados em **equipes**.
+1. Os Guerreiros e Guerreiras presentes são organizados em **equipes**.
 2. As perguntas são **pré-cadastradas pelo curador da aula (Mestre)**, em múltipla escolha.
 3. Ao dar o _start_, **uma pergunta é exibida simultaneamente em todos os dispositivos logados
    na aula**.
@@ -191,21 +194,22 @@ acontece — quem sabe explica para quem não sabe, o que se conecta ao mérito 
 aos colegas.
 
 **O que exige das aplicações:** cadastro do banco de perguntas na App 09 (autoria do Mestre
-curador) e condução da partida na App 03;
+curador) e condução da partida na App 03, **pelo Mestre que ministra a aula ou por um Admin**;
 recebimento da pergunta e envio da resposta na App 05; **sincronização em tempo real** entre os
 dispositivos e desempate por ordem de chegada da resposta, com tolerância a rede instável —
 que é a regra nos pontos de apoio.
 
 > **A definir:** pontuação da vitória e das respostas corretas subsequentes; se responde a
 > equipe inteira ou um representante; comportamento quando duas respostas chegam praticamente
-> juntas; se o quiz roda com um dispositivo por equipe ou um por jogador.
+> juntas; se o quiz roda com um dispositivo por equipe ou um por Guerreiro(a).
 
 ## 6. Formação de Mestres, multiplicadores e voluntários
 
 - **Formação de mentores** é linha de ação explícita do projeto, e o caminho natural é a
-  própria gamificação: o jogador que apoia os colegas (Nível 4) evolui para o **Nível 5 —
+  própria gamificação: o Guerreiro(a) que apoia os colegas (Nível 4) evolui para o **Nível 5 —
   Mestre Aprendiz**, ficando apto ao treinamento de multiplicador.
-- O reconhecimento é **por trilha ou por poder**, no conteúdo em que o jogador se destacou.
+- O reconhecimento é **por trilha ou por poder**, no conteúdo em que o Guerreiro(a) se
+  destacou.
 - A **mediação entre idades faz parte do caminho**: nas equipes mistas, o mais velho ou mais
   avançado apoia os mais novos — exercício prático que forma o Nível 4 e prepara o Mestre
   Aprendiz. A diferença de idades vira o primeiro degrau da formação de multiplicadores.
@@ -219,11 +223,11 @@ que é a regra nos pontos de apoio.
 
 ### Voluntários de suporte nos pontos de apoio
 
-- Recrutados entre os **jogadores que atingirem o badge de Mestre Aprendiz**.
+- Recrutados entre os **Guerreiros e Guerreiras que atingirem o badge de Mestre Aprendiz**.
 - Dão suporte no dia a dia — recepção, apoio ao uso das aplicações, ajuda nas atividades
   práticas — sempre sob supervisão de um Mestre ou Admin.
-- É o degrau entre "jogador avançado" e "multiplicador": experiência prática de ensino antes de
-  assumir uma turma.
+- É o degrau entre "Guerreiro(a) avançado" e "multiplicador": experiência prática de ensino
+  antes de assumir uma turma.
 - Aplicam-se as regras de salvaguarda das atividades presenciais — nenhum adulto ou voluntário
   sozinho com criança, e canal de denúncia disponível.
 
@@ -251,10 +255,10 @@ coletivo com _fiscal sponsor_) — necessária para editais e recursos públicos
 ## 8. Fases sugeridas de implantação do piloto **[Proposta]**
 
 O piloto é o **Case 01 — Guerreira Zeferina**. O **Ciclo 01 (ago–dez/2026)** tem como meta o
-**MVP**: credenciamento de jogadores, cadastro da comunidade digital e as **trilhas 1 e 2** em
-operação — o que corresponde a **chegar até a Fase 3** dentro do ciclo. As fases seguintes
-ficam para ciclos posteriores. Todas as entregas de software são Web Apps responsivos, Mobile
-First.
+**MVP**: credenciamento de Guerreiros e Guerreiras, cadastro da comunidade digital e as
+**trilhas 1 e 2** em operação — o que corresponde a **chegar até a Fase 3** dentro do ciclo. As
+fases seguintes ficam para ciclos posteriores. Todas as entregas de software são Web Apps
+responsivos, Mobile First.
 
 | Fase                                   | Entrega                                                                                                                                              | Depende de                                    |
 | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
@@ -264,7 +268,7 @@ First.
 | 2.5 — Canal da família                 | **App 07** — é o que torna a hipótese **H2** mensurável                                                                                              | Fase 2                                        |
 | 3 — Primeiro ciclo presencial completo | Aulas com o roteiro da §4 + **App 02** + Quiz ao Vivo + **2ª trilha — Batalha de Laser** + culminância com vídeo                                     | Fase 2 + ponto de apoio + recursos com lastro |
 | 3.5 — Acervo em operação               | Entrega dos livros Alpha na abertura de cada trilha, tombamento dos 46 permanentes, mapeamento capítulo → ponto de trilha e conservação implantada   | Fase 2                                        |
-| 4 — Área do jogador e jogo             | **App 05** e **App 04**                                                                                                                              | Fase 2                                        |
+| 4 — Área do Guerreiro(a) e jogo        | **App 05** e **App 04**                                                                                                                              | Fase 2                                        |
 | 5 — Comunidade Virtual                 | Coleta de dados do território e painel público por comunidade                                                                                        | Fase 2                                        |
 | 6 — Economia visível                   | Livro-razão público em moedas, Poder Econômico, relatórios de transparência e **App 08** — Área do Apoiador                                          | Fase 3                                        |
 | 7 — Escala                             | Personalização por IA, formação de multiplicadores e voluntários, kit de implantação para a 2ª comunidade                                            | Fases 3–6                                     |
