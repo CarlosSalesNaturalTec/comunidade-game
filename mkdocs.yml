@@ -83,6 +83,7 @@ nav:
       - "PRD-01 — Backend API (núcleo)": prds/prd-01-backend-api.md
       - "PRD-02 — App 03: Frontend de Gestão": prds/prd-02-frontend-de-gestao.md
       - "PRD-04 — App 01: Onboarding": prds/prd-04-onboarding.md
+      - "PRD-09 — App 09: Área do Mestre": prds/prd-09-area-do-mestre.md
   - "Operação":
       - "04 — Modelo econômico e sustentabilidade": 04-modelo-economico-e-sustentabilidade.md
       - "05 — Implantação e operação": 05-implantacao-e-operacao.md

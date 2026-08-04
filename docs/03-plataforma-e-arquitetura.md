@@ -9,7 +9,8 @@
 3. **Frontends independentes** — em **domínios diferentes**, evoluindo desacoplados do
    backend.
 4. **Open Source** — todo o código-fonte é aberto, para permitir replicação por qualquer
-   comunidade.
+   comunidade. O **conteúdo educacional publicado sai sob CC BY-SA**: qualquer um usa e
+   adapta, creditando o Mestre autor, e o derivado herda a mesma licença.
 5. **Registro de custos em tudo** — toda ação com custo (aula, lanche, hospedagem,
    prestadores) é computada e atribuída a um personagem; a arquitetura precisa suportar esse
    livro-razão desde o início.
@@ -456,6 +457,14 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   Guerreiro(a) —, aprovações privativas de Admin e painéis gerais continuam na App 03.
 - **Nenhum modelo ou fluxo pressupõe habilidade técnica de TI**: o Mestre pode ser de humanas,
   artes, esportes ou cultura.
+- **A trilha publicada vai ao ar sem aprovação prévia.** A curadoria é posterior: o Admin
+  audita por amostragem e pode despublicar, do mesmo modo como audita a coleta.
+- **A ferramenta recusa publicar trilha sem desafio de coleta e sem culminância com criação
+  original** — as duas regras do documento 02 viram trava, não recomendação. A criação
+  entregue é validada pelo Mestre autor da trilha.
+- **Conteúdo do ponto de trilha:** texto formatado, imagens, link externo e upload hospedado
+  pela plataforma — **vídeo até 200 MB e arquivo até 20 MB por ponto de trilha**, com o
+  consumo lançado como recurso de _cloud_ no livro-razão.
 
 ## 12. Proteção de dados em toda a plataforma (LGPD)
 

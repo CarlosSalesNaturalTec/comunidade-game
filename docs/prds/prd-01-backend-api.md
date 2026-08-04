@@ -8,7 +8,7 @@
 | Aplicação        | — (núcleo consumido pelas nove aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | aprovado                                                   |
-| Versão e data    | v5 — 2026-08-04                                            |
+| Versão e data    | v6 — 2026-08-04                                            |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 9, 11 e 12, 04, 11                        |
 
@@ -205,7 +205,9 @@ Responsavel         DesafioDeDesbloqueio  Batalha
 VinculoResponsavel  DesafioExtra          PerguntaDeQuiz
 Credencial          Ponto/Nivel/Badge     PartidaDeQuiz
 Consentimento       CriacaoOriginal
-Sessao
+Sessao              Conteudo
+                    BibliografiaDoPonto
+                    Culminancia
                     PARTICIPAÇÃO               TERRITÓRIO (PRD-08)  ECONOMIA (PRD-07)
                     SolicitacaoDeParticipacao  ComunidadeVirtual    TipoDeRecurso
                     SolicitacaoDoResponsavel   Local                Aporte
@@ -224,6 +226,10 @@ Sessao
 A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela que o App 01 tira
 a comunidade do novo cadastro, e é a existência dela que habilita o onboarding naquele momento.
 Não há parâmetro de liberação separado.
+
+`Conteudo`, `BibliografiaDoPonto` e `Culminancia` entram pela autoria de trilha e têm os
+atributos definidos no PRD-09. A `Culminancia` é o que torna verificável a regra de que toda
+trilha termina em criação original: sem ela, a trilha não é publicável.
 
 Imutabilidade: `Consentimento` e `Auditoria` são **somente inserção**. Revogação é um novo
 registro, não a edição do anterior — é o que permite responder "o que valia naquela data".

@@ -16,7 +16,7 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
 | Visão, valores, causas, objetivos, público-alvo, fundador, transparência sobre IA                                                                                                                              | 01          |
 | Personas, solicitação de participação, Comunidades Virtuais (conceito e regras de coleta), poderes, trilhas, atividades e desafios, criações originais, equipes, batalhas, recompensas, manual do Guerreiro(a) | 02          |
-| Princípios de arquitetura, canais, as 9 aplicações, LGPD da plataforma                                                                                                                                         | 03          |
+| Princípios de arquitetura, canais, as 9 aplicações, licenças, LGPD da plataforma                                                                                                                               | 03          |
 | Economia de recursos, moeda da plataforma, livro-razão, pessoa jurídica, receitas, titularidade dos dados publicados, desafios extras (regras completas), impacto social                                       | 04          |
 | Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto                                          | 05          |
 | Trilha 1 — Robô Educa                                                                                                                                                                                          | 06          |
@@ -78,6 +78,8 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Aviso de LGPD visível nas aplicações e área detalhada                | 03 §12                           | 08, 09                         |
 | Área do Apoiador (App 08) e registro de propostas                    | 03 §10                           | 04, 08, 09, 12                 |
 | Área do Mestre (App 09) — autoria e operação                         | 03 §11                           | 02, 05, 08, 09                 |
+| Publicação da trilha (sem aprovação prévia, travas e conteúdo)       | 03 §11                           | 02, 05, 08, 11                 |
+| Licença do conteúdo educacional (CC BY-SA)                           | 03 §1                            | 01, 08, 09                     |
 | Regra de lastro (atividade só com recurso provido)                   | 04 §1                            | 02, 05, 10, 11, 12             |
 | Poder Econômico                                                      | 04 §1                            | 02, 12                         |
 | Desafios extras (aberto e direcionado)                               | 04 §3                            | 02, 08, 11, 12                 |

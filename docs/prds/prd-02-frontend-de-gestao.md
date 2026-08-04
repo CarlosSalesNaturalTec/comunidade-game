@@ -8,7 +8,7 @@
 | Aplicação        | App 03 — Gestão administrativa            |
 | Onda             | 2                                         |
 | Situação         | aprovado                                  |
-| Versão e data    | v3 — 2026-08-04                           |
+| Versão e data    | v4 — 2026-08-04                           |
 | Depende de       | PRD-01                                    |
 | Documentos-fonte | 03 §§5, 11, 12, 04 §§1–3, 05 §§2–5, 02 §4 |
 
@@ -58,7 +58,8 @@ poder tocar a partida.
 ### 3.2 Fora do escopo
 
 - **Autoria de trilha, ponto de trilha, conteúdo, quiz e desafio de coleta** — é a bancada do
-  Mestre na App 09 (PRD-09). A App 03 apenas acompanha o que foi publicado.
+  Mestre na App 09 (PRD-09). A App 03 acompanha o que foi publicado e, na auditoria por
+  amostragem, pode despublicar com motivo.
 - **Lançamento das atividades do próprio Mestre** — ele lança na App 09; aqui o Admin lança as
   demais e corrige o que precisar.
 - Regras de pontuação, cadência de coleta e valoração de aporte: normatizadas nos documentos
@@ -272,6 +273,7 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RF-02-62` | Encerrada a partida, a pontuação é lançada automaticamente às equipes                              | essencial  |
 | `RF-02-63` | Admin consulta a trilha de auditoria das ações de gestão, com filtro por autor, período e entidade | essencial  |
 | `RF-02-64` | Toda tela que coleta dado exibe o aviso discreto e o acesso à área detalhada de direitos           | essencial  |
+| `RF-02-70` | Admin audita por amostragem as trilhas publicadas e despublica com motivo registrado               | essencial  |
 
 ## 7. Regras de negócio
 
@@ -515,3 +517,4 @@ foi definida no PRD-01 — a App 03 apenas a consulta.
 | `RF-02-59` a `RF-02-62` | 05 §5 (Quiz ao Vivo)                                     |
 | `RF-02-63`              | PRD-01 (trilha de auditoria)                             |
 | `RF-02-64`              | 03 §12 (aviso visível de coleta e área detalhada)        |
+| `RF-02-70`              | 03 §11 e PRD-09 (auditoria das trilhas publicadas)       |
