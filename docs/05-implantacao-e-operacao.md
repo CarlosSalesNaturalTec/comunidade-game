@@ -182,7 +182,8 @@ Competição rápida entre equipes, encaixável no "Desafio do dia", com pontua�
 automaticamente.
 
 1. Os Guerreiros e Guerreiras presentes são organizados em **equipes**.
-2. As perguntas são **pré-cadastradas pelo curador da aula (Mestre)**, em múltipla escolha.
+2. As perguntas são **pré-cadastradas pelo curador da aula (Mestre)**, em múltipla escolha com
+   **quatro alternativas e sem tempo por pergunta** — o ritmo é de quem conduz a partida.
 3. Ao dar o _start_, **uma pergunta é exibida simultaneamente em todos os dispositivos logados
    na aula**.
 4. Cada equipe **se consulta internamente** e clica na opção escolhida.

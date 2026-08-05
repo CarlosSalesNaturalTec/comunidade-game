@@ -64,6 +64,9 @@
   escolhida no cadastro; genérico **Guerreiro(a)**, coletivo **Guerreiros e Guerreiras**.
 - **Sem notificação por e-mail no Ciclo 01:** todo retorno acontece dentro da plataforma.
 - **Toda trilha contém desafios de coleta de dados reais** e **termina em criação original**.
+- **Atividade de trilha pertence a um ponto de trilha**, é autorada pelo Mestre e declara
+  modalidade (individual ou equipe) e formato (presencial ou on-line).
+- **Recompensa é conquistada em marco da trilha**, nunca comprada com saldo de pontos.
 - Valores do projeto refletidos em conteúdo, conduta e representatividade.
 - **Modelo de gamificação como fonte normativa:** anatomia da trilha, taxonomia de atividades,
   motor de pontuação, níveis, badges, recompensas e reflexos no ecossistema seguem o documento 11.
@@ -97,7 +100,9 @@
   Registro de dado do território, Pergunta de quiz, Partida de quiz, **Criação original do
   Guerreiro(a)**, **Sugestão ou proposta de evolução** e **Solicitação de participação como
   Mestre ou Apoiador**.
-- Rotas de consulta abertas (vitrine, rankings, painéis de comunidade) sem autenticação.
+- Rotas de consulta abertas (vitrine, rankings, painéis de comunidade) sem autenticação,
+  incluindo a **consulta por nick exato** do Guerreiro(a) com divulgação autorizada — sem
+  listagem, sugestão ou completação que permita descobrir nick de criança.
 - Suporte a múltiplos frontends e a aplicações de terceiros.
 - Papéis e permissões: Admin (total), Mestre (conteúdo e lançamentos das suas atividades),
   Guerreiro(a) (próprios dados), Visitante (leitura pública).
@@ -179,7 +184,9 @@ de quem tratou; **cadastro dos locais do território e fila de solicitações de
 vindas da App 05, com alerta das que estão em aberto; inclusão manual de Admins; cadastro de
 atividades (pontuação, recompensas, recursos necessários); **acompanhamento dos desafios de
 coleta publicados** — cadência, vigência e séries ativas —, cuja autoria é do Mestre na App 09;
-agenda de aulas on-line e presenciais; lançamento de atividades realizadas (data, mentores,
+agenda de aulas on-line e presenciais; **cadastro de atividade avulsa, fora de trilha — a atividade
+que pertence a um ponto de trilha é autorada pelo Mestre na App 09**; lançamento de atividades
+realizadas (data, mentores,
 Guerreiros e Guerreiras, resultados); **entradas manuais** — presença, infrações ocorridas nas
 aulas e pontuação extra a quem ajudou o colega; conferência e ajuste de presenças vindas do
 onboarding; gestão de recursos (aportes e consumo); **painéis do dia** com a visão operacional
@@ -221,7 +228,8 @@ apoiar"** com a chave PIX do projeto; espaço de **publicidade** fora das áreas
 crianças; vídeo de apresentação (Susy, Otávio, Rôbróders, prof. Carlos Trenell); estética de
 comunidade (grafite, cores, imagens do território); **portfólio de criações originais** dos
 Guerreiros e Guerreiras autorizados, com o nick dos autores; **nota de transparência sobre IA**
-nas seções institucionais.
+nas seções institucionais; **favoritos do visitante** — sem login e sem cadastro, guardados no
+próprio aparelho, fazendo a vitrine destacar primeiro as novidades de quem ele acompanha.
 
 **Formulário de solicitação de participação:** pessoas e instituições interessadas em
 participar como **Mestre ou Apoiador** preenchem um formulário público. **Obrigatórios:** nome,
@@ -301,7 +309,8 @@ Apoiadores** — abertos ou direcionados —, vinculados à trilha em andamento,
 recompensa em quantidade declarada; **equipes** — grupos livres de até 5, participação em mais
 de uma, com a pontuação de todas as atividades em que colaborar; **séries de coleta de dados do
 território** — próxima medição, histórico do que já foi registrado, situação da série (ativa ou
-interrompida) e pontos que ela está rendendo; ranking; troca de pontos por recompensas; pedido
+interrompida) e pontos que ela está rendendo; ranking; recompensas conquistadas nos marcos da
+trilha; pedido
 de ajuda para atividades escolares; níveis 1–5 (assíduo → **Mestre Aprendiz**); badges por
 trilha e por poder; **portfólio de criações originais do Guerreiro(a)**, com autoria creditada;
 **canal de sugestões**, com acompanhamento do status de avaliação.
@@ -498,7 +507,10 @@ ensina; a gestão administrativa segue na App 03.
 
 **Requisitos de autoria:** trilhas seguindo a **anatomia formal do documento 11** — em modelo
 **agnóstico de área do conhecimento**, apto a trilhas de humanas, artes, esportes e cultura
-tanto quanto às técnicas —, incluindo a **paginação da trilha pelas etapas do ciclo**; conteúdo
+tanto quanto às técnicas —, incluindo a **paginação da trilha pelas etapas do ciclo**; **as
+atividades de cada ponto de trilha**, com modalidade (individual ou equipe) e formato
+(presencial ou on-line) declarados pelo Mestre autor; **a recompensa de cada marco**, com
+lastro exigido antes da publicação; conteúdo
 próprio e de terceiros; quiz ou desafio para desbloqueio; **publicação dos artefatos que
 comprovam a habilidade do Mestre**; catálogo inicial de poderes: **IA/Robótica e Poder do
 Território** nesta etapa — Redes, Soft Skills, PNED/BNCC, Rima e Capoeira ficam para ciclo
@@ -596,6 +608,9 @@ família. Substitui a comunicação por mensageria de terceiros, fora do escopo 
 - **Vínculo responsável ↔ Guerreiros e Guerreiras**, cadastrado por Admin ou Mestre, com grau
   de parentesco e no máximo três responsáveis por Guerreiro(a); o responsável só enxerga os
   Guerreiros e Guerreiras sob sua responsabilidade.
+- **Parentes e amigos além dos três acompanham como Apoiador** (App 08), pelo nick que o
+  responsável lhes ceder — a aplicação deixa isso claro para a família, porque é ela quem
+  decide a quem entrega o nick.
 - **Evolução do Guerreiro(a)**: presença, atividades realizadas, pontos, poderes, badges, nível
   e progresso nas trilhas.
 - **Autorização de divulgação pública** do histórico e do perfil — concessão e **revogação**,
@@ -646,6 +661,11 @@ quem sustenta o projeto, sem nenhum contato com Guerreiros e Guerreiras ou famí
   → publicado, com **lastro exigido antes da publicação**.
 - **Relatório de efetividade** dos desafios propostos, **agregado e por avatar** — nunca com
   dado de contato ou identificação de Guerreiro(a).
+- **Os mesmos dados do painel público**, com **favoritos** de Guerreiros, Guerreiras e Mestres,
+  cujas novidades aparecem em destaque. É o canal de parentes e amigos que não são um dos três
+  responsáveis da criança: acompanham pelo **nick cedido pela família** e podem direcionar
+  desafio a ela. Favoritar é leitura — não abre contato, não avisa a criança e não alcança
+  quem não tem divulgação autorizada.
 - **Envio de documentos comprobatórios** — currículo, portfólio, redes sociais, termos de
   doação e comprovantes —, que um Admin anexa ao cadastro e que alimentam a página pública do
   Apoiador na vitrine (PRD-03).

@@ -9,7 +9,8 @@
 3. **Frontends independentes** — em **domínios diferentes**, evoluindo desacoplados do
    backend.
 4. **Open Source** — todo o código-fonte é aberto, para permitir replicação por qualquer
-   comunidade.
+   comunidade. O **conteúdo educacional publicado sai sob CC BY-SA**: qualquer um usa e
+   adapta, creditando o Mestre autor, e o derivado herda a mesma licença.
 5. **Registro de custos em tudo** — toda ação com custo (aula, lanche, hospedagem,
    prestadores) é computada e atribuída a um personagem; a arquitetura precisa suportar esse
    livro-razão desde o início.
@@ -331,8 +332,8 @@ imagens reais**.
 
 Web App de uso cotidiano do Guerreiro(a), com **guia e apoio nas trilhas**: qual é o próximo
 ponto, o que precisa ser feito, o que já foi conquistado e o que está bloqueado. Reúne a
-jornada gamificada — poderes, trilhas, desafios semanais, equipes, ranking, recompensas e
-registro de dados do território.
+jornada gamificada — poderes, trilhas, desafios semanais, equipes, ranking, recompensas
+conquistadas nos marcos e registro de dados do território.
 
 É também o instrumento de **coleta de dados da Comunidade Virtual**: as séries ativas, quando é
 a próxima medição, o que já foi registrado e **quantos pontos aquela série está rendendo**. O
@@ -363,6 +364,10 @@ Web App de acesso público e **sem autenticação**:
   agregados e anonimizados, abertos à consulta da comunidade e de instituições.
 - **Portfólio de criações originais** — as criações dos Guerreiros e Guerreiras autorizados,
   com o nick do autor (ou dos autores, em equipe).
+- **Favoritos do visitante** — sem login e sem cadastro, o visitante marca Guerreiros,
+  Guerreiras e Mestres como favoritos e a vitrine passa a destacar as novidades deles primeiro.
+  A lista fica **no próprio aparelho**: a plataforma não coleta nada do visitante e, trocando de
+  aparelho, a lista não vai junto.
 - Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins — incluindo a **nota de
   transparência sobre IA**.
 - **"Como apoiar"** — canais de doação, incluindo a chave PIX da pessoa jurídica vinculada.
@@ -411,18 +416,22 @@ notificação por e-mail**: o retorno acontece na própria plataforma, na área 
 Web App autenticado dos **Apoiadores já cadastrados** por um Admin. É onde o apoio deixa de
 ser um lançamento feito por terceiros e passa a ter canal próprio:
 
-| Função                        | O que o Apoiador faz                                                                                 |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Meus aportes**              | Acompanha o que aportou, em **moedas**, e o **Poder Econômico** acumulado                            |
-| **Desafios extras**           | Propõe desafios abertos ou direcionados e acompanha validação do Mestre e aprovação do Admin         |
-| **Efetividade do apoio**      | Vê o que os desafios produziram — sempre **agregado e por avatar**                                   |
-| **Documentos comprobatórios** | Envia currículo, portfólio, redes sociais, termos e comprovantes para o Admin anexar ao seu cadastro |
-| **Propostas**                 | Registra propostas de evolução da plataforma, que caem na fila de avaliação da gestão                |
+| Função                        | O que o Apoiador faz                                                                                                                                |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Meus aportes**              | Acompanha o que aportou, em **moedas**, e o **Poder Econômico** acumulado                                                                           |
+| **Desafios extras**           | Propõe desafios abertos ou direcionados e acompanha validação do Mestre e aprovação do Admin                                                        |
+| **Efetividade do apoio**      | Vê o que os desafios produziram — sempre **agregado e por avatar**                                                                                  |
+| **Acompanhamento**            | Vê os **mesmos dados do painel público** e mantém **favoritos** — Guerreiros e Guerreiras pelo nick e Mestres —, com as novidades deles em destaque |
+| **Documentos comprobatórios** | Envia currículo, portfólio, redes sociais, termos e comprovantes para o Admin anexar ao seu cadastro                                                |
+| **Propostas**                 | Registra propostas de evolução da plataforma, que caem na fila de avaliação da gestão                                                               |
 
 **Regras obrigatórias:**
 
 - **Nenhum contato direto com Guerreiro(a) ou família.** Proposta, entrega e reconhecimento
-  seguem mediados pela plataforma; a App 07 não é compartilhada com Apoiadores.
+  seguem mediados pela plataforma; a App 07 não é compartilhada com Apoiadores. **Favoritar é
+  leitura**: não abre canal, não avisa a criança e não dá acesso a nada além do que já é público.
+- **O nick vem da família, nunca da plataforma.** A busca é por nick exato, alcança apenas quem
+  tem divulgação autorizada e não lista, sugere nem completa nomes.
 - **O app não cadastra Apoiador.** O cadastro continua exclusivo de Admin; quem ainda não é
   Apoiador usa o formulário de solicitação da vitrine.
 - Toda proposta de desafio extra segue o fluxo vigente: validação do Mestre da trilha,
@@ -435,7 +444,7 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 
 | Função                    | O que o Mestre faz                                                                                                                     |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **Autoria de trilhas**    | Cria trilhas, pontos de trilha, conteúdos, bibliografia de apoio, quizzes e desafios — inclusive o de coleta                           |
+| **Autoria de trilhas**    | Cria trilhas, pontos de trilha, conteúdos, bibliografia de apoio, **atividades do ponto**, quizzes e desafios — inclusive o de coleta  |
 | **Prova de habilidade**   | Publica os artefatos que comprovam sua habilidade, além de currículo, portfólio e redes sociais                                        |
 | **Minhas atividades**     | Acompanha as suas turmas e lança resultados, presenças e méritos das atividades que propôs                                             |
 | **Validação pedagógica**  | Valida os desafios extras que os Apoiadores propõem para as suas trilhas, antes da aprovação do Admin                                  |
@@ -456,6 +465,14 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   Guerreiro(a) —, aprovações privativas de Admin e painéis gerais continuam na App 03.
 - **Nenhum modelo ou fluxo pressupõe habilidade técnica de TI**: o Mestre pode ser de humanas,
   artes, esportes ou cultura.
+- **A trilha publicada vai ao ar sem aprovação prévia.** A curadoria é posterior: o Admin
+  audita por amostragem e pode despublicar, do mesmo modo como audita a coleta.
+- **A ferramenta recusa publicar trilha sem desafio de coleta e sem culminância com criação
+  original** — as duas regras do documento 02 viram trava, não recomendação. A criação
+  entregue é validada pelo Mestre autor da trilha.
+- **Conteúdo do ponto de trilha:** texto formatado, imagens, link externo e upload hospedado
+  pela plataforma — **vídeo até 200 MB e arquivo até 20 MB por ponto de trilha**, com o
+  consumo lançado como recurso de _cloud_ no livro-razão.
 
 ## 12. Proteção de dados em toda a plataforma (LGPD)
 

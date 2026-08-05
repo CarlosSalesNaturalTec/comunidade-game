@@ -52,7 +52,7 @@ Pela regra de lastro, **nenhuma atividade acontece sem os recursos providos** �
 | **Ponto de apoio**         | Espaço físico na comunidade (hackerspace, fab lab, sala cedida) com guarda do acervo                                     |
 | **Equipamentos**           | Notebooks, smartphones e tablets de uso compartilhado — viabilizam a dinâmica assíncrona dos encontros                   |
 | **Operação dos encontros** | Hora-aula dos mentores, lanche dos Guerreiros e Guerreiras, insumos das oficinas (LEDs, baterias, papel, kit de encapar) |
-| **Recompensas**            | Catálogo de troca de pontos (kits de alimentos e itens não alimentares)                                                  |
+| **Recompensas**            | Catálogo entregue nos marcos da trilha (kits de alimentos e itens não alimentares)                                       |
 | **Infraestrutura digital** | Servidores, armazenamento e execução das aplicações                                                                      |
 | **Reposições**             | Acervo e materiais — perda ou dano nunca gera cobrança à família; vira necessidade de reposição a ser aportada           |
 
@@ -102,5 +102,8 @@ Guerreiros e Guerreiras ou famílias.
   comprovam.
 - **Relatório de efetividade** dos seus desafios — quantos concluíram, em que trilhas, com que
   retenção (formato ainda em definição).
+- **Os mesmos dados do painel público**, com **favoritos**: parentes e amigos que não são um dos
+  três responsáveis da criança acompanham por aqui, pelo nick que a família lhes cedeu, e podem
+  direcionar desafios a ela. Acompanhar é ler o que já é público — não abre contato.
 - **Prestação de contas** dos recursos: o primeiro relatório real será o do acervo do
   Goethe-Institut, ao fim do Ciclo 01.
