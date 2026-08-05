@@ -58,8 +58,8 @@ inteira sem escrever uma linha de código.
   Guerreiras já cadastrados.
 - **Artefatos comprobatórios** da habilidade do Mestre, que alimentam a sua página na vitrine.
 - **Registro de propostas** de evolução da plataforma, na fila única da gestão.
-- **Disciplinas e conteúdo do apoio escolar** que o assistente da App 05 pode usar — o Admin
-  cadastra o mesmo conteúdo pela App 03.
+- **Disciplinas e conteúdo do apoio escolar** — o corpus fechado que os assistentes das Apps 05
+  e 02 consomem. É autoria exclusiva do Mestre; o Admin audita por amostragem.
 
 ### 3.2 Fora do escopo
 
@@ -83,7 +83,7 @@ inteira sem escrever uma linha de código.
 | Persona      | O que faz nesta aplicação                                                               | O que não pode fazer                                                    |
 | ------------ | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | Mestre       | Cria e publica trilhas, cadastra perguntas, lança o que é seu, valida, absorve e propõe | Lançar atividade de outro Mestre; cadastrar persona além do responsável |
-| Admin        | Audita trilhas publicadas por amostragem e despublica com motivo                        | Editar a trilha de um Mestre — despublicar não é reescrever             |
+| Admin        | Audita por amostragem trilhas e corpus de apoio escolar, e despublica com motivo        | Editar a trilha de um Mestre, ou cadastrar conteúdo de apoio escolar    |
 | Guerreiro(a) | Nada: não acessa esta aplicação                                                         | Entrar                                                                  |
 | Visitante    | Nada: a aplicação é inteiramente autenticada                                            | Acessar qualquer tela                                                   |
 
@@ -292,7 +292,8 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-54` | Solicitações de local em aberto aparecem com alerta enquanto não são tratadas                  | essencial  |
 | `RF-09-55` | Mestre registra proposta de evolução da plataforma e acompanha o status na fila única          | essencial  |
 | `RF-09-77` | Mestre cadastra disciplinas do apoio escolar, com nome, faixa de dificuldade e situação        | essencial  |
-| `RF-09-78` | Mestre cadastra o conteúdo de cada disciplina, que é o único insumo do assistente da App 05    | essencial  |
+| `RF-09-78` | Mestre cadastra o conteúdo de cada disciplina, único insumo dos assistentes das Apps 05 e 02   | essencial  |
+| `RF-09-79` | Mestre vê o motivo quando o Admin despublica conteúdo de apoio auditado, e corrige             | essencial  |
 
 ### 6.7 Recursos, absorção e ressarcimento
 
@@ -536,8 +537,8 @@ como ação de Admin e o cadastro de atividade ficou restrito à **atividade avu
 
 ## 14. Pendências que permanecem
 
-- **Curadoria do conteúdo de apoio escolar** que o Mestre cadastra para o assistente da App 05:
-  sem aprovação prévia na ferramenta, a conferência do corpus precisa de critério combinado.
+- **Periodicidade da auditoria por amostragem** do Admin, tanto das trilhas publicadas quanto
+  do corpus de apoio escolar: a regra está decidida, o ritmo da conferência não.
 - **Mapeamento dos livros nas trilhas**: qual capítulo apoia qual ponto das trilhas 1 e 2 é
   trabalho de leitura do acervo, não de ferramenta — mas sem ele a bibliografia nasce vazia.
 - **Licença do código** da plataforma (AGPL, MIT ou outra): a do conteúdo já está decidida.
@@ -568,4 +569,4 @@ como ação de Admin e o cadastro de atividade ficou restrito à **atividade avu
 | `RF-09-68`              | 03 §12 (aviso visível de coleta e área detalhada)                |
 | `RF-09-69` e `RF-09-70` | 11 §§2.1, 4 (atividade dentro do ponto de trilha)                |
 | `RF-09-71` a `RF-09-76` | 02 §8 e 11 §2.1 (recompensa conquistada no marco)                |
-| `RF-09-77` e `RF-09-78` | 03 §§7, 11 (disciplinas e conteúdo do apoio escolar)             |
+| `RF-09-77` a `RF-09-79` | 03 §§7, 11 (disciplinas e conteúdo do apoio escolar)             |

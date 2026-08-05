@@ -201,8 +201,8 @@ aprovação caso a caso por Admin; **fila de solicitações dos responsáveis** 
 (autorizações, revogações, recusas, acesso, correção e exclusão de dados), com registro de quem
 tratou e quando; **fila única de avaliação das sugestões e propostas** vindas das Apps 05
 (Guerreiro(a)), 07 (responsável), 08 (Apoiador) e 09 (Mestre), com status e retorno a quem
-propôs; **cadastro das disciplinas e do conteúdo do apoio escolar** consumido pelo assistente
-da App 05, que o Mestre também cadastra pela App 09.
+propôs; **auditoria por amostragem do conteúdo de apoio escolar** cadastrado pelos Mestres, com
+despublicação motivada — o Admin confere o corpus, não o cadastra.
 
 **Painel do dia em encontro assíncrono:** como os Guerreiros e Guerreiras chegam e avançam em
 ritmos diferentes, o painel precisa mostrar em tempo real **quem já chegou, em que ponto de
@@ -346,8 +346,10 @@ backend** — com dois modos de operação.
 **Requisitos:**
 
 - **Modo Conversa:** interação educacional por voz ("converse com seu robô") — quiz e explicação
-  de conceitos das trilhas. O **apoio às atividades escolares fica na App 05** (PRD-05), com
-  corpus restrito ao conteúdo cadastrado pela gestão.
+  de conceitos das trilhas, **no mesmo desenho do assistente da App 05**: modelo LLM Google
+  Gemini, corpus fechado no conteúdo cadastrado pelos Mestres, guardrails, filtros de segurança
+  no nível mais restritivo e guarda apenas da transcrição. O **apoio às atividades escolares
+  fica na App 05** (PRD-05).
 - **Modo Ouvinte:** a aplicação acompanha o que é falado durante a aula e, **quando acionada**,
   opina sobre o tema em discussão ou responde a perguntas dirigidas a ela.
 - Captação e reprodução de áudio via `navigator.mediaDevices.getUserMedia`; reconhecimento de
@@ -363,10 +365,10 @@ backend** — com dois modos de operação.
 - Registro de dados do território **por voz**, alimentando as séries da Comunidade Virtual sem
   exigir digitação.
 
-**Questões em aberto:** provedor e custo do modelo de IA; processamento de áudio no
-dispositivo × nuvem; base legal e prazo de retenção da transcrição de aula com menores;
-critério de acionamento do Modo Ouvinte (palavra-chave, botão do Mestre ou ambos);
-comportamento em salas barulhentas.
+**Questões em aberto:** processamento de áudio no dispositivo × nuvem; base legal e prazo de
+retenção da transcrição de aula com menores; critério de acionamento do Modo Ouvinte
+(palavra-chave, botão do Mestre ou ambos); comportamento em salas barulhentas. O modelo, o
+corpus fechado, os guardrails e o descarte do áudio seguem o que o documento 03 §7 define.
 
 **Fontes:** docs 03, 06.
 
@@ -503,8 +505,9 @@ ensina; a gestão administrativa segue na App 03.
   com alerta das solicitações em aberto.
 - **Publicação dos artefatos comprobatórios** da sua habilidade, com currículo, portfólio e
   redes sociais, que alimentam a sua página na vitrine (PRD-03).
-- **Cadastro das disciplinas e do conteúdo do apoio escolar** que o assistente da App 05 pode
-  usar — o mesmo cadastro existe para o Admin na App 03.
+- **Cadastro das disciplinas e do conteúdo do apoio escolar** — o corpus fechado que os
+  assistentes das Apps 05 e 02 consomem. É cadastro exclusivo do Mestre; o Admin audita por
+  amostragem, como faz com as trilhas.
 - **Registro de propostas** de evolução da plataforma, na mesma fila da gestão que recebe as
   sugestões dos Guerreiros e Guerreiras.
 - **Acompanhamento do ressarcimento** do que absorveu; havendo receita destinada, a chave PIX

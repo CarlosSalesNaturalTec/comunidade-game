@@ -225,8 +225,11 @@ Arquitetura: **JavaScript no frontend + IA no backend**, a mesma base técnica d
 Dois modos de operação:
 
 - **Modo Conversa** — o Guerreiro(a) fala com o robô e recebe resposta em áudio: quiz e
-  explicação de conceitos das trilhas. O **apoio às atividades escolares** não fica aqui: é
-  atendido pelo assistente da App 05 (§7), restrito ao conteúdo cadastrado pela gestão.
+  explicação de conceitos das trilhas. Segue **o mesmo desenho do assistente da App 05** (§7):
+  modelo **LLM Google Gemini**, **corpus fechado** no conteúdo que os Mestres cadastraram,
+  guardrails educacionais, filtros de segurança no nível mais restritivo e **guarda apenas da
+  transcrição**, com o áudio descartado. O **apoio às atividades escolares** não fica aqui: é
+  atendido pelo assistente da App 05.
 - **Modo Ouvinte** — a aplicação **acompanha o que é falado durante a aula** e, quando
   acionada, **opina sobre o tema em discussão ou responde a perguntas dirigidas a ela**.
   Funciona como um participante a mais, não como um gravador: só se manifesta quando
@@ -293,8 +296,8 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
   tratou e quando.
 - **Fila de avaliação das sugestões e propostas** vindas das Apps 05, 07, 08 e 09, com status
   e retorno a quem propôs.
-- **Disciplinas e conteúdo do apoio escolar** que o assistente da App 05 pode usar — o Mestre
-  cadastra o mesmo conteúdo pela App 09.
+- **Auditoria por amostragem do conteúdo de apoio escolar** cadastrado pelos Mestres, com
+  despublicação motivada — o Admin confere, não cadastra.
 
 A autoria de trilhas e conteúdos e as validações pedagógicas são do Mestre e vivem na App 09;
 esta aplicação continua sendo a da **gestão** — cadastros, lançamentos, aprovações de Admin e
@@ -345,8 +348,7 @@ inclusão.
 
 É onde fica o **apoio às atividades escolares**, atendido por um **assistente por voz com IA**
 — modelo **LLM Google Gemini** — que responde **exclusivamente a partir das disciplinas e do
-conteúdo cadastrados previamente por Mestres (App 09) ou Admins (App 03)**. Três exigências
-formam a regra:
+conteúdo cadastrados previamente pelos Mestres na App 09**. Quatro exigências formam a regra:
 
 - **Corpus fechado.** Fora do conteúdo cadastrado o assistente não responde: diz que o assunto
   ainda não está no material da plataforma e orienta procurar um Mestre no encontro.
@@ -355,6 +357,17 @@ formam a regra:
 - **Filtros de segurança no nível mais restritivo**, com aviso prévio ao Guerreiro(a) e ao
   responsável e **alternativa equivalente** — perguntar ao Mestre no encontro — para quem
   recusar.
+- **Só a transcrição é guardada**: o áudio da pergunta é descartado assim que transcrito,
+  pela mesma razão que a fotografia do onboarding é apagada na geração do _template_.
+
+**Quem cadastra e quem confere.** O corpus é cadastrado **apenas pelos Mestres**; o Admin não
+cadastra conteúdo de apoio — ele **audita por amostragem** o que o Mestre publicou e pode
+despublicar com motivo, exatamente como faz com as trilhas.
+
+**Cota e custo no Ciclo 01.** Não há teto de uso: a demanda e o custo são observados ao longo
+do ciclo para dimensionar o ciclo seguinte. O consumo entra no livro-razão como recurso de
+_cloud_, **aportado por absorção pelo Admin e Mestre fundador**, começando no _free tier_ da
+conta **Google Gemini PRO** e passando a _pay-as-you-go_ quando o uso exigir.
 
 E é o **canal de sugestões do Guerreiro(a)**: ideias de melhoria para atividades, trilhas e
 para a própria plataforma são registradas aqui e caem na fila de avaliação da gestão — o mesmo
@@ -473,7 +486,7 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 | **Necessidades**          | Vê o que falta de recurso para as suas atividades e, se quiser, cobre a falta com **aporte por absorção**                              |
 | **Locais do território**  | Aprova as solicitações de novo local dos Guerreiros e Guerreiras das suas trilhas, com alerta das que estão em aberto                  |
 | **Responsáveis**          | Cadastra o responsável que se apresentou no encontro e vincula a ele **qualquer** Guerreiro(a) já cadastrado, com o grau de parentesco |
-| **Apoio escolar**         | Cadastra as disciplinas e o conteúdo que o assistente da App 05 pode usar para ajudar nas atividades escolares                         |
+| **Apoio escolar**         | Cadastra as disciplinas e o conteúdo — o corpus fechado que os assistentes das Apps 05 e 02 podem usar; o Admin audita por amostragem  |
 | **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                                                     |
 | **Ressarcimento**         | Acompanha a situação do que absorveu; havendo receita, envia a chave PIX por e-mail ao Admin — a plataforma não guarda dado bancário   |
 

@@ -54,7 +54,7 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
 - **Acervo do Guerreiro(a)**: o exemplar da linha Alpha que é dele e os exemplares permanentes
   em uso de bancada, com a ficha de vida do livro.
 - **Apoio às atividades escolares** por assistente de voz com IA, respondendo apenas a partir
-  do conteúdo cadastrado pela gestão.
+  do conteúdo que os Mestres cadastraram.
 - **Canal de sugestões**, em texto ou áudio, com acompanhamento do status.
 - **Aviso de coleta de dados** em toda tela que coleta, com acesso à área detalhada.
 
@@ -68,8 +68,8 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
 - **Autorização de divulgação pública** — é ato do responsável, na App 07; aqui só se vê o
   estado do perfil.
 - **Cadastro de equipe e de local do território** — são de Admin (App 03 e PRD-08).
-- **Cadastro das disciplinas e do conteúdo do apoio escolar** — é do Mestre (App 09) ou do
-  Admin (App 03); aqui o conteúdo só é consumido.
+- **Cadastro das disciplinas e do conteúdo do apoio escolar** — é autoria do Mestre (App 09),
+  auditada por amostragem pelo Admin; aqui o conteúdo só é consumido.
 - **Conversa educacional aberta e Modo Ouvinte da aula** — são da App 02 (PRD-06); o
   assistente desta aplicação atende apenas ao apoio escolar, com corpus fechado.
 - **Compra de recompensa com pontos**: não existe. Recompensa se conquista em marco.
@@ -186,8 +186,8 @@ avatar e nick.
 
 1. O Guerreiro(a) abre o apoio escolar, escolhe a **disciplina** entre as cadastradas e
    pergunta **por voz ou por texto**.
-2. O assistente responde a partir **exclusivamente** do conteúdo que Mestres ou Admins
-   cadastraram para aquela disciplina, em áudio e em texto, na linguagem da faixa etária.
+2. O assistente responde a partir **exclusivamente** do conteúdo que os Mestres cadastraram
+   para aquela disciplina, em áudio e em texto, na linguagem da faixa etária.
 3. A resposta **explica e conduz ao raciocínio**: dá o caminho, o exemplo e a próxima
    pergunta — **não entrega a tarefa pronta**.
 4. Sendo a pergunta fora do conteúdo cadastrado, o assistente **diz que ainda não tem esse
@@ -323,42 +323,46 @@ avatar e nick.
 | `RF-05-65` | Tela do apoio escolar avisa que a resposta é gerada por IA e o que isso significa               | essencial  |
 | `RF-05-66` | Guerreiro(a) que recusou o assistente segue com a alternativa de perguntar ao Mestre            | essencial  |
 | `RF-05-67` | Consumo do modelo é lançado como recurso de _cloud_ no livro-razão                              | essencial  |
+| `RF-05-69` | Áudio da pergunta é descartado assim que transcrito; guarda-se apenas a transcrição             | essencial  |
+| `RF-05-70` | Aplicação não impõe teto de uso do assistente no Ciclo 01, e registra a demanda para medição    | essencial  |
 | `RF-05-68` | Mestre e Admin veem as recusas registradas das suas turmas, para ajustar o conteúdo cadastrado  | desejável  |
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                              | Invariante (doc 99 §6) | Fonte            |
-| ---------- | -------------------------------------------------------------------------------------------------- | ---------------------- | ---------------- |
-| `RN-05-01` | O Guerreiro(a) entra por nick e imagem em toda sessão; sem câmera não há entrada                   | 12                     | 03 §1.1          |
-| `RN-05-02` | Enquanto não houver imagem gravada, quem abre a sessão é o Mestre ou um Admin presente             | 3                      | 03 §1.1          |
-| `RN-05-03` | Nível é percurso da trilha, não volume de pontos, e nível conquistado não regride                  | 2                      | 11 §6            |
-| `RN-05-04` | Níveis e badges são por trilha ou poder, nunca globais                                             | —                      | 02 §7, 11 §§6, 7 |
-| `RN-05-05` | Pontos só nascem de atividade realizada proposta por Mestre e da coleta do território              | 8                      | 11 §§1, 5        |
-| `RN-05-06` | A aplicação não lança resultado, presença nem mérito: quem lança é o Mestre ou o Admin             | —                      | 02 §4, 03 §11    |
-| `RN-05-07` | Recompensa é conquistada em marco da trilha, nunca comprada com saldo de pontos                    | —                      | 02 §8            |
-| `RN-05-08` | Registro de coleta nasce válido e pontua na hora; valor fora da faixa fica "a conferir"            | 6                      | 02 §1, 11 §5.1   |
-| `RN-05-09` | A invalidação por amostragem estorna apenas o registro invalidado                                  | 6                      | 02 §1, 11 §5.1   |
-| `RN-05-10` | Duas cadências seguidas sem registro interrompem a série, sem perder os pontos já creditados       | 6                      | 02 §1            |
-| `RN-05-11` | O local do registro é escolhido entre os cadastrados; faltando, o Guerreiro(a) solicita inclusão   | —                      | 02 §1            |
-| `RN-05-12` | Um aparelho por equipe na partida de quiz, com a resposta valendo para todos os integrantes        | —                      | 05 §5            |
-| `RN-05-13` | A criação original carrega a autoria por toda a vida do registro, inclusive quando devolvida       | 5                      | 02 §4, 11 §7     |
-| `RN-05-14` | Criação original só é exposta publicamente com autorização do responsável                          | 11                     | 03 §12           |
-| `RN-05-15` | O Guerreiro(a) é representado exclusivamente por avatar e nick, nunca por imagem real              | 12                     | 03 §§3.3, 12     |
-| `RN-05-16` | Ranking usa somente pontos regulares e segue a mesma regra de exibição da vitrine                  | —                      | 11 §8.1          |
-| `RN-05-17` | Registrar sugestão não pontua; a proposta adotada rende pontos extras e badge                      | —                      | 03 §7, 11 §5     |
-| `RN-05-18` | Pontos extras não alimentam níveis: são computados isoladamente                                    | —                      | 11 §5            |
-| `RN-05-19` | Dano acidental ao acervo não gera pontuação negativa nem dívida para a família                     | —                      | 13 §3            |
-| `RN-05-20` | Dificuldade gradual acessível a toda a faixa de 6 a 16 anos, sem segmentação por idade             | 2                      | 02 §4            |
-| `RN-05-21` | O Guerreiro(a) vê apenas os próprios dados; de terceiros, só avatar, nick e posição pública        | 10                     | 03 §12           |
-| `RN-05-22` | Não há canal de conversa entre pessoas nesta aplicação                                             | 10                     | 03 §12           |
-| `RN-05-23` | O App 04 lê o progresso e debita pontos; nenhum crédito parte do jogo                              | 8                      | 11 §8.4          |
-| `RN-05-24` | No Ciclo 01 o Guerreiro(a) não muda de comunidade                                                  | 4                      | 02 §1            |
-| `RN-05-25` | O apoio escolar responde só a partir do conteúdo cadastrado por Mestre ou Admin; fora dele, recusa | —                      | 03 §7            |
-| `RN-05-26` | Filtros de segurança de conteúdo no nível mais restritivo em toda interação com a criança          | —                      | 03 §§4, 7        |
-| `RN-05-27` | O assistente não substitui o Mestre: explica e conduz, sem entregar a tarefa pronta                | —                      | 03 §7            |
-| `RN-05-28` | Recusar o assistente não exclui ninguém: a alternativa é perguntar ao Mestre no encontro           | 11                     | 03 §§7, 12       |
-| `RN-05-29` | O consumo do modelo de IA é custo de _cloud_ atribuído no livro-razão                              | 9                      | 04 §1            |
-| `RN-05-30` | A plataforma declara o uso de IA, e a tela do apoio escolar diz isso à criança                     | —                      | 01 §7, 03 §1     |
+| ID         | Regra                                                                                            | Invariante (doc 99 §6) | Fonte            |
+| ---------- | ------------------------------------------------------------------------------------------------ | ---------------------- | ---------------- |
+| `RN-05-01` | O Guerreiro(a) entra por nick e imagem em toda sessão; sem câmera não há entrada                 | 12                     | 03 §1.1          |
+| `RN-05-02` | Enquanto não houver imagem gravada, quem abre a sessão é o Mestre ou um Admin presente           | 3                      | 03 §1.1          |
+| `RN-05-03` | Nível é percurso da trilha, não volume de pontos, e nível conquistado não regride                | 2                      | 11 §6            |
+| `RN-05-04` | Níveis e badges são por trilha ou poder, nunca globais                                           | —                      | 02 §7, 11 §§6, 7 |
+| `RN-05-05` | Pontos só nascem de atividade realizada proposta por Mestre e da coleta do território            | 8                      | 11 §§1, 5        |
+| `RN-05-06` | A aplicação não lança resultado, presença nem mérito: quem lança é o Mestre ou o Admin           | —                      | 02 §4, 03 §11    |
+| `RN-05-07` | Recompensa é conquistada em marco da trilha, nunca comprada com saldo de pontos                  | —                      | 02 §8            |
+| `RN-05-08` | Registro de coleta nasce válido e pontua na hora; valor fora da faixa fica "a conferir"          | 6                      | 02 §1, 11 §5.1   |
+| `RN-05-09` | A invalidação por amostragem estorna apenas o registro invalidado                                | 6                      | 02 §1, 11 §5.1   |
+| `RN-05-10` | Duas cadências seguidas sem registro interrompem a série, sem perder os pontos já creditados     | 6                      | 02 §1            |
+| `RN-05-11` | O local do registro é escolhido entre os cadastrados; faltando, o Guerreiro(a) solicita inclusão | —                      | 02 §1            |
+| `RN-05-12` | Um aparelho por equipe na partida de quiz, com a resposta valendo para todos os integrantes      | —                      | 05 §5            |
+| `RN-05-13` | A criação original carrega a autoria por toda a vida do registro, inclusive quando devolvida     | 5                      | 02 §4, 11 §7     |
+| `RN-05-14` | Criação original só é exposta publicamente com autorização do responsável                        | 11                     | 03 §12           |
+| `RN-05-15` | O Guerreiro(a) é representado exclusivamente por avatar e nick, nunca por imagem real            | 12                     | 03 §§3.3, 12     |
+| `RN-05-16` | Ranking usa somente pontos regulares e segue a mesma regra de exibição da vitrine                | —                      | 11 §8.1          |
+| `RN-05-17` | Registrar sugestão não pontua; a proposta adotada rende pontos extras e badge                    | —                      | 03 §7, 11 §5     |
+| `RN-05-18` | Pontos extras não alimentam níveis: são computados isoladamente                                  | —                      | 11 §5            |
+| `RN-05-19` | Dano acidental ao acervo não gera pontuação negativa nem dívida para a família                   | —                      | 13 §3            |
+| `RN-05-20` | Dificuldade gradual acessível a toda a faixa de 6 a 16 anos, sem segmentação por idade           | 2                      | 02 §4            |
+| `RN-05-21` | O Guerreiro(a) vê apenas os próprios dados; de terceiros, só avatar, nick e posição pública      | 10                     | 03 §12           |
+| `RN-05-22` | Não há canal de conversa entre pessoas nesta aplicação                                           | 10                     | 03 §12           |
+| `RN-05-23` | O App 04 lê o progresso e debita pontos; nenhum crédito parte do jogo                            | 8                      | 11 §8.4          |
+| `RN-05-24` | No Ciclo 01 o Guerreiro(a) não muda de comunidade                                                | 4                      | 02 §1            |
+| `RN-05-25` | O apoio escolar responde só a partir do conteúdo que o Mestre cadastrou; fora dele, recusa       | —                      | 03 §7            |
+| `RN-05-26` | Filtros de segurança de conteúdo no nível mais restritivo em toda interação com a criança        | —                      | 03 §§4, 7        |
+| `RN-05-27` | O assistente não substitui o Mestre: explica e conduz, sem entregar a tarefa pronta              | —                      | 03 §7            |
+| `RN-05-28` | Recusar o assistente não exclui ninguém: a alternativa é perguntar ao Mestre no encontro         | 11                     | 03 §§7, 12       |
+| `RN-05-29` | O consumo do modelo de IA é custo de _cloud_ atribuído no livro-razão                            | 9                      | 04 §1            |
+| `RN-05-31` | No Ciclo 01 o consumo de IA é aportado por absorção pelo Admin e Mestre fundador, sem teto       | —                      | 10 §4.3          |
+| `RN-05-32` | O áudio da criança é descartado na transcrição; guarda-se apenas a transcrição                   | —                      | 03 §7            |
+| `RN-05-30` | A plataforma declara o uso de IA, e a tela do apoio escolar diz isso à criança                   | —                      | 01 §7, 03 §1     |
 
 ## 8. Modelo de dados
 
@@ -386,7 +390,7 @@ Avatar (características)                RecompensaDeMarco         (PRD-09)
 | ------------------- | --------------------------------------------------------------------------------------------------------------- |
 | `RespostaDeQuiz`    | partida, pergunta, equipe, aparelho vinculado, alternativa escolhida, momento de chegada no servidor, acerto    |
 | `Nivel`             | Guerreiro(a), trilha ou poder, número (1 a 5), data da conquista — derivado do percurso, nunca editado          |
-| `DisciplinaDeApoio` | nome, faixa de dificuldade, situação (ativa ou inativa), autor do cadastro (Mestre ou Admin)                    |
+| `DisciplinaDeApoio` | nome, faixa de dificuldade, situação (ativa ou inativa), Mestre autor do cadastro                               |
 | `ConteudoDeApoio`   | disciplina, título, corpo ou arquivo, fonte, autor do cadastro, data — é o corpus fechado que o modelo consulta |
 | `ConsultaDeApoio`   | Guerreiro(a), disciplina, pergunta transcrita, situação (respondida, fora do corpus, recusada), data e hora     |
 
@@ -468,15 +472,15 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                    | Finalidade                            | Base legal        | Retenção                     | Quem acessa              |
-| -------------------------------- | ------------------------------------- | ----------------- | ---------------------------- | ------------------------ |
-| Imagem da entrada                | Conferir que é o próprio Guerreiro(a) | consentimento     | não é armazenada na entrada  | núcleo, em conferência   |
-| Registro de coleta do território | Construir a Comunidade Virtual        | interesse público | permanente, com autoria      | gestão, público agregado |
-| Criação original                 | Autoria, portfólio e culminância      | consentimento     | permanente, com autoria      | gestão e responsável     |
-| Sugestão em texto ou áudio       | Evolução da plataforma                | consentimento     | enquanto durar o vínculo     | gestão                   |
-| Respostas de quiz e progresso    | Registro da participação e pontuação  | consentimento     | enquanto durar o vínculo     | gestão e responsável     |
-| Características do avatar        | Representação pública do Guerreiro(a) | consentimento     | enquanto durar o vínculo     | público                  |
-| Pergunta do apoio escolar        | Responder à dúvida da atividade       | consentimento     | transcrição, prazo a definir | gestão                   |
+| Dado coletado                    | Finalidade                            | Base legal        | Retenção                           | Quem acessa              |
+| -------------------------------- | ------------------------------------- | ----------------- | ---------------------------------- | ------------------------ |
+| Imagem da entrada                | Conferir que é o próprio Guerreiro(a) | consentimento     | não é armazenada na entrada        | núcleo, em conferência   |
+| Registro de coleta do território | Construir a Comunidade Virtual        | interesse público | permanente, com autoria            | gestão, público agregado |
+| Criação original                 | Autoria, portfólio e culminância      | consentimento     | permanente, com autoria            | gestão e responsável     |
+| Sugestão em texto ou áudio       | Evolução da plataforma                | consentimento     | enquanto durar o vínculo           | gestão                   |
+| Respostas de quiz e progresso    | Registro da participação e pontuação  | consentimento     | enquanto durar o vínculo           | gestão e responsável     |
+| Características do avatar        | Representação pública do Guerreiro(a) | consentimento     | enquanto durar o vínculo           | público                  |
+| Pergunta do apoio escolar        | Responder à dúvida da atividade       | consentimento     | só a transcrição; áudio descartado | gestão                   |
 
 - **Consentimento**: a participação segue a adesão em duas etapas — o cadastro livre já permite
   usar a aplicação, e a **divulgação pública** depende de autorização do responsável, dada na
@@ -550,28 +554,29 @@ avaliação do ciclo: número de criações originais apresentadas e de sugestõ
 | Canal de sugestões: texto ou áudio de 60 s, adotada rende extras e badge   | 03 §7           | Canal de sugestões do Guerreiro(a)    |
 | Reparação que zera a ocorrência de conduta                                 | 13 §3           | Reparação de ocorrência de conduta    |
 | Apoio escolar por assistente de voz na App 05, com IA e corpus fechado     | 03 §§4, 7       | Apoio às atividades escolares         |
+| Corpus cadastrado só pelo Mestre; Admin audita por amostragem              | 03 §§5, 7, 11   | Corpus, cota e áudio dos assistentes  |
+| Sem teto de uso no Ciclo 01, absorvido pelo fundador em conta Gemini PRO   | 03 §7 e 10 §4.3 | Corpus, cota e áudio dos assistentes  |
+| Áudio descartado na transcrição, nas Apps 05 e 02                          | 03 §§4, 7       | Corpus, cota e áudio dos assistentes  |
 
 As entidades `RespostaDeQuiz`, `DisciplinaDeApoio`, `ConteudoDeApoio` e `ConsultaDeApoio`
 foram acrescentadas ao modelo do PRD-01, e `Nivel` passou a ser derivado do percurso. O badge
 **de protagonismo** entrou no catálogo do documento 11 §7. O cadastro das disciplinas e do
 conteúdo de apoio entrou na App 09 (PRD-09) e na App 03 (PRD-02), e o **apoio às atividades
-escolares saiu do Modo Conversa da App 02** (documento 03 §4 e documento 08, PRD-06).
+escolares saiu do Modo Conversa da App 02** (documento 03 §4 e documento 08, PRD-06), que
+passou a seguir o mesmo desenho de corpus fechado, guardrails e descarte do áudio.
 
 ## 14. Pendências que permanecem
 
-- **Cota e custo da IA do apoio escolar**: o consumo é recurso de _cloud_ no livro-razão
-  (`RF-05-67`), mas falta o teto de uso por Guerreiro(a) ou por ciclo e o que a aplicação faz
-  quando a cota se esgota — sem isso, o `RF-05-58` opera sem limite de gasto.
+- **Prazo de guarda da transcrição** da sugestão e da pergunta do apoio escolar: o áudio já é
+  descartado na transcrição, mas por quanto tempo o texto fica guardado ainda não está
+  definido. É o único campo "a definir" da tabela de LGPD deste PRD.
 - **Registro de coleta com a rede fora**: se vai para fila local no aparelho, como a presença
   do App 01, ou se é bloqueado até reconectar. A entrada já exige rede pela conferência da
   imagem.
 - **Tempo de inatividade** que encerra a sessão no aparelho compartilhado — o comportamento
   está definido no `RF-05-05`, o número não.
-- **Retenção do áudio e da transcrição** da sugestão e da pergunta do apoio escolar: apagar o
-  áudio na transcrição, como se faz com a fotografia do onboarding, e por quanto tempo a
-  transcrição fica guardada. É o único campo "a definir" da tabela de LGPD deste PRD.
-- **Curadoria do conteúdo de apoio escolar**: quem confere o que Mestres e Admins cadastram
-  como corpus, no mesmo espírito da auditoria por amostragem das trilhas.
+- **Periodicidade da auditoria por amostragem** do corpus de apoio escolar pelo Admin: a regra
+  está decidida, o ritmo da conferência não.
 - **Ranking interno**: hoje segue a regra da vitrine e exibe apenas quem tem divulgação
   autorizada. Se a intenção for mostrar a turma inteira dentro da aplicação logada, é decisão
   a tomar e a gravar no documento 03 §12.
@@ -597,3 +602,4 @@ escolares saiu do Modo Conversa da App 02** (documento 03 §4 e documento 08, PR
 | `RF-05-57`              | 03 §12 (aviso visível de coleta e área detalhada)                        |
 | `RF-05-58` a `RF-05-66` | 03 §7 (apoio escolar com corpus fechado) e 03 §4 (filtros de segurança)  |
 | `RF-05-67` e `RF-05-68` | 04 §1 (custo de _cloud_ no livro-razão) e 01 §7 (transparência sobre IA) |
+| `RF-05-69` e `RF-05-70` | 03 §7 (descarte do áudio e ausência de teto no Ciclo 01)                 |
