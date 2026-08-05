@@ -170,13 +170,13 @@ quem o concluir.
 
 ### Definições vigentes
 
-| Questão                          | Definição                                                                                                                                                                                                                                                                         |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Pontos**                       | O desafio extra vale **pontos além da recompensa**, computados **isoladamente como pontos extras** — não se misturam à pontuação regular da trilha                                                                                                                                |
-| **Teto de desafios simultâneos** | **Não há teto por trilha.** O controle é qualitativo: cada desafio é aprovado ou não por um Admin, caso a caso, após a validação do Mestre                                                                                                                                        |
-| **Exclusividade**                | **Proibida nos desafios abertos**: ninguém é barrado de disputar. O que é limitado é a **quantidade** de recompensas, declarada de antemão                                                                                                                                        |
-| **Desafio direcionado**          | O Apoiador pode **direcionar um desafio a um Guerreiro(a) específico** — só ele recebe a recompensa se atingir os requisitos. Exige **justificativa registrada** do vínculo (ex.: parente próximo — tio(a), padrinho, madrinha) e aprovação de Admin, além da validação do Mestre |
-| **Quantidade de recompensas**    | **Uma única** (para quem concluir primeiro) **ou várias** — todos que concluírem recebem, até o limite disponibilizado                                                                                                                                                            |
+| Questão                          | Definição                                                                                                                                                                                                                                                                                                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pontos**                       | O desafio extra vale **pontos além da recompensa**, computados **isoladamente como pontos extras** — não se misturam à pontuação regular da trilha                                                                                                                                                                                    |
+| **Teto de desafios simultâneos** | **Não há teto por trilha.** O controle é qualitativo: cada desafio é aprovado ou não por um Admin, caso a caso, após a validação do Mestre                                                                                                                                                                                            |
+| **Exclusividade**                | **Proibida nos desafios abertos**: ninguém é barrado de disputar. O que é limitado é a **quantidade** de recompensas, declarada de antemão                                                                                                                                                                                            |
+| **Desafio direcionado**          | O Apoiador pode **direcionar um desafio a um Guerreiro(a) específico**, identificado **pelo nick** que a família lhe cedeu — só ele recebe a recompensa se atingir os requisitos. Exige **justificativa registrada** do vínculo (ex.: parente próximo — tio(a), padrinho, madrinha) e aprovação de Admin, além da validação do Mestre |
+| **Quantidade de recompensas**    | **Uma única** (para quem concluir primeiro) **ou várias** — todos que concluírem recebem, até o limite disponibilizado                                                                                                                                                                                                                |
 
 Por que o teto foi substituído por aprovação: um número fixo protegeria a trilha do excesso,
 mas barraria um bom desafio pela razão errada — a ordem de chegada. A aprovação caso a caso
@@ -184,7 +184,9 @@ protege a trilha pelo motivo certo: **o mérito pedagógico da proposta**.
 
 O desafio direcionado é o caminho para o apoio de interesse direto e legítimo — por exemplo, um
 parente próximo que propõe um desafio para um Guerreiro(a) da sua parentela — sem abrir exceção
-nas salvaguardas.
+nas salvaguardas. É também o caminho de quem ficou de fora dos **três responsáveis** da criança:
+avós, tios, padrinhos e amigos da família participam **como Apoiadores**, acompanhando pelo nick
+e propondo desafios, sem acesso à área da família.
 
 ### Rastreio de efetividade
 

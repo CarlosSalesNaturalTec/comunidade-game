@@ -84,6 +84,9 @@ e revogam consentimentos, e têm acesso próprio à plataforma.
   responsáveis**.
 - Todo vínculo declara o **grau de parentesco** do responsável com o Guerreiro(a), em texto
   livre.
+- **Parentes e amigos além dos três responsáveis acompanham como Apoiador**, cadastrados pela
+  via normal, e seguem o Guerreiro(a) pelo **nick**, no que é público. **O nick é informação que
+  só a família cede** — a plataforma nunca o revela a um adulto, nem por busca nem por listagem.
 
 ### Solicitação de participação (Mestres e Apoiadores)
 
@@ -403,22 +406,26 @@ apoio. Duas regras estruturais:
 
 ## 8. Recompensas
 
-**Regra vigente:** à medida que avançam nas trilhas, os Guerreiros e Guerreiras **acumulam
-pontos, e esses pontos podem ser trocados por recompensas**. É o que fecha o vínculo entre o
-jogo e a vida real: o esforço de aprender converte-se em algo concreto na mão do Guerreiro(a).
+**Regra vigente:** a recompensa é **conquistada ao atingir um marco da trilha** — desbloqueio
+de um ponto, conclusão de etapa, batalha ou culminância —, **nunca comprada com saldo de
+pontos**. É o que fecha o vínculo entre o jogo e a vida real: o esforço de aprender converte-se
+em algo concreto na mão do Guerreiro(a), no momento em que a conquista acontece.
 
-Catálogo inicial — **valores ainda são sugestão, a definir**:
+O **Mestre autor declara, na trilha, qual marco concede qual recompensa**, e o lastro do recurso
+é exigido antes da publicação. Duas consequências: o Guerreiro(a) sabe desde o começo o que cada
+conquista lhe rende, e nenhuma recompensa é prometida sem estar provida.
 
-| Recompensa                | Custo em pontos (a definir) |
-| ------------------------- | --------------------------- |
-| Kit alimentos 1 (3 itens) | 20                          |
-| Kit alimentos 2 (6 itens) | 20                          |
+Catálogo inicial — **quais recompensas em quais marcos ainda é a definir**:
+
+| Recompensa                | Marco que concede (a definir) |
+| ------------------------- | ----------------------------- |
+| Kit alimentos 1 (3 itens) | —                             |
+| Kit alimentos 2 (6 itens) | —                             |
 
 **[Proposta]** Ao definir a tabela, ampliar o catálogo com recompensas não alimentares
-(material escolar, componentes de robótica, ingressos culturais). A troca de pontos por
-alimento é socialmente sensível e deve ser tratada com dignidade, no espírito do **"sem
-miséria"** baiano: a recompensa celebra a conquista do Guerreiro(a); nunca pode soar como
-assistencialismo.
+(material escolar, componentes de robótica, ingressos culturais). Entregar alimento é
+socialmente sensível e deve ser tratado com dignidade, no espírito do **"sem miséria"** baiano:
+a recompensa celebra a conquista do Guerreiro(a); nunca pode soar como assistencialismo.
 
 ## 9. Manual do Guerreiro(a) (fluxo de entrada)
 

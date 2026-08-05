@@ -8,7 +8,7 @@
 | Aplicação        | App 09 — Área do Mestre                                     |
 | Onda             | 3                                                           |
 | Situação         | em revisão                                                  |
-| Versão e data    | v1 — 2026-08-04                                             |
+| Versão e data    | v2 — 2026-08-05                                             |
 | Depende de       | PRD-01                                                      |
 | Documentos-fonte | 02 §§1–4, 03 §§1, 11, 05 §§3, 5, 6, 06, 07, 11 §§2, 4, 5, 7 |
 
@@ -36,6 +36,10 @@ inteira sem escrever uma linha de código.
 
 - **Autoria da trilha**: criação, pontos de trilha em sequência com dificuldade gradual,
   paginação pelas etapas do ciclo e publicação pelo próprio Mestre.
+- **Atividades de cada ponto de trilha**, com modalidade (individual ou em equipe) e formato
+  (presencial ou on-line) declarados pelo Mestre.
+- **Recompensa de cada marco** — desbloqueio de ponto, etapa, batalha ou culminância —, com
+  lastro exigido antes da publicação e entrega confirmada pelo Mestre.
 - **Conteúdo do ponto**: texto formatado com imagens, link externo, upload de vídeo e de
   arquivo hospedados pela plataforma, e bibliografia de apoio por ponto.
 - **Desafios**: desbloqueio do ponto, desafio de coleta de dados reais e culminância com a
@@ -93,19 +97,24 @@ Guerreiras que percorrem as suas trilhas.
    conhecimento. A trilha nasce em **rascunho**, visível só para ele.
 2. Acrescenta **pontos de trilha** em sequência, cada um com o seu nível de dificuldade.
 3. Em cada ponto, monta o conteúdo, a bibliografia de apoio e o **desafio de desbloqueio**.
-4. Cria ao menos um **desafio de coleta**, declarando o que se mede, com que cadência e por
+4. Cria as **atividades daquele ponto**, declarando de cada uma a **modalidade** (individual ou
+   em equipe) e o **formato** (presencial ou on-line) — uma desplugada e um Quiz ao Vivo são
+   presenciais; um quiz entre encontros é on-line.
+5. Cria ao menos um **desafio de coleta**, declarando o que se mede, com que cadência e por
    quanto tempo.
-5. Define a **culminância**: o que a criação original precisa ser, se é individual ou de
+6. Define a **culminância**: o que a criação original precisa ser, se é individual ou de
    equipe, e o critério com que será validada.
-6. **Pagina a trilha** pelas etapas do ciclo — abertura, desenvolvimento, marcos e fechamento.
-7. Manda publicar. A aplicação confere as duas travas: **sem desafio de coleta não publica** e
+7. **Pagina a trilha** pelas etapas do ciclo — abertura, desenvolvimento, marcos e fechamento —
+   e declara **qual marco concede qual recompensa**: desbloqueio de ponto, conclusão de etapa,
+   batalha ou culminância. Recompensa sem lastro registrado não vai ao ar com a trilha.
+8. Manda publicar. A aplicação confere as duas travas: **sem desafio de coleta não publica** e
    **sem culminância com criação original não publica**, dizendo em linguagem simples o que
    falta.
-8. Passando, a trilha vai ao ar **na hora, sem aprovação de ninguém**, declarando a licença
+9. Passando, a trilha vai ao ar **na hora, sem aprovação de ninguém**, declarando a licença
    **CC BY-SA** e o crédito do Mestre autor.
-9. Depois, um Admin audita por amostragem. Encontrando problema, **despublica com motivo
-   registrado**, e o Mestre vê o motivo e corrige — a trilha volta a rascunho, e o que a turma
-   já percorreu não se perde.
+10. Depois, um Admin audita por amostragem. Encontrando problema, **despublica com motivo
+    registrado**, e o Mestre vê o motivo e corrige — a trilha volta a rascunho, e o que a turma
+    já percorreu não se perde.
 
 ### 5.2 Montar o conteúdo de um ponto de trilha
 
@@ -141,14 +150,18 @@ Guerreiras que percorrem as suas trilhas.
 
 ### 5.5 Conduzir as minhas turmas
 
-1. O Mestre abre **Minhas atividades** e vê apenas as suas turmas e as atividades que propôs.
-2. Lança a atividade realizada com data, participantes e equipes.
+1. O Mestre abre **Minhas atividades** e vê apenas as suas turmas e as atividades que propôs,
+   separadas pelo formato: as **presenciais** do encontro e as **on-line** entre encontros.
+2. Lança a atividade realizada com data, participantes e equipes. Na atividade em equipe, lança
+   a equipe inteira de uma vez, preservando o papel de cada integrante.
 3. Atribui o resultado de cada um: **realizada**, **com mérito** ou **mérito extra por auxílio
    aos colegas**.
 4. Registra a presença do seu encontro e ajusta o que o App 01 não capturou.
-5. Havendo má conduta, lança a **pontuação negativa** com o motivo — efetivada na hora, sem
+5. Alcançado um **marco** com recompensa declarada, a entrega aparece como pendência do
+   Mestre e a baixa vai para o livro-razão quando ele confirma.
+6. Havendo má conduta, lança a **pontuação negativa** com o motivo — efetivada na hora, sem
    revisão de Admin, porque quem estava na sala é quem viu o que aconteceu.
-6. Lançamento não se edita: correção é **ajuste** que referencia o original, e tudo entra na
+7. Lançamento não se edita: correção é **ajuste** que referencia o original, e tudo entra na
    trilha de auditoria com autor, papel, data e hora.
 
 ### 5.6 Validar o desafio extra de um Apoiador
@@ -201,6 +214,10 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-11` | Trilha despublicada volta a rascunho preservando o percurso já realizado pelos Guerreiros      | essencial  |
 | `RF-09-12` | Nenhum campo de autoria exige escrever código, HTML ou configuração técnica                    | essencial  |
 | `RF-09-13` | Mestre duplica trilha existente como ponto de partida de uma nova                              | desejável  |
+| `RF-09-69` | Mestre cria as atividades do ponto de trilha, com modalidade e formato declarados em cada uma  | essencial  |
+| `RF-09-70` | Aplicação recusa atividade de trilha sem ponto, sem modalidade ou sem formato                  | essencial  |
+| `RF-09-71` | Mestre declara qual marco da trilha concede qual recompensa, e em que quantidade               | essencial  |
+| `RF-09-72` | Aplicação recusa publicar trilha cujo marco prometa recompensa sem lastro registrado           | essencial  |
 
 ### 6.2 Conteúdo e bibliografia do ponto
 
@@ -258,6 +275,10 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-48` | Toda escrita do Mestre entra na trilha de auditoria com autor, papel, data e hora         | essencial  |
 | `RF-09-49` | Aplicação recusa lançamento de atividade que não é do Mestre autenticado                  | essencial  |
 | `RF-09-50` | Aplicação leva o Mestre ao painel do dia da sua aula, operado na App 03                   | desejável  |
+| `RF-09-73` | Minhas atividades separa as presenciais do encontro das on-line entre encontros           | essencial  |
+| `RF-09-74` | Mestre lança a equipe inteira de uma vez, preservando o papel de cada integrante          | essencial  |
+| `RF-09-75` | Marco alcançado com recompensa declarada vira pendência de entrega para o Mestre          | essencial  |
+| `RF-09-76` | Mestre confirma a entrega da recompensa do marco, gerando a baixa no livro-razão          | essencial  |
 
 ### 6.6 Validações, filas e propostas
 
@@ -319,30 +340,40 @@ Guerreiras que percorrem as suas trilhas.
 | `RN-09-21` | Registro de coleta nasce válido; o Mestre audita por amostragem e pode invalidar com motivo      | 6                      | 02 §1, PRD-08 |
 | `RN-09-22` | Toda trilha é paginada pelas etapas do ciclo, com a coleta aberta já na abertura                 | —                      | 11 §2.3       |
 | `RN-09-23` | Nenhum retorno sai por e-mail no Ciclo 01, salvo a chave PIX do ressarcimento enviada ao Admin   | —                      | 03 §9, 04 §1  |
+| `RN-09-24` | Toda atividade de trilha pertence a um ponto de trilha e declara modalidade e formato            | —                      | 11 §§2.1, 4   |
+| `RN-09-25` | Atividade avulsa, fora de trilha, é cadastro da gestão na App 03, não da autoria do Mestre       | —                      | 11 §4, 03 §11 |
+| `RN-09-26` | Recompensa é conquistada em marco da trilha, nunca comprada com saldo de pontos                  | —                      | 02 §8         |
+| `RN-09-27` | Recompensa prometida em marco exige lastro registrado antes da publicação da trilha              | 9                      | 04 §1, 02 §8  |
 
 ## 8. Modelo de dados
 
 As entidades de trilha já existem no PRD-01; as de coleta, no PRD-08; as de recurso, no
-PRD-07. Este PRD **acrescenta três entidades** ao núcleo — `Conteudo`, `BibliografiaDoPonto` e
-`Culminancia` — e detalha os atributos que a autoria exige.
+PRD-07. Este PRD **acrescenta quatro entidades** ao núcleo — `Conteudo`, `BibliografiaDoPonto`,
+`Culminancia` e `RecompensaDeMarco` — e detalha os atributos que a autoria exige. A `Atividade`
+já existe no PRD-01 e passa a **pertencer obrigatoriamente a um ponto de trilha** quando é
+atividade de trilha.
 
 ```text
 AUTORIA (esta aplicação escreve)        CONSOME (definidos em outro PRD)
 Trilha                                  DesafioDeColeta      (PRD-08)
 PontoDeTrilha                           SerieDeColeta        (PRD-08)
-Conteudo            [entidade nova]     RegistroDeColeta     (PRD-08)
-BibliografiaDoPonto [entidade nova]     Necessidade/Aporte   (PRD-07)
-Culminancia         [entidade nova]     ItemPatrimonial      (PRD-07)
-DesafioDeDesbloqueio                    DesafioExtra         (PRD-01)
-PerguntaDeQuiz                          Responsavel          (PRD-01)
-CriacaoOriginal                         SugestaoOuProposta   (PRD-01)
-Resultado / Presenca / Lancamento       Auditoria            (PRD-01)
+Atividade                               RegistroDeColeta     (PRD-08)
+Conteudo            [entidade nova]     Necessidade/Aporte   (PRD-07)
+BibliografiaDoPonto [entidade nova]     ItemPatrimonial      (PRD-07)
+Culminancia         [entidade nova]     DesafioExtra         (PRD-01)
+RecompensaDeMarco   [entidade nova]     Responsavel          (PRD-01)
+DesafioDeDesbloqueio                    SugestaoOuProposta   (PRD-01)
+PerguntaDeQuiz                          Auditoria            (PRD-01)
+CriacaoOriginal
+Resultado / Presenca / Lancamento
 ```
 
 | Entidade              | Atributos essenciais                                                                                                                                   |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `Trilha`              | nome, poder, área do conhecimento, Mestre autor, objetivo, situação (rascunho, publicada, despublicada), versão, licença, paginação pelas etapas       |
 | `PontoDeTrilha`       | trilha, ordem, título, nível de dificuldade, etapa do ciclo, desafio de desbloqueio                                                                    |
+| `Atividade`           | ponto de trilha, título, descrição, **modalidade** (individual, equipe, equipe com familiar), **formato** (presencial ou on-line), natureza, recursos  |
+| `RecompensaDeMarco`   | trilha, marco (ponto de trilha, etapa, batalha ou culminância), recompensa, quantidade, lastro confirmado, situação da entrega                         |
 | `Conteudo`            | ponto de trilha, tipo (texto, imagem, link externo, vídeo, arquivo), corpo ou endereço, tamanho, autoria (própria ou de terceiro), fonte e autorização |
 | `BibliografiaDoPonto` | ponto de trilha, título do acervo, capítulo recomendado, Apoiador creditado                                                                            |
 | `Culminancia`         | trilha, descrição da criação original esperada, modalidade (individual ou equipe), critério de validação                                               |
@@ -356,6 +387,9 @@ Imutabilidade e versionamento:
 - Editar trilha publicada gera **nova versão**; o percurso já realizado permanece atrelado à
   versão que o Guerreiro(a) cursou.
 - `Conteudo` de terceiro sem fonte registrada não é publicável.
+- `RecompensaDeMarco` **não debita saldo do Guerreiro(a)**: a entrega é baixa de recurso no
+  livro-razão, exatamente como a entrega do exemplar Alpha na abertura da trilha.
+- `Atividade` sem ponto de trilha só existe como atividade avulsa da gestão (App 03).
 
 ## 9. Contratos de API
 
@@ -373,7 +407,10 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | POST   | `/v1/pontos/{id}/conteudos`             | Mestre       | Cria conteúdo de texto, imagem ou link externo                 |
 | POST   | `/v1/conteudos/{id}/arquivo`            | Mestre       | Envia vídeo ou arquivo, em upload retomável, dentro do limite  |
 | POST   | `/v1/pontos/{id}/bibliografia`          | Mestre       | Vincula título e capítulo do acervo ao ponto                   |
+| POST   | `/v1/pontos/{id}/atividades`            | Mestre       | Cria atividade do ponto, com modalidade e formato              |
 | POST   | `/v1/pontos/{id}/desbloqueio`           | Mestre       | Define o quiz ou desafio que abre o ponto seguinte             |
+| POST   | `/v1/trilhas/{id}/recompensas-de-marco` | Mestre       | Declara a recompensa de um marco, com quantidade e lastro      |
+| POST   | `/v1/recompensas-de-marco/{id}/entrega` | Mestre       | Confirma a entrega e gera a baixa no livro-razão               |
 | POST   | `/v1/trilhas/{id}/culminancia`          | Mestre       | Declara a criação original esperada e o critério de validação  |
 | POST   | `/v1/trilhas/{id}/publicacao`           | Mestre       | Publica a trilha; recusa sem coleta ou sem culminância         |
 | POST   | `/v1/trilhas/{id}/despublicacao`        | Admin        | Despublica trilha auditada, com motivo registrado              |
@@ -389,7 +426,9 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | POST   | `/v1/mestres/{id}/artefatos`            | Mestre       | Publica currículo, portfólio, redes e artefatos comprobatórios |
 | POST   | `/v1/sugestoes`                         | Mestre       | Registra proposta de evolução na fila única da gestão          |
 
-Erros previstos: publicação de trilha sem desafio de coleta (422) ou sem culminância (422);
+Erros previstos: atividade de trilha sem ponto, sem modalidade ou sem formato (422); publicação
+de trilha cujo marco prometa recompensa sem lastro (422); publicação de trilha sem desafio de
+coleta (422) ou sem culminância (422);
 upload acima do limite de 200 MB para vídeo ou 20 MB para arquivo (413); conteúdo de terceiro
 sem fonte registrada (422); pergunta sem quatro alternativas ou sem correta declarada (422);
 lançamento de atividade que não é do Mestre autenticado (403); tentativa de editar lançamento
@@ -437,6 +476,11 @@ sem autorização do responsável (409).
 
 ## 12. Critérios de aceite e métricas
 
+- Atividade de trilha criada sem ponto, sem modalidade ou sem formato é recusada; a mesma
+  atividade, criada fora de trilha, é cadastro da gestão e não aparece na autoria do Mestre.
+- Trilha cujo marco promete recompensa sem lastro registrado não publica.
+- Marco alcançado por um Guerreiro(a) gera pendência de entrega para o Mestre, e a confirmação
+  baixa o recurso no livro-razão — **sem debitar saldo de pontos de ninguém**.
 - Trilha sem desafio de coleta não publica, e a mensagem diz o que falta sem jargão.
 - Trilha sem culminância com criação original não publica, pela mesma regra.
 - Trilha completa publicada pelo Mestre fica visível **na hora**, sem passar por nenhuma
@@ -471,17 +515,20 @@ para **H4**, porque a dificuldade gradual por ponto é o que permite a mesma tri
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                             | Gravada em | Linha do doc 09                     |
-| ----------------------------------------------------------------------------------- | ---------- | ----------------------------------- |
-| Trilha vai ao ar sem aprovação prévia; Admin audita por amostragem e despublica     | 03 §11     | Publicação e curadoria da trilha    |
-| Publicação travada sem desafio de coleta e sem culminância com criação original     | 03 §11     | Trava de publicação da trilha       |
-| Conteúdo do ponto: texto, imagem, link e upload de vídeo (200 MB) e arquivo (20 MB) | 03 §11     | Conteúdo do ponto de trilha         |
-| Pergunta do Quiz ao Vivo em múltipla escolha, quatro alternativas, sem tempo        | 05 §5      | Formato da pergunta do Quiz ao Vivo |
-| Conteúdo educacional publicado sob licença CC BY-SA                                 | 03 §1      | Licença do conteúdo educacional     |
+| Decisão                                                                             | Gravada em  | Linha do doc 09                     |
+| ----------------------------------------------------------------------------------- | ----------- | ----------------------------------- |
+| Trilha vai ao ar sem aprovação prévia; Admin audita por amostragem e despublica     | 03 §11      | Publicação e curadoria da trilha    |
+| Publicação travada sem desafio de coleta e sem culminância com criação original     | 03 §11      | Trava de publicação da trilha       |
+| Conteúdo do ponto: texto, imagem, link e upload de vídeo (200 MB) e arquivo (20 MB) | 03 §11      | Conteúdo do ponto de trilha         |
+| Pergunta do Quiz ao Vivo em múltipla escolha, quatro alternativas, sem tempo        | 05 §5       | Formato da pergunta do Quiz ao Vivo |
+| Conteúdo educacional publicado sob licença CC BY-SA                                 | 03 §1       | Licença do conteúdo educacional     |
+| Atividade de trilha pertence a um ponto de trilha, com modalidade e formato         | 11 §§2.1, 4 | Atividade do ponto de trilha        |
+| Recompensa conquistada em marco da trilha, nunca comprada com pontos                | 02 §8       | Recompensa conquistada em marco     |
 
-As três entidades novas — `Conteudo`, `BibliografiaDoPonto` e `Culminancia` — foram
-acrescentadas ao modelo do PRD-01, e a auditoria das trilhas publicadas entrou na App 03
-(PRD-02) como ação de Admin.
+As quatro entidades novas — `Conteudo`, `BibliografiaDoPonto`, `Culminancia` e
+`RecompensaDeMarco` — foram acrescentadas ao modelo do PRD-01, e a `Atividade` passou a
+pertencer a um ponto de trilha. Na App 03 (PRD-02), a auditoria das trilhas publicadas entrou
+como ação de Admin e o cadastro de atividade ficou restrito à **atividade avulsa**.
 
 ## 14. Pendências que permanecem
 
@@ -500,6 +547,9 @@ acrescentadas ao modelo do PRD-01, e a auditoria das trilhas publicadas entrou n
   de tamanho está decidido, a lista de extensões e a checagem de conteúdo impróprio não.
 - **Revisão pedagógica das trilhas 1 e 2** antes da primeira turma: sem aprovação prévia na
   ferramenta, a conferência é combinada fora dela.
+- **Quais recompensas em quais marcos**: a regra está decidida — recompensa se conquista em
+  marco —, mas o catálogo do Ciclo 01 ainda não diz que marco entrega o quê. **Trava** o
+  `RF-09-71` na prática, não no desenho.
 
 ## 15. Rastreabilidade
 
@@ -518,3 +568,5 @@ acrescentadas ao modelo do PRD-01, e a auditoria das trilhas publicadas entrou n
 | `RF-09-62` a `RF-09-65` | 03 §9 e PRD-01 (cadastro do responsável e credencial provisória) |
 | `RF-09-66` a `RF-09-67` | 02 §1 e 03 §11 (prova de habilidade e governança de personas)    |
 | `RF-09-68`              | 03 §12 (aviso visível de coleta e área detalhada)                |
+| `RF-09-69` e `RF-09-70` | 11 §§2.1, 4 (atividade dentro do ponto de trilha)                |
+| `RF-09-71` a `RF-09-76` | 02 §8 e 11 §2.1 (recompensa conquistada no marco)                |

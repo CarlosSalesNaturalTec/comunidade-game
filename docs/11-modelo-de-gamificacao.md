@@ -25,7 +25,7 @@ O motor é um único fluxo, válido para qualquer poder e qualquer área do conh
                                          ▼
                 ┌───────────────┐  ┌───────────────┐  ┌───────────────┐
                 │  NÍVEIS 1–5   │  │    BADGES     │  │  RECOMPENSAS  │
-                │ (progressão)  │  │ (conquistas)  │  │ (troca/extra) │
+                │ (progressão)  │  │ (conquistas)  │  │ (marco/extra) │
                 └───────┬───────┘  └───────┬───────┘  └───────┬───────┘
                         └──────────────────┼──────────────────┘
                                            ▼
@@ -89,6 +89,10 @@ TRILHA (autoria de um Mestre, vinculada a um Poder)
 | **Batalha**                | Disputa de ideias e realizações; marco opcional, previsto pela trilha                    |
 | **Culminância**            | Apresentação pública da criação original; **ponto final de toda trilha**                 |
 
+**Marco concede recompensa.** Desbloqueio de ponto, conclusão de etapa, batalha e culminância
+são os momentos em que a recompensa é entregue — o Mestre autor declara qual marco concede o
+quê, conforme a regra do documento 02.
+
 ### 2.2 O modelo aplicado — três exemplos
 
 A tabela valida a estrutura contra as duas trilhas existentes e contra uma trilha de área não
@@ -146,11 +150,13 @@ atividade pode ser _em equipe + presencial + de construção_):
 | Eixo           | Valores                                                                                                                                                                               | Observações                                                                                                |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | **Modalidade** | Individual · Em equipe (grupo livre, até 5) · Em equipe com familiar (no máximo 1, com 17 anos ou mais)                                                                               | Define a pontuação-base; a presença do familiar vale mais por ser estratégica para a permanência           |
-| **Formato**    | Presencial (nos encontros) · On-line/assíncrona (entre encontros)                                                                                                                     | O desafio de coleta é contínuo: atravessa os dois formatos                                                 |
+| **Formato**    | Presencial (nos encontros) · On-line/assíncrona (entre encontros)                                                                                                                     | Presencial: desplugada, construção, Quiz ao Vivo. On-line: quiz e desafios entre encontros                 |
 | **Natureza**   | Construção/making · Programação e IA · **Coleta de dados do território** · Desplugada · Valores e temas transversais · Competição ao vivo (Quiz) · Culminância · **Criação original** | Lista aberta: novas trilhas de outras áreas acrescentam naturezas (expressão artística, movimento e corpo) |
 
 Regras transversais:
 
+- **Toda atividade de trilha pertence a um ponto de trilha** e é autorada pelo Mestre, que
+  declara a modalidade e o formato. Atividade avulsa, fora de trilha, é cadastro da gestão.
 - **Dificuldade gradual, independente de idade** (faixa 6–16).
 - **Um Guerreiro(a) pode integrar mais de uma equipe** e pontua em **todas** as atividades em
   que participa e colabora.
@@ -179,11 +185,11 @@ Tabela única das fontes de pontos da plataforma:
 
 Três naturezas de saldo, que nunca se confundem:
 
-| Saldo                 | O que é                                                    | Regra                                                                                           |
-| --------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **Pontos regulares**  | Da progressão nas trilhas e poderes                        | Alimentam níveis, ranking e troca por recompensas                                               |
-| **Pontos extras**     | De desafios extras de Apoiadores                           | Computados isoladamente; rastreados no histórico do Apoiador                                    |
-| **Pontos consumidos** | Débitos por troca de recompensa e por uso dentro do App 04 | O jogo **só debita, nunca credita**; pontos gastos não afetam níveis nem badges já conquistados |
+| Saldo                 | O que é                             | Regra                                                                                           |
+| --------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Pontos regulares**  | Da progressão nas trilhas e poderes | Alimentam níveis e ranking                                                                      |
+| **Pontos extras**     | De desafios extras de Apoiadores    | Computados isoladamente; rastreados no histórico do Apoiador                                    |
+| **Pontos consumidos** | Débitos por uso dentro do App 04    | O jogo **só debita, nunca credita**; pontos gastos não afetam níveis nem badges já conquistados |
 
 A coleta vale o mesmo por registro, qualquer que seja o tipo medido, e **não tem teto**:
 **quantos registros de um mesmo período de cadência pontuam é declarado no desafio** pelo

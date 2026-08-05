@@ -8,7 +8,7 @@
 | Aplicação        | — (núcleo consumido pelas nove aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | aprovado                                                   |
-| Versão e data    | v6 — 2026-08-04                                            |
+| Versão e data    | v7 — 2026-08-05                                            |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 9, 11 e 12, 04, 11                        |
 
@@ -63,7 +63,7 @@ o que é público — cada um pela sua aplicação, todos sobre a mesma verdade.
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | Admin        | Tudo: cadastros, aprovações, lançamentos, ledger, comunidades                                                                                                                                                                                 | Tudo                                                                     |
 | Mestre       | Suas trilhas e conteúdos, lançamentos e pontuação negativa das suas atividades, condução do Quiz ao Vivo das suas aulas, auditoria de coleta, aprovação de local, aportes seus, cadastro de responsável e vínculo com Guerreiros e Guerreiras | O que é público, suas turmas e o **painel do dia** na App 03, em leitura |
-| Guerreiro(a) | Seus registros de coleta, suas criações, suas sugestões, troca de pontos                                                                                                                                                                      | Seus dados e o que é público                                             |
+| Guerreiro(a) | Seus registros de coleta, suas criações, suas sugestões, recompensas recebidas nos marcos                                                                                                                                                     | Seus dados e o que é público                                             |
 | Responsável  | Consentimentos, autorizações, solicitações e propostas                                                                                                                                                                                        | Os Guerreiros e Guerreiras sob sua responsabilidade e o que é público    |
 | Apoiador     | Propostas de desafio extra, documentos comprobatórios, propostas de evolução                                                                                                                                                                  | Seus aportes, efetividade agregada e o que é público                     |
 | Visitante    | Solicitação de participação, pela rota pública da vitrine                                                                                                                                                                                     | Somente o que é público                                                  |
@@ -163,6 +163,8 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RF-01-30` | Núcleo documenta as rotas públicas para uso por aplicações de terceiros                                                                                                                         | desejável  |
 | `RF-01-31` | Versão anterior da API segue disponível por prazo declarado após a abertura da seguinte                                                                                                         | desejável  |
 | `RF-01-32` | Núcleo deriva a disponibilidade do App 01 da aula agendada para a data e o horário correntes                                                                                                    | essencial  |
+| `RF-01-33` | Núcleo responde à consulta pública por **nick exato**, apenas de Guerreiro(a) com divulgação autorizada                                                                                         | essencial  |
+| `RF-01-34` | Núcleo não expõe listagem, busca parcial nem sugestão de nicks de Guerreiros e Guerreiras                                                                                                       | essencial  |
 
 ## 7. Regras de negócio
 
@@ -189,6 +191,7 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RN-01-19` | Cada Guerreiro(a) tem no máximo três responsáveis vinculados, com grau de parentesco em texto livre                     | 3          | 02 §1       |
 | `RN-01-20` | Responsável só é vinculado a Guerreiro(a) já cadastrado no onboarding                                                   | 3          | 02 §1       |
 | `RN-01-21` | Recusa de consentimento nunca exclui o Guerreiro(a) da atividade                                                        | 11         | 03 §12      |
+| `RN-01-22` | O nick é chave de acompanhamento público, cedido pela família: o núcleo nunca o descobre nem o sugere a um adulto       | 12         | 02 §1       |
 
 ## 8. Modelo de dados
 
@@ -246,21 +249,22 @@ Convenções válidas para todas as rotas:
 | Listagem     | paginada, com filtros de comunidade, período e persona                  |
 | Data e hora  | sempre com fuso, e a data do fato nunca é substituída pela do registro  |
 
-| Método | Rota                                | Autenticação    | Descrição                                                   |
-| ------ | ----------------------------------- | --------------- | ----------------------------------------------------------- |
-| POST   | `/v1/sessoes/guerreiro`             | pública         | Autentica com nick e imagem e abre sessão curta             |
-| POST   | `/v1/sessoes/guerreiro/confirmacao` | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana        |
-| POST   | `/v1/sessoes/social`                | pública         | Autentica adulto por login social                           |
-| POST   | `/v1/sessoes/credencial`            | pública         | Autentica adulto por usuário e senha                        |
-| DELETE | `/v1/sessoes/atual`                 | autenticada     | Encerra a sessão                                            |
-| POST   | `/v1/guerreiros/{id}/imagem`        | Mestre ou Admin | Grava ou recadastra a imagem de referência, com registro    |
-| POST   | `/v1/credenciais`                   | Admin ou Mestre | Cria credencial de usuário e senha provisória               |
-| POST   | `/v1/credenciais/senha`             | autenticada     | Troca a senha; obrigatória no primeiro acesso               |
-| POST   | `/v1/responsaveis`                  | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele            |
-| POST   | `/v1/responsaveis/{id}/vinculos`    | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco |
-| GET    | `/v1/eu`                            | autenticada     | Persona, papéis e permissões da sessão                      |
-| GET    | `/v1/vitrine/...`                   | pública         | Consultas públicas de vitrine e rankings                    |
-| GET    | `/v1/auditoria`                     | Admin           | Trilha de auditoria das ações de gestão                     |
+| Método | Rota                                | Autenticação    | Descrição                                                      |
+| ------ | ----------------------------------- | --------------- | -------------------------------------------------------------- |
+| POST   | `/v1/sessoes/guerreiro`             | pública         | Autentica com nick e imagem e abre sessão curta                |
+| POST   | `/v1/sessoes/guerreiro/confirmacao` | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana           |
+| POST   | `/v1/sessoes/social`                | pública         | Autentica adulto por login social                              |
+| POST   | `/v1/sessoes/credencial`            | pública         | Autentica adulto por usuário e senha                           |
+| DELETE | `/v1/sessoes/atual`                 | autenticada     | Encerra a sessão                                               |
+| POST   | `/v1/guerreiros/{id}/imagem`        | Mestre ou Admin | Grava ou recadastra a imagem de referência, com registro       |
+| POST   | `/v1/credenciais`                   | Admin ou Mestre | Cria credencial de usuário e senha provisória                  |
+| POST   | `/v1/credenciais/senha`             | autenticada     | Troca a senha; obrigatória no primeiro acesso                  |
+| POST   | `/v1/responsaveis`                  | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele               |
+| POST   | `/v1/responsaveis/{id}/vinculos`    | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco    |
+| GET    | `/v1/eu`                            | autenticada     | Persona, papéis e permissões da sessão                         |
+| GET    | `/v1/vitrine/...`                   | pública         | Consultas públicas de vitrine e rankings                       |
+| GET    | `/v1/vitrine/guerreiros/{nick}`     | pública         | Perfil público por nick exato, se houver divulgação autorizada |
+| GET    | `/v1/auditoria`                     | Admin           | Trilha de auditoria das ações de gestão                        |
 
 As rotas de domínio — território, ledger, trilhas, atividades — estão nos PRDs que as definem
 e seguem estas mesmas convenções.
@@ -389,3 +393,4 @@ pelas aplicações que as verificam.
 | `RF-01-25` e `RF-01-26` | 02 §§1, 4 e 03 §§7, 9–11                         |
 | `RF-01-27` a `RF-01-30` | 03 §1 (princípios de arquitetura)                |
 | `RF-01-32`              | 03 §§3, 5 (App 01 habilitado pela aula agendada) |
+| `RF-01-33` e `RF-01-34` | 02 §1 e 03 §10 (acompanhamento por nick)         |

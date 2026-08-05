@@ -8,7 +8,7 @@
 | Aplicação        | App 03 — Gestão administrativa            |
 | Onda             | 2                                         |
 | Situação         | aprovado                                  |
-| Versão e data    | v4 — 2026-08-04                           |
+| Versão e data    | v5 — 2026-08-05                           |
 | Depende de       | PRD-01                                    |
 | Documentos-fonte | 03 §§5, 11, 12, 04 §§1–3, 05 §§2–5, 02 §4 |
 
@@ -58,8 +58,9 @@ poder tocar a partida.
 ### 3.2 Fora do escopo
 
 - **Autoria de trilha, ponto de trilha, conteúdo, quiz e desafio de coleta** — é a bancada do
-  Mestre na App 09 (PRD-09). A App 03 acompanha o que foi publicado e, na auditoria por
-  amostragem, pode despublicar com motivo.
+  Mestre na App 09 (PRD-09) — inclusive as **atividades de cada ponto de trilha** e a
+  **recompensa de cada marco**. A App 03 cadastra apenas atividade avulsa, fora de trilha;
+  acompanha o que foi publicado e, na auditoria por amostragem, pode despublicar com motivo.
 - **Lançamento das atividades do próprio Mestre** — ele lança na App 09; aqui o Admin lança as
   demais e corrige o que precisar.
 - Regras de pontuação, cadência de coleta e valoração de aporte: normatizadas nos documentos
@@ -224,7 +225,8 @@ conduz a partida de quiz das suas aulas — nada além disso.
 
 | ID         | Requisito                                                                                          | Prioridade |
 | ---------- | -------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-29` | Admin cadastra atividade com pontuação, recompensas e recursos necessários                         | essencial  |
+| `RF-02-29` | Admin cadastra atividade avulsa, fora de trilha, com pontuação e recursos necessários              | essencial  |
+| `RF-02-71` | Admin consulta as atividades e as recompensas de marco autoradas pelo Mestre, sem editá-las        | essencial  |
 | `RF-02-30` | Admin agenda aula on-line ou presencial, com atividade prevista e ponto de apoio                   | essencial  |
 | `RF-02-31` | Agendamento reserva os recursos necessários no livro-razão                                         | essencial  |
 | `RF-02-32` | Atividade sem lastro fica pendente de lastro e publica a necessidade na vitrine e nas Apps 08 e 09 | essencial  |
@@ -302,7 +304,7 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RN-02-21` | Toda escrita da gestão é registrada na trilha de auditoria, com autor, papel, data e hora     | —          | 03 §1      |
 | `RN-02-22` | Nenhuma tela de gestão exibe a imagem real do Guerreiro(a) — a representação é o avatar       | 12         | 03 §12     |
 | `RN-02-23` | Nenhuma recusa de consentimento exclui o Guerreiro(a) da atividade nem do lançamento          | 11         | 03 §12     |
-| `RN-02-24` | Autoria de trilha, conteúdo e desafio de coleta é do Mestre, na App 09                        | —          | 03 §§5, 11 |
+| `RN-02-24` | Autoria de trilha, conteúdo, atividades do ponto, marco e coleta é do Mestre, na App 09       | —          | 03 §§5, 11 |
 | `RN-02-25` | No Ciclo 01 não há notificação por e-mail: todo retorno acontece dentro da plataforma         | —          | 03 §9      |
 
 ## 8. Modelo de dados
@@ -518,3 +520,4 @@ foi definida no PRD-01 — a App 03 apenas a consulta.
 | `RF-02-63`              | PRD-01 (trilha de auditoria)                             |
 | `RF-02-64`              | 03 §12 (aviso visível de coleta e área detalhada)        |
 | `RF-02-70`              | 03 §11 e PRD-09 (auditoria das trilhas publicadas)       |
+| `RF-02-71`              | 11 §§2, 4 e PRD-09 (autoria da atividade e do marco)     |
