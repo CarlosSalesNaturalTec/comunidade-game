@@ -342,7 +342,11 @@ inclusão.
 
 E é o **canal de sugestões do Guerreiro(a)**: ideias de melhoria para atividades, trilhas e
 para a própria plataforma são registradas aqui e caem na fila de avaliação da gestão — o mesmo
-mecanismo de evolução pactuada do Código de Conduta, estendido à plataforma inteira.
+mecanismo de evolução pactuada do Código de Conduta, estendido à plataforma inteira. O registro
+é feito **em texto ou em áudio de até 60 segundos**, transcrito — uma criança de 6 anos fala
+melhor do que escreve. **Registrar não pontua; a proposta adotada rende pontos extras e badge**,
+e o retorno acontece em até 7 dias na própria plataforma, com o motivo em linguagem simples
+quando não for adotada.
 
 ## 8. App 06 — Vitrine pública
 

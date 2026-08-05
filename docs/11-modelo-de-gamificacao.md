@@ -41,7 +41,8 @@ Regras estruturais:
 1. **Só a realização gera pontos.** Pontos nascem exclusivamente de atividades e desafios
    propostos por Mestres e da coleta de dados do território — nunca de presença passiva e nunca
    de dentro do jogo digital.
-2. **A acumulação é por trilha ou poder**, não global.
+2. **A acumulação é por trilha ou poder**, não global — e o **nível vem do percurso da
+   trilha**, não do saldo acumulado (§6).
 3. **Todo reflexo público é derivado, nunca editado à mão**: o que aparece na vitrine, nos
    cards e nos painéis é leitura do mesmo motor — uma única fonte de verdade no backend.
 
@@ -168,47 +169,75 @@ Regras transversais:
 
 Tabela única das fontes de pontos da plataforma:
 
-| Fonte                                                 | Pontos                | Tipo                                                                                        | Quem lança                                 |
-| ----------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| Desafio semanal — atividade on-line                   | 10                    | Regular                                                                                     | Mestre/gestão                              |
-| Desafio semanal — atividade presencial                | 10                    | Regular                                                                                     | Mestre/gestão                              |
-| Desafio semanal — atividade em equipe                 | 10                    | Regular                                                                                     | Mestre/gestão                              |
-| Desafio semanal — atividade em equipe com familiar    | 20                    | Regular                                                                                     | Mestre/gestão                              |
-| **Coleta de dados do território**                     | 5 por registro válido | **Recorrente** — pontua enquanto a série está ativa, sem teto; interrompeu, parou de render | Automático (registro do Guerreiro(a))      |
-| **Quiz ao Vivo**                                      | A definir             | Regular                                                                                     | Automático (partida)                       |
-| Mérito extra por auxílio aos colegas                  | A definir             | Regular                                                                                     | Mestre/gestão                              |
-| **Criação original** — culminância da trilha          | A definir             | Regular                                                                                     | Mestre/gestão                              |
-| Badge de conduta (ex.: Guardião do Acervo)            | Pontos + badge        | Regular                                                                                     | Mestre/gestão                              |
-| **Desafio extra de Apoiador** (aberto ou direcionado) | Definidos no desafio  | **Extra** — computado isoladamente                                                          | Automático na conclusão validada           |
-| **Batalha** (resultado e estatísticas)                | A definir por batalha | Regular                                                                                     | Automático (ponte Nexus → API) ou gestão   |
-| Pontuação negativa (má conduta)                       | Negativo, a definir   | Regular                                                                                     | Admin/gestão, conforme o Código de Conduta |
+| Fonte                                                 | Pontos                                                                         | Tipo                                                                                        | Quem lança                                 |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Desafio semanal — atividade on-line                   | 10                                                                             | Regular                                                                                     | Mestre/gestão                              |
+| Desafio semanal — atividade presencial                | 10                                                                             | Regular                                                                                     | Mestre/gestão                              |
+| Desafio semanal — atividade em equipe                 | 10                                                                             | Regular                                                                                     | Mestre/gestão                              |
+| Desafio semanal — atividade em equipe com familiar    | 20                                                                             | Regular                                                                                     | Mestre/gestão                              |
+| Atividade **realizada com mérito**                    | +5 sobre o valor da atividade                                                  | Regular                                                                                     | Mestre/gestão                              |
+| **Mérito extra por auxílio aos colegas**              | +10 sobre o valor da atividade                                                 | Regular                                                                                     | Mestre/gestão                              |
+| **Coleta de dados do território**                     | 5 por registro válido                                                          | **Recorrente** — pontua enquanto a série está ativa, sem teto; interrompeu, parou de render | Automático (registro do Guerreiro(a))      |
+| **Quiz ao Vivo**                                      | 1 por acerto da equipe, +1 à primeira a acertar; teto de 10 por partida        | Regular                                                                                     | Automático (partida)                       |
+| **Criação original** — culminância da trilha          | 50, integrais a cada integrante                                                | Regular                                                                                     | Mestre autor, ao validar                   |
+| **Batalha**                                           | 10 por disputar, +10 à equipe vencedora, +5 ao melhor desempenho na telemetria | Regular                                                                                     | Automático (ponte Nexus → API) ou gestão   |
+| Badge de conduta (ex.: Guardião do Acervo)            | 20 + badge, uma vez por ciclo                                                  | Regular                                                                                     | Mestre/gestão                              |
+| **Desafio extra de Apoiador** (aberto ou direcionado) | Definidos no desafio                                                           | **Extra** — computado isoladamente                                                          | Automático na conclusão validada           |
+| **Proposta de evolução adotada** pela gestão          | 20 + badge                                                                     | **Extra** — computado isoladamente                                                          | Gestão, ao adotar a proposta               |
+| Pontuação negativa (má conduta)                       | −5 por ocorrência, teto de −5 no dia                                           | Regular                                                                                     | Admin/gestão, conforme o Código de Conduta |
 
 Três naturezas de saldo, que nunca se confundem:
 
-| Saldo                 | O que é                             | Regra                                                                                           |
-| --------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **Pontos regulares**  | Da progressão nas trilhas e poderes | Alimentam níveis e ranking                                                                      |
-| **Pontos extras**     | De desafios extras de Apoiadores    | Computados isoladamente; rastreados no histórico do Apoiador                                    |
-| **Pontos consumidos** | Débitos por uso dentro do App 04    | O jogo **só debita, nunca credita**; pontos gastos não afetam níveis nem badges já conquistados |
+| Saldo                 | O que é                                                              | Regra                                                                                                |
+| --------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Pontos regulares**  | Da progressão nas trilhas e poderes                                  | Alimentam níveis e ranking                                                                           |
+| **Pontos extras**     | De desafios extras de Apoiadores e de propostas de evolução adotadas | Computados isoladamente; não alimentam níveis; os de desafio são rastreados no histórico do Apoiador |
+| **Pontos consumidos** | Débitos por uso dentro do App 04                                     | O jogo **só debita, nunca credita**; pontos gastos não afetam níveis nem badges já conquistados      |
 
 A coleta vale o mesmo por registro, qualquer que seja o tipo medido, e **não tem teto**:
 **quantos registros de um mesmo período de cadência pontuam é declarado no desafio** pelo
 Mestre que o cria.
 
-> **A definir:** valores do Quiz ao Vivo, dos méritos, da criação original e da pontuação
-> negativa; mecânica antifraude dos pontos em geral.
+**A pontuação negativa não desfaz percurso.** O saldo da trilha **nunca fica negativo**, nível
+e badge já conquistados **não regridem**, e a ocorrência **sai do ranking ao fim do ciclo** —
+o registro permanece para a gestão e o responsável. É consequência no jogo, não porta de saída.
+
+### 5.1 Integridade dos pontos
+
+O desenho já elimina as duas fraudes mais prováveis: o jogo **não credita** pontos e o
+Guerreiro(a) entra em toda aplicação **por nick e imagem**, de modo que a atividade é
+comprovadamente dele. As demais travas:
+
+| Risco                             | Trava                                                                                                  |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Dado de coleta inventado          | Valor fora da faixa declarada no desafio entra como **a conferir** e só pontua com validação do Mestre |
+| Registro em massa                 | Pontua o número de registros por cadência declarado no desafio; o excedente fica sem crédito           |
+| Registro inverossímil             | Auditoria por amostragem do Mestre; a invalidação **estorna apenas aquele registro**                   |
+| Resposta de quiz por outra equipe | O aparelho é vinculado à equipe na abertura da partida                                                 |
+| Lançamento indevido               | Só o Mestre autor lança; lançamento não é editável e a correção referencia o original                  |
+
+Nenhuma dessas travas depende de infraestrutura sofisticada — antifraude que não roda na rede
+do ponto de apoio não é antifraude.
 
 ## 6. Níveis
 
-Progressão **por trilha ou poder** (nunca global), destravada por quiz ou desafio:
+Progressão **por trilha ou poder** (nunca global), destravada por quiz ou desafio.
 
-| Nível | Critério            | O que destrava                                                           |
+**Nível é percurso, não volume de pontos.** O que faz subir é avançar na trilha — não o total
+acumulado. A razão é dupla: a coleta é recorrente e sem teto, e amarrar nível a saldo faria
+alguém subir sustentando séries sem percorrer a trilha; e ponto acumula com tempo, o que
+condenaria quem entra no meio do ciclo, contra a dinâmica assíncrona dos encontros.
+
+| Nível | Critério            | Condição verificável                                                     |
 | ----- | ------------------- | ------------------------------------------------------------------------ |
-| 1     | Inscrito e assíduo  | Participação nas atividades                                              |
-| 2     | Bom rendimento      | —                                                                        |
-| 3     | Ótimo rendimento    | —                                                                        |
-| 4     | Apoio aos colegas   | —                                                                        |
-| **5** | **Mestre Aprendiz** | Apto ao treinamento de multiplicador e ao voluntariado no ponto de apoio |
+| 1     | Inscrito e assíduo  | Inscrito na trilha e com a primeira atividade realizada                  |
+| 2     | Bom rendimento      | **1/3** dos pontos de trilha desbloqueados                               |
+| 3     | Ótimo rendimento    | **2/3** desbloqueados **e** série de coleta ativa                        |
+| 4     | Apoio aos colegas   | Todos os pontos desbloqueados **e** ao menos um mérito extra por auxílio |
+| **5** | **Mestre Aprendiz** | **Culminância validada** pelo Mestre autor da trilha                     |
+
+**Nível conquistado não regride**: série que se interrompe depois, ou pontuação negativa
+lançada em seguida, não derrubam o nível já alcançado.
 
 O Nível 5 é a engrenagem de escala do projeto: o Guerreiro(a) que chega ao topo volta como
 multiplicador. Ser Mestre Aprendiz **não** equivale a ser Mestre — o reconhecimento como Mestre
@@ -225,6 +254,7 @@ Badges representam poderes e conquistas e são um dos principais elementos dos c
 | **De valores/causas** | Participação em atividades ligadas às causas do projeto           | Atividades de natureza "valores e temas transversais" |
 | **De território**     | Progressão no **Poder do Território**                             | Manutenção de séries de coleta ativas                 |
 | **De autoria**        | Badge de autoria — criações originais apresentadas em culminância | Criação original validada pelo Mestre                 |
+| **De protagonismo**   | Proposta de evolução da plataforma adotada                        | Sugestão do Guerreiro(a) adotada pela gestão          |
 
 Regra geral: **badge é por trilha ou por poder, não global.**
 

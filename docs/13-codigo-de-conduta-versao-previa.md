@@ -63,6 +63,13 @@ hipótese alguma: o que é dele, é dele.
 jogo, não porta de saída. Cobrança em dinheiro a Guerreiro(a) ou família **não existe** neste
 projeto.
 
+### Reparação
+
+O código pactuado em cada comunidade **pode prever reparação que zera a ocorrência**: cumprida
+a reparação combinada, os pontos voltam. Sanção que só subtrai ensina a não ser pego; sanção
+com caminho de volta ensina a reparar — que é o que este código quer. A ocorrência em si
+permanece registrada para a gestão e o responsável.
+
 ## 4. Proteção de todos
 
 - Toda interação entre adultos e Guerreiros e Guerreiras é **mediada pela plataforma**; nenhum

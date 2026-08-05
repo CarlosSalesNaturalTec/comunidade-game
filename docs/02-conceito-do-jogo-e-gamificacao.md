@@ -159,7 +159,9 @@ correspondente também é temporal:
 - O registro pode ser **foto ou vídeo** — é assim que se registra lixo acumulado, buraco na
   via ou poste apagado, que se medem por evidência e não por número.
 - O registro **nasce válido e pontua na hora**. O Mestre audita por **amostragem** e pode
-  invalidar registro inverossímil, o que retira os pontos correspondentes.
+  invalidar registro inverossímil, o que retira os pontos daquele registro — só dele.
+- **Valor fora da faixa declarada no desafio** entra como **a conferir** e não pontua até o
+  Mestre validar. É a trava contra dado inventado, e é também momento de ensinar a medir.
 
 É o desenho que traduz o valor real do dado de território: uma medição isolada é curiosidade;
 uma **série contínua** é evidência. A plataforma paga pela continuidade, porque é a
@@ -321,9 +323,9 @@ alterado, uma ideia nova sobre o que a trilha ensinou. A criação original dist
 - **Vitrine pública** — as criações de Guerreiros e Guerreiras autorizados compõem o portfólio
   público.
 - Em **equipe**, o crédito é da equipe **e** de cada membro, com o papel que teve.
-- A criação original **pontua e rende badge de autoria**.
-
-> **A definir:** valor em pontos da criação original e critérios do badge de autoria.
+- A criação original **pontua e rende badge de autoria**, com o valor em pontos creditado
+  **integralmente a cada integrante** da equipe — dividir puniria justamente a colaboração.
+  Validá-la é ato do Mestre autor da trilha, e o valor está no documento 11.
 
 ### Desafios extras propostos por Apoiadores
 

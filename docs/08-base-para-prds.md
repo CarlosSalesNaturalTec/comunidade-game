@@ -328,9 +328,10 @@ linha Alpha recebido na abertura da trilha (que é dele, sem devolução) e os e
 permanentes em uso de bancada, com a **ficha de vida do livro** e o badge **Guardião do
 Acervo**.
 
-**Questões em aberto:** tabela de pontos das recompensas (os valores atuais são apenas
-sugestão); mecânica antifraude de pontos; acessibilidade para quem só tem celular, com aparelho
-compartilhado ou sem dados móveis.
+**Questões em aberto:** catálogo de qual marco entrega qual recompensa no Ciclo 01;
+acessibilidade para quem só tem celular, com aparelho compartilhado ou sem dados móveis. O
+motor de pontuação, os critérios de nível e as travas de integridade dos pontos estão
+definidos no documento 11.
 
 **Fontes:** docs 02, 03, 05, 11.
 

@@ -91,6 +91,11 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Quiz ao Vivo                                                         | 05 §5                            | 03, 08, 11                     |
 | Mestre Aprendiz (nível 5) e multiplicadores                          | 11 §6 (motor) e 05 §6 (operação) | 02, 08                         |
 | Níveis, badges, tabela de pontos, taxonomia de atividades            | 11 §§4–7                         | 02, 08                         |
+| Nível como percurso da trilha (gates dos níveis 1 a 5)               | 11 §6                            | 02 §7, 08                      |
+| Integridade dos pontos (travas antifraude)                           | 11 §5.1                          | 02 §1, 05 §5                   |
+| Canal de sugestões do Guerreiro(a) (formato, prazo e crédito)        | 03 §7                            | 11 §§5, 7, 13 §5               |
+| Reparação que zera a ocorrência de conduta                           | 13 §3                            | 11 §5                          |
+| Regras da partida do Quiz ao Vivo (aparelho, acerto e desempate)     | 05 §5                            | 03 §§5, 11, 08, 11 §5          |
 | Contrato dos jogos (lê progresso, debita, nunca credita)             | 11 §8.4                          | 03 §6, 08                      |
 | LGPD, avatares, imagem do Guerreiro(a), Modo Ouvinte                 | 03 §§3.3, 4, 12                  | 02, 08, 09, 13                 |
 
@@ -222,7 +227,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD-02 | `prd-02-frontend-de-gestao.md`    | PRD-01         | 02, 03, 04, 05         |
 | PRD-03 | `prd-03-vitrine-publica.md`       | PRD-01, PRD-13 | 02, 03, 04, 11         |
 | PRD-04 | `prd-04-onboarding.md`            | PRD-01, PRD-02 | 02, 03, 06             |
-| PRD-05 | `prd-05-area-do-Guerreiro(a).md`  | PRD-01, PRD-09 | 02, 03, 05, 11         |
+| PRD-05 | `prd-05-area-do-guerreiro.md`     | PRD-01, PRD-09 | 02, 03, 05, 11         |
 | PRD-06 | `prd-06-assistente-por-voz.md`    | PRD-01         | 03, 06                 |
 | PRD-07 | `prd-07-economia-e-ledger.md`     | PRD-08         | 04, 05                 |
 | PRD-08 | `prd-08-comunidades-virtuais.md`  | —              | 02, 03, 11             |
