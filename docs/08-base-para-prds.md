@@ -201,7 +201,8 @@ aprovação caso a caso por Admin; **fila de solicitações dos responsáveis** 
 (autorizações, revogações, recusas, acesso, correção e exclusão de dados), com registro de quem
 tratou e quando; **fila única de avaliação das sugestões e propostas** vindas das Apps 05
 (Guerreiro(a)), 07 (responsável), 08 (Apoiador) e 09 (Mestre), com status e retorno a quem
-propôs.
+propôs; **cadastro das disciplinas e do conteúdo do apoio escolar** consumido pelo assistente
+da App 05, que o Mestre também cadastra pela App 09.
 
 **Painel do dia em encontro assíncrono:** como os Guerreiros e Guerreiras chegam e avançam em
 ritmos diferentes, o painel precisa mostrar em tempo real **quem já chegou, em que ponto de
@@ -310,8 +311,10 @@ recompensa em quantidade declarada; **equipes** — grupos livres de até 5, par
 de uma, com a pontuação de todas as atividades em que colaborar; **séries de coleta de dados do
 território** — próxima medição, histórico do que já foi registrado, situação da série (ativa ou
 interrompida) e pontos que ela está rendendo; ranking; recompensas conquistadas nos marcos da
-trilha; pedido
-de ajuda para atividades escolares; níveis 1–5 (assíduo → **Mestre Aprendiz**); badges por
+trilha; **apoio às atividades escolares por assistente de voz com IA** — modelo LLM Google
+Gemini, respondendo **apenas** a partir das disciplinas e do conteúdo cadastrados por Mestres
+(App 09) ou Admins (App 03), com guardrails, tratamento de casos-limite e filtros de segurança
+no nível mais restritivo; níveis 1–5 (assíduo → **Mestre Aprendiz**); badges por
 trilha e por poder; **portfólio de criações originais do Guerreiro(a)**, com autoria creditada;
 **canal de sugestões**, com acompanhamento do status de avaliação.
 
@@ -342,8 +345,9 @@ backend** — com dois modos de operação.
 
 **Requisitos:**
 
-- **Modo Conversa:** interação educacional por voz ("converse com seu robô") — quiz, explicação
-  de conceitos e apoio às atividades escolares.
+- **Modo Conversa:** interação educacional por voz ("converse com seu robô") — quiz e explicação
+  de conceitos das trilhas. O **apoio às atividades escolares fica na App 05** (PRD-05), com
+  corpus restrito ao conteúdo cadastrado pela gestão.
 - **Modo Ouvinte:** a aplicação acompanha o que é falado durante a aula e, **quando acionada**,
   opina sobre o tema em discussão ou responde a perguntas dirigidas a ela.
 - Captação e reprodução de áudio via `navigator.mediaDevices.getUserMedia`; reconhecimento de
@@ -499,6 +503,8 @@ ensina; a gestão administrativa segue na App 03.
   com alerta das solicitações em aberto.
 - **Publicação dos artefatos comprobatórios** da sua habilidade, com currículo, portfólio e
   redes sociais, que alimentam a sua página na vitrine (PRD-03).
+- **Cadastro das disciplinas e do conteúdo do apoio escolar** que o assistente da App 05 pode
+  usar — o mesmo cadastro existe para o Admin na App 03.
 - **Registro de propostas** de evolução da plataforma, na mesma fila da gestão que recebe as
   sugestões dos Guerreiros e Guerreiras.
 - **Acompanhamento do ressarcimento** do que absorveu; havendo receita destinada, a chave PIX

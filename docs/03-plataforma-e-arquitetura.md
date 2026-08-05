@@ -224,8 +224,9 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
 Arquitetura: **JavaScript no frontend + IA no backend**, a mesma base técnica do Robô Educa.
 Dois modos de operação:
 
-- **Modo Conversa** — o Guerreiro(a) fala com o robô e recebe resposta em áudio: quiz,
-  explicação de conceitos, apoio às atividades escolares.
+- **Modo Conversa** — o Guerreiro(a) fala com o robô e recebe resposta em áudio: quiz e
+  explicação de conceitos das trilhas. O **apoio às atividades escolares** não fica aqui: é
+  atendido pelo assistente da App 05 (§7), restrito ao conteúdo cadastrado pela gestão.
 - **Modo Ouvinte** — a aplicação **acompanha o que é falado durante a aula** e, quando
   acionada, **opina sobre o tema em discussão ou responde a perguntas dirigidas a ela**.
   Funciona como um participante a mais, não como um gravador: só se manifesta quando
@@ -292,6 +293,8 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
   tratou e quando.
 - **Fila de avaliação das sugestões e propostas** vindas das Apps 05, 07, 08 e 09, com status
   e retorno a quem propôs.
+- **Disciplinas e conteúdo do apoio escolar** que o assistente da App 05 pode usar — o Mestre
+  cadastra o mesmo conteúdo pela App 09.
 
 A autoria de trilhas e conteúdos e as validações pedagógicas são do Mestre e vivem na App 09;
 esta aplicação continua sendo a da **gestão** — cadastros, lançamentos, aprovações de Admin e
@@ -339,6 +342,19 @@ conquistadas nos marcos e registro de dados do território.
 a próxima medição, o que já foi registrado e **quantos pontos aquela série está rendendo**. O
 Guerreiro(a) seleciona o local do dado entre os cadastrados e, faltando um, solicita a
 inclusão.
+
+É onde fica o **apoio às atividades escolares**, atendido por um **assistente por voz com IA**
+— modelo **LLM Google Gemini** — que responde **exclusivamente a partir das disciplinas e do
+conteúdo cadastrados previamente por Mestres (App 09) ou Admins (App 03)**. Três exigências
+formam a regra:
+
+- **Corpus fechado.** Fora do conteúdo cadastrado o assistente não responde: diz que o assunto
+  ainda não está no material da plataforma e orienta procurar um Mestre no encontro.
+- **Guardrails educacionais.** O assistente explica e conduz ao raciocínio; não entrega tarefa
+  pronta, não opina sobre pessoas e não trata de assunto fora das disciplinas cadastradas.
+- **Filtros de segurança no nível mais restritivo**, com aviso prévio ao Guerreiro(a) e ao
+  responsável e **alternativa equivalente** — perguntar ao Mestre no encontro — para quem
+  recusar.
 
 E é o **canal de sugestões do Guerreiro(a)**: ideias de melhoria para atividades, trilhas e
 para a própria plataforma são registradas aqui e caem na fila de avaliação da gestão — o mesmo
@@ -457,6 +473,7 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 | **Necessidades**          | Vê o que falta de recurso para as suas atividades e, se quiser, cobre a falta com **aporte por absorção**                              |
 | **Locais do território**  | Aprova as solicitações de novo local dos Guerreiros e Guerreiras das suas trilhas, com alerta das que estão em aberto                  |
 | **Responsáveis**          | Cadastra o responsável que se apresentou no encontro e vincula a ele **qualquer** Guerreiro(a) já cadastrado, com o grau de parentesco |
+| **Apoio escolar**         | Cadastra as disciplinas e o conteúdo que o assistente da App 05 pode usar para ajudar nas atividades escolares                         |
 | **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                                                     |
 | **Ressarcimento**         | Acompanha a situação do que absorveu; havendo receita, envia a chave PIX por e-mail ao Admin — a plataforma não guarda dado bancário   |
 

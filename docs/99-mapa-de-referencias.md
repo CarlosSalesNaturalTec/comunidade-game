@@ -94,6 +94,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Nível como percurso da trilha (gates dos níveis 1 a 5)               | 11 §6                            | 02 §7, 08                      |
 | Integridade dos pontos (travas antifraude)                           | 11 §5.1                          | 02 §1, 05 §5                   |
 | Canal de sugestões do Guerreiro(a) (formato, prazo e crédito)        | 03 §7                            | 11 §§5, 7, 13 §5               |
+| Apoio escolar por assistente de voz, com corpus fechado e IA         | 03 §7                            | 03 §§4, 5, 11, 08              |
 | Reparação que zera a ocorrência de conduta                           | 13 §3                            | 11 §5                          |
 | Regras da partida do Quiz ao Vivo (aparelho, acerto e desempate)     | 05 §5                            | 03 §§5, 11, 08, 11 §5          |
 | Contrato dos jogos (lê progresso, debita, nunca credita)             | 11 §8.4                          | 03 §6, 08                      |
@@ -148,6 +149,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10                 |
 | Distribuição da trilha no ciclo             | 11 §2.3 + 10 §5           | PRD-09, 02                     |
 | Sugestões e propostas de evolução           | 03 §§7, 9, 10, 11 + 13 §5 | PRD-01, 02, 05, 09, 13, 14     |
+| Apoio às atividades escolares               | 03 §7                     | PRD-05, 09, 02, 01             |
 | Área do Apoiador                            | 03 §10 + 04 §3            | PRD-14, 07, 02                 |
 | Área do Mestre                              | 03 §11 + 02 §1            | PRD-09, 02, 01                 |
 | Acervo didático (patrimônio e doação)       | 05 §3                     | PRD-07, 02, 05, 09             |

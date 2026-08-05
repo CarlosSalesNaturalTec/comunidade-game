@@ -271,8 +271,11 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RF-02-58` | Aplicação exibe as necessidades de recurso em aberto das atividades previstas                      | essencial  |
 | `RF-02-59` | Mestre da aula ou Admin abre partida de Quiz ao Vivo com o banco do curador e as equipes presentes | essencial  |
 | `RF-02-60` | Partida exibe a pergunta simultaneamente nos dispositivos logados na aula                          | essencial  |
-| `RF-02-61` | Partida apura a primeira resposta correta por ordem de chegada e mostra o resultado                | essencial  |
-| `RF-02-62` | Encerrada a partida, a pontuação é lançada automaticamente às equipes                              | essencial  |
+| `RF-02-61` | Partida vincula um aparelho a cada equipe e aceita uma única resposta por equipe e pergunta        | essencial  |
+| `RF-02-62` | Partida credita toda equipe que acerta e o bônus à primeira, por ordem de chegada no servidor      | essencial  |
+| `RF-02-72` | Quem conduz a partida pode anular a pergunta contestada, sem crédito para ninguém                  | essencial  |
+| `RF-02-73` | Encerrada a partida, a pontuação é lançada automaticamente às equipes, respeitado o teto           | essencial  |
+| `RF-02-74` | Admin cadastra disciplinas e conteúdo do apoio escolar consumido pelo assistente da App 05         | essencial  |
 | `RF-02-63` | Admin consulta a trilha de auditoria das ações de gestão, com filtro por autor, período e entidade | essencial  |
 | `RF-02-64` | Toda tela que coleta dado exibe o aviso discreto e o acesso à área detalhada de direitos           | essencial  |
 | `RF-02-70` | Admin audita por amostragem as trilhas publicadas e despublica com motivo registrado               | essencial  |
@@ -488,9 +491,8 @@ foi definida no PRD-01 — a App 03 apenas a consulta.
 
 - **Tipificação das infrações** que embasam a pontuação negativa — quem lança já está decidido;
   o catálogo de motivos nasce do Código de Conduta co-criado com os Guerreiros e Guerreiras.
-- **Pontuação e regras do Quiz ao Vivo**: pontos da vitória e das respostas corretas seguintes,
-  se responde a equipe inteira ou um representante, critério de desempate e número de
-  dispositivos por equipe. **Trava** o `RF-02-62`.
+- **Curadoria do conteúdo de apoio escolar**: quem confere o corpus que Admins e Mestres
+  cadastram para o assistente da App 05, no espírito da auditoria por amostragem das trilhas.
 - **Triagem do formulário público** contra envio abusivo: os dados mínimos e o prazo de 7 dias
   já estão decididos, a proteção contra abuso não.
 - **Estratégia de conservação do acervo permanente**: a validação da linha Include I —
@@ -517,6 +519,8 @@ foi definida no PRD-01 — a App 03 apenas a consulta.
 | `RF-02-50` a `RF-02-56` | 05 §3 e PRD-07 (acervo, regime misto e patrimônio)       |
 | `RF-02-57` e `RF-02-58` | 04 §1 e PRD-07 (aportes e necessidades)                  |
 | `RF-02-59` a `RF-02-62` | 05 §5 (Quiz ao Vivo)                                     |
+| `RF-02-72` e `RF-02-73` | 05 §5 e 11 §5 (regras e pontuação da partida)            |
+| `RF-02-74`              | 03 §§5, 7 (cadastro do conteúdo do apoio escolar)        |
 | `RF-02-63`              | PRD-01 (trilha de auditoria)                             |
 | `RF-02-64`              | 03 §12 (aviso visível de coleta e área detalhada)        |
 | `RF-02-70`              | 03 §11 e PRD-09 (auditoria das trilhas publicadas)       |

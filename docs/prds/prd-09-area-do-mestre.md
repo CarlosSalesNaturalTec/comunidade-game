@@ -7,8 +7,8 @@
 | PRD              | PRD-09                                                      |
 | Aplicação        | App 09 — Área do Mestre                                     |
 | Onda             | 3                                                           |
-| Situação         | em revisão                                                  |
-| Versão e data    | v2 — 2026-08-05                                             |
+| Situação         | aprovado                                                    |
+| Versão e data    | v3 — 2026-08-05                                             |
 | Depende de       | PRD-01                                                      |
 | Documentos-fonte | 02 §§1–4, 03 §§1, 11, 05 §§3, 5, 6, 06, 07, 11 §§2, 4, 5, 7 |
 
@@ -58,6 +58,8 @@ inteira sem escrever uma linha de código.
   Guerreiras já cadastrados.
 - **Artefatos comprobatórios** da habilidade do Mestre, que alimentam a sua página na vitrine.
 - **Registro de propostas** de evolução da plataforma, na fila única da gestão.
+- **Disciplinas e conteúdo do apoio escolar** que o assistente da App 05 pode usar — o Admin
+  cadastra o mesmo conteúdo pela App 03.
 
 ### 3.2 Fora do escopo
 
@@ -289,6 +291,8 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-53` | Mestre aprova ou recusa solicitação de novo local dos Guerreiros e Guerreiras das suas trilhas | essencial  |
 | `RF-09-54` | Solicitações de local em aberto aparecem com alerta enquanto não são tratadas                  | essencial  |
 | `RF-09-55` | Mestre registra proposta de evolução da plataforma e acompanha o status na fila única          | essencial  |
+| `RF-09-77` | Mestre cadastra disciplinas do apoio escolar, com nome, faixa de dificuldade e situação        | essencial  |
+| `RF-09-78` | Mestre cadastra o conteúdo de cada disciplina, que é o único insumo do assistente da App 05    | essencial  |
 
 ### 6.7 Recursos, absorção e ressarcimento
 
@@ -532,14 +536,8 @@ como ação de Admin e o cadastro de atividade ficou restrito à **atividade avu
 
 ## 14. Pendências que permanecem
 
-- **Pontos da criação original e critérios de validação**: a culminância já é obrigatória e o
-  Mestre autor já é quem valida; falta o **valor em pontos**, o badge e o formato da exposição
-  no portfólio. **Trava** o crédito automático do `RF-09-31`.
-- **Pontuação e regras do Quiz ao Vivo**: o formato da pergunta está decidido; seguem em aberto
-  os pontos da vitória, se responde a equipe inteira ou um representante, o desempate e o número
-  de dispositivos por equipe.
-- **Faixas de pontos dos níveis 1 a 5**: o documento 11 define os critérios em palavras, sem os
-  números que separam um nível do outro. Não impede publicar trilha; impede exibir progressão.
+- **Curadoria do conteúdo de apoio escolar** que o Mestre cadastra para o assistente da App 05:
+  sem aprovação prévia na ferramenta, a conferência do corpus precisa de critério combinado.
 - **Mapeamento dos livros nas trilhas**: qual capítulo apoia qual ponto das trilhas 1 e 2 é
   trabalho de leitura do acervo, não de ferramenta — mas sem ele a bibliografia nasce vazia.
 - **Licença do código** da plataforma (AGPL, MIT ou outra): a do conteúdo já está decidida.
@@ -570,3 +568,4 @@ como ação de Admin e o cadastro de atividade ficou restrito à **atividade avu
 | `RF-09-68`              | 03 §12 (aviso visível de coleta e área detalhada)                |
 | `RF-09-69` e `RF-09-70` | 11 §§2.1, 4 (atividade dentro do ponto de trilha)                |
 | `RF-09-71` a `RF-09-76` | 02 §8 e 11 §2.1 (recompensa conquistada no marco)                |
+| `RF-09-77` e `RF-09-78` | 03 §§7, 11 (disciplinas e conteúdo do apoio escolar)             |
