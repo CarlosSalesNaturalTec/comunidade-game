@@ -43,9 +43,9 @@
   autorização dos pais ou responsáveis. **Toda aplicação indica visualmente**, de forma
   discreta, o que coleta e quais são os direitos do usuário, com acesso a uma **área
   detalhada** sobre destino e uso de cada dado.
-- **Coproprietariedade dos dados publicados:** em produção, a entidade responsável pela
-  plataforma é coproprietária, com quem gerou o dado; havendo monetização, ambos são
-  remunerados, e a parte dos Guerreiros e Guerreiras é proporcional ao que cada um gerou.
+- **Disponibilização gratuita dos dados produzidos:** visão macro e agregada na vitrine, e o
+  conjunto na íntegra, anonimizado, a pesquisadores e gestores públicos mediante solicitação
+  prévia e aprovação de Admin.
 - **Faixa etária dos Guerreiros e Guerreiras: 6 a 16 anos**, com atividades em **níveis de
   dificuldade graduais** acessíveis independentemente da idade. A convivência entre idades é
   tratada com **papéis de mediação, nunca com segmentação por faixa**.
@@ -104,8 +104,8 @@
 - Entidades: Guerreiro(a), Mestre, Apoiador, Admin, Comunidade Virtual, Poder, Trilha,
   Atividade, Aula/Agenda, Presença, Batalha, Equipe, Recurso, Recompensa, Ponto/Badge/Nível,
   Registro de dado do território, Pergunta de quiz, Partida de quiz, **Criação original do
-  Guerreiro(a)**, **Sugestão ou proposta de evolução** e **Solicitação de participação como
-  Mestre ou Apoiador**.
+  Guerreiro(a)**, **Sugestão ou proposta de evolução**, **Solicitação de participação como
+  Mestre ou Apoiador** e **Solicitação de dados**.
 - Rotas de consulta abertas (vitrine, rankings, painéis de comunidade) sem autenticação,
   incluindo a **consulta por nick exato** do Guerreiro(a) com divulgação autorizada — sem
   listagem, sugestão ou completação que permita descobrir nick de criança.
@@ -130,10 +130,9 @@
   Quiz ao Vivo** — e pontua em todas as atividades em que participa; a composição admite **no
   máximo 1 familiar com 17 anos ou mais**, conforme a atividade, o desafio ou a batalha
   determinar. Equipes são cadastradas por Admin.
-- Regra de negócio: **coproprietariedade dos dados publicados** entre a entidade responsável
-  pela plataforma e quem gerou o dado; monetizados, o resultado é rateado **50% / 50%**, com a
-  metade dos Guerreiros e Guerreiras dividida **na proporção do que cada um gerou** no conjunto
-  entregue e paga **ao responsável legal** de cada um.
+- Regra de negócio: **entrega de dados a pesquisadores e gestores públicos** — gratuita e
+  anonimizada, com o conjunto na íntegra liberado só após **solicitação prévia aprovada por um
+  Admin**, e o pedido, a finalidade declarada, o desfecho e o que foi entregue gravados.
 - Regra de negócio: **registro de dado do território é uma série temporal** — cadência, janela
   de validade, Guerreiro(a) coletor(a) e comunidade. **Série ativa gera pontos recorrentes; série
   interrompida cessa o cômputo**, sem perda dos pontos já creditados.
@@ -199,7 +198,9 @@ aulas e a formação livre dos Guerreiros e Guerreiras, com a composição permi
 Mestres e Apoiadores com upload dos artefatos comprobatórios — **currículo, portfólios, redes
 sociais, documentos externos e termos de doação**; **fila de solicitações de participação como
 Mestre ou Apoiador** vindas do formulário público da App 06, com avaliação, status e registro
-de quem tratou; **cadastro dos locais do território e fila de solicitações de novo local**
+de quem tratou; **fila de solicitações de dados** de pesquisadores e gestores públicos, com
+aprovação ou recusa motivada e registro do que foi entregue; **cadastro dos locais do
+território e fila de solicitações de novo local**
 vindas da App 05, com alerta das que estão em aberto; inclusão manual de Admins; cadastro de
 atividades (pontuação, recompensas, recursos necessários); **acompanhamento dos desafios de
 coleta publicados** — cadência, vigência e séries ativas —, cuja autoria é do Mestre na App 09;
@@ -267,9 +268,15 @@ navegação — o visitante circula livremente entre os três.
   tempo e o **painel de cobertura da Agenda 2030**, com destaque para a meta 17.18.
 
 Os três obedecem à regra de saída — **agregada e anonimizada, nunca por Guerreiro(a)** —, com
-a granularidade limitada pela mitigação de inferência de endereço, que segue pendente. Ficam em
-aberto o formato de exportação e a licença do conjunto oferecido ao pesquisador, e se o pedido
-de recorte específico passa pelo formulário público ou por contato direto.
+a granularidade limitada pela mitigação de inferência de endereço, que segue pendente. O que a
+vitrine publica é a **visão macro**; o **conjunto na íntegra** é gratuito e sai por
+solicitação, como descrito abaixo. Ficam em aberto o formato de exportação e a licença de uso.
+
+**Formulário de solicitação de dados:** pesquisadores e gestores públicos pedem o conjunto
+completo por formulário público, declarando quem são, a instituição e a finalidade do uso. O
+pedido é gravado, cai na fila da App 03 (PRD-02) e só vira entrega com **aprovação de um
+Admin**; a entrega é **gratuita e anonimizada**, e o desfecho fica registrado com motivo. O
+envio **não cria cadastro nem acesso**.
 
 **Formulário de solicitação de participação:** pessoas e instituições interessadas em
 participar como **Mestre ou Apoiador** preenchem um formulário público. **Obrigatórios:** nome,
@@ -440,12 +447,6 @@ plataforma é despesa do projeto e entra como **aporte por absorção**, com o m
 dos demais — tabela de referência, ressarcível, destaque público. O ledger precisa registrar a
 frente (construção ou operação), o período apurado e as horas aportadas.
 
-**Coproprietariedade dos dados publicados:** a entidade responsável pela plataforma e quem
-gerou o dado são coproprietários; havendo monetização, o ledger registra o rateio **50% /
-50%**, com a metade dos Guerreiros e Guerreiras **dividida na proporção do que cada um gerou**
-no conjunto entregue e paga **ao responsável legal** de cada um. O rateio é registro do ledger,
-não conteúdo de vitrine: no Ciclo 01 a regra existe e não é destacada.
-
 **Recursos duráveis (patrimônio) e empréstimo:** além dos consumíveis, o ledger precisa tratar
 material que **não se consome no uso e é reaproveitado a cada turma** — o caso concreto é o
 acervo de 298 livros doado pelo Goethe-Institut:
@@ -480,8 +481,7 @@ acervo de 298 livros doado pelo Goethe-Institut:
 **Questões em aberto:** valoração da hora-aula, do acervo, dos kits e das camisas doados —
 critério que define a conversão desses aportes em moedas; **valor-hora da produção executiva** e
 como o histórico de commits vira hora aportada; relatórios públicos por atividade, comunidade e
-provedor; **formato do relatório de efetividade** entregue ao Apoiador; periodicidade, forma de
-pagamento e **fórmula da proporcionalidade** do rateio da monetização dos dados.
+provedor; **formato do relatório de efetividade** entregue ao Apoiador.
 
 **Fontes:** docs 04, 05.
 
@@ -508,7 +508,8 @@ pelos próprios Guerreiros e Guerreiras — a base _Data Driven_ da plataforma.
 - **Guarda permanente** dos registros **com o Guerreiro(a) coletor(a) identificado** — o vínculo
   autoria ↔ registro não é removido nem anonimizado no armazenamento.
 - **Anonimização na saída**: exportações, painéis públicos, pesquisas e entregas a instituições
-  recebem dados agregados e anonimizados.
+  recebem dados anonimizados — agregados na parte pública, na íntegra quando a entrega é
+  aprovada por um Admin.
 - **Granularidade hierárquica**: comunidade → bairro → rua → condomínio → bloco → quadra.
 - **Locais cadastrados previamente por Admin**; o Guerreiro(a) seleciona o local do dado e,
   faltando um, solicita a inclusão pela App 05. A solicitação é aprovada pelo **Mestre da
@@ -522,7 +523,8 @@ pelos próprios Guerreiros e Guerreiras — a base _Data Driven_ da plataforma.
   publicação do painel local como
   **contribuição à meta 17.18** — dado desagregado do território, sempre agregado e anonimizado
   na saída.
-- Exportação e API aberta dos dados agregados e anonimizados.
+- Exportação e API aberta dos dados agregados e anonimizados, além da entrega do conjunto
+  completo anonimizado a quem tiver a solicitação aprovada.
 
 **Questões em aberto:** fontes e sensores (registro manual × sensor construído pelo
 Guerreiro(a) × API pública); curadoria e **veracidade dos dados**; cadência e valor em pontos
@@ -701,8 +703,8 @@ família. Substitui a comunicação por mensageria de terceiros, fora do escopo 
   autoria e destrói o mapeamento; a medição permanece na série sem apontar pessoa alguma. A
   tela e o termo precisam dizer isso antes do aceite.
 - **Termos e consentimentos versionados**, com data e hora e histórico consultável, incluindo a
-  declaração de **coproprietariedade dos dados publicados** e o que ela implica em caso de
-  monetização.
+  declaração de que os dados podem ser **entregues anonimizados** a pesquisadores e gestores
+  públicos.
 - **Registro de propostas** de evolução da plataforma pelo responsável, com acompanhamento do
   status, na mesma fila da gestão que recebe as sugestões dos Guerreiros e Guerreiras.
 - **Linguagem simples**, no mesmo padrão exigido da política de privacidade.
@@ -715,9 +717,8 @@ H2 não é mensurável — é anedota.
 **Definições vigentes:** prazo de resposta de **7 dias** para toda solicitação; **sem
 notificação por e-mail no Ciclo 01** — o retorno acontece na própria plataforma.
 
-**Questões em aberto:** nenhuma — a autorização passou a ser única, o atendimento de quem não
-tem smartphone foi definido e a redação do termo de monetização segue no documento 09, fora
-deste PRD.
+**Questões em aberto:** nenhuma — a autorização passou a ser única e o atendimento de quem não
+tem smartphone foi definido.
 
 **Fontes:** docs 02, 03, 10.
 

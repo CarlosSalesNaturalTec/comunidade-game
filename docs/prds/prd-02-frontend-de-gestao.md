@@ -8,7 +8,7 @@
 | Aplicação        | App 03 — Gestão administrativa            |
 | Onda             | 2                                         |
 | Situação         | aprovado                                  |
-| Versão e data    | v5 — 2026-08-05                           |
+| Versão e data    | v6 — 2026-08-06                           |
 | Depende de       | PRD-01                                    |
 | Documentos-fonte | 03 §§5, 11, 12, 04 §§1–3, 05 §§2–5, 02 §4 |
 
@@ -52,8 +52,8 @@ poder tocar a partida.
   e conferência de inventário.
 - Gestão de recursos: registro e homologação de aportes, e **publicação das necessidades** das
   atividades pendentes de lastro.
-- Filas de avaliação: solicitações de participação, solicitações dos responsáveis, desafios
-  extras dos Apoiadores e a fila única de sugestões e propostas.
+- Filas de avaliação: solicitações de participação, **solicitações de dados**, solicitações
+  dos responsáveis, desafios extras dos Apoiadores e a fila única de sugestões e propostas.
 - Consulta da trilha de auditoria das ações de gestão.
 
 ### 3.2 Fora do escopo
@@ -206,21 +206,24 @@ conduz a partida de quiz das suas aulas — nada além disso.
 
 ### 6.2 Filas de avaliação
 
-| ID         | Requisito                                                                                       | Prioridade |
-| ---------- | ----------------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-18` | Fila de solicitações exibe nome, e-mail, WhatsApp, pretensão, apresentação, instituição e links | essencial  |
-| `RF-02-19` | Admin conclui a solicitação como aceita ou recusada, com parecer, autor e data registrados      | essencial  |
-| `RF-02-65` | Solicitação de participação sem desfecho em 7 dias aparece em atraso na fila                    | essencial  |
-| `RF-02-20` | Solicitação aceita abre o cadastro de Mestre ou Apoiador pré-preenchido, sem criar acesso       | essencial  |
-| `RF-02-21` | Fila de solicitações de novo local alerta enquanto houver solicitação em aberto                 | essencial  |
-| `RF-02-22` | Admin aprova a solicitação de local, criando-o, ou recusa com motivo                            | essencial  |
-| `RF-02-23` | Fila de solicitações dos responsáveis exibe protocolo, tipo, situação e o prazo de 7 dias       | essencial  |
-| `RF-02-24` | Admin registra o desfecho da solicitação do responsável, com quem tratou e quando               | essencial  |
-| `RF-02-66` | Solicitação de responsável sem desfecho em 7 dias aparece em atraso na fila                     | essencial  |
-| `RF-02-25` | Fila única reúne sugestões e propostas das Apps 05, 07, 08 e 09, identificando autor e persona  | essencial  |
-| `RF-02-26` | Admin avalia a sugestão, muda o status e registra o retorno a quem propôs                       | essencial  |
-| `RF-02-27` | Fila de desafios extras mostra apenas os já validados pelo Mestre da trilha                     | essencial  |
-| `RF-02-28` | Admin aprova o desafio extra, e a aprovação é recusada sem o lastro da recompensa registrado    | essencial  |
+| ID         | Requisito                                                                                           | Prioridade |
+| ---------- | --------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-02-18` | Fila de solicitações exibe nome, e-mail, WhatsApp, pretensão, apresentação, instituição e links     | essencial  |
+| `RF-02-19` | Admin conclui a solicitação como aceita ou recusada, com parecer, autor e data registrados          | essencial  |
+| `RF-02-65` | Solicitação de participação sem desfecho em 7 dias aparece em atraso na fila                        | essencial  |
+| `RF-02-20` | Solicitação aceita abre o cadastro de Mestre ou Apoiador pré-preenchido, sem criar acesso           | essencial  |
+| `RF-02-77` | Fila de solicitações de dados exibe solicitante, instituição, finalidade declarada e recorte pedido | essencial  |
+| `RF-02-78` | Admin aprova ou recusa a solicitação de dados, com motivo, autor e data registrados                 | essencial  |
+| `RF-02-79` | Entrega aprovada é gratuita e anonimizada, com registro do que foi entregue e a quem                | essencial  |
+| `RF-02-21` | Fila de solicitações de novo local alerta enquanto houver solicitação em aberto                     | essencial  |
+| `RF-02-22` | Admin aprova a solicitação de local, criando-o, ou recusa com motivo                                | essencial  |
+| `RF-02-23` | Fila de solicitações dos responsáveis exibe protocolo, tipo, situação e o prazo de 7 dias           | essencial  |
+| `RF-02-24` | Admin registra o desfecho da solicitação do responsável, com quem tratou e quando                   | essencial  |
+| `RF-02-66` | Solicitação de responsável sem desfecho em 7 dias aparece em atraso na fila                         | essencial  |
+| `RF-02-25` | Fila única reúne sugestões e propostas das Apps 05, 07, 08 e 09, identificando autor e persona      | essencial  |
+| `RF-02-26` | Admin avalia a sugestão, muda o status e registra o retorno a quem propôs                           | essencial  |
+| `RF-02-27` | Fila de desafios extras mostra apenas os já validados pelo Mestre da trilha                         | essencial  |
+| `RF-02-28` | Admin aprova o desafio extra, e a aprovação é recusada sem o lastro da recompensa registrado        | essencial  |
 
 ### 6.3 Atividades, agenda e lançamentos
 
@@ -290,6 +293,7 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RN-02-01` | Mestre e Apoiador são cadastrados só por Admin, com artefato comprobatório anexado            | 3          | 02 §1      |
 | `RN-02-02` | Novo Admin só entra por inclusão manual de outro Admin                                        | 3          | 02 §1      |
 | `RN-02-03` | Solicitação de participação não cria cadastro nem acesso                                      | 3          | 02 §1      |
+| `RN-02-26` | Nenhum conjunto de dados sai sem aprovação de Admin, e a entrega é gratuita e anonimizada     | 17         | 03 §12.3   |
 | `RN-02-04` | Comunidade Virtual é criada apenas por Admin e nasce vazia                                    | 4          | 02 §1      |
 | `RN-02-05` | Sem aula agendada para a data e o horário, o App 01 não opera                                 | 4          | 02 §1      |
 | `RN-02-06` | O Guerreiro(a) não muda de comunidade no Ciclo 01; a transferência existe no modelo, com data | 4          | 02 §1      |
@@ -321,16 +325,16 @@ PRD-07 (economia) e no PRD-08 (território). O que segue é o mapa do que a apli
 ```text
 CADASTRA                 AGENDA E LANÇA          FILAS QUE TRATA
 Guerreiro(a)                  Aula/Agenda             SolicitacaoDeParticipacao
-Mestre                   Atividade               SolicitacaoDeLocal
-Apoiador                 Presenca                SolicitacaoDoResponsavel
-Admin                    Resultado               SugestaoOuProposta
-Responsavel              Lancamento              DesafioExtra
-VinculoResponsavel       PartidaDeQuiz
-Credencial               Reserva                 CONFERE (leitura)
-Equipe                                           SerieDeColeta
-ComunidadeVirtual        ACERVO                  DesafioDeColeta
-Local                    ItemPatrimonial         Auditoria
-Poder                    Emprestimo
+Mestre                   Atividade               SolicitacaoDeDados
+Apoiador                 Presenca                SolicitacaoDeLocal
+Admin                    Resultado               SolicitacaoDoResponsavel
+Responsavel              Lancamento              SugestaoOuProposta
+VinculoResponsavel       PartidaDeQuiz           DesafioExtra
+Credencial               Reserva
+Equipe                                           CONFERE (leitura)
+ComunidadeVirtual        ACERVO                  SerieDeColeta
+Local                    ItemPatrimonial         DesafioDeColeta
+Poder                    Emprestimo              Auditoria
                          Aporte
 ```
 
@@ -365,6 +369,8 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | GET    | `/v1/aulas/vigentes`                              | pública         | Aulas em curso na data e hora, para o App 01 identificar a comunidade |
 | GET    | `/v1/solicitacoes-de-participacao`                | Admin           | Fila das solicitações vindas da vitrine                               |
 | POST   | `/v1/solicitacoes-de-participacao/{id}/avaliacao` | Admin           | Aceita ou recusa, com parecer e autor                                 |
+| GET    | `/v1/solicitacoes-de-dados`                       | Admin           | Fila dos pedidos de conjunto de dados                                 |
+| POST   | `/v1/solicitacoes-de-dados/{id}/avaliacao`        | Admin           | Aprova ou recusa, com motivo, autor e o que foi entregue              |
 | GET    | `/v1/solicitacoes-do-responsavel`                 | Admin           | Fila das solicitações vindas da App 07                                |
 | POST   | `/v1/solicitacoes-do-responsavel/{id}/tratamento` | Admin           | Registra o desfecho, com quem tratou e quando                         |
 | GET    | `/v1/sugestoes`                                   | Admin           | Fila única de sugestões e propostas das Apps 05, 07, 08, 09           |
@@ -418,6 +424,7 @@ do quiz ou a de ocorrência (403); condução de partida por Mestre que não min
 | Contato do responsável             | Canal oficial com a família       | consentimento     | enquanto durar o vínculo | gestão               |
 | Artefatos comprobatórios de adulto | Provar habilidade ou apoio        | consentimento     | enquanto durar o vínculo | gestão e visitante   |
 | Solicitação de participação        | Avaliar quem pede para participar | consentimento     | enquanto durar a fila    | gestão               |
+| Solicitação de dados               | Avaliar e registrar a entrega     | consentimento     | enquanto durar a fila    | gestão               |
 | Auditoria das ações de gestão      | Rastreabilidade                   | interesse público | permanente               | Admin                |
 
 - A gestão **não vê a imagem do Guerreiro(a)**: a aplicação mostra avatar e nick, e a
@@ -511,6 +518,7 @@ foi definida no PRD-01 — a App 03 apenas a consulta.
 | `RF-02-01` a `RF-02-10` | 02 §§1, 5 e 03 §5 (cadastros e governança de personas)   |
 | `RF-02-11` a `RF-02-17` | 02 §1, 03 §5 e PRD-08 (comunidade, default e território) |
 | `RF-02-18` a `RF-02-20` | 02 §1 e 03 §§5, 8 (solicitação de participação)          |
+| `RF-02-77` a `RF-02-79` | 03 §12.3 (entrega de dados aprovada por Admin)           |
 | `RF-02-21` e `RF-02-22` | PRD-08 (solicitação de novo local)                       |
 | `RF-02-23` e `RF-02-24` | 03 §9 (solicitações da área do responsável)              |
 | `RF-02-25` e `RF-02-26` | 03 §§7, 9, 10, 11 (fila única de sugestões e propostas)  |

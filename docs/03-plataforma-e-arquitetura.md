@@ -436,9 +436,12 @@ Web App de acesso público e **sem autenticação**:
   comprobatórios externos** — a prova pública de habilidade e de apoio.
 - **Formulário de solicitação de participação** como Mestre ou Apoiador, aberto a pessoas e
   instituições: a solicitação é gravada e cai na fila de avaliação dos Admins na App 03.
+- **Formulário de solicitação de dados**, para pesquisadores e gestores públicos, com a mesma
+  fila de avaliação (§12.3).
 - **Aportes exibidos em moedas da plataforma**, nunca em reais (documento 04).
-- **Painel público da Comunidade Virtual** — dados do território em **série histórica**,
-  agregados e anonimizados, abertos à consulta da comunidade e de instituições.
+- **Painel público da Comunidade Virtual** — dados do território em **série histórica**, em
+  **visão macro**, agregados e anonimizados, abertos à consulta da comunidade e de
+  instituições.
 - **Portfólio de criações originais** — as criações dos Guerreiros e Guerreiras autorizados,
   com o nick do autor (ou dos autores, em equipe).
 - **Favoritos do visitante** — sem login e sem cadastro, o visitante marca Guerreiros,
@@ -465,10 +468,9 @@ de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos:
 | **Gestores públicos** | Evidência sobre o lugar para decidir | Painel do território por comunidade e ciclo e a cobertura da Agenda 2030, com a meta 17.18 |
 
 Nenhum recorte cria área restrita, cadastro ou coleta de dado do visitante, e os três obedecem
-à regra de saída de sempre: **agregada e anonimizada, nunca por Guerreiro(a)**.
-
-> **A definir:** formato de exportação e licença do conjunto de dados oferecido ao pesquisador,
-> e se o pedido de recorte específico passa pelo formulário público ou por contato direto.
+à regra de saída de sempre: **agregada e anonimizada, nunca por Guerreiro(a)**. Na vitrine o
+dado aparece em **visão macro**; quem precisa do **conjunto na íntegra** o solicita pelo
+formulário público, e a entrega segue a regra de §12.3.
 
 ## 9. App 07 — Área dos pais e responsáveis
 
@@ -599,7 +601,8 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 - **Dados do território: guarda permanente com o coletor identificado**, mesmo depois que o
   Guerreiro(a) deixa o projeto — é o que dá procedência à série e preserva o crédito da
   realização. A **anonimização ocorre na saída**: painéis públicos, exportações, pesquisas e
-  entregas a instituições recebem dados **agregados e anonimizados**.
+  entregas a instituições recebem dados **anonimizados**, agregados conforme a finalidade
+  (§12.3).
 
 ### 12.1 Base legal da guarda do dado de território
 
@@ -611,8 +614,8 @@ Duas camadas, e a distinção entre elas é o que sustenta o desenho:
 | **O vínculo de autoria** | Quem coletou — único dado **pessoal** do registro | **Consentimento específico e em destaque do responsável**, revogável              |
 
 - **Titularidade não se transfere.** O titular do vínculo de autoria é o Guerreiro(a); o
-  responsável **exerce os direitos** em nome dele e **recebe a parte monetária** do rateio da
-  coproprietariedade. É o máximo que a lei admite nessa direção, e é o que o projeto pratica.
+  responsável **exerce os direitos** em nome dele. É o máximo que a lei admite nessa direção, e
+  é o que o projeto pratica.
 - **Revogação despersonaliza, não apaga.** Revogado o consentimento, a plataforma **rompe o
   vínculo de autoria e destrói o mapeamento**: o registro permanece na série com um **código de
   coletor sem correspondência a pessoa alguma**, preservando a consistência da série sem
@@ -622,8 +625,7 @@ Duas camadas, e a distinção entre elas é o que sustenta o desenho:
   indeterminado só se apoia em pesquisa (LGPD art. 7º, IV e art. 16, II) quando houver
   **pessoa jurídica sem fins lucrativos** com pesquisa na missão institucional — a empresa
   vinculada hoje não se enquadra. Até lá, a camada pessoal se sustenta em consentimento, e é
-  por isso que a criação da entidade é decisão que precede a monetização e a entrega de dados
-  a instituições.
+  por isso que toda entrega a terceiros sai **anonimizada** (§12.3).
 - **Risco de reidentificação**: em comunidade pequena, código de coletor somado a data e local
   fino ainda pode apontar uma criança. Toda saída passa por agregação suficiente para que isso
   não ocorra, e a granularidade fina fica restrita a uso interno e a entregas com acordo
@@ -656,9 +658,26 @@ minuto antes e opção de continuar, além do botão de sair sempre visível. O 
 - **Aviso visível em toda aplicação:** onde há coleta de dado, o app indica ao usuário — de
   forma discreta e elegante, sem interromper o uso — o que está sendo coletado e quais são os
   seus direitos, com acesso a uma **área detalhada** que explica destino e uso de cada dado.
-- **Coproprietariedade dos dados publicados**: em produção, a entidade responsável pela
-  plataforma é coproprietária, com o Guerreiro(a) que gerou o dado (documento 04).
 - A LGPD deve ser considerada em **todos** os módulos e PRDs, não como item pontual.
 
 Vídeos de culminância e fotos de eventos em que Guerreiros e Guerreiras apareçam seguem a
 mesma autorização única do responsável, sem termo à parte por divulgação.
+
+### 12.3 Entrega de dados a pesquisadores e gestores públicos
+
+**Definição vigente.** No Ciclo 01 os dados produzidos pela plataforma são disponibilizados
+**gratuitamente**, em duas formas:
+
+| Forma                        | Quem acessa                       | O que sai                                          |
+| ---------------------------- | --------------------------------- | -------------------------------------------------- |
+| **Vitrine pública (App 06)** | Qualquer visitante, sem login     | Visão **macro e agregada**, por comunidade e ciclo |
+| **Entrega sob solicitação**  | Pesquisadores e gestores públicos | O **conjunto na íntegra**, anonimizado             |
+
+- A solicitação é **prévia** e depende de **aprovação de um Admin**, que registra quem pediu,
+  para que finalidade e o que foi entregue. Sem aprovação não há entrega, e a recusa é
+  registrada com motivo.
+- A entrega é **anonimizada** em qualquer granularidade aprovada: nenhum conjunto sai com
+  vínculo de autoria, nome ou nick de Guerreiro(a).
+
+> **A definir:** formato de exportação, licença de uso do conjunto entregue e o critério que o
+> Admin aplica ao aprovar ou recusar o pedido.

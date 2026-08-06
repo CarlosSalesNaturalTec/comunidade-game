@@ -8,7 +8,7 @@
 | Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | aprovado                                                   |
-| Versão e data    | v8 — 2026-08-06                                            |
+| Versão e data    | v9 — 2026-08-06                                            |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 9, 11 e 12, 04, 11                        |
 
@@ -41,6 +41,8 @@ o que é público — cada um pela sua aplicação, todos sobre a mesma verdade.
 - Papéis e permissões: Admin, Mestre, Guerreiro(a), Responsável, Apoiador e Visitante.
 - Convenções da API: versionamento em `/v1`, formato de erro, paginação e filtros.
 - Rotas de consulta públicas, sem autenticação, para vitrine, rankings e painéis.
+- Registro da **solicitação de dados** de pesquisadores e gestores públicos, com a entrega
+  liberada apenas após aprovação de Admin e sempre anonimizada.
 - Filtro por comunidade em toda consulta, com a plataforma em **instância única**.
 - Registro de auditoria de toda escrita: quem, o quê, quando.
 - Suporte a aplicações de terceiros sobre as rotas públicas.
@@ -66,7 +68,7 @@ o que é público — cada um pela sua aplicação, todos sobre a mesma verdade.
 | Guerreiro(a) | Seus registros de coleta, suas criações, suas sugestões, recompensas recebidas nos marcos, a **equipe que forma na aula** e a resposta de quiz da equipe                                                                                      | Seus dados, as equipes da aula em andamento e o que é público            |
 | Responsável  | Consentimentos, autorizações, solicitações e propostas                                                                                                                                                                                        | Os Guerreiros e Guerreiras sob sua responsabilidade e o que é público    |
 | Apoiador     | Propostas de desafio extra, documentos comprobatórios, propostas de evolução                                                                                                                                                                  | Seus aportes, efetividade agregada e o que é público                     |
-| Visitante    | Solicitação de participação, pela rota pública da vitrine                                                                                                                                                                                     | Somente o que é público                                                  |
+| Visitante    | Solicitação de participação e solicitação de dados, pelas rotas públicas da vitrine                                                                                                                                                           | Somente o que é público                                                  |
 
 Regra geral: **leitura pública é aberta; escrita é sempre autenticada e auditada.**
 
@@ -157,6 +159,8 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RF-01-24` | Núcleo mantém as entidades do livro-razão definidas no PRD-07                                                                                                                                   | essencial  |
 | `RF-01-25` | Núcleo mantém solicitação de participação, sugestões e propostas em fila única de avaliação                                                                                                     | essencial  |
 | `RF-01-26` | Núcleo mantém criação original com autoria creditada por toda a vida do registro                                                                                                                | essencial  |
+| `RF-01-46` | Núcleo mantém a solicitação de dados de pesquisador ou gestor público, com finalidade declarada e desfecho                                                                                      | essencial  |
+| `RF-01-47` | Núcleo só libera o conjunto de dados depois da aprovação de um Admin, sempre anonimizado                                                                                                        | essencial  |
 | `RF-01-35` | Núcleo mantém as entidades do apoio escolar — disciplina, conteúdo do corpus e consulta                                                                                                         | essencial  |
 | `RF-01-36` | Núcleo mantém a resposta de quiz por equipe e pergunta, com o momento de chegada                                                                                                                | essencial  |
 | `RF-01-37` | Equipe é criada pelo Guerreiro(a), vinculada a uma aula, e encerra com ela sem ser reaproveitada                                                                                                | essencial  |
@@ -205,6 +209,7 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RN-01-22` | O nick é chave de acompanhamento público, cedido pela família: o núcleo nunca o descobre nem o sugere a um adulto       | 12         | 02 §1       |
 | `RN-01-23` | A etiqueta ODS não entra em ponto, nível ou badge; é opcional no Ciclo 01 e obrigatória na trilha a partir do Ciclo 02  | 20         | 11 §2.1     |
 | `RN-01-24` | A cobertura de ODS nunca é atributo de um Guerreiro(a): agrega por trilha, poder, comunidade e ciclo                    | 20         | 11 §2.1     |
+| `RN-01-25` | Solicitação de dados não cria cadastro nem acesso, e a entrega exige aprovação registrada de Admin                      | 17         | 03 §12.3    |
 
 ## 8. Modelo de dados
 
@@ -230,9 +235,10 @@ Sessao              Conteudo
                     EtiquetaODS
                     PARTICIPAÇÃO               TERRITÓRIO (PRD-08)  ECONOMIA (PRD-07)
                     SolicitacaoDeParticipacao  ComunidadeVirtual    TipoDeRecurso
-                    SolicitacaoDoResponsavel   Local                Aporte
-                    SugestaoOuProposta         SerieDeColeta        Lancamento
-                    Auditoria                  RegistroDeColeta     ItemPatrimonial
+                    SolicitacaoDeDados         Local                Aporte
+                    SolicitacaoDoResponsavel   SerieDeColeta        Lancamento
+                    SugestaoOuProposta         RegistroDeColeta     ItemPatrimonial
+                    Auditoria
 
                     APOIO ESCOLAR (PRD-05)
                     DisciplinaDeApoio
@@ -247,6 +253,7 @@ Sessao              Conteudo
 | `VinculoResponsavel`       | responsável, Guerreiro(a), grau de parentesco, cadastrado por (Admin ou Mestre), início, fim                                                                                        |
 | `Consentimento`            | responsável, Guerreiro(a), tipo, versão do termo, decisão, data e hora, testemunha (Mestre ou Admin), anexo do termo assinado, origem (própria, assistida ou impressa), quem operou |
 | `SolicitacaoDoResponsavel` | protocolo, responsável, Guerreiro(a), tipo, texto, situação, prazo, quem tratou, desfecho e data                                                                                    |
+| `SolicitacaoDeDados`       | solicitante, instituição, e-mail, finalidade declarada, recorte pedido, situação, quem avaliou, desfecho, data e o que foi entregue                                                 |
 | `EtiquetaODS`              | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                                                    |
 | `Auditoria`                | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                           |
 
@@ -290,6 +297,7 @@ Convenções válidas para todas as rotas:
 | GET    | `/v1/vitrine/...`                   | pública         | Consultas públicas de vitrine e rankings                       |
 | GET    | `/v1/vitrine/guerreiros/{nick}`     | pública         | Perfil público por nick exato, se houver divulgação autorizada |
 | GET    | `/v1/vitrine/ods/cobertura`         | pública         | Cobertura de ODS agregada por comunidade e ciclo               |
+| POST   | `/v1/solicitacoes-de-dados`         | pública         | Registra pedido do conjunto de dados, sem criar cadastro       |
 | GET    | `/v1/auditoria`                     | Admin           | Trilha de auditoria das ações de gestão                        |
 
 As rotas de domínio — território, ledger, trilhas, atividades — estão nos PRDs que as definem
@@ -426,3 +434,4 @@ e o dos desafios de desbloqueio de cada trilha.
 | `RF-01-36`              | 05 §5 e 11 §5 (resposta e pontuação do quiz)     |
 | `RF-01-37` a `RF-01-39` | 02 §5 e 05 §5 (equipe formada na aula e quiz)    |
 | `RF-01-40` a `RF-01-45` | 11 §2.1 e 04 §4 (etiqueta ODS e cobertura)       |
+| `RF-01-46` e `RF-01-47` | 03 §12.3 (entrega de dados aprovada por Admin)   |
