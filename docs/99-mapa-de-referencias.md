@@ -61,6 +61,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Protagonismo dos Guerreiros e Guerreiras / criação original        | 01 §3 (valor) e 02 §4 (mecânica)           | 03, 05, 06, 07, 08, 11, 12, 13 |
 | Transparência sobre uso de IA                                      | 01 §7                                      | 03, 08, 10, 12, 13             |
 | Adesão em duas etapas (cadastro livre × divulgação autorizada)     | 03 §12                                     | 01, 02, 08, 09, 10             |
+| Autorização única do responsável (divulgação e captação)           | 03 §12                                     | 02 §§1, 9, 03 §9, 08, 09       |
 | Comunidade Virtual (criação, vínculo, granularidade)               | 02 §1                                      | 03, 05, 08, 10, 11             |
 | Série temporal de coleta e pontuação recorrente                    | 02 §1                                      | 03, 06, 07, 08, 11             |
 | Guarda permanente com coletor identificado / anonimização na saída | 02 §1                                      | 03 §12, 08, 09                 |

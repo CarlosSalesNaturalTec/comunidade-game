@@ -240,14 +240,15 @@ Sessao              Conteudo
                     ConsultaDeApoio
 ```
 
-| Entidade             | Atributos essenciais                                                                                                                             |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `Credencial`         | persona, tipo (biometria, login social, usuário e senha), identificador, segredo (_template_ cifrado ou hash), criada por, troca pendente, ativa |
-| `Sessao`             | persona, início, expiração, origem (aplicação), como autenticou, quem confirmou, encerrada em                                                    |
-| `VinculoResponsavel` | responsável, Guerreiro(a), grau de parentesco, cadastrado por (Admin ou Mestre), início, fim                                                     |
-| `Consentimento`      | responsável, Guerreiro(a), tipo, versão do termo, decisão, data e hora, testemunha (Mestre ou Admin), anexo do termo assinado                    |
-| `EtiquetaODS`        | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                 |
-| `Auditoria`          | autor, papel, ação, entidade afetada, data e hora, origem                                                                                        |
+| Entidade                   | Atributos essenciais                                                                                                                                                                |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Credencial`               | persona, tipo (biometria, login social, usuário e senha), identificador, segredo (_template_ cifrado ou hash), criada por, troca pendente, ativa                                    |
+| `Sessao`                   | persona, início, expiração, origem (aplicação), como autenticou, quem confirmou, encerrada em                                                                                       |
+| `VinculoResponsavel`       | responsável, Guerreiro(a), grau de parentesco, cadastrado por (Admin ou Mestre), início, fim                                                                                        |
+| `Consentimento`            | responsável, Guerreiro(a), tipo, versão do termo, decisão, data e hora, testemunha (Mestre ou Admin), anexo do termo assinado, origem (própria, assistida ou impressa), quem operou |
+| `SolicitacaoDoResponsavel` | protocolo, responsável, Guerreiro(a), tipo, texto, situação, prazo, quem tratou, desfecho e data                                                                                    |
+| `EtiquetaODS`              | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                                                    |
+| `Auditoria`                | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                           |
 
 A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela que o App 01 tira
 a comunidade do novo cadastro, e é a existência dela que habilita o onboarding naquele momento.

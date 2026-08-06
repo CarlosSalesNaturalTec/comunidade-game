@@ -85,6 +85,7 @@ nav:
       - "PRD-04 — App 01: Aula presencial": prds/prd-04-aula-presencial.md
       - "PRD-09 — App 09: Área do Mestre": prds/prd-09-area-do-mestre.md
       - "PRD-05 — App 05: Área do Guerreiro(a)": prds/prd-05-area-do-guerreiro.md
+      - "PRD-13 — App 07: Área dos responsáveis": prds/prd-13-area-dos-responsaveis.md
   - "Operação":
       - "04 — Modelo econômico e sustentabilidade": 04-modelo-economico-e-sustentabilidade.md
       - "05 — Implantação e operação": 05-implantacao-e-operacao.md

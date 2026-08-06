@@ -477,14 +477,15 @@ comunicação da evolução do aluno sem depender de aplicativos de mensageria d
 responsável acessa apenas os dados dos Guerreiros e Guerreiras sob sua responsabilidade, com
 vínculo conferido por um Admin ou por um Mestre.
 
-| Função                       | O que o responsável faz                                                                                                                                 |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Evolução do Guerreiro(a)** | Acompanha presença, atividades realizadas, pontos, poderes, badges, nível e progresso nas trilhas                                                       |
-| **Solicitações**             | Autoriza ou **revoga** a divulgação pública do perfil; pede correção ou exclusão de dados; solicita esclarecimentos — cada pedido com protocolo e prazo |
-| **Direitos de recusa**       | Recusa, a qualquer tempo, a **imagem do Guerreiro(a)** e o uso de imagem em vídeos e fotos de eventos                                                   |
-| **Transparência de dados**   | Vê **quais dados da criança estão armazenados**, para que servem, por quanto tempo ficam e quem os acessou                                              |
-| **Termos e consentimentos**  | Lê, aceita e consulta o histórico dos termos assinados, com data e hora                                                                                 |
-| **Propostas**                | Registra propostas de evolução da plataforma, na mesma fila de avaliação das sugestões dos Guerreiros e Guerreiras                                      |
+| Função                       | O que o responsável faz                                                                                                           |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **Evolução do Guerreiro(a)** | Acompanha presença, atividades realizadas, pontos, poderes, badges, nível e progresso nas trilhas                                 |
+| **Autorização**              | Concede e **revoga** a autorização única do responsável, que vale para divulgação, imagem em eventos e captação da produção (§12) |
+| **Solicitações**             | Pede acesso, correção ou exclusão de dados e solicita esclarecimentos — cada pedido com protocolo e prazo                         |
+| **Direitos de recusa**       | Recusa, a qualquer tempo, a **imagem do Guerreiro(a)** captada no onboarding, que tem termo próprio                               |
+| **Transparência de dados**   | Vê **quais dados da criança estão armazenados**, para que servem, por quanto tempo ficam e quem os acessou                        |
+| **Termos e consentimentos**  | Lê, aceita e consulta o histórico dos termos assinados, com data e hora                                                           |
+| **Propostas**                | Registra propostas de evolução da plataforma, na mesma fila de avaliação das sugestões dos Guerreiros e Guerreiras                |
 
 **Regras obrigatórias:**
 
@@ -497,6 +498,10 @@ vínculo conferido por um Admin ou por um Mestre.
   mapeamento destruído (§12.1). Isso precisa estar dito na tela, em linguagem simples, e no
   termo assinado — não descoberto depois.
 - **Linguagem simples**, na mesma medida exigida da política de privacidade.
+- **Responsável sem smartphone não fica de fora:** o ato pode ser feito por **atendimento
+  assistido** — Admin ou Mestre abre a aplicação com ele presente, gravando quem operou e quem
+  testemunhou — ou por **termo impresso digitalizado** e anexado pela gestão. Nos dois casos o
+  registro entra versionado, em nome do responsável.
 - **Sem contato direto com Apoiadores ou terceiros**: a área é canal entre família e
   plataforma, e nada mais.
 - Todas as solicitações caem na fila de atendimento da App 03, com registro de tratamento.
@@ -584,6 +589,11 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   comunidade e características do avatar) e permite participar de todas as atividades; a
   **divulgação pública do histórico e do perfil** só ocorre **após autorização dos pais ou
   responsáveis**, concedida e revogável pela App 07.
+- **A autorização do responsável é uma só.** Ela cobre a divulgação do perfil, do histórico e
+  das criações originais, o **uso de imagem em fotos e vídeos de eventos** e a **captação da
+  produção do Guerreiro(a)** — foto do manuscrito e áudio da fala. Conceder vale para tudo;
+  recusar também, sempre com alternativa equivalente. Fica de fora a **biometria do
+  onboarding**, de finalidade própria e termo impresso (§3.3).
 - A imagem captada no onboarding é **dado sensível de uso restrito**: serve apenas para
   identificar o Guerreiro(a) — presença e autenticação — e **nunca** é exibida publicamente.
 - **Dados do território: guarda permanente com o coletor identificado**, mesmo depois que o
@@ -650,6 +660,5 @@ minuto antes e opção de continuar, além do botão de sair sempre visível. O 
   plataforma é coproprietária, com o Guerreiro(a) que gerou o dado (documento 04).
 - A LGPD deve ser considerada em **todos** os módulos e PRDs, não como item pontual.
 
-**[Proposta]** Aplicar o mesmo cuidado a vídeos de culminância e fotos de eventos em que
-Guerreiros e Guerreiras apareçam, com consentimento específico do responsável para cada
-divulgação.
+Vídeos de culminância e fotos de eventos em que Guerreiros e Guerreiras apareçam seguem a
+mesma autorização única do responsável, sem termo à parte por divulgação.

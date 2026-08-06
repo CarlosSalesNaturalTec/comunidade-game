@@ -84,6 +84,8 @@ e revogam consentimentos, e têm acesso próprio à plataforma.
   responsáveis**.
 - Todo vínculo declara o **grau de parentesco** do responsável com o Guerreiro(a), em texto
   livre.
+- **Qualquer um dos vinculados autoriza ou revoga**, e a **recusa prevalece**: divergindo os
+  responsáveis, a autorização fica suspensa até a gestão tratar.
 - **Parentes e amigos além dos três responsáveis acompanham como Apoiador**, cadastrados pela
   via normal, e seguem o Guerreiro(a) pelo **nick**, no que é público. **O nick é informação que
   só a família cede** — a plataforma nunca o revela a um adulto, nem por busca nem por listagem.
@@ -295,7 +297,7 @@ Goethe-Institut (inventário, posse e guarda no documento 05).
 A trilha de **Social Media** terá função dupla: forma o Guerreiro(a) em produção de conteúdo e
 alimenta a equipe de divulgação do projeto nas redes. Nela vale integralmente a regra de LGPD:
 Guerreiros e Guerreiras aparecem por **avatares**, nunca por imagens reais, e qualquer
-publicação com criança identificável exige consentimento específico do responsável.
+publicação com criança identificável exige a autorização do responsável.
 
 ## 4. Atividades e desafios
 
@@ -470,9 +472,11 @@ a recompensa celebra a conquista do Guerreiro(a); nunca pode soar como assistenc
    criação original, com o seu crédito de autoria.
 10. **Conquiste recompensas nos marcos da trilha** — elas não se compram com pontos (§8).
 11. **Peça ajuda para as atividades escolares** ao robô assistente.
-12. **Autorização dos pais ou responsáveis** — necessária apenas para que o **histórico e o
-    perfil sejam divulgados publicamente**. Sem ela, o Guerreiro(a) participa normalmente, mas
-    não aparece na vitrine nem nos rankings. A autorização é dada — e revogada — na App 07.
+12. **Autorização dos pais ou responsáveis** — uma só, dada e revogada na App 07, libera a
+    divulgação pública do histórico, do perfil e das criações, a imagem em fotos e vídeos de
+    eventos e a captação da sua produção por foto ou áudio. Sem ela, você participa
+    normalmente — entregando a produção ao Mestre no encontro —, mas não aparece na vitrine
+    nem nos rankings.
 
 **[Proposta]** Modelar o estado do Guerreiro(a) em dois níveis: **"ativo"** (cadastro livre,
 participa de tudo) e **"público"** (com autorização do responsável, aparece na vitrine).

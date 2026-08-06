@@ -684,11 +684,14 @@ família. Substitui a comunicação por mensageria de terceiros, fora do escopo 
   decide a quem entrega o nick.
 - **Evolução do Guerreiro(a)**: presença, atividades realizadas, pontos, poderes, badges, nível
   e progresso nas trilhas.
-- **Autorização de divulgação pública** do histórico e do perfil — concessão e **revogação**,
-  com efeito imediato na vitrine e nos rankings públicos.
-- **Direitos de recusa** exercíveis a qualquer tempo: imagem do Guerreiro(a) (PRD-04) e uso de
-  imagem em vídeos e fotos de eventos — **sempre com alternativa equivalente**, nunca com
-  exclusão da atividade.
+- **Autorização única do responsável** — concessão e **revogação** de uma só chave, com efeito
+  imediato na vitrine e nos rankings públicos. Qualquer um dos vinculados a exerce, e a recusa
+  prevalece.
+- **Direitos de recusa** exercíveis a qualquer tempo, inclusive sobre a imagem captada no
+  onboarding (PRD-04), que tem termo próprio — **sempre com alternativa equivalente**, nunca
+  com exclusão da atividade.
+- **Atendimento assistido e termo impresso** para quem não tem smartphone, com o registro
+  versionado em nome do responsável.
 - **Transparência de dados**: quais dados da criança estão armazenados, para que servem, por
   quanto tempo ficam e **quem os acessou**.
 - **Solicitações com protocolo e status**: acesso, correção, exclusão e esclarecimentos —
@@ -712,7 +715,9 @@ H2 não é mensurável — é anedota.
 **Definições vigentes:** prazo de resposta de **7 dias** para toda solicitação; **sem
 notificação por e-mail no Ciclo 01** — o retorno acontece na própria plataforma.
 
-**Questões em aberto:** como atender responsável sem smartphone.
+**Questões em aberto:** nenhuma — a autorização passou a ser única, o atendimento de quem não
+tem smartphone foi definido e a redação do termo de monetização segue no documento 09, fora
+deste PRD.
 
 **Fontes:** docs 02, 03, 10.
 
