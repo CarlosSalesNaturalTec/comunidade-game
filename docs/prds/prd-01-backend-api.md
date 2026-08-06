@@ -8,7 +8,7 @@
 | Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | aprovado                                                   |
-| Versão e data    | v7 — 2026-08-05                                            |
+| Versão e data    | v8 — 2026-08-06                                            |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 9, 11 e 12, 04, 11                        |
 
@@ -162,11 +162,12 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RF-01-37` | Equipe é criada pelo Guerreiro(a), vinculada a uma aula, e encerra com ela sem ser reaproveitada                                                                                                | essencial  |
 | `RF-01-38` | Núcleo recusa o sexto integrante e o segundo familiar de 17 anos ou mais na mesma equipe                                                                                                        | essencial  |
 | `RF-01-39` | Núcleo aceita o Guerreiro(a) em várias equipes da aula e em uma só por partida de quiz                                                                                                          | essencial  |
-| `RF-01-40` | Núcleo mantém a etiqueta ODS da missão — objetivo de 1 a 18, com meta opcional — declarada pelo Mestre autor                                                                                    | essencial  |
-| `RF-01-41` | Núcleo propaga a etiqueta da missão para o desafio de coleta e para o desafio extra vinculados a ela                                                                                            | essencial  |
-| `RF-01-42` | Núcleo agrega a cobertura de ODS por trilha, poder, comunidade e ciclo, derivada das etiquetas das missões                                                                                      | essencial  |
+| `RF-01-40` | Núcleo mantém a etiqueta ODS da trilha — objetivo de 1 a 18, com meta opcional — declarada pelo Mestre autor                                                                                    | essencial  |
+| `RF-01-45` | Núcleo aceita etiqueta própria de uma missão, sempre opcional, que prevalece sobre a da trilha nos vínculos dela                                                                                | essencial  |
+| `RF-01-41` | Núcleo propaga a etiqueta da missão, ou a da trilha na falta dela, para o desafio de coleta e para o desafio extra vinculados                                                                   | essencial  |
+| `RF-01-42` | Núcleo agrega a cobertura de ODS por trilha, poder, comunidade e ciclo, derivada das etiquetas declaradas                                                                                       | essencial  |
 | `RF-01-43` | Núcleo expõe a cobertura de ODS em rota pública, sempre agregada por comunidade e ciclo                                                                                                         | essencial  |
-| `RF-01-44` | Núcleo recusa, a partir do Ciclo 02, publicar missão sem ao menos uma etiqueta ODS                                                                                                              | essencial  |
+| `RF-01-44` | Núcleo recusa, a partir do Ciclo 02, publicar trilha sem ao menos uma etiqueta ODS                                                                                                              | essencial  |
 | `RF-01-27` | Erro segue formato único, com código, mensagem em linguagem simples e campo em falta                                                                                                            | essencial  |
 | `RF-01-28` | Listagens são paginadas e aceitam filtro por comunidade, período e persona                                                                                                                      | essencial  |
 | `RF-01-29` | Núcleo registra trilha de auditoria consultável das ações de Admin                                                                                                                              | essencial  |
@@ -202,8 +203,8 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RN-01-20` | Responsável só é vinculado a Guerreiro(a) já cadastrado no onboarding                                                   | 3          | 02 §1       |
 | `RN-01-21` | Recusa de consentimento nunca exclui o Guerreiro(a) da atividade                                                        | 11         | 03 §12      |
 | `RN-01-22` | O nick é chave de acompanhamento público, cedido pela família: o núcleo nunca o descobre nem o sugere a um adulto       | 12         | 02 §1       |
-| `RN-01-23` | A etiqueta ODS não entra em ponto, nível ou badge; é opcional no Ciclo 01 e obrigatória na missão a partir do Ciclo 02  | 20         | 11 §2.2     |
-| `RN-01-24` | A cobertura de ODS nunca é atributo de um Guerreiro(a): agrega por trilha, poder, comunidade e ciclo                    | 20         | 11 §2.2     |
+| `RN-01-23` | A etiqueta ODS não entra em ponto, nível ou badge; é opcional no Ciclo 01 e obrigatória na trilha a partir do Ciclo 02  | 20         | 11 §2.1     |
+| `RN-01-24` | A cobertura de ODS nunca é atributo de um Guerreiro(a): agrega por trilha, poder, comunidade e ciclo                    | 20         | 11 §2.1     |
 
 ## 8. Modelo de dados
 
@@ -245,7 +246,7 @@ Sessao              Conteudo
 | `Sessao`             | persona, início, expiração, origem (aplicação), como autenticou, quem confirmou, encerrada em                                                    |
 | `VinculoResponsavel` | responsável, Guerreiro(a), grau de parentesco, cadastrado por (Admin ou Mestre), início, fim                                                     |
 | `Consentimento`      | responsável, Guerreiro(a), tipo, versão do termo, decisão, data e hora, testemunha (Mestre ou Admin), anexo do termo assinado                    |
-| `EtiquetaODS`        | missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                           |
+| `EtiquetaODS`        | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                 |
 | `Auditoria`          | autor, papel, ação, entidade afetada, data e hora, origem                                                                                        |
 
 A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela que o App 01 tira
@@ -422,4 +423,4 @@ pelas aplicações que as verificam.
 | `RF-01-35`              | 03 §7 (apoio escolar com corpus fechado)         |
 | `RF-01-36`              | 05 §5 e 11 §5 (resposta e pontuação do quiz)     |
 | `RF-01-37` a `RF-01-39` | 02 §5 e 05 §5 (equipe formada na aula e quiz)    |
-| `RF-01-40` a `RF-01-44` | 11 §2.2 e 04 §4 (etiqueta ODS e cobertura)       |
+| `RF-01-40` a `RF-01-45` | 11 §2.1 e 04 §4 (etiqueta ODS e cobertura)       |

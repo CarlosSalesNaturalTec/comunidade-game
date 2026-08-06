@@ -8,7 +8,7 @@
 | Aplicação        | — (domínio consumido pelas Apps 02, 03, 05, 06 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v2 — 2026-08-04                                      |
+| Versão e data    | v3 — 2026-08-06                                      |
 | Depende de       | —                                                    |
 | Documentos-fonte | 02 §1, 02 §2, 03 §12, 11 §4, 11 §5, 11 §7, 11 §8.3   |
 
@@ -49,8 +49,8 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 - Auditoria por amostragem do Mestre, com invalidação de registro e estorno dos pontos.
 - Guarda permanente do registro com o coletor identificado.
 - Painel público por comunidade, agregado até o nível da rua, e exportação anonimizada.
-- Etiqueta ODS herdada da missão e cobertura por ciclo no painel — é aqui que o dado local
-  desagregado do território sustenta a contribuição do projeto à **meta 17.18**.
+- Etiqueta ODS herdada da missão, ou da trilha, e cobertura por ciclo no painel — é aqui que o
+  dado local desagregado do território sustenta a contribuição do projeto à **meta 17.18**.
 
 ### 3.2 Fora do escopo
 
@@ -158,7 +158,7 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 | `RF-08-22` | Guerreiro(a) solicita a inclusão de local ausente, e a solicitação entra na fila de aprovação      | essencial  |
 | `RF-08-23` | Mestre da trilha ou Admin aprova ou recusa a solicitação, com motivo na recusa                     | essencial  |
 | `RF-08-24` | Mestre e Admin veem alerta das solicitações de local em aberto nas suas aplicações                 | essencial  |
-| `RF-08-25` | Desafio de coleta herda a etiqueta ODS da missão que o criou, e a série a carrega                  | essencial  |
+| `RF-08-25` | Desafio de coleta herda a etiqueta ODS da missão que o criou ou, na falta dela, a da trilha        | essencial  |
 | `RF-08-26` | Painel público da comunidade exibe a cobertura de ODS das suas séries, agregada por ciclo          | desejável  |
 | `RF-08-27` | Exportação a instituições declara a contribuição à meta 17.18 e o período coberto                  | desejável  |
 
@@ -186,7 +186,7 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 | `RN-08-18` | Local nasce de cadastro do Admin ou de solicitação aprovada por Admin ou pelo Mestre da trilha; o pedido em si não cria local | 4          | 02 §1    |
 | `RN-08-19` | Revogação do consentimento despersonaliza o registro: rompe o vínculo de autoria e destrói o mapeamento, sem apagar a medição | 7          | 03 §12.1 |
 | `RN-08-20` | A auditoria por amostragem da coleta é semanal e inclui obrigatoriamente todo valor "a conferir"                              | 6          | 02 §1    |
-| `RN-08-21` | A etiqueta ODS da série vem da missão e é descritiva: não altera pontuação, cadência nem validade do registro                 | 20         | 11 §2.2  |
+| `RN-08-21` | A etiqueta ODS da série vem da missão, ou da trilha, e é descritiva: não altera pontuação, cadência nem validade do registro  | 20         | 11 §2.1  |
 | `RN-08-22` | A cobertura de ODS sai agregada por comunidade e ciclo, nunca por coletor — a anonimização da saída vale igual                | 20, 7      | 04 §4    |
 
 ## 8. Modelo de dados
@@ -203,18 +203,18 @@ RegistroDeColeta  0..1 ── 1 Dispositivo     (quando a origem é sensor)
 TipoDeColeta      1 ──── N DesafioDeColeta
 ```
 
-| Entidade             | Atributos essenciais                                                                                                                                      |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ComunidadeVirtual`  | nome, localização, granularidade máxima, admin criador, data de criação                                                                                   |
-| `Local`              | comunidade, nível (comunidade, bairro, rua, condomínio, bloco, quadra), rótulo, local pai                                                                 |
-| `VinculoJogador`     | Guerreiro(a), comunidade, data de início, data de fim, admin responsável pela transferência                                                               |
-| `TipoDeColeta`       | nome, forma de registro (número, foto ou vídeo), unidade de medida, faixa esperada (mínimo e máximo)                                                      |
-| `DesafioDeColeta`    | trilha, missão, etiqueta ODS herdada da missão, mestre autor, tipo, cadência, vigência, granularidade exigida, registros que pontuam por período          |
-| `SerieDeColeta`      | desafio, Guerreiro(a) coletor(a), local, cadência, estado, data de abertura, data da última medição válida                                                |
-| `RegistroDeColeta`   | série, valor, unidade, data e hora da medição, data e hora do registro, origem, dispositivo, mídia, situação, pontos creditados                           |
-| `SolicitacaoDeLocal` | Guerreiro(a) solicitante, comunidade, desafio de origem, nível pretendido, rótulo, justificativa, situação, avaliador (Admin ou Mestre), motivo da recusa |
-| `Invalidacao`        | registro, mestre, motivo, data e hora                                                                                                                     |
-| `Dispositivo`        | Guerreiro(a) dono, identificação, trilha em que foi construído, situação                                                                                  |
+| Entidade             | Atributos essenciais                                                                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ComunidadeVirtual`  | nome, localização, granularidade máxima, admin criador, data de criação                                                                                       |
+| `Local`              | comunidade, nível (comunidade, bairro, rua, condomínio, bloco, quadra), rótulo, local pai                                                                     |
+| `VinculoJogador`     | Guerreiro(a), comunidade, data de início, data de fim, admin responsável pela transferência                                                                   |
+| `TipoDeColeta`       | nome, forma de registro (número, foto ou vídeo), unidade de medida, faixa esperada (mínimo e máximo)                                                          |
+| `DesafioDeColeta`    | trilha, missão, etiqueta ODS herdada da missão ou da trilha, mestre autor, tipo, cadência, vigência, granularidade exigida, registros que pontuam por período |
+| `SerieDeColeta`      | desafio, Guerreiro(a) coletor(a), local, cadência, estado, data de abertura, data da última medição válida                                                    |
+| `RegistroDeColeta`   | série, valor, unidade, data e hora da medição, data e hora do registro, origem, dispositivo, mídia, situação, pontos creditados                               |
+| `SolicitacaoDeLocal` | Guerreiro(a) solicitante, comunidade, desafio de origem, nível pretendido, rótulo, justificativa, situação, avaliador (Admin ou Mestre), motivo da recusa     |
+| `Invalidacao`        | registro, mestre, motivo, data e hora                                                                                                                         |
+| `Dispositivo`        | Guerreiro(a) dono, identificação, trilha em que foi construído, situação                                                                                      |
 
 Imutabilidade: `RegistroDeColeta` é **somente inserção**. Valor, data da medição e coletor
 nunca mudam depois de gravados; a situação (válido, invalidado, em auditoria) é o único campo
@@ -358,4 +358,4 @@ a base da avaliação do Poder do Território e entram no conjunto de indicadore
 | `RF-08-20`              | 11 §8.3                                       |
 | `RF-08-21`              | 02 §1 (registro por foto ou vídeo)            |
 | `RF-08-22` a `RF-08-24` | 02 §1 (solicitação de novo local), 03 §§5, 11 |
-| `RF-08-25` a `RF-08-27` | 11 §2.2 e 04 §4 (etiqueta ODS e meta 17.18)   |
+| `RF-08-25` a `RF-08-27` | 11 §2.1 e 04 §4 (etiqueta ODS e meta 17.18)   |

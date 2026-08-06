@@ -34,7 +34,7 @@ reconhecimento.
   apoiadores, não o valor monetário.
 - **Efetividade rastreável**: o histórico registra não só _quanto_ foi aportado, mas **o que
   aconteceu por causa do aporte** — as realizações dos Guerreiros e Guerreiras nos desafios
-  propostos, com os **ODS** que aquelas missões tocaram, na linguagem que editais e relatórios
+  propostos, com os **ODS** que aquelas trilhas tocaram, na linguagem que editais e relatórios
   de sustentabilidade pedem.
 - **Protagonismo dos Guerreiros e Guerreiras**: o apoio não financia assistência, financia
   **autoria** — criações originais com crédito público na vitrine e Guerreiros e Guerreiras que
@@ -103,8 +103,8 @@ Guerreiros e Guerreiras ou famílias.
   comprovam.
 - **Relatório de efetividade** dos seus desafios — quantos concluíram, em que trilhas, com que
   retenção (formato ainda em definição).
-- **Cobertura da Agenda 2030**: a que ODS o apoio contribuiu, herdado das missões a que os
-  desafios se vincularam — agregado por comunidade e ciclo, nunca por criança.
+- **Cobertura da Agenda 2030**: a que ODS o apoio contribuiu, herdado da missão ou da trilha a
+  que os desafios se vincularam — agregado por comunidade e ciclo, nunca por criança.
 - **Os mesmos dados do painel público**, com **favoritos**: parentes e amigos que não são um dos
   três responsáveis da criança acompanham por aqui, pelo nick que a família lhes cedeu, e podem
   direcionar desafios a ela. Acompanhar é ler o que já é público — não abre contato.
