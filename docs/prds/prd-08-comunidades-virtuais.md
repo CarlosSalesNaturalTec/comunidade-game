@@ -56,7 +56,7 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
   primeiro ciclo.
 - Georreferenciamento por coordenada de GPS — a granularidade do Ciclo 01 é a hierarquia de
   locais declarada, não o ponto no mapa.
-- Interface das telas de coleta — pertence ao PRD-05 (App 05) e ao PRD-06 (App 02).
+- Interface das telas de coleta — pertence ao PRD-05 (App 05).
 - Escolha do banco de séries temporais — decisão de arquitetura do PRD-01.
 
 ## 4. Personas e permissões
@@ -95,7 +95,7 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
    um **Admin** (App 03) aprova, e o local passa a existir; a série só abre depois disso. Os
    dois veem alerta das solicitações em aberto.
 3. O sistema abre a **série**, individual, com a cadência herdada do desafio.
-4. A cada período, o Guerreiro(a) registra por texto, por voz (App 02), por **foto ou vídeo**
+4. A cada período, o Guerreiro(a) registra por texto, por voz, por **foto ou vídeo**
    ou pelo sensor que construiu (Robô Educa), conforme o tipo de coleta exigir.
 5. O registro nasce **válido** e credita os pontos na hora, até o limite de registros que
    pontuam naquele período.
@@ -249,7 +249,7 @@ false`); invalidação por Mestre que não é autor do desafio (403).
 
 - Registro por celular modesto, em Web App responsivo Mobile First.
 - Operação com rede instável: fila local e sincronização posterior, preservando a hora da
-  medição — requisito que vale igualmente para o App 05 e o App 02.
+  medição — requisito da App 05, onde a coleta acontece.
 - Uso em aparelho compartilhado do ponto de apoio: a série é do Guerreiro(a) autenticado na
   sessão, nunca do aparelho.
 - Envio de foto ou vídeo tolera rede instável: upload retomável, com o registro pendente

@@ -160,7 +160,7 @@ Regras transversais:
   declara a modalidade e o formato. Atividade avulsa, fora de trilha, é cadastro da gestão.
 - **Dificuldade gradual, independente de idade** (faixa 6–16).
 - **Um Guerreiro(a) pode integrar mais de uma equipe** e pontua em **todas** as atividades em
-  que participa e colabora.
+  que participa e colabora — no Quiz ao Vivo, por ser simultâneo, joga por uma equipe só.
 - **Lastro**: nenhuma atividade acontece sem os recursos providos.
 - **Resultado lançado pela gestão**: realizada / realizada com mérito / mérito extra por
   auxílio aos colegas.
@@ -184,7 +184,7 @@ Tabela única das fontes de pontos da plataforma:
 | Badge de conduta (ex.: Guardião do Acervo)            | 20 + badge, uma vez por ciclo                                                  | Regular                                                                                     | Mestre/gestão                              |
 | **Desafio extra de Apoiador** (aberto ou direcionado) | Definidos no desafio                                                           | **Extra** — computado isoladamente                                                          | Automático na conclusão validada           |
 | **Proposta de evolução adotada** pela gestão          | 20 + badge                                                                     | **Extra** — computado isoladamente                                                          | Gestão, ao adotar a proposta               |
-| Pontuação negativa (má conduta)                       | −5 por ocorrência, teto de −5 no dia                                           | Regular                                                                                     | Admin/gestão, conforme o Código de Conduta |
+| Pontuação negativa (má conduta)                       | −5 por ocorrência, teto de −10 por aula presencial                             | Regular                                                                                     | Admin/gestão, conforme o Código de Conduta |
 
 Três naturezas de saldo, que nunca se confundem:
 
@@ -213,7 +213,7 @@ comprovadamente dele. As demais travas:
 | Dado de coleta inventado          | Valor fora da faixa declarada no desafio entra como **a conferir** e só pontua com validação do Mestre |
 | Registro em massa                 | Pontua o número de registros por cadência declarado no desafio; o excedente fica sem crédito           |
 | Registro inverossímil             | Auditoria por amostragem do Mestre; a invalidação **estorna apenas aquele registro**                   |
-| Resposta de quiz por outra equipe | O aparelho é vinculado à equipe na abertura da partida                                                 |
+| Resposta de quiz por outra equipe | O aparelho é vinculado à equipe na abertura da partida, e cada Guerreiro(a) joga por uma só equipe     |
 | Lançamento indevido               | Só o Mestre autor lança; lançamento não é editável e a correção referencia o original                  |
 
 Nenhuma dessas travas depende de infraestrutura sofisticada — antifraude que não roda na rede

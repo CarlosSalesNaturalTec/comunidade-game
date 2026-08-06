@@ -16,8 +16,9 @@
 
 A App 03 é a mesa de comando do projeto. Nenhuma outra aplicação da etapa abre sem ela: é aqui
 que o Admin cria a Comunidade Virtual e **agenda a aula que habilita o App 01**; é aqui que
-Mestres, Apoiadores, responsáveis e equipes são cadastrados; e é aqui que a atividade ganha
-lastro antes de existir.
+Mestres, Apoiadores e responsáveis são cadastrados; e é aqui que a atividade ganha lastro antes
+de existir. As **equipes não são cadastradas aqui**: elas se formam no App 01, a cada aula, e o
+painel do dia apenas as mostra.
 
 Ela também é a aplicação do **dia da aula**. Como o encontro é assíncrono — cada Guerreiro(a)
 chega na sua hora e avança no seu ponto —, o painel do dia substitui o controle visual de uma
@@ -33,8 +34,8 @@ poder tocar a partida.
 
 ### 3.1 Dentro do escopo
 
-- Cadastro de personas: Guerreiros e Guerreiras, Mestres, Apoiadores, responsáveis, Admins e
-  equipes.
+- Cadastro de personas: Guerreiros e Guerreiras, Mestres, Apoiadores, responsáveis e Admins —
+  **equipe não se cadastra aqui**: forma-se no App 01 e aparece no painel do dia.
 - Criação da Comunidade Virtual e **agenda das aulas com comunidade, data, horário inicial e
   final** — é ela que habilita o App 01.
 - Conferência do vínculo do Guerreiro(a) à comunidade herdada da aula.
@@ -159,9 +160,9 @@ conduz a partida de quiz das suas aulas — nada além disso.
 ### 5.7 Conduzir o Quiz ao Vivo
 
 1. O **Mestre que ministra a aula** — ou um Admin — abre a partida escolhendo o banco de
-   perguntas do Mestre curador e as **equipes presentes** no encontro.
+   perguntas do Mestre curador e as **equipes formadas no App 01** naquele encontro.
 2. Ao dar o _start_, a pergunta aparece **simultaneamente** nos dispositivos logados na aula.
-3. Cada equipe se consulta e responde pela App 05.
+3. Cada equipe se consulta e responde pelo App 01.
 4. A aplicação apura a **primeira resposta correta** por ordem de chegada e mostra o resultado.
 5. Encerrada a partida, a pontuação é lançada automaticamente para as equipes.
 6. Dispositivo que caiu volta na pergunta corrente, sem travar a partida.
@@ -192,8 +193,8 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RF-02-05` | Admin inclui novo Admin manualmente                                                                 | essencial  |
 | `RF-02-06` | Admin cadastra responsável e vincula Guerreiros e Guerreiras já cadastrados, com grau de parentesco | essencial  |
 | `RF-02-07` | Admin cria credencial de usuário e senha provisória para adulto sem conta social                    | essencial  |
-| `RF-02-08` | Admin cadastra equipe de até cinco integrantes, indicando a composição permitida pela atividade     | essencial  |
-| `RF-02-09` | Aplicação recusa equipe com mais de um familiar de 17 anos ou mais                                  | essencial  |
+| `RF-02-08` | Painel do dia lista as equipes formadas no App 01 naquela aula, com os integrantes de cada uma      | essencial  |
+| `RF-02-09` | Aplicação não cria, edita nem desfaz equipe: a composição é dos Guerreiros e Guerreiras             | essencial  |
 | `RF-02-10` | Admin mantém o catálogo de poderes do ciclo                                                         | essencial  |
 | `RF-02-11` | Admin cria Comunidade Virtual, que nasce vazia                                                      | essencial  |
 | `RF-02-12` | Agenda da aula exige comunidade, data, horário inicial e horário final                              | essencial  |
@@ -269,9 +270,9 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RF-02-56` | Admin realiza a conferência de inventário do módulo e publica o resultado na prestação de contas   | desejável  |
 | `RF-02-57` | Admin registra e homologa aporte com provedor, tipo, comprovante e valor em moedas                 | essencial  |
 | `RF-02-58` | Aplicação exibe as necessidades de recurso em aberto das atividades previstas                      | essencial  |
-| `RF-02-59` | Mestre da aula ou Admin abre partida de Quiz ao Vivo com o banco do curador e as equipes presentes | essencial  |
+| `RF-02-59` | Mestre da aula ou Admin abre partida de Quiz ao Vivo com o banco do curador e as equipes da aula   | essencial  |
 | `RF-02-60` | Partida exibe a pergunta simultaneamente nos dispositivos logados na aula                          | essencial  |
-| `RF-02-61` | Partida vincula um aparelho a cada equipe e aceita uma única resposta por equipe e pergunta        | essencial  |
+| `RF-02-61` | Partida vincula um aparelho a cada equipe, fixa uma equipe por Guerreiro(a) e aceita uma resposta  | essencial  |
 | `RF-02-62` | Partida credita toda equipe que acerta e o bônus à primeira, por ordem de chegada no servidor      | essencial  |
 | `RF-02-72` | Quem conduz a partida pode anular a pergunta contestada, sem crédito para ninguém                  | essencial  |
 | `RF-02-73` | Encerrada a partida, a pontuação é lançada automaticamente às equipes, respeitado o teto           | essencial  |
@@ -359,7 +360,7 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | POST   | `/v1/mestres`                                     | Admin           | Cadastra Mestre com artefatos comprobatórios                          |
 | POST   | `/v1/apoiadores`                                  | Admin           | Cadastra Apoiador com artefatos e termos de doação                    |
 | POST   | `/v1/admins`                                      | Admin           | Inclui novo Admin manualmente                                         |
-| POST   | `/v1/equipes`                                     | Admin           | Cadastra equipe e seus integrantes                                    |
+| GET    | `/v1/aulas/{id}/equipes`                          | Admin ou Mestre | Lista as equipes formadas no App 01 naquela aula                      |
 | POST   | `/v1/poderes`                                     | Admin           | Mantém o catálogo de poderes                                          |
 | GET    | `/v1/aulas/vigentes`                              | pública         | Aulas em curso na data e hora, para o App 01 identificar a comunidade |
 | GET    | `/v1/solicitacoes-de-participacao`                | Admin           | Fila das solicitações vindas da vitrine                               |
@@ -384,8 +385,8 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 
 Erros previstos: agenda de aula sem comunidade ou sem horário final (422); consulta de aulas
 vigentes fora de qualquer janela agendada (200 com lista vazia — é o que faz o App 01 não
-abrir); cadastro de Mestre ou Apoiador sem artefato anexado (422); sexto integrante de equipe
-(422); segundo familiar de 17 anos ou mais na equipe (422); quarto responsável do mesmo
+abrir); cadastro de Mestre ou Apoiador sem artefato anexado (422); tentativa de editar equipe
+formada no App 01 (403); quarto responsável do mesmo
 Guerreiro(a) (422); aprovação de desafio extra sem validação do Mestre (409) ou sem lastro
 (422); tentativa de editar lançamento (405); escrita de Mestre em rota de gestão que não seja a
 do quiz ou a de ocorrência (403); condução de partida por Mestre que não ministra aquela aula

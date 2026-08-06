@@ -371,10 +371,11 @@ viu o que aconteceu.
 **Definição vigente.** Equipes são **grupos livres de até 5 pessoas**, formados de maneira
 espontânea pelos Guerreiros e Guerreiras:
 
+- As equipes são formadas **pelos próprios Guerreiros e Guerreiras, no App 01**, e **começam e
+  terminam a cada aula presencial** — a gestão acompanha no painel e não altera composição.
 - Cada Guerreiro(a) pode participar de **uma ou mais equipes** e **pontua em todas as
-  atividades em que participar e colaborar**.
-- As equipes são **cadastradas pelo Admin na App 03**, conforme o plano de aulas e a formação
-  livre dos Guerreiros e Guerreiras.
+  atividades em que participar e colaborar**. **No Quiz ao Vivo participa de uma única
+  equipe**, porque a partida é simultânea.
 - A composição segue o que a **atividade, o desafio ou a batalha determinar**: só Guerreiros e
   Guerreiras **ou** com **no máximo 1 familiar, de 17 anos ou mais**.
 
@@ -445,7 +446,8 @@ a recompensa celebra a conquista do Guerreiro(a); nunca pode soar como assistenc
 3. **Acesse a plataforma.**
 4. **Escolha um Poder.**
 5. **Siga uma Trilha** — e receba o **livro de apoio** que passa a ser seu.
-6. **Monte equipes** — grupos livres de até 5 pessoas; você pode estar em mais de uma.
+6. **Monte equipes** no app da aula — grupos livres de até 5 pessoas, válidos para aquele
+   encontro; você pode estar em mais de uma.
 7. **Realize os desafios semanais** (on-line, presenciais, em equipe, em equipe com familiar).
 8. **Registre dados da sua comunidade** — a coleta rende pontos **enquanto você a mantiver**.
 9. **Crie algo seu a partir do que aprendeu e apresente** — toda trilha termina com uma

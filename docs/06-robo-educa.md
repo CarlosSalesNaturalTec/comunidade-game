@@ -1,7 +1,7 @@
 # 06 — Trilha Robô Educa (1ª trilha — Poder da IA e Robótica)
 
 > **Autoria:** Mestre fundador. É a **primeira trilha** da plataforma e também a base técnica
-> da **App 02 — Assistente por voz e Modo Ouvinte**.
+> do **assistente por voz do App 01**.
 
 O Robô Educa demonstra o ciclo completo do Comunidade Game — mestre publica a trilha →
 Guerreiro(a) constrói algo real → aprende conceitos → pontua e ganha visibilidade — e é a base

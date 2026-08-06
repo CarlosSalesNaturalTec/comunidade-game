@@ -8,21 +8,19 @@
 | Aplicação        | App 05 — Área do Guerreiro(a)                            |
 | Onda             | 3                                                        |
 | Situação         | em revisão                                               |
-| Versão e data    | v1 — 2026-08-05                                          |
+| Versão e data    | v2 — 2026-08-06                                          |
 | Depende de       | PRD-01, PRD-09                                           |
 | Documentos-fonte | 02 §§1–8, 03 §§1.1, 7, 12, 05 §§3, 5, 11 §§2, 4, 5, 6, 7 |
 
 ## 2. Contexto e objetivo
 
-A App 05 é a aplicação que o Guerreiro(a) abre todo dia. O PRD-09 garante que existe trilha
-escrita; este PRD garante que a criança **sabe o que fazer com ela sem precisar perguntar a
-ninguém**. O encontro é assíncrono por desenho — cada um chega em um horário e está em um ponto
-diferente —, e sem uma aplicação que diga "o seu próximo passo é este", a dinâmica assíncrona
-vira fila na frente do Mestre.
+A App 05 é a aplicação que o Guerreiro(a) abre todo dia: é ela que atende as **aulas remotas**
+e o uso entre um encontro presencial e outro — a aula presencial é do App 01 (PRD-04). O PRD-09
+garante que existe trilha escrita; este PRD garante que a criança **sabe o que fazer com ela sem
+precisar perguntar a ninguém**, mesmo longe do ponto de apoio.
 
-O que muda na operação do Ciclo 01: o Guerreiro(a) entra por nick e imagem no aparelho
-compartilhado do ponto de apoio, vê o próximo ponto da trilha, faz o desafio de desbloqueio,
-registra a medição do território da semana, responde ao Quiz ao Vivo do encontro, entrega a
+O que muda na operação do Ciclo 01: o Guerreiro(a) entra por nick e imagem, vê o próximo ponto
+da trilha, faz o desafio de desbloqueio, registra a medição do território da semana, entrega a
 criação original na culminância e acompanha o que conquistou. É também por aqui que ele
 **propõe melhorias na plataforma** — o valor de protagonismo virando mecânica, não texto.
 
@@ -43,10 +41,10 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
   e o **desafio de desbloqueio** que abre o ponto seguinte.
 - **Desafios semanais** (on-line, presencial, em equipe e em equipe com familiar) e **desafios
   extras de Apoiadores**, abertos ou direcionados.
-- **Equipes**: as de que participa, o papel em cada uma e as atividades de cada equipe.
+- **Equipes**: as de que participa, o papel em cada uma e as atividades de cada equipe — a
+  formação acontece no App 01, a cada aula presencial.
 - **Séries de coleta do território**: próxima medição, histórico, situação da série, pontos que
   ela está rendendo, seleção do local e solicitação de novo local.
-- **Quiz ao Vivo**: recebimento da pergunta e envio da resposta da equipe.
 - **Criação original**: entrega na culminância e **portfólio** das criações validadas.
 - **Progresso**: pontos, níveis 1 a 5 por trilha ou poder, badges e recompensas conquistadas
   nos marcos.
@@ -63,15 +61,18 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
 - **Autoria de trilha, conteúdo e desafio** — é a bancada do Mestre, na App 09.
 - **Lançamento de atividade realizada, presença e mérito** — quem lança é o Mestre (App 09) ou
   o Admin (App 03); aqui só se consulta o resultado.
-- **Condução da partida de Quiz ao Vivo** — abre e conduz quem ministra a aula, pela App 03.
+- **Quiz ao Vivo** — a partida é aberta e conduzida na App 03, e a equipe recebe a pergunta e
+  responde pelo App 01 (PRD-04).
+- **Aula presencial** — o conteúdo da trilha em equipe, durante o encontro, é do App 01.
 - **Cadastro do próprio Guerreiro(a) e captura da imagem** — acontecem no onboarding (App 01).
 - **Autorização de divulgação pública** — é ato do responsável, na App 07; aqui só se vê o
   estado do perfil.
-- **Cadastro de equipe e de local do território** — são de Admin (App 03 e PRD-08).
+- **Formação de equipe** — é dos próprios Guerreiros e Guerreiras, no App 01; **cadastro de
+  local do território** é de Admin (App 03 e PRD-08).
 - **Cadastro das disciplinas e do conteúdo do apoio escolar** — é autoria do Mestre (App 09),
   auditada por amostragem pelo Admin; aqui o conteúdo só é consumido.
-- **Conversa educacional aberta e Modo Ouvinte da aula** — são da App 02 (PRD-06); o
-  assistente desta aplicação atende apenas ao apoio escolar, com corpus fechado.
+- **Assistente de trilhas da aula presencial** — é do App 01 (PRD-04); o assistente desta
+  aplicação atende apenas ao apoio escolar, com corpus fechado.
 - **Compra de recompensa com pontos**: não existe. Recompensa se conquista em marco.
 - **Crédito de pontos pelo jogo** (App 04): o jogo lê progresso e debita, nunca credita.
 - **Contato com Apoiadores, Mestres ou terceiros por mensagem** — não há canal de conversa
@@ -146,20 +147,7 @@ avatar e nick.
    ganhos permanecem e a tela mostra como retomar.
 6. O histórico da série fica visível, com o que foi registrado e quando.
 
-### 5.5 Jogar o Quiz ao Vivo
-
-1. O Mestre abre a partida na App 03 e **vincula um aparelho a cada equipe**.
-2. A pergunta aparece simultaneamente em todos os aparelhos da aula, com quatro alternativas e
-   sem tempo próprio.
-3. A equipe se consulta e responde pelo seu aparelho; a resposta vale para **todos os
-   integrantes**.
-4. Toda equipe que acerta pontua, e a primeira a acertar recebe o bônus.
-5. Caindo a rede de um aparelho no meio da pergunta, a partida continua e o aparelho volta ao
-   estado corrente ao reconectar.
-6. Equipe sem aparelho responde pelo aparelho do Mestre — falta de celular não tira ninguém da
-   partida.
-
-### 5.6 Entregar a criação original da culminância
+### 5.5 Entregar a criação original da culminância
 
 1. Concluída a trilha, a culminância mostra **o que a criação precisa ser** e o critério com
    que será validada, escritos pelo Mestre autor.
@@ -171,7 +159,7 @@ avatar e nick.
 5. A criação **só aparece publicamente se o responsável tiver autorizado a divulgação**; sem
    autorização, ela existe no portfólio interno do Guerreiro(a).
 
-### 5.7 Conquistar recompensa e cuidar do acervo
+### 5.6 Conquistar recompensa e cuidar do acervo
 
 1. Alcançado um marco com recompensa declarada, a aplicação avisa **o que foi conquistado** e
    que a entrega será confirmada pelo Mestre — não há saldo debitado, porque recompensa não se
@@ -183,7 +171,7 @@ avatar e nick.
 5. **Dano acidental não gera pontuação negativa nem dívida**, e a tela diz isso antes de o
    Guerreiro(a) relatar qualquer problema com o material.
 
-### 5.8 Pedir ajuda em uma atividade escolar
+### 5.7 Pedir ajuda em uma atividade escolar
 
 1. O Guerreiro(a) abre o apoio escolar, escolhe a **disciplina** entre as cadastradas e
    pergunta **por voz ou por texto**.
@@ -199,7 +187,7 @@ avatar e nick.
 7. Quem recusou o uso do assistente, ou o responsável que o recusou, continua com a
    **alternativa equivalente**: perguntar ao Mestre no encontro.
 
-### 5.9 Propor uma melhoria
+### 5.8 Propor uma melhoria
 
 1. O Guerreiro(a) registra a sugestão em **texto ou áudio de até 60 segundos**, que é
    transcrito.
@@ -251,19 +239,12 @@ avatar e nick.
 | `RF-05-21` | Desafio extra exibe a recompensa oferecida, a quantidade disponível e o período de vigência | essencial  |
 | `RF-05-22` | Guerreiro(a) vê as equipes de que participa, o papel em cada uma e as atividades delas      | essencial  |
 | `RF-05-23` | Atividade de equipe exibe os integrantes por avatar e nick, sem qualquer dado pessoal       | essencial  |
-| `RF-05-24` | Aplicação não permite ao Guerreiro(a) criar, editar ou desfazer equipe                      | essencial  |
+| `RF-05-24` | Aplicação não forma nem edita equipe: a formação acontece no App 01, a cada aula            | essencial  |
 
-### 6.4 Quiz ao Vivo
+Os identificadores `RF-05-25` a `RF-05-29`, do Quiz ao Vivo, foram transferidos para o PRD-04
+com a fusão das aplicações e **não são reaproveitados**.
 
-| ID         | Requisito                                                                                  | Prioridade |
-| ---------- | ------------------------------------------------------------------------------------------ | ---------- |
-| `RF-05-25` | Aparelho recebe a pergunta corrente da partida aberta na App 03, com quatro alternativas   | essencial  |
-| `RF-05-26` | Aparelho vinculado a uma equipe envia uma única resposta, válida para todos os integrantes | essencial  |
-| `RF-05-27` | Aplicação recusa segunda resposta da mesma equipe para a mesma pergunta                    | essencial  |
-| `RF-05-28` | Aparelho que perde a rede durante a pergunta volta ao estado corrente ao reconectar        | essencial  |
-| `RF-05-29` | Resultado da pergunta aparece para a equipe assim que quem conduz a partida o libera       | essencial  |
-
-### 6.5 Coleta de dados do território
+### 6.4 Coleta de dados do território
 
 | ID         | Requisito                                                                                  | Prioridade |
 | ---------- | ------------------------------------------------------------------------------------------ | ---------- |
@@ -277,7 +258,7 @@ avatar e nick.
 | `RF-05-37` | Guerreiro(a) consulta o histórico da própria série, com data e valor de cada registro      | essencial  |
 | `RF-05-38` | Registro invalidado pelo Mestre aparece com o motivo, e só ele perde os pontos             | essencial  |
 
-### 6.6 Criação original e portfólio
+### 6.5 Criação original e portfólio
 
 | ID         | Requisito                                                                                     | Prioridade |
 | ---------- | --------------------------------------------------------------------------------------------- | ---------- |
@@ -288,7 +269,7 @@ avatar e nick.
 | `RF-05-43` | Portfólio reúne as criações validadas do Guerreiro(a), com trilha, data e autoria             | essencial  |
 | `RF-05-44` | Portfólio indica quais criações estão públicas e quais dependem de autorização do responsável | essencial  |
 
-### 6.7 Recompensas, acervo e perfil
+### 6.6 Recompensas, acervo e perfil
 
 | ID         | Requisito                                                                                 | Prioridade |
 | ---------- | ----------------------------------------------------------------------------------------- | ---------- |
@@ -300,7 +281,7 @@ avatar e nick.
 | `RF-05-50` | Guerreiro(a) vê o estado do seu perfil público e se a divulgação foi autorizada           | essencial  |
 | `RF-05-51` | Guerreiro(a) escolhe e altera as características do próprio avatar                        | desejável  |
 
-### 6.8 Ranking, sugestões e avisos
+### 6.7 Ranking, sugestões e avisos
 
 | ID         | Requisito                                                                                 | Prioridade |
 | ---------- | ----------------------------------------------------------------------------------------- | ---------- |
@@ -311,7 +292,7 @@ avatar e nick.
 | `RF-05-56` | Proposta adotada credita pontos extras e o badge de protagonismo ao autor                 | essencial  |
 | `RF-05-57` | Toda tela que coleta dado traz aviso discreto do que coleta, com acesso à área detalhada  | essencial  |
 
-### 6.9 Apoio às atividades escolares
+### 6.8 Apoio às atividades escolares
 
 | ID         | Requisito                                                                                       | Prioridade |
 | ---------- | ----------------------------------------------------------------------------------------------- | ---------- |
@@ -344,7 +325,7 @@ avatar e nick.
 | `RN-05-09` | A invalidação por amostragem estorna apenas o registro invalidado                                | 6                      | 02 §1, 11 §5.1   |
 | `RN-05-10` | Duas cadências seguidas sem registro interrompem a série, sem perder os pontos já creditados     | 6                      | 02 §1            |
 | `RN-05-11` | O local do registro é escolhido entre os cadastrados; faltando, o Guerreiro(a) solicita inclusão | —                      | 02 §1            |
-| `RN-05-12` | Um aparelho por equipe na partida de quiz, com a resposta valendo para todos os integrantes      | —                      | 05 §5            |
+| `RN-05-12` | A equipe é formada no App 01 e vale para aquela aula; aqui ela é apenas consultada               | 15                     | 02 §5            |
 | `RN-05-13` | A criação original carrega a autoria por toda a vida do registro, inclusive quando devolvida     | 5                      | 02 §4, 11 §7     |
 | `RN-05-14` | Criação original só é exposta publicamente com autorização do responsável                        | 11                     | 03 §12           |
 | `RN-05-15` | O Guerreiro(a) é representado exclusivamente por avatar e nick, nunca por imagem real            | 12                     | 03 §§3.3, 12     |
@@ -370,8 +351,8 @@ avatar e nick.
 
 A aplicação é majoritariamente **leitora**: trilha e conteúdo vêm do PRD-09, séries e registros
 do PRD-08, recompensas e acervo do PRD-07, e pontos, níveis e badges do núcleo (PRD-01). Este
-PRD **acrescenta quatro entidades** ao núcleo — `RespostaDeQuiz`, `DisciplinaDeApoio`,
-`ConteudoDeApoio` e `ConsultaDeApoio` — e escreve em outras quatro que já existem.
+PRD **acrescenta duas entidades** ao núcleo — `DisciplinaDeApoio` e `ConteudoDeApoio` — e
+escreve em outras quatro que já existem, além da `ConsultaAoAssistente` criada pelo PRD-04.
 
 ```text
 ESCREVE (por ato do Guerreiro(a))       LÊ (definidos em outro PRD)
@@ -379,8 +360,8 @@ RegistroDeColeta        (PRD-08)        Trilha / PontoDeTrilha    (PRD-09)
 SolicitacaoDeLocal      (PRD-08)        Conteudo / Bibliografia   (PRD-09)
 CriacaoOriginal         (PRD-09)        Culminancia               (PRD-09)
 SugestaoOuProposta      (PRD-01)        Atividade / Resultado     (PRD-01)
-RespostaDeQuiz          [entidade nova] Equipe / Presenca         (PRD-01)
-ConsultaDeApoio         [entidade nova] Ponto / Nivel / Badge     (PRD-01)
+ConsultaAoAssistente    (PRD-04)        Equipe / Presenca         (PRD-01)
+                                        Ponto / Nivel / Badge     (PRD-01)
 Avatar (características)                RecompensaDeMarco         (PRD-09)
                                         ItemPatrimonial           (PRD-07)
                                         DesafioExtra              (PRD-01)
@@ -388,19 +369,17 @@ Avatar (características)                RecompensaDeMarco         (PRD-09)
                                         ConteudoDeApoio      [nova, escrita na App 09/03]
 ```
 
-| Entidade            | Atributos essenciais                                                                                            |
-| ------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `RespostaDeQuiz`    | partida, pergunta, equipe, aparelho vinculado, alternativa escolhida, momento de chegada no servidor, acerto    |
-| `Nivel`             | Guerreiro(a), trilha ou poder, número (1 a 5), data da conquista — derivado do percurso, nunca editado          |
-| `DisciplinaDeApoio` | nome, faixa de dificuldade, situação (ativa ou inativa), Mestre autor do cadastro                               |
-| `ConteudoDeApoio`   | disciplina, título, corpo ou arquivo, fonte, autor do cadastro, data — é o corpus fechado que o modelo consulta |
-| `ConsultaDeApoio`   | Guerreiro(a), disciplina, pergunta transcrita, situação (respondida, fora do corpus, recusada), data e hora     |
+| Entidade               | Atributos essenciais                                                                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Nivel`                | Guerreiro(a), trilha ou poder, número (1 a 5), data da conquista — derivado do percurso, nunca editado                                        |
+| `DisciplinaDeApoio`    | nome, faixa de dificuldade, situação (ativa ou inativa), Mestre autor do cadastro                                                             |
+| `ConteudoDeApoio`      | disciplina, título, corpo ou arquivo, fonte, autor do cadastro, data — é o corpus fechado que o modelo consulta                               |
+| `ConsultaAoAssistente` | Guerreiro(a), assistente (apoio escolar, aqui), disciplina, pergunta transcrita, situação (respondida, fora do corpus, recusada), data e hora |
 
 Imutabilidade e derivação:
 
 - `Nivel` é **calculado** a partir dos pontos de trilha desbloqueados, do mérito extra e da
   culminância validada. Não é campo que se escreve à mão, e **não regride**.
-- `RespostaDeQuiz` é única por equipe e por pergunta; a segunda tentativa é recusada.
 - `RegistroDeColeta` fora da faixa nasce na situação **a conferir** e só passa a válido pela
   validação do Mestre.
 - `CriacaoOriginal` devolvida muda de situação, nunca de autoria.
@@ -408,8 +387,8 @@ Imutabilidade e derivação:
   nem badge já conquistados.
 - `ConteudoDeApoio` é **o único insumo** da resposta do assistente: não havendo conteúdo
   cadastrado para a disciplina, a consulta é recusada em vez de respondida.
-- `ConsultaDeApoio` **não gera pontos** e não alimenta nível, badge nem ranking: pedir ajuda
-  não é realização.
+- `ConsultaAoAssistente` **não gera pontos** e não alimenta nível, badge nem ranking: pedir
+  ajuda não é realização.
 
 ## 9. Contratos de API
 
@@ -417,33 +396,31 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessã
 único. As rotas de coleta e de solicitação de local são do PRD-08 e as de acervo, do PRD-07;
 aparecem aqui apenas quando o ato é do Guerreiro(a).
 
-| Método | Rota                                  | Autenticação | Descrição                                                     |
-| ------ | ------------------------------------- | ------------ | ------------------------------------------------------------- |
-| POST   | `/v1/sessoes/guerreiro`               | pública      | Abre sessão com nick e imagem, conferidos contra o _template_ |
-| POST   | `/v1/sessoes/guerreiro/assistida`     | Mestre/Admin | Abre sessão do Guerreiro(a) sem imagem gravada ou após falha  |
-| DELETE | `/v1/sessoes/guerreiro`               | Guerreiro(a) | Encerra a sessão no aparelho compartilhado                    |
-| GET    | `/v1/eu/trilhas`                      | Guerreiro(a) | Trilhas em que está inscrito, com o próximo ponto de cada uma |
-| POST   | `/v1/eu/trilhas/{id}/inscricao`       | Guerreiro(a) | Inscreve-se na trilha de um poder do catálogo do ciclo        |
-| GET    | `/v1/eu/trilhas/{id}/pontos/{ordem}`  | Guerreiro(a) | Conteúdo do ponto, bibliografia e desafio de desbloqueio      |
-| POST   | `/v1/eu/pontos/{id}/desbloqueio`      | Guerreiro(a) | Submete o desafio de desbloqueio do ponto                     |
-| GET    | `/v1/eu/progresso`                    | Guerreiro(a) | Pontos, nível por trilha ou poder, badges e o que falta       |
-| GET    | `/v1/eu/desafios`                     | Guerreiro(a) | Desafios semanais e extras vigentes e elegíveis               |
-| GET    | `/v1/eu/equipes`                      | Guerreiro(a) | Equipes de que participa, com papel e atividades              |
-| GET    | `/v1/eu/series`                       | Guerreiro(a) | Séries de coleta, próxima medição, situação e pontos rendidos |
-| POST   | `/v1/series/{id}/registros`           | Guerreiro(a) | Registra a medição, com local, valor ou mídia e origem        |
-| POST   | `/v1/solicitacoes-de-local`           | Guerreiro(a) | Solicita a inclusão de local faltante                         |
-| GET    | `/v1/partidas-de-quiz/{id}/pergunta`  | Guerreiro(a) | Pergunta corrente da partida aberta na aula                   |
-| POST   | `/v1/partidas-de-quiz/{id}/respostas` | Guerreiro(a) | Envia a resposta da equipe pelo aparelho vinculado            |
-| POST   | `/v1/culminancias/{id}/criacoes`      | Guerreiro(a) | Entrega a criação original, individual ou de equipe           |
-| GET    | `/v1/eu/portfolio`                    | Guerreiro(a) | Criações validadas, com situação de exposição pública         |
-| GET    | `/v1/eu/recompensas`                  | Guerreiro(a) | Recompensas conquistadas em marcos e situação da entrega      |
-| GET    | `/v1/eu/acervo`                       | Guerreiro(a) | Exemplar próprio e permanentes em uso, com a ficha de vida    |
-| GET    | `/v1/rankings/{comunidade}`           | pública      | Ranking por trilha ou poder, somente com pontos regulares     |
-| POST   | `/v1/sugestoes`                       | Guerreiro(a) | Registra sugestão em texto ou áudio na fila única da gestão   |
-| GET    | `/v1/eu/sugestoes`                    | Guerreiro(a) | Status das próprias sugestões                                 |
-| GET    | `/v1/apoio-escolar/disciplinas`       | Guerreiro(a) | Disciplinas ativas com conteúdo cadastrado                    |
-| POST   | `/v1/apoio-escolar/consultas`         | Guerreiro(a) | Pergunta em texto ou áudio; responde a partir do corpus       |
-| PATCH  | `/v1/eu/avatar`                       | Guerreiro(a) | Altera as características do próprio avatar                   |
+| Método | Rota                                 | Autenticação | Descrição                                                     |
+| ------ | ------------------------------------ | ------------ | ------------------------------------------------------------- |
+| POST   | `/v1/sessoes/guerreiro`              | pública      | Abre sessão com nick e imagem, conferidos contra o _template_ |
+| POST   | `/v1/sessoes/guerreiro/assistida`    | Mestre/Admin | Abre sessão do Guerreiro(a) sem imagem gravada ou após falha  |
+| DELETE | `/v1/sessoes/guerreiro`              | Guerreiro(a) | Encerra a sessão no aparelho compartilhado                    |
+| GET    | `/v1/eu/trilhas`                     | Guerreiro(a) | Trilhas em que está inscrito, com o próximo ponto de cada uma |
+| POST   | `/v1/eu/trilhas/{id}/inscricao`      | Guerreiro(a) | Inscreve-se na trilha de um poder do catálogo do ciclo        |
+| GET    | `/v1/eu/trilhas/{id}/pontos/{ordem}` | Guerreiro(a) | Conteúdo do ponto, bibliografia e desafio de desbloqueio      |
+| POST   | `/v1/eu/pontos/{id}/desbloqueio`     | Guerreiro(a) | Submete o desafio de desbloqueio do ponto                     |
+| GET    | `/v1/eu/progresso`                   | Guerreiro(a) | Pontos, nível por trilha ou poder, badges e o que falta       |
+| GET    | `/v1/eu/desafios`                    | Guerreiro(a) | Desafios semanais e extras vigentes e elegíveis               |
+| GET    | `/v1/eu/equipes`                     | Guerreiro(a) | Equipes de que participa, com papel e atividades              |
+| GET    | `/v1/eu/series`                      | Guerreiro(a) | Séries de coleta, próxima medição, situação e pontos rendidos |
+| POST   | `/v1/series/{id}/registros`          | Guerreiro(a) | Registra a medição, com local, valor ou mídia e origem        |
+| POST   | `/v1/solicitacoes-de-local`          | Guerreiro(a) | Solicita a inclusão de local faltante                         |
+| POST   | `/v1/culminancias/{id}/criacoes`     | Guerreiro(a) | Entrega a criação original, individual ou de equipe           |
+| GET    | `/v1/eu/portfolio`                   | Guerreiro(a) | Criações validadas, com situação de exposição pública         |
+| GET    | `/v1/eu/recompensas`                 | Guerreiro(a) | Recompensas conquistadas em marcos e situação da entrega      |
+| GET    | `/v1/eu/acervo`                      | Guerreiro(a) | Exemplar próprio e permanentes em uso, com a ficha de vida    |
+| GET    | `/v1/rankings/{comunidade}`          | pública      | Ranking por trilha ou poder, somente com pontos regulares     |
+| POST   | `/v1/sugestoes`                      | Guerreiro(a) | Registra sugestão em texto ou áudio na fila única da gestão   |
+| GET    | `/v1/eu/sugestoes`                   | Guerreiro(a) | Status das próprias sugestões                                 |
+| GET    | `/v1/apoio-escolar/disciplinas`      | Guerreiro(a) | Disciplinas ativas com conteúdo cadastrado                    |
+| POST   | `/v1/apoio-escolar/consultas`        | Guerreiro(a) | Pergunta em texto ou áudio; responde a partir do corpus       |
+| PATCH  | `/v1/eu/avatar`                      | Guerreiro(a) | Altera as características do próprio avatar                   |
 
 Erros previstos: entrada sem câmera disponível (422); conferência biométrica sem
 correspondência (401), com o caminho da sessão assistida; consulta a dado de outro
@@ -463,7 +440,7 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
   conteúdo já carregado do ponto de trilha continua legível durante uma queda. O apoio escolar
   **só opera com rede** — o modelo roda no backend — e diz isso claramente quando indisponível.
 - **Áudio no navegador**: captação e reprodução por `navigator.mediaDevices.getUserMedia`, com
-  reconhecimento e síntese de fala em pt-BR, na mesma base técnica da App 02.
+  reconhecimento e síntese de fala em pt-BR, na mesma base técnica do App 01.
 - **Linguagem de criança de 6 anos**: nenhum termo técnico, nenhum código de erro exposto e
   todo bloqueio explicado pelo que falta fazer.
 - **Acessibilidade digital**: contraste, alvos de toque grandes, leitura por voz do conteúdo e
@@ -480,7 +457,7 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
 | Registro de coleta do território | Construir a Comunidade Virtual        | interesse público | permanente, com autoria                       | gestão, público agregado |
 | Criação original                 | Autoria, portfólio e culminância      | consentimento     | permanente, com autoria                       | gestão e responsável     |
 | Sugestão em texto ou áudio       | Evolução da plataforma                | consentimento     | 90 dias após o retorno; permanente se adotada | gestão                   |
-| Respostas de quiz e progresso    | Registro da participação e pontuação  | consentimento     | enquanto durar o vínculo                      | gestão e responsável     |
+| Progresso na trilha              | Registro da participação e pontuação  | consentimento     | enquanto durar o vínculo                      | gestão e responsável     |
 | Características do avatar        | Representação pública do Guerreiro(a) | consentimento     | enquanto durar o vínculo                      | público                  |
 | Pergunta do apoio escolar        | Responder à dúvida da atividade       | consentimento     | 7 dias; até o fim do ciclo se recusada        | gestão                   |
 
@@ -523,8 +500,6 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
 - Registro invalidado pelo Mestre perde só os seus pontos, e a série continua.
 - Duas cadências sem registro marcam a série como interrompida, com os pontos anteriores
   intactos.
-- Em partida de quiz, a equipe responde uma vez; a segunda tentativa é recusada e a rede caída
-  no meio da pergunta não impede a equipe de continuar.
 - Criação de equipe entregue registra o papel de cada integrante; devolvida, mantém a autoria.
 - Criação validada de Guerreiro(a) sem autorização do responsável aparece no portfólio interno
   e **não** na vitrine.
@@ -547,28 +522,28 @@ avaliação do ciclo: número de criações originais apresentadas e de sugestõ
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                    | Gravada em      | Linha do doc 09                       |
-| -------------------------------------------------------------------------- | --------------- | ------------------------------------- |
-| Nível é percurso da trilha, com gates dos níveis 1 a 5 e sem regressão     | 11 §6           | Níveis 1 a 5 — critério de progressão |
-| Quiz ao Vivo: um aparelho por equipe, todos que acertam pontuam, desempate | 05 §5 e 11 §5   | Pontuação e regras do Quiz ao Vivo    |
-| Criação original vale 50 pontos e badge, integrais a cada integrante       | 11 §5 e 02 §4   | Criação original — pontos e badge     |
-| Valores de mérito, batalha, badge de conduta e pontuação negativa (−5)     | 11 §5           | Demais valores do motor de pontuação  |
-| Travas de integridade dos pontos, incluindo o valor fora de faixa          | 11 §5.1 e 02 §1 | Integridade dos pontos (antifraude)   |
-| Canal de sugestões: texto ou áudio de 60 s, adotada rende extras e badge   | 03 §7           | Canal de sugestões do Guerreiro(a)    |
-| Reparação que zera a ocorrência de conduta                                 | 13 §3           | Reparação de ocorrência de conduta    |
-| Apoio escolar por assistente de voz na App 05, com IA e corpus fechado     | 03 §§4, 7       | Apoio às atividades escolares         |
-| Corpus cadastrado só pelo Mestre; Admin audita por amostragem              | 03 §§5, 7, 11   | Corpus, cota e áudio dos assistentes  |
-| Sem teto de uso no Ciclo 01, absorvido pelo fundador em conta Gemini PRO   | 03 §7 e 10 §4.3 | Corpus, cota e áudio dos assistentes  |
-| Áudio descartado na transcrição, nas Apps 05 e 02                          | 03 §§4, 7       | Corpus, cota e áudio dos assistentes  |
-| Prazos de guarda das transcrições e do _template_                          | 03 §12.2        | Prazos de guarda dos dados            |
-| Sessão encerrada por 10 minutos de inatividade                             | 03 §12.2        | Sessão em aparelho compartilhado      |
+| Decisão                                                                         | Gravada em      | Linha do doc 09                       |
+| ------------------------------------------------------------------------------- | --------------- | ------------------------------------- |
+| Nível é percurso da trilha, com gates dos níveis 1 a 5 e sem regressão          | 11 §6           | Níveis 1 a 5 — critério de progressão |
+| Resposta do Quiz ao Vivo enviada pelo App 01, com a partida conduzida na App 03 | 05 §5           | Aplicação de cada tipo de aula        |
+| Criação original vale 50 pontos e badge, integrais a cada integrante            | 11 §5 e 02 §4   | Criação original — pontos e badge     |
+| Valores de mérito, batalha, badge de conduta e pontuação negativa (−5)          | 11 §5           | Demais valores do motor de pontuação  |
+| Travas de integridade dos pontos, incluindo o valor fora de faixa               | 11 §5.1 e 02 §1 | Integridade dos pontos (antifraude)   |
+| Canal de sugestões: texto ou áudio de 60 s, adotada rende extras e badge        | 03 §7           | Canal de sugestões do Guerreiro(a)    |
+| Reparação que zera a ocorrência de conduta                                      | 13 §3           | Reparação de ocorrência de conduta    |
+| Apoio escolar por assistente de voz na App 05, com IA e corpus fechado          | 03 §§4, 7       | Apoio às atividades escolares         |
+| Corpus cadastrado só pelo Mestre; Admin audita por amostragem                   | 03 §§5, 7, 11   | Corpus, cota e áudio dos assistentes  |
+| Sem teto de uso no Ciclo 01, absorvido pelo fundador em conta Gemini PRO        | 03 §7 e 10 §4.3 | Corpus, cota e áudio dos assistentes  |
+| Áudio descartado na transcrição, nas Apps 05 e 01                               | 03 §§4, 7       | Corpus, cota e áudio dos assistentes  |
+| Prazos de guarda das transcrições e do _template_                               | 03 §12.2        | Prazos de guarda dos dados            |
+| Sessão encerrada por 10 minutos de inatividade                                  | 03 §12.2        | Sessão em aparelho compartilhado      |
 
-As entidades `RespostaDeQuiz`, `DisciplinaDeApoio`, `ConteudoDeApoio` e `ConsultaDeApoio`
-foram acrescentadas ao modelo do PRD-01, e `Nivel` passou a ser derivado do percurso. O badge
-**de protagonismo** entrou no catálogo do documento 11 §7. O cadastro das disciplinas e do
-conteúdo de apoio entrou na App 09 (PRD-09) e na App 03 (PRD-02), e o **apoio às atividades
-escolares saiu do Modo Conversa da App 02** (documento 03 §4 e documento 08, PRD-06), que
-passou a seguir o mesmo desenho de corpus fechado, guardrails e descarte do áudio.
+As entidades `DisciplinaDeApoio` e `ConteudoDeApoio` foram acrescentadas ao modelo do PRD-01,
+e `Nivel` passou a ser derivado do percurso. O badge **de protagonismo** entrou no catálogo do
+documento 11 §7. O cadastro das disciplinas e do conteúdo de apoio entrou na App 09 (PRD-09) e
+na App 03 (PRD-02). Com a fusão das aplicações, a `RespostaDeQuiz` passou ao PRD-04 e a
+`ConsultaDeApoio` deu lugar à `ConsultaAoAssistente`, que o PRD-04 cria e esta aplicação usa
+para o apoio escolar.
 
 ## 14. Pendências que permanecem
 
@@ -592,7 +567,6 @@ passou a seguir o mesmo desenho de corpus fechado, guardrails e descarte do áud
 | `RF-05-01` a `RF-05-07` | 03 §1.1 (entrada por nick e imagem) e PRD-04 (onboarding e fallback)     |
 | `RF-05-08` a `RF-05-18` | 03 §7 (guia da trilha), 11 §§2, 6 (anatomia e níveis)                    |
 | `RF-05-19` a `RF-05-24` | 02 §5 e 11 §§4, 5 (equipes, taxonomia e desafios), 04 §3 (extras)        |
-| `RF-05-25` a `RF-05-29` | 05 §5 (Quiz ao Vivo) e PRD-02 (condução da partida)                      |
 | `RF-05-30` a `RF-05-38` | 02 §1 e PRD-08 (séries, locais e validade do registro)                   |
 | `RF-05-39` a `RF-05-44` | 02 §4, 11 §7 e PRD-09 (culminância, autoria e validação)                 |
 | `RF-05-45` a `RF-05-49` | 02 §8 (recompensa em marco) e 05 §3 (acervo e ficha de vida)             |

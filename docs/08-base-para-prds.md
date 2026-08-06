@@ -77,8 +77,7 @@
 
 | Aplicação                                                    | PRD    |
 | ------------------------------------------------------------ | ------ |
-| **App 01** — Onboarding (áudio ou texto, cadastro, presença) | PRD-04 |
-| **App 02** — Assistente por voz e Modo Ouvinte               | PRD-06 |
+| **App 01** — Aula presencial (onboarding, trilhas e equipes) | PRD-04 |
 | **App 03** — Gestão administrativa                           | PRD-02 |
 | **App 04** — Jogo em JavaScript                              | PRD-12 |
 | **App 05** — Área do Guerreiro(a)                            | PRD-05 |
@@ -118,8 +117,10 @@
   agendada** em que ele se cadastra, com histórico das transferências — o dado coletado
   pertence à comunidade vigente na data do registro. **A transferência não é operada no
   Ciclo 01.**
-- Regra de negócio: **equipe é grupo livre de até 5 pessoas**; um Guerreiro(a) pode integrar
-  **várias equipes** e pontua em todas as atividades em que participa; a composição admite **no
+- Regra de negócio: **equipe é grupo livre de até 5 pessoas**, formada pelos próprios
+  Guerreiros e Guerreiras no App 01 e **vinculada a uma aula presencial**, começando e
+  terminando com ela; um Guerreiro(a) pode integrar **várias equipes** — **uma só na partida de
+  Quiz ao Vivo** — e pontua em todas as atividades em que participa; a composição admite **no
   máximo 1 familiar com 17 anos ou mais**, conforme a atividade, o desafio ou a batalha
   determinar. Equipes são cadastradas por Admin.
 - Regra de negócio: **coproprietariedade dos dados publicados** entre a entidade responsável
@@ -174,7 +175,8 @@ os Guerreiros e Guerreiras** (grau de parentesco, no máximo três por Guerreiro
 das Comunidades Virtuais — exclusiva de Admin, nascendo vazias — e conferência do vínculo dos
 Guerreiros e Guerreiras** (a transferência entre comunidades fica fora do Ciclo 01); **agenda
 das aulas com comunidade, data, horário inicial e final**, que é o que habilita o App 01 — sem
-aula agendada a aplicação de onboarding não opera; **cadastro de equipes** conforme o plano de
+aula agendada a aplicação de onboarding não opera; **leitura das equipes do dia**, formadas no
+App 01, sem alteração de composição pela gestão, conforme o plano de
 aulas e a formação livre dos Guerreiros e Guerreiras, com a composição permitida pela atividade
 (só Guerreiros e Guerreiras ou com no máximo 1 familiar de 17 anos ou mais); cadastro de
 Mestres e Apoiadores com upload dos artefatos comprobatórios — **currículo, portfólios, redes
@@ -252,14 +254,19 @@ em **moedas da plataforma**, nunca em reais.
 **Fontes:** docs 02, 03, 04, 11 (composição dos cards, páginas individuais e representação
 visual da comunidade).
 
-## PRD-04 — App 01: Onboarding (cadastro e registro de presença)
+## PRD-04 — App 01: Aula presencial (onboarding, trilhas e equipes)
 
-**Escopo:** Web App responsivo Mobile First que cadastra novos Guerreiros e Guerreiras e
-registra a presença dos já cadastrados, por **áudio ou texto**, com IA.
+**Escopo:** Web App responsivo Mobile First **da aula presencial**, usado pelos próprios
+Guerreiros e Guerreiras. Reúne o que antes eram duas aplicações: **onboarding** — cadastro de
+novos Guerreiros e Guerreiras e registro de presença dos já cadastrados, por **áudio ou
+texto**, com IA — e **trilhas** — conteúdo, equipes, Quiz ao Vivo e assistente, em equipe. A
+aula tem **dois ou mais aparelhos, um por equipe**.
 
 **Requisitos:**
 
-- Tela inicial em que o usuário escolhe: **começar por áudio** ou **começar por texto (chat)**.
+- **Tela inicial com a escolha do caminho:** **onboarding** (uso individual) ou **trilhas**
+  (uso em equipe). Escolhido o onboarding, a tela seguinte oferece **começar por áudio** ou
+  **começar por texto (chat)**.
 - Interação cognitiva conduzida por **IA**, tolerante a respostas fora de ordem, capaz de
   repetir e confirmar dados.
 - Captação e reprodução de áudio via `navigator.mediaDevices.getUserMedia`, com reconhecimento
@@ -286,6 +293,26 @@ registra a presença dos já cadastrados, por **áudio ou texto**, com IA.
 - Operação com rede instável: fila local e sincronização posterior.
 - Registro de presença de Guerreiro(a) conhecido em poucos segundos.
 
+**Requisitos do caminho das trilhas (uso em equipe):**
+
+- **Entrada por nick e imagem**, como em toda aplicação do Guerreiro(a).
+- **Formação de equipe pelos próprios Guerreiros e Guerreiras**, válida para a aula em
+  andamento: criar equipe, entrar em equipe existente e sair dela, respeitados o limite de
+  cinco integrantes e o de um familiar de 17 anos ou mais. A equipe **termina com a aula**.
+- Participação em **mais de uma equipe** no mesmo encontro e **em uma única equipe na partida
+  de Quiz ao Vivo**.
+- **Ponto de trilha da equipe**: onde ela está, o conteúdo e a atividade do dia.
+- **Assistente de trilhas por voz ou texto** — quiz e explicação de conceitos —, no mesmo
+  desenho do assistente da App 05: modelo LLM Google Gemini, corpus fechado no conteúdo
+  cadastrado pelos Mestres, guardrails, filtros de segurança no nível mais restritivo e guarda
+  apenas da transcrição. O **apoio às atividades escolares fica na App 05** (PRD-05).
+- **Sem captação do áudio ambiente**: o microfone abre quando o Guerreiro(a) fala com o
+  assistente e fecha quando ele termina.
+- **Quiz ao Vivo:** o aparelho vinculado à equipe recebe a pergunta e envia a resposta, única
+  por equipe e pergunta, com sincronização em tempo real e tolerância a rede instável.
+- Captação e reprodução de áudio via `navigator.mediaDevices.getUserMedia`, com reconhecimento
+  de fala e síntese de voz em pt-BR.
+
 **Requisitos de proteção de dados (obrigatórios):** finalidade única da imagem (identificar o
 Guerreiro(a) — presença e autenticação); consentimento informado do responsável registrado;
 preferência por _template_ biométrico não reversível; criptografia e acesso auditado; prazo de
@@ -294,21 +321,24 @@ confirmação do Mestre ou Admin.
 
 **Questões em aberto:** provedor de IA e de reconhecimento facial (custo, privacidade,
 processamento no dispositivo × nuvem); política de retenção em números; roteiro exato da
-conversa de cadastro.
+conversa de cadastro; comportamento do assistente por voz em sala barulhenta.
 
-**Fontes:** docs 02, 03, 06.
+**Fontes:** docs 02, 03, 05, 06, 11.
 
 ## PRD-05 — App 05: Área do Guerreiro(a) (jornada gamificada)
 
-**Escopo:** experiência logada do Guerreiro(a), com **guia e apoio nas trilhas** — qual é o
-próximo ponto, o que precisa ser feito, o que já foi conquistado e o que está bloqueado.
+**Escopo:** experiência logada do Guerreiro(a) **nas aulas remotas e no uso cotidiano fora do
+encontro presencial**, com **guia e apoio nas trilhas** — qual é o próximo ponto, o que precisa
+ser feito, o que já foi conquistado e o que está bloqueado. A aula presencial, incluindo a
+resposta do Quiz ao Vivo, é atendida pelo App 01 (PRD-04).
 
 **Requisitos:** escolha de poder; trilhas com desbloqueio por quiz ou desafio, seguindo a
 anatomia e o motor de pontuação do documento 11; desafios semanais (on-line 10 pts, presencial
 10 pts, equipe 10 pts, equipe com familiar 20 pts); **desafios extras propostos por
 Apoiadores** — abertos ou direcionados —, vinculados à trilha em andamento, com pontos extras e
-recompensa em quantidade declarada; **equipes** — grupos livres de até 5, participação em mais
-de uma, com a pontuação de todas as atividades em que colaborar; **séries de coleta de dados do
+recompensa em quantidade declarada; **equipes** — leitura das equipes de que participa, com o
+papel em cada uma e a pontuação de todas as atividades em que colaborar; a formação é do App 01
+(PRD-04); **séries de coleta de dados do
 território** — próxima medição, histórico do que já foi registrado, situação da série (ativa ou
 interrompida) e pontos que ela está rendendo; ranking; recompensas conquistadas nos marcos da
 trilha; **apoio às atividades escolares por assistente de voz com IA** — modelo LLM Google
@@ -318,11 +348,12 @@ no nível mais restritivo; níveis 1–5 (assíduo → **Mestre Aprendiz**); bad
 trilha e por poder; **portfólio de criações originais do Guerreiro(a)**, com autoria creditada;
 **canal de sugestões**, com acompanhamento do status de avaliação.
 
-**Autonomia no encontro assíncrono:** a App 05 é o que permite ao Guerreiro(a) saber **o que
-fazer em seguida sem depender do Mestre**. Precisa funcionar em **aparelho compartilhado do
-ponto de apoio** (troca rápida de sessão) e mostrar com clareza o próximo ponto e o que está
-bloqueado. A entrada é por **nick e imagem**, como em toda aplicação do Guerreiro(a) — é o que
-garante que a atividade foi feita pela própria criança, e não por terceiros.
+**Autonomia fora do encontro presencial:** a App 05 é o que permite ao Guerreiro(a) saber **o
+que fazer em seguida sem depender do Mestre** — na aula remota e entre um encontro e outro.
+Precisa funcionar em **aparelho compartilhado do ponto de apoio** (troca rápida de sessão) e
+mostrar com clareza o próximo ponto e o que está bloqueado. A entrada é por **nick e imagem**,
+como em toda aplicação do Guerreiro(a) — é o que garante que a atividade foi feita pela própria
+criança, e não por terceiros.
 
 **Requisitos adicionais:** estado de **perfil público** desbloqueado apenas com autorização do
 responsável; representação exclusivamente por avatar; desafios com níveis de dificuldade
@@ -337,40 +368,6 @@ motor de pontuação, os critérios de nível e as travas de integridade dos pon
 definidos no documento 11.
 
 **Fontes:** docs 02, 03, 05, 11.
-
-## PRD-06 — App 02: Assistente por voz e Modo Ouvinte
-
-**Escopo:** Web App de áudio nos moldes do Robô Educa — **JavaScript no frontend + IA no
-backend** — com dois modos de operação.
-
-**Requisitos:**
-
-- **Modo Conversa:** interação educacional por voz ("converse com seu robô") — quiz e explicação
-  de conceitos das trilhas, **no mesmo desenho do assistente da App 05**: modelo LLM Google
-  Gemini, corpus fechado no conteúdo cadastrado pelos Mestres, guardrails, filtros de segurança
-  no nível mais restritivo e guarda apenas da transcrição. O **apoio às atividades escolares
-  fica na App 05** (PRD-05).
-- **Modo Ouvinte:** a aplicação acompanha o que é falado durante a aula e, **quando acionada**,
-  opina sobre o tema em discussão ou responde a perguntas dirigidas a ela.
-- Captação e reprodução de áudio via `navigator.mediaDevices.getUserMedia`; reconhecimento de
-  fala e síntese de voz em pt-BR.
-- Ativação do Modo Ouvinte pelo Mestre, com **indicação visível e permanente** de que está
-  ativo e desligamento a qualquer momento.
-- **Sem gravação persistente do áudio da turma**; retenção mínima e definida da transcrição
-  estritamente necessária.
-- Aviso prévio a Guerreiros, Guerreiras e responsáveis, com **direito de recusa e alternativa
-  equivalente**.
-- Filtros de segurança de conteúdo no nível mais restritivo.
-- Captação de perfil para personalização (PRD-11).
-- Registro de dados do território **por voz**, alimentando as séries da Comunidade Virtual sem
-  exigir digitação.
-
-**Questões em aberto:** processamento de áudio no dispositivo × nuvem; base legal e prazo de
-retenção da transcrição de aula com menores; critério de acionamento do Modo Ouvinte
-(palavra-chave, botão do Mestre ou ambos); comportamento em salas barulhentas. O modelo, o
-corpus fechado, os guardrails e o descarte do áudio seguem o que o documento 03 §7 define.
-
-**Fontes:** docs 03, 06.
 
 ## PRD-07 — Economia de Recursos e Transparência (ledger)
 
@@ -625,9 +622,9 @@ família. Substitui a comunicação por mensageria de terceiros, fora do escopo 
   e progresso nas trilhas.
 - **Autorização de divulgação pública** do histórico e do perfil — concessão e **revogação**,
   com efeito imediato na vitrine e nos rankings públicos.
-- **Direitos de recusa** exercíveis a qualquer tempo: imagem do Guerreiro(a) (PRD-04), Modo
-  Ouvinte em sala (PRD-06) e uso de imagem em vídeos e fotos de eventos — **sempre com
-  alternativa equivalente**, nunca com exclusão da atividade.
+- **Direitos de recusa** exercíveis a qualquer tempo: imagem do Guerreiro(a) (PRD-04) e uso de
+  imagem em vídeos e fotos de eventos — **sempre com alternativa equivalente**, nunca com
+  exclusão da atividade.
 - **Transparência de dados**: quais dados da criança estão armazenados, para que servem, por
   quanto tempo ficam e **quem os acessou**.
 - **Solicitações com protocolo e status**: acesso, correção, exclusão e esclarecimentos —
@@ -697,10 +694,10 @@ periodicidade do relatório de efetividade.
 Os PRDs são escritos em cinco ondas, um de cada vez, na sequência abaixo. A situação de cada
 um está na página de PRDs; o mapa de arquivos e dependências, no documento 99.
 
-| Onda | PRDs, em ordem                         | Por que nesta ordem                                                                                                |
-| ---- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| 1    | PRD-08, PRD-07, PRD-01                 | Território e ledger definem as entidades que o Backend API consolida — o PRD-01 escrito antes teria de ser refeito |
-| 2    | PRD-02, PRD-04                         | O App 01 não opera enquanto um Admin não agendar, na App 03, a aula que lhe dá comunidade, data e horário          |
-| 3    | PRD-09, PRD-05                         | Sem autoria de trilha não há o que a Área do Guerreiro(a) guie; as trilhas 1 e 2 são o teste do modelo de autoria  |
-| 4    | PRD-13, PRD-03                         | A vitrine só exibe Guerreiro(a) cujo responsável autorizou, e a autorização nasce na App 07                        |
-| 5    | PRD-06, PRD-14, PRD-10, PRD-12, PRD-11 | Dependem de decisões ainda em aberto ou de fluxos que só existem depois das ondas anteriores                       |
+| Onda | PRDs, em ordem                 | Por que nesta ordem                                                                                                |
+| ---- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 1    | PRD-08, PRD-07, PRD-01         | Território e ledger definem as entidades que o Backend API consolida — o PRD-01 escrito antes teria de ser refeito |
+| 2    | PRD-02, PRD-04                 | O App 01 não opera enquanto um Admin não agendar, na App 03, a aula que lhe dá comunidade, data e horário          |
+| 3    | PRD-09, PRD-05                 | Sem autoria de trilha não há o que a Área do Guerreiro(a) guie; as trilhas 1 e 2 são o teste do modelo de autoria  |
+| 4    | PRD-13, PRD-03                 | A vitrine só exibe Guerreiro(a) cujo responsável autorizou, e a autorização nasce na App 07                        |
+| 5    | PRD-14, PRD-10, PRD-12, PRD-11 | Dependem de decisões ainda em aberto ou de fluxos que só existem depois das ondas anteriores                       |
