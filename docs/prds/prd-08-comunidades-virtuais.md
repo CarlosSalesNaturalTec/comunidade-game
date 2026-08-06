@@ -159,26 +159,28 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                                                         | Invariante | Fonte   |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------- | ------- |
-| `RN-08-01` | Comunidade Virtual é criada apenas por Admin e nasce vazia                                                                    | 4          | 02 §1   |
-| `RN-08-02` | Todo Guerreiro(a) tem vínculo obrigatório a exatamente uma comunidade, atribuído pela aula em que se cadastra                 | 4          | 02 §1   |
-| `RN-08-03` | O registro pertence à comunidade vigente do Guerreiro(a) na data da medição                                                   | —          | 02 §1   |
-| `RN-08-04` | A série é individual: um coletor por série                                                                                    | —          | 02 §1   |
-| `RN-08-05` | Registro válido rende valor único, igual para todo tipo de coleta, sem teto por período                                       | 6          | 11 §5   |
-| `RN-08-06` | Quantos registros de um mesmo período de cadência pontuam é declarado no desafio                                              | 6          | 11 §5   |
-| `RN-08-07` | Dois períodos de cadência seguidos sem registro interrompem a série                                                           | 6          | 02 §1   |
-| `RN-08-08` | Série interrompida cessa o cômputo; os pontos já creditados permanecem                                                        | 6          | 02 §1   |
-| `RN-08-09` | Registro nasce válido; o Mestre audita por amostragem e pode invalidar, estornando os pontos                                  | —          | 02 §1   |
-| `RN-08-10` | Registro nunca é apagado nem editado: correção se faz por invalidação e novo registro                                         | 7          | 02 §1   |
-| `RN-08-11` | O vínculo entre registro e Guerreiro(a) coletor(a) é permanente, inclusive após a saída do projeto                            | 7          | 02 §1   |
-| `RN-08-12` | Anonimização se aplica na saída — painéis, exportações e pesquisas —, nunca no armazenamento                                  | 7          | 02 §1   |
-| `RN-08-13` | A saída pública agrega até o nível da rua; abaixo disso, só uso interno ou entrega com acordo                                 | 7          | 02 §1   |
-| `RN-08-14` | Toda trilha tem ao menos um desafio de coleta                                                                                 | 5          | 02 §3   |
-| `RN-08-15` | Pontos da coleta creditam o Poder do Território, não o poder da trilha em que o desafio nasceu                                | —          | 02 §2   |
-| `RN-08-16` | Registro em foto ou vídeo que contenha pessoa identificável é invalidado na auditoria                                         | 12         | 03 §12  |
-| `RN-08-17` | O jogo nunca credita pontos de coleta; o crédito vem do registro validado                                                     | 8          | 11 §8.4 |
-| `RN-08-18` | Local nasce de cadastro do Admin ou de solicitação aprovada por Admin ou pelo Mestre da trilha; o pedido em si não cria local | 4          | 02 §1   |
+| ID         | Regra                                                                                                                         | Invariante | Fonte    |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
+| `RN-08-01` | Comunidade Virtual é criada apenas por Admin e nasce vazia                                                                    | 4          | 02 §1    |
+| `RN-08-02` | Todo Guerreiro(a) tem vínculo obrigatório a exatamente uma comunidade, atribuído pela aula em que se cadastra                 | 4          | 02 §1    |
+| `RN-08-03` | O registro pertence à comunidade vigente do Guerreiro(a) na data da medição                                                   | —          | 02 §1    |
+| `RN-08-04` | A série é individual: um coletor por série                                                                                    | —          | 02 §1    |
+| `RN-08-05` | Registro válido rende valor único, igual para todo tipo de coleta, sem teto por período                                       | 6          | 11 §5    |
+| `RN-08-06` | Quantos registros de um mesmo período de cadência pontuam é declarado no desafio                                              | 6          | 11 §5    |
+| `RN-08-07` | Dois períodos de cadência seguidos sem registro interrompem a série                                                           | 6          | 02 §1    |
+| `RN-08-08` | Série interrompida cessa o cômputo; os pontos já creditados permanecem                                                        | 6          | 02 §1    |
+| `RN-08-09` | Registro nasce válido; o Mestre audita por amostragem e pode invalidar, estornando os pontos                                  | —          | 02 §1    |
+| `RN-08-10` | Registro nunca é apagado nem editado: correção se faz por invalidação e novo registro                                         | 7          | 02 §1    |
+| `RN-08-11` | O vínculo entre registro e Guerreiro(a) coletor(a) é permanente, inclusive após a saída do projeto                            | 7          | 02 §1    |
+| `RN-08-12` | Anonimização se aplica na saída — painéis, exportações e pesquisas —, nunca no armazenamento                                  | 7          | 02 §1    |
+| `RN-08-13` | A saída pública agrega até o nível da rua; abaixo disso, só uso interno ou entrega com acordo                                 | 7          | 02 §1    |
+| `RN-08-14` | Toda trilha tem ao menos um desafio de coleta                                                                                 | 5          | 02 §3    |
+| `RN-08-15` | Pontos da coleta creditam o Poder do Território, não o poder da trilha em que o desafio nasceu                                | —          | 02 §2    |
+| `RN-08-16` | Registro em foto ou vídeo que contenha pessoa identificável é invalidado na auditoria                                         | 12         | 03 §12   |
+| `RN-08-17` | O jogo nunca credita pontos de coleta; o crédito vem do registro validado                                                     | 8          | 11 §8.4  |
+| `RN-08-18` | Local nasce de cadastro do Admin ou de solicitação aprovada por Admin ou pelo Mestre da trilha; o pedido em si não cria local | 4          | 02 §1    |
+| `RN-08-19` | Revogação do consentimento despersonaliza o registro: rompe o vínculo de autoria e destrói o mapeamento, sem apagar a medição | 7          | 03 §12.1 |
+| `RN-08-20` | A auditoria por amostragem da coleta é semanal e inclui obrigatoriamente todo valor "a conferir"                              | 6          | 02 §1    |
 
 ## 8. Modelo de dados
 
@@ -259,18 +261,23 @@ false`); invalidação por Mestre que não é autor do desafio (403).
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                  | Finalidade                                     | Base legal        | Retenção   | Quem acessa                            |
-| ------------------------------ | ---------------------------------------------- | ----------------- | ---------- | -------------------------------------- |
-| Valor medido e data da medição | Construir a série do território                | interesse público | permanente | público, agregado                      |
-| Local até rua                  | Situar a medição                               | interesse público | permanente | público, agregado                      |
-| Local abaixo de rua            | Precisão interna da série                      | interesse público | permanente | gestão e Mestre da trilha              |
-| Identificação do coletor       | Procedência da série e crédito ao Guerreiro(a) | a definir (§14)   | permanente | gestão, Mestre, o próprio, responsável |
-| Foto ou vídeo do território    | Registro visual do território                  | consentimento     | permanente | público, após auditoria                |
+| Dado coletado                  | Finalidade                                     | Base legal                              | Retenção                  | Quem acessa                            |
+| ------------------------------ | ---------------------------------------------- | --------------------------------------- | ------------------------- | -------------------------------------- |
+| Valor medido e data da medição | Construir a série do território                | interesse público                       | permanente                | público, agregado                      |
+| Local até rua                  | Situar a medição                               | interesse público                       | permanente                | público, agregado                      |
+| Local abaixo de rua            | Precisão interna da série                      | interesse público                       | permanente                | gestão e Mestre da trilha              |
+| Identificação do coletor       | Procedência da série e crédito ao Guerreiro(a) | consentimento do responsável, revogável | permanente, até revogação | gestão, Mestre, o próprio, responsável |
+| Foto ou vídeo do território    | Registro visual do território                  | consentimento                           | permanente                | público, após auditoria                |
 
 - O vínculo coletor ↔ registro **não é anonimizado no armazenamento**; a anonimização ocorre
   na saída.
-- Pedido de exclusão do responsável **não apaga** o registro do território. A tela e o termo
-  precisam dizer isso antes do aceite — requisito detalhado no PRD-13.
+- Pedido de exclusão do responsável **não apaga** o registro do território: ele
+  **despersonaliza**. A plataforma rompe o vínculo de autoria e destrói o mapeamento, e o
+  registro segue na série com um código de coletor sem correspondência a pessoa alguma. A tela
+  e o termo dizem isso antes do aceite — requisito detalhado no PRD-13.
+- O dado do território tem **duas camadas**: a medição é dado do lugar e sai anonimizada; o
+  vínculo de autoria é o único dado pessoal, sustentado em consentimento revogável. A base
+  legal completa está no documento 03 §12.1.
 - A aplicação que registra a coleta indica, de forma discreta e permanente, o que está sendo
   coletado e para onde vai.
 - A coleta não capta dado pessoal da criança além da autoria do registro: a foto do território
@@ -322,8 +329,9 @@ a base da avaliação do Poder do Território e entram no conjunto de indicadore
   a implementação do `RF-08-14`, não a modelagem.
 - **Inferência de endereço pela série de rua**: falta a mitigação para rua com um único
   coletor, em que a série diária indica a casa da criança.
-- **Base legal da guarda permanente e nominal** de dado produzido por criança, e o que
-  exatamente se responde a um pedido de exclusão. Trava o termo da App 07, não este domínio.
+- **Reidentificação em comunidade com poucos coletores**: a base legal e a resposta ao pedido
+  de exclusão estão decididas (documento 03 §12.1), mas falta o critério de agregação mínima
+  que impeça apontar uma criança a partir de código de coletor, data e local fino.
 - **Faixas de pontos dos níveis 1 a 5**, inclusive do Poder do Território: o documento 11 §6
   define os critérios em palavras, sem números.
 - **Tecnologia de armazenamento das séries temporais**: decisão de arquitetura do PRD-01.

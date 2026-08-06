@@ -103,8 +103,9 @@ avatar e nick.
 4. Falhando a conferência, o **Mestre ou Admin presente abre a sessão** confirmando quem é —
    é o mesmo fallback do onboarding, e é o único caminho para quem ainda não tem imagem
    gravada.
-5. Ao sair, ou por inatividade, a sessão encerra e a tela volta ao pedido de nick — o aparelho
-   é do ponto de apoio, não da criança.
+5. Ao sair, ou após **10 minutos de inatividade** — com aviso um minuto antes e opção de
+   continuar, para quem está lendo —, a sessão encerra e a tela volta ao pedido de nick: o
+   aparelho é do ponto de apoio, não da criança.
 6. Nenhuma imagem fica guardada no aparelho.
 
 ### 5.2 Saber o que fazer agora
@@ -220,7 +221,8 @@ avatar e nick.
 | `RF-05-02` | Aplicação recusa a entrada em aparelho sem câmera, explicando em linguagem simples    | essencial  |
 | `RF-05-03` | Mestre ou Admin presente abre a sessão do Guerreiro(a) quando a conferência falha     | essencial  |
 | `RF-05-04` | Mestre ou Admin abre a sessão de quem ainda não tem imagem gravada                    | essencial  |
-| `RF-05-05` | Sessão encerra ao sair e por inatividade, devolvendo a tela ao pedido de nick         | essencial  |
+| `RF-05-05` | Sessão encerra ao sair e por 10 minutos de inatividade, voltando ao pedido de nick    | essencial  |
+| `RF-05-71` | Aviso um minuto antes do encerramento por inatividade, com opção de continuar         | essencial  |
 | `RF-05-06` | Nenhuma imagem de Guerreiro(a) é armazenada no aparelho compartilhado                 | essencial  |
 | `RF-05-07` | Troca de sessão entre dois Guerreiros e Guerreiras acontece sem reiniciar a aplicação | essencial  |
 
@@ -472,15 +474,15 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                    | Finalidade                            | Base legal        | Retenção                           | Quem acessa              |
-| -------------------------------- | ------------------------------------- | ----------------- | ---------------------------------- | ------------------------ |
-| Imagem da entrada                | Conferir que é o próprio Guerreiro(a) | consentimento     | não é armazenada na entrada        | núcleo, em conferência   |
-| Registro de coleta do território | Construir a Comunidade Virtual        | interesse público | permanente, com autoria            | gestão, público agregado |
-| Criação original                 | Autoria, portfólio e culminância      | consentimento     | permanente, com autoria            | gestão e responsável     |
-| Sugestão em texto ou áudio       | Evolução da plataforma                | consentimento     | enquanto durar o vínculo           | gestão                   |
-| Respostas de quiz e progresso    | Registro da participação e pontuação  | consentimento     | enquanto durar o vínculo           | gestão e responsável     |
-| Características do avatar        | Representação pública do Guerreiro(a) | consentimento     | enquanto durar o vínculo           | público                  |
-| Pergunta do apoio escolar        | Responder à dúvida da atividade       | consentimento     | só a transcrição; áudio descartado | gestão                   |
+| Dado coletado                    | Finalidade                            | Base legal        | Retenção                                      | Quem acessa              |
+| -------------------------------- | ------------------------------------- | ----------------- | --------------------------------------------- | ------------------------ |
+| Imagem da entrada                | Conferir que é o próprio Guerreiro(a) | consentimento     | não é armazenada na entrada                   | núcleo, em conferência   |
+| Registro de coleta do território | Construir a Comunidade Virtual        | interesse público | permanente, com autoria                       | gestão, público agregado |
+| Criação original                 | Autoria, portfólio e culminância      | consentimento     | permanente, com autoria                       | gestão e responsável     |
+| Sugestão em texto ou áudio       | Evolução da plataforma                | consentimento     | 90 dias após o retorno; permanente se adotada | gestão                   |
+| Respostas de quiz e progresso    | Registro da participação e pontuação  | consentimento     | enquanto durar o vínculo                      | gestão e responsável     |
+| Características do avatar        | Representação pública do Guerreiro(a) | consentimento     | enquanto durar o vínculo                      | público                  |
+| Pergunta do apoio escolar        | Responder à dúvida da atividade       | consentimento     | 7 dias; até o fim do ciclo se recusada        | gestão                   |
 
 - **Consentimento**: a participação segue a adesão em duas etapas — o cadastro livre já permite
   usar a aplicação, e a **divulgação pública** depende de autorização do responsável, dada na
@@ -490,7 +492,8 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
 - **Aviso visível**: toda tela que coleta dado traz o aviso discreto do que se coleta, com
   acesso à área detalhada sobre destino e uso.
 - **Pedidos de acesso, correção e exclusão** são feitos pelo responsável na App 07; a
-  aplicação não os recebe. O registro de coleta do território **não é apagado**, e o texto da
+  aplicação não os recebe. O registro de coleta do território **é despersonalizado, não
+  apagado**, e o texto da
   área detalhada diz isso em linguagem simples.
 - **Nenhuma imagem real é exibida** em qualquer tela — a representação é sempre por avatar.
 - **Nenhum dado pessoal de terceiros** aparece: das outras crianças, só avatar, nick e posição
@@ -557,6 +560,8 @@ avaliação do ciclo: número de criações originais apresentadas e de sugestõ
 | Corpus cadastrado só pelo Mestre; Admin audita por amostragem              | 03 §§5, 7, 11   | Corpus, cota e áudio dos assistentes  |
 | Sem teto de uso no Ciclo 01, absorvido pelo fundador em conta Gemini PRO   | 03 §7 e 10 §4.3 | Corpus, cota e áudio dos assistentes  |
 | Áudio descartado na transcrição, nas Apps 05 e 02                          | 03 §§4, 7       | Corpus, cota e áudio dos assistentes  |
+| Prazos de guarda das transcrições e do _template_                          | 03 §12.2        | Prazos de guarda dos dados            |
+| Sessão encerrada por 10 minutos de inatividade                             | 03 §12.2        | Sessão em aparelho compartilhado      |
 
 As entidades `RespostaDeQuiz`, `DisciplinaDeApoio`, `ConteudoDeApoio` e `ConsultaDeApoio`
 foram acrescentadas ao modelo do PRD-01, e `Nivel` passou a ser derivado do percurso. O badge
@@ -567,16 +572,11 @@ passou a seguir o mesmo desenho de corpus fechado, guardrails e descarte do áud
 
 ## 14. Pendências que permanecem
 
-- **Prazo de guarda da transcrição** da sugestão e da pergunta do apoio escolar: o áudio já é
-  descartado na transcrição, mas por quanto tempo o texto fica guardado ainda não está
-  definido. É o único campo "a definir" da tabela de LGPD deste PRD.
+- **Reidentificação em comunidade com poucos coletores**: os prazos e a base legal do dado
+  de território estão decididos, mas o critério de agregação mínima da saída pública não.
 - **Registro de coleta com a rede fora**: se vai para fila local no aparelho, como a presença
   do App 01, ou se é bloqueado até reconectar. A entrada já exige rede pela conferência da
   imagem.
-- **Tempo de inatividade** que encerra a sessão no aparelho compartilhado — o comportamento
-  está definido no `RF-05-05`, o número não.
-- **Periodicidade da auditoria por amostragem** do corpus de apoio escolar pelo Admin: a regra
-  está decidida, o ritmo da conferência não.
 - **Ranking interno**: hoje segue a regra da vitrine e exibe apenas quem tem divulgação
   autorizada. Se a intenção for mostrar a turma inteira dentro da aplicação logada, é decisão
   a tomar e a gravar no documento 03 §12.
@@ -603,3 +603,4 @@ passou a seguir o mesmo desenho de corpus fechado, guardrails e descarte do áud
 | `RF-05-58` a `RF-05-66` | 03 §7 (apoio escolar com corpus fechado) e 03 §4 (filtros de segurança)  |
 | `RF-05-67` e `RF-05-68` | 04 §1 (custo de _cloud_ no livro-razão) e 01 §7 (transparência sobre IA) |
 | `RF-05-69` e `RF-05-70` | 03 §7 (descarte do áudio e ausência de teto no Ciclo 01)                 |
+| `RF-05-71`              | 03 §12.2 (sessão em aparelho compartilhado)                              |

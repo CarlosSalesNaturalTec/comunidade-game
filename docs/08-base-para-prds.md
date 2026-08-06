@@ -632,9 +632,10 @@ família. Substitui a comunicação por mensageria de terceiros, fora do escopo 
   quanto tempo ficam e **quem os acessou**.
 - **Solicitações com protocolo e status**: acesso, correção, exclusão e esclarecimentos —
   encaminhadas à fila de atendimento da App 03 (PRD-02).
-- **Limite explícito do pedido de exclusão**: os registros de dados do território têm guarda
-  permanente com autoria preservada e **não são apagados**; a tela e o termo precisam dizer
-  isso antes do aceite.
+- **Limite explícito do pedido de exclusão**: os registros de dados do território **não são
+  apagados — são despersonalizados**. Revogado o consentimento, a plataforma rompe o vínculo de
+  autoria e destrói o mapeamento; a medição permanece na série sem apontar pessoa alguma. A
+  tela e o termo precisam dizer isso antes do aceite.
 - **Termos e consentimentos versionados**, com data e hora e histórico consultável, incluindo a
   declaração de **coproprietariedade dos dados publicados** e o que ela implica em caso de
   monetização.

@@ -251,7 +251,7 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-32` | Criação de equipe registra o papel de cada integrante, com crédito individual preservado         | essencial  |
 | `RF-09-33` | Criação validada só aparece no portfólio público se o responsável tiver autorizado a divulgação  | essencial  |
 | `RF-09-34` | Mestre recusa a criação com motivo, devolvendo-a para ajuste sem perder a autoria                | essencial  |
-| `RF-09-35` | Mestre audita por amostragem os registros de coleta das suas trilhas e invalida com motivo       | essencial  |
+| `RF-09-35` | Mestre audita por amostragem semanal os registros de coleta e invalida com motivo                | essencial  |
 
 ### 6.4 Banco do Quiz ao Vivo
 
@@ -475,7 +475,8 @@ sem autorização do responsável (409).
 - O registro de **pontuação negativa** é dado sensível de criança: restrito à gestão e ao
   responsável, nunca em rota pública, ranking ou vitrine.
 - Pedido de acesso, correção ou exclusão chega pela App 07 e é tratado pela gestão; **o registro
-  de coleta do território não é apagado**, e a resposta ao responsável diz isso.
+  de coleta do território não é apagado, e sim despersonalizado**, e a resposta ao responsável
+  diz isso.
 - Toda tela que coleta dado traz o aviso discreto do que se coleta, com acesso à área detalhada
   sobre destino e uso.
 
@@ -537,8 +538,8 @@ como ação de Admin e o cadastro de atividade ficou restrito à **atividade avu
 
 ## 14. Pendências que permanecem
 
-- **Periodicidade da auditoria por amostragem** do Admin, tanto das trilhas publicadas quanto
-  do corpus de apoio escolar: a regra está decidida, o ritmo da conferência não.
+- **Composição da amostra de auditoria de coleta**: a cadência semanal está decidida, mas
+  quantos registros por série ativa entram na amostra ainda não.
 - **Mapeamento dos livros nas trilhas**: qual capítulo apoia qual ponto das trilhas 1 e 2 é
   trabalho de leitura do acervo, não de ferramenta — mas sem ele a bibliografia nasce vazia.
 - **Licença do código** da plataforma (AGPL, MIT ou outra): a do conteúdo já está decidida.

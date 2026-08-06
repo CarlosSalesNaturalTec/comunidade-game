@@ -158,8 +158,9 @@ correspondente também é temporal:
   Guerreiro(a)**; a origem fica gravada no registro.
 - O registro pode ser **foto ou vídeo** — é assim que se registra lixo acumulado, buraco na
   via ou poste apagado, que se medem por evidência e não por número.
-- O registro **nasce válido e pontua na hora**. O Mestre audita por **amostragem** e pode
-  invalidar registro inverossímil, o que retira os pontos daquele registro — só dele.
+- O registro **nasce válido e pontua na hora**. O Mestre audita por **amostragem semanal**,
+  junto com os lançamentos da semana, e pode invalidar registro inverossímil, o que retira os
+  pontos daquele registro — só dele. Valor "a conferir" entra obrigatoriamente na amostra.
 - **Valor fora da faixa declarada no desafio** entra como **a conferir** e não pontua até o
   Mestre validar. É a trava contra dado inventado, e é também momento de ensinar a medir.
 
@@ -183,6 +184,12 @@ A anonimização vale **na saída, não no armazenamento**: o que sai da platafo
 pesquisas, painéis públicos e instituições é agregado e anonimizado conforme a finalidade. A
 saída pública chega **até o nível da rua**; condomínio, bloco e quadra ficam para uso interno
 e para entregas com acordo formal.
+
+**Revogação despersonaliza, não apaga.** Se o responsável revoga o consentimento, a plataforma
+rompe o vínculo de autoria e destrói o mapeamento: o registro segue na série com um **código de
+coletor que não corresponde a pessoa alguma**. A medição é dado do lugar e permanece; o dado
+pessoal, que era só o vínculo, deixa de existir. A base legal das duas camadas está no
+documento 03.
 
 > **A definir:** como evitar que uma série diária em rua com um único coletor indique onde a
 > criança mora.

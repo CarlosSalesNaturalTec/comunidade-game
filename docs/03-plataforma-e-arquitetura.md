@@ -297,7 +297,9 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
 - **Fila de avaliação das sugestões e propostas** vindas das Apps 05, 07, 08 e 09, com status
   e retorno a quem propôs.
 - **Auditoria por amostragem do conteúdo de apoio escolar** cadastrado pelos Mestres, com
-  despublicação motivada — o Admin confere, não cadastra.
+  despublicação motivada — o Admin confere, não cadastra. A conferência é **mensal**, cobrindo
+  ao menos **10% do conteúdo novo do mês** e **100% das disciplinas que geraram recusa** do
+  filtro de segurança; as trilhas publicadas são auditadas no mesmo ato e na mesma cadência.
 
 A autoria de trilhas e conteúdos e as validações pedagógicas são do Mestre e vivem na App 09;
 esta aplicação continua sendo a da **gestão** — cadastros, lançamentos, aprovações de Admin e
@@ -433,9 +435,10 @@ vínculo conferido por um Admin ou por um Mestre.
   equivalente.
 - **A revogação vale para frente e é imediata** na parte pública: o perfil sai da vitrine e
   dos rankings, sem prejuízo da participação.
-- **Limite declarado do pedido de exclusão:** os **registros de dados do território** têm
-  guarda permanente com autoria preservada e **não são apagados** a pedido. Isso precisa estar
-  dito na tela, em linguagem simples, e no termo assinado — não descoberto depois.
+- **Limite declarado do pedido de exclusão:** os **registros de dados do território** não são
+  apagados a pedido — são **despersonalizados**, com o vínculo de autoria rompido e o
+  mapeamento destruído (§12.1). Isso precisa estar dito na tela, em linguagem simples, e no
+  termo assinado — não descoberto depois.
 - **Linguagem simples**, na mesma medida exigida da política de privacidade.
 - **Sem contato direto com Apoiadores ou terceiros**: a área é canal entre família e
   plataforma, e nada mais.
@@ -523,9 +526,56 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   Guerreiro(a) deixa o projeto — é o que dá procedência à série e preserva o crédito da
   realização. A **anonimização ocorre na saída**: painéis públicos, exportações, pesquisas e
   entregas a instituições recebem dados **agregados e anonimizados**.
-- Consequência a tratar na política de privacidade: essa retenção é **indefinida e nominal**,
-  e precisa de **base legal declarada** e de resposta explícita ao pedido de exclusão feito
-  pelo responsável.
+
+### 12.1 Base legal da guarda do dado de território
+
+Duas camadas, e a distinção entre elas é o que sustenta o desenho:
+
+| Camada                   | O que é                                           | Base legal                                                                        |
+| ------------------------ | ------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **A medição**            | Valor, local, data — dado do **lugar**            | Anonimizada na saída, **fora do alcance da LGPD** enquanto não identifica ninguém |
+| **O vínculo de autoria** | Quem coletou — único dado **pessoal** do registro | **Consentimento específico e em destaque do responsável**, revogável              |
+
+- **Titularidade não se transfere.** O titular do vínculo de autoria é o Guerreiro(a); o
+  responsável **exerce os direitos** em nome dele e **recebe a parte monetária** do rateio da
+  coproprietariedade. É o máximo que a lei admite nessa direção, e é o que o projeto pratica.
+- **Revogação despersonaliza, não apaga.** Revogado o consentimento, a plataforma **rompe o
+  vínculo de autoria e destrói o mapeamento**: o registro permanece na série com um **código de
+  coletor sem correspondência a pessoa alguma**, preservando a consistência da série sem
+  preservar dado pessoal. É a resposta concreta ao pedido de exclusão, e o termo diz isso antes
+  do aceite.
+- **A base de pesquisa entra quando a entidade existir.** A retenção nominal por prazo
+  indeterminado só se apoia em pesquisa (LGPD art. 7º, IV e art. 16, II) quando houver
+  **pessoa jurídica sem fins lucrativos** com pesquisa na missão institucional — a empresa
+  vinculada hoje não se enquadra. Até lá, a camada pessoal se sustenta em consentimento, e é
+  por isso que a criação da entidade é decisão que precede a monetização e a entrega de dados
+  a instituições.
+- **Risco de reidentificação**: em comunidade pequena, código de coletor somado a data e local
+  fino ainda pode apontar uma criança. Toda saída passa por agregação suficiente para que isso
+  não ocorra, e a granularidade fina fica restrita a uso interno e a entregas com acordo
+  formal.
+
+### 12.2 Prazos de guarda
+
+| Dado                                              | Prazo                                                             |
+| ------------------------------------------------- | ----------------------------------------------------------------- |
+| Transcrição de consulta respondida (Apps 05 e 02) | **7 dias** vinculada ao Guerreiro(a); depois só disciplina e data |
+| Transcrição de consulta recusada pelos filtros    | **Até o fim do ciclo**, restrita à gestão                         |
+| Transcrição de sugestão não adotada               | **90 dias** após o retorno a quem sugeriu                         |
+| Transcrição de sugestão adotada                   | Permanente, com autoria — é contribuição creditada                |
+| Áudio de qualquer origem                          | **Descartado na transcrição**                                     |
+| _Template_ biométrico, fim do vínculo             | **30 dias**, com aviso prévio ao responsável                      |
+| _Template_ biométrico, pedido do responsável      | **5 dias**                                                        |
+| Métricas de custo e demanda de IA                 | Permanente, **sem nenhum dado pessoal** — só contadores           |
+
+**Fim do vínculo** é o marco desses prazos: ocorre **por pedido do responsável** ou
+**automaticamente após 12 meses sem nenhuma atividade registrada** — prazo que cobre o
+intervalo entre ciclos sem manter biometria de quem já saiu.
+
+**Sessão em aparelho compartilhado**: encerra por **10 minutos de inatividade**, com aviso um
+minuto antes e opção de continuar, além do botão de sair sempre visível. O risco tratado aqui
+é a próxima criança ver os dados da anterior.
+
 - **Georreferenciamento sem expor endereço de criança**: a granularidade publicada nunca pode
   permitir inferir onde um Guerreiro(a) específico mora.
 - **Aviso visível em toda aplicação:** onde há coleta de dado, o app indica ao usuário — de
