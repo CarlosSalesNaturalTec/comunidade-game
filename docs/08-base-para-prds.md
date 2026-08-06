@@ -249,6 +249,24 @@ de que o ODS 18 é adoção voluntária do Brasil; **nota de transparência sobr
 nas seções institucionais; **favoritos do visitante** — sem login e sem cadastro, guardados no
 próprio aparelho, fazendo a vitrine destacar primeiro as novidades de quem ele acompanha.
 
+**Três recortes de leitura:** a vitrine é uma só e **sem login**; o que muda por público é a
+porta de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos. Nenhum
+recorte cria área restrita, cadastro ou coleta de dado do visitante, e a troca de recorte é
+navegação — o visitante circula livremente entre os três.
+
+- **Sociedade civil** — recorte **padrão**: narrativa do projeto, cards e páginas dos
+  personagens, criações originais, batalhas, "Quem somos" e "Como apoiar".
+- **Pesquisadores** — séries históricas por comunidade com **metodologia legível**: o que se
+  mede, cadência declarada no desafio, período coberto, origem da medição (registro manual ou
+  sensor construído na trilha), número de registros válidos e licença de uso do conjunto.
+- **Gestores públicos** — painel do território por comunidade e por ciclo, com evolução no
+  tempo e o **painel de cobertura da Agenda 2030**, com destaque para a meta 17.18.
+
+Os três obedecem à regra de saída — **agregada e anonimizada, nunca por Guerreiro(a)** —, com
+a granularidade limitada pela mitigação de inferência de endereço, que segue pendente. Ficam em
+aberto o formato de exportação e a licença do conjunto oferecido ao pesquisador, e se o pedido
+de recorte específico passa pelo formulário público ou por contato direto.
+
 **Formulário de solicitação de participação:** pessoas e instituições interessadas em
 participar como **Mestre ou Apoiador** preenchem um formulário público. **Obrigatórios:** nome,
 e-mail, WhatsApp, pretensão (Mestre ou Apoiador) e apresentação em texto livre.

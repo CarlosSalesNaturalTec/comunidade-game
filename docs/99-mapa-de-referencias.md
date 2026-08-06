@@ -79,6 +79,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Moeda da plataforma (1 moeda = R$ 100,00; vitrine em moedas)       | 04 §1                                      | 03 §8, 08, 11 §8.2, 12         |
 | Coproprietariedade e monetização (50% / 50%, metade proporcional)  | 04 §2                                      | 03 §12, 08, 09                 |
 | Produção executiva (tempo do fundador e dos Admins, por absorção)  | 04 §1                                      | 08, 09, 10 §4.3                |
+| Recortes da vitrine (sociedade civil, pesquisadores, gestores)     | 03 §8                                      | 04 §§2, 4, 08, 09              |
 | Aviso de LGPD visível nas aplicações e área detalhada              | 03 §12                                     | 08, 09                         |
 | Área do Apoiador (App 08) e registro de propostas                  | 03 §10                                     | 04, 08, 09, 12                 |
 | Área do Mestre (App 09) — autoria e operação                       | 03 §11                                     | 02, 05, 08, 09                 |

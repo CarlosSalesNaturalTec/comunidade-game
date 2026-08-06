@@ -447,6 +447,21 @@ Web App de acesso público e **sem autenticação**:
 - É também o espaço da **publicidade** prevista como fonte de receita — sempre fora das áreas
   de uso das crianças e sem coleta de dados de menores para fins publicitários.
 
+A vitrine é uma só e **sem login**. O que muda por público é o **recorte de leitura** — a porta
+de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos:
+
+| Recorte               | Quem chega procurando                | O que a porta abre primeiro                                                                |
+| --------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------ |
+| **Sociedade civil**   | Conhecer, acompanhar e apoiar        | Narrativa, cards, criações originais, batalhas e "Como apoiar" — é o recorte **padrão**    |
+| **Pesquisadores**     | Dado do território para estudo       | Séries históricas por comunidade, com o que se mede, cadência, período e origem do dado    |
+| **Gestores públicos** | Evidência sobre o lugar para decidir | Painel do território por comunidade e ciclo e a cobertura da Agenda 2030, com a meta 17.18 |
+
+Nenhum recorte cria área restrita, cadastro ou coleta de dado do visitante, e os três obedecem
+à regra de saída de sempre: **agregada e anonimizada, nunca por Guerreiro(a)**.
+
+> **A definir:** formato de exportação e licença do conjunto de dados oferecido ao pesquisador,
+> e se o pedido de recorte específico passa pelo formulário público ou por contato direto.
+
 ## 9. App 07 — Área dos pais e responsáveis
 
 Web App autenticado, **canal oficial da plataforma com a família** — o que resolve a
