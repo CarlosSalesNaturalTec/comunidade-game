@@ -551,9 +551,9 @@ Hipóteses do Ciclo 01 (documento 10): este PRD **sustenta H1** — é a aplica�
 Guerreiros e Guerreiras iniciam uma trilha e quantos permanecem até a culminância. Sustenta
 **H4**, porque a progressão por dificuldade e o mérito por auxílio são o que faz a turma de 6 a
 16 anos funcionar sem segmentar por idade. Sustenta também **H5**: é aqui que o Guerreiro(a)
-responde à sondagem que abre a trilha e entrega a criação da culminância — as duas pontas que
-a hipótese compara. E instrumenta o critério de **protagonismo** da avaliação do ciclo: número
-de criações originais apresentadas e de sugestões registradas.
+responde à sondagem que abre a trilha e aos desafios de desbloqueio das missões — as duas
+pontas que a hipótese compara. E instrumenta o critério de **protagonismo** da avaliação do
+ciclo: número de criações originais apresentadas e de sugestões registradas.
 
 ## 13. Decisões tomadas neste PRD
 

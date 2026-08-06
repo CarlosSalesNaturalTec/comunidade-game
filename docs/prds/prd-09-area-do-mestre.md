@@ -596,8 +596,8 @@ sem autorização do responsável (409).
 
 Hipóteses do Ciclo 01 (documento 10): este PRD **sustenta H1** — sem trilha publicada não há
 trilha a iniciar, e é o número de Guerreiros e Guerreiras que iniciam uma trilha que mede a
-hipótese. Sustenta **H5**, porque é o Mestre autor que escreve a sondagem e declara o critério
-da culminância — as duas medidas que a hipótese compara. Contribui para **H3**, porque a
+hipótese. Sustenta **H5**, porque é o Mestre autor que escreve tanto a sondagem quanto os
+desafios de desbloqueio — as duas medidas comparadas. Contribui para **H3**, porque a
 absorção do Mestre é uma das fontes de lastro, e para **H4**, porque a dificuldade gradual por
 missão é o que permite a mesma trilha atender dos 6 aos 16 anos.
 

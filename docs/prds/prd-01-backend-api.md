@@ -362,7 +362,7 @@ sessão expirada (401); filtro de comunidade ausente onde é obrigatório (422).
 
 Este PRD não sustenta hipótese própria: ele é a condição para que H1, H2, H3 e H5 sejam
 medidas pelas aplicações que as verificam — no caso de H5, por guardar o resultado da sondagem
-e a validação da culminância de cada trilha.
+e o dos desafios de desbloqueio de cada trilha.
 
 ## 13. Decisões tomadas neste PRD
 
