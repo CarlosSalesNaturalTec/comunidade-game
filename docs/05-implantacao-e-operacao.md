@@ -182,6 +182,9 @@ Observações operacionais:
   e Guerreiras sugerirem melhorias nas atividades, nas trilhas e na plataforma. As sugestões
   são registradas pela Área do Guerreiro(a) — a voz do Guerreiro(a) não termina na
   apresentação, ela muda o jogo.
+- **Mostrar o que recebeu vale ponto extra.** Durante o encontro, o Guerreiro(a) pede ao Mestre
+  que valide o bom estado do livro, da camisa ou do kit que recebeu; o Mestre confere e lança.
+  A iniciativa é sempre da criança — a regra e o valor estão no documento 11.
 - Cada aula só acontece com os **recursos providos** por mestres ou apoiadores.
 
 ## 5. Atividade-modelo: Quiz ao Vivo

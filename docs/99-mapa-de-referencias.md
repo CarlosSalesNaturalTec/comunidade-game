@@ -71,19 +71,22 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Poder do Território                                                | 02 §2                                      | 08, 11                         |
 | Governança de personas (só Guerreiro(a) tem autocadastro)          | 02 §1                                      | 01, 05, 08                     |
 | Cadastro do responsável e vínculo com os Guerreiros e Guerreiras   | 02 §1                                      | 03 §§1.1, 5, 9, 11, 08, 09     |
-| Autenticação por persona (Guerreiro(a) por nick e imagem)          | 03 §1.1                                    | 02, 08, 09                     |
+| Autenticação por persona (nick e imagem; Apps 04 e 06 sem login)   | 03 §1.1                                    | 02, 08, 09                     |
 | Solicitação de participação como Mestre ou Apoiador                | 02 §1                                      | 03 §§5, 8, 08, 12              |
 | Equipes (grupo livre até 5, formadas no App 01, válidas na aula)   | 02 §5                                      | 03 §§4, 5, 08, 11 §4           |
 | Comunidade do onboarding vinda da aula agendada                    | 02 §1                                      | 01, 03 §§3, 5, 08, 10          |
 | Guerreiro(a) como termo da persona primária                        | 02 §1                                      | 01, 03, 08, 09                 |
 | Moeda da plataforma (1 moeda = R$ 100,00; vitrine em moedas)       | 04 §1                                      | 03 §8, 08, 11 §8.2, 12         |
-| Coproprietariedade dos dados publicados e monetização (50% / 50%)  | 04 §2                                      | 03 §12, 08, 09                 |
+| Coproprietariedade e monetização (50% / 50%, metade proporcional)  | 04 §2                                      | 03 §12, 08, 09                 |
+| Produção executiva (tempo do fundador e dos Admins, por absorção)  | 04 §1                                      | 08, 09, 10 §4.3                |
+| Recortes da vitrine (sociedade civil, pesquisadores, gestores)     | 03 §8                                      | 04 §§2, 4, 08, 09              |
 | Aviso de LGPD visível nas aplicações e área detalhada              | 03 §12                                     | 08, 09                         |
 | Área do Apoiador (App 08) e registro de propostas                  | 03 §10                                     | 04, 08, 09, 12                 |
 | Área do Mestre (App 09) — autoria e operação                       | 03 §11                                     | 02, 05, 08, 09                 |
 | Publicação da trilha (sem aprovação prévia, travas e conteúdo)     | 03 §11                                     | 02, 05, 08, 11                 |
 | Atividade da missão (modalidade e formato)                         | 11 §§2.1, 4                                | 02, 03 §11, 08                 |
 | Modelo de missão (produção, sondagem, retomada, obrigatoriedade)   | 11 §2.2                                    | 02 §§3, 4, 03 §§4, 7, 11       |
+| Hipóteses do Ciclo 01 (H1 a H5) e como cada uma se verifica        | 10 §3                                      | 08, 09, `prds/`                |
 | Leitura da produção do Guerreiro(a) e devolutiva construtiva       | 03 §§4, 7 e 11 §2.2                        | 02 §4, 09                      |
 | Auxílio de IA na autoria da trilha (estrutura, não conteúdo)       | 03 §11                                     | 01 §7, 09                      |
 | Recompensa conquistada em marco da trilha                          | 02 §8                                      | 03 §7, 08, 11 §2.1, 12         |
@@ -103,7 +106,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Apoio escolar por assistente de voz, com corpus fechado e IA       | 03 §7                                      | 03 §§4, 5, 11, 08, 10 §4.3     |
 | Reparação que zera a ocorrência de conduta                         | 13 §3                                      | 11 §5                          |
 | Regras da partida do Quiz ao Vivo (aparelho, acerto e desempate)   | 05 §5                                      | 03 §§4, 5, 11, 08, 11 §5       |
-| Contrato dos jogos (lê progresso, debita, nunca credita)           | 11 §8.4                                    | 03 §6, 08                      |
+| Contrato dos jogos (somente leitura: lê progresso e nada escreve)  | 11 §8.4                                    | 03 §6, 08                      |
 | LGPD, avatares e imagem do Guerreiro(a)                            | 03 §§3.3, 12                               | 02, 08, 09, 13                 |
 | Etiqueta ODS da trilha (descritiva, sem ponto; trava do Ciclo 02)  | 11 §2.1                                    | 01 §4, 04 §§3, 4, 08, 09, 12   |
 | Aderência à Agenda 2030, meta 17.18 e ressalva do ODS 18           | 04 §4                                      | 01 §4, 08, 09, 11 §8.1, 12     |
@@ -142,7 +145,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Quiz ao Vivo                                | 05 §5                     | PRD-02, 04, 09                 |
 | Batalhas e telemetria                       | 02 §6 + 07                | PRD-10, 01                     |
 | Culminância e criação original              | 02 §4                     | PRD-01, 02, 03, 05, 09, 12, 10 |
-| Motor de pontuação                          | 11 §5                     | PRD-01, 02, 05                 |
+| Motor de pontuação                          | 11 §5                     | PRD-01, 02, 05, 09             |
 | Níveis 1–5 / Mestre Aprendiz                | 11 §6                     | PRD-01, 05                     |
 | Badges                                      | 11 §7                     | PRD-01, 03, 05, 12             |
 | Recompensa conquistada em marco             | 02 §8 + 11 §2.1           | PRD-09, 01, 05, 07             |
@@ -153,6 +156,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Comunidade do onboarding vinda da aula      | 02 §1 + 03 §3             | PRD-04, 02, 01, 08             |
 | Moeda da plataforma                         | 04 §1                     | PRD-07, 03, 01                 |
 | Coproprietariedade dos dados publicados     | 04 §2                     | PRD-01, 07, 13                 |
+| Produção executiva como aporte por absorção | 04 §1                     | PRD-07, 02                     |
 | Representação visual da comunidade          | 11 §8.3                   | PRD-08, 03                     |
 | Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10                 |
 | Distribuição da trilha no ciclo             | 11 §2.4 + 10 §5           | PRD-09, 02                     |
@@ -190,8 +194,12 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
 7. **Dados do território: guarda permanente com o coletor identificado**; anonimização
    apenas **na saída**. A **revogação do consentimento pelo responsável despersonaliza** o
    registro — rompe o vínculo de autoria e destrói o mapeamento —, **nunca o apaga**.
-8. **O App 04 (jogo) consome pontos e nunca os gera.** Não existe endpoint de crédito para
-   jogos.
+8. **O App 04 (jogo) é público, sem login e somente leitura.** Ele lê o progresso do
+   Guerreiro(a) para montar o personagem — pontos regulares, pontos extras, poderes, badges e
+   níveis — e **não escreve nada de volta**: não credita, não debita e não registra resultado
+   de partida. Não existe endpoint de escrita para jogos, e **não há saldo de pontos
+   consumidos**. O personagem é escolhido **estritamente entre os Guerreiros e Guerreiras com
+   divulgação autorizada**, como na vitrine.
 9. **Nenhuma atividade acontece sem lastro** de recursos providos por Mestre ou Apoiador.
 10. **Nenhum contato direto entre Apoiador e Guerreiro(a)**; toda interação adulto–criança é
     mediada pela plataforma.
@@ -209,8 +217,10 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     pontua em todas em que colabora — **uma só na partida de Quiz ao Vivo** —; no máximo
     **1 familiar com 17 anos ou mais**. A gestão não forma nem edita equipe.
 16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.**
-17. **Dados publicados têm coproprietariedade** entre a entidade responsável e o Guerreiro(a)
-    que os gerou; monetizados, remuneram ambos.
+17. **Dados publicados têm coproprietariedade** entre a entidade responsável e quem os gerou;
+    monetizados, remuneram ambos — e a metade dos Guerreiros e Guerreiras é dividida **na
+    proporção do que cada um gerou** no conjunto entregue, porque o dado só tem valor como
+    retrato da comunidade inteira. **No Ciclo 01 a monetização se prevê e não se anuncia.**
 18. **Só a missão obrigatória conta no percurso do nível.** A opcional pontua e pode render
     badge, mas fica fora do denominador dos níveis 2, 3 e 4.
 19. **Toda atividade exige produção do Guerreiro(a)** — escrever, falar ou construir. A

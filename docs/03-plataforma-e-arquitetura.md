@@ -4,8 +4,8 @@
 
 1. **Backend em forma de API** — para que os mais diversos frontends **e aplicações de
    terceiros** possam acessá-lo.
-2. **Rotas de consulta abertas** — leituras públicas (vitrine, rankings, batalhas) não exigem
-   autenticação. Escrita e gestão exigem.
+2. **Rotas de consulta abertas** — leituras públicas (vitrine, rankings, batalhas, jogo) não
+   exigem autenticação. Escrita e gestão exigem.
 3. **Frontends independentes** — em **domínios diferentes**, evoluindo desacoplados do
    backend.
 4. **Open Source** — todo o código-fonte é aberto, para permitir replicação por qualquer
@@ -34,12 +34,14 @@
 
 ### 1.1 Como cada persona entra
 
-| Persona                      | Como autentica                                                                                                                                                                                            |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Guerreiro(a)**             | **Nick + imagem**, em **todas** as aplicações: o nick localiza, a imagem confirma contra o _template_ biométrico gravado no onboarding; sessão curta, porque o aparelho do ponto de apoio é compartilhado |
-| **Mestre, Apoiador e Admin** | **Login social (Google)**                                                                                                                                                                                 |
-| **Responsável**              | **Login social (Google)** ou **usuário e senha** criados por Admin ou Mestre                                                                                                                              |
+| Persona                      | Como autentica                                                                                                                                                                                                 |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Guerreiro(a)**             | **Nick + imagem**, em **toda aplicação com login**: o nick localiza, a imagem confirma contra o _template_ biométrico gravado no onboarding; sessão curta, porque o aparelho do ponto de apoio é compartilhado |
+| **Mestre, Apoiador e Admin** | **Login social (Google)**                                                                                                                                                                                      |
+| **Responsável**              | **Login social (Google)** ou **usuário e senha** criados por Admin ou Mestre                                                                                                                                   |
 
+- **Duas aplicações não têm login:** a **vitrine (App 06)** e o **jogo (App 04)** são abertos a
+  qualquer visitante e só leem dados já públicos. Ninguém se identifica para usá-las.
 - **Não há PIN, senha nem pergunta secreta para a criança, e sem câmera não há entrada.** É a
   imagem que garante que quem faz a atividade é a própria criança, e não um terceiro.
 - **Enquanto o Guerreiro(a) não tem imagem gravada** — onboarding feito sem o responsável —,
@@ -83,7 +85,7 @@ usuário e sem tráfego de dados de crianças por plataformas de terceiros**.
 | ---------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------- |
 | **App 01** | **Aula presencial** — onboarding do Guerreiro(a) e, em equipe, o conteúdo das trilhas              | Guerreiros e Guerreiras (na aula presencial) | §§3 e 4 |
 | **App 03** | **Gestão administrativa** — CRUDs, lançamentos manuais e painéis do dia                            | Admins e Mestres                             | §5      |
-| **App 04** | **Jogo em JavaScript** — sobre a base de personagens da plataforma                                 | Guerreiros e Guerreiras                      | §6      |
+| **App 04** | **Jogo em JavaScript** — sobre a base de personagens da plataforma                                 | Público geral, sem login                     | §6      |
 | **App 05** | **Área do Guerreiro(a)** — guia e apoio nas trilhas                                                | Guerreiros e Guerreiras                      | §7      |
 | **App 06** | **Vitrine pública** — apresentação da plataforma, sem login                                        | Público geral                                | §8      |
 | **App 07** | **Área dos pais e responsáveis** — evolução do Guerreiro(a), solicitações e transparência de dados | Pais e responsáveis                          | §9      |
@@ -342,16 +344,22 @@ avatares, poderes, badges e níveis já conquistados são os elementos do jogo.
 > coerente com Web App / Mobile First e com o objetivo de que o **código seja legível e
 > alterável pelos próprios Guerreiros e Guerreiras**.
 
-**Definição vigente — o jogo não gera pontuação, apenas a consome.** Os pontos vêm
-exclusivamente das atividades propostas pelos Mestres e da coleta de dados do território. O
-jogo é um **destino** dos pontos, não uma fonte. Consequências:
+**Definição vigente — jogo público, sem login, que lê a plataforma e não escreve nada nela.**
+Qualquer visitante joga, sem se identificar. O jogador escolhe seu personagem **estritamente
+na lista dos Guerreiros e Guerreiras com divulgação autorizada** pelo responsável — a mesma
+regra da vitrine —, e o personagem entra na partida com o que aquele Guerreiro(a) já
+conquistou: pontos regulares, pontos extras, poderes, badges e níveis. Quanto maior a evolução
+no jogo real, mais forte e mais distinto o personagem no App 04.
 
-- O que se conquista aprendendo (poderes, badges, níveis) **desbloqueia e alimenta** o que o
-  Guerreiro(a) pode fazer dentro do jogo.
+- **A partida não volta para a plataforma.** Vencer ou perder quantas partidas for **não
+  credita, não debita e não registra nada** no perfil do Guerreiro(a) — o jogo não é fonte nem
+  destino de pontos.
 - Jogar muito **não** sobe ninguém no ranking — o ranking mede aprendizado e realização na
   vida real.
-- Elimina, por construção, a principal via de fraude de pontos: não há como automatizar
-  cliques para pontuar.
+- Elimina, por construção, a principal via de fraude: sem nenhuma escrita, não há o que
+  automatizar.
+- **Quem não tem divulgação autorizada não vira personagem** — nem para si mesmo. Sem login,
+  o jogo não tem como distinguir quem está jogando, e a lista é a mesma para todo visitante.
 
 Objetivos: dar utilidade lúdica ao progresso das trilhas; servir de conteúdo do **Poder da IA e
 Robótica**, já que alterar o código é atividade de trilha — o Guerreiro(a) é um dos
@@ -446,6 +454,21 @@ Web App de acesso público e **sem autenticação**:
   Trenell (narrativa da trilha Robô Educa).
 - É também o espaço da **publicidade** prevista como fonte de receita — sempre fora das áreas
   de uso das crianças e sem coleta de dados de menores para fins publicitários.
+
+A vitrine é uma só e **sem login**. O que muda por público é o **recorte de leitura** — a porta
+de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos:
+
+| Recorte               | Quem chega procurando                | O que a porta abre primeiro                                                                |
+| --------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------ |
+| **Sociedade civil**   | Conhecer, acompanhar e apoiar        | Narrativa, cards, criações originais, batalhas e "Como apoiar" — é o recorte **padrão**    |
+| **Pesquisadores**     | Dado do território para estudo       | Séries históricas por comunidade, com o que se mede, cadência, período e origem do dado    |
+| **Gestores públicos** | Evidência sobre o lugar para decidir | Painel do território por comunidade e ciclo e a cobertura da Agenda 2030, com a meta 17.18 |
+
+Nenhum recorte cria área restrita, cadastro ou coleta de dado do visitante, e os três obedecem
+à regra de saída de sempre: **agregada e anonimizada, nunca por Guerreiro(a)**.
+
+> **A definir:** formato de exportação e licença do conjunto de dados oferecido ao pesquisador,
+> e se o pedido de recorte específico passa pelo formulário público ou por contato direto.
 
 ## 9. App 07 — Área dos pais e responsáveis
 

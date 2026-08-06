@@ -44,8 +44,8 @@
   discreta, o que coleta e quais são os direitos do usuário, com acesso a uma **área
   detalhada** sobre destino e uso de cada dado.
 - **Coproprietariedade dos dados publicados:** em produção, a entidade responsável pela
-  plataforma é coproprietária, com o Guerreiro(a) que gerou o dado; havendo monetização, ambos
-  são remunerados.
+  plataforma é coproprietária, com quem gerou o dado; havendo monetização, ambos são
+  remunerados, e a parte dos Guerreiros e Guerreiras é proporcional ao que cada um gerou.
 - **Faixa etária dos Guerreiros e Guerreiras: 6 a 16 anos**, com atividades em **níveis de
   dificuldade graduais** acessíveis independentemente da idade. A convivência entre idades é
   tratada com **papéis de mediação, nunca com segmentação por faixa**.
@@ -131,8 +131,9 @@
   máximo 1 familiar com 17 anos ou mais**, conforme a atividade, o desafio ou a batalha
   determinar. Equipes são cadastradas por Admin.
 - Regra de negócio: **coproprietariedade dos dados publicados** entre a entidade responsável
-  pela plataforma e o Guerreiro(a) que gerou o dado; monetizados, o resultado é rateado **50% /
-  50%**, com a parte do Guerreiro(a) paga **ao responsável legal**.
+  pela plataforma e quem gerou o dado; monetizados, o resultado é rateado **50% / 50%**, com a
+  metade dos Guerreiros e Guerreiras dividida **na proporção do que cada um gerou** no conjunto
+  entregue e paga **ao responsável legal** de cada um.
 - Regra de negócio: **registro de dado do território é uma série temporal** — cadência, janela
   de validade, Guerreiro(a) coletor(a) e comunidade. **Série ativa gera pontos recorrentes; série
   interrompida cessa o cômputo**, sem perda dos pontos já creditados.
@@ -141,7 +142,11 @@
   anonimização é aplicada **na saída**.
 - Regra de negócio: atividade só é agendável e realizável com recursos providos (lastro).
 - Regra de negócio: pontos de habilidade só vêm de atividades realizadas propostas por Mestres.
-  O **App 04 consome pontos e não os gera**.
+  O **App 04 apenas lê o progresso e não escreve nada na plataforma**.
+- Regra de negócio: **conservação do bem recebido** — livro, camisa ou kit apresentado em bom
+  estado e em uso no encontro presencial rende **1 ponto extra por item**, e cada item pontua
+  **uma vez por encontro**; **lançado pelo Mestre a pedido do Guerreiro(a)**, nunca por
+  conferência automática.
 - Regra de negócio: **desafio extra** exige validação do Mestre da trilha **e aprovação de um
   Admin**; gera **pontos extras** computados isoladamente, nas duas modalidades — **aberto** (a
   todos, com quantidade de recompensas declarada, uma ou várias, por ordem de conclusão) e
@@ -247,6 +252,24 @@ Guerreiros e Guerreiras autorizados, com o nick dos autores; **painel de cobertu
 de que o ODS 18 é adoção voluntária do Brasil; **nota de transparência sobre IA**
 nas seções institucionais; **favoritos do visitante** — sem login e sem cadastro, guardados no
 próprio aparelho, fazendo a vitrine destacar primeiro as novidades de quem ele acompanha.
+
+**Três recortes de leitura:** a vitrine é uma só e **sem login**; o que muda por público é a
+porta de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos. Nenhum
+recorte cria área restrita, cadastro ou coleta de dado do visitante, e a troca de recorte é
+navegação — o visitante circula livremente entre os três.
+
+- **Sociedade civil** — recorte **padrão**: narrativa do projeto, cards e páginas dos
+  personagens, criações originais, batalhas, "Quem somos" e "Como apoiar".
+- **Pesquisadores** — séries históricas por comunidade com **metodologia legível**: o que se
+  mede, cadência declarada no desafio, período coberto, origem da medição (registro manual ou
+  sensor construído na trilha), número de registros válidos e licença de uso do conjunto.
+- **Gestores públicos** — painel do território por comunidade e por ciclo, com evolução no
+  tempo e o **painel de cobertura da Agenda 2030**, com destaque para a meta 17.18.
+
+Os três obedecem à regra de saída — **agregada e anonimizada, nunca por Guerreiro(a)** —, com
+a granularidade limitada pela mitigação de inferência de endereço, que segue pendente. Ficam em
+aberto o formato de exportação e a licença do conjunto oferecido ao pesquisador, e se o pedido
+de recorte específico passa pelo formulário público ou por contato direto.
 
 **Formulário de solicitação de participação:** pessoas e instituições interessadas em
 participar como **Mestre ou Apoiador** preenchem um formulário público. **Obrigatórios:** nome,
@@ -412,9 +435,16 @@ Ressarcimento não é direito: só ocorre havendo receita destinada a ele, por a
 decisão de Admin, e reverte as moedas creditadas. **A plataforma não armazena dado bancário**
 — só o comprovante da transferência.
 
-**Coproprietariedade dos dados publicados:** a entidade responsável pela plataforma e o
-Guerreiro(a) que gerou o dado são coproprietários; havendo monetização, o ledger registra o
-rateio **50% / 50%**, com a parte do Guerreiro(a) paga **ao responsável legal**.
+**Produção executiva:** o tempo do fundador e dos Admins na **construção** e na **operação** da
+plataforma é despesa do projeto e entra como **aporte por absorção**, com o mesmo tratamento
+dos demais — tabela de referência, ressarcível, destaque público. O ledger precisa registrar a
+frente (construção ou operação), o período apurado e as horas aportadas.
+
+**Coproprietariedade dos dados publicados:** a entidade responsável pela plataforma e quem
+gerou o dado são coproprietários; havendo monetização, o ledger registra o rateio **50% /
+50%**, com a metade dos Guerreiros e Guerreiras **dividida na proporção do que cada um gerou**
+no conjunto entregue e paga **ao responsável legal** de cada um. O rateio é registro do ledger,
+não conteúdo de vitrine: no Ciclo 01 a regra existe e não é destacada.
 
 **Recursos duráveis (patrimônio) e empréstimo:** além dos consumíveis, o ledger precisa tratar
 material que **não se consome no uso e é reaproveitado a cada turma** — o caso concreto é o
@@ -448,9 +478,10 @@ acervo de 298 livros doado pelo Goethe-Institut:
   avatar**.
 
 **Questões em aberto:** valoração da hora-aula, do acervo, dos kits e das camisas doados —
-critério que define a conversão desses aportes em moedas; relatórios públicos por atividade,
-comunidade e provedor; **formato do relatório de efetividade** entregue ao Apoiador;
-periodicidade e forma de pagamento do rateio da monetização dos dados.
+critério que define a conversão desses aportes em moedas; **valor-hora da produção executiva** e
+como o histórico de commits vira hora aportada; relatórios públicos por atividade, comunidade e
+provedor; **formato do relatório de efetividade** entregue ao Apoiador; periodicidade, forma de
+pagamento e **fórmula da proporcionalidade** do rateio da monetização dos dados.
 
 **Fontes:** docs 04, 05.
 
@@ -609,27 +640,32 @@ explicabilidade para responsáveis.
 
 ## PRD-12 — App 04: Jogo em JavaScript
 
-**Escopo:** jogo executado no navegador, construído sobre a **base de personagens da
-plataforma**.
+**Escopo:** jogo executado no navegador, **público e sem login**, construído sobre a **base de
+personagens da plataforma**.
 
-**Requisitos:** uso dos avatares, poderes, badges e níveis já conquistados como elementos do
-jogo — a composição dos cards e o contrato do jogo com o motor (leitura de progresso + débito
-de pontos, nunca crédito) seguem o documento 11; representação exclusivamente por **avatar,
-nunca por imagem real**; código aberto e legível, apto a virar conteúdo de trilha do Poder da
-IA e Robótica — **alterá-lo é atividade de trilha**; execução em navegador de celular modesto e
-tolerância a rede instável.
+**Requisitos:** uso dos avatares, poderes, badges, níveis e saldos de pontos já conquistados
+como elementos do jogo — a composição dos cards e o contrato do jogo com o motor (**somente
+leitura**) seguem o documento 11; **escolha do personagem estritamente na lista dos Guerreiros
+e Guerreiras com divulgação autorizada**, a mesma da vitrine — sem login, o jogo não distingue
+quem está jogando, e a lista é idêntica para todo visitante; representação
+exclusivamente por **avatar, nunca por imagem real**; código aberto e legível, apto a virar
+conteúdo de trilha do Poder da IA e Robótica — **alterá-lo é atividade de trilha**; execução em
+navegador de celular modesto e tolerância a rede instável.
 
-**Definição vigente — o jogo consome pontuação, não a gera.** Os pontos vêm das atividades
-propostas pelos Mestres e da coleta de dados do território. Em termos de API: o App 04 tem
-**acesso de leitura ao progresso e de débito de pontos**, e nenhum endpoint de crédito — o que
-elimina, por construção, a fraude por automação de cliques.
+**Definição vigente — o jogo lê a plataforma e não escreve nada nela.** O personagem entra na
+partida com as "virtudes" do Guerreiro(a) escolhido — pontos regulares, pontos extras, poderes,
+badges e níveis —, de modo que quem evoluiu mais na vida real começa mais forte. O resultado da
+partida **não retorna**: nem crédito, nem débito, nem registro de histórico. Em termos de API,
+o App 04 tem **acesso de leitura ao progresso e nenhum endpoint de escrita** — o que elimina,
+por construção, a fraude por automação de cliques.
 
 **Sugestão técnica:** engine **Phaser.js** — jogos 2D em JavaScript rodando no próprio
 navegador, sem instalação, com desempenho adequado a aparelhos modestos e código legível o
 bastante para virar material de trilha.
 
-**Questões em aberto:** gênero e mecânica do jogo; o que exatamente os pontos compram dentro do
-jogo; modo offline; multiplayer local nas aulas presenciais.
+**Questões em aberto:** gênero e mecânica do jogo; **como cada virtude do Guerreiro(a) se
+traduz em atributo do personagem** — o que pontos, poderes, badges e níveis fazem na partida;
+modo offline; multiplayer local nas aulas presenciais.
 
 **Fontes:** docs 03, 11.
 

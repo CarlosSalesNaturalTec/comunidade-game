@@ -32,7 +32,9 @@ atividades previstas.
 ### 3.1 Dentro do escopo
 
 - Catálogo de tipos de recurso — hora-aula, lanche, recompensa, insumo, kit, livro, camisa,
-  cloud e serviços — com unidade e **valor de referência em moedas**.
+  cloud, serviços e **produção executiva** — com unidade e **valor de referência em moedas**.
+- **Produção executiva**: o tempo do fundador e dos Admins na **construção** e na **operação**
+  da plataforma, registrado por absorção com a frente, o período apurado e as horas aportadas.
 - Tabela de referência versionada: o valor de um tipo muda no tempo sem reescrever o passado.
 - Registro de aporte financeiro, material ou de serviço, com provedor, comprovante e
   homologação de Admin.
@@ -57,8 +59,10 @@ atividades previstas.
 ### 3.2 Fora do escopo
 
 - **Rateio da monetização dos dados**: não há monetização prevista até dez/2026, e o termo, a
-  base legal e a periodicidade do pagamento seguem pendentes no documento 09. A regra dos
-  50% / 50% continua vigente no documento 04 e será implementada quando houver receita real.
+  base legal, a periodicidade do pagamento e a fórmula da proporcionalidade seguem pendentes no
+  documento 09. A regra do documento 04 — 50% / 50%, com a metade dos Guerreiros e Guerreiras
+  proporcional ao que cada um gerou — continua vigente e será implementada quando houver
+  receita real. No Ciclo 01 ela não é destacada em nenhuma saída pública deste PRD.
 - **Relatório de efetividade ao Apoiador**: o ledger guarda os dados que o alimentam; o
   formato do relatório é do PRD-14.
 - **Interface de gestão de recursos** — pertence ao PRD-02 (App 03).
@@ -330,11 +334,15 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | Ressarcimento reverte as moedas; o registro do ato permanece                   | 04 §1          | Já decididos |
 | Sem armazenar dado bancário: chave PIX por e-mail e apenas comprovante anexado | 04 §1, 03 §11  | Já decididos |
 | Rateio da monetização sem implementação no Ciclo 01                            | —              | Pendente     |
+| Produção executiva como tipo de recurso, aportada por absorção                 | 04 §1          | Já decididos |
+| Metade dos Guerreiros e Guerreiras rateada por proporcionalidade               | 04 §2          | Já decididos |
 
 ## 14. Pendências que permanecem
 
-- **Termo, base legal e periodicidade do rateio da monetização** dos dados publicados. Não
-  trava o Ciclo 01, porque não há monetização prevista até dez/2026.
+- **Termo, base legal, periodicidade e fórmula da proporcionalidade do rateio da monetização**
+  dos dados publicados. Não trava o Ciclo 01, porque não há monetização prevista até dez/2026.
+- **Valor-hora da produção executiva** e o critério que converte o histórico de commits e o
+  registro do Admin em horas aportadas — cadastro da gestão, como os demais valores da tabela.
 - **Formato dos relatórios públicos de prestação de contas** por atividade, comunidade e
   provedor — o que exatamente se publica e com que agregação.
 - **Formato do relatório de efetividade** entregue ao Apoiador: assunto do PRD-14, que lê
