@@ -72,9 +72,10 @@
 - Valores do projeto refletidos em conteúdo, conduta e representatividade.
 - **Modelo de gamificação como fonte normativa:** anatomia da trilha, taxonomia de atividades,
   motor de pontuação, níveis, badges, recompensas e reflexos no ecossistema seguem o documento 11.
-- **Etiqueta ODS descritiva:** a missão pode declarar os Objetivos de Desenvolvimento
-  Sustentável que toca. A etiqueta **não pontua, não é poder e não trava publicação**; a
-  cobertura é agregada por comunidade e ciclo e **nunca é atributo de um Guerreiro(a)**.
+- **Etiqueta ODS descritiva:** a missão declara os Objetivos de Desenvolvimento Sustentável que
+  toca — **opcional no Ciclo 01, obrigatória a partir do Ciclo 02**, quando missão sem etiqueta
+  deixa de publicar. A etiqueta **não pontua e não é poder**; a cobertura é agregada por
+  comunidade e ciclo e **nunca é atributo de um Guerreiro(a)**.
 - **Mestres de qualquer área do conhecimento** — inclusive humanas, artes, esportes e cultura:
   nenhum modelo de dados ou fluxo pode pressupor habilidade técnica de TI.
 

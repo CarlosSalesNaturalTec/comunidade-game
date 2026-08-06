@@ -183,7 +183,8 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
    não opera. **No Ciclo 01 não há troca de comunidade.**
 5. **Toda trilha abre com missão de sondagem, tem ao menos um desafio de coleta de dados
    reais** e termina em **criação original** apresentada publicamente, com autoria creditada.
-   As três são trava de publicação, não recomendação.
+   As três são trava de publicação da trilha, não recomendação; a etiqueta ODS se junta a elas
+   a partir do Ciclo 02, no nível da missão (§20).
 6. **A coleta pontua de forma recorrente enquanto a série estiver ativa**; interrompida,
    cessa o cômputo sem perder os pontos já creditados.
 7. **Dados do território: guarda permanente com o coletor identificado**; anonimização
@@ -215,10 +216,11 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
 19. **Toda atividade exige produção do Guerreiro(a)** — escrever, falar ou construir. A
     leitura automática dessa produção é **hipótese, nunca resultado**: quem lança o resultado
     é o Mestre.
-20. **A etiqueta ODS é descritiva**: não pontua, não é poder, não trava publicação e **nunca é
-    atributo de um Guerreiro(a)** — a cobertura sai agregada por comunidade e por ciclo. O
-    **ODS 18** é citado como **adoção voluntária do Brasil**, jamais como objetivo oficial da
-    ONU.
+20. **A etiqueta ODS é descritiva**: não pontua, não é poder e **nunca é atributo de um
+    Guerreiro(a)** — a cobertura sai agregada por comunidade e por ciclo. É **opcional no
+    Ciclo 01** e **obrigatória a partir do Ciclo 02**, quando passa a ser a **quarta trava de
+    publicação**, esta no nível da missão. O **ODS 18** é citado como **adoção voluntária do
+    Brasil**, jamais como objetivo oficial da ONU.
 
 ## 7. Como esta documentação deve ser editada
 

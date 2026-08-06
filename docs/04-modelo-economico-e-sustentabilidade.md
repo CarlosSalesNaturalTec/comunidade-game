@@ -268,7 +268,8 @@ Medem **alcance declarado**, não impacto — e saem prontos das etiquetas ODS d
 lançamento manual:
 
 - ODS distintos cobertos no ciclo e por comunidade.
-- Missões publicadas por ODS, e proporção das que declararam etiqueta.
+- Missões publicadas por ODS, e proporção das que declararam etiqueta — indicador de
+  transição, que o Ciclo 02 leva a 100% ao tornar a etiqueta obrigatória.
 - Séries de coleta ativas por ODS, com o tempo em que se mantiveram.
 - Desafios extras de Apoiadores por ODS.
 

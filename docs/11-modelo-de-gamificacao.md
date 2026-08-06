@@ -108,15 +108,15 @@ apenas consome conteúdo não é missão.
 
 Toda missão declara:
 
-| Elemento                    | Regra                                                                             |
-| --------------------------- | --------------------------------------------------------------------------------- |
-| **Obrigatória ou opcional** | Declarado pelo Mestre. Só as obrigatórias contam no percurso do nível (§6)        |
-| **Conteúdo**                | O que se ensina, com a bibliografia de apoio                                      |
-| **Ao menos uma atividade**  | E toda atividade exige **produção** do Guerreiro(a): escrever, falar ou construir |
-| **Desafio de desbloqueio**  | Quiz ou desafio que abre a missão seguinte                                        |
-| **Retomada**                | Cadência da revisão espaçada, quando o Mestre a declara                           |
-| **Recompensa**              | Quando o Mestre declara que aquele desbloqueio libera algo concreto               |
-| **Etiqueta ODS**            | Objetivos da Agenda 2030 que a missão toca, declarados pelo Mestre — opcional     |
+| Elemento                    | Regra                                                                                     |
+| --------------------------- | ----------------------------------------------------------------------------------------- |
+| **Obrigatória ou opcional** | Declarado pelo Mestre. Só as obrigatórias contam no percurso do nível (§6)                |
+| **Conteúdo**                | O que se ensina, com a bibliografia de apoio                                              |
+| **Ao menos uma atividade**  | E toda atividade exige **produção** do Guerreiro(a): escrever, falar ou construir         |
+| **Desafio de desbloqueio**  | Quiz ou desafio que abre a missão seguinte                                                |
+| **Retomada**                | Cadência da revisão espaçada, quando o Mestre a declara                                   |
+| **Recompensa**              | Quando o Mestre declara que aquele desbloqueio libera algo concreto                       |
+| **Etiqueta ODS**            | Objetivos da Agenda 2030 que a missão toca; opcional no Ciclo 01, obrigatória do Ciclo 02 |
 
 Quatro regras fecham o modelo:
 
@@ -138,8 +138,10 @@ O Mestre declara quais **Objetivos de Desenvolvimento Sustentável** a missão t
 objetivo, com a meta (`4.7`, `13.3`, `17.18`) quando ele souber. É rótulo descritivo, e por
 isso não pesa no motor:
 
-- **Não pontua, não é poder e não trava publicação.** Nada na progressão do Guerreiro(a)
-  depende dela.
+- **Não pontua e não é poder.** Nada na progressão do Guerreiro(a) depende dela.
+- **Opcional no Ciclo 01, obrigatória a partir do Ciclo 02.** No primeiro ciclo o template
+  sugere e a trilha publica sem ela; do Ciclo 02 em diante, **missão sem etiqueta não
+  publica** — cobertura pela metade não sustenta número diante de edital.
 - **Sobe por agregação** — trilha, poder, comunidade e ciclo —, sem lançamento manual. É assim
   que a cobertura cresce sozinha à medida que novos Mestres e poderes entram.
 - O **desafio de coleta** herda a etiqueta da série que sustenta: medição ambiental ou urbana
