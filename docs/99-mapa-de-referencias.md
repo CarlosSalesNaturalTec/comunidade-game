@@ -82,7 +82,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Produção executiva (tempo do fundador e dos Admins, por absorção)  | 04 §1                                      | 08, 09, 10 §4.3                |
 | Recortes da vitrine (sociedade civil, pesquisadores, gestores)     | 03 §8                                      | 04 §4, 08, 09                  |
 | Granularidade da saída pública (agrega até o bairro)               | 02 §1                                      | 03 §§8, 12, 08, 09             |
-| Novidade dos favoritos (cinco fatos, 30 dias)                      | 03 §8                                      | 02 §1, 03 §10, 08              |
+| Novidade dos favoritos (cinco fatos, 30 dias; só na App 08)        | 03 §10                                     | 02 §1, 03 §8, 08               |
 | Proteção das rotas públicas (limite por origem, atraso)            | 03 §8                                      | 02 §1, 08                      |
 | Aviso de LGPD visível nas aplicações e área detalhada              | 03 §12                                     | 08, 09                         |
 | Área do Apoiador (App 08) e registro de propostas                  | 03 §10                                     | 04, 08, 09, 12                 |
@@ -94,7 +94,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Leitura da produção do Guerreiro(a) e devolutiva construtiva       | 03 §§4, 7 e 11 §2.2                        | 02 §4, 09                      |
 | Auxílio de IA na autoria da trilha (estrutura, não conteúdo)       | 03 §11                                     | 01 §7, 09                      |
 | Recompensa conquistada em marco da trilha                          | 02 §8                                      | 03 §7, 08, 11 §2.1, 12         |
-| Acompanhamento por nick e favoritos (Apoiador e visitante)         | 02 §1 e 03 §§8, 10                         | 04 §3, 08, 12                  |
+| Acompanhamento por nick e favoritos (só do Apoiador)               | 02 §1 e 03 §10                             | 03 §8, 04 §3, 08, 12           |
 | Licença do conteúdo educacional (CC BY-SA)                         | 03 §1                                      | 01, 08, 09                     |
 | Regra de lastro (atividade só com recurso provido)                 | 04 §1                                      | 02, 05, 10, 11, 12             |
 | Poder Econômico                                                    | 04 §1                                      | 02, 12                         |
@@ -141,7 +141,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Trilha e missões                            | 02 §3 + 11 §2             | PRD-01, 09, 05                 |
 | Conteúdo e bibliografia por missão          | 05 §3 + 11 §2             | PRD-09, 07                     |
 | Atividades e taxonomia                      | 02 §4 + 11 §§2.1, 4       | PRD-09, 01, 02, 05             |
-| Acompanhamento por nick e favoritos         | 02 §1 + 03 §§8, 10        | PRD-03, 14, 01                 |
+| Acompanhamento por nick e favoritos         | 02 §1 + 03 §10            | PRD-14, 03, 01                 |
 | Desafios de desbloqueio                     | 02 §2                     | PRD-01, 09, 05                 |
 | Desafio de coleta (série temporal)          | 02 §1                     | PRD-01, 08, 05, 06             |
 | Desafios extras (abertos e direcionados)    | 04 §3                     | PRD-01, 02, 07, 09             |

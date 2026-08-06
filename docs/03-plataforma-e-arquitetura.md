@@ -444,13 +444,10 @@ Web App de acesso público e **sem autenticação**:
   da comunidade e de instituições.
 - **Portfólio de criações originais** — as criações dos Guerreiros e Guerreiras autorizados,
   com o nick do autor (ou dos autores, em equipe).
-- **Favoritos do visitante** — sem login e sem cadastro, o visitante marca Guerreiros,
-  Guerreiras e Mestres como favoritos e a vitrine passa a destacar as novidades deles primeiro.
-  A lista fica **no próprio aparelho**: a plataforma não coleta nada do visitante e, trocando de
-  aparelho, a lista não vai junto.
-- **O que é novidade**, na vitrine e na App 08: **criação original publicada, badge novo, nível
-  novo, resultado de batalha e trilha nova publicada pelo Mestre**. O fato fica em destaque por
-  **30 dias** a contar da data em que aconteceu.
+- **Sem favoritos e sem qualquer preferência guardada** — nem no servidor, nem no aparelho do
+  visitante. Quem pede para favoritar ou acompanhar alguém é levado à **apresentação da Área do
+  Apoiador**, com o formulário de solicitação e o caminho de apoio: acompanhar é função de quem
+  se cadastra, não da vitrine.
 - **Proteção das rotas públicas**: a consulta por nick exato e o envio dos dois formulários têm
   **limite por origem e janela de tempo, com atraso progressivo** a cada repetição — é o que
   barra a varredura de nicks e o envio abusivo. **Sem CAPTCHA**, que é barreira de
@@ -537,6 +534,10 @@ ser um lançamento feito por terceiros e passa a ter canal próprio:
 - **Nenhum contato direto com Guerreiro(a) ou família.** Proposta, entrega e reconhecimento
   seguem mediados pela plataforma; a App 07 não é compartilhada com Apoiadores. **Favoritar é
   leitura**: não abre canal, não avisa a criança e não dá acesso a nada além do que já é público.
+- **O que é novidade do favorito**: **criação original publicada, badge novo, nível novo,
+  resultado de batalha e trilha nova publicada pelo Mestre**, em destaque por **30 dias** a
+  contar da data do fato. **Favoritar existe só aqui** — a vitrine não guarda favorito de
+  ninguém.
 - **O nick vem da família, nunca da plataforma.** A busca é por nick exato, alcança apenas quem
   tem divulgação autorizada e não lista, sugere nem completa nomes.
 - **O app não cadastra Apoiador.** O cadastro continua exclusivo de Admin; quem ainda não é

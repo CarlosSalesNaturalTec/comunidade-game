@@ -252,10 +252,10 @@ de comunidade (grafite, cores, imagens do território); **portfólio de criaçõ
 Guerreiros e Guerreiras autorizados, com o nick dos autores; **painel de cobertura da Agenda
 2030** por comunidade e por ciclo, com destaque para a contribuição à meta 17.18 e a ressalva
 de que o ODS 18 é adoção voluntária do Brasil; **nota de transparência sobre IA**
-nas seções institucionais; **favoritos do visitante** — sem login e sem cadastro, guardados no
-próprio aparelho, fazendo a vitrine destacar primeiro as novidades de quem ele acompanha, pelos
-cinco fatos e pelos 30 dias definidos no documento 03; **limite por origem com atraso
-progressivo** na consulta por nick e nos dois formulários públicos.
+nas seções institucionais; **sem favoritos e sem preferência guardada** — o pedido de favoritar
+leva à apresentação da Área do Apoiador, com solicitação de cadastro e caminho de apoio;
+**limite por origem com atraso progressivo** na consulta por nick e nos dois formulários
+públicos.
 
 **Três recortes de leitura:** a vitrine é uma só e **sem login**; o que muda por público é a
 porta de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos. Nenhum

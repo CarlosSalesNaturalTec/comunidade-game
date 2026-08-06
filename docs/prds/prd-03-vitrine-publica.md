@@ -53,8 +53,8 @@ hora — o sentido do fluxo é sempre esse.
   sobre os mesmos dados públicos.
 - **Formulário de solicitação de participação** como Mestre ou Apoiador.
 - **Formulário de solicitação de dados** para pesquisadores e gestores públicos.
-- **Favoritos do visitante**, guardados no próprio aparelho, com as novidades de quem ele
-  acompanha em destaque.
+- **Convite ao acompanhamento**: o pedido de favoritar abre a apresentação da Área do
+  Apoiador, com o formulário de solicitação e o caminho de apoio.
 - **Necessidades de recurso em aberto** das atividades sem lastro, com o caminho para apoiar.
 - **Seções institucionais** — "Quem somos", "Contatos" e "Como apoiar" com a chave PIX —, a
   **nota de transparência sobre IA** e o vídeo de apresentação.
@@ -64,6 +64,8 @@ hora — o sentido do fluxo é sempre esse.
 ### 3.2 Fora do escopo
 
 - **Login, cadastro e qualquer área restrita** — a aplicação inteira é pública.
+- **Favoritos e qualquer preferência do visitante**: não são guardados nem no servidor nem no
+  aparelho. Acompanhar alguém é função da App 08 (PRD-14).
 - **Avaliação das solicitações** e **entrega do conjunto de dados**: são atos de Admin na App
   03 (PRD-02).
 - **Edição do conteúdo institucional**: também da App 03; aqui só se exibe o que foi
@@ -78,15 +80,15 @@ hora — o sentido do fluxo é sempre esse.
 
 ## 4. Personas e permissões
 
-| Persona          | O que faz nesta aplicação                                            | O que não pode fazer                                       |
-| ---------------- | -------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Visitante        | Navega, consulta nick exato, favorita, solicita participação e dados | Entrar, comentar, contatar criança, ver quem não autorizou |
-| Pesquisador      | Lê séries e metodologia e pede o conjunto completo pelo formulário   | Baixar o conjunto direto da vitrine ou ver o coletor       |
-| Gestor público   | Lê o painel do território e a cobertura da Agenda 2030 por ciclo     | O mesmo do pesquisador                                     |
-| Admin            | Nada aqui: publica o conteúdo institucional pela App 03              | Editar a vitrine por dentro dela                           |
-| Mestre, Apoiador | Aparecem com a prova pública de habilidade ou de apoio               | Editar a própria página pela vitrine                       |
-| Guerreiro(a)     | Aparece por avatar e nick, se o responsável autorizou                | Entrar, editar ou retirar a própria exibição               |
-| Responsável      | Nada aqui: concede e revoga na App 07                                | Alterar o que aparece sem passar pela autorização          |
+| Persona          | O que faz nesta aplicação                                          | O que não pode fazer                                                  |
+| ---------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| Visitante        | Navega, consulta nick exato, solicita participação e pede dados    | Entrar, favoritar, comentar, contatar criança, ver quem não autorizou |
+| Pesquisador      | Lê séries e metodologia e pede o conjunto completo pelo formulário | Baixar o conjunto direto da vitrine ou ver o coletor                  |
+| Gestor público   | Lê o painel do território e a cobertura da Agenda 2030 por ciclo   | O mesmo do pesquisador                                                |
+| Admin            | Nada aqui: publica o conteúdo institucional pela App 03            | Editar a vitrine por dentro dela                                      |
+| Mestre, Apoiador | Aparecem com a prova pública de habilidade ou de apoio             | Editar a própria página pela vitrine                                  |
+| Guerreiro(a)     | Aparece por avatar e nick, se o responsável autorizou              | Entrar, editar ou retirar a própria exibição                          |
+| Responsável      | Nada aqui: concede e revoga na App 07                              | Alterar o que aparece sem passar pela autorização                     |
 
 Não há persona autenticada nesta aplicação. Toda escrita listada acima — as duas solicitações —
 é ato público e anônimo do ponto de vista da plataforma: gera registro na fila, nunca acesso.
@@ -145,18 +147,20 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 5. Repetindo o envio muitas vezes, o visitante encontra **espera crescente** antes de conseguir
    enviar de novo, com o motivo explicado em linguagem simples.
 
-### 5.5 Favoritos, sem login
+### 5.5 Quem quer acompanhar alguém
 
-1. O visitante marca como favorito um Guerreiro(a) ou um Mestre a partir do card ou da página.
-2. A lista é guardada **no próprio aparelho**; a plataforma não grava nada sobre quem
-   favoritou.
-3. Na volta, a vitrine mostra primeiro as **novidades dos favoritos**: criação original
-   publicada, badge novo, nível novo, resultado de batalha e trilha nova publicada pelo Mestre.
-4. Cada fato fica em destaque por **30 dias** a contar da data em que aconteceu.
-5. Trocando de aparelho ou limpando o navegador, a lista se perde — e a tela diz isso, para
-   ninguém supor que existe conta.
-6. Um favorito cuja autorização foi revogada some da lista na próxima visita, sem explicação
-   sobre a pessoa.
+1. O visitante encontra, no card ou na página, a ação de **favoritar ou acompanhar**.
+2. A vitrine **não guarda favorito**: a ação abre a **apresentação da Área do Apoiador**,
+   explicando que acompanhar Guerreiros, Guerreiras e Mestres, com as novidades em destaque, é
+   função de quem se cadastra como Apoiador.
+3. A mesma tela oferece dois caminhos: **solicitar a participação** como Apoiador, pelo
+   formulário público, e **apoiar** — chave PIX e necessidades de recurso em aberto.
+4. A tela diz que a solicitação **não cria cadastro nem acesso** e que o cadastro é ato de
+   Admin, com prazo de 7 dias.
+5. Quem não quer nenhum dos dois volta à navegação sem preencher nada. Nada é gravado sobre a
+   visita, nem no servidor nem no aparelho.
+6. É a diferença de desenho que sustenta a regra: acompanhar exige uma pessoa identificada e
+   avaliada, e a vitrine não identifica ninguém.
 
 ### 5.6 Procurar alguém pelo nick
 
@@ -233,17 +237,17 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 | `RF-03-36` | Consulta por nick tem limite por origem e janela, com atraso progressivo                         | essencial  |
 | `RF-03-37` | Nenhuma proteção de abuso exige cadastro, login ou CAPTCHA do visitante                          | essencial  |
 
-### 6.4 Favoritos
+### 6.4 Convite ao acompanhamento
 
-| ID         | Requisito                                                                                                      | Prioridade |
-| ---------- | -------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-03-38` | Visitante favorita Guerreiros, Guerreiras e Mestres sem login e sem cadastro                                   | essencial  |
-| `RF-03-39` | Lista de favoritos é guardada apenas no aparelho do visitante                                                  | essencial  |
-| `RF-03-40` | Vitrine destaca primeiro as novidades dos favoritos                                                            | essencial  |
-| `RF-03-41` | São novidade: criação original publicada, badge novo, nível novo, resultado de batalha e trilha nova do Mestre | essencial  |
-| `RF-03-42` | Fato deixa de ser novidade 30 dias depois de ter acontecido                                                    | essencial  |
-| `RF-03-43` | Favorito sem autorização vigente sai da lista, sem explicação sobre a pessoa                                   | essencial  |
-| `RF-03-44` | Tela avisa que a lista se perde ao trocar de aparelho ou limpar o navegador                                    | desejável  |
+| ID         | Requisito                                                                                       | Prioridade |
+| ---------- | ----------------------------------------------------------------------------------------------- | ---------- |
+| `RF-03-38` | Vitrine não guarda favorito nem preferência do visitante, no servidor ou no aparelho            | essencial  |
+| `RF-03-39` | Ação de favoritar ou acompanhar abre a apresentação da Área do Apoiador                         | essencial  |
+| `RF-03-40` | Apresentação explica que acompanhar, com favoritos e novidades, é função do Apoiador cadastrado | essencial  |
+| `RF-03-41` | Tela oferece o formulário de solicitação de participação como Apoiador                          | essencial  |
+| `RF-03-42` | Tela oferece o caminho de apoio: chave PIX e necessidades de recurso em aberto                  | essencial  |
+| `RF-03-43` | Tela declara que a solicitação não cria cadastro nem acesso, com o prazo de 7 dias              | essencial  |
+| `RF-03-44` | Recusar o convite devolve o visitante à navegação, sem gravar nada sobre a visita               | essencial  |
 
 ### 6.5 Institucional e transparência
 
@@ -261,37 +265,37 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                       | Invariante (doc 99 §6) | Fonte       |
-| ---------- | ------------------------------------------------------------------------------------------- | ---------------------- | ----------- |
-| `RN-03-01` | A vitrine é pública, sem login, e não escreve nada sobre Guerreiro(a)                       | 1                      | 03 §§1.1, 8 |
-| `RN-03-02` | Só aparece publicamente o Guerreiro(a) com autorização vigente do responsável               | 12                     | 03 §12      |
-| `RN-03-03` | A revogação vale para frente e é imediata no que é público                                  | 11                     | 03 §9       |
-| `RN-03-04` | Guerreiro(a) aparece só por avatar e nick, sem imagem real, nome civil ou contato           | 12                     | 03 §12      |
-| `RN-03-05` | Não há canal de contato entre visitante e Guerreiro(a) ou família                           | 10                     | 02 §1       |
-| `RN-03-06` | A consulta é por nick exato, sem listagem, sugestão ou completação                          | 12                     | 02 §1       |
-| `RN-03-07` | Nick inexistente e nick sem autorização recebem a mesma resposta                            | 12                     | 03 §8       |
-| `RN-03-08` | Rota pública tem limite por origem e atraso progressivo, sem CAPTCHA nem cadastro           | —                      | 03 §8       |
-| `RN-03-09` | A saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin          | 7, 17                  | 02 §1       |
-| `RN-03-10` | O painel público nunca identifica o coletor, nem por código                                 | 7                      | 02 §1       |
-| `RN-03-11` | Solicitação de participação não cria cadastro nem acesso, e a avaliação é de Admin          | 3                      | 02 §1       |
-| `RN-03-12` | O prazo de resposta ao solicitante é de 7 dias                                              | —                      | 02 §1       |
-| `RN-03-13` | Solicitação de dados não entrega nada no ato: a entrega exige aprovação de Admin            | 17                     | 03 §12.3    |
-| `RN-03-14` | A entrega do conjunto é gratuita e anonimizada em qualquer granularidade aprovada           | 17                     | 03 §12.3    |
-| `RN-03-15` | Favoritar é leitura: não abre contato, não avisa a criança e não alcança quem não autorizou | 10                     | 03 §10      |
-| `RN-03-16` | A lista de favoritos fica no aparelho; a plataforma não coleta dado do visitante            | —                      | 03 §8       |
-| `RN-03-17` | É novidade por 30 dias: criação, badge, nível, batalha e trilha nova do Mestre              | —                      | 03 §8       |
-| `RN-03-18` | Aporte é exibido em moedas da plataforma, nunca em reais                                    | 16                     | 04 §1       |
-| `RN-03-19` | A etiqueta ODS é descritiva, agregada por comunidade e ciclo, nunca por Guerreiro(a)        | 20                     | 11 §2.1     |
-| `RN-03-20` | O ODS 18 é citado como adoção voluntária do Brasil, não como objetivo da ONU                | 20                     | 04 §4       |
-| `RN-03-21` | A vitrine não veicula publicidade nem patrocínio no Ciclo 01                                | —                      | 04 §2       |
-| `RN-03-22` | A vitrine não instala cookie, rastreador ou perfilamento, para nenhuma finalidade           | —                      | 04 §2       |
-| `RN-03-23` | Toda tela indica o que a plataforma coleta, com acesso à área detalhada                     | —                      | 03 §12      |
+| ID         | Regra                                                                                  | Invariante (doc 99 §6) | Fonte       |
+| ---------- | -------------------------------------------------------------------------------------- | ---------------------- | ----------- |
+| `RN-03-01` | A vitrine é pública, sem login, e não escreve nada sobre Guerreiro(a)                  | 1                      | 03 §§1.1, 8 |
+| `RN-03-02` | Só aparece publicamente o Guerreiro(a) com autorização vigente do responsável          | 12                     | 03 §12      |
+| `RN-03-03` | A revogação vale para frente e é imediata no que é público                             | 11                     | 03 §9       |
+| `RN-03-04` | Guerreiro(a) aparece só por avatar e nick, sem imagem real, nome civil ou contato      | 12                     | 03 §12      |
+| `RN-03-05` | Não há canal de contato entre visitante e Guerreiro(a) ou família                      | 10                     | 02 §1       |
+| `RN-03-06` | A consulta é por nick exato, sem listagem, sugestão ou completação                     | 12                     | 02 §1       |
+| `RN-03-07` | Nick inexistente e nick sem autorização recebem a mesma resposta                       | 12                     | 03 §8       |
+| `RN-03-08` | Rota pública tem limite por origem e atraso progressivo, sem CAPTCHA nem cadastro      | —                      | 03 §8       |
+| `RN-03-09` | A saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin     | 7, 17                  | 02 §1       |
+| `RN-03-10` | O painel público nunca identifica o coletor, nem por código                            | 7                      | 02 §1       |
+| `RN-03-11` | Solicitação de participação não cria cadastro nem acesso, e a avaliação é de Admin     | 3                      | 02 §1       |
+| `RN-03-12` | O prazo de resposta ao solicitante é de 7 dias                                         | —                      | 02 §1       |
+| `RN-03-13` | Solicitação de dados não entrega nada no ato: a entrega exige aprovação de Admin       | 17                     | 03 §12.3    |
+| `RN-03-14` | A entrega do conjunto é gratuita e anonimizada em qualquer granularidade aprovada      | 17                     | 03 §12.3    |
+| `RN-03-15` | A vitrine não guarda favorito nem preferência do visitante, em lugar nenhum            | —                      | 03 §8       |
+| `RN-03-16` | Favoritar é função da App 08, de Apoiador cadastrado, e lá é leitura: não abre contato | 10                     | 03 §10      |
+| `RN-03-17` | O convite não cria cadastro nem acesso: cadastrar Apoiador é ato de Admin              | 3                      | 02 §1       |
+| `RN-03-18` | Aporte é exibido em moedas da plataforma, nunca em reais                               | 16                     | 04 §1       |
+| `RN-03-19` | A etiqueta ODS é descritiva, agregada por comunidade e ciclo, nunca por Guerreiro(a)   | 20                     | 11 §2.1     |
+| `RN-03-20` | O ODS 18 é citado como adoção voluntária do Brasil, não como objetivo da ONU           | 20                     | 04 §4       |
+| `RN-03-21` | A vitrine não veicula publicidade nem patrocínio no Ciclo 01                           | —                      | 04 §2       |
+| `RN-03-22` | A vitrine não instala cookie, rastreador ou perfilamento, para nenhuma finalidade      | —                      | 04 §2       |
+| `RN-03-23` | Toda tela indica o que a plataforma coleta, com acesso à área detalhada                | —                      | 03 §12      |
 
 ## 8. Modelo de dados
 
 A aplicação **não escreve no domínio** além das duas solicitações públicas e **não cria
-entidade nenhuma**. Os favoritos **não são entidade**: vivem no armazenamento local do
-navegador do visitante.
+entidade nenhuma**. Também **não persiste nada do visitante** — nem no servidor, nem no
+aparelho: sem favoritos, sem preferência de recorte, sem histórico de navegação.
 
 ```text
 ESCREVE (ato público, sem cadastro)     LÊ (definidos em outro PRD)
@@ -299,8 +303,8 @@ SolicitacaoDeParticipacao  (PRD-01)     Guerreiro(a) / Avatar / Nick    (PRD-01)
 SolicitacaoDeDados         (PRD-01)     Ponto / Nivel / Badge / Poder   (PRD-01)
                                         Consentimento (estado vigente)  (PRD-01)
 NÃO PERSISTE                            CriacaoOriginal / Trilha        (PRD-09)
-Favoritos do visitante                  Batalha                         (PRD-10)
-  (armazenamento local do aparelho)     Mestre / Apoiador / Aporte      (PRD-07)
+Nada do visitante — sem favorito,       Batalha                         (PRD-10)
+preferência ou histórico               Mestre / Apoiador / Aporte      (PRD-07)
                                         ComunidadeVirtual / SerieDeColeta (PRD-08)
                                         EtiquetaODS                     (PRD-01)
                                         Conteúdo institucional          (PRD-02)
@@ -319,35 +323,34 @@ Derivações e imutabilidade:
   `Consentimento` — a mesma derivação do PRD-13, e a mesma lista que o App 04 consome.
 - A **agregação até o bairro** é aplicada na consulta, não no armazenamento: o registro
   continua com local fino e coletor identificado (PRD-08).
-- A **novidade** é derivada da data do fato, sem campo próprio: nada é marcado como "lido".
+- **Novidade de favorito é da App 08** (PRD-14) e não tem projeção aqui.
 
 ## 9. Contratos de API
 
 A aplicação segue as convenções do PRD-01 — prefixo `/v1`, erro em corpo único — e consome
 **apenas rotas públicas, sem token**. As rotas de avaliação e entrega são da App 03 (PRD-02).
 
-| Método | Rota                                 | Autenticação | Descrição                                                     |
-| ------ | ------------------------------------ | ------------ | ------------------------------------------------------------- |
-| GET    | `/v1/vitrine/guerreiros`             | pública      | Cards dos Guerreiros e Guerreiras com divulgação autorizada   |
-| GET    | `/v1/vitrine/guerreiros/{nick}`      | pública      | Página pública por nick exato                                 |
-| GET    | `/v1/vitrine/mestres`                | pública      | Cards e páginas de Mestres, com os comprobatórios             |
-| GET    | `/v1/vitrine/apoiadores`             | pública      | Cards e páginas de Apoiadores, com aportes em moedas          |
-| GET    | `/v1/vitrine/poderes`                | pública      | Poderes, trilhas e Mestres de cada um                         |
-| GET    | `/v1/vitrine/batalhas`               | pública      | Batalhas, resultados e estatísticas de partida                |
-| GET    | `/v1/vitrine/criacoes`               | pública      | Portfólio de criações originais autorizadas                   |
-| GET    | `/v1/vitrine/rankings`               | pública      | Rankings por pontos regulares, só de quem autorizou           |
-| GET    | `/v1/vitrine/novidades`              | pública      | Fatos dos últimos 30 dias, filtráveis pelos nicks favoritados |
-| GET    | `/v1/vitrine/conteudo-institucional` | pública      | "Quem somos", "Contatos", "Como apoiar" e a nota sobre IA     |
-| GET    | `/v1/comunidades`                    | pública      | Comunidades com indicadores agregados (PRD-08)                |
-| GET    | `/v1/comunidades/{id}/series`        | pública      | Séries históricas agregadas até o bairro, com metodologia     |
-| GET    | `/v1/comunidades/{id}/ods`           | pública      | Cobertura de ODS da comunidade, por ciclo                     |
-| GET    | `/v1/vitrine/ods/cobertura`          | pública      | Cobertura agregada de todas as comunidades do ciclo           |
-| GET    | `/v1/vitrine/necessidades`           | pública      | Necessidades de recurso em aberto (PRD-07)                    |
-| POST   | `/v1/solicitacoes-de-participacao`   | pública      | Registra pedido de inclusão como Mestre ou Apoiador           |
-| POST   | `/v1/solicitacoes-de-dados`          | pública      | Registra pedido do conjunto de dados                          |
+| Método | Rota                                 | Autenticação | Descrição                                                   |
+| ------ | ------------------------------------ | ------------ | ----------------------------------------------------------- |
+| GET    | `/v1/vitrine/guerreiros`             | pública      | Cards dos Guerreiros e Guerreiras com divulgação autorizada |
+| GET    | `/v1/vitrine/guerreiros/{nick}`      | pública      | Página pública por nick exato                               |
+| GET    | `/v1/vitrine/mestres`                | pública      | Cards e páginas de Mestres, com os comprobatórios           |
+| GET    | `/v1/vitrine/apoiadores`             | pública      | Cards e páginas de Apoiadores, com aportes em moedas        |
+| GET    | `/v1/vitrine/poderes`                | pública      | Poderes, trilhas e Mestres de cada um                       |
+| GET    | `/v1/vitrine/batalhas`               | pública      | Batalhas, resultados e estatísticas de partida              |
+| GET    | `/v1/vitrine/criacoes`               | pública      | Portfólio de criações originais autorizadas                 |
+| GET    | `/v1/vitrine/rankings`               | pública      | Rankings por pontos regulares, só de quem autorizou         |
+| GET    | `/v1/vitrine/conteudo-institucional` | pública      | "Quem somos", "Contatos", "Como apoiar" e a nota sobre IA   |
+| GET    | `/v1/comunidades`                    | pública      | Comunidades com indicadores agregados (PRD-08)              |
+| GET    | `/v1/comunidades/{id}/series`        | pública      | Séries históricas agregadas até o bairro, com metodologia   |
+| GET    | `/v1/comunidades/{id}/ods`           | pública      | Cobertura de ODS da comunidade, por ciclo                   |
+| GET    | `/v1/vitrine/ods/cobertura`          | pública      | Cobertura agregada de todas as comunidades do ciclo         |
+| GET    | `/v1/vitrine/necessidades`           | pública      | Necessidades de recurso em aberto (PRD-07)                  |
+| POST   | `/v1/solicitacoes-de-participacao`   | pública      | Registra pedido de inclusão como Mestre ou Apoiador         |
+| POST   | `/v1/solicitacoes-de-dados`          | pública      | Registra pedido do conjunto de dados                        |
 
-A rota de novidades recebe os nicks favoritados **como parâmetro da consulta** e não os
-armazena: é o desenho que mantém a lista no aparelho.
+Nenhuma rota desta aplicação aceita ou devolve preferência de visitante: não há parâmetro de
+favorito, de perfil ou de sessão anônima.
 
 Erros previstos: nick não encontrado ou sem autorização (**404 idêntico nos dois casos**, sem
 revelar qual ocorreu); campo obrigatório ausente no formulário (422, com o campo em falta);
@@ -377,7 +380,6 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
 | Dado coletado                        | Finalidade                             | Base legal                   | Retenção                           | Quem acessa        |
 | ------------------------------------ | -------------------------------------- | ---------------------------- | ---------------------------------- | ------------------ |
 | Nenhum dado do visitante             | —                                      | —                            | —                                  | —                  |
-| Favoritos                            | Ordenar o que o visitante acompanha    | —                            | no aparelho, até ele apagar        | só o visitante     |
 | Dados da solicitação de participação | Avaliar quem pede para entrar          | consentimento                | até o desfecho e o registro dele   | gestão             |
 | Dados da solicitação de dados        | Avaliar e registrar a entrega          | consentimento                | permanente, como prova do que saiu | gestão             |
 | Avatar, nick e desempenho exibidos   | Reconhecimento público do Guerreiro(a) | consentimento do responsável | enquanto a autorização durar       | qualquer visitante |
@@ -417,9 +419,10 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   obrigatórios, e a tela informa os 7 dias.
 - Formulário de dados enviado não devolve arquivo nem link: a tela declara a aprovação de Admin
   como condição.
-- Favoritar e recarregar mantém a lista; limpar o navegador a perde; o servidor não guarda
-  nenhuma relação entre visitante e favorito.
-- Um badge conquistado hoje aparece como novidade e deixa de aparecer 31 dias depois.
+- Pedir para favoritar abre a apresentação da Área do Apoiador, com o formulário de
+  solicitação e o caminho de apoio; recusar devolve à navegação sem gravar nada.
+- Depois de navegar e recarregar, a vitrine está idêntica à primeira visita: nenhum favorito,
+  nenhuma preferência, nenhum dado no armazenamento local.
 - Nenhuma tela exibe anúncio, peça patrocinada ou espaço reservado a anunciante.
 - Auditoria da página confirma ausência de cookie e de requisição a rastreador de terceiros.
 
@@ -434,14 +437,18 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 | ------------------------------------------------------------------------ | ---------- | ----------------------------------------- |
 | Saída pública agrega até o bairro; rua e abaixo só na entrega aprovada   | 02 §1      | Granularidade da saída pública            |
 | Limite por origem com atraso progressivo nas rotas públicas, sem CAPTCHA | 03 §8      | Proteção das rotas públicas da vitrine    |
-| Novidade dos favoritos: cinco fatos, em destaque por 30 dias             | 03 §8      | O que conta como "novidade" dos favoritos |
+| Vitrine sem favoritos: o pedido vira convite a se cadastrar e apoiar     | 03 §8      | Favoritos apenas na App 08                |
+| Novidade dos favoritos na App 08: cinco fatos, em destaque por 30 dias   | 03 §10     | O que conta como "novidade" dos favoritos |
 
-A primeira decisão **restringe uma regra anterior** — a saída pública ia até a rua — e foi
-propagada ao PRD-08, que a aplicava, e aos documentos 02, 03 e 08. Uma quarta decisão retirou a
-**publicidade** da lista de receitas (documento 04 §2) e a mandou para estudo de ciclo futuro,
-com a edição do conteúdo institucional permanecendo como ato de Admin no PRD-02. O PRD-01
-ganhou a rota pública da solicitação de participação, que existia como entidade e não como
-contrato.
+Duas dessas decisões **restringem regras anteriores**: a saída pública ia até a rua, e a
+vitrine tinha favoritos guardados no aparelho do visitante. A primeira foi propagada ao PRD-08,
+que a aplicava, e aos documentos 02, 03 e 08; a segunda concentrou o acompanhamento na App 08 e
+transformou a ação de favoritar em porta de entrada para o cadastro e o apoio.
+
+Uma quinta decisão retirou a **publicidade** da lista de receitas (documento 04 §2) e a mandou
+para estudo de ciclo futuro, mantendo a edição do conteúdo institucional como ato de Admin no
+PRD-02. O PRD-01 ganhou a rota pública da solicitação de participação, que existia como
+entidade e não como contrato.
 
 ## 14. Pendências que permanecem
 
@@ -467,7 +474,7 @@ contrato.
 | `RF-03-27` a `RF-03-31` | 02 §1 (solicitação de participação, dados mínimos e prazo)     |
 | `RF-03-32` a `RF-03-34` | 03 §12.3 (entrega sob solicitação aprovada)                    |
 | `RF-03-35` a `RF-03-37` | 03 §8 (proteção das rotas públicas)                            |
-| `RF-03-38` a `RF-03-44` | 03 §§8, 10 (favoritos e novidades) e 02 §1 (nick cedido)       |
+| `RF-03-38` a `RF-03-44` | 03 §§8, 10 (sem favoritos aqui) e 02 §1 (cadastro por Admin)   |
 | `RF-03-45` a `RF-03-49` | 03 §8 (institucional), 04 §1 (PIX e lastro) e 01 §7 (IA)       |
 | `RF-03-50` e `RF-03-51` | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)             |
 | `RF-03-52` e `RF-03-53` | 03 §12 (aviso de coleta e área detalhada)                      |
