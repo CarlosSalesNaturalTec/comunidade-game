@@ -192,10 +192,11 @@ e propondo desafios, sem acesso à área da família.
 
 **O que fica registrado no histórico do Apoiador:**
 
-| Registro                                                                | Para que serve                                           |
-| ----------------------------------------------------------------------- | -------------------------------------------------------- |
-| **Recompensas creditadas** — o que ele custeou e entregou               | Compõe o **Poder Econômico**, como qualquer outro aporte |
-| **Realizações dos Guerreiros e Guerreiras** nos desafios que ele propôs | Mostra **o que aconteceu** por causa daquele apoio       |
+| Registro                                                                | Para que serve                                               |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Recompensas creditadas** — o que ele custeou e entregou               | Compõe o **Poder Econômico**, como qualquer outro aporte     |
+| **Realizações dos Guerreiros e Guerreiras** nos desafios que ele propôs | Mostra **o que aconteceu** por causa daquele apoio           |
+| **Etiquetas ODS** herdadas da missão a que o desafio se vinculou        | Mostra **a que objetivos da Agenda 2030** o apoio contribuiu |
 
 É a segunda linha que muda o jogo: o histórico deixa de responder apenas _"quanto foi
 aportado"_ e passa a responder _"o que esse apoio produziu"_ — quais desafios engajaram,
@@ -215,7 +216,7 @@ de fora torcendo pelo que ele está construindo.
 - Recompensas seguem o cuidado de dignidade previsto para o catálogo.
 
 > **A definir:** formato do **relatório de efetividade** entregue ao Apoiador — quais números,
-> com que periodicidade e em que nível de agregação.
+> com que periodicidade e em que nível de agregação. A cobertura de ODS é um deles.
 
 ## 4. Impacto social
 
@@ -230,10 +231,53 @@ de fora torcendo pelo que ele está construindo.
   tomada de decisões.
 - **Multiplicadores**: alunos formados viram instrutores de novos cursos em comunidades.
 
-**[Proposta]** Definir **indicadores de impacto** desde o início (nº de alunos ativos,
-retenção, trilhas concluídas, atividades realizadas, volume de dados de território, recursos
-movimentados por comunidade). Além de guiar o projeto, são os números exigidos por editais e
-grandes doadores.
+### Aderência à Agenda 2030
+
+O projeto declara aderência aos **Objetivos de Desenvolvimento Sustentável (ODS)** porque é a
+linguagem de editais, poder público e grandes doadores. A adesão é **descritiva**: etiqueta o
+que já existe, sem criar conteúdo, poder ou pontuação.
+
+| ODS                                       | O que na plataforma corresponde                                                                                                                            |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **4** Educação de qualidade               | O projeto inteiro; meta 4.4 (habilidades técnicas) e **4.7** (cidadania, sustentabilidade e diversidade cultural), que é o objetivo dos temas transversais |
+| **5** Igualdade de gênero                 | Combate ao feminicídio e à violência contra a mulher; espaço seguro para meninas; mestras como referência                                                  |
+| **10** Redução das desigualdades          | Público periférico de 6 a 16 anos e primeiro contato com tecnologia sem exigir computador                                                                  |
+| **11** Cidades e comunidades sustentáveis | Coletas de resíduos, iluminação, buracos na via e trânsito (metas 11.3, 11.6 e 11.7); registro de espaços e memórias do bairro (11.4)                      |
+| **13** Ação climática                     | Letramento sobre a crise ambiental e as séries de temperatura e chuva — meta **13.3**, medida no lugar onde o Guerreiro(a) vive                            |
+| **16** Paz, justiça e instituições        | Código de Conduta co-criado (16.7) e transparência radical do livro-razão (16.10)                                                                          |
+| **17** Parcerias e meios de implementação | Apoiadores, doações registradas, código aberto e — sobretudo — a **meta 17.18**                                                                            |
+| **18** Igualdade étnico-racial            | Causa antirracista, reconhecimento dos povos originários e o lema com personalidades negras e indígenas                                                    |
+| **8** e **9** _(parciais)_                | Empreendedorismo e economia criativa (8.6) e acesso a TIC (9.c). Parciais porque o projeto **não se propõe a encaminhar profissionalmente**                |
+
+O **ODS 18 — Igualdade Étnico-Racial** é **adoção voluntária do Brasil**, coordenada pelo
+Ministério da Igualdade Racial com metas e indicadores aprovados pela Comissão Nacional dos
+ODS. Não integra o quadro oficial de 17 objetivos da ONU, e citá-lo sem essa ressalva é erro
+que custa credibilidade justamente diante de quem conhece a agenda.
+
+#### A contribuição própria — meta 17.18
+
+Um ciclo com uma turma não move indicador nacional, e prometer isso queima o projeto com quem
+financia. O que a plataforma entrega de fato é o insumo da **meta 17.18**: dado local,
+desagregado, datado e de guarda permanente sobre um território periférico — exatamente o que
+falta para acompanhar qualquer ODS na escala em que as pessoas vivem. É a única afirmação de
+contribuição que o projeto faz sem exagero, e a mais forte que tem.
+
+#### Indicadores de cobertura
+
+Medem **alcance declarado**, não impacto — e saem prontos das etiquetas ODS das missões, sem
+lançamento manual:
+
+- ODS distintos cobertos no ciclo e por comunidade.
+- Missões publicadas por ODS, e proporção das que declararam etiqueta.
+- Séries de coleta ativas por ODS, com o tempo em que se mantiveram.
+- Desafios extras de Apoiadores por ODS.
+
+Publicados **agregados por comunidade e por ciclo, nunca por Guerreiro(a)**.
+
+**[Proposta]** Definir os demais **indicadores de impacto** desde o início (nº de alunos
+ativos, retenção, trilhas concluídas, atividades realizadas, volume de dados de território,
+recursos movimentados por comunidade). Além de guiar o projeto, são os números exigidos por
+editais e grandes doadores.
 
 ## 5. Sustentabilidade (síntese)
 

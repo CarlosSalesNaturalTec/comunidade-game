@@ -133,6 +133,23 @@ Objetivos concretos:
 - **Expor conquistas locais**: dar visibilidade ao talento que já existe nas comunidades.
 - **Gerar dados sobre o território** que auxiliem a comunidade e o poder público a decidir.
 
+### Aderência à Agenda 2030
+
+Os objetivos acima já respondem, na prática, a boa parte da **Agenda 2030 da ONU**. O projeto
+declara essa aderência para falar a língua de editais, poder público e apoiadores — e **não a
+adota como currículo**: o conteúdo continua sendo o da trilha do Mestre.
+
+- A adesão é **descritiva**. Os ODS etiquetam o que a plataforma já faz; não viram poder,
+  ponto nem obrigação para o Guerreiro(a).
+- A contribuição própria do projeto é a **meta 17.18** — dado local, desagregado e de série
+  longa sobre um território periférico, que é justamente o que falta para acompanhar os ODS
+  onde as pessoas moram.
+- O **ODS 18 — Igualdade Étnico-Racial** é adoção voluntária do Brasil, não um objetivo
+  oficial da ONU. Ele nomeia duas causas inegociáveis do projeto — antirracismo e povos
+  originários — e por isso é sempre citado com essa ressalva.
+
+O mapa dos objetivos e os indicadores de cobertura estão no documento 04.
+
 ### O lema
 
 > **GOAT / The Best / "Podemos ser os melhores"** — a desconstrução da mentira que sempre

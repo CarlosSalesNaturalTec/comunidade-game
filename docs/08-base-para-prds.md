@@ -72,6 +72,9 @@
 - Valores do projeto refletidos em conteúdo, conduta e representatividade.
 - **Modelo de gamificação como fonte normativa:** anatomia da trilha, taxonomia de atividades,
   motor de pontuação, níveis, badges, recompensas e reflexos no ecossistema seguem o documento 11.
+- **Etiqueta ODS descritiva:** a missão pode declarar os Objetivos de Desenvolvimento
+  Sustentável que toca. A etiqueta **não pontua, não é poder e não trava publicação**; a
+  cobertura é agregada por comunidade e ciclo e **nunca é atributo de um Guerreiro(a)**.
 - **Mestres de qualquer área do conhecimento** — inclusive humanas, artes, esportes e cultura:
   nenhum modelo de dados ou fluxo pode pressupor habilidade técnica de TI.
 
@@ -159,6 +162,10 @@
 - Regra de negócio: **sugestões e propostas de evolução** — registradas pelo Guerreiro(a) (App
   05), pelo responsável (App 07), pelo Apoiador (App 08) e pelo Mestre (App 09), com autor,
   persona, data e status de avaliação pela gestão, em fila única.
+- Regra de negócio: **etiqueta ODS da missão** — lista de objetivos (1 a 18) com meta opcional
+  (`4.7`, `13.3`, `17.18`), declarada pelo Mestre autor. Agrega por trilha, poder, comunidade e
+  ciclo; é herdada pelo desafio de coleta e pelo desafio extra; **não entra em pontuação, nível
+  ou badge** e **não é atributo do Guerreiro(a)**.
 
 **Questões em aberto:** nenhuma — autenticação, versionamento e instância única foram
 definidos no documento 03.
@@ -232,7 +239,9 @@ por comunidade **em série histórica**; "Quem somos" e "Contatos" editáveis; s
 apoiar"** com a chave PIX do projeto; espaço de **publicidade** fora das áreas de uso das
 crianças; vídeo de apresentação (Susy, Otávio, Rôbróders, prof. Carlos Trenell); estética de
 comunidade (grafite, cores, imagens do território); **portfólio de criações originais** dos
-Guerreiros e Guerreiras autorizados, com o nick dos autores; **nota de transparência sobre IA**
+Guerreiros e Guerreiras autorizados, com o nick dos autores; **painel de cobertura da Agenda
+2030** por comunidade e por ciclo, com destaque para a contribuição à meta 17.18 e a ressalva
+de que o ODS 18 é adoção voluntária do Brasil; **nota de transparência sobre IA**
 nas seções institucionais; **favoritos do visitante** — sem login e sem cadastro, guardados no
 próprio aparelho, fazendo a vitrine destacar primeiro as novidades de quem ele acompanha.
 
@@ -475,6 +484,9 @@ pelos próprios Guerreiros e Guerreiras — a base _Data Driven_ da plataforma.
   poder.
 - Painéis públicos por comunidade; dados como insumo para tomada de decisões por moradores,
   associações, escolas, poder público e pesquisas.
+- **Etiqueta ODS da série**, herdada da missão que a criou, e publicação do painel local como
+  **contribuição à meta 17.18** — dado desagregado do território, sempre agregado e anonimizado
+  na saída.
 - Exportação e API aberta dos dados agregados e anonimizados.
 
 **Questões em aberto:** fontes e sensores (registro manual × sensor construído pelo
@@ -522,7 +534,9 @@ ensina; a gestão administrativa segue na App 03.
 tanto quanto às técnicas —, incluindo a **paginação da trilha pelas etapas do ciclo**; **as
 atividades de cada missão**, com modalidade (individual ou equipe) e formato
 (presencial ou on-line) declarados pelo Mestre autor; **cada missão declarada obrigatória ou
-opcional**; **missão de sondagem** abrindo a trilha, como terceira trava de publicação;
+opcional**; **etiqueta ODS da missão**, opcional, com a meta quando o Mestre a souber, sem
+efeito em pontuação nem em publicação; **missão de sondagem** abrindo a trilha, como terceira
+trava de publicação;
 **template de missão** que devolve estrutura e checklist de lacunas a partir do tópico
 cadastrado — sem escrever o conteúdo, que é do Mestre; **retomada por revisão espaçada** na
 cadência que o Mestre declarar; **a recompensa de cada marco**, com
@@ -677,7 +691,8 @@ quem sustenta o projeto, sem nenhum contato com Guerreiros e Guerreiras ou famí
   acompanhamento mostra o estado no fluxo: validação do Mestre da trilha → aprovação de Admin
   → publicado, com **lastro exigido antes da publicação**.
 - **Relatório de efetividade** dos desafios propostos, **agregado e por avatar** — nunca com
-  dado de contato ou identificação de Guerreiro(a).
+  dado de contato ou identificação de Guerreiro(a) —, incluindo a **cobertura de ODS** herdada
+  das missões a que os desafios se vincularam.
 - **Os mesmos dados do painel público**, com **favoritos** de Guerreiros, Guerreiras e Mestres,
   cujas novidades aparecem em destaque. É o canal de parentes e amigos que não são um dos três
   responsáveis da criança: acompanham pelo **nick cedido pela família** e podem direcionar

@@ -116,6 +116,7 @@ Toda missão declara:
 | **Desafio de desbloqueio**  | Quiz ou desafio que abre a missão seguinte                                        |
 | **Retomada**                | Cadência da revisão espaçada, quando o Mestre a declara                           |
 | **Recompensa**              | Quando o Mestre declara que aquele desbloqueio libera algo concreto               |
+| **Etiqueta ODS**            | Objetivos da Agenda 2030 que a missão toca, declarados pelo Mestre — opcional     |
 
 Quatro regras fecham o modelo:
 
@@ -130,6 +131,22 @@ Quatro regras fecham o modelo:
 - **Poder técnico começa desplugado.** Em trilha de tecnologia, o modelo pede ao menos uma
   atividade desplugada: lógica e algoritmo com papel e corpo abrem a porta para quem ainda não
   pegou um aparelho.
+
+#### Etiqueta ODS da missão
+
+O Mestre declara quais **Objetivos de Desenvolvimento Sustentável** a missão toca: o número do
+objetivo, com a meta (`4.7`, `13.3`, `17.18`) quando ele souber. É rótulo descritivo, e por
+isso não pesa no motor:
+
+- **Não pontua, não é poder e não trava publicação.** Nada na progressão do Guerreiro(a)
+  depende dela.
+- **Sobe por agregação** — trilha, poder, comunidade e ciclo —, sem lançamento manual. É assim
+  que a cobertura cresce sozinha à medida que novos Mestres e poderes entram.
+- O **desafio de coleta** herda a etiqueta da série que sustenta: medição ambiental ou urbana
+  numa trilha, patrimônio e memória do bairro em outra.
+- O **desafio extra** do Apoiador herda a etiqueta da missão a que se vincula.
+- A cobertura é publicada **agregada por comunidade e por ciclo, nunca por Guerreiro(a)** —
+  criança não é rotulada por objetivo de desenvolvimento.
 
 ### 2.3 O modelo aplicado — três exemplos
 
@@ -312,18 +329,19 @@ nunca reescrito, pelas quatro superfícies públicas do ecossistema.
 
 ### 8.1 Vitrine pública (App 06)
 
-| Elemento do motor                                        | Como aparece na vitrine                                                              |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Guerreiros e Guerreiras (com autorização do responsável) | **Cards rotativos** (a cada 5 s) — composição em §8.2                                |
-| Poderes                                                  | Seção de poderes, com trilhas e Mestres de cada um                                   |
-| Trilhas e realizações                                    | Portfólio público dos Guerreiros e Guerreiras autorizados                            |
-| **Criações originais**                                   | Portfólio de autoria: a criação exposta com o nick do autor ou autores               |
-| **Batalhas**                                             | Resultados e estatísticas de partida alimentando ranking e portfólio                 |
-| **Culminâncias**                                         | Vídeos e registros, com consentimento específico registrado na App 07                |
-| Comunidades Virtuais                                     | Painel público por comunidade em série histórica, agregado e anonimizado             |
-| Mestres                                                  | Cards com os **artefatos que comprovam a habilidade** — de qualquer área             |
-| Apoiadores                                               | Poder Econômico e desafios extras propostos, com as realizações que o apoio produziu |
-| Rankings                                                 | Somente pontos regulares; Guerreiros e Guerreiras sem autorização não aparecem       |
+| Elemento do motor                                        | Como aparece na vitrine                                                                       |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Guerreiros e Guerreiras (com autorização do responsável) | **Cards rotativos** (a cada 5 s) — composição em §8.2                                         |
+| Poderes                                                  | Seção de poderes, com trilhas e Mestres de cada um                                            |
+| Trilhas e realizações                                    | Portfólio público dos Guerreiros e Guerreiras autorizados                                     |
+| **Criações originais**                                   | Portfólio de autoria: a criação exposta com o nick do autor ou autores                        |
+| **Batalhas**                                             | Resultados e estatísticas de partida alimentando ranking e portfólio                          |
+| **Culminâncias**                                         | Vídeos e registros, com consentimento específico registrado na App 07                         |
+| Comunidades Virtuais                                     | Painel público por comunidade em série histórica, agregado e anonimizado                      |
+| **Etiquetas ODS**                                        | Painel de cobertura da Agenda 2030 por comunidade e por ciclo, com destaque para a meta 17.18 |
+| Mestres                                                  | Cards com os **artefatos que comprovam a habilidade** — de qualquer área                      |
+| Apoiadores                                               | Poder Econômico e desafios extras propostos, com as realizações que o apoio produziu          |
+| Rankings                                                 | Somente pontos regulares; Guerreiros e Guerreiras sem autorização não aparecem                |
 
 ### 8.2 Cards e páginas individuais dos personagens
 
