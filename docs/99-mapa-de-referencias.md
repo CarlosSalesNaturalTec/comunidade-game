@@ -77,7 +77,8 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Comunidade do onboarding vinda da aula agendada                    | 02 §1                                      | 01, 03 §§3, 5, 08, 10          |
 | Guerreiro(a) como termo da persona primária                        | 02 §1                                      | 01, 03, 08, 09                 |
 | Moeda da plataforma (1 moeda = R$ 100,00; vitrine em moedas)       | 04 §1                                      | 03 §8, 08, 11 §8.2, 12         |
-| Coproprietariedade dos dados publicados e monetização (50% / 50%)  | 04 §2                                      | 03 §12, 08, 09                 |
+| Coproprietariedade e monetização (50% / 50%, metade proporcional)  | 04 §2                                      | 03 §12, 08, 09                 |
+| Produção executiva (tempo do fundador e dos Admins, por absorção)  | 04 §1                                      | 08, 09, 10 §4.3                |
 | Aviso de LGPD visível nas aplicações e área detalhada              | 03 §12                                     | 08, 09                         |
 | Área do Apoiador (App 08) e registro de propostas                  | 03 §10                                     | 04, 08, 09, 12                 |
 | Área do Mestre (App 09) — autoria e operação                       | 03 §11                                     | 02, 05, 08, 09                 |
@@ -154,6 +155,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Comunidade do onboarding vinda da aula      | 02 §1 + 03 §3             | PRD-04, 02, 01, 08             |
 | Moeda da plataforma                         | 04 §1                     | PRD-07, 03, 01                 |
 | Coproprietariedade dos dados publicados     | 04 §2                     | PRD-01, 07, 13                 |
+| Produção executiva como aporte por absorção | 04 §1                     | PRD-07, 02                     |
 | Representação visual da comunidade          | 11 §8.3                   | PRD-08, 03                     |
 | Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10                 |
 | Distribuição da trilha no ciclo             | 11 §2.4 + 10 §5           | PRD-09, 02                     |
@@ -210,8 +212,10 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     pontua em todas em que colabora — **uma só na partida de Quiz ao Vivo** —; no máximo
     **1 familiar com 17 anos ou mais**. A gestão não forma nem edita equipe.
 16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.**
-17. **Dados publicados têm coproprietariedade** entre a entidade responsável e o Guerreiro(a)
-    que os gerou; monetizados, remuneram ambos.
+17. **Dados publicados têm coproprietariedade** entre a entidade responsável e quem os gerou;
+    monetizados, remuneram ambos — e a metade dos Guerreiros e Guerreiras é dividida **na
+    proporção do que cada um gerou** no conjunto entregue, porque o dado só tem valor como
+    retrato da comunidade inteira. **No Ciclo 01 a monetização se prevê e não se anuncia.**
 18. **Só a missão obrigatória conta no percurso do nível.** A opcional pontua e pode render
     badge, mas fica fora do denominador dos níveis 2, 3 e 4.
 19. **Toda atividade exige produção do Guerreiro(a)** — escrever, falar ou construir. A

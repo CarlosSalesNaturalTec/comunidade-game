@@ -63,6 +63,25 @@ tem um valor padrão, e todo aporte do mesmo tipo vale o mesmo, o que torna comp
 Poder Econômico entre apoiadores. **Tipo novo é cadastrado na hora por um Admin**, com o seu
 valor de referência, para que nenhum aporte fique represado.
 
+### Produção executiva
+
+**Definição vigente.** O **tempo de trabalho do fundador e dos Admins** na plataforma é
+**despesa do projeto** e entra no livro-razão como qualquer outro recurso, na forma de **aporte
+por absorção**. Hoje ninguém o recebe, e é por isso que precisa aparecer: sem ele, o custo real
+do projeto fica subdeclarado diante de edital, doador e da própria comunidade.
+
+| Frente                       | O que cobre                                                                                                          | Lastro do registro                                      |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Construção da plataforma** | Idealização, documentação e desenvolvimento do Backend API e das aplicações                                          | **Histórico de commits deste repositório**, por período |
+| **Operação da plataforma**   | Manutenção em funcionamento, gestão dos recursos de _cloud_ e contatos com apoiadores, pesquisadores e poder público | Registro do próprio Admin, por período                  |
+
+Vale para a produção executiva o que já vale para todo aporte por absorção: valoração pela
+tabela de referência, marcação como **ressarcível**, destaque público pelo ato e ressarcimento
+apenas quando houver receita destinada a ele.
+
+> **A definir:** o valor-hora de referência da produção executiva e o critério que converte o
+> histórico de commits e o registro do Admin em horas aportadas.
+
 **[Proposta]** Modelar tecnicamente como um **livro-razão (ledger) de dupla entrada**: cada
 atividade consome recursos (débito) aportados por provedores (crédito). Viabiliza relatórios
 públicos de prestação de contas por atividade, por comunidade e por provedor — transparência
@@ -127,12 +146,25 @@ Acervo, kits e camisas são valorados pela tabela de referência, como qualquer 
 ### Titularidade dos dados publicados
 
 **Definição vigente.** Com a plataforma em produção, a entidade responsável por ela é
-**coproprietária dos dados publicados**, junto com o Guerreiro(a) que gerou o dado. Havendo
-monetização desses dados, o resultado é rateado **50% para a entidade responsável e 50% para
-o Guerreiro(a)**, pagos **ao responsável legal** do Guerreiro(a).
+**coproprietária dos dados publicados**, junto com quem gerou o dado. Havendo monetização
+desses dados, o resultado é rateado **50% para a entidade responsável e 50% para os Guerreiros
+e Guerreiras** que geraram o conjunto entregue, pagos **ao responsável legal** de cada um.
 
-> **A definir:** redação da regra no termo assinado pelo responsável, base legal e
-> periodicidade do pagamento.
+**O dado vale como conjunto, não como registro isolado.** Ninguém compra a série de uma
+criança: o que tem valor é o retrato da comunidade inteira, ao longo do tempo. Por isso a
+metade dos Guerreiros e Guerreiras é dividida **na proporção do que cada um gerou** dentro do
+conjunto efetivamente fornecido — quem sustentou mais série recebe mais, e quem não contribuiu
+para aquela entrega não entra no rateio dela.
+
+**No Ciclo 01 se prevê, não se anuncia.** O ciclo é validação da plataforma e das suas
+hipóteses, e não há monetização prevista até dez/2026. A regra fica escrita onde é
+estritamente necessária — o **termo assinado pelo responsável** e a prestação de contas — e
+**não vira destaque** na vitrine, no onboarding nem na conversa com as famílias. Anunciar
+receita futura a quem ainda não a tem cria expectativa que o projeto pode não conseguir honrar.
+
+> **A definir:** redação da regra no termo assinado pelo responsável, base legal, periodicidade
+> do pagamento e a **fórmula da proporcionalidade** — o que conta como contribuição de cada
+> Guerreiro(a) no conjunto entregue.
 
 ### Doações em espécie — canal oficial
 

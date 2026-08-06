@@ -44,8 +44,8 @@
   discreta, o que coleta e quais são os direitos do usuário, com acesso a uma **área
   detalhada** sobre destino e uso de cada dado.
 - **Coproprietariedade dos dados publicados:** em produção, a entidade responsável pela
-  plataforma é coproprietária, com o Guerreiro(a) que gerou o dado; havendo monetização, ambos
-  são remunerados.
+  plataforma é coproprietária, com quem gerou o dado; havendo monetização, ambos são
+  remunerados, e a parte dos Guerreiros e Guerreiras é proporcional ao que cada um gerou.
 - **Faixa etária dos Guerreiros e Guerreiras: 6 a 16 anos**, com atividades em **níveis de
   dificuldade graduais** acessíveis independentemente da idade. A convivência entre idades é
   tratada com **papéis de mediação, nunca com segmentação por faixa**.
@@ -131,8 +131,9 @@
   máximo 1 familiar com 17 anos ou mais**, conforme a atividade, o desafio ou a batalha
   determinar. Equipes são cadastradas por Admin.
 - Regra de negócio: **coproprietariedade dos dados publicados** entre a entidade responsável
-  pela plataforma e o Guerreiro(a) que gerou o dado; monetizados, o resultado é rateado **50% /
-  50%**, com a parte do Guerreiro(a) paga **ao responsável legal**.
+  pela plataforma e quem gerou o dado; monetizados, o resultado é rateado **50% / 50%**, com a
+  metade dos Guerreiros e Guerreiras dividida **na proporção do que cada um gerou** no conjunto
+  entregue e paga **ao responsável legal** de cada um.
 - Regra de negócio: **registro de dado do território é uma série temporal** — cadência, janela
   de validade, Guerreiro(a) coletor(a) e comunidade. **Série ativa gera pontos recorrentes; série
   interrompida cessa o cômputo**, sem perda dos pontos já creditados.
@@ -412,9 +413,16 @@ Ressarcimento não é direito: só ocorre havendo receita destinada a ele, por a
 decisão de Admin, e reverte as moedas creditadas. **A plataforma não armazena dado bancário**
 — só o comprovante da transferência.
 
-**Coproprietariedade dos dados publicados:** a entidade responsável pela plataforma e o
-Guerreiro(a) que gerou o dado são coproprietários; havendo monetização, o ledger registra o
-rateio **50% / 50%**, com a parte do Guerreiro(a) paga **ao responsável legal**.
+**Produção executiva:** o tempo do fundador e dos Admins na **construção** e na **operação** da
+plataforma é despesa do projeto e entra como **aporte por absorção**, com o mesmo tratamento
+dos demais — tabela de referência, ressarcível, destaque público. O ledger precisa registrar a
+frente (construção ou operação), o período apurado e as horas aportadas.
+
+**Coproprietariedade dos dados publicados:** a entidade responsável pela plataforma e quem
+gerou o dado são coproprietários; havendo monetização, o ledger registra o rateio **50% /
+50%**, com a metade dos Guerreiros e Guerreiras **dividida na proporção do que cada um gerou**
+no conjunto entregue e paga **ao responsável legal** de cada um. O rateio é registro do ledger,
+não conteúdo de vitrine: no Ciclo 01 a regra existe e não é destacada.
 
 **Recursos duráveis (patrimônio) e empréstimo:** além dos consumíveis, o ledger precisa tratar
 material que **não se consome no uso e é reaproveitado a cada turma** — o caso concreto é o
@@ -448,9 +456,10 @@ acervo de 298 livros doado pelo Goethe-Institut:
   avatar**.
 
 **Questões em aberto:** valoração da hora-aula, do acervo, dos kits e das camisas doados —
-critério que define a conversão desses aportes em moedas; relatórios públicos por atividade,
-comunidade e provedor; **formato do relatório de efetividade** entregue ao Apoiador;
-periodicidade e forma de pagamento do rateio da monetização dos dados.
+critério que define a conversão desses aportes em moedas; **valor-hora da produção executiva** e
+como o histórico de commits vira hora aportada; relatórios públicos por atividade, comunidade e
+provedor; **formato do relatório de efetividade** entregue ao Apoiador; periodicidade, forma de
+pagamento e **fórmula da proporcionalidade** do rateio da monetização dos dados.
 
 **Fontes:** docs 04, 05.
 

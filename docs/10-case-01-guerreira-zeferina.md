@@ -111,6 +111,10 @@ passando a _pay-as-you-go_ conforme o uso. **Não há teto de uso neste ciclo** 
 e o custo são medidos aqui para dimensionar o ciclo seguinte, e essa medição é um dos
 resultados esperados do piloto.
 
+A **produção executiva** do fundador — o tempo de construir a plataforma, apurado pelo
+histórico de commits deste repositório, e o de operá-la durante o ciclo — entra pela mesma
+porta, também por absorção. É o Ciclo 01 que produz a primeira medida real dessa despesa.
+
 > **Nota de escopo:** a operação vai de **agosto a novembro**; o ciclo se estende a
 > **dezembro**, reservado à culminância, à conferência de inventário e à avaliação das
 > hipóteses.
