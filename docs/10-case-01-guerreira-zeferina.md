@@ -93,7 +93,7 @@ Conseguir os recursos digitais básicos: servidores, armazenamento e execução 
 Como qualquer outro recurso, entram no livro-razão e compõem o **Poder Econômico** de quem os
 aportar.
 
-O **consumo de IA das Apps 05 e 02** entra na mesma conta: no Ciclo 01 ele é **aportado por
+O **consumo de IA das Apps 05 e 01** entra na mesma conta: no Ciclo 01 ele é **aportado por
 absorção pelo Admin e Mestre fundador**, começando no _free tier_ da conta Google Gemini PRO e
 passando a _pay-as-you-go_ conforme o uso. **Não há teto de uso neste ciclo** — a demanda real
 e o custo são medidos aqui para dimensionar o ciclo seguinte, e essa medição é um dos
@@ -116,7 +116,7 @@ Consequências práticas:
   próprio ciclo.
 - Os **30 kits MDF** dimensionam a primeira turma que monta o robô em MDF; o saldo precisa
   estar visível no painel do dia.
-- O **mapeamento capítulo → ponto de trilha** deve cobrir, no mínimo, os pontos das trilhas
+- O **mapeamento capítulo → missão** deve cobrir, no mínimo, as missões das trilhas
   1 e 2 efetivamente aplicados aqui — não o acervo inteiro.
 - A prestação de contas do acervo ao fim do ciclo é o **primeiro relatório real de
   transparência da plataforma**, devido ao Apoiador que doou.
@@ -129,7 +129,7 @@ Marcada como proposta porque o calendário dos encontros ainda é pendência do 
 | Período      | Etapa                   | Trilha em foco                                | Conteúdo e acervo                                                                                                                                                                           |
 | ------------ | ----------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Agosto**   | Abertura                | **Trilha 1 — Robô Educa** (início)            | Onboarding e credenciamento; Comunidade Virtual criada antes do 1º encontro; ritual de entrada — entrega do livro **Alpha Mecânica** e do kit MDF ou PET; abertura das **séries de coleta** |
-| **Setembro** | Desenvolvimento         | Trilha 1 — pontos intermediários              | Voz, prompts, limites da IA; **Include Programação I** e **Mecânica I** em bancada; séries de coleta rendendo pontos; desafios extras de Apoiadores                                         |
+| **Setembro** | Desenvolvimento         | Trilha 1 — missões intermediárias             | Voz, prompts, limites da IA; **Include Programação I** e **Mecânica I** em bancada; séries de coleta rendendo pontos; desafios extras de Apoiadores                                         |
 | **Outubro**  | Transição               | Conclusão da trilha 1 → **Trilha 2** (início) | Publicação da versão do robô; entrega dos livros **Alpha Eletrônica** e **Alpha Sensores**; construção dos artefatos; **Include Eletrônica I** e **Sensores I** em bancada                  |
 | **Novembro** | Desenvolvimento + marco | Trilha 2 completa                             | Wi-Fi/MQTT, lógica do jogo, sensor de território instalado; **Batalha de Laser** presencial como marco do ciclo, com telemetria alimentando ranking e portfólio                             |
 | **Dezembro** | Fechamento              | —                                             | **Culminância** (apresentação pública, com consentimentos), conferência de inventário, prestação de contas ao Apoiador e avaliação de H1–H3                                                 |
@@ -137,13 +137,13 @@ Marcada como proposta porque o calendário dos encontros ainda é pendência do 
 Notas de paginação:
 
 - A dinâmica é **assíncrona**: os meses indicam onde o planejamento de recursos e de bancada se
-  concentra, não uma exigência de que todos estejam no mesmo ponto — quem entra em outubro
+  concentra, não uma exigência de que todos estejam na mesma missão — quem entra em outubro
   começa pela abertura da trilha 1 normalmente.
 - A transição trilha 1 → trilha 2 é **por Guerreiro(a) ou equipe**; outubro é apenas o centro
   de gravidade esperado.
 - Os **30 kits MDF** limitam as montagens em MDF da trilha 1; o saldo no painel do dia define
   quando a oficina passa ao material reciclado.
-- O **mapeamento capítulo → ponto de trilha** precisa estar pronto para os pontos de cada mês
+- O **mapeamento capítulo → missão** precisa estar pronto para as missões de cada mês
   antes de o mês começar.
 
 ## 6. Como o ciclo é avaliado

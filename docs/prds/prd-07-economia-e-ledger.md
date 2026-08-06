@@ -113,7 +113,7 @@ atividades previstas.
 ### 5.4 Empréstimo e devolução de exemplar do acervo
 
 1. O exemplar permanente está tombado, com ponto de apoio e responsável designado.
-2. O Mestre registra a retirada de bancada vinculada a um Guerreiro(a) e a um ponto de trilha.
+2. O Mestre registra a retirada de bancada vinculada a um Guerreiro(a) e a uma missão.
 3. A devolução é registrada com o estado de conservação.
 4. Devolução pendente aparece no painel do dia (PRD-02).
 5. Perda ou dano **não gera débito** ao Guerreiro(a) nem à família: gera **necessidade de
@@ -223,7 +223,7 @@ ItemPatrimonial 0..1 ─ 1 NecessidadeDeReposicao
 | `Reserva`                | atividade, tipo de recurso, quantidade, ponto de apoio, estado (reservada, consumida, liberada)                                                                                                                                        |
 | `SaldoDeRecurso`         | tipo, ponto de apoio, quantidade disponível, quantidade reservada                                                                                                                                                                      |
 | `ItemPatrimonial`        | aporte de origem, título, número de tombo, ponto de apoio, responsável designado, estado de conservação                                                                                                                                |
-| `Emprestimo`             | item, Guerreiro(a), ponto de trilha, saída, devolução, estado de conservação na devolução                                                                                                                                              |
+| `Emprestimo`             | item, Guerreiro(a), missão, saída, devolução, estado de conservação na devolução                                                                                                                                                       |
 | `NecessidadeDeReposicao` | item ou tipo de recurso, quantidade, motivo, situação, aporte que a supriu                                                                                                                                                             |
 | `Ressarcimento`          | aporte absorvido, valor em reais, receita destinada de origem, admin pagador, data, comprovante anexado (PDF ou imagem)                                                                                                                |
 

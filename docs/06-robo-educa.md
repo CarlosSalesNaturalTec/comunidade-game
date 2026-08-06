@@ -64,9 +64,9 @@ segurança do modelo no nível mais restritivo, bloqueando assédio, discurso de
 sexual e conteúdo perigoso. O histórico persistido permite **moderação e controle de
 qualidade** das conversas.
 
-## 4. Pontos da trilha
+## 4. Missões da trilha
 
-Decomposição sugerida, cada ponto com desafio de desbloqueio:
+Decomposição sugerida, cada missão com desafio de desbloqueio:
 
 1. Montagem do corpo (reuso de materiais, coordenação motora).
 2. O que é um assistente de voz — ouvir, pensar, falar.

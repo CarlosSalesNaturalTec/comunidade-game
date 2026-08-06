@@ -21,8 +21,8 @@ de existir. As **equipes não são cadastradas aqui**: elas se formam no App 01,
 painel do dia apenas as mostra.
 
 Ela também é a aplicação do **dia da aula**. Como o encontro é assíncrono — cada Guerreiro(a)
-chega na sua hora e avança no seu ponto —, o painel do dia substitui o controle visual de uma
-turma em bloco: quem chegou, em que ponto cada equipe está, quem aguarda aparelho, o que já foi
+chega na sua hora e avança na sua missão —, o painel do dia substitui o controle visual de uma
+turma em bloco: quem chegou, em que missão cada equipe está, quem aguarda aparelho, o que já foi
 lançado e o que falta lançar antes de a aula acabar.
 
 A fronteira com a App 09 é o critério de tudo o que entra aqui: **a gestão cadastra, aprova,
@@ -58,8 +58,8 @@ poder tocar a partida.
 
 ### 3.2 Fora do escopo
 
-- **Autoria de trilha, ponto de trilha, conteúdo, quiz e desafio de coleta** — é a bancada do
-  Mestre na App 09 (PRD-09) — inclusive as **atividades de cada ponto de trilha** e a
+- **Autoria de trilha, missão, conteúdo, quiz e desafio de coleta** — é a bancada do
+  Mestre na App 09 (PRD-09) — inclusive as **atividades de cada missão** e a
   **recompensa de cada marco**. A App 03 cadastra apenas atividade avulsa, fora de trilha;
   acompanha o que foi publicado e, na auditoria por amostragem, pode despublicar com motivo.
 - **Lançamento das atividades do próprio Mestre** — ele lança na App 09; aqui o Admin lança as
@@ -136,7 +136,7 @@ conduz a partida de quiz das suas aulas — nada além disso.
 
 1. Aberto o encontro, o painel mostra **quem já chegou**, com as presenças que o App 01
    registrou automaticamente.
-2. Mostra, por equipe, **em que ponto de trilha cada uma está** e quem está aguardando
+2. Mostra, por equipe, **em que missão cada uma está** e quem está aguardando
    aparelho.
 3. Mostra a atividade prevista, os recursos providos, o **saldo de kits MDF** e de exemplares
    Alpha, e as **devoluções pendentes** de bancada.
@@ -247,7 +247,7 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | ID         | Requisito                                                                                | Prioridade |
 | ---------- | ---------------------------------------------------------------------------------------- | ---------- |
 | `RF-02-41` | Painel do dia lista quem já chegou, com a presença registrada pelo App 01                | essencial  |
-| `RF-02-42` | Painel mostra, por equipe, o ponto de trilha em que ela está                             | essencial  |
+| `RF-02-42` | Painel mostra, por equipe, a missão em que ela está                                      | essencial  |
 | `RF-02-43` | Painel mostra quem está aguardando aparelho                                              | essencial  |
 | `RF-02-44` | Painel mostra atividade prevista e recursos providos do encontro                         | essencial  |
 | `RF-02-45` | Painel mostra o saldo de kits MDF e de exemplares da linha Alpha                         | essencial  |
@@ -310,7 +310,7 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RN-02-21` | Toda escrita da gestão é registrada na trilha de auditoria, com autor, papel, data e hora     | —          | 03 §1      |
 | `RN-02-22` | Nenhuma tela de gestão exibe a imagem real do Guerreiro(a) — a representação é o avatar       | 12         | 03 §12     |
 | `RN-02-23` | Nenhuma recusa de consentimento exclui o Guerreiro(a) da atividade nem do lançamento          | 11         | 03 §12     |
-| `RN-02-24` | Autoria de trilha, conteúdo, atividades do ponto, marco e coleta é do Mestre, na App 09       | —          | 03 §§5, 11 |
+| `RN-02-24` | Autoria de trilha, conteúdo, atividades da missão, marco e coleta é do Mestre, na App 09      | —          | 03 §§5, 11 |
 | `RN-02-25` | No Ciclo 01 não há notificação por e-mail: todo retorno acontece dentro da plataforma         | —          | 03 §9      |
 
 ## 8. Modelo de dados

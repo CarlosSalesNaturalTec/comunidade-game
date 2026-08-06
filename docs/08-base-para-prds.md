@@ -64,7 +64,7 @@
   escolhida no cadastro; genérico **Guerreiro(a)**, coletivo **Guerreiros e Guerreiras**.
 - **Sem notificação por e-mail no Ciclo 01:** todo retorno acontece dentro da plataforma.
 - **Toda trilha contém desafios de coleta de dados reais** e **termina em criação original**.
-- **Atividade de trilha pertence a um ponto de trilha**, é autorada pelo Mestre e declara
+- **Atividade de trilha pertence a uma missão**, é autorada pelo Mestre e declara
   modalidade (individual ou equipe) e formato (presencial ou on-line).
 - **Recompensa é conquistada em marco da trilha**, nunca comprada com saldo de pontos.
 - Valores do projeto refletidos em conteúdo, conduta e representatividade.
@@ -187,7 +187,7 @@ vindas da App 05, com alerta das que estão em aberto; inclusão manual de Admin
 atividades (pontuação, recompensas, recursos necessários); **acompanhamento dos desafios de
 coleta publicados** — cadência, vigência e séries ativas —, cuja autoria é do Mestre na App 09;
 agenda de aulas on-line e presenciais; **cadastro de atividade avulsa, fora de trilha — a atividade
-que pertence a um ponto de trilha é autorada pelo Mestre na App 09**; lançamento de atividades
+que pertence a uma missão é autorada pelo Mestre na App 09**; lançamento de atividades
 realizadas (data, mentores,
 Guerreiros e Guerreiras, resultados); **entradas manuais** — presença, infrações ocorridas nas
 aulas e pontuação extra a quem ajudou o colega; conferência e ajuste de presenças vindas do
@@ -207,8 +207,8 @@ propôs; **auditoria por amostragem do conteúdo de apoio escolar** cadastrado p
 despublicação motivada — o Admin confere o corpus, não o cadastra.
 
 **Painel do dia em encontro assíncrono:** como os Guerreiros e Guerreiras chegam e avançam em
-ritmos diferentes, o painel precisa mostrar em tempo real **quem já chegou, em que ponto de
-trilha cada equipe está, quem está aguardando aparelho e quais lançamentos ainda faltam** — é o
+ritmos diferentes, o painel precisa mostrar em tempo real **quem já chegou, em que missão
+cada equipe está, quem está aguardando aparelho e quais lançamentos ainda faltam** — é o
 instrumento que substitui o controle visual de uma turma em bloco.
 
 **Questões em aberto:** nenhuma. A trilha de auditoria das ações de Admin ficou definida no
@@ -301,7 +301,7 @@ aula tem **dois ou mais aparelhos, um por equipe**.
   cinco integrantes e o de um familiar de 17 anos ou mais. A equipe **termina com a aula**.
 - Participação em **mais de uma equipe** no mesmo encontro e **em uma única equipe na partida
   de Quiz ao Vivo**.
-- **Ponto de trilha da equipe**: onde ela está, o conteúdo e a atividade do dia.
+- **Missão da equipe**: onde ela está, o conteúdo e a atividade do dia.
 - **Assistente de trilhas por voz ou texto** — quiz e explicação de conceitos —, no mesmo
   desenho do assistente da App 05: modelo LLM Google Gemini, corpus fechado no conteúdo
   cadastrado pelos Mestres, guardrails, filtros de segurança no nível mais restritivo e guarda
@@ -328,7 +328,7 @@ conversa de cadastro; comportamento do assistente por voz em sala barulhenta.
 ## PRD-05 — App 05: Área do Guerreiro(a) (jornada gamificada)
 
 **Escopo:** experiência logada do Guerreiro(a) **nas aulas remotas e no uso cotidiano fora do
-encontro presencial**, com **guia e apoio nas trilhas** — qual é o próximo ponto, o que precisa
+encontro presencial**, com **guia e apoio nas trilhas** — qual é a próxima missão, o que precisa
 ser feito, o que já foi conquistado e o que está bloqueado. A aula presencial, incluindo a
 resposta do Quiz ao Vivo, é atendida pelo App 01 (PRD-04).
 
@@ -351,7 +351,7 @@ trilha e por poder; **portfólio de criações originais do Guerreiro(a)**, com 
 **Autonomia fora do encontro presencial:** a App 05 é o que permite ao Guerreiro(a) saber **o
 que fazer em seguida sem depender do Mestre** — na aula remota e entre um encontro e outro.
 Precisa funcionar em **aparelho compartilhado do ponto de apoio** (troca rápida de sessão) e
-mostrar com clareza o próximo ponto e o que está bloqueado. A entrada é por **nick e imagem**,
+mostrar com clareza a próxima missão e o que está bloqueado. A entrada é por **nick e imagem**,
 como em toda aplicação do Guerreiro(a) — é o que garante que a atividade foi feita pela própria
 criança, e não por terceiros.
 
@@ -503,7 +503,7 @@ ensina; a gestão administrativa segue na App 03.
 - **Publicação dos artefatos comprobatórios** da sua habilidade, com currículo, portfólio e
   redes sociais, que alimentam a sua página na vitrine (PRD-03).
 - **Cadastro das disciplinas e do conteúdo do apoio escolar** — o corpus fechado que os
-  assistentes das Apps 05 e 02 consomem. É cadastro exclusivo do Mestre; o Admin audita por
+  assistentes das Apps 05 e 01 consomem. É cadastro exclusivo do Mestre; o Admin audita por
   amostragem, como faz com as trilhas.
 - **Registro de propostas** de evolução da plataforma, na mesma fila da gestão que recebe as
   sugestões dos Guerreiros e Guerreiras.
@@ -515,7 +515,7 @@ ensina; a gestão administrativa segue na App 03.
 **Requisitos de autoria:** trilhas seguindo a **anatomia formal do documento 11** — em modelo
 **agnóstico de área do conhecimento**, apto a trilhas de humanas, artes, esportes e cultura
 tanto quanto às técnicas —, incluindo a **paginação da trilha pelas etapas do ciclo**; **as
-atividades de cada ponto de trilha**, com modalidade (individual ou equipe) e formato
+atividades de cada missão**, com modalidade (individual ou equipe) e formato
 (presencial ou on-line) declarados pelo Mestre autor; **a recompensa de cada marco**, com
 lastro exigido antes da publicação; conteúdo
 próprio e de terceiros; quiz ou desafio para desbloqueio; **publicação dos artefatos que
@@ -540,7 +540,7 @@ de autoria do Mestre fundador. São o conteúdo de validação do módulo: se a 
 essas duas, modela as demais.
 
 **Material de apoio impresso:** o modelo de trilha precisa suportar **bibliografia de apoio por
-ponto de trilha**. Requisitos: vincular um ponto de trilha a **título e capítulo
+missão**. Requisitos: vincular uma missão a **título e capítulo
 recomendados**; indicar ao Guerreiro(a) se há **exemplar disponível no seu ponto de apoio**; e
 creditar o **Apoiador que forneceu o material** onde ele é indicado.
 

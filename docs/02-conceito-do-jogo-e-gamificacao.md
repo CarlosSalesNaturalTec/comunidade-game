@@ -232,15 +232,15 @@ violência de gênero, mediação de conflitos).
 
 ## 3. Trilhas
 
-- Cada trilha é uma **sequência de conteúdos e atividades** que guia o Guerreiro(a) pelos
-  conhecimentos desejados.
-- Ao avançar nos pontos da trilha, o Guerreiro(a) vai **desbloqueando níveis de poderes**.
+- Cada trilha é uma **sequência de missões** — conteúdos e atividades que guiam o Guerreiro(a)
+  pelos conhecimentos desejados. A **missão** é a menor unidade de progressão da trilha.
+- Ao avançar nas missões da trilha, o Guerreiro(a) vai **desbloqueando níveis de poderes**.
 - Trilhas podem conter **conteúdos de terceiros**, curados pelos Mestres, e **bibliografia de
-  apoio** impressa por ponto de trilha.
+  apoio** impressa por missão.
 - **Toda trilha deve conter desafios de coleta de dados reais** da comunidade do Guerreiro(a).
 - **Toda trilha termina em criação original** apresentada publicamente (§4).
-- O Guerreiro(a) é acompanhado pela **Área do Guerreiro(a) (App 05)**, que mostra o próximo
-  ponto, o que já foi conquistado e o que ainda está bloqueado.
+- O Guerreiro(a) é acompanhado pela **Área do Guerreiro(a) (App 05)**, que mostra a próxima
+  missão, o que já foi conquistado e o que ainda está bloqueado.
 
 ### Regra vigente: toda trilha coleta dados reais
 
@@ -418,7 +418,7 @@ apoio. Duas regras estruturais:
 ## 8. Recompensas
 
 **Regra vigente:** a recompensa é **conquistada ao atingir um marco da trilha** — desbloqueio
-de um ponto, conclusão de etapa, batalha ou culminância —, **nunca comprada com saldo de
+de uma missão, conclusão de etapa, batalha ou culminância —, **nunca comprada com saldo de
 pontos**. É o que fecha o vínculo entre o jogo e a vida real: o esforço de aprender converte-se
 em algo concreto na mão do Guerreiro(a), no momento em que a conquista acontece.
 
@@ -446,14 +446,14 @@ a recompensa celebra a conquista do Guerreiro(a); nunca pode soar como assistenc
 2. (Se houver kit) **Receba e monte seu robô, e personalize-o.**
 3. **Acesse a plataforma.**
 4. **Escolha um Poder.**
-5. **Siga uma Trilha** — e receba o **livro de apoio** que passa a ser seu.
+5. **Siga uma Trilha**, missão a missão — e receba o **livro de apoio** que passa a ser seu.
 6. **Monte equipes** no app da aula — grupos livres de até 5 pessoas, válidos para aquele
    encontro; você pode estar em mais de uma.
 7. **Realize os desafios semanais** (on-line, presenciais, em equipe, em equipe com familiar).
 8. **Registre dados da sua comunidade** — a coleta rende pontos **enquanto você a mantiver**.
 9. **Crie algo seu a partir do que aprendeu e apresente** — toda trilha termina com uma
    criação original, com o seu crédito de autoria.
-10. **Troque seus pontos por recompensas.**
+10. **Conquiste recompensas nos marcos da trilha** — elas não se compram com pontos (§8).
 11. **Peça ajuda para as atividades escolares** ao robô assistente.
 12. **Autorização dos pais ou responsáveis** — necessária apenas para que o **histórico e o
     perfil sejam divulgados publicamente**. Sem ela, o Guerreiro(a) participa normalmente, mas

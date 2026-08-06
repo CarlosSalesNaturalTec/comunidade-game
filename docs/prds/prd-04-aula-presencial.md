@@ -20,7 +20,7 @@ abrir, ela pergunta o que a pessoa quer:
 - **Onboarding**, de uso individual: **cadastrar quem chega pela primeira vez** e **registrar a
   presença de quem já é da casa** — por voz ou por chat, sem formulário, com a IA conduzindo e
   confirmando cada dado.
-- **Trilhas**, de uso em equipe: o ponto de trilha em que a equipe está, o conteúdo e a
+- **Trilhas**, de uso em equipe: a missão em que a equipe está, o conteúdo e a
   atividade do dia, o Quiz ao Vivo e o assistente de trilhas.
 
 O onboarding roda **continuamente durante o encontro**, não só na abertura, porque a dinâmica
@@ -71,7 +71,7 @@ existe para impedir.
   em andamento e **encerra com ela**.
 - Participação em **mais de uma equipe** no encontro; na partida de quiz, várias equipes
   disputam e cada Guerreiro(a) joga por **uma única**.
-- **Ponto de trilha da equipe**: onde ela está, o conteúdo e a atividade do dia.
+- **Missão da equipe**: onde ela está, o conteúdo e a atividade do dia.
 - **Assistente de trilhas por voz ou texto**: quiz e explicação de conceitos das trilhas, no
   corpus fechado que os Mestres cadastraram.
 - **Quiz ao Vivo:** recebimento da pergunta e envio da resposta pelo aparelho da equipe.
@@ -205,10 +205,10 @@ dentro da mesma sessão de trabalho do aparelho.
 
 ### 5.8 Trabalhar a trilha com a equipe
 
-1. Escolhida a equipe do momento, o aparelho mostra **em que ponto de trilha ela está**, o
-   conteúdo daquele ponto e a atividade do dia.
+1. Escolhida a equipe do momento, o aparelho mostra **em que missão ela está**, o
+   conteúdo daquela missão e a atividade do dia.
 2. A equipe conversa com o **assistente de trilhas**, por voz ou por texto: pede explicação de
-   um conceito ou responde ao quiz do ponto.
+   um conceito ou responde ao quiz da missão.
 3. O assistente responde **apenas a partir do corpus cadastrado pelos Mestres**. Fora dele,
    diz que o assunto ainda não está no material e orienta procurar um Mestre no encontro.
 4. Pergunta sobre **tarefa escolar** recebe a mesma orientação: esse apoio é da App 05.
@@ -273,7 +273,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-32` | Equipe é vinculada à aula em andamento e se encerra com ela, preservando o histórico realizado                | essencial  |
 | `RF-04-33` | Guerreiro(a) integra mais de uma equipe no mesmo encontro                                                     | essencial  |
 | `RF-04-34` | Tela mostra as equipes da aula por avatar e nick, sem qualquer dado pessoal                                   | essencial  |
-| `RF-04-35` | Aplicação mostra à equipe o ponto de trilha em que está, o conteúdo e a atividade do dia                      | essencial  |
+| `RF-04-35` | Aplicação mostra à equipe a missão em que está, o conteúdo e a atividade do dia                               | essencial  |
 | `RF-04-36` | Assistente de trilhas responde por voz ou texto, apenas a partir do corpus cadastrado pelos Mestres           | essencial  |
 | `RF-04-37` | Pergunta fora do corpus recebe recusa explicada, com orientação de procurar um Mestre no encontro             | essencial  |
 | `RF-04-38` | Pergunta de tarefa escolar é encaminhada à App 05, sem ser respondida aqui                                    | essencial  |
@@ -323,7 +323,7 @@ aparelho é a **fila local**, que não é entidade do domínio e não sobrevive 
 CONSOME                        ESCREVE
 Aula/Agenda (vigente)          Guerreiro(a)          — cadastro novo
 ComunidadeVirtual              Credencial            — template biométrico
-Trilha / PontoDeTrilha         Consentimento         — termo, testemunha, data e hora
+Trilha / Missao                Consentimento         — termo, testemunha, data e hora
 PartidaDeQuiz                  Presenca              — registro do encontro
 PerguntaDeQuiz                 Auditoria             — quem confirmou o quê
 Corpus de apoio (App 09)       Equipe                — formada na aula, encerra com ela
@@ -375,7 +375,7 @@ Rotas do caminho das trilhas, todas autenticadas na **sessão do Guerreiro(a)**:
 | POST   | `/v1/aulas/{id}/equipes`              | Criar equipe da aula, com quem a criou como primeiro integrante |
 | POST   | `/v1/equipes/{id}/integrantes`        | Entrar em uma equipe existente                                  |
 | DELETE | `/v1/equipes/{id}/integrantes/eu`     | Sair da equipe                                                  |
-| GET    | `/v1/equipes/{id}/ponto-de-trilha`    | Ponto de trilha da equipe, com o conteúdo e a atividade do dia  |
+| GET    | `/v1/equipes/{id}/missao`             | Missão da equipe, com o conteúdo e a atividade do dia           |
 | POST   | `/v1/assistente/trilhas/consultas`    | Perguntar ao assistente de trilhas e gravar a transcrição       |
 | GET    | `/v1/partidas-de-quiz/{id}/pergunta`  | Receber a pergunta em andamento no aparelho da equipe           |
 | POST   | `/v1/partidas-de-quiz/{id}/respostas` | Enviar a resposta da equipe pelo aparelho vinculado             |

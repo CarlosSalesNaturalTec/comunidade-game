@@ -139,7 +139,7 @@ Objetivos concretos:
 > disseram o contrário.
 
 O lema afirma **potencial e caminho**, no plural e no coletivo: o melhor é resultado de
-trabalho, e cada ponto de trilha percorrido é prova de que o caminho existe. É também um
+trabalho, e cada missão da trilha cumprida é prova de que o caminho existe. É também um
 **momento fixo das aulas presenciais**, com a apresentação de personalidades mulheres,
 negras e indígenas que impactaram positivamente a sociedade.
 
