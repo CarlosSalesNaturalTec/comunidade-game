@@ -135,36 +135,14 @@ Acervo, kits e camisas são valorados pela tabela de referência, como qualquer 
 
 - **Doações** de pessoas físicas e jurídicas.
 - **Publicidade** na vitrine pública.
-- **Pesquisas** — os dados de território das Comunidades Virtuais podem sustentar estudos e
-  diagnósticos, sempre **anonimizados** e com retorno para a própria comunidade.
 - **Editais.**
 - **Campanhas de crowdfunding** para financiar aulas, kits e equipamentos (celulares,
   notebooks, tablets).
 - **Ressarcimento de recursos absorvidos** — doação destinada especificamente a devolver o
   que Mestres e Admins bancaram do próprio bolso para que a atividade acontecesse.
 
-### Titularidade dos dados publicados
-
-**Definição vigente.** Com a plataforma em produção, a entidade responsável por ela é
-**coproprietária dos dados publicados**, junto com quem gerou o dado. Havendo monetização
-desses dados, o resultado é rateado **50% para a entidade responsável e 50% para os Guerreiros
-e Guerreiras** que geraram o conjunto entregue, pagos **ao responsável legal** de cada um.
-
-**O dado vale como conjunto, não como registro isolado.** Ninguém compra a série de uma
-criança: o que tem valor é o retrato da comunidade inteira, ao longo do tempo. Por isso a
-metade dos Guerreiros e Guerreiras é dividida **na proporção do que cada um gerou** dentro do
-conjunto efetivamente fornecido — quem sustentou mais série recebe mais, e quem não contribuiu
-para aquela entrega não entra no rateio dela.
-
-**No Ciclo 01 se prevê, não se anuncia.** O ciclo é validação da plataforma e das suas
-hipóteses, e não há monetização prevista até dez/2026. A regra fica escrita onde é
-estritamente necessária — o **termo assinado pelo responsável** e a prestação de contas — e
-**não vira destaque** na vitrine, no onboarding nem na conversa com as famílias. Anunciar
-receita futura a quem ainda não a tem cria expectativa que o projeto pode não conseguir honrar.
-
-> **A definir:** redação da regra no termo assinado pelo responsável, base legal, periodicidade
-> do pagamento e a **fórmula da proporcionalidade** — o que conta como contribuição de cada
-> Guerreiro(a) no conjunto entregue.
+Os dados produzidos pela plataforma **não entram nesta lista**: sua disponibilização é
+gratuita, na vitrine e sob solicitação aprovada (documento 03).
 
 ### Doações em espécie — canal oficial
 

@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                           |
-| ---------------- | ----------------------------------------------- |
-| PRD              | PRD-13                                          |
-| Aplicação        | App 07 — Área dos pais e responsáveis           |
-| Onda             | 4                                               |
-| Situação         | em revisão                                      |
-| Versão e data    | v1 — 2026-08-06                                 |
-| Depende de       | PRD-01, PRD-02                                  |
-| Documentos-fonte | 02 §§1, 9, 03 §§1.1, 9, 12, 10 §3, 04 §2, 13 §3 |
+| Campo            | Valor                                    |
+| ---------------- | ---------------------------------------- |
+| PRD              | PRD-13                                   |
+| Aplicação        | App 07 — Área dos pais e responsáveis    |
+| Onda             | 4                                        |
+| Situação         | aprovado                                 |
+| Versão e data    | v2 — 2026-08-06                          |
+| Depende de       | PRD-01, PRD-02                           |
+| Documentos-fonte | 02 §§1, 9, 03 §§1.1, 9, 12, 10 §3, 13 §3 |
 
 ## 2. Contexto e objetivo
 
@@ -49,7 +49,8 @@ esta aplicação apenas a **mostra ao adulto que responde por ela**.
 - **Limite declarado do pedido de exclusão** — o registro de território é despersonalizado,
   não apagado —, dito na tela antes do aceite.
 - **Termos e consentimentos versionados**, com data, hora e histórico consultável, incluindo a
-  declaração de coproprietariedade dos dados publicados.
+  declaração de que os dados podem ser entregues anonimizados a pesquisadores e gestores
+  públicos.
 - **Registro de propostas** de evolução da plataforma, na fila única da gestão.
 - **Atendimento assistido e termo impresso** para o responsável sem smartphone.
 - **Aviso de coleta de dados** em toda tela que coleta, com acesso à área detalhada.
@@ -67,8 +68,8 @@ esta aplicação apenas a **mostra ao adulto que responde por ela**.
 - **Conteúdo de trilha, atividade e lançamento de resultado**: quem lança é o Mestre.
 - **Histórico do apoio escolar e das consultas ao assistente**, restrito à gestão.
 - **Notificação por e-mail**: não existe no Ciclo 01; todo retorno acontece na plataforma.
-- **Recebimento da parte monetária** do rateio da coproprietariedade: a regra se declara no
-  termo e não se opera no Ciclo 01.
+- **Solicitação e entrega de dados a pesquisadores e gestores públicos**: o termo declara que
+  ela existe; o pedido e a aprovação são da vitrine (PRD-03) e da App 03 (PRD-02).
 
 ## 4. Personas e permissões
 
@@ -230,14 +231,14 @@ nem em ranking, nem em equipe, nem em criação de colega.
 
 ### 6.5 Transparência e termos
 
-| ID         | Requisito                                                                                  | Prioridade |
-| ---------- | ------------------------------------------------------------------------------------------ | ---------- |
-| `RF-13-29` | Tela lista os dados armazenados da criança, a finalidade e o prazo de guarda de cada um    | essencial  |
-| `RF-13-30` | Histórico de acessos exibe data, hora, quem acessou, em que papel e qual dado              | essencial  |
-| `RF-13-31` | Responsável abre solicitação de esclarecimento a partir de um acesso listado               | desejável  |
-| `RF-13-32` | Termos vigentes são exibidos em linguagem simples, com registro da leitura                 | essencial  |
-| `RF-13-33` | Histórico de termos permite consultar a versão que valia em cada data                      | essencial  |
-| `RF-13-34` | Termo declara a coproprietariedade dos dados publicados e o que ela implica na monetização | essencial  |
+| ID         | Requisito                                                                                                     | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-13-29` | Tela lista os dados armazenados da criança, a finalidade e o prazo de guarda de cada um                       | essencial  |
+| `RF-13-30` | Histórico de acessos exibe data, hora, quem acessou, em que papel e qual dado                                 | essencial  |
+| `RF-13-31` | Responsável abre solicitação de esclarecimento a partir de um acesso listado                                  | desejável  |
+| `RF-13-32` | Termos vigentes são exibidos em linguagem simples, com registro da leitura                                    | essencial  |
+| `RF-13-33` | Histórico de termos permite consultar a versão que valia em cada data                                         | essencial  |
+| `RF-13-34` | Termo declara que os dados podem ser entregues, gratuitos e anonimizados, a pesquisadores e gestores públicos | essencial  |
 
 ### 6.6 Atendimento assistido, propostas e avisos
 
@@ -268,13 +269,13 @@ nem em ranking, nem em equipe, nem em criação de colega.
 | `RN-13-10` | Consentimento é somente inserção: revogar é registro novo, nunca edição do anterior           | —                      | 03 §12       |
 | `RN-13-11` | Sem autorização vigente, o Guerreiro(a) não aparece em vitrine, ranking nem elenco do jogo    | 8, 12                  | 03 §12       |
 | `RN-13-12` | O pedido de exclusão despersonaliza o registro de território; não o apaga                     | 7                      | 03 §12.1     |
-| `RN-13-13` | A titularidade não se transfere: o responsável exerce direitos e recebe a parte monetária     | 17                     | 03 §12.1     |
+| `RN-13-13` | A titularidade não se transfere: o responsável exerce os direitos em nome do Guerreiro(a)     | —                      | 03 §12.1     |
 | `RN-13-14` | Toda solicitação tem prazo de resposta de 7 dias e desfecho registrado na App 03              | —                      | 03 §9        |
 | `RN-13-15` | No Ciclo 01 não há notificação por e-mail: o retorno acontece na plataforma                   | —                      | 03 §9        |
 | `RN-13-16` | O ato assistido e o termo impresso são gravados em nome do responsável, com testemunha        | —                      | 03 §9        |
 | `RN-13-17` | A aplicação não abre canal com Apoiadores ou terceiros, nem para parentes da criança          | 10                     | 02 §1, 03 §9 |
 | `RN-13-18` | Proposta de responsável não pontua: a pontuação é da criança                                  | —                      | 03 §§7, 9    |
-| `RN-13-19` | O termo declara a coproprietariedade dos dados publicados, sem operá-la no Ciclo 01           | 17                     | 04 §2        |
+| `RN-13-19` | O termo declara a entrega gratuita e anonimizada dos dados, aprovada caso a caso por Admin    | 17                     | 03 §12.3     |
 | `RN-13-20` | O histórico de consultas ao assistente é restrito à gestão e não é exibido ao responsável     | —                      | 03 §7        |
 | `RN-13-21` | Ocorrência de conduta é visível ao responsável, com o estado da reparação                     | —                      | 13 §3        |
 
@@ -377,7 +378,7 @@ responsável (403); tentativa de ler consulta ao assistente ou transcrição de 
 - **Alternativa a quem recusa**: a criança participa igual, entrega a produção ao Mestre no
   encontro e não aparece publicamente. **Recusa não exclui de nada.**
 - **Titularidade**: o titular é o Guerreiro(a); o responsável **exerce os direitos** em nome
-  dele e recebe a parte monetária do rateio, se houver.
+  dele.
 - **Limite da exclusão**: o dado de território é **despersonalizado, não apagado**, e isso é
   dito na tela e no termo antes do aceite — não descoberto depois.
 - **Transparência de acesso**: o responsável vê **quem acessou** os dados da criança, com data,
@@ -435,10 +436,10 @@ documento 08 perdeu a questão em aberto do responsável sem smartphone.
 
 ## 14. Pendências que permanecem
 
-- **Redação do termo quanto à monetização dos dados**: a coproprietariedade e o rateio 50% /
-  50% estão decididos, mas o texto do termo, a base legal, a periodicidade do pagamento e a
-  fórmula da proporcionalidade não. **Trava o `RF-13-34` no texto, não no desenho** — e no
-  Ciclo 01 a regra se declara sem ser operada.
+- **Redação do termo quanto à entrega de dados**: a regra está decidida — entrega gratuita e
+  anonimizada, aprovada caso a caso por um Admin —, mas o texto que a declara ao responsável,
+  a licença de uso e o critério de aprovação não. **Trava o `RF-13-34` no texto, não no
+  desenho.**
 - **Reidentificação em comunidade com poucos coletores**: o que o responsável autoriza como
   saída pública ainda depende do critério de agregação mínima, em aberto.
 - **Metas numéricas de H2** (documento 10): quantas autorizações caracterizam a hipótese
@@ -449,12 +450,12 @@ documento 08 perdeu a questão em aberto do responsável sem smartphone.
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                                            |
-| ----------------------- | ----------------------------------------------------------------- |
-| `RF-13-01` a `RF-13-06` | 03 §1.1 (autenticação por persona) e 02 §1 (cadastro e vínculo)   |
-| `RF-13-07` a `RF-13-12` | 03 §9 (evolução do Guerreiro(a)) e 11 §6 (nível como percurso)    |
-| `RF-13-13` a `RF-13-21` | 03 §§9, 12 (autorização única) e 02 §1 (quem exerce)              |
-| `RF-13-22` a `RF-13-28` | 03 §§9, 12.1 (solicitações, recusa e limite da exclusão)          |
-| `RF-13-29` a `RF-13-34` | 03 §§9, 12.2 (transparência e prazos), 04 §2 (coproprietariedade) |
-| `RF-13-35` a `RF-13-38` | 03 §9 (atendimento assistido e termo impresso)                    |
-| `RF-13-39` a `RF-13-42` | 03 §§7, 9, 12 (fila única, canal fechado e aviso de coleta)       |
+| Requisito               | Origem                                                          |
+| ----------------------- | --------------------------------------------------------------- |
+| `RF-13-01` a `RF-13-06` | 03 §1.1 (autenticação por persona) e 02 §1 (cadastro e vínculo) |
+| `RF-13-07` a `RF-13-12` | 03 §9 (evolução do Guerreiro(a)) e 11 §6 (nível como percurso)  |
+| `RF-13-13` a `RF-13-21` | 03 §§9, 12 (autorização única) e 02 §1 (quem exerce)            |
+| `RF-13-22` a `RF-13-28` | 03 §§9, 12.1 (solicitações, recusa e limite da exclusão)        |
+| `RF-13-29` a `RF-13-34` | 03 §§9, 12.2 (transparência e prazos), 12.3 (entrega de dados)  |
+| `RF-13-35` a `RF-13-38` | 03 §9 (atendimento assistido e termo impresso)                  |
+| `RF-13-39` a `RF-13-42` | 03 §§7, 9, 12 (fila única, canal fechado e aviso de coleta)     |

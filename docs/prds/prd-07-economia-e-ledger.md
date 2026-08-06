@@ -8,7 +8,7 @@
 | Aplicação        | — (domínio consumido pelas Apps 03, 05, 06, 08 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v2 — 2026-08-04                                      |
+| Versão e data    | v3 — 2026-08-06                                      |
 | Depende de       | PRD-08                                               |
 | Documentos-fonte | 04 §§1–3, 05 §3, 11 §5                               |
 
@@ -58,11 +58,9 @@ atividades previstas.
 
 ### 3.2 Fora do escopo
 
-- **Rateio da monetização dos dados**: não há monetização prevista até dez/2026, e o termo, a
-  base legal, a periodicidade do pagamento e a fórmula da proporcionalidade seguem pendentes no
-  documento 09. A regra do documento 04 — 50% / 50%, com a metade dos Guerreiros e Guerreiras
-  proporcional ao que cada um gerou — continua vigente e será implementada quando houver
-  receita real. No Ciclo 01 ela não é destacada em nenhuma saída pública deste PRD.
+- **Entrega de dados a pesquisadores e gestores públicos**: é gratuita (documento 03 §12.3),
+  não movimenta recurso e não gera lançamento no livro-razão. O pedido, a aprovação e o
+  registro da entrega são da App 03 (PRD-02) e da vitrine (PRD-03).
 - **Relatório de efetividade ao Apoiador**: o ledger guarda os dados que o alimentam; o
   formato do relatório é do PRD-14.
 - **Interface de gestão de recursos** — pertence ao PRD-02 (App 03).
@@ -156,8 +154,8 @@ atividades previstas.
 | `RF-07-06` | Sistema registra aporte por absorção em nome do Mestre ou Admin que proveu o recurso              | essencial  |
 | `RF-07-07` | Sistema mantém saldo por tipo de recurso e ponto de apoio                                         | essencial  |
 | `RF-07-08` | Agendamento de atividade reserva os recursos declarados; sem saldo, fica pendente de lastro       | essencial  |
-| `RF-07-28` | Falta de lastro é publicada como necessidade na vitrine e nas áreas do Apoiador e do Mestre       | essencial  |
-| `RF-07-29` | Mestre ou Admin assume o aporte por absorção a partir da necessidade publicada                    | essencial  |
+| `RF-07-27` | Falta de lastro é publicada como necessidade na vitrine e nas áreas do Apoiador e do Mestre       | essencial  |
+| `RF-07-28` | Mestre ou Admin assume o aporte por absorção a partir da necessidade publicada                    | essencial  |
 | `RF-07-09` | Realização da atividade converte a reserva em baixa; cancelamento libera a reserva                | essencial  |
 | `RF-07-10` | Sistema calcula o Poder Econômico de cada provedor pela soma de moedas aportadas                  | essencial  |
 | `RF-07-11` | Sistema registra exemplar tombado com ponto de apoio, responsável designado e conservação         | essencial  |
@@ -169,14 +167,13 @@ atividades previstas.
 | `RF-07-17` | Apoiador consulta seus aportes e seu Poder Econômico, sem edição                                  | essencial  |
 | `RF-07-18` | Sistema expõe o que falta de recurso para as atividades previstas                                 | essencial  |
 | `RF-07-19` | Lançamento é imutável; correção se faz por lançamento de ajuste, com motivo e autor               | essencial  |
-| `RF-07-20` | Sistema registra a coproprietariedade do dado publicado, sem calcular ou pagar rateio             | desejável  |
-| `RF-07-21` | Conferência de inventário por módulo, com resultado publicável na prestação de contas             | desejável  |
-| `RF-07-22` | Aporte por absorção nasce marcado como ressarcível, com situação de ressarcimento                 | essencial  |
-| `RF-07-23` | Ressarcimento pago exige comprovante anexado, e a plataforma não guarda dado bancário             | essencial  |
-| `RF-07-24` | Sistema aceita doação com destinação a ressarcir recursos absorvidos                              | essencial  |
-| `RF-07-25` | Sistema lista os aportes ressarcíveis em aberto por antiguidade, e o Admin decide o pagamento     | essencial  |
-| `RF-07-26` | Ressarcimento pago reverte as moedas do aporte e mantém o registro do ato                         | essencial  |
-| `RF-07-27` | Card e página pública do Mestre ou Admin exibem quantas vezes ele sustentou atividade sem recurso | essencial  |
+| `RF-07-20` | Conferência de inventário por módulo, com resultado publicável na prestação de contas             | desejável  |
+| `RF-07-21` | Aporte por absorção nasce marcado como ressarcível, com situação de ressarcimento                 | essencial  |
+| `RF-07-22` | Ressarcimento pago exige comprovante anexado, e a plataforma não guarda dado bancário             | essencial  |
+| `RF-07-23` | Sistema aceita doação com destinação a ressarcir recursos absorvidos                              | essencial  |
+| `RF-07-24` | Sistema lista os aportes ressarcíveis em aberto por antiguidade, e o Admin decide o pagamento     | essencial  |
+| `RF-07-25` | Ressarcimento pago reverte as moedas do aporte e mantém o registro do ato                         | essencial  |
+| `RF-07-26` | Card e página pública do Mestre ou Admin exibem quantas vezes ele sustentou atividade sem recurso | essencial  |
 
 ## 7. Regras de negócio
 
@@ -190,13 +187,12 @@ atividades previstas.
 | `RN-07-06` | Recurso provido sem contrapartida financeira por Mestre ou Admin é aporte em nome dele      | —          | 04 §1        |
 | `RN-07-07` | Aporte de patrimônio credita o Poder Econômico uma única vez, sem baixa por consumo         | —          | 04 §1        |
 | `RN-07-08` | Livro da linha Alpha e camisa entregues ao Guerreiro(a) têm baixa definitiva                | —          | 05 §3        |
-| `RN-07-14` | Camisa é conquistada no marco de missão declarado pelo Mestre, não entregue a todo inscrito | —          | 02 §8, 05 §3 |
 | `RN-07-09` | Perda ou dano de material comum não gera dívida ao Guerreiro(a) nem à família               | 11         | 05 §3        |
 | `RN-07-10` | Cada ponto de apoio tem responsável designado pelo acervo permanente e pelos kits           | —          | 05 §3        |
 | `RN-07-11` | O exemplar permanente não sai do ponto de apoio; uso é de bancada, com registro             | —          | 05 §3        |
 | `RN-07-12` | A recompensa do desafio extra precisa de lastro antes da publicação do desafio              | 9          | 04 §3        |
 | `RN-07-13` | O Apoiador não recebe dado de contato nem identificação de Guerreiro(a)                     | 10         | 04 §3        |
-| `RN-07-14` | Dados publicados são coproprietários da entidade e do Guerreiro(a) que os gerou             | 17         | 04 §2        |
+| `RN-07-14` | Camisa é conquistada no marco de missão declarado pelo Mestre, não entregue a todo inscrito | —          | 02 §8, 05 §3 |
 | `RN-07-15` | Lançamento do livro-razão nunca é apagado nem editado                                       | —          | 04 §1        |
 | `RN-07-16` | Quem homologa o aporte não pode ser o próprio provedor                                      | —          | 04 §1        |
 | `RN-07-17` | Ressarcimento não é direito nem promessa: só ocorre havendo receita destinada a ele         | —          | 04 §1        |
@@ -333,14 +329,10 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | Ressarcimento só com receita destinada, por antiguidade e decisão de Admin     | 04 §1          | Já decididos |
 | Ressarcimento reverte as moedas; o registro do ato permanece                   | 04 §1          | Já decididos |
 | Sem armazenar dado bancário: chave PIX por e-mail e apenas comprovante anexado | 04 §1, 03 §11  | Já decididos |
-| Rateio da monetização sem implementação no Ciclo 01                            | —              | Pendente     |
 | Produção executiva como tipo de recurso, aportada por absorção                 | 04 §1          | Já decididos |
-| Metade dos Guerreiros e Guerreiras rateada por proporcionalidade               | 04 §2          | Já decididos |
 
 ## 14. Pendências que permanecem
 
-- **Termo, base legal, periodicidade e fórmula da proporcionalidade do rateio da monetização**
-  dos dados publicados. Não trava o Ciclo 01, porque não há monetização prevista até dez/2026.
 - **Valor-hora da produção executiva** e o critério que converte o histórico de commits e o
   registro do Admin em horas aportadas — cadastro da gestão, como os demais valores da tabela.
 - **Formato dos relatórios públicos de prestação de contas** por atividade, comunidade e
@@ -364,9 +356,8 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | `RF-07-15`              | 04 §3 (desafios extras)                          |
 | `RF-07-16` a `RF-07-18` | 04 §1 (transparência) e 10 §3 (hipótese H3)      |
 | `RF-07-19`              | 04 §1 (livro-razão auditável)                    |
-| `RF-07-20`              | 04 §2 (titularidade dos dados publicados)        |
-| `RF-07-21`              | 05 §3 (conferência de inventário)                |
-| `RF-07-22` a `RF-07-26` | 04 §§1–2 (absorção, ressarcimento e comprovante) |
-| `RF-07-27`              | 11 §8.2 (cards e páginas individuais)            |
-| `RF-07-28` e `RF-07-29` | 04 §1 (necessidade publicada e absorção)         |
+| `RF-07-20`              | 05 §3 (conferência de inventário)                |
+| `RF-07-21` a `RF-07-25` | 04 §§1–2 (absorção, ressarcimento e comprovante) |
+| `RF-07-26`              | 11 §8.2 (cards e páginas individuais)            |
+| `RF-07-27` e `RF-07-28` | 04 §1 (necessidade publicada e absorção)         |
 | `RN-07-20`              | 04 §1 (sem armazenamento de dado bancário)       |
