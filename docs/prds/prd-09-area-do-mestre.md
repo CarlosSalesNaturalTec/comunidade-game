@@ -41,8 +41,8 @@ inteira sem escrever uma linha de código.
   e o checklist do que falta, conforme o modelo do documento 11 — **sem escrever o conteúdo**.
 - **Missão de sondagem** que abre a trilha, como terceira trava de publicação.
 - **Retomada por revisão espaçada**, com a cadência declarada pelo Mestre em cada missão.
-- **Etiqueta ODS da missão**, opcional e descritiva, declarada pelo Mestre e sugerida pelo
-  template a partir do tópico cadastrado.
+- **Etiqueta ODS da missão**, declarada pelo Mestre e sugerida pelo template a partir do
+  tópico cadastrado: **opcional no Ciclo 01, obrigatória a partir do Ciclo 02**.
 - **Atividades de cada missão**, com modalidade (individual ou em equipe) e formato
   (presencial ou on-line) declarados pelo Mestre.
 - **Recompensa de cada marco** — desbloqueio de missão, etapa, batalha ou culminância —, com
@@ -125,9 +125,10 @@ Guerreiras que percorrem as suas trilhas.
 9. **Pagina a trilha** pelas etapas do ciclo — abertura, desenvolvimento, marcos e fechamento —
    e declara **qual marco concede qual recompensa**: desbloqueio de missão, conclusão de etapa,
    batalha ou culminância. Recompensa sem lastro registrado não vai ao ar com a trilha.
-10. Manda publicar. A aplicação confere as três travas: **sem missão de sondagem, sem desafio
-    de coleta e sem culminância com criação original não publica**, dizendo em linguagem
-    simples o que falta.
+10. Manda publicar. A aplicação confere as três travas da trilha: **sem missão de sondagem, sem
+    desafio de coleta e sem culminância com criação original não publica**, dizendo em
+    linguagem simples o que falta. **A partir do Ciclo 02 soma-se a quarta**, esta no nível da
+    missão: missão sem etiqueta ODS segura a publicação da trilha.
 11. Passando, a trilha vai ao ar **na hora, sem aprovação de ninguém**, declarando a licença
     **CC BY-SA** e o crédito do Mestre autor.
 12. Depois, um Admin audita por amostragem. Encontrando problema, **despublica com motivo
@@ -258,7 +259,9 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-83` | Mestre declara a cadência de retomada de uma missão, e pode deixá-la sem retomada              | essencial  |
 | `RF-09-84` | Mestre declara que o desbloqueio de uma missão libera recompensa, e em que quantidade          | essencial  |
 | `RF-09-92` | Mestre etiqueta a missão com os ODS que ela toca, escolhendo o objetivo e, se souber, a meta   | essencial  |
-| `RF-09-93` | Aplicação publica trilha com ou sem etiqueta ODS — a etiqueta nunca é trava de publicação      | essencial  |
+| `RF-09-93` | No Ciclo 01 a trilha publica com ou sem etiqueta ODS                                           | essencial  |
+| `RF-09-96` | A partir do Ciclo 02, a aplicação recusa publicar trilha com missão sem etiqueta ODS           | essencial  |
+| `RF-09-97` | A recusa por falta de etiqueta aponta em linguagem simples quais missões estão sem ela         | essencial  |
 | `RF-09-94` | Mestre vê, na sua trilha, a cobertura de ODS resultante das missões que etiquetou              | desejável  |
 
 ### 6.2 Template de missão
@@ -373,44 +376,44 @@ Guerreiras que percorrem as suas trilhas.
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                              | Invariante (doc 99 §6) | Fonte          |
-| ---------- | -------------------------------------------------------------------------------------------------- | ---------------------- | -------------- |
-| `RN-09-01` | Trilha publicada vai ao ar sem aprovação prévia; a curadoria é auditoria posterior do Admin        | —                      | 03 §11         |
-| `RN-09-02` | Trilha sem ao menos um desafio de coleta de dados reais não é publicável                           | 5                      | 02 §3, 03 §11  |
-| `RN-09-03` | Trilha sem culminância com criação original não é publicável                                       | 5                      | 02 §4, 03 §11  |
-| `RN-09-04` | A criação original é validada pelo Mestre autor e carrega a autoria por toda a vida do registro    | —                      | 02 §4, 11 §7   |
-| `RN-09-05` | O conteúdo educacional publicado sai sob CC BY-SA, com crédito ao Mestre autor                     | —                      | 03 §1          |
-| `RN-09-06` | Vídeo até 200 MB e arquivo até 20 MB por missão                                                    | —                      | 03 §11         |
-| `RN-09-07` | O armazenamento consumido é recurso de _cloud_ registrado no livro-razão                           | 9                      | 04 §1          |
-| `RN-09-08` | O Mestre lança apenas as atividades que propôs e as turmas em que atua                             | —                      | 03 §11         |
-| `RN-09-09` | A pontuação negativa lançada pelo Mestre é efetivada sem revisão de outro Admin                    | —                      | 02 §4, 03 §11  |
-| `RN-09-10` | Pontos de habilidade só vêm de atividade realizada proposta por Mestre                             | 8                      | 02 §4, 11 §5   |
-| `RN-09-11` | O desafio extra exige validação do Mestre da trilha antes da aprovação do Admin                    | —                      | 04 §3          |
-| `RN-09-12` | Atividade sem lastro não acontece; a falta vira necessidade publicada                              | 9                      | 04 §1          |
-| `RN-09-13` | Aporte por absorção é ressarcível e não gera armazenamento de dado bancário                        | —                      | 04 §1          |
-| `RN-09-14` | A aplicação não cadastra Mestre: o cadastro é exclusivo de Admin, com habilidade comprovada        | 3                      | 02 §1, 03 §11  |
-| `RN-09-15` | O responsável é cadastrado depois de se apresentar pessoalmente; no máximo três por Guerreiro(a)   | 3                      | 03 §9          |
-| `RN-09-16` | O modelo de trilha é agnóstico de área do conhecimento e não pressupõe habilidade técnica de TI    | —                      | 03 §11, 11 §2  |
-| `RN-09-17` | A dificuldade é gradual e acessível a toda a faixa de 6 a 16 anos, sem segmentação por idade       | 2                      | 02 §1          |
-| `RN-09-18` | Nenhum conteúdo publicado exibe imagem real de Guerreiro(a)                                        | 12                     | 03 §12         |
-| `RN-09-19` | Criação original só vai à vitrine com autorização do responsável                                   | 11                     | 03 §12         |
-| `RN-09-20` | Catálogo de poderes do Ciclo 01: IA/Robótica e Poder do Território; os demais são ciclo futuro     | 13                     | 02 §2          |
-| `RN-09-21` | Registro de coleta nasce válido; o Mestre audita por amostragem e pode invalidar com motivo        | 6                      | 02 §1, PRD-08  |
-| `RN-09-22` | Toda trilha é paginada pelas etapas do ciclo, com a coleta aberta já na abertura                   | —                      | 11 §2.3        |
-| `RN-09-23` | Nenhum retorno sai por e-mail no Ciclo 01, salvo a chave PIX do ressarcimento enviada ao Admin     | —                      | 03 §9, 04 §1   |
-| `RN-09-24` | Toda atividade de trilha pertence a uma missão e declara modalidade e formato                      | —                      | 11 §§2.1, 4    |
-| `RN-09-25` | Atividade avulsa, fora de trilha, é cadastro da gestão na App 03, não da autoria do Mestre         | —                      | 11 §4, 03 §11  |
-| `RN-09-26` | Recompensa é conquistada em marco da trilha, nunca comprada com saldo de pontos                    | —                      | 02 §8          |
-| `RN-09-27` | Recompensa prometida em marco exige lastro registrado antes da publicação da trilha                | 9                      | 04 §1, 02 §8   |
-| `RN-09-28` | Só a missão obrigatória conta no percurso do nível; a opcional pontua sem entrar no denominador    | 18                     | 11 §§2.2, 6    |
-| `RN-09-29` | Toda trilha abre com missão de sondagem, e sem ela não publica                                     | 5                      | 11 §2.2        |
-| `RN-09-30` | O resultado da sondagem não define nível: nível é percurso                                         | —                      | 11 §§2.2, 6    |
-| `RN-09-31` | Toda atividade exige produção do Guerreiro(a): escrever, falar ou construir                        | 19                     | 02 §4, 11 §2.2 |
-| `RN-09-32` | A retomada pontua uma vez por agendamento; refazer por conta própria não rende ponto novo          | —                      | 11 §§2.2, 5    |
-| `RN-09-33` | O template monta estrutura e aponta lacunas; o conteúdo é escrito pelo Mestre, autor creditado     | —                      | 03 §11         |
-| `RN-09-34` | Trilha de poder técnico recebe sugestão de ao menos uma atividade desplugada                       | —                      | 11 §2.2        |
-| `RN-09-35` | A etiqueta ODS é opcional e descritiva: não pontua, não vira poder e não trava a publicação        | 20                     | 11 §2.2        |
-| `RN-09-36` | A etiqueta declarada na missão é herdada pelo desafio de coleta e pelo desafio extra ligados a ela | 20                     | 11 §2.2        |
+| ID         | Regra                                                                                                              | Invariante (doc 99 §6) | Fonte          |
+| ---------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------- | -------------- |
+| `RN-09-01` | Trilha publicada vai ao ar sem aprovação prévia; a curadoria é auditoria posterior do Admin                        | —                      | 03 §11         |
+| `RN-09-02` | Trilha sem ao menos um desafio de coleta de dados reais não é publicável                                           | 5                      | 02 §3, 03 §11  |
+| `RN-09-03` | Trilha sem culminância com criação original não é publicável                                                       | 5                      | 02 §4, 03 §11  |
+| `RN-09-04` | A criação original é validada pelo Mestre autor e carrega a autoria por toda a vida do registro                    | —                      | 02 §4, 11 §7   |
+| `RN-09-05` | O conteúdo educacional publicado sai sob CC BY-SA, com crédito ao Mestre autor                                     | —                      | 03 §1          |
+| `RN-09-06` | Vídeo até 200 MB e arquivo até 20 MB por missão                                                                    | —                      | 03 §11         |
+| `RN-09-07` | O armazenamento consumido é recurso de _cloud_ registrado no livro-razão                                           | 9                      | 04 §1          |
+| `RN-09-08` | O Mestre lança apenas as atividades que propôs e as turmas em que atua                                             | —                      | 03 §11         |
+| `RN-09-09` | A pontuação negativa lançada pelo Mestre é efetivada sem revisão de outro Admin                                    | —                      | 02 §4, 03 §11  |
+| `RN-09-10` | Pontos de habilidade só vêm de atividade realizada proposta por Mestre                                             | 8                      | 02 §4, 11 §5   |
+| `RN-09-11` | O desafio extra exige validação do Mestre da trilha antes da aprovação do Admin                                    | —                      | 04 §3          |
+| `RN-09-12` | Atividade sem lastro não acontece; a falta vira necessidade publicada                                              | 9                      | 04 §1          |
+| `RN-09-13` | Aporte por absorção é ressarcível e não gera armazenamento de dado bancário                                        | —                      | 04 §1          |
+| `RN-09-14` | A aplicação não cadastra Mestre: o cadastro é exclusivo de Admin, com habilidade comprovada                        | 3                      | 02 §1, 03 §11  |
+| `RN-09-15` | O responsável é cadastrado depois de se apresentar pessoalmente; no máximo três por Guerreiro(a)                   | 3                      | 03 §9          |
+| `RN-09-16` | O modelo de trilha é agnóstico de área do conhecimento e não pressupõe habilidade técnica de TI                    | —                      | 03 §11, 11 §2  |
+| `RN-09-17` | A dificuldade é gradual e acessível a toda a faixa de 6 a 16 anos, sem segmentação por idade                       | 2                      | 02 §1          |
+| `RN-09-18` | Nenhum conteúdo publicado exibe imagem real de Guerreiro(a)                                                        | 12                     | 03 §12         |
+| `RN-09-19` | Criação original só vai à vitrine com autorização do responsável                                                   | 11                     | 03 §12         |
+| `RN-09-20` | Catálogo de poderes do Ciclo 01: IA/Robótica e Poder do Território; os demais são ciclo futuro                     | 13                     | 02 §2          |
+| `RN-09-21` | Registro de coleta nasce válido; o Mestre audita por amostragem e pode invalidar com motivo                        | 6                      | 02 §1, PRD-08  |
+| `RN-09-22` | Toda trilha é paginada pelas etapas do ciclo, com a coleta aberta já na abertura                                   | —                      | 11 §2.3        |
+| `RN-09-23` | Nenhum retorno sai por e-mail no Ciclo 01, salvo a chave PIX do ressarcimento enviada ao Admin                     | —                      | 03 §9, 04 §1   |
+| `RN-09-24` | Toda atividade de trilha pertence a uma missão e declara modalidade e formato                                      | —                      | 11 §§2.1, 4    |
+| `RN-09-25` | Atividade avulsa, fora de trilha, é cadastro da gestão na App 03, não da autoria do Mestre                         | —                      | 11 §4, 03 §11  |
+| `RN-09-26` | Recompensa é conquistada em marco da trilha, nunca comprada com saldo de pontos                                    | —                      | 02 §8          |
+| `RN-09-27` | Recompensa prometida em marco exige lastro registrado antes da publicação da trilha                                | 9                      | 04 §1, 02 §8   |
+| `RN-09-28` | Só a missão obrigatória conta no percurso do nível; a opcional pontua sem entrar no denominador                    | 18                     | 11 §§2.2, 6    |
+| `RN-09-29` | Toda trilha abre com missão de sondagem, e sem ela não publica                                                     | 5                      | 11 §2.2        |
+| `RN-09-30` | O resultado da sondagem não define nível: nível é percurso                                                         | —                      | 11 §§2.2, 6    |
+| `RN-09-31` | Toda atividade exige produção do Guerreiro(a): escrever, falar ou construir                                        | 19                     | 02 §4, 11 §2.2 |
+| `RN-09-32` | A retomada pontua uma vez por agendamento; refazer por conta própria não rende ponto novo                          | —                      | 11 §§2.2, 5    |
+| `RN-09-33` | O template monta estrutura e aponta lacunas; o conteúdo é escrito pelo Mestre, autor creditado                     | —                      | 03 §11         |
+| `RN-09-34` | Trilha de poder técnico recebe sugestão de ao menos uma atividade desplugada                                       | —                      | 11 §2.2        |
+| `RN-09-35` | A etiqueta ODS não pontua nem vira poder; é opcional no Ciclo 01 e obrigatória em toda missão a partir do Ciclo 02 | 20                     | 11 §2.2        |
+| `RN-09-36` | A etiqueta declarada na missão é herdada pelo desafio de coleta e pelo desafio extra ligados a ela                 | 20                     | 11 §2.2        |
 
 ## 8. Modelo de dados
 
@@ -659,4 +662,4 @@ avulsa**.
 | `RF-09-77` a `RF-09-79` | 03 §§7, 11 (disciplinas e conteúdo do apoio escolar)             |
 | `RF-09-80` a `RF-09-84` | 11 §2.2 (modelo de missão) e 02 §§3, 8                           |
 | `RF-09-85` a `RF-09-91` | 03 §11 (template e auxílio de IA na autoria) e 11 §2.2           |
-| `RF-09-92` a `RF-09-95` | 11 §2.2 e 04 §4 (etiqueta ODS da missão e cobertura)             |
+| `RF-09-92` a `RF-09-97` | 11 §2.2 e 04 §4 (etiqueta ODS da missão e cobertura)             |
