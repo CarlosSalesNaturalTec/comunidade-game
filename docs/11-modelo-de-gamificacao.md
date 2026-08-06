@@ -57,13 +57,13 @@ de humanas. O que muda é o conteúdo e o que se mede na coleta; a estrutura é 
 ```text
 TRILHA (autoria de um Mestre, vinculada a um Poder)
 │
-├── PONTOS DE TRILHA (sequência ordenada, com dificuldade gradual)
-│     └── cada ponto contém:
+├── MISSÕES (sequência ordenada, com dificuldade gradual)
+│     └── cada missão contém:
 │           ├── CONTEÚDO — próprio do Mestre, de terceiros (curado) e
 │           │   bibliografia de apoio (título/capítulo do acervo)
 │           ├── ATIVIDADES — o que o Guerreiro(a) realiza para aprender
-│           └── DESAFIO DE DESBLOQUEIO — quiz ou desafio que abre o
-│               próximo ponto e os níveis do poder
+│           └── DESAFIO DE DESBLOQUEIO — quiz ou desafio que abre a
+│               próxima missão e os níveis do poder
 │
 ├── DESAFIO(S) DE COLETA DE DADOS REAIS — obrigatório em toda trilha
 │     └── série temporal com cadência; pontua enquanto ativa
@@ -75,22 +75,22 @@ TRILHA (autoria de um Mestre, vinculada a um Poder)
       ├── ENCONTROS PRESENCIAIS — dinâmica assíncrona
       ├── BATALHA — quando a trilha prevê uma disputa (opcional)
       └── CULMINÂNCIA — apresentação pública da criação original;
-          é o ponto final de toda trilha
+          é o encerramento de toda trilha
 ```
 
 | Componente                 | O que é                                                                                  |
 | -------------------------- | ---------------------------------------------------------------------------------------- |
-| **Ponto de trilha**        | Menor unidade de progressão: conteúdo + atividades + desafio de desbloqueio              |
-| **Conteúdo**               | Material do Mestre, conteúdo de terceiros curado e bibliografia de apoio por ponto       |
+| **Missão**                 | Menor unidade de progressão: conteúdo + atividades + desafio de desbloqueio              |
+| **Conteúdo**               | Material do Mestre, conteúdo de terceiros curado e bibliografia de apoio por missão      |
 | **Atividade**              | O que o Guerreiro(a) realiza, classificado pela taxonomia da §4                          |
-| **Desafio de desbloqueio** | Quiz ou desafio que abre o próximo ponto e ativa níveis do poder                         |
+| **Desafio de desbloqueio** | Quiz ou desafio que abre a próxima missão e ativa níveis do poder                        |
 | **Desafio de coleta**      | Série temporal de dados reais do território; requisito de **toda** trilha                |
 | **Desafio extra**          | Proposto por Apoiador, validado pelo Mestre e aprovado por Admin; pontos extras isolados |
 | **Encontro presencial**    | Marco recorrente; roteiro assíncrono com momentos coletivos âncora                       |
 | **Batalha**                | Disputa de ideias e realizações; marco opcional, previsto pela trilha                    |
-| **Culminância**            | Apresentação pública da criação original; **ponto final de toda trilha**                 |
+| **Culminância**            | Apresentação pública da criação original; **encerramento de toda trilha**                |
 
-**Marco concede recompensa.** Desbloqueio de ponto, conclusão de etapa, batalha e culminância
+**Marco concede recompensa.** Desbloqueio de missão, conclusão de etapa, batalha e culminância
 são os momentos em que a recompensa é entregue — o Mestre autor declara qual marco concede o
 quê, conforme a regra do documento 02.
 
@@ -113,21 +113,21 @@ técnica, mostrando que o modelo não pressupõe tecnologia:
 Toda trilha é **paginada no calendário de um ciclo** (o período letivo da comunidade). O modelo
 é o mesmo para qualquer trilha:
 
-| Etapa               | O que acontece                                                                                                                                                   | Conteúdo e material                                                                 |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| **Abertura**        | Onboarding e credenciamento; escolha do poder; **ritual de entrada** — a entrega do livro próprio é a primeira atividade pontuada; abertura das séries de coleta | Ponto 1 da trilha; livro próprio entregue; kit e insumos da primeira montagem       |
-| **Desenvolvimento** | Encontros presenciais assíncronos avançando os pontos + desafios on-line entre encontros; séries de coleta rendendo pontos; desafios extras de Apoiadores        | Pontos intermediários; capítulo recomendado por ponto; acervo permanente em bancada |
-| **Marcos**          | Batalhas, quando a trilha prevê; Quiz ao Vivo nos encontros                                                                                                      | Artefatos construídos no desenvolvimento                                            |
-| **Fechamento**      | **Culminância**, conferência de inventário do acervo, avaliação do ciclo e das hipóteses                                                                         | Portfólio, vídeos (com consentimento), prestação de contas                          |
+| Etapa               | O que acontece                                                                                                                                                   | Conteúdo e material                                                                   |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Abertura**        | Onboarding e credenciamento; escolha do poder; **ritual de entrada** — a entrega do livro próprio é a primeira atividade pontuada; abertura das séries de coleta | Missão 1 da trilha; livro próprio entregue; kit e insumos da primeira montagem        |
+| **Desenvolvimento** | Encontros presenciais assíncronos avançando as missões + desafios on-line entre encontros; séries de coleta rendendo pontos; desafios extras de Apoiadores       | Missões intermediárias; capítulo recomendado por missão; acervo permanente em bancada |
+| **Marcos**          | Batalhas, quando a trilha prevê; Quiz ao Vivo nos encontros                                                                                                      | Artefatos construídos no desenvolvimento                                              |
+| **Fechamento**      | **Culminância**, conferência de inventário do acervo, avaliação do ciclo e das hipóteses                                                                         | Portfólio, vídeos (com consentimento), prestação de contas                            |
 
 Diretrizes de paginação para o Mestre (autor da trilha):
 
 - **O ritual de abertura não se adia**: livro próprio na mão e série de coleta aberta já na
   primeira etapa — é o que dá material de trabalho e pontuação recorrente desde o primeiro dia.
-- **Um ponto de trilha por encontro é o passo de referência**, mas a dinâmica assíncrona
-  permite que cada Guerreiro(a) ou equipe esteja em pontos diferentes: a paginação orienta o
+- **Uma missão por encontro é o passo de referência**, mas a dinâmica assíncrona
+  permite que cada Guerreiro(a) ou equipe esteja em missões diferentes: a paginação orienta o
   planejamento de recursos, não o ritmo individual.
-- **A bibliografia acompanha o ponto, não a trilha inteira.**
+- **A bibliografia acompanha a missão, não a trilha inteira.**
 - **Batalha depois da construção, culminância depois de tudo**: os marcos ficam na segunda
   metade do ciclo, quando há o que disputar e o que mostrar.
 - **O fechamento é parte da trilha, não apêndice**: a culminância pontua, alimenta o portfólio
@@ -135,13 +135,13 @@ Diretrizes de paginação para o Mestre (autor da trilha):
 
 ## 3. Papéis no motor
 
-| Persona                | Papel                                                                                                                                                                                      |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Guerreiro(a)**       | Percorre trilhas, realiza atividades e desafios, **produz criações originais** com autoria creditada, acumula pontos, níveis e badges, troca pontos por recompensas e **propõe melhorias** |
-| **Mestre**             | Autor da trilha: define pontos, conteúdos, atividades, desafios e a paginação no ciclo; lança resultados; valida desafios extras. Pode ser de **qualquer área do conhecimento**            |
-| **Apoiador**           | Provê lastro e propõe **desafios extras** (abertos ou direcionados); acompanha a efetividade do apoio                                                                                      |
-| **Admin**              | Aprova desafios extras, opera lançamentos e painéis, cria Comunidades Virtuais                                                                                                             |
-| **Comunidade Virtual** | Recebe os dados coletados; sua representação visual cresce com a participação                                                                                                              |
+| Persona                | Papel                                                                                                                                                                                          |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Guerreiro(a)**       | Percorre trilhas, realiza atividades e desafios, **produz criações originais** com autoria creditada, acumula pontos, níveis e badges, conquista recompensas nos marcos e **propõe melhorias** |
+| **Mestre**             | Autor da trilha: define missões, conteúdos, atividades, desafios e a paginação no ciclo; lança resultados; valida desafios extras. Pode ser de **qualquer área do conhecimento**               |
+| **Apoiador**           | Provê lastro e propõe **desafios extras** (abertos ou direcionados); acompanha a efetividade do apoio                                                                                          |
+| **Admin**              | Aprova desafios extras, opera lançamentos e painéis, cria Comunidades Virtuais                                                                                                                 |
+| **Comunidade Virtual** | Recebe os dados coletados; sua representação visual cresce com a participação                                                                                                                  |
 
 ## 4. Taxonomia de atividades e desafios
 
@@ -156,7 +156,7 @@ atividade pode ser _em equipe + presencial + de construção_):
 
 Regras transversais:
 
-- **Toda atividade de trilha pertence a um ponto de trilha** e é autorada pelo Mestre, que
+- **Toda atividade de trilha pertence a uma missão** e é autorada pelo Mestre, que
   declara a modalidade e o formato. Atividade avulsa, fora de trilha, é cadastro da gestão.
 - **Dificuldade gradual, independente de idade** (faixa 6–16).
 - **Um Guerreiro(a) pode integrar mais de uma equipe** e pontua em **todas** as atividades em
@@ -229,13 +229,13 @@ acumulado. A razão é dupla: a coleta é recorrente e sem teto, e amarrar níve
 alguém subir sustentando séries sem percorrer a trilha; e ponto acumula com tempo, o que
 condenaria quem entra no meio do ciclo, contra a dinâmica assíncrona dos encontros.
 
-| Nível | Critério            | Condição verificável                                                     |
-| ----- | ------------------- | ------------------------------------------------------------------------ |
-| 1     | Inscrito e assíduo  | Inscrito na trilha e com a primeira atividade realizada                  |
-| 2     | Bom rendimento      | **1/3** dos pontos de trilha desbloqueados                               |
-| 3     | Ótimo rendimento    | **2/3** desbloqueados **e** série de coleta ativa                        |
-| 4     | Apoio aos colegas   | Todos os pontos desbloqueados **e** ao menos um mérito extra por auxílio |
-| **5** | **Mestre Aprendiz** | **Culminância validada** pelo Mestre autor da trilha                     |
+| Nível | Critério            | Condição verificável                                                      |
+| ----- | ------------------- | ------------------------------------------------------------------------- |
+| 1     | Inscrito e assíduo  | Inscrito na trilha e com a primeira atividade realizada                   |
+| 2     | Bom rendimento      | **1/3** das missões desbloqueadas                                         |
+| 3     | Ótimo rendimento    | **2/3** desbloqueadas **e** série de coleta ativa                         |
+| 4     | Apoio aos colegas   | Todas as missões desbloqueadas **e** ao menos um mérito extra por auxílio |
+| **5** | **Mestre Aprendiz** | **Culminância validada** pelo Mestre autor da trilha                      |
 
 **Nível conquistado não regride**: série que se interrompe depois, ou pontuação negativa
 lançada em seguida, não derrubam o nível já alcançado.

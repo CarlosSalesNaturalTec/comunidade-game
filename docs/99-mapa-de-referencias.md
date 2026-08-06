@@ -82,7 +82,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Área do Apoiador (App 08) e registro de propostas                  | 03 §10                                     | 04, 08, 09, 12                 |
 | Área do Mestre (App 09) — autoria e operação                       | 03 §11                                     | 02, 05, 08, 09                 |
 | Publicação da trilha (sem aprovação prévia, travas e conteúdo)     | 03 §11                                     | 02, 05, 08, 11                 |
-| Atividade do ponto de trilha (modalidade e formato)                | 11 §§2.1, 4                                | 02, 03 §11, 08                 |
+| Atividade da missão (modalidade e formato)                         | 11 §§2.1, 4                                | 02, 03 §11, 08                 |
 | Recompensa conquistada em marco da trilha                          | 02 §8                                      | 03 §7, 08, 11 §2.1, 12         |
 | Acompanhamento por nick e favoritos (Apoiador e visitante)         | 02 §1 e 03 §§8, 10                         | 04 §3, 08, 12                  |
 | Licença do conteúdo educacional (CC BY-SA)                         | 03 §1                                      | 01, 08, 09                     |
@@ -126,8 +126,8 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 
 | Conceito                                    | Definição                 | PRDs                           |
 | ------------------------------------------- | ------------------------- | ------------------------------ |
-| Trilha e pontos de trilha                   | 02 §3 + 11 §2             | PRD-01, 09, 05                 |
-| Conteúdo e bibliografia por ponto           | 05 §3 + 11 §2             | PRD-09, 07                     |
+| Trilha e missões                            | 02 §3 + 11 §2             | PRD-01, 09, 05                 |
+| Conteúdo e bibliografia por missão          | 05 §3 + 11 §2             | PRD-09, 07                     |
 | Atividades e taxonomia                      | 02 §4 + 11 §§2.1, 4       | PRD-09, 01, 02, 05             |
 | Acompanhamento por nick e favoritos         | 02 §1 + 03 §§8, 10        | PRD-03, 14, 01                 |
 | Desafios de desbloqueio                     | 02 §2                     | PRD-01, 09, 05                 |

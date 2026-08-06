@@ -19,7 +19,7 @@ e o uso entre um encontro presencial e outro — a aula presencial é do App 01 
 garante que existe trilha escrita; este PRD garante que a criança **sabe o que fazer com ela sem
 precisar perguntar a ninguém**, mesmo longe do ponto de apoio.
 
-O que muda na operação do Ciclo 01: o Guerreiro(a) entra por nick e imagem, vê o próximo ponto
+O que muda na operação do Ciclo 01: o Guerreiro(a) entra por nick e imagem, vê a próxima missão
 da trilha, faz o desafio de desbloqueio, registra a medição do território da semana, entrega a
 criação original na culminância e acompanha o que conquistou. É também por aqui que ele
 **propõe melhorias na plataforma** — o valor de protagonismo virando mecânica, não texto.
@@ -34,11 +34,11 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
 ### 3.1 Dentro do escopo
 
 - **Entrada por nick e imagem** em aparelho compartilhado, com troca rápida de sessão.
-- **Guia da trilha**: qual é o próximo ponto, o que já foi conquistado, o que está bloqueado e
+- **Guia da trilha**: qual é a próxima missão, o que já foi conquistado, o que está bloqueado e
   o que falta para desbloquear.
 - **Escolha do poder** entre os do catálogo do ciclo e inscrição nas trilhas do poder.
-- **Conteúdo do ponto de trilha** — texto, imagens, vídeo, arquivos e bibliografia de apoio —
-  e o **desafio de desbloqueio** que abre o ponto seguinte.
+- **Conteúdo da missão** — texto, imagens, vídeo, arquivos e bibliografia de apoio —
+  e o **desafio de desbloqueio** que abre a missão seguinte.
 - **Desafios semanais** (on-line, presencial, em equipe e em equipe com familiar) e **desafios
   extras de Apoiadores**, abertos ou direcionados.
 - **Equipes**: as de que participa, o papel em cada uma e as atividades de cada equipe — a
@@ -111,24 +111,24 @@ avatar e nick.
 
 ### 5.2 Saber o que fazer agora
 
-1. A tela inicial abre no **próximo ponto de trilha**: o que é, o que precisa ser feito e o
+1. A tela inicial abre na **próxima missão**: o que é, o que precisa ser feito e o
    que ele desbloqueia.
 2. Abaixo, o que está **em aberto hoje**: desafio semanal da semana, medição do território
    pendente e desafio extra vigente.
-3. O que está **bloqueado** aparece com o motivo — "falta desbloquear o ponto 3" —, nunca como
+3. O que está **bloqueado** aparece com o motivo — "falta desbloquear a missão 3" —, nunca como
    cadeado mudo.
-4. O progresso mostra o **nível na trilha e o que falta para o próximo**, em pontos de trilha
+4. O progresso mostra o **nível na trilha e o que falta para o próximo**, em missões
    desbloqueados: nível é percurso, não saldo.
 5. Quem participa de mais de uma trilha alterna entre elas sem perder o contexto de nenhuma.
 
-### 5.3 Desbloquear um ponto de trilha
+### 5.3 Desbloquear uma missão
 
-1. O Guerreiro(a) abre o ponto e percorre o conteúdo — texto, imagens, vídeo e arquivos —, com
+1. O Guerreiro(a) abre a missão e percorre o conteúdo — texto, imagens, vídeo e arquivos —, com
    a bibliografia de apoio indicando **título, capítulo e se há exemplar no seu ponto de
    apoio**.
-2. Realiza as atividades daquele ponto, individuais ou em equipe, presenciais ou on-line.
+2. Realiza as atividades daquela missão, individuais ou em equipe, presenciais ou on-line.
 3. Faz o **desafio de desbloqueio**: quiz ou desafio prático declarado pelo Mestre autor.
-4. Passando, o ponto seguinte abre na hora e o percurso avança.
+4. Passando, a missão seguinte abre na hora e o percurso avança.
 5. Não passando, ele pode tentar de novo — a trilha é de dificuldade gradual e não elimina
    ninguém.
 6. Os **pontos da atividade** só entram quando o Mestre lança o resultado; a aplicação deixa
@@ -216,19 +216,19 @@ avatar e nick.
 
 ### 6.2 Guia da trilha e progressão
 
-| ID         | Requisito                                                                                 | Prioridade |
-| ---------- | ----------------------------------------------------------------------------------------- | ---------- |
-| `RF-05-08` | Tela inicial abre no próximo ponto de trilha, com o que fazer e o que ele desbloqueia     | essencial  |
-| `RF-05-09` | Guerreiro(a) escolhe o poder entre os do catálogo do ciclo e se inscreve nas trilhas dele | essencial  |
-| `RF-05-10` | Ponto bloqueado exibe o motivo do bloqueio e o que falta para abri-lo                     | essencial  |
-| `RF-05-11` | Guerreiro(a) percorre o conteúdo do ponto: texto, imagens, vídeo, arquivos e bibliografia | essencial  |
-| `RF-05-12` | Bibliografia indica título, capítulo e se há exemplar disponível no seu ponto de apoio    | essencial  |
-| `RF-05-13` | Guerreiro(a) realiza o desafio de desbloqueio e o ponto seguinte abre na hora ao passar   | essencial  |
-| `RF-05-14` | Desafio de desbloqueio não passado pode ser repetido, sem eliminar o Guerreiro(a)         | essencial  |
-| `RF-05-15` | Progresso exibe o nível na trilha e quantos pontos de trilha faltam para o próximo nível  | essencial  |
-| `RF-05-16` | Aplicação exibe pontos, badges e recompensas conquistadas, por trilha ou poder            | essencial  |
-| `RF-05-17` | Guerreiro(a) inscrito em mais de uma trilha alterna entre elas preservando o contexto     | essencial  |
-| `RF-05-18` | Resultado ainda não lançado pelo Mestre aparece como "aguardando lançamento"              | essencial  |
+| ID         | Requisito                                                                                  | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------ | ---------- |
+| `RF-05-08` | Tela inicial abre na próxima missão, com o que fazer e o que ela desbloqueia               | essencial  |
+| `RF-05-09` | Guerreiro(a) escolhe o poder entre os do catálogo do ciclo e se inscreve nas trilhas dele  | essencial  |
+| `RF-05-10` | Missão bloqueada exibe o motivo do bloqueio e o que falta para abri-la                     | essencial  |
+| `RF-05-11` | Guerreiro(a) percorre o conteúdo da missão: texto, imagens, vídeo, arquivos e bibliografia | essencial  |
+| `RF-05-12` | Bibliografia indica título, capítulo e se há exemplar disponível no seu ponto de apoio     | essencial  |
+| `RF-05-13` | Guerreiro(a) realiza o desafio de desbloqueio e a missão seguinte abre na hora ao passar   | essencial  |
+| `RF-05-14` | Desafio de desbloqueio não passado pode ser repetido, sem eliminar o Guerreiro(a)          | essencial  |
+| `RF-05-15` | Progresso exibe o nível na trilha e quantas missões faltam para o próximo nível            | essencial  |
+| `RF-05-16` | Aplicação exibe pontos, badges e recompensas conquistadas, por trilha ou poder             | essencial  |
+| `RF-05-17` | Guerreiro(a) inscrito em mais de uma trilha alterna entre elas preservando o contexto      | essencial  |
+| `RF-05-18` | Resultado ainda não lançado pelo Mestre aparece como "aguardando lançamento"               | essencial  |
 
 ### 6.3 Desafios, atividades e equipes
 
@@ -356,7 +356,7 @@ escreve em outras quatro que já existem, além da `ConsultaAoAssistente` criada
 
 ```text
 ESCREVE (por ato do Guerreiro(a))       LÊ (definidos em outro PRD)
-RegistroDeColeta        (PRD-08)        Trilha / PontoDeTrilha    (PRD-09)
+RegistroDeColeta        (PRD-08)        Trilha / Missao           (PRD-09)
 SolicitacaoDeLocal      (PRD-08)        Conteudo / Bibliografia   (PRD-09)
 CriacaoOriginal         (PRD-09)        Culminancia               (PRD-09)
 SugestaoOuProposta      (PRD-01)        Atividade / Resultado     (PRD-01)
@@ -378,7 +378,7 @@ Avatar (características)                RecompensaDeMarco         (PRD-09)
 
 Imutabilidade e derivação:
 
-- `Nivel` é **calculado** a partir dos pontos de trilha desbloqueados, do mérito extra e da
+- `Nivel` é **calculado** a partir das missões desbloqueadas, do mérito extra e da
   culminância validada. Não é campo que se escreve à mão, e **não regride**.
 - `RegistroDeColeta` fora da faixa nasce na situação **a conferir** e só passa a válido pela
   validação do Mestre.
@@ -396,31 +396,31 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessã
 único. As rotas de coleta e de solicitação de local são do PRD-08 e as de acervo, do PRD-07;
 aparecem aqui apenas quando o ato é do Guerreiro(a).
 
-| Método | Rota                                 | Autenticação | Descrição                                                     |
-| ------ | ------------------------------------ | ------------ | ------------------------------------------------------------- |
-| POST   | `/v1/sessoes/guerreiro`              | pública      | Abre sessão com nick e imagem, conferidos contra o _template_ |
-| POST   | `/v1/sessoes/guerreiro/assistida`    | Mestre/Admin | Abre sessão do Guerreiro(a) sem imagem gravada ou após falha  |
-| DELETE | `/v1/sessoes/guerreiro`              | Guerreiro(a) | Encerra a sessão no aparelho compartilhado                    |
-| GET    | `/v1/eu/trilhas`                     | Guerreiro(a) | Trilhas em que está inscrito, com o próximo ponto de cada uma |
-| POST   | `/v1/eu/trilhas/{id}/inscricao`      | Guerreiro(a) | Inscreve-se na trilha de um poder do catálogo do ciclo        |
-| GET    | `/v1/eu/trilhas/{id}/pontos/{ordem}` | Guerreiro(a) | Conteúdo do ponto, bibliografia e desafio de desbloqueio      |
-| POST   | `/v1/eu/pontos/{id}/desbloqueio`     | Guerreiro(a) | Submete o desafio de desbloqueio do ponto                     |
-| GET    | `/v1/eu/progresso`                   | Guerreiro(a) | Pontos, nível por trilha ou poder, badges e o que falta       |
-| GET    | `/v1/eu/desafios`                    | Guerreiro(a) | Desafios semanais e extras vigentes e elegíveis               |
-| GET    | `/v1/eu/equipes`                     | Guerreiro(a) | Equipes de que participa, com papel e atividades              |
-| GET    | `/v1/eu/series`                      | Guerreiro(a) | Séries de coleta, próxima medição, situação e pontos rendidos |
-| POST   | `/v1/series/{id}/registros`          | Guerreiro(a) | Registra a medição, com local, valor ou mídia e origem        |
-| POST   | `/v1/solicitacoes-de-local`          | Guerreiro(a) | Solicita a inclusão de local faltante                         |
-| POST   | `/v1/culminancias/{id}/criacoes`     | Guerreiro(a) | Entrega a criação original, individual ou de equipe           |
-| GET    | `/v1/eu/portfolio`                   | Guerreiro(a) | Criações validadas, com situação de exposição pública         |
-| GET    | `/v1/eu/recompensas`                 | Guerreiro(a) | Recompensas conquistadas em marcos e situação da entrega      |
-| GET    | `/v1/eu/acervo`                      | Guerreiro(a) | Exemplar próprio e permanentes em uso, com a ficha de vida    |
-| GET    | `/v1/rankings/{comunidade}`          | pública      | Ranking por trilha ou poder, somente com pontos regulares     |
-| POST   | `/v1/sugestoes`                      | Guerreiro(a) | Registra sugestão em texto ou áudio na fila única da gestão   |
-| GET    | `/v1/eu/sugestoes`                   | Guerreiro(a) | Status das próprias sugestões                                 |
-| GET    | `/v1/apoio-escolar/disciplinas`      | Guerreiro(a) | Disciplinas ativas com conteúdo cadastrado                    |
-| POST   | `/v1/apoio-escolar/consultas`        | Guerreiro(a) | Pergunta em texto ou áudio; responde a partir do corpus       |
-| PATCH  | `/v1/eu/avatar`                      | Guerreiro(a) | Altera as características do próprio avatar                   |
+| Método | Rota                                  | Autenticação | Descrição                                                      |
+| ------ | ------------------------------------- | ------------ | -------------------------------------------------------------- |
+| POST   | `/v1/sessoes/guerreiro`               | pública      | Abre sessão com nick e imagem, conferidos contra o _template_  |
+| POST   | `/v1/sessoes/guerreiro/assistida`     | Mestre/Admin | Abre sessão do Guerreiro(a) sem imagem gravada ou após falha   |
+| DELETE | `/v1/sessoes/guerreiro`               | Guerreiro(a) | Encerra a sessão no aparelho compartilhado                     |
+| GET    | `/v1/eu/trilhas`                      | Guerreiro(a) | Trilhas em que está inscrito, com a próxima missão de cada uma |
+| POST   | `/v1/eu/trilhas/{id}/inscricao`       | Guerreiro(a) | Inscreve-se na trilha de um poder do catálogo do ciclo         |
+| GET    | `/v1/eu/trilhas/{id}/missoes/{ordem}` | Guerreiro(a) | Conteúdo da missão, bibliografia e desafio de desbloqueio      |
+| POST   | `/v1/eu/missoes/{id}/desbloqueio`     | Guerreiro(a) | Submete o desafio de desbloqueio da missão                     |
+| GET    | `/v1/eu/progresso`                    | Guerreiro(a) | Pontos, nível por trilha ou poder, badges e o que falta        |
+| GET    | `/v1/eu/desafios`                     | Guerreiro(a) | Desafios semanais e extras vigentes e elegíveis                |
+| GET    | `/v1/eu/equipes`                      | Guerreiro(a) | Equipes de que participa, com papel e atividades               |
+| GET    | `/v1/eu/series`                       | Guerreiro(a) | Séries de coleta, próxima medição, situação e pontos rendidos  |
+| POST   | `/v1/series/{id}/registros`           | Guerreiro(a) | Registra a medição, com local, valor ou mídia e origem         |
+| POST   | `/v1/solicitacoes-de-local`           | Guerreiro(a) | Solicita a inclusão de local faltante                          |
+| POST   | `/v1/culminancias/{id}/criacoes`      | Guerreiro(a) | Entrega a criação original, individual ou de equipe            |
+| GET    | `/v1/eu/portfolio`                    | Guerreiro(a) | Criações validadas, com situação de exposição pública          |
+| GET    | `/v1/eu/recompensas`                  | Guerreiro(a) | Recompensas conquistadas em marcos e situação da entrega       |
+| GET    | `/v1/eu/acervo`                       | Guerreiro(a) | Exemplar próprio e permanentes em uso, com a ficha de vida     |
+| GET    | `/v1/rankings/{comunidade}`           | pública      | Ranking por trilha ou poder, somente com pontos regulares      |
+| POST   | `/v1/sugestoes`                       | Guerreiro(a) | Registra sugestão em texto ou áudio na fila única da gestão    |
+| GET    | `/v1/eu/sugestoes`                    | Guerreiro(a) | Status das próprias sugestões                                  |
+| GET    | `/v1/apoio-escolar/disciplinas`       | Guerreiro(a) | Disciplinas ativas com conteúdo cadastrado                     |
+| POST   | `/v1/apoio-escolar/consultas`         | Guerreiro(a) | Pergunta em texto ou áudio; responde a partir do corpus        |
+| PATCH  | `/v1/eu/avatar`                       | Guerreiro(a) | Altera as características do próprio avatar                    |
 
 Erros previstos: entrada sem câmera disponível (422); conferência biométrica sem
 correspondência (401), com o caminho da sessão assistida; consulta a dado de outro
@@ -437,7 +437,7 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
 - **Aparelho compartilhado é a condição normal de uso**: troca de sessão em poucos segundos,
   nenhum dado do Guerreiro(a) anterior visível na tela seguinte e nenhuma imagem no aparelho.
 - **Rede instável**: a entrada exige rede, porque a conferência da imagem acontece no núcleo; o
-  conteúdo já carregado do ponto de trilha continua legível durante uma queda. O apoio escolar
+  conteúdo já carregado da missão continua legível durante uma queda. O apoio escolar
   **só opera com rede** — o modelo roda no backend — e diz isso claramente quando indisponível.
 - **Áudio no navegador**: captação e reprodução por `navigator.mediaDevices.getUserMedia`, com
   reconhecimento e síntese de fala em pt-BR, na mesma base técnica do App 01.
@@ -445,7 +445,7 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
   todo bloqueio explicado pelo que falta fazer.
 - **Acessibilidade digital**: contraste, alvos de toque grandes, leitura por voz do conteúdo e
   operação possível sem digitação — pela mesma razão que a sugestão aceita áudio.
-- Desempenho: a tela inicial abre no próximo ponto sem exigir navegação por menu.
+- Desempenho: a tela inicial abre na próxima missão sem exigir navegação por menu.
 - Escrita idempotente: reenviar o mesmo registro de coleta por falha de rede não duplica.
 - Idioma pt-BR; código aberto.
 
@@ -491,9 +491,9 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
   aplicação recusa e explica.
 - Falhando a conferência, o Mestre abre a sessão e o Guerreiro(a) opera normalmente.
 - Encerrada a sessão, a tela seguinte não mostra nenhum dado do Guerreiro(a) anterior.
-- A tela inicial mostra o próximo ponto sem que a criança precise procurar em menu.
-- Ponto bloqueado exibe o que falta; desbloqueado o ponto anterior, o seguinte abre na hora.
-- Progresso mostra o nível e quantos pontos de trilha faltam para o próximo — e não sobe de
+- A tela inicial mostra a próxima missão sem que a criança precise procurar em menu.
+- Missão bloqueada exibe o que falta; desbloqueada a anterior, a seguinte abre na hora.
+- Progresso mostra o nível e quantas missões faltam para o próximo — e não sobe de
   nível por acúmulo de coleta.
 - Nível conquistado não cai depois de uma série interrompida nem de pontuação negativa.
 - Registro dentro da faixa pontua na hora; fora da faixa entra como "a conferir" e não pontua.

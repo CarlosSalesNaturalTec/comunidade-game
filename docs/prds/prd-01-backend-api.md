@@ -150,7 +150,7 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RF-01-17` | Mestre lê o painel do dia e conduz o Quiz ao Vivo das suas aulas, sem escrever nas demais rotas de gestão                                                                                       | essencial  |
 | `RF-01-18` | Toda consulta de dado de comunidade aceita e aplica filtro por comunidade                                                                                                                       | essencial  |
 | `RF-01-19` | Núcleo mantém as entidades de personas, vínculos e consentimentos versionados                                                                                                                   | essencial  |
-| `RF-01-20` | Núcleo mantém as entidades de trilha, ponto de trilha, atividade, equipe, presença e resultado                                                                                                  | essencial  |
+| `RF-01-20` | Núcleo mantém as entidades de trilha, missão, atividade, equipe, presença e resultado                                                                                                           | essencial  |
 | `RF-01-21` | Núcleo mantém pontos, níveis e badges por trilha ou poder, derivados das realizações                                                                                                            | essencial  |
 | `RF-01-22` | Núcleo expõe leitura de progresso e **débito** de pontos, sem nenhuma rota de crédito para jogos                                                                                                | essencial  |
 | `RF-01-23` | Núcleo mantém as entidades do território definidas no PRD-08                                                                                                                                    | essencial  |
@@ -207,14 +207,14 @@ PRD-07, aqui apenas referenciados — este PRD não os redefine.
 IDENTIDADE          GAMIFICAÇÃO           OPERAÇÃO
 Guerreiro(a)             Poder                 Aula/Agenda
 Mestre              Trilha                Presença
-Apoiador            PontoDeTrilha         Resultado
+Apoiador            Missao                Resultado
 Admin               Atividade             Equipe
 Responsavel         DesafioDeDesbloqueio  Batalha
 VinculoResponsavel  DesafioExtra          PerguntaDeQuiz
 Credencial          Ponto/Nivel/Badge     PartidaDeQuiz
 Consentimento       CriacaoOriginal       RespostaDeQuiz
 Sessao              Conteudo
-                    BibliografiaDoPonto
+                    BibliografiaDaMissao
                     Culminancia
                     PARTICIPAÇÃO               TERRITÓRIO (PRD-08)  ECONOMIA (PRD-07)
                     SolicitacaoDeParticipacao  ComunidadeVirtual    TipoDeRecurso
@@ -240,7 +240,7 @@ A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela 
 a comunidade do novo cadastro, e é a existência dela que habilita o onboarding naquele momento.
 Não há parâmetro de liberação separado.
 
-`Conteudo`, `BibliografiaDoPonto` e `Culminancia` entram pela autoria de trilha e têm os
+`Conteudo`, `BibliografiaDaMissao` e `Culminancia` entram pela autoria de trilha e têm os
 atributos definidos no PRD-09. A `Culminancia` é o que torna verificável a regra de que toda
 trilha termina em criação original: sem ela, a trilha não é publicável.
 

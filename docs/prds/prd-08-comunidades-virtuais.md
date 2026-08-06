@@ -82,7 +82,7 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 
 ### 5.2 Mestre cria o desafio de coleta
 
-1. Mestre, ao montar a trilha, vincula um desafio de coleta a um ponto de trilha.
+1. Mestre, ao montar a trilha, vincula um desafio de coleta a uma missão.
 2. Declara: tipo de coleta, cadência, vigência, granularidade exigida e **quantos registros
    do mesmo período pontuam**.
 3. A trilha só pode ser publicada com ao menos um desafio de coleta (regra do PRD-09).
@@ -202,7 +202,7 @@ TipoDeColeta      1 ──── N DesafioDeColeta
 | `Local`              | comunidade, nível (comunidade, bairro, rua, condomínio, bloco, quadra), rótulo, local pai                                                                 |
 | `VinculoJogador`     | Guerreiro(a), comunidade, data de início, data de fim, admin responsável pela transferência                                                               |
 | `TipoDeColeta`       | nome, forma de registro (número, foto ou vídeo), unidade de medida, faixa esperada (mínimo e máximo)                                                      |
-| `DesafioDeColeta`    | trilha, ponto de trilha, mestre autor, tipo, cadência, vigência, granularidade exigida, registros que pontuam por período                                 |
+| `DesafioDeColeta`    | trilha, missão, mestre autor, tipo, cadência, vigência, granularidade exigida, registros que pontuam por período                                          |
 | `SerieDeColeta`      | desafio, Guerreiro(a) coletor(a), local, cadência, estado, data de abertura, data da última medição válida                                                |
 | `RegistroDeColeta`   | série, valor, unidade, data e hora da medição, data e hora do registro, origem, dispositivo, mídia, situação, pontos creditados                           |
 | `SolicitacaoDeLocal` | Guerreiro(a) solicitante, comunidade, desafio de origem, nível pretendido, rótulo, justificativa, situação, avaliador (Admin ou Mestre), motivo da recusa |
@@ -233,7 +233,7 @@ Rotas de consulta são **públicas e sem autenticação**; escrita é autenticad
 | POST   | `/solicitacoes-de-local/{id}/avaliacao`       | Mestre ou Admin | Aprova, criando o local, ou recusa com motivo             |
 | POST   | `/comunidades`                                | Admin           | Cria comunidade vazia                                     |
 | POST   | `/Guerreiros e Guerreiras/{id}/transferencia` | Admin           | Transfere Guerreiro(a) de comunidade — fora do Ciclo 01   |
-| POST   | `/desafios-de-coleta`                         | Mestre          | Cria desafio de coleta vinculado a um ponto de trilha     |
+| POST   | `/desafios-de-coleta`                         | Mestre          | Cria desafio de coleta vinculado a uma missão             |
 | POST   | `/series`                                     | Guerreiro(a)    | Abre série individual para um desafio e um local          |
 | GET    | `/series/minhas`                              | Guerreiro(a)    | Séries do Guerreiro(a), estado e pontos que rendem        |
 | POST   | `/series/{id}/registros`                      | Guerreiro(a)    | Grava medição; aceita lote da fila offline                |

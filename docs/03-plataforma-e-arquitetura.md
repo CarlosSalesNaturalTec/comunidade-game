@@ -212,9 +212,7 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
   (representação matemática não reversível) é gerado. A plataforma não guarda rosto de criança.
 - **Segurança**: armazenamento criptografado, acesso restrito e auditado.
 - **Retenção**: o _template_ é guardado enquanto durar o vínculo do Guerreiro(a) com o projeto
-  e excluído automaticamente ao fim dele, ou a pedido do responsável.
-
-> **A definir:** prazo, em dias, entre o fim do vínculo e a exclusão automática do _template_.
+  e excluído automaticamente ao fim dele, ou a pedido do responsável, nos prazos da §12.2.
 
 - **Direito de recusa**: quem não autoriza a imagem tem **alternativa equivalente** — nick mais
   confirmação do Mestre ou de um Admin, **no encontro**, tanto para registrar presença quanto
@@ -237,7 +235,7 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
 
 O segundo caminho do App 01 é o que a turma usa durante o encontro: **o conteúdo das trilhas,
 em equipe**. A aula presencial tem **dois ou mais aparelhos, um por equipe** — o mesmo aparelho
-em que a equipe acompanha o ponto de trilha, responde ao Quiz ao Vivo e conversa com o
+em que a equipe acompanha a missão da trilha, responde ao Quiz ao Vivo e conversa com o
 assistente. A entrada é a de sempre: **nick e imagem** (§1.1).
 
 ### 4.1 Equipes formadas na hora
@@ -256,7 +254,7 @@ no painel da App 03.
 ### 4.2 Conteúdo da trilha, quiz e assistente
 
 Arquitetura: **JavaScript no frontend + IA no backend**, a mesma base técnica do Robô Educa. A
-equipe vê **em que ponto de trilha está**, o conteúdo e a atividade do dia, e conversa com o
+equipe vê **em que missão da trilha está**, o conteúdo e a atividade do dia, e conversa com o
 assistente **por voz ou por texto**: quiz e explicação de conceitos das trilhas. O assistente
 segue **o mesmo desenho do assistente da App 05** (§7): modelo **LLM Google Gemini**, **corpus
 fechado** no conteúdo que os Mestres cadastraram, guardrails educacionais, filtros de segurança
@@ -364,7 +362,7 @@ imagens reais**.
 presencial é atendida pelo App 01 (§§3 e 4).
 
 Web App de uso cotidiano do Guerreiro(a), com **guia e apoio nas trilhas**: qual é o próximo
-ponto, o que precisa ser feito, o que já foi conquistado e o que está bloqueado. Reúne a
+missão, o que precisa ser feito, o que já foi conquistado e o que está bloqueado. Reúne a
 jornada gamificada — poderes, trilhas, desafios semanais, equipes, ranking, recompensas
 conquistadas nos marcos e registro de dados do território.
 
@@ -505,7 +503,7 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 
 | Função                    | O que o Mestre faz                                                                                                                     |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **Autoria de trilhas**    | Cria trilhas, pontos de trilha, conteúdos, bibliografia de apoio, **atividades do ponto**, quizzes e desafios — inclusive o de coleta  |
+| **Autoria de trilhas**    | Cria trilhas, missões, conteúdos, bibliografia de apoio, **atividades da missão**, quizzes e desafios — inclusive o de coleta          |
 | **Prova de habilidade**   | Publica os artefatos que comprovam sua habilidade, além de currículo, portfólio e redes sociais                                        |
 | **Minhas atividades**     | Acompanha as suas turmas e lança resultados, presenças e méritos das atividades que propôs                                             |
 | **Validação pedagógica**  | Valida os desafios extras que os Apoiadores propõem para as suas trilhas, antes da aprovação do Admin                                  |
@@ -532,8 +530,8 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 - **A ferramenta recusa publicar trilha sem desafio de coleta e sem culminância com criação
   original** — as duas regras do documento 02 viram trava, não recomendação. A criação
   entregue é validada pelo Mestre autor da trilha.
-- **Conteúdo do ponto de trilha:** texto formatado, imagens, link externo e upload hospedado
-  pela plataforma — **vídeo até 200 MB e arquivo até 20 MB por ponto de trilha**, com o
+- **Conteúdo da missão:** texto formatado, imagens, link externo e upload hospedado
+  pela plataforma — **vídeo até 200 MB e arquivo até 20 MB por missão**, com o
   consumo lançado como recurso de _cloud_ no livro-razão.
 
 ## 12. Proteção de dados em toda a plataforma (LGPD)
@@ -584,7 +582,7 @@ Duas camadas, e a distinção entre elas é o que sustenta o desenho:
 
 | Dado                                              | Prazo                                                             |
 | ------------------------------------------------- | ----------------------------------------------------------------- |
-| Transcrição de consulta respondida (Apps 05 e 02) | **7 dias** vinculada ao Guerreiro(a); depois só disciplina e data |
+| Transcrição de consulta respondida (Apps 05 e 01) | **7 dias** vinculada ao Guerreiro(a); depois só disciplina e data |
 | Transcrição de consulta recusada pelos filtros    | **Até o fim do ciclo**, restrita à gestão                         |
 | Transcrição de sugestão não adotada               | **90 dias** após o retorno a quem sugeriu                         |
 | Transcrição de sugestão adotada                   | Permanente, com autoria — é contribuição creditada                |

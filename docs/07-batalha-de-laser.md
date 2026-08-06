@@ -163,7 +163,7 @@ tópico de punição.
 - **Ponte Nexus → API**: ao fim da partida, o Nexus envia as estatísticas (MVP, tiros, defesas,
   penalidades) para a API, lançando automaticamente a atividade realizada e os pontos — a
   primeira integração real entre uma batalha física e o backend.
-- **Trilha associada**: decompor a construção dos artefatos em pontos de trilha (eletrônica
+- **Trilha associada**: decompor a construção dos artefatos em missões (eletrônica
   básica → LDR e LEDs → Wi-Fi/MQTT → lógica do jogo → dashboard Python), cada um com desafio de
   desbloqueio.
 - **Desafio de coleta de dados** — obrigatório em toda trilha, e aqui o encaixe é direto: o

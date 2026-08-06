@@ -160,7 +160,7 @@ quem o concluir.
 
 1. O Apoiador propõe o desafio, vinculado a uma **trilha em andamento**, e indica a recompensa
    que vai custear e **em que quantidade**.
-2. O **Mestre da trilha valida** — o desafio precisa fazer sentido pedagógico no ponto em que
+2. O **Mestre da trilha valida** — o desafio precisa fazer sentido pedagógico na missão em que
    os Guerreiros e Guerreiras estão.
 3. Um **Admin aprova** (ou não) a publicação.
 4. O desafio é publicado para todos os Guerreiros e Guerreiras daquela trilha — ou, no caso do

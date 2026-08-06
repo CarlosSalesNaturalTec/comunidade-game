@@ -32,7 +32,7 @@ equipamentos.
 
 O **Goethe-Institut (Salvador)** doou **298 livros** do projeto Include (Campus Party), **30
 kits em MDF** e **50 camisas**. Os livros são **material de apoio** das trilhas Robô Educa e
-Batalha de Laser, vinculados a pontos de trilha específicos (**ponto de trilha → capítulo
+Batalha de Laser, vinculados a missões específicas (**missão → capítulo
 recomendado**), e entram em uso pela primeira vez no Ciclo 01.
 
 | Título                                      | Exemplares | Apoia principalmente           |
@@ -46,7 +46,7 @@ recomendado**), e entram em uso pela primeira vez no Ciclo 01.
 | Include — **Eletrônica I**                  |          4 | Batalha de Laser               |
 | **Total**                                   |    **298** |                                |
 
-O acervo **aprofunda** os pontos das duas trilhas: quem quiser ir além do que a aula cobre tem
+O acervo **aprofunda** as missões das duas trilhas: quem quiser ir além do que a aula cobre tem
 o livro na mão. A assimetria do inventário define o regime de posse.
 
 ### Definição vigente — regime misto
@@ -135,8 +135,8 @@ presentes.
 Por que assim:
 
 - **A chegada é escalonada na vida real** — transporte, escola, tarefa de casa, irmão menor.
-  Um roteiro em bloco pune quem chega atrasado; o assíncrono o acolhe no ponto em que está.
-- **Cada Guerreiro(a) está em um ponto diferente da trilha.** A progressão é por nível de
+  Um roteiro em bloco pune quem chega atrasado; o assíncrono o acolhe na missão em que está.
+- **Cada Guerreiro(a) está em uma missão diferente da trilha.** A progressão é por nível de
   dificuldade, não por idade nem por data de entrada.
 - **Os equipamentos são compartilhados e limitados.** A atividade assíncrona distribui o uso
   dos aparelhos ao longo do encontro.
@@ -144,7 +144,7 @@ Por que assim:
   travou e libera quem está adiantado — que passa a ajudar o colega, o que já é mérito extra.
 
 Consequências operacionais: o **onboarding roda continuamente**; o **App 01** é o que sustenta
-a autonomia na aula presencial, dizendo a cada equipe qual é o próximo ponto sem depender do
+a autonomia na aula presencial, dizendo a cada equipe qual é a próxima missão sem depender do
 Mestre — com **um aparelho por equipe**, dois no mínimo; e o **painel do dia (App 03)** é o
 instrumento de controle do encontro. A **App 05** atende as **aulas remotas** e o uso cotidiano
 fora do encontro.
@@ -162,7 +162,7 @@ que garante acolhimento, prática, inspiração e voz do Guerreiro(a) em toda au
 | 2   | **Atividades desplugadas** (_Computer Science Unplugged_) | Assíncrono | Lógica, algoritmos e pensamento computacional **sem computador**: papel, corpo, jogos, materiais do dia a dia. Boa porta de entrada para quem chegou e ainda não pegou um aparelho |
 | 3   | **Bate-papo on-line com mentores e convidados**           | Coletivo   | Conversa ao vivo com profissionais e referências                                                                                                                                   |
 | 4   | **Momento GOAT / "Podemos ser os melhores"**              | Coletivo   | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade                                                                     |
-| 5   | **Trabalho de trilha / Desafio do dia**                   | Assíncrono | O grosso do encontro: cada equipe se forma no App 01 e avança nos pontos da sua trilha e na atividade pontuada, com apoio do Mestre. O **Quiz ao Vivo** (§5) é a exceção coletiva  |
+| 5   | **Trabalho de trilha / Desafio do dia**                   | Assíncrono | O grosso do encontro: cada equipe se forma no App 01 e avança nas missões da sua trilha e na atividade pontuada, com apoio do Mestre. O **Quiz ao Vivo** (§5) é a exceção coletiva |
 | 6   | **Encerramento com apresentação livre**                   | Coletivo   | Cada Guerreiro(a) ou equipe mostra o que construiu e aprendeu, inclusive suas **criações originais**. Treina expressão pública e é a vitrine do protagonismo do Guerreiro(a)       |
 
 Observações operacionais:
@@ -272,7 +272,7 @@ responsivos, Mobile First.
 | 2 — Jogo mínimo                        | **App 03** (gestão, entradas manuais e painéis do dia), **App 09** (autoria do Mestre), poderes e a **1ª trilha — Robô Educa** publicada e pontuando | Fase 1                                        |
 | 2.5 — Canal da família                 | **App 07** — é o que torna a hipótese **H2** mensurável                                                                                              | Fase 2                                        |
 | 3 — Primeiro ciclo presencial completo | Aulas com o roteiro da §4 + **trilhas e equipes no App 01** + Quiz ao Vivo + **2ª trilha — Batalha de Laser** + culminância com vídeo                | Fase 2 + ponto de apoio + recursos com lastro |
-| 3.5 — Acervo em operação               | Entrega dos livros Alpha na abertura de cada trilha, tombamento dos 46 permanentes, mapeamento capítulo → ponto de trilha e conservação implantada   | Fase 2                                        |
+| 3.5 — Acervo em operação               | Entrega dos livros Alpha na abertura de cada trilha, tombamento dos 46 permanentes, mapeamento capítulo → missão e conservação implantada            | Fase 2                                        |
 | 4 — Área do Guerreiro(a) e jogo        | **App 05** (aulas remotas e uso cotidiano) e **App 04**                                                                                              | Fase 2                                        |
 | 5 — Comunidade Virtual                 | Coleta de dados do território e painel público por comunidade                                                                                        | Fase 2                                        |
 | 6 — Economia visível                   | Livro-razão público em moedas, Poder Econômico, relatórios de transparência e **App 08** — Área do Apoiador                                          | Fase 3                                        |

@@ -9,7 +9,7 @@ documentação do projeto, na pasta `docs/`.
 1. **Feito:** revisão e validação humana de todos os documentos de `docs/` (agosto de 2026).
 2. **Agora:** geração dos **PRDs** (_Product Requirements Documents_) em `docs/prds/`, a
    partir do documento `docs/08-base-para-prds.md`, na ordem de ondas definida lá.
-3. **Depois dos PRDs:** desenvolvimento das nove aplicações e do Backend API.
+3. **Depois dos PRDs:** desenvolvimento das oito aplicações e do Backend API.
 
 Não iniciar a escrita de código sem sinal explícito do fundador.
 
@@ -73,8 +73,8 @@ Melhorar a redação **nunca** significa mudar a decisão. Ao reescrever:
 ### 6. Coerência entre documentos
 
 Antes de fechar qualquer edição, confira os **invariantes** listados em
-`docs/99-mapa-de-referencias.md` §6 (sete aplicações Web/Mobile First, faixa 6–16, autocadastro
-só do Jogador, coleta obrigatória em toda trilha, jogo que não credita pontos, lastro, guarda
+`docs/99-mapa-de-referencias.md` §6 (oito aplicações Web/Mobile First, faixa 6–16, autocadastro
+só do Guerreiro(a), coleta obrigatória em toda trilha, jogo que não credita pontos, lastro, guarda
 permanente com anonimização na saída, escopo do Ciclo 01, entre outros). Contradizer um deles é
 erro de documentação, não variação de redação.
 
