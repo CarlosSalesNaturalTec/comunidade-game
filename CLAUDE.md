@@ -163,6 +163,10 @@ Regras que a esteira impõe e que valem ao escrever:
 O deploy do site no GitHub Pages (`.github/workflows/docs-deploy.yml`) acontece **somente
 após merge em `main`** — nunca a partir de um PR.
 
+## Integrações
+
+Merge de PR no GitHub usa **merge commit — nunca squash.**
+
 ## Checklist antes de entregar uma revisão de documentação
 
 - [ ] O texto ficou **menor** que antes, sem perder definição?
