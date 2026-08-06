@@ -176,28 +176,29 @@ atividades previstas.
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                   | Invariante | Fonte   |
-| ---------- | --------------------------------------------------------------------------------------- | ---------- | ------- |
-| `RN-07-01` | Nenhuma atividade acontece sem lastro dos recursos que consome                          | 9          | 04 §1   |
-| `RN-07-02` | Todo custo de toda ação é atribuído a um provedor                                       | —          | 04 §1   |
-| `RN-07-03` | Aporte não financeiro é valorado pela tabela de referência da gestão                    | —          | 04 §1   |
-| `RN-07-04` | A moeda vale R$ 100,00 e admite duas casas decimais                                     | 16         | 04 §1   |
-| `RN-07-05` | Toda saída pública exibe moedas, nunca reais                                            | 16         | 04 §1   |
-| `RN-07-06` | Recurso provido sem contrapartida financeira por Mestre ou Admin é aporte em nome dele  | —          | 04 §1   |
-| `RN-07-07` | Aporte de patrimônio credita o Poder Econômico uma única vez, sem baixa por consumo     | —          | 04 §1   |
-| `RN-07-08` | Livro da linha Alpha e camisa entregues ao Guerreiro(a) têm baixa definitiva            | —          | 05 §3   |
-| `RN-07-09` | Perda ou dano de material comum não gera dívida ao Guerreiro(a) nem à família           | 11         | 05 §3   |
-| `RN-07-10` | Cada ponto de apoio tem responsável designado pelo acervo permanente e pelos kits       | —          | 05 §3   |
-| `RN-07-11` | O exemplar permanente não sai do ponto de apoio; uso é de bancada, com registro         | —          | 05 §3   |
-| `RN-07-12` | A recompensa do desafio extra precisa de lastro antes da publicação do desafio          | 9          | 04 §3   |
-| `RN-07-13` | O Apoiador não recebe dado de contato nem identificação de Guerreiro(a)                 | 10         | 04 §3   |
-| `RN-07-14` | Dados publicados são coproprietários da entidade e do Guerreiro(a) que os gerou         | 17         | 04 §2   |
-| `RN-07-15` | Lançamento do livro-razão nunca é apagado nem editado                                   | —          | 04 §1   |
-| `RN-07-16` | Quem homologa o aporte não pode ser o próprio provedor                                  | —          | 04 §1   |
-| `RN-07-17` | Ressarcimento não é direito nem promessa: só ocorre havendo receita destinada a ele     | —          | 04 §1   |
-| `RN-07-18` | Ressarcimento pago reverte as moedas; o registro do ato e o destaque público permanecem | —          | 04 §1   |
-| `RN-07-19` | O selo público mostra o número de absorções, nunca o valor em reais                     | 16         | 11 §8.2 |
-| `RN-07-20` | Chave PIX, banco e conta nunca são armazenados; o trâmite guarda apenas o comprovante   | —          | 04 §1   |
+| ID         | Regra                                                                                       | Invariante | Fonte        |
+| ---------- | ------------------------------------------------------------------------------------------- | ---------- | ------------ |
+| `RN-07-01` | Nenhuma atividade acontece sem lastro dos recursos que consome                              | 9          | 04 §1        |
+| `RN-07-02` | Todo custo de toda ação é atribuído a um provedor                                           | —          | 04 §1        |
+| `RN-07-03` | Aporte não financeiro é valorado pela tabela de referência da gestão                        | —          | 04 §1        |
+| `RN-07-04` | A moeda vale R$ 100,00 e admite duas casas decimais                                         | 16         | 04 §1        |
+| `RN-07-05` | Toda saída pública exibe moedas, nunca reais                                                | 16         | 04 §1        |
+| `RN-07-06` | Recurso provido sem contrapartida financeira por Mestre ou Admin é aporte em nome dele      | —          | 04 §1        |
+| `RN-07-07` | Aporte de patrimônio credita o Poder Econômico uma única vez, sem baixa por consumo         | —          | 04 §1        |
+| `RN-07-08` | Livro da linha Alpha e camisa entregues ao Guerreiro(a) têm baixa definitiva                | —          | 05 §3        |
+| `RN-07-14` | Camisa é conquistada no marco de missão declarado pelo Mestre, não entregue a todo inscrito | —          | 02 §8, 05 §3 |
+| `RN-07-09` | Perda ou dano de material comum não gera dívida ao Guerreiro(a) nem à família               | 11         | 05 §3        |
+| `RN-07-10` | Cada ponto de apoio tem responsável designado pelo acervo permanente e pelos kits           | —          | 05 §3        |
+| `RN-07-11` | O exemplar permanente não sai do ponto de apoio; uso é de bancada, com registro             | —          | 05 §3        |
+| `RN-07-12` | A recompensa do desafio extra precisa de lastro antes da publicação do desafio              | 9          | 04 §3        |
+| `RN-07-13` | O Apoiador não recebe dado de contato nem identificação de Guerreiro(a)                     | 10         | 04 §3        |
+| `RN-07-14` | Dados publicados são coproprietários da entidade e do Guerreiro(a) que os gerou             | 17         | 04 §2        |
+| `RN-07-15` | Lançamento do livro-razão nunca é apagado nem editado                                       | —          | 04 §1        |
+| `RN-07-16` | Quem homologa o aporte não pode ser o próprio provedor                                      | —          | 04 §1        |
+| `RN-07-17` | Ressarcimento não é direito nem promessa: só ocorre havendo receita destinada a ele         | —          | 04 §1        |
+| `RN-07-18` | Ressarcimento pago reverte as moedas; o registro do ato e o destaque público permanecem     | —          | 04 §1        |
+| `RN-07-19` | O selo público mostra o número de absorções, nunca o valor em reais                         | 16         | 11 §8.2      |
+| `RN-07-20` | Chave PIX, banco e conta nunca são armazenados; o trâmite guarda apenas o comprovante       | —          | 04 §1        |
 
 ## 8. Modelo de dados
 

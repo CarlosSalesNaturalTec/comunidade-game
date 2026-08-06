@@ -83,6 +83,9 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Área do Mestre (App 09) — autoria e operação                       | 03 §11                                     | 02, 05, 08, 09                 |
 | Publicação da trilha (sem aprovação prévia, travas e conteúdo)     | 03 §11                                     | 02, 05, 08, 11                 |
 | Atividade da missão (modalidade e formato)                         | 11 §§2.1, 4                                | 02, 03 §11, 08                 |
+| Modelo de missão (produção, sondagem, retomada, obrigatoriedade)   | 11 §2.2                                    | 02 §§3, 4, 03 §§4, 7, 11       |
+| Leitura da produção do Guerreiro(a) e devolutiva construtiva       | 03 §§4, 7 e 11 §2.2                        | 02 §4, 09                      |
+| Auxílio de IA na autoria da trilha (estrutura, não conteúdo)       | 03 §11                                     | 01 §7, 09                      |
 | Recompensa conquistada em marco da trilha                          | 02 §8                                      | 03 §7, 08, 11 §2.1, 12         |
 | Acompanhamento por nick e favoritos (Apoiador e visitante)         | 02 §1 e 03 §§8, 10                         | 04 §3, 08, 12                  |
 | Licença do conteúdo educacional (CC BY-SA)                         | 03 §1                                      | 01, 08, 09                     |
@@ -150,7 +153,9 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Coproprietariedade dos dados publicados     | 04 §2                     | PRD-01, 07, 13                 |
 | Representação visual da comunidade          | 11 §8.3                   | PRD-08, 03                     |
 | Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10                 |
-| Distribuição da trilha no ciclo             | 11 §2.3 + 10 §5           | PRD-09, 02                     |
+| Distribuição da trilha no ciclo             | 11 §2.4 + 10 §5           | PRD-09, 02                     |
+| Modelo de missão e template de autoria      | 11 §2.2 + 03 §11          | PRD-09, 05, 04, 01             |
+| Produção do Guerreiro(a) e devolutiva       | 11 §2.2 + 03 §§4, 7       | PRD-05, 04, 09, 01             |
 | Sugestões e propostas de evolução           | 03 §§7, 9, 10, 11 + 13 §5 | PRD-01, 02, 05, 09, 13, 14     |
 | Apoio às atividades escolares               | 03 §7                     | PRD-05, 09, 01                 |
 | Área do Apoiador                            | 03 §10 + 04 §3            | PRD-14, 07, 02                 |
@@ -173,8 +178,9 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
 4. **Comunidade Virtual é criada vazia por Admin**; todo Guerreiro(a) é vinculado a exatamente
    uma, pela **comunidade da aula agendada** em que se cadastra — e sem aula agendada o App 01
    não opera. **No Ciclo 01 não há troca de comunidade.**
-5. **Toda trilha tem ao menos um desafio de coleta de dados reais** e termina em
-   **criação original** apresentada publicamente, com autoria creditada.
+5. **Toda trilha abre com missão de sondagem, tem ao menos um desafio de coleta de dados
+   reais** e termina em **criação original** apresentada publicamente, com autoria creditada.
+   As três são trava de publicação, não recomendação.
 6. **A coleta pontua de forma recorrente enquanto a série estiver ativa**; interrompida,
    cessa o cômputo sem perder os pontos já creditados.
 7. **Dados do território: guarda permanente com o coletor identificado**; anonimização
@@ -201,6 +207,11 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
 16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.**
 17. **Dados publicados têm coproprietariedade** entre a entidade responsável e o Guerreiro(a)
     que os gerou; monetizados, remuneram ambos.
+18. **Só a missão obrigatória conta no percurso do nível.** A opcional pontua e pode render
+    badge, mas fica fora do denominador dos níveis 2, 3 e 4.
+19. **Toda atividade exige produção do Guerreiro(a)** — escrever, falar ou construir. A
+    leitura automática dessa produção é **hipótese, nunca resultado**: quem lança o resultado
+    é o Mestre.
 
 ## 7. Como esta documentação deve ser editada
 

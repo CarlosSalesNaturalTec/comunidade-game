@@ -260,6 +260,10 @@ segue **o mesmo desenho do assistente da App 05** (§7): modelo **LLM Google Gem
 fechado** no conteúdo que os Mestres cadastraram, guardrails educacionais, filtros de segurança
 no nível mais restritivo e **guarda apenas da transcrição**, com o áudio descartado.
 
+A equipe também **entrega aqui a produção da missão do dia**, por escrita, fala ou foto do que
+fez à mão, com a mesma regra da App 05 (§7): devolutiva construtiva, foto e áudio descartados
+na leitura, resultado lançado pelo Mestre.
+
 No **Quiz ao Vivo**, é por aqui que a equipe recebe a pergunta e envia a resposta; as regras da
 partida estão no documento 05.
 
@@ -361,7 +365,7 @@ imagens reais**.
 **É a aplicação das aulas remotas** e do uso cotidiano fora do encontro presencial — a aula
 presencial é atendida pelo App 01 (§§3 e 4).
 
-Web App de uso cotidiano do Guerreiro(a), com **guia e apoio nas trilhas**: qual é o próximo
+Web App de uso cotidiano do Guerreiro(a), com **guia e apoio nas trilhas**: qual é a próxima
 missão, o que precisa ser feito, o que já foi conquistado e o que está bloqueado. Reúne a
 jornada gamificada — poderes, trilhas, desafios semanais, equipes, ranking, recompensas
 conquistadas nos marcos e registro de dados do território.
@@ -370,6 +374,13 @@ conquistadas nos marcos e registro de dados do território.
 a próxima medição, o que já foi registrado e **quantos pontos aquela série está rendendo**. O
 Guerreiro(a) seleciona o local do dado entre os cadastrados e, faltando um, solicita a
 inclusão.
+
+É onde o Guerreiro(a) **entrega a produção da missão**: escreve, fala ou fotografa o que fez à
+mão. A plataforma lê e devolve retorno **sempre construtivo**, apontando o próximo passo em vez
+do erro. **Foto e áudio são descartados na leitura** — guardam-se apenas a transcrição e a
+devolutiva —, e **o resultado só existe quando o Mestre o lança**: a leitura automática é
+hipótese sobre o aprendizado, nunca nota. Quem não quiser ser fotografado ou gravado entrega
+ao Mestre no encontro, sem perder a missão.
 
 É onde fica o **apoio às atividades escolares**, atendido por um **assistente por voz com IA**
 — modelo **LLM Google Gemini** — que responde **exclusivamente a partir das disciplinas e do
@@ -504,6 +515,7 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 | Função                    | O que o Mestre faz                                                                                                                     |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | **Autoria de trilhas**    | Cria trilhas, missões, conteúdos, bibliografia de apoio, **atividades da missão**, quizzes e desafios — inclusive o de coleta          |
+| **Template de missão**    | Cadastra o tópico que quer ensinar e recebe a **estrutura da missão** e o que ainda falta nela, conforme o modelo do documento 11      |
 | **Prova de habilidade**   | Publica os artefatos que comprovam sua habilidade, além de currículo, portfólio e redes sociais                                        |
 | **Minhas atividades**     | Acompanha as suas turmas e lança resultados, presenças e méritos das atividades que propôs                                             |
 | **Validação pedagógica**  | Valida os desafios extras que os Apoiadores propõem para as suas trilhas, antes da aprovação do Admin                                  |
@@ -525,11 +537,17 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   Guerreiro(a) —, aprovações privativas de Admin e painéis gerais continuam na App 03.
 - **Nenhum modelo ou fluxo pressupõe habilidade técnica de TI**: o Mestre pode ser de humanas,
   artes, esportes ou cultura.
+- **A IA da autoria monta estrutura, não escreve conteúdo.** A partir do tópico cadastrado ela
+  propõe o esqueleto da missão e o checklist do que falta — que tipo de exercício cabe ali, se
+  há produção do Guerreiro(a), se a retomada está declarada. **O conteúdo é escrito pelo
+  Mestre**, que segue sendo o autor creditado na licença CC BY-SA.
 - **A trilha publicada vai ao ar sem aprovação prévia.** A curadoria é posterior: o Admin
   audita por amostragem e pode despublicar, do mesmo modo como audita a coleta.
-- **A ferramenta recusa publicar trilha sem desafio de coleta e sem culminância com criação
-  original** — as duas regras do documento 02 viram trava, não recomendação. A criação
-  entregue é validada pelo Mestre autor da trilha.
+- **A ferramenta recusa publicar trilha sem missão de sondagem, sem desafio de coleta e sem
+  culminância com criação original** — as três regras do documento 02 viram trava, não
+  recomendação. A criação entregue é validada pelo Mestre autor da trilha.
+- **Cada missão nasce declarada obrigatória ou opcional**, e o Mestre diz se o desbloqueio dela
+  libera recompensa e em que cadência ela volta para revisão.
 - **Conteúdo da missão:** texto formatado, imagens, link externo e upload hospedado
   pela plataforma — **vídeo até 200 MB e arquivo até 20 MB por missão**, com o
   consumo lançado como recurso de _cloud_ no livro-razão.
@@ -586,6 +604,7 @@ Duas camadas, e a distinção entre elas é o que sustenta o desenho:
 | Transcrição de consulta recusada pelos filtros    | **Até o fim do ciclo**, restrita à gestão                         |
 | Transcrição de sugestão não adotada               | **90 dias** após o retorno a quem sugeriu                         |
 | Transcrição de sugestão adotada                   | Permanente, com autoria — é contribuição creditada                |
+| Foto e áudio da produção do Guerreiro(a)          | **Descartados na leitura**; ficam a transcrição e a devolutiva    |
 | Áudio de qualquer origem                          | **Descartado na transcrição**                                     |
 | _Template_ biométrico, fim do vínculo             | **30 dias**, com aviso prévio ao responsável                      |
 | _Template_ biométrico, pedido do responsável      | **5 dias**                                                        |

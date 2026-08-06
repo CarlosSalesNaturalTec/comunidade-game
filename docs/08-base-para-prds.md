@@ -64,6 +64,8 @@
   escolhida no cadastro; genérico **Guerreiro(a)**, coletivo **Guerreiros e Guerreiras**.
 - **Sem notificação por e-mail no Ciclo 01:** todo retorno acontece dentro da plataforma.
 - **Toda trilha contém desafios de coleta de dados reais** e **termina em criação original**.
+- **Toda atividade exige produção do Guerreiro(a)** — escrever, falar ou construir. A leitura
+  automática dessa produção é hipótese; quem lança o resultado é o Mestre.
 - **Atividade de trilha pertence a uma missão**, é autorada pelo Mestre e declara
   modalidade (individual ou equipe) e formato (presencial ou on-line).
 - **Recompensa é conquistada em marco da trilha**, nunca comprada com saldo de pontos.
@@ -333,7 +335,10 @@ ser feito, o que já foi conquistado e o que está bloqueado. A aula presencial,
 resposta do Quiz ao Vivo, é atendida pelo App 01 (PRD-04).
 
 **Requisitos:** escolha de poder; trilhas com desbloqueio por quiz ou desafio, seguindo a
-anatomia e o motor de pontuação do documento 11; desafios semanais (on-line 10 pts, presencial
+anatomia e o motor de pontuação do documento 11; **missão de sondagem** ao entrar na trilha;
+**entrega da produção da missão** por texto, áudio ou foto do manuscrito, com devolutiva
+construtiva e descarte de foto e áudio na leitura; **retomada por revisão espaçada** das
+missões já cumpridas; desafios semanais (on-line 10 pts, presencial
 10 pts, equipe 10 pts, equipe com familiar 20 pts); **desafios extras propostos por
 Apoiadores** — abertos ou direcionados —, vinculados à trilha em andamento, com pontos extras e
 recompensa em quantidade declarada; **equipes** — leitura das equipes de que participa, com o
@@ -516,7 +521,11 @@ ensina; a gestão administrativa segue na App 03.
 **agnóstico de área do conhecimento**, apto a trilhas de humanas, artes, esportes e cultura
 tanto quanto às técnicas —, incluindo a **paginação da trilha pelas etapas do ciclo**; **as
 atividades de cada missão**, com modalidade (individual ou equipe) e formato
-(presencial ou on-line) declarados pelo Mestre autor; **a recompensa de cada marco**, com
+(presencial ou on-line) declarados pelo Mestre autor; **cada missão declarada obrigatória ou
+opcional**; **missão de sondagem** abrindo a trilha, como terceira trava de publicação;
+**template de missão** que devolve estrutura e checklist de lacunas a partir do tópico
+cadastrado — sem escrever o conteúdo, que é do Mestre; **retomada por revisão espaçada** na
+cadência que o Mestre declarar; **a recompensa de cada marco**, com
 lastro exigido antes da publicação; conteúdo
 próprio e de terceiros; quiz ou desafio para desbloqueio; **publicação dos artefatos que
 comprovam a habilidade do Mestre**; catálogo inicial de poderes: **IA/Robótica e Poder do

@@ -101,12 +101,12 @@ existentes, sem custo adicional para o primeiro ciclo.
 
 **Tratamento no livro-razão — regime misto (definição vigente):**
 
-| Item                               | Destino                                                                           | Como entra no ledger                                                      |
-| ---------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| **Livros da linha Alpha** (252)    | Doados ao Guerreiro(a) quando ele começa a trilha                                 | **Recompensa entregue** — baixa definitiva do acervo                      |
-| **Livros da linha Include I** (46) | Acervo permanente do ponto de apoio                                               | **Patrimônio permanente** — sem baixa por consumo, com controle de guarda |
-| **Kits MDF** (30)                  | Insumo das oficinas do Robô Educa                                                 | **Consumível de atividade** — baixa a cada montagem                       |
-| **Camisas** (50)                   | Doadas aos Guerreiros e Guerreiras inscritos no Ciclo 01, até o limite disponível | **Recompensa entregue** — baixa definitiva na entrega                     |
+| Item                               | Destino                                                                        | Como entra no ledger                                                      |
+| ---------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| **Livros da linha Alpha** (252)    | Doados ao Guerreiro(a) quando ele começa a trilha                              | **Recompensa entregue** — baixa definitiva do acervo                      |
+| **Livros da linha Include I** (46) | Acervo permanente do ponto de apoio                                            | **Patrimônio permanente** — sem baixa por consumo, com controle de guarda |
+| **Kits MDF** (30)                  | Insumo das oficinas do Robô Educa                                              | **Consumível de atividade** — baixa a cada montagem                       |
+| **Camisas** (50)                   | Conquistadas no marco de missão que o Mestre declarar, até o limite disponível | **Recompensa entregue** — baixa definitiva na entrega                     |
 
 Inventário completo, regime de posse e estratégia de conservação: documento 05.
 

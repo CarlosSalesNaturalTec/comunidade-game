@@ -216,6 +216,9 @@ Consentimento       CriacaoOriginal       RespostaDeQuiz
 Sessao              Conteudo
                     BibliografiaDaMissao
                     Culminancia
+                    RecompensaDeMarco
+                    SugestaoDeEstrutura
+                    ProducaoDaMissao
                     PARTICIPAÇÃO               TERRITÓRIO (PRD-08)  ECONOMIA (PRD-07)
                     SolicitacaoDeParticipacao  ComunidadeVirtual    TipoDeRecurso
                     SolicitacaoDoResponsavel   Local                Aporte
@@ -240,7 +243,8 @@ A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela 
 a comunidade do novo cadastro, e é a existência dela que habilita o onboarding naquele momento.
 Não há parâmetro de liberação separado.
 
-`Conteudo`, `BibliografiaDaMissao` e `Culminancia` entram pela autoria de trilha e têm os
+`Conteudo`, `BibliografiaDaMissao`, `Culminancia`, `RecompensaDeMarco` e `SugestaoDeEstrutura`
+entram pela autoria de trilha e têm os
 atributos definidos no PRD-09. A `Culminancia` é o que torna verificável a regra de que toda
 trilha termina em criação original: sem ela, a trilha não é publicável.
 

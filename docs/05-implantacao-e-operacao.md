@@ -62,9 +62,10 @@ material escasso — apenas 4 exemplares de Eletrônica I — continua servindo 
 
 ### A. Livro do Guerreiro(a) — linha Alpha (252 exemplares)
 
-- **Entrega na primeira aula do módulo, como ritual.** Identificar o exemplar com o próprio
-  nome ou nick, encapar e registrar que o recebeu é a **primeira atividade pontuada** da
-  trilha. Ensina cuidado com material e marca a entrada no percurso.
+- **Entrega na primeira aula do módulo, como ritual** — é a recompensa da **missão de
+  sondagem** que abre a trilha. Identificar o exemplar com o próprio nome ou nick, encapar e
+  registrar que o recebeu é a **primeira atividade pontuada**. Ensina cuidado com material e
+  marca a entrada no percurso.
 - **Sem devolução, sem controle de guarda, sem cobrança.** O livro é do Guerreiro(a) desde o
   primeiro dia — conclua a trilha ou não. Perder ou estragar o próprio livro **não é
   infração** e não gera dívida.
@@ -111,17 +112,22 @@ O princípio é **conservação por cuidado e orgulho, não por medo de puniçã
 
 ### C. Kits em MDF (30 unidades)
 
-São insumo de oficina, não acervo: montados pelo Guerreiro(a), viram o corpo do seu robô.
+São insumo de oficina, não acervo: montados pelo Guerreiro(a), viram o corpo do seu robô. O
+Mestre pode declarar o kit como **recompensa da missão de montagem**, e nesse caso a entrega
+segue a regra de marco do documento 02.
+
 Entram no livro-razão como **consumível de atividade**, com baixa a cada montagem, e o saldo
 precisa constar do painel do dia — é ele que diz quantos Guerreiros e Guerreiras ainda podem
 montar em MDF antes de a oficina voltar ao material reciclado.
 
 ### D. Camisas (50 unidades)
 
-**Definição vigente — doadas aos Guerreiros e Guerreiras inscritos no Ciclo 01**, até o limite
-disponível. Como o livro da linha Alpha: a camisa é do Guerreiro(a), sem devolução, com **baixa
-definitiva no livro-razão** na entrega. As 50 unidades atendem os primeiros inscritos; o saldo
-entra no painel do dia, e a reposição, se desejada, vira necessidade de recurso a ser aportada.
+**Definição vigente — conquistadas no marco de missão que o Mestre declarar**, até o limite
+disponível. A camisa deixou de ser entrega automática a todo inscrito: veste quem chegou até
+ali, e é isso que a torna reconhecimento. Como o livro da linha Alpha, é do Guerreiro(a), sem
+devolução, com **baixa definitiva no livro-razão** na entrega. As 50 unidades limitam o
+alcance; o saldo entra no painel do dia, e a reposição, se desejada, vira necessidade de
+recurso a ser aportada.
 
 ## 4. Roteiro do encontro presencial
 

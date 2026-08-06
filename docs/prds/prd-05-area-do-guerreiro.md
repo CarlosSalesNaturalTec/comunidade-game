@@ -8,7 +8,7 @@
 | Aplicação        | App 05 — Área do Guerreiro(a)                            |
 | Onda             | 3                                                        |
 | Situação         | em revisão                                               |
-| Versão e data    | v2 — 2026-08-06                                          |
+| Versão e data    | v3 — 2026-08-06                                          |
 | Depende de       | PRD-01, PRD-09                                           |
 | Documentos-fonte | 02 §§1–8, 03 §§1.1, 7, 12, 05 §§3, 5, 11 §§2, 4, 5, 6, 7 |
 
@@ -39,6 +39,11 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
 - **Escolha do poder** entre os do catálogo do ciclo e inscrição nas trilhas do poder.
 - **Conteúdo da missão** — texto, imagens, vídeo, arquivos e bibliografia de apoio —
   e o **desafio de desbloqueio** que abre a missão seguinte.
+- **Missão de sondagem** que abre a trilha e mede o nível de partida no poder.
+- **Entrega da produção da missão** por escrita, fala ou foto do que foi feito à mão, com
+  devolutiva construtiva; foto e áudio descartados na leitura.
+- **Retomada por revisão espaçada** das missões já cumpridas, na cadência que o Mestre
+  declarou.
 - **Desafios semanais** (on-line, presencial, em equipe e em equipe com familiar) e **desafios
   extras de Apoiadores**, abertos ou direcionados.
 - **Equipes**: as de que participa, o papel em cada uma e as atividades de cada equipe — a
@@ -131,8 +136,13 @@ avatar e nick.
 4. Passando, a missão seguinte abre na hora e o percurso avança.
 5. Não passando, ele pode tentar de novo — a trilha é de dificuldade gradual e não elimina
    ninguém.
-6. Os **pontos da atividade** só entram quando o Mestre lança o resultado; a aplicação deixa
-   claro o que está "aguardando lançamento".
+6. **Entrega a produção**: escreve, grava a resposta falada ou fotografa o que fez à mão.
+7. A aplicação lê, devolve retorno **construtivo** — o que está bom e qual o próximo passo — e
+   **descarta foto e áudio na hora**, guardando só a transcrição e a devolutiva.
+8. Recusando ser fotografado ou gravado, ele entrega ao Mestre no encontro e **não perde a
+   missão**.
+9. Os **pontos da atividade** só entram quando o Mestre lança o resultado; a devolutiva
+   automática não pontua, e a aplicação deixa claro o que está "aguardando lançamento".
 
 ### 5.4 Registrar uma medição do território
 
@@ -229,6 +239,16 @@ avatar e nick.
 | `RF-05-16` | Aplicação exibe pontos, badges e recompensas conquistadas, por trilha ou poder             | essencial  |
 | `RF-05-17` | Guerreiro(a) inscrito em mais de uma trilha alterna entre elas preservando o contexto      | essencial  |
 | `RF-05-18` | Resultado ainda não lançado pelo Mestre aparece como "aguardando lançamento"               | essencial  |
+| `RF-05-72` | Guerreiro(a) responde à missão de sondagem que abre a trilha, antes da primeira missão     | essencial  |
+| `RF-05-73` | Resultado da sondagem não altera nível, e a tela diz que ela serve para o Mestre ajustar   | essencial  |
+| `RF-05-74` | Guerreiro(a) entrega a produção da missão por texto, áudio ou foto do manuscrito           | essencial  |
+| `RF-05-75` | Aplicação devolve retorno construtivo da produção, apontando o próximo passo               | essencial  |
+| `RF-05-76` | Foto e áudio da produção são descartados na leitura; ficam a transcrição e a devolutiva    | essencial  |
+| `RF-05-77` | Devolutiva automática não credita pontos; o resultado só existe quando o Mestre o lança    | essencial  |
+| `RF-05-78` | Quem recusa foto ou áudio entrega ao Mestre no encontro, sem perder a missão               | essencial  |
+| `RF-05-79` | Missão com retomada agendada reaparece na cadência declarada pelo Mestre                   | essencial  |
+| `RF-05-80` | Retomada pontua uma vez por agendamento; refazer por conta própria não rende ponto novo    | essencial  |
+| `RF-05-81` | Missão opcional aparece marcada como tal e não conta no que falta para o próximo nível     | essencial  |
 
 ### 6.3 Desafios, atividades e equipes
 
@@ -346,13 +366,20 @@ com a fusão das aplicações e **não são reaproveitados**.
 | `RN-05-31` | No Ciclo 01 o consumo de IA é aportado por absorção pelo Admin e Mestre fundador, sem teto       | —                      | 10 §4.3          |
 | `RN-05-32` | O áudio da criança é descartado na transcrição; guarda-se apenas a transcrição                   | —                      | 03 §7            |
 | `RN-05-30` | A plataforma declara o uso de IA, e a tela do apoio escolar diz isso à criança                   | —                      | 01 §7, 03 §1     |
+| `RN-05-33` | Só a missão obrigatória conta no percurso do nível; a opcional pontua sem entrar no denominador  | 18                     | 11 §§2.2, 6      |
+| `RN-05-34` | Toda trilha abre com missão de sondagem, cujo resultado não define nível                         | 5                      | 11 §2.2          |
+| `RN-05-35` | Toda atividade exige produção do Guerreiro(a), e a leitura automática é hipótese, não resultado  | 19                     | 02 §4, 11 §2.2   |
+| `RN-05-36` | Foto e áudio da produção são descartados na leitura; ficam transcrição e devolutiva              | —                      | 03 §12.2         |
+| `RN-05-37` | Quem recusa foto ou áudio tem alternativa equivalente e não perde a missão                       | 11                     | 03 §3.3          |
+| `RN-05-38` | A retomada pontua uma vez por agendamento                                                        | —                      | 11 §§2.2, 5      |
 
 ## 8. Modelo de dados
 
 A aplicação é majoritariamente **leitora**: trilha e conteúdo vêm do PRD-09, séries e registros
 do PRD-08, recompensas e acervo do PRD-07, e pontos, níveis e badges do núcleo (PRD-01). Este
-PRD **acrescenta duas entidades** ao núcleo — `DisciplinaDeApoio` e `ConteudoDeApoio` — e
-escreve em outras quatro que já existem, além da `ConsultaAoAssistente` criada pelo PRD-04.
+PRD **acrescenta três entidades** ao núcleo — `DisciplinaDeApoio`, `ConteudoDeApoio` e
+`ProducaoDaMissao` — e escreve em outras quatro que já existem, além da `ConsultaAoAssistente`
+criada pelo PRD-04.
 
 ```text
 ESCREVE (por ato do Guerreiro(a))       LÊ (definidos em outro PRD)
@@ -361,6 +388,7 @@ SolicitacaoDeLocal      (PRD-08)        Conteudo / Bibliografia   (PRD-09)
 CriacaoOriginal         (PRD-09)        Culminancia               (PRD-09)
 SugestaoOuProposta      (PRD-01)        Atividade / Resultado     (PRD-01)
 ConsultaAoAssistente    (PRD-04)        Equipe / Presenca         (PRD-01)
+ProducaoDaMissao        [nova]          Retomada da missao        (PRD-09)
                                         Ponto / Nivel / Badge     (PRD-01)
 Avatar (características)                RecompensaDeMarco         (PRD-09)
                                         ItemPatrimonial           (PRD-07)
@@ -369,12 +397,13 @@ Avatar (características)                RecompensaDeMarco         (PRD-09)
                                         ConteudoDeApoio      [nova, escrita na App 09/03]
 ```
 
-| Entidade               | Atributos essenciais                                                                                                                          |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Nivel`                | Guerreiro(a), trilha ou poder, número (1 a 5), data da conquista — derivado do percurso, nunca editado                                        |
-| `DisciplinaDeApoio`    | nome, faixa de dificuldade, situação (ativa ou inativa), Mestre autor do cadastro                                                             |
-| `ConteudoDeApoio`      | disciplina, título, corpo ou arquivo, fonte, autor do cadastro, data — é o corpus fechado que o modelo consulta                               |
-| `ConsultaAoAssistente` | Guerreiro(a), assistente (apoio escolar, aqui), disciplina, pergunta transcrita, situação (respondida, fora do corpus, recusada), data e hora |
+| Entidade               | Atributos essenciais                                                                                                                                              |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ProducaoDaMissao`     | Guerreiro(a), missão, atividade, forma de entrega (texto, áudio ou foto), transcrição, devolutiva, momento — **sem a foto e sem o áudio, descartados na leitura** |
+| `Nivel`                | Guerreiro(a), trilha ou poder, número (1 a 5), data da conquista — derivado do percurso, nunca editado                                                            |
+| `DisciplinaDeApoio`    | nome, faixa de dificuldade, situação (ativa ou inativa), Mestre autor do cadastro                                                                                 |
+| `ConteudoDeApoio`      | disciplina, título, corpo ou arquivo, fonte, autor do cadastro, data — é o corpus fechado que o modelo consulta                                                   |
+| `ConsultaAoAssistente` | Guerreiro(a), assistente (apoio escolar, aqui), disciplina, pergunta transcrita, situação (respondida, fora do corpus, recusada), data e hora                     |
 
 Imutabilidade e derivação:
 
@@ -396,31 +425,33 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessã
 único. As rotas de coleta e de solicitação de local são do PRD-08 e as de acervo, do PRD-07;
 aparecem aqui apenas quando o ato é do Guerreiro(a).
 
-| Método | Rota                                  | Autenticação | Descrição                                                      |
-| ------ | ------------------------------------- | ------------ | -------------------------------------------------------------- |
-| POST   | `/v1/sessoes/guerreiro`               | pública      | Abre sessão com nick e imagem, conferidos contra o _template_  |
-| POST   | `/v1/sessoes/guerreiro/assistida`     | Mestre/Admin | Abre sessão do Guerreiro(a) sem imagem gravada ou após falha   |
-| DELETE | `/v1/sessoes/guerreiro`               | Guerreiro(a) | Encerra a sessão no aparelho compartilhado                     |
-| GET    | `/v1/eu/trilhas`                      | Guerreiro(a) | Trilhas em que está inscrito, com a próxima missão de cada uma |
-| POST   | `/v1/eu/trilhas/{id}/inscricao`       | Guerreiro(a) | Inscreve-se na trilha de um poder do catálogo do ciclo         |
-| GET    | `/v1/eu/trilhas/{id}/missoes/{ordem}` | Guerreiro(a) | Conteúdo da missão, bibliografia e desafio de desbloqueio      |
-| POST   | `/v1/eu/missoes/{id}/desbloqueio`     | Guerreiro(a) | Submete o desafio de desbloqueio da missão                     |
-| GET    | `/v1/eu/progresso`                    | Guerreiro(a) | Pontos, nível por trilha ou poder, badges e o que falta        |
-| GET    | `/v1/eu/desafios`                     | Guerreiro(a) | Desafios semanais e extras vigentes e elegíveis                |
-| GET    | `/v1/eu/equipes`                      | Guerreiro(a) | Equipes de que participa, com papel e atividades               |
-| GET    | `/v1/eu/series`                       | Guerreiro(a) | Séries de coleta, próxima medição, situação e pontos rendidos  |
-| POST   | `/v1/series/{id}/registros`           | Guerreiro(a) | Registra a medição, com local, valor ou mídia e origem         |
-| POST   | `/v1/solicitacoes-de-local`           | Guerreiro(a) | Solicita a inclusão de local faltante                          |
-| POST   | `/v1/culminancias/{id}/criacoes`      | Guerreiro(a) | Entrega a criação original, individual ou de equipe            |
-| GET    | `/v1/eu/portfolio`                    | Guerreiro(a) | Criações validadas, com situação de exposição pública          |
-| GET    | `/v1/eu/recompensas`                  | Guerreiro(a) | Recompensas conquistadas em marcos e situação da entrega       |
-| GET    | `/v1/eu/acervo`                       | Guerreiro(a) | Exemplar próprio e permanentes em uso, com a ficha de vida     |
-| GET    | `/v1/rankings/{comunidade}`           | pública      | Ranking por trilha ou poder, somente com pontos regulares      |
-| POST   | `/v1/sugestoes`                       | Guerreiro(a) | Registra sugestão em texto ou áudio na fila única da gestão    |
-| GET    | `/v1/eu/sugestoes`                    | Guerreiro(a) | Status das próprias sugestões                                  |
-| GET    | `/v1/apoio-escolar/disciplinas`       | Guerreiro(a) | Disciplinas ativas com conteúdo cadastrado                     |
-| POST   | `/v1/apoio-escolar/consultas`         | Guerreiro(a) | Pergunta em texto ou áudio; responde a partir do corpus        |
-| PATCH  | `/v1/eu/avatar`                       | Guerreiro(a) | Altera as características do próprio avatar                    |
+| Método | Rota                                  | Autenticação | Descrição                                                        |
+| ------ | ------------------------------------- | ------------ | ---------------------------------------------------------------- |
+| POST   | `/v1/sessoes/guerreiro`               | pública      | Abre sessão com nick e imagem, conferidos contra o _template_    |
+| POST   | `/v1/sessoes/guerreiro/assistida`     | Mestre/Admin | Abre sessão do Guerreiro(a) sem imagem gravada ou após falha     |
+| DELETE | `/v1/sessoes/guerreiro`               | Guerreiro(a) | Encerra a sessão no aparelho compartilhado                       |
+| GET    | `/v1/eu/trilhas`                      | Guerreiro(a) | Trilhas em que está inscrito, com a próxima missão de cada uma   |
+| POST   | `/v1/eu/trilhas/{id}/inscricao`       | Guerreiro(a) | Inscreve-se na trilha de um poder do catálogo do ciclo           |
+| GET    | `/v1/eu/trilhas/{id}/missoes/{ordem}` | Guerreiro(a) | Conteúdo da missão, bibliografia e desafio de desbloqueio        |
+| POST   | `/v1/eu/missoes/{id}/desbloqueio`     | Guerreiro(a) | Submete o desafio de desbloqueio da missão                       |
+| POST   | `/v1/eu/missoes/{id}/producao`        | Guerreiro(a) | Entrega a produção em texto, áudio ou foto e recebe a devolutiva |
+| GET    | `/v1/eu/retomadas`                    | Guerreiro(a) | Missões que voltaram para revisão espaçada, com o prazo          |
+| GET    | `/v1/eu/progresso`                    | Guerreiro(a) | Pontos, nível por trilha ou poder, badges e o que falta          |
+| GET    | `/v1/eu/desafios`                     | Guerreiro(a) | Desafios semanais e extras vigentes e elegíveis                  |
+| GET    | `/v1/eu/equipes`                      | Guerreiro(a) | Equipes de que participa, com papel e atividades                 |
+| GET    | `/v1/eu/series`                       | Guerreiro(a) | Séries de coleta, próxima medição, situação e pontos rendidos    |
+| POST   | `/v1/series/{id}/registros`           | Guerreiro(a) | Registra a medição, com local, valor ou mídia e origem           |
+| POST   | `/v1/solicitacoes-de-local`           | Guerreiro(a) | Solicita a inclusão de local faltante                            |
+| POST   | `/v1/culminancias/{id}/criacoes`      | Guerreiro(a) | Entrega a criação original, individual ou de equipe              |
+| GET    | `/v1/eu/portfolio`                    | Guerreiro(a) | Criações validadas, com situação de exposição pública            |
+| GET    | `/v1/eu/recompensas`                  | Guerreiro(a) | Recompensas conquistadas em marcos e situação da entrega         |
+| GET    | `/v1/eu/acervo`                       | Guerreiro(a) | Exemplar próprio e permanentes em uso, com a ficha de vida       |
+| GET    | `/v1/rankings/{comunidade}`           | pública      | Ranking por trilha ou poder, somente com pontos regulares        |
+| POST   | `/v1/sugestoes`                       | Guerreiro(a) | Registra sugestão em texto ou áudio na fila única da gestão      |
+| GET    | `/v1/eu/sugestoes`                    | Guerreiro(a) | Status das próprias sugestões                                    |
+| GET    | `/v1/apoio-escolar/disciplinas`       | Guerreiro(a) | Disciplinas ativas com conteúdo cadastrado                       |
+| POST   | `/v1/apoio-escolar/consultas`         | Guerreiro(a) | Pergunta em texto ou áudio; responde a partir do corpus          |
+| PATCH  | `/v1/eu/avatar`                       | Guerreiro(a) | Altera as características do próprio avatar                      |
 
 Erros previstos: entrada sem câmera disponível (422); conferência biométrica sem
 correspondência (401), com o caminho da sessão assistida; consulta a dado de outro
@@ -451,21 +482,23 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                    | Finalidade                            | Base legal        | Retenção                                      | Quem acessa              |
-| -------------------------------- | ------------------------------------- | ----------------- | --------------------------------------------- | ------------------------ |
-| Imagem da entrada                | Conferir que é o próprio Guerreiro(a) | consentimento     | não é armazenada na entrada                   | núcleo, em conferência   |
-| Registro de coleta do território | Construir a Comunidade Virtual        | interesse público | permanente, com autoria                       | gestão, público agregado |
-| Criação original                 | Autoria, portfólio e culminância      | consentimento     | permanente, com autoria                       | gestão e responsável     |
-| Sugestão em texto ou áudio       | Evolução da plataforma                | consentimento     | 90 dias após o retorno; permanente se adotada | gestão                   |
-| Progresso na trilha              | Registro da participação e pontuação  | consentimento     | enquanto durar o vínculo                      | gestão e responsável     |
-| Características do avatar        | Representação pública do Guerreiro(a) | consentimento     | enquanto durar o vínculo                      | público                  |
-| Pergunta do apoio escolar        | Responder à dúvida da atividade       | consentimento     | 7 dias; até o fim do ciclo se recusada        | gestão                   |
+| Dado coletado                     | Finalidade                                 | Base legal        | Retenção                                                   | Quem acessa               |
+| --------------------------------- | ------------------------------------------ | ----------------- | ---------------------------------------------------------- | ------------------------- |
+| Imagem da entrada                 | Conferir que é o próprio Guerreiro(a)      | consentimento     | não é armazenada na entrada                                | núcleo, em conferência    |
+| Registro de coleta do território  | Construir a Comunidade Virtual             | interesse público | permanente, com autoria                                    | gestão, público agregado  |
+| Criação original                  | Autoria, portfólio e culminância           | consentimento     | permanente, com autoria                                    | gestão e responsável      |
+| Sugestão em texto ou áudio        | Evolução da plataforma                     | consentimento     | 90 dias após o retorno; permanente se adotada              | gestão                    |
+| Progresso na trilha               | Registro da participação e pontuação       | consentimento     | enquanto durar o vínculo                                   | gestão e responsável      |
+| Características do avatar         | Representação pública do Guerreiro(a)      | consentimento     | enquanto durar o vínculo                                   | público                   |
+| Produção da missão (foto e áudio) | Ler o que foi produzido e devolver retorno | consentimento     | **descartados na leitura**; ficam transcrição e devolutiva | gestão e Mestre da trilha |
+| Pergunta do apoio escolar         | Responder à dúvida da atividade            | consentimento     | 7 dias; até o fim do ciclo se recusada                     | gestão                    |
 
 - **Consentimento**: a participação segue a adesão em duas etapas — o cadastro livre já permite
   usar a aplicação, e a **divulgação pública** depende de autorização do responsável, dada na
   App 07. A tela de perfil mostra qual é o estado vigente.
 - **Alternativa a quem recusa**: sem imagem gravada, o Guerreiro(a) entra com a sessão aberta
-  pelo Mestre ou Admin presente. Recusa nunca exclui da atividade.
+  pelo Mestre ou Admin presente; sem foto nem áudio da produção, ele a entrega ao Mestre no
+  encontro. Recusa nunca exclui da atividade nem faz perder missão.
 - **Aviso visível**: toda tela que coleta dado traz o aviso discreto do que se coleta, com
   acesso à área detalhada sobre destino e uso.
 - **Pedidos de acesso, correção e exclusão** são feitos pelo responsável na App 07; a
@@ -578,3 +611,4 @@ para o apoio escolar.
 | `RF-05-67` e `RF-05-68` | 04 §1 (custo de _cloud_ no livro-razão) e 01 §7 (transparência sobre IA) |
 | `RF-05-69` e `RF-05-70` | 03 §7 (descarte do áudio e ausência de teto no Ciclo 01)                 |
 | `RF-05-71`              | 03 §12.2 (sessão em aparelho compartilhado)                              |
+| `RF-05-72` a `RF-05-81` | 11 §2.2 (modelo de missão) e 03 §§7, 12.2 (produção e retenção)          |
