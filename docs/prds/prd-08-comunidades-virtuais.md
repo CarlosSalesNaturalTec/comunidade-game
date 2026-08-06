@@ -8,7 +8,7 @@
 | Aplicação        | — (domínio consumido pelas Apps 02, 03, 05, 06 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v3 — 2026-08-06                                      |
+| Versão e data    | v4 — 2026-08-06                                      |
 | Depende de       | —                                                    |
 | Documentos-fonte | 02 §1, 02 §2, 03 §12, 11 §4, 11 §5, 11 §7, 11 §8.3   |
 
@@ -48,7 +48,7 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 - Crédito automático de pontos recorrentes ao Poder do Território.
 - Auditoria por amostragem do Mestre, com invalidação de registro e estorno dos pontos.
 - Guarda permanente do registro com o coletor identificado.
-- Painel público por comunidade, agregado até o nível da rua, e exportação anonimizada.
+- Painel público por comunidade, agregado até o bairro, e exportação anonimizada.
 - Etiqueta ODS herdada da missão, ou da trilha, e cobertura por ciclo no painel — é aqui que o
   dado local desagregado do território sustenta a contribuição do projeto à **meta 17.18**.
 
@@ -127,7 +127,7 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 ### 5.6 Visitante consulta o painel
 
 1. O visitante abre o painel da comunidade, sem login.
-2. Vê as séries históricas por tipo de coleta, agregadas **até o nível da rua**.
+2. Vê as séries históricas por tipo de coleta, agregadas **até o bairro**.
 3. Não vê nick, nome, avatar nem qualquer identificação de quem coletou.
 
 ## 6. Requisitos funcionais
@@ -149,7 +149,7 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 | `RF-08-13` | Mestre invalida registro com motivo, estornando os pontos e mantendo o registro gravado            | essencial  |
 | `RF-08-14` | Sistema aceita registro vindo de sensor do Guerreiro(a), identificando o dispositivo de origem     | essencial  |
 | `RF-08-15` | Sistema enfileira registro feito sem rede e sincroniza depois, preservando a hora da medição       | essencial  |
-| `RF-08-16` | Rota pública devolve a série histórica da comunidade agregada até rua, sem identificar coletor     | essencial  |
+| `RF-08-16` | Rota pública devolve a série histórica da comunidade agregada até o bairro, sem coletor            | essencial  |
 | `RF-08-17` | Guerreiro(a) consulta suas séries, a situação de cada uma e os pontos que estão rendendo           | essencial  |
 | `RF-08-18` | Responsável consulta, pela App 07, as séries da criança sob sua responsabilidade                   | desejável  |
 | `RF-08-19` | Exportação de dados agregados e anonimizados por comunidade e período                              | desejável  |
@@ -178,7 +178,7 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 | `RN-08-10` | Registro nunca é apagado nem editado: correção se faz por invalidação e novo registro                                         | 7          | 02 §1    |
 | `RN-08-11` | O vínculo entre registro e Guerreiro(a) coletor(a) é permanente, inclusive após a saída do projeto                            | 7          | 02 §1    |
 | `RN-08-12` | Anonimização se aplica na saída — painéis, exportações e pesquisas —, nunca no armazenamento                                  | 7          | 02 §1    |
-| `RN-08-13` | A saída pública agrega até o nível da rua; abaixo disso, só uso interno ou entrega com acordo                                 | 7          | 02 §1    |
+| `RN-08-13` | A saída pública agrega até o bairro; rua e abaixo, só uso interno ou entrega aprovada por Admin                               | 7          | 02 §1    |
 | `RN-08-14` | Toda trilha tem ao menos um desafio de coleta                                                                                 | 5          | 02 §3    |
 | `RN-08-15` | Pontos da coleta creditam o Poder do Território, não o poder da trilha em que o desafio nasceu                                | —          | 02 §2    |
 | `RN-08-16` | Registro em foto ou vídeo que contenha pessoa identificável é invalidado na auditoria                                         | 12         | 03 §12   |
@@ -231,7 +231,7 @@ Rotas de consulta são **públicas e sem autenticação**; escrita é autenticad
 | Método | Rota                                          | Autenticação    | Descrição                                                 |
 | ------ | --------------------------------------------- | --------------- | --------------------------------------------------------- |
 | GET    | `/comunidades`                                | pública         | Lista comunidades com indicadores agregados               |
-| GET    | `/comunidades/{id}`                           | pública         | Comunidade, locais até rua e tipos de coleta ativos       |
+| GET    | `/comunidades/{id}`                           | pública         | Comunidade, locais até o bairro e tipos de coleta ativos  |
 | GET    | `/comunidades/{id}/series`                    | pública         | Séries históricas agregadas, sem coletor                  |
 | GET    | `/comunidades/{id}/exportacao`                | pública         | Exportação agregada e anonimizada por período             |
 | GET    | `/comunidades/{id}/ods`                       | pública         | Cobertura de ODS das séries da comunidade, por ciclo      |
@@ -272,8 +272,8 @@ false`); invalidação por Mestre que não é autor do desafio (403).
 | Dado coletado                  | Finalidade                                     | Base legal                              | Retenção                  | Quem acessa                            |
 | ------------------------------ | ---------------------------------------------- | --------------------------------------- | ------------------------- | -------------------------------------- |
 | Valor medido e data da medição | Construir a série do território                | interesse público                       | permanente                | público, agregado                      |
-| Local até rua                  | Situar a medição                               | interesse público                       | permanente                | público, agregado                      |
-| Local abaixo de rua            | Precisão interna da série                      | interesse público                       | permanente                | gestão e Mestre da trilha              |
+| Local até o bairro             | Situar a medição                               | interesse público                       | permanente                | público, agregado                      |
+| Local abaixo do bairro         | Precisão interna da série                      | interesse público                       | permanente                | gestão, Mestre e entrega aprovada      |
 | Identificação do coletor       | Procedência da série e crédito ao Guerreiro(a) | consentimento do responsável, revogável | permanente, até revogação | gestão, Mestre, o próprio, responsável |
 | Foto ou vídeo do território    | Registro visual do território                  | consentimento                           | permanente                | público, após auditoria                |
 
@@ -328,18 +328,16 @@ a base da avaliação do Poder do Território e entram no conjunto de indicadore
 | Registro nasce válido; Mestre audita por amostragem e pode invalidar       | 02 §1      | Já decididos |
 | Série individual, uma por Guerreiro(a)                                     | 02 §1      | Já decididos |
 | Origem do registro: manual, por voz ou sensor construído pelo Guerreiro(a) | 02 §1      | Já decididos |
-| Saída pública agregada até o nível da rua                                  | 02 §1      | Já decididos |
+| Saída pública agregada até o bairro (revisto no PRD-03)                    | 02 §1      | Já decididos |
 
 ## 14. Pendências que permanecem
 
 - **Autenticação do sensor do Guerreiro(a)**: como o dispositivo se credencia na API, o que
   fazer com valor fora de faixa vindo de sensor e quem responde por sensor descalibrado. Trava
   a implementação do `RF-08-14`, não a modelagem.
-- **Inferência de endereço pela série de rua**: falta a mitigação para rua com um único
-  coletor, em que a série diária indica a casa da criança.
-- **Reidentificação em comunidade com poucos coletores**: a base legal e a resposta ao pedido
-  de exclusão estão decididas (documento 03 §12.1), mas falta o critério de agregação mínima
-  que impeça apontar uma criança a partir de código de coletor, data e local fino.
+- **Reidentificação em comunidade com poucos coletores**: o corte da saída pública no bairro
+  resolveu a inferência de endereço pela série de rua, mas falta o critério de agregação
+  mínima **dentro do bairro** e nas entregas aprovadas, que descem a rua e abaixo.
 - **Faixas de pontos dos níveis 1 a 5**, inclusive do Poder do Território: o documento 11 §6
   define os critérios em palavras, sem números.
 - **Tecnologia de armazenamento das séries temporais**: decisão de arquitetura do PRD-01.

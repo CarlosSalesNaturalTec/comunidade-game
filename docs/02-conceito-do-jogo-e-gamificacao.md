@@ -184,17 +184,15 @@ E o registro é **realização do Guerreiro(a)**: apagar o nome apagaria o créd
 
 A anonimização vale **na saída, não no armazenamento**: o que sai da plataforma para
 pesquisas, painéis públicos e instituições é agregado e anonimizado conforme a finalidade. A
-saída pública chega **até o nível da rua**; condomínio, bloco e quadra ficam para uso interno
-e para entregas com acordo formal.
+**saída pública agrega até o bairro**; rua, condomínio, bloco e quadra só saem no **conjunto
+entregue mediante solicitação aprovada** por um Admin. É essa linha de corte que impede uma
+série diária em rua de coletor único de apontar onde a criança mora.
 
 **Revogação despersonaliza, não apaga.** Se o responsável revoga o consentimento, a plataforma
 rompe o vínculo de autoria e destrói o mapeamento: o registro segue na série com um **código de
 coletor que não corresponde a pessoa alguma**. A medição é dado do lugar e permanece; o dado
 pessoal, que era só o vínculo, deixa de existir. A base legal das duas camadas está no
 documento 03.
-
-> **A definir:** como evitar que uma série diária em rua com um único coletor indique onde a
-> criança mora.
 
 **Para que serve.** Os dados podem ser usados como **insumo para tomada de decisões** — pela
 própria comunidade, por associações de moradores, escolas, poder público e pesquisas. O

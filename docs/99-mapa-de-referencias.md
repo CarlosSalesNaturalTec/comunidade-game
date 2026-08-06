@@ -81,6 +81,10 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Entrega de dados (gratuita, íntegra e aprovada por Admin)          | 03 §12.3                                   | 04 §2, 08, 09                  |
 | Produção executiva (tempo do fundador e dos Admins, por absorção)  | 04 §1                                      | 08, 09, 10 §4.3                |
 | Recortes da vitrine (sociedade civil, pesquisadores, gestores)     | 03 §8                                      | 04 §4, 08, 09                  |
+| Granularidade da saída pública (agrega até o bairro)               | 02 §1                                      | 03 §§8, 12, 08, 09             |
+| Novidade dos favoritos (cinco fatos, 30 dias)                      | 03 §8                                      | 02 §1, 03 §10, 08              |
+| Proteção das rotas públicas (limite por origem, atraso)            | 03 §8                                      | 02 §1, 08                      |
+| Publicidade na vitrine (aprovada por Admin, sem rastreamento)      | 04 §2                                      | 03 §8, 08                      |
 | Aviso de LGPD visível nas aplicações e área detalhada              | 03 §12                                     | 08, 09                         |
 | Área do Apoiador (App 08) e registro de propostas                  | 03 §10                                     | 04, 08, 09, 12                 |
 | Área do Mestre (App 09) — autoria e operação                       | 03 §11                                     | 02, 05, 08, 09                 |
@@ -151,6 +155,8 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Badges                                      | 11 §7                     | PRD-01, 03, 05, 12             |
 | Recompensa conquistada em marco             | 02 §8 + 11 §2.1           | PRD-09, 01, 05, 07             |
 | Vitrine e rankings                          | 03 §8 + 11 §8.1           | PRD-03                         |
+| Granularidade da saída pública              | 02 §1 + 03 §12            | PRD-03, 08, 01                 |
+| Publicidade na vitrine                      | 04 §2 + 03 §8             | PRD-03, 01                     |
 | Cards e páginas individuais dos personagens | 11 §8.2                   | PRD-03, 12                     |
 | Solicitação de Mestre ou Apoiador           | 02 §1 + 03 §8             | PRD-03, 02, 01                 |
 | Equipes                                     | 02 §5 + 11 §4             | PRD-04, 01, 02, 05             |
@@ -219,8 +225,9 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     **1 familiar com 17 anos ou mais**. A gestão não forma nem edita equipe.
 16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.**
 17. **Os dados produzidos pela plataforma são gratuitos.** A vitrine mostra a visão macro e
-    agregada; o conjunto na íntegra, sempre anonimizado, vai a pesquisadores e gestores
-    públicos **mediante solicitação prévia e aprovação de um Admin**.
+    agregada, que **para no bairro**; o conjunto na íntegra, sempre anonimizado e podendo
+    descer a rua, condomínio, bloco e quadra, vai a pesquisadores e gestores públicos
+    **mediante solicitação prévia e aprovação de um Admin**.
 18. **Só a missão obrigatória conta no percurso do nível.** A opcional pontua e pode render
     badge, mas fica fora do denominador dos níveis 2, 3 e 4.
 19. **Toda atividade exige produção do Guerreiro(a)** — escrever, falar ou construir. A

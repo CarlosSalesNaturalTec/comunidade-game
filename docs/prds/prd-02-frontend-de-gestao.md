@@ -8,7 +8,7 @@
 | Aplicação        | App 03 — Gestão administrativa            |
 | Onda             | 2                                         |
 | Situação         | aprovado                                  |
-| Versão e data    | v6 — 2026-08-06                           |
+| Versão e data    | v7 — 2026-08-06                           |
 | Depende de       | PRD-01                                    |
 | Documentos-fonte | 03 §§5, 11, 12, 04 §§1–3, 05 §§2–5, 02 §4 |
 
@@ -54,6 +54,8 @@ poder tocar a partida.
   atividades pendentes de lastro.
 - Filas de avaliação: solicitações de participação, **solicitações de dados**, solicitações
   dos responsáveis, desafios extras dos Apoiadores e a fila única de sugestões e propostas.
+- Conteúdo institucional da vitrine — "Quem somos", "Contatos" e "Como apoiar" — e
+  aprovação peça a peça dos anúncios das seções institucionais.
 - Consulta da trilha de auditoria das ações de gestão.
 
 ### 3.2 Fora do escopo
@@ -222,6 +224,9 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RF-02-66` | Solicitação de responsável sem desfecho em 7 dias aparece em atraso na fila                         | essencial  |
 | `RF-02-25` | Fila única reúne sugestões e propostas das Apps 05, 07, 08 e 09, identificando autor e persona      | essencial  |
 | `RF-02-26` | Admin avalia a sugestão, muda o status e registra o retorno a quem propôs                           | essencial  |
+| `RF-02-80` | Admin edita o conteúdo institucional da vitrine, com autor e data do que publicou                   | essencial  |
+| `RF-02-81` | Admin aprova ou recusa anúncio peça a peça, com anunciante, período e motivo registrados            | essencial  |
+| `RF-02-82` | Anúncio recusado ou fora do período não é devolvido pela rota pública da vitrine                    | essencial  |
 | `RF-02-27` | Fila de desafios extras mostra apenas os já validados pelo Mestre da trilha                         | essencial  |
 | `RF-02-28` | Admin aprova o desafio extra, e a aprovação é recusada sem o lastro da recompensa registrado        | essencial  |
 
@@ -371,6 +376,9 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | POST   | `/v1/solicitacoes-de-participacao/{id}/avaliacao` | Admin           | Aceita ou recusa, com parecer e autor                                 |
 | GET    | `/v1/solicitacoes-de-dados`                       | Admin           | Fila dos pedidos de conjunto de dados                                 |
 | POST   | `/v1/solicitacoes-de-dados/{id}/avaliacao`        | Admin           | Aprova ou recusa, com motivo, autor e o que foi entregue              |
+| PUT    | `/v1/conteudo-institucional/{secao}`              | Admin           | Edita "Quem somos", "Contatos" ou "Como apoiar"                       |
+| POST   | `/v1/anuncios`                                    | Admin           | Cadastra anúncio com anunciante, peça, seção e período                |
+| POST   | `/v1/anuncios/{id}/avaliacao`                     | Admin           | Aprova ou recusa a peça, com motivo registrado                        |
 | GET    | `/v1/solicitacoes-do-responsavel`                 | Admin           | Fila das solicitações vindas da App 07                                |
 | POST   | `/v1/solicitacoes-do-responsavel/{id}/tratamento` | Admin           | Registra o desfecho, com quem tratou e quando                         |
 | GET    | `/v1/sugestoes`                                   | Admin           | Fila única de sugestões e propostas das Apps 05, 07, 08, 09           |
@@ -519,6 +527,7 @@ foi definida no PRD-01 — a App 03 apenas a consulta.
 | `RF-02-11` a `RF-02-17` | 02 §1, 03 §5 e PRD-08 (comunidade, default e território) |
 | `RF-02-18` a `RF-02-20` | 02 §1 e 03 §§5, 8 (solicitação de participação)          |
 | `RF-02-77` a `RF-02-79` | 03 §12.3 (entrega de dados aprovada por Admin)           |
+| `RF-02-80` a `RF-02-82` | 03 §8 e 04 §2 (conteúdo institucional e publicidade)     |
 | `RF-02-21` e `RF-02-22` | PRD-08 (solicitação de novo local)                       |
 | `RF-02-23` e `RF-02-24` | 03 §9 (solicitações da área do responsável)              |
 | `RF-02-25` e `RF-02-26` | 03 §§7, 9, 10, 11 (fila única de sugestões e propostas)  |

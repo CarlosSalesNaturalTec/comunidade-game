@@ -440,14 +440,21 @@ Web App de acesso público e **sem autenticação**:
   fila de avaliação (§12.3).
 - **Aportes exibidos em moedas da plataforma**, nunca em reais (documento 04).
 - **Painel público da Comunidade Virtual** — dados do território em **série histórica**, em
-  **visão macro**, agregados e anonimizados, abertos à consulta da comunidade e de
-  instituições.
+  **visão macro**, agregados **até o bairro** e anonimizados (documento 02), abertos à consulta
+  da comunidade e de instituições.
 - **Portfólio de criações originais** — as criações dos Guerreiros e Guerreiras autorizados,
   com o nick do autor (ou dos autores, em equipe).
 - **Favoritos do visitante** — sem login e sem cadastro, o visitante marca Guerreiros,
   Guerreiras e Mestres como favoritos e a vitrine passa a destacar as novidades deles primeiro.
   A lista fica **no próprio aparelho**: a plataforma não coleta nada do visitante e, trocando de
   aparelho, a lista não vai junto.
+- **O que é novidade**, na vitrine e na App 08: **criação original publicada, badge novo, nível
+  novo, resultado de batalha e trilha nova publicada pelo Mestre**. O fato fica em destaque por
+  **30 dias** a contar da data em que aconteceu.
+- **Proteção das rotas públicas**: a consulta por nick exato e o envio dos dois formulários têm
+  **limite por origem e janela de tempo, com atraso progressivo** a cada repetição — é o que
+  barra a varredura de nicks e o envio abusivo. **Sem CAPTCHA**, que é barreira de
+  acessibilidade, e **sem cadastro ou coleta de dado do visitante**.
 - Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins — incluindo a **nota de
   transparência sobre IA**.
 - **"Como apoiar"** — canais de doação, incluindo a chave PIX da pessoa jurídica vinculada.
@@ -455,8 +462,9 @@ Web App de acesso público e **sem autenticação**:
   território, não corporativa.
 - **Vídeo de apresentação**: os irmãos Susy e Otávio, os Rôbróders e o professor Carlos
   Trenell (narrativa da trilha Robô Educa).
-- É também o espaço da **publicidade** prevista como fonte de receita — sempre fora das áreas
-  de uso das crianças e sem coleta de dados de menores para fins publicitários.
+- É também o espaço da **publicidade** prevista como fonte de receita, restrita às **seções
+  institucionais** — "Quem somos", "Contatos" e "Como apoiar" —, **aprovada peça a peça por um
+  Admin** e **sem cookie, rastreador ou perfilamento do visitante** (documento 04).
 
 A vitrine é uma só e **sem login**. O que muda por público é o **recorte de leitura** — a porta
 de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos:
@@ -627,9 +635,8 @@ Duas camadas, e a distinção entre elas é o que sustenta o desenho:
   vinculada hoje não se enquadra. Até lá, a camada pessoal se sustenta em consentimento, e é
   por isso que toda entrega a terceiros sai **anonimizada** (§12.3).
 - **Risco de reidentificação**: em comunidade pequena, código de coletor somado a data e local
-  fino ainda pode apontar uma criança. Toda saída passa por agregação suficiente para que isso
-  não ocorra, e a granularidade fina fica restrita a uso interno e a entregas com acordo
-  formal.
+  fino ainda pode apontar uma criança. Por isso a saída pública agrega até o bairro (documento
+  02), e rua, condomínio, bloco e quadra só saem nas entregas aprovadas (§12.3).
 
 ### 12.2 Prazos de guarda
 
@@ -654,7 +661,7 @@ minuto antes e opção de continuar, além do botão de sair sempre visível. O 
 é a próxima criança ver os dados da anterior.
 
 - **Georreferenciamento sem expor endereço de criança**: a granularidade publicada nunca pode
-  permitir inferir onde um Guerreiro(a) específico mora.
+  permitir inferir onde um Guerreiro(a) específico mora — daí o corte no bairro (documento 02).
 - **Aviso visível em toda aplicação:** onde há coleta de dado, o app indica ao usuário — de
   forma discreta e elegante, sem interromper o uso — o que está sendo coletado e quais são os
   seus direitos, com acesso a uma **área detalhada** que explica destino e uso de cada dado.

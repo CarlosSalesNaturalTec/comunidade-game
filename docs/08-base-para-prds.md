@@ -244,15 +244,18 @@ lançada pelo Mestre (App 09) e pelo Admin (App 03), sem revisão de terceiro.
 Comunidades Virtuais com cards individuais; **página individual detalhada** aberta a partir de
 cada card — Guerreiro(a), Mestre, poder, apoiador e comunidade —, com a composição do documento
 11; cards rotativos de Guerreiros e Guerreiras (rotação a cada 5 s); painel público de dados
-por comunidade **em série histórica**; "Quem somos" e "Contatos" editáveis; seção **"Como
-apoiar"** com a chave PIX do projeto; espaço de **publicidade** fora das áreas de uso das
-crianças; vídeo de apresentação (Susy, Otávio, Rôbróders, prof. Carlos Trenell); estética de
-comunidade (grafite, cores, imagens do território); **portfólio de criações originais** dos
+por comunidade **em série histórica**, agregado **até o bairro**; "Quem somos" e "Contatos"
+editáveis; seção **"Como apoiar"** com a chave PIX do projeto; espaço de **publicidade** nas
+seções institucionais, aprovado peça a peça por Admin e sem rastreamento do visitante
+(documento 04); vídeo de apresentação (Susy, Otávio, Rôbróders, prof. Carlos Trenell); estética
+de comunidade (grafite, cores, imagens do território); **portfólio de criações originais** dos
 Guerreiros e Guerreiras autorizados, com o nick dos autores; **painel de cobertura da Agenda
 2030** por comunidade e por ciclo, com destaque para a contribuição à meta 17.18 e a ressalva
 de que o ODS 18 é adoção voluntária do Brasil; **nota de transparência sobre IA**
 nas seções institucionais; **favoritos do visitante** — sem login e sem cadastro, guardados no
-próprio aparelho, fazendo a vitrine destacar primeiro as novidades de quem ele acompanha.
+próprio aparelho, fazendo a vitrine destacar primeiro as novidades de quem ele acompanha, pelos
+cinco fatos e pelos 30 dias definidos no documento 03; **limite por origem com atraso
+progressivo** na consulta por nick e nos dois formulários públicos.
 
 **Três recortes de leitura:** a vitrine é uma só e **sem login**; o que muda por público é a
 porta de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos. Nenhum
@@ -267,10 +270,10 @@ navegação — o visitante circula livremente entre os três.
 - **Gestores públicos** — painel do território por comunidade e por ciclo, com evolução no
   tempo e o **painel de cobertura da Agenda 2030**, com destaque para a meta 17.18.
 
-Os três obedecem à regra de saída — **agregada e anonimizada, nunca por Guerreiro(a)** —, com
-a granularidade limitada pela mitigação de inferência de endereço, que segue pendente. O que a
-vitrine publica é a **visão macro**; o **conjunto na íntegra** é gratuito e sai por
-solicitação, como descrito abaixo. Ficam em aberto o formato de exportação e a licença de uso.
+Os três obedecem à regra de saída — **agregada e anonimizada, nunca por Guerreiro(a)** — e
+param no **bairro**: rua, condomínio, bloco e quadra só saem no conjunto entregue sob
+solicitação aprovada. O que a vitrine publica é a **visão macro**; o **conjunto na íntegra** é
+gratuito e sai por solicitação, como descrito abaixo.
 
 **Formulário de solicitação de dados:** pesquisadores e gestores públicos pedem o conjunto
 completo por formulário público, declarando quem são, a instituição e a finalidade do uso. O
@@ -294,6 +297,9 @@ responsável autorizou a divulgação**; Guerreiros e Guerreiras sem autorizaç�
 atividades mas não aparecem publicamente. As páginas de **Mestres e Apoiadores** exibem
 **currículo, portfólios, redes sociais e documentos comprobatórios externos**. Aportes aparecem
 em **moedas da plataforma**, nunca em reais.
+
+**Questões em aberto:** texto final e localização exata da nota de transparência sobre IA;
+formato de exportação e licença de uso do conjunto entregue sob solicitação.
 
 **Fontes:** docs 02, 03, 04, 11 (composição dos cards, páginas individuais e representação
 visual da comunidade).
@@ -529,8 +535,7 @@ pelos próprios Guerreiros e Guerreiras — a base _Data Driven_ da plataforma.
 **Questões em aberto:** fontes e sensores (registro manual × sensor construído pelo
 Guerreiro(a) × API pública); curadoria e **veracidade dos dados**; cadência e valor em pontos
 por tipo de coleta; **janela de tolerância** antes de considerar a série interrompida; teto de
-pontos por período; georreferenciamento sem expor endereço de criança; tecnologia de
-armazenamento das séries temporais.
+pontos por período; tecnologia de armazenamento das séries temporais.
 
 **Fontes:** docs 02, 03, 11.
 
