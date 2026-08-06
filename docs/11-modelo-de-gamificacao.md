@@ -279,7 +279,7 @@ o registro permanece para a gestão e o responsável. É consequência no jogo, 
 ### 5.1 Integridade dos pontos
 
 O desenho já elimina as duas fraudes mais prováveis: o jogo **não escreve nada** e o
-Guerreiro(a) entra em toda aplicação **por nick e imagem**, de modo que a atividade é
+Guerreiro(a) entra em toda aplicação com login **por nick e imagem**, de modo que a atividade é
 comprovadamente dele. As demais travas:
 
 | Risco                             | Trava                                                                                                  |
@@ -400,7 +400,9 @@ Princípios: o visual **representa dados reais, nunca decoração**; a saída p�
 
 **Definição vigente — o jogo é somente leitura.** Ele lê o progresso do Guerreiro(a) para
 montar o personagem da partida e **não escreve nada de volta**: não credita, não debita, não
-registra resultado. Ganhar ou perder mil partidas não muda uma linha do perfil.
+registra resultado. Ganhar ou perder mil partidas não muda uma linha do perfil. O App 04 é
+**público e sem login**, e só oferece como personagem quem tem **divulgação autorizada** —
+mesma regra da vitrine.
 
 | O jogo pode                                                                     | O jogo não pode                                                 |
 | ------------------------------------------------------------------------------- | --------------------------------------------------------------- |

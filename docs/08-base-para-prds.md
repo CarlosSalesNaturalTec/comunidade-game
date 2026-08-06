@@ -636,13 +636,14 @@ explicabilidade para responsáveis.
 
 ## PRD-12 — App 04: Jogo em JavaScript
 
-**Escopo:** jogo executado no navegador, construído sobre a **base de personagens da
-plataforma**.
+**Escopo:** jogo executado no navegador, **público e sem login**, construído sobre a **base de
+personagens da plataforma**.
 
 **Requisitos:** uso dos avatares, poderes, badges, níveis e saldos de pontos já conquistados
 como elementos do jogo — a composição dos cards e o contrato do jogo com o motor (**somente
-leitura**) seguem o documento 11; **escolha do personagem** entre os Guerreiros e Guerreiras
-cadastrados, respeitada a regra de divulgação autorizada da vitrine; representação
+leitura**) seguem o documento 11; **escolha do personagem estritamente na lista dos Guerreiros
+e Guerreiras com divulgação autorizada**, a mesma da vitrine — sem login, o jogo não distingue
+quem está jogando, e a lista é idêntica para todo visitante; representação
 exclusivamente por **avatar, nunca por imagem real**; código aberto e legível, apto a virar
 conteúdo de trilha do Poder da IA e Robótica — **alterá-lo é atividade de trilha**; execução em
 navegador de celular modesto e tolerância a rede instável.

@@ -71,7 +71,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Poder do Território                                                | 02 §2                                      | 08, 11                         |
 | Governança de personas (só Guerreiro(a) tem autocadastro)          | 02 §1                                      | 01, 05, 08                     |
 | Cadastro do responsável e vínculo com os Guerreiros e Guerreiras   | 02 §1                                      | 03 §§1.1, 5, 9, 11, 08, 09     |
-| Autenticação por persona (Guerreiro(a) por nick e imagem)          | 03 §1.1                                    | 02, 08, 09                     |
+| Autenticação por persona (nick e imagem; Apps 04 e 06 sem login)   | 03 §1.1                                    | 02, 08, 09                     |
 | Solicitação de participação como Mestre ou Apoiador                | 02 §1                                      | 03 §§5, 8, 08, 12              |
 | Equipes (grupo livre até 5, formadas no App 01, válidas na aula)   | 02 §5                                      | 03 §§4, 5, 08, 11 §4           |
 | Comunidade do onboarding vinda da aula agendada                    | 02 §1                                      | 01, 03 §§3, 5, 08, 10          |
@@ -194,10 +194,12 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
 7. **Dados do território: guarda permanente com o coletor identificado**; anonimização
    apenas **na saída**. A **revogação do consentimento pelo responsável despersonaliza** o
    registro — rompe o vínculo de autoria e destrói o mapeamento —, **nunca o apaga**.
-8. **O App 04 (jogo) é somente leitura.** Ele lê o progresso do Guerreiro(a) para montar o
-   personagem — pontos regulares, pontos extras, poderes, badges e níveis — e **não escreve
-   nada de volta**: não credita, não debita e não registra resultado de partida. Não existe
-   endpoint de escrita para jogos, e **não há saldo de pontos consumidos**.
+8. **O App 04 (jogo) é público, sem login e somente leitura.** Ele lê o progresso do
+   Guerreiro(a) para montar o personagem — pontos regulares, pontos extras, poderes, badges e
+   níveis — e **não escreve nada de volta**: não credita, não debita e não registra resultado
+   de partida. Não existe endpoint de escrita para jogos, e **não há saldo de pontos
+   consumidos**. O personagem é escolhido **estritamente entre os Guerreiros e Guerreiras com
+   divulgação autorizada**, como na vitrine.
 9. **Nenhuma atividade acontece sem lastro** de recursos providos por Mestre ou Apoiador.
 10. **Nenhum contato direto entre Apoiador e Guerreiro(a)**; toda interação adulto–criança é
     mediada pela plataforma.
