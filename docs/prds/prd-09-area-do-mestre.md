@@ -7,7 +7,7 @@
 | PRD              | PRD-09                                                      |
 | Aplicação        | App 09 — Área do Mestre                                     |
 | Onda             | 3                                                           |
-| Situação         | em revisão                                                  |
+| Situação         | aprovado                                                    |
 | Versão e data    | v5 — 2026-08-06                                             |
 | Depende de       | PRD-01                                                      |
 | Documentos-fonte | 02 §§1–4, 03 §§1, 11, 05 §§3, 5, 6, 06, 07, 11 §§2, 4, 5, 7 |

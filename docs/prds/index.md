@@ -11,21 +11,21 @@ no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs est�
 
 ## Situação da esteira
 
-| PRD                                      | Assunto                                | Aplicação | Onda | Situação     |
-| ---------------------------------------- | -------------------------------------- | --------- | ---- | ------------ |
-| [PRD-08](prd-08-comunidades-virtuais.md) | Comunidades Virtuais e território      | —         | 1    | aprovado     |
-| [PRD-07](prd-07-economia-e-ledger.md)    | Economia de recursos e ledger          | —         | 1    | aprovado     |
-| [PRD-01](prd-01-backend-api.md)          | Backend API (núcleo)                   | —         | 1    | aprovado     |
-| [PRD-02](prd-02-frontend-de-gestao.md)   | Frontend de gestão                     | App 03    | 2    | aprovado     |
-| [PRD-04](prd-04-aula-presencial.md)      | Aula presencial (onboarding e trilhas) | App 01    | 2    | em revisão   |
-| [PRD-09](prd-09-area-do-mestre.md)       | Área do Mestre (autoria e operação)    | App 09    | 3    | em revisão   |
-| [PRD-05](prd-05-area-do-guerreiro.md)    | Área do Guerreiro(a)                   | App 05    | 3    | em revisão   |
-| PRD-13                                   | Área dos pais e responsáveis           | App 07    | 4    | não iniciado |
-| PRD-03                                   | Vitrine pública                        | App 06    | 4    | não iniciado |
-| PRD-14                                   | Área do Apoiador                       | App 08    | 5    | não iniciado |
-| PRD-10                                   | Batalhas e eventos presenciais         | —         | 5    | não iniciado |
-| PRD-12                                   | Jogo em JavaScript                     | App 04    | 5    | não iniciado |
-| PRD-11                                   | Personalização por IA                  | —         | 5    | não iniciado |
+| PRD                                       | Assunto                                | Aplicação | Onda | Situação     |
+| ----------------------------------------- | -------------------------------------- | --------- | ---- | ------------ |
+| [PRD-08](prd-08-comunidades-virtuais.md)  | Comunidades Virtuais e território      | —         | 1    | aprovado     |
+| [PRD-07](prd-07-economia-e-ledger.md)     | Economia de recursos e ledger          | —         | 1    | aprovado     |
+| [PRD-01](prd-01-backend-api.md)           | Backend API (núcleo)                   | —         | 1    | aprovado     |
+| [PRD-02](prd-02-frontend-de-gestao.md)    | Frontend de gestão                     | App 03    | 2    | aprovado     |
+| [PRD-04](prd-04-aula-presencial.md)       | Aula presencial (onboarding e trilhas) | App 01    | 2    | aprovado     |
+| [PRD-09](prd-09-area-do-mestre.md)        | Área do Mestre (autoria e operação)    | App 09    | 3    | aprovado     |
+| [PRD-05](prd-05-area-do-guerreiro.md)     | Área do Guerreiro(a)                   | App 05    | 3    | aprovado     |
+| [PRD-13](prd-13-area-dos-responsaveis.md) | Área dos pais e responsáveis           | App 07    | 4    | em revisão   |
+| PRD-03                                    | Vitrine pública                        | App 06    | 4    | não iniciado |
+| PRD-14                                    | Área do Apoiador                       | App 08    | 5    | não iniciado |
+| PRD-10                                    | Batalhas e eventos presenciais         | —         | 5    | não iniciado |
+| PRD-12                                    | Jogo em JavaScript                     | App 04    | 5    | não iniciado |
+| PRD-11                                    | Personalização por IA                  | —         | 5    | não iniciado |
 
 Situações possíveis: **não iniciado**, **em elicitação**, **em redação**, **em revisão** e
 **aprovado**. O link para o documento aparece nesta tabela quando ele entra na pasta. A ordem

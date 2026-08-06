@@ -7,7 +7,7 @@
 | PRD              | PRD-04                                                         |
 | Aplicação        | App 01 — Aula presencial (onboarding, trilhas e equipes)       |
 | Onda             | 2                                                              |
-| Situação         | em revisão                                                     |
+| Situação         | aprovado                                                       |
 | Versão e data    | v3 — 2026-08-06                                                |
 | Depende de       | PRD-01, PRD-02; o caminho das trilhas depende também do PRD-09 |
 | Documentos-fonte | 02 §§1, 5, 9, 03 §§1.1, 3, 4, 12, 05 §§4, 5, 06 §3, 11 §§4, 5  |
