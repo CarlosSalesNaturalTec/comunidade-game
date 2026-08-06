@@ -93,6 +93,12 @@ Conseguir os recursos digitais básicos: servidores, armazenamento e execução 
 Como qualquer outro recurso, entram no livro-razão e compõem o **Poder Econômico** de quem os
 aportar.
 
+O **consumo de IA das Apps 05 e 02** entra na mesma conta: no Ciclo 01 ele é **aportado por
+absorção pelo Admin e Mestre fundador**, começando no _free tier_ da conta Google Gemini PRO e
+passando a _pay-as-you-go_ conforme o uso. **Não há teto de uso neste ciclo** — a demanda real
+e o custo são medidos aqui para dimensionar o ciclo seguinte, e essa medição é um dos
+resultados esperados do piloto.
+
 > **Nota de escopo:** a operação vai de **agosto a novembro**; o ciclo se estende a
 > **dezembro**, reservado à culminância, à conferência de inventário e à avaliação das
 > hipóteses.

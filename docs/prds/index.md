@@ -18,8 +18,8 @@ no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs est�
 | [PRD-01](prd-01-backend-api.md)          | Backend API (núcleo)                | —         | 1    | aprovado     |
 | [PRD-02](prd-02-frontend-de-gestao.md)   | Frontend de gestão                  | App 03    | 2    | aprovado     |
 | [PRD-04](prd-04-onboarding.md)           | Onboarding e registro de presença   | App 01    | 2    | aprovado     |
-| [PRD-09](prd-09-area-do-mestre.md)       | Área do Mestre (autoria e operação) | App 09    | 3    | em revisão   |
-| PRD-05                                   | Área do Guerreiro(a)                | App 05    | 3    | não iniciado |
+| [PRD-09](prd-09-area-do-mestre.md)       | Área do Mestre (autoria e operação) | App 09    | 3    | aprovado     |
+| [PRD-05](prd-05-area-do-guerreiro.md)    | Área do Guerreiro(a)                | App 05    | 3    | em revisão   |
 | PRD-13                                   | Área dos pais e responsáveis        | App 07    | 4    | não iniciado |
 | PRD-03                                   | Vitrine pública                     | App 06    | 4    | não iniciado |
 | PRD-06                                   | Assistente por voz e Modo Ouvinte   | App 02    | 5    | não iniciado |

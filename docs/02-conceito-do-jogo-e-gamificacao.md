@@ -158,8 +158,11 @@ correspondente também é temporal:
   Guerreiro(a)**; a origem fica gravada no registro.
 - O registro pode ser **foto ou vídeo** — é assim que se registra lixo acumulado, buraco na
   via ou poste apagado, que se medem por evidência e não por número.
-- O registro **nasce válido e pontua na hora**. O Mestre audita por **amostragem** e pode
-  invalidar registro inverossímil, o que retira os pontos correspondentes.
+- O registro **nasce válido e pontua na hora**. O Mestre audita por **amostragem semanal**,
+  junto com os lançamentos da semana, e pode invalidar registro inverossímil, o que retira os
+  pontos daquele registro — só dele. Valor "a conferir" entra obrigatoriamente na amostra.
+- **Valor fora da faixa declarada no desafio** entra como **a conferir** e não pontua até o
+  Mestre validar. É a trava contra dado inventado, e é também momento de ensinar a medir.
 
 É o desenho que traduz o valor real do dado de território: uma medição isolada é curiosidade;
 uma **série contínua** é evidência. A plataforma paga pela continuidade, porque é a
@@ -181,6 +184,12 @@ A anonimização vale **na saída, não no armazenamento**: o que sai da platafo
 pesquisas, painéis públicos e instituições é agregado e anonimizado conforme a finalidade. A
 saída pública chega **até o nível da rua**; condomínio, bloco e quadra ficam para uso interno
 e para entregas com acordo formal.
+
+**Revogação despersonaliza, não apaga.** Se o responsável revoga o consentimento, a plataforma
+rompe o vínculo de autoria e destrói o mapeamento: o registro segue na série com um **código de
+coletor que não corresponde a pessoa alguma**. A medição é dado do lugar e permanece; o dado
+pessoal, que era só o vínculo, deixa de existir. A base legal das duas camadas está no
+documento 03.
 
 > **A definir:** como evitar que uma série diária em rua com um único coletor indique onde a
 > criança mora.
@@ -321,9 +330,9 @@ alterado, uma ideia nova sobre o que a trilha ensinou. A criação original dist
 - **Vitrine pública** — as criações de Guerreiros e Guerreiras autorizados compõem o portfólio
   público.
 - Em **equipe**, o crédito é da equipe **e** de cada membro, com o papel que teve.
-- A criação original **pontua e rende badge de autoria**.
-
-> **A definir:** valor em pontos da criação original e critérios do badge de autoria.
+- A criação original **pontua e rende badge de autoria**, com o valor em pontos creditado
+  **integralmente a cada integrante** da equipe — dividir puniria justamente a colaboração.
+  Validá-la é ato do Mestre autor da trilha, e o valor está no documento 11.
 
 ### Desafios extras propostos por Apoiadores
 

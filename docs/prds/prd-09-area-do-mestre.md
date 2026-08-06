@@ -7,8 +7,8 @@
 | PRD              | PRD-09                                                      |
 | Aplicação        | App 09 — Área do Mestre                                     |
 | Onda             | 3                                                           |
-| Situação         | em revisão                                                  |
-| Versão e data    | v2 — 2026-08-05                                             |
+| Situação         | aprovado                                                    |
+| Versão e data    | v3 — 2026-08-05                                             |
 | Depende de       | PRD-01                                                      |
 | Documentos-fonte | 02 §§1–4, 03 §§1, 11, 05 §§3, 5, 6, 06, 07, 11 §§2, 4, 5, 7 |
 
@@ -58,6 +58,8 @@ inteira sem escrever uma linha de código.
   Guerreiras já cadastrados.
 - **Artefatos comprobatórios** da habilidade do Mestre, que alimentam a sua página na vitrine.
 - **Registro de propostas** de evolução da plataforma, na fila única da gestão.
+- **Disciplinas e conteúdo do apoio escolar** — o corpus fechado que os assistentes das Apps 05
+  e 02 consomem. É autoria exclusiva do Mestre; o Admin audita por amostragem.
 
 ### 3.2 Fora do escopo
 
@@ -81,7 +83,7 @@ inteira sem escrever uma linha de código.
 | Persona      | O que faz nesta aplicação                                                               | O que não pode fazer                                                    |
 | ------------ | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | Mestre       | Cria e publica trilhas, cadastra perguntas, lança o que é seu, valida, absorve e propõe | Lançar atividade de outro Mestre; cadastrar persona além do responsável |
-| Admin        | Audita trilhas publicadas por amostragem e despublica com motivo                        | Editar a trilha de um Mestre — despublicar não é reescrever             |
+| Admin        | Audita por amostragem trilhas e corpus de apoio escolar, e despublica com motivo        | Editar a trilha de um Mestre, ou cadastrar conteúdo de apoio escolar    |
 | Guerreiro(a) | Nada: não acessa esta aplicação                                                         | Entrar                                                                  |
 | Visitante    | Nada: a aplicação é inteiramente autenticada                                            | Acessar qualquer tela                                                   |
 
@@ -249,7 +251,7 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-32` | Criação de equipe registra o papel de cada integrante, com crédito individual preservado         | essencial  |
 | `RF-09-33` | Criação validada só aparece no portfólio público se o responsável tiver autorizado a divulgação  | essencial  |
 | `RF-09-34` | Mestre recusa a criação com motivo, devolvendo-a para ajuste sem perder a autoria                | essencial  |
-| `RF-09-35` | Mestre audita por amostragem os registros de coleta das suas trilhas e invalida com motivo       | essencial  |
+| `RF-09-35` | Mestre audita por amostragem semanal os registros de coleta e invalida com motivo                | essencial  |
 
 ### 6.4 Banco do Quiz ao Vivo
 
@@ -289,6 +291,9 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-53` | Mestre aprova ou recusa solicitação de novo local dos Guerreiros e Guerreiras das suas trilhas | essencial  |
 | `RF-09-54` | Solicitações de local em aberto aparecem com alerta enquanto não são tratadas                  | essencial  |
 | `RF-09-55` | Mestre registra proposta de evolução da plataforma e acompanha o status na fila única          | essencial  |
+| `RF-09-77` | Mestre cadastra disciplinas do apoio escolar, com nome, faixa de dificuldade e situação        | essencial  |
+| `RF-09-78` | Mestre cadastra o conteúdo de cada disciplina, único insumo dos assistentes das Apps 05 e 02   | essencial  |
+| `RF-09-79` | Mestre vê o motivo quando o Admin despublica conteúdo de apoio auditado, e corrige             | essencial  |
 
 ### 6.7 Recursos, absorção e ressarcimento
 
@@ -470,7 +475,8 @@ sem autorização do responsável (409).
 - O registro de **pontuação negativa** é dado sensível de criança: restrito à gestão e ao
   responsável, nunca em rota pública, ranking ou vitrine.
 - Pedido de acesso, correção ou exclusão chega pela App 07 e é tratado pela gestão; **o registro
-  de coleta do território não é apagado**, e a resposta ao responsável diz isso.
+  de coleta do território não é apagado, e sim despersonalizado**, e a resposta ao responsável
+  diz isso.
 - Toda tela que coleta dado traz o aviso discreto do que se coleta, com acesso à área detalhada
   sobre destino e uso.
 
@@ -532,14 +538,8 @@ como ação de Admin e o cadastro de atividade ficou restrito à **atividade avu
 
 ## 14. Pendências que permanecem
 
-- **Pontos da criação original e critérios de validação**: a culminância já é obrigatória e o
-  Mestre autor já é quem valida; falta o **valor em pontos**, o badge e o formato da exposição
-  no portfólio. **Trava** o crédito automático do `RF-09-31`.
-- **Pontuação e regras do Quiz ao Vivo**: o formato da pergunta está decidido; seguem em aberto
-  os pontos da vitória, se responde a equipe inteira ou um representante, o desempate e o número
-  de dispositivos por equipe.
-- **Faixas de pontos dos níveis 1 a 5**: o documento 11 define os critérios em palavras, sem os
-  números que separam um nível do outro. Não impede publicar trilha; impede exibir progressão.
+- **Composição da amostra de auditoria de coleta**: a cadência semanal está decidida, mas
+  quantos registros por série ativa entram na amostra ainda não.
 - **Mapeamento dos livros nas trilhas**: qual capítulo apoia qual ponto das trilhas 1 e 2 é
   trabalho de leitura do acervo, não de ferramenta — mas sem ele a bibliografia nasce vazia.
 - **Licença do código** da plataforma (AGPL, MIT ou outra): a do conteúdo já está decidida.
@@ -570,3 +570,4 @@ como ação de Admin e o cadastro de atividade ficou restrito à **atividade avu
 | `RF-09-68`              | 03 §12 (aviso visível de coleta e área detalhada)                |
 | `RF-09-69` e `RF-09-70` | 11 §§2.1, 4 (atividade dentro do ponto de trilha)                |
 | `RF-09-71` a `RF-09-76` | 02 §8 e 11 §2.1 (recompensa conquistada no marco)                |
+| `RF-09-77` a `RF-09-79` | 03 §§7, 11 (disciplinas e conteúdo do apoio escolar)             |

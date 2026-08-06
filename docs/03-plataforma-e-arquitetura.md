@@ -224,8 +224,12 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
 Arquitetura: **JavaScript no frontend + IA no backend**, a mesma base técnica do Robô Educa.
 Dois modos de operação:
 
-- **Modo Conversa** — o Guerreiro(a) fala com o robô e recebe resposta em áudio: quiz,
-  explicação de conceitos, apoio às atividades escolares.
+- **Modo Conversa** — o Guerreiro(a) fala com o robô e recebe resposta em áudio: quiz e
+  explicação de conceitos das trilhas. Segue **o mesmo desenho do assistente da App 05** (§7):
+  modelo **LLM Google Gemini**, **corpus fechado** no conteúdo que os Mestres cadastraram,
+  guardrails educacionais, filtros de segurança no nível mais restritivo e **guarda apenas da
+  transcrição**, com o áudio descartado. O **apoio às atividades escolares** não fica aqui: é
+  atendido pelo assistente da App 05.
 - **Modo Ouvinte** — a aplicação **acompanha o que é falado durante a aula** e, quando
   acionada, **opina sobre o tema em discussão ou responde a perguntas dirigidas a ela**.
   Funciona como um participante a mais, não como um gravador: só se manifesta quando
@@ -292,6 +296,10 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
   tratou e quando.
 - **Fila de avaliação das sugestões e propostas** vindas das Apps 05, 07, 08 e 09, com status
   e retorno a quem propôs.
+- **Auditoria por amostragem do conteúdo de apoio escolar** cadastrado pelos Mestres, com
+  despublicação motivada — o Admin confere, não cadastra. A conferência é **mensal**, cobrindo
+  ao menos **10% do conteúdo novo do mês** e **100% das disciplinas que geraram recusa** do
+  filtro de segurança; as trilhas publicadas são auditadas no mesmo ato e na mesma cadência.
 
 A autoria de trilhas e conteúdos e as validações pedagógicas são do Mestre e vivem na App 09;
 esta aplicação continua sendo a da **gestão** — cadastros, lançamentos, aprovações de Admin e
@@ -340,9 +348,36 @@ a próxima medição, o que já foi registrado e **quantos pontos aquela série 
 Guerreiro(a) seleciona o local do dado entre os cadastrados e, faltando um, solicita a
 inclusão.
 
+É onde fica o **apoio às atividades escolares**, atendido por um **assistente por voz com IA**
+— modelo **LLM Google Gemini** — que responde **exclusivamente a partir das disciplinas e do
+conteúdo cadastrados previamente pelos Mestres na App 09**. Quatro exigências formam a regra:
+
+- **Corpus fechado.** Fora do conteúdo cadastrado o assistente não responde: diz que o assunto
+  ainda não está no material da plataforma e orienta procurar um Mestre no encontro.
+- **Guardrails educacionais.** O assistente explica e conduz ao raciocínio; não entrega tarefa
+  pronta, não opina sobre pessoas e não trata de assunto fora das disciplinas cadastradas.
+- **Filtros de segurança no nível mais restritivo**, com aviso prévio ao Guerreiro(a) e ao
+  responsável e **alternativa equivalente** — perguntar ao Mestre no encontro — para quem
+  recusar.
+- **Só a transcrição é guardada**: o áudio da pergunta é descartado assim que transcrito,
+  pela mesma razão que a fotografia do onboarding é apagada na geração do _template_.
+
+**Quem cadastra e quem confere.** O corpus é cadastrado **apenas pelos Mestres**; o Admin não
+cadastra conteúdo de apoio — ele **audita por amostragem** o que o Mestre publicou e pode
+despublicar com motivo, exatamente como faz com as trilhas.
+
+**Cota e custo no Ciclo 01.** Não há teto de uso: a demanda e o custo são observados ao longo
+do ciclo para dimensionar o ciclo seguinte. O consumo entra no livro-razão como recurso de
+_cloud_, **aportado por absorção pelo Admin e Mestre fundador**, começando no _free tier_ da
+conta **Google Gemini PRO** e passando a _pay-as-you-go_ quando o uso exigir.
+
 E é o **canal de sugestões do Guerreiro(a)**: ideias de melhoria para atividades, trilhas e
 para a própria plataforma são registradas aqui e caem na fila de avaliação da gestão — o mesmo
-mecanismo de evolução pactuada do Código de Conduta, estendido à plataforma inteira.
+mecanismo de evolução pactuada do Código de Conduta, estendido à plataforma inteira. O registro
+é feito **em texto ou em áudio de até 60 segundos**, transcrito — uma criança de 6 anos fala
+melhor do que escreve. **Registrar não pontua; a proposta adotada rende pontos extras e badge**,
+e o retorno acontece em até 7 dias na própria plataforma, com o motivo em linguagem simples
+quando não for adotada.
 
 ## 8. App 06 — Vitrine pública
 
@@ -400,9 +435,10 @@ vínculo conferido por um Admin ou por um Mestre.
   equivalente.
 - **A revogação vale para frente e é imediata** na parte pública: o perfil sai da vitrine e
   dos rankings, sem prejuízo da participação.
-- **Limite declarado do pedido de exclusão:** os **registros de dados do território** têm
-  guarda permanente com autoria preservada e **não são apagados** a pedido. Isso precisa estar
-  dito na tela, em linguagem simples, e no termo assinado — não descoberto depois.
+- **Limite declarado do pedido de exclusão:** os **registros de dados do território** não são
+  apagados a pedido — são **despersonalizados**, com o vínculo de autoria rompido e o
+  mapeamento destruído (§12.1). Isso precisa estar dito na tela, em linguagem simples, e no
+  termo assinado — não descoberto depois.
 - **Linguagem simples**, na mesma medida exigida da política de privacidade.
 - **Sem contato direto com Apoiadores ou terceiros**: a área é canal entre família e
   plataforma, e nada mais.
@@ -453,6 +489,7 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 | **Necessidades**          | Vê o que falta de recurso para as suas atividades e, se quiser, cobre a falta com **aporte por absorção**                              |
 | **Locais do território**  | Aprova as solicitações de novo local dos Guerreiros e Guerreiras das suas trilhas, com alerta das que estão em aberto                  |
 | **Responsáveis**          | Cadastra o responsável que se apresentou no encontro e vincula a ele **qualquer** Guerreiro(a) já cadastrado, com o grau de parentesco |
+| **Apoio escolar**         | Cadastra as disciplinas e o conteúdo — o corpus fechado que os assistentes das Apps 05 e 02 podem usar; o Admin audita por amostragem  |
 | **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                                                     |
 | **Ressarcimento**         | Acompanha a situação do que absorveu; havendo receita, envia a chave PIX por e-mail ao Admin — a plataforma não guarda dado bancário   |
 
@@ -489,9 +526,56 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   Guerreiro(a) deixa o projeto — é o que dá procedência à série e preserva o crédito da
   realização. A **anonimização ocorre na saída**: painéis públicos, exportações, pesquisas e
   entregas a instituições recebem dados **agregados e anonimizados**.
-- Consequência a tratar na política de privacidade: essa retenção é **indefinida e nominal**,
-  e precisa de **base legal declarada** e de resposta explícita ao pedido de exclusão feito
-  pelo responsável.
+
+### 12.1 Base legal da guarda do dado de território
+
+Duas camadas, e a distinção entre elas é o que sustenta o desenho:
+
+| Camada                   | O que é                                           | Base legal                                                                        |
+| ------------------------ | ------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **A medição**            | Valor, local, data — dado do **lugar**            | Anonimizada na saída, **fora do alcance da LGPD** enquanto não identifica ninguém |
+| **O vínculo de autoria** | Quem coletou — único dado **pessoal** do registro | **Consentimento específico e em destaque do responsável**, revogável              |
+
+- **Titularidade não se transfere.** O titular do vínculo de autoria é o Guerreiro(a); o
+  responsável **exerce os direitos** em nome dele e **recebe a parte monetária** do rateio da
+  coproprietariedade. É o máximo que a lei admite nessa direção, e é o que o projeto pratica.
+- **Revogação despersonaliza, não apaga.** Revogado o consentimento, a plataforma **rompe o
+  vínculo de autoria e destrói o mapeamento**: o registro permanece na série com um **código de
+  coletor sem correspondência a pessoa alguma**, preservando a consistência da série sem
+  preservar dado pessoal. É a resposta concreta ao pedido de exclusão, e o termo diz isso antes
+  do aceite.
+- **A base de pesquisa entra quando a entidade existir.** A retenção nominal por prazo
+  indeterminado só se apoia em pesquisa (LGPD art. 7º, IV e art. 16, II) quando houver
+  **pessoa jurídica sem fins lucrativos** com pesquisa na missão institucional — a empresa
+  vinculada hoje não se enquadra. Até lá, a camada pessoal se sustenta em consentimento, e é
+  por isso que a criação da entidade é decisão que precede a monetização e a entrega de dados
+  a instituições.
+- **Risco de reidentificação**: em comunidade pequena, código de coletor somado a data e local
+  fino ainda pode apontar uma criança. Toda saída passa por agregação suficiente para que isso
+  não ocorra, e a granularidade fina fica restrita a uso interno e a entregas com acordo
+  formal.
+
+### 12.2 Prazos de guarda
+
+| Dado                                              | Prazo                                                             |
+| ------------------------------------------------- | ----------------------------------------------------------------- |
+| Transcrição de consulta respondida (Apps 05 e 02) | **7 dias** vinculada ao Guerreiro(a); depois só disciplina e data |
+| Transcrição de consulta recusada pelos filtros    | **Até o fim do ciclo**, restrita à gestão                         |
+| Transcrição de sugestão não adotada               | **90 dias** após o retorno a quem sugeriu                         |
+| Transcrição de sugestão adotada                   | Permanente, com autoria — é contribuição creditada                |
+| Áudio de qualquer origem                          | **Descartado na transcrição**                                     |
+| _Template_ biométrico, fim do vínculo             | **30 dias**, com aviso prévio ao responsável                      |
+| _Template_ biométrico, pedido do responsável      | **5 dias**                                                        |
+| Métricas de custo e demanda de IA                 | Permanente, **sem nenhum dado pessoal** — só contadores           |
+
+**Fim do vínculo** é o marco desses prazos: ocorre **por pedido do responsável** ou
+**automaticamente após 12 meses sem nenhuma atividade registrada** — prazo que cobre o
+intervalo entre ciclos sem manter biometria de quem já saiu.
+
+**Sessão em aparelho compartilhado**: encerra por **10 minutos de inatividade**, com aviso um
+minuto antes e opção de continuar, além do botão de sair sempre visível. O risco tratado aqui
+é a próxima criança ver os dados da anterior.
+
 - **Georreferenciamento sem expor endereço de criança**: a granularidade publicada nunca pode
   permitir inferir onde um Guerreiro(a) específico mora.
 - **Aviso visível em toda aplicação:** onde há coleta de dado, o app indica ao usuário — de

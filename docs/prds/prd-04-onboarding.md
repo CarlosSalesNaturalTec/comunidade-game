@@ -275,17 +275,17 @@ duplicar o registro).
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                  | Finalidade                        | Base legal                   | Retenção                         | Quem acessa                      |
-| ------------------------------ | --------------------------------- | ---------------------------- | -------------------------------- | -------------------------------- |
-| Imagem captada                 | Gerar o _template_ biométrico     | consentimento do responsável | descartada na geração            | ninguém: não é persistida        |
-| _Template_ biométrico          | Presença e autenticação           | consentimento do responsável | enquanto durar o vínculo         | ninguém: só a comparação interna |
-| Nome                           | Identificação interna             | consentimento                | enquanto durar o vínculo         | gestão e responsável             |
-| Nick e forma de tratamento     | Identidade pública                | consentimento                | enquanto durar o vínculo         | qualquer visitante               |
-| Data de nascimento ou idade    | Faixa etária e nível da atividade | consentimento                | enquanto durar o vínculo         | gestão e responsável             |
-| Características do avatar      | Geração do avatar público         | consentimento                | enquanto durar o vínculo         | qualquer visitante               |
-| Áudio ou texto da conversa     | Conduzir o cadastro               | consentimento                | descartado ao fim do atendimento | ninguém depois do atendimento    |
-| Termo assinado (digitalização) | Prova do consentimento            | obrigação legal              | permanente                       | gestão e responsável             |
-| Presença                       | Registro da participação          | consentimento                | enquanto durar o vínculo         | gestão e responsável             |
+| Dado coletado                  | Finalidade                        | Base legal                   | Retenção                           | Quem acessa                      |
+| ------------------------------ | --------------------------------- | ---------------------------- | ---------------------------------- | -------------------------------- |
+| Imagem captada                 | Gerar o _template_ biométrico     | consentimento do responsável | descartada na geração              | ninguém: não é persistida        |
+| _Template_ biométrico          | Presença e autenticação           | consentimento do responsável | vínculo + 30 dias; 5 dias a pedido | ninguém: só a comparação interna |
+| Nome                           | Identificação interna             | consentimento                | enquanto durar o vínculo           | gestão e responsável             |
+| Nick e forma de tratamento     | Identidade pública                | consentimento                | enquanto durar o vínculo           | qualquer visitante               |
+| Data de nascimento ou idade    | Faixa etária e nível da atividade | consentimento                | enquanto durar o vínculo           | gestão e responsável             |
+| Características do avatar      | Geração do avatar público         | consentimento                | enquanto durar o vínculo           | qualquer visitante               |
+| Áudio ou texto da conversa     | Conduzir o cadastro               | consentimento                | descartado ao fim do atendimento   | ninguém depois do atendimento    |
+| Termo assinado (digitalização) | Prova do consentimento            | obrigação legal              | permanente                         | gestão e responsável             |
+| Presença                       | Registro da participação          | consentimento                | enquanto durar o vínculo           | gestão e responsável             |
 
 - **Consentimento**: termo impresso, assinado pelo responsável presente no encontro, antes da
   captura. A aplicação grava data, hora e quem testemunhou; a gestão anexa a digitalização.
@@ -347,8 +347,9 @@ A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do
 
 - **Provedor de IA e de reconhecimento facial**, com a decisão de processar no dispositivo ou na
   nuvem. Não altera os requisitos deste PRD, mas define custo, latência e exposição do dado.
-- **Prazo, em dias, entre o fim do vínculo e a exclusão automática do _template_** — lembrando
-  que apagar o _template_ apaga também a credencial de acesso do Guerreiro(a).
+- **Aviso ao responsável antes da exclusão do _template_**: o prazo está decidido — 30 dias
+  após o fim do vínculo, ou 5 dias a pedido —, mas a forma do aviso prévio, sem notificação por
+  e-mail no Ciclo 01, ainda precisa de desenho.
 - **Duração da sessão de trabalho do aparelho** antes de exigir nova autenticação do Mestre ou
   Admin, a calibrar no primeiro encontro real.
 - **Roteiro final da conversa**: este PRD fixa os dados obrigatórios, a ordem livre e as

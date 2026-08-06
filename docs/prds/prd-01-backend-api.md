@@ -157,6 +157,8 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RF-01-24` | Núcleo mantém as entidades do livro-razão definidas no PRD-07                                                                                                                                   | essencial  |
 | `RF-01-25` | Núcleo mantém solicitação de participação, sugestões e propostas em fila única de avaliação                                                                                                     | essencial  |
 | `RF-01-26` | Núcleo mantém criação original com autoria creditada por toda a vida do registro                                                                                                                | essencial  |
+| `RF-01-35` | Núcleo mantém as entidades do apoio escolar — disciplina, conteúdo do corpus e consulta                                                                                                         | essencial  |
+| `RF-01-36` | Núcleo mantém a resposta de quiz por equipe e pergunta, com o momento de chegada                                                                                                                | essencial  |
 | `RF-01-27` | Erro segue formato único, com código, mensagem em linguagem simples e campo em falta                                                                                                            | essencial  |
 | `RF-01-28` | Listagens são paginadas e aceitam filtro por comunidade, período e persona                                                                                                                      | essencial  |
 | `RF-01-29` | Núcleo registra trilha de auditoria consultável das ações de Admin                                                                                                                              | essencial  |
@@ -207,7 +209,7 @@ Admin               Atividade             Equipe
 Responsavel         DesafioDeDesbloqueio  Batalha
 VinculoResponsavel  DesafioExtra          PerguntaDeQuiz
 Credencial          Ponto/Nivel/Badge     PartidaDeQuiz
-Consentimento       CriacaoOriginal
+Consentimento       CriacaoOriginal       RespostaDeQuiz
 Sessao              Conteudo
                     BibliografiaDoPonto
                     Culminancia
@@ -216,6 +218,11 @@ Sessao              Conteudo
                     SolicitacaoDoResponsavel   Local                Aporte
                     SugestaoOuProposta         SerieDeColeta        Lancamento
                     Auditoria                  RegistroDeColeta     ItemPatrimonial
+
+                    APOIO ESCOLAR (PRD-05)
+                    DisciplinaDeApoio
+                    ConteudoDeApoio
+                    ConsultaDeApoio
 ```
 
 | Entidade             | Atributos essenciais                                                                                                                             |
@@ -394,3 +401,5 @@ pelas aplicações que as verificam.
 | `RF-01-27` a `RF-01-30` | 03 §1 (princípios de arquitetura)                |
 | `RF-01-32`              | 03 §§3, 5 (App 01 habilitado pela aula agendada) |
 | `RF-01-33` e `RF-01-34` | 02 §1 e 03 §10 (acompanhamento por nick)         |
+| `RF-01-35`              | 03 §7 (apoio escolar com corpus fechado)         |
+| `RF-01-36`              | 05 §5 e 11 §5 (resposta e pontuação do quiz)     |

@@ -55,44 +55,53 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 
 ## 3. Conceitos e onde vivem
 
-| Conceito                                                             | Definido em                      | Citado (sem redefinir) em      |
-| -------------------------------------------------------------------- | -------------------------------- | ------------------------------ |
-| Ciclo de evolução positiva                                           | 01 §1                            | 12                             |
-| Protagonismo dos Guerreiros e Guerreiras / criação original          | 01 §3 (valor) e 02 §4 (mecânica) | 03, 05, 06, 07, 08, 11, 12, 13 |
-| Transparência sobre uso de IA                                        | 01 §7                            | 03, 08, 10, 12, 13             |
-| Adesão em duas etapas (cadastro livre × divulgação autorizada)       | 03 §12                           | 01, 02, 08, 09, 10             |
-| Comunidade Virtual (criação, vínculo, granularidade)                 | 02 §1                            | 03, 05, 08, 10, 11             |
-| Série temporal de coleta e pontuação recorrente                      | 02 §1                            | 03, 06, 07, 08, 11             |
-| Guarda permanente com coletor identificado / anonimização na saída   | 02 §1                            | 03 §12, 08, 09                 |
-| Regra "toda trilha coleta dados reais"                               | 02 §3                            | 06, 07, 08, 10, 11             |
-| Poder do Território                                                  | 02 §2                            | 08, 11                         |
-| Governança de personas (só Guerreiro(a) tem autocadastro)            | 02 §1                            | 01, 05, 08                     |
-| Cadastro do responsável e vínculo com os Guerreiros e Guerreiras     | 02 §1                            | 03 §§1.1, 5, 9, 11, 08, 09     |
-| Autenticação por persona (Guerreiro(a) por nick e imagem)            | 03 §1.1                          | 02, 08, 09                     |
-| Solicitação de participação como Mestre ou Apoiador                  | 02 §1                            | 03 §§5, 8, 08, 12              |
-| Equipes (grupo livre até 5, várias por Guerreiro(a), 1 familiar 17+) | 02 §5                            | 03 §5, 08, 11 §4               |
-| Comunidade do onboarding vinda da aula agendada                      | 02 §1                            | 01, 03 §§3, 5, 08, 10          |
-| Guerreiro(a) como termo da persona primária                          | 02 §1                            | 01, 03, 08, 09                 |
-| Moeda da plataforma (1 moeda = R$ 100,00; vitrine em moedas)         | 04 §1                            | 03 §8, 08, 11 §8.2, 12         |
-| Coproprietariedade dos dados publicados e monetização (50% / 50%)    | 04 §2                            | 03 §12, 08, 09                 |
-| Aviso de LGPD visível nas aplicações e área detalhada                | 03 §12                           | 08, 09                         |
-| Área do Apoiador (App 08) e registro de propostas                    | 03 §10                           | 04, 08, 09, 12                 |
-| Área do Mestre (App 09) — autoria e operação                         | 03 §11                           | 02, 05, 08, 09                 |
-| Publicação da trilha (sem aprovação prévia, travas e conteúdo)       | 03 §11                           | 02, 05, 08, 11                 |
-| Atividade do ponto de trilha (modalidade e formato)                  | 11 §§2.1, 4                      | 02, 03 §11, 08                 |
-| Recompensa conquistada em marco da trilha                            | 02 §8                            | 03 §7, 08, 11 §2.1, 12         |
-| Acompanhamento por nick e favoritos (Apoiador e visitante)           | 02 §1 e 03 §§8, 10               | 04 §3, 08, 12                  |
-| Licença do conteúdo educacional (CC BY-SA)                           | 03 §1                            | 01, 08, 09                     |
-| Regra de lastro (atividade só com recurso provido)                   | 04 §1                            | 02, 05, 10, 11, 12             |
-| Poder Econômico                                                      | 04 §1                            | 02, 12                         |
-| Desafios extras (aberto e direcionado)                               | 04 §3                            | 02, 08, 11, 12                 |
-| Acervo Include e kits MDF (inventário, regime misto, guarda)         | 05 §3                            | 02, 04, 09, 10                 |
-| Encontro assíncrono                                                  | 05 §4                            | 03, 08, 11                     |
-| Quiz ao Vivo                                                         | 05 §5                            | 03, 08, 11                     |
-| Mestre Aprendiz (nível 5) e multiplicadores                          | 11 §6 (motor) e 05 §6 (operação) | 02, 08                         |
-| Níveis, badges, tabela de pontos, taxonomia de atividades            | 11 §§4–7                         | 02, 08                         |
-| Contrato dos jogos (lê progresso, debita, nunca credita)             | 11 §8.4                          | 03 §6, 08                      |
-| LGPD, avatares, imagem do Guerreiro(a), Modo Ouvinte                 | 03 §§3.3, 4, 12                  | 02, 08, 09, 13                 |
+| Conceito                                                             | Definido em                                | Citado (sem redefinir) em      |
+| -------------------------------------------------------------------- | ------------------------------------------ | ------------------------------ |
+| Ciclo de evolução positiva                                           | 01 §1                                      | 12                             |
+| Protagonismo dos Guerreiros e Guerreiras / criação original          | 01 §3 (valor) e 02 §4 (mecânica)           | 03, 05, 06, 07, 08, 11, 12, 13 |
+| Transparência sobre uso de IA                                        | 01 §7                                      | 03, 08, 10, 12, 13             |
+| Adesão em duas etapas (cadastro livre × divulgação autorizada)       | 03 §12                                     | 01, 02, 08, 09, 10             |
+| Comunidade Virtual (criação, vínculo, granularidade)                 | 02 §1                                      | 03, 05, 08, 10, 11             |
+| Série temporal de coleta e pontuação recorrente                      | 02 §1                                      | 03, 06, 07, 08, 11             |
+| Guarda permanente com coletor identificado / anonimização na saída   | 02 §1                                      | 03 §12, 08, 09                 |
+| Base legal do dado de território (duas camadas) e revogação          | 03 §12.1                                   | 02 §1, 08, 09, 13              |
+| Prazos de guarda e fim do vínculo                                    | 03 §12.2                                   | 02 §1, 03 §§3.3, 7, 08, 09     |
+| Periodicidade das auditorias por amostragem                          | 03 §11 (corpus e trilhas) e 02 §1 (coleta) | 03 §5, 08, 09                  |
+| Regra "toda trilha coleta dados reais"                               | 02 §3                                      | 06, 07, 08, 10, 11             |
+| Poder do Território                                                  | 02 §2                                      | 08, 11                         |
+| Governança de personas (só Guerreiro(a) tem autocadastro)            | 02 §1                                      | 01, 05, 08                     |
+| Cadastro do responsável e vínculo com os Guerreiros e Guerreiras     | 02 §1                                      | 03 §§1.1, 5, 9, 11, 08, 09     |
+| Autenticação por persona (Guerreiro(a) por nick e imagem)            | 03 §1.1                                    | 02, 08, 09                     |
+| Solicitação de participação como Mestre ou Apoiador                  | 02 §1                                      | 03 §§5, 8, 08, 12              |
+| Equipes (grupo livre até 5, várias por Guerreiro(a), 1 familiar 17+) | 02 §5                                      | 03 §5, 08, 11 §4               |
+| Comunidade do onboarding vinda da aula agendada                      | 02 §1                                      | 01, 03 §§3, 5, 08, 10          |
+| Guerreiro(a) como termo da persona primária                          | 02 §1                                      | 01, 03, 08, 09                 |
+| Moeda da plataforma (1 moeda = R$ 100,00; vitrine em moedas)         | 04 §1                                      | 03 §8, 08, 11 §8.2, 12         |
+| Coproprietariedade dos dados publicados e monetização (50% / 50%)    | 04 §2                                      | 03 §12, 08, 09                 |
+| Aviso de LGPD visível nas aplicações e área detalhada                | 03 §12                                     | 08, 09                         |
+| Área do Apoiador (App 08) e registro de propostas                    | 03 §10                                     | 04, 08, 09, 12                 |
+| Área do Mestre (App 09) — autoria e operação                         | 03 §11                                     | 02, 05, 08, 09                 |
+| Publicação da trilha (sem aprovação prévia, travas e conteúdo)       | 03 §11                                     | 02, 05, 08, 11                 |
+| Atividade do ponto de trilha (modalidade e formato)                  | 11 §§2.1, 4                                | 02, 03 §11, 08                 |
+| Recompensa conquistada em marco da trilha                            | 02 §8                                      | 03 §7, 08, 11 §2.1, 12         |
+| Acompanhamento por nick e favoritos (Apoiador e visitante)           | 02 §1 e 03 §§8, 10                         | 04 §3, 08, 12                  |
+| Licença do conteúdo educacional (CC BY-SA)                           | 03 §1                                      | 01, 08, 09                     |
+| Regra de lastro (atividade só com recurso provido)                   | 04 §1                                      | 02, 05, 10, 11, 12             |
+| Poder Econômico                                                      | 04 §1                                      | 02, 12                         |
+| Desafios extras (aberto e direcionado)                               | 04 §3                                      | 02, 08, 11, 12                 |
+| Acervo Include e kits MDF (inventário, regime misto, guarda)         | 05 §3                                      | 02, 04, 09, 10                 |
+| Encontro assíncrono                                                  | 05 §4                                      | 03, 08, 11                     |
+| Quiz ao Vivo                                                         | 05 §5                                      | 03, 08, 11                     |
+| Mestre Aprendiz (nível 5) e multiplicadores                          | 11 §6 (motor) e 05 §6 (operação)           | 02, 08                         |
+| Níveis, badges, tabela de pontos, taxonomia de atividades            | 11 §§4–7                                   | 02, 08                         |
+| Nível como percurso da trilha (gates dos níveis 1 a 5)               | 11 §6                                      | 02 §7, 08                      |
+| Integridade dos pontos (travas antifraude)                           | 11 §5.1                                    | 02 §1, 05 §5                   |
+| Canal de sugestões do Guerreiro(a) (formato, prazo e crédito)        | 03 §7                                      | 11 §§5, 7, 13 §5               |
+| Apoio escolar por assistente de voz, com corpus fechado e IA         | 03 §7                                      | 03 §§4, 5, 11, 08, 10 §4.3     |
+| Reparação que zera a ocorrência de conduta                           | 13 §3                                      | 11 §5                          |
+| Regras da partida do Quiz ao Vivo (aparelho, acerto e desempate)     | 05 §5                                      | 03 §§5, 11, 08, 11 §5          |
+| Contrato dos jogos (lê progresso, debita, nunca credita)             | 11 §8.4                                    | 03 §6, 08                      |
+| LGPD, avatares, imagem do Guerreiro(a), Modo Ouvinte                 | 03 §§3.3, 4, 12                            | 02, 08, 09, 13                 |
 
 ## 4. Aplicações → PRDs
 
@@ -143,6 +152,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10                 |
 | Distribuição da trilha no ciclo             | 11 §2.3 + 10 §5           | PRD-09, 02                     |
 | Sugestões e propostas de evolução           | 03 §§7, 9, 10, 11 + 13 §5 | PRD-01, 02, 05, 09, 13, 14     |
+| Apoio às atividades escolares               | 03 §7                     | PRD-05, 09, 02, 01             |
 | Área do Apoiador                            | 03 §10 + 04 §3            | PRD-14, 07, 02                 |
 | Área do Mestre                              | 03 §11 + 02 §1            | PRD-09, 02, 01                 |
 | Acervo didático (patrimônio e doação)       | 05 §3                     | PRD-07, 02, 05, 09             |
@@ -167,7 +177,8 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
 6. **A coleta pontua de forma recorrente enquanto a série estiver ativa**; interrompida,
    cessa o cômputo sem perder os pontos já creditados.
 7. **Dados do território: guarda permanente com o coletor identificado**; anonimização
-   apenas **na saída**.
+   apenas **na saída**. A **revogação do consentimento pelo responsável despersonaliza** o
+   registro — rompe o vínculo de autoria e destrói o mapeamento —, **nunca o apaga**.
 8. **O App 04 (jogo) consome pontos e nunca os gera.** Não existe endpoint de crédito para
    jogos.
 9. **Nenhuma atividade acontece sem lastro** de recursos providos por Mestre ou Apoiador.
@@ -222,7 +233,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD-02 | `prd-02-frontend-de-gestao.md`    | PRD-01         | 02, 03, 04, 05         |
 | PRD-03 | `prd-03-vitrine-publica.md`       | PRD-01, PRD-13 | 02, 03, 04, 11         |
 | PRD-04 | `prd-04-onboarding.md`            | PRD-01, PRD-02 | 02, 03, 06             |
-| PRD-05 | `prd-05-area-do-Guerreiro(a).md`  | PRD-01, PRD-09 | 02, 03, 05, 11         |
+| PRD-05 | `prd-05-area-do-guerreiro.md`     | PRD-01, PRD-09 | 02, 03, 05, 11         |
 | PRD-06 | `prd-06-assistente-por-voz.md`    | PRD-01         | 03, 06                 |
 | PRD-07 | `prd-07-economia-e-ledger.md`     | PRD-08         | 04, 05                 |
 | PRD-08 | `prd-08-comunidades-virtuais.md`  | —              | 02, 03, 11             |

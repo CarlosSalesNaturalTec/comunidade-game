@@ -186,23 +186,23 @@ automaticamente.
    **quatro alternativas e sem tempo por pergunta** — o ritmo é de quem conduz a partida.
 3. Ao dar o _start_, **uma pergunta é exibida simultaneamente em todos os dispositivos logados
    na aula**.
-4. Cada equipe **se consulta internamente** e clica na opção escolhida.
-5. O sistema identifica a **primeira equipe que respondeu corretamente** e registra a
-   pontuação.
+4. Cada equipe **se consulta internamente** e responde por **um único aparelho, vinculado à
+   equipe** na abertura da partida — a resposta vale para todos os integrantes. Equipe sem
+   aparelho responde pelo aparelho do Mestre.
+5. **Toda equipe que acerta pontua**, e a primeira a acertar recebe um ponto de bônus. O
+   desempate é pela ordem de chegada no servidor, e o Mestre pode **anular a pergunta** havendo
+   contestação — o ritmo e o critério são de quem conduz.
 
 **Por que funciona bem no presencial:** a consulta dentro da equipe é onde o aprendizado
 acontece — quem sabe explica para quem não sabe, o que se conecta ao mérito extra por auxílio
-aos colegas.
+aos colegas. Por isso pontua toda equipe que acerta, e não apenas a mais rápida: se só o
+primeiro ponto valesse, as equipes mais lentas parariam de discutir na terceira pergunta.
 
 **O que exige das aplicações:** cadastro do banco de perguntas na App 09 (autoria do Mestre
 curador) e condução da partida na App 03, **pelo Mestre que ministra a aula ou por um Admin**;
 recebimento da pergunta e envio da resposta na App 05; **sincronização em tempo real** entre os
 dispositivos e desempate por ordem de chegada da resposta, com tolerância a rede instável —
-que é a regra nos pontos de apoio.
-
-> **A definir:** pontuação da vitória e das respostas corretas subsequentes; se responde a
-> equipe inteira ou um representante; comportamento quando duas respostas chegam praticamente
-> juntas; se o quiz roda com um dispositivo por equipe ou um por Guerreiro(a).
+que é a regra nos pontos de apoio. O valor em pontos da partida está no documento 11.
 
 ## 6. Formação de Mestres, multiplicadores e voluntários
 
