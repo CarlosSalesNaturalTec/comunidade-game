@@ -17,9 +17,9 @@ no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs est�
 | [PRD-07](prd-07-economia-e-ledger.md)     | Economia de recursos e ledger          | —         | 1    | aprovado     |
 | [PRD-01](prd-01-backend-api.md)           | Backend API (núcleo)                   | —         | 1    | aprovado     |
 | [PRD-02](prd-02-frontend-de-gestao.md)    | Frontend de gestão                     | App 03    | 2    | aprovado     |
-| [PRD-04](prd-04-aula-presencial.md)       | Aula presencial (onboarding e trilhas) | App 01    | 2    | em revisão   |
-| [PRD-09](prd-09-area-do-mestre.md)        | Área do Mestre (autoria e operação)    | App 09    | 3    | em revisão   |
-| [PRD-05](prd-05-area-do-guerreiro.md)     | Área do Guerreiro(a)                   | App 05    | 3    | em revisão   |
+| [PRD-04](prd-04-aula-presencial.md)       | Aula presencial (onboarding e trilhas) | App 01    | 2    | aprovado     |
+| [PRD-09](prd-09-area-do-mestre.md)        | Área do Mestre (autoria e operação)    | App 09    | 3    | aprovado     |
+| [PRD-05](prd-05-area-do-guerreiro.md)     | Área do Guerreiro(a)                   | App 05    | 3    | aprovado     |
 | [PRD-13](prd-13-area-dos-responsaveis.md) | Área dos pais e responsáveis           | App 07    | 4    | em revisão   |
 | PRD-03                                    | Vitrine pública                        | App 06    | 4    | não iniciado |
 | PRD-14                                    | Área do Apoiador                       | App 08    | 5    | não iniciado |

@@ -198,8 +198,8 @@ piloto, para permitir comparação (_baseline_).
 
 1. Validar esta documentação e corrigir o que estiver incoerente com a visão do fundador.
 2. Decidir os itens da tabela §1 — em especial nome do projeto, licenças e provedor de IA.
-3. Seguir a esteira de PRDs: as Ondas 1 e 2 estão aprovadas e a Onda 3 segue com o
-   **PRD-05 (Área do Guerreiro(a))**, depois do PRD-09 aprovado.
+3. Seguir a esteira de PRDs: as Ondas 1, 2 e 3 estão aprovadas e a Onda 4 segue com o
+   **PRD-03 (Vitrine pública)**, depois do PRD-13 aprovado.
 4. Redigir o termo de autorização dos responsáveis e o termo de consentimento para captura de
    imagem, necessários antes da primeira aula com onboarding.
 5. Escrever o roteiro pedagógico da oficina do Robô Educa.
