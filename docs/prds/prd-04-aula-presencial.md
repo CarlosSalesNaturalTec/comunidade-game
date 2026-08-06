@@ -69,7 +69,8 @@ existe para impedir.
 - **Formação da equipe pelos próprios Guerreiros e Guerreiras**: criar, entrar e sair, com o
   limite de cinco integrantes e o de um familiar de 17 anos ou mais. A equipe vale para a aula
   em andamento e **encerra com ela**.
-- Participação em **mais de uma equipe** no encontro e em **uma única** na partida de quiz.
+- Participação em **mais de uma equipe** no encontro; na partida de quiz, várias equipes
+  disputam e cada Guerreiro(a) joga por **uma única**.
 - **Ponto de trilha da equipe**: onde ela está, o conteúdo e a atividade do dia.
 - **Assistente de trilhas por voz ou texto**: quiz e explicação de conceitos das trilhas, no
   corpus fechado que os Mestres cadastraram.
@@ -218,8 +219,8 @@ dentro da mesma sessão de trabalho do aparelho.
 ### 5.9 Jogar o Quiz ao Vivo
 
 1. O Mestre abre a partida na App 03 e **vincula um aparelho a cada equipe**.
-2. Vinculado o aparelho, o App 01 fixa **uma única equipe** para aquele Guerreiro(a) na
-   partida, mesmo que ele integre outras no encontro.
+2. Várias equipes disputam a partida. Vinculado o aparelho, o App 01 fixa **uma única equipe**
+   para cada Guerreiro(a), mesmo que ele integre outras nas demais atividades do encontro.
 3. A pergunta aparece **simultaneamente** em todos os aparelhos da partida.
 4. A equipe se consulta e responde pelo seu aparelho; a resposta vale para **todos os
    integrantes** e a segunda tentativa é recusada.

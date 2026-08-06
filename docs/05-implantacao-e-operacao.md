@@ -183,8 +183,9 @@ Observações operacionais:
 Competição rápida entre equipes, encaixável no "Desafio do dia", com pontuação lançada
 automaticamente.
 
-1. Os Guerreiros e Guerreiras presentes jogam pelas **equipes que formaram no App 01**. Na
-   partida cada um integra **uma única equipe**, mesmo estando em mais de uma no encontro.
+1. Os Guerreiros e Guerreiras presentes jogam pelas **equipes que formaram no App 01** —
+   **várias equipes disputam a partida**, e cada um joga por **uma única**, mesmo estando em
+   mais de uma nas demais atividades do encontro.
 2. As perguntas são **pré-cadastradas pelo curador da aula (Mestre)**, em múltipla escolha com
    **quatro alternativas e sem tempo por pergunta** — o ritmo é de quem conduz a partida.
 3. Ao dar o _start_, **uma pergunta é exibida simultaneamente em todos os dispositivos logados

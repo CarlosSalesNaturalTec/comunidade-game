@@ -160,7 +160,8 @@ Regras transversais:
   declara a modalidade e o formato. Atividade avulsa, fora de trilha, é cadastro da gestão.
 - **Dificuldade gradual, independente de idade** (faixa 6–16).
 - **Um Guerreiro(a) pode integrar mais de uma equipe** e pontua em **todas** as atividades em
-  que participa e colabora — no Quiz ao Vivo, por ser simultâneo, joga por uma equipe só.
+  que participa e colabora — no Quiz ao Vivo, por ser simultâneo, joga por uma equipe só,
+  ainda que várias equipes disputem a partida.
 - **Lastro**: nenhuma atividade acontece sem os recursos providos.
 - **Resultado lançado pela gestão**: realizada / realizada com mérito / mérito extra por
   auxílio aos colegas.

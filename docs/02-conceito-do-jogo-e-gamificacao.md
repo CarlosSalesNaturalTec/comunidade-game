@@ -374,8 +374,9 @@ espontânea pelos Guerreiros e Guerreiras:
 - As equipes são formadas **pelos próprios Guerreiros e Guerreiras, no App 01**, e **começam e
   terminam a cada aula presencial** — a gestão acompanha no painel e não altera composição.
 - Cada Guerreiro(a) pode participar de **uma ou mais equipes** e **pontua em todas as
-  atividades em que participar e colaborar**. **No Quiz ao Vivo participa de uma única
-  equipe**, porque a partida é simultânea.
+  atividades em que participar e colaborar**. **No Quiz ao Vivo joga por uma única equipe**,
+  porque a partida é simultânea — a disputa segue sendo entre várias equipes, o que é único é a
+  equipe de cada jogador.
 - A composição segue o que a **atividade, o desafio ou a batalha determinar**: só Guerreiros e
   Guerreiras **ou** com **no máximo 1 familiar, de 17 anos ou mais**.
 

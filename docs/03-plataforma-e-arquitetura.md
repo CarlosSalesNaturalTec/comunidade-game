@@ -247,9 +247,11 @@ para **aquela aula**: começam e terminam com o encontro. Tamanho, composição 
 familiar seguem o documento 02. A gestão **não forma nem edita equipe** — vê as equipes do dia
 no painel da App 03.
 
-- O Guerreiro(a) pode integrar **mais de uma equipe** no mesmo encontro.
-- **No Quiz ao Vivo, uma só**: a partida é simultânea e a resposta do aparelho vale para todos
-  os integrantes da equipe.
+- O Guerreiro(a) pode integrar **mais de uma equipe** no mesmo encontro e nas demais atividades
+  presenciais.
+- **No Quiz ao Vivo, cada Guerreiro(a) joga por uma única equipe** — a partida é simultânea e a
+  resposta do aparelho vale para todos os integrantes. A disputa continua sendo entre **várias
+  equipes**; o que é único é a equipe de cada jogador.
 
 ### 4.2 Conteúdo da trilha, quiz e assistente
 
