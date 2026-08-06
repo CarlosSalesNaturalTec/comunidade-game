@@ -37,18 +37,19 @@ decisão de menor risco possível. A comunidade também atende ao critério de i
 **próxima à residência do fundador**, o que viabiliza a presença frequente que o primeiro ciclo
 exige.
 
-## 3. Hipóteses do Ciclo 01 (formuladas em jul/2026)
+## 3. Hipóteses do Ciclo 01
 
 O ciclo é, antes de tudo, um **teste de hipóteses**. Elas estão escritas aqui na forma em que
-foram formuladas, para que ao fim do ciclo seja possível dizer, sem reescrever a história, se
-cada uma se confirmou.
+foram formuladas — H1 a H4 em jul/2026, H5 em ago/2026 —, para que ao fim do ciclo seja
+possível dizer, sem reescrever a história, se cada uma se confirmou.
 
-| #      | Hipótese                                                                                                                       | Como se verifica                                                                                         |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| **H1** | O público-alvo — crianças e jovens de 6 a 16 anos — vai se interessar pelo tema e **se inscrever** na plataforma e nas trilhas | Nº de cadastros efetivados no onboarding (App 01) e nº de Guerreiros e Guerreiras que iniciam uma trilha |
-| **H2** | Os **pais ou responsáveis** vão permitir a participação, tomar conhecimento do tratamento de dados e **aceitar os termos**     | Nº de autorizações concedidas / nº de Guerreiros e Guerreiras ativos, medido na App 07                   |
-| **H3** | Os **recursos de implantação do MVP** serão supridos por mestres e apoiadores                                                  | Lastro registrado no livro-razão × recursos necessários às atividades previstas                          |
-| **H4** | A turma reunirá Guerreiros e Guerreiras de **toda a faixa de 6 a 16 anos**, e não uma faixa estreita                           | Distribuição etária dos cadastros do Ciclo 01, por idade e por trilha iniciada                           |
+| #      | Hipótese                                                                                                                       | Como se verifica                                                                                              |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| **H1** | O público-alvo — crianças e jovens de 6 a 16 anos — vai se interessar pelo tema e **se inscrever** na plataforma e nas trilhas | Nº de cadastros efetivados no onboarding (App 01) e nº de Guerreiros e Guerreiras que iniciam uma trilha      |
+| **H2** | Os **pais ou responsáveis** vão permitir a participação, tomar conhecimento do tratamento de dados e **aceitar os termos**     | Nº de autorizações concedidas / nº de Guerreiros e Guerreiras ativos, medido na App 07                        |
+| **H3** | Os **recursos de implantação do MVP** serão supridos por mestres e apoiadores                                                  | Lastro registrado no livro-razão × recursos necessários às atividades previstas                               |
+| **H4** | A turma reunirá Guerreiros e Guerreiras de **toda a faixa de 6 a 16 anos**, e não uma faixa estreita                           | Distribuição etária dos cadastros do Ciclo 01, por idade e por trilha iniciada                                |
+| **H5** | O **ensino do poder é efetivo**: o Guerreiro(a) sai da trilha sabendo o que ela se propôs a ensinar                            | Comparação, por trilha e por Guerreiro(a), entre o resultado da missão de sondagem e a entrega da culminância |
 
 - **H1 e H2 são independentes.** A adesão em duas etapas foi desenhada exatamente para isso: o
   Guerreiro(a) participa com cadastro livre (H1), e a autorização do responsável (H2) libera
@@ -60,6 +61,16 @@ cada uma se confirmou.
   misturando idades, mais velhos mediando mais novos — pressupõe uma turma etariamente diversa.
   Se a adesão real se concentrar em poucas idades, o que muda não é a faixa declarada: é a
   expectativa sobre as equipes e a mediação, que precisa ser revista no ciclo seguinte.
+- **H5 é a hipótese pedagógica — a que sustenta todas as outras.** Adesão, autorização e
+  lastro medem se o ciclo acontece; H5 mede se ele serviu para alguma coisa. Sondagem e
+  culminância já são trava de publicação de toda trilha, então o instrumento existe desde o
+  Ciclo 01 sem nada novo no produto: a sondagem registra de onde a turma partiu e a
+  culminância mostra o que ela produziu ao fim. A comparação é **avaliação de ciclo, não
+  nota**: não credita ponto, não altera nível e não entra no card do Guerreiro(a).
+- **Comparar só faz sentido se as duas pontas falarem do mesmo poder.** A sondagem é quiz e a
+  culminância é criação original — medidas de naturezas diferentes. Cabe ao Mestre autor
+  sondar os mesmos itens do poder que vai cobrar no critério da culminância; sem isso, H5
+  compara coisas distintas. O critério é pendência do case (§7).
 
 ## 4. Meta do Ciclo 01
 
@@ -132,7 +143,7 @@ Marcada como proposta porque o calendário dos encontros ainda é pendência do 
 | **Setembro** | Desenvolvimento         | Trilha 1 — missões intermediárias             | Voz, prompts, limites da IA; **Include Programação I** e **Mecânica I** em bancada; séries de coleta rendendo pontos; desafios extras de Apoiadores                                         |
 | **Outubro**  | Transição               | Conclusão da trilha 1 → **Trilha 2** (início) | Publicação da versão do robô; entrega dos livros **Alpha Eletrônica** e **Alpha Sensores**; construção dos artefatos; **Include Eletrônica I** e **Sensores I** em bancada                  |
 | **Novembro** | Desenvolvimento + marco | Trilha 2 completa                             | Wi-Fi/MQTT, lógica do jogo, sensor de território instalado; **Batalha de Laser** presencial como marco do ciclo, com telemetria alimentando ranking e portfólio                             |
-| **Dezembro** | Fechamento              | —                                             | **Culminância** (apresentação pública, com consentimentos), conferência de inventário, prestação de contas ao Apoiador e avaliação de H1–H3                                                 |
+| **Dezembro** | Fechamento              | —                                             | **Culminância** (apresentação pública, com consentimentos), conferência de inventário, prestação de contas ao Apoiador e avaliação de H1–H5                                                 |
 
 Notas de paginação:
 
@@ -157,14 +168,16 @@ Ao fim de dezembro de 2026, o ciclo responde:
    foram as dúvidas e objeções recorrentes sobre dados da criança.
 3. **Lastro (H3)** — quais atividades aconteceram, quais não aconteceram por falta de recurso,
    e quem proveu o quê.
-4. **Entrega técnica** — quais aplicações chegaram a rodar em condição real de aula, com rede
+4. **Aprendizado (H5)** — o que a comparação entre a sondagem que abriu cada trilha e a
+   culminância que a fechou diz sobre o que a turma aprendeu, trilha a trilha.
+5. **Entrega técnica** — quais aplicações chegaram a rodar em condição real de aula, com rede
    instável e aparelhos modestos.
-5. **Território** — quantos registros alimentaram a Comunidade Virtual e o que eles já permitem
+6. **Território** — quantos registros alimentaram a Comunidade Virtual e o que eles já permitem
    dizer sobre o lugar.
-6. **Protagonismo** — quantas criações originais foram apresentadas na culminância e quantas
+7. **Protagonismo** — quantas criações originais foram apresentadas na culminância e quantas
    sugestões de melhoria os Guerreiros e Guerreiras registraram.
 
-Esses seis pontos são a base dos **indicadores de impacto** que o projeto ainda precisa
+Esses sete pontos são a base dos **indicadores de impacto** que o projeto ainda precisa
 formalizar — e o _baseline_ contra o qual a segunda comunidade será comparada.
 
 ## 7. Pontos a definir do case
@@ -176,5 +189,7 @@ formalizar — e o _baseline_ contra o qual a segunda comunidade será comparada
 - **Tamanho da turma** e número de mestres e voluntários necessários por encontro.
 - **Metas numéricas de H1, H2 e H4** — quantos cadastros, quantas autorizações e que
   distribuição etária caracterizam hipótese confirmada.
+- **Critério de comparação de H5** — quais itens do poder a sondagem mede, como o critério da
+  culminância os retoma e o que caracteriza aprendizado confirmado em uma trilha.
 - **Registro da edição de 2024**: reunir memória, fotos e contatos daquela edição como linha de
   base do relacionamento com a comunidade.

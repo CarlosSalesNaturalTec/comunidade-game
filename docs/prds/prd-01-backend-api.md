@@ -360,8 +360,9 @@ sessão expirada (401); filtro de comunidade ausente onde é obrigatório (422).
 - Revogação de consentimento cria novo registro, e o anterior continua consultável.
 - Nenhuma rota de crédito de pontos existe para o App 04 — a tentativa devolve 404.
 
-Este PRD não sustenta hipótese própria: ele é a condição para que H1, H2 e H3 sejam medidas
-pelas aplicações que as verificam.
+Este PRD não sustenta hipótese própria: ele é a condição para que H1, H2, H3 e H5 sejam
+medidas pelas aplicações que as verificam — no caso de H5, por guardar o resultado da sondagem
+e a validação da culminância de cada trilha.
 
 ## 13. Decisões tomadas neste PRD
 

@@ -36,6 +36,7 @@ Nada aqui é decisão tomada — é pauta.
 | Git como canal entre agentes e humanos         | Proposta: GitHub Issues + labels como canal padrão; Discussions para debate; Projects para roadmap                                                                                                                                                         |
 | Submarcas                                      | **Rôbróders** e **Robô Educa** podem nomear subprodutos (ex.: os kits "Rôbróders")                                                                                                                                                                         |
 | Universo dos personagens                       | Susy, Otávio, Rôbróders e prof. Carlos Trenell — formalizar roteiro e identidade da narrativa                                                                                                                                                              |
+| **Critério de comparação da hipótese H5**      | A hipótese do aprendizado se verifica comparando a missão de sondagem com a culminância. Falta declarar quais itens do poder a sondagem mede, como o critério da culminância os retoma e o que caracteriza aprendizado confirmado (documento 10)           |
 | Pendências do Case 01                          | Ponto de apoio físico, calendário do Ciclo 01, tamanho da turma, metas numéricas de H1, H2 e H4 e resgate da memória da edição de 2024 (documento 10)                                                                                                      |
 
 ### Já decididos — registrados aqui para não voltarem à pauta
@@ -157,9 +158,11 @@ A detalhar:
 ### Indicadores de impacto
 
 Os **indicadores de cobertura** da Agenda 2030 já estão definidos (documento 04) e saem
-prontos da etiqueta ODS. Seguem em aberto as métricas de aprendizado, retenção, atividades
-realizadas, dados de território registrados e recursos movimentados — definidas antes do
-piloto, para permitir comparação (_baseline_).
+prontos da etiqueta ODS. O **aprendizado** ganhou instrumento na hipótese H5 do Ciclo 01 —
+sondagem comparada à culminância (documento 10) —, faltando o critério que torna as duas
+medidas comparáveis. Seguem em aberto as métricas de retenção, atividades realizadas, dados
+de território registrados e recursos movimentados — definidas antes do piloto, para permitir
+comparação (_baseline_).
 
 ### Acessibilidade e inclusão
 

@@ -312,9 +312,9 @@ Critérios de aceite, um por requisito essencial, verificáveis por quem não es
   outro registro válido do mesmo desafio.
 - Consulta pública de uma série não devolve nick, nome, avatar nem local abaixo de rua.
 
-Este PRD não sustenta diretamente nenhuma das hipóteses H1 a H4 do Ciclo 01, que tratam de
-adesão, autorização, lastro e faixa etária. Os indicadores que ele passa a produzir —
-séries abertas, séries ativas ao fim do ciclo, registros válidos e taxa de continuidade — são
+Este PRD não sustenta diretamente nenhuma das hipóteses H1 a H5 do Ciclo 01, que tratam de
+adesão, autorização, lastro, faixa etária e aprendizado. Os indicadores que ele passa a
+produzir — séries abertas, séries ativas ao fim do ciclo, registros válidos e continuidade — são
 a base da avaliação do Poder do Território e entram no conjunto de indicadores de impacto.
 
 ## 13. Decisões tomadas neste PRD

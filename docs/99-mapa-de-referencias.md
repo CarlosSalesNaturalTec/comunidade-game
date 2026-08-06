@@ -84,6 +84,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Publicação da trilha (sem aprovação prévia, travas e conteúdo)     | 03 §11                                     | 02, 05, 08, 11                 |
 | Atividade da missão (modalidade e formato)                         | 11 §§2.1, 4                                | 02, 03 §11, 08                 |
 | Modelo de missão (produção, sondagem, retomada, obrigatoriedade)   | 11 §2.2                                    | 02 §§3, 4, 03 §§4, 7, 11       |
+| Hipóteses do Ciclo 01 (H1 a H5) e como cada uma se verifica        | 10 §3                                      | 08, 09, `prds/`                |
 | Leitura da produção do Guerreiro(a) e devolutiva construtiva       | 03 §§4, 7 e 11 §2.2                        | 02 §4, 09                      |
 | Auxílio de IA na autoria da trilha (estrutura, não conteúdo)       | 03 §11                                     | 01 §7, 09                      |
 | Recompensa conquistada em marco da trilha                          | 02 §8                                      | 03 §7, 08, 11 §2.1, 12         |
