@@ -59,7 +59,7 @@ O projeto nasce para:
 - **Evitar crenças limitantes** — o jovem periférico pode ocupar qualquer espaço.
 - Ser **efetivo e engajador** junto a crianças e jovens.
 - Ser **Open Source**, para alcançar o maior número possível de escolas e comunidades.
-- Ser **sustentável** por doações, parceiros, editais e publicidade na vitrine.
+- Ser **sustentável** por doações, parceiros e editais.
 
 > **Fora de escopo:** a plataforma **não se propõe a gerar encaminhamento profissional**. Ela
 > forma repertório, habilidade e confiança; o que o jovem faz com isso é escolha dele.

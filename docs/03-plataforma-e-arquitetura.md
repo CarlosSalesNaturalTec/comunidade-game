@@ -462,9 +462,8 @@ Web App de acesso público e **sem autenticação**:
   território, não corporativa.
 - **Vídeo de apresentação**: os irmãos Susy e Otávio, os Rôbróders e o professor Carlos
   Trenell (narrativa da trilha Robô Educa).
-- É também o espaço da **publicidade** prevista como fonte de receita, restrita às **seções
-  institucionais** — "Quem somos", "Contatos" e "Como apoiar" —, **aprovada peça a peça por um
-  Admin** e **sem cookie, rastreador ou perfilamento do visitante** (documento 04).
+- **Sem publicidade e sem patrocínio no Ciclo 01** — e **sem cookie, rastreador ou
+  perfilamento** do visitante, para qualquer finalidade (documento 04).
 
 A vitrine é uma só e **sem login**. O que muda por público é o **recorte de leitura** — a porta
 de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos:

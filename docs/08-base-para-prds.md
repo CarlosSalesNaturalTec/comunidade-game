@@ -245,9 +245,9 @@ Comunidades Virtuais com cards individuais; **página individual detalhada** abe
 cada card — Guerreiro(a), Mestre, poder, apoiador e comunidade —, com a composição do documento
 11; cards rotativos de Guerreiros e Guerreiras (rotação a cada 5 s); painel público de dados
 por comunidade **em série histórica**, agregado **até o bairro**; "Quem somos" e "Contatos"
-editáveis; seção **"Como apoiar"** com a chave PIX do projeto; espaço de **publicidade** nas
-seções institucionais, aprovado peça a peça por Admin e sem rastreamento do visitante
-(documento 04); vídeo de apresentação (Susy, Otávio, Rôbróders, prof. Carlos Trenell); estética
+editáveis; seção **"Como apoiar"** com a chave PIX do projeto; **sem publicidade e sem
+patrocínio no Ciclo 01**, e sem qualquer rastreamento do visitante (documento 04); vídeo de
+apresentação (Susy, Otávio, Rôbróders, prof. Carlos Trenell); estética
 de comunidade (grafite, cores, imagens do território); **portfólio de criações originais** dos
 Guerreiros e Guerreiras autorizados, com o nick dos autores; **painel de cobertura da Agenda
 2030** por comunidade e por ciclo, com destaque para a contribuição à meta 17.18 e a ressalva

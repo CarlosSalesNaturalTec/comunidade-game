@@ -134,7 +134,6 @@ Acervo, kits e camisas são valorados pela tabela de referência, como qualquer 
 ## 2. Fontes de receita
 
 - **Doações** de pessoas físicas e jurídicas.
-- **Publicidade** na vitrine pública, nas condições abaixo.
 - **Editais.**
 - **Campanhas de crowdfunding** para financiar aulas, kits e equipamentos (celulares,
   notebooks, tablets).
@@ -144,19 +143,11 @@ Acervo, kits e camisas são valorados pela tabela de referência, como qualquer 
 Os dados produzidos pela plataforma **não entram nesta lista**: sua disponibilização é
 gratuita, na vitrine e sob solicitação aprovada (documento 03).
 
-### Publicidade na vitrine
+### Publicidade e patrocínio — fora do Ciclo 01
 
-**Definição vigente.** A publicidade entra já no Ciclo 01, com quatro condições:
-
-- **Aprovação peça a peça por um Admin**, que registra anunciante, peça, período e o motivo
-  quando recusa. O critério é o Código de Conduta do projeto.
-- **Só nas seções institucionais** da vitrine — "Quem somos", "Contatos" e "Como apoiar".
-  Nenhum anúncio nas seções de Guerreiros e Guerreiras, no portfólio, nos painéis do território
-  ou no jogo.
-- **Sem cookie, rastreador ou perfilamento do visitante**: a peça é estática e igual para todo
-  mundo, e a plataforma não coleta dado de quem a vê.
-- **Anunciar não é apoiar**: a receita é do projeto, mas o anunciante **não vira Apoiador** e
-  **não gera Poder Econômico** — quem paga por espaço compra visibilidade, não lastro.
+**Definição vigente.** A plataforma **não veicula publicidade nem patrocínio**. O tema fica
+como **estudo para ciclo futuro**, e o que se decidir ali precisará responder antes ao que
+publicidade significa em plataforma usada por criança (documento 09).
 
 ### Doações em espécie — canal oficial
 

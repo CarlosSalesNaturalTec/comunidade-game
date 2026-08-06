@@ -58,7 +58,6 @@ hora — o sentido do fluxo é sempre esse.
 - **Necessidades de recurso em aberto** das atividades sem lastro, com o caminho para apoiar.
 - **Seções institucionais** — "Quem somos", "Contatos" e "Como apoiar" com a chave PIX —, a
   **nota de transparência sobre IA** e o vídeo de apresentação.
-- **Espaço de publicidade** nas seções institucionais, com as peças aprovadas por um Admin.
 - **Área detalhada de dados**, explicando o que a plataforma coleta, de quem, para quê e o que
   a vitrine **não** coleta do visitante.
 
@@ -67,26 +66,27 @@ hora — o sentido do fluxo é sempre esse.
 - **Login, cadastro e qualquer área restrita** — a aplicação inteira é pública.
 - **Avaliação das solicitações** e **entrega do conjunto de dados**: são atos de Admin na App
   03 (PRD-02).
-- **Edição do conteúdo institucional e aprovação de anúncio**: também da App 03; aqui só se
-  exibe o que foi publicado.
+- **Edição do conteúdo institucional**: também da App 03; aqui só se exibe o que foi
+  publicado.
 - **O jogo** (App 04, PRD-12), que consome os mesmos cards mas é outra aplicação.
 - **Qualquer canal de contato com Guerreiro(a) ou família**, inclusive formulário, comentário
   ou reação.
 - **Notificação por e-mail**: não existe no Ciclo 01, nem para quem preencheu formulário.
-- **Publicidade fora das seções institucionais** e qualquer rastreamento do visitante.
+- **Publicidade e patrocínio**: não existem no Ciclo 01 — o tema é estudo para ciclo futuro
+  (documento 09). Rastreamento do visitante não existe em ciclo nenhum.
 - **Dado abaixo do bairro**: rua, condomínio, bloco e quadra só saem na entrega aprovada.
 
 ## 4. Personas e permissões
 
-| Persona          | O que faz nesta aplicação                                               | O que não pode fazer                                       |
-| ---------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Visitante        | Navega, consulta nick exato, favorita, solicita participação e dados    | Entrar, comentar, contatar criança, ver quem não autorizou |
-| Pesquisador      | Lê séries e metodologia e pede o conjunto completo pelo formulário      | Baixar o conjunto direto da vitrine ou ver o coletor       |
-| Gestor público   | Lê o painel do território e a cobertura da Agenda 2030 por ciclo        | O mesmo do pesquisador                                     |
-| Admin            | Nada aqui: publica o conteúdo institucional e aprova anúncios na App 03 | Editar a vitrine por dentro dela                           |
-| Mestre, Apoiador | Aparecem com a prova pública de habilidade ou de apoio                  | Editar a própria página pela vitrine                       |
-| Guerreiro(a)     | Aparece por avatar e nick, se o responsável autorizou                   | Entrar, editar ou retirar a própria exibição               |
-| Responsável      | Nada aqui: concede e revoga na App 07                                   | Alterar o que aparece sem passar pela autorização          |
+| Persona          | O que faz nesta aplicação                                            | O que não pode fazer                                       |
+| ---------------- | -------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Visitante        | Navega, consulta nick exato, favorita, solicita participação e dados | Entrar, comentar, contatar criança, ver quem não autorizou |
+| Pesquisador      | Lê séries e metodologia e pede o conjunto completo pelo formulário   | Baixar o conjunto direto da vitrine ou ver o coletor       |
+| Gestor público   | Lê o painel do território e a cobertura da Agenda 2030 por ciclo     | O mesmo do pesquisador                                     |
+| Admin            | Nada aqui: publica o conteúdo institucional pela App 03              | Editar a vitrine por dentro dela                           |
+| Mestre, Apoiador | Aparecem com a prova pública de habilidade ou de apoio               | Editar a própria página pela vitrine                       |
+| Guerreiro(a)     | Aparece por avatar e nick, se o responsável autorizou                | Entrar, editar ou retirar a própria exibição               |
+| Responsável      | Nada aqui: concede e revoga na App 07                                | Alterar o que aparece sem passar pela autorização          |
 
 Não há persona autenticada nesta aplicação. Toda escrita listada acima — as duas solicitações —
 é ato público e anônimo do ponto de vista da plataforma: gera registro na fila, nunca acesso.
@@ -245,20 +245,19 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 | `RF-03-43` | Favorito sem autorização vigente sai da lista, sem explicação sobre a pessoa                                   | essencial  |
 | `RF-03-44` | Tela avisa que a lista se perde ao trocar de aparelho ou limpar o navegador                                    | desejável  |
 
-### 6.5 Institucional, publicidade e transparência
+### 6.5 Institucional e transparência
 
-| ID         | Requisito                                                                                   | Prioridade |
-| ---------- | ------------------------------------------------------------------------------------------- | ---------- |
-| `RF-03-45` | Seções "Quem somos", "Contatos" e "Como apoiar" exibem o conteúdo publicado na App 03       | essencial  |
-| `RF-03-46` | "Como apoiar" exibe a chave PIX da pessoa jurídica vinculada                                | essencial  |
-| `RF-03-47` | Vitrine publica as necessidades de recurso em aberto das atividades sem lastro              | essencial  |
-| `RF-03-48` | Nota de transparência sobre IA aparece nas seções institucionais                            | essencial  |
-| `RF-03-49` | Vitrine exibe o vídeo de apresentação e a identidade visual de comunidade                   | desejável  |
-| `RF-03-50` | Anúncio só é exibido aprovado, dentro do período e nas seções institucionais                | essencial  |
-| `RF-03-51` | Nenhum anúncio aparece nas seções de personagens, no portfólio ou nos painéis do território | essencial  |
-| `RF-03-52` | Vitrine não instala cookie, rastreador ou perfilamento do visitante                         | essencial  |
-| `RF-03-53` | Área detalhada explica o que a plataforma coleta, de quem, para quê e por quanto tempo      | essencial  |
-| `RF-03-54` | Área detalhada declara que a vitrine não coleta dado do visitante                           | essencial  |
+| ID         | Requisito                                                                              | Prioridade |
+| ---------- | -------------------------------------------------------------------------------------- | ---------- |
+| `RF-03-45` | Seções "Quem somos", "Contatos" e "Como apoiar" exibem o conteúdo publicado na App 03  | essencial  |
+| `RF-03-46` | "Como apoiar" exibe a chave PIX da pessoa jurídica vinculada                           | essencial  |
+| `RF-03-47` | Vitrine publica as necessidades de recurso em aberto das atividades sem lastro         | essencial  |
+| `RF-03-48` | Nota de transparência sobre IA aparece nas seções institucionais                       | essencial  |
+| `RF-03-49` | Vitrine exibe o vídeo de apresentação e a identidade visual de comunidade              | desejável  |
+| `RF-03-50` | Vitrine não exibe publicidade nem patrocínio                                           | essencial  |
+| `RF-03-51` | Vitrine não instala cookie, rastreador ou perfilamento do visitante                    | essencial  |
+| `RF-03-52` | Área detalhada explica o que a plataforma coleta, de quem, para quê e por quanto tempo | essencial  |
+| `RF-03-53` | Área detalhada declara que a vitrine não coleta dado do visitante                      | essencial  |
 
 ## 7. Regras de negócio
 
@@ -284,16 +283,14 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 | `RN-03-18` | Aporte é exibido em moedas da plataforma, nunca em reais                                    | 16                     | 04 §1       |
 | `RN-03-19` | A etiqueta ODS é descritiva, agregada por comunidade e ciclo, nunca por Guerreiro(a)        | 20                     | 11 §2.1     |
 | `RN-03-20` | O ODS 18 é citado como adoção voluntária do Brasil, não como objetivo da ONU                | 20                     | 04 §4       |
-| `RN-03-21` | Anúncio só vai ao ar aprovado por Admin, nas seções institucionais                          | —                      | 04 §2       |
-| `RN-03-22` | Anunciar não é apoiar: não gera cadastro de Apoiador nem Poder Econômico                    | —                      | 04 §2       |
-| `RN-03-23` | A vitrine não instala cookie, rastreador ou perfilamento, para nenhuma finalidade           | —                      | 04 §2       |
-| `RN-03-24` | Toda tela indica o que a plataforma coleta, com acesso à área detalhada                     | —                      | 03 §12      |
+| `RN-03-21` | A vitrine não veicula publicidade nem patrocínio no Ciclo 01                                | —                      | 04 §2       |
+| `RN-03-22` | A vitrine não instala cookie, rastreador ou perfilamento, para nenhuma finalidade           | —                      | 04 §2       |
+| `RN-03-23` | Toda tela indica o que a plataforma coleta, com acesso à área detalhada                     | —                      | 03 §12      |
 
 ## 8. Modelo de dados
 
-A aplicação **não escreve no domínio** além das duas solicitações públicas, e **não cria
-entidade própria**: a `Anuncio` nasceu desta elicitação e foi acrescentada ao PRD-01, como manda
-a regra do modelo. Os favoritos **não são entidade**: vivem no armazenamento local do
+A aplicação **não escreve no domínio** além das duas solicitações públicas e **não cria
+entidade nenhuma**. Os favoritos **não são entidade**: vivem no armazenamento local do
 navegador do visitante.
 
 ```text
@@ -306,14 +303,13 @@ Favoritos do visitante                  Batalha                         (PRD-10)
   (armazenamento local do aparelho)     Mestre / Apoiador / Aporte      (PRD-07)
                                         ComunidadeVirtual / SerieDeColeta (PRD-08)
                                         EtiquetaODS                     (PRD-01)
-                                        Anuncio / conteúdo institucional (PRD-01, PRD-02)
+                                        Conteúdo institucional          (PRD-02)
 ```
 
 | Entidade                    | Atributos essenciais                                                                                                         |
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `SolicitacaoDeParticipacao` | nome, e-mail, WhatsApp, pretensão, apresentação, instituição e links opcionais, situação, prazo, quem avaliou, parecer, data |
 | `SolicitacaoDeDados`        | solicitante, instituição, e-mail, finalidade declarada, recorte pedido, situação, quem avaliou, desfecho, data e o que saiu  |
-| `Anuncio`                   | anunciante, peça, destino do clique, seção institucional, período, situação, aprovado ou recusado por, motivo da recusa      |
 
 Derivações e imutabilidade:
 
@@ -341,7 +337,6 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, erro em corpo �
 | GET    | `/v1/vitrine/criacoes`               | pública      | Portfólio de criações originais autorizadas                   |
 | GET    | `/v1/vitrine/rankings`               | pública      | Rankings por pontos regulares, só de quem autorizou           |
 | GET    | `/v1/vitrine/novidades`              | pública      | Fatos dos últimos 30 dias, filtráveis pelos nicks favoritados |
-| GET    | `/v1/vitrine/anuncios`               | pública      | Peças aprovadas e em veiculação, por seção institucional      |
 | GET    | `/v1/vitrine/conteudo-institucional` | pública      | "Quem somos", "Contatos", "Como apoiar" e a nota sobre IA     |
 | GET    | `/v1/comunidades`                    | pública      | Comunidades com indicadores agregados (PRD-08)                |
 | GET    | `/v1/comunidades/{id}/series`        | pública      | Séries históricas agregadas até o bairro, com metodologia     |
@@ -396,8 +391,8 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   código de coletor. Rua e abaixo só na entrega aprovada, que é anonimizada.
 - **Sem canal de contato**, sem comentário e sem reação: a mediação adulto–criança não tem
   brecha aqui.
-- **Publicidade sem dado**: a peça é estática e igual para todo visitante, aprovada peça a peça
-  por um Admin — publicidade infantil se combate tirando o rastreamento, não só o anúncio.
+- **Sem publicidade e sem patrocínio**: nada é vendido nesta superfície no Ciclo 01, e o tema
+  só volta como estudo, com as salvaguardas de plataforma usada por criança escritas antes.
 - **Quem preencheu formulário não vira cadastro** e não recebe e-mail da plataforma no Ciclo
   01: o retorno é dado pelo contato que ele mesmo declarou.
 
@@ -425,8 +420,7 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
 - Favoritar e recarregar mantém a lista; limpar o navegador a perde; o servidor não guarda
   nenhuma relação entre visitante e favorito.
 - Um badge conquistado hoje aparece como novidade e deixa de aparecer 31 dias depois.
-- Anúncio recusado ou fora do período não é exibido, e nenhuma seção de personagem, portfólio
-  ou território exibe anúncio.
+- Nenhuma tela exibe anúncio, peça patrocinada ou espaço reservado a anunciante.
 - Auditoria da página confirma ausência de cookie e de requisição a rastreador de terceiros.
 
 Hipóteses do Ciclo 01 (documento 10): este PRD **não sustenta hipótese própria** — ele é a
@@ -436,18 +430,18 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                       | Gravada em | Linha do doc 09                           |
-| ----------------------------------------------------------------------------- | ---------- | ----------------------------------------- |
-| Saída pública agrega até o bairro; rua e abaixo só na entrega aprovada        | 02 §1      | Granularidade da saída pública            |
-| Limite por origem com atraso progressivo nas rotas públicas, sem CAPTCHA      | 03 §8      | Proteção das rotas públicas da vitrine    |
-| Novidade dos favoritos: cinco fatos, em destaque por 30 dias                  | 03 §8      | O que conta como "novidade" dos favoritos |
-| Publicidade no Ciclo 01, aprovada por Admin, institucional e sem rastreamento | 04 §2      | Publicidade na vitrine                    |
+| Decisão                                                                  | Gravada em | Linha do doc 09                           |
+| ------------------------------------------------------------------------ | ---------- | ----------------------------------------- |
+| Saída pública agrega até o bairro; rua e abaixo só na entrega aprovada   | 02 §1      | Granularidade da saída pública            |
+| Limite por origem com atraso progressivo nas rotas públicas, sem CAPTCHA | 03 §8      | Proteção das rotas públicas da vitrine    |
+| Novidade dos favoritos: cinco fatos, em destaque por 30 dias             | 03 §8      | O que conta como "novidade" dos favoritos |
 
 A primeira decisão **restringe uma regra anterior** — a saída pública ia até a rua — e foi
-propagada ao PRD-08, que a aplicava, e aos documentos 02, 03 e 08. A quarta criou a entidade
-`Anuncio` no PRD-01 e dois atos de Admin no PRD-02 (edição do conteúdo institucional e
-aprovação de peça). O PRD-01 também ganhou a rota pública da solicitação de participação, que
-existia como entidade e não como contrato.
+propagada ao PRD-08, que a aplicava, e aos documentos 02, 03 e 08. Uma quarta decisão retirou a
+**publicidade** da lista de receitas (documento 04 §2) e a mandou para estudo de ciclo futuro,
+com a edição do conteúdo institucional permanecendo como ato de Admin no PRD-02. O PRD-01
+ganhou a rota pública da solicitação de participação, que existia como entidade e não como
+contrato.
 
 ## 14. Pendências que permanecem
 
@@ -459,8 +453,6 @@ existia como entidade e não como contrato.
   ainda não existe.
 - **Agregação mínima dentro do bairro**, para comunidade com pouquíssimos coletores — o corte
   no bairro resolve a rua, não o caso extremo.
-- **Preço e contrato da publicidade**, e onde a receita é registrada: a regra de veiculação
-  está decidida, a comercial não.
 - **Nome do projeto e domínio próprio**: a vitrine é a primeira peça que depende da decisão
   entre Comunidade Game e Inova Comunidade.
 
@@ -476,6 +468,6 @@ existia como entidade e não como contrato.
 | `RF-03-32` a `RF-03-34` | 03 §12.3 (entrega sob solicitação aprovada)                    |
 | `RF-03-35` a `RF-03-37` | 03 §8 (proteção das rotas públicas)                            |
 | `RF-03-38` a `RF-03-44` | 03 §§8, 10 (favoritos e novidades) e 02 §1 (nick cedido)       |
-| `RF-03-45` a `RF-03-49` | 03 §8 (institucional), 04 §§1, 2 (PIX e receita) e 01 §7 (IA)  |
-| `RF-03-50` a `RF-03-52` | 04 §2 (publicidade na vitrine)                                 |
-| `RF-03-53` e `RF-03-54` | 03 §12 (aviso de coleta e área detalhada)                      |
+| `RF-03-45` a `RF-03-49` | 03 §8 (institucional), 04 §1 (PIX e lastro) e 01 §7 (IA)       |
+| `RF-03-50` e `RF-03-51` | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)             |
+| `RF-03-52` e `RF-03-53` | 03 §12 (aviso de coleta e área detalhada)                      |

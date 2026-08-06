@@ -212,7 +212,6 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RN-01-25` | Solicitação de dados não cria cadastro nem acesso, e a entrega exige aprovação registrada de Admin                      | 17         | 03 §12.3    |
 | `RN-01-26` | Saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin                                        | 7, 17      | 02 §1       |
 | `RN-01-27` | Rota pública tem limite por origem e janela, com atraso progressivo, sem exigir cadastro do visitante                   | —          | 03 §8       |
-| `RN-01-28` | Anúncio só é veiculado após aprovação de Admin e nunca coleta dado do visitante                                         | —          | 04 §2       |
 
 ## 8. Modelo de dados
 
@@ -241,7 +240,6 @@ Sessao              Conteudo
                     SolicitacaoDeDados         Local                Aporte
                     SolicitacaoDoResponsavel   SerieDeColeta        Lancamento
                     SugestaoOuProposta         RegistroDeColeta     ItemPatrimonial
-                    Anuncio
                     Auditoria
 
                     APOIO ESCOLAR (PRD-05)
@@ -259,7 +257,6 @@ Sessao              Conteudo
 | `SolicitacaoDoResponsavel` | protocolo, responsável, Guerreiro(a), tipo, texto, situação, prazo, quem tratou, desfecho e data                                                                                    |
 | `SolicitacaoDeDados`       | solicitante, instituição, e-mail, finalidade declarada, recorte pedido, situação, quem avaliou, desfecho, data e o que foi entregue                                                 |
 | `EtiquetaODS`              | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                                                    |
-| `Anuncio`                  | anunciante, peça, destino do clique, seção institucional, período de veiculação, situação, aprovado ou recusado por, motivo da recusa                                               |
 | `Auditoria`                | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                           |
 
 A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela que o App 01 tira
@@ -304,7 +301,6 @@ Convenções válidas para todas as rotas:
 | GET    | `/v1/vitrine/ods/cobertura`         | pública         | Cobertura de ODS agregada por comunidade e ciclo               |
 | POST   | `/v1/solicitacoes-de-dados`         | pública         | Registra pedido do conjunto de dados, sem criar cadastro       |
 | POST   | `/v1/solicitacoes-de-participacao`  | pública         | Registra pedido de inclusão como Mestre ou Apoiador            |
-| GET    | `/v1/vitrine/anuncios`              | pública         | Peças aprovadas e em veiculação nas seções institucionais      |
 | GET    | `/v1/auditoria`                     | Admin           | Trilha de auditoria das ações de gestão                        |
 
 As rotas de domínio — território, ledger, trilhas, atividades — estão nos PRDs que as definem
