@@ -178,7 +178,9 @@ avatar e nick.
    — que é dele, sem devolução — e os exemplares permanentes em uso de bancada.
 3. Cada exemplar permanente tem a **ficha de vida**: quem usou, quando e em que estado voltou.
 4. Devolução em bom estado ao fim do ciclo concede o badge **Guardião do Acervo**.
-5. **Dano acidental não gera pontuação negativa nem dívida**, e a tela diz isso antes de o
+5. No encontro presencial, apresentar ao Mestre o bem recebido — livro, camisa, kit — em bom
+   estado e em uso rende **2 pontos extras**, pedidos pelo Guerreiro(a) e lançados pelo Mestre.
+6. **Dano acidental não gera pontuação negativa nem dívida**, e a tela diz isso antes de o
    Guerreiro(a) relatar qualquer problema com o material.
 
 ### 5.7 Pedir ajuda em uma atividade escolar

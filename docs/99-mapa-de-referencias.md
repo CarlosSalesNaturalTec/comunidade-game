@@ -145,7 +145,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Quiz ao Vivo                                | 05 §5                     | PRD-02, 04, 09                 |
 | Batalhas e telemetria                       | 02 §6 + 07                | PRD-10, 01                     |
 | Culminância e criação original              | 02 §4                     | PRD-01, 02, 03, 05, 09, 12, 10 |
-| Motor de pontuação                          | 11 §5                     | PRD-01, 02, 05                 |
+| Motor de pontuação                          | 11 §5                     | PRD-01, 02, 05, 09             |
 | Níveis 1–5 / Mestre Aprendiz                | 11 §6                     | PRD-01, 05                     |
 | Badges                                      | 11 §7                     | PRD-01, 03, 05, 12             |
 | Recompensa conquistada em marco             | 02 §8 + 11 §2.1           | PRD-09, 01, 05, 07             |

@@ -38,9 +38,10 @@ O motor é um único fluxo, válido para qualquer poder e qualquer área do conh
 
 Regras estruturais:
 
-1. **Só a realização gera pontos.** Pontos nascem exclusivamente de atividades e desafios
-   propostos por Mestres e da coleta de dados do território — nunca de presença passiva e nunca
-   de dentro do jogo digital.
+1. **Só a realização gera pontos regulares.** Eles nascem exclusivamente de atividades e
+   desafios propostos por Mestres e da coleta de dados do território — nunca de presença
+   passiva e nunca de dentro do jogo digital. Os **pontos extras** têm fontes próprias (§5) e
+   dependem sempre de um ato humano de validação.
 2. **A acumulação é por trilha ou poder**, não global — e o **nível vem do percurso da
    trilha**, não do saldo acumulado (§6).
 3. **Todo reflexo público é derivado, nunca editado à mão**: o que aparece na vitrine, nos
@@ -236,29 +237,30 @@ Regras transversais:
 
 Tabela única das fontes de pontos da plataforma:
 
-| Fonte                                                 | Pontos                                                                         | Tipo                                                                                        | Quem lança                                 |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| Desafio semanal — atividade on-line                   | 10                                                                             | Regular                                                                                     | Mestre/gestão                              |
-| Desafio semanal — atividade presencial                | 10                                                                             | Regular                                                                                     | Mestre/gestão                              |
-| Desafio semanal — atividade em equipe                 | 10                                                                             | Regular                                                                                     | Mestre/gestão                              |
-| Desafio semanal — atividade em equipe com familiar    | 20                                                                             | Regular                                                                                     | Mestre/gestão                              |
-| Atividade **realizada com mérito**                    | +5 sobre o valor da atividade                                                  | Regular                                                                                     | Mestre/gestão                              |
-| **Mérito extra por auxílio aos colegas**              | +10 sobre o valor da atividade                                                 | Regular                                                                                     | Mestre/gestão                              |
-| **Coleta de dados do território**                     | 5 por registro válido                                                          | **Recorrente** — pontua enquanto a série está ativa, sem teto; interrompeu, parou de render | Automático (registro do Guerreiro(a))      |
-| **Quiz ao Vivo**                                      | 1 por acerto da equipe, +1 à primeira a acertar; teto de 10 por partida        | Regular                                                                                     | Automático (partida)                       |
-| **Criação original** — culminância da trilha          | 50, integrais a cada integrante                                                | Regular                                                                                     | Mestre autor, ao validar                   |
-| **Batalha**                                           | 10 por disputar, +10 à equipe vencedora, +5 ao melhor desempenho na telemetria | Regular                                                                                     | Automático (ponte Nexus → API) ou gestão   |
-| Badge de conduta (ex.: Guardião do Acervo)            | 20 + badge, uma vez por ciclo                                                  | Regular                                                                                     | Mestre/gestão                              |
-| **Desafio extra de Apoiador** (aberto ou direcionado) | Definidos no desafio                                                           | **Extra** — computado isoladamente                                                          | Automático na conclusão validada           |
-| **Proposta de evolução adotada** pela gestão          | 20 + badge                                                                     | **Extra** — computado isoladamente                                                          | Gestão, ao adotar a proposta               |
-| Pontuação negativa (má conduta)                       | −5 por ocorrência, teto de −10 por aula presencial                             | Regular                                                                                     | Admin/gestão, conforme o Código de Conduta |
+| Fonte                                                      | Pontos                                                                         | Tipo                                                                                        | Quem lança                                 |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Desafio semanal — atividade on-line                        | 10                                                                             | Regular                                                                                     | Mestre/gestão                              |
+| Desafio semanal — atividade presencial                     | 10                                                                             | Regular                                                                                     | Mestre/gestão                              |
+| Desafio semanal — atividade em equipe                      | 10                                                                             | Regular                                                                                     | Mestre/gestão                              |
+| Desafio semanal — atividade em equipe com familiar         | 20                                                                             | Regular                                                                                     | Mestre/gestão                              |
+| Atividade **realizada com mérito**                         | +5 sobre o valor da atividade                                                  | Regular                                                                                     | Mestre/gestão                              |
+| **Mérito extra por auxílio aos colegas**                   | +10 sobre o valor da atividade                                                 | Regular                                                                                     | Mestre/gestão                              |
+| **Coleta de dados do território**                          | 5 por registro válido                                                          | **Recorrente** — pontua enquanto a série está ativa, sem teto; interrompeu, parou de render | Automático (registro do Guerreiro(a))      |
+| **Quiz ao Vivo**                                           | 1 por acerto da equipe, +1 à primeira a acertar; teto de 10 por partida        | Regular                                                                                     | Automático (partida)                       |
+| **Criação original** — culminância da trilha               | 50, integrais a cada integrante                                                | Regular                                                                                     | Mestre autor, ao validar                   |
+| **Batalha**                                                | 10 por disputar, +10 à equipe vencedora, +5 ao melhor desempenho na telemetria | Regular                                                                                     | Automático (ponte Nexus → API) ou gestão   |
+| Badge de conduta (ex.: Guardião do Acervo)                 | 20 + badge, uma vez por ciclo                                                  | Regular                                                                                     | Mestre/gestão                              |
+| **Conservação e uso do bem recebido** (livro, camisa, kit) | 2 por encontro presencial                                                      | **Extra** — computado isoladamente                                                          | Mestre, a pedido do Guerreiro(a) na aula   |
+| **Desafio extra de Apoiador** (aberto ou direcionado)      | Definidos no desafio                                                           | **Extra** — computado isoladamente                                                          | Automático na conclusão validada           |
+| **Proposta de evolução adotada** pela gestão               | 20 + badge                                                                     | **Extra** — computado isoladamente                                                          | Gestão, ao adotar a proposta               |
+| Pontuação negativa (má conduta)                            | −5 por ocorrência, teto de −10 por aula presencial                             | Regular                                                                                     | Admin/gestão, conforme o Código de Conduta |
 
 Duas naturezas de saldo, que nunca se confundem:
 
-| Saldo                | O que é                                                              | Regra                                                                                                |
-| -------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Pontos regulares** | Da progressão nas trilhas e poderes                                  | Alimentam níveis e ranking                                                                           |
-| **Pontos extras**    | De desafios extras de Apoiadores e de propostas de evolução adotadas | Computados isoladamente; não alimentam níveis; os de desafio são rastreados no histórico do Apoiador |
+| Saldo                | O que é                                                                                              | Regra                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Pontos regulares** | Da progressão nas trilhas e poderes                                                                  | Alimentam níveis e ranking                                                                           |
+| **Pontos extras**    | Da conservação do bem recebido, de desafios extras de Apoiadores e de propostas de evolução adotadas | Computados isoladamente; não alimentam níveis; os de desafio são rastreados no histórico do Apoiador |
 
 **Ponto não se gasta.** Não há saldo consumido: recompensa é conquistada em marco, nunca
 comprada, e o **App 04 não debita nada** (§8.4). Os dois saldos só crescem.
@@ -266,6 +268,14 @@ comprada, e o **App 04 não debita nada** (§8.4). Os dois saldos só crescem.
 A coleta vale o mesmo por registro, qualquer que seja o tipo medido, e **não tem teto**:
 **quantos registros de um mesmo período de cadência pontuam é declarado no desafio** pelo
 Mestre que o cria.
+
+**Cuidar do que recebeu pontua, e quem pede é o Guerreiro(a).** Apresentar ao Mestre, no
+encontro presencial, o livro, a camisa, o kit ou outro bem recebido **em bom estado e em uso**
+vale **2 pontos extras**. O Guerreiro(a) pede a validação durante a aula, o Mestre confere e
+lança — não há conferência automática nem lançamento de ofício. São **2 pontos por encontro**,
+qualquer que seja o número de bens apresentados, e **uma vez por encontro**. O badge **Guardião
+do Acervo** continua o que era: reconhecimento do cuidado com o **material comum**, uma vez por
+ciclo, em pontos regulares (§7).
 
 **Sondagem e retomada valem como qualquer atividade** do seu formato — não têm tabela própria.
 A retomada pontua **uma vez por agendamento**; refazer por conta própria não rende ponto novo.
