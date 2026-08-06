@@ -250,7 +250,7 @@ Tabela única das fontes de pontos da plataforma:
 | **Criação original** — culminância da trilha               | 50, integrais a cada integrante                                                | Regular                                                                                     | Mestre autor, ao validar                   |
 | **Batalha**                                                | 10 por disputar, +10 à equipe vencedora, +5 ao melhor desempenho na telemetria | Regular                                                                                     | Automático (ponte Nexus → API) ou gestão   |
 | Badge de conduta (ex.: Guardião do Acervo)                 | 20 + badge, uma vez por ciclo                                                  | Regular                                                                                     | Mestre/gestão                              |
-| **Conservação e uso do bem recebido** (livro, camisa, kit) | 2 por encontro presencial                                                      | **Extra** — computado isoladamente                                                          | Mestre, a pedido do Guerreiro(a) na aula   |
+| **Conservação e uso do bem recebido** (livro, camisa, kit) | 1 por item apresentado, por encontro presencial                                | **Extra** — computado isoladamente                                                          | Mestre, a pedido do Guerreiro(a) na aula   |
 | **Desafio extra de Apoiador** (aberto ou direcionado)      | Definidos no desafio                                                           | **Extra** — computado isoladamente                                                          | Automático na conclusão validada           |
 | **Proposta de evolução adotada** pela gestão               | 20 + badge                                                                     | **Extra** — computado isoladamente                                                          | Gestão, ao adotar a proposta               |
 | Pontuação negativa (má conduta)                            | −5 por ocorrência, teto de −10 por aula presencial                             | Regular                                                                                     | Admin/gestão, conforme o Código de Conduta |
@@ -271,11 +271,12 @@ Mestre que o cria.
 
 **Cuidar do que recebeu pontua, e quem pede é o Guerreiro(a).** Apresentar ao Mestre, no
 encontro presencial, o livro, a camisa, o kit ou outro bem recebido **em bom estado e em uso**
-vale **2 pontos extras**. O Guerreiro(a) pede a validação durante a aula, o Mestre confere e
-lança — não há conferência automática nem lançamento de ofício. São **2 pontos por encontro**,
-qualquer que seja o número de bens apresentados, e **uma vez por encontro**. O badge **Guardião
-do Acervo** continua o que era: reconhecimento do cuidado com o **material comum**, uma vez por
-ciclo, em pontos regulares (§7).
+vale **1 ponto extra por item**. O Guerreiro(a) pede a validação durante a aula, o Mestre
+confere e lança — não há conferência automática nem lançamento de ofício. **Cada item pontua
+uma vez por encontro**: quem leva livro, camisa e kit em bom estado soma 3 no dia, e o mesmo
+livro não pontua duas vezes no mesmo encontro. O badge **Guardião do Acervo** continua o que
+era: reconhecimento do cuidado com o **material comum**, uma vez por ciclo, em pontos
+regulares (§7).
 
 **Sondagem e retomada valem como qualquer atividade** do seu formato — não têm tabela própria.
 A retomada pontua **uma vez por agendamento**; refazer por conta própria não rende ponto novo.

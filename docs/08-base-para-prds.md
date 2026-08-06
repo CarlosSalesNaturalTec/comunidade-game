@@ -144,8 +144,9 @@
 - Regra de negócio: pontos de habilidade só vêm de atividades realizadas propostas por Mestres.
   O **App 04 apenas lê o progresso e não escreve nada na plataforma**.
 - Regra de negócio: **conservação do bem recebido** — livro, camisa ou kit apresentado em bom
-  estado e em uso no encontro presencial rende **2 pontos extras**, uma vez por encontro,
-  **lançados pelo Mestre a pedido do Guerreiro(a)**; nunca por conferência automática.
+  estado e em uso no encontro presencial rende **1 ponto extra por item**, e cada item pontua
+  **uma vez por encontro**; **lançado pelo Mestre a pedido do Guerreiro(a)**, nunca por
+  conferência automática.
 - Regra de negócio: **desafio extra** exige validação do Mestre da trilha **e aprovação de um
   Admin**; gera **pontos extras** computados isoladamente, nas duas modalidades — **aberto** (a
   todos, com quantidade de recompensas declarada, uma ou várias, por ordem de conclusão) e

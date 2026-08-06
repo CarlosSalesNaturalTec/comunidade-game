@@ -179,7 +179,8 @@ avatar e nick.
 3. Cada exemplar permanente tem a **ficha de vida**: quem usou, quando e em que estado voltou.
 4. Devolução em bom estado ao fim do ciclo concede o badge **Guardião do Acervo**.
 5. No encontro presencial, apresentar ao Mestre o bem recebido — livro, camisa, kit — em bom
-   estado e em uso rende **2 pontos extras**, pedidos pelo Guerreiro(a) e lançados pelo Mestre.
+   estado e em uso rende **1 ponto extra por item**, pedido pelo Guerreiro(a) e lançado pelo
+   Mestre; cada item pontua uma vez por encontro.
 6. **Dano acidental não gera pontuação negativa nem dívida**, e a tela diz isso antes de o
    Guerreiro(a) relatar qualquer problema com o material.
 
