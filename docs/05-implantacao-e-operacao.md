@@ -143,9 +143,11 @@ Por que assim:
 - **O Mestre vira mentor de bancada**, não palestrante: circula entre equipes, atende quem
   travou e libera quem está adiantado — que passa a ajudar o colega, o que já é mérito extra.
 
-Consequências operacionais: o **onboarding roda continuamente**; a **App 05** é o que sustenta
-a autonomia, dizendo a cada Guerreiro(a) qual é o próximo ponto sem depender do Mestre; e o
-**painel do dia (App 03)** é o instrumento de controle do encontro.
+Consequências operacionais: o **onboarding roda continuamente**; o **App 01** é o que sustenta
+a autonomia na aula presencial, dizendo a cada equipe qual é o próximo ponto sem depender do
+Mestre — com **um aparelho por equipe**, dois no mínimo; e o **painel do dia (App 03)** é o
+instrumento de controle do encontro. A **App 05** atende as **aulas remotas** e o uso cotidiano
+fora do encontro.
 
 ### Momentos do encontro
 
@@ -160,7 +162,7 @@ que garante acolhimento, prática, inspiração e voz do Guerreiro(a) em toda au
 | 2   | **Atividades desplugadas** (_Computer Science Unplugged_) | Assíncrono | Lógica, algoritmos e pensamento computacional **sem computador**: papel, corpo, jogos, materiais do dia a dia. Boa porta de entrada para quem chegou e ainda não pegou um aparelho |
 | 3   | **Bate-papo on-line com mentores e convidados**           | Coletivo   | Conversa ao vivo com profissionais e referências                                                                                                                                   |
 | 4   | **Momento GOAT / "Podemos ser os melhores"**              | Coletivo   | Vídeo ou slides sobre personalidades **mulheres, negras e indígenas** que impactaram positivamente a sociedade                                                                     |
-| 5   | **Trabalho de trilha / Desafio do dia**                   | Assíncrono | O grosso do encontro: cada equipe avança nos pontos da sua trilha e na atividade pontuada, com apoio do Mestre. O **Quiz ao Vivo** (§5) é a exceção coletiva deste momento         |
+| 5   | **Trabalho de trilha / Desafio do dia**                   | Assíncrono | O grosso do encontro: cada equipe se forma no App 01 e avança nos pontos da sua trilha e na atividade pontuada, com apoio do Mestre. O **Quiz ao Vivo** (§5) é a exceção coletiva  |
 | 6   | **Encerramento com apresentação livre**                   | Coletivo   | Cada Guerreiro(a) ou equipe mostra o que construiu e aprendeu, inclusive suas **criações originais**. Treina expressão pública e é a vitrine do protagonismo do Guerreiro(a)       |
 
 Observações operacionais:
@@ -181,7 +183,9 @@ Observações operacionais:
 Competição rápida entre equipes, encaixável no "Desafio do dia", com pontuação lançada
 automaticamente.
 
-1. Os Guerreiros e Guerreiras presentes são organizados em **equipes**.
+1. Os Guerreiros e Guerreiras presentes jogam pelas **equipes que formaram no App 01** —
+   **várias equipes disputam a partida**, e cada um joga por **uma única**, mesmo estando em
+   mais de uma nas demais atividades do encontro.
 2. As perguntas são **pré-cadastradas pelo curador da aula (Mestre)**, em múltipla escolha com
    **quatro alternativas e sem tempo por pergunta** — o ritmo é de quem conduz a partida.
 3. Ao dar o _start_, **uma pergunta é exibida simultaneamente em todos os dispositivos logados
@@ -200,7 +204,7 @@ primeiro ponto valesse, as equipes mais lentas parariam de discutir na terceira 
 
 **O que exige das aplicações:** cadastro do banco de perguntas na App 09 (autoria do Mestre
 curador) e condução da partida na App 03, **pelo Mestre que ministra a aula ou por um Admin**;
-recebimento da pergunta e envio da resposta na App 05; **sincronização em tempo real** entre os
+recebimento da pergunta e envio da resposta no App 01; **sincronização em tempo real** entre os
 dispositivos e desempate por ordem de chegada da resposta, com tolerância a rede instável —
 que é a regra nos pontos de apoio. O valor em pontos da partida está no documento 11.
 
@@ -267,9 +271,9 @@ responsivos, Mobile First.
 | 1 — Onboarding + vitrine               | **App 01** + **App 06** + API de personas e de Comunidades Virtuais                                                                                  | PRD-01/02/03                                  |
 | 2 — Jogo mínimo                        | **App 03** (gestão, entradas manuais e painéis do dia), **App 09** (autoria do Mestre), poderes e a **1ª trilha — Robô Educa** publicada e pontuando | Fase 1                                        |
 | 2.5 — Canal da família                 | **App 07** — é o que torna a hipótese **H2** mensurável                                                                                              | Fase 2                                        |
-| 3 — Primeiro ciclo presencial completo | Aulas com o roteiro da §4 + **App 02** + Quiz ao Vivo + **2ª trilha — Batalha de Laser** + culminância com vídeo                                     | Fase 2 + ponto de apoio + recursos com lastro |
+| 3 — Primeiro ciclo presencial completo | Aulas com o roteiro da §4 + **trilhas e equipes no App 01** + Quiz ao Vivo + **2ª trilha — Batalha de Laser** + culminância com vídeo                | Fase 2 + ponto de apoio + recursos com lastro |
 | 3.5 — Acervo em operação               | Entrega dos livros Alpha na abertura de cada trilha, tombamento dos 46 permanentes, mapeamento capítulo → ponto de trilha e conservação implantada   | Fase 2                                        |
-| 4 — Área do Guerreiro(a) e jogo        | **App 05** e **App 04**                                                                                                                              | Fase 2                                        |
+| 4 — Área do Guerreiro(a) e jogo        | **App 05** (aulas remotas e uso cotidiano) e **App 04**                                                                                              | Fase 2                                        |
 | 5 — Comunidade Virtual                 | Coleta de dados do território e painel público por comunidade                                                                                        | Fase 2                                        |
 | 6 — Economia visível                   | Livro-razão público em moedas, Poder Econômico, relatórios de transparência e **App 08** — Área do Apoiador                                          | Fase 3                                        |
 | 7 — Escala                             | Personalização por IA, formação de multiplicadores e voluntários, kit de implantação para a 2ª comunidade                                            | Fases 3–6                                     |

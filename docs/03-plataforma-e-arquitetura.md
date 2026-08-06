@@ -77,25 +77,33 @@ construídos nas oficinas.
 Formato único de entrega: **uma base de código, sem loja de aplicativos, sem atualização pelo
 usuário e sem tráfego de dados de crianças por plataformas de terceiros**.
 
-### 2.1 As nove aplicações desta etapa
+### 2.1 As oito aplicações desta etapa
 
-| #          | Aplicação                                                                                          | Público                                           | Seção |
-| ---------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------- | ----- |
-| **App 01** | **Onboarding** — cadastro de novo Guerreiro(a) e registro de presença, por áudio ou texto          | Guerreiros e Guerreiras (na chegada da aula)      | §3    |
-| **App 02** | **Assistente por voz** — ChatBot de áudio nos moldes do Robô Educa, com **Modo Ouvinte**           | Guerreiros, Guerreiras e Mestres (durante a aula) | §4    |
-| **App 03** | **Gestão administrativa** — CRUDs, lançamentos manuais e painéis do dia                            | Admins e Mestres                                  | §5    |
-| **App 04** | **Jogo em JavaScript** — sobre a base de personagens da plataforma                                 | Guerreiros e Guerreiras                           | §6    |
-| **App 05** | **Área do Guerreiro(a)** — guia e apoio nas trilhas                                                | Guerreiros e Guerreiras                           | §7    |
-| **App 06** | **Vitrine pública** — apresentação da plataforma, sem login                                        | Público geral                                     | §8    |
-| **App 07** | **Área dos pais e responsáveis** — evolução do Guerreiro(a), solicitações e transparência de dados | Pais e responsáveis                               | §9    |
-| **App 08** | **Área do Apoiador** — aportes, desafios extras, efetividade e propostas                           | Apoiadores cadastrados                            | §10   |
-| **App 09** | **Área do Mestre** — autoria de trilhas e conteúdos, suas turmas e lançamentos                     | Mestres cadastrados                               | §11   |
+| #          | Aplicação                                                                                          | Público                                      | Seção   |
+| ---------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------- |
+| **App 01** | **Aula presencial** — onboarding do Guerreiro(a) e, em equipe, o conteúdo das trilhas              | Guerreiros e Guerreiras (na aula presencial) | §§3 e 4 |
+| **App 03** | **Gestão administrativa** — CRUDs, lançamentos manuais e painéis do dia                            | Admins e Mestres                             | §5      |
+| **App 04** | **Jogo em JavaScript** — sobre a base de personagens da plataforma                                 | Guerreiros e Guerreiras                      | §6      |
+| **App 05** | **Área do Guerreiro(a)** — guia e apoio nas trilhas                                                | Guerreiros e Guerreiras                      | §7      |
+| **App 06** | **Vitrine pública** — apresentação da plataforma, sem login                                        | Público geral                                | §8      |
+| **App 07** | **Área dos pais e responsáveis** — evolução do Guerreiro(a), solicitações e transparência de dados | Pais e responsáveis                          | §9      |
+| **App 08** | **Área do Apoiador** — aportes, desafios extras, efetividade e propostas                           | Apoiadores cadastrados                       | §10     |
+| **App 09** | **Área do Mestre** — autoria de trilhas e conteúdos, suas turmas e lançamentos                     | Mestres cadastrados                          | §11     |
 
-## 3. App 01 — Onboarding (cadastro e registro de presença)
+A numeração é histórica: o antigo **App 02 — Assistente por voz e Modo Ouvinte** foi
+**incorporado ao App 01**, e o número 02 não é reaproveitado.
 
-Usado no início de cada aula presencial e também nas atividades on-line. Resolve dois problemas
-com a mesma jornada: **cadastrar novos Guerreiros e Guerreiras** e **registrar a presença** dos
-já cadastrados — por conversa, sem formulário.
+## 3. App 01 — Aula presencial: onboarding e presença
+
+O App 01 é **a aplicação da aula presencial**, usada pelos próprios Guerreiros e Guerreiras. Ao
+abrir, ela pergunta qual dos dois caminhos a pessoa quer:
+
+- **Onboarding** — cadastro e registro de presença, de **uso individual**. É esta seção.
+- **Trilhas** — conteúdo, equipes, quiz e assistente, de **uso em equipe** (§4).
+
+Esta seção trata do primeiro caminho, que resolve dois problemas com a mesma jornada:
+**cadastrar novos Guerreiros e Guerreiras** e **registrar a presença** dos já cadastrados — por
+conversa, sem formulário.
 
 > O onboarding **roda continuamente** durante o encontro, e não apenas na abertura, porque a
 > dinâmica da aula é assíncrona.
@@ -103,7 +111,12 @@ já cadastrados — por conversa, sem formulário.
 ### 3.1 Jornada
 
 ```text
-[Tela de Boas-Vindas]
+[Tela inicial do App 01]
+   ├── botão "TRILHAS"  → uso em equipe (§4)
+   └── botão "ONBOARDING"
+             │
+             ▼
+   [Tela de Boas-Vindas]
    ├── botão "Começar com ÁUDIO"  ──┐
    └── botão "Começar com CHAT"   ──┤
                                     ▼
@@ -123,8 +136,9 @@ já cadastrados — por conversa, sem formulário.
 
 ### 3.2 Requisitos funcionais
 
-**Tela inicial** — layout Mobile First, alto contraste, poucos elementos. Dois botões:
-**começar por áudio** e **começar por texto (chat)**. Ambos levam ao mesmo fluxo cognitivo.
+**Tela inicial** — layout Mobile First, alto contraste, poucos elementos. Primeiro a escolha
+entre **onboarding** e **trilhas**; escolhido o onboarding, dois botões: **começar por áudio** e
+**começar por texto (chat)**. Ambos levam ao mesmo fluxo cognitivo.
 
 **Interação cognitiva** — conduzida por **IA**: conversa natural, tolerante a respostas fora
 de ordem, capaz de repetir e confirmar dados. Na modalidade áudio, captação e reprodução via
@@ -219,35 +233,43 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
 - Acessibilidade: a modalidade áudio atende quem ainda não lê com fluência e pessoas com
   deficiência visual.
 
-## 4. App 02 — Assistente por voz e Modo Ouvinte
+## 4. App 01 — Aula presencial: trilhas, equipes e assistente
 
-Arquitetura: **JavaScript no frontend + IA no backend**, a mesma base técnica do Robô Educa.
-Dois modos de operação:
+O segundo caminho do App 01 é o que a turma usa durante o encontro: **o conteúdo das trilhas,
+em equipe**. A aula presencial tem **dois ou mais aparelhos, um por equipe** — o mesmo aparelho
+em que a equipe acompanha o ponto de trilha, responde ao Quiz ao Vivo e conversa com o
+assistente. A entrada é a de sempre: **nick e imagem** (§1.1).
 
-- **Modo Conversa** — o Guerreiro(a) fala com o robô e recebe resposta em áudio: quiz e
-  explicação de conceitos das trilhas. Segue **o mesmo desenho do assistente da App 05** (§7):
-  modelo **LLM Google Gemini**, **corpus fechado** no conteúdo que os Mestres cadastraram,
-  guardrails educacionais, filtros de segurança no nível mais restritivo e **guarda apenas da
-  transcrição**, com o áudio descartado. O **apoio às atividades escolares** não fica aqui: é
-  atendido pelo assistente da App 05.
-- **Modo Ouvinte** — a aplicação **acompanha o que é falado durante a aula** e, quando
-  acionada, **opina sobre o tema em discussão ou responde a perguntas dirigidas a ela**.
-  Funciona como um participante a mais, não como um gravador: só se manifesta quando
-  solicitada.
+### 4.1 Equipes formadas na hora
 
-Requisitos obrigatórios do Modo Ouvinte, dado o público infantojuvenil:
+**As equipes são formadas pelos próprios Guerreiros e Guerreiras, aqui no App 01**, e valem
+para **aquela aula**: começam e terminam com o encontro. Tamanho, composição e a regra do
+familiar seguem o documento 02. A gestão **não forma nem edita equipe** — vê as equipes do dia
+no painel da App 03.
 
-- **Ativação explícita e visível** pelo Mestre no início da aula, com indicação permanente na
-  tela e desligamento a qualquer momento.
-- **Sem gravação persistente do áudio da turma.** O áudio é processado em janela de contexto
-  transitória; persiste-se, no máximo, a transcrição estritamente necessária, com prazo de
-  retenção definido.
-- **Aviso prévio a Guerreiros, Guerreiras e responsáveis**, com possibilidade de recusa e
-  alternativa equivalente — mesma regra da imagem do Guerreiro(a).
-- Filtros de segurança de conteúdo no nível mais restritivo.
+- O Guerreiro(a) pode integrar **mais de uma equipe** no mesmo encontro e nas demais atividades
+  presenciais.
+- **No Quiz ao Vivo, cada Guerreiro(a) joga por uma única equipe** — a partida é simultânea e a
+  resposta do aparelho vale para todos os integrantes. A disputa continua sendo entre **várias
+  equipes**; o que é único é a equipe de cada jogador.
 
-> **Pendência registrada:** os limites de captação, retenção e consentimento do Modo Ouvinte
-> ainda precisam de definição formal (documento 09).
+### 4.2 Conteúdo da trilha, quiz e assistente
+
+Arquitetura: **JavaScript no frontend + IA no backend**, a mesma base técnica do Robô Educa. A
+equipe vê **em que ponto de trilha está**, o conteúdo e a atividade do dia, e conversa com o
+assistente **por voz ou por texto**: quiz e explicação de conceitos das trilhas. O assistente
+segue **o mesmo desenho do assistente da App 05** (§7): modelo **LLM Google Gemini**, **corpus
+fechado** no conteúdo que os Mestres cadastraram, guardrails educacionais, filtros de segurança
+no nível mais restritivo e **guarda apenas da transcrição**, com o áudio descartado.
+
+No **Quiz ao Vivo**, é por aqui que a equipe recebe a pergunta e envia a resposta; as regras da
+partida estão no documento 05.
+
+O **apoio às atividades escolares** não fica aqui: é atendido pelo assistente da App 05.
+
+**A aplicação não escuta a aula.** O microfone só abre quando o Guerreiro(a) fala com o
+assistente e fecha quando ele termina — não há captação do áudio ambiente nem transcrição da
+conversa da turma.
 
 ## 5. App 03 — Gestão administrativa
 
@@ -273,8 +295,8 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
   App 05, com alerta das solicitações em aberto — o Mestre da trilha também pode aprová-las,
   pela App 09.
 - **Inclusão manual de novos Admins** por um Admin existente.
-- **Cadastro de equipes**, conforme o plano de aulas e a formação livre dos Guerreiros e
-  Guerreiras.
+- **Leitura das equipes do dia**, formadas pelos próprios Guerreiros e Guerreiras no App 01 —
+  a gestão acompanha no painel e **não altera composição**.
 - **Cadastro de atividades** com pontuação, recompensas e recursos necessários.
 - **Agenda de aulas** (on-line e presenciais) e atividades previstas.
 - **Lançamento de atividades realizadas**: data, mentores, Guerreiros e Guerreiras e
@@ -337,6 +359,9 @@ imagens reais**.
 > **A definir:** gênero e mecânica do jogo.
 
 ## 7. App 05 — Área do Guerreiro(a)
+
+**É a aplicação das aulas remotas** e do uso cotidiano fora do encontro presencial — a aula
+presencial é atendida pelo App 01 (§§3 e 4).
 
 Web App de uso cotidiano do Guerreiro(a), com **guia e apoio nas trilhas**: qual é o próximo
 ponto, o que precisa ser feito, o que já foi conquistado e o que está bloqueado. Reúne a
@@ -424,7 +449,7 @@ vínculo conferido por um Admin ou por um Mestre.
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Evolução do Guerreiro(a)** | Acompanha presença, atividades realizadas, pontos, poderes, badges, nível e progresso nas trilhas                                                       |
 | **Solicitações**             | Autoriza ou **revoga** a divulgação pública do perfil; pede correção ou exclusão de dados; solicita esclarecimentos — cada pedido com protocolo e prazo |
-| **Direitos de recusa**       | Recusa, a qualquer tempo, a **imagem do Guerreiro(a)**, o **Modo Ouvinte** e o uso de imagem em vídeos e fotos de eventos                               |
+| **Direitos de recusa**       | Recusa, a qualquer tempo, a **imagem do Guerreiro(a)** e o uso de imagem em vídeos e fotos de eventos                                                   |
 | **Transparência de dados**   | Vê **quais dados da criança estão armazenados**, para que servem, por quanto tempo ficam e quem os acessou                                              |
 | **Termos e consentimentos**  | Lê, aceita e consulta o histórico dos termos assinados, com data e hora                                                                                 |
 | **Propostas**                | Registra propostas de evolução da plataforma, na mesma fila de avaliação das sugestões dos Guerreiros e Guerreiras                                      |
@@ -489,7 +514,7 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 | **Necessidades**          | Vê o que falta de recurso para as suas atividades e, se quiser, cobre a falta com **aporte por absorção**                              |
 | **Locais do território**  | Aprova as solicitações de novo local dos Guerreiros e Guerreiras das suas trilhas, com alerta das que estão em aberto                  |
 | **Responsáveis**          | Cadastra o responsável que se apresentou no encontro e vincula a ele **qualquer** Guerreiro(a) já cadastrado, com o grau de parentesco |
-| **Apoio escolar**         | Cadastra as disciplinas e o conteúdo — o corpus fechado que os assistentes das Apps 05 e 02 podem usar; o Admin audita por amostragem  |
+| **Apoio escolar**         | Cadastra as disciplinas e o conteúdo — o corpus fechado que os assistentes das Apps 05 e 01 podem usar; o Admin audita por amostragem  |
 | **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                                                     |
 | **Ressarcimento**         | Acompanha a situação do que absorveu; havendo receita, envia a chave PIX por e-mail ao Admin — a plataforma não guarda dado bancário   |
 

@@ -5,7 +5,7 @@
 | Campo            | Valor                                                      |
 | ---------------- | ---------------------------------------------------------- |
 | PRD              | PRD-01                                                     |
-| Aplicação        | — (núcleo consumido pelas nove aplicações e por terceiros) |
+| Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | aprovado                                                   |
 | Versão e data    | v7 — 2026-08-05                                            |
@@ -14,7 +14,7 @@
 
 ## 2. Contexto e objetivo
 
-As nove aplicações não conversam entre si: todas conversam com este núcleo. Ele guarda o
+As oito aplicações não conversam entre si: todas conversam com este núcleo. Ele guarda o
 modelo de domínio inteiro — personas, trilhas, atividades, pontos, território, livro-razão —,
 decide **quem pode escrever o quê** e serve leitura pública sem autenticação.
 
@@ -63,7 +63,7 @@ o que é público — cada um pela sua aplicação, todos sobre a mesma verdade.
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | Admin        | Tudo: cadastros, aprovações, lançamentos, ledger, comunidades                                                                                                                                                                                 | Tudo                                                                     |
 | Mestre       | Suas trilhas e conteúdos, lançamentos e pontuação negativa das suas atividades, condução do Quiz ao Vivo das suas aulas, auditoria de coleta, aprovação de local, aportes seus, cadastro de responsável e vínculo com Guerreiros e Guerreiras | O que é público, suas turmas e o **painel do dia** na App 03, em leitura |
-| Guerreiro(a) | Seus registros de coleta, suas criações, suas sugestões, recompensas recebidas nos marcos                                                                                                                                                     | Seus dados e o que é público                                             |
+| Guerreiro(a) | Seus registros de coleta, suas criações, suas sugestões, recompensas recebidas nos marcos, a **equipe que forma na aula** e a resposta de quiz da equipe                                                                                      | Seus dados, as equipes da aula em andamento e o que é público            |
 | Responsável  | Consentimentos, autorizações, solicitações e propostas                                                                                                                                                                                        | Os Guerreiros e Guerreiras sob sua responsabilidade e o que é público    |
 | Apoiador     | Propostas de desafio extra, documentos comprobatórios, propostas de evolução                                                                                                                                                                  | Seus aportes, efetividade agregada e o que é público                     |
 | Visitante    | Solicitação de participação, pela rota pública da vitrine                                                                                                                                                                                     | Somente o que é público                                                  |
@@ -159,6 +159,9 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RF-01-26` | Núcleo mantém criação original com autoria creditada por toda a vida do registro                                                                                                                | essencial  |
 | `RF-01-35` | Núcleo mantém as entidades do apoio escolar — disciplina, conteúdo do corpus e consulta                                                                                                         | essencial  |
 | `RF-01-36` | Núcleo mantém a resposta de quiz por equipe e pergunta, com o momento de chegada                                                                                                                | essencial  |
+| `RF-01-37` | Equipe é criada pelo Guerreiro(a), vinculada a uma aula, e encerra com ela sem ser reaproveitada                                                                                                | essencial  |
+| `RF-01-38` | Núcleo recusa o sexto integrante e o segundo familiar de 17 anos ou mais na mesma equipe                                                                                                        | essencial  |
+| `RF-01-39` | Núcleo aceita o Guerreiro(a) em várias equipes da aula e em uma só por partida de quiz                                                                                                          | essencial  |
 | `RF-01-27` | Erro segue formato único, com código, mensagem em linguagem simples e campo em falta                                                                                                            | essencial  |
 | `RF-01-28` | Listagens são paginadas e aceitam filtro por comunidade, período e persona                                                                                                                      | essencial  |
 | `RF-01-29` | Núcleo registra trilha de auditoria consultável das ações de Admin                                                                                                                              | essencial  |
@@ -356,6 +359,7 @@ pelas aplicações que as verificam.
 | Nick e imagem valem em **todas** as aplicações do Guerreiro(a), para garantir que a atividade é dele | 03 §1.1           | Já decididos |
 | Falha, ausência de _template_ ou recusa da biometria caem na confirmação humana, no encontro         | 03 §§1.1, 3.3     | Já decididos |
 | App 01 exige câmera e Mestre ou Admin presente; sem isso não há onboarding                           | 03 §3.2           | Já decididos |
+| Equipe formada pelo Guerreiro(a) no App 01, vinculada à aula e encerrada com ela                     | 02 §5             | Já decididos |
 | Criança sem o responsável: onboarding sem imagem, e cadastro biométrico após a aprovação dele        | 03 §§3.2, 3.3     | Já decididos |
 | Mestre cadastra e vincula responsável de qualquer Guerreiro(a)                                       | 02 §1, 03 §11     | Já decididos |
 | A imagem do onboarding identifica o Guerreiro(a): presença **e** autenticação                        | 03 §§3.2, 3.3, 12 | Já decididos |
@@ -403,3 +407,4 @@ pelas aplicações que as verificam.
 | `RF-01-33` e `RF-01-34` | 02 §1 e 03 §10 (acompanhamento por nick)         |
 | `RF-01-35`              | 03 §7 (apoio escolar com corpus fechado)         |
 | `RF-01-36`              | 05 §5 e 11 §5 (resposta e pontuação do quiz)     |
+| `RF-01-37` a `RF-01-39` | 02 §5 e 05 §5 (equipe formada na aula e quiz)    |
