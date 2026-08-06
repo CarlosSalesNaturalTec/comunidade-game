@@ -166,6 +166,7 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RF-01-41` | Núcleo propaga a etiqueta da missão para o desafio de coleta e para o desafio extra vinculados a ela                                                                                            | essencial  |
 | `RF-01-42` | Núcleo agrega a cobertura de ODS por trilha, poder, comunidade e ciclo, derivada das etiquetas das missões                                                                                      | essencial  |
 | `RF-01-43` | Núcleo expõe a cobertura de ODS em rota pública, sempre agregada por comunidade e ciclo                                                                                                         | essencial  |
+| `RF-01-44` | Núcleo recusa, a partir do Ciclo 02, publicar missão sem ao menos uma etiqueta ODS                                                                                                              | essencial  |
 | `RF-01-27` | Erro segue formato único, com código, mensagem em linguagem simples e campo em falta                                                                                                            | essencial  |
 | `RF-01-28` | Listagens são paginadas e aceitam filtro por comunidade, período e persona                                                                                                                      | essencial  |
 | `RF-01-29` | Núcleo registra trilha de auditoria consultável das ações de Admin                                                                                                                              | essencial  |
@@ -201,7 +202,7 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RN-01-20` | Responsável só é vinculado a Guerreiro(a) já cadastrado no onboarding                                                   | 3          | 02 §1       |
 | `RN-01-21` | Recusa de consentimento nunca exclui o Guerreiro(a) da atividade                                                        | 11         | 03 §12      |
 | `RN-01-22` | O nick é chave de acompanhamento público, cedido pela família: o núcleo nunca o descobre nem o sugere a um adulto       | 12         | 02 §1       |
-| `RN-01-23` | A etiqueta ODS é descritiva: não entra em ponto, nível ou badge, e não trava a publicação da trilha                     | 20         | 11 §2.2     |
+| `RN-01-23` | A etiqueta ODS não entra em ponto, nível ou badge; é opcional no Ciclo 01 e obrigatória na missão a partir do Ciclo 02  | 20         | 11 §2.2     |
 | `RN-01-24` | A cobertura de ODS nunca é atributo de um Guerreiro(a): agrega por trilha, poder, comunidade e ciclo                    | 20         | 11 §2.2     |
 
 ## 8. Modelo de dados
@@ -421,4 +422,4 @@ pelas aplicações que as verificam.
 | `RF-01-35`              | 03 §7 (apoio escolar com corpus fechado)         |
 | `RF-01-36`              | 05 §5 e 11 §5 (resposta e pontuação do quiz)     |
 | `RF-01-37` a `RF-01-39` | 02 §5 e 05 §5 (equipe formada na aula e quiz)    |
-| `RF-01-40` a `RF-01-43` | 11 §2.2 e 04 §4 (etiqueta ODS e cobertura)       |
+| `RF-01-40` a `RF-01-44` | 11 §2.2 e 04 §4 (etiqueta ODS e cobertura)       |
