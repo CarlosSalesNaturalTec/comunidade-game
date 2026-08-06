@@ -234,6 +234,8 @@ violência de gênero, mediação de conflitos).
 
 - Cada trilha é uma **sequência de missões** — conteúdos e atividades que guiam o Guerreiro(a)
   pelos conhecimentos desejados. A **missão** é a menor unidade de progressão da trilha.
+- Cada missão é **obrigatória ou opcional**, conforme o Mestre autor declarar.
+- **Toda trilha abre com uma missão de sondagem**, que mede o nível de partida no poder.
 - Ao avançar nas missões da trilha, o Guerreiro(a) vai **desbloqueando níveis de poderes**.
 - Trilhas podem conter **conteúdos de terceiros**, curados pelos Mestres, e **bibliografia de
   apoio** impressa por missão.
@@ -304,6 +306,11 @@ que consegue realizar, não pela idade que tem.
 **Tipos:** **presenciais** (nos encontros) e **assíncronas / on-line** (no intervalo entre os
 encontros presenciais). Os desafios são **semanais**, exceto a coleta de dados, que é
 contínua.
+
+**Toda atividade exige produção do Guerreiro(a)** — escrever, falar ou construir. Só se aprende
+fazendo, errando e refazendo; consumir conteúdo não conclui missão. A plataforma lê o que foi
+produzido e devolve retorno construtivo, mas **quem lança o resultado é o Mestre**: a leitura
+automática é hipótese sobre o aprendizado, não veredito.
 
 ### Categorias de atividade
 
@@ -426,12 +433,20 @@ O **Mestre autor declara, na trilha, qual marco concede qual recompensa**, e o l
 é exigido antes da publicação. Duas consequências: o Guerreiro(a) sabe desde o começo o que cada
 conquista lhe rende, e nenhuma recompensa é prometida sem estar provida.
 
+**A missão é o marco de uso corrente.** Ao cadastrar uma missão, o Mestre declara se o
+desbloqueio dela libera recompensa — e é por aí que saem **as camisas, os livros e os kits do
+acervo**, além dos kits de alimentos. Etapa, batalha e culminância continuam valendo como
+marcos, para o que faz sentido entregar só no fim.
+
 Catálogo inicial — **quais recompensas em quais marcos ainda é a definir**:
 
-| Recompensa                | Marco que concede (a definir) |
-| ------------------------- | ----------------------------- |
-| Kit alimentos 1 (3 itens) | —                             |
-| Kit alimentos 2 (6 itens) | —                             |
+| Recompensa                  | Marco que concede (a definir) |
+| --------------------------- | ----------------------------- |
+| Kit alimentos 1 (3 itens)   | —                             |
+| Kit alimentos 2 (6 itens)   | —                             |
+| Camisa do projeto           | —                             |
+| Livro próprio (linha Alpha) | —                             |
+| Kit de montagem em MDF      | —                             |
 
 **[Proposta]** Ao definir a tabela, ampliar o catálogo com recompensas não alimentares
 (material escolar, componentes de robótica, ingressos culturais). Entregar alimento é

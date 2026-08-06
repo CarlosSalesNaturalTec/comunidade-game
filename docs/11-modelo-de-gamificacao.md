@@ -57,13 +57,17 @@ de humanas. O que muda é o conteúdo e o que se mede na coleta; a estrutura é 
 ```text
 TRILHA (autoria de um Mestre, vinculada a um Poder)
 │
+├── MISSÃO DE SONDAGEM — abre toda trilha; mede de onde a turma parte
+│
 ├── MISSÕES (sequência ordenada, com dificuldade gradual)
-│     └── cada missão contém:
+│     └── cada uma obrigatória ou opcional, e contendo:
 │           ├── CONTEÚDO — próprio do Mestre, de terceiros (curado) e
 │           │   bibliografia de apoio (título/capítulo do acervo)
-│           ├── ATIVIDADES — o que o Guerreiro(a) realiza para aprender
-│           └── DESAFIO DE DESBLOQUEIO — quiz ou desafio que abre a
-│               próxima missão e os níveis do poder
+│           ├── ATIVIDADES — o que o Guerreiro(a) produz para aprender
+│           ├── DESAFIO DE DESBLOQUEIO — quiz ou desafio que abre a
+│           │   próxima missão e os níveis do poder
+│           └── RETOMADA — revisão espaçada, na cadência que o Mestre
+│               declarar (§2.2)
 │
 ├── DESAFIO(S) DE COLETA DE DADOS REAIS — obrigatório em toda trilha
 │     └── série temporal com cadência; pontua enquanto ativa
@@ -81,9 +85,11 @@ TRILHA (autoria de um Mestre, vinculada a um Poder)
 | Componente                 | O que é                                                                                  |
 | -------------------------- | ---------------------------------------------------------------------------------------- |
 | **Missão**                 | Menor unidade de progressão: conteúdo + atividades + desafio de desbloqueio              |
+| **Missão de sondagem**     | Primeira missão de toda trilha; quiz que mede o nível de partida no poder                |
 | **Conteúdo**               | Material do Mestre, conteúdo de terceiros curado e bibliografia de apoio por missão      |
 | **Atividade**              | O que o Guerreiro(a) realiza, classificado pela taxonomia da §4                          |
 | **Desafio de desbloqueio** | Quiz ou desafio que abre a próxima missão e ativa níveis do poder                        |
+| **Retomada**               | Revisão espaçada de missão já cumprida, na cadência declarada pelo Mestre                |
 | **Desafio de coleta**      | Série temporal de dados reais do território; requisito de **toda** trilha                |
 | **Desafio extra**          | Proposto por Apoiador, validado pelo Mestre e aprovado por Admin; pontos extras isolados |
 | **Encontro presencial**    | Marco recorrente; roteiro assíncrono com momentos coletivos âncora                       |
@@ -94,7 +100,38 @@ TRILHA (autoria de um Mestre, vinculada a um Poder)
 são os momentos em que a recompensa é entregue — o Mestre autor declara qual marco concede o
 quê, conforme a regra do documento 02.
 
-### 2.2 O modelo aplicado — três exemplos
+### 2.2 Anatomia da missão
+
+**Só aprende quem faz.** A missão existe para o Guerreiro(a) quebrar a cabeça: exercitar o que
+foi ensinado escrevendo, falando ou construindo, errar e refazer até acertar. Missão em que se
+apenas consome conteúdo não é missão.
+
+Toda missão declara:
+
+| Elemento                    | Regra                                                                             |
+| --------------------------- | --------------------------------------------------------------------------------- |
+| **Obrigatória ou opcional** | Declarado pelo Mestre. Só as obrigatórias contam no percurso do nível (§6)        |
+| **Conteúdo**                | O que se ensina, com a bibliografia de apoio                                      |
+| **Ao menos uma atividade**  | E toda atividade exige **produção** do Guerreiro(a): escrever, falar ou construir |
+| **Desafio de desbloqueio**  | Quiz ou desafio que abre a missão seguinte                                        |
+| **Retomada**                | Cadência da revisão espaçada, quando o Mestre a declara                           |
+| **Recompensa**              | Quando o Mestre declara que aquele desbloqueio libera algo concreto               |
+
+Quatro regras fecham o modelo:
+
+- **Sondagem antes de ensinar.** Toda trilha abre com uma missão de sondagem, e sem ela a
+  trilha não publica. Ela mede de onde a turma parte; **não define nível**, que é percurso (§6).
+- **Repetir para fixar.** A retomada traz de volta o que já foi cumprido, na cadência que o
+  Mestre declara — o mesmo vocabulário do desafio de coleta. Ela pontua **uma vez por
+  agendamento**; refazer por conta própria não rende ponto novo.
+- **A análise da produção é hipótese, não resultado.** A plataforma lê o que o Guerreiro(a)
+  escreveu ou falou e devolve retorno **sempre construtivo**, apontando o caminho em vez do
+  erro. **Quem lança o resultado é o Mestre** — a leitura automática nunca pontua sozinha.
+- **Poder técnico começa desplugado.** Em trilha de tecnologia, o modelo pede ao menos uma
+  atividade desplugada: lógica e algoritmo com papel e corpo abrem a porta para quem ainda não
+  pegou um aparelho.
+
+### 2.3 O modelo aplicado — três exemplos
 
 A tabela valida a estrutura contra as duas trilhas existentes e contra uma trilha de área não
 técnica, mostrando que o modelo não pressupõe tecnologia:
@@ -108,14 +145,14 @@ técnica, mostrando que o modelo não pressupõe tecnologia:
 | Batalha                | — (apresentação)                            | **Batalha de Laser** presencial                                              | Roda / jogo de capoeira entre equipes                     |
 | Culminância            | Publicar e apresentar sua versão do robô    | Partida final com telemetria no telão                                        | Apresentação da roda para a comunidade                    |
 
-### 2.3 Distribuição da trilha pelas etapas do ciclo
+### 2.4 Distribuição da trilha pelas etapas do ciclo
 
 Toda trilha é **paginada no calendário de um ciclo** (o período letivo da comunidade). O modelo
 é o mesmo para qualquer trilha:
 
 | Etapa               | O que acontece                                                                                                                                                   | Conteúdo e material                                                                   |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| **Abertura**        | Onboarding e credenciamento; escolha do poder; **ritual de entrada** — a entrega do livro próprio é a primeira atividade pontuada; abertura das séries de coleta | Missão 1 da trilha; livro próprio entregue; kit e insumos da primeira montagem        |
+| **Abertura**        | Onboarding e credenciamento; escolha do poder; **ritual de entrada** — a entrega do livro próprio é a primeira atividade pontuada; abertura das séries de coleta | Missão de sondagem; livro próprio entregue; kit e insumos da primeira montagem        |
 | **Desenvolvimento** | Encontros presenciais assíncronos avançando as missões + desafios on-line entre encontros; séries de coleta rendendo pontos; desafios extras de Apoiadores       | Missões intermediárias; capítulo recomendado por missão; acervo permanente em bancada |
 | **Marcos**          | Batalhas, quando a trilha prevê; Quiz ao Vivo nos encontros                                                                                                      | Artefatos construídos no desenvolvimento                                              |
 | **Fechamento**      | **Culminância**, conferência de inventário do acervo, avaliação do ciclo e das hipóteses                                                                         | Portfólio, vídeos (com consentimento), prestação de contas                            |
@@ -148,16 +185,17 @@ Diretrizes de paginação para o Mestre (autor da trilha):
 Toda atividade é classificada em **três eixos ortogonais**, que se combinam livremente (uma
 atividade pode ser _em equipe + presencial + de construção_):
 
-| Eixo           | Valores                                                                                                                                                                               | Observações                                                                                                |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Modalidade** | Individual · Em equipe (grupo livre, até 5) · Em equipe com familiar (no máximo 1, com 17 anos ou mais)                                                                               | Define a pontuação-base; a presença do familiar vale mais por ser estratégica para a permanência           |
-| **Formato**    | Presencial (nos encontros) · On-line/assíncrona (entre encontros)                                                                                                                     | Presencial: desplugada, construção, Quiz ao Vivo. On-line: quiz e desafios entre encontros                 |
-| **Natureza**   | Construção/making · Programação e IA · **Coleta de dados do território** · Desplugada · Valores e temas transversais · Competição ao vivo (Quiz) · Culminância · **Criação original** | Lista aberta: novas trilhas de outras áreas acrescentam naturezas (expressão artística, movimento e corpo) |
+| Eixo           | Valores                                                                                                                                                                                                             | Observações                                                                                                |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Modalidade** | Individual · Em equipe (grupo livre, até 5) · Em equipe com familiar (no máximo 1, com 17 anos ou mais)                                                                                                             | Define a pontuação-base; a presença do familiar vale mais por ser estratégica para a permanência           |
+| **Formato**    | Presencial (nos encontros) · On-line/assíncrona (entre encontros)                                                                                                                                                   | Presencial: desplugada, construção, Quiz ao Vivo. On-line: quiz e desafios entre encontros                 |
+| **Natureza**   | **Sondagem** · Construção/making · Programação e IA · **Coleta de dados do território** · Desplugada · Valores e temas transversais · Competição ao vivo (Quiz) · **Retomada** · Culminância · **Criação original** | Lista aberta: novas trilhas de outras áreas acrescentam naturezas (expressão artística, movimento e corpo) |
 
 Regras transversais:
 
 - **Toda atividade de trilha pertence a uma missão** e é autorada pelo Mestre, que
   declara a modalidade e o formato. Atividade avulsa, fora de trilha, é cadastro da gestão.
+- **Toda atividade exige produção** do Guerreiro(a) — escrever, falar ou construir (§2.2).
 - **Dificuldade gradual, independente de idade** (faixa 6–16).
 - **Um Guerreiro(a) pode integrar mais de uma equipe** e pontua em **todas** as atividades em
   que participa e colabora — no Quiz ao Vivo, por ser simultâneo, joga por uma equipe só,
@@ -199,6 +237,11 @@ A coleta vale o mesmo por registro, qualquer que seja o tipo medido, e **não te
 **quantos registros de um mesmo período de cadência pontuam é declarado no desafio** pelo
 Mestre que o cria.
 
+**Sondagem e retomada valem como qualquer atividade** do seu formato — não têm tabela própria.
+A retomada pontua **uma vez por agendamento**; refazer por conta própria não rende ponto novo.
+O resultado da sondagem não credita nem define nível: ela mede o ponto de partida, e a
+devolutiva automática da produção **nunca pontua sozinha** — quem lança o resultado é o Mestre.
+
 **A pontuação negativa não desfaz percurso.** O saldo da trilha **nunca fica negativo**, nível
 e badge já conquistados **não regridem**, e a ocorrência **sai do ranking ao fim do ciclo** —
 o registro permanece para a gestão e o responsável. É consequência no jogo, não porta de saída.
@@ -229,13 +272,16 @@ acumulado. A razão é dupla: a coleta é recorrente e sem teto, e amarrar níve
 alguém subir sustentando séries sem percorrer a trilha; e ponto acumula com tempo, o que
 condenaria quem entra no meio do ciclo, contra a dinâmica assíncrona dos encontros.
 
-| Nível | Critério            | Condição verificável                                                      |
-| ----- | ------------------- | ------------------------------------------------------------------------- |
-| 1     | Inscrito e assíduo  | Inscrito na trilha e com a primeira atividade realizada                   |
-| 2     | Bom rendimento      | **1/3** das missões desbloqueadas                                         |
-| 3     | Ótimo rendimento    | **2/3** desbloqueadas **e** série de coleta ativa                         |
-| 4     | Apoio aos colegas   | Todas as missões desbloqueadas **e** ao menos um mérito extra por auxílio |
-| **5** | **Mestre Aprendiz** | **Culminância validada** pelo Mestre autor da trilha                      |
+| Nível | Critério            | Condição verificável                                                           |
+| ----- | ------------------- | ------------------------------------------------------------------------------ |
+| 1     | Inscrito e assíduo  | Inscrito na trilha e com a primeira atividade realizada                        |
+| 2     | Bom rendimento      | **1/3** das missões obrigatórias desbloqueadas                                 |
+| 3     | Ótimo rendimento    | **2/3** desbloqueadas **e** série de coleta ativa                              |
+| 4     | Apoio aos colegas   | Todas as obrigatórias desbloqueadas **e** ao menos um mérito extra por auxílio |
+| **5** | **Mestre Aprendiz** | **Culminância validada** pelo Mestre autor da trilha                           |
+
+**Só a missão obrigatória conta no percurso.** A opcional pontua e pode render badge, mas fica
+fora do denominador — quem faz o mínimo não trava, e quem faz tudo ganha por ter feito.
 
 **Nível conquistado não regride**: série que se interrompe depois, ou pontuação negativa
 lançada em seguida, não derrubam o nível já alcançado.

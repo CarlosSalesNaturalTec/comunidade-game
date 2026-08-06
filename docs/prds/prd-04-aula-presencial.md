@@ -8,7 +8,7 @@
 | Aplicação        | App 01 — Aula presencial (onboarding, trilhas e equipes)       |
 | Onda             | 2                                                              |
 | Situação         | em revisão                                                     |
-| Versão e data    | v2 — 2026-08-06                                                |
+| Versão e data    | v3 — 2026-08-06                                                |
 | Depende de       | PRD-01, PRD-02; o caminho das trilhas depende também do PRD-09 |
 | Documentos-fonte | 02 §§1, 5, 9, 03 §§1.1, 3, 4, 12, 05 §§4, 5, 06 §3, 11 §§4, 5  |
 
@@ -72,6 +72,8 @@ existe para impedir.
 - Participação em **mais de uma equipe** no encontro; na partida de quiz, várias equipes
   disputam e cada Guerreiro(a) joga por **uma única**.
 - **Missão da equipe**: onde ela está, o conteúdo e a atividade do dia.
+- **Entrega da produção da missão** no aparelho compartilhado, por escrita, fala ou foto do
+  que a equipe fez à mão, com devolutiva construtiva e descarte de foto e áudio na leitura.
 - **Assistente de trilhas por voz ou texto**: quiz e explicação de conceitos das trilhas, no
   corpus fechado que os Mestres cadastraram.
 - **Quiz ao Vivo:** recebimento da pergunta e envio da resposta pelo aparelho da equipe.
@@ -273,6 +275,9 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-32` | Equipe é vinculada à aula em andamento e se encerra com ela, preservando o histórico realizado                | essencial  |
 | `RF-04-33` | Guerreiro(a) integra mais de uma equipe no mesmo encontro                                                     | essencial  |
 | `RF-04-34` | Tela mostra as equipes da aula por avatar e nick, sem qualquer dado pessoal                                   | essencial  |
+| `RF-04-45` | Equipe entrega a produção da missão por texto, áudio ou foto do manuscrito                                    | essencial  |
+| `RF-04-46` | Aplicação devolve retorno construtivo e descarta foto e áudio na leitura                                      | essencial  |
+| `RF-04-47` | Devolutiva automática não credita pontos; o resultado é lançado pelo Mestre                                   | essencial  |
 | `RF-04-35` | Aplicação mostra à equipe a missão em que está, o conteúdo e a atividade do dia                               | essencial  |
 | `RF-04-36` | Assistente de trilhas responde por voz ou texto, apenas a partir do corpus cadastrado pelos Mestres           | essencial  |
 | `RF-04-37` | Pergunta fora do corpus recebe recusa explicada, com orientação de procurar um Mestre no encontro             | essencial  |
@@ -413,19 +418,20 @@ corpus (200, com a recusa explicada no corpo).
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                         | Finalidade                                | Base legal                   | Retenção                           | Quem acessa                      |
-| ------------------------------------- | ----------------------------------------- | ---------------------------- | ---------------------------------- | -------------------------------- |
-| Imagem captada                        | Gerar o _template_ biométrico             | consentimento do responsável | descartada na geração              | ninguém: não é persistida        |
-| _Template_ biométrico                 | Presença e autenticação                   | consentimento do responsável | vínculo + 30 dias; 5 dias a pedido | ninguém: só a comparação interna |
-| Nome                                  | Identificação interna                     | consentimento                | enquanto durar o vínculo           | gestão e responsável             |
-| Nick e forma de tratamento            | Identidade pública                        | consentimento                | enquanto durar o vínculo           | qualquer visitante               |
-| Data de nascimento ou idade           | Faixa etária e nível da atividade         | consentimento                | enquanto durar o vínculo           | gestão e responsável             |
-| Características do avatar             | Geração do avatar público                 | consentimento                | enquanto durar o vínculo           | qualquer visitante               |
-| Áudio ou texto da conversa            | Conduzir o cadastro                       | consentimento                | descartado ao fim do atendimento   | ninguém depois do atendimento    |
-| Áudio da pergunta ao assistente       | Gerar a transcrição                       | consentimento                | descartado assim que transcrito    | ninguém: não é persistido        |
-| Transcrição da consulta ao assistente | Melhorar o conteúdo e auditar o uso da IA | consentimento                | enquanto durar o vínculo           | gestão e Mestre da trilha        |
-| Termo assinado (digitalização)        | Prova do consentimento                    | obrigação legal              | permanente                         | gestão e responsável             |
-| Presença                              | Registro da participação                  | consentimento                | enquanto durar o vínculo           | gestão e responsável             |
+| Dado coletado                         | Finalidade                                     | Base legal                   | Retenção                                                   | Quem acessa                      |
+| ------------------------------------- | ---------------------------------------------- | ---------------------------- | ---------------------------------------------------------- | -------------------------------- |
+| Imagem captada                        | Gerar o _template_ biométrico                  | consentimento do responsável | descartada na geração                                      | ninguém: não é persistida        |
+| _Template_ biométrico                 | Presença e autenticação                        | consentimento do responsável | vínculo + 30 dias; 5 dias a pedido                         | ninguém: só a comparação interna |
+| Nome                                  | Identificação interna                          | consentimento                | enquanto durar o vínculo                                   | gestão e responsável             |
+| Nick e forma de tratamento            | Identidade pública                             | consentimento                | enquanto durar o vínculo                                   | qualquer visitante               |
+| Data de nascimento ou idade           | Faixa etária e nível da atividade              | consentimento                | enquanto durar o vínculo                                   | gestão e responsável             |
+| Características do avatar             | Geração do avatar público                      | consentimento                | enquanto durar o vínculo                                   | qualquer visitante               |
+| Áudio ou texto da conversa            | Conduzir o cadastro                            | consentimento                | descartado ao fim do atendimento                           | ninguém depois do atendimento    |
+| Produção da missão (foto e áudio)     | Ler o que a equipe produziu e devolver retorno | consentimento                | **descartados na leitura**; ficam transcrição e devolutiva | gestão e Mestre da turma         |
+| Áudio da pergunta ao assistente       | Gerar a transcrição                            | consentimento                | descartado assim que transcrito                            | ninguém: não é persistido        |
+| Transcrição da consulta ao assistente | Melhorar o conteúdo e auditar o uso da IA      | consentimento                | enquanto durar o vínculo                                   | gestão e Mestre da trilha        |
+| Termo assinado (digitalização)        | Prova do consentimento                         | obrigação legal              | permanente                                                 | gestão e responsável             |
+| Presença                              | Registro da participação                       | consentimento                | enquanto durar o vínculo                                   | gestão e responsável             |
 
 - **Consentimento**: termo impresso, assinado pelo responsável presente no encontro, antes da
   captura. A aplicação grava data, hora e quem testemunhou; a gestão anexa a digitalização.
@@ -555,6 +561,7 @@ nasce aqui e serve também ao apoio escolar da App 05.
 | `RF-04-29`              | 03 §1.1 (entrada por nick e imagem)                   |
 | `RF-04-30` a `RF-04-34` | 02 §5 e 03 §4.1 (equipes formadas na aula)            |
 | `RF-04-35`              | 11 §2 (anatomia da trilha), 03 §4.2                   |
+| `RF-04-45` a `RF-04-47` | 11 §2.2 (produção e devolutiva), 03 §§4, 12.2         |
 | `RF-04-36` a `RF-04-40` | 03 §§4.2, 7 (assistente, corpus fechado e áudio)      |
 | `RF-04-41` a `RF-04-44` | 05 §5 (regras da partida de Quiz ao Vivo)             |
 | `RF-04-45`              | 03 §3.4 (rede instável)                               |
