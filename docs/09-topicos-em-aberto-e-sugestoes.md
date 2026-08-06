@@ -21,7 +21,8 @@ Nada aqui é decisão tomada — é pauta.
 | Cadência padrão da revisão espaçada            | O Mestre declara a cadência de cada missão, mas falta o **padrão que o template sugere** — de quantos em quantos dias a retomada volta, e quantas vezes por missão                                                                                         |
 | Provedor da leitura da produção                | Quem lê a foto do manuscrito e transcreve o áudio da resposta: mesmo modelo do assistente ou serviço dedicado, e se o processamento é no dispositivo ou na nuvem. O custo entra no livro-razão como recurso de _cloud_                                     |
 | Consentimento da captação da produção          | Se a foto do manuscrito e o áudio da resposta entram no consentimento já colhido para os assistentes ou exigem termo próprio do responsável. A alternativa equivalente — entregar ao Mestre no encontro — já está definida                                 |
-| Relatório de efetividade ao Apoiador           | Quais números, com que periodicidade e em que nível de agregação                                                                                                                                                                                           |
+| Relatório de efetividade ao Apoiador           | Quais números, com que periodicidade e em que nível de agregação — a cobertura de ODS é um deles                                                                                                                                                           |
+| **Etiqueta ODS obrigatória no template**       | Hoje é campo opcional da missão e não trava publicação. Decidir, com o baseline do Ciclo 01 em mãos, se o template de missão passa a exigi-la a partir do Ciclo 02 — cobertura incompleta enfraquece o número diante de edital                             |
 | Monetização dos dados — termo e pagamento      | O rateio já é 50% / 50%, com a parte do Guerreiro(a) paga ao responsável legal. Falta a **redação da regra no termo** assinado, a base legal e a periodicidade do pagamento. **Sem implementação no Ciclo 01** — não há monetização prevista até dez/2026  |
 | Nome da classe "Guerreiro" na Batalha de Laser | Com a persona passando a se chamar Guerreiro(a), a classe do Atacante na trilha 2 (documento 07) fica com nome colidente. Decidir se a classe é renomeada ou se a distinção basta em contexto                                                              |
 | Triagem do formulário público                  | Com os dados mínimos e o prazo já definidos, resta a proteção contra envio abusivo do formulário da vitrine                                                                                                                                                |
@@ -106,6 +107,7 @@ Nada aqui é decisão tomada — é pauta.
 | Periodicidade das auditorias por amostragem  | **Mensal** para trilhas publicadas e corpus de apoio escolar, cobrindo ao menos 10% do conteúdo novo do mês e **100% do que gerou recusa** do filtro de segurança; **semanal** para registros de coleta, junto com os lançamentos da semana, com o valor "a conferir" sempre na amostra                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Base legal do dado de território             | **Duas camadas:** a medição é dado do lugar e sai anonimizada, fora do alcance da LGPD; o **vínculo de autoria** é o único dado pessoal e se apoia em **consentimento específico do responsável**, revogável. **Revogação despersonaliza, não apaga** — rompe o vínculo e destrói o mapeamento, mantendo um código de coletor sem correspondência a pessoa. **Titularidade não se transfere ao responsável**: ele exerce os direitos e recebe a parte monetária. A base de **pesquisa** (art. 7º, IV e art. 16, II) só se aplica quando existir a pessoa jurídica sem fins lucrativos                                                                                                                                                                                                                               |
 | Reparação de ocorrência de conduta           | O código pactuado em cada comunidade **pode prever reparação que zera a ocorrência** — cumprida a reparação, os pontos voltam; a ocorrência permanece registrada para a gestão e o responsável                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Aderência à Agenda 2030 e ODS                | Adesão **declarada e descritiva**: os ODS etiquetam o que a plataforma já faz e **não viram currículo, poder nem pontuação**. A etiqueta é campo opcional da missão, herdada pelos desafios de coleta e extras, agregada por trilha, poder, comunidade e ciclo, e **publicada nunca por Guerreiro(a)**. A contribuição própria do projeto é a **meta 17.18** — dado local desagregado do território —, e o **ODS 18** é sempre citado como **adoção voluntária do Brasil**, não como objetivo oficial da ONU                                                                                                                                                                                                                                                                                                        |
 
 ## 2. Propostas de novos tópicos **[Proposta]**
 
@@ -154,8 +156,10 @@ A detalhar:
 
 ### Indicadores de impacto
 
-Métricas de aprendizado, retenção, atividades realizadas, dados de território registrados e
-recursos movimentados — definidas antes do piloto, para permitir comparação (_baseline_).
+Os **indicadores de cobertura** da Agenda 2030 já estão definidos (documento 04) e saem
+prontos da etiqueta ODS. Seguem em aberto as métricas de aprendizado, retenção, atividades
+realizadas, dados de território registrados e recursos movimentados — definidas antes do
+piloto, para permitir comparação (_baseline_).
 
 ### Acessibilidade e inclusão
 
@@ -176,7 +180,9 @@ recursos movimentados — definidas antes do piloto, para permitir comparação 
   fato.
 - **Parcerias institucionais**: escolas públicas (protocolo com secretarias, alinhamento
   PNED/BNCC); universidades (estagiários e extensão); instituições que possam **consumir os
-  dados** das Comunidades Virtuais (prefeitura, defesa civil, associações de moradores).
+  dados** das Comunidades Virtuais (prefeitura, defesa civil, associações de moradores) —
+  inclusive a entrega do painel local como contribuição à meta 17.18, e o contato com a
+  Comissão Nacional dos ODS e o Ministério da Igualdade Racial em torno do ODS 18.
 
 ## 3. Próximos passos sugeridos **[Proposta]**
 

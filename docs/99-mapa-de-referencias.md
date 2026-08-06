@@ -12,22 +12,22 @@ Cada assunto tem **um** documento normativo. Alterar o assunto significa alterar
 documento. Os demais, quando precisam citar o assunto, resumem em uma frase e **nunca
 repetem a regra completa** — repetição é o defeito que esta documentação combate.
 
-| Assunto                                                                                                                                                                                                        | Fonte única |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| Visão, valores, causas, objetivos, público-alvo, fundador, transparência sobre IA                                                                                                                              | 01          |
-| Personas, solicitação de participação, Comunidades Virtuais (conceito e regras de coleta), poderes, trilhas, atividades e desafios, criações originais, equipes, batalhas, recompensas, manual do Guerreiro(a) | 02          |
-| Princípios de arquitetura, canais, as 8 aplicações, licenças, LGPD da plataforma                                                                                                                               | 03          |
-| Economia de recursos, moeda da plataforma, livro-razão, pessoa jurídica, receitas, titularidade dos dados publicados, desafios extras (regras completas), impacto social                                       | 04          |
-| Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto                                          | 05          |
-| Trilha 1 — Robô Educa                                                                                                                                                                                          | 06          |
-| Trilha 2 — Batalha de Laser                                                                                                                                                                                    | 07          |
-| Requisitos por PRD (**único documento extenso entre os 01–13**)                                                                                                                                                | 08          |
-| Requisitos de produto por aplicação (**derivados — nenhum PRD é fonte única**)                                                                                                                                 | `prds/`     |
-| Decisões pendentes e propostas                                                                                                                                                                                 | 09          |
-| Case 01 — Guerreira Zeferina, Ciclo 01                                                                                                                                                                         | 10          |
-| Motor do jogo: anatomia da trilha, taxonomia, pontuação, níveis, badges, reflexos no ecossistema                                                                                                               | 11          |
-| Guia do Apoiador (documento **derivado**, sem regra própria)                                                                                                                                                   | 12          |
-| Código de Conduta do Guerreiro(a)                                                                                                                                                                              | 13          |
+| Assunto                                                                                                                                                                                                                      | Fonte única |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| Visão, valores, causas, objetivos, público-alvo, fundador, transparência sobre IA                                                                                                                                            | 01          |
+| Personas, solicitação de participação, Comunidades Virtuais (conceito e regras de coleta), poderes, trilhas, atividades e desafios, criações originais, equipes, batalhas, recompensas, manual do Guerreiro(a)               | 02          |
+| Princípios de arquitetura, canais, as 8 aplicações, licenças, LGPD da plataforma                                                                                                                                             | 03          |
+| Economia de recursos, moeda da plataforma, livro-razão, pessoa jurídica, receitas, titularidade dos dados publicados, desafios extras (regras completas), impacto social, aderência à Agenda 2030 e indicadores de cobertura | 04          |
+| Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto                                                        | 05          |
+| Trilha 1 — Robô Educa                                                                                                                                                                                                        | 06          |
+| Trilha 2 — Batalha de Laser                                                                                                                                                                                                  | 07          |
+| Requisitos por PRD (**único documento extenso entre os 01–13**)                                                                                                                                                              | 08          |
+| Requisitos de produto por aplicação (**derivados — nenhum PRD é fonte única**)                                                                                                                                               | `prds/`     |
+| Decisões pendentes e propostas                                                                                                                                                                                               | 09          |
+| Case 01 — Guerreira Zeferina, Ciclo 01                                                                                                                                                                                       | 10          |
+| Motor do jogo: anatomia da trilha, taxonomia, pontuação, níveis, badges, reflexos no ecossistema, etiqueta ODS da missão                                                                                                     | 11          |
+| Guia do Apoiador (documento **derivado**, sem regra própria)                                                                                                                                                                 | 12          |
+| Código de Conduta do Guerreiro(a)                                                                                                                                                                                            | 13          |
 
 ## 2. Papel e dependência dos documentos
 
@@ -105,6 +105,8 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Regras da partida do Quiz ao Vivo (aparelho, acerto e desempate)   | 05 §5                                      | 03 §§4, 5, 11, 08, 11 §5       |
 | Contrato dos jogos (lê progresso, debita, nunca credita)           | 11 §8.4                                    | 03 §6, 08                      |
 | LGPD, avatares e imagem do Guerreiro(a)                            | 03 §§3.3, 12                               | 02, 08, 09, 13                 |
+| Etiqueta ODS da missão (descritiva, sem ponto e sem trava)         | 11 §2.2                                    | 01 §4, 04 §§3, 4, 08, 09, 12   |
+| Aderência à Agenda 2030, meta 17.18 e ressalva do ODS 18           | 04 §4                                      | 01 §4, 08, 09, 11 §8.1, 12     |
 
 ## 4. Aplicações → PRDs
 
@@ -162,6 +164,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Área do Mestre                              | 03 §11 + 02 §1            | PRD-09, 02, 01                 |
 | Acervo didático (patrimônio e doação)       | 05 §3                     | PRD-07, 02, 05, 09             |
 | Área do responsável e consentimentos        | 03 §9                     | PRD-13, 01, 02                 |
+| Etiqueta ODS e cobertura da Agenda 2030     | 11 §2.2 + 04 §4           | PRD-09, 01, 08, 03, 14         |
 
 ## 6. Invariantes — coerências que qualquer edição precisa preservar
 
@@ -212,6 +215,10 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
 19. **Toda atividade exige produção do Guerreiro(a)** — escrever, falar ou construir. A
     leitura automática dessa produção é **hipótese, nunca resultado**: quem lança o resultado
     é o Mestre.
+20. **A etiqueta ODS é descritiva**: não pontua, não é poder, não trava publicação e **nunca é
+    atributo de um Guerreiro(a)** — a cobertura sai agregada por comunidade e por ciclo. O
+    **ODS 18** é citado como **adoção voluntária do Brasil**, jamais como objetivo oficial da
+    ONU.
 
 ## 7. Como esta documentação deve ser editada
 
