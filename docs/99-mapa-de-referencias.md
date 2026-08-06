@@ -106,7 +106,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Apoio escolar por assistente de voz, com corpus fechado e IA       | 03 §7                                      | 03 §§4, 5, 11, 08, 10 §4.3     |
 | Reparação que zera a ocorrência de conduta                         | 13 §3                                      | 11 §5                          |
 | Regras da partida do Quiz ao Vivo (aparelho, acerto e desempate)   | 05 §5                                      | 03 §§4, 5, 11, 08, 11 §5       |
-| Contrato dos jogos (lê progresso, debita, nunca credita)           | 11 §8.4                                    | 03 §6, 08                      |
+| Contrato dos jogos (somente leitura: lê progresso e nada escreve)  | 11 §8.4                                    | 03 §6, 08                      |
 | LGPD, avatares e imagem do Guerreiro(a)                            | 03 §§3.3, 12                               | 02, 08, 09, 13                 |
 | Etiqueta ODS da trilha (descritiva, sem ponto; trava do Ciclo 02)  | 11 §2.1                                    | 01 §4, 04 §§3, 4, 08, 09, 12   |
 | Aderência à Agenda 2030, meta 17.18 e ressalva do ODS 18           | 04 §4                                      | 01 §4, 08, 09, 11 §8.1, 12     |
@@ -194,8 +194,10 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
 7. **Dados do território: guarda permanente com o coletor identificado**; anonimização
    apenas **na saída**. A **revogação do consentimento pelo responsável despersonaliza** o
    registro — rompe o vínculo de autoria e destrói o mapeamento —, **nunca o apaga**.
-8. **O App 04 (jogo) consome pontos e nunca os gera.** Não existe endpoint de crédito para
-   jogos.
+8. **O App 04 (jogo) é somente leitura.** Ele lê o progresso do Guerreiro(a) para montar o
+   personagem — pontos regulares, pontos extras, poderes, badges e níveis — e **não escreve
+   nada de volta**: não credita, não debita e não registra resultado de partida. Não existe
+   endpoint de escrita para jogos, e **não há saldo de pontos consumidos**.
 9. **Nenhuma atividade acontece sem lastro** de recursos providos por Mestre ou Apoiador.
 10. **Nenhum contato direto entre Apoiador e Guerreiro(a)**; toda interação adulto–criança é
     mediada pela plataforma.

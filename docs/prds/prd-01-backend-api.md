@@ -152,7 +152,7 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RF-01-19` | Núcleo mantém as entidades de personas, vínculos e consentimentos versionados                                                                                                                   | essencial  |
 | `RF-01-20` | Núcleo mantém as entidades de trilha, missão, atividade, equipe, presença e resultado                                                                                                           | essencial  |
 | `RF-01-21` | Núcleo mantém pontos, níveis e badges por trilha ou poder, derivados das realizações                                                                                                            | essencial  |
-| `RF-01-22` | Núcleo expõe leitura de progresso e **débito** de pontos, sem nenhuma rota de crédito para jogos                                                                                                | essencial  |
+| `RF-01-22` | Núcleo expõe aos jogos **apenas leitura** de progresso, sem nenhuma rota de escrita — crédito, débito ou resultado de partida                                                                   | essencial  |
 | `RF-01-23` | Núcleo mantém as entidades do território definidas no PRD-08                                                                                                                                    | essencial  |
 | `RF-01-24` | Núcleo mantém as entidades do livro-razão definidas no PRD-07                                                                                                                                   | essencial  |
 | `RF-01-25` | Núcleo mantém solicitação de participação, sugestões e propostas em fila única de avaliação                                                                                                     | essencial  |
@@ -186,7 +186,7 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RN-01-03` | Solicitação de participação não cria cadastro nem acesso                                                                | 3          | 02 §1       |
 | `RN-01-04` | Login não cria persona: autentica quem já tem cadastro                                                                  | 3          | 03 §1.1     |
 | `RN-01-05` | Todo Guerreiro(a) tem vínculo obrigatório a exatamente uma comunidade                                                   | 4          | 02 §1       |
-| `RN-01-06` | Pontos só vêm de realização; o App 04 debita e nunca credita                                                            | 8          | 11 §§1, 8.4 |
+| `RN-01-06` | Pontos só vêm de realização; o App 04 apenas lê e não tem nenhuma rota de escrita                                       | 8          | 11 §§1, 8.4 |
 | `RN-01-07` | Nenhuma atividade é agendável sem lastro dos recursos                                                                   | 9          | 04 §1       |
 | `RN-01-08` | Dado do território tem guarda permanente com coletor identificado                                                       | 7          | 02 §1       |
 | `RN-01-09` | Anonimização se aplica na saída, nunca no armazenamento                                                                 | 7          | 02 §1       |

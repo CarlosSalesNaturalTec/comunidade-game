@@ -142,7 +142,7 @@
   anonimização é aplicada **na saída**.
 - Regra de negócio: atividade só é agendável e realizável com recursos providos (lastro).
 - Regra de negócio: pontos de habilidade só vêm de atividades realizadas propostas por Mestres.
-  O **App 04 consome pontos e não os gera**.
+  O **App 04 apenas lê o progresso e não escreve nada na plataforma**.
 - Regra de negócio: **desafio extra** exige validação do Mestre da trilha **e aprovação de um
   Admin**; gera **pontos extras** computados isoladamente, nas duas modalidades — **aberto** (a
   todos, com quantidade de recompensas declarada, uma ou várias, por ordem de conclusão) e
@@ -639,24 +639,28 @@ explicabilidade para responsáveis.
 **Escopo:** jogo executado no navegador, construído sobre a **base de personagens da
 plataforma**.
 
-**Requisitos:** uso dos avatares, poderes, badges e níveis já conquistados como elementos do
-jogo — a composição dos cards e o contrato do jogo com o motor (leitura de progresso + débito
-de pontos, nunca crédito) seguem o documento 11; representação exclusivamente por **avatar,
-nunca por imagem real**; código aberto e legível, apto a virar conteúdo de trilha do Poder da
-IA e Robótica — **alterá-lo é atividade de trilha**; execução em navegador de celular modesto e
-tolerância a rede instável.
+**Requisitos:** uso dos avatares, poderes, badges, níveis e saldos de pontos já conquistados
+como elementos do jogo — a composição dos cards e o contrato do jogo com o motor (**somente
+leitura**) seguem o documento 11; **escolha do personagem** entre os Guerreiros e Guerreiras
+cadastrados, respeitada a regra de divulgação autorizada da vitrine; representação
+exclusivamente por **avatar, nunca por imagem real**; código aberto e legível, apto a virar
+conteúdo de trilha do Poder da IA e Robótica — **alterá-lo é atividade de trilha**; execução em
+navegador de celular modesto e tolerância a rede instável.
 
-**Definição vigente — o jogo consome pontuação, não a gera.** Os pontos vêm das atividades
-propostas pelos Mestres e da coleta de dados do território. Em termos de API: o App 04 tem
-**acesso de leitura ao progresso e de débito de pontos**, e nenhum endpoint de crédito — o que
-elimina, por construção, a fraude por automação de cliques.
+**Definição vigente — o jogo lê a plataforma e não escreve nada nela.** O personagem entra na
+partida com as "virtudes" do Guerreiro(a) escolhido — pontos regulares, pontos extras, poderes,
+badges e níveis —, de modo que quem evoluiu mais na vida real começa mais forte. O resultado da
+partida **não retorna**: nem crédito, nem débito, nem registro de histórico. Em termos de API,
+o App 04 tem **acesso de leitura ao progresso e nenhum endpoint de escrita** — o que elimina,
+por construção, a fraude por automação de cliques.
 
 **Sugestão técnica:** engine **Phaser.js** — jogos 2D em JavaScript rodando no próprio
 navegador, sem instalação, com desempenho adequado a aparelhos modestos e código legível o
 bastante para virar material de trilha.
 
-**Questões em aberto:** gênero e mecânica do jogo; o que exatamente os pontos compram dentro do
-jogo; modo offline; multiplayer local nas aulas presenciais.
+**Questões em aberto:** gênero e mecânica do jogo; **como cada virtude do Guerreiro(a) se
+traduz em atributo do personagem** — o que pontos, poderes, badges e níveis fazem na partida;
+modo offline; multiplayer local nas aulas presenciais.
 
 **Fontes:** docs 03, 11.
 

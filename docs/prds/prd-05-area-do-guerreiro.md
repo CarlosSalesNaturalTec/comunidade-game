@@ -79,7 +79,7 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
 - **Assistente de trilhas da aula presencial** — é do App 01 (PRD-04); o assistente desta
   aplicação atende apenas ao apoio escolar, com corpus fechado.
 - **Compra de recompensa com pontos**: não existe. Recompensa se conquista em marco.
-- **Crédito de pontos pelo jogo** (App 04): o jogo lê progresso e debita, nunca credita.
+- **Escrita de qualquer natureza pelo jogo** (App 04): o jogo só lê o progresso.
 - **Contato com Apoiadores, Mestres ou terceiros por mensagem** — não há canal de conversa
   entre pessoas nesta aplicação.
 - **Troca de comunidade**: existe no modelo, não é operada no Ciclo 01.
@@ -356,7 +356,7 @@ com a fusão das aplicações e **não são reaproveitados**.
 | `RN-05-20` | Dificuldade gradual acessível a toda a faixa de 6 a 16 anos, sem segmentação por idade           | 2                      | 02 §4            |
 | `RN-05-21` | O Guerreiro(a) vê apenas os próprios dados; de terceiros, só avatar, nick e posição pública      | 10                     | 03 §12           |
 | `RN-05-22` | Não há canal de conversa entre pessoas nesta aplicação                                           | 10                     | 03 §12           |
-| `RN-05-23` | O App 04 lê o progresso e debita pontos; nenhum crédito parte do jogo                            | 8                      | 11 §8.4          |
+| `RN-05-23` | O App 04 lê o progresso e nada escreve: nem crédito, nem débito, nem resultado                   | 8                      | 11 §8.4          |
 | `RN-05-24` | No Ciclo 01 o Guerreiro(a) não muda de comunidade                                                | 4                      | 02 §1            |
 | `RN-05-25` | O apoio escolar responde só a partir do conteúdo que o Mestre cadastrou; fora dele, recusa       | —                      | 03 §7            |
 | `RN-05-26` | Filtros de segurança de conteúdo no nível mais restritivo em toda interação com a criança        | —                      | 03 §§4, 7        |

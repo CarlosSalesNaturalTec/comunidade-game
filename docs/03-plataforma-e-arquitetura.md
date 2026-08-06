@@ -342,16 +342,20 @@ avatares, poderes, badges e níveis já conquistados são os elementos do jogo.
 > coerente com Web App / Mobile First e com o objetivo de que o **código seja legível e
 > alterável pelos próprios Guerreiros e Guerreiras**.
 
-**Definição vigente — o jogo não gera pontuação, apenas a consome.** Os pontos vêm
-exclusivamente das atividades propostas pelos Mestres e da coleta de dados do território. O
-jogo é um **destino** dos pontos, não uma fonte. Consequências:
+**Definição vigente — o jogo lê a plataforma e não escreve nada nela.** O jogador escolhe um
+Guerreiro(a) entre os cadastrados, e o personagem entra na partida com o que aquele
+Guerreiro(a) já conquistou: pontos regulares, pontos extras, poderes, badges e níveis. Quanto
+maior a evolução no jogo real, mais forte e mais distinto o personagem no App 04.
 
-- O que se conquista aprendendo (poderes, badges, níveis) **desbloqueia e alimenta** o que o
-  Guerreiro(a) pode fazer dentro do jogo.
+- **A partida não volta para a plataforma.** Vencer ou perder quantas partidas for **não
+  credita, não debita e não registra nada** no perfil do Guerreiro(a) — o jogo não é fonte nem
+  destino de pontos.
 - Jogar muito **não** sobe ninguém no ranking — o ranking mede aprendizado e realização na
   vida real.
-- Elimina, por construção, a principal via de fraude de pontos: não há como automatizar
-  cliques para pontuar.
+- Elimina, por construção, a principal via de fraude: sem nenhuma escrita, não há o que
+  automatizar.
+- A lista de personagens segue a regra da vitrine: só entram os Guerreiros e Guerreiras com
+  **divulgação autorizada** pelo responsável, além do próprio Guerreiro(a) que está jogando.
 
 Objetivos: dar utilidade lúdica ao progresso das trilhas; servir de conteúdo do **Poder da IA e
 Robótica**, já que alterar o código é atividade de trilha — o Guerreiro(a) é um dos

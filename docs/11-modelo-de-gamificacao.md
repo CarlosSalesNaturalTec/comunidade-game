@@ -253,13 +253,15 @@ Tabela única das fontes de pontos da plataforma:
 | **Proposta de evolução adotada** pela gestão          | 20 + badge                                                                     | **Extra** — computado isoladamente                                                          | Gestão, ao adotar a proposta               |
 | Pontuação negativa (má conduta)                       | −5 por ocorrência, teto de −10 por aula presencial                             | Regular                                                                                     | Admin/gestão, conforme o Código de Conduta |
 
-Três naturezas de saldo, que nunca se confundem:
+Duas naturezas de saldo, que nunca se confundem:
 
-| Saldo                 | O que é                                                              | Regra                                                                                                |
-| --------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Pontos regulares**  | Da progressão nas trilhas e poderes                                  | Alimentam níveis e ranking                                                                           |
-| **Pontos extras**     | De desafios extras de Apoiadores e de propostas de evolução adotadas | Computados isoladamente; não alimentam níveis; os de desafio são rastreados no histórico do Apoiador |
-| **Pontos consumidos** | Débitos por uso dentro do App 04                                     | O jogo **só debita, nunca credita**; pontos gastos não afetam níveis nem badges já conquistados      |
+| Saldo                | O que é                                                              | Regra                                                                                                |
+| -------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Pontos regulares** | Da progressão nas trilhas e poderes                                  | Alimentam níveis e ranking                                                                           |
+| **Pontos extras**    | De desafios extras de Apoiadores e de propostas de evolução adotadas | Computados isoladamente; não alimentam níveis; os de desafio são rastreados no histórico do Apoiador |
+
+**Ponto não se gasta.** Não há saldo consumido: recompensa é conquistada em marco, nunca
+comprada, e o **App 04 não debita nada** (§8.4). Os dois saldos só crescem.
 
 A coleta vale o mesmo por registro, qualquer que seja o tipo medido, e **não tem teto**:
 **quantos registros de um mesmo período de cadência pontuam é declarado no desafio** pelo
@@ -276,7 +278,7 @@ o registro permanece para a gestão e o responsável. É consequência no jogo, 
 
 ### 5.1 Integridade dos pontos
 
-O desenho já elimina as duas fraudes mais prováveis: o jogo **não credita** pontos e o
+O desenho já elimina as duas fraudes mais prováveis: o jogo **não escreve nada** e o
 Guerreiro(a) entra em toda aplicação **por nick e imagem**, de modo que a atividade é
 comprovadamente dele. As demais travas:
 
@@ -396,17 +398,22 @@ Princípios: o visual **representa dados reais, nunca decoração**; a saída p�
 
 ### 8.4 Jogos sobre o backend (App 04 e terceiros)
 
-Contrato entre o motor e qualquer jogo construído sobre a plataforma:
+**Definição vigente — o jogo é somente leitura.** Ele lê o progresso do Guerreiro(a) para
+montar o personagem da partida e **não escreve nada de volta**: não credita, não debita, não
+registra resultado. Ganhar ou perder mil partidas não muda uma linha do perfil.
 
-| O jogo pode                                                          | O jogo não pode                                                 |
-| -------------------------------------------------------------------- | --------------------------------------------------------------- |
-| **Ler** o progresso do Guerreiro(a): avatar, poderes, badges, níveis | **Creditar** pontos — não existe endpoint de crédito para jogos |
-| **Debitar** pontos (consumo declarado dentro do jogo)                | Alterar níveis, badges ou histórico                             |
-| Usar os cards (§8.2) como base dos personagens                       | Exibir imagem real ou dados pessoais do Guerreiro(a)            |
+| O jogo pode                                                                     | O jogo não pode                                                 |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **Ler** o progresso: avatar, poderes, badges, níveis e os dois saldos de pontos | **Creditar** pontos — não existe endpoint de crédito para jogos |
+| **Compor o personagem** da partida a partir desse progresso                     | **Debitar** pontos ou consumir saldo de qualquer natureza       |
+| Usar os cards (§8.2) como base dos personagens                                  | Escrever resultado de partida, nível, badge ou histórico        |
+|                                                                                 | Exibir imagem real ou dados pessoais do Guerreiro(a)            |
 
-- O que se conquista aprendendo **desbloqueia e alimenta** o que o Guerreiro(a) pode fazer no
-  jogo; jogar muito não sobe ninguém no ranking — e a ausência de endpoint de crédito elimina,
-  por construção, a fraude por automação.
+- **A evolução real é a força do personagem.** Pontos regulares, pontos extras, poderes e
+  badges entram na partida como as "virtudes" do personagem: quem evoluiu mais na vida real
+  começa mais forte e se distingue dos demais. É o que dá utilidade lúdica ao aprendizado.
+- Jogar muito não sobe ninguém no ranking, e a **ausência de qualquer endpoint de escrita**
+  elimina, por construção, a fraude por automação: não há o que automatizar.
 - **Batalhas físicas seguem o mesmo padrão**: a ponte Nexus → API da Batalha de Laser envia as
   estatísticas da partida para a API, que **lança a atividade realizada** — o crédito de
   pontos é da atividade validada, não do jogo. É o modelo de referência para qualquer batalha
