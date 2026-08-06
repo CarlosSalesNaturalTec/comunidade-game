@@ -25,7 +25,7 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 | Requisitos de produto por aplicação (**derivados — nenhum PRD é fonte única**)                                                                                                                                               | `prds/`     |
 | Decisões pendentes e propostas                                                                                                                                                                                               | 09          |
 | Case 01 — Guerreira Zeferina, Ciclo 01                                                                                                                                                                                       | 10          |
-| Motor do jogo: anatomia da trilha, taxonomia, pontuação, níveis, badges, reflexos no ecossistema, etiqueta ODS da missão                                                                                                     | 11          |
+| Motor do jogo: anatomia da trilha, taxonomia, pontuação, níveis, badges, reflexos no ecossistema, etiqueta ODS da trilha                                                                                                     | 11          |
 | Guia do Apoiador (documento **derivado**, sem regra própria)                                                                                                                                                                 | 12          |
 | Código de Conduta do Guerreiro(a)                                                                                                                                                                                            | 13          |
 
@@ -105,7 +105,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Regras da partida do Quiz ao Vivo (aparelho, acerto e desempate)   | 05 §5                                      | 03 §§4, 5, 11, 08, 11 §5       |
 | Contrato dos jogos (lê progresso, debita, nunca credita)           | 11 §8.4                                    | 03 §6, 08                      |
 | LGPD, avatares e imagem do Guerreiro(a)                            | 03 §§3.3, 12                               | 02, 08, 09, 13                 |
-| Etiqueta ODS da missão (descritiva, sem ponto e sem trava)         | 11 §2.2                                    | 01 §4, 04 §§3, 4, 08, 09, 12   |
+| Etiqueta ODS da trilha (descritiva, sem ponto; trava do Ciclo 02)  | 11 §2.1                                    | 01 §4, 04 §§3, 4, 08, 09, 12   |
 | Aderência à Agenda 2030, meta 17.18 e ressalva do ODS 18           | 04 §4                                      | 01 §4, 08, 09, 11 §8.1, 12     |
 
 ## 4. Aplicações → PRDs
@@ -164,7 +164,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Área do Mestre                              | 03 §11 + 02 §1            | PRD-09, 02, 01                 |
 | Acervo didático (patrimônio e doação)       | 05 §3                     | PRD-07, 02, 05, 09             |
 | Área do responsável e consentimentos        | 03 §9                     | PRD-13, 01, 02                 |
-| Etiqueta ODS e cobertura da Agenda 2030     | 11 §2.2 + 04 §4           | PRD-09, 01, 08, 03, 14         |
+| Etiqueta ODS e cobertura da Agenda 2030     | 11 §2.1 + 04 §4           | PRD-09, 01, 08, 03, 14         |
 
 ## 6. Invariantes — coerências que qualquer edição precisa preservar
 
@@ -184,7 +184,7 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
 5. **Toda trilha abre com missão de sondagem, tem ao menos um desafio de coleta de dados
    reais** e termina em **criação original** apresentada publicamente, com autoria creditada.
    As três são trava de publicação da trilha, não recomendação; a etiqueta ODS se junta a elas
-   a partir do Ciclo 02, no nível da missão (§20).
+   a partir do Ciclo 02, no nível da trilha (§20).
 6. **A coleta pontua de forma recorrente enquanto a série estiver ativa**; interrompida,
    cessa o cômputo sem perder os pontos já creditados.
 7. **Dados do território: guarda permanente com o coletor identificado**; anonimização
@@ -217,10 +217,11 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     leitura automática dessa produção é **hipótese, nunca resultado**: quem lança o resultado
     é o Mestre.
 20. **A etiqueta ODS é descritiva**: não pontua, não é poder e **nunca é atributo de um
-    Guerreiro(a)** — a cobertura sai agregada por comunidade e por ciclo. É **opcional no
-    Ciclo 01** e **obrigatória a partir do Ciclo 02**, quando passa a ser a **quarta trava de
-    publicação**, esta no nível da missão. O **ODS 18** é citado como **adoção voluntária do
-    Brasil**, jamais como objetivo oficial da ONU.
+    Guerreiro(a)** — a cobertura sai agregada por comunidade e por ciclo. Ela é **da trilha**:
+    **opcional no Ciclo 01** e **obrigatória a partir do Ciclo 02**, quando **ao menos um
+    objetivo por trilha** passa a ser a **quarta trava de publicação**. Etiquetar a missão é
+    **opcional em qualquer ciclo** e nunca trava. O **ODS 18** é citado como **adoção
+    voluntária do Brasil**, jamais como objetivo oficial da ONU.
 
 ## 7. Como esta documentação deve ser editada
 

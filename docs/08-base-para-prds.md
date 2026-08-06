@@ -72,10 +72,11 @@
 - Valores do projeto refletidos em conteúdo, conduta e representatividade.
 - **Modelo de gamificação como fonte normativa:** anatomia da trilha, taxonomia de atividades,
   motor de pontuação, níveis, badges, recompensas e reflexos no ecossistema seguem o documento 11.
-- **Etiqueta ODS descritiva:** a missão declara os Objetivos de Desenvolvimento Sustentável que
-  toca — **opcional no Ciclo 01, obrigatória a partir do Ciclo 02**, quando missão sem etiqueta
-  deixa de publicar. A etiqueta **não pontua e não é poder**; a cobertura é agregada por
-  comunidade e ciclo e **nunca é atributo de um Guerreiro(a)**.
+- **Etiqueta ODS descritiva:** a trilha declara os Objetivos de Desenvolvimento Sustentável que
+  toca — **opcional no Ciclo 01, obrigatória a partir do Ciclo 02**, quando trilha sem ao menos
+  um objetivo deixa de publicar. Etiquetar a missão é opcional em qualquer ciclo. A etiqueta
+  **não pontua e não é poder**; a cobertura é agregada por comunidade e ciclo e **nunca é
+  atributo de um Guerreiro(a)**.
 - **Mestres de qualquer área do conhecimento** — inclusive humanas, artes, esportes e cultura:
   nenhum modelo de dados ou fluxo pode pressupor habilidade técnica de TI.
 
@@ -163,10 +164,11 @@
 - Regra de negócio: **sugestões e propostas de evolução** — registradas pelo Guerreiro(a) (App
   05), pelo responsável (App 07), pelo Apoiador (App 08) e pelo Mestre (App 09), com autor,
   persona, data e status de avaliação pela gestão, em fila única.
-- Regra de negócio: **etiqueta ODS da missão** — lista de objetivos (1 a 18) com meta opcional
-  (`4.7`, `13.3`, `17.18`), declarada pelo Mestre autor. Agrega por trilha, poder, comunidade e
-  ciclo; é herdada pelo desafio de coleta e pelo desafio extra; **não entra em pontuação, nível
-  ou badge** e **não é atributo do Guerreiro(a)**.
+- Regra de negócio: **etiqueta ODS da trilha** — lista de objetivos (1 a 18) com meta opcional
+  (`4.7`, `13.3`, `17.18`), declarada pelo Mestre autor para a trilha e, quando ele quiser, para
+  uma missão específica. Agrega por trilha, poder, comunidade e ciclo; é herdada pelo desafio de
+  coleta e pelo desafio extra; **não entra em pontuação, nível ou badge** e **não é atributo do
+  Guerreiro(a)**.
 
 **Questões em aberto:** nenhuma — autenticação, versionamento e instância única foram
 definidos no documento 03.
@@ -485,7 +487,8 @@ pelos próprios Guerreiros e Guerreiras — a base _Data Driven_ da plataforma.
   poder.
 - Painéis públicos por comunidade; dados como insumo para tomada de decisões por moradores,
   associações, escolas, poder público e pesquisas.
-- **Etiqueta ODS da série**, herdada da missão que a criou, e publicação do painel local como
+- **Etiqueta ODS da série**, herdada da missão que a criou ou, na falta dela, da trilha, e
+  publicação do painel local como
   **contribuição à meta 17.18** — dado desagregado do território, sempre agregado e anonimizado
   na saída.
 - Exportação e API aberta dos dados agregados e anonimizados.
@@ -535,8 +538,9 @@ ensina; a gestão administrativa segue na App 03.
 tanto quanto às técnicas —, incluindo a **paginação da trilha pelas etapas do ciclo**; **as
 atividades de cada missão**, com modalidade (individual ou equipe) e formato
 (presencial ou on-line) declarados pelo Mestre autor; **cada missão declarada obrigatória ou
-opcional**; **etiqueta ODS da missão**, opcional, com a meta quando o Mestre a souber, sem
-efeito em pontuação nem em publicação; **missão de sondagem** abrindo a trilha, como terceira
+opcional**; **etiqueta ODS da trilha**, com a meta quando o Mestre a souber, sem efeito em
+pontuação — opcional no Ciclo 01 e trava de publicação a partir do Ciclo 02, com a etiqueta
+por missão sempre opcional; **missão de sondagem** abrindo a trilha, como terceira
 trava de publicação;
 **template de missão** que devolve estrutura e checklist de lacunas a partir do tópico
 cadastrado — sem escrever o conteúdo, que é do Mestre; **retomada por revisão espaçada** na

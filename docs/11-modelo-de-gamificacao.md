@@ -57,6 +57,9 @@ de humanas. O que muda é o conteúdo e o que se mede na coleta; a estrutura é 
 ```text
 TRILHA (autoria de um Mestre, vinculada a um Poder)
 │
+├── ETIQUETA ODS — ao menos um objetivo da Agenda 2030 que a trilha
+│   toca, declarado pelo Mestre autor
+│
 ├── MISSÃO DE SONDAGEM — abre toda trilha; mede de onde a turma parte
 │
 ├── MISSÕES (sequência ordenada, com dificuldade gradual)
@@ -82,23 +85,47 @@ TRILHA (autoria de um Mestre, vinculada a um Poder)
           é o encerramento de toda trilha
 ```
 
-| Componente                 | O que é                                                                                  |
-| -------------------------- | ---------------------------------------------------------------------------------------- |
-| **Missão**                 | Menor unidade de progressão: conteúdo + atividades + desafio de desbloqueio              |
-| **Missão de sondagem**     | Primeira missão de toda trilha; quiz que mede o nível de partida no poder                |
-| **Conteúdo**               | Material do Mestre, conteúdo de terceiros curado e bibliografia de apoio por missão      |
-| **Atividade**              | O que o Guerreiro(a) realiza, classificado pela taxonomia da §4                          |
-| **Desafio de desbloqueio** | Quiz ou desafio que abre a próxima missão e ativa níveis do poder                        |
-| **Retomada**               | Revisão espaçada de missão já cumprida, na cadência declarada pelo Mestre                |
-| **Desafio de coleta**      | Série temporal de dados reais do território; requisito de **toda** trilha                |
-| **Desafio extra**          | Proposto por Apoiador, validado pelo Mestre e aprovado por Admin; pontos extras isolados |
-| **Encontro presencial**    | Marco recorrente; roteiro assíncrono com momentos coletivos âncora                       |
-| **Batalha**                | Disputa de ideias e realizações; marco opcional, previsto pela trilha                    |
-| **Culminância**            | Apresentação pública da criação original; **encerramento de toda trilha**                |
+| Componente                 | O que é                                                                                   |
+| -------------------------- | ----------------------------------------------------------------------------------------- |
+| **Etiqueta ODS**           | Objetivos da Agenda 2030 que a trilha toca; opcional no Ciclo 01, obrigatória do Ciclo 02 |
+| **Missão**                 | Menor unidade de progressão: conteúdo + atividades + desafio de desbloqueio               |
+| **Missão de sondagem**     | Primeira missão de toda trilha; quiz que mede o nível de partida no poder                 |
+| **Conteúdo**               | Material do Mestre, conteúdo de terceiros curado e bibliografia de apoio por missão       |
+| **Atividade**              | O que o Guerreiro(a) realiza, classificado pela taxonomia da §4                           |
+| **Desafio de desbloqueio** | Quiz ou desafio que abre a próxima missão e ativa níveis do poder                         |
+| **Retomada**               | Revisão espaçada de missão já cumprida, na cadência declarada pelo Mestre                 |
+| **Desafio de coleta**      | Série temporal de dados reais do território; requisito de **toda** trilha                 |
+| **Desafio extra**          | Proposto por Apoiador, validado pelo Mestre e aprovado por Admin; pontos extras isolados  |
+| **Encontro presencial**    | Marco recorrente; roteiro assíncrono com momentos coletivos âncora                        |
+| **Batalha**                | Disputa de ideias e realizações; marco opcional, previsto pela trilha                     |
+| **Culminância**            | Apresentação pública da criação original; **encerramento de toda trilha**                 |
 
 **Marco concede recompensa.** Desbloqueio de missão, conclusão de etapa, batalha e culminância
 são os momentos em que a recompensa é entregue — o Mestre autor declara qual marco concede o
 quê, conforme a regra do documento 02.
+
+#### Etiqueta ODS da trilha
+
+O Mestre autor declara quais **Objetivos de Desenvolvimento Sustentável** a trilha toca: o
+número do objetivo, com a meta (`4.7`, `13.3`, `17.18`) quando ele souber. A etiqueta é da
+trilha inteira e do poder a que ela se vincula. É rótulo descritivo, e por isso não pesa no
+motor:
+
+- **Não pontua e não é poder.** Nada na progressão do Guerreiro(a) depende dela.
+- **Uma etiqueta por trilha basta.** Etiquetar missão a missão continua possível e é
+  **opcional em qualquer ciclo** — só vale a pena quando a missão toca objetivo diferente do
+  da trilha. Sem etiqueta própria, a missão responde pela da trilha.
+- **Opcional no Ciclo 01, obrigatória a partir do Ciclo 02.** No primeiro ciclo o template
+  sugere e a trilha publica sem ela; do Ciclo 02 em diante, **trilha sem etiqueta não
+  publica** — cobertura pela metade não sustenta número diante de edital.
+- **Sobe por agregação** — trilha, poder, comunidade e ciclo —, sem lançamento manual. É assim
+  que a cobertura cresce sozinha à medida que novos Mestres e poderes entram.
+- O **desafio de coleta** herda a etiqueta da missão que o criou ou, na falta dela, a da
+  trilha: medição ambiental ou urbana numa trilha, patrimônio e memória do bairro em outra.
+- O **desafio extra** do Apoiador herda, pela mesma regra, a etiqueta da missão a que se
+  vincula.
+- A cobertura é publicada **agregada por comunidade e por ciclo, nunca por Guerreiro(a)** —
+  criança não é rotulada por objetivo de desenvolvimento.
 
 ### 2.2 Anatomia da missão
 
@@ -108,15 +135,15 @@ apenas consome conteúdo não é missão.
 
 Toda missão declara:
 
-| Elemento                    | Regra                                                                                     |
-| --------------------------- | ----------------------------------------------------------------------------------------- |
-| **Obrigatória ou opcional** | Declarado pelo Mestre. Só as obrigatórias contam no percurso do nível (§6)                |
-| **Conteúdo**                | O que se ensina, com a bibliografia de apoio                                              |
-| **Ao menos uma atividade**  | E toda atividade exige **produção** do Guerreiro(a): escrever, falar ou construir         |
-| **Desafio de desbloqueio**  | Quiz ou desafio que abre a missão seguinte                                                |
-| **Retomada**                | Cadência da revisão espaçada, quando o Mestre a declara                                   |
-| **Recompensa**              | Quando o Mestre declara que aquele desbloqueio libera algo concreto                       |
-| **Etiqueta ODS**            | Objetivos da Agenda 2030 que a missão toca; opcional no Ciclo 01, obrigatória do Ciclo 02 |
+| Elemento                    | Regra                                                                                      |
+| --------------------------- | ------------------------------------------------------------------------------------------ |
+| **Obrigatória ou opcional** | Declarado pelo Mestre. Só as obrigatórias contam no percurso do nível (§6)                 |
+| **Conteúdo**                | O que se ensina, com a bibliografia de apoio                                               |
+| **Ao menos uma atividade**  | E toda atividade exige **produção** do Guerreiro(a): escrever, falar ou construir          |
+| **Desafio de desbloqueio**  | Quiz ou desafio que abre a missão seguinte                                                 |
+| **Retomada**                | Cadência da revisão espaçada, quando o Mestre a declara                                    |
+| **Recompensa**              | Quando o Mestre declara que aquele desbloqueio libera algo concreto                        |
+| **Etiqueta ODS**            | Opcional em qualquer ciclo; só quando a missão toca objetivo diferente do da trilha (§2.1) |
 
 Quatro regras fecham o modelo:
 
@@ -131,24 +158,6 @@ Quatro regras fecham o modelo:
 - **Poder técnico começa desplugado.** Em trilha de tecnologia, o modelo pede ao menos uma
   atividade desplugada: lógica e algoritmo com papel e corpo abrem a porta para quem ainda não
   pegou um aparelho.
-
-#### Etiqueta ODS da missão
-
-O Mestre declara quais **Objetivos de Desenvolvimento Sustentável** a missão toca: o número do
-objetivo, com a meta (`4.7`, `13.3`, `17.18`) quando ele souber. É rótulo descritivo, e por
-isso não pesa no motor:
-
-- **Não pontua e não é poder.** Nada na progressão do Guerreiro(a) depende dela.
-- **Opcional no Ciclo 01, obrigatória a partir do Ciclo 02.** No primeiro ciclo o template
-  sugere e a trilha publica sem ela; do Ciclo 02 em diante, **missão sem etiqueta não
-  publica** — cobertura pela metade não sustenta número diante de edital.
-- **Sobe por agregação** — trilha, poder, comunidade e ciclo —, sem lançamento manual. É assim
-  que a cobertura cresce sozinha à medida que novos Mestres e poderes entram.
-- O **desafio de coleta** herda a etiqueta da série que sustenta: medição ambiental ou urbana
-  numa trilha, patrimônio e memória do bairro em outra.
-- O **desafio extra** do Apoiador herda a etiqueta da missão a que se vincula.
-- A cobertura é publicada **agregada por comunidade e por ciclo, nunca por Guerreiro(a)** —
-  criança não é rotulada por objetivo de desenvolvimento.
 
 ### 2.3 O modelo aplicado — três exemplos
 

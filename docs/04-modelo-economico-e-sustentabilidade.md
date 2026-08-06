@@ -192,11 +192,11 @@ e propondo desafios, sem acesso à área da família.
 
 **O que fica registrado no histórico do Apoiador:**
 
-| Registro                                                                | Para que serve                                               |
-| ----------------------------------------------------------------------- | ------------------------------------------------------------ |
-| **Recompensas creditadas** — o que ele custeou e entregou               | Compõe o **Poder Econômico**, como qualquer outro aporte     |
-| **Realizações dos Guerreiros e Guerreiras** nos desafios que ele propôs | Mostra **o que aconteceu** por causa daquele apoio           |
-| **Etiquetas ODS** herdadas da missão a que o desafio se vinculou        | Mostra **a que objetivos da Agenda 2030** o apoio contribuiu |
+| Registro                                                                        | Para que serve                                               |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Recompensas creditadas** — o que ele custeou e entregou                       | Compõe o **Poder Econômico**, como qualquer outro aporte     |
+| **Realizações dos Guerreiros e Guerreiras** nos desafios que ele propôs         | Mostra **o que aconteceu** por causa daquele apoio           |
+| **Etiquetas ODS** herdadas da missão, ou da trilha, a que o desafio se vinculou | Mostra **a que objetivos da Agenda 2030** o apoio contribuiu |
 
 É a segunda linha que muda o jogo: o histórico deixa de responder apenas _"quanto foi
 aportado"_ e passa a responder _"o que esse apoio produziu"_ — quais desafios engajaram,
@@ -264,12 +264,12 @@ contribuição que o projeto faz sem exagero, e a mais forte que tem.
 
 #### Indicadores de cobertura
 
-Medem **alcance declarado**, não impacto — e saem prontos das etiquetas ODS das missões, sem
+Medem **alcance declarado**, não impacto — e saem prontos das etiquetas ODS das trilhas, sem
 lançamento manual:
 
 - ODS distintos cobertos no ciclo e por comunidade.
-- Missões publicadas por ODS, e proporção das que declararam etiqueta — indicador de
-  transição, que o Ciclo 02 leva a 100% ao tornar a etiqueta obrigatória.
+- Trilhas publicadas por ODS, e proporção das que declararam etiqueta — indicador de
+  transição, que o Ciclo 02 leva a 100% ao exigir a etiqueta da trilha.
 - Séries de coleta ativas por ODS, com o tempo em que se mantiveram.
 - Desafios extras de Apoiadores por ODS.
 
