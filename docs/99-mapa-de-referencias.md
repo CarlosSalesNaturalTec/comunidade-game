@@ -89,6 +89,8 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Proteção das rotas públicas (limite por origem, atraso)            | 03 §8                                      | 02 §1, 08                      |
 | Aviso de LGPD visível nas aplicações e área detalhada              | 03 §12                                     | 08, 09                         |
 | Área do Apoiador (App 08) e registro de propostas                  | 03 §10                                     | 04, 08, 09, 12                 |
+| Efetividade do apoio (painel vivo, agregado e por avatar)          | 04 §3                                      | 03 §10, 08, 12                 |
+| Aporte pela App 08 em dinheiro; material e serviço pelo Admin      | 02 §1 e 03 §10                             | 04 §2, 08                      |
 | Pré-cadastro do Apoiador (aporte declarado e comprovante)          | 02 §1 e 03 §10                             | 04 §2, 08                      |
 | Identidade pública do Apoiador (avatar, nick, moldura do card)     | 11 §8.2                                    | 02 §1, 03 §§8, 10, 08          |
 | Área do Mestre (App 09) — autoria e operação                       | 03 §11                                     | 02, 05, 08, 09                 |
@@ -286,7 +288,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD-11 | `prd-11-personalizacao-por-ia.md` | PRD-01, PRD-04 | 02, 03                 |
 | PRD-12 | `prd-12-jogo-em-javascript.md`    | PRD-01, PRD-05 | 03, 11                 |
 | PRD-13 | `prd-13-area-dos-responsaveis.md` | PRD-01, PRD-02 | 02, 03, 10             |
-| PRD-14 | `prd-14-area-do-apoiador.md`      | PRD-07, PRD-02 | 03, 04, 12             |
+| PRD-14 | `prd-14-area-do-apoiador.md`      | PRD-07, PRD-02 | 02, 03, 04, 11, 12     |
 
 A correspondência entre as oito aplicações e os PRDs está na §4; a ordem de elaboração e o
 motivo de cada onda estão no documento 08.

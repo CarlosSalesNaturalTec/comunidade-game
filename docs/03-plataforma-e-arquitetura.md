@@ -567,6 +567,9 @@ passa a ter canal próprio:
   comprovante; o cadastro segue **exclusivo de Admin**, que valida o comprovante na App 03.
 - **Três formas de aportar no pré-cadastro**: assumir uma das **necessidades publicadas**,
   transferir um **valor sugerido** ou um **valor livre**, os dois últimos pela chave PIX.
+- **O aporte feito pela aplicação é em dinheiro**, no pré-cadastro e nos aportes seguintes de
+  quem já é cadastrado. Material, serviço e divulgação entram pelo cadastro do Admin na App 03,
+  com termo de doação ou registro do material.
 - **Comprovante obrigatório no Ciclo 01** — PDF, JPG ou PNG. Não há confirmação automática de
   PIX: quem confere é o Admin.
 - **A identificação não usa documento**: nome ou razão social, e-mail e WhatsApp. A plataforma

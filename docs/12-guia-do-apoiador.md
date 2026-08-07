@@ -101,8 +101,8 @@ Guerreiros e Guerreiras ou famílias.
 - **Seu card público** na vitrine e a **página individual** que ele abre: identidade, Poder
   Econômico em moedas, desafios propostos, o que o apoio produziu e os documentos que o
   comprovam.
-- **Relatório de efetividade** dos seus desafios — quantos concluíram, em que trilhas, com que
-  retenção (formato ainda em definição).
+- **Efetividade dos seus desafios** em painel atualizado a cada conclusão — quantos concluíram
+  e em que trilhas —, sempre agregado e por avatar.
 - **Cobertura da Agenda 2030**: a que ODS o apoio contribuiu, herdado da missão ou da trilha a
   que os desafios se vincularam — agregado por comunidade e ciclo, nunca por criança.
 - **Pré-cadastro na Área do Apoiador**: você se identifica sem documento, escolhe o que vai

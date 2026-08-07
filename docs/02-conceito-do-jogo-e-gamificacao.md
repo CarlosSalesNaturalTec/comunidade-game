@@ -76,6 +76,9 @@ Pessoas e instituições que financiam ou divulgam o projeto.
 - **Avatar e nick próprios**, definidos pelo Apoiador na App 08 depois de aprovado: o avatar
   pode ser a logomarca ou outra imagem escolhida, e o nick segue a **unicidade de nick** da
   plataforma.
+- **Um usuário por cadastro no Ciclo 01**, inclusive no institucional: a instituição indica
+  quem opera a App 08, e é esse usuário que responde pelos atos registrados. Mais de um acesso
+  no mesmo cadastro fica para ciclo futuro.
 - Cada recurso aportado é registrado e contabilizado no seu **Poder Econômico**.
 
 ### Pais e responsáveis

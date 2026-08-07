@@ -244,6 +244,7 @@ Sessao              Conteudo
                     SolicitacaoDeDados         Local                Aporte
                     SolicitacaoDoResponsavel   SerieDeColeta        Lancamento
                     SugestaoOuProposta         RegistroDeColeta     ItemPatrimonial
+                    Favorito
                     Auditoria
 
                     APOIO ESCOLAR (PRD-05)
@@ -268,6 +269,9 @@ Sessao              Conteudo
 A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela que o App 01 tira
 a comunidade do novo cadastro, e é a existência dela que habilita o onboarding naquele momento.
 Não há parâmetro de liberação separado.
+
+`DesafioExtra` e `Favorito` são do Apoiador e têm os atributos definidos no PRD-14; `Favorito`
+existe **apenas na App 08**, e nenhuma outra aplicação guarda preferência de quem lê.
 
 `Conteudo`, `BibliografiaDaMissao`, `Culminancia`, `RecompensaDeMarco` e `SugestaoDeEstrutura`
 entram pela autoria de trilha e têm os
