@@ -39,9 +39,9 @@ que já é público.
   anexado.
 - **Acesso do Apoiador cadastrado**, por login social ou credencial de usuário e senha
   provisória.
-- **Identidade pública**: avatar — logomarca ou imagem escolhida — e nick único, definidos pelo
-  próprio Apoiador.
-- **Meus aportes**: histórico em moedas e Poder Econômico acumulado, lidos do ledger do PRD-07.
+- **Identidade pública**: nick único e avatar — logomarca ou imagem escolhida a partir de
+  **10 moedas acumuladas**, avatar padrão do projeto abaixo desse piso.
+- **Meus aportes**: histórico em moedas e Poder do Sustento acumulado, lidos do ledger do PRD-07.
 - **Novo aporte em dinheiro** de quem já é cadastrado, a partir de uma necessidade publicada ou
   por valor sugerido ou livre, sempre com comprovante.
 - **Necessidades de recurso em aberto**, publicadas pelas atividades sem lastro, com o caminho
@@ -111,11 +111,14 @@ que responde pelos atos registrados no cadastro.
 2. Tendo senha provisória, a **troca é obrigatória** antes de qualquer outra tela.
 3. Login de conta sem cadastro prévio é **recusado**, com a orientação de usar o pré-cadastro —
    login não cria cadastro.
-4. Na primeira entrada ele define a **identidade pública**: avatar — logomarca ou outra imagem
-   escolhida — e **nick**, recusado se já estiver em uso, com sugestão de variações.
-5. Homologado o aporte, o **card vai à vitrine** com avatar, nick e total de moedas em
+4. Na primeira entrada ele define o **nick**, recusado se já estiver em uso, com sugestão de
+   variações.
+5. O **avatar próprio** — logomarca ou outra imagem escolhida — abre a partir de **10 moedas
+   acumuladas**. Abaixo do piso, o card usa o **avatar padrão do projeto**, e a tela diz quanto
+   falta para trocá-lo, sem cobrar nem insistir.
+6. Homologado o aporte, o **card vai à vitrine** com avatar, nick e total de moedas em
    destaque, na moldura comum a todos os apoiadores.
-6. Avatar e nick ficam sujeitos à **auditoria por amostragem** da gestão, que pode despublicar
+7. Avatar e nick ficam sujeitos à **auditoria por amostragem** da gestão, que pode despublicar
    com motivo.
 
 ### 5.3 Aportar de novo
@@ -124,9 +127,9 @@ que responde pelos atos registrados no cadastro.
    atividades previstas, com a comunidade e o valor em moedas.
 2. Escolhe cobrir uma necessidade, ou declara um **valor sugerido** ou **livre**.
 3. Transfere pela chave PIX e anexa o comprovante.
-4. O aporte nasce **pendente de homologação**: não credita moeda, não compõe o Poder Econômico
+4. O aporte nasce **pendente de homologação**: não credita moeda, não compõe o Poder do Sustento
    e não dá lastro a nada.
-5. O Admin homologa na App 03. Só então o valor vira moedas, credita o Poder Econômico e a
+5. O Admin homologa na App 03. Só então o valor vira moedas, credita o Poder do Sustento e a
    necessidade coberta sai da lista.
 6. Recusado, o Apoiador vê o motivo em linguagem simples, dentro da plataforma.
 7. Querendo aportar material ou serviço, a tela explica que aquilo entra pelo cadastro do
@@ -221,78 +224,81 @@ que responde pelos atos registrados no cadastro.
 
 ### 6.2 Identidade pública e comprobatórios
 
-| ID         | Requisito                                                                           | Prioridade |
-| ---------- | ----------------------------------------------------------------------------------- | ---------- |
-| `RF-14-12` | Apoiador define avatar — logomarca ou imagem escolhida — e nick exibidos no card    | essencial  |
-| `RF-14-13` | Nick já usado é recusado, com sugestão de variações                                 | essencial  |
-| `RF-14-14` | Apoiador altera avatar e nick a qualquer tempo, com reflexo na vitrine              | desejável  |
-| `RF-14-15` | Apoiador envia currículo, portfólio, redes sociais, termos de doação e comprovantes | essencial  |
-| `RF-14-16` | Documento enviado entra na fila da App 03 e só é publicado quando um Admin o anexa  | essencial  |
-| `RF-14-17` | Aplicação exibe ao Apoiador o que já está publicado na sua página da vitrine        | desejável  |
+| ID         | Requisito                                                                              | Prioridade |
+| ---------- | -------------------------------------------------------------------------------------- | ---------- |
+| `RF-14-12` | Apoiador define avatar — logomarca ou imagem escolhida — e nick exibidos no card       | essencial  |
+| `RF-14-13` | Nick já usado é recusado, com sugestão de variações                                    | essencial  |
+| `RF-14-14` | Avatar próprio é liberado a partir de 10 moedas acumuladas em aportes homologados      | essencial  |
+| `RF-14-15` | Abaixo do piso o card exibe o avatar padrão do projeto, com o nick e o total de moedas | essencial  |
+| `RF-14-16` | Aplicação mostra quantas moedas faltam para liberar o avatar próprio                   | essencial  |
+| `RF-14-17` | Apoiador altera avatar e nick a qualquer tempo, com reflexo na vitrine                 | desejável  |
+| `RF-14-18` | Apoiador envia currículo, portfólio, redes sociais, termos de doação e comprovantes    | essencial  |
+| `RF-14-19` | Documento enviado entra na fila da App 03 e só é publicado quando um Admin o anexa     | essencial  |
+| `RF-14-20` | Aplicação exibe ao Apoiador o que já está publicado na sua página da vitrine           | desejável  |
 
 ### 6.3 Aportes e necessidades
 
 | ID         | Requisito                                                                                   | Prioridade |
 | ---------- | ------------------------------------------------------------------------------------------- | ---------- |
-| `RF-14-18` | "Meus aportes" lista os aportes homologados em moedas, com data, tipo e destino             | essencial  |
-| `RF-14-19` | Poder Econômico é exibido como total acumulado em moedas                                    | essencial  |
-| `RF-14-20` | Nenhuma tela exibe reais, salvo aquela em que se declara a transferência, sempre com moedas | essencial  |
-| `RF-14-21` | Necessidades em aberto são listadas com atividade, comunidade e o que falta em moedas       | essencial  |
-| `RF-14-22` | Apoiador declara novo aporte a partir de uma necessidade ou por valor sugerido ou livre     | essencial  |
-| `RF-14-23` | Aporte declarado exige comprovante e entra pendente, sem creditar moeda alguma              | essencial  |
-| `RF-14-24` | Apoiador acompanha a situação do aporte: pendente, homologado ou recusado com motivo        | essencial  |
-| `RF-14-25` | Aplicação não aceita aporte em material, serviço ou divulgação, e orienta procurar a gestão | essencial  |
+| `RF-14-21` | "Meus aportes" lista os aportes homologados em moedas, com data, tipo e destino             | essencial  |
+| `RF-14-22` | Poder do Sustento é exibido como total acumulado em moedas                                  | essencial  |
+| `RF-14-23` | Nenhuma tela exibe reais, salvo aquela em que se declara a transferência, sempre com moedas | essencial  |
+| `RF-14-24` | Necessidades em aberto são listadas com atividade, comunidade e o que falta em moedas       | essencial  |
+| `RF-14-25` | Apoiador declara novo aporte a partir de uma necessidade ou por valor sugerido ou livre     | essencial  |
+| `RF-14-26` | Aporte declarado exige comprovante e entra pendente, sem creditar moeda alguma              | essencial  |
+| `RF-14-27` | Apoiador acompanha a situação do aporte: pendente, homologado ou recusado com motivo        | essencial  |
+| `RF-14-28` | Aplicação não aceita aporte em material, serviço ou divulgação, e orienta procurar a gestão | essencial  |
 
 ### 6.4 Desafios extras
 
 | ID         | Requisito                                                                                   | Prioridade |
 | ---------- | ------------------------------------------------------------------------------------------- | ---------- |
-| `RF-14-26` | Apoiador propõe desafio extra vinculado a uma trilha em andamento                           | essencial  |
-| `RF-14-27` | Proposta declara recompensa, quantidade disponível, critério de atribuição e vigência       | essencial  |
-| `RF-14-28` | Proposta declara a modalidade: aberto ou direcionado                                        | essencial  |
-| `RF-14-29` | Direcionado exige o nick do destinatário e a justificativa do vínculo                       | essencial  |
-| `RF-14-30` | Aplicação não confirma se o nick do direcionado existe nem exibe dado do destinatário       | essencial  |
-| `RF-14-31` | Desafio sem lastro da recompensa não é publicado, e a tela mostra o que falta prover        | essencial  |
-| `RF-14-32` | Apoiador acompanha o estado: validação do Mestre, aprovação do Admin, publicado ou recusado | essencial  |
-| `RF-14-33` | Recusa em qualquer etapa é exibida com motivo em linguagem simples                          | essencial  |
-| `RF-14-34` | Desafio publicado exibe a quantidade de recompensas restante                                | essencial  |
-| `RF-14-35` | Desafio publicado não é editável; a correção é proposta nova                                | essencial  |
-| `RF-14-36` | Nenhuma tela de desafio expõe nome real, contato ou dado de identificação de Guerreiro(a)   | essencial  |
+| `RF-14-29` | Apoiador propõe desafio extra vinculado a uma trilha em andamento                           | essencial  |
+| `RF-14-30` | Proposta declara recompensa, quantidade disponível, critério de atribuição e vigência       | essencial  |
+| `RF-14-31` | Proposta declara a modalidade: aberto ou direcionado                                        | essencial  |
+| `RF-14-32` | Direcionado exige o nick do destinatário e a justificativa do vínculo                       | essencial  |
+| `RF-14-33` | Aplicação não confirma se o nick do direcionado existe nem exibe dado do destinatário       | essencial  |
+| `RF-14-34` | Desafio sem lastro da recompensa não é publicado, e a tela mostra o que falta prover        | essencial  |
+| `RF-14-35` | Apoiador acompanha o estado: validação do Mestre, aprovação do Admin, publicado ou recusado | essencial  |
+| `RF-14-36` | Recusa em qualquer etapa é exibida com motivo em linguagem simples                          | essencial  |
+| `RF-14-37` | Desafio publicado exibe a quantidade de recompensas restante                                | essencial  |
+| `RF-14-38` | Desafio publicado não é editável; a correção é proposta nova                                | essencial  |
+| `RF-14-39` | Nenhuma tela de desafio expõe nome real, contato ou dado de identificação de Guerreiro(a)   | essencial  |
 
 ### 6.5 Efetividade do apoio
 
 | ID         | Requisito                                                                            | Prioridade |
 | ---------- | ------------------------------------------------------------------------------------ | ---------- |
-| `RF-14-37` | Painel de efetividade atualiza a cada conclusão registrada, sem fechamento periódico | essencial  |
-| `RF-14-38` | Painel exibe desafios propostos, publicados e concluídos                             | essencial  |
-| `RF-14-39` | Painel exibe quantos concluíram cada desafio, em que trilha e em que período         | essencial  |
-| `RF-14-40` | Painel exibe as moedas aportadas e o que elas custearam                              | essencial  |
-| `RF-14-41` | Painel exibe a cobertura de ODS herdada das missões, agregada por comunidade e ciclo | essencial  |
-| `RF-14-42` | Quem concluiu aparece só por avatar e nick, e apenas com divulgação autorizada       | essencial  |
-| `RF-14-43` | Sem divulgação autorizada, a conclusão entra apenas na contagem agregada             | essencial  |
-| `RF-14-44` | No direcionado, o proponente vê que houve conclusão, e nada além disso               | essencial  |
+| `RF-14-40` | Painel de efetividade atualiza a cada conclusão registrada, sem fechamento periódico | essencial  |
+| `RF-14-41` | Painel exibe desafios propostos, publicados e concluídos                             | essencial  |
+| `RF-14-42` | Painel exibe quantos concluíram cada desafio, em que trilha e em que período         | essencial  |
+| `RF-14-43` | Painel exibe as moedas aportadas e o que elas custearam                              | essencial  |
+| `RF-14-44` | Painel exibe a cobertura de ODS herdada das missões, agregada por comunidade e ciclo | essencial  |
+| `RF-14-45` | Quem concluiu aparece só por avatar e nick, e apenas com divulgação autorizada       | essencial  |
+| `RF-14-46` | Sem divulgação autorizada, a conclusão entra apenas na contagem agregada             | essencial  |
+| `RF-14-47` | No direcionado, o proponente vê que houve conclusão, e nada além disso               | essencial  |
 
 ### 6.6 Acompanhamento e favoritos
 
 | ID         | Requisito                                                                      | Prioridade |
 | ---------- | ------------------------------------------------------------------------------ | ---------- |
-| `RF-14-45` | Apoiador vê os mesmos dados do painel público, sem recorte adicional           | essencial  |
-| `RF-14-46` | Apoiador favorita Guerreiro(a) informando o nick exato cedido pela família     | essencial  |
-| `RF-14-47` | Busca por nick não lista, não sugere e não completa nomes                      | essencial  |
-| `RF-14-48` | Nick sem divulgação autorizada devolve resposta idêntica à de nick inexistente | essencial  |
-| `RF-14-49` | Apoiador favorita Mestre a partir da página pública dele                       | essencial  |
-| `RF-14-50` | Novidade de favorito fica em destaque por 30 dias, nos cinco fatos definidos   | essencial  |
-| `RF-14-51` | Favoritar não abre canal, não avisa a criança e não amplia o que ele enxerga   | essencial  |
-| `RF-14-52` | Apoiador remove favorito a qualquer tempo                                      | essencial  |
+| `RF-14-48` | Apoiador vê os mesmos dados do painel público, sem recorte adicional           | essencial  |
+| `RF-14-49` | Apoiador favorita Guerreiro(a) informando o nick exato cedido pela família     | essencial  |
+| `RF-14-50` | Busca por nick não lista, não sugere e não completa nomes                      | essencial  |
+| `RF-14-51` | Nick sem divulgação autorizada devolve resposta idêntica à de nick inexistente | essencial  |
+| `RF-14-52` | Apoiador favorita Mestre a partir da página pública dele                       | essencial  |
+| `RF-14-53` | Novidade de favorito fica em destaque por 30 dias, nos cinco fatos definidos   | essencial  |
+| `RF-14-54` | Favoritar não abre canal, não avisa a criança e não amplia o que ele enxerga   | essencial  |
+| `RF-14-55` | Apoiador remove favorito a qualquer tempo                                      | essencial  |
 
 ### 6.7 Propostas e avisos
 
 | ID         | Requisito                                                                    | Prioridade |
 | ---------- | ---------------------------------------------------------------------------- | ---------- |
-| `RF-14-53` | Apoiador registra proposta de evolução da plataforma na fila única da gestão | essencial  |
-| `RF-14-54` | Apoiador acompanha o status da proposta, com motivo quando não adotada       | essencial  |
-| `RF-14-55` | Toda tela que coleta dado traz aviso discreto, com acesso à área detalhada   | essencial  |
-| `RF-14-56` | Aplicação não oferece canal de mensagem com Guerreiro(a), família ou Mestre  | essencial  |
+| `RF-14-56` | Apoiador registra proposta de evolução da plataforma na fila única da gestão | essencial  |
+| `RF-14-57` | Apoiador acompanha o status da proposta, com motivo quando não adotada       | essencial  |
+| `RF-14-58` | Toda tela que coleta dado traz aviso discreto, com acesso à área detalhada   | essencial  |
+| `RF-14-59` | Aplicação não oferece canal de mensagem com Guerreiro(a), família ou Mestre  | essencial  |
 
 ## 7. Regras de negócio
 
@@ -308,23 +314,24 @@ que responde pelos atos registrados no cadastro.
 | `RN-14-08` | Quem homologa o aporte não é o provedor: o Apoiador nunca homologa o próprio                                                                                  | —                      | 04 §1          |
 | `RN-14-09` | Toda saída ao público exibe moedas; reais só na tela em que se declara a transferência                                                                        | 16                     | 04 §1          |
 | `RN-14-10` | Avatar e nick são do Apoiador, sujeitos à unicidade de nick e à auditoria por amostragem                                                                      | —                      | 02 §1, 11 §8.2 |
-| `RN-14-11` | O documento comprobatório só vai à vitrine depois que um Admin o anexa ao cadastro                                                                            | —                      | 02 §1, 03 §10  |
-| `RN-14-12` | Desafio extra exige validação do Mestre da trilha e aprovação de Admin antes de publicar                                                                      | —                      | 04 §3          |
-| `RN-14-13` | A recompensa do desafio extra precisa estar provida antes da publicação                                                                                       | 9                      | 04 §3          |
-| `RN-14-14` | Não há teto de desafios simultâneos: o controle é a aprovação caso a caso                                                                                     | —                      | 04 §3          |
-| `RN-14-15` | No aberto, ninguém é barrado de disputar; o que é limitado é a quantidade de recompensas                                                                      | —                      | 04 §3          |
-| `RN-14-16` | O direcionado exige justificativa do vínculo e alcança quem não tem divulgação autorizada                                                                     | 11                     | 04 §3          |
-| `RN-14-17` | A plataforma não confirma ao proponente se o nick existe, nem na proposta nem na recusa                                                                       | 12                     | 03 §10, 04 §3  |
-| `RN-14-18` | O desafio extra vale pontos extras, computados isoladamente da pontuação regular                                                                              | —                      | 04 §3          |
-| `RN-14-19` | Nenhum contato direto com Guerreiro(a) ou família: tudo é mediado pela plataforma                                                                             | 10                     | 04 §3          |
-| `RN-14-20` | A efetividade é painel vivo, agregado e por avatar, sem relatório fechado no Ciclo 01                                                                         | —                      | 04 §3          |
-| `RN-14-21` | Sem divulgação autorizada, o Apoiador só recebe contagem; a exceção é a conclusão do desafio que ele mesmo direcionou, limitada ao fato de ter sido concluída | 12                     | 03 §12         |
-| `RN-14-22` | O nick vem da família: a plataforma não o revela, não lista, não sugere e não completa                                                                        | 12                     | 02 §1, 03 §10  |
-| `RN-14-23` | Favoritar é leitura: não abre canal, não avisa a criança e não amplia o acesso                                                                                | 10                     | 03 §10         |
-| `RN-14-24` | Novidade do favorito são cinco fatos, em destaque por 30 dias, só nesta aplicação                                                                             | —                      | 03 §10         |
-| `RN-14-25` | Proposta de Apoiador não pontua e segue a fila única da gestão                                                                                                | —                      | 03 §§7, 10     |
-| `RN-14-26` | No Ciclo 01 não há notificação por e-mail: o retorno acontece na plataforma                                                                                   | —                      | 03 §9          |
-| `RN-14-27` | A etiqueta ODS é descritiva: aparece como cobertura agregada, nunca como mérito do apoio                                                                      | 20                     | 04 §4, 11 §2.1 |
+| `RN-14-11` | O avatar próprio exige 10 moedas acumuladas; abaixo do piso vale o avatar padrão, e o direito alcançado não regride                                           | —                      | 11 §8.2        |
+| `RN-14-12` | O documento comprobatório só vai à vitrine depois que um Admin o anexa ao cadastro                                                                            | —                      | 02 §1, 03 §10  |
+| `RN-14-13` | Desafio extra exige validação do Mestre da trilha e aprovação de Admin antes de publicar                                                                      | —                      | 04 §3          |
+| `RN-14-14` | A recompensa do desafio extra precisa estar provida antes da publicação                                                                                       | 9                      | 04 §3          |
+| `RN-14-15` | Não há teto de desafios simultâneos: o controle é a aprovação caso a caso                                                                                     | —                      | 04 §3          |
+| `RN-14-16` | No aberto, ninguém é barrado de disputar; o que é limitado é a quantidade de recompensas                                                                      | —                      | 04 §3          |
+| `RN-14-17` | O direcionado exige justificativa do vínculo e alcança quem não tem divulgação autorizada                                                                     | 11                     | 04 §3          |
+| `RN-14-18` | A plataforma não confirma ao proponente se o nick existe, nem na proposta nem na recusa                                                                       | 12                     | 03 §10, 04 §3  |
+| `RN-14-19` | O desafio extra vale pontos extras, computados isoladamente da pontuação regular                                                                              | —                      | 04 §3          |
+| `RN-14-20` | Nenhum contato direto com Guerreiro(a) ou família: tudo é mediado pela plataforma                                                                             | 10                     | 04 §3          |
+| `RN-14-21` | A efetividade é painel vivo, agregado e por avatar, sem relatório fechado no Ciclo 01                                                                         | —                      | 04 §3          |
+| `RN-14-22` | Sem divulgação autorizada, o Apoiador só recebe contagem; a exceção é a conclusão do desafio que ele mesmo direcionou, limitada ao fato de ter sido concluída | 12                     | 03 §12         |
+| `RN-14-23` | O nick vem da família: a plataforma não o revela, não lista, não sugere e não completa                                                                        | 12                     | 02 §1, 03 §10  |
+| `RN-14-24` | Favoritar é leitura: não abre canal, não avisa a criança e não amplia o acesso                                                                                | 10                     | 03 §10         |
+| `RN-14-25` | Novidade do favorito são cinco fatos, em destaque por 30 dias, só nesta aplicação                                                                             | —                      | 03 §10         |
+| `RN-14-26` | Proposta de Apoiador não pontua e segue a fila única da gestão                                                                                                | —                      | 03 §§7, 10     |
+| `RN-14-27` | No Ciclo 01 não há notificação por e-mail: o retorno acontece na plataforma                                                                                   | —                      | 03 §9          |
+| `RN-14-28` | A etiqueta ODS é descritiva: aparece como cobertura agregada, nunca como mérito do apoio                                                                      | 20                     | 04 §4, 11 §2.1 |
 
 ## 8. Modelo de dados
 
@@ -355,7 +362,7 @@ Imutabilidade e derivação:
   aplicação de confirmar existência.
 - A **novidade do favorito** é derivada, não armazenada: são os cinco fatos com data nos
   últimos 30 dias, lidos das entidades que os produzem.
-- O **Poder Econômico** é derivado dos aportes homologados (PRD-07); esta aplicação apenas o lê.
+- O **Poder do Sustento** é derivado dos aportes homologados (PRD-07); esta aplicação apenas o lê.
 - O `Aporte` declarado aqui nasce **pendente**, com `origem do registro` igual a "App 08".
 
 ## 9. Contratos de API
@@ -369,7 +376,7 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessã
 | GET    | `/v1/vitrine/necessidades`           | pública      | Necessidades de recurso em aberto (PRD-07)                      |
 | PUT    | `/v1/eu/apoiador/identidade`         | Apoiador     | Define ou troca avatar e nick exibidos no card                  |
 | POST   | `/v1/eu/apoiador/documentos`         | Apoiador     | Envia comprobatório para o Admin anexar ao cadastro             |
-| GET    | `/v1/meus-aportes`                   | Apoiador     | Aportes homologados e Poder Econômico, em moedas                |
+| GET    | `/v1/meus-aportes`                   | Apoiador     | Aportes homologados e Poder do Sustento, em moedas              |
 | POST   | `/v1/aportes/declarados`             | Apoiador     | Declara aporte em dinheiro, com comprovante, pendente           |
 | GET    | `/v1/eu/aportes/declarados`          | Apoiador     | Situação dos aportes declarados: pendente, homologado, recusado |
 | POST   | `/v1/desafios-extras`                | Apoiador     | Propõe desafio aberto ou direcionado                            |
@@ -389,11 +396,12 @@ declaração de aporte em material ou serviço (422, com a orientação de procu
 excesso de envios da porta pública (429, com o tempo de espera em linguagem simples); login sem
 cadastro prévio (403, com a orientação de usar o pré-cadastro); senha provisória não trocada
 (403 em qualquer rota que não seja a da troca); nick já usado na identidade (409, com
-sugestões); desafio proposto sem lastro (409, com o que falta prover); edição de desafio
-publicado (405); favorito por nick inexistente **ou** sem divulgação autorizada (**404 idêntico
-nos dois casos**); tentativa de homologar aporte ou de ler dado de contato de Guerreiro(a)
-(403). A proposta de desafio direcionado com nick desconhecido é **aceita** e recusada depois,
-na validação — não é erro de tela.
+sugestões); envio de avatar próprio abaixo do piso de 10 moedas (409, com quanto falta);
+desafio proposto sem lastro (409, com o que falta prover); edição de desafio publicado (405);
+favorito por nick inexistente **ou** sem divulgação autorizada (**404 idêntico nos dois
+casos**); tentativa de homologar aporte ou de ler dado de contato de Guerreiro(a) (403). A
+proposta de desafio direcionado com nick desconhecido é **aceita** e recusada depois, na
+validação — não é erro de tela.
 
 ## 10. Requisitos não funcionais
 
@@ -450,7 +458,9 @@ na validação — não é erro de tela.
 - Apoiador cadastrado com senha provisória é obrigado a trocá-la antes de ver qualquer tela.
 - Nick já usado é recusado com sugestões; homologado o aporte, o card aparece na vitrine com
   avatar, nick e total de moedas.
-- Aporte declarado fica pendente: não altera o Poder Econômico nem cobre necessidade antes da
+- Apoiador com 5 moedas não consegue enviar avatar próprio, vê quanto falta e aparece na vitrine
+  com o avatar padrão; ao cruzar as 10 moedas, o envio abre sem intervenção da gestão.
+- Aporte declarado fica pendente: não altera o Poder do Sustento nem cobre necessidade antes da
   homologação do Admin. Homologado, a necessidade sai da lista de abertas.
 - Tentativa de declarar aporte em material devolve a orientação de procurar a gestão.
 - Desafio proposto sem lastro não é publicado, e a tela mostra o que falta prover.
@@ -482,11 +492,15 @@ lançamento manual da gestão.
 | Um usuário por cadastro no Ciclo 01, inclusive no institucional         | 02 §1         | Instituição com mais de um usuário    |
 | O aporte feito pela App 08 é em dinheiro; material e serviço pelo Admin | 02 §1, 03 §10 | Forma do aporte feito pela App 08     |
 | O direcionado alcança quem não tem divulgação, sem confirmar o nick     | 04 §3         | Direcionado a quem não tem divulgação |
+| Avatar próprio a partir de 10 moedas; abaixo do piso, avatar padrão     | 11 §8.2       | Piso do avatar personalizado          |
+| "Poder Econômico" passa a se chamar "Poder do Sustento"                 | 04 §1         | Nome do poder dos provedores          |
 
-As quatro fecharam as duas questões em aberto do PRD-14 no documento 08 e a pendência do
-formato do relatório de efetividade, que também constava do PRD-07. A entidade `Favorito` foi
-acrescentada ao modelo do PRD-01, e o `DesafioExtra` — que já constava dele — teve os atributos
-detalhados aqui. O `Aporte` do PRD-07 ganhou "App 08" como origem do registro.
+As quatro primeiras fecharam as duas questões em aberto do PRD-14 no documento 08 e a pendência
+do formato do relatório de efetividade, que também constava do PRD-07. As duas últimas vieram
+da revisão do fundador: o **piso do avatar** e a **renomeação do Poder Econômico**, que alcança
+todos os documentos onde o termo antigo aparecia. A entidade `Favorito` foi acrescentada ao
+modelo do PRD-01, e o `DesafioExtra` — que já constava dele — teve os atributos detalhados
+aqui. O `Aporte` do PRD-07 ganhou "App 08" como origem do registro.
 
 ## 14. Pendências que permanecem
 
@@ -510,9 +524,9 @@ detalhados aqui. O `Aporte` do PRD-07 ganhou "App 08" como origem do registro.
 | Requisito               | Origem                                                           |
 | ----------------------- | ---------------------------------------------------------------- |
 | `RF-14-01` a `RF-14-11` | 02 §1 e 03 §§1.1, 10 (pré-cadastro, identificação e acesso)      |
-| `RF-14-12` a `RF-14-17` | 02 §1, 03 §10 e 11 §8.2 (identidade pública e comprobatórios)    |
-| `RF-14-18` a `RF-14-25` | 04 §§1, 2 e 03 §10 (moeda, aporte declarado e necessidades)      |
-| `RF-14-26` a `RF-14-36` | 04 §3 (desafios extras, modalidades e salvaguardas)              |
-| `RF-14-37` a `RF-14-44` | 04 §§3, 4 (rastreio de efetividade e cobertura de ODS)           |
-| `RF-14-45` a `RF-14-52` | 03 §§8, 10 e 02 §1 (painel público, nick da família e favoritos) |
-| `RF-14-53` a `RF-14-56` | 03 §§7, 10 (fila única de propostas, canal fechado e aviso)      |
+| `RF-14-12` a `RF-14-20` | 02 §1, 03 §10 e 11 §8.2 (identidade pública e comprobatórios)    |
+| `RF-14-21` a `RF-14-28` | 04 §§1, 2 e 03 §10 (moeda, aporte declarado e necessidades)      |
+| `RF-14-29` a `RF-14-39` | 04 §3 (desafios extras, modalidades e salvaguardas)              |
+| `RF-14-40` a `RF-14-47` | 04 §§3, 4 (rastreio de efetividade e cobertura de ODS)           |
+| `RF-14-48` a `RF-14-55` | 03 §§8, 10 e 02 §1 (painel público, nick da família e favoritos) |
+| `RF-14-56` a `RF-14-59` | 03 §§7, 10 (fila única de propostas, canal fechado e aviso)      |

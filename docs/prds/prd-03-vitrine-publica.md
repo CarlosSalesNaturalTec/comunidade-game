@@ -232,6 +232,7 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 | `RF-03-55` | Card de Apoiador exibe avatar, nick e o total de moedas aportadas em destaque                                           | essencial  |
 | `RF-03-56` | Cards de Apoiador seguem moldura comum, com avatar centralizado em proporção fixa                                       | essencial  |
 | `RF-03-57` | Apoiador sem aporte homologado não aparece na vitrine                                                                   | essencial  |
+| `RF-03-66` | Card de Apoiador com menos de 10 moedas exibe o avatar padrão do projeto na mesma moldura                               | essencial  |
 | `RF-03-08` | Portfólio exibe as criações originais autorizadas, com título, trilha, data e autoria por nick                          | essencial  |
 | `RF-03-09` | Ranking público exibe apenas pontos regulares e apenas quem tem divulgação autorizada                                   | essencial  |
 | `RF-03-10` | Aporte de Apoiador é exibido em moedas da plataforma, nunca em reais                                                    | essencial  |
@@ -471,7 +472,7 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   cita a pessoa que estava sendo vista e leva ao pré-cadastro da App 08.
 - Pedir para favoritar chega à mesma porta; recusar devolve à navegação sem gravar nada.
 - Card de Apoiador exibe avatar, nick e total de moedas na moldura comum; quem não teve aporte
-  homologado não aparece.
+  homologado não aparece, e quem está abaixo de 10 moedas aparece com o avatar padrão.
 - Depois de navegar e recarregar, a vitrine está idêntica à primeira visita: nenhum favorito,
   nenhuma preferência, nenhum dado no armazenamento local.
 - Nenhuma tela exibe anúncio, peça patrocinada ou espaço reservado a anunciante.
@@ -525,19 +526,19 @@ entidade e não como contrato.
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                                         |
-| ----------------------- | -------------------------------------------------------------- |
-| `RF-03-01` a `RF-03-14` | 03 §8 (vitrine), 11 §§8.1, 8.2 (cards e páginas) e 03 §12      |
-| `RF-03-55` a `RF-03-57` | 11 §8.2 (card e moldura do Apoiador) e 04 §2 (aporte)          |
-| `RF-03-15` a `RF-03-21` | 02 §1 (série e granularidade) e 11 §8.3 (representação visual) |
-| `RF-03-22` a `RF-03-24` | 04 §4 (Agenda 2030 e meta 17.18) e 11 §2.1 (etiqueta ODS)      |
-| `RF-03-25` e `RF-03-26` | 03 §8 (três recortes de leitura)                               |
-| `RF-03-27` a `RF-03-31` | 02 §1 (solicitação de participação, dados mínimos e prazo)     |
-| `RF-03-32` a `RF-03-34` | 03 §12.3 (entrega sob solicitação aprovada)                    |
-| `RF-03-35` a `RF-03-37` | 03 §8 (proteção das rotas públicas)                            |
-| `RF-03-38` a `RF-03-44` | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)    |
-| `RF-03-45` a `RF-03-49` | 03 §8 (institucional), 04 §1 (PIX e lastro) e 01 §7 (IA)       |
-| `RF-03-50` e `RF-03-51` | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)             |
-| `RF-03-52` e `RF-03-53` | 03 §12 (aviso de coleta e área detalhada)                      |
-| `RF-03-58` a `RF-03-62` | 03 §§1, 1.1, 8 (vitrine na raiz e entrada por persona)         |
-| `RF-03-63` a `RF-03-65` | 03 §8 (área do gestor) e 04 §4 (Agenda 2030 e meta 17.18)      |
+| Requisito                           | Origem                                                         |
+| ----------------------------------- | -------------------------------------------------------------- |
+| `RF-03-01` a `RF-03-14`             | 03 §8 (vitrine), 11 §§8.1, 8.2 (cards e páginas) e 03 §12      |
+| `RF-03-55` a `RF-03-57`, `RF-03-66` | 11 §8.2 (card, moldura e piso do avatar) e 04 §2 (aporte)      |
+| `RF-03-15` a `RF-03-21`             | 02 §1 (série e granularidade) e 11 §8.3 (representação visual) |
+| `RF-03-22` a `RF-03-24`             | 04 §4 (Agenda 2030 e meta 17.18) e 11 §2.1 (etiqueta ODS)      |
+| `RF-03-25` e `RF-03-26`             | 03 §8 (três recortes de leitura)                               |
+| `RF-03-27` a `RF-03-31`             | 02 §1 (solicitação de participação, dados mínimos e prazo)     |
+| `RF-03-32` a `RF-03-34`             | 03 §12.3 (entrega sob solicitação aprovada)                    |
+| `RF-03-35` a `RF-03-37`             | 03 §8 (proteção das rotas públicas)                            |
+| `RF-03-38` a `RF-03-44`             | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)    |
+| `RF-03-45` a `RF-03-49`             | 03 §8 (institucional), 04 §1 (PIX e lastro) e 01 §7 (IA)       |
+| `RF-03-50` e `RF-03-51`             | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)             |
+| `RF-03-52` e `RF-03-53`             | 03 §12 (aviso de coleta e área detalhada)                      |
+| `RF-03-58` a `RF-03-62`             | 03 §§1, 1.1, 8 (vitrine na raiz e entrada por persona)         |
+| `RF-03-63` a `RF-03-65`             | 03 §8 (área do gestor) e 04 §4 (Agenda 2030 e meta 17.18)      |

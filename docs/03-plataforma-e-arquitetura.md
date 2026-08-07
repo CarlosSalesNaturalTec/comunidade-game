@@ -545,7 +545,7 @@ passa a ter canal próprio:
 | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Pré-cadastro**              | Identifica-se, escolhe o que vai aportar, anexa o comprovante e entra na fila de avaliação                                                          |
 | **Identidade pública**        | Define o **avatar** — logomarca ou imagem escolhida — e o **nick** que aparecem no seu card                                                         |
-| **Meus aportes**              | Acompanha o que aportou, em **moedas**, e o **Poder Econômico** acumulado                                                                           |
+| **Meus aportes**              | Acompanha o que aportou, em **moedas**, e o **Poder do Sustento** acumulado                                                                         |
 | **Desafios extras**           | Propõe desafios abertos ou direcionados e acompanha validação do Mestre e aprovação do Admin                                                        |
 | **Efetividade do apoio**      | Vê o que os desafios produziram — sempre **agregado e por avatar**                                                                                  |
 | **Acompanhamento**            | Vê os **mesmos dados do painel público** e mantém **favoritos** — Guerreiros e Guerreiras pelo nick e Mestres —, com as novidades deles em destaque |
@@ -577,7 +577,8 @@ passa a ter canal próprio:
 - **Aprovado o cadastro e homologado o aporte**, o valor vira **moedas** e o card do Apoiador
   passa a aparecer na vitrine com o total em destaque.
 - **Avatar e nick são do Apoiador**, definidos aqui e sujeitos à **auditoria por amostragem**
-  da gestão, que pode despublicar com motivo.
+  da gestão, que pode despublicar com motivo. O **avatar próprio exige 10 moedas acumuladas**;
+  abaixo do piso a aplicação mostra o avatar padrão e diz quanto falta para trocá-lo.
 - Toda proposta de desafio extra segue o fluxo vigente: validação do Mestre da trilha,
   aprovação de Admin e **lastro antes da publicação**.
 

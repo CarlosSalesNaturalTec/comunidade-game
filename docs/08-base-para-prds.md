@@ -259,7 +259,8 @@ leva à apresentação da Área do Apoiador, com solicitação de cadastro e cam
 vincula o apoio à pessoa exibida**; **botão "Entrar"** sempre visível, encaminhando Guerreiro(a)
 à App 05, responsável à App 07, Mestre à App 09, Apoiador à App 08, gestão à App 03 e o aparelho
 da aula à App 01 — a vitrine não autentica ninguém e não guarda a escolha; **card de Apoiador
-padronizado** — moldura comum, avatar centralizado, nick e total de moedas em destaque;
+padronizado** — moldura comum, avatar centralizado, nick e total de moedas em destaque, com
+**avatar padrão abaixo de 10 moedas**;
 **limite por origem com atraso progressivo** na consulta por nick e nos dois formulários
 públicos.
 
@@ -436,7 +437,7 @@ definidos no documento 11.
 
 ## PRD-07 — Economia de Recursos e Transparência (ledger)
 
-**Escopo:** livro-razão de recursos aportados e consumidos; "Poder Econômico".
+**Escopo:** livro-razão de recursos aportados e consumidos; "Poder do Sustento".
 
 **Requisitos:** todo custo de toda ação atribuído a um personagem; atividade condicionada a
 lastro; tipos de recurso: hora-aula, lanche, recompensas, insumos, cloud, serviços;
@@ -473,7 +474,7 @@ acervo de 298 livros doado pelo Goethe-Institut:
   conservação e movimentações entre pontos.
 - **Empréstimo e devolução** vinculados a Guerreiro(a) e a módulo ou trilha, com histórico de
   quem usou cada exemplar e devoluções pendentes no painel do dia.
-- O aporte credita o Poder Econômico do Apoiador **uma única vez**, sem baixa por consumo.
+- O aporte credita o Poder do Sustento do Apoiador **uma única vez**, sem baixa por consumo.
 - Suporte ao **regime misto**: linha Alpha doada ao Guerreiro(a) na abertura da trilha (baixa
   definitiva, tratada como recompensa entregue), linha Include I como patrimônio permanente e
   kits MDF como consumível de atividade, com saldo de estoque.
@@ -489,7 +490,7 @@ acervo de 298 livros doado pelo Goethe-Institut:
   **Admin aprovador**, recompensa oferecida, **quantidade disponível**, critério de atribuição,
   **pontos extras**, período de vigência, **modalidade (aberto ou direcionado)** e — no
   direcionado — Guerreiro(a) destinatário e justificativa do vínculo aprovada.
-- Recompensa extra **creditada no histórico do Apoiador** e computada no Poder Econômico, com
+- Recompensa extra **creditada no histórico do Apoiador** e computada no Poder do Sustento, com
   lastro exigido **antes** da publicação do desafio.
 - **Realizações dos Guerreiros e Guerreiras** naquele desafio vinculadas ao histórico do
   Apoiador — base dos relatórios de **efetividade do apoio ao longo do tempo**.
@@ -758,8 +759,10 @@ quem sustenta o projeto, sem nenhum contato com Guerreiros e Guerreiras ou famí
   quem opera a aplicação, e é esse usuário que responde pelos atos registrados.
 - **Identidade pública do Apoiador**: **avatar** — logomarca ou imagem escolhida — e **nick**,
   definidos por ele depois de aprovado, sujeitos à unicidade de nick e à auditoria por
-  amostragem da gestão.
-- **Meus aportes**: histórico do que aportou, em **moedas da plataforma**, e Poder Econômico
+  amostragem da gestão. O avatar próprio é liberado a partir de **10 moedas acumuladas**;
+  abaixo do piso vale o **avatar padrão do projeto**, com o mesmo nick e o mesmo total de
+  moedas, e a aplicação mostra quanto falta para trocá-lo.
+- **Meus aportes**: histórico do que aportou, em **moedas da plataforma**, e Poder do Sustento
   acumulado; leitura do mesmo ledger do PRD-07, sem edição.
 - **Necessidades de recurso em aberto**, publicadas pelas atividades sem lastro, com o caminho
   direto para aportar o que falta.
