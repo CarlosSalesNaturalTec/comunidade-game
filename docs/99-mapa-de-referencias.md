@@ -21,37 +21,43 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 | Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto                                                        | 05          |
 | Trilha 1 — Robô Educa                                                                                                                                                                                                        | 06          |
 | Trilha 2 — Batalha de Laser                                                                                                                                                                                                  | 07          |
-| Requisitos por PRD (**único documento extenso entre os 01–13**)                                                                                                                                                              | 08          |
+| Requisitos por PRD (**único documento extenso entre os 01–14**)                                                                                                                                                              | 08          |
 | Requisitos de produto por aplicação (**derivados — nenhum PRD é fonte única**)                                                                                                                                               | `prds/`     |
 | Decisões pendentes e propostas                                                                                                                                                                                               | 09          |
 | Case 01 — Guerreira Zeferina, Ciclo 01                                                                                                                                                                                       | 10          |
 | Motor do jogo: anatomia da trilha, taxonomia, pontuação, níveis, badges, reflexos no ecossistema, etiqueta ODS da trilha                                                                                                     | 11          |
 | Guia do Apoiador (documento **derivado**, sem regra própria)                                                                                                                                                                 | 12          |
 | Código de Conduta do Guerreiro(a)                                                                                                                                                                                            | 13          |
+| Gamificação do Apoiador: níveis de necessidade, modalidades de apoio, perfis PF e PJ, missão do Apoiador, níveis de sustento, selos, técnicas admitidas e vedadas, portas de entrada por modalidade                          | 14          |
 
 ## 2. Papel e dependência dos documentos
 
-| Doc   | Tipo                                 | Depende de         | Alimenta        |
-| ----- | ------------------------------------ | ------------------ | --------------- |
-| index | Índice (home do site)                | —                  | —               |
-| 01    | Normativo (fundação)                 | —                  | 02, 03, 12, 13  |
-| 02    | Normativo (conceito)                 | 01                 | 03, 05, 08, 11  |
-| 03    | Normativo (técnico)                  | 02                 | 08              |
-| 04    | Normativo (econômico)                | 02                 | 08, 12          |
-| 05    | Normativo (operação)                 | 02, 04             | 08, 10          |
-| 06    | Normativo (conteúdo)                 | 02                 | 03 §4, 08, 10   |
-| 07    | Normativo (conteúdo)                 | 02, 06             | 08, 10          |
-| 08    | **Derivado** — requisitos            | 01–07, 11          | PRDs a gerar    |
-| 09    | Pauta                                | todos              | 08              |
-| 10    | Normativo (case)                     | 02–08, 11          | 08, 09          |
-| 11    | Normativo (motor)                    | 02                 | 08              |
-| 12    | **Derivado** — comunicação           | 01, 02, 04, 05, 10 | —               |
-| 13    | Normativo (conduta)                  | 01, 02             | 05              |
-| prds/ | **Derivado** — requisitos de produto | 08, 01–07, 11, 13  | desenvolvimento |
+| Doc   | Tipo                                 | Depende de             | Alimenta        |
+| ----- | ------------------------------------ | ---------------------- | --------------- |
+| index | Índice (home do site)                | —                      | —               |
+| 01    | Normativo (fundação)                 | —                      | 02, 03, 12, 13  |
+| 02    | Normativo (conceito)                 | 01                     | 03, 05, 08, 11  |
+| 03    | Normativo (técnico)                  | 02                     | 08              |
+| 04    | Normativo (econômico)                | 02                     | 08, 12          |
+| 05    | Normativo (operação)                 | 02, 04                 | 08, 10          |
+| 06    | Normativo (conteúdo)                 | 02                     | 03 §4, 08, 10   |
+| 07    | Normativo (conteúdo)                 | 02, 06                 | 08, 10          |
+| 08    | **Derivado** — requisitos            | 01–07, 11, 14          | PRDs a gerar    |
+| 09    | Pauta                                | todos                  | 08              |
+| 10    | Normativo (case)                     | 02–08, 11              | 08, 09          |
+| 11    | Normativo (motor)                    | 02                     | 08              |
+| 12    | **Derivado** — comunicação           | 01, 02, 04, 05, 10, 14 | —               |
+| 13    | Normativo (conduta)                  | 01, 02                 | 05              |
+| 14    | Normativo (apoio)                    | 02, 04, 11             | 08, 12          |
+| prds/ | **Derivado** — requisitos de produto | 08, 01–07, 11, 13, 14  | desenvolvimento |
 
 **Divisão 02 × 11 (a confusão mais provável):** o doc 02 define **o que são** os elementos
 do jogo; o doc 11 define **como eles se ligam e quanto valem**. Tabelas de pontuação,
 níveis, badges e taxonomia existem **apenas no doc 11**.
+
+**Divisão 11 × 14:** o doc 11 é fonte única do motor de pontos, níveis e badges **do
+Guerreiro(a)**. Os níveis de sustento e os selos **do Apoiador** — que correm em moedas, não
+em pontos — ficam **apenas no doc 14**.
 
 ## 3. Conceitos e onde vivem
 
@@ -104,7 +110,16 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Acompanhamento por nick e favoritos (só do Apoiador)               | 02 §1 e 03 §10                             | 03 §8, 04 §3, 08, 12           |
 | Licença do conteúdo educacional (CC BY-SA)                         | 03 §1                                      | 01, 08, 09                     |
 | Regra de lastro (atividade só com recurso provido)                 | 04 §1                                      | 02, 05, 10, 11, 12             |
-| Poder Sustentador                                                  | 04 §1                                      | 02, 12                         |
+| Poder Sustentador                                                  | 04 §1                                      | 02, 12, 14                     |
+| Cobertura parcial da necessidade de recurso                        | 04 §1                                      | 08, 12, 14                     |
+| Escadas de valores sugeridos (pessoa física e pessoa jurídica)     | 04 §2                                      | 02 §1, 08, 12, 14              |
+| Níveis de necessidade da plataforma (Existir a Permanecer)         | 14 §2                                      | 04 §1, 08, 12                  |
+| Modalidades de apoio e portas de entrada por modalidade            | 14 §§3, 10                                 | 02 §1, 03 §§8, 10, 08, 12      |
+| Perfil pessoa física e pessoa jurídica do Apoiador                 | 14 §4                                      | 02 §1, 04 §2, 08               |
+| Missão do Apoiador (individual e coletiva)                         | 14 §§5, 6                                  | 04 §1, 08, 12                  |
+| Níveis de sustento e selos do Apoiador                             | 14 §§7, 8                                  | 02 §1, 11 §§3, 8.2, 08, 12     |
+| Técnicas de gamificação admitidas e vedadas no apoio               | 14 §9                                      | 04, 08, 12                     |
+| Apoio em código como aporte (**proposta**)                         | 04 §1 e 14 §3                              | 03 §1, 08, 09, 11 §8.4         |
 | Desafios extras (aberto e direcionado)                             | 04 §3                                      | 02, 08, 11, 12                 |
 | Acervo Include e kits MDF (inventário, regime misto, guarda)       | 05 §3                                      | 02, 04, 09, 10                 |
 | Encontro assíncrono                                                | 05 §4                                      | 03, 08, 11                     |
@@ -178,6 +193,8 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Sugestões e propostas de evolução           | 03 §§7, 9, 10, 11 + 13 §5 | PRD-01, 02, 05, 09, 13, 14     |
 | Apoio às atividades escolares               | 03 §7                     | PRD-05, 09, 01                 |
 | Área do Apoiador                            | 03 §10 + 04 §3            | PRD-14, 07, 02                 |
+| Missões, níveis de sustento e selos         | 14 §§5–8                  | PRD-14, 03, 07, 02, 01         |
+| Portas de entrada por modalidade de apoio   | 14 §§3, 10 + 02 §1        | PRD-03, 14, 02, 01             |
 | Área do Mestre                              | 03 §11 + 02 §1            | PRD-09, 02, 01                 |
 | Acervo didático (patrimônio e doação)       | 05 §3                     | PRD-07, 02, 05, 09             |
 | Área do responsável e consentimentos        | 03 §9                     | PRD-13, 01, 02                 |
@@ -223,7 +240,7 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     nunca é exibida.
 13. **Ciclo 01 = ago–dez/2026, Guerreira Zeferina, trilhas 1 e 2 apenas.** Rima, Capoeira,
     Redes, PNED/BNCC e Soft Skills são ciclo futuro.
-14. **Detalhamento extenso só no doc 08 e nos PRDs.** Os documentos 01–07 e 09–13 são
+14. **Detalhamento extenso só no doc 08 e nos PRDs.** Os documentos 01–07 e 09–14 são
     sintéticos.
 15. **Equipe é grupo livre de até 5 pessoas**, formada pelos próprios Guerreiros e Guerreiras
     no App 01 e válida para **aquela aula presencial**; o Guerreiro(a) pode integrar várias e
@@ -246,6 +263,12 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     objetivo por trilha** passa a ser a **quarta trava de publicação**. Etiquetar a missão é
     **opcional em qualquer ciclo** e nunca trava. O **ODS 18** é citado como **adoção
     voluntária do Brasil**, jamais como objetivo oficial da ONU.
+21. **O Apoiador não pontua.** A progressão de quem apoia corre em **moedas, selos e níveis
+    de sustento**; ponto é do Guerreiro(a) e nasce de realização. **Nenhum aporte compra
+    vantagem**: moeda alguma abre dado de criança, canal de contato, prioridade pedagógica ou
+    aprovação mais rápida de desafio, e **não há ranking de apoiadores por dinheiro**. A
+    **missão do Apoiador** não se confunde com a missão da trilha nem com o desafio extra, e
+    **só se conclui com aporte homologado por Admin**.
 
 ## 7. Como esta documentação deve ser editada
 
@@ -269,7 +292,7 @@ que valem para qualquer edição:
 Os PRDs ficam em `docs/prds/`, um arquivo por PRD, nomeado `prd-XX-<assunto>.md`. A pasta tem
 ainda `index.md` (situação de cada PRD) e `00-modelo-de-prd.md` (estrutura obrigatória).
 
-O PRD é **derivado**: aplica as regras dos documentos 01–13 e nunca é fonte única de nenhuma
+O PRD é **derivado**: aplica as regras dos documentos 01–14 e nunca é fonte única de nenhuma
 delas. Decisão nova tomada durante a escrita de um PRD é gravada primeiro no documento-fonte
 do assunto (§1) e movida no documento 09 para "Já decididos"; só então o PRD a aplica. Regra
 que existe apenas dentro de um PRD está no lugar errado.
@@ -288,7 +311,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD-11 | `prd-11-personalizacao-por-ia.md` | PRD-01, PRD-04 | 02, 03                 |
 | PRD-12 | `prd-12-jogo-em-javascript.md`    | PRD-01, PRD-05 | 03, 11                 |
 | PRD-13 | `prd-13-area-dos-responsaveis.md` | PRD-01, PRD-02 | 02, 03, 10             |
-| PRD-14 | `prd-14-area-do-apoiador.md`      | PRD-07, PRD-02 | 02, 03, 04, 11, 12     |
+| PRD-14 | `prd-14-area-do-apoiador.md`      | PRD-07, PRD-02 | 02, 03, 04, 11, 12, 14 |
 
 A correspondência entre as oito aplicações e os PRDs está na §4; a ordem de elaboração e o
 motivo de cada onda estão no documento 08.

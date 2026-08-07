@@ -111,14 +111,24 @@
   listagem, sugestão ou completação que permita descobrir nick de criança.
 - Suporte a múltiplos frontends e a aplicações de terceiros.
 - Papéis e permissões: Admin (total), Mestre (conteúdo e lançamentos das suas atividades),
-  Guerreiro(a) (próprios dados), Visitante (leitura pública).
+  Guerreiro(a) (próprios dados), **Apoiador** (próprios aportes, missões, desafios extras e
+  favoritos), **Responsável** (dados dos Guerreiros e Guerreiras sob sua responsabilidade) e
+  Visitante (leitura pública).
+- Regra de negócio: **o Apoiador não pontua.** A progressão dele — nível de sustento e selos —
+  é derivada dos aportes homologados, nunca de pontos, e nenhum saldo de moedas altera
+  permissão, visibilidade ou prioridade de aprovação.
 - Regra de negócio: **cadastro de Mestre e Apoiador restrito a Admin**, com anexos
   comprobatórios obrigatórios — currículo, portfólios, redes sociais e documentos externos —;
   **inclusão de Admin apenas por outro Admin**.
 - Regra de negócio: **solicitação de participação** como Mestre ou Apoiador, aberta a pessoas e
   instituições pela rota pública da vitrine: gravada com nome, e-mail, WhatsApp, pretensão
-  (Mestre ou Apoiador), apresentação em texto livre e status de avaliação, mais instituição e
-  links comprobatórios opcionais; **prazo de resposta de 7 dias**; **não gera cadastro**.
+  (Mestre ou Apoiador), **modalidade do que traz** — insumo, equipamento, alimento, serviço,
+  conteúdo, código, divulgação ou ensinar —, apresentação em texto livre e status de avaliação,
+  mais instituição e links comprobatórios opcionais; **prazo de resposta de 7 dias**; **não
+  gera cadastro**.
+- Regra de negócio: **necessidade de recurso admite cobertura parcial** — o aporte menor abate
+  o que falta e a necessidade só sai da lista quando o saldo fecha, com as moedas creditadas a
+  cada provedor pelo que ele aportou (documento 14).
 - Regra de negócio: **Comunidade Virtual criada apenas por Admin**, nascendo vazia; **todo
   Guerreiro(a) tem vínculo obrigatório a exatamente uma**, atribuída pela **comunidade da aula
   agendada** em que ele se cadastra, com histórico das transferências — o dado coletado
@@ -197,8 +207,11 @@ aulas e a formação livre dos Guerreiros e Guerreiras, com a composição permi
 (só Guerreiros e Guerreiras ou com no máximo 1 familiar de 17 anos ou mais); cadastro de
 Mestres e Apoiadores com upload dos artefatos comprobatórios — **currículo, portfólios, redes
 sociais, documentos externos e termos de doação**; **fila de solicitações de participação como
-Mestre ou Apoiador** vindas do formulário público da App 06, com avaliação, status e registro
-de quem tratou; **fila de solicitações de dados** de pesquisadores e gestores públicos, com
+Mestre ou Apoiador** vindas do formulário público da App 06, **separável por modalidade do que
+a pessoa traz** — dinheiro, insumo, equipamento, alimento, serviço, conteúdo, código,
+divulgação ou ensinar —, com avaliação, status e registro de quem tratou; **homologação do
+aporte que conclui a missão do Apoiador** e credita nível de sustento e selo; **fila de
+solicitações de dados** de pesquisadores e gestores públicos, com
 aprovação ou recusa motivada e registro do que foi entregue; **cadastro dos locais do
 território e fila de solicitações de novo local**
 vindas da App 05, com alerta das que estão em aberto; inclusão manual de Admins; cadastro de
@@ -255,8 +268,10 @@ Guerreiros e Guerreiras autorizados, com o nick dos autores; **painel de cobertu
 de que o ODS 18 é adoção voluntária do Brasil; **nota de transparência sobre IA**
 nas seções institucionais; **sem favoritos e sem preferência guardada** — o pedido de favoritar
 leva à apresentação da Área do Apoiador, com solicitação de cadastro e caminho de apoio;
-**chamada "Quero participar" em toda página individual**, que leva à mesma porta e **nunca
-vincula o apoio à pessoa exibida**; **botão "Entrar"** sempre visível, encaminhando Guerreiro(a)
+**chamada "Quero participar" em toda página individual**, que leva à mesma porta, **abre pela
+pergunta do que a pessoa traz** — encaminhando dinheiro ao pré-cadastro da App 08 e as demais
+modalidades ao formulário da vitrine, cada uma com o seu campo comprobatório (documento 14) — e
+**nunca vincula o apoio à pessoa exibida**; **botão "Entrar"** sempre visível, encaminhando Guerreiro(a)
 à App 05, responsável à App 07, Mestre à App 09, Apoiador à App 08, gestão à App 03 e o aparelho
 da aula à App 01 — a vitrine não autentica ninguém e não guarda a escolha; **card de Apoiador
 padronizado** — moldura comum, avatar centralizado, nick e total de moedas em destaque, com
@@ -790,11 +805,33 @@ quem sustenta o projeto, sem nenhum contato com Guerreiros e Guerreiras ou famí
 - **Sem cadastro pelo app**: o pré-cadastro grava a solicitação, o aporte declarado e o
   comprovante; o cadastro segue exclusivo de Admin, e só com ele o card vai à vitrine com o
   total de moedas.
+- **Perfil pessoa física ou pessoa jurídica**, escolhido no pré-cadastro, **declarado e não
+  verificado** — a plataforma segue sem coletar CPF ou CNPJ. Ele define qual das duas **escadas
+  de valores sugeridos** a tela exibe e o que o painel de efetividade destaca: a pessoa física
+  vê o que aconteceu por causa do aporte; a pessoa jurídica vê cobertura de ODS e frentes
+  sustentadas. Não muda moldura do card, piso do avatar nem salvaguarda alguma.
+- **Missões do Apoiador**: lista das missões abertas, cada uma derivada de uma necessidade de
+  recurso publicada, com nível de necessidade, o que se pede em moedas ou itens, prazo e o selo
+  que rende. A missão **conclui só com aporte homologado por Admin**, e a tela diz isso antes
+  de o Apoiador declarar qualquer coisa. **Missão coletiva**: o aporte parcial abate o que
+  falta, e a missão fecha quando o saldo fecha — cada um recebe as moedas do que aportou.
+- **Nível de sustento e selos**, derivados dos aportes homologados e exibidos na aplicação e no
+  card público. O nível sobe por **frentes diferentes cobertas**, não por volume aportado, e
+  nível ou selo conquistado **não regride**. A aplicação mostra qual frente falta para o
+  próximo nível, **uma vez, sem insistir**.
+- **Sem ranking de apoiadores por dinheiro**, sem urgência fabricada, sem contagem regressiva
+  artificial e sem qualquer peça que use a criança como gatilho de doação — foto, nome,
+  história individual ou apadrinhamento. **Nenhum saldo de moedas** abre dado de criança, canal
+  de contato, prioridade pedagógica ou aprovação mais rápida de desafio.
+- **Aporte em modalidade não financeira** continua entrando pelo Admin: a aplicação orienta e
+  encaminha ao formulário da vitrine, agora dizendo qual comprobatório cada modalidade pede.
 
-**Questões em aberto:** nenhuma — o cadastro institucional tem um usuário no Ciclo 01 e a
-efetividade é painel vivo, sem relatório fechado.
+**Questões em aberto:** a instância do catálogo de missões no Ciclo 01 — quantidade, prazo e
+selo de cada uma —, que depende do catálogo de recompensas por marco e da tabela de valoração;
+e se o apoio em código chega a ser modalidade no Ciclo 01, o que depende da governança de
+código aberto e do valor-hora de referência (documento 09).
 
-**Fontes:** docs 02, 03, 04, 11, 12.
+**Fontes:** docs 02, 03, 04, 11, 12, 14.
 
 ---
 
