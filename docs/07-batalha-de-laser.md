@@ -10,7 +10,7 @@
 
 ## 🌌 Os 4 elementos do jogo
 
-### 1. O Atacante (Guerreiro / classe Dano)
+### 1. O Atacante (Caçador / classe Dano)
 
 - **Arma:** artefato com emissor laser.
 - **Energia (stamina):** o atacante não atira infinitamente. Parte de 100%; cada tiro gasta um
@@ -155,14 +155,22 @@ tópico de punição.
 | Nexus      | Notebook (Python + Mosquitto MQTT)                      | 1   |
 | Roteador   | TP-Link TD-VG5611 (rede isolada)                        | 1   |
 
-## Integração com a plataforma **[Proposta]**
+## Integração com a plataforma
 
-- **Segurança do laser**: documentar a classe do laser utilizada e as regras de segurança
-  ocular (nunca apontar para o rosto; preferir módulos de baixa potência, classe 1 ou 2) —
-  requisito para atividade com crianças.
-- **Ponte Nexus → API**: ao fim da partida, o Nexus envia as estatísticas (MVP, tiros, defesas,
-  penalidades) para a API, lançando automaticamente a atividade realizada e os pontos — a
-  primeira integração real entre uma batalha física e o backend.
+**Segurança do laser é trava de início.** Antes do "Start", o Nexus exige do Mestre a
+conferência registrada: classe do laser em uso — módulos de baixa potência, classe 1 ou 2 —,
+proteção ocular disponível, área de tiro delimitada e a regra de nunca apontar para o rosto.
+**Sem a conferência gravada, a partida não inicia.**
+
+**Ponte Nexus → API, ao vivo.** O Nexus envia as estatísticas à API **durante a partida** e é o
+**único ponto com saída para a internet**: a rede `GAME_NEXUS` segue isolada e nenhum NodeMCU
+alcança a plataforma. Ele opera sob a **sessão do Mestre** que conduz a partida — não há
+credencial de dispositivo —, e na abertura vincula cada artefato a uma equipe da aula e ao
+Guerreiro(a) que o opera. Como toda a lógica roda local, **queda de internet não interrompe
+partida alguma**: o envio é retomado, e o que não chegar é lançado pelo Mestre. Encerrada a
+partida, a API lança a atividade realizada e os pontos — a primeira integração real entre uma
+batalha física e o backend.
+
 - **Trilha associada**: decompor a construção dos artefatos em missões (eletrônica
   básica → LDR e LEDs → Wi-Fi/MQTT → lógica do jogo → dashboard Python), cada um com desafio de
   desbloqueio.
@@ -171,7 +179,8 @@ tópico de punição.
   publica igualmente uma leitura de sensor. A trilha pode terminar com o Guerreiro(a)
   instalando um **sensor de território** — iluminação pública, temperatura, chuva — construído
   por ele e alimentando a série temporal da sua Comunidade Virtual.
-- **Protagonismo na batalha**: variações de regra propostas pelos próprios Guerreiros e
+- **Protagonismo na batalha** **[Proposta]**: variações de regra propostas pelos próprios
+  Guerreiros e
   Guerreiras (novos modos de partida, penalidades, tempos), avaliadas pelo Mestre antes de
   valerem em campo; artefatos personalizados — pintura, carcaça, nomes — como **criação
   original** da trilha; e papéis de equipe que misturam idades, com os mais velhos operando o

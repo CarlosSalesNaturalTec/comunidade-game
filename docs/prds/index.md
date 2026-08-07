@@ -22,8 +22,8 @@ no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs est�
 | [PRD-05](prd-05-area-do-guerreiro.md)     | Área do Guerreiro(a)                   | App 05    | 3    | aprovado     |
 | [PRD-13](prd-13-area-dos-responsaveis.md) | Área dos pais e responsáveis           | App 07    | 4    | aprovado     |
 | [PRD-03](prd-03-vitrine-publica.md)       | Vitrine pública                        | App 06    | 4    | aprovado     |
-| [PRD-14](prd-14-area-do-apoiador.md)      | Área do Apoiador                       | App 08    | 5    | em revisão   |
-| PRD-10                                    | Batalhas e eventos presenciais         | —         | 5    | não iniciado |
+| [PRD-14](prd-14-area-do-apoiador.md)      | Área do Apoiador                       | App 08    | 5    | aprovado     |
+| [PRD-10](prd-10-batalhas.md)              | Batalhas e eventos presenciais         | —         | 5    | em revisão   |
 | PRD-12                                    | Jogo em JavaScript                     | App 04    | 5    | não iniciado |
 | PRD-11                                    | Personalização por IA                  | —         | 5    | não iniciado |
 

@@ -169,7 +169,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Desafios extras (abertos e direcionados)    | 04 §3                     | PRD-01, 02, 07, 09             |
 | Encontros presenciais (dinâmica assíncrona) | 05 §4                     | PRD-02, 04                     |
 | Quiz ao Vivo                                | 05 §5                     | PRD-02, 04, 09                 |
-| Batalhas e telemetria                       | 02 §6 + 07                | PRD-10, 01                     |
+| Batalhas e telemetria                       | 02 §6 + 07                | PRD-10, 01, 09, 02, 04         |
 | Culminância e criação original              | 02 §4                     | PRD-01, 02, 03, 05, 09, 12, 10 |
 | Motor de pontuação                          | 11 §5                     | PRD-01, 02, 05, 09             |
 | Níveis 1–5 / Mestre Aprendiz                | 11 §6                     | PRD-01, 05                     |
