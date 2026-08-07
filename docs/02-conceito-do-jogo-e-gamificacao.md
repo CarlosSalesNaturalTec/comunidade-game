@@ -80,7 +80,13 @@ Pessoas e instituições que financiam ou divulgam o projeto.
 - **Um usuário por cadastro no Ciclo 01**, inclusive no institucional: a instituição indica
   quem opera a App 08, e é esse usuário que responde pelos atos registrados. Mais de um acesso
   no mesmo cadastro fica para ciclo futuro.
-- Cada recurso aportado é registrado e contabilizado no seu **Poder Sustentador**.
+- **Perfil pessoa física ou pessoa jurídica, declarado e não verificado**: quem escolhe é o
+  próprio Apoiador, e o que o comprova são os artefatos anexados pelo Admin. O perfil muda a
+  escada de valores sugeridos e o destaque do painel de efetividade, nada mais.
+- **Apoia em dinheiro, insumo, equipamento, alimento, serviço, conteúdo, divulgação ou
+  código** — as modalidades e as portas de cada uma estão no documento 14.
+- Cada recurso aportado é registrado e contabilizado no seu **Poder Sustentador**, e a
+  progressão de quem apoia — missões, níveis de sustento e selos — vive no documento 14.
 
 ### Pais e responsáveis
 
@@ -113,12 +119,18 @@ cadastra continua sendo um Admin.
 texto livre de apresentação. Instituição representada e links comprobatórios são opcionais.
 **Prazo de resposta ao solicitante: 7 dias.**
 
+**A pergunta de entrada é o que a pessoa traz.** A chamada "Quero participar" abre com essa
+escolha e encaminha conforme a resposta, pedindo o comprobatório que cabe a cada modalidade —
+descrição e foto do bem, disponibilidade do serviço, amostra do conteúdo, repositório e
+portfólio de quem apoia em código, artefatos da habilidade de quem quer ensinar. A tabela de
+modalidades e destinos está no documento 14.
+
 **Duas portas, conforme o que a pessoa traz.** Quem se apresenta sem transferência em dinheiro
-— apoio em material, serviço ou divulgação, e quem quer ser Mestre — usa este formulário da
-vitrine. Quem vai **aportar em dinheiro** faz o **pré-cadastro na Área do Apoiador**, onde
-declara o aporte — uma das **necessidades publicadas**, um **valor sugerido** ou um **valor
-livre** — e anexa o **comprovante**, obrigatório no Ciclo 01. As duas portas terminam na mesma
-fila de avaliação do Admin, e nenhuma delas cadastra ninguém.
+— apoio em material, serviço, conteúdo, código ou divulgação, e quem quer ser Mestre — usa
+este formulário da vitrine. Quem vai **aportar em dinheiro** faz o **pré-cadastro na Área do
+Apoiador**, onde declara o aporte — uma das **necessidades publicadas**, um **valor sugerido**
+ou um **valor livre** — e anexa o **comprovante**, obrigatório no Ciclo 01. As duas portas
+terminam na mesma fila de avaliação do Admin, e nenhuma delas cadastra ninguém.
 
 ### Público geral / Visitantes
 

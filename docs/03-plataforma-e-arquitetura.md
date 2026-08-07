@@ -543,9 +543,10 @@ passa a ter canal próprio:
 
 | Função                        | O que o Apoiador faz                                                                                                                                |
 | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Pré-cadastro**              | Identifica-se, escolhe o que vai aportar, anexa o comprovante e entra na fila de avaliação                                                          |
+| **Pré-cadastro**              | Identifica-se, escolhe o perfil e o que vai aportar, anexa o comprovante e entra na fila de avaliação                                               |
 | **Identidade pública**        | Define o **avatar** — logomarca ou imagem escolhida — e o **nick** que aparecem no seu card                                                         |
 | **Meus aportes**              | Acompanha o que aportou, em **moedas**, e o **Poder Sustentador** acumulado                                                                         |
+| **Missões**                   | Vê as missões abertas, cobre uma delas e acompanha o **nível de sustento** e os **selos** que conquistou (documento 14)                             |
 | **Desafios extras**           | Propõe desafios abertos ou direcionados e acompanha validação do Mestre e aprovação do Admin                                                        |
 | **Efetividade do apoio**      | Vê o que os desafios produziram — sempre **agregado e por avatar**                                                                                  |
 | **Acompanhamento**            | Vê os **mesmos dados do painel público** e mantém **favoritos** — Guerreiros e Guerreiras pelo nick e Mestres —, com as novidades deles em destaque |

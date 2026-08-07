@@ -209,6 +209,10 @@ Diretrizes de paginação para o Mestre (autor da trilha):
 | **Admin**              | Aprova desafios extras, opera lançamentos e painéis, cria Comunidades Virtuais                                                                                                                 |
 | **Comunidade Virtual** | Recebe os dados coletados; sua representação visual cresce com a participação                                                                                                                  |
 
+**O Apoiador não pontua.** Este documento é o motor de pontos, níveis e badges do
+Guerreiro(a). A progressão de quem apoia — missões, níveis de sustento e selos — corre em
+moedas, não em pontos, e está no documento 14.
+
 ## 4. Taxonomia de atividades e desafios
 
 Toda atividade é classificada em **três eixos ortogonais**, que se combinam livremente (uma
@@ -376,7 +380,7 @@ App 04:
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | **Guerreiro(a)**       | Avatar, nick, badges, poderes com níveis, desempenho e **criações originais**                                                         | Imagem real, nome civil, redes sociais, qualquer canal de contato |
 | **Mestre**             | Nome/identidade, áreas de habilidade, artefatos comprobatórios, trilhas de autoria e **selo de quem sustentou atividade sem recurso** | —                                                                 |
-| **Apoiador**           | **Avatar, nick e total de moedas em destaque**, desafios propostos e efetividade agregada                                             | Dados de contato de Guerreiros e Guerreiras; valores em reais     |
+| **Apoiador**           | **Avatar, nick e total de moedas em destaque**, nível de sustento, selos, desafios propostos e efetividade agregada                   | Dados de contato de Guerreiros e Guerreiras; valores em reais     |
 | **Comunidade Virtual** | Nome, território, representação visual, séries ativas, nº de Guerreiros e Guerreiras vinculados                                       | Granularidade que permita inferir endereço de criança             |
 
 **Definição vigente — todo card abre uma página individual.** O card é o resumo; a página é a
@@ -387,7 +391,7 @@ versão detalhada, com as mesmas restrições de exibição da tabela acima:
 | **Guerreiro(a)**       | Trajetória nas trilhas, badges e níveis por poder, portfólio de criações originais com autoria e participação em batalhas                                                                         |
 | **Mestre**             | Habilidades, trilhas de autoria, a prova pública — **currículo, portfólios, redes sociais e documentos comprobatórios externos** — e quantas vezes sustentou uma atividade que estava sem recurso |
 | **Poder**              | Trilhas do poder, Mestres responsáveis, níveis e badges possíveis                                                                                                                                 |
-| **Apoiador**           | Aportes em moedas, desafios extras propostos com sua efetividade e a prova do apoio: **currículo, portfólios, redes sociais e comprobatórios**                                                    |
+| **Apoiador**           | Aportes em moedas, nível de sustento e selos conquistados, desafios extras propostos com sua efetividade e a prova do apoio: **currículo, portfólios, redes sociais e comprobatórios**            |
 | **Comunidade Virtual** | Séries históricas do território, representação visual, vitalidade e criações originais dos Guerreiros e Guerreiras vinculados                                                                     |
 
 **Identidade visual comum do card de Apoiador.** Os avatares dos Apoiadores são logomarcas e
