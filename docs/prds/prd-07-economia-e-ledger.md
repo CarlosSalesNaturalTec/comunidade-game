@@ -48,7 +48,7 @@ atividades previstas.
 - Atividade sem lastro fica **pendente de lastro**, e a falta é publicada como necessidade de
   recurso na vitrine (App 06), na área do Apoiador (App 08) e na área dos Mestres da trilha
   (App 09), de onde o aporte pode ser assumido.
-- Poder do Sustento do provedor, derivado da soma de moedas aportadas.
+- Poder Sustentador do provedor, derivado da soma de moedas aportadas.
 - Patrimônio permanente: exemplar tombado, responsável designado, estado de conservação,
   empréstimo de bancada e devolução.
 - Baixa definitiva de recompensa entregue — livro da linha Alpha e camisa.
@@ -72,7 +72,7 @@ atividades previstas.
 | ------------ | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | Admin        | Cadastra tipos de recurso e valores de referência, registra e homologa aportes, designa responsável de ponto de apoio       | Alterar aporte já homologado; apagar lançamento                  |
 | Mestre       | Aporta recurso, inclusive por absorção, acompanha a situação do ressarcimento e registra empréstimo e devolução de exemplar | Homologar o próprio aporte; exigir ressarcimento                 |
-| Apoiador     | Consulta seus aportes e seu Poder do Sustento; provê o lastro dos desafios extras                                           | Editar o ledger; ver dado de contato de Guerreiro(a)             |
+| Apoiador     | Consulta seus aportes e seu Poder Sustentador; provê o lastro dos desafios extras                                           | Editar o ledger; ver dado de contato de Guerreiro(a)             |
 | Guerreiro(a) | Vê o que recebeu como recompensa e o acervo em seu uso                                                                      | Ver valores em reais; assumir dívida por perda ou dano           |
 | Visitante    | Lê a prestação de contas pública, em moedas                                                                                 | Ver valor em reais, comprovante ou dado de doador não publicável |
 
@@ -84,7 +84,7 @@ atividades previstas.
 2. Informa a quantidade e anexa o comprovante: nota, orçamento, termo de doação ou
    comprovante de PIX.
 3. O sistema calcula o valor em **moedas** pela tabela de referência vigente na data.
-4. Admin homologa. O aporte credita o saldo do tipo de recurso e o Poder do Sustento do
+4. Admin homologa. O aporte credita o saldo do tipo de recurso e o Poder Sustentador do
    provedor.
 5. Tipo de recurso ainda não catalogado: o Admin **cadastra o tipo e o valor na hora**, e o
    aporte segue no mesmo fluxo.
@@ -97,7 +97,7 @@ atividades previstas.
    e **assume o aporte a partir da própria necessidade**, em um ato de confirmação.
 3. O sistema registra um **aporte por absorção** em nome de quem proveu, valorado pela tabela.
 4. O saldo é creditado e imediatamente reservado pela atividade — que passa a ter lastro.
-5. O aporte entra no Poder do Sustento de quem absorveu, nasce marcado como **ressarcível** e
+5. O aporte entra no Poder Sustentador de quem absorveu, nasce marcado como **ressarcível** e
    soma ao selo público de quem sustentou atividade sem recurso.
 
 ### 5.3 Agendamento com reserva de recurso
@@ -137,7 +137,7 @@ atividades previstas.
 4. **Só nesta etapa e fora da plataforma**, a pessoa envia a chave PIX por **e-mail ao Admin**.
 5. Admin faz a transferência e **anexa o comprovante** (PDF ou imagem) ao registro. Nenhuma
    chave, banco ou conta é gravada em campo da plataforma.
-6. Pago o ressarcimento, as **moedas revertem**: o Poder do Sustento de quem absorveu volta ao
+6. Pago o ressarcimento, as **moedas revertem**: o Poder Sustentador de quem absorveu volta ao
    que era antes daquele aporte.
 7. O registro do ato e o **selo público permanecem** — o reconhecimento é por ter sustentado a
    atividade quando faltou recurso, não pelo valor.
@@ -151,7 +151,7 @@ atividades previstas.
 | `RF-07-03` | Admin cadastra tipo novo no ato do registro de um aporte, sem interromper o fluxo                 | essencial  |
 | `RF-07-04` | Admin registra aporte com provedor, tipo, quantidade, comprovante e data                          | essencial  |
 | `RF-07-29` | Aporte declarado no pré-cadastro entra pendente, com comprovante e sem creditar nada              | essencial  |
-| `RF-07-30` | Homologação do aporte pendente converte o valor em moedas e credita o Poder do Sustento           | essencial  |
+| `RF-07-30` | Homologação do aporte pendente converte o valor em moedas e credita o Poder Sustentador           | essencial  |
 | `RF-07-05` | Sistema converte todo aporte em moedas pela tabela vigente na data do aporte                      | essencial  |
 | `RF-07-06` | Sistema registra aporte por absorção em nome do Mestre ou Admin que proveu o recurso              | essencial  |
 | `RF-07-07` | Sistema mantém saldo por tipo de recurso e ponto de apoio                                         | essencial  |
@@ -159,14 +159,14 @@ atividades previstas.
 | `RF-07-27` | Falta de lastro é publicada como necessidade na vitrine e nas áreas do Apoiador e do Mestre       | essencial  |
 | `RF-07-28` | Mestre ou Admin assume o aporte por absorção a partir da necessidade publicada                    | essencial  |
 | `RF-07-09` | Realização da atividade converte a reserva em baixa; cancelamento libera a reserva                | essencial  |
-| `RF-07-10` | Sistema calcula o Poder do Sustento de cada provedor pela soma de moedas aportadas                | essencial  |
+| `RF-07-10` | Sistema calcula o Poder Sustentador de cada provedor pela soma de moedas aportadas                | essencial  |
 | `RF-07-11` | Sistema registra exemplar tombado com ponto de apoio, responsável designado e conservação         | essencial  |
 | `RF-07-12` | Mestre registra empréstimo de bancada e devolução, com estado de conservação                      | essencial  |
 | `RF-07-13` | Sistema registra baixa definitiva de recompensa entregue, sem devolução                           | essencial  |
 | `RF-07-14` | Perda ou dano gera necessidade de reposição, nunca débito ao Guerreiro(a) ou à família            | essencial  |
 | `RF-07-15` | Sistema exige lastro da recompensa do desafio extra antes da publicação                           | essencial  |
 | `RF-07-16` | Rota pública devolve o movimentado por provedor, atividade e comunidade, em moedas                | essencial  |
-| `RF-07-17` | Apoiador consulta seus aportes e seu Poder do Sustento, sem edição                                | essencial  |
+| `RF-07-17` | Apoiador consulta seus aportes e seu Poder Sustentador, sem edição                                | essencial  |
 | `RF-07-18` | Sistema expõe o que falta de recurso para as atividades previstas                                 | essencial  |
 | `RF-07-19` | Lançamento é imutável; correção se faz por lançamento de ajuste, com motivo e autor               | essencial  |
 | `RF-07-20` | Conferência de inventário por módulo, com resultado publicável na prestação de contas             | desejável  |
@@ -187,7 +187,7 @@ atividades previstas.
 | `RN-07-04` | A moeda vale R$ 10,00, admite duas casas decimais e a escala é fixa por ciclo               | 16         | 04 §1        |
 | `RN-07-05` | Toda saída pública exibe moedas, nunca reais                                                | 16         | 04 §1        |
 | `RN-07-06` | Recurso provido sem contrapartida financeira por Mestre ou Admin é aporte em nome dele      | —          | 04 §1        |
-| `RN-07-07` | Aporte de patrimônio credita o Poder do Sustento uma única vez, sem baixa por consumo       | —          | 04 §1        |
+| `RN-07-07` | Aporte de patrimônio credita o Poder Sustentador uma única vez, sem baixa por consumo       | —          | 04 §1        |
 | `RN-07-08` | Livro da linha Alpha e camisa entregues ao Guerreiro(a) têm baixa definitiva                | —          | 05 §3        |
 | `RN-07-09` | Perda ou dano de material comum não gera dívida ao Guerreiro(a) nem à família               | 11         | 05 §3        |
 | `RN-07-10` | Cada ponto de apoio tem responsável designado pelo acervo permanente e pelos kits           | —          | 05 §3        |
@@ -245,7 +245,7 @@ pública lê apenas a primeira.
 | ------ | -------------------------------------- | --------------- | -------------------------------------------------------------------- |
 | GET    | `/prestacao-de-contas`                 | pública         | Movimentado total e por provedor, em moedas                          |
 | GET    | `/prestacao-de-contas/atividades`      | pública         | Consumo por atividade e por comunidade, em moedas                    |
-| GET    | `/provedores/{id}/poder-economico`     | pública         | Poder do Sustento do provedor, em moedas                             |
+| GET    | `/provedores/{id}/poder-economico`     | pública         | Poder Sustentador do provedor, em moedas                             |
 | GET    | `/necessidades`                        | pública         | O que falta de recurso para as atividades previstas                  |
 | GET    | `/necessidades/minhas`                 | Mestre          | Necessidades das atividades das trilhas do próprio Mestre            |
 | POST   | `/tipos-de-recurso`                    | Admin           | Cadastra tipo e valor de referência                                  |
@@ -258,7 +258,7 @@ pública lê apenas a primeira.
 | POST   | `/itens-patrimoniais/{id}/emprestimos` | Mestre          | Registra retirada de bancada                                         |
 | POST   | `/emprestimos/{id}/devolucao`          | Mestre          | Registra devolução e estado de conservação                           |
 | POST   | `/lancamentos/{id}/ajuste`             | Admin           | Lança ajuste referenciando o lançamento original                     |
-| GET    | `/meus-aportes`                        | Apoiador        | Aportes e Poder do Sustento do próprio Apoiador                      |
+| GET    | `/meus-aportes`                        | Apoiador        | Aportes e Poder Sustentador do próprio Apoiador                      |
 | GET    | `/meus-aportes/ressarciveis`           | Mestre ou Admin | Situação dos aportes que absorveu                                    |
 
 Erros previstos: agendamento sem saldo (422, com a lista do que falta); homologação pelo
@@ -298,7 +298,7 @@ tentativa de editar lançamento (405); ressarcimento sem comprovante anexado (42
 ## 12. Critérios de aceite e métricas
 
 - Aporte de tipo material registrado com quantidade 3 e valor de referência 0,50 resulta em
-  1,50 moeda, e o Poder do Sustento do provedor sobe exatamente isso.
+  1,50 moeda, e o Poder Sustentador do provedor sobe exatamente isso.
 - Alteração do valor de referência de um tipo **não** altera o valor em moedas de aportes já
   registrados.
 - Agendamento de atividade que consome recurso sem saldo é recusado, e a resposta diz o que
@@ -310,7 +310,7 @@ tentativa de editar lançamento (405); ressarcimento sem comprovante anexado (42
   necessidade de reposição e **nenhum** débito ao Guerreiro(a).
 - Aporte por absorção nasce com situação de ressarcimento **em aberto** e some da lista quando
   é pago.
-- Ressarcimento pago devolve o Poder do Sustento ao valor anterior ao aporte, e o selo público
+- Ressarcimento pago devolve o Poder Sustentador ao valor anterior ao aporte, e o selo público
   continua contando aquela absorção.
 - Registro de ressarcimento sem comprovante anexado é recusado; nenhum campo da API aceita
   chave PIX, banco ou conta.
@@ -355,7 +355,7 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | `RF-07-01` a `RF-07-05` | 04 §1 (moeda e tabela de referência)             |
 | `RF-07-06`              | 04 §1 (aporte por absorção)                      |
 | `RF-07-07` a `RF-07-09` | 04 §1 (regra de lastro)                          |
-| `RF-07-10`              | 04 §1 (Poder do Sustento)                        |
+| `RF-07-10`              | 04 §1 (Poder Sustentador)                        |
 | `RF-07-11` a `RF-07-14` | 05 §3 (acervo, guarda e reposição)               |
 | `RF-07-15`              | 04 §3 (desafios extras)                          |
 | `RF-07-16` a `RF-07-18` | 04 §1 (transparência) e 10 §3 (hipótese H3)      |

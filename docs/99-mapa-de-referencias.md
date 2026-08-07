@@ -104,7 +104,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Acompanhamento por nick e favoritos (só do Apoiador)               | 02 §1 e 03 §10                             | 03 §8, 04 §3, 08, 12           |
 | Licença do conteúdo educacional (CC BY-SA)                         | 03 §1                                      | 01, 08, 09                     |
 | Regra de lastro (atividade só com recurso provido)                 | 04 §1                                      | 02, 05, 10, 11, 12             |
-| Poder do Sustento                                                  | 04 §1                                      | 02, 12                         |
+| Poder Sustentador                                                  | 04 §1                                      | 02, 12                         |
 | Desafios extras (aberto e direcionado)                             | 04 §3                                      | 02, 08, 11, 12                 |
 | Acervo Include e kits MDF (inventário, regime misto, guarda)       | 05 §3                                      | 02, 04, 09, 10                 |
 | Encontro assíncrono                                                | 05 §4                                      | 03, 08, 11                     |

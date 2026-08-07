@@ -437,7 +437,7 @@ definidos no documento 11.
 
 ## PRD-07 — Economia de Recursos e Transparência (ledger)
 
-**Escopo:** livro-razão de recursos aportados e consumidos; "Poder do Sustento".
+**Escopo:** livro-razão de recursos aportados e consumidos; "Poder Sustentador".
 
 **Requisitos:** todo custo de toda ação atribuído a um personagem; atividade condicionada a
 lastro; tipos de recurso: hora-aula, lanche, recompensas, insumos, cloud, serviços;
@@ -474,7 +474,7 @@ acervo de 298 livros doado pelo Goethe-Institut:
   conservação e movimentações entre pontos.
 - **Empréstimo e devolução** vinculados a Guerreiro(a) e a módulo ou trilha, com histórico de
   quem usou cada exemplar e devoluções pendentes no painel do dia.
-- O aporte credita o Poder do Sustento do Apoiador **uma única vez**, sem baixa por consumo.
+- O aporte credita o Poder Sustentador do Apoiador **uma única vez**, sem baixa por consumo.
 - Suporte ao **regime misto**: linha Alpha doada ao Guerreiro(a) na abertura da trilha (baixa
   definitiva, tratada como recompensa entregue), linha Include I como patrimônio permanente e
   kits MDF como consumível de atividade, com saldo de estoque.
@@ -490,7 +490,7 @@ acervo de 298 livros doado pelo Goethe-Institut:
   **Admin aprovador**, recompensa oferecida, **quantidade disponível**, critério de atribuição,
   **pontos extras**, período de vigência, **modalidade (aberto ou direcionado)** e — no
   direcionado — Guerreiro(a) destinatário e justificativa do vínculo aprovada.
-- Recompensa extra **creditada no histórico do Apoiador** e computada no Poder do Sustento, com
+- Recompensa extra **creditada no histórico do Apoiador** e computada no Poder Sustentador, com
   lastro exigido **antes** da publicação do desafio.
 - **Realizações dos Guerreiros e Guerreiras** naquele desafio vinculadas ao histórico do
   Apoiador — base dos relatórios de **efetividade do apoio ao longo do tempo**.
@@ -762,7 +762,7 @@ quem sustenta o projeto, sem nenhum contato com Guerreiros e Guerreiras ou famí
   amostragem da gestão. O avatar próprio é liberado a partir de **10 moedas acumuladas**;
   abaixo do piso vale o **avatar padrão do projeto**, com o mesmo nick e o mesmo total de
   moedas, e a aplicação mostra quanto falta para trocá-lo.
-- **Meus aportes**: histórico do que aportou, em **moedas da plataforma**, e Poder do Sustento
+- **Meus aportes**: histórico do que aportou, em **moedas da plataforma**, e Poder Sustentador
   acumulado; leitura do mesmo ledger do PRD-07, sem edição.
 - **Necessidades de recurso em aberto**, publicadas pelas atividades sem lastro, com o caminho
   direto para aportar o que falta.

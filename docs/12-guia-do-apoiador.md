@@ -28,7 +28,7 @@ reconhecimento.
   para ela. O Guerreiro(a) aprende e realiza; a comunidade ganha dados, talento e visibilidade;
   o apoio custeia novas atividades; quem chega ao topo volta como multiplicador.
 - **Transparência radical**: todo recurso aportado é registrado em livro-razão público e compõe
-  o **Poder do Sustento** do Apoiador — reconhecimento visível de quem sustenta o projeto. Na
+  o **Poder Sustentador** do Apoiador — reconhecimento visível de quem sustenta o projeto. Na
   vitrine, o aporte aparece em **moedas da plataforma**, nunca em reais: a plataforma é
   educativa e o público inclui crianças, então o que se mostra é o montante relativo entre
   apoiadores, não o valor monetário.
@@ -70,7 +70,7 @@ Pela regra de lastro, **nenhuma atividade acontece sem os recursos providos** �
    titular **Robô Educa — Kits Robóticos Educacionais**, pessoa jurídica vinculada ao projeto.
 4. **Doações de materiais e serviços** — equipamentos, insumos, acervo, hora de trabalho: tudo
    entra no livro-razão com o mesmo rigor do dinheiro.
-5. **Todo aporte compõe o Poder do Sustento** do Apoiador, convertido em **moedas da plataforma**
+5. **Todo aporte compõe o Poder Sustentador** do Apoiador, convertido em **moedas da plataforma**
    e visível publicamente na vitrine.
 
 ## 5. Desafios extras
@@ -98,8 +98,8 @@ e acompanhamento dos desafios extras, relatório de efetividade, envio de docume
 comprobatórios e **registro de propostas** de evolução da plataforma. Nada nela dá acesso a
 Guerreiros e Guerreiras ou famílias.
 
-- **Seu card público** na vitrine e a **página individual** que ele abre: identidade, Poder do
-  Sustento em moedas, desafios propostos, o que o apoio produziu e os documentos que o
+- **Seu card público** na vitrine e a **página individual** que ele abre: identidade, Poder
+  Sustentador em moedas, desafios propostos, o que o apoio produziu e os documentos que o
   comprovam.
 - **Efetividade dos seus desafios** em painel atualizado a cada conclusão — quantos concluíram
   e em que trilhas —, sempre agregado e por avatar.

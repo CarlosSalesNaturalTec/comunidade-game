@@ -41,7 +41,7 @@ que já é público.
   provisória.
 - **Identidade pública**: nick único e avatar — logomarca ou imagem escolhida a partir de
   **10 moedas acumuladas**, avatar padrão do projeto abaixo desse piso.
-- **Meus aportes**: histórico em moedas e Poder do Sustento acumulado, lidos do ledger do PRD-07.
+- **Meus aportes**: histórico em moedas e Poder Sustentador acumulado, lidos do ledger do PRD-07.
 - **Novo aporte em dinheiro** de quem já é cadastrado, a partir de uma necessidade publicada ou
   por valor sugerido ou livre, sempre com comprovante.
 - **Necessidades de recurso em aberto**, publicadas pelas atividades sem lastro, com o caminho
@@ -127,9 +127,9 @@ que responde pelos atos registrados no cadastro.
    atividades previstas, com a comunidade e o valor em moedas.
 2. Escolhe cobrir uma necessidade, ou declara um **valor sugerido** ou **livre**.
 3. Transfere pela chave PIX e anexa o comprovante.
-4. O aporte nasce **pendente de homologação**: não credita moeda, não compõe o Poder do Sustento
+4. O aporte nasce **pendente de homologação**: não credita moeda, não compõe o Poder Sustentador
    e não dá lastro a nada.
-5. O Admin homologa na App 03. Só então o valor vira moedas, credita o Poder do Sustento e a
+5. O Admin homologa na App 03. Só então o valor vira moedas, credita o Poder Sustentador e a
    necessidade coberta sai da lista.
 6. Recusado, o Apoiador vê o motivo em linguagem simples, dentro da plataforma.
 7. Querendo aportar material ou serviço, a tela explica que aquilo entra pelo cadastro do
@@ -241,7 +241,7 @@ que responde pelos atos registrados no cadastro.
 | ID         | Requisito                                                                                   | Prioridade |
 | ---------- | ------------------------------------------------------------------------------------------- | ---------- |
 | `RF-14-21` | "Meus aportes" lista os aportes homologados em moedas, com data, tipo e destino             | essencial  |
-| `RF-14-22` | Poder do Sustento é exibido como total acumulado em moedas                                  | essencial  |
+| `RF-14-22` | Poder Sustentador é exibido como total acumulado em moedas                                  | essencial  |
 | `RF-14-23` | Nenhuma tela exibe reais, salvo aquela em que se declara a transferência, sempre com moedas | essencial  |
 | `RF-14-24` | Necessidades em aberto são listadas com atividade, comunidade e o que falta em moedas       | essencial  |
 | `RF-14-25` | Apoiador declara novo aporte a partir de uma necessidade ou por valor sugerido ou livre     | essencial  |
@@ -362,7 +362,7 @@ Imutabilidade e derivação:
   aplicação de confirmar existência.
 - A **novidade do favorito** é derivada, não armazenada: são os cinco fatos com data nos
   últimos 30 dias, lidos das entidades que os produzem.
-- O **Poder do Sustento** é derivado dos aportes homologados (PRD-07); esta aplicação apenas o lê.
+- O **Poder Sustentador** é derivado dos aportes homologados (PRD-07); esta aplicação apenas o lê.
 - O `Aporte` declarado aqui nasce **pendente**, com `origem do registro` igual a "App 08".
 
 ## 9. Contratos de API
@@ -376,7 +376,7 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessã
 | GET    | `/v1/vitrine/necessidades`           | pública      | Necessidades de recurso em aberto (PRD-07)                      |
 | PUT    | `/v1/eu/apoiador/identidade`         | Apoiador     | Define ou troca avatar e nick exibidos no card                  |
 | POST   | `/v1/eu/apoiador/documentos`         | Apoiador     | Envia comprobatório para o Admin anexar ao cadastro             |
-| GET    | `/v1/meus-aportes`                   | Apoiador     | Aportes homologados e Poder do Sustento, em moedas              |
+| GET    | `/v1/meus-aportes`                   | Apoiador     | Aportes homologados e Poder Sustentador, em moedas              |
 | POST   | `/v1/aportes/declarados`             | Apoiador     | Declara aporte em dinheiro, com comprovante, pendente           |
 | GET    | `/v1/eu/aportes/declarados`          | Apoiador     | Situação dos aportes declarados: pendente, homologado, recusado |
 | POST   | `/v1/desafios-extras`                | Apoiador     | Propõe desafio aberto ou direcionado                            |
@@ -460,7 +460,7 @@ validação — não é erro de tela.
   avatar, nick e total de moedas.
 - Apoiador com 5 moedas não consegue enviar avatar próprio, vê quanto falta e aparece na vitrine
   com o avatar padrão; ao cruzar as 10 moedas, o envio abre sem intervenção da gestão.
-- Aporte declarado fica pendente: não altera o Poder do Sustento nem cobre necessidade antes da
+- Aporte declarado fica pendente: não altera o Poder Sustentador nem cobre necessidade antes da
   homologação do Admin. Homologado, a necessidade sai da lista de abertas.
 - Tentativa de declarar aporte em material devolve a orientação de procurar a gestão.
 - Desafio proposto sem lastro não é publicado, e a tela mostra o que falta prover.
@@ -493,7 +493,7 @@ lançamento manual da gestão.
 | O aporte feito pela App 08 é em dinheiro; material e serviço pelo Admin | 02 §1, 03 §10 | Forma do aporte feito pela App 08     |
 | O direcionado alcança quem não tem divulgação, sem confirmar o nick     | 04 §3         | Direcionado a quem não tem divulgação |
 | Avatar próprio a partir de 10 moedas; abaixo do piso, avatar padrão     | 11 §8.2       | Piso do avatar personalizado          |
-| "Poder Econômico" passa a se chamar "Poder do Sustento"                 | 04 §1         | Nome do poder dos provedores          |
+| "Poder Econômico" passa a se chamar "Poder Sustentador"                 | 04 §1         | Nome do poder dos provedores          |
 
 As quatro primeiras fecharam as duas questões em aberto do PRD-14 no documento 08 e a pendência
 do formato do relatório de efetividade, que também constava do PRD-07. As duas últimas vieram

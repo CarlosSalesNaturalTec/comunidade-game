@@ -263,7 +263,7 @@ Sessao              Conteudo
 | `SolicitacaoDeDados`        | solicitante, instituição, e-mail, finalidade declarada, recorte pedido, situação, quem avaliou, desfecho, data e o que foi entregue                                                                                        |
 | `EtiquetaODS`               | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                                                                                           |
 | `SolicitacaoDeParticipacao` | nome ou razão social, e-mail, WhatsApp, pretensão, apresentação, instituição e links opcionais, aporte declarado (necessidade, valor sugerido ou livre), comprovante anexado, situação, prazo, quem avaliou, parecer, data |
-| `Apoiador`                  | identidade, avatar (próprio a partir de 10 moedas acumuladas; padrão do projeto abaixo do piso), nick único, artefatos comprobatórios, Poder do Sustento derivado dos aportes homologados                                  |
+| `Apoiador`                  | identidade, avatar (próprio a partir de 10 moedas acumuladas; padrão do projeto abaixo do piso), nick único, artefatos comprobatórios, Poder Sustentador derivado dos aportes homologados                                  |
 | `Auditoria`                 | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                                                                  |
 
 A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela que o App 01 tira

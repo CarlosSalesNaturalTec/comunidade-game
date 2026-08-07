@@ -25,8 +25,8 @@ Regras derivadas:
 - **Aporte por absorção.** Faltando saldo, um Mestre ou Admin pode **prover ele mesmo** o
   recurso — dar a aula sem receber, comprar o lanche, ceder o insumo —, e faz isso **a partir
   da própria necessidade publicada**, com um ato de confirmação. A plataforma registra como
-  **aporte dele**, valorado pela tabela de referência, e o crédito entra no seu Poder do
-  Sustento. O aporte nasce marcado como **ressarcível**, e quem absorveu ganha **destaque
+  **aporte dele**, valorado pela tabela de referência, e o crédito entra no seu Poder
+  Sustentador. O aporte nasce marcado como **ressarcível**, e quem absorveu ganha **destaque
   público** pelo ato.
 - **Ressarcimento não é direito nem promessa.** Não há fila permanente nem expectativa de
   devolução: o ressarcimento só existe quando entra receita destinada a ele. Havendo essa
@@ -36,7 +36,7 @@ Regras derivadas:
 - **A plataforma não guarda dado bancário.** Todo o trâmite corre na plataforma; na última
   etapa a pessoa envia a chave PIX **por e-mail ao Admin**, que faz a transferência e anexa
   o **comprovante** ao registro. Nem chave, nem banco, nem conta ficam armazenados.
-- O acumulado forma o **"Poder do Sustento"** do provedor, visível na plataforma: o
+- O acumulado forma o **"Poder Sustentador"** do provedor, visível na plataforma: o
   reconhecimento público de quem sustenta o projeto.
 
 ### A moeda da plataforma
@@ -47,12 +47,12 @@ R$ 10,00**.
 
 - Nas **vitrines públicas** exibe-se a **quantidade de moedas** aportada, **nunca o valor em
   reais**.
-- A moeda mede **aporte de recurso** e compõe o Poder do Sustento. Não se confunde com os
+- A moeda mede **aporte de recurso** e compõe o Poder Sustentador. Não se confunde com os
   **pontos**, que são do Guerreiro(a) e vêm de realização.
 - A moeda admite **fração, com duas casas** — R$ 5,00 são 0,50 moeda —, para que nenhum
   aporte pequeno se perca no arredondamento.
 - **A escala é fixa.** Alterá-la depois que o livro-razão tiver histórico obriga a reconverter
-  todos os aportes já registrados, sob pena de o Poder do Sustento comparar réguas diferentes.
+  todos os aportes já registrados, sob pena de o Poder Sustentador comparar réguas diferentes.
   Mudança de escala é decisão declarada, com reconversão, nunca ajuste silencioso.
 - **Reais aparecem só onde se paga.** A tela de aporte mostra o valor em reais, porque é o que
   se transfere, sempre **ao lado do equivalente em moedas**. Em toda exibição de aporte
@@ -71,7 +71,7 @@ contrário de reconhecer quem sustenta o projeto.
 Aportes em material e serviço são convertidos em moedas por uma **tabela de referência**
 mantida pela gestão: cada tipo de aporte — hora-aula, kit, livro, camisa, lanche, insumo —
 tem um valor padrão, e todo aporte do mesmo tipo vale o mesmo, o que torna comparável o
-Poder do Sustento entre apoiadores. **Tipo novo é cadastrado na hora por um Admin**, com o seu
+Poder Sustentador entre apoiadores. **Tipo novo é cadastrado na hora por um Admin**, com o seu
 valor de referência, para que nenhum aporte fique represado.
 
 ### Produção executiva
@@ -126,7 +126,7 @@ comprobatório do aporte**, exatamente o tipo de artefato que a plataforma exige
 Apoiador, e que fica anexado ao cadastro do Apoiador na App 03.
 
 É o **primeiro caso concreto** da economia descrita acima: entra no histórico do provedor,
-compõe o **Poder do Sustento** do Goethe-Institut e dá **lastro material** às duas trilhas
+compõe o **Poder Sustentador** do Goethe-Institut e dá **lastro material** às duas trilhas
 existentes, sem custo adicional para o primeiro ciclo.
 
 **Tratamento no livro-razão — regime misto (definição vigente):**
@@ -170,7 +170,7 @@ jurídica vinculada:
 | **Chave PIX** | `51.730.395/0001-19` (CNPJ)              |
 | **Titular**   | Robô Educa — Kits Robóticos Educacionais |
 
-- Toda doação recebida é **registrada no livro-razão** e compõe o **Poder do Sustento** do
+- Toda doação recebida é **registrada no livro-razão** e compõe o **Poder Sustentador** do
   doador — dinheiro não é exceção à regra de transparência, é o caso em que ela mais importa.
 - O doador é cadastrado como Apoiador por um Admin, com o comprovante anexado.
 - A chave é publicada na vitrine pública, na seção "Como apoiar".
@@ -188,7 +188,7 @@ Apoiador** e escolhe uma de três formas:
   automaticamente**: quem confere é um Admin, na App 03.
 - **Sem documento fiscal**: a plataforma não coleta CPF, CNPJ nem documento de identidade de
   quem aporta.
-- **Homologado o aporte**, o valor é convertido em **moedas**, credita o Poder do Sustento e o
+- **Homologado o aporte**, o valor é convertido em **moedas**, credita o Poder Sustentador e o
   card do Apoiador passa a exibir o total na vitrine. Antes disso não há crédito nem card.
 
 **Escada de valores sugeridos (definição vigente):**
@@ -249,7 +249,7 @@ e propondo desafios, sem acesso à área da família.
 
 | Registro                                                                        | Para que serve                                               |
 | ------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| **Recompensas creditadas** — o que ele custeou e entregou                       | Compõe o **Poder do Sustento**, como qualquer outro aporte   |
+| **Recompensas creditadas** — o que ele custeou e entregou                       | Compõe o **Poder Sustentador**, como qualquer outro aporte   |
 | **Realizações dos Guerreiros e Guerreiras** nos desafios que ele propôs         | Mostra **o que aconteceu** por causa daquele apoio           |
 | **Etiquetas ODS** herdadas da missão, ou da trilha, a que o desafio se vinculou | Mostra **a que objetivos da Agenda 2030** o apoio contribuiu |
 
@@ -346,7 +346,7 @@ O projeto é sustentável quando o ciclo se fecha:
 Apoiadores/Parceiros aportam recursos ──► Atividades acontecem (com lastro)
         ▲                                          │
         │                                          ▼
-Transparência + vídeos + Poder do Sustento ◄── Guerreiros e Guerreiras aprendem, pontuam e realizam
+Transparência + vídeos + Poder Sustentador ◄── Guerreiros e Guerreiras aprendem, pontuam e realizam
         ▲                                          │
         └────────── novos multiplicadores ◄────────┘
 ```

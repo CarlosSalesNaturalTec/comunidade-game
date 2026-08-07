@@ -364,7 +364,7 @@ nunca reescrito, pelas quatro superfícies públicas do ecossistema.
 | Comunidades Virtuais                                     | Painel público por comunidade em série histórica, agregado e anonimizado                      |
 | **Etiquetas ODS**                                        | Painel de cobertura da Agenda 2030 por comunidade e por ciclo, com destaque para a meta 17.18 |
 | Mestres                                                  | Cards com os **artefatos que comprovam a habilidade** — de qualquer área                      |
-| Apoiadores                                               | Poder do Sustento e desafios extras propostos, com as realizações que o apoio produziu        |
+| Apoiadores                                               | Poder Sustentador e desafios extras propostos, com as realizações que o apoio produziu        |
 | Rankings                                                 | Somente pontos regulares; Guerreiros e Guerreiras sem autorização não aparecem                |
 
 ### 8.2 Cards e páginas individuais dos personagens
