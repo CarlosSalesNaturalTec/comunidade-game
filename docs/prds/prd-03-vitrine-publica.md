@@ -56,6 +56,10 @@ hora — o sentido do fluxo é sempre esse.
 - **Formulário de solicitação de dados** para pesquisadores e gestores públicos.
 - **Chamada "Quero participar"** em **toda página individual** e no pedido de favoritar,
   levando à porta da Área do Apoiador — pré-cadastro e caminho de apoio.
+- **Botão "Entrar"** sempre visível, encaminhando cada persona à sua aplicação. A vitrine é a
+  **raiz do domínio** da plataforma.
+- **Área do gestor público**: bloco em destaque no recorte de gestores, explicando para que a
+  plataforma serve ao município e ao estado, com os limites declarados na mesma tela.
 - **Card de Apoiador padronizado**: moldura comum, avatar centralizado, nick e **total de
   moedas em destaque**.
 - **Necessidades de recurso em aberto** das atividades sem lastro, com o caminho para apoiar.
@@ -66,7 +70,8 @@ hora — o sentido do fluxo é sempre esse.
 
 ### 3.2 Fora do escopo
 
-- **Login, cadastro e qualquer área restrita** — a aplicação inteira é pública.
+- **Login, cadastro e qualquer área restrita** — a aplicação inteira é pública. O botão
+  "Entrar" **encaminha**; quem autentica é a aplicação de destino.
 - **Favoritos e qualquer preferência do visitante**: não são guardados nem no servidor nem no
   aparelho. Acompanhar alguém é função da App 08 (PRD-14).
 - **Pré-cadastro de Apoiador**: a tela é da App 08 (PRD-14); aqui fica só a chamada que leva
@@ -129,15 +134,21 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 
 ### 5.3 Gestor público — o território por ciclo
 
-1. O gestor escolhe o recorte **gestores públicos** e vê o painel do território por comunidade
-   e por ciclo, com a evolução no tempo.
-2. Ao lado, o **painel de cobertura da Agenda 2030**: quais objetivos as trilhas daquela
+1. O gestor escolhe o recorte **gestores públicos** e encontra, antes do painel, um **bloco em
+   destaque** que traduz a plataforma para quem decide: que dado ela produz, para que serve —
+   resíduos, iluminação, buracos na via, transporte, defesa civil, escolas —, como pedir o
+   conjunto completo, como apoiar e como replicar o modelo, já que o código é aberto.
+2. O mesmo bloco declara os limites: dado **agregado e anonimizado, nunca por Guerreiro(a)**, e
+   que **não substitui indicador oficial** — é evidência produzida por moradores sobre o
+   próprio lugar.
+3. Abaixo dele, o painel do território por comunidade e por ciclo, com a evolução no tempo.
+4. Ao lado, o **painel de cobertura da Agenda 2030**: quais objetivos as trilhas daquela
    comunidade tocaram, agregados por ciclo.
-3. A tela destaca a **meta 17.18** como a contribuição própria do projeto — dado local
+5. A tela destaca a **meta 17.18** como a contribuição própria do projeto — dado local
    desagregado do território — e registra que o **ODS 18 é adoção voluntária do Brasil**, não
    objetivo oficial da ONU.
-4. A cobertura nunca aparece por Guerreiro(a): é sempre da comunidade e do ciclo.
-5. Querendo a base para uma decisão de política pública, ele usa o mesmo formulário do
+6. A cobertura nunca aparece por Guerreiro(a): é sempre da comunidade e do ciclo.
+7. Querendo a base para uma decisão de política pública, ele usa o mesmo formulário do
    pesquisador.
 
 ### 5.4 Quem quer ser Mestre ou Apoiador
@@ -188,13 +199,30 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 5. Nada some do território: as séries continuam, agregadas e sem coletor, como sempre
    estiveram.
 
+### 5.8 Entrar na plataforma
+
+1. Qualquer pessoa que chega à raiz do domínio vê a vitrine e, sempre visível, o botão
+   **Entrar**.
+2. O botão pergunta **quem está entrando** e encaminha à aplicação correspondente:
+   Guerreiro(a) à App 05, responsável à App 07, Mestre à App 09, Apoiador à App 08, gestão à
+   App 03 e o **aparelho da aula** à App 01.
+3. A vitrine **não autentica ninguém**: a conferência de nick e imagem, o login social e a
+   credencial de usuário e senha acontecem na aplicação de destino.
+4. A escolha **não é guardada**: quem volta encontra a mesma pergunta, porque a vitrine não
+   grava preferência de visitante.
+5. Nenhuma tela do "Entrar" revela quem existe na plataforma — sem lista de nicks, sem
+   sugestão, sem confirmação de que uma conta existe.
+6. Quem ainda não tem cadastro recebe a orientação da sua persona: **pré-cadastro** para quem
+   quer ser Apoiador, **formulário de participação** para quem quer ser Mestre e **procurar a
+   gestão no encontro** para responsável e Guerreiro(a) — login não cria cadastro.
+
 ## 6. Requisitos funcionais
 
 ### 6.1 Navegação, cards e páginas
 
 | ID         | Requisito                                                                                                               | Prioridade |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-03-01` | Vitrine abre sem login e sem cadastro, em domínio próprio                                                               | essencial  |
+| `RF-03-01` | Vitrine abre sem login e sem cadastro, na raiz do domínio da plataforma                                                 | essencial  |
 | `RF-03-02` | Aplicação exibe as seis seções com cards: Guerreiros e Guerreiras, poderes, Mestres, batalhas, apoiadores e comunidades | essencial  |
 | `RF-03-03` | Cada card abre a página individual do personagem, com a composição do documento 11                                      | essencial  |
 | `RF-03-04` | Cards de Guerreiros e Guerreiras rotacionam a cada 5 segundos                                                           | essencial  |
@@ -270,6 +298,14 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 | `RF-03-51` | Vitrine não instala cookie, rastreador ou perfilamento do visitante                    | essencial  |
 | `RF-03-52` | Área detalhada explica o que a plataforma coleta, de quem, para quê e por quanto tempo | essencial  |
 | `RF-03-53` | Área detalhada declara que a vitrine não coleta dado do visitante                      | essencial  |
+| `RF-03-58` | Botão "Entrar" fica sempre visível e pergunta qual persona está entrando               | essencial  |
+| `RF-03-59` | Cada persona é encaminhada à sua aplicação, sem autenticação na vitrine                | essencial  |
+| `RF-03-60` | Escolha de persona não é guardada, no servidor ou no aparelho                          | essencial  |
+| `RF-03-61` | Nenhuma tela de entrada revela nick, conta ou existência de cadastro                   | essencial  |
+| `RF-03-62` | Quem não tem cadastro recebe a orientação da sua persona, sem prometer acesso          | essencial  |
+| `RF-03-63` | Recorte de gestores abre com bloco em destaque sobre a utilidade ao município          | essencial  |
+| `RF-03-64` | O bloco lista usos concretos do dado e o caminho para pedir o conjunto completo        | essencial  |
+| `RF-03-65` | O bloco declara os limites: dado agregado, nunca por Guerreiro(a), e não oficial       | essencial  |
 
 ## 7. Regras de negócio
 
@@ -294,6 +330,8 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 | `RN-03-17` | O convite não cria cadastro nem acesso: cadastrar Apoiador é ato de Admin                 | 3                      | 02 §1       |
 | `RN-03-25` | A chamada de participação é do projeto e nunca vincula apoio a um Guerreiro(a) específico | 10                     | 03 §8       |
 | `RN-03-26` | Card de Apoiador só existe com aporte homologado, e exibe o total em moedas               | 16                     | 04 §2       |
+| `RN-03-27` | A vitrine encaminha, nunca autentica: quem confere credencial é a aplicação de destino    | 1                      | 03 §1.1     |
+| `RN-03-28` | O dado publicado não substitui indicador oficial, e a vitrine diz isso ao gestor          | 7                      | 03 §8       |
 | `RN-03-18` | Aporte é exibido em moedas da plataforma, nunca em reais                                  | 16                     | 04 §1       |
 | `RN-03-19` | A etiqueta ODS é descritiva, agregada por comunidade e ciclo, nunca por Guerreiro(a)      | 20                     | 11 §2.1     |
 | `RN-03-20` | O ODS 18 é citado como adoção voluntária do Brasil, não como objetivo da ONU              | 20                     | 04 §4       |
@@ -438,6 +476,11 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   nenhuma preferência, nenhum dado no armazenamento local.
 - Nenhuma tela exibe anúncio, peça patrocinada ou espaço reservado a anunciante.
 - Auditoria da página confirma ausência de cookie e de requisição a rastreador de terceiros.
+- O botão "Entrar" leva cada persona à aplicação certa sem pedir credencial na vitrine, e a
+  escolha não sobrevive à recarga.
+- Digitar um nick na tela de entrada não confirma nem nega que ele exista.
+- O recorte de gestores abre com o bloco em destaque, com usos concretos e limites na mesma
+  tela.
 
 Hipóteses do Ciclo 01 (documento 10): este PRD **não sustenta hipótese própria** — ele é a
 superfície onde o efeito de **H2** fica visível (só aparece quem teve autorização) e onde o
@@ -455,6 +498,8 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 | Chamada "Quero participar" em toda página individual                     | 03 §8      | Chamada "Quero participar" nos perfis     |
 | Card de Apoiador com avatar, nick, moedas em destaque e moldura comum    | 11 §8.2    | Identidade pública do Apoiador            |
 | Pré-cadastro do Apoiador, com aporte declarado e comprovante             | 02 §1      | Pré-cadastro do Apoiador                  |
+| Vitrine na raiz do domínio, com botão "Entrar" por persona               | 03 §§1, 8  | Vitrine na raiz e botão "Entrar"          |
+| Área do gestor público, com utilidade e limites declarados               | 03 §8      | Área do gestor público na vitrine         |
 
 Duas dessas decisões **restringem regras anteriores**: a saída pública ia até a rua, e a
 vitrine tinha favoritos guardados no aparelho do visitante. A primeira foi propagada ao PRD-08,
@@ -495,3 +540,5 @@ entidade e não como contrato.
 | `RF-03-45` a `RF-03-49` | 03 §8 (institucional), 04 §1 (PIX e lastro) e 01 §7 (IA)       |
 | `RF-03-50` e `RF-03-51` | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)             |
 | `RF-03-52` e `RF-03-53` | 03 §12 (aviso de coleta e área detalhada)                      |
+| `RF-03-58` a `RF-03-62` | 03 §§1, 1.1, 8 (vitrine na raiz e entrada por persona)         |
+| `RF-03-63` a `RF-03-65` | 03 §8 (área do gestor) e 04 §4 (Agenda 2030 e meta 17.18)      |

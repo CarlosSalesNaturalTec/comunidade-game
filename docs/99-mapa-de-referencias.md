@@ -81,6 +81,8 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Entrega de dados (gratuita, íntegra e aprovada por Admin)          | 03 §12.3                                   | 04 §2, 08, 09                  |
 | Produção executiva (tempo do fundador e dos Admins, por absorção)  | 04 §1                                      | 08, 09, 10 §4.3                |
 | Recortes da vitrine (sociedade civil, pesquisadores, gestores)     | 03 §8                                      | 04 §4, 08, 09                  |
+| Vitrine na raiz do domínio e botão "Entrar" por persona            | 03 §§1, 8                                  | 08                             |
+| Área do gestor público (para que serve ao município e ao estado)   | 03 §8                                      | 04 §4, 08                      |
 | Granularidade da saída pública (agrega até o bairro)               | 02 §1                                      | 03 §§8, 12, 08, 09             |
 | Novidade dos favoritos (cinco fatos, 30 dias; só na App 08)        | 03 §10                                     | 02 §1, 03 §8, 08               |
 | Proteção das rotas públicas (limite por origem, atraso)            | 03 §8                                      | 02 §1, 08                      |

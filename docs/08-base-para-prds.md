@@ -238,7 +238,8 @@ lançada pelo Mestre (App 09) e pelo Admin (App 03), sem revisão de terceiro.
 
 ## PRD-03 — App 06: Vitrine pública
 
-**Escopo:** site público, sem login, em domínio próprio.
+**Escopo:** site público, sem login, na **raiz do domínio da plataforma** — é por ele que
+qualquer pessoa chega, e é dele que o botão **Entrar** encaminha cada persona à sua aplicação.
 
 **Requisitos:** seções Guerreiros e Guerreiras, Poderes, Mestres, Batalhas, Apoiadores e
 Comunidades Virtuais com cards individuais; **página individual detalhada** aberta a partir de
@@ -255,9 +256,12 @@ de que o ODS 18 é adoção voluntária do Brasil; **nota de transparência sobr
 nas seções institucionais; **sem favoritos e sem preferência guardada** — o pedido de favoritar
 leva à apresentação da Área do Apoiador, com solicitação de cadastro e caminho de apoio;
 **chamada "Quero participar" em toda página individual**, que leva à mesma porta e **nunca
-vincula o apoio à pessoa exibida**; **card de Apoiador padronizado** — moldura comum, avatar
-centralizado, nick e total de moedas em destaque; **limite por origem com atraso progressivo**
-na consulta por nick e nos dois formulários públicos.
+vincula o apoio à pessoa exibida**; **botão "Entrar"** sempre visível, encaminhando Guerreiro(a)
+à App 05, responsável à App 07, Mestre à App 09, Apoiador à App 08, gestão à App 03 e o aparelho
+da aula à App 01 — a vitrine não autentica ninguém e não guarda a escolha; **card de Apoiador
+padronizado** — moldura comum, avatar centralizado, nick e total de moedas em destaque;
+**limite por origem com atraso progressivo** na consulta por nick e nos dois formulários
+públicos.
 
 **Três recortes de leitura:** a vitrine é uma só e **sem login**; o que muda por público é a
 porta de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos. Nenhum
@@ -270,7 +274,13 @@ navegação — o visitante circula livremente entre os três.
   mede, cadência declarada no desafio, período coberto, origem da medição (registro manual ou
   sensor construído na trilha), número de registros válidos e licença de uso do conjunto.
 - **Gestores públicos** — painel do território por comunidade e por ciclo, com evolução no
-  tempo e o **painel de cobertura da Agenda 2030**, com destaque para a meta 17.18.
+  tempo e o **painel de cobertura da Agenda 2030**, com destaque para a meta 17.18. O recorte
+  abre com um **bloco em destaque** que traduz a plataforma para quem decide: que dado ela
+  produz, para que serve — coleta de resíduos, iluminação, buracos na via, transporte, defesa
+  civil, escolas —, como pedir o conjunto completo, como o poder público pode apoiar e como
+  replicar o modelo em outra comunidade, já que o código é aberto. O bloco declara os limites
+  na mesma tela: dado agregado e anonimizado, **nunca por Guerreiro(a)**, e que **não substitui
+  indicador oficial**.
 
 Os três obedecem à regra de saída — **agregada e anonimizada, nunca por Guerreiro(a)** — e
 param no **bairro**: rua, condomínio, bloco e quadra só saem no conjunto entregue sob

@@ -6,8 +6,9 @@
    terceiros** possam acessá-lo.
 2. **Rotas de consulta abertas** — leituras públicas (vitrine, rankings, batalhas, jogo) não
    exigem autenticação. Escrita e gestão exigem.
-3. **Frontends independentes** — em **domínios diferentes**, evoluindo desacoplados do
-   backend.
+3. **Frontends independentes** — em **endereços próprios**, evoluindo desacoplados do backend.
+   A **vitrine ocupa a raiz** do domínio da plataforma: é por ela que qualquer pessoa chega, e
+   é dela que o botão **Entrar** encaminha cada persona à sua aplicação.
 4. **Open Source** — todo o código-fonte é aberto, para permitir replicação por qualquer
    comunidade. O **conteúdo educacional publicado sai sob CC BY-SA**: qualquer um usa e
    adapta, creditando o Mestre autor, e o derivado herda a mesma licença.
@@ -455,6 +456,13 @@ Web App de acesso público e **sem autenticação**:
 - **Chamada "Quero participar"** em **toda página individual** — Guerreiro(a), Mestre, poder,
   apoiador e comunidade —, levando à **porta da Área do Apoiador**. A chamada é do projeto:
   **nunca vincula o apoio à pessoa exibida na página**.
+- **Botão "Entrar"**, sempre visível, que encaminha cada persona à sua aplicação: Guerreiro(a)
+  para a App 05, responsável para a App 07, Mestre para a App 09, Apoiador para a App 08,
+  gestão para a App 03 e o **aparelho da aula** para a App 01. A vitrine não autentica ninguém
+  — quem autentica é a aplicação de destino, na forma de §1.1 —, **não guarda a escolha** e não
+  revela quem existe na plataforma. Quem não tem cadastro recebe a orientação da sua persona:
+  pré-cadastro do Apoiador, formulário de participação do Mestre e, para o responsável e o
+  Guerreiro(a), procurar a gestão no encontro.
 - Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins — incluindo a **nota de
   transparência sobre IA**.
 - **"Como apoiar"** — canais de doação, incluindo a chave PIX da pessoa jurídica vinculada.
@@ -473,6 +481,14 @@ de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos:
 | **Sociedade civil**   | Conhecer, acompanhar e apoiar        | Narrativa, cards, criações originais, batalhas e "Como apoiar" — é o recorte **padrão**    |
 | **Pesquisadores**     | Dado do território para estudo       | Séries históricas por comunidade, com o que se mede, cadência, período e origem do dado    |
 | **Gestores públicos** | Evidência sobre o lugar para decidir | Painel do território por comunidade e ciclo e a cobertura da Agenda 2030, com a meta 17.18 |
+
+**Área do gestor público.** O recorte de gestores abre com um bloco em destaque que explica, na
+linguagem de quem decide, **para que a plataforma serve ao município e ao estado**: a série
+histórica do território por bairro, com metodologia declarada; a cobertura da Agenda 2030 por
+comunidade e ciclo; a entrega gratuita do conjunto na íntegra sob solicitação aprovada; e o
+código aberto, que permite replicar o modelo em outra comunidade. O mesmo bloco declara os
+limites: o dado sai **agregado e anonimizado, nunca por Guerreiro(a)**, e **não substitui
+indicador oficial** — é evidência produzida por moradores sobre o próprio lugar.
 
 Nenhum recorte cria área restrita, cadastro ou coleta de dado do visitante, e os três obedecem
 à regra de saída de sempre: **agregada e anonimizada, nunca por Guerreiro(a)**. Na vitrine o
