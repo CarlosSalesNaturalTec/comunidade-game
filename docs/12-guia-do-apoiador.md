@@ -105,6 +105,9 @@ Guerreiros e Guerreiras ou famílias.
   retenção (formato ainda em definição).
 - **Cobertura da Agenda 2030**: a que ODS o apoio contribuiu, herdado da missão ou da trilha a
   que os desafios se vincularam — agregado por comunidade e ciclo, nunca por criança.
+- **Pré-cadastro na Área do Apoiador**: você se identifica sem documento, escolhe o que vai
+  apoiar, anexa o comprovante e um Admin valida — aprovado, seu card vai à vitrine com o total
+  em moedas.
 - **Os mesmos dados do painel público**, com **favoritos**: parentes e amigos que não são um dos
   três responsáveis da criança acompanham por aqui, pelo nick que a família lhes cedeu, e podem
   direcionar desafios a ela. Acompanhar é ler o que já é público — não abre contato.

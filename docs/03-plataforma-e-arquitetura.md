@@ -6,8 +6,10 @@
    terceiros** possam acessá-lo.
 2. **Rotas de consulta abertas** — leituras públicas (vitrine, rankings, batalhas, jogo) não
    exigem autenticação. Escrita e gestão exigem.
-3. **Frontends independentes** — em **domínios diferentes**, evoluindo desacoplados do
-   backend.
+3. **Frontends independentes** — em **endereços próprios**, evoluindo desacoplados do backend.
+   A **vitrine ocupa a raiz** do domínio da plataforma — **`comunidadegame.org`** —: é por ela
+   que qualquer pessoa chega, e é dela que o botão **Entrar** encaminha cada persona à sua
+   aplicação.
 4. **Open Source** — todo o código-fonte é aberto, para permitir replicação por qualquer
    comunidade. O **conteúdo educacional publicado sai sob CC BY-SA**: qualquer um usa e
    adapta, creditando o Mestre autor, e o derivado herda a mesma licença.
@@ -440,14 +442,28 @@ Web App de acesso público e **sem autenticação**:
   fila de avaliação (§12.3).
 - **Aportes exibidos em moedas da plataforma**, nunca em reais (documento 04).
 - **Painel público da Comunidade Virtual** — dados do território em **série histórica**, em
-  **visão macro**, agregados e anonimizados, abertos à consulta da comunidade e de
-  instituições.
+  **visão macro**, agregados **até o bairro** e anonimizados (documento 02), abertos à consulta
+  da comunidade e de instituições.
 - **Portfólio de criações originais** — as criações dos Guerreiros e Guerreiras autorizados,
   com o nick do autor (ou dos autores, em equipe).
-- **Favoritos do visitante** — sem login e sem cadastro, o visitante marca Guerreiros,
-  Guerreiras e Mestres como favoritos e a vitrine passa a destacar as novidades deles primeiro.
-  A lista fica **no próprio aparelho**: a plataforma não coleta nada do visitante e, trocando de
-  aparelho, a lista não vai junto.
+- **Sem favoritos e sem qualquer preferência guardada** — nem no servidor, nem no aparelho do
+  visitante. Quem pede para favoritar ou acompanhar alguém é levado à **apresentação da Área do
+  Apoiador**, com o formulário de solicitação e o caminho de apoio: acompanhar é função de quem
+  se cadastra, não da vitrine.
+- **Proteção das rotas públicas**: a consulta por nick exato e o envio dos dois formulários têm
+  **limite por origem e janela de tempo, com atraso progressivo** a cada repetição — é o que
+  barra a varredura de nicks e o envio abusivo. **Sem CAPTCHA**, que é barreira de
+  acessibilidade, e **sem cadastro ou coleta de dado do visitante**.
+- **Chamada "Quero participar"** em **toda página individual** — Guerreiro(a), Mestre, poder,
+  apoiador e comunidade —, levando à **porta da Área do Apoiador**. A chamada é do projeto:
+  **nunca vincula o apoio à pessoa exibida na página**.
+- **Botão "Entrar"**, sempre visível, que encaminha cada persona à sua aplicação: Guerreiro(a)
+  para a App 05, responsável para a App 07, Mestre para a App 09, Apoiador para a App 08,
+  gestão para a App 03 e o **aparelho da aula** para a App 01. A vitrine não autentica ninguém
+  — quem autentica é a aplicação de destino, na forma de §1.1 —, **não guarda a escolha** e não
+  revela quem existe na plataforma. Quem não tem cadastro recebe a orientação da sua persona:
+  pré-cadastro do Apoiador, formulário de participação do Mestre e, para o responsável e o
+  Guerreiro(a), procurar a gestão no encontro.
 - Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins — incluindo a **nota de
   transparência sobre IA**.
 - **"Como apoiar"** — canais de doação, incluindo a chave PIX da pessoa jurídica vinculada.
@@ -455,8 +471,8 @@ Web App de acesso público e **sem autenticação**:
   território, não corporativa.
 - **Vídeo de apresentação**: os irmãos Susy e Otávio, os Rôbróders e o professor Carlos
   Trenell (narrativa da trilha Robô Educa).
-- É também o espaço da **publicidade** prevista como fonte de receita — sempre fora das áreas
-  de uso das crianças e sem coleta de dados de menores para fins publicitários.
+- **Sem publicidade e sem patrocínio no Ciclo 01** — e **sem cookie, rastreador ou
+  perfilamento** do visitante, para qualquer finalidade (documento 04).
 
 A vitrine é uma só e **sem login**. O que muda por público é o **recorte de leitura** — a porta
 de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos:
@@ -466,6 +482,14 @@ de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos:
 | **Sociedade civil**   | Conhecer, acompanhar e apoiar        | Narrativa, cards, criações originais, batalhas e "Como apoiar" — é o recorte **padrão**    |
 | **Pesquisadores**     | Dado do território para estudo       | Séries históricas por comunidade, com o que se mede, cadência, período e origem do dado    |
 | **Gestores públicos** | Evidência sobre o lugar para decidir | Painel do território por comunidade e ciclo e a cobertura da Agenda 2030, com a meta 17.18 |
+
+**Área do gestor público.** O recorte de gestores abre com um bloco em destaque que explica, na
+linguagem de quem decide, **para que a plataforma serve ao município e ao estado**: a série
+histórica do território por bairro, com metodologia declarada; a cobertura da Agenda 2030 por
+comunidade e ciclo; a entrega gratuita do conjunto na íntegra sob solicitação aprovada; e o
+código aberto, que permite replicar o modelo em outra comunidade. O mesmo bloco declara os
+limites: o dado sai **agregado e anonimizado, nunca por Guerreiro(a)**, e **não substitui
+indicador oficial** — é evidência produzida por moradores sobre o próprio lugar.
 
 Nenhum recorte cria área restrita, cadastro ou coleta de dado do visitante, e os três obedecem
 à regra de saída de sempre: **agregada e anonimizada, nunca por Guerreiro(a)**. Na vitrine o
@@ -513,11 +537,14 @@ notificação por e-mail**: o retorno acontece na própria plataforma, na área 
 
 ## 10. App 08 — Área do Apoiador
 
-Web App autenticado dos **Apoiadores já cadastrados** por um Admin. É onde o apoio deixa de
-ser um lançamento feito por terceiros e passa a ter canal próprio:
+Web App dos Apoiadores, com uma **porta pública de pré-cadastro** e a área autenticada de quem
+já foi cadastrado por um Admin. É onde o apoio deixa de ser um lançamento feito por terceiros e
+passa a ter canal próprio:
 
 | Função                        | O que o Apoiador faz                                                                                                                                |
 | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pré-cadastro**              | Identifica-se, escolhe o que vai aportar, anexa o comprovante e entra na fila de avaliação                                                          |
+| **Identidade pública**        | Define o **avatar** — logomarca ou imagem escolhida — e o **nick** que aparecem no seu card                                                         |
 | **Meus aportes**              | Acompanha o que aportou, em **moedas**, e o **Poder Econômico** acumulado                                                                           |
 | **Desafios extras**           | Propõe desafios abertos ou direcionados e acompanha validação do Mestre e aprovação do Admin                                                        |
 | **Efetividade do apoio**      | Vê o que os desafios produziram — sempre **agregado e por avatar**                                                                                  |
@@ -530,10 +557,24 @@ ser um lançamento feito por terceiros e passa a ter canal próprio:
 - **Nenhum contato direto com Guerreiro(a) ou família.** Proposta, entrega e reconhecimento
   seguem mediados pela plataforma; a App 07 não é compartilhada com Apoiadores. **Favoritar é
   leitura**: não abre canal, não avisa a criança e não dá acesso a nada além do que já é público.
+- **O que é novidade do favorito**: **criação original publicada, badge novo, nível novo,
+  resultado de batalha e trilha nova publicada pelo Mestre**, em destaque por **30 dias** a
+  contar da data do fato. **Favoritar existe só aqui** — a vitrine não guarda favorito de
+  ninguém.
 - **O nick vem da família, nunca da plataforma.** A busca é por nick exato, alcança apenas quem
   tem divulgação autorizada e não lista, sugere nem completa nomes.
-- **O app não cadastra Apoiador.** O cadastro continua exclusivo de Admin; quem ainda não é
-  Apoiador usa o formulário de solicitação da vitrine.
+- **O pré-cadastro não cadastra ninguém.** Ele grava a solicitação, o aporte declarado e o
+  comprovante; o cadastro segue **exclusivo de Admin**, que valida o comprovante na App 03.
+- **Três formas de aportar no pré-cadastro**: assumir uma das **necessidades publicadas**,
+  transferir um **valor sugerido** ou um **valor livre**, os dois últimos pela chave PIX.
+- **Comprovante obrigatório no Ciclo 01** — PDF, JPG ou PNG. Não há confirmação automática de
+  PIX: quem confere é o Admin.
+- **A identificação não usa documento**: nome ou razão social, e-mail e WhatsApp. A plataforma
+  não coleta CPF, CNPJ nem documento de identidade.
+- **Aprovado o cadastro e homologado o aporte**, o valor vira **moedas** e o card do Apoiador
+  passa a aparecer na vitrine com o total em destaque.
+- **Avatar e nick são do Apoiador**, definidos aqui e sujeitos à **auditoria por amostragem**
+  da gestão, que pode despublicar com motivo.
 - Toda proposta de desafio extra segue o fluxo vigente: validação do Mestre da trilha,
   aprovação de Admin e **lastro antes da publicação**.
 
@@ -627,9 +668,8 @@ Duas camadas, e a distinção entre elas é o que sustenta o desenho:
   vinculada hoje não se enquadra. Até lá, a camada pessoal se sustenta em consentimento, e é
   por isso que toda entrega a terceiros sai **anonimizada** (§12.3).
 - **Risco de reidentificação**: em comunidade pequena, código de coletor somado a data e local
-  fino ainda pode apontar uma criança. Toda saída passa por agregação suficiente para que isso
-  não ocorra, e a granularidade fina fica restrita a uso interno e a entregas com acordo
-  formal.
+  fino ainda pode apontar uma criança. Por isso a saída pública agrega até o bairro (documento
+  02), e rua, condomínio, bloco e quadra só saem nas entregas aprovadas (§12.3).
 
 ### 12.2 Prazos de guarda
 
@@ -654,7 +694,7 @@ minuto antes e opção de continuar, além do botão de sair sempre visível. O 
 é a próxima criança ver os dados da anterior.
 
 - **Georreferenciamento sem expor endereço de criança**: a granularidade publicada nunca pode
-  permitir inferir onde um Guerreiro(a) específico mora.
+  permitir inferir onde um Guerreiro(a) específico mora — daí o corte no bairro (documento 02).
 - **Aviso visível em toda aplicação:** onde há coleta de dado, o app indica ao usuário — de
   forma discreta e elegante, sem interromper o uso — o que está sendo coletado e quais são os
   seus direitos, com acesso a uma **área detalhada** que explica destino e uso de cada dado.

@@ -43,19 +43,30 @@ Regras derivadas:
 
 **Definição vigente.** A unidade de conta do livro-razão é a **moeda da plataforma**: todo
 aporte — em dinheiro, material ou serviço — é convertido em moedas, e **1 moeda equivale a
-R$ 100,00**.
+R$ 10,00**.
 
 - Nas **vitrines públicas** exibe-se a **quantidade de moedas** aportada, **nunca o valor em
   reais**.
 - A moeda mede **aporte de recurso** e compõe o Poder Econômico. Não se confunde com os
   **pontos**, que são do Guerreiro(a) e vêm de realização.
-- A moeda admite **fração, com duas casas** — R$ 50,00 são 0,50 moeda —, para que nenhum
+- A moeda admite **fração, com duas casas** — R$ 5,00 são 0,50 moeda —, para que nenhum
   aporte pequeno se perca no arredondamento.
+- **A escala é fixa.** Alterá-la depois que o livro-razão tiver histórico obriga a reconverter
+  todos os aportes já registrados, sob pena de o Poder Econômico comparar réguas diferentes.
+  Mudança de escala é decisão declarada, com reconversão, nunca ajuste silencioso.
+- **Reais aparecem só onde se paga.** A tela de aporte mostra o valor em reais, porque é o que
+  se transfere, sempre **ao lado do equivalente em moedas**. Em toda exibição de aporte
+  **de alguém** — card, página, ranking — o que sai é a quantidade de moedas.
 
 Por que assim: a plataforma é educativa e seu público inclui crianças e terceiros sem
 familiaridade com custos de operação, custeio e despesas. A moeda dá a **noção visual do
 montante** investido por cada apoiador em relação aos seus pares, sem expor valores
 monetários isolados.
+
+Por que **R$ 10,00** e não uma escala maior: assim o **lanche de um encontro vale cerca de 1
+moeda** — âncora que uma criança entende — e a menor doação da escada de sugestão vale **5
+moedas**, número inteiro e digno. Dez vezes maior, quem doa o que pode receberia meia moeda, o
+contrário de reconhecer quem sustenta o projeto.
 
 Aportes em material e serviço são convertidos em moedas por uma **tabela de referência**
 mantida pela gestão: cada tipo de aporte — hora-aula, kit, livro, camisa, lanche, insumo —
@@ -134,7 +145,6 @@ Acervo, kits e camisas são valorados pela tabela de referência, como qualquer 
 ## 2. Fontes de receita
 
 - **Doações** de pessoas físicas e jurídicas.
-- **Publicidade** na vitrine pública.
 - **Editais.**
 - **Campanhas de crowdfunding** para financiar aulas, kits e equipamentos (celulares,
   notebooks, tablets).
@@ -143,6 +153,12 @@ Acervo, kits e camisas são valorados pela tabela de referência, como qualquer 
 
 Os dados produzidos pela plataforma **não entram nesta lista**: sua disponibilização é
 gratuita, na vitrine e sob solicitação aprovada (documento 03).
+
+### Publicidade e patrocínio — fora do Ciclo 01
+
+**Definição vigente.** A plataforma **não veicula publicidade nem patrocínio**. O tema fica
+como **estudo para ciclo futuro**, e o que se decidir ali precisará responder antes ao que
+publicidade significa em plataforma usada por criança (documento 09).
 
 ### Doações em espécie — canal oficial
 
@@ -158,6 +174,35 @@ jurídica vinculada:
   doador — dinheiro não é exceção à regra de transparência, é o caso em que ela mais importa.
 - O doador é cadastrado como Apoiador por um Admin, com o comprovante anexado.
 - A chave é publicada na vitrine pública, na seção "Como apoiar".
+
+**Como o aporte entra, no Ciclo 01.** Quem chega pela vitrine faz o **pré-cadastro na Área do
+Apoiador** e escolhe uma de três formas:
+
+| Forma                     | O que é                                                                      |
+| ------------------------- | ---------------------------------------------------------------------------- |
+| **Necessidade publicada** | Assume uma das necessidades de recurso em aberto, pelo valor que ela declara |
+| **Valor sugerido**        | Escolhe um degrau da escada abaixo                                           |
+| **Valor livre**           | Informa o valor que transferiu                                               |
+
+- **Comprovante obrigatório** — PDF, JPG ou PNG. A plataforma **não confirma PIX
+  automaticamente**: quem confere é um Admin, na App 03.
+- **Sem documento fiscal**: a plataforma não coleta CPF, CNPJ nem documento de identidade de
+  quem aporta.
+- **Homologado o aporte**, o valor é convertido em **moedas**, credita o Poder Econômico e o
+  card do Apoiador passa a exibir o total na vitrine. Antes disso não há crédito nem card.
+
+**Escada de valores sugeridos (definição vigente):**
+
+| Valor       | Equivalente |
+| ----------- | ----------- |
+| R$ 50,00    | 5 moedas    |
+| R$ 100,00   | 10 moedas   |
+| R$ 250,00   | 25 moedas   |
+| R$ 500,00   | 50 moedas   |
+| R$ 1.000,00 | 100 moedas  |
+
+A tela mostra sempre os dois lados, e o **valor livre** exibe o equivalente em moedas antes do
+envio.
 
 ## 3. Interação Apoiadores × Guerreiros e Guerreiras: desafios extras
 

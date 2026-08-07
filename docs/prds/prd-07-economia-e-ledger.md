@@ -8,7 +8,7 @@
 | Aplicação        | — (domínio consumido pelas Apps 03, 05, 06, 08 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v3 — 2026-08-06                                      |
+| Versão e data    | v4 — 2026-08-06                                      |
 | Depende de       | PRD-08                                               |
 | Documentos-fonte | 04 §§1–3, 05 §3, 11 §5                               |
 
@@ -150,6 +150,8 @@ atividades previstas.
 | `RF-07-02` | Sistema versiona o valor de referência por data de vigência                                       | essencial  |
 | `RF-07-03` | Admin cadastra tipo novo no ato do registro de um aporte, sem interromper o fluxo                 | essencial  |
 | `RF-07-04` | Admin registra aporte com provedor, tipo, quantidade, comprovante e data                          | essencial  |
+| `RF-07-29` | Aporte declarado no pré-cadastro entra pendente, com comprovante e sem creditar nada              | essencial  |
+| `RF-07-30` | Homologação do aporte pendente converte o valor em moedas e credita o Poder Econômico             | essencial  |
 | `RF-07-05` | Sistema converte todo aporte em moedas pela tabela vigente na data do aporte                      | essencial  |
 | `RF-07-06` | Sistema registra aporte por absorção em nome do Mestre ou Admin que proveu o recurso              | essencial  |
 | `RF-07-07` | Sistema mantém saldo por tipo de recurso e ponto de apoio                                         | essencial  |
@@ -182,7 +184,7 @@ atividades previstas.
 | `RN-07-01` | Nenhuma atividade acontece sem lastro dos recursos que consome                              | 9          | 04 §1        |
 | `RN-07-02` | Todo custo de toda ação é atribuído a um provedor                                           | —          | 04 §1        |
 | `RN-07-03` | Aporte não financeiro é valorado pela tabela de referência da gestão                        | —          | 04 §1        |
-| `RN-07-04` | A moeda vale R$ 100,00 e admite duas casas decimais                                         | 16         | 04 §1        |
+| `RN-07-04` | A moeda vale R$ 10,00, admite duas casas decimais e a escala é fixa por ciclo               | 16         | 04 §1        |
 | `RN-07-05` | Toda saída pública exibe moedas, nunca reais                                                | 16         | 04 §1        |
 | `RN-07-06` | Recurso provido sem contrapartida financeira por Mestre ou Admin é aporte em nome dele      | —          | 04 §1        |
 | `RN-07-07` | Aporte de patrimônio credita o Poder Econômico uma única vez, sem baixa por consumo         | —          | 04 §1        |
@@ -199,6 +201,8 @@ atividades previstas.
 | `RN-07-18` | Ressarcimento pago reverte as moedas; o registro do ato e o destaque público permanecem     | —          | 04 §1        |
 | `RN-07-19` | O selo público mostra o número de absorções, nunca o valor em reais                         | 16         | 11 §8.2      |
 | `RN-07-20` | Chave PIX, banco e conta nunca são armazenados; o trâmite guarda apenas o comprovante       | —          | 04 §1        |
+| `RN-07-21` | Aporte declarado no pré-cadastro não credita moeda alguma antes da homologação de Admin     | 16         | 04 §2        |
+| `RN-07-22` | Comprovante é aceito em PDF, JPG ou PNG; não há confirmação automática de PIX               | —          | 04 §2        |
 
 ## 8. Modelo de dados
 
@@ -215,18 +219,18 @@ ItemPatrimonial 1 ── N Emprestimo
 ItemPatrimonial 0..1 ─ 1 NecessidadeDeReposicao
 ```
 
-| Entidade                 | Atributos essenciais                                                                                                                                                                                                                   |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `TipoDeRecurso`          | nome, natureza (consumível, durável, serviço, financeiro), unidade, exige comprovante                                                                                                                                                  |
-| `ValorDeReferencia`      | tipo, valor em moedas, vigência inicial e final, admin responsável                                                                                                                                                                     |
-| `Aporte`                 | provedor, tipo, quantidade, valor em moedas, valor de origem, forma (financeira, material, serviço, absorção), **ressarcível**, situação de ressarcimento (não se aplica, em aberto, ressarcido), comprovante, admin homologador, data |
-| `Lancamento`             | natureza (crédito, débito, ajuste), tipo de recurso, quantidade, moedas, atividade, aporte, data, autor, motivo do ajuste                                                                                                              |
-| `Reserva`                | atividade, tipo de recurso, quantidade, ponto de apoio, estado (reservada, consumida, liberada)                                                                                                                                        |
-| `SaldoDeRecurso`         | tipo, ponto de apoio, quantidade disponível, quantidade reservada                                                                                                                                                                      |
-| `ItemPatrimonial`        | aporte de origem, título, número de tombo, ponto de apoio, responsável designado, estado de conservação                                                                                                                                |
-| `Emprestimo`             | item, Guerreiro(a), missão, saída, devolução, estado de conservação na devolução                                                                                                                                                       |
-| `NecessidadeDeReposicao` | item ou tipo de recurso, quantidade, motivo, situação, aporte que a supriu                                                                                                                                                             |
-| `Ressarcimento`          | aporte absorvido, valor em reais, receita destinada de origem, admin pagador, data, comprovante anexado (PDF ou imagem)                                                                                                                |
+| Entidade                 | Atributos essenciais                                                                                                                                                                                                                                                                                           |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TipoDeRecurso`          | nome, natureza (consumível, durável, serviço, financeiro), unidade, exige comprovante                                                                                                                                                                                                                          |
+| `ValorDeReferencia`      | tipo, valor em moedas, vigência inicial e final, admin responsável                                                                                                                                                                                                                                             |
+| `Aporte`                 | provedor, tipo, quantidade, valor em moedas, valor de origem, forma (financeira, material, serviço, absorção), **origem do registro** (gestão ou pré-cadastro), solicitação de origem, **ressarcível**, situação de ressarcimento (não se aplica, em aberto, ressarcido), comprovante, admin homologador, data |
+| `Lancamento`             | natureza (crédito, débito, ajuste), tipo de recurso, quantidade, moedas, atividade, aporte, data, autor, motivo do ajuste                                                                                                                                                                                      |
+| `Reserva`                | atividade, tipo de recurso, quantidade, ponto de apoio, estado (reservada, consumida, liberada)                                                                                                                                                                                                                |
+| `SaldoDeRecurso`         | tipo, ponto de apoio, quantidade disponível, quantidade reservada                                                                                                                                                                                                                                              |
+| `ItemPatrimonial`        | aporte de origem, título, número de tombo, ponto de apoio, responsável designado, estado de conservação                                                                                                                                                                                                        |
+| `Emprestimo`             | item, Guerreiro(a), missão, saída, devolução, estado de conservação na devolução                                                                                                                                                                                                                               |
+| `NecessidadeDeReposicao` | item ou tipo de recurso, quantidade, motivo, situação, aporte que a supriu                                                                                                                                                                                                                                     |
+| `Ressarcimento`          | aporte absorvido, valor em reais, receita destinada de origem, admin pagador, data, comprovante anexado (PDF ou imagem)                                                                                                                                                                                        |
 
 Imutabilidade: `Lancamento` é **somente inserção**. Erro se corrige por lançamento de
 **ajuste**, que referencia o original e guarda motivo e autor. O saldo é sempre **derivado**

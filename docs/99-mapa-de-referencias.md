@@ -77,12 +77,20 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Equipes (grupo livre até 5, formadas no App 01, válidas na aula)   | 02 §5                                      | 03 §§4, 5, 08, 11 §4           |
 | Comunidade do onboarding vinda da aula agendada                    | 02 §1                                      | 01, 03 §§3, 5, 08, 10          |
 | Guerreiro(a) como termo da persona primária                        | 02 §1                                      | 01, 03, 08, 09                 |
-| Moeda da plataforma (1 moeda = R$ 100,00; vitrine em moedas)       | 04 §1                                      | 03 §8, 08, 11 §8.2, 12         |
+| Moeda da plataforma (1 moeda = R$ 10,00; escala fixa por ciclo)    | 04 §1                                      | 03 §8, 08, 11 §8.2, 12         |
 | Entrega de dados (gratuita, íntegra e aprovada por Admin)          | 03 §12.3                                   | 04 §2, 08, 09                  |
 | Produção executiva (tempo do fundador e dos Admins, por absorção)  | 04 §1                                      | 08, 09, 10 §4.3                |
 | Recortes da vitrine (sociedade civil, pesquisadores, gestores)     | 03 §8                                      | 04 §4, 08, 09                  |
+| Nome do projeto e endereço canônico da plataforma                  | 01 §1                                      | 03 §1, 09                      |
+| Vitrine na raiz do domínio e botão "Entrar" por persona            | 03 §§1, 8                                  | 08                             |
+| Área do gestor público (para que serve ao município e ao estado)   | 03 §8                                      | 04 §4, 08                      |
+| Granularidade da saída pública (agrega até o bairro)               | 02 §1                                      | 03 §§8, 12, 08, 09             |
+| Novidade dos favoritos (cinco fatos, 30 dias; só na App 08)        | 03 §10                                     | 02 §1, 03 §8, 08               |
+| Proteção das rotas públicas (limite por origem, atraso)            | 03 §8                                      | 02 §1, 08                      |
 | Aviso de LGPD visível nas aplicações e área detalhada              | 03 §12                                     | 08, 09                         |
 | Área do Apoiador (App 08) e registro de propostas                  | 03 §10                                     | 04, 08, 09, 12                 |
+| Pré-cadastro do Apoiador (aporte declarado e comprovante)          | 02 §1 e 03 §10                             | 04 §2, 08                      |
+| Identidade pública do Apoiador (avatar, nick, moldura do card)     | 11 §8.2                                    | 02 §1, 03 §§8, 10, 08          |
 | Área do Mestre (App 09) — autoria e operação                       | 03 §11                                     | 02, 05, 08, 09                 |
 | Publicação da trilha (sem aprovação prévia, travas e conteúdo)     | 03 §11                                     | 02, 05, 08, 11                 |
 | Atividade da missão (modalidade e formato)                         | 11 §§2.1, 4                                | 02, 03 §11, 08                 |
@@ -91,7 +99,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Leitura da produção do Guerreiro(a) e devolutiva construtiva       | 03 §§4, 7 e 11 §2.2                        | 02 §4, 09                      |
 | Auxílio de IA na autoria da trilha (estrutura, não conteúdo)       | 03 §11                                     | 01 §7, 09                      |
 | Recompensa conquistada em marco da trilha                          | 02 §8                                      | 03 §7, 08, 11 §2.1, 12         |
-| Acompanhamento por nick e favoritos (Apoiador e visitante)         | 02 §1 e 03 §§8, 10                         | 04 §3, 08, 12                  |
+| Acompanhamento por nick e favoritos (só do Apoiador)               | 02 §1 e 03 §10                             | 03 §8, 04 §3, 08, 12           |
 | Licença do conteúdo educacional (CC BY-SA)                         | 03 §1                                      | 01, 08, 09                     |
 | Regra de lastro (atividade só com recurso provido)                 | 04 §1                                      | 02, 05, 10, 11, 12             |
 | Poder Econômico                                                    | 04 §1                                      | 02, 12                         |
@@ -138,7 +146,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Trilha e missões                            | 02 §3 + 11 §2             | PRD-01, 09, 05                 |
 | Conteúdo e bibliografia por missão          | 05 §3 + 11 §2             | PRD-09, 07                     |
 | Atividades e taxonomia                      | 02 §4 + 11 §§2.1, 4       | PRD-09, 01, 02, 05             |
-| Acompanhamento por nick e favoritos         | 02 §1 + 03 §§8, 10        | PRD-03, 14, 01                 |
+| Acompanhamento por nick e favoritos         | 02 §1 + 03 §10            | PRD-14, 03, 01                 |
 | Desafios de desbloqueio                     | 02 §2                     | PRD-01, 09, 05                 |
 | Desafio de coleta (série temporal)          | 02 §1                     | PRD-01, 08, 05, 06             |
 | Desafios extras (abertos e direcionados)    | 04 §3                     | PRD-01, 02, 07, 09             |
@@ -151,7 +159,9 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Badges                                      | 11 §7                     | PRD-01, 03, 05, 12             |
 | Recompensa conquistada em marco             | 02 §8 + 11 §2.1           | PRD-09, 01, 05, 07             |
 | Vitrine e rankings                          | 03 §8 + 11 §8.1           | PRD-03                         |
+| Granularidade da saída pública              | 02 §1 + 03 §12            | PRD-03, 08, 01                 |
 | Cards e páginas individuais dos personagens | 11 §8.2                   | PRD-03, 12                     |
+| Pré-cadastro e identidade do Apoiador       | 02 §1 + 03 §10 + 11 §8.2  | PRD-14, 03, 02, 01, 07         |
 | Solicitação de Mestre ou Apoiador           | 02 §1 + 03 §8             | PRD-03, 02, 01                 |
 | Equipes                                     | 02 §5 + 11 §4             | PRD-04, 01, 02, 05             |
 | Comunidade do onboarding vinda da aula      | 02 §1 + 03 §3             | PRD-04, 02, 01, 08             |
@@ -217,10 +227,12 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     no App 01 e válida para **aquela aula presencial**; o Guerreiro(a) pode integrar várias e
     pontua em todas em que colabora — **uma só na partida de Quiz ao Vivo** —; no máximo
     **1 familiar com 17 anos ou mais**. A gestão não forma nem edita equipe.
-16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.**
+16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.** Reais só aparecem
+    na tela onde se paga, sempre ao lado do equivalente em moedas.
 17. **Os dados produzidos pela plataforma são gratuitos.** A vitrine mostra a visão macro e
-    agregada; o conjunto na íntegra, sempre anonimizado, vai a pesquisadores e gestores
-    públicos **mediante solicitação prévia e aprovação de um Admin**.
+    agregada, que **para no bairro**; o conjunto na íntegra, sempre anonimizado e podendo
+    descer a rua, condomínio, bloco e quadra, vai a pesquisadores e gestores públicos
+    **mediante solicitação prévia e aprovação de um Admin**.
 18. **Só a missão obrigatória conta no percurso do nível.** A opcional pontua e pode render
     badge, mas fica fora do denominador dos níveis 2, 3 e 4.
 19. **Toda atividade exige produção do Guerreiro(a)** — escrever, falar ou construir. A

@@ -41,10 +41,19 @@ datas anteriores e os organiza como projeto. O que já foi validado na prática 
 **oficinas presenciais do Robô Educa desde 2018**. O primeiro case real é a **Comunidade
 Guerreira Zeferina**, com o **Ciclo 01 de agosto a dezembro de 2026**.
 
-### Nomes do projeto
+### Nome do projeto
 
-**Comunidade Game** é o nome adotado. **Inova Comunidade** — usado na edição de 2024 na
-Comunidade Guerreira Zeferina — segue como alternativa em avaliação.
+**Comunidade Game** é o nome do projeto, e a decisão está fechada: ele nomeia o que o produto
+tem de próprio — a vida real tratada como partida — e fala com o público que a plataforma
+serve. Quem decide política pública é atendido por **posicionamento**, na área que a vitrine
+dedica ao gestor, não por outro nome.
+
+**Inova Comunidade** é o **nome histórico da edição de 2024** do Robô Educa na Comunidade
+Guerreira Zeferina. Segue citado como memória e relação prévia com o território, nunca como
+marca do produto.
+
+O endereço canônico da plataforma é **`comunidadegame.org`**, com **`comunidadegame.com.br`**
+registrado em defesa e redirecionando para ele.
 
 ## 2. Premissas fundadoras
 
@@ -59,7 +68,7 @@ O projeto nasce para:
 - **Evitar crenças limitantes** — o jovem periférico pode ocupar qualquer espaço.
 - Ser **efetivo e engajador** junto a crianças e jovens.
 - Ser **Open Source**, para alcançar o maior número possível de escolas e comunidades.
-- Ser **sustentável** por doações, parceiros, editais e publicidade na vitrine.
+- Ser **sustentável** por doações, parceiros e editais.
 
 > **Fora de escopo:** a plataforma **não se propõe a gerar encaminhamento profissional**. Ela
 > forma repertório, habilidade e confiança; o que o jovem faz com isso é escolha dele.

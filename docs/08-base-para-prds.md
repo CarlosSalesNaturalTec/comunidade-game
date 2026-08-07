@@ -238,21 +238,30 @@ lançada pelo Mestre (App 09) e pelo Admin (App 03), sem revisão de terceiro.
 
 ## PRD-03 — App 06: Vitrine pública
 
-**Escopo:** site público, sem login, em domínio próprio.
+**Escopo:** site público, sem login, na **raiz do domínio da plataforma** — é por ele que
+qualquer pessoa chega, e é dele que o botão **Entrar** encaminha cada persona à sua aplicação.
 
 **Requisitos:** seções Guerreiros e Guerreiras, Poderes, Mestres, Batalhas, Apoiadores e
 Comunidades Virtuais com cards individuais; **página individual detalhada** aberta a partir de
 cada card — Guerreiro(a), Mestre, poder, apoiador e comunidade —, com a composição do documento
 11; cards rotativos de Guerreiros e Guerreiras (rotação a cada 5 s); painel público de dados
-por comunidade **em série histórica**; "Quem somos" e "Contatos" editáveis; seção **"Como
-apoiar"** com a chave PIX do projeto; espaço de **publicidade** fora das áreas de uso das
-crianças; vídeo de apresentação (Susy, Otávio, Rôbróders, prof. Carlos Trenell); estética de
-comunidade (grafite, cores, imagens do território); **portfólio de criações originais** dos
+por comunidade **em série histórica**, agregado **até o bairro**; "Quem somos" e "Contatos"
+editáveis; seção **"Como apoiar"** com a chave PIX do projeto; **sem publicidade e sem
+patrocínio no Ciclo 01**, e sem qualquer rastreamento do visitante (documento 04); vídeo de
+apresentação (Susy, Otávio, Rôbróders, prof. Carlos Trenell); estética
+de comunidade (grafite, cores, imagens do território); **portfólio de criações originais** dos
 Guerreiros e Guerreiras autorizados, com o nick dos autores; **painel de cobertura da Agenda
 2030** por comunidade e por ciclo, com destaque para a contribuição à meta 17.18 e a ressalva
 de que o ODS 18 é adoção voluntária do Brasil; **nota de transparência sobre IA**
-nas seções institucionais; **favoritos do visitante** — sem login e sem cadastro, guardados no
-próprio aparelho, fazendo a vitrine destacar primeiro as novidades de quem ele acompanha.
+nas seções institucionais; **sem favoritos e sem preferência guardada** — o pedido de favoritar
+leva à apresentação da Área do Apoiador, com solicitação de cadastro e caminho de apoio;
+**chamada "Quero participar" em toda página individual**, que leva à mesma porta e **nunca
+vincula o apoio à pessoa exibida**; **botão "Entrar"** sempre visível, encaminhando Guerreiro(a)
+à App 05, responsável à App 07, Mestre à App 09, Apoiador à App 08, gestão à App 03 e o aparelho
+da aula à App 01 — a vitrine não autentica ninguém e não guarda a escolha; **card de Apoiador
+padronizado** — moldura comum, avatar centralizado, nick e total de moedas em destaque;
+**limite por origem com atraso progressivo** na consulta por nick e nos dois formulários
+públicos.
 
 **Três recortes de leitura:** a vitrine é uma só e **sem login**; o que muda por público é a
 porta de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos. Nenhum
@@ -265,12 +274,18 @@ navegação — o visitante circula livremente entre os três.
   mede, cadência declarada no desafio, período coberto, origem da medição (registro manual ou
   sensor construído na trilha), número de registros válidos e licença de uso do conjunto.
 - **Gestores públicos** — painel do território por comunidade e por ciclo, com evolução no
-  tempo e o **painel de cobertura da Agenda 2030**, com destaque para a meta 17.18.
+  tempo e o **painel de cobertura da Agenda 2030**, com destaque para a meta 17.18. O recorte
+  abre com um **bloco em destaque** que traduz a plataforma para quem decide: que dado ela
+  produz, para que serve — coleta de resíduos, iluminação, buracos na via, transporte, defesa
+  civil, escolas —, como pedir o conjunto completo, como o poder público pode apoiar e como
+  replicar o modelo em outra comunidade, já que o código é aberto. O bloco declara os limites
+  na mesma tela: dado agregado e anonimizado, **nunca por Guerreiro(a)**, e que **não substitui
+  indicador oficial**.
 
-Os três obedecem à regra de saída — **agregada e anonimizada, nunca por Guerreiro(a)** —, com
-a granularidade limitada pela mitigação de inferência de endereço, que segue pendente. O que a
-vitrine publica é a **visão macro**; o **conjunto na íntegra** é gratuito e sai por
-solicitação, como descrito abaixo. Ficam em aberto o formato de exportação e a licença de uso.
+Os três obedecem à regra de saída — **agregada e anonimizada, nunca por Guerreiro(a)** — e
+param no **bairro**: rua, condomínio, bloco e quadra só saem no conjunto entregue sob
+solicitação aprovada. O que a vitrine publica é a **visão macro**; o **conjunto na íntegra** é
+gratuito e sai por solicitação, como descrito abaixo.
 
 **Formulário de solicitação de dados:** pesquisadores e gestores públicos pedem o conjunto
 completo por formulário público, declarando quem são, a instituição e a finalidade do uso. O
@@ -294,6 +309,9 @@ responsável autorizou a divulgação**; Guerreiros e Guerreiras sem autorizaç�
 atividades mas não aparecem publicamente. As páginas de **Mestres e Apoiadores** exibem
 **currículo, portfólios, redes sociais e documentos comprobatórios externos**. Aportes aparecem
 em **moedas da plataforma**, nunca em reais.
+
+**Questões em aberto:** texto final e localização exata da nota de transparência sobre IA;
+formato de exportação e licença de uso do conjunto entregue sob solicitação.
 
 **Fontes:** docs 02, 03, 04, 11 (composição dos cards, páginas individuais e representação
 visual da comunidade).
@@ -431,7 +449,7 @@ ou o Admin pode **assumir o aporte por absorção** em um ato de confirmação, 
 aportar. Suprida a necessidade, a atividade é confirmada.
 
 **Moeda da plataforma como unidade de conta:** todo aporte — dinheiro, material ou serviço — é
-convertido em **moedas**, com **1 moeda = R$ 100,00**. O ledger guarda as duas
+convertido em **moedas**, com **1 moeda = R$ 10,00**. O ledger guarda as duas
 faces (moedas e valor de origem), mas **toda saída pública exibe apenas moedas**: é plataforma
 educativa, com público infantil e terceiros sem familiaridade com custeio, e o que se quer
 mostrar é o **montante relativo entre apoiadores**, nunca o valor monetário isolado.
@@ -529,8 +547,7 @@ pelos próprios Guerreiros e Guerreiras — a base _Data Driven_ da plataforma.
 **Questões em aberto:** fontes e sensores (registro manual × sensor construído pelo
 Guerreiro(a) × API pública); curadoria e **veracidade dos dados**; cadência e valor em pontos
 por tipo de coleta; **janela de tolerância** antes de considerar a série interrompida; teto de
-pontos por período; georreferenciamento sem expor endereço de criança; tecnologia de
-armazenamento das séries temporais.
+pontos por período; tecnologia de armazenamento das séries temporais.
 
 **Fontes:** docs 02, 03, 11.
 
@@ -729,6 +746,14 @@ quem sustenta o projeto, sem nenhum contato com Guerreiros e Guerreiras ou famí
 
 **Requisitos:**
 
+- **Pré-cadastro público**, porta de entrada de quem chega pela vitrine: identificação sem
+  documento — nome ou razão social, e-mail e WhatsApp —, escolha do que vai aportar entre
+  **necessidade publicada, valor sugerido ou valor livre**, e **anexo do comprovante** em PDF,
+  JPG ou PNG. A tela mostra cada valor **com o equivalente em moedas**. O pedido entra na fila
+  da App 03 e **não cria cadastro**: quem valida o comprovante e cadastra é um Admin.
+- **Identidade pública do Apoiador**: **avatar** — logomarca ou imagem escolhida — e **nick**,
+  definidos por ele depois de aprovado, sujeitos à unicidade de nick e à auditoria por
+  amostragem da gestão.
 - **Meus aportes**: histórico do que aportou, em **moedas da plataforma**, e Poder Econômico
   acumulado; leitura do mesmo ledger do PRD-07, sem edição.
 - **Necessidades de recurso em aberto**, publicadas pelas atividades sem lastro, com o caminho
@@ -750,8 +775,9 @@ quem sustenta o projeto, sem nenhum contato com Guerreiros e Guerreiras ou famí
   Apoiador na vitrine (PRD-03).
 - **Registro de propostas** de evolução da plataforma, com acompanhamento do status, na mesma
   fila de avaliação da gestão que recebe as sugestões e propostas das Apps 05, 07 e 09.
-- **Sem cadastro pelo app**: quem ainda não é Apoiador usa o formulário de solicitação da
-  vitrine; o cadastro segue exclusivo de Admin.
+- **Sem cadastro pelo app**: o pré-cadastro grava a solicitação, o aporte declarado e o
+  comprovante; o cadastro segue exclusivo de Admin, e só com ele o card vai à vitrine com o
+  total de moedas.
 
 **Questões em aberto:** se instituição tem mais de um usuário no mesmo cadastro;
 periodicidade do relatório de efetividade.
