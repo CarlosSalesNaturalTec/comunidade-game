@@ -8,7 +8,7 @@
 | Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | aprovado                                                   |
-| Versão e data    | v10 — 2026-08-06                                           |
+| Versão e data    | v11 — 2026-08-06                                           |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 9, 11 e 12, 04, 11                        |
 
@@ -212,6 +212,10 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RN-01-25` | Solicitação de dados não cria cadastro nem acesso, e a entrega exige aprovação registrada de Admin                      | 17         | 03 §12.3    |
 | `RN-01-26` | Saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin                                        | 7, 17      | 02 §1       |
 | `RN-01-27` | Rota pública tem limite por origem e janela, com atraso progressivo, sem exigir cadastro do visitante                   | —          | 03 §8       |
+| `RN-01-28` | Pré-cadastro de Apoiador não cria cadastro nem acesso: quem valida o comprovante e cadastra é um Admin                  | 3          | 02 §1       |
+| `RN-01-29` | A plataforma não coleta CPF, CNPJ nem documento de identidade de quem aporta                                            | —          | 02 §1       |
+| `RN-01-30` | O nick do Apoiador é único em toda a plataforma, como o do Guerreiro(a)                                                 | —          | 02 §1       |
+| `RN-01-31` | Aporte declarado só credita moedas e vai ao card público depois de homologado por Admin                                 | 16         | 04 §2       |
 
 ## 8. Modelo de dados
 
@@ -248,16 +252,18 @@ Sessao              Conteudo
                     ConsultaDeApoio
 ```
 
-| Entidade                   | Atributos essenciais                                                                                                                                                                |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Credencial`               | persona, tipo (biometria, login social, usuário e senha), identificador, segredo (_template_ cifrado ou hash), criada por, troca pendente, ativa                                    |
-| `Sessao`                   | persona, início, expiração, origem (aplicação), como autenticou, quem confirmou, encerrada em                                                                                       |
-| `VinculoResponsavel`       | responsável, Guerreiro(a), grau de parentesco, cadastrado por (Admin ou Mestre), início, fim                                                                                        |
-| `Consentimento`            | responsável, Guerreiro(a), tipo, versão do termo, decisão, data e hora, testemunha (Mestre ou Admin), anexo do termo assinado, origem (própria, assistida ou impressa), quem operou |
-| `SolicitacaoDoResponsavel` | protocolo, responsável, Guerreiro(a), tipo, texto, situação, prazo, quem tratou, desfecho e data                                                                                    |
-| `SolicitacaoDeDados`       | solicitante, instituição, e-mail, finalidade declarada, recorte pedido, situação, quem avaliou, desfecho, data e o que foi entregue                                                 |
-| `EtiquetaODS`              | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                                                    |
-| `Auditoria`                | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                           |
+| Entidade                    | Atributos essenciais                                                                                                                                                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Credencial`                | persona, tipo (biometria, login social, usuário e senha), identificador, segredo (_template_ cifrado ou hash), criada por, troca pendente, ativa                                                                           |
+| `Sessao`                    | persona, início, expiração, origem (aplicação), como autenticou, quem confirmou, encerrada em                                                                                                                              |
+| `VinculoResponsavel`        | responsável, Guerreiro(a), grau de parentesco, cadastrado por (Admin ou Mestre), início, fim                                                                                                                               |
+| `Consentimento`             | responsável, Guerreiro(a), tipo, versão do termo, decisão, data e hora, testemunha (Mestre ou Admin), anexo do termo assinado, origem (própria, assistida ou impressa), quem operou                                        |
+| `SolicitacaoDoResponsavel`  | protocolo, responsável, Guerreiro(a), tipo, texto, situação, prazo, quem tratou, desfecho e data                                                                                                                           |
+| `SolicitacaoDeDados`        | solicitante, instituição, e-mail, finalidade declarada, recorte pedido, situação, quem avaliou, desfecho, data e o que foi entregue                                                                                        |
+| `EtiquetaODS`               | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                                                                                           |
+| `SolicitacaoDeParticipacao` | nome ou razão social, e-mail, WhatsApp, pretensão, apresentação, instituição e links opcionais, aporte declarado (necessidade, valor sugerido ou livre), comprovante anexado, situação, prazo, quem avaliou, parecer, data |
+| `Apoiador`                  | identidade, avatar (logomarca ou imagem escolhida), nick único, artefatos comprobatórios, Poder Econômico derivado dos aportes homologados                                                                                 |
+| `Auditoria`                 | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                                                                  |
 
 A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela que o App 01 tira
 a comunidade do novo cadastro, e é a existência dela que habilita o onboarding naquele momento.
@@ -300,7 +306,8 @@ Convenções válidas para todas as rotas:
 | GET    | `/v1/vitrine/guerreiros/{nick}`     | pública         | Perfil público por nick exato, se houver divulgação autorizada |
 | GET    | `/v1/vitrine/ods/cobertura`         | pública         | Cobertura de ODS agregada por comunidade e ciclo               |
 | POST   | `/v1/solicitacoes-de-dados`         | pública         | Registra pedido do conjunto de dados, sem criar cadastro       |
-| POST   | `/v1/solicitacoes-de-participacao`  | pública         | Registra pedido de inclusão como Mestre ou Apoiador            |
+| POST   | `/v1/solicitacoes-de-participacao`  | pública         | Registra o pedido; do Apoiador, com aporte e comprovante       |
+| PUT    | `/v1/eu/apoiador/identidade`        | Apoiador        | Define ou troca o avatar e o nick exibidos no card             |
 | GET    | `/v1/auditoria`                     | Admin           | Trilha de auditoria das ações de gestão                        |
 
 As rotas de domínio — território, ledger, trilhas, atividades — estão nos PRDs que as definem

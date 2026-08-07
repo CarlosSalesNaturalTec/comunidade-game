@@ -86,6 +86,8 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Proteção das rotas públicas (limite por origem, atraso)            | 03 §8                                      | 02 §1, 08                      |
 | Aviso de LGPD visível nas aplicações e área detalhada              | 03 §12                                     | 08, 09                         |
 | Área do Apoiador (App 08) e registro de propostas                  | 03 §10                                     | 04, 08, 09, 12                 |
+| Pré-cadastro do Apoiador (aporte declarado e comprovante)          | 02 §1 e 03 §10                             | 04 §2, 08                      |
+| Identidade pública do Apoiador (avatar, nick, moldura do card)     | 11 §8.2                                    | 02 §1, 03 §§8, 10, 08          |
 | Área do Mestre (App 09) — autoria e operação                       | 03 §11                                     | 02, 05, 08, 09                 |
 | Publicação da trilha (sem aprovação prévia, travas e conteúdo)     | 03 §11                                     | 02, 05, 08, 11                 |
 | Atividade da missão (modalidade e formato)                         | 11 §§2.1, 4                                | 02, 03 §11, 08                 |
@@ -156,6 +158,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Vitrine e rankings                          | 03 §8 + 11 §8.1           | PRD-03                         |
 | Granularidade da saída pública              | 02 §1 + 03 §12            | PRD-03, 08, 01                 |
 | Cards e páginas individuais dos personagens | 11 §8.2                   | PRD-03, 12                     |
+| Pré-cadastro e identidade do Apoiador       | 02 §1 + 03 §10 + 11 §8.2  | PRD-14, 03, 02, 01, 07         |
 | Solicitação de Mestre ou Apoiador           | 02 §1 + 03 §8             | PRD-03, 02, 01                 |
 | Equipes                                     | 02 §5 + 11 §4             | PRD-04, 01, 02, 05             |
 | Comunidade do onboarding vinda da aula      | 02 §1 + 03 §3             | PRD-04, 02, 01, 08             |
@@ -221,7 +224,8 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     no App 01 e válida para **aquela aula presencial**; o Guerreiro(a) pode integrar várias e
     pontua em todas em que colabora — **uma só na partida de Quiz ao Vivo** —; no máximo
     **1 familiar com 17 anos ou mais**. A gestão não forma nem edita equipe.
-16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.**
+16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.** Reais só aparecem
+    na tela onde se paga, sempre ao lado do equivalente em moedas.
 17. **Os dados produzidos pela plataforma são gratuitos.** A vitrine mostra a visão macro e
     agregada, que **para no bairro**; o conjunto na íntegra, sempre anonimizado e podendo
     descer a rua, condomínio, bloco e quadra, vai a pesquisadores e gestores públicos

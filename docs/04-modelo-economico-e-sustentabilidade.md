@@ -51,6 +51,9 @@ R$ 100,00**.
   **pontos**, que são do Guerreiro(a) e vêm de realização.
 - A moeda admite **fração, com duas casas** — R$ 50,00 são 0,50 moeda —, para que nenhum
   aporte pequeno se perca no arredondamento.
+- **Reais aparecem só onde se paga.** A tela de aporte mostra o valor em reais, porque é o que
+  se transfere, sempre **ao lado do equivalente em moedas**. Em toda exibição de aporte
+  **de alguém** — card, página, ranking — o que sai é a quantidade de moedas.
 
 Por que assim: a plataforma é educativa e seu público inclui crianças e terceiros sem
 familiaridade com custos de operação, custeio e despesas. A moeda dá a **noção visual do
@@ -163,6 +166,24 @@ jurídica vinculada:
   doador — dinheiro não é exceção à regra de transparência, é o caso em que ela mais importa.
 - O doador é cadastrado como Apoiador por um Admin, com o comprovante anexado.
 - A chave é publicada na vitrine pública, na seção "Como apoiar".
+
+**Como o aporte entra, no Ciclo 01.** Quem chega pela vitrine faz o **pré-cadastro na Área do
+Apoiador** e escolhe uma de três formas:
+
+| Forma                     | O que é                                                                           |
+| ------------------------- | --------------------------------------------------------------------------------- |
+| **Necessidade publicada** | Assume uma das necessidades de recurso em aberto, pelo valor que ela declara      |
+| **Valor sugerido**        | Escolhe um dos valores da escada mantida pela gestão, com o equivalente em moedas |
+| **Valor livre**           | Informa o valor que transferiu                                                    |
+
+- **Comprovante obrigatório** — PDF, JPG ou PNG. A plataforma **não confirma PIX
+  automaticamente**: quem confere é um Admin, na App 03.
+- **Sem documento fiscal**: a plataforma não coleta CPF, CNPJ nem documento de identidade de
+  quem aporta.
+- **Homologado o aporte**, o valor é convertido em **moedas**, credita o Poder Econômico e o
+  card do Apoiador passa a exibir o total na vitrine. Antes disso não há crédito nem card.
+
+> **A definir:** os **valores da escada de sugestão** e o equivalente em moedas de cada um.
 
 ## 3. Interação Apoiadores × Guerreiros e Guerreiras: desafios extras
 

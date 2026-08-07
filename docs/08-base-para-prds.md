@@ -254,8 +254,10 @@ Guerreiros e Guerreiras autorizados, com o nick dos autores; **painel de cobertu
 de que o ODS 18 é adoção voluntária do Brasil; **nota de transparência sobre IA**
 nas seções institucionais; **sem favoritos e sem preferência guardada** — o pedido de favoritar
 leva à apresentação da Área do Apoiador, com solicitação de cadastro e caminho de apoio;
-**limite por origem com atraso progressivo** na consulta por nick e nos dois formulários
-públicos.
+**chamada "Quero participar" em toda página individual**, que leva à mesma porta e **nunca
+vincula o apoio à pessoa exibida**; **card de Apoiador padronizado** — moldura comum, avatar
+centralizado, nick e total de moedas em destaque; **limite por origem com atraso progressivo**
+na consulta por nick e nos dois formulários públicos.
 
 **Três recortes de leitura:** a vitrine é uma só e **sem login**; o que muda por público é a
 porta de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos. Nenhum
@@ -734,6 +736,14 @@ quem sustenta o projeto, sem nenhum contato com Guerreiros e Guerreiras ou famí
 
 **Requisitos:**
 
+- **Pré-cadastro público**, porta de entrada de quem chega pela vitrine: identificação sem
+  documento — nome ou razão social, e-mail e WhatsApp —, escolha do que vai aportar entre
+  **necessidade publicada, valor sugerido ou valor livre**, e **anexo do comprovante** em PDF,
+  JPG ou PNG. A tela mostra cada valor **com o equivalente em moedas**. O pedido entra na fila
+  da App 03 e **não cria cadastro**: quem valida o comprovante e cadastra é um Admin.
+- **Identidade pública do Apoiador**: **avatar** — logomarca ou imagem escolhida — e **nick**,
+  definidos por ele depois de aprovado, sujeitos à unicidade de nick e à auditoria por
+  amostragem da gestão.
 - **Meus aportes**: histórico do que aportou, em **moedas da plataforma**, e Poder Econômico
   acumulado; leitura do mesmo ledger do PRD-07, sem edição.
 - **Necessidades de recurso em aberto**, publicadas pelas atividades sem lastro, com o caminho
@@ -755,11 +765,13 @@ quem sustenta o projeto, sem nenhum contato com Guerreiros e Guerreiras ou famí
   Apoiador na vitrine (PRD-03).
 - **Registro de propostas** de evolução da plataforma, com acompanhamento do status, na mesma
   fila de avaliação da gestão que recebe as sugestões e propostas das Apps 05, 07 e 09.
-- **Sem cadastro pelo app**: quem ainda não é Apoiador usa o formulário de solicitação da
-  vitrine; o cadastro segue exclusivo de Admin.
+- **Sem cadastro pelo app**: o pré-cadastro grava a solicitação, o aporte declarado e o
+  comprovante; o cadastro segue exclusivo de Admin, e só com ele o card vai à vitrine com o
+  total de moedas.
 
 **Questões em aberto:** se instituição tem mais de um usuário no mesmo cadastro;
-periodicidade do relatório de efetividade.
+periodicidade do relatório de efetividade; valores da escada de sugestão e seu equivalente em
+moedas.
 
 **Fontes:** docs 03, 04, 12.
 

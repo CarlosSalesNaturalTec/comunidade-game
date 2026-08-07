@@ -376,7 +376,7 @@ App 04:
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | **Guerreiro(a)**       | Avatar, nick, badges, poderes com níveis, desempenho e **criações originais**                                                         | Imagem real, nome civil, redes sociais, qualquer canal de contato |
 | **Mestre**             | Nome/identidade, áreas de habilidade, artefatos comprobatórios, trilhas de autoria e **selo de quem sustentou atividade sem recurso** | —                                                                 |
-| **Apoiador**           | Identidade, Poder Econômico **em moedas**, desafios propostos e efetividade agregada                                                  | Dados de contato de Guerreiros e Guerreiras; valores em reais     |
+| **Apoiador**           | **Avatar, nick e total de moedas em destaque**, desafios propostos e efetividade agregada                                             | Dados de contato de Guerreiros e Guerreiras; valores em reais     |
 | **Comunidade Virtual** | Nome, território, representação visual, séries ativas, nº de Guerreiros e Guerreiras vinculados                                       | Granularidade que permita inferir endereço de criança             |
 
 **Definição vigente — todo card abre uma página individual.** O card é o resumo; a página é a
@@ -389,6 +389,11 @@ versão detalhada, com as mesmas restrições de exibição da tabela acima:
 | **Poder**              | Trilhas do poder, Mestres responsáveis, níveis e badges possíveis                                                                                                                                 |
 | **Apoiador**           | Aportes em moedas, desafios extras propostos com sua efetividade e a prova do apoio: **currículo, portfólios, redes sociais e comprobatórios**                                                    |
 | **Comunidade Virtual** | Séries históricas do território, representação visual, vitalidade e criações originais dos Guerreiros e Guerreiras vinculados                                                                     |
+
+**Identidade visual comum do card de Apoiador.** Os avatares dos Apoiadores são logomarcas e
+imagens de origens diferentes, e a vitrine os apresenta em **um só formato**: **moldura comum**,
+avatar **centralizado** em proporção fixa, nick abaixo e o **total de moedas em destaque**. É o
+que impede que a marca maior domine a página e mantém a leitura de coleção de cards.
 
 ### 8.3 Representação visual da Comunidade Virtual
 

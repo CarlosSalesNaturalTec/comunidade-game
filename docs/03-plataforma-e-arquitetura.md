@@ -452,6 +452,9 @@ Web App de acesso público e **sem autenticação**:
   **limite por origem e janela de tempo, com atraso progressivo** a cada repetição — é o que
   barra a varredura de nicks e o envio abusivo. **Sem CAPTCHA**, que é barreira de
   acessibilidade, e **sem cadastro ou coleta de dado do visitante**.
+- **Chamada "Quero participar"** em **toda página individual** — Guerreiro(a), Mestre, poder,
+  apoiador e comunidade —, levando à **porta da Área do Apoiador**. A chamada é do projeto:
+  **nunca vincula o apoio à pessoa exibida na página**.
 - Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins — incluindo a **nota de
   transparência sobre IA**.
 - **"Como apoiar"** — canais de doação, incluindo a chave PIX da pessoa jurídica vinculada.
@@ -517,11 +520,14 @@ notificação por e-mail**: o retorno acontece na própria plataforma, na área 
 
 ## 10. App 08 — Área do Apoiador
 
-Web App autenticado dos **Apoiadores já cadastrados** por um Admin. É onde o apoio deixa de
-ser um lançamento feito por terceiros e passa a ter canal próprio:
+Web App dos Apoiadores, com uma **porta pública de pré-cadastro** e a área autenticada de quem
+já foi cadastrado por um Admin. É onde o apoio deixa de ser um lançamento feito por terceiros e
+passa a ter canal próprio:
 
 | Função                        | O que o Apoiador faz                                                                                                                                |
 | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pré-cadastro**              | Identifica-se, escolhe o que vai aportar, anexa o comprovante e entra na fila de avaliação                                                          |
+| **Identidade pública**        | Define o **avatar** — logomarca ou imagem escolhida — e o **nick** que aparecem no seu card                                                         |
 | **Meus aportes**              | Acompanha o que aportou, em **moedas**, e o **Poder Econômico** acumulado                                                                           |
 | **Desafios extras**           | Propõe desafios abertos ou direcionados e acompanha validação do Mestre e aprovação do Admin                                                        |
 | **Efetividade do apoio**      | Vê o que os desafios produziram — sempre **agregado e por avatar**                                                                                  |
@@ -540,8 +546,18 @@ ser um lançamento feito por terceiros e passa a ter canal próprio:
   ninguém.
 - **O nick vem da família, nunca da plataforma.** A busca é por nick exato, alcança apenas quem
   tem divulgação autorizada e não lista, sugere nem completa nomes.
-- **O app não cadastra Apoiador.** O cadastro continua exclusivo de Admin; quem ainda não é
-  Apoiador usa o formulário de solicitação da vitrine.
+- **O pré-cadastro não cadastra ninguém.** Ele grava a solicitação, o aporte declarado e o
+  comprovante; o cadastro segue **exclusivo de Admin**, que valida o comprovante na App 03.
+- **Três formas de aportar no pré-cadastro**: assumir uma das **necessidades publicadas**,
+  transferir um **valor sugerido** ou um **valor livre**, os dois últimos pela chave PIX.
+- **Comprovante obrigatório no Ciclo 01** — PDF, JPG ou PNG. Não há confirmação automática de
+  PIX: quem confere é o Admin.
+- **A identificação não usa documento**: nome ou razão social, e-mail e WhatsApp. A plataforma
+  não coleta CPF, CNPJ nem documento de identidade.
+- **Aprovado o cadastro e homologado o aporte**, o valor vira **moedas** e o card do Apoiador
+  passa a aparecer na vitrine com o total em destaque.
+- **Avatar e nick são do Apoiador**, definidos aqui e sujeitos à **auditoria por amostragem**
+  da gestão, que pode despublicar com motivo.
 - Toda proposta de desafio extra segue o fluxo vigente: validação do Mestre da trilha,
   aprovação de Admin e **lastro antes da publicação**.
 

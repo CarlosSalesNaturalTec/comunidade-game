@@ -8,7 +8,7 @@
 | Aplicação        | App 06 — Vitrine pública                          |
 | Onda             | 4                                                 |
 | Situação         | em revisão                                        |
-| Versão e data    | v1 — 2026-08-06                                   |
+| Versão e data    | v2 — 2026-08-07                                   |
 | Depende de       | PRD-01, PRD-13                                    |
 | Documentos-fonte | 02 §§1, 4, 03 §§8, 12, 04 §§1, 2, 4, 11 §§8.1–8.3 |
 
@@ -21,9 +21,10 @@ nada sobre criança alguma — é superfície de leitura, e é essa restrição 
 
 O que muda na operação do Ciclo 01: os Guerreiros e Guerreiras cujo responsável autorizou
 aparecem com avatar, nick e portfólio; os painéis do território ficam abertos a moradores,
-associações, escolas, pesquisadores e poder público; e a plataforma ganha suas **duas portas de
-entrada de gente nova** — o formulário de quem quer ser Mestre ou Apoiador e o formulário de
-quem quer o conjunto de dados. Nenhum dos dois cadastra ninguém: os dois viram fila na App 03.
+associações, escolas, pesquisadores e poder público; e a plataforma ganha suas **portas de
+entrada de gente nova** — o formulário de quem quer ser Mestre ou Apoiador, o formulário de quem
+quer o conjunto de dados e a chamada **"Quero participar"**, que leva ao pré-cadastro da Área do
+Apoiador. Nenhuma delas cadastra ninguém: todas viram fila na App 03.
 
 A vitrine é consequência, não causa. Ela só existe na medida em que a App 07 (PRD-13) produziu
 autorizações, os Mestres publicaram trilhas (PRD-09), as séries de coleta correram (PRD-08) e o
@@ -53,8 +54,10 @@ hora — o sentido do fluxo é sempre esse.
   sobre os mesmos dados públicos.
 - **Formulário de solicitação de participação** como Mestre ou Apoiador.
 - **Formulário de solicitação de dados** para pesquisadores e gestores públicos.
-- **Convite ao acompanhamento**: o pedido de favoritar abre a apresentação da Área do
-  Apoiador, com o formulário de solicitação e o caminho de apoio.
+- **Chamada "Quero participar"** em **toda página individual** e no pedido de favoritar,
+  levando à porta da Área do Apoiador — pré-cadastro e caminho de apoio.
+- **Card de Apoiador padronizado**: moldura comum, avatar centralizado, nick e **total de
+  moedas em destaque**.
 - **Necessidades de recurso em aberto** das atividades sem lastro, com o caminho para apoiar.
 - **Seções institucionais** — "Quem somos", "Contatos" e "Como apoiar" com a chave PIX —, a
   **nota de transparência sobre IA** e o vídeo de apresentação.
@@ -66,8 +69,10 @@ hora — o sentido do fluxo é sempre esse.
 - **Login, cadastro e qualquer área restrita** — a aplicação inteira é pública.
 - **Favoritos e qualquer preferência do visitante**: não são guardados nem no servidor nem no
   aparelho. Acompanhar alguém é função da App 08 (PRD-14).
-- **Avaliação das solicitações** e **entrega do conjunto de dados**: são atos de Admin na App
-  03 (PRD-02).
+- **Pré-cadastro de Apoiador**: a tela é da App 08 (PRD-14); aqui fica só a chamada que leva
+  até ela.
+- **Avaliação das solicitações**, **validação do comprovante** e **entrega do conjunto de
+  dados**: são atos de Admin na App 03 (PRD-02).
 - **Edição do conteúdo institucional**: também da App 03; aqui só se exibe o que foi
   publicado.
 - **O jogo** (App 04, PRD-12), que consome os mesmos cards mas é outra aplicação.
@@ -147,20 +152,20 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 5. Repetindo o envio muitas vezes, o visitante encontra **espera crescente** antes de conseguir
    enviar de novo, com o motivo explicado em linguagem simples.
 
-### 5.5 Quem quer acompanhar alguém
+### 5.5 Quem quer participar, entrar ou apoiar
 
-1. O visitante encontra, no card ou na página, a ação de **favoritar ou acompanhar**.
-2. A vitrine **não guarda favorito**: a ação abre a **apresentação da Área do Apoiador**,
-   explicando que acompanhar Guerreiros, Guerreiras e Mestres, com as novidades em destaque, é
-   função de quem se cadastra como Apoiador.
-3. A mesma tela oferece dois caminhos: **solicitar a participação** como Apoiador, pelo
-   formulário público, e **apoiar** — chave PIX e necessidades de recurso em aberto.
-4. A tela diz que a solicitação **não cria cadastro nem acesso** e que o cadastro é ato de
-   Admin, com prazo de 7 dias.
-5. Quem não quer nenhum dos dois volta à navegação sem preencher nada. Nada é gravado sobre a
-   visita, nem no servidor nem no aparelho.
-6. É a diferença de desenho que sustenta a regra: acompanhar exige uma pessoa identificada e
-   avaliada, e a vitrine não identifica ninguém.
+1. **Toda página individual** — de Guerreiro(a), Mestre, poder, apoiador ou comunidade — traz a
+   chamada **"Quero participar"**. O pedido de favoritar leva ao mesmo lugar.
+2. A chamada é **do projeto**: não oferece apoiar aquela pessoa, e a tela seguinte não carrega
+   o nome nem o nick de quem estava sendo visto.
+3. Ela abre a **porta da Área do Apoiador**, que explica o que é ser Apoiador — aportar, propor
+   desafios extras, acompanhar favoritos — e leva ao **pré-cadastro**, onde a pessoa se
+   identifica sem documento, escolhe o que vai aportar e anexa o comprovante.
+4. A mesma tela mostra o caminho de quem não quer se cadastrar agora: **doar pela chave PIX** e
+   ver as **necessidades de recurso em aberto**.
+5. A tela diz que o pré-cadastro **não cria cadastro nem acesso**: um Admin valida o
+   comprovante, com prazo de 7 dias, e só então o card aparece na vitrine.
+6. Quem desiste volta à navegação sem preencher nada, e nada é gravado sobre a visita.
 
 ### 5.6 Procurar alguém pelo nick
 
@@ -196,6 +201,9 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 | `RF-03-05` | Card e página de Guerreiro(a) exibem só avatar, nick, badges, poderes e desempenho                                      | essencial  |
 | `RF-03-06` | Nenhuma tela exibe imagem real, nome civil, rede social ou contato de Guerreiro(a)                                      | essencial  |
 | `RF-03-07` | Página de Mestre e de Apoiador exibe currículo, portfólios, redes sociais e comprobatórios                              | essencial  |
+| `RF-03-55` | Card de Apoiador exibe avatar, nick e o total de moedas aportadas em destaque                                           | essencial  |
+| `RF-03-56` | Cards de Apoiador seguem moldura comum, com avatar centralizado em proporção fixa                                       | essencial  |
+| `RF-03-57` | Apoiador sem aporte homologado não aparece na vitrine                                                                   | essencial  |
 | `RF-03-08` | Portfólio exibe as criações originais autorizadas, com título, trilha, data e autoria por nick                          | essencial  |
 | `RF-03-09` | Ranking público exibe apenas pontos regulares e apenas quem tem divulgação autorizada                                   | essencial  |
 | `RF-03-10` | Aporte de Apoiador é exibido em moedas da plataforma, nunca em reais                                                    | essencial  |
@@ -239,15 +247,15 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 
 ### 6.4 Convite ao acompanhamento
 
-| ID         | Requisito                                                                                       | Prioridade |
-| ---------- | ----------------------------------------------------------------------------------------------- | ---------- |
-| `RF-03-38` | Vitrine não guarda favorito nem preferência do visitante, no servidor ou no aparelho            | essencial  |
-| `RF-03-39` | Ação de favoritar ou acompanhar abre a apresentação da Área do Apoiador                         | essencial  |
-| `RF-03-40` | Apresentação explica que acompanhar, com favoritos e novidades, é função do Apoiador cadastrado | essencial  |
-| `RF-03-41` | Tela oferece o formulário de solicitação de participação como Apoiador                          | essencial  |
-| `RF-03-42` | Tela oferece o caminho de apoio: chave PIX e necessidades de recurso em aberto                  | essencial  |
-| `RF-03-43` | Tela declara que a solicitação não cria cadastro nem acesso, com o prazo de 7 dias              | essencial  |
-| `RF-03-44` | Recusar o convite devolve o visitante à navegação, sem gravar nada sobre a visita               | essencial  |
+| ID         | Requisito                                                                                    | Prioridade |
+| ---------- | -------------------------------------------------------------------------------------------- | ---------- |
+| `RF-03-38` | Vitrine não guarda favorito nem preferência do visitante, no servidor ou no aparelho         | essencial  |
+| `RF-03-39` | Toda página individual traz a chamada "Quero participar", que leva à Área do Apoiador        | essencial  |
+| `RF-03-40` | Ação de favoritar ou acompanhar leva à mesma porta                                           | essencial  |
+| `RF-03-41` | A chamada não vincula o apoio à pessoa exibida, e a tela seguinte não carrega quem era vista | essencial  |
+| `RF-03-42` | Porta apresenta o que é ser Apoiador e leva ao pré-cadastro da App 08                        | essencial  |
+| `RF-03-43` | Porta oferece também doar pela chave PIX e ver as necessidades de recurso em aberto          | essencial  |
+| `RF-03-44` | Recusar o convite devolve o visitante à navegação, sem gravar nada sobre a visita            | essencial  |
 
 ### 6.5 Institucional e transparência
 
@@ -265,31 +273,33 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                  | Invariante (doc 99 §6) | Fonte       |
-| ---------- | -------------------------------------------------------------------------------------- | ---------------------- | ----------- |
-| `RN-03-01` | A vitrine é pública, sem login, e não escreve nada sobre Guerreiro(a)                  | 1                      | 03 §§1.1, 8 |
-| `RN-03-02` | Só aparece publicamente o Guerreiro(a) com autorização vigente do responsável          | 12                     | 03 §12      |
-| `RN-03-03` | A revogação vale para frente e é imediata no que é público                             | 11                     | 03 §9       |
-| `RN-03-04` | Guerreiro(a) aparece só por avatar e nick, sem imagem real, nome civil ou contato      | 12                     | 03 §12      |
-| `RN-03-05` | Não há canal de contato entre visitante e Guerreiro(a) ou família                      | 10                     | 02 §1       |
-| `RN-03-06` | A consulta é por nick exato, sem listagem, sugestão ou completação                     | 12                     | 02 §1       |
-| `RN-03-07` | Nick inexistente e nick sem autorização recebem a mesma resposta                       | 12                     | 03 §8       |
-| `RN-03-08` | Rota pública tem limite por origem e atraso progressivo, sem CAPTCHA nem cadastro      | —                      | 03 §8       |
-| `RN-03-09` | A saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin     | 7, 17                  | 02 §1       |
-| `RN-03-10` | O painel público nunca identifica o coletor, nem por código                            | 7                      | 02 §1       |
-| `RN-03-11` | Solicitação de participação não cria cadastro nem acesso, e a avaliação é de Admin     | 3                      | 02 §1       |
-| `RN-03-12` | O prazo de resposta ao solicitante é de 7 dias                                         | —                      | 02 §1       |
-| `RN-03-13` | Solicitação de dados não entrega nada no ato: a entrega exige aprovação de Admin       | 17                     | 03 §12.3    |
-| `RN-03-14` | A entrega do conjunto é gratuita e anonimizada em qualquer granularidade aprovada      | 17                     | 03 §12.3    |
-| `RN-03-15` | A vitrine não guarda favorito nem preferência do visitante, em lugar nenhum            | —                      | 03 §8       |
-| `RN-03-16` | Favoritar é função da App 08, de Apoiador cadastrado, e lá é leitura: não abre contato | 10                     | 03 §10      |
-| `RN-03-17` | O convite não cria cadastro nem acesso: cadastrar Apoiador é ato de Admin              | 3                      | 02 §1       |
-| `RN-03-18` | Aporte é exibido em moedas da plataforma, nunca em reais                               | 16                     | 04 §1       |
-| `RN-03-19` | A etiqueta ODS é descritiva, agregada por comunidade e ciclo, nunca por Guerreiro(a)   | 20                     | 11 §2.1     |
-| `RN-03-20` | O ODS 18 é citado como adoção voluntária do Brasil, não como objetivo da ONU           | 20                     | 04 §4       |
-| `RN-03-21` | A vitrine não veicula publicidade nem patrocínio no Ciclo 01                           | —                      | 04 §2       |
-| `RN-03-22` | A vitrine não instala cookie, rastreador ou perfilamento, para nenhuma finalidade      | —                      | 04 §2       |
-| `RN-03-23` | Toda tela indica o que a plataforma coleta, com acesso à área detalhada                | —                      | 03 §12      |
+| ID         | Regra                                                                                     | Invariante (doc 99 §6) | Fonte       |
+| ---------- | ----------------------------------------------------------------------------------------- | ---------------------- | ----------- |
+| `RN-03-01` | A vitrine é pública, sem login, e não escreve nada sobre Guerreiro(a)                     | 1                      | 03 §§1.1, 8 |
+| `RN-03-02` | Só aparece publicamente o Guerreiro(a) com autorização vigente do responsável             | 12                     | 03 §12      |
+| `RN-03-03` | A revogação vale para frente e é imediata no que é público                                | 11                     | 03 §9       |
+| `RN-03-04` | Guerreiro(a) aparece só por avatar e nick, sem imagem real, nome civil ou contato         | 12                     | 03 §12      |
+| `RN-03-05` | Não há canal de contato entre visitante e Guerreiro(a) ou família                         | 10                     | 02 §1       |
+| `RN-03-06` | A consulta é por nick exato, sem listagem, sugestão ou completação                        | 12                     | 02 §1       |
+| `RN-03-07` | Nick inexistente e nick sem autorização recebem a mesma resposta                          | 12                     | 03 §8       |
+| `RN-03-08` | Rota pública tem limite por origem e atraso progressivo, sem CAPTCHA nem cadastro         | —                      | 03 §8       |
+| `RN-03-09` | A saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin        | 7, 17                  | 02 §1       |
+| `RN-03-10` | O painel público nunca identifica o coletor, nem por código                               | 7                      | 02 §1       |
+| `RN-03-11` | Solicitação de participação não cria cadastro nem acesso, e a avaliação é de Admin        | 3                      | 02 §1       |
+| `RN-03-12` | O prazo de resposta ao solicitante é de 7 dias                                            | —                      | 02 §1       |
+| `RN-03-13` | Solicitação de dados não entrega nada no ato: a entrega exige aprovação de Admin          | 17                     | 03 §12.3    |
+| `RN-03-14` | A entrega do conjunto é gratuita e anonimizada em qualquer granularidade aprovada         | 17                     | 03 §12.3    |
+| `RN-03-15` | A vitrine não guarda favorito nem preferência do visitante, em lugar nenhum               | —                      | 03 §8       |
+| `RN-03-16` | Favoritar é função da App 08, de Apoiador cadastrado, e lá é leitura: não abre contato    | 10                     | 03 §10      |
+| `RN-03-17` | O convite não cria cadastro nem acesso: cadastrar Apoiador é ato de Admin                 | 3                      | 02 §1       |
+| `RN-03-25` | A chamada de participação é do projeto e nunca vincula apoio a um Guerreiro(a) específico | 10                     | 03 §8       |
+| `RN-03-26` | Card de Apoiador só existe com aporte homologado, e exibe o total em moedas               | 16                     | 04 §2       |
+| `RN-03-18` | Aporte é exibido em moedas da plataforma, nunca em reais                                  | 16                     | 04 §1       |
+| `RN-03-19` | A etiqueta ODS é descritiva, agregada por comunidade e ciclo, nunca por Guerreiro(a)      | 20                     | 11 §2.1     |
+| `RN-03-20` | O ODS 18 é citado como adoção voluntária do Brasil, não como objetivo da ONU              | 20                     | 04 §4       |
+| `RN-03-21` | A vitrine não veicula publicidade nem patrocínio no Ciclo 01                              | —                      | 04 §2       |
+| `RN-03-22` | A vitrine não instala cookie, rastreador ou perfilamento, para nenhuma finalidade         | —                      | 04 §2       |
+| `RN-03-23` | Toda tela indica o que a plataforma coleta, com acesso à área detalhada                   | —                      | 03 §12      |
 
 ## 8. Modelo de dados
 
@@ -419,8 +429,11 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   obrigatórios, e a tela informa os 7 dias.
 - Formulário de dados enviado não devolve arquivo nem link: a tela declara a aprovação de Admin
   como condição.
-- Pedir para favoritar abre a apresentação da Área do Apoiador, com o formulário de
-  solicitação e o caminho de apoio; recusar devolve à navegação sem gravar nada.
+- Toda página individual traz a chamada "Quero participar"; clicando nela, a tela seguinte não
+  cita a pessoa que estava sendo vista e leva ao pré-cadastro da App 08.
+- Pedir para favoritar chega à mesma porta; recusar devolve à navegação sem gravar nada.
+- Card de Apoiador exibe avatar, nick e total de moedas na moldura comum; quem não teve aporte
+  homologado não aparece.
 - Depois de navegar e recarregar, a vitrine está idêntica à primeira visita: nenhum favorito,
   nenhuma preferência, nenhum dado no armazenamento local.
 - Nenhuma tela exibe anúncio, peça patrocinada ou espaço reservado a anunciante.
@@ -439,6 +452,9 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 | Limite por origem com atraso progressivo nas rotas públicas, sem CAPTCHA | 03 §8      | Proteção das rotas públicas da vitrine    |
 | Vitrine sem favoritos: o pedido vira convite a se cadastrar e apoiar     | 03 §8      | Favoritos apenas na App 08                |
 | Novidade dos favoritos na App 08: cinco fatos, em destaque por 30 dias   | 03 §10     | O que conta como "novidade" dos favoritos |
+| Chamada "Quero participar" em toda página individual                     | 03 §8      | Chamada "Quero participar" nos perfis     |
+| Card de Apoiador com avatar, nick, moedas em destaque e moldura comum    | 11 §8.2    | Identidade pública do Apoiador            |
+| Pré-cadastro do Apoiador, com aporte declarado e comprovante             | 02 §1      | Pré-cadastro do Apoiador                  |
 
 Duas dessas decisões **restringem regras anteriores**: a saída pública ia até a rua, e a
 vitrine tinha favoritos guardados no aparelho do visitante. A primeira foi propagada ao PRD-08,
@@ -468,13 +484,14 @@ entidade e não como contrato.
 | Requisito               | Origem                                                         |
 | ----------------------- | -------------------------------------------------------------- |
 | `RF-03-01` a `RF-03-14` | 03 §8 (vitrine), 11 §§8.1, 8.2 (cards e páginas) e 03 §12      |
+| `RF-03-55` a `RF-03-57` | 11 §8.2 (card e moldura do Apoiador) e 04 §2 (aporte)          |
 | `RF-03-15` a `RF-03-21` | 02 §1 (série e granularidade) e 11 §8.3 (representação visual) |
 | `RF-03-22` a `RF-03-24` | 04 §4 (Agenda 2030 e meta 17.18) e 11 §2.1 (etiqueta ODS)      |
 | `RF-03-25` e `RF-03-26` | 03 §8 (três recortes de leitura)                               |
 | `RF-03-27` a `RF-03-31` | 02 §1 (solicitação de participação, dados mínimos e prazo)     |
 | `RF-03-32` a `RF-03-34` | 03 §12.3 (entrega sob solicitação aprovada)                    |
 | `RF-03-35` a `RF-03-37` | 03 §8 (proteção das rotas públicas)                            |
-| `RF-03-38` a `RF-03-44` | 03 §§8, 10 (sem favoritos aqui) e 02 §1 (cadastro por Admin)   |
+| `RF-03-38` a `RF-03-44` | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)    |
 | `RF-03-45` a `RF-03-49` | 03 §8 (institucional), 04 §1 (PIX e lastro) e 01 §7 (IA)       |
 | `RF-03-50` e `RF-03-51` | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)             |
 | `RF-03-52` e `RF-03-53` | 03 §12 (aviso de coleta e área detalhada)                      |

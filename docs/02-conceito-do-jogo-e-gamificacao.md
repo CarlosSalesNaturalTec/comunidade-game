@@ -68,6 +68,14 @@ Pessoas e instituições que financiam ou divulgam o projeto.
   precisa estar **comprovado por materiais ou artefatos registrados na plataforma** —
   incluindo currículo, portfólio, redes sociais e documentos externos da pessoa ou
   instituição.
+- **Pré-cadastro na Área do Apoiador**, aberto a quem chega pela vitrine: a pessoa se
+  identifica, declara o aporte e anexa o comprovante. Continua sendo **solicitação, não
+  cadastro** — quem avalia e cadastra é um Admin.
+- **Identificação sem documento**: nome ou razão social, e-mail e WhatsApp bastam. A plataforma
+  **não coleta CPF, CNPJ nem documento de identidade**.
+- **Avatar e nick próprios**, definidos pelo Apoiador na App 08 depois de aprovado: o avatar
+  pode ser a logomarca ou outra imagem escolhida, e o nick segue a **unicidade de nick** da
+  plataforma.
 - Cada recurso aportado é registrado e contabilizado no seu **Poder Econômico**.
 
 ### Pais e responsáveis
@@ -100,6 +108,13 @@ cadastra continua sendo um Admin.
 **Dados mínimos do formulário:** nome, e-mail, WhatsApp, pretensão (Mestre ou Apoiador) e um
 texto livre de apresentação. Instituição representada e links comprobatórios são opcionais.
 **Prazo de resposta ao solicitante: 7 dias.**
+
+**Duas portas, conforme o que a pessoa traz.** Quem se apresenta sem transferência em dinheiro
+— apoio em material, serviço ou divulgação, e quem quer ser Mestre — usa este formulário da
+vitrine. Quem vai **aportar em dinheiro** faz o **pré-cadastro na Área do Apoiador**, onde
+declara o aporte — uma das **necessidades publicadas**, um **valor sugerido** ou um **valor
+livre** — e anexa o **comprovante**, obrigatório no Ciclo 01. As duas portas terminam na mesma
+fila de avaliação do Admin, e nenhuma delas cadastra ninguém.
 
 ### Público geral / Visitantes
 
