@@ -184,7 +184,7 @@ atividades previstas.
 | `RN-07-01` | Nenhuma atividade acontece sem lastro dos recursos que consome                              | 9          | 04 §1        |
 | `RN-07-02` | Todo custo de toda ação é atribuído a um provedor                                           | —          | 04 §1        |
 | `RN-07-03` | Aporte não financeiro é valorado pela tabela de referência da gestão                        | —          | 04 §1        |
-| `RN-07-04` | A moeda vale R$ 100,00 e admite duas casas decimais                                         | 16         | 04 §1        |
+| `RN-07-04` | A moeda vale R$ 10,00, admite duas casas decimais e a escala é fixa por ciclo               | 16         | 04 §1        |
 | `RN-07-05` | Toda saída pública exibe moedas, nunca reais                                                | 16         | 04 §1        |
 | `RN-07-06` | Recurso provido sem contrapartida financeira por Mestre ou Admin é aporte em nome dele      | —          | 04 §1        |
 | `RN-07-07` | Aporte de patrimônio credita o Poder Econômico uma única vez, sem baixa por consumo         | —          | 04 §1        |

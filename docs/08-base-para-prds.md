@@ -439,7 +439,7 @@ ou o Admin pode **assumir o aporte por absorção** em um ato de confirmação, 
 aportar. Suprida a necessidade, a atividade é confirmada.
 
 **Moeda da plataforma como unidade de conta:** todo aporte — dinheiro, material ou serviço — é
-convertido em **moedas**, com **1 moeda = R$ 100,00**. O ledger guarda as duas
+convertido em **moedas**, com **1 moeda = R$ 10,00**. O ledger guarda as duas
 faces (moedas e valor de origem), mas **toda saída pública exibe apenas moedas**: é plataforma
 educativa, com público infantil e terceiros sem familiaridade com custeio, e o que se quer
 mostrar é o **montante relativo entre apoiadores**, nunca o valor monetário isolado.
@@ -770,8 +770,7 @@ quem sustenta o projeto, sem nenhum contato com Guerreiros e Guerreiras ou famí
   total de moedas.
 
 **Questões em aberto:** se instituição tem mais de um usuário no mesmo cadastro;
-periodicidade do relatório de efetividade; valores da escada de sugestão e seu equivalente em
-moedas.
+periodicidade do relatório de efetividade.
 
 **Fontes:** docs 03, 04, 12.
 

@@ -77,7 +77,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Equipes (grupo livre até 5, formadas no App 01, válidas na aula)   | 02 §5                                      | 03 §§4, 5, 08, 11 §4           |
 | Comunidade do onboarding vinda da aula agendada                    | 02 §1                                      | 01, 03 §§3, 5, 08, 10          |
 | Guerreiro(a) como termo da persona primária                        | 02 §1                                      | 01, 03, 08, 09                 |
-| Moeda da plataforma (1 moeda = R$ 100,00; vitrine em moedas)       | 04 §1                                      | 03 §8, 08, 11 §8.2, 12         |
+| Moeda da plataforma (1 moeda = R$ 10,00; escala fixa por ciclo)    | 04 §1                                      | 03 §8, 08, 11 §8.2, 12         |
 | Entrega de dados (gratuita, íntegra e aprovada por Admin)          | 03 §12.3                                   | 04 §2, 08, 09                  |
 | Produção executiva (tempo do fundador e dos Admins, por absorção)  | 04 §1                                      | 08, 09, 10 §4.3                |
 | Recortes da vitrine (sociedade civil, pesquisadores, gestores)     | 03 §8                                      | 04 §4, 08, 09                  |
