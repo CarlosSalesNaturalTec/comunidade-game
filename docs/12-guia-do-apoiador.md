@@ -1,8 +1,9 @@
 # 12 — Guia do Apoiador
 
 > Resumo prático da relação do Apoiador com o Comunidade Game: o que é o projeto, por que
-> apoiar, o que o Ciclo 01 precisa, como apoiar e como funcionam os desafios extras. É um
-> documento **derivado** — as regras completas estão nos documentos 02, 04, 05 e 10.
+> apoiar, o que o Ciclo 01 precisa, como apoiar e como funcionam as missões e os desafios
+> extras. É um documento **derivado** — as regras completas estão nos documentos 02, 04, 05,
+> 10 e 14.
 
 ## 1. Linhas gerais do projeto
 
@@ -43,37 +44,53 @@ reconhecimento.
   doou 298 livros, 30 kits MDF e 50 camisas, com Termo de Doação assinado, dando lastro
   material às duas primeiras trilhas.
 
-## 3. Estrutura necessária para o Ciclo 01
+## 3. O que a plataforma precisa
 
 Pela regra de lastro, **nenhuma atividade acontece sem os recursos providos** — e a hipótese
-**H3** do ciclo mede exatamente se mestres e apoiadores conseguem supri-los.
+**H3** do ciclo mede exatamente se mestres e apoiadores conseguem supri-los. A necessidade tem
+quatro níveis, na ordem do que quebra primeiro se faltar:
 
-| Frente                     | Recursos                                                                                                                 |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **Ponto de apoio**         | Espaço físico na comunidade (hackerspace, fab lab, sala cedida) com guarda do acervo                                     |
-| **Equipamentos**           | Notebooks, smartphones e tablets de uso compartilhado — viabilizam a dinâmica assíncrona dos encontros                   |
-| **Operação dos encontros** | Hora-aula dos mentores, lanche dos Guerreiros e Guerreiras, insumos das oficinas (LEDs, baterias, papel, kit de encapar) |
-| **Recompensas**            | Catálogo entregue nos marcos da trilha (kits de alimentos e itens não alimentares)                                       |
-| **Infraestrutura digital** | Servidores, armazenamento e execução das aplicações                                                                      |
-| **Reposições**             | Acervo e materiais — perda ou dano nunca gera cobrança à família; vira necessidade de reposição a ser aportada           |
+| Nível            | No Ciclo 01                                                                                                                    |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **1 Existir**    | Servidores, armazenamento e execução das aplicações; o código da plataforma                                                    |
+| **2 Acontecer**  | Ponto de apoio com guarda do acervo; notebooks, smartphones e tablets compartilhados; hora-aula, lanche e insumos das oficinas |
+| **3 Reconhecer** | Catálogo entregue nos marcos da trilha — kits de alimentos, camisas, livros e kits MDF                                         |
+| **4 Permanecer** | Reposição do acervo e dos materiais; formação de multiplicadores; conteúdo educacional                                         |
+
+Perda ou dano nunca gera cobrança à família: vira necessidade de reposição a ser aportada.
 
 ## 4. Como apoiar
 
-1. **Solicitação pela vitrine.** Pessoas e instituições interessadas preenchem o formulário
-   público de solicitação de participação como Mestre ou Apoiador. A solicitação é gravada e
-   avaliada por um Admin.
+1. **Diga o que você traz.** A chamada "Quero participar" começa por aí. Quem vai transferir
+   dinheiro faz o **pré-cadastro na Área do Apoiador** e anexa o comprovante; quem traz insumo,
+   equipamento, alimento, serviço, conteúdo, código ou divulgação — e quem quer ensinar — usa o
+   **formulário da vitrine**. As duas portas caem na mesma fila de avaliação do Admin.
 2. **Cadastro por um Admin.** Todo Apoiador — pessoa física ou jurídica — é cadastrado
    exclusivamente pelos Admins, com o apoio **comprovado por materiais ou artefatos registrados
    na plataforma** (termo de doação, comprovante, registro do material, currículo, portfólio e
    redes sociais), que ficam visíveis na sua página da vitrine.
 3. **Doações em dinheiro** — por **PIX**, no canal oficial: chave `51.730.395/0001-19` (CNPJ),
    titular **Robô Educa — Kits Robóticos Educacionais**, pessoa jurídica vinculada ao projeto.
+   A escada de valores sugeridos é uma para pessoa física e outra para pessoa jurídica.
 4. **Doações de materiais e serviços** — equipamentos, insumos, acervo, hora de trabalho: tudo
    entra no livro-razão com o mesmo rigor do dinheiro.
-5. **Todo aporte compõe o Poder Sustentador** do Apoiador, convertido em **moedas da plataforma**
-   e visível publicamente na vitrine.
+5. **Todo aporte compõe o Poder Sustentador** do Apoiador, convertido em **moedas da
+   plataforma** e visível publicamente na vitrine.
+6. **Ninguém precisa cobrir sozinho.** A necessidade aceita aporte parcial, e várias pessoas
+   fecham juntas o que falta.
 
-## 5. Desafios extras
+## 5. Missões, níveis e selos
+
+O que a plataforma pede a quem apoia vem em **missões** — "o lanche do encontro", "um aparelho
+a mais", "reposição sem cobrança" —, cada uma ligada a uma necessidade real do livro-razão. A
+missão conclui quando um Admin homologa o aporte, e rende **moedas e um selo**.
+
+Sobe de **nível de sustento** quem cobre frentes **diferentes**, não quem transfere mais
+dinheiro, e o topo é o **Multiplicador**: quem passa a ensinar ou traz código para a
+plataforma. Não há ranking por valor, e moeda alguma abre acesso a dado de criança, canal de
+contato ou prioridade de qualquer espécie.
+
+## 6. Desafios extras
 
 Aportar é o começo da relação; a interação com os Guerreiros e Guerreiras acontece pelos
 **desafios extras**:
@@ -91,16 +108,16 @@ Aportar é o começo da relação; a interação com os Guerreiros e Guerreiras 
   Proposta, entrega e reconhecimento são sempre mediados pela plataforma, e o relatório de
   efetividade é agregado e por avatar.
 
-## 6. O que o Apoiador acompanha
+## 7. O que o Apoiador acompanha
 
-A **App 08 — Área do Apoiador** é o canal próprio de quem apoia: aportes em moedas, proposição
-e acompanhamento dos desafios extras, relatório de efetividade, envio de documentos
-comprobatórios e **registro de propostas** de evolução da plataforma. Nada nela dá acesso a
-Guerreiros e Guerreiras ou famílias.
+A **App 08 — Área do Apoiador** é o canal próprio de quem apoia: aportes em moedas, missões
+disponíveis, proposição e acompanhamento dos desafios extras, relatório de efetividade, envio
+de documentos comprobatórios e **registro de propostas** de evolução da plataforma. Nada nela
+dá acesso a Guerreiros e Guerreiras ou famílias.
 
 - **Seu card público** na vitrine e a **página individual** que ele abre: identidade, Poder
-  Sustentador em moedas, desafios propostos, o que o apoio produziu e os documentos que o
-  comprovam.
+  Sustentador em moedas, nível de sustento e selos, desafios propostos, o que o apoio produziu
+  e os documentos que o comprovam.
 - **Efetividade dos seus desafios** em painel atualizado a cada conclusão — quantos concluíram
   e em que trilhas —, sempre agregado e por avatar.
 - **Cobertura da Agenda 2030**: a que ODS o apoio contribuiu, herdado da missão ou da trilha a

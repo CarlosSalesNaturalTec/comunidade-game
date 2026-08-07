@@ -67,7 +67,7 @@ o que é público — cada um pela sua aplicação, todos sobre a mesma verdade.
 | Mestre       | Suas trilhas e conteúdos, lançamentos e pontuação negativa das suas atividades, condução do Quiz ao Vivo das suas aulas, auditoria de coleta, aprovação de local, aportes seus, cadastro de responsável e vínculo com Guerreiros e Guerreiras | O que é público, suas turmas e o **painel do dia** na App 03, em leitura |
 | Guerreiro(a) | Seus registros de coleta, suas criações, suas sugestões, recompensas recebidas nos marcos, a **equipe que forma na aula** e a resposta de quiz da equipe                                                                                      | Seus dados, as equipes da aula em andamento e o que é público            |
 | Responsável  | Consentimentos, autorizações, solicitações e propostas                                                                                                                                                                                        | Os Guerreiros e Guerreiras sob sua responsabilidade e o que é público    |
-| Apoiador     | Propostas de desafio extra, documentos comprobatórios, propostas de evolução                                                                                                                                                                  | Seus aportes, efetividade agregada e o que é público                     |
+| Apoiador     | Aportes declarados, cobertura de missão, propostas de desafio extra, documentos comprobatórios, propostas de evolução                                                                                                                         | Seus aportes, efetividade agregada e o que é público                     |
 | Visitante    | Solicitação de participação e solicitação de dados, pelas rotas públicas da vitrine                                                                                                                                                           | Somente o que é público                                                  |
 
 Regra geral: **leitura pública é aberta; escrita é sempre autenticada e auditada.**
@@ -245,7 +245,9 @@ Sessao              Conteudo
                     SolicitacaoDoResponsavel   SerieDeColeta        Lancamento
                     SugestaoOuProposta         RegistroDeColeta     ItemPatrimonial
                     Favorito
-                    Auditoria
+                    Auditoria                  APOIO (PRD-14)
+                                               MissaoDoApoiador
+                                               SeloDoApoiador
 
                     APOIO ESCOLAR (PRD-05)
                     DisciplinaDeApoio
@@ -270,8 +272,12 @@ A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela 
 a comunidade do novo cadastro, e é a existência dela que habilita o onboarding naquele momento.
 Não há parâmetro de liberação separado.
 
-`DesafioExtra` e `Favorito` são do Apoiador e têm os atributos definidos no PRD-14; `Favorito`
-existe **apenas na App 08**, e nenhuma outra aplicação guarda preferência de quem lê.
+`DesafioExtra`, `Favorito`, `MissaoDoApoiador` e `SeloDoApoiador` são do Apoiador e têm os
+atributos definidos no PRD-14. `Favorito` existe **apenas na App 08**, e nenhuma outra aplicação
+guarda preferência de quem lê. **`MissaoDoApoiador` não é `Missao`**: aquela é o chamado de
+sustento dirigido ao adulto, esta é a unidade de progressão da trilha do Guerreiro(a) — as duas
+convivem no domínio e nunca se substituem. O **nível de sustento é derivado** das missões
+concluídas, como o Poder Sustentador é derivado dos aportes; nenhum dos dois é armazenado.
 
 `Conteudo`, `BibliografiaDaMissao`, `Culminancia`, `RecompensaDeMarco` e `SugestaoDeEstrutura`
 entram pela autoria de trilha e têm os

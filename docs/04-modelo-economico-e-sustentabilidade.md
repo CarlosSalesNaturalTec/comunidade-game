@@ -22,6 +22,10 @@ Regras derivadas:
   para o que ela consome, a diferença é publicada como **necessidade de recurso** em três
   lugares: na vitrine pública, na área do Apoiador e na área dos Mestres da trilha. A
   atividade fica **pendente de lastro** e só é confirmada quando a necessidade é suprida.
+- **A necessidade admite cobertura parcial.** Aporte menor que a necessidade publicada abate
+  o que falta em vez de ser recusado, e a necessidade só sai da lista quando o saldo fecha —
+  é o que permite a várias pessoas cobrirem juntas o que nenhuma cobriria sozinha. Cada uma
+  recebe as moedas do que aportou; nenhuma recebe crédito pelo que a outra deu.
 - **Aporte por absorção.** Faltando saldo, um Mestre ou Admin pode **prover ele mesmo** o
   recurso — dar a aula sem receber, comprar o lanche, ceder o insumo —, e faz isso **a partir
   da própria necessidade publicada**, com um ato de confirmação. A plataforma registra como
@@ -64,15 +68,21 @@ montante** investido por cada apoiador em relação aos seus pares, sem expor va
 monetários isolados.
 
 Por que **R$ 10,00** e não uma escala maior: assim o **lanche de um encontro vale cerca de 1
-moeda** — âncora que uma criança entende — e a menor doação da escada de sugestão vale **5
-moedas**, número inteiro e digno. Dez vezes maior, quem doa o que pode receberia meia moeda, o
-contrário de reconhecer quem sustenta o projeto.
+moeda** — âncora que uma criança entende — e o menor degrau da escada de pessoa física vale
+**1 moeda**, número inteiro e digno. Dez vezes maior, quem doa o que pode receberia um décimo
+de moeda, o contrário de reconhecer quem sustenta o projeto.
 
-Aportes em material e serviço são convertidos em moedas por uma **tabela de referência**
-mantida pela gestão: cada tipo de aporte — hora-aula, kit, livro, camisa, lanche, insumo —
-tem um valor padrão, e todo aporte do mesmo tipo vale o mesmo, o que torna comparável o
-Poder Sustentador entre apoiadores. **Tipo novo é cadastrado na hora por um Admin**, com o seu
-valor de referência, para que nenhum aporte fique represado.
+Aportes em material, serviço e conteúdo são convertidos em moedas por uma **tabela de
+referência** mantida pela gestão: cada tipo de aporte — hora-aula, kit, livro, camisa, lanche,
+insumo — tem um valor padrão, e todo aporte do mesmo tipo vale o mesmo, o que torna comparável
+o Poder Sustentador entre apoiadores. **Tipo novo é cadastrado na hora por um Admin**, com o
+seu valor de referência, para que nenhum aporte fique represado.
+
+**[Proposta] Apoio em código como aporte.** Melhoria da plataforma, aplicação sobre a API e
+jogo sobre a API entram no livro-razão como aporte do Apoiador que os fez, valorados em
+**hora-técnica** — a mesma régua já usada para lastrear a construção da plataforma no
+histórico de commits do repositório. Depende do valor-hora de referência e da governança de
+código aberto do projeto, ambos em aberto (documento 09).
 
 ### Produção executiva
 
@@ -191,18 +201,24 @@ Apoiador** e escolhe uma de três formas:
 - **Homologado o aporte**, o valor é convertido em **moedas**, credita o Poder Sustentador e o
   card do Apoiador passa a exibir o total na vitrine. Antes disso não há crédito nem card.
 
-**Escada de valores sugeridos (definição vigente):**
+**Escadas de valores sugeridos (definição vigente).** São duas, conforme o perfil declarado no
+pré-cadastro. A separação existe para que a pessoa física de comunidade periférica encontre um
+degrau ao seu alcance, sem que a instituição comece pelo mesmo lugar:
 
-| Valor       | Equivalente |
-| ----------- | ----------- |
-| R$ 50,00    | 5 moedas    |
-| R$ 100,00   | 10 moedas   |
-| R$ 250,00   | 25 moedas   |
-| R$ 500,00   | 50 moedas   |
-| R$ 1.000,00 | 100 moedas  |
+| Pessoa física | Equivalente | Pessoa jurídica | Equivalente |
+| ------------- | ----------- | --------------- | ----------- |
+| R$ 10,00      | 1 moeda     | R$ 500,00       | 50 moedas   |
+| R$ 50,00      | 5 moedas    | R$ 1.000,00     | 100 moedas  |
+| R$ 100,00     | 10 moedas   | R$ 2.500,00     | 250 moedas  |
+| R$ 250,00     | 25 moedas   | R$ 5.000,00     | 500 moedas  |
 
 A tela mostra sempre os dois lados, e o **valor livre** exibe o equivalente em moedas antes do
-envio.
+envio. O perfil é declarado e não verificado — a plataforma não coleta CPF nem CNPJ —, e quem
+não se reconhece na sua escada usa o valor livre.
+
+**O degrau é sugestão, não piso.** O valor livre aceita qualquer quantia, e a fração de duas
+casas continua valendo: quem transfere R$ 5,00 aporta 0,50 moeda e entra no livro-razão como
+qualquer outro.
 
 ## 3. Interação Apoiadores × Guerreiros e Guerreiras: desafios extras
 

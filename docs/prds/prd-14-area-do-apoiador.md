@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                      |
-| ---------------- | ------------------------------------------ |
-| PRD              | PRD-14                                     |
-| Aplicação        | App 08 — Área do Apoiador                  |
-| Onda             | 5                                          |
-| Situação         | em revisão                                 |
-| Versão e data    | v1 — 2026-08-07                            |
-| Depende de       | PRD-07, PRD-02                             |
-| Documentos-fonte | 02 §1, 03 §§1.1, 10, 04 §§1–3, 11 §8.2, 12 |
+| Campo            | Valor                                          |
+| ---------------- | ---------------------------------------------- |
+| PRD              | PRD-14                                         |
+| Aplicação        | App 08 — Área do Apoiador                      |
+| Onda             | 5                                              |
+| Situação         | em revisão                                     |
+| Versão e data    | v2 — 2026-08-07                                |
+| Depende de       | PRD-07, PRD-02                                 |
+| Documentos-fonte | 02 §1, 03 §§1.1, 10, 04 §§1–3, 11 §8.2, 12, 14 |
 
 ## 2. Contexto e objetivo
 
@@ -25,6 +25,11 @@ encaminha quem chega querendo apoiar, e a **área autenticada** de quem já foi 
 um Admin. A porta grava solicitação, aporte declarado e comprovante; ela **não cadastra
 ninguém** — quem valida o comprovante e cadastra continua sendo o Admin, na App 03.
 
+É aqui que vive a camada de jogo do adulto que sustenta o projeto (documento 14): a necessidade
+publicada vira **missão**, a missão concluída rende **moeda e selo**, e a coleção de selos
+compõe o **nível de sustento**, que sobe por frentes diferentes cobertas e nunca por volume de
+dinheiro. **O Apoiador não pontua** — ponto é do Guerreiro(a).
+
 No Ciclo 01 a aplicação sustenta a hipótese **H3** — se mestres e apoiadores suprem os recursos
 do MVP — de dois lados: publica a necessidade em aberto para quem pode cobri-la e registra o
 que foi coberto. É também onde vive a salvaguarda mais dura do projeto: **nenhum contato direto
@@ -35,15 +40,20 @@ que já é público.
 
 ### 3.1 Dentro do escopo
 
-- **Pré-cadastro público**, com identificação sem documento, aporte declarado e comprovante
-  anexado.
+- **Pré-cadastro público**, com identificação sem documento, **perfil pessoa física ou
+  jurídica**, aporte declarado e comprovante anexado.
 - **Acesso do Apoiador cadastrado**, por login social ou credencial de usuário e senha
   provisória.
+- **Missões do Apoiador**: lista das missões abertas, derivadas das necessidades de recurso
+  publicadas, com o caminho de cobrir uma delas — inteira ou em parte.
+- **Nível de sustento e selos**, derivados das missões concluídas e exibidos na aplicação e no
+  card público.
 - **Identidade pública**: nick único e avatar — logomarca ou imagem escolhida a partir de
   **10 moedas acumuladas**, avatar padrão do projeto abaixo desse piso.
 - **Meus aportes**: histórico em moedas e Poder Sustentador acumulado, lidos do ledger do PRD-07.
-- **Novo aporte em dinheiro** de quem já é cadastrado, a partir de uma necessidade publicada ou
-  por valor sugerido ou livre, sempre com comprovante.
+- **Novo aporte em dinheiro** de quem já é cadastrado, a partir de uma missão, de uma
+  necessidade publicada ou por valor sugerido ou livre, sempre com comprovante. O valor
+  sugerido vem da **escada do perfil declarado**.
 - **Necessidades de recurso em aberto**, publicadas pelas atividades sem lastro, com o caminho
   direto para cobri-las.
 - **Proposição de desafios extras**, abertos ou direcionados, com acompanhamento do fluxo de
@@ -68,6 +78,13 @@ que já é público.
 - **Qualquer canal de mensagem** com Guerreiro(a), família ou Mestre.
 - **Acesso à App 07**, mesmo quando o Apoiador é parente da criança.
 - **Relatório fechado de prestação de contas**: no Ciclo 01 o retorno é o painel vivo.
+- **Catálogo de missões instanciado para o Ciclo 01**: quantidade, prazo e selo de cada missão
+  dependem do catálogo de recompensas por marco e da tabela de valoração, ambos pendentes. A
+  aplicação exibe as missões que a gestão publicar; não as define.
+- **Apoio em código**: é proposta enquanto a governança de código aberto e o valor-hora não
+  forem decididos, e por isso não abre missão nem selo aqui.
+- **Ranking de apoiadores por valor**: vedado pelo documento 14. Há coleção de selos e nível de
+  sustento, nunca pódio.
 - **Publicidade e patrocínio**: fora do Ciclo 01 (documento 09).
 - **Notificação por e-mail**: não existe no Ciclo 01; todo retorno acontece na plataforma.
 - **Recibo fiscal e dado bancário**: a plataforma não coleta CPF, CNPJ nem documento, e não
@@ -75,14 +92,14 @@ que já é público.
 
 ## 4. Personas e permissões
 
-| Persona      | O que faz nesta aplicação                                                            | O que não pode fazer                                                        |
-| ------------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| Apoiador     | Declara aporte, define identidade, propõe desafios, acompanha efetividade e favorita | Homologar aporte, editar ledger, ver dado de contato ou identificar criança |
-| Visitante    | Preenche o pré-cadastro na porta pública                                             | Entrar na área autenticada; obter cadastro pelo envio                       |
-| Admin        | Nada aqui: valida o comprovante, cadastra e anexa documentos pela App 03             | Usar esta aplicação como via de cadastro                                    |
-| Mestre       | Nada aqui: valida o desafio extra pela App 09                                        | Propor desafio extra em nome de Apoiador                                    |
-| Guerreiro(a) | Nada: a sua jornada é a App 05                                                       | Entrar; ser contatado por Apoiador                                          |
-| Responsável  | Nada: o canal da família é a App 07                                                  | Entrar com a credencial de Apoiador de um parente                           |
+| Persona      | O que faz nesta aplicação                                                                                                                      | O que não pode fazer                                                        |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Apoiador     | Cobre missões, declara aporte, define identidade, propõe desafios, acompanha nível de sustento, selos e efetividade, e favorita                | Homologar aporte, editar ledger, ver dado de contato ou identificar criança |
+| Visitante    | Preenche o pré-cadastro na porta pública e vê as missões abertas                                                                               | Entrar na área autenticada; obter cadastro pelo envio                       |
+| Admin        | Nada aqui: valida o comprovante, cadastra e anexa documentos pela App 03. **É a homologação dele que conclui a missão** e credita nível e selo | Usar esta aplicação como via de cadastro                                    |
+| Mestre       | Nada aqui: valida o desafio extra pela App 09                                                                                                  | Propor desafio extra em nome de Apoiador                                    |
+| Guerreiro(a) | Nada: a sua jornada é a App 05                                                                                                                 | Entrar; ser contatado por Apoiador                                          |
+| Responsável  | Nada: o canal da família é a App 07                                                                                                            | Entrar com a credencial de Apoiador de um parente                           |
 
 O Apoiador institucional opera com **um usuário**, indicado pela instituição. É esse usuário
 que responde pelos atos registrados no cadastro.
@@ -94,9 +111,12 @@ que responde pelos atos registrados no cadastro.
 1. A pessoa chega pela vitrine — pelo botão "Entrar", pela chamada "Quero participar" ou pelo
    pedido de favoritar, que ali não existe.
 2. A tela se apresenta, diz o que é a Área do Apoiador e abre o pré-cadastro.
-3. Ela se identifica **sem documento**: nome ou razão social, e-mail e WhatsApp.
-4. Escolhe o que vai aportar: uma **necessidade publicada**, um **valor sugerido** da escada ou
-   um **valor livre**. Cada valor aparece com o **equivalente em moedas** ao lado.
+3. Ela se identifica **sem documento**: nome ou razão social, e-mail e WhatsApp, e declara o
+   **perfil** — pessoa física ou jurídica. O perfil não é verificado: define a escada que a
+   tela exibe e o recorte do painel de efetividade, nada além.
+4. Escolhe o que vai aportar: uma **missão aberta**, uma **necessidade publicada**, um **valor
+   sugerido** da escada do seu perfil ou um **valor livre**. Cada valor aparece com o
+   **equivalente em moedas** ao lado, e o valor livre aceita qualquer quantia.
 5. Transfere pela chave PIX e **anexa o comprovante** em PDF, JPG ou PNG.
 6. A tela diz, antes do envio, que aquilo **não cria cadastro nem acesso** e que um Admin vai
    conferir o comprovante.
@@ -117,7 +137,8 @@ que responde pelos atos registrados no cadastro.
    acumuladas**. Abaixo do piso, o card usa o **avatar padrão do projeto**, e a tela diz quanto
    falta para trocá-lo, sem cobrar nem insistir.
 6. Homologado o aporte, o **card vai à vitrine** com avatar, nick e total de moedas em
-   destaque, na moldura comum a todos os apoiadores.
+   destaque, na moldura comum a todos os apoiadores, mais o **nível de sustento** e os
+   **selos** já conquistados.
 7. Avatar e nick ficam sujeitos à **auditoria por amostragem** da gestão, que pode despublicar
    com motivo.
 
@@ -125,7 +146,8 @@ que responde pelos atos registrados no cadastro.
 
 1. O Apoiador cadastrado abre **Necessidades em aberto** e vê o que falta de recurso nas
    atividades previstas, com a comunidade e o valor em moedas.
-2. Escolhe cobrir uma necessidade, ou declara um **valor sugerido** ou **livre**.
+2. Escolhe cobrir uma necessidade, ou declara um **valor sugerido** da escada do seu perfil ou
+   um **valor livre**.
 3. Transfere pela chave PIX e anexa o comprovante.
 4. O aporte nasce **pendente de homologação**: não credita moeda, não compõe o Poder Sustentador
    e não dá lastro a nada.
@@ -135,7 +157,28 @@ que responde pelos atos registrados no cadastro.
 7. Querendo aportar material ou serviço, a tela explica que aquilo entra pelo cadastro do
    Admin, com termo de doação ou registro do material.
 
-### 5.4 Propor um desafio extra aberto
+### 5.4 Cobrir uma missão
+
+1. O Apoiador abre **Missões** e vê as que estão abertas, agrupadas pelo **nível de
+   necessidade** que sustentam: existir, acontecer, reconhecer, permanecer.
+2. Cada missão mostra o que se pede, **quanto falta em moedas**, o prazo e o **selo** que
+   rende. O que já foi coberto aparece como quantidade, **sem nome de quem cobriu**.
+3. Ele escolhe cobrir a missão inteira ou **parte dela**, transfere pela chave PIX e anexa o
+   comprovante.
+4. O aporte nasce **pendente**, como qualquer outro: não credita moeda, não abate o que falta
+   e não conclui missão alguma.
+5. Homologado pelo Admin, o valor vira moedas e abate o que falta. **A missão conclui apenas
+   quando o saldo fecha.**
+6. Coberta em parte, a missão continua aberta com o restante atualizado, e quem aportou recebe
+   **as moedas do que deu** — não o selo, que só vem com a conclusão.
+7. Fechada por outra pessoa, a missão sai da lista e **cada um que participou recebe o selo de
+   mutirão**, cada qual com as suas moedas. Ninguém recebe crédito pelo que outro deu.
+8. Concluída a missão, a tela mostra o **selo novo** e, se for o caso, o **nível de sustento**
+   alcançado, com a frente que falta para o próximo — uma vez, sem insistir.
+9. Missão com prazo vencido sem fechar sai da lista de abertas; os aportes já homologados
+   permanecem no livro-razão e as moedas, no Poder Sustentador de quem as deu.
+
+### 5.5 Propor um desafio extra aberto
 
 1. O Apoiador escolhe uma **trilha em andamento** e descreve o desafio.
 2. Declara a **recompensa**, a **quantidade disponível**, o critério de atribuição e o
@@ -149,7 +192,7 @@ que responde pelos atos registrados no cadastro.
 7. Recusado em qualquer etapa, ele vê o motivo. **Desafio publicado não se edita**: corrigir é
    propor de novo.
 
-### 5.5 Propor um desafio direcionado
+### 5.6 Propor um desafio direcionado
 
 1. O Apoiador escolhe a modalidade **direcionado** e informa o **nick** que a família lhe cedeu.
 2. Registra a **justificativa do vínculo** — parente próximo, padrinho, madrinha, amigo da
@@ -164,7 +207,7 @@ que responde pelos atos registrados no cadastro.
    motivo genérico — a recusa também não revela se o nick existe.
 7. Publicado, o desafio é entregue ao destinatário na App 05, e só ele recebe a recompensa.
 
-### 5.6 Acompanhar a efetividade do apoio
+### 5.7 Acompanhar a efetividade do apoio
 
 1. O painel de efetividade abre com os **desafios propostos, publicados e concluídos**.
 2. Cada desafio mostra **quantos Guerreiros e Guerreiras concluíram**, em que trilha e em que
@@ -180,7 +223,7 @@ que responde pelos atos registrados no cadastro.
    ali ele vê se o desafio foi concluído, e **nada além disso** — nem avatar, nem trilha, nem
    evolução.
 
-### 5.7 Acompanhar e favoritar
+### 5.8 Acompanhar e favoritar
 
 1. O Apoiador vê **os mesmos dados do painel público** — nada além do que qualquer visitante vê.
 2. Para favoritar um Guerreiro(a), informa o **nick exato** que a família lhe cedeu.
@@ -193,7 +236,7 @@ que responde pelos atos registrados no cadastro.
    público. O destaque só existe **dentro** da aplicação — não há e-mail.
 7. O favorito é removido a qualquer tempo, sem deixar rastro para a criança.
 
-### 5.8 Enviar comprobatórios e registrar proposta
+### 5.9 Enviar comprobatórios e registrar proposta
 
 1. O Apoiador envia **currículo, portfólio, redes sociais, termos de doação e comprovantes**.
 2. O documento entra na fila da App 03; ele **não vai à página pública** enquanto um Admin não o
@@ -208,19 +251,19 @@ que responde pelos atos registrados no cadastro.
 
 ### 6.1 Pré-cadastro e acesso
 
-| ID         | Requisito                                                                                    | Prioridade |
-| ---------- | -------------------------------------------------------------------------------------------- | ---------- |
-| `RF-14-01` | Porta pública identifica sem documento: nome ou razão social, e-mail e WhatsApp              | essencial  |
-| `RF-14-02` | Pré-cadastro oferece as três formas de aportar: necessidade publicada, valor sugerido, livre | essencial  |
-| `RF-14-03` | Cada valor é exibido com o equivalente em moedas na mesma tela                               | essencial  |
-| `RF-14-04` | Pré-cadastro exige anexo do comprovante em PDF, JPG ou PNG                                   | essencial  |
-| `RF-14-05` | Tela declara, antes do envio, que o pré-cadastro não cria cadastro nem acesso                | essencial  |
-| `RF-14-06` | Envio da porta pública respeita limite por origem, com atraso progressivo a cada repetição   | essencial  |
-| `RF-14-07` | Porta pública encaminha ao formulário da vitrine quem apoia sem transferir dinheiro          | essencial  |
-| `RF-14-08` | Apoiador cadastrado entra por login social ou por credencial de usuário e senha              | essencial  |
-| `RF-14-09` | Credencial provisória exige troca de senha antes de qualquer outra tela                      | essencial  |
-| `RF-14-10` | Login de conta sem cadastro prévio é recusado, com orientação de usar o pré-cadastro         | essencial  |
-| `RF-14-11` | Aplicação não oferece convite, delegação nem segundo acesso ao mesmo cadastro                | essencial  |
+| ID         | Requisito                                                                                                         | Prioridade |
+| ---------- | ----------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-14-01` | Porta pública identifica sem documento: nome ou razão social, e-mail, WhatsApp e perfil pessoa física ou jurídica | essencial  |
+| `RF-14-02` | Pré-cadastro oferece as formas de aportar: missão aberta, necessidade publicada, valor sugerido ou livre          | essencial  |
+| `RF-14-03` | Cada valor é exibido com o equivalente em moedas na mesma tela, na escada do perfil declarado                     | essencial  |
+| `RF-14-04` | Pré-cadastro exige anexo do comprovante em PDF, JPG ou PNG                                                        | essencial  |
+| `RF-14-05` | Tela declara, antes do envio, que o pré-cadastro não cria cadastro nem acesso                                     | essencial  |
+| `RF-14-06` | Envio da porta pública respeita limite por origem, com atraso progressivo a cada repetição                        | essencial  |
+| `RF-14-07` | Porta pública encaminha ao formulário da vitrine quem apoia sem transferir dinheiro                               | essencial  |
+| `RF-14-08` | Apoiador cadastrado entra por login social ou por credencial de usuário e senha                                   | essencial  |
+| `RF-14-09` | Credencial provisória exige troca de senha antes de qualquer outra tela                                           | essencial  |
+| `RF-14-10` | Login de conta sem cadastro prévio é recusado, com orientação de usar o pré-cadastro                              | essencial  |
+| `RF-14-11` | Aplicação não oferece convite, delegação nem segundo acesso ao mesmo cadastro                                     | essencial  |
 
 ### 6.2 Identidade pública e comprobatórios
 
@@ -238,16 +281,16 @@ que responde pelos atos registrados no cadastro.
 
 ### 6.3 Aportes e necessidades
 
-| ID         | Requisito                                                                                   | Prioridade |
-| ---------- | ------------------------------------------------------------------------------------------- | ---------- |
-| `RF-14-21` | "Meus aportes" lista os aportes homologados em moedas, com data, tipo e destino             | essencial  |
-| `RF-14-22` | Poder Sustentador é exibido como total acumulado em moedas                                  | essencial  |
-| `RF-14-23` | Nenhuma tela exibe reais, salvo aquela em que se declara a transferência, sempre com moedas | essencial  |
-| `RF-14-24` | Necessidades em aberto são listadas com atividade, comunidade e o que falta em moedas       | essencial  |
-| `RF-14-25` | Apoiador declara novo aporte a partir de uma necessidade ou por valor sugerido ou livre     | essencial  |
-| `RF-14-26` | Aporte declarado exige comprovante e entra pendente, sem creditar moeda alguma              | essencial  |
-| `RF-14-27` | Apoiador acompanha a situação do aporte: pendente, homologado ou recusado com motivo        | essencial  |
-| `RF-14-28` | Aplicação não aceita aporte em material, serviço ou divulgação, e orienta procurar a gestão | essencial  |
+| ID         | Requisito                                                                                              | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------ | ---------- |
+| `RF-14-21` | "Meus aportes" lista os aportes homologados em moedas, com data, tipo e destino                        | essencial  |
+| `RF-14-22` | Poder Sustentador é exibido como total acumulado em moedas                                             | essencial  |
+| `RF-14-23` | Nenhuma tela exibe reais, salvo aquela em que se declara a transferência, sempre com moedas            | essencial  |
+| `RF-14-24` | Necessidades em aberto são listadas com atividade, comunidade e o que falta em moedas                  | essencial  |
+| `RF-14-25` | Apoiador declara novo aporte a partir de uma missão, de uma necessidade ou por valor sugerido ou livre | essencial  |
+| `RF-14-26` | Aporte declarado exige comprovante e entra pendente, sem creditar moeda nem abater o que falta         | essencial  |
+| `RF-14-27` | Apoiador acompanha a situação do aporte: pendente, homologado ou recusado com motivo                   | essencial  |
+| `RF-14-28` | Aplicação não aceita aporte em material, serviço ou divulgação, e orienta procurar a gestão            | essencial  |
 
 ### 6.4 Desafios extras
 
@@ -300,6 +343,25 @@ que responde pelos atos registrados no cadastro.
 | `RF-14-58` | Toda tela que coleta dado traz aviso discreto, com acesso à área detalhada   | essencial  |
 | `RF-14-59` | Aplicação não oferece canal de mensagem com Guerreiro(a), família ou Mestre  | essencial  |
 
+### 6.8 Missões, níveis de sustento e selos
+
+| ID         | Requisito                                                                                      | Prioridade |
+| ---------- | ---------------------------------------------------------------------------------------------- | ---------- |
+| `RF-14-60` | Aplicação lista as missões abertas agrupadas pelo nível de necessidade que sustentam           | essencial  |
+| `RF-14-61` | Cada missão exibe o que se pede, quanto falta em moedas, o prazo e o selo que rende            | essencial  |
+| `RF-14-62` | Missão exibe o quanto já foi coberto, em quantidade, sem identificar quem cobriu               | essencial  |
+| `RF-14-63` | Apoiador cobre a missão inteira ou parte dela, sempre com comprovante                          | essencial  |
+| `RF-14-64` | Aporte parcial homologado abate o que falta e mantém a missão aberta com o restante            | essencial  |
+| `RF-14-65` | Missão só é concluída quando o saldo fecha, por homologação de Admin                           | essencial  |
+| `RF-14-66` | Concluída a missão, cada participante recebe o selo; as moedas são as do que cada um aportou   | essencial  |
+| `RF-14-67` | Aplicação exibe o nível de sustento e a frente que falta para o próximo, uma vez, sem insistir | essencial  |
+| `RF-14-68` | Aplicação exibe os selos conquistados, agrupados por família                                   | essencial  |
+| `RF-14-69` | Nível de sustento e selo conquistados não regridem em nenhuma hipótese                         | essencial  |
+| `RF-14-70` | Nenhuma tela ordena, classifica ou compara apoiadores por valor aportado                       | essencial  |
+| `RF-14-71` | Aplicação não exibe missão que não tenha necessidade de recurso publicada por trás             | essencial  |
+| `RF-14-72` | Missão com prazo vencido sai da lista de abertas, sem estornar aporte já homologado            | essencial  |
+| `RF-14-73` | Card e página públicos do Apoiador exibem o nível de sustento e os selos                       | desejável  |
+
 ## 7. Regras de negócio
 
 | ID         | Regra                                                                                                                                                         | Invariante (doc 99 §6) | Fonte          |
@@ -332,11 +394,26 @@ que responde pelos atos registrados no cadastro.
 | `RN-14-26` | Proposta de Apoiador não pontua e segue a fila única da gestão                                                                                                | —                      | 03 §§7, 10     |
 | `RN-14-27` | No Ciclo 01 não há notificação por e-mail: o retorno acontece na plataforma                                                                                   | —                      | 03 §9          |
 | `RN-14-28` | A etiqueta ODS é descritiva: aparece como cobertura agregada, nunca como mérito do apoio                                                                      | 20                     | 04 §4, 11 §2.1 |
+| `RN-14-29` | O Apoiador não pontua: a progressão dele corre em moedas, selos e níveis de sustento                                                                          | 21                     | 14 §1          |
+| `RN-14-30` | A missão do Apoiador não é a missão da trilha nem o desafio extra, e nunca aparece em tela de criança                                                         | 21                     | 14 §1          |
+| `RN-14-31` | Toda missão nasce de uma necessidade de recurso publicada; sem ela não há missão                                                                              | 9                      | 14 §5          |
+| `RN-14-32` | A missão só se conclui com aporte homologado por Admin; declarar não conclui                                                                                  | 21                     | 14 §5          |
+| `RN-14-33` | A missão concluída rende moeda e selo, nunca ponto                                                                                                            | 21                     | 14 §5          |
+| `RN-14-34` | Na missão coletiva, cada um recebe as moedas do que aportou; ninguém recebe crédito pelo que outro deu                                                        | 16                     | 04 §1, 14 §5   |
+| `RN-14-35` | O nível de sustento sobe por frentes de necessidade diferentes cobertas, nunca por volume aportado                                                            | 21                     | 14 §7          |
+| `RN-14-36` | Nível de sustento e selo conquistados não regridem                                                                                                            | —                      | 14 §§7, 8      |
+| `RN-14-37` | Nenhum saldo de moedas compra vantagem: nem dado de criança, nem contato, nem prioridade pedagógica, nem aprovação mais rápida de desafio                     | 21                     | 14 §9          |
+| `RN-14-38` | Não há ranking de apoiadores por dinheiro: há coleção de selos e nível, nunca pódio de valor                                                                  | 21                     | 14 §9          |
+| `RN-14-39` | O perfil pessoa física ou jurídica é declarado e não verificado; define escada e recorte do painel, e nada mais                                               | —                      | 02 §1, 14 §4   |
+| `RN-14-40` | O degrau da escada é sugestão, não piso: o valor livre aceita qualquer quantia, com fração de duas casas                                                      | 16                     | 04 §2          |
 
 ## 8. Modelo de dados
 
-A aplicação **não cria entidade nova além de `Favorito`**. As demais já estão no PRD-01, no
-PRD-07 e no PRD-09; aqui elas são escritas ou lidas.
+A aplicação cria três entidades: `Favorito`, `MissaoDoApoiador` e `SeloDoApoiador`. As demais
+já estão no PRD-01, no PRD-07 e no PRD-09; aqui elas são escritas ou lidas.
+
+**`MissaoDoApoiador` não se confunde com `Missao`**, que é a da trilha e vive no PRD-09. O nome
+longo é obrigatório justamente porque as duas coexistem no mesmo domínio.
 
 ```text
 ESCREVE (por ato do Apoiador)              LÊ (definidos em outro PRD)
@@ -344,19 +421,32 @@ SolicitacaoDeParticipacao   (PRD-01)       Necessidade / Lancamento      (PRD-07
 Apoiador — avatar e nick    (PRD-01)       SaldoDeRecurso                (PRD-07)
 Aporte (pendente)           (PRD-07)       Trilha / Missao / EtiquetaODS (PRD-09)
 DesafioExtra                (PRD-01)       Guerreiro(a) — avatar e nick  (PRD-01)
-Favorito                    [entidade nova]CriacaoOriginal               (PRD-09)
+Favorito                    [entidade nova] CriacaoOriginal              (PRD-09)
 SugestaoOuProposta          (PRD-01)       Resultado / Badge / Nivel     (PRD-01)
+
+PUBLICADAS PELA GESTÃO (App 03), LIDAS AQUI
+MissaoDoApoiador            [entidade nova]
+SeloDoApoiador              [entidade nova] — creditado na homologação
 ```
 
-| Entidade       | Atributos essenciais                                                                                                                                                                                                                                                                                                    |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DesafioExtra` | proponente, trilha, missão opcional, modalidade (aberto ou direcionado), nick do destinatário e justificativa do vínculo (só no direcionado), recompensa, quantidade disponível, critério de atribuição, pontos extras, vigência, Mestre validador, Admin aprovador, aporte de lastro, situação, etiquetas ODS herdadas |
-| `Favorito`     | Apoiador, alvo (Guerreiro(a) ou Mestre), data de inclusão                                                                                                                                                                                                                                                               |
+| Entidade           | Atributos essenciais                                                                                                                                                                                                                                                                                                    |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DesafioExtra`     | proponente, trilha, missão opcional, modalidade (aberto ou direcionado), nick do destinatário e justificativa do vínculo (só no direcionado), recompensa, quantidade disponível, critério de atribuição, pontos extras, vigência, Mestre validador, Admin aprovador, aporte de lastro, situação, etiquetas ODS herdadas |
+| `Favorito`         | Apoiador, alvo (Guerreiro(a) ou Mestre), data de inclusão                                                                                                                                                                                                                                                               |
+| `MissaoDoApoiador` | necessidade de recurso de origem, nível de necessidade (existir, acontecer, reconhecer, permanecer), título, o que se pede, quantidade em moedas ou itens, prazo, selo que rende, situação (aberta, concluída, vencida), Admin que publicou                                                                             |
+| `SeloDoApoiador`   | Apoiador, família (frente, modalidade, ato, multiplicação), selo, missão ou aporte de origem, data do crédito                                                                                                                                                                                                           |
 
 Imutabilidade e derivação:
 
 - `DesafioExtra` **não é editável depois de publicado**. Corrigir é propor de novo, e a
   proposta anterior fica registrada com o desfecho que teve.
+- O **nível de sustento é derivado**, nunca armazenado: sai dos níveis de necessidade das
+  missões concluídas pelo Apoiador, do mesmo modo que o Poder Sustentador sai dos aportes.
+  Derivado, ele não regride por edição — só cresce com missão nova concluída.
+- O **quanto falta** de uma `MissaoDoApoiador` é derivado dos aportes **homologados** ligados à
+  necessidade de origem. Aporte pendente não abate nada.
+- `SeloDoApoiador` é **somente inserção**, creditado no ato da homologação que conclui a missão.
+  Não há rota que o retire.
 - O **nick do destinatário** é guardado como o Apoiador o digitou, não como referência ao
   Guerreiro(a). A ligação com a pessoa só é feita na validação do Mestre — é o que impede a
   aplicação de confirmar existência.
@@ -370,23 +460,25 @@ Imutabilidade e derivação:
 A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessão, erro em corpo
 único. As rotas de homologação, cadastro e anexação de documento são da App 03 (PRD-02).
 
-| Método | Rota                                 | Autenticação | Descrição                                                       |
-| ------ | ------------------------------------ | ------------ | --------------------------------------------------------------- |
-| POST   | `/v1/solicitacoes-de-participacao`   | pública      | Pré-cadastro com aporte declarado e comprovante                 |
-| GET    | `/v1/vitrine/necessidades`           | pública      | Necessidades de recurso em aberto (PRD-07)                      |
-| PUT    | `/v1/eu/apoiador/identidade`         | Apoiador     | Define ou troca avatar e nick exibidos no card                  |
-| POST   | `/v1/eu/apoiador/documentos`         | Apoiador     | Envia comprobatório para o Admin anexar ao cadastro             |
-| GET    | `/v1/meus-aportes`                   | Apoiador     | Aportes homologados e Poder Sustentador, em moedas              |
-| POST   | `/v1/aportes/declarados`             | Apoiador     | Declara aporte em dinheiro, com comprovante, pendente           |
-| GET    | `/v1/eu/aportes/declarados`          | Apoiador     | Situação dos aportes declarados: pendente, homologado, recusado |
-| POST   | `/v1/desafios-extras`                | Apoiador     | Propõe desafio aberto ou direcionado                            |
-| GET    | `/v1/eu/desafios-extras`             | Apoiador     | Estado de cada desafio no fluxo e quantidade restante           |
-| GET    | `/v1/eu/desafios-extras/efetividade` | Apoiador     | Painel vivo: concluintes, trilhas, moedas e cobertura de ODS    |
-| GET    | `/v1/eu/favoritos`                   | Apoiador     | Favoritos do Apoiador, com as novidades dos últimos 30 dias     |
-| POST   | `/v1/eu/favoritos`                   | Apoiador     | Favorita por nick exato de Guerreiro(a) ou por Mestre           |
-| DELETE | `/v1/eu/favoritos/{id}`              | Apoiador     | Remove o favorito                                               |
-| POST   | `/v1/sugestoes`                      | Apoiador     | Registra proposta na fila única da gestão                       |
-| GET    | `/v1/eu/sugestoes`                   | Apoiador     | Status das próprias propostas                                   |
+| Método | Rota                                 | Autenticação | Descrição                                                            |
+| ------ | ------------------------------------ | ------------ | -------------------------------------------------------------------- |
+| POST   | `/v1/solicitacoes-de-participacao`   | pública      | Pré-cadastro com aporte declarado e comprovante                      |
+| GET    | `/v1/vitrine/necessidades`           | pública      | Necessidades de recurso em aberto (PRD-07)                           |
+| GET    | `/v1/missoes-do-apoiador`            | pública      | Missões abertas, por nível de necessidade, com o que falta em moedas |
+| GET    | `/v1/eu/apoiador/sustento`           | Apoiador     | Nível de sustento, selos e a frente que falta para o próximo         |
+| PUT    | `/v1/eu/apoiador/identidade`         | Apoiador     | Define ou troca avatar e nick exibidos no card                       |
+| POST   | `/v1/eu/apoiador/documentos`         | Apoiador     | Envia comprobatório para o Admin anexar ao cadastro                  |
+| GET    | `/v1/meus-aportes`                   | Apoiador     | Aportes homologados e Poder Sustentador, em moedas                   |
+| POST   | `/v1/aportes/declarados`             | Apoiador     | Declara aporte em dinheiro, com comprovante, pendente                |
+| GET    | `/v1/eu/aportes/declarados`          | Apoiador     | Situação dos aportes declarados: pendente, homologado, recusado      |
+| POST   | `/v1/desafios-extras`                | Apoiador     | Propõe desafio aberto ou direcionado                                 |
+| GET    | `/v1/eu/desafios-extras`             | Apoiador     | Estado de cada desafio no fluxo e quantidade restante                |
+| GET    | `/v1/eu/desafios-extras/efetividade` | Apoiador     | Painel vivo: concluintes, trilhas, moedas e cobertura de ODS         |
+| GET    | `/v1/eu/favoritos`                   | Apoiador     | Favoritos do Apoiador, com as novidades dos últimos 30 dias          |
+| POST   | `/v1/eu/favoritos`                   | Apoiador     | Favorita por nick exato de Guerreiro(a) ou por Mestre                |
+| DELETE | `/v1/eu/favoritos/{id}`              | Apoiador     | Remove o favorito                                                    |
+| POST   | `/v1/sugestoes`                      | Apoiador     | Registra proposta na fila única da gestão                            |
+| GET    | `/v1/eu/sugestoes`                   | Apoiador     | Status das próprias propostas                                        |
 
 As consultas de vitrine consumidas pela tela de acompanhamento são as mesmas rotas públicas do
 PRD-03, sem token e sem parâmetro que identifique o Apoiador.
@@ -398,6 +490,8 @@ cadastro prévio (403, com a orientação de usar o pré-cadastro); senha provis
 (403 em qualquer rota que não seja a da troca); nick já usado na identidade (409, com
 sugestões); envio de avatar próprio abaixo do piso de 10 moedas (409, com quanto falta);
 desafio proposto sem lastro (409, com o que falta prover); edição de desafio publicado (405);
+aporte para missão já concluída ou vencida (409, com o que aconteceu com ela); missão
+inexistente ou despublicada (404);
 favorito por nick inexistente **ou** sem divulgação autorizada (**404 idêntico nos dois
 casos**); tentativa de homologar aporte ou de ler dado de contato de Guerreiro(a) (403). A
 proposta de desafio direcionado com nick desconhecido é **aceita** e recusada depois, na
@@ -422,16 +516,17 @@ validação — não é erro de tela.
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                | Finalidade                                   | Base legal         | Retenção                                      | Quem acessa             |
-| ---------------------------- | -------------------------------------------- | ------------------ | --------------------------------------------- | ----------------------- |
-| Nome ou razão social         | Identificar o Apoiador e o aporte            | consentimento      | enquanto durar o cadastro                     | gestão e público (nick) |
-| E-mail                       | Dar acesso à aplicação e responder ao pedido | consentimento      | enquanto durar o cadastro                     | gestão                  |
-| WhatsApp                     | Contato da gestão com o Apoiador             | consentimento      | enquanto durar o cadastro                     | gestão                  |
-| Comprovante de transferência | Provar o aporte e homologá-lo                | obrigação legal    | permanente, junto ao lançamento               | gestão                  |
-| Documentos comprobatórios    | Comprovar o apoio na página pública          | consentimento      | enquanto durar o cadastro                     | gestão e público        |
-| Avatar e nick                | Identidade pública do Apoiador               | consentimento      | enquanto durar o cadastro                     | público                 |
-| Justificativa do vínculo     | Aprovar o desafio direcionado                | interesse legítimo | permanente, junto ao desafio                  | gestão                  |
-| Proposta registrada          | Evolução da plataforma                       | consentimento      | 90 dias após o retorno; permanente se adotada | gestão                  |
+| Dado coletado                    | Finalidade                                        | Base legal         | Retenção                                      | Quem acessa             |
+| -------------------------------- | ------------------------------------------------- | ------------------ | --------------------------------------------- | ----------------------- |
+| Nome ou razão social             | Identificar o Apoiador e o aporte                 | consentimento      | enquanto durar o cadastro                     | gestão e público (nick) |
+| E-mail                           | Dar acesso à aplicação e responder ao pedido      | consentimento      | enquanto durar o cadastro                     | gestão                  |
+| WhatsApp                         | Contato da gestão com o Apoiador                  | consentimento      | enquanto durar o cadastro                     | gestão                  |
+| Comprovante de transferência     | Provar o aporte e homologá-lo                     | obrigação legal    | permanente, junto ao lançamento               | gestão                  |
+| Documentos comprobatórios        | Comprovar o apoio na página pública               | consentimento      | enquanto durar o cadastro                     | gestão e público        |
+| Avatar e nick                    | Identidade pública do Apoiador                    | consentimento      | enquanto durar o cadastro                     | público                 |
+| Perfil pessoa física ou jurídica | Definir a escada de valores e o recorte do painel | consentimento      | enquanto durar o cadastro                     | gestão                  |
+| Justificativa do vínculo         | Aprovar o desafio direcionado                     | interesse legítimo | permanente, junto ao desafio                  | gestão                  |
+| Proposta registrada              | Evolução da plataforma                            | consentimento      | 90 dias após o retorno; permanente se adotada | gestão                  |
 
 - **Consentimento**: o Apoiador é adulto e se cadastra por vontade própria; o aviso de coleta
   aparece na porta pública e em toda tela que coleta, com acesso à área detalhada.
@@ -478,6 +573,19 @@ validação — não é erro de tela.
   de 30 dias.
 - Nenhuma tela da aplicação oferece campo de mensagem, telefone ou e-mail de Guerreiro(a),
   família ou Mestre.
+- Quem se declara pessoa física vê a escada que começa em 1 moeda; quem se declara pessoa
+  jurídica vê a outra. Nenhum dos dois é impedido de usar o valor livre, em qualquer quantia.
+- **Aporte parcial não conclui missão e não credita selo**: a missão continua aberta com o
+  restante atualizado, e as moedas do aporte já estão no Poder Sustentador de quem o fez.
+- **Duas pessoas fechando a mesma missão recebem cada uma as suas moedas** e ambas o selo de
+  mutirão. Nenhuma delas vê o nome da outra.
+- Aporte pendente não abate o que falta em nenhuma missão: a tela mostra o mesmo valor de antes
+  até o Admin homologar.
+- Missão que vence sem fechar sai da lista, e nenhum aporte já homologado é estornado.
+- Apoiador que cobre uma missão de "acontecer" e outra de "permanecer" chega ao **nível 3**,
+  enquanto quem cobriu duas de "acontecer" — ainda que por valor muito maior — fica no
+  **nível 2**. É a prova de que o nível mede frentes, não dinheiro.
+- Nenhuma tela lista apoiadores em ordem de valor aportado.
 
 Hipóteses do Ciclo 01 (documento 10): este PRD **sustenta H3** — recursos supridos por mestres
 e apoiadores. Ele passa a medir quantas necessidades publicadas foram cobertas por aporte de
@@ -486,14 +594,19 @@ lançamento manual da gestão.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                 | Gravada em    | Linha do doc 09                       |
-| ----------------------------------------------------------------------- | ------------- | ------------------------------------- |
-| Efetividade é painel vivo, agregado e por avatar, sem relatório fechado | 04 §3         | Efetividade do apoio ao Apoiador      |
-| Um usuário por cadastro no Ciclo 01, inclusive no institucional         | 02 §1         | Instituição com mais de um usuário    |
-| O aporte feito pela App 08 é em dinheiro; material e serviço pelo Admin | 02 §1, 03 §10 | Forma do aporte feito pela App 08     |
-| O direcionado alcança quem não tem divulgação, sem confirmar o nick     | 04 §3         | Direcionado a quem não tem divulgação |
-| Avatar próprio a partir de 10 moedas; abaixo do piso, avatar padrão     | 11 §8.2       | Piso do avatar personalizado          |
-| "Poder Econômico" passa a se chamar "Poder Sustentador"                 | 04 §1         | Nome do poder dos provedores          |
+| Decisão                                                                 | Gravada em    | Linha do doc 09                          |
+| ----------------------------------------------------------------------- | ------------- | ---------------------------------------- |
+| Efetividade é painel vivo, agregado e por avatar, sem relatório fechado | 04 §3         | Efetividade do apoio ao Apoiador         |
+| Um usuário por cadastro no Ciclo 01, inclusive no institucional         | 02 §1         | Instituição com mais de um usuário       |
+| O aporte feito pela App 08 é em dinheiro; material e serviço pelo Admin | 02 §1, 03 §10 | Forma do aporte feito pela App 08        |
+| O direcionado alcança quem não tem divulgação, sem confirmar o nick     | 04 §3         | Direcionado a quem não tem divulgação    |
+| Avatar próprio a partir de 10 moedas; abaixo do piso, avatar padrão     | 11 §8.2       | Piso do avatar personalizado             |
+| "Poder Econômico" passa a se chamar "Poder Sustentador"                 | 04 §1         | Nome do poder dos provedores             |
+| Missão do Apoiador, níveis de sustento e selos                          | 14 §§1, 5–9   | Missão do Apoiador                       |
+| Perfil pessoa física ou jurídica, declarado e não verificado            | 02 §1, 14 §4  | Perfil pessoa física e pessoa jurídica   |
+| Escadas por perfil, a de pessoa física começando em 1 moeda             | 04 §2         | Escadas de valores sugeridos por perfil  |
+| Necessidade admite cobertura parcial                                    | 04 §1         | Cobertura parcial da necessidade         |
+| Técnicas de gamificação vedadas no apoio                                | 14 §9         | Técnicas de gamificação vedadas no apoio |
 
 As quatro primeiras fecharam as duas questões em aberto do PRD-14 no documento 08 e a pendência
 do formato do relatório de efetividade, que também constava do PRD-07. As duas últimas vieram
@@ -501,6 +614,11 @@ da revisão do fundador: o **piso do avatar** e a **renomeação do Poder Econô
 todos os documentos onde o termo antigo aparecia. A entidade `Favorito` foi acrescentada ao
 modelo do PRD-01, e o `DesafioExtra` — que já constava dele — teve os atributos detalhados
 aqui. O `Aporte` do PRD-07 ganhou "App 08" como origem do registro.
+
+**Na v2** nenhuma decisão nasceu aqui: todas vieram do documento 14 e dos documentos-fonte que
+ele alcançou, e já estão em "Já decididos" no documento 09. As entidades `MissaoDoApoiador` e
+`SeloDoApoiador` foram acrescentadas ao modelo do PRD-01, e a **cobertura parcial da
+necessidade**, ao PRD-07.
 
 ## 14. Pendências que permanecem
 
@@ -518,6 +636,11 @@ aqui. O `Aporte` do PRD-07 ganhou "App 08" como origem do registro.
   relatório fechado nasce dele — e para quem — se decide com o uso medido no ciclo.
 - **Mais de um usuário por cadastro institucional**: fica para ciclo futuro, com o registro de
   quem agiu em nome da instituição a definir junto.
+- **Catálogo de missões do Ciclo 01** (documento 09): os arquétipos estão no documento 14, mas
+  a quantidade, o prazo e o selo de cada missão dependem do catálogo de recompensas por marco e
+  da tabela de valoração. A aplicação está pronta para exibir o que a gestão publicar.
+- **Apoio em código** (documento 09): enquanto for proposta, não abre missão nem selo, e a
+  segunda via para o nível 5 de sustento não existe — resta virar Mestre.
 
 ## 15. Rastreabilidade
 
@@ -530,3 +653,4 @@ aqui. O `Aporte` do PRD-07 ganhou "App 08" como origem do registro.
 | `RF-14-40` a `RF-14-47` | 04 §§3, 4 (rastreio de efetividade e cobertura de ODS)           |
 | `RF-14-48` a `RF-14-55` | 03 §§8, 10 e 02 §1 (painel público, nick da família e favoritos) |
 | `RF-14-56` a `RF-14-59` | 03 §§7, 10 (fila única de propostas, canal fechado e aviso)      |
+| `RF-14-60` a `RF-14-73` | 14 §§2, 5–9 e 04 §§1, 2 (missões, níveis de sustento e selos)    |

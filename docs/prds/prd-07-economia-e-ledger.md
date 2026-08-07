@@ -144,65 +144,67 @@ atividades previstas.
 
 ## 6. Requisitos funcionais
 
-| ID         | Requisito                                                                                         | Prioridade |
-| ---------- | ------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-07-01` | Admin cadastra tipo de recurso com unidade e valor de referência em moedas                        | essencial  |
-| `RF-07-02` | Sistema versiona o valor de referência por data de vigência                                       | essencial  |
-| `RF-07-03` | Admin cadastra tipo novo no ato do registro de um aporte, sem interromper o fluxo                 | essencial  |
-| `RF-07-04` | Admin registra aporte com provedor, tipo, quantidade, comprovante e data                          | essencial  |
-| `RF-07-29` | Aporte declarado no pré-cadastro entra pendente, com comprovante e sem creditar nada              | essencial  |
-| `RF-07-30` | Homologação do aporte pendente converte o valor em moedas e credita o Poder Sustentador           | essencial  |
-| `RF-07-05` | Sistema converte todo aporte em moedas pela tabela vigente na data do aporte                      | essencial  |
-| `RF-07-06` | Sistema registra aporte por absorção em nome do Mestre ou Admin que proveu o recurso              | essencial  |
-| `RF-07-07` | Sistema mantém saldo por tipo de recurso e ponto de apoio                                         | essencial  |
-| `RF-07-08` | Agendamento de atividade reserva os recursos declarados; sem saldo, fica pendente de lastro       | essencial  |
-| `RF-07-27` | Falta de lastro é publicada como necessidade na vitrine e nas áreas do Apoiador e do Mestre       | essencial  |
-| `RF-07-28` | Mestre ou Admin assume o aporte por absorção a partir da necessidade publicada                    | essencial  |
-| `RF-07-09` | Realização da atividade converte a reserva em baixa; cancelamento libera a reserva                | essencial  |
-| `RF-07-10` | Sistema calcula o Poder Sustentador de cada provedor pela soma de moedas aportadas                | essencial  |
-| `RF-07-11` | Sistema registra exemplar tombado com ponto de apoio, responsável designado e conservação         | essencial  |
-| `RF-07-12` | Mestre registra empréstimo de bancada e devolução, com estado de conservação                      | essencial  |
-| `RF-07-13` | Sistema registra baixa definitiva de recompensa entregue, sem devolução                           | essencial  |
-| `RF-07-14` | Perda ou dano gera necessidade de reposição, nunca débito ao Guerreiro(a) ou à família            | essencial  |
-| `RF-07-15` | Sistema exige lastro da recompensa do desafio extra antes da publicação                           | essencial  |
-| `RF-07-16` | Rota pública devolve o movimentado por provedor, atividade e comunidade, em moedas                | essencial  |
-| `RF-07-17` | Apoiador consulta seus aportes e seu Poder Sustentador, sem edição                                | essencial  |
-| `RF-07-18` | Sistema expõe o que falta de recurso para as atividades previstas                                 | essencial  |
-| `RF-07-19` | Lançamento é imutável; correção se faz por lançamento de ajuste, com motivo e autor               | essencial  |
-| `RF-07-20` | Conferência de inventário por módulo, com resultado publicável na prestação de contas             | desejável  |
-| `RF-07-21` | Aporte por absorção nasce marcado como ressarcível, com situação de ressarcimento                 | essencial  |
-| `RF-07-22` | Ressarcimento pago exige comprovante anexado, e a plataforma não guarda dado bancário             | essencial  |
-| `RF-07-23` | Sistema aceita doação com destinação a ressarcir recursos absorvidos                              | essencial  |
-| `RF-07-24` | Sistema lista os aportes ressarcíveis em aberto por antiguidade, e o Admin decide o pagamento     | essencial  |
-| `RF-07-25` | Ressarcimento pago reverte as moedas do aporte e mantém o registro do ato                         | essencial  |
-| `RF-07-26` | Card e página pública do Mestre ou Admin exibem quantas vezes ele sustentou atividade sem recurso | essencial  |
+| ID         | Requisito                                                                                                                        | Prioridade |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-07-01` | Admin cadastra tipo de recurso com unidade e valor de referência em moedas                                                       | essencial  |
+| `RF-07-02` | Sistema versiona o valor de referência por data de vigência                                                                      | essencial  |
+| `RF-07-03` | Admin cadastra tipo novo no ato do registro de um aporte, sem interromper o fluxo                                                | essencial  |
+| `RF-07-04` | Admin registra aporte com provedor, tipo, quantidade, comprovante e data                                                         | essencial  |
+| `RF-07-29` | Aporte declarado no pré-cadastro entra pendente, com comprovante e sem creditar nada                                             | essencial  |
+| `RF-07-30` | Homologação do aporte pendente converte o valor em moedas e credita o Poder Sustentador                                          | essencial  |
+| `RF-07-05` | Sistema converte todo aporte em moedas pela tabela vigente na data do aporte                                                     | essencial  |
+| `RF-07-06` | Sistema registra aporte por absorção em nome do Mestre ou Admin que proveu o recurso                                             | essencial  |
+| `RF-07-07` | Sistema mantém saldo por tipo de recurso e ponto de apoio                                                                        | essencial  |
+| `RF-07-08` | Agendamento de atividade reserva os recursos declarados; sem saldo, fica pendente de lastro                                      | essencial  |
+| `RF-07-27` | Falta de lastro é publicada como necessidade na vitrine e nas áreas do Apoiador e do Mestre                                      | essencial  |
+| `RF-07-28` | Mestre ou Admin assume o aporte por absorção a partir da necessidade publicada                                                   | essencial  |
+| `RF-07-31` | Necessidade publicada aceita cobertura parcial: o aporte homologado abate o que falta e ela só sai da lista quando o saldo fecha | essencial  |
+| `RF-07-09` | Realização da atividade converte a reserva em baixa; cancelamento libera a reserva                                               | essencial  |
+| `RF-07-10` | Sistema calcula o Poder Sustentador de cada provedor pela soma de moedas aportadas                                               | essencial  |
+| `RF-07-11` | Sistema registra exemplar tombado com ponto de apoio, responsável designado e conservação                                        | essencial  |
+| `RF-07-12` | Mestre registra empréstimo de bancada e devolução, com estado de conservação                                                     | essencial  |
+| `RF-07-13` | Sistema registra baixa definitiva de recompensa entregue, sem devolução                                                          | essencial  |
+| `RF-07-14` | Perda ou dano gera necessidade de reposição, nunca débito ao Guerreiro(a) ou à família                                           | essencial  |
+| `RF-07-15` | Sistema exige lastro da recompensa do desafio extra antes da publicação                                                          | essencial  |
+| `RF-07-16` | Rota pública devolve o movimentado por provedor, atividade e comunidade, em moedas                                               | essencial  |
+| `RF-07-17` | Apoiador consulta seus aportes e seu Poder Sustentador, sem edição                                                               | essencial  |
+| `RF-07-18` | Sistema expõe o que falta de recurso para as atividades previstas                                                                | essencial  |
+| `RF-07-19` | Lançamento é imutável; correção se faz por lançamento de ajuste, com motivo e autor                                              | essencial  |
+| `RF-07-20` | Conferência de inventário por módulo, com resultado publicável na prestação de contas                                            | desejável  |
+| `RF-07-21` | Aporte por absorção nasce marcado como ressarcível, com situação de ressarcimento                                                | essencial  |
+| `RF-07-22` | Ressarcimento pago exige comprovante anexado, e a plataforma não guarda dado bancário                                            | essencial  |
+| `RF-07-23` | Sistema aceita doação com destinação a ressarcir recursos absorvidos                                                             | essencial  |
+| `RF-07-24` | Sistema lista os aportes ressarcíveis em aberto por antiguidade, e o Admin decide o pagamento                                    | essencial  |
+| `RF-07-25` | Ressarcimento pago reverte as moedas do aporte e mantém o registro do ato                                                        | essencial  |
+| `RF-07-26` | Card e página pública do Mestre ou Admin exibem quantas vezes ele sustentou atividade sem recurso                                | essencial  |
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                       | Invariante | Fonte        |
-| ---------- | ------------------------------------------------------------------------------------------- | ---------- | ------------ |
-| `RN-07-01` | Nenhuma atividade acontece sem lastro dos recursos que consome                              | 9          | 04 §1        |
-| `RN-07-02` | Todo custo de toda ação é atribuído a um provedor                                           | —          | 04 §1        |
-| `RN-07-03` | Aporte não financeiro é valorado pela tabela de referência da gestão                        | —          | 04 §1        |
-| `RN-07-04` | A moeda vale R$ 10,00, admite duas casas decimais e a escala é fixa por ciclo               | 16         | 04 §1        |
-| `RN-07-05` | Toda saída pública exibe moedas, nunca reais                                                | 16         | 04 §1        |
-| `RN-07-06` | Recurso provido sem contrapartida financeira por Mestre ou Admin é aporte em nome dele      | —          | 04 §1        |
-| `RN-07-07` | Aporte de patrimônio credita o Poder Sustentador uma única vez, sem baixa por consumo       | —          | 04 §1        |
-| `RN-07-08` | Livro da linha Alpha e camisa entregues ao Guerreiro(a) têm baixa definitiva                | —          | 05 §3        |
-| `RN-07-09` | Perda ou dano de material comum não gera dívida ao Guerreiro(a) nem à família               | 11         | 05 §3        |
-| `RN-07-10` | Cada ponto de apoio tem responsável designado pelo acervo permanente e pelos kits           | —          | 05 §3        |
-| `RN-07-11` | O exemplar permanente não sai do ponto de apoio; uso é de bancada, com registro             | —          | 05 §3        |
-| `RN-07-12` | A recompensa do desafio extra precisa de lastro antes da publicação do desafio              | 9          | 04 §3        |
-| `RN-07-13` | O Apoiador não recebe dado de contato nem identificação de Guerreiro(a)                     | 10         | 04 §3        |
-| `RN-07-14` | Camisa é conquistada no marco de missão declarado pelo Mestre, não entregue a todo inscrito | —          | 02 §8, 05 §3 |
-| `RN-07-15` | Lançamento do livro-razão nunca é apagado nem editado                                       | —          | 04 §1        |
-| `RN-07-16` | Quem homologa o aporte não pode ser o próprio provedor                                      | —          | 04 §1        |
-| `RN-07-17` | Ressarcimento não é direito nem promessa: só ocorre havendo receita destinada a ele         | —          | 04 §1        |
-| `RN-07-18` | Ressarcimento pago reverte as moedas; o registro do ato e o destaque público permanecem     | —          | 04 §1        |
-| `RN-07-19` | O selo público mostra o número de absorções, nunca o valor em reais                         | 16         | 11 §8.2      |
-| `RN-07-20` | Chave PIX, banco e conta nunca são armazenados; o trâmite guarda apenas o comprovante       | —          | 04 §1        |
-| `RN-07-21` | Aporte declarado no pré-cadastro não credita moeda alguma antes da homologação de Admin     | 16         | 04 §2        |
-| `RN-07-22` | Comprovante é aceito em PDF, JPG ou PNG; não há confirmação automática de PIX               | —          | 04 §2        |
+| ID         | Regra                                                                                                          | Invariante | Fonte        |
+| ---------- | -------------------------------------------------------------------------------------------------------------- | ---------- | ------------ |
+| `RN-07-01` | Nenhuma atividade acontece sem lastro dos recursos que consome                                                 | 9          | 04 §1        |
+| `RN-07-02` | Todo custo de toda ação é atribuído a um provedor                                                              | —          | 04 §1        |
+| `RN-07-03` | Aporte não financeiro é valorado pela tabela de referência da gestão                                           | —          | 04 §1        |
+| `RN-07-04` | A moeda vale R$ 10,00, admite duas casas decimais e a escala é fixa por ciclo                                  | 16         | 04 §1        |
+| `RN-07-05` | Toda saída pública exibe moedas, nunca reais                                                                   | 16         | 04 §1        |
+| `RN-07-06` | Recurso provido sem contrapartida financeira por Mestre ou Admin é aporte em nome dele                         | —          | 04 §1        |
+| `RN-07-07` | Aporte de patrimônio credita o Poder Sustentador uma única vez, sem baixa por consumo                          | —          | 04 §1        |
+| `RN-07-08` | Livro da linha Alpha e camisa entregues ao Guerreiro(a) têm baixa definitiva                                   | —          | 05 §3        |
+| `RN-07-09` | Perda ou dano de material comum não gera dívida ao Guerreiro(a) nem à família                                  | 11         | 05 §3        |
+| `RN-07-10` | Cada ponto de apoio tem responsável designado pelo acervo permanente e pelos kits                              | —          | 05 §3        |
+| `RN-07-11` | O exemplar permanente não sai do ponto de apoio; uso é de bancada, com registro                                | —          | 05 §3        |
+| `RN-07-12` | A recompensa do desafio extra precisa de lastro antes da publicação do desafio                                 | 9          | 04 §3        |
+| `RN-07-13` | O Apoiador não recebe dado de contato nem identificação de Guerreiro(a)                                        | 10         | 04 §3        |
+| `RN-07-14` | Camisa é conquistada no marco de missão declarado pelo Mestre, não entregue a todo inscrito                    | —          | 02 §8, 05 §3 |
+| `RN-07-15` | Lançamento do livro-razão nunca é apagado nem editado                                                          | —          | 04 §1        |
+| `RN-07-16` | Quem homologa o aporte não pode ser o próprio provedor                                                         | —          | 04 §1        |
+| `RN-07-23` | Na cobertura parcial, cada provedor recebe as moedas do que aportou; ninguém recebe crédito pelo que outro deu | 16         | 04 §1        |
+| `RN-07-17` | Ressarcimento não é direito nem promessa: só ocorre havendo receita destinada a ele                            | —          | 04 §1        |
+| `RN-07-18` | Ressarcimento pago reverte as moedas; o registro do ato e o destaque público permanecem                        | —          | 04 §1        |
+| `RN-07-19` | O selo público mostra o número de absorções, nunca o valor em reais                                            | 16         | 11 §8.2      |
+| `RN-07-20` | Chave PIX, banco e conta nunca são armazenados; o trâmite guarda apenas o comprovante                          | —          | 04 §1        |
+| `RN-07-21` | Aporte declarado no pré-cadastro não credita moeda alguma antes da homologação de Admin                        | 16         | 04 §2        |
+| `RN-07-22` | Comprovante é aceito em PDF, JPG ou PNG; não há confirmação automática de PIX                                  | —          | 04 §2        |
 
 ## 8. Modelo de dados
 
