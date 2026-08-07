@@ -75,8 +75,12 @@ Pessoas e instituições que financiam ou divulgam o projeto.
   **não coleta CPF, CNPJ nem documento de identidade**.
 - **Avatar e nick próprios**, definidos pelo Apoiador na App 08 depois de aprovado: o avatar
   pode ser a logomarca ou outra imagem escolhida, e o nick segue a **unicidade de nick** da
-  plataforma.
-- Cada recurso aportado é registrado e contabilizado no seu **Poder Econômico**.
+  plataforma. O avatar próprio é liberado a partir de **10 moedas acumuladas**; abaixo disso o
+  card exibe o avatar padrão do projeto, com o mesmo nick e o mesmo total de moedas.
+- **Um usuário por cadastro no Ciclo 01**, inclusive no institucional: a instituição indica
+  quem opera a App 08, e é esse usuário que responde pelos atos registrados. Mais de um acesso
+  no mesmo cadastro fica para ciclo futuro.
+- Cada recurso aportado é registrado e contabilizado no seu **Poder Sustentador**.
 
 ### Pais e responsáveis
 
@@ -227,7 +231,7 @@ projeto, sem trilha nem atividade previstas para o Ciclo 01.
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Poder da IA e Robótica**                        | Programação, eletrônica, robótica e IA. Trilhas: Robô Educa (1ª) e Batalha de Laser (2ª)                                                                                                                                                         |
 | **Poder do Território**                           | Registro e ciência de dados do território (_Data Science_): sustentar séries de coleta reais da comunidade, com progressão e badges próprios. Todo Guerreiro(a) o exercita, pois toda trilha tem desafio de coleta                               |
-| **Poder Econômico**                               | O quanto Mestres e Apoiadores investiram na plataforma — o poder dos provedores                                                                                                                                                                  |
+| **Poder Sustentador**                             | O quanto Mestres e Apoiadores investiram na plataforma — o poder dos provedores                                                                                                                                                                  |
 | **Poder da Rima** _(ciclo futuro)_                | Expressão artística: rima, rap, batalhas de rima. Validado em 2024 na Guerreira Zeferina, dentro do Inova Comunidade                                                                                                                             |
 | **Poder das Redes** _(ciclo futuro)_              | Produção de conteúdo / "Monte seu Canal": comunicação digital, geração de áudio e vídeo e letramento crítico sobre riscos                                                                                                                        |
 | **Poder da Capoeira** _(ciclo futuro)_            | Cultura e movimento, com análise de movimentos por visão computacional (contador de polichinelos e de movimentos corretos). Também validado em 2024. Sugestão técnica de captação: **MediaPipe**; TensorFlow como alternativa para classificação |

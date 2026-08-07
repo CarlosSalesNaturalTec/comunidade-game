@@ -102,7 +102,7 @@ as **oito aplicações desta etapa**, priorizadas conforme as fases do piloto.
 ### 4.3 Captação de recursos de infraestrutura
 
 Conseguir os recursos digitais básicos: servidores, armazenamento e execução das aplicações.
-Como qualquer outro recurso, entram no livro-razão e compõem o **Poder Econômico** de quem os
+Como qualquer outro recurso, entram no livro-razão e compõem o **Poder Sustentador** de quem os
 aportar.
 
 O **consumo de IA das Apps 05 e 01** entra na mesma conta: no Ciclo 01 ele é **aportado por

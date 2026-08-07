@@ -87,6 +87,7 @@ nav:
       - "PRD-05 — App 05: Área do Guerreiro(a)": prds/prd-05-area-do-guerreiro.md
       - "PRD-13 — App 07: Área dos responsáveis": prds/prd-13-area-dos-responsaveis.md
       - "PRD-03 — App 06: Vitrine pública": prds/prd-03-vitrine-publica.md
+      - "PRD-14 — App 08: Área do Apoiador": prds/prd-14-area-do-apoiador.md
   - "Operação":
       - "04 — Modelo econômico e sustentabilidade": 04-modelo-economico-e-sustentabilidade.md
       - "05 — Implantação e operação": 05-implantacao-e-operacao.md

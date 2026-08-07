@@ -26,7 +26,7 @@ Regras derivadas:
   recurso — dar a aula sem receber, comprar o lanche, ceder o insumo —, e faz isso **a partir
   da própria necessidade publicada**, com um ato de confirmação. A plataforma registra como
   **aporte dele**, valorado pela tabela de referência, e o crédito entra no seu Poder
-  Econômico. O aporte nasce marcado como **ressarcível**, e quem absorveu ganha **destaque
+  Sustentador. O aporte nasce marcado como **ressarcível**, e quem absorveu ganha **destaque
   público** pelo ato.
 - **Ressarcimento não é direito nem promessa.** Não há fila permanente nem expectativa de
   devolução: o ressarcimento só existe quando entra receita destinada a ele. Havendo essa
@@ -36,7 +36,7 @@ Regras derivadas:
 - **A plataforma não guarda dado bancário.** Todo o trâmite corre na plataforma; na última
   etapa a pessoa envia a chave PIX **por e-mail ao Admin**, que faz a transferência e anexa
   o **comprovante** ao registro. Nem chave, nem banco, nem conta ficam armazenados.
-- O acumulado forma o **"Poder Econômico"** do provedor, visível na plataforma: o
+- O acumulado forma o **"Poder Sustentador"** do provedor, visível na plataforma: o
   reconhecimento público de quem sustenta o projeto.
 
 ### A moeda da plataforma
@@ -47,12 +47,12 @@ R$ 10,00**.
 
 - Nas **vitrines públicas** exibe-se a **quantidade de moedas** aportada, **nunca o valor em
   reais**.
-- A moeda mede **aporte de recurso** e compõe o Poder Econômico. Não se confunde com os
+- A moeda mede **aporte de recurso** e compõe o Poder Sustentador. Não se confunde com os
   **pontos**, que são do Guerreiro(a) e vêm de realização.
 - A moeda admite **fração, com duas casas** — R$ 5,00 são 0,50 moeda —, para que nenhum
   aporte pequeno se perca no arredondamento.
 - **A escala é fixa.** Alterá-la depois que o livro-razão tiver histórico obriga a reconverter
-  todos os aportes já registrados, sob pena de o Poder Econômico comparar réguas diferentes.
+  todos os aportes já registrados, sob pena de o Poder Sustentador comparar réguas diferentes.
   Mudança de escala é decisão declarada, com reconversão, nunca ajuste silencioso.
 - **Reais aparecem só onde se paga.** A tela de aporte mostra o valor em reais, porque é o que
   se transfere, sempre **ao lado do equivalente em moedas**. Em toda exibição de aporte
@@ -71,7 +71,7 @@ contrário de reconhecer quem sustenta o projeto.
 Aportes em material e serviço são convertidos em moedas por uma **tabela de referência**
 mantida pela gestão: cada tipo de aporte — hora-aula, kit, livro, camisa, lanche, insumo —
 tem um valor padrão, e todo aporte do mesmo tipo vale o mesmo, o que torna comparável o
-Poder Econômico entre apoiadores. **Tipo novo é cadastrado na hora por um Admin**, com o seu
+Poder Sustentador entre apoiadores. **Tipo novo é cadastrado na hora por um Admin**, com o seu
 valor de referência, para que nenhum aporte fique represado.
 
 ### Produção executiva
@@ -126,7 +126,7 @@ comprobatório do aporte**, exatamente o tipo de artefato que a plataforma exige
 Apoiador, e que fica anexado ao cadastro do Apoiador na App 03.
 
 É o **primeiro caso concreto** da economia descrita acima: entra no histórico do provedor,
-compõe o **Poder Econômico** do Goethe-Institut e dá **lastro material** às duas trilhas
+compõe o **Poder Sustentador** do Goethe-Institut e dá **lastro material** às duas trilhas
 existentes, sem custo adicional para o primeiro ciclo.
 
 **Tratamento no livro-razão — regime misto (definição vigente):**
@@ -170,7 +170,7 @@ jurídica vinculada:
 | **Chave PIX** | `51.730.395/0001-19` (CNPJ)              |
 | **Titular**   | Robô Educa — Kits Robóticos Educacionais |
 
-- Toda doação recebida é **registrada no livro-razão** e compõe o **Poder Econômico** do
+- Toda doação recebida é **registrada no livro-razão** e compõe o **Poder Sustentador** do
   doador — dinheiro não é exceção à regra de transparência, é o caso em que ela mais importa.
 - O doador é cadastrado como Apoiador por um Admin, com o comprovante anexado.
 - A chave é publicada na vitrine pública, na seção "Como apoiar".
@@ -188,7 +188,7 @@ Apoiador** e escolhe uma de três formas:
   automaticamente**: quem confere é um Admin, na App 03.
 - **Sem documento fiscal**: a plataforma não coleta CPF, CNPJ nem documento de identidade de
   quem aporta.
-- **Homologado o aporte**, o valor é convertido em **moedas**, credita o Poder Econômico e o
+- **Homologado o aporte**, o valor é convertido em **moedas**, credita o Poder Sustentador e o
   card do Apoiador passa a exibir o total na vitrine. Antes disso não há crédito nem card.
 
 **Escada de valores sugeridos (definição vigente):**
@@ -225,13 +225,13 @@ quem o concluir.
 
 ### Definições vigentes
 
-| Questão                          | Definição                                                                                                                                                                                                                                                                                                                             |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Pontos**                       | O desafio extra vale **pontos além da recompensa**, computados **isoladamente como pontos extras** — não se misturam à pontuação regular da trilha                                                                                                                                                                                    |
-| **Teto de desafios simultâneos** | **Não há teto por trilha.** O controle é qualitativo: cada desafio é aprovado ou não por um Admin, caso a caso, após a validação do Mestre                                                                                                                                                                                            |
-| **Exclusividade**                | **Proibida nos desafios abertos**: ninguém é barrado de disputar. O que é limitado é a **quantidade** de recompensas, declarada de antemão                                                                                                                                                                                            |
-| **Desafio direcionado**          | O Apoiador pode **direcionar um desafio a um Guerreiro(a) específico**, identificado **pelo nick** que a família lhe cedeu — só ele recebe a recompensa se atingir os requisitos. Exige **justificativa registrada** do vínculo (ex.: parente próximo — tio(a), padrinho, madrinha) e aprovação de Admin, além da validação do Mestre |
-| **Quantidade de recompensas**    | **Uma única** (para quem concluir primeiro) **ou várias** — todos que concluírem recebem, até o limite disponibilizado                                                                                                                                                                                                                |
+| Questão                          | Definição                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pontos**                       | O desafio extra vale **pontos além da recompensa**, computados **isoladamente como pontos extras** — não se misturam à pontuação regular da trilha                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **Teto de desafios simultâneos** | **Não há teto por trilha.** O controle é qualitativo: cada desafio é aprovado ou não por um Admin, caso a caso, após a validação do Mestre                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Exclusividade**                | **Proibida nos desafios abertos**: ninguém é barrado de disputar. O que é limitado é a **quantidade** de recompensas, declarada de antemão                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Desafio direcionado**          | O Apoiador pode **direcionar um desafio a um Guerreiro(a) específico**, identificado **pelo nick** que a família lhe cedeu — só ele recebe a recompensa se atingir os requisitos. Exige **justificativa registrada** do vínculo (ex.: parente próximo — tio(a), padrinho, madrinha) e aprovação de Admin, além da validação do Mestre. A plataforma **não confirma ao proponente se o nick existe** nem exibe dado algum do destinatário: quem confere o vínculo são o Mestre e o Admin. Por isso o direcionado **alcança também quem não tem divulgação autorizada** |
+| **Quantidade de recompensas**    | **Uma única** (para quem concluir primeiro) **ou várias** — todos que concluírem recebem, até o limite disponibilizado                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 Por que o teto foi substituído por aprovação: um número fixo protegeria a trilha do excesso,
 mas barraria um bom desafio pela razão errada — a ordem de chegada. A aprovação caso a caso
@@ -249,7 +249,7 @@ e propondo desafios, sem acesso à área da família.
 
 | Registro                                                                        | Para que serve                                               |
 | ------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| **Recompensas creditadas** — o que ele custeou e entregou                       | Compõe o **Poder Econômico**, como qualquer outro aporte     |
+| **Recompensas creditadas** — o que ele custeou e entregou                       | Compõe o **Poder Sustentador**, como qualquer outro aporte   |
 | **Realizações dos Guerreiros e Guerreiras** nos desafios que ele propôs         | Mostra **o que aconteceu** por causa daquele apoio           |
 | **Etiquetas ODS** herdadas da missão, ou da trilha, a que o desafio se vinculou | Mostra **a que objetivos da Agenda 2030** o apoio contribuiu |
 
@@ -270,8 +270,11 @@ de fora torcendo pelo que ele está construindo.
   vira publicidade dentro de uma trilha infantil, o que o projeto não admite.
 - Recompensas seguem o cuidado de dignidade previsto para o catálogo.
 
-> **A definir:** formato do **relatório de efetividade** entregue ao Apoiador — quais números,
-> com que periodicidade e em que nível de agregação. A cobertura de ODS é um deles.
+**Painel vivo, não relatório fechado.** O retorno ao Apoiador é uma tela da App 08 atualizada
+a cada conclusão: desafios propostos, publicados e concluídos, quantos Guerreiros e Guerreiras
+concluíram cada um, em que trilhas, moedas aportadas e cobertura de ODS. Sai **agregado e por
+avatar**, por desafio e por trilha. **No Ciclo 01 não há relatório fechado nem periodicidade** —
+o uso do painel é o que vai dizer qual peça de prestação de contas vale construir depois.
 
 ## 4. Impacto social
 
@@ -343,7 +346,7 @@ O projeto é sustentável quando o ciclo se fecha:
 Apoiadores/Parceiros aportam recursos ──► Atividades acontecem (com lastro)
         ▲                                          │
         │                                          ▼
-Transparência + vídeos + Poder Econômico ◄── Guerreiros e Guerreiras aprendem, pontuam e realizam
+Transparência + vídeos + Poder Sustentador ◄── Guerreiros e Guerreiras aprendem, pontuam e realizam
         ▲                                          │
         └────────── novos multiplicadores ◄────────┘
 ```

@@ -364,7 +364,7 @@ nunca reescrito, pelas quatro superfícies públicas do ecossistema.
 | Comunidades Virtuais                                     | Painel público por comunidade em série histórica, agregado e anonimizado                      |
 | **Etiquetas ODS**                                        | Painel de cobertura da Agenda 2030 por comunidade e por ciclo, com destaque para a meta 17.18 |
 | Mestres                                                  | Cards com os **artefatos que comprovam a habilidade** — de qualquer área                      |
-| Apoiadores                                               | Poder Econômico e desafios extras propostos, com as realizações que o apoio produziu          |
+| Apoiadores                                               | Poder Sustentador e desafios extras propostos, com as realizações que o apoio produziu        |
 | Rankings                                                 | Somente pontos regulares; Guerreiros e Guerreiras sem autorização não aparecem                |
 
 ### 8.2 Cards e páginas individuais dos personagens
@@ -394,6 +394,13 @@ versão detalhada, com as mesmas restrições de exibição da tabela acima:
 imagens de origens diferentes, e a vitrine os apresenta em **um só formato**: **moldura comum**,
 avatar **centralizado** em proporção fixa, nick abaixo e o **total de moedas em destaque**. É o
 que impede que a marca maior domine a página e mantém a leitura de coleção de cards.
+
+**Piso do avatar personalizado.** O avatar próprio — logomarca ou imagem escolhida — é liberado
+a partir de **10 moedas acumuladas** em aportes homologados. Abaixo disso o card exibe o
+**avatar padrão do projeto**, na mesma moldura, com o nick e o total de moedas do Apoiador e
+nenhuma outra marca de diferença. Alcançado o piso, o direito **não regride**, e o nick é
+sempre do Apoiador, em qualquer faixa. É o que impede a página pública de virar mural de marca
+a custo baixo sem apagar quem aportou pouco.
 
 ### 8.3 Representação visual da Comunidade Virtual
 

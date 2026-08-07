@@ -89,8 +89,10 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Proteção das rotas públicas (limite por origem, atraso)            | 03 §8                                      | 02 §1, 08                      |
 | Aviso de LGPD visível nas aplicações e área detalhada              | 03 §12                                     | 08, 09                         |
 | Área do Apoiador (App 08) e registro de propostas                  | 03 §10                                     | 04, 08, 09, 12                 |
+| Efetividade do apoio (painel vivo, agregado e por avatar)          | 04 §3                                      | 03 §10, 08, 12                 |
+| Aporte pela App 08 em dinheiro; material e serviço pelo Admin      | 02 §1 e 03 §10                             | 04 §2, 08                      |
 | Pré-cadastro do Apoiador (aporte declarado e comprovante)          | 02 §1 e 03 §10                             | 04 §2, 08                      |
-| Identidade pública do Apoiador (avatar, nick, moldura do card)     | 11 §8.2                                    | 02 §1, 03 §§8, 10, 08          |
+| Identidade do Apoiador (avatar, nick, moldura e piso de 10 moedas) | 11 §8.2                                    | 02 §1, 03 §§8, 10, 08          |
 | Área do Mestre (App 09) — autoria e operação                       | 03 §11                                     | 02, 05, 08, 09                 |
 | Publicação da trilha (sem aprovação prévia, travas e conteúdo)     | 03 §11                                     | 02, 05, 08, 11                 |
 | Atividade da missão (modalidade e formato)                         | 11 §§2.1, 4                                | 02, 03 §11, 08                 |
@@ -102,7 +104,7 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 | Acompanhamento por nick e favoritos (só do Apoiador)               | 02 §1 e 03 §10                             | 03 §8, 04 §3, 08, 12           |
 | Licença do conteúdo educacional (CC BY-SA)                         | 03 §1                                      | 01, 08, 09                     |
 | Regra de lastro (atividade só com recurso provido)                 | 04 §1                                      | 02, 05, 10, 11, 12             |
-| Poder Econômico                                                    | 04 §1                                      | 02, 12                         |
+| Poder Sustentador                                                  | 04 §1                                      | 02, 12                         |
 | Desafios extras (aberto e direcionado)                             | 04 §3                                      | 02, 08, 11, 12                 |
 | Acervo Include e kits MDF (inventário, regime misto, guarda)       | 05 §3                                      | 02, 04, 09, 10                 |
 | Encontro assíncrono                                                | 05 §4                                      | 03, 08, 11                     |
@@ -286,7 +288,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD-11 | `prd-11-personalizacao-por-ia.md` | PRD-01, PRD-04 | 02, 03                 |
 | PRD-12 | `prd-12-jogo-em-javascript.md`    | PRD-01, PRD-05 | 03, 11                 |
 | PRD-13 | `prd-13-area-dos-responsaveis.md` | PRD-01, PRD-02 | 02, 03, 10             |
-| PRD-14 | `prd-14-area-do-apoiador.md`      | PRD-07, PRD-02 | 03, 04, 12             |
+| PRD-14 | `prd-14-area-do-apoiador.md`      | PRD-07, PRD-02 | 02, 03, 04, 11, 12     |
 
 A correspondência entre as oito aplicações e os PRDs está na §4; a ordem de elaboração e o
 motivo de cada onda estão no documento 08.

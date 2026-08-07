@@ -259,7 +259,8 @@ leva à apresentação da Área do Apoiador, com solicitação de cadastro e cam
 vincula o apoio à pessoa exibida**; **botão "Entrar"** sempre visível, encaminhando Guerreiro(a)
 à App 05, responsável à App 07, Mestre à App 09, Apoiador à App 08, gestão à App 03 e o aparelho
 da aula à App 01 — a vitrine não autentica ninguém e não guarda a escolha; **card de Apoiador
-padronizado** — moldura comum, avatar centralizado, nick e total de moedas em destaque;
+padronizado** — moldura comum, avatar centralizado, nick e total de moedas em destaque, com
+**avatar padrão abaixo de 10 moedas**;
 **limite por origem com atraso progressivo** na consulta por nick e nos dois formulários
 públicos.
 
@@ -436,7 +437,7 @@ definidos no documento 11.
 
 ## PRD-07 — Economia de Recursos e Transparência (ledger)
 
-**Escopo:** livro-razão de recursos aportados e consumidos; "Poder Econômico".
+**Escopo:** livro-razão de recursos aportados e consumidos; "Poder Sustentador".
 
 **Requisitos:** todo custo de toda ação atribuído a um personagem; atividade condicionada a
 lastro; tipos de recurso: hora-aula, lanche, recompensas, insumos, cloud, serviços;
@@ -473,7 +474,7 @@ acervo de 298 livros doado pelo Goethe-Institut:
   conservação e movimentações entre pontos.
 - **Empréstimo e devolução** vinculados a Guerreiro(a) e a módulo ou trilha, com histórico de
   quem usou cada exemplar e devoluções pendentes no painel do dia.
-- O aporte credita o Poder Econômico do Apoiador **uma única vez**, sem baixa por consumo.
+- O aporte credita o Poder Sustentador do Apoiador **uma única vez**, sem baixa por consumo.
 - Suporte ao **regime misto**: linha Alpha doada ao Guerreiro(a) na abertura da trilha (baixa
   definitiva, tratada como recompensa entregue), linha Include I como patrimônio permanente e
   kits MDF como consumível de atividade, com saldo de estoque.
@@ -489,7 +490,7 @@ acervo de 298 livros doado pelo Goethe-Institut:
   **Admin aprovador**, recompensa oferecida, **quantidade disponível**, critério de atribuição,
   **pontos extras**, período de vigência, **modalidade (aberto ou direcionado)** e — no
   direcionado — Guerreiro(a) destinatário e justificativa do vínculo aprovada.
-- Recompensa extra **creditada no histórico do Apoiador** e computada no Poder Econômico, com
+- Recompensa extra **creditada no histórico do Apoiador** e computada no Poder Sustentador, com
   lastro exigido **antes** da publicação do desafio.
 - **Realizações dos Guerreiros e Guerreiras** naquele desafio vinculadas ao histórico do
   Apoiador — base dos relatórios de **efetividade do apoio ao longo do tempo**.
@@ -499,7 +500,7 @@ acervo de 298 livros doado pelo Goethe-Institut:
 **Questões em aberto:** valoração da hora-aula, do acervo, dos kits e das camisas doados —
 critério que define a conversão desses aportes em moedas; **valor-hora da produção executiva** e
 como o histórico de commits vira hora aportada; relatórios públicos por atividade, comunidade e
-provedor; **formato do relatório de efetividade** entregue ao Apoiador.
+provedor.
 
 **Fontes:** docs 04, 05.
 
@@ -751,20 +752,31 @@ quem sustenta o projeto, sem nenhum contato com Guerreiros e Guerreiras ou famí
   **necessidade publicada, valor sugerido ou valor livre**, e **anexo do comprovante** em PDF,
   JPG ou PNG. A tela mostra cada valor **com o equivalente em moedas**. O pedido entra na fila
   da App 03 e **não cria cadastro**: quem valida o comprovante e cadastra é um Admin.
+- **O aporte feito pela aplicação é em dinheiro** — no pré-cadastro e nos aportes seguintes de
+  quem já é cadastrado. Material, serviço e divulgação entram pelo cadastro do Admin na App 03,
+  com termo de doação ou registro do material.
+- **Um usuário por cadastro no Ciclo 01**, inclusive no institucional: a instituição indica
+  quem opera a aplicação, e é esse usuário que responde pelos atos registrados.
 - **Identidade pública do Apoiador**: **avatar** — logomarca ou imagem escolhida — e **nick**,
   definidos por ele depois de aprovado, sujeitos à unicidade de nick e à auditoria por
-  amostragem da gestão.
-- **Meus aportes**: histórico do que aportou, em **moedas da plataforma**, e Poder Econômico
+  amostragem da gestão. O avatar próprio é liberado a partir de **10 moedas acumuladas**;
+  abaixo do piso vale o **avatar padrão do projeto**, com o mesmo nick e o mesmo total de
+  moedas, e a aplicação mostra quanto falta para trocá-lo.
+- **Meus aportes**: histórico do que aportou, em **moedas da plataforma**, e Poder Sustentador
   acumulado; leitura do mesmo ledger do PRD-07, sem edição.
 - **Necessidades de recurso em aberto**, publicadas pelas atividades sem lastro, com o caminho
   direto para aportar o que falta.
 - **Proposição de desafios extras** — abertos ou direcionados —, com recompensa, quantidade
   declarada, período e, no direcionado, destinatário e justificativa do vínculo. O
   acompanhamento mostra o estado no fluxo: validação do Mestre da trilha → aprovação de Admin
-  → publicado, com **lastro exigido antes da publicação**.
-- **Relatório de efetividade** dos desafios propostos, **agregado e por avatar** — nunca com
-  dado de contato ou identificação de Guerreiro(a) —, incluindo a **cobertura de ODS** herdada
-  das missões a que os desafios se vincularam.
+  → publicado, com **lastro exigido antes da publicação**. No direcionado, a aplicação **não
+  confirma se o nick existe** nem exibe dado do destinatário — quem confere o vínculo são o
+  Mestre e o Admin —, e por isso ele alcança também quem não tem divulgação autorizada.
+- **Efetividade do apoio em painel vivo**, atualizado a cada conclusão e **sem relatório
+  fechado no Ciclo 01**: desafios propostos, publicados e concluídos, quantos Guerreiros e
+  Guerreiras concluíram cada um, em que trilhas, moedas aportadas e **cobertura de ODS**
+  herdada das missões. Sempre **agregado e por avatar** — nunca com dado de contato ou
+  identificação de Guerreiro(a).
 - **Os mesmos dados do painel público**, com **favoritos** de Guerreiros, Guerreiras e Mestres,
   cujas novidades aparecem em destaque. É o canal de parentes e amigos que não são um dos três
   responsáveis da criança: acompanham pelo **nick cedido pela família** e podem direcionar
@@ -779,10 +791,10 @@ quem sustenta o projeto, sem nenhum contato com Guerreiros e Guerreiras ou famí
   comprovante; o cadastro segue exclusivo de Admin, e só com ele o card vai à vitrine com o
   total de moedas.
 
-**Questões em aberto:** se instituição tem mais de um usuário no mesmo cadastro;
-periodicidade do relatório de efetividade.
+**Questões em aberto:** nenhuma — o cadastro institucional tem um usuário no Ciclo 01 e a
+efetividade é painel vivo, sem relatório fechado.
 
-**Fontes:** docs 03, 04, 12.
+**Fontes:** docs 02, 03, 04, 11, 12.
 
 ---
 
