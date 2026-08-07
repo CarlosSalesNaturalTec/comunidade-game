@@ -69,8 +69,8 @@ monetários isolados.
 
 Por que **R$ 10,00** e não uma escala maior: assim o **lanche de um encontro vale cerca de 1
 moeda** — âncora que uma criança entende — e o menor degrau da escada de pessoa física vale
-**2,5 moedas**, quantidade que ainda se lê. Dez vezes maior, quem doa o que pode receberia um
-quarto de moeda, o contrário de reconhecer quem sustenta o projeto.
+**1 moeda**, número inteiro e digno. Dez vezes maior, quem doa o que pode receberia um décimo
+de moeda, o contrário de reconhecer quem sustenta o projeto.
 
 Aportes em material, serviço e conteúdo são convertidos em moedas por uma **tabela de
 referência** mantida pela gestão: cada tipo de aporte — hora-aula, kit, livro, camisa, lanche,
@@ -207,7 +207,7 @@ degrau ao seu alcance, sem que a instituição comece pelo mesmo lugar:
 
 | Pessoa física | Equivalente | Pessoa jurídica | Equivalente |
 | ------------- | ----------- | --------------- | ----------- |
-| R$ 25,00      | 2,5 moedas  | R$ 500,00       | 50 moedas   |
+| R$ 10,00      | 1 moeda     | R$ 500,00       | 50 moedas   |
 | R$ 50,00      | 5 moedas    | R$ 1.000,00     | 100 moedas  |
 | R$ 100,00     | 10 moedas   | R$ 2.500,00     | 250 moedas  |
 | R$ 250,00     | 25 moedas   | R$ 5.000,00     | 500 moedas  |
@@ -215,6 +215,10 @@ degrau ao seu alcance, sem que a instituição comece pelo mesmo lugar:
 A tela mostra sempre os dois lados, e o **valor livre** exibe o equivalente em moedas antes do
 envio. O perfil é declarado e não verificado — a plataforma não coleta CPF nem CNPJ —, e quem
 não se reconhece na sua escada usa o valor livre.
+
+**O degrau é sugestão, não piso.** O valor livre aceita qualquer quantia, e a fração de duas
+casas continua valendo: quem transfere R$ 5,00 aporta 0,50 moeda e entra no livro-razão como
+qualquer outro.
 
 ## 3. Interação Apoiadores × Guerreiros e Guerreiras: desafios extras
 
