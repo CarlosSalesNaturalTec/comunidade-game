@@ -7,8 +7,9 @@
 2. **Rotas de consulta abertas** — leituras públicas (vitrine, rankings, batalhas, jogo) não
    exigem autenticação. Escrita e gestão exigem.
 3. **Frontends independentes** — em **endereços próprios**, evoluindo desacoplados do backend.
-   A **vitrine ocupa a raiz** do domínio da plataforma: é por ela que qualquer pessoa chega, e
-   é dela que o botão **Entrar** encaminha cada persona à sua aplicação.
+   A **vitrine ocupa a raiz** do domínio da plataforma — **`comunidadegame.org`** —: é por ela
+   que qualquer pessoa chega, e é dela que o botão **Entrar** encaminha cada persona à sua
+   aplicação.
 4. **Open Source** — todo o código-fonte é aberto, para permitir replicação por qualquer
    comunidade. O **conteúdo educacional publicado sai sob CC BY-SA**: qualquer um usa e
    adapta, creditando o Mestre autor, e o derivado herda a mesma licença.

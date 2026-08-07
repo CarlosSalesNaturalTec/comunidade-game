@@ -500,6 +500,7 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 | Pré-cadastro do Apoiador, com aporte declarado e comprovante             | 02 §1      | Pré-cadastro do Apoiador                  |
 | Vitrine na raiz do domínio, com botão "Entrar" por persona               | 03 §§1, 8  | Vitrine na raiz e botão "Entrar"          |
 | Área do gestor público, com utilidade e limites declarados               | 03 §8      | Área do gestor público na vitrine         |
+| Nome definitivo e endereço canônico da plataforma                        | 01, 03 §1  | Nome do projeto e domínio                 |
 
 Duas dessas decisões **restringem regras anteriores**: a saída pública ia até a rua, e a
 vitrine tinha favoritos guardados no aparelho do visitante. A primeira foi propagada ao PRD-08,
@@ -521,8 +522,6 @@ entidade e não como contrato.
   ainda não existe.
 - **Agregação mínima dentro do bairro**, para comunidade com pouquíssimos coletores — o corte
   no bairro resolve a rua, não o caso extremo.
-- **Nome do projeto e domínio próprio**: a vitrine é a primeira peça que depende da decisão
-  entre Comunidade Game e Inova Comunidade.
 
 ## 15. Rastreabilidade
 
