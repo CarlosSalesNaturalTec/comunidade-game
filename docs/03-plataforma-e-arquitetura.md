@@ -341,7 +341,7 @@ Vivo das aulas que ministra**. Fora isso, tudo o que ele escreve continua na App
 Jogo executado no navegador, construído sobre a **base de personagens da plataforma**: os
 avatares, poderes, badges e níveis já conquistados são os elementos do jogo.
 
-> **Engine sugerida: [Phaser.js](https://phaser.io/)** — framework de jogos 2D em JavaScript
+> **Engine definida: [Phaser.js](https://phaser.io/)** — framework de jogos 2D em JavaScript
 > que roda no navegador, sem plugin nem instalação, e funciona bem em celular modesto. Escolha
 > coerente com Web App / Mobile First e com o objetivo de que o **código seja legível e
 > alterável pelos próprios Guerreiros e Guerreiras**.
@@ -363,12 +363,21 @@ no jogo real, mais forte e mais distinto o personagem no App 04.
 - **Quem não tem divulgação autorizada não vira personagem** — nem para si mesmo. Sem login,
   o jogo não tem como distinguir quem está jogando, e a lista é a mesma para todo visitante.
 
+**Definição vigente — arena de duelo por turnos.** A partida é um duelo curto de um personagem
+contra um adversário conduzido pelo computador, em turnos alternados de ataque, habilidade e
+defesa. É o gênero que mais expõe a evolução real: cada virtude do Guerreiro(a) vira atributo
+visível do personagem, pelo mapa do documento 11. O adversário é dimensionado pelo personagem
+escolhido, de modo que a partida segue disputada em qualquer faixa de evolução.
+
+**Joga sem rede e aceita dois jogadores no mesmo aparelho.** O catálogo de personagens fica
+guardado no aparelho para a partida rodar offline e é **revalidado a cada reconexão** — sem
+rede não se atualiza a lista, mas se joga. O duelo local entre dois personagens escolhidos
+atende ao uso nas aulas presenciais e não exige servidor.
+
 Objetivos: dar utilidade lúdica ao progresso das trilhas; servir de conteúdo do **Poder da IA e
 Robótica**, já que alterar o código é atividade de trilha — o Guerreiro(a) é um dos
 construtores do próprio jogo; e respeitar a regra de representação por **avatares, nunca
 imagens reais**.
-
-> **A definir:** gênero e mecânica do jogo.
 
 ## 7. App 05 — Área do Guerreiro(a)
 

@@ -186,7 +186,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Entrega de dados sob solicitação aprovada   | 03 §12.3                  | PRD-03, 02, 01, 13             |
 | Produção executiva como aporte por absorção | 04 §1                     | PRD-07, 02                     |
 | Representação visual da comunidade          | 11 §8.3                   | PRD-08, 03                     |
-| Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10                 |
+| Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10, 03             |
 | Distribuição da trilha no ciclo             | 11 §2.4 + 10 §5           | PRD-09, 02                     |
 | Modelo de missão e template de autoria      | 11 §2.2 + 03 §11          | PRD-09, 05, 04, 01             |
 | Produção do Guerreiro(a) e devolutiva       | 11 §2.2 + 03 §§4, 7       | PRD-05, 04, 09, 01             |
@@ -309,7 +309,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD-09 | `prd-09-area-do-mestre.md`        | PRD-01         | 02, 03, 05, 06, 07, 11 |
 | PRD-10 | `prd-10-batalhas.md`              | PRD-01, PRD-09 | 02, 07, 11             |
 | PRD-11 | `prd-11-personalizacao-por-ia.md` | PRD-01, PRD-04 | 02, 03                 |
-| PRD-12 | `prd-12-jogo-em-javascript.md`    | PRD-01, PRD-05 | 03, 11                 |
+| PRD-12 | `prd-12-jogo-em-javascript.md`    | PRD-01, PRD-03 | 02, 03, 04, 11         |
 | PRD-13 | `prd-13-area-dos-responsaveis.md` | PRD-01, PRD-02 | 02, 03, 10             |
 | PRD-14 | `prd-14-area-do-apoiador.md`      | PRD-07, PRD-02 | 02, 03, 04, 11, 12, 14 |
 

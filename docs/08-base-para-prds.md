@@ -694,15 +694,27 @@ partida **não retorna**: nem crédito, nem débito, nem registro de histórico.
 o App 04 tem **acesso de leitura ao progresso e nenhum endpoint de escrita** — o que elimina,
 por construção, a fraude por automação de cliques.
 
-**Sugestão técnica:** engine **Phaser.js** — jogos 2D em JavaScript rodando no próprio
-navegador, sem instalação, com desempenho adequado a aparelhos modestos e código legível o
-bastante para virar material de trilha.
+**Engine definida:** **Phaser.js** — jogos 2D em JavaScript rodando no próprio navegador, sem
+instalação, com desempenho adequado a aparelhos modestos e código legível o bastante para
+virar material de trilha.
 
-**Questões em aberto:** gênero e mecânica do jogo; **como cada virtude do Guerreiro(a) se
-traduz em atributo do personagem** — o que pontos, poderes, badges e níveis fazem na partida;
-modo offline; multiplayer local nas aulas presenciais.
+**Definição vigente — arena de duelo por turnos.** A partida é um duelo curto de um personagem
+contra adversário conduzido pelo computador, em turnos alternados de ataque, habilidade e
+defesa. O adversário é dimensionado pelo personagem escolhido, de modo que a disputa se
+sustenta em qualquer faixa de evolução. O **mapa de virtude em atributo** — pontos regulares
+em vitalidade, pontos extras em energia, nível em escalonamento, poder em habilidade especial
+e badge em passiva — é fixo e está no documento 11, com as exigências de monotonia,
+transparência e balanceamento como conteúdo alterável em trilha.
 
-**Fontes:** docs 03, 11.
+**Definição vigente — joga offline e em dupla no mesmo aparelho.** O catálogo de personagens
+fica guardado no aparelho para a partida rodar sem rede e é revalidado a cada reconexão; o
+duelo local entre dois personagens escolhidos atende às aulas presenciais e não exige
+servidor.
+
+**Questões em aberto:** prazo máximo de validade do catálogo guardado no aparelho sem nenhuma
+reconexão; identificação de aplicação de terceiro que consuma a mesma leitura pública.
+
+**Fontes:** docs 02, 03, 11.
 
 ## PRD-13 — App 07: Área dos pais e responsáveis
 

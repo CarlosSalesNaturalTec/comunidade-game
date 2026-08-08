@@ -7,7 +7,7 @@
 | PRD              | PRD-10                                             |
 | Aplicação        | — (domínio operado pelas Apps 01, 03, 05, 06 e 09) |
 | Onda             | 5                                                  |
-| Situação         | em revisão                                         |
+| Situação         | aprovado                                           |
 | Versão e data    | v1 — 2026-08-07                                    |
 | Depende de       | PRD-01, PRD-09                                     |
 | Documentos-fonte | 02 §§5, 6, 8; 07; 11 §§2.1, 4, 5, 8.1, 8.4         |
