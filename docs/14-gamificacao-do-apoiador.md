@@ -32,15 +32,15 @@ O nível 2 é a leitura direta da regra de lastro: sem recurso provido, a ativid
 
 ## 3. Modalidades de apoio
 
-| Modalidade                    | Porta                  | Valoração                   | Situação            |
-| ----------------------------- | ---------------------- | --------------------------- | ------------------- |
-| Dinheiro (PIX)                | Pré-cadastro na App 08 | Escada de valores sugeridos | vigente             |
-| Insumo, equipamento, alimento | Formulário da vitrine  | Tabela de referência        | valoração a definir |
-| Serviço                       | Formulário da vitrine  | Tabela de referência        | valoração a definir |
-| Conteúdo educacional          | Formulário da vitrine  | Tabela de referência        | valoração a definir |
-| **Código**                    | Formulário da vitrine  | Hora-técnica pelos commits  | `[Proposta]`        |
-| Divulgação                    | Formulário da vitrine  | Não valorada                | vigente             |
-| Ensinar — virar Mestre        | Formulário da vitrine  | Não é aporte                | vigente             |
+| Modalidade                    | Porta                                      | Valoração                   | Situação            |
+| ----------------------------- | ------------------------------------------ | --------------------------- | ------------------- |
+| Dinheiro (PIX)                | Pré-cadastro na App 08                     | Escada de valores sugeridos | vigente             |
+| Insumo, equipamento, alimento | Formulário da vitrine                      | Tabela de referência        | valoração a definir |
+| Serviço                       | Formulário da vitrine                      | Tabela de referência        | valoração a definir |
+| Conteúdo educacional          | Formulário da vitrine                      | Tabela de referência        | valoração a definir |
+| **Código**                    | Área do Apoiador Desenvolvedor, na vitrine | Hora-técnica pelos commits  | `[Proposta]`        |
+| Divulgação                    | Formulário da vitrine                      | Não valorada                | vigente             |
+| Ensinar — virar Mestre        | Formulário da vitrine                      | Não é aporte                | vigente             |
 
 A entrada de material, serviço e conteúdo é vigente; o que falta é a conversão em moedas.
 O conteúdo educacional doado sai sob a mesma licença dos demais, com crédito ao autor.

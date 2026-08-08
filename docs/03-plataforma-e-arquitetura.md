@@ -3,10 +3,13 @@
 ## 1. Princípios de arquitetura
 
 1. **Backend em forma de API** — para que os mais diversos frontends **e aplicações de
-   terceiros** possam acessá-lo. A aplicação de terceiro **se identifica por chave**,
-   solicitada pela vitrine pública (§8).
-2. **Rotas de consulta abertas** — leituras públicas (vitrine, rankings, batalhas, jogo) não
-   exigem autenticação. Escrita e gestão exigem.
+   terceiros** possam acessá-lo. A aplicação de terceiro pede a chave na **Área do Apoiador
+   Desenvolvedor**, na vitrine (§8).
+2. **Toda aplicação que consome a API se identifica por chave**, inclusive as do próprio
+   projeto, que recebem a sua na implantação. **Sem chave válida a API não responde.** O que a
+   leitura pública dispensa é o **login da pessoa**: o visitante da vitrine e do jogo não se
+   identifica — quem se identifica é a aplicação. Escrita e gestão exigem, além da chave, a
+   credencial da persona.
 3. **Frontends independentes** — em **endereços próprios**, evoluindo desacoplados do backend.
    A **vitrine ocupa a raiz** do domínio da plataforma — **`comunidadegame.org`** —: é por ela
    que qualquer pessoa chega, e é dela que o botão **Entrar** encaminha cada persona à sua
@@ -44,7 +47,9 @@
 | **Responsável**              | **Login social (Google)** ou **usuário e senha** criados por Admin ou Mestre                                                                                                                                   |
 
 - **Duas aplicações não têm login:** a **vitrine (App 06)** e o **jogo (App 04)** são abertos a
-  qualquer visitante e só leem dados já públicos. Ninguém se identifica para usá-las.
+  qualquer visitante e só leem dados já públicos. Ninguém se identifica para usá-las — a
+  **chave da API é da aplicação, não da pessoa**: as duas carregam a sua e o visitante segue
+  anônimo.
 - **Não há PIN, senha nem pergunta secreta para a criança, e sem câmera não há entrada.** É a
   imagem que garante que quem faz a atividade é a própria criança, e não um terceiro.
 - **Enquanto o Guerreiro(a) não tem imagem gravada** — onboarding feito sem o responsável —,
@@ -438,7 +443,7 @@ quando não for adotada.
 
 ## 8. App 06 — Vitrine pública
 
-Web App de acesso público e **sem autenticação**:
+Web App de acesso público e **sem login** — a chave da API é da aplicação, não do visitante:
 
 - Apresenta **Guerreiros e Guerreiras, Poderes, Mestres, Batalhas, Apoiadores e Comunidades
   Virtuais**, com navegação para seções específicas com cards individuais.
@@ -453,13 +458,24 @@ Web App de acesso público e **sem autenticação**:
   instituições: a solicitação é gravada e cai na fila de avaliação dos Admins na App 03.
 - **Formulário de solicitação de dados**, para pesquisadores e gestores públicos, com a mesma
   fila de avaliação (§12.3).
-- **Formulário de solicitação de chave de aplicação**, para quem quer construir jogo ou
-  aplicação sobre a API, com a mesma fila de avaliação. Emitida a chave, o solicitante tem
-  **30 dias para apresentar a URL** do jogo ou da aplicação construída; não apresentada no
-  prazo, a chave é revogada, e nova solicitação é sempre possível. A chave **não amplia
-  acesso**: a leitura pública segue aberta a todos e o contrato de somente leitura do
-  documento 11 vale igual. Ela identifica a aplicação, dá-lhe cota própria de consulta e é o
-  que permite homologá-la como aporte de quem a construiu.
+- **Área do Apoiador Desenvolvedor** — a porta de quem quer construir sobre a API. É **seção
+  da vitrine**, pública e sem login, não uma nona aplicação. Reúne quatro coisas:
+
+  - **Assistente de chat com IA** que explica **proativamente** como a plataforma está
+    montada, com **corpus fechado** na documentação e no repositório — fora deles, não
+    responde. **Toda mensagem termina com uma pergunta de múltipla escolha** sobre o próximo
+    passo a conhecer: é o que conduz quem chegou sem saber o que perguntar.
+  - **Link para a documentação** publicada com MkDocs.
+  - **Formulário de solicitação de chave**, na mesma fila de avaliação dos Admins. Emitida a
+    chave, o solicitante tem **30 dias para apresentar a URL** do que construiu; não
+    apresentada no prazo, **a chave é revogada**, e nova solicitação é sempre possível.
+  - **Link para o repositório no GitHub.**
+
+  A chave é o que dá acesso à API — **sem ela a plataforma não responde** — e é também o que
+  permite homologar a aplicação como aporte em código (documento 14). Ela não amplia direito
+  nenhum: o contrato de somente leitura do documento 11 vale igual para toda aplicação de
+  terceiro.
+
 - **Aportes exibidos em moedas da plataforma**, nunca em reais (documento 04).
 - **Painel público da Comunidade Virtual** — dados do território em **série histórica**, em
   **visão macro**, agregados **até o bairro** e anonimizados (documento 02), abertos à consulta

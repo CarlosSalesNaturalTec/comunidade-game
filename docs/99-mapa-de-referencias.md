@@ -187,6 +187,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Produção executiva como aporte por absorção | 04 §1                     | PRD-07, 02                     |
 | Representação visual da comunidade          | 11 §8.3                   | PRD-08, 03                     |
 | Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10, 03             |
+| Chave de aplicação e Área do Desenvolvedor  | 03 §§1, 8 + 14 §3         | PRD-03, 01, 02, 12             |
 | Distribuição da trilha no ciclo             | 11 §2.4 + 10 §5           | PRD-09, 02                     |
 | Modelo de missão e template de autoria      | 11 §2.2 + 03 §11          | PRD-09, 05, 04, 01             |
 | Produção do Guerreiro(a) e devolutiva       | 11 §2.2 + 03 §§4, 7       | PRD-05, 04, 09, 01             |
@@ -224,7 +225,9 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
 7. **Dados do território: guarda permanente com o coletor identificado**; anonimização
    apenas **na saída**. A **revogação do consentimento pelo responsável despersonaliza** o
    registro — rompe o vínculo de autoria e destrói o mapeamento —, **nunca o apaga**.
-8. **O App 04 (jogo) é público, sem login e somente leitura.** Ele lê o progresso do
+8. **O App 04 (jogo) é público, sem login de pessoa e somente leitura.** A **chave de acesso
+   à API é da aplicação, não do visitante**: o App 04 carrega a sua e ninguém se identifica
+   para jogar. Ele lê o progresso do
    Guerreiro(a) para montar o personagem — pontos regulares, pontos extras, poderes, badges e
    níveis — e **não escreve nada de volta**: não credita, não debita e não registra resultado
    de partida. Não existe endpoint de escrita para jogos, e **não há saldo de pontos
