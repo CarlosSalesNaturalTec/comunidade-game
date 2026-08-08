@@ -7,7 +7,7 @@
 | PRD              | PRD-12                                              |
 | Aplicação        | App 04 — Jogo em JavaScript                         |
 | Onda             | 5                                                   |
-| Situação         | em revisão                                          |
+| Situação         | aprovado                                            |
 | Versão e data    | v1 — 2026-08-08                                     |
 | Depende de       | PRD-01, PRD-03                                      |
 | Documentos-fonte | 02 §§1, 2, 4; 03 §§6, 8, 9, 12; 04 §§1, 2; 11 §§5–8 |

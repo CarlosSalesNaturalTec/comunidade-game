@@ -7,7 +7,7 @@
 | PRD              | PRD-11                                                    |
 | Aplicação        | — (comportamento das Apps 05, 01, 07, 09 e do núcleo)     |
 | Onda             | 5                                                         |
-| Situação         | em revisão                                                |
+| Situação         | aprovado                                                  |
 | Versão e data    | v1 — 2026-08-08                                           |
 | Depende de       | PRD-01, PRD-04                                            |
 | Documentos-fonte | 02 §§2, 3, 4; 03 §§4, 7, 7.1, 9, 11, 12; 11 §§2.1, 2.2, 6 |

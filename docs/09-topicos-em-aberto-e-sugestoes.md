@@ -236,9 +236,9 @@ piloto, para permitir comparação (_baseline_).
 2. Decidir os itens da tabela §1 — em especial licenças e provedor de reconhecimento facial.
 3. **Conferir a disponibilidade e registrar os domínios** `comunidadegame.org` e
    `comunidadegame.com.br`, apontando a raiz para a vitrine.
-4. **Esteira de PRDs concluída** com o **PRD-11 (personalização por IA)**: os treze PRDs do
-   Ciclo 01 estão escritos. Falta a aprovação do fundador aos que seguem em revisão e, aprovado
-   o último, o sinal para iniciar o desenvolvimento.
+4. **Esteira de PRDs concluída e aprovada**: os treze PRDs do Ciclo 01 estão escritos e
+   validados pelo fundador. O que falta é o sinal para iniciar o desenvolvimento das oito
+   aplicações e do Backend API.
 5. Redigir o termo de autorização dos responsáveis e o termo de consentimento para captura de
    imagem, necessários antes da primeira aula com onboarding.
 6. Escrever o roteiro pedagógico da oficina do Robô Educa.

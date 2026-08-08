@@ -7,11 +7,12 @@ documentação do projeto, na pasta `docs/`.
 ## Estado atual e próxima etapa
 
 1. **Feito:** revisão e validação humana de todos os documentos de `docs/` (agosto de 2026).
-2. **Agora:** geração dos **PRDs** (_Product Requirements Documents_) em `docs/prds/`, a
-   partir do documento `docs/08-base-para-prds.md`, na ordem de ondas definida lá.
-3. **Depois dos PRDs:** desenvolvimento das oito aplicações e do Backend API.
+2. **Feito:** os treze **PRDs** (_Product Requirements Documents_) do Ciclo 01, em
+   `docs/prds/`, escritos a partir de `docs/08-base-para-prds.md` e aprovados pelo fundador.
+3. **Agora:** desenvolvimento das oito aplicações e do Backend API.
 
-Não iniciar a escrita de código sem sinal explícito do fundador.
+Não iniciar a escrita de código sem sinal explícito do fundador. PRD novo ou revisão de PRD
+existente continua seguindo as regras de `docs/prds/` abaixo.
 
 ## Regras de redação e revisão dos documentos de `docs/`
 
