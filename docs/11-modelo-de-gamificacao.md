@@ -273,6 +273,12 @@ A coleta vale o mesmo por registro, qualquer que seja o tipo medido, e **não te
 **quantos registros de um mesmo período de cadência pontuam é declarado no desafio** pelo
 Mestre que o cria.
 
+**O +5 da batalha sai por papel.** Cada papel disputado tem a sua métrica na telemetria —
+precisão do Caçador, acertos absorvidos sem penalidade do Defensor —, declarada pelo Mestre no
+cadastro da batalha, e o melhor de cada papel na partida leva os 5 pontos. Papéis diferentes
+não disputam a mesma régua, e **batalha sem telemetria não distribui o +5**: ficam de pé os 10
+por disputar e os 10 da equipe vencedora.
+
 **Cuidar do que recebeu pontua, e quem pede é o Guerreiro(a).** Apresentar ao Mestre, no
 encontro presencial, o livro, a camisa, o kit ou outro bem recebido **em bom estado e em uso**
 vale **1 ponto extra por item**. O Guerreiro(a) pede a validação durante a aula, o Mestre

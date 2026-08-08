@@ -8,7 +8,7 @@
 | Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | aprovado                                                   |
-| Versão e data    | v11 — 2026-08-06                                           |
+| Versão e data    | v12 — 2026-08-07                                           |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 9, 11 e 12, 04, 11                        |
 
@@ -249,10 +249,12 @@ Sessao              Conteudo
                                                MissaoDoApoiador
                                                SeloDoApoiador
 
-                    APOIO ESCOLAR (PRD-05)
-                    DisciplinaDeApoio
-                    ConteudoDeApoio
-                    ConsultaDeApoio
+                    APOIO ESCOLAR (PRD-05)     BATALHA (PRD-10)
+                    DisciplinaDeApoio          ArtefatoDeBatalha
+                    ConteudoDeApoio            PartidaDeBatalha
+                    ConsultaDeApoio            ParticipacaoNaPartida
+                                               EventoDeTelemetria
+                                               ConferenciaDeSeguranca
 ```
 
 | Entidade                    | Atributos essenciais                                                                                                                                                                                                       |
@@ -283,6 +285,10 @@ concluídas, como o Poder Sustentador é derivado dos aportes; nenhum dos dois �
 entram pela autoria de trilha e têm os
 atributos definidos no PRD-09. A `Culminancia` é o que torna verificável a regra de que toda
 trilha termina em criação original: sem ela, a trilha não é publicável.
+
+A `Batalha`, que aqui só existia como nome no bloco de operação, tem os atributos definidos no
+PRD-10, junto com as entidades da partida. Nenhuma delas abre exceção ao contrato dos jogos: a
+partida física **lança atividade realizada**, e é a atividade que credita pontos.
 
 Imutabilidade: `Consentimento` e `Auditoria` são **somente inserção**. Revogação é um novo
 registro, não a edição do anterior — é o que permite responder "o que valia naquela data".

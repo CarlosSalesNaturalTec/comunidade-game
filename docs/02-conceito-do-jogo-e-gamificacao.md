@@ -440,6 +440,10 @@ competições saudáveis que dão visibilidade ao que foi aprendido e construíd
 
 Os resultados alimentam o ranking e o portfólio público dos Guerreiros e Guerreiras.
 
+**A batalha é marco de trilha.** O Mestre autor a declara na trilha, como qualquer marco, e ela
+acontece no encontro que a gestão agenda; na sala, as equipes que disputam são as da aula,
+formadas no App 01. A batalha de projetos usa o mesmo cadastro, sem telemetria.
+
 ## 7. Níveis e badges
 
 A progressão vai do **Nível 1** (inscrito e assíduo) ao **Nível 5 — Mestre Aprendiz**, que

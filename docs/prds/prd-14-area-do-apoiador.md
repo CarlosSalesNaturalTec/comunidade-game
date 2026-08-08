@@ -7,7 +7,7 @@
 | PRD              | PRD-14                                         |
 | Aplicação        | App 08 — Área do Apoiador                      |
 | Onda             | 5                                              |
-| Situação         | em revisão                                     |
+| Situação         | aprovado                                       |
 | Versão e data    | v2 — 2026-08-07                                |
 | Depende de       | PRD-07, PRD-02                                 |
 | Documentos-fonte | 02 §1, 03 §§1.1, 10, 04 §§1–3, 11 §8.2, 12, 14 |
