@@ -3,9 +3,13 @@
 ## 1. Princípios de arquitetura
 
 1. **Backend em forma de API** — para que os mais diversos frontends **e aplicações de
-   terceiros** possam acessá-lo.
-2. **Rotas de consulta abertas** — leituras públicas (vitrine, rankings, batalhas, jogo) não
-   exigem autenticação. Escrita e gestão exigem.
+   terceiros** possam acessá-lo. A aplicação de terceiro pede a chave na **Área do Apoiador
+   Desenvolvedor**, na vitrine (§8).
+2. **Toda aplicação que consome a API se identifica por chave**, inclusive as do próprio
+   projeto, que recebem a sua na implantação. **Sem chave válida a API não responde.** O que a
+   leitura pública dispensa é o **login da pessoa**: o visitante da vitrine e do jogo não se
+   identifica — quem se identifica é a aplicação. Escrita e gestão exigem, além da chave, a
+   credencial da persona.
 3. **Frontends independentes** — em **endereços próprios**, evoluindo desacoplados do backend.
    A **vitrine ocupa a raiz** do domínio da plataforma — **`comunidadegame.org`** —: é por ela
    que qualquer pessoa chega, e é dela que o botão **Entrar** encaminha cada persona à sua
@@ -33,6 +37,11 @@
     comunidade.
 11. **API versionada na rota**, começando em `/v1`. Quebra de contrato abre uma versão nova,
     e a anterior segue no ar por prazo declarado.
+12. **Modelos de IA do Ciclo 01: Google Gemini.** Toda funcionalidade que precisar de modelo
+    de IA neste ciclo é atendida por modelos **Gemini** — assistente do Guerreiro(a), leitura
+    da produção e assistente da Área do Apoiador Desenvolvedor —, com o custo lançado no
+    livro-razão como recurso de _cloud_. A **biometria facial do App 01** não é modelo de
+    linguagem e segue em aberto (documento 09).
 
 ### 1.1 Como cada persona entra
 
@@ -43,7 +52,9 @@
 | **Responsável**              | **Login social (Google)** ou **usuário e senha** criados por Admin ou Mestre                                                                                                                                   |
 
 - **Duas aplicações não têm login:** a **vitrine (App 06)** e o **jogo (App 04)** são abertos a
-  qualquer visitante e só leem dados já públicos. Ninguém se identifica para usá-las.
+  qualquer visitante e só leem dados já públicos. Ninguém se identifica para usá-las — a
+  **chave da API é da aplicação, não da pessoa**: as duas carregam a sua e o visitante segue
+  anônimo.
 - **Não há PIN, senha nem pergunta secreta para a criança, e sem câmera não há entrada.** É a
   imagem que garante que quem faz a atividade é a própria criança, e não um terceiro.
 - **Enquanto o Guerreiro(a) não tem imagem gravada** — onboarding feito sem o responsável —,
@@ -341,7 +352,7 @@ Vivo das aulas que ministra**. Fora isso, tudo o que ele escreve continua na App
 Jogo executado no navegador, construído sobre a **base de personagens da plataforma**: os
 avatares, poderes, badges e níveis já conquistados são os elementos do jogo.
 
-> **Engine sugerida: [Phaser.js](https://phaser.io/)** — framework de jogos 2D em JavaScript
+> **Engine definida: [Phaser.js](https://phaser.io/)** — framework de jogos 2D em JavaScript
 > que roda no navegador, sem plugin nem instalação, e funciona bem em celular modesto. Escolha
 > coerente com Web App / Mobile First e com o objetivo de que o **código seja legível e
 > alterável pelos próprios Guerreiros e Guerreiras**.
@@ -363,12 +374,24 @@ no jogo real, mais forte e mais distinto o personagem no App 04.
 - **Quem não tem divulgação autorizada não vira personagem** — nem para si mesmo. Sem login,
   o jogo não tem como distinguir quem está jogando, e a lista é a mesma para todo visitante.
 
+**Definição vigente — arena de duelo por turnos.** A partida é um duelo curto de um personagem
+contra um adversário conduzido pelo computador, em turnos alternados de ataque, habilidade e
+defesa. É o gênero que mais expõe a evolução real: cada virtude do Guerreiro(a) vira atributo
+visível do personagem, pelo mapa do documento 11. O adversário é dimensionado pelo personagem
+escolhido, de modo que a partida segue disputada em qualquer faixa de evolução.
+
+**Joga sem rede e aceita dois jogadores no mesmo aparelho.** O catálogo de personagens fica
+guardado no aparelho para a partida rodar offline e é **revalidado a cada reconexão** — sem
+rede não se atualiza a lista, mas se joga. O catálogo guardado vale por **7 dias** sem nenhuma
+reconexão: vencido o prazo, o jogo pede conexão antes de abrir nova partida, e é esse o teto
+da defasagem entre uma revogação de divulgação e o aparelho que ficou fora da rede. O duelo
+local entre dois personagens escolhidos atende ao uso nas aulas presenciais e não exige
+servidor.
+
 Objetivos: dar utilidade lúdica ao progresso das trilhas; servir de conteúdo do **Poder da IA e
 Robótica**, já que alterar o código é atividade de trilha — o Guerreiro(a) é um dos
 construtores do próprio jogo; e respeitar a regra de representação por **avatares, nunca
 imagens reais**.
-
-> **A definir:** gênero e mecânica do jogo.
 
 ## 7. App 05 — Área do Guerreiro(a)
 
@@ -386,7 +409,8 @@ Guerreiro(a) seleciona o local do dado entre os cadastrados e, faltando um, soli
 inclusão.
 
 É onde o Guerreiro(a) **entrega a produção da missão**: escreve, fala ou fotografa o que fez à
-mão. A plataforma lê e devolve retorno **sempre construtivo**, apontando o próximo passo em vez
+mão. A plataforma lê — com o mesmo **modelo Gemini**, na nuvem — e devolve retorno **sempre
+construtivo**, apontando o próximo passo em vez
 do erro. **Foto e áudio são descartados na leitura** — guardam-se apenas a transcrição e a
 devolutiva —, e **o resultado só existe quando o Mestre o lança**: a leitura automática é
 hipótese sobre o aprendizado, nunca nota. Quem não quiser ser fotografado ou gravado entrega
@@ -425,7 +449,7 @@ quando não for adotada.
 
 ## 8. App 06 — Vitrine pública
 
-Web App de acesso público e **sem autenticação**:
+Web App de acesso público e **sem login** — a chave da API é da aplicação, não do visitante:
 
 - Apresenta **Guerreiros e Guerreiras, Poderes, Mestres, Batalhas, Apoiadores e Comunidades
   Virtuais**, com navegação para seções específicas com cards individuais.
@@ -440,6 +464,24 @@ Web App de acesso público e **sem autenticação**:
   instituições: a solicitação é gravada e cai na fila de avaliação dos Admins na App 03.
 - **Formulário de solicitação de dados**, para pesquisadores e gestores públicos, com a mesma
   fila de avaliação (§12.3).
+- **Área do Apoiador Desenvolvedor** — a porta de quem quer construir sobre a API. É **seção
+  da vitrine**, pública e sem login, não uma nona aplicação. Reúne quatro coisas:
+
+  - **Assistente de chat com IA** — modelo **Google Gemini** — que explica **proativamente**
+    como a plataforma está montada, com **corpus fechado** na documentação e no repositório —
+    fora deles, não responde. **Toda mensagem termina com uma pergunta de múltipla escolha**
+    sobre o próximo passo a conhecer: é o que conduz quem chegou sem saber o que perguntar.
+  - **Link para a documentação** publicada com MkDocs.
+  - **Formulário de solicitação de chave**, na mesma fila de avaliação dos Admins. Emitida a
+    chave, o solicitante tem **30 dias para apresentar a URL** do que construiu; não
+    apresentada no prazo, **a chave é revogada**, e nova solicitação é sempre possível.
+  - **Link para o repositório no GitHub.**
+
+  A chave é o que dá acesso à API — **sem ela a plataforma não responde** — e é também o que
+  permite homologar a aplicação como aporte em código (documento 14). Ela não amplia direito
+  nenhum: o contrato de somente leitura do documento 11 vale igual para toda aplicação de
+  terceiro.
+
 - **Aportes exibidos em moedas da plataforma**, nunca em reais (documento 04).
 - **Painel público da Comunidade Virtual** — dados do território em **série histórica**, em
   **visão macro**, agregados **até o bairro** e anonimizados (documento 02), abertos à consulta

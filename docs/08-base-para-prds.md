@@ -23,7 +23,8 @@
 
 ### Restrições transversais (obrigatórias em todos os PRDs)
 
-- Backend como API; rotas de consulta públicas sem autenticação; escrita autenticada.
+- Backend como API; **toda chamada exige a chave da aplicação** e sem ela a API não responde;
+  a consulta pública dispensa o **login da pessoa**, não a chave; escrita autenticada.
 - **Todas as aplicações desta etapa são Web Apps responsivos, Mobile First.** Não há aplicativo
   nativo nem aplicação construída sobre WhatsApp ou outra mensageria de terceiros.
 - Frontends em domínios separados; código open source.
@@ -106,10 +107,11 @@
   Registro de dado do território, Pergunta de quiz, Partida de quiz, **Criação original do
   Guerreiro(a)**, **Sugestão ou proposta de evolução**, **Solicitação de participação como
   Mestre ou Apoiador** e **Solicitação de dados**.
-- Rotas de consulta abertas (vitrine, rankings, painéis de comunidade) sem autenticação,
-  incluindo a **consulta por nick exato** do Guerreiro(a) com divulgação autorizada — sem
-  listagem, sugestão ou completação que permita descobrir nick de criança.
-- Suporte a múltiplos frontends e a aplicações de terceiros.
+- Rotas de consulta abertas (vitrine, rankings, painéis de comunidade) **sem login da pessoa**
+  e com a chave da aplicação, incluindo a **consulta por nick exato** do Guerreiro(a) com
+  divulgação autorizada — sem listagem, sugestão ou completação que permita descobrir nick de
+  criança.
+- Suporte a múltiplos frontends e a aplicações de terceiros, cada uma com a sua chave.
 - Papéis e permissões: Admin (total), Mestre (conteúdo e lançamentos das suas atividades),
   Guerreiro(a) (próprios dados), **Apoiador** (próprios aportes, missões, desafios extras e
   favoritos), **Responsável** (dados dos Guerreiros e Guerreiras sob sua responsabilidade) e
@@ -308,6 +310,16 @@ completo por formulário público, declarando quem são, a instituição e a fin
 pedido é gravado, cai na fila da App 03 (PRD-02) e só vira entrega com **aprovação de um
 Admin**; a entrega é **gratuita e anonimizada**, e o desfecho fica registrado com motivo. O
 envio **não cria cadastro nem acesso**.
+
+**Área do Apoiador Desenvolvedor:** seção pública da vitrine — **não é uma nona aplicação** —
+para quem quer construir sobre a API. Reúne (a) **assistente de chat com IA** que explica
+proativamente como a plataforma está montada, com **corpus fechado** na documentação e no
+repositório, e que **encerra toda mensagem com uma pergunta de múltipla escolha** sobre o
+próximo passo a conhecer; (b) **link para a documentação** publicada com MkDocs; (c)
+**formulário de solicitação de chave** de acesso à API, na fila de avaliação da App 03; e (d)
+**link para o repositório no GitHub**. Emitida a chave, o solicitante tem **30 dias para
+apresentar a URL** do que construiu; não apresentada, **a chave é revogada**. **Sem chave a
+API não responde** — a identificação é da aplicação, não do visitante, que segue anônimo.
 
 **Formulário de solicitação de participação:** pessoas e instituições interessadas em
 participar como **Mestre ou Apoiador** preenchem um formulário público. **Obrigatórios:** nome,
@@ -694,15 +706,34 @@ partida **não retorna**: nem crédito, nem débito, nem registro de histórico.
 o App 04 tem **acesso de leitura ao progresso e nenhum endpoint de escrita** — o que elimina,
 por construção, a fraude por automação de cliques.
 
-**Sugestão técnica:** engine **Phaser.js** — jogos 2D em JavaScript rodando no próprio
-navegador, sem instalação, com desempenho adequado a aparelhos modestos e código legível o
-bastante para virar material de trilha.
+**Engine definida:** **Phaser.js** — jogos 2D em JavaScript rodando no próprio navegador, sem
+instalação, com desempenho adequado a aparelhos modestos e código legível o bastante para
+virar material de trilha.
 
-**Questões em aberto:** gênero e mecânica do jogo; **como cada virtude do Guerreiro(a) se
-traduz em atributo do personagem** — o que pontos, poderes, badges e níveis fazem na partida;
-modo offline; multiplayer local nas aulas presenciais.
+**Definição vigente — arena de duelo por turnos.** A partida é um duelo curto de um personagem
+contra adversário conduzido pelo computador, em turnos alternados de ataque, habilidade e
+defesa. O adversário é dimensionado pelo personagem escolhido, de modo que a disputa se
+sustenta em qualquer faixa de evolução. O **mapa de virtude em atributo** — pontos regulares
+em vitalidade, pontos extras em energia, nível em escalonamento, poder em habilidade especial
+e badge em passiva — é fixo e está no documento 11, com as exigências de monotonia,
+transparência e balanceamento como conteúdo alterável em trilha.
 
-**Fontes:** docs 03, 11.
+**Definição vigente — joga offline e em dupla no mesmo aparelho.** O catálogo de personagens
+fica guardado no aparelho para a partida rodar sem rede, é revalidado a cada reconexão e vale
+por **7 dias** sem nenhuma — vencido o prazo, o jogo pede conexão antes de abrir nova partida.
+O duelo local entre dois personagens escolhidos atende às aulas presenciais e não exige
+servidor.
+
+**Definição vigente — toda aplicação se identifica por chave.** **Sem chave a API não
+responde**, inclusive para o próprio App 04, que recebe a sua na implantação; o visitante
+continua sem se identificar. Quem é de fora pede a chave na **Área do Apoiador Desenvolvedor**
+e tem **30 dias para apresentar a URL** do que construiu, sob pena de revogação (documento 03
+§§1, 8).
+
+**Questões em aberto:** nenhuma — resta apenas a licença do código, que é decisão geral do
+projeto e não deste PRD.
+
+**Fontes:** docs 02, 03, 11.
 
 ## PRD-13 — App 07: Área dos pais e responsáveis
 

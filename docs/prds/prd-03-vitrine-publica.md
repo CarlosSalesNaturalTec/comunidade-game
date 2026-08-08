@@ -8,7 +8,7 @@
 | Aplicação        | App 06 — Vitrine pública                          |
 | Onda             | 4                                                 |
 | Situação         | aprovado                                          |
-| Versão e data    | v2 — 2026-08-07                                   |
+| Versão e data    | v3 — 2026-08-08                                   |
 | Depende de       | PRD-01, PRD-13                                    |
 | Documentos-fonte | 02 §§1, 4, 03 §§8, 12, 04 §§1, 2, 4, 11 §§8.1–8.3 |
 
@@ -23,8 +23,9 @@ O que muda na operação do Ciclo 01: os Guerreiros e Guerreiras cujo responsáv
 aparecem com avatar, nick e portfólio; os painéis do território ficam abertos a moradores,
 associações, escolas, pesquisadores e poder público; e a plataforma ganha suas **portas de
 entrada de gente nova** — o formulário de quem quer ser Mestre ou Apoiador, o formulário de quem
-quer o conjunto de dados e a chamada **"Quero participar"**, que leva ao pré-cadastro da Área do
-Apoiador. Nenhuma delas cadastra ninguém: todas viram fila na App 03.
+quer o conjunto de dados, a **Área do Apoiador Desenvolvedor** de quem quer construir sobre a
+API e a chamada **"Quero participar"**, que leva ao pré-cadastro da Área do Apoiador. Nenhuma
+delas cadastra ninguém: todas viram fila na App 03.
 
 A vitrine é consequência, não causa. Ela só existe na medida em que a App 07 (PRD-13) produziu
 autorizações, os Mestres publicaram trilhas (PRD-09), as séries de coleta correram (PRD-08) e o
@@ -54,6 +55,10 @@ hora — o sentido do fluxo é sempre esse.
   sobre os mesmos dados públicos.
 - **Formulário de solicitação de participação** como Mestre ou Apoiador.
 - **Formulário de solicitação de dados** para pesquisadores e gestores públicos.
+- **Área do Apoiador Desenvolvedor** — seção pública para quem quer construir sobre a API,
+  com **assistente de chat com IA** (modelo Gemini, corpus fechado na documentação e no
+  repositório, toda mensagem encerrada por pergunta de múltipla escolha), **link da
+  documentação MkDocs**, **formulário de solicitação de chave** e **link do repositório**.
 - **Chamada "Quero participar"** em **toda página individual** e no pedido de favoritar,
   levando à porta da Área do Apoiador — pré-cadastro e caminho de apoio.
 - **Botão "Entrar"** sempre visível, encaminhando cada persona à sua aplicação. A vitrine é a
@@ -76,8 +81,8 @@ hora — o sentido do fluxo é sempre esse.
   aparelho. Acompanhar alguém é função da App 08 (PRD-14).
 - **Pré-cadastro de Apoiador**: a tela é da App 08 (PRD-14); aqui fica só a chamada que leva
   até ela.
-- **Avaliação das solicitações**, **validação do comprovante** e **entrega do conjunto de
-  dados**: são atos de Admin na App 03 (PRD-02).
+- **Avaliação das solicitações**, **validação do comprovante**, **emissão e revogação de
+  chave** e **entrega do conjunto de dados**: são atos de Admin na App 03 (PRD-02).
 - **Edição do conteúdo institucional**: também da App 03; aqui só se exibe o que foi
   publicado.
 - **O jogo** (App 04, PRD-12), que consome os mesmos cards mas é outra aplicação.
@@ -93,6 +98,7 @@ hora — o sentido do fluxo é sempre esse.
 | Persona          | O que faz nesta aplicação                                          | O que não pode fazer                                                  |
 | ---------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------- |
 | Visitante        | Navega, consulta nick exato, solicita participação e pede dados    | Entrar, favoritar, comentar, contatar criança, ver quem não autorizou |
+| Desenvolvedor    | Conversa com o assistente, lê a documentação e solicita a chave    | Receber a chave no ato, obter acesso sem aprovação de Admin           |
 | Pesquisador      | Lê séries e metodologia e pede o conjunto completo pelo formulário | Baixar o conjunto direto da vitrine ou ver o coletor                  |
 | Gestor público   | Lê o painel do território e a cobertura da Agenda 2030 por ciclo   | O mesmo do pesquisador                                                |
 | Admin            | Nada aqui: publica o conteúdo institucional pela App 03            | Editar a vitrine por dentro dela                                      |
@@ -100,8 +106,9 @@ hora — o sentido do fluxo é sempre esse.
 | Guerreiro(a)     | Aparece por avatar e nick, se o responsável autorizou              | Entrar, editar ou retirar a própria exibição                          |
 | Responsável      | Nada aqui: concede e revoga na App 07                              | Alterar o que aparece sem passar pela autorização                     |
 
-Não há persona autenticada nesta aplicação. Toda escrita listada acima — as duas solicitações —
-é ato público e anônimo do ponto de vista da plataforma: gera registro na fila, nunca acesso.
+Não há persona autenticada nesta aplicação. Toda escrita listada acima — as **três
+solicitações** — é ato público e anônimo do ponto de vista da plataforma: gera registro na
+fila, nunca acesso.
 
 ## 5. Jornadas principais
 
@@ -199,7 +206,30 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 5. Nada some do território: as séries continuam, agregadas e sem coletor, como sempre
    estiveram.
 
-### 5.8 Entrar na plataforma
+### 5.8 Desenvolvedor conhece a plataforma e pede a chave
+
+1. Alguém que quer construir um jogo ou uma aplicação sobre a API chega à **Área do Apoiador
+   Desenvolvedor**, pela vitrine.
+2. Abre o **assistente de chat**, que **não espera a primeira pergunta**: explica como a
+   plataforma está montada — a API, as oito aplicações, o contrato de somente leitura — e
+   **encerra a mensagem com uma pergunta de múltipla escolha** sobre o que conhecer em
+   seguida.
+3. A cada resposta, o assistente aprofunda o tópico escolhido e oferece a próxima escolha. O
+   visitante pode também perguntar livremente.
+4. Fora do corpus — documentação e repositório —, o assistente diz que não sabe e aponta a
+   documentação, em vez de inventar.
+5. Convencido, o visitante segue para a **documentação MkDocs** ou para o **repositório no
+   GitHub**, ambos linkados na mesma área.
+6. Preenche o **formulário de solicitação de chave**, declarando quem é e o que pretende
+   construir. O envio **não emite chave nenhuma**: gera registro na fila de avaliação da
+   App 03, com o prazo de resposta de 7 dias.
+7. Aprovado por um Admin, recebe a chave e passa a ter **30 dias para apresentar a URL** do
+   que construiu. Não apresentada, a chave é revogada e ele pode solicitar outra.
+
+**Exceção — assistente indisponível.** Falha do modelo não derruba a área: a documentação, o
+repositório e o formulário continuam acessíveis, com aviso de que o assistente voltará.
+
+### 5.9 Entrar na plataforma
 
 1. Qualquer pessoa que chega à raiz do domínio vê a vitrine e, sempre visível, o botão
    **Entrar**.
@@ -308,6 +338,22 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 | `RF-03-64` | O bloco lista usos concretos do dado e o caminho para pedir o conjunto completo        | essencial  |
 | `RF-03-65` | O bloco declara os limites: dado agregado, nunca por Guerreiro(a), e não oficial       | essencial  |
 
+### 6.6 Área do Apoiador Desenvolvedor
+
+| ID         | Requisito                                                                                              | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------ | ---------- |
+| `RF-03-67` | Área reúne assistente de chat, link da documentação, formulário de chave e link do repositório         | essencial  |
+| `RF-03-68` | Assistente abre explicando a arquitetura da plataforma, sem esperar a primeira pergunta                | essencial  |
+| `RF-03-69` | Assistente encerra **toda** mensagem com uma pergunta de múltipla escolha sobre o próximo passo        | essencial  |
+| `RF-03-70` | Assistente responde apenas a partir da documentação e do repositório, e diz quando o assunto está fora | essencial  |
+| `RF-03-71` | Assistente não coleta nem pede dado pessoal do visitante em nenhum momento                             | essencial  |
+| `RF-03-72` | Área segue utilizável — documentação, repositório e formulário — quando o assistente falha             | essencial  |
+| `RF-03-73` | Formulário de chave registra solicitante, contato e o que se pretende construir                        | essencial  |
+| `RF-03-74` | Envio do formulário não emite chave nem cria cadastro: gera registro na fila da App 03                 | essencial  |
+| `RF-03-75` | Área informa o prazo de 7 dias para a resposta e os 30 dias para apresentar a URL                      | essencial  |
+| `RF-03-76` | Área declara que a API não responde sem chave e que a chave não amplia direito de escrita              | essencial  |
+| `RF-03-77` | Área oferece o caminho de apresentar a URL do que foi construído, dentro do prazo                      | essencial  |
+
 ## 7. Regras de negócio
 
 | ID         | Regra                                                                                     | Invariante (doc 99 §6) | Fonte       |
@@ -339,17 +385,24 @@ Não há persona autenticada nesta aplicação. Toda escrita listada acima — a
 | `RN-03-21` | A vitrine não veicula publicidade nem patrocínio no Ciclo 01                              | —                      | 04 §2       |
 | `RN-03-22` | A vitrine não instala cookie, rastreador ou perfilamento, para nenhuma finalidade         | —                      | 04 §2       |
 | `RN-03-23` | Toda tela indica o que a plataforma coleta, com acesso à área detalhada                   | —                      | 03 §12      |
+| `RN-03-29` | A Área do Apoiador Desenvolvedor é seção da vitrine, não uma nona aplicação               | 1                      | 03 §8       |
+| `RN-03-30` | O assistente do Desenvolvedor tem corpus fechado e nunca responde fora dele               | —                      | 03 §8       |
+| `RN-03-31` | O assistente usa modelo Gemini, como toda funcionalidade de IA do Ciclo 01                | —                      | 03 §1       |
+| `RN-03-32` | Solicitação de chave não emite chave nem cria cadastro: quem emite é Admin, na App 03     | 3                      | 03 §8       |
+| `RN-03-33` | A vitrine consome a API com a chave da aplicação, e o visitante segue anônimo             | —                      | 03 §§1, 1.1 |
 
 ## 8. Modelo de dados
 
-A aplicação **não escreve no domínio** além das duas solicitações públicas e **não cria
+A aplicação **não escreve no domínio** além das três solicitações públicas e **não cria
 entidade nenhuma**. Também **não persiste nada do visitante** — nem no servidor, nem no
-aparelho: sem favoritos, sem preferência de recorte, sem histórico de navegação.
+aparelho: sem favoritos, sem preferência de recorte, sem histórico de navegação. A conversa
+com o assistente **não é guardada**: some ao fechar a página.
 
 ```text
 ESCREVE (ato público, sem cadastro)     LÊ (definidos em outro PRD)
 SolicitacaoDeParticipacao  (PRD-01)     Guerreiro(a) / Avatar / Nick    (PRD-01)
 SolicitacaoDeDados         (PRD-01)     Ponto / Nivel / Badge / Poder   (PRD-01)
+SolicitacaoDeChave         (PRD-01)     ChaveDeAplicacao (situação)     (PRD-01)
                                         Consentimento (estado vigente)  (PRD-01)
 NÃO PERSISTE                            CriacaoOriginal / Trilha        (PRD-09)
 Nada do visitante — sem favorito,       Batalha                         (PRD-10)
@@ -363,6 +416,7 @@ preferência ou histórico               Mestre / Apoiador / Aporte      (PRD-07
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `SolicitacaoDeParticipacao` | nome, e-mail, WhatsApp, pretensão, apresentação, instituição e links opcionais, situação, prazo, quem avaliou, parecer, data |
 | `SolicitacaoDeDados`        | solicitante, instituição, e-mail, finalidade declarada, recorte pedido, situação, quem avaliou, desfecho, data e o que saiu  |
+| `SolicitacaoDeChave`        | solicitante, e-mail, instituição opcional, o que pretende construir, situação, prazo, quem avaliou, parecer e data           |
 
 Derivações e imutabilidade:
 
@@ -379,24 +433,27 @@ Derivações e imutabilidade:
 A aplicação segue as convenções do PRD-01 — prefixo `/v1`, erro em corpo único — e consome
 **apenas rotas públicas, sem token**. As rotas de avaliação e entrega são da App 03 (PRD-02).
 
-| Método | Rota                                 | Autenticação | Descrição                                                   |
-| ------ | ------------------------------------ | ------------ | ----------------------------------------------------------- |
-| GET    | `/v1/vitrine/guerreiros`             | pública      | Cards dos Guerreiros e Guerreiras com divulgação autorizada |
-| GET    | `/v1/vitrine/guerreiros/{nick}`      | pública      | Página pública por nick exato                               |
-| GET    | `/v1/vitrine/mestres`                | pública      | Cards e páginas de Mestres, com os comprobatórios           |
-| GET    | `/v1/vitrine/apoiadores`             | pública      | Cards e páginas de Apoiadores, com aportes em moedas        |
-| GET    | `/v1/vitrine/poderes`                | pública      | Poderes, trilhas e Mestres de cada um                       |
-| GET    | `/v1/vitrine/batalhas`               | pública      | Batalhas, resultados e estatísticas de partida              |
-| GET    | `/v1/vitrine/criacoes`               | pública      | Portfólio de criações originais autorizadas                 |
-| GET    | `/v1/vitrine/rankings`               | pública      | Rankings por pontos regulares, só de quem autorizou         |
-| GET    | `/v1/vitrine/conteudo-institucional` | pública      | "Quem somos", "Contatos", "Como apoiar" e a nota sobre IA   |
-| GET    | `/v1/comunidades`                    | pública      | Comunidades com indicadores agregados (PRD-08)              |
-| GET    | `/v1/comunidades/{id}/series`        | pública      | Séries históricas agregadas até o bairro, com metodologia   |
-| GET    | `/v1/comunidades/{id}/ods`           | pública      | Cobertura de ODS da comunidade, por ciclo                   |
-| GET    | `/v1/vitrine/ods/cobertura`          | pública      | Cobertura agregada de todas as comunidades do ciclo         |
-| GET    | `/v1/vitrine/necessidades`           | pública      | Necessidades de recurso em aberto (PRD-07)                  |
-| POST   | `/v1/solicitacoes-de-participacao`   | pública      | Registra pedido de inclusão como Mestre ou Apoiador         |
-| POST   | `/v1/solicitacoes-de-dados`          | pública      | Registra pedido do conjunto de dados                        |
+| Método | Rota                                 | Autenticação | Descrição                                                    |
+| ------ | ------------------------------------ | ------------ | ------------------------------------------------------------ |
+| GET    | `/v1/vitrine/guerreiros`             | pública      | Cards dos Guerreiros e Guerreiras com divulgação autorizada  |
+| GET    | `/v1/vitrine/guerreiros/{nick}`      | pública      | Página pública por nick exato                                |
+| GET    | `/v1/vitrine/mestres`                | pública      | Cards e páginas de Mestres, com os comprobatórios            |
+| GET    | `/v1/vitrine/apoiadores`             | pública      | Cards e páginas de Apoiadores, com aportes em moedas         |
+| GET    | `/v1/vitrine/poderes`                | pública      | Poderes, trilhas e Mestres de cada um                        |
+| GET    | `/v1/vitrine/batalhas`               | pública      | Batalhas, resultados e estatísticas de partida               |
+| GET    | `/v1/vitrine/criacoes`               | pública      | Portfólio de criações originais autorizadas                  |
+| GET    | `/v1/vitrine/rankings`               | pública      | Rankings por pontos regulares, só de quem autorizou          |
+| GET    | `/v1/vitrine/conteudo-institucional` | pública      | "Quem somos", "Contatos", "Como apoiar" e a nota sobre IA    |
+| GET    | `/v1/comunidades`                    | pública      | Comunidades com indicadores agregados (PRD-08)               |
+| GET    | `/v1/comunidades/{id}/series`        | pública      | Séries históricas agregadas até o bairro, com metodologia    |
+| GET    | `/v1/comunidades/{id}/ods`           | pública      | Cobertura de ODS da comunidade, por ciclo                    |
+| GET    | `/v1/vitrine/ods/cobertura`          | pública      | Cobertura agregada de todas as comunidades do ciclo          |
+| GET    | `/v1/vitrine/necessidades`           | pública      | Necessidades de recurso em aberto (PRD-07)                   |
+| POST   | `/v1/solicitacoes-de-participacao`   | pública      | Registra pedido de inclusão como Mestre ou Apoiador          |
+| POST   | `/v1/solicitacoes-de-dados`          | pública      | Registra pedido do conjunto de dados                         |
+| POST   | `/v1/solicitacoes-de-chave`          | pública      | Registra pedido de chave da Área do Apoiador Desenvolvedor   |
+| POST   | `/v1/chaves/{id}/url`                | pública      | Apresenta a URL do que foi construído, dentro dos 30 dias    |
+| POST   | `/v1/assistente-do-desenvolvedor`    | pública      | Pergunta ao assistente, sobre a documentação e o repositório |
 
 Nenhuma rota desta aplicação aceita ou devolve preferência de visitante: não há parâmetro de
 favorito, de perfil ou de sessão anônima.
@@ -426,13 +483,15 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                        | Finalidade                             | Base legal                   | Retenção                           | Quem acessa        |
-| ------------------------------------ | -------------------------------------- | ---------------------------- | ---------------------------------- | ------------------ |
-| Nenhum dado do visitante             | —                                      | —                            | —                                  | —                  |
-| Dados da solicitação de participação | Avaliar quem pede para entrar          | consentimento                | até o desfecho e o registro dele   | gestão             |
-| Dados da solicitação de dados        | Avaliar e registrar a entrega          | consentimento                | permanente, como prova do que saiu | gestão             |
-| Avatar, nick e desempenho exibidos   | Reconhecimento público do Guerreiro(a) | consentimento do responsável | enquanto a autorização durar       | qualquer visitante |
-| Séries do território exibidas        | Bem público e evidência sobre o lugar  | interesse público            | permanente, agregado               | qualquer visitante |
+| Dado coletado                        | Finalidade                             | Base legal                    | Retenção                           | Quem acessa        |
+| ------------------------------------ | -------------------------------------- | ----------------------------- | ---------------------------------- | ------------------ |
+| Nenhum dado do visitante             | —                                      | —                             | —                                  | —                  |
+| Dados da solicitação de participação | Avaliar quem pede para entrar          | consentimento                 | até o desfecho e o registro dele   | gestão             |
+| Dados da solicitação de dados        | Avaliar e registrar a entrega          | consentimento                 | permanente, como prova do que saiu | gestão             |
+| Dados da solicitação de chave        | Avaliar quem vai construir sobre a API | consentimento                 | enquanto a chave existir           | gestão             |
+| Conversa com o assistente            | Responder a pergunta do momento        | execução da própria aplicação | não é guardada: some ao fechar     | ninguém            |
+| Avatar, nick e desempenho exibidos   | Reconhecimento público do Guerreiro(a) | consentimento do responsável  | enquanto a autorização durar       | qualquer visitante |
+| Séries do território exibidas        | Bem público e evidência sobre o lugar  | interesse público             | permanente, agregado               | qualquer visitante |
 
 - **A vitrine não coleta nada de quem visita.** Sem login, sem cadastro, sem cookie de
   rastreio, sem perfilamento — e a área detalhada diz isso com todas as letras.
@@ -446,10 +505,23 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   só volta como estudo, com as salvaguardas de plataforma usada por criança escritas antes.
 - **Quem preencheu formulário não vira cadastro** e não recebe e-mail da plataforma no Ciclo
   01: o retorno é dado pelo contato que ele mesmo declarou.
+- **O assistente do Desenvolvedor não fala de criança nenhuma.** O corpus é a documentação e o
+  repositório; ele não consulta o domínio, não alcança dado de Guerreiro(a) e não pede dado
+  pessoal de quem conversa. A conversa não é guardada nem usada para treinar modelo.
+- **A área é para adulto que quer construir, mas a vitrine é pública** — e por isso o
+  assistente segue as mesmas travas de conteúdo das demais superfícies da plataforma.
 
 ## 12. Critérios de aceite e métricas
 
 - A vitrine abre inteira sem login, e nenhuma tela oferece cadastro ou área restrita.
+- A primeira mensagem do assistente chega **sem que se pergunte nada**, e **toda** mensagem
+  dele termina com uma pergunta de múltipla escolha — inclusive a última de uma conversa longa.
+- Pergunta fora da documentação e do repositório recebe "não sei" com o caminho da
+  documentação, e não uma resposta inventada.
+- Com o assistente fora do ar, a documentação, o repositório e o formulário continuam
+  acessíveis, com aviso.
+- O envio do formulário de chave **não devolve chave nenhuma** — devolve protocolo e prazo.
+- Recarregar a página do assistente **perde a conversa**: nada dela foi guardado.
 - Guerreiro(a) com autorização aparece em card, página e ranking; sem autorização, não aparece
   em nenhum dos três, nem por endereço direto.
 - Revogada a autorização na App 07, o perfil some da vitrine na leitura seguinte e o endereço
@@ -497,6 +569,10 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 | Vitrine sem favoritos: o pedido vira convite a se cadastrar e apoiar     | 03 §8      | Favoritos apenas na App 08                |
 | Novidade dos favoritos na App 08: cinco fatos, em destaque por 30 dias   | 03 §10     | O que conta como "novidade" dos favoritos |
 | Chamada "Quero participar" em toda página individual                     | 03 §8      | Chamada "Quero participar" nos perfis     |
+| Área do Apoiador Desenvolvedor como seção da vitrine, não nona aplicação | 03 §8      | Acesso das aplicações de terceiros        |
+| Assistente de chat com corpus fechado e pergunta de múltipla escolha     | 03 §8      | Acesso das aplicações de terceiros        |
+| Modelo Gemini para toda funcionalidade de IA do Ciclo 01                 | 03 §1      | Modelos de IA do Ciclo 01                 |
+| Solicitação de chave pela vitrine, com emissão por Admin                 | 03 §8      | Acesso das aplicações de terceiros        |
 | Card de Apoiador com avatar, nick, moedas em destaque e moldura comum    | 11 §8.2    | Identidade pública do Apoiador            |
 | Pré-cadastro do Apoiador, com aporte declarado e comprovante             | 02 §1      | Pré-cadastro do Apoiador                  |
 | Vitrine na raiz do domínio, com botão "Entrar" por persona               | 03 §§1, 8  | Vitrine na raiz e botão "Entrar"          |
@@ -542,3 +618,5 @@ entidade e não como contrato.
 | `RF-03-52` e `RF-03-53`             | 03 §12 (aviso de coleta e área detalhada)                      |
 | `RF-03-58` a `RF-03-62`             | 03 §§1, 1.1, 8 (vitrine na raiz e entrada por persona)         |
 | `RF-03-63` a `RF-03-65`             | 03 §8 (área do gestor) e 04 §4 (Agenda 2030 e meta 17.18)      |
+| `RF-03-67` a `RF-03-72`             | 03 §8 (Área do Desenvolvedor e assistente) e 03 §1 (Gemini)    |
+| `RF-03-73` a `RF-03-77`             | 03 §§1, 8 (chave, prazos e recusa sem chave)                   |

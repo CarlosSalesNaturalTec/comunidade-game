@@ -456,3 +456,25 @@ mesma regra da vitrine.
 - A API pública e aberta permite que **terceiros** construam novos jogos sob o mesmo contrato.
 - **O protagonismo vale também aqui**: o código do App 04 é aberto e legível, e alterá-lo é
   atividade de trilha — o Guerreiro(a) não é só usuário do jogo, é um dos seus construtores.
+
+#### Como a virtude vira atributo
+
+**Definição vigente — mapa fixo, igual para todo personagem.** Toda virtude que o jogo lê tem
+destino declarado na partida, e nenhuma fica de fora:
+
+| Virtude lida do Guerreiro(a) | Atributo do personagem na partida                                   |
+| ---------------------------- | ------------------------------------------------------------------- |
+| Pontos regulares             | **Vitalidade** — quanto o personagem aguenta antes de ser derrotado |
+| Pontos extras                | **Energia** — o que custeia o uso das habilidades na partida        |
+| Nível do poder (1–5)         | **Escalonamento** — multiplica vitalidade, energia e dano           |
+| Poder conquistado            | **Habilidade especial** — uma por poder, com efeito próprio         |
+| Badge                        | **Passiva** — efeito permanente enquanto a partida durar            |
+
+Três exigências acompanham o mapa:
+
+- **Monotonia.** Evoluir na vida real nunca produz personagem pior em atributo nenhum.
+- **Transparência.** A tela de escolha mostra de qual virtude veio cada atributo — é o que
+  faz da partida uma leitura do próprio progresso.
+- **Balanceamento é conteúdo, não regra de plataforma.** Os números que convertem virtude em
+  atributo vivem no código aberto do jogo e mudam em atividade de trilha; o que a plataforma
+  fixa é o mapa acima e as duas exigências anteriores.

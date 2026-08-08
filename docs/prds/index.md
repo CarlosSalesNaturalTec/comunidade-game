@@ -23,8 +23,8 @@ no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs est�
 | [PRD-13](prd-13-area-dos-responsaveis.md) | Área dos pais e responsáveis           | App 07    | 4    | aprovado     |
 | [PRD-03](prd-03-vitrine-publica.md)       | Vitrine pública                        | App 06    | 4    | aprovado     |
 | [PRD-14](prd-14-area-do-apoiador.md)      | Área do Apoiador                       | App 08    | 5    | aprovado     |
-| [PRD-10](prd-10-batalhas.md)              | Batalhas e eventos presenciais         | —         | 5    | em revisão   |
-| PRD-12                                    | Jogo em JavaScript                     | App 04    | 5    | não iniciado |
+| [PRD-10](prd-10-batalhas.md)              | Batalhas e eventos presenciais         | —         | 5    | aprovado     |
+| [PRD-12](prd-12-jogo-em-javascript.md)    | App 04: Jogo em JavaScript             | App 04    | 5    | em revisão   |
 | PRD-11                                    | Personalização por IA                  | —         | 5    | não iniciado |
 
 Situações possíveis: **não iniciado**, **em elicitação**, **em redação**, **em revisão** e

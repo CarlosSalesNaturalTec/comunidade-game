@@ -269,7 +269,8 @@ tentativa de editar lançamento (405); ressarcimento sem comprovante anexado (42
 
 ## 10. Requisitos não funcionais
 
-- Consulta pública de prestação de contas responde sem autenticação e é cacheável.
+- Consulta pública de prestação de contas responde sem login de pessoa — a chave da aplicação
+  segue exigida, como em toda rota (PRD-01) — e é cacheável.
 - O cálculo de saldo é reprodutível: recontar os lançamentos devolve o mesmo número.
 - Registro de aporte e de empréstimo em Web App responsivo Mobile First, no ponto de apoio.
 - Painel do dia lê saldo e devoluções pendentes em tempo de encontro (PRD-02).
