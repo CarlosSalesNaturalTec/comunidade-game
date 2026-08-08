@@ -44,5 +44,5 @@ do Robô Educa desde 2018. A primeira implantação da plataforma é o **Case 01
 Guerreira Zeferina** (Salvador/BA), no **Ciclo 01, de agosto a dezembro de 2026**.
 
 Com a validação humana dos documentos desta pasta concluída, o projeto está na **geração dos
-PRDs**, que orientarão o desenvolvimento das aplicações. A situação de cada um está na
-[esteira de PRDs](prds/index.md).
+PRDs**, que orientarão o desenvolvimento das aplicações. Todos já estão escritos, e o que falta
+é a aprovação dos últimos. A situação de cada um está na [esteira de PRDs](prds/index.md).

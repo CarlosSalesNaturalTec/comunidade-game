@@ -90,6 +90,7 @@ nav:
       - "PRD-14 — App 08: Área do Apoiador": prds/prd-14-area-do-apoiador.md
       - "PRD-10 — Batalhas e eventos presenciais": prds/prd-10-batalhas.md
       - "PRD-12 — App 04: Jogo em JavaScript": prds/prd-12-jogo-em-javascript.md
+      - "PRD-11 — Personalização por IA": prds/prd-11-personalizacao-por-ia.md
   - "Operação":
       - "04 — Modelo econômico e sustentabilidade": 04-modelo-economico-e-sustentabilidade.md
       - "05 — Implantação e operação": 05-implantacao-e-operacao.md

@@ -130,6 +130,7 @@ em pontos — ficam **apenas no doc 14**.
 | Integridade dos pontos (travas antifraude)                         | 11 §5.1                                    | 02 §1, 05 §5                   |
 | Canal de sugestões do Guerreiro(a) (formato, prazo e crédito)      | 03 §7                                      | 11 §§5, 7, 13 §5               |
 | Apoio escolar por assistente de voz, com corpus fechado e IA       | 03 §7                                      | 03 §§4, 5, 11, 08, 10 §4.3     |
+| Personalização por IA (sessão, reescrita no corpus, ponte)         | 03 §7.1                                    | 03 §§4, 9, 12.2, 08            |
 | Reparação que zera a ocorrência de conduta                         | 13 §3                                      | 11 §5                          |
 | Regras da partida do Quiz ao Vivo (aparelho, acerto e desempate)   | 05 §5                                      | 03 §§4, 5, 11, 08, 11 §5       |
 | Contrato dos jogos (somente leitura: lê progresso e nada escreve)  | 11 §8.4                                    | 03 §6, 08                      |
@@ -193,6 +194,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Produção do Guerreiro(a) e devolutiva       | 11 §2.2 + 03 §§4, 7       | PRD-05, 04, 09, 01             |
 | Sugestões e propostas de evolução           | 03 §§7, 9, 10, 11 + 13 §5 | PRD-01, 02, 05, 09, 13, 14     |
 | Apoio às atividades escolares               | 03 §7                     | PRD-05, 09, 01                 |
+| Personalização por IA                       | 03 §7.1                   | PRD-11, 05, 04, 13, 09, 01     |
 | Área do Apoiador                            | 03 §10 + 04 §3            | PRD-14, 07, 02                 |
 | Missões, níveis de sustento e selos         | 14 §§5–8                  | PRD-14, 03, 07, 02, 01         |
 | Portas de entrada por modalidade de apoio   | 14 §§3, 10 + 02 §1        | PRD-03, 14, 02, 01             |
@@ -272,6 +274,11 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     aprovação mais rápida de desafio, e **não há ranking de apoiadores por dinheiro**. A
     **missão do Apoiador** não se confunde com a missão da trilha nem com o desafio extra, e
     **só se conclui com aporte homologado por Admin**.
+22. **A personalização por IA adapta na sessão e não perfila a criança.** Nenhum traço de
+    ritmo, dificuldade ou interesse é inferido ou guardado, e o contexto é **descartado ao
+    encerrar a sessão**. A IA **recomenda e reescreve dentro do corpus fechado** do Mestre,
+    marcando o texto gerado, e **nunca cria conteúdo novo**. O responsável a desliga a
+    qualquer tempo, e desligá-la não tira conteúdo nem exclui ninguém da atividade.
 
 ## 7. Como esta documentação deve ser editada
 
@@ -311,7 +318,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD-08 | `prd-08-comunidades-virtuais.md`  | —              | 02, 03, 11             |
 | PRD-09 | `prd-09-area-do-mestre.md`        | PRD-01         | 02, 03, 05, 06, 07, 11 |
 | PRD-10 | `prd-10-batalhas.md`              | PRD-01, PRD-09 | 02, 07, 11             |
-| PRD-11 | `prd-11-personalizacao-por-ia.md` | PRD-01, PRD-04 | 02, 03                 |
+| PRD-11 | `prd-11-personalizacao-por-ia.md` | PRD-01, PRD-04 | 02, 03, 11             |
 | PRD-12 | `prd-12-jogo-em-javascript.md`    | PRD-01, PRD-03 | 02, 03, 04, 11         |
 | PRD-13 | `prd-13-area-dos-responsaveis.md` | PRD-01, PRD-02 | 02, 03, 10             |
 | PRD-14 | `prd-14-area-do-apoiador.md`      | PRD-07, PRD-02 | 02, 03, 04, 11, 12, 14 |
