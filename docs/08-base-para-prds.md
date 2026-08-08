@@ -707,12 +707,18 @@ e badge em passiva — é fixo e está no documento 11, com as exigências de mo
 transparência e balanceamento como conteúdo alterável em trilha.
 
 **Definição vigente — joga offline e em dupla no mesmo aparelho.** O catálogo de personagens
-fica guardado no aparelho para a partida rodar sem rede e é revalidado a cada reconexão; o
-duelo local entre dois personagens escolhidos atende às aulas presenciais e não exige
+fica guardado no aparelho para a partida rodar sem rede, é revalidado a cada reconexão e vale
+por **7 dias** sem nenhuma — vencido o prazo, o jogo pede conexão antes de abrir nova partida.
+O duelo local entre dois personagens escolhidos atende às aulas presenciais e não exige
 servidor.
 
-**Questões em aberto:** prazo máximo de validade do catálogo guardado no aparelho sem nenhuma
-reconexão; identificação de aplicação de terceiro que consuma a mesma leitura pública.
+**Definição vigente — terceiro se identifica por chave.** Quem quer construir jogo ou
+aplicação sobre a API pede a chave pela vitrine pública e tem **30 dias para apresentar a
+URL** do que construiu, sob pena de revogação. A chave não amplia acesso: identifica a
+aplicação, dá-lhe cota própria e permite homologá-la como aporte (documento 03 §§1, 8).
+
+**Questões em aberto:** nenhuma — resta apenas a licença do código, que é decisão geral do
+projeto e não deste PRD.
 
 **Fontes:** docs 02, 03, 11.
 

@@ -3,7 +3,8 @@
 ## 1. Princípios de arquitetura
 
 1. **Backend em forma de API** — para que os mais diversos frontends **e aplicações de
-   terceiros** possam acessá-lo.
+   terceiros** possam acessá-lo. A aplicação de terceiro **se identifica por chave**,
+   solicitada pela vitrine pública (§8).
 2. **Rotas de consulta abertas** — leituras públicas (vitrine, rankings, batalhas, jogo) não
    exigem autenticação. Escrita e gestão exigem.
 3. **Frontends independentes** — em **endereços próprios**, evoluindo desacoplados do backend.
@@ -371,8 +372,11 @@ escolhido, de modo que a partida segue disputada em qualquer faixa de evolução
 
 **Joga sem rede e aceita dois jogadores no mesmo aparelho.** O catálogo de personagens fica
 guardado no aparelho para a partida rodar offline e é **revalidado a cada reconexão** — sem
-rede não se atualiza a lista, mas se joga. O duelo local entre dois personagens escolhidos
-atende ao uso nas aulas presenciais e não exige servidor.
+rede não se atualiza a lista, mas se joga. O catálogo guardado vale por **7 dias** sem nenhuma
+reconexão: vencido o prazo, o jogo pede conexão antes de abrir nova partida, e é esse o teto
+da defasagem entre uma revogação de divulgação e o aparelho que ficou fora da rede. O duelo
+local entre dois personagens escolhidos atende ao uso nas aulas presenciais e não exige
+servidor.
 
 Objetivos: dar utilidade lúdica ao progresso das trilhas; servir de conteúdo do **Poder da IA e
 Robótica**, já que alterar o código é atividade de trilha — o Guerreiro(a) é um dos
@@ -449,6 +453,13 @@ Web App de acesso público e **sem autenticação**:
   instituições: a solicitação é gravada e cai na fila de avaliação dos Admins na App 03.
 - **Formulário de solicitação de dados**, para pesquisadores e gestores públicos, com a mesma
   fila de avaliação (§12.3).
+- **Formulário de solicitação de chave de aplicação**, para quem quer construir jogo ou
+  aplicação sobre a API, com a mesma fila de avaliação. Emitida a chave, o solicitante tem
+  **30 dias para apresentar a URL** do jogo ou da aplicação construída; não apresentada no
+  prazo, a chave é revogada, e nova solicitação é sempre possível. A chave **não amplia
+  acesso**: a leitura pública segue aberta a todos e o contrato de somente leitura do
+  documento 11 vale igual. Ela identifica a aplicação, dá-lhe cota própria de consulta e é o
+  que permite homologá-la como aporte de quem a construiu.
 - **Aportes exibidos em moedas da plataforma**, nunca em reais (documento 04).
 - **Painel público da Comunidade Virtual** — dados do território em **série histórica**, em
   **visão macro**, agregados **até o bairro** e anonimizados (documento 02), abertos à consulta

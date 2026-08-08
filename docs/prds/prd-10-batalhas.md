@@ -382,8 +382,8 @@ sondagem × desbloqueio, que segue sendo o instrumento da hipótese.
 
 A decisão da ponte fechou a proposta que estava aberta no documento 07 desde a primeira
 redação. Ela dispensa credencial de dispositivo — o Nexus fala pela sessão do Mestre —, e por
-isso **não depende** da pendência de acesso das aplicações de terceiros nem da autenticação do
-sensor do Guerreiro(a), ambas ainda abertas no documento 09.
+isso **não depende** da chave de aplicação de terceiro, decidida depois deste PRD, nem da
+autenticação do sensor do Guerreiro(a), que segue aberta no documento 09.
 
 As entidades `ArtefatoDeBatalha`, `PartidaDeBatalha`, `ParticipacaoNaPartida`,
 `EventoDeTelemetria` e `ConferenciaDeSeguranca` foram acrescentadas ao modelo do PRD-01, e a
@@ -396,8 +396,9 @@ As entidades `ArtefatoDeBatalha`, `PartidaDeBatalha`, `ParticipacaoNaPartida`,
   publicação, não este domínio.
 - **Autenticação do sensor do Guerreiro(a)** (documento 09): segue aberta e fora deste PRD — o
   sensor da coleta fala com a API, o artefato da batalha não.
-- **Acesso das aplicações de terceiros** (documento 09): segue aberta. Enquanto não houver
-  chave de aplicação, nenhum Nexus de terceiro conduz partida na plataforma.
+- **Acesso das aplicações de terceiros**: decidido depois deste PRD — o terceiro pede chave
+  pela vitrine (documento 03 §§1, 8). A chave é de leitura, então segue valendo que **nenhum
+  Nexus de terceiro conduz partida** na plataforma: quem conduz é a sessão do Mestre.
 - **Segurança física das demais atividades** (documento 09): eletrônica e ferramentas de
   oficina seguem sem norma escrita; só o laser da batalha ficou decidido.
 - **Batalhas de outras áreas**: rima e capoeira são ciclo futuro. O modelo já as comporta, e

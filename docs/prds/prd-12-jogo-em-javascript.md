@@ -42,8 +42,8 @@ construtores do jogo.
   personagem escolhido.
 - **Duelo local**, dois jogadores no mesmo aparelho, para uso nas aulas presenciais.
 - **Composição do personagem pelo mapa fixo** de virtude em atributo do documento 11.
-- **Funcionamento offline**: catálogo guardado no aparelho, partida sem rede e revalidação a
-  cada reconexão.
+- **Funcionamento offline**: catálogo guardado no aparelho, partida sem rede, revalidação a
+  cada reconexão e validade de 7 dias sem nenhuma.
 - **Instalação como aplicação do navegador** (PWA), sem loja e sem instalador.
 - **Código aberto e legível**, com o balanceamento em arquivo próprio, apto a virar conteúdo
   de trilha.
@@ -117,6 +117,10 @@ distintos; havendo apenas um, a opção fica indisponível, com a explicação e
 4. Voltando a rede, o jogo **revalida o catálogo antes de abrir a próxima partida**: se mudou,
    baixa a lista nova; se um personagem saiu, ele desaparece da escolha.
 5. A partida em andamento no momento da reconexão não é interrompida.
+
+**Exceção — catálogo vencido.** Passados **7 dias** sem nenhuma reconexão, o jogo deixa de
+abrir partida nova e pede conexão. É o teto da defasagem: um responsável que revoga a
+autorização sabe que, no pior caso, o personagem sai de qualquer aparelho em uma semana.
 
 ### 5.4 Autorização revogada durante o uso
 
@@ -197,51 +201,53 @@ distintos; havendo apenas um, a opção fica indisponível, com a explicação e
 | `RF-12-21` | Revalidar o catálogo a cada reconexão, antes de abrir a próxima partida                                           | essencial  |
 | `RF-12-22` | Ler sempre da API quando houver rede; o catálogo guardado só serve na falta dela                                  | essencial  |
 | `RF-12-23` | Informar na tela quando o catálogo em uso é o guardado, e de quando ele é                                         | essencial  |
-| `RF-12-24` | Explicar, no primeiro acesso sem rede e sem catálogo, que é preciso conectar uma vez para conhecer os personagens | essencial  |
-| `RF-12-25` | Permitir a instalação como aplicação do navegador, sem loja e sem instalador                                      | desejável  |
+| `RF-12-24` | Recusar nova partida com catálogo guardado há mais de **7 dias** sem reconexão, pedindo conexão                   | essencial  |
+| `RF-12-25` | Explicar, no primeiro acesso sem rede e sem catálogo, que é preciso conectar uma vez para conhecer os personagens | essencial  |
+| `RF-12-26` | Permitir a instalação como aplicação do navegador, sem loja e sem instalador                                      | desejável  |
 
 ### 6.6 Código aberto e uso em trilha
 
 | ID         | Requisito                                                                                          | Prioridade |
 | ---------- | -------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-12-26` | Publicar o código aberto e legível, com instruções de como rodar e alterar o jogo                  | essencial  |
-| `RF-12-27` | Rodar sem depender de serviço proprietário, para que a alteração feita em trilha funcione          | essencial  |
-| `RF-12-28` | Isolar em arquivos próprios o que a trilha altera com mais frequência: balanceamento e habilidades | desejável  |
+| `RF-12-27` | Publicar o código aberto e legível, com instruções de como rodar e alterar o jogo                  | essencial  |
+| `RF-12-28` | Rodar sem depender de serviço proprietário, para que a alteração feita em trilha funcione          | essencial  |
+| `RF-12-29` | Isolar em arquivos próprios o que a trilha altera com mais frequência: balanceamento e habilidades | desejável  |
 
 ### 6.7 Transparência com o visitante
 
 | ID         | Requisito                                                                    | Prioridade |
 | ---------- | ---------------------------------------------------------------------------- | ---------- |
-| `RF-12-29` | Manter visível o aviso de que o jogo lê a plataforma e não escreve nada nela | essencial  |
-| `RF-12-30` | Informar o que o jogo guarda no aparelho e oferecer a opção de apagar isso   | essencial  |
-| `RF-12-31` | Oferecer caminho para a vitrine e para o "Entrar" da plataforma              | desejável  |
+| `RF-12-30` | Manter visível o aviso de que o jogo lê a plataforma e não escreve nada nela | essencial  |
+| `RF-12-31` | Informar o que o jogo guarda no aparelho e oferecer a opção de apagar isso   | essencial  |
+| `RF-12-32` | Oferecer caminho para a vitrine e para o "Entrar" da plataforma              | desejável  |
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                           | Invariante (doc 99 §6) | Fonte   |
-| ---------- | ----------------------------------------------------------------------------------------------- | ---------------------- | ------- |
-| `RN-12-01` | O jogo é público, sem login, e não escreve nada na plataforma                                   | 8                      | 11 §8.4 |
-| `RN-12-02` | Não existe rota de escrita para o jogo; a tentativa devolve 404                                 | 8                      | 11 §8.4 |
-| `RN-12-03` | Resultado de partida não credita, não debita e não registra histórico                           | 8                      | 03 §6   |
-| `RN-12-04` | Não há saldo de pontos consumidos: ponto não se gasta em partida                                | 8                      | 11 §5   |
-| `RN-12-05` | Só é personagem quem tem divulgação autorizada vigente do responsável                           | 8, 12                  | 03 §12  |
-| `RN-12-06` | O catálogo é idêntico para todo visitante — sem login, o jogo não distingue quem joga           | 8                      | 03 §6   |
-| `RN-12-07` | O Guerreiro(a) aparece só por avatar e nick, nunca por imagem real ou nome civil                | 12                     | 03 §12  |
-| `RN-12-08` | A revogação vale para frente e tira o personagem do catálogo na leitura seguinte                | 12                     | 03 §9   |
-| `RN-12-09` | Ficha inexistente e ficha sem autorização recebem a mesma resposta "não encontrado"             | 12                     | 03 §8   |
-| `RN-12-10` | O mapa de virtude em atributo é fixo e nenhuma virtude fica de fora                             | 8                      | 11 §8.4 |
-| `RN-12-11` | Evoluir na vida real nunca produz personagem pior em atributo nenhum                            | 8                      | 11 §8.4 |
-| `RN-12-12` | O balanceamento é conteúdo do jogo, alterável em trilha, não regra de plataforma                | —                      | 11 §8.4 |
-| `RN-12-13` | Jogar muito não altera ranking, nível ou badge de ninguém                                       | 8                      | 11 §8.4 |
-| `RN-12-14` | O catálogo guardado só é usado sem rede e é revalidado a cada reconexão                         | —                      | 03 §6   |
-| `RN-12-15` | O jogo guarda no aparelho apenas o catálogo e as preferências do próprio jogo, e não envia nada | —                      | 03 §6   |
-| `RN-12-16` | O duelo local não iguala atributos: a diferença de evolução é intencional e visível             | 8                      | 03 §6   |
-| `RN-12-17` | Não há canal de contato entre visitante e Guerreiro(a) ou família                               | 10                     | 02 §1   |
-| `RN-12-18` | O jogo não exibe dado de localização, escola, turma ou comunidade de um Guerreiro(a)            | 12                     | 03 §12  |
-| `RN-12-19` | O jogo não veicula publicidade, patrocínio, rastreador ou cookie de terceiro                    | —                      | 04 §2   |
-| `RN-12-20` | Não há compra, moeda nem item pago dentro do jogo                                               | 16                     | 04 §1   |
-| `RN-12-21` | O código é aberto e alterá-lo é atividade de trilha, com crédito pela atividade validada        | 19                     | 11 §8.4 |
-| `RN-12-22` | Só o Guerreiro(a) é personagem jogável no Ciclo 01                                              | 13                     | 03 §6   |
+| ID         | Regra                                                                                                                                | Invariante (doc 99 §6) | Fonte     |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------- | --------- |
+| `RN-12-01` | O jogo é público, sem login, e não escreve nada na plataforma                                                                        | 8                      | 11 §8.4   |
+| `RN-12-02` | Não existe rota de escrita para o jogo; a tentativa devolve 404                                                                      | 8                      | 11 §8.4   |
+| `RN-12-03` | Resultado de partida não credita, não debita e não registra histórico                                                                | 8                      | 03 §6     |
+| `RN-12-04` | Não há saldo de pontos consumidos: ponto não se gasta em partida                                                                     | 8                      | 11 §5     |
+| `RN-12-05` | Só é personagem quem tem divulgação autorizada vigente do responsável                                                                | 8, 12                  | 03 §12    |
+| `RN-12-06` | O catálogo é idêntico para todo visitante — sem login, o jogo não distingue quem joga                                                | 8                      | 03 §6     |
+| `RN-12-07` | O Guerreiro(a) aparece só por avatar e nick, nunca por imagem real ou nome civil                                                     | 12                     | 03 §12    |
+| `RN-12-08` | A revogação vale para frente e tira o personagem do catálogo na leitura seguinte                                                     | 12                     | 03 §9     |
+| `RN-12-09` | Ficha inexistente e ficha sem autorização recebem a mesma resposta "não encontrado"                                                  | 12                     | 03 §8     |
+| `RN-12-10` | O mapa de virtude em atributo é fixo e nenhuma virtude fica de fora                                                                  | 8                      | 11 §8.4   |
+| `RN-12-11` | Evoluir na vida real nunca produz personagem pior em atributo nenhum                                                                 | 8                      | 11 §8.4   |
+| `RN-12-12` | O balanceamento é conteúdo do jogo, alterável em trilha, não regra de plataforma                                                     | —                      | 11 §8.4   |
+| `RN-12-13` | Jogar muito não altera ranking, nível ou badge de ninguém                                                                            | 8                      | 11 §8.4   |
+| `RN-12-14` | O catálogo guardado só é usado sem rede, é revalidado a cada reconexão e vale por no máximo 7 dias sem nenhuma                       | —                      | 03 §6     |
+| `RN-12-15` | O jogo guarda no aparelho apenas o catálogo e as preferências do próprio jogo, e não envia nada                                      | —                      | 03 §6     |
+| `RN-12-16` | O duelo local não iguala atributos: a diferença de evolução é intencional e visível                                                  | 8                      | 03 §6     |
+| `RN-12-17` | Não há canal de contato entre visitante e Guerreiro(a) ou família                                                                    | 10                     | 02 §1     |
+| `RN-12-18` | O jogo não exibe dado de localização, escola, turma ou comunidade de um Guerreiro(a)                                                 | 12                     | 03 §12    |
+| `RN-12-19` | O jogo não veicula publicidade, patrocínio, rastreador ou cookie de terceiro                                                         | —                      | 04 §2     |
+| `RN-12-20` | Não há compra, moeda nem item pago dentro do jogo                                                                                    | 16                     | 04 §1     |
+| `RN-12-21` | O código é aberto e alterá-lo é atividade de trilha, com crédito pela atividade validada                                             | 19                     | 11 §8.4   |
+| `RN-12-22` | Só o Guerreiro(a) é personagem jogável no Ciclo 01                                                                                   | 13                     | 03 §6     |
+| `RN-12-23` | Aplicação de terceiro sobre a mesma leitura pública se identifica por chave pedida na vitrine; o App 04 é do projeto e não usa chave | —                      | 03 §§1, 8 |
 
 ## 8. Modelo de dados
 
@@ -260,13 +266,13 @@ ESCREVE                                   Adversario  (dimensionado pelo Persona
 Nada. Em lugar nenhum.                    Partida     (existe só até a tela final)
 ```
 
-| Estrutura            | Atributos essenciais                                                                                          |
-| -------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `CatalogoGuardado`   | lista de personagens jogáveis, carimbo de versão do catálogo, data e hora da revalidação                      |
-| `PreferenciasDoJogo` | som, dificuldade e opção de duelo local — locais, sem identificador de visitante                              |
-| `Personagem`         | nick, avatar, vitalidade, energia, escalonamento, habilidades e passivas, com a virtude de origem de cada uma |
-| `Adversario`         | atributos derivados do `Personagem` escolhido, sem vínculo com Guerreiro(a) algum                             |
-| `Partida`            | turno atual, vitalidade e energia correntes dos dois lados, resultado — descartada ao fim                     |
+| Estrutura            | Atributos essenciais                                                                                              |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `CatalogoGuardado`   | lista de personagens jogáveis, carimbo de versão do catálogo, data e hora da revalidação e o vencimento de 7 dias |
+| `PreferenciasDoJogo` | som, dificuldade e opção de duelo local — locais, sem identificador de visitante                                  |
+| `Personagem`         | nick, avatar, vitalidade, energia, escalonamento, habilidades e passivas, com a virtude de origem de cada uma     |
+| `Adversario`         | atributos derivados do `Personagem` escolhido, sem vínculo com Guerreiro(a) algum                                 |
+| `Partida`            | turno atual, vitalidade e energia correntes dos dois lados, resultado — descartada ao fim                         |
 
 Derivações e imutabilidade:
 
@@ -325,12 +331,12 @@ Erros previstos:
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                              | Finalidade                        | Base legal                    | Retenção                                         | Quem acessa        |
-| ------------------------------------------ | --------------------------------- | ----------------------------- | ------------------------------------------------ | ------------------ |
-| Nenhum dado do visitante                   | —                                 | —                             | —                                                | —                  |
-| Avatar e nick do Guerreiro(a)              | Compor o personagem jogável       | Consentimento do responsável  | Enquanto a autorização vigorar                   | Qualquer visitante |
-| Virtudes (pontos, poderes, níveis, badges) | Converter em atributos da partida | Consentimento do responsável  | Enquanto a autorização vigorar                   | Qualquer visitante |
-| Catálogo guardado no aparelho              | Permitir a partida sem rede       | Execução da própria aplicação | Até a revalidação ou o apagamento pelo visitante | Só o aparelho      |
+| Dado coletado                              | Finalidade                        | Base legal                    | Retenção                                                                 | Quem acessa        |
+| ------------------------------------------ | --------------------------------- | ----------------------------- | ------------------------------------------------------------------------ | ------------------ |
+| Nenhum dado do visitante                   | —                                 | —                             | —                                                                        | —                  |
+| Avatar e nick do Guerreiro(a)              | Compor o personagem jogável       | Consentimento do responsável  | Enquanto a autorização vigorar                                           | Qualquer visitante |
+| Virtudes (pontos, poderes, níveis, badges) | Converter em atributos da partida | Consentimento do responsável  | Enquanto a autorização vigorar                                           | Qualquer visitante |
+| Catálogo guardado no aparelho              | Permitir a partida sem rede       | Execução da própria aplicação | Até a revalidação, o vencimento em 7 dias ou o apagamento pelo visitante | Só o aparelho      |
 
 Complementos exigidos pelo modelo:
 
@@ -378,12 +384,14 @@ Critérios verificáveis, um por requisito essencial:
   guardada, diz de quando ela é e **deixa jogar** (`RF-12-20`, `RF-12-23`).
 - Revogada uma autorização enquanto o aparelho estava offline, o personagem **desaparece na
   primeira revalidação após a reconexão** (`RF-12-21`, `RN-12-08`, `RN-12-14`).
+- Passados **7 dias** sem nenhuma reconexão, o jogo **não abre nova partida** e pede conexão,
+  em vez de seguir com a lista vencida (`RF-12-24`, `RN-12-14`).
 - No primeiro acesso sem rede e sem catálogo, o jogo **explica e não abre partida** com lista
-  inventada (`RF-12-24`).
+  inventada (`RF-12-25`).
 - O repositório roda com as instruções publicadas, **sem chave de serviço proprietário**, e o
-  balanceamento está em arquivo próprio e documentado (`RF-12-10`, `RF-12-26`, `RF-12-27`).
+  balanceamento está em arquivo próprio e documentado (`RF-12-10`, `RF-12-27`, `RF-12-28`).
 - A tela informa o que o jogo guardou no aparelho e a opção de apagar **funciona**, deixando o
-  jogo no estado de primeiro acesso (`RF-12-30`).
+  jogo no estado de primeiro acesso (`RF-12-31`).
 - Uma varredura da aplicação não encontra cookie de terceiro, rastreador, anúncio nem chamada
   a domínio que não seja o da própria API (`RN-12-19`).
 
@@ -394,25 +402,31 @@ onde vira cadastro, e a **H1** é medida no App 01 (PRD-04), nunca aqui.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                        | Gravada em         | Linha do doc 09                          |
-| ------------------------------------------------------------------------------ | ------------------ | ---------------------------------------- |
-| Gênero e mecânica: arena de duelo por turnos contra adversário do computador   | doc 03 §6 e doc 08 | Mecânica do jogo (App 04) — Já decididos |
-| Engine **Phaser.js** confirmada, de sugestão para definição vigente            | doc 03 §6 e doc 08 | Mecânica do jogo (App 04) — Já decididos |
-| Mapa fixo de virtude em atributo, com monotonia e transparência                | doc 11 §8.4        | Mecânica do jogo (App 04) — Já decididos |
-| Balanceamento é conteúdo do jogo, alterável em trilha, não regra de plataforma | doc 11 §8.4        | Mecânica do jogo (App 04) — Já decididos |
-| O jogo funciona offline, com catálogo guardado e revalidação a cada reconexão  | doc 03 §6 e doc 08 | Mecânica do jogo (App 04) — Já decididos |
-| Duelo local com dois jogadores no mesmo aparelho, sem igualar atributos        | doc 03 §6 e doc 08 | Mecânica do jogo (App 04) — Já decididos |
-| No Ciclo 01, só o Guerreiro(a) é personagem jogável                            | doc 03 §6          | Mecânica do jogo (App 04) — Já decididos |
+| Decisão                                                                                                   | Gravada em         | Linha do doc 09                                       |
+| --------------------------------------------------------------------------------------------------------- | ------------------ | ----------------------------------------------------- |
+| Gênero e mecânica: arena de duelo por turnos contra adversário do computador                              | doc 03 §6 e doc 08 | Mecânica do jogo (App 04) — Já decididos              |
+| Engine **Phaser.js** confirmada, de sugestão para definição vigente                                       | doc 03 §6 e doc 08 | Mecânica do jogo (App 04) — Já decididos              |
+| Mapa fixo de virtude em atributo, com monotonia e transparência                                           | doc 11 §8.4        | Mecânica do jogo (App 04) — Já decididos              |
+| Balanceamento é conteúdo do jogo, alterável em trilha, não regra de plataforma                            | doc 11 §8.4        | Mecânica do jogo (App 04) — Já decididos              |
+| O jogo funciona offline, com catálogo guardado e revalidação a cada reconexão                             | doc 03 §6 e doc 08 | Mecânica do jogo (App 04) — Já decididos              |
+| Duelo local com dois jogadores no mesmo aparelho, sem igualar atributos                                   | doc 03 §6 e doc 08 | Mecânica do jogo (App 04) — Já decididos              |
+| No Ciclo 01, só o Guerreiro(a) é personagem jogável                                                       | doc 03 §6          | Mecânica do jogo (App 04) — Já decididos              |
+| Catálogo guardado vale por **7 dias** sem nenhuma reconexão                                               | doc 03 §6          | Validade do catálogo offline do App 04 — Já decididos |
+| Aplicação de terceiro pede **chave pela vitrine**, com **30 dias** para apresentar a URL do que construiu | doc 03 §§1, 8      | Acesso das aplicações de terceiros — Já decididos     |
 
 ## 14. Pendências que permanecem
 
-| Pendência                              | O que trava                                                                                                                                           | Quando precisa de resposta                            |
-| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| **Validade do catálogo offline**       | O prazo máximo em que o catálogo guardado ainda serve sem nenhuma reconexão, e o que a tela mostra ao vencer — é o teto da defasagem de uma revogação | Antes de implementar `RF-12-20`                       |
-| **Acesso das aplicações de terceiros** | Se aplicação de terceiro se identifica por chave para consumir a mesma leitura pública, quem a emite e o que acontece na revogação                    | Só quando houver jogo de terceiro; não trava o App 04 |
-| **Licenças do código**                 | A licença sob a qual o jogo é publicado, e portanto sob a qual a alteração feita em trilha é redistribuída                                            | Antes da primeira publicação do repositório           |
+| Pendência              | O que trava                                                                                                | Quando precisa de resposta                  |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| **Licenças do código** | A licença sob a qual o jogo é publicado, e portanto sob a qual a alteração feita em trilha é redistribuída | Antes da primeira publicação do repositório |
 
-As três já constam da tabela de decisões pendentes do documento 09.
+A pendência consta da tabela de decisões pendentes do documento 09. As duas que este PRD
+carregava — validade do catálogo offline e acesso das aplicações de terceiros — foram
+decididas e estão na seção 13.
+
+A decisão da chave de terceiro alcança PRDs já aprovados: o formulário público é do PRD-03, a
+entidade e a emissão são do PRD-01 e a fila de avaliação é do PRD-02. Nenhum deles é alterado
+aqui — cada um recebe a revisão própria, registrada como próximo passo no documento 09.
 
 ## 15. Rastreabilidade
 
@@ -428,10 +442,10 @@ As três já constam da tabela de decisões pendentes do documento 09.
 | `RF-12-14`                          | 11 §8.4 e 03 §6 (a partida não volta para a plataforma)          |
 | `RF-12-15`                          | 03 §6 (partida sem consequência)                                 |
 | `RF-12-16` a `RF-12-19`             | 03 §6 (duelo local em dupla nas aulas presenciais)               |
-| `RF-12-20` a `RF-12-25`             | 03 §6 (catálogo guardado, revalidação e Mobile First)            |
-| `RF-12-26` a `RF-12-28`             | 11 §8.4 e 02 §2 (código aberto, alterá-lo é atividade de trilha) |
-| `RF-12-29`, `RF-12-30`              | 03 §12 (aviso do que se coleta e do que se guarda)               |
-| `RF-12-31`                          | 03 §8 (vitrine e "Entrar")                                       |
+| `RF-12-20` a `RF-12-26`             | 03 §6 (catálogo guardado, validade de 7 dias e Mobile First)     |
+| `RF-12-27` a `RF-12-29`             | 11 §8.4 e 02 §2 (código aberto, alterá-lo é atividade de trilha) |
+| `RF-12-30`, `RF-12-31`              | 03 §12 (aviso do que se coleta e do que se guarda)               |
+| `RF-12-32`                          | 03 §8 (vitrine e "Entrar")                                       |
 | `RN-12-01` a `RN-12-04`, `RN-12-13` | 11 §§5, 8.4 (contrato dos jogos)                                 |
 | `RN-12-05` a `RN-12-09`, `RN-12-18` | 03 §§9, 12 (autorização, revogação e exibição pública)           |
 | `RN-12-10` a `RN-12-12`             | 11 §8.4 (mapa fixo, monotonia e balanceamento como conteúdo)     |
@@ -441,3 +455,4 @@ As três já constam da tabela de decisões pendentes do documento 09.
 | `RN-12-19`, `RN-12-20`              | 04 §§1, 2 (sem publicidade, sem economia própria no jogo)        |
 | `RN-12-21`                          | 11 §8.4 e 02 §4 (crédito é da atividade validada)                |
 | `RN-12-22`                          | 03 §6 e 99 §6 nº 13 (escopo do Ciclo 01)                         |
+| `RN-12-23`                          | 03 §§1, 8 (chave da aplicação de terceiro, pedida na vitrine)    |
