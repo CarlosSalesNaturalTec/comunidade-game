@@ -481,7 +481,8 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessã
 | GET    | `/v1/eu/sugestoes`                   | Apoiador     | Status das próprias propostas                                        |
 
 As consultas de vitrine consumidas pela tela de acompanhamento são as mesmas rotas públicas do
-PRD-03, sem token e sem parâmetro que identifique o Apoiador.
+PRD-03, sem token de sessão e sem parâmetro que identifique o Apoiador — a chave da aplicação
+é exigida nelas como em toda rota (PRD-01).
 
 Erros previstos: comprovante ausente ou em formato não aceito (422, com os formatos válidos);
 declaração de aporte em material ou serviço (422, com a orientação de procurar a gestão);

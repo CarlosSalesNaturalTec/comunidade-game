@@ -37,6 +37,11 @@
     comunidade.
 11. **API versionada na rota**, começando em `/v1`. Quebra de contrato abre uma versão nova,
     e a anterior segue no ar por prazo declarado.
+12. **Modelos de IA do Ciclo 01: Google Gemini.** Toda funcionalidade que precisar de modelo
+    de IA neste ciclo é atendida por modelos **Gemini** — assistente do Guerreiro(a), leitura
+    da produção e assistente da Área do Apoiador Desenvolvedor —, com o custo lançado no
+    livro-razão como recurso de _cloud_. A **biometria facial do App 01** não é modelo de
+    linguagem e segue em aberto (documento 09).
 
 ### 1.1 Como cada persona entra
 
@@ -404,7 +409,8 @@ Guerreiro(a) seleciona o local do dado entre os cadastrados e, faltando um, soli
 inclusão.
 
 É onde o Guerreiro(a) **entrega a produção da missão**: escreve, fala ou fotografa o que fez à
-mão. A plataforma lê e devolve retorno **sempre construtivo**, apontando o próximo passo em vez
+mão. A plataforma lê — com o mesmo **modelo Gemini**, na nuvem — e devolve retorno **sempre
+construtivo**, apontando o próximo passo em vez
 do erro. **Foto e áudio são descartados na leitura** — guardam-se apenas a transcrição e a
 devolutiva —, e **o resultado só existe quando o Mestre o lança**: a leitura automática é
 hipótese sobre o aprendizado, nunca nota. Quem não quiser ser fotografado ou gravado entrega
@@ -461,10 +467,10 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
 - **Área do Apoiador Desenvolvedor** — a porta de quem quer construir sobre a API. É **seção
   da vitrine**, pública e sem login, não uma nona aplicação. Reúne quatro coisas:
 
-  - **Assistente de chat com IA** que explica **proativamente** como a plataforma está
-    montada, com **corpus fechado** na documentação e no repositório — fora deles, não
-    responde. **Toda mensagem termina com uma pergunta de múltipla escolha** sobre o próximo
-    passo a conhecer: é o que conduz quem chegou sem saber o que perguntar.
+  - **Assistente de chat com IA** — modelo **Google Gemini** — que explica **proativamente**
+    como a plataforma está montada, com **corpus fechado** na documentação e no repositório —
+    fora deles, não responde. **Toda mensagem termina com uma pergunta de múltipla escolha**
+    sobre o próximo passo a conhecer: é o que conduz quem chegou sem saber o que perguntar.
   - **Link para a documentação** publicada com MkDocs.
   - **Formulário de solicitação de chave**, na mesma fila de avaliação dos Admins. Emitida a
     chave, o solicitante tem **30 dias para apresentar a URL** do que construiu; não

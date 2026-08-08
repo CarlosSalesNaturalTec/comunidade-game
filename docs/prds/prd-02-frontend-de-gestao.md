@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                     |
-| ---------------- | ----------------------------------------- |
-| PRD              | PRD-02                                    |
-| Aplicação        | App 03 — Gestão administrativa            |
-| Onda             | 2                                         |
-| Situação         | aprovado                                  |
-| Versão e data    | v8 — 2026-08-06                           |
-| Depende de       | PRD-01                                    |
-| Documentos-fonte | 03 §§5, 11, 12, 04 §§1–3, 05 §§2–5, 02 §4 |
+| Campo            | Valor                                        |
+| ---------------- | -------------------------------------------- |
+| PRD              | PRD-02                                       |
+| Aplicação        | App 03 — Gestão administrativa               |
+| Onda             | 2                                            |
+| Situação         | aprovado                                     |
+| Versão e data    | v9 — 2026-08-08                              |
+| Depende de       | PRD-01                                       |
+| Documentos-fonte | 03 §§5, 8, 11, 12, 04 §§1–3, 05 §§2–5, 02 §4 |
 
 ## 2. Contexto e objetivo
 
@@ -228,6 +228,12 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RF-02-84` | Admin valida o comprovante e homologa o aporte, que é convertido em moedas                          | essencial  |
 | `RF-02-85` | Aprovação cria o cadastro de Apoiador e publica o card na vitrine com o total em moedas             | essencial  |
 | `RF-02-86` | Pré-cadastro sem comprovante legível é recusado com motivo, sem criar cadastro nem aporte           | essencial  |
+| `RF-02-87` | Admin lê a fila das solicitações de chave, com quem pediu e o que pretende construir                | essencial  |
+| `RF-02-88` | Admin aprova ou recusa a solicitação de chave, com parecer e autoria                                | essencial  |
+| `RF-02-89` | Aprovação emite a chave e exibe o segredo uma única vez, para entrega ao solicitante                | essencial  |
+| `RF-02-90` | Painel mostra as chaves emitidas com prazo de apresentação, URL apresentada e situação              | essencial  |
+| `RF-02-91` | Painel destaca as chaves com prazo a vencer e as revogadas automaticamente por prazo vencido        | essencial  |
+| `RF-02-92` | Admin revoga chave a qualquer tempo, com motivo registrado                                          | essencial  |
 | `RF-02-27` | Fila de desafios extras mostra apenas os já validados pelo Mestre da trilha                         | essencial  |
 | `RF-02-28` | Admin aprova o desafio extra, e a aprovação é recusada sem o lastro da recompensa registrado        | essencial  |
 
@@ -300,6 +306,9 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RN-02-02` | Novo Admin só entra por inclusão manual de outro Admin                                        | 3          | 02 §1      |
 | `RN-02-03` | Solicitação de participação não cria cadastro nem acesso                                      | 3          | 02 §1      |
 | `RN-02-26` | Nenhum conjunto de dados sai sem aprovação de Admin, e a entrega é gratuita e anonimizada     | 17         | 03 §12.3   |
+| `RN-02-27` | Nenhuma chave é emitida sem aprovação de Admin; o formulário da vitrine só enfileira o pedido | 3          | 03 §8      |
+| `RN-02-28` | O segredo da chave é exibido uma única vez e não é recuperável depois                         | —          | 03 §1      |
+| `RN-02-29` | Chave sem URL apresentada em 30 dias é revogada pelo núcleo, sem ato de Admin                 | —          | 03 §8      |
 | `RN-02-04` | Comunidade Virtual é criada apenas por Admin e nasce vazia                                    | 4          | 02 §1      |
 | `RN-02-05` | Sem aula agendada para a data e o horário, o App 01 não opera                                 | 4          | 02 §1      |
 | `RN-02-06` | O Guerreiro(a) não muda de comunidade no Ciclo 01; a transferência existe no modelo, com data | 4          | 02 §1      |
@@ -377,6 +386,10 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | POST   | `/v1/solicitacoes-de-participacao/{id}/avaliacao` | Admin           | Aceita ou recusa, com parecer e autor                                 |
 | GET    | `/v1/solicitacoes-de-dados`                       | Admin           | Fila dos pedidos de conjunto de dados                                 |
 | POST   | `/v1/solicitacoes-de-dados/{id}/avaliacao`        | Admin           | Aprova ou recusa, com motivo, autor e o que foi entregue              |
+| GET    | `/v1/solicitacoes-de-chave`                       | Admin           | Fila dos pedidos de chave da Área do Apoiador Desenvolvedor           |
+| POST   | `/v1/chaves`                                      | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez     |
+| GET    | `/v1/chaves`                                      | Admin           | Chaves emitidas, com prazo, URL apresentada e situação                |
+| DELETE | `/v1/chaves/{id}`                                 | Admin           | Revoga a chave, com motivo e autoria                                  |
 | PUT    | `/v1/conteudo-institucional/{secao}`              | Admin           | Edita "Quem somos", "Contatos" ou "Como apoiar"                       |
 | GET    | `/v1/solicitacoes-do-responsavel`                 | Admin           | Fila das solicitações vindas da App 07                                |
 | POST   | `/v1/solicitacoes-do-responsavel/{id}/tratamento` | Admin           | Registra o desfecho, com quem tratou e quando                         |
@@ -528,6 +541,7 @@ foi definida no PRD-01 — a App 03 apenas a consulta.
 | `RF-02-77` a `RF-02-79` | 03 §12.3 (entrega de dados aprovada por Admin)           |
 | `RF-02-80`              | 03 §8 (conteúdo institucional da vitrine)                |
 | `RF-02-83` a `RF-02-86` | 02 §1 e 04 §2 (pré-cadastro, comprovante e homologação)  |
+| `RF-02-87` a `RF-02-92` | 03 §§1, 8 (solicitação, emissão, prazo e revogação)      |
 | `RF-02-21` e `RF-02-22` | PRD-08 (solicitação de novo local)                       |
 | `RF-02-23` e `RF-02-24` | 03 §9 (solicitações da área do responsável)              |
 | `RF-02-25` e `RF-02-26` | 03 §§7, 9, 10, 11 (fila única de sugestões e propostas)  |

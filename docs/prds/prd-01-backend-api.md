@@ -8,15 +8,16 @@
 | Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | aprovado                                                   |
-| Versão e data    | v12 — 2026-08-07                                           |
+| Versão e data    | v13 — 2026-08-08                                           |
 | Depende de       | PRD-07, PRD-08                                             |
-| Documentos-fonte | 02, 03 §§1–3, 5, 9, 11 e 12, 04, 11                        |
+| Documentos-fonte | 02, 03 §§1–3, 5, 8, 9, 11 e 12, 04, 11                     |
 
 ## 2. Contexto e objetivo
 
 As oito aplicações não conversam entre si: todas conversam com este núcleo. Ele guarda o
 modelo de domínio inteiro — personas, trilhas, atividades, pontos, território, livro-razão —,
-decide **quem pode escrever o quê** e serve leitura pública sem autenticação.
+decide **quem pode escrever o quê** e serve leitura pública sem login de pessoa — sempre
+mediante a chave da aplicação que faz a chamada.
 
 Este PRD fecha a Onda 1 consolidando o que os dois anteriores definiram: o domínio do
 território (PRD-08) e o do livro-razão (PRD-07) entram aqui como parte do mesmo modelo, com as
@@ -40,12 +41,17 @@ o que é público — cada um pela sua aplicação, todos sobre a mesma verdade.
 - Sessão curta para o Guerreiro(a), adequada a aparelho compartilhado.
 - Papéis e permissões: Admin, Mestre, Guerreiro(a), Responsável, Apoiador e Visitante.
 - Convenções da API: versionamento em `/v1`, formato de erro, paginação e filtros.
-- Rotas de consulta públicas, sem autenticação, para vitrine, rankings e painéis.
+- **Chave de aplicação**: emissão, conferência em toda chamada, cota e revogação. Nenhuma
+  rota responde sem chave válida, nem as de consulta pública.
+- Rotas de consulta públicas — **sem login de pessoa**, com a chave da aplicação — para
+  vitrine, rankings e painéis.
+- Registro da **solicitação de chave** feita na Área do Apoiador Desenvolvedor, com o prazo de
+  30 dias para a apresentação da URL e a revogação automática de quem não apresenta.
 - Registro da **solicitação de dados** de pesquisadores e gestores públicos, com a entrega
   liberada apenas após aprovação de Admin e sempre anonimizada.
 - Filtro por comunidade em toda consulta, com a plataforma em **instância única**.
 - Registro de auditoria de toda escrita: quem, o quê, quando.
-- Suporte a aplicações de terceiros sobre as rotas públicas.
+- Suporte a aplicações de terceiros sobre as rotas públicas, cada uma com a sua chave.
 
 ### 3.2 Fora do escopo
 
@@ -68,9 +74,10 @@ o que é público — cada um pela sua aplicação, todos sobre a mesma verdade.
 | Guerreiro(a) | Seus registros de coleta, suas criações, suas sugestões, recompensas recebidas nos marcos, a **equipe que forma na aula** e a resposta de quiz da equipe                                                                                      | Seus dados, as equipes da aula em andamento e o que é público            |
 | Responsável  | Consentimentos, autorizações, solicitações e propostas                                                                                                                                                                                        | Os Guerreiros e Guerreiras sob sua responsabilidade e o que é público    |
 | Apoiador     | Aportes declarados, cobertura de missão, propostas de desafio extra, documentos comprobatórios, propostas de evolução                                                                                                                         | Seus aportes, efetividade agregada e o que é público                     |
-| Visitante    | Solicitação de participação e solicitação de dados, pelas rotas públicas da vitrine                                                                                                                                                           | Somente o que é público                                                  |
+| Visitante    | Solicitação de participação, de dados e de chave, pelas rotas públicas da vitrine                                                                                                                                                             | Somente o que é público                                                  |
 
-Regra geral: **leitura pública é aberta; escrita é sempre autenticada e auditada.**
+Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplicação; escrita
+é sempre autenticada e auditada.**
 
 ## 5. Jornadas principais
 
@@ -119,22 +126,35 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 
 ### 5.4 Visitante consulta sem login
 
-1. Qualquer consulta pública responde sem autenticação: vitrine, rankings, painéis de
+1. Qualquer consulta pública responde **sem login de pessoa**: vitrine, rankings, painéis de
    comunidade e prestação de contas.
-2. A resposta pública nunca traz dado de contato, imagem real de criança, valor em reais nem
+2. A chamada chega com a **chave da aplicação** que a fez — a vitrine e o jogo carregam a sua,
+   emitida na implantação. **Sem chave válida o núcleo responde 401**, e o visitante segue
+   anônimo em qualquer dos casos.
+3. A resposta pública nunca traz dado de contato, imagem real de criança, valor em reais nem
    granularidade de território abaixo de rua.
 
 ### 5.5 Terceiro constrói sobre a API
 
-1. A aplicação de terceiro consome as rotas públicas de `/v1`.
-2. Mudança que quebre contrato abre `/v2`, e `/v1` segue no ar por prazo declarado.
+1. O interessado pede a chave na **Área do Apoiador Desenvolvedor**, na vitrine (PRD-03).
+2. Um Admin avalia o pedido na App 03 (PRD-02); aprovado, o núcleo **emite a chave** e devolve
+   o segredo uma única vez, com o prazo de apresentação já contado.
+3. A aplicação de terceiro consome as rotas públicas de `/v1` **apresentando a chave em toda
+   chamada**; sem ela, 401.
+4. O solicitante tem **30 dias para apresentar a URL** do jogo ou da aplicação construída.
+   Apresentada, a chave passa a vigente por prazo indeterminado e a aplicação fica apta a ser
+   homologada como aporte em código.
+5. **Vencido o prazo sem URL, o núcleo revoga a chave** — a chamada seguinte recebe 401 — e o
+   interessado pode solicitar outra a qualquer tempo.
+6. Chave revogada não desfaz nada: como o terceiro só lê, não há escrita a reverter.
+7. Mudança que quebre contrato abre `/v2`, e `/v1` segue no ar por prazo declarado.
 
 ## 6. Requisitos funcionais
 
 | ID         | Requisito                                                                                                                                                                                       | Prioridade |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
 | `RF-01-01` | Núcleo expõe todas as rotas sob prefixo de versão, começando em `/v1`                                                                                                                           | essencial  |
-| `RF-01-02` | Rotas de consulta pública respondem sem autenticação                                                                                                                                            | essencial  |
+| `RF-01-02` | Rotas de consulta pública respondem **sem login de pessoa**, mediante chave da aplicação                                                                                                        | essencial  |
 | `RF-01-03` | Toda rota de escrita exige autenticação e registra autoria, data e hora                                                                                                                         | essencial  |
 | `RF-01-04` | Guerreiro(a) autentica com nick e imagem e recebe sessão de duração curta                                                                                                                       | essencial  |
 | `RF-01-05` | Núcleo guarda o _template_ biométrico do Guerreiro(a) e o confere no login, sem devolvê-lo                                                                                                      | essencial  |
@@ -161,6 +181,14 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RF-01-26` | Núcleo mantém criação original com autoria creditada por toda a vida do registro                                                                                                                | essencial  |
 | `RF-01-46` | Núcleo mantém a solicitação de dados de pesquisador ou gestor público, com finalidade declarada e desfecho                                                                                      | essencial  |
 | `RF-01-47` | Núcleo só libera o conjunto de dados depois da aprovação de um Admin, sempre anonimizado                                                                                                        | essencial  |
+| `RF-01-48` | Núcleo recusa com 401 toda chamada sem chave de aplicação válida, inclusive nas rotas de consulta pública                                                                                       | essencial  |
+| `RF-01-49` | Núcleo registra a solicitação de chave feita na Área do Apoiador Desenvolvedor, com solicitante, o que pretende construir e situação                                                            | essencial  |
+| `RF-01-50` | Núcleo emite a chave após aprovação de Admin e devolve o segredo uma única vez, guardando apenas o seu resumo criptográfico                                                                     | essencial  |
+| `RF-01-51` | Núcleo conta 30 dias da emissão para a apresentação da URL e registra a URL apresentada                                                                                                         | essencial  |
+| `RF-01-52` | Núcleo revoga automaticamente a chave cujo prazo de apresentação vence sem URL                                                                                                                  | essencial  |
+| `RF-01-53` | Núcleo permite a um Admin revogar chave a qualquer tempo, com motivo e autoria registrados                                                                                                      | essencial  |
+| `RF-01-54` | Núcleo emite na implantação a chave de cada aplicação do próprio projeto, sem prazo de apresentação                                                                                             | essencial  |
+| `RF-01-55` | Núcleo aplica cota de consulta por chave e responde 429 ao excedê-la                                                                                                                            | desejável  |
 | `RF-01-35` | Núcleo mantém as entidades do apoio escolar — disciplina, conteúdo do corpus e consulta                                                                                                         | essencial  |
 | `RF-01-36` | Núcleo mantém a resposta de quiz por equipe e pergunta, com o momento de chegada                                                                                                                | essencial  |
 | `RF-01-37` | Equipe é criada pelo Guerreiro(a), vinculada a uma aula, e encerra com ela sem ser reaproveitada                                                                                                | essencial  |
@@ -216,6 +244,12 @@ Regra geral: **leitura pública é aberta; escrita é sempre autenticada e audit
 | `RN-01-29` | A plataforma não coleta CPF, CNPJ nem documento de identidade de quem aporta                                            | —          | 02 §1       |
 | `RN-01-30` | O nick do Apoiador é único em toda a plataforma, como o do Guerreiro(a)                                                 | —          | 02 §1       |
 | `RN-01-31` | Aporte declarado só credita moedas e vai ao card público depois de homologado por Admin                                 | 16         | 04 §2       |
+| `RN-01-32` | Sem chave de aplicação válida a API não responde, nem em rota de consulta pública                                       | —          | 03 §1       |
+| `RN-01-33` | A chave é da aplicação, nunca da pessoa: ela não identifica nem autoriza visitante algum                                | 8          | 03 §1.1     |
+| `RN-01-34` | Chave não amplia direito: quem só lê continua só lendo, e escrita segue exigindo credencial de persona                  | 8          | 03 §1       |
+| `RN-01-35` | O segredo da chave é devolvido uma única vez e nunca é recuperável depois                                               | —          | 03 §1       |
+| `RN-01-36` | Chave de terceiro sem URL apresentada em 30 dias é revogada, e nova solicitação é sempre possível                       | —          | 03 §8       |
+| `RN-01-37` | Solicitação de chave não cria cadastro nem persona, como as demais solicitações públicas                                | 3          | 02 §1       |
 
 ## 8. Modelo de dados
 
@@ -242,12 +276,12 @@ Sessao              Conteudo
                     PARTICIPAÇÃO               TERRITÓRIO (PRD-08)  ECONOMIA (PRD-07)
                     SolicitacaoDeParticipacao  ComunidadeVirtual    TipoDeRecurso
                     SolicitacaoDeDados         Local                Aporte
-                    SolicitacaoDoResponsavel   SerieDeColeta        Lancamento
-                    SugestaoOuProposta         RegistroDeColeta     ItemPatrimonial
-                    Favorito
-                    Auditoria                  APOIO (PRD-14)
-                                               MissaoDoApoiador
-                                               SeloDoApoiador
+                    SolicitacaoDeChave         SerieDeColeta        Lancamento
+                    SolicitacaoDoResponsavel   RegistroDeColeta     ItemPatrimonial
+                    SugestaoOuProposta
+                    Favorito                   APOIO (PRD-14)
+                    ChaveDeAplicacao           MissaoDoApoiador
+                    Auditoria                  SeloDoApoiador
 
                     APOIO ESCOLAR (PRD-05)     BATALHA (PRD-10)
                     DisciplinaDeApoio          ArtefatoDeBatalha
@@ -265,6 +299,8 @@ Sessao              Conteudo
 | `Consentimento`             | responsável, Guerreiro(a), tipo, versão do termo, decisão, data e hora, testemunha (Mestre ou Admin), anexo do termo assinado, origem (própria, assistida ou impressa), quem operou                                        |
 | `SolicitacaoDoResponsavel`  | protocolo, responsável, Guerreiro(a), tipo, texto, situação, prazo, quem tratou, desfecho e data                                                                                                                           |
 | `SolicitacaoDeDados`        | solicitante, instituição, e-mail, finalidade declarada, recorte pedido, situação, quem avaliou, desfecho, data e o que foi entregue                                                                                        |
+| `SolicitacaoDeChave`        | solicitante, e-mail, instituição opcional, o que pretende construir, situação, prazo de avaliação, quem avaliou, parecer, data e a chave emitida                                                                           |
+| `ChaveDeAplicacao`          | aplicação, natureza (do projeto ou de terceiro), resumo criptográfico do segredo, emitida por, emitida em, prazo de apresentação, URL apresentada, cota, situação (vigente, revogada), revogada por, motivo e data         |
 | `EtiquetaODS`               | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                                                                                           |
 | `SolicitacaoDeParticipacao` | nome ou razão social, e-mail, WhatsApp, pretensão, apresentação, instituição e links opcionais, aporte declarado (necessidade, valor sugerido ou livre), comprovante anexado, situação, prazo, quem avaliou, parecer, data |
 | `Apoiador`                  | identidade, avatar (próprio a partir de 10 moedas acumuladas; padrão do projeto abaixo do piso), nick único, artefatos comprobatórios, Poder Sustentador derivado dos aportes homologados                                  |
@@ -300,41 +336,52 @@ Convenções válidas para todas as rotas:
 | Aspecto      | Definição                                                               |
 | ------------ | ----------------------------------------------------------------------- |
 | Versão       | prefixo `/v1` em toda rota                                              |
+| Chave        | **obrigatória em toda rota**, inclusive nas públicas; sem ela, 401      |
 | Autenticação | token de sessão no cabeçalho; ausência dele só é aceita em rota pública |
 | Erro         | corpo único com código, mensagem em linguagem simples e campo em falta  |
 | Listagem     | paginada, com filtros de comunidade, período e persona                  |
 | Data e hora  | sempre com fuso, e a data do fato nunca é substituída pela do registro  |
 
-| Método | Rota                                | Autenticação    | Descrição                                                      |
-| ------ | ----------------------------------- | --------------- | -------------------------------------------------------------- |
-| POST   | `/v1/sessoes/guerreiro`             | pública         | Autentica com nick e imagem e abre sessão curta                |
-| POST   | `/v1/sessoes/guerreiro/confirmacao` | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana           |
-| POST   | `/v1/sessoes/social`                | pública         | Autentica adulto por login social                              |
-| POST   | `/v1/sessoes/credencial`            | pública         | Autentica adulto por usuário e senha                           |
-| DELETE | `/v1/sessoes/atual`                 | autenticada     | Encerra a sessão                                               |
-| POST   | `/v1/guerreiros/{id}/imagem`        | Mestre ou Admin | Grava ou recadastra a imagem de referência, com registro       |
-| POST   | `/v1/credenciais`                   | Admin ou Mestre | Cria credencial de usuário e senha provisória                  |
-| POST   | `/v1/credenciais/senha`             | autenticada     | Troca a senha; obrigatória no primeiro acesso                  |
-| POST   | `/v1/responsaveis`                  | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele               |
-| POST   | `/v1/responsaveis/{id}/vinculos`    | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco    |
-| GET    | `/v1/eu`                            | autenticada     | Persona, papéis e permissões da sessão                         |
-| GET    | `/v1/vitrine/...`                   | pública         | Consultas públicas de vitrine e rankings                       |
-| GET    | `/v1/vitrine/guerreiros/{nick}`     | pública         | Perfil público por nick exato, se houver divulgação autorizada |
-| GET    | `/v1/vitrine/ods/cobertura`         | pública         | Cobertura de ODS agregada por comunidade e ciclo               |
-| POST   | `/v1/solicitacoes-de-dados`         | pública         | Registra pedido do conjunto de dados, sem criar cadastro       |
-| POST   | `/v1/solicitacoes-de-participacao`  | pública         | Registra o pedido; do Apoiador, com aporte e comprovante       |
-| PUT    | `/v1/eu/apoiador/identidade`        | Apoiador        | Define ou troca o nick e, acima do piso de moedas, o avatar    |
-| GET    | `/v1/auditoria`                     | Admin           | Trilha de auditoria das ações de gestão                        |
+| Método | Rota                                | Autenticação    | Descrição                                                         |
+| ------ | ----------------------------------- | --------------- | ----------------------------------------------------------------- |
+| POST   | `/v1/sessoes/guerreiro`             | pública         | Autentica com nick e imagem e abre sessão curta                   |
+| POST   | `/v1/sessoes/guerreiro/confirmacao` | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana              |
+| POST   | `/v1/sessoes/social`                | pública         | Autentica adulto por login social                                 |
+| POST   | `/v1/sessoes/credencial`            | pública         | Autentica adulto por usuário e senha                              |
+| DELETE | `/v1/sessoes/atual`                 | autenticada     | Encerra a sessão                                                  |
+| POST   | `/v1/guerreiros/{id}/imagem`        | Mestre ou Admin | Grava ou recadastra a imagem de referência, com registro          |
+| POST   | `/v1/credenciais`                   | Admin ou Mestre | Cria credencial de usuário e senha provisória                     |
+| POST   | `/v1/credenciais/senha`             | autenticada     | Troca a senha; obrigatória no primeiro acesso                     |
+| POST   | `/v1/responsaveis`                  | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele                  |
+| POST   | `/v1/responsaveis/{id}/vinculos`    | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco       |
+| GET    | `/v1/eu`                            | autenticada     | Persona, papéis e permissões da sessão                            |
+| GET    | `/v1/vitrine/...`                   | pública         | Consultas públicas de vitrine e rankings                          |
+| GET    | `/v1/vitrine/guerreiros/{nick}`     | pública         | Perfil público por nick exato, se houver divulgação autorizada    |
+| GET    | `/v1/vitrine/ods/cobertura`         | pública         | Cobertura de ODS agregada por comunidade e ciclo                  |
+| POST   | `/v1/solicitacoes-de-dados`         | pública         | Registra pedido do conjunto de dados, sem criar cadastro          |
+| POST   | `/v1/solicitacoes-de-participacao`  | pública         | Registra o pedido; do Apoiador, com aporte e comprovante          |
+| PUT    | `/v1/eu/apoiador/identidade`        | Apoiador        | Define ou troca o nick e, acima do piso de moedas, o avatar       |
+| GET    | `/v1/auditoria`                     | Admin           | Trilha de auditoria das ações de gestão                           |
+| POST   | `/v1/solicitacoes-de-chave`         | pública         | Registra pedido de chave feito na Área do Apoiador Desenvolvedor  |
+| POST   | `/v1/chaves`                        | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez |
+| POST   | `/v1/chaves/{id}/url`               | pública         | Apresenta a URL do que foi construído, dentro dos 30 dias         |
+| DELETE | `/v1/chaves/{id}`                   | Admin           | Revoga a chave, com motivo e autoria                              |
+| GET    | `/v1/chaves`                        | Admin           | Chaves emitidas, com prazo, URL apresentada e situação            |
+
+**"Pública" nesta coluna significa "sem credencial de persona"** — a chave da aplicação
+continua obrigatória em todas elas. Nenhuma rota deste PRD responde sem chave válida.
 
 As rotas de domínio — território, ledger, trilhas, atividades — estão nos PRDs que as definem
-e seguem estas mesmas convenções.
+e seguem estas mesmas convenções, chave incluída.
 
-Erros previstos: imagem não reconhecida (401, sem revelar se o nick existe, e com a orientação
+Erros previstos: chave ausente, inválida ou revogada (**401**, sem detalhar qual dos três
+ocorreu); imagem não reconhecida (401, sem revelar se o nick existe, e com a orientação
 de chamar o Mestre); login social ou usuário sem cadastro (403, com orientação de solicitar
 participação pela vitrine); senha provisória ainda não trocada (403 em qualquer rota que não
 seja a da troca); quarto vínculo de responsável para o mesmo Guerreiro(a) (422); cadastro de
 imagem sem consentimento do responsável registrado (422); escrita sem permissão do papel (403);
-sessão expirada (401); filtro de comunidade ausente onde é obrigatório (422); excesso de
+sessão expirada (401); filtro de comunidade ausente onde é obrigatório (422); apresentação de
+URL depois de vencido o prazo (422, com a orientação de solicitar nova chave); excesso de
 consultas ou de envios na rota pública (429, com o tempo de espera).
 
 ## 10. Requisitos não funcionais
@@ -375,7 +422,17 @@ consultas ou de envios na rota pública (429, com o tempo de espera).
 
 ## 12. Critérios de aceite e métricas
 
-- Consulta pública de vitrine responde sem token e sem qualquer dado restrito.
+- Consulta pública de vitrine responde **sem token de sessão** e sem qualquer dado restrito,
+  desde que a chamada traga chave de aplicação válida.
+- A mesma consulta **sem chave** devolve 401, e a resposta não diferencia chave ausente,
+  inválida e revogada.
+- Chave emitida devolve o segredo **uma única vez**; uma segunda leitura da mesma chave não o
+  recupera, e a base guarda apenas o resumo criptográfico.
+- Chave de terceiro cujo prazo de 30 dias vence sem URL apresentada passa a devolver 401 na
+  chamada seguinte, sem intervenção humana.
+- URL apresentada dentro do prazo mantém a chave vigente e fica registrada com data e hora.
+- Chave revogada por Admin registra motivo e autoria, e a aplicação perde o acesso na chamada
+  seguinte.
 - Guerreiro(a) autenticado em um aparelho continua com a sessão do outro Guerreiro(a) encerrada
   ao expirar o tempo, sem vazamento entre sessões.
 - Guerreiro(a) entra informando nick e imagem, sem nenhum PIN ou senha em nenhuma tela.
@@ -422,6 +479,10 @@ e o dos desafios de desbloqueio de cada trilha.
 | No máximo três responsáveis por Guerreiro(a), com grau de parentesco em texto livre                  | 02 §1             | Já decididos |
 | Mestre cadastra responsável pela App 09 — única persona que ele cadastra                             | 03 §11            | Já decididos |
 | Mestre lê o painel do dia da App 03 e conduz ali o Quiz ao Vivo das suas aulas                       | 03 §5             | Já decididos |
+| Toda aplicação se identifica por chave, e sem ela a API não responde                                 | 03 §1             | Já decididos |
+| A chave é da aplicação, não da pessoa: consulta pública dispensa login, nunca a chave                | 03 §§1, 1.1       | Já decididos |
+| Chave de terceiro pedida na Área do Apoiador Desenvolvedor, com 30 dias para a URL                   | 03 §8             | Já decididos |
+| Chave sem URL apresentada no prazo é revogada                                                        | 03 §8             | Já decididos |
 
 ## 14. Pendências que permanecem
 
@@ -442,7 +503,7 @@ e o dos desafios de desbloqueio de cada trilha.
 | Requisito               | Origem                                           |
 | ----------------------- | ------------------------------------------------ |
 | `RF-01-01`, `RF-01-31`  | 03 §1 (API versionada)                           |
-| `RF-01-02` e `RF-01-03` | 03 §1 (rotas abertas, escrita autenticada)       |
+| `RF-01-02` e `RF-01-03` | 03 §1 (consulta sem login, escrita autenticada)  |
 | `RF-01-04` a `RF-01-08` | 03 §§1.1, 3.2 e 3.3 (nick e imagem, alternativa) |
 | `RF-01-09` a `RF-01-12` | 03 §1.1 (como o adulto entra)                    |
 | `RF-01-13` a `RF-01-15` | 02 §1 e 03 §§1.1, 5, 9, 11 (responsável)         |
@@ -462,3 +523,6 @@ e o dos desafios de desbloqueio de cada trilha.
 | `RF-01-37` a `RF-01-39` | 02 §5 e 05 §5 (equipe formada na aula e quiz)    |
 | `RF-01-40` a `RF-01-45` | 11 §2.1 e 04 §4 (etiqueta ODS e cobertura)       |
 | `RF-01-46` e `RF-01-47` | 03 §12.3 (entrega de dados aprovada por Admin)   |
+| `RF-01-48`, `RF-01-54`  | 03 §1 (chave obrigatória em toda chamada)        |
+| `RF-01-49` a `RF-01-53` | 03 §8 (solicitação, emissão, prazo e revogação)  |
+| `RF-01-55`              | 03 §§1, 8 (cota de consulta por chave)           |

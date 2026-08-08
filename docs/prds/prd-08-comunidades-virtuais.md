@@ -226,7 +226,8 @@ Estados da série: `ativa` → `interrompida` (dois períodos sem registro) → 
 
 ## 9. Contratos de API
 
-Rotas de consulta são **públicas e sem autenticação**; escrita é autenticada.
+Rotas de consulta são **públicas e sem login de pessoa** — a chave da aplicação é exigida em
+todas elas, como define o PRD-01; escrita é autenticada.
 
 | Método | Rota                                          | Autenticação    | Descrição                                                 |
 | ------ | --------------------------------------------- | --------------- | --------------------------------------------------------- |
@@ -262,7 +263,8 @@ false`); invalidação por Mestre que não é autor do desafio (403).
   sessão, nunca do aparelho.
 - Envio de foto ou vídeo tolera rede instável: upload retomável, com o registro pendente
   visível ao Guerreiro(a) até concluir.
-- Consulta pública de série histórica responde sem autenticação e é cacheável.
+- Consulta pública de série histórica responde sem login de pessoa, mediante chave da
+  aplicação, e é cacheável.
 - Linguagem simples em toda mensagem ao Guerreiro(a), incluindo o aviso de série prestes a
   interromper.
 - Código aberto, em pt-BR.
