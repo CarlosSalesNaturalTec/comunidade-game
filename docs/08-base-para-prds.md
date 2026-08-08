@@ -680,10 +680,32 @@ interação com crianças.
 (captação sugerida com MediaPipe, TensorFlow como alternativa para classificar os movimentos)
 acompanha a trilha de Capoeira, que fica para ciclo futuro.
 
-**Questões em aberto:** modelo e stack de IA; limites éticos e LGPD para perfis de menores;
-explicabilidade para responsáveis.
+**Definição vigente — adapta na sessão e não perfila a criança.** A adaptação vive **dentro da
+sessão em curso** e é descartada ao encerrá-la; a plataforma **não infere nem guarda traço
+algum** sobre ritmo, dificuldade ou interesse do Guerreiro(a). O insumo é o que já existe por
+outra finalidade — sondagem, missões concluídas, pontos, poderes, badges, nível e trilhas.
+Não há perfil de menor a construir, guardar ou vazar (documento 03 §7.1).
 
-**Fontes:** docs 02, 03.
+**Definição vigente — reescreve dentro do corpus, marcado como IA.** A personalização recomenda
+e reordena o que o Mestre publicou e **reformula a explicação do conteúdo cadastrado** no
+vocabulário e no interesse do Guerreiro(a), sem sair do **corpus fechado**. O texto reescrito é
+**marcado como gerado por IA**, e o Admin o audita por amostragem como já audita o corpus.
+
+**Definição vigente — ponte interdisciplinar direto na App 05.** A IA usa o poder que o
+Guerreiro(a) já domina para explicar o que ele ainda não domina, como exemplo e analogia, sem
+passar pelo Mestre. Virar missão ou conteúdo de trilha continua sendo autoria do Mestre.
+
+**Definição vigente — o responsável vê e desliga.** A App 07 mostra o que alimenta a
+personalização e o motivo da recomendação vigente, e permite **desligá-la** a qualquer tempo.
+Desligada, o Guerreiro(a) segue a trilha na ordem publicada e lê a explicação original do
+Mestre — alternativa equivalente, nunca exclusão da atividade.
+
+**Modelo de IA:** **Google Gemini**, como toda funcionalidade de IA do Ciclo 01.
+
+**Questões em aberto:** nenhuma que trave o PRD — resta o comportamento da personalização no
+aparelho compartilhado da equipe (App 01) quando um integrante está com ela desligada.
+
+**Fontes:** docs 02, 03, 11.
 
 ## PRD-12 — App 04: Jogo em JavaScript
 

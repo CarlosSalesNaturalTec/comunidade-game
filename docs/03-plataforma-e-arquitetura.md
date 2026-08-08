@@ -273,7 +273,9 @@ equipe vê **em que missão da trilha está**, o conteúdo e a atividade do dia,
 assistente **por voz ou por texto**: quiz e explicação de conceitos das trilhas. O assistente
 segue **o mesmo desenho do assistente da App 05** (§7): modelo **LLM Google Gemini**, **corpus
 fechado** no conteúdo que os Mestres cadastraram, guardrails educacionais, filtros de segurança
-no nível mais restritivo e **guarda apenas da transcrição**, com o áudio descartado.
+no nível mais restritivo e **guarda apenas da transcrição**, com o áudio descartado. A
+personalização também segue o desenho de §7.1 — adapta na sessão, reescreve dentro do corpus e
+marca o texto gerado por IA.
 
 A equipe também **entrega aqui a produção da missão do dia**, por escrita, fala ou foto do que
 fez à mão, com a mesma regra da App 05 (§7): devolutiva construtiva, foto e áudio descartados
@@ -439,6 +441,33 @@ do ciclo para dimensionar o ciclo seguinte. O consumo entra no livro-razão como
 _cloud_, **aportado por absorção pelo Admin e Mestre fundador**, começando no _free tier_ da
 conta **Google Gemini PRO** e passando a _pay-as-you-go_ quando o uso exigir.
 
+### 7.1 Personalização por IA
+
+**A plataforma adapta na sessão e não perfila a criança.** O guia da trilha e os assistentes
+ajustam o que entregam ao Guerreiro(a) **dentro da sessão em curso**: a conversa daquele
+momento e o que ele já conquistou orientam a missão sugerida, o exemplo e a explicação.
+**Encerrada a sessão, o contexto é descartado** — a plataforma **não infere nem guarda traço
+algum** sobre ritmo, dificuldade ou interesse de quem tem 6 a 16 anos. O que alimenta a
+adaptação é o que já existe por outra finalidade: missão de sondagem, missões concluídas,
+pontos, poderes, badges, nível e trilhas em curso.
+
+Quatro regras fecham o desenho:
+
+- **Reescreve, não inventa.** A IA reformula a explicação do conteúdo que o Mestre cadastrou,
+  no vocabulário e no interesse do Guerreiro(a), **sem sair do corpus fechado**, e o texto
+  reescrito é **marcado como gerado por IA**. Conteúdo novo continua sendo autoria do Mestre.
+- **Ponte interdisciplinar na hora.** A IA usa o poder que o Guerreiro(a) **já domina** para
+  explicar o que ele ainda não domina, como exemplo e analogia, direto na App 05 e sem passar
+  pelo Mestre. Virar missão ou conteúdo de trilha continua sendo autoria do Mestre (§11).
+- **Filtros de segurança no nível mais restritivo** em toda interação, como no apoio escolar.
+- **Auditoria por amostragem** do Admin sobre a reescrita, com a mesma consequência do corpus:
+  despublicar o conteúdo de origem, com motivo.
+
+**O responsável vê e desliga.** A App 07 mostra o que alimenta a personalização e o motivo da
+recomendação vigente, e permite **desligá-la** a qualquer tempo (§9). Desligada, o Guerreiro(a)
+segue a trilha na ordem publicada e lê a explicação original do Mestre — alternativa
+equivalente, nunca exclusão da atividade.
+
 E é o **canal de sugestões do Guerreiro(a)**: ideias de melhoria para atividades, trilhas e
 para a própria plataforma são registradas aqui e caem na fila de avaliação da gestão — o mesmo
 mecanismo de evolução pactuada do Código de Conduta, estendido à plataforma inteira. O registro
@@ -552,6 +581,7 @@ vínculo conferido por um Admin ou por um Mestre.
 | **Solicitações**             | Pede acesso, correção ou exclusão de dados e solicita esclarecimentos — cada pedido com protocolo e prazo                         |
 | **Direitos de recusa**       | Recusa, a qualquer tempo, a **imagem do Guerreiro(a)** captada no onboarding, que tem termo próprio                               |
 | **Transparência de dados**   | Vê **quais dados da criança estão armazenados**, para que servem, por quanto tempo ficam e quem os acessou                        |
+| **Personalização por IA**    | Vê o que alimenta a personalização e o motivo da recomendação vigente, e **desliga a personalização** a qualquer tempo (§7.1)     |
 | **Termos e consentimentos**  | Lê, aceita e consulta o histórico dos termos assinados, com data e hora                                                           |
 | **Propostas**                | Registra propostas de evolução da plataforma, na mesma fila de avaliação das sugestões dos Guerreiros e Guerreiras                |
 
@@ -565,6 +595,9 @@ vínculo conferido por um Admin ou por um Mestre.
   apagados a pedido — são **despersonalizados**, com o vínculo de autoria rompido e o
   mapeamento destruído (§12.1). Isso precisa estar dito na tela, em linguagem simples, e no
   termo assinado — não descoberto depois.
+- **Desligar a personalização não tira conteúdo.** Desligada, o Guerreiro(a) segue a trilha na
+  ordem publicada e lê a explicação original do Mestre — é a alternativa equivalente exigida de
+  toda recusa (§7.1).
 - **Linguagem simples**, na mesma medida exigida da política de privacidade.
 - **Responsável sem smartphone não fica de fora:** o ato pode ser feito por **atendimento
   assistido** — Admin ou Mestre abre a aplicação com ele presente, gravando quem operou e quem
@@ -728,6 +761,7 @@ Duas camadas, e a distinção entre elas é o que sustenta o desenho:
 | Transcrição de sugestão adotada                   | Permanente, com autoria — é contribuição creditada                |
 | Foto e áudio da produção do Guerreiro(a)          | **Descartados na leitura**; ficam a transcrição e a devolutiva    |
 | Áudio de qualquer origem                          | **Descartado na transcrição**                                     |
+| Contexto de personalização da sessão              | **Descartado ao encerrar a sessão**; nada é inferido nem gravado  |
 | _Template_ biométrico, fim do vínculo             | **30 dias**, com aviso prévio ao responsável                      |
 | _Template_ biométrico, pedido do responsável      | **5 dias**                                                        |
 | Métricas de custo e demanda de IA                 | Permanente, **sem nenhum dado pessoal** — só contadores           |
