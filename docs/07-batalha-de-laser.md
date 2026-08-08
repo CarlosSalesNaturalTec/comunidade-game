@@ -171,6 +171,11 @@ partida alguma**: o envio é retomado, e o que não chegar é lançado pelo Mest
 partida, a API lança a atividade realizada e os pontos — a primeira integração real entre uma
 batalha física e o backend.
 
+**A saída do Nexus tem ordem:** o **Wi-Fi do local**, quando houver, e, na falta dele, os
+**dados móveis do Admin ou do Mestre presentes** na atividade. A premissa é que ao menos um
+deles chega com dados disponíveis; o consumo é aporte por absorção de quem o proveu, registrado
+em seu nome como qualquer outro recurso.
+
 - **Trilha associada**: decompor a construção dos artefatos em missões (eletrônica
   básica → LDR e LEDs → Wi-Fi/MQTT → lógica do jogo → dashboard Python), cada um com desafio de
   desbloqueio.

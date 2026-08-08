@@ -98,12 +98,14 @@ sem ninguém digitar planilha.
 
 1. O Mestre autentica no Nexus com a **própria sessão** — o Nexus não tem credencial de
    dispositivo.
-2. O Nexus lê as **equipes da aula em andamento** e a batalha prevista para o encontro.
-3. O Mestre vincula cada **artefato** a uma equipe e ao **Guerreiro(a) que o opera**, pelo nick.
-4. O Nexus apresenta o **roteiro de conferência de segurança** — classe do laser, proteção
+2. O Nexus se conecta à internet pelo **Wi-Fi do local**; não havendo, pelos **dados móveis do
+   Admin ou do Mestre** presentes na atividade.
+3. O Nexus lê as **equipes da aula em andamento** e a batalha prevista para o encontro.
+4. O Mestre vincula cada **artefato** a uma equipe e ao **Guerreiro(a) que o opera**, pelo nick.
+5. O Nexus apresenta o **roteiro de conferência de segurança** — classe do laser, proteção
    ocular, área de tiro delimitada, ninguém mirando o rosto — e o Mestre confirma item a item.
-5. Confirmada a conferência, o Nexus a grava com quem conferiu, data e hora, e libera o "Start".
-6. **Exceção:** sem conferência registrada o "Start" não é liberado, e a tela diz o que falta.
+6. Confirmada a conferência, o Nexus a grava com quem conferiu, data e hora, e libera o "Start".
+7. **Exceção:** sem conferência registrada o "Start" não é liberado, e a tela diz o que falta.
 
 ### 5.5 A partida acontece
 
@@ -184,15 +186,17 @@ sem ninguém digitar planilha.
 
 ### 6.4 Partida e telemetria
 
-| ID         | Requisito                                                                              | Prioridade |
-| ---------- | -------------------------------------------------------------------------------------- | ---------- |
-| `RF-10-21` | Lógica da partida roda local em cada artefato, sem depender da rede nem da plataforma  | essencial  |
-| `RF-10-22` | Nexus envia os eventos de telemetria à API durante a partida                           | essencial  |
-| `RF-10-23` | Evento reenviado não duplica o registro, pela sequência declarada na partida           | essencial  |
-| `RF-10-24` | Queda de internet não interrompe a partida nem altera o resultado                      | essencial  |
-| `RF-10-25` | Nexus retoma o envio do que ficou pendente assim que a saída para a internet volta     | essencial  |
-| `RF-10-26` | Painel do Nexus exibe em tempo real energia, resistência do escudo e vida da torre     | essencial  |
-| `RF-10-27` | Artefato fora do ar não interrompe a partida; o papel sem telemetria fica sem apuração | essencial  |
+| ID         | Requisito                                                                                    | Prioridade |
+| ---------- | -------------------------------------------------------------------------------------------- | ---------- |
+| `RF-10-21` | Lógica da partida roda local em cada artefato, sem depender da rede nem da plataforma        | essencial  |
+| `RF-10-22` | Nexus envia os eventos de telemetria à API durante a partida                                 | essencial  |
+| `RF-10-23` | Evento reenviado não duplica o registro, pela sequência declarada na partida                 | essencial  |
+| `RF-10-24` | Queda de internet não interrompe a partida nem altera o resultado                            | essencial  |
+| `RF-10-25` | Nexus retoma o envio do que ficou pendente assim que a saída para a internet volta           | essencial  |
+| `RF-10-26` | Painel do Nexus exibe em tempo real energia, resistência do escudo e vida da torre           | essencial  |
+| `RF-10-27` | Artefato fora do ar não interrompe a partida; o papel sem telemetria fica sem apuração       | essencial  |
+| `RF-10-45` | Nexus usa o Wi-Fi do local e, na falta dele, os dados móveis do Admin ou do Mestre presentes | essencial  |
+| `RF-10-46` | Nexus mostra qual saída está em uso e avisa quando nenhuma das duas está disponível          | essencial  |
 
 ### 6.5 Encerramento e pontuação
 
@@ -249,6 +253,8 @@ sem ninguém digitar planilha.
 | `RN-10-17` | Nenhuma imagem real do Guerreiro(a) entra no registro da partida, na vitrine ou no portfólio         | 12         | 03 §12  |
 | `RN-10-18` | Recusar o papel de risco não exclui o Guerreiro(a) da batalha: há papel equivalente na mesma partida | 11         | 03 §12  |
 | `RN-10-19` | A batalha é marco de trilha de qualquer área, e o modelo não pressupõe poder técnico                 | —          | 02 §6   |
+| `RN-10-20` | A saída do Nexus é o Wi-Fi do local e, na falta dele, os dados móveis do Admin ou Mestre presentes   | —          | 07      |
+| `RN-10-21` | O consumo de dados móveis na batalha é aporte por absorção de quem o proveu                          | —          | 04 §1   |
 
 ## 8. Modelo de dados
 
@@ -310,6 +316,8 @@ encerramento por quem não conduziu a partida (403); tentativa de editar lançam
   são condição para a disputa acontecer ou terminar.
 - **Rede do jogo isolada**, com o Nexus como único ponto conectado — é o que garante a
   estabilidade da partida independentemente do ambiente do evento.
+- **Saída de internet do Nexus, em ordem:** Wi-Fi do local e, na falta dele, dados móveis do
+  Admin ou do Mestre presentes — a premissa é que ao menos um chegue com dados disponíveis.
 - Envio de telemetria tolerante a rede instável: em lote, com sequência, sem duplicar em
   reenvio.
 - Painel do Nexus legível a distância, na sala, para quem assiste à partida.
@@ -363,13 +371,14 @@ sondagem × desbloqueio, que segue sendo o instrumento da hipótese.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                           | Gravada em | Linha do doc 09                        |
-| --------------------------------------------------------------------------------- | ---------- | -------------------------------------- |
-| A classe do Atacante passa a se chamar **Caçador**                                | 07         | Nome da classe do Atacante na trilha 2 |
-| Ponte Nexus → API ao vivo, sob a sessão do Mestre, com o Nexus único conectado    | 07         | Ponte Nexus → API                      |
-| Conferência de segurança do laser como trava de início da partida                 | 07         | Segurança do laser na batalha          |
-| O +5 da batalha sai por papel, pela métrica declarada no cadastro                 | 11 §5      | Critério do +5 da batalha              |
-| Batalha é marco declarado na trilha, em encontro agendado, com as equipes da aula | 02 §6      | Como a batalha entra na plataforma     |
+| Decisão                                                                                      | Gravada em | Linha do doc 09                        |
+| -------------------------------------------------------------------------------------------- | ---------- | -------------------------------------- |
+| A classe do Atacante passa a se chamar **Caçador**                                           | 07         | Nome da classe do Atacante na trilha 2 |
+| Ponte Nexus → API ao vivo, sob a sessão do Mestre, com o Nexus único conectado               | 07         | Ponte Nexus → API                      |
+| Conferência de segurança do laser como trava de início da partida                            | 07         | Segurança do laser na batalha          |
+| O +5 da batalha sai por papel, pela métrica declarada no cadastro                            | 11 §5      | Critério do +5 da batalha              |
+| Batalha é marco declarado na trilha, em encontro agendado, com as equipes da aula            | 02 §6      | Como a batalha entra na plataforma     |
+| Saída de internet do Nexus: Wi-Fi do local e, na falta dele, dados móveis do Admin ou Mestre | 07         | Saída de internet do Nexus             |
 
 A decisão da ponte fechou a proposta que estava aberta no documento 07 desde a primeira
 redação. Ela dispensa credencial de dispositivo — o Nexus fala pela sessão do Mestre —, e por
@@ -382,10 +391,6 @@ As entidades `ArtefatoDeBatalha`, `PartidaDeBatalha`, `ParticipacaoNaPartida`,
 
 ## 14. Pendências que permanecem
 
-- **Conectividade do ponto de apoio** (documento 09, pendência nova): a ponte é ao vivo e exige
-  uma saída para a internet no encontro. Falta definir qual — rede do local ou modem
-  dedicado —, quem a provê e como o custo entra no livro-razão. **Não trava a partida**, que
-  roda isolada, mas trava o crédito automático dos pontos.
 - **Catálogo de recompensas por marco** (documento 09): o que a batalha entrega como recompensa
   no Ciclo 01 continua indefinido. A trilha só publica com lastro, então a lacuna trava a
   publicação, não este domínio.
@@ -406,6 +411,7 @@ As entidades `ArtefatoDeBatalha`, `PartidaDeBatalha`, `ParticipacaoNaPartida`,
 | `RF-10-10` a `RF-10-13` | 02 §6 e 02 §1 (encontro agendado pela gestão)                  |
 | `RF-10-14` a `RF-10-20` | 07 (Nexus, artefatos e conferência de segurança)               |
 | `RF-10-21` a `RF-10-27` | 07 (lógica local e rede como telemetria)                       |
+| `RF-10-45` e `RF-10-46` | 07 (saída de internet do Nexus)                                |
 | `RF-10-28` a `RF-10-37` | 11 §5 (motor de pontuação) e 11 §5.1 (integridade dos pontos)  |
 | `RF-10-38` a `RF-10-40` | 02 §6 (batalha de projetos e ideias)                           |
 | `RF-10-41` a `RF-10-44` | 11 §8.1 (vitrine) e 11 §8.2 (páginas individuais)              |
