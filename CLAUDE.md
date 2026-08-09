@@ -1,18 +1,20 @@
 # CLAUDE.md — Regras de trabalho neste repositório
 
 Repositório do **Comunidade Game** — plataforma educacional gamificada, open source, para
-comunidades periféricas. Neste momento o repositório **não contém código**: contém apenas a
-documentação do projeto, na pasta `docs/`.
+comunidades periféricas. Ele guarda a documentação do projeto, em `docs/`, os artefatos de
+planejamento da implementação, em `openspec/`, e o código das aplicações.
 
 ## Estado atual e próxima etapa
 
 1. **Feito:** revisão e validação humana de todos os documentos de `docs/` (agosto de 2026).
 2. **Feito:** os treze **PRDs** (_Product Requirements Documents_) do Ciclo 01, em
    `docs/prds/`, escritos a partir de `docs/08-base-para-prds.md` e aprovados pelo fundador.
-3. **Agora:** desenvolvimento das oito aplicações e do Backend API.
+3. **Agora:** desenvolvimento das oito aplicações e do Backend API, conduzido pelo
+   framework de **SDD** (_Spec-Driven Development_) **OpenSpec**.
 
-Não iniciar a escrita de código sem sinal explícito do fundador. PRD novo ou revisão de PRD
-existente continua seguindo as regras de `docs/prds/` abaixo.
+Código entra **apenas** por uma _change_ do OpenSpec cujos artefatos foram aprovados pelo
+fundador. PRD novo ou revisão de PRD existente continua seguindo as regras de `docs/prds/`
+abaixo.
 
 ## Regras de redação e revisão dos documentos de `docs/`
 
@@ -126,6 +128,83 @@ Um branch e um PR por PRD, aprovado antes do próximo. No mesmo PR: o arquivo do
 situação atualizada em `docs/prds/index.md`, a entrada na `nav` do `mkdocs.yml`, o documento
 99 §8 e o que a decisão nova mudou nos documentos-fonte e no documento 09.
 
+## Regras de implementação (`openspec/`)
+
+A implementação é conduzida pelo **OpenSpec**. O contexto do projeto, a hierarquia de
+autoridade e as regras de cada artefato estão em `openspec/config.yaml` e valem para
+qualquer agente que crie ou aplique artefatos.
+
+### 1. `docs/prds/` é a fonte da verdade da implementação
+
+Implementa-se **estritamente** o que está escrito nos PRDs — nada além, nada diferente.
+
+| Nível | Artefato                                | Papel                                |
+| ----- | --------------------------------------- | ------------------------------------ |
+| 1     | `docs/01-*` a `docs/14-*` e `docs/99-*` | regra de negócio (fonte única)       |
+| 2     | `docs/prds/`                            | requisitos de produto (RF-XX, RN-XX) |
+| 3     | `openspec/changes/<change>/`            | plano de execução                    |
+| 4     | código                                  | execução                             |
+
+Cada nível apenas executa o de cima. Conflito resolve-se pelo nível superior — nunca
+ajustando o PRD ao código já escrito.
+
+### 2. Artefato do OpenSpec não cria regra
+
+`proposal`, `specs`, `design` e `tasks` não definem regra de produto, número, prazo,
+provedor nem comportamento que não esteja no PRD. Requisito faltando, ambíguo ou em
+contradição com o PRD: **pare e pergunte ao fundador**; não preencha lacuna com suposição.
+
+Decisão nova segue o mesmo fluxo dos PRDs — documento-fonte (doc 99 §1), documento 09,
+PRD — e só depois vira change. A **stack do backend** e o **provedor de reconhecimento
+facial** seguem pendentes no documento 09: não são escolhidos dentro de uma change.
+
+### 3. Rastreabilidade obrigatória
+
+- A `proposal` nomeia o PRD de origem e os identificadores (`RF-XX-nn`, `RN-XX-nn`) que
+  atende; `specs` e `tasks` repetem o identificador em cada item.
+- Antes de escrever qualquer artefato, ler o PRD alvo na íntegra, `docs/prds/index.md` e o
+  documento 99 §§4, 5, 6 e 8.
+- Os invariantes do documento 99 §6 valem para o código como valem para o texto.
+
+### 4. Fluxo
+
+| Etapa                         | Comando          |
+| ----------------------------- | ---------------- |
+| Criar a change e os artefatos | `/opsx:propose`  |
+| Avançar um artefato por vez   | `/opsx:continue` |
+| Implementar as tarefas        | `/opsx:apply`    |
+| Verificar antes de fechar     | `/opsx:verify`   |
+| Arquivar a change concluída   | `/opsx:archive`  |
+
+A ordem das changes respeita as ondas e as dependências entre PRDs do documento 99 §8.
+
+### 5. Documentação a cada change
+
+A documentação do MkDocs anda junto com a implementação: **nenhuma change fecha deixando o
+site desatualizado**. No mesmo PR, atualize o que aquela change mudou — só isso:
+
+| Se a change                          | Atualize                                       |
+| ------------------------------------ | ---------------------------------------------- |
+| Tomou uma decisão nova               | o documento-fonte (doc 99 §1) e o documento 09 |
+| Mudou um requisito por essa decisão  | o PRD afetado                                  |
+| Mudou a situação de um PRD           | `docs/prds/index.md`                           |
+| Mudou a relação entre documentos     | o documento 99                                 |
+| Criou ou renomeou arquivo em `docs/` | a `nav` do `mkdocs.yml`                        |
+
+Documento técnico novo em `docs/` só entra por decisão do fundador: `docs/` é a documentação
+do produto, e o plano de execução vive em `openspec/changes/`. Toda edição em `docs/` segue
+as regras de redação acima.
+
+Antes de abrir o PR: `npm run fix`, `npm run lint` e `mkdocs build --strict` precisam passar.
+
+### 6. Entrega
+
+Um branch e um PR por change, aprovado antes do próximo. No mesmo PR: os artefatos em
+`openspec/changes/<change>/`, o código, os testes e a documentação da §5. O merge usa
+**merge commit — nunca squash**, e o site só vai ao GitHub Pages **depois do merge em
+`main`** — nunca a partir de um PR. `openspec/` fica fora do lint de documentação e fora do
+site MkDocs.
+
 ## Esteira de CI da documentação
 
 Quatro verificações rodam a cada pull request (`.github/workflows/docs-ci.yml`). Todas
@@ -182,3 +261,15 @@ Merge de PR no GitHub usa **merge commit — nunca squash.**
 - [ ] Se for PRD: todas as seções do modelo estão preenchidas, e cada decisão nova foi gravada
       no documento-fonte e movida no documento 09?
 - [ ] Se for PRD: `docs/prds/index.md` e o documento 99 §8 refletem a situação atual?
+
+## Checklist antes de entregar uma change do OpenSpec
+
+- [ ] Cada requisito e cada tarefa cita o `RF-XX-nn` ou `RN-XX-nn` do PRD que atende?
+- [ ] Nenhum artefato criou regra, número, prazo ou provedor que não esteja no PRD?
+- [ ] As dúvidas foram levadas ao fundador, em vez de resolvidas por suposição?
+- [ ] Decisão nova foi gravada no documento-fonte, movida no documento 09 e aplicada ao PRD
+      antes de virar código?
+- [ ] Os invariantes do documento 99 §6 continuam válidos no que foi implementado?
+- [ ] A documentação que a change mudou entrou no mesmo PR (§5 das regras de implementação)?
+- [ ] `npm run lint` e `mkdocs build --strict` passam com as mudanças de `docs/`?
+- [ ] `/opsx:verify` passou antes de arquivar a change?

@@ -32,7 +32,7 @@
     "MD050": false,
   },
   "globs": ["**/*.md"],
-  // .claude/** são arquivos de ferramenta (skills, comandos) vendorizados de
-  // terceiros — não seguem o estilo de prosa dos documentos do projeto.
-  "ignores": ["node_modules/**", "site/**", ".venv/**", ".claude/**"],
+  // .claude/** e openspec/** são arquivos de ferramenta (skills, comandos e
+  // artefatos de change) — não seguem o estilo de prosa dos documentos do projeto.
+  "ignores": ["node_modules/**", "site/**", ".venv/**", ".claude/**", "openspec/**"],
 }
