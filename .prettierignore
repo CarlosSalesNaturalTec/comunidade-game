@@ -2,3 +2,7 @@ node_modules/
 site/
 .venv/
 CHANGELOG.md
+
+# Arquivos de ferramenta (skills, comandos, config) vendorizados de terceiros
+.claude/
+openspec/
