@@ -1,20 +1,148 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+# Contexto do projeto — mostrado à IA ao criar qualquer artefato.
+context: |
+  PROJETO
+  Comunidade Game — plataforma educacional gamificada, open source, para comunidades
+  periféricas. Escopo em execução: Ciclo 01 (Case Guerreira Zeferina, ago–dez/2026),
+  com oito aplicações Web (Apps 01, 03, 04, 05, 06, 07, 08 e 09) e o Backend API.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  FONTE DA VERDADE
+  `docs/prds/` (PRD-01 a PRD-14) é a fonte da verdade da implementação. Implementa-se o
+  que está escrito nos PRDs — nada além, nada diferente. Os PRDs são artefatos derivados
+  dos documentos normativos `docs/01-*` a `docs/14-*`; o mapa de fonte única, conceitos,
+  rastreabilidade, invariantes e dependências está em `docs/99-mapa-de-referencias.md`.
+
+  LEITURA OBRIGATÓRIA ANTES DE QUALQUER ARTEFATO
+  1. `docs/prds/index.md` — situação de cada PRD e ordem das ondas.
+  2. O(s) PRD(s) alvo em `docs/prds/prd-XX-*.md`, na íntegra.
+  3. `docs/99-mapa-de-referencias.md` §4 (aplicações → PRDs), §5 (rastreabilidade),
+     §6 (invariantes) e §8 (dependências entre PRDs).
+  4. Os documentos-fonte listados na §8 para aquele PRD, quando a regra precisar de origem.
+
+  HIERARQUIA DE AUTORIDADE (da maior para a menor)
+  1. `docs/01-*` a `docs/14-*` e `docs/99-*` — regra de negócio, fonte única.
+  2. `docs/prds/` — requisitos de produto, identificados como RF-XX-nn e RN-XX-nn.
+  3. Artefatos OpenSpec (proposal, specs, design, tasks) — plano de execução.
+  4. Código.
+  Cada nível apenas executa o de cima. Conflito entre níveis resolve-se pelo nível superior.
+
+  ARTEFATO OPENSPEC NÃO CRIA REGRA
+  Nenhum artefato do OpenSpec define regra de produto, número, prazo, provedor ou
+  comportamento que não esteja no PRD. Quando faltar requisito, houver ambiguidade ou
+  contradição com um PRD: PARE e pergunte ao fundador. Não preencha lacuna com suposição.
+  Decisão nova segue este fluxo, nesta ordem:
+  1. gravar a regra no documento-fonte dela (`docs/99-mapa-de-referencias.md` §1);
+  2. mover a linha no `docs/09-topicos-em-aberto-e-sugestoes.md` de "Decisões pendentes"
+     para "Já decididos";
+  3. atualizar o PRD afetado;
+  4. só então propor a change e implementar.
+
+  INVARIANTES
+  Os 22 invariantes de `docs/99-mapa-de-referencias.md` §6 valem para o código como valem
+  para o texto. Contrariá-los é defeito, não variação de implementação. Entre eles: oito
+  aplicações Web responsivas Mobile First (sem app nativo e sem mensageria de terceiros);
+  faixa de 6 a 16 anos com progressão por dificuldade; só o Guerreiro(a) tem autocadastro e
+  login não cria cadastro; toda trilha abre em sondagem, tem coleta de dados reais e termina
+  em criação original; guarda permanente do dado de território com anonimização apenas na
+  saída, e revogação que despersonaliza sem apagar; App 04 (jogo) público, sem login de
+  pessoa e somente leitura, sem endpoint de escrita; nenhuma atividade sem lastro; nenhum
+  contato direto entre Apoiador e Guerreiro(a); Guerreiros e Guerreiras aparecem em público
+  só por avatar e nick; aporte exibido em moedas, nunca em reais; personalização por IA que
+  adapta na sessão e não perfila a criança.
+
+  DECISÕES TÉCNICAS JÁ VIGENTES (documento 03)
+  - Backend em forma de API, versionada na rota, começando em `/v1`.
+  - Toda aplicação consumidora se identifica por chave, inclusive as do projeto; sem chave
+    válida a API não responde. Escrita e gestão exigem também a credencial da persona.
+  - Frontends independentes, em endereços próprios; a vitrine ocupa a raiz de
+    `comunidadegame.org`.
+  - Autenticação por persona: Guerreiro(a) por nick e imagem; Mestre, Apoiador e Admin por
+    login social (Google); responsável por login social ou usuário e senha criados por Admin
+    ou Mestre. Apps 04 e 06 não têm login.
+  - Uma única instância para todas as comunidades; Comunidade Virtual é vínculo no registro,
+    e toda consulta filtra por comunidade.
+  - Registro de custos em tudo: toda ação com custo entra no livro-razão (PRD-07).
+  - Séries temporais georreferenciadas como cidadão de primeira classe no modelo de dados.
+  - Modelos de IA do Ciclo 01: Google Gemini, com custo lançado no livro-razão como cloud.
+  - Código aberto; conteúdo educacional publicado sob CC BY-SA.
+
+  PENDÊNCIAS QUE TRAVAM CÓDIGO
+  A stack do backend — linguagem, framework, banco de dados e armazenamento das séries
+  temporais — e o provedor de reconhecimento facial do App 01 continuam pendentes no
+  documento 09. Não escolher nenhum deles dentro de um artefato do OpenSpec: a decisão é do
+  fundador, é gravada no documento 03 e movida no documento 09 antes de virar código.
+
+  ENTREGA
+  Um branch e um PR por change. O PR leva os artefatos da change, o código, os testes e a
+  documentação que aquela change mudou em `docs/` — o site do MkDocs nunca fica atrasado em
+  relação ao que foi implementado. Merge sempre por merge commit, nunca squash. O site só é
+  publicado no GitHub Pages depois do merge em `main`, nunca a partir de um PR.
+
+  IDIOMA
+  Português do Brasil em artefatos, documentação, comentários e mensagens de commit. Os
+  termos do domínio são preservados: Guerreiro(a), Mestre, Apoiador, Admin, responsável,
+  Comunidade Virtual, trilha, missão, desafio, poder, badge, moeda, lastro, livro-razão.
+
+# Regras por artefato.
+rules:
+  proposal:
+    - >-
+      Toda proposta declara, na abertura, o PRD que a origina e os identificadores
+      (RF-XX-nn, RN-XX-nn) que serão atendidos. Proposta sem âncora em PRD é inválida.
+    - >-
+      O escopo de uma change é um recorte de um PRD; respeite a ordem das ondas e as
+      dependências entre PRDs do documento 99 §8.
+    - >-
+      A seção de fora do escopo reproduz o que o PRD já exclui (seção 3.2 do PRD), sem
+      inventar exclusão nova.
+    - >-
+      Não copie texto normativo do PRD nem dos documentos 01–14 — cite o identificador.
+    - >-
+      Requisito que você gostaria de ter e não existe no PRD não entra na proposta: ele
+      vira pergunta ao fundador.
+  specs:
+    - >-
+      Cada requisito do delta aponta o RF/RN do PRD que o origina; requisito sem origem
+      em PRD é sinal de PRD incompleto — pare e pergunte.
+    - >-
+      Os cenários de aceite derivam dos critérios de aceite do PRD (seção 12) e das
+      regras de negócio (seção 7); não crie critério novo.
+    - >-
+      Dado pessoal de criança segue a seção 11 do PRD e o documento 03 §12; consentimento,
+      anonimização na saída e prazo de guarda são requisito, não detalhe de implementação.
+    - >-
+      Mantenha o vocabulário do domínio em português; não renomeie conceito do PRD.
+  design:
+    - >-
+      O desenho respeita os princípios de arquitetura do documento 03 §1 e os contratos
+      de API declarados no PRD (seção 9) e no PRD-01.
+    - >-
+      Não escolha linguagem, framework, banco, provedor ou serviço que não esteja
+      decidido nos documentos; pendência do documento 09 vira pergunta, nunca suposição.
+    - >-
+      Registre alternativas descartadas em uma linha cada; justificativa longa não é
+      artefato deste projeto.
+    - >-
+      Toda operação com custo prevê o lançamento no livro-razão; todo dado de território
+      prevê série temporal com coletor identificado.
+  tasks:
+    - >-
+      Cada tarefa cita o identificador que atende (RF-XX-nn ou RN-XX-nn) e tem resultado
+      verificável.
+    - >-
+      Para cada requisito coberto existe tarefa de verificação correspondente ao critério
+      de aceite do PRD.
+    - >-
+      Toda change termina com uma tarefa de documentação: atualizar em `docs/` apenas o que
+      a change mudou — documento-fonte e documento 09 quando houve decisão nova, o PRD
+      afetado, `docs/prds/index.md` se a situação mudou, o documento 99 se a relação entre
+      documentos mudou e a `nav` do `mkdocs.yml` se nasceu arquivo novo.
+    - >-
+      Não crie documento técnico novo em `docs/`: essa pasta é a documentação do produto e
+      só recebe arquivo novo por decisão do fundador. O plano de execução fica na change.
+    - >-
+      A tarefa de documentação inclui rodar `npm run fix`, `npm run lint` e
+      `mkdocs build --strict` antes de abrir o PR.
+    - >-
+      Não crie tarefa fora do escopo declarado na proposal.

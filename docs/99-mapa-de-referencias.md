@@ -32,24 +32,24 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 
 ## 2. Papel e dependência dos documentos
 
-| Doc   | Tipo                                 | Depende de             | Alimenta        |
-| ----- | ------------------------------------ | ---------------------- | --------------- |
-| index | Índice (home do site)                | —                      | —               |
-| 01    | Normativo (fundação)                 | —                      | 02, 03, 12, 13  |
-| 02    | Normativo (conceito)                 | 01                     | 03, 05, 08, 11  |
-| 03    | Normativo (técnico)                  | 02                     | 08              |
-| 04    | Normativo (econômico)                | 02                     | 08, 12          |
-| 05    | Normativo (operação)                 | 02, 04                 | 08, 10          |
-| 06    | Normativo (conteúdo)                 | 02                     | 03 §4, 08, 10   |
-| 07    | Normativo (conteúdo)                 | 02, 06                 | 08, 10          |
-| 08    | **Derivado** — requisitos            | 01–07, 11, 14          | PRDs a gerar    |
-| 09    | Pauta                                | todos                  | 08              |
-| 10    | Normativo (case)                     | 02–08, 11              | 08, 09          |
-| 11    | Normativo (motor)                    | 02                     | 08              |
-| 12    | **Derivado** — comunicação           | 01, 02, 04, 05, 10, 14 | —               |
-| 13    | Normativo (conduta)                  | 01, 02                 | 05              |
-| 14    | Normativo (apoio)                    | 02, 04, 11             | 08, 12          |
-| prds/ | **Derivado** — requisitos de produto | 08, 01–07, 11, 13, 14  | desenvolvimento |
+| Doc   | Tipo                                 | Depende de             | Alimenta         |
+| ----- | ------------------------------------ | ---------------------- | ---------------- |
+| index | Índice (home do site)                | —                      | —                |
+| 01    | Normativo (fundação)                 | —                      | 02, 03, 12, 13   |
+| 02    | Normativo (conceito)                 | 01                     | 03, 05, 08, 11   |
+| 03    | Normativo (técnico)                  | 02                     | 08               |
+| 04    | Normativo (econômico)                | 02                     | 08, 12           |
+| 05    | Normativo (operação)                 | 02, 04                 | 08, 10           |
+| 06    | Normativo (conteúdo)                 | 02                     | 03 §4, 08, 10    |
+| 07    | Normativo (conteúdo)                 | 02, 06                 | 08, 10           |
+| 08    | **Derivado** — requisitos            | 01–07, 11, 14          | PRDs a gerar     |
+| 09    | Pauta                                | todos                  | 08               |
+| 10    | Normativo (case)                     | 02–08, 11              | 08, 09           |
+| 11    | Normativo (motor)                    | 02                     | 08               |
+| 12    | **Derivado** — comunicação           | 01, 02, 04, 05, 10, 14 | —                |
+| 13    | Normativo (conduta)                  | 01, 02                 | 05               |
+| 14    | Normativo (apoio)                    | 02, 04, 11             | 08, 12           |
+| prds/ | **Derivado** — requisitos de produto | 08, 01–07, 11, 13, 14  | `openspec/` (§9) |
 
 **Divisão 02 × 11 (a confusão mais provável):** o doc 02 define **o que são** os elementos
 do jogo; o doc 11 define **como eles se ligam e quanto valem**. Tabelas de pontuação,
@@ -325,3 +325,19 @@ que existe apenas dentro de um PRD está no lugar errado.
 
 A correspondência entre as oito aplicações e os PRDs está na §4; a ordem de elaboração e o
 motivo de cada onda estão no documento 08.
+
+## 9. Implementação — artefatos do OpenSpec
+
+O desenvolvimento é conduzido pelo framework de _Spec-Driven Development_ **OpenSpec**. Os
+artefatos de cada _change_ — `proposal`, `specs`, `design` e `tasks` — ficam em
+`openspec/changes/<change>/` e são **derivados dos PRDs**: aplicam requisitos identificados
+(`RF-XX-nn`, `RN-XX-nn`) e nunca criam regra própria.
+
+A ordem de autoridade é: documentos 01–14 e 99 → `docs/prds/` → artefatos do OpenSpec →
+código. Conflito resolve-se sempre pelo nível superior. Decisão nova tomada durante a
+implementação é gravada no documento-fonte (§1), movida no documento 09 e aplicada ao PRD
+antes de virar código.
+
+O contexto e as regras entregues aos agentes estão em `openspec/config.yaml`; o processo de
+trabalho e a entrega estão no `CLAUDE.md`. A pasta `openspec/` fica fora do site MkDocs e
+fora do lint de documentação.
