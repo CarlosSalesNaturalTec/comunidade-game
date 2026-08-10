@@ -21,7 +21,9 @@
    não é alcançado pela licença — usar a API pela rede não torna a aplicação derivada. O
    **conteúdo educacional publicado sai sob CC BY-SA**: qualquer um usa e adapta, creditando
    o Mestre autor, e o derivado herda a mesma licença. Código e conteúdo seguem, cada um na
-   sua régua, o mesmo princípio de compartilhar igual.
+   sua régua, o mesmo princípio de compartilhar igual. O **titular do direito autoral do
+   código é a pessoa jurídica vinculada ao projeto** (documento 04), que é quem responde por
+   ele e quem poderia relicenciá-lo.
 5. **Registro de custos em tudo** — toda ação com custo (aula, lanche, hospedagem,
    prestadores) é computada e atribuída a um personagem; a arquitetura precisa suportar esse
    livro-razão desde o início.
