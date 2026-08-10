@@ -136,7 +136,8 @@ caminho não passa por _pull request_ neste repositório.
   titularidade íntegra: com vários donos, ninguém relicencia o conjunto. Os direitos morais de
   autor são inalienáveis e a autoria segue no histórico de _commits_.
 
-O texto integral da licença está em `LICENSE`; o processo do CLA está em `CONTRIBUTING.md`.
+O texto integral da licença está em `LICENSE`; o processo do CLA está em `CONTRIBUTING.md`, e
+o rascunho do termo — não vigente, pendente de revisão jurídica — está em `CLA.md`.
 
 A escolha da AGPL não é detalhe jurídico: é o que impede que a plataforma construída por uma
 comunidade seja fechada como serviço privado por quem a replicar.

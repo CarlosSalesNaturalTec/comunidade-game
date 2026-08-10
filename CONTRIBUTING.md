@@ -144,8 +144,11 @@ sob AGPL, os direitos morais de autor são inalienáveis e a sua autoria segue r
 histórico de _commits_ — que, aliás, é o lastro do aporte em tempo de quem constrói a
 plataforma.
 
-> **A definir:** o **texto do termo**, revisado por advogado; a **forma de assinatura** —
-> verificação automática no _pull request_ ou termo assinado por outro meio —; e se haverá
+Um **rascunho** do termo está em `CLA.md` — não vigente, marcado como tal e pendente de revisão
+por advogado.
+
+> **A definir:** a **aprovação do texto** depois da revisão jurídica; a **forma de assinatura**
+> — verificação automática no _pull request_ ou termo assinado por outro meio —; e se haverá
 > termo próprio para quem contribui **em nome de uma empresa**. Até que existam, fale com o
 > mantenedor antes de abrir o _pull request_.
 

@@ -186,9 +186,10 @@ A detalhar:
 - Modelo de decisão (quem aprova mudanças de rumo quando o projeto deixar de ter um mantenedor
   só) e marca (quem pode usar o nome do projeto ao replicar). O `GOVERNANCE.md` descreve o
   modelo vigente — mantenedor único — e marca os dois como em aberto.
-- **CLA já decidido** (§1). Falta o **texto** do termo, revisado por advogado, e a **forma de
-  assinatura** — verificação automática no _pull request_ ou termo assinado por outro meio.
-  Falta também definir se haverá termo próprio para quem contribui **em nome de empresa**.
+- **CLA já decidido** (§1), com **rascunho do termo em `CLA.md`** — não vigente, marcado como
+  tal, pendente de revisão por advogado. Falta a **aprovação do texto** depois dessa revisão,
+  a **forma de assinatura** — verificação automática no _pull request_ ou termo assinado por
+  outro meio — e se haverá termo próprio para quem contribui **em nome de empresa**.
 - Deixou de ser só higiene de repositório: o **apoio em código** como modalidade de aporte
   depende dela para sair de proposta.
 
