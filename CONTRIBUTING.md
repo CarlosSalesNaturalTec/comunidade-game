@@ -170,9 +170,8 @@ por advogado.
 ## 8. Conduta
 
 O `docs/13-codigo-de-conduta-versao-previa.md` é o código de conduta **do Guerreiro(a)**, dentro
-das trilhas — não governa quem contribui neste repositório.
-
-> **A definir:** o `CODE_OF_CONDUCT.md` dos contribuidores, que é documento distinto daquele.
+das trilhas — não governa quem contribui neste repositório. Quem contribui aqui segue
+`CODE_OF_CONDUCT.md`.
 
 ## 9. O que ainda não está decidido
 
@@ -183,7 +182,6 @@ Estes pontos afetam quem contribui e seguem em aberto no documento 09:
 | Texto e assinatura do CLA                     | O termo revisado por advogado e como se assina   |
 | CLA para quem contribui por uma empresa       | Se haverá termo próprio                          |
 | Apoio em código como aporte                   | Valor-hora e critério de conversão em horas      |
-| `CODE_OF_CONDUCT.md` dos contribuidores       | O documento                                      |
 | Canal entre agentes de IA e humanos           | _Issues_ com _labels_, _Discussions_, _Projects_ |
 | Orquestração do fluxo "do explore ao _merge_" | Se a automação com agentes entra aqui            |
 | Uso do Slack no fluxo de desenvolvimento      | A decisão                                        |

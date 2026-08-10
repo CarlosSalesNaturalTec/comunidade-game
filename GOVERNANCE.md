@@ -157,13 +157,13 @@ e creditar os Mestres autores do conteúdo que reaproveitar.
 
 ## 8. O que ainda não está decidido
 
-| Tema                                     | O que falta                                                                                |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Modelo de decisão com mais de uma pessoa | Quem aprova mudança de rumo quando o projeto deixar de ter um mantenedor só                |
-| Marca e uso do nome                      | Quem pode chamar de "Comunidade Game" a instância que replicou                             |
-| Texto e assinatura do CLA                | O termo revisado por advogado, como se assina e se há termo próprio para empresa           |
-| `CODE_OF_CONDUCT.md`                     | O código de conduta dos contribuidores, distinto do código de conduta do Guerreiro(a)      |
-| Forma jurídica sem fins lucrativos       | Arranjo para editais e recursos públicos, que costumam não aceitar empresa como proponente |
-| Separação contábil                       | Entre a atividade comercial da pessoa jurídica e os recursos do projeto                    |
+| Tema                                      | O que falta                                                                                |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Modelo de decisão com mais de uma pessoa  | Quem aprova mudança de rumo quando o projeto deixar de ter um mantenedor só                |
+| Marca e uso do nome                       | Quem pode chamar de "Comunidade Game" a instância que replicou                             |
+| Texto e assinatura do CLA                 | O termo revisado por advogado, como se assina e se há termo próprio para empresa           |
+| Canal de denúncia do `CODE_OF_CONDUCT.md` | Onde relatar violação de conduta no repositório, distinto do canal do Guerreiro(a)         |
+| Forma jurídica sem fins lucrativos        | Arranjo para editais e recursos públicos, que costumam não aceitar empresa como proponente |
+| Separação contábil                        | Entre a atividade comercial da pessoa jurídica e os recursos do projeto                    |
 
 Todos estão registrados no documento 09 e seguem o caminho da seção 3 quando forem decididos.

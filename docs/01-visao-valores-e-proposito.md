@@ -119,8 +119,10 @@ que conduta decretada.
   propõem melhorias, alteram o código do jogo e sugerem rumos. A plataforma deve estar **sempre
   em evolução**, e quem joga é parte de quem a evolui.
 
-**[Proposta]** Criar também documentos de **governança open source** (`CODE_OF_CONDUCT.md`
-e `GOVERNANCE.md`) traduzindo esses valores para a comunidade de desenvolvedores.
+**Definição vigente.** Os valores e causas da §3 se traduzem também para a comunidade de
+desenvolvedores, nos documentos de governança open source na raiz do repositório:
+`GOVERNANCE.md` e `CODE_OF_CONDUCT.md`, este último aplicando explicitamente a lista acima
+a quem contribui com código.
 
 ## 4. Objetivos
 
