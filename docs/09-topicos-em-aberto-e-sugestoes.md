@@ -179,10 +179,14 @@ A detalhar:
 
 ### Governança open source
 
-- `LICENSE` **já está na raiz** (AGPL, titular a pessoa jurídica). Faltam
-  `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md` e `GOVERNANCE.md`.
-- Modelo de decisão (quem aprova mudanças de rumo) e marca (quem pode usar o nome do projeto ao
-  replicar).
+- `LICENSE`, `CONTRIBUTING.md` e `GOVERNANCE.md` **já estão na raiz**. Falta o
+  `CODE_OF_CONDUCT.md` dos contribuidores, que é documento distinto do documento 13 — este
+  governa o Guerreiro(a) na trilha, aquele governa quem contribui no repositório.
+- Modelo de decisão (quem aprova mudanças de rumo quando o projeto deixar de ter um mantenedor
+  só) e marca (quem pode usar o nome do projeto ao replicar). O `GOVERNANCE.md` descreve o
+  modelo vigente — mantenedor único — e marca os dois como em aberto.
+- **DCO, CLA ou nenhum dos dois**: como o direito autoral da contribuição externa se relaciona
+  com a pessoa jurídica titular. Precisa ser decidido antes da primeira contribuição de fora.
 - Deixou de ser só higiene de repositório: o **apoio em código** como modalidade de aporte
   depende dela para sair de proposta.
 
