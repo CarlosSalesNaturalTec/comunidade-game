@@ -71,11 +71,9 @@ online ou presencial.
 
 ## 6. Aplicação
 
-> **A definir:** o **canal de denúncia** para violações deste código. Ele é distinto do canal
-> de denúncia do documento 13 §4, que atende Guerreiros e Guerreiras e famílias sobre o que
-> acontece na trilha — este aqui atende quem contribui no repositório. Enquanto o canal não
-> existir, relate por _issue_ marcada como confidencial ou, se o conteúdo for sensível, pelo
-> contato mais direto que você tiver com o mantenedor.
+Relate violação deste código para **`roboeduca.net@gmail.com`**. Esse canal é distinto do
+canal de denúncia do documento 13 §4, que atende Guerreiros e Guerreiras e famílias sobre o
+que acontece na trilha — este aqui atende quem contribui no repositório.
 
 Todas as queixas serão revisadas e investigadas com prontidão e equidade.
 

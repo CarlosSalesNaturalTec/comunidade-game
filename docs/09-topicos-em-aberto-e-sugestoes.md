@@ -182,8 +182,8 @@ A detalhar:
 
 - `LICENSE`, `CONTRIBUTING.md`, `GOVERNANCE.md` e `CODE_OF_CONDUCT.md` **já estão na raiz**.
   O último é documento distinto do documento 13 — este governa o Guerreiro(a) na trilha,
-  aquele governa quem contribui no repositório, e aplica os valores do documento 01 §3. Falta
-  o **canal de denúncia** de violação, distinto do canal do documento 13 §4.
+  aquele governa quem contribui no repositório, aplica os valores do documento 01 §3 e tem
+  canal de denúncia próprio (`roboeduca.net@gmail.com`), distinto do canal do documento 13 §4.
 - Modelo de decisão (quem aprova mudanças de rumo quando o projeto deixar de ter um mantenedor
   só) e marca (quem pode usar o nome do projeto ao replicar). O `GOVERNANCE.md` descreve o
   modelo vigente — mantenedor único — e marca os dois como em aberto.
