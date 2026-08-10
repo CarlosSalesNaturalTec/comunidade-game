@@ -131,8 +131,12 @@ caminho não passa por _pull request_ neste repositório.
 - **Conteúdo educacional publicado: CC BY-SA**, com crédito ao Mestre autor.
 - **Titular do direito autoral do código:** a pessoa jurídica vinculada ao projeto, descrita no
   documento 04. É ela quem responde pelo código e quem poderia relicenciá-lo.
+- **Contribuição externa entra por CLA**, com cessão dos direitos patrimoniais à pessoa
+  jurídica titular. Sem CLA assinado o _pull request_ não é integrado. É o que mantém a
+  titularidade íntegra: com vários donos, ninguém relicencia o conjunto. Os direitos morais de
+  autor são inalienáveis e a autoria segue no histórico de _commits_.
 
-O texto integral está em `LICENSE`.
+O texto integral da licença está em `LICENSE`; o processo do CLA está em `CONTRIBUTING.md`.
 
 A escolha da AGPL não é detalhe jurídico: é o que impede que a plataforma construída por uma
 comunidade seja fechada como serviço privado por quem a replicar.
@@ -156,7 +160,7 @@ e creditar os Mestres autores do conteúdo que reaproveitar.
 | ---------------------------------------- | ------------------------------------------------------------------------------------------ |
 | Modelo de decisão com mais de uma pessoa | Quem aprova mudança de rumo quando o projeto deixar de ter um mantenedor só                |
 | Marca e uso do nome                      | Quem pode chamar de "Comunidade Game" a instância que replicou                             |
-| DCO, CLA ou nenhum dos dois              | Como o direito autoral da contribuição externa se relaciona com o titular                  |
+| Texto e assinatura do CLA                | O termo revisado por advogado, como se assina e se há termo próprio para empresa           |
 | `CODE_OF_CONDUCT.md`                     | O código de conduta dos contribuidores, distinto do código de conduta do Guerreiro(a)      |
 | Forma jurídica sem fins lucrativos       | Arranjo para editais e recursos públicos, que costumam não aceitar empresa como proponente |
 | Separação contábil                       | Entre a atividade comercial da pessoa jurídica e os recursos do projeto                    |

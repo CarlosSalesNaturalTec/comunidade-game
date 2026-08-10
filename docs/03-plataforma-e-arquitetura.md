@@ -23,7 +23,9 @@
    o Mestre autor, e o derivado herda a mesma licença. Código e conteúdo seguem, cada um na
    sua régua, o mesmo princípio de compartilhar igual. O **titular do direito autoral do
    código é a pessoa jurídica vinculada ao projeto** (documento 04), que é quem responde por
-   ele e quem poderia relicenciá-lo.
+   ele e quem poderia relicenciá-lo. Para manter essa titularidade íntegra, **toda
+   contribuição externa entra por CLA**, com cessão dos direitos patrimoniais à pessoa
+   jurídica; sem CLA assinado, o _pull request_ não é integrado.
 5. **Registro de custos em tudo** — toda ação com custo (aula, lanche, hospedagem,
    prestadores) é computada e atribuída a um personagem; a arquitetura precisa suportar esse
    livro-razão desde o início.

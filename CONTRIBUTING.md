@@ -128,10 +128,26 @@ Ao abrir um _pull request_, você contribui sob essas licenças. Quem replicar a
 oferecer pela rede abre também as suas modificações; quem apenas consome a API com aplicação
 própria não é alcançado pela licença.
 
-> **A definir:** se o projeto vai adotar **DCO** (_Developer Certificate of Origin_), **CLA**
-> com cessão de direitos à pessoa jurídica titular, ou nenhum dos dois. A escolha muda quem
-> pode relicenciar o conjunto no futuro e precisa ser decidida antes da primeira contribuição
-> externa.
+### O CLA
+
+**Toda contribuição externa entra por CLA** (_Contributor License Agreement_), com **cessão dos
+direitos patrimoniais** à pessoa jurídica titular do projeto. Sem CLA assinado, o _pull
+request_ não é integrado — não importa o tamanho da mudança.
+
+Por que existe: sem a cessão, cada contribuição fica com o direito autoral de quem a escreveu,
+e o conjunto passa a ter vários donos. A partir daí ninguém consegue mais relicenciar o todo —
+nem para uma versão futura da AGPL, nem para atender exigência de um edital. O CLA é o que
+mantém essa porta aberta.
+
+O que o CLA **não** faz: ele não fecha o código nem retira o seu crédito. O projeto continua
+sob AGPL, os direitos morais de autor são inalienáveis e a sua autoria segue registrada no
+histórico de _commits_ — que, aliás, é o lastro do aporte em tempo de quem constrói a
+plataforma.
+
+> **A definir:** o **texto do termo**, revisado por advogado; a **forma de assinatura** —
+> verificação automática no _pull request_ ou termo assinado por outro meio —; e se haverá
+> termo próprio para quem contribui **em nome de uma empresa**. Até que existam, fale com o
+> mantenedor antes de abrir o _pull request_.
 
 ## 7. Contribuir sem escrever código
 
@@ -159,13 +175,14 @@ das trilhas — não governa quem contribui neste repositório.
 
 Estes pontos afetam quem contribui e seguem em aberto no documento 09:
 
-| Tema                                          | O que falta                                       |
-| --------------------------------------------- | ------------------------------------------------- |
-| DCO, CLA ou nenhum dos dois                   | A escolha, antes da primeira contribuição externa |
-| Apoio em código como aporte                   | Valor-hora e critério de conversão em horas       |
-| `CODE_OF_CONDUCT.md` dos contribuidores       | O documento                                       |
-| Canal entre agentes de IA e humanos           | _Issues_ com _labels_, _Discussions_, _Projects_  |
-| Orquestração do fluxo "do explore ao _merge_" | Se a automação com agentes entra aqui             |
-| Uso do Slack no fluxo de desenvolvimento      | A decisão                                         |
+| Tema                                          | O que falta                                      |
+| --------------------------------------------- | ------------------------------------------------ |
+| Texto e assinatura do CLA                     | O termo revisado por advogado e como se assina   |
+| CLA para quem contribui por uma empresa       | Se haverá termo próprio                          |
+| Apoio em código como aporte                   | Valor-hora e critério de conversão em horas      |
+| `CODE_OF_CONDUCT.md` dos contribuidores       | O documento                                      |
+| Canal entre agentes de IA e humanos           | _Issues_ com _labels_, _Discussions_, _Projects_ |
+| Orquestração do fluxo "do explore ao _merge_" | Se a automação com agentes entra aqui            |
+| Uso do Slack no fluxo de desenvolvimento      | A decisão                                        |
 
 Enquanto uma linha destas não for decidida, **pergunte** em vez de supor.
