@@ -8,7 +8,7 @@
 | Aplicação        | App 09 — Área do Mestre                                     |
 | Onda             | 3                                                           |
 | Situação         | aprovado                                                    |
-| Versão e data    | v5 — 2026-08-06                                             |
+| Versão e data    | v6 — 2026-08-10                                             |
 | Depende de       | PRD-01                                                      |
 | Documentos-fonte | 02 §§1–4, 03 §§1, 11, 05 §§3, 5, 6, 06, 07, 11 §§2, 4, 5, 7 |
 
@@ -632,7 +632,6 @@ avulsa**.
   quantos registros por série ativa entram na amostra ainda não.
 - **Mapeamento dos livros nas trilhas**: qual capítulo apoia qual missão das trilhas 1 e 2 é
   trabalho de leitura do acervo, não de ferramenta — mas sem ele a bibliografia nasce vazia.
-- **Licença do código** da plataforma (AGPL, MIT ou outra): a do conteúdo já está decidida.
 - **Formatos de arquivo aceitos no upload** e política de moderação do que é enviado: o limite
   de tamanho está decidido, a lista de extensões e a checagem de conteúdo impróprio não.
 - **Revisão pedagógica das trilhas 1 e 2** antes da primeira turma: sem aprovação prévia na

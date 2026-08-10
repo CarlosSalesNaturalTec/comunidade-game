@@ -15,8 +15,13 @@
    que qualquer pessoa chega, e é dela que o botão **Entrar** encaminha cada persona à sua
    aplicação.
 4. **Open Source** — todo o código-fonte é aberto, para permitir replicação por qualquer
-   comunidade. O **conteúdo educacional publicado sai sob CC BY-SA**: qualquer um usa e
-   adapta, creditando o Mestre autor, e o derivado herda a mesma licença.
+   comunidade. O **código sai sob AGPL**: quem replica a plataforma e a oferece pela rede
+   abre também as suas modificações, e é isso que impede alguém de fechar como serviço
+   privado o que a comunidade construiu. Quem apenas **consome a API** com aplicação própria
+   não é alcançado pela licença — usar a API pela rede não torna a aplicação derivada. O
+   **conteúdo educacional publicado sai sob CC BY-SA**: qualquer um usa e adapta, creditando
+   o Mestre autor, e o derivado herda a mesma licença. Código e conteúdo seguem, cada um na
+   sua régua, o mesmo princípio de compartilhar igual.
 5. **Registro de custos em tudo** — toda ação com custo (aula, lanche, hospedagem,
    prestadores) é computada e atribuída a um personagem; a arquitetura precisa suportar esse
    livro-razão desde o início.
