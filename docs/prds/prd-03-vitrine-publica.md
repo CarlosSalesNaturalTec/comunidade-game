@@ -8,7 +8,7 @@
 | Aplicação        | App 06 — Vitrine pública                          |
 | Onda             | 4                                                 |
 | Situação         | aprovado                                          |
-| Versão e data    | v3 — 2026-08-08                                   |
+| Versão e data    | v4 — 2026-08-10                                   |
 | Depende de       | PRD-01, PRD-13                                    |
 | Documentos-fonte | 02 §§1, 4, 03 §§8, 12, 04 §§1, 2, 4, 11 §§8.1–8.3 |
 
@@ -591,9 +591,10 @@ entidade e não como contrato.
 
 ## 14. Pendências que permanecem
 
-- **Nota de transparência sobre IA**: texto final, localização exata e a conexão com a linha
-  "Licenças" quanto a conteúdo gerado com auxílio de IA. Trava o `RF-03-48` no texto, não no
-  desenho.
+- **Nota de transparência sobre IA**: o **conteúdo** está decidido — a nota declara que a
+  plataforma é construída com Claude e atende as pessoas com Gemini (documento 01). Faltam o
+  **texto final**, a **localização exata** e a conexão com a linha "Licenças" quanto a conteúdo
+  gerado com auxílio de IA. Trava o `RF-03-48` no texto, não no desenho.
 - **Formato de exportação e licença de uso do conjunto** entregue sob solicitação, e o critério
   que o Admin aplica ao aprovar ou recusar. O recorte de pesquisadores promete a licença que
   ainda não existe.

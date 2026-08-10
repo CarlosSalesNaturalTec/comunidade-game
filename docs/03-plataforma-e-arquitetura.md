@@ -30,7 +30,9 @@
    atividade de trilha; a arquitetura precisa comportar essa evolução permanente.
 9. **Construção assistida por IA, sob direção humana** — os artefatos da plataforma são
    construídos com auxílio de ferramentas de IA; a idealização, o contexto humano e social e
-   as decisões são humanas, e a transparência sobre esse uso é pública.
+   as decisões são humanas, e a transparência sobre esse uso é pública. No Ciclo 01 a
+   construção usa os modelos **Claude 5 e Sonnet 5**, da Anthropic — uso distinto do Gemini,
+   que atende as pessoas na plataforma (§1.12). A nota pública declara os dois (documento 01).
 10. **Uma instância para todas as comunidades** — a Comunidade Virtual é um vínculo nos
     registros, não uma cópia da plataforma. É o que permite comparar territórios e somar o
     aporte de quem sustenta mais de uma comunidade; em troca, toda consulta filtra por
@@ -40,8 +42,18 @@
 12. **Modelos de IA do Ciclo 01: Google Gemini.** Toda funcionalidade que precisar de modelo
     de IA neste ciclo é atendida por modelos **Gemini** — assistente do Guerreiro(a), leitura
     da produção e assistente da Área do Apoiador Desenvolvedor —, com o custo lançado no
-    livro-razão como recurso de _cloud_. A **biometria facial do App 01** não é modelo de
-    linguagem e segue em aberto (documento 09).
+    livro-razão como recurso de _cloud_. O consumo é feito pela **API do Gemini**, de
+    **endpoint global**: no Ciclo 01 a região de processamento não é escolhida, porque o
+    Vertex AI, que a permite escolher, custaria o _free tier_ que sustenta o ciclo — a
+    revisão fica para o Ciclo 02 (documento 09). A **biometria facial do App 01 não usa
+    modelo de linguagem** e é resolvida no próprio aparelho (§3.3).
+13. **Stack e hospedagem do Ciclo 01.** O Backend API é escrito em **Python com FastAPI** e
+    roda em **Cloud Run**; o banco é **Cloud SQL para PostgreSQL com PostGIS**, onde ficam
+    também as **séries temporais do território**, particionadas por tempo; os arquivos de
+    missão vão para o **Cloud Storage**. Tudo na região **`southamerica-east1`** (São Paulo).
+    Contêiner e banco são portáteis — outra comunidade replica a plataforma fora do Google
+    Cloud. O custo entra no livro-razão como recurso de _cloud_, **aportado por absorção pelo
+    Admin e Mestre fundador** neste ciclo.
 
 ### 1.1 Como cada persona entra
 
@@ -164,7 +176,8 @@ barulhentos ou Guerreiros e Guerreiras que preferem digitar.
 **Captura de imagem** — pela câmera do dispositivo, com **finalidade única: identificar o
 Guerreiro(a)**, o que abrange o registro de presença e a autenticação dele nas aplicações. É o
 _template_ gerado nesta captura que faz as vezes de senha, já que a criança não tem PIN nem
-senha. Não é avatar, não vai para a vitrine, não aparece em ranking, não é compartilhada.
+senha. Não é avatar, não vai para a vitrine, não aparece em ranking, não é compartilhada. O
+_template_ nasce **no próprio aparelho**, e a fotografia não trafega (§3.3).
 
 **Condição de funcionamento** — o App 01 exige **câmera no aparelho** e um **Mestre ou Admin
 presente**. Faltando um dos dois, o onboarding não acontece: é o encontro presencial que dá
@@ -223,8 +236,15 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
   assinado é anexada ao cadastro pela gestão**, e o anexo em falta aparece como pendência no
   painel do dia. **Sem termo assinado não há captura** — e é por isso que o cadastro biométrico
   só acontece depois que o responsável aprova a participação.
-- **Minimização**: a **fotografia original é apagada assim que o _template_ biométrico**
-  (representação matemática não reversível) é gerado. A plataforma não guarda rosto de criança.
+- **Minimização, com o processamento no aparelho**: o _template_ biométrico — representação
+  matemática não reversível — é gerado **no navegador do próprio aparelho**, pela biblioteca
+  aberta **Human**, na ordem **prova de vivacidade e, depois, descritor facial**. Ao núcleo
+  vai **apenas o descritor**: a fotografia não trafega e é descartada na geração. A plataforma
+  não recebe nem guarda rosto de criança.
+- **Comparação sempre no núcleo**: o aparelho gera o descritor e **nunca recebe** o _template_
+  guardado — nenhuma rota o devolve. Como o descritor nasce em código que roda no aparelho, a
+  garantia da entrada é **também** presencial: o App 01 só opera com aula agendada, em
+  aparelho do ponto de apoio e com Mestre ou Admin presente (§3.2).
 - **Segurança**: armazenamento criptografado, acesso restrito e auditado.
 - **Retenção**: o _template_ é guardado enquanto durar o vínculo do Guerreiro(a) com o projeto
   e excluído automaticamente ao fim dele, ou a pedido do responsável, nos prazos da §12.2.
@@ -240,7 +260,8 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
 - Funcionar em **rede instável** e em aparelhos modestos, com fila local de sincronização.
 - **Rede fora:** a **presença** entra na fila local, confirmada pelo Mestre ou por um Admin
   pelo nick, e sincroniza quando a rede voltar. **Cadastro novo e reconhecimento facial exigem
-  rede** — nenhuma imagem de criança fica guardada no aparelho compartilhado.
+  rede**: o descritor nasce no aparelho, mas a comparação é no núcleo, e nem imagem nem
+  _template_ de criança ficam guardados no aparelho compartilhado.
 - Registro de presença de Guerreiro(a) conhecido em **poucos segundos** — a aula não pode
   travar na porta.
 - Acessibilidade: a modalidade áudio atende quem ainda não lê com fluência e pessoas com

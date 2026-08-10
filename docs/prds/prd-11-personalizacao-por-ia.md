@@ -8,7 +8,7 @@
 | Aplicação        | — (comportamento das Apps 05, 01, 07, 09 e do núcleo)     |
 | Onda             | 5                                                         |
 | Situação         | aprovado                                                  |
-| Versão e data    | v1 — 2026-08-08                                           |
+| Versão e data    | v2 — 2026-08-10                                           |
 | Depende de       | PRD-01, PRD-04                                            |
 | Documentos-fonte | 02 §§2, 3, 4; 03 §§4, 7, 7.1, 9, 11, 12; 11 §§2.1, 2.2, 6 |
 
@@ -65,7 +65,7 @@ recomendação e desliga tudo com um toque, sem que a criança perca uma linha d
 - **Recomendação entre ciclos ou entre comunidades**: no Ciclo 01 há uma comunidade e duas
   trilhas.
 - **Visão computacional para análise de movimentos de capoeira**: ciclo futuro, com a trilha.
-- **Biometria facial do App 01**: não é modelo de linguagem, tem pendência própria.
+- **Biometria facial do App 01**: não é modelo de linguagem e se resolve no aparelho.
 
 ## 4. Personas e permissões
 
@@ -450,7 +450,7 @@ acrescentados ao modelo do PRD-01. Nenhuma entidade existente ganhou atributo.
 - **Retenção pelo provedor**: o Ciclo 01 opera em conta Google Gemini PRO, e a configuração que
   desliga a retenção para treino precisa ser conferida na implantação e registrada. É tarefa de
   operação, não decisão de produto.
-- **Provedor de reconhecimento facial** (documento 09): segue aberto e fora deste PRD — é
+- **Reconhecimento facial** (documento 03 §3.3): resolvido no aparelho e fora deste PRD — é
   biometria do App 01, não personalização.
 
 ## 15. Rastreabilidade

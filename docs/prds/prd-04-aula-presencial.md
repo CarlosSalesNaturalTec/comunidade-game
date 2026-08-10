@@ -8,7 +8,7 @@
 | Aplicação        | App 01 — Aula presencial (onboarding, trilhas e equipes)       |
 | Onda             | 2                                                              |
 | Situação         | aprovado                                                       |
-| Versão e data    | v3 — 2026-08-06                                                |
+| Versão e data    | v4 — 2026-08-10                                                |
 | Depende de       | PRD-01, PRD-02; o caminho das trilhas depende também do PRD-09 |
 | Documentos-fonte | 02 §§1, 5, 9, 03 §§1.1, 3, 4, 12, 05 §§4, 5, 06 §3, 11 §§4, 5  |
 
@@ -54,7 +54,8 @@ existe para impedir.
 - Cadastro do novo Guerreiro(a): nome, nick, forma de tratamento, data de nascimento ou idade e
   características do avatar.
 - Conferência da **unicidade do nick** na conversa, com sugestão de variações.
-- Captura da imagem e geração do _template_ biométrico, com descarte imediato da fotografia.
+- Captura da imagem e geração do _template_ biométrico **no próprio aparelho**, com descarte
+  imediato da fotografia.
 - Registro do consentimento do responsável, com data, hora e quem testemunhou.
 - Caminho da criança sem o responsável: cadastro sem imagem, com intervenção do Mestre ou Admin.
 - Identificação do Guerreiro(a) já cadastrado por **nick e imagem** e registro automático da
@@ -88,7 +89,6 @@ existe para impedir.
 - Abertura e condução da partida de Quiz ao Vivo, com o vínculo aparelho–equipe: App 03
   (PRD-02). Aqui a equipe só recebe a pergunta e responde.
 - Autoria da trilha, do conteúdo e do banco de perguntas: App 09 (PRD-09).
-- Escolha do provedor de IA e de reconhecimento facial: pendência do documento 09.
 - **Apoio às atividades escolares**, coleta de dados do território, ranking, recompensas e
   canal de sugestões: são a App 05 (PRD-05), que atende as aulas remotas e o uso cotidiano.
 - **Captação do áudio ambiente da aula**: o antigo Modo Ouvinte **saiu do produto**.
@@ -138,8 +138,9 @@ dentro da mesma sessão de trabalho do aparelho.
    imagem — exibido na tela e **lido em voz alta** na modalidade áudio.
 7. O responsável **assina o termo impresso**, ali no encontro. O Mestre ou o Admin confirma na
    aplicação que o termo foi assinado e fica registrado como **testemunha**.
-8. Só então a câmera captura a imagem. O aparelho envia a captura, o _template_ é gerado e a
-   **fotografia original é descartada**.
+8. Só então a câmera captura a imagem. **No próprio aparelho** a aplicação verifica a
+   vivacidade e gera o **descritor facial**; ao núcleo vai apenas o descritor, e a
+   **fotografia é descartada sem sair do aparelho**.
 9. O cadastro é criado **ativo**, vinculado à comunidade da aula vigente, e a **presença do dia
    é registrada** no mesmo ato.
 10. A IA fecha a conversa dizendo o nick escolhido e como a criança vai entrar da próxima vez:
@@ -162,8 +163,8 @@ dentro da mesma sessão de trabalho do aparelho.
 ### 5.4 Presença de Guerreiro(a) já cadastrado
 
 1. A criança informa o **nick**, por voz ou por texto.
-2. A câmera captura a imagem e a aplicação a compara com o _template_ **daquele nick** — o nick
-   restringe a busca, a imagem confirma.
+2. A câmera captura a imagem, o aparelho gera o descritor e o núcleo o compara com o
+   _template_ **daquele nick** — o nick restringe a busca, a imagem confirma.
 3. Reconhecida, a **presença é registrada automaticamente** na atividade da aula vigente, e a
    tela devolve a confirmação em poucos segundos.
 4. Presença já registrada no mesmo encontro não é duplicada: a aplicação avisa que ela já
@@ -234,36 +235,37 @@ dentro da mesma sessão de trabalho do aparelho.
 
 ### 6.1 Onboarding e presença
 
-| ID         | Requisito                                                                                                                | Prioridade |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------ | ---------- |
-| `RF-04-01` | Tela inicial oferece a escolha entre onboarding e trilhas e, no onboarding, entre áudio e texto                          | essencial  |
-| `RF-04-02` | Aplicação abre somente dentro da janela de uma aula agendada para a data e a hora correntes                              | essencial  |
-| `RF-04-03` | Havendo mais de uma aula vigente, a aplicação pergunta uma única vez em qual comunidade opera                            | essencial  |
-| `RF-04-04` | Aplicação verifica a presença de câmera e bloqueia o onboarding quando não há                                            | essencial  |
-| `RF-04-05` | Sessão de trabalho do aparelho é aberta por Mestre ou Admin autenticado                                                  | essencial  |
-| `RF-04-06` | IA conduz a conversa aceitando respostas fora de ordem, repetindo e confirmando cada dado                                | essencial  |
-| `RF-04-07` | Cadastro coleta nome, nick, forma de tratamento, data de nascimento ou idade e características do avatar                 | essencial  |
-| `RF-04-08` | Aplicação recusa nick já existente e sugere variações antes de concluir o cadastro                                       | essencial  |
-| `RF-04-09` | Idade fora da faixa de 6 a 16 anos interrompe o cadastro e aciona o Mestre ou o Admin                                    | essencial  |
-| `RF-04-10` | Aplicação vincula o novo cadastro à comunidade da aula vigente, sem perguntá-la                                          | essencial  |
-| `RF-04-11` | Termo de consentimento é exibido na tela e lido em voz alta na modalidade áudio                                          | essencial  |
-| `RF-04-12` | Mestre ou Admin confirma na aplicação a assinatura do termo impresso e fica registrado como testemunha                   | essencial  |
-| `RF-04-13` | Captura da imagem só ocorre depois do registro do consentimento, com o responsável presente                              | essencial  |
-| `RF-04-14` | Fotografia original é descartada assim que o _template_ biométrico é gerado                                              | essencial  |
-| `RF-04-15` | Cadastro sem o responsável é criado ativo e sem imagem, com registro de quem confirmou                                   | essencial  |
-| `RF-04-16` | Aplicação captura a imagem do Guerreiro(a) já cadastrado assim que o responsável aprova a participação                   | essencial  |
-| `RF-04-17` | Novo cadastro nasce ativo e registra a presença do dia no mesmo ato                                                      | essencial  |
-| `RF-04-18` | Guerreiro(a) já cadastrado informa o nick, captura a imagem e tem a presença registrada automaticamente                  | essencial  |
-| `RF-04-19` | Presença já registrada no mesmo encontro não é duplicada                                                                 | essencial  |
-| `RF-04-20` | Falha de identificação oferece nova tentativa sem revelar se o nick existe                                               | essencial  |
-| `RF-04-21` | Mestre ou Admin confirma a identidade e registra a presença quando a identificação falha, com registro de quem confirmou | essencial  |
-| `RF-04-22` | Mestre ou Admin recadastra a imagem de referência a partir da própria aplicação                                          | desejável  |
-| `RF-04-23` | Sem rede, a presença confirmada pelo Mestre ou Admin entra em fila local e sincroniza depois                             | essencial  |
-| `RF-04-24` | Sem rede, cadastro novo e reconhecimento facial ficam indisponíveis, com aviso na tela                                   | essencial  |
-| `RF-04-25` | Sincronização preserva a hora do fato, não a do envio, e não duplica registro reenviado                                  | essencial  |
-| `RF-04-26` | Aplicação exibe aviso discreto do que coleta, com acesso à área detalhada de direitos                                    | essencial  |
-| `RF-04-27` | Aplicação encerra a conversa dizendo ao Guerreiro(a) como ele entrará da próxima vez                                     | desejável  |
-| `RF-04-28` | Aplicação volta à tela inicial ao fim de cada atendimento, pronta para o próximo que chegar                              | essencial  |
+| ID         | Requisito                                                                                                                                            | Prioridade |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-04-01` | Tela inicial oferece a escolha entre onboarding e trilhas e, no onboarding, entre áudio e texto                                                      | essencial  |
+| `RF-04-02` | Aplicação abre somente dentro da janela de uma aula agendada para a data e a hora correntes                                                          | essencial  |
+| `RF-04-03` | Havendo mais de uma aula vigente, a aplicação pergunta uma única vez em qual comunidade opera                                                        | essencial  |
+| `RF-04-04` | Aplicação verifica a presença de câmera e bloqueia o onboarding quando não há                                                                        | essencial  |
+| `RF-04-05` | Sessão de trabalho do aparelho é aberta por Mestre ou Admin autenticado                                                                              | essencial  |
+| `RF-04-06` | IA conduz a conversa aceitando respostas fora de ordem, repetindo e confirmando cada dado                                                            | essencial  |
+| `RF-04-07` | Cadastro coleta nome, nick, forma de tratamento, data de nascimento ou idade e características do avatar                                             | essencial  |
+| `RF-04-08` | Aplicação recusa nick já existente e sugere variações antes de concluir o cadastro                                                                   | essencial  |
+| `RF-04-09` | Idade fora da faixa de 6 a 16 anos interrompe o cadastro e aciona o Mestre ou o Admin                                                                | essencial  |
+| `RF-04-10` | Aplicação vincula o novo cadastro à comunidade da aula vigente, sem perguntá-la                                                                      | essencial  |
+| `RF-04-11` | Termo de consentimento é exibido na tela e lido em voz alta na modalidade áudio                                                                      | essencial  |
+| `RF-04-12` | Mestre ou Admin confirma na aplicação a assinatura do termo impresso e fica registrado como testemunha                                               | essencial  |
+| `RF-04-13` | Captura da imagem só ocorre depois do registro do consentimento, com o responsável presente                                                          | essencial  |
+| `RF-04-14` | Fotografia original é descartada assim que o _template_ biométrico é gerado, sem sair do aparelho                                                    | essencial  |
+| `RF-04-48` | Aparelho gera o _template_ no navegador, na ordem prova de vivacidade e descritor facial, e envia ao núcleo só o descritor                           | essencial  |
+| `RF-04-15` | Cadastro sem o responsável é criado ativo e sem imagem, com registro de quem confirmou                                                               | essencial  |
+| `RF-04-16` | Aplicação captura a imagem do Guerreiro(a) já cadastrado assim que o responsável aprova a participação                                               | essencial  |
+| `RF-04-17` | Novo cadastro nasce ativo e registra a presença do dia no mesmo ato                                                                                  | essencial  |
+| `RF-04-18` | Guerreiro(a) já cadastrado informa o nick, captura a imagem e tem a presença registrada automaticamente                                              | essencial  |
+| `RF-04-19` | Presença já registrada no mesmo encontro não é duplicada                                                                                             | essencial  |
+| `RF-04-20` | Falha de identificação oferece nova tentativa sem revelar se o nick existe                                                                           | essencial  |
+| `RF-04-21` | Mestre ou Admin confirma a identidade e registra a presença quando a identificação falha, com registro de quem confirmou                             | essencial  |
+| `RF-04-22` | Mestre ou Admin recadastra a imagem de referência a partir da própria aplicação                                                                      | desejável  |
+| `RF-04-23` | Sem rede, a presença confirmada pelo Mestre ou Admin entra em fila local e sincroniza depois                                                         | essencial  |
+| `RF-04-24` | Sem rede, cadastro novo e reconhecimento facial ficam indisponíveis, com aviso na tela — o descritor nasce no aparelho, mas a comparação é no núcleo | essencial  |
+| `RF-04-25` | Sincronização preserva a hora do fato, não a do envio, e não duplica registro reenviado                                                              | essencial  |
+| `RF-04-26` | Aplicação exibe aviso discreto do que coleta, com acesso à área detalhada de direitos                                                                | essencial  |
+| `RF-04-27` | Aplicação encerra a conversa dizendo ao Guerreiro(a) como ele entrará da próxima vez                                                                 | desejável  |
+| `RF-04-28` | Aplicação volta à tela inicial ao fim de cada atendimento, pronta para o próximo que chegar                                                          | essencial  |
 
 ### 6.2 Trilhas e equipes
 
@@ -362,15 +364,15 @@ As convenções são as do PRD-01 — prefixo `/v1`, erro em formato único, dat
 A **sessão de trabalho do aparelho**, aberta pelo Mestre ou Admin presente, é o que autentica a
 escrita: o cadastro continua sendo **autocadastro do Guerreiro(a)**, feito na presença deles.
 
-| Método | Rota                             | Autenticação     | Uso nesta aplicação                                       |
-| ------ | -------------------------------- | ---------------- | --------------------------------------------------------- |
-| GET    | `/v1/aulas/vigentes`             | pública          | Descobrir a aula e a comunidade do momento                |
-| GET    | `/v1/guerreiros/nick/disponivel` | pública          | Conferir a unicidade do nick durante a conversa           |
-| POST   | `/v1/guerreiros`                 | sessão do App 01 | Criar o cadastro, já vinculado à comunidade da aula       |
-| POST   | `/v1/consentimentos`             | sessão do App 01 | Registrar o termo assinado, com testemunha, data e hora   |
-| POST   | `/v1/guerreiros/{id}/imagem`     | sessão do App 01 | Enviar a captura para geração do _template_               |
-| POST   | `/v1/aulas/{id}/presencas`       | sessão do App 01 | Registrar presença, por reconhecimento ou confirmação     |
-| POST   | `/v1/sessoes/guerreiro`          | pública          | Conferir nick e imagem na chegada de quem já é cadastrado |
+| Método | Rota                             | Autenticação     | Uso nesta aplicação                                        |
+| ------ | -------------------------------- | ---------------- | ---------------------------------------------------------- |
+| GET    | `/v1/aulas/vigentes`             | pública          | Descobrir a aula e a comunidade do momento                 |
+| GET    | `/v1/guerreiros/nick/disponivel` | pública          | Conferir a unicidade do nick durante a conversa            |
+| POST   | `/v1/guerreiros`                 | sessão do App 01 | Criar o cadastro, já vinculado à comunidade da aula        |
+| POST   | `/v1/consentimentos`             | sessão do App 01 | Registrar o termo assinado, com testemunha, data e hora    |
+| POST   | `/v1/guerreiros/{id}/descritor`  | sessão do App 01 | Enviar o descritor gerado no aparelho, que vira _template_ |
+| POST   | `/v1/aulas/{id}/presencas`       | sessão do App 01 | Registrar presença, por reconhecimento ou confirmação      |
+| POST   | `/v1/sessoes/guerreiro`          | pública          | Conferir nick e imagem na chegada de quem já é cadastrado  |
 
 Rotas do caminho das trilhas, todas autenticadas na **sessão do Guerreiro(a)**:
 
@@ -418,20 +420,20 @@ corpus (200, com a recusa explicada no corpo).
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                         | Finalidade                                     | Base legal                   | Retenção                                                   | Quem acessa                      |
-| ------------------------------------- | ---------------------------------------------- | ---------------------------- | ---------------------------------------------------------- | -------------------------------- |
-| Imagem captada                        | Gerar o _template_ biométrico                  | consentimento do responsável | descartada na geração                                      | ninguém: não é persistida        |
-| _Template_ biométrico                 | Presença e autenticação                        | consentimento do responsável | vínculo + 30 dias; 5 dias a pedido                         | ninguém: só a comparação interna |
-| Nome                                  | Identificação interna                          | consentimento                | enquanto durar o vínculo                                   | gestão e responsável             |
-| Nick e forma de tratamento            | Identidade pública                             | consentimento                | enquanto durar o vínculo                                   | qualquer visitante               |
-| Data de nascimento ou idade           | Faixa etária e nível da atividade              | consentimento                | enquanto durar o vínculo                                   | gestão e responsável             |
-| Características do avatar             | Geração do avatar público                      | consentimento                | enquanto durar o vínculo                                   | qualquer visitante               |
-| Áudio ou texto da conversa            | Conduzir o cadastro                            | consentimento                | descartado ao fim do atendimento                           | ninguém depois do atendimento    |
-| Produção da missão (foto e áudio)     | Ler o que a equipe produziu e devolver retorno | consentimento                | **descartados na leitura**; ficam transcrição e devolutiva | gestão e Mestre da turma         |
-| Áudio da pergunta ao assistente       | Gerar a transcrição                            | consentimento                | descartado assim que transcrito                            | ninguém: não é persistido        |
-| Transcrição da consulta ao assistente | Melhorar o conteúdo e auditar o uso da IA      | consentimento                | enquanto durar o vínculo                                   | gestão e Mestre da trilha        |
-| Termo assinado (digitalização)        | Prova do consentimento                         | obrigação legal              | permanente                                                 | gestão e responsável             |
-| Presença                              | Registro da participação                       | consentimento                | enquanto durar o vínculo                                   | gestão e responsável             |
+| Dado coletado                         | Finalidade                                     | Base legal                   | Retenção                                                   | Quem acessa                           |
+| ------------------------------------- | ---------------------------------------------- | ---------------------------- | ---------------------------------------------------------- | ------------------------------------- |
+| Imagem captada                        | Gerar o _template_ biométrico no aparelho      | consentimento do responsável | descartada na geração, sem sair do aparelho                | ninguém: não trafega nem é persistida |
+| _Template_ biométrico                 | Presença e autenticação                        | consentimento do responsável | vínculo + 30 dias; 5 dias a pedido                         | ninguém: só a comparação interna      |
+| Nome                                  | Identificação interna                          | consentimento                | enquanto durar o vínculo                                   | gestão e responsável                  |
+| Nick e forma de tratamento            | Identidade pública                             | consentimento                | enquanto durar o vínculo                                   | qualquer visitante                    |
+| Data de nascimento ou idade           | Faixa etária e nível da atividade              | consentimento                | enquanto durar o vínculo                                   | gestão e responsável                  |
+| Características do avatar             | Geração do avatar público                      | consentimento                | enquanto durar o vínculo                                   | qualquer visitante                    |
+| Áudio ou texto da conversa            | Conduzir o cadastro                            | consentimento                | descartado ao fim do atendimento                           | ninguém depois do atendimento         |
+| Produção da missão (foto e áudio)     | Ler o que a equipe produziu e devolver retorno | consentimento                | **descartados na leitura**; ficam transcrição e devolutiva | gestão e Mestre da turma              |
+| Áudio da pergunta ao assistente       | Gerar a transcrição                            | consentimento                | descartado assim que transcrito                            | ninguém: não é persistido             |
+| Transcrição da consulta ao assistente | Melhorar o conteúdo e auditar o uso da IA      | consentimento                | enquanto durar o vínculo                                   | gestão e Mestre da trilha             |
+| Termo assinado (digitalização)        | Prova do consentimento                         | obrigação legal              | permanente                                                 | gestão e responsável                  |
+| Presença                              | Registro da participação                       | consentimento                | enquanto durar o vínculo                                   | gestão e responsável                  |
 
 - **Consentimento**: termo impresso, assinado pelo responsável presente no encontro, antes da
   captura. A aplicação grava data, hora e quem testemunhou; a gestão anexa a digitalização.
@@ -442,6 +444,8 @@ corpus (200, com a recusa explicada no corpo).
   sendo coletado, com um caminho para a área detalhada sobre destino e uso de cada dado.
 - **Pedido de acesso, correção ou exclusão**: a aplicação não os atende — ela informa que o
   canal é o responsável, pela App 07, e que o prazo de resposta é de 7 dias.
+- **A imagem não trafega**: o descritor é gerado no navegador do próprio aparelho, e só ele é
+  enviado. A rede não carrega rosto de criança, e nenhum registro do núcleo pode conter um.
 - A imagem **nunca** é exibida: não vira avatar, não vai para a vitrine, não aparece em ranking
   e não é mostrada a outro Guerreiro(a).
 - **Nada da aula é escutado**: o microfone abre por ação do Guerreiro(a) e fecha ao fim da fala.
@@ -463,6 +467,9 @@ corpus (200, com a recusa explicada no corpo).
 - Cadastro criado sem o responsável fica **ativo e sem _template_**, e a captura acontece depois,
   quando o responsável aprova.
 - Tentativa de captura sem consentimento registrado é recusada, com mensagem em linguagem simples.
+- Nenhuma requisição do App 01 carrega imagem de criança: o que sai do aparelho é o descritor,
+  e a fotografia não aparece em corpo de requisição nem em registro de erro.
+- Descritor gerado sem a prova de vivacidade não é aceito pelo núcleo.
 - Concluída a captura, a fotografia original não existe em lugar nenhum — nem no aparelho, nem
   no servidor, nem em log.
 - Guerreiro(a) conhecido tem a presença registrada em poucos segundos, informando só o nick e
@@ -500,6 +507,8 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 | Decisão                                                                                 | Gravada em     | Linha do doc 09 |
 | --------------------------------------------------------------------------------------- | -------------- | --------------- |
 | Fotografia original apagada assim que o _template_ é gerado                             | 03 §3.3        | Já decididos    |
+| _Template_ gerado no aparelho pela biblioteca Human — vivacidade e depois descritor     | 03 §3.3        | Já decididos    |
+| Só o descritor trafega; a comparação continua no núcleo, que nunca devolve o _template_ | 03 §3.3        | Já decididos    |
 | _Template_ guardado enquanto durar o vínculo, excluído ao fim dele ou a pedido          | 03 §3.3        | Já decididos    |
 | Consentimento biométrico em termo impresso assinado, com testemunha e anexo pela gestão | 03 §3.3        | Já decididos    |
 | Nick único em toda a plataforma, com sugestão de variações no cadastro                  | 02 §1          | Já decididos    |
@@ -520,8 +529,8 @@ nasce aqui e serve também ao apoio escolar da App 05.
 
 ## 14. Pendências que permanecem
 
-- **Provedor de IA e de reconhecimento facial**, com a decisão de processar no dispositivo ou na
-  nuvem. Não altera os requisitos deste PRD, mas define custo, latência e exposição do dado.
+- **Peso dos modelos da biblioteca Human** no primeiro carregamento, contra o requisito de
+  aparelho modesto e rede instável. É desenho de implementação, não requisito novo.
 - **Aviso ao responsável antes da exclusão do _template_**: o prazo está decidido — 30 dias
   após o fim do vínculo, ou 5 dias a pedido —, mas a forma do aviso prévio, sem notificação por
   e-mail no Ciclo 01, ainda precisa de desenho.
@@ -565,3 +574,4 @@ nasce aqui e serve também ao apoio escolar da App 05.
 | `RF-04-36` a `RF-04-40` | 03 §§4.2, 7 (assistente, corpus fechado e áudio)      |
 | `RF-04-41` a `RF-04-44` | 05 §5 (regras da partida de Quiz ao Vivo)             |
 | `RF-04-45`              | 03 §3.4 (rede instável)                               |
+| `RF-04-48`              | 03 §3.3 (_template_ gerado no aparelho)               |

@@ -409,9 +409,8 @@ preferência por _template_ biométrico não reversível; criptografia e acesso 
 retenção com exclusão automática; **alternativa sem biometria** para quem recusar, com
 confirmação do Mestre ou Admin.
 
-**Questões em aberto:** provedor de IA e de reconhecimento facial (custo, privacidade,
-processamento no dispositivo × nuvem); política de retenção em números; roteiro exato da
-conversa de cadastro; comportamento do assistente por voz em sala barulhenta.
+**Questões em aberto:** roteiro exato da conversa de cadastro; comportamento do assistente por
+voz em sala barulhenta; peso dos modelos de biometria no primeiro carregamento do aparelho.
 
 **Fontes:** docs 02, 03, 05, 06, 11.
 

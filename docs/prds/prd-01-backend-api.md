@@ -8,7 +8,7 @@
 | Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | aprovado                                                   |
-| Versão e data    | v13 — 2026-08-08                                           |
+| Versão e data    | v14 — 2026-08-10                                           |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 8, 9, 11 e 12, 04, 11                     |
 
@@ -58,12 +58,10 @@ o que é público — cada um pela sua aplicação, todos sobre a mesma verdade.
 - Interface de qualquer aplicação — cada uma tem o seu PRD.
 - Regras de pontuação, cadência de coleta e valoração de aporte: já normatizadas nos
   documentos 11, 02 e 04 e detalhadas nos PRD-08 e PRD-07.
-- Captura da imagem e conversa de cadastro: são da App 01 (PRD-04). Aqui ficam apenas a guarda
-  do _template_, a conferência no login e a alternativa para quem recusa a biometria.
-- Escolha do provedor de reconhecimento facial e do lugar onde o _template_ é extraído
-  (dispositivo × servidor): pendência registrada no documento 09.
+- Captura da imagem, conversa de cadastro e **geração do descritor no aparelho**: são da App 01
+  (PRD-04). Aqui ficam a guarda do _template_, a comparação no login e a alternativa para quem
+  recusa a biometria.
 - Telemetria da Batalha de Laser (PRD-10) e personalização por IA (PRD-11).
-- Escolha de linguagem, framework e banco de dados — decisão de implementação, ainda pendente.
 
 ## 4. Personas e permissões
 
@@ -157,7 +155,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-02` | Rotas de consulta pública respondem **sem login de pessoa**, mediante chave da aplicação                                                                                                        | essencial  |
 | `RF-01-03` | Toda rota de escrita exige autenticação e registra autoria, data e hora                                                                                                                         | essencial  |
 | `RF-01-04` | Guerreiro(a) autentica com nick e imagem e recebe sessão de duração curta                                                                                                                       | essencial  |
-| `RF-01-05` | Núcleo guarda o _template_ biométrico do Guerreiro(a) e o confere no login, sem devolvê-lo                                                                                                      | essencial  |
+| `RF-01-05` | Núcleo recebe o descritor gerado no aparelho, guarda o _template_ cifrado e o confere no login, sem devolvê-lo                                                                                  | essencial  |
 | `RF-01-06` | Mestre ou Admin confirma a identidade do Guerreiro(a) e abre a sessão dele quando não há _template_ gravado, o reconhecimento falha ou a biometria foi recusada, com registro de quem confirmou | essencial  |
 | `RF-01-07` | Núcleo grava o _template_ do Guerreiro(a) cadastrado sem imagem assim que o responsável aprova a participação                                                                                   | essencial  |
 | `RF-01-08` | Mestre ou Admin recadastra a imagem de referência do Guerreiro(a), com registro de quem recadastrou                                                                                             | essencial  |
@@ -342,31 +340,31 @@ Convenções válidas para todas as rotas:
 | Listagem     | paginada, com filtros de comunidade, período e persona                  |
 | Data e hora  | sempre com fuso, e a data do fato nunca é substituída pela do registro  |
 
-| Método | Rota                                | Autenticação    | Descrição                                                         |
-| ------ | ----------------------------------- | --------------- | ----------------------------------------------------------------- |
-| POST   | `/v1/sessoes/guerreiro`             | pública         | Autentica com nick e imagem e abre sessão curta                   |
-| POST   | `/v1/sessoes/guerreiro/confirmacao` | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana              |
-| POST   | `/v1/sessoes/social`                | pública         | Autentica adulto por login social                                 |
-| POST   | `/v1/sessoes/credencial`            | pública         | Autentica adulto por usuário e senha                              |
-| DELETE | `/v1/sessoes/atual`                 | autenticada     | Encerra a sessão                                                  |
-| POST   | `/v1/guerreiros/{id}/imagem`        | Mestre ou Admin | Grava ou recadastra a imagem de referência, com registro          |
-| POST   | `/v1/credenciais`                   | Admin ou Mestre | Cria credencial de usuário e senha provisória                     |
-| POST   | `/v1/credenciais/senha`             | autenticada     | Troca a senha; obrigatória no primeiro acesso                     |
-| POST   | `/v1/responsaveis`                  | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele                  |
-| POST   | `/v1/responsaveis/{id}/vinculos`    | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco       |
-| GET    | `/v1/eu`                            | autenticada     | Persona, papéis e permissões da sessão                            |
-| GET    | `/v1/vitrine/...`                   | pública         | Consultas públicas de vitrine e rankings                          |
-| GET    | `/v1/vitrine/guerreiros/{nick}`     | pública         | Perfil público por nick exato, se houver divulgação autorizada    |
-| GET    | `/v1/vitrine/ods/cobertura`         | pública         | Cobertura de ODS agregada por comunidade e ciclo                  |
-| POST   | `/v1/solicitacoes-de-dados`         | pública         | Registra pedido do conjunto de dados, sem criar cadastro          |
-| POST   | `/v1/solicitacoes-de-participacao`  | pública         | Registra o pedido; do Apoiador, com aporte e comprovante          |
-| PUT    | `/v1/eu/apoiador/identidade`        | Apoiador        | Define ou troca o nick e, acima do piso de moedas, o avatar       |
-| GET    | `/v1/auditoria`                     | Admin           | Trilha de auditoria das ações de gestão                           |
-| POST   | `/v1/solicitacoes-de-chave`         | pública         | Registra pedido de chave feito na Área do Apoiador Desenvolvedor  |
-| POST   | `/v1/chaves`                        | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez |
-| POST   | `/v1/chaves/{id}/url`               | pública         | Apresenta a URL do que foi construído, dentro dos 30 dias         |
-| DELETE | `/v1/chaves/{id}`                   | Admin           | Revoga a chave, com motivo e autoria                              |
-| GET    | `/v1/chaves`                        | Admin           | Chaves emitidas, com prazo, URL apresentada e situação            |
+| Método | Rota                                | Autenticação    | Descrição                                                            |
+| ------ | ----------------------------------- | --------------- | -------------------------------------------------------------------- |
+| POST   | `/v1/sessoes/guerreiro`             | pública         | Autentica com nick e imagem e abre sessão curta                      |
+| POST   | `/v1/sessoes/guerreiro/confirmacao` | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana                 |
+| POST   | `/v1/sessoes/social`                | pública         | Autentica adulto por login social                                    |
+| POST   | `/v1/sessoes/credencial`            | pública         | Autentica adulto por usuário e senha                                 |
+| DELETE | `/v1/sessoes/atual`                 | autenticada     | Encerra a sessão                                                     |
+| POST   | `/v1/guerreiros/{id}/descritor`     | Mestre ou Admin | Grava ou recadastra o _template_ a partir do descritor, com registro |
+| POST   | `/v1/credenciais`                   | Admin ou Mestre | Cria credencial de usuário e senha provisória                        |
+| POST   | `/v1/credenciais/senha`             | autenticada     | Troca a senha; obrigatória no primeiro acesso                        |
+| POST   | `/v1/responsaveis`                  | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele                     |
+| POST   | `/v1/responsaveis/{id}/vinculos`    | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco          |
+| GET    | `/v1/eu`                            | autenticada     | Persona, papéis e permissões da sessão                               |
+| GET    | `/v1/vitrine/...`                   | pública         | Consultas públicas de vitrine e rankings                             |
+| GET    | `/v1/vitrine/guerreiros/{nick}`     | pública         | Perfil público por nick exato, se houver divulgação autorizada       |
+| GET    | `/v1/vitrine/ods/cobertura`         | pública         | Cobertura de ODS agregada por comunidade e ciclo                     |
+| POST   | `/v1/solicitacoes-de-dados`         | pública         | Registra pedido do conjunto de dados, sem criar cadastro             |
+| POST   | `/v1/solicitacoes-de-participacao`  | pública         | Registra o pedido; do Apoiador, com aporte e comprovante             |
+| PUT    | `/v1/eu/apoiador/identidade`        | Apoiador        | Define ou troca o nick e, acima do piso de moedas, o avatar          |
+| GET    | `/v1/auditoria`                     | Admin           | Trilha de auditoria das ações de gestão                              |
+| POST   | `/v1/solicitacoes-de-chave`         | pública         | Registra pedido de chave feito na Área do Apoiador Desenvolvedor     |
+| POST   | `/v1/chaves`                        | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez    |
+| POST   | `/v1/chaves/{id}/url`               | pública         | Apresenta a URL do que foi construído, dentro dos 30 dias            |
+| DELETE | `/v1/chaves/{id}`                   | Admin           | Revoga a chave, com motivo e autoria                                 |
+| GET    | `/v1/chaves`                        | Admin           | Chaves emitidas, com prazo, URL apresentada e situação               |
 
 **"Pública" nesta coluna significa "sem credencial de persona"** — a chave da aplicação
 continua obrigatória em todas elas. Nenhuma rota deste PRD responde sem chave válida.
@@ -410,7 +408,8 @@ consultas ou de envios na rota pública (429, com o tempo de espera).
 | Auditoria de escrita         | Rastreabilidade das ações         | interesse público            | permanente               | Admin                            |
 
 - O _template_ é guardado **cifrado**, a senha com **hash**, e nenhuma rota devolve um nem
-  outro. A imagem original não é a credencial: o que autentica é o _template_.
+  outro. A imagem original não é a credencial: o que autentica é o _template_. Ela tampouco
+  **chega ao núcleo** — o descritor é gerado no aparelho (PRD-04).
 - **O _template_ só nasce com o consentimento do responsável.** Até lá — criança que fez o
   onboarding sozinha — o Guerreiro(a) participa igual, e quem abre a sessão dele é o Mestre ou
   um Admin, no encontro. Mesma saída para quem recusa a biometria.
@@ -439,6 +438,8 @@ consultas ou de envios na rota pública (429, com o tempo de espera).
 - Imagem não reconhecida devolve 401 sem dizer se o nick existe, e a confirmação do Mestre
   abre a sessão em seguida, com o nome de quem confirmou no registro.
 - Nenhuma resposta da API devolve o _template_ biométrico nem a imagem do Guerreiro(a).
+- Nenhuma rota do núcleo aceita imagem de Guerreiro(a): a gravação do _template_ recebe
+  descritor, e o envio de imagem é recusado.
 - Login social ou usuário sem cadastro é recusado e **nenhuma persona é criada**.
 - Adulto com senha provisória só consegue trocar a senha; qualquer outra rota devolve 403.
 - Tentativa de vincular um quarto responsável ao mesmo Guerreiro(a) é recusada, e os três
@@ -483,14 +484,14 @@ e o dos desafios de desbloqueio de cada trilha.
 | A chave é da aplicação, não da pessoa: consulta pública dispensa login, nunca a chave                | 03 §§1, 1.1       | Já decididos |
 | Chave de terceiro pedida na Área do Apoiador Desenvolvedor, com 30 dias para a URL                   | 03 §8             | Já decididos |
 | Chave sem URL apresentada no prazo é revogada                                                        | 03 §8             | Já decididos |
+| Stack: Python com FastAPI, Cloud SQL para PostgreSQL com PostGIS e Cloud Storage                     | 03 §1             | Já decididos |
+| Hospedagem em Cloud Run, região `southamerica-east1`, custo por absorção do fundador                 | 03 §1             | Já decididos |
+| Séries temporais do território no próprio PostgreSQL, particionadas por tempo                        | 03 §1             | Já decididos |
+| _Template_ biométrico gerado no aparelho; ao núcleo chega só o descritor                             | 03 §3.3           | Já decididos |
+| Comparação do _template_ permanece no núcleo, que nunca o devolve                                    | 03 §3.3           | Já decididos |
 
 ## 14. Pendências que permanecem
 
-- **Provedor de reconhecimento facial** e o lugar da extração do _template_ (dispositivo ×
-  servidor), com o prazo de retenção em números — sabendo que apagar o _template_ apaga
-  também a credencial de acesso do Guerreiro(a).
-- **Stack do backend**: linguagem, framework e banco de dados, incluindo o armazenamento das
-  séries temporais do território. É decisão de implementação e não altera os requisitos.
 - **Instituição com mais de um usuário** no mesmo cadastro de Apoiador, e como se registra
   quem agiu em nome dela.
 - **Prazo de disponibilidade da versão anterior** da API depois que uma nova abrir.
