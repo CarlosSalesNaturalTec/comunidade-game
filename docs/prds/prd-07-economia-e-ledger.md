@@ -400,4 +400,6 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | `RF-07-39` a `RF-07-41` | 04 §3 (custeio e reserva do desafio extra)       |
 | `RF-07-27` e `RF-07-28` | 04 §1 (necessidade publicada e absorção)         |
 | `RF-07-32`              | 04 §1 (custos anteriores ao livro-razão)         |
+| `RF-07-29` e `RF-07-30` | 04 §2 (pré-cadastro, comprovante e homologação)  |
+| `RF-07-31`              | 04 §1 (cobertura parcial da necessidade)         |
 | `RN-07-20`              | 04 §1 (sem armazenamento de dado bancário)       |
