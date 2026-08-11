@@ -76,6 +76,12 @@ context: |
     _template_. Sem provedor externo e sem custo de nuvem.
   - Modelos de IA do Ciclo 01: Google Gemini, com custo lançado no livro-razão como cloud.
   - Código aberto; conteúdo educacional publicado sob CC BY-SA.
+  - Repositório único (monorepo), com uma pasta por aplicação: `backend/`, `apps/app-NN-*/`,
+    `jogos/app-04-arena/`, `docs/` e `openspec/`. O desenho está no documento 03 §1.2 — siga
+    aquele desenho e não invente pasta nova de topo. O jogo fica em `jogos/`, não em `apps/`.
+  - O código tem esteira de CI como a documentação. A change que cria uma pasta de código
+    entrega, no mesmo PR, o workflow daquela pasta. As ferramentas de cada stack — formatador,
+    linter, executor de testes — seguem PENDENTES no documento 09: pergunte, não escolha.
 
   ORDEM DE CONSTRUÇÃO
   A ordem em que os PRDs viram código está no documento 99 §9, com o piso de dependência de

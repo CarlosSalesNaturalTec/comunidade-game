@@ -1,8 +1,9 @@
 # CLAUDE.md — Regras de trabalho neste repositório
 
 Repositório do **Comunidade Game** — plataforma educacional gamificada, open source, para
-comunidades periféricas. Ele guarda a documentação do projeto, em `docs/`, os artefatos de
-planejamento da implementação, em `openspec/`, e o código das aplicações.
+comunidades periféricas. É um **monorepo**: guarda a documentação do projeto, em `docs/`, os
+artefatos de planejamento da implementação, em `openspec/`, e todo o código — o Backend API,
+as oito aplicações e os jogos. O desenho das pastas está no documento 03 §1.2.
 
 ## Estado atual e próxima etapa
 
@@ -258,6 +259,16 @@ Regras que a esteira impõe e que valem ao escrever:
 O deploy do site no GitHub Pages (`.github/workflows/docs-deploy.yml`) acontece **somente
 após merge em `main`** — nunca a partir de um PR.
 
+## Esteira de CI do código
+
+O código tem verificação automática como a documentação tem. **A change que cria uma pasta
+de código entrega, no mesmo PR, a esteira daquela pasta** — workflow em `.github/workflows/`,
+disparado só pelo caminho que ele cobre, e os comandos equivalentes rodáveis à mão.
+
+As **ferramentas de cada stack ainda não estão decididas** — formatador, _linter_, executor
+de testes e o que bloqueia o merge (documento 09). Enquanto a linha não for decidida,
+**pergunte ao fundador**; não escolha ferramenta dentro de uma change.
+
 ## Integrações
 
 Merge de PR no GitHub usa **merge commit — nunca squash.**
@@ -285,6 +296,8 @@ Merge de PR no GitHub usa **merge commit — nunca squash.**
 - [ ] Decisão nova foi gravada no documento-fonte, movida no documento 09 e aplicada ao PRD
       antes de virar código?
 - [ ] Os invariantes do documento 99 §6 continuam válidos no que foi implementado?
+- [ ] O código foi para a pasta que o documento 03 §1.2 define, e pasta nova saiu com a
+      esteira de CI dela?
 - [ ] A documentação que a change mudou entrou no mesmo PR (§5 das regras de implementação)?
 - [ ] `npm run lint` e `mkdocs build --strict` passam com as mudanças de `docs/`?
 - [ ] `/opsx:verify` passou antes de arquivar a change?

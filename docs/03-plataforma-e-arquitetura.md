@@ -63,6 +63,11 @@
     Contêiner e banco são portáteis — outra comunidade replica a plataforma fora do Google
     Cloud. O custo entra no livro-razão como recurso de _cloud_, **aportado por absorção pelo
     Admin e Mestre fundador** neste ciclo.
+14. **Repositório único (_monorepo_)** — o Backend API, as oito aplicações, os jogos, a
+    documentação e os artefatos de implementação vivem no mesmo repositório, com uma pasta
+    por aplicação (§1.2). É organização do código, não acoplamento: cada frontend continua
+    com implantação e endereço próprios (princípio 3). Um repositório só é o que faz a
+    replicação por outra comunidade caber num `git clone` (princípio 4).
 
 ### 1.1 Como cada persona entra
 
@@ -91,6 +96,35 @@
 
 **[Proposta]** Documentar a API com OpenAPI/Swagger desde o primeiro endpoint — condição
 prática para que aplicações de terceiros e novos frontends realmente surjam.
+
+### 1.2 Organização do repositório
+
+Uma pasta por aplicação, com o número da aplicação no nome — o mesmo número usado neste
+documento e nos PRDs, para que ninguém precise traduzir nomenclatura:
+
+```text
+comunidade-game/
+├─ backend/                     Backend API — o núcleo que todas consomem
+├─ apps/
+│  ├─ app-01-aula-presencial/
+│  ├─ app-03-gestao/
+│  ├─ app-05-guerreiro/
+│  ├─ app-06-vitrine/
+│  ├─ app-07-responsaveis/
+│  ├─ app-08-apoiador/
+│  └─ app-09-mestre/
+├─ jogos/
+│  └─ app-04-arena/             jogo em Phaser; novo jogo entra como irmão
+├─ docs/                        documentação do produto — o site MkDocs
+└─ openspec/                    artefatos de implementação
+```
+
+O jogo fica fora de `apps/` por dois motivos: a API aberta admite **outros jogos** sobre o
+mesmo contrato (documento 11), e é o código que o Guerreiro(a) altera como atividade de
+trilha — separar deixa claro o que se pode mexer.
+
+Pasta de código nova nasce com a **verificação automática dela no CI**, na mesma esteira que
+já roda para a documentação; a regra de entrega está no `CONTRIBUTING.md`.
 
 ## 2. Canais e meios de acesso
 
