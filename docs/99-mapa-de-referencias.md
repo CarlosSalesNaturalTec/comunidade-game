@@ -342,3 +342,30 @@ antes de virar código.
 O contexto e as regras entregues aos agentes estão em `openspec/config.yaml`; o processo de
 trabalho e a entrega estão no `CLAUDE.md`. A pasta `openspec/` fica fora do site MkDocs e
 fora do lint de documentação.
+
+A ordem em que o **código** entra é a tabela abaixo, uma entrega aprovada antes da seguinte.
+Ela não é a ordem de elaboração do documento 08, que registra em que sequência os PRDs foram
+**escritos**: a dependência que pôs PRD-08 e PRD-07 antes do PRD-01 na escrita já foi quitada
+— o PRD-01 absorveu as entidades de ambos em `RF-01-23` e `RF-01-24` — e em execução a seta
+se inverte, porque território e ledger só operam sobre a autenticação, a chave de aplicação e
+o filtro por comunidade do núcleo.
+
+| Nº  | PRD    | Entrega                        | Liberado a partir de |
+| --- | ------ | ------------------------------ | -------------------- |
+| 1   | PRD-01 | Backend API — núcleo           | —                    |
+| 2   | PRD-08 | Território e séries temporais  | 1                    |
+| 3   | PRD-07 | Economia e livro-razão         | 2                    |
+| 4   | PRD-02 | App 03 — frontend de gestão    | 1                    |
+| 5   | PRD-09 | App 09 — Área do Mestre        | 1                    |
+| 6   | PRD-04 | App 01 — aula presencial       | 4                    |
+| 7   | PRD-05 | App 05 — Área do Guerreiro(a)  | 5                    |
+| 8   | PRD-13 | App 07 — Área dos responsáveis | 4                    |
+| 9   | PRD-14 | App 08 — Área do Apoiador      | 4                    |
+| 10  | PRD-03 | App 06 — vitrine pública       | 8                    |
+| 11  | PRD-10 | Batalhas e eventos presenciais | 5                    |
+| 12  | PRD-11 | Personalização por IA          | 6                    |
+| 13  | PRD-12 | App 04 — jogo em JavaScript    | 10                   |
+
+A coluna "liberado a partir de" traduz a dependência da §8 em número de ordem: é o piso, e
+nenhum PRD entra antes dele. A posição exata acima desse piso é escolha da gestão. O PRD-01
+é fatiado em changes menores; os demais são fatiados conforme o tamanho.
