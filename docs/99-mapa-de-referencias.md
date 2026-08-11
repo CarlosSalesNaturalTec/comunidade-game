@@ -233,10 +233,13 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
    para jogar. Ele lê o progresso do
    Guerreiro(a) para montar o personagem — pontos regulares, pontos extras, poderes, badges e
    níveis — e **não escreve nada de volta**: não credita, não debita e não registra resultado
-   de partida. Não existe endpoint de escrita para jogos, e **não há saldo de pontos
-   consumidos**. O personagem é escolhido **estritamente entre os Guerreiros e Guerreiras com
+   de partida. Não existe endpoint de escrita para jogos. Dos pontos extras o jogo lê o
+   **acumulado, nunca o saldo disponível**: trocar por recompensa avulsa **não enfraquece o
+   personagem**. O personagem é escolhido **estritamente entre os Guerreiros e Guerreiras com
    divulgação autorizada**, como na vitrine.
-9. **Nenhuma atividade acontece sem lastro** de recursos providos por Mestre ou Apoiador.
+9. **Nenhuma atividade acontece sem lastro** de recursos providos por Mestre ou Apoiador. Vale
+   igualmente para a **recompensa avulsa** do catálogo e para a recompensa do **desafio
+   extra**, providas antes de entrar no catálogo ou de o desafio publicar.
 10. **Nenhum contato direto entre Apoiador e Guerreiro(a)**; toda interação adulto–criança é
     mediada pela plataforma.
 11. **Nenhuma recusa de consentimento exclui o Guerreiro(a) da atividade** — sempre há
@@ -280,6 +283,12 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     encerrar a sessão**. A IA **recomenda e reescreve dentro do corpus fechado** do Mestre,
     marcando o texto gerado, e **nunca cria conteúdo novo**. O responsável a desliga a
     qualquer tempo, e desligá-la não tira conteúdo nem exclui ninguém da atividade.
+23. **Ponto regular nunca se gasta; só o extra se troca.** O regular alimenta níveis e ranking
+    e não é debitado em nenhuma hipótese. O extra tem **duas contas** — o **acumulado**, que só
+    cresce e é o que as superfícies públicas leem, e o **saldo disponível**, que debita na
+    troca e **nunca fica negativo**. A troca alcança **só a recompensa avulsa** do catálogo:
+    **recompensa de marco jamais é comprada**. O preço em pontos **não deriva** do valor em
+    moedas nem em reais.
 
 ## 7. Como esta documentação deve ser editada
 

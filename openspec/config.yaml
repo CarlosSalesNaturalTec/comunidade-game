@@ -39,7 +39,7 @@ context: |
   4. só então propor a change e implementar.
 
   INVARIANTES
-  Os 22 invariantes de `docs/99-mapa-de-referencias.md` §6 valem para o código como valem
+  Os 23 invariantes de `docs/99-mapa-de-referencias.md` §6 valem para o código como valem
   para o texto. Contrariá-los é defeito, não variação de implementação. Entre eles: oito
   aplicações Web responsivas Mobile First (sem app nativo e sem mensageria de terceiros);
   faixa de 6 a 16 anos com progressão por dificuldade; só o Guerreiro(a) tem autocadastro e
@@ -48,7 +48,9 @@ context: |
   saída, e revogação que despersonaliza sem apagar; App 04 (jogo) público, sem login de
   pessoa e somente leitura, sem endpoint de escrita; nenhuma atividade sem lastro; nenhum
   contato direto entre Apoiador e Guerreiro(a); Guerreiros e Guerreiras aparecem em público
-  só por avatar e nick; aporte exibido em moedas, nunca em reais; personalização por IA que
+  só por avatar e nick; aporte exibido em moedas, nunca em reais; ponto regular nunca se
+  gasta e só o extra se troca, por recompensa avulsa e nunca por recompensa de marco;
+  personalização por IA que
   adapta na sessão e não perfila a criança.
 
   DECISÕES TÉCNICAS JÁ VIGENTES (documento 03)
