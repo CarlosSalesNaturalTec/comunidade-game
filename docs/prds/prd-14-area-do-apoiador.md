@@ -307,6 +307,14 @@ que responde pelos atos registrados no cadastro.
 | `RF-14-37` | Desafio publicado exibe a quantidade de recompensas restante                                | essencial  |
 | `RF-14-38` | Desafio publicado não é editável; a correção é proposta nova                                | essencial  |
 | `RF-14-39` | Nenhuma tela de desafio expõe nome real, contato ou dado de identificação de Guerreiro(a)   | essencial  |
+| `RF-14-74` | Proposta de desafio extra declara os pontos extras, e a aplicação recusa valor acima de 10  | essencial  |
+| `RF-14-75` | Proposta declara o formato do desafio: presencial ou on-line                                | essencial  |
+| `RF-14-76` | Proposta declara o custeio: aporte do Apoiador ou saldo de recurso existente na plataforma  | essencial  |
+| `RF-14-77` | Apoiador oferta item para o catálogo avulso, com nome, tipo de recurso, quantidade e lastro | essencial  |
+| `RF-14-78` | Item ofertado pelo Apoiador só entra no catálogo após homologação de Admin                  | essencial  |
+| `RF-14-79` | Apoiador não define o preço em pontos extras do item que oferta; quem define é a gestão     | essencial  |
+| `RF-14-80` | Apoiador acompanha o item ofertado: homologado, ativo, estoque restante e quantas trocas    | essencial  |
+| `RF-14-81` | Nenhuma tela de catálogo expõe identificação de quem trocou; o retorno é agregado           | essencial  |
 
 ### 6.5 Efetividade do apoio
 
@@ -406,6 +414,10 @@ que responde pelos atos registrados no cadastro.
 | `RN-14-38` | Não há ranking de apoiadores por dinheiro: há coleção de selos e nível, nunca pódio de valor                                                                  | 21                     | 14 §9          |
 | `RN-14-39` | O perfil pessoa física ou jurídica é declarado e não verificado; define escada e recorte do painel, e nada mais                                               | —                      | 02 §1, 14 §4   |
 | `RN-14-40` | O degrau da escada é sugestão, não piso: o valor livre aceita qualquer quantia, com fração de duas casas                                                      | 16                     | 04 §2          |
+| `RN-14-41` | Pontos do desafio extra são no máximo 10, de qualquer proponente                                                                                              | —                      | 04 §3          |
+| `RN-14-42` | Item ofertado ao catálogo avulso só entra depois de homologado por Admin e com lastro                                                                         | 9                      | 02 §8.2        |
+| `RN-14-43` | O preço em pontos extras é da gestão, nunca de quem oferta, e não deriva do valor em moedas                                                                   | 23                     | 02 §8.2        |
+| `RN-14-44` | Ofertar item não abre dado de criança nem prioridade: o retorno é agregado, como todo o resto                                                                 | 21                     | 14 §8          |
 
 ## 8. Modelo de dados
 
@@ -621,6 +633,11 @@ ele alcançou, e já estão em "Já decididos" no documento 09. As entidades `Mi
 `SeloDoApoiador` foram acrescentadas ao modelo do PRD-01, e a **cobertura parcial da
 necessidade**, ao PRD-07.
 
+**Na v3** também não: o teto de 10 pontos do desafio extra, o custeio por saldo da plataforma e
+a oferta de item ao catálogo avulso vieram dos documentos 04 §3 e 02 §8.2, e estão em "Já
+decididos" no documento 09. As entidades `ItemDeCatalogoAvulso` e `Troca` foram acrescentadas
+ao modelo do PRD-07.
+
 ## 14. Pendências que permanecem
 
 - **Valoração dos aportes não financeiros** (documento 09): a tabela de referência que converte
@@ -633,6 +650,8 @@ necessidade**, ao PRD-07.
   quem pede recibo.
 - **Catálogo de recompensas por marco** (documento 09): o que o Apoiador pode oferecer como
   recompensa de desafio extra convive com o catálogo do Ciclo 01, ainda não fechado.
+- **Preço em pontos extras do catálogo avulso**: quem define é a gestão, não quem oferta, e os
+  números ainda não existem. **Trava** o `RF-14-77` na prática, não no desenho.
 - **Peça de prestação de contas depois do Ciclo 01**: o painel vivo é a decisão do ciclo; que
   relatório fechado nasce dele — e para quem — se decide com o uso medido no ciclo.
 - **Mais de um usuário por cadastro institucional**: fica para ciclo futuro, com o registro de
@@ -655,3 +674,5 @@ necessidade**, ao PRD-07.
 | `RF-14-48` a `RF-14-55` | 03 §§8, 10 e 02 §1 (painel público, nick da família e favoritos) |
 | `RF-14-56` a `RF-14-59` | 03 §§7, 10 (fila única de propostas, canal fechado e aviso)      |
 | `RF-14-60` a `RF-14-73` | 14 §§2, 5–9 e 04 §§1, 2 (missões, níveis de sustento e selos)    |
+| `RF-14-74` a `RF-14-76` | 04 §3 (teto de pontos, formato e custeio do desafio extra)       |
+| `RF-14-77` a `RF-14-81` | 02 §8.2 (catálogo avulso ofertado por Apoiador, homologado)      |

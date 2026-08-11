@@ -48,6 +48,9 @@ inteira sem escrever uma linha de código.
   (presencial ou on-line) declarados pelo Mestre.
 - **Recompensa de cada marco** — desbloqueio de missão, etapa, batalha ou culminância —, com
   lastro exigido antes da publicação e entrega confirmada pelo Mestre.
+- **Catálogo avulso** da comunidade: cadastro do item, preço em pontos extras, estoque e
+  retirada, sem homologação de Admin, com lastro exigido antes de publicar.
+- **Acompanhamento das trocas** feitas na comunidade do Mestre.
 - **Conteúdo da missão**: texto formatado com imagens, link externo, upload de vídeo e de
   arquivo hospedados pela plataforma, e bibliografia de apoio por missão.
 - **Desafios**: desbloqueio da missão, desafio de coleta de dados reais e culminância com a
@@ -58,7 +61,11 @@ inteira sem escrever uma linha de código.
 - **Banco de perguntas do Quiz ao Vivo**, cadastrado aqui; a partida é conduzida na App 03.
 - **Minhas turmas**: lançamento de atividades realizadas, presenças, resultados, méritos e
   pontuação negativa das aulas que o Mestre ministra.
-- **Validação pedagógica dos desafios extras** propostos por Apoiadores para as suas trilhas.
+- **Validação pedagógica dos desafios extras** propostos por Apoiadores para as suas trilhas, e
+  dos propostos por outro Mestre.
+- **Proposta de desafio extra** do próprio Mestre, presencial ou on-line, custeada por absorção
+  dele ou por saldo já existente na plataforma. Quando ele é o autor da trilha, a validação
+  pedagógica é dispensada; a aprovação de Admin continua exigida.
 - **Necessidades de recurso** das suas atividades, aporte por absorção e acompanhamento do
   ressarcimento.
 - **Aprovação das solicitações de novo local** dos Guerreiros e Guerreiras das suas trilhas.
@@ -74,7 +81,12 @@ inteira sem escrever uma linha de código.
 - **Cadastro de Mestre e de qualquer outra persona além do responsável** — segue exclusivo de
   Admin, na App 03.
 - **Condução da partida do Quiz ao Vivo** — acontece na App 03, com o banco cadastrado aqui.
-- **Aprovação final do desafio extra** — é ato privativo de Admin (PRD-02).
+- **Aprovação final do desafio extra** — é ato privativo de Admin (PRD-02), inclusive quando
+  quem propõe é o Mestre.
+- **Execução da troca** por recompensa avulsa — é presencial, no App 01 (PRD-04). Aqui o Mestre
+  cadastra o catálogo e acompanha o que foi trocado.
+- **Homologação do item ofertado por Apoiador** — é de Admin; o cadastro direto vale só para o
+  Mestre.
 - **Criação de Comunidade Virtual e cadastro de locais** — são de Admin (PRD-08 e PRD-02).
 - **Telas do Guerreiro(a)**: percorrer a trilha, responder ao quiz e registrar coleta são da
   App 05 (PRD-05).
@@ -377,6 +389,30 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-67` | Aplicação não cadastra Mestre nem cria acesso de Mestre                                         | essencial  |
 | `RF-09-68` | Toda tela que coleta dado traz aviso discreto do que coleta, com acesso à área detalhada        | essencial  |
 
+### 6.10 Catálogo avulso e troca por pontos extras
+
+| ID          | Requisito                                                                                      | Prioridade |
+| ----------- | ---------------------------------------------------------------------------------------------- | ---------- |
+| `RF-09-99`  | Mestre cadastra item do catálogo avulso com nome, preço em pontos extras, estoque e comunidade | essencial  |
+| `RF-09-100` | Cadastro do Mestre entra no catálogo sem homologação de Admin                                  | essencial  |
+| `RF-09-101` | Aplicação recusa publicar item do catálogo sem lastro registrado                               | essencial  |
+| `RF-09-102` | Mestre altera o estoque do item e o retira do catálogo, com autoria registrada                 | essencial  |
+| `RF-09-103` | Preço do item é declarado em pontos extras, sem campo de valor em reais nem em moedas          | essencial  |
+| `RF-09-104` | Mestre acompanha as trocas feitas na sua comunidade, com item, Guerreiro(a), preço e data      | essencial  |
+
+### 6.11 Desafio extra proposto pelo Mestre
+
+| ID          | Requisito                                                                                     | Prioridade |
+| ----------- | --------------------------------------------------------------------------------------------- | ---------- |
+| `RF-09-105` | Mestre propõe desafio extra vinculado a uma trilha em andamento, presencial ou on-line        | essencial  |
+| `RF-09-106` | Proposta declara a recompensa, a quantidade e os pontos extras, recusando valor acima de 10   | essencial  |
+| `RF-09-107` | Proposta declara o custeio: absorção do Mestre ou saldo de recurso já existente na plataforma | essencial  |
+| `RF-09-108` | Validação pedagógica é dispensada quando o proponente é o Mestre autor da trilha              | essencial  |
+| `RF-09-109` | Desafio extra de outro Mestre entra na fila de validação pedagógica do Mestre autor           | essencial  |
+| `RF-09-110` | Toda proposta segue para aprovação de Admin, que confere o lastro antes da publicação         | essencial  |
+| `RF-09-111` | Desafio direcionado exige justificativa pedagógica registrada                                 | essencial  |
+| `RF-09-112` | Publicação reserva a recompensa; sem saldo, o desafio não publica                             | essencial  |
+
 ## 7. Regras de negócio
 
 | ID         | Regra                                                                                                         | Invariante (doc 99 §6) | Fonte          |
@@ -417,6 +453,12 @@ Guerreiras que percorrem as suas trilhas.
 | `RN-09-34` | Trilha de poder técnico recebe sugestão de ao menos uma atividade desplugada                                  | —                      | 11 §2.2        |
 | `RN-09-35` | A etiqueta ODS não pontua nem vira poder; é opcional no Ciclo 01 e obrigatória na trilha a partir do Ciclo 02 | 20                     | 11 §2.1        |
 | `RN-09-36` | A etiqueta da missão, ou a da trilha na falta dela, é herdada pelo desafio de coleta e pelo desafio extra     | 20                     | 11 §2.1        |
+| `RN-09-37` | Item do catálogo avulso só publica com lastro registrado                                                      | 9                      | 02 §8.2        |
+| `RN-09-38` | Preço do catálogo avulso é declarado em pontos extras e nunca deriva de moedas nem de reais                   | 23                     | 02 §8.2        |
+| `RN-09-39` | Recompensa de marco é conquistada, nunca trocada; a troca alcança só a recompensa avulsa                      | 23                     | 02 §8          |
+| `RN-09-40` | Pontos do desafio extra são no máximo 10, de qualquer proponente                                              | —                      | 04 §3          |
+| `RN-09-41` | Validação pedagógica só é dispensada para o Mestre autor da própria trilha; Admin aprova sempre               | —                      | 04 §3          |
+| `RN-09-42` | Desafio extra reserva a recompensa na publicação; sem saldo, não publica                                      | 9                      | 04 §3, PRD-07  |
 
 ## 8. Modelo de dados
 
@@ -604,21 +646,26 @@ missão é o que permite a mesma trilha atender dos 6 aos 16 anos.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                              | Gravada em          | Linha do doc 09                           |
-| ------------------------------------------------------------------------------------ | ------------------- | ----------------------------------------- |
-| Trilha vai ao ar sem aprovação prévia; Admin audita por amostragem e despublica      | 03 §11              | Publicação e curadoria da trilha          |
-| Publicação travada sem sondagem, sem desafio de coleta e sem culminância             | 03 §11              | Trava de publicação da trilha             |
-| Conteúdo da missão: texto, imagem, link e upload de vídeo (200 MB) e arquivo (20 MB) | 03 §11              | Conteúdo da missão                        |
-| Pergunta do Quiz ao Vivo em múltipla escolha, quatro alternativas, sem tempo         | 05 §5               | Formato da pergunta do Quiz ao Vivo       |
-| Conteúdo educacional publicado sob licença CC BY-SA                                  | 03 §1               | Licença do conteúdo educacional           |
-| Atividade de trilha pertence a uma missão, com modalidade e formato                  | 11 §§2.1, 4         | Atividade da missão                       |
-| Recompensa conquistada em marco da trilha, nunca comprada com pontos                 | 02 §8               | Recompensa conquistada em marco           |
-| Missão declarada obrigatória ou opcional; só a obrigatória conta no nível            | 11 §§2.2, 6         | Missão obrigatória ou opcional            |
-| Missão de sondagem abre toda trilha e é a terceira trava de publicação               | 11 §2.2             | Missão de sondagem — terceira trava       |
-| Toda atividade exige produção do Guerreiro(a); a leitura automática é hipótese       | 02 §4, 11 §2.2      | Produção obrigatória na atividade         |
-| Cadência da retomada declarada pelo Mestre, com padrão sugerido pelo template        | 11 §§2.2, 5         | Revisão espaçada — quem define a cadência |
-| Template monta estrutura e checklist; a IA não escreve conteúdo                      | 03 §11              | Auxílio de IA na autoria da trilha        |
-| Camisa conquistada no marco de missão, não entregue a todo inscrito                  | 02 §8, 04 §1, 05 §3 | Camisa como recompensa de marco           |
+| Decisão                                                                              | Gravada em          | Linha do doc 09                              |
+| ------------------------------------------------------------------------------------ | ------------------- | -------------------------------------------- |
+| Trilha vai ao ar sem aprovação prévia; Admin audita por amostragem e despublica      | 03 §11              | Publicação e curadoria da trilha             |
+| Publicação travada sem sondagem, sem desafio de coleta e sem culminância             | 03 §11              | Trava de publicação da trilha                |
+| Conteúdo da missão: texto, imagem, link e upload de vídeo (200 MB) e arquivo (20 MB) | 03 §11              | Conteúdo da missão                           |
+| Pergunta do Quiz ao Vivo em múltipla escolha, quatro alternativas, sem tempo         | 05 §5               | Formato da pergunta do Quiz ao Vivo          |
+| Conteúdo educacional publicado sob licença CC BY-SA                                  | 03 §1               | Licença do conteúdo educacional              |
+| Atividade de trilha pertence a uma missão, com modalidade e formato                  | 11 §§2.1, 4         | Atividade da missão                          |
+| Recompensa de marco conquistada na trilha, nunca comprada com pontos                 | 02 §8.1             | Recompensa conquistada em marco              |
+| Missão declarada obrigatória ou opcional; só a obrigatória conta no nível            | 11 §§2.2, 6         | Missão obrigatória ou opcional               |
+| Missão de sondagem abre toda trilha e é a terceira trava de publicação               | 11 §2.2             | Missão de sondagem — terceira trava          |
+| Toda atividade exige produção do Guerreiro(a); a leitura automática é hipótese       | 02 §4, 11 §2.2      | Produção obrigatória na atividade            |
+| Cadência da retomada declarada pelo Mestre, com padrão sugerido pelo template        | 11 §§2.2, 5         | Revisão espaçada — quem define a cadência    |
+| Template monta estrutura e checklist; a IA não escreve conteúdo                      | 03 §11              | Auxílio de IA na autoria da trilha           |
+| Camisa conquistada no marco de missão, não entregue a todo inscrito                  | 02 §8, 04 §1, 05 §3 | Camisa como recompensa de marco              |
+| Catálogo avulso cadastrado pelo Mestre sem homologação, com lastro e estoque         | 02 §8.2             | Troca de pontos extras por recompensa avulsa |
+| Preço do catálogo em pontos extras, sem derivação de moedas nem de reais             | 02 §8.2             | Troca de pontos extras por recompensa avulsa |
+| Mestre propõe desafio extra, presencial ou on-line, com teto de 10 pontos            | 04 §3               | Desafio extra — proponente, teto e custeio   |
+| Custeio do desafio extra por absorção do proponente ou saldo da plataforma           | 04 §3               | Desafio extra — proponente, teto e custeio   |
+| Validação pedagógica dispensada só para o Mestre autor; Admin aprova sempre          | 04 §3               | Desafio extra — proponente, teto e custeio   |
 
 As cinco entidades novas — `Conteudo`, `BibliografiaDaMissao`, `Culminancia`,
 `RecompensaDeMarco` e `SugestaoDeEstrutura` — foram acrescentadas ao modelo do PRD-01, e a
@@ -630,6 +677,8 @@ avulsa**.
 
 - **Composição da amostra de auditoria de coleta**: a cadência semanal está decidida, mas
   quantos registros por série ativa entram na amostra ainda não.
+- **Preço em pontos extras de cada item do catálogo avulso**: a regra e a régua estão
+  decididas, os números não. **Trava** o `RF-09-99` na prática, não no desenho.
 - **Mapeamento dos livros nas trilhas**: qual capítulo apoia qual missão das trilhas 1 e 2 é
   trabalho de leitura do acervo, não de ferramenta — mas sem ele a bibliografia nasce vazia.
 - **Formatos de arquivo aceitos no upload** e política de moderação do que é enviado: o limite
@@ -646,24 +695,26 @@ avulsa**.
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                                           |
-| ----------------------- | ---------------------------------------------------------------- |
-| `RF-09-01` a `RF-09-13` | 11 §2 (anatomia da trilha) e 03 §11 (publicação e curadoria)     |
-| `RF-09-14` a `RF-09-25` | 03 §11 (conteúdo e upload), 05 §3 e 11 §2.1 (bibliografia)       |
-| `RF-09-26` a `RF-09-28` | 02 §§1, 3, PRD-08 (desafio de coleta e série temporal)           |
-| `RF-09-29` a `RF-09-34` | 02 §4 e 11 §7 (criação original, autoria e badge)                |
-| `RF-09-35`              | PRD-08 (auditoria por amostragem da coleta)                      |
-| `RF-09-36` a `RF-09-41` | 05 §5 (Quiz ao Vivo) e PRD-02 (condução da partida)              |
-| `RF-09-42` a `RF-09-50` | 03 §11 e 11 §§4, 5 (lançamentos e motor de pontuação)            |
-| `RF-09-51` a `RF-09-52` | 04 §3 (desafios extras e validação pedagógica)                   |
-| `RF-09-53` a `RF-09-55` | PRD-08 (solicitação de local) e 03 §§7, 9, 10, 11 (fila única)   |
-| `RF-09-56` a `RF-09-61` | 04 §1 e PRD-07 (necessidades, absorção, ressarcimento e acervo)  |
-| `RF-09-62` a `RF-09-65` | 03 §9 e PRD-01 (cadastro do responsável e credencial provisória) |
-| `RF-09-66` a `RF-09-67` | 02 §1 e 03 §11 (prova de habilidade e governança de personas)    |
-| `RF-09-68`              | 03 §12 (aviso visível de coleta e área detalhada)                |
-| `RF-09-69` e `RF-09-70` | 11 §§2.1, 4 (atividade dentro da missão)                         |
-| `RF-09-71` a `RF-09-76` | 02 §8 e 11 §2.1 (recompensa conquistada no marco)                |
-| `RF-09-77` a `RF-09-79` | 03 §§7, 11 (disciplinas e conteúdo do apoio escolar)             |
-| `RF-09-80` a `RF-09-84` | 11 §2.2 (modelo de missão) e 02 §§3, 8                           |
-| `RF-09-85` a `RF-09-91` | 03 §11 (template e auxílio de IA na autoria) e 11 §2.2           |
-| `RF-09-92` a `RF-09-98` | 11 §2.1 e 04 §4 (etiqueta ODS da trilha e cobertura)             |
+| Requisito                 | Origem                                                           |
+| ------------------------- | ---------------------------------------------------------------- |
+| `RF-09-01` a `RF-09-13`   | 11 §2 (anatomia da trilha) e 03 §11 (publicação e curadoria)     |
+| `RF-09-14` a `RF-09-25`   | 03 §11 (conteúdo e upload), 05 §3 e 11 §2.1 (bibliografia)       |
+| `RF-09-26` a `RF-09-28`   | 02 §§1, 3, PRD-08 (desafio de coleta e série temporal)           |
+| `RF-09-29` a `RF-09-34`   | 02 §4 e 11 §7 (criação original, autoria e badge)                |
+| `RF-09-35`                | PRD-08 (auditoria por amostragem da coleta)                      |
+| `RF-09-36` a `RF-09-41`   | 05 §5 (Quiz ao Vivo) e PRD-02 (condução da partida)              |
+| `RF-09-42` a `RF-09-50`   | 03 §11 e 11 §§4, 5 (lançamentos e motor de pontuação)            |
+| `RF-09-51` a `RF-09-52`   | 04 §3 (desafios extras e validação pedagógica)                   |
+| `RF-09-53` a `RF-09-55`   | PRD-08 (solicitação de local) e 03 §§7, 9, 10, 11 (fila única)   |
+| `RF-09-56` a `RF-09-61`   | 04 §1 e PRD-07 (necessidades, absorção, ressarcimento e acervo)  |
+| `RF-09-62` a `RF-09-65`   | 03 §9 e PRD-01 (cadastro do responsável e credencial provisória) |
+| `RF-09-66` a `RF-09-67`   | 02 §1 e 03 §11 (prova de habilidade e governança de personas)    |
+| `RF-09-68`                | 03 §12 (aviso visível de coleta e área detalhada)                |
+| `RF-09-69` e `RF-09-70`   | 11 §§2.1, 4 (atividade dentro da missão)                         |
+| `RF-09-71` a `RF-09-76`   | 02 §8.1 e 11 §2.1 (recompensa conquistada no marco)              |
+| `RF-09-77` a `RF-09-79`   | 03 §§7, 11 (disciplinas e conteúdo do apoio escolar)             |
+| `RF-09-80` a `RF-09-84`   | 11 §2.2 (modelo de missão) e 02 §§3, 8                           |
+| `RF-09-85` a `RF-09-91`   | 03 §11 (template e auxílio de IA na autoria) e 11 §2.2           |
+| `RF-09-92` a `RF-09-98`   | 11 §2.1 e 04 §4 (etiqueta ODS da trilha e cobertura)             |
+| `RF-09-99` a `RF-09-104`  | 02 §8.2 (recompensa avulsa) e 11 §5 (troca por pontos extras)    |
+| `RF-09-105` a `RF-09-112` | 04 §3 (desafio extra: proponente, teto, custeio e validação)     |

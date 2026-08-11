@@ -178,6 +178,15 @@ atividades previstas.
 | `RF-07-24` | Sistema lista os aportes ressarcíveis em aberto por antiguidade, e o Admin decide o pagamento                                    | essencial  |
 | `RF-07-25` | Ressarcimento pago reverte as moedas do aporte e mantém o registro do ato                                                        | essencial  |
 | `RF-07-26` | Card e página pública do Mestre ou Admin exibem quantas vezes ele sustentou atividade sem recurso                                | essencial  |
+| `RF-07-33` | Sistema mantém o item do catálogo avulso com tipo de recurso, preço em pontos extras, estoque e comunidade                       | essencial  |
+| `RF-07-34` | Item do catálogo avulso só fica ativo com lastro registrado no saldo do seu tipo de recurso                                      | essencial  |
+| `RF-07-35` | Troca registra item, Guerreiro(a), preço cobrado, encontro e Mestre que entregou                                                 | essencial  |
+| `RF-07-36` | Entrega da troca gera baixa no livro-razão e decrementa o estoque do item                                                        | essencial  |
+| `RF-07-37` | Sistema recusa troca de item sem estoque ou sem lastro                                                                           | essencial  |
+| `RF-07-38` | Preço em pontos extras é atributo próprio do item, sem derivação do valor em moedas do tipo de recurso                           | essencial  |
+| `RF-07-39` | Publicação de desafio extra reserva a recompensa; sem saldo, a publicação é recusada                                             | essencial  |
+| `RF-07-40` | Desafio extra encerrado sem conclusão libera a reserva, devolvendo o saldo                                                       | essencial  |
+| `RF-07-41` | Sistema aceita custeio do desafio extra por absorção do proponente ou por saldo de recurso existente                             | essencial  |
 
 ## 7. Regras de negócio
 
@@ -206,6 +215,11 @@ atividades previstas.
 | `RN-07-20` | Chave PIX, banco e conta nunca são armazenados; o trâmite guarda apenas o comprovante                          | —          | 04 §1        |
 | `RN-07-21` | Aporte declarado no pré-cadastro não credita moeda alguma antes da homologação de Admin                        | 16         | 04 §2        |
 | `RN-07-22` | Comprovante é aceito em PDF, JPG ou PNG; não há confirmação automática de PIX                                  | —          | 04 §2        |
+| `RN-07-24` | Reais, moedas da plataforma e pontos extras não se convertem entre si                                          | 23         | 02 §8.2      |
+| `RN-07-25` | Preço do catálogo avulso é declarado em pontos extras e nunca deriva do valor em moedas                        | 23         | 02 §8.2      |
+| `RN-07-26` | Nenhum item entra no catálogo avulso sem lastro, como toda recompensa                                          | 9          | 02 §8.2      |
+| `RN-07-27` | A entrega da troca é imediata; não há reserva de item do catálogo entre encontros                              | —          | 02 §8.2      |
+| `RN-07-28` | Pontos do desafio extra são no máximo 10, de qualquer proponente                                               | —          | 04 §3        |
 
 ## 8. Modelo de dados
 
@@ -216,6 +230,8 @@ Provedor      1 ──── N Aporte             (Apoiador, Mestre ou Admin)
 Aporte        1 ──── 1 Lancamento         (crédito)
 Atividade     1 ──── N Reserva ──── 1 Lancamento (débito, na realização)
 TipoDeRecurso 1 ──── 1 SaldoDeRecurso     (por ponto de apoio)
+TipoDeRecurso 1 ──── N ItemDeCatalogoAvulso
+ItemDeCatalogoAvulso 1 ── N Troca ──── 1 Lancamento (débito, na entrega)
 Aporte        0..1 ─ 1 Ressarcimento      (só quando o aporte é por absorção)
 Aporte        0..1 ─ N ItemPatrimonial    (quando o aporte é durável)
 ItemPatrimonial 1 ── N Emprestimo
@@ -228,7 +244,9 @@ ItemPatrimonial 0..1 ─ 1 NecessidadeDeReposicao
 | `ValorDeReferencia`      | tipo, valor em moedas, vigência inicial e final, admin responsável                                                                                                                                                                                                                                                     |
 | `Aporte`                 | provedor, tipo, quantidade, valor em moedas, valor de origem, forma (financeira, material, serviço, absorção), **origem do registro** (gestão, pré-cadastro ou App 08), solicitação de origem, **ressarcível**, situação de ressarcimento (não se aplica, em aberto, ressarcido), comprovante, admin homologador, data |
 | `Lancamento`             | natureza (crédito, débito, ajuste), tipo de recurso, quantidade, moedas, atividade, aporte, data, autor, motivo do ajuste                                                                                                                                                                                              |
-| `Reserva`                | atividade, tipo de recurso, quantidade, ponto de apoio, estado (reservada, consumida, liberada)                                                                                                                                                                                                                        |
+| `Reserva`                | atividade **ou desafio extra**, tipo de recurso, quantidade, ponto de apoio, estado (reservada, consumida, liberada)                                                                                                                                                                                                   |
+| `ItemDeCatalogoAvulso`   | nome, tipo de recurso, **preço em pontos extras**, estoque, comunidade, quem cadastrou (Mestre ou Apoiador), situação de homologação, ativo                                                                                                                                                                            |
+| `Troca`                  | item, Guerreiro(a), preço em pontos extras cobrado, encontro, Mestre que entregou, data                                                                                                                                                                                                                                |
 | `SaldoDeRecurso`         | tipo, ponto de apoio, quantidade disponível, quantidade reservada                                                                                                                                                                                                                                                      |
 | `ItemPatrimonial`        | aporte de origem, título, número de tombo, ponto de apoio, responsável designado, estado de conservação                                                                                                                                                                                                                |
 | `Emprestimo`             | item, Guerreiro(a), missão, saída, devolução, estado de conservação na devolução                                                                                                                                                                                                                                       |
@@ -241,6 +259,10 @@ dos lançamentos, nunca um número editável.
 
 Duas faces do valor: o `Aporte` guarda **moedas** e **valor de origem em reais**. Toda saída
 pública lê apenas a primeira.
+
+**Três unidades que não se convertem entre si:** reais, moedas da plataforma e pontos extras.
+O `ItemDeCatalogoAvulso` guarda o preço em **pontos extras**, que **não deriva** do valor em
+moedas do seu tipo de recurso — o custo real segue no lançamento, invisível para a criança.
 
 ## 9. Contratos de API
 
@@ -325,25 +347,31 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                        | Gravada em     | Doc 09       |
-| ------------------------------------------------------------------------------ | -------------- | ------------ |
-| Aporte não financeiro valorado por tabela de referência da gestão              | 04 §1          | Já decididos |
-| Tipo de aporte novo cadastrado na hora por um Admin                            | 04 §1          | Já decididos |
-| Moeda com duas casas decimais                                                  | 04 §1          | Já decididos |
-| Lastro por saldo de tipo de recurso, com reserva no agendamento                | 04 §1          | Já decididos |
-| Aporte por absorção de Mestre ou Admin                                         | 04 §1          | Já decididos |
-| Responsável designado pelo acervo em cada ponto de apoio                       | 05 §3          | Já decididos |
-| Aporte por absorção marcado como ressarcível, com destaque público pelo ato    | 04 §1, 11 §8.2 | Já decididos |
-| Ressarcimento só com receita destinada, por antiguidade e decisão de Admin     | 04 §1          | Já decididos |
-| Ressarcimento reverte as moedas; o registro do ato permanece                   | 04 §1          | Já decididos |
-| Sem armazenar dado bancário: chave PIX por e-mail e apenas comprovante anexado | 04 §1, 03 §11  | Já decididos |
-| Produção executiva como tipo de recurso, aportada por absorção                 | 04 §1          | Já decididos |
-| Faturas anteriores ao livro-razão guardadas e lançadas retroativamente         | 04 §1          | Já decididos |
+| Decisão                                                                        | Gravada em     | Doc 09                                       |
+| ------------------------------------------------------------------------------ | -------------- | -------------------------------------------- |
+| Aporte não financeiro valorado por tabela de referência da gestão              | 04 §1          | Já decididos                                 |
+| Tipo de aporte novo cadastrado na hora por um Admin                            | 04 §1          | Já decididos                                 |
+| Moeda com duas casas decimais                                                  | 04 §1          | Já decididos                                 |
+| Lastro por saldo de tipo de recurso, com reserva no agendamento                | 04 §1          | Já decididos                                 |
+| Aporte por absorção de Mestre ou Admin                                         | 04 §1          | Já decididos                                 |
+| Responsável designado pelo acervo em cada ponto de apoio                       | 05 §3          | Já decididos                                 |
+| Aporte por absorção marcado como ressarcível, com destaque público pelo ato    | 04 §1, 11 §8.2 | Já decididos                                 |
+| Ressarcimento só com receita destinada, por antiguidade e decisão de Admin     | 04 §1          | Já decididos                                 |
+| Ressarcimento reverte as moedas; o registro do ato permanece                   | 04 §1          | Já decididos                                 |
+| Sem armazenar dado bancário: chave PIX por e-mail e apenas comprovante anexado | 04 §1, 03 §11  | Já decididos                                 |
+| Produção executiva como tipo de recurso, aportada por absorção                 | 04 §1          | Já decididos                                 |
+| Faturas anteriores ao livro-razão guardadas e lançadas retroativamente         | 04 §1          | Já decididos                                 |
+| Catálogo avulso com lastro, estoque e baixa na entrega da troca                | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
+| Preço em pontos extras sem derivação do valor em moedas                        | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
+| Desafio extra reserva a recompensa na publicação e libera se encerrar sem uso  | 04 §3          | Desafio extra — proponente, teto e custeio   |
+| Custeio do desafio extra por absorção ou por saldo já existente na plataforma  | 04 §3          | Desafio extra — proponente, teto e custeio   |
 
 ## 14. Pendências que permanecem
 
 - **Valor-hora da produção executiva** e o critério que converte o histórico de commits e o
   registro do Admin em horas aportadas — cadastro da gestão, como os demais valores da tabela.
+- **Preço em pontos extras de cada item do catálogo avulso**: a regra e a régua estão
+  decididas, os números não. Cadastro da gestão, como a tabela de referência.
 - **Formato dos relatórios públicos de prestação de contas** por atividade, comunidade e
   provedor — o que exatamente se publica e com que agregação.
 - **Formato do relatório de efetividade** entregue ao Apoiador: assunto do PRD-14, que lê
@@ -368,6 +396,8 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | `RF-07-20`              | 05 §3 (conferência de inventário)                |
 | `RF-07-21` a `RF-07-25` | 04 §§1–2 (absorção, ressarcimento e comprovante) |
 | `RF-07-26`              | 11 §8.2 (cards e páginas individuais)            |
+| `RF-07-33` a `RF-07-38` | 02 §8.2 (catálogo avulso, lastro e entrega)      |
+| `RF-07-39` a `RF-07-41` | 04 §3 (custeio e reserva do desafio extra)       |
 | `RF-07-27` e `RF-07-28` | 04 §1 (necessidade publicada e absorção)         |
 | `RF-07-32`              | 04 §1 (custos anteriores ao livro-razão)         |
 | `RN-07-20`              | 04 §1 (sem armazenamento de dado bancário)       |

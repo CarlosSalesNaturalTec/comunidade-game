@@ -53,6 +53,9 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
 - **Criação original**: entrega na culminância e **portfólio** das criações validadas.
 - **Progresso**: pontos, níveis 1 a 5 por trilha ou poder, badges e recompensas conquistadas
   nos marcos.
+- **Carteira de pontos extras**: o acumulado, que só cresce, e o saldo disponível para troca.
+- **Catálogo avulso** da comunidade, com preço em pontos extras, estoque e histórico das
+  trocas já feitas — a troca em si acontece no encontro presencial, no App 01.
 - **Ranking** da comunidade, por trilha ou poder, apenas com pontos regulares.
 - **Acervo do Guerreiro(a)**: o exemplar da linha Alpha que é dele e os exemplares permanentes
   em uso de bancada, com a ficha de vida do livro.
@@ -78,7 +81,10 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
   auditada por amostragem pelo Admin; aqui o conteúdo só é consumido.
 - **Assistente de trilhas da aula presencial** — é do App 01 (PRD-04); o assistente desta
   aplicação atende apenas ao apoio escolar, com corpus fechado.
-- **Compra de recompensa com pontos**: não existe. Recompensa se conquista em marco.
+- **Compra de recompensa de marco**: não existe. Recompensa de marco se conquista, nunca se
+  compra, com pontos de qualquer natureza.
+- **Execução da troca** por recompensa avulsa: é presencial, no App 01 (PRD-04). Aqui o
+  Guerreiro(a) vê o catálogo, o preço, o estoque e o próprio saldo, e não troca.
 - **Escrita de qualquer natureza pelo jogo** (App 04): o jogo só lê o progresso.
 - **Contato com Apoiadores, Mestres ou terceiros por mensagem** — não há canal de conversa
   entre pessoas nesta aplicação.
@@ -172,8 +178,8 @@ avatar e nick.
 ### 5.6 Conquistar recompensa e cuidar do acervo
 
 1. Alcançado um marco com recompensa declarada, a aplicação avisa **o que foi conquistado** e
-   que a entrega será confirmada pelo Mestre — não há saldo debitado, porque recompensa não se
-   compra.
+   que a entrega será confirmada pelo Mestre — não há saldo debitado, porque **recompensa de
+   marco não se compra**.
 2. O **acervo do Guerreiro(a)** mostra o exemplar da linha Alpha recebido na abertura da trilha
    — que é dele, sem devolução — e os exemplares permanentes em uso de bancada.
 3. Cada exemplar permanente tem a **ficha de vida**: quem usou, quando e em que estado voltou.
@@ -183,6 +189,10 @@ avatar e nick.
    Mestre; cada item pontua uma vez por encontro.
 6. **Dano acidental não gera pontuação negativa nem dívida**, e a tela diz isso antes de o
    Guerreiro(a) relatar qualquer problema com o material.
+7. O **catálogo avulso** mostra o que o Guerreiro(a) pode trocar por **pontos extras**, com
+   preço e estoque, e o quanto ele tem: o **acumulado**, que nunca cai, e o **saldo
+   disponível**, que é o que dá para trocar. A tela avisa que **a troca acontece no encontro
+   presencial**, com o Mestre, e não ali.
 
 ### 5.7 Pedir ajuda em uma atividade escolar
 
@@ -294,15 +304,20 @@ com a fusão das aplicações e **não são reaproveitados**.
 
 ### 6.6 Recompensas, acervo e perfil
 
-| ID         | Requisito                                                                                 | Prioridade |
-| ---------- | ----------------------------------------------------------------------------------------- | ---------- |
-| `RF-05-45` | Marco alcançado avisa a recompensa conquistada e que a entrega é confirmada pelo Mestre   | essencial  |
-| `RF-05-46` | Aplicação não oferece nenhuma forma de comprar recompensa com saldo de pontos             | essencial  |
-| `RF-05-47` | Acervo do Guerreiro(a) distingue o exemplar próprio da linha Alpha dos permanentes em uso | essencial  |
-| `RF-05-48` | Exemplar permanente exibe a ficha de vida: quem usou, quando e em que estado voltou       | essencial  |
-| `RF-05-49` | Tela do acervo informa que dano acidental não gera pontuação negativa nem dívida          | essencial  |
-| `RF-05-50` | Guerreiro(a) vê o estado do seu perfil público e se a divulgação foi autorizada           | essencial  |
-| `RF-05-51` | Guerreiro(a) escolhe e altera as características do próprio avatar                        | desejável  |
+| ID         | Requisito                                                                                           | Prioridade |
+| ---------- | --------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-05-45` | Marco alcançado avisa a recompensa conquistada e que a entrega é confirmada pelo Mestre             | essencial  |
+| `RF-05-46` | Aplicação não oferece nenhuma forma de comprar recompensa de marco, com pontos de qualquer natureza | essencial  |
+| `RF-05-82` | Aplicação exibe, separados, o acumulado e o saldo disponível de pontos extras                       | essencial  |
+| `RF-05-83` | Aplicação exibe o catálogo avulso da comunidade, com preço em pontos extras e estoque               | essencial  |
+| `RF-05-84` | Aplicação informa que a troca é feita presencialmente, com o Mestre, ao fim do encontro             | essencial  |
+| `RF-05-85` | Aplicação exibe o histórico de trocas do Guerreiro(a), com item, preço e data                       | essencial  |
+| `RF-05-86` | Aplicação não oferece troca nem reserva de item do catálogo avulso                                  | essencial  |
+| `RF-05-47` | Acervo do Guerreiro(a) distingue o exemplar próprio da linha Alpha dos permanentes em uso           | essencial  |
+| `RF-05-48` | Exemplar permanente exibe a ficha de vida: quem usou, quando e em que estado voltou                 | essencial  |
+| `RF-05-49` | Tela do acervo informa que dano acidental não gera pontuação negativa nem dívida                    | essencial  |
+| `RF-05-50` | Guerreiro(a) vê o estado do seu perfil público e se a divulgação foi autorizada                     | essencial  |
+| `RF-05-51` | Guerreiro(a) escolhe e altera as características do próprio avatar                                  | desejável  |
 
 ### 6.7 Ranking, sugestões e avisos
 
@@ -375,6 +390,10 @@ com a fusão das aplicações e **não são reaproveitados**.
 | `RN-05-36` | Foto e áudio da produção são descartados na leitura; ficam transcrição e devolutiva              | —                      | 03 §12.2         |
 | `RN-05-37` | Quem recusa foto ou áudio tem alternativa equivalente e não perde a missão                       | 11                     | 03 §3.3          |
 | `RN-05-38` | A retomada pontua uma vez por agendamento                                                        | —                      | 11 §§2.2, 5      |
+| `RN-05-39` | Ponto regular nunca se gasta; só o saldo de pontos extras é trocável                             | 23                     | 11 §5            |
+| `RN-05-40` | O acumulado de pontos extras nunca decresce por troca; quem decresce é o saldo disponível        | 23                     | 11 §5            |
+| `RN-05-41` | Recompensa de marco é conquistada, nunca comprada; a troca alcança só a recompensa avulsa        | 23                     | 02 §8            |
+| `RN-05-42` | O saldo disponível de pontos extras nunca fica negativo                                          | 23                     | 11 §5            |
 
 ## 8. Modelo de dados
 
@@ -560,21 +579,24 @@ ciclo: número de criações originais apresentadas e de sugestões registradas.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                         | Gravada em      | Linha do doc 09                       |
-| ------------------------------------------------------------------------------- | --------------- | ------------------------------------- |
-| Nível é percurso da trilha, com gates dos níveis 1 a 5 e sem regressão          | 11 §6           | Níveis 1 a 5 — critério de progressão |
-| Resposta do Quiz ao Vivo enviada pelo App 01, com a partida conduzida na App 03 | 05 §5           | Aplicação de cada tipo de aula        |
-| Criação original vale 50 pontos e badge, integrais a cada integrante            | 11 §5 e 02 §4   | Criação original — pontos e badge     |
-| Valores de mérito, batalha, badge de conduta e pontuação negativa (−5)          | 11 §5           | Demais valores do motor de pontuação  |
-| Travas de integridade dos pontos, incluindo o valor fora de faixa               | 11 §5.1 e 02 §1 | Integridade dos pontos (antifraude)   |
-| Canal de sugestões: texto ou áudio de 60 s, adotada rende extras e badge        | 03 §7           | Canal de sugestões do Guerreiro(a)    |
-| Reparação que zera a ocorrência de conduta                                      | 13 §3           | Reparação de ocorrência de conduta    |
-| Apoio escolar por assistente de voz na App 05, com IA e corpus fechado          | 03 §§4, 7       | Apoio às atividades escolares         |
-| Corpus cadastrado só pelo Mestre; Admin audita por amostragem                   | 03 §§5, 7, 11   | Corpus, cota e áudio dos assistentes  |
-| Sem teto de uso no Ciclo 01, absorvido pelo fundador em conta Gemini PRO        | 03 §7 e 10 §4.3 | Corpus, cota e áudio dos assistentes  |
-| Áudio descartado na transcrição, nas Apps 05 e 01                               | 03 §§4, 7       | Corpus, cota e áudio dos assistentes  |
-| Prazos de guarda das transcrições e do _template_                               | 03 §12.2        | Prazos de guarda dos dados            |
-| Sessão encerrada por 10 minutos de inatividade                                  | 03 §12.2        | Sessão em aparelho compartilhado      |
+| Decisão                                                                         | Gravada em      | Linha do doc 09                              |
+| ------------------------------------------------------------------------------- | --------------- | -------------------------------------------- |
+| Nível é percurso da trilha, com gates dos níveis 1 a 5 e sem regressão          | 11 §6           | Níveis 1 a 5 — critério de progressão        |
+| Resposta do Quiz ao Vivo enviada pelo App 01, com a partida conduzida na App 03 | 05 §5           | Aplicação de cada tipo de aula               |
+| Criação original vale 50 pontos e badge, integrais a cada integrante            | 11 §5 e 02 §4   | Criação original — pontos e badge            |
+| Valores de mérito, batalha, badge de conduta e pontuação negativa (−5)          | 11 §5           | Demais valores do motor de pontuação         |
+| Travas de integridade dos pontos, incluindo o valor fora de faixa               | 11 §5.1 e 02 §1 | Integridade dos pontos (antifraude)          |
+| Canal de sugestões: texto ou áudio de 60 s, adotada rende extras e badge        | 03 §7           | Canal de sugestões do Guerreiro(a)           |
+| Reparação que zera a ocorrência de conduta                                      | 13 §3           | Reparação de ocorrência de conduta           |
+| Apoio escolar por assistente de voz na App 05, com IA e corpus fechado          | 03 §§4, 7       | Apoio às atividades escolares                |
+| Corpus cadastrado só pelo Mestre; Admin audita por amostragem                   | 03 §§5, 7, 11   | Corpus, cota e áudio dos assistentes         |
+| Sem teto de uso no Ciclo 01, absorvido pelo fundador em conta Gemini PRO        | 03 §7 e 10 §4.3 | Corpus, cota e áudio dos assistentes         |
+| Áudio descartado na transcrição, nas Apps 05 e 01                               | 03 §§4, 7       | Corpus, cota e áudio dos assistentes         |
+| Prazos de guarda das transcrições e do _template_                               | 03 §12.2        | Prazos de guarda dos dados                   |
+| Sessão encerrada por 10 minutos de inatividade                                  | 03 §12.2        | Sessão em aparelho compartilhado             |
+| Ponto extra tem acumulado e saldo disponível; só o saldo é trocável             | 11 §5           | Troca de pontos extras por recompensa avulsa |
+| Recompensa avulsa é trocada por pontos extras; a de marco segue não comprada    | 02 §8           | Troca de pontos extras por recompensa avulsa |
+| A troca é presencial, no encontro, e não acontece nesta aplicação               | 02 §8.2         | Troca de pontos extras por recompensa avulsa |
 
 As entidades `DisciplinaDeApoio` e `ConteudoDeApoio` foram acrescentadas ao modelo do PRD-01,
 e `Nivel` passou a ser derivado do percurso. O badge **de protagonismo** entrou no catálogo do
@@ -595,6 +617,8 @@ para o apoio escolar.
   a tomar e a gravar no documento 03 §12.
 - **Catálogo de qual marco entrega qual recompensa** no Ciclo 01: a regra está decidida, o
   catálogo não. **Trava** o `RF-05-45` na prática, não no desenho.
+- **Preço em pontos extras de cada item do catálogo avulso**: a regra e a régua estão
+  decididas, os números não. **Trava** o `RF-05-83` na prática, não no desenho.
 - **Acessibilidade de quem não tem aparelho nem dados móveis** fora do ponto de apoio: os
   desafios on-line entre encontros pressupõem acesso que nem todo Guerreiro(a) tem.
 
@@ -607,7 +631,8 @@ para o apoio escolar.
 | `RF-05-19` a `RF-05-24` | 02 §5 e 11 §§4, 5 (equipes, taxonomia e desafios), 04 §3 (extras)        |
 | `RF-05-30` a `RF-05-38` | 02 §1 e PRD-08 (séries, locais e validade do registro)                   |
 | `RF-05-39` a `RF-05-44` | 02 §4, 11 §7 e PRD-09 (culminância, autoria e validação)                 |
-| `RF-05-45` a `RF-05-49` | 02 §8 (recompensa em marco) e 05 §3 (acervo e ficha de vida)             |
+| `RF-05-45` a `RF-05-49` | 02 §8.1 (recompensa em marco) e 05 §3 (acervo e ficha de vida)           |
+| `RF-05-82` a `RF-05-86` | 02 §8.2 (recompensa avulsa) e 11 §5 (acumulado e saldo disponível)       |
 | `RF-05-50` e `RF-05-51` | 03 §12 (adesão em duas etapas) e 02 §1 (avatar)                          |
 | `RF-05-52` e `RF-05-53` | 11 §8.1 (rankings com pontos regulares)                                  |
 | `RF-05-54` a `RF-05-56` | 03 §7 (canal de sugestões) e 11 §§5, 7 (pontos extras e badge)           |

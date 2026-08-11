@@ -78,6 +78,8 @@ existe para impedir.
 - **Assistente de trilhas por voz ou texto**: quiz e explicação de conceitos das trilhas, no
   corpus fechado que os Mestres cadastraram.
 - **Quiz ao Vivo:** recebimento da pergunta e envio da resposta pelo aparelho da equipe.
+- **Troca de pontos extras por recompensa avulsa**, aberta pelo Mestre no encerramento do
+  encontro, com entrega no ato e baixa no livro-razão.
 
 ### 3.2 Fora do escopo
 
@@ -89,8 +91,14 @@ existe para impedir.
 - Abertura e condução da partida de Quiz ao Vivo, com o vínculo aparelho–equipe: App 03
   (PRD-02). Aqui a equipe só recebe a pergunta e responde.
 - Autoria da trilha, do conteúdo e do banco de perguntas: App 09 (PRD-09).
-- **Apoio às atividades escolares**, coleta de dados do território, ranking, recompensas e
-  canal de sugestões: são a App 05 (PRD-05), que atende as aulas remotas e o uso cotidiano.
+- **Apoio às atividades escolares**, coleta de dados do território, ranking e canal de
+  sugestões: são a App 05 (PRD-05), que atende as aulas remotas e o uso cotidiano. A App 05
+  também **exibe** o catálogo avulso e o saldo, mas **não executa a troca**: ela é presencial
+  e acontece aqui.
+- **Cadastro do catálogo avulso** e do seu estoque: App 09 (PRD-09) e App 08 (PRD-14). Aqui só
+  se troca e se entrega o que já está cadastrado e provido.
+- **Recompensa de marco**: conquistada no marco e confirmada pelo Mestre na App 09, nunca
+  trocada.
 - **Captação do áudio ambiente da aula**: o antigo Modo Ouvinte **saiu do produto**.
 - Troca de comunidade do Guerreiro(a): fora do Ciclo 01.
 
@@ -231,6 +239,21 @@ dentro da mesma sessão de trabalho do aparelho.
 6. Equipe sem aparelho responde pelo aparelho do Mestre — falta de celular não tira ninguém da
    partida.
 
+### 5.10 Trocar pontos extras por recompensa avulsa, ao fim do encontro
+
+1. No fechamento do encontro, o Mestre **abre a troca** no aparelho. Fora desse momento a
+   troca não existe: não há loja aberta entre encontros.
+2. O Guerreiro(a) entra por nick e imagem e vê o **catálogo avulso** da sua comunidade — o que
+   há, o preço em **pontos extras** e o **estoque restante**.
+3. Ele vê o próprio **saldo disponível**, e não o acumulado: o que dá para trocar hoje.
+4. Escolhido o item, a aplicação **debita o saldo** e registra a troca. O **acumulado não
+   muda** — nada do que ele conquistou é apagado.
+5. O Mestre **entrega o item na hora** e confirma a entrega, que dá **baixa no livro-razão**.
+   Não há reserva, fila nem promessa para o encontro seguinte.
+6. Item sem estoque **não aparece** para troca. Saldo insuficiente recusa a troca com a
+   diferença dita em pontos, nunca em reais.
+7. **Pontos regulares nunca aparecem** nessa tela: eles não são moeda.
+
 ## 6. Requisitos funcionais
 
 ### 6.1 Onboarding e presença
@@ -292,6 +315,20 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-44` | Resultado da pergunta aparece para a equipe quando quem conduz a partida o libera                             | essencial  |
 | `RF-04-45` | Sem rede, o conteúdo já carregado continua legível; equipe, assistente e resposta de quiz ficam indisponíveis | essencial  |
 
+### 6.3 Troca por recompensa avulsa
+
+| ID         | Requisito                                                                                             | Prioridade |
+| ---------- | ----------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-04-49` | Mestre abre e fecha o momento de troca no encerramento do encontro; fora dele a troca não é oferecida | essencial  |
+| `RF-04-50` | Aplicação exibe o catálogo avulso da comunidade, com preço em pontos extras e estoque restante        | essencial  |
+| `RF-04-51` | Aplicação exibe ao Guerreiro(a) o saldo disponível de pontos extras, e não o acumulado                | essencial  |
+| `RF-04-52` | Troca debita o saldo disponível, registra item, preço e data, e não altera o acumulado                | essencial  |
+| `RF-04-53` | Aplicação recusa a troca com saldo insuficiente, dizendo a diferença em pontos                        | essencial  |
+| `RF-04-54` | Item sem estoque não é oferecido para troca                                                           | essencial  |
+| `RF-04-55` | Mestre confirma a entrega no ato, gerando a baixa no livro-razão                                      | essencial  |
+| `RF-04-56` | Aplicação não oferece pontos regulares como moeda de troca em nenhuma tela                            | essencial  |
+| `RF-04-57` | Troca exige rede; sem rede o momento de troca não abre                                                | essencial  |
+
 ## 7. Regras de negócio
 
 | ID         | Regra                                                                                                       | Invariante | Fonte         |
@@ -318,6 +355,12 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RN-04-20` | A aplicação não capta o áudio ambiente da aula; só o áudio dirigido ao assistente                           | —          | 03 §4         |
 | `RN-04-21` | Do áudio do assistente guarda-se apenas a transcrição                                                       | —          | 03 §7         |
 | `RN-04-22` | Uma resposta por equipe e pergunta, válida para todos os integrantes                                        | —          | 05 §5         |
+| `RN-04-23` | Só o saldo de pontos extras é trocável; ponto regular nunca debita                                          | 23         | 11 §5         |
+| `RN-04-24` | A troca debita o saldo disponível e nunca o acumulado, que só cresce                                        | 23         | 11 §5         |
+| `RN-04-25` | O saldo disponível nunca fica negativo                                                                      | 23         | 11 §5         |
+| `RN-04-26` | Recompensa de marco não é trocada; a troca alcança só a recompensa avulsa                                   | 23         | 02 §8         |
+| `RN-04-27` | Entrega no ato da troca, sem reserva nem promessa para o encontro seguinte                                  | 9          | 02 §8.2       |
+| `RN-04-28` | Preço e diferença aparecem sempre em pontos, nunca em reais nem em moedas                                   | 16         | 02 §8.2       |
 
 ## 8. Modelo de dados
 
@@ -496,6 +539,10 @@ corpus (200, com a recusa explicada no corpo).
 - Terminada a fala, o microfone fecha: com o assistente parado, nada é captado da sala.
 - Em partida de quiz, a equipe responde uma vez; a segunda tentativa é recusada, e a rede caída
   no meio da pergunta não impede a equipe de continuar.
+- Fora do momento de troca aberto pelo Mestre, o catálogo avulso não é oferecido em tela alguma.
+- Troca com saldo insuficiente é recusada com a diferença dita em pontos, e o item sem estoque
+  não aparece.
+- Feita a troca, o saldo disponível cai exatamente o preço do item e o acumulado não se altera.
 
 **Hipótese sustentada:** o App 01 é o instrumento de medida de **H1** (documento 10) — quantos
 Guerreiros e Guerreiras se cadastram e com que frequência voltam. Ele passa a medir cadastros
@@ -504,21 +551,24 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                                 | Gravada em     | Linha do doc 09 |
-| --------------------------------------------------------------------------------------- | -------------- | --------------- |
-| Fotografia original apagada assim que o _template_ é gerado                             | 03 §3.3        | Já decididos    |
-| _Template_ gerado no aparelho pela biblioteca Human — vivacidade e depois descritor     | 03 §3.3        | Já decididos    |
-| Só o descritor trafega; a comparação continua no núcleo, que nunca devolve o _template_ | 03 §3.3        | Já decididos    |
-| _Template_ guardado enquanto durar o vínculo, excluído ao fim dele ou a pedido          | 03 §3.3        | Já decididos    |
-| Consentimento biométrico em termo impresso assinado, com testemunha e anexo pela gestão | 03 §3.3        | Já decididos    |
-| Nick único em toda a plataforma, com sugestão de variações no cadastro                  | 02 §1          | Já decididos    |
-| Rede fora: presença na fila local; cadastro e reconhecimento exigem rede                | 03 §3.4        | Já decididos    |
-| App 02 incorporado ao App 01, que passa a ser a aplicação da aula presencial            | 03 §§2.1, 3, 4 | Já decididos    |
-| Modo Ouvinte removido do produto; a aplicação não capta o áudio ambiente da aula        | 03 §4          | Já decididos    |
-| Equipe formada pelos próprios Guerreiros e Guerreiras, válida para aquela aula          | 02 §5          | Já decididos    |
-| Uma única equipe por Guerreiro(a) na partida de Quiz ao Vivo                            | 02 §5, 05 §5   | Já decididos    |
-| Resposta do Quiz ao Vivo enviada pelo App 01, não mais pela App 05                      | 05 §5          | Já decididos    |
-| App 05 como aplicação das aulas remotas e do uso cotidiano                              | 03 §7          | Já decididos    |
+| Decisão                                                                                 | Gravada em     | Linha do doc 09                              |
+| --------------------------------------------------------------------------------------- | -------------- | -------------------------------------------- |
+| Fotografia original apagada assim que o _template_ é gerado                             | 03 §3.3        | Já decididos                                 |
+| _Template_ gerado no aparelho pela biblioteca Human — vivacidade e depois descritor     | 03 §3.3        | Já decididos                                 |
+| Só o descritor trafega; a comparação continua no núcleo, que nunca devolve o _template_ | 03 §3.3        | Já decididos                                 |
+| _Template_ guardado enquanto durar o vínculo, excluído ao fim dele ou a pedido          | 03 §3.3        | Já decididos                                 |
+| Consentimento biométrico em termo impresso assinado, com testemunha e anexo pela gestão | 03 §3.3        | Já decididos                                 |
+| Nick único em toda a plataforma, com sugestão de variações no cadastro                  | 02 §1          | Já decididos                                 |
+| Rede fora: presença na fila local; cadastro e reconhecimento exigem rede                | 03 §3.4        | Já decididos                                 |
+| App 02 incorporado ao App 01, que passa a ser a aplicação da aula presencial            | 03 §§2.1, 3, 4 | Já decididos                                 |
+| Modo Ouvinte removido do produto; a aplicação não capta o áudio ambiente da aula        | 03 §4          | Já decididos                                 |
+| Troca de pontos extras por recompensa avulsa, presencial, no encerramento do encontro   | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
+| Entrega no ato da troca, com baixa no livro-razão e sem reserva                         | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
+| Debita o saldo disponível; o acumulado de pontos extras não muda                        | 11 §5          | Troca de pontos extras por recompensa avulsa |
+| Equipe formada pelos próprios Guerreiros e Guerreiras, válida para aquela aula          | 02 §5          | Já decididos                                 |
+| Uma única equipe por Guerreiro(a) na partida de Quiz ao Vivo                            | 02 §5, 05 §5   | Já decididos                                 |
+| Resposta do Quiz ao Vivo enviada pelo App 01, não mais pela App 05                      | 05 §5          | Já decididos                                 |
+| App 05 como aplicação das aulas remotas e do uso cotidiano                              | 03 §7          | Já decididos                                 |
 
 A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do termo** ao
 `Consentimento` do PRD-01, e o acompanhamento do anexo pendente à App 03 (PRD-02).
@@ -575,3 +625,4 @@ nasce aqui e serve também ao apoio escolar da App 05.
 | `RF-04-41` a `RF-04-44` | 05 §5 (regras da partida de Quiz ao Vivo)             |
 | `RF-04-45`              | 03 §3.4 (rede instável)                               |
 | `RF-04-48`              | 03 §3.3 (_template_ gerado no aparelho)               |
+| `RF-04-49` a `RF-04-57` | 02 §8.2 (recompensa avulsa) e 11 §5 (saldo e troca)   |
