@@ -16,7 +16,7 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
 | Visão, valores, causas, objetivos, público-alvo, fundador, transparência sobre IA                                                                                                                                            | 01          |
 | Personas, solicitação de participação, Comunidades Virtuais (conceito e regras de coleta), poderes, trilhas, atividades e desafios, criações originais, equipes, batalhas, recompensas, manual do Guerreiro(a)               | 02          |
-| Princípios de arquitetura, canais, as 8 aplicações, licenças, LGPD da plataforma                                                                                                                                             | 03          |
+| Princípios de arquitetura, stack e hospedagem, canais, as 8 aplicações, licenças, LGPD da plataforma                                                                                                                         | 03          |
 | Economia de recursos, moeda da plataforma, livro-razão, pessoa jurídica, receitas, titularidade dos dados publicados, desafios extras (regras completas), impacto social, aderência à Agenda 2030 e indicadores de cobertura | 04          |
 | Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto                                                        | 05          |
 | Trilha 1 — Robô Educa                                                                                                                                                                                                        | 06          |
@@ -108,6 +108,7 @@ em pontos — ficam **apenas no doc 14**.
 | Auxílio de IA na autoria da trilha (estrutura, não conteúdo)       | 03 §11                                     | 01 §7, 09                      |
 | Recompensa conquistada em marco da trilha                          | 02 §8                                      | 03 §7, 08, 11 §2.1, 12         |
 | Acompanhamento por nick e favoritos (só do Apoiador)               | 02 §1 e 03 §10                             | 03 §8, 04 §3, 08, 12           |
+| Licença do código (AGPL)                                           | 03 §1                                      | 01, 08                         |
 | Licença do conteúdo educacional (CC BY-SA)                         | 03 §1                                      | 01, 08, 09                     |
 | Regra de lastro (atividade só com recurso provido)                 | 04 §1                                      | 02, 05, 10, 11, 12             |
 | Poder Sustentador                                                  | 04 §1                                      | 02, 12, 14                     |

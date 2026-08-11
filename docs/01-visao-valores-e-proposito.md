@@ -119,8 +119,10 @@ que conduta decretada.
   propõem melhorias, alteram o código do jogo e sugerem rumos. A plataforma deve estar **sempre
   em evolução**, e quem joga é parte de quem a evolui.
 
-**[Proposta]** Criar também documentos de **governança open source** (`CODE_OF_CONDUCT.md`
-e `GOVERNANCE.md`) traduzindo esses valores para a comunidade de desenvolvedores.
+**Definição vigente.** Os valores e causas da §3 se traduzem também para a comunidade de
+desenvolvedores, nos documentos de governança open source na raiz do repositório:
+`GOVERNANCE.md` e `CODE_OF_CONDUCT.md`, este último aplicando explicitamente a lista acima
+a quem contribui com código.
 
 ## 4. Objetivos
 
@@ -258,3 +260,10 @@ a empunha**.
 A coerência importa: uma plataforma que ensina crianças a usar IA com consciência dos seus
 riscos deve dar o exemplo, dizendo abertamente onde e como a usa. Por isso a declaração de
 transparência acompanha os artefatos públicos do projeto, a começar pela vitrine.
+
+**O que a nota pública diz.** São dois usos distintos, e a vitrine declara os dois: a
+plataforma é **construída** com os modelos **Claude 5 e Sonnet 5**, da Anthropic, e **atende**
+Guerreiros, Guerreiras, Mestres e Apoiadores com os modelos **Gemini**, do Google
+(documento 03). Quem constrói não é quem responde a uma criança na tela, e o público tem
+direito de saber a diferença. O texto final, a localização exata na vitrine e a forma de marcar
+o conteúdo gerado com auxílio de IA seguem em aberto (documento 09).

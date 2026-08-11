@@ -8,7 +8,7 @@
 | Aplicação        | — (domínio consumido pelas Apps 03, 05, 06, 08 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v4 — 2026-08-06                                      |
+| Versão e data    | v5 — 2026-08-10                                      |
 | Depende de       | PRD-08                                               |
 | Documentos-fonte | 04 §§1–3, 05 §3, 11 §5                               |
 
@@ -170,6 +170,7 @@ atividades previstas.
 | `RF-07-17` | Apoiador consulta seus aportes e seu Poder Sustentador, sem edição                                                               | essencial  |
 | `RF-07-18` | Sistema expõe o que falta de recurso para as atividades previstas                                                                | essencial  |
 | `RF-07-19` | Lançamento é imutável; correção se faz por lançamento de ajuste, com motivo e autor                                              | essencial  |
+| `RF-07-32` | Sistema aceita aporte com período apurado anterior à entrada do livro-razão no ar, com comprovante anexado                       | essencial  |
 | `RF-07-20` | Conferência de inventário por módulo, com resultado publicável na prestação de contas                                            | desejável  |
 | `RF-07-21` | Aporte por absorção nasce marcado como ressarcível, com situação de ressarcimento                                                | essencial  |
 | `RF-07-22` | Ressarcimento pago exige comprovante anexado, e a plataforma não guarda dado bancário                                            | essencial  |
@@ -337,6 +338,7 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | Ressarcimento reverte as moedas; o registro do ato permanece                   | 04 §1          | Já decididos |
 | Sem armazenar dado bancário: chave PIX por e-mail e apenas comprovante anexado | 04 §1, 03 §11  | Já decididos |
 | Produção executiva como tipo de recurso, aportada por absorção                 | 04 §1          | Já decididos |
+| Faturas anteriores ao livro-razão guardadas e lançadas retroativamente         | 04 §1          | Já decididos |
 
 ## 14. Pendências que permanecem
 
@@ -367,4 +369,5 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | `RF-07-21` a `RF-07-25` | 04 §§1–2 (absorção, ressarcimento e comprovante) |
 | `RF-07-26`              | 11 §8.2 (cards e páginas individuais)            |
 | `RF-07-27` e `RF-07-28` | 04 §1 (necessidade publicada e absorção)         |
+| `RF-07-32`              | 04 §1 (custos anteriores ao livro-razão)         |
 | `RN-07-20`              | 04 §1 (sem armazenamento de dado bancário)       |
