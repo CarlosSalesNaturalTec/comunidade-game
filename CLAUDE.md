@@ -265,9 +265,23 @@ O código tem verificação automática como a documentação tem. **A change qu
 de código entrega, no mesmo PR, a esteira daquela pasta** — workflow em `.github/workflows/`,
 disparado só pelo caminho que ele cobre, e os comandos equivalentes rodáveis à mão.
 
-As **ferramentas de cada stack ainda não estão decididas** — formatador, _linter_, executor
-de testes e o que bloqueia o merge (documento 09). Enquanto a linha não for decidida,
-**pergunte ao fundador**; não escolha ferramenta dentro de uma change.
+### Backend (Python)
+
+| Ferramenta | O que verifica       | Comando local           |
+| ---------- | -------------------- | ----------------------- |
+| **Ruff**   | Formatação do Python | `ruff format --check .` |
+| **Ruff**   | Lint do Python       | `ruff check .`          |
+| **pytest** | Testes automatizados | `pytest`                |
+
+**As três bloqueiam o merge.** Ruff faz formatador e _linter_ numa ferramenta só. O workflow
+(`.github/workflows/backend-ci.yml`, disparado por `backend/**`) nasce na primeira change que
+criar a pasta `backend/`, junto com o código.
+
+### Frontends e jogo (JavaScript)
+
+**Ainda não decididos** — formatador, _linter_, executor de testes e o que bloqueia o merge
+(documento 09). Enquanto a linha não for decidida, **pergunte ao fundador**; não escolha
+ferramenta dentro de uma change. Não trava o PRD-01, que é backend.
 
 ## Integrações
 

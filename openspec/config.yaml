@@ -80,8 +80,12 @@ context: |
     `jogos/app-04-arena/`, `docs/` e `openspec/`. O desenho está no documento 03 §1.2 — siga
     aquele desenho e não invente pasta nova de topo. O jogo fica em `jogos/`, não em `apps/`.
   - O código tem esteira de CI como a documentação. A change que cria uma pasta de código
-    entrega, no mesmo PR, o workflow daquela pasta. As ferramentas de cada stack — formatador,
-    linter, executor de testes — seguem PENDENTES no documento 09: pergunte, não escolha.
+    entrega, no mesmo PR, o workflow daquela pasta, disparado só pelo caminho que cobre.
+  - Ferramentas do backend: Ruff como formatador e linter do Python, pytest como executor de
+    testes. As três verificações bloqueiam o merge — `ruff format --check`, `ruff check` e
+    `pytest`. As dos frontends e do jogo seguem PENDENTES no documento 09: pergunte, não
+    escolha. Nada além disso está decidido: limiar de cobertura, plugin de teste e regra de
+    Ruff ligada ou desligada são pergunta ao fundador, não escolha da change.
 
   ORDEM DE CONSTRUÇÃO
   A ordem em que os PRDs viram código está no documento 99 §9, com o piso de dependência de

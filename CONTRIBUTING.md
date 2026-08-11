@@ -96,8 +96,19 @@ artefatos de implementação no mesmo repositório, com uma pasta por aplicaçã
 pastas está no documento 03 §1.2, e é ele que diz onde o seu código entra.
 
 O código tem esteira de CI como a documentação tem: **pasta de código nova chega com a
-verificação automática dela**, disparada só pelo caminho que cobre. As ferramentas de cada
-_stack_ ainda não estão decididas (§9) — pergunte antes de escolher.
+verificação automática dela**, disparada só pelo caminho que cobre.
+
+No **backend**, três verificações bloqueiam o _merge_ — **Ruff** faz formatador e _linter_ do
+Python, e **pytest** roda os testes:
+
+```bash
+ruff format --check .
+ruff check .
+pytest
+```
+
+Nos **frontends e no jogo** as ferramentas ainda não estão decididas (§9) — pergunte antes de
+escolher.
 
 Da documentação, quatro verificações rodam no CI e todas podem ser rodadas localmente:
 
@@ -187,7 +198,7 @@ Estes pontos afetam quem contribui e seguem em aberto no documento 09:
 
 | Tema                                          | O que falta                                      |
 | --------------------------------------------- | ------------------------------------------------ |
-| Ferramentas da esteira de CI do código        | Formatador, _linter_ e testes de cada _stack_    |
+| Ferramentas de CI dos frontends e do jogo     | Formatador, _linter_ e testes do JavaScript      |
 | Texto e assinatura do CLA                     | O termo revisado por advogado e como se assina   |
 | CLA para quem contribui por uma empresa       | Se haverá termo próprio                          |
 | Apoio em código como aporte                   | Valor-hora e critério de conversão em horas      |
