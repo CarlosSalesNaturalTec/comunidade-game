@@ -190,7 +190,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-51` | Núcleo conta 30 dias da emissão para a apresentação da URL e registra a URL apresentada                                                                                                         | essencial  |
 | `RF-01-52` | Núcleo revoga automaticamente a chave cujo prazo de apresentação vence sem URL                                                                                                                  | essencial  |
 | `RF-01-53` | Núcleo permite a um Admin revogar chave a qualquer tempo, com motivo e autoria registrados                                                                                                      | essencial  |
-| `RF-01-54` | Núcleo emite na implantação a chave de cada aplicação do próprio projeto, sem prazo de apresentação                                                                                             | essencial  |
+| `RF-01-54` | Núcleo emite na implantação uma chave por aplicação do próprio projeto e por ambiente, sem prazo de apresentação                                                                                | essencial  |
 | `RF-01-55` | Núcleo aplica cota de consulta por chave e responde 429 ao excedê-la                                                                                                                            | desejável  |
 | `RF-01-35` | Núcleo mantém as entidades do apoio escolar — disciplina, conteúdo do corpus e consulta                                                                                                         | essencial  |
 | `RF-01-36` | Núcleo mantém a resposta de quiz por equipe e pergunta, com o momento de chegada                                                                                                                | essencial  |
@@ -214,49 +214,49 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                                                   | Invariante | Fonte       |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------- | ---------- | ----------- |
-| `RN-01-01` | Só o Guerreiro(a) tem autocadastro; Mestre e Apoiador são cadastrados por Admin, e o responsável por Admin ou Mestre    | 3          | 02 §1       |
-| `RN-01-02` | Novo Admin só entra por inclusão manual de outro Admin                                                                  | 3          | 02 §1       |
-| `RN-01-03` | Solicitação de participação não cria cadastro nem acesso                                                                | 3          | 02 §1       |
-| `RN-01-04` | Login não cria persona: autentica quem já tem cadastro                                                                  | 3          | 03 §1.1     |
-| `RN-01-05` | Todo Guerreiro(a) tem vínculo obrigatório a exatamente uma comunidade                                                   | 4          | 02 §1       |
-| `RN-01-06` | Pontos só vêm de realização; o App 04 apenas lê e não tem nenhuma rota de escrita                                       | 8          | 11 §§1, 8.4 |
-| `RN-01-07` | Nenhuma atividade é agendável sem lastro dos recursos                                                                   | 9          | 04 §1       |
-| `RN-01-08` | Dado do território tem guarda permanente com coletor identificado                                                       | 7          | 02 §1       |
-| `RN-01-09` | Anonimização se aplica na saída, nunca no armazenamento                                                                 | 7          | 02 §1       |
-| `RN-01-10` | Guerreiro(a) aparece publicamente só por avatar e nick, e só com autorização do responsável                             | 12         | 03 §12      |
-| `RN-01-11` | Rota pública nunca devolve dado de contato, valor em reais ou imagem real de criança                                    | 10, 16     | 03 §12      |
-| `RN-01-12` | Consentimento é versionado, com autoria, data e hora                                                                    | 11         | 03 §12      |
-| `RN-01-13` | Criação original carrega o autor por toda a vida do registro                                                            | 5          | 02 §4       |
-| `RN-01-14` | O _template_ biométrico é guardado cifrado, com acesso auditado, e nenhuma rota o devolve nem devolve a imagem original | 12         | 03 §3.3     |
-| `RN-01-15` | A imagem do Guerreiro(a) serve só para identificá-lo — presença e autenticação; outro uso exige nova base legal         | 12         | 03 §3.3     |
-| `RN-01-16` | Recusar a biometria não impede o acesso: a confirmação do Mestre ou Admin, no encontro, é a alternativa equivalente     | 11         | 03 §3.3     |
-| `RN-01-17` | O _template_ só é gravado com consentimento do responsável registrado                                                   | 11         | 03 §3.3     |
-| `RN-01-18` | Senha provisória é guardada com hash, vale para um único acesso e é trocada pelo próprio adulto                         | —          | 03 §1.1     |
-| `RN-01-19` | Cada Guerreiro(a) tem no máximo três responsáveis vinculados, com grau de parentesco em texto livre                     | 3          | 02 §1       |
-| `RN-01-20` | Responsável só é vinculado a Guerreiro(a) já cadastrado no onboarding                                                   | 3          | 02 §1       |
-| `RN-01-21` | Recusa de consentimento nunca exclui o Guerreiro(a) da atividade                                                        | 11         | 03 §12      |
-| `RN-01-22` | O nick é chave de acompanhamento público, cedido pela família: o núcleo nunca o descobre nem o sugere a um adulto       | 12         | 02 §1       |
-| `RN-01-23` | A etiqueta ODS não entra em ponto, nível ou badge; é opcional no Ciclo 01 e obrigatória na trilha a partir do Ciclo 02  | 20         | 11 §2.1     |
-| `RN-01-24` | A cobertura de ODS nunca é atributo de um Guerreiro(a): agrega por trilha, poder, comunidade e ciclo                    | 20         | 11 §2.1     |
-| `RN-01-25` | Solicitação de dados não cria cadastro nem acesso, e a entrega exige aprovação registrada de Admin                      | 17         | 03 §12.3    |
-| `RN-01-26` | Saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin                                        | 7, 17      | 02 §1       |
-| `RN-01-27` | Rota pública tem limite por origem e janela, com atraso progressivo, sem exigir cadastro do visitante                   | —          | 03 §8       |
-| `RN-01-28` | Pré-cadastro de Apoiador não cria cadastro nem acesso: quem valida o comprovante e cadastra é um Admin                  | 3          | 02 §1       |
-| `RN-01-29` | A plataforma não coleta CPF, CNPJ nem documento de identidade de quem aporta                                            | —          | 02 §1       |
-| `RN-01-30` | O nick do Apoiador é único em toda a plataforma, como o do Guerreiro(a)                                                 | —          | 02 §1       |
-| `RN-01-31` | Aporte declarado só credita moedas e vai ao card público depois de homologado por Admin                                 | 16         | 04 §2       |
-| `RN-01-32` | Sem chave de aplicação válida a API não responde, nem em rota de consulta pública                                       | —          | 03 §1       |
-| `RN-01-33` | A chave é da aplicação, nunca da pessoa: ela não identifica nem autoriza visitante algum                                | 8          | 03 §1.1     |
-| `RN-01-34` | Chave não amplia direito: quem só lê continua só lendo, e escrita segue exigindo credencial de persona                  | 8          | 03 §1       |
-| `RN-01-35` | O segredo da chave é devolvido uma única vez e nunca é recuperável depois                                               | —          | 03 §1       |
-| `RN-01-36` | Chave de terceiro sem URL apresentada em 30 dias é revogada, e nova solicitação é sempre possível                       | —          | 03 §8       |
-| `RN-01-37` | Solicitação de chave não cria cadastro nem persona, como as demais solicitações públicas                                | 3          | 02 §1       |
-| `RN-01-38` | Ponto regular nunca se gasta; só o saldo de pontos extras é debitado                                                    | 23         | 11 §5       |
-| `RN-01-39` | O acumulado de pontos extras só cresce; a troca debita apenas o saldo disponível                                        | 23         | 11 §5       |
-| `RN-01-40` | O saldo disponível nunca fica negativo                                                                                  | 23         | 11 §5       |
-| `RN-01-41` | Nenhuma rota de jogo expõe o saldo disponível de pontos extras                                                          | 8          | 11 §§5, 8.4 |
+| ID         | Regra                                                                                                                           | Invariante | Fonte       |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------- | ----------- |
+| `RN-01-01` | Só o Guerreiro(a) tem autocadastro; Mestre e Apoiador são cadastrados por Admin, e o responsável por Admin ou Mestre            | 3          | 02 §1       |
+| `RN-01-02` | Novo Admin só entra por inclusão manual de outro Admin                                                                          | 3          | 02 §1       |
+| `RN-01-03` | Solicitação de participação não cria cadastro nem acesso                                                                        | 3          | 02 §1       |
+| `RN-01-04` | Login não cria persona: autentica quem já tem cadastro                                                                          | 3          | 03 §1.1     |
+| `RN-01-05` | Todo Guerreiro(a) tem vínculo obrigatório a exatamente uma comunidade                                                           | 4          | 02 §1       |
+| `RN-01-06` | Pontos só vêm de realização; o App 04 apenas lê e não tem nenhuma rota de escrita                                               | 8          | 11 §§1, 8.4 |
+| `RN-01-07` | Nenhuma atividade é agendável sem lastro dos recursos                                                                           | 9          | 04 §1       |
+| `RN-01-08` | Dado do território tem guarda permanente com coletor identificado                                                               | 7          | 02 §1       |
+| `RN-01-09` | Anonimização se aplica na saída, nunca no armazenamento                                                                         | 7          | 02 §1       |
+| `RN-01-10` | Guerreiro(a) aparece publicamente só por avatar e nick, e só com autorização do responsável                                     | 12         | 03 §12      |
+| `RN-01-11` | Rota pública nunca devolve dado de contato, valor em reais ou imagem real de criança                                            | 10, 16     | 03 §12      |
+| `RN-01-12` | Consentimento é versionado, com autoria, data e hora                                                                            | 11         | 03 §12      |
+| `RN-01-13` | Criação original carrega o autor por toda a vida do registro                                                                    | 5          | 02 §4       |
+| `RN-01-14` | O _template_ biométrico é guardado cifrado, com acesso auditado, e nenhuma rota o devolve nem devolve a imagem original         | 12         | 03 §3.3     |
+| `RN-01-15` | A imagem do Guerreiro(a) serve só para identificá-lo — presença e autenticação; outro uso exige nova base legal                 | 12         | 03 §3.3     |
+| `RN-01-16` | Recusar a biometria não impede o acesso: a confirmação do Mestre ou Admin, no encontro, é a alternativa equivalente             | 11         | 03 §3.3     |
+| `RN-01-17` | O _template_ só é gravado com consentimento do responsável registrado                                                           | 11         | 03 §3.3     |
+| `RN-01-18` | Senha provisória é guardada com hash, vale para um único acesso e é trocada pelo próprio adulto                                 | —          | 03 §1.1     |
+| `RN-01-19` | Cada Guerreiro(a) tem no máximo três responsáveis vinculados, com grau de parentesco em texto livre                             | 3          | 02 §1       |
+| `RN-01-20` | Responsável só é vinculado a Guerreiro(a) já cadastrado no onboarding                                                           | 3          | 02 §1       |
+| `RN-01-21` | Recusa de consentimento nunca exclui o Guerreiro(a) da atividade                                                                | 11         | 03 §12      |
+| `RN-01-22` | O nick é chave de acompanhamento público, cedido pela família: o núcleo nunca o descobre nem o sugere a um adulto               | 12         | 02 §1       |
+| `RN-01-23` | A etiqueta ODS não entra em ponto, nível ou badge; é opcional no Ciclo 01 e obrigatória na trilha a partir do Ciclo 02          | 20         | 11 §2.1     |
+| `RN-01-24` | A cobertura de ODS nunca é atributo de um Guerreiro(a): agrega por trilha, poder, comunidade e ciclo                            | 20         | 11 §2.1     |
+| `RN-01-25` | Solicitação de dados não cria cadastro nem acesso, e a entrega exige aprovação registrada de Admin                              | 17         | 03 §12.3    |
+| `RN-01-26` | Saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin                                                | 7, 17      | 02 §1       |
+| `RN-01-27` | Rota pública tem limite por origem e janela, com atraso progressivo, sem exigir cadastro do visitante                           | —          | 03 §8       |
+| `RN-01-28` | Pré-cadastro de Apoiador não cria cadastro nem acesso: quem valida o comprovante e cadastra é um Admin                          | 3          | 02 §1       |
+| `RN-01-29` | A plataforma não coleta CPF, CNPJ nem documento de identidade de quem aporta                                                    | —          | 02 §1       |
+| `RN-01-30` | O nick do Apoiador é único em toda a plataforma, como o do Guerreiro(a)                                                         | —          | 02 §1       |
+| `RN-01-31` | Aporte declarado só credita moedas e vai ao card público depois de homologado por Admin                                         | 16         | 04 §2       |
+| `RN-01-32` | Sem chave válida nenhuma rota de dados sob `/v1` responde, nem em consulta pública; o schema OpenAPI, fora do prefixo, é aberto | —          | 03 §1       |
+| `RN-01-33` | A chave é da aplicação, nunca da pessoa: ela não identifica nem autoriza visitante algum                                        | 8          | 03 §1.1     |
+| `RN-01-34` | Chave não amplia direito: quem só lê continua só lendo, e escrita segue exigindo credencial de persona                          | 8          | 03 §1       |
+| `RN-01-35` | O segredo da chave é devolvido uma única vez e nunca é recuperável depois                                                       | —          | 03 §1       |
+| `RN-01-36` | Chave de terceiro sem URL apresentada em 30 dias é revogada, e nova solicitação é sempre possível                               | —          | 03 §8       |
+| `RN-01-37` | Solicitação de chave não cria cadastro nem persona, como as demais solicitações públicas                                        | 3          | 02 §1       |
+| `RN-01-38` | Ponto regular nunca se gasta; só o saldo de pontos extras é debitado                                                            | 23         | 11 §5       |
+| `RN-01-39` | O acumulado de pontos extras só cresce; a troca debita apenas o saldo disponível                                                | 23         | 11 §5       |
+| `RN-01-40` | O saldo disponível nunca fica negativo                                                                                          | 23         | 11 §5       |
+| `RN-01-41` | Nenhuma rota de jogo expõe o saldo disponível de pontos extras                                                                  | 8          | 11 §§5, 8.4 |
 
 ## 8. Modelo de dados
 
@@ -300,20 +300,20 @@ Sessao              Conteudo
                                                ConferenciaDeSeguranca
 ```
 
-| Entidade                    | Atributos essenciais                                                                                                                                                                                                       |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Credencial`                | persona, tipo (biometria, login social, usuário e senha), identificador, segredo (_template_ cifrado ou hash), criada por, troca pendente, ativa                                                                           |
-| `Sessao`                    | persona, início, expiração, origem (aplicação), como autenticou, quem confirmou, encerrada em                                                                                                                              |
-| `VinculoResponsavel`        | responsável, Guerreiro(a), grau de parentesco, cadastrado por (Admin ou Mestre), início, fim                                                                                                                               |
-| `Consentimento`             | responsável, Guerreiro(a), tipo, versão do termo, decisão, data e hora, testemunha (Mestre ou Admin), anexo do termo assinado, origem (própria, assistida ou impressa), quem operou                                        |
-| `SolicitacaoDoResponsavel`  | protocolo, responsável, Guerreiro(a), tipo, texto, situação, prazo, quem tratou, desfecho e data                                                                                                                           |
-| `SolicitacaoDeDados`        | solicitante, instituição, e-mail, finalidade declarada, recorte pedido, situação, quem avaliou, desfecho, data e o que foi entregue                                                                                        |
-| `SolicitacaoDeChave`        | solicitante, e-mail, instituição opcional, o que pretende construir, situação, prazo de avaliação, quem avaliou, parecer, data e a chave emitida                                                                           |
-| `ChaveDeAplicacao`          | aplicação, natureza (do projeto ou de terceiro), resumo criptográfico do segredo, emitida por, emitida em, prazo de apresentação, URL apresentada, cota, situação (vigente, revogada), revogada por, motivo e data         |
-| `EtiquetaODS`               | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                                                                                           |
-| `SolicitacaoDeParticipacao` | nome ou razão social, e-mail, WhatsApp, pretensão, apresentação, instituição e links opcionais, aporte declarado (necessidade, valor sugerido ou livre), comprovante anexado, situação, prazo, quem avaliou, parecer, data |
-| `Apoiador`                  | identidade, avatar (próprio a partir de 10 moedas acumuladas; padrão do projeto abaixo do piso), nick único, artefatos comprobatórios, Poder Sustentador derivado dos aportes homologados                                  |
-| `Auditoria`                 | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                                                                  |
+| Entidade                    | Atributos essenciais                                                                                                                                                                                                         |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Credencial`                | persona, tipo (biometria, login social, usuário e senha), identificador, segredo (_template_ cifrado ou hash), criada por, troca pendente, ativa                                                                             |
+| `Sessao`                    | persona, início, expiração, origem (aplicação), como autenticou, quem confirmou, encerrada em                                                                                                                                |
+| `VinculoResponsavel`        | responsável, Guerreiro(a), grau de parentesco, cadastrado por (Admin ou Mestre), início, fim                                                                                                                                 |
+| `Consentimento`             | responsável, Guerreiro(a), tipo, versão do termo, decisão, data e hora, testemunha (Mestre ou Admin), anexo do termo assinado, origem (própria, assistida ou impressa), quem operou                                          |
+| `SolicitacaoDoResponsavel`  | protocolo, responsável, Guerreiro(a), tipo, texto, situação, prazo, quem tratou, desfecho e data                                                                                                                             |
+| `SolicitacaoDeDados`        | solicitante, instituição, e-mail, finalidade declarada, recorte pedido, situação, quem avaliou, desfecho, data e o que foi entregue                                                                                          |
+| `SolicitacaoDeChave`        | solicitante, e-mail, instituição opcional, o que pretende construir, situação, prazo de avaliação, quem avaliou, parecer, data e a chave emitida                                                                             |
+| `ChaveDeAplicacao`          | aplicação, ambiente, natureza (do projeto ou de terceiro), resumo criptográfico do segredo, emitida por, emitida em, prazo de apresentação, URL apresentada, cota, situação (vigente, revogada), revogada por, motivo e data |
+| `EtiquetaODS`               | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                                                                                             |
+| `SolicitacaoDeParticipacao` | nome ou razão social, e-mail, WhatsApp, pretensão, apresentação, instituição e links opcionais, aporte declarado (necessidade, valor sugerido ou livre), comprovante anexado, situação, prazo, quem avaliou, parecer, data   |
+| `Apoiador`                  | identidade, avatar (próprio a partir de 10 moedas acumuladas; padrão do projeto abaixo do piso), nick único, artefatos comprobatórios, Poder Sustentador derivado dos aportes homologados                                    |
+| `Auditoria`                 | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                                                                    |
 
 A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela que o App 01 tira
 a comunidade do novo cadastro, e é a existência dela que habilita o onboarding naquele momento.
@@ -502,6 +502,9 @@ e o dos desafios de desbloqueio de cada trilha.
 | Ponto extra em duas contas: acumulado e saldo disponível; só o saldo debita                          | 11 §5             | Troca de pontos extras por recompensa avulsa |
 | Jogos leem o acumulado de pontos extras, nunca o saldo disponível                                    | 11 §5             | Troca de pontos extras por recompensa avulsa |
 | Comparação do _template_ permanece no núcleo, que nunca o devolve                                    | 03 §3.3           | Já decididos                                 |
+| API documentada em OpenAPI desde o primeiro _endpoint_, com schema aberto fora de `/v1`              | 03 §§1, 1.1       | Documentação da API em OpenAPI               |
+| Chave por aplicação e por ambiente; dois ambientes no Ciclo 01, e 16 chaves na implantação           | 03 §§1, 1.13      | Escopo da chave e ambientes do Ciclo 01      |
+| Python 3.12 e conjunto de regras do Ruff, com cobertura medida sem limiar que bloqueie               | 03 §1.13          | Ferramentas da esteira de CI do backend      |
 
 ## 14. Pendências que permanecem
 

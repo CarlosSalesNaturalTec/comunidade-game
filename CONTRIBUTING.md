@@ -107,6 +107,9 @@ ruff check .
 pytest
 ```
 
+O Python é o **3.12**, e o Ruff roda com os conjuntos **`E`, `F`, `I`, `UP` e `B`**. A
+**cobertura é medida e aparece no log, mas não bloqueia** o _merge_ no Ciclo 01.
+
 Nos **frontends e no jogo** as ferramentas ainda não estão decididas (§9) — pergunte antes de
 escolher.
 
