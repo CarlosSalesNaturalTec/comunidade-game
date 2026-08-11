@@ -10,7 +10,9 @@ planejamento da implementação, em `openspec/`, e o código das aplicações.
 2. **Feito:** os treze **PRDs** (_Product Requirements Documents_) do Ciclo 01, em
    `docs/prds/`, escritos a partir de `docs/08-base-para-prds.md` e aprovados pelo fundador.
 3. **Agora:** desenvolvimento das oito aplicações e do Backend API, conduzido pelo
-   framework de **SDD** (_Spec-Driven Development_) **OpenSpec**.
+   framework de **SDD** (_Spec-Driven Development_) **OpenSpec**. Nenhuma _change_ foi criada
+   ainda — `openspec/` tem só o `config.yaml`, e a primeira entrega é o **PRD-01**, o núcleo
+   do Backend API (documento 99 §9).
 
 Código entra **apenas** por uma _change_ do OpenSpec cujos artefatos foram aprovados pelo
 fundador. PRD novo ou revisão de PRD existente continua seguindo as regras de `docs/prds/`
@@ -169,16 +171,27 @@ reabra. O que segue pendente está no documento 09 e vira pergunta, nunca suposi
 
 ### 4. Fluxo
 
-| Etapa                         | Comando          |
-| ----------------------------- | ---------------- |
-| Criar a change e os artefatos | `/opsx:propose`  |
-| Avançar um artefato por vez   | `/opsx:continue` |
-| Implementar as tarefas        | `/opsx:apply`    |
-| Verificar antes de fechar     | `/opsx:verify`   |
-| Arquivar a change concluída   | `/opsx:archive`  |
+| Etapa                                     | Comando              |
+| ----------------------------------------- | -------------------- |
+| Pensar antes de abrir change              | `/opsx:explore`      |
+| Criar a change e os artefatos             | `/opsx:propose`      |
+| Criar a change vazia, para conduzir à mão | `/opsx:new`          |
+| Avançar um artefato por vez               | `/opsx:continue`     |
+| Gerar de uma vez o que falta              | `/opsx:ff`           |
+| Implementar as tarefas                    | `/opsx:apply`        |
+| Verificar antes de fechar                 | `/opsx:verify`       |
+| Arquivar a change concluída               | `/opsx:archive`      |
+| Arquivar várias de uma vez                | `/opsx:bulk-archive` |
+
+Os artefatos de cada change ficam em `openspec/changes/<change>/`, na ordem `proposal` →
+`specs` → `design` → `tasks`; ao arquivar, o delta é consolidado em `openspec/specs/`.
+`openspec list`, `openspec status --change <nome>` e `openspec validate --all` conferem o
+estado pelo terminal. Os comandos e as skills em `.claude/` são vendorizados do OpenSpec e se
+atualizam com `openspec update` — não os edite à mão.
 
 A ordem em que os PRDs viram código está no documento 99 §9 — não é a ordem de elaboração
-do documento 08, que registra em que sequência os PRDs foram escritos.
+do documento 08, que registra em que sequência os PRDs foram escritos. A primeira change
+recorta o **PRD-01**; PRD-08 e PRD-07 só entram depois dele.
 
 ### 5. Documentação a cada change
 

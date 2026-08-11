@@ -83,17 +83,22 @@ context: |
   PRDs foram escritos — em execução o PRD-01 vem primeiro, porque território (PRD-08) e
   ledger (PRD-07) só operam sobre a autenticação, a chave e o filtro por comunidade dele.
 
-  PENDÊNCIAS QUE AINDA TRAVAM CÓDIGO
+  PENDÊNCIAS — ONDE PROCURAR ANTES DE SUPOR
   Stack, hospedagem, armazenamento das séries temporais e reconhecimento facial estão
-  decididos — aplique o documento 03, não reabra. Seguem pendentes no documento 09, e cada
-  uma trava apenas o requisito indicado: autenticação do sensor do Guerreiro(a) (RF-08-14,
-  trava a implementação, não a modelagem); agregação mínima dentro do bairro (RF-08-16 e
-  RF-08-19); formato, licença e critério de aprovação da entrega do conjunto de dados
-  (RF-01-46 e RF-01-47); duração da sessão do Guerreiro(a) (RF-01-04, parâmetro de
-  configuração); prazo de disponibilidade da versão anterior da API (RF-01-31); valor-hora
-  da produção executiva (PRD-07, cadastro da gestão). Nenhuma delas se resolve dentro de um
-  artefato do OpenSpec: a decisão é do fundador, é gravada no documento-fonte e movida no
-  documento 09 antes de virar código.
+  decididos — aplique o documento 03, não reabra. O que segue em aberto está em dois lugares,
+  e a lista não se repete aqui para não envelhecer:
+  1. a §14 do PRD alvo ("Pendências que permanecem") — o que trava aquele PRD;
+  2. `docs/09-topicos-em-aberto-e-sugestoes.md` §1 — a pauta do fundador.
+  Antes de escrever qualquer artefato, leia a §14 do PRD e confira se alguma pendência atinge
+  o recorte da change. Se atingir, PARE e pergunte: nenhuma delas se resolve dentro de um
+  artefato do OpenSpec — a decisão é do fundador, é gravada no documento-fonte, movida no
+  documento 09 e aplicada ao PRD antes de virar código.
+
+  Parâmetro que a documentação deixa de propósito para a operação declarar — a duração da
+  sessão do Guerreiro(a) (RF-01-04), o prazo da versão anterior da API (RF-01-31), os valores
+  de tabela cadastrados pela gestão — não é pendência de decisão de produto: vira parâmetro
+  de configuração. Não trave a change por causa dele e não invente o número: pergunte o valor
+  inicial ao fundador.
 
   ENTREGA
   Um branch e um PR por change. O PR leva os artefatos da change, o código, os testes e a
@@ -168,3 +173,28 @@ rules:
       `mkdocs build --strict` antes de abrir o PR.
     - >-
       Não crie tarefa fora do escopo declarado na proposal.
+
+# Orientação por operação — vale na implementação e no arquivamento, não na escrita
+# dos artefatos.
+operations:
+  apply:
+    guidance:
+      - >-
+        Implemente apenas as tarefas aprovadas. Requisito faltando, ambíguo ou em
+        contradição com o PRD não se resolve no código: pare e pergunte ao fundador.
+      - >-
+        Toda mudança em `docs/` que a change provocou entra no mesmo PR — o site do MkDocs
+        nunca fica atrasado em relação ao que foi implementado.
+      - >-
+        Quando a change tocar `docs/`, rode `npm run fix`, `npm run lint` e
+        `mkdocs build --strict` antes de abrir o PR. `openspec/` fica fora do lint e do site.
+      - >-
+        Um branch e um PR por change. Merge sempre por merge commit, nunca squash.
+  archive:
+    guidance:
+      - >-
+        Rode `/opsx:verify` antes de arquivar; arquive só com artefatos, código, testes e
+        documentação já entregues.
+      - >-
+        Confira que `docs/prds/index.md` e o documento 99 refletem a situação e que todo
+        arquivo novo de `docs/` está na `nav` do `mkdocs.yml`.
