@@ -617,8 +617,9 @@ para o apoio escolar.
   a tomar e a gravar no documento 03 §12.
 - **Catálogo de qual marco entrega qual recompensa** no Ciclo 01: a regra está decidida, o
   catálogo não. **Trava** o `RF-05-45` na prática, não no desenho.
-- **Preço em pontos extras de cada item do catálogo avulso**: a regra e a régua estão
-  decididas, os números não. **Trava** o `RF-05-83` na prática, não no desenho.
+- **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 20
+  estão decididos; os preços por tipo são cadastro da gestão e dependem do calendário do
+  Ciclo 01. **Trava** o `RF-05-83` na prática, não no desenho.
 - **Acessibilidade de quem não tem aparelho nem dados móveis** fora do ponto de apoio: os
   desafios on-line entre encontros pressupõem acesso que nem todo Guerreiro(a) tem.
 

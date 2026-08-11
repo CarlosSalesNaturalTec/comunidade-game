@@ -312,7 +312,7 @@ que responde pelos atos registrados no cadastro.
 | `RF-14-76` | Proposta declara o custeio: aporte do Apoiador ou saldo de recurso existente na plataforma  | essencial  |
 | `RF-14-77` | Apoiador oferta item para o catálogo avulso, com nome, tipo de recurso, quantidade e lastro | essencial  |
 | `RF-14-78` | Item ofertado pelo Apoiador só entra no catálogo após homologação de Admin                  | essencial  |
-| `RF-14-79` | Apoiador não define o preço em pontos extras do item que oferta; quem define é a gestão     | essencial  |
+| `RF-14-79` | Apoiador não define o preço do item que oferta; ele vem da tabela de referência da gestão   | essencial  |
 | `RF-14-80` | Apoiador acompanha o item ofertado: homologado, ativo, estoque restante e quantas trocas    | essencial  |
 | `RF-14-81` | Nenhuma tela de catálogo expõe identificação de quem trocou; o retorno é agregado           | essencial  |
 
@@ -650,8 +650,9 @@ ao modelo do PRD-07.
   quem pede recibo.
 - **Catálogo de recompensas por marco** (documento 09): o que o Apoiador pode oferecer como
   recompensa de desafio extra convive com o catálogo do Ciclo 01, ainda não fechado.
-- **Preço em pontos extras do catálogo avulso**: quem define é a gestão, não quem oferta, e os
-  números ainda não existem. **Trava** o `RF-14-77` na prática, não no desenho.
+- **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 20
+  estão decididos; os preços por tipo são cadastro da gestão. **Trava** o `RF-14-77` na
+  prática, não no desenho.
 - **Peça de prestação de contas depois do Ciclo 01**: o painel vivo é a decisão do ciclo; que
   relatório fechado nasce dele — e para quem — se decide com o uso medido no ciclo.
 - **Mais de um usuário por cadastro institucional**: fica para ciclo futuro, com o registro de

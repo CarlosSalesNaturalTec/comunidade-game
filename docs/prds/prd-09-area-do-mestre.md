@@ -48,8 +48,9 @@ inteira sem escrever uma linha de código.
   (presencial ou on-line) declarados pelo Mestre.
 - **Recompensa de cada marco** — desbloqueio de missão, etapa, batalha ou culminância —, com
   lastro exigido antes da publicação e entrega confirmada pelo Mestre.
-- **Catálogo avulso** da comunidade: cadastro do item, preço em pontos extras, estoque e
-  retirada, sem homologação de Admin, com lastro exigido antes de publicar.
+- **Catálogo avulso** da comunidade: cadastro do item, tipo de recurso, estoque e retirada, sem
+  homologação de Admin, com lastro exigido antes de publicar. O **preço vem da tabela de
+  referência** da gestão — o Mestre não o define.
 - **Acompanhamento das trocas** feitas na comunidade do Mestre.
 - **Conteúdo da missão**: texto formatado com imagens, link externo, upload de vídeo e de
   arquivo hospedados pela plataforma, e bibliografia de apoio por missão.
@@ -391,14 +392,14 @@ Guerreiras que percorrem as suas trilhas.
 
 ### 6.10 Catálogo avulso e troca por pontos extras
 
-| ID          | Requisito                                                                                      | Prioridade |
-| ----------- | ---------------------------------------------------------------------------------------------- | ---------- |
-| `RF-09-99`  | Mestre cadastra item do catálogo avulso com nome, preço em pontos extras, estoque e comunidade | essencial  |
-| `RF-09-100` | Cadastro do Mestre entra no catálogo sem homologação de Admin                                  | essencial  |
-| `RF-09-101` | Aplicação recusa publicar item do catálogo sem lastro registrado                               | essencial  |
-| `RF-09-102` | Mestre altera o estoque do item e o retira do catálogo, com autoria registrada                 | essencial  |
-| `RF-09-103` | Preço do item é declarado em pontos extras, sem campo de valor em reais nem em moedas          | essencial  |
-| `RF-09-104` | Mestre acompanha as trocas feitas na sua comunidade, com item, Guerreiro(a), preço e data      | essencial  |
+| ID          | Requisito                                                                                  | Prioridade |
+| ----------- | ------------------------------------------------------------------------------------------ | ---------- |
+| `RF-09-99`  | Mestre cadastra item do catálogo avulso com nome, tipo de recurso, estoque e comunidade    | essencial  |
+| `RF-09-100` | Cadastro do Mestre entra no catálogo sem homologação de Admin                              | essencial  |
+| `RF-09-101` | Aplicação recusa publicar item do catálogo sem lastro registrado                           | essencial  |
+| `RF-09-102` | Mestre altera o estoque do item e o retira do catálogo, com autoria registrada             | essencial  |
+| `RF-09-103` | Preço vem da tabela de referência vigente e é exibido em pontos extras, sem campo editável | essencial  |
+| `RF-09-104` | Mestre acompanha as trocas feitas na sua comunidade, com item, Guerreiro(a), preço e data  | essencial  |
 
 ### 6.11 Desafio extra proposto pelo Mestre
 
@@ -662,7 +663,7 @@ missão é o que permite a mesma trilha atender dos 6 aos 16 anos.
 | Template monta estrutura e checklist; a IA não escreve conteúdo                      | 03 §11              | Auxílio de IA na autoria da trilha           |
 | Camisa conquistada no marco de missão, não entregue a todo inscrito                  | 02 §8, 04 §1, 05 §3 | Camisa como recompensa de marco              |
 | Catálogo avulso cadastrado pelo Mestre sem homologação, com lastro e estoque         | 02 §8.2             | Troca de pontos extras por recompensa avulsa |
-| Preço do catálogo em pontos extras, sem derivação de moedas nem de reais             | 02 §8.2             | Troca de pontos extras por recompensa avulsa |
+| Preço do catálogo vindo de tabela de referência da gestão, com piso de 20 pontos     | 02 §8.2             | Quem fixa o preço do catálogo avulso         |
 | Mestre propõe desafio extra, presencial ou on-line, com teto de 10 pontos            | 04 §3               | Desafio extra — proponente, teto e custeio   |
 | Custeio do desafio extra por absorção do proponente ou saldo da plataforma           | 04 §3               | Desafio extra — proponente, teto e custeio   |
 | Validação pedagógica dispensada só para o Mestre autor; Admin aprova sempre          | 04 §3               | Desafio extra — proponente, teto e custeio   |
@@ -677,8 +678,9 @@ avulsa**.
 
 - **Composição da amostra de auditoria de coleta**: a cadência semanal está decidida, mas
   quantos registros por série ativa entram na amostra ainda não.
-- **Preço em pontos extras de cada item do catálogo avulso**: a regra e a régua estão
-  decididas, os números não. **Trava** o `RF-09-99` na prática, não no desenho.
+- **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 20
+  estão decididos; os preços por tipo são cadastro da gestão e dependem do calendário do
+  Ciclo 01. **Trava** o `RF-09-99` na prática, não no desenho.
 - **Mapeamento dos livros nas trilhas**: qual capítulo apoia qual missão das trilhas 1 e 2 é
   trabalho de leitura do acervo, não de ferramenta — mas sem ele a bibliografia nasce vazia.
 - **Formatos de arquivo aceitos no upload** e política de moderação do que é enviado: o limite

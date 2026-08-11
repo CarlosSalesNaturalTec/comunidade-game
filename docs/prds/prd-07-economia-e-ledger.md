@@ -183,7 +183,12 @@ atividades previstas.
 | `RF-07-35` | Troca registra item, Guerreiro(a), preço cobrado, encontro e Mestre que entregou                                                 | essencial  |
 | `RF-07-36` | Entrega da troca gera baixa no livro-razão e decrementa o estoque do item                                                        | essencial  |
 | `RF-07-37` | Sistema recusa troca de item sem estoque ou sem lastro                                                                           | essencial  |
-| `RF-07-38` | Preço em pontos extras é atributo próprio do item, sem derivação do valor em moedas do tipo de recurso                           | essencial  |
+| `RF-07-38` | Preço em pontos extras vem da tabela de referência vigente, sem derivação do valor em moedas do tipo de recurso                  | essencial  |
+| `RF-07-42` | Admin cadastra o preço de referência em pontos extras por tipo de recurso                                                        | essencial  |
+| `RF-07-43` | Sistema versiona o preço de referência por data de vigência, como o valor em moedas                                              | essencial  |
+| `RF-07-44` | Sistema recusa preço de referência menor que 20 pontos extras                                                                    | essencial  |
+| `RF-07-45` | Item do catálogo herda o preço da tabela vigente; o cadastro do item não aceita preço próprio                                    | essencial  |
+| `RF-07-46` | Troca cobra o preço vigente na data da troca e o registra no histórico                                                           | essencial  |
 | `RF-07-39` | Publicação de desafio extra reserva a recompensa; sem saldo, a publicação é recusada                                             | essencial  |
 | `RF-07-40` | Desafio extra encerrado sem conclusão libera a reserva, devolvendo o saldo                                                       | essencial  |
 | `RF-07-41` | Sistema aceita custeio do desafio extra por absorção do proponente ou por saldo de recurso existente                             | essencial  |
@@ -217,6 +222,8 @@ atividades previstas.
 | `RN-07-22` | Comprovante é aceito em PDF, JPG ou PNG; não há confirmação automática de PIX                                  | —          | 04 §2        |
 | `RN-07-24` | Reais, moedas da plataforma e pontos extras não se convertem entre si                                          | 23         | 02 §8.2      |
 | `RN-07-25` | Preço do catálogo avulso é declarado em pontos extras e nunca deriva do valor em moedas                        | 23         | 02 §8.2      |
+| `RN-07-29` | Quem fixa o preço é a tabela de referência da gestão; nem o Mestre nem o Apoiador arbitram valor               | 23         | 02 §8.2      |
+| `RN-07-30` | Nenhum item do catálogo avulso vale menos de 20 pontos extras                                                  | 23         | 02 §8.2      |
 | `RN-07-26` | Nenhum item entra no catálogo avulso sem lastro, como toda recompensa                                          | 9          | 02 §8.2      |
 | `RN-07-27` | A entrega da troca é imediata; não há reserva de item do catálogo entre encontros                              | —          | 02 §8.2      |
 | `RN-07-28` | Pontos do desafio extra são no máximo 10, de qualquer proponente                                               | —          | 04 §3        |
@@ -230,6 +237,7 @@ Provedor      1 ──── N Aporte             (Apoiador, Mestre ou Admin)
 Aporte        1 ──── 1 Lancamento         (crédito)
 Atividade     1 ──── N Reserva ──── 1 Lancamento (débito, na realização)
 TipoDeRecurso 1 ──── 1 SaldoDeRecurso     (por ponto de apoio)
+TipoDeRecurso 1 ──── N PrecoDeReferencia  (versionado por vigência)
 TipoDeRecurso 1 ──── N ItemDeCatalogoAvulso
 ItemDeCatalogoAvulso 1 ── N Troca ──── 1 Lancamento (débito, na entrega)
 Aporte        0..1 ─ 1 Ressarcimento      (só quando o aporte é por absorção)
@@ -245,7 +253,8 @@ ItemPatrimonial 0..1 ─ 1 NecessidadeDeReposicao
 | `Aporte`                 | provedor, tipo, quantidade, valor em moedas, valor de origem, forma (financeira, material, serviço, absorção), **origem do registro** (gestão, pré-cadastro ou App 08), solicitação de origem, **ressarcível**, situação de ressarcimento (não se aplica, em aberto, ressarcido), comprovante, admin homologador, data |
 | `Lancamento`             | natureza (crédito, débito, ajuste), tipo de recurso, quantidade, moedas, atividade, aporte, data, autor, motivo do ajuste                                                                                                                                                                                              |
 | `Reserva`                | atividade **ou desafio extra**, tipo de recurso, quantidade, ponto de apoio, estado (reservada, consumida, liberada)                                                                                                                                                                                                   |
-| `ItemDeCatalogoAvulso`   | nome, tipo de recurso, **preço em pontos extras**, estoque, comunidade, quem cadastrou (Mestre ou Apoiador), situação de homologação, ativo                                                                                                                                                                            |
+| `PrecoDeReferencia`      | tipo de recurso, **preço em pontos extras**, vigência inicial e final, admin responsável                                                                                                                                                                                                                               |
+| `ItemDeCatalogoAvulso`   | nome, tipo de recurso, estoque, comunidade, quem cadastrou (Mestre ou Apoiador), situação de homologação, ativo — o **preço vem da tabela de referência**, não do cadastro do item                                                                                                                                     |
 | `Troca`                  | item, Guerreiro(a), preço em pontos extras cobrado, encontro, Mestre que entregou, data                                                                                                                                                                                                                                |
 | `SaldoDeRecurso`         | tipo, ponto de apoio, quantidade disponível, quantidade reservada                                                                                                                                                                                                                                                      |
 | `ItemPatrimonial`        | aporte de origem, título, número de tombo, ponto de apoio, responsável designado, estado de conservação                                                                                                                                                                                                                |
@@ -363,6 +372,8 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | Faturas anteriores ao livro-razão guardadas e lançadas retroativamente         | 04 §1          | Já decididos                                 |
 | Catálogo avulso com lastro, estoque e baixa na entrega da troca                | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
 | Preço em pontos extras sem derivação do valor em moedas                        | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
+| Preço fixado por tabela de referência da gestão, versionada por vigência       | 02 §8.2        | Quem fixa o preço do catálogo avulso         |
+| Piso de 20 pontos extras para qualquer item do catálogo avulso                 | 02 §8.2        | Quem fixa o preço do catálogo avulso         |
 | Desafio extra reserva a recompensa na publicação e libera se encerrar sem uso  | 04 §3          | Desafio extra — proponente, teto e custeio   |
 | Custeio do desafio extra por absorção ou por saldo já existente na plataforma  | 04 §3          | Desafio extra — proponente, teto e custeio   |
 
@@ -370,8 +381,9 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 
 - **Valor-hora da produção executiva** e o critério que converte o histórico de commits e o
   registro do Admin em horas aportadas — cadastro da gestão, como os demais valores da tabela.
-- **Preço em pontos extras de cada item do catálogo avulso**: a regra e a régua estão
-  decididas, os números não. Cadastro da gestão, como a tabela de referência.
+- **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 20
+  estão decididos; o preço de cada tipo acima do piso é cadastro da gestão, como a tabela de
+  moedas, e depende do calendário do Ciclo 01.
 - **Formato dos relatórios públicos de prestação de contas** por atividade, comunidade e
   provedor — o que exatamente se publica e com que agregação.
 - **Formato do relatório de efetividade** entregue ao Apoiador: assunto do PRD-14, que lê
@@ -397,6 +409,7 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | `RF-07-21` a `RF-07-25` | 04 §§1–2 (absorção, ressarcimento e comprovante) |
 | `RF-07-26`              | 11 §8.2 (cards e páginas individuais)            |
 | `RF-07-33` a `RF-07-38` | 02 §8.2 (catálogo avulso, lastro e entrega)      |
+| `RF-07-42` a `RF-07-46` | 02 §8.2 (tabela de referência e piso de 20)      |
 | `RF-07-39` a `RF-07-41` | 04 §3 (custeio e reserva do desafio extra)       |
 | `RF-07-27` e `RF-07-28` | 04 §1 (necessidade publicada e absorção)         |
 | `RF-07-32`              | 04 §1 (custos anteriores ao livro-razão)         |

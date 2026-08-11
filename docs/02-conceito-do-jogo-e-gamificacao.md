@@ -518,12 +518,20 @@ quantos atos de cuidado e colaboração o item representa —, e o custo real se
 invisível para a criança. Espelhar o preço em dinheiro ensinaria à criança quanto custa a comida
 da casa dela, contra o mesmo "sem miséria" da seção anterior.
 
-> **A definir:** o preço em pontos extras de cada item do catálogo avulso, e **quem o fixa** —
-> uma tabela de referência da gestão, como a de moedas, ou o Mestre item a item. A régua é o
-> encontro presencial, que rende no máximo **18 pontos extras** a um Guerreiro(a) — 10 do
-> auxílio aos colegas, 5 de valorizar colegas e cuidar dos mais novos e 3 da conservação de
-> três bens —, ou **28** quando corre um desafio extra presencial. Falta declarar quantos
-> encontros cada item representa, o que depende do calendário do Ciclo 01.
+**O preço sai de uma tabela de referência**, mantida pela gestão e versionada por vigência, do
+mesmo modo que a tabela de moedas do documento 04 §1. Quem cadastra item escolhe o tipo e o
+preço vem da tabela — nem o Mestre nem o Apoiador arbitram valor. É o que impede que a mesma
+caixa custe 20 pontos numa comunidade e 60 na vizinha.
+
+**O piso é de 20 pontos extras.** Nenhum item vale menos, e é esse o valor que **desbloqueia a
+primeira recompensa avulsa**. A régua de esforço é o encontro presencial, que rende no máximo
+**18 pontos extras** a um Guerreiro(a) — 10 do auxílio aos colegas, 5 de valorizar colegas e
+cuidar dos mais novos e 3 da conservação de três bens —, ou **28** quando corre um desafio
+extra presencial. O piso é, portanto, pouco mais de um encontro exemplar.
+
+> **A definir:** o preço de cada item da tabela acima do piso, e quantos encontros cada um
+> representa. Depende do calendário do Ciclo 01, e é cadastro da gestão, não regra de
+> documentação.
 
 ## 9. Manual do Guerreiro(a) (fluxo de entrada)
 
