@@ -560,3 +560,7 @@ foi definida no PRD-01 — a App 03 apenas a consulta.
 | `RF-02-64`              | 03 §12 (aviso visível de coleta e área detalhada)        |
 | `RF-02-70`              | 03 §11 e PRD-09 (auditoria das trilhas publicadas)       |
 | `RF-02-71`              | 11 §§2, 4 e PRD-09 (autoria da atividade e do marco)     |
+| `RF-02-65`              | 02 §1 (prazo de 7 dias da solicitação de participação)   |
+| `RF-02-66`              | 03 §9 (prazo de 7 dias da solicitação do responsável)    |
+| `RF-02-67`              | 04 §1 e PRD-07 (suprido o lastro, confirma e reserva)    |
+| `RF-02-68` e `RF-02-69` | 03 §3.3 (digitalização do termo anexada pela gestão)     |

@@ -340,9 +340,6 @@ a base da avaliação do Poder do Território e entram no conjunto de indicadore
 - **Reidentificação em comunidade com poucos coletores**: o corte da saída pública no bairro
   resolveu a inferência de endereço pela série de rua, mas falta o critério de agregação
   mínima **dentro do bairro** e nas entregas aprovadas, que descem a rua e abaixo.
-- **Faixas de pontos dos níveis 1 a 5**, inclusive do Poder do Território: o documento 11 §6
-  define os critérios em palavras, sem números.
-- **Tecnologia de armazenamento das séries temporais**: decisão de arquitetura do PRD-01.
 
 ## 15. Rastreabilidade
 

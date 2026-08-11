@@ -173,6 +173,11 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-20` | Núcleo mantém as entidades de trilha, missão, atividade, equipe, presença e resultado                                                                                                           | essencial  |
 | `RF-01-21` | Núcleo mantém pontos, níveis e badges por trilha ou poder, derivados das realizações                                                                                                            | essencial  |
 | `RF-01-22` | Núcleo expõe aos jogos **apenas leitura** de progresso, sem nenhuma rota de escrita — crédito, débito ou resultado de partida                                                                   | essencial  |
+| `RF-01-56` | Núcleo mantém o ponto extra em duas contas: acumulado, que só cresce, e saldo disponível, que debita na troca                                                                                   | essencial  |
+| `RF-01-57` | Núcleo nunca debita ponto regular, em nenhuma operação                                                                                                                                          | essencial  |
+| `RF-01-58` | Núcleo recusa troca que deixaria o saldo disponível negativo                                                                                                                                    | essencial  |
+| `RF-01-59` | Núcleo expõe aos jogos o acumulado de pontos extras, nunca o saldo disponível                                                                                                                   | essencial  |
+| `RF-01-60` | Núcleo mantém o catálogo avulso e as trocas definidos no PRD-07                                                                                                                                 | essencial  |
 | `RF-01-23` | Núcleo mantém as entidades do território definidas no PRD-08                                                                                                                                    | essencial  |
 | `RF-01-24` | Núcleo mantém as entidades do livro-razão definidas no PRD-07                                                                                                                                   | essencial  |
 | `RF-01-25` | Núcleo mantém solicitação de participação, sugestões e propostas em fila única de avaliação                                                                                                     | essencial  |
@@ -248,6 +253,10 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-35` | O segredo da chave é devolvido uma única vez e nunca é recuperável depois                                               | —          | 03 §1       |
 | `RN-01-36` | Chave de terceiro sem URL apresentada em 30 dias é revogada, e nova solicitação é sempre possível                       | —          | 03 §8       |
 | `RN-01-37` | Solicitação de chave não cria cadastro nem persona, como as demais solicitações públicas                                | 3          | 02 §1       |
+| `RN-01-38` | Ponto regular nunca se gasta; só o saldo de pontos extras é debitado                                                    | 23         | 11 §5       |
+| `RN-01-39` | O acumulado de pontos extras só cresce; a troca debita apenas o saldo disponível                                        | 23         | 11 §5       |
+| `RN-01-40` | O saldo disponível nunca fica negativo                                                                                  | 23         | 11 §5       |
+| `RN-01-41` | Nenhuma rota de jogo expõe o saldo disponível de pontos extras                                                          | 8          | 11 §§5, 8.4 |
 
 ## 8. Modelo de dados
 
@@ -276,6 +285,8 @@ Sessao              Conteudo
                     SolicitacaoDeDados         Local                Aporte
                     SolicitacaoDeChave         SerieDeColeta        Lancamento
                     SolicitacaoDoResponsavel   RegistroDeColeta     ItemPatrimonial
+                                                                    ItemDeCatalogoAvulso
+                                                                    Troca
                     SugestaoOuProposta
                     Favorito                   APOIO (PRD-14)
                     ChaveDeAplicacao           MissaoDoApoiador
@@ -460,35 +471,37 @@ e o dos desafios de desbloqueio de cada trilha.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                                              | Gravada em        | Doc 09       |
-| ---------------------------------------------------------------------------------------------------- | ----------------- | ------------ |
-| Instância única, com a comunidade como vínculo nos registros                                         | 03 §1             | Já decididos |
-| API versionada na rota, a partir de `/v1`                                                            | 03 §1             | Já decididos |
-| Guerreiro(a) entra com nick e imagem, conferida contra o _template_ do onboarding                    | 03 §1.1           | Já decididos |
-| Sem PIN nem senha para a criança, e sem câmera não há entrada                                        | 03 §§1.1, 3.2     | Já decididos |
-| Nick e imagem valem em **todas** as aplicações do Guerreiro(a), para garantir que a atividade é dele | 03 §1.1           | Já decididos |
-| Falha, ausência de _template_ ou recusa da biometria caem na confirmação humana, no encontro         | 03 §§1.1, 3.3     | Já decididos |
-| App 01 exige câmera e Mestre ou Admin presente; sem isso não há onboarding                           | 03 §3.2           | Já decididos |
-| Equipe formada pelo Guerreiro(a) no App 01, vinculada à aula e encerrada com ela                     | 02 §5             | Já decididos |
-| Criança sem o responsável: onboarding sem imagem, e cadastro biométrico após a aprovação dele        | 03 §§3.2, 3.3     | Já decididos |
-| Mestre cadastra e vincula responsável de qualquer Guerreiro(a)                                       | 02 §1, 03 §11     | Já decididos |
-| A imagem do onboarding identifica o Guerreiro(a): presença **e** autenticação                        | 03 §§3.2, 3.3, 12 | Já decididos |
-| Adultos entram por login social                                                                      | 03 §1.1           | Já decididos |
-| Credencial de usuário e senha provisória, criada por Admin ou Mestre, trocada no primeiro acesso     | 03 §1.1           | Já decididos |
-| Responsável tem login próprio, vinculado a um ou mais Guerreiros e Guerreiras                        | 03 §1.1           | Já decididos |
-| Responsável é cadastrado por Admin ou Mestre, depois de se apresentar pessoalmente                   | 02 §1             | Já decididos |
-| No máximo três responsáveis por Guerreiro(a), com grau de parentesco em texto livre                  | 02 §1             | Já decididos |
-| Mestre cadastra responsável pela App 09 — única persona que ele cadastra                             | 03 §11            | Já decididos |
-| Mestre lê o painel do dia da App 03 e conduz ali o Quiz ao Vivo das suas aulas                       | 03 §5             | Já decididos |
-| Toda aplicação se identifica por chave, e sem ela a API não responde                                 | 03 §1             | Já decididos |
-| A chave é da aplicação, não da pessoa: consulta pública dispensa login, nunca a chave                | 03 §§1, 1.1       | Já decididos |
-| Chave de terceiro pedida na Área do Apoiador Desenvolvedor, com 30 dias para a URL                   | 03 §8             | Já decididos |
-| Chave sem URL apresentada no prazo é revogada                                                        | 03 §8             | Já decididos |
-| Stack: Python com FastAPI, Cloud SQL para PostgreSQL com PostGIS e Cloud Storage                     | 03 §1             | Já decididos |
-| Hospedagem em Cloud Run, região `southamerica-east1`, custo por absorção do fundador                 | 03 §1             | Já decididos |
-| Séries temporais do território no próprio PostgreSQL, particionadas por tempo                        | 03 §1             | Já decididos |
-| _Template_ biométrico gerado no aparelho; ao núcleo chega só o descritor                             | 03 §3.3           | Já decididos |
-| Comparação do _template_ permanece no núcleo, que nunca o devolve                                    | 03 §3.3           | Já decididos |
+| Decisão                                                                                              | Gravada em        | Doc 09                                       |
+| ---------------------------------------------------------------------------------------------------- | ----------------- | -------------------------------------------- |
+| Instância única, com a comunidade como vínculo nos registros                                         | 03 §1             | Já decididos                                 |
+| API versionada na rota, a partir de `/v1`                                                            | 03 §1             | Já decididos                                 |
+| Guerreiro(a) entra com nick e imagem, conferida contra o _template_ do onboarding                    | 03 §1.1           | Já decididos                                 |
+| Sem PIN nem senha para a criança, e sem câmera não há entrada                                        | 03 §§1.1, 3.2     | Já decididos                                 |
+| Nick e imagem valem em **todas** as aplicações do Guerreiro(a), para garantir que a atividade é dele | 03 §1.1           | Já decididos                                 |
+| Falha, ausência de _template_ ou recusa da biometria caem na confirmação humana, no encontro         | 03 §§1.1, 3.3     | Já decididos                                 |
+| App 01 exige câmera e Mestre ou Admin presente; sem isso não há onboarding                           | 03 §3.2           | Já decididos                                 |
+| Equipe formada pelo Guerreiro(a) no App 01, vinculada à aula e encerrada com ela                     | 02 §5             | Já decididos                                 |
+| Criança sem o responsável: onboarding sem imagem, e cadastro biométrico após a aprovação dele        | 03 §§3.2, 3.3     | Já decididos                                 |
+| Mestre cadastra e vincula responsável de qualquer Guerreiro(a)                                       | 02 §1, 03 §11     | Já decididos                                 |
+| A imagem do onboarding identifica o Guerreiro(a): presença **e** autenticação                        | 03 §§3.2, 3.3, 12 | Já decididos                                 |
+| Adultos entram por login social                                                                      | 03 §1.1           | Já decididos                                 |
+| Credencial de usuário e senha provisória, criada por Admin ou Mestre, trocada no primeiro acesso     | 03 §1.1           | Já decididos                                 |
+| Responsável tem login próprio, vinculado a um ou mais Guerreiros e Guerreiras                        | 03 §1.1           | Já decididos                                 |
+| Responsável é cadastrado por Admin ou Mestre, depois de se apresentar pessoalmente                   | 02 §1             | Já decididos                                 |
+| No máximo três responsáveis por Guerreiro(a), com grau de parentesco em texto livre                  | 02 §1             | Já decididos                                 |
+| Mestre cadastra responsável pela App 09 — única persona que ele cadastra                             | 03 §11            | Já decididos                                 |
+| Mestre lê o painel do dia da App 03 e conduz ali o Quiz ao Vivo das suas aulas                       | 03 §5             | Já decididos                                 |
+| Toda aplicação se identifica por chave, e sem ela a API não responde                                 | 03 §1             | Já decididos                                 |
+| A chave é da aplicação, não da pessoa: consulta pública dispensa login, nunca a chave                | 03 §§1, 1.1       | Já decididos                                 |
+| Chave de terceiro pedida na Área do Apoiador Desenvolvedor, com 30 dias para a URL                   | 03 §8             | Já decididos                                 |
+| Chave sem URL apresentada no prazo é revogada                                                        | 03 §8             | Já decididos                                 |
+| Stack: Python com FastAPI, Cloud SQL para PostgreSQL com PostGIS e Cloud Storage                     | 03 §1             | Já decididos                                 |
+| Hospedagem em Cloud Run, região `southamerica-east1`, custo por absorção do fundador                 | 03 §1             | Já decididos                                 |
+| Séries temporais do território no próprio PostgreSQL, particionadas por tempo                        | 03 §1             | Já decididos                                 |
+| _Template_ biométrico gerado no aparelho; ao núcleo chega só o descritor                             | 03 §3.3           | Já decididos                                 |
+| Ponto extra em duas contas: acumulado e saldo disponível; só o saldo debita                          | 11 §5             | Troca de pontos extras por recompensa avulsa |
+| Jogos leem o acumulado de pontos extras, nunca o saldo disponível                                    | 11 §5             | Troca de pontos extras por recompensa avulsa |
+| Comparação do _template_ permanece no núcleo, que nunca o devolve                                    | 03 §3.3           | Já decididos                                 |
 
 ## 14. Pendências que permanecem
 
@@ -514,7 +527,8 @@ e o dos desafios de desbloqueio de cada trilha.
 | `RF-01-20` e `RF-01-21` | 02 §§3–5 e 11 §§2, 4–7                           |
 | `RF-01-22`              | 11 §8.4 (contrato dos jogos)                     |
 | `RF-01-23`              | PRD-08                                           |
-| `RF-01-24`              | PRD-07                                           |
+| `RF-01-24`, `RF-01-60`  | PRD-07                                           |
+| `RF-01-56` a `RF-01-59` | 11 §5 (acumulado e saldo disponível de extras)   |
 | `RF-01-25` e `RF-01-26` | 02 §§1, 4 e 03 §§7, 9–11                         |
 | `RF-01-27` a `RF-01-30` | 03 §1 (princípios de arquitetura)                |
 | `RF-01-32`              | 03 §§3, 5 (App 01 habilitado pela aula agendada) |

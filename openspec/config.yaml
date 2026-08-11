@@ -39,7 +39,7 @@ context: |
   4. só então propor a change e implementar.
 
   INVARIANTES
-  Os 22 invariantes de `docs/99-mapa-de-referencias.md` §6 valem para o código como valem
+  Os 23 invariantes de `docs/99-mapa-de-referencias.md` §6 valem para o código como valem
   para o texto. Contrariá-los é defeito, não variação de implementação. Entre eles: oito
   aplicações Web responsivas Mobile First (sem app nativo e sem mensageria de terceiros);
   faixa de 6 a 16 anos com progressão por dificuldade; só o Guerreiro(a) tem autocadastro e
@@ -48,7 +48,9 @@ context: |
   saída, e revogação que despersonaliza sem apagar; App 04 (jogo) público, sem login de
   pessoa e somente leitura, sem endpoint de escrita; nenhuma atividade sem lastro; nenhum
   contato direto entre Apoiador e Guerreiro(a); Guerreiros e Guerreiras aparecem em público
-  só por avatar e nick; aporte exibido em moedas, nunca em reais; personalização por IA que
+  só por avatar e nick; aporte exibido em moedas, nunca em reais; ponto regular nunca se
+  gasta e só o extra se troca, por recompensa avulsa e nunca por recompensa de marco;
+  personalização por IA que
   adapta na sessão e não perfila a criança.
 
   DECISÕES TÉCNICAS JÁ VIGENTES (documento 03)
@@ -64,14 +66,34 @@ context: |
     e toda consulta filtra por comunidade.
   - Registro de custos em tudo: toda ação com custo entra no livro-razão (PRD-07).
   - Séries temporais georreferenciadas como cidadão de primeira classe no modelo de dados.
+  - Stack e hospedagem do Ciclo 01: Python com FastAPI no Cloud Run, Cloud SQL para
+    PostgreSQL com PostGIS e Cloud Storage, tudo em `southamerica-east1`. As séries
+    temporais do território ficam no próprio PostgreSQL, particionadas por tempo. Contêiner
+    e banco portáteis, para que outra comunidade replique fora do Google Cloud.
+  - Reconhecimento facial do App 01 no próprio aparelho, pela biblioteca aberta Human, na
+    ordem prova de vivacidade e depois descritor facial. Ao núcleo vai apenas o descritor —
+    a fotografia não trafega —, a comparação acontece no núcleo e nenhuma rota devolve o
+    _template_. Sem provedor externo e sem custo de nuvem.
   - Modelos de IA do Ciclo 01: Google Gemini, com custo lançado no livro-razão como cloud.
   - Código aberto; conteúdo educacional publicado sob CC BY-SA.
 
-  PENDÊNCIAS QUE TRAVAM CÓDIGO
-  A stack do backend — linguagem, framework, banco de dados e armazenamento das séries
-  temporais — e o provedor de reconhecimento facial do App 01 continuam pendentes no
-  documento 09. Não escolher nenhum deles dentro de um artefato do OpenSpec: a decisão é do
-  fundador, é gravada no documento 03 e movida no documento 09 antes de virar código.
+  ORDEM DE CONSTRUÇÃO
+  A ordem em que os PRDs viram código está no documento 99 §9, com o piso de dependência de
+  cada um. Ela NÃO é a ordem de elaboração do documento 08, que registra em que sequência os
+  PRDs foram escritos — em execução o PRD-01 vem primeiro, porque território (PRD-08) e
+  ledger (PRD-07) só operam sobre a autenticação, a chave e o filtro por comunidade dele.
+
+  PENDÊNCIAS QUE AINDA TRAVAM CÓDIGO
+  Stack, hospedagem, armazenamento das séries temporais e reconhecimento facial estão
+  decididos — aplique o documento 03, não reabra. Seguem pendentes no documento 09, e cada
+  uma trava apenas o requisito indicado: autenticação do sensor do Guerreiro(a) (RF-08-14,
+  trava a implementação, não a modelagem); agregação mínima dentro do bairro (RF-08-16 e
+  RF-08-19); formato, licença e critério de aprovação da entrega do conjunto de dados
+  (RF-01-46 e RF-01-47); duração da sessão do Guerreiro(a) (RF-01-04, parâmetro de
+  configuração); prazo de disponibilidade da versão anterior da API (RF-01-31); valor-hora
+  da produção executiva (PRD-07, cadastro da gestão). Nenhuma delas se resolve dentro de um
+  artefato do OpenSpec: a decisão é do fundador, é gravada no documento-fonte e movida no
+  documento 09 antes de virar código.
 
   ENTREGA
   Um branch e um PR por change. O PR leva os artefatos da change, o código, os testes e a

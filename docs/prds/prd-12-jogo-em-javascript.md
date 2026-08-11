@@ -80,7 +80,8 @@ construtores do jogo.
 2. O jogo carrega o **catálogo de personagens** — os Guerreiros e Guerreiras com divulgação
    autorizada — e mostra os cards, com avatar e nick.
 3. O visitante abre um card e vê a **ficha do personagem**: quais poderes e badges ele
-   conquistou, em que nível está, os dois saldos de pontos e **qual atributo cada virtude
+   conquistou, em que nível está, os pontos regulares e o **acumulado** de extras, e **qual
+   atributo cada virtude
    produziu** na partida.
 4. Escolhido o personagem, começa o duelo contra um adversário conduzido pelo computador,
    dimensionado pelo personagem escolhido.
@@ -156,14 +157,15 @@ autorização sabe que, no pior caso, o personagem sai de qualquer aparelho em u
 
 ### 6.1 Catálogo e escolha do personagem
 
-| ID         | Requisito                                                                                            | Prioridade |
-| ---------- | ---------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-12-01` | Carregar e exibir o catálogo de personagens sem exigir login, cadastro ou identificação do visitante | essencial  |
-| `RF-12-02` | Compor o catálogo exclusivamente com Guerreiros e Guerreiras de divulgação autorizada vigente        | essencial  |
-| `RF-12-03` | Exibir na ficha do personagem avatar, nick, poderes com níveis, badges e os dois saldos de pontos    | essencial  |
-| `RF-12-04` | Filtrar o catálogo por nick dentro da lista já carregada, sem consultar nick que não esteja nela     | desejável  |
-| `RF-12-05` | Mostrar, para cada atributo do personagem, de qual virtude ele veio                                  | essencial  |
-| `RF-12-06` | Exibir o catálogo idêntico para todo visitante, sem personalização de nenhuma natureza               | essencial  |
+| ID         | Requisito                                                                                                      | Prioridade |
+| ---------- | -------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-12-01` | Carregar e exibir o catálogo de personagens sem exigir login, cadastro ou identificação do visitante           | essencial  |
+| `RF-12-02` | Compor o catálogo exclusivamente com Guerreiros e Guerreiras de divulgação autorizada vigente                  | essencial  |
+| `RF-12-03` | Exibir na ficha do personagem avatar, nick, poderes com níveis, badges, pontos regulares e acumulado de extras | essencial  |
+| `RF-12-33` | Montar o personagem com o acumulado de pontos extras, nunca com o saldo disponível                             | essencial  |
+| `RF-12-04` | Filtrar o catálogo por nick dentro da lista já carregada, sem consultar nick que não esteja nela               | desejável  |
+| `RF-12-05` | Mostrar, para cada atributo do personagem, de qual virtude ele veio                                            | essencial  |
+| `RF-12-06` | Exibir o catálogo idêntico para todo visitante, sem personalização de nenhuma natureza                         | essencial  |
 
 ### 6.2 Composição do personagem
 
@@ -228,7 +230,8 @@ autorização sabe que, no pior caso, o personagem sai de qualquer aparelho em u
 | `RN-12-01` | O jogo é público, sem login, e não escreve nada na plataforma                                                  | 8                      | 11 §8.4   |
 | `RN-12-02` | Não existe rota de escrita para o jogo; a tentativa devolve 404                                                | 8                      | 11 §8.4   |
 | `RN-12-03` | Resultado de partida não credita, não debita e não registra histórico                                          | 8                      | 03 §6     |
-| `RN-12-04` | Não há saldo de pontos consumidos: ponto não se gasta em partida                                               | 8                      | 11 §5     |
+| `RN-12-04` | O jogo não debita ponto algum: nada da partida consome saldo                                                   | 8                      | 11 §5     |
+| `RN-12-26` | Dos pontos extras o jogo lê o acumulado, nunca o saldo disponível: trocar não enfraquece o personagem          | 23                     | 11 §5     |
 | `RN-12-05` | Só é personagem quem tem divulgação autorizada vigente do responsável                                          | 8, 12                  | 03 §12    |
 | `RN-12-06` | O catálogo é idêntico para todo visitante — sem login, o jogo não distingue quem joga                          | 8                      | 03 §6     |
 | `RN-12-07` | O Guerreiro(a) aparece só por avatar e nick, nunca por imagem real ou nome civil                               | 12                     | 03 §12    |
@@ -294,14 +297,15 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, erro em corpo �
 do jogo, não do jogador: nenhuma rota exige credencial de pessoa, e não existe, em rota
 alguma, um verbo de escrita destinado ao jogo.
 
-| Método | Rota                          | Autenticação       | Descrição                                                                   |
-| ------ | ----------------------------- | ------------------ | --------------------------------------------------------------------------- |
-| GET    | `/v1/jogo/personagens`        | chave da aplicação | Catálogo jogável: avatar, nick, poderes com níveis, badges e os dois saldos |
-| GET    | `/v1/jogo/personagens/{nick}` | chave da aplicação | Ficha de um personagem, por nick exato                                      |
-| GET    | `/v1/jogo/catalogo/versao`    | chave da aplicação | Carimbo de versão do catálogo, para revalidar sem baixar a lista            |
+| Método | Rota                          | Autenticação       | Descrição                                                                                          |
+| ------ | ----------------------------- | ------------------ | -------------------------------------------------------------------------------------------------- |
+| GET    | `/v1/jogo/personagens`        | chave da aplicação | Catálogo jogável: avatar, nick, poderes com níveis, badges, pontos regulares e acumulado de extras |
+| GET    | `/v1/jogo/personagens/{nick}` | chave da aplicação | Ficha de um personagem, por nick exato                                                             |
+| GET    | `/v1/jogo/catalogo/versao`    | chave da aplicação | Carimbo de versão do catálogo, para revalidar sem baixar a lista                                   |
 
 O catálogo é **o mesmo conjunto** que a vitrine expõe em `/v1/vitrine/guerreiros` (PRD-03),
-com um recorte diferente de campos: o jogo precisa dos dois saldos de pontos e não precisa de
+com um recorte diferente de campos: o jogo precisa dos pontos regulares e do acumulado de
+extras — **o saldo disponível não é exposto ao jogo** — e não precisa de
 criações originais nem de portfólio. A elegibilidade é a mesma derivação de consentimento, e
 não uma segunda lista a manter em dia.
 
@@ -367,8 +371,9 @@ Critérios verificáveis, um por requisito essencial:
   (`RF-12-01`).
 - Um Guerreiro(a) sem autorização vigente **não aparece** no catálogo, nem pela busca por nick,
   e o endereço direto da ficha dele responde 404 (`RF-12-02`, `RN-12-05`, `RN-12-09`).
-- A ficha do personagem exibe avatar, nick, poderes com níveis, badges e os dois saldos, e
-  indica **de qual virtude veio cada atributo** (`RF-12-03`, `RF-12-05`).
+- A ficha do personagem exibe avatar, nick, poderes com níveis, badges, pontos regulares e o
+  acumulado de extras, e indica **de qual virtude veio cada atributo** (`RF-12-03`,
+  `RF-12-05`).
 - Dois visitantes diferentes, em aparelhos diferentes, veem **o mesmo catálogo** (`RF-12-06`).
 - Um personagem com mais pontos, mais poderes ou nível maior tem atributos **maiores ou iguais**
   aos de um personagem com menos — nunca menores (`RF-12-08`).
@@ -460,6 +465,7 @@ revisão própria, registrada como próximo passo no documento 09:
 | `RF-12-30`, `RF-12-31`              | 03 §12 (aviso do que se coleta e do que se guarda)                 |
 | `RF-12-32`                          | 03 §8 (vitrine e "Entrar")                                         |
 | `RN-12-01` a `RN-12-04`, `RN-12-13` | 11 §§5, 8.4 (contrato dos jogos)                                   |
+| `RF-12-33` e `RN-12-26`             | 11 §5 (acumulado e saldo disponível de pontos extras)              |
 | `RN-12-05` a `RN-12-09`, `RN-12-18` | 03 §§9, 12 (autorização, revogação e exibição pública)             |
 | `RN-12-10` a `RN-12-12`             | 11 §8.4 (mapa fixo, monotonia e balanceamento como conteúdo)       |
 | `RN-12-14`, `RN-12-15`              | 03 §6 (funcionamento offline)                                      |

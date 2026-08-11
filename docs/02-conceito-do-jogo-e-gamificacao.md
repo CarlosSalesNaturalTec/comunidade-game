@@ -372,15 +372,16 @@ alterado, uma ideia nova sobre o que a trilha ensinou. A criação original dist
   **integralmente a cada integrante** da equipe — dividir puniria justamente a colaboração.
   Validá-la é ato do Mestre autor da trilha, e o valor está no documento 11.
 
-### Desafios extras propostos por Apoiadores
+### Desafios extras propostos por Apoiadores e Mestres
 
-Além dos desafios semanais dos Mestres, **Apoiadores podem propor desafios extras** ao longo de
-um ciclo, sempre vinculados a uma trilha em andamento, com **recompensa custeada pelo
-proponente** e **pontos extras** computados isoladamente. Existem duas modalidades — **aberto**
-(a todos os Guerreiros e Guerreiras da trilha) e **direcionado** (a um Guerreiro(a) específico,
-mediante justificativa registrada do vínculo). Todo desafio extra exige **validação pedagógica
-do Mestre da trilha e aprovação de um Admin**, recompensa **provida antes da publicação** e
-**nenhum contato direto** entre Apoiador e Guerreiro(a).
+Além dos desafios semanais, **Apoiadores e Mestres podem propor desafios extras** ao longo de
+um ciclo, sempre vinculados a uma trilha em andamento, **presenciais ou on-line**, com
+**recompensa custeada** e **pontos extras** computados isoladamente, **até 10 por desafio**.
+Existem duas modalidades — **aberto** (a todos os Guerreiros e Guerreiras da trilha) e
+**direcionado** (a um Guerreiro(a) específico, mediante justificativa registrada). Todo desafio
+extra exige **aprovação de um Admin** e recompensa **provida antes da publicação**; a
+**validação pedagógica do Mestre da trilha** é exigida de todo proponente, menos do próprio
+Mestre autor. Segue valendo **nenhum contato direto** entre Apoiador e Guerreiro(a).
 
 > Regras completas, mecânica no ciclo e rastreio de efetividade: documento 04.
 
@@ -459,6 +460,15 @@ apoio. Duas regras estruturais:
 
 ## 8. Recompensas
 
+Há **duas espécies de recompensa**, que nunca se confundem:
+
+| Espécie      | Como se obtém                             | Custa pontos?              |
+| ------------ | ----------------------------------------- | -------------------------- |
+| **De marco** | Conquistada ao atingir um marco da trilha | **Não** — nunca é comprada |
+| **Avulsa**   | Trocada por pontos extras no catálogo     | Sim, **só pontos extras**  |
+
+### 8.1 Recompensa de marco
+
 **Regra vigente:** a recompensa é **conquistada ao atingir um marco da trilha** — desbloqueio
 de uma missão, conclusão de etapa, batalha ou culminância —, **nunca comprada com saldo de
 pontos**. É o que fecha o vínculo entre o jogo e a vida real: o esforço de aprender converte-se
@@ -487,6 +497,41 @@ Catálogo inicial — **quais recompensas em quais marcos ainda é a definir**:
 (material escolar, componentes de robótica, ingressos culturais). Entregar alimento é
 socialmente sensível e deve ser tratado com dignidade, no espírito do **"sem miséria"** baiano:
 a recompensa celebra a conquista do Guerreiro(a); nunca pode soar como assistencialismo.
+
+### 8.2 Recompensa avulsa, trocada por pontos extras
+
+O Guerreiro(a) troca **pontos extras** — nunca regulares — por item de um **catálogo avulso**.
+Alimento entra no catálogo: em comunidade periférica a falta é urgente, e quem ajuda o colega
+também pode ser ajudado. A troca é ato do Guerreiro(a), não entrega de ofício.
+
+| Regra                | Definição                                                                  |
+| -------------------- | -------------------------------------------------------------------------- |
+| Moeda da troca       | **Saldo disponível de pontos extras**; o acumulado não decresce            |
+| Quem cadastra        | **Mestre**, direto; **Apoiador**, com homologação de Admin                 |
+| Lastro               | Exigido antes de o item entrar no catálogo, como em toda recompensa        |
+| Estoque              | Declarado no cadastro; item sem estoque não aparece para troca             |
+| Entrega              | **No ato da troca**, ao final do encontro presencial, pelas mãos do Mestre |
+| Baixa no livro-razão | Na entrega, como na recompensa de marco                                    |
+
+**O preço em pontos não deriva do valor em moedas nem em reais.** Ele é fixado em **esforço** —
+quantos atos de cuidado e colaboração o item representa —, e o custo real segue no livro-razão,
+invisível para a criança. Espelhar o preço em dinheiro ensinaria à criança quanto custa a comida
+da casa dela, contra o mesmo "sem miséria" da seção anterior.
+
+**O preço sai de uma tabela de referência**, mantida pela gestão e versionada por vigência, do
+mesmo modo que a tabela de moedas do documento 04 §1. Quem cadastra item escolhe o tipo e o
+preço vem da tabela — nem o Mestre nem o Apoiador arbitram valor. É o que impede que a mesma
+caixa custe 20 pontos numa comunidade e 60 na vizinha.
+
+**O piso é de 20 pontos extras.** Nenhum item vale menos, e é esse o valor que **desbloqueia a
+primeira recompensa avulsa**. A régua de esforço é o encontro presencial, que rende no máximo
+**18 pontos extras** a um Guerreiro(a) — 10 do auxílio aos colegas, 5 de valorizar colegas e
+cuidar dos mais novos e 3 da conservação de três bens —, ou **28** quando corre um desafio
+extra presencial. O piso é, portanto, pouco mais de um encontro exemplar.
+
+> **A definir:** o preço de cada item da tabela acima do piso, e quantos encontros cada um
+> representa. Depende do calendário do Ciclo 01, e é cadastro da gestão, não regra de
+> documentação.
 
 ## 9. Manual do Guerreiro(a) (fluxo de entrada)
 

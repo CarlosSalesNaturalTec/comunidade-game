@@ -155,8 +155,9 @@ provedor nem comportamento que não esteja no PRD. Requisito faltando, ambíguo 
 contradição com o PRD: **pare e pergunte ao fundador**; não preencha lacuna com suposição.
 
 Decisão nova segue o mesmo fluxo dos PRDs — documento-fonte (doc 99 §1), documento 09,
-PRD — e só depois vira change. A **stack do backend** e o **provedor de reconhecimento
-facial** seguem pendentes no documento 09: não são escolhidos dentro de uma change.
+PRD — e só depois vira change. Stack, hospedagem, armazenamento das séries temporais e
+reconhecimento facial já estão decididos no documento 03: aplique o que está lá, não
+reabra. O que segue pendente está no documento 09 e vira pergunta, nunca suposição.
 
 ### 3. Rastreabilidade obrigatória
 
@@ -176,7 +177,8 @@ facial** seguem pendentes no documento 09: não são escolhidos dentro de uma ch
 | Verificar antes de fechar     | `/opsx:verify`   |
 | Arquivar a change concluída   | `/opsx:archive`  |
 
-A ordem das changes respeita as ondas e as dependências entre PRDs do documento 99 §8.
+A ordem em que os PRDs viram código está no documento 99 §9 — não é a ordem de elaboração
+do documento 08, que registra em que sequência os PRDs foram escritos.
 
 ### 5. Documentação a cada change
 

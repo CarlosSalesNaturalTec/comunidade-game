@@ -28,8 +28,10 @@ no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs est�
 | [PRD-11](prd-11-personalizacao-por-ia.md) | Personalização por IA                  | —         | 5    | aprovado |
 
 Situações possíveis: **não iniciado**, **em elicitação**, **em redação**, **em revisão** e
-**aprovado**. O link para o documento aparece nesta tabela quando ele entra na pasta. A ordem
-das ondas e o motivo de cada uma estão no documento 08.
+**aprovado**. O link para o documento aparece nesta tabela quando ele entra na pasta.
+
+A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
+no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 
 O **PRD-06 — Assistente por voz e Modo Ouvinte** foi extinto: o App 02 passou a fazer parte do
 App 01 e o Modo Ouvinte saiu do produto. O que restou dele está no PRD-04.
