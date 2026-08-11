@@ -1,0 +1,68 @@
+name: Backend CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths: [backend/**]
+  push:
+    branches: [main]
+    paths: [backend/**]
+  workflow_dispatch:
+
+concurrency:
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  qualidade:
+    name: Ruff + pytest
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: comunidade
+          POSTGRES_PASSWORD: comunidade
+          POSTGRES_DB: comunidade_game_teste
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U comunidade"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      CG_DSN_BANCO_TESTE: postgresql+psycopg://comunidade:comunidade@localhost:5432/comunidade_game_teste
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.5.x"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependências
+        run: uv sync --dev
+
+      - name: ruff format --check
+        run: uv run ruff format --check .
+
+      - name: ruff check
+        run: uv run ruff check .
+
+      - name: pytest
+        run: uv run pytest
