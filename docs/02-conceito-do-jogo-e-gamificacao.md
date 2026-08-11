@@ -518,9 +518,12 @@ quantos atos de cuidado e colaboração o item representa —, e o custo real se
 invisível para a criança. Espelhar o preço em dinheiro ensinaria à criança quanto custa a comida
 da casa dela, contra o mesmo "sem miséria" da seção anterior.
 
-> **A definir:** o preço em pontos extras de cada item do catálogo avulso. A régua é o
-> encontro presencial, que rende no máximo cerca de 13 pontos extras; falta declarar quantos
-> encontros cada item representa. Depende do calendário do Ciclo 01.
+> **A definir:** o preço em pontos extras de cada item do catálogo avulso, e **quem o fixa** —
+> uma tabela de referência da gestão, como a de moedas, ou o Mestre item a item. A régua é o
+> encontro presencial, que rende no máximo **18 pontos extras** a um Guerreiro(a) — 10 do
+> auxílio aos colegas, 5 de valorizar colegas e cuidar dos mais novos e 3 da conservação de
+> três bens —, ou **28** quando corre um desafio extra presencial. Falta declarar quantos
+> encontros cada item representa, o que depende do calendário do Ciclo 01.
 
 ## 9. Manual do Guerreiro(a) (fluxo de entrada)
 
