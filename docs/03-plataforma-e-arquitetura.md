@@ -6,10 +6,12 @@
    terceiros** possam acessá-lo. A aplicação de terceiro pede a chave na **Área do Apoiador
    Desenvolvedor**, na vitrine (§8).
 2. **Toda aplicação que consome a API se identifica por chave**, inclusive as do próprio
-   projeto, que recebem a sua na implantação. **Sem chave válida a API não responde.** O que a
-   leitura pública dispensa é o **login da pessoa**: o visitante da vitrine e do jogo não se
-   identifica — quem se identifica é a aplicação. Escrita e gestão exigem, além da chave, a
-   credencial da persona.
+   projeto, que recebem a sua na implantação — **uma por aplicação e por ambiente**, para que
+   chave de desenvolvimento não abra produção. **Sem chave válida a API não responde**, e a
+   exigência alcança **toda rota de dados sob o prefixo de versão**, inclusive as de consulta
+   pública. O que a leitura pública dispensa é o **login da pessoa**: o visitante da vitrine e
+   do jogo não se identifica — quem se identifica é a aplicação. Escrita e gestão exigem, além
+   da chave, a credencial da persona.
 3. **Frontends independentes** — em **endereços próprios**, evoluindo desacoplados do backend.
    A **vitrine ocupa a raiz** do domínio da plataforma — **`comunidadegame.org`** —: é por ela
    que qualquer pessoa chega, e é dela que o botão **Entrar** encaminha cada persona à sua
@@ -56,13 +58,14 @@
     Vertex AI, que a permite escolher, custaria o _free tier_ que sustenta o ciclo — a
     revisão fica para o Ciclo 02 (documento 09). A **biometria facial do App 01 não usa
     modelo de linguagem** e é resolvida no próprio aparelho (§3.3).
-13. **Stack e hospedagem do Ciclo 01.** O Backend API é escrito em **Python com FastAPI** e
-    roda em **Cloud Run**; o banco é **Cloud SQL para PostgreSQL com PostGIS**, onde ficam
+13. **Stack e hospedagem do Ciclo 01.** O Backend API é escrito em **Python 3.12 com FastAPI**
+    e roda em **Cloud Run**; o banco é **Cloud SQL para PostgreSQL com PostGIS**, onde ficam
     também as **séries temporais do território**, particionadas por tempo; os arquivos de
     missão vão para o **Cloud Storage**. Tudo na região **`southamerica-east1`** (São Paulo).
-    Contêiner e banco são portáteis — outra comunidade replica a plataforma fora do Google
-    Cloud. O custo entra no livro-razão como recurso de _cloud_, **aportado por absorção pelo
-    Admin e Mestre fundador** neste ciclo.
+    São **dois ambientes**: **desenvolvimento**, em contêiner local com banco próprio, e
+    **produção**, no Cloud Run. Contêiner e banco são portáteis — outra comunidade replica a
+    plataforma fora do Google Cloud. O custo entra no livro-razão como recurso de _cloud_,
+    **aportado por absorção pelo Admin e Mestre fundador** neste ciclo.
 14. **Repositório único (_monorepo_)** — o Backend API, as oito aplicações, os jogos, a
     documentação e os artefatos de implementação vivem no mesmo repositório, com uma pasta
     por aplicação (§1.2). É organização do código, não acoplamento: cada frontend continua
@@ -94,8 +97,11 @@
 - **O responsável tem login próprio**, vinculado a um ou mais Guerreiros e Guerreiras — é o que
   dá autoria clara ao consentimento e separa o que é dele do que é da criança.
 
-**[Proposta]** Documentar a API com OpenAPI/Swagger desde o primeiro endpoint — condição
-prática para que aplicações de terceiros e novos frontends realmente surjam.
+A API é documentada em **OpenAPI/Swagger desde o primeiro _endpoint_** — condição prática para
+que aplicações de terceiros e novos frontends realmente surjam. O schema e a interface ficam
+**fora do prefixo de versão e abertos**, sem chave: quem ainda não tem uma precisa ler o
+contrato para decidir pedi-la (§8). Descrevem rotas e não devolvem conteúdo, de modo que a
+exigência de chave do princípio 2, que alcança os dados sob `/v1`, segue inteira.
 
 ### 1.2 Organização do repositório
 

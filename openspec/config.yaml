@@ -81,11 +81,17 @@ context: |
     aquele desenho e não invente pasta nova de topo. O jogo fica em `jogos/`, não em `apps/`.
   - O código tem esteira de CI como a documentação. A change que cria uma pasta de código
     entrega, no mesmo PR, o workflow daquela pasta, disparado só pelo caminho que cobre.
-  - Ferramentas do backend: Ruff como formatador e linter do Python, pytest como executor de
-    testes. As três verificações bloqueiam o merge — `ruff format --check`, `ruff check` e
-    `pytest`. As dos frontends e do jogo seguem PENDENTES no documento 09: pergunte, não
-    escolha. Nada além disso está decidido: limiar de cobertura, plugin de teste e regra de
-    Ruff ligada ou desligada são pergunta ao fundador, não escolha da change.
+  - Ferramentas do backend: Python 3.12, Ruff como formatador e linter — conjuntos `E`, `F`,
+    `I`, `UP` e `B` — e pytest como executor de testes. As três verificações bloqueiam o
+    merge: `ruff format --check`, `ruff check` e `pytest`. A cobertura é medida e publicada
+    no log, SEM limiar que bloqueie no Ciclo 01. As ferramentas dos frontends e do jogo
+    seguem PENDENTES no documento 09: pergunte, não escolha.
+  - A chave de aplicação é por aplicação E por ambiente. São dois ambientes no Ciclo 01 —
+    desenvolvimento, em contêiner local, e produção, no Cloud Run —, de modo que a
+    implantação semeia 16 chaves: as oito aplicações do projeto em cada ambiente.
+  - A API é documentada em OpenAPI desde o primeiro endpoint. O schema e a interface ficam
+    FORA do prefixo `/v1` e abertos, sem chave; a exigência de chave alcança as rotas de
+    dados sob `/v1`, inclusive as de consulta pública.
 
   ORDEM DE CONSTRUÇÃO
   A ordem em que os PRDs viram código está no documento 99 §9, com o piso de dependência de

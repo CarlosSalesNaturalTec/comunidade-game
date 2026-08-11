@@ -34,5 +34,5 @@
   "globs": ["**/*.md"],
   // .claude/** e openspec/** são arquivos de ferramenta (skills, comandos e
   // artefatos de change) — não seguem o estilo de prosa dos documentos do projeto.
-  "ignores": ["node_modules/**", "site/**", ".venv/**", ".claude/**", "openspec/**"],
+  "ignores": ["node_modules/**", "site/**", "**/.venv/**", ".claude/**", "openspec/**"],
 }

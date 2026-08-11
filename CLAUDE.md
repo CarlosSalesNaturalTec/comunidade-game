@@ -273,9 +273,11 @@ disparado só pelo caminho que ele cobre, e os comandos equivalentes rodáveis �
 | **Ruff**   | Lint do Python       | `ruff check .`          |
 | **pytest** | Testes automatizados | `pytest`                |
 
-**As três bloqueiam o merge.** Ruff faz formatador e _linter_ numa ferramenta só. O workflow
-(`.github/workflows/backend-ci.yml`, disparado por `backend/**`) nasce na primeira change que
-criar a pasta `backend/`, junto com o código.
+**As três bloqueiam o merge.** Ruff faz formatador e _linter_ numa ferramenta só. O Python é o
+**3.12**, o Ruff roda com os conjuntos **`E`, `F`, `I`, `UP` e `B`**, e a **cobertura é medida
+sem limiar que bloqueie** no Ciclo 01. O workflow (`.github/workflows/backend-ci.yml`,
+disparado por `backend/**`) nasce na primeira change que criar a pasta `backend/`, junto com o
+código.
 
 ### Frontends e jogo (JavaScript)
 
