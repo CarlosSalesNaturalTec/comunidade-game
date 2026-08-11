@@ -313,7 +313,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-42` | Na partida, o Guerreiro(a) joga por uma única equipe, ainda que integre outras no encontro                    | essencial  |
 | `RF-04-43` | Aparelho envia uma única resposta por pergunta, válida para todos os integrantes, e recusa a segunda          | essencial  |
 | `RF-04-44` | Resultado da pergunta aparece para a equipe quando quem conduz a partida o libera                             | essencial  |
-| `RF-04-45` | Sem rede, o conteúdo já carregado continua legível; equipe, assistente e resposta de quiz ficam indisponíveis | essencial  |
+| `RF-04-58` | Sem rede, o conteúdo já carregado continua legível; equipe, assistente e resposta de quiz ficam indisponíveis | essencial  |
 
 ### 6.3 Troca por recompensa avulsa
 
@@ -623,6 +623,6 @@ nasce aqui e serve também ao apoio escolar da App 05.
 | `RF-04-45` a `RF-04-47` | 11 §2.2 (produção e devolutiva), 03 §§4, 12.2         |
 | `RF-04-36` a `RF-04-40` | 03 §§4.2, 7 (assistente, corpus fechado e áudio)      |
 | `RF-04-41` a `RF-04-44` | 05 §5 (regras da partida de Quiz ao Vivo)             |
-| `RF-04-45`              | 03 §3.4 (rede instável)                               |
+| `RF-04-58`              | 03 §3.4 (rede instável)                               |
 | `RF-04-48`              | 03 §3.3 (_template_ gerado no aparelho)               |
 | `RF-04-49` a `RF-04-57` | 02 §8.2 (recompensa avulsa) e 11 §5 (saldo e troca)   |

@@ -336,22 +336,22 @@ Guerreiras que percorrem as suas trilhas.
 
 ### 6.6 Minhas turmas e lançamentos
 
-| ID         | Requisito                                                                                                                          | Prioridade |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-09-42` | Mestre vê apenas as suas turmas, as suas atividades e os Guerreiros e Guerreiras delas                                             | essencial  |
-| `RF-09-43` | Mestre lança a atividade realizada que propôs, com data, participantes e equipes                                                   | essencial  |
-| `RF-09-44` | Mestre atribui o resultado: realizada, com mérito ou mérito extra por auxílio aos colegas                                          | essencial  |
-| `RF-09-45` | Mestre registra presença do seu encontro e ajusta o que o App 01 não capturou                                                      | essencial  |
-| `RF-09-46` | Mestre lança pontuação negativa da sua aula com motivo, efetivada sem revisão de Admin                                             | essencial  |
-| `RF-09-47` | Lançamento não é editável; correção é ajuste que referencia o original                                                             | essencial  |
-| `RF-09-48` | Toda escrita do Mestre entra na trilha de auditoria com autor, papel, data e hora                                                  | essencial  |
-| `RF-09-49` | Aplicação recusa lançamento de atividade que não é do Mestre autenticado                                                           | essencial  |
-| `RF-09-50` | Aplicação leva o Mestre ao painel do dia da sua aula, operado na App 03                                                            | desejável  |
-| `RF-09-73` | Minhas atividades separa as presenciais do encontro das on-line entre encontros                                                    | essencial  |
-| `RF-09-74` | Mestre lança a equipe inteira de uma vez, preservando o papel de cada integrante                                                   | essencial  |
-| `RF-09-75` | Marco alcançado com recompensa declarada vira pendência de entrega para o Mestre                                                   | essencial  |
-| `RF-09-76` | Mestre confirma a entrega da recompensa do marco, gerando a baixa no livro-razão                                                   | essencial  |
-| `RF-09-91` | Mestre valida a conservação de cada bem recebido a pedido do Guerreiro(a), creditando 1 ponto extra por item, uma vez por encontro | essencial  |
+| ID          | Requisito                                                                                                                          | Prioridade |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-09-42`  | Mestre vê apenas as suas turmas, as suas atividades e os Guerreiros e Guerreiras delas                                             | essencial  |
+| `RF-09-43`  | Mestre lança a atividade realizada que propôs, com data, participantes e equipes                                                   | essencial  |
+| `RF-09-44`  | Mestre atribui o resultado: realizada, com mérito ou mérito extra por auxílio aos colegas                                          | essencial  |
+| `RF-09-45`  | Mestre registra presença do seu encontro e ajusta o que o App 01 não capturou                                                      | essencial  |
+| `RF-09-46`  | Mestre lança pontuação negativa da sua aula com motivo, efetivada sem revisão de Admin                                             | essencial  |
+| `RF-09-47`  | Lançamento não é editável; correção é ajuste que referencia o original                                                             | essencial  |
+| `RF-09-48`  | Toda escrita do Mestre entra na trilha de auditoria com autor, papel, data e hora                                                  | essencial  |
+| `RF-09-49`  | Aplicação recusa lançamento de atividade que não é do Mestre autenticado                                                           | essencial  |
+| `RF-09-50`  | Aplicação leva o Mestre ao painel do dia da sua aula, operado na App 03                                                            | desejável  |
+| `RF-09-73`  | Minhas atividades separa as presenciais do encontro das on-line entre encontros                                                    | essencial  |
+| `RF-09-74`  | Mestre lança a equipe inteira de uma vez, preservando o papel de cada integrante                                                   | essencial  |
+| `RF-09-75`  | Marco alcançado com recompensa declarada vira pendência de entrega para o Mestre                                                   | essencial  |
+| `RF-09-76`  | Mestre confirma a entrega da recompensa do marco, gerando a baixa no livro-razão                                                   | essencial  |
+| `RF-09-113` | Mestre valida a conservação de cada bem recebido a pedido do Guerreiro(a), creditando 1 ponto extra por item, uma vez por encontro | essencial  |
 
 ### 6.7 Validações, filas e propostas
 
@@ -715,6 +715,7 @@ avulsa**.
 | `RF-09-77` a `RF-09-79`   | 03 §§7, 11 (disciplinas e conteúdo do apoio escolar)             |
 | `RF-09-80` a `RF-09-84`   | 11 §2.2 (modelo de missão) e 02 §§3, 8                           |
 | `RF-09-85` a `RF-09-91`   | 03 §11 (template e auxílio de IA na autoria) e 11 §2.2           |
+| `RF-09-113`               | 11 §5 (conservação do bem recebido, ponto extra por item)        |
 | `RF-09-92` a `RF-09-98`   | 11 §2.1 e 04 §4 (etiqueta ODS da trilha e cobertura)             |
 | `RF-09-99` a `RF-09-104`  | 02 §8.2 (recompensa avulsa) e 11 §5 (troca por pontos extras)    |
 | `RF-09-105` a `RF-09-112` | 04 §3 (desafio extra: proponente, teto, custeio e validação)     |
