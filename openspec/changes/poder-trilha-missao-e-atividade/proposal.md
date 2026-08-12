@@ -2,7 +2,8 @@
 
 **PRD de origem:** PRD-01 — Backend API (núcleo). Quinta fatia, na ordem do documento 99 §9.
 
-**Requisitos atendidos:** `RF-01-20` (a parte de trilha, missão e atividade).
+**Requisitos atendidos:** `RF-01-20` (a parte de trilha, missão e atividade), `RF-01-62`,
+`RN-01-42`, `RN-01-43`.
 
 As quatro fatias anteriores fecharam a identidade: os cinco papéis do PRD-01 §4 têm caminho de
 entrada, e o que resta do núcleo é domínio. Este é o primeiro pedaço dele, e é o pedaço de que
@@ -19,10 +20,14 @@ pontuação.
 
 ## What Changes
 
-- Nasce o **Poder**, catálogo a que toda trilha se vincula, com os poderes do documento 02 §2 e
-  a marcação de quais valem no Ciclo 01 (`RF-01-20`).
+- Nasce o **Poder**, catálogo a que toda trilha se vincula, **cadastrado por Admin**: o Mestre
+  escolhe entre os cadastrados e não cria poder novo. Só poder de Guerreiro(a) recebe trilha —
+  o Poder Sustentador é derivado do aporte (`RF-01-62`, `RN-01-43`).
 - Nasce a **Trilha**, de autoria de um Mestre e vinculada a um poder, com situação de rascunho
   ou publicada — a transição entre as duas é do PRD-09 (`RF-01-20`).
+- A trilha é **bem comum da plataforma**: não se vincula a Comunidade Virtual, e o filtro por
+  comunidade de `RF-01-18` recai sobre o percurso do Guerreiro(a), nunca sobre ela
+  (`RN-01-42`).
 - Nasce a **Missão**, ordenada dentro da trilha, declarada **obrigatória ou opcional** e com o
   **nível de dificuldade** próprio; a de **sondagem** é a que abre a trilha (`RF-01-20`).
 - Nasce a **Atividade**, sempre pertencente a uma missão, classificada nos **três eixos** do
@@ -80,28 +85,31 @@ A **pontuação negativa** do documento 11 §5 fica fora de qualquer fatia por o
 guarda do registro de infração** é pendência declarada no PRD-01 §14 e precisa ser decidida no
 documento-fonte antes de virar código.
 
-### Perguntas ao fundador, antes de escrever as specs
+### Duas decisões que esta fatia destravou
 
-Duas lacunas que nenhum artefato do OpenSpec pode preencher por suposição:
+As duas lacunas que travavam as specs foram decididas pelo fundador e gravadas antes de virar
+código, na ordem que o documento 99 §9 exige — documento-fonte, documento 09, PRD:
 
-1. **A trilha é dado de comunidade?** `RF-01-18` manda filtrar por comunidade "toda consulta de
-   dado de comunidade", e a plataforma é instância única. Nem o PRD-01 nem o PRD-09 dizem se a
-   trilha se vincula a uma Comunidade Virtual ou se é bem comum da plataforma, visível a todas
-   — o que a licença CC BY-SA do conteúdo publicado sugere, sem declarar.
-2. **Quem cria o catálogo de poderes?** `RF-09-01` fala em "poder do catálogo", e o documento 02
-   §2 lista os poderes, mas nenhum requisito diz se ele é semeado na implantação, como as chaves
-   de `RF-01-54`, ou cadastrado por Admin. O documento 02 §2 ainda marca dois poderes como
-   `[Proposta]`, e o **Poder Sustentador** é do Apoiador e não recebe trilha — o catálogo mistura
-   duas naturezas.
+| Decisão                                                | Gravada em | Documento 09                    |
+| ------------------------------------------------------ | ---------- | ------------------------------- |
+| A trilha é bem comum da plataforma, sem vínculo de comunidade | 02 §3 | A trilha é bem comum da plataforma |
+| O catálogo de poderes é cadastrado por Admin           | 02 §2      | Cadastro do catálogo de poderes |
+
+A primeira responde o que `RF-01-18` deixava em aberto e nasce como `RN-01-42`. A segunda dá ao
+"poder do catálogo" de `RF-09-01` um dono e nasce como `RF-01-62` e `RN-01-43`. A cláusula de
+que **só poder de Guerreiro(a) recebe trilha** acompanha a segunda para preservar o invariante
+21: o Poder Sustentador está no mesmo catálogo do documento 02 §2, mas é derivado do aporte.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `catalogo-de-poderes`: o poder como catálogo a que a trilha se vincula, com a marcação do que
-  vale no Ciclo 01 e a distinção entre poder de trilha e poder derivado do apoio.
-- `trilha-e-missao`: a trilha do Mestre autor, as missões ordenadas dentro dela, a declaração de
-  obrigatória ou opcional, o nível de dificuldade e a missão de sondagem que a abre.
+- `catalogo-de-poderes`: o poder como catálogo cadastrado por Admin a que a trilha se vincula,
+  com a marcação do que vale no Ciclo 01 e a recusa de trilha em poder que não é de
+  Guerreiro(a).
+- `trilha-e-missao`: a trilha do Mestre autor e bem comum da plataforma, as missões ordenadas
+  dentro dela, a declaração de obrigatória ou opcional, o nível de dificuldade e a missão de
+  sondagem que a abre.
 - `atividade-de-trilha`: a atividade sempre vinculada a uma missão e classificada nos três eixos
   do documento 11 §4, com a exigência de produção do Guerreiro(a).
 
@@ -120,6 +128,6 @@ própria `trilha-e-missao`.
 - `backend/src/nucleo/permissoes.py`: a posse da trilha pelo Mestre autor entra como conferência
   de autoria, ao lado da conferência de papel que já existe.
 - Nenhuma rota nova sob `/v1`: as rotas de autoria são do PRD-09.
-- `docs/`: nada a alterar enquanto as duas perguntas acima não forem respondidas. Se alguma
-  virar decisão, ela é gravada no documento-fonte e movida no documento 09 **antes** das specs,
-  e `docs/prds/index.md` recebe a situação ao fim da implementação.
+- `docs/`: as duas decisões já estão gravadas — documento 02 §§2 e 3, documento 09 e PRD-01
+  §§6, 7, 13 e 15. Resta a situação em `docs/prds/index.md`, se ela mudar ao fim da
+  implementação.

@@ -257,6 +257,10 @@ Regras dos poderes:
 - A **ativação/desbloqueio** de níveis acontece por **quiz ou desafios**.
 - Todo poder, mesmo o mais técnico, deve abrir **paralelos com outras áreas do conhecimento e
   com os valores do projeto**.
+- **O catálogo é cadastrado por Admin.** O Mestre escolhe entre os poderes cadastrados e não
+  cria poder novo ao escrever a trilha.
+- **Só poder de Guerreiro(a) recebe trilha.** O Poder Sustentador é derivado do que Mestres e
+  Apoiadores aportaram e corre por moedas, selos e níveis de sustento — o Apoiador não pontua.
 
 **[Proposta]** Novos poderes alinhados aos valores: "Poder da Ancestralidade" (cultura
 afro-brasileira e povos originários) e "Poder do Cuidado" (respeito, combate ao racismo e à
@@ -273,6 +277,9 @@ violência de gênero, mediação de conflitos).
   apoio** impressa por missão.
 - **Toda trilha deve conter desafios de coleta de dados reais** da comunidade do Guerreiro(a).
 - **Toda trilha termina em criação original** apresentada publicamente (§4).
+- **A trilha é bem comum da plataforma, não de uma comunidade.** Publicada, alcança todas as
+  Comunidades Virtuais; o filtro por comunidade recai sobre o percurso do Guerreiro(a), nunca
+  sobre a trilha. É o que faz a licença CC BY-SA valer na prática.
 - O Guerreiro(a) é acompanhado pela **Área do Guerreiro(a) (App 05)**, que mostra a próxima
   missão, o que já foi conquistado e o que ainda está bloqueado.
 
