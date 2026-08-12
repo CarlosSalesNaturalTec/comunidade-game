@@ -82,6 +82,15 @@ def test_admin_tem_tudo_em_qualquer_operacao():
         assert conferir_permissao(Papel.admin, "le", operacao)
 
 
+def test_catalogo_de_poderes_so_alcancado_por_admin():
+    """`RF-01-62`: nenhum papel tem `catalogo_de_poderes` na própria
+    matriz — o Admin o alcança só por `Operacao.tudo`, e negar por padrão
+    recusa os demais, inclusive o Mestre."""
+    for papel in (Papel.mestre, Papel.guerreiro, Papel.responsavel, Papel.apoiador):
+        assert not conferir_permissao(papel, "escreve", Operacao.catalogo_de_poderes)
+    assert conferir_permissao(Papel.admin, "escreve", Operacao.catalogo_de_poderes)
+
+
 def test_operacao_de_outro_papel_nega_por_padrao():
     """Nega por padrão (RF-01-16): operação fora do que o papel tem
     declarado na matriz não passa, mesmo sendo uma operação real de outro

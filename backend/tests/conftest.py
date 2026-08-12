@@ -32,12 +32,14 @@ from nucleo.personas.modelo import (
     TipoDeCredencial,
 )
 from nucleo.personas.senha import calcular_hash
+from nucleo.poderes.modelo import NaturezaDoPoder, Poder, VigenciaDoPoder
 from nucleo.principal import criar_app, incluir_roteador_de_dados
 from nucleo.responsaveis.modelo import VinculoResponsavel
 from nucleo.sessoes.modelo import ComoAutenticou, Sessao
 from nucleo.sessoes.token import calcular_resumo as calcular_resumo_do_token
 from nucleo.sessoes.token import gerar_token
 from nucleo.tempo import DataHoraComFuso
+from nucleo.trilhas.modelo import Missao, SituacaoDaTrilha, Trilha
 
 DSN_DE_TESTE = os.environ.get(
     "CG_DSN_BANCO_TESTE",
@@ -363,6 +365,88 @@ def conceder_consentimento_biometrico(criar_consentimento):
         )
 
     return _conceder
+
+
+@pytest.fixture
+def criar_poder(sessao):
+    def _criar(
+        autor: Persona,
+        nome: str = "Poder de Teste",
+        descricao: str = "Descrição de teste.",
+        natureza: NaturezaDoPoder = NaturezaDoPoder.de_guerreiro,
+        vigencia: VigenciaDoPoder = VigenciaDoPoder.vigente,
+        ativo: bool = True,
+    ) -> Poder:
+        poder = Poder(
+            nome=nome,
+            descricao=descricao,
+            natureza=natureza,
+            vigencia=vigencia,
+            ativo=ativo,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(poder)
+        sessao.commit()
+        sessao.refresh(poder)
+        return poder
+
+    return _criar
+
+
+@pytest.fixture
+def criar_trilha(sessao, criar_poder):
+    def _criar(
+        autor: Persona,
+        poder: Poder | None = None,
+        nome: str = "Trilha de Teste",
+        objetivo: str = "Objetivo de teste.",
+        area_do_conhecimento: str = "Tecnologia",
+        situacao: SituacaoDaTrilha = SituacaoDaTrilha.rascunho,
+    ) -> Trilha:
+        poder_da_trilha = poder or criar_poder(autor)
+        trilha = Trilha(
+            nome=nome,
+            objetivo=objetivo,
+            area_do_conhecimento=area_do_conhecimento,
+            poder_id=poder_da_trilha.id,
+            situacao=situacao,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(trilha)
+        sessao.commit()
+        sessao.refresh(trilha)
+        return trilha
+
+    return _criar
+
+
+@pytest.fixture
+def criar_missao(sessao):
+    def _criar(
+        trilha: Trilha,
+        autor: Persona,
+        posicao: int = 1,
+        nivel_de_dificuldade: int = 1,
+        obrigatoria: bool = True,
+        e_sondagem: bool = False,
+    ) -> Missao:
+        missao = Missao(
+            trilha_id=trilha.id,
+            posicao=posicao,
+            nivel_de_dificuldade=nivel_de_dificuldade,
+            obrigatoria=obrigatoria,
+            e_sondagem=e_sondagem,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(missao)
+        sessao.commit()
+        sessao.refresh(missao)
+        return missao
+
+    return _criar
 
 
 @pytest.fixture
