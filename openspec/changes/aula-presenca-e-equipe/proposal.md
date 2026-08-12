@@ -4,7 +4,7 @@
 
 **Requisitos atendidos:** `RF-01-20` (parcial — `Aula/Agenda`, `Presenca` e `Equipe`),
 `RF-01-32`, `RF-01-37`, `RF-01-38`, `RF-01-39` (parcial — a metade das várias equipes da
-aula), `RF-01-03`, `RF-01-16`, `RF-01-18`.
+aula), `RF-01-63`, `RF-01-64`, `RN-01-44`, `RF-01-03`, `RF-01-16`, `RF-01-18`.
 
 A aula agendada é a dependência que a oitava fatia nomeou ao adiar `RF-01-36` a `RF-01-39`, e
 é o que falta para fechar `RF-01-20`: trilha, missão, atividade e resultado já entregues,
@@ -42,10 +42,19 @@ com a rede fora* estão todas em "Já decididos".
 
 ### Equipe
 
-- Nasce a **Equipe**, presa a exatamente uma aula e criada pelo próprio Guerreiro(a), que
-  entra como primeiro integrante (`RF-01-37`).
-- A equipe **encerra com a aula e não é reaproveitada**: equipe de uma aula não aparece em
-  outra (`RF-01-37`).
+- Nasce a **Equipe**, criada pelo próprio Guerreiro(a), que entra como primeiro integrante, em
+  **dois tempos de vida** — a da aula e a da trilha (documento 02 §5). É uma entidade só, e o
+  vínculo declara qual das duas ela é: aula **ou** trilha, nunca as duas.
+- A **equipe da aula** encerra com a aula e não é reaproveitada: equipe de uma aula não
+  aparece em outra (`RF-01-37`).
+- A **equipe da trilha** é formada pelos Guerreiros e Guerreiras e **homologada pelo Mestre**;
+  da homologação em diante ela não recebe nem perde integrante (`RF-01-63`, `RN-01-44`). É uma
+  por trilha percorrida, o mesmo alcance da unicidade que `CriacaoOriginal` já tem.
+- A criação original passa a ser creditada **a cada integrante** da equipe da trilha que a
+  entregou, com o **papel de cada um** guardado (`RF-01-64`, documento 02 §4). Fecha a dívida
+  que a sétima fatia deixou anotada em `pontuacao/regra.py`.
+- O núcleo não confere onde a homologação acontece: "em encontro presencial" é regra de
+  operação, e a aplicação que a carrega segue pendente no documento 09.
 - O núcleo **recusa o sexto integrante** e o **segundo integrante de 17 anos ou mais** na
   mesma equipe (`RF-01-38`). Como a faixa do Guerreiro(a) é 6–16 (invariante 2), o integrante
   de 17 anos ou mais é o que **não tem papel de Guerreiro(a)** — o núcleo não guarda data de
@@ -68,11 +77,8 @@ nascem lá, sobre a `Equipe` que esta fatia entrega.
 quinta fatia: a reserva de recursos no agendamento precisa do livro-razão do PRD-07, que é a
 entrega nº 3 do documento 99 §9. A aula nasce sem a trava, e a trava chega com o ledger.
 
-**A pontuação da criação original em equipe** — documento 11 §5, "50, integrais a cada
-integrante" — não entra aqui. A `Equipe` que esta fatia cria começa e termina **na aula**
-(`RF-01-37`), e a criação original é a culminância **da trilha**: a equipe da aula não é
-sujeito de um registro que atravessa o ciclo. Isso é pergunta ao fundador, não decisão de
-artefato (ver abaixo).
+**A validação da criação original** segue sendo ato do Mestre autor, pela rota do PRD-09: esta
+fatia muda a quem o crédito vai — cada integrante da equipe da trilha —, não quem valida.
 
 **As rotas** de `aulas`, `presencas` e `equipes` não são deste PRD: estão declaradas no
 PRD-04 §9 (App 01) e no PRD-02 §9 (App 03), e o PRD-01 §9 diz expressamente que as rotas de
@@ -81,19 +87,19 @@ regra.
 
 **O painel do dia** (`RF-01-17`) é leitura da App 03, requisito do PRD-02.
 
-### Perguntas ao fundador, que esta fatia não resolve sozinha
+### Decisão nova aplicada antes desta change
 
-1. **Criação original em equipe.** O documento 11 §5 e o documento 09 creditam os 50 pontos e
-   o badge de autoria "integralmente a cada integrante da equipe", mas a equipe é da aula e a
-   culminância é da trilha. Falta dizer que agrupamento credita a culminância.
-2. **Papel do integrante.** O documento 02 §5 diz que "o registro guarda o papel de cada
-   membro" — quem constrói, quem registra, quem apresenta, quem media. Nem `RF-01-20` nem o
-   PRD-01 §8 declaram esse atributo, e ele não entra por suposição: é da equipe, do resultado,
-   ou nenhum dos dois no Ciclo 01?
-3. **Familiar e modalidade.** O documento 02 §5 admite o familiar "quando a atividade
-   permitir", e a atividade já tem a modalidade `em_equipe_com_familiar`; a equipe, porém, é
-   da aula, não da atividade. `RF-01-38` é verificável como está — no máximo um —, e é o que
-   esta fatia implementa; a amarração à modalidade fica pendente de decisão.
+A equipe fixa da criação original foi decidida pelo fundador durante a exploração e **subiu a
+hierarquia antes de virar plano**, na ordem que o `CLAUDE.md` exige: gravada no documento-fonte
+(02 §§4 e 5), registrada no documento 09 em "Já decididos", aplicada ao PRD-01 — `RF-01-37`
+reescrito, `RF-01-63`, `RF-01-64` e `RN-01-44` novos, matriz da §4, modelo da §8, aceite da
+§12 e rastreabilidade da §15 — e refletida no invariante 15 do documento 99. Só então entrou
+aqui.
+
+Segue em aberto, e não trava esta fatia: **o familiar e a modalidade**. O documento 02 §5
+admite o familiar "quando a atividade permitir", e a atividade já tem a modalidade
+`em_equipe_com_familiar`; a equipe, porém, é da aula ou da trilha, não da atividade.
+`RF-01-38` é verificável como está — no máximo um —, e é o que esta fatia implementa.
 
 ### Fora do escopo
 
@@ -121,26 +127,39 @@ O que é do PRD-01 mas de outra fatia:
 - `aula-e-presenca`: a aula agendada com comunidade, data e horários, a derivação das aulas
   vigentes no momento corrente e o registro de presença por reconhecimento ou por confirmação
   de Mestre ou Admin, único por aula e Guerreiro(a).
-- `equipe-da-aula`: a equipe formada pelo Guerreiro(a) dentro de uma aula, que encerra com
-  ela sem reaproveitamento, com o teto de cinco integrantes e o limite de um integrante de 17
-  anos ou mais.
+- `equipe`: a equipe formada pelo Guerreiro(a) nos dois tempos de vida — a da aula, que encerra
+  com ela sem reaproveitamento, e a da trilha, fixa depois de homologada pelo Mestre —, com o
+  teto de cinco integrantes, o limite de um integrante de 17 anos ou mais e o papel de cada um.
 
 ### Modified Capabilities
 
-Nenhuma. `permissoes-e-escopo-de-comunidade` não muda de requisito: as operações que a equipe
-usa já estão concedidas na matriz desde a segunda fatia, e esta fatia apenas passa a exercê-las.
-`trilha-e-missao` e `resultado-de-atividade` também não mudam — a aula não altera o
-comportamento delas, e o vínculo entre atividade realizada e aula não está em `RF-01-20`.
+- `permissoes-e-escopo-de-comunidade`: a matriz do PRD-01 §4 muda em duas células — o
+  Guerreiro(a) passa a escrever "as equipes que forma, a da aula e a da trilha", e o Mestre
+  ganha a homologação da equipe da trilha (`RF-01-16`, `RF-01-63`).
+- `criacao-original`: a criação original deixa de ser registro só do autor e passa a ser da
+  equipe da trilha, com o papel de cada integrante (`RF-01-64`, `RN-01-13` preservado — o autor
+  segue creditado por toda a vida do registro).
+- `pontos-niveis-e-badges`: os pontos e o badge de autoria da criação original passam a ser
+  creditados a cada integrante da equipe da trilha, e não só a quem entregou (`RF-01-21`,
+  `RF-01-64`).
 
 ## Impact
 
 - `backend/src/nucleo/`: módulos novos `aulas/` (`Aula`, `Presenca`, a derivação das aulas
-  vigentes e a regra de unicidade da presença) e `equipes/` (`Equipe`, `IntegranteDaEquipe` e
-  as regras de composição), lendo `persona`, `comunidade_virtual` e a matriz de permissões já
-  existentes.
-- `backend/alembic/`: migração para `aula`, `presenca`, `equipe` e `integrante_da_equipe`.
+  vigentes e a regra de unicidade da presença) e `equipes/` (`Equipe`, `IntegranteDaEquipe`, as
+  regras de composição e a homologação), lendo `persona`, `comunidade_virtual`, `trilha` e a
+  matriz de permissões já existentes.
+- `backend/src/nucleo/permissoes.py`: duas operações novas na matriz — a equipe da trilha para
+  o Guerreiro(a) e a homologação para o Mestre.
+- `backend/src/nucleo/criacoes_originais/` e `pontuacao/`: a criação original passa a referenciar
+  a equipe da trilha, e o crédito dos pontos e do badge de autoria alcança cada integrante.
+  Some o comentário "sem equipe nesta fatia" de `pontuacao/regra.py`.
+- `backend/alembic/`: migração para `aula`, `presenca`, `equipe` e `integrante_da_equipe`, e a
+  alteração de `criacao_original` — a unicidade por (autor, trilha) passa a ser por
+  (equipe da trilha, trilha).
 - Nenhuma rota nova sob `/v1`: como nas fatias 5 a 8, entidade e regra — as rotas de aula e
-  presença são do PRD-02 e do PRD-04, e as de equipe, do PRD-04.
-- `docs/`: nenhuma decisão nova nesta fatia. As três perguntas acima, se respondidas, mudam
-  documento-fonte, documento 09 e PRD antes de virar código — nunca dentro desta change.
-  `docs/prds/index.md` recebe a situação atualizada se ela mudar ao fim da implementação.
+  presença são do PRD-02 e do PRD-04, as de equipe são do PRD-04, e a da homologação nasce no
+  PRD da aplicação que o documento 09 ainda vai definir.
+- `docs/`: a decisão da equipe fixa **já foi gravada** nos documentos 02, 09, 99 e no PRD-01,
+  antes desta proposta. `docs/prds/index.md` recebe a situação atualizada se ela mudar ao fim
+  da implementação.
