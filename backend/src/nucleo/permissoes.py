@@ -64,6 +64,9 @@ class Operacao(enum.StrEnum):
     efetividade_agregada = "efetividade_agregada"
     # Comum a várias personas — lê
     publico = "publico"
+    # Catálogo — nenhum papel tem entrada dele na matriz; o Admin o alcança
+    # por `Operacao.tudo`, e negar por padrão recusa os demais (`RF-01-62`).
+    catalogo_de_poderes = "catalogo_de_poderes"
 
 
 MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {

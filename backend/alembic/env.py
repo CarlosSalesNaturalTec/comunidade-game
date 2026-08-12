@@ -9,8 +9,10 @@ from nucleo.chaves import modelo  # noqa: F401 — registra as tabelas em Base.m
 from nucleo.configuracao import obter_configuracao
 from nucleo.consentimentos import modelo as modelo_consentimentos  # noqa: F401
 from nucleo.personas import modelo as modelo_personas  # noqa: F401
+from nucleo.poderes import modelo as modelo_poderes  # noqa: F401
 from nucleo.responsaveis import modelo as modelo_responsaveis  # noqa: F401
 from nucleo.sessoes import modelo as modelo_sessoes  # noqa: F401
+from nucleo.trilhas import modelo as modelo_trilhas  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
