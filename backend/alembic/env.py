@@ -8,6 +8,7 @@ from nucleo.biometria import modelo as modelo_biometria  # noqa: F401
 from nucleo.chaves import modelo  # noqa: F401 — registra as tabelas em Base.metadata
 from nucleo.configuracao import obter_configuracao
 from nucleo.consentimentos import modelo as modelo_consentimentos  # noqa: F401
+from nucleo.criacoes_originais import modelo as modelo_criacoes_originais  # noqa: F401
 from nucleo.personas import modelo as modelo_personas  # noqa: F401
 from nucleo.poderes import modelo as modelo_poderes  # noqa: F401
 from nucleo.ponto_extra import modelo as modelo_ponto_extra  # noqa: F401

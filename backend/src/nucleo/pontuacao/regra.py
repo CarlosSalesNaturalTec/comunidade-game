@@ -3,6 +3,7 @@ import uuid
 
 from sqlalchemy.orm import Session
 
+from ..criacoes_originais.modelo import CriacaoOriginal
 from ..erros import ErroDeValidacao
 from ..resultados.modelo import DesfechoDoResultado, Resultado
 from ..trilhas.modelo import Atividade, Missao, ModalidadeDeAtividade, Trilha
@@ -15,6 +16,10 @@ VALOR_BASE_PADRAO = 10
 ADICIONAL_DE_MERITO = 5
 ADICIONAL_DE_MERITO_EXTRA_POR_AUXILIO = 10
 
+# Documento 11 §5: a criação original validada credita 50 pontos regulares
+# integrais — sem equipe nesta fatia (proposta — o que esta fatia não tem).
+VALOR_DA_CRIACAO_ORIGINAL = 50
+
 # Documento 11 §7: o badge de valores/causas nasce da natureza declarada na
 # atividade, já normalizada por `trilhas.regra._normalizar_natureza`.
 NATUREZA_DE_VALORES_E_CAUSAS = "valores e temas transversais"
@@ -22,6 +27,7 @@ NATUREZA_DE_VALORES_E_CAUSAS = "valores e temas transversais"
 NIVEL_1 = 1
 NIVEL_2 = 2
 NIVEL_4 = 4
+NIVEL_5 = 5
 
 
 def _valor_regular(atividade: Atividade, desfecho: DesfechoDoResultado) -> int:
@@ -119,9 +125,11 @@ def _tem_merito_de_auxilio_na_trilha(
 
 def avaliar_niveis(sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID) -> None:
     """Certifica os níveis 1, 2 e 4 quando o critério verificável do
-    documento 11 §6 é atingido pela primeira vez — 3 e 5 dependem de
-    entidades de outro PRD e ficam fora desta fatia (proposta — o que esta
-    fatia não tem). Só a missão obrigatória conta no percurso (11 §6)."""
+    documento 11 §6 é atingido pela primeira vez — 3 depende de entidade de
+    outro PRD e fica fora desta fatia (proposta — o que esta fatia não
+    tem); o 5 é `certificar_nivel_5`, disparado pela validação da criação
+    original, não por Resultado. Só a missão obrigatória conta no percurso
+    (11 §6)."""
     obrigatorias = _missoes_obrigatorias_da_trilha(sessao, trilha_id)
     concluidas = _missoes_concluidas_pelo_guerreiro(
         sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id
@@ -195,3 +203,41 @@ def creditar_pontuacao_do_resultado(
         conceder_badge_de_valores_e_causas(
             sessao, guerreiro_id=resultado.guerreiro_id, trilha_id=trilha.id
         )
+
+
+def certificar_nivel_5(sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID) -> None:
+    """Certificado quando a criação original da trilha é validada — ao
+    contrário dos níveis 1, 2 e 4, não depende de missão obrigatória
+    (`RF-01-21`, 11 §6). Reaproveita `_certificar_nivel`, que também
+    concede o badge de nível correspondente e nunca regride."""
+    if _ja_certificado(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id, valor=NIVEL_5):
+        return
+    _certificar_nivel(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id, valor=NIVEL_5)
+
+
+def conceder_badge_de_autoria(
+    sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID
+) -> None:
+    """Concedido a cada criação original validada; sem guarda de
+    duplicidade porque a unicidade de `CriacaoOriginal` por (autor, trilha)
+    já impede validar a mesma trilha duas vezes (`RF-01-21`, 11 §7, design
+    — decisões)."""
+    sessao.add(Badge(guerreiro_id=guerreiro_id, trilha_id=trilha_id, tipo=TipoDeBadge.de_autoria))
+    sessao.flush()
+
+
+def creditar_pontuacao_da_criacao_original(
+    sessao: Session, *, criacao_original: CriacaoOriginal, trilha: Trilha
+) -> None:
+    """Ponto de entrada único, chamado por
+    `criacoes_originais.regra.validar_criacao_original`: credita os 50
+    pontos regulares integrais, certifica o nível 5 e concede o badge de
+    autoria (`RF-01-21`, 11 §§5-7)."""
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=criacao_original.autor_id,
+        trilha_id=trilha.id,
+        valor=VALOR_DA_CRIACAO_ORIGINAL,
+    )
+    certificar_nivel_5(sessao, guerreiro_id=criacao_original.autor_id, trilha_id=trilha.id)
+    conceder_badge_de_autoria(sessao, guerreiro_id=criacao_original.autor_id, trilha_id=trilha.id)

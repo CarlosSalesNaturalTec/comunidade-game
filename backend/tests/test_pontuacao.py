@@ -4,6 +4,11 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 
+from nucleo.criacoes_originais.regra import (
+    devolver_criacao_original,
+    entregar_criacao_original,
+    validar_criacao_original,
+)
 from nucleo.erros import DebitoDePontoRegularRecusado, ErroDeValidacao
 from nucleo.personas.modelo import Papel
 from nucleo.pontuacao.modelo import Badge, Nivel, PontoRegular, TipoDeBadge
@@ -401,3 +406,78 @@ def test_atividade_de_outra_natureza_nao_concede_badge_de_valores_e_causas(
         .first()
         is None
     )
+
+
+def test_validar_criacao_original_credita_cinquenta_pontos_regulares_ao_autor(
+    sessao, criar_persona, criar_trilha
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    criacao = entregar_criacao_original(
+        sessao, guerreiro=guerreiro, trilha=trilha, producao="Produção."
+    )
+    sessao.commit()
+
+    validar_criacao_original(sessao, operador=mestre, criacao=criacao)
+    sessao.commit()
+
+    conta = (
+        sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).one()
+    )
+    assert conta.total == 50
+
+
+def test_validar_criacao_original_certifica_o_nivel_5_uma_unica_vez(
+    sessao, criar_persona, criar_trilha
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    criacao = entregar_criacao_original(
+        sessao, guerreiro=guerreiro, trilha=trilha, producao="Produção."
+    )
+    sessao.commit()
+
+    validar_criacao_original(sessao, operador=mestre, criacao=criacao)
+    sessao.commit()
+
+    niveis = sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=5)
+    assert niveis.count() == 1
+
+
+def test_validar_criacao_original_concede_o_badge_de_autoria(sessao, criar_persona, criar_trilha):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    criacao = entregar_criacao_original(
+        sessao, guerreiro=guerreiro, trilha=trilha, producao="Produção."
+    )
+    sessao.commit()
+
+    validar_criacao_original(sessao, operador=mestre, criacao=criacao)
+    sessao.commit()
+
+    badge = (
+        sessao.query(Badge)
+        .filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id, tipo=TipoDeBadge.de_autoria)
+        .one()
+    )
+    assert badge.trilha_id == trilha.id
+
+
+def test_devolver_criacao_original_nao_credita_nada(sessao, criar_persona, criar_trilha):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    criacao = entregar_criacao_original(
+        sessao, guerreiro=guerreiro, trilha=trilha, producao="Produção."
+    )
+    sessao.commit()
+
+    devolver_criacao_original(sessao, operador=mestre, criacao=criacao)
+    sessao.commit()
+
+    assert sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id).count() == 0
+    assert sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id).count() == 0
+    assert sessao.query(Badge).filter_by(guerreiro_id=guerreiro.id).count() == 0

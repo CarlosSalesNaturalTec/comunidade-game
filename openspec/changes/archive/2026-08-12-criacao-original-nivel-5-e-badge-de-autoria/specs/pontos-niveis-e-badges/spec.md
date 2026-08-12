@@ -1,10 +1,4 @@
-## Purpose
-
-O motor de pontuação regular — pontos, níveis e badges por trilha ou poder, derivados do
-Resultado — é o que a vitrine, os cards públicos e o App 04 vão ler sobre a progressão de cada
-Guerreiro(a).
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Ponto regular é creditado por trilha ou poder e nunca debitado
 
