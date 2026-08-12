@@ -408,16 +408,17 @@ consultas ou de envios na rota pública (429, com o tempo de espera).
 
 ## 11. LGPD e proteção da criança
 
-| Dado                         | Finalidade                        | Base legal                   | Retenção                 | Quem acessa                      |
-| ---------------------------- | --------------------------------- | ---------------------------- | ------------------------ | -------------------------------- |
-| Nick do Guerreiro(a)         | Identificação pública             | consentimento                | enquanto durar o vínculo | qualquer visitante               |
-| _Template_ biométrico        | Presença e autenticação           | consentimento do responsável | enquanto durar o vínculo | ninguém: só a comparação interna |
-| Nome e data de nascimento    | Identificação e faixa etária      | consentimento                | enquanto durar o vínculo | gestão e responsável             |
-| Conta social do adulto       | Autenticação                      | consentimento                | enquanto durar o vínculo | gestão e o próprio               |
-| Usuário e senha do adulto    | Autenticação sem conta social     | consentimento                | enquanto durar o vínculo | o próprio; hash na base          |
-| Vínculo e grau de parentesco | Provar quem responde pela criança | consentimento                | enquanto durar o vínculo | gestão e o próprio               |
-| Consentimentos versionados   | Prova do que foi autorizado       | obrigação legal              | permanente               | gestão e responsável             |
-| Auditoria de escrita         | Rastreabilidade das ações         | interesse público            | permanente               | Admin                            |
+| Dado                         | Finalidade                          | Base legal                   | Retenção                 | Quem acessa                      |
+| ---------------------------- | ----------------------------------- | ---------------------------- | ------------------------ | -------------------------------- |
+| Nick do Guerreiro(a)         | Identificação pública               | consentimento                | enquanto durar o vínculo | qualquer visitante               |
+| _Template_ biométrico        | Presença e autenticação             | consentimento do responsável | enquanto durar o vínculo | ninguém: só a comparação interna |
+| Nome e data de nascimento    | Identificação e faixa etária        | consentimento                | enquanto durar o vínculo | gestão e responsável             |
+| Conta social do adulto       | Autenticação                        | consentimento                | enquanto durar o vínculo | gestão e o próprio               |
+| Usuário e senha do adulto    | Autenticação sem conta social       | consentimento                | enquanto durar o vínculo | o próprio; hash na base          |
+| Vínculo e grau de parentesco | Provar quem responde pela criança   | consentimento                | enquanto durar o vínculo | gestão e o próprio               |
+| Consentimentos versionados   | Prova do que foi autorizado         | obrigação legal              | permanente               | gestão e responsável             |
+| Auditoria de escrita         | Rastreabilidade das ações           | interesse público            | permanente               | Admin                            |
+| Acesso ao _template_         | Rastreabilidade do uso da biometria | interesse público            | permanente               | Admin                            |
 
 - O _template_ é guardado **cifrado**, a senha com **hash**, e nenhuma rota devolve um nem
   outro. A imagem original não é a credencial: o que autentica é o _template_. Ela tampouco
@@ -504,6 +505,9 @@ e o dos desafios de desbloqueio de cada trilha.
 | Ponto extra em duas contas: acumulado e saldo disponível; só o saldo debita                          | 11 §5             | Troca de pontos extras por recompensa avulsa |
 | Jogos leem o acumulado de pontos extras, nunca o saldo disponível                                    | 11 §5             | Troca de pontos extras por recompensa avulsa |
 | Comparação do _template_ permanece no núcleo, que nunca o devolve                                    | 03 §3.3           | Já decididos                                 |
+| Chave que cifra o _template_ no Secret Manager, lida na subida, sem chamada externa por login        | 03 §3.3           | Guarda e auditoria do _template_ biométrico  |
+| Acesso auditado ao _template_ alcança toda leitura, inclusive cada comparação de login               | 03 §3.3           | Guarda e auditoria do _template_ biométrico  |
+| Duração da sessão do Guerreiro(a) e limiar da biometria são parâmetro declarado na implantação       | 03 §§3.2, 3.3     | Parâmetros da entrada do Guerreiro(a)        |
 | API documentada em OpenAPI desde o primeiro _endpoint_, com schema aberto fora de `/v1`              | 03 §§1, 1.1       | Documentação da API em OpenAPI               |
 | Chave por aplicação e por ambiente; dois ambientes no Ciclo 01, e 16 chaves na implantação           | 03 §§1, 1.13      | Escopo da chave e ambientes do Ciclo 01      |
 | Python 3.12 e conjunto de regras do Ruff, com cobertura medida sem limiar que bloqueie               | 03 §1.13          | Ferramentas da esteira de CI do backend      |
@@ -513,7 +517,6 @@ e o dos desafios de desbloqueio de cada trilha.
 - **Instituição com mais de um usuário** no mesmo cadastro de Apoiador, e como se registra
   quem agiu em nome dela.
 - **Prazo de disponibilidade da versão anterior** da API depois que uma nova abrir.
-- **Duração exata da sessão** do Guerreiro(a), a calibrar no primeiro encontro real.
 - **Prazo de guarda** do registro de infração e de pontuação negativa, dado sensível de
   criança que hoje segue a retenção geral do vínculo.
 
