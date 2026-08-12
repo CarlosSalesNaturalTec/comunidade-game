@@ -105,3 +105,9 @@ class ErroInterno(ErroDeAplicacao):
     status_code = 500
     codigo = "erro_interno"
     mensagem = "Ocorreu um erro inesperado. Tente novamente em instantes."
+
+
+class ConsentimentoImutavel(ErroDeAplicacao):
+    status_code = 409
+    codigo = "consentimento_imutavel"
+    mensagem = "Consentimento é somente inserção; revogar grava um registro novo."
