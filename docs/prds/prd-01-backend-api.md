@@ -67,14 +67,14 @@ o que é público — cada um pela sua aplicação, todos sobre a mesma verdade.
 
 ## 4. Personas e permissões
 
-| Persona      | Escreve                                                                                                                                                                                                                                                                                                             | Lê                                                                       |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Admin        | Tudo: cadastros, aprovações, lançamentos, ledger, comunidades                                                                                                                                                                                                                                                       | Tudo                                                                     |
-| Mestre       | Suas trilhas e conteúdos, lançamentos e pontuação negativa das suas atividades, condução do Quiz ao Vivo das suas aulas, auditoria de coleta, aprovação de local, aportes seus, cadastro de responsável e vínculo com Guerreiros e Guerreiras, confirmação de identidade do Guerreiro(a) e cadastro biométrico dele | O que é público, suas turmas e o **painel do dia** na App 03, em leitura |
-| Guerreiro(a) | Seus registros de coleta, suas criações, suas sugestões, recompensas recebidas nos marcos, a **equipe que forma na aula** e a resposta de quiz da equipe                                                                                                                                                            | Seus dados, as equipes da aula em andamento e o que é público            |
-| Responsável  | Consentimentos, autorizações, solicitações e propostas                                                                                                                                                                                                                                                              | Os Guerreiros e Guerreiras sob sua responsabilidade e o que é público    |
-| Apoiador     | Aportes declarados, cobertura de missão, propostas de desafio extra, documentos comprobatórios, propostas de evolução                                                                                                                                                                                               | Seus aportes, efetividade agregada e o que é público                     |
-| Visitante    | Solicitação de participação, de dados e de chave, pelas rotas públicas da vitrine                                                                                                                                                                                                                                   | Somente o que é público                                                  |
+| Persona      | Escreve                                                                                                                                                                                                                                                                                                                                                  | Lê                                                                       |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Admin        | Tudo: cadastros, aprovações, lançamentos, ledger, comunidades                                                                                                                                                                                                                                                                                            | Tudo                                                                     |
+| Mestre       | Suas trilhas e conteúdos, lançamentos e pontuação negativa das suas atividades, condução do Quiz ao Vivo das suas aulas, auditoria de coleta, aprovação de local, aportes seus, cadastro de responsável e vínculo com Guerreiros e Guerreiras, confirmação de identidade do Guerreiro(a), cadastro biométrico dele e **homologação da equipe da trilha** | O que é público, suas turmas e o **painel do dia** na App 03, em leitura |
+| Guerreiro(a) | Seus registros de coleta, suas criações, suas sugestões, recompensas recebidas nos marcos, as **equipes que forma — a da aula e a da trilha** — e a resposta de quiz da equipe                                                                                                                                                                           | Seus dados, as equipes da aula em andamento e o que é público            |
+| Responsável  | Consentimentos, autorizações, solicitações e propostas                                                                                                                                                                                                                                                                                                   | Os Guerreiros e Guerreiras sob sua responsabilidade e o que é público    |
+| Apoiador     | Aportes declarados, cobertura de missão, propostas de desafio extra, documentos comprobatórios, propostas de evolução                                                                                                                                                                                                                                    | Seus aportes, efetividade agregada e o que é público                     |
+| Visitante    | Solicitação de participação, de dados e de chave, pelas rotas públicas da vitrine                                                                                                                                                                                                                                                                        | Somente o que é público                                                  |
 
 Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplicação; escrita
 é sempre autenticada e auditada.**
@@ -198,7 +198,9 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-55` | Núcleo aplica cota de consulta por chave e responde 429 ao excedê-la                                                                                                                            | desejável  |
 | `RF-01-35` | Núcleo mantém as entidades do apoio escolar — disciplina, conteúdo do corpus e consulta                                                                                                         | essencial  |
 | `RF-01-36` | Núcleo mantém a resposta de quiz por equipe e pergunta, com o momento de chegada                                                                                                                | essencial  |
-| `RF-01-37` | Equipe é criada pelo Guerreiro(a), vinculada a uma aula, e encerra com ela sem ser reaproveitada                                                                                                | essencial  |
+| `RF-01-37` | Equipe da aula é criada pelo Guerreiro(a), vinculada a uma aula, e encerra com ela sem ser reaproveitada                                                                                        | essencial  |
+| `RF-01-63` | Equipe da trilha é formada pelos Guerreiros e Guerreiras e homologada pelo Mestre em encontro presencial, e a composição fica fixa a partir da homologação                                      | essencial  |
+| `RF-01-64` | Núcleo credita a criação original a cada integrante da equipe da trilha que a entregou, guardando o papel de cada um                                                                            | essencial  |
 | `RF-01-38` | Núcleo recusa o sexto integrante e o segundo familiar de 17 anos ou mais na mesma equipe                                                                                                        | essencial  |
 | `RF-01-39` | Núcleo aceita o Guerreiro(a) em várias equipes da aula e em uma só por partida de quiz                                                                                                          | essencial  |
 | `RF-01-40` | Núcleo mantém a etiqueta ODS da trilha — objetivo de 1 a 18, com meta opcional — declarada pelo Mestre autor                                                                                    | essencial  |
@@ -263,6 +265,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-41` | Nenhuma rota de jogo expõe o saldo disponível de pontos extras                                                                   | 8          | 11 §§5, 8.4 |
 | `RN-01-42` | A trilha é bem comum da plataforma: não se vincula a comunidade, e o filtro por comunidade recai sobre o percurso, não sobre ela | —          | 02 §3       |
 | `RN-01-43` | O poder é cadastrado por Admin, e só poder de Guerreiro(a) recebe trilha                                                         | 21         | 02 §2       |
+| `RN-01-44` | A equipe da trilha é uma por trilha percorrida e, homologada pelo Mestre, não recebe nem perde integrante                        | 15         | 02 §5       |
 
 ## 8. Modelo de dados
 
@@ -317,6 +320,7 @@ Sessao              Conteudo
 | `SolicitacaoDeChave`        | solicitante, e-mail, instituição opcional, o que pretende construir, situação, prazo de avaliação, quem avaliou, parecer, data e a chave emitida                                                                             |
 | `ChaveDeAplicacao`          | aplicação, ambiente, natureza (do projeto ou de terceiro), resumo criptográfico do segredo, emitida por, emitida em, prazo de apresentação, URL apresentada, cota, situação (vigente, revogada), revogada por, motivo e data |
 | `EtiquetaODS`               | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                                                                                             |
+| `Equipe`                    | vínculo — aula **ou** trilha, nunca os dois —, criada por, integrantes com o papel de cada um, e, na equipe da trilha, quem homologou e quando                                                                               |
 | `SolicitacaoDeParticipacao` | nome ou razão social, e-mail, WhatsApp, pretensão, apresentação, instituição e links opcionais, aporte declarado (necessidade, valor sugerido ou livre), comprovante anexado, situação, prazo, quem avaliou, parecer, data   |
 | `Apoiador`                  | identidade, avatar (próprio a partir de 10 moedas acumuladas; padrão do projeto abaixo do piso), nick único, artefatos comprobatórios, Poder Sustentador derivado dos aportes homologados                                    |
 | `Auditoria`                 | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                                                                    |
@@ -324,6 +328,10 @@ Sessao              Conteudo
 A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela que o App 01 tira
 a comunidade do novo cadastro, e é a existência dela que habilita o onboarding naquele momento.
 Não há parâmetro de liberação separado.
+
+A `Equipe` tem **dois tempos de vida**, definidos no documento 02 §5: a da aula, que termina com
+ela, e a da trilha, fixa depois de homologada e sujeito da criação original. É a mesma entidade,
+com o vínculo declarando qual das duas ela é.
 
 `DesafioExtra`, `Favorito`, `MissaoDoApoiador` e `SeloDoApoiador` são do Apoiador e têm os
 atributos definidos no PRD-14. `Favorito` existe **apenas na App 08**, e nenhuma outra aplicação
@@ -468,6 +476,11 @@ consultas ou de envios na rota pública (429, com o tempo de espera).
   senha em nenhuma aplicação.
 - Mestre que tenta escrever em rota de gestão recebe 403, e a leitura do painel do dia
   responde normalmente.
+- Equipe da trilha homologada recusa entrada e saída de integrante, e a composição registrada
+  na homologação é a que credita a criação original.
+- Segundo pedido de equipe da trilha para o mesmo Guerreiro(a) na mesma trilha é recusado.
+- Criação original validada credita cada integrante da equipe da trilha, e o registro guarda o
+  papel de cada um.
 - Toda escrita bem-sucedida gera registro de auditoria com autor, papel e data e hora.
 - Revogação de consentimento cria novo registro, e o anterior continua consultável.
 - Nenhuma rota de crédito de pontos existe para o App 04 — a tentativa devolve 404.
@@ -553,6 +566,8 @@ e o dos desafios de desbloqueio de cada trilha.
 | `RF-01-35`              | 03 §7 (apoio escolar com corpus fechado)         |
 | `RF-01-36`              | 05 §5 e 11 §5 (resposta e pontuação do quiz)     |
 | `RF-01-37` a `RF-01-39` | 02 §5 e 05 §5 (equipe formada na aula e quiz)    |
+| `RF-01-63`, `RF-01-64`  | 02 §§4, 5 (equipe fixa da trilha e crédito)      |
+| `RN-01-44`              | 02 §5 (uma por trilha, fixa após homologação)    |
 | `RF-01-40` a `RF-01-45` | 11 §2.1 e 04 §4 (etiqueta ODS e cobertura)       |
 | `RF-01-46` e `RF-01-47` | 03 §12.3 (entrega de dados aprovada por Admin)   |
 | `RF-01-48`, `RF-01-54`  | 03 §1 (chave obrigatória em toda chamada)        |

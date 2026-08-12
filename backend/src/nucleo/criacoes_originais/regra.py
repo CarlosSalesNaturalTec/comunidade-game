@@ -2,7 +2,8 @@ from datetime import UTC, datetime
 
 from sqlalchemy.orm import Session
 
-from ..erros import ErroDeValidacao
+from ..equipes.modelo import Equipe, IntegranteDaEquipe
+from ..erros import ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Persona
 from ..pontuacao.regra import creditar_pontuacao_da_criacao_original
 from ..trilhas.modelo import Trilha
@@ -14,15 +15,18 @@ def entregar_criacao_original(
     sessao: Session,
     *,
     guerreiro: Persona | None,
-    trilha: Trilha | None,
+    equipe: Equipe | None,
     producao: str | None,
 ) -> CriacaoOriginal:
-    """Entrega feita pelo próprio Guerreiro(a) — a mesma permissão que o
-    PRD-01 §4 já lista ("Guerreiro(a) escreve... suas criações"); nasce
-    sempre com situação "entregue" (`RF-01-26`).
+    """Entrega feita por um integrante da equipe da trilha, e vale pela
+    equipe inteira; a trilha é a da própria equipe (`RF-01-26`, `RF-01-64`).
+    Nasce sempre com situação "entregue". Como cada Guerreiro(a) tem uma só
+    equipe por trilha (`RN-01-44`), a equipe aceita no máximo uma entrega.
     """
-    if trilha is None:
-        raise ErroDeValidacao(mensagem="Criação original exige uma trilha.", campo="trilha_id")
+    if equipe is None or equipe.trilha_id is None:
+        raise ErroDeValidacao(
+            mensagem="Criação original exige a equipe da trilha.", campo="equipe_id"
+        )
     if guerreiro is None:
         raise ErroDeValidacao(
             mensagem="Criação original exige o Guerreiro(a) autor.", campo="guerreiro_id"
@@ -32,8 +36,26 @@ def entregar_criacao_original(
             mensagem="Criação original exige a produção declarada.", campo="producao"
         )
 
+    e_integrante = (
+        sessao.query(IntegranteDaEquipe)
+        .filter_by(equipe_id=equipe.id, persona_id=guerreiro.id)
+        .first()
+    )
+    if e_integrante is None:
+        raise PermissaoNegada(
+            mensagem="Só um integrante da equipe entrega a criação original dela."
+        )
+
+    ja_entregou = sessao.query(CriacaoOriginal).filter_by(equipe_id=equipe.id).first()
+    if ja_entregou is not None:
+        raise ErroDeValidacao(
+            mensagem="Esta equipe já entregou a criação original desta trilha.",
+            campo="equipe_id",
+        )
+
     criacao = CriacaoOriginal(
-        trilha_id=trilha.id,
+        trilha_id=equipe.trilha_id,
+        equipe_id=equipe.id,
         producao=producao,
         situacao=SituacaoDaCriacaoOriginal.entregue,
         autor_id=guerreiro.id,

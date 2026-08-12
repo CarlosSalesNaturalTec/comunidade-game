@@ -4,6 +4,7 @@ import uuid
 from sqlalchemy.orm import Session
 
 from ..criacoes_originais.modelo import CriacaoOriginal
+from ..equipes.modelo import IntegranteDaEquipe
 from ..erros import ErroDeValidacao
 from ..resultados.modelo import DesfechoDoResultado, Resultado
 from ..trilhas.modelo import Atividade, Missao, ModalidadeDeAtividade, Trilha
@@ -17,7 +18,7 @@ ADICIONAL_DE_MERITO = 5
 ADICIONAL_DE_MERITO_EXTRA_POR_AUXILIO = 10
 
 # Documento 11 §5: a criação original validada credita 50 pontos regulares
-# integrais — sem equipe nesta fatia (proposta — o que esta fatia não tem).
+# integrais a cada integrante da equipe da trilha, sem rateio pelo tamanho.
 VALOR_DA_CRIACAO_ORIGINAL = 50
 
 # Documento 11 §7: o badge de valores/causas nasce da natureza declarada na
@@ -218,10 +219,11 @@ def certificar_nivel_5(sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: u
 def conceder_badge_de_autoria(
     sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID
 ) -> None:
-    """Concedido a cada criação original validada; sem guarda de
-    duplicidade porque a unicidade de `CriacaoOriginal` por (autor, trilha)
-    já impede validar a mesma trilha duas vezes (`RF-01-21`, 11 §7, design
-    — decisões)."""
+    """Concedido a cada integrante da equipe cuja criação original for
+    validada; sem guarda de duplicidade porque a unicidade de
+    `CriacaoOriginal` por equipe já impede validar a mesma trilha duas
+    vezes para a mesma equipe (`RF-01-21`, `RF-01-64`, 11 §7, design —
+    decisões)."""
     sessao.add(Badge(guerreiro_id=guerreiro_id, trilha_id=trilha_id, tipo=TipoDeBadge.de_autoria))
     sessao.flush()
 
@@ -231,13 +233,18 @@ def creditar_pontuacao_da_criacao_original(
 ) -> None:
     """Ponto de entrada único, chamado por
     `criacoes_originais.regra.validar_criacao_original`: credita os 50
-    pontos regulares integrais, certifica o nível 5 e concede o badge de
-    autoria (`RF-01-21`, 11 §§5-7)."""
-    creditar_ponto_regular(
-        sessao,
-        guerreiro_id=criacao_original.autor_id,
-        trilha_id=trilha.id,
-        valor=VALOR_DA_CRIACAO_ORIGINAL,
+    pontos regulares integrais a cada integrante da equipe da trilha, sem
+    rateio pelo tamanho, certifica o nível 5 e concede o badge de autoria a
+    cada um deles (`RF-01-21`, `RF-01-64`, 11 §§5-7)."""
+    integrantes = (
+        sessao.query(IntegranteDaEquipe).filter_by(equipe_id=criacao_original.equipe_id).all()
     )
-    certificar_nivel_5(sessao, guerreiro_id=criacao_original.autor_id, trilha_id=trilha.id)
-    conceder_badge_de_autoria(sessao, guerreiro_id=criacao_original.autor_id, trilha_id=trilha.id)
+    for integrante in integrantes:
+        creditar_ponto_regular(
+            sessao,
+            guerreiro_id=integrante.persona_id,
+            trilha_id=trilha.id,
+            valor=VALOR_DA_CRIACAO_ORIGINAL,
+        )
+        certificar_nivel_5(sessao, guerreiro_id=integrante.persona_id, trilha_id=trilha.id)
+        conceder_badge_de_autoria(sessao, guerreiro_id=integrante.persona_id, trilha_id=trilha.id)

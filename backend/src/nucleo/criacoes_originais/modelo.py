@@ -16,21 +16,23 @@ class SituacaoDaCriacaoOriginal(enum.StrEnum):
 
 
 class CriacaoOriginal(Base, ComAutoria):
-    """Registro de que um Guerreiro(a) entregou, ao final da trilha, o que
+    """Registro de que a equipe da trilha entregou, ao final dela, o que
     produziu a partir do que aprendeu — a Culminância do documento 11 §2.
-    `ComAutoria.autor_id` grava o próprio Guerreiro(a) que entrega, a
-    mesma permissão que o PRD-01 §4 já lista ("Guerreiro(a) escreve...
-    suas criações"), e nunca muda, nem na devolução (`RN-01-13`).
+    `equipe_id` é a equipe da trilha que assina o registro (`RF-01-64`);
+    `ComAutoria.autor_id` continua a gravar quem entregou pela equipe —
+    mesmo sentido de sempre, e nunca muda, nem na devolução (`RN-01-13`).
     `validado_por_id` e `validado_em` guardam o Mestre autor ou o Admin
     que decide, preenchidos só na transição (design — decisões). A
-    unicidade por (autor, trilha) evita mais de uma entrega por trilha e,
-    com ela, crédito duplicado de pontos e do badge de autoria.
+    unicidade passa a ser por equipe: como cada Guerreiro(a) tem uma só
+    equipe por trilha (`RN-01-44`), a equipe segue entregando no máximo
+    uma criação original por trilha.
     """
 
     __tablename__ = "criacao_original"
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     trilha_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("trilha.id"), nullable=False)
+    equipe_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("equipe.id"), nullable=False)
     producao: Mapped[str] = mapped_column(Text, nullable=False)
     situacao: Mapped[SituacaoDaCriacaoOriginal] = mapped_column(
         Enum(SituacaoDaCriacaoOriginal, native_enum=False, length=16), nullable=False
@@ -40,6 +42,4 @@ class CriacaoOriginal(Base, ComAutoria):
     )
     validado_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    __table_args__ = (
-        UniqueConstraint("autor_id", "trilha_id", name="uq_criacao_original_autor_id_trilha_id"),
-    )
+    __table_args__ = (UniqueConstraint("equipe_id", name="uq_criacao_original_equipe_id"),)
