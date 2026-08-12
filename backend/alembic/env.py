@@ -6,7 +6,9 @@ from alembic import context
 from nucleo.banco import Base
 from nucleo.chaves import modelo  # noqa: F401 — registra as tabelas em Base.metadata
 from nucleo.configuracao import obter_configuracao
+from nucleo.consentimentos import modelo as modelo_consentimentos  # noqa: F401
 from nucleo.personas import modelo as modelo_personas  # noqa: F401
+from nucleo.responsaveis import modelo as modelo_responsaveis  # noqa: F401
 from nucleo.sessoes import modelo as modelo_sessoes  # noqa: F401
 
 # this is the Alembic Config object, which provides

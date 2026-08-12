@@ -8,6 +8,7 @@ from starlette.exceptions import HTTPException as ExcecaoHTTP
 from .chaves.conferencia import exigir_chave_de_aplicacao
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
 from .personas.rotas import roteador as roteador_de_personas
+from .responsaveis.rotas import roteador as roteador_de_responsaveis
 from .sessoes.rotas import roteador as roteador_de_sessoes
 
 logger = logging.getLogger("nucleo")
@@ -76,3 +77,4 @@ def incluir_roteador_de_dados(app: FastAPI, roteador: APIRouter) -> None:
 app = criar_app()
 incluir_roteador_de_dados(app, roteador_de_personas)
 incluir_roteador_de_dados(app, roteador_de_sessoes)
+incluir_roteador_de_dados(app, roteador_de_responsaveis)

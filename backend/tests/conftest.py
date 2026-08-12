@@ -6,7 +6,7 @@ import pytest
 from fastapi import APIRouter, Depends
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 from nucleo.autenticacao import exigir_persona
@@ -15,10 +15,16 @@ from nucleo.chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from nucleo.chaves.modelo import ChaveDeAplicacao, NaturezaDaChave, SituacaoDaChave
 from nucleo.chaves.segredo import calcular_resumo, gerar_segredo, montar_chave_completa
 from nucleo.configuracao import Configuracao, obter_configuracao
+from nucleo.consentimentos.modelo import (
+    Consentimento,
+    DecisaoDeConsentimento,
+    OrigemDoConsentimento,
+)
 from nucleo.paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from nucleo.personas.modelo import ComunidadeVirtual, Credencial, Papel, Persona, TipoDeCredencial
 from nucleo.personas.senha import calcular_hash
 from nucleo.principal import criar_app, incluir_roteador_de_dados
+from nucleo.responsaveis.modelo import VinculoResponsavel
 from nucleo.sessoes.modelo import ComoAutenticou, Sessao
 from nucleo.sessoes.token import calcular_resumo as calcular_resumo_do_token
 from nucleo.sessoes.token import gerar_token
@@ -45,8 +51,11 @@ def sessao(engine):
     sessao = fabrica()
     yield sessao
     sessao.rollback()
-    for tabela in reversed(Base.metadata.sorted_tables):
-        sessao.execute(tabela.delete())
+    # `TRUNCATE`, ao contrário de `DELETE`, não dispara o trigger de linha que
+    # recusa remoção em `consentimento` (RN-01-12) — é o que permite limpar o
+    # banco entre testes sem violar a imutabilidade que a própria fatia exige.
+    nomes_das_tabelas = ", ".join(f'"{tabela.name}"' for tabela in Base.metadata.sorted_tables)
+    sessao.execute(text(f"TRUNCATE TABLE {nomes_das_tabelas} RESTART IDENTITY CASCADE"))
     sessao.commit()
     sessao.close()
 
@@ -111,6 +120,7 @@ def _montar_roteador_de_teste() -> APIRouter:
 @pytest.fixture
 def app(sessao, configuracao):
     from nucleo.personas.rotas import roteador as roteador_de_personas
+    from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
     from nucleo.sessoes.rotas import roteador as roteador_de_sessoes
 
     aplicacao = criar_app()
@@ -119,6 +129,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, _montar_roteador_de_teste())
     incluir_roteador_de_dados(aplicacao, roteador_de_personas)
     incluir_roteador_de_dados(aplicacao, roteador_de_sessoes)
+    incluir_roteador_de_dados(aplicacao, roteador_de_responsaveis)
     return aplicacao
 
 
@@ -242,5 +253,65 @@ def criar_sessao_de_teste(sessao):
         sessao.commit()
         sessao.refresh(registro)
         return token, registro
+
+    return _criar
+
+
+@pytest.fixture
+def criar_vinculo(sessao):
+    def _criar(
+        responsavel: Persona,
+        guerreiro: Persona,
+        grau_de_parentesco: str = "mãe",
+        cadastrado_por: Persona | None = None,
+        fim: datetime | None = None,
+    ) -> VinculoResponsavel:
+        autor = cadastrado_por or responsavel
+        vinculo = VinculoResponsavel(
+            responsavel_id=responsavel.id,
+            guerreiro_id=guerreiro.id,
+            grau_de_parentesco=grau_de_parentesco,
+            fim=fim,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(vinculo)
+        sessao.commit()
+        sessao.refresh(vinculo)
+        return vinculo
+
+    return _criar
+
+
+@pytest.fixture
+def criar_consentimento(sessao):
+    def _criar(
+        responsavel: Persona,
+        guerreiro: Persona,
+        tipo: str = "autorizacao",
+        versao_do_termo: str = "1.0",
+        decisao: DecisaoDeConsentimento = DecisaoDeConsentimento.concede,
+        origem: OrigemDoConsentimento = OrigemDoConsentimento.propria,
+        operado_por: Persona | None = None,
+        testemunha: Persona | None = None,
+        anexo: str | None = None,
+    ) -> Consentimento:
+        autor = operado_por or responsavel
+        consentimento = Consentimento(
+            responsavel_id=responsavel.id,
+            guerreiro_id=guerreiro.id,
+            tipo=tipo,
+            versao_do_termo=versao_do_termo,
+            decisao=decisao,
+            origem=origem,
+            testemunha_id=testemunha.id if testemunha is not None else None,
+            anexo=anexo,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(consentimento)
+        sessao.commit()
+        sessao.refresh(consentimento)
+        return consentimento
 
     return _criar
