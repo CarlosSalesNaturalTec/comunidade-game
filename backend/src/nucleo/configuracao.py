@@ -21,6 +21,14 @@ class Configuracao(BaseSettings):
     identidade_fundador: str
     sessao_adulto_duracao: timedelta
 
+    # Parâmetros da entrada do Guerreiro(a), também sem valor padrão: duração
+    # da sessão curta, limiar de comparação do descritor, dimensão esperada
+    # dele e a chave que cifra o _template_ (`RN-01-14`, design — decisões).
+    sessao_guerreiro_duracao: timedelta
+    biometria_dimensao_do_descritor: int
+    biometria_limiar_de_comparacao: float
+    biometria_chave_de_cifragem: str
+
     google_client_id: str = ""
 
     # Custo do Argon2id, ajustável por ambiente (design — decisão da senha).

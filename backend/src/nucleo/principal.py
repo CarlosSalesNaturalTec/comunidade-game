@@ -5,6 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as ExcecaoHTTP
 
+from .biometria.rotas import roteador as roteador_de_biometria
 from .chaves.conferencia import exigir_chave_de_aplicacao
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
 from .personas.rotas import roteador as roteador_de_personas
@@ -78,3 +79,4 @@ app = criar_app()
 incluir_roteador_de_dados(app, roteador_de_personas)
 incluir_roteador_de_dados(app, roteador_de_sessoes)
 incluir_roteador_de_dados(app, roteador_de_responsaveis)
+incluir_roteador_de_dados(app, roteador_de_biometria)

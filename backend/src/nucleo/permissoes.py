@@ -32,6 +32,8 @@ class Operacao(enum.StrEnum):
     aportes_seus = "aportes_seus"
     cadastro_de_responsavel = "cadastro_de_responsavel"
     vinculo_com_guerreiros_e_guerreiras = "vinculo_com_guerreiros_e_guerreiras"
+    confirmacao_de_identidade_do_guerreiro = "confirmacao_de_identidade_do_guerreiro"
+    cadastro_biometrico_do_guerreiro = "cadastro_biometrico_do_guerreiro"
     # Mestre — lê
     suas_turmas = "suas_turmas"
     painel_do_dia_na_app_03 = "painel_do_dia_na_app_03"
@@ -80,6 +82,8 @@ MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {
                 Operacao.aportes_seus,
                 Operacao.cadastro_de_responsavel,
                 Operacao.vinculo_com_guerreiros_e_guerreiras,
+                Operacao.confirmacao_de_identidade_do_guerreiro,
+                Operacao.cadastro_biometrico_do_guerreiro,
             }
         ),
         "le": frozenset({Operacao.publico, Operacao.suas_turmas, Operacao.painel_do_dia_na_app_03}),

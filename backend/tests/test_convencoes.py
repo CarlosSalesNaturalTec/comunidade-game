@@ -143,3 +143,12 @@ def test_ler_schema_nao_abre_rota_de_dados(cliente):
     cliente.get("/openapi.json")
     resposta = cliente.get("/v1/publica")
     assert resposta.status_code == 401
+
+
+def test_nenhuma_rota_lista_ou_sugere_nick(cliente):
+    """`RN-01-22`: o núcleo nunca descobre nem sugere um nick — não existe
+    rota de listagem, busca parcial ou sugestão em toda a API."""
+    schema = cliente.get("/openapi.json").json()
+    for caminho in schema["paths"]:
+        assert "nicks" not in caminho.lower()
+        assert "sugest" not in caminho.lower()

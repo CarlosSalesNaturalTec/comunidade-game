@@ -1,18 +1,24 @@
 import uuid
 from collections.abc import Callable
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
+from ..biometria.regra import autenticar_por_nick_e_descritor
 from ..chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from ..configuracao import Configuracao, obter_configuracao
-from ..erros import CredencialInvalida, LoginSemCadastro
-from ..permissoes import MATRIZ_DE_PERMISSOES
+from ..erros import (
+    AutenticacaoBiometricaInvalida,
+    CredencialInvalida,
+    LoginSemCadastro,
+    NaoEncontrado,
+)
+from ..permissoes import MATRIZ_DE_PERMISSOES, Operacao, exigir_permissao
 from ..personas.modelo import Credencial, Papel, Persona, TipoDeCredencial
 from ..personas.senha import conferir_senha
 from .modelo import ComoAutenticou, Sessao
@@ -30,21 +36,23 @@ class AberturaDeSessaoSaida(BaseModel):
 
 def _abrir_sessao(
     sessao_bd: Session,
-    configuracao: Configuracao,
     *,
     persona_id: uuid.UUID,
     papel: Papel,
     origem: str,
     como_autenticou: ComoAutenticou,
+    duracao: timedelta,
+    quem_confirmou: uuid.UUID | None = None,
 ) -> AberturaDeSessaoSaida:
     token = gerar_token()
-    expira_em = datetime.now(UTC) + configuracao.sessao_adulto_duracao
+    expira_em = datetime.now(UTC) + duracao
     registro = Sessao(
         persona_id=persona_id,
         resumo_do_token=calcular_resumo(token),
         expira_em=expira_em,
         origem=origem,
         como_autenticou=como_autenticou,
+        quem_confirmou=quem_confirmou,
     )
     sessao_bd.add(registro)
     sessao_bd.commit()
@@ -79,11 +87,11 @@ def login_social(
     persona = sessao_bd.get(Persona, credencial.persona_id)
     return _abrir_sessao(
         sessao_bd,
-        configuracao,
         persona_id=persona.id,
         papel=persona.papel,
         origem=contexto_da_chave.aplicacao,
         como_autenticou=ComoAutenticou.social,
+        duracao=configuracao.sessao_adulto_duracao,
     )
 
 
@@ -112,11 +120,85 @@ def login_por_credencial(
     persona = sessao_bd.get(Persona, credencial.persona_id)
     return _abrir_sessao(
         sessao_bd,
-        configuracao,
         persona_id=persona.id,
         papel=persona.papel,
         origem=contexto_da_chave.aplicacao,
         como_autenticou=ComoAutenticou.credencial,
+        duracao=configuracao.sessao_adulto_duracao,
+    )
+
+
+class AbrirSessaoDeGuerreiroEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    nick: str
+    descritor: list[float] = Field(min_length=1)
+
+
+@roteador.post("/sessoes/guerreiro", status_code=201)
+def abrir_sessao_de_guerreiro(
+    entrada: AbrirSessaoDeGuerreiroEntrada,
+    contexto_da_chave: Annotated[ContextoDaChave, Depends(exigir_chave_de_aplicacao)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
+) -> AberturaDeSessaoSaida:
+    """Pública quanto à persona — dispensa credencial, nunca a chave de
+    aplicação (`RF-01-04`, `RF-01-05`). A recusa não diferencia nick
+    inexistente, Guerreiro(a) sem _template_ e descritor que não confere,
+    nem no corpo nem no tempo (`RN-01-22`).
+    """
+    guerreiro = autenticar_por_nick_e_descritor(
+        sessao_bd, configuracao, nick=entrada.nick, descritor=entrada.descritor
+    )
+    if guerreiro is None:
+        # O registro de acesso da comparação (RN-01-14) precisa persistir mesmo
+        # na recusa — sem este commit, `sessao_bd.close()` o descartaria.
+        sessao_bd.commit()
+        raise AutenticacaoBiometricaInvalida()
+
+    return _abrir_sessao(
+        sessao_bd,
+        persona_id=guerreiro.id,
+        papel=guerreiro.papel,
+        origem=contexto_da_chave.aplicacao,
+        como_autenticou=ComoAutenticou.biometria,
+        duracao=configuracao.sessao_guerreiro_duracao,
+    )
+
+
+class ConfirmarSessaoDeGuerreiroEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    guerreiro_id: uuid.UUID
+
+
+@roteador.post("/sessoes/guerreiro/confirmacao", status_code=201)
+def confirmar_sessao_de_guerreiro(
+    entrada: ConfirmarSessaoDeGuerreiroEntrada,
+    contexto: Annotated[
+        ContextoDaSessao,
+        Depends(exigir_permissao(Operacao.confirmacao_de_identidade_do_guerreiro, "escreve")),
+    ],
+    contexto_da_chave: Annotated[ContextoDaChave, Depends(exigir_chave_de_aplicacao)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
+) -> AberturaDeSessaoSaida:
+    """Restrita a Mestre e Admin pela matriz (`RF-01-06`, `RF-01-16`) — a
+    alternativa equivalente para quem não tem _template_, para a falha de
+    reconhecimento e para quem recusou a biometria (`RN-01-16`).
+    """
+    guerreiro = sessao_bd.get(Persona, entrada.guerreiro_id)
+    if guerreiro is None or guerreiro.papel != Papel.guerreiro:
+        raise NaoEncontrado(mensagem="Guerreiro(a) não encontrado.", campo="guerreiro_id")
+
+    return _abrir_sessao(
+        sessao_bd,
+        persona_id=guerreiro.id,
+        papel=guerreiro.papel,
+        origem=contexto_da_chave.aplicacao,
+        como_autenticou=ComoAutenticou.confirmacao_humana,
+        duracao=configuracao.sessao_guerreiro_duracao,
+        quem_confirmou=contexto.persona_id,
     )
 
 

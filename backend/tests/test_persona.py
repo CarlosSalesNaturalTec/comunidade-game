@@ -1,7 +1,7 @@
 import pytest
 
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
-from nucleo.personas.modelo import Credencial, Papel, Persona, TipoDeCredencial
+from nucleo.personas.modelo import Credencial, Nick, Papel, Persona, TipoDeCredencial
 from nucleo.personas.regra import criar_persona, vincular_guerreiro_a_comunidade
 from nucleo.personas.semeadura import semear_admin_fundador
 
@@ -16,7 +16,11 @@ def test_papel_ausente_nao_produz_persona(sessao):
 def test_guerreiro_tem_autocadastro(sessao, criar_comunidade):
     comunidade = criar_comunidade()
     persona = criar_persona(
-        sessao, papel=Papel.guerreiro, criada_por=None, comunidade_virtual_id=comunidade.id
+        sessao,
+        papel=Papel.guerreiro,
+        criada_por=None,
+        comunidade_virtual_id=comunidade.id,
+        nick="Guerreira_de_teste",
     )
     sessao.commit()
     assert persona.papel == Papel.guerreiro
@@ -28,6 +32,45 @@ def test_guerreiro_sem_comunidade_nao_e_criado(sessao):
         criar_persona(sessao, papel=Papel.guerreiro, criada_por=None)
     assert excinfo.value.campo == "comunidade_virtual_id"
     assert sessao.query(Persona).count() == 0
+
+
+def test_guerreiro_sem_nick_nao_e_criado(sessao, criar_comunidade):
+    comunidade = criar_comunidade()
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        criar_persona(
+            sessao, papel=Papel.guerreiro, criada_por=None, comunidade_virtual_id=comunidade.id
+        )
+    assert excinfo.value.campo == "nick"
+    assert sessao.query(Persona).count() == 0
+    assert sessao.query(Nick).count() == 0
+
+
+def test_nick_repetido_e_recusado_entre_papeis_diferentes(sessao, criar_comunidade):
+    comunidade = criar_comunidade()
+    criar_persona(
+        sessao,
+        papel=Papel.guerreiro,
+        criada_por=None,
+        comunidade_virtual_id=comunidade.id,
+        nick="MesmoNick",
+    )
+    sessao.commit()
+
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        criar_persona(
+            sessao,
+            papel=Papel.guerreiro,
+            criada_por=None,
+            comunidade_virtual_id=comunidade.id,
+            nick="MesmoNick",
+        )
+    assert excinfo.value.campo == "nick"
+    assert sessao.query(Persona).filter_by(papel=Papel.guerreiro).count() == 1
+    assert sessao.query(Nick).filter_by(valor="MesmoNick").count() == 1
 
 
 def test_mestre_so_e_cadastrado_por_admin(sessao):
@@ -108,7 +151,11 @@ def test_segundo_vinculo_de_comunidade_e_recusado(sessao, criar_comunidade):
     comunidade_um = criar_comunidade("Comunidade Um")
     comunidade_dois = criar_comunidade("Comunidade Dois")
     guerreiro = criar_persona(
-        sessao, papel=Papel.guerreiro, criada_por=None, comunidade_virtual_id=comunidade_um.id
+        sessao,
+        papel=Papel.guerreiro,
+        criada_por=None,
+        comunidade_virtual_id=comunidade_um.id,
+        nick="Guerreiro_de_teste",
     )
     sessao.commit()
 
