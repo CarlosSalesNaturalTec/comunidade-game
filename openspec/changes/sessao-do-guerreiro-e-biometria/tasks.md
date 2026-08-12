@@ -101,8 +101,10 @@
 
 ## 7. Documentação
 
-- [ ] 7.1 Acrescentar ao PRD-01 §4 a confirmação de identidade e o cadastro biométrico na célula
-      do Mestre, que `RF-01-06` e `RF-01-08` já lhe dão — **depois do aval do fundador** (design
-      — open questions).
-- [ ] 7.2 Atualizar `docs/prds/index.md` se a situação do PRD-01 mudar ao fim desta fatia.
-- [ ] 7.3 Rodar `npm run fix`, `npm run lint` e `mkdocs build --strict` antes de abrir o PR.
+- [x] 7.1 Acrescentar ao PRD-01 §4 a confirmação de identidade e o cadastro biométrico na célula
+      do Mestre, que `RF-01-06` e `RF-01-08` já lhe dão (`RF-01-16`).
+- [x] 7.2 Registrar no PRD-01 §3.2 que a exclusão do _template_ é do PRD-13, e gravar no PRD-13 os
+      requisitos correspondentes — `RF-13-43`, `RF-13-44` e `RN-13-22` —, com a decisão no
+      documento 09 (documento 03 §3.3).
+- [ ] 7.3 Atualizar `docs/prds/index.md` se a situação do PRD-01 mudar ao fim desta fatia.
+- [ ] 7.4 Rodar `npm run fix`, `npm run lint` e `mkdocs build --strict` antes de abrir o PR.

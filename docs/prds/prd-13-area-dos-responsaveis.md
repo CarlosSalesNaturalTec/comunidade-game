@@ -223,6 +223,8 @@ nem em ranking, nem em equipe, nem em criação de colega.
 | ---------- | -------------------------------------------------------------------------------------------- | ---------- |
 | `RF-13-22` | Responsável abre solicitação de acesso, correção, exclusão ou esclarecimento                 | essencial  |
 | `RF-13-23` | Pedido de exclusão exibe o limite da despersonalização do dado de território antes do aceite | essencial  |
+| `RF-13-43` | Pedido de exclusão deferido apaga o _template_ biométrico do Guerreiro(a)                    | essencial  |
+| `RF-13-44` | Fim do vínculo do Guerreiro(a) apaga o _template_ biométrico, sem depender de pedido         | essencial  |
 | `RF-13-24` | Solicitação confirmada recebe protocolo e entra na fila da App 03                            | essencial  |
 | `RF-13-25` | Responsável acompanha a situação da solicitação e o prazo de 7 dias                          | essencial  |
 | `RF-13-26` | Solicitação sem desfecho em 7 dias aparece em atraso para o responsável                      | essencial  |
@@ -269,6 +271,7 @@ nem em ranking, nem em equipe, nem em criação de colega.
 | `RN-13-10` | Consentimento é somente inserção: revogar é registro novo, nunca edição do anterior           | —                      | 03 §12       |
 | `RN-13-11` | Sem autorização vigente, o Guerreiro(a) não aparece em vitrine, ranking nem elenco do jogo    | 8, 12                  | 03 §12       |
 | `RN-13-12` | O pedido de exclusão despersonaliza o registro de território; não o apaga                     | 7                      | 03 §12.1     |
+| `RN-13-22` | O _template_ biométrico é apagado, não despersonalizado: é a exceção ao limite da exclusão    | 12                     | 03 §3.3      |
 | `RN-13-13` | A titularidade não se transfere: o responsável exerce os direitos em nome do Guerreiro(a)     | —                      | 03 §12.1     |
 | `RN-13-14` | Toda solicitação tem prazo de resposta de 7 dias e desfecho registrado na App 03              | —                      | 03 §9        |
 | `RN-13-15` | No Ciclo 01 não há notificação por e-mail: o retorno acontece na plataforma                   | —                      | 03 §9        |
@@ -380,7 +383,8 @@ responsável (403); tentativa de ler consulta ao assistente ou transcrição de 
 - **Titularidade**: o titular é o Guerreiro(a); o responsável **exerce os direitos** em nome
   dele.
 - **Limite da exclusão**: o dado de território é **despersonalizado, não apagado**, e isso é
-  dito na tela e no termo antes do aceite — não descoberto depois.
+  dito na tela e no termo antes do aceite — não descoberto depois. O _template_ biométrico é a
+  exceção: ele é **apagado**, no pedido de exclusão e ao fim do vínculo.
 - **Transparência de acesso**: o responsável vê **quem acessou** os dados da criança, com data,
   hora, papel e dado — a trilha de auditoria do PRD-01 exposta a quem responde pela criança.
 - **Dado de outra criança nunca aparece**, nem em equipe, nem em ranking, nem em criação
@@ -427,6 +431,7 @@ adesão da criança.
 | Autorização única do responsável, cobrindo divulgação, eventos e produção | 03 §§9, 12 | Autorização única do responsável    |
 | Qualquer responsável autoriza ou revoga, e a recusa prevalece             | 02 §1      | Quem autoriza entre os responsáveis |
 | Atendimento assistido e termo impresso para quem não tem smartphone       | 03 §9      | Responsável sem smartphone          |
+| A exclusão do _template_ biométrico é requisito deste PRD, não do PRD-01  | 03 §3.3    | Exclusão do _template_ biométrico   |
 
 As três decisões fecharam a pendência do **consentimento da captação da produção** e a
 **[Proposta]** de consentimento por divulgação de vídeos e fotos de eventos, que deixou de
@@ -456,6 +461,7 @@ documento 08 perdeu a questão em aberto do responsável sem smartphone.
 | `RF-13-07` a `RF-13-12` | 03 §9 (evolução do Guerreiro(a)) e 11 §6 (nível como percurso)  |
 | `RF-13-13` a `RF-13-21` | 03 §§9, 12 (autorização única) e 02 §1 (quem exerce)            |
 | `RF-13-22` a `RF-13-28` | 03 §§9, 12.1 (solicitações, recusa e limite da exclusão)        |
+| `RF-13-43` e `RF-13-44` | 03 §§3.3, 12.2 (exclusão do _template_ e prazos)                |
 | `RF-13-29` a `RF-13-34` | 03 §§9, 12.2 (transparência e prazos), 12.3 (entrega de dados)  |
 | `RF-13-35` a `RF-13-38` | 03 §9 (atendimento assistido e termo impresso)                  |
 | `RF-13-39` a `RF-13-42` | 03 §§7, 9, 12 (fila única, canal fechado e aviso de coleta)     |

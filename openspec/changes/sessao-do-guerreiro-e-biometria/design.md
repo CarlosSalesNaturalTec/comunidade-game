@@ -30,8 +30,8 @@ que faz "acesso" alcançar também cada comparação de login.
 
 - Rota que cria o Guerreiro(a) e conferência de unicidade na conversa: são do PRD-04 (ver
   `proposal.md`).
-- **Exclusão do _template_** ao fim do vínculo ou a pedido do responsável: o documento 03 §3.3 a
-  exige, mas nenhum `RF` do PRD-01 a declara. Ver Open Questions.
+- **Exclusão do _template_** ao fim do vínculo ou a pedido do responsável: é do PRD-13
+  (`RF-13-43`, `RF-13-44`, `RN-13-22`), e o PRD-01 §3.2 passou a apontar para lá.
 - Prova de vivacidade: acontece no aparelho, antes do descritor (documento 03 §3.3).
 - Limite de tentativas na rota pública: segue com `RN-01-27` no documento 09.
 
@@ -93,7 +93,7 @@ numa entidade de negócio, e a comparação de login não escreve entidade nenhu
 A matriz nasceu como transcrição do PRD-01 §4, cuja célula do Mestre não nomeia nenhuma das duas
 — mas o vocabulário foi declarado extensível pelas fatias seguintes, e é por ele que as rotas
 declaram o que exigem. As duas entram como operação do Mestre, com origem no `RF`, e o PRD-01 §4
-recebe a menção correspondente. Ver Open Questions.
+já recebeu a menção correspondente, de modo que matriz e documento voltam a dizer o mesmo.
 
 ### A sessão do Guerreiro(a) reusa o que já existe
 
@@ -132,10 +132,6 @@ a segunda duração de configuração.
 
 ## Open Questions
 
-- **Exclusão do _template_.** O documento 03 §3.3 manda excluí-lo ao fim do vínculo ou a pedido
-  do responsável, e o PRD-01 §11 dá a retenção "enquanto durar o vínculo" — mas nenhum `RF` do
-  PRD-01 declara a operação. Fica fora desta fatia, e a decisão é do fundador: virar requisito do
-  PRD-01 ou ficar com o PRD-13, que já trata dos pedidos do responsável.
-- **PRD-01 §4.** A célula do Mestre não nomeia a confirmação de identidade nem o cadastro
-  biométrico que `RF-01-06` e `RF-01-08` lhe dão. A emenda é de uma linha e está prevista nas
-  tarefas, mas depende do aval do fundador.
+Nenhuma. As duas que este desenho levantou foram decididas pelo fundador antes da implementação:
+a **exclusão do _template_** ficou com o PRD-13, e a célula do Mestre no **PRD-01 §4** foi
+emendada com as duas operações que `RF-01-06` e `RF-01-08` já lhe davam.

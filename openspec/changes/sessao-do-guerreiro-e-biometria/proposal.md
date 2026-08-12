@@ -59,6 +59,7 @@ O que é do PRD-01 mas de outra fatia, por dependência declarada ou por pendên
 
 | Fica para                           | Porque                                                            |
 | ----------------------------------- | ----------------------------------------------------------------- |
+| a exclusão do _template_            | é do PRD-13 (`RF-13-43`, `RF-13-44`), como o PRD-01 §3.2 declara  |
 | `RF-01-32`                          | a aula agendada que habilita o App 01 é entidade de operação      |
 | `RF-01-33` e `RF-01-34`             | a consulta pública por nick é rota de vitrine, de outra fatia     |
 | `RF-01-17`                          | o painel do dia só existe quando App 03 e App 09 existirem        |
