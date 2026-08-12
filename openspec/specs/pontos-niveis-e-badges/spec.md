@@ -9,8 +9,9 @@ Guerreiro(a).
 ### Requirement: Ponto regular é creditado por trilha ou poder e nunca debitado
 
 O núcleo SHALL creditar **ponto regular** por **trilha ou poder** — nunca globalmente — a partir
-de um Resultado, conforme a fonte e o valor da tabela do documento 11 §5. O ponto regular SHALL
-**nunca ser debitado**, em nenhuma operação. (`RF-01-21`, `RN-01-38`, 11 §5)
+de um Resultado ou de uma **Criação Original validada**, conforme a fonte e o valor da tabela do
+documento 11 §5. O ponto regular SHALL **nunca ser debitado**, em nenhuma operação. (`RF-01-21`,
+`RN-01-38`, 11 §5)
 
 #### Scenario: Resultado "realizada" credita o valor da atividade
 
@@ -29,13 +30,20 @@ de um Resultado, conforme a fonte e o valor da tabela do documento 11 §5. O pon
 - **WHEN** qualquer operação tenta reduzir o saldo de ponto regular de um Guerreiro(a)
 - **THEN** o núcleo recusa a operação
 
+#### Scenario: Criação original validada credita 50 pontos regulares
+
+- **WHEN** o Mestre autor valida uma criação original
+- **THEN** o núcleo credita, à trilha da criação, 50 pontos regulares integrais ao Guerreiro(a)
+  autor
+
 ### Requirement: Nível é percurso por trilha ou poder e nunca regride
 
 O núcleo SHALL manter o **nível** por trilha ou poder, derivado do **percurso das missões
 obrigatórias desbloqueadas** — nunca do total de pontos acumulado (11 §6). Nesta capacidade o
 núcleo SHALL certificar os níveis **1** (inscrito na trilha e primeira atividade realizada), **2**
-(um terço das missões obrigatórias desbloqueadas) e **4** (todas as obrigatórias desbloqueadas e
-ao menos um Resultado com mérito extra por auxílio aos colegas). Nível conquistado SHALL **nunca
+(um terço das missões obrigatórias desbloqueadas), **4** (todas as obrigatórias desbloqueadas e
+ao menos um Resultado com mérito extra por auxílio aos colegas) e **5 — Mestre Aprendiz** (a
+criação original da trilha validada pelo Mestre autor). Nível conquistado SHALL **nunca
 regredir**. (`RF-01-21`, 11 §6)
 
 #### Scenario: Primeira atividade realizada alcança o nível 1
@@ -54,12 +62,18 @@ regredir**. (`RF-01-21`, 11 §6)
 - **WHEN** um Guerreiro(a) já certificado num nível deixa de atender ao critério que o levou lá
 - **THEN** o núcleo mantém o nível já certificado
 
+#### Scenario: Criação original validada alcança o nível 5
+
+- **WHEN** o Mestre autor da trilha valida a criação original do Guerreiro(a) naquela trilha
+- **THEN** o núcleo certifica o nível 5 — Mestre Aprendiz — naquela trilha
+
 ### Requirement: Badge é conquistado por trilha ou por poder, nunca global
 
 O núcleo SHALL conceder **badge** sempre vinculado a uma trilha ou a um poder, nunca de forma
 global (11 §7). Nesta capacidade o núcleo SHALL conceder o **badge de nível** a cada nível
-certificado e o **badge de valores/causas** a Resultado de atividade de natureza "valores e
-temas transversais". O badge de conquista **Guardião do Acervo** não nasce de Resultado — ele
+certificado, o **badge de valores/causas** a Resultado de atividade de natureza "valores e temas
+transversais" e o **badge de autoria** a cada criação original validada pelo Mestre autor. O
+badge de conquista **Guardião do Acervo** não nasce de Resultado nem de Criação Original — ele
 depende de encontro presencial identificável (`Aula/Agenda`) — e fica para a fatia que o
 entregar. (`RF-01-21`, 11 §7)
 
@@ -72,3 +86,8 @@ entregar. (`RF-01-21`, 11 §7)
 
 - **WHEN** o Guerreiro(a) tem Resultado de atividade de natureza "valores e temas transversais"
 - **THEN** o núcleo concede o badge de valores/causas correspondente à trilha ou ao poder
+
+#### Scenario: Badge de autoria concedido ao validar a criação original
+
+- **WHEN** o Mestre autor da trilha valida a criação original do Guerreiro(a)
+- **THEN** o núcleo concede o badge de autoria correspondente àquela trilha
