@@ -10,7 +10,10 @@ from nucleo.configuracao import obter_configuracao
 from nucleo.consentimentos import modelo as modelo_consentimentos  # noqa: F401
 from nucleo.personas import modelo as modelo_personas  # noqa: F401
 from nucleo.poderes import modelo as modelo_poderes  # noqa: F401
+from nucleo.ponto_extra import modelo as modelo_ponto_extra  # noqa: F401
+from nucleo.pontuacao import modelo as modelo_pontuacao  # noqa: F401
 from nucleo.responsaveis import modelo as modelo_responsaveis  # noqa: F401
+from nucleo.resultados import modelo as modelo_resultados  # noqa: F401
 from nucleo.sessoes import modelo as modelo_sessoes  # noqa: F401
 from nucleo.trilhas import modelo as modelo_trilhas  # noqa: F401
 

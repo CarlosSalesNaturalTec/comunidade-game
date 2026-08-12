@@ -39,7 +39,14 @@ from nucleo.sessoes.modelo import ComoAutenticou, Sessao
 from nucleo.sessoes.token import calcular_resumo as calcular_resumo_do_token
 from nucleo.sessoes.token import gerar_token
 from nucleo.tempo import DataHoraComFuso
-from nucleo.trilhas.modelo import Missao, SituacaoDaTrilha, Trilha
+from nucleo.trilhas.modelo import (
+    Atividade,
+    FormatoDeAtividade,
+    Missao,
+    ModalidadeDeAtividade,
+    SituacaoDaTrilha,
+    Trilha,
+)
 
 DSN_DE_TESTE = os.environ.get(
     "CG_DSN_BANCO_TESTE",
@@ -445,6 +452,33 @@ def criar_missao(sessao):
         sessao.commit()
         sessao.refresh(missao)
         return missao
+
+    return _criar
+
+
+@pytest.fixture
+def criar_atividade(sessao):
+    def _criar(
+        missao: Missao,
+        autor: Persona,
+        modalidade: ModalidadeDeAtividade = ModalidadeDeAtividade.individual,
+        formato: FormatoDeAtividade = FormatoDeAtividade.presencial,
+        natureza: str = "construcao",
+        producao_esperada: str = "Produção de teste.",
+    ) -> Atividade:
+        atividade = Atividade(
+            missao_id=missao.id,
+            modalidade=modalidade,
+            formato=formato,
+            natureza=natureza,
+            producao_esperada=producao_esperada,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(atividade)
+        sessao.commit()
+        sessao.refresh(atividade)
+        return atividade
 
     return _criar
 

@@ -353,6 +353,10 @@ condenaria quem entra no meio do ciclo, contra a dinâmica assíncrona dos encon
 **Só a missão obrigatória conta no percurso.** A opcional pontua e pode render badge, mas fica
 fora do denominador — quem faz o mínimo não trava, e quem faz tudo ganha por ter feito.
 
+**A fração arredonda para cima.** Quando o total de obrigatórias não divide exato por 3, o
+limiar mínimo de missões desbloqueadas é o teto da fração — ex.: 4 obrigatórias exigem 2 para
+o nível 2. Garante que cada nível sempre exija progresso real, mesmo com poucas missões.
+
 **Nível conquistado não regride**: série que se interrompe depois, ou pontuação negativa
 lançada em seguida, não derrubam o nível já alcançado.
 

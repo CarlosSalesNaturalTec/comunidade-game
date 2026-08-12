@@ -1,0 +1,403 @@
+from datetime import UTC, datetime
+
+import pytest
+from sqlalchemy import text
+from sqlalchemy.exc import DBAPIError
+
+from nucleo.erros import DebitoDePontoRegularRecusado, ErroDeValidacao
+from nucleo.personas.modelo import Papel
+from nucleo.pontuacao.modelo import Badge, Nivel, PontoRegular, TipoDeBadge
+from nucleo.pontuacao.regra import creditar_ponto_regular
+from nucleo.resultados.modelo import DesfechoDoResultado, Resultado
+from nucleo.resultados.regra import registrar_resultado
+from nucleo.trilhas.modelo import FormatoDeAtividade, ModalidadeDeAtividade
+
+MOMENTO_DO_FATO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
+
+
+def _lancar(sessao, *, mestre, guerreiro, missao, desfecho=DesfechoDoResultado.realizada, **kwargs):
+    from nucleo.trilhas.regra import criar_atividade
+
+    atividade = criar_atividade(
+        sessao,
+        operador=mestre,
+        missao=missao,
+        modalidade=kwargs.pop("modalidade", ModalidadeDeAtividade.individual),
+        formato=FormatoDeAtividade.presencial,
+        natureza=kwargs.pop("natureza", "construcao"),
+        producao_esperada="Produção esperada.",
+    )
+    sessao.commit()
+    resultado = registrar_resultado(
+        sessao,
+        operador=mestre,
+        guerreiro_id=guerreiro.id,
+        atividade=atividade,
+        momento_do_fato=MOMENTO_DO_FATO,
+        producao="Produção do Guerreiro(a).",
+        desfecho=desfecho,
+    )
+    sessao.commit()
+    return resultado
+
+
+def test_resultado_realizada_credita_o_valor_base_pela_modalidade(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    _lancar(
+        sessao,
+        mestre=mestre,
+        guerreiro=guerreiro,
+        missao=missao,
+        modalidade=ModalidadeDeAtividade.individual,
+    )
+
+    conta = (
+        sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).one()
+    )
+    assert conta.total == 10
+
+
+def test_resultado_em_equipe_com_familiar_credita_vinte(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    _lancar(
+        sessao,
+        mestre=mestre,
+        guerreiro=guerreiro,
+        missao=missao,
+        modalidade=ModalidadeDeAtividade.em_equipe_com_familiar,
+    )
+
+    conta = (
+        sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).one()
+    )
+    assert conta.total == 20
+
+
+def test_resultado_realizada_com_merito_credita_o_valor_base_mais_cinco(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    _lancar(
+        sessao,
+        mestre=mestre,
+        guerreiro=guerreiro,
+        missao=missao,
+        desfecho=DesfechoDoResultado.realizada_com_merito,
+    )
+
+    conta = (
+        sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).one()
+    )
+    assert conta.total == 15
+
+
+def test_resultado_merito_extra_por_auxilio_credita_o_valor_base_mais_dez(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    _lancar(
+        sessao,
+        mestre=mestre,
+        guerreiro=guerreiro,
+        missao=missao,
+        desfecho=DesfechoDoResultado.merito_extra_por_auxilio,
+    )
+
+    conta = (
+        sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).one()
+    )
+    assert conta.total == 20
+
+
+def test_credito_de_ponto_regular_com_valor_nao_positivo_e_recusado(
+    sessao, criar_persona, criar_trilha
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=0)
+    assert excinfo.value.campo == "valor"
+    assert sessao.query(PontoRegular).count() == 0
+
+
+def test_ponto_regular_nunca_e_debitado_pelo_orm(sessao, criar_persona, criar_trilha):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+
+    conta = creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=10)
+    sessao.commit()
+
+    conta.total = 5
+    with pytest.raises(DebitoDePontoRegularRecusado):
+        sessao.commit()
+    sessao.rollback()
+
+    conta_intacta = sessao.get(PontoRegular, conta.id)
+    assert conta_intacta.total == 10
+
+
+def test_ponto_regular_recusa_debito_e_remocao_direto_no_banco(
+    engine, sessao, criar_persona, criar_trilha
+):
+    """Fora do ORM — direto no banco — o gatilho da migração recusa também
+    (`RF-01-57`, `RN-01-38`, mesmo padrão de `RN-01-12`)."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+
+    conta = creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=10)
+    sessao.commit()
+
+    with engine.connect() as conexao, pytest.raises(DBAPIError):
+        conexao.execute(
+            text("UPDATE ponto_regular SET total = 5 WHERE id = :id"), {"id": str(conta.id)}
+        )
+        conexao.commit()
+
+    with engine.connect() as conexao, pytest.raises(DBAPIError):
+        conexao.execute(text("DELETE FROM ponto_regular WHERE id = :id"), {"id": str(conta.id)})
+        conexao.commit()
+
+    conta_intacta = sessao.get(PontoRegular, conta.id)
+    assert conta_intacta is not None
+    assert conta_intacta.total == 10
+
+
+def test_primeira_atividade_realizada_certifica_nivel_1(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """Missão opcional: só o nível 1 entra em jogo, sem a trilha ter
+    obrigatória para também disparar o nível 2 nesta única missão."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre, obrigatoria=False)
+
+    _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missao)
+
+    nivel = sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).one()
+    assert nivel.valor == 1
+
+
+def test_um_terco_das_obrigatorias_desbloqueadas_certifica_nivel_2(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """Quatro obrigatórias, arredondando 1/3 para cima: exige duas
+    concluídas — uma só basta para o nível 1, não para o nível 2."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missoes = [
+        criar_missao(trilha, mestre, posicao=posicao, obrigatoria=True) for posicao in range(1, 5)
+    ]
+
+    _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missoes[0])
+    niveis = {
+        n.valor
+        for n in sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id)
+    }
+    assert niveis == {1}
+
+    _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missoes[1])
+    niveis = {
+        n.valor
+        for n in sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id)
+    }
+    assert niveis == {1, 2}
+
+
+def test_missao_opcional_nao_conta_para_o_nivel_2(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """Só a missão obrigatória conta no percurso (11 §6): completar as
+    opcionais não aproxima do limiar de nível 2."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    obrigatorias = [
+        criar_missao(trilha, mestre, posicao=posicao, obrigatoria=True) for posicao in range(1, 5)
+    ]
+    opcionais = [
+        criar_missao(trilha, mestre, posicao=posicao, obrigatoria=False) for posicao in range(5, 8)
+    ]
+
+    _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=obrigatorias[0])
+    for opcional in opcionais:
+        _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=opcional)
+
+    niveis = {
+        n.valor
+        for n in sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id)
+    }
+    assert niveis == {1}
+
+
+def test_todas_obrigatorias_mais_merito_de_auxilio_certificam_nivel_4(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missoes = [
+        criar_missao(trilha, mestre, posicao=posicao, obrigatoria=True) for posicao in range(1, 3)
+    ]
+
+    _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missoes[0])
+    niveis = {
+        n.valor
+        for n in sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id)
+    }
+    assert 4 not in niveis
+
+    _lancar(
+        sessao,
+        mestre=mestre,
+        guerreiro=guerreiro,
+        missao=missoes[1],
+        desfecho=DesfechoDoResultado.merito_extra_por_auxilio,
+    )
+    niveis = {
+        n.valor
+        for n in sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id)
+    }
+    assert niveis == {1, 2, 4}
+
+
+def test_todas_obrigatorias_sem_merito_de_auxilio_nao_certifica_nivel_4(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missoes = [
+        criar_missao(trilha, mestre, posicao=posicao, obrigatoria=True) for posicao in range(1, 3)
+    ]
+
+    for missao in missoes:
+        _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missao)
+
+    niveis = {
+        n.valor
+        for n in sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id)
+    }
+    assert 4 not in niveis
+
+
+def test_nivel_certificado_nao_regride(sessao, criar_persona, criar_trilha, criar_missao):
+    """Nível conquistado nunca regride, mesmo que o critério deixe de
+    valer depois (`RF-01-21`, 11 §6): o registro nasce e nunca é apagado."""
+    from nucleo.pontuacao.regra import avaliar_niveis
+
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    resultado = _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missao)
+    assert (
+        sessao.query(Nivel)
+        .filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=1)
+        .first()
+        is not None
+    )
+
+    sessao.query(Resultado).filter_by(id=resultado.id).delete()
+    sessao.commit()
+
+    avaliar_niveis(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id)
+    sessao.commit()
+
+    nivel_ainda_certificado = (
+        sessao.query(Nivel)
+        .filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=1)
+        .first()
+    )
+    assert nivel_ainda_certificado is not None
+
+
+def test_badge_de_nivel_concedido_ao_certificar_um_nivel(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre, obrigatoria=False)
+
+    _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missao)
+
+    badge = (
+        sessao.query(Badge)
+        .filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id, tipo=TipoDeBadge.de_nivel)
+        .one()
+    )
+    assert badge.trilha_id == trilha.id
+    assert badge.poder_id is None
+
+
+def test_badge_de_valores_e_causas_concedido_por_natureza_da_atividade(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    _lancar(
+        sessao,
+        mestre=mestre,
+        guerreiro=guerreiro,
+        missao=missao,
+        natureza="Valores e Temas Transversais",
+    )
+
+    badge = (
+        sessao.query(Badge)
+        .filter_by(
+            guerreiro_id=guerreiro.id, trilha_id=trilha.id, tipo=TipoDeBadge.de_valores_e_causas
+        )
+        .one()
+    )
+    assert badge.trilha_id == trilha.id
+
+
+def test_atividade_de_outra_natureza_nao_concede_badge_de_valores_e_causas(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missao, natureza="construcao")
+
+    assert (
+        sessao.query(Badge)
+        .filter_by(
+            guerreiro_id=guerreiro.id, trilha_id=trilha.id, tipo=TipoDeBadge.de_valores_e_causas
+        )
+        .first()
+        is None
+    )
