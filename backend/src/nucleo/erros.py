@@ -119,6 +119,18 @@ class AcessoAoTemplateImutavel(ErroDeAplicacao):
     mensagem = "Registro de acesso ao template biométrico é somente inserção."
 
 
+class DebitoDePontoRegularRecusado(ErroDeAplicacao):
+    status_code = 409
+    codigo = "debito_de_ponto_regular_recusado"
+    mensagem = "Ponto regular nunca é debitado, em nenhuma operação."
+
+
+class DebitoDePontoExtraRecusado(ErroDeAplicacao):
+    status_code = 409
+    codigo = "debito_de_ponto_extra_recusado"
+    mensagem = "O acumulado de ponto extra só cresce, em nenhuma operação decresce."
+
+
 class AutenticacaoBiometricaInvalida(ErroDeAplicacao):
     status_code = 401
     codigo = "autenticacao_biometrica_invalida"
