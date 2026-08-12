@@ -151,9 +151,9 @@ Por que assim:
 
 Consequências operacionais: o **onboarding roda continuamente**; o **App 01** é o que sustenta
 a autonomia na aula presencial, dizendo a cada equipe qual é a próxima missão sem depender do
-Mestre — com **um aparelho por equipe**, dois no mínimo; e o **painel do dia (App 03)** é o
-instrumento de controle do encontro. A **App 05** atende as **aulas remotas** e o uso cotidiano
-fora do encontro.
+Mestre — com **um aparelho por equipe**, em quantidade que varia a cada encontro; e o **painel
+do dia (App 03)** é o instrumento de controle do encontro. A **App 05** atende as **aulas
+remotas** e o uso cotidiano fora do encontro.
 
 ### Momentos do encontro
 
@@ -199,9 +199,10 @@ automaticamente.
    **quatro alternativas e sem tempo por pergunta** — o ritmo é de quem conduz a partida.
 3. Ao dar o _start_, **uma pergunta é exibida simultaneamente em todos os dispositivos logados
    na aula**.
-4. Cada equipe **se consulta internamente** e responde por **um único aparelho, vinculado à
-   equipe** na abertura da partida — a resposta vale para todos os integrantes. Equipe sem
-   aparelho responde pelo aparelho do Mestre.
+4. Cada equipe **se consulta internamente** e responde por **um único aparelho** — a resposta
+   vale para todos os integrantes. Equipe sem aparelho responde pelo aparelho do Mestre. **A
+   plataforma não controla aparelhos no Ciclo 01**: a quantidade varia a cada encontro, e a
+   resposta é registrada pela **equipe**, nunca pelo aparelho de onde veio.
 5. **Toda equipe que acerta pontua**, e a primeira a acertar recebe um ponto de bônus. O
    desempate é pela ordem de chegada no servidor, e o Mestre pode **anular a pergunta** havendo
    contestação — o ritmo e o critério são de quem conduz.
