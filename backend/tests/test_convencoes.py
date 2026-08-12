@@ -130,9 +130,12 @@ def test_openapi_responde_sem_chave(cliente):
 
 
 def test_openapi_nao_serve_dado_de_dominio(cliente):
+    """ "guerreiro" é um valor legítimo do enum `Papel`, contrato desta fatia
+    (RF-01-19) — o que a rota nunca serve é entidade de domínio de fatia
+    futura."""
     schema = cliente.get("/openapi.json").json()
     texto = str(schema).lower()
-    for termo in ("guerreiro", "comunidade virtual", "aporte", "território"):
+    for termo in ("comunidade virtual", "aporte", "território"):
         assert termo not in texto
 
 

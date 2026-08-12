@@ -22,10 +22,18 @@ class ParametrosDeListagem:
     filtros: dict[str, str]
 
 
-def contrato_de_listagem(filtros_do_dominio: frozenset[str] = frozenset()):
+def contrato_de_listagem(
+    filtros_do_dominio: frozenset[str] = frozenset(),
+    *,
+    filtro_comunidade_obrigatorio: bool = False,
+):
     """Fábrica de dependência de listagem: cada rota declara os filtros próprios
     do seu domínio, além dos universais de comunidade, período e persona.
     Parâmetro fora dessa lista é recusado com 422 (RF-01-28), nunca ignorado.
+
+    Rota de dado de comunidade declara `filtro_comunidade_obrigatorio=True`
+    (RF-01-18): faltando o filtro, o núcleo recusa com 422 em vez de
+    devolver dado de todas as comunidades misturado.
     """
     permitidos = PARAMETROS_DE_PAGINACAO | FILTROS_UNIVERSAIS | filtros_do_dominio
 
@@ -40,6 +48,11 @@ def contrato_de_listagem(filtros_do_dominio: frozenset[str] = frozenset()):
             raise ParametroDesconhecido(
                 mensagem=f"O parâmetro '{desconhecido}' não é aceito por esta rota.",
                 campo=desconhecido,
+            )
+
+        if filtro_comunidade_obrigatorio and not bruto.get("comunidade"):
+            raise ErroDeValidacao(
+                mensagem="Esta consulta exige o filtro de comunidade.", campo="comunidade"
             )
 
         tamanho_str = bruto.pop("tamanho", None)

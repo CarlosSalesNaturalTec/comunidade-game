@@ -40,14 +40,18 @@ def test_rota_publica_nao_atribui_persona(cliente, criar_chave):
     assert "persona" not in resposta.json()
 
 
-def test_rota_autenticada_exige_as_duas_coisas(cliente, criar_chave):
+def test_rota_autenticada_exige_as_duas_coisas(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
     chave, _ = criar_chave()
+    persona = criar_persona()
+    token, _ = criar_sessao_de_teste(persona)
 
     sem_chave_nem_persona = cliente.get("/v1/autenticada")
     so_com_chave = cliente.get("/v1/autenticada", headers={"X-Chave-Aplicacao": chave})
     com_as_duas = cliente.get(
         "/v1/autenticada",
-        headers={"X-Chave-Aplicacao": chave, "Authorization": "Bearer sessao-de-teste"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
     )
 
     assert sem_chave_nem_persona.status_code == 401
