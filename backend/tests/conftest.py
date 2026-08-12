@@ -1,3 +1,4 @@
+import base64
 import os
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
@@ -11,6 +12,7 @@ from sqlalchemy.orm import sessionmaker
 
 from nucleo.autenticacao import exigir_persona
 from nucleo.banco import Base, obter_sessao
+from nucleo.biometria.cifra import cifrar_descritor
 from nucleo.chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from nucleo.chaves.modelo import ChaveDeAplicacao, NaturezaDaChave, SituacaoDaChave
 from nucleo.chaves.segredo import calcular_resumo, gerar_segredo, montar_chave_completa
@@ -21,7 +23,14 @@ from nucleo.consentimentos.modelo import (
     OrigemDoConsentimento,
 )
 from nucleo.paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
-from nucleo.personas.modelo import ComunidadeVirtual, Credencial, Papel, Persona, TipoDeCredencial
+from nucleo.personas.modelo import (
+    ComunidadeVirtual,
+    Credencial,
+    Nick,
+    Papel,
+    Persona,
+    TipoDeCredencial,
+)
 from nucleo.personas.senha import calcular_hash
 from nucleo.principal import criar_app, incluir_roteador_de_dados
 from nucleo.responsaveis.modelo import VinculoResponsavel
@@ -34,6 +43,11 @@ DSN_DE_TESTE = os.environ.get(
     "CG_DSN_BANCO_TESTE",
     "postgresql+psycopg://comunidade:comunidade@localhost:5432/comunidade_game_teste",
 )
+
+# Dimensão pequena para os testes ficarem legíveis; chave fixa para que a
+# cifra e a decifra sejam determinísticas dentro da suíte.
+DIMENSAO_DE_TESTE_DO_DESCRITOR = 4
+CHAVE_DE_CIFRAGEM_DE_TESTE = base64.urlsafe_b64encode(b"0" * 32).decode()
 
 
 @pytest.fixture(scope="session")
@@ -67,6 +81,10 @@ def configuracao():
         dsn_banco=DSN_DE_TESTE,
         identidade_fundador="fundador-de-teste@example.org",
         sessao_adulto_duracao=timedelta(hours=8),
+        sessao_guerreiro_duracao=timedelta(hours=4),
+        biometria_dimensao_do_descritor=DIMENSAO_DE_TESTE_DO_DESCRITOR,
+        biometria_limiar_de_comparacao=0.5,
+        biometria_chave_de_cifragem=CHAVE_DE_CIFRAGEM_DE_TESTE,
         argon2_memoria_kib=8,
         argon2_iteracoes=1,
         argon2_paralelismo=1,
@@ -119,6 +137,7 @@ def _montar_roteador_de_teste() -> APIRouter:
 
 @pytest.fixture
 def app(sessao, configuracao):
+    from nucleo.biometria.rotas import roteador as roteador_de_biometria
     from nucleo.personas.rotas import roteador as roteador_de_personas
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
     from nucleo.sessoes.rotas import roteador as roteador_de_sessoes
@@ -130,6 +149,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_personas)
     incluir_roteador_de_dados(aplicacao, roteador_de_sessoes)
     incluir_roteador_de_dados(aplicacao, roteador_de_responsaveis)
+    incluir_roteador_de_dados(aplicacao, roteador_de_biometria)
     return aplicacao
 
 
@@ -313,5 +333,58 @@ def criar_consentimento(sessao):
         sessao.commit()
         sessao.refresh(consentimento)
         return consentimento
+
+    return _criar
+
+
+@pytest.fixture
+def criar_nick(sessao):
+    def _criar(persona: Persona, valor: str) -> Nick:
+        registro = Nick(persona_id=persona.id, valor=valor)
+        sessao.add(registro)
+        sessao.commit()
+        sessao.refresh(registro)
+        return registro
+
+    return _criar
+
+
+@pytest.fixture
+def conceder_consentimento_biometrico(criar_consentimento):
+    """Atalho para o consentimento que `RN-01-17` exige antes da gravação do
+    _template_ — mesma `tipo` que `nucleo.biometria.regra` usa na consulta."""
+
+    def _conceder(responsavel: Persona, guerreiro: Persona, **kwargs) -> Consentimento:
+        from nucleo.biometria.regra import TIPO_DE_CONSENTIMENTO_BIOMETRIA
+
+        kwargs.setdefault("decisao", DecisaoDeConsentimento.concede)
+        return criar_consentimento(
+            responsavel, guerreiro, tipo=TIPO_DE_CONSENTIMENTO_BIOMETRIA, **kwargs
+        )
+
+    return _conceder
+
+
+@pytest.fixture
+def criar_template_biometrico(sessao, configuracao):
+    def _criar(
+        guerreiro: Persona,
+        descritor: list[float] | None = None,
+        criada_por: Persona | None = None,
+        ativa: bool = True,
+    ) -> Credencial:
+        valor = descritor or [0.1 * (i + 1) for i in range(DIMENSAO_DE_TESTE_DO_DESCRITOR)]
+        credencial = Credencial(
+            persona_id=guerreiro.id,
+            tipo=TipoDeCredencial.biometria,
+            identificador=str(guerreiro.id),
+            segredo=cifrar_descritor(valor, configuracao),
+            criada_por=criada_por.id if criada_por is not None else None,
+            ativa=ativa,
+        )
+        sessao.add(credencial)
+        sessao.commit()
+        sessao.refresh(credencial)
+        return credencial
 
     return _criar

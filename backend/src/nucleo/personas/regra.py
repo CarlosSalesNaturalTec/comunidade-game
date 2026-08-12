@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy.orm import Session
 
 from ..erros import ErroDeValidacao, PermissaoNegada
-from .modelo import Papel, Persona
+from .modelo import Nick, Papel, Persona
 
 # Quem cadastra quem (RN-01-01, RN-01-02). Guerreiro(a) tem autocadastro:
 # frozenset vazio significa "nenhum autor exigido".
@@ -22,11 +22,16 @@ def criar_persona(
     papel: Papel | None,
     criada_por: Persona | None,
     comunidade_virtual_id: uuid.UUID | None = None,
+    nick: str | None = None,
     permitir_semeadura_de_admin: bool = False,
 ) -> Persona:
     """Cria a persona aplicando RN-01-01, RN-01-02 e RN-01-05. Login nunca
     chama esta função (`RN-01-04`) — quem chama é quem cadastra: Admin,
     Mestre ou, no caso do Guerreiro(a), o próprio autocadastro.
+
+    O nick é exigido só do Guerreiro(a) (`RF-01-19`); a unicidade é conferida
+    antes de qualquer gravação, para que a recusa nunca deixe persona
+    nem nick a meio caminho (`RN-01-30`).
     """
     if papel is None:
         raise ErroDeValidacao(mensagem="Toda persona precisa declarar o papel.", campo="papel")
@@ -46,6 +51,12 @@ def criar_persona(
             campo="comunidade_virtual_id",
         )
 
+    if papel == Papel.guerreiro:
+        if not nick or not nick.strip():
+            raise ErroDeValidacao(mensagem="Guerreiro(a) precisa de nick.", campo="nick")
+        if sessao.query(Nick).filter_by(valor=nick).first() is not None:
+            raise ErroDeValidacao(mensagem="Este nick já está em uso.", campo="nick")
+
     persona = Persona(
         papel=papel,
         comunidade_virtual_id=comunidade_virtual_id if papel == Papel.guerreiro else None,
@@ -53,6 +64,11 @@ def criar_persona(
     )
     sessao.add(persona)
     sessao.flush()
+
+    if nick is not None:
+        sessao.add(Nick(persona_id=persona.id, valor=nick))
+        sessao.flush()
+
     return persona
 
 

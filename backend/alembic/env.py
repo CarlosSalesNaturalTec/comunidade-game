@@ -4,6 +4,7 @@ from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 from nucleo.banco import Base
+from nucleo.biometria import modelo as modelo_biometria  # noqa: F401
 from nucleo.chaves import modelo  # noqa: F401 — registra as tabelas em Base.metadata
 from nucleo.configuracao import obter_configuracao
 from nucleo.consentimentos import modelo as modelo_consentimentos  # noqa: F401

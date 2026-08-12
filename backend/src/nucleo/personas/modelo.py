@@ -2,7 +2,18 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, Index, String, Uuid, func, text
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Index,
+    String,
+    Text,
+    Uuid,
+    func,
+    text,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..banco import Base
@@ -73,6 +84,28 @@ class Persona(Base):
     )
 
 
+class Nick(Base):
+    """Tabela própria, não coluna de `persona` nem de satélite de papel: é o
+    que dá à unicidade um único índice a conferir, alcançando qualquer papel
+    que venha a ter nick — Guerreiro(a) nesta fatia, Apoiador em fatia futura
+    (`RF-01-19`, `RN-01-22`, `RN-01-30`, design — decisões).
+    """
+
+    __tablename__ = "nick"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    persona_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("persona.id"), nullable=False)
+    valor: Mapped[str] = mapped_column(String(64), nullable=False)
+    criado_em: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    __table_args__ = (
+        Index("uq_nick_valor", "valor", unique=True),
+        Index("uq_nick_persona_id", "persona_id", unique=True),
+    )
+
+
 class TipoDeCredencial(enum.StrEnum):
     biometria = "biometria"
     login_social = "login_social"
@@ -80,8 +113,10 @@ class TipoDeCredencial(enum.StrEnum):
 
 
 class Credencial(Base):
-    """Atributos do PRD-01 §8. O tipo `biometria` nasce aqui na estrutura,
-    mas só é usado a partir da fatia 4 (design — decisões).
+    """Atributos do PRD-01 §8. O tipo `biometria`, usado a partir desta fatia,
+    guarda o _template_ cifrado e codificado em `segredo` — maior que o hash
+    de senha que a coluna foi dimensionada para caber, por isso `Text` e não
+    `String` (design — decisões).
     """
 
     __tablename__ = "credencial"
@@ -92,7 +127,7 @@ class Credencial(Base):
         Enum(TipoDeCredencial, native_enum=False, length=32), nullable=False
     )
     identificador: Mapped[str] = mapped_column(String(256), nullable=False)
-    segredo: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    segredo: Mapped[str | None] = mapped_column(Text, nullable=True)
     criada_por: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("persona.id"), nullable=True
     )

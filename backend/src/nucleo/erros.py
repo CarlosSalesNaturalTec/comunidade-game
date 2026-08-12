@@ -111,3 +111,15 @@ class ConsentimentoImutavel(ErroDeAplicacao):
     status_code = 409
     codigo = "consentimento_imutavel"
     mensagem = "Consentimento é somente inserção; revogar grava um registro novo."
+
+
+class AcessoAoTemplateImutavel(ErroDeAplicacao):
+    status_code = 409
+    codigo = "acesso_ao_template_imutavel"
+    mensagem = "Registro de acesso ao template biométrico é somente inserção."
+
+
+class AutenticacaoBiometricaInvalida(ErroDeAplicacao):
+    status_code = 401
+    codigo = "autenticacao_biometrica_invalida"
+    mensagem = "Nick ou imagem não reconhecidos. Peça a um Mestre para confirmar sua entrada."
