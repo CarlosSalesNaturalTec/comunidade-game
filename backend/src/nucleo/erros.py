@@ -32,6 +32,45 @@ class SessaoAusente(ErroDeAplicacao):
     mensagem = "Esta rota exige uma sessão de persona autenticada."
 
 
+class SessaoInvalida(ErroDeAplicacao):
+    status_code = 401
+    codigo = "sessao_invalida"
+    mensagem = "Sessão inexistente, encerrada ou expirada."
+
+
+class TrocaDeSenhaPendente(ErroDeAplicacao):
+    status_code = 403
+    codigo = "troca_de_senha_pendente"
+    mensagem = "Troque a senha provisória antes de continuar."
+
+
+class PermissaoNegada(ErroDeAplicacao):
+    status_code = 403
+    codigo = "permissao_negada"
+    mensagem = "O papel desta persona não autoriza esta operação."
+
+
+class LoginSemCadastro(ErroDeAplicacao):
+    status_code = 403
+    codigo = "login_sem_cadastro"
+    mensagem = (
+        "Esta conta não corresponde a nenhum cadastro. Quem quer ser Mestre ou "
+        "Apoiador pode solicitar participação pelo formulário da vitrine."
+    )
+
+
+class CredencialInvalida(ErroDeAplicacao):
+    status_code = 401
+    codigo = "credencial_invalida"
+    mensagem = "Usuário ou senha inválidos."
+
+
+class ServicoIndisponivel(ErroDeAplicacao):
+    status_code = 503
+    codigo = "servico_indisponivel"
+    mensagem = "Serviço de verificação de identidade indisponível. Tente novamente em instantes."
+
+
 class NaoEncontrado(ErroDeAplicacao):
     status_code = 404
     codigo = "nao_encontrado"

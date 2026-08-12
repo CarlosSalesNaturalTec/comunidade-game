@@ -161,6 +161,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-08` | Mestre ou Admin recadastra a imagem de referência do Guerreiro(a), com registro de quem recadastrou                                                                                             | essencial  |
 | `RF-01-09` | Adulto autentica por login social vinculado a cadastro existente                                                                                                                                | essencial  |
 | `RF-01-10` | Login social ou usuário sem cadastro correspondente é recusado, sem criar persona                                                                                                               | essencial  |
+| `RF-01-61` | Núcleo semeia na implantação a persona Admin do fundador, com a identidade social declarada, sem passar por outro Admin                                                                         | essencial  |
 | `RF-01-11` | Admin ou Mestre cria credencial de usuário e senha provisória para adulto sem conta social                                                                                                      | essencial  |
 | `RF-01-12` | Credencial provisória exige troca de senha no primeiro acesso, antes de qualquer outra operação                                                                                                 | essencial  |
 | `RF-01-13` | Admin ou Mestre cadastra responsável e vincula a ele quem já está cadastrado, com grau de parentesco                                                                                            | essencial  |
@@ -484,6 +485,7 @@ e o dos desafios de desbloqueio de cada trilha.
 | Criança sem o responsável: onboarding sem imagem, e cadastro biométrico após a aprovação dele        | 03 §§3.2, 3.3     | Já decididos                                 |
 | Mestre cadastra e vincula responsável de qualquer Guerreiro(a)                                       | 02 §1, 03 §11     | Já decididos                                 |
 | A imagem do onboarding identifica o Guerreiro(a): presença **e** autenticação                        | 03 §§3.2, 3.3, 12 | Já decididos                                 |
+| Admin fundador semeado na implantação, único cadastro que não passa por outro Admin                  | 02 §1             | Semeadura do primeiro Admin                  |
 | Adultos entram por login social                                                                      | 03 §1.1           | Já decididos                                 |
 | Credencial de usuário e senha provisória, criada por Admin ou Mestre, trocada no primeiro acesso     | 03 §1.1           | Já decididos                                 |
 | Responsável tem login próprio, vinculado a um ou mais Guerreiros e Guerreiras                        | 03 §1.1           | Já decididos                                 |
@@ -523,6 +525,7 @@ e o dos desafios de desbloqueio de cada trilha.
 | `RF-01-02` e `RF-01-03` | 03 §1 (consulta sem login, escrita autenticada)  |
 | `RF-01-04` a `RF-01-08` | 03 §§1.1, 3.2 e 3.3 (nick e imagem, alternativa) |
 | `RF-01-09` a `RF-01-12` | 03 §1.1 (como o adulto entra)                    |
+| `RF-01-61`              | 02 §1 (o fundador é o primeiro Admin)            |
 | `RF-01-13` a `RF-01-15` | 02 §1 e 03 §§1.1, 5, 9, 11 (responsável)         |
 | `RF-01-16` e `RF-01-17` | 03 §§5, 11 (fronteira App 03 × App 09)           |
 | `RF-01-18`              | 03 §1 (instância única)                          |

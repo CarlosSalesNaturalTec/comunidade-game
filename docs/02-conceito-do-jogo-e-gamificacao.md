@@ -38,8 +38,9 @@ O Guerreiro(a) é a **única persona com autocadastro** na plataforma.
 Responsáveis pela operação da plataforma e pela logística dos eventos. Editam as seções
 institucionais, fazem os lançamentos de atividades e **cadastram Mestres e Apoiadores**.
 
-O **fundador é o primeiro Admin**. **Novos Admins são incluídos manualmente** por um Admin
-existente — não há autocadastro nem solicitação aberta de acesso administrativo.
+O **fundador é o primeiro Admin**, semeado na implantação junto com as chaves de aplicação — é
+o único cadastro que não passa por outro Admin. **Novos Admins são incluídos manualmente** por
+um Admin existente — não há autocadastro nem solicitação aberta de acesso administrativo.
 
 ### Mestres (persona secundária)
 
