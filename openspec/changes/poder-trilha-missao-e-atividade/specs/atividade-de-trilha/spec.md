@@ -1,0 +1,84 @@
+## Purpose
+
+A atividade é o que o Guerreiro(a) realiza para aprender, e é dela que nascem a realização e, mais
+tarde, o ponto. Esta capacidade cobre a atividade sempre pertencente a uma missão, a classificação
+nos três eixos ortogonais do documento 11 §4 e a exigência de que toda atividade peça produção do
+Guerreiro(a).
+
+## ADDED Requirements
+
+### Requirement: Toda atividade de trilha pertence a uma missão
+
+O núcleo SHALL manter a atividade de trilha pertencente a **exatamente uma** missão. Atividade sem
+missão SHALL ser recusada com **422**. A escrita SHALL ser restrita ao **Mestre autor** da trilha
+a que a missão pertence e a **Admin**, como vale para a trilha e para a missão; outro Mestre SHALL
+receber **403**. A atividade **avulsa, fora de trilha**, é cadastro da gestão e não é desta
+capacidade. (`RF-01-20`, `RF-01-16`, `RF-01-03`, PRD-01 §4, 11 §4)
+
+#### Scenario: Atividade criada dentro de uma missão
+
+- **WHEN** o Mestre autor cria uma atividade informando a missão a que ela pertence
+- **THEN** o núcleo grava a atividade naquela missão, com autoria, data e hora com fuso
+
+#### Scenario: Atividade sem missão é recusada
+
+- **WHEN** chega uma atividade de trilha sem missão
+- **THEN** o núcleo responde 422 indicando o campo em falta e nada é gravado
+
+#### Scenario: Mestre que não é o autor é recusado
+
+- **WHEN** um Mestre que não é o autor da trilha tenta criar atividade em uma missão dela
+- **THEN** o núcleo responde 403 e nada é gravado
+
+### Requirement: A atividade é classificada nos três eixos
+
+O núcleo SHALL exigir, em cada atividade, os três eixos do documento 11 §4: **modalidade**
+(individual, em equipe, em equipe com familiar), **formato** (presencial, on-line ou assíncrona) e
+**natureza**. Os três eixos SHALL ser **ortogonais** — qualquer combinação entre eles é válida. A
+**natureza** SHALL ser lista aberta, porque trilhas de outras áreas acrescentam naturezas novas;
+modalidade e formato SHALL ser fechados nos valores acima. Atividade sem modalidade ou sem formato
+SHALL ser recusada com **422**. (`RF-01-20`, `RF-09-70`, 11 §4)
+
+#### Scenario: Os eixos se combinam livremente
+
+- **WHEN** o Mestre autor cria uma atividade em equipe, presencial e de construção
+- **THEN** o núcleo aceita a combinação dos três eixos
+
+#### Scenario: Atividade sem modalidade é recusada
+
+- **WHEN** chega uma atividade sem modalidade declarada
+- **THEN** o núcleo responde 422 indicando o campo em falta e nada é gravado
+
+#### Scenario: Atividade sem formato é recusada
+
+- **WHEN** chega uma atividade sem formato declarado
+- **THEN** o núcleo responde 422 indicando o campo em falta e nada é gravado
+
+#### Scenario: Natureza nova é aceita
+
+- **WHEN** o Mestre autor cria uma atividade cuja natureza não está entre as do Ciclo 01
+- **THEN** o núcleo a aceita, porque a natureza é lista aberta
+
+#### Scenario: Modalidade fora dos valores previstos é recusada
+
+- **WHEN** chega uma atividade com modalidade que não é individual, em equipe nem em equipe com
+  familiar
+- **THEN** o núcleo responde 422 e nada é gravado
+
+### Requirement: Toda atividade exige produção do Guerreiro(a)
+
+O núcleo SHALL exigir, em cada atividade, a declaração do que o Guerreiro(a) **produz** —
+escrever, falar ou construir. Atividade sem produção declarada SHALL ser recusada com **422**:
+consumir conteúdo não conclui missão. Quem lança o resultado da produção é o Mestre, e a leitura
+automática dela é hipótese, nunca veredito — o resultado é de outra fatia. (`RF-01-20`,
+documento 99 §6 invariante 19, 02 §4, 11 §2.2)
+
+#### Scenario: Atividade com produção declarada
+
+- **WHEN** o Mestre autor cria uma atividade declarando o que o Guerreiro(a) produz
+- **THEN** o núcleo grava a atividade
+
+#### Scenario: Atividade sem produção é recusada
+
+- **WHEN** chega uma atividade sem a declaração de produção
+- **THEN** o núcleo responde 422 indicando o campo em falta e nada é gravado
