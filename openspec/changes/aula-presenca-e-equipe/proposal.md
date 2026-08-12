@@ -133,15 +133,17 @@ O que é do PRD-01 mas de outra fatia:
 
 ### Modified Capabilities
 
-- `permissoes-e-escopo-de-comunidade`: a matriz do PRD-01 §4 muda em duas células — o
-  Guerreiro(a) passa a escrever "as equipes que forma, a da aula e a da trilha", e o Mestre
-  ganha a homologação da equipe da trilha (`RF-01-16`, `RF-01-63`).
 - `criacao-original`: a criação original deixa de ser registro só do autor e passa a ser da
   equipe da trilha, com o papel de cada integrante (`RF-01-64`, `RN-01-13` preservado — o autor
   segue creditado por toda a vida do registro).
-- `pontos-niveis-e-badges`: os pontos e o badge de autoria da criação original passam a ser
-  creditados a cada integrante da equipe da trilha, e não só a quem entregou (`RF-01-21`,
+- `pontos-niveis-e-badges`: os pontos, o nível 5 e o badge de autoria da criação original passam
+  a alcançar cada integrante da equipe da trilha, e não só quem entregou (`RF-01-21`,
   `RF-01-64`).
+
+`permissoes-e-escopo-de-comunidade` **não** entra: o requisito dela é genérico — "conferir a
+matriz do PRD-01 §4 em toda operação" —, e a matriz é dado do PRD, não texto do spec. As duas
+células novas mudam o PRD, já atualizado, e quem escreve o quê na equipe está declarado na
+capability `equipe`.
 
 ## Impact
 
