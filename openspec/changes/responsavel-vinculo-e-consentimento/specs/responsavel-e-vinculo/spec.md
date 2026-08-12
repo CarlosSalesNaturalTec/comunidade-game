@@ -10,9 +10,10 @@ enxerga os seus, e só os seus.
 
 ### Requirement: Admin ou Mestre cadastra o responsável
 
-O núcleo SHALL permitir que um Admin ou um Mestre cadastre a persona de responsável. O responsável
-SHALL ser a única persona que o Mestre cadastra. O cadastro NEVER SHALL, por si só, dar ao
-responsável acesso a Guerreiro(a) algum — o que ele alcança vem do vínculo, não do cadastro.
+O núcleo SHALL permitir que um Admin ou um Mestre cadastre a persona de responsável. O
+responsável SHALL ser a única persona que o Mestre cadastra. O cadastro NEVER SHALL, por si só,
+dar ao responsável acesso a Guerreiro(a) algum — o que ele alcança vem do vínculo, não do
+cadastro.
 Persona de outro papel que tentar cadastrar responsável SHALL receber **403**. (`RF-01-13`,
 `RN-01-01`, PRD-01 §§4, 5.3, 9)
 
@@ -73,7 +74,8 @@ da criança acontece no onboarding e é o único caminho que a cria. (`RN-01-20`
 
 O núcleo SHALL recusar, com **422**, o vínculo que faria o mesmo Guerreiro(a) passar de **três**
 responsáveis vigentes. Os vínculos já existentes SHALL permanecer válidos, cada um com o seu grau
-de parentesco. (`RF-01-14`, `RN-01-19`, PRD-01 §§9, 12)
+de parentesco. A contagem SHALL considerar apenas os vínculos **vigentes**: vínculo encerrado
+NEVER SHALL ocupar vaga. (`RF-01-14`, `RN-01-19`, PRD-01 §§9, 12, documento 02 §1)
 
 #### Scenario: O quarto vínculo é recusado
 
@@ -85,6 +87,12 @@ de parentesco. (`RF-01-14`, `RN-01-19`, PRD-01 §§9, 12)
 
 - **WHEN** um terceiro responsável é vinculado a um Guerreiro(a) que tem dois vínculos vigentes
 - **THEN** o núcleo cria o vínculo
+
+#### Scenario: Vínculo encerrado abre vaga
+
+- **WHEN** um Guerreiro(a) tem três vínculos, um deles já encerrado, e um novo responsável é
+  vinculado a ele
+- **THEN** o núcleo cria o vínculo, porque só os vigentes ocupam vaga
 
 #### Scenario: O teto é por Guerreiro(a), não por responsável
 

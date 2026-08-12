@@ -56,13 +56,16 @@ no máximo três escritas na vida do registro.
 Alternativa descartada: contador desnormalizado em `persona` — duplicaria estado que a contagem
 já dá, e teria de ser mantido em toda mudança de vigência.
 
-### O teto conta vínculos vigentes
+### O teto conta vínculos vigentes, e o vínculo encerrado abre vaga
 
-`VinculoResponsavel` tem `início` e `fim` no PRD-01 §8, e `RN-01-19` fala em três responsáveis
-**vinculados**, enquanto o PRD-01 §12 fala nos três vínculos que "continuam válidos". A leitura
-aplicada é a literal: conta quem está vigente. O efeito prático nesta fatia é nulo — nada aqui
-encerra vínculo, porque não há rota para isso —, então a leitura só passa a valer quando o PRD-02
-trouxer a edição. Ver Open Questions.
+`VinculoResponsavel` tem `início` e `fim` no PRD-01 §8; `RN-01-19` fala em três responsáveis
+**vinculados**, o PRD-01 §12 nos três que "continuam válidos" e o documento 02 §1 diz que cada
+Guerreiro(a) **tem** no máximo três. A contagem é dos vigentes: encerrado um vínculo, a vaga fica
+livre para outro responsável. É a leitura literal dos três textos, confirmada pelo fundador — não
+é regra nova, e nenhum documento-fonte muda por ela.
+
+Nada nesta fatia encerra vínculo, porque o PRD-01 §9 não declara rota para isso e o PRD-13 §3.2
+põe a edição no PRD-02. A contagem já nasce correta para quando aquela rota chegar.
 
 ### O recorte por vínculo é dependência declarativa, como o filtro por comunidade
 
@@ -73,15 +76,15 @@ proposital que sejam **dois recortes independentes**: `RF-01-15` não é uma var
 comunidade, e a spec exige que a mesma comunidade não amplie o alcance de ninguém.
 
 Nesta fatia nenhuma rota do PRD-01 lê dado de Guerreiro(a), então a dependência nasce conferida
-por teste, como a autoria nasceu na fatia 2 sem a rota que a consulta. A primeira rota a declará-la
-é `GET /v1/eu/guerreiros`, do PRD-13.
+por teste, como a autoria nasceu na fatia 2 sem a rota que a consulta. A primeira rota a
+declará-la é `GET /v1/eu/guerreiros`, do PRD-13.
 
 ### O consentimento nasce como função de domínio, sem rota
 
 `registrar_consentimento` concentra as três invariantes — versão do termo obrigatória, vínculo
 vigente exigido e inserção sempre nova — em um lugar só. As rotas do PRD-04
-(`POST /v1/consentimentos`) e do PRD-13 (`POST /v1/eu/guerreiros/{id}/autorizacao`) a chamarão sem
-reimplementar nada. Espalhar as invariantes pelas duas aplicações seria repetir regra em dois
+(`POST /v1/consentimentos`) e do PRD-13 (`POST /v1/eu/guerreiros/{id}/autorizacao`) a chamarão
+sem reimplementar nada. Espalhar as invariantes pelas duas aplicações seria repetir regra em dois
 PRDs diferentes.
 
 ### `tipo` do consentimento fica aberto, com os dois valores que os PRDs já nomeiam
@@ -130,9 +133,5 @@ intactas. Nenhuma aplicação consome as rotas novas ainda.
 
 ## Open Questions
 
-- **Vínculo encerrado conta para o teto de três?** A decisão acima aplica a leitura literal de
-  `RN-01-19` — conta os vigentes. Nada nesta fatia encerra vínculo, então a resposta só muda
-  comportamento quando o PRD-02 trouxer a edição; se o fundador ler diferente, muda uma linha da
-  contagem e um cenário da spec, não o desenho.
 - **O que acontece ao vínculo quando o Guerreiro(a) muda de comunidade.** É transferência, tema
   do PRD-08; nenhum cenário desta fatia depende disso.

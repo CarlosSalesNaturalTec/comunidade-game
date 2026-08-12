@@ -26,6 +26,8 @@
 - [ ] 2.5 Implementar o teto de três responsáveis vigentes com `SELECT ... FOR UPDATE` na linha
       da persona do Guerreiro(a) antes de contar e inserir, respondendo 422 ao quarto
       (`RF-01-14`, `RN-01-19`, design — decisões).
+- [ ] 2.6 Contar apenas vínculos vigentes no teto, de modo que vínculo encerrado não ocupe vaga
+      (`RN-01-19`, documento 02 §1, design — decisões).
 
 ## 3. Recorte de leitura do responsável
 
@@ -58,25 +60,27 @@
       mesmo responsável se vincula a vários Guerreiros e Guerreiras (`RN-01-19`).
 - [ ] 5.3 Teste concorrente: duas criações simultâneas do quarto vínculo não passam as duas
       (`RN-01-19`, design — decisões).
-- [ ] 5.4 Teste: vínculo a Guerreiro(a) inexistente é recusado e nenhuma persona é criada
+- [ ] 5.4 Teste: Guerreiro(a) com três vínculos, um encerrado, aceita um novo responsável
+      (`RN-01-19`, documento 02 §1).
+- [ ] 5.5 Teste: vínculo a Guerreiro(a) inexistente é recusado e nenhuma persona é criada
       (`RN-01-20`).
-- [ ] 5.5 Teste: persona que não é Admin nem Mestre recebe 403 ao cadastrar responsável ou criar
+- [ ] 5.6 Teste: persona que não é Admin nem Mestre recebe 403 ao cadastrar responsável ou criar
       vínculo (`RF-01-13`, `RF-01-16`).
-- [ ] 5.6 Teste: responsável recém-cadastrado, sem vínculo, não enxerga Guerreiro(a) algum, e o
+- [ ] 5.7 Teste: responsável recém-cadastrado, sem vínculo, não enxerga Guerreiro(a) algum, e o
       que tem vínculo enxerga só os seus (`RF-01-15`).
-- [ ] 5.7 Teste: revogação de consentimento cria registro novo, e o anterior continua consultável
+- [ ] 5.8 Teste: revogação de consentimento cria registro novo, e o anterior continua consultável
       (`RN-01-12`, PRD-01 §12).
-- [ ] 5.8 Teste: `UPDATE` e `DELETE` em `consentimento` são recusados **também fora do ORM**,
+- [ ] 5.9 Teste: `UPDATE` e `DELETE` em `consentimento` são recusados **também fora do ORM**,
       direto no banco (`RN-01-12`, design — decisões).
-- [ ] 5.9 Teste: consentimento sem versão do termo é recusado com 422 e nada é gravado
+- [ ] 5.10 Teste: consentimento sem versão do termo é recusado com 422 e nada é gravado
       (`RN-01-12`).
-- [ ] 5.10 Teste: recusa de consentimento não impede a participação do Guerreiro(a), e a
+- [ ] 5.11 Teste: recusa de consentimento não impede a participação do Guerreiro(a), e a
       revogação não desfaz o que ele já realizou (`RN-01-21`).
-- [ ] 5.11 Teste: toda escrita nova desta fatia grava autor, papel e data e hora com fuso
+- [ ] 5.12 Teste: toda escrita nova desta fatia grava autor, papel e data e hora com fuso
       (`RF-01-03`, regressão da fatia anterior).
-- [ ] 5.12 Teste: rota nova sem chave de aplicação responde 401, sem diferenciar o motivo
+- [ ] 5.13 Teste: rota nova sem chave de aplicação responde 401, sem diferenciar o motivo
       (`RN-01-32`, regressão da fatia 1).
-- [ ] 5.13 Rodar `ruff format --check .`, `ruff check .` e `pytest` na pasta `backend/`, as três
+- [ ] 5.14 Rodar `ruff format --check .`, `ruff check .` e `pytest` na pasta `backend/`, as três
       verdes.
 
 ## 6. Documentação e esteira
