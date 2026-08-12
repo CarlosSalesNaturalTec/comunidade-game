@@ -21,6 +21,7 @@ _TABELA_DO_PRD_01_PAR_4 = {
             Operacao.vinculo_com_guerreiros_e_guerreiras,
             Operacao.confirmacao_de_identidade_do_guerreiro,
             Operacao.cadastro_biometrico_do_guerreiro,
+            Operacao.homologacao_da_equipe_da_trilha,
         },
         "le": {Operacao.publico, Operacao.suas_turmas, Operacao.painel_do_dia_na_app_03},
     },

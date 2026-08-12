@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
+from nucleo.aulas.modelo import Aula
 from nucleo.autenticacao import exigir_persona
 from nucleo.banco import Base, obter_sessao
 from nucleo.biometria.cifra import cifrar_descritor
@@ -22,6 +23,7 @@ from nucleo.consentimentos.modelo import (
     DecisaoDeConsentimento,
     OrigemDoConsentimento,
 )
+from nucleo.equipes.modelo import Equipe, IntegranteDaEquipe
 from nucleo.paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from nucleo.personas.modelo import (
     ComunidadeVirtual,
@@ -479,6 +481,60 @@ def criar_atividade(sessao):
         sessao.commit()
         sessao.refresh(atividade)
         return atividade
+
+    return _criar
+
+
+@pytest.fixture
+def criar_aula(sessao):
+    def _criar(
+        autor: Persona,
+        comunidade: ComunidadeVirtual,
+        inicio_em: datetime | None = None,
+        fim_em: datetime | None = None,
+    ) -> Aula:
+        agora = datetime.now(UTC)
+        inicio = inicio_em or (agora - timedelta(hours=1))
+        fim = fim_em or (agora + timedelta(hours=1))
+        aula = Aula(
+            comunidade_virtual_id=comunidade.id,
+            inicio_em=inicio,
+            fim_em=fim,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(aula)
+        sessao.commit()
+        sessao.refresh(aula)
+        return aula
+
+    return _criar
+
+
+@pytest.fixture
+def criar_equipe(sessao):
+    def _criar(
+        criador: Persona,
+        aula: Aula | None = None,
+        trilha: Trilha | None = None,
+        homologada: bool = False,
+        homologado_por: Persona | None = None,
+    ) -> Equipe:
+        equipe = Equipe(
+            aula_id=aula.id if aula is not None else None,
+            trilha_id=trilha.id if trilha is not None else None,
+            autor_id=criador.id,
+            papel_do_autor=criador.papel.value,
+        )
+        if homologada:
+            equipe.homologado_por_id = (homologado_por or criador).id
+            equipe.homologado_em = datetime.now(UTC)
+        sessao.add(equipe)
+        sessao.commit()
+        sessao.refresh(equipe)
+        sessao.add(IntegranteDaEquipe(equipe_id=equipe.id, persona_id=criador.id))
+        sessao.commit()
+        return equipe
 
     return _criar
 

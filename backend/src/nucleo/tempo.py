@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 from pydantic import AwareDatetime
 from sqlalchemy import DateTime, func
@@ -6,6 +6,13 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 # Toda data e hora de entrada e saída exige fuso explícito (PRD-01 §9).
 DataHoraComFuso = AwareDatetime
+
+
+def agora() -> datetime:
+    """Momento corrente com fuso — ponto único para o que hoje já se repete
+    como `datetime.now(UTC)` pelo núcleo, usado por quem deriva estado a
+    partir do relógio (`RF-01-32`)."""
+    return datetime.now(UTC)
 
 
 class ComMomentoDoFato:
