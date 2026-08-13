@@ -6,6 +6,13 @@ from sqlalchemy.orm import Session
 from ..criacoes_originais.modelo import CriacaoOriginal
 from ..equipes.modelo import IntegranteDaEquipe
 from ..erros import ErroDeValidacao
+from ..quiz.modelo import (
+    EquipeNaPartida,
+    PartidaDeQuiz,
+    PerguntaAnuladaNaPartida,
+    PerguntaDeQuiz,
+    RespostaDeQuiz,
+)
 from ..resultados.modelo import DesfechoDoResultado, Resultado
 from ..trilhas.modelo import Atividade, Missao, ModalidadeDeAtividade, Trilha
 from .modelo import Badge, Nivel, PontoRegular, TipoDeBadge
@@ -20,6 +27,13 @@ ADICIONAL_DE_MERITO_EXTRA_POR_AUXILIO = 10
 # Documento 11 §5: a criação original validada credita 50 pontos regulares
 # integrais a cada integrante da equipe da trilha, sem rateio pelo tamanho.
 VALOR_DA_CRIACAO_ORIGINAL = 50
+
+# Documento 11 §5, "Quiz ao Vivo": 1 ponto por acerto da equipe, mais 1 de
+# bônus à primeira a acertar cada pergunta, com teto de 10 por partida. O
+# valor apurado vai integral a cada integrante, sem rateio.
+VALOR_POR_ACERTO_NO_QUIZ = 1
+BONUS_DA_PRIMEIRA_A_ACERTAR = 1
+TETO_DE_PONTO_POR_PARTIDA_DE_QUIZ = 10
 
 # Documento 11 §7: o badge de valores/causas nasce da natureza declarada na
 # atividade, já normalizada por `trilhas.regra._normalizar_natureza`.
@@ -226,6 +240,84 @@ def conceder_badge_de_autoria(
     decisões)."""
     sessao.add(Badge(guerreiro_id=guerreiro_id, trilha_id=trilha_id, tipo=TipoDeBadge.de_autoria))
     sessao.flush()
+
+
+def apurar_partida_de_quiz(sessao: Session, *, partida: PartidaDeQuiz) -> dict[uuid.UUID, int]:
+    """Apuração por equipe disputante, já com o teto da partida aplicado —
+    1 por acerto e 1 de bônus à primeira a acertar cada pergunta, pela
+    ordem de chegada ao servidor (`RF-01-21`, `RF-01-36`, 11 §5).
+
+    É **leitura**: nada credita. Serve tanto ao placar ao vivo da App 03,
+    com a partida ainda aberta, quanto ao crédito do encerramento — o mesmo
+    cálculo nos dois, para que o painel não divirja do que foi creditado
+    (design — decisão 1, riscos). Pergunta anulada fica fora, lida da
+    tabela de anulação e não da marca da resposta, que é só a projeção
+    consultável (design — decisão 6).
+    """
+    apuracao: dict[uuid.UUID, int] = dict.fromkeys(
+        (
+            linha.equipe_id
+            for linha in sessao.query(EquipeNaPartida).filter_by(partida_id=partida.id).all()
+        ),
+        0,
+    )
+    anuladas = {
+        linha.pergunta_id
+        for linha in sessao.query(PerguntaAnuladaNaPartida).filter_by(partida_id=partida.id).all()
+    }
+
+    # `(momento_de_chegada, id)`: o `id` só desempata dois carimbos
+    # idênticos ao microssegundo, e é o que torna a apuração reproduzível
+    # em vez de arbitrária (design — decisão 2).
+    respostas = (
+        sessao.query(RespostaDeQuiz, PerguntaDeQuiz.alternativa_correta)
+        .join(PerguntaDeQuiz, PerguntaDeQuiz.id == RespostaDeQuiz.pergunta_id)
+        .filter(RespostaDeQuiz.partida_id == partida.id)
+        .order_by(RespostaDeQuiz.momento_de_chegada, RespostaDeQuiz.id)
+        .all()
+    )
+
+    perguntas_com_primeira_acertada: set[uuid.UUID] = set()
+    for resposta, alternativa_correta in respostas:
+        if resposta.pergunta_id in anuladas:
+            continue
+        if resposta.alternativa_escolhida != alternativa_correta:
+            continue
+        valor = VALOR_POR_ACERTO_NO_QUIZ
+        if resposta.pergunta_id not in perguntas_com_primeira_acertada:
+            perguntas_com_primeira_acertada.add(resposta.pergunta_id)
+            valor += BONUS_DA_PRIMEIRA_A_ACERTAR
+        apuracao[resposta.equipe_id] = apuracao.get(resposta.equipe_id, 0) + valor
+
+    return {
+        equipe_id: min(TETO_DE_PONTO_POR_PARTIDA_DE_QUIZ, total)
+        for equipe_id, total in apuracao.items()
+    }
+
+
+def creditar_pontuacao_da_partida_de_quiz(
+    sessao: Session, *, partida: PartidaDeQuiz, trilha: Trilha
+) -> None:
+    """Ponto de entrada único, chamado por `quiz.regra.encerrar_partida`:
+    credita o valor apurado integral a **cada integrante** da equipe, sem
+    rateio pelo tamanho, na trilha derivada da atividade da partida
+    (`RF-01-21`, `RN-01-42`, 11 §5).
+
+    Reaproveita `creditar_ponto_regular`, o mesmo ponto de entrada da
+    criação original — e portanto o mesmo respeito ao gatilho que recusa
+    débito (`RN-01-38`). A régua do valor é própria do quiz e não passa por
+    `_valor_regular`, que é a do Resultado (design — decisão 5). Equipe sem
+    acerto não entra: crédito de valor não positivo é recusado por
+    `creditar_ponto_regular`, e nada é debitado.
+    """
+    for equipe_id, valor in apurar_partida_de_quiz(sessao, partida=partida).items():
+        if valor <= 0:
+            continue
+        integrantes = sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe_id).all()
+        for integrante in integrantes:
+            creditar_ponto_regular(
+                sessao, guerreiro_id=integrante.persona_id, trilha_id=trilha.id, valor=valor
+            )
 
 
 def creditar_pontuacao_da_criacao_original(

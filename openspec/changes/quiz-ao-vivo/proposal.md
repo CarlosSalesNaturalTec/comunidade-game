@@ -144,7 +144,8 @@ conferir a matriz em toda operação.
 - `backend/src/nucleo/pontuacao/`: a partida entra como fonte de `PontoRegular`, com a régua
   própria do documento 11 §5 — não passa pelo `creditar_ponto_regular` do resultado, que tem
   outra régua.
-- `backend/alembic/`: migração para `pergunta_de_quiz`, `partida_de_quiz` e `resposta_de_quiz`.
+- `backend/alembic/`: migração para `pergunta_de_quiz`, `partida_de_quiz`, `equipe_na_partida`,
+  `pergunta_anulada_na_partida` e `resposta_de_quiz`.
 - `backend/src/nucleo/permissoes.py`: **sem alteração** — as duas operações já existem.
 - Nenhuma rota nova sob `/v1`: entidade e regra, como nas fatias 5 a 9.
 - `docs/`: as duas decisões **já foram gravadas** nos documentos 03, 05, 09, 11 e 99 antes

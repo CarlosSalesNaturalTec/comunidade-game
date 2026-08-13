@@ -93,7 +93,21 @@ Apuração por equipe: `min(10, acertos + bonus)`, com `bonus` contando as pergu
 equipe foi a primeira a acertar. O teto é da **partida**, aplicado antes do crédito, e o valor
 apurado vai **integral a cada integrante**, sem rateio.
 
-### 6. Idempotência do encerramento
+### 6. A anulação é um registro próprio, não um campo da resposta
+
+A anulação vive em `PerguntaAnuladaNaPartida` — o par (partida, pergunta), com `ComAutoria`.
+Marcar apenas a resposta já gravada não bastava: a anulação exige partida **aberta** (decisão
+1), de modo que **resposta pode chegar depois** dela, e essa resposta nasceria sem marca e
+entraria na apuração — contra a spec, que proíbe a pergunta anulada de creditar a qualquer
+equipe. Anular pergunta ainda sem resposta também não deixaria registro de quem anulou.
+
+A tabela é a fonte da apuração; `RespostaDeQuiz.anulada_em` é a **projeção consultável** dela,
+gravada nas respostas existentes ao anular e na resposta que chegar depois.
+
+- _Alternativa descartada:_ marca só em `resposta_de_quiz` — deixa a pergunta anulada creditar
+  no caso da resposta que chega depois da anulação.
+
+### 7. Idempotência do encerramento
 
 O encerramento é aceito apenas na transição `aberta → encerrada`; a segunda chamada devolve 422
 sem tocar em `PontoRegular`. Como o crédito acontece na mesma transação da transição, não há
@@ -121,11 +135,13 @@ Migração aditiva, sem alteração de tabela existente:
 2. `partida_de_quiz` — `aula_id`, `atividade_id`, situação, autoria da abertura e do
    encerramento.
 3. `equipe_na_partida` — a lista fixada na abertura, com unicidade por (partida, equipe).
-4. `resposta_de_quiz` — `partida_id`, `pergunta_id`, `equipe_id`, alternativa,
-   `momento_de_chegada`, com **unicidade por (partida, pergunta, equipe)**, que é o que torna o
-   reenvio inofensivo.
+4. `pergunta_anulada_na_partida` — o par (partida, pergunta) com autoria, único por par
+   (decisão 6).
+5. `resposta_de_quiz` — `partida_id`, `pergunta_id`, `equipe_id`, alternativa,
+   `momento_de_chegada`, `anulada_em`, com **unicidade por (partida, pergunta, equipe)**, que é
+   o que torna o reenvio inofensivo.
 
-Reversão: `downgrade` derruba as quatro tabelas. Nenhuma linha de `ponto_regular`,
+Reversão: `downgrade` derruba as cinco tabelas. Nenhuma linha de `ponto_regular`,
 `equipe`, `aula` ou `atividade` é tocada pela migração, de modo que a reversão não perde
 crédito já concedido — o que foi creditado por uma partida permanece, como qualquer ponto
 regular.
