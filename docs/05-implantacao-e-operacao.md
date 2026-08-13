@@ -192,12 +192,12 @@ Observações operacionais:
 Competição rápida entre equipes, encaixável no "Desafio do dia", com pontuação lançada
 automaticamente.
 
-1. Os Guerreiros e Guerreiras presentes jogam pelas **equipes que formaram no App 01** —
-   **várias equipes disputam a partida**, e cada um joga por **uma única**, mesmo estando em
-   mais de uma nas demais atividades do encontro.
-2. **A partida corre sobre uma trilha**, declarada por quem conduz. O encontro segue
-   assíncrono, com cada equipe avançando na sua (§4), e é a trilha da partida que recebe os
-   pontos do quiz — não a do percurso de cada jogador.
+1. **O Quiz ao Vivo é uma atividade da trilha**, e é dela que vêm os pontos. No encontro, os
+   Guerreiros e Guerreiras **de uma mesma trilha** se agrupam para disputar — o resto do
+   encontro segue assíncrono, com cada equipe avançando na sua (§4).
+2. Eles jogam pelas **equipes que formaram no App 01** — **várias equipes disputam a
+   partida**, e cada um joga por **uma única**, mesmo estando em mais de uma nas demais
+   atividades do encontro.
 3. As perguntas são **pré-cadastradas pelo curador da aula (Mestre)**, em múltipla escolha com
    **quatro alternativas e sem tempo por pergunta** — o ritmo é de quem conduz a partida.
 4. Ao dar o _start_, **uma pergunta é exibida simultaneamente em todos os dispositivos logados
