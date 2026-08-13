@@ -10,10 +10,12 @@ as oito aplicações e os jogos. O desenho das pastas está no documento 03 §1.
 1. **Feito:** revisão e validação humana de todos os documentos de `docs/` (agosto de 2026).
 2. **Feito:** os treze **PRDs** (_Product Requirements Documents_) do Ciclo 01, em
    `docs/prds/`, escritos a partir de `docs/08-base-para-prds.md` e aprovados pelo fundador.
-3. **Agora:** desenvolvimento das oito aplicações e do Backend API, conduzido pelo
-   framework de **SDD** (_Spec-Driven Development_) **OpenSpec**. Nenhuma _change_ foi criada
-   ainda — `openspec/` tem só o `config.yaml`, e a primeira entrega é o **PRD-01**, o núcleo
-   do Backend API (documento 99 §9).
+3. **Agora:** implementação do **PRD-01** (núcleo do Backend API), conduzida pelo framework
+   de **SDD** (_Spec-Driven Development_) **OpenSpec**, uma fatia por _change_. A pasta
+   `backend/` já existe, com a esteira de CI ativa (`.github/workflows/backend-ci.yml`).
+   `openspec/changes/archive/` guarda as fatias já entregues; `openspec status --change
+   <nome>` mostra o que está em andamento. Ao fechar o PRD-01, a próxima entrega é o PRD-08
+   (documento 99 §9).
 
 Código entra **apenas** por uma _change_ do OpenSpec cujos artefatos foram aprovados pelo
 fundador. PRD novo ou revisão de PRD existente continua seguindo as regras de `docs/prds/`
