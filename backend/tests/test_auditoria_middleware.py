@@ -1,5 +1,9 @@
+from datetime import timedelta
+
 from nucleo.auditoria.modelo import Auditoria
+from nucleo.chaves.modelo import NaturezaDaChave
 from nucleo.personas.modelo import Papel
+from nucleo.tempo import agora
 
 
 def test_escrita_aceita_gera_registro_de_auditoria(
@@ -147,3 +151,93 @@ def test_falha_ao_gravar_auditoria_nao_altera_a_resposta_ja_pronta(
     assert "id" in resposta.json()
     assert sessao.query(Auditoria).count() == 0
     assert "Falha ao gravar registro de auditoria" in caplog.text
+
+
+def test_emissao_de_chave_de_terceiro_entra_na_trilha_de_auditoria(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_solicitacao_de_chave,
+    sessao,
+    monkeypatch,
+    fabrica_de_auditoria,
+):
+    """`RF-01-29`: emissão é ato de Admin, entra na trilha pelo middleware,
+    sem nada declarado na rota."""
+    monkeypatch.setattr(
+        "nucleo.auditoria.middleware.obter_fabrica_de_sessao", lambda: fabrica_de_auditoria
+    )
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    solicitacao = criar_solicitacao_de_chave()
+
+    resposta = cliente.post(
+        "/v1/chaves",
+        json={"solicitacao_id": str(solicitacao.id)},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 201
+    registro = sessao.query(Auditoria).one()
+    assert registro.autor_id == admin.id
+    assert registro.papel_do_autor == Papel.admin.value
+    assert registro.momento is not None
+
+
+def test_revogacao_de_chave_entra_na_trilha_de_auditoria(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    sessao,
+    monkeypatch,
+    fabrica_de_auditoria,
+):
+    """`RF-01-29`: revogação é ato de Admin, entra na trilha pelo middleware."""
+    monkeypatch.setattr(
+        "nucleo.auditoria.middleware.obter_fabrica_de_sessao", lambda: fabrica_de_auditoria
+    )
+    chave, _ = criar_chave()
+    _, chave_de_terceiro = criar_chave(natureza=NaturezaDaChave.de_terceiro)
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.request(
+        "DELETE",
+        f"/v1/chaves/{chave_de_terceiro.id}",
+        json={"motivo": "Uso indevido detectado."},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 204
+    registro = sessao.query(Auditoria).one()
+    assert registro.autor_id == admin.id
+    assert registro.papel_do_autor == Papel.admin.value
+    assert registro.momento is not None
+
+
+def test_apresentacao_de_url_nao_entra_na_trilha_por_nao_ter_persona(
+    cliente, criar_chave, sessao, monkeypatch, fabrica_de_auditoria
+):
+    """A apresentação de URL é rota pública e sem persona, por desenho
+    (`RN-01-33`, design.md — Decisions): o terceiro não tem persona, e
+    `RF-01-29` audita ações de Admin. Sem `contexto_da_sessao`, o middleware
+    não tem autor nem papel para gravar (auditoria/middleware.py)."""
+    monkeypatch.setattr(
+        "nucleo.auditoria.middleware.obter_fabrica_de_sessao", lambda: fabrica_de_auditoria
+    )
+    chave, _ = criar_chave()
+    _, chave_de_terceiro = criar_chave(
+        natureza=NaturezaDaChave.de_terceiro, prazo_de_apresentacao=agora() + timedelta(days=30)
+    )
+
+    resposta = cliente.post(
+        f"/v1/chaves/{chave_de_terceiro.id}/url",
+        json={"url": "https://exemplo.org/painel"},
+        headers={"X-Chave-Aplicacao": chave},
+    )
+
+    assert resposta.status_code == 204
+    assert sessao.query(Auditoria).count() == 0

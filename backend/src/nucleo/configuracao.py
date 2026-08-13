@@ -41,6 +41,10 @@ class Configuracao(BaseSettings):
     protecao_cota_do_projeto_por_hora: int = 6_000
     protecao_cota_de_terceiro_por_hora: int = 600
 
+    # Prazo de apresentação da URL da chave de terceiro, contado da emissão
+    # (`RN-01-36`, design — o prazo é configuração).
+    prazo_de_apresentacao_dias: int = 30
+
     # Freio por origem, com limite e janela próprios por superfície, e o
     # atraso progressivo comum às duas (`RF-01-65`, `RN-01-27`, 03 §8).
     protecao_freio_nick_limite: int = 30

@@ -161,6 +161,24 @@ class ConjuntoDeDadosNaoLiberado(ErroDeAplicacao):
     mensagem = "O conjunto de dados só é liberado depois da aprovação de um Admin."
 
 
+class SolicitacaoDeChaveNaoDisponivelParaEmissao(ErroDeAplicacao):
+    status_code = 409
+    codigo = "solicitacao_de_chave_nao_disponivel_para_emissao"
+    mensagem = "A chave só pode ser emitida sobre solicitação aprovada e sem chave emitida."
+
+
+class PrazoDeApresentacaoVencido(ErroDeAplicacao):
+    status_code = 422
+    codigo = "prazo_de_apresentacao_vencido"
+    mensagem = "O prazo para apresentar a URL venceu. Solicite uma nova chave."
+
+
+class UrlJaApresentada(ErroDeAplicacao):
+    status_code = 409
+    codigo = "url_ja_apresentada"
+    mensagem = "Esta chave já tem uma URL apresentada."
+
+
 class FreioPorOrigemAcionado(ErroDeAplicacao):
     """`RF-01-65`: leva o tempo de espera calculado pelo freio, que o
     manipulador de `principal.py` também expõe no cabeçalho `Retry-After`

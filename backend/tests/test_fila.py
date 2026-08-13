@@ -321,6 +321,7 @@ def test_avaliacao_de_solicitacao_de_chave_nao_cria_persona_nem_emite_chave(sess
 
     assert avaliada.situacao == SituacaoDaSolicitacao.aceita
     assert sessao.query(Persona).count() == total_de_personas_antes
+    assert avaliada.chave_id is None
 
 
 def test_sugestao_registrada_guarda_autor_persona_e_alvo(sessao, criar_persona):

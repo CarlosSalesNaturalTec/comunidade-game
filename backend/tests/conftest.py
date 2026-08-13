@@ -1,5 +1,6 @@
 import base64
 import os
+import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
@@ -25,6 +26,8 @@ from nucleo.consentimentos.modelo import (
     OrigemDoConsentimento,
 )
 from nucleo.equipes.modelo import Equipe, IntegranteDaEquipe
+from nucleo.fila.modelo import SituacaoDaSolicitacao, SolicitacaoDeChave
+from nucleo.fila.regra import avaliar_solicitacao_de_chave, registrar_solicitacao_de_chave
 from nucleo.paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from nucleo.personas.modelo import (
     ComunidadeVirtual,
@@ -174,6 +177,7 @@ def _montar_roteador_de_teste() -> APIRouter:
 def app(sessao, configuracao):
     from nucleo.auditoria.rotas import roteador as roteador_de_auditoria
     from nucleo.biometria.rotas import roteador as roteador_de_biometria
+    from nucleo.chaves.rotas import roteador as roteador_de_chaves
     from nucleo.fila.rotas import roteador as roteador_de_fila
     from nucleo.personas.rotas import roteador as roteador_de_personas
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
@@ -189,6 +193,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_biometria)
     incluir_roteador_de_dados(aplicacao, roteador_de_auditoria)
     incluir_roteador_de_dados(aplicacao, roteador_de_fila)
+    incluir_roteador_de_dados(aplicacao, roteador_de_chaves)
     return aplicacao
 
 
@@ -233,6 +238,9 @@ def criar_chave(sessao):
         ambiente: str = "desenvolvimento",
         situacao: SituacaoDaChave = SituacaoDaChave.vigente,
         natureza: NaturezaDaChave = NaturezaDaChave.do_projeto,
+        prazo_de_apresentacao: datetime | None = None,
+        url_apresentada: str | None = None,
+        solicitacao_de_chave_id: uuid.UUID | None = None,
     ) -> tuple[str, ChaveDeAplicacao]:
         segredo = gerar_segredo()
         registro = ChaveDeAplicacao(
@@ -241,12 +249,48 @@ def criar_chave(sessao):
             natureza=natureza,
             resumo_do_segredo=calcular_resumo(segredo),
             situacao=situacao,
+            prazo_de_apresentacao=prazo_de_apresentacao,
+            url_apresentada=url_apresentada,
+            solicitacao_de_chave_id=solicitacao_de_chave_id,
         )
         sessao.add(registro)
         sessao.commit()
         sessao.refresh(registro)
         chave_completa = montar_chave_completa(ambiente, str(registro.id), segredo)
         return chave_completa, registro
+
+    return _criar
+
+
+@pytest.fixture
+def criar_solicitacao_de_chave(sessao, criar_persona):
+    """Registra uma solicitação de chave e, por padrão, já a aprova — o
+    estado de que a emissão (`RF-01-50`) precisa partir."""
+
+    def _criar(
+        situacao: SituacaoDaSolicitacao = SituacaoDaSolicitacao.aceita,
+        solicitante: str = "Desenvolvedora de Tal",
+        avaliado_por: Persona | None = None,
+    ) -> SolicitacaoDeChave:
+        solicitacao = registrar_solicitacao_de_chave(
+            sessao,
+            solicitante=solicitante,
+            contato="dev@example.org",
+            o_que_pretende_construir="Um painel comunitário.",
+        )
+        sessao.commit()
+
+        if situacao in (SituacaoDaSolicitacao.aceita, SituacaoDaSolicitacao.recusada):
+            admin = avaliado_por or criar_persona(Papel.admin)
+            avaliar_solicitacao_de_chave(
+                sessao, solicitacao, situacao=situacao, avaliado_por=admin, parecer="Aprovado."
+            )
+            sessao.commit()
+        elif situacao == SituacaoDaSolicitacao.em_avaliacao:
+            solicitacao.situacao = situacao
+            sessao.commit()
+
+        return solicitacao
 
     return _criar
 
