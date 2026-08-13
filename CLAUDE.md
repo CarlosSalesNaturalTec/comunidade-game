@@ -14,7 +14,7 @@ as oito aplicações e os jogos. O desenho das pastas está no documento 03 §1.
    de **SDD** (_Spec-Driven Development_) **OpenSpec**, uma fatia por _change_. A pasta
    `backend/` já existe, com a esteira de CI ativa (`.github/workflows/backend-ci.yml`).
    `openspec/changes/archive/` guarda as fatias já entregues; `openspec status --change
-   <nome>` mostra o que está em andamento. Ao fechar o PRD-01, a próxima entrega é o PRD-08
+<nome>` mostra o que está em andamento. Ao fechar o PRD-01, a próxima entrega é o PRD-08
    (documento 99 §9).
 
 Código entra **apenas** por uma _change_ do OpenSpec cujos artefatos foram aprovados pelo
