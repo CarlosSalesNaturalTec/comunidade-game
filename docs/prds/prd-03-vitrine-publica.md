@@ -290,19 +290,19 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 
 ### 6.3 Formulários públicos
 
-| ID         | Requisito                                                                                        | Prioridade |
-| ---------- | ------------------------------------------------------------------------------------------------ | ---------- |
-| `RF-03-27` | Formulário de participação exige nome, e-mail, WhatsApp, pretensão e apresentação                | essencial  |
-| `RF-03-28` | Formulário de participação aceita instituição e links comprobatórios como opcionais              | essencial  |
-| `RF-03-29` | Tela declara, antes do envio, que a solicitação não cria cadastro nem acesso                     | essencial  |
-| `RF-03-30` | Tela informa o prazo de resposta de 7 dias e que quem avalia é um Admin                          | essencial  |
-| `RF-03-31` | Solicitação enviada é gravada e entra na fila da App 03, com confirmação na tela                 | essencial  |
-| `RF-03-32` | Formulário de dados exige solicitante, instituição, e-mail e finalidade declarada                | essencial  |
-| `RF-03-33` | Tela do formulário de dados declara que a entrega é gratuita, anonimizada e depende de aprovação | essencial  |
-| `RF-03-34` | Nenhum formulário devolve dado, arquivo ou acesso no ato do envio                                | essencial  |
-| `RF-03-35` | Envio repetido da mesma origem encontra atraso progressivo, com o motivo explicado               | essencial  |
-| `RF-03-36` | Consulta por nick tem limite por origem e janela, com atraso progressivo                         | essencial  |
-| `RF-03-37` | Nenhuma proteção de abuso exige cadastro, login ou CAPTCHA do visitante                          | essencial  |
+| ID         | Requisito                                                                                                                                   | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-03-27` | Formulário de participação exige nome, e-mail, WhatsApp, pretensão e apresentação                                                           | essencial  |
+| `RF-03-28` | Formulário de participação aceita instituição e links comprobatórios como opcionais                                                         | essencial  |
+| `RF-03-29` | Tela declara, antes do envio, que a solicitação não cria cadastro nem acesso                                                                | essencial  |
+| `RF-03-30` | Tela informa o prazo de resposta de 7 dias e que quem avalia é um Admin                                                                     | essencial  |
+| `RF-03-31` | Solicitação enviada é gravada e entra na fila da App 03, com confirmação na tela                                                            | essencial  |
+| `RF-03-32` | Formulário de dados exige solicitante, instituição, e-mail e finalidade declarada                                                           | essencial  |
+| `RF-03-33` | Tela do formulário de dados declara que a entrega é gratuita, anonimizada e depende de aprovação                                            | essencial  |
+| `RF-03-34` | Nenhum formulário devolve dado, arquivo ou acesso no ato do envio                                                                           | essencial  |
+| `RF-03-35` | Envio repetido dos formulários de participação e de dados, da mesma origem, encontra atraso progressivo, com o motivo e a espera explicados | essencial  |
+| `RF-03-36` | Consulta por nick tem limite por origem e janela, com atraso progressivo                                                                    | essencial  |
+| `RF-03-37` | Nenhuma proteção de abuso exige cadastro, login ou CAPTCHA do visitante                                                                     | essencial  |
 
 ### 6.4 Convite ao acompanhamento
 
@@ -366,6 +366,8 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RN-03-06` | A consulta é por nick exato, sem listagem, sugestão ou completação                        | 12                     | 02 §1       |
 | `RN-03-07` | Nick inexistente e nick sem autorização recebem a mesma resposta                          | 12                     | 03 §8       |
 | `RN-03-08` | Rota pública tem limite por origem e atraso progressivo, sem CAPTCHA nem cadastro         | —                      | 03 §8       |
+| `RN-03-34` | A origem do freio nunca é gravada: agrupa-se por resumo do IP, mantido só pela janela     | —                      | 03 §8       |
+| `RN-03-35` | O formulário de solicitação de chave não tem freio por origem                             | —                      | 03 §8       |
 | `RN-03-09` | A saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin        | 7, 17                  | 02 §1       |
 | `RN-03-10` | O painel público nunca identifica o coletor, nem por código                               | 7                      | 02 §1       |
 | `RN-03-11` | Solicitação de participação não cria cadastro nem acesso, e a avaliação é de Admin        | 3                      | 02 §1       |
@@ -566,6 +568,9 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 | ------------------------------------------------------------------------ | ---------- | ----------------------------------------- |
 | Saída pública agrega até o bairro; rua e abaixo só na entrega aprovada   | 02 §1      | Granularidade da saída pública            |
 | Limite por origem com atraso progressivo nas rotas públicas, sem CAPTCHA | 03 §8      | Proteção das rotas públicas da vitrine    |
+| Números do freio por origem e da cota por faixa de chave                 | 03 §8      | Números da proteção das rotas públicas    |
+| Origem agrupada por resumo do IP, mantido só em memória pela janela      | 03 §8      | Números da proteção das rotas públicas    |
+| Solicitação de chave sem freio por origem, protegida pela cota da chave  | 03 §8      | Números da proteção das rotas públicas    |
 | Vitrine sem favoritos: o pedido vira convite a se cadastrar e apoiar     | 03 §8      | Favoritos apenas na App 08                |
 | Novidade dos favoritos na App 08: cinco fatos, em destaque por 30 dias   | 03 §10     | O que conta como "novidade" dos favoritos |
 | Chamada "Quero participar" em toda página individual                     | 03 §8      | Chamada "Quero participar" nos perfis     |
@@ -613,6 +618,7 @@ entidade e não como contrato.
 | `RF-03-27` a `RF-03-31`             | 02 §1 (solicitação de participação, dados mínimos e prazo)     |
 | `RF-03-32` a `RF-03-34`             | 03 §12.3 (entrega sob solicitação aprovada)                    |
 | `RF-03-35` a `RF-03-37`             | 03 §8 (proteção das rotas públicas)                            |
+| `RN-03-34` e `RN-03-35`             | 03 §8 (origem em memória e chave sem freio)                    |
 | `RF-03-38` a `RF-03-44`             | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)    |
 | `RF-03-45` a `RF-03-49`             | 03 §8 (institucional), 04 §1 (PIX e lastro) e 01 §7 (IA)       |
 | `RF-03-50` e `RF-03-51`             | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)             |
