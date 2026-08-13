@@ -602,7 +602,9 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   **limite por origem e janela de tempo, com atraso progressivo** a cada repetição — é o que
   barra a varredura de nicks e o envio abusivo. **Sem CAPTCHA**, que é barreira de
   acessibilidade, e **sem cadastro ou coleta de dado do visitante**. Em separado corre a
-  **cota de consulta por chave**, em duas faixas, cujo excesso responde **429**:
+  **cota de consulta por chave**, em duas faixas, cujo excesso responde **429**. Ela conta
+  **só as chamadas de leitura**: a escrita das aplicações do projeto não tem cota, e para a
+  chave de terceiro, que é somente leitura, toda chamada entra na conta.
 
   | Limite                     | Faixa ou superfície              | Valor                        |
   | -------------------------- | -------------------------------- | ---------------------------- |

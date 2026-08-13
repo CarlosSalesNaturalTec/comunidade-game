@@ -27,8 +27,9 @@ escreve rota depois.
 
 - Nasce a **cota de consulta por chave**, em duas faixas. A faixa não é conceito novo: o
   modelo `ChaveDeAplicacao` já guarda `NaturezaDaChave` com `do_projeto` e `de_terceiro`
-  desde a primeira fatia, e a cota se prende a essa coluna. O excesso responde **429**
-  (`RF-01-55`).
+  desde a primeira fatia, e a cota se prende a essa coluna. Ela conta **só as chamadas de
+  leitura** — a escrita das aplicações do projeto não tem cota, e a chave de terceiro, que é
+  somente leitura, tem toda chamada contada. O excesso responde **429** (`RF-01-55`).
 - Nasce o **freio por origem**, aplicável à consulta por nick exato e ao envio dos
   formulários de participação e de dados, com atraso progressivo a cada repetição
   (`RF-01-65`, `RN-01-27`).
@@ -110,6 +111,3 @@ Fica fora também a **base legal do resumo do IP**: é pendência aberta nesta m
    um campo no corpo único de erro ou os dois é desenho de execução, não regra de produto.
 2. **Onde vive a janela deslizante** dentro do processo, e como o sal da origem roda sem
    zerar o freio no meio de uma janela.
-3. **Como a cota distingue "consulta"** das demais chamadas — se ela conta toda chamada sob
-   `/v1` ou só as de leitura. O documento 03 §8 diz "cota de consulta"; o recorte exato é
-   leitura de desenho sobre o texto vigente, e vai declarado no design.
