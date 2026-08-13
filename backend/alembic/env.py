@@ -4,6 +4,7 @@ from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 from nucleo.apoio_escolar import modelo as modelo_apoio_escolar  # noqa: F401
+from nucleo.auditoria import modelo as modelo_auditoria  # noqa: F401
 from nucleo.aulas import modelo as modelo_aulas  # noqa: F401
 from nucleo.banco import Base
 from nucleo.biometria import modelo as modelo_biometria  # noqa: F401

@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
+from nucleo.auditoria.modelo import Auditoria
 from nucleo.aulas.modelo import Aula
 from nucleo.autenticacao import exigir_persona
 from nucleo.banco import Base, obter_sessao
@@ -148,6 +149,7 @@ def _montar_roteador_de_teste() -> APIRouter:
 
 @pytest.fixture
 def app(sessao, configuracao):
+    from nucleo.auditoria.rotas import roteador as roteador_de_auditoria
     from nucleo.biometria.rotas import roteador as roteador_de_biometria
     from nucleo.personas.rotas import roteador as roteador_de_personas
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
@@ -161,6 +163,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_sessoes)
     incluir_roteador_de_dados(aplicacao, roteador_de_responsaveis)
     incluir_roteador_de_dados(aplicacao, roteador_de_biometria)
+    incluir_roteador_de_dados(aplicacao, roteador_de_auditoria)
     return aplicacao
 
 
@@ -577,3 +580,40 @@ def criar_template_biometrico(sessao, configuracao):
         return credencial
 
     return _criar
+
+
+@pytest.fixture
+def criar_registro_de_auditoria(sessao):
+    def _criar(
+        autor: Persona,
+        acao: str = "POST acao_de_teste",
+        entidade_afetada: str = "acao_de_teste",
+        origem: str = "app-06-vitrine",
+        momento: datetime | None = None,
+    ) -> Auditoria:
+        registro = Auditoria(
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+            acao=acao,
+            entidade_afetada=entidade_afetada,
+            origem=origem,
+        )
+        if momento is not None:
+            # `server_default` só se aplica quando a coluna não é informada
+            # na inserção — a trilha é somente inserção, sem `UPDATE` depois.
+            registro.momento = momento
+        sessao.add(registro)
+        sessao.commit()
+        sessao.refresh(registro)
+        return registro
+
+    return _criar
+
+
+@pytest.fixture
+def fabrica_de_auditoria(engine):
+    """Sessionmaker do middleware de auditoria, para testes que precisam
+    ver a gravação acontecer de verdade — o mesmo padrão de
+    `nucleo.cli.obter_fabrica_de_sessao`, ligado ao `engine` de teste em vez
+    de à configuração real do processo."""
+    return sessionmaker(bind=engine, expire_on_commit=False)

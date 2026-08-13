@@ -5,6 +5,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as ExcecaoHTTP
 
+from .auditoria.middleware import MiddlewareDeAuditoria
+from .auditoria.rotas import roteador as roteador_de_auditoria
 from .biometria.rotas import roteador as roteador_de_biometria
 from .chaves.conferencia import exigir_chave_de_aplicacao
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
@@ -63,6 +65,10 @@ def criar_app() -> FastAPI:
     app.add_exception_handler(ExcecaoHTTP, _manipular_http_exception)
     app.add_exception_handler(Exception, _manipular_excecao_nao_tratada)
 
+    # Transversal a toda a aplicação (RF-01-29): nenhuma rota, presente ou
+    # futura, precisa declarar nada para entrar na trilha de auditoria.
+    app.add_middleware(MiddlewareDeAuditoria)
+
     return app
 
 
@@ -80,3 +86,4 @@ incluir_roteador_de_dados(app, roteador_de_personas)
 incluir_roteador_de_dados(app, roteador_de_sessoes)
 incluir_roteador_de_dados(app, roteador_de_responsaveis)
 incluir_roteador_de_dados(app, roteador_de_biometria)
+incluir_roteador_de_dados(app, roteador_de_auditoria)
