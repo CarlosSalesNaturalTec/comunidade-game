@@ -580,7 +580,10 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   - **Link para a documentação** publicada com MkDocs.
   - **Formulário de solicitação de chave**, na mesma fila de avaliação dos Admins. Emitida a
     chave, o solicitante tem **30 dias para apresentar a URL** do que construiu; não
-    apresentada no prazo, **a chave é revogada**, e nova solicitação é sempre possível.
+    apresentada no prazo, **a chave é revogada**, e nova solicitação é sempre possível. A chave
+    de terceiro é sempre de **produção** — desenvolvimento é ambiente das aplicações do
+    projeto — e **cada solicitação aprovada rende uma chave**: é a solicitação que identifica a
+    chave, não o nome da aplicação, que dois terceiros podem repetir.
   - **Link para o repositório no GitHub.**
 
   A chave é o que dá acesso à API — **sem ela a plataforma não responde** — e é também o que
@@ -733,8 +736,8 @@ passa a ter canal próprio:
   resultado de batalha e trilha nova publicada pelo Mestre**, em destaque por **30 dias** a
   contar da data do fato. **Favoritar existe só aqui** — a vitrine não guarda favorito de
   ninguém.
-- **O nick vem da família, nunca da plataforma.** A busca é por nick exato, alcança apenas quem
-  tem divulgação autorizada e não lista, sugere nem completa nomes.
+- **O nick vem da família, nunca da plataforma.** A busca é por nick exato e alcança apenas
+  quem tem divulgação autorizada (documento 02).
 - **O pré-cadastro não cadastra ninguém.** Ele grava a solicitação, o aporte declarado e o
   comprovante; o cadastro segue **exclusivo de Admin**, que valida o comprovante na App 03.
 - **Três formas de aportar no pré-cadastro**: assumir uma das **necessidades publicadas**,
