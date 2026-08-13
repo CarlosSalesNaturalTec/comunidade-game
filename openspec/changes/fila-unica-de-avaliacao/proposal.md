@@ -6,9 +6,11 @@ documento 99 §9.
 **Requisitos atendidos:** `RF-01-25` (participação, sugestões e propostas em fila única),
 `RF-01-46` (solicitação de dados com finalidade declarada e desfecho), `RF-01-47` (conjunto
 só liberado após aprovação de Admin), `RF-01-49` (registro da solicitação de chave),
-`RN-01-03`, `RN-01-25`, `RN-01-28` e `RN-01-37` (nenhuma solicitação cria cadastro, persona
-ou acesso), `RN-01-29` (sem CPF, CNPJ ou documento de quem aporta) e `RN-01-48` (critério
-que o Admin aplica ao aprovar ou recusar a entrega de dados).
+`RF-01-21` e `RF-01-56` (o crédito da proposta adotada), `RN-01-03`, `RN-01-25`, `RN-01-28`
+e `RN-01-37` (nenhuma solicitação cria cadastro, persona ou acesso), `RN-01-29` (sem CPF,
+CNPJ ou documento de quem aporta), `RN-01-48` (critério que o Admin aplica ao aprovar ou
+recusar a entrega de dados), `RN-01-49` (o prazo de resposta da solicitação de dados) e
+`RN-01-50` (o badge de protagonismo é o único global).
 
 A fatia anterior entregou o freio por origem **antes** das rotas que ele protege, e o deixou
 com três superfícies declaradas e nenhuma existindo: a consulta por nick, o formulário de
@@ -20,16 +22,19 @@ A fila é também a porta de entrada de quatro PRDs que vêm depois: a App 03 a 
 públicos (PRD-03 §6.3), o pré-cadastro do Apoiador chega por ela (PRD-14) e as sugestões
 vêm das Apps 05, 07, 08 e 09. Nenhum deles anda antes dela.
 
-`RN-01-48` acabou de ser decidido pelo fundador: a pendência "Entrega do conjunto de dados"
-foi gravada no documento-fonte (03 §12.3), movida no documento 09 e aplicada ao PRD-01, ao
-PRD-02 e ao PRD-03 no commit que antecede esta change.
+`RN-01-48` e `RN-01-49` acabaram de ser decididos pelo fundador: a pendência "Entrega do
+conjunto de dados" foi gravada no documento-fonte (03 §12.3), movida no documento 09 e
+aplicada ao PRD-01, ao PRD-02 e ao PRD-03 nos dois commits que antecedem esta change. O
+mesmo par de commits fechou as duas lacunas que travavam as `specs`: o prazo da solicitação
+de dados e a linha de atributos de `SugestaoOuProposta` no PRD-01 §8.
 
 ## What Changes
 
 - Nasce a **fila única de avaliação**, com uma entidade por natureza de item —
   `SolicitacaoDeParticipacao`, `SolicitacaoDeDados`, `SolicitacaoDeChave` e
   `SugestaoOuProposta`, como o PRD-01 §8 as nomeia — sobre um **ciclo comum**: situação,
-  prazo, quem avaliou, parecer, desfecho e data.
+  prazo, quem avaliou, parecer, desfecho e data. O **prazo é de 7 dias nas quatro**
+  (02 §1, 03 §§7, 12.3 e `RF-03-75`).
 - Nascem as **três rotas públicas de envio** do PRD-01 §9: `POST
   /v1/solicitacoes-de-participacao`, `POST /v1/solicitacoes-de-dados` e `POST
   /v1/solicitacoes-de-chave`. As duas primeiras **declaram a superfície do freio** por
@@ -41,7 +46,11 @@ PRD-02 e ao PRD-03 no commit que antecede esta change.
   declarado e comprovante anexado. A plataforma **não coleta CPF, CNPJ nem documento de
   identidade** (`RN-01-29`), e creditar moedas pelo aporte homologado é do PRD-07.
 - **Sugestões e propostas** entram na mesma fila por rota autenticada, com autor e persona
-  identificados, vindas das Apps 05, 07, 08 e 09.
+  identificados, vindas das Apps 05, 07, 08 e 09. A fila guarda **texto**: o áudio de
+  qualquer origem é descartado na transcrição (03 §12.2) e não chega ao núcleo.
+- A **proposta adotada credita 20 pontos extras e o badge de protagonismo** ao autor
+  (documento 11 §5, `RF-05-56`). É a fonte de extra que o documento 11 declara **só extra**,
+  ao lado das fontes duplas que a fatia 7 já entregou.
 - O **desfecho é ato de Admin**: aprova ou recusa com parecer, autor e data — escrita que a
   trilha de auditoria da fatia 11 já registra sozinha. Na solicitação de dados o critério é
   o de `RN-01-48`: solicitante identificado, finalidade declarada compatível com pesquisa ou
@@ -85,7 +94,17 @@ O que é do PRD-01 mas de outra fatia:
 
 ### Modified Capabilities
 
-Nenhuma. O freio por origem já declara em `protecao-das-rotas-publicas` que vale para os
+- `ponto-extra`: nasce a **fonte só extra**. Hoje a capacidade credita extra apenas quando a
+  fonte do documento 11 §5 é declarada **regular e extra** — mérito e auxílio aos colegas. A
+  proposta adotada credita **20 pontos extras sem nenhum ponto regular**, o que a spec ainda
+  não prevê (`RF-01-56`, 11 §5).
+- `pontos-niveis-e-badges`: o **badge de protagonismo** passa a ser concedido pelo desfecho
+  "adotada" da fila, e não por realização de atividade. Ele é a **exceção declarada** à regra
+  de que badge se vincula a trilha ou poder — a proposta que o rende é sobre a plataforma
+  inteira. A exceção foi decidida pelo fundador e gravada no documento 11 §7 antes desta
+  change (`RF-01-21`, `RN-01-50`, 11 §§5, 7).
+
+Não mudam: o freio por origem já declara em `protecao-das-rotas-publicas` que vale para os
 formulários de participação e de dados — as rotas novas se prendem ao mecanismo existente,
 sem mudar requisito dele. A trilha de auditoria já alcança toda escrita por middleware, e
 `chave-de-aplicacao` só muda quando a **emissão** entrar, na fatia seguinte.
@@ -98,21 +117,11 @@ sem mudar requisito dele. A trilha de auditoria já alcança toda escrita por mi
 - `backend/src/nucleo/principal.py`: registra o roteador da fila.
 - `backend/src/nucleo/protecao/`: as duas rotas de formulário declaram a superfície do
   freio; **nenhuma mudança no mecanismo**.
-- `docs/`: nada a atualizar. A decisão da entrega de dados já entrou nos documentos 03 e 09
-  e nos PRD-01, PRD-02 e PRD-03 no commit que antecede esta change. `docs/prds/index.md`
-  não muda de situação: o PRD-01 segue "aprovado", fatiado em changes.
-
-## Questões que precisam do fundador antes das `specs`
-
-1. **Atributos de `SugestaoOuProposta`.** O PRD-01 §8 nomeia a entidade no diagrama mas é a
-   única da fila **sem linha de atributos** na tabela. O PRD-05 diz que a sugestão do
-   Guerreiro(a) é texto **ou áudio de até 60 segundos, transcrito** (`RF-05-54`), e o
-   PRD-02 pede autor e persona identificados (`RF-02-25`). Faltam os campos e, sobretudo,
-   **de quem é a transcrição do áudio** — do núcleo, da App 05 ou do PRD-11. Nenhum artefato
-   do OpenSpec resolve isso.
-2. **O prazo de 7 dias vale para quais naturezas?** PRD-02 §5.2 e PRD-03 `RF-03-30` fixam
-   7 dias para a **solicitação de participação**. A solicitação de dados, a de chave e a
-   sugestão têm prazo declarado? Se sim, qual?
+- `backend/src/nucleo/ponto_extra/` e `backend/src/nucleo/pontuacao/`: a fonte só extra e o
+  badge de protagonismo, disparados pelo desfecho "adotada".
+- `docs/`: nada a atualizar. As decisões já entraram nos documentos 03 e 09 e nos PRD-01,
+  PRD-02 e PRD-03 nos dois commits que antecedem esta change. `docs/prds/index.md` não muda
+  de situação: o PRD-01 segue "aprovado", fatiado em changes.
 
 ## Questões que ficam para o `design.md`
 
