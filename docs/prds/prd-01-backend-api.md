@@ -247,6 +247,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-21` | Recusa de consentimento nunca exclui o Guerreiro(a) da atividade                                                                    | 11         | 03 §12      |
 | `RN-01-22` | O nick é chave de acompanhamento público, cedido pela família: o núcleo nunca o descobre nem o sugere a um adulto                   | 12         | 02 §1       |
 | `RN-01-23` | A etiqueta ODS não entra em ponto, nível ou badge; é opcional no Ciclo 01 e obrigatória na trilha a partir do Ciclo 02              | 20         | 11 §2.1     |
+| `RN-01-50` | O badge de protagonismo é o único global; todos os demais se vinculam a uma trilha ou a um poder                                    | —          | 11 §7       |
 | `RN-01-24` | A cobertura de ODS nunca é atributo de um Guerreiro(a): agrega por trilha, poder, comunidade e ciclo                                | 20         | 11 §2.1     |
 | `RN-01-25` | Solicitação de dados não cria cadastro nem acesso, e a entrega exige aprovação registrada de Admin                                  | 17         | 03 §12.3    |
 | `RN-01-26` | Saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin                                                    | 7, 17      | 02 §1       |
@@ -548,6 +549,7 @@ e o dos desafios de desbloqueio de cada trilha.
 | Aprovação por solicitante identificado, finalidade declarada e não reidentificação                   | 03 §12.3          | Entrega do conjunto de dados                 |
 | Solicitação de dados no mesmo prazo de 7 dias das demais solicitações                                | 03 §12.3          | Entrega do conjunto de dados                 |
 | `SugestaoOuProposta` com autor, alvo, texto transcrito, situação, prazo e motivo do retorno          | 03 §§7, 12.2      | Canal de sugestões do Guerreiro(a)           |
+| Badge de protagonismo é o único global, porque a proposta é sobre a plataforma inteira               | 11 §7             | Canal de sugestões do Guerreiro(a)           |
 
 ## 14. Pendências que permanecem
 
