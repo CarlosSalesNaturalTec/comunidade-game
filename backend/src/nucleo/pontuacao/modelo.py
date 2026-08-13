@@ -130,18 +130,22 @@ class TipoDeBadge(enum.StrEnum):
     de_nivel = "de_nivel"
     de_valores_e_causas = "de_valores_e_causas"
     de_autoria = "de_autoria"
+    de_protagonismo = "de_protagonismo"
 
 
 class Badge(Base):
     """Badge certificado por Guerreiro(a), trilha ou poder — nunca global
-    (`RF-01-21`, 11 §7). Exatamente uma das duas referências é preenchida;
-    nesta fatia sempre `trilha_id`, já que `de_nivel`, `de_valores_e_causas`
-    e `de_autoria` nascem de Resultado ou de Criação Original, sempre
-    alcançáveis por trilha. `poder_id` existe para o badge de território de
-    fatia futura (design — decisões). O badge de nível é concedido a cada
-    nível certificado — por isso não há restrição de unicidade por
-    (Guerreiro(a), trilha, tipo): um mesmo Guerreiro(a) acumula um badge de
-    nível por nível alcançado na mesma trilha.
+    (`RF-01-21`, 11 §7), com **uma única exceção: o badge de protagonismo**,
+    que é global porque a proposta que o rende é sobre a plataforma inteira,
+    não sobre uma trilha (`RN-01-50`). Fora dessa exceção, exatamente uma
+    das duas referências é preenchida; nesta fatia sempre `trilha_id`, já
+    que `de_nivel`, `de_valores_e_causas` e `de_autoria` nascem de
+    Resultado ou de Criação Original, sempre alcançáveis por trilha.
+    `poder_id` existe para o badge de território de fatia futura (design —
+    decisões). O badge de nível é concedido a cada nível certificado — por
+    isso não há restrição de unicidade por (Guerreiro(a), trilha, tipo): um
+    mesmo Guerreiro(a) acumula um badge de nível por nível alcançado na
+    mesma trilha.
     """
 
     __tablename__ = "badge"
@@ -161,7 +165,8 @@ class Badge(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "(trilha_id IS NOT NULL) != (poder_id IS NOT NULL)",
+            "(tipo = 'de_protagonismo' AND trilha_id IS NULL AND poder_id IS NULL) "
+            "OR (tipo != 'de_protagonismo' AND (trilha_id IS NOT NULL) != (poder_id IS NOT NULL))",
             name="ck_badge_trilha_ou_poder",
         ),
     )

@@ -149,6 +149,18 @@ class CotaDeLeituraExcedida(ErroDeAplicacao):
     mensagem = "Cota de leitura desta chave excedida. Tente novamente mais tarde."
 
 
+class DocumentoPessoalRecusado(ErroDeAplicacao):
+    status_code = 422
+    codigo = "documento_pessoal_recusado"
+    mensagem = "A plataforma não coleta CPF, CNPJ nem documento de identidade."
+
+
+class ConjuntoDeDadosNaoLiberado(ErroDeAplicacao):
+    status_code = 409
+    codigo = "conjunto_de_dados_nao_liberado"
+    mensagem = "O conjunto de dados só é liberado depois da aprovação de um Admin."
+
+
 class FreioPorOrigemAcionado(ErroDeAplicacao):
     """`RF-01-65`: leva o tempo de espera calculado pelo freio, que o
     manipulador de `principal.py` também expõe no cabeçalho `Retry-After`

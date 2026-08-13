@@ -89,6 +89,7 @@ MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {
                 Operacao.confirmacao_de_identidade_do_guerreiro,
                 Operacao.cadastro_biometrico_do_guerreiro,
                 Operacao.homologacao_da_equipe_da_trilha,
+                Operacao.propostas_de_evolucao,
             }
         ),
         "le": frozenset({Operacao.publico, Operacao.suas_turmas, Operacao.painel_do_dia_na_app_03}),
@@ -146,6 +147,22 @@ def exigir_permissao(operacao: Operacao, acesso: Acesso):
         contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     ) -> ContextoDaSessao:
         if not conferir_permissao(contexto.papel, acesso, operacao):
+            raise PermissaoNegada()
+        return contexto
+
+    return _dependencia
+
+
+def exigir_qualquer_permissao(operacoes: frozenset[Operacao], acesso: Acesso):
+    """Mesma dependência única, para a rota que uma mesma ação alcança por
+    operações de nomes diferentes conforme o papel — caso da fila de
+    avaliação, em que `suas_sugestoes`, `solicitacoes_e_propostas` e
+    `propostas_de_evolucao` levam à mesma rota (`RF-01-25`)."""
+
+    def _dependencia(
+        contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    ) -> ContextoDaSessao:
+        if not any(conferir_permissao(contexto.papel, acesso, operacao) for operacao in operacoes):
             raise PermissaoNegada()
         return contexto
 

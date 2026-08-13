@@ -51,6 +51,12 @@ class Configuracao(BaseSettings):
     protecao_freio_atraso_fator_de_crescimento: float = 2.0
     protecao_freio_atraso_teto: timedelta = timedelta(minutes=15)
 
+    # Porta de armazenamento do comprovante (design — Decisions): disco fora
+    # de produção, sem exigir credencial de nuvem; Cloud Storage em produção
+    # (documento 03 §1).
+    armazenamento_diretorio_local: str = "./armazenamento"
+    armazenamento_bucket_cloud_storage: str = ""
+
 
 @lru_cache
 def obter_configuracao() -> Configuracao:

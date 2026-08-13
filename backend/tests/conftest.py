@@ -88,7 +88,7 @@ def sessao(engine):
 
 
 @pytest.fixture
-def configuracao():
+def configuracao(tmp_path):
     return Configuracao(
         ambiente="desenvolvimento",
         dsn_banco=DSN_DE_TESTE,
@@ -101,6 +101,7 @@ def configuracao():
         argon2_memoria_kib=8,
         argon2_iteracoes=1,
         argon2_paralelismo=1,
+        armazenamento_diretorio_local=str(tmp_path / "armazenamento"),
     )
 
 
@@ -173,6 +174,7 @@ def _montar_roteador_de_teste() -> APIRouter:
 def app(sessao, configuracao):
     from nucleo.auditoria.rotas import roteador as roteador_de_auditoria
     from nucleo.biometria.rotas import roteador as roteador_de_biometria
+    from nucleo.fila.rotas import roteador as roteador_de_fila
     from nucleo.personas.rotas import roteador as roteador_de_personas
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
     from nucleo.sessoes.rotas import roteador as roteador_de_sessoes
@@ -186,6 +188,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_responsaveis)
     incluir_roteador_de_dados(aplicacao, roteador_de_biometria)
     incluir_roteador_de_dados(aplicacao, roteador_de_auditoria)
+    incluir_roteador_de_dados(aplicacao, roteador_de_fila)
     return aplicacao
 
 
