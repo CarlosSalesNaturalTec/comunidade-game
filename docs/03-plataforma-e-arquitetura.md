@@ -895,6 +895,11 @@ mesma autorização única do responsável, sem termo à parte por divulgação.
   registrada com motivo.
 - A entrega é **anonimizada** em qualquer granularidade aprovada: nenhum conjunto sai com
   vínculo de autoria, nome ou nick de Guerreiro(a).
-
-> **A definir:** formato de exportação, licença de uso do conjunto entregue e o critério que o
-> Admin aplica ao aprovar ou recusar o pedido.
+- O conjunto sai em **CSV** para as séries, com uma tabela por arquivo e cabeçalho declarado,
+  **GeoJSON** para a geometria e um **dicionário de dados** que descreve cada campo, a
+  unidade, a cadência e a origem. Formatos abertos, legíveis em planilha e em SIG.
+- O conjunto é licenciado em **CC BY-SA**, a mesma licença do conteúdo educacional: quem usa
+  credita a comunidade que produziu o dado, e o derivado herda a licença.
+- O Admin **aprova** o pedido com solicitante identificado, finalidade declarada compatível
+  com pesquisa ou política pública e compromisso de não tentar reidentificar ninguém. A
+  **recusa** é registrada com motivo, nessas mesmas três frentes.

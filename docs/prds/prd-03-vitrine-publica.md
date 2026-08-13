@@ -298,7 +298,7 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RF-03-30` | Tela informa o prazo de resposta de 7 dias e que quem avalia é um Admin                                                                     | essencial  |
 | `RF-03-31` | Solicitação enviada é gravada e entra na fila da App 03, com confirmação na tela                                                            | essencial  |
 | `RF-03-32` | Formulário de dados exige solicitante, instituição, e-mail e finalidade declarada                                                           | essencial  |
-| `RF-03-33` | Tela do formulário de dados declara que a entrega é gratuita, anonimizada e depende de aprovação                                            | essencial  |
+| `RF-03-33` | Tela do formulário de dados declara que a entrega é gratuita, anonimizada, licenciada em CC BY-SA e dependente de aprovação                 | essencial  |
 | `RF-03-34` | Nenhum formulário devolve dado, arquivo ou acesso no ato do envio                                                                           | essencial  |
 | `RF-03-35` | Envio repetido dos formulários de participação e de dados, da mesma origem, encontra atraso progressivo, com o motivo e a espera explicados | essencial  |
 | `RF-03-36` | Consulta por nick tem limite por origem e janela, com atraso progressivo                                                                    | essencial  |
