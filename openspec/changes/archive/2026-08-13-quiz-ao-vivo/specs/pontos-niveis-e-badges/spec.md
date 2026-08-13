@@ -1,9 +1,5 @@
-## Purpose
+## MODIFIED Requirements
 
-O motor de pontuação regular — pontos, níveis e badges por trilha ou poder, derivados do
-Resultado — é o que a vitrine, os cards públicos e o App 04 vão ler sobre a progressão de cada
-Guerreiro(a).
-## Requirements
 ### Requirement: Ponto regular é creditado por trilha ou poder e nunca debitado
 
 O núcleo SHALL creditar **ponto regular** por **trilha ou poder** — nunca globalmente — a partir
@@ -46,6 +42,8 @@ equipe. O ponto regular SHALL **nunca ser debitado**, em nenhuma operação. (`R
 
 - **WHEN** uma partida de quiz sobre uma atividade da trilha 1 é encerrada com acertos
 - **THEN** o núcleo credita o ponto regular apurado à trilha 1, e não à aula nem a outra trilha
+
+## ADDED Requirements
 
 ### Requirement: A partida de quiz credita 1 por acerto, 1 de bônus à primeira e no máximo 10
 
@@ -90,62 +88,3 @@ atividade** sobre a qual a partida corre. Pergunta anulada NÃO SHALL entrar na 
 - **WHEN** uma equipe erra uma pergunta da partida
 - **THEN** o núcleo não credita ponto por ela e não reduz o saldo da equipe nem de nenhum
   integrante
-
-### Requirement: Nível é percurso por trilha ou poder e nunca regride
-
-O núcleo SHALL manter o **nível** por trilha ou poder, derivado do **percurso das missões
-obrigatórias desbloqueadas** — nunca do total de pontos acumulado (11 §6). Nesta capacidade o
-núcleo SHALL certificar os níveis **1** (inscrito na trilha e primeira atividade realizada), **2**
-(um terço das missões obrigatórias desbloqueadas), **4** (todas as obrigatórias desbloqueadas e
-ao menos um Resultado com mérito extra por auxílio aos colegas) e **5 — Mestre Aprendiz** (a
-criação original da trilha validada pelo Mestre autor, certificada a **cada integrante** da
-equipe que a entregou). Nível conquistado SHALL **nunca regredir**. (`RF-01-21`, `RF-01-64`,
-11 §6)
-
-#### Scenario: Primeira atividade realizada alcança o nível 1
-
-- **WHEN** o Guerreiro(a) tem a primeira atividade da trilha com Resultado registrado
-- **THEN** o núcleo certifica o nível 1 naquela trilha
-
-#### Scenario: Um terço das obrigatórias desbloqueadas alcança o nível 2
-
-- **WHEN** o Guerreiro(a) tem Resultado registrado para um terço das missões obrigatórias da
-  trilha
-- **THEN** o núcleo certifica o nível 2 naquela trilha
-
-#### Scenario: Nível conquistado não regride
-
-- **WHEN** um Guerreiro(a) já certificado num nível deixa de atender ao critério que o levou lá
-- **THEN** o núcleo mantém o nível já certificado
-
-#### Scenario: Criação original validada alcança o nível 5
-
-- **WHEN** o Mestre autor da trilha valida a criação original entregue pela equipe da trilha
-- **THEN** o núcleo certifica o nível 5 — Mestre Aprendiz — naquela trilha a cada integrante da
-  equipe
-
-### Requirement: Badge é conquistado por trilha ou por poder, nunca global
-
-O núcleo SHALL conceder **badge** sempre vinculado a uma trilha ou a um poder, nunca de forma
-global (11 §7). Nesta capacidade o núcleo SHALL conceder o **badge de nível** a cada nível
-certificado, o **badge de valores/causas** a Resultado de atividade de natureza "valores e temas
-transversais" e o **badge de autoria** a **cada integrante** da equipe cuja criação original for
-validada pelo Mestre autor. O badge de conquista **Guardião do Acervo** não nasce de Resultado
-nem de Criação Original — ele depende de encontro presencial identificável (`Aula/Agenda`) — e
-fica para a fatia que o entregar. (`RF-01-21`, `RF-01-64`, 11 §7)
-
-#### Scenario: Badge de nível concedido ao certificar um nível
-
-- **WHEN** o núcleo certifica um nível numa trilha
-- **THEN** o núcleo concede o badge de nível correspondente àquela trilha
-
-#### Scenario: Badge de valores/causas concedido por atividade da natureza
-
-- **WHEN** o Guerreiro(a) tem Resultado de atividade de natureza "valores e temas transversais"
-- **THEN** o núcleo concede o badge de valores/causas correspondente à trilha ou ao poder
-
-#### Scenario: Badge de autoria concedido ao validar a criação original
-
-- **WHEN** o Mestre autor da trilha valida a criação original entregue pela equipe da trilha
-- **THEN** o núcleo concede o badge de autoria daquela trilha a cada integrante da equipe
-

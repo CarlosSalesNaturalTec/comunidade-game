@@ -322,13 +322,13 @@ O desenho já elimina as duas fraudes mais prováveis: o jogo **não escreve nad
 Guerreiro(a) entra em toda aplicação com login **por nick e imagem**, de modo que a atividade é
 comprovadamente dele. As demais travas:
 
-| Risco                             | Trava                                                                                                  |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| Dado de coleta inventado          | Valor fora da faixa declarada no desafio entra como **a conferir** e só pontua com validação do Mestre |
-| Registro em massa                 | Pontua o número de registros por cadência declarado no desafio; o excedente fica sem crédito           |
-| Registro inverossímil             | Auditoria por amostragem do Mestre; a invalidação **estorna apenas aquele registro**                   |
-| Resposta de quiz por outra equipe | O aparelho é vinculado à equipe na abertura da partida, e cada Guerreiro(a) joga por uma só equipe     |
-| Lançamento indevido               | Só o Mestre autor lança; lançamento não é editável e a correção referencia o original                  |
+| Risco                             | Trava                                                                                                                            |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Dado de coleta inventado          | Valor fora da faixa declarada no desafio entra como **a conferir** e só pontua com validação do Mestre                           |
+| Registro em massa                 | Pontua o número de registros por cadência declarado no desafio; o excedente fica sem crédito                                     |
+| Registro inverossímil             | Auditoria por amostragem do Mestre; a invalidação **estorna apenas aquele registro**                                             |
+| Resposta de quiz por outra equipe | Cada Guerreiro(a) joga por uma só equipe na partida, e a resposta é registrada pela equipe — a plataforma não controla aparelhos |
+| Lançamento indevido               | Só o Mestre autor lança; lançamento não é editável e a correção referencia o original                                            |
 
 Nenhuma dessas travas depende de infraestrutura sofisticada — antifraude que não roda na rede
 do ponto de apoio não é antifraude.

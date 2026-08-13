@@ -540,6 +540,21 @@ def criar_equipe(sessao):
 
 
 @pytest.fixture
+def adicionar_integrante(sessao):
+    """Vincula direto, sem passar por `entrar_na_equipe`: montar uma equipe
+    de vários integrantes é cenário do teste, não o que ele exercita."""
+
+    def _adicionar(equipe: Equipe, persona: Persona) -> IntegranteDaEquipe:
+        integrante = IntegranteDaEquipe(equipe_id=equipe.id, persona_id=persona.id)
+        sessao.add(integrante)
+        sessao.commit()
+        sessao.refresh(integrante)
+        return integrante
+
+    return _adicionar
+
+
+@pytest.fixture
 def criar_template_biometrico(sessao, configuracao):
     def _criar(
         guerreiro: Persona,

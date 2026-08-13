@@ -322,9 +322,9 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
 ## 4. App 01 — Aula presencial: trilhas, equipes e assistente
 
 O segundo caminho do App 01 é o que a turma usa durante o encontro: **o conteúdo das trilhas,
-em equipe**. A aula presencial tem **dois ou mais aparelhos, um por equipe** — o mesmo aparelho
-em que a equipe acompanha a missão da trilha, responde ao Quiz ao Vivo e conversa com o
-assistente. A entrada é a de sempre: **nick e imagem** (§1.1).
+em equipe**. A aula presencial tem **um aparelho por equipe**, em quantidade que varia a cada
+encontro — o mesmo aparelho em que a equipe acompanha a missão da trilha, responde ao Quiz ao
+Vivo e conversa com o assistente. A entrada é a de sempre: **nick e imagem** (§1.1).
 
 ### 4.1 Equipes formadas na hora
 
