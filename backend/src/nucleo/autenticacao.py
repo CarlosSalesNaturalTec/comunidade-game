@@ -69,4 +69,8 @@ def exigir_persona(
     if tem_troca_pendente and request.url.path != ROTA_DE_TROCA_DE_SENHA:
         raise TrocaDeSenhaPendente()
 
-    return ContextoDaSessao(persona_id=persona.id, papel=persona.papel, sessao_id=registro.id)
+    contexto = ContextoDaSessao(persona_id=persona.id, papel=persona.papel, sessao_id=registro.id)
+    # A trilha de auditoria (RF-01-29) lê este contexto de `request.state`
+    # depois de `call_next`, sem recalcular sessão — nenhuma rota muda.
+    request.state.contexto_da_sessao = contexto
+    return contexto

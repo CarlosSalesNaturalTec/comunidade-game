@@ -65,9 +65,13 @@ def exigir_chave_de_aplicacao(
     if not tudo_certo:
         raise ChaveInvalida()
 
-    return ContextoDaChave(
+    contexto = ContextoDaChave(
         id=str(registro.id),
         aplicacao=registro.aplicacao,
         ambiente=registro.ambiente,
         natureza=registro.natureza.value,
     )
+    # A trilha de auditoria (RF-01-29) lê este contexto de `request.state`
+    # depois de `call_next`, sem recalcular a chave — nenhuma rota muda.
+    request.state.contexto_da_chave = contexto
+    return contexto

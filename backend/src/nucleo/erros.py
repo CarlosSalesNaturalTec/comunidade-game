@@ -119,6 +119,12 @@ class AcessoAoTemplateImutavel(ErroDeAplicacao):
     mensagem = "Registro de acesso ao template biométrico é somente inserção."
 
 
+class AuditoriaImutavel(ErroDeAplicacao):
+    status_code = 409
+    codigo = "auditoria_imutavel"
+    mensagem = "Registro de auditoria é somente inserção."
+
+
 class DebitoDePontoRegularRecusado(ErroDeAplicacao):
     status_code = 409
     codigo = "debito_de_ponto_regular_recusado"
