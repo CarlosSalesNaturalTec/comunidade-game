@@ -242,6 +242,21 @@ def conceder_badge_de_autoria(
     sessao.flush()
 
 
+def conceder_badge_de_protagonismo(sessao: Session, *, guerreiro_id: uuid.UUID) -> None:
+    """Único badge global (`RN-01-50`): concedido ao autor da sugestão
+    adotada, sem trilha nem poder, e uma única vez por autor (`RF-01-21`,
+    11 §7)."""
+    ja_tem = (
+        sessao.query(Badge)
+        .filter_by(guerreiro_id=guerreiro_id, tipo=TipoDeBadge.de_protagonismo)
+        .first()
+    )
+    if ja_tem is not None:
+        return
+    sessao.add(Badge(guerreiro_id=guerreiro_id, tipo=TipoDeBadge.de_protagonismo))
+    sessao.flush()
+
+
 def apurar_partida_de_quiz(sessao: Session, *, partida: PartidaDeQuiz) -> dict[uuid.UUID, int]:
     """Apuração por equipe disputante, já com o teto da partida aplicado —
     1 por acerto e 1 de bônus à primeira a acertar cada pergunta, pela

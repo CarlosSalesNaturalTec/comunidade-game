@@ -207,35 +207,36 @@ conduz a partida de quiz das suas aulas — nada além disso.
 
 ### 6.2 Filas de avaliação
 
-| ID         | Requisito                                                                                           | Prioridade |
-| ---------- | --------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-18` | Fila de solicitações exibe nome, e-mail, WhatsApp, pretensão, apresentação, instituição e links     | essencial  |
-| `RF-02-19` | Admin conclui a solicitação como aceita ou recusada, com parecer, autor e data registrados          | essencial  |
-| `RF-02-65` | Solicitação de participação sem desfecho em 7 dias aparece em atraso na fila                        | essencial  |
-| `RF-02-20` | Solicitação aceita abre o cadastro de Mestre ou Apoiador pré-preenchido, sem criar acesso           | essencial  |
-| `RF-02-77` | Fila de solicitações de dados exibe solicitante, instituição, finalidade declarada e recorte pedido | essencial  |
-| `RF-02-78` | Admin aprova ou recusa a solicitação de dados, com motivo, autor e data registrados                 | essencial  |
-| `RF-02-79` | Entrega aprovada é gratuita e anonimizada, com registro do que foi entregue e a quem                | essencial  |
-| `RF-02-21` | Fila de solicitações de novo local alerta enquanto houver solicitação em aberto                     | essencial  |
-| `RF-02-22` | Admin aprova a solicitação de local, criando-o, ou recusa com motivo                                | essencial  |
-| `RF-02-23` | Fila de solicitações dos responsáveis exibe protocolo, tipo, situação e o prazo de 7 dias           | essencial  |
-| `RF-02-24` | Admin registra o desfecho da solicitação do responsável, com quem tratou e quando                   | essencial  |
-| `RF-02-66` | Solicitação de responsável sem desfecho em 7 dias aparece em atraso na fila                         | essencial  |
-| `RF-02-25` | Fila única reúne sugestões e propostas das Apps 05, 07, 08 e 09, identificando autor e persona      | essencial  |
-| `RF-02-26` | Admin avalia a sugestão, muda o status e registra o retorno a quem propôs                           | essencial  |
-| `RF-02-80` | Admin edita o conteúdo institucional da vitrine, com autor e data do que publicou                   | essencial  |
-| `RF-02-83` | Fila do pré-cadastro exibe a identificação, o aporte declarado e o comprovante anexado              | essencial  |
-| `RF-02-84` | Admin valida o comprovante e homologa o aporte, que é convertido em moedas                          | essencial  |
-| `RF-02-85` | Aprovação cria o cadastro de Apoiador e publica o card na vitrine com o total em moedas             | essencial  |
-| `RF-02-86` | Pré-cadastro sem comprovante legível é recusado com motivo, sem criar cadastro nem aporte           | essencial  |
-| `RF-02-87` | Admin lê a fila das solicitações de chave, com quem pediu e o que pretende construir                | essencial  |
-| `RF-02-88` | Admin aprova ou recusa a solicitação de chave, com parecer e autoria                                | essencial  |
-| `RF-02-89` | Aprovação emite a chave e exibe o segredo uma única vez, para entrega ao solicitante                | essencial  |
-| `RF-02-90` | Painel mostra as chaves emitidas com prazo de apresentação, URL apresentada e situação              | essencial  |
-| `RF-02-91` | Painel destaca as chaves com prazo a vencer e as revogadas automaticamente por prazo vencido        | essencial  |
-| `RF-02-92` | Admin revoga chave a qualquer tempo, com motivo registrado                                          | essencial  |
-| `RF-02-27` | Fila de desafios extras mostra apenas os já validados pelo Mestre da trilha                         | essencial  |
-| `RF-02-28` | Admin aprova o desafio extra, e a aprovação é recusada sem o lastro da recompensa registrado        | essencial  |
+| ID         | Requisito                                                                                                                                      | Prioridade |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-02-18` | Fila de solicitações exibe nome, e-mail, WhatsApp, pretensão, apresentação, instituição e links                                                | essencial  |
+| `RF-02-19` | Admin conclui a solicitação como aceita ou recusada, com parecer, autor e data registrados                                                     | essencial  |
+| `RF-02-65` | Solicitação de participação sem desfecho em 7 dias aparece em atraso na fila                                                                   | essencial  |
+| `RF-02-20` | Solicitação aceita abre o cadastro de Mestre ou Apoiador pré-preenchido, sem criar acesso                                                      | essencial  |
+| `RF-02-77` | Fila de solicitações de dados exibe solicitante, instituição, finalidade declarada e recorte pedido                                            | essencial  |
+| `RF-02-78` | Admin aprova ou recusa a solicitação de dados, com motivo, autor e data registrados                                                            | essencial  |
+| `RF-02-93` | Fila da solicitação de dados apresenta ao Admin o critério de aprovação: solicitante identificado, finalidade compatível e não reidentificação | essencial  |
+| `RF-02-79` | Entrega aprovada é gratuita e anonimizada, com registro do que foi entregue e a quem                                                           | essencial  |
+| `RF-02-21` | Fila de solicitações de novo local alerta enquanto houver solicitação em aberto                                                                | essencial  |
+| `RF-02-22` | Admin aprova a solicitação de local, criando-o, ou recusa com motivo                                                                           | essencial  |
+| `RF-02-23` | Fila de solicitações dos responsáveis exibe protocolo, tipo, situação e o prazo de 7 dias                                                      | essencial  |
+| `RF-02-24` | Admin registra o desfecho da solicitação do responsável, com quem tratou e quando                                                              | essencial  |
+| `RF-02-66` | Solicitação de responsável sem desfecho em 7 dias aparece em atraso na fila                                                                    | essencial  |
+| `RF-02-25` | Fila única reúne sugestões e propostas das Apps 05, 07, 08 e 09, identificando autor e persona                                                 | essencial  |
+| `RF-02-26` | Admin avalia a sugestão, muda o status e registra o retorno a quem propôs                                                                      | essencial  |
+| `RF-02-80` | Admin edita o conteúdo institucional da vitrine, com autor e data do que publicou                                                              | essencial  |
+| `RF-02-83` | Fila do pré-cadastro exibe a identificação, o aporte declarado e o comprovante anexado                                                         | essencial  |
+| `RF-02-84` | Admin valida o comprovante e homologa o aporte, que é convertido em moedas                                                                     | essencial  |
+| `RF-02-85` | Aprovação cria o cadastro de Apoiador e publica o card na vitrine com o total em moedas                                                        | essencial  |
+| `RF-02-86` | Pré-cadastro sem comprovante legível é recusado com motivo, sem criar cadastro nem aporte                                                      | essencial  |
+| `RF-02-87` | Admin lê a fila das solicitações de chave, com quem pediu e o que pretende construir                                                           | essencial  |
+| `RF-02-88` | Admin aprova ou recusa a solicitação de chave, com parecer e autoria                                                                           | essencial  |
+| `RF-02-89` | Aprovação emite a chave e exibe o segredo uma única vez, para entrega ao solicitante                                                           | essencial  |
+| `RF-02-90` | Painel mostra as chaves emitidas com prazo de apresentação, URL apresentada e situação                                                         | essencial  |
+| `RF-02-91` | Painel destaca as chaves com prazo a vencer e as revogadas automaticamente por prazo vencido                                                   | essencial  |
+| `RF-02-92` | Admin revoga chave a qualquer tempo, com motivo registrado                                                                                     | essencial  |
+| `RF-02-27` | Fila de desafios extras mostra apenas os já validados pelo Mestre da trilha                                                                    | essencial  |
+| `RF-02-28` | Admin aprova o desafio extra, e a aprovação é recusada sem o lastro da recompensa registrado                                                   | essencial  |
 
 ### 6.3 Atividades, agenda e lançamentos
 
@@ -539,6 +540,7 @@ foi definida no PRD-01 — a App 03 apenas a consulta.
 | `RF-02-11` a `RF-02-17` | 02 §1, 03 §5 e PRD-08 (comunidade, default e território) |
 | `RF-02-18` a `RF-02-20` | 02 §1 e 03 §§5, 8 (solicitação de participação)          |
 | `RF-02-77` a `RF-02-79` | 03 §12.3 (entrega de dados aprovada por Admin)           |
+| `RF-02-93`              | 03 §12.3 (critério de aprovação da entrega)              |
 | `RF-02-80`              | 03 §8 (conteúdo institucional da vitrine)                |
 | `RF-02-83` a `RF-02-86` | 02 §1 e 04 §2 (pré-cadastro, comprovante e homologação)  |
 | `RF-02-87` a `RF-02-92` | 03 §§1, 8 (solicitação, emissão, prazo e revogação)      |

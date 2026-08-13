@@ -131,11 +131,12 @@ def test_openapi_responde_sem_chave(cliente):
 
 def test_openapi_nao_serve_dado_de_dominio(cliente):
     """ "guerreiro" é um valor legítimo do enum `Papel`, contrato desta fatia
-    (RF-01-19) — o que a rota nunca serve é entidade de domínio de fatia
-    futura."""
+    (RF-01-19), e "aporte" é o aporte declarado na solicitação de
+    participação (`RF-01-25`, PRD-01 §8) — o que a rota nunca serve é
+    entidade de domínio de fatia futura."""
     schema = cliente.get("/openapi.json").json()
     texto = str(schema).lower()
-    for termo in ("comunidade virtual", "aporte", "território"):
+    for termo in ("comunidade virtual", "território"):
         assert termo not in texto
 
 
@@ -147,8 +148,11 @@ def test_ler_schema_nao_abre_rota_de_dados(cliente):
 
 def test_nenhuma_rota_lista_ou_sugere_nick(cliente):
     """`RN-01-22`: o núcleo nunca descobre nem sugere um nick — não existe
-    rota de listagem, busca parcial ou sugestão em toda a API."""
+    rota de listagem, busca parcial ou sugestão de nick em toda a API.
+    `/v1/sugestoes` é a fila de propostas da gestão (`RF-01-25`), sem
+    relação com nick — só a combinação dos dois termos denunciaria isso."""
     schema = cliente.get("/openapi.json").json()
     for caminho in schema["paths"]:
-        assert "nicks" not in caminho.lower()
-        assert "sugest" not in caminho.lower()
+        caminho_em_minusculas = caminho.lower()
+        assert "nicks" not in caminho_em_minusculas
+        assert "nick" not in caminho_em_minusculas or "sugest" not in caminho_em_minusculas

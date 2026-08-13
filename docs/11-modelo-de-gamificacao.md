@@ -377,7 +377,8 @@ Badges representam poderes e conquistas e são um dos principais elementos dos c
 | **De autoria**        | Badge de autoria — criações originais apresentadas em culminância | Criação original validada pelo Mestre                 |
 | **De protagonismo**   | Proposta de evolução da plataforma adotada                        | Sugestão do Guerreiro(a) adotada pela gestão          |
 
-Regra geral: **badge é por trilha ou por poder, não global.**
+Regra geral: **badge é por trilha ou por poder, não global.** A **única exceção é o badge de
+protagonismo**: a proposta que o rende é sobre a plataforma inteira, não sobre uma trilha.
 
 ## 8. Reflexos no ecossistema
 
