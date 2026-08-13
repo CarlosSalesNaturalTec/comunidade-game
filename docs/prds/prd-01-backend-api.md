@@ -540,6 +540,8 @@ e o dos desafios de desbloqueio de cada trilha.
 | API documentada em OpenAPI desde o primeiro _endpoint_, com schema aberto fora de `/v1`              | 03 §§1, 1.1       | Documentação da API em OpenAPI               |
 | Chave por aplicação e por ambiente; dois ambientes no Ciclo 01, e 16 chaves na implantação           | 03 §§1, 1.13      | Escopo da chave e ambientes do Ciclo 01      |
 | Chave de terceiro sempre de produção, identificada pela solicitação aprovada e não pelo nome         | 03 §8             | Escopo da chave e ambientes do Ciclo 01      |
+| Emissão entrega identificador e segredo; o identificador é o que apresenta a URL                     | 03 §8             | Escopo da chave e ambientes do Ciclo 01      |
+| Prazo de apresentação é parâmetro declarado na implantação, com 30 dias como valor inicial           | 03 §8             | Escopo da chave e ambientes do Ciclo 01      |
 | A busca nunca descobre o nick; a exibição pública alcança quem tem divulgação autorizada             | 02 §1, 03 §10     | Busca por nick e exibição pública            |
 | Python 3.12 e conjunto de regras do Ruff, com cobertura medida sem limiar que bloqueie               | 03 §1.13          | Ferramentas da esteira de CI do backend      |
 | Trilha é bem comum da plataforma; o filtro por comunidade recai sobre o percurso, não sobre ela      | 02 §3             | A trilha é bem comum da plataforma           |

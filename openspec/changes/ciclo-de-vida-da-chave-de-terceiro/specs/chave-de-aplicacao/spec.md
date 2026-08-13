@@ -5,14 +5,16 @@
 O núcleo SHALL emitir chave de natureza **de terceiro** apenas por ato de Admin sobre uma
 solicitação de chave já **aprovada** na fila de avaliação. O núcleo SHALL recusar a emissão
 sobre solicitação em outra situação, e cada solicitação aprovada SHALL render **uma única**
-chave. A emissão SHALL devolver o segredo uma única vez, na forma que a capacidade já exige.
-(`RF-01-50`, `RN-01-35`, `RN-01-51`)
+chave. A emissão SHALL devolver o **identificador** da chave e o **segredo**, este uma única
+vez, na forma que a capacidade já exige — são os dois dados que o Admin entrega ao
+solicitante, e é o identificador que ele apresenta ao registrar a URL. (`RF-01-50`,
+`RN-01-35`, `RN-01-51`, `RF-02-89`)
 
 #### Scenario: Solicitação aprovada rende a chave
 
 - **WHEN** um Admin emite a chave de uma solicitação aprovada
 - **THEN** o núcleo cria a chave de natureza de terceiro, vincula-a à solicitação e devolve o
-  segredo uma única vez
+  identificador e o segredo, este uma única vez
 
 #### Scenario: Solicitação não aprovada não rende chave
 

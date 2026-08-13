@@ -583,7 +583,10 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
     apresentada no prazo, **a chave é revogada**, e nova solicitação é sempre possível. A chave
     de terceiro é sempre de **produção** — desenvolvimento é ambiente das aplicações do
     projeto — e **cada solicitação aprovada rende uma chave**: é a solicitação que identifica a
-    chave, não o nome da aplicação, que dois terceiros podem repetir.
+    chave, não o nome da aplicação, que dois terceiros podem repetir. A emissão entrega ao
+    solicitante **o identificador da chave e o segredo** — o identificador é o que ele
+    apresenta ao registrar a URL, e o prazo de apresentação é **parâmetro declarado na
+    implantação**, com os 30 dias como valor inicial.
   - **Link para o repositório no GitHub.**
 
   A chave é o que dá acesso à API — **sem ela a plataforma não responde** — e é também o que

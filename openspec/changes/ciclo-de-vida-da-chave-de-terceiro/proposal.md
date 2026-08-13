@@ -102,9 +102,11 @@ emissão e a revogação por _middleware_, sem nada a declarar.
 - `backend/src/nucleo/chaves/conferencia.py`: a conferência passa a observar o prazo vencido.
 - `backend/src/nucleo/fila/`: a solicitação de chave guarda a chave emitida.
 - `backend/src/nucleo/principal.py`: registra o roteador de chaves.
-- `docs/`: nada a atualizar. As duas decisões entraram nos documentos 02, 03 e 09 e nos PRD-01
-  e PRD-03 no commit que antecede esta change. `docs/prds/index.md` não muda de situação: o
-  PRD-01 segue "aprovado", fatiado em changes.
+- `docs/`: o documento 03 §8 e o documento 09 passam a dizer que a emissão entrega ao
+  solicitante **o identificador e o segredo**, e que o prazo é parâmetro da implantação;
+  `RF-02-89` acompanha, porque é a App 03 que exibe e entrega. As demais decisões entraram nos
+  documentos 02, 03 e 09 e nos PRD-01 e PRD-03 no commit que antecede esta change.
+  `docs/prds/index.md` não muda de situação: o PRD-01 segue "aprovado", fatiado em changes.
 
 ## Questões levadas ao fundador antes do desenho
 

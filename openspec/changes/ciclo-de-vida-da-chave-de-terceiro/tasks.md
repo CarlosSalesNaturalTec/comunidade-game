@@ -105,9 +105,10 @@
 
 ## 8. Documentação
 
-- [ ] 8.1 Nada a atualizar em `docs/`: as duas decisões desta change entraram nos documentos
-      02, 03 e 09 e nos PRD-01 e PRD-03 no commit que antecede a change, e `docs/prds/index.md`
-      não muda de situação — o PRD-01 segue "aprovado", fatiado em changes. Verificável:
-      `git diff` da change não toca `docs/`
+- [ ] 8.1 Conferir que `docs/` já reflete o que esta change implementa: documento 03 §8 e
+      documento 09 com a entrega do identificador e o prazo como parâmetro da implantação,
+      `RF-02-89` com o identificador, e as demais decisões nos documentos 02, 03 e 09 e nos
+      PRD-01 e PRD-03. `docs/prds/index.md` não muda de situação — o PRD-01 segue "aprovado",
+      fatiado em changes. Verificável: nenhuma regra implementada fica sem origem em `docs/`
 - [ ] 8.2 Rodar `npm run fix`, `npm run lint` e `mkdocs build --strict` antes de abrir o PR,
       ainda que `docs/` não mude nesta change. Verificável: os três passam
