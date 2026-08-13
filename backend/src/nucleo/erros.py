@@ -141,3 +141,23 @@ class AutenticacaoBiometricaInvalida(ErroDeAplicacao):
     status_code = 401
     codigo = "autenticacao_biometrica_invalida"
     mensagem = "Nick ou imagem não reconhecidos. Peça a um Mestre para confirmar sua entrada."
+
+
+class CotaDeLeituraExcedida(ErroDeAplicacao):
+    status_code = 429
+    codigo = "cota_de_leitura_excedida"
+    mensagem = "Cota de leitura desta chave excedida. Tente novamente mais tarde."
+
+
+class FreioPorOrigemAcionado(ErroDeAplicacao):
+    """`RF-01-65`: leva o tempo de espera calculado pelo freio, que o
+    manipulador de `principal.py` também expõe no cabeçalho `Retry-After`
+    (design — Decisions)."""
+
+    status_code = 429
+    codigo = "freio_por_origem_acionado"
+    mensagem = "Muitas tentativas em pouco tempo. Tente novamente mais tarde."
+
+    def __init__(self, mensagem: str | None = None, *, tempo_de_espera_em_segundos: int) -> None:
+        super().__init__(mensagem)
+        self.tempo_de_espera_em_segundos = tempo_de_espera_em_segundos

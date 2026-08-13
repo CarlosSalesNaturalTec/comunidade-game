@@ -37,6 +37,7 @@ from nucleo.personas.modelo import (
 from nucleo.personas.senha import calcular_hash
 from nucleo.poderes.modelo import NaturezaDoPoder, Poder, VigenciaDoPoder
 from nucleo.principal import criar_app, incluir_roteador_de_dados
+from nucleo.protecao.freio import exigir_freio_por_origem
 from nucleo.responsaveis.modelo import VinculoResponsavel
 from nucleo.sessoes.modelo import ComoAutenticou, Sessao
 from nucleo.sessoes.token import calcular_resumo as calcular_resumo_do_token
@@ -144,6 +145,27 @@ def _montar_roteador_de_teste() -> APIRouter:
     def quebra():
         raise RuntimeError("falha proposital de teste")
 
+    @roteador.get(
+        "/consulta-por-nick",
+        dependencies=[Depends(exigir_freio_por_origem("consulta_por_nick"))],
+    )
+    def consulta_por_nick():
+        return {"ok": True}
+
+    @roteador.post(
+        "/formulario-participacao",
+        dependencies=[Depends(exigir_freio_por_origem("formulario_participacao"))],
+    )
+    def formulario_participacao():
+        return {"ok": True}
+
+    @roteador.post(
+        "/formulario-dados",
+        dependencies=[Depends(exigir_freio_por_origem("formulario_dados"))],
+    )
+    def formulario_dados():
+        return {"ok": True}
+
     return roteador
 
 
@@ -170,6 +192,33 @@ def app(sessao, configuracao):
 @pytest.fixture
 def cliente(app):
     return TestClient(app, raise_server_exceptions=False)
+
+
+@pytest.fixture
+def cliente_com_origem(app):
+    """Um `TestClient` por origem simulada — o freio por origem agrupa por
+    endereço de rede (`RN-01-45`), e testes precisam de origens distintas
+    para provar que uma não compartilha o freio da outra."""
+
+    def _criar(endereco: str = "203.0.113.10") -> TestClient:
+        return TestClient(app, client=(endereco, 12345), raise_server_exceptions=False)
+
+    return _criar
+
+
+@pytest.fixture
+def sobrescrever_configuracao(app, configuracao):
+    """Troca a `Configuracao` injetada nas rotas de teste por uma cópia com
+    os campos indicados alterados, sem tocar nos demais — usado para testar
+    a cota e o freio com números pequenos, em vez de esperar o padrão do
+    documento 03 §8 se esgotar de verdade."""
+
+    def _sobrescrever(**mudancas) -> Configuracao:
+        nova = configuracao.model_copy(update=mudancas)
+        app.dependency_overrides[obter_configuracao] = lambda: nova
+        return nova
+
+    return _sobrescrever
 
 
 @pytest.fixture
