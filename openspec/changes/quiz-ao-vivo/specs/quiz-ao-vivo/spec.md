@@ -143,10 +143,12 @@ de chegada já gravado. Resposta a pergunta de partida já encerrada SHALL ser r
 ### Requirement: O Mestre anula a pergunta, e a anulada não credita ponto
 
 O núcleo SHALL permitir ao **Mestre que conduz a partida**, ou a um **Admin**, **anular uma
-pergunta** havendo contestação, com autoria, data e hora registradas. A pergunta anulada NÃO
-SHALL creditar ponto a nenhuma equipe, e a anulação NÃO SHALL debitar ponto regular de
-Guerreiro(a) algum. As respostas já registradas SHALL continuar consultáveis, marcadas como de
-pergunta anulada. (`RN-01-38`, `RF-01-03`, documento 05 §5)
+pergunta** havendo contestação, com autoria, data e hora registradas. A anulação SHALL exigir a
+partida **ainda aberta** e SHALL ser recusada com **422** depois do encerramento — é o que
+mantém `RN-01-38`, já que a partida encerrada já creditou. A pergunta anulada NÃO SHALL
+creditar ponto a nenhuma equipe, e a anulação NÃO SHALL debitar ponto regular de Guerreiro(a)
+algum. As respostas já registradas SHALL continuar consultáveis, marcadas como de pergunta
+anulada. (`RN-01-38`, `RF-01-03`, documento 05 §5)
 
 #### Scenario: Pergunta anulada não credita ponto
 
@@ -164,3 +166,8 @@ pergunta anulada. (`RN-01-38`, `RF-01-03`, documento 05 §5)
 
 - **WHEN** uma pergunta com respostas já registradas é anulada
 - **THEN** as respostas continuam consultáveis, marcadas como de pergunta anulada
+
+#### Scenario: Anulação depois do encerramento é recusada
+
+- **WHEN** o Mestre tenta anular uma pergunta de partida já encerrada
+- **THEN** o núcleo responde 422, a pergunta segue valendo e nenhum ponto é debitado
