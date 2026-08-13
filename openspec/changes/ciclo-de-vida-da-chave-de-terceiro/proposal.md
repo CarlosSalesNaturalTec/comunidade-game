@@ -106,19 +106,20 @@ emissão e a revogação por _middleware_, sem nada a declarar.
   e PRD-03 no commit que antecede esta change. `docs/prds/index.md` não muda de situação: o
   PRD-01 segue "aprovado", fatiado em changes.
 
-## Questões que ficam para o `design.md`
+## Questões levadas ao fundador antes do desenho
 
-1. **Como a revogação por decurso acontece.** O critério de aceite do PRD-01 §12 diz que a
-   chamada seguinte ao vencimento recebe 401, "sem intervenção humana" — o que admite decidir
-   o vencimento **na própria conferência**, sem agendador. A alternativa é uma tarefa
-   periódica que muda a situação na base. A primeira dispensa infraestrutura que o Ciclo 01
-   não tem e combina com o Cloud Run sem escala horizontal; falta decidir se a situação
-   gravada precisa acompanhar, para que `GET /v1/chaves` mostre "revogada" sem esperar uma
-   chamada da chave.
-2. **O que protege `POST /v1/chaves/{id}/url`.** O PRD-01 §9 a declara pública — sem
-   credencial de persona. Falta desenhar o que impede alguém de apresentar URL na chave de
-   outro: se o `{id}` da rota é o identificador da chave ou um dado que só o solicitante
-   recebeu na emissão. Se o desenho não fechar sem criar regra, vira pergunta ao fundador.
-3. **Onde o prazo vira número.** São 30 dias em `RN-01-36`, decididos e gravados; falta
-   escolher se o núcleo os lê de configuração, como faz com a duração da sessão, ou se são
-   constante do domínio.
+As três foram respondidas e estão fechadas no `design.md` — Decisions:
+
+1. **Como a revogação por decurso acontece.** Decidido: o vencimento se aplica na leitura, e a
+   **situação gravada acompanha**, para que a leitura de gestão não mostre "vigente" numa
+   chave que já recebe 401. Sem agendador, que o Ciclo 01 não tem.
+2. **O que protege `POST /v1/chaves/{id}/url`.** Resolvido no desenho, sem criar regra: quem
+   faz a chamada é a **vitrine**, com a chave dela, e o que prova a titularidade é o
+   **identificador da chave**, entregue ao solicitante na emissão e nunca devolvido por rota
+   pública.
+3. **Onde o prazo vira número.** Decidido: **configuração**, com 30 como valor padrão, ao lado
+   das cotas e dos limites do freio.
+
+O desenho registra ainda uma escolha conservadora que o fundador pode derrubar: apresentada a
+URL uma vez, a segunda apresentação é recusada, porque substituir URL não está em requisito
+nenhum.
