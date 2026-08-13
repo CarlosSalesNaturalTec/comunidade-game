@@ -11,6 +11,8 @@ from .biometria.rotas import roteador as roteador_de_biometria
 from .chaves.conferencia import exigir_chave_de_aplicacao
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
 from .personas.rotas import roteador as roteador_de_personas
+from .protecao import registrar_premissa_de_conteiner_unico
+from .protecao.cota import exigir_cota_de_leitura
 from .responsaveis.rotas import roteador as roteador_de_responsaveis
 from .sessoes.rotas import roteador as roteador_de_sessoes
 
@@ -27,7 +29,11 @@ def _resposta_de_erro(
 
 
 async def _manipular_erro_de_aplicacao(request: Request, exc: ErroDeAplicacao) -> JSONResponse:
-    return _resposta_de_erro(exc.status_code, exc.codigo, exc.mensagem, exc.campo)
+    resposta = _resposta_de_erro(exc.status_code, exc.codigo, exc.mensagem, exc.campo)
+    tempo_de_espera = getattr(exc, "tempo_de_espera_em_segundos", None)
+    if tempo_de_espera is not None:
+        resposta.headers["Retry-After"] = str(tempo_de_espera)
+    return resposta
 
 
 async def _manipular_erro_de_validacao(
@@ -69,16 +75,25 @@ def criar_app() -> FastAPI:
     # futura, precisa declarar nada para entrar na trilha de auditoria.
     app.add_middleware(MiddlewareDeAuditoria)
 
+    registrar_premissa_de_conteiner_unico()
+
     return app
 
 
 def incluir_roteador_de_dados(app: FastAPI, roteador: APIRouter) -> None:
-    """Inclui um roteador de domínio sob `/v1`, com a chave de aplicação exigida
-    em toda rota dele (`RF-01-01`, `RN-01-32`). É o que permite às fatias
-    seguintes do PRD-01 estender o núcleo sem refazer a exigência da chave —
-    `/docs` e `/openapi.json` ficam fora, porque nunca passam por aqui.
+    """Inclui um roteador de domínio sob `/v1`, com a chave de aplicação e a
+    cota de leitura por faixa dela exigidas em toda rota (`RF-01-01`,
+    `RN-01-32`, `RF-01-55`). A cota vem depois da chave, para que chave
+    inválida receba 401 antes de a cota contar qualquer coisa (design —
+    Decisions). É o que permite às fatias seguintes do PRD-01 estender o
+    núcleo sem refazer nenhuma das duas — `/docs` e `/openapi.json` ficam
+    fora, porque nunca passam por aqui.
     """
-    app.include_router(roteador, prefix="/v1", dependencies=[Depends(exigir_chave_de_aplicacao)])
+    app.include_router(
+        roteador,
+        prefix="/v1",
+        dependencies=[Depends(exigir_chave_de_aplicacao), Depends(exigir_cota_de_leitura)],
+    )
 
 
 app = criar_app()

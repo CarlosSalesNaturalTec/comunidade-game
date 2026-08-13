@@ -36,6 +36,21 @@ class Configuracao(BaseSettings):
     argon2_iteracoes: int = 2
     argon2_paralelismo: int = 1
 
+    # Cota de leitura por faixa da chave, janela fixa de uma hora (`RF-01-55`,
+    # 03 §8). Só os tetos por faixa são parâmetro; a janela é estrutural.
+    protecao_cota_do_projeto_por_hora: int = 6_000
+    protecao_cota_de_terceiro_por_hora: int = 600
+
+    # Freio por origem, com limite e janela próprios por superfície, e o
+    # atraso progressivo comum às duas (`RF-01-65`, `RN-01-27`, 03 §8).
+    protecao_freio_nick_limite: int = 30
+    protecao_freio_nick_janela: timedelta = timedelta(minutes=10)
+    protecao_freio_formulario_limite: int = 3
+    protecao_freio_formulario_janela: timedelta = timedelta(hours=1)
+    protecao_freio_atraso_inicial: timedelta = timedelta(seconds=2)
+    protecao_freio_atraso_fator_de_crescimento: float = 2.0
+    protecao_freio_atraso_teto: timedelta = timedelta(minutes=15)
+
 
 @lru_cache
 def obter_configuracao() -> Configuracao:

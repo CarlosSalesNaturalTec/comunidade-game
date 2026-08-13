@@ -195,7 +195,8 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-52` | Núcleo revoga automaticamente a chave cujo prazo de apresentação vence sem URL                                                                                                                  | essencial  |
 | `RF-01-53` | Núcleo permite a um Admin revogar chave a qualquer tempo, com motivo e autoria registrados                                                                                                      | essencial  |
 | `RF-01-54` | Núcleo emite na implantação uma chave por aplicação do próprio projeto e por ambiente, sem prazo de apresentação                                                                                | essencial  |
-| `RF-01-55` | Núcleo aplica cota de consulta por chave e responde 429 ao excedê-la                                                                                                                            | desejável  |
+| `RF-01-55` | Núcleo aplica às chamadas de leitura a cota da faixa da chave — do projeto ou de terceiro — e responde 429 ao excedê-la                                                                         | desejável  |
+| `RF-01-65` | Núcleo freia por origem a consulta por nick e o envio dos formulários de participação e de dados, com atraso progressivo, e agrupa a origem por resumo do IP mantido só em memória              | essencial  |
 | `RF-01-35` | Núcleo mantém as entidades do apoio escolar — disciplina, conteúdo do corpus e consulta                                                                                                         | essencial  |
 | `RF-01-36` | Núcleo mantém a resposta de quiz por equipe e pergunta, com o momento de chegada                                                                                                                | essencial  |
 | `RF-01-37` | Equipe da aula é criada pelo Guerreiro(a), vinculada a uma aula, e encerra com ela sem ser reaproveitada                                                                                        | essencial  |
@@ -249,6 +250,8 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-25` | Solicitação de dados não cria cadastro nem acesso, e a entrega exige aprovação registrada de Admin                               | 17         | 03 §12.3    |
 | `RN-01-26` | Saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin                                                 | 7, 17      | 02 §1       |
 | `RN-01-27` | Rota pública tem limite por origem e janela, com atraso progressivo, sem exigir cadastro do visitante                            | —          | 03 §8       |
+| `RN-01-45` | A origem do freio nunca é gravada: agrupa-se por resumo do IP, mantido só pela janela e em memória                               | —          | 03 §8       |
+| `RN-01-46` | Solicitação de chave não tem freio por origem, porque nova solicitação é sempre possível                                         | —          | 03 §8       |
 | `RN-01-28` | Pré-cadastro de Apoiador não cria cadastro nem acesso: quem valida o comprovante e cadastra é um Admin                           | 3          | 02 §1       |
 | `RN-01-29` | A plataforma não coleta CPF, CNPJ nem documento de identidade de quem aporta                                                     | —          | 02 §1       |
 | `RN-01-30` | O nick do Apoiador é único em toda a plataforma, como o do Guerreiro(a)                                                          | —          | 02 §1       |
@@ -531,11 +534,17 @@ e o dos desafios de desbloqueio de cada trilha.
 | Python 3.12 e conjunto de regras do Ruff, com cobertura medida sem limiar que bloqueie               | 03 §1.13          | Ferramentas da esteira de CI do backend      |
 | Trilha é bem comum da plataforma; o filtro por comunidade recai sobre o percurso, não sobre ela      | 02 §3             | A trilha é bem comum da plataforma           |
 | Catálogo de poderes cadastrado por Admin, e só poder de Guerreiro(a) recebe trilha                   | 02 §2             | Cadastro do catálogo de poderes              |
+| Cota de consulta em duas faixas, do projeto e de terceiro, com 429 no excesso                        | 03 §8             | Números da proteção das rotas públicas       |
+| Freio por origem na consulta por nick e nos formulários de participação e de dados                   | 03 §8             | Números da proteção das rotas públicas       |
+| Origem agrupada por resumo do IP, só em memória, e Cloud Run sem escala horizontal no Ciclo 01       | 03 §§1, 8         | Números da proteção das rotas públicas       |
+| Solicitação de chave sem freio por origem, porque nova solicitação é sempre possível                 | 03 §8             | Números da proteção das rotas públicas       |
 
 ## 14. Pendências que permanecem
 
 - **Instituição com mais de um usuário** no mesmo cadastro de Apoiador, e como se registra
   quem agiu em nome dela.
+- **Base legal do resumo do IP** usado pelo freio das rotas públicas, e se ele merece linha
+  própria na tabela de §11, que hoje só lista dado retido.
 - **Prazo de disponibilidade da versão anterior** da API depois que uma nova abrir.
 - **Prazo de guarda** do registro de infração e de pontuação negativa, dado sensível de
   criança que hoje segue a retenção geral do vínculo.
@@ -572,4 +581,5 @@ e o dos desafios de desbloqueio de cada trilha.
 | `RF-01-46` e `RF-01-47` | 03 §12.3 (entrega de dados aprovada por Admin)   |
 | `RF-01-48`, `RF-01-54`  | 03 §1 (chave obrigatória em toda chamada)        |
 | `RF-01-49` a `RF-01-53` | 03 §8 (solicitação, emissão, prazo e revogação)  |
-| `RF-01-55`              | 03 §§1, 8 (cota de consulta por chave)           |
+| `RF-01-55`              | 03 §§1, 8 (cota por faixa de chave)              |
+| `RF-01-65`              | 03 §§1, 8 (freio por origem e sem escala)        |

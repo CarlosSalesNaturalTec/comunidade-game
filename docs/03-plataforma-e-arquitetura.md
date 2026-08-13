@@ -65,7 +65,11 @@
     São **dois ambientes**: **desenvolvimento**, em contêiner local com banco próprio, e
     **produção**, no Cloud Run. Contêiner e banco são portáteis — outra comunidade replica a
     plataforma fora do Google Cloud. O custo entra no livro-razão como recurso de _cloud_,
-    **aportado por absorção pelo Admin e Mestre fundador** neste ciclo.
+    **aportado por absorção pelo Admin e Mestre fundador** neste ciclo. Em produção o Cloud Run
+    roda **sem escala horizontal** no Ciclo 01 — no máximo um contêiner de cada vez —, porque o
+    freio das rotas públicas conta em memória (§8) e cada contêiner a mais multiplicaria o
+    limite. Não confundir com o princípio 10: lá "instância única" é uma base para todas as
+    comunidades; aqui é quantos contêineres atendem ao mesmo tempo.
 14. **Repositório único (_monorepo_)** — o Backend API, as oito aplicações, os jogos, a
     documentação e os artefatos de implementação vivem no mesmo repositório, com uma pasta
     por aplicação (§1.2). É organização do código, não acoplamento: cada frontend continua
@@ -597,7 +601,26 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
 - **Proteção das rotas públicas**: a consulta por nick exato e o envio dos dois formulários têm
   **limite por origem e janela de tempo, com atraso progressivo** a cada repetição — é o que
   barra a varredura de nicks e o envio abusivo. **Sem CAPTCHA**, que é barreira de
-  acessibilidade, e **sem cadastro ou coleta de dado do visitante**.
+  acessibilidade, e **sem cadastro ou coleta de dado do visitante**. Em separado corre a
+  **cota de consulta por chave**, em duas faixas, cujo excesso responde **429**. Ela conta
+  **só as chamadas de leitura**: a escrita das aplicações do projeto não tem cota, e para a
+  chave de terceiro, que é somente leitura, toda chamada entra na conta.
+
+  | Limite                     | Faixa ou superfície              | Valor                        |
+  | -------------------------- | -------------------------------- | ---------------------------- |
+  | Cota por chave do projeto  | as oito aplicações e os jogos    | 6.000 consultas por hora     |
+  | Cota por chave de terceiro | emitida por aprovação de Admin   | 600 consultas por hora       |
+  | Consulta por nick          | por origem                       | 30 por 10 minutos            |
+  | Envio de formulário        | por origem, participação e dados | 3 por hora                   |
+  | Atraso ao exceder          | as duas superfícies por origem   | 2s, dobrando, teto de 15 min |
+
+  A **origem** é o **resumo criptográfico do IP com sal rotativo**, mantido **só em memória**
+  pela janela do freio e **nunca gravado em banco** — é o que faz o limite existir sem guardar
+  dado do visitante. Por isso o Cloud Run roda **sem escala horizontal** no Ciclo 01 (§1,
+  princípio 13): cada contêiner contaria por si, e o limite valeria multiplicado. O
+  **formulário de solicitação de chave não tem freio por origem** — nova solicitação é sempre
+  possível —, e o que o protege é a cota da chave da vitrine.
+
 - **Chamada "Quero participar"** em **toda página individual** — Guerreiro(a), Mestre, poder,
   apoiador e comunidade —, levando à **porta da Área do Apoiador**. A chamada é do projeto:
   **nunca vincula o apoio à pessoa exibida na página**.
