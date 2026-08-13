@@ -195,15 +195,18 @@ automaticamente.
 1. Os Guerreiros e Guerreiras presentes jogam pelas **equipes que formaram no App 01** —
    **várias equipes disputam a partida**, e cada um joga por **uma única**, mesmo estando em
    mais de uma nas demais atividades do encontro.
-2. As perguntas são **pré-cadastradas pelo curador da aula (Mestre)**, em múltipla escolha com
+2. **A partida corre sobre uma trilha**, declarada por quem conduz. O encontro segue
+   assíncrono, com cada equipe avançando na sua (§4), e é a trilha da partida que recebe os
+   pontos do quiz — não a do percurso de cada jogador.
+3. As perguntas são **pré-cadastradas pelo curador da aula (Mestre)**, em múltipla escolha com
    **quatro alternativas e sem tempo por pergunta** — o ritmo é de quem conduz a partida.
-3. Ao dar o _start_, **uma pergunta é exibida simultaneamente em todos os dispositivos logados
+4. Ao dar o _start_, **uma pergunta é exibida simultaneamente em todos os dispositivos logados
    na aula**.
-4. Cada equipe **se consulta internamente** e responde por **um único aparelho** — a resposta
+5. Cada equipe **se consulta internamente** e responde por **um único aparelho** — a resposta
    vale para todos os integrantes. Equipe sem aparelho responde pelo aparelho do Mestre. **A
    plataforma não controla aparelhos no Ciclo 01**: a quantidade varia a cada encontro, e a
    resposta é registrada pela **equipe**, nunca pelo aparelho de onde veio.
-5. **Toda equipe que acerta pontua**, e a primeira a acertar recebe um ponto de bônus. O
+6. **Toda equipe que acerta pontua**, e a primeira a acertar recebe um ponto de bônus. O
    desempate é pela ordem de chegada no servidor, e o Mestre pode **anular a pergunta** havendo
    contestação — o ritmo e o critério são de quem conduz.
 

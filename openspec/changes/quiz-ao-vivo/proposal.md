@@ -18,7 +18,14 @@ ocupa os dois. Nenhuma entrada nova na matriz: as duas já estão no PRD-01 §4.
 
 ## What Changes
 
-### Decisão nova aplicada antes desta change
+### Decisões novas aplicadas antes desta change
+
+**A partida corre sobre uma trilha, declarada por quem conduz.** O ponto do quiz é regular, e
+ponto regular é por trilha (`RF-01-21`, `RN-01-42`) — mas o encontro é assíncrono e hospeda
+várias trilhas ao mesmo tempo (documento 05 §4, documento 10 §5.1), de modo que a trilha não
+podia vir dele. Gravada no documento-fonte da partida (05 §5) e registrada no documento 09,
+em "Já decididos". A `Aula` **não muda**: segue sendo o encontro presencial com comunidade,
+data e horários, como a nona fatia a entregou.
 
 **A plataforma não controla aparelhos no Ciclo 01.** A decisão foi tomada pelo fundador
 durante a exploração desta fatia e subiu a hierarquia antes de virar plano, na ordem que o
@@ -38,6 +45,11 @@ equipe única por partida (`RF-01-39`), que o núcleo verifica.
   pergunta** — o ritmo é de quem conduz, e o núcleo não cronometra.
 - Nasce a **PartidaDeQuiz**, vinculada à aula, conduzida pelo **Mestre que ministra a aula ou
   por um Admin** (`RF-01-17`, `RF-01-16`). As equipes disputantes são declaradas na abertura.
+- A partida **corre sobre uma trilha, declarada por quem conduz** (documento 05 §5), e é ela
+  que recebe os pontos. A **aula não ganha trilha**: o encontro é assíncrono e cada equipe
+  avança na sua (documento 05 §4), de modo que a trilha do quiz é da partida, nunca do
+  encontro nem do percurso de cada jogador. É o que dá a `PontoRegular` a trilha que
+  `RF-01-21` e `RN-01-42` exigem.
 - Nasce a **RespostaDeQuiz**, por **equipe e pergunta**, com o **momento de chegada no
   servidor** (`RF-01-36`). O momento é carimbado **na chegada**, nunca declarado pelo cliente
   — é o critério de desempate do documento 05 §5, e cliente não arbitra a própria ordem.
@@ -123,32 +135,22 @@ conferir a matriz em toda operação.
 
 - `backend/src/nucleo/`: módulo novo `quiz/` (`PerguntaDeQuiz`, `PartidaDeQuiz`,
   `RespostaDeQuiz`, a ordem de chegada, a recusa da equipe repetida e a anulação), lendo
-  `aulas`, `equipes`, `persona` e a matriz de permissões já existentes.
+  `aulas`, `equipes`, `trilhas`, `persona` e a matriz de permissões já existentes. **Nenhuma
+  alteração em `aulas/`**: a trilha é da partida, não do encontro.
 - `backend/src/nucleo/pontuacao/`: a partida entra como fonte de `PontoRegular`, com a régua
   própria do documento 11 §5 — não passa pelo `creditar_ponto_regular` do resultado, que tem
   outra régua.
 - `backend/alembic/`: migração para `pergunta_de_quiz`, `partida_de_quiz` e `resposta_de_quiz`.
 - `backend/src/nucleo/permissoes.py`: **sem alteração** — as duas operações já existem.
 - Nenhuma rota nova sob `/v1`: entidade e regra, como nas fatias 5 a 9.
-- `docs/`: a decisão dos aparelhos **já foi gravada** nos documentos 03, 05, 09, 11 e 99 antes
+- `docs/`: as duas decisões **já foram gravadas** nos documentos 03, 05, 09, 11 e 99 antes
   desta proposta. `docs/prds/index.md` recebe a situação atualizada se ela mudar ao fim da
   implementação.
 
-## Pergunta ao fundador antes das specs
+## Questão que fica para o `design.md`
 
-Uma ambiguidade real, que o `design.md` não pode resolver sozinho porque muda o modelo:
-
-**A que trilha o ponto do quiz se prende?** `PontoRegular` é por **(Guerreiro(a), trilha)** —
-nunca global (`RF-01-21`, `RN-01-42`). Mas a partida corre numa **aula**, e a aula tem
-comunidade, data e horário; não tem trilha.
-
-Há apoio documental para pendurar a partida numa **atividade**: o documento 05 §5 chama o Quiz
-de "atividade-modelo, encaixável no Desafio do dia", o documento 11 §4 lista "Competição ao
-vivo (Quiz)" como **natureza de atividade**, e `Atividade.natureza` já é campo aberto no
-núcleo. A partida herdaria missão → trilha, e o ponto teria onde cair.
-
-A alternativa é a partida solta na aula — e aí o ponto do quiz não tem trilha a que se
-vincular, o que contraria `RF-01-21`.
-
-A leitura da atividade parece a correta, mas ela decide se **toda partida exige uma atividade
-declarada**, e isso é escopo, não desenho. Confirme antes de escrever as specs.
+**Quando o crédito se consolida.** O Mestre anula a pergunta havendo contestação, e ponto
+regular nunca é debitado (`RN-01-38`, com gatilho no ORM e no Postgres desde a sexta fatia).
+O documento 11 §5 lança o quiz como automático **da partida**, não da pergunta — o desenho de
+onde o acerto fica guardado até virar ponto é escolha de execução, não regra de produto, e
+por isso é do `design.md`. Nenhuma leitura dele pode debitar `PontoRegular`.
