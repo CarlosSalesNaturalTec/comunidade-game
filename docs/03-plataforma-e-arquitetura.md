@@ -892,7 +892,8 @@ mesma autorização única do responsável, sem termo à parte por divulgação.
 
 - A solicitação é **prévia** e depende de **aprovação de um Admin**, que registra quem pediu,
   para que finalidade e o que foi entregue. Sem aprovação não há entrega, e a recusa é
-  registrada com motivo.
+  registrada com motivo. O **prazo de resposta é de 7 dias**, o mesmo de toda solicitação da
+  plataforma.
 - A entrega é **anonimizada** em qualquer granularidade aprovada: nenhum conjunto sai com
   vínculo de autoria, nome ou nick de Guerreiro(a).
 - O conjunto sai em **CSV** para as séries, com uma tabela por arquivo e cabeçalho declarado,
