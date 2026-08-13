@@ -107,7 +107,9 @@ e revogam consentimentos, e têm acesso próprio à plataforma.
   responsáveis, a autorização fica suspensa até a gestão tratar.
 - **Parentes e amigos além dos três responsáveis acompanham como Apoiador**, cadastrados pela
   via normal, e seguem o Guerreiro(a) pelo **nick**, no que é público. **O nick é informação que
-  só a família cede** — a plataforma nunca o revela a um adulto, nem por busca nem por listagem.
+  só a família cede** — a **busca** nunca o revela a um adulto: aceita só o nick exato, não
+  sugere e não completa. As **exibições públicas** — cards, ranking e portfólio — mostram avatar
+  e nick apenas de quem tem **divulgação autorizada** pelo responsável.
 
 ### Solicitação de participação (Mestres e Apoiadores)
 

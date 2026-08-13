@@ -267,7 +267,7 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RF-03-09` | Ranking público exibe apenas pontos regulares e apenas quem tem divulgação autorizada                                   | essencial  |
 | `RF-03-10` | Aporte de Apoiador é exibido em moedas da plataforma, nunca em reais                                                    | essencial  |
 | `RF-03-11` | Busca por nick exato devolve a página pública; nick inexistente e nick sem autorização têm a mesma resposta             | essencial  |
-| `RF-03-12` | Aplicação não oferece listagem, sugestão ou completação de nicks                                                        | essencial  |
+| `RF-03-12` | Busca não oferece sugestão, completação nem lista de nicks; cards, ranking e portfólio exibem só quem autorizou         | essencial  |
 | `RF-03-13` | Guerreiro(a) sem autorização vigente não aparece em card, página, portfólio ou ranking                                  | essencial  |
 | `RF-03-14` | Revogação da autorização retira o perfil do público na leitura seguinte                                                 | essencial  |
 
@@ -363,7 +363,7 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RN-03-03` | A revogação vale para frente e é imediata no que é público                                | 11                     | 03 §9       |
 | `RN-03-04` | Guerreiro(a) aparece só por avatar e nick, sem imagem real, nome civil ou contato         | 12                     | 03 §12      |
 | `RN-03-05` | Não há canal de contato entre visitante e Guerreiro(a) ou família                         | 10                     | 02 §1       |
-| `RN-03-06` | A consulta é por nick exato, sem listagem, sugestão ou completação                        | 12                     | 02 §1       |
+| `RN-03-06` | A consulta é por nick exato e não devolve lista, sugestão ou completação                  | 12                     | 02 §1       |
 | `RN-03-07` | Nick inexistente e nick sem autorização recebem a mesma resposta                          | 12                     | 03 §8       |
 | `RN-03-08` | Rota pública tem limite por origem e atraso progressivo, sem CAPTCHA nem cadastro         | —                      | 03 §8       |
 | `RN-03-34` | A origem do freio nunca é gravada: agrupa-se por resumo do IP, mantido só pela janela     | —                      | 03 §8       |

@@ -102,9 +102,10 @@ class SolicitacaoDeDados(Base, EmAvaliacao):
 
 
 class SolicitacaoDeChave(Base, EmAvaliacao):
-    """Atributos do PRD-01 §8, na redação de `RF-01-49`. Não emite chave —
-    a emissão é `RF-01-50`, de fatia seguinte —, e não tem freio por origem
-    (`RN-01-46`)."""
+    """Atributos do PRD-01 §8, na redação de `RF-01-49`. Não emite chave no
+    registro (`RN-01-37`) e não tem freio por origem (`RN-01-46`).
+    `chave_id` guarda a chave emitida (`RF-01-50`): nasce nula e é gravada
+    uma única vez, no ato de emissão, sempre sobre solicitação aprovada."""
 
     __tablename__ = "solicitacao_de_chave"
 
@@ -118,6 +119,14 @@ class SolicitacaoDeChave(Base, EmAvaliacao):
     contato: Mapped[str] = mapped_column(String(256), nullable=False)
     instituicao: Mapped[str | None] = mapped_column(String(256), nullable=True)
     o_que_pretende_construir: Mapped[str] = mapped_column(Text, nullable=False)
+    chave_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid,
+        ForeignKey(
+            "chave_de_aplicacao.id", name="fk_solicitacao_de_chave_chave_id_chave_de_aplicacao"
+        ),
+        unique=True,
+        nullable=True,
+    )
 
 
 class SugestaoOuProposta(Base, EmAvaliacao):

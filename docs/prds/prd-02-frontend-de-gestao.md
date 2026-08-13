@@ -231,7 +231,7 @@ conduz a partida de quiz das suas aulas — nada além disso.
 | `RF-02-86` | Pré-cadastro sem comprovante legível é recusado com motivo, sem criar cadastro nem aporte                                                      | essencial  |
 | `RF-02-87` | Admin lê a fila das solicitações de chave, com quem pediu e o que pretende construir                                                           | essencial  |
 | `RF-02-88` | Admin aprova ou recusa a solicitação de chave, com parecer e autoria                                                                           | essencial  |
-| `RF-02-89` | Aprovação emite a chave e exibe o segredo uma única vez, para entrega ao solicitante                                                           | essencial  |
+| `RF-02-89` | Aprovação emite a chave e exibe o identificador e o segredo uma única vez, para entrega ao solicitante                                         | essencial  |
 | `RF-02-90` | Painel mostra as chaves emitidas com prazo de apresentação, URL apresentada e situação                                                         | essencial  |
 | `RF-02-91` | Painel destaca as chaves com prazo a vencer e as revogadas automaticamente por prazo vencido                                                   | essencial  |
 | `RF-02-92` | Admin revoga chave a qualquer tempo, com motivo registrado                                                                                     | essencial  |

@@ -13,6 +13,7 @@ from nucleo.configuracao import obter_configuracao
 from nucleo.consentimentos import modelo as modelo_consentimentos  # noqa: F401
 from nucleo.criacoes_originais import modelo as modelo_criacoes_originais  # noqa: F401
 from nucleo.equipes import modelo as modelo_equipes  # noqa: F401
+from nucleo.fila import modelo as modelo_fila  # noqa: F401
 from nucleo.ods import modelo as modelo_ods  # noqa: F401
 from nucleo.personas import modelo as modelo_personas  # noqa: F401
 from nucleo.poderes import modelo as modelo_poderes  # noqa: F401

@@ -11,6 +11,7 @@ from ..banco import obter_sessao
 from ..configuracao import Configuracao, obter_configuracao
 from ..erros import ChaveInvalida
 from .modelo import ChaveDeAplicacao, SituacaoDaChave
+from .regra import aplicar_decurso_se_vencido
 from .segredo import ChaveMalFormada, calcular_resumo, decompor_chave
 
 NOME_DO_CABECALHO = "X-Chave-Aplicacao"
@@ -52,6 +53,12 @@ def exigir_chave_de_aplicacao(
             id_da_chave, segredo = _ID_FANTASMA, _SEGREDO_FANTASMA
 
     registro = _buscar_por_id(sessao, id_da_chave)
+
+    if registro is not None and aplicar_decurso_se_vencido(registro):
+        # RF-01-52: o vencimento sem URL revoga sem ato humano, e a situação
+        # gravada acompanha — persiste aqui para que a leitura de gestão
+        # também veja "revogada", mesmo que esta chave nunca mais chame.
+        sessao.commit()
 
     resumo_esperado = registro.resumo_do_segredo if registro is not None else _RESUMO_FANTASMA
     resumo_calculado = calcular_resumo(segredo)

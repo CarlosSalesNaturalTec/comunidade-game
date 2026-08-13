@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, Index, String, Uuid, func, text
+from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, Uuid, func, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..banco import Base
@@ -50,6 +50,12 @@ class ChaveDeAplicacao(Base):
     revogada_por: Mapped[str | None] = mapped_column(String(128), nullable=True)
     motivo_da_revogacao: Mapped[str | None] = mapped_column(String(512), nullable=True)
     revogada_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    solicitacao_de_chave_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid,
+        ForeignKey("solicitacao_de_chave.id", name="fk_chave_de_aplicacao_solicitacao_de_chave_id"),
+        unique=True,
+        nullable=True,
+    )
 
     __table_args__ = (
         Index(
@@ -57,6 +63,6 @@ class ChaveDeAplicacao(Base):
             "aplicacao",
             "ambiente",
             unique=True,
-            postgresql_where=text("situacao = 'vigente'"),
+            postgresql_where=text("situacao = 'vigente' AND natureza = 'do_projeto'"),
         ),
     )
