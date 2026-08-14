@@ -75,7 +75,7 @@ recomendação e desliga tudo com um toque, sem que a criança perca uma linha d
 | Responsável  | Vê o que alimenta a personalização e o motivo vigente; liga e desliga a qualquer tempo           | Alterar a ordem das missões ou o conteúdo do corpus                                   |
 | Mestre       | Cadastra o corpus, único insumo da reescrita; vê a marcação nos textos gerados a partir do seu   | Editar o texto reescrito de uma sessão: ele não existe depois dela                    |
 | Admin        | Audita a reescrita por amostragem e despublica o conteúdo de origem, com motivo                  | Cadastrar corpus; ligar ou desligar a personalização de um Guerreiro(a)               |
-| Equipe       | No App 01, recebe explicação adaptada ao conjunto, no aparelho compartilhado                     | Receber reescrita quando algum integrante estiver com a personalização desligada      |
+| Equipe       | No App 01, recebe explicação adaptada ao conjunto, no aparelho compartilhado                     | Ter dado individual de qualquer integrante no contexto da sessão da equipe            |
 
 ## 5. Jornadas principais
 
@@ -150,8 +150,9 @@ recomendação e desliga tudo com um toque, sem que a criança perca uma linha d
    do dia e o conteúdo cadastrado.
 3. **Nenhum dado individual de integrante entra no contexto da equipe** — nem nível, nem
    pontos, nem histórico —, porque a tela é vista por todos.
-4. **Exceção — integrante com personalização desligada:** vale o mais restritivo, e a equipe lê
-   o conteúdo original do Mestre naquele aparelho.
+4. **Integrante com personalização desligada não desliga a equipe:** a chave do responsável vale
+   na App 05, tela individual. Aqui a reescrita **sempre opera**, porque a tela não é de ninguém
+   em particular e o contexto não carrega dado individual algum.
 5. A ponte interdisciplinar **não opera na App 01**: ela depende do poder individual, que não
    entra no contexto da equipe.
 
@@ -186,6 +187,7 @@ recomendação e desliga tudo com um toque, sem que a criança perca uma linha d
 | `RF-11-04` | Aplicação não grava nenhum traço inferido de ritmo, dificuldade ou interesse do Guerreiro(a)        | essencial  |
 | `RF-11-05` | Sessão seguinte remonta o contexto do zero, sem memória da anterior                                 | essencial  |
 | `RF-11-06` | Contexto da App 01 é da equipe e não carrega dado individual de nenhum integrante                   | essencial  |
+| `RF-11-29` | Reescrita opera no App 01 ainda que um integrante esteja com a personalização desligada             | essencial  |
 
 ### 6.2 Recomendação da próxima missão
 
@@ -273,6 +275,7 @@ recomendação e desliga tudo com um toque, sem que a criança perca uma linha d
 | `RN-11-14` | O corpus é cadastrado só pelo Mestre; o Admin audita por amostragem e despublica com motivo       | —          | 03 §§7, 11   |
 | `RN-11-15` | A leitura automática segue sendo hipótese: a personalização não lança resultado nem credita ponto | 19         | 11 §2.2      |
 | `RN-11-16` | O contexto da App 01 é da equipe e não carrega dado individual, porque a tela é de todos          | 15         | 03 §4        |
+| `RN-11-21` | A chave do responsável vale na App 05, tela individual; não alcança a tela coletiva do App 01     | 11         | 03 §7.1      |
 | `RN-11-17` | Do áudio guarda-se só a transcrição, com os prazos já definidos                                   | —          | 03 §12.2     |
 | `RN-11-18` | Não há teto de uso no Ciclo 01; o consumo é aporte por absorção do Admin e Mestre fundador        | 9          | 03 §7        |
 | `RN-11-19` | Contadores de custo e demanda de IA são permanentes e não carregam dado pessoal                   | —          | 03 §12.2     |
@@ -333,8 +336,7 @@ de personalização.
 
 Erros previstos: reescrita de missão sem conteúdo cadastrado (422, dizendo que o Mestre ainda
 não publicou); reescrita com a personalização desligada (409, com o conteúdo original no
-corpo); reescrita no aparelho da equipe com integrante desligado (409, mesma resposta);
-consulta de personalização de Guerreiro(a) fora da responsabilidade de quem pede (403);
+corpo); consulta de personalização de Guerreiro(a) fora da responsabilidade de quem pede (403);
 tentativa de o próprio Guerreiro(a) ligar ou desligar a chave (403); pedido de histórico de
 recomendações (404, com a explicação de que ele não existe por desenho).
 
@@ -402,8 +404,8 @@ recomendações (404, com a explicação de que ele não existe por desenho).
   App 05 abre na ordem publicada, sem a ação de reescrita e com todo o conteúdo disponível.
 - Havendo dois responsáveis e um deles em recusa, a tentativa de religar é recusada com o
   motivo.
-- No aparelho da equipe com um integrante desligado, a reescrita é recusada e a equipe lê o
-  conteúdo original.
+- No aparelho da equipe com um integrante desligado, a reescrita **opera normalmente**, e o
+  contexto da sessão segue sem dado individual de nenhum integrante.
 - A auditoria por amostragem mostra consulta, origem e entrega lado a lado, e despublicar o
   conteúdo de origem tira a reescrita do ar na consulta seguinte.
 - O painel de custo de IA fecha o consumo do ciclo por finalidade sem exibir um único nick.
@@ -416,14 +418,17 @@ Não é experimento controlado — é observação declarada, e o PRD não prome
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                        | Gravada em     | Linha do doc 09                      |
-| ------------------------------------------------------------------------------ | -------------- | ------------------------------------ |
-| Adapta na sessão e não perfila a criança; contexto descartado ao encerrar      | 03 §7.1        | Limites da personalização por IA     |
-| Reescreve dentro do corpus fechado, com marcação de texto gerado por IA        | 03 §7.1        | Alcance da personalização por IA     |
-| Ponte interdisciplinar direto ao Guerreiro(a) na App 05                        | 03 §7.1        | Ponte interdisciplinar da IA         |
-| Painel, motivo e chave de desligar na App 07, com alternativa equivalente      | 03 §§7.1, 9    | Explicabilidade da IA ao responsável |
-| Contexto de personalização entra na tabela de prazos de guarda como descartado | 03 §12.2       | Limites da personalização por IA     |
-| A personalização vira invariante da documentação                               | 99 §6, item 22 | —                                    |
+| Decisão                                                                        | Gravada em     | Linha do doc 09                             |
+| ------------------------------------------------------------------------------ | -------------- | ------------------------------------------- |
+| Adapta na sessão e não perfila a criança; contexto descartado ao encerrar      | 03 §7.1        | Limites da personalização por IA            |
+| Reescreve dentro do corpus fechado, com marcação de texto gerado por IA        | 03 §7.1        | Alcance da personalização por IA            |
+| Ponte interdisciplinar direto ao Guerreiro(a) na App 05                        | 03 §7.1        | Ponte interdisciplinar da IA                |
+| Painel, motivo e chave de desligar na App 07, com alternativa equivalente      | 03 §§7.1, 9    | Explicabilidade da IA ao responsável        |
+| Contexto de personalização entra na tabela de prazos de guarda como descartado | 03 §12.2       | Limites da personalização por IA            |
+| A personalização vira invariante da documentação                               | 99 §6, item 22 | —                                           |
+| A chave do responsável não alcança a tela coletiva do App 01                   | 03 §7.1        | Personalização por IA no aparelho da equipe |
+| Etiqueta visível no início do bloco reescrito, com link para a nota da vitrine | 03 §§7.1, 8    | Nota de transparência sobre IA na vitrine   |
+| Padrão de retomada sugerido pelo _template_: 2, 7 e 21 dias                    | 11 §2.2        | Cadência padrão da revisão espaçada         |
 
 A decisão de não perfilar tem uma consequência que este PRD assume por inteiro: **não existe
 histórico de recomendações**. A App 07 mostra a recomendação vigente, recalculada na leitura.
@@ -435,23 +440,17 @@ acrescentados ao modelo do PRD-01. Nenhuma entidade existente ganhou atributo.
 
 ## 14. Pendências que permanecem
 
-- **Personalização no aparelho da equipe** (documento 09): este PRD aplica o critério do mais
-  restritivo — um integrante desligado desliga a reescrita naquele aparelho. É a leitura
-  coerente com a recusa que prevalece, e segue registrada como pendência porque o fundador
-  ainda pode preferir que a chave individual não alcance a tela coletiva.
-- **Forma da marcação do texto gerado por IA** (documento 09): que o texto é marcado está
-  decidido; o desenho da marca entra junto com a nota de transparência da vitrine.
-- **Nota de transparência sobre IA na vitrine** (documento 09): texto final e localização
-  seguem abertos, e agora precisam também dizer que a plataforma reescreve conteúdo para
-  crianças e não as perfila.
-- **Cadência padrão da revisão espaçada** (documento 09): sem o padrão, `RF-11-13` fica
-  desejável — a recomendação segue a cadência que cada Mestre declarar, e não há regra
-  supletiva.
 - **Retenção pelo provedor**: o Ciclo 01 opera em conta Google Gemini PRO, e a configuração que
   desliga a retenção para treino precisa ser conferida na implantação e registrada. É tarefa de
   operação, não decisão de produto.
-- **Reconhecimento facial** (documento 03 §3.3): resolvido no aparelho e fora deste PRD — é
-  biometria do App 01, não personalização.
+- **Texto final da nota de transparência**: a localização e a forma da marcação estão decididas;
+  falta redigir a nota, junto com os demais textos públicos.
+
+Quatro saíram desta lista, decididas e gravadas na §13: a personalização no aparelho da equipe,
+a forma da marcação do texto gerado por IA, a localização da nota de transparência e a cadência
+padrão da revisão espaçada — esta última torna `RF-11-13` operável, ainda que siga desejável. O
+**reconhecimento facial** também saiu: é resolvido no próprio aparelho, pela biblioteca Human, e
+é biometria do App 01, não personalização (documento 03 §3.3).
 
 ## 15. Rastreabilidade
 

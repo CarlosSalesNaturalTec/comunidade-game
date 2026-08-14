@@ -429,22 +429,14 @@ onde vira cadastro, e a **H1** é medida no App 01 (PRD-04), nunca aqui.
 
 ## 14. Pendências que permanecem
 
-| Pendência              | O que trava                                                                                                | Quando precisa de resposta                  |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| **Licenças do código** | A licença sob a qual o jogo é publicado, e portanto sob a qual a alteração feita em trilha é redistribuída | Antes da primeira publicação do repositório |
+Nenhuma. As três que este PRD carregava foram decididas: validade do catálogo offline e acesso
+das aplicações de terceiros estão na seção 13, e a **licença do código** ficou em **AGPL**, com
+a pessoa jurídica vinculada como titular — o `LICENSE` está na raiz do repositório, e a
+alteração que o Guerreiro(a) faz na trilha é redistribuída sob ela.
 
-A pendência consta da tabela de decisões pendentes do documento 09. As duas que este PRD
-carregava — validade do catálogo offline e acesso das aplicações de terceiros — foram
-decididas e estão na seção 13.
-
-A decisão da chave alcança PRDs já aprovados, e nenhum é alterado aqui — cada um recebe a
-revisão própria, registrada como próximo passo no documento 09:
-
-- **PRD-03**: a Área do Apoiador Desenvolvedor, com o assistente de chat, os dois links e o
-  formulário de solicitação de chave.
-- **PRD-01**: a entidade da chave, a emissão, a revogação e a **recusa de toda chamada sem
-  chave** — muda a coluna de autenticação de todas as rotas hoje descritas como públicas.
-- **PRD-02**: a fila de avaliação das solicitações e o acompanhamento do prazo de 30 dias.
+A revisão que a decisão da chave exigia dos PRDs já aprovados **foi feita**: PRD-03 ganhou a
+Área do Apoiador Desenvolvedor, PRD-01 a entidade da chave e a recusa de toda chamada sem
+chave, e PRD-02 a fila de avaliação e o acompanhamento do prazo.
 
 ## 15. Rastreabilidade
 

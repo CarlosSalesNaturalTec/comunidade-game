@@ -110,8 +110,17 @@ pytest
 O Python é o **3.12**, e o Ruff roda com os conjuntos **`E`, `F`, `I`, `UP` e `B`**. A
 **cobertura é medida e aparece no log, mas não bloqueia** o _merge_ no Ciclo 01.
 
-Nos **frontends e no jogo** as ferramentas ainda não estão decididas (§9) — pergunte antes de
-escolher.
+Nos **frontends e no jogo**, três verificações bloqueiam o _merge_ — **Biome** faz formatador e
+_linter_ do JavaScript, e **Vitest** roda os testes:
+
+```bash
+biome format --check .
+biome check .
+vitest run
+```
+
+Como no backend, a **cobertura é medida e aparece no log, mas não bloqueia** o _merge_ no
+Ciclo 01.
 
 Da documentação, quatro verificações rodam no CI e todas podem ser rodadas localmente:
 
@@ -184,10 +193,13 @@ por advogado.
 - **Aplicação de terceiro sobre a API** não passa por aqui: a chave é pedida na Área do
   Apoiador Desenvolvedor, na vitrine, e a aplicação de terceiro **lê e não escreve**.
 
-> **`[Proposta]`** O **apoio em código** como modalidade de aporte — melhoria da plataforma,
-> aplicação sobre a API e jogo sobre a API valorados em hora-técnica no livro-razão — depende
-> do valor-hora de referência e do critério de conversão, ambos em aberto no documento 09.
-> Enquanto não for decidido, contribuição em código **não** gera moedas nem Poder Sustentador.
+**O apoio em código é aporte.** Melhoria da plataforma, aplicação sobre a API e jogo sobre a
+API entram no livro-razão pela mesma régua da produção executiva: **hora declarada, _pull
+request_ integrado como lastro**. Você declara as horas do que entregou, o PR integrado à `main`
+comprova a entrega e **um Admin homologa**; o valor sai do valor-hora único da tabela de
+referência. Homologado, o aporte rende moedas, selo e Poder Sustentador, e abre a segunda via
+para o Nível 5 de sustento. Duas condições: **CLA assinado** e **PR integrado** — proposta
+recusada ou abandonada não vira aporte. O detalhe está no documento 04 §1.
 
 ## 8. Conduta
 
@@ -201,10 +213,8 @@ Estes pontos afetam quem contribui e seguem em aberto no documento 09:
 
 | Tema                                          | O que falta                                      |
 | --------------------------------------------- | ------------------------------------------------ |
-| Ferramentas de CI dos frontends e do jogo     | Formatador, _linter_ e testes do JavaScript      |
 | Texto e assinatura do CLA                     | O termo revisado por advogado e como se assina   |
 | CLA para quem contribui por uma empresa       | Se haverá termo próprio                          |
-| Apoio em código como aporte                   | Valor-hora e critério de conversão em horas      |
 | Canal entre agentes de IA e humanos           | _Issues_ com _labels_, _Discussions_, _Projects_ |
 | Orquestração do fluxo "do explore ao _merge_" | Se a automação com agentes entra aqui            |
 | Uso do Slack no fluxo de desenvolvimento      | A decisão                                        |

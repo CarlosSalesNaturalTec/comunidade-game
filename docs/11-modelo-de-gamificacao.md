@@ -152,7 +152,9 @@ Quatro regras fecham o modelo:
   trilha não publica. Ela mede de onde a turma parte; **não define nível**, que é percurso (§6).
 - **Repetir para fixar.** A retomada traz de volta o que já foi cumprido, na cadência que o
   Mestre declara — o mesmo vocabulário do desafio de coleta. Ela pontua **uma vez por
-  agendamento**; refazer por conta própria não rende ponto novo.
+  agendamento**; refazer por conta própria não rende ponto novo. O _template_ de missão sugere
+  como padrão **três retomadas, em 2, 7 e 21 dias** contados do desbloqueio: intervalos
+  crescentes, com a primeira ainda perto da aprendizagem. É sugestão — o Mestre declara a sua.
 - **A análise da produção é hipótese, não resultado.** A plataforma lê o que o Guerreiro(a)
   escreveu ou falou e devolve retorno **sempre construtivo**, apontando o caminho em vez do
   erro. **Quem lança o resultado é o Mestre** — a leitura automática nunca pontua sozinha.
@@ -271,6 +273,11 @@ Duas naturezas de saldo, que nunca se confundem:
 **Ponto regular é percurso; ponto extra é caráter.** O regular vem de avançar na trilha; o
 extra vem do que se faz além dela — cuidar, colaborar, propor. É o que separa as duas naturezas
 e o critério para classificar fonte nova.
+
+**Esta tabela é a única fonte do valor.** Quem cadastra atividade — Mestre na App 09, gestão na
+App 03 para a atividade avulsa — **escolhe o tipo** e a pontuação vem daqui; ninguém arbitra
+valor no cadastro. É a mesma régua da tabela de preços do catálogo avulso (documento 02 §8.2):
+a mesma atividade não vale 10 numa comunidade e 30 na vizinha.
 
 **Ponto regular não se gasta.** Ele só cresce, alimenta níveis e ranking e nunca é debitado.
 

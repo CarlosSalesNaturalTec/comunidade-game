@@ -68,8 +68,9 @@ hora — o sentido do fluxo é sempre esse.
 - **Card de Apoiador padronizado**: moldura comum, avatar centralizado, nick e **total de
   moedas em destaque**.
 - **Necessidades de recurso em aberto** das atividades sem lastro, com o caminho para apoiar.
-- **Seções institucionais** — "Quem somos", "Contatos" e "Como apoiar" com a chave PIX —, a
-  **nota de transparência sobre IA** e o vídeo de apresentação.
+- **Seções institucionais** — "Quem somos", "Contatos" e "Como apoiar" com a chave PIX — e o
+  vídeo de apresentação. A **nota de transparência sobre IA** fica **dentro de "Quem somos"**, e
+  é para ela que aponta a etiqueta do texto reescrito por IA nas Apps 01 e 05.
 - **Área detalhada de dados**, explicando o que a plataforma coleta, de quem, para quê e o que
   a vitrine **não** coleta do visitante.
 
@@ -323,7 +324,7 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RF-03-45` | Seções "Quem somos", "Contatos" e "Como apoiar" exibem o conteúdo publicado na App 03  | essencial  |
 | `RF-03-46` | "Como apoiar" exibe a chave PIX da pessoa jurídica vinculada                           | essencial  |
 | `RF-03-47` | Vitrine publica as necessidades de recurso em aberto das atividades sem lastro         | essencial  |
-| `RF-03-48` | Nota de transparência sobre IA aparece nas seções institucionais                       | essencial  |
+| `RF-03-48` | Nota de transparência sobre IA vive dentro de "Quem somos" e remete à linha "Licenças" | essencial  |
 | `RF-03-49` | Vitrine exibe o vídeo de apresentação e a identidade visual de comunidade              | desejável  |
 | `RF-03-50` | Vitrine não exibe publicidade nem patrocínio                                           | essencial  |
 | `RF-03-51` | Vitrine não instala cookie, rastreador ou perfilamento do visitante                    | essencial  |
@@ -596,15 +597,17 @@ entidade e não como contrato.
 
 ## 14. Pendências que permanecem
 
-- **Nota de transparência sobre IA**: o **conteúdo** está decidido — a nota declara que a
-  plataforma é construída com Claude e atende as pessoas com Gemini (documento 01). Faltam o
-  **texto final**, a **localização exata** e a conexão com a linha "Licenças" quanto a conteúdo
-  gerado com auxílio de IA. Trava o `RF-03-48` no texto, não no desenho.
-- **Formato de exportação e licença de uso do conjunto** entregue sob solicitação, e o critério
-  que o Admin aplica ao aprovar ou recusar. O recorte de pesquisadores promete a licença que
-  ainda não existe.
-- **Agregação mínima dentro do bairro**, para comunidade com pouquíssimos coletores — o corte
-  no bairro resolve a rua, não o caso extremo.
+- **Texto final da nota de transparência sobre IA**: o conteúdo e a localização estão decididos
+  — a nota vive dentro de "Quem somos", declara Claude na construção e Gemini no atendimento e
+  remete à linha "Licenças". Falta redigi-la, com os demais textos públicos. Trava o `RF-03-48`
+  no texto, não no desenho.
+
+As outras três que este PRD carregava foram decididas depois dele e constam do documento 09,
+em "Já decididos": o **formato, a licença e o critério de aprovação** do conjunto entregue —
+CSV, GeoJSON e dicionário de dados, em CC BY-SA, aprovados por Admin em três frentes —, a
+**agregação mínima dentro do bairro**, com piso de três coletores distintos no recorte
+publicado, e a **localização da nota de transparência**, com a etiqueta do texto reescrito por
+IA apontando para ela.
 
 ## 15. Rastreabilidade
 

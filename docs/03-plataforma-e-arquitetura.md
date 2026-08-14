@@ -272,6 +272,11 @@ Havendo, na mesma data e horário, **aulas presenciais em comunidades diferentes
 pergunta **uma vez, ao abrir**, em qual delas está operando, e usa essa escolha até o fim da
 sessão de trabalho.
 
+**A sessão de trabalho do aparelho é a janela da aula agendada.** O Mestre ou Admin autentica o
+aparelho ao abrir a aula, e ele opera até o horário final declarado no agendamento; encerrada a
+aula, o aparelho exige nova autenticação. Não há prazo próprio a calibrar: quem delimita é o
+agendamento que já rege o funcionamento do App 01.
+
 Ao final, o Guerreiro(a) já está **ativo** e pode participar das atividades — sem exigência de
 autorização do responsável nesta etapa.
 
@@ -430,8 +435,10 @@ A autoria de trilhas e conteúdos e as validações pedagógicas são do Mestre 
 esta aplicação continua sendo a da **gestão** — cadastros, lançamentos, aprovações de Admin e
 painéis do dia.
 
-**Acesso do Mestre a esta aplicação:** **leitura do painel do dia** e **condução do Quiz ao
-Vivo das aulas que ministra**. Fora isso, tudo o que ele escreve continua na App 09.
+**Acesso do Mestre a esta aplicação:** **leitura do painel do dia**, **condução do Quiz ao
+Vivo das aulas que ministra** e **homologação da equipe da trilha** das suas trilhas, ato
+presencial que ele pratica no mesmo encontro (documento 02 §5). Fora isso, tudo o que ele
+escreve continua na App 09.
 
 ## 6. App 04 — Jogo em JavaScript
 
@@ -494,6 +501,10 @@ a próxima medição, o que já foi registrado e **quantos pontos aquela série 
 Guerreiro(a) seleciona o local do dado entre os cadastrados e, faltando um, solicita a
 inclusão.
 
+**O registro de coleta exige rede: sem ela, fica bloqueado até reconectar.** Não há fila local
+como a da presença do App 01 — a entrada na App 05 já depende de rede para a conferência da
+imagem, e sem sessão aberta não há a quem atribuir o registro.
+
 É onde o Guerreiro(a) **entrega a produção da missão**: escreve, fala ou fotografa o que fez à
 mão. A plataforma lê — com o mesmo **modelo Gemini**, na nuvem — e devolve retorno **sempre
 construtivo**, apontando o próximo passo em vez
@@ -539,7 +550,9 @@ Quatro regras fecham o desenho:
 
 - **Reescreve, não inventa.** A IA reformula a explicação do conteúdo que o Mestre cadastrou,
   no vocabulário e no interesse do Guerreiro(a), **sem sair do corpus fechado**, e o texto
-  reescrito é **marcado como gerado por IA**. Conteúdo novo continua sendo autoria do Mestre.
+  reescrito é **marcado como gerado por IA**: uma **etiqueta visível no início do bloco**, em
+  linguagem simples, com link para a nota de transparência da vitrine (§8). Conteúdo novo
+  continua sendo autoria do Mestre.
 - **Ponte interdisciplinar na hora.** A IA usa o poder que o Guerreiro(a) **já domina** para
   explicar o que ele ainda não domina, como exemplo e analogia, direto na App 05 e sem passar
   pelo Mestre. Virar missão ou conteúdo de trilha continua sendo autoria do Mestre (§11).
@@ -551,6 +564,11 @@ Quatro regras fecham o desenho:
 recomendação vigente, e permite **desligá-la** a qualquer tempo (§9). Desligada, o Guerreiro(a)
 segue a trilha na ordem publicada e lê a explicação original do Mestre — alternativa
 equivalente, nunca exclusão da atividade.
+
+**A chave do responsável não alcança a tela coletiva.** Ela vale na App 05, tela individual do
+Guerreiro(a). No App 01 o aparelho é da equipe e a reescrita **sempre opera**: a tela não é de
+ninguém em particular, e a personalização ali não perfila criança alguma — adapta na sessão e é
+descartada com ela. Um integrante com a chave desligada não desliga a reescrita da equipe.
 
 E é o **canal de sugestões do Guerreiro(a)**: ideias de melhoria para atividades, trilhas e
 para a própria plataforma são registradas aqui e caem na fila de avaliação da gestão — o mesmo
@@ -644,8 +662,12 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   revela quem existe na plataforma. Quem não tem cadastro recebe a orientação da sua persona:
   pré-cadastro do Apoiador, formulário de participação do Mestre e, para o responsável e o
   Guerreiro(a), procurar a gestão no encontro.
-- Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins — incluindo a **nota de
-  transparência sobre IA**.
+- Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins. A **nota de transparência
+  sobre IA** vive **dentro de "Quem somos"**, e não em seção própria: declara que a plataforma
+  é construída com Claude e atende as pessoas com Gemini (documento 01), que a IA **reescreve
+  conteúdo do corpus do Mestre para crianças e não as perfila**, e remete à linha "Licenças"
+  quanto ao que é gerado com auxílio de IA. É para ela que aponta a etiqueta do texto reescrito
+  nas Apps 01 e 05 (§7.1).
 - **"Como apoiar"** — canais de doação, incluindo a chave PIX da pessoa jurídica vinculada.
 - Identidade visual: **background com imagem de comunidade, cores, grafite** — estética de
   território, não corporativa.
@@ -707,6 +729,10 @@ vínculo conferido por um Admin ou por um Mestre.
 - **Desligar a personalização não tira conteúdo.** Desligada, o Guerreiro(a) segue a trilha na
   ordem publicada e lê a explicação original do Mestre — é a alternativa equivalente exigida de
   toda recusa (§7.1).
+- **A exclusão do _template_ biométrico é avisada antes de acontecer.** Encerrado o vínculo, a
+  App 07 exibe ao responsável que o _template_ será apagado, **em que data** e o que isso
+  significa caso o Guerreiro(a) volte — nova captura, com novo termo. O aviso vive no canal
+  oficial, sem notificação por e-mail, como todo retorno do Ciclo 01.
 - **Linguagem simples**, na mesma medida exigida da política de privacidade.
 - **Responsável sem smartphone não fica de fora:** o ato pode ser feito por **atendimento
   assistido** — Admin ou Mestre abre a aplicação com ele presente, gravando quem operou e quem
@@ -811,6 +837,11 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 - **Conteúdo da missão:** texto formatado, imagens, link externo e upload hospedado
   pela plataforma — **vídeo até 200 MB e arquivo até 20 MB por missão**, com o
   consumo lançado como recurso de _cloud_ no livro-razão.
+- **O upload aceita lista fechada de formatos**: vídeo MP4 e WebM, imagem JPG, PNG e WebP,
+  áudio MP3 e documento PDF. O que está fora da lista é recusado no envio — o que fecha a porta
+  a executável e a formato que o navegador não abre. **O que é enviado não passa por conferência
+  prévia**: cai na auditoria mensal por amostragem do Admin, como a trilha e o corpus de apoio,
+  e o Admin despublica com motivo.
 
 ## 12. Proteção de dados em toda a plataforma (LGPD)
 
@@ -828,6 +859,11 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   onboarding**, de finalidade própria e termo impresso (§3.3).
 - A imagem captada no onboarding é **dado sensível de uso restrito**: serve apenas para
   identificar o Guerreiro(a) — presença e autenticação — e **nunca** é exibida publicamente.
+- **O ranking interno da App 05 mostra a turma inteira.** É a exceção declarada à regra da
+  divulgação autorizada: ali não há público externo — a tela é logada e os colegas já se
+  conhecem do encontro presencial —, e deixar de fora quem não tem autorização apagaria a
+  criança do ranking da própria turma. **A vitrine e todas as exibições públicas seguem
+  restritas a quem tem divulgação autorizada**, sem exceção.
 - **Dados do território: guarda permanente com o coletor identificado**, mesmo depois que o
   Guerreiro(a) deixa o projeto — é o que dá procedência à série e preserva o crédito da
   realização. A **anonimização ocorre na saída**: painéis públicos, exportações, pesquisas e

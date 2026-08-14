@@ -197,6 +197,9 @@ correspondente também é temporal:
 - O registro **nasce válido e pontua na hora**. O Mestre audita por **amostragem semanal**,
   junto com os lançamentos da semana, e pode invalidar registro inverossímil, o que retira os
   pontos daquele registro — só dele. Valor "a conferir" entra obrigatoriamente na amostra.
+- A amostra é de **10% dos registros da semana em cada série ativa, com o mínimo de um**. O
+  piso garante que nenhuma série passe uma semana sem ser olhada, e o percentual acompanha
+  quem registra mais. É o mesmo percentual da auditoria de trilhas e do corpus de apoio.
 - **Valor fora da faixa declarada no desafio** entra como **a conferir** e não pontua até o
   Mestre validar. É a trava contra dado inventado, e é também momento de ensinar a medir.
 
@@ -434,8 +437,8 @@ altera composição. Há dois tempos de vida:
 | **Da trilha** | A criação original que encerra a trilha | Com a culminância da trilha             |
 
 - A **equipe da trilha é fixa**: os Guerreiros e Guerreiras a formam e o **Mestre a homologa
-  em encontro presencial**; da homologação em diante ninguém entra nem sai. Cada Guerreiro(a)
-  tem **uma equipe da trilha por trilha** que percorre.
+  em encontro presencial, na App 03**, onde já conduz o Quiz ao Vivo; da homologação em diante
+  ninguém entra nem sai. Cada Guerreiro(a) tem **uma equipe da trilha por trilha** que percorre.
 - Cada Guerreiro(a) pode participar de **uma ou mais equipes** e **pontua em todas as
   atividades em que participar e colaborar**. **No Quiz ao Vivo joga por uma única equipe**,
   porque a partida é simultânea — a disputa segue sendo entre várias equipes, o que é único é a
@@ -449,7 +452,8 @@ de idades (6 a 16 anos) em força:
 - As equipes **misturam idades e níveis deliberadamente**. A progressão individual segue por
   nível de dificuldade; é a convivência que é heterogênea de propósito.
 - **Cada membro tem papel ativo** — quem constrói, quem registra, quem apresenta, quem
-  media — e os papéis giram entre as atividades.
+  media — e os papéis giram entre as atividades. O papel é **declarado na formação da equipe**,
+  no App 01, e vale para o encontro inteiro.
 - Guerreiros e Guerreiras **mais velhos ou mais avançados mediam os mais novos**: exercício
   prático do "colaborar vale mais que competir" e primeiro degrau do caminho de multiplicador.
 - **O crédito individual é preservado**: a realização é da equipe, e o registro guarda o

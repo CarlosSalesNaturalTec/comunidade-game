@@ -126,6 +126,8 @@ dentro da mesma sessão de trabalho do aparelho.
 4. Havendo **uma**, ela assume a comunidade daquela aula e segue.
 5. Havendo **mais de uma** — aulas presenciais em comunidades diferentes no mesmo horário —, ela
    pergunta **uma única vez** em qual está operando e usa essa escolha até o fim da sessão.
+   A sessão de trabalho **dura o que durar a janela da aula agendada**: encerrado o horário
+   final declarado no agendamento, o aparelho exige nova autenticação do Mestre ou do Admin.
 6. A aplicação verifica a **câmera** do aparelho. Sem câmera, não há onboarding: a mensagem
    orienta a usar outro aparelho.
 7. A tela inicial fica aberta, com os dois caminhos — **onboarding** e **trilhas** —, pronta
@@ -299,6 +301,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-31` | Aplicação recusa o sexto integrante e o segundo familiar de 17 anos ou mais                                   | essencial  |
 | `RF-04-32` | Equipe é vinculada à aula em andamento e se encerra com ela, preservando o histórico realizado                | essencial  |
 | `RF-04-33` | Guerreiro(a) integra mais de uma equipe no mesmo encontro                                                     | essencial  |
+| `RF-04-59` | Cada integrante declara o seu papel na formação da equipe, e ele vale para o encontro inteiro                 | essencial  |
 | `RF-04-34` | Tela mostra as equipes da aula por avatar e nick, sem qualquer dado pessoal                                   | essencial  |
 | `RF-04-45` | Equipe entrega a produção da missão por texto, áudio ou foto do manuscrito                                    | essencial  |
 | `RF-04-46` | Aplicação devolve retorno construtivo e descarta foto e áudio na leitura                                      | essencial  |
@@ -361,6 +364,9 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RN-04-26` | Recompensa de marco não é trocada; a troca alcança só a recompensa avulsa                                   | 23         | 02 §8         |
 | `RN-04-27` | Entrega no ato da troca, sem reserva nem promessa para o encontro seguinte                                  | 9          | 02 §8.2       |
 | `RN-04-28` | Preço e diferença aparecem sempre em pontos, nunca em reais nem em moedas                                   | 16         | 02 §8.2       |
+| `RN-04-29` | A sessão de trabalho do aparelho vale pela janela da aula agendada, e cai com ela                           | —          | 03 §3.2       |
+| `RN-04-30` | O papel do integrante é declarado na formação da equipe e vale para o encontro inteiro                      | —          | 02 §5         |
+| `RN-04-31` | A reescrita por IA opera no App 01 ainda que um integrante esteja com a chave desligada                     | 11         | 03 §7.1       |
 
 ## 8. Modelo de dados
 
@@ -569,6 +575,10 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 | Uma única equipe por Guerreiro(a) na partida de Quiz ao Vivo                            | 02 §5, 05 §5   | Já decididos                                 |
 | Resposta do Quiz ao Vivo enviada pelo App 01, não mais pela App 05                      | 05 §5          | Já decididos                                 |
 | App 05 como aplicação das aulas remotas e do uso cotidiano                              | 03 §7          | Já decididos                                 |
+| Papel de cada integrante declarado na formação da equipe, valendo para o encontro       | 02 §5          | Papel de cada integrante na equipe           |
+| Sessão de trabalho do aparelho é a janela da aula agendada                              | 03 §3.2        | Sessão de trabalho do aparelho da aula       |
+| Aviso da exclusão do _template_ na App 07, com a data                                   | 03 §9          | Aviso da exclusão do _template_ biométrico   |
+| Reescrita por IA opera no App 01 mesmo com um integrante desligado                      | 03 §7.1        | Personalização por IA no aparelho da equipe  |
 
 A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do termo** ao
 `Consentimento` do PRD-01, e o acompanhamento do anexo pendente à App 03 (PRD-02).
@@ -581,11 +591,6 @@ nasce aqui e serve também ao apoio escolar da App 05.
 
 - **Peso dos modelos da biblioteca Human** no primeiro carregamento, contra o requisito de
   aparelho modesto e rede instável. É desenho de implementação, não requisito novo.
-- **Aviso ao responsável antes da exclusão do _template_**: o prazo está decidido — 30 dias
-  após o fim do vínculo, ou 5 dias a pedido —, mas a forma do aviso prévio, sem notificação por
-  e-mail no Ciclo 01, ainda precisa de desenho.
-- **Duração da sessão de trabalho do aparelho** antes de exigir nova autenticação do Mestre ou
-  Admin, a calibrar no primeiro encontro real.
 - **Roteiro final da conversa**: este PRD fixa os dados obrigatórios, a ordem livre e as
   confirmações; o texto exato das falas da IA é escrito na implementação e validado com o Mestre
   fundador antes da primeira turma.
@@ -594,10 +599,12 @@ nasce aqui e serve também ao apoio escolar da App 05.
 - **Entrega em duas etapas**: o caminho do onboarding é da onda 2; o caminho das trilhas só
   opera com trilha, conteúdo e banco de perguntas publicados na App 09 (PRD-09) e com a
   condução da partida na App 03 (PRD-02) — o que a fase 3 do piloto já pressupõe.
-- **Papel de cada integrante na equipe**: o documento 02 exige que o registro guarde o papel;
-  falta decidir se o papel é escolhido na formação da equipe ou lançado na entrega da atividade.
 - **Comportamento do assistente por voz em sala barulhenta**, com a alternativa por texto sempre
   disponível.
+
+Três saíram desta lista, decididas e gravadas na §13: o **papel de cada integrante**, declarado
+na formação da equipe; a **sessão de trabalho do aparelho**, que é a janela da aula agendada; e
+a **forma do aviso** da exclusão do _template_, que acontece na App 07, com a data.
 
 ## 15. Rastreabilidade
 

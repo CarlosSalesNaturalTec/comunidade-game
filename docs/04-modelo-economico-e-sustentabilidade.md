@@ -107,6 +107,21 @@ operação são o **lastro comprobatório** da declaração, nunca a fórmula qu
 outro tipo de recurso, versionado por vigência — cadastro da gestão, feito antes do primeiro
 aporte do ciclo.
 
+#### Apoio em código de quem não é Admin
+
+**Definição vigente.** A melhoria da plataforma, de uma aplicação ou de um jogo sobre a API
+entra como **aporte do Apoiador**, pela mesma régua da produção executiva: **hora declarada,
+_pull request_ integrado como lastro**. O contribuidor declara as horas do que entregou, o PR
+integrado à `main` comprova a entrega, **um Admin homologa** e o valor sai do **mesmo
+valor-hora único** da tabela de referência. Homologado, o aporte rende moedas e selo como
+qualquer outro, e abre a segunda via para o **Nível 5 de sustento** — que deixa de exigir virar
+Mestre.
+
+Duas condições: **CLA assinado**, sem o qual o PR não é integrado (documento 03 §1), e **PR
+integrado** — proposta recusada ou abandonada não vira aporte. O Admin homologa a declaração,
+não a arbitra: assim como no commit do fundador, revisar, documentar e discutir a solução também
+é produção.
+
 ### Custos anteriores ao livro-razão
 
 **Definição vigente.** O custo de construir a plataforma — assinatura das ferramentas de IA do
@@ -217,6 +232,12 @@ Apoiador** e escolhe uma de três formas:
   automaticamente**: quem confere é um Admin, na App 03.
 - **Sem documento fiscal**: a plataforma não coleta CPF, CNPJ nem documento de identidade de
   quem aporta.
+- **Recibo, quem quiser, fora da plataforma.** A tela de pré-cadastro declara que a plataforma
+  não emite recibo e que quem precisar de um escreve para a pessoa jurídica vinculada, que o
+  emite com os dados fiscais informados **diretamente a ela**. É o que permite atender quem
+  precisa comprovar a doação sem a plataforma passar a guardar dado fiscal de ninguém. A
+  prestação de contas da pessoa jurídica sobre o que entra por PIX corre pela contabilidade
+  dela, fora do livro-razão de transparência.
 - **Homologado o aporte**, o valor é convertido em **moedas**, credita o Poder Sustentador e o
   card do Apoiador passa a exibir o total na vitrine. Antes disso não há crédito nem card.
 

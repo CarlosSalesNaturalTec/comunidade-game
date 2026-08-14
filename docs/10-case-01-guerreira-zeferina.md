@@ -68,8 +68,14 @@ possível dizer, sem reescrever a história, se cada uma se confirmou.
   turma partiu; o desbloqueio, o que ela sabe depois de a missão ter sido ensinada.
 - **Compara-se quiz com quiz.** A culminância fica **fora** de H5: criação original é medida
   de autoria, validada contra o critério declarado pelo Mestre, e não tem como ser comparada a
-  um quiz. Para a comparação significar alguma coisa, a sondagem precisa medir os mesmos itens
-  do poder que os desafios de desbloqueio retomam — critério que é pendência do case (§7).
+  um quiz.
+- **O critério é item a item.** A sondagem mede **os mesmos itens do poder que cada missão
+  obrigatória desbloqueia**, e o desafio de desbloqueio retoma o item da sua missão — é o
+  Mestre autor que declara, no cadastro, qual item cada pergunta cobre. **A hipótese se confirma
+  para o Guerreiro(a) quando ele acerta, no desbloqueio, ao menos 60% dos itens que errou na
+  sondagem**; por trilha, confirma-se pela proporção de Guerreiros e Guerreiras que alcançam
+  esse ganho. Item já acertado na sondagem não entra no cálculo: o que se mede é o que a trilha
+  ensinou, não o que a criança já sabia.
 - **A comparação é avaliação de ciclo, não nota.** Ela lê registros que a trilha já produz:
   não credita ponto, não altera nível e não entra no card do Guerreiro(a).
 
@@ -194,7 +200,5 @@ formalizar — e o _baseline_ contra o qual a segunda comunidade será comparada
 - **Tamanho da turma** e número de mestres e voluntários necessários por encontro.
 - **Metas numéricas de H1, H2 e H4** — quantos cadastros, quantas autorizações e que
   distribuição etária caracterizam hipótese confirmada.
-- **Critério de comparação de H5** — quais itens do poder a sondagem mede, como os desafios de
-  desbloqueio os retomam e o que caracteriza aprendizado confirmado em uma trilha.
 - **Registro da edição de 2024**: reunir memória, fotos e contatos daquela edição como linha de
   base do relacionamento com a comunidade.

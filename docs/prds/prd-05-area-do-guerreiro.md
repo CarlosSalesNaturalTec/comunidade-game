@@ -58,7 +58,7 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
   trocas já feitas — a troca em si acontece no encontro presencial, no App 01.
 - **Ranking** da comunidade, por trilha ou poder, apenas com pontos regulares.
 - **Acervo do Guerreiro(a)**: o exemplar da linha Alpha que é dele e os exemplares permanentes
-  em uso de bancada, com a ficha de vida do livro.
+  do ponto de apoio, com a ficha de vida do livro.
 - **Apoio às atividades escolares** por assistente de voz com IA, respondendo apenas a partir
   do conteúdo que os Mestres cadastraram.
 - **Canal de sugestões**, em texto ou áudio, com acompanhamento do status.
@@ -325,6 +325,8 @@ com a fusão das aplicações e **não são reaproveitados**.
 | ---------- | ----------------------------------------------------------------------------------------- | ---------- |
 | `RF-05-52` | Ranking exibe posições da comunidade por trilha ou poder, somente com pontos regulares    | essencial  |
 | `RF-05-53` | Guerreiro(a) vê sempre a própria posição no ranking, mesmo sem divulgação autorizada      | essencial  |
+| `RF-05-84` | Ranking desta aplicação exibe a turma inteira, com ou sem divulgação autorizada           | essencial  |
+| `RF-05-85` | Registro de coleta sem rede é recusado com o motivo, sem fila local no aparelho           | essencial  |
 | `RF-05-54` | Guerreiro(a) registra sugestão em texto ou em áudio de até 60 segundos, transcrito        | essencial  |
 | `RF-05-55` | Sugestão registrada exibe o status até o retorno da gestão, com motivo quando não adotada | essencial  |
 | `RF-05-56` | Proposta adotada credita pontos extras e o badge de protagonismo ao autor                 | essencial  |
@@ -597,6 +599,9 @@ ciclo: número de criações originais apresentadas e de sugestões registradas.
 | Ponto extra tem acumulado e saldo disponível; só o saldo é trocável             | 11 §5           | Troca de pontos extras por recompensa avulsa |
 | Recompensa avulsa é trocada por pontos extras; a de marco segue não comprada    | 02 §8           | Troca de pontos extras por recompensa avulsa |
 | A troca é presencial, no encontro, e não acontece nesta aplicação               | 02 §8.2         | Troca de pontos extras por recompensa avulsa |
+| Registro de coleta bloqueado até reconectar, sem fila local                     | 03 §7           | Registro de coleta com a rede fora           |
+| Ranking interno mostra a turma inteira, exceção declarada à divulgação          | 03 §12          | Ranking interno da App 05                    |
+| Janelas de acesso no ponto de apoio para quem não tem aparelho                  | 05 §2           | Acesso de quem não tem aparelho nem dados    |
 
 As entidades `DisciplinaDeApoio` e `ConteudoDeApoio` foram acrescentadas ao modelo do PRD-01,
 e `Nivel` passou a ser derivado do percurso. O badge **de protagonismo** entrou no catálogo do
@@ -607,21 +612,17 @@ para o apoio escolar.
 
 ## 14. Pendências que permanecem
 
-- **Reidentificação em comunidade com poucos coletores**: os prazos e a base legal do dado
-  de território estão decididos, mas o critério de agregação mínima da saída pública não.
-- **Registro de coleta com a rede fora**: se vai para fila local no aparelho, como a presença
-  do App 01, ou se é bloqueado até reconectar. A entrada já exige rede pela conferência da
-  imagem.
-- **Ranking interno**: hoje segue a regra da vitrine e exibe apenas quem tem divulgação
-  autorizada. Se a intenção for mostrar a turma inteira dentro da aplicação logada, é decisão
-  a tomar e a gravar no documento 03 §12.
 - **Catálogo de qual marco entrega qual recompensa** no Ciclo 01: a regra está decidida, o
   catálogo não. **Trava** o `RF-05-45` na prática, não no desenho.
 - **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 20
   estão decididos; os preços por tipo são cadastro da gestão e dependem do calendário do
   Ciclo 01. **Trava** o `RF-05-83` na prática, não no desenho.
-- **Acessibilidade de quem não tem aparelho nem dados móveis** fora do ponto de apoio: os
-  desafios on-line entre encontros pressupõem acesso que nem todo Guerreiro(a) tem.
+
+Quatro saíram desta lista, decididas e gravadas na §13: o **registro de coleta com a rede
+fora**, que fica bloqueado até reconectar; o **ranking interno**, que mostra a turma inteira;
+a **acessibilidade de quem não tem aparelho**, atendida por janelas de acesso no ponto de
+apoio; e a **reidentificação em comunidade com poucos coletores**, resolvida pelo piso de três
+coletores distintos no recorte publicado (documento 02 §1).
 
 ## 15. Rastreabilidade
 

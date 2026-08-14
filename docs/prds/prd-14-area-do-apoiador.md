@@ -81,14 +81,16 @@ que já é público.
 - **Catálogo de missões instanciado para o Ciclo 01**: quantidade, prazo e selo de cada missão
   dependem do catálogo de recompensas por marco e da tabela de valoração, ambos pendentes. A
   aplicação exibe as missões que a gestão publicar; não as define.
-- **Apoio em código**: é proposta enquanto a governança de código aberto e o valor-hora não
-  forem decididos, e por isso não abre missão nem selo aqui.
+- **Recebimento do apoio em código**: a contribuição entra pelo repositório, com CLA assinado e
+  _pull request_ integrado, e é homologada pelo Admin na App 03. Aqui o Apoiador vê as moedas,
+  o selo e o nível que ela rendeu, como qualquer aporte.
 - **Ranking de apoiadores por valor**: vedado pelo documento 14. Há coleção de selos e nível de
   sustento, nunca pódio.
 - **Publicidade e patrocínio**: fora do Ciclo 01 (documento 09).
 - **Notificação por e-mail**: não existe no Ciclo 01; todo retorno acontece na plataforma.
 - **Recibo fiscal e dado bancário**: a plataforma não coleta CPF, CNPJ nem documento, e não
-  armazena dado bancário.
+  armazena dado bancário. Quem quiser recibo escreve para a pessoa jurídica vinculada, que o
+  emite fora da plataforma — e a tela de pré-cadastro diz isso.
 
 ## 4. Personas e permissões
 
@@ -638,30 +640,33 @@ a oferta de item ao catálogo avulso vieram dos documentos 04 §3 e 02 §8.2, e 
 decididos" no documento 09. As entidades `ItemDeCatalogoAvulso` e `Troca` foram acrescentadas
 ao modelo do PRD-07.
 
+**Na v4** duas decisões alcançam esta aplicação, ambas gravadas nos documentos-fonte antes de
+chegarem aqui: o **recibo emitido fora da plataforma** pela pessoa jurídica, a pedido, com a
+tela de pré-cadastro declarando isso (documento 04 §2), e o **apoio em código como aporte**, por
+hora declarada com o _pull request_ integrado como lastro, homologado por Admin e valorado pelo
+valor-hora único da tabela de referência (documento 04 §1). A segunda abre a **segunda via para
+o nível 5 de sustento**, que deixa de exigir virar Mestre.
+
 ## 14. Pendências que permanecem
 
-- **Valoração dos aportes não financeiros** (documento 09): a tabela de referência que converte
-  acervo, kits, camisas e hora-aula em moedas segue em aberto. **Não trava esta aplicação** —
-  foi a razão de o aporte pela App 08 ser em dinheiro —, mas trava a página pública do Apoiador
-  que doou material.
-- **Identificação fiscal de quem doa** (documento 09): a plataforma não coleta CPF nem CNPJ, e
-  como a pessoa jurídica vinculada emite recibo do que entra por PIX continua indefinido. É
-  operação fora da plataforma, mas a tela de pré-cadastro precisará dizer o que acontece com
-  quem pede recibo.
+- **Valores da tabela de referência** que converte acervo, kits, camisas e hora-aula em moedas:
+  a tabela e quem a mantém estão decididos — é cadastro da gestão, versionado por vigência —,
+  os valores por tipo não. **Não trava esta aplicação**, porque o aporte pela App 08 é em
+  dinheiro, mas trava a página pública do Apoiador que doou material.
 - **Catálogo de recompensas por marco** (documento 09): o que o Apoiador pode oferecer como
   recompensa de desafio extra convive com o catálogo do Ciclo 01, ainda não fechado.
 - **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 20
   estão decididos; os preços por tipo são cadastro da gestão. **Trava** o `RF-14-77` na
   prática, não no desenho.
-- **Peça de prestação de contas depois do Ciclo 01**: o painel vivo é a decisão do ciclo; que
-  relatório fechado nasce dele — e para quem — se decide com o uso medido no ciclo.
-- **Mais de um usuário por cadastro institucional**: fica para ciclo futuro, com o registro de
-  quem agiu em nome da instituição a definir junto.
 - **Catálogo de missões do Ciclo 01** (documento 09): os arquétipos estão no documento 14, mas
   a quantidade, o prazo e o selo de cada missão dependem do catálogo de recompensas por marco e
   da tabela de valoração. A aplicação está pronta para exibir o que a gestão publicar.
-- **Apoio em código** (documento 09): enquanto for proposta, não abre missão nem selo, e a
-  segunda via para o nível 5 de sustento não existe — resta virar Mestre.
+  Quatro saíram desta lista, decididas: a **identificação fiscal de quem doa** — recibo emitido
+  pela pessoa jurídica, fora da plataforma, com a tela de pré-cadastro declarando isso —, o
+  **apoio em código**, que passa a ser aporte por hora declarada com o _pull request_ integrado
+  como lastro e abre a segunda via para o nível 5 de sustento, a **peça de prestação de contas**,
+  que é o painel vivo sem relatório fechado no Ciclo 01 (documento 04 §1), e o cadastro
+  institucional, com **um usuário por cadastro** neste ciclo (documento 02 §1).
 
 ## 15. Rastreabilidade
 
