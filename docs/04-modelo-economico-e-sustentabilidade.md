@@ -100,8 +100,12 @@ Vale para a produção executiva o que já vale para todo aporte por absorção:
 tabela de referência, marcação como **ressarcível**, destaque público pelo ato e ressarcimento
 apenas quando houver receita destinada a ele.
 
-> **A definir:** o valor-hora de referência da produção executiva e o critério que converte o
-> histórico de commits e o registro do Admin em horas aportadas.
+As **horas são declaradas pelo Admin por período**, e o histórico de commits e o registro de
+operação são o **lastro comprobatório** da declaração, nunca a fórmula que a produz: commit não
+é unidade de trabalho, e documentar, elicitar e conversar com apoiador também é produção. O
+**valor-hora é único** para as duas frentes e entra na **tabela de referência** como qualquer
+outro tipo de recurso, versionado por vigência — cadastro da gestão, feito antes do primeiro
+aporte do ciclo.
 
 ### Custos anteriores ao livro-razão
 
@@ -114,7 +118,14 @@ e o comprovante anexado. Sem isso o Ciclo 01 fecharia sem contar a própria cons
 **[Proposta]** Modelar tecnicamente como um **livro-razão (ledger) de dupla entrada**: cada
 atividade consome recursos (débito) aportados por provedores (crédito). Viabiliza relatórios
 públicos de prestação de contas por atividade, por comunidade e por provedor — transparência
-auditável, essencial para captar doações e editais.
+auditável, essencial para captar doações e editais. **Não entra no Ciclo 01**: a prestação de
+contas abaixo já se sustenta sem ela.
+
+**A prestação de contas pública é painel vivo.** A tela aberta na vitrine atualiza a cada
+lançamento e mostra o movimentado por atividade, por comunidade e por provedor, sempre em
+moedas. **No Ciclo 01 não há relatório fechado nem periodicidade** — mesmo desenho do painel de
+efetividade do Apoiador (§3), e pela mesma razão: o uso dirá que peça consolidada vale
+construir.
 
 ### Pessoa jurídica vinculada ao projeto
 

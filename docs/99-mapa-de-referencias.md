@@ -79,6 +79,7 @@ em pontos — ficam **apenas no doc 14**.
 | Governança de personas (só Guerreiro(a) tem autocadastro)                  | 02 §1                                      | 01, 05, 08                     |
 | Cadastro do responsável e vínculo com os Guerreiros e Guerreiras           | 02 §1                                      | 03 §§1.1, 5, 9, 11, 08, 09     |
 | Autenticação por persona (nick e imagem; Apps 04 e 06 sem login)           | 03 §1.1                                    | 02, 08, 09                     |
+| Credencial de dispositivo do sensor                                        | 03 §1.1                                    | 02 §1, 08                      |
 | Solicitação de participação como Mestre ou Apoiador                        | 02 §1                                      | 03 §§5, 8, 08, 12              |
 | Equipes (grupo livre até 5, formadas no App 01; da aula e da trilha)       | 02 §5                                      | 03 §§4, 5, 08, 11 §4           |
 | Comunidade do onboarding vinda da aula agendada                            | 02 §1                                      | 01, 03 §§3, 5, 08, 10          |

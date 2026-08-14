@@ -8,7 +8,7 @@
 | Aplicação        | — (domínio consumido pelas Apps 03, 05, 06, 08 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v5 — 2026-08-10                                      |
+| Versão e data    | v6 — 2026-08-14                                      |
 | Depende de       | PRD-08                                               |
 | Documentos-fonte | 04 §§1–3, 05 §3, 11 §5                               |
 
@@ -224,6 +224,8 @@ atividades previstas.
 | `RN-07-25` | Preço do catálogo avulso é declarado em pontos extras e nunca deriva do valor em moedas                        | 23         | 02 §8.2      |
 | `RN-07-29` | Quem fixa o preço é a tabela de referência da gestão; nem o Mestre nem o Apoiador arbitram valor               | 23         | 02 §8.2      |
 | `RN-07-30` | Nenhum item do catálogo avulso vale menos de 20 pontos extras                                                  | 23         | 02 §8.2      |
+| `RN-07-31` | A prestação de contas pública é painel vivo, sem fechamento periódico no Ciclo 01                              | —          | 04 §1        |
+| `RN-07-32` | As horas da produção executiva são declaradas pelo Admin por período; commits são lastro, não fórmula          | —          | 04 §1        |
 | `RN-07-26` | Nenhum item entra no catálogo avulso sem lastro, como toda recompensa                                          | 9          | 02 §8.2      |
 | `RN-07-27` | A entrega da troca é imediata; não há reserva de item do catálogo entre encontros                              | —          | 02 §8.2      |
 | `RN-07-28` | Pontos do desafio extra são no máximo 10, de qualquer proponente                                               | —          | 04 §3        |
@@ -376,22 +378,18 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | Piso de 20 pontos extras para qualquer item do catálogo avulso                 | 02 §8.2        | Quem fixa o preço do catálogo avulso         |
 | Desafio extra reserva a recompensa na publicação e libera se encerrar sem uso  | 04 §3          | Desafio extra — proponente, teto e custeio   |
 | Custeio do desafio extra por absorção ou por saldo já existente na plataforma  | 04 §3          | Desafio extra — proponente, teto e custeio   |
+| Horas da produção executiva declaradas por período, com commits como lastro    | 04 §1          | Apuração da produção executiva               |
+| Valor-hora único na tabela de referência, versionado por vigência              | 04 §1          | Apuração da produção executiva               |
+| Prestação de contas pública em painel vivo, sem fechamento periódico           | 04 §1          | Formato da prestação de contas pública       |
+| Dupla entrada fora do Ciclo 01; segue proposta no documento-fonte              | 04 §1          | Formato da prestação de contas pública       |
 
 ## 14. Pendências que permanecem
 
-- **Valor-hora da produção executiva** e o critério que converte o histórico de commits e o
-  registro do Admin em horas aportadas — cadastro da gestão, como os demais valores da tabela.
-- **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 20
-  estão decididos; o preço de cada tipo acima do piso é cadastro da gestão, como a tabela de
-  moedas, e depende do calendário do Ciclo 01.
-- **Formato dos relatórios públicos de prestação de contas** por atividade, comunidade e
-  provedor — o que exatamente se publica e com que agregação.
-- **Formato do relatório de efetividade** entregue ao Apoiador: assunto do PRD-14, que lê
-  este ledger.
-- **Modelagem formal em dupla entrada**: segue como `[Proposta]` no documento 04. Os
-  requisitos deste PRD não dependem dela.
-- **Valores da tabela de referência**: deixaram de ser pendência de documentação e passaram a
-  ser cadastro da gestão, alimentado por Admin antes do primeiro aporte do ciclo.
+Nenhuma. Das seis que restavam, duas viraram decisão, na tabela de §13, e quatro não eram
+decisão de produto: os valores da tabela de referência e os preços do catálogo avulso são
+cadastro da gestão — os preços ainda dependem do calendário do Ciclo 01 e seguem no documento
+09 —, o relatório de efetividade já estava decidido como painel vivo no PRD-14, e a modelagem
+em dupla entrada segue proposta no documento 04, fora do Ciclo 01.
 
 ## 15. Rastreabilidade
 
@@ -416,3 +414,4 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | `RF-07-29` e `RF-07-30` | 04 §2 (pré-cadastro, comprovante e homologação)  |
 | `RF-07-31`              | 04 §1 (cobertura parcial da necessidade)         |
 | `RN-07-20`              | 04 §1 (sem armazenamento de dado bancário)       |
+| `RN-07-31` e `RN-07-32` | 04 §1 (painel vivo e horas declaradas)           |

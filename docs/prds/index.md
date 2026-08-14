@@ -31,6 +31,10 @@ Situações possíveis: **não iniciado**, **em elicitação**, **em redação**
 **aprovado** e **implementado**. O link para o documento aparece nesta tabela quando ele entra
 na pasta.
 
+O PRD-01 segue **implementado**, com uma exceção declarada: `RF-01-67` e `RF-01-68`, a
+credencial de dispositivo do sensor, nasceram depois da implementação e entram por change
+própria.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 
