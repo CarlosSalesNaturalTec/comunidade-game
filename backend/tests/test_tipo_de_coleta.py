@@ -183,3 +183,27 @@ def test_admin_desativa_tipo_de_coleta(sessao, criar_persona, criar_tipo_de_cole
     sessao.refresh(tipo)
 
     assert tipo.ativo is False
+
+
+def test_admin_altera_o_nome_do_tipo_de_coleta(sessao, criar_persona, criar_tipo_de_coleta):
+    admin = criar_persona(Papel.admin)
+    tipo = criar_tipo_de_coleta(admin, nome="Nome original")
+
+    alterar_tipo_de_coleta(sessao, tipo, operador=admin, nome="Nome revisado")
+    sessao.commit()
+    sessao.refresh(tipo)
+
+    assert tipo.nome == "Nome revisado"
+
+
+def test_alterar_tipo_de_coleta_para_nome_vazio_e_recusado(
+    sessao, criar_persona, criar_tipo_de_coleta
+):
+    admin = criar_persona(Papel.admin)
+    tipo = criar_tipo_de_coleta(admin, nome="Nome original")
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        alterar_tipo_de_coleta(sessao, tipo, operador=admin, nome="   ")
+    assert excinfo.value.campo == "nome"
+    sessao.refresh(tipo)
+    assert tipo.nome == "Nome original"

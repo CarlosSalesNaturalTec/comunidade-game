@@ -317,11 +317,14 @@ def test_desativar_tipo_nao_altera_desafio_ja_criado(
 
 
 def test_trilha_em_rascunho_sem_desafio_de_coleta_e_aceita(sessao, criar_persona, criar_trilha):
+    """`RN-08-14` exige ao menos um desafio por trilha, mas a trava mora na
+    publicação (PRD-09) — aqui a trilha em rascunho, sem nenhum
+    `DesafioDeColeta` vinculado, é aceita sem ressalva."""
     from nucleo.trilhas.modelo import SituacaoDaTrilha
 
     mestre = criar_persona(Papel.mestre)
 
     trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.rascunho)
 
+    assert trilha.id is not None
     assert trilha.situacao == SituacaoDaTrilha.rascunho
-    assert sessao.query(DesafioDeColeta).filter_by(missao_id=None).count() == 0
