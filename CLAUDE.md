@@ -50,7 +50,7 @@ Cada assunto tem **um** documento normativo, listado em `docs/99-mapa-de-referen
 
 ### 3. Referências entre documentos ficam no doc 99
 
-- Os documentos 01–14 **não** carregam links `[XX §Y](arquivo.md#ancora)` entre si. Quando o
+- Os documentos 01–15 **não** carregam links `[XX §Y](arquivo.md#ancora)` entre si. Quando o
   leitor humano precisar mesmo ser encaminhado, escreva em texto simples: _"(documento 05)"_.
   A exceção é `docs/index.md`, cuja função é justamente indexar e linkar os demais.
 - Todo o mapa de relações — fonte única, dependências, conceitos, aplicações → PRDs,
@@ -103,7 +103,7 @@ Valem todas as regras acima, com as diferenças abaixo.
 
 ### 1. O PRD é derivado — nunca fonte única
 
-O PRD **aplica** as regras dos documentos 01–14; não cria regra própria. Quando uma decisão
+O PRD **aplica** as regras dos documentos 01–15; não cria regra própria. Quando uma decisão
 nova for tomada durante a escrita de um PRD:
 
 1. gravar a regra no **documento-fonte** dela (doc 99 §1);
@@ -302,7 +302,7 @@ Merge de PR no GitHub usa **merge commit — nunca squash.**
 
 - [ ] O texto ficou **menor** que antes, sem perder definição?
 - [ ] Nenhuma regra foi duplicada — cada assunto está no seu documento-fonte?
-- [ ] Nenhum link cruzado entre documentos 01–14 foi introduzido?
+- [ ] Nenhum link cruzado entre documentos 01–15 foi introduzido?
 - [ ] O doc 99 foi atualizado, se alguma relação entre documentos mudou?
 - [ ] Pendências novas entraram no doc 09?
 - [ ] Os invariantes do doc 99 §6 continuam válidos?

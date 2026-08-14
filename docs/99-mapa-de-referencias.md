@@ -21,7 +21,7 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 | Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto                                                        | 05          |
 | Trilha 1 — Robô Educa                                                                                                                                                                                                        | 06          |
 | Trilha 2 — Batalha de Laser                                                                                                                                                                                                  | 07          |
-| Requisitos por PRD (**único documento extenso entre os 01–14**)                                                                                                                                                              | 08          |
+| Requisitos por PRD (**único documento extenso entre os 01–15**)                                                                                                                                                              | 08          |
 | Requisitos de produto por aplicação (**derivados — nenhum PRD é fonte única**)                                                                                                                                               | `prds/`     |
 | Decisões pendentes e propostas                                                                                                                                                                                               | 09          |
 | Case 01 — Guerreira Zeferina, Ciclo 01                                                                                                                                                                                       | 10          |
@@ -29,6 +29,7 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 | Guia do Apoiador (documento **derivado**, sem regra própria)                                                                                                                                                                 | 12          |
 | Código de Conduta do Guerreiro(a)                                                                                                                                                                                            | 13          |
 | Gamificação do Apoiador: níveis de necessidade, modalidades de apoio, perfis PF e PJ, missão do Apoiador, níveis de sustento, selos, técnicas admitidas e vedadas, portas de entrada por modalidade                          | 14          |
+| Identidade visual das aplicações: paleta, tipografia, medida, acessibilidade (WCAG AA), temperamentos, sistema de avatar, forma da carta, emblema de nível, silhueta de badge, fichas de ponto e moeda, tokens               | 15          |
 
 ## 2. Papel e dependência dos documentos
 
@@ -49,7 +50,8 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 | 12    | **Derivado** — comunicação           | 01, 02, 04, 05, 10, 14 | —                |
 | 13    | Normativo (conduta)                  | 01, 02                 | 05               |
 | 14    | Normativo (apoio)                    | 02, 04, 11             | 08, 12           |
-| prds/ | **Derivado** — requisitos de produto | 08, 01–07, 11, 13, 14  | `openspec/` (§9) |
+| 15    | Normativo (visual)                   | 01, 02, 03, 11         | `prds/`          |
+| prds/ | **Derivado** — requisitos de produto | 08, 01–07, 11, 13–15   | `openspec/` (§9) |
 
 **Divisão 02 × 11 (a confusão mais provável):** o doc 02 define **o que são** os elementos
 do jogo; o doc 11 define **como eles se ligam e quanto valem**. Tabelas de pontuação,
@@ -58,6 +60,11 @@ níveis, badges e taxonomia existem **apenas no doc 11**.
 **Divisão 11 × 14:** o doc 11 é fonte única do motor de pontos, níveis e badges **do
 Guerreiro(a)**. Os níveis de sustento e os selos **do Apoiador** — que correm em moedas, não
 em pontos — ficam **apenas no doc 14**.
+
+**Divisão 11 × 15:** o doc 11 diz **o que** cada card mostra e **como o território cresce**
+conforme o dado chega; o doc 15 diz **como isso se parece** — paleta, tipografia, moldura,
+silhueta de badge e emblema de nível. Composição de card e mapa dado → elemento visual ficam
+**apenas no doc 11**; cor, forma e medida ficam **apenas no doc 15**.
 
 ## 3. Conceitos e onde vivem
 
@@ -100,6 +107,12 @@ em pontos — ficam **apenas no doc 14**.
 | Aporte pela App 08 em dinheiro; material e serviço pelo Admin              | 02 §1 e 03 §10                             | 04 §2, 08                      |
 | Pré-cadastro do Apoiador (aporte declarado e comprovante)                  | 02 §1 e 03 §10                             | 04 §2, 08                      |
 | Identidade do Apoiador (avatar, nick, moldura e piso de 10 moedas)         | 11 §8.2                                    | 02 §1, 03 §§8, 10, 08          |
+| Paleta, tipografia, medida e tokens das aplicações                         | 15 §§3, 4, 11                              | 03 §8                          |
+| Acessibilidade digital das aplicações (WCAG 2.2 AA)                        | 15 §5                                      | 09, `prds/` §10 de cada um     |
+| Temperamentos Operação e Arena                                             | 15 §6                                      | 03 §2                          |
+| Sistema de avatar do Guerreiro(a) e avatar padrão do projeto               | 15 §7                                      | 02 §1, 03 §3.2, 11 §8.2        |
+| Forma da carta, emblema de nível e silhueta de badge                       | 15 §8                                      | 11 §§7, 8.2                    |
+| Fichas de ponto, ponto extra e moeda                                       | 15 §9                                      | 04 §1, 11 §5                   |
 | Área do Mestre (App 09) — autoria e operação                               | 03 §11                                     | 02, 05, 08, 09                 |
 | Publicação da trilha (sem aprovação prévia, travas e conteúdo)             | 03 §11                                     | 02, 05, 08, 11                 |
 | Atividade da missão (modalidade e formato)                                 | 11 §§2.1, 4                                | 02, 03 §11, 08                 |
@@ -161,49 +174,52 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 
 ## 5. Matriz de rastreabilidade — conceito → PRDs
 
-| Conceito                                    | Definição                 | PRDs                           |
-| ------------------------------------------- | ------------------------- | ------------------------------ |
-| Trilha e missões                            | 02 §3 + 11 §2             | PRD-01, 09, 05                 |
-| Conteúdo e bibliografia por missão          | 05 §3 + 11 §2             | PRD-09, 07                     |
-| Atividades e taxonomia                      | 02 §4 + 11 §§2.1, 4       | PRD-09, 01, 02, 05             |
-| Acompanhamento por nick e favoritos         | 02 §1 + 03 §10            | PRD-14, 03, 01                 |
-| Desafios de desbloqueio                     | 02 §2                     | PRD-01, 09, 05                 |
-| Desafio de coleta (série temporal)          | 02 §1                     | PRD-01, 08, 05, 06             |
-| Desafios extras (abertos e direcionados)    | 04 §3                     | PRD-01, 02, 07, 09             |
-| Encontros presenciais (dinâmica assíncrona) | 05 §4                     | PRD-02, 04                     |
-| Quiz ao Vivo                                | 05 §5                     | PRD-02, 04, 09                 |
-| Batalhas e telemetria                       | 02 §6 + 07                | PRD-10, 01, 09, 02, 04         |
-| Culminância e criação original              | 02 §4                     | PRD-01, 02, 03, 05, 09, 12, 10 |
-| Motor de pontuação                          | 11 §5                     | PRD-01, 02, 05, 09             |
-| Níveis 1–5 / Mestre Aprendiz                | 11 §6                     | PRD-01, 05                     |
-| Badges                                      | 11 §7                     | PRD-01, 03, 05, 12             |
-| Recompensa conquistada em marco             | 02 §8 + 11 §2.1           | PRD-09, 01, 05, 07             |
-| Vitrine e rankings                          | 03 §8 + 11 §8.1           | PRD-03                         |
-| Granularidade da saída pública              | 02 §1 + 03 §12            | PRD-03, 08, 01                 |
-| Cards e páginas individuais dos personagens | 11 §8.2                   | PRD-03, 12                     |
-| Pré-cadastro e identidade do Apoiador       | 02 §1 + 03 §10 + 11 §8.2  | PRD-14, 03, 02, 01, 07         |
-| Solicitação de Mestre ou Apoiador           | 02 §1 + 03 §8             | PRD-03, 02, 01                 |
-| Equipes                                     | 02 §5 + 11 §4             | PRD-04, 01, 02, 05             |
-| Comunidade do onboarding vinda da aula      | 02 §1 + 03 §3             | PRD-04, 02, 01, 08             |
-| Moeda da plataforma                         | 04 §1                     | PRD-07, 03, 01                 |
-| Entrega de dados sob solicitação aprovada   | 03 §12.3                  | PRD-03, 02, 01, 13             |
-| Produção executiva como aporte por absorção | 04 §1                     | PRD-07, 02                     |
-| Representação visual da comunidade          | 11 §8.3                   | PRD-08, 03                     |
-| Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10, 03             |
-| Chave de aplicação e Área do Desenvolvedor  | 03 §§1, 8 + 14 §3         | PRD-03, 01, 02, 12             |
-| Distribuição da trilha no ciclo             | 11 §2.4 + 10 §5           | PRD-09, 02                     |
-| Modelo de missão e template de autoria      | 11 §2.2 + 03 §11          | PRD-09, 05, 04, 01             |
-| Produção do Guerreiro(a) e devolutiva       | 11 §2.2 + 03 §§4, 7       | PRD-05, 04, 09, 01             |
-| Sugestões e propostas de evolução           | 03 §§7, 9, 10, 11 + 13 §5 | PRD-01, 02, 05, 09, 13, 14     |
-| Apoio às atividades escolares               | 03 §7                     | PRD-05, 09, 01                 |
-| Personalização por IA                       | 03 §7.1                   | PRD-11, 05, 04, 13, 09, 01     |
-| Área do Apoiador                            | 03 §10 + 04 §3            | PRD-14, 07, 02                 |
-| Missões, níveis de sustento e selos         | 14 §§5–8                  | PRD-14, 03, 07, 02, 01         |
-| Portas de entrada por modalidade de apoio   | 14 §§3, 10 + 02 §1        | PRD-03, 14, 02, 01             |
-| Área do Mestre                              | 03 §11 + 02 §1            | PRD-09, 02, 01                 |
-| Acervo didático (patrimônio e doação)       | 05 §3                     | PRD-07, 02, 05, 09             |
-| Área do responsável e consentimentos        | 03 §9                     | PRD-13, 01, 02                 |
-| Etiqueta ODS e cobertura da Agenda 2030     | 11 §2.1 + 04 §4           | PRD-09, 01, 08, 03, 14         |
+| Conceito                                    | Definição                 | PRDs                               |
+| ------------------------------------------- | ------------------------- | ---------------------------------- |
+| Trilha e missões                            | 02 §3 + 11 §2             | PRD-01, 09, 05                     |
+| Conteúdo e bibliografia por missão          | 05 §3 + 11 §2             | PRD-09, 07                         |
+| Atividades e taxonomia                      | 02 §4 + 11 §§2.1, 4       | PRD-09, 01, 02, 05                 |
+| Acompanhamento por nick e favoritos         | 02 §1 + 03 §10            | PRD-14, 03, 01                     |
+| Desafios de desbloqueio                     | 02 §2                     | PRD-01, 09, 05                     |
+| Desafio de coleta (série temporal)          | 02 §1                     | PRD-01, 08, 05, 06                 |
+| Desafios extras (abertos e direcionados)    | 04 §3                     | PRD-01, 02, 07, 09                 |
+| Encontros presenciais (dinâmica assíncrona) | 05 §4                     | PRD-02, 04                         |
+| Quiz ao Vivo                                | 05 §5                     | PRD-02, 04, 09                     |
+| Batalhas e telemetria                       | 02 §6 + 07                | PRD-10, 01, 09, 02, 04             |
+| Culminância e criação original              | 02 §4                     | PRD-01, 02, 03, 05, 09, 12, 10     |
+| Motor de pontuação                          | 11 §5                     | PRD-01, 02, 05, 09                 |
+| Níveis 1–5 / Mestre Aprendiz                | 11 §6                     | PRD-01, 05                         |
+| Badges                                      | 11 §7                     | PRD-01, 03, 05, 12                 |
+| Recompensa conquistada em marco             | 02 §8 + 11 §2.1           | PRD-09, 01, 05, 07                 |
+| Vitrine e rankings                          | 03 §8 + 11 §8.1           | PRD-03                             |
+| Granularidade da saída pública              | 02 §1 + 03 §12            | PRD-03, 08, 01                     |
+| Cards e páginas individuais dos personagens | 11 §8.2                   | PRD-03, 12                         |
+| Pré-cadastro e identidade do Apoiador       | 02 §1 + 03 §10 + 11 §8.2  | PRD-14, 03, 02, 01, 07             |
+| Solicitação de Mestre ou Apoiador           | 02 §1 + 03 §8             | PRD-03, 02, 01                     |
+| Equipes                                     | 02 §5 + 11 §4             | PRD-04, 01, 02, 05                 |
+| Comunidade do onboarding vinda da aula      | 02 §1 + 03 §3             | PRD-04, 02, 01, 08                 |
+| Moeda da plataforma                         | 04 §1                     | PRD-07, 03, 01                     |
+| Entrega de dados sob solicitação aprovada   | 03 §12.3                  | PRD-03, 02, 01, 13                 |
+| Produção executiva como aporte por absorção | 04 §1                     | PRD-07, 02                         |
+| Representação visual da comunidade          | 11 §8.3                   | PRD-08, 03                         |
+| Identidade visual das aplicações            | 15                        | PRD-02, 03, 04, 05, 09, 12, 13, 14 |
+| Sistema de avatar do Guerreiro(a)           | 15 §7                     | PRD-04, 05, 03, 12                 |
+| Acessibilidade digital (WCAG 2.2 AA)        | 15 §5                     | todos os PRDs de aplicação         |
+| Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10, 03                 |
+| Chave de aplicação e Área do Desenvolvedor  | 03 §§1, 8 + 14 §3         | PRD-03, 01, 02, 12                 |
+| Distribuição da trilha no ciclo             | 11 §2.4 + 10 §5           | PRD-09, 02                         |
+| Modelo de missão e template de autoria      | 11 §2.2 + 03 §11          | PRD-09, 05, 04, 01                 |
+| Produção do Guerreiro(a) e devolutiva       | 11 §2.2 + 03 §§4, 7       | PRD-05, 04, 09, 01                 |
+| Sugestões e propostas de evolução           | 03 §§7, 9, 10, 11 + 13 §5 | PRD-01, 02, 05, 09, 13, 14         |
+| Apoio às atividades escolares               | 03 §7                     | PRD-05, 09, 01                     |
+| Personalização por IA                       | 03 §7.1                   | PRD-11, 05, 04, 13, 09, 01         |
+| Área do Apoiador                            | 03 §10 + 04 §3            | PRD-14, 07, 02                     |
+| Missões, níveis de sustento e selos         | 14 §§5–8                  | PRD-14, 03, 07, 02, 01             |
+| Portas de entrada por modalidade de apoio   | 14 §§3, 10 + 02 §1        | PRD-03, 14, 02, 01                 |
+| Área do Mestre                              | 03 §11 + 02 §1            | PRD-09, 02, 01                     |
+| Acervo didático (patrimônio e doação)       | 05 §3                     | PRD-07, 02, 05, 09                 |
+| Área do responsável e consentimentos        | 03 §9                     | PRD-13, 01, 02                     |
+| Etiqueta ODS e cobertura da Agenda 2030     | 11 §2.1 + 04 §4           | PRD-09, 01, 08, 03, 14             |
 
 ## 6. Invariantes — coerências que qualquer edição precisa preservar
 
@@ -253,7 +269,7 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     inteira.
 13. **Ciclo 01 = ago–dez/2026, Guerreira Zeferina, trilhas 1 e 2 apenas.** Rima, Capoeira,
     Redes, PNED/BNCC e Soft Skills são ciclo futuro.
-14. **Detalhamento extenso só no doc 08 e nos PRDs.** Os documentos 01–07 e 09–14 são
+14. **Detalhamento extenso só no doc 08 e nos PRDs.** Os documentos 01–07 e 09–15 são
     sintéticos.
 15. **Equipe é grupo livre de até 5 pessoas**, formada pelos próprios Guerreiros e Guerreiras
     no App 01, em dois tempos de vida: a **da aula**, válida para aquela aula presencial, e a
@@ -298,6 +314,12 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     troca e **nunca fica negativo**. A troca alcança **só a recompensa avulsa** do catálogo:
     **recompensa de marco jamais é comprada**. O preço em pontos **não deriva** do valor em
     moedas nem em reais.
+24. **As oito aplicações têm uma identidade visual só**, com dois temperamentos — Operação e
+    Arena — que mudam densidade, raio e presença de ilustração, **nunca a marca nem a paleta**.
+    O piso de acessibilidade é **WCAG 2.2 AA** em todas elas, e **a cor jamais carrega
+    significado sozinha**: sempre acompanhada de glifo, forma, numeral ou rótulo. **Ponto
+    regular, ponto extra e moeda nunca se confundem na tela** — cada um com glifo, ficha e
+    rótulo próprios.
 
 ## 7. Como esta documentação deve ser editada
 
@@ -321,7 +343,7 @@ que valem para qualquer edição:
 Os PRDs ficam em `docs/prds/`, um arquivo por PRD, nomeado `prd-XX-<assunto>.md`. A pasta tem
 ainda `index.md` (situação de cada PRD) e `00-modelo-de-prd.md` (estrutura obrigatória).
 
-O PRD é **derivado**: aplica as regras dos documentos 01–14 e nunca é fonte única de nenhuma
+O PRD é **derivado**: aplica as regras dos documentos 01–15 e nunca é fonte única de nenhuma
 delas. Decisão nova tomada durante a escrita de um PRD é gravada primeiro no documento-fonte
 do assunto (§1) e movida no documento 09 para "Já decididos"; só então o PRD a aplica. Regra
 que existe apenas dentro de um PRD está no lugar errado.
@@ -352,7 +374,7 @@ artefatos de cada _change_ — `proposal`, `specs`, `design` e `tasks` — ficam
 `openspec/changes/<change>/` e são **derivados dos PRDs**: aplicam requisitos identificados
 (`RF-XX-nn`, `RN-XX-nn`) e nunca criam regra própria.
 
-A ordem de autoridade é: documentos 01–14 e 99 → `docs/prds/` → artefatos do OpenSpec →
+A ordem de autoridade é: documentos 01–15 e 99 → `docs/prds/` → artefatos do OpenSpec →
 código. Conflito resolve-se sempre pelo nível superior. Decisão nova tomada durante a
 implementação é gravada no documento-fonte (§1), movida no documento 09 e aplicada ao PRD
 antes de virar código.

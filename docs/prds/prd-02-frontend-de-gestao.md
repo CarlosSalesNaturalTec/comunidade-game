@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                        |
-| ---------------- | -------------------------------------------- |
-| PRD              | PRD-02                                       |
-| Aplicação        | App 03 — Gestão administrativa               |
-| Onda             | 2                                            |
-| Situação         | aprovado                                     |
-| Versão e data    | v9 — 2026-08-08                              |
-| Depende de       | PRD-01                                       |
-| Documentos-fonte | 03 §§5, 8, 11, 12, 04 §§1–3, 05 §§2–5, 02 §4 |
+| Campo            | Valor                                            |
+| ---------------- | ------------------------------------------------ |
+| PRD              | PRD-02                                           |
+| Aplicação        | App 03 — Gestão administrativa                   |
+| Onda             | 2                                                |
+| Situação         | aprovado                                         |
+| Versão e data    | v9 — 2026-08-08                                  |
+| Depende de       | PRD-01                                           |
+| Documentos-fonte | 03 §§5, 8, 11, 12, 04 §§1–3, 05 §§2–5, 02 §4, 15 |
 
 ## 2. Contexto e objetivo
 
@@ -437,7 +437,7 @@ do quiz ou a de ocorrência (403); condução de partida por Mestre que não min
 - Desempenho em celular modesto, o mesmo do ponto de apoio.
 - Linguagem simples nas telas e nos erros; nenhum jargão de TI, porque o Mestre pode ser de
   humanas, artes, esportes ou cultura.
-- Acessibilidade digital e idioma pt-BR; código aberto.
+- Acessibilidade digital no piso do documento 15 — **WCAG 2.2 AA**; idioma pt-BR; código aberto.
 
 ## 11. LGPD e proteção da criança
 

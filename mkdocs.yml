@@ -74,6 +74,7 @@ nav:
       - "11 — Modelo de gamificação": 11-modelo-de-gamificacao.md
   - "Plataforma":
       - "03 — Plataforma e arquitetura": 03-plataforma-e-arquitetura.md
+      - "15 — Identidade visual das aplicações": 15-identidade-visual.md
       - "08 — Base para PRDs": 08-base-para-prds.md
   - "PRDs":
       - prds/index.md

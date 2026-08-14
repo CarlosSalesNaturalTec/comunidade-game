@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                               |
-| ---------------- | --------------------------------------------------- |
-| PRD              | PRD-12                                              |
-| Aplicação        | App 04 — Jogo em JavaScript                         |
-| Onda             | 5                                                   |
-| Situação         | aprovado                                            |
-| Versão e data    | v1 — 2026-08-08                                     |
-| Depende de       | PRD-01, PRD-03                                      |
-| Documentos-fonte | 02 §§1, 2, 4; 03 §§6, 8, 9, 12; 04 §§1, 2; 11 §§5–8 |
+| Campo            | Valor                                                   |
+| ---------------- | ------------------------------------------------------- |
+| PRD              | PRD-12                                                  |
+| Aplicação        | App 04 — Jogo em JavaScript                             |
+| Onda             | 5                                                       |
+| Situação         | aprovado                                                |
+| Versão e data    | v1 — 2026-08-08                                         |
+| Depende de       | PRD-01, PRD-03                                          |
+| Documentos-fonte | 02 §§1, 2, 4; 03 §§6, 8, 9, 12; 04 §§1, 2; 11 §§5–8; 15 |
 
 ## 2. Contexto e objetivo
 
@@ -331,8 +331,9 @@ Erros previstos:
   pega o celular em seguida encontra a mesma tela inicial.
 - **Sem dependência de serviço proprietário** em tempo de execução — é condição para que a
   alteração feita em trilha funcione no aparelho do Guerreiro(a).
-- **Acessibilidade e linguagem simples**: contraste alto, textos curtos, nenhuma instrução que
-  dependa de saber jargão de jogo.
+- **Acessibilidade e linguagem simples** no piso do documento 15 — **WCAG 2.2 AA**: contraste
+  alto, textos curtos, nenhuma instrução que dependa de saber jargão de jogo. O pixel do
+  temperamento Arena fica nos sprites, nunca no texto.
 - **Idioma pt-BR** em toda a interface e nos nomes de domínio do código do jogo.
 - **Código aberto**, com licença conforme a decisão de licenciamento do projeto, ainda
   pendente.

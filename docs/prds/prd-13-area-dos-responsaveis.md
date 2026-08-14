@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                    |
-| ---------------- | ---------------------------------------- |
-| PRD              | PRD-13                                   |
-| Aplicação        | App 07 — Área dos pais e responsáveis    |
-| Onda             | 4                                        |
-| Situação         | aprovado                                 |
-| Versão e data    | v2 — 2026-08-06                          |
-| Depende de       | PRD-01, PRD-02                           |
-| Documentos-fonte | 02 §§1, 9, 03 §§1.1, 9, 12, 10 §3, 13 §3 |
+| Campo            | Valor                                        |
+| ---------------- | -------------------------------------------- |
+| PRD              | PRD-13                                       |
+| Aplicação        | App 07 — Área dos pais e responsáveis        |
+| Onda             | 4                                            |
+| Situação         | aprovado                                     |
+| Versão e data    | v2 — 2026-08-06                              |
+| Depende de       | PRD-01, PRD-02                               |
+| Documentos-fonte | 02 §§1, 9, 03 §§1.1, 9, 12, 10 §3, 13 §3, 15 |
 
 ## 2. Contexto e objetivo
 
@@ -357,8 +357,9 @@ responsável (403); tentativa de ler consulta ao assistente ou transcrição de 
   isso, em vez de simular sucesso.
 - **Aparelho compartilhado da família**: botão de sair sempre visível e nenhum dado da criança
   em cache depois do encerramento da sessão.
-- **Acessibilidade digital**: contraste, alvos de toque grandes e leitura por voz — parte dos
-  responsáveis tem baixa escolaridade ou pouca familiaridade com aplicativos.
+- **Acessibilidade digital** no piso do documento 15 — **WCAG 2.2 AA**: contraste, alvos de
+  toque grandes e leitura por voz — parte dos responsáveis tem baixa escolaridade ou pouca
+  familiaridade com aplicativos.
 - **Uso raro é a condição normal**: o responsável entra poucas vezes no ciclo, e a aplicação
   precisa ser compreensível sem aprendizado acumulado.
 - Escrita idempotente: reenviar a mesma concessão por falha de rede não gera dois registros.
