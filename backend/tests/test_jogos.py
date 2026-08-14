@@ -4,6 +4,20 @@ from nucleo.personas.modelo import Papel
 TIPO = TipoDeConsentimento.autorizacao_de_divulgacao
 
 
+def test_jogo_responde_sem_token_de_sessao(cliente, criar_chave, guerreiro_publico):
+    """`RF-01-22`, `RF-01-02`: ninguém se identifica para jogar — a leitura
+    do jogo dispensa credencial de persona, exige só a chave."""
+    guerreiro_publico()
+    chave, _ = criar_chave()
+    resposta = cliente.get("/v1/jogos/elenco", headers={"X-Chave-Aplicacao": chave})
+    assert resposta.status_code == 200
+
+
+def test_jogo_sem_chave_e_recusado(cliente):
+    resposta = cliente.get("/v1/jogos/elenco")
+    assert resposta.status_code == 401
+
+
 def test_elenco_traz_so_quem_autorizou(
     cliente,
     criar_chave,

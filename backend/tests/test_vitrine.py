@@ -30,6 +30,98 @@ def test_vitrine_sem_chave_e_recusada(cliente):
     assert resposta.status_code == 401
 
 
+def test_vitrine_nao_tem_rota_de_escrita(cliente, criar_chave):
+    """A vitrine é só leitura (`RF-01-02`): toda rota sob o prefixo é
+    `GET`, e não há caminho por onde criar, alterar ou remover registro."""
+    schema = cliente.get("/openapi.json").json()
+    rotas_da_vitrine = {
+        caminho: metodos for caminho, metodos in schema["paths"].items() if "/vitrine" in caminho
+    }
+    assert rotas_da_vitrine
+    for caminho, metodos in rotas_da_vitrine.items():
+        assert set(metodos.keys()) <= {"get", "head"}, caminho
+
+    chave, _ = criar_chave()
+    resposta = cliente.post("/v1/vitrine/guerreiros", headers={"X-Chave-Aplicacao": chave}, json={})
+    assert resposta.status_code == 405
+
+
+def test_guerreiros_filtra_por_comunidade(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+    criar_comunidade,
+):
+    comunidade_a = criar_comunidade("Comunidade A")
+    comunidade_b = criar_comunidade("Comunidade B")
+    admin = criar_persona(Papel.admin)
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+
+    guerreiro_a = criar_persona(Papel.guerreiro, comunidade=comunidade_a)
+    criar_nick(guerreiro_a, "guerreiro-comunidade-a")
+    criar_vinculo(responsavel, guerreiro_a, cadastrado_por=admin)
+    criar_consentimento(responsavel, guerreiro_a, tipo=TIPO, decisao=DecisaoDeConsentimento.concede)
+
+    guerreiro_b = criar_persona(Papel.guerreiro, comunidade=comunidade_b)
+    criar_nick(guerreiro_b, "guerreiro-comunidade-b")
+    criar_vinculo(responsavel, guerreiro_b, cadastrado_por=admin)
+    criar_consentimento(responsavel, guerreiro_b, tipo=TIPO, decisao=DecisaoDeConsentimento.concede)
+
+    chave, _ = criar_chave()
+    resposta = cliente.get(
+        "/v1/vitrine/guerreiros",
+        params={"comunidade": str(comunidade_a.id)},
+        headers={"X-Chave-Aplicacao": chave},
+    )
+    assert resposta.status_code == 200
+    nicks = [item["nick"] for item in resposta.json()["itens"]]
+    assert nicks == ["guerreiro-comunidade-a"]
+
+
+def test_ranking_filtra_por_comunidade(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+    criar_comunidade,
+    criar_trilha,
+    criar_ponto_regular,
+):
+    comunidade_a = criar_comunidade("Comunidade Ranking A")
+    comunidade_b = criar_comunidade("Comunidade Ranking B")
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(admin)
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+
+    guerreiro_a = criar_persona(Papel.guerreiro, comunidade=comunidade_a)
+    criar_nick(guerreiro_a, "ranking-comunidade-a")
+    criar_vinculo(responsavel, guerreiro_a, cadastrado_por=admin)
+    criar_consentimento(responsavel, guerreiro_a, tipo=TIPO, decisao=DecisaoDeConsentimento.concede)
+    criar_ponto_regular(guerreiro_a, trilha, total=10)
+
+    guerreiro_b = criar_persona(Papel.guerreiro, comunidade=comunidade_b)
+    criar_nick(guerreiro_b, "ranking-comunidade-b")
+    criar_vinculo(responsavel, guerreiro_b, cadastrado_por=admin)
+    criar_consentimento(responsavel, guerreiro_b, tipo=TIPO, decisao=DecisaoDeConsentimento.concede)
+    criar_ponto_regular(guerreiro_b, trilha, total=20)
+
+    chave, _ = criar_chave()
+    resposta = cliente.get(
+        "/v1/vitrine/rankings",
+        params={"comunidade": str(comunidade_a.id)},
+        headers={"X-Chave-Aplicacao": chave},
+    )
+    assert resposta.status_code == 200
+    itens = resposta.json()["itens"]
+    assert [item["nick"] for item in itens] == ["ranking-comunidade-a"]
+    assert itens[0]["posicao"] == 1
+
+
 def test_card_traz_avatar_e_nick_sem_dado_pessoal(cliente, criar_chave, guerreiro_publico):
     _, nick = guerreiro_publico(avatar="avatar-x")
     chave, _ = criar_chave()
