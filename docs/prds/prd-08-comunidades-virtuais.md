@@ -8,7 +8,7 @@
 | Aplicação        | — (domínio consumido pelas Apps 02, 03, 05, 06 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v4 — 2026-08-06                                      |
+| Versão e data    | v5 — 2026-08-14                                      |
 | Depende de       | —                                                    |
 | Documentos-fonte | 02 §1, 02 §2, 03 §12, 11 §4, 11 §5, 11 §7, 11 §8.3   |
 
@@ -147,12 +147,13 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 | `RF-08-11` | Sistema retoma a série ao receber novo registro, sem recompor o período parado                     | essencial  |
 | `RF-08-12` | Sistema marca para auditoria registro fora da faixa esperada do tipo de coleta                     | essencial  |
 | `RF-08-13` | Mestre invalida registro com motivo, estornando os pontos e mantendo o registro gravado            | essencial  |
-| `RF-08-14` | Sistema aceita registro vindo de sensor do Guerreiro(a), identificando o dispositivo de origem     | essencial  |
+| `RF-08-14` | Sistema aceita registro de sensor autenticado por credencial de dispositivo, com a origem gravada  | essencial  |
 | `RF-08-15` | Sistema enfileira registro feito sem rede e sincroniza depois, preservando a hora da medição       | essencial  |
 | `RF-08-16` | Rota pública devolve a série histórica da comunidade agregada até o bairro, sem coletor            | essencial  |
 | `RF-08-17` | Guerreiro(a) consulta suas séries, a situação de cada uma e os pontos que estão rendendo           | essencial  |
 | `RF-08-18` | Responsável consulta, pela App 07, as séries da criança sob sua responsabilidade                   | desejável  |
 | `RF-08-19` | Exportação de dados agregados e anonimizados por comunidade e período                              | desejável  |
+| `RF-08-28` | Saída pública e entrega aprovada agregam ao nível acima recorte com menos de três coletores        | essencial  |
 | `RF-08-20` | Painel reflete visualmente o crescimento da comunidade conforme o documento 11 §8.3                | desejável  |
 | `RF-08-21` | Sistema aceita foto ou vídeo como o próprio registro, quando o tipo de coleta assim o define       | essencial  |
 | `RF-08-22` | Guerreiro(a) solicita a inclusão de local ausente, e a solicitação entra na fila de aprovação      | essencial  |
@@ -188,6 +189,8 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 | `RN-08-20` | A auditoria por amostragem da coleta é semanal e inclui obrigatoriamente todo valor "a conferir"                              | 6          | 02 §1    |
 | `RN-08-21` | A etiqueta ODS da série vem da missão, ou da trilha, e é descritiva: não altera pontuação, cadência nem validade do registro  | 20         | 11 §2.1  |
 | `RN-08-22` | A cobertura de ODS sai agregada por comunidade e ciclo, nunca por coletor — a anonimização da saída vale igual                | 20, 7      | 04 §4    |
+| `RN-08-23` | O sensor se autentica por credencial de dispositivo vinculada ao Guerreiro(a) e à série; não abre sessão nem lê dado          | —          | 03 §1.1  |
+| `RN-08-24` | Recorte publicado com menos de três coletores distintos sobe para o nível acima; piso declarado na implantação                | 7          | 02 §1    |
 
 ## 8. Modelo de dados
 
@@ -321,25 +324,24 @@ a base da avaliação do Poder do Território e entram no conjunto de indicadore
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                    | Gravada em | Doc 09       |
-| -------------------------------------------------------------------------- | ---------- | ------------ |
-| Valor único por registro válido, igual para todo tipo de coleta            | 11 §5      | Já decididos |
-| Sem teto de pontos por período                                             | 11 §5      | Já decididos |
-| Quantos registros do período pontuam é declarado no desafio                | 11 §5      | Já decididos |
-| Dois períodos de cadência seguidos sem registro interrompem a série        | 02 §1      | Já decididos |
-| Registro nasce válido; Mestre audita por amostragem e pode invalidar       | 02 §1      | Já decididos |
-| Série individual, uma por Guerreiro(a)                                     | 02 §1      | Já decididos |
-| Origem do registro: manual, por voz ou sensor construído pelo Guerreiro(a) | 02 §1      | Já decididos |
-| Saída pública agregada até o bairro (revisto no PRD-03)                    | 02 §1      | Já decididos |
+| Decisão                                                                    | Gravada em | Doc 09                                 |
+| -------------------------------------------------------------------------- | ---------- | -------------------------------------- |
+| Valor único por registro válido, igual para todo tipo de coleta            | 11 §5      | Já decididos                           |
+| Sem teto de pontos por período                                             | 11 §5      | Já decididos                           |
+| Quantos registros do período pontuam é declarado no desafio                | 11 §5      | Já decididos                           |
+| Dois períodos de cadência seguidos sem registro interrompem a série        | 02 §1      | Já decididos                           |
+| Registro nasce válido; Mestre audita por amostragem e pode invalidar       | 02 §1      | Já decididos                           |
+| Série individual, uma por Guerreiro(a)                                     | 02 §1      | Já decididos                           |
+| Origem do registro: manual, por voz ou sensor construído pelo Guerreiro(a) | 02 §1      | Já decididos                           |
+| Saída pública agregada até o bairro (revisto no PRD-03)                    | 02 §1      | Já decididos                           |
+| Sensor entra por credencial de dispositivo, emitida por Admin ou Mestre    | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
+| Piso de três coletores distintos no recorte publicado ou entregue          | 02 §1      | Agregação mínima dentro do bairro      |
 
 ## 14. Pendências que permanecem
 
-- **Autenticação do sensor do Guerreiro(a)**: como o dispositivo se credencia na API, o que
-  fazer com valor fora de faixa vindo de sensor e quem responde por sensor descalibrado. Trava
-  a implementação do `RF-08-14`, não a modelagem.
-- **Reidentificação em comunidade com poucos coletores**: o corte da saída pública no bairro
-  resolveu a inferência de endereço pela série de rua, mas falta o critério de agregação
-  mínima **dentro do bairro** e nas entregas aprovadas, que descem a rua e abaixo.
+Nenhuma: as duas que restavam foram decididas e estão na tabela de §13. O valor fora de faixa
+vindo de sensor e o sensor descalibrado não eram pendência própria — seguem a regra do valor "a
+conferir" e a auditoria por amostragem, que valem para qualquer origem do registro.
 
 ## 15. Rastreabilidade
 
@@ -349,10 +351,12 @@ a base da avaliação do Poder do Território e entram no conjunto de indicadore
 | `RF-08-05` a `RF-08-08` | 02 §1 (registro temporal), 11 §4              |
 | `RF-08-09` a `RF-08-11` | 11 §5 (motor de pontuação)                    |
 | `RF-08-12` e `RF-08-13` | 02 §1 (veracidade do dado)                    |
-| `RF-08-14` e `RF-08-15` | 02 §1 (origem do registro), 03 §1             |
+| `RF-08-14` e `RF-08-15` | 02 §1 (origem do registro), 03 §§1, 1.1       |
 | `RF-08-16` e `RF-08-19` | 02 §1 (anonimização na saída), 03 §12         |
 | `RF-08-17` e `RF-08-18` | 08 (PRD-05 e PRD-13)                          |
 | `RF-08-20`              | 11 §8.3                                       |
 | `RF-08-21`              | 02 §1 (registro por foto ou vídeo)            |
 | `RF-08-22` a `RF-08-24` | 02 §1 (solicitação de novo local), 03 §§5, 11 |
 | `RF-08-25` a `RF-08-27` | 11 §2.1 e 04 §4 (etiqueta ODS e meta 17.18)   |
+| `RF-08-28`, `RN-08-24`  | 02 §1 (piso de três coletores no recorte)     |
+| `RN-08-23`              | 03 §1.1 (credencial do sensor)                |

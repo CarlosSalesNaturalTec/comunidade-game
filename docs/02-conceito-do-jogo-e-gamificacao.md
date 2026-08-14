@@ -222,6 +222,12 @@ pesquisas, painéis públicos e instituições é agregado e anonimizado conform
 entregue mediante solicitação aprovada** por um Admin. É essa linha de corte que impede uma
 série diária em rua de coletor único de apontar onde a criança mora.
 
+**Piso de três coletores no recorte publicado.** Recorte com menos de **três coletores
+distintos** não sai sozinho: soma-se ao nível acima até alcançar o piso. Vale para o painel
+público e para o conjunto entregue, que desce abaixo do bairro. É o que protege o bairro de
+coletor único, que o corte no bairro sozinho não alcança. O piso é **parâmetro declarado na
+implantação**, com três como valor inicial.
+
 **Revogação despersonaliza, não apaga.** Se o responsável revoga o consentimento, a plataforma
 rompe o vínculo de autoria e destrói o mapeamento: o registro segue na série com um **código de
 coletor que não corresponde a pessoa alguma**. A medição é dado do lugar e permanece; o dado

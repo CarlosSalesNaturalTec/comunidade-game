@@ -36,6 +36,8 @@ o que é público — cada um pela sua aplicação, todos sobre a mesma verdade.
   adultos e credencial de usuário e senha provisória criada por Admin ou Mestre como exceção.
 - Guarda do _template_ biométrico do Guerreiro(a), gerado no onboarding, e sua conferência no
   login.
+- **Credencial de dispositivo** do sensor construído pelo Guerreiro(a): emissão, conferência e
+  revogação. Ela não abre sessão nem lê dado algum — só registra na série a que está presa.
 - Cadastro do responsável por Admin ou Mestre e vínculo com os Guerreiros e Guerreiras já
   cadastrados.
 - Sessão curta para o Guerreiro(a), adequada a aparelho compartilhado.
@@ -167,6 +169,8 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-61` | Núcleo semeia na implantação a persona Admin do fundador, com a identidade social declarada, sem passar por outro Admin                                                                         | essencial  |
 | `RF-01-11` | Admin ou Mestre cria credencial de usuário e senha provisória para adulto sem conta social                                                                                                      | essencial  |
 | `RF-01-12` | Credencial provisória exige troca de senha no primeiro acesso, antes de qualquer outra operação                                                                                                 | essencial  |
+| `RF-01-67` | Admin ou Mestre emite credencial de dispositivo para o sensor, vinculada ao Guerreiro(a) e à série, com o segredo devolvido uma única vez                                                       | essencial  |
+| `RF-01-68` | Núcleo revoga a credencial de dispositivo com motivo e autoria, e a encerra ao fim do vínculo do Guerreiro(a)                                                                                   | essencial  |
 | `RF-01-13` | Admin ou Mestre cadastra responsável e vincula a ele quem já está cadastrado, com grau de parentesco                                                                                            | essencial  |
 | `RF-01-14` | Núcleo recusa o vínculo que passaria de três responsáveis para o mesmo Guerreiro(a)                                                                                                             | essencial  |
 | `RF-01-15` | Responsável autentica com login próprio e enxerga apenas os Guerreiros e Guerreiras vinculados                                                                                                  | essencial  |
@@ -322,7 +326,7 @@ Sessao              Conteudo
 
 | Entidade                    | Atributos essenciais                                                                                                                                                                                                                                       |
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Credencial`                | persona, tipo (biometria, login social, usuário e senha), identificador, segredo (_template_ cifrado ou hash), criada por, troca pendente, ativa                                                                                                           |
+| `Credencial`                | persona, tipo (biometria, login social, usuário e senha, dispositivo), identificador, segredo (_template_ cifrado ou hash), série vinculada quando é de dispositivo, criada por, troca pendente, ativa                                                     |
 | `Sessao`                    | persona, início, expiração, origem (aplicação), como autenticou, quem confirmou, encerrada em                                                                                                                                                              |
 | `VinculoResponsavel`        | responsável, Guerreiro(a), grau de parentesco, cadastrado por (Admin ou Mestre), início, fim                                                                                                                                                               |
 | `Consentimento`             | responsável, Guerreiro(a), tipo, versão do termo, decisão, data e hora, testemunha (Mestre ou Admin), anexo do termo assinado, origem (própria, assistida ou impressa), quem operou                                                                        |
@@ -387,6 +391,8 @@ Convenções válidas para todas as rotas:
 | POST   | `/v1/guerreiros/{id}/descritor`     | Mestre ou Admin | Grava ou recadastra o _template_ a partir do descritor, com registro |
 | POST   | `/v1/credenciais`                   | Admin ou Mestre | Cria credencial de usuário e senha provisória                        |
 | POST   | `/v1/credenciais/senha`             | autenticada     | Troca a senha; obrigatória no primeiro acesso                        |
+| POST   | `/v1/credenciais/dispositivo`       | Admin ou Mestre | Emite a credencial do sensor e devolve o segredo uma única vez       |
+| DELETE | `/v1/credenciais/dispositivo/{id}`  | Admin ou Mestre | Revoga a credencial do sensor, com motivo e autoria                  |
 | POST   | `/v1/responsaveis`                  | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele                     |
 | POST   | `/v1/responsaveis/{id}/vinculos`    | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco          |
 | GET    | `/v1/eu`                            | autenticada     | Persona, papéis e permissões da sessão                               |
@@ -569,6 +575,7 @@ e o dos desafios de desbloqueio de cada trilha.
 | A origem do freio não é dado pessoal: sal rotativo, só em memória, nunca gravada                     | 03 §§8, 12        | Origem do freio das rotas públicas           |
 | Versão anterior da API por 180 dias, parâmetro declarado na implantação                              | 03 §1             | Prazo da versão anterior da API              |
 | Motivo da ocorrência de conduta até o fim do ciclo; o lançamento negativo permanece                  | 03 §12.2          | Guarda do registro de ocorrência de conduta  |
+| Sensor entra por credencial de dispositivo, que não abre sessão nem lê dado                          | 03 §1.1           | Autenticação do sensor do Guerreiro(a)       |
 
 ## 14. Pendências que permanecem
 
@@ -612,3 +619,4 @@ antes no documento 09.
 | `RF-01-55`              | 03 §§1, 8 (cota por faixa de chave)                |
 | `RF-01-65`              | 03 §§1, 8 (freio por origem e sem escala)          |
 | `RN-01-52`              | 03 §12.2 (prazo de guarda do motivo)               |
+| `RF-01-67` e `RF-01-68` | 03 §1.1 (credencial do sensor)                     |
