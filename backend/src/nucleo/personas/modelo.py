@@ -2,18 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import (
-    CheckConstraint,
-    DateTime,
-    Enum,
-    ForeignKey,
-    Index,
-    String,
-    Text,
-    Uuid,
-    func,
-    text,
-)
+from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, Text, Uuid, func, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..banco import Base
@@ -27,38 +16,15 @@ class Papel(enum.StrEnum):
     apoiador = "apoiador"
 
 
-class ComunidadeVirtual(Base):
-    """Território ao qual o Guerreiro(a) se vincula (RF-01-23). Criação,
-    hierarquia de locais e transferência são comportamento do PRD-08; aqui
-    ela existe só como entidade para que o vínculo e o filtro por comunidade
-    tenham a que apontar — nenhuma rota desta fatia a expõe.
-    """
-
-    __tablename__ = "comunidade_virtual"
-
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    nome: Mapped[str] = mapped_column(String(128), nullable=False)
-    localizacao: Mapped[str] = mapped_column(String(256), nullable=False)
-    granularidade_maxima: Mapped[str] = mapped_column(String(32), nullable=False)
-    admin_criador_id: Mapped[uuid.UUID | None] = mapped_column(
-        Uuid,
-        ForeignKey("persona.id", name="fk_comunidade_virtual_admin_criador_id_persona"),
-        nullable=True,
-    )
-    criada_em: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-
-
 class Persona(Base):
     """Tabela única para os cinco papéis do PRD-01 §4 (RF-01-19). Atributo
     próprio de papel entra em tabela satélite quando a fatia que o traz
-    chegar (design — riscos); o vínculo de comunidade do Guerreiro(a) é
-    exceção deliberada, porque `RN-01-05` já o exige nesta fatia e a
-    migração desta fatia cria só quatro tabelas. `avatar` segue o mesmo
-    precedente do nick: nasce aqui, opaco ao núcleo — nenhuma validação de
-    forma —, e a rota que o grava é do PRD-04 (`RN-01-10`, design —
-    decisões).
+    chegar (design — riscos). `avatar` segue o mesmo precedente do nick:
+    nasce aqui, opaco ao núcleo — nenhuma validação de forma —, e a rota que
+    o grava é do PRD-04 (`RN-01-10`, design — decisões). O vínculo de
+    comunidade do Guerreiro(a) não é coluna daqui: vive em
+    `comunidades.modelo.VinculoJogador`, entidade com histórico
+    (`RN-01-05`, `RF-08-02`, PRD-08 §8).
     """
 
     __tablename__ = "persona"
@@ -66,25 +32,11 @@ class Persona(Base):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     papel: Mapped[Papel] = mapped_column(Enum(Papel, native_enum=False, length=32), nullable=False)
     avatar: Mapped[str | None] = mapped_column(Text, nullable=True)
-    comunidade_virtual_id: Mapped[uuid.UUID | None] = mapped_column(
-        Uuid,
-        ForeignKey(
-            "comunidade_virtual.id", name="fk_persona_comunidade_virtual_id_comunidade_virtual"
-        ),
-        nullable=True,
-    )
     criada_por: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("persona.id"), nullable=True
     )
     criada_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-
-    __table_args__ = (
-        CheckConstraint(
-            "papel != 'guerreiro' OR comunidade_virtual_id IS NOT NULL",
-            name="ck_persona_guerreiro_tem_comunidade",
-        ),
     )
 
 

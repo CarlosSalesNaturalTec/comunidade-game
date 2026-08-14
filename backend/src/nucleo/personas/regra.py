@@ -1,7 +1,7 @@
-import uuid
-
 from sqlalchemy.orm import Session
 
+from ..aulas.modelo import Aula
+from ..comunidades.regra import abrir_vinculo
 from ..erros import ErroDeValidacao, PermissaoNegada
 from .modelo import Nick, Papel, Persona
 
@@ -21,7 +21,7 @@ def criar_persona(
     *,
     papel: Papel | None,
     criada_por: Persona | None,
-    comunidade_virtual_id: uuid.UUID | None = None,
+    aula: Aula | None = None,
     nick: str | None = None,
     permitir_semeadura_de_admin: bool = False,
 ) -> Persona:
@@ -31,7 +31,9 @@ def criar_persona(
 
     O nick é exigido só do Guerreiro(a) (`RF-01-19`); a unicidade é conferida
     antes de qualquer gravação, para que a recusa nunca deixe persona
-    nem nick a meio caminho (`RN-01-30`).
+    nem nick a meio caminho (`RN-01-30`). A comunidade do Guerreiro(a) nunca
+    é parâmetro desta função: ela vem só da `aula` agendada em que ele se
+    cadastra, nunca de quem cadastra (`RF-08-02`, `RN-08-02`, PRD-08).
     """
     if papel is None:
         raise ErroDeValidacao(mensagem="Toda persona precisa declarar o papel.", campo="papel")
@@ -45,10 +47,11 @@ def criar_persona(
                 "para isso."
             )
 
-    if papel == Papel.guerreiro and comunidade_virtual_id is None:
+    if papel == Papel.guerreiro and aula is None:
         raise ErroDeValidacao(
-            mensagem="Guerreiro(a) precisa de vínculo com uma comunidade.",
-            campo="comunidade_virtual_id",
+            mensagem="Guerreiro(a) precisa de uma aula agendada que origine o vínculo de "
+            "comunidade.",
+            campo="aula_id",
         )
 
     if papel == Papel.guerreiro:
@@ -59,7 +62,6 @@ def criar_persona(
 
     persona = Persona(
         papel=papel,
-        comunidade_virtual_id=comunidade_virtual_id if papel == Papel.guerreiro else None,
         criada_por=criada_por.id if criada_por is not None else None,
     )
     sessao.add(persona)
@@ -69,18 +71,7 @@ def criar_persona(
         sessao.add(Nick(persona_id=persona.id, valor=nick))
         sessao.flush()
 
+    if papel == Papel.guerreiro:
+        abrir_vinculo(sessao, guerreiro=persona, comunidade_id=aula.comunidade_virtual_id)
+
     return persona
-
-
-def vincular_guerreiro_a_comunidade(persona: Persona, comunidade_virtual_id: uuid.UUID) -> None:
-    """Vínculo obrigatório a exatamente uma comunidade (`RN-01-05`). Um
-    segundo vínculo vigente é recusado; o existente permanece.
-    """
-    if persona.papel != Papel.guerreiro:
-        raise ErroDeValidacao(mensagem="Só o Guerreiro(a) tem vínculo de comunidade.")
-    if persona.comunidade_virtual_id is not None:
-        raise ErroDeValidacao(
-            mensagem="Este Guerreiro(a) já tem um vínculo de comunidade vigente.",
-            campo="comunidade_virtual_id",
-        )
-    persona.comunidade_virtual_id = comunidade_virtual_id

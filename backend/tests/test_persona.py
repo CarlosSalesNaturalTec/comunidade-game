@@ -2,7 +2,7 @@ import pytest
 
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
 from nucleo.personas.modelo import Credencial, Nick, Papel, Persona, TipoDeCredencial
-from nucleo.personas.regra import criar_persona, vincular_guerreiro_a_comunidade
+from nucleo.personas.regra import criar_persona
 from nucleo.personas.semeadura import semear_admin_fundador
 
 
@@ -13,59 +13,88 @@ def test_papel_ausente_nao_produz_persona(sessao):
     assert sessao.query(Persona).count() == 0
 
 
-def test_guerreiro_tem_autocadastro(sessao, criar_comunidade):
+def test_guerreiro_tem_autocadastro(sessao, criar_comunidade, criar_aula):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
     comunidade = criar_comunidade()
+    aula = criar_aula(admin, comunidade)
+
     persona = criar_persona(
         sessao,
         papel=Papel.guerreiro,
         criada_por=None,
-        comunidade_virtual_id=comunidade.id,
+        aula=aula,
         nick="Guerreira_de_teste",
     )
     sessao.commit()
     assert persona.papel == Papel.guerreiro
-    assert persona.comunidade_virtual_id == comunidade.id
+    assert persona.vinculo_vigente.comunidade_virtual_id == comunidade.id
 
 
-def test_guerreiro_sem_comunidade_nao_e_criado(sessao):
+def test_guerreiro_sem_aula_nao_e_criado(sessao):
     with pytest.raises(ErroDeValidacao) as excinfo:
         criar_persona(sessao, papel=Papel.guerreiro, criada_por=None)
-    assert excinfo.value.campo == "comunidade_virtual_id"
+    assert excinfo.value.campo == "aula_id"
     assert sessao.query(Persona).count() == 0
 
 
-def test_guerreiro_sem_nick_nao_e_criado(sessao, criar_comunidade):
+def test_guerreiro_com_comunidade_declarada_e_recusado(sessao, criar_comunidade, criar_aula):
+    """A comunidade nunca é parâmetro desta função: só a aula a origina
+    (`RF-08-02`) — o parâmetro nem existe mais na assinatura."""
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
     comunidade = criar_comunidade()
-    with pytest.raises(ErroDeValidacao) as excinfo:
+    aula = criar_aula(admin, comunidade)
+
+    with pytest.raises(TypeError):
         criar_persona(
-            sessao, papel=Papel.guerreiro, criada_por=None, comunidade_virtual_id=comunidade.id
+            sessao,
+            papel=Papel.guerreiro,
+            criada_por=None,
+            aula=aula,
+            nick="Guerreira_de_teste",
+            comunidade_virtual_id=comunidade.id,
         )
+
+
+def test_guerreiro_sem_nick_nao_e_criado(sessao, criar_comunidade, criar_aula):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+    comunidade = criar_comunidade()
+    aula = criar_aula(admin, comunidade)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        criar_persona(sessao, papel=Papel.guerreiro, criada_por=None, aula=aula)
     assert excinfo.value.campo == "nick"
-    assert sessao.query(Persona).count() == 0
+    assert sessao.query(Persona).filter_by(papel=Papel.guerreiro).count() == 0
     assert sessao.query(Nick).count() == 0
 
 
-def test_nick_repetido_e_recusado_entre_papeis_diferentes(sessao, criar_comunidade):
+def test_nick_repetido_e_recusado_entre_papeis_diferentes(sessao, criar_comunidade, criar_aula):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
     comunidade = criar_comunidade()
+    aula = criar_aula(admin, comunidade)
+
     criar_persona(
         sessao,
         papel=Papel.guerreiro,
         criada_por=None,
-        comunidade_virtual_id=comunidade.id,
+        aula=aula,
         nick="MesmoNick",
     )
     sessao.commit()
-
-    admin = Persona(papel=Papel.admin)
-    sessao.add(admin)
-    sessao.flush()
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         criar_persona(
             sessao,
             papel=Papel.guerreiro,
             criada_por=None,
-            comunidade_virtual_id=comunidade.id,
+            aula=aula,
             nick="MesmoNick",
         )
     assert excinfo.value.campo == "nick"
@@ -135,34 +164,6 @@ def test_admin_novo_exige_admin_existente(sessao):
     sessao.flush()
     novo_admin = criar_persona(sessao, papel=Papel.admin, criada_por=admin_existente)
     assert novo_admin.papel == Papel.admin
-
-
-def test_vincular_comunidade_so_vale_para_guerreiro(sessao, criar_comunidade):
-    admin = Persona(papel=Papel.admin)
-    sessao.add(admin)
-    sessao.flush()
-    comunidade = criar_comunidade()
-
-    with pytest.raises(ErroDeValidacao):
-        vincular_guerreiro_a_comunidade(admin, comunidade.id)
-
-
-def test_segundo_vinculo_de_comunidade_e_recusado(sessao, criar_comunidade):
-    comunidade_um = criar_comunidade("Comunidade Um")
-    comunidade_dois = criar_comunidade("Comunidade Dois")
-    guerreiro = criar_persona(
-        sessao,
-        papel=Papel.guerreiro,
-        criada_por=None,
-        comunidade_virtual_id=comunidade_um.id,
-        nick="Guerreiro_de_teste",
-    )
-    sessao.commit()
-
-    with pytest.raises(ErroDeValidacao):
-        vincular_guerreiro_a_comunidade(guerreiro, comunidade_dois.id)
-
-    assert guerreiro.comunidade_virtual_id == comunidade_um.id
 
 
 def test_semeadura_cria_admin_fundador(sessao):

@@ -131,13 +131,14 @@ def test_openapi_responde_sem_chave(cliente):
 
 def test_openapi_nao_serve_dado_de_dominio(cliente):
     """ "guerreiro" é um valor legítimo do enum `Papel`, contrato desta fatia
-    (RF-01-19), e "aporte" é o aporte declarado na solicitação de
-    participação (`RF-01-25`, PRD-01 §8) — o que a rota nunca serve é
-    entidade de domínio de fatia futura."""
+    (RF-01-19), "aporte" é o aporte declarado na solicitação de
+    participação (`RF-01-25`, PRD-01 §8), e "comunidade virtual" é a
+    própria capacidade que esta fatia abre (`RF-08-01`) — o que a rota
+    nunca serve é entidade de domínio de fatia futura, como o território
+    georreferenciado da série de coleta (PRD-08 §9, fora deste recorte)."""
     schema = cliente.get("/openapi.json").json()
     texto = str(schema).lower()
-    for termo in ("comunidade virtual", "território"):
-        assert termo not in texto
+    assert "território" not in texto
 
 
 def test_ler_schema_nao_abre_rota_de_dados(cliente):

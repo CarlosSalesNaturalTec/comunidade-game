@@ -8,6 +8,8 @@ from sqlalchemy import func, tuple_
 from sqlalchemy.orm import Session
 
 from ..banco import obter_sessao
+from ..comunidades.modelo import ComunidadeVirtual
+from ..comunidades.regra import filtrar_personas_por_comunidade
 from ..configuracao import Configuracao, obter_configuracao
 from ..consentimentos.regra import condicao_de_autorizacao_vigente
 from ..criacoes_originais.modelo import CriacaoOriginal, SituacaoDaCriacaoOriginal
@@ -21,7 +23,7 @@ from ..paginacao import (
     contrato_de_listagem,
     decodificar_cursor,
 )
-from ..personas.modelo import ComunidadeVirtual, Nick, Papel, Persona
+from ..personas.modelo import Nick, Papel, Persona
 from ..poderes.modelo import Poder
 from ..pontuacao.modelo import Badge, Nivel, PontoRegular
 from ..protecao.freio import exigir_freio_por_origem
@@ -163,7 +165,7 @@ def ranking_publico(
         )
     )
     if comunidade_id is not None:
-        base = base.filter(Persona.comunidade_virtual_id == comunidade_id)
+        base = filtrar_personas_por_comunidade(base, comunidade_id)
 
     subquery = base.subquery()
     consulta = sessao_bd.query(*subquery.c).order_by(subquery.c.posicao)
