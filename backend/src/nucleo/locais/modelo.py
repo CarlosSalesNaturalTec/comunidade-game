@@ -9,6 +9,7 @@ from sqlalchemy import (
     ForeignKey,
     ForeignKeyConstraint,
     String,
+    Text,
     UniqueConstraint,
     Uuid,
     func,
@@ -43,8 +44,10 @@ ORDEM_DOS_NIVEIS: tuple[NivelDoLocal, ...] = (
 
 
 class Local(Base):
-    """Um nó da hierarquia territorial da comunidade, cadastrado por Admin
-    nesta entrega — a única origem de local aqui (`RF-08-04`, `RN-08-18`).
+    """Um nó da hierarquia territorial da comunidade, com duas origens: o
+    cadastro direto por Admin e a aprovação de `SolicitacaoDeLocal` por
+    Admin ou pelo Mestre autor da trilha do desafio de origem — as duas sob
+    as mesmas regras de hierarquia (`RF-08-04`, `RF-08-22`, `RN-08-18`).
 
     `UNIQUE (id, comunidade_id)` existe só para sustentar a chave
     estrangeira composta do pai: com ela, o próprio banco recusa um pai de
@@ -79,4 +82,64 @@ class Local(Base):
             "(nivel = 'comunidade') = (local_pai_id IS NULL)",
             name="ck_local_pai_so_vazio_no_nivel_comunidade",
         ),
+    )
+
+
+class SituacaoDaSolicitacaoDeLocal(enum.StrEnum):
+    """Só `recebida` admite transição, e apenas para `aprovada` ou
+    `recusada` — desfecho irreversível, sem reabertura (`RN-08-18`,
+    design — Decisions)."""
+
+    recebida = "recebida"
+    aprovada = "aprovada"
+    recusada = "recusada"
+
+
+class SolicitacaoDeLocal(Base):
+    """Pedido do Guerreiro(a) por um local ausente na hierarquia, preso à
+    sua comunidade vigente e ao desafio de coleta que o alcança até a
+    trilha do avaliador (`RF-08-22`, PRD-08 §8). Sem prazo de resposta e
+    sem marca de atraso: fica fora do ciclo da fila única de avaliação, que
+    proíbe em toda situação o que a aprovação daqui faz — criar cadastro
+    (proposal — Por que não é a quinta natureza da fila de avaliação).
+
+    O pedido em si NEVER cria local — só a aprovação, e `local_criado_id`
+    guarda o local que ela criou, para que a auditoria e o teste confiram
+    que a aprovação criou um local e um só (`RN-08-18`, design —
+    Decisions). O local pai da aprovação não é atributo daqui: vem do
+    corpo do próprio ato de avaliar (design — Decisions).
+    """
+
+    __tablename__ = "solicitacao_de_local"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    solicitante_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("persona.id"), nullable=False
+    )
+    comunidade_virtual_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("comunidade_virtual.id"), nullable=False
+    )
+    desafio_de_coleta_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("desafio_de_coleta.id"), nullable=False
+    )
+    nivel_pretendido: Mapped[NivelDoLocal] = mapped_column(
+        Enum(NivelDoLocal, native_enum=False, length=16), nullable=False
+    )
+    rotulo: Mapped[str] = mapped_column(String(128), nullable=False)
+    justificativa: Mapped[str] = mapped_column(Text, nullable=False)
+    situacao: Mapped[SituacaoDaSolicitacaoDeLocal] = mapped_column(
+        Enum(SituacaoDaSolicitacaoDeLocal, native_enum=False, length=16),
+        nullable=False,
+        default=SituacaoDaSolicitacaoDeLocal.recebida,
+    )
+    avaliador_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("persona.id"), nullable=True
+    )
+    motivo_da_recusa: Mapped[str | None] = mapped_column(Text, nullable=True)
+    local_criado_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("local.id"), nullable=True
+    )
+    avaliado_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    registrado_em: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
