@@ -57,7 +57,7 @@ depois. Todo requisito precisa ser verificável por alguém que não escreveu o 
 | ---------- | -------------------- | ----------------------- | ------------- |
 | `RN-XX-01` | _Enunciado da regra_ | _nº do invariante ou —_ | _doc e seção_ |
 
-_A regra aqui é **aplicação** do que já está definido nos documentos 01–13. Regra nova só
+_A regra aqui é **aplicação** do que já está definido nos documentos 01–15. Regra nova só
 entra depois de gravada no documento-fonte dela._
 
 ## 8. Modelo de dados
@@ -73,8 +73,8 @@ payload de entrada e de saída, e erros previstos._
 ## 10. Requisitos não funcionais
 
 _Web App responsivo Mobile First; comportamento com rede instável; uso em aparelho
-compartilhado do ponto de apoio; desempenho em celular modesto; acessibilidade e linguagem
-simples; idioma pt-BR; código aberto._
+compartilhado do ponto de apoio; desempenho em celular modesto; acessibilidade no piso do
+documento 15 — WCAG 2.2 AA — e linguagem simples; idioma pt-BR; código aberto._
 
 ## 11. LGPD e proteção da criança
 

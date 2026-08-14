@@ -411,7 +411,8 @@ nunca reescrito, pelas quatro superfícies públicas do ecossistema.
 ### 8.2 Cards e páginas individuais dos personagens
 
 O card é a "carta do personagem" do universo do jogo, e a mesma composição serve de base para o
-App 04:
+App 04. A tabela abaixo define **o que cada card exibe**; a aparência dele — cor, tipografia,
+moldura e emblema — está no documento 15:
 
 | Card                   | O que exibe                                                                                                                           | O que **nunca** exibe                                             |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
@@ -458,7 +459,7 @@ dado registrado e elemento visual é requisito de produto:
 | Guerreiros e Guerreiras vinculados ativos | Indicador de vitalidade da comunidade (agregado, sem expor indivíduos)                          |
 
 Princípios: o visual **representa dados reais, nunca decoração**; a saída pública é sempre
-**agregada e anonimizada**.
+**agregada e anonimizada**. Cor, forma e medida desses elementos estão no documento 15.
 
 ### 8.4 Jogos sobre o backend (App 04 e terceiros)
 

@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                             |
-| ---------------- | ------------------------------------------------- |
-| PRD              | PRD-03                                            |
-| Aplicação        | App 06 — Vitrine pública                          |
-| Onda             | 4                                                 |
-| Situação         | aprovado                                          |
-| Versão e data    | v4 — 2026-08-10                                   |
-| Depende de       | PRD-01, PRD-13                                    |
-| Documentos-fonte | 02 §§1, 4, 03 §§8, 12, 04 §§1, 2, 4, 11 §§8.1–8.3 |
+| Campo            | Valor                                                 |
+| ---------------- | ----------------------------------------------------- |
+| PRD              | PRD-03                                                |
+| Aplicação        | App 06 — Vitrine pública                              |
+| Onda             | 4                                                     |
+| Situação         | aprovado                                              |
+| Versão e data    | v4 — 2026-08-10                                       |
+| Depende de       | PRD-01, PRD-13                                        |
+| Documentos-fonte | 02 §§1, 4, 03 §§8, 12, 04 §§1, 2, 4, 11 §§8.1–8.3, 15 |
 
 ## 2. Contexto e objetivo
 
@@ -477,8 +477,8 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   vitrine é a superfície onde isso aparece.
 - **Sem rastreador de terceiros**, inclusive de métricas: se houver medição de audiência, ela é
   agregada e sem identificador de visitante.
-- **Acessibilidade digital**: contraste, alvos de toque grandes, leitura por voz e conteúdo
-  legível sem depender da rotação dos cards.
+- **Acessibilidade digital** no piso do documento 15 — **WCAG 2.2 AA**: contraste, alvos de
+  toque grandes, leitura por voz e conteúdo legível sem depender da rotação dos cards.
 - **Linguagem simples** em toda tela pública, inclusive nas mensagens de erro e de espera.
 - **Indexável por buscadores** nas seções institucionais e de comunidade; a página individual
   de Guerreiro(a) **não é indexada**, para que a exposição não sobreviva à revogação.
@@ -623,7 +623,7 @@ IA apontando para ela.
 | `RF-03-35` a `RF-03-37`             | 03 §8 (proteção das rotas públicas)                            |
 | `RN-03-34` e `RN-03-35`             | 03 §8 (origem em memória e chave sem freio)                    |
 | `RF-03-38` a `RF-03-44`             | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)    |
-| `RF-03-45` a `RF-03-49`             | 03 §8 (institucional), 04 §1 (PIX e lastro) e 01 §7 (IA)       |
+| `RF-03-45` a `RF-03-49`             | 03 §8 (institucional), 04 §1 (PIX e lastro), 01 §7 (IA) e 15   |
 | `RF-03-50` e `RF-03-51`             | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)             |
 | `RF-03-52` e `RF-03-53`             | 03 §12 (aviso de coleta e área detalhada)                      |
 | `RF-03-58` a `RF-03-62`             | 03 §§1, 1.1, 8 (vitrine na raiz e entrada por persona)         |

@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                          |
-| ---------------- | ---------------------------------------------- |
-| PRD              | PRD-14                                         |
-| Aplicação        | App 08 — Área do Apoiador                      |
-| Onda             | 5                                              |
-| Situação         | aprovado                                       |
-| Versão e data    | v2 — 2026-08-07                                |
-| Depende de       | PRD-07, PRD-02                                 |
-| Documentos-fonte | 02 §1, 03 §§1.1, 10, 04 §§1–3, 11 §8.2, 12, 14 |
+| Campo            | Valor                                              |
+| ---------------- | -------------------------------------------------- |
+| PRD              | PRD-14                                             |
+| Aplicação        | App 08 — Área do Apoiador                          |
+| Onda             | 5                                                  |
+| Situação         | aprovado                                           |
+| Versão e data    | v2 — 2026-08-07                                    |
+| Depende de       | PRD-07, PRD-02                                     |
+| Documentos-fonte | 02 §1, 03 §§1.1, 10, 04 §§1–3, 11 §8.2, 12, 14, 15 |
 
 ## 2. Contexto e objetivo
 
@@ -526,7 +526,8 @@ validação — não é erro de tela.
 - **Anexo em celular modesto**: comprovante e documento enviados por foto, com compressão e
   limite de tamanho declarado antes do envio.
 - Escrita idempotente: reenviar a mesma declaração por falha de rede não gera dois aportes.
-- **Acessibilidade digital**: contraste, alvos de toque grandes e leitura por voz.
+- **Acessibilidade digital**: contraste, alvos de toque grandes e leitura por voz, no piso do
+  documento 15 — **WCAG 2.2 AA**.
 - Idioma pt-BR; código aberto.
 
 ## 11. LGPD e proteção da criança
@@ -673,7 +674,7 @@ o nível 5 de sustento**, que deixa de exigir virar Mestre.
 | Requisito               | Origem                                                           |
 | ----------------------- | ---------------------------------------------------------------- |
 | `RF-14-01` a `RF-14-11` | 02 §1 e 03 §§1.1, 10 (pré-cadastro, identificação e acesso)      |
-| `RF-14-12` a `RF-14-20` | 02 §1, 03 §10 e 11 §8.2 (identidade pública e comprobatórios)    |
+| `RF-14-12` a `RF-14-20` | 02 §1, 03 §10, 11 §8.2 e 15 §7.3 (identidade e avatar padrão)    |
 | `RF-14-21` a `RF-14-28` | 04 §§1, 2 e 03 §10 (moeda, aporte declarado e necessidades)      |
 | `RF-14-29` a `RF-14-39` | 04 §3 (desafios extras, modalidades e salvaguardas)              |
 | `RF-14-40` a `RF-14-47` | 04 §§3, 4 (rastreio de efetividade e cobertura de ODS)           |

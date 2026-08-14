@@ -23,6 +23,7 @@ outro.
 | 12  | [Guia do Apoiador](12-guia-do-apoiador.md)                                       | Resumo prático da relação do Apoiador com a plataforma                                                                |
 | 13  | [Código de Conduta (versão prévia)](13-codigo-de-conduta-versao-previa.md)       | Modelo básico, a ser co-criado com os Guerreiros e Guerreiras no primeiro encontro                                    |
 | 14  | [Gamificação do Apoiador](14-gamificacao-do-apoiador.md)                         | Níveis de necessidade, modalidades de apoio, missões, níveis de sustento e selos de quem sustenta o projeto           |
+| 15  | [Identidade visual das aplicações](15-identidade-visual.md)                      | Paleta, tipografia, acessibilidade, avatar, carta do personagem, emblemas e as fichas de ponto e moeda                |
 | 99  | [Mapa de referências](99-mapa-de-referencias.md)                                 | Relação entre os documentos — página técnica, para orientação de agentes de IA                                        |
 | —   | [PRDs](prds/index.md)                                                            | Requisitos de produto por aplicação, derivados do documento 08 — a esteira que orienta o desenvolvimento              |
 

@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                                          |
-| ---------------- | -------------------------------------------------------------- |
-| PRD              | PRD-04                                                         |
-| Aplicação        | App 01 — Aula presencial (onboarding, trilhas e equipes)       |
-| Onda             | 2                                                              |
-| Situação         | aprovado                                                       |
-| Versão e data    | v4 — 2026-08-10                                                |
-| Depende de       | PRD-01, PRD-02; o caminho das trilhas depende também do PRD-09 |
-| Documentos-fonte | 02 §§1, 5, 9, 03 §§1.1, 3, 4, 12, 05 §§4, 5, 06 §3, 11 §§4, 5  |
+| Campo            | Valor                                                             |
+| ---------------- | ----------------------------------------------------------------- |
+| PRD              | PRD-04                                                            |
+| Aplicação        | App 01 — Aula presencial (onboarding, trilhas e equipes)          |
+| Onda             | 2                                                                 |
+| Situação         | aprovado                                                          |
+| Versão e data    | v4 — 2026-08-10                                                   |
+| Depende de       | PRD-01, PRD-02; o caminho das trilhas depende também do PRD-09    |
+| Documentos-fonte | 02 §§1, 5, 9, 03 §§1.1, 3, 4, 12, 05 §§4, 5, 06 §3, 11 §§4, 5, 15 |
 
 ## 2. Contexto e objetivo
 
@@ -461,8 +461,9 @@ corpus (200, com a recusa explicada no corpo).
 - Modalidade áudio em **pt-BR**, com captação e reprodução via
   `navigator.mediaDevices.getUserMedia`, reconhecimento de fala e síntese de voz — mesma base
   técnica do Robô Educa.
-- Acessibilidade: a modalidade áudio atende quem ainda não lê com fluência e pessoas com
-  deficiência visual; a modalidade chat atende sala barulhenta e quem prefere digitar.
+- Acessibilidade no piso do documento 15 — **WCAG 2.2 AA**. A modalidade áudio atende quem
+  ainda não lê com fluência e pessoas com deficiência visual; a modalidade chat atende sala
+  barulhenta e quem prefere digitar.
 - Linguagem simples, adequada a criança de 6 anos, sem jargão e sem termo em inglês.
 - Filtros de segurança de conteúdo no nível mais restritivo em toda interação da IA.
 - Código aberto.
@@ -613,7 +614,7 @@ a **forma do aviso** da exclusão do _template_, que acontece na App 07, com a d
 | `RF-04-01`, `RF-04-06`  | 03 §3.2 (tela inicial e interação cognitiva), 06 §3   |
 | `RF-04-02` e `RF-04-03` | 02 §1 e 03 §3.2 (comunidade vinda da aula agendada)   |
 | `RF-04-04` e `RF-04-05` | 03 §3.2 (condição de funcionamento)                   |
-| `RF-04-07`              | 03 §3.2 (dados coletados), 02 §9                      |
+| `RF-04-07`              | 03 §3.2 (dados coletados), 02 §9, 15 §7 (avatar)      |
 | `RF-04-08`              | 02 §1 (nick único)                                    |
 | `RF-04-09`              | 02 §1 (faixa de 6 a 16 anos)                          |
 | `RF-04-10`              | 02 §1 (vínculo obrigatório à comunidade)              |

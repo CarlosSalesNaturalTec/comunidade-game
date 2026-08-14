@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                                    |
-| ---------------- | -------------------------------------------------------- |
-| PRD              | PRD-05                                                   |
-| Aplicação        | App 05 — Área do Guerreiro(a)                            |
-| Onda             | 3                                                        |
-| Situação         | aprovado                                                 |
-| Versão e data    | v3 — 2026-08-06                                          |
-| Depende de       | PRD-01, PRD-09                                           |
-| Documentos-fonte | 02 §§1–8, 03 §§1.1, 7, 12, 05 §§3, 5, 11 §§2, 4, 5, 6, 7 |
+| Campo            | Valor                                                        |
+| ---------------- | ------------------------------------------------------------ |
+| PRD              | PRD-05                                                       |
+| Aplicação        | App 05 — Área do Guerreiro(a)                                |
+| Onda             | 3                                                            |
+| Situação         | aprovado                                                     |
+| Versão e data    | v3 — 2026-08-06                                              |
+| Depende de       | PRD-01, PRD-09                                               |
+| Documentos-fonte | 02 §§1–8, 03 §§1.1, 7, 12, 05 §§3, 5, 11 §§2, 4, 5, 6, 7, 15 |
 
 ## 2. Contexto e objetivo
 
@@ -498,8 +498,9 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
   reconhecimento e síntese de fala em pt-BR, na mesma base técnica do App 01.
 - **Linguagem de criança de 6 anos**: nenhum termo técnico, nenhum código de erro exposto e
   todo bloqueio explicado pelo que falta fazer.
-- **Acessibilidade digital**: contraste, alvos de toque grandes, leitura por voz do conteúdo e
-  operação possível sem digitação — pela mesma razão que a sugestão aceita áudio.
+- **Acessibilidade digital** no piso do documento 15 — **WCAG 2.2 AA**: contraste, alvos de
+  toque grandes, leitura por voz do conteúdo e operação possível sem digitação — pela mesma
+  razão que a sugestão aceita áudio.
 - Desempenho: a tela inicial abre na próxima missão sem exigir navegação por menu.
 - Escrita idempotente: reenviar o mesmo registro de coleta por falha de rede não duplica.
 - Idioma pt-BR; código aberto.
@@ -635,7 +636,7 @@ coletores distintos no recorte publicado (documento 02 §1).
 | `RF-05-39` a `RF-05-44` | 02 §4, 11 §7 e PRD-09 (culminância, autoria e validação)                 |
 | `RF-05-45` a `RF-05-49` | 02 §8.1 (recompensa em marco) e 05 §3 (acervo e ficha de vida)           |
 | `RF-05-82` a `RF-05-86` | 02 §8.2 (recompensa avulsa) e 11 §5 (acumulado e saldo disponível)       |
-| `RF-05-50` e `RF-05-51` | 03 §12 (adesão em duas etapas) e 02 §1 (avatar)                          |
+| `RF-05-50` e `RF-05-51` | 03 §12 (adesão em duas etapas), 02 §1 e 15 §7 (avatar)                   |
 | `RF-05-52` e `RF-05-53` | 11 §8.1 (rankings com pontos regulares)                                  |
 | `RF-05-54` a `RF-05-56` | 03 §7 (canal de sugestões) e 11 §§5, 7 (pontos extras e badge)           |
 | `RF-05-57`              | 03 §12 (aviso visível de coleta e área detalhada)                        |

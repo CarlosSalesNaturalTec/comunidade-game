@@ -673,8 +673,7 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   quanto ao que é gerado com auxílio de IA. É para ela que aponta a etiqueta do texto reescrito
   nas Apps 01 e 05 (§7.1).
 - **"Como apoiar"** — canais de doação, incluindo a chave PIX da pessoa jurídica vinculada.
-- Identidade visual: **background com imagem de comunidade, cores, grafite** — estética de
-  território, não corporativa.
+- Identidade visual: a da plataforma, no temperamento **Arena** (documento 15).
 - **Vídeo de apresentação**: os irmãos Susy e Otávio, os Rôbróders e o professor Carlos
   Trenell (narrativa da trilha Robô Educa).
 - **Sem publicidade e sem patrocínio no Ciclo 01** — e **sem cookie, rastreador ou

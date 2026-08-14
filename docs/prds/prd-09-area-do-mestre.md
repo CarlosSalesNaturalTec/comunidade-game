@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                                       |
-| ---------------- | ----------------------------------------------------------- |
-| PRD              | PRD-09                                                      |
-| Aplicação        | App 09 — Área do Mestre                                     |
-| Onda             | 3                                                           |
-| Situação         | aprovado                                                    |
-| Versão e data    | v6 — 2026-08-10                                             |
-| Depende de       | PRD-01                                                      |
-| Documentos-fonte | 02 §§1–4, 03 §§1, 11, 05 §§3, 5, 6, 06, 07, 11 §§2, 4, 5, 7 |
+| Campo            | Valor                                                           |
+| ---------------- | --------------------------------------------------------------- |
+| PRD              | PRD-09                                                          |
+| Aplicação        | App 09 — Área do Mestre                                         |
+| Onda             | 3                                                               |
+| Situação         | aprovado                                                        |
+| Versão e data    | v6 — 2026-08-10                                                 |
+| Depende de       | PRD-01                                                          |
+| Documentos-fonte | 02 §§1–4, 03 §§1, 11, 05 §§3, 5, 6, 06, 07, 11 §§2, 4, 5, 7, 15 |
 
 ## 2. Contexto e objetivo
 
@@ -574,7 +574,8 @@ sem autorização do responsável (409).
 - **Rascunho salvo automaticamente**: perder texto de trilha por queda de rede é inaceitável.
 - Desempenho em celular modesto, o mesmo do ponto de apoio.
 - Escrita idempotente: reenviar o mesmo lançamento por falha de rede não duplica o registro.
-- Acessibilidade digital e linguagem simples também no conteúdo entregue ao Guerreiro(a).
+- Acessibilidade digital no piso do documento 15 — **WCAG 2.2 AA** —, e linguagem simples
+  também no conteúdo entregue ao Guerreiro(a).
 - Idioma pt-BR; código aberto; conteúdo educacional sob CC BY-SA.
 
 ## 11. LGPD e proteção da criança

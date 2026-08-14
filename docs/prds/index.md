@@ -5,7 +5,7 @@ do documento 08 e escritos um a um, na ordem das ondas abaixo. Cada PRD segue o
 [modelo de PRD](00-modelo-de-prd.md) e vale para o **Ciclo 01** (Guerreira Zeferina,
 ago–dez/2026).
 
-O PRD é artefato **derivado**: ele aplica as regras dos documentos 01–14 e não cria regra
+O PRD é artefato **derivado**: ele aplica as regras dos documentos 01–15 e não cria regra
 própria. As regras de escrita, o fluxo de decisão das pendências e o processo de entrega estão
 no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs está no documento 99.
 
