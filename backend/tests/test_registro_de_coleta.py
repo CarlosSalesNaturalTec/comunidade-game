@@ -369,6 +369,9 @@ def test_midia_e_aceita_como_o_proprio_registro(
     assert registro.midia_referencia is not None
     assert armazenamento.ler(referencia=registro.midia_referencia) == b"conteudo-da-foto"
     assert registro.pontos_creditados == 5
+    # Tipo de forma `foto` nunca declara faixa esperada (constraint do
+    # catálogo) — é o caso real de "tipo sem faixa declarada" da spec.
+    assert registro.a_conferir is False
 
 
 def test_forma_foto_sem_midia_e_recusado(
