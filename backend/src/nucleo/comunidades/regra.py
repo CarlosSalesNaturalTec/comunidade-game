@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from sqlalchemy.orm import Query, Session
 
@@ -67,6 +68,25 @@ def abrir_vinculo(
     sessao.add(vinculo)
     sessao.flush()
     return vinculo
+
+
+def resolver_vinculo_na_data(
+    sessao: Session, *, guerreiro_id: uuid.UUID, data: datetime
+) -> VinculoJogador | None:
+    """Localiza o vínculo do Guerreiro(a) cujo intervalo `[data_inicio,
+    data_fim)` contém `data` — `data_fim` nulo é tratado como aberto. É o
+    que prende o registro de coleta à comunidade vigente **na data da
+    medição**, e não à comunidade corrente do coletor (`RN-08-03`, design —
+    decisões)."""
+    return (
+        sessao.query(VinculoJogador)
+        .filter(
+            VinculoJogador.guerreiro_id == guerreiro_id,
+            VinculoJogador.data_inicio <= data,
+            (VinculoJogador.data_fim.is_(None)) | (VinculoJogador.data_fim > data),
+        )
+        .first()
+    )
 
 
 def unir_vinculo_vigente(consulta: Query) -> Query:

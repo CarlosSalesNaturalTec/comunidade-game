@@ -19,7 +19,17 @@ from nucleo.biometria.cifra import cifrar_descritor
 from nucleo.chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from nucleo.chaves.modelo import ChaveDeAplicacao, NaturezaDaChave, SituacaoDaChave
 from nucleo.chaves.segredo import calcular_resumo, gerar_segredo, montar_chave_completa
-from nucleo.coletas.modelo import Cadencia, DesafioDeColeta, FormaDeRegistro, TipoDeColeta
+from nucleo.coletas.modelo import (
+    Cadencia,
+    DesafioDeColeta,
+    EstadoDaSerie,
+    FormaDeRegistro,
+    OrigemDoRegistro,
+    RegistroDeColeta,
+    SerieDeColeta,
+    SituacaoDoRegistro,
+    TipoDeColeta,
+)
 from nucleo.comunidades.modelo import ComunidadeVirtual, VinculoJogador
 from nucleo.configuracao import Configuracao, obter_configuracao
 from nucleo.consentimentos.modelo import (
@@ -41,7 +51,7 @@ from nucleo.personas.modelo import (
     TipoDeCredencial,
 )
 from nucleo.personas.senha import calcular_hash
-from nucleo.poderes.modelo import NaturezaDoPoder, Poder, VigenciaDoPoder
+from nucleo.poderes.modelo import NaturezaDoPoder, PapelDoPoder, Poder, VigenciaDoPoder
 from nucleo.ponto_extra.modelo import PontoExtra
 from nucleo.pontuacao.modelo import Badge, Nivel, PontoRegular, TipoDeBadge
 from nucleo.principal import criar_app, incluir_roteador_de_dados
@@ -543,12 +553,14 @@ def criar_poder(sessao):
         natureza: NaturezaDoPoder = NaturezaDoPoder.de_guerreiro,
         vigencia: VigenciaDoPoder = VigenciaDoPoder.vigente,
         ativo: bool = True,
+        papel: PapelDoPoder | None = None,
     ) -> Poder:
         poder = Poder(
             nome=nome,
             descricao=descricao,
             natureza=natureza,
             vigencia=vigencia,
+            papel=papel,
             ativo=ativo,
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
@@ -557,6 +569,17 @@ def criar_poder(sessao):
         sessao.commit()
         sessao.refresh(poder)
         return poder
+
+    return _criar
+
+
+@pytest.fixture
+def criar_poder_do_territorio(criar_poder):
+    """Atalho para o poder que o crédito da coleta busca pelo papel
+    (`RN-08-15`)."""
+
+    def _criar(autor: Persona, nome: str = "Poder do Território") -> Poder:
+        return criar_poder(autor, nome=nome, papel=PapelDoPoder.territorio)
 
     return _criar
 
@@ -705,6 +728,69 @@ def criar_desafio_de_coleta(sessao, criar_tipo_de_coleta):
 
 
 @pytest.fixture
+def criar_serie_de_coleta(sessao):
+    def _criar(
+        coletor: Persona,
+        desafio: DesafioDeColeta,
+        local: Local,
+        cadencia: Cadencia | None = None,
+        estado: EstadoDaSerie = EstadoDaSerie.ativa,
+        ultima_medicao_valida_em: datetime | None = None,
+    ) -> SerieDeColeta:
+        serie = SerieDeColeta(
+            desafio_de_coleta_id=desafio.id,
+            coletor_id=coletor.id,
+            local_id=local.id,
+            cadencia=cadencia or desafio.cadencia,
+            estado=estado,
+            ultima_medicao_valida_em=ultima_medicao_valida_em,
+        )
+        sessao.add(serie)
+        sessao.commit()
+        sessao.refresh(serie)
+        return serie
+
+    return _criar
+
+
+@pytest.fixture
+def criar_registro_de_coleta(sessao):
+    def _criar(
+        serie: SerieDeColeta,
+        autor: Persona,
+        comunidade_virtual_id: uuid.UUID,
+        momento_do_fato: datetime | None = None,
+        valor: float | None = 25.0,
+        unidade: str | None = "°C",
+        midia_referencia: str | None = None,
+        origem: OrigemDoRegistro = OrigemDoRegistro.manual,
+        situacao: SituacaoDoRegistro = SituacaoDoRegistro.valida,
+        a_conferir: bool = False,
+        pontos_creditados: int = 5,
+    ) -> RegistroDeColeta:
+        registro = RegistroDeColeta(
+            serie_de_coleta_id=serie.id,
+            valor=valor,
+            unidade=unidade,
+            midia_referencia=midia_referencia,
+            origem=origem,
+            situacao=situacao,
+            a_conferir=a_conferir,
+            comunidade_virtual_id=comunidade_virtual_id,
+            pontos_creditados=pontos_creditados,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+            momento_do_fato=momento_do_fato or datetime.now(UTC),
+        )
+        sessao.add(registro)
+        sessao.commit()
+        sessao.refresh(registro)
+        return registro
+
+    return _criar
+
+
+@pytest.fixture
 def criar_aula(sessao):
     def _criar(
         autor: Persona,
@@ -837,8 +923,18 @@ def fabrica_de_auditoria(engine):
 
 @pytest.fixture
 def criar_ponto_regular(sessao):
-    def _criar(guerreiro: Persona, trilha: Trilha, total: int = 10) -> PontoRegular:
-        registro = PontoRegular(guerreiro_id=guerreiro.id, trilha_id=trilha.id, total=total)
+    def _criar(
+        guerreiro: Persona,
+        trilha: Trilha | None = None,
+        total: int = 10,
+        poder: Poder | None = None,
+    ) -> PontoRegular:
+        registro = PontoRegular(
+            guerreiro_id=guerreiro.id,
+            trilha_id=trilha.id if trilha is not None else None,
+            poder_id=poder.id if poder is not None else None,
+            total=total,
+        )
         sessao.add(registro)
         sessao.commit()
         sessao.refresh(registro)

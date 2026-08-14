@@ -1,9 +1,14 @@
 import pytest
 
-from nucleo.erros import ErroDeValidacao, PermissaoNegada
+from nucleo.erros import ErroDeValidacao, PapelDoPoderTerritorioJaDeclarado, PermissaoNegada
 from nucleo.personas.modelo import Papel
-from nucleo.poderes.modelo import NaturezaDoPoder, Poder, VigenciaDoPoder
-from nucleo.poderes.regra import alterar_poder, cadastrar_poder, desativar_poder
+from nucleo.poderes.modelo import NaturezaDoPoder, PapelDoPoder, Poder, VigenciaDoPoder
+from nucleo.poderes.regra import (
+    alterar_poder,
+    buscar_poder_do_territorio,
+    cadastrar_poder,
+    desativar_poder,
+)
 
 
 def test_admin_cadastra_poder_com_autoria(sessao, criar_persona):
@@ -118,3 +123,78 @@ def test_admin_altera_e_desativa_poder(sessao, criar_persona, criar_poder):
     sessao.commit()
     sessao.refresh(poder)
     assert poder.ativo is False
+
+
+def test_admin_marca_o_papel_do_territorio(sessao, criar_persona):
+    admin = criar_persona(Papel.admin)
+
+    poder = cadastrar_poder(
+        sessao,
+        operador=admin,
+        nome="Poder do Território",
+        descricao="Registro e ciência de dados do território.",
+        natureza=NaturezaDoPoder.de_guerreiro,
+        papel=PapelDoPoder.territorio,
+    )
+    sessao.commit()
+
+    assert poder.papel == PapelDoPoder.territorio
+    assert buscar_poder_do_territorio(sessao).id == poder.id
+
+
+def test_segundo_poder_com_papel_do_territorio_e_recusado(sessao, criar_persona, criar_poder):
+    admin = criar_persona(Papel.admin)
+    primeiro = criar_poder(admin, nome="Poder do Território", papel=PapelDoPoder.territorio)
+
+    with pytest.raises(PapelDoPoderTerritorioJaDeclarado):
+        cadastrar_poder(
+            sessao,
+            operador=admin,
+            nome="Poder do Território (duplicado)",
+            descricao="Descrição de teste.",
+            natureza=NaturezaDoPoder.de_guerreiro,
+            papel=PapelDoPoder.territorio,
+        )
+
+    sessao.refresh(primeiro)
+    assert primeiro.papel == PapelDoPoder.territorio
+    assert sessao.query(Poder).filter(Poder.papel == PapelDoPoder.territorio).count() == 1
+
+
+def test_poder_sem_papel_e_aceito(sessao, criar_persona):
+    admin = criar_persona(Papel.admin)
+
+    poder = cadastrar_poder(
+        sessao,
+        operador=admin,
+        nome="Poder da IA e Robótica",
+        descricao="Programação, eletrônica, robótica e IA.",
+        natureza=NaturezaDoPoder.de_guerreiro,
+    )
+    sessao.commit()
+
+    assert poder.papel is None
+
+
+def test_renomear_o_poder_nao_muda_o_papel(sessao, criar_persona, criar_poder):
+    admin = criar_persona(Papel.admin)
+    poder = criar_poder(admin, nome="Poder do Território", papel=PapelDoPoder.territorio)
+
+    alterar_poder(sessao, poder, operador=admin, nome="Novo nome do Poder do Território")
+    sessao.commit()
+    sessao.refresh(poder)
+
+    assert poder.nome == "Novo nome do Poder do Território"
+    assert poder.papel == PapelDoPoder.territorio
+    assert buscar_poder_do_territorio(sessao).id == poder.id
+
+
+def test_papel_nao_e_deduzido_do_nome(sessao, criar_persona, criar_poder):
+    admin = criar_persona(Papel.admin)
+    criar_poder(admin, nome="Poder do Território")
+    marcado = criar_poder(admin, nome="Outro nome qualquer", papel=PapelDoPoder.territorio)
+
+    encontrado = buscar_poder_do_territorio(sessao)
+
+    assert encontrado.id == marcado.id
+    assert encontrado.nome == "Outro nome qualquer"

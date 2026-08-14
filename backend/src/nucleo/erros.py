@@ -179,6 +179,27 @@ class UrlJaApresentada(ErroDeAplicacao):
     mensagem = "Esta chave já tem uma URL apresentada."
 
 
+class PapelDoPoderTerritorioJaDeclarado(ErroDeAplicacao):
+    status_code = 409
+    codigo = "papel_do_poder_territorio_ja_declarado"
+    mensagem = "Já existe um poder com o papel do Território declarado no catálogo."
+
+
+class PoderDoTerritorioNaoDeclarado(ErroDeAplicacao):
+    status_code = 409
+    codigo = "poder_do_territorio_nao_declarado"
+    mensagem = (
+        "O catálogo de poderes ainda não declara o Poder do Território. "
+        "Peça a um Admin para marcar o papel no poder correspondente."
+    )
+
+
+class SerieDeColetaJaAberta(ErroDeAplicacao):
+    status_code = 409
+    codigo = "serie_de_coleta_ja_aberta"
+    mensagem = "Este Guerreiro(a) já tem uma série aberta para este desafio e local."
+
+
 class FreioPorOrigemAcionado(ErroDeAplicacao):
     """`RF-01-65`: leva o tempo de espera calculado pelo freio, que o
     manipulador de `principal.py` também expõe no cabeçalho `Retry-After`

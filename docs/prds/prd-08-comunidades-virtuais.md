@@ -104,8 +104,9 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 6. Registro fora da faixa esperada do tipo de coleta é aceito e gravado, mas **marcado para
    auditoria** — a medição estranha pode ser a mais valiosa da série.
 
-Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado depois, com a
-**data e hora da medição** preservadas, não a do envio.
+O registro exige rede: sem conexão, a gravação fica bloqueada até reconectar — não há fila
+local, ao contrário da presença do App 01. A **data e hora da medição** são preservadas
+distintas da hora do envio: o Guerreiro(a) pode registrar agora uma medição que fez antes.
 
 ### 5.4 A série interrompe e retoma
 
@@ -132,36 +133,36 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 
 ## 6. Requisitos funcionais
 
-| ID         | Requisito                                                                                          | Prioridade |
-| ---------- | -------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-08-01` | Admin cria Comunidade Virtual com nome, localização e granularidade máxima                         | essencial  |
-| `RF-08-02` | Vínculo do Guerreiro(a) é atribuído pela comunidade da aula agendada em que ele se cadastra        | essencial  |
-| `RF-08-03` | Admin transfere Guerreiro(a) entre comunidades, preservando a data da mudança — fora do Ciclo 01   | desejável  |
-| `RF-08-04` | Admin cadastra locais na hierarquia comunidade → bairro → rua → condomínio → bloco → quadra        | essencial  |
-| `RF-08-05` | Admin mantém o catálogo de tipos de coleta, com unidade e faixa esperada                           | essencial  |
-| `RF-08-06` | Mestre cria desafio de coleta com tipo, cadência, vigência, granularidade e registros que pontuam  | essencial  |
-| `RF-08-07` | Guerreiro(a) abre série individual selecionando um desafio e um local cadastrado da sua comunidade | essencial  |
-| `RF-08-08` | Guerreiro(a) registra medição com valor, data e hora da medição e origem                           | essencial  |
-| `RF-08-09` | Sistema credita, por registro válido, o valor do documento 11 §5 ao Poder do Território            | essencial  |
-| `RF-08-10` | Sistema marca a série como interrompida após dois períodos de cadência seguidos sem registro       | essencial  |
-| `RF-08-11` | Sistema retoma a série ao receber novo registro, sem recompor o período parado                     | essencial  |
-| `RF-08-12` | Sistema marca para auditoria registro fora da faixa esperada do tipo de coleta                     | essencial  |
-| `RF-08-13` | Mestre invalida registro com motivo, estornando os pontos e mantendo o registro gravado            | essencial  |
-| `RF-08-14` | Sistema aceita registro de sensor autenticado por credencial de dispositivo, com a origem gravada  | essencial  |
-| `RF-08-15` | Sistema enfileira registro feito sem rede e sincroniza depois, preservando a hora da medição       | essencial  |
-| `RF-08-16` | Rota pública devolve a série histórica da comunidade agregada até o bairro, sem coletor            | essencial  |
-| `RF-08-17` | Guerreiro(a) consulta suas séries, a situação de cada uma e os pontos que estão rendendo           | essencial  |
-| `RF-08-18` | Responsável consulta, pela App 07, as séries da criança sob sua responsabilidade                   | desejável  |
-| `RF-08-19` | Exportação de dados agregados e anonimizados por comunidade e período                              | desejável  |
-| `RF-08-28` | Saída pública e entrega aprovada agregam ao nível acima recorte com menos de três coletores        | essencial  |
-| `RF-08-20` | Painel reflete visualmente o crescimento da comunidade conforme o documento 11 §8.3                | desejável  |
-| `RF-08-21` | Sistema aceita foto ou vídeo como o próprio registro, quando o tipo de coleta assim o define       | essencial  |
-| `RF-08-22` | Guerreiro(a) solicita a inclusão de local ausente, e a solicitação entra na fila de aprovação      | essencial  |
-| `RF-08-23` | Mestre da trilha ou Admin aprova ou recusa a solicitação, com motivo na recusa                     | essencial  |
-| `RF-08-24` | Mestre e Admin veem alerta das solicitações de local em aberto nas suas aplicações                 | essencial  |
-| `RF-08-25` | Desafio de coleta herda a etiqueta ODS da missão que o criou ou, na falta dela, a da trilha        | essencial  |
-| `RF-08-26` | Painel público da comunidade exibe a cobertura de ODS das suas séries, agregada por ciclo          | desejável  |
-| `RF-08-27` | Exportação a instituições declara a contribuição à meta 17.18 e o período coberto                  | desejável  |
+| ID         | Requisito                                                                                                                      | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `RF-08-01` | Admin cria Comunidade Virtual com nome, localização e granularidade máxima                                                     | essencial  |
+| `RF-08-02` | Vínculo do Guerreiro(a) é atribuído pela comunidade da aula agendada em que ele se cadastra                                    | essencial  |
+| `RF-08-03` | Admin transfere Guerreiro(a) entre comunidades, preservando a data da mudança — fora do Ciclo 01                               | desejável  |
+| `RF-08-04` | Admin cadastra locais na hierarquia comunidade → bairro → rua → condomínio → bloco → quadra                                    | essencial  |
+| `RF-08-05` | Admin mantém o catálogo de tipos de coleta, com unidade e faixa esperada                                                       | essencial  |
+| `RF-08-06` | Mestre cria desafio de coleta com tipo, cadência, vigência, granularidade e registros que pontuam                              | essencial  |
+| `RF-08-07` | Guerreiro(a) abre série individual selecionando um desafio e um local cadastrado da sua comunidade                             | essencial  |
+| `RF-08-08` | Guerreiro(a) registra medição com valor, data e hora da medição e origem                                                       | essencial  |
+| `RF-08-09` | Sistema credita, por registro válido, o valor do documento 11 §5 ao Poder do Território                                        | essencial  |
+| `RF-08-10` | Sistema marca a série como interrompida após dois períodos de cadência seguidos sem registro                                   | essencial  |
+| `RF-08-11` | Sistema retoma a série ao receber novo registro, sem recompor o período parado                                                 | essencial  |
+| `RF-08-12` | Sistema marca para auditoria registro fora da faixa esperada do tipo de coleta                                                 | essencial  |
+| `RF-08-13` | Mestre invalida registro com motivo, estornando os pontos e mantendo o registro gravado                                        | essencial  |
+| `RF-08-14` | Sistema aceita registro de sensor autenticado por credencial de dispositivo, com a origem gravada                              | essencial  |
+| `RF-08-15` | Sistema grava a hora da medição e a hora do registro em campos distintos, e usa a da medição em toda regra dependente de tempo | essencial  |
+| `RF-08-16` | Rota pública devolve a série histórica da comunidade agregada até o bairro, sem coletor                                        | essencial  |
+| `RF-08-17` | Guerreiro(a) consulta suas séries, a situação de cada uma e os pontos que estão rendendo                                       | essencial  |
+| `RF-08-18` | Responsável consulta, pela App 07, as séries da criança sob sua responsabilidade                                               | desejável  |
+| `RF-08-19` | Exportação de dados agregados e anonimizados por comunidade e período                                                          | desejável  |
+| `RF-08-28` | Saída pública e entrega aprovada agregam ao nível acima recorte com menos de três coletores                                    | essencial  |
+| `RF-08-20` | Painel reflete visualmente o crescimento da comunidade conforme o documento 11 §8.3                                            | desejável  |
+| `RF-08-21` | Sistema aceita foto ou vídeo como o próprio registro, quando o tipo de coleta assim o define                                   | essencial  |
+| `RF-08-22` | Guerreiro(a) solicita a inclusão de local ausente, e a solicitação entra na fila de aprovação                                  | essencial  |
+| `RF-08-23` | Mestre da trilha ou Admin aprova ou recusa a solicitação, com motivo na recusa                                                 | essencial  |
+| `RF-08-24` | Mestre e Admin veem alerta das solicitações de local em aberto nas suas aplicações                                             | essencial  |
+| `RF-08-25` | Desafio de coleta herda a etiqueta ODS da missão que o criou ou, na falta dela, a da trilha                                    | essencial  |
+| `RF-08-26` | Painel público da comunidade exibe a cobertura de ODS das suas séries, agregada por ciclo                                      | desejável  |
+| `RF-08-27` | Exportação a instituições declara a contribuição à meta 17.18 e o período coberto                                              | desejável  |
 
 ## 7. Regras de negócio
 
@@ -252,7 +253,7 @@ todas elas, como define o PRD-01; escrita é autenticada.
 | POST   | `/desafios-de-coleta`                         | Mestre          | Cria desafio de coleta vinculado a uma missão             |
 | POST   | `/series`                                     | Guerreiro(a)    | Abre série individual para um desafio e um local          |
 | GET    | `/series/minhas`                              | Guerreiro(a)    | Séries do Guerreiro(a), estado e pontos que rendem        |
-| POST   | `/series/{id}/registros`                      | Guerreiro(a)    | Grava medição; aceita lote da fila offline                |
+| POST   | `/series/{id}/registros`                      | Guerreiro(a)    | Grava medição                                             |
 | POST   | `/series/{id}/registros`                      | Dispositivo     | Mesma rota, autenticada por credencial de dispositivo     |
 | GET    | `/auditoria/amostra`                          | Mestre          | Amostra de registros a auditar, priorizando fora de faixa |
 | POST   | `/registros/{id}/invalidacao`                 | Mestre          | Invalida registro com motivo e estorna os pontos          |
@@ -264,8 +265,8 @@ false`); invalidação por Mestre que não é autor do desafio (403).
 ## 10. Requisitos não funcionais
 
 - Registro por celular modesto, em Web App responsivo Mobile First.
-- Operação com rede instável: fila local e sincronização posterior, preservando a hora da
-  medição — requisito da App 05, onde a coleta acontece.
+- O registro de coleta exige rede: sem ela, a gravação fica bloqueada até reconectar — não há
+  fila local como a da presença do App 01 (documento 03 §7).
 - Uso em aparelho compartilhado do ponto de apoio: a série é do Guerreiro(a) autenticado na
   sessão, nunca do aparelho.
 - Envio de foto ou vídeo tolera rede instável: upload retomável, com o registro pendente
@@ -313,8 +314,8 @@ Critérios de aceite, um por requisito essencial, verificáveis por quem não es
   creditar; o registro seguinte a devolve para `ativa`.
 - Invalidação de um registro reduz o saldo do Guerreiro(a) no valor exato creditado, e o
   registro continua consultável, marcado como inválido.
-- Registro feito sem rede e sincronizado uma hora depois grava a hora da medição, não a do
-  envio.
+- Guerreiro(a) que registra às 15h uma medição feita às 14h tem a série gravada com 14h como
+  hora da medição e 15h como hora do registro.
 - Solicitação de local aprovada pelo Mestre da trilha cria o local e libera a abertura da
   série; recusada, devolve o motivo ao Guerreiro(a).
 - Registro em foto ou vídeo, sem valor numérico, é aceito e credita pontos como qualquer
@@ -352,19 +353,20 @@ conferir" e a auditoria por amostragem, que valem para qualquer origem do regist
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                        |
-| ----------------------- | --------------------------------------------- |
-| `RF-08-01` a `RF-08-04` | 02 §1 (Comunidades Virtuais)                  |
-| `RF-08-05` a `RF-08-08` | 02 §1 (registro temporal), 11 §4              |
-| `RF-08-09` a `RF-08-11` | 11 §5 (motor de pontuação)                    |
-| `RF-08-12` e `RF-08-13` | 02 §1 (veracidade do dado)                    |
-| `RF-08-14` e `RF-08-15` | 02 §1 (origem do registro), 03 §§1, 1.1       |
-| `RF-08-16` e `RF-08-19` | 02 §1 (anonimização na saída), 03 §12         |
-| `RF-08-17` e `RF-08-18` | 08 (PRD-05 e PRD-13)                          |
-| `RF-08-20`              | 11 §8.3                                       |
-| `RF-08-21`              | 02 §1 (registro por foto ou vídeo)            |
-| `RF-08-22` a `RF-08-24` | 02 §1 (solicitação de novo local), 03 §§5, 11 |
-| `RF-08-25` a `RF-08-27` | 11 §2.1 e 04 §4 (etiqueta ODS e meta 17.18)   |
-| `RF-08-28`, `RN-08-24`  | 02 §1 (piso de três coletores no recorte)     |
-| `RN-08-23`              | 03 §1.1 (credencial do sensor)                |
-| `RN-08-25`              | 02 §1 (granularidade exigida do desafio)      |
+| Requisito               | Origem                                                                        |
+| ----------------------- | ----------------------------------------------------------------------------- |
+| `RF-08-01` a `RF-08-04` | 02 §1 (Comunidades Virtuais)                                                  |
+| `RF-08-05` a `RF-08-08` | 02 §1 (registro temporal), 11 §4                                              |
+| `RF-08-09` a `RF-08-11` | 11 §5 (motor de pontuação)                                                    |
+| `RF-08-12` e `RF-08-13` | 02 §1 (veracidade do dado)                                                    |
+| `RF-08-14`              | 02 §1 (origem do registro), 03 §§1, 1.1                                       |
+| `RF-08-15`              | 03 §7 (registro exige rede), PRD-01 §9 (hora do fato distinta da do registro) |
+| `RF-08-16` e `RF-08-19` | 02 §1 (anonimização na saída), 03 §12                                         |
+| `RF-08-17` e `RF-08-18` | 08 (PRD-05 e PRD-13)                                                          |
+| `RF-08-20`              | 11 §8.3                                                                       |
+| `RF-08-21`              | 02 §1 (registro por foto ou vídeo)                                            |
+| `RF-08-22` a `RF-08-24` | 02 §1 (solicitação de novo local), 03 §§5, 11                                 |
+| `RF-08-25` a `RF-08-27` | 11 §2.1 e 04 §4 (etiqueta ODS e meta 17.18)                                   |
+| `RF-08-28`, `RN-08-24`  | 02 §1 (piso de três coletores no recorte)                                     |
+| `RN-08-23`              | 03 §1.1 (credencial do sensor)                                                |
+| `RN-08-25`              | 02 §1 (granularidade exigida do desafio)                                      |
