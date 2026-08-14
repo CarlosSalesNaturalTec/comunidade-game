@@ -8,7 +8,7 @@
 | Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | aprovado                                                   |
-| Versão e data    | v14 — 2026-08-10                                           |
+| Versão e data    | v15 — 2026-08-14                                           |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 8, 9, 11 e 12, 04, 11                     |
 
@@ -216,7 +216,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-28` | Listagens são paginadas e aceitam filtro por comunidade, período e persona                                                                                                                      | essencial  |
 | `RF-01-29` | Núcleo registra trilha de auditoria consultável das ações de Admin                                                                                                                              | essencial  |
 | `RF-01-30` | Núcleo documenta as rotas públicas para uso por aplicações de terceiros                                                                                                                         | desejável  |
-| `RF-01-31` | Versão anterior da API segue disponível por prazo declarado após a abertura da seguinte                                                                                                         | desejável  |
+| `RF-01-31` | Versão anterior da API segue disponível por 180 dias após a abertura da seguinte, prazo declarado na implantação                                                                                | desejável  |
 | `RF-01-32` | Núcleo deriva a disponibilidade do App 01 da aula agendada para a data e o horário correntes                                                                                                    | essencial  |
 | `RF-01-33` | Núcleo responde à consulta pública por **nick exato**, apenas de Guerreiro(a) com divulgação autorizada                                                                                         | essencial  |
 | `RF-01-34` | Núcleo não expõe busca parcial, sugestão nem completação de nick; a exibição pública alcança só quem tem divulgação autorizada                                                                  | essencial  |
@@ -276,6 +276,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-42` | A trilha é bem comum da plataforma: não se vincula a comunidade, e o filtro por comunidade recai sobre o percurso, não sobre ela                                     | —          | 02 §3       |
 | `RN-01-43` | O poder é cadastrado por Admin, e só poder de Guerreiro(a) recebe trilha                                                                                             | 21         | 02 §2       |
 | `RN-01-44` | A equipe da trilha é uma por trilha percorrida e, homologada pelo Mestre, não recebe nem perde integrante                                                            | 15         | 02 §5       |
+| `RN-01-52` | O motivo da ocorrência de conduta é apagado ao fim do ciclo em que ocorreu; o lançamento negativo permanece, com valor, data e autor                                 | —          | 03 §12.2    |
 
 ## 8. Modelo de dados
 
@@ -440,6 +441,7 @@ consultas ou de envios na rota pública (429, com o tempo de espera).
 | Conta social do adulto       | Autenticação                        | consentimento                | enquanto durar o vínculo | gestão e o próprio               |
 | Usuário e senha do adulto    | Autenticação sem conta social       | consentimento                | enquanto durar o vínculo | o próprio; hash na base          |
 | Vínculo e grau de parentesco | Provar quem responde pela criança   | consentimento                | enquanto durar o vínculo | gestão e o próprio               |
+| Motivo da ocorrência         | Aplicar o Código de Conduta         | consentimento                | até o fim do ciclo       | gestão e responsável             |
 | Consentimentos versionados   | Prova do que foi autorizado         | obrigação legal              | permanente               | gestão e responsável             |
 | Auditoria de escrita         | Rastreabilidade das ações           | interesse público            | permanente               | Admin                            |
 | Acesso ao _template_         | Rastreabilidade do uso da biometria | interesse público            | permanente               | Admin                            |
@@ -455,6 +457,10 @@ consultas ou de envios na rota pública (429, com o tempo de espera).
 - O responsável consulta, pela App 07, **quem acessou** os dados da criança — a trilha de
   auditoria existe também para isso.
 - Nenhuma rota pública devolve imagem real, nome civil ou contato de criança.
+- **Apagado o motivo, o lançamento negativo continua** com valor, data e autor: some a
+  descrição da conduta, não o lastro do saldo.
+- **A origem do freio das rotas públicas não entra nesta tabela**: o resumo do IP com sal
+  rotativo, nunca gravado, não é dado pessoal (documento 03 §12).
 
 ## 12. Critérios de aceite e métricas
 
@@ -494,6 +500,8 @@ consultas ou de envios na rota pública (429, com o tempo de espera).
   papel de cada um.
 - Toda escrita bem-sucedida gera registro de auditoria com autor, papel e data e hora.
 - Revogação de consentimento cria novo registro, e o anterior continua consultável.
+- Ocorrência de conduta de ciclo encerrado não devolve o motivo em nenhuma rota, e o lançamento
+  negativo dela segue consultável com valor, data e autor.
 - Nenhuma rota de crédito de pontos existe para o App 04 — a tentativa devolve 404.
 
 Este PRD não sustenta hipótese própria: ele é a condição para que H1, H2, H3 e H5 sejam
@@ -557,16 +565,15 @@ e o dos desafios de desbloqueio de cada trilha.
 | `SugestaoOuProposta` com autor, alvo, texto transcrito, situação, prazo e motivo do retorno          | 03 §§7, 12.2      | Canal de sugestões do Guerreiro(a)           |
 | Badge de protagonismo é o único global, porque a proposta é sobre a plataforma inteira               | 11 §7             | Canal de sugestões do Guerreiro(a)           |
 | O Mestre também registra proposta de evolução, como as demais personas com aplicação                 | 03 §11            | Já decididos                                 |
+| Um usuário por cadastro, inclusive no institucional; quem opera responde pelos atos                  | 02 §1             | Instituição com mais de um usuário           |
+| A origem do freio não é dado pessoal: sal rotativo, só em memória, nunca gravada                     | 03 §§8, 12        | Origem do freio das rotas públicas           |
+| Versão anterior da API por 180 dias, parâmetro declarado na implantação                              | 03 §1             | Prazo da versão anterior da API              |
+| Motivo da ocorrência de conduta até o fim do ciclo; o lançamento negativo permanece                  | 03 §12.2          | Guarda do registro de ocorrência de conduta  |
 
 ## 14. Pendências que permanecem
 
-- **Instituição com mais de um usuário** no mesmo cadastro de Apoiador, e como se registra
-  quem agiu em nome dela.
-- **Base legal do resumo do IP** usado pelo freio das rotas públicas, e se ele merece linha
-  própria na tabela de §11, que hoje só lista dado retido.
-- **Prazo de disponibilidade da versão anterior** da API depois que uma nova abrir.
-- **Prazo de guarda** do registro de infração e de pontuação negativa, dado sensível de
-  criança que hoje segue a retenção geral do vínculo.
+Nenhuma: as quatro que restavam foram decididas e estão na tabela de §13. Pendência nova entra
+antes no documento 09.
 
 ## 15. Rastreabilidade
 
@@ -604,3 +611,4 @@ e o dos desafios de desbloqueio de cada trilha.
 | `RN-01-51`              | 03 §8 (ambiente e identidade da chave de terceiro) |
 | `RF-01-55`              | 03 §§1, 8 (cota por faixa de chave)                |
 | `RF-01-65`              | 03 §§1, 8 (freio por origem e sem escala)          |
+| `RN-01-52`              | 03 §12.2 (prazo de guarda do motivo)               |

@@ -48,8 +48,9 @@
     registros, não uma cópia da plataforma. É o que permite comparar territórios e somar o
     aporte de quem sustenta mais de uma comunidade; em troca, toda consulta filtra por
     comunidade.
-11. **API versionada na rota**, começando em `/v1`. Quebra de contrato abre uma versão nova,
-    e a anterior segue no ar por prazo declarado.
+11. **API versionada na rota**, começando em `/v1`. Quebra de contrato abre uma versão nova, e
+    a anterior segue no ar por **180 dias** contados da abertura da seguinte — parâmetro
+    declarado na implantação, como o prazo de apresentação da URL da chave (§8).
 12. **Modelos de IA do Ciclo 01: Google Gemini.** Toda funcionalidade que precisar de modelo
     de IA neste ciclo é atendida por modelos **Gemini** — assistente do Guerreiro(a), leitura
     da produção e assistente da Área do Apoiador Desenvolvedor —, com o custo lançado no
@@ -826,6 +827,11 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   realização. A **anonimização ocorre na saída**: painéis públicos, exportações, pesquisas e
   entregas a instituições recebem dados **anonimizados**, agregados conforme a finalidade
   (§12.3).
+- **A origem do freio das rotas públicas não é dado pessoal.** O resumo criptográfico do IP com
+  sal rotativo (§8) não identifica ninguém e não se reverte: o sal troca, o resumo vive só na
+  memória pela janela do freio e nunca é gravado. Fica fora do alcance da LGPD pela mesma razão
+  da camada de medição do território (§12.1). **A conclusão depende do desenho**: sal fixo ou
+  resumo gravado a derrubam, e o tratamento passaria a exigir base legal declarada.
 
 ### 12.1 Base legal da guarda do dado de território
 
@@ -864,6 +870,7 @@ Duas camadas, e a distinção entre elas é o que sustenta o desenho:
 | Foto e áudio da produção do Guerreiro(a)          | **Descartados na leitura**; ficam a transcrição e a devolutiva    |
 | Áudio de qualquer origem                          | **Descartado na transcrição**                                     |
 | Contexto de personalização da sessão              | **Descartado ao encerrar a sessão**; nada é inferido nem gravado  |
+| Motivo da ocorrência de conduta                   | **Até o fim do ciclo** em que ocorreu; o lançamento é que fica    |
 | _Template_ biométrico, fim do vínculo             | **30 dias**, com aviso prévio ao responsável                      |
 | _Template_ biométrico, pedido do responsável      | **5 dias**                                                        |
 | Métricas de custo e demanda de IA                 | Permanente, **sem nenhum dado pessoal** — só contadores           |
@@ -871,6 +878,10 @@ Duas camadas, e a distinção entre elas é o que sustenta o desenho:
 **Fim do vínculo** é o marco desses prazos: ocorre **por pedido do responsável** ou
 **automaticamente após 12 meses sem nenhuma atividade registrada** — prazo que cobre o
 intervalo entre ciclos sem manter biometria de quem já saiu.
+
+**Ocorrência de conduta**: apaga-se a **descrição da conduta**, não o lançamento. Ao fim do
+ciclo — o mesmo marco em que a ocorrência sai do ranking (documento 11) — resta o lançamento
+negativo com valor, data e autor, sem o texto que descreve o que a criança fez.
 
 **Sessão em aparelho compartilhado**: encerra por **10 minutos de inatividade**, com aviso um
 minuto antes e opção de continuar, além do botão de sair sempre visível. O risco tratado aqui
