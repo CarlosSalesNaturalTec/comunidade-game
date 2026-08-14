@@ -32,7 +32,17 @@
     "MD050": false,
   },
   "globs": ["**/*.md"],
-  // .claude/** e openspec/** são arquivos de ferramenta (skills, comandos e
-  // artefatos de change) — não seguem o estilo de prosa dos documentos do projeto.
-  "ignores": ["node_modules/**", "site/**", "**/.venv/**", ".claude/**", "openspec/**"],
+  // .agent/**, .claude/**, .github/skills/** e openspec/** são arquivos de
+  // ferramenta (skills, comandos e artefatos de change) — não seguem o estilo de
+  // prosa dos documentos do produto.
+  "ignores": [
+    "node_modules/**",
+    "site/**",
+    "**/.venv/**",
+    ".agent/**",
+    ".claude/**",
+    ".github/skills/**",
+    ".github/prompts/**",
+    "openspec/**",
+  ],
 }
