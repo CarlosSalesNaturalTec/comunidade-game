@@ -107,6 +107,10 @@
   da aplicação: não abre sessão, não lê dado algum e só registra medição na série a que está
   presa. O segredo é devolvido uma única vez, a revogação exige motivo e autoria e a credencial
   cai ao fim do vínculo.
+- **A credencial é o próprio registro do aparelho**: guarda o identificador dele e a trilha em
+  que foi construído, e não há cadastro de dispositivo além dela. Aparelho que alimenta mais de
+  uma série tem **uma credencial por série**, todas com o mesmo identificador — e nunca duas
+  vivas para a mesma série.
 
 A API é documentada em **OpenAPI/Swagger desde o primeiro _endpoint_** — condição prática para
 que aplicações de terceiros e novos frontends realmente surjam. O schema e a interface ficam
