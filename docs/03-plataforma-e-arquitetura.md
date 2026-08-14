@@ -601,6 +601,7 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   fila de avaliação (§12.3).
 - **Área do Apoiador Desenvolvedor** — a porta de quem quer construir sobre a API. É **seção
   da vitrine**, pública e sem login, não uma nona aplicação. Reúne quatro coisas:
+
   - **Assistente de chat com IA** — modelo **Google Gemini** — que explica **proativamente**
     como a plataforma está montada, com **corpus fechado** na documentação e no repositório —
     fora deles, não responde. **Toda mensagem termina com uma pergunta de múltipla escolha**
