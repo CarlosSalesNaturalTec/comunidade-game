@@ -19,6 +19,7 @@ from nucleo.biometria.cifra import cifrar_descritor
 from nucleo.chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from nucleo.chaves.modelo import ChaveDeAplicacao, NaturezaDaChave, SituacaoDaChave
 from nucleo.chaves.segredo import calcular_resumo, gerar_segredo, montar_chave_completa
+from nucleo.coletas.modelo import Cadencia, DesafioDeColeta, FormaDeRegistro, TipoDeColeta
 from nucleo.comunidades.modelo import ComunidadeVirtual, VinculoJogador
 from nucleo.configuracao import Configuracao, obter_configuracao
 from nucleo.consentimentos.modelo import (
@@ -175,6 +176,7 @@ def app(sessao, configuracao):
     from nucleo.auditoria.rotas import roteador as roteador_de_auditoria
     from nucleo.biometria.rotas import roteador as roteador_de_biometria
     from nucleo.chaves.rotas import roteador as roteador_de_chaves
+    from nucleo.coletas.rotas import roteador as roteador_de_coletas
     from nucleo.comunidades.rotas import roteador as roteador_de_comunidades
     from nucleo.fila.rotas import roteador as roteador_de_fila
     from nucleo.jogos.rotas import roteador as roteador_de_jogos
@@ -199,6 +201,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_jogos)
     incluir_roteador_de_dados(aplicacao, roteador_de_comunidades)
     incluir_roteador_de_dados(aplicacao, roteador_de_locais)
+    incluir_roteador_de_dados(aplicacao, roteador_de_coletas)
     return aplicacao
 
 
@@ -636,6 +639,67 @@ def criar_atividade(sessao):
         sessao.commit()
         sessao.refresh(atividade)
         return atividade
+
+    return _criar
+
+
+@pytest.fixture
+def criar_tipo_de_coleta(sessao):
+    def _criar(
+        autor: Persona,
+        nome: str = "Temperatura",
+        forma_de_registro: FormaDeRegistro = FormaDeRegistro.numero,
+        unidade: str | None = "°C",
+        faixa_minima: float | None = -10.0,
+        faixa_maxima: float | None = 55.0,
+        ativo: bool = True,
+    ) -> TipoDeColeta:
+        tipo = TipoDeColeta(
+            nome=nome,
+            forma_de_registro=forma_de_registro,
+            unidade=unidade,
+            faixa_minima=faixa_minima,
+            faixa_maxima=faixa_maxima,
+            ativo=ativo,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(tipo)
+        sessao.commit()
+        sessao.refresh(tipo)
+        return tipo
+
+    return _criar
+
+
+@pytest.fixture
+def criar_desafio_de_coleta(sessao, criar_tipo_de_coleta):
+    def _criar(
+        missao: Missao,
+        autor: Persona,
+        tipo: TipoDeColeta | None = None,
+        cadencia: Cadencia = Cadencia.semanal,
+        vigencia_inicio: datetime | None = None,
+        vigencia_fim: datetime | None = None,
+        granularidade_exigida: NivelDoLocal = NivelDoLocal.rua,
+        registros_que_pontuam_por_periodo: int = 1,
+    ) -> DesafioDeColeta:
+        tipo_do_desafio = tipo or criar_tipo_de_coleta(autor)
+        desafio = DesafioDeColeta(
+            missao_id=missao.id,
+            tipo_de_coleta_id=tipo_do_desafio.id,
+            cadencia=cadencia,
+            vigencia_inicio=vigencia_inicio or datetime(2026, 1, 1, tzinfo=UTC),
+            vigencia_fim=vigencia_fim or datetime(2026, 12, 31, tzinfo=UTC),
+            granularidade_exigida=granularidade_exigida,
+            registros_que_pontuam_por_periodo=registros_que_pontuam_por_periodo,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(desafio)
+        sessao.commit()
+        sessao.refresh(desafio)
+        return desafio
 
     return _criar
 

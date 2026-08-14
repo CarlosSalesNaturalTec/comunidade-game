@@ -63,13 +63,13 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 
 ## 4. Personas e permissões
 
-| Persona      | O que faz neste domínio                                                                                                                                   | O que não pode fazer                                                        |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| Admin        | Cria comunidades e locais e avalia solicitações de novo local; a transferência de Guerreiro(a) entre comunidades fica fora do Ciclo 01                    | Registrar coleta no lugar do Guerreiro(a)                                   |
-| Mestre       | Cria o desafio de coleta da sua trilha, aprova solicitações de novo local dos Guerreiros e Guerreiras dela, audita registros por amostragem e os invalida | Alterar o valor registrado por um Guerreiro(a)                              |
-| Guerreiro(a) | Abre séries, seleciona o local, solicita novo local, registra medições e acompanha os pontos das suas séries                                              | Apagar registro já gravado; criar local; abrir série fora da sua comunidade |
-| Responsável  | Consulta, pela App 07, o que a criança sob sua responsabilidade coletou                                                                                   | Registrar, corrigir ou apagar dado do território                            |
-| Visitante    | Consulta o painel público da comunidade, agregado e anonimizado                                                                                           | Ver coletor, granularidade abaixo de rua ou dado bruto                      |
+| Persona      | O que faz neste domínio                                                                                                                                                                   | O que não pode fazer                                                        |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Admin        | Cria comunidades, locais e os tipos de coleta do catálogo e avalia solicitações de novo local; a transferência de Guerreiro(a) entre comunidades fica fora do Ciclo 01                    | Registrar coleta no lugar do Guerreiro(a)                                   |
+| Mestre       | Cria o desafio de coleta da sua trilha, escolhendo um tipo do catálogo, aprova solicitações de novo local dos Guerreiros e Guerreiras dela, audita registros por amostragem e os invalida | Alterar o valor registrado por um Guerreiro(a); criar tipo de coleta        |
+| Guerreiro(a) | Abre séries, seleciona o local, solicita novo local, registra medições e acompanha os pontos das suas séries                                                                              | Apagar registro já gravado; criar local; abrir série fora da sua comunidade |
+| Responsável  | Consulta, pela App 07, o que a criança sob sua responsabilidade coletou                                                                                                                   | Registrar, corrigir ou apagar dado do território                            |
+| Visitante    | Consulta o painel público da comunidade, agregado e anonimizado                                                                                                                           | Ver coletor, granularidade abaixo de rua ou dado bruto                      |
 
 ## 5. Jornadas principais
 
@@ -138,7 +138,7 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 | `RF-08-02` | Vínculo do Guerreiro(a) é atribuído pela comunidade da aula agendada em que ele se cadastra        | essencial  |
 | `RF-08-03` | Admin transfere Guerreiro(a) entre comunidades, preservando a data da mudança — fora do Ciclo 01   | desejável  |
 | `RF-08-04` | Admin cadastra locais na hierarquia comunidade → bairro → rua → condomínio → bloco → quadra        | essencial  |
-| `RF-08-05` | Sistema mantém catálogo de tipos de coleta, com unidade e faixa esperada                           | essencial  |
+| `RF-08-05` | Admin mantém o catálogo de tipos de coleta, com unidade e faixa esperada                           | essencial  |
 | `RF-08-06` | Mestre cria desafio de coleta com tipo, cadência, vigência, granularidade e registros que pontuam  | essencial  |
 | `RF-08-07` | Guerreiro(a) abre série individual selecionando um desafio e um local cadastrado da sua comunidade | essencial  |
 | `RF-08-08` | Guerreiro(a) registra medição com valor, data e hora da medição e origem                           | essencial  |
@@ -191,6 +191,7 @@ Exceção — sem rede: o registro é enfileirado no dispositivo e sincronizado 
 | `RN-08-22` | A cobertura de ODS sai agregada por comunidade e ciclo, nunca por coletor — a anonimização da saída vale igual                | 20, 7      | 04 §4    |
 | `RN-08-23` | O sensor se autentica por credencial de dispositivo vinculada ao Guerreiro(a) e à série; não abre sessão nem lê dado          | —          | 03 §1.1  |
 | `RN-08-24` | Recorte publicado com menos de três coletores distintos sobe para o nível acima; piso declarado na implantação                | 7          | 02 §1    |
+| `RN-08-25` | A granularidade exigida é declarada livremente no desafio; o teto da comunidade é conferido na abertura da série              | —          | 02 §1    |
 
 ## 8. Modelo de dados
 
@@ -247,6 +248,7 @@ todas elas, como define o PRD-01; escrita é autenticada.
 | POST   | `/solicitacoes-de-local/{id}/avaliacao`       | Mestre ou Admin | Aprova, criando o local, ou recusa com motivo             |
 | POST   | `/comunidades`                                | Admin           | Cria comunidade vazia                                     |
 | POST   | `/Guerreiros e Guerreiras/{id}/transferencia` | Admin           | Transfere Guerreiro(a) de comunidade — fora do Ciclo 01   |
+| POST   | `/tipos-de-coleta`                            | Admin           | Cadastra tipo de coleta no catálogo                       |
 | POST   | `/desafios-de-coleta`                         | Mestre          | Cria desafio de coleta vinculado a uma missão             |
 | POST   | `/series`                                     | Guerreiro(a)    | Abre série individual para um desafio e um local          |
 | GET    | `/series/minhas`                              | Guerreiro(a)    | Séries do Guerreiro(a), estado e pontos que rendem        |
@@ -326,19 +328,21 @@ a base da avaliação do Poder do Território e entram no conjunto de indicadore
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                    | Gravada em | Doc 09                                 |
-| -------------------------------------------------------------------------- | ---------- | -------------------------------------- |
-| Valor único por registro válido, igual para todo tipo de coleta            | 11 §5      | Já decididos                           |
-| Sem teto de pontos por período                                             | 11 §5      | Já decididos                           |
-| Quantos registros do período pontuam é declarado no desafio                | 11 §5      | Já decididos                           |
-| Dois períodos de cadência seguidos sem registro interrompem a série        | 02 §1      | Já decididos                           |
-| Registro nasce válido; Mestre audita por amostragem e pode invalidar       | 02 §1      | Já decididos                           |
-| Série individual, uma por Guerreiro(a)                                     | 02 §1      | Já decididos                           |
-| Origem do registro: manual, por voz ou sensor construído pelo Guerreiro(a) | 02 §1      | Já decididos                           |
-| Saída pública agregada até o bairro (revisto no PRD-03)                    | 02 §1      | Já decididos                           |
-| Sensor entra por credencial de dispositivo, emitida por Admin ou Mestre    | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
-| A credencial é o registro do aparelho; o PRD-08 não tem entidade própria   | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
-| Piso de três coletores distintos no recorte publicado ou entregue          | 02 §1      | Agregação mínima dentro do bairro      |
+| Decisão                                                                     | Gravada em | Doc 09                                 |
+| --------------------------------------------------------------------------- | ---------- | -------------------------------------- |
+| Valor único por registro válido, igual para todo tipo de coleta             | 11 §5      | Já decididos                           |
+| Sem teto de pontos por período                                              | 11 §5      | Já decididos                           |
+| Quantos registros do período pontuam é declarado no desafio                 | 11 §5      | Já decididos                           |
+| Dois períodos de cadência seguidos sem registro interrompem a série         | 02 §1      | Já decididos                           |
+| Registro nasce válido; Mestre audita por amostragem e pode invalidar        | 02 §1      | Já decididos                           |
+| Série individual, uma por Guerreiro(a)                                      | 02 §1      | Já decididos                           |
+| Origem do registro: manual, por voz ou sensor construído pelo Guerreiro(a)  | 02 §1      | Já decididos                           |
+| Saída pública agregada até o bairro (revisto no PRD-03)                     | 02 §1      | Já decididos                           |
+| Sensor entra por credencial de dispositivo, emitida por Admin ou Mestre     | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
+| A credencial é o registro do aparelho; o PRD-08 não tem entidade própria    | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
+| Piso de três coletores distintos no recorte publicado ou entregue           | 02 §1      | Agregação mínima dentro do bairro      |
+| Catálogo de tipos de coleta cadastrado por Admin; Mestre escolhe, não cria  | 02 §1      | Já decididos                           |
+| Granularidade exigida livre no desafio; teto conferido na abertura da série | 02 §1      | Já decididos                           |
 
 ## 14. Pendências que permanecem
 
@@ -363,3 +367,4 @@ conferir" e a auditoria por amostragem, que valem para qualquer origem do regist
 | `RF-08-25` a `RF-08-27` | 11 §2.1 e 04 §4 (etiqueta ODS e meta 17.18)   |
 | `RF-08-28`, `RN-08-24`  | 02 §1 (piso de três coletores no recorte)     |
 | `RN-08-23`              | 03 §1.1 (credencial do sensor)                |
+| `RN-08-25`              | 02 §1 (granularidade exigida do desafio)      |

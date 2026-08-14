@@ -68,6 +68,9 @@ class Operacao(enum.StrEnum):
     # Catálogo — nenhum papel tem entrada dele na matriz; o Admin o alcança
     # por `Operacao.tudo`, e negar por padrão recusa os demais (`RF-01-62`).
     catalogo_de_poderes = "catalogo_de_poderes"
+    # Mesmo precedente: nenhum papel tem entrada, inclusive o Mestre, que
+    # escolhe entre os tipos cadastrados e nunca cria um novo (`RF-08-05`).
+    catalogo_de_tipos_de_coleta = "catalogo_de_tipos_de_coleta"
 
 
 MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {

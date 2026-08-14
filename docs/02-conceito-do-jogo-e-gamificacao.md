@@ -169,11 +169,20 @@ transporte público, fotos, vídeos e memórias de pontos de referência.
 → bairro → rua → condomínio → bloco → quadra**. Cada registro adiciona uma peça à comunidade
 digital, que vai ganhando corpo conforme a participação cresce.
 
+**A granularidade exigida é do desafio, e é livre.** O Mestre a declara ao criar o desafio, sem
+teto: a trilha publicada alcança todas as comunidades, e cada uma tem a sua granularidade
+máxima. O teto vale **na abertura da série** — o Guerreiro(a) só abre a sua se a comunidade
+dele alcançar o nível exigido.
+
 **Quem cadastra os locais.** Os locais são **cadastrados previamente pelos Admins**, e o
 Guerreiro(a) **seleciona** a qual deles o dado se refere. Faltando o local, o Guerreiro(a)
 **solicita a inclusão** pelo aplicativo — mesma lógica das demais solicitações: pedido
 registrado não é cadastro. A solicitação é aprovada pelo **Mestre da trilha** ou por um
 **Admin**, ambos alertados das solicitações em aberto.
+
+**Quem cadastra os tipos de coleta.** O catálogo do que se mede — a forma de registro, a
+unidade e a faixa esperada de cada tipo — é **cadastrado pelos Admins**, como os locais. O
+Mestre **escolhe** um tipo do catálogo ao criar o desafio; não cria tipo novo.
 
 #### Registro temporal e pontuação enquanto a coleta durar
 
