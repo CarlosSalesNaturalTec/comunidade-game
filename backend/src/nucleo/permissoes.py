@@ -35,6 +35,7 @@ class Operacao(enum.StrEnum):
     confirmacao_de_identidade_do_guerreiro = "confirmacao_de_identidade_do_guerreiro"
     cadastro_biometrico_do_guerreiro = "cadastro_biometrico_do_guerreiro"
     homologacao_da_equipe_da_trilha = "homologacao_da_equipe_da_trilha"
+    credencial_de_dispositivo_dos_seus_desafios = "credencial_de_dispositivo_dos_seus_desafios"
     # Mestre — lê
     suas_turmas = "suas_turmas"
     painel_do_dia_na_app_03 = "painel_do_dia_na_app_03"
@@ -92,6 +93,7 @@ MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {
                 Operacao.confirmacao_de_identidade_do_guerreiro,
                 Operacao.cadastro_biometrico_do_guerreiro,
                 Operacao.homologacao_da_equipe_da_trilha,
+                Operacao.credencial_de_dispositivo_dos_seus_desafios,
                 Operacao.propostas_de_evolucao,
             }
         ),

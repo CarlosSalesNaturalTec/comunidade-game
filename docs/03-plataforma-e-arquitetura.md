@@ -101,12 +101,12 @@
   caminho normal; esta é a exceção que impede alguém de ficar de fora.
 - **O responsável tem login próprio**, vinculado a um ou mais Guerreiros e Guerreiras — é o que
   dá autoria clara ao consentimento e separa o que é dele do que é da criança.
-- **O sensor construído pelo Guerreiro(a) entra por credencial de dispositivo**, com
-  identificador e segredo emitidos por Admin ou Mestre e vinculados ao Guerreiro(a) e à série
-  que ele alimenta. Ela é **do aparelho, nunca da criança**, e não amplia direito, como a chave
-  da aplicação: não abre sessão, não lê dado algum e só registra medição na série a que está
-  presa. O segredo é devolvido uma única vez, a revogação exige motivo e autoria e a credencial
-  cai ao fim do vínculo.
+- **O sensor construído pelo Guerreiro(a) entra por credencial de dispositivo**, emitida e
+  revogada por **Admin ou pelo Mestre autor do desafio** da série, com identificador e segredo
+  vinculados ao Guerreiro(a) e à série que ele alimenta. Ela é **do aparelho, nunca da
+  criança**, e não amplia direito, como a chave da aplicação: não abre sessão, não lê dado
+  algum e só registra medição na série a que está presa. O segredo é devolvido uma única vez,
+  a revogação exige motivo e autoria e a credencial cai ao fim do vínculo.
 - **A credencial é o próprio registro do aparelho**: guarda o identificador dele e a trilha em
   que foi construído, e não há cadastro de dispositivo além dela. Aparelho que alimenta mais de
   uma série tem **uma credencial por série**, todas com o mesmo identificador — e nunca duas
@@ -601,7 +601,6 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   fila de avaliação (§12.3).
 - **Área do Apoiador Desenvolvedor** — a porta de quem quer construir sobre a API. É **seção
   da vitrine**, pública e sem login, não uma nona aplicação. Reúne quatro coisas:
-
   - **Assistente de chat com IA** — modelo **Google Gemini** — que explica **proativamente**
     como a plataforma está montada, com **corpus fechado** na documentação e no repositório —
     fora deles, não responde. **Toda mensagem termina com uma pergunta de múltipla escolha**

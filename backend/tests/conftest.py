@@ -885,6 +885,38 @@ def criar_template_biometrico(sessao, configuracao):
 
 
 @pytest.fixture
+def criar_credencial_de_dispositivo(sessao):
+    """Emite direto pelo modelo — o mesmo par identificador e segredo que
+    `emitir_credencial_de_dispositivo` produziria, sem passar pela posse da
+    trilha, para testes que só precisam da credencial já existente."""
+
+    def _criar(
+        serie: SerieDeColeta,
+        trilha: Trilha,
+        identificador: str = "sensor-de-teste-01",
+        criada_por: Persona | None = None,
+        ativa: bool = True,
+    ) -> tuple[Credencial, str]:
+        segredo = gerar_segredo()
+        credencial = Credencial(
+            persona_id=serie.coletor_id,
+            tipo=TipoDeCredencial.dispositivo,
+            identificador=identificador,
+            segredo=calcular_resumo(segredo),
+            serie_de_coleta_id=serie.id,
+            trilha_id=trilha.id,
+            criada_por=criada_por.id if criada_por is not None else None,
+            ativa=ativa,
+        )
+        sessao.add(credencial)
+        sessao.commit()
+        sessao.refresh(credencial)
+        return credencial, segredo
+
+    return _criar
+
+
+@pytest.fixture
 def criar_registro_de_auditoria(sessao):
     def _criar(
         autor: Persona,
