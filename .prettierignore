@@ -4,5 +4,8 @@ site/
 CHANGELOG.md
 
 # Arquivos de ferramenta (skills, comandos, config) vendorizados de terceiros
+.agent/
 .claude/
+.github/skills/
+.github/prompts/
 openspec/
