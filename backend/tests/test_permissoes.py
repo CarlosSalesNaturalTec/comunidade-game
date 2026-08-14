@@ -35,6 +35,7 @@ _TABELA_DO_PRD_01_PAR_4 = {
             Operacao.recompensas_recebidas_nos_marcos,
             Operacao.equipe_que_forma_na_aula,
             Operacao.resposta_de_quiz_da_equipe,
+            Operacao.solicitacao_de_local,
         },
         "le": {Operacao.seus_dados, Operacao.equipes_da_aula_em_andamento, Operacao.publico},
     },
