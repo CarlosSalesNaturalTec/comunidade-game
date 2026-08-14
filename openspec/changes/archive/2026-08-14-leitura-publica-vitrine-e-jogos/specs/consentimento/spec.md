@@ -1,12 +1,4 @@
-## Purpose
-
-O consentimento é a prova do que foi autorizado, por quem e quando. Esta capacidade cobre o
-registro versionado e **somente inserção** que responde "o que valia naquela data": cada decisão
-do responsável — conceder ou revogar — entra como registro novo, com a versão do termo, a autoria
-e o momento, e nenhuma delas apaga a anterior. É esse registro que, na fatia seguinte, libera o
-cadastro biométrico do Guerreiro(a).
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: O consentimento é versionado, com autoria, data e hora
 
@@ -20,7 +12,7 @@ O **tipo** SHALL ser um valor de conjunto fechado, e não texto livre. São dois
 documentação nomeia:
 
 | Tipo                        | O que cobre                                                       |
-| ---------------------------- | ----------------------------------------------------------------- |
+| --------------------------- | ----------------------------------------------------------------- |
 | `autorizacao_de_divulgacao` | divulgação do perfil, do histórico e das criações, imagem em fotos e vídeos de eventos e captação da produção — uma só autorização (`RN-13-05`) |
 | `biometria`                 | captura e tratamento biométrico do onboarding, de finalidade própria e termo impresso, fora da autorização única (`RN-13-06`, `RN-01-17`) |
 
@@ -52,6 +44,8 @@ Consentimento com tipo fora desse conjunto SHALL ser recusado com **422**. (`RN-
 - **WHEN** um responsável concede a `autorizacao_de_divulgacao` de um Guerreiro(a)
 - **THEN** nenhum consentimento de `biometria` passa a existir por consequência, e o cadastro
   biométrico continua exigindo o consentimento próprio dele
+
+## ADDED Requirements
 
 ### Requirement: A autorização vigente se resolve pelo histórico, e a recusa prevalece
 
@@ -86,44 +80,3 @@ qualquer momento anterior. (`RF-01-19`, `RN-01-12`, `RN-01-10`, `RN-13-07`)
 
 - **WHEN** se pergunta se a autorização estava vigente numa data anterior a uma revogação
 - **THEN** o núcleo responde pela decisão que valia naquela data, e não pela mais recente
-
-### Requirement: O consentimento é somente inserção
-
-O núcleo SHALL tratar o consentimento como registro de **somente inserção**. Revogar SHALL ser a
-gravação de um registro novo com a decisão contrária, e o registro anterior SHALL continuar
-consultável. Nenhuma rota, comando ou operação do núcleo SHALL editar ou apagar um consentimento
-já gravado. (`RF-01-19`, `RN-01-12`, PRD-01 §8)
-
-#### Scenario: Revogar cria registro novo
-
-- **WHEN** um responsável revoga um consentimento que havia concedido
-- **THEN** o núcleo grava um registro novo com a decisão de revogação, e o anterior continua
-  consultável
-
-#### Scenario: Consentimento gravado não é editado nem apagado
-
-- **WHEN** qualquer caminho do núcleo tenta alterar ou remover um consentimento já gravado
-- **THEN** a operação é recusada e o registro permanece como foi gravado
-
-#### Scenario: O histórico responde por data
-
-- **WHEN** se pergunta o que valia para um Guerreiro(a) em uma data anterior
-- **THEN** o núcleo responde pelo registro vigente naquela data, e não pela decisão mais recente
-
-### Requirement: Recusa de consentimento não exclui o Guerreiro(a) da atividade
-
-O núcleo NEVER SHALL usar a recusa ou a revogação de um consentimento para impedir a
-participação do Guerreiro(a) na atividade. A decisão do responsável SHALL restringir apenas o que
-aquele termo cobre, e o Guerreiro(a) SHALL continuar participando como qualquer outro.
-(`RN-01-21`, PRD-01 §11)
-
-#### Scenario: Criança sem consentimento participa igual
-
-- **WHEN** o responsável de um Guerreiro(a) recusa um consentimento
-- **THEN** o Guerreiro(a) continua podendo participar da atividade, e nenhuma operação de
-  participação é recusada por causa disso
-
-#### Scenario: A revogação não desfaz a participação
-
-- **WHEN** um responsável revoga um consentimento que havia concedido
-- **THEN** o que o Guerreiro(a) já realizou permanece registrado, e ele segue participando

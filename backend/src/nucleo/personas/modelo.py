@@ -55,13 +55,17 @@ class Persona(Base):
     próprio de papel entra em tabela satélite quando a fatia que o traz
     chegar (design — riscos); o vínculo de comunidade do Guerreiro(a) é
     exceção deliberada, porque `RN-01-05` já o exige nesta fatia e a
-    migração desta fatia cria só quatro tabelas.
+    migração desta fatia cria só quatro tabelas. `avatar` segue o mesmo
+    precedente do nick: nasce aqui, opaco ao núcleo — nenhuma validação de
+    forma —, e a rota que o grava é do PRD-04 (`RN-01-10`, design —
+    decisões).
     """
 
     __tablename__ = "persona"
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     papel: Mapped[Papel] = mapped_column(Enum(Papel, native_enum=False, length=32), nullable=False)
+    avatar: Mapped[str | None] = mapped_column(Text, nullable=True)
     comunidade_virtual_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid,
         ForeignKey(

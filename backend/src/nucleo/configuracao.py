@@ -61,6 +61,10 @@ class Configuracao(BaseSettings):
     armazenamento_diretorio_local: str = "./armazenamento"
     armazenamento_bucket_cloud_storage: str = ""
 
+    # Rótulo do ciclo corrente, declarado na implantação — não é entidade,
+    # não tem calendário (`RF-01-42`, `RF-01-43`, design — Decisions).
+    ciclo_rotulo: str = "Ciclo 01"
+
 
 @lru_cache
 def obter_configuracao() -> Configuracao:

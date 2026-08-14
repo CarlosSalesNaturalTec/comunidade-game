@@ -111,3 +111,16 @@ def cobertura_por_comunidade(sessao: Session, comunidade_id: uuid.UUID) -> set[i
     for trilha_id in ids_das_trilhas:
         objetivos |= cobertura_por_trilha(sessao, trilha_id)
     return objetivos
+
+
+def comunidades_com_cobertura(sessao: Session) -> list[uuid.UUID]:
+    """Comunidades com ao menos um Resultado registrado — a população sobre
+    a qual a cobertura pública por comunidade é apurada (`RF-01-42`,
+    `RF-01-43`, `RN-01-24`)."""
+    return [
+        comunidade_id
+        for (comunidade_id,) in sessao.query(Persona.comunidade_virtual_id)
+        .join(Resultado, Resultado.guerreiro_id == Persona.id)
+        .filter(Persona.comunidade_virtual_id.isnot(None))
+        .distinct()
+    ]

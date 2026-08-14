@@ -80,10 +80,16 @@ ODS, e a etiqueta NEVER SHALL ser confundida com um poder do catálogo. (`RN-01-
 ### Requirement: Cobertura de ODS agrega por trilha, poder e comunidade, nunca por Guerreiro(a)
 
 O núcleo SHALL agregar a cobertura de ODS — o conjunto de objetivos distintos etiquetados — por
-**trilha**, por **poder** (a união das etiquetas das trilhas vinculadas a ele) e por
+**trilha**, por **poder** (a união das etiquetas das trilhas vinculadas a ele), por
 **comunidade** (a união das etiquetas das trilhas em que há Guerreiro(a) daquela comunidade com
-Resultado registrado). A cobertura NEVER SHALL ser exposta nem calculada por Guerreiro(a)
-individual. (`RF-01-42`, `RN-01-24`, 11 §2.1)
+Resultado registrado) e por **ciclo**. A cobertura NEVER SHALL ser exposta nem calculada por
+Guerreiro(a) individual. (`RF-01-42`, `RN-01-24`, 11 §2.1)
+
+O **ciclo** é o quarto eixo, exigido por `RF-01-42` e sem o qual `RF-01-43` não se cumpre. Ele
+SHALL ser o **rótulo declarado na implantação**, não uma entidade com período: `Ciclo` não é
+entidade em nenhum PRD, e o calendário do Ciclo 01 segue pendente no documento 09 §1. Toda
+agregação SHALL carregar o rótulo do ciclo em que foi apurada. (`RF-01-42`, `RF-01-43`,
+invariantes 13 e 20 do documento 99 §6)
 
 #### Scenario: Cobertura por trilha soma os objetivos da trilha e das missões dela
 
@@ -103,4 +109,9 @@ individual. (`RF-01-42`, `RN-01-24`, 11 §2.1)
 #### Scenario: Cobertura nunca é calculada por Guerreiro(a)
 
 - **WHEN** se procura no núcleo uma função que agregue cobertura de ODS por Guerreiro(a)
-- **THEN** nenhuma existe: as três agregações são por trilha, poder e comunidade
+- **THEN** nenhuma existe: as agregações são por trilha, poder, comunidade e ciclo
+
+#### Scenario: Toda agregação carrega o rótulo do ciclo
+
+- **WHEN** a cobertura é apurada por qualquer um dos eixos
+- **THEN** o resultado carrega o rótulo do ciclo declarado na implantação

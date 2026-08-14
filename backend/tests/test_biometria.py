@@ -261,5 +261,7 @@ class TestImutabilidadeDoAcessoAoTemplate:
 
 def test_tipo_de_consentimento_biometrico_e_string_estavel():
     """Regressão: se este valor mudar, `consultar_consentimento_vigente_em`
-    passa a não achar o consentimento gravado com o valor antigo."""
-    assert TIPO_DE_CONSENTIMENTO_BIOMETRIA == "captura_biometrica"
+    passa a não achar o consentimento gravado com o valor antigo. O valor é
+    `biometria`, um dos dois do conjunto fechado que `TipoDeConsentimento`
+    define (`RN-13-06`)."""
+    assert TIPO_DE_CONSENTIMENTO_BIOMETRIA == "biometria"

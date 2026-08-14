@@ -12,11 +12,13 @@ from .chaves.conferencia import exigir_chave_de_aplicacao
 from .chaves.rotas import roteador as roteador_de_chaves
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
 from .fila.rotas import roteador as roteador_de_fila
+from .jogos.rotas import roteador as roteador_de_jogos
 from .personas.rotas import roteador as roteador_de_personas
 from .protecao import registrar_premissa_de_conteiner_unico
 from .protecao.cota import exigir_cota_de_leitura
 from .responsaveis.rotas import roteador as roteador_de_responsaveis
 from .sessoes.rotas import roteador as roteador_de_sessoes
+from .vitrine.rotas import roteador as roteador_de_vitrine
 
 logger = logging.getLogger("nucleo")
 
@@ -106,3 +108,5 @@ incluir_roteador_de_dados(app, roteador_de_biometria)
 incluir_roteador_de_dados(app, roteador_de_auditoria)
 incluir_roteador_de_dados(app, roteador_de_fila)
 incluir_roteador_de_dados(app, roteador_de_chaves)
+incluir_roteador_de_dados(app, roteador_de_vitrine)
+incluir_roteador_de_dados(app, roteador_de_jogos)

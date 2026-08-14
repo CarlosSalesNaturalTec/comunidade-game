@@ -24,6 +24,7 @@ from nucleo.consentimentos.modelo import (
     Consentimento,
     DecisaoDeConsentimento,
     OrigemDoConsentimento,
+    TipoDeConsentimento,
 )
 from nucleo.equipes.modelo import Equipe, IntegranteDaEquipe
 from nucleo.fila.modelo import SituacaoDaSolicitacao, SolicitacaoDeChave
@@ -39,6 +40,8 @@ from nucleo.personas.modelo import (
 )
 from nucleo.personas.senha import calcular_hash
 from nucleo.poderes.modelo import NaturezaDoPoder, Poder, VigenciaDoPoder
+from nucleo.ponto_extra.modelo import PontoExtra
+from nucleo.pontuacao.modelo import Badge, Nivel, PontoRegular, TipoDeBadge
 from nucleo.principal import criar_app, incluir_roteador_de_dados
 from nucleo.protecao.freio import exigir_freio_por_origem
 from nucleo.responsaveis.modelo import VinculoResponsavel
@@ -149,13 +152,6 @@ def _montar_roteador_de_teste() -> APIRouter:
     def quebra():
         raise RuntimeError("falha proposital de teste")
 
-    @roteador.get(
-        "/consulta-por-nick",
-        dependencies=[Depends(exigir_freio_por_origem("consulta_por_nick"))],
-    )
-    def consulta_por_nick():
-        return {"ok": True}
-
     @roteador.post(
         "/formulario-participacao",
         dependencies=[Depends(exigir_freio_por_origem("formulario_participacao"))],
@@ -179,9 +175,11 @@ def app(sessao, configuracao):
     from nucleo.biometria.rotas import roteador as roteador_de_biometria
     from nucleo.chaves.rotas import roteador as roteador_de_chaves
     from nucleo.fila.rotas import roteador as roteador_de_fila
+    from nucleo.jogos.rotas import roteador as roteador_de_jogos
     from nucleo.personas.rotas import roteador as roteador_de_personas
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
     from nucleo.sessoes.rotas import roteador as roteador_de_sessoes
+    from nucleo.vitrine.rotas import roteador as roteador_de_vitrine
 
     aplicacao = criar_app()
     aplicacao.dependency_overrides[obter_sessao] = lambda: sessao
@@ -194,6 +192,8 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_auditoria)
     incluir_roteador_de_dados(aplicacao, roteador_de_fila)
     incluir_roteador_de_dados(aplicacao, roteador_de_chaves)
+    incluir_roteador_de_dados(aplicacao, roteador_de_vitrine)
+    incluir_roteador_de_dados(aplicacao, roteador_de_jogos)
     return aplicacao
 
 
@@ -317,6 +317,7 @@ def criar_persona(sessao, criar_comunidade):
         papel: Papel = Papel.admin,
         criada_por: Persona | None = None,
         comunidade: ComunidadeVirtual | None = None,
+        avatar: str | None = None,
     ) -> Persona:
         if papel == Papel.guerreiro and comunidade is None:
             comunidade = criar_comunidade()
@@ -324,6 +325,7 @@ def criar_persona(sessao, criar_comunidade):
             papel=papel,
             comunidade_virtual_id=comunidade.id if comunidade is not None else None,
             criada_por=criada_por.id if criada_por is not None else None,
+            avatar=avatar,
         )
         sessao.add(persona)
         sessao.commit()
@@ -418,7 +420,7 @@ def criar_consentimento(sessao):
     def _criar(
         responsavel: Persona,
         guerreiro: Persona,
-        tipo: str = "autorizacao",
+        tipo: TipoDeConsentimento | str = TipoDeConsentimento.autorizacao_de_divulgacao,
         versao_do_termo: str = "1.0",
         decisao: DecisaoDeConsentimento = DecisaoDeConsentimento.concede,
         origem: OrigemDoConsentimento = OrigemDoConsentimento.propria,
@@ -713,3 +715,91 @@ def fabrica_de_auditoria(engine):
     `nucleo.cli.obter_fabrica_de_sessao`, ligado ao `engine` de teste em vez
     de à configuração real do processo."""
     return sessionmaker(bind=engine, expire_on_commit=False)
+
+
+@pytest.fixture
+def criar_ponto_regular(sessao):
+    def _criar(guerreiro: Persona, trilha: Trilha, total: int = 10) -> PontoRegular:
+        registro = PontoRegular(guerreiro_id=guerreiro.id, trilha_id=trilha.id, total=total)
+        sessao.add(registro)
+        sessao.commit()
+        sessao.refresh(registro)
+        return registro
+
+    return _criar
+
+
+@pytest.fixture
+def criar_ponto_extra(sessao):
+    def _criar(
+        guerreiro: Persona, acumulado: int = 10, saldo_disponivel: int | None = None
+    ) -> PontoExtra:
+        registro = PontoExtra(
+            guerreiro_id=guerreiro.id,
+            acumulado=acumulado,
+            saldo_disponivel=saldo_disponivel if saldo_disponivel is not None else acumulado,
+        )
+        sessao.add(registro)
+        sessao.commit()
+        sessao.refresh(registro)
+        return registro
+
+    return _criar
+
+
+@pytest.fixture
+def criar_nivel(sessao):
+    def _criar(guerreiro: Persona, trilha: Trilha, valor: int = 1) -> Nivel:
+        registro = Nivel(guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=valor)
+        sessao.add(registro)
+        sessao.commit()
+        sessao.refresh(registro)
+        return registro
+
+    return _criar
+
+
+@pytest.fixture
+def criar_badge(sessao):
+    def _criar(
+        guerreiro: Persona,
+        trilha: Trilha | None = None,
+        poder: Poder | None = None,
+        tipo: TipoDeBadge = TipoDeBadge.de_nivel,
+    ) -> Badge:
+        registro = Badge(
+            guerreiro_id=guerreiro.id,
+            trilha_id=trilha.id if trilha is not None else None,
+            poder_id=poder.id if poder is not None else None,
+            tipo=tipo,
+        )
+        sessao.add(registro)
+        sessao.commit()
+        sessao.refresh(registro)
+        return registro
+
+    return _criar
+
+
+@pytest.fixture
+def guerreiro_publico(criar_persona, criar_nick, criar_vinculo, criar_consentimento):
+    """Guerreiro(a) com nick e autorização de divulgação vigente — o cenário
+    comum a toda rota de leitura pública desta fatia."""
+
+    def _criar(
+        nick: str = "guerreira-de-teste", avatar: str | None = "avatar-de-teste"
+    ) -> tuple[Persona, str]:
+        guerreiro = criar_persona(Papel.guerreiro, avatar=avatar)
+        criar_nick(guerreiro, nick)
+        admin = criar_persona(Papel.admin)
+        responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+        criar_vinculo(responsavel, guerreiro, cadastrado_por=admin)
+        criar_consentimento(
+            responsavel,
+            guerreiro,
+            tipo=TipoDeConsentimento.autorizacao_de_divulgacao,
+            decisao=DecisaoDeConsentimento.concede,
+        )
+        return guerreiro, nick
+
+    return _criar

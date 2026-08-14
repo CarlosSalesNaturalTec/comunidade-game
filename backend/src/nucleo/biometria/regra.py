@@ -7,16 +7,17 @@ from random import Random
 from sqlalchemy.orm import Session
 
 from ..configuracao import Configuracao
-from ..consentimentos.modelo import DecisaoDeConsentimento
+from ..consentimentos.modelo import DecisaoDeConsentimento, TipoDeConsentimento
 from ..consentimentos.regra import consultar_consentimento_vigente_em
 from ..erros import ErroDeValidacao
 from ..personas.modelo import Credencial, Nick, Papel, Persona, TipoDeCredencial
 from .cifra import cifrar_descritor, decifrar_descritor
 from .modelo import AcessoAoTemplate, DesfechoDoAcesso, NaturezaDoAcesso
 
-# `Consentimento.tipo` é campo aberto (design da fatia anterior — decisões);
-# esta é a string que a captura biométrica usa (`RN-01-17`, documento 03 §3.3).
-TIPO_DE_CONSENTIMENTO_BIOMETRIA = "captura_biometrica"
+# O tipo do consentimento que a captura biométrica exige (`RN-01-17`,
+# documento 03 §3.3), do conjunto fechado que `consentimentos.modelo` define
+# (`RN-13-06`).
+TIPO_DE_CONSENTIMENTO_BIOMETRIA = TipoDeConsentimento.biometria
 
 
 @lru_cache(maxsize=1)
