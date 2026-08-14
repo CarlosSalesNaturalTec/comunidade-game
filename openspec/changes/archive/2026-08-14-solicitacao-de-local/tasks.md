@@ -96,4 +96,4 @@
       porque nenhum arquivo nasceu em `docs/`
 - [x] 8.3 Rodar `ruff format --check .`, `ruff check .` e `pytest` no `backend/`
 - [x] 8.4 Rodar `npm run fix`, `npm run lint` e `mkdocs build --strict` antes de abrir o PR
-- [ ] 8.5 Rodar `openspec validate --all` e `/opsx:verify` antes de arquivar a change
+- [x] 8.5 Rodar `openspec validate --all` e `/opsx:verify` antes de arquivar a change
