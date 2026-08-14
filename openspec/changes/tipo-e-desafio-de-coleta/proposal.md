@@ -3,10 +3,10 @@
 **PRD de origem:** PRD-08 — Comunidades Virtuais e dados do território. Segunda fatia dele e
 décima sétima da esteira, na ordem do documento 99 §9.
 
-**Requisitos atendidos:** `RF-08-05` (catálogo de tipos de coleta), `RF-08-06` (Mestre cria o
-desafio de coleta), `RF-08-25` (desafio herda a etiqueta ODS da missão ou da trilha),
-`RN-08-21` (a etiqueta da série é descritiva) e a metade do `RF-01-41` que se prende ao
-desafio de coleta.
+**Requisitos atendidos:** `RF-08-05` (Admin mantém o catálogo de tipos de coleta), `RF-08-06`
+(Mestre cria o desafio de coleta), `RF-08-25` (desafio herda a etiqueta ODS da missão ou da
+trilha), `RN-08-21` (a etiqueta da série é descritiva), `RN-08-25` (granularidade exigida livre
+no desafio) e a metade do `RF-01-41` que se prende ao desafio de coleta.
 
 A fatia anterior parou de propósito antes da medição, e nomeou esta: sem `DesafioDeColeta` não
 há série, porque `RF-08-07` manda o Guerreiro(a) abrir a série **selecionando um desafio**. É o
@@ -18,11 +18,13 @@ destino nasce aqui.
 
 ## What Changes
 
-- Nasce o **catálogo de tipos de coleta**, com nome, forma de registro, unidade de medida e
-  faixa esperada — mínimo e máximo (`RF-08-05`, PRD-08 §8).
+- Nasce o **catálogo de tipos de coleta**, cadastrado por Admin, com nome, forma de registro,
+  unidade de medida e faixa esperada — mínimo e máximo (`RF-08-05`, PRD-08 §8).
 - Nasce o **desafio de coleta**, criado pelo Mestre e vinculado a uma missão da sua trilha, com
-  tipo, cadência, vigência, granularidade exigida e quantos registros do mesmo período pontuam
-  (`RF-08-06`, PRD-08 §§5.2, 8).
+  tipo escolhido no catálogo, cadência, vigência, granularidade exigida e quantos registros do
+  mesmo período pontuam (`RF-08-06`, PRD-08 §§5.2, 8).
+- A **granularidade exigida é livre na criação** do desafio. O teto da comunidade é conferido
+  na abertura da série, que é da fatia seguinte (`RN-08-25`).
 - A **etiqueta ODS passa a se propagar**: o desafio herda a da missão que o criou ou, na falta
   dela, a da trilha, como rótulo descritivo que não altera pontuação, cadência nem validade
   (`RF-08-25`, `RN-08-21`, `RF-01-41`).
@@ -107,34 +109,35 @@ metade cujo destino existe.
 - `backend/alembic/`: migração das duas tabelas.
 - `backend/tests/`: o catálogo, a criação do desafio pelo Mestre da trilha, a recusa do Mestre
   que não é autor dela, a herança da etiqueta pela missão e o recuo para a da trilha.
-- `docs/`: depende das duas questões abaixo. Nenhuma outra edição está prevista — o PRD-08
+- `docs/`: as duas decisões abaixo, já gravadas antes desta change virar código — documento 02
+  §1 (fonte única), documento 09 ("Já decididos") e PRD-08 §§4, 6, 7, 9, 13 e 15. O PRD-08
   segue **aprovado** em `docs/prds/index.md` até a sua última fatia.
 
-## Questões ao fundador — travam as `specs`
+## Decisões que esta fatia recebeu
 
-Nenhuma das duas se resolve dentro de um artefato do OpenSpec. Decidida, cada uma é gravada no
-documento-fonte, movida no documento 09 e aplicada ao PRD-08 **antes** de virar código.
+Duas lacunas do PRD-08 apareceram ao recortar a fatia e foram levadas ao fundador, porque
+nenhuma se resolve dentro de um artefato do OpenSpec. Ambas já percorreram o fluxo — documento
+02 §1, documento 09 e PRD-08 — antes de a change virar código.
 
-### 1. Quem cadastra o tipo de coleta?
+### 1. O catálogo de tipos de coleta é cadastrado por Admin
 
-`RF-08-05` diz que o **sistema mantém** o catálogo, e nenhum outro ponto do PRD-08 atribui a
-persona: a tabela de §4 dá ao Admin a comunidade e os locais, e ao Mestre o desafio, sem citar
-o catálogo; o §9 não tem rota que o crie. O precedente mais próximo do repositório é o catálogo
-de poderes, que `RF-01-62` põe explicitamente no Admin — mas o precedente não é a regra, e a
-lacuna é do PRD.
+`RF-08-05` dizia que o **sistema mantém** o catálogo, sem atribuir persona: a tabela de §4 dava
+ao Admin a comunidade e os locais e ao Mestre o desafio, sem citar o catálogo, e o §9 não tinha
+rota que o criasse. **Decisão do fundador: Admin**, como os locais do território. O Mestre
+escolhe um tipo do catálogo ao criar o desafio e não cria tipo novo — a mesma separação que já
+vale entre quem cadastra o local e quem o seleciona.
 
-### 2. A granularidade exigida do desafio tem teto na comunidade?
+`RF-08-05` passou a nomear o Admin, o §4 ganhou o cadastro no que o Admin faz e a criação de
+tipo no que o Mestre não pode, e o §9 ganhou a rota `POST /tipos-de-coleta`.
 
-O PRD-08 §5.1 chama o atributo da comunidade de **granularidade máxima permitida**, o que soa
-como teto, mas nenhum `RN-08-nn` manda o núcleo recusar o desafio que o exceda.
+### 2. A granularidade exigida é livre no desafio
 
-E há uma tensão de alcance por baixo dessa dúvida: a spec `trilha-e-missao` já estabelece que a
-**trilha publicada alcança todas as comunidades**. O desafio é da trilha, e a granularidade
-máxima é de cada comunidade — de modo que não existe uma comunidade única contra a qual conferir
-o teto no momento da criação. As saídas possíveis são diferentes entre si:
+O PRD-08 §5.1 chama o atributo da comunidade de **granularidade máxima permitida**, o que soava
+como teto, mas nenhuma regra mandava recusar o desafio que o excedesse. Por baixo da dúvida
+havia uma tensão de alcance: a spec `trilha-e-missao` estabelece que a **trilha publicada
+alcança todas as comunidades**, de modo que não existe uma comunidade única contra a qual
+conferir o teto quando o Mestre cria o desafio.
 
-- a granularidade do desafio é livre, e o teto só morde quando a série abre, contra a comunidade
-  do Guerreiro(a);
-- ou o teto morde na criação, e o PRD precisa dizer contra o quê.
-
-A escolha muda o que a `specs` desta fatia escreve e o que sobra para a fatia da série.
+**Decisão do fundador: livre na criação.** O teto vale na **abertura da série** — o Guerreiro(a)
+só abre a sua se a comunidade dele alcançar o nível exigido. Nasceu o `RN-08-25`, e a conferência
+é da fatia da série, não desta.
