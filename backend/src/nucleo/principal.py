@@ -10,6 +10,7 @@ from .auditoria.rotas import roteador as roteador_de_auditoria
 from .biometria.rotas import roteador as roteador_de_biometria
 from .chaves.conferencia import exigir_chave_de_aplicacao
 from .chaves.rotas import roteador as roteador_de_chaves
+from .coletas.rotas import roteador as roteador_de_coletas
 from .comunidades.rotas import roteador as roteador_de_comunidades
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
 from .fila.rotas import roteador as roteador_de_fila
@@ -114,3 +115,4 @@ incluir_roteador_de_dados(app, roteador_de_vitrine)
 incluir_roteador_de_dados(app, roteador_de_jogos)
 incluir_roteador_de_dados(app, roteador_de_comunidades)
 incluir_roteador_de_dados(app, roteador_de_locais)
+incluir_roteador_de_dados(app, roteador_de_coletas)

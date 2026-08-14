@@ -10,9 +10,10 @@ já existe, e a série, que vem da fatia seguinte.
 ### Requirement: O desafio de coleta é criado pelo Mestre autor, preso a uma missão da sua trilha
 
 O núcleo SHALL permitir que o **Mestre autor da trilha** crie desafio de coleta vinculado a uma
-**missão daquela trilha** — a mesma posse já aplicada à trilha e à etiqueta ODS. Mestre que não é
-o autor da trilha SHALL receber **403**. Desafio apontando missão de **outra trilha**, ou missão
-inexistente, SHALL ser recusado com **422**. Toda escrita SHALL gravar autoria, data e hora.
+**missão daquela trilha** — a mesma posse já aplicada à trilha e à etiqueta ODS, conferida pela
+trilha alcançada a partir de `missão.trilha_id`: uma missão de trilha que o operador não é autor
+SHALL ser recusada com **403**, o mesmo status de qualquer outro Mestre que não é o autor. Missão
+**inexistente** SHALL ser recusada com **422**. Toda escrita SHALL gravar autoria, data e hora.
 (`RF-08-06`, `RF-01-03`, `RF-01-16`, PRD-08 §§4, 5.2)
 
 #### Scenario: Mestre autor cria o desafio na própria trilha
@@ -22,12 +23,13 @@ inexistente, SHALL ser recusado com **422**. Toda escrita SHALL gravar autoria, 
 
 #### Scenario: Mestre que não é o autor é recusado
 
-- **WHEN** um Mestre que não é o autor da trilha tenta criar desafio de coleta nela
+- **WHEN** um Mestre que não é o autor da trilha tenta criar desafio de coleta nela, apontando uma
+  missão que pertence a essa trilha de outro autor
 - **THEN** o núcleo responde 403 e nenhum desafio é criado
 
-#### Scenario: Missão de outra trilha é recusada
+#### Scenario: Missão inexistente é recusada
 
-- **WHEN** chega um desafio de coleta apontando uma missão que pertence a outra trilha
+- **WHEN** chega um desafio de coleta apontando um `missao_id` que não existe
 - **THEN** o núcleo responde 422 e nenhum desafio é criado
 
 ### Requirement: O desafio declara tipo, cadência, vigência, granularidade e registros que pontuam
