@@ -2,6 +2,8 @@ import uuid
 
 from sqlalchemy.orm import Session
 
+from ..comunidades.modelo import VinculoJogador
+from ..comunidades.regra import filtrar_personas_por_comunidade, unir_vinculo_vigente
 from ..erros import ErroDeValidacao
 from ..personas.modelo import Persona
 from ..resultados.modelo import Resultado
@@ -98,14 +100,15 @@ def cobertura_por_comunidade(sessao: Session, comunidade_id: uuid.UUID) -> set[i
     """União das coberturas das trilhas em que há Guerreiro(a) daquela
     comunidade com Resultado registrado — nunca por Guerreiro(a)
     individual (`RF-01-42`, `RN-01-24`)."""
-    ids_das_trilhas = {
-        trilha_id
-        for (trilha_id,) in sessao.query(Trilha.id)
+    consulta = (
+        sessao.query(Trilha.id)
         .join(Missao, Missao.trilha_id == Trilha.id)
         .join(Atividade, Atividade.missao_id == Missao.id)
         .join(Resultado, Resultado.atividade_id == Atividade.id)
         .join(Persona, Persona.id == Resultado.guerreiro_id)
-        .filter(Persona.comunidade_virtual_id == comunidade_id)
+    )
+    ids_das_trilhas = {
+        trilha_id for (trilha_id,) in filtrar_personas_por_comunidade(consulta, comunidade_id)
     }
     objetivos: set[int] = set()
     for trilha_id in ids_das_trilhas:
@@ -117,10 +120,6 @@ def comunidades_com_cobertura(sessao: Session) -> list[uuid.UUID]:
     """Comunidades com ao menos um Resultado registrado — a população sobre
     a qual a cobertura pública por comunidade é apurada (`RF-01-42`,
     `RF-01-43`, `RN-01-24`)."""
-    return [
-        comunidade_id
-        for (comunidade_id,) in sessao.query(Persona.comunidade_virtual_id)
-        .join(Resultado, Resultado.guerreiro_id == Persona.id)
-        .filter(Persona.comunidade_virtual_id.isnot(None))
-        .distinct()
-    ]
+    consulta = sessao.query(Persona.id).join(Resultado, Resultado.guerreiro_id == Persona.id)
+    consulta = unir_vinculo_vigente(consulta).with_entities(VinculoJogador.comunidade_virtual_id)
+    return [comunidade_id for (comunidade_id,) in consulta.distinct()]

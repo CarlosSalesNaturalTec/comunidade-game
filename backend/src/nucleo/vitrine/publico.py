@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy import tuple_
 from sqlalchemy.orm import Session
 
+from ..comunidades.regra import filtrar_personas_por_comunidade
 from ..consentimentos.regra import condicao_de_autorizacao_vigente
 from ..erros import ErroDeValidacao
 from ..paginacao import PaginaDeResultado, codificar_cursor, decodificar_cursor
@@ -76,7 +77,7 @@ def _consulta_de_guerreiros_publicos(sessao: Session, *, comunidade_id: uuid.UUI
         )
     )
     if comunidade_id is not None:
-        consulta = consulta.filter(Persona.comunidade_virtual_id == comunidade_id)
+        consulta = filtrar_personas_por_comunidade(consulta, comunidade_id)
     return consulta
 
 

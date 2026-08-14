@@ -19,6 +19,7 @@ from nucleo.biometria.cifra import cifrar_descritor
 from nucleo.chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from nucleo.chaves.modelo import ChaveDeAplicacao, NaturezaDaChave, SituacaoDaChave
 from nucleo.chaves.segredo import calcular_resumo, gerar_segredo, montar_chave_completa
+from nucleo.comunidades.modelo import ComunidadeVirtual, VinculoJogador
 from nucleo.configuracao import Configuracao, obter_configuracao
 from nucleo.consentimentos.modelo import (
     Consentimento,
@@ -29,9 +30,9 @@ from nucleo.consentimentos.modelo import (
 from nucleo.equipes.modelo import Equipe, IntegranteDaEquipe
 from nucleo.fila.modelo import SituacaoDaSolicitacao, SolicitacaoDeChave
 from nucleo.fila.regra import avaliar_solicitacao_de_chave, registrar_solicitacao_de_chave
+from nucleo.locais.modelo import Local, NivelDoLocal
 from nucleo.paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from nucleo.personas.modelo import (
-    ComunidadeVirtual,
     Credencial,
     Nick,
     Papel,
@@ -174,8 +175,10 @@ def app(sessao, configuracao):
     from nucleo.auditoria.rotas import roteador as roteador_de_auditoria
     from nucleo.biometria.rotas import roteador as roteador_de_biometria
     from nucleo.chaves.rotas import roteador as roteador_de_chaves
+    from nucleo.comunidades.rotas import roteador as roteador_de_comunidades
     from nucleo.fila.rotas import roteador as roteador_de_fila
     from nucleo.jogos.rotas import roteador as roteador_de_jogos
+    from nucleo.locais.rotas import roteador as roteador_de_locais
     from nucleo.personas.rotas import roteador as roteador_de_personas
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
     from nucleo.sessoes.rotas import roteador as roteador_de_sessoes
@@ -194,6 +197,8 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_chaves)
     incluir_roteador_de_dados(aplicacao, roteador_de_vitrine)
     incluir_roteador_de_dados(aplicacao, roteador_de_jogos)
+    incluir_roteador_de_dados(aplicacao, roteador_de_comunidades)
+    incluir_roteador_de_dados(aplicacao, roteador_de_locais)
     return aplicacao
 
 
@@ -319,18 +324,67 @@ def criar_persona(sessao, criar_comunidade):
         comunidade: ComunidadeVirtual | None = None,
         avatar: str | None = None,
     ) -> Persona:
-        if papel == Papel.guerreiro and comunidade is None:
-            comunidade = criar_comunidade()
         persona = Persona(
             papel=papel,
-            comunidade_virtual_id=comunidade.id if comunidade is not None else None,
             criada_por=criada_por.id if criada_por is not None else None,
             avatar=avatar,
         )
         sessao.add(persona)
+        sessao.flush()
+
+        if papel == Papel.guerreiro:
+            if comunidade is None:
+                comunidade = criar_comunidade()
+            sessao.add(VinculoJogador(guerreiro_id=persona.id, comunidade_virtual_id=comunidade.id))
+            sessao.flush()
+
         sessao.commit()
         sessao.refresh(persona)
         return persona
+
+    return _criar
+
+
+@pytest.fixture
+def criar_vinculo_jogador(sessao):
+    def _criar(
+        guerreiro: Persona,
+        comunidade: ComunidadeVirtual,
+        data_fim: datetime | None = None,
+        admin_responsavel: Persona | None = None,
+    ) -> VinculoJogador:
+        vinculo = VinculoJogador(
+            guerreiro_id=guerreiro.id,
+            comunidade_virtual_id=comunidade.id,
+            data_fim=data_fim,
+            admin_responsavel_id=admin_responsavel.id if admin_responsavel is not None else None,
+        )
+        sessao.add(vinculo)
+        sessao.commit()
+        sessao.refresh(vinculo)
+        return vinculo
+
+    return _criar
+
+
+@pytest.fixture
+def criar_local(sessao):
+    def _criar(
+        comunidade: ComunidadeVirtual,
+        nivel: NivelDoLocal = NivelDoLocal.comunidade,
+        rotulo: str = "Local de teste",
+        local_pai: Local | None = None,
+    ) -> Local:
+        local = Local(
+            comunidade_virtual_id=comunidade.id,
+            nivel=nivel,
+            rotulo=rotulo,
+            local_pai_id=local_pai.id if local_pai is not None else None,
+        )
+        sessao.add(local)
+        sessao.commit()
+        sessao.refresh(local)
+        return local
 
     return _criar
 

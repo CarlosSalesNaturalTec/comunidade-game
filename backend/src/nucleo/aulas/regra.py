@@ -2,8 +2,9 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
+from ..comunidades.modelo import ComunidadeVirtual, VinculoJogador
 from ..erros import ErroDeValidacao, PermissaoNegada
-from ..personas.modelo import ComunidadeVirtual, Papel, Persona
+from ..personas.modelo import Papel, Persona
 from ..tempo import agora
 from .modelo import Aula, ModoDeComprovacao, Presenca
 
@@ -77,7 +78,8 @@ def registrar_presenca(
     if existente is not None:
         return existente
 
-    if guerreiro.comunidade_virtual_id != aula.comunidade_virtual_id:
+    vinculo: VinculoJogador | None = guerreiro.vinculo_vigente
+    if vinculo is None or vinculo.comunidade_virtual_id != aula.comunidade_virtual_id:
         raise ErroDeValidacao(
             mensagem="Presença só é registrada na comunidade do próprio Guerreiro(a).",
             campo="aula_id",
