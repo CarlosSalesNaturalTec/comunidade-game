@@ -9,6 +9,7 @@ from nucleo.aulas import modelo as modelo_aulas  # noqa: F401
 from nucleo.banco import Base
 from nucleo.biometria import modelo as modelo_biometria  # noqa: F401
 from nucleo.chaves import modelo  # noqa: F401 — registra as tabelas em Base.metadata
+from nucleo.coletas import modelo as modelo_coletas  # noqa: F401
 from nucleo.comunidades import modelo as modelo_comunidades  # noqa: F401
 from nucleo.configuracao import obter_configuracao
 from nucleo.consentimentos import modelo as modelo_consentimentos  # noqa: F401

@@ -66,6 +66,7 @@ class TipoDeCredencial(enum.StrEnum):
     biometria = "biometria"
     login_social = "login_social"
     usuario_e_senha = "usuario_e_senha"
+    dispositivo = "dispositivo"
 
 
 class Credencial(Base):
@@ -73,6 +74,12 @@ class Credencial(Base):
     guarda o _template_ cifrado e codificado em `segredo` — maior que o hash
     de senha que a coluna foi dimensionada para caber, por isso `Text` e não
     `String` (design — decisões).
+
+    O tipo `dispositivo` (`RF-01-67`, `RN-01-53`) é o próprio registro do
+    sensor construído pelo Guerreiro(a): `persona_id` é o **coletor** da
+    série, `serie_de_coleta_id` e `trilha_id` só existem nela, e os três
+    campos de revogação — `revogada_por`, `motivo_da_revogacao`,
+    `revogada_em` — espelham os já usados por `ChaveDeAplicacao` (`RF-01-68`).
     """
 
     __tablename__ = "credencial"
@@ -92,6 +99,15 @@ class Credencial(Base):
     )
     troca_pendente: Mapped[bool] = mapped_column(nullable=False, default=False)
     ativa: Mapped[bool] = mapped_column(nullable=False, default=True)
+    serie_de_coleta_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("serie_de_coleta.id"), nullable=True
+    )
+    trilha_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("trilha.id"), nullable=True
+    )
+    revogada_por: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    motivo_da_revogacao: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    revogada_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     __table_args__ = (
         Index(
@@ -99,6 +115,12 @@ class Credencial(Base):
             "tipo",
             "identificador",
             unique=True,
-            postgresql_where=text("ativa"),
+            postgresql_where=text("ativa AND tipo != 'dispositivo'"),
+        ),
+        Index(
+            "uq_credencial_dispositivo_serie_ativa",
+            "serie_de_coleta_id",
+            unique=True,
+            postgresql_where=text("ativa AND tipo = 'dispositivo'"),
         ),
     )

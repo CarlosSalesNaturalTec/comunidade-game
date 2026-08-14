@@ -31,9 +31,10 @@ Situações possíveis: **não iniciado**, **em elicitação**, **em redação**
 **aprovado** e **implementado**. O link para o documento aparece nesta tabela quando ele entra
 na pasta.
 
-O PRD-01 segue **implementado**, com uma exceção declarada: `RF-01-67` e `RF-01-68`, a
-credencial de dispositivo do sensor, nasceram depois da implementação e entram por change
-própria.
+O PRD-01 segue **implementado**. A credencial de dispositivo do sensor (`RF-01-67` e a
+metade de `RF-01-68` sobre revogação por ato) entrou por change própria; resta só a metade de
+`RF-01-68` que depende do marco de fim do vínculo do Guerreiro(a), ainda não implementado no
+núcleo (proposal.md da change).
 
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.

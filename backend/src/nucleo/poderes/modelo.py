@@ -1,7 +1,7 @@
 import enum
 import uuid
 
-from sqlalchemy import Boolean, Enum, String, Text, Uuid
+from sqlalchemy import Boolean, Enum, Index, String, Text, Uuid, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
@@ -18,12 +18,24 @@ class VigenciaDoPoder(enum.StrEnum):
     ciclo_futuro = "ciclo_futuro"
 
 
+class PapelDoPoder(enum.StrEnum):
+    """O papel que um poder exerce nas regras da plataforma, declarado por
+    Admin — nunca deduzido do `nome`, que é só rótulo de exibição
+    (`RN-01-54`). Hoje só o papel do Território existe: é o que o crédito
+    da coleta busca (`RN-08-15`)."""
+
+    territorio = "territorio"
+
+
 class Poder(Base, ComAutoria):
     """Catálogo cadastrado por Admin a que toda trilha se vincula
     (`RF-01-62`). A natureza distingue o poder que o Guerreiro(a) conquista
     do derivado do aporte (`RN-01-43`, documento 99 §6 invariante 21) — só o
     primeiro recebe trilha. A vigência só descreve o que vale no ciclo
     corrente e nunca trava vínculo de trilha (02 §2, design — decisões).
+    `papel` é opcional — a maioria dos poderes não exerce papel algum — e o
+    índice único parcial garante no máximo um poder com o papel do
+    Território (`RN-01-54`).
     """
 
     __tablename__ = "poder"
@@ -37,4 +49,16 @@ class Poder(Base, ComAutoria):
     vigencia: Mapped[VigenciaDoPoder] = mapped_column(
         Enum(VigenciaDoPoder, native_enum=False, length=16), nullable=False
     )
+    papel: Mapped[PapelDoPoder | None] = mapped_column(
+        Enum(PapelDoPoder, native_enum=False, length=16), nullable=True
+    )
     ativo: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+    __table_args__ = (
+        Index(
+            "uq_poder_papel_territorio",
+            "papel",
+            unique=True,
+            postgresql_where=text("papel = 'territorio'"),
+        ),
+    )

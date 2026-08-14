@@ -402,7 +402,8 @@ As entidades `ArtefatoDeBatalha`, `PartidaDeBatalha`, `ParticipacaoNaPartida`,
   cada uma precisará declarar os seus papéis e métricas quando entrar.
 
 Duas saíram desta lista. A **autenticação do sensor do Guerreiro(a)** foi decidida como
-credencial de dispositivo, emitida por Admin ou Mestre (documento 03 §1.1), e continua fora
+credencial de dispositivo, emitida por Admin ou pelo Mestre autor do desafio (documento 03
+§1.1), e continua fora
 deste PRD — o sensor da coleta fala com a API, o artefato da batalha não. O **acesso das
 aplicações de terceiros** também: o terceiro pede chave pela vitrine (documento 03 §§1, 8), e
 como a chave é de leitura, segue valendo que **nenhum Nexus de terceiro conduz partida** —
