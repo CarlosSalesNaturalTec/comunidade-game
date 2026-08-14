@@ -22,9 +22,13 @@ from ..erros import DebitoDePontoRegularRecusado
 
 
 class PontoRegular(Base):
-    """Ponto regular por Guerreiro(a) e trilha — nunca por poder nesta
-    fatia, nem global (`RF-01-21`). Uma linha por par, somada a cada
-    Resultado; o detalhe por evento fica para quando o crédito precisar de
+    """Ponto regular por Guerreiro(a) e, exclusivamente, trilha **ou** poder
+    (`RF-01-21`, `RF-08-09`). Nasceu só por trilha; a coleta de dados do
+    território credita direto ao **Poder do Território**, nunca à trilha em
+    que o desafio nasceu (`RN-08-15`) — daí `poder_id`, no mesmo padrão que
+    `Badge` já usa para o mesmo par de referências (design — decisões,
+    serie-registro-e-pontuacao-da-coleta). Uma linha por par, somada a cada
+    crédito; o detalhe por evento fica para quando o crédito precisar de
     estorno (design — riscos). `total` nunca decresce nem é removido
     (`RF-01-57`, `RN-01-38`) — os gatilhos abaixo recusam fora do ORM tanto
     quanto dentro dele, no mesmo padrão de `consentimentos.modelo`.
@@ -34,14 +38,22 @@ class PontoRegular(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     guerreiro_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("persona.id"), nullable=False)
-    trilha_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("trilha.id"), nullable=False)
+    trilha_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("trilha.id"), nullable=True
+    )
+    poder_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("poder.id"), nullable=True)
     total: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     __table_args__ = (
         UniqueConstraint(
             "guerreiro_id", "trilha_id", name="uq_ponto_regular_guerreiro_id_trilha_id"
         ),
+        UniqueConstraint("guerreiro_id", "poder_id", name="uq_ponto_regular_guerreiro_id_poder_id"),
         CheckConstraint("total >= 0", name="ck_ponto_regular_total_nao_negativo"),
+        CheckConstraint(
+            "(trilha_id IS NOT NULL) != (poder_id IS NOT NULL)",
+            name="ck_ponto_regular_trilha_ou_poder",
+        ),
     )
 
 

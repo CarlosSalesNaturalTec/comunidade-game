@@ -127,6 +127,18 @@ Foto e vídeo vão pela `PortaDeArmazenamento`, como o comprovante de aporte em 
 disco no ambiente local, Cloud Storage em produção. O registro guarda a **referência**, nunca o
 conteúdo — o documento 03 §1 põe os arquivos no Cloud Storage e o banco fica com a série.
 
+### `PontoRegular` passa a aceitar trilha **ou** poder
+
+`RN-08-15` manda creditar direto ao Poder do Território, nunca à trilha do desafio — mas
+`ponto_regular` nasceu com `trilha_id` `NOT NULL` (`215dc282710b`), sem coluna de poder. Não
+apareceu no desenho original desta fatia; a implementação a fecha no mesmo padrão que `Badge`
+já usa para o mesmo par de referências (`fdfe17ea361e`): `poder_id` nasce nulável ao lado de
+`trilha_id`, agora também nulável, com `CheckConstraint` garantindo exatamente uma das duas
+preenchida. `creditar_ponto_regular` passa a receber `trilha_id` **ou** `poder_id`, nunca os
+dois. Não é decisão de produto nova — é o mesmo requisito de `RF-08-09`/`RN-08-15` já aprovado,
+só faltava o suporte de dado que `Badge` já antecipava ("`poder_id` existe para o badge de
+território de fatia futura").
+
 ## Risks / Trade-offs
 
 - **A partição padrão acumula, se a plataforma passar dos anos criados na migração** → a

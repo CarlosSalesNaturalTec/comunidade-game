@@ -1,11 +1,15 @@
 import math
 import uuid
+from datetime import datetime
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from ..coletas.modelo import DesafioDeColeta, RegistroDeColeta, SerieDeColeta
 from ..criacoes_originais.modelo import CriacaoOriginal
 from ..equipes.modelo import IntegranteDaEquipe
-from ..erros import ErroDeValidacao
+from ..erros import ErroDeValidacao, PoderDoTerritorioNaoDeclarado
+from ..poderes.regra import buscar_poder_do_territorio
 from ..quiz.modelo import (
     EquipeNaPartida,
     PartidaDeQuiz,
@@ -27,6 +31,11 @@ ADICIONAL_DE_MERITO_EXTRA_POR_AUXILIO = 10
 # Documento 11 §5: a criação original validada credita 50 pontos regulares
 # integrais a cada integrante da equipe da trilha, sem rateio pelo tamanho.
 VALOR_DA_CRIACAO_ORIGINAL = 50
+
+# Documento 11 §5: registro de coleta válido credita o mesmo valor, qualquer
+# que seja o tipo medido, sem teto por período — só o desafio limita quantos
+# registros do período pontuam (`RF-08-09`, `RN-08-05`).
+VALOR_DO_REGISTRO_DE_COLETA = 5
 
 # Documento 11 §5, "Quiz ao Vivo": 1 ponto por acerto da equipe, mais 1 de
 # bônus à primeira a acertar cada pergunta, com teto de 10 por partida. O
@@ -59,20 +68,30 @@ def _valor_regular(atividade: Atividade, desfecho: DesfechoDoResultado) -> int:
 
 
 def creditar_ponto_regular(
-    sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID, valor: int
+    sessao: Session,
+    *,
+    guerreiro_id: uuid.UUID,
+    valor: int,
+    trilha_id: uuid.UUID | None = None,
+    poder_id: uuid.UUID | None = None,
 ) -> PontoRegular:
     """Só credita — nunca debita, em nenhuma operação (`RF-01-57`,
-    `RN-01-38`); o gatilho de `pontuacao.modelo` recusa qualquer redução."""
+    `RN-01-38`); o gatilho de `pontuacao.modelo` recusa qualquer redução.
+    Exige exatamente uma referência — trilha **ou** poder, nunca as duas nem
+    nenhuma (`RF-08-09`, `RN-08-15`)."""
+    if (trilha_id is None) == (poder_id is None):
+        raise ErroDeValidacao(
+            mensagem="Crédito de ponto regular exige exatamente uma trilha ou um poder."
+        )
     if valor <= 0:
         raise ErroDeValidacao(
             mensagem="Crédito de ponto regular exige valor positivo.", campo="valor"
         )
 
-    conta = (
-        sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro_id, trilha_id=trilha_id).first()
-    )
+    filtro = {"guerreiro_id": guerreiro_id, "trilha_id": trilha_id, "poder_id": poder_id}
+    conta = sessao.query(PontoRegular).filter_by(**filtro).first()
     if conta is None:
-        conta = PontoRegular(guerreiro_id=guerreiro_id, trilha_id=trilha_id, total=valor)
+        conta = PontoRegular(**filtro, total=valor)
         sessao.add(conta)
     else:
         conta.total += valor
@@ -228,6 +247,54 @@ def certificar_nivel_5(sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: u
     if _ja_certificado(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id, valor=NIVEL_5):
         return
     _certificar_nivel(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id, valor=NIVEL_5)
+
+
+def creditar_pontuacao_da_coleta(
+    sessao: Session,
+    *,
+    registro: RegistroDeColeta,
+    serie: SerieDeColeta,
+    desafio: DesafioDeColeta,
+    periodo_inicio: datetime,
+    periodo_fim: datetime,
+) -> int:
+    """Ponto de entrada único, chamado por
+    `coletas.regra.gravar_registro_de_coleta`: credita ao **Poder do
+    Território** — identificado pelo papel declarado no catálogo, nunca ao
+    poder da trilha em que o desafio nasceu —, respeitando quantos
+    registros do período de cadência pontuam (`RF-08-09`, `RN-08-05`,
+    `RN-08-06`, `RN-08-15`, `RN-01-54`). Devolve o valor efetivamente
+    creditado — zero quando o registro excede a cota do período; ele
+    permanece válido de qualquer forma, só não credita.
+
+    `periodo_inicio`/`periodo_fim` vêm já apurados por
+    `coletas.regra.periodo_de_cadencia`, para que este módulo não precise
+    importar de volta o módulo que o chama (evita ciclo de import).
+    """
+    poder_do_territorio = buscar_poder_do_territorio(sessao)
+    if poder_do_territorio is None:
+        raise PoderDoTerritorioNaoDeclarado()
+
+    ja_pontuaram = (
+        sessao.query(func.count(RegistroDeColeta.id))
+        .filter(
+            RegistroDeColeta.serie_de_coleta_id == serie.id,
+            RegistroDeColeta.pontos_creditados > 0,
+            RegistroDeColeta.momento_do_fato >= periodo_inicio,
+            RegistroDeColeta.momento_do_fato < periodo_fim,
+        )
+        .scalar()
+    )
+    if ja_pontuaram >= desafio.registros_que_pontuam_por_periodo:
+        return 0
+
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=serie.coletor_id,
+        poder_id=poder_do_territorio.id,
+        valor=VALOR_DO_REGISTRO_DE_COLETA,
+    )
+    return VALOR_DO_REGISTRO_DE_COLETA
 
 
 def conceder_badge_de_autoria(
