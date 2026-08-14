@@ -283,9 +283,16 @@ código.
 
 ### Frontends e jogo (JavaScript)
 
-**Ainda não decididos** — formatador, _linter_, executor de testes e o que bloqueia o merge
-(documento 09). Enquanto a linha não for decidida, **pergunte ao fundador**; não escolha
-ferramenta dentro de uma change. Não trava o PRD-01, que é backend.
+| Ferramenta | O que verifica           | Comando local            |
+| ---------- | ------------------------ | ------------------------ |
+| **Biome**  | Formatação do JavaScript | `biome format --check .` |
+| **Biome**  | Lint do JavaScript       | `biome check .`          |
+| **Vitest** | Testes automatizados     | `vitest run`             |
+
+**As três bloqueiam o merge.** O Biome faz formatador e _linter_ numa ferramenta só, pela mesma
+razão que levou ao Ruff no backend, e a **cobertura é medida sem limiar que bloqueie** no
+Ciclo 01. O workflow de cada pasta nasce na change que criar a pasta, disparado só pelo caminho
+que ele cobre.
 
 ## Integrações
 

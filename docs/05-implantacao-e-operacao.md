@@ -23,7 +23,12 @@ equipamentos.
   disponível quando chega a sua vez, sem precisar trazer o seu. O parque de equipamentos é
   recurso com lastro como qualquer outro e é uma das finalidades previstas de campanha de
   financiamento.
-- Custo operacional previsto: diária do professor para o ponto de apoio.
+- **Janelas de acesso fora do encontro.** O ponto de apoio abre horários próprios para quem
+  não tem aparelho nem dados móveis em casa, para que os desafios on-line entre encontros não
+  fiquem restritos a quem tem acesso. A janela é recurso com lastro como o encontro: exige
+  local aberto e alguém responsável presente, e sem isso não é publicada.
+- Custo operacional previsto: diária do professor para o ponto de apoio, e a diária de quem
+  abre a janela de acesso.
 - **Guarda do acervo didático** (§3): os 46 exemplares permanentes são distribuídos entre os
   pontos de apoio, com controle de quantos estão em cada local e em que estado. Os 30 kits MDF
   ficam em estoque de oficina, com saldo visível no painel do dia.
@@ -77,29 +82,37 @@ material escasso — apenas 4 exemplares de Eletrônica I — continua servindo 
 
 ### B. Acervo permanente — linha Include I (46 exemplares)
 
-O princípio é **conservação por cuidado e orgulho, não por medo de punição**:
+O princípio é **conservação por cuidado e orgulho, não por medo de punição**.
+
+**No Ciclo 01 valem três frentes**: o tombamento, a ficha de vida e o badge "Guardião do
+Acervo". O **uso em bancada com retirada registrada**, a **guarda compartilhada pela equipe** e
+o **fluxo de reposição** ficam para o ciclo seguinte — recorte que mantém o acervo tombado e
+rastreado sem exigir da primeira turma uma rotina de empréstimo que ainda não se sabe operar.
+A vedação de cobrar da família **não é adiada**: vale desde o primeiro dia.
 
 1. **Tombamento e ficha de vida.** Cada exemplar recebe número de tombo e registro na gestão:
    título, ponto de apoio, estado de conservação e histórico de quem o usou. O Guerreiro(a) vê
    na Área do Guerreiro(a) **quais Guerreiros e Guerreiras cuidaram daquele livro antes**
    — o exemplar carrega uma linhagem, e ninguém quer ser o elo que quebrou a corrente.
-2. **Uso em bancada, com retirada registrada.** O exemplar não sai do ponto de apoio; retirada
-   e devolução são lançadas pelo Mestre, e o painel do dia mostra as devoluções pendentes
-   antes do fim da aula.
+2. **Uso em bancada, com retirada registrada** — _ciclo seguinte_. O exemplar não sai do ponto
+   de apoio; retirada e devolução são lançadas pelo Mestre, e o painel do dia mostra as
+   devoluções pendentes antes do fim da aula. No Ciclo 01 o exemplar segue sem sair do ponto de
+   apoio, e a conferência é a do inventário do item 7.
 3. **Badge "Guardião do Acervo".** Cuidar bem do material comum rende badge e pontos.
    Guardiões reincidentes podem ser convidados a cuidar do acervo como voluntários.
-4. **Responsável designado, com guarda compartilhada pela equipe.** Cada ponto de apoio tem
-   uma **pessoa designada** que responde pelo acervo permanente e pelos kits ali guardados —
-   é ela que consta do inventário, e a responsabilidade sobrevive à troca de turma e de
-   Mestre. Sobre essa base, cada equipe responde por um conjunto de exemplares; cuidar do
-   material do colega conta como **mérito extra por auxílio aos colegas**.
+4. **Responsável designado.** Cada ponto de apoio tem uma **pessoa designada** que responde
+   pelo acervo permanente e pelos kits ali guardados — é ela que consta do inventário, e a
+   responsabilidade sobrevive à troca de turma e de Mestre. A **guarda compartilhada pela
+   equipe**, em que cada equipe responde por um conjunto de exemplares, fica para o _ciclo
+   seguinte_; o mérito extra por auxílio aos colegas continua valendo por outras vias.
 5. **Kit de conservação com lastro.** Papel para encapar, fita e etiquetas são recursos como
    qualquer outro: precisam ser providos para a atividade acontecer.
-6. **Reposição solidária, nunca cobrança à família.** Perda ou dano **não gera dívida** para o
-   Guerreiro(a) nem para os responsáveis e não impede a participação: a reposição entra como
-   necessidade de recurso a ser aportada por Apoiador. Cobrar de família em situação de
-   vulnerabilidade contradiz o **"sem miséria"** e afastaria justamente quem o projeto quer
-   alcançar.
+6. **Nunca cobrança à família.** Perda ou dano **não gera dívida** para o Guerreiro(a) nem para
+   os responsáveis e não impede a participação — regra vigente desde o primeiro dia. Cobrar de
+   família em situação de vulnerabilidade contradiz o **"sem miséria"** e afastaria justamente
+   quem o projeto quer alcançar. A **reposição solidária**, em que a perda vira necessidade de
+   recurso a ser aportada por Apoiador, fica para o _ciclo seguinte_: no Ciclo 01 a perda é
+   anotada na ficha de vida e entra na conferência de inventário.
 7. **Conferência de inventário a cada módulo**, com resultado publicado na prestação de contas
    — transparência que também presta contas ao Apoiador que doou.
 
@@ -186,6 +199,23 @@ Observações operacionais:
   que valide o bom estado do livro, da camisa ou do kit que recebeu; o Mestre confere e lança.
   A iniciativa é sempre da criança — a regra e o valor estão no documento 11.
 - Cada aula só acontece com os **recursos providos** por mestres ou apoiadores.
+
+### Segurança física da atividade
+
+A conferência do laser antes da batalha é **trava no sistema** (documento 07). As demais
+atividades — eletrônica, solda, corte e ferramentas de oficina — seguem **norma escrita, sem
+trava**: o Mestre confere antes de iniciar, e a plataforma não bloqueia o início. Cada oficina
+declara na norma o equipamento de proteção exigido, quem pode operar o quê por faixa de idade,
+e o que nunca é feito sem adulto ao lado.
+
+### Divergência entre responsáveis
+
+A recusa de um responsável **suspende a autorização** e abre solicitação para a gestão
+(documento 02). A gestão conversa com os responsáveis dentro do prazo de 7 dias que vale para
+toda solicitação. **Não havendo acordo, a autorização permanece suspensa** e o Guerreiro(a)
+segue pela alternativa equivalente, sem perder atividade alguma. A gestão não arbitra sobre o
+dado da criança contra a vontade de um responsável — é a recusa que prevalece, e o caso volta à
+pauta a qualquer tempo, se quem recusou mudar de posição.
 
 ## 5. Atividade-modelo: Quiz ao Vivo
 

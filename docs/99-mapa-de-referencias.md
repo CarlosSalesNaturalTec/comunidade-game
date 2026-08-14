@@ -247,7 +247,10 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     alternativa equivalente.
 12. **Guerreiros e Guerreiras aparecem publicamente só por avatar e nick.** A imagem do
     onboarding tem finalidade única de identificar o Guerreiro(a) — presença e autenticação — e
-    nunca é exibida.
+    nunca é exibida. **Toda superfície pública** — vitrine, cards, rankings públicos, portfólio
+    e App 04 — mostra apenas quem tem **divulgação autorizada**. O **ranking interno da App 05
+    é a única exceção declarada**: por ser tela logada, sem público externo, ele mostra a turma
+    inteira.
 13. **Ciclo 01 = ago–dez/2026, Guerreira Zeferina, trilhas 1 e 2 apenas.** Rima, Capoeira,
     Redes, PNED/BNCC e Soft Skills são ciclo futuro.
 14. **Detalhamento extenso só no doc 08 e nos PRDs.** Os documentos 01–07 e 09–14 são
@@ -256,8 +259,9 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     no App 01, em dois tempos de vida: a **da aula**, válida para aquela aula presencial, e a
     **da trilha**, fixa depois de homologada pelo Mestre e sujeito da criação original. O
     Guerreiro(a) pode integrar várias e pontua em todas em que colabora — **uma só na partida
-    de Quiz ao Vivo** —; no máximo **1 familiar com 17 anos ou mais**. A gestão não forma nem
-    edita composição: o Mestre apenas homologa a equipe da trilha.
+    de Quiz ao Vivo** —; no máximo **1 familiar com 17 anos ou mais**. Cada integrante **declara
+    o seu papel na formação da equipe**, e ele vale para o encontro. A gestão não forma nem
+    edita composição: o Mestre apenas **homologa a equipe da trilha, na App 03**.
 16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.** Reais só aparecem
     na tela onde se paga, sempre ao lado do equivalente em moedas.
 17. **Os dados produzidos pela plataforma são gratuitos.** A vitrine mostra a visão macro e
@@ -285,7 +289,9 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     ritmo, dificuldade ou interesse é inferido ou guardado, e o contexto é **descartado ao
     encerrar a sessão**. A IA **recomenda e reescreve dentro do corpus fechado** do Mestre,
     marcando o texto gerado, e **nunca cria conteúdo novo**. O responsável a desliga a
-    qualquer tempo, e desligá-la não tira conteúdo nem exclui ninguém da atividade.
+    qualquer tempo, e desligá-la não tira conteúdo nem exclui ninguém da atividade. A chave
+    dele vale na **App 05**, tela individual: **não alcança a tela coletiva do App 01**, onde a
+    reescrita sempre opera e o contexto não carrega dado individual de ninguém.
 23. **Ponto regular nunca se gasta; só o extra se troca.** O regular alimenta níveis e ranking
     e não é debitado em nenhuma hipótese. O extra tem **duas contas** — o **acumulado**, que só
     cresce e é o que as superfícies públicas leem, e o **saldo disponível**, que debita na

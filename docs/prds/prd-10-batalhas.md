@@ -394,15 +394,19 @@ As entidades `ArtefatoDeBatalha`, `PartidaDeBatalha`, `ParticipacaoNaPartida`,
 - **Catálogo de recompensas por marco** (documento 09): o que a batalha entrega como recompensa
   no Ciclo 01 continua indefinido. A trilha só publica com lastro, então a lacuna trava a
   publicação, não este domínio.
-- **Autenticação do sensor do Guerreiro(a)** (documento 09): segue aberta e fora deste PRD — o
-  sensor da coleta fala com a API, o artefato da batalha não.
-- **Acesso das aplicações de terceiros**: decidido depois deste PRD — o terceiro pede chave
-  pela vitrine (documento 03 §§1, 8). A chave é de leitura, então segue valendo que **nenhum
-  Nexus de terceiro conduz partida** na plataforma: quem conduz é a sessão do Mestre.
-- **Segurança física das demais atividades** (documento 09): eletrônica e ferramentas de
-  oficina seguem sem norma escrita; só o laser da batalha ficou decidido.
+- **Redação das normas de segurança física** das demais atividades: ficou decidido que
+  eletrônica, solda, corte e ferramentas de oficina seguem **norma escrita, sem trava no
+  sistema** (documento 05 §4) — falta escrever cada norma. A trava do laser continua sendo a
+  única no sistema, e é deste PRD.
 - **Batalhas de outras áreas**: rima e capoeira são ciclo futuro. O modelo já as comporta, e
   cada uma precisará declarar os seus papéis e métricas quando entrar.
+
+Duas saíram desta lista. A **autenticação do sensor do Guerreiro(a)** foi decidida como
+credencial de dispositivo, emitida por Admin ou Mestre (documento 03 §1.1), e continua fora
+deste PRD — o sensor da coleta fala com a API, o artefato da batalha não. O **acesso das
+aplicações de terceiros** também: o terceiro pede chave pela vitrine (documento 03 §§1, 8), e
+como a chave é de leitura, segue valendo que **nenhum Nexus de terceiro conduz partida** —
+quem conduz é a sessão do Mestre.
 
 ## 15. Rastreabilidade
 

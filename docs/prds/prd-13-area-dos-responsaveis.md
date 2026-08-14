@@ -426,12 +426,14 @@ adesão da criança.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                   | Gravada em | Linha do doc 09                     |
-| ------------------------------------------------------------------------- | ---------- | ----------------------------------- |
-| Autorização única do responsável, cobrindo divulgação, eventos e produção | 03 §§9, 12 | Autorização única do responsável    |
-| Qualquer responsável autoriza ou revoga, e a recusa prevalece             | 02 §1      | Quem autoriza entre os responsáveis |
-| Atendimento assistido e termo impresso para quem não tem smartphone       | 03 §9      | Responsável sem smartphone          |
-| A exclusão do _template_ biométrico é requisito deste PRD, não do PRD-01  | 03 §3.3    | Exclusão do _template_ biométrico   |
+| Decisão                                                                   | Gravada em | Linha do doc 09                            |
+| ------------------------------------------------------------------------- | ---------- | ------------------------------------------ |
+| Autorização única do responsável, cobrindo divulgação, eventos e produção | 03 §§9, 12 | Autorização única do responsável           |
+| Qualquer responsável autoriza ou revoga, e a recusa prevalece             | 02 §1      | Quem autoriza entre os responsáveis        |
+| Atendimento assistido e termo impresso para quem não tem smartphone       | 03 §9      | Responsável sem smartphone                 |
+| A exclusão do _template_ biométrico é requisito deste PRD, não do PRD-01  | 03 §3.3    | Exclusão do _template_ biométrico          |
+| Aviso da exclusão do _template_ na App 07, com a data                     | 03 §9      | Aviso da exclusão do _template_ biométrico |
+| Divergência sem acordo mantém a autorização suspensa, com alternativa     | 05 §4      | Desfecho da divergência entre responsáveis |
 
 As três decisões fecharam a pendência do **consentimento da captação da produção** e a
 **[Proposta]** de consentimento por divulgação de vídeos e fotos de eventos, que deixou de
@@ -441,17 +443,15 @@ documento 08 perdeu a questão em aberto do responsável sem smartphone.
 
 ## 14. Pendências que permanecem
 
-- **Redação do termo quanto à entrega de dados**: a regra está decidida — entrega gratuita e
-  anonimizada, aprovada caso a caso por um Admin —, mas o texto que a declara ao responsável,
-  a licença de uso e o critério de aprovação não. **Trava o `RF-13-34` no texto, não no
-  desenho.**
-- **Reidentificação em comunidade com poucos coletores**: o que o responsável autoriza como
-  saída pública ainda depende do critério de agregação mínima, em aberto.
+- **Redação do termo quanto à entrega de dados**: a regra, a licença CC BY-SA e o critério de
+  aprovação do Admin estão decididos; falta o **texto** que declara isso ao responsável.
+  **Trava o `RF-13-34` no texto, não no desenho.**
 - **Metas numéricas de H2** (documento 10): quantas autorizações caracterizam a hipótese
   confirmada. Sem elas, a métrica existe e o critério de sucesso não.
-- **Desfecho da suspensão por divergência**: a gestão trata o caso na App 03, mas o
-  procedimento — conversa, prazo, o que fazer se a divergência não se resolver — é de operação
-  e ainda não está escrito no documento 05.
+  Duas saíram desta lista, decididas e gravadas na §13: o **desfecho da divergência**, em que a
+  autorização permanece suspensa e vale a alternativa equivalente, e o **aviso da exclusão do
+  _template_**, que a App 07 exibe com a data. A **reidentificação em comunidade com poucos
+  coletores** também saiu: a agregação mínima tem piso de três coletores (documento 02 §1).
 
 ## 15. Rastreabilidade
 
