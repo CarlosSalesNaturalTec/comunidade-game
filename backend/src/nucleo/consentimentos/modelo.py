@@ -20,12 +20,21 @@ class OrigemDoConsentimento(enum.StrEnum):
     impressa = "impressa"
 
 
+class TipoDeConsentimento(enum.StrEnum):
+    """Os dois valores que a documentação nomeia (`RN-13-05`, `RN-13-06`):
+    a autorização única de divulgação e a biometria do onboarding, de
+    finalidade própria e fora dela (design — decisões)."""
+
+    autorizacao_de_divulgacao = "autorizacao_de_divulgacao"
+    biometria = "biometria"
+
+
 class Consentimento(Base, ComAutoria):
     """Atributos do PRD-01 §8. `ComAutoria` cobre "quem operou" e a data e
-    hora com fuso; `tipo` fica aberto, com os dois valores que os PRDs já
-    nomeiam, sem virar enumeração fechada nesta fatia (design — decisões).
-    Somente inserção: os _listeners_ abaixo recusam `UPDATE` e `DELETE`
-    também dentro do ORM, além do _trigger_ da migração (`RN-01-12`).
+    hora com fuso; `tipo` é conjunto fechado, com os dois valores que os
+    PRDs nomeiam (`RF-01-19`, `RN-13-05`, `RN-13-06`). Somente inserção: os
+    _listeners_ abaixo recusam `UPDATE` e `DELETE` também dentro do ORM,
+    além do _trigger_ da migração (`RN-01-12`).
     """
 
     __tablename__ = "consentimento"
@@ -35,7 +44,9 @@ class Consentimento(Base, ComAutoria):
         Uuid, ForeignKey("persona.id"), nullable=False
     )
     guerreiro_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("persona.id"), nullable=False)
-    tipo: Mapped[str] = mapped_column(String(64), nullable=False)
+    tipo: Mapped[TipoDeConsentimento] = mapped_column(
+        Enum(TipoDeConsentimento, native_enum=False, length=64), nullable=False
+    )
     versao_do_termo: Mapped[str] = mapped_column(String(32), nullable=False)
     decisao: Mapped[DecisaoDeConsentimento] = mapped_column(
         Enum(DecisaoDeConsentimento, native_enum=False, length=16), nullable=False
