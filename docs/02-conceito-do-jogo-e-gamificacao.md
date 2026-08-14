@@ -281,6 +281,10 @@ Regras dos poderes:
   cria poder novo ao escrever a trilha.
 - **Só poder de Guerreiro(a) recebe trilha.** O Poder Sustentador é derivado do que Mestres e
   Apoiadores aportaram e corre por moedas, selos e níveis de sustento — o Apoiador não pontua.
+- **O papel do poder é declarado no catálogo, nunca deduzido do nome.** A coleta de dados do
+  território credita o Poder do Território qualquer que seja a trilha em que o desafio nasceu,
+  e é o catálogo que marca qual entrada exerce esse papel: o nome é rótulo de exibição e não
+  identifica regra.
 
 **[Proposta]** Novos poderes alinhados aos valores: "Poder da Ancestralidade" (cultura
 afro-brasileira e povos originários) e "Poder do Cuidado" (respeito, combate ao racismo e à

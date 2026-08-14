@@ -115,6 +115,9 @@ alcançável quando houver credencial que a autentique.
   período, limitado a quantos registros do mesmo período de cadência o desafio declara que
   pontuam — e nunca ao poder da trilha em que o desafio nasceu (`RF-08-09`, `RN-08-05`,
   `RN-08-06`, `RN-08-15`).
+- `catalogo-de-poderes`: o catálogo passa a **declarar o papel** do poder, ao lado da natureza e
+  da vigência. O nome deixa de ser o que identifica regra, e é a marca do papel que permite ao
+  crédito da coleta encontrar o Poder do Território (`RN-01-54`).
 
 ## Impact
 
@@ -136,20 +139,25 @@ alcançável quando houver credencial que a autentique.
   granularidade, registro com hora de medição anterior ao envio, mídia como registro, valor
   fora da faixa marcado "a conferir", crédito ao Poder do Território, o segundo registro do
   período que não pontua e a recusa de edição e de exclusão do registro.
-- `docs/`: a correção do `RF-08-15` no PRD-08 §§6, 5.3, 9, 10, 12 e 15. O PRD-08 segue
-  **aprovado** em `docs/prds/index.md` até a sua última fatia, e o documento 99 não muda —
-  nenhuma relação entre documentos foi alterada.
+- `backend/src/nucleo/poderes/`: o papel declarado no catálogo, que a decisão abaixo trouxe.
+- `docs/`: a correção do `RF-08-15` no PRD-08 §§6, 5.3, 9, 10, 12 e 15, e a decisão do papel do
+  poder já gravada no documento 02 §2, no documento 09 ("Já decididos") e no PRD-01 §§7 e 15.
+  O PRD-08 segue **aprovado** em `docs/prds/index.md` até a sua última fatia, e o documento 99
+  não muda — nenhuma relação entre documentos foi alterada.
 
-## Pergunta ao fundador antes das specs
+## Decisão que esta fatia recebeu
 
-Uma só, e ela trava `RF-08-09`: **como o núcleo identifica o Poder do Território?**
+Uma lacuna do PRD-08 apareceu ao recortar a fatia e foi levada ao fundador, porque não se
+resolve dentro de um artefato do OpenSpec. Ela já percorreu o fluxo — documento 02 §2, documento
+09 e PRD-01 — antes de a change virar código.
 
-`RN-08-15` manda creditar a coleta ao Poder do Território e **não** ao poder da trilha em que o
-desafio nasceu. Mas o poder é catálogo cadastrado por Admin (`RF-01-62`), com nome livre — o
-documento 02 §2 nomeia o Poder do Território entre os demais, e a tabela `poder` de hoje tem
-`nome`, `descricao`, `natureza` e `vigencia`, nada que diga "é este".
+**Como o núcleo identifica o Poder do Território.** `RN-08-15` manda creditar a coleta ao Poder
+do Território e **não** ao poder da trilha em que o desafio nasceu, mas o poder é catálogo
+cadastrado por Admin (`RF-01-62`) e a tabela de hoje guarda `nome`, `descricao`, `natureza` e
+`vigencia` — nada que diga "é este". Não era o mesmo que os parâmetros que a documentação deixa
+de propósito para a operação declarar: é vínculo que a regra de negócio exige e o modelo não
+expressava.
 
-Isso não se resolve dentro de um artefato do OpenSpec, e não é o mesmo que os parâmetros que a
-documentação deixa de propósito para a operação declarar: é um vínculo que a regra de negócio
-exige e o modelo ainda não expressa. A resposta muda o desenho — marcar o poder no catálogo,
-declarar o identificador na implantação ou semeá-lo — e por isso vem antes das specs.
+**Decisão: o papel do poder é marcado no catálogo**, declarado como já são a natureza e a
+vigência. O nome é rótulo de exibição, muda sem aviso e não identifica regra. Mantém a regra no
+dado, fora da configuração da operação, e independe de semeadura (`RN-01-54`, documento 02 §2).

@@ -282,6 +282,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-44` | A equipe da trilha é uma por trilha percorrida e, homologada pelo Mestre, não recebe nem perde integrante                                                            | 15         | 02 §5       |
 | `RN-01-52` | O motivo da ocorrência de conduta é apagado ao fim do ciclo em que ocorreu; o lançamento negativo permanece, com valor, data e autor                                 | —          | 03 §12.2    |
 | `RN-01-53` | A credencial de dispositivo é o próprio registro do aparelho, e entre as ativas há uma por par de identificador e série                                              | —          | 03 §1.1     |
+| `RN-01-54` | O papel do poder é declarado no catálogo, nunca deduzido do nome; a coleta credita o poder marcado como do Território                                                | —          | 02 §2       |
 
 ## 8. Modelo de dados
 
@@ -598,7 +599,7 @@ antes no documento 09.
 | `RF-01-18`              | 03 §1 (instância única)                            |
 | `RF-01-19`              | 03 §12 (LGPD e consentimentos)                     |
 | `RF-01-20` e `RF-01-21` | 02 §§3–5 e 11 §§2, 4–7                             |
-| `RF-01-62`              | 02 §2 (catálogo de poderes cadastrado por Admin)   |
+| `RF-01-62`, `RN-01-54`  | 02 §2 (catálogo de poderes, com o papel declarado) |
 | `RF-01-22`              | 11 §8.4 (contrato dos jogos)                       |
 | `RF-01-23`              | PRD-08                                             |
 | `RF-01-24`, `RF-01-60`  | PRD-07                                             |
