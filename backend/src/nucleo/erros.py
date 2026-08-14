@@ -200,6 +200,18 @@ class SerieDeColetaJaAberta(ErroDeAplicacao):
     mensagem = "Este Guerreiro(a) já tem uma série aberta para este desafio e local."
 
 
+class CredencialDeDispositivoInvalida(ErroDeAplicacao):
+    status_code = 401
+    codigo = "credencial_de_dispositivo_invalida"
+    mensagem = "Credencial de dispositivo ausente, inválida ou revogada."
+
+
+class CredencialDeDispositivoJaAtiva(ErroDeAplicacao):
+    status_code = 409
+    codigo = "credencial_de_dispositivo_ja_ativa"
+    mensagem = "Esta série já tem uma credencial de dispositivo ativa."
+
+
 class FreioPorOrigemAcionado(ErroDeAplicacao):
     """`RF-01-65`: leva o tempo de espera calculado pelo freio, que o
     manipulador de `principal.py` também expõe no cabeçalho `Retry-After`

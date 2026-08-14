@@ -329,21 +329,21 @@ a base da avaliação do Poder do Território e entram no conjunto de indicadore
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                     | Gravada em | Doc 09                                 |
-| --------------------------------------------------------------------------- | ---------- | -------------------------------------- |
-| Valor único por registro válido, igual para todo tipo de coleta             | 11 §5      | Já decididos                           |
-| Sem teto de pontos por período                                              | 11 §5      | Já decididos                           |
-| Quantos registros do período pontuam é declarado no desafio                 | 11 §5      | Já decididos                           |
-| Dois períodos de cadência seguidos sem registro interrompem a série         | 02 §1      | Já decididos                           |
-| Registro nasce válido; Mestre audita por amostragem e pode invalidar        | 02 §1      | Já decididos                           |
-| Série individual, uma por Guerreiro(a)                                      | 02 §1      | Já decididos                           |
-| Origem do registro: manual, por voz ou sensor construído pelo Guerreiro(a)  | 02 §1      | Já decididos                           |
-| Saída pública agregada até o bairro (revisto no PRD-03)                     | 02 §1      | Já decididos                           |
-| Sensor entra por credencial de dispositivo, emitida por Admin ou Mestre     | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
-| A credencial é o registro do aparelho; o PRD-08 não tem entidade própria    | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
-| Piso de três coletores distintos no recorte publicado ou entregue           | 02 §1      | Agregação mínima dentro do bairro      |
-| Catálogo de tipos de coleta cadastrado por Admin; Mestre escolhe, não cria  | 02 §1      | Já decididos                           |
-| Granularidade exigida livre no desafio; teto conferido na abertura da série | 02 §1      | Já decididos                           |
+| Decisão                                                                                       | Gravada em | Doc 09                                 |
+| --------------------------------------------------------------------------------------------- | ---------- | -------------------------------------- |
+| Valor único por registro válido, igual para todo tipo de coleta                               | 11 §5      | Já decididos                           |
+| Sem teto de pontos por período                                                                | 11 §5      | Já decididos                           |
+| Quantos registros do período pontuam é declarado no desafio                                   | 11 §5      | Já decididos                           |
+| Dois períodos de cadência seguidos sem registro interrompem a série                           | 02 §1      | Já decididos                           |
+| Registro nasce válido; Mestre audita por amostragem e pode invalidar                          | 02 §1      | Já decididos                           |
+| Série individual, uma por Guerreiro(a)                                                        | 02 §1      | Já decididos                           |
+| Origem do registro: manual, por voz ou sensor construído pelo Guerreiro(a)                    | 02 §1      | Já decididos                           |
+| Saída pública agregada até o bairro (revisto no PRD-03)                                       | 02 §1      | Já decididos                           |
+| Sensor entra por credencial de dispositivo, emitida por Admin ou pelo Mestre autor do desafio | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
+| A credencial é o registro do aparelho; o PRD-08 não tem entidade própria                      | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
+| Piso de três coletores distintos no recorte publicado ou entregue                             | 02 §1      | Agregação mínima dentro do bairro      |
+| Catálogo de tipos de coleta cadastrado por Admin; Mestre escolhe, não cria                    | 02 §1      | Já decididos                           |
+| Granularidade exigida livre no desafio; teto conferido na abertura da série                   | 02 §1      | Já decididos                           |
 
 ## 14. Pendências que permanecem
 

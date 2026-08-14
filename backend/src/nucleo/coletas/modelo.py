@@ -167,8 +167,8 @@ class SerieDeColeta(Base):
 class OrigemDoRegistro(enum.StrEnum):
     manual = "manual"
     voz = "voz"
-    # `sensor` exige a credencial de dispositivo de `RF-01-67`/`RF-01-68`,
-    # entrega posterior — a rota de sessão a recusa nesta fatia (`RN-08-23`).
+    # `sensor` exige a credencial de dispositivo (`RF-01-67`, `RN-08-23`) —
+    # a rota de sessão de persona continua recusando esta origem com 422.
     sensor = "sensor"
 
 
@@ -240,6 +240,11 @@ class RegistroDeColeta(Base, ComAutoria, ComMomentoDoFato):
         Uuid, ForeignKey("comunidade_virtual.id"), nullable=False
     )
     pontos_creditados: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    # O atributo `dispositivo` do PRD-08 §8: só preenchido na origem `sensor`
+    # (`RF-08-14`) — manual e voz nunca gravam credencial.
+    credencial_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("credencial.id"), nullable=True
+    )
 
     __table_args__ = ({"postgresql_partition_by": "RANGE (momento_do_fato)"},)
 

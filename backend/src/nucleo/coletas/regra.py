@@ -5,13 +5,20 @@ from zoneinfo import ZoneInfo
 from sqlalchemy.orm import Session
 
 from ..armazenamento.porta import PortaDeArmazenamento
+from ..chaves.segredo import calcular_resumo, gerar_segredo
 from ..comunidades.modelo import ComunidadeVirtual
 from ..comunidades.regra import resolver_vinculo_na_data
-from ..erros import ErroDeValidacao, PermissaoNegada, SerieDeColetaJaAberta
+from ..erros import (
+    CredencialDeDispositivoJaAtiva,
+    ErroDeValidacao,
+    NaoEncontrado,
+    PermissaoNegada,
+    SerieDeColetaJaAberta,
+)
 from ..locais.modelo import ORDEM_DOS_NIVEIS, Local, NivelDoLocal
 from ..ods.modelo import EtiquetaOds
 from ..ods.regra import resolver_etiquetas_da_missao
-from ..personas.modelo import Papel, Persona
+from ..personas.modelo import Credencial, Papel, Persona, TipoDeCredencial
 from ..pontuacao.regra import creditar_pontuacao_da_coleta
 from ..tempo import agora
 from ..trilhas.modelo import Missao, Trilha
@@ -348,6 +355,101 @@ def abrir_serie_de_coleta(
     return serie
 
 
+def _trilha_do_desafio_da_serie(sessao: Session, serie: SerieDeColeta) -> Trilha:
+    """Mesmo caminho de `resolver_etiquetas_do_desafio` e
+    `criar_desafio_de_coleta`: a trilha nunca é declarada, é alcançada a
+    partir da série (design — decisões)."""
+    desafio = sessao.get(DesafioDeColeta, serie.desafio_de_coleta_id)
+    missao = sessao.get(Missao, desafio.missao_id)
+    return sessao.get(Trilha, missao.trilha_id)
+
+
+def emitir_credencial_de_dispositivo(
+    sessao: Session,
+    *,
+    operador: Persona,
+    serie: SerieDeColeta | None,
+    identificador: str | None,
+    trilha_id: uuid.UUID | None,
+) -> tuple[Credencial, str]:
+    """Emitida por Admin ou pelo Mestre autor do desafio da série
+    (`RF-01-67`, decisão do fundador em `proposal.md`). Guarda só o resumo
+    do segredo, reaproveitando os utilitários da chave de aplicação, e
+    devolve o segredo em claro uma única vez (`RN-01-35`). Entre as ativas,
+    no máximo uma por série — a segunda tentativa é recusada pelo índice
+    único parcial, e aqui só antecipamos a recusa com uma mensagem clara
+    (`RN-01-53`).
+    """
+    if serie is None:
+        raise ErroDeValidacao(
+            mensagem="Credencial de dispositivo exige uma série de coleta.",
+            campo="serie_de_coleta_id",
+        )
+    if not identificador or not identificador.strip():
+        raise ErroDeValidacao(
+            mensagem="Credencial de dispositivo exige o identificador do aparelho.",
+            campo="identificador",
+        )
+    if trilha_id is None:
+        raise ErroDeValidacao(
+            mensagem="Credencial de dispositivo exige a trilha em que o aparelho foi construído.",
+            campo="trilha_id",
+        )
+
+    trilha = _trilha_do_desafio_da_serie(sessao, serie)
+    conferir_posse_da_trilha(trilha, operador)
+
+    ja_ativa = (
+        sessao.query(Credencial)
+        .filter_by(serie_de_coleta_id=serie.id, tipo=TipoDeCredencial.dispositivo, ativa=True)
+        .first()
+    )
+    if ja_ativa is not None:
+        raise CredencialDeDispositivoJaAtiva()
+
+    segredo = gerar_segredo()
+    credencial = Credencial(
+        persona_id=serie.coletor_id,
+        tipo=TipoDeCredencial.dispositivo,
+        identificador=identificador,
+        segredo=calcular_resumo(segredo),
+        serie_de_coleta_id=serie.id,
+        trilha_id=trilha_id,
+        criada_por=operador.id,
+        ativa=True,
+    )
+    sessao.add(credencial)
+    sessao.flush()
+    return credencial, segredo
+
+
+def revogar_credencial_de_dispositivo(
+    sessao: Session,
+    credencial: Credencial | None,
+    *,
+    operador: Persona,
+    motivo: str | None,
+) -> Credencial:
+    """Admin ou o Mestre autor do desafio revoga a qualquer tempo, com
+    motivo e autoria (`RF-01-68`). Não desfaz registro algum: a credencial
+    só autentica, o registro é somente inserção (`RN-08-10`)."""
+    if credencial is None or credencial.tipo != TipoDeCredencial.dispositivo:
+        raise NaoEncontrado(mensagem="Credencial de dispositivo não encontrada.")
+    if not motivo or not motivo.strip():
+        raise ErroDeValidacao(mensagem="A revogação exige o motivo.", campo="motivo")
+
+    serie = sessao.get(SerieDeColeta, credencial.serie_de_coleta_id)
+    trilha = _trilha_do_desafio_da_serie(sessao, serie)
+    conferir_posse_da_trilha(trilha, operador)
+
+    credencial.ativa = False
+    credencial.revogada_por = str(operador.id)
+    credencial.motivo_da_revogacao = motivo
+    credencial.revogada_em = agora()
+    sessao.flush()
+    return credencial
+
+
 def gravar_registro_de_coleta(
     sessao: Session,
     *,
@@ -355,6 +457,7 @@ def gravar_registro_de_coleta(
     serie: SerieDeColeta | None,
     momento_do_fato: datetime | None,
     origem: str | None,
+    credencial_de_dispositivo_id: uuid.UUID | None = None,
     valor: float | None = None,
     unidade: str | None = None,
     midia_conteudo: bytes | None = None,
@@ -365,6 +468,11 @@ def gravar_registro_de_coleta(
     (`RF-08-09`) e atualiza a data da última medição válida da série
     (`RF-08-07`). Somente inserção: não há caminho de alteração nem de
     exclusão (`RN-08-10`, `RN-08-11`).
+
+    `credencial_de_dispositivo_id` vem só quando a chamada se autenticou
+    por credencial de dispositivo (`RF-08-14`); a autoria continua sendo a
+    do coletor da série em qualquer uma das duas origens — o aparelho nunca
+    é autor (`RN-08-11`).
     """
     if operador.papel != Papel.guerreiro:
         raise PermissaoNegada(mensagem="Só o Guerreiro(a) registra medição de coleta.")
@@ -401,10 +509,14 @@ def gravar_registro_de_coleta(
         raise ErroDeValidacao(
             mensagem="Origem fora dos valores previstos.", campo="origem"
         ) from exc
-    if origem_valida == OrigemDoRegistro.sensor:
+    if credencial_de_dispositivo_id is None and origem_valida == OrigemDoRegistro.sensor:
         raise ErroDeValidacao(
-            mensagem="A origem 'sensor' exige credencial de dispositivo, ainda não "
-            "disponível nesta rota.",
+            mensagem="A origem 'sensor' exige credencial de dispositivo.",
+            campo="origem",
+        )
+    if credencial_de_dispositivo_id is not None and origem_valida != OrigemDoRegistro.sensor:
+        raise ErroDeValidacao(
+            mensagem="A credencial de dispositivo só grava origem 'sensor'.",
             campo="origem",
         )
 
@@ -459,6 +571,7 @@ def gravar_registro_de_coleta(
         a_conferir=a_conferir,
         comunidade_virtual_id=vinculo.comunidade_virtual_id,
         pontos_creditados=0,
+        credencial_id=credencial_de_dispositivo_id,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
         momento_do_fato=momento_do_fato,
