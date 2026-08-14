@@ -202,7 +202,7 @@ Trilha            1 ──── N DesafioDeColeta
 DesafioDeColeta   1 ──── N SerieDeColeta    (uma por Guerreiro(a) que aceita o desafio)
 SerieDeColeta     1 ──── N RegistroDeColeta
 RegistroDeColeta  0..1 ── 1 Invalidacao
-RegistroDeColeta  0..1 ── 1 Dispositivo     (quando a origem é sensor)
+RegistroDeColeta  0..1 ── 1 Credencial      (de dispositivo, quando a origem é sensor)
 TipoDeColeta      1 ──── N DesafioDeColeta
 ```
 
@@ -217,7 +217,9 @@ TipoDeColeta      1 ──── N DesafioDeColeta
 | `RegistroDeColeta`   | série, valor, unidade, data e hora da medição, data e hora do registro, origem, dispositivo, mídia, situação, pontos creditados                               |
 | `SolicitacaoDeLocal` | Guerreiro(a) solicitante, comunidade, desafio de origem, nível pretendido, rótulo, justificativa, situação, avaliador (Admin ou Mestre), motivo da recusa     |
 | `Invalidacao`        | registro, mestre, motivo, data e hora                                                                                                                         |
-| `Dispositivo`        | Guerreiro(a) dono, identificação, trilha em que foi construído, situação                                                                                      |
+
+O aparelho não é entidade deste PRD: a credencial de dispositivo do PRD-01 é o registro dele, e
+o `RegistroDeColeta` de origem sensor aponta para ela.
 
 Imutabilidade: `RegistroDeColeta` é **somente inserção**. Valor, data da medição e coletor
 nunca mudam depois de gravados; a situação (válido, invalidado, em auditoria) é o único campo
@@ -249,7 +251,7 @@ todas elas, como define o PRD-01; escrita é autenticada.
 | POST   | `/series`                                     | Guerreiro(a)    | Abre série individual para um desafio e um local          |
 | GET    | `/series/minhas`                              | Guerreiro(a)    | Séries do Guerreiro(a), estado e pontos que rendem        |
 | POST   | `/series/{id}/registros`                      | Guerreiro(a)    | Grava medição; aceita lote da fila offline                |
-| POST   | `/series/{id}/registros`                      | Dispositivo     | Mesma rota, credencial de dispositivo — ver pendência §14 |
+| POST   | `/series/{id}/registros`                      | Dispositivo     | Mesma rota, autenticada por credencial de dispositivo     |
 | GET    | `/auditoria/amostra`                          | Mestre          | Amostra de registros a auditar, priorizando fora de faixa |
 | POST   | `/registros/{id}/invalidacao`                 | Mestre          | Invalida registro com motivo e estorna os pontos          |
 
@@ -335,6 +337,7 @@ a base da avaliação do Poder do Território e entram no conjunto de indicadore
 | Origem do registro: manual, por voz ou sensor construído pelo Guerreiro(a) | 02 §1      | Já decididos                           |
 | Saída pública agregada até o bairro (revisto no PRD-03)                    | 02 §1      | Já decididos                           |
 | Sensor entra por credencial de dispositivo, emitida por Admin ou Mestre    | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
+| A credencial é o registro do aparelho; o PRD-08 não tem entidade própria   | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
 | Piso de três coletores distintos no recorte publicado ou entregue          | 02 §1      | Agregação mínima dentro do bairro      |
 
 ## 14. Pendências que permanecem
