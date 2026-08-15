@@ -1,9 +1,12 @@
 import uuid
 from datetime import datetime
 
+from pydantic import BaseModel
 from sqlalchemy.orm import Query, Session
 
+from ..coletas.modelo import DesafioDeColeta, SerieDeColeta, TipoDeColeta
 from ..erros import ErroDeValidacao, PermissaoNegada
+from ..locais.modelo import Local, NivelDoLocal
 from ..personas.modelo import Papel, Persona
 from .modelo import ComunidadeVirtual, VinculoJogador
 
@@ -106,4 +109,65 @@ def filtrar_personas_por_comunidade(consulta: Query, comunidade_id: uuid.UUID) -
     leitura que a coluna deixou (`RN-01-05`, design — Decisions)."""
     return unir_vinculo_vigente(consulta).filter(
         VinculoJogador.comunidade_virtual_id == comunidade_id
+    )
+
+
+class LocalPublicoSaida(BaseModel):
+    id: uuid.UUID
+    nivel: str
+    rotulo: str
+    local_pai_id: uuid.UUID | None
+
+
+class TipoDeColetaPublicoSaida(BaseModel):
+    id: uuid.UUID
+    nome: str
+
+
+class ComunidadePublicaSaida(BaseModel):
+    id: uuid.UUID
+    nome: str
+    locais: list[LocalPublicoSaida]
+    tipos_de_coleta: list[TipoDeColetaPublicoSaida]
+
+
+def consultar_comunidade_publica(
+    sessao: Session, *, comunidade: ComunidadeVirtual
+) -> ComunidadePublicaSaida:
+    """Leitura pública da comunidade: os locais até o bairro — nunca de rua
+    ou abaixo — e os tipos de coleta sobre os quais há série aberta nela,
+    nunca os do catálogo sem série ali (`RF-08-16`, `RN-08-13`, PRD-08 §9).
+    """
+    locais = (
+        sessao.query(Local)
+        .filter(
+            Local.comunidade_virtual_id == comunidade.id,
+            Local.nivel.in_([NivelDoLocal.comunidade, NivelDoLocal.bairro]),
+        )
+        .order_by(Local.criado_em, Local.id)
+        .all()
+    )
+    tipos = (
+        sessao.query(TipoDeColeta)
+        .join(DesafioDeColeta, DesafioDeColeta.tipo_de_coleta_id == TipoDeColeta.id)
+        .join(SerieDeColeta, SerieDeColeta.desafio_de_coleta_id == DesafioDeColeta.id)
+        .join(Local, Local.id == SerieDeColeta.local_id)
+        .filter(Local.comunidade_virtual_id == comunidade.id)
+        .distinct()
+        .order_by(TipoDeColeta.nome)
+        .all()
+    )
+    return ComunidadePublicaSaida(
+        id=comunidade.id,
+        nome=comunidade.nome,
+        locais=[
+            LocalPublicoSaida(
+                id=local.id,
+                nivel=local.nivel.value,
+                rotulo=local.rotulo,
+                local_pai_id=local.local_pai_id,
+            )
+            for local in locais
+        ],
+        tipos_de_coleta=[TipoDeColetaPublicoSaida(id=tipo.id, nome=tipo.nome) for tipo in tipos],
     )

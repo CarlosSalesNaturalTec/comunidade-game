@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel
-from sqlalchemy import func, tuple_
+from sqlalchemy import case, func, tuple_
 from sqlalchemy.orm import Session
 
 from ..armazenamento.porta import PortaDeArmazenamento
@@ -18,6 +18,7 @@ from ..erros import (
     SerieDeColetaJaAberta,
 )
 from ..locais.modelo import ORDEM_DOS_NIVEIS, Local, NivelDoLocal
+from ..locais.regra import resolver_locais_publicados
 from ..ods.modelo import EtiquetaOds
 from ..ods.regra import resolver_etiquetas_da_missao
 from ..paginacao import PaginaDeResultado, codificar_cursor, decodificar_cursor
@@ -714,4 +715,235 @@ def consultar_series_do_guerreiro(
                 pontos=pontos,
             )
         )
+    return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)
+
+
+class RecortePublicadoSaida(BaseModel):
+    tipo_de_coleta_id: uuid.UUID
+    tipo_de_coleta_nome: str
+    local_publicado_id: uuid.UUID
+    local_publicado_nivel: str
+    local_publicado_rotulo: str
+
+
+class PontoDaSeriePublicaSaida(BaseModel):
+    momento_da_medicao: datetime
+    valor: float | None
+    recorte: RecortePublicadoSaida
+
+
+def _consulta_de_registros_publicaveis(
+    sessao: Session,
+    *,
+    comunidade: ComunidadeVirtual,
+    periodo_inicio: datetime | None,
+    periodo_fim: datetime | None,
+    piso: int,
+):
+    """Os três passos do design — Decisions: rotula cada registro válido da
+    comunidade e do período com (tipo de coleta, local publicado), sobe ao
+    nível da comunidade o recorte que não alcança o piso e suprime o que
+    ainda não o alcança no topo (`RF-08-16`, `RF-08-28`, `RN-08-24`,
+    `RN-08-09`, `RN-08-13`)."""
+    mapa_de_local = resolver_locais_publicados(sessao, comunidade_id=comunidade.id)
+
+    rotulados = (
+        sessao.query(
+            RegistroDeColeta.id.label("registro_id"),
+            RegistroDeColeta.momento_do_fato.label("momento_do_fato"),
+            RegistroDeColeta.valor.label("valor"),
+            SerieDeColeta.coletor_id.label("coletor_id"),
+            DesafioDeColeta.tipo_de_coleta_id.label("tipo_de_coleta_id"),
+            mapa_de_local.c.local_publicado_id.label("local_publicado_id"),
+        )
+        .select_from(RegistroDeColeta)
+        .join(SerieDeColeta, SerieDeColeta.id == RegistroDeColeta.serie_de_coleta_id)
+        .join(DesafioDeColeta, DesafioDeColeta.id == SerieDeColeta.desafio_de_coleta_id)
+        .join(mapa_de_local, mapa_de_local.c.local_id == SerieDeColeta.local_id)
+        .filter(
+            RegistroDeColeta.comunidade_virtual_id == comunidade.id,
+            RegistroDeColeta.situacao == SituacaoDoRegistro.valida,
+        )
+    )
+    if periodo_inicio is not None:
+        rotulados = rotulados.filter(RegistroDeColeta.momento_do_fato >= periodo_inicio)
+    if periodo_fim is not None:
+        rotulados = rotulados.filter(RegistroDeColeta.momento_do_fato <= periodo_fim)
+    rotulados_sub = rotulados.subquery()
+
+    # Passo 2: conta coletores distintos por recorte e sobe ao nível da
+    # comunidade o que não alcança o piso — sem deixar rastro do recorte
+    # suprimido, porque o rótulo do bairro simplesmente deixa de existir na
+    # linha (design — Decisions).
+    contagem_por_recorte = (
+        sessao.query(
+            rotulados_sub.c.tipo_de_coleta_id,
+            rotulados_sub.c.local_publicado_id,
+            func.count(func.distinct(rotulados_sub.c.coletor_id)).label("coletores_distintos"),
+        )
+        .group_by(rotulados_sub.c.tipo_de_coleta_id, rotulados_sub.c.local_publicado_id)
+        .subquery()
+    )
+    # O alvo da subida é o `Local` de nível comunidade, nunca a
+    # `ComunidadeVirtual` — é ele que `resolver_locais_publicados` já usa
+    # como local publicado de quem está direto nela, e é com ele que a
+    # contagem do passo 3 precisa casar (design — Decisions).
+    local_da_comunidade_id = (
+        sessao.query(Local.id)
+        .filter(
+            Local.comunidade_virtual_id == comunidade.id, Local.nivel == NivelDoLocal.comunidade
+        )
+        .order_by(Local.criado_em)
+        .limit(1)
+        .scalar_subquery()
+    )
+    local_promovido = case(
+        (contagem_por_recorte.c.coletores_distintos < piso, local_da_comunidade_id),
+        else_=rotulados_sub.c.local_publicado_id,
+    )
+    promovidos = (
+        sessao.query(
+            rotulados_sub.c.registro_id,
+            rotulados_sub.c.momento_do_fato,
+            rotulados_sub.c.valor,
+            rotulados_sub.c.coletor_id,
+            rotulados_sub.c.tipo_de_coleta_id,
+            local_promovido.label("local_final_id"),
+        )
+        .select_from(rotulados_sub)
+        .join(
+            contagem_por_recorte,
+            (contagem_por_recorte.c.tipo_de_coleta_id == rotulados_sub.c.tipo_de_coleta_id)
+            & (contagem_por_recorte.c.local_publicado_id == rotulados_sub.c.local_publicado_id),
+        )
+        .subquery()
+    )
+
+    # Passo 3: reapura a contagem no nível final — a união dos coletores
+    # distintos que ali chegaram, nunca a soma das contagens de origem — e
+    # suprime o recorte que ainda não alcança o piso, inclusive no topo.
+    contagem_final = (
+        sessao.query(
+            promovidos.c.tipo_de_coleta_id,
+            promovidos.c.local_final_id,
+            func.count(func.distinct(promovidos.c.coletor_id)).label("coletores_distintos"),
+        )
+        .group_by(promovidos.c.tipo_de_coleta_id, promovidos.c.local_final_id)
+        .subquery()
+    )
+
+    return (
+        sessao.query(
+            promovidos.c.registro_id,
+            promovidos.c.momento_do_fato,
+            promovidos.c.valor,
+            promovidos.c.tipo_de_coleta_id,
+            promovidos.c.local_final_id,
+        )
+        .select_from(promovidos)
+        .join(
+            contagem_final,
+            (contagem_final.c.tipo_de_coleta_id == promovidos.c.tipo_de_coleta_id)
+            & (contagem_final.c.local_final_id == promovidos.c.local_final_id),
+        )
+        .filter(contagem_final.c.coletores_distintos >= piso)
+    )
+
+
+def paginar_serie_publica(
+    sessao: Session,
+    *,
+    comunidade: ComunidadeVirtual,
+    piso_de_coletores: int,
+    cursor: str | None,
+    tamanho: int,
+    periodo_inicio: datetime | None = None,
+    periodo_fim: datetime | None = None,
+) -> PaginaDeResultado[PontoDaSeriePublicaSaida]:
+    """A série pública da comunidade: agregada por tipo de coleta e local,
+    parando no bairro, sem coletor e sem mídia — o item paginado é o ponto
+    da série, não o recorte (`RF-08-16`, `RN-08-13`, `RN-08-12`, `RN-08-16`,
+    `RF-08-21`, `RF-08-28`, `RN-08-24`, `RF-01-28`, design — Decisions).
+    Ordenação estável por (tipo, local publicado, momento da medição, id do
+    registro), a mesma quádrupla do cursor opaco.
+    """
+    publicaveis = _consulta_de_registros_publicaveis(
+        sessao,
+        comunidade=comunidade,
+        periodo_inicio=periodo_inicio,
+        periodo_fim=periodo_fim,
+        piso=piso_de_coletores,
+    ).subquery()
+
+    consulta = (
+        sessao.query(
+            publicaveis.c.registro_id,
+            publicaveis.c.momento_do_fato,
+            publicaveis.c.valor,
+            TipoDeColeta.id.label("tipo_de_coleta_id"),
+            TipoDeColeta.nome.label("tipo_de_coleta_nome"),
+            Local.id.label("local_publicado_id"),
+            Local.nivel.label("local_publicado_nivel"),
+            Local.rotulo.label("local_publicado_rotulo"),
+        )
+        .select_from(publicaveis)
+        .join(TipoDeColeta, TipoDeColeta.id == publicaveis.c.tipo_de_coleta_id)
+        .join(Local, Local.id == publicaveis.c.local_final_id)
+    )
+
+    if cursor:
+        posicao = decodificar_cursor(cursor)
+        try:
+            tipo_cursor = uuid.UUID(posicao["tipo_de_coleta_id"])
+            local_cursor = uuid.UUID(posicao["local_publicado_id"])
+            momento_cursor = datetime.fromisoformat(posicao["momento_do_fato"])
+            id_cursor = uuid.UUID(posicao["registro_id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(
+            tuple_(
+                publicaveis.c.tipo_de_coleta_id,
+                publicaveis.c.local_final_id,
+                publicaveis.c.momento_do_fato,
+                publicaveis.c.registro_id,
+            )
+            > (tipo_cursor, local_cursor, momento_cursor, id_cursor)
+        )
+
+    consulta = consulta.order_by(
+        publicaveis.c.tipo_de_coleta_id,
+        publicaveis.c.local_final_id,
+        publicaveis.c.momento_do_fato,
+        publicaveis.c.registro_id,
+    ).limit(tamanho + 1)
+
+    linhas = consulta.all()
+
+    proximo_cursor = None
+    if len(linhas) > tamanho:
+        linhas = linhas[:tamanho]
+        ultima = linhas[-1]
+        proximo_cursor = codificar_cursor(
+            {
+                "tipo_de_coleta_id": str(ultima.tipo_de_coleta_id),
+                "local_publicado_id": str(ultima.local_publicado_id),
+                "momento_do_fato": ultima.momento_do_fato.isoformat(),
+                "registro_id": str(ultima.registro_id),
+            }
+        )
+
+    itens = [
+        PontoDaSeriePublicaSaida(
+            momento_da_medicao=linha.momento_do_fato,
+            valor=linha.valor,
+            recorte=RecortePublicadoSaida(
+                tipo_de_coleta_id=linha.tipo_de_coleta_id,
+                tipo_de_coleta_nome=linha.tipo_de_coleta_nome,
+                local_publicado_id=linha.local_publicado_id,
+                local_publicado_nivel=linha.local_publicado_nivel.value,
+                local_publicado_rotulo=linha.local_publicado_rotulo,
+            ),
+        )
+        for linha in linhas
+    ]
     return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)

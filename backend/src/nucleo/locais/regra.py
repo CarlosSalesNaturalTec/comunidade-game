@@ -2,8 +2,8 @@ import uuid
 from datetime import datetime
 
 from pydantic import BaseModel
-from sqlalchemy import tuple_
-from sqlalchemy.orm import Session
+from sqlalchemy import Subquery, tuple_
+from sqlalchemy.orm import Session, aliased
 
 from ..coletas.modelo import DesafioDeColeta
 from ..comunidades.regra import resolver_vinculo_na_data
@@ -173,6 +173,55 @@ def paginar_locais(
         for local in locais
     ]
     return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)
+
+
+def resolver_locais_publicados(sessao: Session, *, comunidade_id: uuid.UUID) -> Subquery:
+    """Subconsulta que mapeia cada local da comunidade ao seu **local
+    publicado** — o ancestral de nível bairro, ou a própria comunidade
+    quando o local já está nela (`RN-08-13`, design — Decisions).
+
+    CTE recursiva sobre `local_pai_id`, podada pela comunidade: a recursão
+    para assim que alcança bairro ou comunidade, de modo que cada local
+    produz exatamente uma linha de saída — nunca duas, nunca nenhuma
+    (design — Decisions, Riscos).
+    """
+    ancestrais = (
+        sessao.query(
+            Local.id.label("local_id"),
+            Local.id.label("ancestral_id"),
+            Local.nivel.label("ancestral_nivel"),
+            Local.local_pai_id.label("proximo_pai_id"),
+        )
+        .filter(Local.comunidade_virtual_id == comunidade_id)
+        .cte(name="ancestrais_do_local", recursive=True)
+    )
+
+    proximo = aliased(Local)
+    passo_recursivo = (
+        sessao.query(
+            ancestrais.c.local_id,
+            proximo.id.label("ancestral_id"),
+            proximo.nivel.label("ancestral_nivel"),
+            proximo.local_pai_id.label("proximo_pai_id"),
+        )
+        .join(proximo, proximo.id == ancestrais.c.proximo_pai_id)
+        .filter(
+            ancestrais.c.ancestral_nivel != NivelDoLocal.bairro.value,
+            ancestrais.c.ancestral_nivel != NivelDoLocal.comunidade.value,
+        )
+    )
+    cte = ancestrais.union_all(passo_recursivo)
+
+    return (
+        sessao.query(
+            cte.c.local_id.label("local_id"),
+            cte.c.ancestral_id.label("local_publicado_id"),
+        )
+        .filter(
+            cte.c.ancestral_nivel.in_([NivelDoLocal.bairro.value, NivelDoLocal.comunidade.value])
+        )
+        .subquery()
+    )
 
 
 def _trilha_do_desafio(sessao: Session, desafio: DesafioDeColeta) -> Trilha:
