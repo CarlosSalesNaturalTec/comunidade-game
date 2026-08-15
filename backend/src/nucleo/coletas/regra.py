@@ -2,7 +2,8 @@ import uuid
 from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import func
+from pydantic import BaseModel
+from sqlalchemy import func, tuple_
 from sqlalchemy.orm import Session
 
 from ..armazenamento.porta import PortaDeArmazenamento
@@ -19,6 +20,7 @@ from ..erros import (
 from ..locais.modelo import ORDEM_DOS_NIVEIS, Local, NivelDoLocal
 from ..ods.modelo import EtiquetaOds
 from ..ods.regra import resolver_etiquetas_da_missao
+from ..paginacao import PaginaDeResultado, codificar_cursor, decodificar_cursor
 from ..personas.modelo import Credencial, Papel, Persona, TipoDeCredencial
 from ..pontuacao.regra import creditar_pontuacao_da_coleta
 from ..tempo import agora
@@ -645,22 +647,55 @@ def gravar_registro_de_coleta(
     return registro
 
 
+class SerieDoGuerreiroSaida(BaseModel):
+    id: uuid.UUID
+    desafio_de_coleta_id: uuid.UUID
+    local_id: uuid.UUID
+    cadencia: str
+    estado: str
+    pontos: int
+
+
 def consultar_series_do_guerreiro(
-    sessao: Session, *, operador: Persona
-) -> list[tuple[SerieDeColeta, int]]:
-    """As séries do Guerreiro(a) da sessão, cada uma com o estado apurado
-    no momento da consulta e a soma dos pontos creditados pelos registros
-    válidos dela (`RF-08-17`, `RN-08-04`, PRD-08 §9). Nunca alcança série
+    sessao: Session, *, operador: Persona, cursor: str | None, tamanho: int
+) -> PaginaDeResultado[SerieDoGuerreiroSaida]:
+    """As séries do Guerreiro(a) da sessão, paginadas por cursor no par
+    `(aberta_em, id)` — a mesma régua de `paginar_locais` (`RF-01-28`).
+    Estado e pontos são apurados só das séries que saem na página, para o
+    custo ficar proporcional ao tamanho dela, e não ao total de séries do
+    Guerreiro(a) (`RF-08-17`, `RN-08-04`, PRD-08 §9). Nunca alcança série
     de outro coletor, e qualquer outro papel recebe 403.
     """
     if operador.papel != Papel.guerreiro:
         raise PermissaoNegada(mensagem="Só o Guerreiro(a) consulta as suas séries.")
 
-    series = sessao.query(SerieDeColeta).filter_by(coletor_id=operador.id).all()
+    consulta = sessao.query(SerieDeColeta).filter_by(coletor_id=operador.id)
 
-    resultado = []
+    if cursor:
+        posicao = decodificar_cursor(cursor)
+        try:
+            aberta_em_cursor = datetime.fromisoformat(posicao["aberta_em"])
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(
+            tuple_(SerieDeColeta.aberta_em, SerieDeColeta.id) > (aberta_em_cursor, id_cursor)
+        )
+
+    consulta = consulta.order_by(SerieDeColeta.aberta_em, SerieDeColeta.id).limit(tamanho + 1)
+    series = consulta.all()
+
+    proximo_cursor = None
+    if len(series) > tamanho:
+        series = series[:tamanho]
+        ultima = series[-1]
+        proximo_cursor = codificar_cursor(
+            {"aberta_em": ultima.aberta_em.isoformat(), "id": str(ultima.id)}
+        )
+
+    itens = []
     for serie in series:
-        apurar_estado_da_serie(sessao, serie)
+        estado = apurar_estado_da_serie(sessao, serie)
         pontos = (
             sessao.query(func.coalesce(func.sum(RegistroDeColeta.pontos_creditados), 0))
             .filter(
@@ -669,5 +704,14 @@ def consultar_series_do_guerreiro(
             )
             .scalar()
         )
-        resultado.append((serie, pontos))
-    return resultado
+        itens.append(
+            SerieDoGuerreiroSaida(
+                id=serie.id,
+                desafio_de_coleta_id=serie.desafio_de_coleta_id,
+                local_id=serie.local_id,
+                cadencia=serie.cadencia.value,
+                estado=estado.value,
+                pontos=pontos,
+            )
+        )
+    return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)

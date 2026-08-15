@@ -17,12 +17,14 @@ from ..autenticacao import (
 )
 from ..banco import obter_sessao
 from ..erros import PermissaoNegada
+from ..paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from ..permissoes import Operacao, conferir_permissao, exigir_permissao
 from ..personas.modelo import Credencial, Persona
 from ..tempo import DataHoraComFuso
 from ..trilhas.modelo import Missao
 from .modelo import DesafioDeColeta, SerieDeColeta
 from .regra import (
+    SerieDoGuerreiroSaida,
     abrir_serie_de_coleta,
     cadastrar_tipo_de_coleta,
     consultar_series_do_guerreiro,
@@ -200,37 +202,23 @@ def abrir_serie_de_coleta_rota(
     )
 
 
-class SerieDoGuerreiroSaida(BaseModel):
-    id: uuid.UUID
-    desafio_de_coleta_id: uuid.UUID
-    local_id: uuid.UUID
-    cadencia: str
-    estado: str
-    pontos: int
-
-
-@roteador.get("/series-de-coleta/minhas")
+@roteador.get("/series-de-coleta/minhas", response_model=PaginaDeResultado[SerieDoGuerreiroSaida])
 def consultar_series_do_guerreiro_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
-) -> list[SerieDoGuerreiroSaida]:
+) -> PaginaDeResultado[SerieDoGuerreiroSaida]:
     """Restrita ao Guerreiro(a) — a recusa de qualquer outro papel é 403,
     devolvida por `consultar_series_do_guerreiro` (`RF-08-17`,
-    `RN-08-04`)."""
+    `RN-08-04`). Paginada como toda listagem do núcleo, sem exigir o
+    filtro de comunidade: a sessão já recorta mais estreito do que ele
+    (`RF-01-28`, `RF-01-18`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
-    resultado = consultar_series_do_guerreiro(sessao_bd, operador=operador)
+    pagina = consultar_series_do_guerreiro(
+        sessao_bd, operador=operador, cursor=parametros.cursor, tamanho=parametros.tamanho
+    )
     sessao_bd.commit()
-    return [
-        SerieDoGuerreiroSaida(
-            id=serie.id,
-            desafio_de_coleta_id=serie.desafio_de_coleta_id,
-            local_id=serie.local_id,
-            cadencia=serie.cadencia.value,
-            estado=serie.estado.value,
-            pontos=pontos,
-        )
-        for serie, pontos in resultado
-    ]
+    return pagina
 
 
 class EmitirCredencialDeDispositivoEntrada(BaseModel):
