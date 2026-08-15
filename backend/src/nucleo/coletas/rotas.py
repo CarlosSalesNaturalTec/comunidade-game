@@ -25,6 +25,7 @@ from .modelo import DesafioDeColeta, SerieDeColeta
 from .regra import (
     abrir_serie_de_coleta,
     cadastrar_tipo_de_coleta,
+    consultar_series_do_guerreiro,
     criar_desafio_de_coleta,
     emitir_credencial_de_dispositivo,
     gravar_registro_de_coleta,
@@ -197,6 +198,39 @@ def abrir_serie_de_coleta_rota(
         aberta_em=serie.aberta_em,
         ultima_medicao_valida_em=serie.ultima_medicao_valida_em,
     )
+
+
+class SerieDoGuerreiroSaida(BaseModel):
+    id: uuid.UUID
+    desafio_de_coleta_id: uuid.UUID
+    local_id: uuid.UUID
+    cadencia: str
+    estado: str
+    pontos: int
+
+
+@roteador.get("/series-de-coleta/minhas")
+def consultar_series_do_guerreiro_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[SerieDoGuerreiroSaida]:
+    """Restrita ao Guerreiro(a) — a recusa de qualquer outro papel é 403,
+    devolvida por `consultar_series_do_guerreiro` (`RF-08-17`,
+    `RN-08-04`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    resultado = consultar_series_do_guerreiro(sessao_bd, operador=operador)
+    sessao_bd.commit()
+    return [
+        SerieDoGuerreiroSaida(
+            id=serie.id,
+            desafio_de_coleta_id=serie.desafio_de_coleta_id,
+            local_id=serie.local_id,
+            cadencia=serie.cadencia.value,
+            estado=serie.estado.value,
+            pontos=pontos,
+        )
+        for serie, pontos in resultado
+    ]
 
 
 class EmitirCredencialDeDispositivoEntrada(BaseModel):

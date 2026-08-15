@@ -1,18 +1,26 @@
 from datetime import UTC, datetime, timedelta
 
 import pytest
+from sqlalchemy import func
 
 from nucleo.armazenamento.disco import ArmazenamentoEmDisco
 from nucleo.coletas.modelo import (
+    EstadoDaSerie,
     FormaDeRegistro,
     OrigemDoRegistro,
     RegistroDeColeta,
 )
-from nucleo.coletas.regra import abrir_serie_de_coleta, gravar_registro_de_coleta
+from nucleo.coletas.regra import (
+    abrir_serie_de_coleta,
+    apurar_estado_da_serie,
+    gravar_registro_de_coleta,
+    periodo_de_cadencia,
+)
 from nucleo.comunidades.modelo import ComunidadeVirtual, VinculoJogador
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
 from nucleo.locais.modelo import ORDEM_DOS_NIVEIS, NivelDoLocal
 from nucleo.personas.modelo import Papel
+from nucleo.tempo import agora
 
 # Todos os cenários gravam medição em 2026, mas o vínculo do Guerreiro(a)
 # nasce no instante real do teste (server_default) — recuar o início do
@@ -21,6 +29,17 @@ from nucleo.personas.modelo import Papel
 INICIO_DO_VINCULO = datetime(2025, 1, 1, tzinfo=UTC)
 
 MOMENTO_DA_MEDICAO = datetime(2026, 8, 12, 14, 0, tzinfo=UTC)  # quarta-feira
+
+
+def _ancora_ha_n_periodos_completos(referencia: datetime, cadencia, n: int) -> datetime:
+    """Mesma régua de `test_serie_de_coleta.py`: um instante dentro do
+    período que está `n` períodos completos antes do período de
+    `referencia`, andando pelas bordas de `periodo_de_cadencia`."""
+    limite = referencia
+    for _ in range(n):
+        inicio_do_periodo, _ = periodo_de_cadencia(limite, cadencia)
+        limite = inicio_do_periodo - timedelta(microseconds=1)
+    return limite
 
 
 def _criar_comunidade(sessao) -> ComunidadeVirtual:
@@ -673,3 +692,214 @@ def test_coletor_permanece_no_registro_apos_saida_do_vinculo(
     sessao.refresh(registro)
 
     assert registro.autor_id == guerreiro.id
+
+
+def test_medicao_mais_antiga_enviada_depois_nao_move_o_campo_para_tras(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    """`ultima_medicao_valida_em` é a data da **última** medição válida, não
+    da última gravada (PRD-08 §8)."""
+    _, guerreiro, serie, _, _ = _preparar_serie(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    medicao_recente = MOMENTO_DA_MEDICAO
+    medicao_antiga = MOMENTO_DA_MEDICAO - timedelta(days=3)
+
+    gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=medicao_recente,
+        origem=OrigemDoRegistro.manual.value,
+        valor=25.0,
+        unidade="°C",
+    )
+    sessao.commit()
+    gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=medicao_antiga,
+        origem=OrigemDoRegistro.manual.value,
+        valor=20.0,
+        unidade="°C",
+    )
+    sessao.commit()
+    sessao.refresh(serie)
+
+    assert sessao.query(RegistroDeColeta).count() == 2
+    assert serie.ultima_medicao_valida_em == medicao_recente
+
+
+def test_medicao_mais_recente_avanca_o_campo(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, guerreiro, serie, _, _ = _preparar_serie(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+
+    gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=MOMENTO_DA_MEDICAO,
+        origem=OrigemDoRegistro.manual.value,
+        valor=25.0,
+        unidade="°C",
+    )
+    sessao.commit()
+    sessao.refresh(serie)
+
+    assert serie.ultima_medicao_valida_em == MOMENTO_DA_MEDICAO
+
+
+def test_registro_em_serie_interrompida_credita_e_retoma_para_ativa(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    """O crédito não consulta o estado: o registro que retoma credita como
+    qualquer outro, e a retomada é consequência de a âncora ter avançado
+    (`RF-08-11`, `RN-08-05`)."""
+    _, guerreiro, serie, _, _ = _preparar_serie(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    agora_do_teste = agora()
+    serie.aberta_em = _ancora_ha_n_periodos_completos(agora_do_teste, serie.cadencia, 2)
+    sessao.commit()
+    assert apurar_estado_da_serie(sessao, serie) == EstadoDaSerie.interrompida
+
+    registro = gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=agora_do_teste,
+        origem=OrigemDoRegistro.manual.value,
+        valor=25.0,
+        unidade="°C",
+    )
+    sessao.commit()
+
+    assert registro.pontos_creditados == 5
+    assert serie.estado == EstadoDaSerie.ativa
+
+
+def test_retomada_nao_recupera_pontos_dos_periodos_parados(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, guerreiro, serie, _, _ = _preparar_serie(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    agora_do_teste = agora()
+    serie.aberta_em = _ancora_ha_n_periodos_completos(agora_do_teste, serie.cadencia, 2)
+    sessao.commit()
+
+    gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=agora_do_teste,
+        origem=OrigemDoRegistro.manual.value,
+        valor=25.0,
+        unidade="°C",
+    )
+    sessao.commit()
+
+    total_creditado = (
+        sessao.query(func.sum(RegistroDeColeta.pontos_creditados))
+        .filter_by(serie_de_coleta_id=serie.id)
+        .scalar()
+    )
+    assert total_creditado == 5
+
+
+def test_interrupcao_nao_estorna_pontos_ja_creditados(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, guerreiro, serie, _, _ = _preparar_serie(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    agora_do_teste = agora()
+    registro = gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=agora_do_teste,
+        origem=OrigemDoRegistro.manual.value,
+        valor=25.0,
+        unidade="°C",
+    )
+    sessao.commit()
+    pontos_antes = registro.pontos_creditados
+    assert pontos_antes == 5
+
+    # Simula o decurso de dois períodos sem novo registro — a interrupção
+    # deriva na leitura seguinte, sem estornar o que já foi creditado.
+    serie.ultima_medicao_valida_em = _ancora_ha_n_periodos_completos(
+        agora_do_teste, serie.cadencia, 2
+    )
+    sessao.commit()
+    apurar_estado_da_serie(sessao, serie)
+    sessao.commit()
+    sessao.refresh(registro)
+
+    assert serie.estado == EstadoDaSerie.interrompida
+    assert registro.pontos_creditados == pontos_antes

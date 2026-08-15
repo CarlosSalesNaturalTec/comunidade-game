@@ -1,13 +1,21 @@
 from datetime import UTC, datetime, timedelta
+from unittest.mock import patch
 
 import pytest
 
-from nucleo.coletas.modelo import EstadoDaSerie, SerieDeColeta
-from nucleo.coletas.regra import abrir_serie_de_coleta
+from nucleo.coletas.modelo import Cadencia, EstadoDaSerie, SerieDeColeta
+from nucleo.coletas.regra import (
+    abrir_serie_de_coleta,
+    apurar_estado_da_serie,
+    consultar_series_do_guerreiro,
+    gravar_registro_de_coleta,
+    periodo_de_cadencia,
+)
 from nucleo.comunidades.modelo import ComunidadeVirtual
 from nucleo.erros import ErroDeValidacao, PermissaoNegada, SerieDeColetaJaAberta
 from nucleo.locais.modelo import ORDEM_DOS_NIVEIS, NivelDoLocal
 from nucleo.personas.modelo import Papel
+from nucleo.tempo import agora
 
 
 def _criar_comunidade(sessao, granularidade_maxima: str = "quadra") -> ComunidadeVirtual:
@@ -232,22 +240,190 @@ def test_dois_guerreiros_abrem_series_independentes_sobre_o_mesmo_par(
     assert sessao.query(SerieDeColeta).count() == 2
 
 
-def test_serie_permanece_ativa_apos_dois_periodos_sem_registro(
+def _ancora_ha_n_periodos_completos(referencia: datetime, cadencia: Cadencia, n: int) -> datetime:
+    """Um instante dentro do período que está `n` períodos completos antes
+    do período de `referencia`, andando pelas bordas de `periodo_de_cadencia`
+    em vez de subtrair datas — a mesma régua que a derivação usa (design —
+    a régua dos períodos)."""
+    limite = referencia
+    for _ in range(n):
+        inicio_do_periodo, _ = periodo_de_cadencia(limite, cadencia)
+        limite = inicio_do_periodo - timedelta(microseconds=1)
+    return limite
+
+
+@pytest.mark.parametrize("cadencia", [Cadencia.diaria, Cadencia.semanal, Cadencia.mensal])
+def test_um_periodo_vazio_nao_interrompe(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    cadencia,
+):
+    """Uma falha isolada não interrompe — só o segundo período completo sem
+    registro interrompe (`RN-08-07`)."""
+    _, guerreiro, desafio, local = _preparar(
+        sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
+    )
+    desafio.cadencia = cadencia
+    sessao.commit()
+
+    serie = abrir_serie_de_coleta(sessao, operador=guerreiro, desafio=desafio, local_id=local.id)
+    sessao.commit()
+    agora_do_teste = agora()
+    serie.aberta_em = _ancora_ha_n_periodos_completos(agora_do_teste, cadencia, 1)
+    sessao.commit()
+
+    assert apurar_estado_da_serie(sessao, serie) == EstadoDaSerie.ativa
+
+
+@pytest.mark.parametrize("cadencia", [Cadencia.diaria, Cadencia.semanal, Cadencia.mensal])
+def test_dois_periodos_vazios_interrompem_contados_da_abertura(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    cadencia,
+):
+    """Série sem nenhum registro conta os períodos a partir da data de
+    abertura (`RF-08-10`)."""
+    _, guerreiro, desafio, local = _preparar(
+        sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
+    )
+    desafio.cadencia = cadencia
+    sessao.commit()
+
+    serie = abrir_serie_de_coleta(sessao, operador=guerreiro, desafio=desafio, local_id=local.id)
+    sessao.commit()
+    agora_do_teste = agora()
+    serie.aberta_em = _ancora_ha_n_periodos_completos(agora_do_teste, cadencia, 2)
+    sessao.commit()
+
+    assert apurar_estado_da_serie(sessao, serie) == EstadoDaSerie.interrompida
+
+
+def test_encerrada_prevalece_sobre_interrompida_e_nao_retoma(
     sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
 ):
-    """A transição para `interrompida` é `RF-08-10`, de entrega posterior —
-    nesta fatia a série não muda de estado."""
+    """A vigência terminada decide primeiro; `encerrada` é terminal (PRD-08
+    §§3.1, 8)."""
     _, guerreiro, desafio, local = _preparar(
         sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
     )
 
     serie = abrir_serie_de_coleta(sessao, operador=guerreiro, desafio=desafio, local_id=local.id)
     sessao.commit()
-    serie.aberta_em = datetime.now(UTC) - timedelta(weeks=3)
+    agora_do_teste = agora()
+    serie.aberta_em = _ancora_ha_n_periodos_completos(agora_do_teste, serie.cadencia, 2)
+    desafio.vigencia_fim = agora_do_teste - timedelta(days=1)
     sessao.commit()
-    sessao.refresh(serie)
 
-    assert serie.estado == EstadoDaSerie.ativa
+    assert apurar_estado_da_serie(sessao, serie) == EstadoDaSerie.encerrada
+
+    with pytest.raises(ErroDeValidacao):
+        gravar_registro_de_coleta(
+            sessao,
+            operador=guerreiro,
+            serie=serie,
+            momento_do_fato=agora_do_teste,
+            origem="manual",
+            valor=1.0,
+            unidade="unidade",
+        )
+    assert apurar_estado_da_serie(sessao, serie) == EstadoDaSerie.encerrada
+
+
+def test_leitura_sem_transicao_nao_escreve(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
+):
+    """A guarda de divergência: leitura que não muda o estado não grava o
+    espelho (design — Decisions)."""
+    _, guerreiro, desafio, local = _preparar(
+        sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
+    )
+    serie = abrir_serie_de_coleta(sessao, operador=guerreiro, desafio=desafio, local_id=local.id)
+    sessao.commit()
+
+    with patch.object(sessao, "flush", wraps=sessao.flush) as flush_espionado:
+        assert apurar_estado_da_serie(sessao, serie) == EstadoDaSerie.ativa
+        assert flush_espionado.call_count == 0
+
+
+def test_leitura_no_instante_da_transicao_grava_o_espelho_uma_unica_vez(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
+):
+    _, guerreiro, desafio, local = _preparar(
+        sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
+    )
+    serie = abrir_serie_de_coleta(sessao, operador=guerreiro, desafio=desafio, local_id=local.id)
+    sessao.commit()
+    agora_do_teste = agora()
+    serie.aberta_em = _ancora_ha_n_periodos_completos(agora_do_teste, serie.cadencia, 2)
+    sessao.commit()
+
+    with patch.object(sessao, "flush", wraps=sessao.flush) as flush_espionado:
+        assert apurar_estado_da_serie(sessao, serie) == EstadoDaSerie.interrompida
+        assert flush_espionado.call_count == 1
+
+        flush_espionado.reset_mock()
+        assert apurar_estado_da_serie(sessao, serie) == EstadoDaSerie.interrompida
+        assert flush_espionado.call_count == 0
+
+
+def test_consulta_devolve_so_as_series_do_guerreiro_da_sessao(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
+):
+    """A consulta nunca alcança série de outro coletor, mesmo havendo série
+    de outro sobre o mesmo desafio e local (`RN-08-04`, `RF-08-17`)."""
+    comunidade, primeiro, desafio, local = _preparar(
+        sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
+    )
+    segundo = criar_persona(Papel.guerreiro, comunidade=comunidade)
+
+    serie_1 = abrir_serie_de_coleta(sessao, operador=primeiro, desafio=desafio, local_id=local.id)
+    sessao.commit()
+    abrir_serie_de_coleta(sessao, operador=segundo, desafio=desafio, local_id=local.id)
+    sessao.commit()
+
+    resultado = consultar_series_do_guerreiro(sessao, operador=primeiro)
+
+    assert [serie.id for serie, _ in resultado] == [serie_1.id]
+
+
+def test_consulta_apresenta_interrompida_sem_escrita_anterior(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
+):
+    """A consulta apura o estado no próprio ato — não depende de nenhuma
+    escrita anterior ter acontecido (`RF-08-10`, `RF-08-17`)."""
+    _, guerreiro, desafio, local = _preparar(
+        sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
+    )
+    serie = abrir_serie_de_coleta(sessao, operador=guerreiro, desafio=desafio, local_id=local.id)
+    sessao.commit()
+    agora_do_teste = agora()
+    serie.aberta_em = _ancora_ha_n_periodos_completos(agora_do_teste, serie.cadencia, 2)
+    sessao.commit()
+
+    resultado = consultar_series_do_guerreiro(sessao, operador=guerreiro)
+
+    assert resultado == [(serie, 0)]
+    assert serie.estado == EstadoDaSerie.interrompida
+
+
+def test_mestre_nao_consulta_series_do_guerreiro(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
+):
+    _, _, desafio, local = _preparar(
+        sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_local
+    )
+    mestre_qualquer = criar_persona(Papel.mestre)
+
+    with pytest.raises(PermissaoNegada):
+        consultar_series_do_guerreiro(sessao, operador=mestre_qualquer)
 
 
 def test_data_da_ultima_medicao_valida_acompanha_a_serie(
