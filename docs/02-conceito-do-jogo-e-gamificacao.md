@@ -209,6 +209,8 @@ correspondente também é temporal:
 - A amostra é de **10% dos registros da semana em cada série ativa, com o mínimo de um**. O
   piso garante que nenhuma série passe uma semana sem ser olhada, e o percentual acompanha
   quem registra mais. É o mesmo percentual da auditoria de trilhas e do corpus de apoio.
+  **Série ativa é a que está ativa no instante da amostra** — a situação de cada série é
+  apurada ali, não aproveitada de uma apuração anterior.
 - **Valor fora da faixa declarada no desafio** entra como **a conferir** e não pontua até o
   Mestre validar. É a trava contra dado inventado, e é também momento de ensinar a medir.
 
