@@ -65,6 +65,11 @@ class Configuracao(BaseSettings):
     # não tem calendário (`RF-01-42`, `RF-01-43`, design — Decisions).
     ciclo_rotulo: str = "Ciclo 01"
 
+    # Piso de coletores distintos do recorte publicado do território — abaixo
+    # dele, o recorte sobe ao nível acima (`RF-08-28`, `RN-08-24`, documento
+    # 02 §1).
+    territorio_piso_de_coletores_distintos: int = 3
+
 
 @lru_cache
 def obter_configuracao() -> Configuracao:
