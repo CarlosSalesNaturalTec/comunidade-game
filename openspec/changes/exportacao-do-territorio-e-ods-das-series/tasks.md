@@ -69,4 +69,4 @@
 - [x] 5.2 Atualizar `docs/prds/index.md` na nota de situação do PRD-08 — nenhuma decisão de
       produto nova foi tomada, de modo que documento-fonte, documento 09, documento 99 e a `nav`
       do `mkdocs.yml` não mudam
-- [ ] 5.3 Rodar `npm run fix`, `npm run lint` e `mkdocs build --strict` antes de abrir o PR
+- [x] 5.3 Rodar `npm run fix`, `npm run lint` e `mkdocs build --strict` antes de abrir o PR
