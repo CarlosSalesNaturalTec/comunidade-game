@@ -389,9 +389,9 @@ def test_consulta_devolve_so_as_series_do_guerreiro_da_sessao(
     abrir_serie_de_coleta(sessao, operador=segundo, desafio=desafio, local_id=local.id)
     sessao.commit()
 
-    resultado = consultar_series_do_guerreiro(sessao, operador=primeiro)
+    pagina = consultar_series_do_guerreiro(sessao, operador=primeiro, cursor=None, tamanho=50)
 
-    assert [serie.id for serie, _ in resultado] == [serie_1.id]
+    assert [item.id for item in pagina.itens] == [serie_1.id]
 
 
 def test_consulta_apresenta_interrompida_sem_escrita_anterior(
@@ -408,9 +408,12 @@ def test_consulta_apresenta_interrompida_sem_escrita_anterior(
     serie.aberta_em = _ancora_ha_n_periodos_completos(agora_do_teste, serie.cadencia, 2)
     sessao.commit()
 
-    resultado = consultar_series_do_guerreiro(sessao, operador=guerreiro)
+    pagina = consultar_series_do_guerreiro(sessao, operador=guerreiro, cursor=None, tamanho=50)
 
-    assert resultado == [(serie, 0)]
+    assert len(pagina.itens) == 1
+    assert pagina.itens[0].id == serie.id
+    assert pagina.itens[0].pontos == 0
+    assert pagina.itens[0].estado == EstadoDaSerie.interrompida.value
     assert serie.estado == EstadoDaSerie.interrompida
 
 
@@ -423,7 +426,7 @@ def test_mestre_nao_consulta_series_do_guerreiro(
     mestre_qualquer = criar_persona(Papel.mestre)
 
     with pytest.raises(PermissaoNegada):
-        consultar_series_do_guerreiro(sessao, operador=mestre_qualquer)
+        consultar_series_do_guerreiro(sessao, operador=mestre_qualquer, cursor=None, tamanho=50)
 
 
 def test_data_da_ultima_medicao_valida_acompanha_a_serie(
