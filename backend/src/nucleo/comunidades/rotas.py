@@ -1,14 +1,21 @@
 import uuid
 from datetime import datetime
 from typing import Annotated
+from urllib.parse import quote
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
-from ..coletas.regra import PontoDaSeriePublicaSaida, paginar_serie_publica
+from ..coletas.regra import (
+    CAMPOS_DO_DICIONARIO_DE_DADOS,
+    PontoDaSeriePublicaSaida,
+    apurar_periodo_coberto_da_exportacao,
+    exportar_serie_do_territorio,
+    paginar_serie_publica,
+)
 from ..configuracao import Configuracao, obter_configuracao
 from ..erros import ErroDeValidacao, NaoEncontrado
 from ..paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
@@ -129,4 +136,104 @@ def serie_publica_da_comunidade(
         tamanho=parametros.tamanho,
         periodo_inicio=periodo_inicio,
         periodo_fim=periodo_fim,
+    )
+
+
+def _query_string_do_periodo(periodo_inicio: str | None, periodo_fim: str | None) -> str:
+    partes = []
+    if periodo_inicio:
+        partes.append(f"periodo_inicio={quote(periodo_inicio)}")
+    if periodo_fim:
+        partes.append(f"periodo_fim={quote(periodo_fim)}")
+    return f"?{'&'.join(partes)}" if partes else ""
+
+
+@roteador.get("/comunidades/{id_da_comunidade}/exportacao")
+def exportar_territorio_da_comunidade(
+    id_da_comunidade: uuid.UUID,
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
+    periodo_inicio: str | None = None,
+    periodo_fim: str | None = None,
+) -> Response:
+    """Exportação pública da série da comunidade em CSV, sem dependência de
+    persona — reusa integralmente as guardas da série pública (`RF-08-19`,
+    `RN-08-12`, `RN-08-13`, `RF-08-28`, `RN-08-24`, `RF-01-02`,
+    `RN-01-32`). O corpo é só a tabela; licença, período coberto e o
+    endereço do dicionário de dados saem em cabeçalho, nunca misturados ao
+    CSV (`RF-08-27`, design — Decisions)."""
+    comunidade = _obter_comunidade(sessao_bd, id_da_comunidade)
+    inicio = _analisar_momento(periodo_inicio, "periodo_inicio") if periodo_inicio else None
+    fim = _analisar_momento(periodo_fim, "periodo_fim") if periodo_fim else None
+
+    exportacao = exportar_serie_do_territorio(
+        sessao_bd,
+        comunidade=comunidade,
+        piso_de_coletores=configuracao.territorio_piso_de_coletores_distintos,
+        periodo_inicio=inicio,
+        periodo_fim=fim,
+    )
+    sessao_bd.commit()
+
+    resposta = Response(content=exportacao.conteudo_csv, media_type="text/csv")
+    resposta.headers["X-Licenca"] = configuracao.territorio_licenca
+    resposta.headers["X-Periodo-Coberto-Inicio"] = (
+        exportacao.periodo_coberto_inicio.isoformat() if exportacao.periodo_coberto_inicio else ""
+    )
+    resposta.headers["X-Periodo-Coberto-Fim"] = (
+        exportacao.periodo_coberto_fim.isoformat() if exportacao.periodo_coberto_fim else ""
+    )
+    resposta.headers["X-Dicionario-De-Dados"] = (
+        f"/v1/comunidades/{id_da_comunidade}/exportacao/dicionario"
+        f"{_query_string_do_periodo(periodo_inicio, periodo_fim)}"
+    )
+    return resposta
+
+
+class CampoDoDicionarioSaida(BaseModel):
+    campo: str
+    unidade: str
+    cadencia: str
+    origem: str
+
+
+class DicionarioDeDadosSaida(BaseModel):
+    campos: list[CampoDoDicionarioSaida]
+    licenca: str
+    contribuicao_meta_17_18: str
+    periodo_coberto_inicio: datetime | None
+    periodo_coberto_fim: datetime | None
+
+
+@roteador.get(
+    "/comunidades/{id_da_comunidade}/exportacao/dicionario", response_model=DicionarioDeDadosSaida
+)
+def dicionario_de_dados_da_exportacao(
+    id_da_comunidade: uuid.UUID,
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
+    periodo_inicio: str | None = None,
+    periodo_fim: str | None = None,
+) -> DicionarioDeDadosSaida:
+    """A rota irmã da exportação: descreve cada campo do CSV — unidade,
+    cadência e origem —, a licença e a contribuição à meta 17.18 com o
+    período coberto (`RF-08-19`, `RF-08-27`, documento 03 §12.3, documento
+    04 §4)."""
+    comunidade = _obter_comunidade(sessao_bd, id_da_comunidade)
+    inicio = _analisar_momento(periodo_inicio, "periodo_inicio") if periodo_inicio else None
+    fim = _analisar_momento(periodo_fim, "periodo_fim") if periodo_fim else None
+
+    periodo_coberto_inicio, periodo_coberto_fim = apurar_periodo_coberto_da_exportacao(
+        sessao_bd,
+        comunidade=comunidade,
+        piso_de_coletores=configuracao.territorio_piso_de_coletores_distintos,
+        periodo_inicio=inicio,
+        periodo_fim=fim,
+    )
+    return DicionarioDeDadosSaida(
+        campos=[CampoDoDicionarioSaida(**campo) for campo in CAMPOS_DO_DICIONARIO_DE_DADOS],
+        licenca=configuracao.territorio_licenca,
+        contribuicao_meta_17_18=configuracao.territorio_declaracao_meta_17_18,
+        periodo_coberto_inicio=periodo_coberto_inicio,
+        periodo_coberto_fim=periodo_coberto_fim,
     )
