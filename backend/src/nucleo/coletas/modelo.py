@@ -116,11 +116,14 @@ class DesafioDeColeta(Base, ComAutoria):
 
 
 class EstadoDaSerie(enum.StrEnum):
-    """Só `ativa` nesta fatia — a interrupção por dois períodos de cadência
-    sem registro e o encerramento pelo fim da vigência do desafio são
-    `RF-08-10` e `RF-08-11`, de entrega posterior (proposal.md)."""
+    """Sempre derivado — nunca informado na requisição nem editado à mão
+    (`RF-08-10`, `RF-08-11`, PRD-08 §8). `interrompida` cessa o cômputo
+    após dois períodos de cadência seguidos sem registro válido;
+    `encerrada` é terminal, pelo fim da vigência do desafio."""
 
     ativa = "ativa"
+    interrompida = "interrompida"
+    encerrada = "encerrada"
 
 
 class SerieDeColeta(Base):

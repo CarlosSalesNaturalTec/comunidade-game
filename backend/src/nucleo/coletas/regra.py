@@ -2,6 +2,7 @@ import uuid
 from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..armazenamento.porta import PortaDeArmazenamento
@@ -67,6 +68,52 @@ def periodo_de_cadencia(
             fim_local = inicio_local.replace(month=inicio_local.month + 1)
 
     return inicio_local.astimezone(UTC), fim_local.astimezone(UTC)
+
+
+def _contar_periodos_decorridos(ancora: datetime, agora_: datetime, cadencia: Cadencia) -> int:
+    """Conta quantos períodos de `periodo_de_cadencia` terminaram por
+    inteiro entre a âncora e agora — sem subtrair datas, para que a régua
+    valha igual na cadência mensal, cujo período não tem duração fixa
+    (design — a régua dos períodos)."""
+    _, periodo_fim = periodo_de_cadencia(ancora, cadencia)
+    periodos = 0
+    while periodo_fim <= agora_:
+        periodos += 1
+        _, periodo_fim = periodo_de_cadencia(periodo_fim, cadencia)
+    return periodos
+
+
+def _derivar_estado_da_serie(
+    serie: SerieDeColeta, desafio: DesafioDeColeta, agora_: datetime
+) -> EstadoDaSerie:
+    """Fonte da verdade do estado: `encerrada` → `interrompida` → `ativa`
+    (design — Decisions). `encerrada` prevalece e é terminal, pelo fim da
+    vigência do desafio. `interrompida` conta a partir da última medição
+    válida ou, na falta dela, da abertura da série — dois períodos cheios
+    sem registro interrompem; um só não interrompe (`RN-08-07`).
+    """
+    if agora_ > desafio.vigencia_fim:
+        return EstadoDaSerie.encerrada
+
+    ancora = serie.ultima_medicao_valida_em or serie.aberta_em
+    if _contar_periodos_decorridos(ancora, agora_, serie.cadencia) >= 2:
+        return EstadoDaSerie.interrompida
+
+    return EstadoDaSerie.ativa
+
+
+def apurar_estado_da_serie(sessao: Session, serie: SerieDeColeta) -> EstadoDaSerie:
+    """Único ponto de apuração do estado, chamado tanto pela gravação do
+    registro quanto pela consulta das séries (design — Decisions). O
+    estado derivado é sempre a resposta; a coluna é espelho, gravada só
+    quando diverge do derivado — nunca lida como fonte.
+    """
+    desafio = sessao.get(DesafioDeColeta, serie.desafio_de_coleta_id)
+    derivado = _derivar_estado_da_serie(serie, desafio, agora())
+    if derivado != serie.estado:
+        serie.estado = derivado
+        sessao.flush()
+    return derivado
 
 
 def _exigir_admin(operador: Persona) -> None:
@@ -590,6 +637,37 @@ def gravar_registro_de_coleta(
     )
     registro.pontos_creditados = pontos
 
-    serie.ultima_medicao_valida_em = momento_do_fato
+    if serie.ultima_medicao_valida_em is None or momento_do_fato > serie.ultima_medicao_valida_em:
+        serie.ultima_medicao_valida_em = momento_do_fato
+    apurar_estado_da_serie(sessao, serie)
+
     sessao.flush()
     return registro
+
+
+def consultar_series_do_guerreiro(
+    sessao: Session, *, operador: Persona
+) -> list[tuple[SerieDeColeta, int]]:
+    """As séries do Guerreiro(a) da sessão, cada uma com o estado apurado
+    no momento da consulta e a soma dos pontos creditados pelos registros
+    válidos dela (`RF-08-17`, `RN-08-04`, PRD-08 §9). Nunca alcança série
+    de outro coletor, e qualquer outro papel recebe 403.
+    """
+    if operador.papel != Papel.guerreiro:
+        raise PermissaoNegada(mensagem="Só o Guerreiro(a) consulta as suas séries.")
+
+    series = sessao.query(SerieDeColeta).filter_by(coletor_id=operador.id).all()
+
+    resultado = []
+    for serie in series:
+        apurar_estado_da_serie(sessao, serie)
+        pontos = (
+            sessao.query(func.coalesce(func.sum(RegistroDeColeta.pontos_creditados), 0))
+            .filter(
+                RegistroDeColeta.serie_de_coleta_id == serie.id,
+                RegistroDeColeta.situacao == SituacaoDoRegistro.valida,
+            )
+            .scalar()
+        )
+        resultado.append((serie, pontos))
+    return resultado

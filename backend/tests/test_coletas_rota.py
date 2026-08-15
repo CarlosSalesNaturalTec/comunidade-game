@@ -1,6 +1,7 @@
-from datetime import UTC, datetime
+import uuid
+from datetime import UTC, datetime, timedelta
 
-from nucleo.coletas.modelo import Cadencia, FormaDeRegistro
+from nucleo.coletas.modelo import Cadencia, FormaDeRegistro, SerieDeColeta
 from nucleo.comunidades.modelo import VinculoJogador
 from nucleo.locais.modelo import NivelDoLocal
 from nucleo.personas.modelo import Papel
@@ -340,3 +341,88 @@ def test_coletor_grava_registro_de_coleta_pela_rota(
     assert corpo["serie_de_coleta_id"] == serie_id
     assert corpo["pontos_creditados"] == 5
     assert corpo["pontuou"] is True
+
+
+def test_mestre_recebe_403_ao_consultar_series_do_guerreiro_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/series-de-coleta/minhas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403
+
+
+def test_guerreiro_consulta_suas_series_pela_rota(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    """Ponta a ponta do critério de aceite do PRD-08 §12: série sem
+    registro por dois períodos de cadência aparece `interrompida` e para
+    de creditar; o registro seguinte a devolve para `ativa` (`RF-08-10`,
+    `RF-08-11`, `RF-08-17`)."""
+    chave, token, guerreiro, desafio, local = _preparar_serie_pela_rota(
+        sessao,
+        criar_chave,
+        criar_persona,
+        criar_comunidade,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+        criar_tipo_de_coleta,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    resposta_serie = cliente.post(
+        "/v1/series-de-coleta",
+        json={"desafio_de_coleta_id": str(desafio.id), "local_id": str(local.id)},
+        headers=headers,
+    )
+    serie_id = resposta_serie.json()["id"]
+
+    serie = sessao.get(SerieDeColeta, uuid.UUID(serie_id))
+    serie.aberta_em = datetime.now(UTC) - timedelta(weeks=3)
+    sessao.commit()
+
+    resposta_interrompida = cliente.get("/v1/series-de-coleta/minhas", headers=headers)
+    assert resposta_interrompida.status_code == 200
+    corpo_interrompido = resposta_interrompida.json()
+    assert len(corpo_interrompido) == 1
+    assert corpo_interrompido[0]["id"] == serie_id
+    assert corpo_interrompido[0]["estado"] == "interrompida"
+    assert corpo_interrompido[0]["pontos"] == 0
+
+    resposta_registro = cliente.post(
+        "/v1/registros-de-coleta",
+        data={
+            "serie_de_coleta_id": serie_id,
+            "momento_do_fato": datetime.now(UTC).isoformat(),
+            "origem": "manual",
+            "valor": "25.0",
+            "unidade": "°C",
+        },
+        headers=headers,
+    )
+    assert resposta_registro.status_code == 201
+
+    resposta_ativa = cliente.get("/v1/series-de-coleta/minhas", headers=headers)
+    corpo_ativo = resposta_ativa.json()
+    assert corpo_ativo[0]["estado"] == "ativa"
+    assert corpo_ativo[0]["pontos"] > 0
