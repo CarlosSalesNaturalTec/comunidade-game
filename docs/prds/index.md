@@ -37,11 +37,13 @@ metade de `RF-01-68` sobre revogação por ato) entrou por change própria; rest
 núcleo (proposal.md da change).
 
 O PRD-08 segue **aprovado**, com a leitura pública do território (`RF-08-16`, `RF-08-28`,
-`RN-08-24`, `RN-08-12`, `RN-08-13`) entregue por change própria. Restam a auditoria por
-amostragem e a invalidação (`RF-08-13`), travadas pela contradição entre o estorno que ela
-exige e o ponto regular que nunca decresce, e o `GET /comunidades` com indicadores agregados,
-cuja lista de indicadores o PRD ainda não declara — as duas perguntas seguem com o fundador
-(proposal.md da change).
+`RN-08-24`, `RN-08-12`, `RN-08-13`) e a exportação pública em CSV com a cobertura de ODS da
+coleta (`RF-08-19`, `RF-08-26`, `RF-08-27`) entregues por changes próprias. Restam a auditoria
+por amostragem e a invalidação (`RF-08-13`), travadas pela contradição entre o estorno que ela
+exige e o ponto regular que nunca decresce, a entrega do conjunto abaixo do bairro sob
+aprovação de Admin, sem `RF` que declare a rota, o formato ou o recorte aprovado, e o
+`GET /comunidades` com indicadores agregados, cuja lista de indicadores o PRD ainda não
+declara — as perguntas seguem com o fundador (proposal.md de cada change).
 
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.

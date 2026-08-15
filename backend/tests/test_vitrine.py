@@ -392,3 +392,39 @@ def test_cobertura_de_ods_agrega_por_comunidade_e_ciclo_sem_recorte_de_guerreiro
     schema = cliente.get("/openapi.json").json()
     parametros_da_rota = schema["paths"]["/v1/vitrine/ods/cobertura"]["get"].get("parameters", [])
     assert not any(p["name"] == "guerreiro" for p in parametros_da_rota)
+
+
+def test_cobertura_publica_inclui_comunidade_so_com_coleta(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_serie_de_coleta,
+    sessao,
+):
+    """4.11: comunidade sem Resultado registrado e com série aberta sobre
+    desafio etiquetado aparece na cobertura pública (`RF-08-26`)."""
+    from nucleo.ods.regra import criar_etiqueta_ods
+
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade("Comunidade só de coleta")
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    local = criar_local(comunidade)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    criar_etiqueta_ods(sessao, operador=mestre, objetivo=6, missao=missao)
+    sessao.commit()
+    tipo = criar_tipo_de_coleta(mestre)
+    desafio = criar_desafio_de_coleta(missao, mestre, tipo=tipo)
+    criar_serie_de_coleta(guerreiro, desafio, local)
+
+    chave, _ = criar_chave()
+    resposta = cliente.get("/v1/vitrine/ods/cobertura", headers={"X-Chave-Aplicacao": chave})
+    assert resposta.status_code == 200
+    linha = next(item for item in resposta.json() if item["comunidade_id"] == str(comunidade.id))
+    assert linha["objetivos"] == [6]

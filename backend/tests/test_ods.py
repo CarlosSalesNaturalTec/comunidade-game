@@ -2,12 +2,14 @@ from datetime import UTC, datetime
 
 import pytest
 
+from nucleo.coletas.modelo import EstadoDaSerie
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
 from nucleo.ods.modelo import EtiquetaOds
 from nucleo.ods.regra import (
     cobertura_por_comunidade,
     cobertura_por_poder,
     cobertura_por_trilha,
+    comunidades_com_cobertura,
     criar_etiqueta_ods,
     resolver_etiquetas_da_missao,
 )
@@ -236,3 +238,126 @@ def test_cobertura_por_comunidade_sem_resultado_e_vazia(
     cobertura = cobertura_por_comunidade(sessao, comunidade.id)
 
     assert cobertura == set()
+
+
+def _montar_desafio_etiquetado(
+    sessao,
+    *,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    objetivo: int = 11,
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    criar_etiqueta_ods(sessao, operador=mestre, objetivo=objetivo, missao=missao)
+    sessao.commit()
+    tipo = criar_tipo_de_coleta(mestre)
+    desafio = criar_desafio_de_coleta(missao, mestre, tipo=tipo)
+    return desafio
+
+
+def test_cobertura_por_comunidade_soma_desafios_de_coleta_com_serie_aberta(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_serie_de_coleta,
+):
+    """4.10: `RF-08-26` soma trilha e coleta, e o objetivo etiquetado nas
+    duas fontes aparece uma só vez."""
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    local = criar_local(comunidade)
+    desafio = _montar_desafio_etiquetado(
+        sessao,
+        criar_persona=criar_persona,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_tipo_de_coleta=criar_tipo_de_coleta,
+        criar_desafio_de_coleta=criar_desafio_de_coleta,
+        objetivo=11,
+    )
+    criar_serie_de_coleta(guerreiro, desafio, local)
+
+    cobertura = cobertura_por_comunidade(sessao, comunidade.id)
+
+    assert cobertura == {11}
+
+
+def test_comunidade_so_com_coleta_cobre_o_objetivo_do_desafio(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_serie_de_coleta,
+):
+    """4.11: comunidade sem Resultado registrado e com série aberta sobre
+    desafio etiquetado aparece na cobertura, com o objetivo do desafio."""
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    local = criar_local(comunidade)
+    desafio = _montar_desafio_etiquetado(
+        sessao,
+        criar_persona=criar_persona,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_tipo_de_coleta=criar_tipo_de_coleta,
+        criar_desafio_de_coleta=criar_desafio_de_coleta,
+        objetivo=6,
+    )
+    criar_serie_de_coleta(guerreiro, desafio, local)
+
+    assert comunidade.id in comunidades_com_cobertura(sessao)
+    assert cobertura_por_comunidade(sessao, comunidade.id) == {6}
+
+
+def test_estado_da_serie_nao_altera_a_cobertura(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_serie_de_coleta,
+):
+    """4.12: série interrompida ou encerrada continua cobrindo o objetivo
+    do desafio — a cobertura mede alcance declarado, não continuidade."""
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    local = criar_local(comunidade)
+    desafio = _montar_desafio_etiquetado(
+        sessao,
+        criar_persona=criar_persona,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_tipo_de_coleta=criar_tipo_de_coleta,
+        criar_desafio_de_coleta=criar_desafio_de_coleta,
+        objetivo=15,
+    )
+    criar_serie_de_coleta(guerreiro, desafio, local, estado=EstadoDaSerie.encerrada)
+
+    assert cobertura_por_comunidade(sessao, comunidade.id) == {15}
+
+
+def test_cobertura_de_comunidade_nunca_e_calculada_por_guerreiro(sessao):
+    """4.13: nenhuma função do núcleo agrega cobertura de ODS por
+    Guerreiro(a) — as agregações são por trilha, poder, comunidade e ciclo
+    (`RN-08-22`, invariante 20 do documento 99 §6)."""
+    import nucleo.ods.regra as modulo_de_regra
+
+    nomes_das_funcoes_publicas = {nome for nome in dir(modulo_de_regra) if not nome.startswith("_")}
+    assert not any("guerreiro" in nome.lower() for nome in nomes_das_funcoes_publicas)

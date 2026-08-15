@@ -1,3 +1,5 @@
+import csv
+import io
 import uuid
 from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -947,3 +949,152 @@ def paginar_serie_publica(
         for linha in linhas
     ]
     return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)
+
+
+# Cabeçalho declarado da exportação e o dicionário de dados que descreve cada
+# campo — a mesma granularidade real do dado, sem geometria que o Ciclo 01
+# não coleta: o local sai como rótulo e nível, nunca como coordenada
+# (`RF-08-19`, documento 03 §12.3, design — Decisions).
+CABECALHO_DA_EXPORTACAO: tuple[str, ...] = (
+    "momento_da_medicao",
+    "tipo_de_coleta",
+    "local_nivel",
+    "local_rotulo",
+    "valor",
+)
+
+CAMPOS_DO_DICIONARIO_DE_DADOS: tuple[dict[str, str], ...] = (
+    {
+        "campo": "momento_da_medicao",
+        "unidade": "data e hora em ISO 8601 (UTC)",
+        "cadencia": "uma linha por medição registrada",
+        "origem": "data e hora da medição, gravada pelo Guerreiro(a) no registro de coleta "
+        "(RF-08-08)",
+    },
+    {
+        "campo": "tipo_de_coleta",
+        "unidade": "texto — nome do tipo de coleta",
+        "cadencia": "não se aplica",
+        "origem": "catálogo de tipos de coleta, mantido por Admin (RF-08-05)",
+    },
+    {
+        "campo": "local_nivel",
+        "unidade": "texto — 'comunidade' ou 'bairro'",
+        "cadencia": "não se aplica",
+        "origem": "local publicado do registro, agregado ao piso de coletores distintos "
+        "(RN-08-13, RF-08-28)",
+    },
+    {
+        "campo": "local_rotulo",
+        "unidade": "texto — rótulo do local publicado",
+        "cadencia": "não se aplica",
+        "origem": "local publicado do registro, agregado ao piso de coletores distintos "
+        "(RN-08-13, RF-08-28)",
+    },
+    {
+        "campo": "valor",
+        "unidade": "numérico, na unidade do tipo de coleta; vazio quando o tipo se mede por "
+        "foto ou vídeo",
+        "cadencia": "uma medição por registro, na cadência da série de coleta",
+        "origem": "valor informado pelo Guerreiro(a) no registro de coleta (RF-08-08)",
+    },
+)
+
+
+class ExportacaoDoTerritorio(BaseModel):
+    conteudo_csv: str
+    periodo_coberto_inicio: datetime | None
+    periodo_coberto_fim: datetime | None
+
+
+def exportar_serie_do_territorio(
+    sessao: Session,
+    *,
+    comunidade: ComunidadeVirtual,
+    piso_de_coletores: int,
+    periodo_inicio: datetime | None = None,
+    periodo_fim: datetime | None = None,
+) -> ExportacaoDoTerritorio:
+    """A exportação pública do território em CSV: chama
+    `_consulta_de_registros_publicaveis` com os mesmos argumentos da série
+    pública, sem reimplementar corte, piso ou supressão — a exportação
+    herda integralmente as mesmas guardas (`RF-08-19`, `RN-08-12`,
+    `RN-08-13`, `RF-08-28`, `RN-08-24`, design — Decisions). Uma tabela por
+    arquivo, cabeçalho declarado na primeira linha, local como rótulo e
+    nível. O período coberto é apurado da primeira e da última medição
+    efetivamente contidas no conjunto, depois do piso — conjunto vazio
+    declara período vazio (`RF-08-27`, design — Decisions).
+    """
+    publicaveis = _consulta_de_registros_publicaveis(
+        sessao,
+        comunidade=comunidade,
+        periodo_inicio=periodo_inicio,
+        periodo_fim=periodo_fim,
+        piso=piso_de_coletores,
+    ).subquery()
+
+    linhas = (
+        sessao.query(
+            publicaveis.c.momento_do_fato,
+            publicaveis.c.valor,
+            TipoDeColeta.nome.label("tipo_de_coleta_nome"),
+            Local.nivel.label("local_nivel"),
+            Local.rotulo.label("local_rotulo"),
+        )
+        .select_from(publicaveis)
+        .join(TipoDeColeta, TipoDeColeta.id == publicaveis.c.tipo_de_coleta_id)
+        .join(Local, Local.id == publicaveis.c.local_final_id)
+        .order_by(publicaveis.c.momento_do_fato, publicaveis.c.registro_id)
+        .all()
+    )
+
+    buffer = io.StringIO(newline="")
+    escritor = csv.writer(buffer)
+    escritor.writerow(CABECALHO_DA_EXPORTACAO)
+    for linha in linhas:
+        escritor.writerow(
+            [
+                linha.momento_do_fato.isoformat(),
+                linha.tipo_de_coleta_nome,
+                linha.local_nivel.value,
+                linha.local_rotulo,
+                "" if linha.valor is None else linha.valor,
+            ]
+        )
+
+    if linhas:
+        periodo_coberto_inicio = linhas[0].momento_do_fato
+        periodo_coberto_fim = linhas[-1].momento_do_fato
+    else:
+        periodo_coberto_inicio = None
+        periodo_coberto_fim = None
+
+    return ExportacaoDoTerritorio(
+        conteudo_csv=buffer.getvalue(),
+        periodo_coberto_inicio=periodo_coberto_inicio,
+        periodo_coberto_fim=periodo_coberto_fim,
+    )
+
+
+def apurar_periodo_coberto_da_exportacao(
+    sessao: Session,
+    *,
+    comunidade: ComunidadeVirtual,
+    piso_de_coletores: int,
+    periodo_inicio: datetime | None = None,
+    periodo_fim: datetime | None = None,
+) -> tuple[datetime | None, datetime | None]:
+    """O mesmo período que `exportar_serie_do_territorio` declara, apurado
+    sem serializar o conjunto — a rota irmã do dicionário de dados devolve a
+    mesma declaração sem gerar o CSV inteiro (`RF-08-27`)."""
+    publicaveis = _consulta_de_registros_publicaveis(
+        sessao,
+        comunidade=comunidade,
+        periodo_inicio=periodo_inicio,
+        periodo_fim=periodo_fim,
+        piso=piso_de_coletores,
+    ).subquery()
+    inicio, fim = sessao.query(
+        func.min(publicaveis.c.momento_do_fato), func.max(publicaveis.c.momento_do_fato)
+    ).one()
+    return inicio, fim

@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy.orm import Session
 
+from ..coletas.modelo import DesafioDeColeta, SerieDeColeta
 from ..comunidades.modelo import VinculoJogador
 from ..comunidades.regra import filtrar_personas_por_comunidade, unir_vinculo_vigente
 from ..erros import ErroDeValidacao
@@ -96,10 +97,36 @@ def cobertura_por_poder(sessao: Session, poder_id: uuid.UUID) -> set[int]:
     return objetivos
 
 
+def _cobertura_de_coleta_por_comunidade(sessao: Session, comunidade_id: uuid.UUID) -> set[int]:
+    """A segunda fonte: união das etiquetas herdadas pelos desafios de
+    coleta com série aberta por Guerreiro(a) daquela comunidade, sem
+    recuar por estado da série — ativa, interrompida e encerrada contam
+    igual, porque a cobertura mede alcance declarado, não continuidade
+    (`RF-08-26`, `RF-08-25`, design — Decisions)."""
+    consulta = (
+        sessao.query(Missao.id)
+        .join(DesafioDeColeta, DesafioDeColeta.missao_id == Missao.id)
+        .join(SerieDeColeta, SerieDeColeta.desafio_de_coleta_id == DesafioDeColeta.id)
+        .join(Persona, Persona.id == SerieDeColeta.coletor_id)
+    )
+    ids_das_missoes = {
+        missao_id for (missao_id,) in filtrar_personas_por_comunidade(consulta, comunidade_id)
+    }
+    objetivos: set[int] = set()
+    for missao_id in ids_das_missoes:
+        missao = sessao.get(Missao, missao_id)
+        objetivos |= {
+            etiqueta.objetivo for etiqueta in resolver_etiquetas_da_missao(sessao, missao)
+        }
+    return objetivos
+
+
 def cobertura_por_comunidade(sessao: Session, comunidade_id: uuid.UUID) -> set[int]:
-    """União das coberturas das trilhas em que há Guerreiro(a) daquela
-    comunidade com Resultado registrado — nunca por Guerreiro(a)
-    individual (`RF-01-42`, `RN-01-24`)."""
+    """União de duas fontes, nunca por Guerreiro(a) individual: as trilhas
+    em que há Guerreiro(a) daquela comunidade com Resultado registrado, e
+    os desafios de coleta com série aberta por Guerreiro(a) dela — a
+    segunda fonte vale ainda que a primeira esteja vazia (`RF-01-42`,
+    `RN-01-24`, `RF-08-26`, `RF-08-25`)."""
     consulta = (
         sessao.query(Trilha.id)
         .join(Missao, Missao.trilha_id == Trilha.id)
@@ -113,13 +140,30 @@ def cobertura_por_comunidade(sessao: Session, comunidade_id: uuid.UUID) -> set[i
     objetivos: set[int] = set()
     for trilha_id in ids_das_trilhas:
         objetivos |= cobertura_por_trilha(sessao, trilha_id)
+    objetivos |= _cobertura_de_coleta_por_comunidade(sessao, comunidade_id)
     return objetivos
 
 
 def comunidades_com_cobertura(sessao: Session) -> list[uuid.UUID]:
-    """Comunidades com ao menos um Resultado registrado — a população sobre
-    a qual a cobertura pública por comunidade é apurada (`RF-01-42`,
-    `RF-01-43`, `RN-01-24`)."""
-    consulta = sessao.query(Persona.id).join(Resultado, Resultado.guerreiro_id == Persona.id)
-    consulta = unir_vinculo_vigente(consulta).with_entities(VinculoJogador.comunidade_virtual_id)
-    return [comunidade_id for (comunidade_id,) in consulta.distinct()]
+    """Comunidades com ao menos um Resultado registrado ou uma série de
+    coleta aberta sobre desafio etiquetado — a população sobre a qual a
+    cobertura pública por comunidade é apurada, para que a comunidade que
+    só coletou seja calculada e também perguntada (`RF-01-42`, `RF-01-43`,
+    `RN-01-24`, `RF-08-26`, design — Decisions)."""
+    consulta_de_resultado = sessao.query(Persona.id).join(
+        Resultado, Resultado.guerreiro_id == Persona.id
+    )
+    consulta_de_resultado = unir_vinculo_vigente(consulta_de_resultado).with_entities(
+        VinculoJogador.comunidade_virtual_id
+    )
+    comunidades = {comunidade_id for (comunidade_id,) in consulta_de_resultado.distinct()}
+
+    consulta_de_coleta = sessao.query(Persona.id).join(
+        SerieDeColeta, SerieDeColeta.coletor_id == Persona.id
+    )
+    consulta_de_coleta = unir_vinculo_vigente(consulta_de_coleta).with_entities(
+        VinculoJogador.comunidade_virtual_id
+    )
+    comunidades |= {comunidade_id for (comunidade_id,) in consulta_de_coleta.distinct()}
+
+    return list(comunidades)

@@ -70,6 +70,15 @@ class Configuracao(BaseSettings):
     # 02 §1).
     territorio_piso_de_coletores_distintos: int = 3
 
+    # Licença do conjunto exportado do território e o texto da declaração da
+    # contribuição à meta 17.18 — nunca embutidos no código (`RF-08-27`,
+    # documento 03 §12.3, documento 04 §4).
+    territorio_licenca: str = "CC BY-SA"
+    territorio_declaracao_meta_17_18: str = (
+        "Este conjunto é a contribuição do Comunidade Game à meta 17.18 da Agenda 2030: "
+        "dado local, desagregado, datado e de guarda permanente sobre um território periférico."
+    )
+
 
 @lru_cache
 def obter_configuracao() -> Configuracao:
