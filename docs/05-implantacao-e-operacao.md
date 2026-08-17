@@ -17,7 +17,9 @@ equipamentos.
 ## 2. Estrutura física — pontos de apoio
 
 - **Pontos de apoio nas comunidades**: hackerspace, fab lab, coworking. São a base para aulas
-  presenciais, montagem de kits, batalhas e culminâncias.
+  presenciais, montagem de kits, batalhas e culminâncias. Cada ponto de apoio é **cadastrado
+  pela gestão** e pertence a uma comunidade, e **toda aula declara em qual deles acontece** —
+  é o que liga a aula ao saldo de recursos guardado naquele espaço.
 - **Equipamentos disponíveis no ponto de apoio** — notebooks, smartphones e tablets — são o
   que viabiliza a **dinâmica assíncrona dos encontros** (§4): o Guerreiro(a) usa o aparelho
   disponível quando chega a sua vez, sem precisar trazer o seu. O parque de equipamentos é
