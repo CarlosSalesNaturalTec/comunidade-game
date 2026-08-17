@@ -22,15 +22,18 @@ from ..permissoes import Operacao, conferir_permissao, exigir_permissao
 from ..personas.modelo import Credencial, Persona
 from ..tempo import DataHoraComFuso
 from ..trilhas.modelo import Missao
-from .modelo import DesafioDeColeta, SerieDeColeta
+from .modelo import DesafioDeColeta, RegistroDeColeta, SerieDeColeta
 from .regra import (
     SerieDoGuerreiroSaida,
     abrir_serie_de_coleta,
     cadastrar_tipo_de_coleta,
+    compor_amostra_de_auditoria,
+    confirmar_registro_de_coleta,
     consultar_series_do_guerreiro,
     criar_desafio_de_coleta,
     emitir_credencial_de_dispositivo,
     gravar_registro_de_coleta,
+    invalidar_registro_de_coleta,
     revogar_credencial_de_dispositivo,
 )
 
@@ -382,3 +385,109 @@ def gravar_registro_de_coleta_rota(
         momento_do_fato=registro.momento_do_fato,
         momento_do_registro=registro.momento_do_registro,
     )
+
+
+class RegistroAuditadoSaida(BaseModel):
+    id: uuid.UUID
+    serie_de_coleta_id: uuid.UUID
+    valor: float | None
+    unidade: str | None
+    origem: str
+    situacao: str
+    a_conferir: bool
+    pontos_creditados: int
+    momento_do_fato: datetime
+    auditado_em: datetime | None
+    auditado_por_id: uuid.UUID | None
+    motivo_da_invalidacao: str | None
+
+
+def _saida_do_registro_auditado(registro: RegistroDeColeta) -> RegistroAuditadoSaida:
+    return RegistroAuditadoSaida(
+        id=registro.id,
+        serie_de_coleta_id=registro.serie_de_coleta_id,
+        valor=registro.valor,
+        unidade=registro.unidade,
+        origem=registro.origem.value,
+        situacao=registro.situacao.value,
+        a_conferir=registro.a_conferir,
+        pontos_creditados=registro.pontos_creditados,
+        momento_do_fato=registro.momento_do_fato,
+        auditado_em=registro.auditado_em,
+        auditado_por_id=registro.auditado_por_id,
+        motivo_da_invalidacao=registro.motivo_da_invalidacao,
+    )
+
+
+def _buscar_registro_de_coleta(
+    sessao: Session, id_do_registro: uuid.UUID
+) -> RegistroDeColeta | None:
+    """`RegistroDeColeta.id` é único apesar da chave primária composta que o
+    particionamento exige — a busca por ele sozinho é o caminho de toda
+    rota que recebe só o id na URL (design — decisões)."""
+    return sessao.query(RegistroDeColeta).filter_by(id=id_do_registro).first()
+
+
+class AmostraDeAuditoriaSaida(BaseModel):
+    itens: list[RegistroAuditadoSaida]
+
+
+@roteador.get("/auditoria/amostra")
+def consultar_amostra_de_auditoria_rota(
+    contexto: Annotated[
+        ContextoDaSessao, Depends(exigir_permissao(Operacao.auditoria_de_coleta, "escreve"))
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> AmostraDeAuditoriaSaida:
+    """Restrita ao Mestre — a amostra das séries dos seus desafios, 10% da
+    semana com o mínimo de um mais todo "a conferir" (`RN-08-20`,
+    PRD-08 §9)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    amostra = compor_amostra_de_auditoria(sessao_bd, operador=operador)
+    sessao_bd.commit()
+    return AmostraDeAuditoriaSaida(itens=[_saida_do_registro_auditado(item) for item in amostra])
+
+
+@roteador.post("/registros/{id_do_registro}/confirmacao")
+def confirmar_registro_de_coleta_rota(
+    id_do_registro: uuid.UUID,
+    contexto: Annotated[
+        ContextoDaSessao, Depends(exigir_permissao(Operacao.auditoria_de_coleta, "escreve"))
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> RegistroAuditadoSaida:
+    """Restrita ao Mestre autor do desafio da série — a posse é conferida em
+    `confirmar_registro_de_coleta`, que credita o "a conferir" e recusa
+    registro já invalidado (`RF-08-29`, `RN-08-26`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    registro = _buscar_registro_de_coleta(sessao_bd, id_do_registro)
+    registro = confirmar_registro_de_coleta(sessao_bd, registro, operador=operador)
+    sessao_bd.commit()
+    return _saida_do_registro_auditado(registro)
+
+
+class InvalidarRegistroDeColetaEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    motivo: str = Field(min_length=1)
+
+
+@roteador.post("/registros/{id_do_registro}/invalidacao")
+def invalidar_registro_de_coleta_rota(
+    id_do_registro: uuid.UUID,
+    entrada: InvalidarRegistroDeColetaEntrada,
+    contexto: Annotated[
+        ContextoDaSessao, Depends(exigir_permissao(Operacao.auditoria_de_coleta, "escreve"))
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> RegistroAuditadoSaida:
+    """Restrita ao Mestre autor do desafio da série — a posse é conferida em
+    `invalidar_registro_de_coleta`, que exige motivo e estorna o valor
+    exato creditado (`RF-08-13`, `RN-08-09`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    registro = _buscar_registro_de_coleta(sessao_bd, id_do_registro)
+    registro = invalidar_registro_de_coleta(
+        sessao_bd, registro, operador=operador, motivo=entrada.motivo
+    )
+    sessao_bd.commit()
+    return _saida_do_registro_auditado(registro)

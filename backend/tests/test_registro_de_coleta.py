@@ -457,7 +457,7 @@ def test_forma_numero_sem_valor_e_recusado(
     assert sessao.query(RegistroDeColeta).count() == 0
 
 
-def test_valor_acima_da_faixa_entra_a_conferir_e_credita(
+def test_valor_acima_da_faixa_entra_a_conferir_e_credita_zero(
     sessao,
     criar_persona,
     criar_trilha,
@@ -490,7 +490,7 @@ def test_valor_acima_da_faixa_entra_a_conferir_e_credita(
     sessao.commit()
 
     assert registro.a_conferir is True
-    assert registro.pontos_creditados == 5
+    assert registro.pontos_creditados == 0
 
 
 def test_valor_abaixo_da_faixa_entra_a_conferir(
@@ -526,6 +526,7 @@ def test_valor_abaixo_da_faixa_entra_a_conferir(
     sessao.commit()
 
     assert registro.a_conferir is True
+    assert registro.pontos_creditados == 0
 
 
 def test_valor_dentro_da_faixa_nao_recebe_a_marca(

@@ -878,10 +878,10 @@ def test_partida_nunca_encerrada_nunca_credita(sessao, partida_aberta):
     assert sessao.query(PontoRegular).count() == 0
 
 
-def test_gatilho_recusa_debito_com_o_quiz_no_caminho(sessao, partida_aberta, engine):
-    """`RN-01-38`, `RF-01-57`: o ponto creditado pela partida é ponto regular
-    como qualquer outro — o evento do ORM e o gatilho do Postgres recusam
-    reduzi-lo."""
+def test_gatilho_recusa_negativo_com_o_quiz_no_caminho(sessao, partida_aberta, engine):
+    """`RN-01-38`, `RF-01-57`, `RN-01-55`: o ponto creditado pela partida é
+    ponto regular como qualquer outro — o evento do ORM e o gatilho do
+    Postgres recusam o saldo negativo."""
     cen, partida = partida_aberta()
     pergunta = _cadastrar(sessao, cen.mestre)
     _responder(
@@ -891,7 +891,7 @@ def test_gatilho_recusa_debito_com_o_quiz_no_caminho(sessao, partida_aberta, eng
     sessao.commit()
 
     conta = sessao.query(PontoRegular).one()
-    conta.total -= 1
+    conta.total -= conta.total + 1
     with pytest.raises(DebitoDePontoRegularRecusado):
         sessao.flush()
     sessao.rollback()
@@ -899,7 +899,7 @@ def test_gatilho_recusa_debito_com_o_quiz_no_caminho(sessao, partida_aberta, eng
     with pytest.raises(Exception, match="ponto regular nunca é debitado"):
         with engine.begin() as conexao:
             conexao.execute(
-                text("UPDATE ponto_regular SET total = 0 WHERE id = :id"), {"id": str(conta.id)}
+                text("UPDATE ponto_regular SET total = -1 WHERE id = :id"), {"id": str(conta.id)}
             )
 
     with pytest.raises(Exception, match="ponto regular nunca é debitado"):

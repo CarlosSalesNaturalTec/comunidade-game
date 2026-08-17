@@ -13,7 +13,7 @@ from nucleo.equipes.regra import entrar_na_equipe
 from nucleo.erros import DebitoDePontoRegularRecusado, ErroDeValidacao
 from nucleo.personas.modelo import Papel
 from nucleo.pontuacao.modelo import Badge, Nivel, PontoRegular, TipoDeBadge
-from nucleo.pontuacao.regra import creditar_ponto_regular
+from nucleo.pontuacao.regra import creditar_ponto_regular, debitar_ponto_regular
 from nucleo.resultados.modelo import DesfechoDoResultado, Resultado
 from nucleo.resultados.regra import registrar_resultado
 from nucleo.trilhas.modelo import FormatoDeAtividade, ModalidadeDeAtividade
@@ -148,7 +148,9 @@ def test_credito_de_ponto_regular_com_valor_nao_positivo_e_recusado(
     assert sessao.query(PontoRegular).count() == 0
 
 
-def test_ponto_regular_nunca_e_debitado_pelo_orm(sessao, criar_persona, criar_trilha):
+def test_ponto_regular_recusa_ficar_negativo_pelo_orm(sessao, criar_persona, criar_trilha):
+    """`RF-01-57`, `RF-01-69`, `RN-01-55`: a redução em si é aceita — só o
+    total negativo é recusado."""
     mestre = criar_persona(Papel.mestre)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
@@ -157,19 +159,23 @@ def test_ponto_regular_nunca_e_debitado_pelo_orm(sessao, criar_persona, criar_tr
     sessao.commit()
 
     conta.total = 5
+    sessao.commit()
+    assert sessao.get(PontoRegular, conta.id).total == 5
+
+    conta.total = -1
     with pytest.raises(DebitoDePontoRegularRecusado):
         sessao.commit()
     sessao.rollback()
 
     conta_intacta = sessao.get(PontoRegular, conta.id)
-    assert conta_intacta.total == 10
+    assert conta_intacta.total == 5
 
 
-def test_ponto_regular_recusa_debito_e_remocao_direto_no_banco(
+def test_ponto_regular_recusa_negativo_e_remocao_direto_no_banco(
     engine, sessao, criar_persona, criar_trilha
 ):
     """Fora do ORM — direto no banco — o gatilho da migração recusa também
-    (`RF-01-57`, `RN-01-38`, mesmo padrão de `RN-01-12`)."""
+    (`RF-01-57`, `RN-01-38`, `RN-01-55`, mesmo padrão de `RN-01-12`)."""
     mestre = criar_persona(Papel.mestre)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
@@ -177,9 +183,16 @@ def test_ponto_regular_recusa_debito_e_remocao_direto_no_banco(
     conta = creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=10)
     sessao.commit()
 
-    with engine.connect() as conexao, pytest.raises(DBAPIError):
+    with engine.connect() as conexao:
         conexao.execute(
             text("UPDATE ponto_regular SET total = 5 WHERE id = :id"), {"id": str(conta.id)}
+        )
+        conexao.commit()
+    sessao.refresh(conta)
+
+    with engine.connect() as conexao, pytest.raises(DBAPIError):
+        conexao.execute(
+            text("UPDATE ponto_regular SET total = -1 WHERE id = :id"), {"id": str(conta.id)}
         )
         conexao.commit()
 
@@ -189,7 +202,75 @@ def test_ponto_regular_recusa_debito_e_remocao_direto_no_banco(
 
     conta_intacta = sessao.get(PontoRegular, conta.id)
     assert conta_intacta is not None
-    assert conta_intacta.total == 10
+    assert conta_intacta.total == 5
+
+
+def test_debito_de_ponto_regular_com_valor_nao_positivo_e_recusado(
+    sessao, criar_persona, criar_trilha
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=5)
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        debitar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=0)
+    assert excinfo.value.campo == "valor"
+
+
+def test_debito_maior_que_o_saldo_para_em_zero(sessao, criar_persona, criar_trilha):
+    """`RF-01-57`, `RF-01-69`, `RN-01-55`: o débito por fato desfeito nunca
+    deixa o saldo negativo."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=5)
+    sessao.commit()
+
+    conta = debitar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=10)
+    sessao.commit()
+
+    assert conta.total == 0
+
+
+def test_debito_nao_derruba_nivel_nem_badge_ja_conquistados(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-01-70`, `RN-01-55`: nível e badge persistem mesmo que o saldo
+    caia depois de certificados."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre, obrigatoria=False)
+    _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missao)
+
+    nivel_antes = (
+        sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).one()
+    )
+    badge_antes = (
+        sessao.query(Badge)
+        .filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id, tipo=TipoDeBadge.de_nivel)
+        .one()
+    )
+
+    debitar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=10)
+    sessao.commit()
+
+    conta = (
+        sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).one()
+    )
+    assert conta.total == 0
+    nivel_depois = (
+        sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).one()
+    )
+    badge_depois = (
+        sessao.query(Badge)
+        .filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id, tipo=TipoDeBadge.de_nivel)
+        .one()
+    )
+    assert nivel_depois.id == nivel_antes.id
+    assert badge_depois.id == badge_antes.id
 
 
 def test_primeira_atividade_realizada_certifica_nivel_1(
