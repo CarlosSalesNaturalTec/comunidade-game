@@ -12,24 +12,24 @@ Cada assunto tem **um** documento normativo. Alterar o assunto significa alterar
 documento. Os demais, quando precisam citar o assunto, resumem em uma frase e **nunca
 repetem a regra completa** — repetição é o defeito que esta documentação combate.
 
-| Assunto                                                                                                                                                                                                                      | Fonte única |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| Visão, valores, causas, objetivos, público-alvo, fundador, transparência sobre IA                                                                                                                                            | 01          |
-| Personas, solicitação de participação, Comunidades Virtuais (conceito e regras de coleta), poderes, trilhas, atividades e desafios, criações originais, equipes, batalhas, recompensas, manual do Guerreiro(a)               | 02          |
-| Princípios de arquitetura, organização do repositório, stack e hospedagem, canais, as 8 aplicações, licenças, LGPD da plataforma                                                                                             | 03          |
-| Economia de recursos, moeda da plataforma, livro-razão, pessoa jurídica, receitas, titularidade dos dados publicados, desafios extras (regras completas), impacto social, aderência à Agenda 2030 e indicadores de cobertura | 04          |
-| Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto                                                        | 05          |
-| Trilha 1 — Robô Educa                                                                                                                                                                                                        | 06          |
-| Trilha 2 — Batalha de Laser                                                                                                                                                                                                  | 07          |
-| Requisitos por PRD (**único documento extenso entre os 01–15**)                                                                                                                                                              | 08          |
-| Requisitos de produto por aplicação (**derivados — nenhum PRD é fonte única**)                                                                                                                                               | `prds/`     |
-| Decisões pendentes e propostas                                                                                                                                                                                               | 09          |
-| Case 01 — Guerreira Zeferina, Ciclo 01                                                                                                                                                                                       | 10          |
-| Motor do jogo: anatomia da trilha, taxonomia, pontuação, níveis, badges, reflexos no ecossistema, etiqueta ODS da trilha                                                                                                     | 11          |
-| Guia do Apoiador (documento **derivado**, sem regra própria)                                                                                                                                                                 | 12          |
-| Código de Conduta do Guerreiro(a)                                                                                                                                                                                            | 13          |
-| Gamificação do Apoiador: níveis de necessidade, modalidades de apoio, perfis PF e PJ, missão do Apoiador, níveis de sustento, selos, técnicas admitidas e vedadas, portas de entrada por modalidade                          | 14          |
-| Identidade visual das aplicações: paleta, tipografia, medida, acessibilidade (WCAG AA), temperamentos, sistema de avatar, forma da carta, emblema de nível, silhueta de badge, fichas de ponto e moeda, tokens               | 15          |
+| Assunto                                                                                                                                                                                                                                                                               | Fonte única |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| Visão, valores, causas, objetivos, público-alvo, fundador, transparência sobre IA                                                                                                                                                                                                     | 01          |
+| Personas, solicitação de participação, Comunidades Virtuais (conceito e regras de coleta), poderes, trilhas, atividades e desafios, criações originais, equipes, batalhas, recompensas, manual do Guerreiro(a)                                                                        | 02          |
+| Princípios de arquitetura, organização do repositório, stack e hospedagem, canais, as 8 aplicações, licenças, LGPD da plataforma                                                                                                                                                      | 03          |
+| Economia de recursos, moeda da plataforma, livro-razão, pessoa jurídica, receitas, titularidade dos dados publicados, desafios extras (regras completas), impacto social, aderência à Agenda 2030 e indicadores de cobertura                                                          | 04          |
+| Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto                                                                                                                 | 05          |
+| Trilha 1 — Robô Educa                                                                                                                                                                                                                                                                 | 06          |
+| Trilha 2 — Batalha de Laser                                                                                                                                                                                                                                                           | 07          |
+| Requisitos por PRD (**único documento extenso entre os 01–15**)                                                                                                                                                                                                                       | 08          |
+| Requisitos de produto por aplicação (**derivados — nenhum PRD é fonte única**)                                                                                                                                                                                                        | `prds/`     |
+| Decisões pendentes e propostas                                                                                                                                                                                                                                                        | 09          |
+| Case 01 — Guerreira Zeferina, Ciclo 01                                                                                                                                                                                                                                                | 10          |
+| Motor do jogo: anatomia da trilha, taxonomia, pontuação, níveis, badges, reflexos no ecossistema, etiqueta ODS da trilha                                                                                                                                                              | 11          |
+| Guia do Apoiador (documento **derivado**, sem regra própria)                                                                                                                                                                                                                          | 12          |
+| Código de Conduta do Guerreiro(a)                                                                                                                                                                                                                                                     | 13          |
+| Gamificação do Apoiador: níveis de necessidade, modalidades de apoio, perfis PF e PJ, missão do Apoiador, níveis de sustento, selos, técnicas admitidas e vedadas, portas de entrada por modalidade                                                                                   | 14          |
+| Identidade visual das aplicações: paleta, tipografia, medida, marcos de largura, acessibilidade (WCAG AA), temperamentos, sistema de avatar, forma da carta, emblema de nível, silhueta de badge, glifo de poder, sistema de ícone, gráfico de série, fichas de ponto e moeda, tokens | 15          |
 
 ## 2. Papel e dependência dos documentos
 
@@ -63,8 +63,9 @@ em pontos — ficam **apenas no doc 14**.
 
 **Divisão 11 × 15:** o doc 11 diz **o que** cada card mostra e **como o território cresce**
 conforme o dado chega; o doc 15 diz **como isso se parece** — paleta, tipografia, moldura,
-silhueta de badge e emblema de nível. Composição de card e mapa dado → elemento visual ficam
-**apenas no doc 11**; cor, forma e medida ficam **apenas no doc 15**.
+silhueta de badge, emblema de nível, glifo de poder e gráfico de série. Composição de card e
+mapa dado → elemento visual ficam **apenas no doc 11**; cor, forma e medida ficam **apenas no
+doc 15**.
 
 ## 3. Conceitos e onde vivem
 
@@ -107,12 +108,13 @@ silhueta de badge e emblema de nível. Composição de card e mapa dado → elem
 | Aporte pela App 08 em dinheiro; material e serviço pelo Admin              | 02 §1 e 03 §10                             | 04 §2, 08                      |
 | Pré-cadastro do Apoiador (aporte declarado e comprovante)                  | 02 §1 e 03 §10                             | 04 §2, 08                      |
 | Identidade do Apoiador (avatar, nick, moldura e piso de 10 moedas)         | 11 §8.2                                    | 02 §1, 03 §§8, 10, 08          |
-| Paleta, tipografia, medida e tokens das aplicações                         | 15 §§3, 4, 11                              | 03 §8                          |
+| Paleta, tipografia, medida, marcos de largura e tokens das aplicações      | 15 §§3, 4, 12                              | 03 §8                          |
 | Acessibilidade digital das aplicações (WCAG 2.2 AA)                        | 15 §5                                      | 09, `prds/` §10 de cada um     |
 | Temperamentos Operação e Arena                                             | 15 §6                                      | 03 §2                          |
 | Sistema de avatar do Guerreiro(a) e avatar padrão do projeto               | 15 §7                                      | 02 §1, 03 §3.2, 11 §8.2        |
-| Forma da carta, emblema de nível e silhueta de badge                       | 15 §8                                      | 11 §§7, 8.2                    |
+| Forma da carta, emblema de nível, silhueta de badge e glifo de poder       | 15 §8                                      | 02 §2, 11 §§7, 8.2             |
 | Fichas de ponto, ponto extra e moeda                                       | 15 §9                                      | 04 §1, 11 §5                   |
+| Sistema de ícone e gráfico de série das aplicações                         | 15 §11                                     | 11 §8.3                        |
 | Área do Mestre (App 09) — autoria e operação                               | 03 §11                                     | 02, 05, 08, 09                 |
 | Publicação da trilha (sem aprovação prévia, travas e conteúdo)             | 03 §11                                     | 02, 05, 08, 11                 |
 | Atividade da missão (modalidade e formato)                                 | 11 §§2.1, 4                                | 02, 03 §11, 08                 |
@@ -315,7 +317,8 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     **recompensa de marco jamais é comprada**. O preço em pontos **não deriva** do valor em
     moedas nem em reais.
 24. **As oito aplicações têm uma identidade visual só**, com dois temperamentos — Operação e
-    Arena — que mudam densidade, raio e presença de ilustração, **nunca a marca nem a paleta**.
+    Arena — que mudam densidade, raio e presença de ilustração, **nunca a marca nem a paleta**,
+    e que valem para a **aplicação inteira**, jamais por região de uma tela.
     O piso de acessibilidade é **WCAG 2.2 AA** em todas elas, e **a cor jamais carrega
     significado sozinha**: sempre acompanhada de glifo, forma, numeral ou rótulo. **Ponto
     regular, ponto extra e moeda nunca se confundem na tela** — cada um com glifo, ficha e
