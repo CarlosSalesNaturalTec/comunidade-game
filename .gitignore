@@ -17,3 +17,6 @@ __pycache__/
 Thumbs.db
 .idea/
 .vscode/
+
+# Scaffolding de agentes em worktree isolado (Claude Code)
+.claude/worktrees/
