@@ -11,39 +11,41 @@ no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs est�
 
 ## Situação da esteira
 
-| PRD                                       | Assunto                                | Aplicação | Onda | Situação     |
-| ----------------------------------------- | -------------------------------------- | --------- | ---- | ------------ |
-| [PRD-08](prd-08-comunidades-virtuais.md)  | Comunidades Virtuais e território      | —         | 1    | aprovado     |
-| [PRD-07](prd-07-economia-e-ledger.md)     | Economia de recursos e ledger          | —         | 1    | aprovado     |
-| [PRD-01](prd-01-backend-api.md)           | Backend API (núcleo)                   | —         | 1    | implementado |
-| [PRD-02](prd-02-frontend-de-gestao.md)    | Frontend de gestão                     | App 03    | 2    | aprovado     |
-| [PRD-04](prd-04-aula-presencial.md)       | Aula presencial (onboarding e trilhas) | App 01    | 2    | aprovado     |
-| [PRD-09](prd-09-area-do-mestre.md)        | Área do Mestre (autoria e operação)    | App 09    | 3    | aprovado     |
-| [PRD-05](prd-05-area-do-guerreiro.md)     | Área do Guerreiro(a)                   | App 05    | 3    | aprovado     |
-| [PRD-13](prd-13-area-dos-responsaveis.md) | Área dos pais e responsáveis           | App 07    | 4    | aprovado     |
-| [PRD-03](prd-03-vitrine-publica.md)       | Vitrine pública                        | App 06    | 4    | aprovado     |
-| [PRD-14](prd-14-area-do-apoiador.md)      | Área do Apoiador                       | App 08    | 5    | aprovado     |
-| [PRD-10](prd-10-batalhas.md)              | Batalhas e eventos presenciais         | —         | 5    | aprovado     |
-| [PRD-12](prd-12-jogo-em-javascript.md)    | App 04: Jogo em JavaScript             | App 04    | 5    | aprovado     |
-| [PRD-11](prd-11-personalizacao-por-ia.md) | Personalização por IA                  | —         | 5    | aprovado     |
+| PRD                                       | Assunto                                | Aplicação | Onda | Situação |
+| ----------------------------------------- | -------------------------------------- | --------- | ---- | -------- |
+| [PRD-08](prd-08-comunidades-virtuais.md)  | Comunidades Virtuais e território      | —         | 1    | aprovado |
+| [PRD-07](prd-07-economia-e-ledger.md)     | Economia de recursos e ledger          | —         | 1    | aprovado |
+| [PRD-01](prd-01-backend-api.md)           | Backend API (núcleo)                   | —         | 1    | aprovado |
+| [PRD-02](prd-02-frontend-de-gestao.md)    | Frontend de gestão                     | App 03    | 2    | aprovado |
+| [PRD-04](prd-04-aula-presencial.md)       | Aula presencial (onboarding e trilhas) | App 01    | 2    | aprovado |
+| [PRD-09](prd-09-area-do-mestre.md)        | Área do Mestre (autoria e operação)    | App 09    | 3    | aprovado |
+| [PRD-05](prd-05-area-do-guerreiro.md)     | Área do Guerreiro(a)                   | App 05    | 3    | aprovado |
+| [PRD-13](prd-13-area-dos-responsaveis.md) | Área dos pais e responsáveis           | App 07    | 4    | aprovado |
+| [PRD-03](prd-03-vitrine-publica.md)       | Vitrine pública                        | App 06    | 4    | aprovado |
+| [PRD-14](prd-14-area-do-apoiador.md)      | Área do Apoiador                       | App 08    | 5    | aprovado |
+| [PRD-10](prd-10-batalhas.md)              | Batalhas e eventos presenciais         | —         | 5    | aprovado |
+| [PRD-12](prd-12-jogo-em-javascript.md)    | App 04: Jogo em JavaScript             | App 04    | 5    | aprovado |
+| [PRD-11](prd-11-personalizacao-por-ia.md) | Personalização por IA                  | —         | 5    | aprovado |
 
 Situações possíveis: **não iniciado**, **em elicitação**, **em redação**, **em revisão**,
 **aprovado** e **implementado**. O link para o documento aparece nesta tabela quando ele entra
 na pasta.
 
-O PRD-01 segue **implementado**. A credencial de dispositivo do sensor (`RF-01-67` e a
-metade de `RF-01-68` sobre revogação por ato) entrou por change própria; resta só a metade de
-`RF-01-68` que depende do marco de fim do vínculo do Guerreiro(a), ainda não implementado no
-núcleo (proposal.md da change).
+O PRD-01 volta a **aprovado**: as cinco decisões que travavam a esteira mudaram requisitos
+dele. `RF-01-57` deixa de proibir todo débito de ponto regular e passa a admiti-lo por fato
+desfeito, com `RF-01-69`, `RF-01-70` e `RN-01-55` guardando o piso em zero e o nível já
+conquistado; `RF-01-68` passa a encerrar a credencial de dispositivo ao **encerramento da
+série**, marco que existe no núcleo, em vez do fim do vínculo, que não existe. O código
+implementado até aqui segue válido, salvo a trava de débito, que a change do estorno revisa.
 
 O PRD-08 segue **aprovado**, com a leitura pública do território (`RF-08-16`, `RF-08-28`,
 `RN-08-24`, `RN-08-12`, `RN-08-13`) e a exportação pública em CSV com a cobertura de ODS da
-coleta (`RF-08-19`, `RF-08-26`, `RF-08-27`) entregues por changes próprias. Restam a auditoria
-por amostragem e a invalidação (`RF-08-13`), travadas pela contradição entre o estorno que ela
-exige e o ponto regular que nunca decresce, a entrega do conjunto abaixo do bairro sob
-aprovação de Admin, sem `RF` que declare a rota, o formato ou o recorte aprovado, e o
-`GET /comunidades` com indicadores agregados, cuja lista de indicadores o PRD ainda não
-declara — as perguntas seguem com o fundador (proposal.md de cada change).
+coleta (`RF-08-19`, `RF-08-26`, `RF-08-27`) entregues por changes próprias. Resta a auditoria
+por amostragem, agora destravada: a invalidação estorna (`RF-08-13`, `RN-08-27`) e a confirmação
+do Mestre credita o que estava "a conferir" (`RF-08-29`, `RN-08-26`). A entrega do conjunto
+abaixo do bairro saiu do escopo — corre fora da plataforma no Ciclo 01 —, e o `GET /comunidades`
+publica os quatro indicadores do documento 02 §1, faltando só decidir o que sai quando a
+comunidade fica abaixo do piso de três coletores (documento 09).
 
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.

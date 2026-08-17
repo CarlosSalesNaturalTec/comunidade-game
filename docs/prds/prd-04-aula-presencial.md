@@ -8,7 +8,7 @@
 | Aplicação        | App 01 — Aula presencial (onboarding, trilhas e equipes)          |
 | Onda             | 2                                                                 |
 | Situação         | aprovado                                                          |
-| Versão e data    | v4 — 2026-08-10                                                   |
+| Versão e data    | v5 — 2026-08-17                                                   |
 | Depende de       | PRD-01, PRD-02; o caminho das trilhas depende também do PRD-09    |
 | Documentos-fonte | 02 §§1, 5, 9, 03 §§1.1, 3, 4, 12, 05 §§4, 5, 06 §3, 11 §§4, 5, 15 |
 
@@ -358,7 +358,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RN-04-20` | A aplicação não capta o áudio ambiente da aula; só o áudio dirigido ao assistente                           | —          | 03 §4         |
 | `RN-04-21` | Do áudio do assistente guarda-se apenas a transcrição                                                       | —          | 03 §7         |
 | `RN-04-22` | Uma resposta por equipe e pergunta, válida para todos os integrantes                                        | —          | 05 §5         |
-| `RN-04-23` | Só o saldo de pontos extras é trocável; ponto regular nunca debita                                          | 23         | 11 §5         |
+| `RN-04-23` | Só o saldo de pontos extras é trocável; a troca nunca alcança o ponto regular                               | 23         | 11 §5         |
 | `RN-04-24` | A troca debita o saldo disponível e nunca o acumulado, que só cresce                                        | 23         | 11 §5         |
 | `RN-04-25` | O saldo disponível nunca fica negativo                                                                      | 23         | 11 §5         |
 | `RN-04-26` | Recompensa de marco não é trocada; a troca alcança só a recompensa avulsa                                   | 23         | 02 §8         |
