@@ -7,7 +7,7 @@
 | PRD              | PRD-01                                                     |
 | Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
-| Situação         | aprovado                                                   |
+| Situação         | implementado                                               |
 | Versão e data    | v16 — 2026-08-17                                           |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 8, 9, 11 e 12, 04, 11                     |
