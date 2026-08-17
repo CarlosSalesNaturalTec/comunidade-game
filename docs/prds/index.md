@@ -42,8 +42,9 @@ ODS da coleta (`RF-08-19`, `RF-08-26`, `RF-08-27`) e a auditoria por amostragem 
 estorno (`RF-08-13`, `RN-08-27`) e confirmação que credita o "a conferir" (`RF-08-29`,
 `RN-08-26`) — estão entregues. A entrega do conjunto abaixo do bairro saiu do escopo — corre fora
 da plataforma no Ciclo 01. Falta só o `GET /comunidades` com os quatro indicadores do documento
-02 §1, que nunca chegou a ser construído: trava na pendência de o que sai quando a comunidade
-fica abaixo do piso de três coletores (documento 09).
+02 §1 (`RF-08-30`, `RF-08-31`), última fatia do PRD-08: a pendência que o travava foi decidida —
+comunidade abaixo do piso sai na lista sem os indicadores —, e com ela veio o cálculo dos
+quatro, que estava apenas nomeado.
 
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.

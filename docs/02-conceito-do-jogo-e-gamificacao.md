@@ -249,6 +249,20 @@ fim do ciclo, registros válidos e continuidade. São os mesmos que embasam a av
 do Território, e o piso acima vale para eles — contagem de séries é, na prática, contagem de
 coletores.
 
+| Indicador                     | O que conta                                                                              |
+| ----------------------------- | ---------------------------------------------------------------------------------------- |
+| Séries abertas                | Séries abertas na comunidade, qualquer que seja o estado                                 |
+| Séries ativas ao fim do ciclo | Séries ativas **no instante da consulta**, com o rótulo do ciclo corrente                |
+| Registros válidos             | Registros em situação válida das séries da comunidade                                    |
+| Continuidade                  | Média, entre as séries, da fração dos períodos de cadência esperados com registro válido |
+
+O ciclo é rótulo declarado na implantação, sem calendário: enquanto ele corre, "ao fim do ciclo"
+se apura **no instante da consulta**, a mesma régua que a auditoria por amostragem já usa.
+
+**Comunidade abaixo do piso sai na lista sem os indicadores.** A comunidade é o topo da
+hierarquia e não há nível acima a que somá-la: ela permanece na lista, com nome e localização, e
+os quatro indicadores não saem. Some o número, nunca a comunidade — quem está começando aparece.
+
 **Revogação despersonaliza, não apaga.** Se o responsável revoga o consentimento, a plataforma
 rompe o vínculo de autoria e destrói o mapeamento: o registro segue na série com um **código de
 coletor que não corresponde a pessoa alguma**. A medição é dado do lugar e permanece; o dado
