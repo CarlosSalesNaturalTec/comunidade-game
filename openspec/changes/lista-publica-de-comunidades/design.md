@@ -104,6 +104,20 @@ qualquer um dos quatro.
   mitigação é textual: a spec põe os dois lado a lado, com um cenário que afirma que o recorte
   da série **continua** sendo suprimido.
 
+### 7. A apuração dos quatro indicadores vive em `coletas/regra.py`, não em `comunidades/regra.py`
+
+Desvio de implementação em relação às `tasks`: `coletas/regra.py` já importa
+`comunidades/regra.py` (para `resolver_vinculo_na_data`), e a apuração dos indicadores precisa
+de `apurar_estado_da_serie` e dos períodos de cadência, que vivem em `coletas`. Colocar as
+funções em `comunidades/regra.py` fecharia um ciclo de import entre os dois módulos, que o
+Python não resolve.
+
+A solução segue o padrão que o próprio módulo já usa para `paginar_serie_publica` e
+`exportar_serie_do_territorio`: a apuração pública que depende de `coletas` interno vive em
+`coletas/regra.py`, tomando `ComunidadeVirtual` só como parâmetro (de `comunidades.modelo`, sem
+ciclo), e `comunidades/rotas.py` importa de lá — como já importa `PontoDaSeriePublicaSaida` e as
+demais. Nenhum requisito muda; só o arquivo em que a função mora.
+
 ## Migration Plan
 
 Nenhuma migração de banco. A change é somente leitura: não cria tabela, não altera coluna e não

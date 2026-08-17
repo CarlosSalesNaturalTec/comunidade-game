@@ -11,9 +11,11 @@ from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..coletas.regra import (
     CAMPOS_DO_DICIONARIO_DE_DADOS,
+    ComunidadeDaListaSaida,
     PontoDaSeriePublicaSaida,
     apurar_periodo_coberto_da_exportacao,
     exportar_serie_do_territorio,
+    paginar_comunidades_publicas,
     paginar_serie_publica,
 )
 from ..configuracao import Configuracao, obter_configuracao
@@ -67,6 +69,36 @@ def criar_comunidade_rota(
         granularidade_maxima=comunidade.granularidade_maxima,
         admin_criador_id=comunidade.admin_criador_id,
         criada_em=comunidade.criada_em,
+    )
+
+
+class ListaDeComunidadesSaida(BaseModel):
+    itens: list[ComunidadeDaListaSaida]
+    proximo_cursor: str | None
+    ciclo_rotulo: str
+
+
+@roteador.get("/comunidades", response_model=ListaDeComunidadesSaida)
+def lista_de_comunidades(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
+) -> ListaDeComunidadesSaida:
+    """Leitura pública, sem credencial de persona: nome, localização e os
+    quatro indicadores do documento 02 §1 de cada comunidade, com o rótulo
+    do ciclo corrente (`RF-08-30`, `RF-08-31`, `RN-08-28`, `RN-08-29`,
+    `RF-01-02`, `RN-01-32`, `RF-01-28`, PRD-08 §9)."""
+    pagina = paginar_comunidades_publicas(
+        sessao_bd,
+        piso_de_coletores=configuracao.territorio_piso_de_coletores_distintos,
+        cursor=parametros.cursor,
+        tamanho=parametros.tamanho,
+    )
+    sessao_bd.commit()
+    return ListaDeComunidadesSaida(
+        itens=pagina.itens,
+        proximo_cursor=pagina.proximo_cursor,
+        ciclo_rotulo=configuracao.ciclo_rotulo,
     )
 
 

@@ -89,6 +89,55 @@ def _contar_periodos_decorridos(ancora: datetime, agora_: datetime, cadencia: Ca
     return periodos
 
 
+def _enumerar_periodos_vencidos(
+    aberta_em: datetime, agora_: datetime, cadencia: Cadencia
+) -> set[datetime]:
+    """Os períodos de `periodo_de_cadencia`, identificados pelo próprio
+    início, já encerrados por inteiro entre a abertura da série e agora — a
+    base de que `contar_periodos_vencidos` e
+    `contar_periodos_vencidos_com_registro_valido` partem (`RN-08-29`,
+    design — Decisions 2 e 4)."""
+    inicio, fim = periodo_de_cadencia(aberta_em, cadencia)
+    periodos: set[datetime] = set()
+    while fim <= agora_:
+        periodos.add(inicio)
+        inicio, fim = periodo_de_cadencia(fim, cadencia)
+    return periodos
+
+
+def contar_periodos_vencidos(serie: SerieDeColeta, agora_: datetime) -> int:
+    """Quantos períodos de cadência da série já venceram entre a abertura e
+    o instante da consulta — o denominador da continuidade da comunidade;
+    série sem período vencido devolve zero, em vez de entrar como se
+    tivesse falhado (`RN-08-29`, design — Decisions 2 e 4)."""
+    return len(_enumerar_periodos_vencidos(serie.aberta_em, agora_, serie.cadencia))
+
+
+def contar_periodos_vencidos_com_registro_valido(
+    sessao: Session, serie: SerieDeColeta, agora_: datetime
+) -> int:
+    """Entre os períodos já vencidos da série, quantos têm ao menos um
+    registro válido — recortado pela **data da medição**, nunca a do
+    registro, e sem contar o período ainda em curso nem o registro
+    invalidado (`RN-08-29`, `RN-08-09`, `RF-08-15`, design — Decisions 2 e
+    3)."""
+    vencidos = _enumerar_periodos_vencidos(serie.aberta_em, agora_, serie.cadencia)
+    if not vencidos:
+        return 0
+    momentos = (
+        sessao.query(RegistroDeColeta.momento_do_fato)
+        .filter(
+            RegistroDeColeta.serie_de_coleta_id == serie.id,
+            RegistroDeColeta.situacao == SituacaoDoRegistro.valida,
+        )
+        .all()
+    )
+    periodos_com_registro = {
+        periodo_de_cadencia(momento, serie.cadencia)[0] for (momento,) in momentos
+    }
+    return len(vencidos & periodos_com_registro)
+
+
 def _derivar_estado_da_serie(
     serie: SerieDeColeta, desafio: DesafioDeColeta, agora_: datetime
 ) -> EstadoDaSerie:
@@ -1236,3 +1285,126 @@ def apurar_periodo_coberto_da_exportacao(
         func.min(publicaveis.c.momento_do_fato), func.max(publicaveis.c.momento_do_fato)
     ).one()
     return inicio, fim
+
+
+class ComunidadeDaListaSaida(BaseModel):
+    id: uuid.UUID
+    nome: str
+    localizacao: str
+    series_abertas: int | None
+    series_ativas: int | None
+    registros_validos: int | None
+    continuidade: float | None
+
+
+def _contar_coletores_distintos_da_comunidade(
+    sessao: Session, comunidade: ComunidadeVirtual
+) -> int:
+    """O insumo do piso da lista de comunidades, nunca devolvido na
+    resposta: coletores distintos entre os registros válidos da comunidade
+    — a mesma base que a série pública já usa para o próprio piso
+    (`RN-08-12`, `RF-08-31`, `RN-08-28`, design — Decisions 6)."""
+    return (
+        sessao.query(func.count(func.distinct(SerieDeColeta.coletor_id)))
+        .join(RegistroDeColeta, RegistroDeColeta.serie_de_coleta_id == SerieDeColeta.id)
+        .filter(
+            RegistroDeColeta.comunidade_virtual_id == comunidade.id,
+            RegistroDeColeta.situacao == SituacaoDoRegistro.valida,
+        )
+        .scalar()
+    )
+
+
+def _apurar_quatro_indicadores(
+    sessao: Session, comunidade: ComunidadeVirtual, agora_: datetime
+) -> tuple[int, int, int, float | None]:
+    """Séries abertas, séries ativas no instante da consulta, registros
+    válidos e continuidade — nessa ordem —, para uma comunidade acima do
+    piso de coletores distintos (`RF-08-30`, `RN-08-29`)."""
+    series = (
+        sessao.query(SerieDeColeta)
+        .join(Local, Local.id == SerieDeColeta.local_id)
+        .filter(Local.comunidade_virtual_id == comunidade.id)
+        .all()
+    )
+
+    series_ativas = sum(
+        1 for serie in series if apurar_estado_da_serie(sessao, serie) == EstadoDaSerie.ativa
+    )
+
+    registros_validos = (
+        sessao.query(func.count(RegistroDeColeta.id))
+        .filter(
+            RegistroDeColeta.comunidade_virtual_id == comunidade.id,
+            RegistroDeColeta.situacao == SituacaoDoRegistro.valida,
+        )
+        .scalar()
+    )
+
+    fracoes = []
+    for serie in series:
+        vencidos = contar_periodos_vencidos(serie, agora_)
+        if vencidos == 0:
+            continue
+        com_registro = contar_periodos_vencidos_com_registro_valido(sessao, serie, agora_)
+        fracoes.append(com_registro / vencidos)
+    continuidade = sum(fracoes) / len(fracoes) if fracoes else None
+
+    return len(series), series_ativas, registros_validos, continuidade
+
+
+def paginar_comunidades_publicas(
+    sessao: Session, *, piso_de_coletores: int, cursor: str | None, tamanho: int
+) -> PaginaDeResultado[ComunidadeDaListaSaida]:
+    """A lista pública de comunidades: nome, localização e os quatro
+    indicadores do documento 02 §1 — nulos para a comunidade abaixo do piso
+    de coletores distintos, que continua na lista porque é o topo da
+    hierarquia e não há nível acima a que somá-la (`RF-08-30`, `RF-08-31`,
+    `RN-08-28`, `RN-08-29`, `RF-01-28`, design — Decisions 1 e 5).
+    Ordenação estável por (nome, id); o piso é apurado por comunidade, antes
+    de montar cada item da página.
+    """
+    consulta = sessao.query(ComunidadeVirtual)
+
+    if cursor:
+        posicao = decodificar_cursor(cursor)
+        try:
+            nome_cursor = posicao["nome"]
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(
+            tuple_(ComunidadeVirtual.nome, ComunidadeVirtual.id) > (nome_cursor, id_cursor)
+        )
+
+    consulta = consulta.order_by(ComunidadeVirtual.nome, ComunidadeVirtual.id).limit(tamanho + 1)
+    comunidades = consulta.all()
+
+    proximo_cursor = None
+    if len(comunidades) > tamanho:
+        comunidades = comunidades[:tamanho]
+        ultima = comunidades[-1]
+        proximo_cursor = codificar_cursor({"nome": ultima.nome, "id": str(ultima.id)})
+
+    agora_ = agora()
+    itens = []
+    for comunidade in comunidades:
+        if _contar_coletores_distintos_da_comunidade(sessao, comunidade) < piso_de_coletores:
+            series_abertas = series_ativas = registros_validos = None
+            continuidade = None
+        else:
+            series_abertas, series_ativas, registros_validos, continuidade = (
+                _apurar_quatro_indicadores(sessao, comunidade, agora_)
+            )
+        itens.append(
+            ComunidadeDaListaSaida(
+                id=comunidade.id,
+                nome=comunidade.nome,
+                localizacao=comunidade.localizacao,
+                series_abertas=series_abertas,
+                series_ativas=series_ativas,
+                registros_validos=registros_validos,
+                continuidade=continuidade,
+            )
+        )
+    return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)

@@ -13,7 +13,7 @@ no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs est�
 
 | PRD                                       | Assunto                                | Aplicação | Onda | Situação     |
 | ----------------------------------------- | -------------------------------------- | --------- | ---- | ------------ |
-| [PRD-08](prd-08-comunidades-virtuais.md)  | Comunidades Virtuais e território      | —         | 1    | aprovado     |
+| [PRD-08](prd-08-comunidades-virtuais.md)  | Comunidades Virtuais e território      | —         | 1    | implementado |
 | [PRD-07](prd-07-economia-e-ledger.md)     | Economia de recursos e ledger          | —         | 1    | aprovado     |
 | [PRD-01](prd-01-backend-api.md)           | Backend API (núcleo)                   | —         | 1    | implementado |
 | [PRD-02](prd-02-frontend-de-gestao.md)    | Frontend de gestão                     | App 03    | 2    | aprovado     |
@@ -36,15 +36,12 @@ ponto regular por fato desfeito (`RF-01-57`, `RF-01-69`, `RF-01-70`, `RN-01-55`)
 credencial de dispositivo ao **encerramento da série** (`RF-01-68`), fechando as cinco decisões
 que travavam a esteira.
 
-O PRD-08 segue **aprovado**, não implementado. A leitura pública do território (`RF-08-16`,
-`RF-08-28`, `RN-08-24`, `RN-08-12`, `RN-08-13`), a exportação pública em CSV com a cobertura de
-ODS da coleta (`RF-08-19`, `RF-08-26`, `RF-08-27`) e a auditoria por amostragem — invalidação com
-estorno (`RF-08-13`, `RN-08-27`) e confirmação que credita o "a conferir" (`RF-08-29`,
-`RN-08-26`) — estão entregues. A entrega do conjunto abaixo do bairro saiu do escopo — corre fora
-da plataforma no Ciclo 01. Falta só o `GET /comunidades` com os quatro indicadores do documento
-02 §1 (`RF-08-30`, `RF-08-31`), última fatia do PRD-08: a pendência que o travava foi decidida —
-comunidade abaixo do piso sai na lista sem os indicadores —, e com ela veio o cálculo dos
-quatro, que estava apenas nomeado.
+O PRD-08 volta a **implementado**: a change `lista-publica-de-comunidades` entregou o
+`GET /comunidades` com os quatro indicadores do documento 02 §1 (`RF-08-30`, `RF-08-31`),
+última fatia do PRD-08. A pendência que a travava foi decidida — comunidade abaixo do piso sai
+na lista sem os indicadores —, e com ela veio o cálculo dos quatro indicadores, que estava
+apenas nomeado. A entrega do conjunto abaixo do bairro segue fora do escopo — corre fora da
+plataforma no Ciclo 01.
 
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
