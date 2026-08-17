@@ -8,7 +8,7 @@
 | Aplicação        | — (domínio consumido pelas Apps 02, 03, 05, 06 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v5 — 2026-08-14                                      |
+| Versão e data    | v6 — 2026-08-17                                      |
 | Depende de       | —                                                    |
 | Documentos-fonte | 02 §1, 02 §2, 03 §12, 11 §4, 11 §5, 11 §7, 11 §8.3   |
 
@@ -46,7 +46,8 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 - Registro por **foto ou vídeo**, para o que se mede por evidência e não por número — lixo
   acumulado, buraco na via, poste apagado.
 - Crédito automático de pontos recorrentes ao Poder do Território.
-- Auditoria por amostragem do Mestre, com invalidação de registro e estorno dos pontos.
+- Auditoria por amostragem do Mestre, com confirmação do registro "a conferir", que o credita,
+  e invalidação de registro, que estorna os pontos.
 - Guarda permanente do registro com o coletor identificado.
 - Painel público por comunidade, agregado até o bairro, e exportação anonimizada.
 - Etiqueta ODS herdada da missão, ou da trilha, e cobertura por ciclo no painel — é aqui que o
@@ -60,16 +61,19 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
   locais declarada, não o ponto no mapa.
 - Interface das telas de coleta — pertence ao PRD-05 (App 05).
 - Escolha do banco de séries temporais — decisão de arquitetura do PRD-01.
+- Rota de entrega do conjunto abaixo do bairro — no Ciclo 01 a entrega corre **fora da
+  plataforma**, e ao núcleo cabe só registrar quem pediu, a finalidade, a aprovação ou a recusa
+  com motivo e o que foi entregue, pela fila única de avaliação do PRD-01.
 
 ## 4. Personas e permissões
 
-| Persona      | O que faz neste domínio                                                                                                                                                                   | O que não pode fazer                                                        |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| Admin        | Cria comunidades, locais e os tipos de coleta do catálogo e avalia solicitações de novo local; a transferência de Guerreiro(a) entre comunidades fica fora do Ciclo 01                    | Registrar coleta no lugar do Guerreiro(a)                                   |
-| Mestre       | Cria o desafio de coleta da sua trilha, escolhendo um tipo do catálogo, aprova solicitações de novo local dos Guerreiros e Guerreiras dela, audita registros por amostragem e os invalida | Alterar o valor registrado por um Guerreiro(a); criar tipo de coleta        |
-| Guerreiro(a) | Abre séries, seleciona o local, solicita novo local, registra medições e acompanha os pontos das suas séries                                                                              | Apagar registro já gravado; criar local; abrir série fora da sua comunidade |
-| Responsável  | Consulta, pela App 07, o que a criança sob sua responsabilidade coletou                                                                                                                   | Registrar, corrigir ou apagar dado do território                            |
-| Visitante    | Consulta o painel público da comunidade, agregado e anonimizado                                                                                                                           | Ver coletor, granularidade abaixo de rua ou dado bruto                      |
+| Persona      | O que faz neste domínio                                                                                                                                                                                 | O que não pode fazer                                                        |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Admin        | Cria comunidades, locais e os tipos de coleta do catálogo e avalia solicitações de novo local; a transferência de Guerreiro(a) entre comunidades fica fora do Ciclo 01                                  | Registrar coleta no lugar do Guerreiro(a)                                   |
+| Mestre       | Cria o desafio de coleta da sua trilha, escolhendo um tipo do catálogo, aprova solicitações de novo local dos Guerreiros e Guerreiras dela, audita registros por amostragem, confirmando ou invalidando | Alterar o valor registrado por um Guerreiro(a); criar tipo de coleta        |
+| Guerreiro(a) | Abre séries, seleciona o local, solicita novo local, registra medições e acompanha os pontos das suas séries                                                                                            | Apagar registro já gravado; criar local; abrir série fora da sua comunidade |
+| Responsável  | Consulta, pela App 07, o que a criança sob sua responsabilidade coletou                                                                                                                                 | Registrar, corrigir ou apagar dado do território                            |
+| Visitante    | Consulta o painel público da comunidade, agregado e anonimizado                                                                                                                                         | Ver coletor, granularidade abaixo de rua ou dado bruto                      |
 
 ## 5. Jornadas principais
 
@@ -101,8 +105,9 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
    ou pelo sensor que construiu (Robô Educa), conforme o tipo de coleta exigir.
 5. O registro nasce **válido** e credita os pontos na hora, até o limite de registros que
    pontuam naquele período.
-6. Registro fora da faixa esperada do tipo de coleta é aceito e gravado, mas **marcado para
-   auditoria** — a medição estranha pode ser a mais valiosa da série.
+6. Registro fora da faixa esperada do tipo de coleta é aceito e gravado, mas **marcado "a
+   conferir"** e **sem creditar ponto algum** — a medição estranha pode ser a mais valiosa da
+   série, e é a confirmação do Mestre que a credita.
 
 O registro exige rede: sem conexão, a gravação fica bloqueada até reconectar — não há fila
 local, ao contrário da presença do App 01. A **data e hora da medição** são preservadas
@@ -122,8 +127,13 @@ distintas da hora do envio: o Guerreiro(a) pode registrar agora uma medição qu
 1. O Mestre recebe uma amostra de registros das séries dos seus desafios, priorizando os
    marcados fora da faixa.
 2. Confirma ou **invalida** o registro, com motivo.
-3. A invalidação **estorna** os pontos daquele registro e fica no histórico da série.
-4. Invalidação não apaga o registro: ele permanece gravado, marcado como inválido.
+3. A confirmação de registro "a conferir" **credita** os pontos que ele ainda não tinha; a de
+   registro já válido apenas encerra a auditoria dele, sem creditar de novo.
+4. A invalidação **estorna** os pontos daquele registro e fica no histórico da série. Registro
+   "a conferir" invalidado não tem o que estornar, porque nunca creditou.
+5. O estorno não desfaz percurso: o saldo não fica negativo, e nível e badge já conquistados
+   permanecem.
+6. Invalidação não apaga o registro: ele permanece gravado, marcado como inválido.
 
 ### 5.6 Visitante consulta o painel
 
@@ -146,7 +156,8 @@ distintas da hora do envio: o Guerreiro(a) pode registrar agora uma medição qu
 | `RF-08-09` | Sistema credita, por registro válido, o valor do documento 11 §5 ao Poder do Território                                        | essencial  |
 | `RF-08-10` | Sistema marca a série como interrompida após dois períodos de cadência seguidos sem registro                                   | essencial  |
 | `RF-08-11` | Sistema retoma a série ao receber novo registro, sem recompor o período parado                                                 | essencial  |
-| `RF-08-12` | Sistema marca para auditoria registro fora da faixa esperada do tipo de coleta                                                 | essencial  |
+| `RF-08-12` | Sistema marca "a conferir" registro fora da faixa esperada do tipo de coleta e não credita ponto por ele                       | essencial  |
+| `RF-08-29` | Mestre confirma registro "a conferir" na auditoria, e é essa confirmação que credita os pontos dele                            | essencial  |
 | `RF-08-13` | Mestre invalida registro com motivo, estornando os pontos e mantendo o registro gravado                                        | essencial  |
 | `RF-08-14` | Sistema aceita registro de sensor autenticado por credencial de dispositivo, com a origem gravada                              | essencial  |
 | `RF-08-15` | Sistema grava a hora da medição e a hora do registro em campos distintos, e usa a da medição em toda regra dependente de tempo | essencial  |
@@ -177,6 +188,8 @@ distintas da hora do envio: o Guerreiro(a) pode registrar agora uma medição qu
 | `RN-08-07` | Dois períodos de cadência seguidos sem registro interrompem a série                                                           | 6          | 02 §1    |
 | `RN-08-08` | Série interrompida cessa o cômputo; os pontos já creditados permanecem                                                        | 6          | 02 §1    |
 | `RN-08-09` | Registro nasce válido; o Mestre audita por amostragem e pode invalidar, estornando os pontos                                  | —          | 02 §1    |
+| `RN-08-26` | Valor "a conferir" não pontua até a confirmação do Mestre: é ela que credita, e o invalidado não tem o que estornar           | —          | 02 §1    |
+| `RN-08-27` | O estorno da coleta não deixa o saldo negativo nem derruba nível ou badge já conquistados                                     | 23         | 11 §5    |
 | `RN-08-10` | Registro nunca é apagado nem editado: correção se faz por invalidação e novo registro                                         | 7          | 02 §1    |
 | `RN-08-11` | O vínculo entre registro e Guerreiro(a) coletor(a) é permanente, inclusive após a saída do projeto                            | 7          | 02 §1    |
 | `RN-08-12` | Anonimização se aplica na saída — painéis, exportações e pesquisas —, nunca no armazenamento                                  | 7          | 02 §1    |
@@ -238,7 +251,7 @@ todas elas, como define o PRD-01; escrita é autenticada.
 
 | Método | Rota                                          | Autenticação    | Descrição                                                 |
 | ------ | --------------------------------------------- | --------------- | --------------------------------------------------------- |
-| GET    | `/comunidades`                                | pública         | Lista comunidades com indicadores agregados               |
+| GET    | `/comunidades`                                | pública         | Lista comunidades com os quatro indicadores agregados     |
 | GET    | `/comunidades/{id}`                           | pública         | Comunidade, locais até o bairro e tipos de coleta ativos  |
 | GET    | `/comunidades/{id}/series`                    | pública         | Séries históricas agregadas, sem coletor                  |
 | GET    | `/comunidades/{id}/exportacao`                | pública         | Exportação agregada e anonimizada por período             |
@@ -256,6 +269,7 @@ todas elas, como define o PRD-01; escrita é autenticada.
 | POST   | `/series/{id}/registros`                      | Guerreiro(a)    | Grava medição                                             |
 | POST   | `/series/{id}/registros`                      | Dispositivo     | Mesma rota, autenticada por credencial de dispositivo     |
 | GET    | `/auditoria/amostra`                          | Mestre          | Amostra de registros a auditar, priorizando fora de faixa |
+| POST   | `/registros/{id}/confirmacao`                 | Mestre          | Confirma registro e credita o que estava "a conferir"     |
 | POST   | `/registros/{id}/invalidacao`                 | Mestre          | Invalida registro com motivo e estorna os pontos          |
 
 Erros previstos: série aberta fora da comunidade do Guerreiro(a) (403); registro fora da
@@ -312,8 +326,13 @@ Critérios de aceite, um por requisito essencial, verificáveis por quem não es
   segundo registro do mesmo período credita zero quando o desafio declara que só um pontua.
 - Série sem registro por dois períodos de cadência aparece como `interrompida` e para de
   creditar; o registro seguinte a devolve para `ativa`.
+- Registro fora da faixa esperada do tipo credita zero na gravação e aparece como "a conferir";
+  confirmado pelo Mestre, credita então o valor do documento 11 §5.
 - Invalidação de um registro reduz o saldo do Guerreiro(a) no valor exato creditado, e o
-  registro continua consultável, marcado como inválido.
+  registro continua consultável, marcado como inválido. Registro "a conferir" invalidado reduz
+  zero, porque nunca creditou.
+- Estorno que ultrapassaria o saldo da trilha para em zero, e o nível já alcançado pelo
+  Guerreiro(a) permanece, com os badges dele.
 - Guerreiro(a) que registra às 15h uma medição feita às 14h tem a série gravada com 14h como
   hora da medição e 15h como hora do registro.
 - Solicitação de local aprovada pelo Mestre da trilha cria o local e libera a abertura da
@@ -323,33 +342,42 @@ Critérios de aceite, um por requisito essencial, verificáveis por quem não es
 - Consulta pública de uma série não devolve nick, nome, avatar nem local abaixo de rua.
 
 Este PRD não sustenta diretamente nenhuma das hipóteses H1 a H5 do Ciclo 01, que tratam de
-adesão, autorização, lastro, faixa etária e aprendizado. Os indicadores que ele passa a
-produzir — séries abertas, séries ativas ao fim do ciclo, registros válidos e continuidade — são
-a base da avaliação do Poder do Território e entram no conjunto de indicadores de impacto.
+adesão, autorização, lastro, faixa etária e aprendizado. Os quatro indicadores que ele passa a
+produzir, listados no documento 02 §1, são a base da avaliação do Poder do Território e entram
+no conjunto de indicadores de impacto.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                                       | Gravada em | Doc 09                                 |
-| --------------------------------------------------------------------------------------------- | ---------- | -------------------------------------- |
-| Valor único por registro válido, igual para todo tipo de coleta                               | 11 §5      | Já decididos                           |
-| Sem teto de pontos por período                                                                | 11 §5      | Já decididos                           |
-| Quantos registros do período pontuam é declarado no desafio                                   | 11 §5      | Já decididos                           |
-| Dois períodos de cadência seguidos sem registro interrompem a série                           | 02 §1      | Já decididos                           |
-| Registro nasce válido; Mestre audita por amostragem e pode invalidar                          | 02 §1      | Já decididos                           |
-| Série individual, uma por Guerreiro(a)                                                        | 02 §1      | Já decididos                           |
-| Origem do registro: manual, por voz ou sensor construído pelo Guerreiro(a)                    | 02 §1      | Já decididos                           |
-| Saída pública agregada até o bairro (revisto no PRD-03)                                       | 02 §1      | Já decididos                           |
-| Sensor entra por credencial de dispositivo, emitida por Admin ou pelo Mestre autor do desafio | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
-| A credencial é o registro do aparelho; o PRD-08 não tem entidade própria                      | 03 §1.1    | Autenticação do sensor do Guerreiro(a) |
-| Piso de três coletores distintos no recorte publicado ou entregue                             | 02 §1      | Agregação mínima dentro do bairro      |
-| Catálogo de tipos de coleta cadastrado por Admin; Mestre escolhe, não cria                    | 02 §1      | Já decididos                           |
-| Granularidade exigida livre no desafio; teto conferido na abertura da série                   | 02 §1      | Já decididos                           |
+| Decisão                                                                                       | Gravada em | Doc 09                                      |
+| --------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------- |
+| Valor único por registro válido, igual para todo tipo de coleta                               | 11 §5      | Já decididos                                |
+| Sem teto de pontos por período                                                                | 11 §5      | Já decididos                                |
+| Quantos registros do período pontuam é declarado no desafio                                   | 11 §5      | Já decididos                                |
+| Dois períodos de cadência seguidos sem registro interrompem a série                           | 02 §1      | Já decididos                                |
+| Registro nasce válido; Mestre audita por amostragem e pode invalidar                          | 02 §1      | Já decididos                                |
+| Valor "a conferir" só pontua com a confirmação do Mestre, que passa a ser ato declarado       | 02 §1      | Crédito do registro "a conferir"            |
+| Estorno debita ponto regular por fato desfeito, sem saldo negativo nem queda de nível         | 11 §5      | Estorno do registro de coleta invalidado    |
+| Entrega do conjunto abaixo do bairro corre fora da plataforma no Ciclo 01                     | 03 §12.3   | Entrega do conjunto abaixo do bairro        |
+| Lista pública de comunidades publica os quatro indicadores, sob o piso de três coletores      | 02 §1      | Indicadores da lista pública de comunidades |
+| Série individual, uma por Guerreiro(a)                                                        | 02 §1      | Já decididos                                |
+| Origem do registro: manual, por voz ou sensor construído pelo Guerreiro(a)                    | 02 §1      | Já decididos                                |
+| Saída pública agregada até o bairro (revisto no PRD-03)                                       | 02 §1      | Já decididos                                |
+| Sensor entra por credencial de dispositivo, emitida por Admin ou pelo Mestre autor do desafio | 03 §1.1    | Autenticação do sensor do Guerreiro(a)      |
+| A credencial é o registro do aparelho; o PRD-08 não tem entidade própria                      | 03 §1.1    | Autenticação do sensor do Guerreiro(a)      |
+| Piso de três coletores distintos no recorte publicado ou entregue                             | 02 §1      | Agregação mínima dentro do bairro           |
+| Catálogo de tipos de coleta cadastrado por Admin; Mestre escolhe, não cria                    | 02 §1      | Já decididos                                |
+| Granularidade exigida livre no desafio; teto conferido na abertura da série                   | 02 §1      | Já decididos                                |
 
 ## 14. Pendências que permanecem
 
-Nenhuma: as duas que restavam foram decididas e estão na tabela de §13. O valor fora de faixa
-vindo de sensor e o sensor descalibrado não eram pendência própria — seguem a regra do valor "a
-conferir" e a auditoria por amostragem, que valem para qualquer origem do registro.
+Uma: **o que sai na lista pública quando a comunidade fica abaixo do piso de três coletores.**
+O piso manda somar o recorte ao nível acima até alcançá-lo, mas ali a comunidade já é o topo e
+não há nível acima — falta dizer se ela sai sem os indicadores ou fica fora da lista. Está no
+documento 09 e trava `RF-08-19` na parte da lista.
+
+O valor fora de faixa vindo de sensor e o sensor descalibrado não eram pendência própria —
+seguem a regra do valor "a conferir" e a auditoria por amostragem, que valem para qualquer
+origem do registro.
 
 ## 15. Rastreabilidade
 
@@ -359,6 +387,8 @@ conferir" e a auditoria por amostragem, que valem para qualquer origem do regist
 | `RF-08-05` a `RF-08-08` | 02 §1 (registro temporal), 11 §4                                              |
 | `RF-08-09` a `RF-08-11` | 11 §5 (motor de pontuação)                                                    |
 | `RF-08-12` e `RF-08-13` | 02 §1 (veracidade do dado)                                                    |
+| `RF-08-29`, `RN-08-26`  | 02 §1 (a confirmação do Mestre é que credita)                                 |
+| `RN-08-27`              | 11 §5 e 99 §6 (o débito não desfaz percurso)                                  |
 | `RF-08-14`              | 02 §1 (origem do registro), 03 §§1, 1.1                                       |
 | `RF-08-15`              | 03 §7 (registro exige rede), PRD-01 §9 (hora do fato distinta da do registro) |
 | `RF-08-16` e `RF-08-19` | 02 §1 (anonimização na saída), 03 §12                                         |

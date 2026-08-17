@@ -75,10 +75,10 @@ def creditar_ponto_regular(
     trilha_id: uuid.UUID | None = None,
     poder_id: uuid.UUID | None = None,
 ) -> PontoRegular:
-    """Só credita — nunca debita, em nenhuma operação (`RF-01-57`,
-    `RN-01-38`); o gatilho de `pontuacao.modelo` recusa qualquer redução.
-    Exige exatamente uma referência — trilha **ou** poder, nunca as duas nem
-    nenhuma (`RF-08-09`, `RN-08-15`)."""
+    """Credita — nunca debita: débito é `debitar_ponto_regular`, restrito ao
+    estorno por fato desfeito (`RF-01-57`, `RN-01-38`). Exige exatamente uma
+    referência — trilha **ou** poder, nunca as duas nem nenhuma (`RF-08-09`,
+    `RN-08-15`)."""
     if (trilha_id is None) == (poder_id is None):
         raise ErroDeValidacao(
             mensagem="Crédito de ponto regular exige exatamente uma trilha ou um poder."
@@ -95,6 +95,39 @@ def creditar_ponto_regular(
         sessao.add(conta)
     else:
         conta.total += valor
+    sessao.flush()
+    return conta
+
+
+def debitar_ponto_regular(
+    sessao: Session,
+    *,
+    guerreiro_id: uuid.UUID,
+    valor: int,
+    trilha_id: uuid.UUID | None = None,
+    poder_id: uuid.UUID | None = None,
+) -> PontoRegular:
+    """Debita por **fato desfeito** — hoje só o estorno de registro de
+    coleta invalidado (`RF-01-57`, `RF-01-69`). Exige exatamente uma
+    referência — trilha **ou** poder — e valor positivo, como o crédito; o
+    saldo nunca fica negativo — o débito maior que o total para em zero
+    (`RN-01-55`)."""
+    if (trilha_id is None) == (poder_id is None):
+        raise ErroDeValidacao(
+            mensagem="Débito de ponto regular exige exatamente uma trilha ou um poder."
+        )
+    if valor <= 0:
+        raise ErroDeValidacao(
+            mensagem="Débito de ponto regular exige valor positivo.", campo="valor"
+        )
+
+    filtro = {"guerreiro_id": guerreiro_id, "trilha_id": trilha_id, "poder_id": poder_id}
+    conta = sessao.query(PontoRegular).filter_by(**filtro).first()
+    if conta is None:
+        conta = PontoRegular(**filtro, total=0)
+        sessao.add(conta)
+    else:
+        conta.total = max(0, conta.total - valor)
     sessao.flush()
     return conta
 
@@ -295,6 +328,32 @@ def creditar_pontuacao_da_coleta(
         valor=VALOR_DO_REGISTRO_DE_COLETA,
     )
     return VALOR_DO_REGISTRO_DE_COLETA
+
+
+def estornar_pontuacao_da_coleta(
+    sessao: Session, *, registro: RegistroDeColeta, serie: SerieDeColeta
+) -> None:
+    """Ponto de entrada único, chamado por
+    `coletas.regra.invalidar_registro_de_coleta`: estorna ao **Poder do
+    Território** do coletor exatamente o que `registro.pontos_creditados`
+    diz que aquele registro creditou — o próprio campo é a fonte do
+    estorno, sem livro-razão por evento (`RF-08-13`, `RN-08-09`, design —
+    decisão 1). Não faz nada quando o registro nada creditou, como o "a
+    conferir" ainda não confirmado e o excedente da quantidade do período
+    (`RN-08-26`)."""
+    if registro.pontos_creditados <= 0:
+        return
+
+    poder_do_territorio = buscar_poder_do_territorio(sessao)
+    if poder_do_territorio is None:
+        raise PoderDoTerritorioNaoDeclarado()
+
+    debitar_ponto_regular(
+        sessao,
+        guerreiro_id=serie.coletor_id,
+        poder_id=poder_do_territorio.id,
+        valor=registro.pontos_creditados,
+    )
 
 
 def conceder_badge_de_autoria(

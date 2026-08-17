@@ -29,9 +29,11 @@ class PontoRegular(Base):
     `Badge` já usa para o mesmo par de referências (design — decisões,
     serie-registro-e-pontuacao-da-coleta). Uma linha por par, somada a cada
     crédito; o detalhe por evento fica para quando o crédito precisar de
-    estorno (design — riscos). `total` nunca decresce nem é removido
-    (`RF-01-57`, `RN-01-38`) — os gatilhos abaixo recusam fora do ORM tanto
-    quanto dentro dele, no mesmo padrão de `consentimentos.modelo`.
+    estorno (design — riscos). `total` só debita por fato desfeito — o
+    estorno de registro de coleta invalidado — e nunca fica negativo
+    (`RF-01-57`, `RF-01-69`, `RN-01-55`); nunca é removido (`RN-01-38`) —
+    os gatilhos abaixo recusam fora do ORM tanto quanto dentro dele, no
+    mesmo padrão de `consentimentos.modelo`.
     """
 
     __tablename__ = "ponto_regular"
@@ -58,12 +60,12 @@ class PontoRegular(Base):
 
 
 def _recusar_debito_de_ponto_regular(mapper, connection, target: PontoRegular) -> None:
+    """Recusa só o **total negativo** — o piso em zero de `RN-01-55` — e não
+    mais toda redução: o débito por fato desfeito passa a ser aceito
+    (`RF-01-57`, `RF-01-69`, design — decisão 2)."""
     historico = inspect(target).attrs.total.history
-    if not historico.deleted:
-        return
-    anterior = historico.deleted[0]
     novo = historico.added[0] if historico.added else target.total
-    if novo < anterior:
+    if novo < 0:
         raise DebitoDePontoRegularRecusado()
 
 
@@ -88,9 +90,9 @@ event.listen(
                 RAISE EXCEPTION
                     'ponto regular nunca é debitado: DELETE não é permitido';
             END IF;
-            IF NEW.total < OLD.total THEN
+            IF NEW.total < 0 THEN
                 RAISE EXCEPTION
-                    'ponto regular nunca é debitado: total não pode diminuir';
+                    'ponto regular nunca é debitado: total não pode ficar negativo';
             END IF;
             RETURN NEW;
         END;

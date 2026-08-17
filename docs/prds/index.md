@@ -31,19 +31,19 @@ Situações possíveis: **não iniciado**, **em elicitação**, **em redação**
 **aprovado** e **implementado**. O link para o documento aparece nesta tabela quando ele entra
 na pasta.
 
-O PRD-01 segue **implementado**. A credencial de dispositivo do sensor (`RF-01-67` e a
-metade de `RF-01-68` sobre revogação por ato) entrou por change própria; resta só a metade de
-`RF-01-68` que depende do marco de fim do vínculo do Guerreiro(a), ainda não implementado no
-núcleo (proposal.md da change).
+O PRD-01 volta a **implementado**: a change `auditoria-e-estorno-da-coleta` entregou o débito de
+ponto regular por fato desfeito (`RF-01-57`, `RF-01-69`, `RF-01-70`, `RN-01-55`) e a queda da
+credencial de dispositivo ao **encerramento da série** (`RF-01-68`), fechando as cinco decisões
+que travavam a esteira.
 
-O PRD-08 segue **aprovado**, com a leitura pública do território (`RF-08-16`, `RF-08-28`,
-`RN-08-24`, `RN-08-12`, `RN-08-13`) e a exportação pública em CSV com a cobertura de ODS da
-coleta (`RF-08-19`, `RF-08-26`, `RF-08-27`) entregues por changes próprias. Restam a auditoria
-por amostragem e a invalidação (`RF-08-13`), travadas pela contradição entre o estorno que ela
-exige e o ponto regular que nunca decresce, a entrega do conjunto abaixo do bairro sob
-aprovação de Admin, sem `RF` que declare a rota, o formato ou o recorte aprovado, e o
-`GET /comunidades` com indicadores agregados, cuja lista de indicadores o PRD ainda não
-declara — as perguntas seguem com o fundador (proposal.md de cada change).
+O PRD-08 segue **aprovado**, não implementado. A leitura pública do território (`RF-08-16`,
+`RF-08-28`, `RN-08-24`, `RN-08-12`, `RN-08-13`), a exportação pública em CSV com a cobertura de
+ODS da coleta (`RF-08-19`, `RF-08-26`, `RF-08-27`) e a auditoria por amostragem — invalidação com
+estorno (`RF-08-13`, `RN-08-27`) e confirmação que credita o "a conferir" (`RF-08-29`,
+`RN-08-26`) — estão entregues. A entrega do conjunto abaixo do bairro saiu do escopo — corre fora
+da plataforma no Ciclo 01. Falta só o `GET /comunidades` com os quatro indicadores do documento
+02 §1, que nunca chegou a ser construído: trava na pendência de o que sai quando a comunidade
+fica abaixo do piso de três coletores (documento 09).
 
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.

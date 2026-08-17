@@ -176,10 +176,12 @@ class OrigemDoRegistro(enum.StrEnum):
 
 
 class SituacaoDoRegistro(enum.StrEnum):
-    """Só `valida` nesta fatia — `invalidada`, com o estorno, é a entrega da
-    auditoria do Mestre (proposal.md)."""
+    """`valida` nasce assim, `a_conferir` ou não; `invalidada` é a entrega
+    da auditoria do Mestre — terminal, o registro invalidado nunca volta a
+    valer (`RF-08-13`, `RN-08-10`)."""
 
     valida = "valida"
+    invalidada = "invalidada"
 
 
 # Anos do Ciclo 01 (documento 01 §pré-âmbulo — ago a dez/2026): a migração
@@ -248,6 +250,14 @@ class RegistroDeColeta(Base, ComAutoria, ComMomentoDoFato):
     credencial_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("credencial.id"), nullable=True
     )
+    # A auditoria do Mestre (`RF-08-13`, `RF-08-29`): nulos até o registro
+    # ser confirmado ou invalidado. `auditado_em` é o que tira o registro da
+    # amostra seguinte (design — decisão 3).
+    auditado_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    auditado_por_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("persona.id"), nullable=True
+    )
+    motivo_da_invalidacao: Mapped[str | None] = mapped_column(String(512), nullable=True)
 
     __table_args__ = ({"postgresql_partition_by": "RANGE (momento_do_fato)"},)
 

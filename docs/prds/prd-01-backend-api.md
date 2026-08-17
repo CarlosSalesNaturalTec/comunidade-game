@@ -7,8 +7,8 @@
 | PRD              | PRD-01                                                     |
 | Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
-| Situação         | aprovado                                                   |
-| Versão e data    | v15 — 2026-08-14                                           |
+| Situação         | implementado                                               |
+| Versão e data    | v16 — 2026-08-17                                           |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 8, 9, 11 e 12, 04, 11                     |
 
@@ -170,7 +170,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-11` | Admin ou Mestre cria credencial de usuário e senha provisória para adulto sem conta social                                                                                                      | essencial  |
 | `RF-01-12` | Credencial provisória exige troca de senha no primeiro acesso, antes de qualquer outra operação                                                                                                 | essencial  |
 | `RF-01-67` | Admin ou o Mestre autor do desafio emite credencial de dispositivo para o sensor, vinculada ao Guerreiro(a) e à série, com o segredo devolvido uma única vez                                    | essencial  |
-| `RF-01-68` | Admin ou o Mestre autor do desafio revoga a credencial de dispositivo com motivo e autoria, e ela também se encerra ao fim do vínculo do Guerreiro(a)                                           | essencial  |
+| `RF-01-68` | Admin ou o Mestre autor do desafio revoga a credencial de dispositivo com motivo e autoria, e ela também se encerra ao encerramento da série que alimenta                                       | essencial  |
 | `RF-01-13` | Admin ou Mestre cadastra responsável e vincula a ele quem já está cadastrado, com grau de parentesco                                                                                            | essencial  |
 | `RF-01-14` | Núcleo recusa o vínculo que passaria de três responsáveis para o mesmo Guerreiro(a)                                                                                                             | essencial  |
 | `RF-01-15` | Responsável autentica com login próprio e enxerga apenas os Guerreiros e Guerreiras vinculados                                                                                                  | essencial  |
@@ -183,7 +183,9 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-21` | Núcleo mantém pontos, níveis e badges por trilha ou poder, derivados das realizações                                                                                                            | essencial  |
 | `RF-01-22` | Núcleo expõe aos jogos **apenas leitura** de progresso, sem nenhuma rota de escrita — crédito, débito ou resultado de partida                                                                   | essencial  |
 | `RF-01-56` | Núcleo mantém o ponto extra em duas contas: acumulado, que só cresce, e saldo disponível, que debita na troca                                                                                   | essencial  |
-| `RF-01-57` | Núcleo nunca debita ponto regular, em nenhuma operação                                                                                                                                          | essencial  |
+| `RF-01-57` | Núcleo debita ponto regular só por fato desfeito — ocorrência de conduta lançada e estorno de registro de coleta invalidado —, nunca por troca                                                  | essencial  |
+| `RF-01-69` | Núcleo recusa débito de ponto regular que deixaria negativo o saldo da trilha ou do poder                                                                                                       | essencial  |
+| `RF-01-70` | Núcleo preserva nível e badge já conquistados quando um débito de ponto regular reduz o saldo                                                                                                   | essencial  |
 | `RF-01-58` | Núcleo recusa troca que deixaria o saldo disponível negativo                                                                                                                                    | essencial  |
 | `RF-01-59` | Núcleo expõe aos jogos o acumulado de pontos extras, nunca o saldo disponível                                                                                                                   | essencial  |
 | `RF-01-60` | Núcleo mantém o catálogo avulso e as trocas definidos no PRD-07                                                                                                                                 | essencial  |
@@ -273,7 +275,8 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-51` | Chave de terceiro é emitida sempre no ambiente de produção, e cada solicitação aprovada rende uma única chave                                                        | —          | 03 §8       |
 | `RN-01-36` | Chave de terceiro sem URL apresentada em 30 dias é revogada, e nova solicitação é sempre possível                                                                    | —          | 03 §8       |
 | `RN-01-37` | Solicitação de chave não cria cadastro nem persona, como as demais solicitações públicas                                                                             | 3          | 02 §1       |
-| `RN-01-38` | Ponto regular nunca se gasta; só o saldo de pontos extras é debitado                                                                                                 | 23         | 11 §5       |
+| `RN-01-38` | Ponto regular nunca se gasta: a troca por recompensa alcança só o saldo de pontos extras                                                                             | 23         | 11 §5       |
+| `RN-01-55` | Ponto regular debita apenas por fato desfeito — conduta lançada e registro de coleta invalidado —, sem ficar negativo e sem derrubar nível ou badge                  | 23         | 11 §5       |
 | `RN-01-39` | O acumulado de pontos extras só cresce; a troca debita apenas o saldo disponível                                                                                     | 23         | 11 §5       |
 | `RN-01-40` | O saldo disponível nunca fica negativo                                                                                                                               | 23         | 11 §5       |
 | `RN-01-41` | Nenhuma rota de jogo expõe o saldo disponível de pontos extras                                                                                                       | 8          | 11 §§5, 8.4 |
@@ -511,6 +514,11 @@ consultas ou de envios na rota pública (429, com o tempo de espera).
 - Ocorrência de conduta de ciclo encerrado não devolve o motivo em nenhuma rota, e o lançamento
   negativo dela segue consultável com valor, data e autor.
 - Nenhuma rota de crédito de pontos existe para o App 04 — a tentativa devolve 404.
+- Débito de ponto regular maior que o saldo da trilha é recusado, e o saldo para em zero.
+- Guerreiro(a) que sofre débito de ponto regular abaixo do limiar do nível já alcançado
+  permanece nesse nível, e os badges dele seguem concedidos.
+- Troca de recompensa avulsa que tentasse alcançar o ponto regular é recusada: só o saldo de
+  extras debita.
 
 Este PRD não sustenta hipótese própria: ele é a condição para que H1, H2, H3 e H5 sejam
 medidas pelas aplicações que as verificam — no caso de H5, por guardar o resultado da sondagem
@@ -548,6 +556,7 @@ e o dos desafios de desbloqueio de cada trilha.
 | Séries temporais do território no próprio PostgreSQL, particionadas por tempo                        | 03 §1             | Já decididos                                 |
 | _Template_ biométrico gerado no aparelho; ao núcleo chega só o descritor                             | 03 §3.3           | Já decididos                                 |
 | Ponto extra em duas contas: acumulado e saldo disponível; só o saldo debita                          | 11 §5             | Troca de pontos extras por recompensa avulsa |
+| Ponto regular debita por fato desfeito — conduta e estorno de coleta —, nunca por troca              | 11 §5, 99 §6      | Estorno do registro de coleta invalidado     |
 | Jogos leem o acumulado de pontos extras, nunca o saldo disponível                                    | 11 §5             | Troca de pontos extras por recompensa avulsa |
 | Comparação do _template_ permanece no núcleo, que nunca o devolve                                    | 03 §3.3           | Já decididos                                 |
 | Chave que cifra o _template_ no Secret Manager, lida na subida, sem chamada externa por login        | 03 §3.3           | Guarda e auditoria do _template_ biométrico  |
@@ -580,6 +589,7 @@ e o dos desafios de desbloqueio de cada trilha.
 | Sensor entra por credencial de dispositivo, que não abre sessão nem lê dado                          | 03 §1.1           | Autenticação do sensor do Guerreiro(a)       |
 | A credencial é o registro do aparelho; uma por série, sem entidade de dispositivo à parte            | 03 §1.1           | Autenticação do sensor do Guerreiro(a)       |
 | Credencial de dispositivo emitida e revogada por Admin ou pelo Mestre autor do desafio da série      | 03 §1.1           | Autenticação do sensor do Guerreiro(a)       |
+| Credencial de dispositivo cai ao encerramento da série, e não ao fim do vínculo do Guerreiro(a)      | 03 §1.1           | Queda da credencial de dispositivo           |
 
 ## 14. Pendências que permanecem
 
@@ -605,6 +615,8 @@ antes no documento 09.
 | `RF-01-23`              | PRD-08                                             |
 | `RF-01-24`, `RF-01-60`  | PRD-07                                             |
 | `RF-01-56` a `RF-01-59` | 11 §5 (acumulado e saldo disponível de extras)     |
+| `RF-01-69`, `RF-01-70`  | 11 §5 (o débito não desfaz percurso)               |
+| `RN-01-55`              | 11 §5 e 99 §6 (débito por fato desfeito)           |
 | `RF-01-25` e `RF-01-26` | 02 §§1, 4 e 03 §§7, 9–11                           |
 | `RF-01-27` a `RF-01-30` | 03 §1 (princípios de arquitetura)                  |
 | `RF-01-32`              | 03 §§3, 5 (App 01 habilitado pela aula agendada)   |

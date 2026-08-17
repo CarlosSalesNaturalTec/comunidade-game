@@ -136,20 +136,22 @@ qualquer outro registro válido do mesmo desafio. (`RF-08-21`, PRD-08 §§8, 12)
 
 O núcleo SHALL **aceitar e gravar** o registro cujo valor cai fora da **faixa esperada** —
 mínimo e máximo — do tipo de coleta, e SHALL marcá-lo **"a conferir"**. A marca SHALL valer
-qualquer que seja a origem do registro. O registro marcado "a conferir" SHALL **creditar pontos
-normalmente**: ele nasce válido como qualquer outro, e a marca só o destina à amostra de
-auditoria do Mestre, de entrega posterior. Tipo sem faixa declarada NEVER SHALL produzir a
-marca. (`RF-08-12`, PRD-08 §5.3)
+qualquer que seja a origem do registro. O registro marcado "a conferir" NEVER SHALL creditar
+ponto na gravação: ele entra obrigatoriamente na amostra de auditoria do Mestre, e é a
+**confirmação** dele que o credita. O núcleo SHALL informar na resposta da gravação que aquele
+registro não pontuou. Tipo sem faixa declarada NEVER SHALL produzir a marca. (`RF-08-12`,
+`RN-08-26`, PRD-08 §5.3)
 
 #### Scenario: Valor acima do máximo entra a conferir
 
 - **WHEN** chega uma medição de valor acima do máximo da faixa esperada do tipo
-- **THEN** o núcleo grava o registro, marca-o "a conferir" e credita os pontos
+- **THEN** o núcleo grava o registro, marca-o "a conferir", credita zero e responde indicando que
+  ele não pontuou
 
 #### Scenario: Valor abaixo do mínimo entra a conferir
 
 - **WHEN** chega uma medição de valor abaixo do mínimo da faixa esperada do tipo
-- **THEN** o núcleo grava o registro e marca-o "a conferir"
+- **THEN** o núcleo grava o registro, marca-o "a conferir" e credita zero
 
 #### Scenario: Valor dentro da faixa não recebe a marca
 
@@ -165,10 +167,12 @@ marca. (`RF-08-12`, PRD-08 §5.3)
 
 O núcleo NEVER SHALL apagar nem editar registro gravado: **valor**, **data da medição** e
 **coletor** SHALL ser imutáveis depois de gravados, e a **situação** SHALL ser o único campo que
-evolui. Rota de alteração e rota de exclusão de registro NEVER SHALL existir; a correção se faz
-por invalidação e novo registro, de entrega posterior. O vínculo entre registro e Guerreiro(a)
-coletor(a) SHALL ser **permanente**, inclusive depois da saída dele do projeto. (`RN-08-10`,
-`RN-08-11`, invariante 7 do documento 99 §6, PRD-08 §8)
+evolui. A situação SHALL evoluir apenas pelos atos da auditoria do Mestre — **confirmação** e
+**invalidação** —, e a invalidação SHALL ser **terminal**. Rota de alteração e rota de exclusão
+de registro NEVER SHALL existir; a correção se faz por invalidação e novo registro. O vínculo
+entre registro e Guerreiro(a) coletor(a) SHALL ser **permanente**, inclusive depois da saída dele
+do projeto. (`RN-08-10`, `RN-08-11`, `RF-08-13`, `RF-08-29`, invariante 7 do documento 99 §6,
+PRD-08 §8)
 
 #### Scenario: Não há rota de alteração de registro
 
@@ -179,6 +183,11 @@ coletor(a) SHALL ser **permanente**, inclusive depois da saída dele do projeto.
 
 - **WHEN** chega uma requisição para apagar um registro gravado
 - **THEN** o núcleo responde 405 e o registro permanece gravado
+
+#### Scenario: A invalidação não apaga a medição
+
+- **WHEN** um registro é invalidado na auditoria
+- **THEN** valor, data da medição e coletor seguem gravados e inalterados, e só a situação mudou
 
 #### Scenario: O coletor permanece no registro depois da saída do projeto
 

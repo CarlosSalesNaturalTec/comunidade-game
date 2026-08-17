@@ -498,4 +498,4 @@ def test_valor_fora_da_faixa_do_sensor_entra_a_conferir(sessao, cenario):
     sessao.commit()
 
     assert registro.a_conferir is True
-    assert registro.pontos_creditados == 5
+    assert registro.pontos_creditados == 0

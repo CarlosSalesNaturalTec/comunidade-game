@@ -200,6 +200,12 @@ class SerieDeColetaJaAberta(ErroDeAplicacao):
     mensagem = "Este Guerreiro(a) já tem uma série aberta para este desafio e local."
 
 
+class ConfirmacaoDeRegistroInvalidadoRecusada(ErroDeAplicacao):
+    status_code = 409
+    codigo = "confirmacao_de_registro_invalidado_recusada"
+    mensagem = "Registro invalidado não pode ser confirmado: a invalidação é terminal."
+
+
 class CredencialDeDispositivoInvalida(ErroDeAplicacao):
     status_code = 401
     codigo = "credencial_de_dispositivo_invalida"

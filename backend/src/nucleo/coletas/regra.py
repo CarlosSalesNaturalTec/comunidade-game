@@ -13,6 +13,7 @@ from ..chaves.segredo import calcular_resumo, gerar_segredo
 from ..comunidades.modelo import ComunidadeVirtual
 from ..comunidades.regra import resolver_vinculo_na_data
 from ..erros import (
+    ConfirmacaoDeRegistroInvalidadoRecusada,
     CredencialDeDispositivoJaAtiva,
     ErroDeValidacao,
     NaoEncontrado,
@@ -25,7 +26,7 @@ from ..ods.modelo import EtiquetaOds
 from ..ods.regra import resolver_etiquetas_da_missao
 from ..paginacao import PaginaDeResultado, codificar_cursor, decodificar_cursor
 from ..personas.modelo import Credencial, Papel, Persona, TipoDeCredencial
-from ..pontuacao.regra import creditar_pontuacao_da_coleta
+from ..pontuacao.regra import creditar_pontuacao_da_coleta, estornar_pontuacao_da_coleta
 from ..tempo import agora
 from ..trilhas.modelo import Missao, Trilha
 from ..trilhas.regra import conferir_posse_da_trilha
@@ -631,21 +632,158 @@ def gravar_registro_de_coleta(
     sessao.add(registro)
     sessao.flush()
 
-    periodo_inicio, periodo_fim = periodo_de_cadencia(momento_do_fato, serie.cadencia)
-    pontos = creditar_pontuacao_da_coleta(
-        sessao,
-        registro=registro,
-        serie=serie,
-        desafio=desafio,
-        periodo_inicio=periodo_inicio,
-        periodo_fim=periodo_fim,
-    )
+    if a_conferir:
+        # `RF-08-12`, `RN-08-26`: "a conferir" nasce sem crédito — é a
+        # confirmação do Mestre na auditoria que credita, pela mesma régua
+        # (`confirmar_registro_de_coleta`).
+        pontos = 0
+    else:
+        periodo_inicio, periodo_fim = periodo_de_cadencia(momento_do_fato, serie.cadencia)
+        pontos = creditar_pontuacao_da_coleta(
+            sessao,
+            registro=registro,
+            serie=serie,
+            desafio=desafio,
+            periodo_inicio=periodo_inicio,
+            periodo_fim=periodo_fim,
+        )
     registro.pontos_creditados = pontos
 
     if serie.ultima_medicao_valida_em is None or momento_do_fato > serie.ultima_medicao_valida_em:
         serie.ultima_medicao_valida_em = momento_do_fato
     apurar_estado_da_serie(sessao, serie)
 
+    sessao.flush()
+    return registro
+
+
+# A janela móvel de 7 dias da amostra semanal, apurada pela hora da medição
+# (`RN-08-20`, design — decisão 6).
+JANELA_DA_AMOSTRA_DE_AUDITORIA = timedelta(days=7)
+
+
+def _exigir_mestre_autor_do_desafio(desafio: DesafioDeColeta, persona: Persona) -> None:
+    """A auditoria é mais estreita que a posse geral da trilha: só o Mestre
+    autor do próprio desafio audita — nem o Admin audita no lugar dele
+    (`RF-08-13`, `RF-08-29`, spec — auditoria-da-coleta)."""
+    if persona.papel != Papel.mestre or desafio.autor_id != persona.id:
+        raise PermissaoNegada(mensagem="Só o Mestre autor do desafio audita os registros da série.")
+
+
+def compor_amostra_de_auditoria(sessao: Session, *, operador: Persona) -> list[RegistroDeColeta]:
+    """A amostra semanal do Mestre: 10% dos registros da semana ainda não
+    auditados por série, com o mínimo de um, mais todo "a conferir" — fora
+    do percentual e sem consumir as vagas dele. Só alcança as séries dos
+    desafios de que o Mestre é autor, e só as **ativas no instante do
+    pedido** (`RN-08-20`, design — decisões 5 e 6)."""
+    if operador.papel != Papel.mestre:
+        raise PermissaoNegada(mensagem="Só o Mestre audita os registros dos seus desafios.")
+
+    agora_ = agora()
+    inicio_da_semana = agora_ - JANELA_DA_AMOSTRA_DE_AUDITORIA
+
+    series = (
+        sessao.query(SerieDeColeta)
+        .join(DesafioDeColeta, DesafioDeColeta.id == SerieDeColeta.desafio_de_coleta_id)
+        .filter(DesafioDeColeta.autor_id == operador.id)
+        .all()
+    )
+
+    amostra: list[RegistroDeColeta] = []
+    for serie in series:
+        if apurar_estado_da_serie(sessao, serie) != EstadoDaSerie.ativa:
+            continue
+
+        registros_da_semana = (
+            sessao.query(RegistroDeColeta)
+            .filter(
+                RegistroDeColeta.serie_de_coleta_id == serie.id,
+                RegistroDeColeta.momento_do_fato >= inicio_da_semana,
+                RegistroDeColeta.momento_do_fato <= agora_,
+                RegistroDeColeta.auditado_em.is_(None),
+            )
+            .order_by(RegistroDeColeta.momento_do_fato)
+            .all()
+        )
+        if not registros_da_semana:
+            continue
+
+        a_conferir = [registro for registro in registros_da_semana if registro.a_conferir]
+        demais = [registro for registro in registros_da_semana if not registro.a_conferir]
+
+        qtd_do_percentual = len(registros_da_semana) // 10
+        if qtd_do_percentual == 0 and not a_conferir:
+            qtd_do_percentual = 1
+        qtd_do_percentual = min(qtd_do_percentual, len(demais))
+
+        amostra.extend(a_conferir)
+        amostra.extend(demais[:qtd_do_percentual])
+
+    return amostra
+
+
+def confirmar_registro_de_coleta(
+    sessao: Session, registro: RegistroDeColeta | None, *, operador: Persona
+) -> RegistroDeColeta:
+    """A confirmação do Mestre autor do desafio credita o "a conferir" pela
+    régua do registro válido, reapurando a quantidade que pontua no
+    período; registro já válido, ou já auditado, só encerra a auditoria,
+    sem creditar de novo. Registro invalidado não é confirmável — a
+    invalidação é terminal (`RF-08-29`, `RN-08-10`, `RN-08-26`, design —
+    decisão 4)."""
+    if registro is None:
+        raise NaoEncontrado(mensagem="Registro de coleta não encontrado.")
+
+    serie = sessao.get(SerieDeColeta, registro.serie_de_coleta_id)
+    desafio = sessao.get(DesafioDeColeta, serie.desafio_de_coleta_id)
+    _exigir_mestre_autor_do_desafio(desafio, operador)
+
+    if registro.situacao == SituacaoDoRegistro.invalidada:
+        raise ConfirmacaoDeRegistroInvalidadoRecusada()
+
+    if registro.auditado_em is None and registro.a_conferir:
+        periodo_inicio, periodo_fim = periodo_de_cadencia(registro.momento_do_fato, serie.cadencia)
+        pontos = creditar_pontuacao_da_coleta(
+            sessao,
+            registro=registro,
+            serie=serie,
+            desafio=desafio,
+            periodo_inicio=periodo_inicio,
+            periodo_fim=periodo_fim,
+        )
+        registro.pontos_creditados = pontos
+
+    registro.auditado_em = agora()
+    registro.auditado_por_id = operador.id
+    sessao.flush()
+    return registro
+
+
+def invalidar_registro_de_coleta(
+    sessao: Session, registro: RegistroDeColeta | None, *, operador: Persona, motivo: str | None
+) -> RegistroDeColeta:
+    """A invalidação do Mestre autor do desafio exige motivo, estorna
+    exatamente o que o registro creditou — zero quando ele nada creditou —
+    e mantém o registro gravado, marcado inválido. É terminal: invalidar de
+    novo não estorna segunda vez, e não recredita nenhum outro registro do
+    período (`RF-08-13`, `RN-08-09`, `RN-08-10`, design — decisões 1 e 4)."""
+    if registro is None:
+        raise NaoEncontrado(mensagem="Registro de coleta não encontrado.")
+    if not motivo or not motivo.strip():
+        raise ErroDeValidacao(mensagem="A invalidação exige o motivo.", campo="motivo")
+
+    serie = sessao.get(SerieDeColeta, registro.serie_de_coleta_id)
+    desafio = sessao.get(DesafioDeColeta, serie.desafio_de_coleta_id)
+    _exigir_mestre_autor_do_desafio(desafio, operador)
+
+    if registro.situacao == SituacaoDoRegistro.invalidada:
+        return registro
+
+    estornar_pontuacao_da_coleta(sessao, registro=registro, serie=serie)
+    registro.situacao = SituacaoDoRegistro.invalidada
+    registro.motivo_da_invalidacao = motivo
+    registro.auditado_em = agora()
+    registro.auditado_por_id = operador.id
     sessao.flush()
     return registro
 
