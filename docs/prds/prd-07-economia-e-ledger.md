@@ -210,7 +210,7 @@ atividades previstas.
 | `RN-07-06` | Recurso provido sem contrapartida financeira por Mestre ou Admin é aporte em nome dele                         | —          | 04 §1        |
 | `RN-07-07` | Aporte de patrimônio credita o Poder Sustentador uma única vez, sem baixa por consumo                          | —          | 04 §1        |
 | `RN-07-08` | Livro da linha Alpha e camisa entregues ao Guerreiro(a) têm baixa definitiva                                   | —          | 05 §3        |
-| `RN-07-09` | Perda ou dano de material comum não gera dívida ao Guerreiro(a) nem à família                                  | 11         | 05 §3        |
+| `RN-07-09` | Perda ou dano de material comum não gera dívida ao Guerreiro(a) nem à família                                  | —          | 05 §3        |
 | `RN-07-10` | Cada ponto de apoio tem responsável designado pelo acervo permanente e pelos kits                              | —          | 05 §3        |
 | `RN-07-11` | O exemplar permanente não sai do ponto de apoio; a retirada registrada é do ciclo seguinte                     | —          | 05 §3        |
 | `RN-07-33` | O ponto de apoio pertence a uma comunidade e é onde o recurso fica guardado e a aula acontece                  | —          | 05 §2        |
