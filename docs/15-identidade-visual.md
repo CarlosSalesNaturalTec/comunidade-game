@@ -1,7 +1,7 @@
 # 15 — Identidade Visual das Aplicações
 
 Define o sistema visual das oito aplicações: paleta, tipografia, medida, acessibilidade, avatar,
-carta do personagem, emblemas e as fichas de ponto e moeda.
+carta do personagem, emblemas, ícone, gráfico de série e as fichas de ponto e moeda.
 
 > Este documento define **como as aplicações se parecem**. **O que cada card mostra e como o
 > território cresce visualmente** continua no documento 11.
@@ -92,15 +92,18 @@ contorno no degrau 700**, nunca sozinha contra o fundo.
 Duas famílias no máximo, variáveis, **subconjunto latino e latino estendido**, servidas pelo
 próprio domínio. O App 04 usa as mesmas: o pixel fica nos sprites, nunca no texto.
 
-| Medida                  | Valor                                                   |
-| ----------------------- | ------------------------------------------------------- |
-| Escala tipográfica      | `0,75 · 0,875 · 1 · 1,125 · 1,375 · 1,75 · 2,25` rem    |
-| Corpo mínimo de leitura | `1` rem (16 px); nunca abaixo em texto lido por criança |
-| Entrelinha              | `1,5` em texto corrido; `1,2` em título                 |
-| Escala de espaçamento   | `4 · 8 · 12 · 16 · 24 · 32 · 48 · 64` px                |
-| Alvo de toque           | **≥ 48 px**, com ao menos 8 px entre alvos vizinhos     |
-| Raio                    | `4` (campo) · `12` (carta) · `999` (ficha e pastilha)   |
-| Largura de leitura      | Máximo `64` caracteres por linha                        |
+| Medida                  | Valor                                                                              |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| Escala tipográfica      | `0,75 · 0,875 · 1 · 1,125 · 1,375 · 1,75 · 2,25` rem                               |
+| Corpo mínimo de leitura | `1` rem (16 px); nunca abaixo em texto lido por criança                            |
+| Entrelinha              | `1,5` em texto corrido; `1,2` em título                                            |
+| Pesos                   | `400` corpo · `500` rótulo · `600` título · `700` numeral de carta                 |
+| Escala de espaçamento   | `4 · 8 · 12 · 16 · 24 · 32 · 48 · 64` px                                           |
+| Alvo de toque           | **≥ 48 px**, com ao menos 8 px entre alvos vizinhos                                |
+| Raio                    | `4` (campo) · `12` (carta) · `999` (ficha e pastilha)                              |
+| Largura de leitura      | Máximo `64` caracteres por linha                                                   |
+| Marcos de largura       | `768` · `1024` · `1280` px — o celular é o padrão, e não tem marco                 |
+| Colunas                 | `4` no celular · `8` a partir de 768 · `12` a partir de 1024, com calha de `16` px |
 
 ## 5. Acessibilidade
 
@@ -126,8 +129,11 @@ muda é densidade, raio, peso e presença de ilustração.
 | Ilustração          | Só onde é dado — avatar, carta, território                                                                      | Em primeiro plano; a carta domina a tela                          |
 | Cor                 | Neutro dominante; cor reservada a ação e estado                                                                 | Cor chapada e imagem de comunidade ao fundo                       |
 | Raio de carta       | `4` px                                                                                                          | `12` px                                                           |
-| Movimento           | Nenhum decorativo                                                                                               | Retorno de progresso e conquista                                  |
+| Movimento           | Nenhum decorativo; `200` ms                                                                                     | Retorno de progresso e conquista; `300` ms                        |
 | Caso que dimensiona | Operado em pé, no celular, entre as bancadas; e o uso raro, que precisa ser entendido sem aprendizado acumulado | Criança de 6 anos, em aparelho compartilhado, podendo não digitar |
+
+Toda transição usa `ease-in-out`, e o temperamento é da aplicação inteira: a App 06 é Arena do
+cabeçalho ao rodapé, inclusive no painel do território e nos rankings.
 
 O Apoiador precisa reconhecer, na App 08, o mesmo jogo que o filho joga na App 05 — é por isso
 que os temperamentos não separam marca nem paleta.
@@ -234,6 +240,21 @@ dependa de cor:
 | De autoria          | Folha com canto dobrado |
 | De protagonismo     | Hexágono                |
 
+### 8.4 Glifo de poder
+
+A silhueta diz a **família** do badge, não o poder: dois badges de nível são ambos escudo. O que
+os separa é o **glifo do poder**, desenhado no sistema de ícone da §11.
+
+| Regra        | Valor                                                                             |
+| ------------ | --------------------------------------------------------------------------------- |
+| Onde aparece | Dentro da silhueta do badge, na moldura de nível e na seção de poderes da vitrine |
+| Legibilidade | Reconhecível a `24` px, em traço, sem depender de cor                             |
+| Cobertura    | Um por poder do catálogo; poder sem glifo cai no genérico e nunca quebra a tela   |
+| Rótulo       | O glifo acompanha o nome do poder, nunca o substitui                              |
+
+O poder **não tem cor própria**: cor é da grandeza (§9) e do estado, e distribuí-la pelo
+catálogo inteiro gastaria a paleta e furaria o piso de contraste.
+
 ## 9. Ponto, ponto extra e moeda
 
 São três grandezas distintas e **nunca podem ser confundidas na tela**:
@@ -255,20 +276,55 @@ Bloco reescrito por IA abre com etiqueta visível, em linguagem simples, com **�
 nunca só cor, nunca só ícone —, contorno em `atencao-600` no claro e `atencao-400` no escuro, e
 link para a nota de transparência da vitrine.
 
-## 11. Tokens
+## 11. Ícone e gráfico
+
+### 11.1 Ícone
+
+Todo ícone é SVG servido pelo próprio domínio, e leva rótulo junto — a §5 não abre exceção.
+
+| Medida   | Valor                                                                           |
+| -------- | ------------------------------------------------------------------------------- |
+| Grade    | `24` px de desenho, com traço de `2` px                                         |
+| Tamanhos | `16` (pastilha) · `24` (linha e rótulo) · `32` (carta) · `48` (destaque)        |
+| Traço    | Ponta e junta arredondadas, sem preenchimento — a silhueta de badge é a exceção |
+| Cor      | `currentColor`, herdada do texto que o ícone acompanha                          |
+
+O `currentColor` é o que faz a camada semântica da §12 alcançar o ícone sem repetir cor
+nenhuma: trocar o tema troca o ícone junto, e nenhum arquivo guarda valor de cor.
+
+### 11.2 Gráfico de série
+
+Vale para as séries do território na App 05, o painel público da App 06 e a efetividade
+na App 08. O documento 11 diz que dado cada elemento representa; aqui ficam cor, forma e
+medida.
+
+| Regra            | Valor                                                                      |
+| ---------------- | -------------------------------------------------------------------------- |
+| Forma            | Linha para série no tempo, barra para comparação — **nunca setor (pizza)** |
+| Cor de série     | Degrau 600 no claro e 400 no escuro, **fora das famílias ponto e moeda**   |
+| Distinção        | Além da cor, cada série leva marcador de ponto e rótulo próprios           |
+| Legenda          | Abaixo do gráfico, com a unidade escrita por extenso                       |
+| Leitura de valor | Ponto focalizável por teclado, com valor, data e unidade                   |
+| Grade            | `tinta-200`, sem sombra e sem área preenchida sob a linha                  |
+| Série inativa    | Traço interrompido e rótulo "série inativa" — o dado permanece             |
+
+Nenhuma biblioteca de gráfico está escolhida: o framework de frontend segue pendente (documento
+09), e estas regras valem para qualquer uma que venha a ser adotada.
+
+## 12. Tokens
 
 Os tokens são propriedades personalizadas de CSS, independentes de framework, em três camadas:
 
-| Camada        | O que guarda                                      | Exemplo                       |
-| ------------- | ------------------------------------------------- | ----------------------------- |
-| **Primitiva** | Os valores das §§3 e 4                            | `--cor-marca-500`             |
-| **Semântica** | O papel de cada valor                             | `--cor-acao`, `--cor-borda`   |
-| **Tema**      | O que muda entre claro e escuro, Operação e Arena | `--densidade`, `--raio-carta` |
+| Camada        | O que guarda                                      | Exemplo                                    |
+| ------------- | ------------------------------------------------- | ------------------------------------------ |
+| **Primitiva** | Os valores das §§3 e 4                            | `--cor-marca-500`                          |
+| **Semântica** | O papel de cada valor                             | `--cor-acao`, `--cor-borda`                |
+| **Tema**      | O que muda entre claro e escuro, Operação e Arena | `--densidade`, `--raio-carta`, `--duracao` |
 
 Aplicação consome **apenas a camada semântica e a de tema** — nunca a primitiva direto. O
 arquivo nasce junto da primeira pasta de aplicação, compartilhado pelas oito.
 
-## 12. O que este documento não define
+## 13. O que este documento não define
 
 | Assunto                                                      | Onde está                     |
 | ------------------------------------------------------------ | ----------------------------- |
