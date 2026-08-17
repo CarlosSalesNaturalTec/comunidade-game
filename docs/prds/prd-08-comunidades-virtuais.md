@@ -7,8 +7,8 @@
 | PRD              | PRD-08                                               |
 | Aplicação        | — (domínio consumido pelas Apps 02, 03, 05, 06 e 09) |
 | Onda             | 1                                                    |
-| Situação         | aprovado                                             |
-| Versão e data    | v6 — 2026-08-17                                      |
+| Situação         | implementado                                         |
+| Versão e data    | v8 — 2026-08-17                                      |
 | Depende de       | —                                                    |
 | Documentos-fonte | 02 §1, 02 §2, 03 §12, 11 §4, 11 §5, 11 §7, 11 §8.3   |
 
@@ -166,6 +166,8 @@ distintas da hora do envio: o Guerreiro(a) pode registrar agora uma medição qu
 | `RF-08-18` | Responsável consulta, pela App 07, as séries da criança sob sua responsabilidade                                               | desejável  |
 | `RF-08-19` | Exportação de dados agregados e anonimizados por comunidade e período                                                          | desejável  |
 | `RF-08-28` | Saída pública e entrega aprovada agregam ao nível acima recorte com menos de três coletores                                    | essencial  |
+| `RF-08-30` | Rota pública lista as comunidades com os quatro indicadores do documento 02 §1                                                 | essencial  |
+| `RF-08-31` | Comunidade abaixo do piso de coletores sai na lista sem os quatro indicadores                                                  | essencial  |
 | `RF-08-20` | Painel reflete visualmente o crescimento da comunidade conforme o documento 11 §8.3                                            | desejável  |
 | `RF-08-21` | Sistema aceita foto ou vídeo como o próprio registro, quando o tipo de coleta assim o define                                   | essencial  |
 | `RF-08-22` | Guerreiro(a) solicita a inclusão de local ausente, e a solicitação entra na fila de aprovação                                  | essencial  |
@@ -177,35 +179,37 @@ distintas da hora do envio: o Guerreiro(a) pode registrar agora uma medição qu
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                                                         | Invariante | Fonte    |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
-| `RN-08-01` | Comunidade Virtual é criada apenas por Admin e nasce vazia                                                                    | 4          | 02 §1    |
-| `RN-08-02` | Todo Guerreiro(a) tem vínculo obrigatório a exatamente uma comunidade, atribuído pela aula em que se cadastra                 | 4          | 02 §1    |
-| `RN-08-03` | O registro pertence à comunidade vigente do Guerreiro(a) na data da medição                                                   | —          | 02 §1    |
-| `RN-08-04` | A série é individual: um coletor por série                                                                                    | —          | 02 §1    |
-| `RN-08-05` | Registro válido rende valor único, igual para todo tipo de coleta, sem teto por período                                       | 6          | 11 §5    |
-| `RN-08-06` | Quantos registros de um mesmo período de cadência pontuam é declarado no desafio                                              | 6          | 11 §5    |
-| `RN-08-07` | Dois períodos de cadência seguidos sem registro interrompem a série                                                           | 6          | 02 §1    |
-| `RN-08-08` | Série interrompida cessa o cômputo; os pontos já creditados permanecem                                                        | 6          | 02 §1    |
-| `RN-08-09` | Registro nasce válido; o Mestre audita por amostragem e pode invalidar, estornando os pontos                                  | —          | 02 §1    |
-| `RN-08-26` | Valor "a conferir" não pontua até a confirmação do Mestre: é ela que credita, e o invalidado não tem o que estornar           | —          | 02 §1    |
-| `RN-08-27` | O estorno da coleta não deixa o saldo negativo nem derruba nível ou badge já conquistados                                     | 23         | 11 §5    |
-| `RN-08-10` | Registro nunca é apagado nem editado: correção se faz por invalidação e novo registro                                         | 7          | 02 §1    |
-| `RN-08-11` | O vínculo entre registro e Guerreiro(a) coletor(a) é permanente, inclusive após a saída do projeto                            | 7          | 02 §1    |
-| `RN-08-12` | Anonimização se aplica na saída — painéis, exportações e pesquisas —, nunca no armazenamento                                  | 7          | 02 §1    |
-| `RN-08-13` | A saída pública agrega até o bairro; rua e abaixo, só uso interno ou entrega aprovada por Admin                               | 7          | 02 §1    |
-| `RN-08-14` | Toda trilha tem ao menos um desafio de coleta                                                                                 | 5          | 02 §3    |
-| `RN-08-15` | Pontos da coleta creditam o Poder do Território, não o poder da trilha em que o desafio nasceu                                | —          | 02 §2    |
-| `RN-08-16` | Registro em foto ou vídeo que contenha pessoa identificável é invalidado na auditoria                                         | 12         | 03 §12   |
-| `RN-08-17` | O jogo nunca credita pontos de coleta; o crédito vem do registro validado                                                     | 8          | 11 §8.4  |
-| `RN-08-18` | Local nasce de cadastro do Admin ou de solicitação aprovada por Admin ou pelo Mestre da trilha; o pedido em si não cria local | 4          | 02 §1    |
-| `RN-08-19` | Revogação do consentimento despersonaliza o registro: rompe o vínculo de autoria e destrói o mapeamento, sem apagar a medição | 7          | 03 §12.1 |
-| `RN-08-20` | A auditoria por amostragem da coleta é semanal e inclui obrigatoriamente todo valor "a conferir"                              | 6          | 02 §1    |
-| `RN-08-21` | A etiqueta ODS da série vem da missão, ou da trilha, e é descritiva: não altera pontuação, cadência nem validade do registro  | 20         | 11 §2.1  |
-| `RN-08-22` | A cobertura de ODS sai agregada por comunidade e ciclo, nunca por coletor — a anonimização da saída vale igual                | 20, 7      | 04 §4    |
-| `RN-08-23` | O sensor se autentica por credencial de dispositivo vinculada ao Guerreiro(a) e à série; não abre sessão nem lê dado          | —          | 03 §1.1  |
-| `RN-08-24` | Recorte publicado com menos de três coletores distintos sobe para o nível acima; piso declarado na implantação                | 7          | 02 §1    |
-| `RN-08-25` | A granularidade exigida é declarada livremente no desafio; o teto da comunidade é conferido na abertura da série              | —          | 02 §1    |
+| ID         | Regra                                                                                                                                        | Invariante | Fonte    |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
+| `RN-08-01` | Comunidade Virtual é criada apenas por Admin e nasce vazia                                                                                   | 4          | 02 §1    |
+| `RN-08-02` | Todo Guerreiro(a) tem vínculo obrigatório a exatamente uma comunidade, atribuído pela aula em que se cadastra                                | 4          | 02 §1    |
+| `RN-08-03` | O registro pertence à comunidade vigente do Guerreiro(a) na data da medição                                                                  | —          | 02 §1    |
+| `RN-08-04` | A série é individual: um coletor por série                                                                                                   | —          | 02 §1    |
+| `RN-08-05` | Registro válido rende valor único, igual para todo tipo de coleta, sem teto por período                                                      | 6          | 11 §5    |
+| `RN-08-06` | Quantos registros de um mesmo período de cadência pontuam é declarado no desafio                                                             | 6          | 11 §5    |
+| `RN-08-07` | Dois períodos de cadência seguidos sem registro interrompem a série                                                                          | 6          | 02 §1    |
+| `RN-08-08` | Série interrompida cessa o cômputo; os pontos já creditados permanecem                                                                       | 6          | 02 §1    |
+| `RN-08-09` | Registro nasce válido; o Mestre audita por amostragem e pode invalidar, estornando os pontos                                                 | —          | 02 §1    |
+| `RN-08-26` | Valor "a conferir" não pontua até a confirmação do Mestre: é ela que credita, e o invalidado não tem o que estornar                          | —          | 02 §1    |
+| `RN-08-27` | O estorno da coleta não deixa o saldo negativo nem derruba nível ou badge já conquistados                                                    | 23         | 11 §5    |
+| `RN-08-10` | Registro nunca é apagado nem editado: correção se faz por invalidação e novo registro                                                        | 7          | 02 §1    |
+| `RN-08-11` | O vínculo entre registro e Guerreiro(a) coletor(a) é permanente, inclusive após a saída do projeto                                           | 7          | 02 §1    |
+| `RN-08-12` | Anonimização se aplica na saída — painéis, exportações e pesquisas —, nunca no armazenamento                                                 | 7          | 02 §1    |
+| `RN-08-13` | A saída pública agrega até o bairro; rua e abaixo, só uso interno ou entrega aprovada por Admin                                              | 7          | 02 §1    |
+| `RN-08-14` | Toda trilha tem ao menos um desafio de coleta                                                                                                | 5          | 02 §3    |
+| `RN-08-15` | Pontos da coleta creditam o Poder do Território, não o poder da trilha em que o desafio nasceu                                               | —          | 02 §2    |
+| `RN-08-16` | Registro em foto ou vídeo que contenha pessoa identificável é invalidado na auditoria                                                        | 12         | 03 §12   |
+| `RN-08-17` | O jogo nunca credita pontos de coleta; o crédito vem do registro validado                                                                    | 8          | 11 §8.4  |
+| `RN-08-18` | Local nasce de cadastro do Admin ou de solicitação aprovada por Admin ou pelo Mestre da trilha; o pedido em si não cria local                | 4          | 02 §1    |
+| `RN-08-19` | Revogação do consentimento despersonaliza o registro: rompe o vínculo de autoria e destrói o mapeamento, sem apagar a medição                | 7          | 03 §12.1 |
+| `RN-08-20` | A auditoria por amostragem da coleta é semanal e inclui obrigatoriamente todo valor "a conferir"                                             | 6          | 02 §1    |
+| `RN-08-21` | A etiqueta ODS da série vem da missão, ou da trilha, e é descritiva: não altera pontuação, cadência nem validade do registro                 | 20         | 11 §2.1  |
+| `RN-08-22` | A cobertura de ODS sai agregada por comunidade e ciclo, nunca por coletor — a anonimização da saída vale igual                               | 20, 7      | 04 §4    |
+| `RN-08-23` | O sensor se autentica por credencial de dispositivo vinculada ao Guerreiro(a) e à série; não abre sessão nem lê dado                         | —          | 03 §1.1  |
+| `RN-08-24` | Recorte publicado com menos de três coletores distintos sobe para o nível acima; piso declarado na implantação                               | 7          | 02 §1    |
+| `RN-08-25` | A granularidade exigida é declarada livremente no desafio; o teto da comunidade é conferido na abertura da série                             | —          | 02 §1    |
+| `RN-08-28` | A comunidade é o topo da hierarquia: abaixo do piso ela permanece na lista, e o que se omite é o indicador, nunca a comunidade               | 7          | 02 §1    |
+| `RN-08-29` | Os quatro indicadores se calculam como o documento 02 §1 define; enquanto o ciclo corre, o de séries ativas se apura no instante da consulta | —          | 02 §1    |
 
 ## 8. Modelo de dados
 
@@ -365,15 +369,16 @@ no conjunto de indicadores de impacto.
 | Sensor entra por credencial de dispositivo, emitida por Admin ou pelo Mestre autor do desafio | 03 §1.1    | Autenticação do sensor do Guerreiro(a)      |
 | A credencial é o registro do aparelho; o PRD-08 não tem entidade própria                      | 03 §1.1    | Autenticação do sensor do Guerreiro(a)      |
 | Piso de três coletores distintos no recorte publicado ou entregue                             | 02 §1      | Agregação mínima dentro do bairro           |
+| Comunidade abaixo do piso sai na lista sem os indicadores, nunca fora dela                    | 02 §1      | Comunidade abaixo do piso na lista pública  |
+| Cálculo dos quatro indicadores, com continuidade e séries ativas definidas                    | 02 §1      | Cálculo dos quatro indicadores              |
 | Catálogo de tipos de coleta cadastrado por Admin; Mestre escolhe, não cria                    | 02 §1      | Já decididos                                |
 | Granularidade exigida livre no desafio; teto conferido na abertura da série                   | 02 §1      | Já decididos                                |
 
 ## 14. Pendências que permanecem
 
-Uma: **o que sai na lista pública quando a comunidade fica abaixo do piso de três coletores.**
-O piso manda somar o recorte ao nível acima até alcançá-lo, mas ali a comunidade já é o topo e
-não há nível acima — falta dizer se ela sai sem os indicadores ou fica fora da lista. Está no
-documento 09 e trava `RF-08-19` na parte da lista.
+Nenhuma. A que restava — o que sai na lista pública quando a comunidade fica abaixo do piso —
+foi decidida e está na tabela de §13: a comunidade permanece na lista, sem os indicadores. Com
+ela veio o cálculo dos quatro, que estava apenas nomeado no documento 02 §1.
 
 O valor fora de faixa vindo de sensor e o sensor descalibrado não eram pendência própria —
 seguem a regra do valor "a conferir" e a auditoria por amostragem, que valem para qualquer
@@ -398,5 +403,7 @@ origem do registro.
 | `RF-08-22` a `RF-08-24` | 02 §1 (solicitação de novo local), 03 §§5, 11                                 |
 | `RF-08-25` a `RF-08-27` | 11 §2.1 e 04 §4 (etiqueta ODS e meta 17.18)                                   |
 | `RF-08-28`, `RN-08-24`  | 02 §1 (piso de três coletores no recorte)                                     |
+| `RF-08-30`, `RN-08-29`  | 02 §1 (os quatro indicadores e o cálculo de cada um)                          |
+| `RF-08-31`, `RN-08-28`  | 02 §1 (a comunidade é o topo e não sobe de nível)                             |
 | `RN-08-23`              | 03 §1.1 (credencial do sensor)                                                |
 | `RN-08-25`              | 02 §1 (granularidade exigida do desafio)                                      |
