@@ -203,16 +203,18 @@ correspondente também é temporal:
   Guerreiro(a)**; a origem fica gravada no registro.
 - O registro pode ser **foto ou vídeo** — é assim que se registra lixo acumulado, buraco na
   via ou poste apagado, que se medem por evidência e não por número.
-- O registro **nasce válido e pontua na hora**. O Mestre audita por **amostragem semanal**,
-  junto com os lançamentos da semana, e pode invalidar registro inverossímil, o que retira os
-  pontos daquele registro — só dele. Valor "a conferir" entra obrigatoriamente na amostra.
+- O registro **nasce válido e pontua na hora**, salvo o valor "a conferir", abaixo. O Mestre
+  audita por **amostragem semanal**, junto com os lançamentos da semana, e pode invalidar
+  registro inverossímil, o que **estorna** os pontos daquele registro — só dele. Valor "a
+  conferir" entra obrigatoriamente na amostra.
 - A amostra é de **10% dos registros da semana em cada série ativa, com o mínimo de um**. O
   piso garante que nenhuma série passe uma semana sem ser olhada, e o percentual acompanha
   quem registra mais. É o mesmo percentual da auditoria de trilhas e do corpus de apoio.
   **Série ativa é a que está ativa no instante da amostra** — a situação de cada série é
   apurada ali, não aproveitada de uma apuração anterior.
 - **Valor fora da faixa declarada no desafio** entra como **a conferir** e não pontua até o
-  Mestre validar. É a trava contra dado inventado, e é também momento de ensinar a medir.
+  Mestre validar: é a **confirmação** dele que credita, e o que ele invalida não tem o que
+  estornar. É a trava contra dado inventado, e é também momento de ensinar a medir.
 
 É o desenho que traduz o valor real do dado de território: uma medição isolada é curiosidade;
 uma **série contínua** é evidência. A plataforma paga pela continuidade, porque é a
@@ -241,6 +243,11 @@ distintos** não sai sozinho: soma-se ao nível acima até alcançar o piso. Val
 público e para o conjunto entregue, que desce abaixo do bairro. É o que protege o bairro de
 coletor único, que o corte no bairro sozinho não alcança. O piso é **parâmetro declarado na
 implantação**, com três como valor inicial.
+
+**A lista pública de comunidades publica quatro indicadores**: séries abertas, séries ativas ao
+fim do ciclo, registros válidos e continuidade. São os mesmos que embasam a avaliação do Poder
+do Território, e o piso acima vale para eles — contagem de séries é, na prática, contagem de
+coletores.
 
 **Revogação despersonaliza, não apaga.** Se o responsável revoga o consentimento, a plataforma
 rompe o vínculo de autoria e destrói o mapeamento: o registro segue na série com um **código de

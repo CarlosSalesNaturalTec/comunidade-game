@@ -279,7 +279,10 @@ App 03 para a atividade avulsa — **escolhe o tipo** e a pontuação vem daqui;
 valor no cadastro. É a mesma régua da tabela de preços do catálogo avulso (documento 02 §8.2):
 a mesma atividade não vale 10 numa comunidade e 30 na vizinha.
 
-**Ponto regular não se gasta.** Ele só cresce, alimenta níveis e ranking e nunca é debitado.
+**Ponto regular não se gasta; debita só por fato desfeito.** Gastar é trocar por recompensa, e
+isso só o saldo de pontos extras faz. Debitam o regular apenas dois fatos: a **ocorrência de
+conduta** lançada e o **estorno do registro de coleta invalidado** na auditoria do Mestre. Fora
+esses dois, ele só cresce.
 
 **Ponto extra tem duas contas**, que nunca se confundem:
 
@@ -319,9 +322,10 @@ A retomada pontua **uma vez por agendamento**; refazer por conta própria não r
 O resultado da sondagem não credita nem define nível: ela mede o ponto de partida, e a
 devolutiva automática da produção **nunca pontua sozinha** — quem lança o resultado é o Mestre.
 
-**A pontuação negativa não desfaz percurso.** O saldo da trilha **nunca fica negativo**, nível
-e badge já conquistados **não regridem**, e a ocorrência **sai do ranking ao fim do ciclo** —
-o registro permanece para a gestão e o responsável. É consequência no jogo, não porta de saída.
+**O débito não desfaz percurso.** O saldo da trilha **nunca fica negativo**, nível e badge já
+conquistados **não regridem**, e a ocorrência de conduta **sai do ranking ao fim do ciclo** — o
+registro permanece para a gestão e o responsável. Vale para a pontuação negativa e para o
+estorno da coleta: é consequência no jogo, não porta de saída.
 
 ### 5.1 Integridade dos pontos
 

@@ -106,7 +106,8 @@
   vinculados ao Guerreiro(a) e à série que ele alimenta. Ela é **do aparelho, nunca da
   criança**, e não amplia direito, como a chave da aplicação: não abre sessão, não lê dado
   algum e só registra medição na série a que está presa. O segredo é devolvido uma única vez,
-  a revogação exige motivo e autoria e a credencial cai ao fim do vínculo.
+  a revogação exige motivo e autoria e a credencial **cai ao encerramento da série** que ela
+  alimenta — o aparelho não sobrevive à medição que o justificava.
 - **A credencial é o próprio registro do aparelho**: guarda o identificador dele e a trilha em
   que foi construído, e não há cadastro de dispositivo além dela. Aparelho que alimenta mais de
   uma série tem **uma credencial por série**, todas com o mesmo identificador — e nunca duas
@@ -958,6 +959,9 @@ mesma autorização única do responsável, sem termo à parte por divulgação.
   plataforma.
 - A entrega é **anonimizada** em qualquer granularidade aprovada: nenhum conjunto sai com
   vínculo de autoria, nome ou nick de Guerreiro(a).
+- No Ciclo 01 a **entrega corre fora da plataforma**: o núcleo registra quem pediu, a
+  finalidade, a aprovação ou a recusa com motivo e o que foi entregue, e o Admin gera e envia o
+  conjunto por canal próprio. Rota de download espera demanda que a justifique.
 - O conjunto sai em **CSV** para as séries, com uma tabela por arquivo e cabeçalho declarado,
   **GeoJSON** para a geometria e um **dicionário de dados** que descreve cada campo, a
   unidade, a cadência e a origem. Formatos abertos, legíveis em planilha e em SIG.
