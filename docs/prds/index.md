@@ -15,7 +15,7 @@ no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs est�
 | ----------------------------------------- | -------------------------------------- | --------- | ---- | ------------ |
 | [PRD-08](prd-08-comunidades-virtuais.md)  | Comunidades Virtuais e território      | —         | 1    | implementado |
 | [PRD-07](prd-07-economia-e-ledger.md)     | Economia de recursos e ledger          | —         | 1    | aprovado     |
-| [PRD-01](prd-01-backend-api.md)           | Backend API (núcleo)                   | —         | 1    | implementado |
+| [PRD-01](prd-01-backend-api.md)           | Backend API (núcleo)                   | —         | 1    | em revisão   |
 | [PRD-02](prd-02-frontend-de-gestao.md)    | Frontend de gestão                     | App 03    | 2    | aprovado     |
 | [PRD-04](prd-04-aula-presencial.md)       | Aula presencial (onboarding e trilhas) | App 01    | 2    | aprovado     |
 | [PRD-09](prd-09-area-do-mestre.md)        | Área do Mestre (autoria e operação)    | App 09    | 3    | aprovado     |
@@ -31,10 +31,18 @@ Situações possíveis: **não iniciado**, **em elicitação**, **em redação**
 **aprovado** e **implementado**. O link para o documento aparece nesta tabela quando ele entra
 na pasta.
 
-O PRD-01 volta a **implementado**: a change `auditoria-e-estorno-da-coleta` entregou o débito de
-ponto regular por fato desfeito (`RF-01-57`, `RF-01-69`, `RF-01-70`, `RN-01-55`) e a queda da
-credencial de dispositivo ao **encerramento da série** (`RF-01-68`), fechando as cinco decisões
-que travavam a esteira.
+O PRD-01 passa a **em revisão**: a abertura do PRD-07 decidiu que a **aula é a atividade que
+reserva recurso** e que ela declara **em qual ponto de apoio acontece** (`RF-01-71`). É a única
+pendência dele — o restante segue implementado, e o campo entra na primeira change do PRD-07.
+Antes disso, a change `auditoria-e-estorno-da-coleta` entregou o débito de ponto regular por
+fato desfeito (`RF-01-57`, `RF-01-69`, `RF-01-70`, `RN-01-55`) e a queda da credencial de
+dispositivo ao **encerramento da série** (`RF-01-68`).
+
+O PRD-07 vai à implementação em **v7**, com três correções decididas na abertura: nasce o
+`PontoDeApoio` como entidade da gestão, o saldo é por tipo **e ponto de apoio**, e a reserva
+pendura na **aula**, não na atividade da missão. **Empréstimo de bancada e reposição solidária
+saíram do escopo** — o documento 05 já os adiava para o ciclo seguinte, e o PRD divergia da
+fonte. No Ciclo 01 ficam o tombamento, a ficha de vida e a conferência de inventário.
 
 O PRD-08 volta a **implementado**: a change `lista-publica-de-comunidades` entregou o
 `GET /comunidades` com os quatro indicadores do documento 02 §1 (`RF-08-30`, `RF-08-31`),

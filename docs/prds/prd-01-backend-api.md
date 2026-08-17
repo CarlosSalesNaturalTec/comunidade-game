@@ -8,9 +8,9 @@
 | Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | implementado                                               |
-| Versão e data    | v16 — 2026-08-17                                           |
+| Versão e data    | v17 — 2026-08-17                                           |
 | Depende de       | PRD-07, PRD-08                                             |
-| Documentos-fonte | 02, 03 §§1–3, 5, 8, 9, 11 e 12, 04, 11                     |
+| Documentos-fonte | 02, 03 §§1–3, 5, 8, 9, 11 e 12, 04, 05 §2, 11              |
 
 ## 2. Contexto e objetivo
 
@@ -224,6 +224,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-30` | Núcleo documenta as rotas públicas para uso por aplicações de terceiros                                                                                                                         | desejável  |
 | `RF-01-31` | Versão anterior da API segue disponível por 180 dias após a abertura da seguinte, prazo declarado na implantação                                                                                | desejável  |
 | `RF-01-32` | Núcleo deriva a disponibilidade do App 01 da aula agendada para a data e o horário correntes                                                                                                    | essencial  |
+| `RF-01-71` | Aula declara, obrigatoriamente, o ponto de apoio em que acontece                                                                                                                                | essencial  |
 | `RF-01-33` | Núcleo responde à consulta pública por **nick exato**, apenas de Guerreiro(a) com divulgação autorizada                                                                                         | essencial  |
 | `RF-01-34` | Núcleo não expõe busca parcial, sugestão nem completação de nick; a exibição pública alcança só quem tem divulgação autorizada                                                                  | essencial  |
 
@@ -310,10 +311,11 @@ Sessao              Conteudo
                     ProducaoDaMissao
                     EtiquetaODS
                     PARTICIPAÇÃO               TERRITÓRIO (PRD-08)  ECONOMIA (PRD-07)
-                    SolicitacaoDeParticipacao  ComunidadeVirtual    TipoDeRecurso
-                    SolicitacaoDeDados         Local                Aporte
-                    SolicitacaoDeChave         SerieDeColeta        Lancamento
-                    SolicitacaoDoResponsavel   RegistroDeColeta     ItemPatrimonial
+                    SolicitacaoDeParticipacao  ComunidadeVirtual    PontoDeApoio
+                    SolicitacaoDeDados         Local                TipoDeRecurso
+                    SolicitacaoDeChave         SerieDeColeta        Aporte
+                    SolicitacaoDoResponsavel   RegistroDeColeta     Lancamento
+                                                                    ItemPatrimonial
                                                                     ItemDeCatalogoAvulso
                                                                     Troca
                     SugestaoOuProposta
@@ -346,9 +348,10 @@ Sessao              Conteudo
 | `Apoiador`                  | identidade, avatar (próprio a partir de 10 moedas acumuladas; padrão do projeto abaixo do piso), nick único, artefatos comprobatórios, Poder Sustentador derivado dos aportes homologados                                                                                                  |
 | `Auditoria`                 | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                                                                                                                                  |
 
-A `Aula/Agenda` carrega **comunidade, data, horário inicial e final**: é dela que o App 01 tira
-a comunidade do novo cadastro, e é a existência dela que habilita o onboarding naquele momento.
-Não há parâmetro de liberação separado.
+A `Aula/Agenda` carrega **comunidade, ponto de apoio, data, horário inicial e final**: é dela
+que o App 01 tira a comunidade do novo cadastro, e é a existência dela que habilita o
+onboarding naquele momento. Não há parâmetro de liberação separado. O **ponto de apoio** é
+obrigatório e é o que liga a aula ao saldo de recursos do PRD-07 (`RF-01-71`).
 
 A `Equipe` tem **dois tempos de vida**, definidos no documento 02 §5: a da aula, que termina com
 ela, e a da trilha, fixa depois de homologada e sujeito da criação original. É a mesma entidade,
@@ -620,6 +623,7 @@ antes no documento 09.
 | `RF-01-25` e `RF-01-26` | 02 §§1, 4 e 03 §§7, 9–11                           |
 | `RF-01-27` a `RF-01-30` | 03 §1 (princípios de arquitetura)                  |
 | `RF-01-32`              | 03 §§3, 5 (App 01 habilitado pela aula agendada)   |
+| `RF-01-71`              | 05 §2 (a aula acontece num ponto de apoio)         |
 | `RF-01-33` e `RF-01-34` | 02 §1 e 03 §10 (acompanhamento por nick)           |
 | `RF-01-35`              | 03 §7 (apoio escolar com corpus fechado)           |
 | `RF-01-36`              | 05 §5 e 11 §5 (resposta e pontuação do quiz)       |

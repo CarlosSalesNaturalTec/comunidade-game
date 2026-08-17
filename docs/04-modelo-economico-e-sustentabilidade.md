@@ -16,8 +16,10 @@ Regras derivadas:
 - Cada recurso alocado é **computado para o respectivo provedor** e acumulado no seu
   histórico.
 - **Cada atividade só acontece se tiver os recursos providos** — não há atividade sem lastro.
-  O livro-razão mantém **saldo por tipo de recurso**; agendar uma atividade **reserva** o que
-  ela consome, e a realização converte a reserva em baixa.
+  A atividade que se agenda e reserva recurso é a **aula**, que declara o que consome e em que
+  ponto de apoio acontece. O livro-razão mantém **saldo por tipo de recurso e ponto de apoio**,
+  porque o material fica onde é usado (documento 05). Agendar a aula **reserva** o que ela
+  consome, e a realização converte a reserva em baixa.
 - **Falta de lastro vira pedido, não recusa silenciosa.** Cadastrada a atividade sem saldo
   para o que ela consome, a diferença é publicada como **necessidade de recurso** em três
   lugares: na vitrine pública, na área do Apoiador e na área dos Mestres da trilha. A

@@ -94,6 +94,8 @@ doc 15**.
 | Guerreiro(a) como termo da persona primária                                | 02 §1                                      | 01, 03, 08, 09                 |
 | Moeda da plataforma (1 moeda = R$ 10,00; escala fixa por ciclo)            | 04 §1                                      | 03 §8, 08, 11 §8.2, 12         |
 | Entrega de dados (gratuita, íntegra e aprovada por Admin)                  | 03 §12.3                                   | 04 §2, 08, 09                  |
+| Ponto de apoio (cadastro da gestão; dimensão do saldo e sede da aula)      | 05 §2                                      | 04 §1, 08, 09, 10              |
+| Lastro da aula (reserva no agendamento, baixa na realização)               | 04 §1                                      | 05 §2, 08, 09                  |
 | Produção executiva (tempo do fundador e dos Admins, por absorção)          | 04 §1                                      | 08, 09, 10 §4.3                |
 | Recortes da vitrine (sociedade civil, pesquisadores, gestores)             | 03 §8                                      | 04 §4, 08, 09                  |
 | Nome do projeto e endereço canônico da plataforma                          | 01 §1                                      | 03 §1, 09                      |
@@ -220,6 +222,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Portas de entrada por modalidade de apoio   | 14 §§3, 10 + 02 §1        | PRD-03, 14, 02, 01                 |
 | Área do Mestre                              | 03 §11 + 02 §1            | PRD-09, 02, 01                     |
 | Acervo didático (patrimônio e doação)       | 05 §3                     | PRD-07, 02, 05, 09                 |
+| Ponto de apoio (saldo e sede da aula)       | 05 §2                     | PRD-07, PRD-01, PRD-02, PRD-04     |
 | Área do responsável e consentimentos        | 03 §9                     | PRD-13, 01, 02                     |
 | Etiqueta ODS e cobertura da Agenda 2030     | 11 §2.1 + 04 §4           | PRD-09, 01, 08, 03, 14             |
 
@@ -355,7 +358,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 
 | PRD    | Arquivo                           | Depende de     | Documentos-fonte       |
 | ------ | --------------------------------- | -------------- | ---------------------- |
-| PRD-01 | `prd-01-backend-api.md`           | PRD-07, PRD-08 | 02, 03, 04, 11         |
+| PRD-01 | `prd-01-backend-api.md`           | PRD-07, PRD-08 | 02, 03, 04, 05, 11     |
 | PRD-02 | `prd-02-frontend-de-gestao.md`    | PRD-01         | 02, 03, 04, 05         |
 | PRD-03 | `prd-03-vitrine-publica.md`       | PRD-01, PRD-13 | 02, 03, 04, 11         |
 | PRD-04 | `prd-04-aula-presencial.md`       | PRD-01, PRD-02 | 02, 03, 05, 06, 11     |
