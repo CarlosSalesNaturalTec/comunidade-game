@@ -8,7 +8,7 @@
 | Aplicação        | — (domínio consumido pelas Apps 03, 05, 06, 08 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v8 — 2026-08-17                                      |
+| Versão e data    | v10 — 2026-08-18                                     |
 | Depende de       | PRD-08                                               |
 | Documentos-fonte | 04 §§1–3, 05 §§2–3, 11 §5                            |
 
@@ -99,8 +99,10 @@ atividades previstas.
    publicada como **necessidade**, e o Mestre da trilha a vê na App 09.
 2. O Mestre (ou o Admin) provê ele mesmo: dá a aula sem receber, leva o lanche, cede o insumo,
    e **assume o aporte a partir da própria necessidade**, em um ato de confirmação.
-3. O sistema registra um **aporte por absorção** em nome de quem proveu, valorado pela tabela.
-4. O saldo é creditado e imediatamente reservado pela aula — que passa a ter lastro.
+3. O sistema registra um **aporte por absorção** em nome de quem proveu, valorado pela tabela,
+   **no ponto de apoio da aula**.
+4. O saldo é creditado **no ato, sem homologação**, e imediatamente reservado pela aula — que
+   passa a ter lastro.
 5. O aporte entra no Poder Sustentador de quem absorveu, nasce marcado como **ressarcível** e
    soma ao selo público de quem sustentou atividade sem recurso.
 
@@ -113,8 +115,10 @@ atividades previstas.
    dos Mestres da trilha.
 4. Suprida a necessidade, por aporte ou por absorção, a aula é confirmada e a reserva
    acontece.
-5. Realizada a aula, a reserva vira **baixa**.
-6. Aula cancelada **libera** a reserva, devolvendo o saldo.
+5. O **lançamento da atividade realizada** — o mesmo ato que registra o resultado de cada
+   participante — converte a reserva em **baixa**.
+6. Aula cancelada por Admin ou por Mestre da comunidade dela **libera** a reserva, devolvendo o
+   saldo. Aula que passa da data sem lançamento nem cancelamento **mantém** a reserva.
 
 ### 5.4 Tombamento e ficha de vida do exemplar
 
@@ -156,7 +160,7 @@ atividades previstas.
 | `RF-07-01` | Admin cadastra tipo de recurso com unidade e valor de referência em moedas                                                       | essencial  |
 | `RF-07-02` | Sistema versiona o valor de referência por data de vigência                                                                      | essencial  |
 | `RF-07-03` | Admin cadastra tipo novo no ato do registro de um aporte, sem interromper o fluxo                                                | essencial  |
-| `RF-07-04` | Admin registra aporte com provedor, tipo, quantidade, comprovante e data                                                         | essencial  |
+| `RF-07-04` | Admin registra aporte com provedor, tipo, quantidade, ponto de apoio, comprovante e data                                         | essencial  |
 | `RF-07-29` | Aporte declarado no pré-cadastro entra pendente, com comprovante e sem creditar nada                                             | essencial  |
 | `RF-07-30` | Homologação do aporte pendente converte o valor em moedas e credita o Poder Sustentador                                          | essencial  |
 | `RF-07-05` | Sistema converte todo aporte em moedas pela tabela vigente na data do aporte                                                     | essencial  |
@@ -166,7 +170,7 @@ atividades previstas.
 | `RF-07-27` | Falta de lastro é publicada como necessidade na vitrine e nas áreas do Apoiador e do Mestre                                      | essencial  |
 | `RF-07-28` | Mestre ou Admin assume o aporte por absorção a partir da necessidade publicada                                                   | essencial  |
 | `RF-07-31` | Necessidade publicada aceita cobertura parcial: o aporte homologado abate o que falta e ela só sai da lista quando o saldo fecha | essencial  |
-| `RF-07-09` | Realização da aula converte a reserva em baixa; cancelamento dela libera a reserva                                               | essencial  |
+| `RF-07-09` | Lançamento da atividade realizada converte a reserva em baixa; cancelamento da aula libera a reserva, que nunca expira sozinha   | essencial  |
 | `RF-07-10` | Sistema calcula o Poder Sustentador de cada provedor pela soma de moedas aportadas                                               | essencial  |
 | `RF-07-11` | Sistema registra exemplar tombado com ponto de apoio, responsável designado e conservação                                        | essencial  |
 | `RF-07-13` | Sistema registra baixa definitiva de recompensa entregue, sem devolução                                                          | essencial  |
@@ -206,6 +210,7 @@ atividades previstas.
 | `RN-07-01` | Nenhuma atividade acontece sem lastro dos recursos que consome                                                                       | 9          | 04 §1        |
 | `RN-07-02` | Todo custo de toda ação é atribuído a um provedor                                                                                    | —          | 04 §1        |
 | `RN-07-03` | Aporte não financeiro é valorado pela tabela de referência da gestão                                                                 | —          | 04 §1        |
+| `RN-07-36` | O aporte declara o ponto de apoio em que entra, e o lançamento de crédito herda esse ponto                                           | —          | 04 §1        |
 | `RN-07-04` | A moeda vale R$ 10,00, admite duas casas decimais e a escala é fixa por ciclo                                                        | 16         | 04 §1        |
 | `RN-07-05` | Toda saída pública exibe moedas, nunca reais                                                                                         | 16         | 04 §1        |
 | `RN-07-06` | Recurso provido sem contrapartida financeira por Mestre ou Admin é aporte em nome dele                                               | —          | 04 §1        |
@@ -221,6 +226,7 @@ atividades previstas.
 | `RN-07-14` | Camisa é conquistada no marco de missão declarado pelo Mestre, não entregue a todo inscrito                                          | —          | 02 §8, 05 §3 |
 | `RN-07-15` | Lançamento do livro-razão nunca é apagado nem editado                                                                                | —          | 04 §1        |
 | `RN-07-16` | Quem homologa o aporte não pode ser o próprio provedor                                                                               | —          | 04 §1        |
+| `RN-07-35` | A absorção credita no ato, sem homologação; homologam-se o aporte da gestão e o do pré-cadastro                                      | —          | 04 §1        |
 | `RN-07-23` | Na cobertura parcial, cada provedor recebe as moedas do que aportou; ninguém recebe crédito pelo que outro deu                       | 16         | 04 §1        |
 | `RN-07-17` | Ressarcimento não é direito nem promessa: só ocorre havendo receita destinada a ele                                                  | —          | 04 §1        |
 | `RN-07-18` | Ressarcimento pago reverte as moedas; o registro do ato e o destaque público permanecem                                              | —          | 04 §1        |
@@ -246,6 +252,7 @@ PontoDeApoio  1 ──── N Aula               (a Aula é do PRD-01)
 TipoDeRecurso 1 ──── N ValorDeReferencia  (versionado por vigência)
 TipoDeRecurso 1 ──── N Aporte
 Provedor      1 ──── N Aporte             (Apoiador, Mestre ou Admin)
+PontoDeApoio  1 ──── N Aporte             (onde o aporte entra)
 Aporte        1 ──── 1 Lancamento         (crédito)
 Aula          1 ──── N Reserva ──── 1 Lancamento (débito, na realização)
 TipoDeRecurso 1 ──── 1 SaldoDeRecurso     (por ponto de apoio)
@@ -257,20 +264,20 @@ Aporte        0..1 ─ N ItemPatrimonial    (quando o aporte é durável)
 PontoDeApoio  1 ──── N ItemPatrimonial
 ```
 
-| Entidade               | Atributos essenciais                                                                                                                                                                                                                                                                                                   |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PontoDeApoio`         | nome, comunidade, responsável designado pelo acervo — em designação posterior ao cadastro —, ativo                                                                                                                                                                                                                     |
-| `TipoDeRecurso`        | nome, natureza (consumível, durável, serviço, financeiro), unidade, exige comprovante                                                                                                                                                                                                                                  |
-| `ValorDeReferencia`    | tipo, valor em moedas, vigência inicial e final, admin responsável                                                                                                                                                                                                                                                     |
-| `Aporte`               | provedor, tipo, quantidade, valor em moedas, valor de origem, forma (financeira, material, serviço, absorção), **origem do registro** (gestão, pré-cadastro ou App 08), solicitação de origem, **ressarcível**, situação de ressarcimento (não se aplica, em aberto, ressarcido), comprovante, admin homologador, data |
-| `Lancamento`           | natureza (crédito, débito, ajuste), tipo de recurso, quantidade, moedas, aula, aporte, data, autor, motivo do ajuste                                                                                                                                                                                                   |
-| `Reserva`              | aula **ou desafio extra**, tipo de recurso, quantidade, ponto de apoio, estado (reservada, consumida, liberada)                                                                                                                                                                                                        |
-| `PrecoDeReferencia`    | tipo de recurso, **preço em pontos extras**, vigência inicial e final, admin responsável                                                                                                                                                                                                                               |
-| `ItemDeCatalogoAvulso` | nome, tipo de recurso, estoque, comunidade, quem cadastrou (Mestre ou Apoiador), situação de homologação, ativo — o **preço vem da tabela de referência**, não do cadastro do item                                                                                                                                     |
-| `Troca`                | item, Guerreiro(a), preço em pontos extras cobrado, encontro, Mestre que entregou, data                                                                                                                                                                                                                                |
-| `SaldoDeRecurso`       | tipo, ponto de apoio, quantidade disponível, quantidade reservada                                                                                                                                                                                                                                                      |
-| `ItemPatrimonial`      | aporte de origem, título, número de tombo, ponto de apoio, responsável designado, estado de conservação, ficha de vida — quem cuidou dele e as perdas e danos anotados                                                                                                                                                 |
-| `Ressarcimento`        | aporte absorvido, valor em reais, receita destinada de origem, admin pagador, data, comprovante anexado (PDF ou imagem)                                                                                                                                                                                                |
+| Entidade               | Atributos essenciais                                                                                                                                                                                                                                                                                                                                                        |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PontoDeApoio`         | nome, comunidade, responsável designado pelo acervo — em designação posterior ao cadastro —, ativo                                                                                                                                                                                                                                                                          |
+| `TipoDeRecurso`        | nome, natureza (consumível, durável, serviço, financeiro), unidade, exige comprovante                                                                                                                                                                                                                                                                                       |
+| `ValorDeReferencia`    | tipo, valor em moedas, vigência inicial e final, admin responsável                                                                                                                                                                                                                                                                                                          |
+| `Aporte`               | provedor, tipo, quantidade, **ponto de apoio de entrada**, valor em moedas, valor de origem, forma (financeira, material, serviço, absorção), **origem do registro** (gestão, pré-cadastro ou App 08), solicitação de origem, **ressarcível**, situação de ressarcimento (não se aplica, em aberto, ressarcido), comprovante, admin homologador — vazio na absorção —, data |
+| `Lancamento`           | natureza (crédito, débito, ajuste), tipo de recurso, **ponto de apoio**, quantidade, moedas, aula, aporte, data, autor, motivo do ajuste                                                                                                                                                                                                                                    |
+| `Reserva`              | aula **ou desafio extra**, tipo de recurso, quantidade, ponto de apoio, estado (reservada, consumida, liberada)                                                                                                                                                                                                                                                             |
+| `PrecoDeReferencia`    | tipo de recurso, **preço em pontos extras**, vigência inicial e final, admin responsável                                                                                                                                                                                                                                                                                    |
+| `ItemDeCatalogoAvulso` | nome, tipo de recurso, estoque, comunidade, quem cadastrou (Mestre ou Apoiador), situação de homologação, ativo — o **preço vem da tabela de referência**, não do cadastro do item                                                                                                                                                                                          |
+| `Troca`                | item, Guerreiro(a), preço em pontos extras cobrado, encontro, Mestre que entregou, data                                                                                                                                                                                                                                                                                     |
+| `SaldoDeRecurso`       | tipo, ponto de apoio, quantidade disponível, quantidade reservada                                                                                                                                                                                                                                                                                                           |
+| `ItemPatrimonial`      | aporte de origem, título, número de tombo, ponto de apoio, responsável designado, estado de conservação, ficha de vida — quem cuidou dele e as perdas e danos anotados                                                                                                                                                                                                      |
+| `Ressarcimento`        | aporte absorvido, valor em reais, receita destinada de origem, admin pagador, data, comprovante anexado (PDF ou imagem)                                                                                                                                                                                                                                                     |
 
 Imutabilidade: `Lancamento` é **somente inserção**. Erro se corrige por lançamento de
 **ajuste**, que referencia o original e guarda motivo e autor. O saldo é sempre **derivado**
@@ -282,6 +289,11 @@ pública lê apenas a primeira.
 O `PontoDeApoio` é a dimensão do saldo: o recurso fica onde é usado. A `Aula`, entidade do
 PRD-01, passa a declarar **em qual ponto de apoio acontece** — é o que leva a reserva ao saldo
 certo. Ele não se confunde com o `Local` do PRD-08, que é a hierarquia territorial da coleta.
+
+Os **dois lados do lançamento acham o mesmo lugar**: o crédito herda o ponto de apoio do
+aporte que o gerou, e o débito, o da aula que o consumiu (`RN-07-36`). É o que torna o saldo
+derivável por tipo **e** ponto de apoio. Todas as naturezas declaram o ponto, inclusive
+serviço e financeiro, para que a reserva da aula leia um escopo de saldo só.
 
 **Três unidades que não se convertem entre si:** reais, moedas da plataforma e pontos extras.
 O `ItemDeCatalogoAvulso` guarda o preço em **pontos extras**, que **não deriva** do valor em
@@ -304,7 +316,6 @@ moedas do seu tipo de recurso — o custo real segue no lançamento, invisível 
 | GET    | `/aportes/ressarciveis`             | Admin           | Aportes absorvidos em aberto, do mais antigo ao mais novo            |
 | POST   | `/aportes/{id}/ressarcimento`       | Admin           | Registra o ressarcimento com comprovante anexado e reverte as moedas |
 | POST   | `/aulas/{id}/reservas`              | gestão          | Reserva os recursos no agendamento da aula                           |
-| POST   | `/aulas/{id}/baixa`                 | gestão          | Converte reservas em baixa na realização da aula                     |
 | POST   | `/lancamentos/{id}/ajuste`          | Admin           | Lança ajuste referenciando o lançamento original                     |
 | GET    | `/meus-aportes`                     | Apoiador        | Aportes e Poder Sustentador do próprio Apoiador                      |
 | GET    | `/meus-aportes/ressarciveis`        | Mestre ou Admin | Situação dos aportes que absorveu                                    |
@@ -371,36 +382,41 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                        | Gravada em     | Doc 09                                       |
-| ------------------------------------------------------------------------------ | -------------- | -------------------------------------------- |
-| Ponto de apoio como entidade da gestão, ligada a uma comunidade                | 05 §2          | Ponto de apoio como entidade da plataforma   |
-| Saldo de recurso por tipo **e ponto de apoio**                                 | 04 §1          | Ponto de apoio como entidade da plataforma   |
-| A aula é a atividade que declara recursos, reserva e dá baixa                  | 04 §1          | A atividade que reserva recurso é a aula     |
-| A aula declara em qual ponto de apoio acontece — altera o PRD-01               | 05 §2          | A atividade que reserva recurso é a aula     |
-| Empréstimo de bancada e reposição solidária ficam para o ciclo seguinte        | 05 §3 (já era) | Empréstimo de bancada e reposição solidária  |
-| Aporte não financeiro valorado por tabela de referência da gestão              | 04 §1          | Já decididos                                 |
-| Tipo de aporte novo cadastrado na hora por um Admin                            | 04 §1          | Já decididos                                 |
-| Moeda com duas casas decimais                                                  | 04 §1          | Já decididos                                 |
-| Lastro por saldo de tipo de recurso, com reserva no agendamento                | 04 §1          | Já decididos                                 |
-| Aporte por absorção de Mestre ou Admin                                         | 04 §1          | Já decididos                                 |
-| Responsável designado pelo acervo em cada ponto de apoio                       | 05 §3          | Já decididos                                 |
-| Designação do responsável posterior ao cadastro, entre os adultos cadastrados  | 05 §3          | Ponto de apoio como entidade da plataforma   |
-| Aporte por absorção marcado como ressarcível, com destaque público pelo ato    | 04 §1, 11 §8.2 | Já decididos                                 |
-| Ressarcimento só com receita destinada, por antiguidade e decisão de Admin     | 04 §1          | Já decididos                                 |
-| Ressarcimento reverte as moedas; o registro do ato permanece                   | 04 §1          | Já decididos                                 |
-| Sem armazenar dado bancário: chave PIX por e-mail e apenas comprovante anexado | 04 §1, 03 §11  | Já decididos                                 |
-| Produção executiva como tipo de recurso, aportada por absorção                 | 04 §1          | Já decididos                                 |
-| Faturas anteriores ao livro-razão guardadas e lançadas retroativamente         | 04 §1          | Já decididos                                 |
-| Catálogo avulso com lastro, estoque e baixa na entrega da troca                | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
-| Preço em pontos extras sem derivação do valor em moedas                        | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
-| Preço fixado por tabela de referência da gestão, versionada por vigência       | 02 §8.2        | Quem fixa o preço do catálogo avulso         |
-| Piso de 20 pontos extras para qualquer item do catálogo avulso                 | 02 §8.2        | Quem fixa o preço do catálogo avulso         |
-| Desafio extra reserva a recompensa na publicação e libera se encerrar sem uso  | 04 §3          | Desafio extra — proponente, teto e custeio   |
-| Custeio do desafio extra por absorção ou por saldo já existente na plataforma  | 04 §3          | Desafio extra — proponente, teto e custeio   |
-| Horas da produção executiva declaradas por período, com commits como lastro    | 04 §1          | Apuração da produção executiva               |
-| Valor-hora único na tabela de referência, versionado por vigência              | 04 §1          | Apuração da produção executiva               |
-| Prestação de contas pública em painel vivo, sem fechamento periódico           | 04 §1          | Formato da prestação de contas pública       |
-| Dupla entrada fora do Ciclo 01; segue proposta no documento-fonte              | 04 §1          | Formato da prestação de contas pública       |
+| Decisão                                                                        | Gravada em     | Doc 09                                         |
+| ------------------------------------------------------------------------------ | -------------- | ---------------------------------------------- |
+| Ponto de apoio como entidade da gestão, ligada a uma comunidade                | 05 §2          | Ponto de apoio como entidade da plataforma     |
+| Saldo de recurso por tipo **e ponto de apoio**                                 | 04 §1          | Ponto de apoio como entidade da plataforma     |
+| A aula é a atividade que declara recursos, reserva e dá baixa                  | 04 §1          | A atividade que reserva recurso é a aula       |
+| A baixa é o lançamento da atividade realizada, sem rota de baixa à parte       | 04 §1          | A baixa do recurso é o lançamento da atividade |
+| Aula cancelada por Admin ou por Mestre da comunidade dela                      | 05 §4          | Quem cancela uma aula agendada                 |
+| Reserva de aula que passou sem desfecho não expira sozinha                     | 04 §1          | Reserva de aula que passou sem desfecho        |
+| A aula declara em qual ponto de apoio acontece — altera o PRD-01               | 05 §2          | A atividade que reserva recurso é a aula       |
+| Empréstimo de bancada e reposição solidária ficam para o ciclo seguinte        | 05 §3 (já era) | Empréstimo de bancada e reposição solidária    |
+| Aporte não financeiro valorado por tabela de referência da gestão              | 04 §1          | Já decididos                                   |
+| Tipo de aporte novo cadastrado na hora por um Admin                            | 04 §1          | Já decididos                                   |
+| Moeda com duas casas decimais                                                  | 04 §1          | Já decididos                                   |
+| Lastro por saldo de tipo de recurso, com reserva no agendamento                | 04 §1          | Já decididos                                   |
+| Aporte por absorção de Mestre ou Admin                                         | 04 §1          | Já decididos                                   |
+| O aporte declara o ponto de apoio em que entra, e o crédito herda esse ponto   | 04 §1          | Onde o aporte entra no livro-razão             |
+| A absorção credita no ato, sem homologação                                     | 04 §1          | Homologação do aporte por absorção             |
+| Responsável designado pelo acervo em cada ponto de apoio                       | 05 §3          | Já decididos                                   |
+| Designação do responsável posterior ao cadastro, entre os adultos cadastrados  | 05 §3          | Ponto de apoio como entidade da plataforma     |
+| Aporte por absorção marcado como ressarcível, com destaque público pelo ato    | 04 §1, 11 §8.2 | Já decididos                                   |
+| Ressarcimento só com receita destinada, por antiguidade e decisão de Admin     | 04 §1          | Já decididos                                   |
+| Ressarcimento reverte as moedas; o registro do ato permanece                   | 04 §1          | Já decididos                                   |
+| Sem armazenar dado bancário: chave PIX por e-mail e apenas comprovante anexado | 04 §1, 03 §11  | Já decididos                                   |
+| Produção executiva como tipo de recurso, aportada por absorção                 | 04 §1          | Já decididos                                   |
+| Faturas anteriores ao livro-razão guardadas e lançadas retroativamente         | 04 §1          | Já decididos                                   |
+| Catálogo avulso com lastro, estoque e baixa na entrega da troca                | 02 §8.2        | Troca de pontos extras por recompensa avulsa   |
+| Preço em pontos extras sem derivação do valor em moedas                        | 02 §8.2        | Troca de pontos extras por recompensa avulsa   |
+| Preço fixado por tabela de referência da gestão, versionada por vigência       | 02 §8.2        | Quem fixa o preço do catálogo avulso           |
+| Piso de 20 pontos extras para qualquer item do catálogo avulso                 | 02 §8.2        | Quem fixa o preço do catálogo avulso           |
+| Desafio extra reserva a recompensa na publicação e libera se encerrar sem uso  | 04 §3          | Desafio extra — proponente, teto e custeio     |
+| Custeio do desafio extra por absorção ou por saldo já existente na plataforma  | 04 §3          | Desafio extra — proponente, teto e custeio     |
+| Horas da produção executiva declaradas por período, com commits como lastro    | 04 §1          | Apuração da produção executiva                 |
+| Valor-hora único na tabela de referência, versionado por vigência              | 04 §1          | Apuração da produção executiva                 |
+| Prestação de contas pública em painel vivo, sem fechamento periódico           | 04 §1          | Formato da prestação de contas pública         |
+| Dupla entrada fora do Ciclo 01; segue proposta no documento-fonte              | 04 §1          | Formato da prestação de contas pública         |
 
 ## 14. Pendências que permanecem
 
@@ -443,4 +459,5 @@ qualquer número de pontos de apoio.
 | `RF-07-31`              | 04 §1 (cobertura parcial da necessidade)         |
 | `RN-07-20`              | 04 §1 (sem armazenamento de dado bancário)       |
 | `RN-07-33`              | 05 §2 (estrutura física — pontos de apoio)       |
+| `RN-07-35` e `RN-07-36` | 04 §1 (onde o aporte entra e como se homologa)   |
 | `RN-07-31` e `RN-07-32` | 04 §1 (painel vivo e horas declaradas)           |

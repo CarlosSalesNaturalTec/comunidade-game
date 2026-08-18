@@ -8,7 +8,7 @@
 | Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | implementado                                               |
-| Versão e data    | v17 — 2026-08-17                                           |
+| Versão e data    | v18 — 2026-08-18                                           |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 8, 9, 11 e 12, 04, 05 §2, 11              |
 
@@ -175,7 +175,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-14` | Núcleo recusa o vínculo que passaria de três responsáveis para o mesmo Guerreiro(a)                                                                                                             | essencial  |
 | `RF-01-15` | Responsável autentica com login próprio e enxerga apenas os Guerreiros e Guerreiras vinculados                                                                                                  | essencial  |
 | `RF-01-16` | Núcleo aplica a matriz de permissões por papel em toda operação                                                                                                                                 | essencial  |
-| `RF-01-17` | Mestre lê o painel do dia e conduz o Quiz ao Vivo das suas aulas, sem escrever nas demais rotas de gestão                                                                                       | essencial  |
+| `RF-01-17` | Mestre lê o painel do dia, conduz o Quiz ao Vivo das suas aulas e cancela aula da sua comunidade, sem escrever nas demais rotas de gestão                                                       | essencial  |
 | `RF-01-18` | Toda consulta de dado de comunidade aceita e aplica filtro por comunidade                                                                                                                       | essencial  |
 | `RF-01-19` | Núcleo mantém as entidades de personas, vínculos e consentimentos versionados                                                                                                                   | essencial  |
 | `RF-01-20` | Núcleo mantém as entidades de trilha, missão, atividade, equipe, presença e resultado                                                                                                           | essencial  |
@@ -225,6 +225,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-31` | Versão anterior da API segue disponível por 180 dias após a abertura da seguinte, prazo declarado na implantação                                                                                | desejável  |
 | `RF-01-32` | Núcleo deriva a disponibilidade do App 01 da aula agendada para a data e o horário correntes                                                                                                    | essencial  |
 | `RF-01-71` | Aula declara, obrigatoriamente, o ponto de apoio em que acontece                                                                                                                                | essencial  |
+| `RF-01-72` | Aula agendada é cancelada por Admin ou por Mestre da comunidade dela, com motivo, e o cancelamento libera os recursos reservados                                                                | essencial  |
 | `RF-01-33` | Núcleo responde à consulta pública por **nick exato**, apenas de Guerreiro(a) com divulgação autorizada                                                                                         | essencial  |
 | `RF-01-34` | Núcleo não expõe busca parcial, sugestão nem completação de nick; a exibição pública alcança só quem tem divulgação autorizada                                                                  | essencial  |
 
@@ -348,10 +349,13 @@ Sessao              Conteudo
 | `Apoiador`                  | identidade, avatar (próprio a partir de 10 moedas acumuladas; padrão do projeto abaixo do piso), nick único, artefatos comprobatórios, Poder Sustentador derivado dos aportes homologados                                                                                                  |
 | `Auditoria`                 | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                                                                                                                                  |
 
-A `Aula/Agenda` carrega **comunidade, ponto de apoio, data, horário inicial e final**: é dela
-que o App 01 tira a comunidade do novo cadastro, e é a existência dela que habilita o
-onboarding naquele momento. Não há parâmetro de liberação separado. O **ponto de apoio** é
-obrigatório e é o que liga a aula ao saldo de recursos do PRD-07 (`RF-01-71`).
+A `Aula/Agenda` carrega **comunidade, ponto de apoio, data, horário inicial e final** e a
+**situação** — prevista, pendente de lastro, confirmada, realizada ou cancelada: é dela que o
+App 01 tira a comunidade do novo cadastro, e é a existência dela que habilita o onboarding
+naquele momento. Não há parâmetro de liberação separado. O **ponto de apoio** é obrigatório e é
+o que liga a aula ao saldo de recursos do PRD-07 (`RF-01-71`). A aula passa a **realizada** pelo
+lançamento da atividade, e a **cancelada** por ato de Admin ou de Mestre da comunidade dela
+(`RF-01-72`); não há desfecho automático por decurso de prazo.
 
 A `Equipe` tem **dois tempos de vida**, definidos no documento 02 §5: a da aula, que termina com
 ela, e a da trilha, fixa depois de homologada e sujeito da criação original. É a mesma entidade,
@@ -529,70 +533,73 @@ e o dos desafios de desbloqueio de cada trilha.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                                              | Gravada em        | Doc 09                                       |
-| ---------------------------------------------------------------------------------------------------- | ----------------- | -------------------------------------------- |
-| Instância única, com a comunidade como vínculo nos registros                                         | 03 §1             | Já decididos                                 |
-| API versionada na rota, a partir de `/v1`                                                            | 03 §1             | Já decididos                                 |
-| Guerreiro(a) entra com nick e imagem, conferida contra o _template_ do onboarding                    | 03 §1.1           | Já decididos                                 |
-| Sem PIN nem senha para a criança, e sem câmera não há entrada                                        | 03 §§1.1, 3.2     | Já decididos                                 |
-| Nick e imagem valem em **todas** as aplicações do Guerreiro(a), para garantir que a atividade é dele | 03 §1.1           | Já decididos                                 |
-| Falha, ausência de _template_ ou recusa da biometria caem na confirmação humana, no encontro         | 03 §§1.1, 3.3     | Já decididos                                 |
-| App 01 exige câmera e Mestre ou Admin presente; sem isso não há onboarding                           | 03 §3.2           | Já decididos                                 |
-| Equipe formada pelo Guerreiro(a) no App 01, vinculada à aula e encerrada com ela                     | 02 §5             | Já decididos                                 |
-| Criança sem o responsável: onboarding sem imagem, e cadastro biométrico após a aprovação dele        | 03 §§3.2, 3.3     | Já decididos                                 |
-| Mestre cadastra e vincula responsável de qualquer Guerreiro(a)                                       | 02 §1, 03 §11     | Já decididos                                 |
-| A imagem do onboarding identifica o Guerreiro(a): presença **e** autenticação                        | 03 §§3.2, 3.3, 12 | Já decididos                                 |
-| Admin fundador semeado na implantação, único cadastro que não passa por outro Admin                  | 02 §1             | Semeadura do primeiro Admin                  |
-| Adultos entram por login social                                                                      | 03 §1.1           | Já decididos                                 |
-| Credencial de usuário e senha provisória, criada por Admin ou Mestre, trocada no primeiro acesso     | 03 §1.1           | Já decididos                                 |
-| Responsável tem login próprio, vinculado a um ou mais Guerreiros e Guerreiras                        | 03 §1.1           | Já decididos                                 |
-| Responsável é cadastrado por Admin ou Mestre, depois de se apresentar pessoalmente                   | 02 §1             | Já decididos                                 |
-| No máximo três responsáveis por Guerreiro(a), com grau de parentesco em texto livre                  | 02 §1             | Já decididos                                 |
-| Mestre cadastra responsável pela App 09 — única persona que ele cadastra                             | 03 §11            | Já decididos                                 |
-| Mestre lê o painel do dia da App 03 e conduz ali o Quiz ao Vivo das suas aulas                       | 03 §5             | Já decididos                                 |
-| Toda aplicação se identifica por chave, e sem ela a API não responde                                 | 03 §1             | Já decididos                                 |
-| A chave é da aplicação, não da pessoa: consulta pública dispensa login, nunca a chave                | 03 §§1, 1.1       | Já decididos                                 |
-| Chave de terceiro pedida na Área do Apoiador Desenvolvedor, com 30 dias para a URL                   | 03 §8             | Já decididos                                 |
-| Chave sem URL apresentada no prazo é revogada                                                        | 03 §8             | Já decididos                                 |
-| Stack: Python com FastAPI, Cloud SQL para PostgreSQL com PostGIS e Cloud Storage                     | 03 §1             | Já decididos                                 |
-| Hospedagem em Cloud Run, região `southamerica-east1`, custo por absorção do fundador                 | 03 §1             | Já decididos                                 |
-| Séries temporais do território no próprio PostgreSQL, particionadas por tempo                        | 03 §1             | Já decididos                                 |
-| _Template_ biométrico gerado no aparelho; ao núcleo chega só o descritor                             | 03 §3.3           | Já decididos                                 |
-| Ponto extra em duas contas: acumulado e saldo disponível; só o saldo debita                          | 11 §5             | Troca de pontos extras por recompensa avulsa |
-| Ponto regular debita por fato desfeito — conduta e estorno de coleta —, nunca por troca              | 11 §5, 99 §6      | Estorno do registro de coleta invalidado     |
-| Jogos leem o acumulado de pontos extras, nunca o saldo disponível                                    | 11 §5             | Troca de pontos extras por recompensa avulsa |
-| Comparação do _template_ permanece no núcleo, que nunca o devolve                                    | 03 §3.3           | Já decididos                                 |
-| Chave que cifra o _template_ no Secret Manager, lida na subida, sem chamada externa por login        | 03 §3.3           | Guarda e auditoria do _template_ biométrico  |
-| Acesso auditado ao _template_ alcança toda leitura, inclusive cada comparação de login               | 03 §3.3           | Guarda e auditoria do _template_ biométrico  |
-| Duração da sessão do Guerreiro(a) e limiar da biometria são parâmetro declarado na implantação       | 03 §§3.2, 3.3     | Parâmetros da entrada do Guerreiro(a)        |
-| API documentada em OpenAPI desde o primeiro _endpoint_, com schema aberto fora de `/v1`              | 03 §§1, 1.1       | Documentação da API em OpenAPI               |
-| Chave por aplicação e por ambiente; dois ambientes no Ciclo 01, e 16 chaves na implantação           | 03 §§1, 1.13      | Escopo da chave e ambientes do Ciclo 01      |
-| Chave de terceiro sempre de produção, identificada pela solicitação aprovada e não pelo nome         | 03 §8             | Escopo da chave e ambientes do Ciclo 01      |
-| Emissão entrega identificador e segredo; o identificador é o que apresenta a URL                     | 03 §8             | Escopo da chave e ambientes do Ciclo 01      |
-| Prazo de apresentação é parâmetro declarado na implantação, com 30 dias como valor inicial           | 03 §8             | Escopo da chave e ambientes do Ciclo 01      |
-| A busca nunca descobre o nick; a exibição pública alcança quem tem divulgação autorizada             | 02 §1, 03 §10     | Busca por nick e exibição pública            |
-| Python 3.12 e conjunto de regras do Ruff, com cobertura medida sem limiar que bloqueie               | 03 §1.13          | Ferramentas da esteira de CI do backend      |
-| Trilha é bem comum da plataforma; o filtro por comunidade recai sobre o percurso, não sobre ela      | 02 §3             | A trilha é bem comum da plataforma           |
-| Catálogo de poderes cadastrado por Admin, e só poder de Guerreiro(a) recebe trilha                   | 02 §2             | Cadastro do catálogo de poderes              |
-| Cota de consulta em duas faixas, do projeto e de terceiro, com 429 no excesso                        | 03 §8             | Números da proteção das rotas públicas       |
-| Freio por origem na consulta por nick e nos formulários de participação e de dados                   | 03 §8             | Números da proteção das rotas públicas       |
-| Origem agrupada por resumo do IP, só em memória, e Cloud Run sem escala horizontal no Ciclo 01       | 03 §§1, 8         | Números da proteção das rotas públicas       |
-| Solicitação de chave sem freio por origem, porque nova solicitação é sempre possível                 | 03 §8             | Números da proteção das rotas públicas       |
-| Conjunto exportado em CSV, GeoJSON e dicionário de dados, formatos abertos                           | 03 §12.3          | Entrega do conjunto de dados                 |
-| Conjunto entregue sob CC BY-SA, com crédito à comunidade que produziu o dado                         | 03 §12.3          | Entrega do conjunto de dados                 |
-| Aprovação por solicitante identificado, finalidade declarada e não reidentificação                   | 03 §12.3          | Entrega do conjunto de dados                 |
-| Solicitação de dados no mesmo prazo de 7 dias das demais solicitações                                | 03 §12.3          | Entrega do conjunto de dados                 |
-| `SugestaoOuProposta` com autor, alvo, texto transcrito, situação, prazo e motivo do retorno          | 03 §§7, 12.2      | Canal de sugestões do Guerreiro(a)           |
-| Badge de protagonismo é o único global, porque a proposta é sobre a plataforma inteira               | 11 §7             | Canal de sugestões do Guerreiro(a)           |
-| O Mestre também registra proposta de evolução, como as demais personas com aplicação                 | 03 §11            | Já decididos                                 |
-| Um usuário por cadastro, inclusive no institucional; quem opera responde pelos atos                  | 02 §1             | Instituição com mais de um usuário           |
-| A origem do freio não é dado pessoal: sal rotativo, só em memória, nunca gravada                     | 03 §§8, 12        | Origem do freio das rotas públicas           |
-| Versão anterior da API por 180 dias, parâmetro declarado na implantação                              | 03 §1             | Prazo da versão anterior da API              |
-| Motivo da ocorrência de conduta até o fim do ciclo; o lançamento negativo permanece                  | 03 §12.2          | Guarda do registro de ocorrência de conduta  |
-| Sensor entra por credencial de dispositivo, que não abre sessão nem lê dado                          | 03 §1.1           | Autenticação do sensor do Guerreiro(a)       |
-| A credencial é o registro do aparelho; uma por série, sem entidade de dispositivo à parte            | 03 §1.1           | Autenticação do sensor do Guerreiro(a)       |
-| Credencial de dispositivo emitida e revogada por Admin ou pelo Mestre autor do desafio da série      | 03 §1.1           | Autenticação do sensor do Guerreiro(a)       |
-| Credencial de dispositivo cai ao encerramento da série, e não ao fim do vínculo do Guerreiro(a)      | 03 §1.1           | Queda da credencial de dispositivo           |
+| Decisão                                                                                              | Gravada em        | Doc 09                                         |
+| ---------------------------------------------------------------------------------------------------- | ----------------- | ---------------------------------------------- |
+| Instância única, com a comunidade como vínculo nos registros                                         | 03 §1             | Já decididos                                   |
+| API versionada na rota, a partir de `/v1`                                                            | 03 §1             | Já decididos                                   |
+| Guerreiro(a) entra com nick e imagem, conferida contra o _template_ do onboarding                    | 03 §1.1           | Já decididos                                   |
+| Sem PIN nem senha para a criança, e sem câmera não há entrada                                        | 03 §§1.1, 3.2     | Já decididos                                   |
+| Nick e imagem valem em **todas** as aplicações do Guerreiro(a), para garantir que a atividade é dele | 03 §1.1           | Já decididos                                   |
+| Falha, ausência de _template_ ou recusa da biometria caem na confirmação humana, no encontro         | 03 §§1.1, 3.3     | Já decididos                                   |
+| App 01 exige câmera e Mestre ou Admin presente; sem isso não há onboarding                           | 03 §3.2           | Já decididos                                   |
+| Equipe formada pelo Guerreiro(a) no App 01, vinculada à aula e encerrada com ela                     | 02 §5             | Já decididos                                   |
+| A aula passa a realizada pelo lançamento da atividade, sem operação de baixa à parte                 | 04 §1             | A baixa do recurso é o lançamento da atividade |
+| Aula cancelada por Admin ou por Mestre da comunidade dela, liberando a reserva                       | 05 §4             | Quem cancela uma aula agendada                 |
+| Reserva de aula que passou sem desfecho não expira: só sai por lançamento ou cancelamento            | 04 §1             | Reserva de aula que passou sem desfecho        |
+| Criança sem o responsável: onboarding sem imagem, e cadastro biométrico após a aprovação dele        | 03 §§3.2, 3.3     | Já decididos                                   |
+| Mestre cadastra e vincula responsável de qualquer Guerreiro(a)                                       | 02 §1, 03 §11     | Já decididos                                   |
+| A imagem do onboarding identifica o Guerreiro(a): presença **e** autenticação                        | 03 §§3.2, 3.3, 12 | Já decididos                                   |
+| Admin fundador semeado na implantação, único cadastro que não passa por outro Admin                  | 02 §1             | Semeadura do primeiro Admin                    |
+| Adultos entram por login social                                                                      | 03 §1.1           | Já decididos                                   |
+| Credencial de usuário e senha provisória, criada por Admin ou Mestre, trocada no primeiro acesso     | 03 §1.1           | Já decididos                                   |
+| Responsável tem login próprio, vinculado a um ou mais Guerreiros e Guerreiras                        | 03 §1.1           | Já decididos                                   |
+| Responsável é cadastrado por Admin ou Mestre, depois de se apresentar pessoalmente                   | 02 §1             | Já decididos                                   |
+| No máximo três responsáveis por Guerreiro(a), com grau de parentesco em texto livre                  | 02 §1             | Já decididos                                   |
+| Mestre cadastra responsável pela App 09 — única persona que ele cadastra                             | 03 §11            | Já decididos                                   |
+| Mestre lê o painel do dia da App 03 e conduz ali o Quiz ao Vivo das suas aulas                       | 03 §5             | Já decididos                                   |
+| Toda aplicação se identifica por chave, e sem ela a API não responde                                 | 03 §1             | Já decididos                                   |
+| A chave é da aplicação, não da pessoa: consulta pública dispensa login, nunca a chave                | 03 §§1, 1.1       | Já decididos                                   |
+| Chave de terceiro pedida na Área do Apoiador Desenvolvedor, com 30 dias para a URL                   | 03 §8             | Já decididos                                   |
+| Chave sem URL apresentada no prazo é revogada                                                        | 03 §8             | Já decididos                                   |
+| Stack: Python com FastAPI, Cloud SQL para PostgreSQL com PostGIS e Cloud Storage                     | 03 §1             | Já decididos                                   |
+| Hospedagem em Cloud Run, região `southamerica-east1`, custo por absorção do fundador                 | 03 §1             | Já decididos                                   |
+| Séries temporais do território no próprio PostgreSQL, particionadas por tempo                        | 03 §1             | Já decididos                                   |
+| _Template_ biométrico gerado no aparelho; ao núcleo chega só o descritor                             | 03 §3.3           | Já decididos                                   |
+| Ponto extra em duas contas: acumulado e saldo disponível; só o saldo debita                          | 11 §5             | Troca de pontos extras por recompensa avulsa   |
+| Ponto regular debita por fato desfeito — conduta e estorno de coleta —, nunca por troca              | 11 §5, 99 §6      | Estorno do registro de coleta invalidado       |
+| Jogos leem o acumulado de pontos extras, nunca o saldo disponível                                    | 11 §5             | Troca de pontos extras por recompensa avulsa   |
+| Comparação do _template_ permanece no núcleo, que nunca o devolve                                    | 03 §3.3           | Já decididos                                   |
+| Chave que cifra o _template_ no Secret Manager, lida na subida, sem chamada externa por login        | 03 §3.3           | Guarda e auditoria do _template_ biométrico    |
+| Acesso auditado ao _template_ alcança toda leitura, inclusive cada comparação de login               | 03 §3.3           | Guarda e auditoria do _template_ biométrico    |
+| Duração da sessão do Guerreiro(a) e limiar da biometria são parâmetro declarado na implantação       | 03 §§3.2, 3.3     | Parâmetros da entrada do Guerreiro(a)          |
+| API documentada em OpenAPI desde o primeiro _endpoint_, com schema aberto fora de `/v1`              | 03 §§1, 1.1       | Documentação da API em OpenAPI                 |
+| Chave por aplicação e por ambiente; dois ambientes no Ciclo 01, e 16 chaves na implantação           | 03 §§1, 1.13      | Escopo da chave e ambientes do Ciclo 01        |
+| Chave de terceiro sempre de produção, identificada pela solicitação aprovada e não pelo nome         | 03 §8             | Escopo da chave e ambientes do Ciclo 01        |
+| Emissão entrega identificador e segredo; o identificador é o que apresenta a URL                     | 03 §8             | Escopo da chave e ambientes do Ciclo 01        |
+| Prazo de apresentação é parâmetro declarado na implantação, com 30 dias como valor inicial           | 03 §8             | Escopo da chave e ambientes do Ciclo 01        |
+| A busca nunca descobre o nick; a exibição pública alcança quem tem divulgação autorizada             | 02 §1, 03 §10     | Busca por nick e exibição pública              |
+| Python 3.12 e conjunto de regras do Ruff, com cobertura medida sem limiar que bloqueie               | 03 §1.13          | Ferramentas da esteira de CI do backend        |
+| Trilha é bem comum da plataforma; o filtro por comunidade recai sobre o percurso, não sobre ela      | 02 §3             | A trilha é bem comum da plataforma             |
+| Catálogo de poderes cadastrado por Admin, e só poder de Guerreiro(a) recebe trilha                   | 02 §2             | Cadastro do catálogo de poderes                |
+| Cota de consulta em duas faixas, do projeto e de terceiro, com 429 no excesso                        | 03 §8             | Números da proteção das rotas públicas         |
+| Freio por origem na consulta por nick e nos formulários de participação e de dados                   | 03 §8             | Números da proteção das rotas públicas         |
+| Origem agrupada por resumo do IP, só em memória, e Cloud Run sem escala horizontal no Ciclo 01       | 03 §§1, 8         | Números da proteção das rotas públicas         |
+| Solicitação de chave sem freio por origem, porque nova solicitação é sempre possível                 | 03 §8             | Números da proteção das rotas públicas         |
+| Conjunto exportado em CSV, GeoJSON e dicionário de dados, formatos abertos                           | 03 §12.3          | Entrega do conjunto de dados                   |
+| Conjunto entregue sob CC BY-SA, com crédito à comunidade que produziu o dado                         | 03 §12.3          | Entrega do conjunto de dados                   |
+| Aprovação por solicitante identificado, finalidade declarada e não reidentificação                   | 03 §12.3          | Entrega do conjunto de dados                   |
+| Solicitação de dados no mesmo prazo de 7 dias das demais solicitações                                | 03 §12.3          | Entrega do conjunto de dados                   |
+| `SugestaoOuProposta` com autor, alvo, texto transcrito, situação, prazo e motivo do retorno          | 03 §§7, 12.2      | Canal de sugestões do Guerreiro(a)             |
+| Badge de protagonismo é o único global, porque a proposta é sobre a plataforma inteira               | 11 §7             | Canal de sugestões do Guerreiro(a)             |
+| O Mestre também registra proposta de evolução, como as demais personas com aplicação                 | 03 §11            | Já decididos                                   |
+| Um usuário por cadastro, inclusive no institucional; quem opera responde pelos atos                  | 02 §1             | Instituição com mais de um usuário             |
+| A origem do freio não é dado pessoal: sal rotativo, só em memória, nunca gravada                     | 03 §§8, 12        | Origem do freio das rotas públicas             |
+| Versão anterior da API por 180 dias, parâmetro declarado na implantação                              | 03 §1             | Prazo da versão anterior da API                |
+| Motivo da ocorrência de conduta até o fim do ciclo; o lançamento negativo permanece                  | 03 §12.2          | Guarda do registro de ocorrência de conduta    |
+| Sensor entra por credencial de dispositivo, que não abre sessão nem lê dado                          | 03 §1.1           | Autenticação do sensor do Guerreiro(a)         |
+| A credencial é o registro do aparelho; uma por série, sem entidade de dispositivo à parte            | 03 §1.1           | Autenticação do sensor do Guerreiro(a)         |
+| Credencial de dispositivo emitida e revogada por Admin ou pelo Mestre autor do desafio da série      | 03 §1.1           | Autenticação do sensor do Guerreiro(a)         |
+| Credencial de dispositivo cai ao encerramento da série, e não ao fim do vínculo do Guerreiro(a)      | 03 §1.1           | Queda da credencial de dispositivo             |
 
 ## 14. Pendências que permanecem
 
@@ -624,6 +631,7 @@ antes no documento 09.
 | `RF-01-27` a `RF-01-30` | 03 §1 (princípios de arquitetura)                  |
 | `RF-01-32`              | 03 §§3, 5 (App 01 habilitado pela aula agendada)   |
 | `RF-01-71`              | 05 §2 (a aula acontece num ponto de apoio)         |
+| `RF-01-72`              | 05 §4 (quem cancela o encontro agendado)           |
 | `RF-01-33` e `RF-01-34` | 02 §1 e 03 §10 (acompanhamento por nick)           |
 | `RF-01-35`              | 03 §7 (apoio escolar com corpus fechado)           |
 | `RF-01-36`              | 05 §5 e 11 §5 (resposta e pontuação do quiz)       |

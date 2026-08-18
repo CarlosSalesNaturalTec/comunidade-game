@@ -18,8 +18,12 @@ Regras derivadas:
 - **Cada atividade só acontece se tiver os recursos providos** — não há atividade sem lastro.
   A atividade que se agenda e reserva recurso é a **aula**, que declara o que consome e em que
   ponto de apoio acontece. O livro-razão mantém **saldo por tipo de recurso e ponto de apoio**,
-  porque o material fica onde é usado (documento 05). Agendar a aula **reserva** o que ela
-  consome, e a realização converte a reserva em baixa.
+  porque o material fica onde é usado (documento 05). **O aporte declara em que ponto de
+  apoio entra**, inclusive quando é serviço ou dinheiro: é ali que o saldo dele fica. Agendar
+  a aula **reserva** o que ela consome, e o **lançamento da atividade realizada** — o mesmo ato
+  que registra o resultado de cada participante — converte a reserva em baixa. Cancelar a aula
+  **libera** a reserva, devolvendo o saldo. A reserva **não expira sozinha**: sai por lançamento
+  ou por cancelamento, sempre com autor e momento.
 - **Falta de lastro vira pedido, não recusa silenciosa.** Cadastrada a atividade sem saldo
   para o que ela consome, a diferença é publicada como **necessidade de recurso** em três
   lugares: na vitrine pública, na área do Apoiador e na área dos Mestres da trilha. A
@@ -33,7 +37,9 @@ Regras derivadas:
   da própria necessidade publicada**, com um ato de confirmação. A plataforma registra como
   **aporte dele**, valorado pela tabela de referência, e o crédito entra no seu Poder
   Sustentador. O aporte nasce marcado como **ressarcível**, e quem absorveu ganha **destaque
-  público** pelo ato.
+  público** pelo ato. A absorção **credita no ato, sem homologação** — é o que destrava a
+  atividade na hora em que o recurso é provido. A homologação por Admin, em que ninguém
+  homologa o próprio aporte, vale para o registro da gestão e para o do pré-cadastro.
 - **Ressarcimento não é direito nem promessa.** Não há fila permanente nem expectativa de
   devolução: o ressarcimento só existe quando entra receita destinada a ele. Havendo essa
   receita, os aportes ressarcíveis são pagos **por antiguidade**, por decisão de um Admin.

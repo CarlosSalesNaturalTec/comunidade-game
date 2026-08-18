@@ -173,6 +173,11 @@ Mestre — com **um aparelho por equipe**, em quantidade que varia a cada encont
 do dia (App 03)** é o instrumento de controle do encontro. A **App 05** atende as **aulas
 remotas** e o uso cotidiano fora do encontro.
 
+**Encontro cancelado.** O encontro agendado é cancelado por um **Admin** ou por um **Mestre
+vinculado à comunidade** dele, com motivo registrado. O cancelamento devolve ao saldo os
+recursos que o encontro havia reservado (documento 04). Encontro já lançado como realizado não
+se cancela.
+
 ### Momentos do encontro
 
 Os momentos abaixo compõem o encontro, mas **nem todos são simultâneos para todos**. Os

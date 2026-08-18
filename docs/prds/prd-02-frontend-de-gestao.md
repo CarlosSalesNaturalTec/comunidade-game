@@ -8,7 +8,7 @@
 | Aplicação        | App 03 — Gestão administrativa                   |
 | Onda             | 2                                                |
 | Situação         | aprovado                                         |
-| Versão e data    | v9 — 2026-08-08                                  |
+| Versão e data    | v10 — 2026-08-18                                 |
 | Depende de       | PRD-01                                           |
 | Documentos-fonte | 03 §§5, 8, 11, 12, 04 §§1–3, 05 §§2–5, 02 §4, 15 |
 
@@ -249,6 +249,7 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
 | `RF-02-71` | Admin consulta as atividades e as recompensas de marco autoradas pelo Mestre, sem editá-las        | essencial  |
 | `RF-02-30` | Admin agenda aula on-line ou presencial, com atividade prevista e ponto de apoio                   | essencial  |
 | `RF-02-31` | Agendamento reserva os recursos necessários no livro-razão                                         | essencial  |
+| `RF-02-95` | Admin, ou Mestre da comunidade da aula, cancela aula agendada com motivo, liberando a reserva      | essencial  |
 | `RF-02-32` | Atividade sem lastro fica pendente de lastro e publica a necessidade na vitrine e nas Apps 08 e 09 | essencial  |
 | `RF-02-67` | Suprida a necessidade, a aplicação confirma a atividade e efetiva a reserva de recursos            | essencial  |
 | `RF-02-33` | Admin lança atividade realizada com data, mentores, Guerreiros, Guerreiras e equipes               | essencial  |
@@ -377,42 +378,43 @@ A aplicação consome as convenções do PRD-01 — prefixo `/v1`, token de sess
 único, listagem paginada com filtro de comunidade, período e persona. As rotas de território e
 de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 
-| Método | Rota                                              | Autenticação    | Descrição                                                             |
-| ------ | ------------------------------------------------- | --------------- | --------------------------------------------------------------------- |
-| POST   | `/v1/guerreiros`                                  | Admin           | Cadastra Guerreiro(a) pela gestão                                     |
-| POST   | `/v1/consentimentos/{id}/anexo`                   | Admin           | Anexa a digitalização do termo assinado no encontro                   |
-| POST   | `/v1/mestres`                                     | Admin           | Cadastra Mestre com artefatos comprobatórios                          |
-| POST   | `/v1/apoiadores`                                  | Admin           | Cadastra Apoiador com artefatos e termos de doação                    |
-| POST   | `/v1/admins`                                      | Admin           | Inclui novo Admin manualmente                                         |
-| GET    | `/v1/aulas/{id}/equipes`                          | Admin ou Mestre | Lista as equipes formadas no App 01 naquela aula                      |
-| POST   | `/v1/poderes`                                     | Admin           | Mantém o catálogo de poderes                                          |
-| GET    | `/v1/aulas/vigentes`                              | pública         | Aulas em curso na data e hora, para o App 01 identificar a comunidade |
-| GET    | `/v1/solicitacoes-de-participacao`                | Admin           | Fila das solicitações, com aporte declarado e comprovante             |
-| POST   | `/v1/solicitacoes-de-participacao/{id}/avaliacao` | Admin           | Aceita ou recusa, com parecer e autor                                 |
-| GET    | `/v1/solicitacoes-de-dados`                       | Admin           | Fila dos pedidos de conjunto de dados                                 |
-| POST   | `/v1/solicitacoes-de-dados/{id}/avaliacao`        | Admin           | Aprova ou recusa, com motivo, autor e o que foi entregue              |
-| GET    | `/v1/solicitacoes-de-chave`                       | Admin           | Fila dos pedidos de chave da Área do Apoiador Desenvolvedor           |
-| POST   | `/v1/chaves`                                      | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez     |
-| GET    | `/v1/chaves`                                      | Admin           | Chaves emitidas, com prazo, URL apresentada e situação                |
-| DELETE | `/v1/chaves/{id}`                                 | Admin           | Revoga a chave, com motivo e autoria                                  |
-| PUT    | `/v1/conteudo-institucional/{secao}`              | Admin           | Edita "Quem somos", "Contatos" ou "Como apoiar"                       |
-| GET    | `/v1/solicitacoes-do-responsavel`                 | Admin           | Fila das solicitações vindas da App 07                                |
-| POST   | `/v1/solicitacoes-do-responsavel/{id}/tratamento` | Admin           | Registra o desfecho, com quem tratou e quando                         |
-| GET    | `/v1/sugestoes`                                   | Admin           | Fila única de sugestões e propostas das Apps 05, 07, 08, 09           |
-| POST   | `/v1/sugestoes/{id}/avaliacao`                    | Admin           | Muda o status e registra o retorno a quem propôs                      |
-| GET    | `/v1/desafios-extras/pendentes`                   | Admin           | Desafios já validados pelo Mestre, aguardando aprovação               |
-| POST   | `/v1/desafios-extras/{id}/aprovacao`              | Admin           | Aprova, exigindo lastro registrado, ou recusa com motivo              |
-| POST   | `/v1/atividades`                                  | Admin           | Cadastra atividade com pontuação, recompensa e recursos               |
-| POST   | `/v1/aulas`                                       | Admin           | Agenda a aula com comunidade, data e horários, e dispara a reserva    |
-| POST   | `/v1/aulas/{id}/lancamentos`                      | Admin           | Lança a atividade realizada e os resultados                           |
-| POST   | `/v1/aulas/{id}/presencas`                        | Admin           | Confirma ou ajusta presença, com registro do ajuste                   |
-| POST   | `/v1/aulas/{id}/ocorrencias`                      | Mestre ou Admin | Registra infração e a pontuação negativa correspondente               |
-| GET    | `/v1/painel-do-dia`                               | Mestre ou Admin | Estado do encontro em andamento, em leitura                           |
-| POST   | `/v1/partidas-de-quiz`                            | Mestre ou Admin | Abre a partida com banco de perguntas e equipes                       |
-| POST   | `/v1/partidas-de-quiz/{id}/perguntas`             | Mestre ou Admin | Dá o _start_ da pergunta corrente                                     |
-| POST   | `/v1/partidas-de-quiz/{id}/encerramento`          | Mestre ou Admin | Encerra a partida e lança a pontuação                                 |
-| POST   | `/v1/entregas`                                    | Admin           | Registra entrega de exemplar Alpha ou camisa, com baixa               |
-| GET    | `/v1/auditoria`                                   | Admin           | Trilha de auditoria, com filtro por autor e período                   |
+| Método | Rota                                              | Autenticação    | Descrição                                                                   |
+| ------ | ------------------------------------------------- | --------------- | --------------------------------------------------------------------------- |
+| POST   | `/v1/guerreiros`                                  | Admin           | Cadastra Guerreiro(a) pela gestão                                           |
+| POST   | `/v1/consentimentos/{id}/anexo`                   | Admin           | Anexa a digitalização do termo assinado no encontro                         |
+| POST   | `/v1/mestres`                                     | Admin           | Cadastra Mestre com artefatos comprobatórios                                |
+| POST   | `/v1/apoiadores`                                  | Admin           | Cadastra Apoiador com artefatos e termos de doação                          |
+| POST   | `/v1/admins`                                      | Admin           | Inclui novo Admin manualmente                                               |
+| GET    | `/v1/aulas/{id}/equipes`                          | Admin ou Mestre | Lista as equipes formadas no App 01 naquela aula                            |
+| POST   | `/v1/poderes`                                     | Admin           | Mantém o catálogo de poderes                                                |
+| GET    | `/v1/aulas/vigentes`                              | pública         | Aulas em curso na data e hora, para o App 01 identificar a comunidade       |
+| GET    | `/v1/solicitacoes-de-participacao`                | Admin           | Fila das solicitações, com aporte declarado e comprovante                   |
+| POST   | `/v1/solicitacoes-de-participacao/{id}/avaliacao` | Admin           | Aceita ou recusa, com parecer e autor                                       |
+| GET    | `/v1/solicitacoes-de-dados`                       | Admin           | Fila dos pedidos de conjunto de dados                                       |
+| POST   | `/v1/solicitacoes-de-dados/{id}/avaliacao`        | Admin           | Aprova ou recusa, com motivo, autor e o que foi entregue                    |
+| GET    | `/v1/solicitacoes-de-chave`                       | Admin           | Fila dos pedidos de chave da Área do Apoiador Desenvolvedor                 |
+| POST   | `/v1/chaves`                                      | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez           |
+| GET    | `/v1/chaves`                                      | Admin           | Chaves emitidas, com prazo, URL apresentada e situação                      |
+| DELETE | `/v1/chaves/{id}`                                 | Admin           | Revoga a chave, com motivo e autoria                                        |
+| PUT    | `/v1/conteudo-institucional/{secao}`              | Admin           | Edita "Quem somos", "Contatos" ou "Como apoiar"                             |
+| GET    | `/v1/solicitacoes-do-responsavel`                 | Admin           | Fila das solicitações vindas da App 07                                      |
+| POST   | `/v1/solicitacoes-do-responsavel/{id}/tratamento` | Admin           | Registra o desfecho, com quem tratou e quando                               |
+| GET    | `/v1/sugestoes`                                   | Admin           | Fila única de sugestões e propostas das Apps 05, 07, 08, 09                 |
+| POST   | `/v1/sugestoes/{id}/avaliacao`                    | Admin           | Muda o status e registra o retorno a quem propôs                            |
+| GET    | `/v1/desafios-extras/pendentes`                   | Admin           | Desafios já validados pelo Mestre, aguardando aprovação                     |
+| POST   | `/v1/desafios-extras/{id}/aprovacao`              | Admin           | Aprova, exigindo lastro registrado, ou recusa com motivo                    |
+| POST   | `/v1/atividades`                                  | Admin           | Cadastra atividade com pontuação, recompensa e recursos                     |
+| POST   | `/v1/aulas`                                       | Admin           | Agenda a aula com comunidade, data e horários, e dispara a reserva          |
+| POST   | `/v1/aulas/{id}/lancamentos`                      | Admin           | Lança a atividade realizada e os resultados, convertendo a reserva em baixa |
+| POST   | `/v1/aulas/{id}/cancelamento`                     | Admin ou Mestre | Cancela a aula agendada com motivo e libera a reserva                       |
+| POST   | `/v1/aulas/{id}/presencas`                        | Admin           | Confirma ou ajusta presença, com registro do ajuste                         |
+| POST   | `/v1/aulas/{id}/ocorrencias`                      | Mestre ou Admin | Registra infração e a pontuação negativa correspondente                     |
+| GET    | `/v1/painel-do-dia`                               | Mestre ou Admin | Estado do encontro em andamento, em leitura                                 |
+| POST   | `/v1/partidas-de-quiz`                            | Mestre ou Admin | Abre a partida com banco de perguntas e equipes                             |
+| POST   | `/v1/partidas-de-quiz/{id}/perguntas`             | Mestre ou Admin | Dá o _start_ da pergunta corrente                                           |
+| POST   | `/v1/partidas-de-quiz/{id}/encerramento`          | Mestre ou Admin | Encerra a partida e lança a pontuação                                       |
+| POST   | `/v1/entregas`                                    | Admin           | Registra entrega de exemplar Alpha ou camisa, com baixa                     |
+| GET    | `/v1/auditoria`                                   | Admin           | Trilha de auditoria, com filtro por autor e período                         |
 
 Erros previstos: agenda de aula sem comunidade ou sem horário final (422); consulta de aulas
 vigentes fora de qualquer janela agendada (200 com lista vazia — é o que faz o App 01 não

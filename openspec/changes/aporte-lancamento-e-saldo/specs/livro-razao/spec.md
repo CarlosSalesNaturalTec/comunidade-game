@@ -1,0 +1,88 @@
+## Purpose
+
+O registro contábil da plataforma: cada entrada e cada saída de recurso vira um lançamento que
+nunca se apaga nem se edita, e o saldo de cada tipo de recurso em cada ponto de apoio é sempre
+recontado a partir deles. É o que torna a prestação de contas auditável e o que autoriza ou
+barra a atividade que precisa de lastro.
+
+## ADDED Requirements
+
+### Requirement: O lançamento é somente inserção
+
+O núcleo SHALL registrar cada movimento de recurso como um **lançamento** com **natureza**
+— crédito, débito ou ajuste —, **tipo de recurso**, **ponto de apoio**, **quantidade**, valor em
+**moedas**, autor e data e hora com fuso. O lançamento gravado SHALL ser imutável: alterar
+qualquer atributo dele SHALL ser recusado com **405**, e remover um lançamento SHALL ser
+recusado por qualquer via, dentro ou fora do ORM. A quantidade e as moedas SHALL ser guardadas
+em decimal exato de duas casas. (`RF-07-19`, `RN-07-15`, `RN-07-04`, `RF-01-03`, `RF-01-27`,
+PRD-07 §8)
+
+#### Scenario: Lançamento nasce com autoria e momento
+
+- **WHEN** o núcleo registra um lançamento a partir de um aporte homologado
+- **THEN** o lançamento guarda natureza, tipo de recurso, ponto de apoio, quantidade, moedas,
+  o autor da operação e a data e hora com fuso
+
+#### Scenario: Edição de lançamento é recusada
+
+- **WHEN** chega uma tentativa de alterar um lançamento já gravado
+- **THEN** o núcleo responde 405 e o lançamento permanece exatamente como estava
+
+#### Scenario: Remoção de lançamento é recusada fora do ORM
+
+- **WHEN** uma remoção de lançamento é tentada diretamente no banco, sem passar pelo núcleo
+- **THEN** o banco recusa a operação e o lançamento permanece gravado
+
+### Requirement: A correção se faz por lançamento de ajuste
+
+O núcleo SHALL corrigir erro de lançamento apenas por **lançamento de ajuste**, que SHALL
+referenciar o lançamento original e SHALL guardar **motivo** e **autor**. Lançar ajuste SHALL
+exigir persona **Admin** em sessão; persona de qualquer outro papel SHALL receber **403**.
+Ajuste sem motivo SHALL ser recusado com **422**, e ajuste que referencie lançamento inexistente
+SHALL ser recusado com **422**. O lançamento original SHALL permanecer intacto após o ajuste.
+(`RF-07-19`, `RN-07-15`, `RF-01-16`, `RF-01-03`, PRD-07 §9)
+
+#### Scenario: Admin lança ajuste sobre um lançamento errado
+
+- **WHEN** um Admin em sessão lança um ajuste referenciando um lançamento existente, com motivo
+- **THEN** o núcleo grava o ajuste com a referência, o motivo, o autor e o momento, e o
+  lançamento original segue gravado sem alteração
+
+#### Scenario: Ajuste sem motivo é recusado
+
+- **WHEN** chega um ajuste sem motivo
+- **THEN** o núcleo responde 422 indicando o campo em falta e nada é gravado
+
+#### Scenario: Mestre não lança ajuste
+
+- **WHEN** um Mestre em sessão tenta lançar um ajuste
+- **THEN** o núcleo responde 403 e nada é gravado
+
+### Requirement: O saldo é derivado por tipo de recurso e ponto de apoio
+
+O núcleo SHALL manter o **saldo de cada tipo de recurso em cada ponto de apoio** como valor
+**derivado dos lançamentos**, nunca como número editável. O saldo SHALL somar os créditos,
+subtrair os débitos e aplicar os ajustes daquele par tipo/ponto de apoio, e recontar os
+lançamentos SHALL devolver o mesmo número. Lançamento creditado a um ponto de apoio NÃO SHALL
+compor o saldo de outro ponto de apoio. (`RF-07-07`, `RN-07-36`, PRD-07 §§8, 10, 12)
+
+#### Scenario: Saldo soma os lançamentos do par tipo e ponto de apoio
+
+- **WHEN** dois aportes do mesmo tipo entram no mesmo ponto de apoio, com quantidades 3 e 2
+- **THEN** o saldo daquele tipo naquele ponto de apoio é 5
+
+#### Scenario: Ponto de apoio não empresta saldo a outro
+
+- **WHEN** um aporte de um tipo entra no ponto de apoio A e nenhum entra no ponto de apoio B
+- **THEN** o saldo daquele tipo no ponto de apoio B é zero, e o do ponto de apoio A é o
+  aportado
+
+#### Scenario: Recontagem devolve o mesmo saldo
+
+- **WHEN** o saldo de um par tipo/ponto de apoio é recalculado a partir dos lançamentos
+- **THEN** o número devolvido é igual ao anterior, sem depender de estado guardado à parte
+
+#### Scenario: Ajuste entra na conta do saldo
+
+- **WHEN** um ajuste é lançado sobre um crédito de quantidade 3, corrigindo-o em -1
+- **THEN** o saldo daquele tipo naquele ponto de apoio passa a 2
