@@ -5,16 +5,23 @@ comunidades periféricas. É um **monorepo**: a documentação do produto em `do
 planejamento da implementação em `openspec/` e o código — o Backend API, as oito aplicações e
 os jogos. O desenho das pastas está no documento 03 §1.2.
 
-## Estado atual e próxima etapa
+## Estado atual
 
 1. **Feito:** revisão e validação humana de todos os documentos de `docs/` (agosto de 2026).
 2. **Feito:** os treze **PRDs** (_Product Requirements Documents_) do Ciclo 01, em
    `docs/prds/`, escritos a partir de `docs/08-base-para-prds.md` e aprovados pelo fundador.
-3. **Agora:** implementação do **PRD-01** (núcleo do Backend API), conduzida pelo framework
-   de **SDD** (_Spec-Driven Development_) **OpenSpec**, uma fatia por _change_. A pasta
-   `backend/` já existe, com a esteira de CI ativa. `openspec/changes/archive/` guarda as
-   fatias já entregues; `openspec status --change <nome>` mostra o que está em andamento. Ao
-   fechar o PRD-01, a próxima entrega é o PRD-08 (documento 99 §9).
+3. **Agora:** implementação dos PRDs, conduzida pelo framework de **SDD** (_Spec-Driven
+   Development_) **OpenSpec**, uma fatia por _change_.
+
+Qual PRD está em implementação não se escreve aqui — é estado, e muda a cada entrega. Onde
+lê-lo:
+
+| Para saber                          | Leia                                               |
+| ----------------------------------- | -------------------------------------------------- |
+| A situação de cada PRD              | `docs/prds/index.md`                               |
+| A ordem em que os PRDs viram código | documento 99 §9 — não é a ordem do documento 08    |
+| As changes em andamento             | `openspec list`, `openspec status --change <nome>` |
+| As fatias já entregues              | `openspec/changes/archive/`                        |
 
 Código entra **apenas** por uma _change_ do OpenSpec cujos artefatos foram aprovados pelo
 fundador. PRD novo ou revisão de PRD existente segue as regras de `docs/prds/` abaixo.
@@ -168,9 +175,6 @@ Os artefatos de cada change ficam em `openspec/changes/<change>/`, na ordem `pro
 estado pelo terminal. Os comandos e as skills em `.claude/` são vendorizados do OpenSpec e se
 atualizam com `openspec update` — não os edite à mão; o que precisar ser ajustado para este
 projeto entra em `openspec/config.yaml` ou aqui.
-
-A ordem em que os PRDs viram código está no documento 99 §9 — não é a ordem de elaboração do
-documento 08.
 
 ### 3. Documentação a cada change
 

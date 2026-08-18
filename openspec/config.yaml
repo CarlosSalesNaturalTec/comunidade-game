@@ -77,8 +77,8 @@ context: |
 
   ORDEM DE CONSTRUÇÃO
   Está no documento 99 §9, com o piso de dependência de cada PRD. NÃO é a ordem de elaboração
-  do documento 08: em execução o PRD-01 vem primeiro, porque território (PRD-08) e ledger
-  (PRD-07) só operam sobre a autenticação, a chave e o filtro por comunidade dele.
+  do documento 08. A situação de cada PRD está em `docs/prds/index.md`, e as changes em
+  andamento em `openspec list`; nenhuma das duas se repete aqui, para não envelhecer.
 
   PENDÊNCIAS — ONDE PROCURAR ANTES DE SUPOR
   O que segue em aberto está na §14 do PRD alvo (o que trava aquele PRD) e em
