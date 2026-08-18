@@ -3,7 +3,17 @@ import uuid
 from datetime import date
 from decimal import Decimal
 
-from sqlalchemy import Boolean, CheckConstraint, Date, Enum, ForeignKey, Numeric, String, Uuid
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    Date,
+    Enum,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Uuid,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
@@ -70,5 +80,37 @@ class ValorDeReferencia(Base, ComAutoria):
         CheckConstraint(
             "vigencia_fim IS NULL OR vigencia_fim >= vigencia_inicio",
             name="ck_valor_de_referencia_fim_apos_ou_igual_ao_inicio",
+        ),
+    )
+
+
+class PrecoDeReferencia(Base, ComAutoria):
+    """O preço em pontos extras de um tipo de recurso, régua independente
+    de `ValorDeReferencia` sobre a mesma entidade — a mesma mecânica de
+    vigência semiaberta, nunca derivada uma da outra (`RF-07-42`,
+    `RF-07-43`, `RN-07-24`, `RN-07-25`, design — Decisions 1).
+
+    Inteiro, sem casas decimais: o ponto extra é contado em unidades, ao
+    contrário da moeda em `NUMERIC(12, 2)` — é essa diferença de tipo que
+    barra a conversão silenciosa entre as réguas (`RN-07-24`, design —
+    Decisions 3). O piso de 20 é regra de `recursos/regra.py`, reforçada
+    aqui como `CHECK` (`RF-07-44`, `RN-07-30`).
+    """
+
+    __tablename__ = "preco_de_referencia"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    tipo_de_recurso_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("tipo_de_recurso.id"), nullable=False
+    )
+    preco_em_pontos_extras: Mapped[int] = mapped_column(Integer, nullable=False)
+    vigencia_inicio: Mapped[date] = mapped_column(Date, nullable=False)
+    vigencia_fim: Mapped[date | None] = mapped_column(Date, nullable=True)
+
+    __table_args__ = (
+        CheckConstraint("preco_em_pontos_extras >= 20", name="ck_preco_de_referencia_piso_minimo"),
+        CheckConstraint(
+            "vigencia_fim IS NULL OR vigencia_fim >= vigencia_inicio",
+            name="ck_preco_de_referencia_fim_apos_ou_igual_ao_inicio",
         ),
     )

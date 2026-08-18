@@ -568,14 +568,15 @@ O Guerreiro(a) troca **pontos extras** — nunca regulares — por item de um **
 Alimento entra no catálogo: em comunidade periférica a falta é urgente, e quem ajuda o colega
 também pode ser ajudado. A troca é ato do Guerreiro(a), não entrega de ofício.
 
-| Regra                | Definição                                                                  |
-| -------------------- | -------------------------------------------------------------------------- |
-| Moeda da troca       | **Saldo disponível de pontos extras**; o acumulado não decresce            |
-| Quem cadastra        | **Mestre**, direto; **Apoiador**, com homologação de Admin                 |
-| Lastro               | Exigido antes de o item entrar no catálogo, como em toda recompensa        |
-| Estoque              | Declarado no cadastro; item sem estoque não aparece para troca             |
-| Entrega              | **No ato da troca**, ao final do encontro presencial, pelas mãos do Mestre |
-| Baixa no livro-razão | Na entrega, como na recompensa de marco                                    |
+| Regra                | Definição                                                                                                                                      |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Moeda da troca       | **Saldo disponível de pontos extras**; o acumulado não decresce                                                                                |
+| Quem cadastra        | **Mestre**, direto; **Apoiador**, com homologação de Admin                                                                                     |
+| Lastro               | Saldo do tipo de recurso no ponto de apoio do item **igual ou maior** que o estoque declarado — item sem lastro fica inativo, nunca é recusado |
+| Estoque              | Declarado no cadastro; item sem estoque não aparece para troca                                                                                 |
+| Janela de troca      | **A App 01 abre e fecha** o momento de troca no encerramento do encontro; garantia da aplicação, o núcleo não a verifica                       |
+| Entrega              | **No ato da troca**, ao final do encontro presencial, pelas mãos do Mestre                                                                     |
+| Baixa no livro-razão | Na entrega, como na recompensa de marco                                                                                                        |
 
 **O preço em pontos não deriva do valor em moedas nem em reais.** Ele é fixado em **esforço** —
 quantos atos de cuidado e colaboração o item representa —, e o custo real segue no livro-razão,

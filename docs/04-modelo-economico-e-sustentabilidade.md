@@ -24,6 +24,9 @@ Regras derivadas:
   que registra o resultado de cada participante — converte a reserva em baixa. Cancelar a aula
   **libera** a reserva, devolvendo o saldo. A reserva **não expira sozinha**: sai por lançamento
   ou por cancelamento, sempre com autor e momento.
+- **O item do catálogo avulso (documento 02 §8.2) também declara o ponto de apoio** em que o
+  estoque fica guardado, pela mesma razão da aula: o saldo que o lastreia é por tipo **e**
+  ponto de apoio.
 - **Falta de lastro vira pedido, não recusa silenciosa.** Cadastrada a atividade sem saldo
   para o que ela consome, a diferença é publicada como **necessidade de recurso** em três
   lugares: na vitrine pública, na área do Apoiador e na área dos Mestres da **comunidade da

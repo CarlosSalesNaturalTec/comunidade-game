@@ -19,6 +19,11 @@ from nucleo.aulas.modelo import Aula, RecursoDeclaradoDaAula
 from nucleo.autenticacao import exigir_persona
 from nucleo.banco import Base, obter_sessao
 from nucleo.biometria.cifra import cifrar_descritor
+from nucleo.catalogo_avulso.modelo import (
+    ItemDeCatalogoAvulso,
+    OrigemDoCadastroDoItem,
+    SituacaoDeHomologacao,
+)
 from nucleo.chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from nucleo.chaves.modelo import ChaveDeAplicacao, NaturezaDaChave, SituacaoDaChave
 from nucleo.chaves.segredo import calcular_resumo, gerar_segredo, montar_chave_completa
@@ -61,7 +66,12 @@ from nucleo.pontos_de_apoio.modelo import PontoDeApoio
 from nucleo.pontuacao.modelo import Badge, Nivel, PontoRegular, TipoDeBadge
 from nucleo.principal import criar_app, incluir_roteador_de_dados
 from nucleo.protecao.freio import exigir_freio_por_origem
-from nucleo.recursos.modelo import NaturezaDoRecurso, TipoDeRecurso, ValorDeReferencia
+from nucleo.recursos.modelo import (
+    NaturezaDoRecurso,
+    PrecoDeReferencia,
+    TipoDeRecurso,
+    ValorDeReferencia,
+)
 from nucleo.reservas.modelo import EstadoDaReserva, Reserva
 from nucleo.responsaveis.modelo import VinculoResponsavel
 from nucleo.ressarcimentos.modelo import Ressarcimento
@@ -247,6 +257,7 @@ def app(sessao, configuracao):
     from nucleo.auditoria.rotas import roteador as roteador_de_auditoria
     from nucleo.aulas.rotas import roteador as roteador_de_aulas
     from nucleo.biometria.rotas import roteador as roteador_de_biometria
+    from nucleo.catalogo_avulso.rotas import roteador as roteador_de_catalogo_avulso
     from nucleo.chaves.rotas import roteador as roteador_de_chaves
     from nucleo.coletas.rotas import roteador as roteador_de_coletas
     from nucleo.comunidades.rotas import roteador as roteador_de_comunidades
@@ -290,6 +301,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_poder_sustentador)
     incluir_roteador_de_dados(aplicacao, roteador_de_prestacao_de_contas)
     incluir_roteador_de_dados(aplicacao, roteador_de_ressarcimentos)
+    incluir_roteador_de_dados(aplicacao, roteador_de_catalogo_avulso)
     return aplicacao
 
 
@@ -937,6 +949,66 @@ def criar_valor_de_referencia(sessao):
         sessao.commit()
         sessao.refresh(valor)
         return valor
+
+    return _criar
+
+
+@pytest.fixture
+def criar_preco_de_referencia(sessao):
+    def _criar(
+        autor: Persona,
+        tipo: TipoDeRecurso,
+        preco_em_pontos_extras: int = 20,
+        vigencia_inicio: date | None = None,
+        vigencia_fim: date | None = None,
+    ) -> PrecoDeReferencia:
+        preco = PrecoDeReferencia(
+            tipo_de_recurso_id=tipo.id,
+            preco_em_pontos_extras=preco_em_pontos_extras,
+            vigencia_inicio=vigencia_inicio or date(2026, 1, 1),
+            vigencia_fim=vigencia_fim,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(preco)
+        sessao.commit()
+        sessao.refresh(preco)
+        return preco
+
+    return _criar
+
+
+@pytest.fixture
+def criar_item_de_catalogo_avulso(sessao):
+    def _criar(
+        autor: Persona,
+        tipo: TipoDeRecurso,
+        comunidade: ComunidadeVirtual,
+        ponto_de_apoio: PontoDeApoio,
+        nome: str = "Kit de Robótica",
+        estoque: Decimal = Decimal("1"),
+        origem_do_cadastro: OrigemDoCadastroDoItem = OrigemDoCadastroDoItem.mestre,
+        situacao_de_homologacao: SituacaoDeHomologacao = SituacaoDeHomologacao.nao_se_aplica,
+        homologacao_motivo: str | None = None,
+        ativo: bool = False,
+    ) -> ItemDeCatalogoAvulso:
+        item = ItemDeCatalogoAvulso(
+            nome=nome,
+            tipo_de_recurso_id=tipo.id,
+            estoque=estoque,
+            comunidade_virtual_id=comunidade.id,
+            ponto_de_apoio_id=ponto_de_apoio.id,
+            origem_do_cadastro=origem_do_cadastro,
+            situacao_de_homologacao=situacao_de_homologacao,
+            homologacao_motivo=homologacao_motivo,
+            ativo=ativo,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(item)
+        sessao.commit()
+        sessao.refresh(item)
+        return item
 
     return _criar
 

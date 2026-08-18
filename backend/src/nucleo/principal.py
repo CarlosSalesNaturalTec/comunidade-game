@@ -10,6 +10,7 @@ from .auditoria.middleware import MiddlewareDeAuditoria
 from .auditoria.rotas import roteador as roteador_de_auditoria
 from .aulas.rotas import roteador as roteador_de_aulas
 from .biometria.rotas import roteador as roteador_de_biometria
+from .catalogo_avulso.rotas import roteador as roteador_de_catalogo_avulso
 from .chaves.conferencia import exigir_chave_de_aplicacao
 from .chaves.rotas import roteador as roteador_de_chaves
 from .coletas.rotas import roteador as roteador_de_coletas
@@ -134,3 +135,4 @@ incluir_roteador_de_dados(app, roteador_de_necessidades)
 incluir_roteador_de_dados(app, roteador_de_poder_sustentador)
 incluir_roteador_de_dados(app, roteador_de_prestacao_de_contas)
 incluir_roteador_de_dados(app, roteador_de_ressarcimentos)
+incluir_roteador_de_dados(app, roteador_de_catalogo_avulso)

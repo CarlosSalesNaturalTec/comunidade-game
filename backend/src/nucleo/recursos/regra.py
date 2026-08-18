@@ -5,7 +5,9 @@ from sqlalchemy.orm import Session
 
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Papel, Persona
-from .modelo import NaturezaDoRecurso, TipoDeRecurso, ValorDeReferencia
+from .modelo import NaturezaDoRecurso, PrecoDeReferencia, TipoDeRecurso, ValorDeReferencia
+
+PISO_DE_PONTOS_EXTRAS = 20
 
 
 def cadastrar_tipo_de_recurso(
@@ -116,4 +118,97 @@ def consultar_valor_de_referencia(
         )
         .order_by(ValorDeReferencia.vigencia_inicio.desc(), ValorDeReferencia.registrado_em.desc())
         .first()
+    )
+
+
+def registrar_preco_de_referencia(
+    sessao: Session,
+    *,
+    operador: Persona,
+    tipo: TipoDeRecurso,
+    preco_em_pontos_extras: int | Decimal | None,
+    vigencia_inicio: date | None,
+) -> PrecoDeReferencia:
+    """A segunda régua do tipo de recurso, irmã de `registrar_valor_de_
+    referencia` — mesma mecânica de vigência, nunca deriva nem altera o
+    valor em moedas (`RF-07-42`, `RF-07-43`, `RN-07-24`, `RN-07-25`,
+    design — Decisions 1). Preço fracionário ou abaixo do piso de 20 é
+    recusado aqui, antes do banco (`RF-07-44`, `RN-07-30`)."""
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin registra preço de referência.")
+    if preco_em_pontos_extras is None:
+        raise ErroDeValidacao(
+            mensagem="Preço de referência exige o preço em pontos extras.",
+            campo="preco_em_pontos_extras",
+        )
+    if vigencia_inicio is None:
+        raise ErroDeValidacao(
+            mensagem="Preço de referência exige o início de vigência.", campo="vigencia_inicio"
+        )
+    if preco_em_pontos_extras != int(preco_em_pontos_extras):
+        raise ErroDeValidacao(
+            mensagem="Preço de referência é número inteiro de pontos extras, sem casas decimais.",
+            campo="preco_em_pontos_extras",
+        )
+    preco_em_pontos_extras = int(preco_em_pontos_extras)
+    if preco_em_pontos_extras < PISO_DE_PONTOS_EXTRAS:
+        raise ErroDeValidacao(
+            mensagem=f"Preço de referência não pode ser menor que {PISO_DE_PONTOS_EXTRAS} "
+            "pontos extras.",
+            campo="preco_em_pontos_extras",
+        )
+
+    vigencia_aberta = (
+        sessao.query(PrecoDeReferencia)
+        .filter_by(tipo_de_recurso_id=tipo.id, vigencia_fim=None)
+        .first()
+    )
+    if vigencia_aberta is not None:
+        vigencia_aberta.vigencia_fim = vigencia_inicio
+
+    novo_preco = PrecoDeReferencia(
+        tipo_de_recurso_id=tipo.id,
+        preco_em_pontos_extras=preco_em_pontos_extras,
+        vigencia_inicio=vigencia_inicio,
+        vigencia_fim=None,
+        autor_id=operador.id,
+        papel_do_autor=operador.papel.value,
+    )
+    sessao.add(novo_preco)
+    sessao.flush()
+    return novo_preco
+
+
+def consultar_preco_de_referencia(
+    sessao: Session, *, tipo: TipoDeRecurso, data: date
+) -> PrecoDeReferencia | None:
+    """Consulta pela data no intervalo semiaberto `inicio <= data < fim`,
+    mesmo desempate de `consultar_valor_de_referencia` — a vigência
+    registrada por último vence entre duas abertas no mesmo dia
+    (`RF-07-43`)."""
+    return (
+        sessao.query(PrecoDeReferencia)
+        .filter(
+            PrecoDeReferencia.tipo_de_recurso_id == tipo.id,
+            PrecoDeReferencia.vigencia_inicio <= data,
+            (PrecoDeReferencia.vigencia_fim.is_(None)) | (PrecoDeReferencia.vigencia_fim > data),
+        )
+        .order_by(PrecoDeReferencia.vigencia_inicio.desc(), PrecoDeReferencia.registrado_em.desc())
+        .first()
+    )
+
+
+def consultar_precos_de_referencia(
+    sessao: Session, *, operador: Persona, tipo: TipoDeRecurso
+) -> list[PrecoDeReferencia]:
+    """Restrita ao Admin — todas as vigências do tipo, da mais recente para
+    a mais antiga: histórico consultável, nunca reescrito (`RF-07-43`,
+    `RF-01-16`)."""
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin lê o histórico de preço de referência.")
+    return (
+        sessao.query(PrecoDeReferencia)
+        .filter_by(tipo_de_recurso_id=tipo.id)
+        .order_by(PrecoDeReferencia.vigencia_inicio.desc(), PrecoDeReferencia.registrado_em.desc())
+        .all()
     )
