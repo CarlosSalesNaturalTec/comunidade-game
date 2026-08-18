@@ -3,8 +3,34 @@ name: Docs CI
 on:
   pull_request:
     branches: [main]
+    paths:
+      - "docs/**"
+      - "*.md"
+      - mkdocs.yml
+      - lychee.toml
+      - .lycheeignore
+      - .markdownlint-cli2.jsonc
+      - .prettierrc.json
+      - .prettierignore
+      - package.json
+      - package-lock.json
+      - requirements-docs.txt
+      - .github/workflows/docs-ci.yml
   push:
     branches: [main]
+    paths:
+      - "docs/**"
+      - "*.md"
+      - mkdocs.yml
+      - lychee.toml
+      - .lycheeignore
+      - .markdownlint-cli2.jsonc
+      - .prettierrc.json
+      - .prettierignore
+      - package.json
+      - package-lock.json
+      - requirements-docs.txt
+      - .github/workflows/docs-ci.yml
   workflow_dispatch:
 
 concurrency:

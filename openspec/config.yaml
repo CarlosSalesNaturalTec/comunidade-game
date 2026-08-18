@@ -1,62 +1,54 @@
 schema: spec-driven
 
 # Contexto do projeto — mostrado à IA ao criar qualquer artefato.
+# As regras gerais do repositório estão em `CLAUDE.md`, que já está no contexto da sessão:
+# este arquivo não as repete. Aqui fica só o que muda a escrita de um artefato.
 context: |
   PROJETO
   Comunidade Game — plataforma educacional gamificada, open source, para comunidades
   periféricas. Escopo em execução: Ciclo 01 (Case Guerreira Zeferina, ago–dez/2026),
   com oito aplicações Web (Apps 01, 03, 04, 05, 06, 07, 08 e 09) e o Backend API.
 
-  FONTE DA VERDADE
-  `docs/prds/` (PRD-01 a PRD-14) é a fonte da verdade da implementação. Implementa-se o
-  que está escrito nos PRDs — nada além, nada diferente. Os PRDs são artefatos derivados
-  dos documentos normativos `docs/01-*` a `docs/14-*`; o mapa de fonte única, conceitos,
-  rastreabilidade, invariantes e dependências está em `docs/99-mapa-de-referencias.md`.
+  FONTE DA VERDADE E AUTORIDADE
+  `docs/prds/` é a fonte da verdade da implementação: implementa-se o que está escrito nos
+  PRDs — nada além, nada diferente. A hierarquia de autoridade, o fluxo de decisão nova e o
+  ritmo de verificação estão em `CLAUDE.md`; siga-os sem repeti-los no artefato.
 
-  LEITURA OBRIGATÓRIA ANTES DE QUALQUER ARTEFATO
+  NENHUM ARTEFATO DO OPENSPEC CRIA REGRA
+  Proposal, specs, design e tasks não definem regra de produto, número, prazo, provedor ou
+  comportamento que não esteja no PRD. Faltou requisito, há ambiguidade ou contradição com o
+  PRD: PARE e pergunte ao fundador. Não preencha lacuna com suposição.
+
+  LEITURA DIRIGIDA — o que abrir antes de escrever
   1. `docs/prds/index.md` — situação de cada PRD e ordem das ondas.
-  2. O(s) PRD(s) alvo em `docs/prds/prd-XX-*.md`, na íntegra.
-  3. `docs/99-mapa-de-referencias.md` §4 (aplicações → PRDs), §5 (rastreabilidade),
-     §6 (invariantes) e §8 (dependências entre PRDs).
-  4. Os documentos-fonte listados na §8 para aquele PRD, quando a regra precisar de origem.
+  2. Do PRD alvo: a §14 (pendências que permanecem), as seções que cobrem os RF/RN do
+     recorte e, quando houver contrato de API, a §9. O PRD inteiro só quando a fatia
+     atravessar o documento todo. Leia o PRD UMA vez por change, não uma vez por artefato.
+  3. `docs/99-mapa-de-referencias.md` §§4, 5, 6 e 8.
+  4. `openspec/specs/<capability>/spec.md` para saber o que já existe — é o consolidado.
+     `openspec/changes/archive/` é histórico: só abra quando precisar do porquê de uma
+     decisão.
 
-  HIERARQUIA DE AUTORIDADE (da maior para a menor)
-  1. `docs/01-*` a `docs/14-*` e `docs/99-*` — regra de negócio, fonte única.
-  2. `docs/prds/` — requisitos de produto, identificados como RF-XX-nn e RN-XX-nn.
-  3. Artefatos OpenSpec (proposal, specs, design, tasks) — plano de execução.
-  4. Código.
-  Cada nível apenas executa o de cima. Conflito entre níveis resolve-se pelo nível superior.
-
-  ARTEFATO OPENSPEC NÃO CRIA REGRA
-  Nenhum artefato do OpenSpec define regra de produto, número, prazo, provedor ou
-  comportamento que não esteja no PRD. Quando faltar requisito, houver ambiguidade ou
-  contradição com um PRD: PARE e pergunte ao fundador. Não preencha lacuna com suposição.
-  Decisão nova segue este fluxo, nesta ordem:
-  1. gravar a regra no documento-fonte dela (`docs/99-mapa-de-referencias.md` §1);
-  2. mover a linha no `docs/09-topicos-em-aberto-e-sugestoes.md` de "Decisões pendentes"
-     para "Já decididos";
-  3. atualizar o PRD afetado;
-  4. só então propor a change e implementar.
-
-  INVARIANTES
-  Os 23 invariantes de `docs/99-mapa-de-referencias.md` §6 valem para o código como valem
-  para o texto. Contrariá-los é defeito, não variação de implementação. Entre eles: oito
-  aplicações Web responsivas Mobile First (sem app nativo e sem mensageria de terceiros);
-  faixa de 6 a 16 anos com progressão por dificuldade; só o Guerreiro(a) tem autocadastro e
+  INVARIANTES (documento 99 §6 — resumo; valem para o código como valem para o texto)
+  Oito aplicações Web responsivas Mobile First, sem app nativo e sem mensageria de terceiros;
+  faixa de 6 a 16 anos com progressão por dificuldade; só o Guerreiro(a) tem autocadastro, e
   login não cria cadastro; toda trilha abre em sondagem, tem coleta de dados reais e termina
   em criação original; guarda permanente do dado de território com anonimização apenas na
-  saída, e revogação que despersonaliza sem apagar; App 04 (jogo) público, sem login de
-  pessoa e somente leitura, sem endpoint de escrita; nenhuma atividade sem lastro; nenhum
-  contato direto entre Apoiador e Guerreiro(a); Guerreiros e Guerreiras aparecem em público
-  só por avatar e nick; aporte exibido em moedas, nunca em reais; ponto regular nunca se
-  gasta e só o extra se troca, por recompensa avulsa e nunca por recompensa de marco;
-  personalização por IA que
-  adapta na sessão e não perfila a criança.
+  saída, e revogação que despersonaliza sem apagar; App 04 (jogo) público, sem login de pessoa
+  e somente leitura, sem endpoint de escrita; nenhuma atividade sem lastro; nenhum contato
+  direto entre Apoiador e Guerreiro(a); Guerreiros e Guerreiras aparecem em público só por
+  avatar e nick; aporte exibido em moedas, nunca em reais; ponto regular nunca se gasta e só
+  o extra se troca, por recompensa avulsa e nunca por recompensa de marco; personalização por
+  IA que adapta na sessão e não perfila a criança. Contrariar um deles é defeito.
 
-  DECISÕES TÉCNICAS JÁ VIGENTES (documento 03)
-  - Backend em forma de API, versionada na rota, começando em `/v1`.
+  DECISÕES TÉCNICAS JÁ VIGENTES (documento 03 — aplique, não reabra)
+  - Backend em forma de API, versionada na rota, começando em `/v1`. Documentada em OpenAPI
+    desde o primeiro endpoint; o schema e a interface ficam FORA do `/v1` e abertos, sem
+    chave. A exigência de chave alcança as rotas de dados sob `/v1`, inclusive as públicas.
   - Toda aplicação consumidora se identifica por chave, inclusive as do projeto; sem chave
-    válida a API não responde. Escrita e gestão exigem também a credencial da persona.
+    válida a API não responde. Escrita e gestão exigem também a credencial da persona. A
+    chave é por aplicação E por ambiente — dois ambientes no Ciclo 01 (desenvolvimento em
+    contêiner local e produção no Cloud Run), o que dá 16 chaves semeadas na implantação.
   - Frontends independentes, em endereços próprios; a vitrine ocupa a raiz de
     `comunidadegame.org`.
   - Autenticação por persona: Guerreiro(a) por nick e imagem; Mestre, Apoiador e Admin por
@@ -67,65 +59,48 @@ context: |
   - Registro de custos em tudo: toda ação com custo entra no livro-razão (PRD-07).
   - Séries temporais georreferenciadas como cidadão de primeira classe no modelo de dados.
   - Stack e hospedagem do Ciclo 01: Python com FastAPI no Cloud Run, Cloud SQL para
-    PostgreSQL com PostGIS e Cloud Storage, tudo em `southamerica-east1`. As séries
-    temporais do território ficam no próprio PostgreSQL, particionadas por tempo. Contêiner
-    e banco portáteis, para que outra comunidade replique fora do Google Cloud.
+    PostgreSQL com PostGIS e Cloud Storage, tudo em `southamerica-east1`. As séries temporais
+    do território ficam no próprio PostgreSQL, particionadas por tempo. Contêiner e banco
+    portáteis, para que outra comunidade replique fora do Google Cloud.
   - Reconhecimento facial do App 01 no próprio aparelho, pela biblioteca aberta Human, na
-    ordem prova de vivacidade e depois descritor facial. Ao núcleo vai apenas o descritor —
-    a fotografia não trafega —, a comparação acontece no núcleo e nenhuma rota devolve o
+    ordem prova de vivacidade e depois descritor facial. Ao núcleo vai apenas o descritor — a
+    fotografia não trafega —, a comparação acontece no núcleo e nenhuma rota devolve o
     _template_. Sem provedor externo e sem custo de nuvem.
   - Modelos de IA do Ciclo 01: Google Gemini, com custo lançado no livro-razão como cloud.
   - Código aberto; conteúdo educacional publicado sob CC BY-SA.
-  - Repositório único (monorepo), com uma pasta por aplicação: `backend/`, `apps/app-NN-*/`,
-    `jogos/app-04-arena/`, `docs/` e `openspec/`. O desenho está no documento 03 §1.2 — siga
-    aquele desenho e não invente pasta nova de topo. O jogo fica em `jogos/`, não em `apps/`.
-  - O código tem esteira de CI como a documentação. A change que cria uma pasta de código
-    entrega, no mesmo PR, o workflow daquela pasta, disparado só pelo caminho que cobre.
-  - Ferramentas do backend: Python 3.12, Ruff como formatador e linter — conjuntos `E`, `F`,
-    `I`, `UP` e `B` — e pytest como executor de testes. As três verificações bloqueiam o
-    merge: `ruff format --check`, `ruff check` e `pytest`. A cobertura é medida e publicada
-    no log, SEM limiar que bloqueie no Ciclo 01. As ferramentas dos frontends e do jogo
-    seguem PENDENTES no documento 09: pergunte, não escolha.
-  - A chave de aplicação é por aplicação E por ambiente. São dois ambientes no Ciclo 01 —
-    desenvolvimento, em contêiner local, e produção, no Cloud Run —, de modo que a
-    implantação semeia 16 chaves: as oito aplicações do projeto em cada ambiente.
-  - A API é documentada em OpenAPI desde o primeiro endpoint. O schema e a interface ficam
-    FORA do prefixo `/v1` e abertos, sem chave; a exigência de chave alcança as rotas de
-    dados sob `/v1`, inclusive as de consulta pública.
+  - Monorepo com uma pasta por aplicação: `backend/`, `apps/app-NN-*/`, `jogos/app-04-arena/`,
+    `docs/` e `openspec/` (documento 03 §1.2). Não invente pasta nova de topo; o jogo fica em
+    `jogos/`, não em `apps/`.
+  - Ferramentas do backend: Python 3.12, Ruff (conjuntos `E`, `F`, `I`, `UP`, `B`) e pytest.
+    As ferramentas dos frontends e do jogo seguem PENDENTES no documento 09: pergunte, não
+    escolha.
 
   ORDEM DE CONSTRUÇÃO
-  A ordem em que os PRDs viram código está no documento 99 §9, com o piso de dependência de
-  cada um. Ela NÃO é a ordem de elaboração do documento 08, que registra em que sequência os
-  PRDs foram escritos — em execução o PRD-01 vem primeiro, porque território (PRD-08) e
-  ledger (PRD-07) só operam sobre a autenticação, a chave e o filtro por comunidade dele.
+  Está no documento 99 §9, com o piso de dependência de cada PRD. NÃO é a ordem de elaboração
+  do documento 08: em execução o PRD-01 vem primeiro, porque território (PRD-08) e ledger
+  (PRD-07) só operam sobre a autenticação, a chave e o filtro por comunidade dele.
 
   PENDÊNCIAS — ONDE PROCURAR ANTES DE SUPOR
-  Stack, hospedagem, armazenamento das séries temporais e reconhecimento facial estão
-  decididos — aplique o documento 03, não reabra. O que segue em aberto está em dois lugares,
-  e a lista não se repete aqui para não envelhecer:
-  1. a §14 do PRD alvo ("Pendências que permanecem") — o que trava aquele PRD;
-  2. `docs/09-topicos-em-aberto-e-sugestoes.md` §1 — a pauta do fundador.
-  Antes de escrever qualquer artefato, leia a §14 do PRD e confira se alguma pendência atinge
-  o recorte da change. Se atingir, PARE e pergunte: nenhuma delas se resolve dentro de um
-  artefato do OpenSpec — a decisão é do fundador, é gravada no documento-fonte, movida no
-  documento 09 e aplicada ao PRD antes de virar código.
+  O que segue em aberto está na §14 do PRD alvo (o que trava aquele PRD) e em
+  `docs/09-topicos-em-aberto-e-sugestoes.md` §1 (a pauta do fundador); a lista não se repete
+  aqui para não envelhecer. Se uma pendência atinge o recorte da change, PARE e pergunte:
+  nenhuma se resolve dentro de um artefato do OpenSpec.
 
   Parâmetro que a documentação deixa de propósito para a operação declarar — a duração da
   sessão do Guerreiro(a) (RF-01-04), o prazo da versão anterior da API (RF-01-31), os valores
-  de tabela cadastrados pela gestão — não é pendência de decisão de produto: vira parâmetro
-  de configuração. Não trave a change por causa dele e não invente o número: pergunte o valor
+  de tabela cadastrados pela gestão — não é pendência de decisão de produto: vira parâmetro de
+  configuração. Não trave a change por causa dele e não invente o número: pergunte o valor
   inicial ao fundador.
-
-  ENTREGA
-  Um branch e um PR por change. O PR leva os artefatos da change, o código, os testes e a
-  documentação que aquela change mudou em `docs/` — o site do MkDocs nunca fica atrasado em
-  relação ao que foi implementado. Merge sempre por merge commit, nunca squash. O site só é
-  publicado no GitHub Pages depois do merge em `main`, nunca a partir de um PR.
 
   IDIOMA
   Português do Brasil em artefatos, documentação, comentários e mensagens de commit. Os
   termos do domínio são preservados: Guerreiro(a), Mestre, Apoiador, Admin, responsável,
   Comunidade Virtual, trilha, missão, desafio, poder, badge, moeda, lastro, livro-razão.
+
+  ECONOMIA DE CONTEXTO
+  O artefato é plano de execução, não redação. Cite o identificador em vez de copiar o texto
+  normativo, escreva o suficiente para a tarefa ser executável e pare. Não abra subagente
+  para escrever, sincronizar ou arquivar: o agente da sessão já tem o contexto.
 
 # Regras por artefato.
 rules:
@@ -169,24 +144,37 @@ rules:
     - >-
       Toda operação com custo prevê o lançamento no livro-razão; todo dado de território
       prevê série temporal com coletor identificado.
+    - >-
+      O `design.md` cobre o que a fatia decide, não o que já está decidido. Fatia que apenas
+      aplica um padrão consolidado em `openspec/specs/` sai com meia página: Context aponta a
+      spec que já existe, Decisions traz só a escolha nova e o resto some.
   tasks:
     - >-
       Cada tarefa cita o identificador que atende (RF-XX-nn ou RN-XX-nn) e tem resultado
       verificável.
     - >-
-      Para cada requisito coberto existe tarefa de verificação correspondente ao critério
-      de aceite do PRD.
+      Uma tarefa é uma unidade de trabalho, não uma asserção. Agrupe por arquivo de código
+      ou por comportamento e liste os identificadores da tarefa juntos; uma fatia normal
+      fecha em torno de 10 a 15 tarefas, não em 30.
+    - >-
+      A seção de testes traz uma tarefa por arquivo de teste ou por grupo de cenários
+      relacionados, com os cenários citados dentro da tarefa. Não crie uma tarefa por
+      cenário de aceite.
+    - >-
+      Para cada requisito coberto existe verificação correspondente ao critério de aceite do
+      PRD — dentro da tarefa de teste do grupo dele, não numa tarefa separada.
+    - >-
+      Não crie tarefa para rodar esteira: o ritmo de verificação de `CLAUDE.md` já define o
+      que roda e quando. Nenhuma tarefa diz "rodar ruff, pytest, npm run lint ou mkdocs".
     - >-
       Toda change termina com uma tarefa de documentação: atualizar em `docs/` apenas o que
       a change mudou — documento-fonte e documento 09 quando houve decisão nova, o PRD
       afetado, `docs/prds/index.md` se a situação mudou, o documento 99 se a relação entre
-      documentos mudou e a `nav` do `mkdocs.yml` se nasceu arquivo novo.
+      documentos mudou e a `nav` do `mkdocs.yml` se nasceu arquivo novo. Se a change não
+      mudou nada disso, a tarefa diz isso em uma linha.
     - >-
       Não crie documento técnico novo em `docs/`: essa pasta é a documentação do produto e
       só recebe arquivo novo por decisão do fundador. O plano de execução fica na change.
-    - >-
-      A tarefa de documentação inclui rodar `npm run fix`, `npm run lint` e
-      `mkdocs build --strict` antes de abrir o PR.
     - >-
       Não crie tarefa fora do escopo declarado na proposal.
 
@@ -199,18 +187,33 @@ operations:
         Implemente apenas as tarefas aprovadas. Requisito faltando, ambíguo ou em
         contradição com o PRD não se resolve no código: pare e pergunte ao fundador.
       - >-
+        Encadeie as tarefas: implemente o bloco inteiro de um arquivo antes de verificar, e
+        marque `- [x]` em lote. Não pare a cada linha para conferir o que ainda vai mudar.
+      - >-
+        Ritmo de verificação (detalhe em `CLAUDE.md`): durante o laço, rode só os testes do
+        recorte (`uv run pytest tests/test_<arquivo>.py -x`); ao fechar as tarefas, rode uma
+        única vez `ruff format .`, `ruff check --fix .` e `pytest` no `backend/`. Teste
+        quebrado se resolve com `uv run pytest --lf -x`, não com a suíte inteira.
+      - >-
+        `npm run fix`, `npm run lint` e `mkdocs build --strict` só quando a change tocou
+        `docs/`, `mkdocs.yml` ou `.md` da raiz. `openspec/` fica fora do lint e do site.
+      - >-
         Toda mudança em `docs/` que a change provocou entra no mesmo PR — o site do MkDocs
         nunca fica atrasado em relação ao que foi implementado.
-      - >-
-        Quando a change tocar `docs/`, rode `npm run fix`, `npm run lint` e
-        `mkdocs build --strict` antes de abrir o PR. `openspec/` fica fora do lint e do site.
       - >-
         Um branch e um PR por change. Merge sempre por merge commit, nunca squash.
   archive:
     guidance:
       - >-
-        Rode `/opsx:verify` antes de arquivar; arquive só com artefatos, código, testes e
-        documentação já entregues.
+        Quando só existe uma change ativa, use-a sem perguntar; a pergunta de seleção só
+        vale quando há mais de uma.
+      - >-
+        `/opsx:verify` confere o diff da change (`git diff --stat main...HEAD`) contra
+        `tasks.md` e as specs do delta. NÃO refaça varredura de palavra-chave pelo código
+        inteiro e NÃO re-execute teste, lint ou build: se a árvore não mudou desde a última
+        suíte verde, o resultado já é conhecido.
+      - >-
+        Sincronize as specs no próprio agente da sessão — não abra subagente para isso.
       - >-
         Confira que `docs/prds/index.md` e o documento 99 refletem a situação e que todo
         arquivo novo de `docs/` está na `nav` do `mkdocs.yml`.

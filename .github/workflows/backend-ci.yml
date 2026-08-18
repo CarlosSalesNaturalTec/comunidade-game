@@ -50,6 +50,8 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "0.5.x"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
 
       - uses: actions/setup-python@v5
         with:
@@ -64,5 +66,7 @@ jobs:
       - name: ruff check
         run: uv run ruff check .
 
-      - name: pytest
-        run: uv run pytest
+      # A cobertura é medida aqui, e só aqui: o laço local roda `pytest` silencioso.
+      # Sem limiar que bloqueie no Ciclo 01 — o número fica publicado no log.
+      - name: pytest (com cobertura)
+        run: uv run pytest --cov=src --cov-report=term-missing

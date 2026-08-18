@@ -16,4 +16,5 @@ accept = ["200..=299", "429"]
 # Verifica também as âncoras (#secao) dos links, não só o arquivo de destino.
 include_fragments = "full"
 
-exclude_path = ["node_modules", "site", ".venv"]
+# `openspec/` fica fora do lint de documentação (CLAUDE.md) e não tem links.
+exclude_path = ["node_modules", "site", ".venv", "openspec"]
