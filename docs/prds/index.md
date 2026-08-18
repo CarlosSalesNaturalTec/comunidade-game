@@ -87,11 +87,25 @@ em **`GET /prestacao-de-contas`**, consumo por aula e por comunidade em
 no ato da baixa; débito lançado antes desta fatia fica sem aula, por ser somente inserção
 (`RN-07-15`).
 
+A sexta fatia entregou o **ressarcimento**, fechando o ciclo inteiro do aporte por absorção:
+como ele nasce e como termina. O aporte ganha **destinação** — lastro ou ressarcimento —, e a
+receita destinada a ressarcir credita o Poder Sustentador de quem doou sem virar lastro
+(`RF-07-23`, `RN-07-38`). A absorção passa a poder declarar a **aula cuja necessidade atende**
+(`RF-07-28`) e a exigir o **valor de origem em reais** quando houve desembolso — consumível,
+durável ou financeira; a absorção de **serviço** nasce **não ressarcível**, decisão nova desta
+fatia que fecha a contradição entre o `RN-07-39` e o `RN-07-24` (`RF-07-21`). O Admin lê a fila
+de aportes ressarcíveis por antiguidade em **`GET /aportes/ressarciveis`** e registra o
+pagamento, com comprovante exigido, em **`POST /aportes/{id}/ressarcimento`** — recusado se o
+valor exceder o que a **receita destinada** ainda cobre, decisão nova que torna o teto regra do
+núcleo (`RN-07-17`). O pagamento reverte as moedas por **lançamento de ajuste de quantidade
+zero**, sem mexer no saldo de recurso nem na contagem de absorções (`RF-07-25`, `RN-07-18`).
+Quem absorveu acompanha a própria situação em **`GET /meus-aportes/ressarciveis`**.
+
 O documento 09 mantém a pendência de **quem desativa um ponto de apoio**. **Empréstimo de
 bancada e reposição solidária saíram do escopo** — o documento 05 já os adiava, e o PRD
 divergia da fonte. No Ciclo 01 ficam o tombamento, a ficha de vida e a conferência de
-inventário. Seguem para as próximas fatias o ressarcimento, o patrimônio, o catálogo avulso e o
-desafio extra.
+inventário. Seguem para as próximas fatias o patrimônio, o catálogo avulso e o desafio extra —
+este último ainda sem a entidade `DesafioExtra`, que nasce em PRD-09 ou PRD-14.
 
 O PRD-08 volta a **implementado**: a change `lista-publica-de-comunidades` entregou o
 `GET /comunidades` com os quatro indicadores do documento 02 §1 (`RF-08-30`, `RF-08-31`),

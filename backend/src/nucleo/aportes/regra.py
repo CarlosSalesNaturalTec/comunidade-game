@@ -5,15 +5,21 @@ from decimal import Decimal
 from sqlalchemy.orm import Session
 
 from ..armazenamento.porta import PortaDeArmazenamento
+from ..aulas.modelo import Aula, RecursoDeclaradoDaAula
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..fila.modelo import SolicitacaoDeParticipacao
+from ..livro_razao.modelo import DestinacaoDoAporte
 from ..livro_razao.regra import lancar_credito
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
-from ..recursos.modelo import TipoDeRecurso
+from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
 from ..recursos.regra import consultar_valor_de_referencia
 from ..reservas.regra import confirmar_aulas_pendentes
 from .modelo import Aporte, FormaDeAporte, OrigemDoRegistro, SituacaoDeRessarcimento
+
+_NATUREZAS_COM_DESEMBOLSO = frozenset(
+    {NaturezaDoRecurso.consumivel, NaturezaDoRecurso.duravel, NaturezaDoRecurso.financeiro}
+)
 
 _FORMATOS_DE_COMPROVANTE_ACEITOS = frozenset({"application/pdf", "image/jpeg", "image/png"})
 
@@ -82,6 +88,8 @@ def _registrar_aporte_base(
     ressarcivel: bool,
     situacao_de_ressarcimento: SituacaoDeRessarcimento,
     admin_homologador_id: uuid.UUID | None,
+    destinacao: DestinacaoDoAporte = DestinacaoDoAporte.lastro,
+    aula: Aula | None = None,
     solicitacao_de_participacao_id: uuid.UUID | None = None,
     valor_de_origem: Decimal | None = None,
     periodo_apurado: date | None = None,
@@ -102,6 +110,29 @@ def _registrar_aporte_base(
         )
     if data_do_aporte is None:
         raise ErroDeValidacao(mensagem="Aporte exige a data.", campo="data_do_aporte")
+    if forma == FormaDeAporte.absorcao and destinacao == DestinacaoDoAporte.ressarcimento:
+        raise ErroDeValidacao(
+            mensagem="Aporte por absorção não se destina a ressarcimento.", campo="destinacao"
+        )
+    if aula is not None:
+        if forma != FormaDeAporte.absorcao:
+            raise ErroDeValidacao(
+                mensagem="Só o aporte por absorção declara a aula que atende.", campo="aula_id"
+            )
+        consome = (
+            sessao.query(RecursoDeclaradoDaAula)
+            .filter_by(aula_id=aula.id, tipo_de_recurso_id=tipo.id)
+            .first()
+        )
+        if consome is None:
+            raise ErroDeValidacao(
+                mensagem="A aula declarada não consome este tipo de recurso.", campo="aula_id"
+            )
+        if ponto_de_apoio.id != aula.ponto_de_apoio_id:
+            raise ErroDeValidacao(
+                mensagem="O ponto de apoio não confere com o da aula declarada.",
+                campo="ponto_de_apoio_id",
+            )
 
     valor_em_moedas = _valorar_em_moedas(
         sessao, tipo=tipo, quantidade=quantidade, data=data_do_aporte
@@ -121,14 +152,19 @@ def _registrar_aporte_base(
         quantidade=quantidade,
         valor_em_moedas=valor_em_moedas,
         operador=operador,
+        destinacao=destinacao,
     )
 
-    # O aporte que fecha a diferença confirma, no mesmo ato, toda aula
-    # pendente de lastro que passe a ter disponível bastante — sem ato
-    # humano de confirmação à parte, nas três formas que creditam: registro
-    # da gestão, absorção e homologação do pré-cadastro (`RN-07-37`, design
-    # — Decisions 5).
-    confirmar_aulas_pendentes(sessao, tipo=tipo, ponto_de_apoio=ponto_de_apoio, operador=operador)
+    if destinacao == DestinacaoDoAporte.lastro:
+        # O aporte que fecha a diferença confirma, no mesmo ato, toda aula
+        # pendente de lastro que passe a ter disponível bastante — sem ato
+        # humano de confirmação à parte, nas três formas que creditam:
+        # registro da gestão, absorção e homologação do pré-cadastro
+        # (`RN-07-37`, design — Decisions 5). A receita destinada a
+        # ressarcir não confirma aula: não vira lastro (`RN-07-38`).
+        confirmar_aulas_pendentes(
+            sessao, tipo=tipo, ponto_de_apoio=ponto_de_apoio, operador=operador
+        )
 
     aporte = Aporte(
         provedor_id=provedor.id,
@@ -148,6 +184,8 @@ def _registrar_aporte_base(
         comprovante_tipo=tipo_mime,
         comprovante_tamanho=tamanho,
         admin_homologador_id=admin_homologador_id,
+        destinacao=destinacao,
+        aula_id=aula.id if aula is not None else None,
         lancamento_id=lancamento.id,
         data_do_aporte=data_do_aporte,
         autor_id=operador.id,
@@ -168,6 +206,8 @@ def registrar_aporte(
     ponto_de_apoio: PontoDeApoio | None,
     data_do_aporte: date | None,
     forma: FormaDeAporte | None,
+    destinacao: DestinacaoDoAporte = DestinacaoDoAporte.lastro,
+    aula: Aula | None = None,
     valor_de_origem: Decimal | None = None,
     periodo_apurado: date | None = None,
     solicitacao_de_participacao: SolicitacaoDeParticipacao | None = None,
@@ -179,7 +219,10 @@ def registrar_aporte(
     """Só Admin registra pela rota da gestão (`RF-07-04`). Quem homologa não
     pode ser o provedor (`RN-07-16`); a solicitação de origem, quando
     apontada, é a homologação do que o pré-cadastro só declarou, e não pode
-    ser homologada duas vezes (`RF-07-30`, `RN-07-21`)."""
+    ser homologada duas vezes (`RF-07-30`, `RN-07-21`). `destinacao` separa
+    o que vira lastro do que não vira; a doação destinada a ressarcir
+    credita o Poder Sustentador sem entrar em saldo (`RF-07-23`,
+    `RN-07-38`)."""
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin registra aporte pela rota da gestão.")
     if provedor is None:
@@ -217,6 +260,8 @@ def registrar_aporte(
         ressarcivel=False,
         situacao_de_ressarcimento=SituacaoDeRessarcimento.nao_se_aplica,
         admin_homologador_id=operador.id,
+        destinacao=destinacao,
+        aula=aula,
         solicitacao_de_participacao_id=solicitacao_id,
         valor_de_origem=valor_de_origem,
         periodo_apurado=periodo_apurado,
@@ -235,6 +280,8 @@ def registrar_aporte_por_absorcao(
     quantidade: Decimal | None,
     ponto_de_apoio: PontoDeApoio | None,
     data_do_aporte: date | None,
+    aula: Aula | None = None,
+    destinacao: DestinacaoDoAporte = DestinacaoDoAporte.lastro,
     valor_de_origem: Decimal | None = None,
     periodo_apurado: date | None = None,
     comprovante_conteudo: bytes | None = None,
@@ -243,10 +290,34 @@ def registrar_aporte_por_absorcao(
     armazenamento: PortaDeArmazenamento | None = None,
 ) -> Aporte:
     """Só Mestre ou Admin, em nome de quem proveu — a absorção credita no
-    ato, sem homologação, e nasce ressarcível com situação em aberto
-    (`RF-07-06`, `RF-07-21`, `RN-07-06`, `RN-07-35`)."""
+    ato, sem homologação (`RF-07-06`, `RN-07-06`, `RN-07-35`). Nasce
+    ressarcível com situação em aberto, exceto a de tipo de natureza
+    **serviço**, que nasce **não ressarcível**: quem absorve serviço dá
+    tempo, não dinheiro, e não há desembolso a devolver (`RF-07-21`,
+    `RN-07-39`, design — Decisions 6). O valor de origem em reais é
+    exigido nas demais naturezas — houve desembolso — e fica vazio no
+    serviço, cujo valor é o em moedas que a tabela já fornece (`RN-07-24`).
+    `aula` é a necessidade publicada que a absorção assume, do PRD-07 §8
+    (`RF-07-28`)."""
     if operador.papel not in (Papel.mestre, Papel.admin):
         raise PermissaoNegada(mensagem="Só Mestre ou Admin registram aporte por absorção.")
+
+    eh_servico = tipo is not None and tipo.natureza == NaturezaDoRecurso.servico
+    exige_valor_de_origem = (
+        tipo is not None and tipo.natureza in _NATUREZAS_COM_DESEMBOLSO and valor_de_origem is None
+    )
+    if eh_servico:
+        valor_de_origem = None
+        ressarcivel = False
+        situacao_de_ressarcimento = SituacaoDeRessarcimento.nao_se_aplica
+    else:
+        if exige_valor_de_origem:
+            raise ErroDeValidacao(
+                mensagem="Absorção deste tipo exige o valor de origem em reais.",
+                campo="valor_de_origem",
+            )
+        ressarcivel = True
+        situacao_de_ressarcimento = SituacaoDeRessarcimento.em_aberto
 
     return _registrar_aporte_base(
         sessao,
@@ -258,9 +329,11 @@ def registrar_aporte_por_absorcao(
         data_do_aporte=data_do_aporte,
         forma=FormaDeAporte.absorcao,
         origem_do_registro=OrigemDoRegistro.gestao,
-        ressarcivel=True,
-        situacao_de_ressarcimento=SituacaoDeRessarcimento.em_aberto,
+        ressarcivel=ressarcivel,
+        situacao_de_ressarcimento=situacao_de_ressarcimento,
         admin_homologador_id=None,
+        destinacao=destinacao,
+        aula=aula,
         valor_de_origem=valor_de_origem,
         periodo_apurado=periodo_apurado,
         comprovante_conteudo=comprovante_conteudo,

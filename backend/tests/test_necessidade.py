@@ -261,6 +261,7 @@ def test_aporte_parcial_abate_a_falta(
         quantidade=Decimal("2.00"),
         ponto_de_apoio=ponto_de_apoio,
         data_do_aporte=aula.inicio_em.date(),
+        valor_de_origem=Decimal("20.00"),
     )
     sessao.commit()
     sessao.refresh(aula)
@@ -298,6 +299,7 @@ def test_aporte_que_fecha_o_saldo_apaga_a_necessidade_e_confirma_a_aula(
         quantidade=Decimal("6.00"),
         ponto_de_apoio=ponto_de_apoio,
         data_do_aporte=aula.inicio_em.date(),
+        valor_de_origem=Decimal("60.00"),
     )
     sessao.commit()
     sessao.refresh(aula)
@@ -334,6 +336,7 @@ def test_cada_provedor_recebe_as_moedas_do_que_aportou(
         quantidade=Decimal("2.00"),
         ponto_de_apoio=ponto_de_apoio,
         data_do_aporte=aula.inicio_em.date(),
+        valor_de_origem=Decimal("20.00"),
     )
     sessao.commit()
     aporte_dois = registrar_aporte_por_absorcao(
@@ -343,6 +346,7 @@ def test_cada_provedor_recebe_as_moedas_do_que_aportou(
         quantidade=Decimal("4.00"),
         ponto_de_apoio=ponto_de_apoio,
         data_do_aporte=aula.inicio_em.date(),
+        valor_de_origem=Decimal("40.00"),
     )
     sessao.commit()
     sessao.refresh(aula)

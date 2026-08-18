@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
 from ..banco import Base
+from ..livro_razao.modelo import DestinacaoDoAporte
 
 
 class FormaDeAporte(enum.StrEnum):
@@ -28,8 +29,8 @@ class OrigemDoRegistro(enum.StrEnum):
 
 
 class SituacaoDeRessarcimento(enum.StrEnum):
-    """Nasce com `ressarcido` ainda inalcançável nesta fatia, no precedente
-    do `ativo` do ponto de apoio (design — Decisions 6)."""
+    """`ressarcido` é gravado pela capacidade `ressarcimento`, na fatia que
+    a alcança (`RF-07-22`, `RF-07-25`)."""
 
     nao_se_aplica = "nao_se_aplica"
     em_aberto = "em_aberto"
@@ -48,6 +49,10 @@ class Aporte(Base, ComAutoria):
     homologação (`RN-07-35`). `solicitacao_de_participacao_id` é único: a
     mesma declaração do pré-cadastro não credita duas vezes (`RN-07-21`,
     design — Decisions 10).
+
+    `destinacao` separa o que vira lastro do que não vira (`RF-07-23`,
+    `RN-07-38`). `aula_id` só existe na forma absorção, quando o aporte
+    declara qual necessidade publicada atende (`RF-07-28`).
     """
 
     __tablename__ = "aporte"
@@ -88,3 +93,10 @@ class Aporte(Base, ComAutoria):
         Uuid, ForeignKey("lancamento.id"), nullable=False
     )
     data_do_aporte: Mapped[date] = mapped_column(Date, nullable=False)
+    destinacao: Mapped[DestinacaoDoAporte] = mapped_column(
+        Enum(DestinacaoDoAporte, native_enum=False, length=16),
+        nullable=False,
+        default=DestinacaoDoAporte.lastro,
+        server_default=DestinacaoDoAporte.lastro.value,
+    )
+    aula_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=True)

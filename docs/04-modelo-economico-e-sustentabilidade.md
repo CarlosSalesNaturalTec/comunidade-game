@@ -46,18 +46,22 @@ Regras derivadas:
   da própria necessidade publicada**: o registro **declara qual necessidade atende**, e ela
   precisa estar em aberto. A plataforma registra como **aporte dele**, valorado pela tabela de
   referência, e o crédito entra no seu Poder Sustentador. O registro declara também **quanto
-  custou em reais** quando houve desembolso — consumível, durável ou financeiro; na absorção de
-  **serviço**, em que se dá tempo e não dinheiro, o valor vem da tabela. É esse valor que o
-  ressarcimento devolve. O aporte nasce marcado como **ressarcível**, e quem absorveu ganha
-  **destaque público** pelo ato. A absorção **credita no ato, sem homologação** — é o que
-  destrava a atividade na hora em que o recurso é provido. A homologação por Admin, em que ninguém
-  homologa o próprio aporte, vale para o registro da gestão e para o do pré-cadastro.
+  custou em reais** quando houve desembolso — consumível, durável ou financeiro —, e é esse
+  valor que o ressarcimento devolve; essas absorções nascem marcadas como **ressarcíveis**. Na
+  absorção de **serviço**, em que se dá tempo e não dinheiro, não há valor em reais a declarar:
+  o aporte nasce **não ressarcível**, mas credita o Poder Sustentador e ganha **destaque
+  público** pelo ato, como qualquer outra absorção. A absorção **credita no ato, sem
+  homologação** — é o que destrava a atividade na hora em que o recurso é provido. A homologação
+  por Admin, em que ninguém homologa o próprio aporte, vale para o registro da gestão e para o
+  do pré-cadastro.
 - **Ressarcimento não é direito nem promessa.** Não há fila permanente nem expectativa de
   devolução: o ressarcimento só existe quando entra receita destinada a ele. Essa receita entra
   como **aporte financeiro com destinação a ressarcir**: credita o Poder Sustentador de quem
   doou, como toda doação, mas **não vira lastro** — fica fora do saldo de recurso e não confirma
   aula pendente, para que o mesmo dinheiro não seja prometido duas vezes. Havendo essa receita,
-  os aportes ressarcíveis são pagos **por antiguidade**, por decisão de um Admin.
+  os aportes ressarcíveis são pagos **por antiguidade**, por decisão de um Admin, **sem
+  exceder o que aquela receita ainda cobre** — nenhum pagamento ultrapassa a doação que o
+  financia.
   Ressarcido o aporte, as moedas **revertem** — quem recebeu de volta adiantou recurso, não
   doou —, mas o registro do ato e o destaque público **permanecem**.
 - **A plataforma não guarda dado bancário.** Todo o trâmite corre na plataforma; na última
