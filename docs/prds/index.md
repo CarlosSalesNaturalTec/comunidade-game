@@ -75,11 +75,23 @@ pelo vínculo de comunidade (`RF-03-47`). A **cobertura parcial** abate a falta 
 homologado e a necessidade só sai da lista quando o saldo fecha, o que já confirma a aula no
 mesmo ato (`RF-07-31`, `RN-07-23`).
 
+A quinta fatia entregou a superfície de leitura do livro-razão: o **Poder Sustentador** do
+provedor, derivado da cadeia aporte → crédito → ajuste e nunca da soma dos aportes
+(`RF-07-10`, `RN-07-15`), e a **contagem de absorções**, derivada só dos aportes de forma
+absorção e por isso independente do Poder Sustentador (`RF-07-26`, `RN-07-19`) — em
+**`GET /provedores/{id}/poder-sustentador`**, pública, e **`GET /meus-aportes`**, do Apoiador
+em sessão (`RF-07-17`). A **prestação de contas pública** — movimentado total e por provedor
+em **`GET /prestacao-de-contas`**, consumo por aula e por comunidade em
+**`GET /prestacao-de-contas/aulas`** — é painel vivo, sem fechamento periódico (`RF-07-16`,
+`RN-07-31`). O **lançamento de débito** passa a declarar a **aula** que o consumiu, gravada
+no ato da baixa; débito lançado antes desta fatia fica sem aula, por ser somente inserção
+(`RN-07-15`).
+
 O documento 09 mantém a pendência de **quem desativa um ponto de apoio**. **Empréstimo de
 bancada e reposição solidária saíram do escopo** — o documento 05 já os adiava, e o PRD
 divergia da fonte. No Ciclo 01 ficam o tombamento, a ficha de vida e a conferência de
-inventário. Seguem para as próximas fatias o Poder Sustentador, a prestação de contas pública,
-o ressarcimento, o patrimônio, o catálogo avulso e o desafio extra.
+inventário. Seguem para as próximas fatias o ressarcimento, o patrimônio, o catálogo avulso e o
+desafio extra.
 
 O PRD-08 volta a **implementado**: a change `lista-publica-de-comunidades` entregou o
 `GET /comunidades` com os quatro indicadores do documento 02 §1 (`RF-08-30`, `RF-08-31`),
