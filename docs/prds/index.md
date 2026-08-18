@@ -38,11 +38,14 @@ Antes disso, a change `auditoria-e-estorno-da-coleta` entregou o débito de pont
 fato desfeito (`RF-01-57`, `RF-01-69`, `RF-01-70`, `RN-01-55`) e a queda da credencial de
 dispositivo ao **encerramento da série** (`RF-01-68`).
 
-O PRD-07 vai à implementação em **v7**, com três correções decididas na abertura: nasce o
+O PRD-07 vai à implementação em **v8**, com três correções decididas na abertura: nasce o
 `PontoDeApoio` como entidade da gestão, o saldo é por tipo **e ponto de apoio**, e a reserva
-pendura na **aula**, não na atividade da missão. **Empréstimo de bancada e reposição solidária
-saíram do escopo** — o documento 05 já os adiava para o ciclo seguinte, e o PRD divergia da
-fonte. No Ciclo 01 ficam o tombamento, a ficha de vida e a conferência de inventário.
+pendura na **aula**, não na atividade da missão. A preparação da primeira fatia acrescentou
+que o **responsável pelo acervo é designado depois do cadastro** (`RF-07-49`, `RN-07-34`) e
+abriu no documento 09 a pendência de **quem desativa um ponto de apoio**. **Empréstimo de
+bancada e reposição solidária saíram do escopo** — o documento 05 já os adiava para o ciclo
+seguinte, e o PRD divergia da fonte. No Ciclo 01 ficam o tombamento, a ficha de vida e a
+conferência de inventário.
 
 O PRD-08 volta a **implementado**: a change `lista-publica-de-comunidades` entregou o
 `GET /comunidades` com os quatro indicadores do documento 02 §1 (`RF-08-30`, `RF-08-31`),
