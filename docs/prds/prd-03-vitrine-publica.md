@@ -319,25 +319,25 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 
 ### 6.5 Institucional e transparência
 
-| ID         | Requisito                                                                              | Prioridade |
-| ---------- | -------------------------------------------------------------------------------------- | ---------- |
-| `RF-03-45` | Seções "Quem somos", "Contatos" e "Como apoiar" exibem o conteúdo publicado na App 03  | essencial  |
-| `RF-03-46` | "Como apoiar" exibe a chave PIX da pessoa jurídica vinculada                           | essencial  |
-| `RF-03-47` | Vitrine publica as necessidades de recurso em aberto das atividades sem lastro         | essencial  |
-| `RF-03-48` | Nota de transparência sobre IA vive dentro de "Quem somos" e remete à linha "Licenças" | essencial  |
-| `RF-03-49` | Vitrine exibe o vídeo de apresentação e a identidade visual de comunidade              | desejável  |
-| `RF-03-50` | Vitrine não exibe publicidade nem patrocínio                                           | essencial  |
-| `RF-03-51` | Vitrine não instala cookie, rastreador ou perfilamento do visitante                    | essencial  |
-| `RF-03-52` | Área detalhada explica o que a plataforma coleta, de quem, para quê e por quanto tempo | essencial  |
-| `RF-03-53` | Área detalhada declara que a vitrine não coleta dado do visitante                      | essencial  |
-| `RF-03-58` | Botão "Entrar" fica sempre visível e pergunta qual persona está entrando               | essencial  |
-| `RF-03-59` | Cada persona é encaminhada à sua aplicação, sem autenticação na vitrine                | essencial  |
-| `RF-03-60` | Escolha de persona não é guardada, no servidor ou no aparelho                          | essencial  |
-| `RF-03-61` | Nenhuma tela de entrada revela nick, conta ou existência de cadastro                   | essencial  |
-| `RF-03-62` | Quem não tem cadastro recebe a orientação da sua persona, sem prometer acesso          | essencial  |
-| `RF-03-63` | Recorte de gestores abre com bloco em destaque sobre a utilidade ao município          | essencial  |
-| `RF-03-64` | O bloco lista usos concretos do dado e o caminho para pedir o conjunto completo        | essencial  |
-| `RF-03-65` | O bloco declara os limites: dado agregado, nunca por Guerreiro(a), e não oficial       | essencial  |
+| ID         | Requisito                                                                                                                                       | Prioridade |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-03-45` | Seções "Quem somos", "Contatos" e "Como apoiar" exibem o conteúdo publicado na App 03                                                           | essencial  |
+| `RF-03-46` | "Como apoiar" exibe a chave PIX da pessoa jurídica vinculada                                                                                    | essencial  |
+| `RF-03-47` | Vitrine publica as necessidades de recurso em aberto, com tipo, quantidade, valor em moedas, comunidade, ponto de apoio, data e horário da aula | essencial  |
+| `RF-03-48` | Nota de transparência sobre IA vive dentro de "Quem somos" e remete à linha "Licenças"                                                          | essencial  |
+| `RF-03-49` | Vitrine exibe o vídeo de apresentação e a identidade visual de comunidade                                                                       | desejável  |
+| `RF-03-50` | Vitrine não exibe publicidade nem patrocínio                                                                                                    | essencial  |
+| `RF-03-51` | Vitrine não instala cookie, rastreador ou perfilamento do visitante                                                                             | essencial  |
+| `RF-03-52` | Área detalhada explica o que a plataforma coleta, de quem, para quê e por quanto tempo                                                          | essencial  |
+| `RF-03-53` | Área detalhada declara que a vitrine não coleta dado do visitante                                                                               | essencial  |
+| `RF-03-58` | Botão "Entrar" fica sempre visível e pergunta qual persona está entrando                                                                        | essencial  |
+| `RF-03-59` | Cada persona é encaminhada à sua aplicação, sem autenticação na vitrine                                                                         | essencial  |
+| `RF-03-60` | Escolha de persona não é guardada, no servidor ou no aparelho                                                                                   | essencial  |
+| `RF-03-61` | Nenhuma tela de entrada revela nick, conta ou existência de cadastro                                                                            | essencial  |
+| `RF-03-62` | Quem não tem cadastro recebe a orientação da sua persona, sem prometer acesso                                                                   | essencial  |
+| `RF-03-63` | Recorte de gestores abre com bloco em destaque sobre a utilidade ao município                                                                   | essencial  |
+| `RF-03-64` | O bloco lista usos concretos do dado e o caminho para pedir o conjunto completo                                                                 | essencial  |
+| `RF-03-65` | O bloco declara os limites: dado agregado, nunca por Guerreiro(a), e não oficial                                                                | essencial  |
 
 ### 6.6 Área do Apoiador Desenvolvedor
 
