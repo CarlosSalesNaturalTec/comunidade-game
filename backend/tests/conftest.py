@@ -98,17 +98,45 @@ def engine():
 
 
 @pytest.fixture
-def sessao(engine):
-    fabrica = sessionmaker(bind=engine, expire_on_commit=False)
+def conexao(engine):
+    conexao = engine.connect()
+    transacao = conexao.begin()
+    yield conexao
+    transacao.rollback()
+    conexao.close()
+
+
+@pytest.fixture
+def sessao(request, engine):
+    # `banco_compartilhado` (design.md — Decisions 4): o teste precisa de uma
+    # segunda conexão vendo dado realmente gravado — recebe sessão presa ao
+    # `engine`, e só ele paga a limpeza por `TRUNCATE` no teardown.
+    if request.node.get_closest_marker("banco_compartilhado") is not None:
+        fabrica = sessionmaker(bind=engine, expire_on_commit=False)
+        sessao = fabrica()
+        yield sessao
+        sessao.rollback()
+        # `TRUNCATE`, ao contrário de `DELETE`, não dispara o trigger de linha
+        # que recusa remoção em `consentimento` (RN-01-12) — é o que permite
+        # limpar o banco entre testes sem violar a imutabilidade que a
+        # própria fatia exige.
+        nomes_das_tabelas = ", ".join(
+            f'"{tabela.name}"' for tabela in Base.metadata.sorted_tables
+        )
+        sessao.execute(text(f"TRUNCATE TABLE {nomes_das_tabelas} CASCADE"))
+        sessao.commit()
+        sessao.close()
+        return
+
+    # Cada teste roda dentro de uma transação desfeita no fim, sobre a mesma
+    # conexão que o SQL cru dos testes usa — nada chega a ser commitado no
+    # banco, e o `TRUNCATE` deixa de ser necessário (design.md — Decisions 1).
+    conexao = request.getfixturevalue("conexao")
+    fabrica = sessionmaker(
+        bind=conexao, expire_on_commit=False, join_transaction_mode="create_savepoint"
+    )
     sessao = fabrica()
     yield sessao
-    sessao.rollback()
-    # `TRUNCATE`, ao contrário de `DELETE`, não dispara o trigger de linha que
-    # recusa remoção em `consentimento` (RN-01-12) — é o que permite limpar o
-    # banco entre testes sem violar a imutabilidade que a própria fatia exige.
-    nomes_das_tabelas = ", ".join(f'"{tabela.name}"' for tabela in Base.metadata.sorted_tables)
-    sessao.execute(text(f"TRUNCATE TABLE {nomes_das_tabelas} RESTART IDENTITY CASCADE"))
-    sessao.commit()
     sessao.close()
 
 
@@ -1200,12 +1228,15 @@ def criar_registro_de_auditoria(sessao):
 
 
 @pytest.fixture
-def fabrica_de_auditoria(engine):
+def fabrica_de_auditoria(conexao):
     """Sessionmaker do middleware de auditoria, para testes que precisam
     ver a gravação acontecer de verdade — o mesmo padrão de
-    `nucleo.cli.obter_fabrica_de_sessao`, ligado ao `engine` de teste em vez
-    de à configuração real do processo."""
-    return sessionmaker(bind=engine, expire_on_commit=False)
+    `nucleo.cli.obter_fabrica_de_sessao`, ligado à `conexao` do teste, para
+    que o commit best-effort do middleware entre na mesma transação
+    desfeita no teardown (design.md — Decisions 3)."""
+    return sessionmaker(
+        bind=conexao, expire_on_commit=False, join_transaction_mode="create_savepoint"
+    )
 
 
 @pytest.fixture

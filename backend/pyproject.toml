@@ -38,6 +38,9 @@ select = ["E", "F", "I", "UP", "B"]
 # medida no CI (`.github/workflows/backend-ci.yml`), que roda com `--cov`.
 addopts = "-q --no-header --tb=short"
 testpaths = ["tests"]
+markers = [
+    "banco_compartilhado: teste precisa de uma segunda conexão vendo dado realmente gravado; paga TRUNCATE no teardown (design.md — Decisions 4).",
+]
 
 [tool.coverage.run]
 source = ["src"]
