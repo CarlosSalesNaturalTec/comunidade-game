@@ -44,7 +44,10 @@ catálogo de **tipos de recurso** e o **valor de referência em moedas** version
 (`RF-07-49`, `RN-07-34`). A fatia da reserva na **aula** foi destravada por decisões à parte: a
 baixa passa a ser o **lançamento da atividade realizada** — e a rota de baixa sai do PRD-07 —,
 o cancelamento é de **Admin ou Mestre da comunidade** da aula (`RF-01-72`, `RF-02-95`) e a
-reserva de aula que passou sem desfecho **não expira sozinha**.
+reserva de aula que passou sem desfecho **não expira sozinha**. Uma quarta decisão fecha a
+elicitação dessa fatia: **quem confirma a aula pendente de lastro é o próprio aporte que fecha
+a diferença** (`RN-07-37`), e não um ato humano — o `RF-02-67` deixa de atribuir o ato à App 03
+e passa a apenas mostrá-lo.
 
 A segunda fatia entregou o **livro-razão** — lançamento imutável, de natureza crédito, débito
 ou ajuste, recusado a alterar ou remover também fora do ORM (`RF-07-19`, `RN-07-15`), e o saldo

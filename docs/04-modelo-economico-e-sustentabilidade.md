@@ -27,7 +27,9 @@ Regras derivadas:
 - **Falta de lastro vira pedido, não recusa silenciosa.** Cadastrada a atividade sem saldo
   para o que ela consome, a diferença é publicada como **necessidade de recurso** em três
   lugares: na vitrine pública, na área do Apoiador e na área dos Mestres da trilha. A
-  atividade fica **pendente de lastro** e só é confirmada quando a necessidade é suprida.
+  atividade fica **pendente de lastro** e só é confirmada quando a necessidade é suprida. A
+  confirmação é **automática**: o aporte homologado que fecha a diferença confirma a aula e
+  efetiva a reserva no mesmo ato, sem confirmação humana à parte.
 - **A necessidade admite cobertura parcial.** Aporte menor que a necessidade publicada abate
   o que falta em vez de ser recusado, e a necessidade só sai da lista quando o saldo fecha —
   é o que permite a várias pessoas cobrirem juntas o que nenhuma cobriria sozinha. Cada uma
