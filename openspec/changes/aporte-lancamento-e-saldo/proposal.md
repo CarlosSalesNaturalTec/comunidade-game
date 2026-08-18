@@ -79,7 +79,7 @@ O que é **adiado por recorte**, não excluído — cada item é fatia própria:
 
 | Fica para                                 | Porque                                                            |
 | ----------------------------------------- | ----------------------------------------------------------------- |
-| `RF-07-08`, `RF-07-09` e a `Reserva`      | a `Aula` não tem ciclo de vida; ver a pergunta aberta abaixo      |
+| `RF-07-08`, `RF-07-09` e a `Reserva`      | fatia própria, já destravada pelas decisões do ciclo de vida da aula |
 | `RF-07-27`, `RF-07-28` e `RF-07-31`       | necessidade publicada, que só existe depois da reserva            |
 | `RF-07-10`, `RF-07-17`, `RF-07-26`        | Poder Sustentador, que é leitura derivada do que nasce aqui       |
 | `RF-07-16` e `RF-07-18`                   | prestação de contas pública e o que falta às aulas agendadas      |
@@ -100,14 +100,15 @@ O atributo "solicitação de origem" do PRD-07 §8 é justamente essa ponte.
 não declara rota que o devolva, e as consultas que existem lá — prestação de contas, meus
 aportes, ressarcíveis — são das fatias adiadas acima.
 
-### Pergunta que fica aberta, e não trava esta fatia
+### O ciclo de vida da aula, decidido depois desta proposta
 
-A `Aula` do núcleo não tem ciclo de vida: não há `realizada`, não há `cancelada`, e não existe
-rota que a agende. O `RF-07-09` — "a realização converte a reserva em baixa; o cancelamento
-libera" — fica sem sujeito, como o `RF-07-09` já ficara antes de a `Aula` ser eleita a atividade
-que reserva. **Quem marca a aula como realizada, e quem a cancela**, precisa de decisão do
-fundador antes da fatia da reserva, e ela altera o PRD-01. Esta fatia não toca em aula alguma e
-por isso não espera pela resposta.
+A `Aula` do núcleo não tinha ciclo de vida, o que deixava o `RF-07-09` sem sujeito. As quatro
+decisões vieram do fundador e já estão gravadas nos documentos 04 §1 e 05 §4, no documento 09 e
+nos PRDs 01, 02 e 07: a baixa é o **lançamento da atividade realizada**, e a rota
+`POST /aulas/{id}/baixa` sai do PRD-07 §9; o cancelamento é de **Admin ou de Mestre da
+comunidade** da aula, com motivo, conferido contra o vínculo de comunidade e sem campo novo no
+núcleo; e a reserva de aula que passou sem desfecho **não expira sozinha**. Nada disso alcança
+esta fatia, que não toca em aula alguma — é a fatia seguinte que executa.
 
 ## Capabilities
 

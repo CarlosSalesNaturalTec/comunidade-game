@@ -20,7 +20,10 @@ Regras derivadas:
   ponto de apoio acontece. O livro-razão mantém **saldo por tipo de recurso e ponto de apoio**,
   porque o material fica onde é usado (documento 05). **O aporte declara em que ponto de
   apoio entra**, inclusive quando é serviço ou dinheiro: é ali que o saldo dele fica. Agendar
-  a aula **reserva** o que ela consome, e a realização converte a reserva em baixa.
+  a aula **reserva** o que ela consome, e o **lançamento da atividade realizada** — o mesmo ato
+  que registra o resultado de cada participante — converte a reserva em baixa. Cancelar a aula
+  **libera** a reserva, devolvendo o saldo. A reserva **não expira sozinha**: sai por lançamento
+  ou por cancelamento, sempre com autor e momento.
 - **Falta de lastro vira pedido, não recusa silenciosa.** Cadastrada a atividade sem saldo
   para o que ela consome, a diferença é publicada como **necessidade de recurso** em três
   lugares: na vitrine pública, na área do Apoiador e na área dos Mestres da trilha. A

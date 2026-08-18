@@ -44,10 +44,12 @@ catálogo de **tipos de recurso** e o **valor de referência em moedas** version
 (`RF-07-49`, `RN-07-34`). Duas decisões novas abrem a fatia seguinte, a do livro-razão: **o
 aporte declara em que ponto de apoio entra**, e o lançamento de crédito herda esse ponto
 (`RN-07-36`) — sem isso o saldo por tipo **e ponto de apoio** não era derivável —, e **a
-absorção credita no ato, sem homologação** (`RN-07-35`). A reserva na **aula** vem depois
-delas, e depende de a `Aula` ganhar o ciclo de vida que hoje não tem. O documento 09 mantém a
-pendência de **quem desativa um ponto de apoio**. **Empréstimo de bancada e reposição
-solidária saíram do escopo** — o documento 05 já os adiava para o ciclo seguinte, e o PRD
+absorção credita no ato, sem homologação** (`RN-07-35`). A fatia da reserva na **aula** também
+foi destravada: a baixa passa a ser o **lançamento da atividade realizada** — e a rota de baixa
+à parte sai do PRD-07 —, o cancelamento é de **Admin ou Mestre da comunidade** da aula
+(`RF-01-72`, `RF-02-95`) e a reserva de aula que passou sem desfecho **não expira sozinha**. O
+documento 09 mantém a pendência de **quem desativa um ponto de apoio**. **Empréstimo de
+bancada e reposição solidária saíram do escopo** — o documento 05 já os adiava, e o PRD
 divergia da fonte. No Ciclo 01 ficam o tombamento, a ficha de vida e a conferência de
 inventário.
 

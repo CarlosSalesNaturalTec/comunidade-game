@@ -8,7 +8,7 @@
 | Aplicação        | — (domínio consumido pelas Apps 03, 05, 06, 08 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v9 — 2026-08-18                                      |
+| Versão e data    | v10 — 2026-08-18                                     |
 | Depende de       | PRD-08                                               |
 | Documentos-fonte | 04 §§1–3, 05 §§2–3, 11 §5                            |
 
@@ -115,8 +115,10 @@ atividades previstas.
    dos Mestres da trilha.
 4. Suprida a necessidade, por aporte ou por absorção, a aula é confirmada e a reserva
    acontece.
-5. Realizada a aula, a reserva vira **baixa**.
-6. Aula cancelada **libera** a reserva, devolvendo o saldo.
+5. O **lançamento da atividade realizada** — o mesmo ato que registra o resultado de cada
+   participante — converte a reserva em **baixa**.
+6. Aula cancelada por Admin ou por Mestre da comunidade dela **libera** a reserva, devolvendo o
+   saldo. Aula que passa da data sem lançamento nem cancelamento **mantém** a reserva.
 
 ### 5.4 Tombamento e ficha de vida do exemplar
 
@@ -168,7 +170,7 @@ atividades previstas.
 | `RF-07-27` | Falta de lastro é publicada como necessidade na vitrine e nas áreas do Apoiador e do Mestre                                      | essencial  |
 | `RF-07-28` | Mestre ou Admin assume o aporte por absorção a partir da necessidade publicada                                                   | essencial  |
 | `RF-07-31` | Necessidade publicada aceita cobertura parcial: o aporte homologado abate o que falta e ela só sai da lista quando o saldo fecha | essencial  |
-| `RF-07-09` | Realização da aula converte a reserva em baixa; cancelamento dela libera a reserva                                               | essencial  |
+| `RF-07-09` | Lançamento da atividade realizada converte a reserva em baixa; cancelamento da aula libera a reserva, que nunca expira sozinha   | essencial  |
 | `RF-07-10` | Sistema calcula o Poder Sustentador de cada provedor pela soma de moedas aportadas                                               | essencial  |
 | `RF-07-11` | Sistema registra exemplar tombado com ponto de apoio, responsável designado e conservação                                        | essencial  |
 | `RF-07-13` | Sistema registra baixa definitiva de recompensa entregue, sem devolução                                                          | essencial  |
@@ -314,7 +316,6 @@ moedas do seu tipo de recurso — o custo real segue no lançamento, invisível 
 | GET    | `/aportes/ressarciveis`             | Admin           | Aportes absorvidos em aberto, do mais antigo ao mais novo            |
 | POST   | `/aportes/{id}/ressarcimento`       | Admin           | Registra o ressarcimento com comprovante anexado e reverte as moedas |
 | POST   | `/aulas/{id}/reservas`              | gestão          | Reserva os recursos no agendamento da aula                           |
-| POST   | `/aulas/{id}/baixa`                 | gestão          | Converte reservas em baixa na realização da aula                     |
 | POST   | `/lancamentos/{id}/ajuste`          | Admin           | Lança ajuste referenciando o lançamento original                     |
 | GET    | `/meus-aportes`                     | Apoiador        | Aportes e Poder Sustentador do próprio Apoiador                      |
 | GET    | `/meus-aportes/ressarciveis`        | Mestre ou Admin | Situação dos aportes que absorveu                                    |
@@ -381,38 +382,41 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                        | Gravada em     | Doc 09                                       |
-| ------------------------------------------------------------------------------ | -------------- | -------------------------------------------- |
-| Ponto de apoio como entidade da gestão, ligada a uma comunidade                | 05 §2          | Ponto de apoio como entidade da plataforma   |
-| Saldo de recurso por tipo **e ponto de apoio**                                 | 04 §1          | Ponto de apoio como entidade da plataforma   |
-| A aula é a atividade que declara recursos, reserva e dá baixa                  | 04 §1          | A atividade que reserva recurso é a aula     |
-| A aula declara em qual ponto de apoio acontece — altera o PRD-01               | 05 §2          | A atividade que reserva recurso é a aula     |
-| Empréstimo de bancada e reposição solidária ficam para o ciclo seguinte        | 05 §3 (já era) | Empréstimo de bancada e reposição solidária  |
-| Aporte não financeiro valorado por tabela de referência da gestão              | 04 §1          | Já decididos                                 |
-| Tipo de aporte novo cadastrado na hora por um Admin                            | 04 §1          | Já decididos                                 |
-| Moeda com duas casas decimais                                                  | 04 §1          | Já decididos                                 |
-| Lastro por saldo de tipo de recurso, com reserva no agendamento                | 04 §1          | Já decididos                                 |
-| Aporte por absorção de Mestre ou Admin                                         | 04 §1          | Já decididos                                 |
-| O aporte declara o ponto de apoio em que entra, e o crédito herda esse ponto   | 04 §1          | Onde o aporte entra no livro-razão           |
-| A absorção credita no ato, sem homologação                                     | 04 §1          | Homologação do aporte por absorção           |
-| Responsável designado pelo acervo em cada ponto de apoio                       | 05 §3          | Já decididos                                 |
-| Designação do responsável posterior ao cadastro, entre os adultos cadastrados  | 05 §3          | Ponto de apoio como entidade da plataforma   |
-| Aporte por absorção marcado como ressarcível, com destaque público pelo ato    | 04 §1, 11 §8.2 | Já decididos                                 |
-| Ressarcimento só com receita destinada, por antiguidade e decisão de Admin     | 04 §1          | Já decididos                                 |
-| Ressarcimento reverte as moedas; o registro do ato permanece                   | 04 §1          | Já decididos                                 |
-| Sem armazenar dado bancário: chave PIX por e-mail e apenas comprovante anexado | 04 §1, 03 §11  | Já decididos                                 |
-| Produção executiva como tipo de recurso, aportada por absorção                 | 04 §1          | Já decididos                                 |
-| Faturas anteriores ao livro-razão guardadas e lançadas retroativamente         | 04 §1          | Já decididos                                 |
-| Catálogo avulso com lastro, estoque e baixa na entrega da troca                | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
-| Preço em pontos extras sem derivação do valor em moedas                        | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
-| Preço fixado por tabela de referência da gestão, versionada por vigência       | 02 §8.2        | Quem fixa o preço do catálogo avulso         |
-| Piso de 20 pontos extras para qualquer item do catálogo avulso                 | 02 §8.2        | Quem fixa o preço do catálogo avulso         |
-| Desafio extra reserva a recompensa na publicação e libera se encerrar sem uso  | 04 §3          | Desafio extra — proponente, teto e custeio   |
-| Custeio do desafio extra por absorção ou por saldo já existente na plataforma  | 04 §3          | Desafio extra — proponente, teto e custeio   |
-| Horas da produção executiva declaradas por período, com commits como lastro    | 04 §1          | Apuração da produção executiva               |
-| Valor-hora único na tabela de referência, versionado por vigência              | 04 §1          | Apuração da produção executiva               |
-| Prestação de contas pública em painel vivo, sem fechamento periódico           | 04 §1          | Formato da prestação de contas pública       |
-| Dupla entrada fora do Ciclo 01; segue proposta no documento-fonte              | 04 §1          | Formato da prestação de contas pública       |
+| Decisão                                                                        | Gravada em     | Doc 09                                         |
+| ------------------------------------------------------------------------------ | -------------- | ---------------------------------------------- |
+| Ponto de apoio como entidade da gestão, ligada a uma comunidade                | 05 §2          | Ponto de apoio como entidade da plataforma     |
+| Saldo de recurso por tipo **e ponto de apoio**                                 | 04 §1          | Ponto de apoio como entidade da plataforma     |
+| A aula é a atividade que declara recursos, reserva e dá baixa                  | 04 §1          | A atividade que reserva recurso é a aula       |
+| A baixa é o lançamento da atividade realizada, sem rota de baixa à parte       | 04 §1          | A baixa do recurso é o lançamento da atividade |
+| Aula cancelada por Admin ou por Mestre da comunidade dela                      | 05 §4          | Quem cancela uma aula agendada                 |
+| Reserva de aula que passou sem desfecho não expira sozinha                     | 04 §1          | Reserva de aula que passou sem desfecho        |
+| A aula declara em qual ponto de apoio acontece — altera o PRD-01               | 05 §2          | A atividade que reserva recurso é a aula       |
+| Empréstimo de bancada e reposição solidária ficam para o ciclo seguinte        | 05 §3 (já era) | Empréstimo de bancada e reposição solidária    |
+| Aporte não financeiro valorado por tabela de referência da gestão              | 04 §1          | Já decididos                                   |
+| Tipo de aporte novo cadastrado na hora por um Admin                            | 04 §1          | Já decididos                                   |
+| Moeda com duas casas decimais                                                  | 04 §1          | Já decididos                                   |
+| Lastro por saldo de tipo de recurso, com reserva no agendamento                | 04 §1          | Já decididos                                   |
+| Aporte por absorção de Mestre ou Admin                                         | 04 §1          | Já decididos                                   |
+| O aporte declara o ponto de apoio em que entra, e o crédito herda esse ponto   | 04 §1          | Onde o aporte entra no livro-razão             |
+| A absorção credita no ato, sem homologação                                     | 04 §1          | Homologação do aporte por absorção             |
+| Responsável designado pelo acervo em cada ponto de apoio                       | 05 §3          | Já decididos                                   |
+| Designação do responsável posterior ao cadastro, entre os adultos cadastrados  | 05 §3          | Ponto de apoio como entidade da plataforma     |
+| Aporte por absorção marcado como ressarcível, com destaque público pelo ato    | 04 §1, 11 §8.2 | Já decididos                                   |
+| Ressarcimento só com receita destinada, por antiguidade e decisão de Admin     | 04 §1          | Já decididos                                   |
+| Ressarcimento reverte as moedas; o registro do ato permanece                   | 04 §1          | Já decididos                                   |
+| Sem armazenar dado bancário: chave PIX por e-mail e apenas comprovante anexado | 04 §1, 03 §11  | Já decididos                                   |
+| Produção executiva como tipo de recurso, aportada por absorção                 | 04 §1          | Já decididos                                   |
+| Faturas anteriores ao livro-razão guardadas e lançadas retroativamente         | 04 §1          | Já decididos                                   |
+| Catálogo avulso com lastro, estoque e baixa na entrega da troca                | 02 §8.2        | Troca de pontos extras por recompensa avulsa   |
+| Preço em pontos extras sem derivação do valor em moedas                        | 02 §8.2        | Troca de pontos extras por recompensa avulsa   |
+| Preço fixado por tabela de referência da gestão, versionada por vigência       | 02 §8.2        | Quem fixa o preço do catálogo avulso           |
+| Piso de 20 pontos extras para qualquer item do catálogo avulso                 | 02 §8.2        | Quem fixa o preço do catálogo avulso           |
+| Desafio extra reserva a recompensa na publicação e libera se encerrar sem uso  | 04 §3          | Desafio extra — proponente, teto e custeio     |
+| Custeio do desafio extra por absorção ou por saldo já existente na plataforma  | 04 §3          | Desafio extra — proponente, teto e custeio     |
+| Horas da produção executiva declaradas por período, com commits como lastro    | 04 §1          | Apuração da produção executiva                 |
+| Valor-hora único na tabela de referência, versionado por vigência              | 04 §1          | Apuração da produção executiva                 |
+| Prestação de contas pública em painel vivo, sem fechamento periódico           | 04 §1          | Formato da prestação de contas pública         |
+| Dupla entrada fora do Ciclo 01; segue proposta no documento-fonte              | 04 §1          | Formato da prestação de contas pública         |
 
 ## 14. Pendências que permanecem
 
