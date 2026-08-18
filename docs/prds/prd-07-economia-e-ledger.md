@@ -302,24 +302,24 @@ moedas do seu tipo de recurso — o custo real segue no lançamento, invisível 
 
 ## 9. Contratos de API
 
-| Método | Rota                                | Autenticação    | Descrição                                                            |
-| ------ | ----------------------------------- | --------------- | -------------------------------------------------------------------- |
-| GET    | `/prestacao-de-contas`              | pública         | Movimentado total e por provedor, em moedas                          |
-| GET    | `/prestacao-de-contas/aulas`        | pública         | Consumo por aula e por comunidade, em moedas                         |
-| GET    | `/provedores/{id}/poder-economico`  | pública         | Poder Sustentador do provedor, em moedas                             |
-| GET    | `/vitrine/necessidades`             | pública         | O que falta de recurso para as aulas já agendadas                    |
-| GET    | `/necessidades/minhas`              | Mestre          | Necessidades das aulas das comunidades a que o Mestre está vinculado |
-| POST   | `/pontos-de-apoio`                  | Admin           | Cadastra ponto de apoio, com nome e comunidade                       |
-| PUT    | `/pontos-de-apoio/{id}/responsavel` | Admin           | Designa ou troca o responsável pelo acervo                           |
-| POST   | `/tipos-de-recurso`                 | Admin           | Cadastra tipo e valor de referência                                  |
-| POST   | `/aportes`                          | Admin           | Registra e homologa aporte, com comprovante                          |
-| POST   | `/aportes/absorcao`                 | Mestre ou Admin | Registra aporte por absorção de quem proveu o recurso                |
-| GET    | `/aportes/ressarciveis`             | Admin           | Aportes absorvidos em aberto, do mais antigo ao mais novo            |
-| POST   | `/aportes/{id}/ressarcimento`       | Admin           | Registra o ressarcimento com comprovante anexado e reverte as moedas |
-| POST   | `/aulas/{id}/reservas`              | gestão          | Reserva os recursos no agendamento da aula                           |
-| POST   | `/lancamentos/{id}/ajuste`          | Admin           | Lança ajuste referenciando o lançamento original                     |
-| GET    | `/meus-aportes`                     | Apoiador        | Aportes e Poder Sustentador do próprio Apoiador                      |
-| GET    | `/meus-aportes/ressarciveis`        | Mestre ou Admin | Situação dos aportes que absorveu                                    |
+| Método | Rota                                 | Autenticação    | Descrição                                                            |
+| ------ | ------------------------------------ | --------------- | -------------------------------------------------------------------- |
+| GET    | `/prestacao-de-contas`               | pública         | Movimentado total e por provedor, em moedas                          |
+| GET    | `/prestacao-de-contas/aulas`         | pública         | Consumo por aula e por comunidade, em moedas                         |
+| GET    | `/provedores/{id}/poder-sustentador` | pública         | Poder Sustentador do provedor, em moedas                             |
+| GET    | `/vitrine/necessidades`              | pública         | O que falta de recurso para as aulas já agendadas                    |
+| GET    | `/necessidades/minhas`               | Mestre          | Necessidades das aulas das comunidades a que o Mestre está vinculado |
+| POST   | `/pontos-de-apoio`                   | Admin           | Cadastra ponto de apoio, com nome e comunidade                       |
+| PUT    | `/pontos-de-apoio/{id}/responsavel`  | Admin           | Designa ou troca o responsável pelo acervo                           |
+| POST   | `/tipos-de-recurso`                  | Admin           | Cadastra tipo e valor de referência                                  |
+| POST   | `/aportes`                           | Admin           | Registra e homologa aporte, com comprovante                          |
+| POST   | `/aportes/absorcao`                  | Mestre ou Admin | Registra aporte por absorção de quem proveu o recurso                |
+| GET    | `/aportes/ressarciveis`              | Admin           | Aportes absorvidos em aberto, do mais antigo ao mais novo            |
+| POST   | `/aportes/{id}/ressarcimento`        | Admin           | Registra o ressarcimento com comprovante anexado e reverte as moedas |
+| POST   | `/aulas/{id}/reservas`               | gestão          | Reserva os recursos no agendamento da aula                           |
+| POST   | `/lancamentos/{id}/ajuste`           | Admin           | Lança ajuste referenciando o lançamento original                     |
+| GET    | `/meus-aportes`                      | Apoiador        | Aportes e Poder Sustentador do próprio Apoiador                      |
+| GET    | `/meus-aportes/ressarciveis`         | Mestre ou Admin | Situação dos aportes que absorveu                                    |
 
 Erros previstos: agendamento sem saldo (422, com a lista do que falta); homologação pelo
 próprio provedor (403); aporte de tipo inexistente (422, com a rota de cadastro do tipo);

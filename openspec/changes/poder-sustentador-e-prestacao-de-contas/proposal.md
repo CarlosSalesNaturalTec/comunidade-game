@@ -45,12 +45,12 @@ O lado do crédito **não** muda: o caminho até o provedor já existe por `Apor
 
 Rotas, conforme o PRD-07 §9:
 
-| Método | Rota                                | Autenticação |
-| ------ | ----------------------------------- | ------------ |
-| GET    | `/prestacao-de-contas`              | pública      |
-| GET    | `/prestacao-de-contas/aulas`        | pública      |
-| GET    | `/provedores/{id}/poder-economico`  | pública      |
-| GET    | `/meus-aportes`                     | Apoiador     |
+| Método | Rota                                   | Autenticação |
+| ------ | -------------------------------------- | ------------ |
+| GET    | `/prestacao-de-contas`                 | pública      |
+| GET    | `/prestacao-de-contas/aulas`           | pública      |
+| GET    | `/provedores/{id}/poder-sustentador`   | pública      |
+| GET    | `/meus-aportes`                        | Apoiador     |
 
 As três rotas públicas dispensam credencial de persona e seguem exigindo a chave de aplicação,
 como toda rota de dados sob `/v1`. Provedor é sempre adulto (`RN-07-06`): nenhum dado de
