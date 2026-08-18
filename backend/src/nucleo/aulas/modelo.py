@@ -16,7 +16,9 @@ class Aula(Base, ComAutoria):
     liberação separado (`RF-01-20`, `RF-01-32`). `inicio_em` e `fim_em`
     guardam o instante com fuso — a derivação das aulas vigentes vira uma
     comparação só contra `tempo.agora()` (design — decisões). `ComAutoria`
-    grava o Admin que agendou.
+    grava o Admin que agendou. `ponto_de_apoio_id` é o espaço em que a aula
+    acontece e de onde sai o recurso, sempre da mesma comunidade da aula
+    (`RF-01-71`, `RN-07-33`).
     """
 
     __tablename__ = "aula"
@@ -24,6 +26,9 @@ class Aula(Base, ComAutoria):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     comunidade_virtual_id: Mapped[uuid.UUID] = mapped_column(
         Uuid, ForeignKey("comunidade_virtual.id"), nullable=False
+    )
+    ponto_de_apoio_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("ponto_de_apoio.id"), nullable=False
     )
     inicio_em: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     fim_em: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

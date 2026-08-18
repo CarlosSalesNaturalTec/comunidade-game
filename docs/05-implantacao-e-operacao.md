@@ -104,9 +104,12 @@ A vedação de cobrar da família **não é adiada**: vale desde o primeiro dia.
    Guardiões reincidentes podem ser convidados a cuidar do acervo como voluntários.
 4. **Responsável designado.** Cada ponto de apoio tem uma **pessoa designada** que responde
    pelo acervo permanente e pelos kits ali guardados — é ela que consta do inventário, e a
-   responsabilidade sobrevive à troca de turma e de Mestre. A **guarda compartilhada pela
-   equipe**, em que cada equipe responde por um conjunto de exemplares, fica para o _ciclo
-   seguinte_; o mérito extra por auxílio aos colegas continua valendo por outras vias.
+   responsabilidade sobrevive à troca de turma e de Mestre. A designação vem **depois do
+   cadastro** do ponto de apoio e recai sobre **qualquer adulto cadastrado** — Admin, Mestre
+   ou Apoiador —, nunca sobre Guerreiro(a) nem sobre responsável familiar. A **guarda
+   compartilhada pela equipe**, em que cada equipe responde por um conjunto de exemplares,
+   fica para o _ciclo seguinte_; o mérito extra por auxílio aos colegas continua valendo por
+   outras vias.
 5. **Kit de conservação com lastro.** Papel para encapar, fita e etiquetas são recursos como
    qualquer outro: precisam ser providos para a atividade acontecer.
 6. **Nunca cobrança à família.** Perda ou dano **não gera dívida** para o Guerreiro(a) nem para
