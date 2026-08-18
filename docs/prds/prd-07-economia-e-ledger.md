@@ -307,8 +307,8 @@ moedas do seu tipo de recurso — o custo real segue no lançamento, invisível 
 | GET    | `/prestacao-de-contas`              | pública         | Movimentado total e por provedor, em moedas                          |
 | GET    | `/prestacao-de-contas/aulas`        | pública         | Consumo por aula e por comunidade, em moedas                         |
 | GET    | `/provedores/{id}/poder-economico`  | pública         | Poder Sustentador do provedor, em moedas                             |
-| GET    | `/necessidades`                     | pública         | O que falta de recurso para as aulas já agendadas                    |
-| GET    | `/necessidades/minhas`              | Mestre          | Necessidades das aulas das trilhas do próprio Mestre                 |
+| GET    | `/vitrine/necessidades`             | pública         | O que falta de recurso para as aulas já agendadas                    |
+| GET    | `/necessidades/minhas`              | Mestre          | Necessidades das aulas das comunidades a que o Mestre está vinculado |
 | POST   | `/pontos-de-apoio`                  | Admin           | Cadastra ponto de apoio, com nome e comunidade                       |
 | PUT    | `/pontos-de-apoio/{id}/responsavel` | Admin           | Designa ou troca o responsável pelo acervo                           |
 | POST   | `/tipos-de-recurso`                 | Admin           | Cadastra tipo e valor de referência                                  |

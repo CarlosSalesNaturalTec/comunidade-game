@@ -221,8 +221,8 @@ O aporte declarado numa solicitação de participação NÃO SHALL creditar moed
 existir apenas como declaração; o crédito SHALL nascer somente do registro do aporte por um
 Admin, que é o ato de **homologação** e que converte o valor em moedas pela vigência da data.
 Registrar mais de um aporte apontando a **mesma** solicitação de origem SHALL ser recusado com
-**422**, para que a mesma declaração não credite duas vezes. (`RF-07-30`, `RN-07-21`,
-`RF-07-05`, PRD-07 §8)
+**422**, para que a mesma declaração não credite duas vezes. (`RF-07-29`, `RF-07-30`,
+`RN-07-21`, `RF-07-05`, PRD-07 §8)
 
 #### Scenario: Declaração no pré-cadastro não credita
 

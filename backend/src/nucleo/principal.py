@@ -19,6 +19,7 @@ from .fila.rotas import roteador as roteador_de_fila
 from .jogos.rotas import roteador as roteador_de_jogos
 from .livro_razao.rotas import roteador as roteador_de_livro_razao
 from .locais.rotas import roteador as roteador_de_locais
+from .necessidades.rotas import roteador as roteador_de_necessidades
 from .personas.rotas import roteador as roteador_de_personas
 from .pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
 from .protecao import registrar_premissa_de_conteiner_unico
@@ -126,3 +127,4 @@ incluir_roteador_de_dados(app, roteador_de_recursos)
 incluir_roteador_de_dados(app, roteador_de_livro_razao)
 incluir_roteador_de_dados(app, roteador_de_aportes)
 incluir_roteador_de_dados(app, roteador_de_aulas)
+incluir_roteador_de_dados(app, roteador_de_necessidades)
