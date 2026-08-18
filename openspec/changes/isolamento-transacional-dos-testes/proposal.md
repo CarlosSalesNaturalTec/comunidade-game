@@ -17,12 +17,16 @@ O custo não para de crescer: ele é o número de tabelas vezes o número de tes
 coisas aumentam a cada fatia. O ritmo de verificação que o `CLAUDE.md` acaba de fixar — suíte
 inteira uma vez ao fechar as tarefas — só se sustenta se essa execução for barata.
 
-**Esta change não tem `RF-XX-nn` nem `RN-XX-nn`.** Ela não altera comportamento de produto:
-mexe apenas na infraestrutura de teste da esteira do backend, cuja autoridade é o documento
-03 §1.13 (Python 3.12, Ruff e pytest, cobertura sem limiar), aplicado no PRD-01 §13. Por não
-haver mudança de comportamento, ela não tem delta de spec e declara `skip_specs: true`. É uma
-exceção à regra de rastreabilidade, e por isso precisa do aval explícito do fundador antes do
-`/opsx:apply`.
+**Esta change não tem `RF-XX-nn` nem `RN-XX-nn`, e não é de um PRD.** Ela é infraestrutura
+de teste do backend: não altera comportamento de produto, não tem delta de spec e declara
+`skip_specs: true`. A fixture `sessao` é usada por toda a suíte — hoje pelo que já entrou do
+PRD-01 e do PRD-07, daqui em diante por toda fatia, de qualquer PRD. O que ela muda é o custo
+de rodar a verificação, e esse custo é pago em toda change do ciclo.
+
+A esteira do backend que ela respeita — Ruff, pytest e cobertura medida sem limiar no Ciclo
+01 — está no `CLAUDE.md`, sobre a stack Python 3.12 do documento 03 §1.13 e registrada no
+PRD-01 §13. Change sem identificador é exceção à regra de rastreabilidade, e por isso precisa
+do aval explícito do fundador antes do `/opsx:apply`.
 
 ## What Changes
 

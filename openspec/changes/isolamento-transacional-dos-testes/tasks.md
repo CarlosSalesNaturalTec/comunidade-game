@@ -1,6 +1,6 @@
-Sem `RF-XX-nn` nem `RN-XX-nn`: a change é infraestrutura da esteira do backend (documento 03
-§1.13, aplicado no PRD-01 §13) e não altera comportamento de produto. Cada tarefa cita a
-decisão do `design.md` que a origina.
+Sem `RF-XX-nn` nem `RN-XX-nn`: a change é infraestrutura de teste do backend, usada por
+toda a suíte e por toda fatia de qualquer PRD, e não altera comportamento de produto. Cada
+tarefa cita a decisão do `design.md` que a origina.
 
 ## 1. Isolamento por transação
 
