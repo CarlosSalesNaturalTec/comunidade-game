@@ -113,6 +113,12 @@ class ConsentimentoImutavel(ErroDeAplicacao):
     mensagem = "Consentimento é somente inserção; revogar grava um registro novo."
 
 
+class LancamentoImutavel(ErroDeAplicacao):
+    status_code = 409
+    codigo = "lancamento_imutavel"
+    mensagem = "Lançamento é somente inserção; a correção se faz por lançamento de ajuste."
+
+
 class AcessoAoTemplateImutavel(ErroDeAplicacao):
     status_code = 409
     codigo = "acesso_ao_template_imutavel"

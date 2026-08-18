@@ -12,6 +12,8 @@ from pydantic import BaseModel
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
+from nucleo.aportes.modelo import Aporte, FormaDeAporte, SituacaoDeRessarcimento
+from nucleo.aportes.modelo import OrigemDoRegistro as OrigemDoRegistroDoAporte
 from nucleo.auditoria.modelo import Auditoria
 from nucleo.aulas.modelo import Aula
 from nucleo.autenticacao import exigir_persona
@@ -40,8 +42,9 @@ from nucleo.consentimentos.modelo import (
     TipoDeConsentimento,
 )
 from nucleo.equipes.modelo import Equipe, IntegranteDaEquipe
-from nucleo.fila.modelo import SituacaoDaSolicitacao, SolicitacaoDeChave
+from nucleo.fila.modelo import SituacaoDaSolicitacao, SolicitacaoDeChave, SolicitacaoDeParticipacao
 from nucleo.fila.regra import avaliar_solicitacao_de_chave, registrar_solicitacao_de_chave
+from nucleo.livro_razao.modelo import Lancamento, NaturezaDoLancamento
 from nucleo.locais.modelo import Local, NivelDoLocal
 from nucleo.paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from nucleo.personas.modelo import (
@@ -186,6 +189,7 @@ def _montar_roteador_de_teste() -> APIRouter:
 
 @pytest.fixture
 def app(sessao, configuracao):
+    from nucleo.aportes.rotas import roteador as roteador_de_aportes
     from nucleo.auditoria.rotas import roteador as roteador_de_auditoria
     from nucleo.biometria.rotas import roteador as roteador_de_biometria
     from nucleo.chaves.rotas import roteador as roteador_de_chaves
@@ -193,6 +197,7 @@ def app(sessao, configuracao):
     from nucleo.comunidades.rotas import roteador as roteador_de_comunidades
     from nucleo.fila.rotas import roteador as roteador_de_fila
     from nucleo.jogos.rotas import roteador as roteador_de_jogos
+    from nucleo.livro_razao.rotas import roteador as roteador_de_livro_razao
     from nucleo.locais.rotas import roteador as roteador_de_locais
     from nucleo.personas.rotas import roteador as roteador_de_personas
     from nucleo.pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
@@ -219,6 +224,8 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_coletas)
     incluir_roteador_de_dados(aplicacao, roteador_de_pontos_de_apoio)
     incluir_roteador_de_dados(aplicacao, roteador_de_recursos)
+    incluir_roteador_de_dados(aplicacao, roteador_de_livro_razao)
+    incluir_roteador_de_dados(aplicacao, roteador_de_aportes)
     return aplicacao
 
 
@@ -827,11 +834,13 @@ def criar_tipo_de_recurso(sessao):
         nome: str = "Lanche",
         natureza: NaturezaDoRecurso = NaturezaDoRecurso.consumivel,
         unidade: str = "unidade",
+        exige_comprovante: bool = False,
     ) -> TipoDeRecurso:
         tipo = TipoDeRecurso(
             nome=nome,
             natureza=natureza,
             unidade=unidade,
+            exige_comprovante=exige_comprovante,
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
         )
@@ -864,6 +873,88 @@ def criar_valor_de_referencia(sessao):
         sessao.commit()
         sessao.refresh(valor)
         return valor
+
+    return _criar
+
+
+@pytest.fixture
+def criar_lancamento(sessao):
+    def _criar(
+        autor: Persona,
+        tipo: TipoDeRecurso,
+        ponto_de_apoio: PontoDeApoio,
+        natureza: NaturezaDoLancamento = NaturezaDoLancamento.credito,
+        quantidade: Decimal = Decimal("1.00"),
+        valor_em_moedas: Decimal = Decimal("1.00"),
+        lancamento_original: Lancamento | None = None,
+        motivo_do_ajuste: str | None = None,
+    ) -> Lancamento:
+        lancamento = Lancamento(
+            natureza=natureza,
+            tipo_de_recurso_id=tipo.id,
+            ponto_de_apoio_id=ponto_de_apoio.id,
+            quantidade=quantidade,
+            valor_em_moedas=valor_em_moedas,
+            lancamento_original_id=(
+                lancamento_original.id if lancamento_original is not None else None
+            ),
+            motivo_do_ajuste=motivo_do_ajuste,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(lancamento)
+        sessao.commit()
+        sessao.refresh(lancamento)
+        return lancamento
+
+    return _criar
+
+
+@pytest.fixture
+def criar_aporte(sessao):
+    def _criar(
+        autor: Persona,
+        provedor: Persona,
+        tipo: TipoDeRecurso,
+        ponto_de_apoio: PontoDeApoio,
+        lancamento: Lancamento,
+        quantidade: Decimal = Decimal("1.00"),
+        valor_em_moedas: Decimal = Decimal("1.00"),
+        valor_de_origem: Decimal | None = None,
+        forma: FormaDeAporte = FormaDeAporte.material,
+        origem_do_registro: OrigemDoRegistroDoAporte = OrigemDoRegistroDoAporte.gestao,
+        solicitacao_de_participacao: SolicitacaoDeParticipacao | None = None,
+        ressarcivel: bool = False,
+        situacao_de_ressarcimento: SituacaoDeRessarcimento = SituacaoDeRessarcimento.nao_se_aplica,
+        periodo_apurado: date | None = None,
+        admin_homologador: Persona | None = None,
+        data_do_aporte: date | None = None,
+    ) -> Aporte:
+        aporte = Aporte(
+            provedor_id=provedor.id,
+            tipo_de_recurso_id=tipo.id,
+            quantidade=quantidade,
+            ponto_de_apoio_id=ponto_de_apoio.id,
+            valor_em_moedas=valor_em_moedas,
+            valor_de_origem=valor_de_origem,
+            forma=forma,
+            origem_do_registro=origem_do_registro,
+            solicitacao_de_participacao_id=(
+                solicitacao_de_participacao.id if solicitacao_de_participacao is not None else None
+            ),
+            ressarcivel=ressarcivel,
+            situacao_de_ressarcimento=situacao_de_ressarcimento,
+            periodo_apurado=periodo_apurado,
+            admin_homologador_id=(admin_homologador.id if admin_homologador is not None else None),
+            lancamento_id=lancamento.id,
+            data_do_aporte=data_do_aporte or date(2026, 1, 1),
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(aporte)
+        sessao.commit()
+        sessao.refresh(aporte)
+        return aporte
 
     return _criar
 

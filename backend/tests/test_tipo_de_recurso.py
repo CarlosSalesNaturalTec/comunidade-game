@@ -32,6 +32,37 @@ def test_admin_cadastra_tipo_de_recurso_com_autoria_gravada(sessao, criar_person
     assert tipo.papel_do_autor == Papel.admin.value
 
 
+def test_tipo_nasce_sem_exigir_comprovante_quando_nao_declarado(sessao, criar_persona):
+    admin = criar_persona(Papel.admin)
+
+    tipo = cadastrar_tipo_de_recurso(
+        sessao,
+        operador=admin,
+        nome="Lanche",
+        natureza=NaturezaDoRecurso.consumivel.value,
+        unidade="unidade",
+    )
+    sessao.commit()
+
+    assert tipo.exige_comprovante is False
+
+
+def test_tipo_cadastrado_exigindo_comprovante(sessao, criar_persona):
+    admin = criar_persona(Papel.admin)
+
+    tipo = cadastrar_tipo_de_recurso(
+        sessao,
+        operador=admin,
+        nome="Cloud",
+        natureza=NaturezaDoRecurso.financeiro.value,
+        unidade="mês",
+        exige_comprovante=True,
+    )
+    sessao.commit()
+
+    assert tipo.exige_comprovante is True
+
+
 def test_mestre_nao_cadastra_tipo_de_recurso(sessao, criar_persona):
     mestre = criar_persona(Papel.mestre)
 
