@@ -41,11 +41,15 @@ credencial de dispositivo ao **encerramento da série** (`RF-01-68`).
 O PRD-07 segue em implementação. A primeira fatia entregou, além do `PontoDeApoio`, o
 catálogo de **tipos de recurso** e o **valor de referência em moedas** versionado por vigência
 (`RF-07-01`, `RF-07-02`), com o **responsável pelo acervo designado depois do cadastro**
-(`RF-07-49`, `RN-07-34`). Ficam para as fatias seguintes o livro-razão, o saldo por tipo **e
-ponto de apoio**, e a reserva na **aula**. O documento 09 mantém a pendência de **quem desativa
-um ponto de apoio**. **Empréstimo de bancada e reposição solidária saíram do escopo** — o
-documento 05 já os adiava para o ciclo seguinte, e o PRD divergia da fonte. No Ciclo 01 ficam o
-tombamento, a ficha de vida e a conferência de inventário.
+(`RF-07-49`, `RN-07-34`). Duas decisões novas abrem a fatia seguinte, a do livro-razão: **o
+aporte declara em que ponto de apoio entra**, e o lançamento de crédito herda esse ponto
+(`RN-07-36`) — sem isso o saldo por tipo **e ponto de apoio** não era derivável —, e **a
+absorção credita no ato, sem homologação** (`RN-07-35`). A reserva na **aula** vem depois
+delas, e depende de a `Aula` ganhar o ciclo de vida que hoje não tem. O documento 09 mantém a
+pendência de **quem desativa um ponto de apoio**. **Empréstimo de bancada e reposição
+solidária saíram do escopo** — o documento 05 já os adiava para o ciclo seguinte, e o PRD
+divergia da fonte. No Ciclo 01 ficam o tombamento, a ficha de vida e a conferência de
+inventário.
 
 O PRD-08 volta a **implementado**: a change `lista-publica-de-comunidades` entregou o
 `GET /comunidades` com os quatro indicadores do documento 02 §1 (`RF-08-30`, `RF-08-31`),
