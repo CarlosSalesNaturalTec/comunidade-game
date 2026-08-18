@@ -1,7 +1,8 @@
 import base64
 import os
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
+from decimal import Decimal
 from typing import Annotated
 
 import pytest
@@ -53,9 +54,11 @@ from nucleo.personas.modelo import (
 from nucleo.personas.senha import calcular_hash
 from nucleo.poderes.modelo import NaturezaDoPoder, PapelDoPoder, Poder, VigenciaDoPoder
 from nucleo.ponto_extra.modelo import PontoExtra
+from nucleo.pontos_de_apoio.modelo import PontoDeApoio
 from nucleo.pontuacao.modelo import Badge, Nivel, PontoRegular, TipoDeBadge
 from nucleo.principal import criar_app, incluir_roteador_de_dados
 from nucleo.protecao.freio import exigir_freio_por_origem
+from nucleo.recursos.modelo import NaturezaDoRecurso, TipoDeRecurso, ValorDeReferencia
 from nucleo.responsaveis.modelo import VinculoResponsavel
 from nucleo.sessoes.modelo import ComoAutenticou, Sessao
 from nucleo.sessoes.token import calcular_resumo as calcular_resumo_do_token
@@ -192,6 +195,8 @@ def app(sessao, configuracao):
     from nucleo.jogos.rotas import roteador as roteador_de_jogos
     from nucleo.locais.rotas import roteador as roteador_de_locais
     from nucleo.personas.rotas import roteador as roteador_de_personas
+    from nucleo.pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
+    from nucleo.recursos.rotas import roteador as roteador_de_recursos
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
     from nucleo.sessoes.rotas import roteador as roteador_de_sessoes
     from nucleo.vitrine.rotas import roteador as roteador_de_vitrine
@@ -212,6 +217,8 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_comunidades)
     incluir_roteador_de_dados(aplicacao, roteador_de_locais)
     incluir_roteador_de_dados(aplicacao, roteador_de_coletas)
+    incluir_roteador_de_dados(aplicacao, roteador_de_pontos_de_apoio)
+    incluir_roteador_de_dados(aplicacao, roteador_de_recursos)
     return aplicacao
 
 
@@ -791,18 +798,92 @@ def criar_registro_de_coleta(sessao):
 
 
 @pytest.fixture
-def criar_aula(sessao):
+def criar_ponto_de_apoio(sessao):
     def _criar(
         autor: Persona,
         comunidade: ComunidadeVirtual,
+        nome: str = "Ponto de Apoio de Teste",
+        responsavel: Persona | None = None,
+    ) -> PontoDeApoio:
+        ponto_de_apoio = PontoDeApoio(
+            nome=nome,
+            comunidade_virtual_id=comunidade.id,
+            responsavel_id=responsavel.id if responsavel is not None else None,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(ponto_de_apoio)
+        sessao.commit()
+        sessao.refresh(ponto_de_apoio)
+        return ponto_de_apoio
+
+    return _criar
+
+
+@pytest.fixture
+def criar_tipo_de_recurso(sessao):
+    def _criar(
+        autor: Persona,
+        nome: str = "Lanche",
+        natureza: NaturezaDoRecurso = NaturezaDoRecurso.consumivel,
+        unidade: str = "unidade",
+    ) -> TipoDeRecurso:
+        tipo = TipoDeRecurso(
+            nome=nome,
+            natureza=natureza,
+            unidade=unidade,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(tipo)
+        sessao.commit()
+        sessao.refresh(tipo)
+        return tipo
+
+    return _criar
+
+
+@pytest.fixture
+def criar_valor_de_referencia(sessao):
+    def _criar(
+        autor: Persona,
+        tipo: TipoDeRecurso,
+        valor_em_moedas: Decimal = Decimal("1.00"),
+        vigencia_inicio: date | None = None,
+        vigencia_fim: date | None = None,
+    ) -> ValorDeReferencia:
+        valor = ValorDeReferencia(
+            tipo_de_recurso_id=tipo.id,
+            valor_em_moedas=valor_em_moedas,
+            vigencia_inicio=vigencia_inicio or date(2026, 1, 1),
+            vigencia_fim=vigencia_fim,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(valor)
+        sessao.commit()
+        sessao.refresh(valor)
+        return valor
+
+    return _criar
+
+
+@pytest.fixture
+def criar_aula(sessao, criar_persona, criar_ponto_de_apoio):
+    def _criar(
+        autor: Persona,
+        comunidade: ComunidadeVirtual,
+        ponto_de_apoio: PontoDeApoio | None = None,
         inicio_em: datetime | None = None,
         fim_em: datetime | None = None,
     ) -> Aula:
         agora = datetime.now(UTC)
         inicio = inicio_em or (agora - timedelta(hours=1))
         fim = fim_em or (agora + timedelta(hours=1))
+        ponto = ponto_de_apoio or criar_ponto_de_apoio(autor, comunidade)
         aula = Aula(
             comunidade_virtual_id=comunidade.id,
+            ponto_de_apoio_id=ponto.id,
             inicio_em=inicio,
             fim_em=fim,
             autor_id=autor.id,

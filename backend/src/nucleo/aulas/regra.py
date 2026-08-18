@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from ..comunidades.modelo import ComunidadeVirtual, VinculoJogador
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Papel, Persona
+from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..tempo import agora
 from .modelo import Aula, ModoDeComprovacao, Presenca
 
@@ -14,16 +15,26 @@ def agendar_aula(
     *,
     operador: Persona,
     comunidade: ComunidadeVirtual | None,
+    ponto_de_apoio: PontoDeApoio | None,
     inicio_em: datetime | None,
     fim_em: datetime | None,
 ) -> Aula:
     """Restrita ao Admin — o Mestre lê o painel do dia, mas não escreve em
-    gestão (`RF-01-20`, `RF-01-16`, `RF-01-03`, PRD-01 §4).
+    gestão (`RF-01-20`, `RF-01-16`, `RF-01-03`, PRD-01 §4). O ponto de apoio
+    declarado precisa ser da mesma comunidade da aula (`RF-01-71`,
+    `RN-07-33`, invariante 4 do documento 99 §6).
     """
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin agenda aula.")
     if comunidade is None:
         raise ErroDeValidacao(mensagem="Aula exige uma comunidade.", campo="comunidade_virtual_id")
+    if ponto_de_apoio is None:
+        raise ErroDeValidacao(mensagem="Aula exige um ponto de apoio.", campo="ponto_de_apoio_id")
+    if ponto_de_apoio.comunidade_virtual_id != comunidade.id:
+        raise ErroDeValidacao(
+            mensagem="O ponto de apoio precisa ser da mesma comunidade da aula.",
+            campo="ponto_de_apoio_id",
+        )
     if inicio_em is None:
         raise ErroDeValidacao(mensagem="Aula exige o horário inicial.", campo="inicio_em")
     if fim_em is None:
@@ -36,6 +47,7 @@ def agendar_aula(
 
     aula = Aula(
         comunidade_virtual_id=comunidade.id,
+        ponto_de_apoio_id=ponto_de_apoio.id,
         inicio_em=inicio_em,
         fim_em=fim_em,
         autor_id=operador.id,

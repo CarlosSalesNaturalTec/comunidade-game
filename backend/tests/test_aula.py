@@ -11,64 +11,163 @@ INICIO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
 FIM = datetime(2026, 8, 1, 12, 0, tzinfo=UTC)
 
 
-def test_admin_agenda_aula_com_autoria_gravada(sessao, criar_persona, criar_comunidade):
+def test_admin_agenda_aula_com_autoria_gravada(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
 
-    aula = agendar_aula(sessao, operador=admin, comunidade=comunidade, inicio_em=INICIO, fim_em=FIM)
+    aula = agendar_aula(
+        sessao,
+        operador=admin,
+        comunidade=comunidade,
+        ponto_de_apoio=ponto_de_apoio,
+        inicio_em=INICIO,
+        fim_em=FIM,
+    )
     sessao.commit()
 
     assert aula.comunidade_virtual_id == comunidade.id
+    assert aula.ponto_de_apoio_id == ponto_de_apoio.id
     assert aula.inicio_em == INICIO
     assert aula.fim_em == FIM
     assert aula.autor_id == admin.id
     assert aula.papel_do_autor == Papel.admin.value
 
 
-def test_mestre_nao_agenda_aula(sessao, criar_persona, criar_comunidade):
+def test_mestre_nao_agenda_aula(sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio):
+    admin = criar_persona(Papel.admin)
     mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
 
     with pytest.raises(PermissaoNegada):
-        agendar_aula(sessao, operador=mestre, comunidade=comunidade, inicio_em=INICIO, fim_em=FIM)
+        agendar_aula(
+            sessao,
+            operador=mestre,
+            comunidade=comunidade,
+            ponto_de_apoio=ponto_de_apoio,
+            inicio_em=INICIO,
+            fim_em=FIM,
+        )
     assert sessao.query(Aula).count() == 0
 
 
-def test_aula_sem_comunidade_e_recusada(sessao, criar_persona):
+def test_aula_sem_comunidade_e_recusada(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
     admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
-        agendar_aula(sessao, operador=admin, comunidade=None, inicio_em=INICIO, fim_em=FIM)
+        agendar_aula(
+            sessao,
+            operador=admin,
+            comunidade=None,
+            ponto_de_apoio=ponto_de_apoio,
+            inicio_em=INICIO,
+            fim_em=FIM,
+        )
     assert excinfo.value.campo == "comunidade_virtual_id"
     assert sessao.query(Aula).count() == 0
 
 
-def test_aula_sem_horario_inicial_e_recusada(sessao, criar_persona, criar_comunidade):
+def test_aula_sem_ponto_de_apoio_e_recusada(sessao, criar_persona, criar_comunidade):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
 
     with pytest.raises(ErroDeValidacao) as excinfo:
-        agendar_aula(sessao, operador=admin, comunidade=comunidade, inicio_em=None, fim_em=FIM)
+        agendar_aula(
+            sessao,
+            operador=admin,
+            comunidade=comunidade,
+            ponto_de_apoio=None,
+            inicio_em=INICIO,
+            fim_em=FIM,
+        )
+    assert excinfo.value.campo == "ponto_de_apoio_id"
+    assert sessao.query(Aula).count() == 0
+
+
+def test_aula_com_ponto_de_apoio_de_outra_comunidade_e_recusada(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
+    admin = criar_persona(Papel.admin)
+    comunidade_da_aula = criar_comunidade("Comunidade da Aula")
+    comunidade_do_ponto = criar_comunidade("Comunidade do Ponto")
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade_do_ponto)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        agendar_aula(
+            sessao,
+            operador=admin,
+            comunidade=comunidade_da_aula,
+            ponto_de_apoio=ponto_de_apoio,
+            inicio_em=INICIO,
+            fim_em=FIM,
+        )
+    assert excinfo.value.campo == "ponto_de_apoio_id"
+    assert sessao.query(Aula).count() == 0
+
+
+def test_aula_sem_horario_inicial_e_recusada(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        agendar_aula(
+            sessao,
+            operador=admin,
+            comunidade=comunidade,
+            ponto_de_apoio=ponto_de_apoio,
+            inicio_em=None,
+            fim_em=FIM,
+        )
     assert excinfo.value.campo == "inicio_em"
     assert sessao.query(Aula).count() == 0
 
 
-def test_aula_sem_horario_final_e_recusada(sessao, criar_persona, criar_comunidade):
+def test_aula_sem_horario_final_e_recusada(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
-        agendar_aula(sessao, operador=admin, comunidade=comunidade, inicio_em=INICIO, fim_em=None)
+        agendar_aula(
+            sessao,
+            operador=admin,
+            comunidade=comunidade,
+            ponto_de_apoio=ponto_de_apoio,
+            inicio_em=INICIO,
+            fim_em=None,
+        )
     assert excinfo.value.campo == "fim_em"
     assert sessao.query(Aula).count() == 0
 
 
-def test_horario_final_anterior_ao_inicial_e_recusado(sessao, criar_persona, criar_comunidade):
+def test_horario_final_anterior_ao_inicial_e_recusado(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
-        agendar_aula(sessao, operador=admin, comunidade=comunidade, inicio_em=FIM, fim_em=INICIO)
+        agendar_aula(
+            sessao,
+            operador=admin,
+            comunidade=comunidade,
+            ponto_de_apoio=ponto_de_apoio,
+            inicio_em=FIM,
+            fim_em=INICIO,
+        )
     assert excinfo.value.campo == "fim_em"
     assert sessao.query(Aula).count() == 0
 
