@@ -21,7 +21,9 @@ from .livro_razao.rotas import roteador as roteador_de_livro_razao
 from .locais.rotas import roteador as roteador_de_locais
 from .necessidades.rotas import roteador as roteador_de_necessidades
 from .personas.rotas import roteador as roteador_de_personas
+from .poder_sustentador.rotas import roteador as roteador_de_poder_sustentador
 from .pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
+from .prestacao_de_contas.rotas import roteador as roteador_de_prestacao_de_contas
 from .protecao import registrar_premissa_de_conteiner_unico
 from .protecao.cota import exigir_cota_de_leitura
 from .recursos.rotas import roteador as roteador_de_recursos
@@ -128,3 +130,5 @@ incluir_roteador_de_dados(app, roteador_de_livro_razao)
 incluir_roteador_de_dados(app, roteador_de_aportes)
 incluir_roteador_de_dados(app, roteador_de_aulas)
 incluir_roteador_de_dados(app, roteador_de_necessidades)
+incluir_roteador_de_dados(app, roteador_de_poder_sustentador)
+incluir_roteador_de_dados(app, roteador_de_prestacao_de_contas)

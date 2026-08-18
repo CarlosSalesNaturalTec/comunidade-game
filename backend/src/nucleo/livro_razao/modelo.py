@@ -27,7 +27,10 @@ class Lancamento(Base, ComAutoria):
 
     `lancamento_original_id` e `motivo_do_ajuste` só existem no lançamento
     de natureza `ajuste`: a correção referencia o original, sem alterá-lo
-    (design — Decisions 9).
+    (design — Decisions 9). `aula_id` só existe no débito emitido pela
+    baixa da reserva — crédito e ajuste não a declaram, e débito gravado
+    antes desta coluna fica sem aula, por ser somente inserção
+    (`RF-07-16`, `RN-07-15`, design — Decisions 3, 4).
     """
 
     __tablename__ = "lancamento"
@@ -48,6 +51,7 @@ class Lancamento(Base, ComAutoria):
         Uuid, ForeignKey("lancamento.id"), nullable=True
     )
     motivo_do_ajuste: Mapped[str | None] = mapped_column(Text, nullable=True)
+    aula_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=True)
 
     __table_args__ = (
         Index(
@@ -55,6 +59,7 @@ class Lancamento(Base, ComAutoria):
             "tipo_de_recurso_id",
             "ponto_de_apoio_id",
         ),
+        Index("ix_lancamento_aula_id", "aula_id"),
     )
 
 

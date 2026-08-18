@@ -1,12 +1,12 @@
 from decimal import Decimal
 
 import pytest
-from sqlalchemy import text
+from sqlalchemy import func, text
 from sqlalchemy.exc import DBAPIError
 
 from nucleo.erros import ErroDeValidacao, LancamentoImutavel, PermissaoNegada
 from nucleo.livro_razao.modelo import Lancamento, NaturezaDoLancamento
-from nucleo.livro_razao.regra import lancar_ajuste, lancar_credito, saldo_de
+from nucleo.livro_razao.regra import lancar_ajuste, lancar_credito, lancar_debito, saldo_de
 from nucleo.personas.modelo import Papel
 
 
@@ -327,3 +327,132 @@ def test_update_e_delete_em_lancamento_sao_recusados_direto_no_banco(
     ainda_existe = sessao.get(Lancamento, lancamento.id)
     assert ainda_existe is not None
     assert ainda_existe.quantidade == Decimal("3.00")
+
+
+def test_a_baixa_grava_a_aula_no_debito(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_aula,
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    tipo = criar_tipo_de_recurso(admin)
+    aula = criar_aula(admin, comunidade, ponto_de_apoio=ponto_de_apoio)
+
+    debito = lancar_debito(
+        sessao,
+        tipo_de_recurso_id=tipo.id,
+        ponto_de_apoio_id=ponto_de_apoio.id,
+        quantidade=Decimal("2.00"),
+        valor_em_moedas=Decimal("1.00"),
+        operador=admin,
+        aula_id=aula.id,
+    )
+    sessao.commit()
+
+    assert debito.natureza == NaturezaDoLancamento.debito
+    assert debito.aula_id == aula.id
+
+
+def test_o_credito_do_aporte_nao_declara_aula(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio, criar_tipo_de_recurso
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    tipo = criar_tipo_de_recurso(admin)
+
+    credito = lancar_credito(
+        sessao,
+        tipo_de_recurso_id=tipo.id,
+        ponto_de_apoio_id=ponto_de_apoio.id,
+        quantidade=Decimal("3.00"),
+        valor_em_moedas=Decimal("3.00"),
+        operador=admin,
+    )
+    sessao.commit()
+
+    assert credito.aula_id is None
+
+
+def test_a_aula_do_lancamento_nao_muda_depois(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_aula,
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    tipo = criar_tipo_de_recurso(admin)
+    aula = criar_aula(admin, comunidade, ponto_de_apoio=ponto_de_apoio)
+    outra_aula = criar_aula(admin, comunidade, ponto_de_apoio=ponto_de_apoio)
+
+    debito = lancar_debito(
+        sessao,
+        tipo_de_recurso_id=tipo.id,
+        ponto_de_apoio_id=ponto_de_apoio.id,
+        quantidade=Decimal("2.00"),
+        valor_em_moedas=Decimal("1.00"),
+        operador=admin,
+        aula_id=aula.id,
+    )
+    sessao.commit()
+
+    debito.aula_id = outra_aula.id
+    with pytest.raises(LancamentoImutavel):
+        sessao.commit()
+    sessao.rollback()
+
+    intacto = sessao.get(Lancamento, debito.id)
+    assert intacto.aula_id == aula.id
+
+
+def test_o_consumo_da_aula_e_derivavel_do_ledger(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_aula,
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    tipo_a = criar_tipo_de_recurso(admin, nome="Lanche")
+    tipo_b = criar_tipo_de_recurso(admin, nome="Material")
+    aula = criar_aula(admin, comunidade, ponto_de_apoio=ponto_de_apoio)
+
+    lancar_debito(
+        sessao,
+        tipo_de_recurso_id=tipo_a.id,
+        ponto_de_apoio_id=ponto_de_apoio.id,
+        quantidade=Decimal("2.00"),
+        valor_em_moedas=Decimal("1.00"),
+        operador=admin,
+        aula_id=aula.id,
+    )
+    lancar_debito(
+        sessao,
+        tipo_de_recurso_id=tipo_b.id,
+        ponto_de_apoio_id=ponto_de_apoio.id,
+        quantidade=Decimal("1.00"),
+        valor_em_moedas=Decimal("0.50"),
+        operador=admin,
+        aula_id=aula.id,
+    )
+    sessao.commit()
+
+    consumo = (
+        sessao.query(func.coalesce(func.sum(Lancamento.valor_em_moedas), 0))
+        .filter(Lancamento.aula_id == aula.id, Lancamento.natureza == NaturezaDoLancamento.debito)
+        .scalar()
+    )
+
+    assert Decimal(consumo) == Decimal("1.50")

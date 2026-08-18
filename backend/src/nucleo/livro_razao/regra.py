@@ -42,16 +42,20 @@ def lancar_debito(
     quantidade: Decimal,
     valor_em_moedas: Decimal,
     operador: Persona,
+    aula_id=None,
 ) -> Lancamento:
     """O lançamento de débito que a baixa de uma reserva gera, um por
     reserva consumida, no ponto de apoio da aula que a consumiu (`RF-07-09`,
-    `RN-07-36`, design — Decisions 7)."""
+    `RN-07-36`, design — Decisions 7). `aula_id` é anulável porque fatias
+    futuras trarão débito sem aula — a baixa da troca do catálogo avulso e
+    a de recompensa entregue (`RF-07-16`, design — Decisions 3)."""
     lancamento = Lancamento(
         natureza=NaturezaDoLancamento.debito,
         tipo_de_recurso_id=tipo_de_recurso_id,
         ponto_de_apoio_id=ponto_de_apoio_id,
         quantidade=quantidade,
         valor_em_moedas=valor_em_moedas,
+        aula_id=aula_id,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
     )

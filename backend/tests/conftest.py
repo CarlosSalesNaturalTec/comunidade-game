@@ -255,7 +255,9 @@ def app(sessao, configuracao):
     from nucleo.locais.rotas import roteador as roteador_de_locais
     from nucleo.necessidades.rotas import roteador as roteador_de_necessidades
     from nucleo.personas.rotas import roteador as roteador_de_personas
+    from nucleo.poder_sustentador.rotas import roteador as roteador_de_poder_sustentador
     from nucleo.pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
+    from nucleo.prestacao_de_contas.rotas import roteador as roteador_de_prestacao_de_contas
     from nucleo.recursos.rotas import roteador as roteador_de_recursos
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
     from nucleo.sessoes.rotas import roteador as roteador_de_sessoes
@@ -283,6 +285,8 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_aportes)
     incluir_roteador_de_dados(aplicacao, roteador_de_aulas)
     incluir_roteador_de_dados(aplicacao, roteador_de_necessidades)
+    incluir_roteador_de_dados(aplicacao, roteador_de_poder_sustentador)
+    incluir_roteador_de_dados(aplicacao, roteador_de_prestacao_de_contas)
     return aplicacao
 
 
@@ -945,6 +949,7 @@ def criar_lancamento(sessao):
         valor_em_moedas: Decimal = Decimal("1.00"),
         lancamento_original: Lancamento | None = None,
         motivo_do_ajuste: str | None = None,
+        aula: Aula | None = None,
     ) -> Lancamento:
         lancamento = Lancamento(
             natureza=natureza,
@@ -956,6 +961,7 @@ def criar_lancamento(sessao):
                 lancamento_original.id if lancamento_original is not None else None
             ),
             motivo_do_ajuste=motivo_do_ajuste,
+            aula_id=aula.id if aula is not None else None,
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
         )

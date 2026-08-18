@@ -170,6 +170,7 @@ def consumir_reservas_da_aula(
             quantidade=reserva.quantidade,
             valor_em_moedas=valor_em_moedas,
             operador=operador,
+            aula_id=aula.id,
         )
         reserva.estado = EstadoDaReserva.consumida
         lancamentos.append(lancamento)
