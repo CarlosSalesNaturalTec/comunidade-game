@@ -267,6 +267,7 @@ def test_mestre_absorve_um_recurso(
         quantidade=Decimal("2"),
         ponto_de_apoio=ponto_de_apoio,
         data_do_aporte=date(2026, 6, 1),
+        valor_de_origem=Decimal("20.00"),
     )
     sessao.commit()
 
@@ -300,6 +301,7 @@ def test_admin_absorve_um_recurso_em_nome_proprio(
         quantidade=Decimal("1"),
         ponto_de_apoio=ponto_de_apoio,
         data_do_aporte=date(2026, 6, 1),
+        valor_de_origem=Decimal("10.00"),
     )
     sessao.commit()
 
@@ -764,6 +766,7 @@ def test_absorcao_tambem_confirma_a_aula_pendente(
         quantidade=Decimal("5"),
         ponto_de_apoio=ponto_de_apoio,
         data_do_aporte=date(2026, 6, 1),
+        valor_de_origem=Decimal("50.00"),
     )
     sessao.commit()
 

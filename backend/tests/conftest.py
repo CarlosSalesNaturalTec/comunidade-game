@@ -44,7 +44,7 @@ from nucleo.consentimentos.modelo import (
 from nucleo.equipes.modelo import Equipe, IntegranteDaEquipe
 from nucleo.fila.modelo import SituacaoDaSolicitacao, SolicitacaoDeChave, SolicitacaoDeParticipacao
 from nucleo.fila.regra import avaliar_solicitacao_de_chave, registrar_solicitacao_de_chave
-from nucleo.livro_razao.modelo import Lancamento, NaturezaDoLancamento
+from nucleo.livro_razao.modelo import DestinacaoDoAporte, Lancamento, NaturezaDoLancamento
 from nucleo.locais.modelo import Local, NivelDoLocal
 from nucleo.paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from nucleo.personas.modelo import (
@@ -64,6 +64,7 @@ from nucleo.protecao.freio import exigir_freio_por_origem
 from nucleo.recursos.modelo import NaturezaDoRecurso, TipoDeRecurso, ValorDeReferencia
 from nucleo.reservas.modelo import EstadoDaReserva, Reserva
 from nucleo.responsaveis.modelo import VinculoResponsavel
+from nucleo.ressarcimentos.modelo import Ressarcimento
 from nucleo.sessoes.modelo import ComoAutenticou, Sessao
 from nucleo.sessoes.token import calcular_resumo as calcular_resumo_do_token
 from nucleo.sessoes.token import gerar_token
@@ -260,6 +261,7 @@ def app(sessao, configuracao):
     from nucleo.prestacao_de_contas.rotas import roteador as roteador_de_prestacao_de_contas
     from nucleo.recursos.rotas import roteador as roteador_de_recursos
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
+    from nucleo.ressarcimentos.rotas import roteador as roteador_de_ressarcimentos
     from nucleo.sessoes.rotas import roteador as roteador_de_sessoes
     from nucleo.vitrine.rotas import roteador as roteador_de_vitrine
 
@@ -287,6 +289,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_necessidades)
     incluir_roteador_de_dados(aplicacao, roteador_de_poder_sustentador)
     incluir_roteador_de_dados(aplicacao, roteador_de_prestacao_de_contas)
+    incluir_roteador_de_dados(aplicacao, roteador_de_ressarcimentos)
     return aplicacao
 
 
@@ -950,6 +953,7 @@ def criar_lancamento(sessao):
         lancamento_original: Lancamento | None = None,
         motivo_do_ajuste: str | None = None,
         aula: Aula | None = None,
+        destinacao: DestinacaoDoAporte = DestinacaoDoAporte.lastro,
     ) -> Lancamento:
         lancamento = Lancamento(
             natureza=natureza,
@@ -962,6 +966,7 @@ def criar_lancamento(sessao):
             ),
             motivo_do_ajuste=motivo_do_ajuste,
             aula_id=aula.id if aula is not None else None,
+            destinacao=destinacao,
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
         )
@@ -992,6 +997,8 @@ def criar_aporte(sessao):
         periodo_apurado: date | None = None,
         admin_homologador: Persona | None = None,
         data_do_aporte: date | None = None,
+        destinacao: DestinacaoDoAporte = DestinacaoDoAporte.lastro,
+        aula: Aula | None = None,
     ) -> Aporte:
         aporte = Aporte(
             provedor_id=provedor.id,
@@ -1011,6 +1018,8 @@ def criar_aporte(sessao):
             admin_homologador_id=(admin_homologador.id if admin_homologador is not None else None),
             lancamento_id=lancamento.id,
             data_do_aporte=data_do_aporte or date(2026, 1, 1),
+            destinacao=destinacao,
+            aula_id=aula.id if aula is not None else None,
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
         )
@@ -1018,6 +1027,39 @@ def criar_aporte(sessao):
         sessao.commit()
         sessao.refresh(aporte)
         return aporte
+
+    return _criar
+
+
+@pytest.fixture
+def criar_ressarcimento(sessao):
+    def _criar(
+        autor: Persona,
+        aporte: Aporte,
+        receita_destinada: Aporte,
+        admin_pagador: Persona,
+        valor_em_reais: Decimal = Decimal("10.00"),
+        data: date | None = None,
+        comprovante_referencia: str = "ressarcimentos/teste.pdf",
+        comprovante_tipo: str = "application/pdf",
+        comprovante_tamanho: int = 10,
+    ) -> Ressarcimento:
+        ressarcimento = Ressarcimento(
+            aporte_id=aporte.id,
+            receita_destinada_id=receita_destinada.id,
+            valor_em_reais=valor_em_reais,
+            admin_pagador_id=admin_pagador.id,
+            data=data or date(2026, 1, 1),
+            comprovante_referencia=comprovante_referencia,
+            comprovante_tipo=comprovante_tipo,
+            comprovante_tamanho=comprovante_tamanho,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(ressarcimento)
+        sessao.commit()
+        sessao.refresh(ressarcimento)
+        return ressarcimento
 
     return _criar
 

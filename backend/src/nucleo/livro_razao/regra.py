@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Papel, Persona
-from .modelo import Lancamento, NaturezaDoLancamento
+from .modelo import DestinacaoDoAporte, Lancamento, NaturezaDoLancamento
 
 
 def lancar_credito(
@@ -16,16 +16,20 @@ def lancar_credito(
     quantidade: Decimal,
     valor_em_moedas: Decimal,
     operador: Persona,
+    destinacao: DestinacaoDoAporte = DestinacaoDoAporte.lastro,
 ) -> Lancamento:
     """O lançamento de crédito que todo aporte homologado gera, um por
     aporte, no ponto de apoio declarado (`RF-07-04`, `RF-07-07`, `RN-07-36`,
-    design — Decisions 9)."""
+    design — Decisions 9). `destinacao` herda a do aporte que o gerou; o
+    crédito de destinação ressarcimento fica fora do saldo derivado
+    (`RF-07-23`, `RN-07-38`, design — Decisions 2)."""
     lancamento = Lancamento(
         natureza=NaturezaDoLancamento.credito,
         tipo_de_recurso_id=tipo_de_recurso_id,
         ponto_de_apoio_id=ponto_de_apoio_id,
         quantidade=quantidade,
         valor_em_moedas=valor_em_moedas,
+        destinacao=destinacao,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
     )
@@ -74,9 +78,12 @@ def lancar_ajuste(
     motivo: str | None,
 ) -> Lancamento:
     """Só Admin corrige lançamento, e só por lançamento novo que referencia
-    o original sem alterá-lo (`RF-07-19`, `RN-07-15`). Herda tipo de recurso
-    e ponto de apoio do original, para que a correção entre na mesma conta
-    de saldo (design — Decisions 9)."""
+    o original sem alterá-lo (`RF-07-19`, `RN-07-15`). Herda tipo de
+    recurso, ponto de apoio e **destinação** do original, para que a
+    correção entre na mesma conta de saldo (design — Decisions 9). O
+    ajuste que reverte um ressarcimento grava **quantidade zero**: reverte
+    moedas sem desfazer um consumo que já aconteceu (`RF-07-25`, design —
+    Decisions 1)."""
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin lança ajuste.")
     if lancamento_original is None:
@@ -96,6 +103,7 @@ def lancar_ajuste(
         ponto_de_apoio_id=lancamento_original.ponto_de_apoio_id,
         quantidade=quantidade,
         valor_em_moedas=valor_em_moedas,
+        destinacao=lancamento_original.destinacao,
         lancamento_original_id=lancamento_original.id,
         motivo_do_ajuste=motivo,
         autor_id=operador.id,
@@ -110,7 +118,9 @@ def saldo_de(sessao: Session, *, tipo_de_recurso_id, ponto_de_apoio_id) -> Decim
     """O saldo é sempre agregado sobre `lancamento`, nunca um número
     editável: recontar devolve o mesmo número (`RF-07-07`, `RN-07-36`,
     design — Decisions 1). Crédito soma, débito subtrai, ajuste entra pelo
-    sinal que a própria quantidade já carrega."""
+    sinal que a própria quantidade já carrega. Exclui o lançamento de
+    destinação **ressarcimento**: a receita destinada a ressarcir credita
+    reconhecimento, não estoque (`RN-07-38`, design — Decisions 2)."""
     contribuicao = case(
         (Lancamento.natureza == NaturezaDoLancamento.debito, -Lancamento.quantidade),
         else_=Lancamento.quantidade,
@@ -120,6 +130,7 @@ def saldo_de(sessao: Session, *, tipo_de_recurso_id, ponto_de_apoio_id) -> Decim
         .filter(
             Lancamento.tipo_de_recurso_id == tipo_de_recurso_id,
             Lancamento.ponto_de_apoio_id == ponto_de_apoio_id,
+            Lancamento.destinacao == DestinacaoDoAporte.lastro,
         )
         .scalar()
     )

@@ -240,6 +240,7 @@ def test_mestre_absorve_um_recurso_pela_rota(
             "quantidade": "2",
             "ponto_de_apoio_id": str(ponto_de_apoio.id),
             "data_do_aporte": "2026-06-01",
+            "valor_de_origem": "20.00",
         },
         headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
     )

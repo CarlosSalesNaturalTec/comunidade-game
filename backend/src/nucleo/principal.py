@@ -28,6 +28,7 @@ from .protecao import registrar_premissa_de_conteiner_unico
 from .protecao.cota import exigir_cota_de_leitura
 from .recursos.rotas import roteador as roteador_de_recursos
 from .responsaveis.rotas import roteador as roteador_de_responsaveis
+from .ressarcimentos.rotas import roteador as roteador_de_ressarcimentos
 from .sessoes.rotas import roteador as roteador_de_sessoes
 from .vitrine.rotas import roteador as roteador_de_vitrine
 
@@ -132,3 +133,4 @@ incluir_roteador_de_dados(app, roteador_de_aulas)
 incluir_roteador_de_dados(app, roteador_de_necessidades)
 incluir_roteador_de_dados(app, roteador_de_poder_sustentador)
 incluir_roteador_de_dados(app, roteador_de_prestacao_de_contas)
+incluir_roteador_de_dados(app, roteador_de_ressarcimentos)

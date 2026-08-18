@@ -18,6 +18,15 @@ class NaturezaDoLancamento(enum.StrEnum):
     ajuste = "ajuste"
 
 
+class DestinacaoDoAporte(enum.StrEnum):
+    """O que separa o que vira lastro do que não vira: a destinação
+    `ressarcimento` credita reconhecimento sem creditar estoque
+    (`RF-07-23`, `RN-07-38`, PRD-07 §8)."""
+
+    lastro = "lastro"
+    ressarcimento = "ressarcimento"
+
+
 class Lancamento(Base, ComAutoria):
     """A unidade do livro-razão: cada entrada e cada saída de recurso, por
     tipo e ponto de apoio, em `NUMERIC(12, 2)` exato (`RF-07-19`, `RN-07-04`,
@@ -31,6 +40,13 @@ class Lancamento(Base, ComAutoria):
     baixa da reserva — crédito e ajuste não a declaram, e débito gravado
     antes desta coluna fica sem aula, por ser somente inserção
     (`RF-07-16`, `RN-07-15`, design — Decisions 3, 4).
+
+    `destinacao` herda a do aporte que gerou o crédito, e o ajuste herda a
+    do lançamento que referencia — é a coluna local que `saldo_de` filtra,
+    sem junção com `aporte` (`RF-07-23`, `RN-07-38`, design — Decisions 2).
+    O ajuste que reverte um ressarcimento grava **quantidade zero**: reverte
+    moedas sem desfazer um consumo que já aconteceu (`RF-07-25`, design —
+    Decisions 1).
     """
 
     __tablename__ = "lancamento"
@@ -52,6 +68,12 @@ class Lancamento(Base, ComAutoria):
     )
     motivo_do_ajuste: Mapped[str | None] = mapped_column(Text, nullable=True)
     aula_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=True)
+    destinacao: Mapped[DestinacaoDoAporte] = mapped_column(
+        Enum(DestinacaoDoAporte, native_enum=False, length=16),
+        nullable=False,
+        default=DestinacaoDoAporte.lastro,
+        server_default=DestinacaoDoAporte.lastro.value,
+    )
 
     __table_args__ = (
         Index(
