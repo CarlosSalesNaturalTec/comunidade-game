@@ -356,6 +356,7 @@ def test_cobertura_de_ods_agrega_por_comunidade_e_ciclo_sem_recorte_de_guerreiro
     criar_trilha,
     criar_missao,
     criar_atividade,
+    criar_aula,
     sessao,
 ):
     from datetime import UTC, datetime
@@ -369,10 +370,12 @@ def test_cobertura_de_ods_agrega_por_comunidade_e_ciclo_sem_recorte_de_guerreiro
     trilha = criar_trilha(admin)
     missao = criar_missao(trilha, admin)
     atividade = criar_atividade(missao, admin)
+    aula = criar_aula(admin, comunidade)
     criar_etiqueta_ods(sessao, operador=admin, objetivo=4, trilha=trilha)
     registrar_resultado(
         sessao,
         operador=admin,
+        aula=aula,
         guerreiro_id=guerreiro.id,
         atividade=atividade,
         momento_do_fato=datetime.now(UTC),

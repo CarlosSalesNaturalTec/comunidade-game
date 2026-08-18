@@ -1,13 +1,36 @@
 import enum
 import uuid
 from datetime import datetime
+from decimal import Decimal
 
-from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, UniqueConstraint, Uuid
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Numeric,
+    Text,
+    UniqueConstraint,
+    Uuid,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
 from ..banco import Base
 from ..tempo import ComMomentoDoFato
+
+
+class SituacaoDaAula(enum.StrEnum):
+    """Os cinco valores do PRD-01 §8. `prevista` não tem transição que a
+    produza: o agendamento sempre avalia o lastro na mesma operação, e toda
+    aula nasce **confirmada** ou **pendente de lastro** (`RF-07-08`, design
+    — Decisions 9)."""
+
+    prevista = "prevista"
+    pendente_de_lastro = "pendente_de_lastro"
+    confirmada = "confirmada"
+    realizada = "realizada"
+    cancelada = "cancelada"
 
 
 class Aula(Base, ComAutoria):
@@ -19,6 +42,12 @@ class Aula(Base, ComAutoria):
     grava o Admin que agendou. `ponto_de_apoio_id` é o espaço em que a aula
     acontece e de onde sai o recurso, sempre da mesma comunidade da aula
     (`RF-01-71`, `RN-07-33`).
+
+    `situacao` nasce **confirmada** por padrão — o caso da aula sem recurso
+    declarado — e só o agendamento a leva a **pendente de lastro**
+    (`RF-07-08`, `RN-07-01`). `cancelamento_motivo` só se preenche no
+    cancelamento; quem cancelou e quando é a trilha de auditoria já
+    existente, sem coluna nova (`RF-01-72`, design — Migration Plan).
     """
 
     __tablename__ = "aula"
@@ -32,8 +61,32 @@ class Aula(Base, ComAutoria):
     )
     inicio_em: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     fim_em: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    situacao: Mapped[SituacaoDaAula] = mapped_column(
+        Enum(SituacaoDaAula, native_enum=False, length=20),
+        nullable=False,
+        default=SituacaoDaAula.confirmada,
+    )
+    cancelamento_motivo: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (CheckConstraint("fim_em > inicio_em", name="ck_aula_fim_em_apos_inicio_em"),)
+
+
+class RecursoDeclaradoDaAula(Base):
+    """O que a aula **precisa** para acontecer, declarado no agendamento
+    como pares de tipo de recurso e quantidade — separado da `Reserva`, que
+    é o que ela **comprometeu**, porque a aula pendente de lastro precisa
+    lembrar o que lhe falta para o aporte fechar depois (`RF-07-08`, design
+    — Decisions 1). Não deriva da atividade prevista (documento 04 §1).
+    """
+
+    __tablename__ = "recurso_declarado_da_aula"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    aula_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=False)
+    tipo_de_recurso_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("tipo_de_recurso.id"), nullable=False
+    )
+    quantidade: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
 
 
 class ModoDeComprovacao(enum.StrEnum):

@@ -34,6 +34,32 @@ def lancar_credito(
     return lancamento
 
 
+def lancar_debito(
+    sessao: Session,
+    *,
+    tipo_de_recurso_id,
+    ponto_de_apoio_id,
+    quantidade: Decimal,
+    valor_em_moedas: Decimal,
+    operador: Persona,
+) -> Lancamento:
+    """O lançamento de débito que a baixa de uma reserva gera, um por
+    reserva consumida, no ponto de apoio da aula que a consumiu (`RF-07-09`,
+    `RN-07-36`, design — Decisions 7)."""
+    lancamento = Lancamento(
+        natureza=NaturezaDoLancamento.debito,
+        tipo_de_recurso_id=tipo_de_recurso_id,
+        ponto_de_apoio_id=ponto_de_apoio_id,
+        quantidade=quantidade,
+        valor_em_moedas=valor_em_moedas,
+        autor_id=operador.id,
+        papel_do_autor=operador.papel.value,
+    )
+    sessao.add(lancamento)
+    sessao.flush()
+    return lancamento
+
+
 def lancar_ajuste(
     sessao: Session,
     *,

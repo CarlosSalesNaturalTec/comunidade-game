@@ -22,6 +22,9 @@ class Resultado(Base, ComAutoria, ComMomentoDoFato):
     autor da trilha ou o Admin (`trilhas.regra.conferir_posse_da_trilha`).
     O desfecho é enumeração fechada (design — decisões): os três valores que
     o documento 11 §4 declara, ao contrário da natureza aberta da atividade.
+    `aula_id` é a aula em que o resultado foi lançado — é por ela que a
+    baixa encontra as reservas a converter em débito (`RF-07-09`,
+    `RF-02-35`, documento 04 §1).
     """
 
     __tablename__ = "resultado"
@@ -31,6 +34,7 @@ class Resultado(Base, ComAutoria, ComMomentoDoFato):
     atividade_id: Mapped[uuid.UUID] = mapped_column(
         Uuid, ForeignKey("atividade.id"), nullable=False
     )
+    aula_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=False)
     producao: Mapped[str] = mapped_column(Text, nullable=False)
     desfecho: Mapped[DesfechoDoResultado] = mapped_column(
         Enum(DesfechoDoResultado, native_enum=False, length=32), nullable=False
