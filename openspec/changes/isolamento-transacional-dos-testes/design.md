@@ -23,7 +23,9 @@ Três detalhes da suíte de hoje condicionam o desenho, e foram confirmados no p
 
 **Goals:**
 
-- Suíte completa abaixo de 90 s sem perder cobertura nem cenário.
+- Suíte completa abaixo de 90 s sem perder cobertura nem cenário. **Medido depois da
+  conversão** (máquina do `/opsx:apply`, diferente da da proposta): 962 testes em 48 s —
+  contra os 258 s do `TRUNCATE` medidos na máquina da proposta (§ Why).
 - Custo do isolamento deixa de crescer com o número de tabelas.
 - Cada teste continua partindo de um banco vazio, com a mesma garantia de hoje.
 
@@ -68,11 +70,30 @@ explícita no código, em vez de virar um `engine` solto.
 todas as chaves são `Uuid`. A cláusula não tinha efeito e não é reproduzida no caminho do
 marcador.
 
+**6. `now()` vira `clock_timestamp()`, só no banco de teste.** A transação única por teste
+(decisão 1) mantém `now()` — e `CURRENT_TIMESTAMP` — congelado no instante em que ela abre;
+confirmado no `psql`, com `SAVEPOINT` e `pg_sleep` entre eles. Toda coluna com
+`server_default=func.now()` (`nucleo/autoria.py`, `nucleo/tempo.py`) grava o mesmo instante
+em cada `commit()` do teste, e a regra que lê "a mais recente" por essa coluna
+(`func.max(registrado_em)`, em `consentimento`, `valor_de_referencia`, `solicitacao_de_local`
+e a trilha de auditoria) para de distinguir ordem dentro de um teste — não é uma das 17
+falhas do protótipo, porque ele não tinha ainda a transação única aberta por todo o teste.
+A fixture `engine`, depois do `create_all`, troca o `DEFAULT` dessas colunas por
+`clock_timestamp()` — que lê o relógio a cada chamada, e não o início da transação — via
+`ALTER TABLE ... ALTER COLUMN ... SET DEFAULT`, direto no catálogo do banco de teste.
+`backend/src/` não muda: a coluna continua declarada com `func.now()` no modelo, e a troca
+só existe no banco criado pela fixture, desfeita com o `drop_all` do fim da sessão de testes.
+_Alternativa descartada:_ mudar o modelo para `func.clock_timestamp()` — afetaria produção,
+fora do que a proposta declara.
+
 ## Risks / Trade-offs
 
 - **Teste que dependa de estado realmente commitado passa a falhar** → o protótipo rodou a
   suíte inteira e mostrou exatamente quais são: 17 falhas, todas nas três categorias tratadas
   pelas decisões 2, 3 e 4. A conversão termina com a suíte inteira verde, o que fecha o risco.
+- **`now()` congelado pela transação única** (achado na implementação, fora do protótipo) →
+  fechado pela decisão 6. Confirmado nos dois testes de `test_autorizacao_vigente.py` que
+  comparam decisão mais recente por `registrado_em`: voltam a passar com `clock_timestamp()`.
 - **`create_savepoint` altera o significado de `rollback()` dentro do teste** — o teste que
   espera um `rollback()` desfazer tudo passa a desfazer até o savepoint. Nenhum teste de hoje
   depende disso, e a conversão confirma teste a teste.

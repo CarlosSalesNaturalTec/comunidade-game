@@ -46,23 +46,21 @@ def test_registro_de_auditoria_nao_e_editado_nem_apagado_no_orm(
 
 
 def test_update_e_delete_em_auditoria_sao_recusados_direto_no_banco(
-    engine, sessao, criar_persona, criar_registro_de_auditoria
+    conexao, sessao, criar_persona, criar_registro_de_auditoria
 ):
     """Fora do ORM — direto no banco — o gatilho da migração recusa também,
     como já vale para `consentimento` e `acesso_ao_template`."""
     admin = criar_persona(Papel.admin)
     registro = criar_registro_de_auditoria(admin)
 
-    with engine.connect() as conexao, pytest.raises(DBAPIError):
+    with pytest.raises(DBAPIError), conexao.begin_nested():
         conexao.execute(
             text("UPDATE auditoria SET acao = 'PUT outra_acao' WHERE id = :id"),
             {"id": str(registro.id)},
         )
-        conexao.commit()
 
-    with engine.connect() as conexao, pytest.raises(DBAPIError):
+    with pytest.raises(DBAPIError), conexao.begin_nested():
         conexao.execute(text("DELETE FROM auditoria WHERE id = :id"), {"id": str(registro.id)})
-        conexao.commit()
 
     ainda_existe = sessao.get(Auditoria, registro.id)
     assert ainda_existe is not None

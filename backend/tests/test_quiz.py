@@ -878,7 +878,7 @@ def test_partida_nunca_encerrada_nunca_credita(sessao, partida_aberta):
     assert sessao.query(PontoRegular).count() == 0
 
 
-def test_gatilho_recusa_negativo_com_o_quiz_no_caminho(sessao, partida_aberta, engine):
+def test_gatilho_recusa_negativo_com_o_quiz_no_caminho(sessao, partida_aberta, conexao):
     """`RN-01-38`, `RF-01-57`, `RN-01-55`: o ponto creditado pela partida é
     ponto regular como qualquer outro — o evento do ORM e o gatilho do
     Postgres recusam o saldo negativo."""
@@ -891,20 +891,27 @@ def test_gatilho_recusa_negativo_com_o_quiz_no_caminho(sessao, partida_aberta, e
     sessao.commit()
 
     conta = sessao.query(PontoRegular).one()
+    conta_id = str(conta.id)
     conta.total -= conta.total + 1
     with pytest.raises(DebitoDePontoRegularRecusado):
         sessao.flush()
-    sessao.rollback()
+    # `close()`, não só `rollback()`: presa à mesma `conexao`
+    # (`join_transaction_mode="create_savepoint"`), a sessão reabre um
+    # savepoint próprio ao ver a conexão usada de novo depois de um
+    # `rollback()` por flush falho — o `close()` evita essa segunda
+    # savepoint fantasma antes do SQL cru abaixo. `conta_id` já foi lido
+    # antes, porque `conta` fica expirada e desanexada depois do `close()`.
+    sessao.close()
 
     with pytest.raises(Exception, match="ponto regular nunca é debitado"):
-        with engine.begin() as conexao:
+        with conexao.begin_nested():
             conexao.execute(
-                text("UPDATE ponto_regular SET total = -1 WHERE id = :id"), {"id": str(conta.id)}
+                text("UPDATE ponto_regular SET total = -1 WHERE id = :id"), {"id": conta_id}
             )
 
     with pytest.raises(Exception, match="ponto regular nunca é debitado"):
-        with engine.begin() as conexao:
-            conexao.execute(text("DELETE FROM ponto_regular WHERE id = :id"), {"id": str(conta.id)})
+        with conexao.begin_nested():
+            conexao.execute(text("DELETE FROM ponto_regular WHERE id = :id"), {"id": conta_id})
 
 
 def test_integrante_que_entra_depois_do_encerramento_nao_recebe(

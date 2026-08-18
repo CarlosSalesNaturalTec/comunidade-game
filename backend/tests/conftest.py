@@ -88,10 +88,36 @@ DIMENSAO_DE_TESTE_DO_DESCRITOR = 4
 CHAVE_DE_CIFRAGEM_DE_TESTE = base64.urlsafe_b64encode(b"0" * 32).decode()
 
 
+def _trocar_now_por_clock_timestamp(motor):
+    """A transação única por teste (fixture `conexao`) congela `now()` no
+    instante em que abre — confirmado no `psql`, com `SAVEPOINT` e
+    `pg_sleep` entre eles. Toda coluna com `server_default=func.now()`
+    (`nucleo.autoria`, `nucleo.tempo`) gravaria o mesmo instante em cada
+    `commit()` do teste, e a regra que lê "a mais recente" por ela
+    (`func.max(registrado_em)`) deixaria de distinguir ordem dentro de um
+    teste. Troca só no catálogo do banco de teste, depois do `create_all` —
+    `backend/src/` continua declarando `func.now()` (design.md — Decisions
+    6)."""
+    with motor.begin() as conexao:
+        colunas = conexao.execute(
+            text(
+                "SELECT table_name, column_name FROM information_schema.columns "
+                "WHERE table_schema = 'public' AND column_default = 'now()'"
+            )
+        ).all()
+        for tabela, coluna in colunas:
+            conexao.execute(
+                text(
+                    f'ALTER TABLE "{tabela}" ALTER COLUMN "{coluna}" SET DEFAULT clock_timestamp()'
+                )
+            )
+
+
 @pytest.fixture(scope="session")
 def engine():
     motor = create_engine(DSN_DE_TESTE)
     Base.metadata.create_all(motor)
+    _trocar_now_por_clock_timestamp(motor)
     yield motor
     Base.metadata.drop_all(motor)
     motor.dispose()
@@ -120,9 +146,7 @@ def sessao(request, engine):
         # que recusa remoção em `consentimento` (RN-01-12) — é o que permite
         # limpar o banco entre testes sem violar a imutabilidade que a
         # própria fatia exige.
-        nomes_das_tabelas = ", ".join(
-            f'"{tabela.name}"' for tabela in Base.metadata.sorted_tables
-        )
+        nomes_das_tabelas = ", ".join(f'"{tabela.name}"' for tabela in Base.metadata.sorted_tables)
         sessao.execute(text(f"TRUNCATE TABLE {nomes_das_tabelas} CASCADE"))
         sessao.commit()
         sessao.close()

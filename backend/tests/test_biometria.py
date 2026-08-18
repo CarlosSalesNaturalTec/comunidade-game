@@ -232,7 +232,7 @@ class TestImutabilidadeDoAcessoAoTemplate:
 
         assert sessao.get(AcessoAoTemplate, acesso.id) is not None
 
-    def test_update_e_delete_sao_recusados_direto_no_banco(self, engine, sessao, criar_persona):
+    def test_update_e_delete_sao_recusados_direto_no_banco(self, conexao, sessao, criar_persona):
         guerreiro = criar_persona(Papel.guerreiro)
         acesso = AcessoAoTemplate(
             guerreiro_id=guerreiro.id,
@@ -243,18 +243,16 @@ class TestImutabilidadeDoAcessoAoTemplate:
         sessao.add(acesso)
         sessao.commit()
 
-        with engine.connect() as conexao, pytest.raises(DBAPIError):
+        with pytest.raises(DBAPIError), conexao.begin_nested():
             conexao.execute(
                 text("UPDATE acesso_ao_template SET desfecho = 'recusa' WHERE id = :id"),
                 {"id": str(acesso.id)},
             )
-            conexao.commit()
 
-        with engine.connect() as conexao, pytest.raises(DBAPIError):
+        with pytest.raises(DBAPIError), conexao.begin_nested():
             conexao.execute(
                 text("DELETE FROM acesso_ao_template WHERE id = :id"), {"id": str(acesso.id)}
             )
-            conexao.commit()
 
         assert sessao.get(AcessoAoTemplate, acesso.id) is not None
 

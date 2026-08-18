@@ -109,12 +109,12 @@ def test_data_e_hora_com_fuso_e_aceita(cliente, criar_chave):
     assert resposta.status_code == 200
 
 
-def test_data_do_fato_sobrevive_a_envio_atrasado(engine):
+def test_data_do_fato_sobrevive_a_envio_atrasado(conexao):
     """Exercita o mixin `ComMomentoDoFato`: o momento do fato é o que foi
     informado, e o momento do registro é sempre o instante da gravação —
     mesmo quando o fato aconteceu bem antes de chegar ao núcleo."""
     momento_do_fato_atrasado = datetime.now(UTC) - timedelta(days=3)
-    with engine.begin() as conexao:
+    with conexao.begin_nested():
         conexao.execute(
             insert(_RegistroDeExemplo.__table__).values(momento_do_fato=momento_do_fato_atrasado)
         )
