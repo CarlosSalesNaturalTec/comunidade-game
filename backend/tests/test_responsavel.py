@@ -282,12 +282,15 @@ def test_exigir_vinculo_do_responsavel_deixa_outros_papeis_passarem(sessao, cria
     )
 
 
+@pytest.mark.banco_compartilhado
 def test_duas_criacoes_simultaneas_do_terceiro_vinculo_nao_passam_as_duas(
     engine, sessao, criar_persona
 ):
     """Trava a linha do Guerreiro(a) antes de contar (design — decisões):
     partindo de dois vínculos vigentes, duas tentativas concorrentes do
-    terceiro só podem deixar uma passar."""
+    terceiro só podem deixar uma passar. Precisa de dado realmente
+    gravado — duas conexões reais concorrendo — por isso o marcador
+    `banco_compartilhado` (design.md — Decisions 4)."""
     admin = criar_persona(Papel.admin)
     guerreiro = criar_persona(Papel.guerreiro)
     responsavel_um = cadastrar_responsavel(sessao, criado_por=admin)

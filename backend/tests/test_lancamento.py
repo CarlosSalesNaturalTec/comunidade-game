@@ -298,7 +298,7 @@ def test_edicao_de_lancamento_e_recusada_pelo_orm(
 
 
 def test_update_e_delete_em_lancamento_sao_recusados_direto_no_banco(
-    engine, sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio, criar_tipo_de_recurso
+    conexao, sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio, criar_tipo_de_recurso
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -315,16 +315,14 @@ def test_update_e_delete_em_lancamento_sao_recusados_direto_no_banco(
     )
     sessao.commit()
 
-    with engine.connect() as conexao, pytest.raises(DBAPIError):
+    with pytest.raises(DBAPIError), conexao.begin_nested():
         conexao.execute(
             text("UPDATE lancamento SET quantidade = 30 WHERE id = :id"),
             {"id": str(lancamento.id)},
         )
-        conexao.commit()
 
-    with engine.connect() as conexao, pytest.raises(DBAPIError):
+    with pytest.raises(DBAPIError), conexao.begin_nested():
         conexao.execute(text("DELETE FROM lancamento WHERE id = :id"), {"id": str(lancamento.id)})
-        conexao.commit()
 
     ainda_existe = sessao.get(Lancamento, lancamento.id)
     assert ainda_existe is not None

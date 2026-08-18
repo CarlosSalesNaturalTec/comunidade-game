@@ -83,11 +83,11 @@ def test_acumulado_nunca_decresce_pelo_orm(sessao, criar_persona):
 
 
 def test_saldo_disponivel_nunca_aceita_valor_negativo_direto_no_banco(
-    engine, sessao, criar_persona
+    conexao, sessao, criar_persona
 ):
     guerreiro = criar_persona(Papel.guerreiro)
 
-    with engine.connect() as conexao, pytest.raises(DBAPIError):
+    with pytest.raises(DBAPIError), conexao.begin_nested():
         conexao.execute(
             text(
                 "INSERT INTO ponto_extra (id, guerreiro_id, acumulado, saldo_disponivel) "
@@ -95,25 +95,22 @@ def test_saldo_disponivel_nunca_aceita_valor_negativo_direto_no_banco(
             ),
             {"guerreiro_id": str(guerreiro.id)},
         )
-        conexao.commit()
 
 
-def test_ponto_extra_recusa_debito_e_remocao_direto_no_banco(engine, sessao, criar_persona):
+def test_ponto_extra_recusa_debito_e_remocao_direto_no_banco(conexao, sessao, criar_persona):
     """Fora do ORM — direto no banco — o gatilho da migração recusa também
     (`RN-01-39`, mesmo padrão de `RN-01-12`)."""
     guerreiro = criar_persona(Papel.guerreiro)
     conta = creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=10)
     sessao.commit()
 
-    with engine.connect() as conexao, pytest.raises(DBAPIError):
+    with pytest.raises(DBAPIError), conexao.begin_nested():
         conexao.execute(
             text("UPDATE ponto_extra SET acumulado = 5 WHERE id = :id"), {"id": str(conta.id)}
         )
-        conexao.commit()
 
-    with engine.connect() as conexao, pytest.raises(DBAPIError):
+    with pytest.raises(DBAPIError), conexao.begin_nested():
         conexao.execute(text("DELETE FROM ponto_extra WHERE id = :id"), {"id": str(conta.id)})
-        conexao.commit()
 
     conta_intacta = sessao.get(PontoExtra, conta.id)
     assert conta_intacta is not None

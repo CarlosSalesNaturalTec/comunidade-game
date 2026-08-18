@@ -18,9 +18,9 @@ class _RegistroDeExemplo(Base, ComAutoria):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
 
-def test_escrita_grava_autor_papel_e_data_e_hora(engine, criar_persona):
+def test_escrita_grava_autor_papel_e_data_e_hora(conexao, criar_persona):
     persona = criar_persona()
-    with engine.begin() as conexao:
+    with conexao.begin_nested():
         conexao.execute(
             insert(_RegistroDeExemplo.__table__).values(
                 autor_id=persona.id, papel_do_autor=persona.papel.value
@@ -33,14 +33,14 @@ def test_escrita_grava_autor_papel_e_data_e_hora(engine, criar_persona):
     assert linha.registrado_em is not None
 
 
-def test_registro_exige_autor(engine):
-    with pytest.raises(IntegrityError), engine.begin() as conexao:
+def test_registro_exige_autor(conexao):
+    with pytest.raises(IntegrityError), conexao.begin_nested():
         conexao.execute(insert(_RegistroDeExemplo.__table__).values(papel_do_autor="admin"))
 
 
-def test_autor_id_e_um_uuid_valido(engine, criar_persona):
+def test_autor_id_e_um_uuid_valido(conexao, criar_persona):
     persona = criar_persona()
-    with engine.begin() as conexao:
+    with conexao.begin_nested():
         conexao.execute(
             insert(_RegistroDeExemplo.__table__).values(
                 autor_id=persona.id, papel_do_autor=persona.papel.value

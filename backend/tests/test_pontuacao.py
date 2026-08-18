@@ -175,7 +175,7 @@ def test_ponto_regular_recusa_ficar_negativo_pelo_orm(sessao, criar_persona, cri
 
 
 def test_ponto_regular_recusa_negativo_e_remocao_direto_no_banco(
-    engine, sessao, criar_persona, criar_trilha
+    conexao, sessao, criar_persona, criar_trilha
 ):
     """Fora do ORM — direto no banco — o gatilho da migração recusa também
     (`RF-01-57`, `RN-01-38`, `RN-01-55`, mesmo padrão de `RN-01-12`)."""
@@ -186,22 +186,19 @@ def test_ponto_regular_recusa_negativo_e_remocao_direto_no_banco(
     conta = creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=10)
     sessao.commit()
 
-    with engine.connect() as conexao:
+    with conexao.begin_nested():
         conexao.execute(
             text("UPDATE ponto_regular SET total = 5 WHERE id = :id"), {"id": str(conta.id)}
         )
-        conexao.commit()
     sessao.refresh(conta)
 
-    with engine.connect() as conexao, pytest.raises(DBAPIError):
+    with pytest.raises(DBAPIError), conexao.begin_nested():
         conexao.execute(
             text("UPDATE ponto_regular SET total = -1 WHERE id = :id"), {"id": str(conta.id)}
         )
-        conexao.commit()
 
-    with engine.connect() as conexao, pytest.raises(DBAPIError):
+    with pytest.raises(DBAPIError), conexao.begin_nested():
         conexao.execute(text("DELETE FROM ponto_regular WHERE id = :id"), {"id": str(conta.id)})
-        conexao.commit()
 
     conta_intacta = sessao.get(PontoRegular, conta.id)
     assert conta_intacta is not None

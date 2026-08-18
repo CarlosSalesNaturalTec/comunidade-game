@@ -166,7 +166,7 @@ def test_consentimento_gravado_nao_e_editado_nem_apagado_no_orm(sessao, criar_pe
 
 
 def test_update_e_delete_em_consentimento_sao_recusados_direto_no_banco(
-    engine, sessao, criar_persona
+    conexao, sessao, criar_persona
 ):
     """Fora do ORM — direto no banco — o gatilho da migração recusa também
     (`RN-01-12`, design — decisões)."""
@@ -187,18 +187,16 @@ def test_update_e_delete_em_consentimento_sao_recusados_direto_no_banco(
     )
     sessao.commit()
 
-    with engine.connect() as conexao, pytest.raises(DBAPIError):
+    with pytest.raises(DBAPIError), conexao.begin_nested():
         conexao.execute(
             text("UPDATE consentimento SET versao_do_termo = '2.0' WHERE id = :id"),
             {"id": str(consentimento.id)},
         )
-        conexao.commit()
 
-    with engine.connect() as conexao, pytest.raises(DBAPIError):
+    with pytest.raises(DBAPIError), conexao.begin_nested():
         conexao.execute(
             text("DELETE FROM consentimento WHERE id = :id"), {"id": str(consentimento.id)}
         )
-        conexao.commit()
 
     ainda_existe = sessao.get(Consentimento, consentimento.id)
     assert ainda_existe is not None
