@@ -1,9 +1,4 @@
-## Purpose
-
-O Resultado é o registro de que um Guerreiro(a) realizou uma atividade da trilha — sem ele não
-há o que pontuar, o que desbloquear nem o que autorar por trilha ou poder.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Resultado registra quem realizou qual atividade, quando e o quê produziu
 
@@ -35,6 +30,8 @@ reservas que a baixa consome (documento 04 §1). (`RF-01-20`, `RF-07-09`, `RF-02
 - **WHEN** chega um Resultado sem a aula em que foi lançado
 - **THEN** o núcleo responde 422 indicando o campo em falta e nada é gravado
 
+## ADDED Requirements
+
 ### Requirement: O lançamento da atividade realizada é ato por aula e converte as reservas em baixa
 
 O núcleo SHALL expor o **lançamento da atividade realizada** como ato **por aula**, de
@@ -64,28 +61,4 @@ SHALL passar à situação **realizada**. (`RF-07-09`, `RF-02-35`, `RN-07-36`, `
 #### Scenario: Mestre não lança a atividade da aula
 
 - **WHEN** um Mestre tenta lançar a atividade realizada de uma aula
-- **THEN** o núcleo responde 403 e nada é gravado
-
-### Requirement: O desfecho do Resultado é lançado pela gestão, em três valores fechados
-
-O núcleo SHALL exigir, em todo Resultado, um **desfecho** entre exatamente três valores:
-**realizada**, **realizada com mérito** ou **mérito extra por auxílio aos colegas** (11 §4).
-Quem lança o desfecho é o **Mestre autor** da trilha a que a atividade pertence, ou um **Admin**
-— a mesma matriz de posse que já vale para a trilha, a missão e a atividade (`RF-01-16`). Mestre
-que não é o autor SHALL receber **403**. O desfecho SHALL ser gravado com a autoria de quem
-lançou (`RN-01-13`). (`RF-01-20`, `RF-01-16`, `RF-01-03`, 11 §4)
-
-#### Scenario: Mestre autor lança desfecho "realizada com mérito"
-
-- **WHEN** o Mestre autor da trilha lança o desfecho "realizada com mérito" para um Resultado
-- **THEN** o núcleo grava o desfecho com a autoria, data e hora de quem lançou
-
-#### Scenario: Desfecho fora dos três valores é recusado
-
-- **WHEN** chega um Resultado com desfecho que não é nenhum dos três valores fechados
-- **THEN** o núcleo responde 422 e nada é gravado
-
-#### Scenario: Mestre que não é o autor é recusado
-
-- **WHEN** um Mestre que não é o autor da trilha tenta lançar o desfecho de um Resultado dela
 - **THEN** o núcleo responde 403 e nada é gravado

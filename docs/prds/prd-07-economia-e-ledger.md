@@ -8,7 +8,7 @@
 | Aplicação        | — (domínio consumido pelas Apps 03, 05, 06, 08 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v10 — 2026-08-18                                     |
+| Versão e data    | v11 — 2026-08-18                                     |
 | Depende de       | PRD-08                                               |
 | Documentos-fonte | 04 §§1–3, 05 §§2–3, 11 §5                            |
 
@@ -113,8 +113,8 @@ atividades previstas.
 3. Havendo saldo, **reserva** as quantidades; faltando, a aula fica **pendente de lastro** e o
    que falta é publicado como necessidade de recurso — na vitrine, na área do Apoiador e na
    dos Mestres da trilha.
-4. Suprida a necessidade, por aporte ou por absorção, a aula é confirmada e a reserva
-   acontece.
+4. Suprida a necessidade, por aporte ou por absorção, **o sistema confirma a aula e efetiva a
+   reserva no mesmo ato**, sem confirmação humana à parte.
 5. O **lançamento da atividade realizada** — o mesmo ato que registra o resultado de cada
    participante — converte a reserva em **baixa**.
 6. Aula cancelada por Admin ou por Mestre da comunidade dela **libera** a reserva, devolvendo o
@@ -228,6 +228,7 @@ atividades previstas.
 | `RN-07-16` | Quem homologa o aporte não pode ser o próprio provedor                                                                               | —          | 04 §1        |
 | `RN-07-35` | A absorção credita no ato, sem homologação; homologam-se o aporte da gestão e o do pré-cadastro                                      | —          | 04 §1        |
 | `RN-07-23` | Na cobertura parcial, cada provedor recebe as moedas do que aportou; ninguém recebe crédito pelo que outro deu                       | 16         | 04 §1        |
+| `RN-07-37` | A aula pendente de lastro é confirmada pelo próprio aporte que fecha a diferença, sem ato humano de confirmação                      | 9          | 04 §1        |
 | `RN-07-17` | Ressarcimento não é direito nem promessa: só ocorre havendo receita destinada a ele                                                  | —          | 04 §1        |
 | `RN-07-18` | Ressarcimento pago reverte as moedas; o registro do ato e o destaque público permanecem                                              | —          | 04 §1        |
 | `RN-07-19` | O selo público mostra o número de absorções, nunca o valor em reais                                                                  | 16         | 11 §8.2      |
@@ -390,6 +391,7 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | A baixa é o lançamento da atividade realizada, sem rota de baixa à parte       | 04 §1          | A baixa do recurso é o lançamento da atividade |
 | Aula cancelada por Admin ou por Mestre da comunidade dela                      | 05 §4          | Quem cancela uma aula agendada                 |
 | Reserva de aula que passou sem desfecho não expira sozinha                     | 04 §1          | Reserva de aula que passou sem desfecho        |
+| A aula pendente de lastro é confirmada pelo aporte que fecha a diferença       | 04 §1          | Quem confirma a aula pendente de lastro        |
 | A aula declara em qual ponto de apoio acontece — altera o PRD-01               | 05 §2          | A atividade que reserva recurso é a aula       |
 | Empréstimo de bancada e reposição solidária ficam para o ciclo seguinte        | 05 §3 (já era) | Empréstimo de bancada e reposição solidária    |
 | Aporte não financeiro valorado por tabela de referência da gestão              | 04 §1          | Já decididos                                   |
@@ -460,4 +462,5 @@ qualquer número de pontos de apoio.
 | `RN-07-20`              | 04 §1 (sem armazenamento de dado bancário)       |
 | `RN-07-33`              | 05 §2 (estrutura física — pontos de apoio)       |
 | `RN-07-35` e `RN-07-36` | 04 §1 (onde o aporte entra e como se homologa)   |
+| `RN-07-37`              | 04 §1 (confirmação da aula pendente de lastro)   |
 | `RN-07-31` e `RN-07-32` | 04 §1 (painel vivo e horas declaradas)           |

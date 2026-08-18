@@ -17,6 +17,8 @@ MOMENTO_DO_FATO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
 
 
 def _lancar(sessao, *, mestre, guerreiro, missao, desfecho):
+    from tests.conftest import criar_aula_para_resultado
+
     atividade = criar_atividade(
         sessao,
         operador=mestre,
@@ -26,10 +28,12 @@ def _lancar(sessao, *, mestre, guerreiro, missao, desfecho):
         natureza="construcao",
         producao_esperada="Produção esperada.",
     )
+    aula = criar_aula_para_resultado(sessao, mestre)
     sessao.commit()
     registrar_resultado(
         sessao,
         operador=mestre,
+        aula=aula,
         guerreiro_id=guerreiro.id,
         atividade=atividade,
         momento_do_fato=MOMENTO_DO_FATO,

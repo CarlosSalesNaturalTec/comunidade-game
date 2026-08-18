@@ -41,10 +41,7 @@ credencial de dispositivo ao **encerramento da série** (`RF-01-68`).
 O PRD-07 segue em implementação. A primeira fatia entregou, além do `PontoDeApoio`, o
 catálogo de **tipos de recurso** e o **valor de referência em moedas** versionado por vigência
 (`RF-07-01`, `RF-07-02`), com o **responsável pelo acervo designado depois do cadastro**
-(`RF-07-49`, `RN-07-34`). A fatia da reserva na **aula** foi destravada por decisões à parte: a
-baixa passa a ser o **lançamento da atividade realizada** — e a rota de baixa sai do PRD-07 —,
-o cancelamento é de **Admin ou Mestre da comunidade** da aula (`RF-01-72`, `RF-02-95`) e a
-reserva de aula que passou sem desfecho **não expira sozinha**.
+(`RF-07-49`, `RN-07-34`).
 
 A segunda fatia entregou o **livro-razão** — lançamento imutável, de natureza crédito, débito
 ou ajuste, recusado a alterar ou remover também fora do ORM (`RF-07-19`, `RN-07-15`), e o saldo
@@ -55,11 +52,25 @@ Admin que credita no ato, sem homologação, e nasce **ressarcível** (`RF-07-06
 `RN-07-35`), o comprovante em PDF, JPG ou PNG (`RN-07-22`) e a homologação do aporte declarado
 no pré-cadastro, que credita só nesse ato (`RF-07-30`, `RN-07-21`).
 
+A terceira fatia entregou a **reserva** — o vínculo entre a aula e o recurso que ela consome,
+que compromete o saldo sem movimentá-lo (`RF-07-08`, `RN-07-01`). O agendamento passa a
+declarar os recursos consumidos e a reservá-los no ponto de apoio da aula: havendo disponível
+para todos, a aula nasce **confirmada**; faltando qualquer parcela, nasce **pendente de
+lastro**, sem reserva alguma. O **lançamento da atividade realizada** grava os resultados dos
+participantes e, na mesma operação, converte cada reserva em **baixa** — um débito por reserva
+— e leva a aula a **realizada** (`RF-07-09`, `RF-02-35`, `RN-07-36`). O **cancelamento**, de
+Admin ou Mestre da comunidade da aula, **libera** as reservas (`RF-01-72`, `RF-02-95`) — fecha
+o `RF-01-72` do PRD-01, a primeira escrita de gestão do Mestre. A reserva nunca expira por
+decurso de prazo. O **aporte que fecha a diferença confirma a aula pendente de lastro no mesmo
+ato**, sem ato humano de confirmação (`RN-07-37`) — o `RF-02-67` deixa de atribuir esse ato à
+App 03 e passa a apenas mostrá-lo.
+
 O documento 09 mantém a pendência de **quem desativa um ponto de apoio**. **Empréstimo de
 bancada e reposição solidária saíram do escopo** — o documento 05 já os adiava, e o PRD
 divergia da fonte. No Ciclo 01 ficam o tombamento, a ficha de vida e a conferência de
-inventário. Seguem para as próximas fatias a reserva na aula, o Poder Sustentador, a prestação
-de contas pública, o ressarcimento, o patrimônio, o catálogo avulso e o desafio extra.
+inventário. Seguem para as próximas fatias a necessidade publicada e a cobertura parcial da
+aula pendente de lastro, o Poder Sustentador, a prestação de contas pública, o ressarcimento, o
+patrimônio, o catálogo avulso e o desafio extra.
 
 O PRD-08 volta a **implementado**: a change `lista-publica-de-comunidades` entregou o
 `GET /comunidades` com os quatro indicadores do documento 02 §1 (`RF-08-30`, `RF-08-31`),

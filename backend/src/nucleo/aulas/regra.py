@@ -1,4 +1,6 @@
+from dataclasses import dataclass
 from datetime import datetime
+from decimal import Decimal
 
 from sqlalchemy.orm import Session
 
@@ -6,8 +8,22 @@ from ..comunidades.modelo import ComunidadeVirtual, VinculoJogador
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
+from ..recursos.modelo import TipoDeRecurso
+from ..reservas.regra import liberar_reservas_da_aula, tentar_reservar_recursos
 from ..tempo import agora
-from .modelo import Aula, ModoDeComprovacao, Presenca
+from .modelo import Aula, ModoDeComprovacao, Presenca, RecursoDeclaradoDaAula, SituacaoDaAula
+
+_SITUACOES_COM_DESFECHO = (SituacaoDaAula.realizada, SituacaoDaAula.cancelada)
+
+
+@dataclass
+class RecursoDeclaradoEntrada:
+    """O par tipo de recurso e quantidade que a rota resolve antes de
+    chamar `agendar_aula` — `tipo` já vem carregado (ou `None`, para o 422
+    de tipo inexistente) pela mesma convenção de `aportes.regra`."""
+
+    tipo: TipoDeRecurso | None
+    quantidade: Decimal | None
 
 
 def agendar_aula(
@@ -18,11 +34,19 @@ def agendar_aula(
     ponto_de_apoio: PontoDeApoio | None,
     inicio_em: datetime | None,
     fim_em: datetime | None,
+    recursos_declarados: list[RecursoDeclaradoEntrada] | None = None,
 ) -> Aula:
     """Restrita ao Admin — o Mestre lê o painel do dia, mas não escreve em
     gestão (`RF-01-20`, `RF-01-16`, `RF-01-03`, PRD-01 §4). O ponto de apoio
     declarado precisa ser da mesma comunidade da aula (`RF-01-71`,
     `RN-07-33`, invariante 4 do documento 99 §6).
+
+    Os recursos declarados disparam a reserva na mesma operação: havendo
+    disponível para todos, a aula nasce **confirmada**; faltando qualquer
+    parcela, nasce **pendente de lastro** sem reserva alguma — nem a dos
+    tipos que tinham saldo (`RF-07-08`, `RN-07-01`, design — Decisions 1,
+    4). Sem recurso declarado, a aula nasce confirmada, pelo padrão do
+    próprio modelo.
     """
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin agenda aula.")
@@ -45,6 +69,19 @@ def agendar_aula(
             campo="fim_em",
         )
 
+    recursos_declarados = recursos_declarados or []
+    for entrada in recursos_declarados:
+        if entrada.tipo is None:
+            raise ErroDeValidacao(
+                mensagem="Recurso declarado exige um tipo de recurso existente.",
+                campo="recursos_declarados",
+            )
+        if entrada.quantidade is None or entrada.quantidade <= 0:
+            raise ErroDeValidacao(
+                mensagem="Recurso declarado exige quantidade maior que zero.",
+                campo="recursos_declarados",
+            )
+
     aula = Aula(
         comunidade_virtual_id=comunidade.id,
         ponto_de_apoio_id=ponto_de_apoio.id,
@@ -55,6 +92,77 @@ def agendar_aula(
     )
     sessao.add(aula)
     sessao.flush()
+
+    for entrada in recursos_declarados:
+        sessao.add(
+            RecursoDeclaradoDaAula(
+                aula_id=aula.id, tipo_de_recurso_id=entrada.tipo.id, quantidade=entrada.quantidade
+            )
+        )
+    sessao.flush()
+
+    if recursos_declarados:
+        reservou = tentar_reservar_recursos(sessao, aula=aula, operador=operador)
+        aula.situacao = SituacaoDaAula.confirmada if reservou else SituacaoDaAula.pendente_de_lastro
+        sessao.flush()
+
+    return aula
+
+
+def tentar_reservar_aula_pendente(sessao: Session, *, operador: Persona, aula: Aula | None) -> Aula:
+    """Caminho explícito e idempotente da PRD-07 §9: tenta a reserva de uma
+    aula pendente de lastro; aula já confirmada devolve o estado corrente
+    sem duplicar reserva (design — Decisions 6). Restrita ao Admin, pela
+    mesma leitura de `RF-01-17` que reserva a gestão a ele fora das três
+    exceções do Mestre.
+    """
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin tenta a reserva pelo caminho explícito.")
+    if aula is None:
+        raise ErroDeValidacao(mensagem="Reserva exige uma aula.", campo="aula_id")
+    if aula.situacao != SituacaoDaAula.pendente_de_lastro:
+        return aula
+
+    if tentar_reservar_recursos(sessao, aula=aula, operador=operador):
+        aula.situacao = SituacaoDaAula.confirmada
+        sessao.flush()
+    return aula
+
+
+def cancelar_aula(
+    sessao: Session, *, operador: Persona, aula: Aula | None, motivo: str | None
+) -> Aula:
+    """Admin ou Mestre vinculado à comunidade da aula cancelam, sempre com
+    motivo; qualquer outro papel recebe 403 (`RF-01-72`, `RF-01-17`,
+    `RF-02-95`, design — Decisions 10). O cancelamento libera as reservas,
+    devolvendo as quantidades à disponível, e é a única escrita de gestão
+    do Mestre (`RF-01-17`).
+    """
+    if aula is None:
+        raise ErroDeValidacao(mensagem="Cancelamento exige uma aula.", campo="aula_id")
+
+    if operador.papel == Papel.admin:
+        pass
+    elif operador.papel == Papel.mestre:
+        vinculo: VinculoJogador | None = operador.vinculo_vigente
+        if vinculo is None or vinculo.comunidade_virtual_id != aula.comunidade_virtual_id:
+            raise PermissaoNegada(mensagem="Só o Mestre vinculado à comunidade da aula a cancela.")
+    else:
+        raise PermissaoNegada(mensagem="Só Admin ou Mestre da comunidade cancelam aula.")
+
+    if not motivo or not motivo.strip():
+        raise ErroDeValidacao(mensagem="Cancelamento exige motivo.", campo="motivo")
+    if aula.situacao in _SITUACOES_COM_DESFECHO:
+        raise ErroDeValidacao(
+            mensagem="Esta aula já teve desfecho; o cancelamento não se repete.",
+            campo="situacao",
+        )
+
+    aula.situacao = SituacaoDaAula.cancelada
+    aula.cancelamento_motivo = motivo
+    sessao.flush()
+
+    liberar_reservas_da_aula(sessao, aula=aula)
     return aula
 
 

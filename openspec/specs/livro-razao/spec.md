@@ -64,7 +64,13 @@ O núcleo SHALL manter o **saldo de cada tipo de recurso em cada ponto de apoio*
 **derivado dos lançamentos**, nunca como número editável. O saldo SHALL somar os créditos,
 subtrair os débitos e aplicar os ajustes daquele par tipo/ponto de apoio, e recontar os
 lançamentos SHALL devolver o mesmo número. Lançamento creditado a um ponto de apoio NÃO SHALL
-compor o saldo de outro ponto de apoio. (`RF-07-07`, `RN-07-36`, PRD-07 §§8, 10, 12)
+compor o saldo de outro ponto de apoio.
+
+O núcleo SHALL distinguir, sobre esse saldo, a **quantidade reservada** — comprometida por
+reservas ainda no estado reservada — e a **quantidade disponível**, que é o saldo menos a
+reservada. A reserva NÃO SHALL alterar o saldo derivado: só o lançamento o move, e o débito da
+baixa é o que faz o saldo cair quando o recurso é de fato consumido. (`RF-07-07`, `RN-07-36`,
+`RF-07-08`, `RF-07-09`, PRD-07 §§8, 10, 12)
 
 #### Scenario: Saldo soma os lançamentos do par tipo e ponto de apoio
 
@@ -86,3 +92,13 @@ compor o saldo de outro ponto de apoio. (`RF-07-07`, `RN-07-36`, PRD-07 §§8, 1
 
 - **WHEN** um ajuste é lançado sobre um crédito de quantidade 3, corrigindo-o em -1
 - **THEN** o saldo daquele tipo naquele ponto de apoio passa a 2
+
+#### Scenario: Reserva reduz a disponível e não o saldo
+
+- **WHEN** uma aula reserva 4 de um tipo cujo saldo no ponto de apoio é 10
+- **THEN** o saldo segue 10 e a quantidade disponível é 6
+
+#### Scenario: A baixa é o que faz o saldo cair
+
+- **WHEN** a atividade realizada é lançada e a reserva de 4 vira débito
+- **THEN** o saldo passa a 6 e a quantidade reservada volta a zero

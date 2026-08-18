@@ -12,6 +12,7 @@ from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
 from ..recursos.regra import consultar_valor_de_referencia
+from ..reservas.regra import confirmar_aulas_pendentes
 from .modelo import Aporte, FormaDeAporte, OrigemDoRegistro, SituacaoDeRessarcimento
 
 _FORMATOS_DE_COMPROVANTE_ACEITOS = frozenset({"application/pdf", "image/jpeg", "image/png"})
@@ -121,6 +122,13 @@ def _registrar_aporte_base(
         valor_em_moedas=valor_em_moedas,
         operador=operador,
     )
+
+    # O aporte que fecha a diferença confirma, no mesmo ato, toda aula
+    # pendente de lastro que passe a ter disponível bastante — sem ato
+    # humano de confirmação à parte, nas três formas que creditam: registro
+    # da gestão, absorção e homologação do pré-cadastro (`RN-07-37`, design
+    # — Decisions 5).
+    confirmar_aulas_pendentes(sessao, tipo=tipo, ponto_de_apoio=ponto_de_apoio, operador=operador)
 
     aporte = Aporte(
         provedor_id=provedor.id,

@@ -15,7 +15,7 @@ from sqlalchemy.orm import sessionmaker
 from nucleo.aportes.modelo import Aporte, FormaDeAporte, SituacaoDeRessarcimento
 from nucleo.aportes.modelo import OrigemDoRegistro as OrigemDoRegistroDoAporte
 from nucleo.auditoria.modelo import Auditoria
-from nucleo.aulas.modelo import Aula
+from nucleo.aulas.modelo import Aula, RecursoDeclaradoDaAula
 from nucleo.autenticacao import exigir_persona
 from nucleo.banco import Base, obter_sessao
 from nucleo.biometria.cifra import cifrar_descritor
@@ -62,6 +62,7 @@ from nucleo.pontuacao.modelo import Badge, Nivel, PontoRegular, TipoDeBadge
 from nucleo.principal import criar_app, incluir_roteador_de_dados
 from nucleo.protecao.freio import exigir_freio_por_origem
 from nucleo.recursos.modelo import NaturezaDoRecurso, TipoDeRecurso, ValorDeReferencia
+from nucleo.reservas.modelo import EstadoDaReserva, Reserva
 from nucleo.responsaveis.modelo import VinculoResponsavel
 from nucleo.sessoes.modelo import ComoAutenticou, Sessao
 from nucleo.sessoes.token import calcular_resumo as calcular_resumo_do_token
@@ -191,6 +192,7 @@ def _montar_roteador_de_teste() -> APIRouter:
 def app(sessao, configuracao):
     from nucleo.aportes.rotas import roteador as roteador_de_aportes
     from nucleo.auditoria.rotas import roteador as roteador_de_auditoria
+    from nucleo.aulas.rotas import roteador as roteador_de_aulas
     from nucleo.biometria.rotas import roteador as roteador_de_biometria
     from nucleo.chaves.rotas import roteador as roteador_de_chaves
     from nucleo.coletas.rotas import roteador as roteador_de_coletas
@@ -226,6 +228,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_recursos)
     incluir_roteador_de_dados(aplicacao, roteador_de_livro_razao)
     incluir_roteador_de_dados(aplicacao, roteador_de_aportes)
+    incluir_roteador_de_dados(aplicacao, roteador_de_aulas)
     return aplicacao
 
 
@@ -959,6 +962,41 @@ def criar_aporte(sessao):
     return _criar
 
 
+def criar_aula_para_resultado(sessao, autor: Persona) -> Aula:
+    """Aula mínima e independente, para o teste que só precisa satisfazer
+    `Resultado.aula_id` e não exercita o agendamento em si — comunidade e
+    ponto de apoio próprios, sem interferir no resto do cenário do teste.
+    Função simples, não _fixture_: é chamada de dentro de helpers locais
+    dos testes de pontuação, ponto extra e ODS, que não recebem as
+    _fixtures_ do `conftest` diretamente (`RF-07-09`, `RF-02-35`).
+    """
+    comunidade = ComunidadeVirtual(
+        nome="Comunidade de Resultado", localizacao="Bairro de teste", granularidade_maxima="bairro"
+    )
+    sessao.add(comunidade)
+    sessao.flush()
+    ponto_de_apoio = PontoDeApoio(
+        nome="Ponto de Resultado",
+        comunidade_virtual_id=comunidade.id,
+        autor_id=autor.id,
+        papel_do_autor=autor.papel.value,
+    )
+    sessao.add(ponto_de_apoio)
+    sessao.flush()
+    momento = datetime.now(UTC)
+    aula = Aula(
+        comunidade_virtual_id=comunidade.id,
+        ponto_de_apoio_id=ponto_de_apoio.id,
+        inicio_em=momento - timedelta(hours=1),
+        fim_em=momento + timedelta(hours=1),
+        autor_id=autor.id,
+        papel_do_autor=autor.papel.value,
+    )
+    sessao.add(aula)
+    sessao.flush()
+    return aula
+
+
 @pytest.fixture
 def criar_aula(sessao, criar_persona, criar_ponto_de_apoio):
     def _criar(
@@ -984,6 +1022,49 @@ def criar_aula(sessao, criar_persona, criar_ponto_de_apoio):
         sessao.commit()
         sessao.refresh(aula)
         return aula
+
+    return _criar
+
+
+@pytest.fixture
+def criar_recurso_declarado_da_aula(sessao):
+    def _criar(
+        aula: Aula, tipo: TipoDeRecurso, quantidade: Decimal = Decimal("1.00")
+    ) -> RecursoDeclaradoDaAula:
+        declarado = RecursoDeclaradoDaAula(
+            aula_id=aula.id, tipo_de_recurso_id=tipo.id, quantidade=quantidade
+        )
+        sessao.add(declarado)
+        sessao.commit()
+        sessao.refresh(declarado)
+        return declarado
+
+    return _criar
+
+
+@pytest.fixture
+def criar_reserva(sessao):
+    def _criar(
+        autor: Persona,
+        aula: Aula,
+        tipo: TipoDeRecurso,
+        ponto_de_apoio: PontoDeApoio,
+        quantidade: Decimal = Decimal("1.00"),
+        estado: EstadoDaReserva = EstadoDaReserva.reservada,
+    ) -> Reserva:
+        reserva = Reserva(
+            aula_id=aula.id,
+            tipo_de_recurso_id=tipo.id,
+            ponto_de_apoio_id=ponto_de_apoio.id,
+            quantidade=quantidade,
+            estado=estado,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(reserva)
+        sessao.commit()
+        sessao.refresh(reserva)
+        return reserva
 
     return _criar
 

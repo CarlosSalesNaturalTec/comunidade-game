@@ -7,6 +7,7 @@ from nucleo.personas.modelo import Papel
 from nucleo.pontuacao.modelo import PontoRegular
 from nucleo.resultados.modelo import DesfechoDoResultado, Resultado
 from nucleo.resultados.regra import registrar_resultado
+from tests.conftest import criar_aula_para_resultado
 
 MOMENTO_DO_FATO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
 
@@ -19,10 +20,12 @@ def test_resultado_registrado_com_producao_declarada(
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre)
+    aula = criar_aula_para_resultado(sessao, mestre)
 
     resultado = registrar_resultado(
         sessao,
         operador=mestre,
+        aula=aula,
         guerreiro_id=guerreiro.id,
         atividade=atividade,
         momento_do_fato=MOMENTO_DO_FATO,
@@ -33,6 +36,7 @@ def test_resultado_registrado_com_producao_declarada(
 
     assert resultado.guerreiro_id == guerreiro.id
     assert resultado.atividade_id == atividade.id
+    assert resultado.aula_id == aula.id
     assert resultado.momento_do_fato == MOMENTO_DO_FATO
     assert resultado.desfecho == DesfechoDoResultado.realizada
 
@@ -40,11 +44,13 @@ def test_resultado_registrado_com_producao_declarada(
 def test_resultado_sem_atividade_e_recusado(sessao, criar_persona):
     mestre = criar_persona(Papel.mestre)
     guerreiro = criar_persona(Papel.guerreiro)
+    aula = criar_aula_para_resultado(sessao, mestre)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         registrar_resultado(
             sessao,
             operador=mestre,
+            aula=aula,
             guerreiro_id=guerreiro.id,
             atividade=None,
             momento_do_fato=MOMENTO_DO_FATO,
@@ -62,11 +68,13 @@ def test_resultado_sem_guerreiro_e_recusado(
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre)
+    aula = criar_aula_para_resultado(sessao, mestre)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         registrar_resultado(
             sessao,
             operador=mestre,
+            aula=aula,
             guerreiro_id=None,
             atividade=atividade,
             momento_do_fato=MOMENTO_DO_FATO,
@@ -77,7 +85,7 @@ def test_resultado_sem_guerreiro_e_recusado(
     assert sessao.query(Resultado).count() == 0
 
 
-def test_resultado_sem_producao_e_recusado(
+def test_resultado_sem_aula_e_recusado(
     sessao, criar_persona, criar_trilha, criar_missao, criar_atividade
 ):
     mestre = criar_persona(Papel.mestre)
@@ -90,6 +98,32 @@ def test_resultado_sem_producao_e_recusado(
         registrar_resultado(
             sessao,
             operador=mestre,
+            aula=None,
+            guerreiro_id=guerreiro.id,
+            atividade=atividade,
+            momento_do_fato=MOMENTO_DO_FATO,
+            producao="Construiu algo.",
+            desfecho=DesfechoDoResultado.realizada,
+        )
+    assert excinfo.value.campo == "aula_id"
+    assert sessao.query(Resultado).count() == 0
+
+
+def test_resultado_sem_producao_e_recusado(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_atividade
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre)
+    aula = criar_aula_para_resultado(sessao, mestre)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_resultado(
+            sessao,
+            operador=mestre,
+            aula=aula,
             guerreiro_id=guerreiro.id,
             atividade=atividade,
             momento_do_fato=MOMENTO_DO_FATO,
@@ -108,11 +142,13 @@ def test_resultado_sem_data_do_fato_e_recusado(
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre)
+    aula = criar_aula_para_resultado(sessao, mestre)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         registrar_resultado(
             sessao,
             operador=mestre,
+            aula=aula,
             guerreiro_id=guerreiro.id,
             atividade=atividade,
             momento_do_fato=None,
@@ -131,11 +167,13 @@ def test_resultado_sem_desfecho_e_recusado(
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre)
+    aula = criar_aula_para_resultado(sessao, mestre)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         registrar_resultado(
             sessao,
             operador=mestre,
+            aula=aula,
             guerreiro_id=guerreiro.id,
             atividade=atividade,
             momento_do_fato=MOMENTO_DO_FATO,
@@ -154,11 +192,13 @@ def test_desfecho_fora_dos_valores_previstos_e_recusado(
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre)
+    aula = criar_aula_para_resultado(sessao, mestre)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         registrar_resultado(
             sessao,
             operador=mestre,
+            aula=aula,
             guerreiro_id=guerreiro.id,
             atividade=atividade,
             momento_do_fato=MOMENTO_DO_FATO,
@@ -178,11 +218,13 @@ def test_mestre_que_nao_e_autor_e_recusado(
     trilha = criar_trilha(mestre_autor)
     missao = criar_missao(trilha, mestre_autor)
     atividade = criar_atividade(missao, mestre_autor)
+    aula = criar_aula_para_resultado(sessao, mestre_autor)
 
     with pytest.raises(PermissaoNegada):
         registrar_resultado(
             sessao,
             operador=outro_mestre,
+            aula=aula,
             guerreiro_id=guerreiro.id,
             atividade=atividade,
             momento_do_fato=MOMENTO_DO_FATO,
@@ -201,10 +243,12 @@ def test_admin_lanca_desfecho_mesmo_sem_ser_o_autor(
     trilha = criar_trilha(mestre_autor)
     missao = criar_missao(trilha, mestre_autor)
     atividade = criar_atividade(missao, mestre_autor)
+    aula = criar_aula_para_resultado(sessao, admin)
 
     resultado = registrar_resultado(
         sessao,
         operador=admin,
+        aula=aula,
         guerreiro_id=guerreiro.id,
         atividade=atividade,
         momento_do_fato=MOMENTO_DO_FATO,
@@ -224,10 +268,12 @@ def test_autoria_de_quem_lancou_fica_gravada(
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre)
+    aula = criar_aula_para_resultado(sessao, mestre)
 
     resultado = registrar_resultado(
         sessao,
         operador=mestre,
+        aula=aula,
         guerreiro_id=guerreiro.id,
         atividade=atividade,
         momento_do_fato=MOMENTO_DO_FATO,
@@ -252,10 +298,12 @@ def test_registrar_resultado_credita_a_pontuacao_na_mesma_operacao(
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre)
+    aula = criar_aula_para_resultado(sessao, mestre)
 
     registrar_resultado(
         sessao,
         operador=mestre,
+        aula=aula,
         guerreiro_id=guerreiro.id,
         atividade=atividade,
         momento_do_fato=MOMENTO_DO_FATO,

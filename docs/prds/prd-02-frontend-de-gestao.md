@@ -8,7 +8,7 @@
 | Aplicação        | App 03 — Gestão administrativa                   |
 | Onda             | 2                                                |
 | Situação         | aprovado                                         |
-| Versão e data    | v10 — 2026-08-18                                 |
+| Versão e data    | v11 — 2026-08-18                                 |
 | Depende de       | PRD-01                                           |
 | Documentos-fonte | 03 §§5, 8, 11, 12, 04 §§1–3, 05 §§2–5, 02 §4, 15 |
 
@@ -134,7 +134,8 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
    (App 08) e área dos Mestres da trilha (App 09).
 4. O Apoiador aporta o que falta; o **Mestre**, vendo a pendência na App 09, pode assumi-la
    como **aporte por absorção**, em um ato de confirmação.
-5. Suprida a necessidade, a atividade é confirmada e a reserva acontece.
+5. Suprida a necessidade, o núcleo confirma a atividade e efetiva a reserva; a aplicação
+   apenas mostra a mudança.
 
 ### 5.5 Conduzir o encontro pelo painel do dia
 
@@ -251,7 +252,7 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
 | `RF-02-31` | Agendamento reserva os recursos necessários no livro-razão                                         | essencial  |
 | `RF-02-95` | Admin, ou Mestre da comunidade da aula, cancela aula agendada com motivo, liberando a reserva      | essencial  |
 | `RF-02-32` | Atividade sem lastro fica pendente de lastro e publica a necessidade na vitrine e nas Apps 08 e 09 | essencial  |
-| `RF-02-67` | Suprida a necessidade, a aplicação confirma a atividade e efetiva a reserva de recursos            | essencial  |
+| `RF-02-67` | Aplicação mostra a atividade confirmada e a reserva efetivada pelo aporte que supre a falta        | essencial  |
 | `RF-02-33` | Admin lança atividade realizada com data, mentores, Guerreiros, Guerreiras e equipes               | essencial  |
 | `RF-02-34` | Lançamento atribui a cada participante realizada, com mérito ou mérito extra por auxílio           | essencial  |
 | `RF-02-35` | Lançamento da atividade realizada converte a reserva em baixa de recursos                          | essencial  |
