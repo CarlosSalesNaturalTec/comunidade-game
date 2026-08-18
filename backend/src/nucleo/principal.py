@@ -5,6 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as ExcecaoHTTP
 
+from .aportes.rotas import roteador as roteador_de_aportes
 from .auditoria.middleware import MiddlewareDeAuditoria
 from .auditoria.rotas import roteador as roteador_de_auditoria
 from .biometria.rotas import roteador as roteador_de_biometria
@@ -15,6 +16,7 @@ from .comunidades.rotas import roteador as roteador_de_comunidades
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
 from .fila.rotas import roteador as roteador_de_fila
 from .jogos.rotas import roteador as roteador_de_jogos
+from .livro_razao.rotas import roteador as roteador_de_livro_razao
 from .locais.rotas import roteador as roteador_de_locais
 from .personas.rotas import roteador as roteador_de_personas
 from .pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
@@ -120,3 +122,5 @@ incluir_roteador_de_dados(app, roteador_de_locais)
 incluir_roteador_de_dados(app, roteador_de_coletas)
 incluir_roteador_de_dados(app, roteador_de_pontos_de_apoio)
 incluir_roteador_de_dados(app, roteador_de_recursos)
+incluir_roteador_de_dados(app, roteador_de_livro_razao)
+incluir_roteador_de_dados(app, roteador_de_aportes)

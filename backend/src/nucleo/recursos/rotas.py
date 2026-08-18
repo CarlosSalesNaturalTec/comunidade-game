@@ -21,6 +21,7 @@ class TipoDeRecursoSaida(BaseModel):
     nome: str
     natureza: str
     unidade: str
+    exige_comprovante: bool
     valor_em_moedas: Decimal
     vigencia_inicio: date
 
@@ -31,6 +32,7 @@ def _saida(tipo: TipoDeRecurso, valor: ValorDeReferencia) -> TipoDeRecursoSaida:
         nome=tipo.nome,
         natureza=tipo.natureza.value,
         unidade=tipo.unidade,
+        exige_comprovante=tipo.exige_comprovante,
         valor_em_moedas=valor.valor_em_moedas,
         vigencia_inicio=valor.vigencia_inicio,
     )
@@ -44,6 +46,7 @@ class CadastrarTipoDeRecursoEntrada(BaseModel):
     unidade: str = Field(min_length=1)
     valor_em_moedas: Decimal
     vigencia_inicio: date
+    exige_comprovante: bool = False
 
 
 @roteador.post("/tipos-de-recurso", status_code=201)
@@ -61,6 +64,7 @@ def cadastrar_tipo_de_recurso_rota(
         nome=entrada.nome,
         natureza=entrada.natureza,
         unidade=entrada.unidade,
+        exige_comprovante=entrada.exige_comprovante,
     )
     valor = registrar_valor_de_referencia(
         sessao_bd,

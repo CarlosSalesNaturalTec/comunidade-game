@@ -15,9 +15,11 @@ def cadastrar_tipo_de_recurso(
     nome: str | None,
     natureza: str | None,
     unidade: str | None,
+    exige_comprovante: bool = False,
 ) -> TipoDeRecurso:
     """Só Admin cadastra tipo de recurso, operação avulsa que não depende de
-    nenhum outro fluxo (`RF-07-01`, `RF-07-03`)."""
+    nenhum outro fluxo (`RF-07-01`, `RF-07-03`). `exige_comprovante` é
+    opcional e nasce falsa quando não declarada (`RN-07-22`)."""
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin cadastra tipo de recurso.")
     if not nome or not nome.strip():
@@ -35,6 +37,7 @@ def cadastrar_tipo_de_recurso(
         nome=nome,
         natureza=natureza_valida,
         unidade=unidade,
+        exige_comprovante=exige_comprovante,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
     )

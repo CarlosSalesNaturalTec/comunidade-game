@@ -3,7 +3,7 @@ import uuid
 from datetime import date
 from decimal import Decimal
 
-from sqlalchemy import CheckConstraint, Date, Enum, ForeignKey, Numeric, String, Uuid
+from sqlalchemy import Boolean, CheckConstraint, Date, Enum, ForeignKey, Numeric, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
@@ -25,6 +25,9 @@ class TipoDeRecurso(Base, ComAutoria):
     kit, cloud e afins —, cadastrado por Admin (`RF-07-01`). O valor de
     referência em moedas não é coluna daqui: vive em `ValorDeReferencia`,
     versionado por vigência (`RF-07-02`).
+
+    `exige_comprovante` nasce falsa e entra em tipo já cadastrado sem mudar
+    o comportamento existente (`RN-07-22`, design — Migration Plan).
     """
 
     __tablename__ = "tipo_de_recurso"
@@ -35,6 +38,9 @@ class TipoDeRecurso(Base, ComAutoria):
         Enum(NaturezaDoRecurso, native_enum=False, length=16), nullable=False
     )
     unidade: Mapped[str] = mapped_column(String(32), nullable=False)
+    exige_comprovante: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
 
 
 class ValorDeReferencia(Base, ComAutoria):
