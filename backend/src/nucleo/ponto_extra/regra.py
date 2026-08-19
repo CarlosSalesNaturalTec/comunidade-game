@@ -32,6 +32,26 @@ def creditar_ponto_extra(sessao: Session, *, guerreiro_id: uuid.UUID, valor: int
     return conta
 
 
+def debitar_ponto_extra(sessao: Session, *, guerreiro_id: uuid.UUID, valor: int) -> PontoExtra:
+    """Debita `valor` do saldo disponível, sem tocar o acumulado — o único
+    débito previsto no Ciclo 01, pela troca por recompensa avulsa
+    (`RF-01-56`, `RN-01-39`, `RN-01-40`). Recusado, com o motivo nomeado,
+    quando deixaria o saldo negativo — antes de a `CheckConstraint` do
+    modelo recusar sem dizer por quê."""
+    if valor <= 0:
+        raise ErroDeValidacao(mensagem="Débito de ponto extra exige valor positivo.", campo="valor")
+
+    conta = sessao.query(PontoExtra).filter_by(guerreiro_id=guerreiro_id).first()
+    if conta is None or conta.saldo_disponivel < valor:
+        raise ErroDeValidacao(
+            mensagem="Saldo disponível de pontos extras insuficiente.", campo="valor"
+        )
+
+    conta.saldo_disponivel -= valor
+    sessao.flush()
+    return conta
+
+
 def creditar_ponto_extra_do_resultado(sessao: Session, *, resultado: Resultado) -> None:
     """Fonte dupla do documento 11 §5: só `realizada_com_merito` e
     `merito_extra_por_auxilio` creditam ponto extra, junto do regular

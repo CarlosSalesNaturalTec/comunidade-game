@@ -8,6 +8,7 @@ from nucleo.erros import ErroDeValidacao, LancamentoImutavel, PermissaoNegada
 from nucleo.livro_razao.modelo import Lancamento, NaturezaDoLancamento
 from nucleo.livro_razao.regra import lancar_ajuste, lancar_credito, lancar_debito, saldo_de
 from nucleo.personas.modelo import Papel
+from nucleo.trocas.regra import registrar_troca
 
 
 def test_lancamento_de_credito_nasce_com_autoria_e_momento(
@@ -456,3 +457,133 @@ def test_o_consumo_da_aula_e_derivavel_do_ledger(
     )
 
     assert Decimal(consumo) == Decimal("1.50")
+
+
+def _preparar_troca(
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_preco_de_referencia,
+    criar_valor_de_referencia,
+    criar_lancamento,
+    criar_vinculo_jogador,
+    criar_item_de_catalogo_avulso,
+    criar_ponto_extra,
+    criar_aula,
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    tipo = criar_tipo_de_recurso(admin)
+    criar_preco_de_referencia(admin, tipo, preco_em_pontos_extras=20)
+    criar_valor_de_referencia(admin, tipo, valor_em_moedas=Decimal("1.00"))
+    criar_lancamento(
+        admin,
+        tipo,
+        ponto_de_apoio,
+        natureza=NaturezaDoLancamento.credito,
+        quantidade=Decimal("10.00"),
+    )
+    mestre = criar_persona(Papel.mestre)
+    criar_vinculo_jogador(mestre, comunidade)
+    item = criar_item_de_catalogo_avulso(
+        admin, tipo, comunidade, ponto_de_apoio, estoque=Decimal("5"), ativo=True
+    )
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_ponto_extra(guerreiro, acumulado=100, saldo_disponivel=100)
+    aula = criar_aula(admin, comunidade, ponto_de_apoio=ponto_de_apoio)
+    return admin, mestre, guerreiro, item, ponto_de_apoio, tipo, aula
+
+
+def test_o_debito_da_troca_nao_declara_aula(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_preco_de_referencia,
+    criar_valor_de_referencia,
+    criar_lancamento,
+    criar_vinculo_jogador,
+    criar_item_de_catalogo_avulso,
+    criar_ponto_extra,
+    criar_aula,
+):
+    _, mestre, guerreiro, item, ponto_de_apoio, tipo, aula = _preparar_troca(
+        criar_persona,
+        criar_comunidade,
+        criar_ponto_de_apoio,
+        criar_tipo_de_recurso,
+        criar_preco_de_referencia,
+        criar_valor_de_referencia,
+        criar_lancamento,
+        criar_vinculo_jogador,
+        criar_item_de_catalogo_avulso,
+        criar_ponto_extra,
+        criar_aula,
+    )
+
+    registrar_troca(sessao, operador=mestre, aula=aula, item=item, guerreiro=guerreiro)
+    sessao.commit()
+
+    debito = (
+        sessao.query(Lancamento)
+        .filter_by(natureza=NaturezaDoLancamento.debito, tipo_de_recurso_id=tipo.id)
+        .order_by(Lancamento.registrado_em.desc())
+        .first()
+    )
+
+    assert debito is not None
+    assert debito.aula_id is None
+    assert debito.ponto_de_apoio_id == ponto_de_apoio.id
+    assert debito.quantidade == Decimal("1.00")
+
+
+def test_a_troca_nao_entra_no_consumo_por_aula(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_preco_de_referencia,
+    criar_valor_de_referencia,
+    criar_lancamento,
+    criar_vinculo_jogador,
+    criar_item_de_catalogo_avulso,
+    criar_ponto_extra,
+    criar_aula,
+):
+    admin, mestre, guerreiro, item, ponto_de_apoio, tipo, aula = _preparar_troca(
+        criar_persona,
+        criar_comunidade,
+        criar_ponto_de_apoio,
+        criar_tipo_de_recurso,
+        criar_preco_de_referencia,
+        criar_valor_de_referencia,
+        criar_lancamento,
+        criar_vinculo_jogador,
+        criar_item_de_catalogo_avulso,
+        criar_ponto_extra,
+        criar_aula,
+    )
+
+    lancar_debito(
+        sessao,
+        tipo_de_recurso_id=tipo.id,
+        ponto_de_apoio_id=ponto_de_apoio.id,
+        quantidade=Decimal("2.00"),
+        valor_em_moedas=Decimal("2.00"),
+        operador=admin,
+        aula_id=aula.id,
+    )
+    registrar_troca(sessao, operador=mestre, aula=aula, item=item, guerreiro=guerreiro)
+    sessao.commit()
+
+    consumo = (
+        sessao.query(func.coalesce(func.sum(Lancamento.valor_em_moedas), 0))
+        .filter(Lancamento.aula_id == aula.id, Lancamento.natureza == NaturezaDoLancamento.debito)
+        .scalar()
+    )
+
+    assert Decimal(consumo) == Decimal("2.00")

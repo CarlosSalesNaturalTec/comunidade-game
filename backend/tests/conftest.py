@@ -87,6 +87,7 @@ from nucleo.trilhas.modelo import (
     SituacaoDaTrilha,
     Trilha,
 )
+from nucleo.trocas.modelo import Troca
 
 DSN_DE_TESTE = os.environ.get(
     "CG_DSN_BANCO_TESTE",
@@ -274,6 +275,7 @@ def app(sessao, configuracao):
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
     from nucleo.ressarcimentos.rotas import roteador as roteador_de_ressarcimentos
     from nucleo.sessoes.rotas import roteador as roteador_de_sessoes
+    from nucleo.trocas.rotas import roteador as roteador_de_trocas
     from nucleo.vitrine.rotas import roteador as roteador_de_vitrine
 
     aplicacao = criar_app()
@@ -302,6 +304,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_prestacao_de_contas)
     incluir_roteador_de_dados(aplicacao, roteador_de_ressarcimentos)
     incluir_roteador_de_dados(aplicacao, roteador_de_catalogo_avulso)
+    incluir_roteador_de_dados(aplicacao, roteador_de_trocas)
     return aplicacao
 
 
@@ -1419,6 +1422,31 @@ def criar_ponto_extra(sessao):
         sessao.commit()
         sessao.refresh(registro)
         return registro
+
+    return _criar
+
+
+@pytest.fixture
+def criar_troca(sessao):
+    def _criar(
+        autor: Persona,
+        item: ItemDeCatalogoAvulso,
+        guerreiro: Persona,
+        aula: Aula,
+        preco_cobrado: int = 20,
+    ) -> Troca:
+        troca = Troca(
+            item_de_catalogo_avulso_id=item.id,
+            guerreiro_id=guerreiro.id,
+            preco_cobrado=preco_cobrado,
+            aula_id=aula.id,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(troca)
+        sessao.commit()
+        sessao.refresh(troca)
+        return troca
 
     return _criar
 

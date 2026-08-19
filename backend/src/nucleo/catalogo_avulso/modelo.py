@@ -72,5 +72,8 @@ class ItemDeCatalogoAvulso(Base, ComAutoria):
     ativo: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     __table_args__ = (
-        CheckConstraint("estoque >= 1", name="ck_item_de_catalogo_avulso_estoque_minimo"),
+        # O piso de gestão continua sendo 1 (`catalogo_avulso.regra.ESTOQUE_MINIMO`), aplicado
+        # no cadastro e na alteração de estoque; a trava de banco só impede negativo, porque a
+        # troca (PRD-07) decrementa até zero sem passar por esse caminho (`RF-07-36`, `RN-07-27`).
+        CheckConstraint("estoque >= 0", name="ck_item_de_catalogo_avulso_estoque_nao_negativo"),
     )

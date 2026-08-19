@@ -31,6 +31,7 @@ from .recursos.rotas import roteador as roteador_de_recursos
 from .responsaveis.rotas import roteador as roteador_de_responsaveis
 from .ressarcimentos.rotas import roteador as roteador_de_ressarcimentos
 from .sessoes.rotas import roteador as roteador_de_sessoes
+from .trocas.rotas import roteador as roteador_de_trocas
 from .vitrine.rotas import roteador as roteador_de_vitrine
 
 logger = logging.getLogger("nucleo")
@@ -136,3 +137,4 @@ incluir_roteador_de_dados(app, roteador_de_poder_sustentador)
 incluir_roteador_de_dados(app, roteador_de_prestacao_de_contas)
 incluir_roteador_de_dados(app, roteador_de_ressarcimentos)
 incluir_roteador_de_dados(app, roteador_de_catalogo_avulso)
+incluir_roteador_de_dados(app, roteador_de_trocas)
