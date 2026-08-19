@@ -53,7 +53,27 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    e uma conta de serviço de deploy com papel de executor no Cloud Run, no Cloud Run Jobs e no
    Artifact Registry. Os identificadores vão para os segredos do repositório
    `GCP_WIF_PROVIDER` e `GCP_DEPLOY_SERVICE_ACCOUNT`.
-5. **Firebase Hosting**, no mesmo projeto GCP (documento 03 §1; ver design.md da change de
+
+5. **Conta de execução do núcleo** — `nucleo-runtime`, distinta da conta de deploy: é quem o
+   contêiner **é** enquanto roda, e portanto quem lê os segredos e alcança o Cloud SQL. Sem
+   declará-la, o Cloud Run usa a conta de computação padrão, que tem `roles/editor` no projeto
+   inteiro — permissão demais para o núcleo que guarda dado biométrico de criança. Recebe
+   **apenas** `roles/secretmanager.secretAccessor` e `roles/cloudsql.client`; os workflows a
+   passam em `--service-account`.
+
+   ```bash
+   gcloud iam service-accounts create nucleo-runtime \
+     --display-name="Execução do núcleo no Cloud Run"
+
+   for PAPEL in roles/secretmanager.secretAccessor roles/cloudsql.client
+   do
+     gcloud projects add-iam-policy-binding comunidade-game-506017 \
+       --member="serviceAccount:nucleo-runtime@comunidade-game-506017.iam.gserviceaccount.com" \
+       --role="$PAPEL" --condition=None
+   done
+   ```
+
+6. **Firebase Hosting**, no mesmo projeto GCP (documento 03 §1; ver design.md da change de
    implantação para o porquê). Criar os sites e mapear os alvos declarados em `firebase.json`:
 
    ```bash
@@ -68,7 +88,7 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    registros DNS que o Firebase pedir entram na Cloudflare em modo **"DNS only"** (nuvem
    cinza) enquanto o certificado é emitido — o proxy da Cloudflare atrapalha a validação.
 
-6. **Permissão de invocação do Cloud Run pelo Firebase Hosting** — o serviço sobe com
+7. **Permissão de invocação do Cloud Run pelo Firebase Hosting** — o serviço sobe com
    `--no-allow-unauthenticated` (só o _rewrite_ do Firebase o alcança). O `firebase deploy`
    concede essa permissão sozinho quando publica um _rewrite_ do tipo `run` para um serviço
    do mesmo projeto — **não é passo manual**. Confirmar depois do primeiro deploy da esteira

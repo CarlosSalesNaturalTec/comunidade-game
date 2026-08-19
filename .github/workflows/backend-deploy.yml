@@ -20,6 +20,11 @@ env:
   SERVICO: nucleo-comunidade-game
   REPOSITORIO_IMAGENS: comunidade-game
   JOB_MIGRACAO: nucleo-migracao
+  # Conta de execução dedicada: é ela quem lê os segredos e alcança o Cloud
+  # SQL enquanto o contêiner roda. Sem declarar, o Cloud Run usaria a conta de
+  # computação padrão, que tem `roles/editor` no projeto inteiro — permissão
+  # demais para o núcleo que guarda dado biométrico de criança.
+  CONTA_DE_EXECUCAO: nucleo-runtime@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com
 
 jobs:
   deploy:
@@ -58,6 +63,7 @@ jobs:
             --image "${{ env.IMAGEM }}" \
             --region "${{ env.REGIAO }}" \
             --project "${{ env.PROJETO_GCP }}" \
+            --service-account "${{ env.CONTA_DE_EXECUCAO }}" \
             --command "alembic" \
             --args "upgrade,head" \
             --set-cloudsql-instances "${{ secrets.GCP_CLOUDSQL_INSTANCIA }}" \
@@ -80,6 +86,7 @@ jobs:
             --region "${{ env.REGIAO }}" \
             --project "${{ env.PROJETO_GCP }}" \
             --platform managed \
+            --service-account "${{ env.CONTA_DE_EXECUCAO }}" \
             --max-instances 1 \
             --min-instances 0 \
             --no-allow-unauthenticated \
