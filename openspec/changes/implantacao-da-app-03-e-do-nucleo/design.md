@@ -43,17 +43,22 @@ rodaria dezenas de vezes por dia e atrasaria a primeira resposta. Alternativa de
 `alembic upgrade head` no `CMD`, mais simples e errado pelo mesmo motivo.
 
 **O endereço do núcleo passa por um _spike_, com plano B declarado.** O mapeamento de domínio
-do Cloud Run não existe em toda região, e não afirmamos que `southamerica-east1` está na
-lista. A primeira tarefa do `tasks.md` é conferir, nesta ordem:
+do Cloud Run não existe em toda região. Conferido na tarefa 1.1:
 
-| Plano | Caminho                                       | Custo             |
-| ----- | --------------------------------------------- | ----------------- |
-| A     | Mapeamento de domínio do próprio Cloud Run    | nenhum            |
-| B     | _Rewrite_ do Firebase Hosting para o serviço  | nenhum            |
-| C     | Balanceador de carga externo global           | **sai do _free tier_** |
+| Plano | Caminho                                       | Custo             | Resultado |
+| ----- | ---------------------------------------------- | ----------------- | --------- |
+| A     | Mapeamento de domínio do próprio Cloud Run    | nenhum            | **falha** — `southamerica-east1` não está na lista de regiões com mapeamento nativo |
+| B     | _Rewrite_ do Firebase Hosting para o serviço  | nenhum            | **confirmado** — o _rewrite_ referencia o serviço por nome e região, sem depender de mapeamento nativo |
+| C     | Balanceador de carga externo global           | **sai do _free tier_** | descartado, plano B resolve |
 
 O plano C **não é executado sem decisão do fundador**: o custo do ciclo é aporte por absorção
-dele. Se A e B falharem, a tarefa para e pergunta.
+dele. Como o plano B funciona, ele não entra em jogo.
+
+**Consequência para o desenho**: `api.comunidadegame.org` não é um mapeamento de domínio do
+Cloud Run — é um **segundo alvo de hospedagem do Firebase**, com `rewrites` no `firebase.json`
+apontando para o serviço do Cloud Run por nome e região. O serviço não precisa de URL pública
+própria nem de certificado dele; quem serve o certificado é o Firebase Hosting, como já faz
+para a App 03. As tarefas 2.4 e 3.1 aplicam essa forma.
 
 **Os `CG_*` vêm do Secret Manager, montados como variável de ambiente do serviço.** É onde o
 documento 09 já pôs a chave que cifra o _template_ biométrico; o resto dos segredos segue o

@@ -1,0 +1,57 @@
+name: App 03 Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/app-03-gestao/**"
+      - "comum/**"
+      - "firebase.json"
+      - ".firebaserc"
+  workflow_dispatch:
+
+concurrency:
+  group: app-03-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    name: Build e publicação no Firebase Hosting
+    runs-on: ubuntu-latest
+    environment: producao
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build de produção
+        working-directory: apps/app-03-gestao
+        env:
+          VITE_CHAVE_DE_APLICACAO: ${{ secrets.APP03_CHAVE_DE_APLICACAO }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          VITE_URL_DO_NUCLEO: https://api.comunidadegame.org
+        run: npm run build
+
+      - name: Autenticar no Google Cloud (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          channelId: live
+          target: app-03
+          projectId: ${{ secrets.GCP_PROJECT_ID }}

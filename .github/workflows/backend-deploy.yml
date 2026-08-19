@@ -1,0 +1,88 @@
+name: Backend Deploy
+
+on:
+  push:
+    branches: [main]
+    paths: [backend/**]
+  workflow_dispatch:
+
+concurrency:
+  group: backend-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  REGIAO: southamerica-east1
+  PROJETO_GCP: ${{ secrets.GCP_PROJECT_ID }}
+  SERVICO: nucleo-comunidade-game
+  REPOSITORIO_IMAGENS: comunidade-game
+  JOB_MIGRACAO: nucleo-migracao
+
+jobs:
+  deploy:
+    name: Build, migração e deploy no Cloud Run
+    runs-on: ubuntu-latest
+    environment: producao
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Autenticar no Google Cloud (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Autenticar o Docker no Artifact Registry
+        run: gcloud auth configure-docker "${{ env.REGIAO }}-docker.pkg.dev" --quiet
+
+      - name: Build e push da imagem
+        working-directory: backend
+        run: |
+          IMAGEM="${{ env.REGIAO }}-docker.pkg.dev/${{ env.PROJETO_GCP }}/${{ env.REPOSITORIO_IMAGENS }}/nucleo:${{ github.sha }}"
+          docker build -t "$IMAGEM" .
+          docker push "$IMAGEM"
+          echo "IMAGEM=$IMAGEM" >> "$GITHUB_ENV"
+
+      # Migração roda como Job próprio, nunca no entrypoint do serviço: com
+      # min-instances=0 o contêiner arranca a cada partida a fria, e migração
+      # não pode rodar a cada arranque (design — Decisions).
+      - name: Atualizar e executar o Job de migração
+        run: |
+          gcloud run jobs deploy "${{ env.JOB_MIGRACAO }}" \
+            --image "${{ env.IMAGEM }}" \
+            --region "${{ env.REGIAO }}" \
+            --project "${{ env.PROJETO_GCP }}" \
+            --command "alembic" \
+            --args "upgrade,head" \
+            --set-cloudsql-instances "${{ secrets.GCP_CLOUDSQL_INSTANCIA }}" \
+            --set-secrets "${{ secrets.GCP_SECRETOS_CG }}" \
+            --quiet
+
+          gcloud run jobs execute "${{ env.JOB_MIGRACAO }}" \
+            --region "${{ env.REGIAO }}" \
+            --project "${{ env.PROJETO_GCP }}" \
+            --wait
+
+      # max-instances=1 mantém o invariante de que a cota e o freio nunca se
+      # multiplicam (documento 03 §8); min-instances=0 é a contrapartida de
+      # custo que reinicia o freio a cada partida a fria (documento 03 §8,
+      # docs/09).
+      - name: Deploy do serviço no Cloud Run
+        run: |
+          gcloud run deploy "${{ env.SERVICO }}" \
+            --image "${{ env.IMAGEM }}" \
+            --region "${{ env.REGIAO }}" \
+            --project "${{ env.PROJETO_GCP }}" \
+            --platform managed \
+            --max-instances 1 \
+            --min-instances 0 \
+            --no-allow-unauthenticated \
+            --add-cloudsql-instances "${{ secrets.GCP_CLOUDSQL_INSTANCIA }}" \
+            --set-secrets "${{ secrets.GCP_SECRETOS_CG }}" \
+            --quiet
