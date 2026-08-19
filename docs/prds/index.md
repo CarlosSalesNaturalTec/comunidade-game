@@ -101,11 +101,23 @@ núcleo (`RN-07-17`). O pagamento reverte as moedas por **lançamento de ajuste 
 zero**, sem mexer no saldo de recurso nem na contagem de absorções (`RF-07-25`, `RN-07-18`).
 Quem absorveu acompanha a própria situação em **`GET /meus-aportes/ressarciveis`**.
 
+A sétima fatia entregou a **régua de preço em pontos extras** — `PrecoDeReferencia`, irmã do
+valor em moedas, mesma vigência semiaberta, com o **piso de 20 pontos** e sem conversão
+alguma entre as duas réguas (`RF-07-42` a `RF-07-44`, `RN-07-24`, `RN-07-25`, `RN-07-30`) — e o
+**item do catálogo avulso**: cadastrado por Mestre, sem homologação, ou por Apoiador, pendente
+até um Admin decidir (`RF-09-100`, `RN-14-42`); ativo só com **lastro igual ou maior que o
+estoque declarado** no seu ponto de apoio, decisão nova desta fatia (`RF-07-34`, `RN-07-26`); e
+sem preço próprio — lê sempre a vigência corrente do seu tipo de recurso (`RF-07-45`,
+`RN-07-29`). Três decisões novas: a **janela de troca** do `RF-04-49` é garantia da App 01, não
+regra do núcleo; o **lastro do item** é o saldo igual ou maior que o estoque; e o
+`ItemDeCatalogoAvulso` **declara o ponto de apoio**, como a `Aula` já declara.
+
 O documento 09 mantém a pendência de **quem desativa um ponto de apoio**. **Empréstimo de
 bancada e reposição solidária saíram do escopo** — o documento 05 já os adiava, e o PRD
 divergia da fonte. No Ciclo 01 ficam o tombamento, a ficha de vida e a conferência de
-inventário. Seguem para as próximas fatias o patrimônio, o catálogo avulso e o desafio extra —
-este último ainda sem a entidade `DesafioExtra`, que nasce em PRD-09 ou PRD-14.
+inventário. Seguem para as próximas fatias o patrimônio, a **troca** do catálogo avulso e o
+desafio extra — este último ainda sem a entidade `DesafioExtra`, que nasce em PRD-09 ou
+PRD-14.
 
 O PRD-08 volta a **implementado**: a change `lista-publica-de-comunidades` entregou o
 `GET /comunidades` com os quatro indicadores do documento 02 §1 (`RF-08-30`, `RF-08-31`),

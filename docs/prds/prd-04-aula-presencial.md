@@ -572,6 +572,7 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 | Troca de pontos extras por recompensa avulsa, presencial, no encerramento do encontro   | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
 | Entrega no ato da troca, com baixa no livro-razão e sem reserva                         | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
 | Debita o saldo disponível; o acumulado de pontos extras não muda                        | 11 §5          | Troca de pontos extras por recompensa avulsa |
+| `RF-04-49` é garantia da App 01, não regra que o núcleo verifica                        | 02 §8.2        | Janela de troca da recompensa avulsa         |
 | Equipe formada pelos próprios Guerreiros e Guerreiras, válida para aquela aula          | 02 §5          | Já decididos                                 |
 | Uma única equipe por Guerreiro(a) na partida de Quiz ao Vivo                            | 02 §5, 05 §5   | Já decididos                                 |
 | Resposta do Quiz ao Vivo enviada pelo App 01, não mais pela App 05                      | 05 §5          | Já decididos                                 |
