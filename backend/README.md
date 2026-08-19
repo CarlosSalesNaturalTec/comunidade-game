@@ -69,14 +69,21 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    cinza) enquanto o certificado é emitido — o proxy da Cloudflare atrapalha a validação.
 
 6. **Permissão de invocação do Cloud Run pelo Firebase Hosting** — o serviço sobe com
-   `--no-allow-unauthenticated` (só o _rewrite_ do Firebase o alcança):
+   `--no-allow-unauthenticated` (só o _rewrite_ do Firebase o alcança). O `firebase deploy`
+   concede essa permissão sozinho quando publica um _rewrite_ do tipo `run` para um serviço
+   do mesmo projeto — **não é passo manual**. Confirmar depois do primeiro deploy da esteira
+   do núcleo (5.2, depois do primeiro `app-03-deploy.yml` ou de qualquer deploy que publique
+   o alvo `api`):
 
    ```bash
-   gcloud run services add-iam-policy-binding nucleo-comunidade-game \
-     --region southamerica-east1 \
-     --member serviceAccount:firebase-hosting@comunidade-game-506017.iam.gserviceaccount.com \
-     --role roles/run.invoker
+   gcloud run services get-iam-policy nucleo-comunidade-game --region southamerica-east1
    ```
+
+   Esperado: um vínculo `roles/run.invoker` para uma conta de serviço do Firebase Hosting
+   (`service-PROJECT_NUMBER@gcp-sa-firebasehosting.iam.gserviceaccount.com`, ou equivalente —
+   confira o nome real na saída, não pelo suposto aqui). **Se não aparecer**, publique o alvo
+   `api` do Firebase Hosting uma vez (`firebase deploy --only hosting:api`) antes de tentar
+   qualquer vínculo manual: é o deploy do Hosting que cria essa conta de serviço.
 
 ## Semeadura (uma vez por ambiente)
 
