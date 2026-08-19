@@ -173,7 +173,7 @@ atividades previstas.
 | `RF-07-09` | Lançamento da atividade realizada converte a reserva em baixa; cancelamento da aula libera a reserva, que nunca expira sozinha              | essencial  |
 | `RF-07-10` | Sistema calcula o Poder Sustentador de cada provedor pela soma de moedas aportadas                                                          | essencial  |
 | `RF-07-11` | Sistema registra exemplar tombado com ponto de apoio, responsável designado e conservação                                                   | essencial  |
-| `RF-07-13` | Sistema registra baixa definitiva de recompensa entregue, sem devolução                                                                     | essencial  |
+| `RF-07-13` | Mestre vinculado à comunidade do Guerreiro(a) confirma a entrega da recompensa de marco, com baixa definitiva e sem devolução               | essencial  |
 | `RF-07-48` | Perda ou dano é anotado na ficha de vida do exemplar, nunca como débito ao Guerreiro(a) ou à família                                        | essencial  |
 | `RF-07-15` | Sistema exige lastro da recompensa do desafio extra antes da publicação                                                                     | essencial  |
 | `RF-07-16` | Rota pública devolve o movimentado por provedor, aula e comunidade, em moedas                                                               | essencial  |
@@ -316,11 +316,15 @@ serviço e financeiro, para que a reserva da aula leia um escopo de saldo só.
 O `ItemDeCatalogoAvulso` guarda o preço em **pontos extras**, que **não deriva** do valor em
 moedas do seu tipo de recurso — o custo real segue no lançamento, invisível para a criança.
 
-**O débito emitido pela troca não declara aula**, como o crédito e o ajuste já não declaram —
-só o débito da baixa de reserva declara. `Lancamento.aula` guarda um significado só, a reserva
-daquela aula foi baixada, e o consumo por troca é derivável da própria `Troca`, sem entrar em
-`GET /prestacao-de-contas/aulas`. A troca exige que o Guerreiro(a) seja da **comunidade do
-item**, no mesmo filtro por comunidade que já vale no cadastro do item.
+**O débito tem três origens, e só a baixa de reserva declara aula**: o crédito e o ajuste já não
+declaram, e o débito emitido pela **troca** e pela **entrega de recompensa de marco** também não
+— o marco é alcançado no percurso da trilha, não num encontro. `Lancamento.aula` guarda um
+significado só, a reserva daquela aula foi baixada, e o consumo por troca e por entrega é
+derivável da própria `Troca` e da própria entrega, sem entrar em `GET
+/prestacao-de-contas/aulas`. A troca exige que o Guerreiro(a) seja da **comunidade do item**, no
+mesmo filtro por comunidade que já vale no cadastro do item; a entrega exige que o Mestre esteja
+vinculado à **comunidade do Guerreiro(a)**, porque a recompensa de marco não tem ponto de apoio
+próprio (PRD-09).
 
 ## 9. Contratos de API
 

@@ -153,14 +153,17 @@ Lançamento de **crédito** NÃO SHALL declarar aula — ele vem de um aporte, e
 provedor é o próprio aporte. Lançamento de **ajuste** NÃO SHALL declarar aula — ele referencia o
 lançamento original.
 
-O débito tem **duas origens**, e só a primeira declara aula. O débito emitido pela **troca por
+O débito tem **três origens**, e só a primeira declara aula. O débito emitido pela **troca por
 recompensa avulsa** NÃO SHALL declarar aula, ainda que a troca guarde o encontro em que foi
-entregue: `Lancamento.aula` significa **a reserva daquela aula foi baixada**, e o consumo por
-troca é derivável da própria `Troca`. É o que mantém `GET /prestacao-de-contas/aulas` medindo
-consumo de atividade, sem somar a ele a recompensa que um Guerreiro(a) trocou. O débito da troca
-SHALL declarar o **ponto de apoio do item** e SHALL ser valorado em moedas pela vigência do
-valor de referência na data, como o da baixa. (`RF-07-16`, `RF-07-09`, `RF-07-36`, `RN-07-15`,
-`RN-07-36`, PRD-07 §8)
+entregue, e o débito emitido pela **entrega de recompensa de marco** NÃO SHALL declarar aula,
+porque o marco é alcançado no percurso da trilha e não num encontro: `Lancamento.aula` significa
+**a reserva daquela aula foi baixada**, e o consumo por troca e por entrega é derivável da
+própria `Troca` e da própria entrega. É o que mantém `GET /prestacao-de-contas/aulas` medindo
+consumo de atividade, sem somar a ele a recompensa que um Guerreiro(a) trocou nem a que ele
+conquistou. O débito da troca SHALL declarar o **ponto de apoio do item** e o da entrega, o
+**ponto de apoio da entrega**; ambos SHALL ser valorados em moedas pela vigência do valor de
+referência na data, como o da baixa. (`RF-07-16`, `RF-07-09`, `RF-07-36`, `RF-07-13`,
+`RN-07-15`, `RN-07-36`, PRD-07 §8)
 
 #### Scenario: A baixa grava a aula no débito
 
@@ -193,3 +196,15 @@ valor de referência na data, como o da baixa. (`RF-07-16`, `RF-07-09`, `RF-07-3
 
 - **WHEN** uma aula deu baixa numa reserva e, no mesmo encontro, uma troca foi entregue
 - **THEN** o consumo daquela aula soma apenas o débito da baixa, e o débito da troca fica fora
+
+#### Scenario: O débito da entrega de recompensa de marco não declara aula
+
+- **WHEN** uma recompensa de marco é entregue e emite o débito da quantidade declarada
+- **THEN** o débito é gravado sem aula, no ponto de apoio da entrega, com a quantidade e as
+  moedas da vigência corrente
+
+#### Scenario: A entrega não entra no consumo por aula
+
+- **WHEN** uma aula deu baixa numa reserva e, no mesmo encontro, uma recompensa de marco foi
+  entregue
+- **THEN** o consumo daquela aula soma apenas o débito da baixa, e o débito da entrega fica fora

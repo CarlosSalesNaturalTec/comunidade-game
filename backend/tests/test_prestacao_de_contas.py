@@ -240,3 +240,49 @@ def test_aula_sem_baixa_nao_aparece_com_consumo(
 
     assert aulas == []
     assert comunidades == []
+
+
+def test_entrega_de_recompensa_de_marco_fica_fora_do_consumo_por_aula(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_lancamento,
+    criar_aula,
+):
+    """A baixa da reserva e a entrega de recompensa de marco acontecem no
+    mesmo encontro; só a primeira declara aula, e é só ela que soma no
+    consumo por aula (`RF-07-16`, `RN-07-15`, PRD-07 §8)."""
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    tipo = criar_tipo_de_recurso(admin)
+    aula = criar_aula(admin, comunidade, ponto_de_apoio=ponto_de_apoio)
+
+    criar_lancamento(
+        admin,
+        tipo,
+        ponto_de_apoio,
+        natureza=NaturezaDoLancamento.debito,
+        quantidade=Decimal("2.00"),
+        valor_em_moedas=Decimal("1.00"),
+        aula=aula,
+    )
+    # O débito da entrega de recompensa de marco, gravado sem aula
+    # (`RF-07-13`), no mesmo encontro em que a baixa acima aconteceu.
+    criar_lancamento(
+        admin,
+        tipo,
+        ponto_de_apoio,
+        natureza=NaturezaDoLancamento.debito,
+        quantidade=Decimal("1.00"),
+        valor_em_moedas=Decimal("30.00"),
+        aula=None,
+    )
+
+    aulas, _ = consumo_por_aula_e_comunidade(sessao)
+
+    assert len(aulas) == 1
+    assert aulas[0].aula_id == aula.id
+    assert aulas[0].consumo_em_moedas == Decimal("1.00")
