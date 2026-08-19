@@ -49,9 +49,11 @@
 
 ## 5. Primeira execução — a ordem é obrigatória
 
-- [ ] 5.1 Conferir que `comunidadegame.org` está registrado e que os nameservers respondem.
+- [x] 5.1 Conferir que `comunidadegame.org` está registrado e que os nameservers respondem.
       **Bloqueia 2.4 e 3.3**: publicar em endereço provisório obrigaria a refazer as origens
-      autorizadas do OAuth (design — Risks).
+      autorizadas do OAuth (design — Risks). **Feito em 19/08/2026**: domínio registrado, sem
+      `hold`, nameservers da Cloudflare respondendo, e o projeto do Google Cloud criado com
+      faturamento configurado (ver design — Context).
 - [ ] 5.2 Acompanhar o fundador na primeira execução na ordem do `design.md` — núcleo,
       migração, semeadura, chave da App 03 como segredo do repositório, build, publicação — e
       conferir que a semeadura repetida converge sem emitir chave nova (`RF-01-54`,
@@ -62,7 +64,7 @@
 
 ## 6. Documentação
 
-- [ ] 6.1 Gravar as decisões novas nos documentos-fonte: o padrão de endereço das oito
+- [x] 6.1 Gravar as decisões novas nos documentos-fonte: o padrão de endereço das oito
       aplicações no documento 03 §1; a consequência de `min-instances=0` sobre o freio no
       documento 03 §8; e as quatro decisões — endereços, `min-instances`, runbook fora do
       MkDocs e domínio registrado fora do Google Cloud — na tabela de já decididos do

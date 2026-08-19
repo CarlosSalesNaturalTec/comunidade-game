@@ -6,6 +6,11 @@ App 03 lendo `VITE_CHAVE_DE_APLICACAO`, `VITE_GOOGLE_CLIENT_ID` e `VITE_URL_DO_N
 variável de ambiente do Vite. O núcleo já responde a qualquer origem sem cookie credenciado, e
 `registrar_premissa_de_conteiner_unico()` já registra no log a premissa do contêiner único.
 
+Ambiente de produção já provisionado pelo fundador, do qual as esteiras dependem: domínio
+`comunidadegame.org` na Cloudflare, com Email Routing ativo, e o projeto do Google Cloud
+`comunidade-game-506017` com faturamento configurado. O identificador do projeto **não entra
+em `docs/`** — é parâmetro de implantação, e o lugar dele é o runbook da tarefa 4.1.
+
 Restrições que moldam tudo: provedores e região fixados pelo documento 03 §1 princípio 13;
 **dois ambientes**, e o de desenvolvimento é contêiner local — não há ambiente de ensaio na
 nuvem; e o freio das rotas públicas conta em memória (documento 03 §8).
