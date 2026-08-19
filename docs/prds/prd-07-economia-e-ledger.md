@@ -468,17 +468,25 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 
 ## 14. Pendências que permanecem
 
-Uma. **Quem desativa um ponto de apoio, e o que acontece com aula já agendada e com saldo
-ainda guardado ali**, segue no documento 09: o `ativo` de §8 existe sem operação que o mude
-até a decisão vir. Das seis anteriores, duas viraram decisão, na tabela de §13, e quatro não
-eram decisão de produto: os valores da tabela de referência e os preços do catálogo avulso são
-cadastro da gestão — os preços ainda dependem do calendário do Ciclo 01 e seguem no documento
-09 —, o relatório de efetividade já estava decidido como painel vivo no PRD-14, e a modelagem
-em dupla entrada segue proposta no documento 04, fora do Ciclo 01.
+Duas, ambas no documento 09. **Quem desativa um ponto de apoio, e o que acontece com aula já
+agendada e com saldo ainda guardado ali**: o `ativo` de §8 existe sem operação que o mude até a
+decisão vir. E o que a **conferência de inventário** do `RF-07-20` apura, registra e publica —
+cinco pontos que o requisito não decide. Ele é desejável e não trava o fecho deste PRD:
+enquanto a decisão não vier, a conferência do Ciclo 01 corre fora da plataforma.
+
+Das seis anteriores, duas viraram decisão, na tabela de §13, e quatro não eram decisão de
+produto: os valores da tabela de referência e os preços do catálogo avulso são cadastro da
+gestão — os preços ainda dependem do calendário do Ciclo 01 e seguem no documento 09 —, o
+relatório de efetividade já estava decidido como painel vivo no PRD-14, e a modelagem em dupla
+entrada segue proposta no documento 04, fora do Ciclo 01.
 
 **Qual prédio** hospeda o ponto de apoio do Ciclo 01 segue no documento 09, entre as
 pendências do Case 01. Não trava este PRD: o cadastro é da gestão e a entidade opera com
 qualquer número de pontos de apoio.
+
+`RF-07-15` e `RF-07-39` a `RF-07-41` — lastro, reserva e custeio do desafio extra — não são
+pendência de decisão: esperam a entidade `DesafioExtra`, cujos atributos o PRD-14 §8 define.
+Entram com a fatia do desafio extra do PRD-09 ou do PRD-14, nunca por change deste PRD.
 
 ## 15. Rastreabilidade
 
