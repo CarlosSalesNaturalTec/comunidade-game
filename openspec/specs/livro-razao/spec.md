@@ -151,7 +151,16 @@ A aula SHALL ser gravada **no ato** da baixa e SHALL seguir a imutabilidade que 
 já exige de todo atributo de lançamento: alterá-la depois SHALL ser recusado com **405**.
 Lançamento de **crédito** NÃO SHALL declarar aula — ele vem de um aporte, e o caminho até o
 provedor é o próprio aporte. Lançamento de **ajuste** NÃO SHALL declarar aula — ele referencia o
-lançamento original. (`RF-07-16`, `RF-07-09`, `RN-07-15`, `RN-07-36`, PRD-07 §8)
+lançamento original.
+
+O débito tem **duas origens**, e só a primeira declara aula. O débito emitido pela **troca por
+recompensa avulsa** NÃO SHALL declarar aula, ainda que a troca guarde o encontro em que foi
+entregue: `Lancamento.aula` significa **a reserva daquela aula foi baixada**, e o consumo por
+troca é derivável da própria `Troca`. É o que mantém `GET /prestacao-de-contas/aulas` medindo
+consumo de atividade, sem somar a ele a recompensa que um Guerreiro(a) trocou. O débito da troca
+SHALL declarar o **ponto de apoio do item** e SHALL ser valorado em moedas pela vigência do
+valor de referência na data, como o da baixa. (`RF-07-16`, `RF-07-09`, `RF-07-36`, `RN-07-15`,
+`RN-07-36`, PRD-07 §8)
 
 #### Scenario: A baixa grava a aula no débito
 
@@ -174,3 +183,13 @@ lançamento original. (`RF-07-16`, `RF-07-09`, `RN-07-15`, `RN-07-36`, PRD-07 §
 - **WHEN** uma aula deu baixa em dois tipos de recurso, em dois débitos
 - **THEN** somar os débitos daquela aula devolve o consumo dela em moedas, pelo valor que cada
   débito gravou
+
+#### Scenario: O débito da troca não declara aula
+
+- **WHEN** uma troca por recompensa avulsa é entregue numa aula e emite o débito de uma unidade
+- **THEN** o débito é gravado sem aula, no ponto de apoio do item, com a quantidade e as moedas
+
+#### Scenario: A troca não entra no consumo por aula
+
+- **WHEN** uma aula deu baixa numa reserva e, no mesmo encontro, uma troca foi entregue
+- **THEN** o consumo daquela aula soma apenas o débito da baixa, e o débito da troca fica fora

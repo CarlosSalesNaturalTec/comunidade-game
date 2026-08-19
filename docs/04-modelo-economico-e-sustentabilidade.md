@@ -27,6 +27,9 @@ Regras derivadas:
 - **O item do catálogo avulso (documento 02 §8.2) também declara o ponto de apoio** em que o
   estoque fica guardado, pela mesma razão da aula: o saldo que o lastreia é por tipo **e**
   ponto de apoio.
+- **O débito emitido pela troca por recompensa avulsa não declara aula**, ainda que a troca
+  guarde o encontro em que foi entregue: `Lancamento.aula` significa que a reserva daquela aula
+  foi baixada, e o consumo por troca fica fora de `GET /prestacao-de-contas/aulas`.
 - **Falta de lastro vira pedido, não recusa silenciosa.** Cadastrada a atividade sem saldo
   para o que ela consome, a diferença é publicada como **necessidade de recurso** em três
   lugares: na vitrine pública, na área do Apoiador e na área dos Mestres da **comunidade da

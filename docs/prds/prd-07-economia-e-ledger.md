@@ -278,7 +278,7 @@ PontoDeApoio  1 ──── N ItemPatrimonial
 | `Reserva`              | aula **ou desafio extra**, tipo de recurso, quantidade, ponto de apoio, estado (reservada, consumida, liberada)                                                                                                                                                                                                                                                                                                                                                            |
 | `PrecoDeReferencia`    | tipo de recurso, **preço em pontos extras**, vigência inicial e final, admin responsável                                                                                                                                                                                                                                                                                                                                                                                   |
 | `ItemDeCatalogoAvulso` | nome, tipo de recurso, estoque, comunidade, **ponto de apoio**, quem cadastrou (Mestre ou Apoiador), situação de homologação, ativo — o **preço vem da tabela de referência**, não do cadastro do item                                                                                                                                                                                                                                                                     |
-| `Troca`                | item, Guerreiro(a), preço em pontos extras cobrado, encontro, Mestre que entregou, data                                                                                                                                                                                                                                                                                                                                                                                    |
+| `Troca`                | item, Guerreiro(a), preço em pontos extras cobrado, **encontro (a `Aula` do PRD-01, sem verificação de estado nem presença)**, Mestre que entregou, data                                                                                                                                                                                                                                                                                                                   |
 | `SaldoDeRecurso`       | tipo, ponto de apoio, quantidade disponível, quantidade reservada                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `ItemPatrimonial`      | aporte de origem, título, número de tombo, ponto de apoio, responsável designado, estado de conservação, ficha de vida — quem cuidou dele e as perdas e danos anotados                                                                                                                                                                                                                                                                                                     |
 | `Ressarcimento`        | aporte absorvido, valor em reais, receita destinada de origem, admin pagador, data, comprovante anexado (PDF ou imagem)                                                                                                                                                                                                                                                                                                                                                    |
@@ -316,6 +316,12 @@ serviço e financeiro, para que a reserva da aula leia um escopo de saldo só.
 O `ItemDeCatalogoAvulso` guarda o preço em **pontos extras**, que **não deriva** do valor em
 moedas do seu tipo de recurso — o custo real segue no lançamento, invisível para a criança.
 
+**O débito emitido pela troca não declara aula**, como o crédito e o ajuste já não declaram —
+só o débito da baixa de reserva declara. `Lancamento.aula` guarda um significado só, a reserva
+daquela aula foi baixada, e o consumo por troca é derivável da própria `Troca`, sem entrar em
+`GET /prestacao-de-contas/aulas`. A troca exige que o Guerreiro(a) seja da **comunidade do
+item**, no mesmo filtro por comunidade que já vale no cadastro do item.
+
 ## 9. Contratos de API
 
 | Método | Rota                                 | Autenticação    | Descrição                                                            |
@@ -333,6 +339,8 @@ moedas do seu tipo de recurso — o custo real segue no lançamento, invisível 
 | GET    | `/aportes/ressarciveis`              | Admin           | Aportes absorvidos em aberto, do mais antigo ao mais novo            |
 | POST   | `/aportes/{id}/ressarcimento`        | Admin           | Registra o ressarcimento com comprovante anexado e reverte as moedas |
 | POST   | `/aulas/{id}/reservas`               | gestão          | Reserva os recursos no agendamento da aula                           |
+| POST   | `/aulas/{id}/trocas`                 | Mestre          | Registra a troca de item por pontos extras, na entrega               |
+| GET    | `/trocas`                            | gestão          | Histórico de trocas, filtrado por persona                            |
 | POST   | `/lancamentos/{id}/ajuste`           | Admin           | Lança ajuste referenciando o lançamento original                     |
 | GET    | `/meus-aportes`                      | Apoiador        | Aportes e Poder Sustentador do próprio Apoiador                      |
 | GET    | `/meus-aportes/ressarciveis`         | Mestre ou Admin | Situação dos aportes que absorveu                                    |
@@ -442,6 +450,10 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | `RF-04-49` é garantia da App 01; o núcleo não verifica a janela de troca       | 02 §8.2        | Janela de troca da recompensa avulsa           |
 | Lastro do item do catálogo avulso é saldo igual ou maior que o estoque         | 02 §8.2        | Lastro do item do catálogo avulso              |
 | `ItemDeCatalogoAvulso` declara o ponto de apoio, como a `Aula` já declara      | 04 §1          | Ponto de apoio do item do catálogo avulso      |
+| O encontro que a troca registra é a `Aula`, sem verificar estado nem presença  | 02 §8.2        | Encontro registrado pela troca de recompensa   |
+| Rota da troca é `POST /aulas/{id}/trocas`, com Mestre em sessão                | 02 §8.2        | Rota de registro da troca de recompensa        |
+| O débito emitido pela troca não declara aula                                   | 04 §1          | Aula no débito emitido pela troca              |
+| A troca exige que o Guerreiro(a) seja da comunidade do item                    | 02 §8.2        | Comunidade exigida na troca de recompensa      |
 
 ## 14. Pendências que permanecem
 
