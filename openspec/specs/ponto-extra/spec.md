@@ -10,9 +10,11 @@ apague histórico.
 
 O núcleo SHALL manter, por Guerreiro(a), duas contas de ponto extra: o **acumulado** — tudo o que
 já foi ganho, que **nunca decresce** — e o **saldo disponível** — o que ainda não foi trocado, que
-**nunca fica negativo**. Nesta fatia as duas contas **só recebem crédito**; a operação de débito
-nasce com a troca por recompensa avulsa (PRD-07) e herda esta mesma trava de não ficar negativo.
-(`RF-01-56`, `RN-01-39`, `RN-01-40`, 11 §5)
+**nunca fica negativo**. O acumulado SHALL receber apenas crédito. O saldo disponível SHALL
+receber crédito e **débito**, e o **único débito** previsto no Ciclo 01 é a **troca por
+recompensa avulsa**, que debita o preço cobrado sem tocar o acumulado. Débito que deixaria o
+saldo disponível negativo SHALL ser recusado, em qualquer via — inclusive fora do ORM.
+(`RF-01-56`, `RN-01-39`, `RN-01-40`, `RF-07-36`, 11 §5, invariante 23)
 
 #### Scenario: Crédito aumenta as duas contas juntas
 
@@ -28,6 +30,17 @@ nasce com a troca por recompensa avulsa (PRD-07) e herda esta mesma trava de nã
 
 - **WHEN** qualquer operação resultaria em saldo disponível negativo
 - **THEN** o núcleo recusa a operação
+
+#### Scenario: A troca debita só o saldo disponível
+
+- **WHEN** uma troca por recompensa avulsa cobra 40 pontos extras de um Guerreiro(a) com
+  acumulado 300 e saldo disponível 100
+- **THEN** o saldo disponível passa a 60 e o acumulado permanece 300
+
+#### Scenario: A troca não debita além do saldo disponível
+
+- **WHEN** uma troca cobraria mais pontos extras do que o saldo disponível do Guerreiro(a)
+- **THEN** o núcleo recusa o débito e o saldo permanece exatamente como estava
 
 ### Requirement: Fonte dupla credita ponto regular e ponto extra juntos
 
