@@ -538,9 +538,17 @@ de uma missão, conclusão de etapa, batalha ou culminância —, **nunca compra
 pontos**. É o que fecha o vínculo entre o jogo e a vida real: o esforço de aprender converte-se
 em algo concreto na mão do Guerreiro(a), no momento em que a conquista acontece.
 
-O **Mestre autor declara, na trilha, qual marco concede qual recompensa**, e o lastro do recurso
-é exigido antes da publicação. Duas consequências: o Guerreiro(a) sabe desde o começo o que cada
-conquista lhe rende, e nenhuma recompensa é prometida sem estar provida.
+O **Mestre autor declara, na trilha, qual marco concede qual recompensa** — o Guerreiro(a) sabe
+desde o começo o que cada conquista lhe rende. A trilha é bem comum e não tem ponto de apoio: o
+lastro do recurso **não** é exigido na publicação, e a garantia de que a recompensa está provida
+passa a valer no ato da entrega.
+
+| Regra                | Definição                                                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Quem confirma        | O **Mestre vinculado à comunidade do Guerreiro(a)**, que escolhe o ponto de apoio de onde o recurso sai; o Admin nunca confirma |
+| Lastro               | **Reverificado no ato da entrega**, contra o saldo do ponto de apoio escolhido                                                  |
+| Marco alcançado      | Conferido contra o percurso já derivado da pontuação (missões concluídas)                                                       |
+| Baixa no livro-razão | Sai **nesse ato**, junto da entrega, sem aula declarada e sem devolução possível                                                |
 
 **A missão é o marco de uso corrente.** Ao cadastrar uma missão, o Mestre declara se o
 desbloqueio dela libera recompensa — e é por aí que saem **as camisas, os livros e os kits do

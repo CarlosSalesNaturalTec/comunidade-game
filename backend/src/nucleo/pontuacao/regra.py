@@ -136,9 +136,13 @@ def _missoes_obrigatorias_da_trilha(sessao: Session, trilha_id: uuid.UUID) -> li
     return sessao.query(Missao).filter_by(trilha_id=trilha_id, obrigatoria=True).all()
 
 
-def _missoes_concluidas_pelo_guerreiro(
+def missoes_concluidas_pelo_guerreiro(
     sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID
 ) -> set[uuid.UUID]:
+    """As missões da trilha que o Guerreiro(a) já concluiu, derivadas dos
+    `Resultado`s — pública porque `recompensas_de_marco.regra` também a
+    chama, para verificar o marco alcançado sem duplicar a consulta
+    (`RF-07-13`, design — Decisions)."""
     linhas = (
         sessao.query(Missao.id)
         .join(Atividade, Atividade.missao_id == Missao.id)
@@ -198,7 +202,7 @@ def avaliar_niveis(sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.
     original, não por Resultado. Só a missão obrigatória conta no percurso
     (11 §6)."""
     obrigatorias = _missoes_obrigatorias_da_trilha(sessao, trilha_id)
-    concluidas = _missoes_concluidas_pelo_guerreiro(
+    concluidas = missoes_concluidas_pelo_guerreiro(
         sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id
     )
 

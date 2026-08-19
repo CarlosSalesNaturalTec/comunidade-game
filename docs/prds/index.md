@@ -142,11 +142,30 @@ tombamento; duas recusas novas o guardam, no agendamento e no cadastro do item d
 avulso. Em **`POST /itens-patrimoniais`** (Admin), **`GET /itens-patrimoniais`** (gestão,
 filtrada por comunidade) e **`POST /itens-patrimoniais/{id}/ficha-de-vida`** (Admin ou Mestre).
 
+A décima fatia entregou a **recompensa de marco e a entrega** — a terceira e última saída de
+recurso do livro-razão, e a única que a criança conquista sem pagar nada. O **Mestre autor**
+declara, na trilha, qual missão concede qual tipo de recurso e em que quantidade
+(`RF-09-71`, `RN-09-26`, `RN-09-39`); só a **missão** é aceita como marco, porque é a única
+espécie que o núcleo hoje sabe verificar alcançada. A `RecompensaDeMarco` **não** tem ponto de
+apoio nem situação de entrega própria — a trilha é bem comum, e o lastro **deixa de ser exigido
+na publicação** (`RF-09-72`, `RN-09-27`, corrige PRD-09). A entrega é confirmada pelo **Mestre
+vinculado à comunidade do Guerreiro(a)**, que escolhe o ponto de apoio de onde o recurso sai; o
+Admin nunca confirma, o que corrige `RF-02-50` e `RF-02-51` do PRD-02 para **mostrar** a entrega,
+não escrevê-la (`RF-07-13`, `RF-09-76`). Cinco recusas protegem a operação, todas antes de
+qualquer escrita: tipo de recurso durável, lastro reverificado no ato contra o ponto de apoio da
+entrega, quantidade da recompensa esgotada pela contagem de entregas, Mestre não vinculado à
+comunidade do Guerreiro(a), e marco não alcançado — conferido contra o percurso que a capacidade
+de pontos, níveis e badges já deriva, sem duplicar a consulta (`RN-07-07`, `RN-09-26`,
+invariante 9). A entrega grava a `EntregaDeRecompensa` e emite o débito **numa operação só**,
+**sem aula** — como o débito da troca —, e nunca toca ponto regular nem extra do Guerreiro(a)
+(`RN-07-08`, `RN-07-15`, `RN-07-36`). Em **`POST` e `GET /trilhas/{id}/recompensas-de-marco`**,
+**`POST /recompensas-de-marco/{id}/entregas`** e **`GET /entregas`**, filtrado por persona.
+
 O documento 09 mantém a pendência de **quem desativa um ponto de apoio**. **Empréstimo de
 bancada e reposição solidária saíram do escopo** — o documento 05 já os adiava, e o PRD
-divergia da fonte. No Ciclo 01 ficam o tombamento, a ficha de vida entregues; a **conferência de
-inventário** e o **desafio extra** seguem para próximas fatias — este último ainda sem a
-entidade `DesafioExtra`, que nasce em PRD-09 ou PRD-14.
+divergia da fonte. Com a recompensa de marco entregue, esgota-se o que resta de essencial e
+desimpedido no PRD-07: sobram apenas a **conferência de inventário** (`RF-07-20`, desejável) e o
+**desafio extra**, travado pela entidade `DesafioExtra`, que nasce em PRD-09 ou PRD-14.
 
 O PRD-08 volta a **implementado**: a change `lista-publica-de-comunidades` entregou o
 `GET /comunidades` com os quatro indicadores do documento 02 §1 (`RF-08-30`, `RF-08-31`),

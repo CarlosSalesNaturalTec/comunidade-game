@@ -282,8 +282,8 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
 
 | ID         | Requisito                                                                                          | Prioridade |
 | ---------- | -------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-50` | Admin registra a entrega do exemplar Alpha na abertura da trilha, com baixa definitiva             | essencial  |
-| `RF-02-51` | Admin registra a entrega da camisa ao Guerreiro(a) inscrito, com baixa definitiva                  | essencial  |
+| `RF-02-50` | Aplicação mostra a entrega do exemplar Alpha confirmada pelo Mestre, com a baixa definitiva        | essencial  |
+| `RF-02-51` | Aplicação mostra a entrega da camisa confirmada pelo Mestre ao Guerreiro(a) inscrito, com a baixa  | essencial  |
 | `RF-02-52` | Admin tomba o exemplar permanente com título, tombo, ponto de apoio e responsável designado        | essencial  |
 | `RF-02-53` | Aplicação mantém a ficha de vida do exemplar, com estado de conservação e histórico de uso         | essencial  |
 | `RF-02-55` | Perda ou dano é anotado na ficha de vida, sem débito ao Guerreiro(a) nem à família                 | essencial  |

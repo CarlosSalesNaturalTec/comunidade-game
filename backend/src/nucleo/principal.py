@@ -28,6 +28,7 @@ from .pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
 from .prestacao_de_contas.rotas import roteador as roteador_de_prestacao_de_contas
 from .protecao import registrar_premissa_de_conteiner_unico
 from .protecao.cota import exigir_cota_de_leitura
+from .recompensas_de_marco.rotas import roteador as roteador_de_recompensas_de_marco
 from .recursos.rotas import roteador as roteador_de_recursos
 from .responsaveis.rotas import roteador as roteador_de_responsaveis
 from .ressarcimentos.rotas import roteador as roteador_de_ressarcimentos
@@ -140,3 +141,4 @@ incluir_roteador_de_dados(app, roteador_de_ressarcimentos)
 incluir_roteador_de_dados(app, roteador_de_catalogo_avulso)
 incluir_roteador_de_dados(app, roteador_de_trocas)
 incluir_roteador_de_dados(app, roteador_de_patrimonio)
+incluir_roteador_de_dados(app, roteador_de_recompensas_de_marco)

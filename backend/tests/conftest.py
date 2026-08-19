@@ -67,6 +67,7 @@ from nucleo.pontos_de_apoio.modelo import PontoDeApoio
 from nucleo.pontuacao.modelo import Badge, Nivel, PontoRegular, TipoDeBadge
 from nucleo.principal import criar_app, incluir_roteador_de_dados
 from nucleo.protecao.freio import exigir_freio_por_origem
+from nucleo.recompensas_de_marco.modelo import EntregaDeRecompensa, RecompensaDeMarco
 from nucleo.recursos.modelo import (
     NaturezaDoRecurso,
     PrecoDeReferencia,
@@ -273,6 +274,7 @@ def app(sessao, configuracao):
     from nucleo.poder_sustentador.rotas import roteador as roteador_de_poder_sustentador
     from nucleo.pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
     from nucleo.prestacao_de_contas.rotas import roteador as roteador_de_prestacao_de_contas
+    from nucleo.recompensas_de_marco.rotas import roteador as roteador_de_recompensas_de_marco
     from nucleo.recursos.rotas import roteador as roteador_de_recursos
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
     from nucleo.ressarcimentos.rotas import roteador as roteador_de_ressarcimentos
@@ -308,6 +310,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_catalogo_avulso)
     incluir_roteador_de_dados(aplicacao, roteador_de_trocas)
     incluir_roteador_de_dados(aplicacao, roteador_de_patrimonio)
+    incluir_roteador_de_dados(aplicacao, roteador_de_recompensas_de_marco)
     return aplicacao
 
 
@@ -1500,6 +1503,56 @@ def criar_troca(sessao):
         sessao.commit()
         sessao.refresh(troca)
         return troca
+
+    return _criar
+
+
+@pytest.fixture
+def criar_recompensa_de_marco(sessao):
+    def _criar(
+        autor: Persona,
+        trilha: Trilha,
+        missao: Missao,
+        tipo: TipoDeRecurso,
+        quantidade: Decimal = Decimal("1"),
+    ) -> RecompensaDeMarco:
+        recompensa = RecompensaDeMarco(
+            trilha_id=trilha.id,
+            missao_id=missao.id,
+            tipo_de_recurso_id=tipo.id,
+            quantidade=quantidade,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(recompensa)
+        sessao.commit()
+        sessao.refresh(recompensa)
+        return recompensa
+
+    return _criar
+
+
+@pytest.fixture
+def criar_entrega_de_recompensa(sessao):
+    def _criar(
+        autor: Persona,
+        recompensa: RecompensaDeMarco,
+        guerreiro: Persona,
+        ponto_de_apoio: PontoDeApoio,
+        lancamento: Lancamento,
+    ) -> EntregaDeRecompensa:
+        entrega = EntregaDeRecompensa(
+            recompensa_de_marco_id=recompensa.id,
+            guerreiro_id=guerreiro.id,
+            ponto_de_apoio_id=ponto_de_apoio.id,
+            lancamento_id=lancamento.id,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(entrega)
+        sessao.commit()
+        sessao.refresh(entrega)
+        return entrega
 
     return _criar
 

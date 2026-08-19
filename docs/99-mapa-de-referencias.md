@@ -365,12 +365,17 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD-05 | `prd-05-area-do-guerreiro.md`     | PRD-01, PRD-09 | 02, 03, 05, 11         |
 | PRD-07 | `prd-07-economia-e-ledger.md`     | PRD-08         | 04, 05                 |
 | PRD-08 | `prd-08-comunidades-virtuais.md`  | —              | 02, 03, 11             |
-| PRD-09 | `prd-09-area-do-mestre.md`        | PRD-01         | 02, 03, 05, 06, 07, 11 |
+| PRD-09 | `prd-09-area-do-mestre.md`        | PRD-01, PRD-07 | 02, 03, 05, 06, 07, 11 |
 | PRD-10 | `prd-10-batalhas.md`              | PRD-01, PRD-09 | 02, 07, 11             |
 | PRD-11 | `prd-11-personalizacao-por-ia.md` | PRD-01, PRD-04 | 02, 03, 11             |
 | PRD-12 | `prd-12-jogo-em-javascript.md`    | PRD-01, PRD-03 | 02, 03, 04, 11         |
 | PRD-13 | `prd-13-area-dos-responsaveis.md` | PRD-01, PRD-02 | 02, 03, 10             |
 | PRD-14 | `prd-14-area-do-apoiador.md`      | PRD-07, PRD-02 | 02, 03, 04, 11, 12, 14 |
+
+O PRD-09 passou a depender também do PRD-07: a recompensa de marco e a entrega são capacidade
+do livro-razão (`backend/src/nucleo/recompensas_de_marco/`), e as rotas que a Área do Mestre
+consome para declarar o marco e confirmar a entrega (`RF-09-71`, `RF-09-76`) vivem lá, não em
+PRD-09.
 
 A correspondência entre as oito aplicações e os PRDs está na §4; a ordem de elaboração e o
 motivo de cada onda estão no documento 08.
