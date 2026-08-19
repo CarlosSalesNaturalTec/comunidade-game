@@ -7,7 +7,7 @@ from ..erros import ErroDeValidacao, PermissaoNegada
 from ..livro_razao.regra import saldo_de
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
-from ..recursos.modelo import TipoDeRecurso
+from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
 from ..recursos.regra import consultar_preco_de_referencia
 from ..tempo import agora
 from .modelo import ItemDeCatalogoAvulso, OrigemDoCadastroDoItem, SituacaoDeHomologacao
@@ -94,6 +94,14 @@ def cadastrar_item(
     if tipo is None:
         raise ErroDeValidacao(
             mensagem="Item do catálogo avulso exige um tipo de recurso existente.",
+            campo="tipo_de_recurso_id",
+        )
+    if tipo.natureza == NaturezaDoRecurso.duravel:
+        raise ErroDeValidacao(
+            mensagem=(
+                "Item do catálogo avulso não aceita tipo de recurso de natureza durável: "
+                "o saldo durável é patrimônio e nunca lastreia recompensa."
+            ),
             campo="tipo_de_recurso_id",
         )
     if comunidade is None:

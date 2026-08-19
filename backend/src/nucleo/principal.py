@@ -21,6 +21,7 @@ from .jogos.rotas import roteador as roteador_de_jogos
 from .livro_razao.rotas import roteador as roteador_de_livro_razao
 from .locais.rotas import roteador as roteador_de_locais
 from .necessidades.rotas import roteador as roteador_de_necessidades
+from .patrimonio.rotas import roteador as roteador_de_patrimonio
 from .personas.rotas import roteador as roteador_de_personas
 from .poder_sustentador.rotas import roteador as roteador_de_poder_sustentador
 from .pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
@@ -138,3 +139,4 @@ incluir_roteador_de_dados(app, roteador_de_prestacao_de_contas)
 incluir_roteador_de_dados(app, roteador_de_ressarcimentos)
 incluir_roteador_de_dados(app, roteador_de_catalogo_avulso)
 incluir_roteador_de_dados(app, roteador_de_trocas)
+incluir_roteador_de_dados(app, roteador_de_patrimonio)

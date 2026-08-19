@@ -131,6 +131,12 @@ class AuditoriaImutavel(ErroDeAplicacao):
     mensagem = "Registro de auditoria é somente inserção."
 
 
+class FichaDeVidaImutavel(ErroDeAplicacao):
+    status_code = 409
+    codigo = "ficha_de_vida_imutavel"
+    mensagem = "Anotação da ficha de vida é somente inserção."
+
+
 class DebitoDePontoRegularRecusado(ErroDeAplicacao):
     status_code = 409
     codigo = "debito_de_ponto_regular_recusado"
