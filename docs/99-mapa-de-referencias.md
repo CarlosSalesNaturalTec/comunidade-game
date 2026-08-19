@@ -100,6 +100,7 @@ doc 15**.
 | Recortes da vitrine (sociedade civil, pesquisadores, gestores)             | 03 §8                                      | 04 §4, 08, 09                  |
 | Nome do projeto e endereço canônico da plataforma                          | 01 §1                                      | 03 §1, 09                      |
 | Vitrine na raiz do domínio e botão "Entrar" por persona                    | 03 §§1, 8                                  | 08                             |
+| Framework de frontend e hospedagem das aplicações                          | 03 §1                                      | 15 §13                         |
 | Área do gestor público (para que serve ao município e ao estado)           | 03 §8                                      | 04 §4, 08                      |
 | Granularidade da saída pública (agrega até o bairro)                       | 02 §1                                      | 03 §§8, 12, 08, 09             |
 | Novidade dos favoritos (cinco fatos, 30 dias; só na App 08)                | 03 §10                                     | 02 §1, 03 §8, 08               |

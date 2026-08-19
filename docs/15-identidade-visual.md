@@ -308,8 +308,8 @@ medida.
 | Grade            | `tinta-200`, sem sombra e sem área preenchida sob a linha                  |
 | Série inativa    | Traço interrompido e rótulo "série inativa" — o dado permanece             |
 
-Nenhuma biblioteca de gráfico está escolhida: o framework de frontend segue pendente (documento
-09), e estas regras valem para qualquer uma que venha a ser adotada.
+Nenhuma biblioteca de gráfico está escolhida (documento 09), e estas regras valem para qualquer
+uma que venha a ser adotada.
 
 ## 12. Tokens
 
@@ -331,6 +331,6 @@ arquivo nasce junto da primeira pasta de aplicação, compartilhado pelas oito.
 | Logotipo e marca gráfica do projeto                          | Pendente (documento 09)       |
 | Universo dos personagens — Susy, Otávio, Rôbróders e Trenell | Pendente (documento 09)       |
 | Submarcas Rôbróders e Robô Educa                             | Pendente (documento 09)       |
-| Framework de frontend das aplicações                         | Pendente (documento 09)       |
+| Framework de frontend das aplicações                         | Documento 03 §1               |
 | O que cada card mostra e como o território cresce            | Documento 11                  |
 | Peça gráfica impressa                                        | Não há a produzir no Ciclo 01 |
