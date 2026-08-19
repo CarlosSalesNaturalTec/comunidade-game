@@ -12,6 +12,10 @@
    pública. O que a leitura pública dispensa é o **login da pessoa**: o visitante da vitrine e
    do jogo não se identifica — quem se identifica é a aplicação. Escrita e gestão exigem, além
    da chave, a credencial da persona.
+   O núcleo responde a **qualquer origem** (`*`), **sem cookie credenciado** — a chave e a
+   credencial da persona viajam em cabeçalho. A proteção está nelas, na cota por chave e no
+   freio por origem (§8), não no navegador: restringir origem não barra chamada feita fora
+   dele e contrariaria o princípio 1.
 3. **Frontends independentes** — em **endereços próprios**, evoluindo desacoplados do backend.
    A **vitrine ocupa a raiz** do domínio da plataforma — **`comunidadegame.org`** —: é por ela
    que qualquer pessoa chega, e é dela que o botão **Entrar** encaminha cada persona à sua
