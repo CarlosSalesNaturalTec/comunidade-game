@@ -1,8 +1,13 @@
 {
-  "name": "comunidade-game-docs",
+  "name": "comunidade-game",
   "version": "0.0.0",
   "private": true,
-  "description": "Documentação do projeto Comunidade Game — ferramentas de qualidade de texto",
+  "description": "Comunidade Game — monorepo: documentação, aplicações e o compartilhado entre elas",
+  "workspaces": [
+    "comum",
+    "apps/*",
+    "jogos/*"
+  ],
   "scripts": {
     "lint": "npm run lint:md && npm run lint:format",
     "lint:md": "markdownlint-cli2",
@@ -12,6 +17,7 @@
     "fix:md": "markdownlint-cli2 --fix"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.9",
     "markdownlint-cli2": "0.14.0",
     "prettier": "3.3.3"
   }

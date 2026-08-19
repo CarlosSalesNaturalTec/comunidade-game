@@ -1,0 +1,58 @@
+name: Frontend CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "comum/**"
+      - "apps/**"
+      - "jogos/**"
+      - "package.json"
+      - "package-lock.json"
+      - "biome.jsonc"
+  push:
+    branches: [main]
+    paths:
+      - "comum/**"
+      - "apps/**"
+      - "jogos/**"
+      - "package.json"
+      - "package-lock.json"
+      - "biome.jsonc"
+  workflow_dispatch:
+
+concurrency:
+  group: frontend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  qualidade:
+    name: Biome + Vitest
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: biome format --check
+        run: npx biome format comum apps
+
+      - name: biome check
+        run: npx biome check comum apps
+
+      # A cobertura é medida aqui, e só aqui, sem limiar que bloqueie no
+      # Ciclo 01 — o número fica publicado no log (mesma régua do backend).
+      # `--workspaces --if-present` alcança cada aplicação nova sem editar
+      # este workflow (design — Risks).
+      - name: vitest run (com cobertura)
+        run: npm run test --workspaces --if-present -- --coverage

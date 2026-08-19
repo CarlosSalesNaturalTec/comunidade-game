@@ -1,0 +1,59 @@
+/* A aplicação consome só a camada semântica e a de tema de `comum/tokens.css`
+ * (documento 15 §12) — nenhum valor primitivo é repetido aqui. */
+@import "comum/tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fonte-texto);
+  font-size: var(--escala-100);
+  line-height: var(--entrelinha-corrido);
+  color: var(--cor-texto);
+  background: var(--cor-fundo);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fonte-destaque);
+  line-height: var(--entrelinha-titulo);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* Alvo de toque de ao menos 48 px, dedo de criança na régua (documento 15
+ * §5) — aqui alcança quem opera a gestão em pé, no celular. */
+button,
+input,
+a[role="button"] {
+  min-height: var(--alvo-de-toque);
+}
+
+/* Foco sempre visível, sem exceção (documento 15 §5). */
+:focus-visible {
+  outline: var(--largura-do-foco) solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+/* Nenhuma transição decorativa quando o aparelho pede menos movimento
+ * (documento 15 §5) — `--duracao` já cai para `0ms` em `comum/tokens.css`. */
+* {
+  transition-duration: var(--duracao, 0ms);
+}

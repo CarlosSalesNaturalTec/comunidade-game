@@ -2,6 +2,7 @@ import logging
 
 from fastapi import APIRouter, Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as ExcecaoHTTP
 
@@ -9,8 +10,10 @@ from .aportes.rotas import roteador as roteador_de_aportes
 from .auditoria.middleware import MiddlewareDeAuditoria
 from .auditoria.rotas import roteador as roteador_de_auditoria
 from .aulas.rotas import roteador as roteador_de_aulas
+from .autenticacao import NOME_DO_CABECALHO_DE_SESSAO
 from .biometria.rotas import roteador as roteador_de_biometria
 from .catalogo_avulso.rotas import roteador as roteador_de_catalogo_avulso
+from .chaves.conferencia import NOME_DO_CABECALHO as NOME_DO_CABECALHO_DA_CHAVE
 from .chaves.conferencia import exigir_chave_de_aplicacao
 from .chaves.rotas import roteador as roteador_de_chaves
 from .coletas.rotas import roteador as roteador_de_coletas
@@ -94,6 +97,18 @@ def criar_app() -> FastAPI:
     # Transversal a toda a aplicação (RF-01-29): nenhuma rota, presente ou
     # futura, precisa declarar nada para entrar na trilha de auditoria.
     app.add_middleware(MiddlewareDeAuditoria)
+
+    # Origem aberta, sem cookie credenciado (documento 03 §1, princípio 2):
+    # a proteção está nas duas credenciais de cabeçalho, não no navegador.
+    # Adicionado por último para ficar por fora de tudo, inclusive da
+    # auditoria, e assim responder ao preflight antes de qualquer rota.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE"],
+        allow_headers=[NOME_DO_CABECALHO_DA_CHAVE, NOME_DO_CABECALHO_DE_SESSAO, "Content-Type"],
+    )
 
     registrar_premissa_de_conteiner_unico()
 

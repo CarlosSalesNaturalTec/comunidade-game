@@ -9,3 +9,10 @@ CHANGELOG.md
 .github/skills/
 .github/prompts/
 openspec/
+
+# Pastas de código: formatadas e lintadas pelo Ruff (backend/) e pelo Biome
+# (comum/, apps/*, jogos/*) — o Prettier segue dono só de .md e da raiz.
+backend/
+comum/
+apps/
+jogos/

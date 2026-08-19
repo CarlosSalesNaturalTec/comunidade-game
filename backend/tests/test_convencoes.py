@@ -147,6 +147,28 @@ def test_ler_schema_nao_abre_rota_de_dados(cliente):
     assert resposta.status_code == 401
 
 
+def test_preflight_permite_os_cabecalhos_da_chave_e_da_sessao(cliente):
+    resposta = cliente.options(
+        "/v1/publica",
+        headers={
+            "Origin": "https://app-06-vitrine.web.app",
+            "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "x-chave-aplicacao, authorization",
+        },
+    )
+    assert resposta.status_code == 200
+    cabecalhos_permitidos = resposta.headers["access-control-allow-headers"].lower()
+    assert "x-chave-aplicacao" in cabecalhos_permitidos
+    assert "authorization" in cabecalhos_permitidos
+    assert resposta.headers["access-control-allow-origin"] == "*"
+
+
+def test_chamada_de_origem_qualquer_sem_chave_e_recusada_como_qualquer_outra(cliente):
+    resposta = cliente.get("/v1/publica", headers={"Origin": "https://app-06-vitrine.web.app"})
+    assert resposta.status_code == 401
+    assert resposta.json()["codigo"] == "chave_invalida"
+
+
 def test_nenhuma_rota_lista_ou_sugere_nick(cliente):
     """`RN-01-22`: o núcleo nunca descobre nem sugere um nick — não existe
     rota de listagem, busca parcial ou sugestão de nick em toda a API.
