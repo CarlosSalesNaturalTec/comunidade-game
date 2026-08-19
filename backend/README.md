@@ -17,7 +17,8 @@ Sem valor padrão — o serviço não sobe sem elas declaradas:
 - `CG_IDENTIDADE_FUNDADOR` — identidade social do Admin fundador, semeada na implantação
   (`RF-01-61`).
 - `CG_SESSAO_ADULTO_DURACAO`, `CG_SESSAO_GUERREIRO_DURACAO` — duração das sessões, calibradas
-  no encontro real (documento 09).
+  no encontro real (documento 09). Formato **ISO 8601 de duração**: `PT8H`, `PT4H`. `8h` não
+  é aceito pelo Pydantic e derruba o contêiner no arranque.
 - `CG_BIOMETRIA_DIMENSAO_DO_DESCRITOR`, `CG_BIOMETRIA_LIMIAR_DE_COMPARACAO`,
   `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM` — parâmetros da entrada do Guerreiro(a); a chave de
   cifragem vem do **Secret Manager**, nunca hardcoded (documento 09).
@@ -26,7 +27,9 @@ Com valor padrão, ajustados em produção:
 
 - `CG_AMBIENTE=producao`
 - `CG_DSN_BANCO` — aponta para o Cloud SQL pelo **socket Unix** do conector, em
-  `/cloudsql/PROJETO:REGIAO:INSTANCIA`, nunca por endereço de rede.
+  `/cloudsql/PROJETO:REGIAO:INSTANCIA`, nunca por endereço de rede. A senha do banco vai
+  **dentro de uma URL**: gere-a com `openssl rand -hex 24`, nunca `-base64`, porque `/` e `+`
+  quebram a análise do DSN.
 - `CG_GOOGLE_CLIENT_ID` — o mesmo _client ID_ que os frontends usam.
 - `CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE` — bucket de produção; sem ele o núcleo cai para
   disco local, que não sobrevive a um novo deploy do Cloud Run.
