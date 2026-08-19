@@ -14,7 +14,7 @@ no `CLAUDE.md`, na raiz do repositório; o mapa de dependências entre PRDs est�
 | PRD                                       | Assunto                                | Aplicação | Onda | Situação     |
 | ----------------------------------------- | -------------------------------------- | --------- | ---- | ------------ |
 | [PRD-08](prd-08-comunidades-virtuais.md)  | Comunidades Virtuais e território      | —         | 1    | implementado |
-| [PRD-07](prd-07-economia-e-ledger.md)     | Economia de recursos e ledger          | —         | 1    | aprovado     |
+| [PRD-07](prd-07-economia-e-ledger.md)     | Economia de recursos e ledger          | —         | 1    | implementado |
 | [PRD-01](prd-01-backend-api.md)           | Backend API (núcleo)                   | —         | 1    | implementado |
 | [PRD-02](prd-02-frontend-de-gestao.md)    | Frontend de gestão                     | App 03    | 2    | aprovado     |
 | [PRD-04](prd-04-aula-presencial.md)       | Aula presencial (onboarding e trilhas) | App 01    | 2    | aprovado     |
@@ -38,7 +38,7 @@ do PRD-01. Antes disso, a change `auditoria-e-estorno-da-coleta` entregou o déb
 regular por fato desfeito (`RF-01-57`, `RF-01-69`, `RF-01-70`, `RN-01-55`) e a queda da
 credencial de dispositivo ao **encerramento da série** (`RF-01-68`).
 
-O PRD-07 segue em implementação. A primeira fatia entregou, além do `PontoDeApoio`, o
+O PRD-07 vai a **implementado**. A primeira fatia entregou, além do `PontoDeApoio`, o
 catálogo de **tipos de recurso** e o **valor de referência em moedas** versionado por vigência
 (`RF-07-01`, `RF-07-02`), com o **responsável pelo acervo designado depois do cadastro**
 (`RF-07-49`, `RN-07-34`).
@@ -161,11 +161,15 @@ invariante 9). A entrega grava a `EntregaDeRecompensa` e emite o débito **numa 
 (`RN-07-08`, `RN-07-15`, `RN-07-36`). Em **`POST` e `GET /trilhas/{id}/recompensas-de-marco`**,
 **`POST /recompensas-de-marco/{id}/entregas`** e **`GET /entregas`**, filtrado por persona.
 
-O documento 09 mantém a pendência de **quem desativa um ponto de apoio**. **Empréstimo de
-bancada e reposição solidária saíram do escopo** — o documento 05 já os adiava, e o PRD
-divergia da fonte. Com a recompensa de marco entregue, esgota-se o que resta de essencial e
-desimpedido no PRD-07: sobram apenas a **conferência de inventário** (`RF-07-20`, desejável) e o
-**desafio extra**, travado pela entidade `DesafioExtra`, que nasce em PRD-09 ou PRD-14.
+Com a recompensa de marco entregue, esgota-se o que resta de essencial e desimpedido, e o
+PRD-07 **fecha em dez fatias**. Sobram dois resíduos, e nenhum é fatia deste PRD. A
+**conferência de inventário** (`RF-07-20`, desejável) volta ao documento 09 como pendência de
+decisão, com os cinco pontos que o requisito não decide; até ela vir, a conferência do Ciclo 01
+corre fora da plataforma. O **desafio extra** (`RF-07-15` e `RF-07-39` a `RF-07-41`) espera a
+entidade `DesafioExtra`, cujos atributos o PRD-14 §8 define, e entra com a fatia do desafio
+extra do PRD-09 ou do PRD-14. O documento 09 mantém ainda a pendência de **quem desativa um
+ponto de apoio**, e **empréstimo de bancada e reposição solidária saíram do escopo** — o
+documento 05 já os adiava, e o PRD divergia da fonte.
 
 O PRD-08 volta a **implementado**: a change `lista-publica-de-comunidades` entregou o
 `GET /comunidades` com os quatro indicadores do documento 02 §1 (`RF-08-30`, `RF-08-31`),
