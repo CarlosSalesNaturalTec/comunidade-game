@@ -25,7 +25,8 @@ Sem valor padrão — o serviço não sobe sem elas declaradas:
 Com valor padrão, ajustados em produção:
 
 - `CG_AMBIENTE=producao`
-- `CG_DSN_BANCO` — aponta para o **Cloud SQL pelo conector**, socket Unix, nunca IP público.
+- `CG_DSN_BANCO` — aponta para o Cloud SQL pelo **socket Unix** do conector, em
+  `/cloudsql/PROJETO:REGIAO:INSTANCIA`, nunca por endereço de rede.
 - `CG_GOOGLE_CLIENT_ID` — o mesmo _client ID_ que os frontends usam.
 - `CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE` — bucket de produção; sem ele o núcleo cai para
   disco local, que não sobrevive a um novo deploy do Cloud Run.
@@ -37,6 +38,12 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
 
 1. **Cloud SQL para PostgreSQL** com a extensão PostGIS disponível. Anotar a string de conexão
    da instância (`PROJETO:REGIAO:INSTANCIA`), usada em `--add-cloudsql-instances`.
+
+   A instância nasce com **IP público habilitado e nenhuma rede autorizada**. Parece
+   contraditório e não é: o conector embutido no Cloud Run fala com ela pelo Cloud SQL Auth
+   Proxy, que autentica por IAM e cifra o tráfego — sem rede autorizada, ninguém alcança o
+   banco pela internet. A alternativa, só IP privado, exigiria _Direct VPC egress_ ou um
+   conector de acesso VPC: mais peças e mais custo, sem ganho real de proteção aqui.
 2. **Artifact Registry** — repositório Docker `comunidade-game` na mesma região.
 3. **Secret Manager** — um segredo por variável sem valor padrão, mais
    `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM` e `CG_DSN_BANCO`. O workflow lê a lista de mapeamentos
@@ -49,7 +56,7 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
 5. **Firebase Hosting**, no mesmo projeto GCP (documento 03 §1; ver design.md da change de
    implantação para o porquê). Criar os sites e mapear os alvos declarados em `firebase.json`:
 
-   ```
+   ```bash
    firebase hosting:sites:create comunidade-game-api
    firebase hosting:sites:create comunidade-game-app-03
    firebase target:apply hosting api comunidade-game-api
@@ -64,7 +71,7 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
 6. **Permissão de invocação do Cloud Run pelo Firebase Hosting** — o serviço sobe com
    `--no-allow-unauthenticated` (só o _rewrite_ do Firebase o alcança):
 
-   ```
+   ```bash
    gcloud run services add-iam-policy-binding nucleo-comunidade-game \
      --region southamerica-east1 \
      --member serviceAccount:firebase-hosting@comunidade-game-506017.iam.gserviceaccount.com \
@@ -75,7 +82,7 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
 
 Depois do primeiro deploy e da primeira migração:
 
-```
+```bash
 python -m nucleo.cli
 ```
 
