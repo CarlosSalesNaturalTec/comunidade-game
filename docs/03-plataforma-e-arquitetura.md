@@ -12,6 +12,10 @@
    pública. O que a leitura pública dispensa é o **login da pessoa**: o visitante da vitrine e
    do jogo não se identifica — quem se identifica é a aplicação. Escrita e gestão exigem, além
    da chave, a credencial da persona.
+   O núcleo responde a **qualquer origem** (`*`), **sem cookie credenciado** — a chave e a
+   credencial da persona viajam em cabeçalho. A proteção está nelas, na cota por chave e no
+   freio por origem (§8), não no navegador: restringir origem não barra chamada feita fora
+   dele e contrariaria o princípio 1.
 3. **Frontends independentes** — em **endereços próprios**, evoluindo desacoplados do backend.
    A **vitrine ocupa a raiz** do domínio da plataforma — **`comunidadegame.org`** —: é por ela
    que qualquer pessoa chega, e é dela que o botão **Entrar** encaminha cada persona à sua
@@ -71,6 +75,14 @@
     freio das rotas públicas conta em memória (§8) e cada contêiner a mais multiplicaria o
     limite. Não confundir com o princípio 10: lá "instância única" é uma base para todas as
     comunidades; aqui é quantos contêineres atendem ao mesmo tempo.
+
+    Os **sete frontends** são **React com TypeScript sobre Vite**, exceto a **vitrine
+    (App 06)**, escrita em **Astro** por ser a única indexável por buscadores — as outras seis
+    são inteiramente autenticadas e nada têm a indexar. Todas geram **saída estática**, servida
+    pelo **Firebase Hosting**, um site por aplicação e por ambiente: sem runtime de servidor, o
+    custo cabe no free tier que sustenta o ciclo e qualquer comunidade serve os arquivos onde
+    quiser.
+
 14. **Repositório único (_monorepo_)** — o Backend API, as oito aplicações, os jogos, a
     documentação e os artefatos de implementação vivem no mesmo repositório, com uma pasta
     por aplicação (§1.2). É organização do código, não acoplamento: cada frontend continua
@@ -137,9 +149,13 @@ comunidade-game/
 │  └─ app-09-mestre/
 ├─ jogos/
 │  └─ app-04-arena/             jogo em Phaser; novo jogo entra como irmão
+├─ comum/                       o que as oito compartilham — tokens e carta
 ├─ docs/                        documentação do produto — o site MkDocs
 └─ openspec/                    artefatos de implementação
 ```
+
+A pasta `comum/` é irmã de `apps/` e de `jogos/` porque o jogo consome os mesmos tokens: o
+compartilhado não pode morar dentro de uma das aplicações que o consomem.
 
 O jogo fica fora de `apps/` por dois motivos: a API aberta admite **outros jogos** sobre o
 mesmo contrato (documento 11), e é o código que o Guerreiro(a) altera como atividade de

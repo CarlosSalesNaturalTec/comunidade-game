@@ -1,0 +1,158 @@
+/*
+ * Tokens de design do Comunidade Game (documento 15 §12), em três camadas:
+ * primitiva, semântica e tema. As oito aplicações e o jogo consomem só a
+ * semântica e a de tema — a primitiva não é referenciada fora deste arquivo.
+ *
+ * A camada de tema aqui presente cobre o temperamento Operação (documento 15
+ * §6); Arena entra quando a primeira aplicação daquele temperamento precisar
+ * dela. Cada aplicação declara `data-temperamento` na raiz do documento.
+ */
+
+:root {
+  /* Primitiva — neutros (documento 15 §3.1) */
+  --tinta-900: #10141f;
+  --tinta-800: #1c2333;
+  --tinta-700: #2e3850;
+  --tinta-500: #5c6885;
+  --tinta-300: #a8b2c6;
+  --tinta-200: #cfd6e3;
+  --tinta-100: #e7ebf2;
+  --cal-050: #f7f5f0;
+  --cal-000: #ffffff;
+
+  /* Primitiva — marca, ação e estados (documento 15 §3.2) */
+  --marca-700: #b33c00;
+  --marca-600: #c94800;
+  --marca-500: #f25c05;
+  --marca-400: #ff7a2e;
+  --marca-100: #ffe3d1;
+
+  --acao-700: #123e8a;
+  --acao-600: #1750ae;
+  --acao-500: #1d63d1;
+  --acao-400: #5b93ea;
+  --acao-100: #dce8fb;
+
+  --ponto-700: #7a5500;
+  --ponto-600: #996b00;
+  --ponto-500: #f2b705;
+  --ponto-400: #ffce3d;
+  --ponto-100: #fff1cc;
+
+  --moeda-700: #0b5d57;
+  --moeda-600: #0e7a72;
+  --moeda-500: #12a093;
+  --moeda-400: #3fc7b9;
+  --moeda-100: #d3f1ee;
+
+  --sucesso-600: #1b7a3d;
+  --sucesso-400: #4ecb80;
+  --atencao-600: #8a5a00;
+  --atencao-400: #e8a93b;
+  --erro-600: #c02626;
+  --erro-400: #f27a7a;
+
+  /* Primitiva — tipografia e medida (documento 15 §4) */
+  --fonte-texto: "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --fonte-destaque: "Archivo", system-ui, sans-serif;
+
+  --escala-075: 0.75rem;
+  --escala-0875: 0.875rem;
+  --escala-100: 1rem;
+  --escala-1125: 1.125rem;
+  --escala-1375: 1.375rem;
+  --escala-175: 1.75rem;
+  --escala-225: 2.25rem;
+
+  --entrelinha-corrido: 1.5;
+  --entrelinha-titulo: 1.2;
+
+  --peso-corpo: 400;
+  --peso-rotulo: 500;
+  --peso-titulo: 600;
+  --peso-numeral: 700;
+
+  --espaco-4: 4px;
+  --espaco-8: 8px;
+  --espaco-12: 12px;
+  --espaco-16: 16px;
+  --espaco-24: 24px;
+  --espaco-32: 32px;
+  --espaco-48: 48px;
+  --espaco-64: 64px;
+
+  --alvo-de-toque: 48px;
+  --raio-campo: 4px;
+  --raio-ficha: 999px;
+  --largura-do-foco: 2px;
+
+  /* Semântica — claro (padrão) */
+  --cor-texto: var(--tinta-900);
+  --cor-texto-secundario: var(--tinta-700);
+  --cor-texto-apoio: var(--tinta-500);
+  --cor-fundo: var(--cal-050);
+  --cor-superficie: var(--cal-000);
+  --cor-separador: var(--tinta-200);
+  --cor-campo-desabilitado: var(--tinta-100);
+
+  --cor-marca: var(--marca-600);
+  --cor-marca-contorno: var(--marca-700);
+  --cor-sobre-marca: var(--cal-000);
+  --cor-acao: var(--acao-600);
+  --cor-acao-contorno: var(--acao-700);
+  --cor-sobre-acao: var(--cal-000);
+  --cor-ponto: var(--ponto-500);
+  --cor-ponto-contorno: var(--ponto-700);
+  --cor-moeda: var(--moeda-600);
+  --cor-moeda-contorno: var(--moeda-700);
+  --cor-sobre-moeda: var(--cal-000);
+
+  --cor-sucesso: var(--sucesso-600);
+  --cor-atencao: var(--atencao-600);
+  --cor-erro: var(--erro-600);
+
+  --cor-borda: var(--tinta-500);
+  --cor-foco: var(--marca-500);
+}
+
+/* Semântica — escuro, pelo esquema de cor do sistema (documento 15 §5) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cor-texto: var(--cal-050);
+    --cor-texto-secundario: var(--tinta-300);
+    --cor-texto-apoio: var(--tinta-300);
+    --cor-fundo: var(--tinta-900);
+    --cor-superficie: var(--tinta-800);
+    --cor-separador: var(--tinta-700);
+    --cor-campo-desabilitado: var(--tinta-700);
+
+    --cor-marca: var(--marca-400);
+    --cor-sobre-marca: var(--tinta-900);
+    --cor-acao: var(--acao-400);
+    --cor-sobre-acao: var(--tinta-900);
+    --cor-ponto: var(--ponto-500);
+    --cor-moeda: var(--moeda-400);
+    --cor-sobre-moeda: var(--tinta-900);
+
+    --cor-sucesso: var(--sucesso-400);
+    --cor-atencao: var(--atencao-400);
+    --cor-erro: var(--erro-400);
+
+    --cor-borda: var(--tinta-300);
+    --cor-foco: var(--marca-400);
+  }
+}
+
+/* Tema — temperamento Operação: Apps 03, 07, 08 e 09 (documento 15 §6) */
+:root[data-temperamento="operacao"] {
+  --densidade: var(--espaco-8);
+  --raio-carta: var(--raio-campo);
+  --duracao: 200ms;
+}
+
+/* Nenhum movimento decorativo, sem exceção (documento 15 §5) */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duracao: 0ms;
+  }
+}

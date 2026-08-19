@@ -174,6 +174,15 @@ na lista sem os indicadores —, e com ela veio o cálculo dos quatro indicadore
 apenas nomeado. A entrega do conjunto abaixo do bairro segue fora do escopo — corre fora da
 plataforma no Ciclo 01.
 
+O PRD-02 recebeu a primeira fatia: a change `esqueleto-da-gestao-e-cadastro-de-comunidade`
+abriu a **App 03** — entrada do adulto por login social, sessão em `sessionStorage` e o
+**cadastro de Comunidade Virtual de ponta a ponta** (`RF-02-11`, `RN-02-04`). É também a
+primeira pasta de frontend do repositório: nasceram `comum/`, com os tokens de design do
+documento 15 §12, e a esteira de CI das pastas de JavaScript. O núcleo passou a responder a
+**qualquer origem, sem cookie credenciado**, para que um frontend em endereço próprio o alcance
+(documento 03 §1, princípio 2). Os demais cadastros do PRD-02 §6.1, as filas de avaliação, o
+painel do dia, o Quiz ao Vivo e a publicação em endereço próprio seguem pendentes.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

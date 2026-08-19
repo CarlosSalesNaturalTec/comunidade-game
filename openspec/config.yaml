@@ -69,11 +69,12 @@ context: |
   - Modelos de IA do Ciclo 01: Google Gemini, com custo lançado no livro-razão como cloud.
   - Código aberto; conteúdo educacional publicado sob CC BY-SA.
   - Monorepo com uma pasta por aplicação: `backend/`, `apps/app-NN-*/`, `jogos/app-04-arena/`,
-    `docs/` e `openspec/` (documento 03 §1.2). Não invente pasta nova de topo; o jogo fica em
-    `jogos/`, não em `apps/`.
+    `comum/`, `docs/` e `openspec/` (documento 03 §1.2). Não invente pasta nova de topo; o jogo
+    fica em `jogos/`, não em `apps/`.
   - Ferramentas do backend: Python 3.12, Ruff (conjuntos `E`, `F`, `I`, `UP`, `B`) e pytest.
-    As ferramentas dos frontends e do jogo seguem PENDENTES no documento 09: pergunte, não
-    escolha.
+    Ferramentas dos frontends e do jogo: Biome (formatador e _linter_) e Vitest, com as três
+    verificações — `biome format`, `biome check`, `vitest run` — bloqueando o _merge_
+    (documento 09).
 
   ORDEM DE CONSTRUÇÃO
   Está no documento 99 §9, com o piso de dependência de cada PRD. NÃO é a ordem de elaboração

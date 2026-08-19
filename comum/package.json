@@ -1,0 +1,12 @@
+{
+  "name": "comum",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Tokens de design compartilhados pelas oito aplicações do Comunidade Game (documento 15 §12).",
+  "exports": {
+    "./tokens.css": "./tokens.css"
+  },
+  "files": [
+    "tokens.css"
+  ]
+}

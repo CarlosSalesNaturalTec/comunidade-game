@@ -1,0 +1,40 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+  },
+  // Biome enxerga só o compartilhado e as aplicações Web; o Prettier segue
+  // dono de `.md` e da configuração da raiz (design — Decisions).
+  "files": {
+    "ignoreUnknown": false,
+    // `public/` guarda ativos estáticos (ícones, favicon), não código.
+    "includes": ["comum/**", "apps/**", "!apps/**/public"],
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 95,
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+    },
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+    },
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on",
+      },
+    },
+  },
+}

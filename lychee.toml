@@ -17,4 +17,7 @@ accept = ["200..=299", "429"]
 include_fragments = "full"
 
 # `openspec/` fica fora do lint de documentação (CLAUDE.md) e não tem links.
-exclude_path = ["node_modules", "site", ".venv", "openspec"]
+# `apps/` e `jogos/` têm esteira própria (Biome + Vitest); seus HTML de entrada usam
+# links raiz-relativos (ex.: `/favicon.svg`) que o Vite resolve, mas que o lychee não
+# consegue resolver em arquivo local sem um root dir por aplicação.
+exclude_path = ["node_modules", "site", ".venv", "openspec", "apps", "jogos"]
