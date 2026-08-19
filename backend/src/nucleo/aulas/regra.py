@@ -8,7 +8,7 @@ from ..comunidades.modelo import ComunidadeVirtual, VinculoJogador
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
-from ..recursos.modelo import TipoDeRecurso
+from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
 from ..reservas.regra import liberar_reservas_da_aula, tentar_reservar_recursos
 from ..tempo import agora
 from .modelo import Aula, ModoDeComprovacao, Presenca, RecursoDeclaradoDaAula, SituacaoDaAula
@@ -74,6 +74,14 @@ def agendar_aula(
         if entrada.tipo is None:
             raise ErroDeValidacao(
                 mensagem="Recurso declarado exige um tipo de recurso existente.",
+                campo="recursos_declarados",
+            )
+        if entrada.tipo.natureza == NaturezaDoRecurso.duravel:
+            raise ErroDeValidacao(
+                mensagem=(
+                    "Tipo de recurso de natureza durável não é reservável: o saldo é "
+                    "patrimônio, não insumo de atividade."
+                ),
                 campo="recursos_declarados",
             )
         if entrada.quantidade is None or entrada.quantidade <= 0:

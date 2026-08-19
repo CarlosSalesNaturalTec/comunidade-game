@@ -52,6 +52,7 @@ from nucleo.fila.regra import avaliar_solicitacao_de_chave, registrar_solicitaca
 from nucleo.livro_razao.modelo import DestinacaoDoAporte, Lancamento, NaturezaDoLancamento
 from nucleo.locais.modelo import Local, NivelDoLocal
 from nucleo.paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
+from nucleo.patrimonio.modelo import AnotacaoDaFichaDeVida, ItemPatrimonial, TeorDaAnotacao
 from nucleo.personas.modelo import (
     Credencial,
     Nick,
@@ -267,6 +268,7 @@ def app(sessao, configuracao):
     from nucleo.livro_razao.rotas import roteador as roteador_de_livro_razao
     from nucleo.locais.rotas import roteador as roteador_de_locais
     from nucleo.necessidades.rotas import roteador as roteador_de_necessidades
+    from nucleo.patrimonio.rotas import roteador as roteador_de_patrimonio
     from nucleo.personas.rotas import roteador as roteador_de_personas
     from nucleo.poder_sustentador.rotas import roteador as roteador_de_poder_sustentador
     from nucleo.pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
@@ -305,6 +307,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_ressarcimentos)
     incluir_roteador_de_dados(aplicacao, roteador_de_catalogo_avulso)
     incluir_roteador_de_dados(aplicacao, roteador_de_trocas)
+    incluir_roteador_de_dados(aplicacao, roteador_de_patrimonio)
     return aplicacao
 
 
@@ -1242,6 +1245,56 @@ def criar_reserva(sessao):
         sessao.commit()
         sessao.refresh(reserva)
         return reserva
+
+    return _criar
+
+
+@pytest.fixture
+def criar_item_patrimonial(sessao):
+    def _criar(
+        autor: Persona,
+        ponto_de_apoio: PontoDeApoio,
+        aporte_de_origem: Aporte | None = None,
+        titulo: str = "Descobrindo o Mundo",
+        numero_de_tombo: str = "0001",
+        estado_de_conservacao: str = "novo",
+    ) -> ItemPatrimonial:
+        item = ItemPatrimonial(
+            aporte_de_origem_id=aporte_de_origem.id if aporte_de_origem is not None else None,
+            titulo=titulo,
+            numero_de_tombo=numero_de_tombo,
+            ponto_de_apoio_id=ponto_de_apoio.id,
+            estado_de_conservacao=estado_de_conservacao,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(item)
+        sessao.commit()
+        sessao.refresh(item)
+        return item
+
+    return _criar
+
+
+@pytest.fixture
+def criar_anotacao_da_ficha_de_vida(sessao):
+    def _criar(
+        autor: Persona,
+        item: ItemPatrimonial,
+        teor: TeorDaAnotacao = TeorDaAnotacao.cuidado,
+        estado_de_conservacao: str = "novo",
+    ) -> AnotacaoDaFichaDeVida:
+        anotacao = AnotacaoDaFichaDeVida(
+            item_patrimonial_id=item.id,
+            teor=teor,
+            estado_de_conservacao=estado_de_conservacao,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(anotacao)
+        sessao.commit()
+        sessao.refresh(anotacao)
+        return anotacao
 
     return _criar
 

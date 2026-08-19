@@ -128,11 +128,25 @@ encontro que a troca registra é a `Aula` do PRD-01, sem verificação de estado
 rota nasce sob `/aulas/{id}/trocas`; o débito emitido pela troca **não declara aula** — só o da
 baixa de reserva declara —; e a troca exige que o Guerreiro(a) seja da comunidade do item.
 
+A nona fatia entregou o **patrimônio** — o `ItemPatrimonial` tombado por Admin num ponto de
+apoio, com **aporte de origem opcional** que, quando declarado, precisa ser de tipo **durável**
+e não pode exceder a quantidade aportada (`RF-07-11`, `RN-07-07`). O **número de tombo** é
+digitado por quem tomba, nunca gerado pelo núcleo, e **único por ponto de apoio**; o
+**responsável não é campo do item** — deriva do responsável designado no `PontoDeApoio`, o que
+corrige o PRD-07 §8. A **ficha de vida**, `AnotacaoDaFichaDeVida`, é histórico somente
+inserção, à imagem do `Lancamento`: cada anotação grava o teor — cuidado, perda ou dano — e o
+estado de conservação apurado, sem caminho de código para perda ou dano virarem débito
+(`RF-07-48`, `RN-07-09`). Decisão nova de fundo: **o saldo de natureza durável fica inerte** —
+não é reservável pela aula nem lastreia item do catálogo avulso, e o único destino dele é o
+tombamento; duas recusas novas o guardam, no agendamento e no cadastro do item de catálogo
+avulso. Em **`POST /itens-patrimoniais`** (Admin), **`GET /itens-patrimoniais`** (gestão,
+filtrada por comunidade) e **`POST /itens-patrimoniais/{id}/ficha-de-vida`** (Admin ou Mestre).
+
 O documento 09 mantém a pendência de **quem desativa um ponto de apoio**. **Empréstimo de
 bancada e reposição solidária saíram do escopo** — o documento 05 já os adiava, e o PRD
-divergia da fonte. No Ciclo 01 ficam o tombamento, a ficha de vida e a conferência de
-inventário. Seguem para as próximas fatias o **patrimônio** e o **desafio extra** — este
-último ainda sem a entidade `DesafioExtra`, que nasce em PRD-09 ou PRD-14.
+divergia da fonte. No Ciclo 01 ficam o tombamento, a ficha de vida entregues; a **conferência de
+inventário** e o **desafio extra** seguem para próximas fatias — este último ainda sem a
+entidade `DesafioExtra`, que nasce em PRD-09 ou PRD-14.
 
 O PRD-08 volta a **implementado**: a change `lista-publica-de-comunidades` entregou o
 `GET /comunidades` com os quatro indicadores do documento 02 §1 (`RF-08-30`, `RF-08-31`),
