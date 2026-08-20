@@ -126,6 +126,33 @@ describe("cadastro de Comunidade Virtual", () => {
     ).toBeInTheDocument();
   });
 
+  it("a ausência de indicadores é informação, nunca aviso de erro", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
+      itens: [
+        {
+          id: "1",
+          nome: "Comunidade Nova",
+          localizacao: "Bairro Novo",
+          series_abertas: null,
+          series_ativas: null,
+          registros_validos: null,
+          continuidade: null,
+        },
+      ],
+      proximo_cursor: null,
+      ciclo_rotulo: "2026",
+    });
+
+    render(<TelaDeComunidades />);
+
+    const indicadoresAusentes = await screen.findByText(
+      /ainda sem indicadores do território/i,
+    );
+    expect(indicadoresAusentes).toHaveAttribute("role", "status");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
   it("campo obrigatório em falta é apontado no campo, sem criar nada", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
     const criarComunidadeEspiado = vi.spyOn(comunidadesApi, "criarComunidade");
@@ -138,6 +165,21 @@ describe("cadastro de Comunidade Virtual", () => {
 
     expect(await screen.findByText(/informe a localização/i)).toBeInTheDocument();
     expect(criarComunidadeEspiado).not.toHaveBeenCalled();
+  });
+
+  it("erro de campo é anunciado no próprio campo, alcançado depois que surgiu", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+
+    render(<FormularioDeComunidade onCriada={vi.fn()} onCancelar={vi.fn()} />);
+    const usuario = userEvent.setup();
+
+    await usuario.type(screen.getByLabelText(/^nome$/i), "Comunidade Nova");
+    await usuario.click(screen.getByRole("button", { name: /^criar$/i }));
+    await screen.findByText(/informe a localização/i);
+
+    const campoDeLocalizacao = screen.getByLabelText(/localização/i);
+    expect(campoDeLocalizacao).toHaveAccessibleDescription(/informe a localização/i);
+    expect(campoDeLocalizacao).toHaveAttribute("aria-invalid", "true");
   });
 
   it("recusa por papel é explicada em linguagem simples", async () => {

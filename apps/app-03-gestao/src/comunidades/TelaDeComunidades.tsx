@@ -1,3 +1,4 @@
+import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import { ehRecusaDeSessao } from "../api/cliente";
 import { useSessao } from "../autenticacao/ContextoDeSessao";
@@ -38,20 +39,13 @@ export function TelaDeComunidades() {
   const podeCriar = sessao?.papel === "admin";
 
   return (
-    <main>
-      <header>
-        <h1>Comunidades Virtuais</h1>
-        <button type="button" onClick={sair}>
-          Sair
-        </button>
-      </header>
+    <Moldura>
+      <Cabecalho titulo="Comunidades Virtuais" acao={{ rotulo: "Sair", aoAcionar: sair }} />
 
-      {erro && <p role="alert">{erro}</p>}
+      {erro && <Aviso tipo="erro">{erro}</Aviso>}
 
       {podeCriar && !mostrarFormulario && (
-        <button type="button" onClick={() => definirMostrarFormulario(true)}>
-          Nova comunidade
-        </button>
+        <Botao onClick={() => definirMostrarFormulario(true)}>Nova comunidade</Botao>
       )}
 
       {podeCriar && mostrarFormulario && (
@@ -62,6 +56,6 @@ export function TelaDeComunidades() {
       )}
 
       <ListaDeComunidades comunidades={comunidades} />
-    </main>
+    </Moldura>
   );
 }

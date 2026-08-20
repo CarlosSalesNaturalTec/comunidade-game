@@ -113,6 +113,8 @@
 
   --cor-borda: var(--tinta-500);
   --cor-foco: var(--marca-500);
+
+  --largura-de-leitura: 64ch;
 }
 
 /* Semântica — escuro, pelo esquema de cor do sistema (documento 15 §5) */

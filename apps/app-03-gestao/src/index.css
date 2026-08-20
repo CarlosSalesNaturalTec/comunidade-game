@@ -1,6 +1,7 @@
 /* A aplicação consome só a camada semântica e a de tema de `comum/tokens.css`
  * (documento 15 §12) — nenhum valor primitivo é repetido aqui. */
 @import "comum/tokens.css";
+@import "comum/fontes.css";
 
 *,
 *::before,
@@ -36,14 +37,6 @@ select,
 textarea {
   font: inherit;
   color: inherit;
-}
-
-/* Alvo de toque de ao menos 48 px, dedo de criança na régua (documento 15
- * §5) — aqui alcança quem opera a gestão em pé, no celular. */
-button,
-input,
-a[role="button"] {
-  min-height: var(--alvo-de-toque);
 }
 
 /* Foco sempre visível, sem exceção (documento 15 §5). */

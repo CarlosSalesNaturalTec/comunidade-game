@@ -27,3 +27,22 @@ cadastro de Comunidade Virtual. React com TypeScript sobre Vite (documento 03 §
 Publicada pelo `.github/workflows/app-03-deploy.yml` em `gestao.comunidadegame.org`, via
 Firebase Hosting — alvo `app-03` de `firebase.json`. Provisionamento e ordem da primeira
 execução em `backend/README.md`.
+
+## Conferência à mão de acessibilidade (2026-08-20)
+
+O que o Vitest não prova — contraste, alvo de toque em pixel e o desenho das duas famílias —,
+conferido uma vez nas três telas, na largura de um celular (390 px), claro e escuro (design —
+Decisions). Resultado:
+
+| O que foi medido                                       | Piso do documento 15 §5 | Medido                                                    |
+| -------------------------------------------------------- | ------------------------ | ---------------------------------------------------------- |
+| Contraste do título e do corpo sobre o fundo             | 4,5:1                    | 16,88:1 (título), 10,72:1 claro / 8,62:1 escuro (corpo)     |
+| Contraste do `Aviso` de erro sobre o fundo                | 4,5:1                    | 5,43:1 claro / 6,87:1 escuro                                |
+| Contraste do rótulo do `Botao` primário sobre o fundo     | 4,5:1                    | 7,51:1 claro / 5,96:1 escuro                                |
+| Alvo de toque dos três botões (`Sair`, `Criar`, `Cancelar`) | 48 px                   | 48,0 px de altura, nos três                                 |
+| Contorno de foco do `Botao`, alcançado por Tab            | 2 px, `marca-500`/`marca-400` | 2 px sólido, `#f25c05` no claro e `#ff7a2e` no escuro — exato |
+| Família do título e do corpo                              | Archivo / Atkinson Hyperlegible Next | Aplicadas nas três telas, sem substituição pela família de reserva |
+
+Conferido com Chromium (o mesmo motor do ambiente), viewport 390×1400, nas três telas —
+entrada, comunidades com erro de carregamento e formulário com erro de campo —, em claro e
+escuro. Nenhum ponto abaixo do piso.
