@@ -25,7 +25,10 @@ Sem valor padrão — o serviço não sobe sem elas declaradas:
 
 Com valor padrão, ajustados em produção:
 
-- `CG_AMBIENTE=producao`
+- `CG_AMBIENTE=producao` — **declarado pelo `backend-deploy.yml`**, no serviço e no Job de
+  migração, não pelo Secret Manager: não é segredo. O padrão do código é `desenvolvimento`, e
+  o núcleo confere a chave contra o ambiente dela (`RN-01-34`) — rodando com o padrão, ele
+  recusa com `chave_invalida` toda chave semeada em produção.
 - `CG_DSN_BANCO` — aponta para o Cloud SQL pelo **socket Unix** do conector, em
   `/cloudsql/PROJETO:REGIAO:INSTANCIA`, nunca por endereço de rede. A senha do banco vai
   **dentro de uma URL**: gere-a com `openssl rand -hex 24`, nunca `-base64`, porque `/` e `+`
@@ -124,6 +127,11 @@ Converge **8 chaves** — uma por aplicação do projeto **no ambiente declarado
 aqui. Rodando como Cloud Run Job, declare `CG_AMBIENTE=producao`, senão a semeadura emite as
 chaves do ambiente errado.
 
+**A semeadura e o serviço precisam do mesmo `CG_AMBIENTE`.** Semear com `producao` e servir
+com o padrão `desenvolvimento` — ou o contrário — emite chave que o núcleo recusa em toda
+chamada, com `chave_invalida`, sem dizer por quê: quem chama recebe sempre a mesma recusa
+(`RN-01-34`). O motivo sai no log do serviço, em `nucleo.chaves`.
+
 **Os segredos das chaves aparecem uma única vez** — copie e guarde antes de fechar o terminal,
 `semear_ambiente` não os recupera depois. Rodar de novo é seguro: ambiente já semeado não emite
 chave nova. Chave emitida sem o segredo anotado só se resolve **revogando e reemitindo**.
@@ -135,6 +143,26 @@ chave nova. Chave emitida sem o segredo anotado só se resolve **revogando e ree
 A chave da App 03 do ambiente de produção vira o segredo do repositório
 `APP03_CHAVE_DE_APLICACAO`, consumido pelo `app-03-deploy.yml` — é o que destrava o primeiro
 build do frontend.
+
+## Quando a chamada é recusada com `chave_invalida`
+
+A recusa é sempre a mesma para quem chama, qualquer que seja o motivo (`RN-01-34`). O motivo
+vai para o log do serviço, no `logger` `nucleo.chaves`:
+
+```bash
+gcloud run services logs read nucleo-comunidade-game \
+  --region southamerica-east1 --project comunidade-game-506017 --limit 20
+```
+
+A linha traz os campos que decidem, e cada um aponta uma causa:
+
+| Campo do log        | Causa                                                                |
+| ------------------- | -------------------------------------------------------------------- |
+| `cabeçalho=ausente` | o build saiu sem `VITE_CHAVE_DE_APLICACAO`, ou o cabeçalho se perdeu |
+| `registro=False`    | a chave não existe neste banco — semeada em outro, ou mal formada    |
+| `segredo=False`     | segredo trocado: o `id` existe, o resumo não confere                 |
+| `ambiente=False`    | chave de um ambiente conferida contra o outro — veja `CG_AMBIENTE`   |
+| `vigente=False`     | chave revogada, à mão ou por decurso do prazo (`RF-01-52`)           |
 
 ## Conferência que fecha a publicação
 

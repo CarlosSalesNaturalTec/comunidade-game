@@ -1,3 +1,4 @@
+import logging
 import statistics
 import time
 import uuid
@@ -85,6 +86,25 @@ def test_recusa_por_ambiente_errado_usa_o_mesmo_corpo_da_chave_desconhecida(clie
     resposta = cliente.get("/v1/publica", headers={"X-Chave-Aplicacao": chave_de_producao})
     assert resposta.status_code == 401
     assert resposta.json()["codigo"] == "chave_invalida"
+
+
+def test_log_do_servico_diz_qual_conferencia_falhou(cliente, criar_chave, caplog):
+    """A resposta é sempre a mesma, mas a implantação precisa distinguir uma
+    chave de ambiente errado de uma revogada — o motivo sai no log, e o
+    segredo nunca."""
+    chave_de_producao, _ = criar_chave(ambiente="producao")
+    segredo = chave_de_producao.split(".", 1)[1]
+
+    with caplog.at_level(logging.WARNING, logger="nucleo.chaves"):
+        cliente.get("/v1/publica", headers={"X-Chave-Aplicacao": chave_de_producao})
+
+    linha = caplog.text
+    assert "ambiente=False" in linha
+    assert "cabeçalho=presente" in linha
+    assert "registro=True" in linha
+    assert "segredo=True" in linha
+    assert "vigente=True" in linha
+    assert segredo not in linha
 
 
 def test_dispersao_de_tempo_nao_denuncia_o_motivo(cliente, criar_chave):
