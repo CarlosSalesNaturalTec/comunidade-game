@@ -93,3 +93,18 @@ jobs:
             --add-cloudsql-instances "${{ secrets.GCP_CLOUDSQL_INSTANCIA }}" \
             --set-secrets "${{ secrets.GCP_SECRETOS_CG }}" \
             --quiet
+
+      # O serviço sobe privado: quem serve `api.comunidadegame.org` é o alvo
+      # `api` do Firebase Hosting, com `rewrite` para ele (design — Decisions,
+      # plano B). Republicar aqui mantém o _rewrite_ em dia com o serviço, e é
+      # este deploy que concede ao Hosting a permissão de invocação.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Publicar o alvo `api` no Firebase Hosting
+        run: |
+          npx --yes firebase-tools@latest deploy \
+            --only hosting:api \
+            --project "${{ env.PROJETO_GCP }}" \
+            --non-interactive

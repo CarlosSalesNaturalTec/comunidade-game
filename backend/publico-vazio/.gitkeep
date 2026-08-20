@@ -1,0 +1,7 @@
+Diretório vazio de propósito.
+
+O alvo `api` do Firebase Hosting não serve arquivo nenhum: tudo o que chega a
+`api.comunidadegame.org` cai no `rewrite` para o serviço do Cloud Run
+(`firebase.json`). O Firebase exige um diretório público declarado mesmo
+quando ele não publica nada, e é este. O `.gitkeep` não sobe: o `ignore` do
+alvo descarta `**/.*`.

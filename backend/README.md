@@ -93,6 +93,11 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    O `target:apply` grava o mapeamento no `.firebaserc` **local**. Ele já está versionado
    no repositório com os dois alvos — sem isso a esteira não saberia a que site publicar.
 
+   O alvo `api` **não serve arquivo nenhum**: o diretório `backend/publico-vazio/` existe só
+   porque o Firebase exige um público declarado, e todo caminho cai no `rewrite` para o
+   Cloud Run. Quem publica esse alvo é o `backend-deploy.yml`, junto com o núcleo — o
+   `rewrite` aponta para um serviço, e faz sentido republicá-lo quando o serviço muda.
+
    Ligar o domínio a cada site (console do Firebase Hosting → domínio personalizado):
    `api.comunidadegame.org` ao alvo `api`, `gestao.comunidadegame.org` ao alvo `app-03`. Os
    registros DNS que o Firebase pedir entram na Cloudflare em modo **"DNS only"** (nuvem
@@ -101,9 +106,8 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
 7. **Permissão de invocação do Cloud Run pelo Firebase Hosting** — o serviço sobe com
    `--no-allow-unauthenticated` (só o _rewrite_ do Firebase o alcança). O `firebase deploy`
    concede essa permissão sozinho quando publica um _rewrite_ do tipo `run` para um serviço
-   do mesmo projeto — **não é passo manual**. Confirmar depois do primeiro deploy da esteira
-   do núcleo (5.2, depois do primeiro `app-03-deploy.yml` ou de qualquer deploy que publique
-   o alvo `api`):
+   do mesmo projeto — **não é passo manual**. O `backend-deploy.yml` republica o alvo `api`
+   a cada deploy do núcleo, então isso acontece na esteira. Confirmar depois dela rodar:
 
    ```bash
    gcloud run services get-iam-policy nucleo-comunidade-game --region southamerica-east1
