@@ -1,3 +1,4 @@
+import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useState } from "react";
 import { ErroDaApi, ehRecusaDeSessao } from "../api/cliente";
 import { useSessao } from "../autenticacao/ContextoDeSessao";
@@ -79,36 +80,35 @@ export function FormularioDeComunidade({ onCriada, onCancelar }: Props) {
 
   return (
     <form onSubmit={aoSubmeter} aria-label="Nova Comunidade Virtual">
-      <label htmlFor="campo-nome">Nome</label>
-      <input id="campo-nome" value={nome} onChange={(e) => definirNome(e.target.value)} />
-      {erroDeCampo?.campo === "nome" && <p role="alert">{erroDeCampo.mensagem}</p>}
-
-      <label htmlFor="campo-localizacao">Localização</label>
-      <input
-        id="campo-localizacao"
-        value={localizacao}
-        onChange={(e) => definirLocalizacao(e.target.value)}
+      <Campo
+        rotulo="Nome"
+        valor={nome}
+        aoAlterar={definirNome}
+        erro={erroDeCampo?.campo === "nome" ? erroDeCampo.mensagem : null}
       />
-      {erroDeCampo?.campo === "localizacao" && <p role="alert">{erroDeCampo.mensagem}</p>}
 
-      <label htmlFor="campo-granularidade">Granularidade máxima</label>
-      <input
-        id="campo-granularidade"
-        value={granularidadeMaxima}
-        onChange={(e) => definirGranularidadeMaxima(e.target.value)}
+      <Campo
+        rotulo="Localização"
+        valor={localizacao}
+        aoAlterar={definirLocalizacao}
+        erro={erroDeCampo?.campo === "localizacao" ? erroDeCampo.mensagem : null}
       />
-      {erroDeCampo?.campo === "granularidade_maxima" && (
-        <p role="alert">{erroDeCampo.mensagem}</p>
-      )}
 
-      {erroDeRecusa && <p role="alert">{erroDeRecusa}</p>}
+      <Campo
+        rotulo="Granularidade máxima"
+        valor={granularidadeMaxima}
+        aoAlterar={definirGranularidadeMaxima}
+        erro={erroDeCampo?.campo === "granularidade_maxima" ? erroDeCampo.mensagem : null}
+      />
 
-      <button type="submit" disabled={enviando}>
+      {erroDeRecusa && <Aviso tipo="erro">{erroDeRecusa}</Aviso>}
+
+      <Botao tipo="submit" desabilitado={enviando}>
         Criar
-      </button>
-      <button type="button" onClick={onCancelar}>
+      </Botao>
+      <Botao variante="secundaria" onClick={onCancelar}>
         Cancelar
-      </button>
+      </Botao>
     </form>
   );
 }

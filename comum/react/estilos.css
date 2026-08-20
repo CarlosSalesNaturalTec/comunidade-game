@@ -1,0 +1,114 @@
+/*
+ * Estilo dos seis componentes de `comum/react`, consumindo só a camada
+ * semântica e a de tema de `comum/tokens.css` (documento 15 §12) —
+ * nenhum valor primitivo é repetido aqui.
+ */
+
+.cg-botao {
+  min-height: var(--alvo-de-toque);
+  min-width: var(--alvo-de-toque);
+  padding: 0 var(--espaco-16);
+  border-radius: var(--raio-campo);
+  font: inherit;
+  font-weight: var(--peso-rotulo);
+  cursor: pointer;
+  border-width: var(--largura-do-foco);
+  border-style: solid;
+}
+
+.cg-botao + .cg-botao {
+  margin-inline-start: var(--espaco-8);
+}
+
+.cg-botao--primaria {
+  background: var(--cor-acao);
+  color: var(--cor-sobre-acao);
+  border-color: var(--cor-acao-contorno);
+}
+
+.cg-botao--secundaria {
+  background: transparent;
+  color: var(--cor-texto);
+  border-color: var(--cor-borda);
+}
+
+.cg-botao:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cg-moldura {
+  max-width: var(--largura-de-leitura);
+  margin-inline: auto;
+  padding: var(--espaco-24) var(--espaco-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-16);
+}
+
+.cg-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-16);
+}
+
+.cg-cabecalho__texto p {
+  color: var(--cor-texto-secundario);
+}
+
+.cg-campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.cg-campo label {
+  font-weight: var(--peso-rotulo);
+}
+
+.cg-campo input {
+  min-height: var(--alvo-de-toque);
+  padding: 0 var(--espaco-12);
+  border-radius: var(--raio-campo);
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+}
+
+.cg-campo input[aria-invalid="true"] {
+  border-color: var(--cor-erro);
+}
+
+.cg-campo__erro {
+  color: var(--cor-erro);
+}
+
+.cg-aviso {
+  border-radius: var(--raio-campo);
+  padding: var(--espaco-12) var(--espaco-16);
+}
+
+.cg-aviso__rotulo {
+  font-weight: var(--peso-rotulo);
+}
+
+.cg-aviso--erro {
+  color: var(--cor-erro);
+}
+
+.cg-aviso--atencao {
+  color: var(--cor-atencao);
+}
+
+.cg-aviso--sucesso {
+  color: var(--cor-sucesso);
+}
+
+.cg-aviso--andamento {
+  color: var(--cor-texto-secundario);
+}
+
+.cg-estado-da-lista {
+  color: var(--cor-texto-secundario);
+}
