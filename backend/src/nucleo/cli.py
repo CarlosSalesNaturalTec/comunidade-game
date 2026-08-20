@@ -1,7 +1,7 @@
+from . import modelos as _modelos  # noqa: F401 — popula Base.metadata com todas as tabelas
 from .banco import obter_fabrica_de_sessao
 from .chaves.semeadura import semear_ambiente
 from .configuracao import obter_configuracao
-from .fila import modelo as _modelo_fila  # noqa: F401 — registra o vínculo da chave de terceiro
 from .personas.semeadura import semear_admin_fundador
 
 
