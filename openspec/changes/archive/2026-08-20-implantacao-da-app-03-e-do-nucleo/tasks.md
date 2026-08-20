@@ -110,4 +110,6 @@
       rodar isso como Cloud Run Job põe os segredos no Cloud Logging em claro, onde ficam.
       Não é defeito desta change — é consequência de onde o comando roda. Decisão do fundador:
       ou a semeadura corre em terminal interativo, ou entrega os segredos por outro caminho.
-      Enquanto não se decide, o log é apagado à mão depois de cada semeadura.
+      Enquanto não se decide, o log é apagado à mão depois de cada semeadura. **Fica aberta de
+      propósito**, e por isso foi registrada como pendência no documento 09 — é lá que ela
+      sobrevive ao arquivamento desta change.
