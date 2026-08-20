@@ -79,7 +79,13 @@
       App 03 fica para o merge, que destrava as duas esteiras.
 - [ ] 5.3 Conferir a cadeia de ponta a ponta em produção: entrar na App 03 pelo login social,
       criar uma Comunidade Virtual e lê-la na lista; conferir que quem não é Admin recebe a
-      recusa por papel (03 §1 p2).
+      recusa por papel (03 §1 p2). **Primeira tentativa em 20/08/2026**: o login recusou com
+      `401 chave_invalida` — sexto defeito da implantação. O `backend-deploy.yml` nunca
+      declarava `CG_AMBIENTE`, então o serviço rodava com o padrão `desenvolvimento` e
+      conferia contra esse ambiente a chave semeada em `producao` (`RN-01-34`). Corrigido
+      nesta change: a esteira declara `CG_AMBIENTE=producao` no serviço e no Job de migração,
+      e a recusa passa a dizer no log qual das quatro conferências falhou. **A conferência
+      só fecha depois de um novo deploy do núcleo.**
 
 ## 6. Documentação
 

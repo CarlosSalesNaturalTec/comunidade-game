@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+import logging
 import uuid
 from dataclasses import dataclass
 from typing import Annotated
@@ -13,6 +14,8 @@ from ..erros import ChaveInvalida
 from .modelo import ChaveDeAplicacao, SituacaoDaChave
 from .regra import aplicar_decurso_se_vencido
 from .segredo import ChaveMalFormada, calcular_resumo, decompor_chave
+
+logger = logging.getLogger("nucleo.chaves")
 
 NOME_DO_CABECALHO = "X-Chave-Aplicacao"
 
@@ -70,6 +73,23 @@ def exigir_chave_de_aplicacao(
     tudo_certo = registro is not None and resumo_confere and ambiente_confere and situacao_confere
 
     if not tudo_certo:
+        # A recusa é sempre a mesma para quem chama (`RN-01-34`): o motivo vai
+        # só para o log do serviço, onde a implantação o lê sem que a resposta
+        # denuncie nada. Sem isso, uma chave recusada por ambiente errado é
+        # indistinguível de uma chave revogada. O segredo nunca entra aqui.
+        logger.warning(
+            "Chave de aplicação recusada em %s %s: cabeçalho=%s, id=%s, registro=%s, "
+            "segredo=%s, ambiente=%s (o núcleo roda em %r), vigente=%s",
+            request.method,
+            request.url.path,
+            "presente" if cabecalho else "ausente",
+            id_da_chave,
+            registro is not None,
+            resumo_confere,
+            ambiente_confere,
+            configuracao.ambiente,
+            situacao_confere,
+        )
         raise ChaveInvalida()
 
     contexto = ContextoDaChave(

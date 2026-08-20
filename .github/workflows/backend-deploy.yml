@@ -15,6 +15,11 @@ permissions:
   id-token: write
 
 env:
+  # Declarado aqui, e não no Secret Manager: `CG_AMBIENTE` não é segredo, e o
+  # padrão do código é `desenvolvimento`. Sem declarar, o serviço conferia as
+  # chaves contra o ambiente errado e recusava toda chamada com
+  # `chave_invalida` — a chave semeada é de produção (`RN-01-34`).
+  CG_AMBIENTE: producao
   REGIAO: southamerica-east1
   PROJETO_GCP: ${{ secrets.GCP_PROJECT_ID }}
   SERVICO: nucleo-comunidade-game
@@ -67,6 +72,7 @@ jobs:
             --command "alembic" \
             --args "upgrade,head" \
             --set-cloudsql-instances "${{ secrets.GCP_CLOUDSQL_INSTANCIA }}" \
+            --set-env-vars "CG_AMBIENTE=${{ env.CG_AMBIENTE }}" \
             --set-secrets "${{ secrets.GCP_SECRETOS_CG }}" \
             --quiet
 
@@ -91,6 +97,7 @@ jobs:
             --min-instances 0 \
             --allow-unauthenticated \
             --add-cloudsql-instances "${{ secrets.GCP_CLOUDSQL_INSTANCIA }}" \
+            --set-env-vars "CG_AMBIENTE=${{ env.CG_AMBIENTE }}" \
             --set-secrets "${{ secrets.GCP_SECRETOS_CG }}" \
             --quiet
 
