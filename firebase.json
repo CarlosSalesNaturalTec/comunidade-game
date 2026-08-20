@@ -1,0 +1,59 @@
+{
+  "hosting": [
+    {
+      "target": "app-03",
+      "public": "apps/app-03-gestao/dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [{ "source": "**", "destination": "/index.html" }]
+    },
+    {
+      "target": "api",
+      "public": "backend/publico-vazio",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "run": {
+            "serviceId": "nucleo-comunidade-game",
+            "region": "southamerica-east1"
+          }
+        }
+      ]
+    },
+    {
+      "target": "vitrine",
+      "public": "apps/app-06-vitrine/dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    },
+    {
+      "target": "aula",
+      "public": "apps/app-01-aula-presencial/dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    },
+    {
+      "target": "jogo",
+      "public": "jogos/app-04-arena/dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    },
+    {
+      "target": "minhaarea",
+      "public": "apps/app-05-guerreiro/dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    },
+    {
+      "target": "responsavel",
+      "public": "apps/app-07-responsaveis/dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    },
+    {
+      "target": "apoiador",
+      "public": "apps/app-08-apoiador/dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    },
+    {
+      "target": "mestre",
+      "public": "apps/app-09-mestre/dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    }
+  ]
+}

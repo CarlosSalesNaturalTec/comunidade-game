@@ -3,30 +3,9 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from nucleo.apoio_escolar import modelo as modelo_apoio_escolar  # noqa: F401
-from nucleo.auditoria import modelo as modelo_auditoria  # noqa: F401
-from nucleo.aulas import modelo as modelo_aulas  # noqa: F401
+from nucleo import modelos as _modelos  # noqa: F401 — registro único dos modelos
 from nucleo.banco import Base
-from nucleo.biometria import modelo as modelo_biometria  # noqa: F401
-from nucleo.chaves import modelo  # noqa: F401 — registra as tabelas em Base.metadata
-from nucleo.coletas import modelo as modelo_coletas  # noqa: F401
-from nucleo.comunidades import modelo as modelo_comunidades  # noqa: F401
 from nucleo.configuracao import obter_configuracao
-from nucleo.consentimentos import modelo as modelo_consentimentos  # noqa: F401
-from nucleo.criacoes_originais import modelo as modelo_criacoes_originais  # noqa: F401
-from nucleo.equipes import modelo as modelo_equipes  # noqa: F401
-from nucleo.fila import modelo as modelo_fila  # noqa: F401
-from nucleo.locais import modelo as modelo_locais  # noqa: F401
-from nucleo.ods import modelo as modelo_ods  # noqa: F401
-from nucleo.personas import modelo as modelo_personas  # noqa: F401
-from nucleo.poderes import modelo as modelo_poderes  # noqa: F401
-from nucleo.ponto_extra import modelo as modelo_ponto_extra  # noqa: F401
-from nucleo.pontuacao import modelo as modelo_pontuacao  # noqa: F401
-from nucleo.quiz import modelo as modelo_quiz  # noqa: F401
-from nucleo.responsaveis import modelo as modelo_responsaveis  # noqa: F401
-from nucleo.resultados import modelo as modelo_resultados  # noqa: F401
-from nucleo.sessoes import modelo as modelo_sessoes  # noqa: F401
-from nucleo.trilhas import modelo as modelo_trilhas  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -19,7 +19,23 @@
 3. **Frontends independentes** — em **endereços próprios**, evoluindo desacoplados do backend.
    A **vitrine ocupa a raiz** do domínio da plataforma — **`comunidadegame.org`** —: é por ela
    que qualquer pessoa chega, e é dela que o botão **Entrar** encaminha cada persona à sua
-   aplicação.
+   aplicação. As demais ficam em subdomínio, um por aplicação, e o núcleo no seu:
+
+   | Endereço                         | Aplicação                |
+   | -------------------------------- | ------------------------ |
+   | `comunidadegame.org`             | App 06 — vitrine         |
+   | `api.comunidadegame.org`         | Backend API              |
+   | `aula.comunidadegame.org`        | App 01 — aula presencial |
+   | `gestao.comunidadegame.org`      | App 03 — gestão          |
+   | `jogo.comunidadegame.org`        | App 04 — jogo            |
+   | `minhaarea.comunidadegame.org`   | App 05 — Guerreiro(a)    |
+   | `responsavel.comunidadegame.org` | App 07 — responsáveis    |
+   | `apoiador.comunidadegame.org`    | App 08 — apoiador        |
+   | `mestre.comunidadegame.org`      | App 09 — mestre          |
+
+   A App 05 é **`minhaarea`**, não `guerreiro`: o endereço não fixa o gênero da persona
+   primária, tratada por Guerreiro ou Guerreira (documento 02).
+
 4. **Open Source** — todo o código-fonte é aberto, para permitir replicação por qualquer
    comunidade. O **código sai sob AGPL**: quem replica a plataforma e a oferece pela rede
    abre também as suas modificações, e é isso que impede alguém de fechar como serviço
@@ -669,7 +685,9 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   A **origem** é o **resumo criptográfico do IP com sal rotativo**, mantido **só em memória**
   pela janela do freio e **nunca gravado em banco** — é o que faz o limite existir sem guardar
   dado do visitante. Por isso o Cloud Run roda **sem escala horizontal** no Ciclo 01 (§1,
-  princípio 13): cada contêiner contaria por si, e o limite valeria multiplicado. O
+  princípio 13): cada contêiner contaria por si, e o limite valeria multiplicado. O serviço
+  também **não mantém contêiner ocioso**, e por isso o freio **reinicia a cada partida a
+  frio** — contrapartida aceita no Ciclo 01 para o custo caber no _free tier_. O
   **formulário de solicitação de chave não tem freio por origem** — nova solicitação é sempre
   possível —, e o que o protege é a cota da chave da vitrine.
 
