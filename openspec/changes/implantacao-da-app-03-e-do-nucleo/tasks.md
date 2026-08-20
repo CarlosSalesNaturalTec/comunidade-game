@@ -26,8 +26,10 @@
 - [x] 2.4 Deixar o serviço acessível apenas pelo _rewrite_ do Firebase Hosting (plano B
       confirmado em 1.1): sem necessidade de URL pública própria nem certificado do Cloud Run
       — quem serve `api.comunidadegame.org` e o certificado é o Firebase Hosting (03 §1 p3).
-      **Feito**: deploy com `--no-allow-unauthenticated`; a permissão de invocação da conta
-      de serviço do Firebase Hosting é IAM fora do repositório, registrada no runbook (4.1).
+      **Corrigido em 20/08/2026**: o Firebase Hosting **não se autentica** ao proxiar o
+      _rewrite_, então `--no-allow-unauthenticated` devolvia 403 a todo tráfego. O serviço
+      aceita invocação não autenticada, e a proteção segue onde o documento 03 §1 princípio 2
+      sempre a colocou — chave, credencial da persona, cota e freio, não a rede.
 
 ## 3. Esteira de implantação da App 03
 

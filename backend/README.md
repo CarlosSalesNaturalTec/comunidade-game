@@ -103,21 +103,12 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    registros DNS que o Firebase pedir entram na Cloudflare em modo **"DNS only"** (nuvem
    cinza) enquanto o certificado é emitido — o proxy da Cloudflare atrapalha a validação.
 
-7. **Permissão de invocação do Cloud Run pelo Firebase Hosting** — o serviço sobe com
-   `--no-allow-unauthenticated` (só o _rewrite_ do Firebase o alcança). O `firebase deploy`
-   concede essa permissão sozinho quando publica um _rewrite_ do tipo `run` para um serviço
-   do mesmo projeto — **não é passo manual**. O `backend-deploy.yml` republica o alvo `api`
-   a cada deploy do núcleo, então isso acontece na esteira. Confirmar depois dela rodar:
-
-   ```bash
-   gcloud run services get-iam-policy nucleo-comunidade-game --region southamerica-east1
-   ```
-
-   Esperado: um vínculo `roles/run.invoker` para uma conta de serviço do Firebase Hosting
-   (`service-PROJECT_NUMBER@gcp-sa-firebasehosting.iam.gserviceaccount.com`, ou equivalente —
-   confira o nome real na saída, não pelo suposto aqui). **Se não aparecer**, publique o alvo
-   `api` do Firebase Hosting uma vez (`firebase deploy --only hosting:api`) antes de tentar
-   qualquer vínculo manual: é o deploy do Hosting que cria essa conta de serviço.
+7. **O serviço do Cloud Run aceita invocação não autenticada** (`--allow-unauthenticated`,
+   já no workflow). O Firebase Hosting **não se autentica** ao proxiar o _rewrite_: com o
+   serviço fechado, todo tráfego volta 403. A proteção não está na rede e nunca esteve —
+   está na chave de aplicação, na credencial da persona, na cota por chave e no freio por
+   origem (documento 03 §1, princípio 2, e §8). Efeito colateral aceito: a URL `*.run.app`
+   também responde, contornando o CDN, e enfrenta as mesmas recusas.
 
 ## Semeadura (uma vez por ambiente)
 
