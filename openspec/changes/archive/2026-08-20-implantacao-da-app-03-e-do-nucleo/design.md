@@ -127,6 +127,7 @@ onde guardá-los antes de fechar o terminal.
 
 ## Open Questions
 
-- Qual _tier_ da instância do Cloud SQL. Não muda o desenho nem as tarefas — muda a conta, e é
-  o piso de custo do ciclo, já que o banco cobra ligado enquanto o Cloud Run em zero não cobra.
-  Pergunta ao fundador no momento do provisionamento.
+- ~~Qual _tier_ da instância do Cloud SQL.~~ **Respondida no provisionamento**: `db-f1-micro`,
+  zona única em `southamerica-east1`, 10 GB de disco HDD com aumento automático, PostgreSQL 16.
+  Registrada nos já decididos do documento 09. O provisionamento também expôs uma pendência
+  nova — backup automatizado, SSL e IP público da instância —, levada ao documento 09.
