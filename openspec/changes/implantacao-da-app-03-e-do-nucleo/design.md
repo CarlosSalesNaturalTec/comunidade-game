@@ -56,9 +56,15 @@ dele. Como o plano B funciona, ele não entra em jogo.
 
 **Consequência para o desenho**: `api.comunidadegame.org` não é um mapeamento de domínio do
 Cloud Run — é um **segundo alvo de hospedagem do Firebase**, com `rewrites` no `firebase.json`
-apontando para o serviço do Cloud Run por nome e região. O serviço não precisa de URL pública
-própria nem de certificado dele; quem serve o certificado é o Firebase Hosting, como já faz
-para a App 03. As tarefas 2.4 e 3.1 aplicam essa forma.
+apontando para o serviço do Cloud Run por nome e região. O serviço não precisa de certificado
+próprio; quem o serve é o Firebase Hosting, como já faz para a App 03.
+
+O serviço **aceita invocação não autenticada**, e não há escolha: o Firebase Hosting proxia o
+_rewrite_ sem autenticar-se no Cloud Run, então `--no-allow-unauthenticated` devolve 403 a todo
+tráfego. Não é perda de proteção — o documento 03 §1 princípio 2 nunca a colocou na rede: está
+na chave de aplicação, na credencial da persona, na cota por chave e no freio por origem,
+"não no navegador". O único efeito é que a URL `*.run.app` do serviço também responde,
+contornando o CDN; quem chega por ali enfrenta exatamente as mesmas recusas.
 
 **Os `CG_*` vêm do Secret Manager, montados como variável de ambiente do serviço.** É onde o
 documento 09 já pôs a chave que cifra o _template_ biométrico; o resto dos segredos segue o
