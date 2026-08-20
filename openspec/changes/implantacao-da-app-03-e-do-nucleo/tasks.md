@@ -67,10 +67,14 @@
       autorizadas do OAuth (design — Risks). **Feito em 19/08/2026**: domínio registrado, sem
       `hold`, nameservers da Cloudflare respondendo, e o projeto do Google Cloud criado com
       faturamento configurado (ver design — Context).
-- [ ] 5.2 Acompanhar o fundador na primeira execução na ordem do `design.md` — núcleo,
+- [x] 5.2 Acompanhar o fundador na primeira execução na ordem do `design.md` — núcleo,
       migração, semeadura, chave da App 03 como segredo do repositório, build, publicação — e
       conferir que a semeadura repetida converge sem emitir chave nova (`RF-01-54`,
-      `RF-01-61`).
+      `RF-01-61`). **Feito em 19–20/08/2026**, pelo Cloud Shell: os workflows não podiam
+      disparar porque `workflow_dispatch` só aparece depois de o arquivo existir em `main`.
+      Núcleo no ar, migração aplicada, 8 chaves de produção e a persona Admin semeadas. A
+      execução expôs cinco defeitos, todos corrigidos nos commits desta change. Publicação da
+      App 03 fica para o merge, que destrava as duas esteiras.
 - [ ] 5.3 Conferir a cadeia de ponta a ponta em produção: entrar na App 03 pelo login social,
       criar uma Comunidade Virtual e lê-la na lista; conferir que quem não é Admin recebe a
       recusa por papel (03 §1 p2).
@@ -84,3 +88,11 @@
       documento 09. **Nenhum arquivo novo em `docs/`**, nenhuma entrada na `nav` do
       `mkdocs.yml`, nenhum PRD alterado e nenhuma relação entre documentos mudada — o
       documento 99 e `docs/prds/index.md` ficam como estão.
+
+## 7. Resíduos levados ao fundador
+
+- [ ] 7.1 **A semeadura grava segredo em log.** `RF-01-54` manda imprimir a chave uma vez, e
+      rodar isso como Cloud Run Job põe os segredos no Cloud Logging em claro, onde ficam.
+      Não é defeito desta change — é consequência de onde o comando roda. Decisão do fundador:
+      ou a semeadura corre em terminal interativo, ou entrega os segredos por outro caminho.
+      Enquanto não se decide, o log é apagado à mão depois de cada semeadura.
