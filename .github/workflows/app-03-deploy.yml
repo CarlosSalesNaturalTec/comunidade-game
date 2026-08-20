@@ -49,9 +49,14 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
           service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          channelId: live
-          target: app-03
-          projectId: ${{ secrets.GCP_PROJECT_ID }}
+      # Firebase CLI direto, e não `FirebaseExtended/action-hosting-deploy`:
+      # aquela ação exige `firebaseServiceAccount`, uma chave JSON de conta de
+      # serviço — justamente o que a Workload Identity Federation existe para
+      # evitar. O CLI honra as credenciais que o passo anterior exportou em
+      # GOOGLE_APPLICATION_CREDENTIALS.
+      - name: Publicar no Firebase Hosting
+        run: |
+          npx --yes firebase-tools@latest deploy \
+            --only hosting:app-03 \
+            --project "${{ secrets.GCP_PROJECT_ID }}" \
+            --non-interactive

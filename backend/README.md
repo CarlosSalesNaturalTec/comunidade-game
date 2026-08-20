@@ -55,7 +55,11 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
 4. **Workload Identity Federation** — um _pool_ e um provedor OIDC para o repositório GitHub,
    e uma conta de serviço de deploy com papel de executor no Cloud Run, no Cloud Run Jobs e no
    Artifact Registry. Os identificadores vão para os segredos do repositório
-   `GCP_WIF_PROVIDER` e `GCP_DEPLOY_SERVICE_ACCOUNT`.
+   `GCP_WIF_PROVIDER` e `GCP_DEPLOY_SERVICE_ACCOUNT`. Papéis da conta de deploy:
+   `run.admin`, `artifactregistry.writer`, `iam.serviceAccountUser`, `cloudsql.client`,
+   `secretmanager.secretAccessor` e **`firebasehosting.admin`** — este último porque a
+   esteira da App 03 publica pelo Firebase CLI, e não pela ação
+   `FirebaseExtended/action-hosting-deploy`, que exigiria chave JSON de conta de serviço.
 
 5. **Conta de execução do núcleo** — `nucleo-runtime`, distinta da conta de deploy: é quem o
    contêiner **é** enquanto roda, e portanto quem lê os segredos e alcança o Cloud SQL. Sem
@@ -85,6 +89,9 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    firebase target:apply hosting api comunidade-game-api
    firebase target:apply hosting app-03 comunidade-game-app-03
    ```
+
+   O `target:apply` grava o mapeamento no `.firebaserc` **local**. Ele já está versionado
+   no repositório com os dois alvos — sem isso a esteira não saberia a que site publicar.
 
    Ligar o domínio a cada site (console do Firebase Hosting → domínio personalizado):
    `api.comunidadegame.org` ao alvo `api`, `gestao.comunidadegame.org` ao alvo `app-03`. Os
@@ -116,10 +123,19 @@ Depois do primeiro deploy e da primeira migração:
 python -m nucleo.cli
 ```
 
-Converge as 16 chaves de aplicação (8 aplicações × 2 ambientes, `RF-01-54`) e a persona Admin
-do fundador (`RF-01-61`). **Os segredos das chaves aparecem uma única vez** — copie e guarde
-antes de fechar o terminal, `semear_ambiente` não os recupera depois. Rodar de novo é seguro:
-ambiente já semeado não emite chave nova.
+Converge **8 chaves** — uma por aplicação do projeto **no ambiente declarado em
+`CG_AMBIENTE`** (`RF-01-54`) — e a persona Admin do fundador (`RF-01-61`). As 16 do documento
+03 §1 são 8 aplicações × 2 ambientes, e o de desenvolvimento é contêiner local: nunca passa por
+aqui. Rodando como Cloud Run Job, declare `CG_AMBIENTE=producao`, senão a semeadura emite as
+chaves do ambiente errado.
+
+**Os segredos das chaves aparecem uma única vez** — copie e guarde antes de fechar o terminal,
+`semear_ambiente` não os recupera depois. Rodar de novo é seguro: ambiente já semeado não emite
+chave nova. Chave emitida sem o segredo anotado só se resolve **revogando e reemitindo**.
+
+> **Atenção:** rodar a semeadura como Cloud Run Job grava os segredos no Cloud Logging, em
+> claro. Apague o log depois de guardá-los. A decisão sobre esse caminho está aberta (tarefa
+> 7.1 da change de implantação).
 
 A chave da App 03 do ambiente de produção vira o segredo do repositório
 `APP03_CHAVE_DE_APLICACAO`, consumido pelo `app-03-deploy.yml` — é o que destrava o primeiro
