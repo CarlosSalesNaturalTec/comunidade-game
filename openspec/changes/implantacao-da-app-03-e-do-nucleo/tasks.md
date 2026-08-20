@@ -46,10 +46,12 @@
       caminhos `apps/app-03-gestao/**` e `comum/**`: build do Vite com `VITE_CHAVE_DE_APLICACAO`,
       `VITE_GOOGLE_CLIENT_ID` e `VITE_URL_DO_NUCLEO` vindos de segredos do repositório, e
       publicação no alvo `app-03` do Firebase Hosting (03 §1 p2, p3).
-- [ ] 3.3 Aplicar ao alvo o endereço `gestao.comunidadegame.org`, com os registros em modo
+- [x] 3.3 Aplicar ao alvo o endereço `gestao.comunidadegame.org`, com os registros em modo
       "DNS only" enquanto o certificado é emitido (03 §1 p3). Ação no console do Firebase
       Hosting e no DNS da Cloudflare — não é declarável em workflow. Vai para o runbook (4.1)
-      e é executada pelo fundador na 5.2.
+      e é executada pelo fundador na 5.2. **Conferido em 20/08/2026**: entrada bem-sucedida
+      por `https://gestao.comunidadegame.org/` pela rede móvel, fora da rede corporativa
+      cujo filtro motivou o contorno por `.web.app` na 3.2.
 
 ## 4. Runbook de implantação
 
@@ -77,15 +79,20 @@
       Núcleo no ar, migração aplicada, 8 chaves de produção e a persona Admin semeadas. A
       execução expôs cinco defeitos, todos corrigidos nos commits desta change. Publicação da
       App 03 fica para o merge, que destrava as duas esteiras.
-- [ ] 5.3 Conferir a cadeia de ponta a ponta em produção: entrar na App 03 pelo login social,
+- [x] 5.3 Conferir a cadeia de ponta a ponta em produção: entrar na App 03 pelo login social,
       criar uma Comunidade Virtual e lê-la na lista; conferir que quem não é Admin recebe a
       recusa por papel (03 §1 p2). **Primeira tentativa em 20/08/2026**: o login recusou com
       `401 chave_invalida` — sexto defeito da implantação. O `backend-deploy.yml` nunca
       declarava `CG_AMBIENTE`, então o serviço rodava com o padrão `desenvolvimento` e
       conferia contra esse ambiente a chave semeada em `producao` (`RN-01-34`). Corrigido
       nesta change: a esteira declara `CG_AMBIENTE=producao` no serviço e no Job de migração,
-      e a recusa passa a dizer no log qual das quatro conferências falhou. **A conferência
-      só fecha depois de um novo deploy do núcleo.**
+      e a recusa passa a dizer no log qual das quatro conferências falhou.
+      **Conferido pelo fundador em 20/08/2026**, depois do deploy do núcleo: entrada pelo
+      login social, Comunidade Virtual criada e lida na lista, e a conta sem cadastro
+      recebendo a recusa por papel. Conferido nos dois endereços — `.web.app` e
+      `gestao.comunidadegame.org`, este pela rede móvel —, e o log do Cloud Run mostra a
+      cadeia inteira em 2xx: `POST /v1/sessoes/social` 201, `GET /v1/eu` 200,
+      `GET /v1/comunidades` 200 e `DELETE /v1/sessoes/atual` 204.
 
 ## 6. Documentação
 
