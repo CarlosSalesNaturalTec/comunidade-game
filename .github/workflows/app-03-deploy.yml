@@ -8,6 +8,7 @@ on:
       - "comum/**"
       - "firebase.json"
       - ".firebaserc"
+      - ".github/workflows/app-03-deploy.yml"
   workflow_dispatch:
 
 concurrency:
@@ -40,7 +41,19 @@ jobs:
         env:
           VITE_CHAVE_DE_APLICACAO: ${{ secrets.APP03_CHAVE_DE_APLICACAO }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          VITE_URL_DO_NUCLEO: https://api.comunidadegame.org
+          # TEMPORÁRIO — reverter para https://api.comunidadegame.org assim que
+          # o TI liberar o domínio no filtro web.
+          #
+          # O FortiGate da rede corporativa responde o DNS de
+          # `*.comunidadegame.org` com o endereço da própria página de bloqueio
+          # (208.91.112.55) e apresenta o certificado do appliance, o que
+          # derruba a chamada ao núcleo com ERR_CERT_AUTHORITY_INVALID. O
+          # domínio é recém-registrado, e o FortiGuard bloqueia essa categoria
+          # por padrão. Não há defeito no Firebase: o certificado de
+          # `api.comunidadegame.org` é do Google Trust Services e é válido.
+          # `.web.app` já é categorizado e passa no filtro, então serve de
+          # contorno para conferir as fatias de dentro da rede corporativa.
+          VITE_URL_DO_NUCLEO: https://comunidade-game-api.web.app
         run: npm run build
 
       - name: Autenticar no Google Cloud (Workload Identity Federation)
