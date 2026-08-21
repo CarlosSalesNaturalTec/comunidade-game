@@ -169,3 +169,69 @@ A linha traz os campos que decidem, e cada um aponta uma causa:
 Depois do primeiro deploy de cada esteira: entrar em `gestao.comunidadegame.org` pelo login
 social, criar uma Comunidade Virtual e lê-la na lista; conferir que quem não é Admin recebe a
 recusa por papel, não um erro cru.
+
+## Conferência de saúde depois de incidente no projeto
+
+Suspensão do projeto, revogação de permissão ou qualquer parada derruba a vinculação dos
+**agentes de serviço** — e nem o deploy da App 03 nem a suíte de testes acusam, porque o
+Hosting publica sem tocar no Cloud Run. Com `min-instances=0`, toda partida a frio repuxa a
+imagem: agente sem acesso ao Artifact Registry significa núcleo fora do ar, em silêncio.
+
+Estes quatro passos, na ordem, dizem se ele voltou. O primeiro que falhar aponta o que
+consertar; se todos passarem, não há o que fazer.
+
+```bash
+export P=comunidade-game-506017
+export REGIAO=southamerica-east1
+```
+
+**1. O núcleo responde.** `/openapi.json` fica fora do `/v1` e é aberto (documento 03 §1),
+então dispensa chave e sessão:
+
+```bash
+URL=$(gcloud run services describe nucleo-comunidade-game \
+  --region "$REGIAO" --project "$P" --format="value(status.url)")
+curl -s -o /dev/null -w "%{http_code} em %{time_total}s\n" "$URL/openapi.json"
+```
+
+`200` é o esperado. A partida a frio pode levar segundos — a demora é normal, o código de
+estado é que decide.
+
+**2. O agente de serviço mantém a vinculação:**
+
+```bash
+gcloud projects get-iam-policy "$P" --flatten="bindings[].members" \
+  --filter="bindings.members:serverless-robot-prod" \
+  --format="table(bindings.role, bindings.members)"
+```
+
+Esperado: `roles/run.serviceAgent`. Esse papel **já** carrega a leitura do Artifact Registry
+dentro do projeto; não acrescente `roles/artifactregistry.reader` por cima.
+
+**3. As duas Jobs estão prontas:**
+
+```bash
+for J in nucleo-migracao nucleo-semeadura; do
+  echo "== $J =="
+  gcloud run jobs describe "$J" --region "$REGIAO" --project "$P" \
+    --format="value(status.conditions[].type, status.conditions[].status,
+                    status.conditions[].message)"
+done
+```
+
+Esperado: `Ready True`, sem mensagem. Mensagem dizendo que o agente precisa de permissão para
+ler a imagem é a assinatura de agente derrubado.
+
+**4. A migração roda de ponta a ponta:**
+
+```bash
+gcloud run jobs execute nucleo-migracao --region "$REGIAO" --project "$P" --wait
+```
+
+É `alembic upgrade head`: com o banco já em `head` não altera nada, e ainda assim exercita a
+cadeia inteira — o agente puxa a imagem, a `nucleo-runtime` lê o Secret Manager e a conexão com
+o Cloud SQL sobe. Um comando cobre os três.
+
+**Não execute `nucleo-semeadura` para conferir.** Ela usa a mesma imagem, o mesmo agente e o
+mesmo caminho de segredos que o passo 4 já exercita, e não prova nada a mais; em troca, grava
+os segredos no Cloud Logging em claro (ver a Semeadura acima). Para ela, o passo 3 basta.

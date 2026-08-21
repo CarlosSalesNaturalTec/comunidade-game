@@ -3,10 +3,11 @@ name: Backend CI
 on:
   pull_request:
     branches: [main]
-    paths: [backend/**]
+    # Markdown de fora: Ruff e pytest não têm o que dizer sobre um README.
+    paths: [backend/**, "!backend/**.md"]
   push:
     branches: [main]
-    paths: [backend/**]
+    paths: [backend/**, "!backend/**.md"]
   workflow_dispatch:
 
 concurrency:
