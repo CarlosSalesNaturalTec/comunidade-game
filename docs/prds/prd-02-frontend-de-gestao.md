@@ -191,9 +191,9 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
 
 | ID         | Requisito                                                                                           | Prioridade |
 | ---------- | --------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-01` | Admin cadastra e edita Guerreiros e Guerreiras, com nome, nascimento, nick, avatar e situação       | essencial  |
-| `RF-02-02` | Admin cadastra Mestre anexando currículo, portfólios, redes sociais e documentos externos           | essencial  |
-| `RF-02-03` | Admin cadastra Apoiador anexando os mesmos artefatos e os termos de doação                          | essencial  |
+| `RF-02-01` | Admin cadastra e edita Guerreiros e Guerreiras, com nome, nascimento, nick e avatar                 | essencial  |
+| `RF-02-02` | Admin cadastra Mestre declarando os links de currículo, portfólio, redes e documentos externos      | essencial  |
+| `RF-02-03` | Admin cadastra Apoiador declarando os mesmos links e os termos de doação                            | essencial  |
 | `RF-02-04` | Aplicação recusa o cadastro de Mestre ou Apoiador sem ao menos um artefato comprobatório            | essencial  |
 | `RF-02-05` | Admin inclui novo Admin manualmente                                                                 | essencial  |
 | `RF-02-06` | Admin cadastra responsável e vincula Guerreiros e Guerreiras já cadastrados, com grau de parentesco | essencial  |
@@ -309,7 +309,7 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
 
 | ID         | Regra                                                                                          | Invariante | Fonte      |
 | ---------- | ---------------------------------------------------------------------------------------------- | ---------- | ---------- |
-| `RN-02-01` | Mestre e Apoiador são cadastrados só por Admin, com artefato comprobatório anexado             | 3          | 02 §1      |
+| `RN-02-01` | Mestre e Apoiador são cadastrados só por Admin, com link comprobatório declarado               | 3          | 02 §1      |
 | `RN-02-02` | Novo Admin só entra por inclusão manual de outro Admin                                         | 3          | 02 §1      |
 | `RN-02-03` | Solicitação de participação não cria cadastro nem acesso                                       | 3          | 02 §1      |
 | `RN-02-26` | Nenhum conjunto de dados sai sem aprovação de Admin, e a entrega é gratuita e anonimizada      | 17         | 03 §12.3   |
@@ -383,8 +383,8 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | ------ | ------------------------------------------------- | --------------- | --------------------------------------------------------------------------- |
 | POST   | `/v1/guerreiros`                                  | Admin           | Cadastra Guerreiro(a) pela gestão                                           |
 | POST   | `/v1/consentimentos/{id}/anexo`                   | Admin           | Anexa a digitalização do termo assinado no encontro                         |
-| POST   | `/v1/mestres`                                     | Admin           | Cadastra Mestre com artefatos comprobatórios                                |
-| POST   | `/v1/apoiadores`                                  | Admin           | Cadastra Apoiador com artefatos e termos de doação                          |
+| POST   | `/v1/mestres`                                     | Admin           | Cadastra Mestre com os links comprobatórios declarados                      |
+| POST   | `/v1/apoiadores`                                  | Admin           | Cadastra Apoiador com os links e os termos de doação                        |
 | POST   | `/v1/admins`                                      | Admin           | Inclui novo Admin manualmente                                               |
 | GET    | `/v1/aulas/{id}/equipes`                          | Admin ou Mestre | Lista as equipes formadas no App 01 naquela aula                            |
 | POST   | `/v1/poderes`                                     | Admin           | Mantém o catálogo de poderes                                                |
@@ -419,7 +419,7 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 
 Erros previstos: agenda de aula sem comunidade ou sem horário final (422); consulta de aulas
 vigentes fora de qualquer janela agendada (200 com lista vazia — é o que faz o App 01 não
-abrir); cadastro de Mestre ou Apoiador sem artefato anexado (422); tentativa de editar equipe
+abrir); cadastro de Mestre ou Apoiador sem link comprobatório (422); tentativa de editar equipe
 formada no App 01 (403); quarto responsável do mesmo
 Guerreiro(a) (422); aprovação de desafio extra sem validação do Mestre (409) ou sem lastro
 (422); tentativa de editar lançamento (405); escrita de Mestre em rota de gestão que não seja a
@@ -476,7 +476,7 @@ do quiz ou a de ocorrência (403); condução de partida por Mestre que não min
   e é o App 01 que pergunta em qual está operando.
 - Guerreiro(a) cadastrado no onboarding nasce vinculado à comunidade da aula, sem tê-la
   informado, e não existe tela de transferência de comunidade no Ciclo 01.
-- Cadastro de Mestre sem nenhum artefato anexado é recusado.
+- Cadastro de Mestre sem nenhum link comprobatório declarado é recusado.
 - Solicitação de participação aceita **não** cria acesso: o Mestre só existe depois do cadastro
   feito pelo Admin.
 - Equipe com seis integrantes, ou com dois familiares de 17 anos ou mais, é recusada.
