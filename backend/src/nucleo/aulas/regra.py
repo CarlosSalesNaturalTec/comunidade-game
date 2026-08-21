@@ -1,3 +1,4 @@
+import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
@@ -172,6 +173,29 @@ def cancelar_aula(
 
     liberar_reservas_da_aula(sessao, aula=aula)
     return aula
+
+
+def escopo_de_comunidade_da_leitura(
+    *, operador: Persona, comunidade_virtual_id: uuid.UUID | None
+) -> uuid.UUID | None:
+    """Resolve a comunidade a que a leitura da agenda se restringe, no molde
+    de `listar_acervo` (`patrimonio/regra.py`) e de
+    `pontos_de_apoio.regra.escopo_de_comunidade_da_leitura`: Admin declara a
+    comunidade, sempre obrigatória; Mestre herda do vínculo vigente, e sem
+    vínculo não tem o que listar — `None` aqui sinaliza lista vazia, nunca
+    erro. Demais papéis são recusados (`RF-02-12`, `RF-01-28`, `RF-01-18`,
+    `RF-01-16`).
+    """
+    if operador.papel == Papel.admin:
+        if comunidade_virtual_id is None:
+            raise ErroDeValidacao(
+                mensagem="Esta consulta exige o filtro de comunidade.", campo="comunidade"
+            )
+        return comunidade_virtual_id
+    if operador.papel == Papel.mestre:
+        vinculo: VinculoJogador | None = operador.vinculo_vigente
+        return vinculo.comunidade_virtual_id if vinculo is not None else None
+    raise PermissaoNegada(mensagem="Persona sem agenda de gestão a consultar.")
 
 
 def aulas_vigentes(sessao: Session) -> list[Aula]:

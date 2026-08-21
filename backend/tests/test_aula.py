@@ -726,3 +726,202 @@ def test_cancelamento_de_aula_ja_cancelada_e_recusado(
     with pytest.raises(ErroDeValidacao) as excinfo:
         cancelar_aula(sessao, operador=admin, aula=aula, motivo="Segunda vez.")
     assert excinfo.value.campo == "situacao"
+
+
+def test_admin_le_a_agenda_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade, criar_aula
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    criar_aula(admin, comunidade)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.get(
+        "/v1/aulas",
+        params={"comunidade": str(comunidade.id)},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    assert len(resposta.json()["itens"]) == 1
+
+
+def test_mestre_le_apenas_a_agenda_das_suas_comunidades(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    criar_vinculo_jogador,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    outra_comunidade = criar_comunidade("Outra Comunidade")
+    aula_da_comunidade = criar_aula(admin, comunidade)
+    criar_aula(admin, outra_comunidade)
+    mestre = criar_persona(Papel.mestre)
+    criar_vinculo_jogador(mestre, comunidade)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/aulas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert len(corpo["itens"]) == 1
+    assert corpo["itens"][0]["id"] == str(aula_da_comunidade.id)
+
+
+def test_apoiador_recebe_403_ao_ler_a_agenda(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    apoiador = criar_persona(Papel.apoiador)
+    token, _ = criar_sessao_de_teste(apoiador)
+
+    resposta = cliente.get(
+        "/v1/aulas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403
+
+
+def test_agenda_distingue_pendente_de_lastro_e_confirmada_sem_mudar_situacao(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    sessao,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    confirmada = criar_aula(admin, comunidade)
+    pendente = criar_aula(admin, comunidade)
+    pendente.situacao = SituacaoDaAula.pendente_de_lastro
+    sessao.commit()
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.get(
+        "/v1/aulas",
+        params={"comunidade": str(comunidade.id)},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    situacoes = {item["id"]: item["situacao"] for item in resposta.json()["itens"]}
+    assert situacoes[str(confirmada.id)] == SituacaoDaAula.confirmada.value
+    assert situacoes[str(pendente.id)] == SituacaoDaAula.pendente_de_lastro.value
+    sessao.refresh(pendente)
+    assert pendente.situacao == SituacaoDaAula.pendente_de_lastro
+
+
+def test_filtro_de_periodo_recorta_a_agenda(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade, criar_aula
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    dentro = criar_aula(
+        admin,
+        comunidade,
+        inicio_em=datetime(2026, 8, 10, 10, 0, tzinfo=UTC),
+        fim_em=datetime(2026, 8, 10, 12, 0, tzinfo=UTC),
+    )
+    fora = criar_aula(
+        admin,
+        comunidade,
+        inicio_em=datetime(2026, 9, 10, 10, 0, tzinfo=UTC),
+        fim_em=datetime(2026, 9, 10, 12, 0, tzinfo=UTC),
+    )
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.get(
+        "/v1/aulas",
+        params={
+            "comunidade": str(comunidade.id),
+            "periodo_inicio": datetime(2026, 8, 1, tzinfo=UTC).isoformat(),
+            "periodo_fim": datetime(2026, 8, 31, 23, 59, 59, tzinfo=UTC).isoformat(),
+        },
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    ids = {item["id"] for item in resposta.json()["itens"]}
+    assert str(dentro.id) in ids
+    assert str(fora.id) not in ids
+
+
+def test_aplicacao_sem_persona_le_as_vigentes_pela_rota(
+    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    agora = datetime.now(UTC)
+    vigente = criar_aula(
+        admin, comunidade, inicio_em=agora - timedelta(hours=1), fim_em=agora + timedelta(hours=1)
+    )
+
+    resposta = cliente.get("/v1/aulas/vigentes", headers={"X-Chave-Aplicacao": chave})
+
+    assert resposta.status_code == 200
+    ids = {item["id"] for item in resposta.json()["itens"]}
+    assert str(vigente.id) in ids
+
+
+def test_fora_de_qualquer_janela_as_vigentes_voltam_vazias(
+    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    criar_aula(admin, comunidade, inicio_em=INICIO, fim_em=FIM)
+
+    resposta = cliente.get("/v1/aulas/vigentes", headers={"X-Chave-Aplicacao": chave})
+
+    assert resposta.status_code == 200
+    assert resposta.json()["itens"] == []
+
+
+def test_duas_comunidades_vigentes_chegam_ambas_pela_rota(
+    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade_um = criar_comunidade("Comunidade Um")
+    comunidade_dois = criar_comunidade("Comunidade Dois")
+    agora = datetime.now(UTC)
+    aula_um = criar_aula(
+        admin,
+        comunidade_um,
+        inicio_em=agora - timedelta(hours=1),
+        fim_em=agora + timedelta(hours=1),
+    )
+    aula_dois = criar_aula(
+        admin,
+        comunidade_dois,
+        inicio_em=agora - timedelta(hours=1),
+        fim_em=agora + timedelta(hours=1),
+    )
+
+    resposta = cliente.get("/v1/aulas/vigentes", headers={"X-Chave-Aplicacao": chave})
+
+    assert resposta.status_code == 200
+    ids = {item["id"] for item in resposta.json()["itens"]}
+    assert {str(aula_um.id), str(aula_dois.id)} <= ids
+
+
+def test_consulta_das_vigentes_sem_chave_e_recusada(cliente):
+    resposta = cliente.get("/v1/aulas/vigentes")
+
+    assert resposta.status_code == 401
+    assert resposta.json()["codigo"] == "chave_invalida"

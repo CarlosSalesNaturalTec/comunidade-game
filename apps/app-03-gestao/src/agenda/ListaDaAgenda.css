@@ -1,0 +1,55 @@
+/* Lista densa do temperamento Operação (documento 15 §6), mesmo desenho de
+ * `comunidades/ListaDeComunidades.css`. */
+.lista-da-agenda {
+  display: flex;
+  flex-direction: column;
+  gap: var(--densidade);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.lista-da-agenda__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  padding: var(--espaco-8) var(--espaco-12);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.lista-da-agenda__linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--espaco-8) var(--espaco-16);
+}
+
+.lista-da-agenda__comunidade {
+  font-weight: var(--peso-rotulo);
+}
+
+.lista-da-agenda__ponto-de-apoio,
+.lista-da-agenda__horario {
+  color: var(--cor-texto-secundario);
+}
+
+/* A situação nunca se comunica só por cor (`RN-02-09`): o rótulo textual é
+ * a informação, a cor é reforço opcional. */
+.lista-da-agenda__situacao {
+  font-weight: var(--peso-rotulo);
+  border: 1px solid var(--cor-separador);
+  border-radius: var(--raio-campo);
+  padding: 0 var(--espaco-8);
+}
+
+.lista-da-agenda__motivo {
+  color: var(--cor-texto-secundario);
+  margin: 0;
+}
+
+.lista-da-agenda__cancelamento {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  align-items: flex-start;
+}

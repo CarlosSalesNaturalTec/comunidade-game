@@ -165,3 +165,119 @@ def test_designacao_em_ponto_de_apoio_inexistente_e_recusada(sessao, criar_perso
 
     with pytest.raises(NaoEncontrado):
         designar_responsavel(sessao, None, operador=admin, responsavel=mestre)
+
+
+def test_admin_le_pontos_de_apoio_filtrado_por_comunidade(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    outra_comunidade = criar_comunidade("Outra Comunidade")
+    criar_ponto_de_apoio(admin, comunidade, nome="Sede")
+    criar_ponto_de_apoio(admin, outra_comunidade, nome="Sede de Outra Comunidade")
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.get(
+        "/v1/pontos-de-apoio",
+        params={"comunidade": str(comunidade.id)},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert len(corpo["itens"]) == 1
+    assert corpo["itens"][0]["nome"] == "Sede"
+
+
+def test_mestre_le_apenas_pontos_de_apoio_do_seu_vinculo(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_vinculo_jogador,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    outra_comunidade = criar_comunidade("Outra Comunidade")
+    criar_ponto_de_apoio(admin, comunidade, nome="Sede")
+    criar_ponto_de_apoio(admin, outra_comunidade, nome="Sede de Outra Comunidade")
+    mestre = criar_persona(Papel.mestre)
+    criar_vinculo_jogador(mestre, comunidade)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/pontos-de-apoio",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert len(corpo["itens"]) == 1
+    assert corpo["itens"][0]["nome"] == "Sede"
+
+
+def test_guerreiro_recebe_403_ao_ler_pontos_de_apoio(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade
+):
+    chave, _ = criar_chave()
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.get(
+        "/v1/pontos-de-apoio",
+        params={"comunidade": str(comunidade.id)},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403
+
+
+def test_ponto_de_apoio_sem_responsavel_vem_na_leitura(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    criar_ponto_de_apoio(admin, comunidade)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.get(
+        "/v1/pontos-de-apoio",
+        params={"comunidade": str(comunidade.id)},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert len(corpo["itens"]) == 1
+    assert corpo["itens"][0]["responsavel_id"] is None
+
+
+def test_listagem_de_pontos_de_apoio_sem_filtro_de_comunidade_e_422(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.get(
+        "/v1/pontos-de-apoio",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 422

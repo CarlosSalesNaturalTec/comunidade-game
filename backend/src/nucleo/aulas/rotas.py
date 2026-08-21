@@ -1,14 +1,24 @@
 import uuid
+from datetime import datetime
 from decimal import Decimal
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy import tuple_
 from sqlalchemy.orm import Session
 
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..comunidades.modelo import ComunidadeVirtual
+from ..erros import ErroDeValidacao
+from ..paginacao import (
+    PaginaDeResultado,
+    ParametrosDeListagem,
+    codificar_cursor,
+    contrato_de_listagem,
+    decodificar_cursor,
+)
 from ..personas.modelo import Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
@@ -21,7 +31,9 @@ from .modelo import Aula, RecursoDeclaradoDaAula, SituacaoDaAula
 from .regra import (
     RecursoDeclaradoEntrada,
     agendar_aula,
+    aulas_vigentes,
     cancelar_aula,
+    escopo_de_comunidade_da_leitura,
     tentar_reservar_aula_pendente,
 )
 
@@ -130,6 +142,104 @@ def agendar_aula_rota(
     )
     sessao_bd.commit()
     return _saida(sessao_bd, aula)
+
+
+def _analisar_comunidade(valor: str | None) -> uuid.UUID | None:
+    if not valor:
+        return None
+    try:
+        return uuid.UUID(valor)
+    except ValueError as exc:
+        raise ErroDeValidacao(
+            mensagem="Filtro 'comunidade' precisa ser um identificador válido.",
+            campo="comunidade",
+        ) from exc
+
+
+def _analisar_momento(bruto: str, campo: str) -> datetime:
+    """Mesma régua de `auditoria/rotas.py`: toda data e hora de filtro exige
+    fuso explícito (PRD-01 §9)."""
+    try:
+        valor = datetime.fromisoformat(bruto)
+    except ValueError as exc:
+        raise ErroDeValidacao(
+            mensagem=f"Filtro '{campo}' precisa ser uma data e hora ISO 8601.", campo=campo
+        ) from exc
+    if valor.tzinfo is None:
+        raise ErroDeValidacao(mensagem=f"Filtro '{campo}' exige fuso explícito.", campo=campo)
+    return valor
+
+
+@roteador.get("/aulas", response_model=PaginaDeResultado[AulaSaida])
+def listar_agenda_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[AulaSaida]:
+    """Restrita à gestão — Admin lê qualquer comunidade, sempre declarada; o
+    Mestre lê só a do seu vínculo vigente, e sem vínculo lê lista vazia. O
+    filtro de período recorta pelo horário inicial da aula (`RF-02-12`,
+    `RF-01-28`, `RF-01-18`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    comunidade_id = _analisar_comunidade(parametros.filtros.get("comunidade"))
+    alvo_id = escopo_de_comunidade_da_leitura(
+        operador=operador, comunidade_virtual_id=comunidade_id
+    )
+    if alvo_id is None:
+        return PaginaDeResultado(itens=[], proximo_cursor=None)
+
+    consulta = sessao_bd.query(Aula).filter(Aula.comunidade_virtual_id == alvo_id)
+
+    periodo_inicio = parametros.filtros.get("periodo_inicio")
+    if periodo_inicio:
+        consulta = consulta.filter(
+            Aula.inicio_em >= _analisar_momento(periodo_inicio, "periodo_inicio")
+        )
+    periodo_fim = parametros.filtros.get("periodo_fim")
+    if periodo_fim:
+        consulta = consulta.filter(Aula.inicio_em <= _analisar_momento(periodo_fim, "periodo_fim"))
+
+    if parametros.cursor:
+        posicao = decodificar_cursor(parametros.cursor)
+        try:
+            inicio_em_cursor = datetime.fromisoformat(posicao["inicio_em"])
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(tuple_(Aula.inicio_em, Aula.id) > (inicio_em_cursor, id_cursor))
+
+    consulta = consulta.order_by(Aula.inicio_em, Aula.id).limit(parametros.tamanho + 1)
+    aulas = consulta.all()
+
+    proximo_cursor = None
+    if len(aulas) > parametros.tamanho:
+        aulas = aulas[: parametros.tamanho]
+        ultima = aulas[-1]
+        proximo_cursor = codificar_cursor(
+            {"inicio_em": ultima.inicio_em.isoformat(), "id": str(ultima.id)}
+        )
+
+    return PaginaDeResultado(
+        itens=[_saida(sessao_bd, aula) for aula in aulas], proximo_cursor=proximo_cursor
+    )
+
+
+@roteador.get("/aulas/vigentes", response_model=PaginaDeResultado[AulaSaida])
+def listar_aulas_vigentes_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[AulaSaida]:
+    """Rota pública — chave de aplicação sim, credencial de persona não —,
+    exposta antes de qualquer pessoa se identificar. Consome `aulas_vigentes`
+    sem alterá-la; sem aula vigente, responde 200 com conjunto vazio, nunca
+    erro (`RF-02-14`, `RF-02-13`, `RF-01-32`, `RF-01-02`, `RN-02-05`)."""
+    comunidade_id = _analisar_comunidade(parametros.filtros.get("comunidade"))
+    vigentes = aulas_vigentes(sessao_bd)
+    if comunidade_id is not None:
+        vigentes = [aula for aula in vigentes if aula.comunidade_virtual_id == comunidade_id]
+    return PaginaDeResultado(
+        itens=[_saida(sessao_bd, aula) for aula in vigentes], proximo_cursor=None
+    )
 
 
 @roteador.post("/aulas/{id_da_aula}/reservas")
