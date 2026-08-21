@@ -421,7 +421,7 @@ moldura e emblema — está no documento 15:
 | Card                   | O que exibe                                                                                                                           | O que **nunca** exibe                                             |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | **Guerreiro(a)**       | Avatar, nick, badges, poderes com níveis, desempenho e **criações originais**                                                         | Imagem real, nome civil, redes sociais, qualquer canal de contato |
-| **Mestre**             | Nome/identidade, áreas de habilidade, artefatos comprobatórios, trilhas de autoria e **selo de quem sustentou atividade sem recurso** | —                                                                 |
+| **Mestre**             | **Avatar, nick**, áreas de habilidade, artefatos comprobatórios, trilhas de autoria e **selo de quem sustentou atividade sem recurso** | —                                                                 |
 | **Apoiador**           | **Avatar, nick e total de moedas em destaque**, nível de sustento, selos, desafios propostos e efetividade agregada                   | Dados de contato de Guerreiros e Guerreiras; valores em reais     |
 | **Comunidade Virtual** | Nome, território, representação visual, séries ativas, nº de Guerreiros e Guerreiras vinculados                                       | Granularidade que permita inferir endereço de criança             |
 

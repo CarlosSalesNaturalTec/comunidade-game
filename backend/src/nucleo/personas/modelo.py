@@ -57,7 +57,9 @@ class Nick(Base):
     )
 
     __table_args__ = (
-        Index("uq_nick_valor", "valor", unique=True),
+        # Insensível a caixa (`RN-01-30`, design — Decisions): "Zeferina" e
+        # "zeferina" são o mesmo nick para a unicidade.
+        Index("uq_nick_valor", func.lower(valor), unique=True),
         Index("uq_nick_persona_id", "persona_id", unique=True),
     )
 

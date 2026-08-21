@@ -54,12 +54,14 @@ def registrar_solicitacao_de_participacao_rota(
     _freio: Annotated[None, Depends(exigir_freio_por_origem("formulario_participacao"))],
     instituicao: Annotated[str | None, Form()] = None,
     links: Annotated[str | None, Form()] = None,
+    nick: Annotated[str | None, Form()] = None,
     aporte_declarado: Annotated[str | None, Form()] = None,
     comprovante: Annotated[UploadFile | None, File()] = None,
 ) -> SolicitacaoSaida:
     """Pública, sem credencial de persona (`RF-01-25`, design — Decisions).
-    O pré-cadastro do Apoiador entra aqui, com aporte declarado e
-    comprovante; nenhum caminho cria cadastro (`RN-01-03`, `RN-01-28`)."""
+    O pré-cadastro do Apoiador entra aqui, com aporte declarado, comprovante
+    e o nick pretendido; nenhum caminho cria cadastro (`RN-01-03`,
+    `RN-01-28`, `RF-14-13`)."""
     conteudo = comprovante.file.read() if comprovante is not None else None
     solicitacao = registrar_solicitacao_de_participacao(
         sessao_bd,
@@ -70,6 +72,7 @@ def registrar_solicitacao_de_participacao_rota(
         apresentacao=apresentacao,
         instituicao=instituicao,
         links=links,
+        nick=nick,
         aporte_declarado=aporte_declarado,
         comprovante_conteudo=conteudo,
         comprovante_nome_original=comprovante.filename if comprovante is not None else None,

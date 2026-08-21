@@ -57,6 +57,8 @@ o motor do jogo é agnóstico de área. Regras de admissão:
   ou qualquer produção verificável da sua área. A prova é pública e verificável por qualquer
   visitante.
 - Mestres também podem prover recursos para atividades.
+- **Nick e avatar, definidos no primeiro acesso** — sem o piso de moedas, que é regra só do
+  Apoiador —, sob a mesma unicidade de nick da plataforma. Até lá, o Mestre existe sem eles.
 
 > **Exemplo de referência — o Mestre fundador.** É mestre em Programação e Robótica porque
 > construiu o software da plataforma, propõe as atividades que os Guerreiros e Guerreiras
@@ -75,10 +77,11 @@ Pessoas e instituições que financiam ou divulgam o projeto.
   cadastro** — quem avalia e cadastra é um Admin.
 - **Identificação sem documento**: nome ou razão social, e-mail e WhatsApp bastam. A plataforma
   **não coleta CPF, CNPJ nem documento de identidade**.
-- **Nick escolhido pelo próprio Apoiador no pré-cadastro**, sob a **unicidade de nick** da
-  plataforma. O **avatar** é definido depois de aprovado, na App 08: pode ser a logomarca ou
-  outra imagem escolhida, e é liberado a partir de **10 moedas acumuladas**; abaixo disso o
-  card exibe o avatar padrão do projeto, com o mesmo nick e o mesmo total de moedas.
+- **Nick escolhido no pré-cadastro**, sob a **unicidade de nick** da plataforma — opcional até
+  lá. Sem pré-cadastro, ou em colisão de nick, é o Admin quem digita o nick no cadastro. O
+  **avatar** é definido depois de aprovado, na App 08: pode ser a logomarca ou outra imagem
+  escolhida, e é liberado a partir de **10 moedas acumuladas**; abaixo disso o card exibe o
+  avatar padrão do projeto, com o mesmo nick e o mesmo total de moedas.
 - **Um usuário por cadastro no Ciclo 01**, inclusive no institucional: a instituição indica
   quem opera a App 08, e é esse usuário que responde pelos atos registrados. Mais de um acesso
   no mesmo cadastro fica para ciclo futuro.
@@ -146,15 +149,16 @@ conteúdo de vitrine é público, sem login.
 O cadastro do Guerreiro(a) está no documento 03 §12, na adesão em duas etapas. O do adulto é
 este:
 
-| Persona     | Identidade no cadastro        |
-| ----------- | ----------------------------- |
-| Mestre      | nome, e-mail e WhatsApp       |
-| Apoiador    | nome, e-mail, WhatsApp e nick |
-| Admin       | nome, e-mail e WhatsApp       |
-| Responsável | nome e e-mail                 |
+| Persona     | Identidade no cadastro   |
+| ----------- | ------------------------ |
+| Mestre      | nome, e-mail e WhatsApp  |
+| Apoiador    | nome, e-mail e WhatsApp  |
+| Admin       | nome, e-mail e WhatsApp  |
+| Responsável | nome e e-mail            |
 
-O **WhatsApp é opcional** onde aparece. O **nick do Apoiador** é escolhido por ele no
-pré-cadastro da Área do Apoiador e obedece à mesma unicidade do nick do Guerreiro(a).
+O **WhatsApp é opcional** onde aparece. Mestre e Apoiador têm também **nick e avatar**,
+opcionais no cadastro: o Apoiador o traz do pré-cadastro, quando há um; o Mestre o define no
+primeiro acesso — os dois sob a mesma unicidade do nick do Guerreiro(a).
 
 O **artefato comprobatório** de Mestre e Apoiador é **link declarado** — endereço e rótulo do
 que ele aponta. **Anexo de arquivo fica fora do Ciclo 01**: a prova é verificável por qualquer

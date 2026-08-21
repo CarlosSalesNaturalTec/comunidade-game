@@ -102,6 +102,86 @@ def test_nick_repetido_e_recusado_entre_papeis_diferentes(sessao, criar_comunida
     assert sessao.query(Nick).filter_by(valor="MesmoNick").count() == 1
 
 
+def test_apoiador_e_criado_sem_nick(sessao):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+
+    apoiador = criar_persona(sessao, papel=Papel.apoiador, criada_por=admin)
+    sessao.commit()
+
+    assert apoiador.papel == Papel.apoiador
+    assert sessao.query(Nick).filter_by(persona_id=apoiador.id).first() is None
+
+
+def test_mestre_e_criado_sem_nick(sessao):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+
+    mestre = criar_persona(sessao, papel=Papel.mestre, criada_por=admin)
+    sessao.commit()
+
+    assert mestre.papel == Papel.mestre
+    assert sessao.query(Nick).filter_by(persona_id=mestre.id).first() is None
+
+
+def test_nick_de_mestre_colide_com_nick_de_guerreiro(sessao, criar_comunidade, criar_aula):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+    comunidade = criar_comunidade()
+    aula = criar_aula(admin, comunidade)
+    criar_persona(
+        sessao, papel=Papel.guerreiro, criada_por=None, aula=aula, nick="NickCompartilhado"
+    )
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        criar_persona(sessao, papel=Papel.mestre, criada_por=admin, nick="NickCompartilhado")
+    assert excinfo.value.campo == "nick"
+    assert sessao.query(Persona).filter_by(papel=Papel.mestre).count() == 0
+
+
+def test_nick_de_mestre_colide_com_nick_de_apoiador(sessao):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+    criar_persona(sessao, papel=Papel.apoiador, criada_por=admin, nick="NickCompartilhado")
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        criar_persona(sessao, papel=Papel.mestre, criada_por=admin, nick="NickCompartilhado")
+    assert excinfo.value.campo == "nick"
+    assert sessao.query(Persona).filter_by(papel=Papel.mestre).count() == 0
+
+
+def test_colisao_de_nick_e_insensivel_a_caixa(sessao):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+    criar_persona(sessao, papel=Papel.apoiador, criada_por=admin, nick="Zeferina")
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        criar_persona(sessao, papel=Papel.mestre, criada_por=admin, nick="zeferina")
+    assert excinfo.value.campo == "nick"
+
+
+def test_recusa_de_nick_em_uso_nao_revela_o_papel_de_quem_o_tem(sessao):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+    criar_persona(sessao, papel=Papel.apoiador, criada_por=admin, nick="NickCompartilhado")
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        criar_persona(sessao, papel=Papel.mestre, criada_por=admin, nick="NickCompartilhado")
+    mensagem = excinfo.value.mensagem.lower()
+    assert "apoiador" not in mensagem
+    assert "mestre" not in mensagem
+
+
 def test_mestre_so_e_cadastrado_por_admin(sessao):
     with pytest.raises(PermissaoNegada):
         criar_persona(sessao, papel=Papel.mestre, criada_por=None)

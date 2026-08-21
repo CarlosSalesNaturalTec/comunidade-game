@@ -27,7 +27,9 @@ from nucleo.fila.regra import (
     registrar_solicitacao_de_participacao,
     registrar_sugestao,
 )
-from nucleo.personas.modelo import Papel, Persona
+from nucleo.personas.modelo import Nick, Papel, Persona
+from nucleo.personas.regra import conferir_disponibilidade_de_nick
+from nucleo.personas.regra import criar_persona as criar_persona_do_nucleo
 from nucleo.ponto_extra.modelo import PontoExtra
 from nucleo.pontuacao.modelo import Badge, TipoDeBadge
 from nucleo.tempo import agora
@@ -179,6 +181,168 @@ def test_comprovante_fora_da_pretensao_apoiador_e_recusado(sessao, tmp_path):
             armazenamento=porta,
         )
     assert excinfo.value.campo == "comprovante"
+
+
+def test_nick_gravado_no_pre_cadastro_sem_criar_persona(sessao):
+    solicitacao = registrar_solicitacao_de_participacao(
+        sessao,
+        nome_ou_razao_social="Apoiadora de Tal",
+        email="apoiadora@example.org",
+        whatsapp="+55 11 90000-0000",
+        pretensao=PretensaoDeParticipacao.apoiador,
+        apresentacao="Quero apoiar a comunidade.",
+        nick="ApoiadoraPretendida",
+    )
+    sessao.commit()
+
+    assert solicitacao.nick == "ApoiadoraPretendida"
+    assert sessao.query(Persona).count() == 0
+    assert sessao.query(Nick).filter_by(valor="ApoiadoraPretendida").first() is None
+
+
+def test_nick_de_adulto_em_uso_e_recusado_no_pre_cadastro(sessao, criar_persona):
+    admin = criar_persona(Papel.admin)
+    criar_persona_do_nucleo(sessao, papel=Papel.apoiador, criada_por=admin, nick="JaEmUso")
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_solicitacao_de_participacao(
+            sessao,
+            nome_ou_razao_social="Outra Apoiadora",
+            email="outra@example.org",
+            whatsapp="+55 11 90000-0000",
+            pretensao=PretensaoDeParticipacao.apoiador,
+            apresentacao="Quero apoiar a comunidade.",
+            nick="JaEmUso",
+        )
+    assert excinfo.value.campo == "nick"
+    assert sessao.query(SolicitacaoDeParticipacao).count() == 0
+
+
+def test_nick_declarado_em_solicitacao_de_mestre_e_recusado(sessao):
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_solicitacao_de_participacao(
+            sessao,
+            nome_ou_razao_social="Fulana de Tal",
+            email="fulana@example.org",
+            whatsapp="+55 11 90000-0000",
+            pretensao=PretensaoDeParticipacao.mestre,
+            apresentacao="Quero ser Mestre na comunidade.",
+            nick="NickDeMestre",
+        )
+    assert excinfo.value.campo == "nick"
+    assert sessao.query(SolicitacaoDeParticipacao).count() == 0
+
+
+def test_nick_reservado_sai_como_indisponivel_na_conferencia(sessao):
+    registrar_solicitacao_de_participacao(
+        sessao,
+        nome_ou_razao_social="Apoiadora de Tal",
+        email="apoiadora@example.org",
+        whatsapp="+55 11 90000-0000",
+        pretensao=PretensaoDeParticipacao.apoiador,
+        apresentacao="Quero apoiar a comunidade.",
+        nick="NickReservado",
+    )
+    sessao.commit()
+
+    assert conferir_disponibilidade_de_nick(sessao, "NickReservado") is False
+
+
+def test_segunda_solicitacao_com_o_mesmo_nick_e_recusada(sessao):
+    primeira = registrar_solicitacao_de_participacao(
+        sessao,
+        nome_ou_razao_social="Apoiadora de Tal",
+        email="apoiadora@example.org",
+        whatsapp="+55 11 90000-0000",
+        pretensao=PretensaoDeParticipacao.apoiador,
+        apresentacao="Quero apoiar a comunidade.",
+        nick="NickDisputado",
+    )
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_solicitacao_de_participacao(
+            sessao,
+            nome_ou_razao_social="Outra Apoiadora",
+            email="outra@example.org",
+            whatsapp="+55 11 90000-0000",
+            pretensao=PretensaoDeParticipacao.apoiador,
+            apresentacao="Quero apoiar a comunidade também.",
+            nick="NickDisputado",
+        )
+    assert excinfo.value.campo == "nick"
+    assert sessao.query(SolicitacaoDeParticipacao).count() == 1
+    assert primeira.nick == "NickDisputado"
+
+
+def test_reserva_vencida_libera_o_nick(sessao):
+    solicitacao = registrar_solicitacao_de_participacao(
+        sessao,
+        nome_ou_razao_social="Apoiadora de Tal",
+        email="apoiadora@example.org",
+        whatsapp="+55 11 90000-0000",
+        pretensao=PretensaoDeParticipacao.apoiador,
+        apresentacao="Quero apoiar a comunidade.",
+        nick="NickAVencer",
+    )
+    solicitacao.prazo = agora() - timedelta(seconds=1)
+    sessao.commit()
+
+    assert conferir_disponibilidade_de_nick(sessao, "NickAVencer") is True
+    assert solicitacao.situacao == SituacaoDaSolicitacao.recebida
+
+
+def test_solicitacao_recusada_libera_o_nick(sessao, criar_persona):
+    admin = criar_persona(Papel.admin)
+    solicitacao = registrar_solicitacao_de_participacao(
+        sessao,
+        nome_ou_razao_social="Apoiadora de Tal",
+        email="apoiadora@example.org",
+        whatsapp="+55 11 90000-0000",
+        pretensao=PretensaoDeParticipacao.apoiador,
+        apresentacao="Quero apoiar a comunidade.",
+        nick="NickARecusar",
+    )
+    sessao.commit()
+
+    avaliar_solicitacao_de_participacao(
+        sessao,
+        solicitacao,
+        situacao=SituacaoDaSolicitacao.recusada,
+        avaliado_por=admin,
+        parecer="Perfil incompatível com a proposta.",
+    )
+    sessao.commit()
+
+    assert conferir_disponibilidade_de_nick(sessao, "NickARecusar") is True
+
+
+def test_reserva_nao_impede_o_cadastro_de_um_guerreiro_com_o_mesmo_nick(
+    sessao, criar_comunidade, criar_aula, criar_persona
+):
+    registrar_solicitacao_de_participacao(
+        sessao,
+        nome_ou_razao_social="Apoiadora de Tal",
+        email="apoiadora@example.org",
+        whatsapp="+55 11 90000-0000",
+        pretensao=PretensaoDeParticipacao.apoiador,
+        apresentacao="Quero apoiar a comunidade.",
+        nick="NickCobicado",
+    )
+    sessao.commit()
+
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    aula = criar_aula(admin, comunidade)
+
+    guerreiro = criar_persona_do_nucleo(
+        sessao, papel=Papel.guerreiro, criada_por=None, aula=aula, nick="NickCobicado"
+    )
+    sessao.commit()
+
+    assert guerreiro.papel == Papel.guerreiro
+    assert sessao.query(Nick).filter_by(valor="NickCobicado").one().persona_id == guerreiro.id
 
 
 def test_solicitacao_de_dados_sem_finalidade_e_recusada(sessao):

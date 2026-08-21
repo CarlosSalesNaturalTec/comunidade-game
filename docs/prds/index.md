@@ -194,6 +194,17 @@ que nenhum documento-fonte definia, e o `RF-02-02` e o `RF-02-03` passam de arte
 a **link declarado**. Os atributos entram no núcleo com a fatia de cadastro de personas da
 App 03, que atende `RF-02-01` a `RF-02-07`.
 
+O **nick de adulto** foi decidido em 2026-08-21, fechando a pendência "Conferência do nick no
+pré-cadastro" do documento 09: nick e avatar passam a ser atributos opcionais de Apoiador **e
+Mestre**, a unicidade global do nick alcança os três papéis que o têm, e a conferência de
+disponibilidade que a porta pública usa varre **só nicks de adulto** — nunca o de Guerreiro(a),
+o oráculo que a pendência vedava. `RN-01-30` e o modelo do PRD-01 §8 já refletem a decisão; o
+documento 02 §1, o documento 11 §8.2 e o documento 09 também. `RF-14-12`, `RF-14-13` e o `RF-09-66`
+do Mestre a aplicam. O caminho de código entra em três changes: a primeira, `nick-de-adulto`,
+entrega o núcleo; `cadastro-de-personas` expõe as rotas de cadastro de cada papel e o caminho
+em que o Admin grava o nick quando a escolha do adulto colidiu; `desativacao-do-ponto-de-apoio`
+fecha, à parte, a pendência "Desativação de ponto de apoio" do mesmo documento 09.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 
