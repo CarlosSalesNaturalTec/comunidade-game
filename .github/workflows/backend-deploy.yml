@@ -3,7 +3,8 @@ name: Backend Deploy
 on:
   push:
     branches: [main]
-    paths: [backend/**]
+    # Markdown de fora: editar um README não pode redeployar produção.
+    paths: [backend/**, "!backend/**.md"]
   workflow_dispatch:
 
 concurrency:
