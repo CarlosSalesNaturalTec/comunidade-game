@@ -50,3 +50,27 @@ textarea {
 * {
   transition-duration: var(--duracao, 0ms);
 }
+
+/* Navegação entre as áreas da gestão — alvo de toque de ao menos 48 px,
+ * como todo elemento acionável (documento 15 §5). */
+.cg-navegacao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-8);
+  padding: var(--espaco-8) var(--espaco-16);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.cg-navegacao__item {
+  min-height: var(--alvo-de-toque);
+  padding: 0 var(--espaco-16);
+  border: 1px solid transparent;
+  border-radius: var(--raio-campo);
+  background: none;
+  cursor: pointer;
+}
+
+.cg-navegacao__item[aria-current] {
+  border-color: var(--cor-separador);
+  font-weight: var(--peso-rotulo);
+}
