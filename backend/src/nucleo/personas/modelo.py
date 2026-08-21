@@ -1,8 +1,8 @@
 import enum
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, Text, Uuid, func, text
+from sqlalchemy import Date, DateTime, Enum, ForeignKey, Index, String, Text, Uuid, func, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..banco import Base
@@ -25,12 +25,22 @@ class Persona(Base):
     comunidade do Guerreiro(a) não é coluna daqui: vive em
     `comunidades.modelo.VinculoJogador`, entidade com histórico
     (`RN-01-05`, `RF-08-02`, PRD-08 §8).
+
+    `nome`, `email` e `whatsapp` são atributos comuns aos cinco papéis
+    (PRD-01 §8); `nascimento` é de quem o tem — só o Guerreiro(a). Todos
+    nulos no banco porque a semeadura e as personas anteriores a esta fatia
+    não os carregam; a exigência de cada um por papel é do cadastro da
+    gestão (`RF-02-01` a `RF-02-05`, documento 02 §1).
     """
 
     __tablename__ = "persona"
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     papel: Mapped[Papel] = mapped_column(Enum(Papel, native_enum=False, length=32), nullable=False)
+    nome: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    nascimento: Mapped[date | None] = mapped_column(Date, nullable=True)
+    email: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    whatsapp: Mapped[str | None] = mapped_column(String(32), nullable=True)
     avatar: Mapped[str | None] = mapped_column(Text, nullable=True)
     criada_por: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("persona.id"), nullable=True
@@ -125,4 +135,23 @@ class Credencial(Base):
             unique=True,
             postgresql_where=text("ativa AND tipo = 'dispositivo'"),
         ),
+    )
+
+
+class ArtefatoComprobatorio(Base):
+    """Prova declarada do adulto — link de currículo, portfólio, redes ou
+    documento externo —, nunca anexo de arquivo (`RF-02-02`, `RF-02-03`,
+    `RF-02-04`, `RN-02-01`, documento 02 §1). A persona pode ter vários;
+    satélite porque é atributo próprio de Mestre e de Apoiador, no mesmo
+    precedente do nick (design — decisões).
+    """
+
+    __tablename__ = "artefato_comprobatorio"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    persona_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("persona.id"), nullable=False)
+    endereco: Mapped[str] = mapped_column(String(512), nullable=False)
+    rotulo: Mapped[str] = mapped_column(String(256), nullable=False)
+    criado_em: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )

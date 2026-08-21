@@ -1,3 +1,5 @@
+from datetime import date
+
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -6,7 +8,7 @@ from ..comunidades.regra import abrir_vinculo
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..fila.modelo import SolicitacaoDeParticipacao
 from ..tempo import agora
-from .modelo import Nick, Papel, Persona
+from .modelo import ArtefatoComprobatorio, Credencial, Nick, Papel, Persona, TipoDeCredencial
 
 # Quem cadastra quem (RN-01-01, RN-01-02). Guerreiro(a) tem autocadastro:
 # frozenset vazio significa "nenhum autor exigido".
@@ -26,6 +28,11 @@ def criar_persona(
     criada_por: Persona | None,
     aula: Aula | None = None,
     nick: str | None = None,
+    nome: str | None = None,
+    nascimento: date | None = None,
+    email: str | None = None,
+    whatsapp: str | None = None,
+    avatar: str | None = None,
     permitir_semeadura_de_admin: bool = False,
 ) -> Persona:
     """Cria a persona aplicando RN-01-01, RN-01-02 e RN-01-05. Login nunca
@@ -68,6 +75,11 @@ def criar_persona(
 
     persona = Persona(
         papel=papel,
+        nome=nome,
+        nascimento=nascimento,
+        email=email,
+        whatsapp=whatsapp,
+        avatar=avatar,
         criada_por=criada_por.id if criada_por is not None else None,
     )
     sessao.add(persona)
@@ -166,5 +178,185 @@ def definir_ou_trocar_nick(sessao: Session, persona: Persona, nick: str) -> Pers
         sessao.add(Nick(persona_id=persona.id, valor=nick))
     else:
         registro.valor = nick
+    sessao.flush()
+    return persona
+
+
+# `RF-02-04`, `RN-02-01`: artefato comprobatório obrigatório só para Mestre e
+# Apoiador — o Admin não declara prova nenhuma para incluir outro Admin.
+_PAPEIS_QUE_EXIGEM_ARTEFATO = (Papel.mestre, Papel.apoiador)
+
+
+def _gravar_credencial_de_login_social(
+    sessao: Session, *, persona: Persona, email: str, criada_por: Persona
+) -> None:
+    """O e-mail declarado no cadastro é o identificador que a rota de login
+    social já procura (`sessoes.rotas.login_social`, `personas.semeadura`) —
+    sem esta credencial, o adulto cadastrado nunca conseguiria entrar pela
+    conta Google (documento 03 §1.1)."""
+    sessao.add(
+        Credencial(
+            persona_id=persona.id,
+            tipo=TipoDeCredencial.login_social,
+            identificador=email,
+            criada_por=criada_por.id,
+            troca_pendente=False,
+            ativa=True,
+        )
+    )
+
+
+def cadastrar_guerreiro_pela_gestao(
+    sessao: Session,
+    *,
+    operador: Persona,
+    nome: str | None,
+    nascimento: date | None,
+    nick: str | None,
+    avatar: str | None,
+    aula: Aula,
+) -> Persona:
+    """`RF-02-01`: cadastro do Guerreiro(a) pelo Admin. A comunidade vem da
+    aula agendada em que ele se cadastra, nunca de quem o cadastra — a
+    mesma regra do autocadastro do PRD-04, aplicada aqui ao caminho da
+    gestão (`RF-08-02`, `RN-08-02`). `criar_persona` não restringe autor
+    algum para Guerreiro(a) — o autocadastro do PRD-04 não tem um —, então
+    é aqui que o caminho da gestão exige Admin.
+    """
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin cadastra Guerreiro(a) pela gestão.")
+    if not nome or not nome.strip():
+        raise ErroDeValidacao(mensagem="Guerreiro(a) precisa de nome.", campo="nome")
+    if nascimento is None:
+        raise ErroDeValidacao(
+            mensagem="Guerreiro(a) precisa de data de nascimento.", campo="nascimento"
+        )
+    if not avatar or not avatar.strip():
+        raise ErroDeValidacao(mensagem="Guerreiro(a) precisa de avatar.", campo="avatar")
+
+    return criar_persona(
+        sessao,
+        papel=Papel.guerreiro,
+        criada_por=operador,
+        aula=aula,
+        nick=nick,
+        nome=nome,
+        nascimento=nascimento,
+        avatar=avatar,
+    )
+
+
+def editar_guerreiro(
+    sessao: Session,
+    persona: Persona,
+    *,
+    nome: str | None,
+    nascimento: date | None,
+    nick: str | None,
+    avatar: str | None,
+) -> Persona:
+    """`RF-02-01`: mesmas recusas do cadastro. NEVER apaga a persona nem
+    troca o papel dela — só atualiza os quatro campos (`RN-02-21`)."""
+    if not nome or not nome.strip():
+        raise ErroDeValidacao(mensagem="Guerreiro(a) precisa de nome.", campo="nome")
+    if nascimento is None:
+        raise ErroDeValidacao(
+            mensagem="Guerreiro(a) precisa de data de nascimento.", campo="nascimento"
+        )
+    if not avatar or not avatar.strip():
+        raise ErroDeValidacao(mensagem="Guerreiro(a) precisa de avatar.", campo="avatar")
+    if not nick or not nick.strip():
+        raise ErroDeValidacao(mensagem="Guerreiro(a) precisa de nick.", campo="nick")
+
+    # Exclui a própria persona da checagem: reenviar o nick que ela já tem
+    # não pode se confundir com colisão (RN-01-30 conta contra QUALQUER
+    # outra persona, nunca contra ela mesma).
+    nick_normalizado = nick.strip().lower()
+    em_uso_por_outra_persona = (
+        sessao.query(Nick)
+        .filter(func.lower(Nick.valor) == nick_normalizado, Nick.persona_id != persona.id)
+        .first()
+        is not None
+    )
+    if em_uso_por_outra_persona:
+        raise ErroDeValidacao(mensagem="Este nick já está em uso.", campo="nick")
+
+    registro_de_nick = sessao.query(Nick).filter_by(persona_id=persona.id).first()
+    if registro_de_nick is None:
+        sessao.add(Nick(persona_id=persona.id, valor=nick))
+    else:
+        registro_de_nick.valor = nick
+
+    persona.nome = nome
+    persona.nascimento = nascimento
+    persona.avatar = avatar
+    sessao.flush()
+    return persona
+
+
+def cadastrar_adulto_com_artefatos(
+    sessao: Session,
+    *,
+    papel: Papel,
+    operador: Persona,
+    nome: str | None,
+    email: str | None,
+    whatsapp: str | None,
+    nick: str | None,
+    artefatos: list[tuple[str, str]],
+) -> Persona:
+    """`RF-02-02`, `RF-02-03`: cadastro de Mestre ou de Apoiador, com o
+    artefato comprobatório obrigatório (`RF-02-04`, `RN-02-01`) — a prova é
+    link declarado, nunca anexo de arquivo. O nick não é exigido aqui: o do
+    Apoiador vem do pré-cadastro e o do Mestre é definido por ele no
+    primeiro acesso."""
+    if not nome or not nome.strip():
+        raise ErroDeValidacao(mensagem=f"{papel.value.capitalize()} precisa de nome.", campo="nome")
+    if not email or not email.strip():
+        raise ErroDeValidacao(
+            mensagem=f"{papel.value.capitalize()} precisa de e-mail.", campo="email"
+        )
+    if papel in _PAPEIS_QUE_EXIGEM_ARTEFATO and not artefatos:
+        raise ErroDeValidacao(
+            mensagem="O cadastro exige ao menos um artefato comprobatório.", campo="artefatos"
+        )
+
+    persona = criar_persona(
+        sessao,
+        papel=papel,
+        criada_por=operador,
+        nick=nick,
+        nome=nome,
+        email=email,
+        whatsapp=whatsapp,
+    )
+
+    for endereco, rotulo in artefatos:
+        sessao.add(ArtefatoComprobatorio(persona_id=persona.id, endereco=endereco, rotulo=rotulo))
+
+    _gravar_credencial_de_login_social(sessao, persona=persona, email=email, criada_por=operador)
+    sessao.flush()
+    return persona
+
+
+def incluir_admin(
+    sessao: Session,
+    *,
+    operador: Persona,
+    nome: str | None,
+    email: str | None,
+    whatsapp: str | None,
+) -> Persona:
+    """`RF-02-05`, `RN-02-02`: único caminho de entrada de um Admin novo —
+    `criar_persona` já recusa quem não é Admin (`criada_por`)."""
+    if not nome or not nome.strip():
+        raise ErroDeValidacao(mensagem="Admin precisa de nome.", campo="nome")
+    if not email or not email.strip():
+        raise ErroDeValidacao(mensagem="Admin precisa de e-mail.", campo="email")
+
+    persona = criar_persona(
+        sessao, papel=Papel.admin, criada_por=operador, nome=nome, email=email, whatsapp=whatsapp
+    )
+    _gravar_credencial_de_login_social(sessao, persona=persona, email=email, criada_por=operador)
     sessao.flush()
     return persona

@@ -1,8 +1,10 @@
+from datetime import date
+
 import pytest
 
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
 from nucleo.personas.modelo import Credencial, Nick, Papel, Persona, TipoDeCredencial
-from nucleo.personas.regra import criar_persona
+from nucleo.personas.regra import cadastrar_guerreiro_pela_gestao, criar_persona, editar_guerreiro
 from nucleo.personas.semeadura import semear_admin_fundador
 
 
@@ -276,3 +278,177 @@ def test_admin_semeado_tem_credencial_de_login_social(sessao):
     assert credencial.tipo == TipoDeCredencial.login_social
     assert credencial.identificador == "fundador@example.org"
     assert credencial.troca_pendente is False
+
+
+# cadastro-de-persona: cadastro e edição do Guerreiro(a) pela gestão (RF-02-01)
+
+
+def test_admin_cadastra_guerreiro_pela_gestao(sessao, criar_comunidade, criar_aula):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+    comunidade = criar_comunidade()
+    aula = criar_aula(admin, comunidade)
+
+    guerreiro = cadastrar_guerreiro_pela_gestao(
+        sessao,
+        operador=admin,
+        nome="Zeferina",
+        nascimento=date(2015, 3, 20),
+        nick="ZeferinaGuerreira",
+        avatar="avatar-opaco",
+        aula=aula,
+    )
+    sessao.commit()
+
+    assert guerreiro.papel == Papel.guerreiro
+    assert guerreiro.nome == "Zeferina"
+    assert guerreiro.nascimento == date(2015, 3, 20)
+    assert guerreiro.avatar == "avatar-opaco"
+    assert guerreiro.criada_por == admin.id
+    assert sessao.query(Nick).filter_by(persona_id=guerreiro.id).one().valor == "ZeferinaGuerreira"
+
+
+def test_cadastro_de_guerreiro_pela_gestao_sem_nome_e_recusado(
+    sessao, criar_comunidade, criar_aula
+):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+    comunidade = criar_comunidade()
+    aula = criar_aula(admin, comunidade)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        cadastrar_guerreiro_pela_gestao(
+            sessao,
+            operador=admin,
+            nome="",
+            nascimento=date(2015, 3, 20),
+            nick="Nick",
+            avatar="avatar",
+            aula=aula,
+        )
+    assert excinfo.value.campo == "nome"
+    assert sessao.query(Persona).filter_by(papel=Papel.guerreiro).count() == 0
+
+
+def test_cadastro_de_guerreiro_pela_gestao_com_nick_em_uso_nao_revela_o_dono(
+    sessao, criar_comunidade, criar_aula
+):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+    comunidade = criar_comunidade()
+    aula = criar_aula(admin, comunidade)
+    cadastrar_guerreiro_pela_gestao(
+        sessao,
+        operador=admin,
+        nome="Primeira",
+        nascimento=date(2014, 1, 1),
+        nick="NickUnico",
+        avatar="a",
+        aula=aula,
+    )
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        cadastrar_guerreiro_pela_gestao(
+            sessao,
+            operador=admin,
+            nome="Segunda",
+            nascimento=date(2014, 1, 1),
+            nick="NickUnico",
+            avatar="a",
+            aula=aula,
+        )
+    assert excinfo.value.campo == "nick"
+    assert "primeira" not in excinfo.value.mensagem.lower()
+    assert sessao.query(Persona).filter_by(papel=Papel.guerreiro).count() == 1
+
+
+def test_admin_corrige_o_nome_do_guerreiro(sessao, criar_comunidade, criar_aula):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+    comunidade = criar_comunidade()
+    aula = criar_aula(admin, comunidade)
+    guerreiro = cadastrar_guerreiro_pela_gestao(
+        sessao,
+        operador=admin,
+        nome="Nome Antigo",
+        nascimento=date(2015, 1, 1),
+        nick="NickFixo",
+        avatar="avatar-1",
+        aula=aula,
+    )
+    sessao.commit()
+
+    editado = editar_guerreiro(
+        sessao,
+        guerreiro,
+        nome="Nome Novo",
+        nascimento=date(2015, 1, 1),
+        nick="NickFixo",
+        avatar="avatar-1",
+    )
+    sessao.commit()
+
+    assert editado.id == guerreiro.id
+    assert editado.nome == "Nome Novo"
+    assert sessao.query(Persona).filter_by(papel=Papel.guerreiro).count() == 1
+    assert sessao.query(Nick).filter_by(persona_id=guerreiro.id).one().valor == "NickFixo"
+
+
+def test_edicao_do_guerreiro_para_nick_em_uso_e_recusada(sessao, criar_comunidade, criar_aula):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+    comunidade = criar_comunidade()
+    aula = criar_aula(admin, comunidade)
+    cadastrar_guerreiro_pela_gestao(
+        sessao,
+        operador=admin,
+        nome="Um",
+        nascimento=date(2014, 1, 1),
+        nick="NickUm",
+        avatar="a",
+        aula=aula,
+    )
+    segundo = cadastrar_guerreiro_pela_gestao(
+        sessao,
+        operador=admin,
+        nome="Dois",
+        nascimento=date(2014, 1, 1),
+        nick="NickDois",
+        avatar="a",
+        aula=aula,
+    )
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        editar_guerreiro(
+            sessao, segundo, nome="Dois", nascimento=date(2014, 1, 1), nick="NickUm", avatar="a"
+        )
+    assert excinfo.value.campo == "nick"
+    assert sessao.query(Nick).filter_by(persona_id=segundo.id).one().valor == "NickDois"
+
+
+def test_mestre_nao_cadastra_guerreiro_pela_gestao(sessao, criar_comunidade, criar_aula):
+    admin = Persona(papel=Papel.admin)
+    mestre = Persona(papel=Papel.mestre)
+    sessao.add_all([admin, mestre])
+    sessao.flush()
+    comunidade = criar_comunidade()
+    aula = criar_aula(admin, comunidade)
+
+    with pytest.raises(PermissaoNegada):
+        cadastrar_guerreiro_pela_gestao(
+            sessao,
+            operador=mestre,
+            nome="X",
+            nascimento=date(2014, 1, 1),
+            nick="Nick",
+            avatar="a",
+            aula=aula,
+        )
+    assert sessao.query(Persona).filter_by(papel=Papel.guerreiro).count() == 0

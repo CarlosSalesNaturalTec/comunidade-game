@@ -187,11 +187,19 @@ documento 15 §12, e a esteira de CI das pastas de JavaScript. O núcleo passou 
 (documento 03 §1, princípio 2). Os demais cadastros do PRD-02 §6.1, as filas de avaliação, o
 painel do dia, o Quiz ao Vivo e a publicação em endereço próprio seguem pendentes.
 
+O PRD-02 recebeu a segunda fatia: a change `cadastro-de-personas` expôs as quatro rotas de
+cadastro de persona — `POST /v1/guerreiros`, `/v1/mestres`, `/v1/apoiadores`, `/v1/admins` —, a
+edição do Guerreiro(a), o artefato comprobatório obrigatório de Mestre e Apoiador (`RF-02-04`) e
+o caminho pelo qual o Admin grava o nick do adulto quando a escolha dele colidiu, atendendo
+`RF-02-01` a `RF-02-07`. As telas de cadastro, o vínculo do responsável e a credencial
+provisória entraram na App 03. As filas de avaliação, o painel do dia, o Quiz ao Vivo e a
+publicação em endereço próprio seguem pendentes — o PRD-02 continua **aprovado**.
+
 A **identidade da persona** foi decidida em 2026-08-21, antes de virar código: o cadastro do
 adulto e a forma do artefato comprobatório estão no documento 02 §1, as cinco linhas no
 documento 09, e o PRD-01 §8 ganhou a linha da `Persona`. O `RF-02-01` perdeu a **situação**,
 que nenhum documento-fonte definia, e o `RF-02-02` e o `RF-02-03` passam de artefato **anexado**
-a **link declarado**. Os atributos entram no núcleo com a fatia de cadastro de personas da
+a **link declarado**. Os atributos entraram no núcleo com a fatia de cadastro de personas da
 App 03, que atende `RF-02-01` a `RF-02-07`.
 
 O **nick de adulto** foi decidido em 2026-08-21, fechando a pendência "Conferência do nick no
@@ -200,10 +208,10 @@ Mestre**, a unicidade global do nick alcança os três papéis que o têm, e a c
 disponibilidade que a porta pública usa varre **só nicks de adulto** — nunca o de Guerreiro(a),
 o oráculo que a pendência vedava. `RN-01-30` e o modelo do PRD-01 §8 já refletem a decisão; o
 documento 02 §1, o documento 11 §8.2 e o documento 09 também. `RF-14-12`, `RF-14-13` e o `RF-09-66`
-do Mestre a aplicam. O caminho de código entra em três changes: a primeira, `nick-de-adulto`,
-entrega o núcleo; `cadastro-de-personas` expõe as rotas de cadastro de cada papel e o caminho
-em que o Admin grava o nick quando a escolha do adulto colidiu; `desativacao-do-ponto-de-apoio`
-fecha, à parte, a pendência "Desativação de ponto de apoio" do mesmo documento 09.
+do Mestre a aplicam. O caminho de código entrou em três changes: `nick-de-adulto` entregou o
+núcleo; `cadastro-de-personas` expôs as rotas de cadastro de cada papel e o caminho em que o
+Admin grava o nick quando a escolha do adulto colidiu; `desativacao-do-ponto-de-apoio` fecha, à
+parte, a pendência "Desativação de ponto de apoio" do mesmo documento 09.
 
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.

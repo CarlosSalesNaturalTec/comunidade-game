@@ -171,10 +171,12 @@ class TestNaoExisteRotaDeLeituraDoTemplate:
         guerreiro = criar_persona(Papel.guerreiro)
         cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
 
-        for caminho in (
-            f"/v1/guerreiros/{guerreiro.id}/template",
-            f"/v1/guerreiros/{guerreiro.id}",
-            "/v1/templates",
-        ):
+        for caminho in (f"/v1/guerreiros/{guerreiro.id}/template", "/v1/templates"):
             resposta = cliente.get(caminho, headers=cabecalhos)
             assert resposta.status_code == 404
+
+        # `/v1/guerreiros/{id}` existe desde `cadastro-de-persona`, mas só
+        # para `PUT` — a edição do cadastro (`RF-02-01`), nunca leitura do
+        # _template_: GET no mesmo caminho responde 405, não 404.
+        resposta = cliente.get(f"/v1/guerreiros/{guerreiro.id}", headers=cabecalhos)
+        assert resposta.status_code == 405

@@ -1,25 +1,365 @@
 import uuid
+from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
+from ..aulas.modelo import Aula
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..configuracao import Configuracao, obter_configuracao
-from ..erros import NaoEncontrado, PermissaoNegada
+from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
+from ..paginacao import (
+    PaginaDeResultado,
+    ParametrosDeListagem,
+    codificar_cursor,
+    contrato_de_listagem,
+    decodificar_cursor,
+)
+from ..permissoes import Operacao, exigir_permissao
 from ..protecao.freio import exigir_freio_por_origem
 from .credenciais import criar_credencial_provisoria
-from .modelo import Credencial, Papel, Persona, TipoDeCredencial
+from .modelo import ArtefatoComprobatorio, Credencial, Nick, Papel, Persona, TipoDeCredencial
 from .regra import (
+    cadastrar_adulto_com_artefatos,
+    cadastrar_guerreiro_pela_gestao,
     conferir_disponibilidade_de_nick,
     definir_ou_trocar_nick,
+    editar_guerreiro,
+    incluir_admin,
     sugerir_variacoes_de_nick,
 )
 from .senha import calcular_hash
 
 roteador = APIRouter()
+
+
+def _paginar_personas(
+    sessao_bd: Session, *, papel: Papel, parametros: ParametrosDeListagem
+) -> tuple[list[Persona], str | None]:
+    """Paginação comum às três listas de persona por papel — cursor pelo
+    `id`, sem filtro de domínio (`RF-02-01`, `RF-02-02`, `RF-02-03`)."""
+    consulta = sessao_bd.query(Persona).filter_by(papel=papel)
+
+    if parametros.cursor:
+        posicao = decodificar_cursor(parametros.cursor)
+        try:
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(Persona.id > id_cursor)
+
+    consulta = consulta.order_by(Persona.id).limit(parametros.tamanho + 1)
+    personas = consulta.all()
+
+    proximo_cursor = None
+    if len(personas) > parametros.tamanho:
+        personas = personas[: parametros.tamanho]
+        proximo_cursor = codificar_cursor({"id": str(personas[-1].id)})
+    return personas, proximo_cursor
+
+
+class GuerreiroSaida(BaseModel):
+    id: uuid.UUID
+    nome: str
+    nascimento: date
+    nick: str
+    avatar: str
+
+
+def _saida_do_guerreiro(persona: Persona, sessao_bd: Session) -> GuerreiroSaida:
+    nick = sessao_bd.query(Nick).filter_by(persona_id=persona.id).first()
+    return GuerreiroSaida(
+        id=persona.id,
+        nome=persona.nome or "",
+        nascimento=persona.nascimento,
+        nick=nick.valor if nick is not None else "",
+        avatar=persona.avatar or "",
+    )
+
+
+class CadastrarGuerreiroEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    nome: str = Field(min_length=1)
+    nascimento: date
+    nick: str = Field(min_length=1)
+    avatar: str = Field(min_length=1)
+    aula_id: uuid.UUID
+
+
+@roteador.post("/guerreiros", status_code=201)
+def cadastrar_guerreiro_rota(
+    entrada: CadastrarGuerreiroEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> GuerreiroSaida:
+    """Restrita a Admin — outro papel recebe 403 pela matriz (`RF-02-01`).
+    A comunidade vem da aula agendada em que o Guerreiro(a) se cadastra,
+    nunca de quem o cadastra (`RF-08-02`, `RN-08-02`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    aula = sessao_bd.get(Aula, entrada.aula_id)
+    if aula is None:
+        raise NaoEncontrado(mensagem="Aula não encontrada.", campo="aula_id")
+
+    persona = cadastrar_guerreiro_pela_gestao(
+        sessao_bd,
+        operador=operador,
+        nome=entrada.nome,
+        nascimento=entrada.nascimento,
+        nick=entrada.nick,
+        avatar=entrada.avatar,
+        aula=aula,
+    )
+    sessao_bd.commit()
+    return _saida_do_guerreiro(persona, sessao_bd)
+
+
+@roteador.get("/guerreiros", response_model=PaginaDeResultado[GuerreiroSaida])
+def listar_guerreiros_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "le"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[GuerreiroSaida]:
+    """Restrita a Admin — a gestão apresenta os Guerreiros e Guerreiras já
+    cadastrados antes de oferecer um novo cadastro (`RF-02-01`)."""
+    personas, proximo_cursor = _paginar_personas(
+        sessao_bd, papel=Papel.guerreiro, parametros=parametros
+    )
+    return PaginaDeResultado(
+        itens=[_saida_do_guerreiro(persona, sessao_bd) for persona in personas],
+        proximo_cursor=proximo_cursor,
+    )
+
+
+class EditarGuerreiroEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    nome: str = Field(min_length=1)
+    nascimento: date
+    nick: str = Field(min_length=1)
+    avatar: str = Field(min_length=1)
+
+
+@roteador.patch("/guerreiros/{id}")
+def editar_guerreiro_rota(
+    id: uuid.UUID,
+    entrada: EditarGuerreiroEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> GuerreiroSaida:
+    """Restrita a Admin. NEVER apaga a persona nem troca o papel dela — só
+    atualiza os quatro campos (`RF-02-01`, `RN-02-21`)."""
+    persona = sessao_bd.get(Persona, id)
+    if persona is None or persona.papel != Papel.guerreiro:
+        raise NaoEncontrado(mensagem="Guerreiro(a) não encontrado.", campo="id")
+
+    persona = editar_guerreiro(
+        sessao_bd,
+        persona,
+        nome=entrada.nome,
+        nascimento=entrada.nascimento,
+        nick=entrada.nick,
+        avatar=entrada.avatar,
+    )
+    sessao_bd.commit()
+    return _saida_do_guerreiro(persona, sessao_bd)
+
+
+class ArtefatoEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    endereco: str = Field(min_length=1)
+    rotulo: str = Field(min_length=1)
+
+
+class ArtefatoSaida(BaseModel):
+    endereco: str
+    rotulo: str
+
+
+class AdultoSaida(BaseModel):
+    id: uuid.UUID
+    nome: str
+    email: str
+    whatsapp: str | None
+    nick: str | None
+    artefatos: list[ArtefatoSaida]
+
+
+def _saida_do_adulto(persona: Persona, sessao_bd: Session) -> AdultoSaida:
+    nick = sessao_bd.query(Nick).filter_by(persona_id=persona.id).first()
+    artefatos = sessao_bd.query(ArtefatoComprobatorio).filter_by(persona_id=persona.id).all()
+    return AdultoSaida(
+        id=persona.id,
+        nome=persona.nome or "",
+        email=persona.email or "",
+        whatsapp=persona.whatsapp,
+        nick=nick.valor if nick is not None else None,
+        artefatos=[ArtefatoSaida(endereco=a.endereco, rotulo=a.rotulo) for a in artefatos],
+    )
+
+
+class CadastrarAdultoEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    nome: str = Field(min_length=1)
+    email: str = Field(min_length=1)
+    whatsapp: str | None = None
+    nick: str | None = None
+    artefatos: list[ArtefatoEntrada] = Field(default_factory=list)
+
+
+@roteador.post("/mestres", status_code=201)
+def cadastrar_mestre_rota(
+    entrada: CadastrarAdultoEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> AdultoSaida:
+    """Restrita a Admin, com o artefato comprobatório obrigatório
+    (`RF-02-02`, `RF-02-04`, `RN-02-01`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    persona = cadastrar_adulto_com_artefatos(
+        sessao_bd,
+        papel=Papel.mestre,
+        operador=operador,
+        nome=entrada.nome,
+        email=entrada.email,
+        whatsapp=entrada.whatsapp,
+        nick=entrada.nick,
+        artefatos=[(artefato.endereco, artefato.rotulo) for artefato in entrada.artefatos],
+    )
+    sessao_bd.commit()
+    return _saida_do_adulto(persona, sessao_bd)
+
+
+@roteador.get("/mestres", response_model=PaginaDeResultado[AdultoSaida])
+def listar_mestres_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "le"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[AdultoSaida]:
+    """Restrita a Admin — sinaliza quem está sem nick, sem sugerir nenhum
+    (`RF-02-01`, `RN-14-10`)."""
+    personas, proximo_cursor = _paginar_personas(
+        sessao_bd, papel=Papel.mestre, parametros=parametros
+    )
+    return PaginaDeResultado(
+        itens=[_saida_do_adulto(persona, sessao_bd) for persona in personas],
+        proximo_cursor=proximo_cursor,
+    )
+
+
+@roteador.post("/apoiadores", status_code=201)
+def cadastrar_apoiador_rota(
+    entrada: CadastrarAdultoEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> AdultoSaida:
+    """Restrita a Admin, com o artefato comprobatório obrigatório
+    (`RF-02-03`, `RF-02-04`, `RN-02-01`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    persona = cadastrar_adulto_com_artefatos(
+        sessao_bd,
+        papel=Papel.apoiador,
+        operador=operador,
+        nome=entrada.nome,
+        email=entrada.email,
+        whatsapp=entrada.whatsapp,
+        nick=entrada.nick,
+        artefatos=[(artefato.endereco, artefato.rotulo) for artefato in entrada.artefatos],
+    )
+    sessao_bd.commit()
+    return _saida_do_adulto(persona, sessao_bd)
+
+
+@roteador.get("/apoiadores", response_model=PaginaDeResultado[AdultoSaida])
+def listar_apoiadores_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "le"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[AdultoSaida]:
+    """Restrita a Admin — sinaliza quem está sem nick, sem sugerir nenhum
+    (`RF-02-01`, `RN-14-10`)."""
+    personas, proximo_cursor = _paginar_personas(
+        sessao_bd, papel=Papel.apoiador, parametros=parametros
+    )
+    return PaginaDeResultado(
+        itens=[_saida_do_adulto(persona, sessao_bd) for persona in personas],
+        proximo_cursor=proximo_cursor,
+    )
+
+
+class IncluirAdminEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    nome: str = Field(min_length=1)
+    email: str = Field(min_length=1)
+    whatsapp: str | None = None
+
+
+class AdminSaida(BaseModel):
+    id: uuid.UUID
+    nome: str
+    email: str
+    whatsapp: str | None
+
+
+@roteador.post("/admins", status_code=201)
+def incluir_admin_rota(
+    entrada: IncluirAdminEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> AdminSaida:
+    """Restrita a Admin — único caminho de entrada de um Admin novo
+    (`RF-02-05`, `RN-02-02`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    persona = incluir_admin(
+        sessao_bd,
+        operador=operador,
+        nome=entrada.nome,
+        email=entrada.email,
+        whatsapp=entrada.whatsapp,
+    )
+    sessao_bd.commit()
+    return AdminSaida(
+        id=persona.id,
+        nome=persona.nome or "",
+        email=persona.email or "",
+        whatsapp=persona.whatsapp,
+    )
+
+
+class GravarNickDoAdultoEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    nick: str = Field(min_length=1)
+
+
+class NickGravadoSaida(BaseModel):
+    nick: str
+
+
+@roteador.patch("/personas/{id}/nick")
+def gravar_nick_do_adulto_rota(
+    id: uuid.UUID,
+    entrada: GravarNickDoAdultoEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> NickGravadoSaida:
+    """Desfecho da colisão de nick: o Admin grava aqui o nick que a pessoa
+    lhe passou por canal fora da plataforma. NEVER alcança persona de
+    Guerreiro(a) — o nick da criança se edita pela rota de edição dela
+    (`RF-02-01`, `RN-01-30`, `RN-14-10`)."""
+    persona_alvo = sessao_bd.get(Persona, id)
+    if persona_alvo is None or persona_alvo.papel not in (Papel.mestre, Papel.apoiador):
+        raise NaoEncontrado(mensagem="Persona não encontrada.", campo="id")
+
+    definir_ou_trocar_nick(sessao_bd, persona_alvo, entrada.nick)
+    sessao_bd.commit()
+    return NickGravadoSaida(nick=entrada.nick)
 
 
 class CriarCredencialEntrada(BaseModel):

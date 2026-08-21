@@ -33,10 +33,13 @@ fatia que o traz chega. Cada artefato guarda endereço e rótulo, e a persona po
 Alternativa descartada: coluna de texto com os links concatenados, que impediria contar
 "ao menos um" sem parsing.
 
-**A gravação do nick pelo Admin é rota separada da edição da persona.** `PUT
-/v1/personas/{id}/nick`, de Admin, alcançando só adulto. Manter fora do corpo de edição evita
-que uma correção de e-mail carregue nick junto e dispare a colisão sem que o Admin tenha
-pedido. Alternativa descartada: nick como campo opcional do `PUT` da persona.
+**A gravação do nick pelo Admin é rota separada da edição da persona.** `PATCH
+/v1/personas/{id}/nick`, de Admin, alcançando só adulto — e a edição do Guerreiro(a) (tarefa
+3.2) é `PATCH /v1/guerreiros/{id}` pelo mesmo motivo: o CORS do núcleo e o cliente HTTP da App
+03 já cobrem só `GET`, `POST`, `PATCH` e `DELETE` (nenhum `PUT`), então as duas rotas de edição
+desta change seguem esse conjunto em vez de abrir uma exceção. Manter fora do corpo de edição
+evita que uma correção de e-mail carregue nick junto e dispare a colisão sem que o Admin tenha
+pedido. Alternativa descartada: nick como campo opcional do corpo de edição da persona.
 
 **A App 03 nunca sugere nick ao Admin.** A conferência de disponibilidade da change
 `nick-de-adulto` existe para quem escolhe o próprio nick; o Admin está gravando um nick que a

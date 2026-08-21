@@ -3,14 +3,16 @@ import { TelaDaAgenda } from "./agenda/TelaDaAgenda";
 import { ProvedorDeSessao, useSessao } from "./autenticacao/ContextoDeSessao";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeComunidades } from "./comunidades/TelaDeComunidades";
+import { TelaDePersonas } from "./personas/TelaDePersonas";
 import { TelaDePontosDeApoio } from "./pontos-de-apoio/TelaDePontosDeApoio";
 
-type Area = "comunidades" | "pontos-de-apoio" | "agenda";
+type Area = "comunidades" | "pontos-de-apoio" | "agenda" | "personas";
 
 const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "comunidades", rotulo: "Comunidades" },
   { chave: "pontos-de-apoio", rotulo: "Pontos de Apoio" },
   { chave: "agenda", rotulo: "Agenda" },
+  { chave: "personas", rotulo: "Personas" },
 ];
 
 // Sem sessão aberta, só a entrada aparece — nenhum dado de gestão aparece
@@ -46,6 +48,7 @@ function Conteudo() {
       {area === "comunidades" && <TelaDeComunidades />}
       {area === "pontos-de-apoio" && <TelaDePontosDeApoio />}
       {area === "agenda" && <TelaDaAgenda />}
+      {area === "personas" && <TelaDePersonas />}
     </>
   );
 }
