@@ -6,6 +6,15 @@ on:
     paths:
       - "docs/**"
       - "*.md"
+      # O Markdown das pastas de código (documento 03 §1.2): o markdownlint já
+      # lê `**/*.md`, mas sem estes caminhos nenhum evento o acordava, e um
+      # README de `backend/` entrava em `main` sem passar por lint nenhum.
+      # Listados um a um, e não `**/*.md`, para não disparar a esteira a cada
+      # artefato de change — `openspec/**` está entre os ignorados do linter.
+      - "backend/**.md"
+      - "comum/**.md"
+      - "apps/**.md"
+      - "jogos/**.md"
       - mkdocs.yml
       - lychee.toml
       - .lycheeignore
@@ -21,6 +30,15 @@ on:
     paths:
       - "docs/**"
       - "*.md"
+      # O Markdown das pastas de código (documento 03 §1.2): o markdownlint já
+      # lê `**/*.md`, mas sem estes caminhos nenhum evento o acordava, e um
+      # README de `backend/` entrava em `main` sem passar por lint nenhum.
+      # Listados um a um, e não `**/*.md`, para não disparar a esteira a cada
+      # artefato de change — `openspec/**` está entre os ignorados do linter.
+      - "backend/**.md"
+      - "comum/**.md"
+      - "apps/**.md"
+      - "jogos/**.md"
       - mkdocs.yml
       - lychee.toml
       - .lycheeignore
