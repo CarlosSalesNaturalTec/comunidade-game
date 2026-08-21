@@ -42,6 +42,13 @@ já declarada no PRD, o que é churn maior do que somar uma irmã.
 inválido em `convencoes-da-api`. A mensagem NÃO diz de quem é o nick nem de que papel — é o que
 mantém a recusa indistinguível.
 
+**A reserva do pré-cadastro não alcança a criança.** A reserva vale na conferência de adulto; a
+unicidade da gravação corre contra personas, e reserva não é persona. Um Guerreiro(a) cadastrado
+com um nick reservado leva o nick, e o Apoiador cai na colisão já prevista, resolvida pelo Admin
+na change de cadastro de personas. Alternativa descartada pelo fundador: fazer a reserva barrar
+o cadastro da criança, o que faria o cadastro de um Guerreiro(a) falhar por causa de um
+formulário público que qualquer pessoa envia.
+
 **A unicidade global já está pronta; o que falta é a caixa.** `Nick` é tabela própria com
 índice único em `valor`, alcançando qualquer papel — o Mestre já entra sem migração, e
 `Persona.avatar` também já existe para qualquer papel. O que muda é tornar o índice
@@ -72,13 +79,3 @@ alcançam qualquer papel, e o `prazo` da solicitação já existe. Muda apenas o
 `solicitacao_de_participacao`, nula. Nenhuma persona existente muda de estado. Rollback é a
 migração inversa; o único cuidado é que, se dois nicks que diferem só na caixa já existirem,
 o índice novo falha — conferir antes de aplicar em produção.
-
-## Open Questions
-
-**A reserva de um pré-cadastro deveria impedir a criança de escolher aquele nick?** Como está
-especificado, não impede: a reserva vale na conferência de adulto, e a unicidade da gravação
-corre contra personas. A consequência é que a criança leva o nick e o Apoiador cai na colisão
-já prevista. Impedir seria mais gentil com o Admin, mas deixaria o cadastro de uma criança
-falhar por causa de um formulário público que qualquer um envia. Não muda specs, desenho nem
-tarefas desta fatia — muda só o caminho da change de cadastro de personas, e pode ser
-respondida antes dela.
