@@ -186,6 +186,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Conteúdo e bibliografia por missão          | 05 §3 + 11 §2             | PRD-09, 07                         |
 | Atividades e taxonomia                      | 02 §4 + 11 §§2.1, 4       | PRD-09, 01, 02, 05                 |
 | Acompanhamento por nick e favoritos         | 02 §1 + 03 §10            | PRD-14, 03, 01                     |
+| Identidade da persona no cadastro           | 02 §1 + 03 §12            | PRD-01, 02, 09, 14                 |
 | Desafios de desbloqueio                     | 02 §2                     | PRD-01, 09, 05                     |
 | Desafio de coleta (série temporal)          | 02 §1                     | PRD-01, 08, 05, 06                 |
 | Desafios extras (abertos e direcionados)    | 04 §3                     | PRD-01, 02, 07, 09                 |

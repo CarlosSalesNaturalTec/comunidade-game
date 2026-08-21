@@ -49,7 +49,8 @@ conhecimento** — tecnologia, educação, artes, esportes, cultura, ciências h
 o motor do jogo é agnóstico de área. Regras de admissão:
 
 - **Todo Mestre é cadastrado exclusivamente pelos Admins.** Não há autocadastro.
-- Todo Mestre **tem que ter pelo menos uma habilidade declarada**.
+- Todo Mestre **tem que ter pelo menos uma habilidade declarada**, e a habilidade é um
+  **poder do catálogo** (§2) — não há lista de habilidades à parte.
 - A habilidade precisa estar **comprovada por materiais ou artefatos disponibilizados na
   plataforma** — aulas presenciais ou gravadas, atividades propostas, videoaulas, projetos,
   obras, registros de prática, **currículo, portfólio, redes sociais e documentos externos**
@@ -74,15 +75,15 @@ Pessoas e instituições que financiam ou divulgam o projeto.
   cadastro** — quem avalia e cadastra é um Admin.
 - **Identificação sem documento**: nome ou razão social, e-mail e WhatsApp bastam. A plataforma
   **não coleta CPF, CNPJ nem documento de identidade**.
-- **Avatar e nick próprios**, definidos pelo Apoiador na App 08 depois de aprovado: o avatar
-  pode ser a logomarca ou outra imagem escolhida, e o nick segue a **unicidade de nick** da
-  plataforma. O avatar próprio é liberado a partir de **10 moedas acumuladas**; abaixo disso o
+- **Nick escolhido pelo próprio Apoiador no pré-cadastro**, sob a **unicidade de nick** da
+  plataforma. O **avatar** é definido depois de aprovado, na App 08: pode ser a logomarca ou
+  outra imagem escolhida, e é liberado a partir de **10 moedas acumuladas**; abaixo disso o
   card exibe o avatar padrão do projeto, com o mesmo nick e o mesmo total de moedas.
 - **Um usuário por cadastro no Ciclo 01**, inclusive no institucional: a instituição indica
   quem opera a App 08, e é esse usuário que responde pelos atos registrados. Mais de um acesso
   no mesmo cadastro fica para ciclo futuro.
 - **Perfil pessoa física ou pessoa jurídica, declarado e não verificado**: quem escolhe é o
-  próprio Apoiador, e o que o comprova são os artefatos anexados pelo Admin. O perfil muda a
+  próprio Apoiador, e o que o comprova são os artefatos declarados pelo Admin. O perfil muda a
   escada de valores sugeridos e o destaque do painel de efetividade, nada mais.
 - **Apoia em dinheiro, insumo, equipamento, alimento, serviço, conteúdo, divulgação ou
   código** — as modalidades e as portas de cada uma estão no documento 14.
@@ -139,6 +140,25 @@ terminam na mesma fila de avaliação do Admin, e nenhuma delas cadastra ningué
 
 Interessados em acompanhar batalhas, ver o portfólio dos jovens e apoiar o trabalho. Todo o
 conteúdo de vitrine é público, sem login.
+
+### O que o cadastro do adulto carrega
+
+O cadastro do Guerreiro(a) está no documento 03 §12, na adesão em duas etapas. O do adulto é
+este:
+
+| Persona     | Identidade no cadastro        |
+| ----------- | ----------------------------- |
+| Mestre      | nome, e-mail e WhatsApp       |
+| Apoiador    | nome, e-mail, WhatsApp e nick |
+| Admin       | nome, e-mail e WhatsApp       |
+| Responsável | nome e e-mail                 |
+
+O **WhatsApp é opcional** onde aparece. O **nick do Apoiador** é escolhido por ele no
+pré-cadastro da Área do Apoiador e obedece à mesma unicidade do nick do Guerreiro(a).
+
+O **artefato comprobatório** de Mestre e Apoiador é **link declarado** — endereço e rótulo do
+que ele aponta. **Anexo de arquivo fica fora do Ciclo 01**: a prova é verificável por qualquer
+visitante, e arquivo guardado na plataforma não é.
 
 ### Comunidades Virtuais
 
