@@ -30,6 +30,11 @@ execução em `backend/README.md`.
 
 ## Conferência à mão de acessibilidade (2026-08-20)
 
+**Regra da conferência.** Ela roda sobre build com `VITE_GOOGLE_CLIENT_ID` vazio. Sem client
+ID a tela de entrada não carrega o provedor externo de identidade, e navegador automatizado
+acionando endpoint de identidade é a forma exata do que sistemas antiabuso classificam como
+bot. Contraste, alvo de toque, foco e desenho da fonte se medem igual sem o botão do Google.
+
 O que o Vitest não prova — contraste, alvo de toque em pixel e o desenho das duas famílias —,
 conferido uma vez nas três telas, na largura de um celular (390 px), claro e escuro (design —
 Decisions). Resultado:

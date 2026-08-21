@@ -67,9 +67,13 @@ jobs:
       # serviço — justamente o que a Workload Identity Federation existe para
       # evitar. O CLI honra as credenciais que o passo anterior exportou em
       # GOOGLE_APPLICATION_CREDENTIALS.
+      #
+      # Versão exata, e não `@latest` nem faixa `^`: a CLI é baixada a cada
+      # publicação, e sem fixá-la o comportamento do deploy muda sozinho entre
+      # duas execuções. Subir a versão é ato revisado (design — Decisions).
       - name: Publicar no Firebase Hosting
         run: |
-          npx --yes firebase-tools@latest deploy \
+          npx --yes firebase-tools@15.28.1 deploy \
             --only hosting:app-03 \
             --project "${{ secrets.GCP_PROJECT_ID }}" \
             --non-interactive
