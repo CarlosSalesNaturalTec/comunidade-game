@@ -93,3 +93,74 @@ def test_valor_negativo_e_recusado_com_422_pela_rota(
     )
 
     assert resposta.status_code == 422
+
+
+def test_admin_le_o_catalogo_de_tipos_de_recurso(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    """Rota fora da proposal desta change — sem ela não há como montar o
+    seletor de tipo de recurso da homologação do aporte (`RF-02-84`)."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    cliente.post(
+        "/v1/tipos-de-recurso",
+        json={
+            "nome": "Lanche",
+            "natureza": NaturezaDoRecurso.consumivel.value,
+            "unidade": "unidade",
+            "valor_em_moedas": "1.50",
+            "vigencia_inicio": "2026-01-01",
+        },
+        headers=headers,
+    )
+    cliente.post(
+        "/v1/tipos-de-recurso",
+        json={
+            "nome": "Cloud",
+            "natureza": NaturezaDoRecurso.financeiro.value,
+            "unidade": "mês",
+            "valor_em_moedas": "40.00",
+            "vigencia_inicio": "2026-01-01",
+        },
+        headers=headers,
+    )
+
+    resposta = cliente.get("/v1/tipos-de-recurso", headers=headers)
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert [item["nome"] for item in corpo] == ["Cloud", "Lanche"]
+    assert corpo[0]["valor_em_moedas"] == "40.00"
+
+
+def test_quem_nao_e_admin_recebe_403_ao_ler_o_catalogo(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/tipos-de-recurso",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403
+
+
+def test_leitura_do_catalogo_sem_chave_e_recusada_com_401(
+    cliente, criar_persona, criar_sessao_de_teste
+):
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.get(
+        "/v1/tipos-de-recurso",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 401

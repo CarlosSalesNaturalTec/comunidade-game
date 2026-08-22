@@ -37,7 +37,12 @@ pela vigência da data do aporte. O Admin não tem de onde ver a solicitação q
   criar acesso, reaproveitando os formulários que a change `cadastro-de-personas` entregou
   (`RF-02-20`).
 - **Homologação do pré-cadastro na tela**: o Admin registra o aporte declarado apontando a
-  solicitação. Nenhuma rota nova — `POST /aportes` já faz (`RF-02-84`, `RF-07-30`, `RN-07-21`).
+  solicitação. `POST /aportes` já faz a escrita (`RF-02-84`, `RF-07-30`, `RN-07-21`).
+- **`GET /tipos-de-recurso`**: adição durante o `/opsx:apply`, fora do que esta proposal previa
+  como "nenhuma rota nova". `POST /aportes` exige `tipo_de_recurso_id`, e nenhuma rota do
+  núcleo listava o catálogo — só a leitura aninhada de preço por id já conhecido. Sem ela o
+  seletor da homologação não existe: o Admin digitaria um UUID cru. Decidido pelo fundador em
+  2026-08-22. Restrita a Admin, mesma restrição do cadastro (`RF-07-01`).
 
 Nenhuma rota de escrita existente muda. `POST /solicitacoes-de-participacao` e `POST /aportes`
 ficam como estão.
@@ -80,6 +85,9 @@ Nenhuma.
   cadastro — e silencia sobre quem lê a fila e sob que credencial o desfecho se registra.
 - `aplicacao-de-gestao`: a App 03 ganha a **área Filas**, a quinta área da aplicação, com o
   filtro por natureza e o encaminhamento da solicitação aceita ao cadastro pré-preenchido.
+- `catalogo-de-tipos-de-recurso`: ganha **leitura** pela gestão, restrita a Admin. Adição
+  decidida em 2026-08-22 durante o `/opsx:apply`, fora do previsto nesta proposal — ver
+  `GET /tipos-de-recurso` em "What Changes".
 
 ## Impact
 

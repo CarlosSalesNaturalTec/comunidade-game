@@ -2,14 +2,26 @@ import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useState } from "react";
 import { ErroDaApi, ehRecusaDeSessao } from "../api/cliente";
 import { useSessao } from "../autenticacao/ContextoDeSessao";
-import type { ArtefatoComprobatorio } from "./api";
+import type { AdultoDaLista, ArtefatoComprobatorio } from "./api";
 import { cadastrarApoiador, cadastrarMestre } from "./api";
 import { FormularioDeArtefatos } from "./FormularioDeArtefatos";
 
+interface ValorInicial {
+  nome?: string;
+  email?: string;
+  whatsapp?: string;
+  nick?: string;
+}
+
 interface Props {
   papel: "mestre" | "apoiador";
-  onSalvo: () => void;
+  onSalvo: (adulto: AdultoDaLista) => void;
   onCancelar: () => void;
+  // Pré-preenchimento a partir da solicitação de participação aceita
+  // (`RF-02-20`); editável, e o cadastro continua exigindo as mesmas
+  // coisas de sempre — aceitar, por si só, não cadastra ninguém
+  // (`RN-02-03`).
+  valorInicial?: ValorInicial;
 }
 
 interface ErroDeCampo {
@@ -22,11 +34,12 @@ const ROTULO_DO_PAPEL: Record<Props["papel"], string> = {
   apoiador: "Apoiador",
 };
 
-export function FormularioDeAdulto({ papel, onSalvo, onCancelar }: Props) {
+export function FormularioDeAdulto({ papel, onSalvo, onCancelar, valorInicial }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
-  const [nome, definirNome] = useState("");
-  const [email, definirEmail] = useState("");
-  const [whatsapp, definirWhatsapp] = useState("");
+  const [nome, definirNome] = useState(valorInicial?.nome ?? "");
+  const [email, definirEmail] = useState(valorInicial?.email ?? "");
+  const [whatsapp, definirWhatsapp] = useState(valorInicial?.whatsapp ?? "");
+  const [nick, definirNick] = useState(valorInicial?.nick ?? "");
   const [artefatos, definirArtefatos] = useState<ArtefatoComprobatorio[]>([]);
   const [erroDeCampo, definirErroDeCampo] = useState<ErroDeCampo | null>(null);
   const [erroDeRecusa, definirErroDeRecusa] = useState<string | null>(null);
@@ -62,11 +75,17 @@ export function FormularioDeAdulto({ papel, onSalvo, onCancelar }: Props) {
     definirEnviando(true);
     try {
       const cadastrar = papel === "mestre" ? cadastrarMestre : cadastrarApoiador;
-      await cadastrar(
-        { nome, email, whatsapp: whatsapp || undefined, artefatos: artefatosPreenchidos },
+      const adulto = await cadastrar(
+        {
+          nome,
+          email,
+          whatsapp: whatsapp || undefined,
+          nick: nick || undefined,
+          artefatos: artefatosPreenchidos,
+        },
         sessao.token,
       );
-      onSalvo();
+      onSalvo(adulto);
     } catch (erro) {
       if (ehRecusaDeSessao(erro)) {
         tratarRecusaDeSessao();
@@ -102,6 +121,9 @@ export function FormularioDeAdulto({ papel, onSalvo, onCancelar }: Props) {
         erro={erroDeCampo?.campo === "email" ? erroDeCampo.mensagem : null}
       />
       <Campo rotulo="WhatsApp (opcional)" valor={whatsapp} aoAlterar={definirWhatsapp} />
+      {valorInicial?.nick !== undefined && (
+        <Campo rotulo="Nick pretendido" valor={nick} aoAlterar={definirNick} />
+      )}
 
       <FormularioDeArtefatos
         artefatos={artefatos}

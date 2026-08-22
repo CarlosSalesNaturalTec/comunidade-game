@@ -57,6 +57,11 @@ _Descartado:_ rota de cadastro derivado da solicitação.
 alternativa — tela só de participação, generalizada depois — custaria reescrever a lista quando
 a fatia 2 chegar, uma semana depois. O filtro com uma opção é honesto: mostra o que existe.
 
+**6. `GET /tipos-de-recurso` entrou durante o `/opsx:apply`, restrita a Admin como o cadastro.**
+A proposal previa "nenhuma rota nova" para a homologação do aporte, mas `POST /aportes` exige
+`tipo_de_recurso_id` e nenhuma rota listava o catálogo. Decidido pelo fundador em 2026-08-22.
+_Descartado:_ seletor por UUID digitado, que não é interface funcional para o Admin.
+
 ## Risks / Trade-offs
 
 - **A guarda de reavaliação fica na rota e a regra segue permissiva** → um segundo chamador da
