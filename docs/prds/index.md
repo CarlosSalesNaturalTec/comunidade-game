@@ -225,6 +225,16 @@ o `RF-02-93` duplicado foi corrigido — a amostra semanal de coleta passa a `RF
 decisões do fundador em 2026-08-22. As filas fecham o PRD-02 §6.2; o painel do dia, o Quiz
 ao Vivo e os lançamentos seguem pendentes — o PRD-02 continua **aprovado**.
 
+O PRD-02 recebeu a quinta fatia: a change `catalogo-de-poderes-e-tela-da-gestao` abriu a
+porta HTTP do catálogo de poderes — `POST /poderes`, `GET /poderes`, `PUT /poderes/{id}` e
+`POST /poderes/{id}/desativacao` —, fechando o PRD-02 §6.1 (`RF-02-10`, `RF-01-62`,
+`RN-01-43`, `RN-01-54`). A alteração nunca alcança natureza nem papel, e a desativação retira
+o poder da escolha de novas trilhas sem desfazer o vínculo das trilhas já criadas. A App 03
+ganhou a área **Poderes**, ao lado de Comunidades, com cadastro, edição e desativação — o
+caminho que destrava a autoria de trilha do PRD-09 e o crédito da coleta do território
+(`RN-08-15`). O painel do dia, o Quiz ao Vivo e os lançamentos seguem pendentes — o PRD-02
+continua **aprovado**.
+
 A **identidade da persona** foi decidida em 2026-08-21, antes de virar código: o cadastro do
 adulto e a forma do artefato comprobatório estão no documento 02 §1, as cinco linhas no
 documento 09, e o PRD-01 §8 ganhou a linha da `Persona`. O `RF-02-01` perdeu a **situação**,

@@ -6,12 +6,21 @@ import { TelaDeChaves } from "./chaves/TelaDeChaves";
 import { TelaDeComunidades } from "./comunidades/TelaDeComunidades";
 import { TelaDeFilas } from "./filas/TelaDeFilas";
 import { TelaDePersonas } from "./personas/TelaDePersonas";
+import { TelaDePoderes } from "./poderes/TelaDePoderes";
 import { TelaDePontosDeApoio } from "./pontos-de-apoio/TelaDePontosDeApoio";
 
-type Area = "comunidades" | "pontos-de-apoio" | "agenda" | "personas" | "filas" | "chaves";
+type Area =
+  | "comunidades"
+  | "poderes"
+  | "pontos-de-apoio"
+  | "agenda"
+  | "personas"
+  | "filas"
+  | "chaves";
 
 const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "comunidades", rotulo: "Comunidades" },
+  { chave: "poderes", rotulo: "Poderes" },
   { chave: "pontos-de-apoio", rotulo: "Pontos de Apoio" },
   { chave: "agenda", rotulo: "Agenda" },
   { chave: "personas", rotulo: "Personas" },
@@ -50,6 +59,7 @@ function Conteudo() {
       </nav>
 
       {area === "comunidades" && <TelaDeComunidades />}
+      {area === "poderes" && <TelaDePoderes />}
       {area === "pontos-de-apoio" && <TelaDePontosDeApoio />}
       {area === "agenda" && <TelaDaAgenda />}
       {area === "personas" && <TelaDePersonas />}

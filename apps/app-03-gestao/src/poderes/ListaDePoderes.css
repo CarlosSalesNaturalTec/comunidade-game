@@ -1,0 +1,55 @@
+/* Lista densa do temperamento Operação (documento 15 §6), mesmo desenho de
+ * `pontos-de-apoio/ListaDePontosDeApoio.css`. */
+.lista-de-poderes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--densidade);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.lista-de-poderes__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  padding: var(--espaco-8) var(--espaco-12);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.lista-de-poderes__linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--espaco-8) var(--espaco-16);
+}
+
+.lista-de-poderes__nome {
+  font-weight: var(--peso-rotulo);
+}
+
+.lista-de-poderes__descricao {
+  color: var(--cor-texto-secundario);
+  margin: 0;
+}
+
+.lista-de-poderes__natureza,
+.lista-de-poderes__vigencia,
+.lista-de-poderes__papel {
+  color: var(--cor-texto-secundario);
+}
+
+/* A situação nunca se comunica só por cor (`RN-02-09`): o rótulo textual é
+ * a informação, a cor é reforço opcional. */
+.lista-de-poderes__situacao {
+  font-weight: var(--peso-rotulo);
+  border: 1px solid var(--cor-separador);
+  border-radius: var(--raio-campo);
+  padding: 0 var(--espaco-8);
+}
+
+.lista-de-poderes__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-8);
+}
