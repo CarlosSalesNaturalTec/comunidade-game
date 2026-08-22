@@ -89,12 +89,14 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    ```bash
    firebase hosting:sites:create comunidade-game-api
    firebase hosting:sites:create comunidade-game-app-03
+   firebase hosting:sites:create comunidade-game-mestre
    firebase target:apply hosting api comunidade-game-api
    firebase target:apply hosting app-03 comunidade-game-app-03
+   firebase target:apply hosting mestre comunidade-game-mestre
    ```
 
    O `target:apply` grava o mapeamento no `.firebaserc` **local**. Ele já está versionado
-   no repositório com os dois alvos — sem isso a esteira não saberia a que site publicar.
+   no repositório com os três alvos — sem isso a esteira não saberia a que site publicar.
 
    O alvo `api` **não serve arquivo nenhum**: o diretório `backend/publico-vazio/` existe só
    porque o Firebase exige um público declarado, e todo caminho cai no `rewrite` para o
@@ -102,9 +104,10 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    `rewrite` aponta para um serviço, e faz sentido republicá-lo quando o serviço muda.
 
    Ligar o domínio a cada site (console do Firebase Hosting → domínio personalizado):
-   `api.comunidadegame.org` ao alvo `api`, `gestao.comunidadegame.org` ao alvo `app-03`. Os
-   registros DNS que o Firebase pedir entram na Cloudflare em modo **"DNS only"** (nuvem
-   cinza) enquanto o certificado é emitido — o proxy da Cloudflare atrapalha a validação.
+   `api.comunidadegame.org` ao alvo `api`, `gestao.comunidadegame.org` ao alvo `app-03`,
+   `mestre.comunidadegame.org` ao alvo `mestre`. Os registros DNS que o Firebase pedir entram
+   na Cloudflare em modo **"DNS only"** (nuvem cinza) enquanto o certificado é emitido — o
+   proxy da Cloudflare atrapalha a validação.
 
 7. **O serviço do Cloud Run aceita invocação não autenticada** (`--allow-unauthenticated`,
    já no workflow). O Firebase Hosting **não se autentica** ao proxiar o _rewrite_: com o

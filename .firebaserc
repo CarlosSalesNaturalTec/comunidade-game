@@ -6,7 +6,8 @@
     "comunidade-game-506017": {
       "hosting": {
         "api": ["comunidade-game-api"],
-        "app-03": ["comunidade-game-app-03"]
+        "app-03": ["comunidade-game-app-03"],
+        "mestre": ["comunidade-game-mestre"]
       }
     }
   }
