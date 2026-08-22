@@ -203,6 +203,28 @@ o caminho pelo qual o Admin grava o nick do adulto quando a escolha dele colidiu
 provisória entraram na App 03. As filas de avaliação, o painel do dia, o Quiz ao Vivo e a
 publicação em endereço próprio seguem pendentes — o PRD-02 continua **aprovado**.
 
+O PRD-02 recebeu a terceira fatia: a change `avaliacao-da-participacao-e-do-pre-cadastro`
+abriu a fila de avaliação — leitura e desfecho da solicitação de participação, restritos a
+Admin, com o atraso derivado do prazo de 7 dias (`RF-02-18`, `RF-02-19`, `RF-02-65`). A App
+03 ganhou a área **Filas**, com filtro por natureza — participação, ainda a única naquele
+momento. Aceitar abre o cadastro pré-preenchido de Mestre ou Apoiador, sem criar acesso; a
+homologação do aporte declarado entrou na mesma tela, sobre `POST /aportes` já existente
+(`RF-02-20`, `RF-02-84`). `GET /tipos-de-recurso` entrou fora do previsto na proposal, para o
+seletor da homologação. O painel do dia, o Quiz ao Vivo, os lançamentos e as outras três
+naturezas da fila seguiam pendentes.
+
+O PRD-02 recebeu a quarta fatia: a change `avaliacao-de-dados-de-chave-e-de-sugestao` fechou
+as três naturezas que faltavam na área Filas — dados, chave e sugestão —, cada uma com
+leitura paginada e desfecho de Admin (`RF-02-77`, `RF-02-78`, `RF-02-87`, `RF-02-88`,
+`RF-02-25`, `RF-02-26`). O desfecho da solicitação de chave destravou a emissão de
+`POST /chaves`, inalcançável até aqui; a sugestão adotada credita 20 pontos extras e o
+badge de protagonismo na mesma operação (`RF-01-56`). A App 03 ganhou o **painel das
+chaves emitidas**, ao lado das Filas, com prazo, URL apresentada e revogação com motivo
+(`RF-02-90` a `RF-02-92`). O PRD-02 §9 recebeu a rota de desfecho da chave que faltava, e
+o `RF-02-93` duplicado foi corrigido — a amostra semanal de coleta passa a `RF-02-98` —,
+decisões do fundador em 2026-08-22. As filas fecham o PRD-02 §6.2; o painel do dia, o Quiz
+ao Vivo e os lançamentos seguem pendentes — o PRD-02 continua **aprovado**.
+
 A **identidade da persona** foi decidida em 2026-08-21, antes de virar código: o cadastro do
 adulto e a forma do artefato comprobatório estão no documento 02 §1, as cinco linhas no
 documento 09, e o PRD-01 §8 ganhou a linha da `Persona`. O `RF-02-01` perdeu a **situação**,

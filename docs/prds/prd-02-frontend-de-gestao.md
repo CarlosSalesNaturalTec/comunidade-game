@@ -301,7 +301,7 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
 | `RF-02-73` | Encerrada a partida, a pontuação é lançada automaticamente às equipes, respeitado o teto           | essencial  |
 | `RF-02-74` | Admin audita por amostragem o conteúdo de apoio escolar dos Mestres e despublica com motivo        | essencial  |
 | `RF-02-76` | Aplicação abre a amostra mensal de auditoria com 10% do conteúdo novo e 100% do que gerou recusa   | essencial  |
-| `RF-02-93` | Aplicação abre a amostra semanal de coleta com 10% dos registros por série ativa, mínimo de um     | essencial  |
+| `RF-02-98` | Aplicação abre a amostra semanal de coleta com 10% dos registros por série ativa, mínimo de um     | essencial  |
 | `RF-02-75` | Aplicação recusa cadastro de conteúdo de apoio escolar por Admin: o corpus é autoria do Mestre     | essencial  |
 | `RF-02-63` | Admin consulta a trilha de auditoria das ações de gestão, com filtro por autor, período e entidade | essencial  |
 | `RF-02-64` | Toda tela que coleta dado exibe o aviso discreto e o acesso à área detalhada de direitos           | essencial  |
@@ -396,6 +396,7 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | GET    | `/v1/solicitacoes-de-dados`                       | Admin           | Fila dos pedidos de conjunto de dados                                       |
 | POST   | `/v1/solicitacoes-de-dados/{id}/avaliacao`        | Admin           | Aprova ou recusa, com motivo, autor e o que foi entregue                    |
 | GET    | `/v1/solicitacoes-de-chave`                       | Admin           | Fila dos pedidos de chave da Área do Apoiador Desenvolvedor                 |
+| POST   | `/v1/solicitacoes-de-chave/{id}/avaliacao`        | Admin           | Aprova ou recusa, com parecer e autoria                                     |
 | POST   | `/v1/chaves`                                      | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez           |
 | GET    | `/v1/chaves`                                      | Admin           | Chaves emitidas, com prazo, URL apresentada e situação                      |
 | DELETE | `/v1/chaves/{id}`                                 | Admin           | Revoga a chave, com motivo e autoria                                        |

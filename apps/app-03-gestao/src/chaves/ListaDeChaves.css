@@ -1,0 +1,40 @@
+/* Lista densa do temperamento Operação (documento 15 §6), mesmo desenho de
+ * `filas/ListaDeFilas.css`. */
+.lista-de-chaves {
+  display: flex;
+  flex-direction: column;
+  gap: var(--densidade);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.lista-de-chaves__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--espaco-8) var(--espaco-16);
+  padding: var(--espaco-8) var(--espaco-12);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.lista-de-chaves__aplicacao {
+  font-weight: var(--peso-rotulo);
+}
+
+/* A situação nunca se comunica só por cor (documento 15 §5): o rótulo
+ * textual é a informação, a cor é reforço opcional. */
+.lista-de-chaves__situacao {
+  font-weight: var(--peso-rotulo);
+  border: 1px solid var(--cor-separador);
+  border-radius: var(--raio-campo);
+  padding: 0 var(--espaco-8);
+}
+
+.lista-de-chaves__destaque {
+  font-weight: var(--peso-rotulo);
+  color: var(--cor-atencao);
+  border: 1px solid var(--cor-atencao);
+  border-radius: var(--raio-campo);
+  padding: 0 var(--espaco-8);
+}

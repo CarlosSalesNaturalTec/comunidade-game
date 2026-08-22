@@ -4,11 +4,17 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { ErroDaApi } from "../api/cliente";
 import * as aportesApi from "../aportes/api";
 import type { SessaoAberta } from "../autenticacao/ContextoDeSessao";
+import * as chavesApi from "../chaves/api";
 import * as comunidadesApi from "../comunidades/api";
 import * as personasApi from "../personas/api";
 import * as pontosDeApoioApi from "../pontos-de-apoio/api";
 import * as recursosApi from "../recursos/api";
-import type { SolicitacaoDeParticipacao } from "./api";
+import type {
+  SolicitacaoDeChave,
+  SolicitacaoDeDados,
+  SolicitacaoDeParticipacao,
+  Sugestao,
+} from "./api";
 import * as filasApi from "./api";
 import { TelaDeFilas } from "./TelaDeFilas";
 
@@ -87,6 +93,61 @@ function solicitacaoDeApoiador(
     comprovante_anexado: true,
     ...parcial,
   });
+}
+
+function solicitacaoDeDados(parcial: Partial<SolicitacaoDeDados> = {}): SolicitacaoDeDados {
+  return {
+    id: "dados-1",
+    solicitante: "Pesquisadora de Tal",
+    instituicao: "Universidade de Teste",
+    finalidade_declarada: "Pesquisa acadêmica sobre evasão escolar.",
+    recorte_pedido: "Comunidade de Teste, 2026",
+    situacao: "recebida",
+    prazo: "2026-08-29T00:00:00-03:00",
+    em_atraso: false,
+    avaliado_por_id: null,
+    parecer: null,
+    decidido_em: null,
+    entregue: null,
+    ...parcial,
+  };
+}
+
+function solicitacaoDeChave(parcial: Partial<SolicitacaoDeChave> = {}): SolicitacaoDeChave {
+  return {
+    id: "chave-1",
+    solicitante: "Desenvolvedora de Tal",
+    contato: "dev@example.org",
+    instituicao: null,
+    o_que_pretende_construir: "Um painel comunitário.",
+    situacao: "recebida",
+    prazo: "2026-08-29T00:00:00-03:00",
+    em_atraso: false,
+    avaliado_por_id: null,
+    parecer: null,
+    decidido_em: null,
+    chave_emitida: false,
+    ...parcial,
+  };
+}
+
+function sugestao(parcial: Partial<Sugestao> = {}): Sugestao {
+  return {
+    id: "sugestao-1",
+    autor_id: "guerreiro-1",
+    papel_do_autor: "guerreiro",
+    alvo_tipo: "plataforma",
+    alvo_id: null,
+    texto: "Podíamos ter um mural entre trilhas.",
+    situacao: "recebida",
+    prazo: "2026-08-29T00:00:00-03:00",
+    em_atraso: false,
+    avaliado_por_id: null,
+    parecer: null,
+    motivo_do_retorno: null,
+    decidido_em: null,
+    ...parcial,
+  };
 }
 
 vi.mock("../autenticacao/ContextoDeSessao", async () => {
@@ -393,5 +454,283 @@ describe("área Filas", () => {
     expect(
       screen.queryByRole("button", { name: /homologar aporte/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("o filtro alcança as quatro naturezas", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSolicitacoesDeParticipacao").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(filasApi, "listarSolicitacoesDeDados").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(filasApi, "listarSolicitacoesDeChave").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(filasApi, "listarSugestoes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    const seletor = await screen.findByLabelText(/natureza/i);
+
+    const opcoes = within(seletor)
+      .getAllByRole("option")
+      .map((opcao) => opcao.textContent);
+    expect(opcoes).toEqual(["Participação", "Dados", "Chave", "Sugestões"]);
+
+    await usuario.selectOptions(seletor, "dados");
+    await waitFor(() => expect(filasApi.listarSolicitacoesDeDados).toHaveBeenCalled());
+
+    await usuario.selectOptions(seletor, "chave");
+    await waitFor(() => expect(filasApi.listarSolicitacoesDeChave).toHaveBeenCalled());
+
+    await usuario.selectOptions(seletor, "sugestao");
+    await waitFor(() => expect(filasApi.listarSugestoes).toHaveBeenCalled());
+  });
+
+  it("a natureza dados mostra solicitante, instituição, finalidade e recorte", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSolicitacoesDeDados").mockResolvedValue({
+      itens: [solicitacaoDeDados()],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "dados");
+
+    expect(await screen.findByText("Pesquisadora de Tal")).toBeInTheDocument();
+    expect(screen.getByText("Universidade de Teste")).toBeInTheDocument();
+
+    await usuario.click(screen.getByText("Pesquisadora de Tal"));
+
+    expect(screen.getByText("Pesquisa acadêmica sobre evasão escolar.")).toBeInTheDocument();
+    expect(screen.getByText("Comunidade de Teste, 2026")).toBeInTheDocument();
+  });
+
+  it("a natureza chave mostra quem pediu e o que pretende construir", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSolicitacoesDeChave").mockResolvedValue({
+      itens: [solicitacaoDeChave()],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "chave");
+
+    expect(await screen.findByText("Desenvolvedora de Tal")).toBeInTheDocument();
+    expect(screen.getByText("Um painel comunitário.")).toBeInTheDocument();
+  });
+
+  it("a natureza sugestão mostra o autor, a persona dele e o teor", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSugestoes").mockResolvedValue({
+      itens: [sugestao()],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "sugestao");
+
+    expect(await screen.findByText("Guerreiro(a)")).toBeInTheDocument();
+    expect(screen.getByText("Podíamos ter um mural entre trilhas.")).toBeInTheDocument();
+  });
+
+  it("os três critérios de aprovação de dados aparecem antes da decisão", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSolicitacoesDeDados").mockResolvedValue({
+      itens: [solicitacaoDeDados()],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "dados");
+    await usuario.click(await screen.findByText("Pesquisadora de Tal"));
+
+    expect(screen.getByText("Solicitante identificado")).toBeInTheDocument();
+    expect(
+      screen.getByText("Finalidade declarada compatível com pesquisa ou política pública"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Compromisso de não tentar reidentificar ninguém"),
+    ).toBeInTheDocument();
+  });
+
+  it("aprovar dados sem o compromisso é apontado no campo sem chamar o núcleo", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSolicitacoesDeDados").mockResolvedValue({
+      itens: [solicitacaoDeDados()],
+      proximo_cursor: null,
+    });
+    const avaliarEspiado = vi.spyOn(filasApi, "avaliarSolicitacaoDeDados");
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "dados");
+    await usuario.click(await screen.findByText("Pesquisadora de Tal"));
+    await usuario.type(screen.getByLabelText(/^parecer$/i), "Finalidade compatível.");
+    await usuario.click(screen.getByRole("button", { name: /^aceitar$/i }));
+
+    expect(
+      await screen.findByText(/afirme o compromisso de não tentar reidentificar ninguém/i),
+    ).toBeInTheDocument();
+    expect(avaliarEspiado).not.toHaveBeenCalled();
+  });
+
+  it("a entrega registrada é apresentada como gratuita e anonimizada", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSolicitacoesDeDados").mockResolvedValue({
+      itens: [solicitacaoDeDados()],
+      proximo_cursor: null,
+    });
+    vi.spyOn(filasApi, "avaliarSolicitacaoDeDados").mockResolvedValue(
+      solicitacaoDeDados({
+        situacao: "aceita",
+        parecer: "Finalidade compatível.",
+        decidido_em: "2026-08-22T10:00:00-03:00",
+        entregue: "CSV anonimizado enviado a pesquisadora@example.org",
+      }),
+    );
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "dados");
+    await usuario.click(await screen.findByText("Pesquisadora de Tal"));
+    await usuario.type(screen.getByLabelText(/^parecer$/i), "Finalidade compatível.");
+    await usuario.click(screen.getByLabelText(/compromisso de não tentar reidentificar/i));
+    await usuario.type(
+      screen.getByLabelText(/o que foi entregue/i),
+      "CSV anonimizado enviado a pesquisadora@example.org",
+    );
+    await usuario.click(screen.getByRole("button", { name: /^aceitar$/i }));
+
+    expect(await screen.findByText(/gratuita e anonimizada/i)).toBeInTheDocument();
+  });
+
+  it("aprovar chave não emite e passa a oferecer a emissão", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSolicitacoesDeChave").mockResolvedValue({
+      itens: [solicitacaoDeChave()],
+      proximo_cursor: null,
+    });
+    vi.spyOn(filasApi, "avaliarSolicitacaoDeChave").mockResolvedValue(
+      solicitacaoDeChave({
+        situacao: "aceita",
+        parecer: "Projeto compatível.",
+        decidido_em: "2026-08-22T10:00:00-03:00",
+      }),
+    );
+    const emitirEspiado = vi.spyOn(chavesApi, "emitirChave");
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "chave");
+    await usuario.click(await screen.findByText("Desenvolvedora de Tal"));
+    await usuario.click(screen.getByRole("button", { name: /^aceitar$/i }));
+
+    expect(await screen.findByRole("button", { name: /^emitir chave$/i })).toBeInTheDocument();
+    expect(emitirEspiado).not.toHaveBeenCalled();
+  });
+
+  it("o segredo aparece uma vez com o aviso, e some ao voltar à mesma solicitação", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    const aprovada = solicitacaoDeChave({
+      situacao: "aceita",
+      parecer: "Projeto compatível.",
+      decidido_em: "2026-08-22T10:00:00-03:00",
+    });
+    vi.spyOn(filasApi, "listarSolicitacoesDeChave").mockResolvedValue({
+      itens: [aprovada],
+      proximo_cursor: null,
+    });
+    vi.spyOn(chavesApi, "emitirChave").mockResolvedValue({
+      id: "chave-emitida-1",
+      segredo: "producao.chave-emitida-1.segredo-em-claro",
+    });
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "chave");
+    await usuario.click(await screen.findByText("Desenvolvedora de Tal"));
+    await usuario.click(await screen.findByRole("button", { name: /^emitir chave$/i }));
+
+    expect(await screen.findByText(/segredo-em-claro/)).toBeInTheDocument();
+    expect(screen.getByText(/não será mostrado de novo/i)).toBeInTheDocument();
+
+    await usuario.click(screen.getByText(/voltar para a fila/i));
+    await usuario.click(await screen.findByText("Desenvolvedora de Tal"));
+
+    expect(screen.queryByText(/segredo-em-claro/)).not.toBeInTheDocument();
+  });
+
+  it("solicitação de chave que já rendeu chave não oferece emitir de novo", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSolicitacoesDeChave").mockResolvedValue({
+      itens: [
+        solicitacaoDeChave({
+          situacao: "aceita",
+          decidido_em: "2026-08-21T10:00:00-03:00",
+          chave_emitida: true,
+        }),
+      ],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "chave");
+    await usuario.click(await screen.findByText("Desenvolvedora de Tal"));
+
+    expect(screen.queryByRole("button", { name: /^emitir chave$/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/chave já emitida/i)).toBeInTheDocument();
+  });
+
+  it("a não adotada sem motivo é apontada no campo sem chamar o núcleo", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSugestoes").mockResolvedValue({
+      itens: [sugestao()],
+      proximo_cursor: null,
+    });
+    const avaliarEspiado = vi.spyOn(filasApi, "avaliarSugestao");
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "sugestao");
+    await usuario.click(await screen.findByText("Guerreiro(a)"));
+    await usuario.click(screen.getByRole("button", { name: /^não adotar$/i }));
+
+    expect(await screen.findByText(/informe o motivo do retorno/i)).toBeInTheDocument();
+    expect(avaliarEspiado).not.toHaveBeenCalled();
+  });
+
+  it("a sugestão adotada mostra o que foi creditado, sem caminho de e-mail", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSugestoes").mockResolvedValue({
+      itens: [sugestao()],
+      proximo_cursor: null,
+    });
+    vi.spyOn(filasApi, "avaliarSugestao").mockResolvedValue(
+      sugestao({ situacao: "adotada", decidido_em: "2026-08-22T10:00:00-03:00" }),
+    );
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "sugestao");
+    await usuario.click(await screen.findByText("Guerreiro(a)"));
+    await usuario.click(screen.getByRole("button", { name: /^adotar$/i }));
+
+    expect(
+      await screen.findByText(/20 pontos extras e o badge de protagonismo/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/e-mail/i)).not.toBeInTheDocument();
   });
 });

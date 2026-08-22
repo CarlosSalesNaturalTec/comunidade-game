@@ -25,12 +25,20 @@ from ..protecao.freio import exigir_freio_por_origem
 from .modelo import (
     PretensaoDeParticipacao,
     SituacaoDaSolicitacao,
+    SituacaoDaSugestao,
+    SolicitacaoDeChave,
+    SolicitacaoDeDados,
     SolicitacaoDeParticipacao,
+    SugestaoOuProposta,
     TipoDeAlvo,
 )
 from .regra import (
+    avaliar_solicitacao_de_chave,
+    avaliar_solicitacao_de_dados,
     avaliar_solicitacao_de_participacao,
+    avaliar_sugestao,
     esta_em_atraso,
+    liberar_conjunto_de_dados,
     registrar_solicitacao_de_chave,
     registrar_solicitacao_de_dados,
     registrar_solicitacao_de_participacao,
@@ -324,3 +332,369 @@ def registrar_sugestao_rota(
     )
     sessao_bd.commit()
     return SolicitacaoSaida(id=sugestao.id, prazo=sugestao.prazo)
+
+
+class SolicitacaoDeDadosSaida(BaseModel):
+    """`RF-02-77`; `entregue` só existe depois da aprovação, pela guarda
+    `liberar_conjunto_de_dados` (`RF-02-79`)."""
+
+    id: uuid.UUID
+    solicitante: str
+    instituicao: str
+    finalidade_declarada: str
+    recorte_pedido: str
+    situacao: SituacaoDaSolicitacao
+    prazo: datetime
+    em_atraso: bool
+    avaliado_por_id: uuid.UUID | None
+    parecer: str | None
+    decidido_em: datetime | None
+    entregue: str | None = None
+
+
+def _saida_da_solicitacao_de_dados(solicitacao: SolicitacaoDeDados) -> SolicitacaoDeDadosSaida:
+    return SolicitacaoDeDadosSaida(
+        id=solicitacao.id,
+        solicitante=solicitacao.solicitante,
+        instituicao=solicitacao.instituicao,
+        finalidade_declarada=solicitacao.finalidade_declarada,
+        recorte_pedido=solicitacao.recorte_pedido,
+        situacao=solicitacao.situacao,
+        prazo=solicitacao.prazo,
+        em_atraso=esta_em_atraso(solicitacao),
+        avaliado_por_id=solicitacao.avaliado_por_id,
+        parecer=solicitacao.parecer,
+        decidido_em=solicitacao.decidido_em,
+        entregue=solicitacao.entregue,
+    )
+
+
+@roteador.get("/solicitacoes-de-dados", response_model=PaginaDeResultado[SolicitacaoDeDadosSaida])
+def listar_solicitacoes_de_dados_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "le"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[SolicitacaoDeDadosSaida]:
+    """Restrita a Admin (`RF-01-16`), no mesmo molde de paginação e atraso da
+    fila de participação (`RF-02-77`, `RN-01-49`)."""
+    consulta = sessao_bd.query(SolicitacaoDeDados)
+
+    if parametros.cursor:
+        posicao = decodificar_cursor(parametros.cursor)
+        try:
+            registrada_em_cursor = datetime.fromisoformat(posicao["registrado_em"])
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(
+            tuple_(SolicitacaoDeDados.registrado_em, SolicitacaoDeDados.id)
+            > (registrada_em_cursor, id_cursor)
+        )
+
+    consulta = consulta.order_by(SolicitacaoDeDados.registrado_em, SolicitacaoDeDados.id)
+    registros = consulta.limit(parametros.tamanho + 1).all()
+
+    proximo_cursor = None
+    if len(registros) > parametros.tamanho:
+        registros = registros[: parametros.tamanho]
+        ultimo = registros[-1]
+        proximo_cursor = codificar_cursor(
+            {"registrado_em": ultimo.registrado_em.isoformat(), "id": str(ultimo.id)}
+        )
+
+    return PaginaDeResultado(
+        itens=[_saida_da_solicitacao_de_dados(registro) for registro in registros],
+        proximo_cursor=proximo_cursor,
+    )
+
+
+class AvaliarSolicitacaoDeDadosEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    situacao: str = Field(min_length=1)
+    parecer: str
+    compromisso_de_nao_reidentificar: bool = False
+    entregue: str | None = None
+
+
+@roteador.post("/solicitacoes-de-dados/{id_da_solicitacao}/avaliacao")
+def avaliar_solicitacao_de_dados_rota(
+    id_da_solicitacao: uuid.UUID,
+    entrada: AvaliarSolicitacaoDeDadosEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> SolicitacaoDeDadosSaida:
+    """Restrita a Admin (`RF-02-78`, `RF-01-16`). O compromisso de não
+    reidentificação é só transportado — quem exige é a regra (design —
+    decisão 2). `entregue` só se aplica à aprovação, e passa pela guarda
+    `liberar_conjunto_de_dados` antes de gravar (`RF-02-79`)."""
+    solicitacao = sessao_bd.get(SolicitacaoDeDados, id_da_solicitacao)
+    if solicitacao is None:
+        raise NaoEncontrado(mensagem="Solicitação de dados não encontrada.")
+    if solicitacao.decidido_em is not None:
+        raise SolicitacaoJaAvaliada()
+
+    try:
+        situacao_valida = SituacaoDaSolicitacao(entrada.situacao)
+    except ValueError as exc:
+        raise ErroDeValidacao(
+            mensagem="Desfecho precisa ser aceita ou recusada.", campo="situacao"
+        ) from exc
+
+    if entrada.entregue is not None and situacao_valida != SituacaoDaSolicitacao.aceita:
+        raise ErroDeValidacao(
+            mensagem="Só a solicitação aprovada registra o que foi entregue.", campo="entregue"
+        )
+
+    avaliador = sessao_bd.get(Persona, contexto.persona_id)
+    solicitacao = avaliar_solicitacao_de_dados(
+        sessao_bd,
+        solicitacao,
+        situacao=situacao_valida,
+        avaliado_por=avaliador,
+        parecer=entrada.parecer,
+        compromisso_de_nao_reidentificar=entrada.compromisso_de_nao_reidentificar,
+    )
+
+    if entrada.entregue is not None:
+        liberar_conjunto_de_dados(solicitacao)
+        solicitacao.entregue = entrada.entregue
+        sessao_bd.flush()
+
+    sessao_bd.commit()
+    return _saida_da_solicitacao_de_dados(solicitacao)
+
+
+class SolicitacaoDeChaveSaida(BaseModel):
+    """A leitura nunca traz o segredo (`RN-02-28`) — só se a chave já foi
+    emitida a partir desta solicitação."""
+
+    id: uuid.UUID
+    solicitante: str
+    contato: str
+    instituicao: str | None
+    o_que_pretende_construir: str
+    situacao: SituacaoDaSolicitacao
+    prazo: datetime
+    em_atraso: bool
+    avaliado_por_id: uuid.UUID | None
+    parecer: str | None
+    decidido_em: datetime | None
+    chave_emitida: bool
+
+
+def _saida_da_solicitacao_de_chave(solicitacao: SolicitacaoDeChave) -> SolicitacaoDeChaveSaida:
+    return SolicitacaoDeChaveSaida(
+        id=solicitacao.id,
+        solicitante=solicitacao.solicitante,
+        contato=solicitacao.contato,
+        instituicao=solicitacao.instituicao,
+        o_que_pretende_construir=solicitacao.o_que_pretende_construir,
+        situacao=solicitacao.situacao,
+        prazo=solicitacao.prazo,
+        em_atraso=esta_em_atraso(solicitacao),
+        avaliado_por_id=solicitacao.avaliado_por_id,
+        parecer=solicitacao.parecer,
+        decidido_em=solicitacao.decidido_em,
+        chave_emitida=solicitacao.chave_id is not None,
+    )
+
+
+@roteador.get("/solicitacoes-de-chave", response_model=PaginaDeResultado[SolicitacaoDeChaveSaida])
+def listar_solicitacoes_de_chave_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "le"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[SolicitacaoDeChaveSaida]:
+    """Restrita a Admin (`RF-01-16`, `RF-02-87`)."""
+    consulta = sessao_bd.query(SolicitacaoDeChave)
+
+    if parametros.cursor:
+        posicao = decodificar_cursor(parametros.cursor)
+        try:
+            registrada_em_cursor = datetime.fromisoformat(posicao["registrado_em"])
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(
+            tuple_(SolicitacaoDeChave.registrado_em, SolicitacaoDeChave.id)
+            > (registrada_em_cursor, id_cursor)
+        )
+
+    consulta = consulta.order_by(SolicitacaoDeChave.registrado_em, SolicitacaoDeChave.id)
+    registros = consulta.limit(parametros.tamanho + 1).all()
+
+    proximo_cursor = None
+    if len(registros) > parametros.tamanho:
+        registros = registros[: parametros.tamanho]
+        ultimo = registros[-1]
+        proximo_cursor = codificar_cursor(
+            {"registrado_em": ultimo.registrado_em.isoformat(), "id": str(ultimo.id)}
+        )
+
+    return PaginaDeResultado(
+        itens=[_saida_da_solicitacao_de_chave(registro) for registro in registros],
+        proximo_cursor=proximo_cursor,
+    )
+
+
+class AvaliarSolicitacaoDeChaveEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    situacao: str = Field(min_length=1)
+    parecer: str | None = None
+
+
+@roteador.post("/solicitacoes-de-chave/{id_da_solicitacao}/avaliacao")
+def avaliar_solicitacao_de_chave_rota(
+    id_da_solicitacao: uuid.UUID,
+    entrada: AvaliarSolicitacaoDeChaveEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> SolicitacaoDeChaveSaida:
+    """Restrita a Admin (`RF-02-88`, `RF-01-16`). Só o desfecho — a emissão
+    é ato separado, sobre solicitação aceita (`POST /chaves`), decisão do
+    fundador em 2026-08-22 (design — decisão 1)."""
+    solicitacao = sessao_bd.get(SolicitacaoDeChave, id_da_solicitacao)
+    if solicitacao is None:
+        raise NaoEncontrado(mensagem="Solicitação de chave não encontrada.")
+    if solicitacao.decidido_em is not None:
+        raise SolicitacaoJaAvaliada()
+
+    try:
+        situacao_valida = SituacaoDaSolicitacao(entrada.situacao)
+    except ValueError as exc:
+        raise ErroDeValidacao(
+            mensagem="Desfecho precisa ser aceita ou recusada.", campo="situacao"
+        ) from exc
+
+    avaliador = sessao_bd.get(Persona, contexto.persona_id)
+    solicitacao = avaliar_solicitacao_de_chave(
+        sessao_bd,
+        solicitacao,
+        situacao=situacao_valida,
+        avaliado_por=avaliador,
+        parecer=entrada.parecer,
+    )
+    sessao_bd.commit()
+    return _saida_da_solicitacao_de_chave(solicitacao)
+
+
+class SugestaoSaida(BaseModel):
+    """`RF-02-25`; `motivo_do_retorno` só existe na não adotada
+    (`RF-02-26`)."""
+
+    id: uuid.UUID
+    autor_id: uuid.UUID
+    papel_do_autor: str
+    alvo_tipo: TipoDeAlvo
+    alvo_id: uuid.UUID | None
+    texto: str
+    situacao: SituacaoDaSugestao
+    prazo: datetime
+    em_atraso: bool
+    avaliado_por_id: uuid.UUID | None
+    parecer: str | None
+    motivo_do_retorno: str | None
+    decidido_em: datetime | None
+
+
+def _saida_da_sugestao(sugestao: SugestaoOuProposta) -> SugestaoSaida:
+    return SugestaoSaida(
+        id=sugestao.id,
+        autor_id=sugestao.autor_id,
+        papel_do_autor=sugestao.papel_do_autor,
+        alvo_tipo=sugestao.alvo_tipo,
+        alvo_id=sugestao.alvo_id,
+        texto=sugestao.texto,
+        situacao=sugestao.situacao,
+        prazo=sugestao.prazo,
+        em_atraso=esta_em_atraso(sugestao),
+        avaliado_por_id=sugestao.avaliado_por_id,
+        parecer=sugestao.parecer,
+        motivo_do_retorno=sugestao.motivo_do_retorno,
+        decidido_em=sugestao.decidido_em,
+    )
+
+
+@roteador.get("/sugestoes", response_model=PaginaDeResultado[SugestaoSaida])
+def listar_sugestoes_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "le"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[SugestaoSaida]:
+    """Restrita a Admin (`RF-01-16`). Fila única das Apps 05, 07, 08 e 09 —
+    todas gravam na mesma tabela (`RF-02-25`)."""
+    consulta = sessao_bd.query(SugestaoOuProposta)
+
+    if parametros.cursor:
+        posicao = decodificar_cursor(parametros.cursor)
+        try:
+            registrada_em_cursor = datetime.fromisoformat(posicao["registrado_em"])
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(
+            tuple_(SugestaoOuProposta.registrado_em, SugestaoOuProposta.id)
+            > (registrada_em_cursor, id_cursor)
+        )
+
+    consulta = consulta.order_by(SugestaoOuProposta.registrado_em, SugestaoOuProposta.id)
+    registros = consulta.limit(parametros.tamanho + 1).all()
+
+    proximo_cursor = None
+    if len(registros) > parametros.tamanho:
+        registros = registros[: parametros.tamanho]
+        ultimo = registros[-1]
+        proximo_cursor = codificar_cursor(
+            {"registrado_em": ultimo.registrado_em.isoformat(), "id": str(ultimo.id)}
+        )
+
+    return PaginaDeResultado(
+        itens=[_saida_da_sugestao(registro) for registro in registros],
+        proximo_cursor=proximo_cursor,
+    )
+
+
+class AvaliarSugestaoEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    situacao: str = Field(min_length=1)
+    parecer: str | None = None
+    motivo_do_retorno: str | None = None
+
+
+@roteador.post("/sugestoes/{id_da_sugestao}/avaliacao")
+def avaliar_sugestao_rota(
+    id_da_sugestao: uuid.UUID,
+    entrada: AvaliarSugestaoEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> SugestaoSaida:
+    """Restrita a Admin (`RF-02-26`, `RF-01-16`). O crédito dos 20 extras, o
+    badge de protagonismo e a data de descarte da transcrição vêm da regra,
+    não da rota (`RF-01-56`, `RN-01-50`)."""
+    sugestao = sessao_bd.get(SugestaoOuProposta, id_da_sugestao)
+    if sugestao is None:
+        raise NaoEncontrado(mensagem="Sugestão ou proposta não encontrada.")
+    if sugestao.decidido_em is not None:
+        raise SolicitacaoJaAvaliada()
+
+    try:
+        situacao_valida = SituacaoDaSugestao(entrada.situacao)
+    except ValueError as exc:
+        raise ErroDeValidacao(
+            mensagem="Desfecho precisa ser adotada ou não adotada.", campo="situacao"
+        ) from exc
+
+    avaliador = sessao_bd.get(Persona, contexto.persona_id)
+    sugestao = avaliar_sugestao(
+        sessao_bd,
+        sugestao,
+        situacao=situacao_valida,
+        avaliado_por=avaliador,
+        parecer=entrada.parecer,
+        motivo_do_retorno=entrada.motivo_do_retorno,
+    )
+    sessao_bd.commit()
+    return _saida_da_sugestao(sugestao)
