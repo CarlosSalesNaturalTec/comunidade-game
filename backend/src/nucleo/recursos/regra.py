@@ -102,6 +102,15 @@ def registrar_valor_de_referencia(
     return novo_valor
 
 
+def listar_tipos_de_recurso(sessao: Session, *, operador: Persona) -> list[TipoDeRecurso]:
+    """Só Admin lê o catálogo — a mesma restrição do cadastro (`RF-07-01`).
+    Ordenado por nome: catálogo pequeno, sem paginação por cursor, e a
+    listagem serve o seletor de tipo de recurso da gestão (PRD-02 §6.2)."""
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin lê o catálogo de tipos de recurso.")
+    return sessao.query(TipoDeRecurso).order_by(TipoDeRecurso.nome).all()
+
+
 def consultar_valor_de_referencia(
     sessao: Session, *, tipo: TipoDeRecurso, data: date
 ) -> ValorDeReferencia | None:

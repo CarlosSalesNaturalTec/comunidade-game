@@ -15,6 +15,8 @@ from .modelo import PrecoDeReferencia, TipoDeRecurso, ValorDeReferencia
 from .regra import (
     cadastrar_tipo_de_recurso,
     consultar_precos_de_referencia,
+    consultar_valor_de_referencia,
+    listar_tipos_de_recurso,
     registrar_preco_de_referencia,
     registrar_valor_de_referencia,
 )
@@ -42,6 +44,26 @@ def _saida(tipo: TipoDeRecurso, valor: ValorDeReferencia) -> TipoDeRecursoSaida:
         valor_em_moedas=valor.valor_em_moedas,
         vigencia_inicio=valor.vigencia_inicio,
     )
+
+
+@roteador.get("/tipos-de-recurso", response_model=list[TipoDeRecursoSaida])
+def listar_tipos_de_recurso_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[TipoDeRecursoSaida]:
+    """Restrita ao Admin, mesma restrição do cadastro. Serve o seletor de
+    tipo de recurso da gestão — entre outros, o da homologação do aporte
+    (`RF-07-01`, `RF-02-84`, PRD-02 §6.2). Adição não prevista na proposal
+    desta change: sem ela não há como montar um seletor real, e a
+    proposal.md declarava "nenhuma rota nova"."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    tipos = listar_tipos_de_recurso(sessao_bd, operador=operador)
+    saida: list[TipoDeRecursoSaida] = []
+    for tipo in tipos:
+        valor = consultar_valor_de_referencia(sessao_bd, tipo=tipo, data=date.today())
+        if valor is not None:
+            saida.append(_saida(tipo, valor))
+    return saida
 
 
 class CadastrarTipoDeRecursoEntrada(BaseModel):

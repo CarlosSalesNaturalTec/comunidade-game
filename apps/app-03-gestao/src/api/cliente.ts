@@ -37,9 +37,14 @@ export function ehRecusaDeSessao(erro: unknown): erro is ErroDaApi {
 interface OpcoesDeChamada {
   metodo?: "GET" | "POST" | "PATCH" | "DELETE";
   corpo?: unknown;
+  formulario?: FormData;
   token?: string | null;
 }
 
+// `formulario` serve as rotas que aceitam `multipart/form-data` — hoje só
+// `POST /aportes` — sem mudar o contrato de quem já chama com `corpo`
+// (`RF-02-84`). O navegador declara o `Content-Type` com o `boundary`
+// sozinho; declará-lo aqui quebraria o envio.
 export async function chamarNucleo<T>(
   caminho: string,
   opcoes: OpcoesDeChamada = {},
@@ -57,7 +62,9 @@ export async function chamarNucleo<T>(
   const resposta = await fetch(`${URL_DO_NUCLEO}${caminho}`, {
     method: opcoes.metodo ?? "GET",
     headers: cabecalhos,
-    body: opcoes.corpo !== undefined ? JSON.stringify(opcoes.corpo) : undefined,
+    body:
+      opcoes.formulario ??
+      (opcoes.corpo !== undefined ? JSON.stringify(opcoes.corpo) : undefined),
   });
 
   if (resposta.status === 204) {

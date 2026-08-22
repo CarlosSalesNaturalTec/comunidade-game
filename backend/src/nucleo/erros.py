@@ -173,6 +173,12 @@ class ConjuntoDeDadosNaoLiberado(ErroDeAplicacao):
     mensagem = "O conjunto de dados só é liberado depois da aprovação de um Admin."
 
 
+class SolicitacaoJaAvaliada(ErroDeAplicacao):
+    status_code = 409
+    codigo = "solicitacao_ja_avaliada"
+    mensagem = "Esta solicitação já tem um desfecho gravado."
+
+
 class SolicitacaoDeChaveNaoDisponivelParaEmissao(ErroDeAplicacao):
     status_code = 409
     codigo = "solicitacao_de_chave_nao_disponivel_para_emissao"

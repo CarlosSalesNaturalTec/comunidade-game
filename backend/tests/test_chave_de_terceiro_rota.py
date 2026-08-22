@@ -402,3 +402,118 @@ def test_solicitacao_e_chave_ficam_consultaveis_juntas(
     chave_emitida = sessao.get(ChaveDeAplicacao, solicitacao_recarregada.chave_id)
     assert chave_emitida is not None
     assert chave_emitida.solicitacao_de_chave_id == solicitacao.id
+
+
+# --- Ciclo completo pela fila (`RF-02-88`, `RF-02-89`) ---------------------
+
+
+def _registrar_e_aprovar_solicitacao_de_chave(cliente, headers, *, situacao="aceita"):
+    id_solicitacao = cliente.post(
+        "/v1/solicitacoes-de-chave",
+        json={
+            "solicitante": "Desenvolvedora de Tal",
+            "contato": "dev@example.org",
+            "o_que_pretende_construir": "Um painel comunitário.",
+        },
+        headers={"X-Chave-Aplicacao": headers["X-Chave-Aplicacao"]},
+    ).json()["id"]
+    if situacao is not None:
+        cliente.post(
+            f"/v1/solicitacoes-de-chave/{id_solicitacao}/avaliacao",
+            json={"situacao": situacao, "parecer": "Parecer do Admin."},
+            headers=headers,
+        )
+    return id_solicitacao
+
+
+def test_ciclo_completo_solicitacao_aprovacao_emissao_e_apresentacao(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    """Caminho de ponta a ponta que ninguém percorreu junto até esta fatia
+    (design — Risks/Trade-offs): solicitação pública, aprovação pela rota
+    nova da fila, emissão que devolve o segredo uma única vez e
+    apresentação pública da URL."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    id_solicitacao = _registrar_e_aprovar_solicitacao_de_chave(cliente, headers)
+
+    emitida = cliente.post("/v1/chaves", json={"solicitacao_id": id_solicitacao}, headers=headers)
+    assert emitida.status_code == 201
+    corpo_emitido = emitida.json()
+    assert set(corpo_emitido.keys()) == {"id", "segredo"}
+
+    apresentada = cliente.post(
+        f"/v1/chaves/{corpo_emitido['id']}/url",
+        json={"url": "https://exemplo.org/painel"},
+        headers={"X-Chave-Aplicacao": chave},
+    )
+    assert apresentada.status_code == 204
+
+
+def test_aprovar_solicitacao_de_chave_pela_fila_nao_emite(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    id_solicitacao = _registrar_e_aprovar_solicitacao_de_chave(cliente, headers)
+
+    fila = cliente.get("/v1/solicitacoes-de-chave", headers=headers)
+    item = next(i for i in fila.json()["itens"] if i["id"] == id_solicitacao)
+    assert item["situacao"] == "aceita"
+    assert item["chave_emitida"] is False
+
+
+def test_emissao_sobre_solicitacao_recusada_pela_fila_e_recusada(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    id_solicitacao = _registrar_e_aprovar_solicitacao_de_chave(
+        cliente, headers, situacao="recusada"
+    )
+
+    resposta = cliente.post("/v1/chaves", json={"solicitacao_id": id_solicitacao}, headers=headers)
+
+    assert resposta.status_code == 409
+    assert resposta.json()["codigo"] == "solicitacao_de_chave_nao_disponivel_para_emissao"
+
+
+def test_emissao_sobre_solicitacao_sem_desfecho_pela_fila_e_recusada(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    id_solicitacao = _registrar_e_aprovar_solicitacao_de_chave(cliente, headers, situacao=None)
+
+    resposta = cliente.post("/v1/chaves", json={"solicitacao_id": id_solicitacao}, headers=headers)
+
+    assert resposta.status_code == 409
+
+
+def test_mesma_solicitacao_de_chave_nao_rende_duas_chaves(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    id_solicitacao = _registrar_e_aprovar_solicitacao_de_chave(cliente, headers)
+    primeira = cliente.post("/v1/chaves", json={"solicitacao_id": id_solicitacao}, headers=headers)
+    assert primeira.status_code == 201
+
+    segunda = cliente.post("/v1/chaves", json={"solicitacao_id": id_solicitacao}, headers=headers)
+
+    assert segunda.status_code == 409
