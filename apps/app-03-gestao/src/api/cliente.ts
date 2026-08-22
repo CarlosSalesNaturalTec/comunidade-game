@@ -35,7 +35,7 @@ export function ehRecusaDeSessao(erro: unknown): erro is ErroDaApi {
 }
 
 interface OpcoesDeChamada {
-  metodo?: "GET" | "POST" | "PATCH" | "DELETE";
+  metodo?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   corpo?: unknown;
   formulario?: FormData;
   token?: string | null;

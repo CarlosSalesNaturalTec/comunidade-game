@@ -27,6 +27,7 @@ from .necessidades.rotas import roteador as roteador_de_necessidades
 from .patrimonio.rotas import roteador as roteador_de_patrimonio
 from .personas.rotas import roteador as roteador_de_personas
 from .poder_sustentador.rotas import roteador as roteador_de_poder_sustentador
+from .poderes.rotas import roteador as roteador_de_poderes
 from .pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
 from .prestacao_de_contas.rotas import roteador as roteador_de_prestacao_de_contas
 from .protecao import registrar_premissa_de_conteiner_unico
@@ -151,6 +152,7 @@ incluir_roteador_de_dados(app, roteador_de_aportes)
 incluir_roteador_de_dados(app, roteador_de_aulas)
 incluir_roteador_de_dados(app, roteador_de_necessidades)
 incluir_roteador_de_dados(app, roteador_de_poder_sustentador)
+incluir_roteador_de_dados(app, roteador_de_poderes)
 incluir_roteador_de_dados(app, roteador_de_prestacao_de_contas)
 incluir_roteador_de_dados(app, roteador_de_ressarcimentos)
 incluir_roteador_de_dados(app, roteador_de_catalogo_avulso)

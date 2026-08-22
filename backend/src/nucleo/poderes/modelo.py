@@ -18,12 +18,14 @@ class VigenciaDoPoder(enum.StrEnum):
     ciclo_futuro = "ciclo_futuro"
 
 
+# O papel que um poder exerce nas regras da plataforma, declarado por Admin —
+# nunca deduzido do `nome`, que é só rótulo de exibição (`RN-01-54`). Hoje só
+# o papel do Território existe: é o que o crédito da coleta busca
+# (`RN-08-15`). Comentário, não docstring: a classe agora entra em resposta
+# HTTP (`catalogo-de-poderes-e-tela-da-gestao`), e um docstring vira
+# descrição no schema OpenAPI publicado sem chave — `território`, aqui,
+# fugiria da convenção de `test_openapi_nao_serve_dado_de_dominio`.
 class PapelDoPoder(enum.StrEnum):
-    """O papel que um poder exerce nas regras da plataforma, declarado por
-    Admin — nunca deduzido do `nome`, que é só rótulo de exibição
-    (`RN-01-54`). Hoje só o papel do Território existe: é o que o crédito
-    da coleta busca (`RN-08-15`)."""
-
     territorio = "territorio"
 
 
