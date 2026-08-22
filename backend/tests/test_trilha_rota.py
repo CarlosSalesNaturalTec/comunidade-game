@@ -559,6 +559,29 @@ def test_mestre_autor_publica_a_propria_trilha_pela_rota(
     assert resposta.json()["situacao"] == "publicada"
 
 
+def test_trilha_sem_etiqueta_ods_publica_no_ciclo_01(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_poder, criar_tipo_de_coleta
+):
+    """`RF-09-93`: a falta de etiqueta ODS não é trava de publicação no
+    Ciclo 01 — a trava do `RF-09-96` é do Ciclo 02."""
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    trilha_id = _criar_trilha_completa_pela_rota(
+        cliente, cabecalhos, poder, criar_tipo_de_coleta, mestre
+    )
+
+    resposta = cliente.post(f"/v1/trilhas/{trilha_id}/publicacao", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["situacao"] == "publicada"
+    assert corpo["etiquetas_ods"] == []
+    assert corpo["cobertura_ods"]["objetivos"] == []
+
+
 def test_publicacao_por_outro_mestre_e_recusada_pela_rota(
     cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha
 ):

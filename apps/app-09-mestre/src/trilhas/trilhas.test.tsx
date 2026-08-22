@@ -9,6 +9,7 @@ import * as poderesApi from "../poderes/api";
 import type {
   AtividadeDaMissao,
   CulminanciaDaTrilha,
+  EtiquetaOds,
   MissaoDaTrilha,
   TrilhaDoMestre,
 } from "./api";
@@ -90,6 +91,7 @@ function missao(sobrescreve: Partial<MissaoDaTrilha> = {}): MissaoDaTrilha {
     etapa_do_ciclo: "abertura",
     cadencia_de_retomada: null,
     atividades: [],
+    etiquetas_ods: [],
     ...sobrescreve,
   };
 }
@@ -103,6 +105,8 @@ function trilha(sobrescreve: Partial<TrilhaDoMestre> = {}): TrilhaDoMestre {
     poder_id: "poder-guerreiro",
     situacao: "rascunho",
     motivo_da_situacao: null,
+    etiquetas_ods: [],
+    cobertura_ods: { objetivos: [], ciclo: "Ciclo 01" },
     missoes: [],
     ...sobrescreve,
   };
@@ -139,6 +143,8 @@ describe("criação de trilha (RF-09-01)", () => {
       poder_id: "poder-guerreiro",
       situacao: "rascunho",
       motivo_da_situacao: null,
+      etiquetas_ods: [],
+      cobertura_ods: { objetivos: [], ciclo: "Ciclo 01" },
     });
     vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValueOnce([trilha()]);
 
@@ -704,6 +710,8 @@ describe("publicação da trilha (RF-09-05, RF-09-08, RF-09-82)", () => {
       poder_id: "poder-guerreiro",
       situacao: "publicada",
       motivo_da_situacao: null,
+      etiquetas_ods: [],
+      cobertura_ods: { objetivos: [], ciclo: "Ciclo 01" },
     });
 
     render(<TelaDeAutoria />);
@@ -790,6 +798,8 @@ describe("publicação da trilha (RF-09-05, RF-09-08, RF-09-82)", () => {
       poder_id: "poder-guerreiro",
       situacao: "publicada",
       motivo_da_situacao: null,
+      etiquetas_ods: [],
+      cobertura_ods: { objetivos: [], ciclo: "Ciclo 01" },
     });
 
     render(<TelaDeAutoria />);
@@ -839,5 +849,336 @@ describe("situação e motivo da despublicação na lista (RF-09-04, RF-09-10)",
 
     expect(await screen.findByText(/despublicada/i)).toBeInTheDocument();
     expect(screen.getByText(/conteúdo desatualizado/i)).toBeInTheDocument();
+  });
+});
+
+describe("etiqueta ODS da trilha (RF-09-92, RF-09-12)", () => {
+  function etiqueta(sobrescreve: Partial<EtiquetaOds> = {}): EtiquetaOds {
+    return {
+      id: "etiqueta-1",
+      objetivo: 4,
+      meta: null,
+      trilha_id: "trilha-1",
+      missao_id: null,
+      ...sobrescreve,
+    };
+  }
+
+  async function abrirATrilha(usuario: ReturnType<typeof userEvent.setup>) {
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+  }
+
+  function comCatalogoVazio() {
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+  }
+
+  it("Mestre etiqueta a trilha com objetivo e meta", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    comCatalogoVazio();
+    const substituirEspiado = vi
+      .spyOn(trilhasApi, "substituirEtiquetasOdsDaTrilha")
+      .mockResolvedValue([etiqueta({ meta: "4.7" })]);
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await abrirATrilha(usuario);
+
+    await usuario.click(screen.getByRole("button", { name: /etiquetar ods da trilha/i }));
+    await usuario.click(screen.getByRole("button", { name: /acrescentar objetivo/i }));
+    await usuario.selectOptions(screen.getByLabelText(/^objetivo 1$/i), "4");
+    await usuario.type(screen.getByLabelText(/meta do objetivo 1/i), "4.7");
+    await usuario.click(screen.getByRole("button", { name: /confirmar ods da trilha/i }));
+
+    await waitFor(() =>
+      expect(substituirEspiado).toHaveBeenCalledWith(
+        "trilha-1",
+        [{ objetivo: 4, meta: "4.7" }],
+        "token-do-mestre",
+      ),
+    );
+    expect(await screen.findByText(/ods 4 — meta 4\.7/i)).toBeInTheDocument();
+  });
+
+  it("Mestre etiqueta sem saber a meta", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    comCatalogoVazio();
+    const substituirEspiado = vi
+      .spyOn(trilhasApi, "substituirEtiquetasOdsDaTrilha")
+      .mockResolvedValue([etiqueta({ objetivo: 13 })]);
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await abrirATrilha(usuario);
+
+    await usuario.click(screen.getByRole("button", { name: /etiquetar ods da trilha/i }));
+    await usuario.click(screen.getByRole("button", { name: /acrescentar objetivo/i }));
+    await usuario.selectOptions(screen.getByLabelText(/^objetivo 1$/i), "13");
+    await usuario.click(screen.getByRole("button", { name: /confirmar ods da trilha/i }));
+
+    await waitFor(() =>
+      expect(substituirEspiado).toHaveBeenCalledWith(
+        "trilha-1",
+        [{ objetivo: 13, meta: null }],
+        "token-do-mestre",
+      ),
+    );
+    expect(await screen.findByText(/^ods 13$/i)).toBeInTheDocument();
+  });
+
+  it("Mestre declara mais de um objetivo na trilha", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    comCatalogoVazio();
+    vi.spyOn(trilhasApi, "substituirEtiquetasOdsDaTrilha").mockResolvedValue([
+      etiqueta({ id: "etiqueta-4", objetivo: 4 }),
+      etiqueta({ id: "etiqueta-13", objetivo: 13 }),
+    ]);
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await abrirATrilha(usuario);
+
+    await usuario.click(screen.getByRole("button", { name: /etiquetar ods da trilha/i }));
+    await usuario.click(screen.getByRole("button", { name: /acrescentar objetivo/i }));
+    await usuario.selectOptions(screen.getByLabelText(/^objetivo 1$/i), "4");
+    await usuario.click(screen.getByRole("button", { name: /acrescentar objetivo/i }));
+    await usuario.selectOptions(screen.getByLabelText(/^objetivo 2$/i), "13");
+    await usuario.click(screen.getByRole("button", { name: /confirmar ods da trilha/i }));
+
+    const declarados = await screen.findByRole("list", {
+      name: /objetivos declarados — ods da trilha/i,
+    });
+    expect(within(declarados).getByText(/^ods 4$/i)).toBeInTheDocument();
+    expect(within(declarados).getByText(/^ods 13$/i)).toBeInTheDocument();
+  });
+
+  it("o que o Mestre remove some da trilha", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        etiquetas_ods: [
+          etiqueta({ id: "etiqueta-4", objetivo: 4 }),
+          etiqueta({ id: "etiqueta-13", objetivo: 13 }),
+        ],
+        cobertura_ods: { objetivos: [4, 13], ciclo: "Ciclo 01" },
+      }),
+    ]);
+    comCatalogoVazio();
+    const substituirEspiado = vi
+      .spyOn(trilhasApi, "substituirEtiquetasOdsDaTrilha")
+      .mockResolvedValue([etiqueta({ id: "etiqueta-4", objetivo: 4 })]);
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await abrirATrilha(usuario);
+
+    await usuario.click(screen.getByRole("button", { name: /alterar ods da trilha/i }));
+    await usuario.click(screen.getByRole("button", { name: /remover objetivo 2/i }));
+    await usuario.click(screen.getByRole("button", { name: /confirmar ods da trilha/i }));
+
+    await waitFor(() =>
+      expect(substituirEspiado).toHaveBeenCalledWith(
+        "trilha-1",
+        [{ objetivo: 4, meta: null }],
+        "token-do-mestre",
+      ),
+    );
+    const declarados = await screen.findByRole("list", {
+      name: /objetivos declarados — ods da trilha/i,
+    });
+    expect(within(declarados).queryByText(/^ods 13$/i)).not.toBeInTheDocument();
+  });
+
+  it("o Mestre retira todas as etiquetas e a trilha segue publicável", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        etiquetas_ods: [etiqueta()],
+        cobertura_ods: { objetivos: [4], ciclo: "Ciclo 01" },
+      }),
+    ]);
+    comCatalogoVazio();
+    vi.spyOn(trilhasApi, "substituirEtiquetasOdsDaTrilha").mockResolvedValue([]);
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await abrirATrilha(usuario);
+
+    await usuario.click(screen.getByRole("button", { name: /alterar ods da trilha/i }));
+    await usuario.click(screen.getByRole("button", { name: /remover objetivo 1/i }));
+    await usuario.click(screen.getByRole("button", { name: /confirmar ods da trilha/i }));
+
+    expect(await screen.findByText(/sem ods declarado/i)).toBeInTheDocument();
+    // `RF-09-93`: a trilha sem etiqueta segue publicável no Ciclo 01.
+    expect(screen.getByRole("button", { name: /publicar trilha/i })).toBeInTheDocument();
+  });
+
+  it("a etiquetagem nunca é oferecida em trilha alheia, porque a lista já filtra por autoria", async () => {
+    // `GET /trilhas/minhas` só devolve as trilhas do próprio Mestre em
+    // sessão — a trilha de outro Mestre nunca chega a esta tela, logo a
+    // ação de etiquetar nunca é oferecida para ela (`RF-09-92`).
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([]);
+    comCatalogoVazio();
+
+    render(<TelaDeAutoria />);
+
+    expect(await screen.findByText(/nenhuma trilha criada/i)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /etiquetar ods da trilha/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("Mestre etiqueta a missão sem alterar o que a trilha apresenta", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        etiquetas_ods: [etiqueta()],
+        cobertura_ods: { objetivos: [4], ciclo: "Ciclo 01" },
+        missoes: [missao()],
+      }),
+    ]);
+    comCatalogoVazio();
+    const substituirNaMissao = vi
+      .spyOn(trilhasApi, "substituirEtiquetasOdsDaMissao")
+      .mockResolvedValue([
+        etiqueta({
+          id: "etiqueta-da-missao",
+          objetivo: 13,
+          trilha_id: null,
+          missao_id: "missao-1",
+        }),
+      ]);
+    const substituirNaTrilha = vi.spyOn(trilhasApi, "substituirEtiquetasOdsDaTrilha");
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await abrirATrilha(usuario);
+
+    // A tela diz, na missão, que a etiqueta só é necessária quando ela toca
+    // objetivo diferente do da trilha (`RF-09-98`).
+    expect(screen.getByText(/responde pela etiqueta da trilha/i)).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /etiquetar ods da missão/i }));
+    await usuario.click(screen.getByRole("button", { name: /acrescentar objetivo/i }));
+    await usuario.selectOptions(screen.getByLabelText(/^objetivo 1$/i), "13");
+    await usuario.click(screen.getByRole("button", { name: /confirmar ods da missão/i }));
+
+    await waitFor(() => expect(substituirNaMissao).toHaveBeenCalled());
+    expect(substituirNaTrilha).not.toHaveBeenCalled();
+    const daTrilha = screen.getByRole("list", {
+      name: /objetivos declarados — ods da trilha/i,
+    });
+    expect(within(daTrilha).getByText(/^ods 4$/i)).toBeInTheDocument();
+    expect(within(daTrilha).queryByText(/^ods 13$/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("cobertura de ODS da trilha (RF-09-94, RN-01-24)", () => {
+  function etiqueta(sobrescreve: Partial<EtiquetaOds> = {}): EtiquetaOds {
+    return {
+      id: "etiqueta-1",
+      objetivo: 4,
+      meta: null,
+      trilha_id: "trilha-1",
+      missao_id: null,
+      ...sobrescreve,
+    };
+  }
+
+  it("a cobertura reúne a trilha e as missões dela", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        etiquetas_ods: [etiqueta()],
+        cobertura_ods: { objetivos: [4, 13], ciclo: "Ciclo 01" },
+        missoes: [
+          missao({
+            etiquetas_ods: [
+              etiqueta({
+                id: "etiqueta-da-missao",
+                objetivo: 13,
+                trilha_id: null,
+                missao_id: "missao-1",
+              }),
+            ],
+          }),
+        ],
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    const cobertura = await screen.findByRole("region", {
+      name: /cobertura de ods da trilha/i,
+    });
+    expect(within(cobertura).getByText(/ods 4, ods 13 · ciclo 01/i)).toBeInTheDocument();
+  });
+
+  it("a cobertura acompanha o que o Mestre acabou de declarar", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        etiquetas_ods: [etiqueta()],
+        cobertura_ods: { objetivos: [4], ciclo: "Ciclo 01" },
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "substituirEtiquetasOdsDaTrilha").mockResolvedValue([
+      etiqueta(),
+      etiqueta({ id: "etiqueta-13", objetivo: 13 }),
+    ]);
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    await usuario.click(screen.getByRole("button", { name: /alterar ods da trilha/i }));
+    await usuario.click(screen.getByRole("button", { name: /acrescentar objetivo/i }));
+    await usuario.selectOptions(screen.getByLabelText(/^objetivo 2$/i), "13");
+    await usuario.click(screen.getByRole("button", { name: /confirmar ods da trilha/i }));
+
+    const cobertura = await screen.findByRole("region", {
+      name: /cobertura de ods da trilha/i,
+    });
+    await waitFor(() =>
+      expect(within(cobertura).getByText(/ods 4, ods 13 · ciclo 01/i)).toBeInTheDocument(),
+    );
+  });
+
+  it("trilha sem etiqueta apresenta cobertura vazia, sem erro", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    expect(
+      await screen.findByText(/nenhum ods coberto por esta trilha ainda/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });

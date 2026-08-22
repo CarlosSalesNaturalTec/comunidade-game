@@ -271,6 +271,7 @@ def app(sessao, configuracao):
     from nucleo.livro_razao.rotas import roteador as roteador_de_livro_razao
     from nucleo.locais.rotas import roteador as roteador_de_locais
     from nucleo.necessidades.rotas import roteador as roteador_de_necessidades
+    from nucleo.ods.rotas import roteador as roteador_de_ods
     from nucleo.patrimonio.rotas import roteador as roteador_de_patrimonio
     from nucleo.personas.rotas import roteador as roteador_de_personas
     from nucleo.poder_sustentador.rotas import roteador as roteador_de_poder_sustentador
@@ -318,6 +319,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_recompensas_de_marco)
     incluir_roteador_de_dados(aplicacao, roteador_de_trilhas)
     incluir_roteador_de_dados(aplicacao, roteador_de_culminancias)
+    incluir_roteador_de_dados(aplicacao, roteador_de_ods)
     return aplicacao
 
 

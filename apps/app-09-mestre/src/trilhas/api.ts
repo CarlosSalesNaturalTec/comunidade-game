@@ -2,6 +2,28 @@ import { chamarNucleo } from "comum/api";
 
 export type EtapaDoCiclo = "abertura" | "desenvolvimento" | "marcos" | "fechamento";
 
+// O objetivo vai de 1 a 18 e a meta é livre e opcional; quem recusa o
+// objetivo fora da faixa é o núcleo (`RF-09-92`, `RF-09-98`).
+export interface EtiquetaOds {
+  id: string;
+  objetivo: number;
+  meta: string | null;
+  trilha_id: string | null;
+  missao_id: string | null;
+}
+
+export interface EtiquetaOdsDeclarada {
+  objetivo: number;
+  meta?: string | null;
+}
+
+// A cobertura é sempre da trilha — a união dos objetivos dela e das missões
+// dela —, nunca por Guerreiro(a) (`RF-09-94`, `RN-01-24`).
+export interface CoberturaOdsDaTrilha {
+  objetivos: number[];
+  ciclo: string;
+}
+
 export interface AtividadeDaMissao {
   id: string;
   missao_id: string;
@@ -24,6 +46,10 @@ export interface MissaoDaTrilha {
   etapa_do_ciclo: EtapaDoCiclo;
   cadencia_de_retomada: number[] | null;
   atividades: AtividadeDaMissao[];
+  // As etiquetas **próprias** da missão: a leitura não cai para as da
+  // trilha, ainda que a missão sem etiqueta própria responda por elas nos
+  // vínculos (`RF-09-98`, `RF-01-45`).
+  etiquetas_ods: EtiquetaOds[];
 }
 
 export interface TrilhaDaLista {
@@ -34,6 +60,8 @@ export interface TrilhaDaLista {
   poder_id: string;
   situacao: string;
   motivo_da_situacao: string | null;
+  etiquetas_ods: EtiquetaOds[];
+  cobertura_ods: CoberturaOdsDaTrilha;
 }
 
 export interface TrilhaDoMestre extends TrilhaDaLista {
@@ -160,6 +188,34 @@ export function declararCulminancia(
 export function publicarTrilha(idDaTrilha: string, token: string): Promise<TrilhaDaLista> {
   return chamarNucleo<TrilhaDaLista>(`/v1/trilhas/${idDaTrilha}/publicacao`, {
     metodo: "POST",
+    token,
+  });
+}
+
+// As duas rotas recebem a **lista completa** e substituem o conjunto do
+// alvo: o que estava é apagado, o que veio é gravado. Lista vazia deixa o
+// alvo sem etiqueta, situação legal no Ciclo 01 (`RF-09-92`, `RF-09-93`).
+export function substituirEtiquetasOdsDaTrilha(
+  idDaTrilha: string,
+  etiquetas: EtiquetaOdsDeclarada[],
+  token: string,
+): Promise<EtiquetaOds[]> {
+  return chamarNucleo<EtiquetaOds[]>(`/v1/trilhas/${idDaTrilha}/ods`, {
+    metodo: "POST",
+    corpo: { etiquetas },
+    token,
+  });
+}
+
+// Escopada à missão: nunca alcança as etiquetas da trilha (`RF-09-98`).
+export function substituirEtiquetasOdsDaMissao(
+  idDaMissao: string,
+  etiquetas: EtiquetaOdsDeclarada[],
+  token: string,
+): Promise<EtiquetaOds[]> {
+  return chamarNucleo<EtiquetaOds[]>(`/v1/missoes/${idDaMissao}/ods`, {
+    metodo: "POST",
+    corpo: { etiquetas },
     token,
   });
 }
