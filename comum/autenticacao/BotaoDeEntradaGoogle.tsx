@@ -1,3 +1,4 @@
+/// <reference path="./google-identity-services.d.ts" />
 import { useEffect, useRef } from "react";
 
 const URL_DO_SCRIPT = "https://accounts.google.com/gsi/client";
