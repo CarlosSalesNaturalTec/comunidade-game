@@ -62,20 +62,22 @@ Nada disto é exclusão nova: o PRD-02 §3.1 mantém tudo em escopo, e a fatia a
 | Desafios extras (`RF-02-27`, `RF-02-28`)        | espera a entidade `DesafioExtra`, do PRD-09 ou do PRD-14   |
 | Conteúdo institucional da vitrine (`RF-02-80`)  | é superfície de PRD-03, não da fila                        |
 
-### Perguntas ao fundador, antes do `/opsx:apply`
+### Decidido pelo fundador em 2026-08-22
 
-1. **O PRD-02 §9 não declara a rota de desfecho da solicitação de chave.** A tabela traz
+Duas correções ao PRD-02, ambas neste PR. Nenhuma cria regra de produto: a primeira completa a
+§9 com uma rota que o `RF-02-88` já exigia, a segunda desfaz uma colisão de identificador.
+
+1. **O PRD-02 §9 não declarava a rota de desfecho da solicitação de chave.** A tabela traz
    `GET /v1/solicitacoes-de-chave` e `POST /v1/chaves`, mas o `RF-02-88` exige *aprovar ou
-   recusar, com parecer e autoria* — e a recusa não tem para onde ir, já que `POST /v1/chaves`
-   só emite. As outras três naturezas têm `POST .../{id}/avaliacao`. A leitura simétrica é
-   acrescentar `POST /v1/solicitacoes-de-chave/{id}/avaliacao` à §9; a alternativa é a
-   aprovação ser o próprio `POST /v1/chaves` e a recusa entrar por rota separada. **É correção
-   de PRD, não decisão de artefato** — precisa da sua palavra antes de virar código.
+   recusar, com parecer e autoria* — e a recusa não tinha para onde ir, já que
+   `POST /v1/chaves` só emite. A §9 recebe **`POST /v1/solicitacoes-de-chave/{id}/avaliacao`**,
+   simétrica às outras três naturezas; `POST /v1/chaves` segue emitindo apenas sobre
+   solicitação já aceita, e `emitir_chave_de_terceiro` não muda.
 
-2. **`RF-02-93` está duplicado** (§6.2 linha 222 e §6.5 linha 304, enunciados diferentes; a §15
-   rastreia só o primeiro). Esta fatia implementa o de §6.2 — o critério de aprovação da
-   solicitação de dados. O de §6.5, sobre a amostra semanal de coleta, precisa de identificador
-   próprio.
+2. **`RF-02-93` estava duplicado** — §6.2 linha 222 (critério de aprovação da solicitação de
+   dados) e §6.5 linha 304 (amostra semanal de coleta). O de **§6.5 recebe identificador
+   novo**; o de §6.2 mantém `RF-02-93`, que é o que a §15 já rastreia para 03 §12.3. Esta fatia
+   implementa o de §6.2.
 
 ## Capabilities
 
@@ -86,12 +88,14 @@ Nenhuma.
 ### Modified Capabilities
 
 - `fila-de-avaliacao`: as naturezas **dados**, **chave** e **sugestão** ganham **superfície de
-  leitura e de desfecho**, fechando o que a fatia anterior abriu para participação.
-- `chave-de-aplicacao`: o desfecho da solicitação passa a ter porta, e com ele a emissão da
-  chave de terceiro deixa de ser inalcançável. Requisito de leitura e revogação pela gestão,
-  hoje especificado e sem consumidor.
+  leitura e de desfecho**, fechando o que a fatia anterior abriu para participação. O desfecho
+  da chave entra aqui, e com ele a emissão de `chave-de-aplicacao` deixa de ser inalcançável.
 - `aplicacao-de-gestao`: a área Filas passa a servir as quatro naturezas, e a App 03 ganha o
   **painel das chaves emitidas**.
+
+A capacidade `chave-de-aplicacao` **não muda**: ela já especifica a emissão sobre solicitação
+aprovada, a leitura pela gestão, o prazo e a revogação. O que faltava era o degrau anterior, que
+é da fila. Nenhum requisito dela é tocado.
 
 ## Impact
 
@@ -106,5 +110,6 @@ Nenhuma.
 
 **App 03** — `apps/app-03-gestao/`: três naturezas na área Filas e o painel de chaves.
 
-**Documentação** — o PRD-02 §9 e o `RF-02-93` mudam conforme as respostas às duas perguntas
-acima; enquanto não houver resposta, as pendências ficam no documento 09 §1.
+**Documentação** — o PRD-02 recebe as duas correções decididas em 2026-08-22: a rota de desfecho
+da solicitação de chave entra na §9, e o `RF-02-93` de §6.5 é renumerado. Nenhuma decisão de
+produto é tomada, e por isso nenhum documento-fonte muda.

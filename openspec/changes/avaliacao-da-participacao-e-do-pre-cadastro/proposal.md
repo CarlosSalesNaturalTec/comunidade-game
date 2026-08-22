@@ -59,13 +59,13 @@ núcleo autenticado ou por URL assinada do bucket é do documento 03, não deste
 não vier, `RF-02-83` fecha na identificação e no aporte declarado, e `RF-02-86` fecha no
 desfecho com motivo — não na legibilidade.
 
-### Pergunta ao fundador, antes do `/opsx:apply`
+### Decidido pelo fundador em 2026-08-22
 
-**`RF-02-93` está duplicado no PRD-02.** O identificador aparece em §6.2 linha 222 (*critério de
-aprovação da solicitação de dados*) e outra vez em §6.5 linha 304 (*amostra semanal de coleta*),
-com enunciados diferentes. A §15 rastreia só o primeiro, para 03 §12.3. Não trava esta fatia —
-o `RF-02-93` é da fatia seguinte —, mas precisa de renumeração antes que alguém implemente o
-requisito errado.
+**`RF-02-93` está duplicado no PRD-02** — §6.2 linha 222 (*critério de aprovação da solicitação
+de dados*) e §6.5 linha 304 (*amostra semanal de coleta*), com enunciados diferentes; a §15
+rastreia só o primeiro. O de **§6.5 recebe identificador novo**, e o de §6.2 mantém `RF-02-93`.
+Não alcança esta fatia — a correção do PRD entra com a fatia seguinte, que implementa o
+requisito de §6.2.
 
 ## Capabilities
 
