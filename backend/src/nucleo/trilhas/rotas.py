@@ -23,9 +23,16 @@ from .regra import (
     criar_missao,
     criar_trilha,
     declarar_cadencia_de_retomada,
+    despublicar_trilha,
+    publicar_trilha,
 )
 
 roteador = APIRouter()
+
+# Conteúdo educacional aberto sob licença fixa, decidida no documento 03
+# (Estado atual — código aberto e CC BY-SA): não é parâmetro de operação,
+# então não entra em `Configuracao`.
+LICENCA_DO_CONTEUDO = "CC BY-SA"
 
 
 class AtividadeSaida(BaseModel):
@@ -87,6 +94,19 @@ class TrilhaSaida(BaseModel):
     area_do_conhecimento: str
     poder_id: uuid.UUID
     situacao: SituacaoDaTrilha
+    motivo_da_situacao: str | None
+
+
+def _saida_da_trilha(trilha: Trilha) -> TrilhaSaida:
+    return TrilhaSaida(
+        id=trilha.id,
+        nome=trilha.nome,
+        objetivo=trilha.objetivo,
+        area_do_conhecimento=trilha.area_do_conhecimento,
+        poder_id=trilha.poder_id,
+        situacao=trilha.situacao,
+        motivo_da_situacao=trilha.motivo_da_situacao,
+    )
 
 
 class TrilhaComMissoesSaida(TrilhaSaida):
@@ -96,15 +116,7 @@ class TrilhaComMissoesSaida(TrilhaSaida):
 def _saida_da_trilha_com_missoes(
     trilha: Trilha, *, missoes: list[MissaoSaida]
 ) -> TrilhaComMissoesSaida:
-    return TrilhaComMissoesSaida(
-        id=trilha.id,
-        nome=trilha.nome,
-        objetivo=trilha.objetivo,
-        area_do_conhecimento=trilha.area_do_conhecimento,
-        poder_id=trilha.poder_id,
-        situacao=trilha.situacao,
-        missoes=missoes,
-    )
+    return TrilhaComMissoesSaida(**_saida_da_trilha(trilha).model_dump(), missoes=missoes)
 
 
 def _obter_trilha(sessao_bd: Session, id_da_trilha: uuid.UUID) -> Trilha:
@@ -149,14 +161,7 @@ def criar_trilha_rota(
         poder_id=entrada.poder_id,
     )
     sessao_bd.commit()
-    return TrilhaSaida(
-        id=trilha.id,
-        nome=trilha.nome,
-        objetivo=trilha.objetivo,
-        area_do_conhecimento=trilha.area_do_conhecimento,
-        poder_id=trilha.poder_id,
-        situacao=trilha.situacao,
-    )
+    return _saida_da_trilha(trilha)
 
 
 @roteador.get("/trilhas/minhas")
@@ -287,3 +292,74 @@ def declarar_cadencia_de_retomada_rota(
     )
     sessao_bd.commit()
     return _saida_da_missao(missao)
+
+
+@roteador.post("/trilhas/{id_da_trilha}/publicacao")
+def publicar_trilha_rota(
+    id_da_trilha: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> TrilhaSaida:
+    """`RF-09-05` a `RF-09-09`, `RF-09-82`: publica ou republica a pedido do
+    Mestre autor, sem aprovação — a posse estrita, as três travas e a
+    recusa nomeando todas as pendentes já são de `publicar_trilha` (design —
+    decisões 4, 5, 6, 7)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    trilha = sessao_bd.get(Trilha, id_da_trilha)
+    trilha = publicar_trilha(sessao_bd, trilha, operador=operador)
+    sessao_bd.commit()
+    return _saida_da_trilha(trilha)
+
+
+class DespublicarTrilhaEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    motivo: str = Field(min_length=1)
+
+
+@roteador.post("/trilhas/{id_da_trilha}/despublicacao")
+def despublicar_trilha_rota(
+    id_da_trilha: uuid.UUID,
+    entrada: DespublicarTrilhaEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> TrilhaSaida:
+    """`RF-09-10`, `RF-09-11`: só Admin, sempre com motivo — a recusa de
+    Mestre e a exigência do motivo já são de `despublicar_trilha`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    trilha = sessao_bd.get(Trilha, id_da_trilha)
+    trilha = despublicar_trilha(sessao_bd, trilha, operador=operador, motivo=entrada.motivo)
+    sessao_bd.commit()
+    return _saida_da_trilha(trilha)
+
+
+class TrilhaPublicaSaida(TrilhaComMissoesSaida):
+    licenca: str
+    autor_nome: str | None
+
+
+@roteador.get("/trilhas/{id_da_trilha}")
+def obter_trilha_publica_rota(
+    id_da_trilha: uuid.UUID,
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> TrilhaPublicaSaida:
+    """`RF-09-09`, `RN-09-05`: pública, sem persona em sessão — só serve
+    trilha publicada; rascunho e despublicada respondem como não
+    encontrada, para não vazar a existência de rascunho alheio (`RF-09-04`,
+    design — decisões 8). Destrava o consumo pela App 05 e pela App 01."""
+    trilha = sessao_bd.get(Trilha, id_da_trilha)
+    if trilha is None or trilha.situacao != SituacaoDaTrilha.publicada:
+        raise NaoEncontrado(mensagem="Trilha não encontrada.")
+
+    autor = sessao_bd.get(Persona, trilha.autor_id)
+    missoes = sessao_bd.query(Missao).filter_by(trilha_id=trilha.id).order_by(Missao.posicao).all()
+    missoes_saida = []
+    for missao in missoes:
+        atividades = sessao_bd.query(Atividade).filter_by(missao_id=missao.id).all()
+        missoes_saida.append(_saida_da_missao(missao, atividades=atividades))
+
+    return TrilhaPublicaSaida(
+        **_saida_da_trilha_com_missoes(trilha, missoes=missoes_saida).model_dump(),
+        licenca=LICENCA_DO_CONTEUDO,
+        autor_nome=autor.nome if autor is not None else None,
+    )

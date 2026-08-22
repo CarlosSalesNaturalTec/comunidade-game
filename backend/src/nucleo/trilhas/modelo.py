@@ -1,9 +1,11 @@
 import enum
 import uuid
+from datetime import datetime
 
 from sqlalchemy import (
     ARRAY,
     Boolean,
+    DateTime,
     Enum,
     ForeignKey,
     Index,
@@ -23,6 +25,7 @@ from ..banco import Base
 class SituacaoDaTrilha(enum.StrEnum):
     rascunho = "rascunho"
     publicada = "publicada"
+    despublicada = "despublicada"
 
 
 class Trilha(Base, ComAutoria):
@@ -31,6 +34,12 @@ class Trilha(Base, ComAutoria):
     design — decisões). O ciclo de publicação e as travas dele são do
     PRD-09; aqui nasce só a situação. `ComAutoria.autor_id` é o Mestre autor
     contra o qual a posse é conferida (`trilhas.regra.conferir_posse_da_trilha`).
+
+    `motivo_da_situacao`, `autor_da_situacao_id`, `papel_do_autor_da_situacao`
+    e `situacao_alterada_em` guardam a procedência da última mudança de
+    situação — publicação, despublicação ou republicação —, separada da
+    autoria do cadastro já gravada por `ComAutoria`, no mesmo padrão do
+    `PontoDeApoio` (`RF-09-10`, `RF-09-11`, design — decisões 3).
     """
 
     __tablename__ = "trilha"
@@ -44,6 +53,14 @@ class Trilha(Base, ComAutoria):
         Enum(SituacaoDaTrilha, native_enum=False, length=16),
         nullable=False,
         default=SituacaoDaTrilha.rascunho,
+    )
+    motivo_da_situacao: Mapped[str | None] = mapped_column(Text, nullable=True)
+    autor_da_situacao_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("persona.id"), nullable=True
+    )
+    papel_do_autor_da_situacao: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    situacao_alterada_em: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
     )
 
 

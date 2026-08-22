@@ -18,6 +18,7 @@ from .chaves.conferencia import exigir_chave_de_aplicacao
 from .chaves.rotas import roteador as roteador_de_chaves
 from .coletas.rotas import roteador as roteador_de_coletas
 from .comunidades.rotas import roteador as roteador_de_comunidades
+from .culminancias.rotas import roteador as roteador_de_culminancias
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
 from .fila.rotas import roteador as roteador_de_fila
 from .jogos.rotas import roteador as roteador_de_jogos
@@ -161,3 +162,4 @@ incluir_roteador_de_dados(app, roteador_de_trocas)
 incluir_roteador_de_dados(app, roteador_de_patrimonio)
 incluir_roteador_de_dados(app, roteador_de_recompensas_de_marco)
 incluir_roteador_de_dados(app, roteador_de_trilhas)
+incluir_roteador_de_dados(app, roteador_de_culminancias)

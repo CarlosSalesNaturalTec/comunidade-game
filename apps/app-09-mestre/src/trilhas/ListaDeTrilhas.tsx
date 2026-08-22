@@ -11,6 +11,7 @@ interface Props {
 const ROTULO_DA_SITUACAO: Record<string, string> = {
   rascunho: "Rascunho",
   publicada: "Publicada",
+  despublicada: "Despublicada",
 };
 
 // As trilhas do Mestre autor, rascunho incluso — a trilha de outro Mestre
@@ -40,6 +41,9 @@ export function ListaDeTrilhas({ trilhas, poderes, aoAbrir }: Props) {
             <p className="lista-de-trilhas__detalhe">
               {poder?.nome ?? "Poder"} · {trilha.area_do_conhecimento}
             </p>
+            {trilha.situacao === "despublicada" && trilha.motivo_da_situacao && (
+              <p className="lista-de-trilhas__motivo">{trilha.motivo_da_situacao}</p>
+            )}
             <Botao variante="secundaria" onClick={() => aoAbrir(trilha)}>
               Abrir
             </Botao>

@@ -267,6 +267,19 @@ do adulto, até então só dentro da App 03, para servir as duas. Publicação e
 template de missão, conteúdo e bibliografia, banco do Quiz, minhas turmas e lançamentos seguem
 pendentes — o PRD-09 continua **aprovado**.
 
+A segunda fatia, `culminancia-e-publicacao-da-trilha`, tirou a trilha do rascunho perpétuo:
+nasceu o módulo `culminancias` (`RF-09-29`, `RF-09-30`) e `SituacaoDaTrilha` ganhou o terceiro
+valor, `despublicada` — decisão do fundador em 2026-08-22 que fecha o `RF-09-11` e confirma o
+PRD-09 §8. `POST /trilhas/{id}/publicacao` confere as três travas juntas e recusa nomeando
+todas as pendentes de uma vez (`RF-09-05` a `RF-09-08`, `RF-09-82`); a mesma rota republica a
+trilha despublicada, sempre pelo Mestre autor, sem aprovação de Admin. `POST
+/trilhas/{id}/despublicacao` é privativa do Admin, sempre com motivo, que o Mestre autor lê em
+`GET /trilhas/minhas`; `GET /trilhas/{id}` passa a servir, em leitura pública, a trilha
+publicada, com a licença CC BY-SA e o crédito ao Mestre autor (`RF-09-09`, `RF-09-10`). A
+App 09 ganhou a tela da culminância e a ação de publicar. Etiqueta ODS, edição de trilha
+publicada, duplicar trilha, desafio de desbloqueio e validação da criação original seguem
+pendentes — o PRD-09 continua **aprovado**.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

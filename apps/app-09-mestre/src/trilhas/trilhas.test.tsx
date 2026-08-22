@@ -6,7 +6,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { TelaDeAutoria } from "../autoria/TelaDeAutoria";
 import type { PoderDoCatalogo } from "../poderes/api";
 import * as poderesApi from "../poderes/api";
-import type { AtividadeDaMissao, MissaoDaTrilha, TrilhaDoMestre } from "./api";
+import type {
+  AtividadeDaMissao,
+  CulminanciaDaTrilha,
+  MissaoDaTrilha,
+  TrilhaDoMestre,
+} from "./api";
 import * as trilhasApi from "./api";
 
 vi.mock("comum/autenticacao", async () => {
@@ -97,7 +102,19 @@ function trilha(sobrescreve: Partial<TrilhaDoMestre> = {}): TrilhaDoMestre {
     area_do_conhecimento: "Programação e Robótica",
     poder_id: "poder-guerreiro",
     situacao: "rascunho",
+    motivo_da_situacao: null,
     missoes: [],
+    ...sobrescreve,
+  };
+}
+
+function culminancia(sobrescreve: Partial<CulminanciaDaTrilha> = {}): CulminanciaDaTrilha {
+  return {
+    id: "culminancia-1",
+    trilha_id: "trilha-1",
+    descricao: "Um robô que resolve um problema da comunidade.",
+    modalidade: "individual",
+    criterio_de_validacao: "O robô precisa funcionar.",
     ...sobrescreve,
   };
 }
@@ -121,6 +138,7 @@ describe("criação de trilha (RF-09-01)", () => {
       area_do_conhecimento: "Programação e Robótica",
       poder_id: "poder-guerreiro",
       situacao: "rascunho",
+      motivo_da_situacao: null,
     });
     vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValueOnce([trilha()]);
 
@@ -580,5 +598,246 @@ describe("autoria sem jargão técnico (RF-09-12)", () => {
     // de recusa genérico — mas nunca mostra o código cru do núcleo.
     await waitFor(() => expect(trilhasApi.criarMissao).toHaveBeenCalled());
     expect(screen.queryByText(/erro_de_validacao/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("culminância da trilha (RF-09-29, RF-09-30)", () => {
+  it("Mestre declara a culminância e a tela passa a apresentá-la", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const declararCulminanciaEspiado = vi
+      .spyOn(trilhasApi, "declararCulminancia")
+      .mockResolvedValue(culminancia());
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByRole("button", { name: /declarar culminância/i }));
+    await usuario.type(
+      screen.getByLabelText(/descrição da criação esperada/i),
+      "Um robô que resolve um problema da comunidade.",
+    );
+    await usuario.selectOptions(screen.getByLabelText(/modalidade/i), "individual");
+    await usuario.type(
+      screen.getByLabelText(/critério de validação/i),
+      "O robô precisa funcionar.",
+    );
+    await usuario.click(screen.getByRole("button", { name: /^declarar culminância$/i }));
+
+    await waitFor(() => expect(declararCulminanciaEspiado).toHaveBeenCalled());
+    expect(
+      await screen.findByText(/um robô que resolve um problema da comunidade/i),
+    ).toBeInTheDocument();
+  });
+
+  it("critério de validação em falta é recusado no próprio campo", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const declararCulminanciaEspiado = vi.spyOn(trilhasApi, "declararCulminancia");
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByRole("button", { name: /declarar culminância/i }));
+    await usuario.type(
+      screen.getByLabelText(/descrição da criação esperada/i),
+      "Descrição qualquer.",
+    );
+    await usuario.selectOptions(screen.getByLabelText(/modalidade/i), "individual");
+    await usuario.click(screen.getByRole("button", { name: /^declarar culminância$/i }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(/critério de validação/i);
+    expect(declararCulminanciaEspiado).not.toHaveBeenCalled();
+  });
+
+  it("a segunda declaração substitui a anterior na tela", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ culminancia: culminancia() }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "declararCulminancia").mockResolvedValue(
+      culminancia({ descricao: "Uma horta comunitária." }),
+    );
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    expect(
+      await screen.findByText(/um robô que resolve um problema da comunidade/i),
+    ).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /alterar culminância/i }));
+    await usuario.click(screen.getByRole("button", { name: /salvar culminância/i }));
+
+    expect(await screen.findByText(/uma horta comunitária/i)).toBeInTheDocument();
+  });
+});
+
+describe("publicação da trilha (RF-09-05, RF-09-08, RF-09-82)", () => {
+  it("trilha completa é publicada pelo autor", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const publicarTrilhaEspiado = vi.spyOn(trilhasApi, "publicarTrilha").mockResolvedValue({
+      id: "trilha-1",
+      nome: "Robô Educa",
+      objetivo: "Construir o próprio robô.",
+      area_do_conhecimento: "Programação e Robótica",
+      poder_id: "poder-guerreiro",
+      situacao: "publicada",
+      motivo_da_situacao: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByRole("button", { name: /publicar trilha/i }));
+
+    await waitFor(() => expect(publicarTrilhaEspiado).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("button", { name: /publicar trilha/i }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it("a recusa diz em linguagem simples que falta a culminância", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "publicarTrilha").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "Para publicar, ainda falta declarar: a culminância.",
+      }),
+    );
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByRole("button", { name: /publicar trilha/i }));
+
+    const recusa = await screen.findByRole("alert");
+    expect(recusa).toHaveTextContent(/falta declarar: a culminância/i);
+    expect(recusa.textContent).not.toMatch(/erro_de_validacao/i);
+  });
+
+  it("a recusa lista as três travas que faltam, não apenas uma", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "publicarTrilha").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem:
+          "Para publicar, ainda falta declarar: a missão de sondagem, o desafio de " +
+          "coleta de dados reais e a culminância.",
+      }),
+    );
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByRole("button", { name: /publicar trilha/i }));
+
+    const recusa = await screen.findByRole("alert");
+    expect(recusa).toHaveTextContent(/missão de sondagem/i);
+    expect(recusa).toHaveTextContent(/desafio de coleta/i);
+    expect(recusa).toHaveTextContent(/culminância/i);
+  });
+
+  it("o Mestre republica a trilha corrigida e o motivo deixa de aparecer", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ situacao: "despublicada", motivo_da_situacao: "Conteúdo desatualizado." }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "publicarTrilha").mockResolvedValue({
+      id: "trilha-1",
+      nome: "Robô Educa",
+      objetivo: "Construir o próprio robô.",
+      area_do_conhecimento: "Programação e Robótica",
+      poder_id: "poder-guerreiro",
+      situacao: "publicada",
+      motivo_da_situacao: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    expect(await screen.findByText(/conteúdo desatualizado/i)).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /publicar trilha/i }));
+
+    await waitFor(() =>
+      expect(screen.queryByText(/conteúdo desatualizado/i)).not.toBeInTheDocument(),
+    );
+  });
+
+  it("a ação de publicar nunca aparece para trilha de outro Mestre, porque a lista já filtra por autoria", async () => {
+    // `GET /trilhas/minhas` só devolve as trilhas do próprio Mestre em
+    // sessão — a trilha de outro Mestre nunca chega a esta tela, logo a
+    // ação de publicar nunca é oferecida para ela (`RF-09-05`, mesmo
+    // fundamento da lista de trilhas).
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+
+    expect(await screen.findByText(/nenhuma trilha criada/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /publicar trilha/i })).not.toBeInTheDocument();
+  });
+});
+
+describe("situação e motivo da despublicação na lista (RF-09-04, RF-09-10)", () => {
+  it("a trilha despublicada mostra a situação e o motivo registrado pelo Admin", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ situacao: "despublicada", motivo_da_situacao: "Conteúdo desatualizado." }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+
+    expect(await screen.findByText(/despublicada/i)).toBeInTheDocument();
+    expect(screen.getByText(/conteúdo desatualizado/i)).toBeInTheDocument();
   });
 });

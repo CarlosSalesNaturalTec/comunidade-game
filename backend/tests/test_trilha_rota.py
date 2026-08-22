@@ -1,6 +1,67 @@
 from nucleo.personas.modelo import Papel
 from nucleo.poderes.modelo import NaturezaDoPoder
-from nucleo.trilhas.modelo import EtapaDoCiclo
+from nucleo.trilhas.modelo import EtapaDoCiclo, SituacaoDaTrilha
+
+
+def _criar_trilha_completa_pela_rota(cliente, cabecalhos, poder, criar_tipo_de_coleta, mestre):
+    """Trilha em rascunho que atende às três travas de publicação, montada
+    só por HTTP: sondagem, desafio de coleta e culminância."""
+    resposta_trilha = cliente.post(
+        "/v1/trilhas",
+        json={
+            "nome": "Robô Educa",
+            "objetivo": "Construir o próprio robô.",
+            "area_do_conhecimento": "Programação e Robótica",
+            "poder_id": str(poder.id),
+        },
+        headers=cabecalhos,
+    )
+    assert resposta_trilha.status_code == 201
+    trilha_id = resposta_trilha.json()["id"]
+
+    resposta_missao = cliente.post(
+        f"/v1/trilhas/{trilha_id}/missoes",
+        json={
+            "titulo": "Sondagem",
+            "posicao": 1,
+            "nivel_de_dificuldade": 1,
+            "obrigatoria": True,
+            "etapa_do_ciclo": EtapaDoCiclo.abertura.value,
+            "e_sondagem": True,
+        },
+        headers=cabecalhos,
+    )
+    assert resposta_missao.status_code == 201
+    missao_id = resposta_missao.json()["id"]
+
+    tipo_de_coleta = criar_tipo_de_coleta(mestre)
+    resposta_desafio = cliente.post(
+        "/v1/desafios-de-coleta",
+        json={
+            "missao_id": missao_id,
+            "tipo_de_coleta_id": str(tipo_de_coleta.id),
+            "cadencia": "semanal",
+            "vigencia_inicio": "2026-01-01T00:00:00-03:00",
+            "vigencia_fim": "2026-12-31T00:00:00-03:00",
+            "granularidade_exigida": "rua",
+            "registros_que_pontuam_por_periodo": 1,
+        },
+        headers=cabecalhos,
+    )
+    assert resposta_desafio.status_code == 201
+
+    resposta_culminancia = cliente.post(
+        f"/v1/trilhas/{trilha_id}/culminancia",
+        json={
+            "descricao": "Um robô que resolve um problema da comunidade.",
+            "modalidade": "individual",
+            "criterio_de_validacao": "O robô precisa funcionar.",
+        },
+        headers=cabecalhos,
+    )
+    assert resposta_culminancia.status_code == 200
+
+    return trilha_id
 
 
 def test_mestre_cria_trilha_pela_rota(
@@ -478,3 +539,222 @@ def test_fluxo_completo_de_autoria_destrava_rotas_orfas(
         headers=cabecalhos,
     )
     assert resposta_recompensa.status_code == 201
+
+
+def test_mestre_autor_publica_a_propria_trilha_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_poder, criar_tipo_de_coleta
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    trilha_id = _criar_trilha_completa_pela_rota(
+        cliente, cabecalhos, poder, criar_tipo_de_coleta, mestre
+    )
+
+    resposta = cliente.post(f"/v1/trilhas/{trilha_id}/publicacao", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    assert resposta.json()["situacao"] == "publicada"
+
+
+def test_publicacao_por_outro_mestre_e_recusada_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha
+):
+    chave, _ = criar_chave()
+    mestre_autor = criar_persona(Papel.mestre)
+    outro_mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre_autor)
+    token, _ = criar_sessao_de_teste(outro_mestre)
+
+    resposta = cliente.post(
+        f"/v1/trilhas/{trilha.id}/publicacao",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403
+
+
+def test_admin_despublica_trilha_publicada_com_motivo_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.post(
+        f"/v1/trilhas/{trilha.id}/despublicacao",
+        json={"motivo": "Conteúdo desatualizado."},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["situacao"] == "despublicada"
+    assert corpo["motivo_da_situacao"] == "Conteúdo desatualizado."
+
+
+def test_despublicacao_sem_motivo_e_recusada_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.post(
+        f"/v1/trilhas/{trilha.id}/despublicacao",
+        json={"motivo": ""},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_mestre_nao_despublica_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.post(
+        f"/v1/trilhas/{trilha.id}/despublicacao",
+        json={"motivo": "Motivo qualquer."},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403
+
+
+def test_despublicacao_de_rascunho_e_recusada_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(mestre)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.post(
+        f"/v1/trilhas/{trilha.id}/despublicacao",
+        json={"motivo": "Motivo qualquer."},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_mestre_autor_republica_trilha_corrigida_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_poder, criar_tipo_de_coleta
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    admin = criar_persona(Papel.admin)
+    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
+    token_mestre, _ = criar_sessao_de_teste(mestre)
+    token_admin, _ = criar_sessao_de_teste(admin)
+    cabecalhos_mestre = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_mestre}"}
+    cabecalhos_admin = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_admin}"}
+
+    trilha_id = _criar_trilha_completa_pela_rota(
+        cliente, cabecalhos_mestre, poder, criar_tipo_de_coleta, mestre
+    )
+    cliente.post(f"/v1/trilhas/{trilha_id}/publicacao", headers=cabecalhos_mestre)
+    resposta_despublicacao = cliente.post(
+        f"/v1/trilhas/{trilha_id}/despublicacao",
+        json={"motivo": "Corrigir a descrição."},
+        headers=cabecalhos_admin,
+    )
+    assert resposta_despublicacao.status_code == 200
+
+    resposta_republicacao = cliente.post(
+        f"/v1/trilhas/{trilha_id}/publicacao", headers=cabecalhos_mestre
+    )
+
+    assert resposta_republicacao.status_code == 200
+    corpo = resposta_republicacao.json()
+    assert corpo["situacao"] == "publicada"
+    assert corpo["motivo_da_situacao"] is None
+
+
+def test_republicacao_reconfere_as_travas_pela_rota(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.despublicada)
+    missao = criar_missao(trilha, mestre, posicao=1, e_sondagem=True)
+    criar_desafio_de_coleta(missao, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.post(
+        f"/v1/trilhas/{trilha.id}/publicacao",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 422
+    assert "culminância" in resposta.json()["mensagem"]
+
+
+def test_get_trilha_publica_serve_so_publicada(cliente, criar_chave, criar_persona, criar_trilha):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha_publicada = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    trilha_rascunho = criar_trilha(mestre, situacao=SituacaoDaTrilha.rascunho)
+    trilha_despublicada = criar_trilha(mestre, situacao=SituacaoDaTrilha.despublicada)
+
+    resposta_publicada = cliente.get(
+        f"/v1/trilhas/{trilha_publicada.id}", headers={"X-Chave-Aplicacao": chave}
+    )
+    resposta_rascunho = cliente.get(
+        f"/v1/trilhas/{trilha_rascunho.id}", headers={"X-Chave-Aplicacao": chave}
+    )
+    resposta_despublicada = cliente.get(
+        f"/v1/trilhas/{trilha_despublicada.id}", headers={"X-Chave-Aplicacao": chave}
+    )
+
+    assert resposta_publicada.status_code == 200
+    corpo = resposta_publicada.json()
+    assert corpo["licenca"] == "CC BY-SA"
+    assert corpo["situacao"] == "publicada"
+    assert resposta_rascunho.status_code == 404
+    assert resposta_despublicada.status_code == 404
+
+
+def test_motivo_da_despublicacao_aparece_em_minhas_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    token_admin, _ = criar_sessao_de_teste(admin)
+    token_mestre, _ = criar_sessao_de_teste(mestre)
+
+    cliente.post(
+        f"/v1/trilhas/{trilha.id}/despublicacao",
+        json={"motivo": "Conteúdo desatualizado."},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_admin}"},
+    )
+
+    resposta = cliente.get(
+        "/v1/trilhas/minhas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_mestre}"},
+    )
+
+    assert resposta.status_code == 200
+    trilha_na_lista = next(item for item in resposta.json() if item["id"] == str(trilha.id))
+    assert trilha_na_lista["situacao"] == "despublicada"
+    assert trilha_na_lista["motivo_da_situacao"] == "Conteúdo desatualizado."
