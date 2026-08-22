@@ -171,6 +171,14 @@ extra do PRD-09 ou do PRD-14. O documento 09 mantém ainda a pendência de **que
 ponto de apoio**, e **empréstimo de bancada e reposição solidária saíram do escopo** — o
 documento 05 já os adiava, e o PRD divergia da fonte.
 
+A pendência de **quem desativa um ponto de apoio** foi fechada depois, fora das dez fatias: a
+change `desativacao-do-ponto-de-apoio` deu ao Admin as operações de **desativar e reativar**,
+sempre com motivo, bloqueadas por **aula futura** — a recusa diz quantas — e por **saldo
+remanescente**, que sai por **transferência** entre pontos de apoio, gravada como par de
+débito e crédito, nunca como ajuste (`RF-07-47`, `RF-07-19`). O agendamento de aula passa a
+recusar ponto de apoio inativo, sem que aula já agendada perca o vínculo com ele, e a App 03
+ganhou as três telas — desativar, reativar e transferir saldo.
+
 O PRD-08 volta a **implementado**: a change `lista-publica-de-comunidades` entregou o
 `GET /comunidades` com os quatro indicadores do documento 02 §1 (`RF-08-30`, `RF-08-31`),
 última fatia do PRD-08. A pendência que a travava foi decidida — comunidade abaixo do piso sai
@@ -208,10 +216,9 @@ Mestre**, a unicidade global do nick alcança os três papéis que o têm, e a c
 disponibilidade que a porta pública usa varre **só nicks de adulto** — nunca o de Guerreiro(a),
 o oráculo que a pendência vedava. `RN-01-30` e o modelo do PRD-01 §8 já refletem a decisão; o
 documento 02 §1, o documento 11 §8.2 e o documento 09 também. `RF-14-12`, `RF-14-13` e o `RF-09-66`
-do Mestre a aplicam. O caminho de código entrou em três changes: `nick-de-adulto` entregou o
+do Mestre a aplicam. O caminho de código entrou em duas changes: `nick-de-adulto` entregou o
 núcleo; `cadastro-de-personas` expôs as rotas de cadastro de cada papel e o caminho em que o
-Admin grava o nick quando a escolha do adulto colidiu; `desativacao-do-ponto-de-apoio` fecha, à
-parte, a pendência "Desativação de ponto de apoio" do mesmo documento 09.
+Admin grava o nick quando a escolha do adulto colidiu.
 
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.

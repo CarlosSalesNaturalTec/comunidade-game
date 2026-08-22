@@ -1,0 +1,6 @@
+.mudar-situacao-do-ponto-de-apoio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  align-items: flex-start;
+}

@@ -1,3 +1,4 @@
+import uuid
 from decimal import Decimal
 
 from sqlalchemy import case, func
@@ -5,6 +6,10 @@ from sqlalchemy.orm import Session
 
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Papel, Persona
+from ..pontos_de_apoio.modelo import PontoDeApoio
+from ..recursos.modelo import TipoDeRecurso
+from ..recursos.regra import consultar_valor_de_referencia
+from ..tempo import agora
 from .modelo import DestinacaoDoAporte, Lancamento, NaturezaDoLancamento
 
 
@@ -112,6 +117,132 @@ def lancar_ajuste(
     sessao.add(ajuste)
     sessao.flush()
     return ajuste
+
+
+def transferir_saldo(
+    sessao: Session,
+    *,
+    operador: Persona,
+    tipo_de_recurso: TipoDeRecurso | None,
+    ponto_de_apoio_origem: PontoDeApoio | None,
+    ponto_de_apoio_destino: PontoDeApoio | None,
+    quantidade: Decimal | None,
+    motivo: str | None,
+) -> tuple[Lancamento, Lancamento]:
+    """Só Admin transfere, e move recurso que existe e está certo — por isso
+    não é `ajuste`, que corrige erro (`RF-07-19`, `RN-07-15`, design —
+    Decisions 1). Grava um débito na origem e um crédito no destino, na
+    mesma operação, com o mesmo tipo de recurso, quantidade, moedas, motivo,
+    autoria e momento; os dois `id` são gerados antes da inserção para que
+    cada lançamento já nasça referenciando o outro (`lancamento_relacionado_id`
+    é `DEFERRABLE`, design — Decisions 1). `valor_em_moedas` é derivado da
+    vigência de hoje do valor de referência do tipo, pela mesma régua de
+    `aportes/regra.py`: a tela de transferência não pede o valor à mão."""
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin transfere saldo entre pontos de apoio.")
+    if ponto_de_apoio_origem is None:
+        raise ErroDeValidacao(
+            mensagem="Transferência exige o ponto de apoio de origem.",
+            campo="ponto_de_apoio_origem_id",
+        )
+    if ponto_de_apoio_destino is None:
+        raise ErroDeValidacao(
+            mensagem="Transferência exige o ponto de apoio de destino.",
+            campo="ponto_de_apoio_destino_id",
+        )
+    if ponto_de_apoio_origem.id == ponto_de_apoio_destino.id:
+        raise ErroDeValidacao(
+            mensagem="Origem e destino da transferência não podem ser o mesmo ponto de apoio.",
+            campo="ponto_de_apoio_destino_id",
+        )
+    if tipo_de_recurso is None:
+        raise ErroDeValidacao(
+            mensagem="Transferência exige o tipo de recurso.", campo="tipo_de_recurso_id"
+        )
+    if quantidade is None or quantidade <= 0:
+        raise ErroDeValidacao(
+            mensagem="Transferência exige quantidade maior que zero.", campo="quantidade"
+        )
+    if not motivo or not motivo.strip():
+        raise ErroDeValidacao(mensagem="Transferência exige motivo.", campo="motivo")
+    if not ponto_de_apoio_destino.ativo:
+        raise ErroDeValidacao(
+            mensagem="O ponto de apoio de destino está inativo.",
+            campo="ponto_de_apoio_destino_id",
+        )
+
+    saldo_na_origem = saldo_de(
+        sessao, tipo_de_recurso_id=tipo_de_recurso.id, ponto_de_apoio_id=ponto_de_apoio_origem.id
+    )
+    if quantidade > saldo_na_origem:
+        raise ErroDeValidacao(
+            mensagem=f"Saldo insuficiente na origem: disponível {saldo_na_origem}.",
+            campo="quantidade",
+        )
+
+    momento = agora()
+    referencia = consultar_valor_de_referencia(sessao, tipo=tipo_de_recurso, data=momento.date())
+    if referencia is None:
+        raise ErroDeValidacao(
+            mensagem="Nenhuma vigência do valor de referência cobre a data de hoje.",
+            campo="tipo_de_recurso_id",
+        )
+    valor_em_moedas = (quantidade * referencia.valor_em_moedas).quantize(Decimal("0.01"))
+
+    id_do_debito = uuid.uuid4()
+    id_do_credito = uuid.uuid4()
+
+    debito = Lancamento(
+        id=id_do_debito,
+        natureza=NaturezaDoLancamento.debito,
+        tipo_de_recurso_id=tipo_de_recurso.id,
+        ponto_de_apoio_id=ponto_de_apoio_origem.id,
+        quantidade=quantidade,
+        valor_em_moedas=valor_em_moedas,
+        lancamento_relacionado_id=id_do_credito,
+        autor_id=operador.id,
+        papel_do_autor=operador.papel.value,
+        registrado_em=momento,
+    )
+    credito = Lancamento(
+        id=id_do_credito,
+        natureza=NaturezaDoLancamento.credito,
+        tipo_de_recurso_id=tipo_de_recurso.id,
+        ponto_de_apoio_id=ponto_de_apoio_destino.id,
+        quantidade=quantidade,
+        valor_em_moedas=valor_em_moedas,
+        lancamento_relacionado_id=id_do_debito,
+        autor_id=operador.id,
+        papel_do_autor=operador.papel.value,
+        registrado_em=momento,
+    )
+    sessao.add(debito)
+    sessao.add(credito)
+    sessao.flush()
+    return debito, credito
+
+
+def saldos_por_ponto_de_apoio(
+    sessao: Session, *, ponto_de_apoio_id
+) -> list[tuple[uuid.UUID, Decimal]]:
+    """Todo tipo de recurso com saldo não nulo neste ponto de apoio, cada um
+    recontado por `saldo_de` — usado pela desativação, que bloqueia enquanto
+    restar saldo, e pela tela de transferência, que mostra o disponível
+    antes de confirmar (`RF-07-47`, `RF-07-19`)."""
+    tipos_ids = (
+        sessao.query(Lancamento.tipo_de_recurso_id)
+        .filter(Lancamento.ponto_de_apoio_id == ponto_de_apoio_id)
+        .distinct()
+        .all()
+    )
+    resultado = []
+    for (tipo_de_recurso_id,) in tipos_ids:
+        saldo = saldo_de(
+            sessao, tipo_de_recurso_id=tipo_de_recurso_id, ponto_de_apoio_id=ponto_de_apoio_id
+        )
+        if saldo != 0:
+            resultado.append((tipo_de_recurso_id, saldo))
+    return resultado
 
 
 def saldo_de(sessao: Session, *, tipo_de_recurso_id, ponto_de_apoio_id) -> Decimal:

@@ -285,6 +285,8 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
 | `RF-02-50` | Aplicação mostra a entrega do exemplar Alpha confirmada pelo Mestre, com a baixa definitiva        | essencial  |
 | `RF-02-51` | Aplicação mostra a entrega da camisa confirmada pelo Mestre ao Guerreiro(a) inscrito, com a baixa  | essencial  |
 | `RF-02-52` | Admin tomba o exemplar permanente com título, tombo, ponto de apoio e responsável designado        | essencial  |
+| `RF-02-96` | Admin desativa e reativa ponto de apoio, sempre com motivo; a lista distingue o inativo do ativo   | essencial  |
+| `RF-02-97` | Admin transfere saldo de um tipo de recurso entre pontos de apoio, com o saldo da origem mostrado  | essencial  |
 | `RF-02-53` | Aplicação mantém a ficha de vida do exemplar, com estado de conservação e histórico de uso         | essencial  |
 | `RF-02-55` | Perda ou dano é anotado na ficha de vida, sem débito ao Guerreiro(a) nem à família                 | essencial  |
 | `RF-02-56` | Admin realiza a conferência de inventário do módulo e publica o resultado na prestação de contas   | desejável  |
@@ -526,6 +528,7 @@ contar, e dá à gestão a distribuição etária que **H4** observa.
 | Amostra da auditoria de coleta: 10% da semana por série ativa, mínimo de um                   | 02 §1              | Composição da amostra de auditoria de coleta   |
 | Pontuação da atividade vem do motor do documento 11; o cadastro escolhe o tipo                | 11 §5              | Pontuação da atividade cadastrada              |
 | Acervo permanente no Ciclo 01: tombamento, ficha de vida e badge                              | 05 §3              | Estratégia de conservação do acervo permanente |
+| Admin desativa e reativa ponto de apoio, bloqueado por aula futura e por saldo remanescente   | 05 §2              | Desativação de ponto de apoio                  |
 
 A **trilha de auditoria das ações de Admin**, questão que o documento 08 listava para este PRD,
 foi definida no PRD-01 — a App 03 apenas a consulta.
@@ -563,6 +566,7 @@ freio por origem: 3 envios por hora, com atraso progressivo e sem CAPTCHA (docum
 | `RF-02-37` a `RF-02-40` | 02 §4, 05 §3 e 13 (pontuação negativa e ajuste)          |
 | `RF-02-41` a `RF-02-49` | 05 §4 e 03 §5 (encontro assíncrono e painel do dia)      |
 | `RF-02-50` a `RF-02-56` | 05 §3 e PRD-07 (acervo, regime misto e patrimônio)       |
+| `RF-02-96` e `RF-02-97` | 05 §2 e PRD-07 (desativação, reativação e transferência) |
 | `RF-02-57` e `RF-02-58` | 04 §1 e PRD-07 (aportes e necessidades)                  |
 | `RF-02-59` a `RF-02-62` | 05 §5 (Quiz ao Vivo)                                     |
 | `RF-02-72` e `RF-02-73` | 05 §5 e 11 §5 (regras e pontuação da partida)            |

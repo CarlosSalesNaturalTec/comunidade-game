@@ -1,9 +1,19 @@
+from datetime import UTC, datetime, timedelta
+from decimal import Decimal
+
 import pytest
 
+from nucleo.aulas.regra import cancelar_aula
 from nucleo.erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
+from nucleo.livro_razao.regra import lancar_credito, saldo_de, transferir_saldo
 from nucleo.personas.modelo import Papel
 from nucleo.pontos_de_apoio.modelo import PontoDeApoio
-from nucleo.pontos_de_apoio.regra import cadastrar_ponto_de_apoio, designar_responsavel
+from nucleo.pontos_de_apoio.regra import (
+    cadastrar_ponto_de_apoio,
+    desativar_ponto_de_apoio,
+    designar_responsavel,
+    reativar_ponto_de_apoio,
+)
 
 
 def test_admin_cadastra_ponto_de_apoio_com_autoria_gravada(sessao, criar_persona, criar_comunidade):
@@ -281,3 +291,290 @@ def test_listagem_de_pontos_de_apoio_sem_filtro_de_comunidade_e_422(
     )
 
     assert resposta.status_code == 422
+
+
+def test_admin_desativa_ponto_de_apoio_gravando_motivo_e_autoria(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+
+    resultado = desativar_ponto_de_apoio(
+        sessao, ponto_de_apoio, operador=admin, motivo="Fechou o espaço."
+    )
+    sessao.commit()
+
+    assert resultado.ativo is False
+    assert resultado.motivo_da_situacao == "Fechou o espaço."
+    assert resultado.autor_da_situacao_id == admin.id
+    assert resultado.papel_do_autor_da_situacao == Papel.admin.value
+    assert resultado.situacao_alterada_em is not None
+
+
+def test_admin_reativa_ponto_de_apoio(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    desativar_ponto_de_apoio(sessao, ponto_de_apoio, operador=admin, motivo="Fechou o espaço.")
+    sessao.commit()
+
+    resultado = reativar_ponto_de_apoio(
+        sessao, ponto_de_apoio, operador=admin, motivo="Reabriu o espaço."
+    )
+    sessao.commit()
+
+    assert resultado.ativo is True
+    assert resultado.motivo_da_situacao == "Reabriu o espaço."
+
+
+def test_mestre_nao_desativa_ponto_de_apoio(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+
+    with pytest.raises(PermissaoNegada):
+        desativar_ponto_de_apoio(sessao, ponto_de_apoio, operador=mestre, motivo="Fechou o espaço.")
+    assert ponto_de_apoio.ativo is True
+
+
+def test_desativacao_sem_motivo_e_recusada(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        desativar_ponto_de_apoio(sessao, ponto_de_apoio, operador=admin, motivo=None)
+    assert excinfo.value.campo == "motivo"
+    assert ponto_de_apoio.ativo is True
+
+
+def test_desativar_ponto_ja_inativo_e_recusado(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    desativar_ponto_de_apoio(sessao, ponto_de_apoio, operador=admin, motivo="Fechou o espaço.")
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        desativar_ponto_de_apoio(sessao, ponto_de_apoio, operador=admin, motivo="De novo.")
+    assert excinfo.value.campo == "ativo"
+
+
+def test_reativar_ponto_ja_ativo_e_recusado(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        reativar_ponto_de_apoio(sessao, ponto_de_apoio, operador=admin, motivo="Já está ativo.")
+    assert excinfo.value.campo == "ativo"
+
+
+def test_aula_passada_continua_apontando_o_ponto_desativado(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio, criar_aula
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    passado = datetime.now(UTC) - timedelta(days=2)
+    aula_passada = criar_aula(
+        admin,
+        comunidade,
+        ponto_de_apoio=ponto_de_apoio,
+        inicio_em=passado,
+        fim_em=passado + timedelta(hours=1),
+    )
+
+    resultado = desativar_ponto_de_apoio(
+        sessao, ponto_de_apoio, operador=admin, motivo="Fechou o espaço."
+    )
+    sessao.commit()
+    sessao.refresh(aula_passada)
+
+    assert resultado.ativo is False
+    assert aula_passada.ponto_de_apoio_id == ponto_de_apoio.id
+
+
+def test_ponto_de_apoio_com_aula_futura_nao_e_desativado(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio, criar_aula
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    futuro = datetime.now(UTC) + timedelta(days=1)
+    criar_aula(
+        admin,
+        comunidade,
+        ponto_de_apoio=ponto_de_apoio,
+        inicio_em=futuro,
+        fim_em=futuro + timedelta(hours=1),
+    )
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        desativar_ponto_de_apoio(sessao, ponto_de_apoio, operador=admin, motivo="Fechou o espaço.")
+    assert excinfo.value.campo == "aulas_futuras"
+    assert "1" in excinfo.value.mensagem
+    assert ponto_de_apoio.ativo is True
+
+
+def test_aula_ja_realizada_ou_cancelada_nao_bloqueia(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio, criar_aula
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    passado = datetime.now(UTC) - timedelta(days=1)
+    criar_aula(
+        admin,
+        comunidade,
+        ponto_de_apoio=ponto_de_apoio,
+        inicio_em=passado,
+        fim_em=passado + timedelta(hours=1),
+    )
+    futuro = datetime.now(UTC) + timedelta(days=1)
+    aula_cancelada = criar_aula(
+        admin,
+        comunidade,
+        ponto_de_apoio=ponto_de_apoio,
+        inicio_em=futuro,
+        fim_em=futuro + timedelta(hours=1),
+    )
+    cancelar_aula(sessao, operador=admin, aula=aula_cancelada, motivo="Não vai mais acontecer.")
+    sessao.commit()
+
+    resultado = desativar_ponto_de_apoio(
+        sessao, ponto_de_apoio, operador=admin, motivo="Fechou o espaço."
+    )
+    sessao.commit()
+
+    assert resultado.ativo is False
+
+
+def test_cancelada_a_aula_a_desativacao_passa(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio, criar_aula
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    futuro = datetime.now(UTC) + timedelta(days=1)
+    aula = criar_aula(
+        admin,
+        comunidade,
+        ponto_de_apoio=ponto_de_apoio,
+        inicio_em=futuro,
+        fim_em=futuro + timedelta(hours=1),
+    )
+
+    with pytest.raises(ErroDeValidacao):
+        desativar_ponto_de_apoio(sessao, ponto_de_apoio, operador=admin, motivo="Fechou o espaço.")
+
+    cancelar_aula(sessao, operador=admin, aula=aula, motivo="Não vai mais acontecer.")
+    sessao.commit()
+
+    resultado = desativar_ponto_de_apoio(
+        sessao, ponto_de_apoio, operador=admin, motivo="Fechou o espaço."
+    )
+    sessao.commit()
+
+    assert resultado.ativo is False
+
+
+def test_ponto_de_apoio_com_saldo_nao_e_desativado(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio, criar_tipo_de_recurso
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    tipo = criar_tipo_de_recurso(admin)
+    lancar_credito(
+        sessao,
+        tipo_de_recurso_id=tipo.id,
+        ponto_de_apoio_id=ponto_de_apoio.id,
+        quantidade=Decimal("3.00"),
+        valor_em_moedas=Decimal("3.00"),
+        operador=admin,
+    )
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        desativar_ponto_de_apoio(sessao, ponto_de_apoio, operador=admin, motivo="Fechou o espaço.")
+    assert excinfo.value.campo == "saldo"
+    assert tipo.nome in excinfo.value.mensagem
+    assert ponto_de_apoio.ativo is True
+
+
+def test_transferido_o_saldo_a_desativacao_passa(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_valor_de_referencia,
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    origem = criar_ponto_de_apoio(admin, comunidade, nome="Origem")
+    destino = criar_ponto_de_apoio(admin, comunidade, nome="Destino")
+    tipo = criar_tipo_de_recurso(admin)
+    criar_valor_de_referencia(admin, tipo, valor_em_moedas=Decimal("1.00"))
+    lancar_credito(
+        sessao,
+        tipo_de_recurso_id=tipo.id,
+        ponto_de_apoio_id=origem.id,
+        quantidade=Decimal("3.00"),
+        valor_em_moedas=Decimal("3.00"),
+        operador=admin,
+    )
+    sessao.commit()
+
+    transferir_saldo(
+        sessao,
+        operador=admin,
+        tipo_de_recurso=tipo,
+        ponto_de_apoio_origem=origem,
+        ponto_de_apoio_destino=destino,
+        quantidade=Decimal("3.00"),
+        motivo="Esvazia para desativar.",
+    )
+    sessao.commit()
+
+    resultado = desativar_ponto_de_apoio(sessao, origem, operador=admin, motivo="Fechou o espaço.")
+    sessao.commit()
+
+    assert resultado.ativo is False
+
+
+def test_saldo_nao_e_zerado_ao_recusar_a_desativacao(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio, criar_tipo_de_recurso
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    tipo = criar_tipo_de_recurso(admin)
+    lancar_credito(
+        sessao,
+        tipo_de_recurso_id=tipo.id,
+        ponto_de_apoio_id=ponto_de_apoio.id,
+        quantidade=Decimal("3.00"),
+        valor_em_moedas=Decimal("3.00"),
+        operador=admin,
+    )
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao):
+        desativar_ponto_de_apoio(sessao, ponto_de_apoio, operador=admin, motivo="Fechou o espaço.")
+
+    saldo = saldo_de(sessao, tipo_de_recurso_id=tipo.id, ponto_de_apoio_id=ponto_de_apoio.id)
+    assert saldo == Decimal("3.00")

@@ -39,7 +39,8 @@ def agendar_aula(
 ) -> Aula:
     """Restrita ao Admin — o Mestre lê o painel do dia, mas não escreve em
     gestão (`RF-01-20`, `RF-01-16`, `RF-01-03`, PRD-01 §4). O ponto de apoio
-    declarado precisa ser da mesma comunidade da aula (`RF-01-71`,
+    declarado precisa ser da mesma comunidade da aula e estar **ativo**:
+    espaço desativado não recebe aula nova (`RF-01-71`, `RF-07-47`,
     `RN-07-33`, invariante 4 do documento 99 §6).
 
     Os recursos declarados disparam a reserva na mesma operação: havendo
@@ -58,6 +59,11 @@ def agendar_aula(
     if ponto_de_apoio.comunidade_virtual_id != comunidade.id:
         raise ErroDeValidacao(
             mensagem="O ponto de apoio precisa ser da mesma comunidade da aula.",
+            campo="ponto_de_apoio_id",
+        )
+    if not ponto_de_apoio.ativo:
+        raise ErroDeValidacao(
+            mensagem="O ponto de apoio está inativo e não recebe aula nova.",
             campo="ponto_de_apoio_id",
         )
     if inicio_em is None:

@@ -34,6 +34,11 @@ equipamentos.
 - **Guarda do acervo didático** (§3): os 46 exemplares permanentes são distribuídos entre os
   pontos de apoio, com controle de quantos estão em cada local e em que estado. Os 30 kits MDF
   ficam em estoque de oficina, com saldo visível no painel do dia.
+- **Desativação do ponto de apoio**: o **Admin** desativa e reativa, sempre com motivo
+  registrado. A desativação é **bloqueada** enquanto houver aula futura agendada ali ou saldo
+  ainda guardado — o saldo sai por **transferência** para outro ponto de apoio antes de o
+  espaço fechar. Desativar não é excluir: aula passada e lançamento continuam apontando o
+  ponto de apoio, e ele deixa apenas de ser escolhível no agendamento de aula nova.
 
 ## 3. Acervo didático — inventário, posse e conservação
 

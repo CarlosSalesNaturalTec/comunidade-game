@@ -14,6 +14,7 @@ from nucleo.aulas.regra import (
 )
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
 from nucleo.personas.modelo import Papel
+from nucleo.pontos_de_apoio.regra import desativar_ponto_de_apoio
 from nucleo.reservas.modelo import EstadoDaReserva, Reserva
 
 INICIO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
@@ -93,6 +94,28 @@ def test_aula_sem_ponto_de_apoio_e_recusada(sessao, criar_persona, criar_comunid
             operador=admin,
             comunidade=comunidade,
             ponto_de_apoio=None,
+            inicio_em=INICIO,
+            fim_em=FIM,
+        )
+    assert excinfo.value.campo == "ponto_de_apoio_id"
+    assert sessao.query(Aula).count() == 0
+
+
+def test_aula_com_ponto_de_apoio_inativo_e_recusada(
+    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    desativar_ponto_de_apoio(sessao, ponto_de_apoio, operador=admin, motivo="Fechou o espaço.")
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        agendar_aula(
+            sessao,
+            operador=admin,
+            comunidade=comunidade,
+            ponto_de_apoio=ponto_de_apoio,
             inicio_em=INICIO,
             fim_em=FIM,
         )

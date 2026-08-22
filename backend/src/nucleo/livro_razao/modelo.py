@@ -41,6 +41,13 @@ class Lancamento(Base, ComAutoria):
     antes desta coluna fica sem aula, por ser somente inserção
     (`RF-07-16`, `RN-07-15`, design — Decisions 3, 4).
 
+    `lancamento_relacionado_id` só existe no par de uma **transferência**
+    entre pontos de apoio: o débito na origem e o crédito no destino se
+    referenciam mutuamente, cada um já sabendo o `id` do outro desde a
+    criação — a coluna é `DEFERRABLE INITIALLY DEFERRED` porque os dois só
+    existem, um para o outro, dentro da mesma operação, e `lancamento` é
+    somente inserção (`RF-07-19`, `RN-07-15`, design — Decisions 1).
+
     `destinacao` herda a do aporte que gerou o crédito, e o ajuste herda a
     do lançamento que referencia — é a coluna local que `saldo_de` filtra,
     sem junção com `aporte` (`RF-07-23`, `RN-07-38`, design — Decisions 2).
@@ -67,6 +74,11 @@ class Lancamento(Base, ComAutoria):
         Uuid, ForeignKey("lancamento.id"), nullable=True
     )
     motivo_do_ajuste: Mapped[str | None] = mapped_column(Text, nullable=True)
+    lancamento_relacionado_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid,
+        ForeignKey("lancamento.id", deferrable=True, initially="DEFERRED"),
+        nullable=True,
+    )
     aula_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=True)
     destinacao: Mapped[DestinacaoDoAporte] = mapped_column(
         Enum(DestinacaoDoAporte, native_enum=False, length=16),
