@@ -1,7 +1,7 @@
+import { ehRecusaDeSessao } from "comum/api";
+import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
-import { ehRecusaDeSessao } from "../api/cliente";
-import { useSessao } from "../autenticacao/ContextoDeSessao";
 import { listarPoderes, type PoderDaLista } from "./api";
 import { FormularioDePoder } from "./FormularioDePoder";
 import { ListaDePoderes } from "./ListaDePoderes";

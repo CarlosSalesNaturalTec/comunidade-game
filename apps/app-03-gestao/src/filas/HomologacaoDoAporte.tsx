@@ -1,8 +1,8 @@
+import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
+import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useEffect, useId, useState } from "react";
-import { ErroDaApi, ehRecusaDeSessao } from "../api/cliente";
 import { type AporteHomologado, homologarAporte } from "../aportes/api";
-import { useSessao } from "../autenticacao/ContextoDeSessao";
 import { type ComunidadeDaLista, listarComunidades } from "../comunidades/api";
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "../pontos-de-apoio/api";
 import { listarTiposDeRecurso, type TipoDeRecurso } from "../recursos/api";

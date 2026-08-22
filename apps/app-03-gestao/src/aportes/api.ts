@@ -1,4 +1,4 @@
-import { chamarNucleo } from "../api/cliente";
+import { chamarNucleo } from "comum/api";
 
 export interface AporteHomologado {
   id: string;

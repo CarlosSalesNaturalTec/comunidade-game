@@ -1,6 +1,6 @@
+import { useSessao } from "comum/autenticacao";
 import { Botao, Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
-import { useSessao } from "../autenticacao/ContextoDeSessao";
 import { FormularioDeAdmin } from "./FormularioDeAdmin";
 import { FormularioDeResponsavel } from "./FormularioDeResponsavel";
 import { TelaDeAdultos } from "./TelaDeAdultos";

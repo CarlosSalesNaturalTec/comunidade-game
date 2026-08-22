@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { SessaoAberta } from "../autenticacao/ContextoDeSessao";
 import type { ChaveDeAplicacao } from "./api";
 import * as chavesApi from "./api";
 import { TelaDeChaves } from "./TelaDeChaves";
@@ -25,17 +25,16 @@ function chaveDeAplicacao(parcial: Partial<ChaveDeAplicacao> = {}): ChaveDeAplic
   };
 }
 
-vi.mock("../autenticacao/ContextoDeSessao", async () => {
-  const real = await vi.importActual<typeof import("../autenticacao/ContextoDeSessao")>(
-    "../autenticacao/ContextoDeSessao",
-  );
+vi.mock("comum/autenticacao", async () => {
+  const real =
+    await vi.importActual<typeof import("comum/autenticacao")>("comum/autenticacao");
   return {
     ...real,
     useSessao: vi.fn(),
   };
 });
 
-import { useSessao } from "../autenticacao/ContextoDeSessao";
+import { useSessao } from "comum/autenticacao";
 
 function configurarSessao(sessao: SessaoAberta | null) {
   vi.mocked(useSessao).mockReturnValue({

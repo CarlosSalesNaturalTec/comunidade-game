@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { chamarNucleo, ErroDaApi, ehRecusaDeChave, ehRecusaDeSessao } from "./cliente";
+import {
+  chamarNucleo,
+  configurarAcessoAoNucleo,
+  ErroDaApi,
+  ehRecusaDeChave,
+  ehRecusaDeSessao,
+} from "./cliente";
 
 function respostaMock(status: number, corpo: unknown) {
   return {
@@ -12,6 +18,10 @@ function respostaMock(status: number, corpo: unknown) {
 describe("chamarNucleo", () => {
   beforeEach(() => {
     vi.stubGlobal("fetch", vi.fn());
+    configurarAcessoAoNucleo({
+      chaveDeAplicacao: "chave-de-teste",
+      urlDoNucleo: "https://nucleo.teste",
+    });
   });
 
   afterEach(() => {
@@ -25,7 +35,7 @@ describe("chamarNucleo", () => {
 
     const [, opcoes] = vi.mocked(fetch).mock.calls[0];
     const cabecalhos = opcoes?.headers as Record<string, string>;
-    expect(cabecalhos["X-Chave-Aplicacao"]).toBeDefined();
+    expect(cabecalhos["X-Chave-Aplicacao"]).toBe("chave-de-teste");
   });
 
   it("leva a sessão em Authorization: Bearer quando um token é passado", async () => {
@@ -73,5 +83,42 @@ describe("chamarNucleo", () => {
 
     expect(erroDeChave).toBeInstanceOf(ErroDaApi);
     expect(erroDeSessao).toBeInstanceOf(ErroDaApi);
+  });
+
+  it("duas aplicações levam cada uma a própria chave", async () => {
+    vi.mocked(fetch).mockResolvedValue(respostaMock(200, { ok: true }));
+
+    configurarAcessoAoNucleo({
+      chaveDeAplicacao: "chave-da-app-09",
+      urlDoNucleo: "https://x",
+    });
+    await chamarNucleo("/v1/trilhas/minhas");
+
+    const [, opcoes] = vi.mocked(fetch).mock.calls[0];
+    const cabecalhos = opcoes?.headers as Record<string, string>;
+    expect(cabecalhos["X-Chave-Aplicacao"]).toBe("chave-da-app-09");
+  });
+});
+
+describe("chamarNucleo sem configuração", () => {
+  // O módulo guarda a configuração em variável de topo de arquivo — este
+  // teste roda isolado (`vi.resetModules`) para não herdar a configuração
+  // que os `beforeEach` acima já aplicaram (design — decisão 6).
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+    vi.resetModules();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("falha explícito em vez de chamar o núcleo com chave vazia", async () => {
+    const { chamarNucleo: chamarNucleoNaoConfigurado } = await import("./cliente");
+
+    await expect(chamarNucleoNaoConfigurado("/v1/comunidades")).rejects.toThrow(
+      /configurarAcessoAoNucleo/,
+    );
+    expect(fetch).not.toHaveBeenCalled();
   });
 });

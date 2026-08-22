@@ -1,7 +1,7 @@
+import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
+import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao } from "comum/react";
 import { type FormEvent, useId, useState } from "react";
-import { ErroDaApi, ehRecusaDeSessao } from "../api/cliente";
-import { useSessao } from "../autenticacao/ContextoDeSessao";
 import { avaliarSolicitacaoDeDados, type SolicitacaoDeDados } from "./api";
 
 interface Props {
