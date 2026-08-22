@@ -6,7 +6,7 @@ from nucleo.trilhas.modelo import Atividade, FormatoDeAtividade, ModalidadeDeAti
 from nucleo.trilhas.regra import criar_atividade
 
 
-def test_atividade_criada_dentro_de_uma_missao(sessao, criar_persona, criar_trilha, criar_missao):
+def test_atividade_criada_com_titulo_e_descricao(sessao, criar_persona, criar_trilha, criar_missao):
     mestre = criar_persona(Papel.mestre)
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
@@ -15,6 +15,8 @@ def test_atividade_criada_dentro_de_uma_missao(sessao, criar_persona, criar_tril
         sessao,
         operador=mestre,
         missao=missao,
+        titulo="Montagem do robô",
+        descricao="Montar o chassi e conectar os sensores.",
         modalidade=ModalidadeDeAtividade.individual,
         formato=FormatoDeAtividade.presencial,
         natureza="construcao",
@@ -23,8 +25,50 @@ def test_atividade_criada_dentro_de_uma_missao(sessao, criar_persona, criar_tril
     sessao.commit()
 
     assert atividade.missao_id == missao.id
+    assert atividade.titulo == "Montagem do robô"
+    assert atividade.descricao == "Montar o chassi e conectar os sensores."
     assert atividade.autor_id == mestre.id
     assert atividade.registrado_em is not None
+
+
+def test_atividade_sem_descricao_e_aceita(sessao, criar_persona, criar_trilha, criar_missao):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    atividade = criar_atividade(
+        sessao,
+        operador=mestre,
+        missao=missao,
+        titulo="Montagem do robô",
+        modalidade=ModalidadeDeAtividade.individual,
+        formato=FormatoDeAtividade.presencial,
+        natureza="construcao",
+        producao_esperada="Construir o próprio robô.",
+    )
+    sessao.commit()
+
+    assert atividade.descricao is None
+
+
+def test_atividade_sem_titulo_e_recusada(sessao, criar_persona, criar_trilha, criar_missao):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        criar_atividade(
+            sessao,
+            operador=mestre,
+            missao=missao,
+            titulo=None,
+            modalidade=ModalidadeDeAtividade.individual,
+            formato=FormatoDeAtividade.presencial,
+            natureza="construcao",
+            producao_esperada="Construir algo.",
+        )
+    assert excinfo.value.campo == "titulo"
+    assert sessao.query(Atividade).count() == 0
 
 
 def test_atividade_sem_missao_e_recusada(sessao, criar_persona):
@@ -35,6 +79,7 @@ def test_atividade_sem_missao_e_recusada(sessao, criar_persona):
             sessao,
             operador=mestre,
             missao=None,
+            titulo="Atividade",
             modalidade=ModalidadeDeAtividade.individual,
             formato=FormatoDeAtividade.presencial,
             natureza="construcao",
@@ -55,6 +100,7 @@ def test_mestre_que_nao_e_autor_e_recusado(sessao, criar_persona, criar_trilha, 
             sessao,
             operador=outro_mestre,
             missao=missao,
+            titulo="Atividade",
             modalidade=ModalidadeDeAtividade.individual,
             formato=FormatoDeAtividade.presencial,
             natureza="construcao",
@@ -72,6 +118,7 @@ def test_eixos_se_combinam_livremente(sessao, criar_persona, criar_trilha, criar
         sessao,
         operador=mestre,
         missao=missao,
+        titulo="Batalha",
         modalidade=ModalidadeDeAtividade.em_equipe,
         formato=FormatoDeAtividade.presencial,
         natureza="construcao",
@@ -94,6 +141,7 @@ def test_atividade_sem_modalidade_e_recusada(sessao, criar_persona, criar_trilha
             sessao,
             operador=mestre,
             missao=missao,
+            titulo="Atividade",
             modalidade=None,
             formato=FormatoDeAtividade.presencial,
             natureza="construcao",
@@ -113,6 +161,7 @@ def test_atividade_sem_formato_e_recusada(sessao, criar_persona, criar_trilha, c
             sessao,
             operador=mestre,
             missao=missao,
+            titulo="Atividade",
             modalidade=ModalidadeDeAtividade.individual,
             formato=None,
             natureza="construcao",
@@ -131,6 +180,7 @@ def test_natureza_nova_e_aceita(sessao, criar_persona, criar_trilha, criar_missa
         sessao,
         operador=mestre,
         missao=missao,
+        titulo="Atividade",
         modalidade=ModalidadeDeAtividade.individual,
         formato=FormatoDeAtividade.presencial,
         natureza="expressao_artistica",
@@ -150,6 +200,7 @@ def test_natureza_e_normalizada_antes_de_gravar(sessao, criar_persona, criar_tri
         sessao,
         operador=mestre,
         missao=missao,
+        titulo="Atividade",
         modalidade=ModalidadeDeAtividade.individual,
         formato=FormatoDeAtividade.presencial,
         natureza="  Construção  ",
@@ -172,6 +223,7 @@ def test_modalidade_fora_dos_valores_previstos_e_recusada(
             sessao,
             operador=mestre,
             missao=missao,
+            titulo="Atividade",
             modalidade="modalidade-inexistente",
             formato=FormatoDeAtividade.presencial,
             natureza="construcao",
@@ -193,6 +245,7 @@ def test_formato_fora_dos_valores_previstos_e_recusada(
             sessao,
             operador=mestre,
             missao=missao,
+            titulo="Atividade",
             modalidade=ModalidadeDeAtividade.individual,
             formato="formato-inexistente",
             natureza="construcao",
@@ -212,6 +265,7 @@ def test_atividade_sem_natureza_e_recusada(sessao, criar_persona, criar_trilha, 
             sessao,
             operador=mestre,
             missao=missao,
+            titulo="Atividade",
             modalidade=ModalidadeDeAtividade.individual,
             formato=FormatoDeAtividade.presencial,
             natureza="",
@@ -230,6 +284,7 @@ def test_atividade_com_producao_declarada(sessao, criar_persona, criar_trilha, c
         sessao,
         operador=mestre,
         missao=missao,
+        titulo="Atividade",
         modalidade=ModalidadeDeAtividade.individual,
         formato=FormatoDeAtividade.presencial,
         natureza="construcao",
@@ -250,6 +305,7 @@ def test_atividade_sem_producao_e_recusada(sessao, criar_persona, criar_trilha, 
             sessao,
             operador=mestre,
             missao=missao,
+            titulo="Atividade",
             modalidade=ModalidadeDeAtividade.individual,
             formato=FormatoDeAtividade.presencial,
             natureza="construcao",

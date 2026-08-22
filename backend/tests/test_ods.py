@@ -30,6 +30,7 @@ def _lancar_resultado(sessao, *, mestre, guerreiro, missao):
         sessao,
         operador=mestre,
         missao=missao,
+        titulo="Atividade de Teste",
         modalidade=ModalidadeDeAtividade.individual,
         formato=FormatoDeAtividade.presencial,
         natureza="construcao",

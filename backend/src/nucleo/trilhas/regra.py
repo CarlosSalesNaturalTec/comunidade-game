@@ -8,6 +8,7 @@ from ..personas.modelo import Papel, Persona
 from ..poderes.modelo import NaturezaDoPoder, Poder
 from .modelo import (
     Atividade,
+    EtapaDoCiclo,
     FormatoDeAtividade,
     Missao,
     ModalidadeDeAtividade,
@@ -88,25 +89,38 @@ def criar_missao(
     *,
     operador: Persona,
     trilha: Trilha | None,
+    titulo: str | None,
     posicao: int,
     nivel_de_dificuldade: int,
     obrigatoria: bool | None,
+    etapa_do_ciclo: str | None,
     e_sondagem: bool = False,
+    cadencia_de_retomada: list[int] | None = None,
 ) -> Missao:
     """A dificuldade é só o que o Mestre autor declara — nunca deriva da
     idade do Guerreiro(a) (documento 99 §6 invariante 2). A sondagem
     exige a primeira posição e admite no máximo uma por trilha
     (documento 99 §6 invariante 5); a trilha em rascunho pode não ter
-    sondagem ainda — a trava de publicação é `RF-09-82`.
+    sondagem ainda — a trava de publicação é `RF-09-82`. A retomada é
+    opcional na criação (`RF-09-83`); quem a declara depois é
+    `declarar_cadencia_de_retomada`.
     """
     if trilha is None:
         raise ErroDeValidacao(mensagem="Missão exige uma trilha.", campo="trilha_id")
     conferir_posse_da_trilha(trilha, operador)
+    if not titulo or not titulo.strip():
+        raise ErroDeValidacao(mensagem="Missão exige um título.", campo="titulo")
     if obrigatoria is None:
         raise ErroDeValidacao(
             mensagem="Missão exige a declaração de obrigatória ou opcional.",
             campo="obrigatoria",
         )
+    try:
+        etapa_valida = EtapaDoCiclo(etapa_do_ciclo)
+    except ValueError as exc:
+        raise ErroDeValidacao(
+            mensagem="Etapa do ciclo fora dos valores previstos.", campo="etapa_do_ciclo"
+        ) from exc
 
     if e_sondagem:
         if posicao != 1:
@@ -124,14 +138,32 @@ def criar_missao(
 
     missao = Missao(
         trilha_id=trilha.id,
+        titulo=titulo,
         posicao=posicao,
         nivel_de_dificuldade=nivel_de_dificuldade,
         obrigatoria=obrigatoria,
+        etapa_do_ciclo=etapa_valida,
         e_sondagem=e_sondagem,
+        cadencia_de_retomada=cadencia_de_retomada,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
     )
     sessao.add(missao)
+    sessao.flush()
+    return missao
+
+
+def declarar_cadencia_de_retomada(
+    sessao: Session, *, operador: Persona, missao: Missao, cadencia_de_retomada: list[int] | None
+) -> Missao:
+    """A cadência declarada é sempre a do Mestre autor — o núcleo nunca a
+    impõe (`RF-09-83`, `RF-09-101`). Declarar de novo substitui a anterior;
+    `None` deixa a missão sem retomada.
+    """
+    trilha = sessao.get(Trilha, missao.trilha_id)
+    conferir_posse_da_trilha(trilha, operador)
+
+    missao.cadencia_de_retomada = cadencia_de_retomada
     sessao.flush()
     return missao
 
@@ -147,6 +179,8 @@ def criar_atividade(
     *,
     operador: Persona,
     missao: Missao | None,
+    titulo: str | None,
+    descricao: str | None = None,
     modalidade: str | None,
     formato: str | None,
     natureza: str | None,
@@ -156,13 +190,18 @@ def criar_atividade(
     da trilha e a Admin, pela mesma conferência de posse da trilha
     (`RF-01-20`, `RF-01-16`). Os três eixos combinam livremente; a natureza
     é lista aberta e a produção declarada é sempre exigida
-    (documento 99 §6 invariante 19).
+    (documento 99 §6 invariante 19). O título é exigido — sem ele nenhuma
+    tela lista a atividade; a descrição é opcional (`RF-09-69`, design —
+    decisões 5).
     """
     if missao is None:
         raise ErroDeValidacao(mensagem="Atividade exige uma missão.", campo="missao_id")
 
     trilha = sessao.get(Trilha, missao.trilha_id)
     conferir_posse_da_trilha(trilha, operador)
+
+    if not titulo or not titulo.strip():
+        raise ErroDeValidacao(mensagem="Atividade exige um título.", campo="titulo")
 
     if not modalidade:
         raise ErroDeValidacao(mensagem="Atividade exige modalidade.", campo="modalidade")
@@ -193,6 +232,8 @@ def criar_atividade(
 
     atividade = Atividade(
         missao_id=missao.id,
+        titulo=titulo,
+        descricao=descricao,
         modalidade=modalidade_valida,
         formato=formato_valido,
         natureza=_normalizar_natureza(natureza),

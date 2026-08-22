@@ -2,6 +2,7 @@ import enum
 import uuid
 
 from sqlalchemy import (
+    ARRAY,
     Boolean,
     Enum,
     ForeignKey,
@@ -46,23 +47,37 @@ class Trilha(Base, ComAutoria):
     )
 
 
+class EtapaDoCiclo(enum.StrEnum):
+    abertura = "abertura"
+    desenvolvimento = "desenvolvimento"
+    marcos = "marcos"
+    fechamento = "fechamento"
+
+
 class Missao(Base, ComAutoria):
     """Menor unidade de progressão da trilha (documento 11 §2.2). A posição
     tem unicidade adiável (`uq_missao_trilha_id_posicao`) para que o PRD-09
     reordene as missões numa única transação, sem migração nova
     (`RF-09-02`, design — decisões). A sondagem é declarada em `e_sondagem`,
     nunca deduzida da posição, e o índice único parcial admite no máximo uma
-    por trilha.
+    por trilha. `cadencia_de_retomada` é a lista de dias contados do
+    desbloqueio (`RF-09-101`, design — decisões 3); anulável porque a
+    retomada é opcional (`RF-09-83`).
     """
 
     __tablename__ = "missao"
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     trilha_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("trilha.id"), nullable=False)
+    titulo: Mapped[str] = mapped_column(String(128), nullable=False)
     posicao: Mapped[int] = mapped_column(Integer, nullable=False)
     nivel_de_dificuldade: Mapped[int] = mapped_column(Integer, nullable=False)
     obrigatoria: Mapped[bool] = mapped_column(Boolean, nullable=False)
     e_sondagem: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    etapa_do_ciclo: Mapped[EtapaDoCiclo] = mapped_column(
+        Enum(EtapaDoCiclo, native_enum=False, length=16), nullable=False
+    )
+    cadencia_de_retomada: Mapped[list[int] | None] = mapped_column(ARRAY(Integer), nullable=True)
 
     __table_args__ = (
         UniqueConstraint(
@@ -103,6 +118,8 @@ class Atividade(Base, ComAutoria):
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     missao_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("missao.id"), nullable=False)
+    titulo: Mapped[str] = mapped_column(String(128), nullable=False)
+    descricao: Mapped[str | None] = mapped_column(Text, nullable=True)
     modalidade: Mapped[ModalidadeDeAtividade] = mapped_column(
         Enum(ModalidadeDeAtividade, native_enum=False, length=32), nullable=False
     )

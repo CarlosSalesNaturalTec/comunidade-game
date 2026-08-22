@@ -37,6 +37,7 @@ from .recursos.rotas import roteador as roteador_de_recursos
 from .responsaveis.rotas import roteador as roteador_de_responsaveis
 from .ressarcimentos.rotas import roteador as roteador_de_ressarcimentos
 from .sessoes.rotas import roteador as roteador_de_sessoes
+from .trilhas.rotas import roteador as roteador_de_trilhas
 from .trocas.rotas import roteador as roteador_de_trocas
 from .vitrine.rotas import roteador as roteador_de_vitrine
 
@@ -159,3 +160,4 @@ incluir_roteador_de_dados(app, roteador_de_catalogo_avulso)
 incluir_roteador_de_dados(app, roteador_de_trocas)
 incluir_roteador_de_dados(app, roteador_de_patrimonio)
 incluir_roteador_de_dados(app, roteador_de_recompensas_de_marco)
+incluir_roteador_de_dados(app, roteador_de_trilhas)
