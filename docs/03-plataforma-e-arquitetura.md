@@ -870,6 +870,11 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 - **A ferramenta recusa publicar trilha sem missão de sondagem, sem desafio de coleta e sem
   culminância com criação original** — as três regras do documento 02 viram trava, não
   recomendação. A criação entregue é validada pelo Mestre autor da trilha.
+- **A situação da trilha tem três valores** — rascunho, publicada, despublicada. Despublicada
+  some da consulta pública e volta a ser editável pelo Mestre autor, como rascunho, sem que o
+  estado vire rascunho. **A republicação é do Mestre autor**, pela mesma rota e pelas mesmas
+  três travas da publicação, sem aprovação de Admin — o motivo que o Admin registra existe para
+  o Mestre corrigir e voltar ao ar.
 - **Cada missão nasce declarada obrigatória ou opcional**, e o Mestre diz se o desbloqueio dela
   libera recompensa e em que cadência ela volta para revisão.
 - **Conteúdo da missão:** texto formatado, imagens, link externo e upload hospedado

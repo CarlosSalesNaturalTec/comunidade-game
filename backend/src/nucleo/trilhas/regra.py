@@ -3,9 +3,12 @@ import uuid
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-from ..erros import ErroDeValidacao, PermissaoNegada
+from ..coletas.modelo import DesafioDeColeta
+from ..culminancias.modelo import Culminancia
+from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from ..poderes.modelo import NaturezaDoPoder, Poder
+from ..tempo import agora
 from .modelo import (
     Atividade,
     EtapaDoCiclo,
@@ -27,6 +30,110 @@ def conferir_posse_da_trilha(trilha: Trilha, persona: Persona) -> None:
         return
     if trilha.autor_id != persona.id:
         raise PermissaoNegada(mensagem="Só o Mestre autor escreve na própria trilha.")
+
+
+def conferir_autoria_estrita_da_trilha(trilha: Trilha, persona: Persona) -> None:
+    """Só o Mestre autor — nem outro Mestre nem Admin publicam a trilha ou
+    declaram a culminância dela; a publicação não passa por aprovação, e o
+    Admin não edita a trilha de um Mestre (`RF-09-05`, `RF-09-29`, design —
+    decisões 1).
+    """
+    if trilha.autor_id != persona.id:
+        raise PermissaoNegada(mensagem="Só o Mestre autor executa esta operação na própria trilha.")
+
+
+def _unir_em_portugues(itens: list[str]) -> str:
+    if len(itens) == 1:
+        return itens[0]
+    return ", ".join(itens[:-1]) + " e " + itens[-1]
+
+
+def _travas_de_publicacao_pendentes(sessao: Session, trilha: Trilha) -> list[str]:
+    """As três travas do `RF-09-06`, `RF-09-07` e `RN-09-29` — sondagem
+    declarada, ao menos um desafio de coleta em alguma missão da trilha
+    (existência, não contagem — design — decisões 6) e culminância
+    declarada. O lastro de recompensa de marco nunca entra aqui: é
+    conferido na entrega, por `RN-09-27`.
+    """
+    pendentes = []
+
+    tem_sondagem = (
+        sessao.query(Missao).filter_by(trilha_id=trilha.id, e_sondagem=True).first() is not None
+    )
+    if not tem_sondagem:
+        pendentes.append("a missão de sondagem")
+
+    tem_desafio_de_coleta = (
+        sessao.query(DesafioDeColeta)
+        .join(Missao, DesafioDeColeta.missao_id == Missao.id)
+        .filter(Missao.trilha_id == trilha.id)
+        .first()
+        is not None
+    )
+    if not tem_desafio_de_coleta:
+        pendentes.append("o desafio de coleta de dados reais")
+
+    tem_culminancia = sessao.query(Culminancia).filter_by(trilha_id=trilha.id).first() is not None
+    if not tem_culminancia:
+        pendentes.append("a culminância")
+
+    return pendentes
+
+
+def publicar_trilha(sessao: Session, trilha: Trilha | None, *, operador: Persona) -> Trilha:
+    """Publica ou republica a pedido do Mestre autor, sem aprovação de
+    Admin, a partir de `rascunho` ou `despublicada` — uma só rota para as
+    duas origens (design — decisões 4). Confere as três travas juntas e
+    nomeia **todas** as pendentes na recusa (`RF-09-05` a `RF-09-08`,
+    `RF-09-82`, `RN-09-01`, design — decisões 5). A republicação limpa o
+    motivo da despublicação (design — decisões 7).
+    """
+    if trilha is None:
+        raise NaoEncontrado(mensagem="Trilha não encontrada.")
+    conferir_autoria_estrita_da_trilha(trilha, operador)
+    if trilha.situacao == SituacaoDaTrilha.publicada:
+        raise ErroDeValidacao(mensagem="Esta trilha já está publicada.", campo="situacao")
+
+    pendentes = _travas_de_publicacao_pendentes(sessao, trilha)
+    if pendentes:
+        raise ErroDeValidacao(
+            mensagem=f"Para publicar, ainda falta declarar: {_unir_em_portugues(pendentes)}."
+        )
+
+    trilha.situacao = SituacaoDaTrilha.publicada
+    trilha.motivo_da_situacao = None
+    trilha.autor_da_situacao_id = operador.id
+    trilha.papel_do_autor_da_situacao = operador.papel.value
+    trilha.situacao_alterada_em = agora()
+    sessao.flush()
+    return trilha
+
+
+def despublicar_trilha(
+    sessao: Session, trilha: Trilha | None, *, operador: Persona, motivo: str | None
+) -> Trilha:
+    """Só Admin despublica, sempre com motivo, e só trilha publicada
+    (`RF-09-10`, `RF-09-11`). Não toca missão, atividade, resultado,
+    presença nem pontuação: o percurso já realizado permanece íntegro.
+    """
+    if trilha is None:
+        raise NaoEncontrado(mensagem="Trilha não encontrada.")
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin despublica trilha.")
+    if not motivo or not motivo.strip():
+        raise ErroDeValidacao(mensagem="Despublicação exige motivo.", campo="motivo")
+    if trilha.situacao != SituacaoDaTrilha.publicada:
+        raise ErroDeValidacao(
+            mensagem="Só uma trilha publicada pode ser despublicada.", campo="situacao"
+        )
+
+    trilha.situacao = SituacaoDaTrilha.despublicada
+    trilha.motivo_da_situacao = motivo
+    trilha.autor_da_situacao_id = operador.id
+    trilha.papel_do_autor_da_situacao = operador.papel.value
+    trilha.situacao_alterada_em = agora()
+    sessao.flush()
+    return trilha
 
 
 def criar_trilha(

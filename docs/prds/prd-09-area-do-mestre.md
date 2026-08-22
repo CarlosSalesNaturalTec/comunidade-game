@@ -248,37 +248,37 @@ Guerreiras que percorrem as suas trilhas.
 
 ### 6.1 Autoria e publicação da trilha
 
-| ID          | Requisito                                                                                                                                     | Prioridade |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-09-01`  | Mestre cria trilha vinculada a um poder do catálogo, com nome, objetivo e área do conhecimento                                                | essencial  |
-| `RF-09-02`  | Mestre ordena as missões em sequência, com nível de dificuldade declarado em cada uma                                                         | essencial  |
-| `RF-09-03`  | Mestre pagina a trilha pelas etapas do ciclo: abertura, desenvolvimento, marcos e fechamento                                                  | essencial  |
-| `RF-09-04`  | Trilha em rascunho é visível apenas ao Mestre autor                                                                                           | essencial  |
-| `RF-09-05`  | Mestre publica a própria trilha sem aprovação prévia de Admin ou de outro Mestre                                                              | essencial  |
-| `RF-09-06`  | Aplicação recusa publicar trilha sem ao menos um desafio de coleta de dados reais                                                             | essencial  |
-| `RF-09-07`  | Aplicação recusa publicar trilha sem culminância com criação original prevista                                                                | essencial  |
-| `RF-09-08`  | Recusa de publicação diz, em linguagem simples, exatamente o que falta                                                                        | essencial  |
-| `RF-09-09`  | Publicação declara a licença CC BY-SA do conteúdo e credita o Mestre autor                                                                    | essencial  |
-| `RF-09-10`  | Admin despublica trilha auditada com motivo registrado, e o Mestre autor vê o motivo                                                          | essencial  |
-| `RF-09-11`  | Trilha despublicada volta a rascunho preservando o percurso já realizado pelos Guerreiros                                                     | essencial  |
-| `RF-09-12`  | Nenhum campo de autoria exige escrever código, HTML ou configuração técnica                                                                   | essencial  |
-| `RF-09-13`  | Mestre duplica trilha existente como ponto de partida de uma nova                                                                             | desejável  |
-| `RF-09-69`  | Mestre cria as atividades da missão, com modalidade e formato declarados em cada uma                                                          | essencial  |
-| `RF-09-70`  | Aplicação recusa atividade de trilha sem missão, sem modalidade ou sem formato                                                                | essencial  |
-| `RF-09-71`  | Mestre declara qual missão da trilha concede qual recompensa, e em que quantidade — o único marco que o núcleo do Ciclo 01 verifica alcançado | essencial  |
-| `RF-09-72`  | Aplicação publica a trilha mesmo que o marco prometa recompensa sem lastro; a garantia acontece na entrega (PRD-07)                           | essencial  |
-| `RF-09-80`  | Mestre declara cada missão como obrigatória ou opcional                                                                                       | essencial  |
-| `RF-09-81`  | Mestre cria a missão de sondagem que abre a trilha, na forma de quiz                                                                          | essencial  |
-| `RF-09-82`  | Aplicação recusa publicar trilha sem missão de sondagem                                                                                       | essencial  |
-| `RF-09-83`  | Mestre declara a cadência de retomada de uma missão, e pode deixá-la sem retomada                                                             | essencial  |
-| `RF-09-101` | Template sugere a retomada em 2, 7 e 21 dias do desbloqueio, e o Mestre altera à vontade                                                      | essencial  |
-| `RF-09-84`  | Mestre declara que o desbloqueio de uma missão libera recompensa, e em que quantidade                                                         | essencial  |
-| `RF-09-92`  | Mestre etiqueta a trilha com os ODS que ela toca, escolhendo o objetivo e, se souber, a meta                                                  | essencial  |
-| `RF-09-98`  | Mestre pode etiquetar uma missão à parte, quando ela tocar objetivo diferente do da trilha                                                    | essencial  |
-| `RF-09-93`  | No Ciclo 01 a trilha publica com ou sem etiqueta ODS                                                                                          | essencial  |
-| `RF-09-96`  | A partir do Ciclo 02, a aplicação recusa publicar trilha sem ao menos uma etiqueta ODS                                                        | essencial  |
-| `RF-09-97`  | A recusa por falta de etiqueta diz em linguagem simples que falta o ODS da trilha                                                             | essencial  |
-| `RF-09-94`  | Mestre vê, na sua trilha, a cobertura de ODS resultante do que etiquetou                                                                      | desejável  |
+| ID          | Requisito                                                                                                                                      | Prioridade |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-09-01`  | Mestre cria trilha vinculada a um poder do catálogo, com nome, objetivo e área do conhecimento                                                 | essencial  |
+| `RF-09-02`  | Mestre ordena as missões em sequência, com nível de dificuldade declarado em cada uma                                                          | essencial  |
+| `RF-09-03`  | Mestre pagina a trilha pelas etapas do ciclo: abertura, desenvolvimento, marcos e fechamento                                                   | essencial  |
+| `RF-09-04`  | Trilha em rascunho é visível apenas ao Mestre autor                                                                                            | essencial  |
+| `RF-09-05`  | Mestre publica ou republica a própria trilha, em rascunho ou despublicada, sem aprovação prévia de Admin ou de outro Mestre                    | essencial  |
+| `RF-09-06`  | Aplicação recusa publicar trilha sem ao menos um desafio de coleta de dados reais                                                              | essencial  |
+| `RF-09-07`  | Aplicação recusa publicar trilha sem culminância com criação original prevista                                                                 | essencial  |
+| `RF-09-08`  | Recusa de publicação diz, em linguagem simples, exatamente o que falta                                                                         | essencial  |
+| `RF-09-09`  | Publicação declara a licença CC BY-SA do conteúdo e credita o Mestre autor                                                                     | essencial  |
+| `RF-09-10`  | Admin despublica trilha auditada com motivo registrado, e o Mestre autor vê o motivo                                                           | essencial  |
+| `RF-09-11`  | Trilha despublicada volta a ser editável, como rascunho, preservando o percurso já realizado pelos Guerreiros — sem que o estado vire rascunho | essencial  |
+| `RF-09-12`  | Nenhum campo de autoria exige escrever código, HTML ou configuração técnica                                                                    | essencial  |
+| `RF-09-13`  | Mestre duplica trilha existente como ponto de partida de uma nova                                                                              | desejável  |
+| `RF-09-69`  | Mestre cria as atividades da missão, com modalidade e formato declarados em cada uma                                                           | essencial  |
+| `RF-09-70`  | Aplicação recusa atividade de trilha sem missão, sem modalidade ou sem formato                                                                 | essencial  |
+| `RF-09-71`  | Mestre declara qual missão da trilha concede qual recompensa, e em que quantidade — o único marco que o núcleo do Ciclo 01 verifica alcançado  | essencial  |
+| `RF-09-72`  | Aplicação publica a trilha mesmo que o marco prometa recompensa sem lastro; a garantia acontece na entrega (PRD-07)                            | essencial  |
+| `RF-09-80`  | Mestre declara cada missão como obrigatória ou opcional                                                                                        | essencial  |
+| `RF-09-81`  | Mestre cria a missão de sondagem que abre a trilha, na forma de quiz                                                                           | essencial  |
+| `RF-09-82`  | Aplicação recusa publicar trilha sem missão de sondagem                                                                                        | essencial  |
+| `RF-09-83`  | Mestre declara a cadência de retomada de uma missão, e pode deixá-la sem retomada                                                              | essencial  |
+| `RF-09-101` | Template sugere a retomada em 2, 7 e 21 dias do desbloqueio, e o Mestre altera à vontade                                                       | essencial  |
+| `RF-09-84`  | Mestre declara que o desbloqueio de uma missão libera recompensa, e em que quantidade                                                          | essencial  |
+| `RF-09-92`  | Mestre etiqueta a trilha com os ODS que ela toca, escolhendo o objetivo e, se souber, a meta                                                   | essencial  |
+| `RF-09-98`  | Mestre pode etiquetar uma missão à parte, quando ela tocar objetivo diferente do da trilha                                                     | essencial  |
+| `RF-09-93`  | No Ciclo 01 a trilha publica com ou sem etiqueta ODS                                                                                           | essencial  |
+| `RF-09-96`  | A partir do Ciclo 02, a aplicação recusa publicar trilha sem ao menos uma etiqueta ODS                                                         | essencial  |
+| `RF-09-97`  | A recusa por falta de etiqueta diz em linguagem simples que falta o ODS da trilha                                                              | essencial  |
+| `RF-09-94`  | Mestre vê, na sua trilha, a cobertura de ODS resultante do que etiquetou                                                                       | desejável  |
 
 ### 6.2 Template de missão
 
@@ -697,21 +697,24 @@ avulsa**.
 - **Quais recompensas em quais marcos**: a regra está decidida — recompensa se conquista em
   marco —, mas o catálogo do Ciclo 01 ainda não diz que marco entrega o quê. **Trava** o
   `RF-09-71` na prática, não no desenho.
-- **A situação da trilha tem dois ou três valores?** Este §8 lista rascunho, publicada e
-  despublicada; o `RF-09-11` diz que a trilha despublicada **volta a rascunho** — dois
-  estados. O núcleo, desde a primeira fatia, implementa dois. **Trava** a fatia de publicação
-  e despublicação.
 - **Atividade avulsa, fora de trilha**: este §8 a reconhece — "`Atividade` sem missão só
   existe como atividade avulsa da gestão" —, mas `Atividade.missao_id` é obrigatório no
   núcleo e a spec `atividade-de-trilha` exige a missão. Não existe onde gravá-la. **Trava** o
   `RF-02-29` do PRD-02.
+- **`RF-02-71` continua sem rota**: o Admin lê a autoria de trilha, missão e atividade sem
+  editá-la, mas o `GET /trilhas/{id}` deste PRD é público e só serve trilha publicada. Sem
+  ela, a App 03 não tem por onde listar a trilha de um Mestre — **trava** a tela de
+  despublicação, que entrega testada por contrato, sem tela, até a pendência ser decidida.
 
-Quatro saíram desta lista, decididas: os **formatos aceitos no upload** — lista fechada de MP4,
+Cinco saíram desta lista, decididas: os **formatos aceitos no upload** — lista fechada de MP4,
 WebM, JPG, PNG, WebP, MP3 e PDF, com moderação pela auditoria mensal por amostragem —, a
 **cadência padrão da retomada**, que o _template_ sugere em 2, 7 e 21 dias, a **composição da
-amostra de coleta**, de 10% da semana por série ativa com mínimo de um, e o **provedor da
-leitura da produção**: o Ciclo 01 usa o Google Gemini, com o processamento na nuvem e o consumo
-lançado como recurso de _cloud_ (documento 03 §§1, 7, 8).
+amostra de coleta**, de 10% da semana por série ativa com mínimo de um, o **provedor da
+leitura da produção** — o Ciclo 01 usa o Google Gemini, com o processamento na nuvem e o consumo
+lançado como recurso de _cloud_ (documento 03 §§1, 7, 8) —, e a **situação da trilha**, que
+fecha em três valores — rascunho, publicada, despublicada —, com o `RF-09-11` corrigido para
+"volta a ser editável, como rascunho" e a republicação privativa do Mestre autor pelas mesmas
+travas da publicação (documento 03 §11).
 
 ## 15. Rastreabilidade
 

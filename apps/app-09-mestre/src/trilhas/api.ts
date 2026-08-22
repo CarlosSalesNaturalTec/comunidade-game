@@ -33,10 +33,26 @@ export interface TrilhaDaLista {
   area_do_conhecimento: string;
   poder_id: string;
   situacao: string;
+  motivo_da_situacao: string | null;
 }
 
 export interface TrilhaDoMestre extends TrilhaDaLista {
   missoes: MissaoDaTrilha[];
+  // Nunca vem de `GET /trilhas/minhas` — só é conhecida depois que o Mestre
+  // a declara nesta sessão (`POST /trilhas/{id}/culminancia` não tem par de
+  // leitura, PRD-09 §9). `undefined` é "ainda não declarada nesta sessão",
+  // distinto de `null`, que o núcleo nunca devolve.
+  culminancia?: CulminanciaDaTrilha | null;
+}
+
+export type ModalidadeDaCulminancia = "individual" | "em_equipe";
+
+export interface CulminanciaDaTrilha {
+  id: string;
+  trilha_id: string;
+  descricao: string;
+  modalidade: ModalidadeDaCulminancia;
+  criterio_de_validacao: string;
 }
 
 // `GET /trilhas/minhas` já traz missões e atividades aninhadas — o PRD-09
@@ -115,6 +131,35 @@ export function declararCadenciaDeRetomada(
   return chamarNucleo<MissaoDaTrilha>(`/v1/missoes/${idDaMissao}/retomada`, {
     metodo: "POST",
     corpo: { cadencia_de_retomada: cadenciaDeRetomada },
+    token,
+  });
+}
+
+export interface DeclararCulminanciaEntrada {
+  descricao: string;
+  modalidade: ModalidadeDaCulminancia;
+  criterio_de_validacao: string;
+}
+
+// Privativa do Mestre autor; a segunda declaração substitui a anterior, e
+// não cria uma segunda culminância (`RF-09-29`, `RF-09-30`).
+export function declararCulminancia(
+  idDaTrilha: string,
+  entrada: DeclararCulminanciaEntrada,
+  token: string,
+): Promise<CulminanciaDaTrilha> {
+  return chamarNucleo<CulminanciaDaTrilha>(`/v1/trilhas/${idDaTrilha}/culminancia`, {
+    metodo: "POST",
+    corpo: entrada,
+    token,
+  });
+}
+
+// Publica ou republica, a partir de rascunho ou despublicada — a mesma
+// rota para as duas origens (`RF-09-05`, `RF-09-11`).
+export function publicarTrilha(idDaTrilha: string, token: string): Promise<TrilhaDaLista> {
+  return chamarNucleo<TrilhaDaLista>(`/v1/trilhas/${idDaTrilha}/publicacao`, {
+    metodo: "POST",
     token,
   });
 }
