@@ -272,17 +272,17 @@ que responde pelos atos registrados no cadastro.
 
 ### 6.2 Identidade pública e comprobatórios
 
-| ID         | Requisito                                                                                    | Prioridade |
-| ---------- | -------------------------------------------------------------------------------------------- | ---------- |
+| ID         | Requisito                                                                                                                                      | Prioridade |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
 | `RF-14-12` | Apoiador define o avatar do card — logomarca ou imagem escolhida; o nick vem do pré-cadastro, quando há um, ou é definido por ele na aplicação | essencial  |
-| `RF-14-13` | Nick já usado por outro adulto é recusado, com sugestão de variações; a conferência nunca alcança nick de Guerreiro(a) | essencial  |
-| `RF-14-14` | Avatar próprio é liberado a partir de 10 moedas acumuladas em aportes homologados            | essencial  |
-| `RF-14-15` | Abaixo do piso o card exibe o avatar padrão do projeto, com o nick e o total de moedas       | essencial  |
-| `RF-14-16` | Aplicação mostra quantas moedas faltam para liberar o avatar próprio                         | essencial  |
-| `RF-14-17` | Apoiador altera avatar e nick a qualquer tempo, com reflexo na vitrine                       | desejável  |
-| `RF-14-18` | Apoiador envia currículo, portfólio, redes sociais, termos de doação e comprovantes          | essencial  |
-| `RF-14-19` | Documento enviado entra na fila da App 03 e só é publicado quando um Admin o anexa           | essencial  |
-| `RF-14-20` | Aplicação exibe ao Apoiador o que já está publicado na sua página da vitrine                 | desejável  |
+| `RF-14-13` | Nick já usado por outro adulto é recusado, com sugestão de variações; a conferência nunca alcança nick de Guerreiro(a)                         | essencial  |
+| `RF-14-14` | Avatar próprio é liberado a partir de 10 moedas acumuladas em aportes homologados                                                              | essencial  |
+| `RF-14-15` | Abaixo do piso o card exibe o avatar padrão do projeto, com o nick e o total de moedas                                                         | essencial  |
+| `RF-14-16` | Aplicação mostra quantas moedas faltam para liberar o avatar próprio                                                                           | essencial  |
+| `RF-14-17` | Apoiador altera avatar e nick a qualquer tempo, com reflexo na vitrine                                                                         | desejável  |
+| `RF-14-18` | Apoiador envia currículo, portfólio, redes sociais, termos de doação e comprovantes                                                            | essencial  |
+| `RF-14-19` | Documento enviado entra na fila da App 03 e só é publicado quando um Admin o anexa                                                             | essencial  |
+| `RF-14-20` | Aplicação exibe ao Apoiador o que já está publicado na sua página da vitrine                                                                   | desejável  |
 
 ### 6.3 Aportes e necessidades
 

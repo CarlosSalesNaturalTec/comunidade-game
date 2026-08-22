@@ -382,16 +382,16 @@ Guerreiras que percorrem as suas trilhas.
 
 ### 6.9 Responsáveis, perfil público e avisos
 
-| ID         | Requisito                                                                                       | Prioridade |
-| ---------- | ----------------------------------------------------------------------------------------------- | ---------- |
-| `RF-09-62` | Mestre cadastra responsável apresentado no encontro e vincula Guerreiros e Guerreiras já ativos | essencial  |
-| `RF-09-63` | Vínculo registra o grau de parentesco em texto livre                                            | essencial  |
-| `RF-09-64` | Aplicação recusa o quarto vínculo de responsável para o mesmo Guerreiro(a)                      | essencial  |
-| `RF-09-65` | Mestre cria credencial de usuário e senha provisória para responsável sem conta Google          | essencial  |
-| `RF-09-66` | Mestre publica currículo, portfólio, redes sociais e artefatos comprobatórios da sua habilidade | essencial  |
+| ID          | Requisito                                                                                           | Prioridade |
+| ----------- | --------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-09-62`  | Mestre cadastra responsável apresentado no encontro e vincula Guerreiros e Guerreiras já ativos     | essencial  |
+| `RF-09-63`  | Vínculo registra o grau de parentesco em texto livre                                                | essencial  |
+| `RF-09-64`  | Aplicação recusa o quarto vínculo de responsável para o mesmo Guerreiro(a)                          | essencial  |
+| `RF-09-65`  | Mestre cria credencial de usuário e senha provisória para responsável sem conta Google              | essencial  |
+| `RF-09-66`  | Mestre publica currículo, portfólio, redes sociais e artefatos comprobatórios da sua habilidade     | essencial  |
 | `RF-09-114` | Mestre define ou troca o próprio nick e avatar no card, sob a unicidade global e sem piso de moedas | essencial  |
-| `RF-09-67` | Aplicação não cadastra Mestre nem cria acesso de Mestre                                         | essencial  |
-| `RF-09-68` | Toda tela que coleta dado traz aviso discreto do que coleta, com acesso à área detalhada        | essencial  |
+| `RF-09-67`  | Aplicação não cadastra Mestre nem cria acesso de Mestre                                             | essencial  |
+| `RF-09-68`  | Toda tela que coleta dado traz aviso discreto do que coleta, com acesso à área detalhada            | essencial  |
 
 ### 6.10 Catálogo avulso e troca por pontos extras
 

@@ -149,12 +149,12 @@ conteúdo de vitrine é público, sem login.
 O cadastro do Guerreiro(a) está no documento 03 §12, na adesão em duas etapas. O do adulto é
 este:
 
-| Persona     | Identidade no cadastro   |
-| ----------- | ------------------------ |
-| Mestre      | nome, e-mail e WhatsApp  |
-| Apoiador    | nome, e-mail e WhatsApp  |
-| Admin       | nome, e-mail e WhatsApp  |
-| Responsável | nome e e-mail            |
+| Persona     | Identidade no cadastro  |
+| ----------- | ----------------------- |
+| Mestre      | nome, e-mail e WhatsApp |
+| Apoiador    | nome, e-mail e WhatsApp |
+| Admin       | nome, e-mail e WhatsApp |
+| Responsável | nome e e-mail           |
 
 O **WhatsApp é opcional** onde aparece. Mestre e Apoiador têm também **nick e avatar**,
 opcionais no cadastro: o Apoiador o traz do pré-cadastro, quando há um; o Mestre o define no
