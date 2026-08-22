@@ -170,12 +170,18 @@ def test_chamada_de_origem_qualquer_sem_chave_e_recusada_como_qualquer_outra(cli
 
 
 def test_nenhuma_rota_lista_ou_sugere_nick(cliente):
-    """`RN-01-22`: o núcleo nunca descobre nem sugere um nick — não existe
-    rota de listagem, busca parcial ou sugestão de nick em toda a API.
-    `/v1/sugestoes` é a fila de propostas da gestão (`RF-01-25`), sem
-    relação com nick — só a combinação dos dois termos denunciaria isso."""
+    """`RN-01-22`: o núcleo nunca descobre nem sugere um nick de
+    Guerreiro(a) — não existe rota de listagem, busca parcial ou sugestão
+    de nick em toda a API, fora da única exceção declarada:
+    `GET /v1/nicks/disponibilidade`, restrita a nicks de adulto e que por
+    isso nunca alcança nick de Guerreiro(a) (`RF-14-13`, capacidade
+    `identidade-do-adulto`). `/v1/sugestoes` é a fila de propostas da
+    gestão (`RF-01-25`), sem relação com nick — só a combinação dos dois
+    termos denunciaria isso."""
     schema = cliente.get("/openapi.json").json()
     for caminho in schema["paths"]:
+        if caminho == "/v1/nicks/disponibilidade":
+            continue
         caminho_em_minusculas = caminho.lower()
         assert "nicks" not in caminho_em_minusculas
         assert "nick" not in caminho_em_minusculas or "sugest" not in caminho_em_minusculas

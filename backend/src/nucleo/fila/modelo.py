@@ -74,6 +74,7 @@ class SolicitacaoDeParticipacao(Base, EmAvaliacao):
     apresentacao: Mapped[str] = mapped_column(Text, nullable=False)
     instituicao: Mapped[str | None] = mapped_column(String(256), nullable=True)
     links: Mapped[str | None] = mapped_column(Text, nullable=True)
+    nick: Mapped[str | None] = mapped_column(String(64), nullable=True)
     aporte_declarado: Mapped[str | None] = mapped_column(Text, nullable=True)
     comprovante_referencia: Mapped[str | None] = mapped_column(String(512), nullable=True)
     comprovante_nome_original: Mapped[str | None] = mapped_column(String(256), nullable=True)

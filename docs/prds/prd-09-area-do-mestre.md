@@ -382,15 +382,16 @@ Guerreiras que percorrem as suas trilhas.
 
 ### 6.9 Responsáveis, perfil público e avisos
 
-| ID         | Requisito                                                                                       | Prioridade |
-| ---------- | ----------------------------------------------------------------------------------------------- | ---------- |
-| `RF-09-62` | Mestre cadastra responsável apresentado no encontro e vincula Guerreiros e Guerreiras já ativos | essencial  |
-| `RF-09-63` | Vínculo registra o grau de parentesco em texto livre                                            | essencial  |
-| `RF-09-64` | Aplicação recusa o quarto vínculo de responsável para o mesmo Guerreiro(a)                      | essencial  |
-| `RF-09-65` | Mestre cria credencial de usuário e senha provisória para responsável sem conta Google          | essencial  |
-| `RF-09-66` | Mestre publica currículo, portfólio, redes sociais e artefatos comprobatórios da sua habilidade | essencial  |
-| `RF-09-67` | Aplicação não cadastra Mestre nem cria acesso de Mestre                                         | essencial  |
-| `RF-09-68` | Toda tela que coleta dado traz aviso discreto do que coleta, com acesso à área detalhada        | essencial  |
+| ID          | Requisito                                                                                           | Prioridade |
+| ----------- | --------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-09-62`  | Mestre cadastra responsável apresentado no encontro e vincula Guerreiros e Guerreiras já ativos     | essencial  |
+| `RF-09-63`  | Vínculo registra o grau de parentesco em texto livre                                                | essencial  |
+| `RF-09-64`  | Aplicação recusa o quarto vínculo de responsável para o mesmo Guerreiro(a)                          | essencial  |
+| `RF-09-65`  | Mestre cria credencial de usuário e senha provisória para responsável sem conta Google              | essencial  |
+| `RF-09-66`  | Mestre publica currículo, portfólio, redes sociais e artefatos comprobatórios da sua habilidade     | essencial  |
+| `RF-09-114` | Mestre define ou troca o próprio nick e avatar no card, sob a unicidade global e sem piso de moedas | essencial  |
+| `RF-09-67`  | Aplicação não cadastra Mestre nem cria acesso de Mestre                                             | essencial  |
+| `RF-09-68`  | Toda tela que coleta dado traz aviso discreto do que coleta, com acesso à área detalhada            | essencial  |
 
 ### 6.10 Catálogo avulso e troca por pontos extras
 
@@ -553,6 +554,7 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | POST   | `/v1/desafios-extras/{id}/validacao`    | Mestre       | Validação pedagógica, com parecer ou motivo da recusa          |
 | POST   | `/v1/responsaveis`                      | Mestre       | Cadastra responsável e vincula Guerreiros e Guerreiras         |
 | POST   | `/v1/mestres/{id}/artefatos`            | Mestre       | Publica currículo, portfólio, redes e artefatos comprobatórios |
+| PUT    | `/v1/eu/mestre/identidade`              | Mestre       | Define ou troca o próprio nick e avatar                        |
 | POST   | `/v1/sugestoes`                         | Mestre       | Registra proposta de evolução na fila única da gestão          |
 
 Erros previstos: publicação de trilha sem missão de sondagem (422); atividade de trilha sem
@@ -719,6 +721,7 @@ lançado como recurso de _cloud_ (documento 03 §§1, 7, 8).
 | `RF-09-56` a `RF-09-61`   | 04 §1 e PRD-07 (necessidades, absorção, ressarcimento e acervo)  |
 | `RF-09-62` a `RF-09-65`   | 03 §9 e PRD-01 (cadastro do responsável e credencial provisória) |
 | `RF-09-66` a `RF-09-67`   | 02 §1 e 03 §11 (prova de habilidade e governança de personas)    |
+| `RF-09-114`               | 02 §1 e 11 §8.2 (nick e avatar do Mestre)                        |
 | `RF-09-68`                | 03 §12 (aviso visível de coleta e área detalhada)                |
 | `RF-09-69` e `RF-09-70`   | 11 §§2.1, 4 (atividade dentro da missão)                         |
 | `RF-09-71` a `RF-09-76`   | 02 §8.1 e 11 §2.1 (recompensa conquistada no marco)              |

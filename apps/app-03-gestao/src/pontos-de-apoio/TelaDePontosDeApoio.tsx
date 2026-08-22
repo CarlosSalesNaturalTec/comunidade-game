@@ -6,6 +6,7 @@ import { type ComunidadeDaLista, listarComunidades } from "../comunidades/api";
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "./api";
 import { FormularioDePontoDeApoio } from "./FormularioDePontoDeApoio";
 import { ListaDePontosDeApoio } from "./ListaDePontosDeApoio";
+import { TransferenciaDeSaldo } from "./TransferenciaDeSaldo";
 
 export function TelaDePontosDeApoio() {
   const { sessao, sair, tratarRecusaDeSessao } = useSessao();
@@ -15,6 +16,8 @@ export function TelaDePontosDeApoio() {
   const [pontosDeApoio, definirPontosDeApoio] = useState<PontoDeApoioDaLista[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
+  const [origemDaTransferencia, definirOrigemDaTransferencia] =
+    useState<PontoDeApoioDaLista | null>(null);
 
   // O caminho de cadastro não é oferecido a quem não é Admin (`RF-07-47`).
   const podeCadastrar = sessao?.papel === "admin";
@@ -97,7 +100,24 @@ export function TelaDePontosDeApoio() {
         />
       )}
 
-      <ListaDePontosDeApoio pontosDeApoio={pontosDeApoio} />
+      {origemDaTransferencia && pontosDeApoio ? (
+        <TransferenciaDeSaldo
+          origem={origemDaTransferencia}
+          pontosDeApoio={pontosDeApoio}
+          onConcluida={() => {
+            definirOrigemDaTransferencia(null);
+            carregar();
+          }}
+          onCancelar={() => definirOrigemDaTransferencia(null)}
+        />
+      ) : (
+        <ListaDePontosDeApoio
+          pontosDeApoio={pontosDeApoio}
+          podeGerenciar={podeCadastrar}
+          aoMudarSituacao={carregar}
+          aoIrParaTransferencia={definirOrigemDaTransferencia}
+        />
+      )}
     </Moldura>
   );
 }

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from ..armazenamento.porta import PortaDeArmazenamento
 from ..erros import ConjuntoDeDadosNaoLiberado, DocumentoPessoalRecusado, ErroDeValidacao
 from ..personas.modelo import Persona
+from ..personas.regra import conferir_disponibilidade_de_nick
 from ..ponto_extra.regra import creditar_ponto_extra
 from ..pontuacao.regra import conceder_badge_de_protagonismo
 from ..tempo import agora
@@ -98,6 +99,7 @@ def registrar_solicitacao_de_participacao(
     apresentacao: str,
     instituicao: str | None = None,
     links: str | None = None,
+    nick: str | None = None,
     aporte_declarado: str | None = None,
     comprovante_conteudo: bytes | None = None,
     comprovante_nome_original: str | None = None,
@@ -106,11 +108,26 @@ def registrar_solicitacao_de_participacao(
 ) -> SolicitacaoDeParticipacao:
     """Registra o pré-cadastro sem criar cadastro, persona ou acesso
     (`RN-01-03`, `RN-01-28`). A plataforma não coleta CPF, CNPJ nem
-    documento de identidade (`RN-01-29`)."""
+    documento de identidade (`RN-01-29`).
+
+    O nick pretendido só existe na pretensão de Apoiador (`RF-01-25`,
+    `RF-14-13`) — o Mestre o define no primeiro acesso, nunca no
+    pré-cadastro. Passa pela mesma conferência restrita a adulto que a rota
+    pública de disponibilidade usa, o que já conta os nicks reservados por
+    outra solicitação ainda dentro do prazo (`RN-01-28`, `RN-01-30`); a
+    reserva em si não é estado novo, é o próprio `prazo` desta solicitação
+    (design — Decisions).
+    """
     if contem_documento_pessoal(
         nome_ou_razao_social, apresentacao, instituicao, links, aporte_declarado
     ):
         raise DocumentoPessoalRecusado()
+
+    if nick is not None:
+        if pretensao != PretensaoDeParticipacao.apoiador:
+            raise ErroDeValidacao(mensagem="Só a pretensão de Apoiador declara nick.", campo="nick")
+        if not conferir_disponibilidade_de_nick(sessao, nick):
+            raise ErroDeValidacao(mensagem="Este nick já está em uso.", campo="nick")
 
     solicitacao = SolicitacaoDeParticipacao(
         nome_ou_razao_social=nome_ou_razao_social,
@@ -120,6 +137,7 @@ def registrar_solicitacao_de_participacao(
         apresentacao=apresentacao,
         instituicao=instituicao,
         links=links,
+        nick=nick,
         aporte_declarado=aporte_declarado,
         prazo=agora() + PRAZO_DE_AVALIACAO,
     )

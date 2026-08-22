@@ -157,6 +157,75 @@ apresentar essa ausência como falha: a designação é ato posterior e não é 
 - **THEN** o caminho de cadastro não lhe é oferecido, e a recusa do núcleo, se ocorrer, é
   apresentada em linguagem simples
 
+### Requirement: O Admin desativa e reativa o ponto de apoio pela aplicação
+
+A App 03 SHALL oferecer ao Admin, no ponto de apoio já cadastrado, as ações de **desativar** e
+**reativar**, cada uma exigindo motivo antes de confirmar. A lista de pontos de apoio SHALL
+distinguir o ativo do inativo, e o inativo SHALL continuar visível — é histórico, não some. As
+ações NEVER SHALL ser oferecidas a quem não é Admin. (`RF-07-47`, `RN-07-33`, `RN-02-21`,
+PRD-02 §4)
+
+#### Scenario: Admin desativa um ponto de apoio
+
+- **WHEN** um Admin em sessão desativa um ponto de apoio informando o motivo
+- **THEN** o ponto passa a aparecer como inativo na lista, e o motivo fica registrado
+
+#### Scenario: Inativo continua na lista
+
+- **WHEN** um Admin abre a lista de pontos de apoio de uma comunidade que tem um inativo
+- **THEN** o inativo aparece, distinguido do ativo
+
+#### Scenario: Mestre não vê a ação
+
+- **WHEN** um Mestre em sessão abre um ponto de apoio
+- **THEN** as ações de desativar e reativar não lhe são oferecidas
+
+#### Scenario: Sem motivo não confirma
+
+- **WHEN** o Admin tenta confirmar a desativação com o motivo vazio
+- **THEN** a aplicação aponta o campo em falta e nada é enviado ao núcleo
+
+### Requirement: A recusa da desativação diz o que está prendendo o espaço
+
+A App 03 SHALL apresentar em linguagem simples por que a desativação foi recusada: **quantas
+aulas futuras** prendem o ponto de apoio, ou **quais tipos de recurso** ainda têm saldo nele. A
+aplicação SHALL oferecer, na recusa por saldo, o caminho da **transferência**, e NEVER SHALL
+apresentar código de erro cru. (`RF-07-47`, `RN-07-01`, `RN-07-15`, PRD-02 §10)
+
+#### Scenario: Recusa por aula futura é explicada
+
+- **WHEN** o núcleo recusa a desativação porque há aulas futuras no ponto de apoio
+- **THEN** a aplicação diz quantas aulas o prendem, sem jargão de TI
+
+#### Scenario: Recusa por saldo oferece a transferência
+
+- **WHEN** o núcleo recusa a desativação porque ainda há saldo no ponto de apoio
+- **THEN** a aplicação diz quais tipos têm saldo e oferece o caminho de transferi-los
+
+### Requirement: O Admin transfere o saldo de um ponto de apoio para outro
+
+A App 03 SHALL oferecer ao Admin a **transferência** de um tipo de recurso de um ponto de apoio
+para outro, informando tipo, quantidade, destino e motivo. A aplicação SHALL apresentar o saldo
+disponível na origem antes de confirmar, NEVER SHALL oferecer como destino um ponto de apoio
+inativo nem o próprio ponto de origem, e SHALL apresentar a transferência confirmada como **um
+fato só**, não como dois lançamentos soltos. (`RF-07-19`, `RN-07-15`, `RN-07-33`)
+
+#### Scenario: Admin transfere um tipo de recurso
+
+- **WHEN** um Admin informa tipo, quantidade, ponto de apoio de destino e motivo, e confirma
+- **THEN** a transferência acontece e os saldos dos dois pontos de apoio aparecem atualizados
+
+#### Scenario: O destino inativo não é oferecido
+
+- **WHEN** o Admin escolhe o destino da transferência
+- **THEN** os pontos de apoio inativos e o próprio ponto de origem não aparecem entre as
+  opções
+
+#### Scenario: Quantidade acima do saldo é barrada antes de enviar
+
+- **WHEN** o Admin informa quantidade maior que o saldo disponível na origem
+- **THEN** a aplicação aponta o limite e nada é enviado ao núcleo
+
 ### Requirement: O Admin agenda a aula com comunidade, data e horários
 
 A App 03 SHALL permitir ao Admin agendar a aula informando **comunidade**, **data**, **horário
@@ -307,3 +376,103 @@ continuar apresentável nesse ambiente, sem apresentar a ausência do provedor c
 
 - **WHEN** a tela de entrada é apresentada num ambiente cujo client ID está configurado
 - **THEN** o caminho de entrada pela conta social é oferecido ao adulto
+
+### Requirement: O Admin cadastra e edita o Guerreiro(a) pela aplicação
+
+A App 03 SHALL oferecer ao Admin o cadastro de Guerreiro(a) com nome, data de nascimento, nick
+e características do avatar, e a edição do que já foi cadastrado. A aplicação SHALL apontar o
+campo em falta antes de chamar o núcleo e SHALL apresentar em linguagem simples a recusa por
+nick em uso, **sem dizer de quem é o nick**. A aplicação NEVER SHALL exibir a imagem do
+Guerreiro(a): a representação é o avatar. (`RF-02-01`, `RN-02-22`, invariante 12 do documento
+99 §6, PRD-02 §11)
+
+#### Scenario: Admin cadastra o Guerreiro(a)
+
+- **WHEN** um Admin em sessão informa nome, nascimento, nick e avatar e confirma
+- **THEN** o Guerreiro(a) passa a existir e a aplicação o apresenta entre os cadastrados
+
+#### Scenario: Nick em uso é explicado sem revelar o dono
+
+- **WHEN** o núcleo recusa o cadastro porque o nick já está em uso
+- **THEN** a aplicação pede outro nick, sem informar quem o usa nem de que papel
+
+#### Scenario: A gestão não vê a imagem da criança
+
+- **WHEN** um Admin abre o cadastro de um Guerreiro(a)
+- **THEN** a tela mostra avatar e nick, e nenhuma imagem real aparece
+
+### Requirement: O Admin cadastra Mestre e Apoiador declarando os artefatos
+
+A App 03 SHALL oferecer ao Admin o cadastro de Mestre e de Apoiador com nome, e-mail, WhatsApp
+opcional e os artefatos comprobatórios, cada um com endereço e rótulo. A aplicação SHALL
+impedir a confirmação sem ao menos um artefato e SHALL explicar por quê. A tela NEVER SHALL
+oferecer anexo de arquivo como artefato, nem exigir nick. (`RF-02-02`, `RF-02-03`, `RF-02-04`,
+`RN-02-01`, documento 02 §1)
+
+#### Scenario: Admin cadastra Mestre com um link
+
+- **WHEN** um Admin informa nome, e-mail e um link de currículo com rótulo e confirma
+- **THEN** o Mestre passa a existir e a aplicação o apresenta entre os cadastrados
+
+#### Scenario: Sem artefato a aplicação não deixa confirmar
+
+- **WHEN** o Admin tenta confirmar o cadastro de um Apoiador sem artefato algum
+- **THEN** a aplicação explica que ao menos um é obrigatório e nada é enviado ao núcleo
+
+#### Scenario: A tela de adulto não pede nick ao Admin
+
+- **WHEN** um Admin abre o cadastro de Mestre
+- **THEN** a tela não exige nick, porque o Mestre o define no primeiro acesso
+
+### Requirement: A aplicação oferece ao Admin gravar o nick do adulto na colisão
+
+A App 03 SHALL oferecer ao Admin, na ficha de um Mestre ou de um Apoiador, o caminho de gravar
+ou trocar o nick daquela persona, e SHALL sinalizar na lista quem está **sem nick**. A
+aplicação SHALL apresentar em linguagem simples que o adulto sem nick não aparece em superfície
+pública, e NEVER SHALL sugerir ao Admin um nick nem revelar de quem é o nick recusado.
+(`RF-02-01`, `RN-01-30`, `RN-14-10`)
+
+#### Scenario: Adulto sem nick é sinalizado na lista
+
+- **WHEN** um Admin abre a lista de Mestres e Apoiadores
+- **THEN** quem está sem nick aparece sinalizado, com o caminho de gravá-lo
+
+#### Scenario: Admin grava o nick que recebeu por fora
+
+- **WHEN** o Admin grava um nick disponível na ficha de um Apoiador sem nick
+- **THEN** o nick passa a valer e a sinalização de ausência some
+
+#### Scenario: A aplicação não sugere nick ao Admin
+
+- **WHEN** o Admin abre o caminho de gravar nick
+- **THEN** a tela não oferece sugestão alguma, e o nick é o que a pessoa lhe passou
+
+### Requirement: O Admin inclui outro Admin e cadastra o responsável com o vínculo
+
+A App 03 SHALL oferecer ao Admin a inclusão manual de outro Admin (`RF-02-05`) e o cadastro de
+responsável com o **vínculo** a Guerreiros e Guerreiras já cadastrados, declarando o **grau de
+parentesco** em texto livre (`RF-02-06`). A aplicação SHALL impedir o quarto vínculo de um
+mesmo Guerreiro(a), respeitando o teto de três responsáveis, e SHALL oferecer a criação de
+**credencial de usuário e senha provisória** para o adulto sem conta social (`RF-02-07`).
+(`RN-02-02`, `RN-02-08`, invariante 3 do documento 99 §6)
+
+#### Scenario: Admin inclui outro Admin
+
+- **WHEN** um Admin em sessão informa nome e e-mail de um novo Admin e confirma
+- **THEN** o Admin novo passa a existir, sem nenhum caminho de autocadastro envolvido
+
+#### Scenario: Responsável é vinculado com grau de parentesco
+
+- **WHEN** o Admin cadastra um responsável e o vincula a um Guerreiro(a) declarando o
+  parentesco
+- **THEN** o vínculo passa a existir com o parentesco declarado
+
+#### Scenario: Quarto responsável é barrado
+
+- **WHEN** o Admin tenta vincular um quarto responsável ao mesmo Guerreiro(a)
+- **THEN** a aplicação explica o teto de três e o vínculo não é criado
+
+#### Scenario: Adulto sem conta social recebe senha provisória
+
+- **WHEN** o Admin cria credencial de usuário e senha provisória para um adulto cadastrado
+- **THEN** a aplicação exibe a senha provisória uma vez, para entrega, e não a recupera depois

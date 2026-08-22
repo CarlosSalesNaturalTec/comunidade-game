@@ -18,7 +18,13 @@ from ..paginacao import (
 )
 from ..personas.modelo import Persona
 from .modelo import PontoDeApoio
-from .regra import cadastrar_ponto_de_apoio, designar_responsavel, escopo_de_comunidade_da_leitura
+from .regra import (
+    cadastrar_ponto_de_apoio,
+    desativar_ponto_de_apoio,
+    designar_responsavel,
+    escopo_de_comunidade_da_leitura,
+    reativar_ponto_de_apoio,
+)
 
 roteador = APIRouter()
 
@@ -148,6 +154,48 @@ def designar_responsavel_rota(
         ponto_de_apoio,
         operador=operador,
         responsavel=responsavel,
+    )
+    sessao_bd.commit()
+    return _saida(ponto_de_apoio)
+
+
+class MudarSituacaoDoPontoDeApoioEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    motivo: str = Field(min_length=1)
+
+
+@roteador.post("/pontos-de-apoio/{id_do_ponto_de_apoio}/desativacao")
+def desativar_ponto_de_apoio_rota(
+    id_do_ponto_de_apoio: uuid.UUID,
+    entrada: MudarSituacaoDoPontoDeApoioEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PontoDeApoioSaida:
+    """Restrita ao Admin — bloqueada por aula futura e por saldo
+    remanescente, cada bloqueio dizendo o que prende o espaço (`RF-07-47`,
+    `RN-07-01`, `RN-07-15`, `RN-07-33`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    ponto_de_apoio = sessao_bd.get(PontoDeApoio, id_do_ponto_de_apoio)
+    ponto_de_apoio = desativar_ponto_de_apoio(
+        sessao_bd, ponto_de_apoio, operador=operador, motivo=entrada.motivo
+    )
+    sessao_bd.commit()
+    return _saida(ponto_de_apoio)
+
+
+@roteador.post("/pontos-de-apoio/{id_do_ponto_de_apoio}/reativacao")
+def reativar_ponto_de_apoio_rota(
+    id_do_ponto_de_apoio: uuid.UUID,
+    entrada: MudarSituacaoDoPontoDeApoioEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PontoDeApoioSaida:
+    """Restrita ao Admin (`RF-07-47`, `RN-07-33`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    ponto_de_apoio = sessao_bd.get(PontoDeApoio, id_do_ponto_de_apoio)
+    ponto_de_apoio = reativar_ponto_de_apoio(
+        sessao_bd, ponto_de_apoio, operador=operador, motivo=entrada.motivo
     )
     sessao_bd.commit()
     return _saida(ponto_de_apoio)
