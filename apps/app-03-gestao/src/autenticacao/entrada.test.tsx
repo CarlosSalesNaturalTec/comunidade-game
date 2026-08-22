@@ -1,19 +1,27 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ErroDaApi } from "comum/api";
+import { limparToken, ProvedorDeSessao, useSessao } from "comum/autenticacao";
+import * as api from "comum/autenticacao/api";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ErroDaApi } from "../api/cliente";
-import * as api from "./api";
-import { limparToken } from "./armazenamentoDeSessao";
-import { ProvedorDeSessao, useSessao } from "./ContextoDeSessao";
 import { TelaDeEntrada } from "./TelaDeEntrada";
 
-vi.mock("./BotaoDeEntradaGoogle", () => ({
-  BotaoDeEntradaGoogle: ({ aoReceberIdToken }: { aoReceberIdToken: (t: string) => void }) => (
-    <button type="button" onClick={() => aoReceberIdToken("id-token-de-teste")}>
-      Entrar com Google
-    </button>
-  ),
-}));
+vi.mock("comum/autenticacao", async () => {
+  const real =
+    await vi.importActual<typeof import("comum/autenticacao")>("comum/autenticacao");
+  return {
+    ...real,
+    BotaoDeEntradaGoogle: ({
+      aoReceberIdToken,
+    }: {
+      aoReceberIdToken: (t: string) => void;
+    }) => (
+      <button type="button" onClick={() => aoReceberIdToken("id-token-de-teste")}>
+        Entrar com Google
+      </button>
+    ),
+  };
+});
 
 function Conteudo() {
   const { sessao, restaurando, sair } = useSessao();

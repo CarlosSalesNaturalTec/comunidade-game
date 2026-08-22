@@ -539,6 +539,10 @@ foi definida no PRD-01 — a App 03 apenas a consulta.
 - **Tipificação das infrações** que embasam a pontuação negativa — quem lança já está decidido;
   o catálogo de motivos nasce do Código de Conduta co-criado com os Guerreiros e Guerreiras, e
   por isso não é decisão a tomar antes da primeira turma.
+- **`RF-02-71` não tem rota**: este PRD não declara a leitura da autoria — trilha, missão e
+  atividade — pelo Admin, e o `GET /trilhas/{id}` do PRD-09 é público e serve trilha publicada,
+  não o rascunho que o Admin precisa consultar. Sem decisão, o Admin não tem por onde ler o que
+  os Mestres autoram.
 
 Quatro saíram desta lista, decididas e gravadas na §13: a composição da amostra de auditoria, a
 pontuação da atividade cadastrada, a estratégia de conservação do acervo — que reduziu o escopo

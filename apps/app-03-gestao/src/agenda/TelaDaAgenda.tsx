@@ -1,7 +1,7 @@
+import { ehRecusaDeSessao } from "comum/api";
+import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, CampoDeDataHora, Moldura } from "comum/react";
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
-import { ehRecusaDeSessao } from "../api/cliente";
-import { useSessao } from "../autenticacao/ContextoDeSessao";
 import { type ComunidadeDaLista, listarComunidades } from "../comunidades/api";
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "../pontos-de-apoio/api";
 import { type AulaDaAgenda, cancelarAula, listarAgenda } from "./api";

@@ -1,4 +1,4 @@
-import { chamarNucleo } from "../api/cliente";
+import { chamarNucleo } from "comum/api";
 
 export type NaturezaDoPoder = "de_guerreiro" | "derivado_do_aporte";
 export type VigenciaDoPoder = "vigente" | "ciclo_futuro";

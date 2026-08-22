@@ -697,6 +697,14 @@ avulsa**.
 - **Quais recompensas em quais marcos**: a regra está decidida — recompensa se conquista em
   marco —, mas o catálogo do Ciclo 01 ainda não diz que marco entrega o quê. **Trava** o
   `RF-09-71` na prática, não no desenho.
+- **A situação da trilha tem dois ou três valores?** Este §8 lista rascunho, publicada e
+  despublicada; o `RF-09-11` diz que a trilha despublicada **volta a rascunho** — dois
+  estados. O núcleo, desde a primeira fatia, implementa dois. **Trava** a fatia de publicação
+  e despublicação.
+- **Atividade avulsa, fora de trilha**: este §8 a reconhece — "`Atividade` sem missão só
+  existe como atividade avulsa da gestão" —, mas `Atividade.missao_id` é obrigatório no
+  núcleo e a spec `atividade-de-trilha` exige a missão. Não existe onde gravá-la. **Trava** o
+  `RF-02-29` do PRD-02.
 
 Quatro saíram desta lista, decididas: os **formatos aceitos no upload** — lista fechada de MP4,
 WebM, JPG, PNG, WebP, MP3 e PDF, com moderação pela auditoria mensal por amostragem —, a

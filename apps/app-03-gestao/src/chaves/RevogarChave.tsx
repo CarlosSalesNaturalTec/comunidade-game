@@ -1,7 +1,7 @@
+import { ehRecusaDeSessao } from "comum/api";
+import { useSessao } from "comum/autenticacao";
 import { Botao, Campo } from "comum/react";
 import { useState } from "react";
-import { ehRecusaDeSessao } from "../api/cliente";
-import { useSessao } from "../autenticacao/ContextoDeSessao";
 import { revogarChave } from "./api";
 
 interface Props {

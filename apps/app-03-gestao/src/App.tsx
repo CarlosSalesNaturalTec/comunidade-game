@@ -1,6 +1,6 @@
+import { ProvedorDeSessao, useSessao } from "comum/autenticacao";
 import { useState } from "react";
 import { TelaDaAgenda } from "./agenda/TelaDaAgenda";
-import { ProvedorDeSessao, useSessao } from "./autenticacao/ContextoDeSessao";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeChaves } from "./chaves/TelaDeChaves";
 import { TelaDeComunidades } from "./comunidades/TelaDeComunidades";

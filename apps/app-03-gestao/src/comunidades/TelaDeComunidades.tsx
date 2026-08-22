@@ -1,7 +1,7 @@
+import { ehRecusaDeSessao } from "comum/api";
+import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
-import { ehRecusaDeSessao } from "../api/cliente";
-import { useSessao } from "../autenticacao/ContextoDeSessao";
 import { type ComunidadeDaLista, listarComunidades } from "./api";
 import { FormularioDeComunidade } from "./FormularioDeComunidade";
 import { ListaDeComunidades } from "./ListaDeComunidades";

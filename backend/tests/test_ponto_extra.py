@@ -23,6 +23,7 @@ def _lancar(sessao, *, mestre, guerreiro, missao, desfecho):
         sessao,
         operador=mestre,
         missao=missao,
+        titulo="Atividade de Teste",
         modalidade=ModalidadeDeAtividade.individual,
         formato=FormatoDeAtividade.presencial,
         natureza="construcao",

@@ -7,13 +7,18 @@
   "exports": {
     "./tokens.css": "./tokens.css",
     "./fontes.css": "./fontes.css",
-    "./react": "./react/indice.ts"
+    "./react": "./react/indice.ts",
+    "./api": "./api/indice.ts",
+    "./autenticacao": "./autenticacao/indice.ts",
+    "./autenticacao/api": "./autenticacao/api.ts"
   },
   "files": [
     "tokens.css",
     "fontes.css",
     "fontes",
-    "react"
+    "react",
+    "api",
+    "autenticacao"
   ],
   "scripts": {
     "test": "vitest run",

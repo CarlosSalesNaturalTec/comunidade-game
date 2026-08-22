@@ -83,6 +83,7 @@ from nucleo.sessoes.token import gerar_token
 from nucleo.tempo import DataHoraComFuso
 from nucleo.trilhas.modelo import (
     Atividade,
+    EtapaDoCiclo,
     FormatoDeAtividade,
     Missao,
     ModalidadeDeAtividade,
@@ -280,6 +281,7 @@ def app(sessao, configuracao):
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
     from nucleo.ressarcimentos.rotas import roteador as roteador_de_ressarcimentos
     from nucleo.sessoes.rotas import roteador as roteador_de_sessoes
+    from nucleo.trilhas.rotas import roteador as roteador_de_trilhas
     from nucleo.trocas.rotas import roteador as roteador_de_trocas
     from nucleo.vitrine.rotas import roteador as roteador_de_vitrine
 
@@ -313,6 +315,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_trocas)
     incluir_roteador_de_dados(aplicacao, roteador_de_patrimonio)
     incluir_roteador_de_dados(aplicacao, roteador_de_recompensas_de_marco)
+    incluir_roteador_de_dados(aplicacao, roteador_de_trilhas)
     return aplicacao
 
 
@@ -718,17 +721,23 @@ def criar_missao(sessao):
     def _criar(
         trilha: Trilha,
         autor: Persona,
+        titulo: str = "Missão de Teste",
         posicao: int = 1,
         nivel_de_dificuldade: int = 1,
         obrigatoria: bool = True,
+        etapa_do_ciclo: EtapaDoCiclo = EtapaDoCiclo.desenvolvimento,
         e_sondagem: bool = False,
+        cadencia_de_retomada: list[int] | None = None,
     ) -> Missao:
         missao = Missao(
             trilha_id=trilha.id,
+            titulo=titulo,
             posicao=posicao,
             nivel_de_dificuldade=nivel_de_dificuldade,
             obrigatoria=obrigatoria,
+            etapa_do_ciclo=etapa_do_ciclo,
             e_sondagem=e_sondagem,
+            cadencia_de_retomada=cadencia_de_retomada,
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
         )
@@ -745,6 +754,8 @@ def criar_atividade(sessao):
     def _criar(
         missao: Missao,
         autor: Persona,
+        titulo: str = "Atividade de Teste",
+        descricao: str | None = None,
         modalidade: ModalidadeDeAtividade = ModalidadeDeAtividade.individual,
         formato: FormatoDeAtividade = FormatoDeAtividade.presencial,
         natureza: str = "construcao",
@@ -752,6 +763,8 @@ def criar_atividade(sessao):
     ) -> Atividade:
         atividade = Atividade(
             missao_id=missao.id,
+            titulo=titulo,
+            descricao=descricao,
             modalidade=modalidade,
             formato=formato,
             natureza=natureza,

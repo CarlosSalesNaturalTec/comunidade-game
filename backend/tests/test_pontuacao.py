@@ -29,6 +29,7 @@ def _lancar(sessao, *, mestre, guerreiro, missao, desfecho=DesfechoDoResultado.r
         sessao,
         operador=mestre,
         missao=missao,
+        titulo="Atividade de Teste",
         modalidade=kwargs.pop("modalidade", ModalidadeDeAtividade.individual),
         formato=FormatoDeAtividade.presencial,
         natureza=kwargs.pop("natureza", "construcao"),

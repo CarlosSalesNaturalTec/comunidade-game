@@ -1,7 +1,7 @@
+import { ehRecusaDeSessao } from "comum/api";
+import { useSessao } from "comum/autenticacao";
 import { Aviso, Cabecalho, Moldura } from "comum/react";
 import { useCallback, useEffect, useId, useState } from "react";
-import { ehRecusaDeSessao } from "../api/cliente";
-import { useSessao } from "../autenticacao/ContextoDeSessao";
 import { AvaliacaoDaSolicitacao } from "./AvaliacaoDaSolicitacao";
 import { AvaliacaoDeChave } from "./AvaliacaoDeChave";
 import { AvaliacaoDeDados } from "./AvaliacaoDeDados";

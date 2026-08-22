@@ -1,4 +1,3 @@
-import { CHAVE_DE_APLICACAO, URL_DO_NUCLEO } from "./configuracao";
 import type { CorpoDeErro } from "./tipos";
 
 const NOME_DO_CABECALHO_DA_CHAVE = "X-Chave-Aplicacao";
@@ -34,6 +33,31 @@ export function ehRecusaDeSessao(erro: unknown): erro is ErroDaApi {
   return erro instanceof ErroDaApi && CODIGOS_DE_RECUSA_DE_SESSAO.has(erro.codigo);
 }
 
+interface ConfiguracaoDeAcesso {
+  chaveDeAplicacao: string;
+  urlDoNucleo: string;
+}
+
+// A chave e a URL não vêm embutidas em `comum/` — cada aplicação as declara
+// e chama esta função uma vez, no `main.tsx`, antes de renderizar (design —
+// decisão 6). Sem isso, `chamarNucleo` falha explícito em vez de partir com
+// cabeçalho de chave vazio.
+let configuracao: ConfiguracaoDeAcesso | null = null;
+
+export function configurarAcessoAoNucleo(config: ConfiguracaoDeAcesso): void {
+  configuracao = config;
+}
+
+function obterConfiguracao(): ConfiguracaoDeAcesso {
+  if (!configuracao) {
+    throw new Error(
+      "chamarNucleo foi chamado antes de configurarAcessoAoNucleo — configure o acesso " +
+        "ao núcleo no main.tsx da aplicação antes de renderizar.",
+    );
+  }
+  return configuracao;
+}
+
 interface OpcoesDeChamada {
   metodo?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   corpo?: unknown;
@@ -49,8 +73,10 @@ export async function chamarNucleo<T>(
   caminho: string,
   opcoes: OpcoesDeChamada = {},
 ): Promise<T> {
+  const { chaveDeAplicacao, urlDoNucleo } = obterConfiguracao();
+
   const cabecalhos: Record<string, string> = {
-    [NOME_DO_CABECALHO_DA_CHAVE]: CHAVE_DE_APLICACAO,
+    [NOME_DO_CABECALHO_DA_CHAVE]: chaveDeAplicacao,
   };
   if (opcoes.token) {
     cabecalhos[NOME_DO_CABECALHO_DE_SESSAO] = `Bearer ${opcoes.token}`;
@@ -59,7 +85,7 @@ export async function chamarNucleo<T>(
     cabecalhos["Content-Type"] = "application/json";
   }
 
-  const resposta = await fetch(`${URL_DO_NUCLEO}${caminho}`, {
+  const resposta = await fetch(`${urlDoNucleo}${caminho}`, {
     method: opcoes.metodo ?? "GET",
     headers: cabecalhos,
     body:

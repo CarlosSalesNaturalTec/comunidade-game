@@ -252,6 +252,21 @@ do Mestre a aplicam. O caminho de código entrou em duas changes: `nick-de-adult
 núcleo; `cadastro-de-personas` expôs as rotas de cadastro de cada papel e o caminho em que o
 Admin grava o nick quando a escolha do adulto colidiu.
 
+O PRD-09 recebeu a primeira fatia: a change `esqueleto-da-area-do-mestre-e-autoria-da-trilha`
+abriu a porta HTTP da autoria — `POST /trilhas`, `GET /trilhas/minhas`,
+`POST /trilhas/{id}/missoes`, `POST /missoes/{id}/atividades` e `POST /missoes/{id}/retomada` —,
+reexpondo `trilhas/regra.py` sem reescrever nenhuma recusa (`RF-09-01` a `RF-09-04`,
+`RF-09-69`, `RF-09-70`, `RF-09-80`, `RF-09-81`, `RF-09-83`, `RF-09-101`). Destrava, sem
+tocá-las, três rotas órfãs de fatias anteriores do PRD-07 e do PRD-01: `POST
+/desafios-de-coleta`, `POST /trilhas/{id}/recompensas-de-marco` e `POST /aulas/{id}/lancamentos`.
+A `Missao` ganhou **título**, **etapa do ciclo** e **cadência de retomada**; a `Atividade`
+ganhou **título** e **descrição** (PRD-09 §8). Nasceu a **App 09** — a segunda aplicação do
+repositório —, com a entrada do Mestre por login social e a autoria de trilha, missão e
+atividade de ponta a ponta; a fatia também subiu para `comum/` o cliente do núcleo e a sessão
+do adulto, até então só dentro da App 03, para servir as duas. Publicação e travas, culminância,
+template de missão, conteúdo e bibliografia, banco do Quiz, minhas turmas e lançamentos seguem
+pendentes — o PRD-09 continua **aprovado**.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

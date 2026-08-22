@@ -25,6 +25,7 @@ def _marcar_marco_alcancado(sessao, *, mestre, guerreiro, missao):
         sessao,
         operador=mestre,
         missao=missao,
+        titulo="Atividade de Teste",
         modalidade=ModalidadeDeAtividade.individual,
         formato=FormatoDeAtividade.presencial,
         natureza="construcao",

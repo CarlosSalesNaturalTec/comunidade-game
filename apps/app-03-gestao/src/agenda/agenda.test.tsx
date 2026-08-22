@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { SessaoAberta } from "../autenticacao/ContextoDeSessao";
 import * as comunidadesApi from "../comunidades/api";
 import * as pontosDeApoioApi from "../pontos-de-apoio/api";
 import * as agendaApi from "./api";
@@ -48,17 +48,16 @@ const PONTO_DE_APOIO = {
   ativo: true,
 };
 
-vi.mock("../autenticacao/ContextoDeSessao", async () => {
-  const real = await vi.importActual<typeof import("../autenticacao/ContextoDeSessao")>(
-    "../autenticacao/ContextoDeSessao",
-  );
+vi.mock("comum/autenticacao", async () => {
+  const real =
+    await vi.importActual<typeof import("comum/autenticacao")>("comum/autenticacao");
   return {
     ...real,
     useSessao: vi.fn(),
   };
 });
 
-import { useSessao } from "../autenticacao/ContextoDeSessao";
+import { useSessao } from "comum/autenticacao";
 
 function configurarSessao(sessao: SessaoAberta | null) {
   vi.mocked(useSessao).mockReturnValue({

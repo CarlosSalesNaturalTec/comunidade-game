@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ErroDaApi } from "comum/api";
+import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as agendaApi from "../agenda/api";
-import { ErroDaApi } from "../api/cliente";
-import type { SessaoAberta } from "../autenticacao/ContextoDeSessao";
 import type { GuerreiroDaLista } from "./api";
 import * as personasApi from "./api";
 import { FormularioDeAdulto } from "./FormularioDeAdulto";
@@ -38,17 +38,16 @@ const SESSAO_DE_ADMIN: SessaoAberta = {
   permissoes: {},
 };
 
-vi.mock("../autenticacao/ContextoDeSessao", async () => {
-  const real = await vi.importActual<typeof import("../autenticacao/ContextoDeSessao")>(
-    "../autenticacao/ContextoDeSessao",
-  );
+vi.mock("comum/autenticacao", async () => {
+  const real =
+    await vi.importActual<typeof import("comum/autenticacao")>("comum/autenticacao");
   return {
     ...real,
     useSessao: vi.fn(),
   };
 });
 
-import { useSessao } from "../autenticacao/ContextoDeSessao";
+import { useSessao } from "comum/autenticacao";
 
 function configurarSessao(sessao: SessaoAberta | null) {
   vi.mocked(useSessao).mockReturnValue({
