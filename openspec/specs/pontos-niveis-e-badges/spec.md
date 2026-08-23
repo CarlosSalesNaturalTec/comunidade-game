@@ -16,7 +16,7 @@ própria dele e alcançar apenas o **coletor** da série.
 
 O ponto regular NEVER SHALL ser **trocado por recompensa**: a troca alcança só o saldo de pontos
 extras. Ele SHALL debitar **apenas por fato desfeito** — o **estorno de registro de coleta
-invalidado** e a **ocorrência de conduta lançada**, esta de entrega posterior. O saldo NEVER
+invalidado** e a **ocorrência de conduta lançada**, ambos exercitáveis. O saldo NEVER
 SHALL ficar negativo: débito maior que o saldo da trilha ou do poder SHALL pará-lo em **zero**.
 O registro de ponto regular NEVER SHALL ser removido. (`RF-01-21`, `RF-01-57`, `RF-01-64`,
 `RF-01-69`, `RF-08-09`, `RN-01-38`, `RN-01-55`, invariante 23 do documento 99 §6, 11 §5)
@@ -48,6 +48,11 @@ O registro de ponto regular NEVER SHALL ser removido. (`RF-01-21`, `RF-01-57`, `
 
 - **WHEN** um registro de coleta que creditou ponto regular é invalidado na auditoria
 - **THEN** o núcleo reduz o saldo do coletor no valor exato que aquele registro creditou
+
+#### Scenario: Ocorrência de conduta lançada debita o ponto regular
+
+- **WHEN** o Mestre da aula ou um Admin lança uma ocorrência de conduta contra um Guerreiro(a)
+- **THEN** o núcleo reduz o saldo dele, na trilha ou no poder da ocorrência, no valor lançado
 
 #### Scenario: Débito maior que o saldo para em zero
 
