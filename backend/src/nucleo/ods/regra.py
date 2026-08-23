@@ -1,4 +1,5 @@
 import uuid
+from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
 
@@ -9,8 +10,26 @@ from ..erros import ErroDeValidacao
 from ..personas.modelo import Persona
 from ..resultados.modelo import Resultado
 from ..trilhas.modelo import Atividade, Missao, Trilha
-from ..trilhas.regra import conferir_posse_da_trilha
+from ..trilhas.regra import conferir_autoria_estrita_da_trilha
 from .modelo import OBJETIVO_ODS_MAXIMO, OBJETIVO_ODS_MINIMO, EtiquetaOds
+
+
+@dataclass(frozen=True)
+class EtiquetaDeclarada:
+    """Uma linha da lista completa que a substituição recebe — objetivo
+    obrigatório e meta opcional (`RF-09-92`, `RF-09-98`)."""
+
+    objetivo: int | None
+    meta: str | None = None
+
+
+def _conferir_objetivo(objetivo: int | None) -> None:
+    if objetivo is None or not (OBJETIVO_ODS_MINIMO <= objetivo <= OBJETIVO_ODS_MAXIMO):
+        raise ErroDeValidacao(
+            mensagem=f"Objetivo ODS deve estar entre {OBJETIVO_ODS_MINIMO} e "
+            f"{OBJETIVO_ODS_MAXIMO}.",
+            campo="objetivo",
+        )
 
 
 def criar_etiqueta_ods(
@@ -23,25 +42,22 @@ def criar_etiqueta_ods(
     missao: Missao | None = None,
 ) -> EtiquetaOds:
     """Presa a exatamente uma trilha ou a exatamente uma missão, declarada
-    pelo Mestre autor da trilha — a mesma posse de `RF-01-16` (`RF-01-40`,
-    `RF-01-45`)."""
+    pelo **Mestre autor** da trilha — autoria estrita, a mesma da
+    publicação: nem outro Mestre nem o Admin declaram, porque o Admin não
+    edita a trilha de um Mestre (`RF-01-40`, `RF-01-45`, `RF-01-16`,
+    `RF-09-92`, `RF-09-98`, design — decisão 2)."""
     if (trilha is None) == (missao is None):
         raise ErroDeValidacao(
             mensagem="Etiqueta ODS exige exatamente uma trilha ou uma missão.",
             campo="trilha_id",
         )
 
-    trilha_da_posse = trilha
+    trilha_da_autoria = trilha
     if missao is not None:
-        trilha_da_posse = sessao.get(Trilha, missao.trilha_id)
-    conferir_posse_da_trilha(trilha_da_posse, operador)
+        trilha_da_autoria = sessao.get(Trilha, missao.trilha_id)
+    conferir_autoria_estrita_da_trilha(trilha_da_autoria, operador)
 
-    if objetivo is None or not (OBJETIVO_ODS_MINIMO <= objetivo <= OBJETIVO_ODS_MAXIMO):
-        raise ErroDeValidacao(
-            mensagem=f"Objetivo ODS deve estar entre {OBJETIVO_ODS_MINIMO} e "
-            f"{OBJETIVO_ODS_MAXIMO}.",
-            campo="objetivo",
-        )
+    _conferir_objetivo(objetivo)
 
     etiqueta = EtiquetaOds(
         objetivo=objetivo,
@@ -54,6 +70,87 @@ def criar_etiqueta_ods(
     sessao.add(etiqueta)
     sessao.flush()
     return etiqueta
+
+
+def _substituir_etiquetas(
+    sessao: Session,
+    *,
+    operador: Persona,
+    trilha_da_autoria: Trilha | None,
+    etiquetas: list[EtiquetaDeclarada],
+    trilha: Trilha | None = None,
+    missao: Missao | None = None,
+) -> list[EtiquetaOds]:
+    """Todas as recusas antes de qualquer escrita: confere a autoria e
+    valida **todos** os objetivos recebidos antes de apagar o que havia, de
+    modo que uma etiqueta inválida recuse a operação inteira e deixe o
+    conjunto anterior intacto (design — decisão 4)."""
+    conferir_autoria_estrita_da_trilha(trilha_da_autoria, operador)
+    for declarada in etiquetas:
+        _conferir_objetivo(declarada.objetivo)
+
+    consulta = sessao.query(EtiquetaOds)
+    consulta = (
+        consulta.filter_by(trilha_id=trilha.id)
+        if trilha is not None
+        else consulta.filter_by(missao_id=missao.id)
+    )
+    for anterior in consulta.all():
+        sessao.delete(anterior)
+    sessao.flush()
+
+    return [
+        criar_etiqueta_ods(
+            sessao,
+            operador=operador,
+            objetivo=declarada.objetivo,
+            meta=declarada.meta,
+            trilha=trilha,
+            missao=missao,
+        )
+        for declarada in etiquetas
+    ]
+
+
+def substituir_etiquetas_da_trilha(
+    sessao: Session,
+    *,
+    operador: Persona,
+    trilha: Trilha,
+    etiquetas: list[EtiquetaDeclarada],
+) -> list[EtiquetaOds]:
+    """A lista recebida substitui o conjunto que a trilha tinha: o anterior
+    é apagado e o recebido gravado, na mesma transação. Lista vazia deixa a
+    trilha sem etiqueta — legal no Ciclo 01 (`RF-09-93`). A substituição é
+    **escopada à trilha** e nunca alcança as etiquetas das missões dela, o
+    que preserva a precedência da etiqueta própria da missão (`RF-09-92`,
+    `RF-01-45`, design — decisões 1 e 4)."""
+    return _substituir_etiquetas(
+        sessao,
+        operador=operador,
+        trilha_da_autoria=trilha,
+        etiquetas=etiquetas,
+        trilha=trilha,
+    )
+
+
+def substituir_etiquetas_da_missao(
+    sessao: Session,
+    *,
+    operador: Persona,
+    missao: Missao,
+    etiquetas: list[EtiquetaDeclarada],
+) -> list[EtiquetaOds]:
+    """O mesmo da trilha, **escopado à missão**: nunca alcança as etiquetas
+    da trilha a que ela pertence (`RF-09-98`, `RF-01-45`, design —
+    decisões 1 e 4)."""
+    return _substituir_etiquetas(
+        sessao,
+        operador=operador,
+        trilha_da_autoria=sessao.get(Trilha, missao.trilha_id),
+        etiquetas=etiquetas,
+        missao=missao,
+    )
 
 
 def resolver_etiquetas_da_missao(sessao: Session, missao: Missao) -> list[EtiquetaOds]:

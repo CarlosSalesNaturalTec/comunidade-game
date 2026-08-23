@@ -2,6 +2,7 @@ import { Botao, EstadoDaLista } from "comum/react";
 import { useState } from "react";
 import type { EtapaDoCiclo, MissaoDaTrilha } from "./api";
 import { CadenciaDeRetomada } from "./CadenciaDeRetomada";
+import { EtiquetasOds } from "./EtiquetasOds";
 import { FormularioDeAtividade } from "./FormularioDeAtividade";
 
 interface Props {
@@ -49,6 +50,13 @@ export function ListaDeMissoes({ missoes, onAtualizarMissao }: Props) {
               : "Sem retomada declarada"}
           </p>
           <CadenciaDeRetomada missao={missao} onAtualizada={onAtualizarMissao} />
+
+          <EtiquetasOds
+            alvo="missao"
+            id={missao.id}
+            etiquetas={missao.etiquetas_ods}
+            onSalvo={(etiquetas) => onAtualizarMissao({ ...missao, etiquetas_ods: etiquetas })}
+          />
 
           <ul aria-label={`Atividades de ${missao.titulo}`}>
             {missao.atividades.map((atividade) => (

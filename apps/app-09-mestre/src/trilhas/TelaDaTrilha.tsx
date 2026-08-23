@@ -3,6 +3,7 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
 import { type MissaoDaTrilha, publicarTrilha, type TrilhaDoMestre } from "./api";
+import { EtiquetasOds } from "./EtiquetasOds";
 import { FormularioDeCulminancia } from "./FormularioDeCulminancia";
 import { FormularioDeMissao } from "./FormularioDeMissao";
 import { ListaDeMissoes } from "./ListaDeMissoes";
@@ -22,6 +23,26 @@ const ROTULO_DA_MODALIDADE_DA_CULMINANCIA: Record<string, string> = {
 // publicada não oferece a ação de novo (`RF-09-05`, `RF-09-11`).
 const SITUACOES_QUE_PODEM_PUBLICAR = new Set(["rascunho", "despublicada"]);
 
+// A cobertura é a união dos objetivos da trilha e das missões dela, sempre
+// agregada por trilha e nunca por Guerreiro(a) — refeita a cada confirmação
+// para a tela acompanhar o que o Mestre acabou de declarar (`RF-09-94`,
+// `RN-01-24`).
+function coberturaDaTrilha(trilha: TrilhaDoMestre): number[] {
+  const objetivos = new Set<number>();
+  for (const etiqueta of trilha.etiquetas_ods) objetivos.add(etiqueta.objetivo);
+  for (const missao of trilha.missoes) {
+    for (const etiqueta of missao.etiquetas_ods) objetivos.add(etiqueta.objetivo);
+  }
+  return [...objetivos].sort((a, b) => a - b);
+}
+
+function comCoberturaRefeita(trilha: TrilhaDoMestre): TrilhaDoMestre {
+  return {
+    ...trilha,
+    cobertura_ods: { ...trilha.cobertura_ods, objetivos: coberturaDaTrilha(trilha) },
+  };
+}
+
 export function TelaDaTrilha({ trilha, aoVoltar, onAtualizarTrilha }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
@@ -32,16 +53,20 @@ export function TelaDaTrilha({ trilha, aoVoltar, onAtualizarTrilha }: Props) {
 
   function aoAcrescentarMissao(missao: MissaoDaTrilha) {
     definirMostrarFormulario(false);
-    onAtualizarTrilha({ ...trilha, missoes: [...trilha.missoes, missao] });
+    onAtualizarTrilha(
+      comCoberturaRefeita({ ...trilha, missoes: [...trilha.missoes, missao] }),
+    );
   }
 
   function aoAtualizarMissao(missaoAtualizada: MissaoDaTrilha) {
-    onAtualizarTrilha({
-      ...trilha,
-      missoes: trilha.missoes.map((missao) =>
-        missao.id === missaoAtualizada.id ? missaoAtualizada : missao,
-      ),
-    });
+    onAtualizarTrilha(
+      comCoberturaRefeita({
+        ...trilha,
+        missoes: trilha.missoes.map((missao) =>
+          missao.id === missaoAtualizada.id ? missaoAtualizada : missao,
+        ),
+      }),
+    );
   }
 
   async function aoPublicar() {
@@ -82,6 +107,24 @@ export function TelaDaTrilha({ trilha, aoVoltar, onAtualizarTrilha }: Props) {
       />
 
       {trilha.motivo_da_situacao && <Aviso tipo="atencao">{trilha.motivo_da_situacao}</Aviso>}
+
+      <EtiquetasOds
+        alvo="trilha"
+        id={trilha.id}
+        etiquetas={trilha.etiquetas_ods}
+        onSalvo={(etiquetas) =>
+          onAtualizarTrilha(comCoberturaRefeita({ ...trilha, etiquetas_ods: etiquetas }))
+        }
+      />
+
+      <section aria-label="Cobertura de ODS da trilha">
+        <h3>Cobertura de ODS da trilha</h3>
+        <p>
+          {trilha.cobertura_ods.objetivos.length > 0
+            ? `${trilha.cobertura_ods.objetivos.map((objetivo) => `ODS ${objetivo}`).join(", ")} · ${trilha.cobertura_ods.ciclo}`
+            : "Nenhum ODS coberto por esta trilha ainda."}
+        </p>
+      </section>
 
       <section aria-label="Culminância">
         <h2>Culminância</h2>

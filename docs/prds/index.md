@@ -280,6 +280,27 @@ App 09 ganhou a tela da culminância e a ação de publicar. Etiqueta ODS, ediç
 publicada, duplicar trilha, desafio de desbloqueio e validação da criação original seguem
 pendentes — o PRD-09 continua **aprovado**.
 
+A terceira fatia, `etiqueta-ods-da-trilha-e-da-missao`, fechou o PRD-09 §6.1 abrindo a porta
+HTTP do módulo `ods` — regra inteira e testada desde a change `apoio-escolar-e-etiqueta-ods`,
+sem rota alguma até aqui. `POST /trilhas/{id}/ods` e `POST /missoes/{id}/ods` recebem a
+**lista completa** de etiquetas do alvo e **substituem** o conjunto que havia, numa operação
+idempotente que recusa por inteiro quando qualquer objetivo da lista é inválido — o conjunto
+anterior fica intacto (`RF-09-92`, `RF-09-98`). Lista vazia deixa o alvo sem etiqueta, legal no
+Ciclo 01 (`RF-09-93`), e a substituição é **escopada ao alvo**: a da trilha nunca alcança as
+etiquetas das missões dela, o que preserva a precedência do `RF-01-45`. Apagar não deixa ponta
+solta porque nada guarda chave estrangeira para a etiqueta — o desafio de coleta a resolve por
+derivação a cada leitura, e a fatia trava em teste o que a spec já previa: trocar a etiqueta da
+missão troca a do desafio, sem reprocessar pontuação (`RF-08-25`, `RN-08-21`). A declaração
+passa a exigir **autoria estrita** do Mestre autor, e o Admin recebe 403: não é decisão nova, é
+o código alcançando o documento 11, que sempre disse que quem declara é o Mestre autor. As
+saídas de trilha e de missão passam a devolver as etiquetas declaradas e a **cobertura de ODS
+da trilha**, com o rótulo do ciclo (`RF-09-94`, `RN-01-24`), e a App 09 ganhou a tela de ODS
+dentro da trilha e dentro da missão. Destrava a base de `GET /vitrine/ods/cobertura`, que
+estava no ar sobre tabela que ninguém podia alimentar. A trava de publicação sem etiqueta é do
+Ciclo 02 por texto do `RF-09-96`. Template de missão, conteúdo e bibliografia, banco do Quiz,
+minhas turmas e lançamentos, edição de trilha publicada, duplicar trilha, desafio de
+desbloqueio e validação da criação original seguem pendentes — o PRD-09 continua **aprovado**.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

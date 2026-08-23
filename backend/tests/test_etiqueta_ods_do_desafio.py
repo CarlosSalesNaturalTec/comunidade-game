@@ -1,5 +1,9 @@
 from nucleo.coletas.regra import resolver_etiquetas_do_desafio
-from nucleo.ods.regra import criar_etiqueta_ods
+from nucleo.ods.regra import (
+    EtiquetaDeclarada,
+    criar_etiqueta_ods,
+    substituir_etiquetas_da_missao,
+)
 from nucleo.personas.modelo import Papel
 from nucleo.pontuacao.modelo import Nivel, PontoRegular
 
@@ -64,6 +68,36 @@ def test_mudar_a_etiqueta_da_missao_muda_a_do_desafio(
 
     resolvidas = resolver_etiquetas_do_desafio(sessao, desafio)
     assert [e.objetivo for e in resolvidas] == [13]
+
+
+def test_substituir_a_etiqueta_da_missao_muda_a_do_desafio_sem_alterar_o_desafio(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta
+):
+    """O cenário que a porta de substituição torna exercitável de ponta a
+    ponta: o desafio resolve a etiqueta por derivação a cada leitura, então
+    trocar a da missão muda a dele sem que nada no desafio seja tocado
+    (`RF-08-25`, `RN-08-21`)."""
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    criar_etiqueta_ods(sessao, operador=mestre, objetivo=4, missao=missao)
+    sessao.commit()
+    desafio = criar_desafio_de_coleta(missao, mestre)
+    assert [e.objetivo for e in resolver_etiquetas_do_desafio(sessao, desafio)] == [4]
+    desafio_antes = (desafio.id, desafio.missao_id, desafio.tipo_de_coleta_id, desafio.cadencia)
+
+    substituir_etiquetas_da_missao(
+        sessao, operador=mestre, missao=missao, etiquetas=[EtiquetaDeclarada(objetivo=13)]
+    )
+    sessao.commit()
+
+    assert [e.objetivo for e in resolver_etiquetas_do_desafio(sessao, desafio)] == [13]
+    assert (
+        desafio.id,
+        desafio.missao_id,
+        desafio.tipo_de_coleta_id,
+        desafio.cadencia,
+    ) == desafio_antes
 
 
 def test_desafio_etiquetado_pontua_igual_ao_nao_etiquetado(

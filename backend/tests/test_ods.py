@@ -6,12 +6,15 @@ from nucleo.coletas.modelo import EstadoDaSerie
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
 from nucleo.ods.modelo import EtiquetaOds
 from nucleo.ods.regra import (
+    EtiquetaDeclarada,
     cobertura_por_comunidade,
     cobertura_por_poder,
     cobertura_por_trilha,
     comunidades_com_cobertura,
     criar_etiqueta_ods,
     resolver_etiquetas_da_missao,
+    substituir_etiquetas_da_missao,
+    substituir_etiquetas_da_trilha,
 )
 from nucleo.personas.modelo import Papel
 from nucleo.pontuacao.modelo import Nivel, PontoRegular
@@ -131,15 +134,20 @@ def test_mestre_que_nao_e_autor_e_recusado(sessao, criar_persona, criar_trilha):
     assert sessao.query(EtiquetaOds).count() == 0
 
 
-def test_admin_etiqueta_trilha_de_qualquer_mestre(sessao, criar_persona, criar_trilha):
+def test_admin_e_recusado(sessao, criar_persona, criar_trilha, criar_missao):
+    """Autoria estrita: o Admin não edita a trilha de um Mestre, nem a
+    etiqueta dela nem a de uma missão dela (`RF-09-92`, design — decisão
+    2)."""
     autor = criar_persona(Papel.mestre)
     admin = criar_persona(Papel.admin)
     trilha = criar_trilha(autor)
+    missao = criar_missao(trilha, autor)
 
-    etiqueta = criar_etiqueta_ods(sessao, operador=admin, objetivo=4, trilha=trilha)
-    sessao.commit()
-
-    assert etiqueta.trilha_id == trilha.id
+    with pytest.raises(PermissaoNegada):
+        criar_etiqueta_ods(sessao, operador=admin, objetivo=4, trilha=trilha)
+    with pytest.raises(PermissaoNegada):
+        criar_etiqueta_ods(sessao, operador=admin, objetivo=4, missao=missao)
+    assert sessao.query(EtiquetaOds).count() == 0
 
 
 def test_missao_com_etiqueta_propria_prevalece_sobre_a_da_trilha(
@@ -180,6 +188,169 @@ def test_declarar_etiqueta_nao_credita_pontuacao(sessao, criar_persona, criar_tr
 
     assert sessao.query(PontoRegular).count() == 0
     assert sessao.query(Nivel).count() == 0
+
+
+def _objetivos_da_trilha(sessao, trilha):
+    return sorted(
+        objetivo
+        for (objetivo,) in sessao.query(EtiquetaOds.objetivo).filter_by(trilha_id=trilha.id)
+    )
+
+
+def _objetivos_da_missao(sessao, missao):
+    return sorted(
+        objetivo
+        for (objetivo,) in sessao.query(EtiquetaOds.objetivo).filter_by(missao_id=missao.id)
+    )
+
+
+def test_a_lista_recebida_substitui_o_conjunto_anterior(sessao, criar_persona, criar_trilha):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    criar_etiqueta_ods(sessao, operador=mestre, objetivo=11, trilha=trilha)
+    criar_etiqueta_ods(sessao, operador=mestre, objetivo=4, trilha=trilha)
+    sessao.commit()
+
+    substituir_etiquetas_da_trilha(
+        sessao,
+        operador=mestre,
+        trilha=trilha,
+        etiquetas=[EtiquetaDeclarada(objetivo=4), EtiquetaDeclarada(objetivo=13, meta="13.3")],
+    )
+    sessao.commit()
+
+    assert _objetivos_da_trilha(sessao, trilha) == [4, 13]
+
+
+def test_lista_vazia_deixa_o_alvo_sem_etiqueta(sessao, criar_persona, criar_trilha):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    criar_etiqueta_ods(sessao, operador=mestre, objetivo=4, trilha=trilha)
+    sessao.commit()
+
+    substituir_etiquetas_da_trilha(sessao, operador=mestre, trilha=trilha, etiquetas=[])
+    sessao.commit()
+
+    assert _objetivos_da_trilha(sessao, trilha) == []
+
+
+def test_a_substituicao_e_idempotente(sessao, criar_persona, criar_trilha):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    lista = [EtiquetaDeclarada(objetivo=4, meta="4.7"), EtiquetaDeclarada(objetivo=13)]
+
+    substituir_etiquetas_da_trilha(sessao, operador=mestre, trilha=trilha, etiquetas=lista)
+    sessao.commit()
+    substituir_etiquetas_da_trilha(sessao, operador=mestre, trilha=trilha, etiquetas=lista)
+    sessao.commit()
+
+    assert _objetivos_da_trilha(sessao, trilha) == [4, 13]
+
+
+def test_substituir_na_trilha_nao_toca_as_etiquetas_das_missoes(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    criar_etiqueta_ods(sessao, operador=mestre, objetivo=4, trilha=trilha)
+    criar_etiqueta_ods(sessao, operador=mestre, objetivo=13, missao=missao)
+    sessao.commit()
+
+    substituir_etiquetas_da_trilha(
+        sessao, operador=mestre, trilha=trilha, etiquetas=[EtiquetaDeclarada(objetivo=11)]
+    )
+    sessao.commit()
+
+    assert _objetivos_da_missao(sessao, missao) == [13]
+    assert [e.objetivo for e in resolver_etiquetas_da_missao(sessao, missao)] == [13]
+
+
+def test_substituir_na_missao_nao_toca_as_etiquetas_da_trilha(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    criar_etiqueta_ods(sessao, operador=mestre, objetivo=4, trilha=trilha)
+    criar_etiqueta_ods(sessao, operador=mestre, objetivo=13, missao=missao)
+    sessao.commit()
+
+    substituir_etiquetas_da_missao(
+        sessao, operador=mestre, missao=missao, etiquetas=[EtiquetaDeclarada(objetivo=6)]
+    )
+    sessao.commit()
+
+    assert _objetivos_da_trilha(sessao, trilha) == [4]
+    assert _objetivos_da_missao(sessao, missao) == [6]
+
+
+def test_uma_etiqueta_invalida_recusa_a_operacao_inteira(sessao, criar_persona, criar_trilha):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    criar_etiqueta_ods(sessao, operador=mestre, objetivo=4, trilha=trilha)
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao):
+        substituir_etiquetas_da_trilha(
+            sessao,
+            operador=mestre,
+            trilha=trilha,
+            etiquetas=[EtiquetaDeclarada(objetivo=11), EtiquetaDeclarada(objetivo=19)],
+        )
+    sessao.rollback()
+
+    assert _objetivos_da_trilha(sessao, trilha) == [4]
+
+
+def test_substituicao_recusa_quem_nao_e_o_mestre_autor(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    autor = criar_persona(Papel.mestre)
+    outro_mestre = criar_persona(Papel.mestre)
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(autor)
+    missao = criar_missao(trilha, autor)
+    criar_etiqueta_ods(sessao, operador=autor, objetivo=4, trilha=trilha)
+    sessao.commit()
+
+    for operador in (outro_mestre, admin):
+        with pytest.raises(PermissaoNegada):
+            substituir_etiquetas_da_trilha(sessao, operador=operador, trilha=trilha, etiquetas=[])
+        with pytest.raises(PermissaoNegada):
+            substituir_etiquetas_da_missao(sessao, operador=operador, missao=missao, etiquetas=[])
+    sessao.rollback()
+
+    assert _objetivos_da_trilha(sessao, trilha) == [4]
+
+
+def test_substituir_etiqueta_nao_reprocessa_pontuacao(
+    sessao, criar_persona, criar_comunidade, criar_trilha, criar_missao
+):
+    """`RN-01-23`: a etiqueta não pontua, então trocá-la não recalcula,
+    estorna nem credita nada sobre registros já creditados."""
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade("Comunidade da substituição")
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    criar_etiqueta_ods(sessao, operador=mestre, objetivo=4, trilha=trilha)
+    sessao.commit()
+    _lancar_resultado(sessao, mestre=mestre, guerreiro=guerreiro, missao=missao)
+
+    pontos_antes = [(p.id, p.total) for p in sessao.query(PontoRegular).order_by(PontoRegular.id)]
+    assert pontos_antes, "o cenário exige crédito já lançado para valer como regressão"
+    niveis_antes = [(n.id, n.valor) for n in sessao.query(Nivel).order_by(Nivel.id)]
+
+    substituir_etiquetas_da_trilha(
+        sessao, operador=mestre, trilha=trilha, etiquetas=[EtiquetaDeclarada(objetivo=13)]
+    )
+    sessao.commit()
+
+    assert [
+        (p.id, p.total) for p in sessao.query(PontoRegular).order_by(PontoRegular.id)
+    ] == pontos_antes
+    assert [(n.id, n.valor) for n in sessao.query(Nivel).order_by(Nivel.id)] == niveis_antes
 
 
 def test_cobertura_por_trilha_soma_trilha_e_missoes(
