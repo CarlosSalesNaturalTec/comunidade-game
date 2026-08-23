@@ -119,6 +119,12 @@ class LancamentoImutavel(ErroDeAplicacao):
     mensagem = "Lançamento é somente inserção; a correção se faz por lançamento de ajuste."
 
 
+class OcorrenciaDeCondutaImutavel(ErroDeAplicacao):
+    status_code = 409
+    codigo = "ocorrencia_de_conduta_imutavel"
+    mensagem = "Ocorrência de conduta é somente inserção; a correção se faz por ocorrência nova."
+
+
 class AcessoAoTemplateImutavel(ErroDeAplicacao):
     status_code = 409
     codigo = "acesso_ao_template_imutavel"

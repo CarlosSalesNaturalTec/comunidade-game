@@ -26,6 +26,7 @@ from .equipes import modelo as _modelo_equipes  # noqa: F401
 from .fila import modelo as _modelo_fila  # noqa: F401
 from .livro_razao import modelo as _modelo_livro_razao  # noqa: F401
 from .locais import modelo as _modelo_locais  # noqa: F401
+from .ocorrencias_de_conduta import modelo as _modelo_ocorrencias_de_conduta  # noqa: F401
 from .ods import modelo as _modelo_ods  # noqa: F401
 from .patrimonio import modelo as _modelo_patrimonio  # noqa: F401
 from .personas import modelo as _modelo_personas  # noqa: F401

@@ -107,11 +107,12 @@ def debitar_ponto_regular(
     trilha_id: uuid.UUID | None = None,
     poder_id: uuid.UUID | None = None,
 ) -> PontoRegular:
-    """Debita por **fato desfeito** — hoje só o estorno de registro de
-    coleta invalidado (`RF-01-57`, `RF-01-69`). Exige exatamente uma
-    referência — trilha **ou** poder — e valor positivo, como o crédito; o
-    saldo nunca fica negativo — o débito maior que o total para em zero
-    (`RN-01-55`)."""
+    """Debita por **fato desfeito** — o estorno de registro de coleta
+    invalidado e a ocorrência de conduta lançada (`RF-01-57`, `RF-01-69`,
+    `ocorrencias_de_conduta.regra.lancar_ocorrencia_de_conduta`). Exige
+    exatamente uma referência — trilha **ou** poder — e valor positivo, como
+    o crédito; o saldo nunca fica negativo — o débito maior que o total para
+    em zero (`RN-01-55`)."""
     if (trilha_id is None) == (poder_id is None):
         raise ErroDeValidacao(
             mensagem="Débito de ponto regular exige exatamente uma trilha ou um poder."
