@@ -7,6 +7,7 @@ from sqlalchemy import (
     DateTime,
     Enum,
     ForeignKey,
+    Index,
     Integer,
     Text,
     UniqueConstraint,
@@ -26,11 +27,14 @@ TOTAL_DE_ALTERNATIVAS = 4
 
 class PerguntaDeQuiz(Base, ComAutoria):
     """Pergunta de múltipla escolha pré-cadastrada pelo Mestre curador, com
-    quatro alternativas e a indicação da correta (`RF-01-36`, `RF-01-03`,
-    documento 05 §5). **Sem tempo-limite**: o ritmo é de quem conduz a
-    partida, e o núcleo não cronometra. A pergunta é do banco do Mestre e
-    não pertence a uma partida — a mesma pergunta serve a partidas
-    diferentes, e por isso a anulação é da partida, não dela.
+    quatro alternativas, a indicação da correta e o vínculo com a missão a
+    que ela se refere, de onde a trilha decorre (`RF-01-36`, `RF-01-03`,
+    `RF-09-39`, documento 05 §5). **Sem tempo-limite**: o ritmo é de quem
+    conduz a partida, e o núcleo não cronometra. A pergunta é do banco do
+    Mestre e não pertence a uma partida — a mesma pergunta serve a partidas
+    diferentes, e por isso a anulação é da partida, não dela. **Sem
+    situação**: ela nasce disponível e assim permanece (decisão do
+    fundador, 2026-08-23, documento 09).
     """
 
     __tablename__ = "pergunta_de_quiz"
@@ -42,12 +46,19 @@ class PerguntaDeQuiz(Base, ComAutoria):
     alternativa_3: Mapped[str] = mapped_column(Text, nullable=False)
     alternativa_4: Mapped[str] = mapped_column(Text, nullable=False)
     alternativa_correta: Mapped[int] = mapped_column(Integer, nullable=False)
+    # A trilha é derivada da missão no cadastro e persistida — não pedida ao
+    # cliente — para que uma missão nunca seja declarada sob a trilha errada
+    # (design — decisão 1). Ambas alimentam o filtro de `RF-09-40`.
+    missao_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("missao.id"), nullable=False)
+    trilha_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("trilha.id"), nullable=False)
 
     __table_args__ = (
         CheckConstraint(
             f"alternativa_correta BETWEEN {PRIMEIRA_ALTERNATIVA} AND {TOTAL_DE_ALTERNATIVAS}",
             name="ck_pergunta_de_quiz_alternativa_correta",
         ),
+        Index("ix_pergunta_de_quiz_missao_id", "missao_id"),
+        Index("ix_pergunta_de_quiz_trilha_id", "trilha_id"),
     )
 
 

@@ -501,7 +501,7 @@ Resultado / Presenca / Lancamento
 | `BibliografiaDaMissao` | missão, título do acervo, capítulo recomendado, Apoiador creditado                                                                                                                         |
 | `Culminancia`          | trilha, descrição da criação original esperada, modalidade (individual ou equipe), critério de validação                                                                                   |
 | `CriacaoOriginal`      | Guerreiro(a) ou equipe com o papel de cada integrante, trilha, culminância, situação (entregue, validada, devolvida), Mestre validador, data e hora                                        |
-| `PerguntaDeQuiz`       | Mestre curador, trilha, missão, enunciado, quatro alternativas, alternativa correta, situação                                                                                              |
+| `PerguntaDeQuiz`       | Mestre curador, trilha, missão, enunciado, quatro alternativas, alternativa correta                                                                                                        |
 
 Imutabilidade e versionamento:
 

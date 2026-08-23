@@ -26,6 +26,7 @@ from nucleo.quiz.regra import (
     anular_pergunta,
     cadastrar_pergunta,
     encerrar_partida,
+    perguntas_do_mestre,
     registrar_resposta,
 )
 
@@ -93,13 +94,14 @@ def cenario(
     return _montar
 
 
-def _cadastrar(sessao, mestre, correta: int = CORRETA) -> PerguntaDeQuiz:
+def _cadastrar(sessao, mestre, missao, correta: int = CORRETA) -> PerguntaDeQuiz:
     return cadastrar_pergunta(
         sessao,
         operador=mestre,
         enunciado="Qual é a primeira capital do Brasil?",
         alternativas=list(ALTERNATIVAS),
         alternativa_correta=correta,
+        missao=missao,
     )
 
 
@@ -131,12 +133,14 @@ def _saldo(sessao, persona, trilha) -> int:
 def test_pergunta_com_quatro_alternativas_e_correta_grava_com_autoria(sessao, cenario):
     cen = cenario()
 
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     sessao.commit()
 
     assert pergunta.alternativa_1 == "Salvador"
     assert pergunta.alternativa_4 == "Ilhéus"
     assert pergunta.alternativa_correta == CORRETA
+    assert pergunta.missao_id == cen.missao.id
+    assert pergunta.trilha_id == cen.trilha.id
     assert pergunta.autor_id == cen.mestre.id
     assert pergunta.papel_do_autor == Papel.mestre.value
     assert pergunta.registrado_em is not None
@@ -152,6 +156,7 @@ def test_pergunta_com_tres_alternativas_e_recusada(sessao, cenario):
             enunciado="Enunciado.",
             alternativas=ALTERNATIVAS[:3],
             alternativa_correta=1,
+            missao=cen.missao,
         )
     assert excinfo.value.campo == "alternativas"
     assert sessao.query(PerguntaDeQuiz).count() == 0
@@ -167,8 +172,25 @@ def test_pergunta_sem_alternativa_correta_e_recusada(sessao, cenario):
             enunciado="Enunciado.",
             alternativas=list(ALTERNATIVAS),
             alternativa_correta=None,
+            missao=cen.missao,
         )
     assert excinfo.value.campo == "alternativa_correta"
+    assert sessao.query(PerguntaDeQuiz).count() == 0
+
+
+def test_pergunta_sem_missao_e_recusada(sessao, cenario):
+    cen = cenario()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        cadastrar_pergunta(
+            sessao,
+            operador=cen.mestre,
+            enunciado="Enunciado.",
+            alternativas=list(ALTERNATIVAS),
+            alternativa_correta=CORRETA,
+            missao=None,
+        )
+    assert excinfo.value.campo == "missao_id"
     assert sessao.query(PerguntaDeQuiz).count() == 0
 
 
@@ -185,8 +207,91 @@ def test_guerreiro_nao_cadastra_pergunta(sessao, cenario):
     guerreiro = cen.integrantes[cen.equipes[0].id][0]
 
     with pytest.raises(PermissaoNegada):
-        _cadastrar(sessao, guerreiro)
+        _cadastrar(sessao, guerreiro, cen.missao)
     assert sessao.query(PerguntaDeQuiz).count() == 0
+
+
+# ------------------------------------------------------------- banco do mestre
+
+
+def test_mestre_le_o_proprio_banco(sessao, cenario):
+    cen = cenario()
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
+    sessao.commit()
+
+    pagina = perguntas_do_mestre(
+        sessao, operador=cen.mestre, trilha_id=None, missao_id=None, cursor=None, tamanho=10
+    )
+
+    assert [item.id for item in pagina.itens] == [pergunta.id]
+    assert pagina.itens[0].enunciado == pergunta.enunciado
+    assert pagina.itens[0].alternativas == list(ALTERNATIVAS)
+    assert pagina.itens[0].alternativa_correta == CORRETA
+    assert pagina.itens[0].missao_id == cen.missao.id
+    assert pagina.itens[0].trilha_id == cen.trilha.id
+
+
+def test_filtro_por_missao_devolve_so_as_perguntas_daquela_missao(sessao, cenario, criar_missao):
+    cen = cenario()
+    outra_missao = criar_missao(cen.trilha, cen.mestre, posicao=2)
+    pergunta_da_missao = _cadastrar(sessao, cen.mestre, cen.missao)
+    _cadastrar(sessao, cen.mestre, outra_missao)
+    sessao.commit()
+
+    pagina = perguntas_do_mestre(
+        sessao,
+        operador=cen.mestre,
+        trilha_id=None,
+        missao_id=cen.missao.id,
+        cursor=None,
+        tamanho=10,
+    )
+
+    assert [item.id for item in pagina.itens] == [pergunta_da_missao.id]
+
+
+def test_filtro_por_trilha_alcanca_as_missoes_dela(sessao, cenario, criar_missao):
+    cen = cenario()
+    outra_missao = criar_missao(cen.trilha, cen.mestre, posicao=2)
+    pergunta_1 = _cadastrar(sessao, cen.mestre, cen.missao)
+    pergunta_2 = _cadastrar(sessao, cen.mestre, outra_missao)
+    sessao.commit()
+
+    pagina = perguntas_do_mestre(
+        sessao,
+        operador=cen.mestre,
+        trilha_id=cen.trilha.id,
+        missao_id=None,
+        cursor=None,
+        tamanho=10,
+    )
+
+    assert {item.id for item in pagina.itens} == {pergunta_1.id, pergunta_2.id}
+
+
+def test_banco_de_um_mestre_nao_aparece_para_outro(sessao, cenario, criar_persona):
+    cen = cenario()
+    outro_mestre = criar_persona(Papel.mestre)
+    _cadastrar(sessao, cen.mestre, cen.missao)
+    sessao.commit()
+
+    pagina = perguntas_do_mestre(
+        sessao, operador=outro_mestre, trilha_id=None, missao_id=None, cursor=None, tamanho=10
+    )
+
+    assert pagina.itens == []
+
+
+def test_guerreiro_nao_alcanca_o_banco_de_perguntas(sessao, cenario):
+    cen = cenario()
+    guerreiro = cen.integrantes[cen.equipes[0].id][0]
+    _cadastrar(sessao, cen.mestre, cen.missao)
+    sessao.commit()
+
+    with pytest.raises(PermissaoNegada):
+        perguntas_do_mestre(
+            sessao, operador=guerreiro, trilha_id=None, missao_id=None, cursor=None, tamanho=10
+        )
 
 
 # ----------------------------------------------------------------- partida
@@ -419,7 +524,7 @@ def partida_aberta(sessao, cenario):
 
 def test_resposta_grava_equipe_alternativa_e_momento(sessao, partida_aberta):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     equipe = cen.equipes[0]
     antes = datetime.now(UTC)
 
@@ -438,7 +543,7 @@ def test_resposta_grava_equipe_alternativa_e_momento(sessao, partida_aberta):
 
 def test_momento_declarado_pelo_chamador_e_ignorado(sessao, partida_aberta):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     equipe = cen.equipes[0]
     declarado = datetime(2020, 1, 1, tzinfo=UTC)
 
@@ -459,7 +564,7 @@ def test_momento_declarado_pelo_chamador_e_ignorado(sessao, partida_aberta):
 
 def test_reenvio_mantem_um_registro_e_o_momento_da_primeira(sessao, partida_aberta):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     equipe = cen.equipes[0]
 
     primeira = _responder(
@@ -478,7 +583,7 @@ def test_reenvio_mantem_um_registro_e_o_momento_da_primeira(sessao, partida_aber
 
 def test_segunda_alternativa_da_mesma_equipe_e_recusada(sessao, partida_aberta):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     equipe = cen.equipes[0]
     _responder(sessao, cen, partida=partida, pergunta=pergunta, equipe=equipe, alternativa=CORRETA)
     sessao.commit()
@@ -494,7 +599,7 @@ def test_segunda_alternativa_da_mesma_equipe_e_recusada(sessao, partida_aberta):
 
 def test_resposta_a_partida_encerrada_e_recusada(sessao, partida_aberta):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     encerrar_partida(sessao, operador=cen.mestre, partida=partida)
     sessao.commit()
 
@@ -515,7 +620,7 @@ def test_equipe_que_nao_disputa_a_partida_e_recusada(
     sessao, partida_aberta, criar_persona, criar_equipe, adicionar_integrante
 ):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     de_fora = criar_persona(Papel.guerreiro, comunidade=cen.comunidade)
     equipe_de_fora = criar_equipe(de_fora, aula=cen.aula)
 
@@ -536,7 +641,7 @@ def test_mestre_nao_responde_pela_equipe(sessao, partida_aberta):
     """A matriz do PRD-01 §4 dá `resposta_de_quiz_da_equipe` ao Guerreiro(a);
     o Mestre conduz, mas não responde."""
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
 
     with pytest.raises(PermissaoNegada):
         registrar_resposta(
@@ -555,7 +660,7 @@ def test_mestre_nao_responde_pela_equipe(sessao, partida_aberta):
 
 def test_anulacao_grava_autoria_e_marca_as_respostas(sessao, partida_aberta):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     _responder(
         sessao, cen, partida=partida, pergunta=pergunta, equipe=cen.equipes[0], alternativa=CORRETA
     )
@@ -574,7 +679,7 @@ def test_anulacao_grava_autoria_e_marca_as_respostas(sessao, partida_aberta):
 
 def test_mestre_que_nao_conduz_nao_anula(sessao, partida_aberta, criar_persona):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     outro_mestre = criar_persona(Papel.mestre)
 
     with pytest.raises(PermissaoNegada):
@@ -584,7 +689,7 @@ def test_mestre_que_nao_conduz_nao_anula(sessao, partida_aberta, criar_persona):
 
 def test_pergunta_anulada_nao_credita_a_nenhuma_equipe(sessao, partida_aberta):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     for equipe in cen.equipes:
         _responder(
             sessao, cen, partida=partida, pergunta=pergunta, equipe=equipe, alternativa=CORRETA
@@ -600,7 +705,7 @@ def test_resposta_que_chega_depois_da_anulacao_nao_credita(sessao, partida_abert
     """A partida segue aberta depois da anulação: a resposta que chega
     então nasce marcada e fica fora da apuração (design — decisão 6)."""
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     anular_pergunta(sessao, operador=cen.mestre, partida=partida, pergunta=pergunta)
     sessao.commit()
 
@@ -618,7 +723,7 @@ def test_anulacao_nunca_debita_ponto_regular(sessao, partida_aberta):
     """A equipe já creditou por outra partida; a anulação nesta não reduz
     saldo nenhum (`RN-01-38`)."""
     cen, primeira = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     equipe = cen.equipes[0]
     guerreiro = cen.integrantes[equipe.id][0]
 
@@ -645,7 +750,7 @@ def test_anulacao_nunca_debita_ponto_regular(sessao, partida_aberta):
 
 def test_anulacao_depois_do_encerramento_e_recusada(sessao, partida_aberta):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     _responder(
         sessao, cen, partida=partida, pergunta=pergunta, equipe=cen.equipes[0], alternativa=CORRETA
     )
@@ -667,7 +772,7 @@ def test_anulacao_depois_do_encerramento_e_recusada(sessao, partida_aberta):
 
 def test_acerto_credita_1_por_integrante(sessao, partida_aberta):
     cen, partida = partida_aberta(tamanhos=(1, 4))
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     veloz, lenta = cen.equipes
 
     _responder(
@@ -698,7 +803,7 @@ def test_acerto_credita_1_por_integrante(sessao, partida_aberta):
 
 def test_primeira_a_acertar_recebe_o_bonus(sessao, partida_aberta):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     veloz, lenta = cen.equipes
 
     _responder(
@@ -731,7 +836,7 @@ def test_o_teto_de_10_por_partida_e_respeitado(sessao, partida_aberta):
     equipe B chega antes — apuração de 13, creditada como 10."""
     cen, partida = partida_aberta()
     equipe_a, equipe_b = cen.equipes
-    perguntas = [_cadastrar(sessao, cen.mestre) for _ in range(7)]
+    perguntas = [_cadastrar(sessao, cen.mestre, cen.missao) for _ in range(7)]
 
     _responder(
         sessao,
@@ -763,7 +868,7 @@ def test_o_teto_de_10_por_partida_e_respeitado(sessao, partida_aberta):
 
 def test_o_valor_da_partida_nao_se_divide_pela_equipe(sessao, partida_aberta):
     cen, partida = partida_aberta(tamanhos=(2, 5))
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     pequena, grande = cen.equipes
 
     _responder(
@@ -795,7 +900,7 @@ def test_o_valor_da_partida_nao_se_divide_pela_equipe(sessao, partida_aberta):
 
 def test_erro_nao_credita_nem_reduz_saldo(sessao, partida_aberta):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
 
     _responder(
         sessao, cen, partida=partida, pergunta=pergunta, equipe=cen.equipes[0], alternativa=ERRADA
@@ -816,7 +921,7 @@ def test_partida_credita_a_trilha_da_atividade(
         cen.mestre,
         natureza=NATUREZA_DE_COMPETICAO_AO_VIVO,
     )
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     equipe = cen.equipes[0]
 
     _responder(sessao, cen, partida=partida, pergunta=pergunta, equipe=equipe, alternativa=CORRETA)
@@ -832,7 +937,7 @@ def test_partida_credita_a_trilha_da_atividade(
 
 def test_segundo_encerramento_e_recusado_sem_creditar_de_novo(sessao, partida_aberta):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     equipe = cen.equipes[0]
 
     _responder(sessao, cen, partida=partida, pergunta=pergunta, equipe=equipe, alternativa=CORRETA)
@@ -853,7 +958,7 @@ def test_apuracao_parcial_e_leitura_sem_creditar(sessao, partida_aberta):
     (design — riscos): com a partida aberta, a apuração já existe e nada
     foi creditado."""
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     equipe = cen.equipes[0]
 
     _responder(sessao, cen, partida=partida, pergunta=pergunta, equipe=equipe, alternativa=CORRETA)
@@ -869,7 +974,7 @@ def test_apuracao_parcial_e_leitura_sem_creditar(sessao, partida_aberta):
 
 def test_partida_nunca_encerrada_nunca_credita(sessao, partida_aberta):
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     _responder(
         sessao, cen, partida=partida, pergunta=pergunta, equipe=cen.equipes[0], alternativa=CORRETA
     )
@@ -883,7 +988,7 @@ def test_gatilho_recusa_negativo_com_o_quiz_no_caminho(sessao, partida_aberta, c
     ponto regular como qualquer outro — o evento do ORM e o gatilho do
     Postgres recusam o saldo negativo."""
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     _responder(
         sessao, cen, partida=partida, pergunta=pergunta, equipe=cen.equipes[0], alternativa=CORRETA
     )
@@ -920,7 +1025,7 @@ def test_integrante_que_entra_depois_do_encerramento_nao_recebe(
     """A equipe disputante é fixada na abertura, mas o crédito lê a
     composição no encerramento — quem entrou depois dele não recebe."""
     cen, partida = partida_aberta()
-    pergunta = _cadastrar(sessao, cen.mestre)
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
     equipe = cen.equipes[0]
 
     _responder(sessao, cen, partida=partida, pergunta=pergunta, equipe=equipe, alternativa=CORRETA)
