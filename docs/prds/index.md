@@ -34,9 +34,11 @@ na pasta.
 O PRD-01 volta a **implementado**: a change `ponto-de-apoio-e-tabela-de-referencia`, primeira
 fatia do PRD-07, entregou o `PontoDeApoio` e fechou o `RF-01-71` — a aula passa a declarar
 **em qual ponto de apoio acontece**, exigido e da mesma comunidade dela. Era a última pendência
-do PRD-01. Antes disso, a change `auditoria-e-estorno-da-coleta` entregou o débito de ponto
-regular por fato desfeito (`RF-01-57`, `RF-01-69`, `RF-01-70`, `RN-01-55`) e a queda da
-credencial de dispositivo ao **encerramento da série** (`RF-01-68`).
+do PRD-01. Antes disso, a change `auditoria-e-estorno-da-coleta` entregou a primeira das duas
+causas de débito do `RF-01-57` — o estorno de registro de coleta invalidado (`RF-01-69`,
+`RF-01-70`, `RN-01-55`) — e a queda da credencial de dispositivo ao **encerramento da série**
+(`RF-01-68`). A segunda causa, a ocorrência de conduta lançada, fechou só na quarta fatia do
+PRD-09.
 
 O PRD-07 vai a **implementado**. A primeira fatia entregou, além do `PontoDeApoio`, o
 catálogo de **tipos de recurso** e o **valor de referência em moedas** versionado por vigência
@@ -300,6 +302,25 @@ estava no ar sobre tabela que ninguém podia alimentar. A trava de publicação 
 Ciclo 02 por texto do `RF-09-96`. Template de missão, conteúdo e bibliografia, banco do Quiz,
 minhas turmas e lançamentos, edição de trilha publicada, duplicar trilha, desafio de
 desbloqueio e validação da criação original seguem pendentes — o PRD-09 continua **aprovado**.
+
+A quarta fatia, `minhas-turmas-e-lancamentos-do-mestre`, liga a operação que a autoria vinha sem
+porta. `GET /minhas-turmas` lê as aulas das comunidades do Mestre em sessão e as atividades de
+que é autor, separadas por formato — presencial do encontro e on-line entre encontros
+(`RF-09-42`, `RF-09-73`). `POST /atividades/{id}/lancamentos` abre
+`resultados.regra.registrar_resultado` ao Mestre autor, com a lista de participantes numa
+operação só, sem consumir reserva nem mudar a situação da aula — distinto do lançamento por
+aula, do Admin, que permanece inalterado (`RF-09-43`, `RF-09-44`, `RF-09-49`, `RF-09-74`).
+`POST /aulas/{id}/presencas` abre `registrar_presenca` ao Mestre só no modo confirmação, pela
+operação `confirmacao_de_identidade_do_guerreiro` que a matriz já lhe concedia (`RF-09-45`).
+Nasce o módulo `ocorrencias_de_conduta` — entidade somente inserção, com o motivo anulável para
+o expurgo futuro —, que fecha a segunda causa do `RF-01-57`: debita 5 pontos regulares por
+ocorrência, com teto de 10 por Guerreiro(a) e por aula, sem que quem lança arbitre o valor
+(`RF-09-46`, `RN-01-55`). A App 09 ganhou a área **Minhas turmas** — lista, lançamento,
+confirmação de presença e ocorrência de conduta. Fica pendente, e volta ao documento 09, o
+gatilho do fim de ciclo, do qual dependem o expurgo do motivo (`RN-01-52`) e a saída da
+ocorrência do ranking público. Template de missão, conteúdo e bibliografia, banco do Quiz,
+edição de trilha publicada, duplicar trilha, desafio de desbloqueio e validação da criação
+original seguem pendentes — o PRD-09 continua **aprovado**.
 
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.

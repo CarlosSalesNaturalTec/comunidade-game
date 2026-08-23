@@ -25,6 +25,7 @@ from .jogos.rotas import roteador as roteador_de_jogos
 from .livro_razao.rotas import roteador as roteador_de_livro_razao
 from .locais.rotas import roteador as roteador_de_locais
 from .necessidades.rotas import roteador as roteador_de_necessidades
+from .ocorrencias_de_conduta.rotas import roteador as roteador_de_ocorrencias_de_conduta
 from .ods.rotas import roteador as roteador_de_ods
 from .patrimonio.rotas import roteador as roteador_de_patrimonio
 from .personas.rotas import roteador as roteador_de_personas
@@ -38,6 +39,7 @@ from .recompensas_de_marco.rotas import roteador as roteador_de_recompensas_de_m
 from .recursos.rotas import roteador as roteador_de_recursos
 from .responsaveis.rotas import roteador as roteador_de_responsaveis
 from .ressarcimentos.rotas import roteador as roteador_de_ressarcimentos
+from .resultados.rotas import roteador as roteador_de_resultados
 from .sessoes.rotas import roteador as roteador_de_sessoes
 from .trilhas.rotas import roteador as roteador_de_trilhas
 from .trocas.rotas import roteador as roteador_de_trocas
@@ -165,3 +167,5 @@ incluir_roteador_de_dados(app, roteador_de_recompensas_de_marco)
 incluir_roteador_de_dados(app, roteador_de_trilhas)
 incluir_roteador_de_dados(app, roteador_de_culminancias)
 incluir_roteador_de_dados(app, roteador_de_ods)
+incluir_roteador_de_dados(app, roteador_de_resultados)
+incluir_roteador_de_dados(app, roteador_de_ocorrencias_de_conduta)

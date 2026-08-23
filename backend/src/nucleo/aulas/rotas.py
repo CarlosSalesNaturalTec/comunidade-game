@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..comunidades.modelo import ComunidadeVirtual
-from ..erros import ErroDeValidacao
+from ..erros import ErroDeValidacao, PermissaoNegada
 from ..paginacao import (
     PaginaDeResultado,
     ParametrosDeListagem,
@@ -19,21 +19,23 @@ from ..paginacao import (
     contrato_de_listagem,
     decodificar_cursor,
 )
-from ..personas.modelo import Persona
+from ..permissoes import Operacao, exigir_permissao
+from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
 from ..reservas.regra import disponivel_de
 from ..resultados.regra import ResultadoDeclarado
 from ..resultados.regra import lancar_atividade_realizada as _lancar_atividade_realizada
 from ..tempo import DataHoraComFuso
-from ..trilhas.modelo import Atividade
-from .modelo import Aula, RecursoDeclaradoDaAula, SituacaoDaAula
+from ..trilhas.modelo import Atividade, FormatoDeAtividade, Missao, Trilha
+from .modelo import Aula, ModoDeComprovacao, Presenca, RecursoDeclaradoDaAula, SituacaoDaAula
 from .regra import (
     RecursoDeclaradoEntrada,
     agendar_aula,
     aulas_vigentes,
     cancelar_aula,
     escopo_de_comunidade_da_leitura,
+    registrar_presenca,
     tentar_reservar_aula_pendente,
 )
 
@@ -324,3 +326,150 @@ def cancelar_aula_rota(
     aula = cancelar_aula(sessao_bd, operador=operador, aula=aula, motivo=entrada.motivo)
     sessao_bd.commit()
     return _saida(sessao_bd, aula)
+
+
+class ConfirmarPresencaEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    guerreiro_id: uuid.UUID
+    modo: str
+    momento_do_fato: DataHoraComFuso
+
+
+class PresencaSaida(BaseModel):
+    id: uuid.UUID
+    aula_id: uuid.UUID
+    guerreiro_id: uuid.UUID
+    modo: str
+    confirmador_id: uuid.UUID | None
+    momento_do_fato: DataHoraComFuso
+
+
+def _saida_da_presenca(presenca: Presenca) -> PresencaSaida:
+    return PresencaSaida(
+        id=presenca.id,
+        aula_id=presenca.aula_id,
+        guerreiro_id=presenca.guerreiro_id,
+        modo=presenca.modo.value,
+        confirmador_id=presenca.confirmador_id,
+        momento_do_fato=presenca.momento_do_fato,
+    )
+
+
+@roteador.post("/aulas/{id_da_aula}/presencas", status_code=201)
+def confirmar_presenca_rota(
+    id_da_aula: uuid.UUID,
+    entrada: ConfirmarPresencaEntrada,
+    contexto: Annotated[
+        ContextoDaSessao,
+        Depends(exigir_permissao(Operacao.confirmacao_de_identidade_do_guerreiro, "escreve")),
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PresencaSaida:
+    """O Mestre alcança a presença só pela confirmação de identidade do
+    Guerreiro(a) — a mesma operação que a matriz já lhe concede; o modo
+    reconhecimento continua exclusivo do App 01 e é recusado aqui, antes de
+    chamar `registrar_presenca`, que não distingue papel algum (`RF-09-45`,
+    `RF-01-20`, `RF-01-17`, design — Decisions 2)."""
+    if entrada.modo != ModoDeComprovacao.confirmacao.value:
+        raise PermissaoNegada(mensagem="Esta rota só registra presença no modo confirmação.")
+
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    aula = sessao_bd.get(Aula, id_da_aula)
+    guerreiro = sessao_bd.get(Persona, entrada.guerreiro_id)
+
+    presenca = registrar_presenca(
+        sessao_bd,
+        operador=operador,
+        aula=aula,
+        guerreiro=guerreiro,
+        modo=entrada.modo,
+        confirmador=operador,
+        momento_do_fato=entrada.momento_do_fato,
+    )
+    sessao_bd.commit()
+    return _saida_da_presenca(presenca)
+
+
+class AtividadeDoMestreSaida(BaseModel):
+    id: uuid.UUID
+    missao_id: uuid.UUID
+    titulo: str
+    formato: str
+    modalidade: str
+
+
+class MinhasTurmasSaida(PaginaDeResultado[AulaSaida]):
+    atividades_presenciais: list[AtividadeDoMestreSaida] = Field(default_factory=list)
+    atividades_on_line: list[AtividadeDoMestreSaida] = Field(default_factory=list)
+
+
+def _saida_da_atividade(atividade: Atividade) -> AtividadeDoMestreSaida:
+    return AtividadeDoMestreSaida(
+        id=atividade.id,
+        missao_id=atividade.missao_id,
+        titulo=atividade.titulo,
+        formato=atividade.formato.value,
+        modalidade=atividade.modalidade.value,
+    )
+
+
+@roteador.get("/minhas-turmas")
+def listar_minhas_turmas_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.suas_turmas, "le"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> MinhasTurmasSaida:
+    """Restrita à operação `suas_turmas`: as aulas das comunidades do Mestre
+    em sessão, paginadas no padrão da agenda, e as atividades de que ele é
+    autor, separadas pelo formato — presencial do encontro e on-line entre
+    encontros (`RF-09-42`, `RF-09-73`, `RN-09-08`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    comunidade_id = _analisar_comunidade(parametros.filtros.get("comunidade"))
+    alvo_id = escopo_de_comunidade_da_leitura(
+        operador=operador, comunidade_virtual_id=comunidade_id
+    )
+    if alvo_id is None:
+        return MinhasTurmasSaida(itens=[], proximo_cursor=None)
+
+    consulta = sessao_bd.query(Aula).filter(Aula.comunidade_virtual_id == alvo_id)
+    if parametros.cursor:
+        posicao = decodificar_cursor(parametros.cursor)
+        try:
+            inicio_em_cursor = datetime.fromisoformat(posicao["inicio_em"])
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(tuple_(Aula.inicio_em, Aula.id) > (inicio_em_cursor, id_cursor))
+    consulta = consulta.order_by(Aula.inicio_em, Aula.id).limit(parametros.tamanho + 1)
+    aulas = consulta.all()
+
+    proximo_cursor = None
+    if len(aulas) > parametros.tamanho:
+        aulas = aulas[: parametros.tamanho]
+        ultima = aulas[-1]
+        proximo_cursor = codificar_cursor(
+            {"inicio_em": ultima.inicio_em.isoformat(), "id": str(ultima.id)}
+        )
+
+    consulta_de_atividades = (
+        sessao_bd.query(Atividade)
+        .join(Missao, Missao.id == Atividade.missao_id)
+        .join(Trilha, Trilha.id == Missao.trilha_id)
+    )
+    if operador.papel != Papel.admin:
+        consulta_de_atividades = consulta_de_atividades.filter(Trilha.autor_id == operador.id)
+    atividades = consulta_de_atividades.all()
+
+    return MinhasTurmasSaida(
+        itens=[_saida(sessao_bd, aula) for aula in aulas],
+        proximo_cursor=proximo_cursor,
+        atividades_presenciais=[
+            _saida_da_atividade(a) for a in atividades if a.formato == FormatoDeAtividade.presencial
+        ],
+        atividades_on_line=[
+            _saida_da_atividade(a)
+            for a in atividades
+            if a.formato == FormatoDeAtividade.on_line_assincrona
+        ],
+    )
