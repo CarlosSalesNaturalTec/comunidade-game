@@ -113,19 +113,19 @@
 
 ## 8. Documentação
 
-- [ ] 8.1 Gravar as três decisões do fundador de 2026-08-24 em `docs/09-topicos-em-aberto-e-sugestoes.md`,
+- [x] 8.1 Gravar as três decisões do fundador de 2026-08-24 em `docs/09-topicos-em-aberto-e-sugestoes.md`,
       em "Já decididos": a entrada sem câmera na primeira fatia, o cadastro de Guerreiro(a) por
       Mestre e Admin, a conferência de nick do onboarding atrás da sessão de trabalho do
       aparelho, e a confirmação do Guerreiro(a) por nick sem identificador exposto.
-- [ ] 8.2 Aplicar as decisões nos documentos afetados: a matriz do documento 02 §1 e do PRD-01
+- [x] 8.2 Aplicar as decisões nos documentos afetados: a matriz do documento 02 §1 e do PRD-01
       §4 ganha o cadastro de Guerreiro(a) pelo Mestre (decisão 2); o PRD-04 §9 deixa de declarar
       a conferência de nick como pública (decisão 3), troca `guerreiro_id` por `nick` no corpo
       de `POST /sessoes/guerreiro/confirmacao` (decisão 1.1) e a §14 perde as pendências
       decididas.
-- [ ] 8.3 Alinhar `docs/prds/prd-09-area-do-mestre.md` §6.8: o `RF-09-61` — empréstimo e
+- [x] 8.3 Alinhar `docs/prds/prd-09-area-do-mestre.md` §6.8: o `RF-09-61` — empréstimo e
       devolução de exemplar do acervo — fica para o ciclo seguinte, como o documento 09 já
       decidiu na estratégia de conservação do acervo. Não é decisão nova: é o PRD alcançando a
       fonte.
-- [ ] 8.4 Atualizar `docs/prds/index.md` com a situação do PRD-04 e a narrativa desta fatia, e o
+- [x] 8.4 Atualizar `docs/prds/index.md` com a situação do PRD-04 e a narrativa desta fatia, e o
       documento 99 §8 se a relação entre documentos mudou. Nenhum arquivo novo em `docs/`, logo
       a `nav` do `mkdocs.yml` não muda.

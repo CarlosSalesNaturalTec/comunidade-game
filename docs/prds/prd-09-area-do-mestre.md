@@ -371,14 +371,20 @@ Guerreiras que percorrem as suas trilhas.
 
 ### 6.8 Recursos, absorção e ressarcimento
 
-| ID         | Requisito                                                                                          | Prioridade |
-| ---------- | -------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-09-56` | Mestre vê as necessidades de recurso das suas atividades, expressas em moedas da plataforma        | essencial  |
-| `RF-09-57` | Mestre assume a necessidade como aporte por absorção em um ato de confirmação                      | essencial  |
-| `RF-09-58` | Aporte por absorção nasce em nome do Mestre, marcado como ressarcível                              | essencial  |
-| `RF-09-59` | Mestre acompanha a situação do ressarcimento do que absorveu                                       | essencial  |
-| `RF-09-60` | Aplicação não coleta nem exibe dado bancário; guarda apenas o comprovante da transferência         | essencial  |
-| `RF-09-61` | Mestre registra empréstimo e devolução de exemplar do acervo permanente, com estado de conservação | essencial  |
+| ID         | Requisito                                                                                                                | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `RF-09-56` | Mestre vê as necessidades de recurso das suas atividades, expressas em moedas da plataforma                              | essencial  |
+| `RF-09-57` | Mestre assume a necessidade como aporte por absorção em um ato de confirmação                                            | essencial  |
+| `RF-09-58` | Aporte por absorção nasce em nome do Mestre, marcado como ressarcível                                                    | essencial  |
+| `RF-09-59` | Mestre acompanha a situação do ressarcimento do que absorveu                                                             | essencial  |
+| `RF-09-60` | Aplicação não coleta nem exibe dado bancário; guarda apenas o comprovante da transferência                               | essencial  |
+| `RF-09-61` | A partir do Ciclo 02, Mestre registra empréstimo e devolução de exemplar do acervo permanente, com estado de conservação | essencial  |
+
+Correção, não decisão nova: a estratégia de conservação do acervo (documento 09) já restringiu
+"uso em bancada com retirada registrada, guarda compartilhada pela equipe e o fluxo de
+reposição" ao ciclo seguinte, e reduziu por isso o escopo de `RF-02-52` a `RF-02-56` no PRD-02
+— sem tocar este requisito, que a mesma decisão alcança. No Ciclo 01, a conservação corre pelas
+outras duas frentes já entregues — tombamento (PRD-07) e ficha de vida —, sem empréstimo.
 
 ### 6.9 Responsáveis, perfil público e avisos
 

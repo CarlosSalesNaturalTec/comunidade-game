@@ -337,6 +337,30 @@ depende da formação de equipe da App 01. Template de missão, conteúdo e bibl
 trilha publicada, duplicar trilha, desafio de desbloqueio e validação da criação original
 seguem pendentes — o PRD-09 continua **aprovado**.
 
+O PRD-04 recebeu a primeira fatia: a change `esqueleto-da-aula-presencial-e-equipe-da-aula`
+abriu a **App 01** — a sessão de trabalho do aparelho, aberta por Mestre ou Admin e amarrada à
+janela da aula agendada, sem aula não abre e mais de uma pergunta uma única vez (`RF-04-02`,
+`RF-04-03`, `RF-04-05`), a tela inicial com os dois caminhos e a **formação da equipe da aula**
+— criar, entrar com o papel declarado e sair, sem aprovação de terceiro (`RF-04-30` a
+`RF-04-34`, `RF-04-59`). É a terceira aplicação do repositório. `equipes/regra.py`, escrito e
+testado desde a change `aula-presenca-e-equipe`, ganhou a porta HTTP que faltava — destrava,
+sem tocá-la, a fila de validação da criação original do Mestre (PRD-09 §6.4) e o `RF-09-41`,
+que dependia de haver quem formasse equipe.
+
+Sem câmera nesta fatia — a entrada do Guerreiro(a) é por confirmação de Mestre ou Admin, o
+caminho que o `RF-04-15` já previa para quem não tem _template_. Implementá-la revelou que a
+rota de confirmação exigia um identificador de persona sem rota alguma capaz de resolvê-lo a
+partir do nick, e que criar essa rota, mesmo restrita a Mestre ou Admin, violaria o invariante
+de `persona-e-credencial` que veda o oráculo de nick de Guerreiro(a) por quem quer que pergunte
+— corrigido recebendo o nick e resolvendo-o internamente, com recusa indistinguível entre nick
+inexistente e nick de outro papel. A conferência de disponibilidade de nick do onboarding, que
+o PRD-04 §9 declarava pública, e a confirmação humana, que ele não detalhava, foram corrigidas
+ao mesmo invariante — a versão do PRD é anterior à decisão de `nick-de-adulto` (documento 09,
+2026-08-21). A matriz do PRD-01 §4 ganhou a operação que falta para o Mestre autenticar o
+autocadastro do Guerreiro(a) pela sessão de trabalho, texto que o PRD-04 §9 já previa; o código
+entra na fatia do onboarding, junto da câmera, do consentimento e da fila local sem rede, que
+seguem pendentes.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 
