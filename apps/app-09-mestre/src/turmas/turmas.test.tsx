@@ -22,6 +22,7 @@ const SESSAO_DE_MESTRE: SessaoAberta = {
   token: "token-do-mestre",
   papel: "mestre",
   permissoes: {},
+  persona_id: "mestre-1",
 };
 
 function configurarSessao() {
