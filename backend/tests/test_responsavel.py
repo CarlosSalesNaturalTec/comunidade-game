@@ -18,7 +18,7 @@ from nucleo.responsaveis.regra import (
 
 def test_admin_cadastra_responsavel_sem_criar_acesso_a_ninguem(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     assert responsavel.papel == Papel.responsavel
     assert guerreiros_vinculados(sessao, responsavel.id) == []
 
@@ -26,7 +26,7 @@ def test_admin_cadastra_responsavel_sem_criar_acesso_a_ninguem(sessao, criar_per
 def test_mestre_cadastra_responsavel(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
     mestre = criar_persona(Papel.mestre, criada_por=admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=mestre)
+    responsavel = cadastrar_responsavel(sessao, criado_por=mestre, nome="mãe")
     assert responsavel.papel == Papel.responsavel
 
 
@@ -34,12 +34,12 @@ def test_apoiador_nao_cadastra_responsavel(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador, criada_por=admin)
     with pytest.raises(PermissaoNegada):
-        cadastrar_responsavel(sessao, criado_por=apoiador)
+        cadastrar_responsavel(sessao, criado_por=apoiador, nome="mãe")
 
 
 def test_vinculo_grava_grau_quem_cadastrou_e_inicio(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
 
     vinculo = criar_vinculo(
@@ -60,7 +60,7 @@ def test_vinculo_grava_grau_quem_cadastrou_e_inicio(sessao, criar_persona):
 
 def test_vinculo_sem_grau_de_parentesco_e_recusado(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
@@ -77,7 +77,7 @@ def test_vinculo_sem_grau_de_parentesco_e_recusado(sessao, criar_persona):
 
 def test_vinculo_a_guerreiro_inexistente_e_recusado_sem_criar_persona(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     total_personas_antes = sessao.query(Persona).count()
 
     with pytest.raises(NaoEncontrado):
@@ -97,7 +97,7 @@ def test_quarto_vinculo_e_recusado_e_os_tres_permanecem_validos(sessao, criar_pe
     admin = criar_persona(Papel.admin)
     guerreiro = criar_persona(Papel.guerreiro)
     graus = ["mãe", "pai", "avó"]
-    responsaveis = [cadastrar_responsavel(sessao, criado_por=admin) for _ in range(4)]
+    responsaveis = [cadastrar_responsavel(sessao, criado_por=admin, nome="mãe") for _ in range(4)]
 
     for responsavel, grau in zip(responsaveis[:3], graus, strict=True):
         criar_vinculo(
@@ -131,7 +131,7 @@ def test_quarto_vinculo_e_recusado_e_os_tres_permanecem_validos(sessao, criar_pe
 
 def test_teto_conta_por_guerreiro_nao_por_responsavel(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiros = [criar_persona(Papel.guerreiro) for _ in range(4)]
 
     for guerreiro in guerreiros:
@@ -151,10 +151,10 @@ def test_teto_conta_por_guerreiro_nao_por_responsavel(sessao, criar_persona):
 def test_vinculo_encerrado_abre_vaga_para_novo_responsavel(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
     guerreiro = criar_persona(Papel.guerreiro)
-    responsavel_um = cadastrar_responsavel(sessao, criado_por=admin)
-    responsavel_dois = cadastrar_responsavel(sessao, criado_por=admin)
-    responsavel_tres_encerrado = cadastrar_responsavel(sessao, criado_por=admin)
-    responsavel_novo = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel_um = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
+    responsavel_dois = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
+    responsavel_tres_encerrado = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
+    responsavel_novo = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
 
     criar_vinculo(
         sessao,
@@ -195,7 +195,7 @@ def test_vinculo_encerrado_abre_vaga_para_novo_responsavel(sessao, criar_persona
 
 def test_guerreiros_vinculados_traz_so_os_vigentes_do_responsavel(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro_vinculado = criar_persona(Papel.guerreiro)
     guerreiro_nao_vinculado = criar_persona(Papel.guerreiro)
 
@@ -214,13 +214,13 @@ def test_guerreiros_vinculados_traz_so_os_vigentes_do_responsavel(sessao, criar_
 
 def test_responsavel_recem_cadastrado_nao_enxerga_ninguem(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     assert guerreiros_vinculados(sessao, responsavel.id) == []
 
 
 def test_exigir_vinculo_do_responsavel_nega_sem_vinculo_vigente(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
 
     with pytest.raises(PermissaoNegada):
@@ -234,7 +234,7 @@ def test_exigir_vinculo_do_responsavel_nega_sem_vinculo_vigente(sessao, criar_pe
 
 def test_exigir_vinculo_do_responsavel_libera_com_vinculo_vigente(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
     criar_vinculo(
         sessao,
@@ -254,7 +254,7 @@ def test_exigir_vinculo_do_responsavel_nao_amplia_por_comunidade(
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro_da_comunidade = criar_persona(Papel.guerreiro, comunidade=comunidade)
     outro_guerreiro_da_mesma_comunidade = criar_persona(Papel.guerreiro, comunidade=comunidade)
     criar_vinculo(
@@ -293,10 +293,10 @@ def test_duas_criacoes_simultaneas_do_terceiro_vinculo_nao_passam_as_duas(
     `banco_compartilhado` (design.md — Decisions 4)."""
     admin = criar_persona(Papel.admin)
     guerreiro = criar_persona(Papel.guerreiro)
-    responsavel_um = cadastrar_responsavel(sessao, criado_por=admin)
-    responsavel_dois = cadastrar_responsavel(sessao, criado_por=admin)
-    responsavel_tres = cadastrar_responsavel(sessao, criado_por=admin)
-    responsavel_quatro = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel_um = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
+    responsavel_dois = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
+    responsavel_tres = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
+    responsavel_quatro = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
 
     criar_vinculo(
         sessao,

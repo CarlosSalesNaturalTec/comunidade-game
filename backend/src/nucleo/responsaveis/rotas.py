@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
 from ..autenticacao import ContextoDaSessao
@@ -16,22 +16,32 @@ from .regra import cadastrar_responsavel, criar_vinculo
 roteador = APIRouter()
 
 
+class CadastrarResponsavelEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    nome: str = Field(min_length=1)
+
+
 class ResponsavelSaida(BaseModel):
     id: uuid.UUID
+    nome: str
 
 
 @roteador.post("/responsaveis", status_code=201)
 def cadastrar_responsavel_rota(
+    entrada: CadastrarResponsavelEntrada,
     contexto: Annotated[
         ContextoDaSessao, Depends(exigir_permissao(Operacao.cadastro_de_responsavel, "escreve"))
     ],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> ResponsavelSaida:
-    """Restrita a Admin e Mestre pela matriz (`RF-01-13`, `RF-01-16`)."""
+    """Restrita a Admin e Mestre pela matriz (`RF-01-13`, `RF-01-16`). O
+    nome é o conteúdo mínimo do responsável (`RF-04-60`, design —
+    decisão 1)."""
     criado_por = sessao_bd.get(Persona, contexto.persona_id)
-    responsavel = cadastrar_responsavel(sessao_bd, criado_por=criado_por)
+    responsavel = cadastrar_responsavel(sessao_bd, criado_por=criado_por, nome=entrada.nome)
     sessao_bd.commit()
-    return ResponsavelSaida(id=responsavel.id)
+    return ResponsavelSaida(id=responsavel.id, nome=responsavel.nome or "")
 
 
 class CriarVinculoEntrada(BaseModel):

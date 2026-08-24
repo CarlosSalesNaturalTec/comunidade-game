@@ -27,6 +27,7 @@ def test_escrita_aceita_gera_registro_de_auditoria(
 
     resposta = cliente.post(
         "/v1/responsaveis",
+        json={"nome": "mãe"},
         headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
     )
     assert resposta.status_code == 201
@@ -61,7 +62,7 @@ def test_duas_rotas_diferentes_produzem_acoes_diferentes_e_estaveis(
     token, _ = criar_sessao_de_teste(admin)
     cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
 
-    cliente.post("/v1/responsaveis", headers=cabecalhos)
+    cliente.post("/v1/responsaveis", json={"nome": "mãe"}, headers=cabecalhos)
     cliente.post(
         f"/v1/responsaveis/{responsavel.id}/vinculos",
         json={"guerreiro_id": str(guerreiro.id), "grau_de_parentesco": "mãe"},
@@ -114,6 +115,7 @@ def test_escrita_recusada_por_permissao_nao_gera_registro(
 
     resposta = cliente.post(
         "/v1/responsaveis",
+        json={"nome": "mãe"},
         headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
     )
     assert resposta.status_code == 403
@@ -145,6 +147,7 @@ def test_falha_ao_gravar_auditoria_nao_altera_a_resposta_ja_pronta(
 
     resposta = cliente.post(
         "/v1/responsaveis",
+        json={"nome": "mãe"},
         headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
     )
     assert resposta.status_code == 201

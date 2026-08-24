@@ -30,7 +30,7 @@ def _vincular(sessao, responsavel, guerreiro, cadastrado_por):
 
 def test_registro_guarda_o_que_valia(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
     _vincular(sessao, responsavel, guerreiro, admin)
 
@@ -55,7 +55,7 @@ def test_registro_guarda_o_que_valia(sessao, criar_persona):
 
 def test_consentimento_sem_versao_do_termo_e_recusado(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
     _vincular(sessao, responsavel, guerreiro, admin)
 
@@ -76,7 +76,7 @@ def test_consentimento_sem_versao_do_termo_e_recusado(sessao, criar_persona):
 
 def test_responsavel_nao_consente_por_crianca_que_nao_e_sua(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro_sem_vinculo = criar_persona(Papel.guerreiro)
 
     with pytest.raises(PermissaoNegada):
@@ -95,7 +95,7 @@ def test_responsavel_nao_consente_por_crianca_que_nao_e_sua(sessao, criar_person
 
 def test_revogar_cria_registro_novo_e_anterior_continua_consultavel(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
     _vincular(sessao, responsavel, guerreiro, admin)
 
@@ -133,7 +133,7 @@ def test_revogar_cria_registro_novo_e_anterior_continua_consultavel(sessao, cria
 
 def test_consentimento_gravado_nao_e_editado_nem_apagado_no_orm(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
     _vincular(sessao, responsavel, guerreiro, admin)
 
@@ -171,7 +171,7 @@ def test_update_e_delete_em_consentimento_sao_recusados_direto_no_banco(
     """Fora do ORM — direto no banco — o gatilho da migração recusa também
     (`RN-01-12`, design — decisões)."""
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
     _vincular(sessao, responsavel, guerreiro, admin)
 
@@ -205,7 +205,7 @@ def test_update_e_delete_em_consentimento_sao_recusados_direto_no_banco(
 
 def test_historico_responde_pelo_registro_vigente_na_data(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
     _vincular(sessao, responsavel, guerreiro, admin)
 
@@ -249,7 +249,7 @@ def test_recusa_de_consentimento_nao_impede_participacao_e_revogacao_nao_desfaz(
     Guerreiro(a) da atividade — nada além do registro do consentimento é
     alterado, e o vínculo segue vigente."""
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
     vinculo = _vincular(sessao, responsavel, guerreiro, admin)
     sessao.commit()
@@ -273,7 +273,7 @@ def test_recusa_de_consentimento_nao_impede_participacao_e_revogacao_nao_desfaz(
 
 def test_tipo_fora_do_conjunto_e_recusado(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
     _vincular(sessao, responsavel, guerreiro, admin)
 
@@ -294,7 +294,7 @@ def test_tipo_fora_do_conjunto_e_recusado(sessao, criar_persona):
 
 def test_biometria_nao_entra_na_autorizacao_unica(sessao, criar_persona):
     admin = criar_persona(Papel.admin)
-    responsavel = cadastrar_responsavel(sessao, criado_por=admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
     guerreiro = criar_persona(Papel.guerreiro)
     _vincular(sessao, responsavel, guerreiro, admin)
 

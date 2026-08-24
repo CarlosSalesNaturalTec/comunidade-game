@@ -122,13 +122,6 @@ describe("cadastro do Guerreiro(a) no encontro", () => {
     expect(cadastrar).not.toHaveBeenCalled();
   });
 
-  it("não oferece consentimento nem captura de imagem nesta fatia", () => {
-    renderizar();
-
-    expect(screen.queryByText(/consentimento/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/câmera|foto|imagem/i)).not.toBeInTheDocument();
-  });
-
   it("voltar aciona aoVoltar sem cadastrar nada", async () => {
     const cadastrar = vi.spyOn(guerreirosApi, "cadastrarGuerreiroNoEncontro");
     const aoVoltar = vi.fn();

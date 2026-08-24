@@ -20,6 +20,7 @@ export interface SessaoAberta {
   token: string;
   papel: Papel;
   permissoes: Record<string, string[]>;
+  persona_id: string;
 }
 
 interface ContextoDeSessaoValor {
@@ -65,7 +66,12 @@ export function ProvedorDeSessao({
     async (token: string): Promise<boolean> => {
       try {
         const quemSou = await eu(token);
-        definirSessao({ token, papel: quemSou.papel, permissoes: quemSou.permissoes });
+        definirSessao({
+          token,
+          papel: quemSou.papel,
+          permissoes: quemSou.permissoes,
+          persona_id: quemSou.persona_id,
+        });
         return true;
       } catch {
         limparToken(chaveDeArmazenamento);

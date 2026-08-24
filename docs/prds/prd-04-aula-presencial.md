@@ -267,7 +267,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-01` | Tela inicial oferece a escolha entre onboarding e trilhas e, no onboarding, entre áudio e texto                                                      | essencial  |
 | `RF-04-02` | Aplicação abre somente dentro da janela de uma aula agendada para a data e a hora correntes                                                          | essencial  |
 | `RF-04-03` | Havendo mais de uma aula vigente, a aplicação pergunta uma única vez em qual comunidade opera                                                        | essencial  |
-| `RF-04-04` | Aplicação verifica a presença de câmera e bloqueia o onboarding quando não há                                                                        | essencial  |
+| `RF-04-04` | Aplicação verifica a presença de câmera e bloqueia a captura da imagem quando não há, sem bloquear o onboarding                                      | essencial  |
 | `RF-04-05` | Sessão de trabalho do aparelho é aberta por Mestre ou Admin autenticado                                                                              | essencial  |
 | `RF-04-06` | IA conduz a conversa aceitando respostas fora de ordem, repetindo e confirmando cada dado                                                            | essencial  |
 | `RF-04-07` | Cadastro coleta nome, nick, forma de tratamento, data de nascimento ou idade e características do avatar                                             | essencial  |
@@ -341,7 +341,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | ---------- | ----------------------------------------------------------------------------------------------------------- | ---------- | ------------- |
 | `RN-04-01` | Sem aula agendada para a data e o horário, o App 01 não opera                                               | 4          | 02 §1         |
 | `RN-04-02` | O Guerreiro(a) nunca informa a comunidade: ela vem da aula vigente                                          | 4          | 02 §1         |
-| `RN-04-03` | Sem câmera no aparelho e sem Mestre ou Admin presente, não há onboarding                                    | —          | 03 §3.2       |
+| `RN-04-03` | Sem câmera no aparelho, o onboarding segue pelo caminho sem imagem — só a captura fecha                     | —          | 03 §3.2       |
 | `RN-04-04` | O Guerreiro(a) é a única persona com autocadastro                                                           | 3          | 02 §1         |
 | `RN-04-05` | O nick é único em toda a plataforma                                                                         | —          | 02 §1         |
 | `RN-04-06` | A imagem tem finalidade única: identificar o Guerreiro(a) — presença e autenticação                         | 12         | 03 §3.3       |
@@ -422,14 +422,16 @@ cadastro direto; a recusa por nick em uso é onde o nick é conferido, e devolve
 corpo, até três variações já testadas contra todo papel (documento 09, 2026-08-21 e
 2026-08-24).
 
-| Método | Rota                            | Autenticação     | Uso nesta aplicação                                        |
-| ------ | ------------------------------- | ---------------- | ---------------------------------------------------------- |
-| GET    | `/v1/aulas/vigentes`            | pública          | Descobrir a aula e a comunidade do momento                 |
-| POST   | `/v1/guerreiros`                | sessão do App 01 | Criar o cadastro, já vinculado à comunidade da aula        |
-| POST   | `/v1/consentimentos`            | sessão do App 01 | Registrar o termo assinado, com testemunha, data e hora    |
-| POST   | `/v1/guerreiros/{id}/descritor` | sessão do App 01 | Enviar o descritor gerado no aparelho, que vira _template_ |
-| POST   | `/v1/aulas/{id}/presencas`      | sessão do App 01 | Registrar presença, por reconhecimento ou confirmação      |
-| POST   | `/v1/sessoes/guerreiro`         | pública          | Conferir nick e imagem na chegada de quem já é cadastrado  |
+| Método | Rota                             | Autenticação     | Uso nesta aplicação                                              |
+| ------ | -------------------------------- | ---------------- | ---------------------------------------------------------------- |
+| GET    | `/v1/aulas/vigentes`             | pública          | Descobrir a aula e a comunidade do momento                       |
+| POST   | `/v1/guerreiros`                 | sessão do App 01 | Criar o cadastro, já vinculado à comunidade da aula              |
+| POST   | `/v1/responsaveis`               | sessão do App 01 | Cadastrar o responsável mínimo — só o nome (`RF-04-60`)          |
+| POST   | `/v1/responsaveis/{id}/vinculos` | sessão do App 01 | Vincular o responsável ao Guerreiro(a), com o grau de parentesco |
+| POST   | `/v1/consentimentos`             | sessão do App 01 | Registrar o termo assinado, com testemunha, data e hora          |
+| POST   | `/v1/guerreiros/{id}/descritor`  | sessão do App 01 | Enviar o descritor gerado no aparelho, que vira _template_       |
+| POST   | `/v1/aulas/{id}/presencas`       | sessão do App 01 | Registrar presença, por reconhecimento ou confirmação            |
+| POST   | `/v1/sessoes/guerreiro`          | pública          | Conferir nick e imagem na chegada de quem já é cadastrado        |
 
 Rotas do caminho das trilhas, todas autenticadas na **sessão do Guerreiro(a)**:
 
@@ -517,7 +519,8 @@ corpus (200, com a recusa explicada no corpo).
 - Fora da janela de qualquer aula agendada, a aplicação não abre e explica por quê em uma frase.
 - Com duas aulas presenciais vigentes em comunidades diferentes, a aplicação pergunta uma única
   vez e não repete a pergunta no restante da sessão de trabalho.
-- Em aparelho sem câmera, a aplicação bloqueia o onboarding e orienta a trocar de aparelho.
+- Em aparelho sem câmera, a aplicação bloqueia só a captura da imagem, orienta a trocar de
+  aparelho e conclui o cadastro ativo e sem imagem, pelo caminho da criança sem responsável.
 - Cadastro concluído com as respostas dadas fora de ordem chega ao mesmo resultado do cadastro
   com as respostas na ordem.
 - Nick já existente é recusado antes da conclusão, e as variações sugeridas são aceitas.
@@ -527,7 +530,10 @@ corpus (200, com a recusa explicada no corpo).
 - Tentativa de captura sem consentimento registrado é recusada, com mensagem em linguagem simples.
 - Nenhuma requisição do App 01 carrega imagem de criança: o que sai do aparelho é o descritor,
   e a fotografia não aparece em corpo de requisição nem em registro de erro.
-- Descritor gerado sem a prova de vivacidade não é aceito pelo núcleo.
+- A ordem prova de vivacidade e depois descritor é garantida no aparelho, pelo código da Human;
+  a garantia de que o descritor veio de um rosto presente é também presencial — aula agendada,
+  aparelho do ponto de apoio e Mestre ou Admin na sala —, porque o núcleo não tem como
+  reconferi-la.
 - Concluída a captura, a fotografia original não existe em lugar nenhum — nem no aparelho, nem
   no servidor, nem em log.
 - Guerreiro(a) conhecido tem a presença registrada em poucos segundos, informando só o nick e
@@ -593,6 +599,9 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 | Confirmação humana recebe o nick, nunca um identificador de persona                                              | 02 §1          | Busca por nick e exibição pública                            |
 | Faixa de 6 a 16 anos exigida na regra do núcleo, retroativa ao caminho da gestão                                 | 09 §1          | Faixa etária do Guerreiro(a) retroativa ao caminho da gestão |
 | Responsável mínimo e vínculo cadastrados pelo App 01 no ato do encontro, com grau de parentesco (`RF-04-60`)     | 09 §1          | Cadastro do responsável no ato do encontro                   |
+| O responsável mínimo é o nome, e só — sem e-mail, credencial nem digitalização do termo                          | 09 §1          | O responsável mínimo é o nome, e só                          |
+| A versão do termo é carimbada pelo núcleo, nunca recebida do cliente                                             | 09 §1          | A versão do termo é carimbada pelo núcleo                    |
+| Sem câmera, o onboarding continua — só a captura fecha                                                           | 09 §1          | Sem câmera, o onboarding continua                            |
 
 A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do termo** ao
 `Consentimento` do PRD-01, e o acompanhamento do anexo pendente à App 03 (PRD-02).
@@ -606,10 +615,12 @@ anterior à decisão de `nick-de-adulto` (documento 09, 2026-08-21), que fechou 
 de Guerreiro(a) para qualquer um que pergunte, credenciado ou não — a §9 corrige as duas rotas
 que ainda o contradiziam.
 
-As duas últimas linhas, essas sim, são decisão nova do fundador, em 2026-08-24, na change
-`cadastro-do-guerreiro-no-encontro`: a faixa etária passa a valer também para o caminho da
-gestão, e o responsável mínimo passa a ser cadastrado pelo App 01 no ato do encontro — o código
-deste último vai para a fatia seguinte, junto do consentimento e da câmera.
+As cinco linhas seguintes são decisão nova do fundador, em 2026-08-24: as duas primeiras na
+change `cadastro-do-guerreiro-no-encontro` — a faixa etária passa a valer também para o caminho
+da gestão, e o responsável mínimo passa a ser cadastrado pelo App 01 no ato do encontro —, e as
+três últimas na change seguinte, `responsavel-consentimento-e-captura-da-imagem`, que entrega o
+código de todas as cinco: o conteúdo do responsável mínimo, a versão do termo carimbada pelo
+núcleo e a falta de câmera que fecha só a captura.
 
 ## 14. Pendências que permanecem
 
