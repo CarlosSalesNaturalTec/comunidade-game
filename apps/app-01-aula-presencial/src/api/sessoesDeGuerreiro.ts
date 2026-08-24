@@ -22,3 +22,22 @@ export function confirmarSessaoDeGuerreiro(
     token: tokenDeTrabalho,
   });
 }
+
+interface AbrirSessaoPorReconhecimentoEntrada {
+  nick: string;
+  descritor: number[];
+}
+
+// Reconhecimento facial: nick digitado e descritor gerado no aparelho —
+// só ele viaja, nunca a fotografia (`RN-04-12`). Pública quanto à
+// persona — dispensa credencial, nunca a chave de aplicação (`RF-01-04`,
+// `RF-01-05`) —, e a recusa não diferencia nick inexistente,
+// Guerreiro(a) sem _template_ e descritor que não confere (`RN-01-22`).
+export function abrirSessaoPorReconhecimento(
+  entrada: AbrirSessaoPorReconhecimentoEntrada,
+): Promise<AberturaDeSessao> {
+  return chamarNucleo<AberturaDeSessao>("/v1/sessoes/guerreiro", {
+    metodo: "POST",
+    corpo: entrada,
+  });
+}

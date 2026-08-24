@@ -4,6 +4,7 @@ import { useState } from "react";
 import { TelaDeEntradaDoGuerreiro } from "../entrada/TelaDeEntradaDoGuerreiro";
 import { TelaDeEquipes } from "../equipes/TelaDeEquipes";
 import { FluxoDeOnboarding } from "../onboarding/FluxoDeOnboarding";
+import { TelaDeCaptura } from "../onboarding/TelaDeCaptura";
 
 type Caminho = "inicio" | "onboarding" | "trilhas";
 
@@ -27,6 +28,13 @@ export function TelaInicial({
 }: Props) {
   const { sessao: sessaoDoGuerreiro, sair: sairDoGuerreiro } = useSessao();
   const [caminho, definirCaminho] = useState<Caminho>("inicio");
+  // Só a sessão aberta por confirmação presencial autoriza o recadastro da
+  // imagem — nunca a de reconhecimento, que já provou que a imagem serve
+  // (`RF-04-22`, design — decisão 4).
+  const [viaDeEntrada, definirViaDeEntrada] = useState<
+    "reconhecimento" | "confirmacao" | null
+  >(null);
+  const [mostrarRecadastro, definirMostrarRecadastro] = useState(false);
 
   // Fim de cada atendimento: a sessão do Guerreiro(a) é limpa e a tela
   // volta ao início, sem dado do atendimento anterior (`RF-04-28`, design
@@ -35,6 +43,8 @@ export function TelaInicial({
   function voltarAoInicio() {
     sairDoGuerreiro();
     definirCaminho("inicio");
+    definirViaDeEntrada(null);
+    definirMostrarRecadastro(false);
     aoVoltarAoInicio();
   }
 
@@ -55,7 +65,19 @@ export function TelaInicial({
       return (
         <TelaDeEntradaDoGuerreiro
           tokenDeTrabalho={tokenDeTrabalho}
+          aulaId={aulaId}
           aoVoltar={voltarAoInicio}
+          aoAbrirSessao={definirViaDeEntrada}
+        />
+      );
+    }
+    if (mostrarRecadastro) {
+      return (
+        <TelaDeCaptura
+          tokenDeTrabalho={tokenDeTrabalho}
+          guerreiroId={sessaoDoGuerreiro.persona_id}
+          aoConcluir={() => definirMostrarRecadastro(false)}
+          aoVoltar={() => definirMostrarRecadastro(false)}
         />
       );
     }
@@ -64,6 +86,8 @@ export function TelaInicial({
         aulaId={aulaId}
         token={sessaoDoGuerreiro.token}
         aoVoltar={voltarAoInicio}
+        podeRecadastrarImagem={viaDeEntrada === "confirmacao"}
+        aoRecadastrarImagem={() => definirMostrarRecadastro(true)}
       />
     );
   }

@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
+from ..chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from ..comunidades.modelo import ComunidadeVirtual
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..paginacao import (
@@ -40,6 +41,11 @@ from .regra import (
 )
 
 roteador = APIRouter()
+
+# `POST /v1/aulas/{id}/presencas` aceita o modo reconhecimento só sob esta
+# aplicação (design — decisão 1); mesmo precedente e mesma constante local
+# de `personas/rotas.py`.
+_APLICACAO_DO_ENCONTRO = "app-01-aula-presencial"
 
 
 class RecursoDeclaradoCorpo(BaseModel):
@@ -360,6 +366,7 @@ def _saida_da_presenca(presenca: Presenca) -> PresencaSaida:
 def confirmar_presenca_rota(
     id_da_aula: uuid.UUID,
     entrada: ConfirmarPresencaEntrada,
+    contexto_da_chave: Annotated[ContextoDaChave, Depends(exigir_chave_de_aplicacao)],
     contexto: Annotated[
         ContextoDaSessao,
         Depends(exigir_permissao(Operacao.confirmacao_de_identidade_do_guerreiro, "escreve")),
@@ -367,16 +374,23 @@ def confirmar_presenca_rota(
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> PresencaSaida:
     """O Mestre alcança a presença só pela confirmação de identidade do
-    Guerreiro(a) — a mesma operação que a matriz já lhe concede; o modo
-    reconhecimento continua exclusivo do App 01 e é recusado aqui, antes de
-    chamar `registrar_presenca`, que não distingue papel algum (`RF-09-45`,
-    `RF-01-20`, `RF-01-17`, design — Decisions 2)."""
-    if entrada.modo != ModoDeComprovacao.confirmacao.value:
-        raise PermissaoNegada(mensagem="Esta rota só registra presença no modo confirmação.")
+    Guerreiro(a) — a mesma operação que a matriz já lhe concede. O modo
+    reconhecimento é recusado aqui quando a chave não é a da App 01, e não
+    pela rota inteira nem pelo papel de quem está em sessão (`RF-09-45`,
+    `RF-04-18`, `RF-01-20`, `RF-01-17`, design — decisão 1). A sessão de
+    trabalho autentica a escrita sem virar confirmadora: só o modo
+    confirmação preenche `confirmador`, pela mesma distinção do
+    autocadastro (design — decisão 2). `registrar_presenca` não muda."""
+    if (
+        entrada.modo == ModoDeComprovacao.reconhecimento.value
+        and contexto_da_chave.aplicacao != _APLICACAO_DO_ENCONTRO
+    ):
+        raise PermissaoNegada(mensagem="O modo reconhecimento só é aceito pela App 01.")
 
     operador = sessao_bd.get(Persona, contexto.persona_id)
     aula = sessao_bd.get(Aula, id_da_aula)
     guerreiro = sessao_bd.get(Persona, entrada.guerreiro_id)
+    confirmador = operador if entrada.modo == ModoDeComprovacao.confirmacao.value else None
 
     presenca = registrar_presenca(
         sessao_bd,
@@ -384,7 +398,7 @@ def confirmar_presenca_rota(
         aula=aula,
         guerreiro=guerreiro,
         modo=entrada.modo,
-        confirmador=operador,
+        confirmador=confirmador,
         momento_do_fato=entrada.momento_do_fato,
     )
     sessao_bd.commit()
