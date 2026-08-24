@@ -66,6 +66,7 @@ function configurarSessao(sessao: SessaoAberta | null) {
     entrando: false,
     erroDeEntrada: null,
     entrarComGoogle: vi.fn(),
+    entrarComToken: vi.fn(),
     sair: vi.fn(),
     tratarRecusaDeSessao: vi.fn(),
   });

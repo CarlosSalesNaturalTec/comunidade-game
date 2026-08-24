@@ -412,11 +412,15 @@ Regras do modelo:
 As convenções são as do PRD-01 — prefixo `/v1`, erro em formato único, data e hora com fuso.
 A **sessão de trabalho do aparelho**, aberta pelo Mestre ou Admin presente, é o que autentica a
 escrita: o cadastro continua sendo **autocadastro do Guerreiro(a)**, feito na presença deles.
+A conferência de disponibilidade de nick exige essa mesma sessão — corrige a versão anterior,
+que a declarava pública: `RN-01-22` veda o oráculo de nick de Guerreiro(a) por quem quer que
+pergunte, adulto autenticado incluído, e a versão anterior deste PRD é de antes dessa decisão
+(documento 09, 2026-08-21).
 
 | Método | Rota                             | Autenticação     | Uso nesta aplicação                                        |
 | ------ | -------------------------------- | ---------------- | ---------------------------------------------------------- |
 | GET    | `/v1/aulas/vigentes`             | pública          | Descobrir a aula e a comunidade do momento                 |
-| GET    | `/v1/guerreiros/nick/disponivel` | pública          | Conferir a unicidade do nick durante a conversa            |
+| GET    | `/v1/guerreiros/nick/disponivel` | sessão do App 01 | Conferir a unicidade do nick durante a conversa            |
 | POST   | `/v1/guerreiros`                 | sessão do App 01 | Criar o cadastro, já vinculado à comunidade da aula        |
 | POST   | `/v1/consentimentos`             | sessão do App 01 | Registrar o termo assinado, com testemunha, data e hora    |
 | POST   | `/v1/guerreiros/{id}/descritor`  | sessão do App 01 | Enviar o descritor gerado no aparelho, que vira _template_ |
@@ -581,6 +585,8 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 | Sessão de trabalho do aparelho é a janela da aula agendada                              | 03 §3.2        | Sessão de trabalho do aparelho da aula       |
 | Aviso da exclusão do _template_ na App 07, com a data                                   | 03 §9          | Aviso da exclusão do _template_ biométrico   |
 | Reescrita por IA opera no App 01 mesmo com um integrante desligado                      | 03 §7.1        | Personalização por IA no aparelho da equipe  |
+| Conferência de nick do onboarding exige a sessão do App 01, nunca pública               | 02 §1          | Busca por nick e exibição pública            |
+| Confirmação humana recebe o nick, nunca um identificador de persona                     | 02 §1          | Busca por nick e exibição pública            |
 
 A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do termo** ao
 `Consentimento` do PRD-01, e o acompanhamento do anexo pendente à App 03 (PRD-02).
@@ -588,6 +594,11 @@ A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do
 A fusão das duas aplicações moveu para cá a `RespostaDeQuiz`, que estava no PRD-05, e trouxe a
 `Equipe` — antes escrita apenas pela App 03 — para o aparelho da aula. A `ConsultaAoAssistente`
 nasce aqui e serve também ao apoio escolar da App 05.
+
+As duas últimas linhas não são decisão nova: são o PRD alcançando a fonte. A v5 deste PRD é
+anterior à decisão de `nick-de-adulto` (documento 09, 2026-08-21), que fechou o oráculo de nick
+de Guerreiro(a) para qualquer um que pergunte, credenciado ou não — a §9 corrige as duas rotas
+que ainda o contradiziam.
 
 ## 14. Pendências que permanecem
 

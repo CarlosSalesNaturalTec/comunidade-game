@@ -9,7 +9,12 @@ import {
 import { ErroDaApi, ehRecusaDeChave } from "../api/cliente";
 import type { Papel } from "../api/tipos";
 import { encerrarSessao, eu, loginSocial } from "./api";
-import { gravarToken, lerToken, limparToken } from "./armazenamentoDeSessao";
+import {
+  CHAVE_DE_ARMAZENAMENTO_PADRAO,
+  gravarToken,
+  lerToken,
+  limparToken,
+} from "./armazenamentoDeSessao";
 
 export interface SessaoAberta {
   token: string;
@@ -23,6 +28,12 @@ interface ContextoDeSessaoValor {
   entrando: boolean;
   erroDeEntrada: string | null;
   entrarComGoogle: (idToken: string) => Promise<void>;
+  /** Abre a sessão a partir de um token já emitido por outra rota que não
+   * `/sessoes/social` — a confirmação humana do Guerreiro(a) na App 01,
+   * por exemplo (`RF-04-29`). Grava o token, relê `GET /v1/eu` e, se o
+   * núcleo não o reconhecer, o erro sobe para quem chamou tratar
+   * (openspec — esqueleto-da-aula-presencial-e-equipe-da-aula). */
+  entrarComToken: (token: string) => Promise<void>;
   sair: () => Promise<void>;
   /** Chamada por qualquer tela que receba `sessao_ausente` ou
    * `sessao_invalida` do núcleo (`RN-01-34`): devolve à entrada sem tentar
@@ -32,32 +43,47 @@ interface ContextoDeSessaoValor {
 
 const ContextoDeSessao = createContext<ContextoDeSessaoValor | null>(null);
 
-export function ProvedorDeSessao({ children }: { children: ReactNode }) {
+interface ProvedorDeSessaoProps {
+  children: ReactNode;
+  /** Chave de `sessionStorage` desta sessão — o padrão de hoje quando
+   * omitida. A App 01 instancia dois provedores aninhados, com chaves
+   * distintas, para a sessão de trabalho do aparelho e a do Guerreiro(a)
+   * conviverem sem que uma derrube a outra (design — decisão 1). */
+  chaveDeArmazenamento?: string;
+}
+
+export function ProvedorDeSessao({
+  children,
+  chaveDeArmazenamento = CHAVE_DE_ARMAZENAMENTO_PADRAO,
+}: ProvedorDeSessaoProps) {
   const [sessao, definirSessao] = useState<SessaoAberta | null>(null);
   const [restaurando, definirRestaurando] = useState(true);
   const [entrando, definirEntrando] = useState(false);
   const [erroDeEntrada, definirErroDeEntrada] = useState<string | null>(null);
 
-  const restaurarSessao = useCallback(async (token: string): Promise<boolean> => {
-    try {
-      const quemSou = await eu(token);
-      definirSessao({ token, papel: quemSou.papel, permissoes: quemSou.permissoes });
-      return true;
-    } catch {
-      limparToken();
-      definirSessao(null);
-      return false;
-    }
-  }, []);
+  const restaurarSessao = useCallback(
+    async (token: string): Promise<boolean> => {
+      try {
+        const quemSou = await eu(token);
+        definirSessao({ token, papel: quemSou.papel, permissoes: quemSou.permissoes });
+        return true;
+      } catch {
+        limparToken(chaveDeArmazenamento);
+        definirSessao(null);
+        return false;
+      }
+    },
+    [chaveDeArmazenamento],
+  );
 
   useEffect(() => {
-    const token = lerToken();
+    const token = lerToken(chaveDeArmazenamento);
     if (!token) {
       definirRestaurando(false);
       return;
     }
     restaurarSessao(token).finally(() => definirRestaurando(false));
-  }, [restaurarSessao]);
+  }, [restaurarSessao, chaveDeArmazenamento]);
 
   const entrarComGoogle = useCallback(
     async (idToken: string) => {
@@ -65,7 +91,7 @@ export function ProvedorDeSessao({ children }: { children: ReactNode }) {
       definirErroDeEntrada(null);
       try {
         const abertura = await loginSocial(idToken);
-        gravarToken(abertura.token);
+        gravarToken(abertura.token, chaveDeArmazenamento);
         await restaurarSessao(abertura.token);
       } catch (erro) {
         if (ehRecusaDeChave(erro)) {
@@ -83,12 +109,26 @@ export function ProvedorDeSessao({ children }: { children: ReactNode }) {
         definirEntrando(false);
       }
     },
-    [restaurarSessao],
+    [restaurarSessao, chaveDeArmazenamento],
+  );
+
+  const entrarComToken = useCallback(
+    async (token: string) => {
+      definirEntrando(true);
+      definirErroDeEntrada(null);
+      gravarToken(token, chaveDeArmazenamento);
+      const restaurou = await restaurarSessao(token);
+      definirEntrando(false);
+      if (!restaurou) {
+        definirErroDeEntrada("Não foi possível abrir a sessão. Tente novamente.");
+      }
+    },
+    [restaurarSessao, chaveDeArmazenamento],
   );
 
   const sair = useCallback(async () => {
     const token = sessao?.token;
-    limparToken();
+    limparToken(chaveDeArmazenamento);
     definirSessao(null);
     definirErroDeEntrada(null);
     if (token) {
@@ -99,13 +139,13 @@ export function ProvedorDeSessao({ children }: { children: ReactNode }) {
         // devolve o adulto à tela de gestão.
       }
     }
-  }, [sessao]);
+  }, [sessao, chaveDeArmazenamento]);
 
   const tratarRecusaDeSessao = useCallback(() => {
-    limparToken();
+    limparToken(chaveDeArmazenamento);
     definirSessao(null);
     definirErroDeEntrada("Sua sessão terminou. Entre novamente.");
-  }, []);
+  }, [chaveDeArmazenamento]);
 
   return (
     <ContextoDeSessao.Provider
@@ -115,6 +155,7 @@ export function ProvedorDeSessao({ children }: { children: ReactNode }) {
         entrando,
         erroDeEntrada,
         entrarComGoogle,
+        entrarComToken,
         sair,
         tratarRecusaDeSessao,
       }}

@@ -106,6 +106,21 @@ def _nick_em_uso(sessao: Session, nick: str) -> bool:
     )
 
 
+def buscar_guerreiro_por_nick(sessao: Session, nick: str) -> Persona | None:
+    """Resolução interna, nunca exposta como busca: correspondência exata
+    insensível a caixa, restrita a `Papel.guerreiro`. É o único uso
+    autorizado de nick de Guerreiro(a) fora da abertura de sessão por
+    biometria — a confirmação humana o consome sem devolver identificador
+    algum a quem chamou (`RN-01-22`, openspec —
+    esqueleto-da-aula-presencial-e-equipe-da-aula, design — decisão 1.1)."""
+    return (
+        sessao.query(Persona)
+        .join(Nick, Nick.persona_id == Persona.id)
+        .filter(func.lower(Nick.valor) == nick.strip().lower(), Persona.papel == Papel.guerreiro)
+        .first()
+    )
+
+
 _PAPEIS_DE_ADULTO = (Papel.apoiador, Papel.mestre)
 
 _QUANTIDADE_DE_SUGESTOES_DE_VARIACAO = 3

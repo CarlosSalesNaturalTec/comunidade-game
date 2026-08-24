@@ -7,7 +7,8 @@
       "hosting": {
         "api": ["comunidade-game-api"],
         "app-03": ["comunidade-game-app-03"],
-        "mestre": ["comunidade-game-mestre"]
+        "mestre": ["comunidade-game-mestre"],
+        "aula": ["comunidade-game-aula"]
       }
     }
   }

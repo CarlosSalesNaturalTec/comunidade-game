@@ -149,17 +149,17 @@ class TestAbrirSessaoDeGuerreiro:
 
 class TestConfirmacaoDeSessaoDeGuerreiro:
     def test_mestre_confirma_guerreiro_sem_template(
-        self, cliente, criar_chave, criar_persona, criar_sessao_de_teste, sessao
+        self, cliente, criar_chave, criar_persona, criar_nick, criar_sessao_de_teste, sessao
     ):
         chave, _ = criar_chave()
         admin = criar_persona(Papel.admin)
         mestre = criar_persona(Papel.mestre, criada_por=admin)
-        guerreiro = criar_persona(Papel.guerreiro)
+        guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Sem_template")
         token_do_mestre, _ = criar_sessao_de_teste(mestre)
 
         resposta = cliente.post(
             "/v1/sessoes/guerreiro/confirmacao",
-            json={"guerreiro_id": str(guerreiro.id)},
+            json={"nick": "Sem_template"},
             headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_mestre}"},
         )
         assert resposta.status_code == 201
@@ -170,32 +170,32 @@ class TestConfirmacaoDeSessaoDeGuerreiro:
         assert registro.quem_confirmou == mestre.id
 
     def test_admin_tambem_confirma(
-        self, cliente, criar_chave, criar_persona, criar_sessao_de_teste
+        self, cliente, criar_chave, criar_persona, criar_nick, criar_sessao_de_teste
     ):
         chave, _ = criar_chave()
         admin = criar_persona(Papel.admin)
-        guerreiro = criar_persona(Papel.guerreiro)
+        _guerreiro_com_nick(criar_persona, criar_nick, nick="Confirmado_pelo_admin")
         token_do_admin, _ = criar_sessao_de_teste(admin)
 
         resposta = cliente.post(
             "/v1/sessoes/guerreiro/confirmacao",
-            json={"guerreiro_id": str(guerreiro.id)},
+            json={"nick": "Confirmado_pelo_admin"},
             headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_admin}"},
         )
         assert resposta.status_code == 201
 
     def test_apoiador_nao_confirma(
-        self, cliente, criar_chave, criar_persona, criar_sessao_de_teste
+        self, cliente, criar_chave, criar_persona, criar_nick, criar_sessao_de_teste
     ):
         chave, _ = criar_chave()
         admin = criar_persona(Papel.admin)
         apoiador = criar_persona(Papel.apoiador, criada_por=admin)
-        guerreiro = criar_persona(Papel.guerreiro)
+        _guerreiro_com_nick(criar_persona, criar_nick, nick="Nao_confirmado_por_apoiador")
         token_do_apoiador, _ = criar_sessao_de_teste(apoiador)
 
         resposta = cliente.post(
             "/v1/sessoes/guerreiro/confirmacao",
-            json={"guerreiro_id": str(guerreiro.id)},
+            json={"nick": "Nao_confirmado_por_apoiador"},
             headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_apoiador}"},
         )
         assert resposta.status_code == 403
@@ -221,12 +221,46 @@ class TestConfirmacaoDeSessaoDeGuerreiro:
 
         resposta = cliente.post(
             "/v1/sessoes/guerreiro/confirmacao",
-            json={"guerreiro_id": str(guerreiro.id)},
+            json={"nick": "Recusou_biometria"},
             headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_mestre}"},
         )
         assert resposta.status_code == 201
 
-    def test_guerreiro_inexistente_e_recusado(
+    def test_nick_inexistente_e_recusado_sem_revelar_o_motivo(
+        self, cliente, criar_chave, criar_persona, criar_sessao_de_teste
+    ):
+        chave, _ = criar_chave()
+        admin = criar_persona(Papel.admin)
+        token_do_admin, _ = criar_sessao_de_teste(admin)
+
+        resposta = cliente.post(
+            "/v1/sessoes/guerreiro/confirmacao",
+            json={"nick": "nick_que_nao_existe"},
+            headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_admin}"},
+        )
+        assert resposta.status_code == 401
+        assert resposta.json()["codigo"] == "confirmacao_de_guerreiro_recusada"
+
+    def test_nick_de_quem_nao_e_guerreiro_e_recusado_da_mesma_forma(
+        self, cliente, criar_chave, criar_persona, criar_nick, criar_sessao_de_teste
+    ):
+        """A recusa não distingue nick inexistente de nick de outro papel —
+        é o mesmo código e a mesma mensagem dos dois casos (`RN-01-22`)."""
+        chave, _ = criar_chave()
+        admin = criar_persona(Papel.admin)
+        mestre_com_nick = criar_persona(Papel.mestre, criada_por=admin)
+        criar_nick(mestre_com_nick, "nick_de_mestre")
+        token_do_admin, _ = criar_sessao_de_teste(admin)
+
+        resposta = cliente.post(
+            "/v1/sessoes/guerreiro/confirmacao",
+            json={"nick": "nick_de_mestre"},
+            headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_admin}"},
+        )
+        assert resposta.status_code == 401
+        assert resposta.json()["codigo"] == "confirmacao_de_guerreiro_recusada"
+
+    def test_confirmacao_nao_aceita_identificador_de_persona(
         self, cliente, criar_chave, criar_persona, criar_sessao_de_teste
     ):
         chave, _ = criar_chave()
@@ -238,7 +272,7 @@ class TestConfirmacaoDeSessaoDeGuerreiro:
             json={"guerreiro_id": "00000000-0000-0000-0000-000000000000"},
             headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_admin}"},
         )
-        assert resposta.status_code == 404
+        assert resposta.status_code == 422
 
 
 class TestFluxoCompletoDoOnboardingSemImagem:
@@ -271,7 +305,7 @@ class TestFluxoCompletoDoOnboardingSemImagem:
 
         confirmacao = cliente.post(
             "/v1/sessoes/guerreiro/confirmacao",
-            json={"guerreiro_id": str(guerreiro.id)},
+            json={"nick": "Onboarding_sem_imagem"},
             headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_mestre}"},
         )
         assert confirmacao.status_code == 201

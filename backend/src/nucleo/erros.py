@@ -161,6 +161,17 @@ class AutenticacaoBiometricaInvalida(ErroDeAplicacao):
     mensagem = "Nick ou imagem não reconhecidos. Peça a um Mestre para confirmar sua entrada."
 
 
+class ConfirmacaoDeGuerreiroRecusada(ErroDeAplicacao):
+    """Indistinguível entre nick inexistente e nick que não é de
+    Guerreiro(a) — não é uma variação de `AutenticacaoBiometricaInvalida`,
+    porque aqui quem já está confirmando é o próprio Mestre ou Admin
+    (`RN-01-22`)."""
+
+    status_code = 401
+    codigo = "confirmacao_de_guerreiro_recusada"
+    mensagem = "Não foi possível confirmar esse nick. Confira com o Guerreiro(a) e tente de novo."
+
+
 class CotaDeLeituraExcedida(ErroDeAplicacao):
     status_code = 429
     codigo = "cota_de_leitura_excedida"
