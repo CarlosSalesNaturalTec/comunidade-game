@@ -1,12 +1,12 @@
 import { ErroDaApi } from "comum/api";
 import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
 import { type FormEvent, useId, useState } from "react";
-import { cadastrarGuerreiroNoEncontro } from "../api/guerreiros";
+import { cadastrarGuerreiroNoEncontro, type GuerreiroCadastrado } from "../api/guerreiros";
 
 interface Props {
   tokenDeTrabalho: string;
   aulaId: string;
-  aoConcluir: () => void;
+  aoConcluir: (guerreiro: GuerreiroCadastrado) => void;
   aoVoltar: () => void;
 }
 
@@ -92,7 +92,7 @@ export function TelaDeCadastro({ tokenDeTrabalho, aulaId, aoConcluir, aoVoltar }
 
     definirEnviando(true);
     try {
-      await cadastrarGuerreiroNoEncontro(
+      const guerreiro = await cadastrarGuerreiroNoEncontro(
         {
           nome: nome.trim(),
           nascimento,
@@ -102,7 +102,7 @@ export function TelaDeCadastro({ tokenDeTrabalho, aulaId, aoConcluir, aoVoltar }
         },
         tokenDeTrabalho,
       );
-      aoConcluir();
+      aoConcluir(guerreiro);
     } catch (erroCapturado) {
       if (erroCapturado instanceof ErroDaApi && erroCapturado.campo === "nascimento") {
         definirIdadeForaDaFaixa(true);

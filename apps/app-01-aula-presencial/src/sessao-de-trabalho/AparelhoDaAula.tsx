@@ -156,6 +156,7 @@ export function AparelhoDaAula() {
     <ProvedorDeSessao chaveDeArmazenamento={CHAVE_DE_SESSAO_DO_GUERREIRO}>
       <TelaInicial
         tokenDeTrabalho={sessao.token}
+        personaIdDeTrabalho={sessao.persona_id}
         aulaId={aulaEscolhidaId}
         aoVoltarAoInicio={consultarAulasVigentes}
       />

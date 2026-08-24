@@ -1,6 +1,6 @@
 import uuid
 
-from nucleo.personas.modelo import Papel
+from nucleo.personas.modelo import Credencial, Papel
 
 
 def test_admin_cadastra_responsavel_pela_rota(
@@ -12,10 +12,13 @@ def test_admin_cadastra_responsavel_pela_rota(
 
     resposta = cliente.post(
         "/v1/responsaveis",
+        json={"nome": "mãe"},
         headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
     )
     assert resposta.status_code == 201
-    assert "id" in resposta.json()
+    corpo = resposta.json()
+    assert "id" in corpo
+    assert corpo["nome"] == "mãe"
 
 
 def test_mestre_cadastra_responsavel_pela_rota(
@@ -28,6 +31,7 @@ def test_mestre_cadastra_responsavel_pela_rota(
 
     resposta = cliente.post(
         "/v1/responsaveis",
+        json={"nome": "mãe"},
         headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
     )
     assert resposta.status_code == 201
@@ -43,10 +47,43 @@ def test_quem_nao_e_admin_nem_mestre_recebe_403_ao_cadastrar_responsavel(
 
     resposta = cliente.post(
         "/v1/responsaveis",
+        json={"nome": "mãe"},
         headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
     )
     assert resposta.status_code == 403
     assert resposta.json()["codigo"] == "permissao_negada"
+
+
+def test_cadastro_de_responsavel_sem_nome_pela_rota_e_422(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.post(
+        "/v1/responsaveis",
+        json={"nome": ""},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+    assert resposta.status_code == 422
+    assert resposta.json()["codigo"] == "erro_de_validacao"
+
+
+def test_cadastro_de_responsavel_nao_cria_credencial(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.post(
+        "/v1/responsaveis",
+        json={"nome": "mãe"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+    responsavel_id = resposta.json()["id"]
+    assert sessao.query(Credencial).filter_by(persona_id=responsavel_id).count() == 0
 
 
 def test_criar_vinculo_pela_rota(cliente, criar_chave, criar_persona, criar_sessao_de_teste):

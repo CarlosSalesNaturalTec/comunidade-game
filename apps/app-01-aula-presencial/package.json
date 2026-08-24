@@ -14,6 +14,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@vladmandic/human": "^3.3.6",
     "comum": "*",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"

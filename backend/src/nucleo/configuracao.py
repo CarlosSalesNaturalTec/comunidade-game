@@ -65,6 +65,13 @@ class Configuracao(BaseSettings):
     # não tem calendário (`RF-01-42`, `RF-01-43`, design — Decisions).
     ciclo_rotulo: str = "Ciclo 01"
 
+    # Versão vigente do termo de consentimento, carimbada pelo núcleo em todo
+    # registro — a porta HTTP não a recebe do cliente (`RF-04-12`, `RN-01-12`,
+    # documento 09 — decisão do fundador, 2026-08-24). Trocar o termo é
+    # trocar esta configuração; o registro já gravado continua afirmando a
+    # versão que valia quando foi feito.
+    consentimento_versao_vigente_do_termo: str = "2026-08"
+
     # Piso de coletores distintos do recorte publicado do território — abaixo
     # dele, o recorte sobe ao nível acima (`RF-08-28`, `RN-08-24`, documento
     # 02 §1).

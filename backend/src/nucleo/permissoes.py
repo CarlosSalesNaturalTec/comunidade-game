@@ -37,6 +37,7 @@ class Operacao(enum.StrEnum):
     homologacao_da_equipe_da_trilha = "homologacao_da_equipe_da_trilha"
     credencial_de_dispositivo_dos_seus_desafios = "credencial_de_dispositivo_dos_seus_desafios"
     cadastro_do_guerreiro_no_encontro = "cadastro_do_guerreiro_no_encontro"
+    testemunho_do_termo_impresso = "testemunho_do_termo_impresso"
     # Mestre — lê
     suas_turmas = "suas_turmas"
     painel_do_dia_na_app_03 = "painel_do_dia_na_app_03"
@@ -97,6 +98,7 @@ MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {
                 Operacao.homologacao_da_equipe_da_trilha,
                 Operacao.credencial_de_dispositivo_dos_seus_desafios,
                 Operacao.cadastro_do_guerreiro_no_encontro,
+                Operacao.testemunho_do_termo_impresso,
                 Operacao.propostas_de_evolucao,
             }
         ),

@@ -11,12 +11,16 @@ from .modelo import VinculoResponsavel
 TETO_DE_RESPONSAVEIS = 3
 
 
-def cadastrar_responsavel(sessao: Session, *, criado_por: Persona | None) -> Persona:
+def cadastrar_responsavel(sessao: Session, *, criado_por: Persona | None, nome: str) -> Persona:
     """O cadastro não dá, por si só, acesso a Guerreiro(a) algum — o que o
     responsável alcança vem do vínculo (`RF-01-13`). `criar_persona` já
-    recusa quem não é Admin nem Mestre (`RN-01-01`).
+    recusa quem não é Admin nem Mestre (`RN-01-01`). O nome é exigido: é
+    sobre ele que se apoia o consentimento que autoriza a captura da imagem
+    da criança (`RF-04-60`, design — decisão 1).
     """
-    return criar_persona(sessao, papel=Papel.responsavel, criada_por=criado_por)
+    if not nome or not nome.strip():
+        raise ErroDeValidacao(mensagem="O responsável exige o nome.", campo="nome")
+    return criar_persona(sessao, papel=Papel.responsavel, criada_por=criado_por, nome=nome)
 
 
 def criar_vinculo(

@@ -24,6 +24,7 @@ _TABELA_DO_PRD_01_PAR_4 = {
             Operacao.homologacao_da_equipe_da_trilha,
             Operacao.credencial_de_dispositivo_dos_seus_desafios,
             Operacao.cadastro_do_guerreiro_no_encontro,
+            Operacao.testemunho_do_termo_impresso,
             Operacao.propostas_de_evolucao,
         },
         "le": {Operacao.publico, Operacao.suas_turmas, Operacao.painel_do_dia_na_app_03},
@@ -94,6 +95,16 @@ def test_catalogo_de_poderes_so_alcancado_por_admin():
     for papel in (Papel.mestre, Papel.guerreiro, Papel.responsavel, Papel.apoiador):
         assert not conferir_permissao(papel, "escreve", Operacao.catalogo_de_poderes)
     assert conferir_permissao(Papel.admin, "escreve", Operacao.catalogo_de_poderes)
+
+
+def test_testemunho_do_termo_impresso_e_de_mestre_e_admin_nao_do_responsavel():
+    """O testemunho é ato do Mestre ou Admin, distinto do consentimento que o
+    próprio responsável dá na App 07 (design — decisão 3)."""
+    assert conferir_permissao(Papel.mestre, "escreve", Operacao.testemunho_do_termo_impresso)
+    assert conferir_permissao(Papel.admin, "escreve", Operacao.testemunho_do_termo_impresso)
+    assert not conferir_permissao(
+        Papel.responsavel, "escreve", Operacao.testemunho_do_termo_impresso
+    )
 
 
 def test_operacao_de_outro_papel_nega_por_padrao():

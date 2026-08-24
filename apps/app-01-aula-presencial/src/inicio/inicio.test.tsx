@@ -17,6 +17,7 @@ function renderizar(aoVoltarAoInicio = vi.fn()) {
     <ProvedorDeSessao chaveDeArmazenamento="teste:app-01:sessao-guerreiro">
       <TelaInicial
         tokenDeTrabalho="token-de-trabalho"
+        personaIdDeTrabalho="mestre-de-trabalho-1"
         aulaId="aula-1"
         aoVoltarAoInicio={aoVoltarAoInicio}
       />

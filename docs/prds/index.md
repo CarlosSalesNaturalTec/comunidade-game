@@ -375,6 +375,20 @@ passa a cadastrar o responsável mínimo** no ato do encontro, sem o que a prime
 cairia na jornada 5.3 por acidente de implementação — o código dela é da fatia seguinte, junto
 do consentimento e da câmera, que seguem pendentes.
 
+A terceira fatia, `responsavel-consentimento-e-captura-da-imagem`, entregou a **jornada 5.2**: a
+criança que chega **com** o responsável. `POST /v1/responsaveis` passou a exigir o **nome**, e o
+consentimento ganhou a porta HTTP que faltava — `POST /v1/consentimentos`, restrita a Mestre e
+Admin pela operação nova do testemunho do termo impresso, com a **versão do termo carimbada pela
+configuração do núcleo**, nunca recebida do cliente. A App 01 passou a exibir o termo, colher a
+confirmação do Mestre ou Admin como testemunha e só então capturar a imagem — no aparelho, pela
+biblioteca **Human**, na ordem vivacidade e depois descritor, isolada num módulo próprio que
+nunca deixa a fotografia sair dele. Decisão do fundador, 2026-08-24: a **falta de câmera fecha
+só a captura**, nunca o onboarding — sem ela, o cadastro conclui pelo caminho da jornada 5.3.
+Seguem pendentes: a **entrada por reconhecimento facial** e a **captura de quem já se cadastrou
+sem imagem** (`RF-04-16`, `RF-04-18`), que dependem de resolver o Guerreiro(a) a partir do nick
+sem abrir o oráculo que `RN-01-22` veda; a **leitura do termo em voz alta**, que depende da
+modalidade áudio; e a **redação do termo impresso**, pendência do PRD-04 §14.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

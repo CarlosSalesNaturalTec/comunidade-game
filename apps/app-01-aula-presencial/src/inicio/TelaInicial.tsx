@@ -3,12 +3,13 @@ import { Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
 import { TelaDeEntradaDoGuerreiro } from "../entrada/TelaDeEntradaDoGuerreiro";
 import { TelaDeEquipes } from "../equipes/TelaDeEquipes";
-import { TelaDeCadastro } from "../onboarding/TelaDeCadastro";
+import { FluxoDeOnboarding } from "../onboarding/FluxoDeOnboarding";
 
 type Caminho = "inicio" | "onboarding" | "trilhas";
 
 interface Props {
   tokenDeTrabalho: string;
+  personaIdDeTrabalho: string;
   aulaId: string;
   /** Relê `GET /v1/aulas/vigentes`, para que a janela da aula seja
    * conferida a cada volta ao início (`RF-04-05`, design — decisão 3). */
@@ -16,9 +17,14 @@ interface Props {
 }
 
 // Os dois caminhos do PRD-04 §6.1 — onboarding e trilhas. O onboarding
-// entra em estado operante nesta fatia: cadastro do encontro, sem câmera
-// nem consentimento (`RF-04-01`, `RF-04-07`).
-export function TelaInicial({ tokenDeTrabalho, aulaId, aoVoltarAoInicio }: Props) {
+// entra em estado operante nesta fatia: cadastro do Guerreiro(a), do
+// responsável, o termo e a captura da imagem (`RF-04-01`, `RF-04-07`).
+export function TelaInicial({
+  tokenDeTrabalho,
+  personaIdDeTrabalho,
+  aulaId,
+  aoVoltarAoInicio,
+}: Props) {
   const { sessao: sessaoDoGuerreiro, sair: sairDoGuerreiro } = useSessao();
   const [caminho, definirCaminho] = useState<Caminho>("inicio");
 
@@ -34,8 +40,9 @@ export function TelaInicial({ tokenDeTrabalho, aulaId, aoVoltarAoInicio }: Props
 
   if (caminho === "onboarding") {
     return (
-      <TelaDeCadastro
+      <FluxoDeOnboarding
         tokenDeTrabalho={tokenDeTrabalho}
+        personaIdDeTrabalho={personaIdDeTrabalho}
         aulaId={aulaId}
         aoConcluir={voltarAoInicio}
         aoVoltar={voltarAoInicio}
