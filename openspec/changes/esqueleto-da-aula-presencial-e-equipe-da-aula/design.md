@@ -54,6 +54,38 @@ hoje como padrão. A App 01 o instancia duas vezes, aninhado, com chaves distint
 `sessionStorage`, e não `localStorage`, nas duas: o aparelho é compartilhado, e a sessão precisa
 morrer com a aba (decisão já vigente, `armazenamentoDeSessao.ts`).
 
+### 1.1. A confirmação do Guerreiro(a) entra por nick, nunca por identificador — decisão do
+fundador, 2026-08-24, revista durante o `/opsx:apply`
+
+A tarefa 4.5 pressupunha que a App 01 resolveria o nick digitado num `guerreiro_id` para então
+chamar `POST /v1/sessoes/guerreiro/confirmacao`, que hoje exige esse identificador. Não há rota
+alguma que faça essa resolução — e a capacidade `persona-e-credencial`, consolidada desde
+`sessao-do-guerreiro-e-biometria` e reafirmada em `nick-de-adulto` (2026-08-21), proíbe
+criá-la: "a vedação [de busca por nick de Guerreiro(a)] é definida pelo que a resposta alcança,
+**não por quem pergunta**", com o cenário nomeado "adulto autenticado não descobre nick de
+Guerreiro(a)". Uma rota de busca por nick, mesmo restrita a Mestre ou Admin, seria exatamente
+o oráculo que o invariante veda.
+
+A solução aplica à confirmação o mesmo padrão que `sessao-do-guerreiro/spec.md` já usa na
+abertura por biometria: **entrada por nick, resolução interna, e recusa uniforme** que não
+distingue nick inexistente de nick que não é de Guerreiro(a). `ConfirmarSessaoDeGuerreiroEntrada`
+troca `guerreiro_id: UUID` por `nick: str`; a rota resolve o nick internamente (correspondência
+exata, insensível a caixa, restrita a `Papel.guerreiro` — mesmo padrão de
+`personas/regra.py::_nick_em_uso`) e abre a sessão ou recusa com uma classe de erro nova,
+`ConfirmacaoDeGuerreiroRecusada` (401), que nunca revela qual dos dois motivos causou a recusa.
+Nenhum identificador de persona sai do núcleo nem entra na App 01 nesta fatia.
+
+Isso muda uma rota que já existia antes desta change (`sessoes/rotas.py`), sem consumidor até
+aqui — nenhuma aplicação a chama em produção —, e por isso a mudança de contrato é segura sem
+período de transição. A capacidade `sessao-do-guerreiro` entra em "Modified Capabilities" na
+proposal.
+
+- _Descartado_: rota `GET /v1/guerreiros/nick/{nick}` restrita a Mestre/Admin — é o oráculo que
+  o invariante nomeia e veda explicitamente, independente de quem pergunta.
+- _Descartado_: reaproveitar `AutenticacaoBiometricaInvalida` para a recusa — a mensagem
+  ("Peça a um Mestre para confirmar sua entrada") não faz sentido quando é o próprio Mestre
+  confirmando; a nova classe leva mensagem própria, mesmo código de status.
+
 ### 2. A sessão do Guerreiro(a) é limpa ao voltar à tela inicial
 
 Voltar ao início encerra a sessão do Guerreiro(a) e apaga o token dele, para que o próximo

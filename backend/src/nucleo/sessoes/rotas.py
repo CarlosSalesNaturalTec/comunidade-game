@@ -14,12 +14,13 @@ from ..chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from ..configuracao import Configuracao, obter_configuracao
 from ..erros import (
     AutenticacaoBiometricaInvalida,
+    ConfirmacaoDeGuerreiroRecusada,
     CredencialInvalida,
     LoginSemCadastro,
-    NaoEncontrado,
 )
 from ..permissoes import MATRIZ_DE_PERMISSOES, Operacao, exigir_permissao
 from ..personas.modelo import Credencial, Papel, Persona, TipoDeCredencial
+from ..personas.regra import buscar_guerreiro_por_nick
 from ..personas.senha import conferir_senha
 from .modelo import ComoAutenticou, Sessao
 from .social import TokenSocialInvalido, obter_verificador_social
@@ -169,7 +170,7 @@ def abrir_sessao_de_guerreiro(
 class ConfirmarSessaoDeGuerreiroEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    guerreiro_id: uuid.UUID
+    nick: str = Field(min_length=1)
 
 
 @roteador.post("/sessoes/guerreiro/confirmacao", status_code=201)
@@ -185,11 +186,16 @@ def confirmar_sessao_de_guerreiro(
 ) -> AberturaDeSessaoSaida:
     """Restrita a Mestre e Admin pela matriz (`RF-01-06`, `RF-01-16`) — a
     alternativa equivalente para quem não tem _template_, para a falha de
-    reconhecimento e para quem recusou a biometria (`RN-01-16`).
+    reconhecimento e para quem recusou a biometria (`RN-01-16`). Recebe o
+    **nick**, nunca um identificador: resolvê-lo por uma rota de busca
+    abriria o oráculo que `RN-01-22` veda para qualquer persona, adulto
+    autenticado incluído — a recusa por nick inexistente é indistinguível
+    da recusa por nick de outro papel (openspec —
+    esqueleto-da-aula-presencial-e-equipe-da-aula, design — decisão 1.1).
     """
-    guerreiro = sessao_bd.get(Persona, entrada.guerreiro_id)
-    if guerreiro is None or guerreiro.papel != Papel.guerreiro:
-        raise NaoEncontrado(mensagem="Guerreiro(a) não encontrado.", campo="guerreiro_id")
+    guerreiro = buscar_guerreiro_por_nick(sessao_bd, entrada.nick)
+    if guerreiro is None:
+        raise ConfirmacaoDeGuerreiroRecusada()
 
     return _abrir_sessao(
         sessao_bd,

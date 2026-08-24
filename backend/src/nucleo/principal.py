@@ -19,6 +19,7 @@ from .chaves.rotas import roteador as roteador_de_chaves
 from .coletas.rotas import roteador as roteador_de_coletas
 from .comunidades.rotas import roteador as roteador_de_comunidades
 from .culminancias.rotas import roteador as roteador_de_culminancias
+from .equipes.rotas import roteador as roteador_de_equipes
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
 from .fila.rotas import roteador as roteador_de_fila
 from .jogos.rotas import roteador as roteador_de_jogos
@@ -171,3 +172,4 @@ incluir_roteador_de_dados(app, roteador_de_ods)
 incluir_roteador_de_dados(app, roteador_de_resultados)
 incluir_roteador_de_dados(app, roteador_de_ocorrencias_de_conduta)
 incluir_roteador_de_dados(app, roteador_de_quiz)
+incluir_roteador_de_dados(app, roteador_de_equipes)

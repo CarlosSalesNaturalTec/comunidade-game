@@ -81,6 +81,14 @@ em `.firebaserc` e o `app-01-deploy.yml`, espelho do da App 09.
    quem não tem _template_ gravado, e a operação `confirmacao_de_identidade_do_guerreiro` já
    está na matriz. `RF-04-29` fica atendido em parte, e a captura por nick e imagem entra com
    a fatia do onboarding.
+
+   Revisto durante a implementação (`/opsx:apply`, 2026-08-24): a rota, herdada de uma fatia
+   anterior, exige `guerreiro_id`, e nenhuma rota resolve o nick digitado nesse identificador
+   — criar uma violaria o invariante da capacidade `persona-e-credencial` que veda busca por
+   nick de Guerreiro(a) **por quem quer que pergunte**, adulto autenticado incluído. A rota
+   passa a receber o **nick**, resolvendo-o internamente e recusando de forma indistinguível
+   entre nick inexistente e nick que não é de Guerreiro(a) — o mesmo padrão que a abertura por
+   biometria já usa. Ver design.md — decisão 1.1.
 2. **Mestre e Admin cadastram Guerreiro(a).** Hoje `POST /v1/guerreiros` exige `Operacao.tudo`
    — só Admin. O PRD-04 §9 quer o autocadastro sob a sessão de trabalho do aparelho, que o
    `RF-04-05` abre a **Mestre ou Admin**. A matriz do PRD-01 §4 ganha a operação de cadastro de
@@ -107,6 +115,10 @@ em `.firebaserc` e o `app-01-deploy.yml`, espelho do da App 09.
 - `equipe`: a capacidade ganha a **porta HTTP** que faltava — as quatro rotas do PRD-04 §9 — e
   o requisito da **leitura das equipes da aula** pelo Guerreiro(a) em sessão, restrita a avatar
   e nick. Nenhum dos sete requisitos vigentes muda de comportamento.
+- `sessao-do-guerreiro`: o requisito "Mestre ou Admin abre a sessão por confirmação humana"
+  passa a receber **nick**, não `guerreiro_id`, resolvendo-o internamente e recusando de forma
+  indistinguível entre nick inexistente e nick que não é de Guerreiro(a) — preserva o invariante
+  de `persona-e-credencial` que a rota anterior, sem consumidor até aqui, não respeitava.
 
 ## Impact
 
@@ -114,6 +126,9 @@ em `.firebaserc` e o `app-01-deploy.yml`, espelho do da App 09.
 | ---------------------------------------------------- | ------------------------------ |
 | `backend/src/nucleo/equipes/rotas.py`                | arquivo novo                   |
 | `backend/src/nucleo/principal.py`                    | registro do roteador           |
+| `backend/src/nucleo/sessoes/rotas.py`                | entrada da confirmação: nick, não `guerreiro_id` |
+| `backend/src/nucleo/personas/regra.py`               | resolução interna de nick de Guerreiro(a) |
+| `backend/src/nucleo/erros.py`                        | classe `ConfirmacaoDeGuerreiroRecusada`  |
 | `apps/app-01-aula-presencial/`                       | pasta nova                     |
 | `.firebaserc`, `.github/workflows/app-01-deploy.yml` | alvo e esteira de publicação   |
 
