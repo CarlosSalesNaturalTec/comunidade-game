@@ -9,9 +9,8 @@
       decisão 3). Verificação: o teste da matriz mostra Mestre e Admin com a operação e
       responsável sem ela.
 - [ ] 1.3 `configuracao.py`: constante da **versão vigente do termo de consentimento**, no padrão
-      de `ciclo_rotulo` (design — decisão 2). Confirmar com o fundador o valor inicial antes de
-      fechar — não inventar (design — Open Questions). Verificação: a configuração carrega o
-      valor e o teste da rota o encontra no registro gravado.
+      de `ciclo_rotulo`, com o valor inicial `2026-08` (design — decisão 2). Verificação: a
+      configuração carrega o valor e o teste da rota o encontra no registro gravado.
 
 ## 2. Núcleo — a porta do consentimento
 

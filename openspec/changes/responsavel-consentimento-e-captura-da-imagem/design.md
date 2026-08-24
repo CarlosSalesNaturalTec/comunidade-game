@@ -50,6 +50,10 @@ Cliente não escolhe a versão do termo jurídico que a linha de auditoria vai a
 de versão em branco **permanece** em `registrar_consentimento`: ela protege qualquer chamador,
 inclusive a rota do responsável na App 07, que virá depois.
 
+O **valor inicial é `2026-08`**, declarado pelo fundador em 2026-08-24. É parâmetro de operação,
+não regra de produto: trocá-lo é ato de configuração, e o registro já gravado continua afirmando
+a versão que valia quando foi feito.
+
 _Descartado:_ receber a versão no corpo (deixa o cliente determinar a prova).
 
 ### 3. A matriz ganha a operação do testemunho
@@ -121,9 +125,3 @@ corrigidos no mesmo PR —
   pior desfecho é a jornada 5.3, que já é caminho previsto.
 - **Responsável sem e-mail não entra na App 07 até a gestão agir** → é o desenho do PRD-13 §11,
   não efeito colateral; a pendência aparece no painel do dia, como a digitalização do termo.
-
-## Open Questions
-
-- **Valor inicial da constante da versão do termo.** É parâmetro que a operação declara, não
-  decisão de produto — mas o valor não se inventa. Perguntar ao fundador antes de fechar as
-  tarefas; nada nas specs nem no recorte depende da resposta.
