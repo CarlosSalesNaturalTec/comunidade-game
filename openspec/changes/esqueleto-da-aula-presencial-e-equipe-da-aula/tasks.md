@@ -65,26 +65,26 @@
 
 ## 5. A App 01
 
-- [ ] 5.1 Criar `apps/app-01-aula-presencial/` no desenho das duas irmãs — Vite, React,
+- [x] 5.1 Criar `apps/app-01-aula-presencial/` no desenho das duas irmãs — Vite, React,
       TypeScript, workspace `apps/*`, consumindo `comum/` —, Mobile First com alto contraste e
       poucos elementos por tela (PRD-04 §10).
-- [ ] 5.2 Implementar a **sessão de trabalho do aparelho**: entrada de Mestre ou Admin por login
+- [x] 5.2 Implementar a **sessão de trabalho do aparelho**: entrada de Mestre ou Admin por login
       social, recusa de Guerreiro(a) em linguagem simples, leitura de `GET /v1/aulas/vigentes`,
       a aplicação que não abre sem aula vigente e a pergunta única da comunidade quando há mais
       de uma, guardada junto do token de trabalho (`RF-04-02`, `RF-04-03`, `RF-04-05`,
       `RN-04-01`, `RN-04-02`, design — decisões 3 e 4).
-- [ ] 5.3 Encerrar a sessão de trabalho quando a aula escolhida deixa de aparecer entre as
+- [x] 5.3 Encerrar a sessão de trabalho quando a aula escolhida deixa de aparecer entre as
       vigentes, relendo a rota ao abrir e a cada volta à tela inicial (`RF-04-05`, `RN-04-29`,
       design — decisão 3).
-- [ ] 5.4 Implementar a **tela inicial** com os dois caminhos, o do onboarding desabilitado com
+- [x] 5.4 Implementar a **tela inicial** com os dois caminhos, o do onboarding desabilitado com
       o motivo em uma linha, a volta ao início ao fim de cada atendimento com a sessão do
       Guerreiro(a) limpa, e o encaminhamento de quem escolhe trilhas sem sessão à entrada do
       Guerreiro(a), nunca ao cadastro (`RF-04-01`, `RF-04-28`, design — decisão 2).
-- [ ] 5.5 Implementar a **entrada do Guerreiro(a)** por `POST /v1/sessoes/guerreiro/confirmacao`,
+- [x] 5.5 Implementar a **entrada do Guerreiro(a)** por `POST /v1/sessoes/guerreiro/confirmacao`,
       com o nick informado e a confirmação de Mestre ou Admin presente (`RF-04-29`, `RF-04-15`,
       `RN-04-09`), sem qualquer superfície de câmera ou mídia (`RN-04-12`), e sem expor
       identificador algum de persona na tela (design — decisão 1.1).
-- [ ] 5.6 Implementar a **área de equipes**: lista das equipes da aula por avatar e nick, criar,
+- [x] 5.6 Implementar a **área de equipes**: lista das equipes da aula por avatar e nick, criar,
       entrar com papel declarado e sair, com as recusas do núcleo apresentadas em linguagem
       simples (`RF-04-30`, `RF-04-31`, `RF-04-33`, `RF-04-34`, `RF-04-59`, `RN-04-16`), sem
       oferecer formação de equipe à sessão de trabalho nem homologação de equipe da trilha
@@ -92,15 +92,15 @@
 
 ## 6. Testes da App 01
 
-- [ ] 6.1 Cobrir a sessão de trabalho: sem aula vigente a aplicação não abre e explica em uma
+- [x] 6.1 Cobrir a sessão de trabalho: sem aula vigente a aplicação não abre e explica em uma
       frase; uma aula dispensa a pergunta; duas aulas perguntam uma única vez e não repetem no
       restante da sessão; Guerreiro(a) é recusado na abertura; a aula que sai das vigentes
       encerra a sessão (`RF-04-02`, `RF-04-03`, `RF-04-05`, PRD-04 §12).
-- [ ] 6.2 Cobrir a tela inicial e a entrada do Guerreiro(a): os dois caminhos aparecem; trilhas
+- [x] 6.2 Cobrir a tela inicial e a entrada do Guerreiro(a): os dois caminhos aparecem; trilhas
       sem sessão leva à entrada e não ao cadastro; o atendimento seguinte começa sem dado do
       anterior; a confirmação do Mestre abre a sessão do Guerreiro(a); nick sem correspondência
       é recusado sem revelar o motivo (`RF-04-01`, `RF-04-28`, `RF-04-29`, PRD-04 §12).
-- [ ] 6.3 Cobrir a área de equipes: equipe criada aparece na lista; a sexta pessoa lê a recusa
+- [x] 6.3 Cobrir a área de equipes: equipe criada aparece na lista; a sexta pessoa lê a recusa
       em linguagem simples, e o segundo integrante de 17 anos ou mais também; saída por conta
       própria; a lista mostra só avatar e nick (`RF-04-30`, `RF-04-31`, `RF-04-34`, PRD-04 §12).
 

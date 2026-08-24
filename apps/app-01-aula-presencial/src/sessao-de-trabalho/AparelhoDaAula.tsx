@@ -154,7 +154,11 @@ export function AparelhoDaAula() {
 
   return (
     <ProvedorDeSessao chaveDeArmazenamento={CHAVE_DE_SESSAO_DO_GUERREIRO}>
-      <TelaInicial tokenDeTrabalho={sessao.token} aulaId={aulaEscolhidaId} />
+      <TelaInicial
+        tokenDeTrabalho={sessao.token}
+        aulaId={aulaEscolhidaId}
+        aoVoltarAoInicio={consultarAulasVigentes}
+      />
     </ProvedorDeSessao>
   );
 }

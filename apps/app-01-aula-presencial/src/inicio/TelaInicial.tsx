@@ -9,12 +9,15 @@ type Caminho = "inicio" | "trilhas";
 interface Props {
   tokenDeTrabalho: string;
   aulaId: string;
+  /** Relê `GET /v1/aulas/vigentes`, para que a janela da aula seja
+   * conferida a cada volta ao início (`RF-04-05`, design — decisão 3). */
+  aoVoltarAoInicio: () => void;
 }
 
 // Os dois caminhos do PRD-04 §6.1 — onboarding e trilhas. O onboarding
 // entra desabilitado: depende da câmera, fora do recorte desta fatia
 // (`RF-04-01`, proposal — decisão 1).
-export function TelaInicial({ tokenDeTrabalho, aulaId }: Props) {
+export function TelaInicial({ tokenDeTrabalho, aulaId, aoVoltarAoInicio }: Props) {
   const { sessao: sessaoDoGuerreiro, sair: sairDoGuerreiro } = useSessao();
   const [caminho, definirCaminho] = useState<Caminho>("inicio");
 
@@ -24,6 +27,7 @@ export function TelaInicial({ tokenDeTrabalho, aulaId }: Props) {
   function voltarAoInicio() {
     sairDoGuerreiro();
     definirCaminho("inicio");
+    aoVoltarAoInicio();
   }
 
   if (caminho === "trilhas") {
@@ -31,7 +35,7 @@ export function TelaInicial({ tokenDeTrabalho, aulaId }: Props) {
       return (
         <TelaDeEntradaDoGuerreiro
           tokenDeTrabalho={tokenDeTrabalho}
-          aoVoltar={() => definirCaminho("inicio")}
+          aoVoltar={voltarAoInicio}
         />
       );
     }
