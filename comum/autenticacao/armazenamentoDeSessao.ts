@@ -13,7 +13,10 @@ export function lerToken(chave: string = CHAVE_DE_ARMAZENAMENTO_PADRAO): string 
   return sessionStorage.getItem(chave);
 }
 
-export function gravarToken(token: string, chave: string = CHAVE_DE_ARMAZENAMENTO_PADRAO): void {
+export function gravarToken(
+  token: string,
+  chave: string = CHAVE_DE_ARMAZENAMENTO_PADRAO,
+): void {
   sessionStorage.setItem(chave, token);
 }
 

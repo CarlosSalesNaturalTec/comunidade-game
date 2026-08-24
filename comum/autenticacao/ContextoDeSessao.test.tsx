@@ -5,7 +5,13 @@ import * as api from "./api";
 import { CHAVE_DE_ARMAZENAMENTO_PADRAO, lerToken } from "./armazenamentoDeSessao";
 import { ProvedorDeSessao, useSessao } from "./ContextoDeSessao";
 
-function Conteudo({ rotulo, idToken = "id-token-de-teste" }: { rotulo: string; idToken?: string }) {
+function Conteudo({
+  rotulo,
+  idToken = "id-token-de-teste",
+}: {
+  rotulo: string;
+  idToken?: string;
+}) {
   const { sessao, restaurando, entrarComGoogle, sair } = useSessao();
   if (restaurando) return <p>Restaurando {rotulo}…</p>;
   if (!sessao) {

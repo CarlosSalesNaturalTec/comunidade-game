@@ -28,6 +28,12 @@ interface ContextoDeSessaoValor {
   entrando: boolean;
   erroDeEntrada: string | null;
   entrarComGoogle: (idToken: string) => Promise<void>;
+  /** Abre a sessão a partir de um token já emitido por outra rota que não
+   * `/sessoes/social` — a confirmação humana do Guerreiro(a) na App 01,
+   * por exemplo (`RF-04-29`). Grava o token, relê `GET /v1/eu` e, se o
+   * núcleo não o reconhecer, o erro sobe para quem chamou tratar
+   * (openspec — esqueleto-da-aula-presencial-e-equipe-da-aula). */
+  entrarComToken: (token: string) => Promise<void>;
   sair: () => Promise<void>;
   /** Chamada por qualquer tela que receba `sessao_ausente` ou
    * `sessao_invalida` do núcleo (`RN-01-34`): devolve à entrada sem tentar
@@ -106,6 +112,20 @@ export function ProvedorDeSessao({
     [restaurarSessao, chaveDeArmazenamento],
   );
 
+  const entrarComToken = useCallback(
+    async (token: string) => {
+      definirEntrando(true);
+      definirErroDeEntrada(null);
+      gravarToken(token, chaveDeArmazenamento);
+      const restaurou = await restaurarSessao(token);
+      definirEntrando(false);
+      if (!restaurou) {
+        definirErroDeEntrada("Não foi possível abrir a sessão. Tente novamente.");
+      }
+    },
+    [restaurarSessao, chaveDeArmazenamento],
+  );
+
   const sair = useCallback(async () => {
     const token = sessao?.token;
     limparToken(chaveDeArmazenamento);
@@ -135,6 +155,7 @@ export function ProvedorDeSessao({
         entrando,
         erroDeEntrada,
         entrarComGoogle,
+        entrarComToken,
         sair,
         tratarRecusaDeSessao,
       }}
