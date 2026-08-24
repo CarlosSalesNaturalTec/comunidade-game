@@ -449,11 +449,12 @@ Rotas do caminho das trilhas, todas autenticadas na **sessão do Guerreiro(a)**:
 Erros previstos: nenhuma aula vigente (200 com lista vazia — é o que mantém a aplicação
 fechada); nick já usado (422, com as variações sugeridas no corpo); idade fora da faixa (422);
 imagem não reconhecida (401, sem revelar se o nick existe); captura sem consentimento registrado
-(422); presença duplicada no mesmo encontro (409); reenvio da fila local já processado (200, sem
-duplicar o registro); sexto integrante ou segundo familiar de 17 anos ou mais na equipe (422);
-equipe de aula já encerrada (409); segunda resposta da mesma equipe para a mesma pergunta (409);
-resposta de Guerreiro(a) que já joga por outra equipe na mesma partida (409); pergunta fora do
-corpus (200, com a recusa explicada no corpo).
+(422); presença já registrada — na volta à porta do mesmo encontro ou no reenvio da fila local —
+devolvida sem erro (201, com o registro e o momento do fato originais, sem duplicar; é a
+aplicação, não o núcleo, quem avisa a criança); sexto integrante ou segundo familiar de 17 anos
+ou mais na equipe (422); equipe de aula já encerrada (409); segunda resposta da mesma equipe para
+a mesma pergunta (409); resposta de Guerreiro(a) que já joga por outra equipe na mesma partida
+(409); pergunta fora do corpus (200, com a recusa explicada no corpo).
 
 ## 10. Requisitos não funcionais
 
@@ -602,6 +603,8 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 | O responsável mínimo é o nome, e só — sem e-mail, credencial nem digitalização do termo                          | 09 §1          | O responsável mínimo é o nome, e só                          |
 | A versão do termo é carimbada pelo núcleo, nunca recebida do cliente                                             | 09 §1          | A versão do termo é carimbada pelo núcleo                    |
 | Sem câmera, o onboarding continua — só a captura fecha                                                           | 09 §1          | Sem câmera, o onboarding continua                            |
+| Quem escreve a presença por reconhecimento é a sessão de trabalho do aparelho, sem confirmador                   | 09 §1          | Quem escreve a presença por reconhecimento                   |
+| Presença já registrada é devolvida sem erro, no lugar do 409; quem avisa é a aplicação                           | 09 §1          | Presença já registrada não é erro                            |
 
 A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do termo** ao
 `Consentimento` do PRD-01, e o acompanhamento do anexo pendente à App 03 (PRD-02).
@@ -621,6 +624,11 @@ da gestão, e o responsável mínimo passa a ser cadastrado pelo App 01 no ato d
 três últimas na change seguinte, `responsavel-consentimento-e-captura-da-imagem`, que entrega o
 código de todas as cinco: o conteúdo do responsável mínimo, a versão do termo carimbada pelo
 núcleo e a falta de câmera que fecha só a captura.
+
+As duas últimas linhas também são decisão nova do fundador, em 2026-08-24, entregues pela change
+`entrada-por-reconhecimento-e-falha-de-identificacao`: quem escreve a presença por
+reconhecimento é a sessão de trabalho do aparelho, sem virar confirmadora, e a presença já
+registrada é devolvida sem erro, com a aplicação — não o núcleo — avisando a criança.
 
 ## 14. Pendências que permanecem
 

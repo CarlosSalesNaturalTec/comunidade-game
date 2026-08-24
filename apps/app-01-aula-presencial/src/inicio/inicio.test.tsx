@@ -3,9 +3,35 @@ import userEvent from "@testing-library/user-event";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as sessaoApi from "comum/autenticacao/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import * as descritorApi from "../api/descritor";
 import * as equipesApi from "../api/equipes";
+import * as presencasApi from "../api/presencas";
 import * as sessoesDeGuerreiroApi from "../api/sessoesDeGuerreiro";
+import * as biometriaModulo from "../biometria/biometria";
 import { TelaInicial } from "./TelaInicial";
+
+function mockarRegistrarPresencaEcoando() {
+  return vi.spyOn(presencasApi, "registrarPresenca").mockImplementation((aulaId, entrada) =>
+    Promise.resolve({
+      id: "presenca-1",
+      aula_id: aulaId,
+      guerreiro_id: entrada.guerreiro_id,
+      modo: entrada.modo,
+      confirmador_id: entrada.modo === "confirmacao" ? "mestre-de-trabalho-1" : null,
+      momento_do_fato: entrada.momento_do_fato,
+    }),
+  );
+}
+
+async function entrarPorConfirmacao(
+  usuario: ReturnType<typeof userEvent.setup>,
+  nick = "zeferina",
+) {
+  await usuario.click(screen.getByRole("button", { name: /trilhas/i }));
+  await usuario.type(await screen.findByLabelText(/nick/i), nick);
+  await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+  await usuario.click(await screen.findByRole("button", { name: /confirmar identidade/i }));
+}
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -51,7 +77,7 @@ describe("tela inicial da App 01", () => {
     expect(screen.queryByText(/cadastr/i)).not.toBeInTheDocument();
   });
 
-  it("a confirmação do Mestre abre a sessão do Guerreiro(a) e leva às equipes", async () => {
+  it("a confirmação do Mestre abre a sessão do Guerreiro(a), registra a presença e leva às equipes", async () => {
     vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
       token: "token-do-guerreiro",
       expira_em: new Date().toISOString(),
@@ -66,14 +92,18 @@ describe("tela inicial da App 01", () => {
       itens: [],
       proximo_cursor: null,
     });
+    const registrarPresenca = mockarRegistrarPresencaEcoando();
 
     renderizar();
     const usuario = userEvent.setup();
-    await usuario.click(screen.getByRole("button", { name: /trilhas/i }));
-    await usuario.type(await screen.findByLabelText(/nick/i), "zeferina");
-    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+    await entrarPorConfirmacao(usuario);
 
     expect(await screen.findByText(/equipes desta aula/i)).toBeInTheDocument();
+    expect(registrarPresenca).toHaveBeenCalledWith(
+      "aula-1",
+      expect.objectContaining({ guerreiro_id: "guerreiro-1", modo: "confirmacao" }),
+      "token-de-trabalho",
+    );
   });
 
   it("voltar ao início encerra a sessão do Guerreiro(a) e limpa a tela", async () => {
@@ -92,13 +122,12 @@ describe("tela inicial da App 01", () => {
       itens: [],
       proximo_cursor: null,
     });
+    mockarRegistrarPresencaEcoando();
 
     const aoVoltarAoInicio = vi.fn();
     renderizar(aoVoltarAoInicio);
     const usuario = userEvent.setup();
-    await usuario.click(screen.getByRole("button", { name: /trilhas/i }));
-    await usuario.type(await screen.findByLabelText(/nick/i), "zeferina");
-    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+    await entrarPorConfirmacao(usuario);
     await screen.findByText(/equipes desta aula/i);
 
     await usuario.click(screen.getByRole("button", { name: /voltar ao início/i }));
@@ -107,5 +136,81 @@ describe("tela inicial da App 01", () => {
     expect(sessaoApi.encerrarSessao).toHaveBeenCalledWith("token-do-guerreiro");
     // A volta ao início relê a janela da aula — design decisão 3.
     expect(aoVoltarAoInicio).toHaveBeenCalled();
+  });
+
+  it("a sessão aberta por confirmação habilita o recadastro, com o identificador vindo dela", async () => {
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(sessaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    vi.spyOn(equipesApi, "listarEquipesDaAula").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    mockarRegistrarPresencaEcoando();
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.4, 0.5, 0.6]);
+    const enviarDescritor = vi.spyOn(descritorApi, "enviarDescritor").mockResolvedValue({
+      guerreiro_id: "guerreiro-1",
+      gravado_em: new Date().toISOString(),
+    });
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await entrarPorConfirmacao(usuario);
+    await screen.findByText(/equipes desta aula/i);
+
+    const botaoDeRecadastro = screen.getByRole("button", { name: /recadastrar imagem/i });
+    await usuario.click(botaoDeRecadastro);
+    await usuario.click(await screen.findByRole("button", { name: /iniciar captura/i }));
+
+    await vi.waitFor(() =>
+      expect(enviarDescritor).toHaveBeenCalledWith(
+        "guerreiro-1",
+        { descritor: [0.4, 0.5, 0.6] },
+        "token-de-trabalho",
+      ),
+    );
+    // Nenhuma rota de nick para identificador foi chamada — o identificador
+    // veio da sessão aberta por confirmação presencial (`RN-01-22`).
+    expect(sessoesDeGuerreiroApi.confirmarSessaoDeGuerreiro).toHaveBeenCalledTimes(1);
+  });
+
+  it("a sessão aberta por reconhecimento não oferece o recadastro", async () => {
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    vi.spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(sessaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    vi.spyOn(equipesApi, "listarEquipesDaAula").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    mockarRegistrarPresencaEcoando();
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /trilhas/i }));
+    await usuario.type(await screen.findByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+
+    expect(await screen.findByText(/equipes desta aula/i)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /recadastrar imagem/i }),
+    ).not.toBeInTheDocument();
   });
 });

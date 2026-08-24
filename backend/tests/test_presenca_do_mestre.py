@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from nucleo.aulas.modelo import ModoDeComprovacao, Presenca
 from nucleo.personas.modelo import Papel
@@ -137,6 +137,132 @@ def test_papel_sem_a_operacao_e_recusado_na_presenca(
     )
 
     assert resposta.status_code == 403
+
+
+def test_guerreiro_nao_registra_a_propria_presenca(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade, criar_aula
+):
+    """A matriz de permissões (`RF-01-20`) não concede ao Guerreiro(a)
+    operação de escrita de presença alguma — a presença é fato do
+    encontro, não ato dele (design — decisão 1)."""
+    chave, _ = criar_chave(aplicacao="app-01-aula-presencial")
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    token, _ = criar_sessao_de_teste(guerreiro)
+    aula = criar_aula(admin, comunidade)
+
+    resposta = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "reconhecimento",
+            "momento_do_fato": MOMENTO_DO_FATO.isoformat(),
+        },
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403
+
+
+def test_app_01_registra_presenca_por_reconhecimento_sem_confirmador(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade, criar_aula, sessao
+):
+    """A sessão de trabalho do aparelho autentica a escrita sem virar
+    confirmadora (`RF-04-18`, design — decisão 2)."""
+    chave, _ = criar_chave(aplicacao="app-01-aula-presencial")
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+
+    resposta = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "reconhecimento",
+            "momento_do_fato": MOMENTO_DO_FATO.isoformat(),
+        },
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 201
+    corpo = resposta.json()
+    assert corpo["modo"] == "reconhecimento"
+    assert corpo["confirmador_id"] is None
+
+    presenca = sessao.query(Presenca).filter_by(aula_id=aula.id, guerreiro_id=guerreiro.id).one()
+    assert presenca.modo == ModoDeComprovacao.reconhecimento
+    assert presenca.confirmador_id is None
+
+
+def test_app_01_confirma_presenca_e_grava_quem_confirmou(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade, criar_aula, sessao
+):
+    """A App 01 continua aceitando o modo confirmação, gravando o adulto
+    da sessão de trabalho (`RF-04-21`)."""
+    chave, _ = criar_chave(aplicacao="app-01-aula-presencial")
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+
+    resposta = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "confirmacao",
+            "momento_do_fato": MOMENTO_DO_FATO.isoformat(),
+        },
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 201
+    corpo = resposta.json()
+    assert corpo["modo"] == "confirmacao"
+    assert corpo["confirmador_id"] == str(admin.id)
+
+
+def test_reenvio_devolve_o_momento_do_fato_original(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade, criar_aula
+):
+    """O sinal de presença já registrada é o momento do fato gravado, não
+    o enviado no reenvio (`RF-04-19`, design — decisão 3)."""
+    chave, _ = criar_chave(aplicacao="app-01-aula-presencial")
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    primeira = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "reconhecimento",
+            "momento_do_fato": MOMENTO_DO_FATO.isoformat(),
+        },
+        headers=headers,
+    )
+    momento_do_reenvio = MOMENTO_DO_FATO + timedelta(minutes=5)
+    segunda = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "reconhecimento",
+            "momento_do_fato": momento_do_reenvio.isoformat(),
+        },
+        headers=headers,
+    )
+
+    assert primeira.status_code == 201
+    assert segunda.status_code == 201
+    assert segunda.json()["id"] == primeira.json()["id"]
+    assert segunda.json()["momento_do_fato"] == primeira.json()["momento_do_fato"]
+    assert segunda.json()["momento_do_fato"] != momento_do_reenvio.isoformat()
 
 
 def test_mestre_ve_as_proprias_turmas_e_atividades(

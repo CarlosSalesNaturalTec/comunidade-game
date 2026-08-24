@@ -389,6 +389,23 @@ sem imagem** (`RF-04-16`, `RF-04-18`), que dependem de resolver o Guerreiro(a) a
 sem abrir o oráculo que `RN-01-22` veda; a **leitura do termo em voz alta**, que depende da
 modalidade áudio; e a **redação do termo impresso**, pendência do PRD-04 §14.
 
+A quarta fatia, `entrada-por-reconhecimento-e-falha-de-identificacao`, entregou a **entrada por
+reconhecimento facial** (jornadas 5.4 e 5.5): `POST /v1/aulas/{id}/presencas` passou a aceitar o
+modo reconhecimento sob a chave da App 01, escrito pela **sessão de trabalho do aparelho** sem
+virar confirmadora — o Guerreiro(a) segue sem operação de escrita de presença na matriz. A App
+01 tenta primeiro `POST /v1/sessoes/guerreiro` — nick e descritor gerado no aparelho —, e a
+sessão aberta registra a presença no mesmo ato; presença já constante do encontro é devolvida
+sem erro, e é a **aplicação** quem avisa e volta ao início. A confirmação humana deixou de ser o
+único caminho e passou a ser a alternativa de quem não tem câmera, de quem a recusa persiste e
+de quem não tem _template_ — e passou a registrar a presença também, com o adulto como
+confirmador. O recadastro da imagem de referência (`RF-04-22`) ganhou tela, atrás da sessão do
+Guerreiro(a) aberta por confirmação presencial, cujo identificador vem do `GET /v1/eu` daquela
+sessão, nunca de consulta por nick. Decisões do fundador, 2026-08-24: quem escreve a presença
+por reconhecimento é a sessão de trabalho, e a presença já registrada é devolvida sem erro, no
+lugar do 409 que o PRD-04 §9 declarava — corrigido nesta fatia. Seguem pendentes: a **captura de
+quem já se cadastrou sem imagem** (`RF-04-16`), agora só recorte, não mais bloqueio; e a **fila
+local sem rede** (`RF-04-23` a `RF-04-25`, jornada 5.6), cujo piso esta fatia entrega.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

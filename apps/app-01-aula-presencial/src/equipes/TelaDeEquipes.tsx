@@ -13,6 +13,11 @@ interface Props {
   aulaId: string;
   token: string;
   aoVoltar: () => void;
+  /** Presente só quando a sessão abriu por confirmação presencial — é o
+   * que autoriza o Mestre ou Admin a recadastrar a imagem de referência
+   * (`RF-04-22`, design — decisão 4). */
+  podeRecadastrarImagem?: boolean;
+  aoRecadastrarImagem?: () => void;
 }
 
 function papelOuNulo(papel: string): string | null {
@@ -24,7 +29,13 @@ function papelOuNulo(papel: string): string | null {
 // terceiro (`RF-04-30` a `RF-04-34`, `RF-04-59`). Um Guerreiro(a) integra
 // mais de uma equipe da mesma aula (`RF-04-33`) — por isso o pertencimento
 // é um conjunto, não um valor único.
-export function TelaDeEquipes({ aulaId, token, aoVoltar }: Props) {
+export function TelaDeEquipes({
+  aulaId,
+  token,
+  aoVoltar,
+  podeRecadastrarImagem = false,
+  aoRecadastrarImagem,
+}: Props) {
   const [equipes, definirEquipes] = useState<Equipe[] | null>(null);
   const [papel, definirPapel] = useState("");
   const [minhasEquipesIds, definirMinhasEquipesIds] = useState<Set<string>>(new Set());
@@ -93,6 +104,11 @@ export function TelaDeEquipes({ aulaId, token, aoVoltar }: Props) {
       <Botao onClick={criar} desabilitado={emAndamento}>
         Criar equipe
       </Botao>
+      {podeRecadastrarImagem && aoRecadastrarImagem && (
+        <Botao variante="secundaria" onClick={aoRecadastrarImagem}>
+          Recadastrar imagem deste Guerreiro(a)
+        </Botao>
+      )}
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 
       {equipes === null ? (
