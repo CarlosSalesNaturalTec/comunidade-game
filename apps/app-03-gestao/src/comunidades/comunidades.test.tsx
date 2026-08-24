@@ -11,12 +11,14 @@ const SESSAO_DE_ADMIN: SessaoAberta = {
   token: "token-do-admin",
   papel: "admin",
   permissoes: {},
+  persona_id: "admin-1",
 };
 
 const SESSAO_DE_MESTRE: SessaoAberta = {
   token: "token-do-mestre",
   papel: "mestre",
   permissoes: {},
+  persona_id: "mestre-1",
 };
 
 vi.mock("comum/autenticacao", async () => {

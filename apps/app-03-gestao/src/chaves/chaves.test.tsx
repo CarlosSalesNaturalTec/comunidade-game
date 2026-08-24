@@ -10,6 +10,7 @@ const SESSAO_DE_ADMIN: SessaoAberta = {
   token: "token-do-admin",
   papel: "admin",
   permissoes: {},
+  persona_id: "admin-1",
 };
 
 function chaveDeAplicacao(parcial: Partial<ChaveDeAplicacao> = {}): ChaveDeAplicacao {
@@ -162,7 +163,12 @@ describe("painel de chaves", () => {
   });
 
   it("Mestre lê a recusa em linguagem simples, não um erro cru", async () => {
-    configurarSessao({ token: "token-do-mestre", papel: "mestre", permissoes: {} });
+    configurarSessao({
+      token: "token-do-mestre",
+      papel: "mestre",
+      permissoes: {},
+      persona_id: "mestre-1",
+    });
     const listarEspiado = vi.spyOn(chavesApi, "listarChaves");
 
     render(<TelaDeChaves />);

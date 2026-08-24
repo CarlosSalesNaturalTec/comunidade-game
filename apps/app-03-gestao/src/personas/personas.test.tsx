@@ -36,6 +36,7 @@ const SESSAO_DE_ADMIN: SessaoAberta = {
   token: "token-do-admin",
   papel: "admin",
   permissoes: {},
+  persona_id: "admin-1",
 };
 
 vi.mock("comum/autenticacao", async () => {
