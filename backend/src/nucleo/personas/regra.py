@@ -10,6 +10,12 @@ from ..fila.modelo import SolicitacaoDeParticipacao
 from ..tempo import agora
 from .modelo import ArtefatoComprobatorio, Credencial, Nick, Papel, Persona, TipoDeCredencial
 
+# Mesma mensagem nos dois pontos de gravação que a aplicam (`criar_persona` e
+# `definir_ou_trocar_nick`) — a rota do cadastro do encontro reconhece a
+# recusa por esta mensagem para anexar as variações de alcance total
+# (`RF-04-08`, design — decisão 4).
+MENSAGEM_NICK_EM_USO = "Este nick já está em uso."
+
 # Quem cadastra quem (RN-01-01, RN-01-02). Guerreiro(a) tem autocadastro:
 # frozenset vazio significa "nenhum autor exigido".
 _PAPEIS_QUE_CADASTRAM: dict[Papel, frozenset[Papel]] = {
@@ -71,7 +77,7 @@ def criar_persona(
         raise ErroDeValidacao(mensagem="Guerreiro(a) precisa de nick.", campo="nick")
 
     if nick is not None and _nick_em_uso(sessao, nick):
-        raise ErroDeValidacao(mensagem="Este nick já está em uso.", campo="nick")
+        raise ErroDeValidacao(mensagem=MENSAGEM_NICK_EM_USO, campo="nick")
 
     persona = Persona(
         papel=papel,
@@ -186,7 +192,7 @@ def definir_ou_trocar_nick(sessao: Session, persona: Persona, nick: str) -> Pers
         raise ErroDeValidacao(mensagem="Nick é obrigatório.", campo="nick")
 
     if _nick_em_uso(sessao, nick):
-        raise ErroDeValidacao(mensagem="Este nick já está em uso.", campo="nick")
+        raise ErroDeValidacao(mensagem=MENSAGEM_NICK_EM_USO, campo="nick")
 
     registro = sessao.query(Nick).filter_by(persona_id=persona.id).first()
     if registro is None:
@@ -195,6 +201,30 @@ def definir_ou_trocar_nick(sessao: Session, persona: Persona, nick: str) -> Pers
         registro.valor = nick
     sessao.flush()
     return persona
+
+
+def conferir_disponibilidade_de_nick_com_alcance_total(sessao: Session, nick: str) -> bool:
+    """Mesma forma de `conferir_disponibilidade_de_nick`, mas contra
+    **qualquer** papel, inclusive Guerreiro(a). Segunda exceção declarada do
+    requisito "o núcleo nunca descobre nem sugere um nick": só é chamada pela
+    montagem da recusa de gravação do cadastro do encontro, nunca por rota de
+    consulta (`RN-01-22`, `RF-04-08`, design — decisão 4).
+    """
+    return not _nick_em_uso(sessao, nick)
+
+
+def sugerir_variacoes_de_nick_com_alcance_total(sessao: Session, nick: str) -> list[str]:
+    """Variações do nick recusado no cadastro do encontro, cada uma conferida
+    com alcance total — nunca sugere nick já usado por qualquer papel
+    (`RF-04-08`, design — decisão 4)."""
+    sugestoes: list[str] = []
+    for sufixo in range(2, 100):
+        if len(sugestoes) == _QUANTIDADE_DE_SUGESTOES_DE_VARIACAO:
+            break
+        candidata = f"{nick.strip()}{sufixo}"
+        if conferir_disponibilidade_de_nick_com_alcance_total(sessao, candidata):
+            sugestoes.append(candidata)
+    return sugestoes
 
 
 # `RF-02-04`, `RN-02-01`: artefato comprobatório obrigatório só para Mestre e
@@ -221,6 +251,41 @@ def _gravar_credencial_de_login_social(
     )
 
 
+_IDADE_MINIMA_DO_GUERREIRO = 6
+_IDADE_MAXIMA_DO_GUERREIRO = 16
+
+
+def _idade_em(nascimento: date, referencia: date) -> int:
+    idade = referencia.year - nascimento.year
+    if (referencia.month, referencia.day) < (nascimento.month, nascimento.day):
+        idade -= 1
+    return idade
+
+
+def _validar_dados_comuns_do_guerreiro(
+    *, nome: str | None, nascimento: date | None, avatar: str | None
+) -> None:
+    """Nome, nascimento, avatar e a faixa de 6 a 16 anos — comuns aos dois
+    caminhos de cadastro de Guerreiro(a), gestão e encontro, para que a
+    faixa exista num só lugar e alcance os dois (`RN-04-11`, documento 99
+    §6 invariante 2, design — decisão 2 e 3).
+    """
+    if not nome or not nome.strip():
+        raise ErroDeValidacao(mensagem="Guerreiro(a) precisa de nome.", campo="nome")
+    if nascimento is None:
+        raise ErroDeValidacao(
+            mensagem="Guerreiro(a) precisa de data de nascimento.", campo="nascimento"
+        )
+    if not avatar or not avatar.strip():
+        raise ErroDeValidacao(mensagem="Guerreiro(a) precisa de avatar.", campo="avatar")
+
+    idade = _idade_em(nascimento, agora().date())
+    if idade < _IDADE_MINIMA_DO_GUERREIRO or idade > _IDADE_MAXIMA_DO_GUERREIRO:
+        raise ErroDeValidacao(
+            mensagem="Guerreiro(a) precisa ter entre 6 e 16 anos.", campo="nascimento"
+        )
+
+
 def cadastrar_guerreiro_pela_gestao(
     sessao: Session,
     *,
@@ -240,19 +305,42 @@ def cadastrar_guerreiro_pela_gestao(
     """
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin cadastra Guerreiro(a) pela gestão.")
-    if not nome or not nome.strip():
-        raise ErroDeValidacao(mensagem="Guerreiro(a) precisa de nome.", campo="nome")
-    if nascimento is None:
-        raise ErroDeValidacao(
-            mensagem="Guerreiro(a) precisa de data de nascimento.", campo="nascimento"
-        )
-    if not avatar or not avatar.strip():
-        raise ErroDeValidacao(mensagem="Guerreiro(a) precisa de avatar.", campo="avatar")
+    _validar_dados_comuns_do_guerreiro(nome=nome, nascimento=nascimento, avatar=avatar)
 
     return criar_persona(
         sessao,
         papel=Papel.guerreiro,
         criada_por=operador,
+        aula=aula,
+        nick=nick,
+        nome=nome,
+        nascimento=nascimento,
+        avatar=avatar,
+    )
+
+
+def cadastrar_guerreiro_no_encontro(
+    sessao: Session,
+    *,
+    nome: str | None,
+    nascimento: date | None,
+    nick: str | None,
+    avatar: str | None,
+    aula: Aula,
+) -> Persona:
+    """`RF-04-07`, `RF-04-10`, `RN-04-04`: autocadastro do Guerreiro(a) no
+    encontro. A sessão de trabalho do aparelho, aberta por Mestre ou Admin,
+    autentica esta escrita — a rota exige a operação da matriz para isso —
+    sem se tornar autora dela: por isso, ao contrário do caminho da gestão,
+    esta função **não** recebe operador algum, e `criar_persona` grava a
+    persona sem criador (invariante 3 do documento 99 §6).
+    """
+    _validar_dados_comuns_do_guerreiro(nome=nome, nascimento=nascimento, avatar=avatar)
+
+    return criar_persona(
+        sessao,
+        papel=Papel.guerreiro,
+        criada_por=None,
         aula=aula,
         nick=nick,
         nome=nome,

@@ -23,6 +23,7 @@ _TABELA_DO_PRD_01_PAR_4 = {
             Operacao.cadastro_biometrico_do_guerreiro,
             Operacao.homologacao_da_equipe_da_trilha,
             Operacao.credencial_de_dispositivo_dos_seus_desafios,
+            Operacao.cadastro_do_guerreiro_no_encontro,
             Operacao.propostas_de_evolucao,
         },
         "le": {Operacao.publico, Operacao.suas_turmas, Operacao.painel_do_dia_na_app_03},

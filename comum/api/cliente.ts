@@ -9,12 +9,14 @@ export class ErroDaApi extends Error {
   readonly status: number;
   readonly codigo: string;
   readonly campo?: string;
+  readonly sugestoes?: string[];
 
   constructor(status: number, corpo: CorpoDeErro) {
     super(corpo.mensagem);
     this.status = status;
     this.codigo = corpo.codigo;
     this.campo = corpo.campo;
+    this.sugestoes = corpo.sugestoes;
   }
 }
 

@@ -6,11 +6,13 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
-from ..aulas.modelo import Aula
+from ..aulas.modelo import Aula, ModoDeComprovacao
+from ..aulas.regra import registrar_presenca
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
+from ..chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from ..configuracao import Configuracao, obter_configuracao
-from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
+from ..erros import ErroDeValidacao, NaoEncontrado, NickDeGuerreiroEmUsoNoEncontro, PermissaoNegada
 from ..paginacao import (
     PaginaDeResultado,
     ParametrosDeListagem,
@@ -18,22 +20,31 @@ from ..paginacao import (
     contrato_de_listagem,
     decodificar_cursor,
 )
-from ..permissoes import Operacao, exigir_permissao
+from ..permissoes import Operacao, conferir_permissao, exigir_permissao
 from ..protecao.freio import exigir_freio_por_origem
+from ..tempo import agora
 from .credenciais import criar_credencial_provisoria
 from .modelo import ArtefatoComprobatorio, Credencial, Nick, Papel, Persona, TipoDeCredencial
 from .regra import (
+    MENSAGEM_NICK_EM_USO,
     cadastrar_adulto_com_artefatos,
+    cadastrar_guerreiro_no_encontro,
     cadastrar_guerreiro_pela_gestao,
     conferir_disponibilidade_de_nick,
     definir_ou_trocar_nick,
     editar_guerreiro,
     incluir_admin,
     sugerir_variacoes_de_nick,
+    sugerir_variacoes_de_nick_com_alcance_total,
 )
 from .senha import calcular_hash
 
 roteador = APIRouter()
+
+# `POST /v1/guerreiros` atende os dois caminhos que o design — decisão 1
+# separa pela aplicação declarada na chave: só a App 01 leva ao caminho do
+# encontro, qualquer outra ao da gestão.
+_APLICACAO_DO_ENCONTRO = "app-01-aula-presencial"
 
 
 def _paginar_personas(
@@ -90,29 +101,82 @@ class CadastrarGuerreiroEntrada(BaseModel):
     aula_id: uuid.UUID
 
 
+def _exigir_permissao_de_cadastro_de_guerreiro(
+    contexto_da_chave: Annotated[ContextoDaChave, Depends(exigir_chave_de_aplicacao)],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+) -> None:
+    """A chave escolhe a operação exigida, nunca concede acesso sozinha — a
+    autorização continua inteira na matriz (design — decisão 1). Chave da
+    App 01 exige a operação do cadastro no encontro, que Mestre e Admin têm;
+    qualquer outra exige `Operacao.tudo`, que só o Admin tem."""
+    operacao = (
+        Operacao.cadastro_do_guerreiro_no_encontro
+        if contexto_da_chave.aplicacao == _APLICACAO_DO_ENCONTRO
+        else Operacao.tudo
+    )
+    if not conferir_permissao(contexto.papel, "escreve", operacao):
+        raise PermissaoNegada()
+
+
 @roteador.post("/guerreiros", status_code=201)
 def cadastrar_guerreiro_rota(
     entrada: CadastrarGuerreiroEntrada,
-    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    _: Annotated[None, Depends(_exigir_permissao_de_cadastro_de_guerreiro)],
+    contexto_da_chave: Annotated[ContextoDaChave, Depends(exigir_chave_de_aplicacao)],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> GuerreiroSaida:
-    """Restrita a Admin — outro papel recebe 403 pela matriz (`RF-02-01`).
-    A comunidade vem da aula agendada em que o Guerreiro(a) se cadastra,
-    nunca de quem o cadastra (`RF-08-02`, `RN-08-02`)."""
+    """Dois caminhos pela mesma rota (`RF-02-01`, `RF-04-07`, design —
+    decisão 1): chave da App 01 leva ao caminho do encontro, autocadastro do
+    próprio Guerreiro(a) com presença gravada no mesmo ato; qualquer outra
+    chave leva ao caminho da gestão, restrito a Admin, como hoje. A
+    comunidade vem sempre da aula agendada em que o Guerreiro(a) se
+    cadastra, nunca de quem o cadastra (`RF-08-02`, `RN-08-02`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     aula = sessao_bd.get(Aula, entrada.aula_id)
     if aula is None:
         raise NaoEncontrado(mensagem="Aula não encontrada.", campo="aula_id")
 
-    persona = cadastrar_guerreiro_pela_gestao(
-        sessao_bd,
-        operador=operador,
-        nome=entrada.nome,
-        nascimento=entrada.nascimento,
-        nick=entrada.nick,
-        avatar=entrada.avatar,
-        aula=aula,
-    )
+    if contexto_da_chave.aplicacao == _APLICACAO_DO_ENCONTRO:
+        try:
+            persona = cadastrar_guerreiro_no_encontro(
+                sessao_bd,
+                nome=entrada.nome,
+                nascimento=entrada.nascimento,
+                nick=entrada.nick,
+                avatar=entrada.avatar,
+                aula=aula,
+            )
+        except ErroDeValidacao as exc:
+            if exc.campo == "nick" and exc.mensagem == MENSAGEM_NICK_EM_USO:
+                sugestoes = sugerir_variacoes_de_nick_com_alcance_total(sessao_bd, entrada.nick)
+                raise NickDeGuerreiroEmUsoNoEncontro(sugestoes=sugestoes) from exc
+            raise
+
+        # RF-04-17: a presença do dia acompanha o cadastro no mesmo ato —
+        # um único `commit` mais abaixo grava os dois juntos, ou nenhum dos
+        # dois (design — decisão 5). Confirmador é o adulto da sessão de
+        # trabalho, nunca reconhecimento: não há captura nesta fatia.
+        registrar_presenca(
+            sessao_bd,
+            operador=operador,
+            aula=aula,
+            guerreiro=persona,
+            modo=ModoDeComprovacao.confirmacao.value,
+            confirmador=operador,
+            momento_do_fato=agora(),
+        )
+    else:
+        persona = cadastrar_guerreiro_pela_gestao(
+            sessao_bd,
+            operador=operador,
+            nome=entrada.nome,
+            nascimento=entrada.nascimento,
+            nick=entrada.nick,
+            avatar=entrada.avatar,
+            aula=aula,
+        )
+
     sessao_bd.commit()
     return _saida_do_guerreiro(persona, sessao_bd)
 

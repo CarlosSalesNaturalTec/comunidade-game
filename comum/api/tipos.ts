@@ -4,4 +4,5 @@ export interface CorpoDeErro {
   codigo: string;
   mensagem: string;
   campo?: string;
+  sugestoes?: string[];
 }

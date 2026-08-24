@@ -84,7 +84,9 @@ existe para impedir.
 ### 3.2 Fora do escopo
 
 - Guarda do _template_ e conferência dele no login das demais aplicações: é o PRD-01.
-- Cadastro do responsável e vínculo com os Guerreiros e Guerreiras: App 03 e App 09.
+- Vínculo do responsável com Guerreiros e Guerreiras **já cadastrados**: App 03 e App 09. O
+  cadastro do responsável **mínimo**, quando a criança chega sem ele, é desta aplicação, no ato
+  do encontro (§6.1).
 - Anexo da digitalização do termo assinado: App 03, porque quem opera a câmera na porta da aula
   não é quem arquiva documento.
 - Agenda das aulas, conferência e ajuste das presenças recebidas: App 03.
@@ -104,12 +106,12 @@ existe para impedir.
 
 ## 4. Personas e permissões
 
-| Persona               | O que faz nesta aplicação                                                                                       | O que não pode fazer                                                                                      |
-| --------------------- | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Guerreiro(a) novo     | Conversa com a IA, informa seus dados, escolhe o nick e o avatar, tem a imagem captada com o responsável        | Informar a comunidade, escolher a aula, cadastrar-se fora da janela de uma aula                           |
-| Guerreiro(a) já ativo | Informa o nick, captura a imagem e tem a presença registrada; forma equipe, trabalha a trilha e joga o quiz     | Registrar presença de outra pessoa; alterar cadastro por aqui; editar equipe alheia                       |
-| Responsável           | Assiste ao cadastro, assina o termo impresso e autoriza a captura da imagem                                     | Operar a aplicação; não tem tela própria aqui                                                             |
-| Mestre ou Admin       | Abre a sessão de trabalho, testemunha o consentimento, confirma identidade e presença quando o app não consegue | Cadastrar responsável por aqui; alterar presença já registrada ou composição de equipe — isso é na App 03 |
+| Persona               | O que faz nesta aplicação                                                                                                                                                                                                | O que não pode fazer                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| Guerreiro(a) novo     | Conversa com a IA, informa seus dados, escolhe o nick e o avatar, tem a imagem captada com o responsável                                                                                                                 | Informar a comunidade, escolher a aula, cadastrar-se fora da janela de uma aula                                 |
+| Guerreiro(a) já ativo | Informa o nick, captura a imagem e tem a presença registrada; forma equipe, trabalha a trilha e joga o quiz                                                                                                              | Registrar presença de outra pessoa; alterar cadastro por aqui; editar equipe alheia                             |
+| Responsável           | Assiste ao cadastro, assina o termo impresso e autoriza a captura da imagem                                                                                                                                              | Operar a aplicação; não tem tela própria aqui                                                                   |
+| Mestre ou Admin       | Abre a sessão de trabalho, autentica o autocadastro do Guerreiro(a) sem ser autor dele, cadastra o responsável mínimo quando falta, testemunha o consentimento, confirma identidade e presença quando o app não consegue | Cadastrar-se em nome do Guerreiro(a); alterar presença já registrada ou composição de equipe — isso é na App 03 |
 
 O **onboarding não tem login próprio**: quem opera é a dupla que está na sala. O Mestre ou Admin
 autentica-se uma vez, ao abrir a sessão de trabalho do aparelho, e a partir daí a conversa é do
@@ -291,6 +293,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-26` | Aplicação exibe aviso discreto do que coleta, com acesso à área detalhada de direitos                                                                | essencial  |
 | `RF-04-27` | Aplicação encerra a conversa dizendo ao Guerreiro(a) como ele entrará da próxima vez                                                                 | desejável  |
 | `RF-04-28` | Aplicação volta à tela inicial ao fim de cada atendimento, pronta para o próximo que chegar                                                          | essencial  |
+| `RF-04-60` | Cadastro do responsável mínimo no encontro coleta o **grau de parentesco** do vínculo com o Guerreiro(a)                                             | essencial  |
 
 ### 6.2 Trilhas e equipes
 
@@ -412,20 +415,21 @@ Regras do modelo:
 As convenções são as do PRD-01 — prefixo `/v1`, erro em formato único, data e hora com fuso.
 A **sessão de trabalho do aparelho**, aberta pelo Mestre ou Admin presente, é o que autentica a
 escrita: o cadastro continua sendo **autocadastro do Guerreiro(a)**, feito na presença deles.
-A conferência de disponibilidade de nick exige essa mesma sessão — corrige a versão anterior,
-que a declarava pública: `RN-01-22` veda o oráculo de nick de Guerreiro(a) por quem quer que
-pergunte, adulto autenticado incluído, e a versão anterior deste PRD é de antes dessa decisão
-(documento 09, 2026-08-21).
+Não existe rota de **conferência** de nick do onboarding: `RN-01-22` veda o oráculo de nick de
+Guerreiro(a) por quem quer que pergunte, adulto autenticado incluído, pela resposta que
+alcançaria, não por quem pergunta — nem a sessão do App 01 abre exceção. A tela envia o
+cadastro direto; a recusa por nick em uso é onde o nick é conferido, e devolve, no próprio
+corpo, até três variações já testadas contra todo papel (documento 09, 2026-08-21 e
+2026-08-24).
 
-| Método | Rota                             | Autenticação     | Uso nesta aplicação                                        |
-| ------ | -------------------------------- | ---------------- | ---------------------------------------------------------- |
-| GET    | `/v1/aulas/vigentes`             | pública          | Descobrir a aula e a comunidade do momento                 |
-| GET    | `/v1/guerreiros/nick/disponivel` | sessão do App 01 | Conferir a unicidade do nick durante a conversa            |
-| POST   | `/v1/guerreiros`                 | sessão do App 01 | Criar o cadastro, já vinculado à comunidade da aula        |
-| POST   | `/v1/consentimentos`             | sessão do App 01 | Registrar o termo assinado, com testemunha, data e hora    |
-| POST   | `/v1/guerreiros/{id}/descritor`  | sessão do App 01 | Enviar o descritor gerado no aparelho, que vira _template_ |
-| POST   | `/v1/aulas/{id}/presencas`       | sessão do App 01 | Registrar presença, por reconhecimento ou confirmação      |
-| POST   | `/v1/sessoes/guerreiro`          | pública          | Conferir nick e imagem na chegada de quem já é cadastrado  |
+| Método | Rota                            | Autenticação     | Uso nesta aplicação                                        |
+| ------ | ------------------------------- | ---------------- | ---------------------------------------------------------- |
+| GET    | `/v1/aulas/vigentes`            | pública          | Descobrir a aula e a comunidade do momento                 |
+| POST   | `/v1/guerreiros`                | sessão do App 01 | Criar o cadastro, já vinculado à comunidade da aula        |
+| POST   | `/v1/consentimentos`            | sessão do App 01 | Registrar o termo assinado, com testemunha, data e hora    |
+| POST   | `/v1/guerreiros/{id}/descritor` | sessão do App 01 | Enviar o descritor gerado no aparelho, que vira _template_ |
+| POST   | `/v1/aulas/{id}/presencas`      | sessão do App 01 | Registrar presença, por reconhecimento ou confirmação      |
+| POST   | `/v1/sessoes/guerreiro`         | pública          | Conferir nick e imagem na chegada de quem já é cadastrado  |
 
 Rotas do caminho das trilhas, todas autenticadas na **sessão do Guerreiro(a)**:
 
@@ -562,31 +566,33 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                                 | Gravada em     | Linha do doc 09                              |
-| --------------------------------------------------------------------------------------- | -------------- | -------------------------------------------- |
-| Fotografia original apagada assim que o _template_ é gerado                             | 03 §3.3        | Já decididos                                 |
-| _Template_ gerado no aparelho pela biblioteca Human — vivacidade e depois descritor     | 03 §3.3        | Já decididos                                 |
-| Só o descritor trafega; a comparação continua no núcleo, que nunca devolve o _template_ | 03 §3.3        | Já decididos                                 |
-| _Template_ guardado enquanto durar o vínculo, excluído ao fim dele ou a pedido          | 03 §3.3        | Já decididos                                 |
-| Consentimento biométrico em termo impresso assinado, com testemunha e anexo pela gestão | 03 §3.3        | Já decididos                                 |
-| Nick único em toda a plataforma, com sugestão de variações no cadastro                  | 02 §1          | Já decididos                                 |
-| Rede fora: presença na fila local; cadastro e reconhecimento exigem rede                | 03 §3.4        | Já decididos                                 |
-| App 02 incorporado ao App 01, que passa a ser a aplicação da aula presencial            | 03 §§2.1, 3, 4 | Já decididos                                 |
-| Modo Ouvinte removido do produto; a aplicação não capta o áudio ambiente da aula        | 03 §4          | Já decididos                                 |
-| Troca de pontos extras por recompensa avulsa, presencial, no encerramento do encontro   | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
-| Entrega no ato da troca, com baixa no livro-razão e sem reserva                         | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
-| Debita o saldo disponível; o acumulado de pontos extras não muda                        | 11 §5          | Troca de pontos extras por recompensa avulsa |
-| `RF-04-49` é garantia da App 01, não regra que o núcleo verifica                        | 02 §8.2        | Janela de troca da recompensa avulsa         |
-| Equipe formada pelos próprios Guerreiros e Guerreiras, válida para aquela aula          | 02 §5          | Já decididos                                 |
-| Uma única equipe por Guerreiro(a) na partida de Quiz ao Vivo                            | 02 §5, 05 §5   | Já decididos                                 |
-| Resposta do Quiz ao Vivo enviada pelo App 01, não mais pela App 05                      | 05 §5          | Já decididos                                 |
-| App 05 como aplicação das aulas remotas e do uso cotidiano                              | 03 §7          | Já decididos                                 |
-| Papel de cada integrante declarado na formação da equipe, valendo para o encontro       | 02 §5          | Papel de cada integrante na equipe           |
-| Sessão de trabalho do aparelho é a janela da aula agendada                              | 03 §3.2        | Sessão de trabalho do aparelho da aula       |
-| Aviso da exclusão do _template_ na App 07, com a data                                   | 03 §9          | Aviso da exclusão do _template_ biométrico   |
-| Reescrita por IA opera no App 01 mesmo com um integrante desligado                      | 03 §7.1        | Personalização por IA no aparelho da equipe  |
-| Conferência de nick do onboarding exige a sessão do App 01, nunca pública               | 02 §1          | Busca por nick e exibição pública            |
-| Confirmação humana recebe o nick, nunca um identificador de persona                     | 02 §1          | Busca por nick e exibição pública            |
+| Decisão                                                                                                          | Gravada em     | Linha do doc 09                                              |
+| ---------------------------------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------ |
+| Fotografia original apagada assim que o _template_ é gerado                                                      | 03 §3.3        | Já decididos                                                 |
+| _Template_ gerado no aparelho pela biblioteca Human — vivacidade e depois descritor                              | 03 §3.3        | Já decididos                                                 |
+| Só o descritor trafega; a comparação continua no núcleo, que nunca devolve o _template_                          | 03 §3.3        | Já decididos                                                 |
+| _Template_ guardado enquanto durar o vínculo, excluído ao fim dele ou a pedido                                   | 03 §3.3        | Já decididos                                                 |
+| Consentimento biométrico em termo impresso assinado, com testemunha e anexo pela gestão                          | 03 §3.3        | Já decididos                                                 |
+| Nick único em toda a plataforma, com sugestão de variações no cadastro                                           | 02 §1          | Já decididos                                                 |
+| Rede fora: presença na fila local; cadastro e reconhecimento exigem rede                                         | 03 §3.4        | Já decididos                                                 |
+| App 02 incorporado ao App 01, que passa a ser a aplicação da aula presencial                                     | 03 §§2.1, 3, 4 | Já decididos                                                 |
+| Modo Ouvinte removido do produto; a aplicação não capta o áudio ambiente da aula                                 | 03 §4          | Já decididos                                                 |
+| Troca de pontos extras por recompensa avulsa, presencial, no encerramento do encontro                            | 02 §8.2        | Troca de pontos extras por recompensa avulsa                 |
+| Entrega no ato da troca, com baixa no livro-razão e sem reserva                                                  | 02 §8.2        | Troca de pontos extras por recompensa avulsa                 |
+| Debita o saldo disponível; o acumulado de pontos extras não muda                                                 | 11 §5          | Troca de pontos extras por recompensa avulsa                 |
+| `RF-04-49` é garantia da App 01, não regra que o núcleo verifica                                                 | 02 §8.2        | Janela de troca da recompensa avulsa                         |
+| Equipe formada pelos próprios Guerreiros e Guerreiras, válida para aquela aula                                   | 02 §5          | Já decididos                                                 |
+| Uma única equipe por Guerreiro(a) na partida de Quiz ao Vivo                                                     | 02 §5, 05 §5   | Já decididos                                                 |
+| Resposta do Quiz ao Vivo enviada pelo App 01, não mais pela App 05                                               | 05 §5          | Já decididos                                                 |
+| App 05 como aplicação das aulas remotas e do uso cotidiano                                                       | 03 §7          | Já decididos                                                 |
+| Papel de cada integrante declarado na formação da equipe, valendo para o encontro                                | 02 §5          | Papel de cada integrante na equipe                           |
+| Sessão de trabalho do aparelho é a janela da aula agendada                                                       | 03 §3.2        | Sessão de trabalho do aparelho da aula                       |
+| Aviso da exclusão do _template_ na App 07, com a data                                                            | 03 §9          | Aviso da exclusão do _template_ biométrico                   |
+| Reescrita por IA opera no App 01 mesmo com um integrante desligado                                               | 03 §7.1        | Personalização por IA no aparelho da equipe                  |
+| Não existe rota de conferência de nick do onboarding; a recusa da gravação devolve as variações de alcance total | 02 §1          | Busca por nick e exibição pública                            |
+| Confirmação humana recebe o nick, nunca um identificador de persona                                              | 02 §1          | Busca por nick e exibição pública                            |
+| Faixa de 6 a 16 anos exigida na regra do núcleo, retroativa ao caminho da gestão                                 | 09 §1          | Faixa etária do Guerreiro(a) retroativa ao caminho da gestão |
+| Responsável mínimo e vínculo cadastrados pelo App 01 no ato do encontro, com grau de parentesco (`RF-04-60`)     | 09 §1          | Cadastro do responsável no ato do encontro                   |
 
 A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do termo** ao
 `Consentimento` do PRD-01, e o acompanhamento do anexo pendente à App 03 (PRD-02).
@@ -595,10 +601,15 @@ A fusão das duas aplicações moveu para cá a `RespostaDeQuiz`, que estava no 
 `Equipe` — antes escrita apenas pela App 03 — para o aparelho da aula. A `ConsultaAoAssistente`
 nasce aqui e serve também ao apoio escolar da App 05.
 
-As duas últimas linhas não são decisão nova: são o PRD alcançando a fonte. A v5 deste PRD é
+As duas linhas sobre nick não são decisão nova: são o PRD alcançando a fonte. A v5 deste PRD é
 anterior à decisão de `nick-de-adulto` (documento 09, 2026-08-21), que fechou o oráculo de nick
 de Guerreiro(a) para qualquer um que pergunte, credenciado ou não — a §9 corrige as duas rotas
 que ainda o contradiziam.
+
+As duas últimas linhas, essas sim, são decisão nova do fundador, em 2026-08-24, na change
+`cadastro-do-guerreiro-no-encontro`: a faixa etária passa a valer também para o caminho da
+gestão, e o responsável mínimo passa a ser cadastrado pelo App 01 no ato do encontro — o código
+deste último vai para a fatia seguinte, junto do consentimento e da câmera.
 
 ## 14. Pendências que permanecem
 
@@ -621,28 +632,29 @@ a **forma do aviso** da exclusão do _template_, que acontece na App 07, com a d
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                                |
-| ----------------------- | ----------------------------------------------------- |
-| `RF-04-01`, `RF-04-06`  | 03 §3.2 (tela inicial e interação cognitiva), 06 §3   |
-| `RF-04-02` e `RF-04-03` | 02 §1 e 03 §3.2 (comunidade vinda da aula agendada)   |
-| `RF-04-04` e `RF-04-05` | 03 §3.2 (condição de funcionamento)                   |
-| `RF-04-07`              | 03 §3.2 (dados coletados), 02 §9, 15 §7 (avatar)      |
-| `RF-04-08`              | 02 §1 (nick único)                                    |
-| `RF-04-09`              | 02 §1 (faixa de 6 a 16 anos)                          |
-| `RF-04-10`              | 02 §1 (vínculo obrigatório à comunidade)              |
-| `RF-04-11` a `RF-04-14` | 03 §3.3 (consentimento, minimização e retenção)       |
-| `RF-04-15` e `RF-04-16` | 03 §3.2 (criança sem o responsável)                   |
-| `RF-04-17` a `RF-04-19` | 03 §3.2 (registro de presença)                        |
-| `RF-04-20` a `RF-04-22` | 03 §§1.1, 3.2 (falha de identificação e alternativa)  |
-| `RF-04-23` a `RF-04-25` | 03 §3.4 (rede instável e fila local)                  |
-| `RF-04-26`              | 03 §12 (aviso visível e área detalhada)               |
-| `RF-04-27` e `RF-04-28` | 03 §3 (onboarding contínuo em aparelho compartilhado) |
-| `RF-04-29`              | 03 §1.1 (entrada por nick e imagem)                   |
-| `RF-04-30` a `RF-04-34` | 02 §5 e 03 §4.1 (equipes formadas na aula)            |
-| `RF-04-35`              | 11 §2 (anatomia da trilha), 03 §4.2                   |
-| `RF-04-45` a `RF-04-47` | 11 §2.2 (produção e devolutiva), 03 §§4, 12.2         |
-| `RF-04-36` a `RF-04-40` | 03 §§4.2, 7 (assistente, corpus fechado e áudio)      |
-| `RF-04-41` a `RF-04-44` | 05 §5 (regras da partida de Quiz ao Vivo)             |
-| `RF-04-58`              | 03 §3.4 (rede instável)                               |
-| `RF-04-48`              | 03 §3.3 (_template_ gerado no aparelho)               |
-| `RF-04-49` a `RF-04-57` | 02 §8.2 (recompensa avulsa) e 11 §5 (saldo e troca)   |
+| Requisito               | Origem                                                 |
+| ----------------------- | ------------------------------------------------------ |
+| `RF-04-01`, `RF-04-06`  | 03 §3.2 (tela inicial e interação cognitiva), 06 §3    |
+| `RF-04-02` e `RF-04-03` | 02 §1 e 03 §3.2 (comunidade vinda da aula agendada)    |
+| `RF-04-04` e `RF-04-05` | 03 §3.2 (condição de funcionamento)                    |
+| `RF-04-07`              | 03 §3.2 (dados coletados), 02 §9, 15 §7 (avatar)       |
+| `RF-04-08`              | 02 §1 (nick único)                                     |
+| `RF-04-09`              | 02 §1 (faixa de 6 a 16 anos)                           |
+| `RF-04-10`              | 02 §1 (vínculo obrigatório à comunidade)               |
+| `RF-04-11` a `RF-04-14` | 03 §3.3 (consentimento, minimização e retenção)        |
+| `RF-04-15` e `RF-04-16` | 03 §3.2 (criança sem o responsável)                    |
+| `RF-04-17` a `RF-04-19` | 03 §3.2 (registro de presença)                         |
+| `RF-04-20` a `RF-04-22` | 03 §§1.1, 3.2 (falha de identificação e alternativa)   |
+| `RF-04-23` a `RF-04-25` | 03 §3.4 (rede instável e fila local)                   |
+| `RF-04-26`              | 03 §12 (aviso visível e área detalhada)                |
+| `RF-04-27` e `RF-04-28` | 03 §3 (onboarding contínuo em aparelho compartilhado)  |
+| `RF-04-29`              | 03 §1.1 (entrada por nick e imagem)                    |
+| `RF-04-30` a `RF-04-34` | 02 §5 e 03 §4.1 (equipes formadas na aula)             |
+| `RF-04-35`              | 11 §2 (anatomia da trilha), 03 §4.2                    |
+| `RF-04-45` a `RF-04-47` | 11 §2.2 (produção e devolutiva), 03 §§4, 12.2          |
+| `RF-04-36` a `RF-04-40` | 03 §§4.2, 7 (assistente, corpus fechado e áudio)       |
+| `RF-04-41` a `RF-04-44` | 05 §5 (regras da partida de Quiz ao Vivo)              |
+| `RF-04-58`              | 03 §3.4 (rede instável)                                |
+| `RF-04-48`              | 03 §3.3 (_template_ gerado no aparelho)                |
+| `RF-04-49` a `RF-04-57` | 02 §8.2 (recompensa avulsa) e 11 §5 (saldo e troca)    |
+| `RF-04-60`              | 09 §1 (responsável mínimo no ato do encontro), 03 §3.3 |

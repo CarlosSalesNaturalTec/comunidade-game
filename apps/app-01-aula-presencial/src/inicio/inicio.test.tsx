@@ -25,12 +25,20 @@ function renderizar(aoVoltarAoInicio = vi.fn()) {
 }
 
 describe("tela inicial da App 01", () => {
-  it("os dois caminhos aparecem, e o de onboarding está desabilitado", async () => {
+  it("os dois caminhos aparecem, e os dois estão habilitados", async () => {
     renderizar();
 
     expect(await screen.findByText(/o que você quer fazer/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /onboarding/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /onboarding/i })).toBeEnabled();
     expect(screen.getByRole("button", { name: /trilhas/i })).toBeEnabled();
+  });
+
+  it("onboarding leva à tela de cadastro do Guerreiro(a)", async () => {
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /onboarding/i }));
+
+    expect(await screen.findByText(/novo guerreiro/i)).toBeInTheDocument();
   });
 
   it("trilhas sem sessão leva à entrada do Guerreiro(a), nunca ao cadastro", async () => {

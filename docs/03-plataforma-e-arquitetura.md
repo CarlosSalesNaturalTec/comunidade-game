@@ -337,7 +337,10 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
   App 01 registra o consentimento com data, hora e quem testemunhou; a **digitalização do termo
   assinado é anexada ao cadastro pela gestão**, e o anexo em falta aparece como pendência no
   painel do dia. **Sem termo assinado não há captura** — e é por isso que o cadastro biométrico
-  só acontece depois que o responsável aprova a participação.
+  só acontece depois que o responsável aprova a participação. Sem responsável ainda cadastrado,
+  é o **próprio App 01 que cadastra o responsável mínimo e o vínculo no ato do encontro**, para
+  que o consentimento tenha a quem se apoiar; o anexo do termo segue sendo da gestão (PRD-04
+  §3.2).
 - **Minimização, com o processamento no aparelho**: o _template_ biométrico — representação
   matemática não reversível — é gerado **no navegador do próprio aparelho**, pela biblioteca
   aberta **Human**, na ordem **prova de vivacidade e, depois, descritor facial**. Ao núcleo
