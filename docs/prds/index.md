@@ -322,6 +322,21 @@ ocorrência do ranking público. Template de missão, conteúdo e bibliografia, 
 edição de trilha publicada, duplicar trilha, desafio de desbloqueio e validação da criação
 original seguem pendentes — o PRD-09 continua **aprovado**.
 
+A quinta fatia, `banco-do-quiz-ao-vivo`, abre a porta do banco de perguntas do módulo `quiz`,
+escrito e testado desde a change `quiz-ao-vivo` sem uma única rota. `PerguntaDeQuiz` ganha
+`missao_id` e `trilha_id` — a trilha derivada da missão e persistida, nunca declarada pelo
+cliente —, e `cadastrar_pergunta` passa a exigir o vínculo (`RF-09-39`). `POST /v1/perguntas`
+abre o cadastro ao Mestre e ao Admin, sem tocar nas recusas de alternativa que já existiam
+(`RF-09-36`, `RF-09-37`); `GET /v1/perguntas/minhas` lê o banco do próprio Mestre, filtrável
+por trilha e por missão (`RF-09-40`). A App 09 ganhou a área **Banco do Quiz** — cadastro com
+as quatro alternativas e a correta, e lista filtrável por trilha e missão. Decisão do fundador,
+2026-08-23: a `PerguntaDeQuiz` não tem situação — nasce disponível e assim permanece, e a
+anulação segue sendo da partida, nunca dela (documento 09). Fica pendente o `RF-09-41`: o banco
+cadastrado só fica disponível para a partida quando a condução, na App 03, tiver porta — o que
+depende da formação de equipe da App 01. Template de missão, conteúdo e bibliografia, edição de
+trilha publicada, duplicar trilha, desafio de desbloqueio e validação da criação original
+seguem pendentes — o PRD-09 continua **aprovado**.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

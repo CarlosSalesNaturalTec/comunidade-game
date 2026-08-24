@@ -1,11 +1,14 @@
 import uuid
 from datetime import datetime
 
+from pydantic import BaseModel
+from sqlalchemy import tuple_
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula
 from ..equipes.modelo import Equipe, IntegranteDaEquipe
 from ..erros import ErroDeValidacao, PermissaoNegada
+from ..paginacao import PaginaDeResultado, codificar_cursor, decodificar_cursor
 from ..permissoes import Acesso, Operacao, conferir_permissao
 from ..personas.modelo import Papel, Persona
 from ..pontuacao.regra import creditar_pontuacao_da_partida_de_quiz
@@ -62,17 +65,26 @@ def cadastrar_pergunta(
     enunciado: str | None,
     alternativas: list[str] | None,
     alternativa_correta: int | None,
+    missao: Missao | None,
 ) -> PerguntaDeQuiz:
     """Pergunta do banco do Mestre curador, restrita a Mestre e Admin pela
     matriz de permissões — é conteúdo dele, na mesma célula das trilhas e
     conteúdos (`RF-01-36`, `RF-01-03`, `RF-01-16`, PRD-01 §4). Exige
-    exatamente quatro alternativas e a correta declarada; **nenhum
-    tempo-limite**, porque o ritmo é de quem conduz (documento 05 §5).
+    exatamente quatro alternativas, a correta declarada e a missão a que a
+    pergunta se refere; **nenhum tempo-limite**, porque o ritmo é de quem
+    conduz (documento 05 §5). A trilha é derivada da missão e gravada junto
+    — o cliente declara só a missão (`RF-09-39`, design — decisão 1).
     """
     _exigir_operacao(operador, Operacao.suas_trilhas_e_conteudos)
 
     if not enunciado or not enunciado.strip():
         raise ErroDeValidacao(mensagem="Pergunta de quiz exige o enunciado.", campo="enunciado")
+
+    if missao is None:
+        raise ErroDeValidacao(
+            mensagem="Pergunta de quiz exige a missão a que ela se refere.",
+            campo="missao_id",
+        )
 
     if alternativas is None or len(alternativas) != TOTAL_DE_ALTERNATIVAS:
         raise ErroDeValidacao(
@@ -103,12 +115,94 @@ def cadastrar_pergunta(
         alternativa_3=alternativas[2],
         alternativa_4=alternativas[3],
         alternativa_correta=alternativa_correta,
+        missao_id=missao.id,
+        trilha_id=missao.trilha_id,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
     )
     sessao.add(pergunta)
     sessao.flush()
     return pergunta
+
+
+class PerguntaDeQuizSaida(BaseModel):
+    id: uuid.UUID
+    enunciado: str
+    alternativas: list[str]
+    alternativa_correta: int
+    missao_id: uuid.UUID
+    trilha_id: uuid.UUID
+    registrado_em: datetime
+
+
+def saida_da_pergunta(pergunta: PerguntaDeQuiz) -> PerguntaDeQuizSaida:
+    return PerguntaDeQuizSaida(
+        id=pergunta.id,
+        enunciado=pergunta.enunciado,
+        alternativas=[
+            pergunta.alternativa_1,
+            pergunta.alternativa_2,
+            pergunta.alternativa_3,
+            pergunta.alternativa_4,
+        ],
+        alternativa_correta=pergunta.alternativa_correta,
+        missao_id=pergunta.missao_id,
+        trilha_id=pergunta.trilha_id,
+        registrado_em=pergunta.registrado_em,
+    )
+
+
+def perguntas_do_mestre(
+    sessao: Session,
+    *,
+    operador: Persona,
+    trilha_id: uuid.UUID | None,
+    missao_id: uuid.UUID | None,
+    cursor: str | None,
+    tamanho: int,
+) -> PaginaDeResultado[PerguntaDeQuizSaida]:
+    """Banco do Mestre em sessão, por autoria — o de um Mestre nunca aparece
+    para outro —, filtrável por trilha e por missão para montar o banco de
+    uma aula (`RF-09-40`, `RF-01-16`). Mesma permissão do cadastro: a
+    entidade é conteúdo do Mestre, não outra célula da matriz (design —
+    decisão 5). Sem filtro padrão de situação: a pergunta não tem situação
+    e o banco devolve tudo o que o Mestre cadastrou (design — decisão 3).
+    """
+    _exigir_operacao(operador, Operacao.suas_trilhas_e_conteudos)
+
+    consulta = sessao.query(PerguntaDeQuiz).filter(PerguntaDeQuiz.autor_id == operador.id)
+    if missao_id is not None:
+        consulta = consulta.filter(PerguntaDeQuiz.missao_id == missao_id)
+    if trilha_id is not None:
+        consulta = consulta.filter(PerguntaDeQuiz.trilha_id == trilha_id)
+
+    if cursor:
+        posicao = decodificar_cursor(cursor)
+        try:
+            registrado_em_cursor = datetime.fromisoformat(posicao["registrado_em"])
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(
+            tuple_(PerguntaDeQuiz.registrado_em, PerguntaDeQuiz.id)
+            > (registrado_em_cursor, id_cursor)
+        )
+
+    consulta = consulta.order_by(PerguntaDeQuiz.registrado_em, PerguntaDeQuiz.id).limit(tamanho + 1)
+    perguntas = consulta.all()
+
+    proximo_cursor = None
+    if len(perguntas) > tamanho:
+        perguntas = perguntas[:tamanho]
+        ultima = perguntas[-1]
+        proximo_cursor = codificar_cursor(
+            {"registrado_em": ultima.registrado_em.isoformat(), "id": str(ultima.id)}
+        )
+
+    return PaginaDeResultado(
+        itens=[saida_da_pergunta(pergunta) for pergunta in perguntas],
+        proximo_cursor=proximo_cursor,
+    )
 
 
 def _materializar_equipes_disputantes(
