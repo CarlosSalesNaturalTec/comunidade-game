@@ -12,7 +12,13 @@ def _cabecalhos(chave, token):
 
 
 def test_guerreiro_cria_a_equipe_e_entra_como_primeiro_integrante(
-    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula, criar_sessao_de_teste, criar_nick
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_sessao_de_teste,
+    criar_nick,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -33,7 +39,14 @@ def test_guerreiro_cria_a_equipe_e_entra_como_primeiro_integrante(
 
 
 def test_papel_declarado_e_gravado_e_papel_ausente_e_aceito(
-    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula, criar_equipe, criar_sessao_de_teste, criar_nick
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    criar_nick,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -53,9 +66,7 @@ def test_papel_declarado_e_gravado_e_papel_ausente_e_aceito(
         headers=_cabecalhos(chave, token),
     )
     assert com_papel.status_code == 201
-    integrante_com_papel = next(
-        i for i in com_papel.json()["integrantes"] if i["nick"] == "outra"
-    )
+    integrante_com_papel = next(i for i in com_papel.json()["integrantes"] if i["nick"] == "outra")
     assert integrante_com_papel["papel"] == "quem constrói"
 
     terceiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
@@ -72,7 +83,14 @@ def test_papel_declarado_e_gravado_e_papel_ausente_e_aceito(
 
 
 def test_guerreiro_sai_da_propria_equipe_pela_rota(
-    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula, criar_equipe, criar_sessao_de_teste, sessao
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -88,13 +106,22 @@ def test_guerreiro_sai_da_propria_equipe_pela_rota(
 
     assert resposta.status_code == 204
     assert (
-        sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe.id, persona_id=criador.id).first()
+        sessao.query(IntegranteDaEquipe)
+        .filter_by(equipe_id=equipe.id, persona_id=criador.id)
+        .first()
         is None
     )
 
 
 def test_sexto_integrante_e_recusado_com_422_pela_rota(
-    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula, criar_equipe, criar_sessao_de_teste, sessao
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -121,7 +148,14 @@ def test_sexto_integrante_e_recusado_com_422_pela_rota(
 
 
 def test_pessoa_que_nao_e_guerreiro_e_recusada_com_403_pela_rota(
-    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula, criar_equipe, criar_sessao_de_teste, sessao
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
 ):
     """`RF-01-38` restringe a equipe a um integrante de 17 anos ou mais, mas
     a matriz do PRD-01 §4 só concede `equipe_que_forma_na_aula` ao
@@ -147,7 +181,14 @@ def test_pessoa_que_nao_e_guerreiro_e_recusada_com_403_pela_rota(
 
 
 def test_equipe_de_aula_encerrada_nao_recebe_integrante_pela_rota(
-    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula, criar_equipe, criar_sessao_de_teste, sessao
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -188,7 +229,13 @@ def test_admin_nao_cria_equipe_pela_rota(
 
 
 def test_mestre_nao_altera_composicao_pela_rota(
-    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula, criar_equipe, criar_sessao_de_teste
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -210,7 +257,9 @@ def test_mestre_nao_altera_composicao_pela_rota(
     assert saida.status_code == 403
 
 
-def test_pedido_sem_credencial_de_persona_e_recusado(cliente, criar_chave, criar_persona, criar_comunidade, criar_aula):
+def test_pedido_sem_credencial_de_persona_e_recusado(
+    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula
+):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -224,7 +273,14 @@ def test_pedido_sem_credencial_de_persona_e_recusado(cliente, criar_chave, criar
 
 
 def test_equipes_da_aula_trazem_so_avatar_e_nick(
-    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula, criar_equipe, criar_sessao_de_teste, criar_nick
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    criar_nick,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -247,7 +303,14 @@ def test_equipes_da_aula_trazem_so_avatar_e_nick(
 
 
 def test_equipe_da_trilha_nao_aparece_na_leitura_da_aula(
-    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula, criar_trilha, criar_equipe, criar_sessao_de_teste
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_equipe,
+    criar_sessao_de_teste,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -266,7 +329,13 @@ def test_equipe_da_trilha_nao_aparece_na_leitura_da_aula(
 
 
 def test_equipe_de_outra_aula_nao_aparece_na_leitura(
-    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula, criar_equipe, criar_sessao_de_teste
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
