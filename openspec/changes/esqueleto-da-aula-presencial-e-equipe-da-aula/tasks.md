@@ -106,7 +106,7 @@
 
 ## 7. Esteira de publicação
 
-- [ ] 7.1 Acrescentar o alvo `aula` em `.firebaserc` e criar
+- [x] 7.1 Acrescentar o alvo `aula` em `.firebaserc` e criar
       `.github/workflows/app-01-deploy.yml`, espelho do `app-09-deploy.yml`, com
       `VITE_CHAVE_DE_APLICACAO` própria (design — decisão 7). Verificar que o workflow dispara
       só pelos caminhos da App 01 e de `comum/`.
