@@ -5,6 +5,7 @@ class CorpoDeErro(BaseModel):
     codigo: str
     mensagem: str
     campo: str | None = None
+    sugestoes: list[str] | None = None
 
 
 class ErroDeAplicacao(Exception):
@@ -99,6 +100,17 @@ class ErroDeValidacao(ErroDeAplicacao):
     status_code = 422
     codigo = "erro_de_validacao"
     mensagem = "Campo inválido ou em falta."
+
+
+class NickDeGuerreiroEmUsoNoEncontro(ErroDeValidacao):
+    """Mesma recusa 422 no campo `nick` de `ErroDeValidacao`, com as
+    variações de alcance total que só o caminho do encontro devolve — o
+    caminho da gestão segue recusando sem elas (`RF-04-08`, design —
+    decisão 4)."""
+
+    def __init__(self, sugestoes: list[str]) -> None:
+        super().__init__(mensagem="Este nick já está em uso.", campo="nick")
+        self.sugestoes = sugestoes
 
 
 class ErroInterno(ErroDeAplicacao):

@@ -361,6 +361,20 @@ autocadastro do Guerreiro(a) pela sessão de trabalho, texto que o PRD-04 §9 j�
 entra na fatia do onboarding, junto da câmera, do consentimento e da fila local sem rede, que
 seguem pendentes.
 
+A segunda fatia, `cadastro-do-guerreiro-no-encontro`, entregou o **caminho do onboarding**: a
+jornada 5.3, a criança que chega sem o responsável. `POST /v1/guerreiros` passou a atender dois
+caminhos pela **aplicação declarada na chave** — App 01 leva ao autocadastro do encontro, sem
+autor; qualquer outra, ao caminho da gestão, de Admin. O cadastro nasce ativo, sem imagem, e a
+**presença do dia é gravada na mesma transação** (`RF-04-15`, `RF-04-17`). Decisão do fundador,
+2026-08-24: a **faixa de 6 a 16 anos** passa a ser exigida na regra do núcleo, retroativa ao
+caminho da gestão — requisito de tela não protege invariante de plataforma. Segunda decisão do
+mesmo dia: nenhuma rota de consulta ganha alcance total sobre nick de Guerreiro(a); a recusa de
+**gravação** do cadastro do encontro é quem devolve as variações, o que tira `GET
+/v1/guerreiros/nick/disponivel` da lista de rotas do PRD-04 §9. Terceira decisão: a **App 01
+passa a cadastrar o responsável mínimo** no ato do encontro, sem o que a primeira turma inteira
+cairia na jornada 5.3 por acidente de implementação — o código dela é da fatia seguinte, junto
+do consentimento e da câmera, que seguem pendentes.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

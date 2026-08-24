@@ -53,14 +53,20 @@ _LOCAIS_GENERICOS = {"body", "query", "path", "header", "cookie"}
 
 
 def _resposta_de_erro(
-    status_code: int, codigo: str, mensagem: str, campo: str | None = None
+    status_code: int,
+    codigo: str,
+    mensagem: str,
+    campo: str | None = None,
+    sugestoes: list[str] | None = None,
 ) -> JSONResponse:
-    corpo = CorpoDeErro(codigo=codigo, mensagem=mensagem, campo=campo)
+    corpo = CorpoDeErro(codigo=codigo, mensagem=mensagem, campo=campo, sugestoes=sugestoes)
     return JSONResponse(status_code=status_code, content=corpo.model_dump(exclude_none=True))
 
 
 async def _manipular_erro_de_aplicacao(request: Request, exc: ErroDeAplicacao) -> JSONResponse:
-    resposta = _resposta_de_erro(exc.status_code, exc.codigo, exc.mensagem, exc.campo)
+    resposta = _resposta_de_erro(
+        exc.status_code, exc.codigo, exc.mensagem, exc.campo, getattr(exc, "sugestoes", None)
+    )
     tempo_de_espera = getattr(exc, "tempo_de_espera_em_segundos", None)
     if tempo_de_espera is not None:
         resposta.headers["Retry-After"] = str(tempo_de_espera)
