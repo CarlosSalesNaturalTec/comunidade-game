@@ -435,6 +435,24 @@ trabalho, e o registro sai sob essa mesma sessão. É a última fatia do PRD-04 
 outra aplicação; o que resta do §6.2 espera a autoria de conteúdo da App 09 e a condução da
 partida da App 03 (§14).
 
+A sexta fatia, `aparelho-da-equipe-no-quiz`, entregou o elo que faltava para a criança jogar o
+Quiz ao Vivo (jornada 5.9), depois que a autoria de conteúdo (App 09) e a condução da partida
+(App 03) já haviam entrado. O núcleo passou a servir, em **`GET /v1/aulas/{id}/partidas`**, as
+partidas da aula com a equipe do Guerreiro(a) em sessão já **derivada** — o aparelho não
+escolhe nem informa a equipe, e quem não disputa recebe a partida com a equipe nula. A leitura
+da pergunta no ar, `GET /v1/partidas-de-quiz/{id}/pergunta`, ganhou o resultado liberado —
+alternativa correta, se a equipe acertou e qual equipe chegou primeiro —, sem creditar
+pontuação, que segue do encerramento. A App 01 ganhou o **quarto caminho**, sempre presente na
+sessão de trabalho e independente do momento de troca, levando à mesma entrada por nick e
+imagem das demais; a tela da partida sonda a pergunta a cada 2 segundos, envia uma resposta por
+equipe e pergunta com a segunda recusada antes de chegar ao núcleo, mostra o resultado só
+depois da liberação e mantém a pergunta legível sem rede, sem enfileirar resposta. Decisão do
+fundador, 2026-08-25: **o vínculo aparelho–equipe é estado do próprio aparelho, nunca entidade
+do núcleo** — o PRD-04 §3.2, a jornada 5.9 e o `RF-04-41` contrariavam o documento 05 §5 e
+foram corrigidos nesta fatia, sem decisão nova. Resta do §6.2 o **caminho das trilhas** —
+missão da equipe, conteúdo e atividade do dia — e o **assistente de trilhas** (`RF-04-29`,
+`RF-04-35` a `RF-04-40`, `RF-04-45` a `RF-04-47`).
+
 A elicitação das pendências do PRD-09, em 2026-08-25, fechou cinco decisões do fundador antes
 da sexta fatia. O **custo de _cloud_ entra sempre por fatura**, aporte por absorção do fundador:
 nenhuma aplicação mede, conta ou lança consumo por ato, o que esvazia `RF-09-20` e `RF-09-90` e

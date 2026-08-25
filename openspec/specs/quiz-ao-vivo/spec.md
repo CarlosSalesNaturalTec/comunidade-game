@@ -291,18 +291,24 @@ creditar pontuação: o crédito segue sendo do encerramento da partida. (`RF-04
 ### Requirement: A partida é lida por sondagem periódica
 
 O núcleo SHALL expor a **leitura do estado da partida**, que devolve a situação, a pergunta
-no ar, se o resultado dela já foi liberado e as equipes disputantes. A leitura SHALL ser
-alcançável a qualquer momento da partida aberta e SHALL devolver sempre o estado corrente,
-de modo que o aparelho que ficou fora do ar durante uma pergunta **volte na pergunta
-corrente**, sem travar a partida nem recuperar a que perdeu. A sincronização em tempo real do
-Ciclo 01 é **sondagem periódica**, e não conexão longa (documento 03 §1). (`RF-02-60`,
-`RF-04-41`, PRD-02 §12)
+no ar, se o resultado dela já foi liberado e as equipes disputantes, **restrita a quem
+conduz**. O aparelho da equipe SHALL acompanhar a partida pela leitura que é dele — a
+pergunta no ar —, e NEVER SHALL alcançar a leitura do estado. Ambas SHALL ser alcançáveis a
+qualquer momento da partida aberta e SHALL devolver sempre o estado corrente, de modo que o
+aparelho que ficou fora do ar durante uma pergunta **volte na pergunta corrente**, sem travar
+a partida nem recuperar a que perdeu. A sincronização em tempo real do Ciclo 01 é **sondagem
+periódica**, e não conexão longa (documento 03 §1). (`RF-02-60`, `RF-04-41`, PRD-02 §12)
 
 #### Scenario: A leitura devolve o estado corrente
 
-- **WHEN** quem conduz ou o aparelho de uma equipe disputante lê a partida
+- **WHEN** quem conduz lê o estado da partida
 - **THEN** o núcleo devolve a situação, a pergunta no ar, se o resultado está liberado e as
   equipes disputantes
+
+#### Scenario: O aparelho da equipe não alcança a leitura de quem conduz
+
+- **WHEN** o Guerreiro(a) em sessão lê o estado da partida
+- **THEN** o núcleo recusa com 403, e o aparelho acompanha a partida pela pergunta no ar
 
 #### Scenario: O aparelho que caiu volta na pergunta corrente
 

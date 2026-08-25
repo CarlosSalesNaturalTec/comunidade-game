@@ -151,6 +151,7 @@ def _cadastrar_pergunta(cliente, cen) -> dict:
 def test_openapi_lista_as_rotas_da_partida(cliente):
     esquema = cliente.get("/openapi.json").json()
     rotas_esperadas = {
+        ("get", "/v1/aulas/{id_da_aula}/partidas"),
         ("post", "/v1/partidas-de-quiz"),
         ("post", "/v1/partidas-de-quiz/{id_da_partida}/perguntas"),
         ("post", "/v1/partidas-de-quiz/{id_da_partida}/resultado"),
@@ -258,6 +259,39 @@ def test_aparelho_da_equipe_volta_na_pergunta_corrente(cliente, cenario_de_parti
     corpo = resposta.json()
     assert corpo["id"] == segunda["id"]
     assert "alternativa_correta" not in corpo
+
+
+def test_guerreiro_descobre_a_partida_da_sua_aula_pela_rota(cliente, cenario_de_partida):
+    cen = cenario_de_partida()
+    partida = _abrir_partida(cliente, cen)
+
+    resposta = cliente.get(f"/v1/aulas/{cen.aula.id}/partidas", headers=cen.cabecalhos_guerreiro_a)
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert len(corpo) == 1
+    assert corpo[0]["id"] == partida["id"]
+    assert corpo[0]["equipe_id"] == str(cen.equipe_a.id)
+
+
+def test_mestre_recebe_403_ao_descobrir_partidas_da_aula(cliente, cenario_de_partida):
+    cen = cenario_de_partida()
+    _abrir_partida(cliente, cen)
+
+    resposta = cliente.get(f"/v1/aulas/{cen.aula.id}/partidas", headers=cen.cabecalhos_mestre)
+
+    assert resposta.status_code == 403
+
+
+def test_guerreiro_recebe_403_ao_ler_o_estado_da_partida(cliente, cenario_de_partida):
+    cen = cenario_de_partida()
+    partida = _abrir_partida(cliente, cen)
+
+    resposta = cliente.get(
+        f"/v1/partidas-de-quiz/{partida['id']}", headers=cen.cabecalhos_guerreiro_a
+    )
+
+    assert resposta.status_code == 403
 
 
 def test_mestre_que_nao_conduz_recebe_403_em_toda_escrita_da_partida(

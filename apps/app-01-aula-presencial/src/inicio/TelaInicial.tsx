@@ -5,9 +5,10 @@ import { TelaDeEntradaDoGuerreiro } from "../entrada/TelaDeEntradaDoGuerreiro";
 import { TelaDeEquipes } from "../equipes/TelaDeEquipes";
 import { FluxoDeOnboarding } from "../onboarding/FluxoDeOnboarding";
 import { TelaDeCaptura } from "../onboarding/TelaDeCaptura";
+import { CHAVE_DA_PARTIDA_DE_QUIZ, TelaDaPartida } from "../quiz/TelaDaPartida";
 import { TelaDeTroca } from "../troca/TelaDeTroca";
 
-type Caminho = "inicio" | "onboarding" | "trilhas" | "troca";
+type Caminho = "inicio" | "onboarding" | "trilhas" | "troca" | "quiz";
 
 interface Props {
   tokenDeTrabalho: string;
@@ -60,6 +61,7 @@ export function TelaInicial({
     definirCaminho("inicio");
     definirViaDeEntrada(null);
     definirMostrarRecadastro(false);
+    sessionStorage.removeItem(CHAVE_DA_PARTIDA_DE_QUIZ);
     aoVoltarAoInicio();
   }
 
@@ -75,7 +77,7 @@ export function TelaInicial({
     );
   }
 
-  if (caminho === "trilhas" || caminho === "troca") {
+  if (caminho === "trilhas" || caminho === "troca" || caminho === "quiz") {
     if (!sessaoDoGuerreiro) {
       return (
         <TelaDeEntradaDoGuerreiro
@@ -94,6 +96,15 @@ export function TelaInicial({
           tokenDoGuerreiro={sessaoDoGuerreiro.token}
           guerreiroId={sessaoDoGuerreiro.persona_id}
           aoConcluir={voltarAoInicio}
+          aoVoltar={voltarAoInicio}
+        />
+      );
+    }
+    if (caminho === "quiz") {
+      return (
+        <TelaDaPartida
+          aulaId={aulaId}
+          tokenDoGuerreiro={sessaoDoGuerreiro.token}
           aoVoltar={voltarAoInicio}
         />
       );
@@ -132,6 +143,9 @@ export function TelaInicial({
         </button>
         <button type="button" className="cg-caminho" onClick={() => definirCaminho("trilhas")}>
           Trilhas — entrar com o nick e trabalhar em equipe
+        </button>
+        <button type="button" className="cg-caminho" onClick={() => definirCaminho("quiz")}>
+          Quiz ao Vivo — entrar com o nick e responder pela equipe
         </button>
         {momentoDeTrocaAberto && (
           <button type="button" className="cg-caminho" onClick={() => definirCaminho("troca")}>

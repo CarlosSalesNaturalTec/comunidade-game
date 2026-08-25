@@ -34,7 +34,7 @@ operação da resposta da equipe, e papel que não a tem SHALL receber 403. (`RF
 
 #### Scenario: Papel sem a operação é recusado
 
-- **WHEN** um Mestre ou um Admin lê as partidas da aula por esta rota
+- **WHEN** um Mestre lê as partidas da aula por esta rota
 - **THEN** o núcleo recusa com 403, e a condução segue pelas rotas próprias dela
 
 ## MODIFIED Requirements

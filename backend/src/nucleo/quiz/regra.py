@@ -718,6 +718,27 @@ class PerguntaParaEquipeSaida(BaseModel):
     id: uuid.UUID | None
     enunciado: str | None
     alternativas: list[str] | None
+    resultado_liberado: bool = False
+    alternativa_correta: int | None = None
+    acertou: bool | None = None
+    primeira_equipe_a_acertar: uuid.UUID | None = None
+
+
+def _equipe_do_guerreiro_na_partida(
+    sessao: Session, *, partida: PartidaDeQuiz, guerreiro_id: uuid.UUID
+) -> uuid.UUID | None:
+    """A equipe única do Guerreiro(a) naquela partida — a garantia de que é
+    uma só é da abertura, que recusa integrante já disputante por outra
+    (`_materializar_equipes_disputantes`, design — decisão 1)."""
+    return (
+        sessao.query(EquipeNaPartida.equipe_id)
+        .join(IntegranteDaEquipe, IntegranteDaEquipe.equipe_id == EquipeNaPartida.equipe_id)
+        .filter(
+            EquipeNaPartida.partida_id == partida.id,
+            IntegranteDaEquipe.persona_id == guerreiro_id,
+        )
+        .scalar()
+    )
 
 
 def pergunta_para_equipe(
@@ -728,6 +749,11 @@ def pergunta_para_equipe(
     (`RF-04-41`, design — decisão 3). Sem pergunta no ar ainda, devolve
     tudo nulo, sem erro — é o que faz o aparelho que caiu voltar na
     pergunta corrente assim que ela existir (`RF-04-41`).
+
+    Liberado o resultado por quem conduz, a leitura passa a levar também a
+    alternativa correta, se a equipe do Guerreiro(a) em sessão acertou e
+    qual equipe chegou primeiro — sem creditar pontuação, que segue sendo
+    do encerramento (`RF-04-44`, design — decisão 2).
     """
     _exigir_operacao(operador, Operacao.resposta_de_quiz_da_equipe, "le")
 
@@ -736,7 +762,7 @@ def pergunta_para_equipe(
         return PerguntaParaEquipeSaida(id=None, enunciado=None, alternativas=None)
 
     pergunta = sessao.get(PerguntaDeQuiz, pergunta_atual.pergunta_id)
-    return PerguntaParaEquipeSaida(
+    saida = PerguntaParaEquipeSaida(
         id=pergunta.id,
         enunciado=pergunta.enunciado,
         alternativas=[
@@ -746,3 +772,44 @@ def pergunta_para_equipe(
             pergunta.alternativa_4,
         ],
     )
+
+    if pergunta_atual.liberada_em is None:
+        return saida
+
+    equipe_id = _equipe_do_guerreiro_na_partida(sessao, partida=partida, guerreiro_id=operador.id)
+    acertaram, primeira = _apurar_pergunta_no_ar(
+        sessao, partida=partida, pergunta_no_ar=pergunta_atual, pergunta=pergunta
+    )
+    saida.resultado_liberado = True
+    saida.alternativa_correta = pergunta.alternativa_correta
+    saida.acertou = equipe_id is not None and equipe_id in acertaram
+    saida.primeira_equipe_a_acertar = primeira
+    return saida
+
+
+class PartidaDaAulaSaida(BaseModel):
+    id: uuid.UUID
+    situacao: SituacaoDaPartida
+    equipe_id: uuid.UUID | None
+
+
+def partidas_da_aula(sessao: Session, *, operador: Persona, aula: Aula) -> list[PartidaDaAulaSaida]:
+    """Descoberta da partida pelo Guerreiro(a) em sessão, com a equipe dele
+    já derivada — o aparelho não escolhe nem informa a equipe, e a
+    garantia de que é uma só é da abertura da partida (`RF-04-41`,
+    `RF-04-42`, design — decisão 1). Aula sem partida devolve lista vazia,
+    sem erro; quem não disputa recebe a equipe nula.
+    """
+    _exigir_operacao(operador, Operacao.resposta_de_quiz_da_equipe, "le")
+
+    partidas = sessao.query(PartidaDeQuiz).filter_by(aula_id=aula.id).all()
+    return [
+        PartidaDaAulaSaida(
+            id=partida.id,
+            situacao=partida.situacao,
+            equipe_id=_equipe_do_guerreiro_na_partida(
+                sessao, partida=partida, guerreiro_id=operador.id
+            ),
+        )
+        for partida in partidas
+    ]
