@@ -1,4 +1,4 @@
-import { chamarNucleo } from "comum/api";
+import { chamarNucleo, enviarParteComProgresso } from "comum/api";
 
 export type EtapaDoCiclo = "abertura" | "desenvolvimento" | "marcos" | "fechamento";
 
@@ -35,6 +35,34 @@ export interface AtividadeDaMissao {
   producao_esperada: string;
 }
 
+export type TipoDeConteudo = "texto" | "imagem" | "link_externo" | "video" | "arquivo";
+export type AutoriaDoConteudo = "propria" | "terceiro";
+
+export interface ConteudoDaMissao {
+  id: string;
+  missao_id: string;
+  ordem: number;
+  tipo: TipoDeConteudo;
+  corpo: string | null;
+  endereco: string | null;
+  referencia: string | null;
+  tamanho: number | null;
+  autoria: AutoriaDoConteudo;
+  fonte: string | null;
+}
+
+export interface BibliografiaDaMissao {
+  id: string;
+  missao_id: string;
+  titulo: string;
+  capitulo: string;
+  item_patrimonial_id: string | null;
+  // Só a leitura pública (`GET /trilhas/{id}`) devolve os dois — a criação
+  // nunca aceita nem grava nenhum (`RF-09-22`, `RF-09-23`).
+  disponivel?: boolean | null;
+  apoiador_nome?: string | null;
+}
+
 export interface MissaoDaTrilha {
   id: string;
   trilha_id: string;
@@ -50,6 +78,10 @@ export interface MissaoDaTrilha {
   // trilha, ainda que a missão sem etiqueta própria responda por elas nos
   // vínculos (`RF-09-98`, `RF-01-45`).
   etiquetas_ods: EtiquetaOds[];
+  // Nunca vem de `GET /trilhas/minhas` — só o que foi declarado nesta
+  // sessão, no mesmo padrão que `culminancia` já firma nesta aplicação.
+  conteudos?: ConteudoDaMissao[];
+  bibliografia?: BibliografiaDaMissao[];
 }
 
 export interface TrilhaDaLista {
@@ -218,4 +250,146 @@ export function substituirEtiquetasOdsDaMissao(
     corpo: { etiquetas },
     token,
   });
+}
+
+export interface CriarConteudoEntrada {
+  tipo: TipoDeConteudo;
+  ordem: number;
+  corpo?: string;
+  endereco?: string;
+  autoria: AutoriaDoConteudo;
+  fonte?: string;
+}
+
+// A autoria estrita, a coerência de cada tipo e a fonte do terceiro já são
+// do núcleo (`RF-09-14`, `RF-09-15`, `RF-09-24`).
+export function criarConteudo(
+  idDaMissao: string,
+  entrada: CriarConteudoEntrada,
+  token: string,
+): Promise<ConteudoDaMissao> {
+  return chamarNucleo<ConteudoDaMissao>(`/v1/missoes/${idDaMissao}/conteudos`, {
+    metodo: "POST",
+    corpo: entrada,
+    token,
+  });
+}
+
+interface AbrirEnvioSaida {
+  endereco_da_sessao: string;
+}
+
+// Abre a sessão retomável — a recusa por formato ou por tamanho acontece
+// aqui, antes de qualquer byte ser enviado (`RF-09-16` a `RF-09-19`,
+// `RF-09-115`).
+export function abrirEnvio(
+  idDoConteudo: string,
+  tipoMime: string,
+  tamanhoDeclarado: number,
+  token: string,
+): Promise<string> {
+  return chamarNucleo<AbrirEnvioSaida>(`/v1/conteudos/${idDoConteudo}/arquivo`, {
+    metodo: "POST",
+    corpo: { tipo_mime: tipoMime, tamanho_declarado: tamanhoDeclarado },
+    token,
+  }).then((saida) => saida.endereco_da_sessao);
+}
+
+// Só depois desta chamada o conteúdo passa a servir bytes — o núcleo
+// consulta o armazenamento pelo tamanho real antes de gravar a referência
+// (`RF-09-16`, `RF-09-17`).
+export function confirmarEnvio(
+  idDoConteudo: string,
+  token: string,
+): Promise<ConteudoDaMissao> {
+  return chamarNucleo<ConteudoDaMissao>(`/v1/conteudos/${idDoConteudo}/arquivo`, {
+    metodo: "PATCH",
+    token,
+  });
+}
+
+const TAMANHO_DA_PARTE = 5 * 1024 * 1024;
+
+// Consulta o quanto a sessão já recebeu, sem enviar bytes — o que sustenta
+// a retomada depois de recarregar a página no meio do envio (`RF-09-19`).
+export async function consultarProgressoDaSessao(
+  enderecoDaSessao: string,
+  tamanhoDoArquivo: number,
+): Promise<number> {
+  const resultado = await enviarParteComProgresso(
+    enderecoDaSessao,
+    new Blob([]),
+    `bytes */${tamanhoDoArquivo}`,
+    () => {},
+  );
+  return resultado.bytesRecebidos;
+}
+
+// Envia o arquivo em partes, retomando de `posicaoInicial` — uma queda de
+// rede no meio de uma parte é resolvida enviando a mesma parte de novo, e
+// uma queda entre partes é resolvida por `consultarProgressoDaSessao`
+// antes de chamar esta função de novo (`RF-09-19`).
+export async function enviarArquivo(
+  enderecoDaSessao: string,
+  arquivo: File,
+  aoProgredir: (bytesEnviados: number, total: number) => void,
+  posicaoInicial = 0,
+): Promise<void> {
+  let posicao = posicaoInicial;
+  const total = arquivo.size;
+  while (posicao < total) {
+    const fim = Math.min(posicao + TAMANHO_DA_PARTE, total);
+    const parte = arquivo.slice(posicao, fim);
+    const resultado = await enviarParteComProgresso(
+      enderecoDaSessao,
+      parte,
+      `bytes ${posicao}-${fim - 1}/${total}`,
+      (bytesDaParte) => aoProgredir(posicao + bytesDaParte, total),
+    );
+    posicao = resultado.bytesRecebidos;
+    aoProgredir(posicao, total);
+  }
+}
+
+export interface CriarBibliografiaEntrada {
+  titulo: string;
+  capitulo: string;
+  item_patrimonial_id?: string;
+}
+
+// O exemplar é opcional; o Apoiador creditado nunca é digitado — deriva na
+// leitura pública (`RF-09-21` a `RF-09-23`).
+export function criarBibliografia(
+  idDaMissao: string,
+  entrada: CriarBibliografiaEntrada,
+  token: string,
+): Promise<BibliografiaDaMissao> {
+  return chamarNucleo<BibliografiaDaMissao>(`/v1/missoes/${idDaMissao}/bibliografia`, {
+    metodo: "POST",
+    corpo: entrada,
+    token,
+  });
+}
+
+export interface ExemplarDoAcervo {
+  id: string;
+  titulo: string;
+  numero_de_tombo: string;
+  ponto_de_apoio_id: string;
+}
+
+// Alimenta só o seletor da bibliografia — a gestão completa do acervo é do
+// PRD-07 (`RF-09-21`).
+export function listarAcervo(token: string): Promise<ExemplarDoAcervo[]> {
+  return chamarNucleo<ExemplarDoAcervo[]>("/v1/itens-patrimoniais", { token });
+}
+
+// A pré-visualização usa a mesma leitura pública que a App 05 vai consumir
+// — se a tela do Guerreiro(a) divergir depois, a pré-visualização
+// acompanha o contrato, não a tela (`RF-09-25`, design — Risks).
+export function obterTrilhaPublica(
+  idDaTrilha: string,
+  token: string,
+): Promise<TrilhaDoMestre> {
+  return chamarNucleo<TrilhaDoMestre>(`/v1/trilhas/${idDaTrilha}`, { token });
 }

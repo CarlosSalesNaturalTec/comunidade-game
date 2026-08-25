@@ -358,7 +358,7 @@ def test_aporte_da_gestao_nao_nasce_ressarcivel(sessao, cenario, criar_valor_de_
 def test_comprovante_em_pdf_e_aceito(sessao, cenario, criar_valor_de_referencia, tmp_path):
     admin, apoiador, ponto_de_apoio, tipo = cenario
     criar_valor_de_referencia(admin, tipo)
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
 
     aporte = registrar_aporte(
         sessao,
@@ -385,7 +385,7 @@ def test_comprovante_em_formato_nao_previsto_e_recusado(
 ):
     admin, apoiador, ponto_de_apoio, tipo = cenario
     criar_valor_de_referencia(admin, tipo)
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         registrar_aporte(
@@ -441,7 +441,7 @@ def test_aporte_retroativo_com_comprovante(sessao, cenario, criar_valor_de_refer
     criar_valor_de_referencia(
         admin, tipo, valor_em_moedas=Decimal("1.00"), vigencia_inicio=date(2020, 1, 1)
     )
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
 
     aporte = registrar_aporte(
         sessao,

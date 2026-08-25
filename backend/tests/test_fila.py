@@ -134,7 +134,7 @@ def test_contem_documento_pessoal_ignora_numero_qualquer_sem_digito_verificador(
 def test_comprovante_vai_para_a_porta_de_armazenamento_e_linha_guarda_so_a_referencia(
     sessao, tmp_path
 ):
-    porta = ArmazenamentoEmDisco(str(tmp_path))
+    porta = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
     conteudo = b"comprovante em bytes"
 
     solicitacao = registrar_solicitacao_de_participacao(
@@ -168,7 +168,7 @@ def test_comprovante_vai_para_a_porta_de_armazenamento_e_linha_guarda_so_a_refer
 
 
 def test_comprovante_fora_da_pretensao_apoiador_e_recusado(sessao, tmp_path):
-    porta = ArmazenamentoEmDisco(str(tmp_path))
+    porta = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
     with pytest.raises(ErroDeValidacao) as excinfo:
         registrar_solicitacao_de_participacao(
             sessao,

@@ -110,3 +110,55 @@ export async function chamarNucleo<T>(
 
   return corpo as T;
 }
+
+export interface ResultadoDoEnvioDeParte {
+  concluido: boolean;
+  /** Bytes que o armazenamento confirma ter recebido até agora — é daqui
+   * que a retomada depois de queda de rede sabe de onde continuar
+   * (`RF-09-19`). */
+  bytesRecebidos: number;
+}
+
+// Envia uma parte do arquivo pelo protocolo `Content-Range` da sessão
+// retomável (`abrir_envio`). O endereço da sessão pode ser relativo — a
+// rota local do núcleo, fora de produção — ou absoluto — o Cloud Storage
+// em produção, que é credencial própria e não recebe a chave do projeto
+// (design — Risks). Usa `XMLHttpRequest`, não `fetch`, porque só ele
+// expõe o progresso do envio.
+export function enviarParteComProgresso(
+  enderecoDaSessao: string,
+  parte: Blob,
+  contentRange: string,
+  aoProgredir: (bytesEnviados: number) => void,
+): Promise<ResultadoDoEnvioDeParte> {
+  const { chaveDeAplicacao, urlDoNucleo } = obterConfiguracao();
+  const relativo = !enderecoDaSessao.startsWith("http");
+  const url = relativo ? `${urlDoNucleo}${enderecoDaSessao}` : enderecoDaSessao;
+
+  return new Promise((resolve, reject) => {
+    const requisicao = new XMLHttpRequest();
+    requisicao.open("PUT", url);
+    requisicao.setRequestHeader("Content-Range", contentRange);
+    if (relativo) {
+      requisicao.setRequestHeader(NOME_DO_CABECALHO_DA_CHAVE, chaveDeAplicacao);
+    }
+    requisicao.upload.onprogress = (evento) => {
+      if (evento.lengthComputable) aoProgredir(evento.loaded);
+    };
+    requisicao.onload = () => {
+      if (requisicao.status === 200 || requisicao.status === 201) {
+        resolve({ concluido: true, bytesRecebidos: parte.size });
+        return;
+      }
+      if (requisicao.status === 308) {
+        const faixa = requisicao.getResponseHeader("Range");
+        const bytesRecebidos = faixa ? Number(faixa.split("-")[1]) + 1 : 0;
+        resolve({ concluido: false, bytesRecebidos });
+        return;
+      }
+      reject(new Error("Não foi possível enviar o arquivo."));
+    };
+    requisicao.onerror = () => reject(new Error("Não foi possível enviar o arquivo."));
+    requisicao.send(parte);
+  });
+}

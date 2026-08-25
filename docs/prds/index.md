@@ -439,6 +439,25 @@ também achou `RF-09-100` e `RF-09-101` nomeando **dois requisitos cada um**: o 
 mantém os números, já consolidados nas specs, e o upload passa a `RF-09-115` e a sugestão de
 retomada do _template_, a `RF-09-116`. Os dois PRDs continuam **aprovados**.
 
+A sexta fatia, `conteudo-e-bibliografia-da-missao`, entrega o que faltava para a missão
+publicada ter o que ensinar (PRD-09 §8, §9). Nasce `ConteudoDaMissao` — texto formatado, imagem,
+link externo, vídeo e arquivo de apoio, cada tipo com a coerência conferida na regra e a fonte
+exigida do conteúdo de terceiro (`RF-09-14`, `RF-09-15`, `RF-09-24`). Vídeo e arquivo entram por
+**sessão de envio retomável**: o núcleo autoriza e o armazenamento recebe, sem os bytes passarem
+pelo núcleo — `PortaDeArmazenamento` ganha `abrir_sessao` e `consultar_envio`, com o protocolo
+`Content-Range` do Cloud Storage replicado por uma rota local só fora de produção (`RF-09-16` a
+`RF-09-19`, `RF-09-115`). Nasce `BibliografiaDaMissao`, com o exemplar tombado **opcional**;
+disponibilidade e crédito ao Apoiador nunca são coluna — derivam a cada leitura, do exemplar e
+do aporte de origem dele (`RF-09-21` a `RF-09-23`). `GET /v1/trilhas/{id}` passa a servir
+conteúdo e bibliografia da missão publicada, com licença e crédito ao autor (`RN-09-05`);
+`trilhas/regra.py` não foi tocado — as três travas de publicação continuam sendo as únicas. A
+App 09 ganhou as telas de conteúdo, bibliografia e a **pré-visualização** da missão como o
+Guerreiro(a) a verá. A fatia aplica três decisões da elicitação de 2026-08-25 (parágrafo
+acima): nenhuma medição de consumo de nuvem é construída, o vínculo da bibliografia é opcional
+e a fonte do terceiro é campo de texto sem anexo. Template de missão, edição de trilha
+publicada, duplicar trilha, desafio de desbloqueio e validação da criação original seguem
+pendentes — o PRD-09 continua **aprovado**.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

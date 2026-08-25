@@ -13,7 +13,10 @@ def obter_porta_de_armazenamento(configuracao: Configuracao) -> PortaDeArmazenam
     produção, sem exigir credencial de nuvem; Cloud Storage em produção."""
     if configuracao.ambiente == "producao":
         return ArmazenamentoNoCloudStorage(configuracao.armazenamento_bucket_cloud_storage)
-    return ArmazenamentoEmDisco(configuracao.armazenamento_diretorio_local)
+    return ArmazenamentoEmDisco(
+        configuracao.armazenamento_diretorio_local,
+        configuracao.armazenamento_diretorio_sessoes_locais,
+    )
 
 
 def dependencia_de_armazenamento(

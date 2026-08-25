@@ -7,10 +7,12 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as ExcecaoHTTP
 
 from .aportes.rotas import roteador as roteador_de_aportes
+from .armazenamento.rotas import roteador as roteador_de_armazenamento
 from .auditoria.middleware import MiddlewareDeAuditoria
 from .auditoria.rotas import roteador as roteador_de_auditoria
 from .aulas.rotas import roteador as roteador_de_aulas
 from .autenticacao import NOME_DO_CABECALHO_DE_SESSAO
+from .bibliografias.rotas import roteador as roteador_de_bibliografias
 from .biometria.rotas import roteador as roteador_de_biometria
 from .catalogo_avulso.rotas import roteador as roteador_de_catalogo_avulso
 from .chaves.conferencia import NOME_DO_CABECALHO as NOME_DO_CABECALHO_DA_CHAVE
@@ -19,6 +21,7 @@ from .chaves.rotas import roteador as roteador_de_chaves
 from .coletas.rotas import roteador as roteador_de_coletas
 from .comunidades.rotas import roteador as roteador_de_comunidades
 from .consentimentos.rotas import roteador as roteador_de_consentimentos
+from .conteudos.rotas import roteador as roteador_de_conteudos
 from .culminancias.rotas import roteador as roteador_de_culminancias
 from .equipes.rotas import roteador as roteador_de_equipes
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
@@ -183,3 +186,10 @@ incluir_roteador_de_dados(app, roteador_de_quiz)
 incluir_roteador_de_dados(app, roteador_de_equipes)
 incluir_roteador_de_dados(app, roteador_de_consentimentos)
 incluir_roteador_de_dados(app, roteador_de_ponto_extra)
+incluir_roteador_de_dados(app, roteador_de_conteudos)
+incluir_roteador_de_dados(app, roteador_de_bibliografias)
+# A rota local do protocolo `Content-Range` (`armazenamento.rotas`) só
+# conclui algo com o adaptador de disco — em produção, a dependência
+# devolve o Cloud Storage e o manipulador responde 404 (`RF-09-19`, design
+# — decisão 2).
+incluir_roteador_de_dados(app, roteador_de_armazenamento)
