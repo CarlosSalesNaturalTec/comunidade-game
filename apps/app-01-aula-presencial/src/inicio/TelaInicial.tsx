@@ -1,12 +1,13 @@
 import { useSessao } from "comum/autenticacao";
-import { Cabecalho, Moldura } from "comum/react";
+import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
 import { TelaDeEntradaDoGuerreiro } from "../entrada/TelaDeEntradaDoGuerreiro";
 import { TelaDeEquipes } from "../equipes/TelaDeEquipes";
 import { FluxoDeOnboarding } from "../onboarding/FluxoDeOnboarding";
 import { TelaDeCaptura } from "../onboarding/TelaDeCaptura";
+import { TelaDeTroca } from "../troca/TelaDeTroca";
 
-type Caminho = "inicio" | "onboarding" | "trilhas";
+type Caminho = "inicio" | "onboarding" | "trilhas" | "troca";
 
 interface Props {
   tokenDeTrabalho: string;
@@ -15,6 +16,14 @@ interface Props {
   /** Relê `GET /v1/aulas/vigentes`, para que a janela da aula seja
    * conferida a cada volta ao início (`RF-04-05`, design — decisão 3). */
   aoVoltarAoInicio: () => void;
+  /** Só o Mestre da sessão de trabalho abre e fecha o momento de troca
+   * (`RF-04-49`, decisão do fundador de 2026-08-25). */
+  podeAbrirMomentoDeTroca: boolean;
+  momentoDeTrocaAberto: boolean;
+  abrindoMomentoDeTroca: boolean;
+  erroDeAberturaDaTroca: string | null;
+  aoAbrirMomentoDeTroca: () => void;
+  aoFecharMomentoDeTroca: () => void;
 }
 
 // Os dois caminhos do PRD-04 §6.1 — onboarding e trilhas. O onboarding
@@ -25,6 +34,12 @@ export function TelaInicial({
   personaIdDeTrabalho,
   aulaId,
   aoVoltarAoInicio,
+  podeAbrirMomentoDeTroca,
+  momentoDeTrocaAberto,
+  abrindoMomentoDeTroca,
+  erroDeAberturaDaTroca,
+  aoAbrirMomentoDeTroca,
+  aoFecharMomentoDeTroca,
 }: Props) {
   const { sessao: sessaoDoGuerreiro, sair: sairDoGuerreiro } = useSessao();
   const [caminho, definirCaminho] = useState<Caminho>("inicio");
@@ -60,7 +75,7 @@ export function TelaInicial({
     );
   }
 
-  if (caminho === "trilhas") {
+  if (caminho === "trilhas" || caminho === "troca") {
     if (!sessaoDoGuerreiro) {
       return (
         <TelaDeEntradaDoGuerreiro
@@ -68,6 +83,18 @@ export function TelaInicial({
           aulaId={aulaId}
           aoVoltar={voltarAoInicio}
           aoAbrirSessao={definirViaDeEntrada}
+        />
+      );
+    }
+    if (caminho === "troca") {
+      return (
+        <TelaDeTroca
+          tokenDeTrabalho={tokenDeTrabalho}
+          aulaId={aulaId}
+          tokenDoGuerreiro={sessaoDoGuerreiro.token}
+          guerreiroId={sessaoDoGuerreiro.persona_id}
+          aoConcluir={voltarAoInicio}
+          aoVoltar={voltarAoInicio}
         />
       );
     }
@@ -106,7 +133,28 @@ export function TelaInicial({
         <button type="button" className="cg-caminho" onClick={() => definirCaminho("trilhas")}>
           Trilhas — entrar com o nick e trabalhar em equipe
         </button>
+        {momentoDeTrocaAberto && (
+          <button type="button" className="cg-caminho" onClick={() => definirCaminho("troca")}>
+            Troca por recompensa avulsa — entregar uma recompensa do encontro
+          </button>
+        )}
       </div>
+      {podeAbrirMomentoDeTroca && (
+        <div className="cg-momento-de-troca">
+          <Botao
+            variante="secundaria"
+            onClick={momentoDeTrocaAberto ? aoFecharMomentoDeTroca : aoAbrirMomentoDeTroca}
+            desabilitado={abrindoMomentoDeTroca}
+          >
+            {momentoDeTrocaAberto
+              ? "Fechar o momento de troca"
+              : abrindoMomentoDeTroca
+                ? "Abrindo…"
+                : "Abrir o momento de troca"}
+          </Botao>
+          {erroDeAberturaDaTroca && <Aviso tipo="erro">{erroDeAberturaDaTroca}</Aviso>}
+        </div>
+      )}
     </Moldura>
   );
 }

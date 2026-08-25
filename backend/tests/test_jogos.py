@@ -73,6 +73,7 @@ def test_jogo_le_o_progresso_do_personagem(
     assert corpo["nick"] == nick
     assert corpo["pontos_regulares"] == 42
     assert corpo["pontos_extra_acumulado"] == 15
+    assert "saldo_disponivel" not in corpo
     assert corpo["niveis"] == [{"trilha_id": str(trilha.id), "valor": 1}]
     assert len(corpo["badges"]) == 1
 
@@ -155,5 +156,6 @@ def test_nenhuma_resposta_de_jogo_traz_o_saldo_disponivel(
     assert "saldo" not in str(personagem.json()).lower()
 
     schema = cliente.get("/openapi.json").json()
-    texto_do_schema = str(schema).lower()
-    assert "saldo_disponivel" not in texto_do_schema
+    esquemas = schema["components"]["schemas"]
+    schema_do_personagem = str(esquemas["PersonagemSaida"]).lower()
+    assert "saldo_disponivel" not in schema_do_personagem

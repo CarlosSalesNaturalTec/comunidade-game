@@ -38,7 +38,15 @@ afterEach(() => {
   sessionStorage.clear();
 });
 
-function renderizar(aoVoltarAoInicio = vi.fn()) {
+function renderizar(
+  aoVoltarAoInicio = vi.fn(),
+  propsDeTroca: Partial<{
+    podeAbrirMomentoDeTroca: boolean;
+    momentoDeTrocaAberto: boolean;
+    abrindoMomentoDeTroca: boolean;
+    erroDeAberturaDaTroca: string | null;
+  }> = {},
+) {
   return render(
     <ProvedorDeSessao chaveDeArmazenamento="teste:app-01:sessao-guerreiro">
       <TelaInicial
@@ -46,6 +54,12 @@ function renderizar(aoVoltarAoInicio = vi.fn()) {
         personaIdDeTrabalho="mestre-de-trabalho-1"
         aulaId="aula-1"
         aoVoltarAoInicio={aoVoltarAoInicio}
+        podeAbrirMomentoDeTroca={propsDeTroca.podeAbrirMomentoDeTroca ?? false}
+        momentoDeTrocaAberto={propsDeTroca.momentoDeTrocaAberto ?? false}
+        abrindoMomentoDeTroca={propsDeTroca.abrindoMomentoDeTroca ?? false}
+        erroDeAberturaDaTroca={propsDeTroca.erroDeAberturaDaTroca ?? null}
+        aoAbrirMomentoDeTroca={vi.fn()}
+        aoFecharMomentoDeTroca={vi.fn()}
       />
     </ProvedorDeSessao>,
   );
@@ -212,5 +226,27 @@ describe("tela inicial da App 01", () => {
     expect(
       screen.queryByRole("button", { name: /recadastrar imagem/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("o terceiro caminho não aparece com o momento de troca fechado", async () => {
+    renderizar(vi.fn(), { momentoDeTrocaAberto: false });
+
+    expect(await screen.findByText(/o que você quer fazer/i)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /troca por recompensa/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("o terceiro caminho aparece com o momento de troca aberto e leva à entrada, não ao cadastro", async () => {
+    renderizar(vi.fn(), { momentoDeTrocaAberto: true });
+    const usuario = userEvent.setup();
+
+    const caminhoDeTroca = await screen.findByRole("button", {
+      name: /troca por recompensa/i,
+    });
+    await usuario.click(caminhoDeTroca);
+
+    expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
+    expect(screen.queryByText(/cadastr/i)).not.toBeInTheDocument();
   });
 });

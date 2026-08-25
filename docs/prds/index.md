@@ -406,6 +406,23 @@ lugar do 409 que o PRD-04 §9 declarava — corrigido nesta fatia. Seguem penden
 quem já se cadastrou sem imagem** (`RF-04-16`), agora só recorte, não mais bloqueio; e a **fila
 local sem rede** (`RF-04-23` a `RF-04-25`, jornada 5.6), cujo piso esta fatia entrega.
 
+A quinta fatia, `troca-por-recompensa-avulsa-no-encontro`, entregou a **troca por recompensa
+avulsa** (jornada 5.10, §6.3 inteiro): `GET /v1/eu/pontos-extras` nasceu para devolver as duas
+contas do Guerreiro(a) — acumulado e saldo disponível —, sem identificador de persona no
+caminho, e papel diferente do Guerreiro(a) recebe 403. A App 01 ganhou o **momento de troca**,
+estado do próprio aparelho que nasce fechado e só o Mestre abre e fecha — o Admin não recebe o
+controle —, exigindo a sondagem do catálogo respondida pelo núcleo para abrir e falhando
+fechado sem rede. Aberto o momento, a tela inicial ganha o terceiro caminho, que leva à mesma
+entrada por nick e imagem da quarta fatia; a tela da troca exibe o catálogo com preço e estoque
+e o saldo disponível — nunca o acumulado nem ponto regular —, oculta o item sem estoque e
+recusa, antes de enviar, o item mais caro que o saldo, dizendo a diferença em pontos. A
+confirmação da entrega pelo Mestre é o próprio envio de `POST /v1/aulas/{id}/trocas`, sob a
+**sessão de trabalho**, com o `guerreiro_id` vindo da sessão aninhada do Guerreiro(a), nunca de
+nick digitado. Decisões do fundador, 2026-08-25: a troca só é oferecida com Mestre na sessão de
+trabalho, e o registro sai sob essa mesma sessão. É a última fatia do PRD-04 que não depende de
+outra aplicação; o que resta do §6.2 espera a autoria de conteúdo da App 09 e a condução da
+partida da App 03 (§14).
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 
