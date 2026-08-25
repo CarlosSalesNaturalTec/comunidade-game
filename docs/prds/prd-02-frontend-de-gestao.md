@@ -297,7 +297,7 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
 | `RF-02-59` | Mestre da aula ou Admin abre partida de Quiz ao Vivo com o banco do curador e as equipes da aula   | essencial  |
 | `RF-02-94` | Mestre autor homologa a equipe da trilha no encontro presencial, e da homologação nada muda nela   | essencial  |
 | `RF-02-60` | Partida exibe a pergunta simultaneamente nos dispositivos logados na aula                          | essencial  |
-| `RF-02-61` | Partida vincula um aparelho a cada equipe, fixa uma equipe por Guerreiro(a) e aceita uma resposta  | essencial  |
+| `RF-02-61` | Partida fixa uma equipe por Guerreiro(a) e aceita uma resposta por equipe e por pergunta           | essencial  |
 | `RF-02-62` | Partida credita toda equipe que acerta e o bônus à primeira, por ordem de chegada no servidor      | essencial  |
 | `RF-02-72` | Quem conduz a partida pode anular a pergunta contestada, sem crédito para ninguém                  | essencial  |
 | `RF-02-73` | Encerrada a partida, a pontuação é lançada automaticamente às equipes, respeitado o teto           | essencial  |
@@ -419,6 +419,9 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | GET    | `/v1/painel-do-dia`                               | Mestre ou Admin | Estado do encontro em andamento, em leitura                                 |
 | POST   | `/v1/partidas-de-quiz`                            | Mestre ou Admin | Abre a partida com banco de perguntas e equipes                             |
 | POST   | `/v1/partidas-de-quiz/{id}/perguntas`             | Mestre ou Admin | Dá o _start_ da pergunta corrente                                           |
+| POST   | `/v1/partidas-de-quiz/{id}/resultado`             | Mestre ou Admin | Libera o resultado da pergunta no ar, sem creditar                          |
+| POST   | `/v1/partidas-de-quiz/{id}/anulacoes`             | Mestre ou Admin | Anula a pergunta contestada, sem crédito para ninguém                       |
+| GET    | `/v1/partidas-de-quiz/{id}`                       | Mestre ou Admin | Estado da partida, sondado a cada 2 segundos                                |
 | POST   | `/v1/partidas-de-quiz/{id}/encerramento`          | Mestre ou Admin | Encerra a partida e lança a pontuação                                       |
 | POST   | `/v1/entregas`                                    | Admin           | Registra entrega de exemplar Alpha ou camisa, com baixa                     |
 | GET    | `/v1/auditoria`                                   | Admin           | Trilha de auditoria, com filtro por autor e período                         |
@@ -437,10 +440,11 @@ do quiz ou a de ocorrência (403); condução de partida por Mestre que não min
 - Web App responsivo **Mobile First**: o painel do dia é operado **em pé, no celular**, andando
   entre as bancadas — é o caso de uso que dimensiona a interface, não a mesa do escritório.
 - Painel do dia legível em tela pequena, com o estado do encontro visível sem rolagem longa.
-- Atualização do painel tolerante a rede instável: reconexão automática, sem perder o que já
-  foi lançado.
-- Quiz ao Vivo com sincronização em tempo real entre dispositivos e desempate por ordem de
-  chegada da resposta, tolerando queda e volta de aparelho durante a partida.
+- Atualização do painel por sondagem periódica a cada 10 segundos (documento 03 §1), tolerante
+  a rede instável, sem perder o que já foi lançado.
+- Quiz ao Vivo sincronizado entre dispositivos por sondagem periódica a cada 2 segundos
+  (documento 03 §1), com desempate por ordem de chegada da resposta no servidor, tolerando
+  queda e volta de aparelho durante a partida.
 - Lançamento em lote de uma turma inteira sem recarregar a tela a cada Guerreiro(a).
 - Escrita idempotente: reenviar o mesmo lançamento por falha de rede não duplica o registro.
 - Desempenho em celular modesto, o mesmo do ponto de apoio.

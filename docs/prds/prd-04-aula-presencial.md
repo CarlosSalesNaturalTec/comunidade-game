@@ -397,7 +397,7 @@ Corpus de apoio (App 09)       Equipe                — formada na aula, encerr
 | `Consentimento`        | responsável, Guerreiro(a), tipo (captura biométrica), versão do termo, decisão, testemunha, data e hora       |
 | `Presenca`             | Guerreiro(a), aula, hora do fato, forma do registro (reconhecimento ou confirmação humana), quem confirmou    |
 | `Equipe`               | nome, aula a que pertence, integrantes com o papel de cada um, momento de formação e de encerramento          |
-| `RespostaDeQuiz`       | partida, pergunta, equipe, aparelho vinculado, alternativa escolhida, momento de chegada no servidor, acerto  |
+| `RespostaDeQuiz`       | partida, pergunta, equipe, alternativa escolhida, momento de chegada no servidor, acerto                      |
 | `ConsultaAoAssistente` | Guerreiro(a) ou equipe, assistente (trilhas ou apoio escolar), transcrição da pergunta e da resposta, momento |
 
 Regras do modelo:
@@ -444,7 +444,7 @@ Rotas do caminho das trilhas, todas autenticadas na **sessão do Guerreiro(a)**:
 | GET    | `/v1/equipes/{id}/missao`             | Missão da equipe, com o conteúdo e a atividade do dia           |
 | POST   | `/v1/assistente/trilhas/consultas`    | Perguntar ao assistente de trilhas e gravar a transcrição       |
 | GET    | `/v1/partidas-de-quiz/{id}/pergunta`  | Receber a pergunta em andamento no aparelho da equipe           |
-| POST   | `/v1/partidas-de-quiz/{id}/respostas` | Enviar a resposta da equipe pelo aparelho vinculado             |
+| POST   | `/v1/partidas-de-quiz/{id}/respostas` | Enviar a resposta da equipe, nunca do aparelho de onde veio     |
 
 Rotas do momento de troca por recompensa avulsa (`RF-04-49` a `RF-04-57`), oferecido só com o
 Mestre na sessão de trabalho:

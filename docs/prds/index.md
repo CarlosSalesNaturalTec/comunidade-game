@@ -237,6 +237,18 @@ caminho que destrava a autoria de trilha do PRD-09 e o crédito da coleta do ter
 (`RN-08-15`). O painel do dia, o Quiz ao Vivo e os lançamentos seguem pendentes — o PRD-02
 continua **aprovado**.
 
+O PRD-02 recebeu a sexta fatia: a change `conducao-da-partida-de-quiz` deu porta HTTP às
+quatro operações do Quiz ao Vivo já implementadas no núcleo desde `quiz-ao-vivo` — abertura,
+_start_ da pergunta, anulação e encerramento —, e criou a leitura do estado da partida e a
+liberação do resultado (`RF-02-59` a `RF-02-62`, `RF-02-72`, `RF-02-73`, `RF-09-41`). A
+partida ganhou a **pergunta no ar** e o **resultado liberado**, com histórico preservado por
+`PerguntaNaPartida`. A App 03 ganhou a área **Quiz ao Vivo**, com a abertura sobre a atividade
+e as equipes da aula e a condução em quatro atos, sondando o núcleo a cada 2 segundos —
+decisão do fundador de 2026-08-25: a sincronização em tempo real do Ciclo 01 é sondagem
+periódica, não conexão longa (documento 03 §1). As duas rotas do aparelho da equipe do PRD-04
+§9 saíram testadas por contrato; a tela do aparelho é a fatia B. O painel do dia e os
+lançamentos seguem pendentes — o PRD-02 continua **aprovado**.
+
 A **identidade da persona** foi decidida em 2026-08-21, antes de virar código: o cadastro do
 adulto e a forma do artefato comprobatório estão no documento 02 §1, as cinco linhas no
 documento 09, e o PRD-01 §8 ganhou a linha da `Persona`. O `RF-02-01` perdeu a **situação**,

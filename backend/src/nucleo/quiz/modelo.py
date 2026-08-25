@@ -147,6 +147,37 @@ class PerguntaAnuladaNaPartida(Base, ComAutoria):
     )
 
 
+class PerguntaNaPartida(Base, ComAutoria):
+    """Pergunta que esteve no ar durante a partida, preservando a ordem em
+    que caiu e o momento em que entrou — a de maior `ordem` é a que está no
+    ar agora (`RF-02-60`, `RF-09-41`, design — decisão 1). `ComAutoria`
+    grava quem deu o _start_, com que papel e quando: é o momento de
+    entrada. `liberada_em`, anulável, marca a liberação do resultado;
+    enquanto nula, nenhuma leitura devolve a alternativa correta
+    (`RF-04-44`, `RF-02-62`, documento 05 §5). Única por (partida,
+    pergunta): a mesma pergunta não volta ao ar na mesma partida.
+    """
+
+    __tablename__ = "pergunta_na_partida"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    partida_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("partida_de_quiz.id"), nullable=False
+    )
+    pergunta_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("pergunta_de_quiz.id"), nullable=False
+    )
+    ordem: Mapped[int] = mapped_column(Integer, nullable=False)
+    liberada_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "partida_id", "pergunta_id", name="uq_pergunta_na_partida_partida_id_pergunta_id"
+        ),
+        UniqueConstraint("partida_id", "ordem", name="uq_pergunta_na_partida_partida_id_ordem"),
+    )
+
+
 class RespostaDeQuiz(Base, ComAutoria):
     """Resposta da **equipe** a uma pergunta da partida — nunca do aparelho
     de onde veio nem do integrante que a enviou (`RF-01-36`, documento

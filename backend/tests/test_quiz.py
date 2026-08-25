@@ -17,6 +17,7 @@ from nucleo.quiz.modelo import (
     EquipeNaPartida,
     PerguntaAnuladaNaPartida,
     PerguntaDeQuiz,
+    PerguntaNaPartida,
     RespostaDeQuiz,
     SituacaoDaPartida,
 )
@@ -26,7 +27,11 @@ from nucleo.quiz.regra import (
     anular_pergunta,
     cadastrar_pergunta,
     encerrar_partida,
+    estado_da_partida,
+    liberar_resultado,
+    pergunta_para_equipe,
     perguntas_do_mestre,
+    por_pergunta_no_ar,
     registrar_resposta,
 )
 
@@ -1037,3 +1042,229 @@ def test_integrante_que_entra_depois_do_encerramento_nao_recebe(
 
     assert _saldo(sessao, tardio, cen.trilha) == 0
     assert sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe.id).count() == 2
+
+
+# ------------------------------------------------------------ pergunta no ar
+
+
+def test_primeira_pergunta_no_ar_grava_ordem_e_autoria(sessao, partida_aberta):
+    cen, partida = partida_aberta()
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
+
+    no_ar = por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=pergunta)
+    sessao.commit()
+
+    assert no_ar.pergunta_id == pergunta.id
+    assert no_ar.ordem == 1
+    assert no_ar.liberada_em is None
+    assert no_ar.autor_id == cen.mestre.id
+    assert no_ar.papel_do_autor == Papel.mestre.value
+    assert no_ar.registrado_em is not None
+
+
+def test_segunda_pergunta_substitui_a_primeira_preservando_a_anterior(sessao, partida_aberta):
+    cen, partida = partida_aberta()
+    primeira = _cadastrar(sessao, cen.mestre, cen.missao)
+    segunda = _cadastrar(sessao, cen.mestre, cen.missao)
+
+    por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=primeira)
+    no_ar = por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=segunda)
+    sessao.commit()
+
+    assert no_ar.pergunta_id == segunda.id
+    assert no_ar.ordem == 2
+    registros = (
+        sessao.query(PerguntaNaPartida).filter_by(partida_id=partida.id).order_by("ordem").all()
+    )
+    assert [r.pergunta_id for r in registros] == [primeira.id, segunda.id]
+
+
+def test_pergunta_de_outra_missao_e_recusada(sessao, partida_aberta, criar_missao):
+    cen, partida = partida_aberta()
+    outra_missao = criar_missao(cen.trilha, cen.mestre, posicao=2)
+    pergunta_de_fora = _cadastrar(sessao, cen.mestre, outra_missao)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=pergunta_de_fora)
+    assert excinfo.value.campo == "pergunta_id"
+    assert sessao.query(PerguntaNaPartida).count() == 0
+
+
+def test_partida_encerrada_nao_recebe_pergunta_no_ar(sessao, partida_aberta):
+    cen, partida = partida_aberta()
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
+    encerrar_partida(sessao, operador=cen.mestre, partida=partida)
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=pergunta)
+    assert excinfo.value.campo == "partida_id"
+    sessao.rollback()
+    assert sessao.query(PerguntaNaPartida).count() == 0
+
+
+def test_mestre_que_nao_conduz_nao_poe_pergunta_no_ar(sessao, partida_aberta, criar_persona):
+    cen, partida = partida_aberta()
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
+    outro_mestre = criar_persona(Papel.mestre)
+
+    with pytest.raises(PermissaoNegada):
+        por_pergunta_no_ar(sessao, operador=outro_mestre, partida=partida, pergunta=pergunta)
+    assert sessao.query(PerguntaNaPartida).count() == 0
+
+
+# --------------------------------------------------------- liberar resultado
+
+
+def test_liberar_resultado_marca_a_liberacao(sessao, partida_aberta):
+    cen, partida = partida_aberta()
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
+    por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=pergunta)
+    sessao.commit()
+
+    liberada = liberar_resultado(sessao, operador=cen.mestre, partida=partida)
+    sessao.commit()
+
+    assert liberada.liberada_em is not None
+
+
+def test_liberar_de_novo_e_idempotente(sessao, partida_aberta):
+    cen, partida = partida_aberta()
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
+    por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=pergunta)
+    primeira = liberar_resultado(sessao, operador=cen.mestre, partida=partida)
+    sessao.commit()
+    momento_da_primeira = primeira.liberada_em
+
+    segunda = liberar_resultado(sessao, operador=cen.mestre, partida=partida)
+    sessao.commit()
+
+    assert segunda.liberada_em == momento_da_primeira
+
+
+def test_liberacao_nao_credita_pontuacao(sessao, partida_aberta):
+    cen, partida = partida_aberta()
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
+    por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=pergunta)
+    _responder(
+        sessao, cen, partida=partida, pergunta=pergunta, equipe=cen.equipes[0], alternativa=CORRETA
+    )
+
+    liberar_resultado(sessao, operador=cen.mestre, partida=partida)
+    sessao.commit()
+
+    assert sessao.query(PontoRegular).count() == 0
+
+
+def test_liberar_sem_pergunta_no_ar_e_recusado(sessao, partida_aberta):
+    cen, partida = partida_aberta()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        liberar_resultado(sessao, operador=cen.mestre, partida=partida)
+    assert excinfo.value.campo == "partida_id"
+
+
+# -------------------------------------------------------- leitura da partida
+
+
+def test_estado_da_partida_antes_da_liberacao_nao_revela_a_correta(sessao, partida_aberta):
+    cen, partida = partida_aberta()
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
+    por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=pergunta)
+    _responder(
+        sessao, cen, partida=partida, pergunta=pergunta, equipe=cen.equipes[0], alternativa=CORRETA
+    )
+    sessao.commit()
+
+    estado = estado_da_partida(sessao, operador=cen.mestre, partida=partida)
+
+    assert estado.pergunta_no_ar.resultado_liberado is False
+    assert estado.pergunta_no_ar.alternativa_correta is None
+    assert estado.pergunta_no_ar.equipes_que_acertaram is None
+    assert estado.equipes_que_responderam == [cen.equipes[0].id]
+
+
+def test_estado_da_partida_liberado_revela_quem_acertou_e_quem_chegou_primeiro(
+    sessao, partida_aberta
+):
+    cen, partida = partida_aberta()
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
+    por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=pergunta)
+    veloz, lenta = cen.equipes
+    _responder(
+        sessao,
+        cen,
+        partida=partida,
+        pergunta=pergunta,
+        equipe=veloz,
+        alternativa=CORRETA,
+        momento=BASE,
+    )
+    _responder(
+        sessao,
+        cen,
+        partida=partida,
+        pergunta=pergunta,
+        equipe=lenta,
+        alternativa=CORRETA,
+        momento=BASE + timedelta(seconds=5),
+    )
+    liberar_resultado(sessao, operador=cen.mestre, partida=partida)
+    sessao.commit()
+
+    estado = estado_da_partida(sessao, operador=cen.mestre, partida=partida)
+
+    assert estado.pergunta_no_ar.resultado_liberado is True
+    assert estado.pergunta_no_ar.alternativa_correta == CORRETA
+    assert set(estado.pergunta_no_ar.equipes_que_acertaram) == {veloz.id, lenta.id}
+    assert estado.pergunta_no_ar.primeira_equipe_a_acertar == veloz.id
+
+
+def test_estado_da_partida_de_quem_nao_conduz_e_recusado(sessao, partida_aberta, criar_persona):
+    cen, partida = partida_aberta()
+    outro_mestre = criar_persona(Papel.mestre)
+
+    with pytest.raises(PermissaoNegada):
+        estado_da_partida(sessao, operador=outro_mestre, partida=partida)
+
+
+def test_pergunta_para_equipe_devolve_a_pergunta_no_ar(sessao, partida_aberta):
+    cen, partida = partida_aberta()
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
+    por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=pergunta)
+    sessao.commit()
+    guerreiro = cen.integrantes[cen.equipes[0].id][0]
+
+    saida = pergunta_para_equipe(sessao, operador=guerreiro, partida=partida)
+
+    assert saida.id == pergunta.id
+    assert saida.enunciado == pergunta.enunciado
+    assert saida.alternativas == list(ALTERNATIVAS)
+
+
+def test_pergunta_para_equipe_sem_pergunta_no_ar_devolve_nulo(sessao, partida_aberta):
+    cen, partida = partida_aberta()
+    guerreiro = cen.integrantes[cen.equipes[0].id][0]
+
+    saida = pergunta_para_equipe(sessao, operador=guerreiro, partida=partida)
+
+    assert saida.id is None
+    assert saida.enunciado is None
+    assert saida.alternativas is None
+
+
+def test_aparelho_que_caiu_volta_na_pergunta_corrente(sessao, partida_aberta):
+    """`RF-04-41`: o aparelho que ficou fora do ar durante uma pergunta volta
+    na pergunta corrente, sem travar a partida."""
+    cen, partida = partida_aberta()
+    primeira = _cadastrar(sessao, cen.mestre, cen.missao)
+    segunda = _cadastrar(sessao, cen.mestre, cen.missao)
+    guerreiro = cen.integrantes[cen.equipes[0].id][0]
+
+    por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=primeira)
+    por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=segunda)
+    sessao.commit()
+
+    saida = pergunta_para_equipe(sessao, operador=guerreiro, partida=partida)
+
+    assert saida.id == segunda.id

@@ -104,6 +104,11 @@
     por aplicação (§1.2). É organização do código, não acoplamento: cada frontend continua
     com implantação e endereço próprios (princípio 3). Um repositório só é o que faz a
     replicação por outra comunidade caber num `git clone` (princípio 4).
+15. **Sincronização em tempo real por sondagem periódica** — decisão do fundador de
+    2026-08-25: no Ciclo 01 a atualização entre dispositivos é sondagem do cliente, nunca
+    conexão longa (_WebSocket_ ou similar); o núcleo não guarda assinante nem sessão longa.
+    O intervalo é **2 segundos** na partida do Quiz ao Vivo e **10 segundos** no painel do
+    dia da App 03.
 
 ### 1.1 Como cada persona entra
 

@@ -8,6 +8,7 @@ import { TelaDeFilas } from "./filas/TelaDeFilas";
 import { TelaDePersonas } from "./personas/TelaDePersonas";
 import { TelaDePoderes } from "./poderes/TelaDePoderes";
 import { TelaDePontosDeApoio } from "./pontos-de-apoio/TelaDePontosDeApoio";
+import { TelaDeQuiz } from "./quiz/TelaDeQuiz";
 
 type Area =
   | "comunidades"
@@ -16,7 +17,8 @@ type Area =
   | "agenda"
   | "personas"
   | "filas"
-  | "chaves";
+  | "chaves"
+  | "quiz";
 
 const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "comunidades", rotulo: "Comunidades" },
@@ -26,6 +28,7 @@ const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "personas", rotulo: "Personas" },
   { chave: "filas", rotulo: "Filas" },
   { chave: "chaves", rotulo: "Chaves" },
+  { chave: "quiz", rotulo: "Quiz ao Vivo" },
 ];
 
 // Sem sessão aberta, só a entrada aparece — nenhum dado de gestão aparece
@@ -65,6 +68,7 @@ function Conteudo() {
       {area === "personas" && <TelaDePersonas />}
       {area === "filas" && <TelaDeFilas />}
       {area === "chaves" && <TelaDeChaves />}
+      {area === "quiz" && <TelaDeQuiz />}
     </>
   );
 }

@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 from pydantic import BaseModel
-from sqlalchemy import tuple_
+from sqlalchemy import func, tuple_
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula
@@ -22,6 +22,7 @@ from .modelo import (
     PartidaDeQuiz,
     PerguntaAnuladaNaPartida,
     PerguntaDeQuiz,
+    PerguntaNaPartida,
     RespostaDeQuiz,
     SituacaoDaPartida,
 )
@@ -291,6 +292,90 @@ def abrir_partida(
     return partida
 
 
+def _pergunta_no_ar(sessao: Session, partida: PartidaDeQuiz) -> PerguntaNaPartida | None:
+    """A pergunta no ar é a de maior `ordem` da partida (design —
+    decisão 1)."""
+    return (
+        sessao.query(PerguntaNaPartida)
+        .filter_by(partida_id=partida.id)
+        .order_by(PerguntaNaPartida.ordem.desc())
+        .first()
+    )
+
+
+def por_pergunta_no_ar(
+    sessao: Session,
+    *,
+    operador: Persona,
+    partida: PartidaDeQuiz,
+    pergunta: PerguntaDeQuiz | None,
+) -> PerguntaNaPartida:
+    """_Start_ da pergunta corrente, aceito apenas de quem conduz a partida
+    (`RF-02-60`, documento 05 §5). Substitui a pergunta no ar sem apagar a
+    anterior, que segue registrada com a ordem e o momento em que caiu
+    (design — decisão 1). A pergunta precisa ser do banco da **missão da
+    atividade** sobre a qual a partida corre (`RF-09-41`); de outra missão,
+    ou a partida já encerrada, é recusa 422.
+    """
+    _exigir_operacao(operador, Operacao.conducao_do_quiz_ao_vivo_das_suas_aulas)
+    _conferir_conducao(partida, operador)
+
+    if partida.situacao != SituacaoDaPartida.aberta:
+        raise ErroDeValidacao(
+            mensagem="Esta partida já encerrou; não recebe mais pergunta no ar.",
+            campo="partida_id",
+        )
+
+    if pergunta is None:
+        raise ErroDeValidacao(
+            mensagem="Start de pergunta exige a pergunta do banco.", campo="pergunta_id"
+        )
+
+    atividade = sessao.get(Atividade, partida.atividade_id)
+    if pergunta.missao_id != atividade.missao_id:
+        raise ErroDeValidacao(
+            mensagem="A pergunta precisa ser do banco da missão desta atividade.",
+            campo="pergunta_id",
+        )
+
+    ultima_ordem = (
+        sessao.query(func.max(PerguntaNaPartida.ordem)).filter_by(partida_id=partida.id).scalar()
+    )
+    pergunta_no_ar = PerguntaNaPartida(
+        partida_id=partida.id,
+        pergunta_id=pergunta.id,
+        ordem=(ultima_ordem or 0) + 1,
+        autor_id=operador.id,
+        papel_do_autor=operador.papel.value,
+    )
+    sessao.add(pergunta_no_ar)
+    sessao.flush()
+    return pergunta_no_ar
+
+
+def liberar_resultado(
+    sessao: Session, *, operador: Persona, partida: PartidaDeQuiz
+) -> PerguntaNaPartida:
+    """Libera o resultado da pergunta no ar, aceito apenas de quem conduz
+    (`RF-04-44`, `RF-02-62`). Idempotente — liberar de novo devolve o
+    mesmo registro, sem mover o momento —, e **nunca credita**: o crédito
+    segue sendo do encerramento (design — decisão 1, Risks).
+    """
+    _exigir_operacao(operador, Operacao.conducao_do_quiz_ao_vivo_das_suas_aulas)
+    _conferir_conducao(partida, operador)
+
+    pergunta_no_ar = _pergunta_no_ar(sessao, partida)
+    if pergunta_no_ar is None:
+        raise ErroDeValidacao(
+            mensagem="Nenhuma pergunta está no ar nesta partida.", campo="partida_id"
+        )
+
+    if pergunta_no_ar.liberada_em is None:
+        pergunta_no_ar.liberada_em = agora()
+        sessao.flush()
+    return pergunta_no_ar
+
+
 def registrar_resposta(
     sessao: Session,
     *,
@@ -457,3 +542,207 @@ def encerrar_partida(
         sessao, partida=partida, trilha=_trilha_da_atividade(sessao, atividade)
     )
     return partida
+
+
+class PartidaDeQuizSaida(BaseModel):
+    id: uuid.UUID
+    aula_id: uuid.UUID
+    atividade_id: uuid.UUID
+    situacao: SituacaoDaPartida
+    equipes_disputantes: list[uuid.UUID]
+    encerrada_em: datetime | None
+    registrado_em: datetime
+
+
+def saida_da_partida(sessao: Session, partida: PartidaDeQuiz) -> PartidaDeQuizSaida:
+    equipes_disputantes = [
+        linha.equipe_id
+        for linha in sessao.query(EquipeNaPartida).filter_by(partida_id=partida.id).all()
+    ]
+    return PartidaDeQuizSaida(
+        id=partida.id,
+        aula_id=partida.aula_id,
+        atividade_id=partida.atividade_id,
+        situacao=partida.situacao,
+        equipes_disputantes=equipes_disputantes,
+        encerrada_em=partida.encerrada_em,
+        registrado_em=partida.registrado_em,
+    )
+
+
+class PerguntaAnuladaSaida(BaseModel):
+    id: uuid.UUID
+    pergunta_id: uuid.UUID
+    registrado_em: datetime
+
+
+def saida_da_anulacao(anulacao: PerguntaAnuladaNaPartida) -> PerguntaAnuladaSaida:
+    return PerguntaAnuladaSaida(
+        id=anulacao.id, pergunta_id=anulacao.pergunta_id, registrado_em=anulacao.registrado_em
+    )
+
+
+class RespostaDeQuizSaida(BaseModel):
+    id: uuid.UUID
+    equipe_id: uuid.UUID
+    pergunta_id: uuid.UUID
+    alternativa_escolhida: int
+    momento_de_chegada: datetime
+
+
+def saida_da_resposta(resposta: RespostaDeQuiz) -> RespostaDeQuizSaida:
+    return RespostaDeQuizSaida(
+        id=resposta.id,
+        equipe_id=resposta.equipe_id,
+        pergunta_id=resposta.pergunta_id,
+        alternativa_escolhida=resposta.alternativa_escolhida,
+        momento_de_chegada=resposta.momento_de_chegada,
+    )
+
+
+def _apurar_pergunta_no_ar(
+    sessao: Session,
+    *,
+    partida: PartidaDeQuiz,
+    pergunta_no_ar: PerguntaNaPartida,
+    pergunta: PerguntaDeQuiz,
+) -> tuple[list[uuid.UUID], uuid.UUID | None]:
+    """Equipes que acertaram a pergunta no ar, por ordem de chegada no
+    servidor, e a primeira delas (`RF-02-62`, `RF-04-44`)."""
+    respostas = (
+        sessao.query(RespostaDeQuiz)
+        .filter_by(partida_id=partida.id, pergunta_id=pergunta_no_ar.pergunta_id)
+        .order_by(RespostaDeQuiz.momento_de_chegada, RespostaDeQuiz.id)
+        .all()
+    )
+    acertaram = [
+        resposta.equipe_id
+        for resposta in respostas
+        if resposta.alternativa_escolhida == pergunta.alternativa_correta
+    ]
+    primeira = acertaram[0] if acertaram else None
+    return acertaram, primeira
+
+
+class PerguntaNoArSaida(BaseModel):
+    id: uuid.UUID
+    pergunta_id: uuid.UUID
+    enunciado: str
+    alternativas: list[str]
+    ordem: int
+    entrou_em: datetime
+    resultado_liberado: bool
+    alternativa_correta: int | None = None
+    equipes_que_acertaram: list[uuid.UUID] | None = None
+    primeira_equipe_a_acertar: uuid.UUID | None = None
+
+
+class EstadoDaPartidaSaida(BaseModel):
+    id: uuid.UUID
+    aula_id: uuid.UUID
+    atividade_id: uuid.UUID
+    situacao: SituacaoDaPartida
+    equipes_disputantes: list[uuid.UUID]
+    pergunta_no_ar: PerguntaNoArSaida | None
+    equipes_que_responderam: list[uuid.UUID]
+
+
+def estado_da_partida(
+    sessao: Session, *, operador: Persona, partida: PartidaDeQuiz
+) -> EstadoDaPartidaSaida:
+    """Leitura sondada a cada 2 segundos por quem conduz — situação,
+    pergunta no ar, liberação, equipes disputantes e contagem de respostas
+    —, restrita a quem conduz a partida, como a escrita (`RF-02-60`,
+    `RF-02-62`, PRD-02 §12, design — decisão 3). Nunca devolve a
+    alternativa correta nem quem acertou antes da liberação.
+    """
+    _exigir_operacao(operador, Operacao.conducao_do_quiz_ao_vivo_das_suas_aulas, "le")
+    _conferir_conducao(partida, operador)
+
+    equipes_disputantes = [
+        linha.equipe_id
+        for linha in sessao.query(EquipeNaPartida).filter_by(partida_id=partida.id).all()
+    ]
+
+    pergunta_atual = _pergunta_no_ar(sessao, partida)
+    pergunta_saida: PerguntaNoArSaida | None = None
+    equipes_que_responderam: list[uuid.UUID] = []
+
+    if pergunta_atual is not None:
+        pergunta = sessao.get(PerguntaDeQuiz, pergunta_atual.pergunta_id)
+        equipes_que_responderam = [
+            linha.equipe_id
+            for linha in sessao.query(RespostaDeQuiz)
+            .filter_by(partida_id=partida.id, pergunta_id=pergunta_atual.pergunta_id)
+            .all()
+        ]
+
+        liberado = pergunta_atual.liberada_em is not None
+        acertaram: list[uuid.UUID] | None = None
+        primeira: uuid.UUID | None = None
+        if liberado:
+            acertaram, primeira = _apurar_pergunta_no_ar(
+                sessao, partida=partida, pergunta_no_ar=pergunta_atual, pergunta=pergunta
+            )
+
+        pergunta_saida = PerguntaNoArSaida(
+            id=pergunta_atual.id,
+            pergunta_id=pergunta.id,
+            enunciado=pergunta.enunciado,
+            alternativas=[
+                pergunta.alternativa_1,
+                pergunta.alternativa_2,
+                pergunta.alternativa_3,
+                pergunta.alternativa_4,
+            ],
+            ordem=pergunta_atual.ordem,
+            entrou_em=pergunta_atual.registrado_em,
+            resultado_liberado=liberado,
+            alternativa_correta=pergunta.alternativa_correta if liberado else None,
+            equipes_que_acertaram=acertaram,
+            primeira_equipe_a_acertar=primeira,
+        )
+
+    return EstadoDaPartidaSaida(
+        id=partida.id,
+        aula_id=partida.aula_id,
+        atividade_id=partida.atividade_id,
+        situacao=partida.situacao,
+        equipes_disputantes=equipes_disputantes,
+        pergunta_no_ar=pergunta_saida,
+        equipes_que_responderam=equipes_que_responderam,
+    )
+
+
+class PerguntaParaEquipeSaida(BaseModel):
+    id: uuid.UUID | None
+    enunciado: str | None
+    alternativas: list[str] | None
+
+
+def pergunta_para_equipe(
+    sessao: Session, *, operador: Persona, partida: PartidaDeQuiz
+) -> PerguntaParaEquipeSaida:
+    """A pergunta no ar para o aparelho da equipe — sem situação, sem
+    liberação e sem a correta: essa informação é só de quem conduz
+    (`RF-04-41`, design — decisão 3). Sem pergunta no ar ainda, devolve
+    tudo nulo, sem erro — é o que faz o aparelho que caiu voltar na
+    pergunta corrente assim que ela existir (`RF-04-41`).
+    """
+    _exigir_operacao(operador, Operacao.resposta_de_quiz_da_equipe, "le")
+
+    pergunta_atual = _pergunta_no_ar(sessao, partida)
+    if pergunta_atual is None:
+        return PerguntaParaEquipeSaida(id=None, enunciado=None, alternativas=None)
+
+    pergunta = sessao.get(PerguntaDeQuiz, pergunta_atual.pergunta_id)
+    return PerguntaParaEquipeSaida(
+        id=pergunta.id,
+        enunciado=pergunta.enunciado,
+        alternativas=[
+            pergunta.alternativa_1,
+            pergunta.alternativa_2,
+            pergunta.alternativa_3,
+            pergunta.alternativa_4,
+        ],
+    )
