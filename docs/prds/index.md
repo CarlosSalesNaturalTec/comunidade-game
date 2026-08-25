@@ -453,6 +453,20 @@ foram corrigidos nesta fatia, sem decisão nova. Resta do §6.2 o **caminho das 
 missão da equipe, conteúdo e atividade do dia — e o **assistente de trilhas** (`RF-04-29`,
 `RF-04-35` a `RF-04-40`, `RF-04-45` a `RF-04-47`).
 
+A sétima fatia, `programacao-do-encontro-e-missao-da-equipe`, abriu o caminho das trilhas que
+restava do §6.2 (`RF-04-35`). Faltava o elo entre a `Atividade` e o encontro em que ela
+acontece: `Atividade` ganhou `aula_id` **opcional**, declarado só pelo **Mestre autor** da
+trilha e só em formato **presencial** — decisão do fundador, 2026-08-25, que também firmou a
+programação como **lista**, nunca uma atividade só, porque o encontro tem vários Mestres e
+várias trilhas ao mesmo tempo, e a escolha entre elas é da equipe. Nasce
+`GET /v1/equipes/{id}/missao`, restrita a quem integra a equipe, que resolve
+equipe → aula → atividades presenciais → missão, conteúdo e bibliografia, filtrando por trilha
+publicada. `GET /v1/minhas-turmas` (PRD-09 §6.6) passou a trazer, em cada atividade presencial,
+a aula que ela declarou (`RF-09-73`). A App 09 ganhou a escolha da aula no formulário de
+atividade; a App 01 ganhou a tela da programação, com o conteúdo já carregado legível sem rede.
+Restou do §6.2 só o **assistente de trilhas** (`RF-04-29`, `RF-04-36` a `RF-04-40`) e a
+**entrega da produção da missão** (`RF-04-45` a `RF-04-47`) — o PRD-04 continua **aprovado**.
+
 A elicitação das pendências do PRD-09, em 2026-08-25, fechou cinco decisões do fundador antes
 da sexta fatia. O **custo de _cloud_ entra sempre por fatura**, aporte por absorção do fundador:
 nenhuma aplicação mede, conta ou lança consumo por ato, o que esvazia `RF-09-20` e `RF-09-90` e

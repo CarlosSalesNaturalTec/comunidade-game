@@ -6,6 +6,7 @@ import { TelaDeEquipes } from "../equipes/TelaDeEquipes";
 import { FluxoDeOnboarding } from "../onboarding/FluxoDeOnboarding";
 import { TelaDeCaptura } from "../onboarding/TelaDeCaptura";
 import { CHAVE_DA_PARTIDA_DE_QUIZ, TelaDaPartida } from "../quiz/TelaDaPartida";
+import { TelaDaProgramacao } from "../trilhas/TelaDaProgramacao";
 import { TelaDeTroca } from "../troca/TelaDeTroca";
 
 type Caminho = "inicio" | "onboarding" | "trilhas" | "troca" | "quiz";
@@ -51,6 +52,10 @@ export function TelaInicial({
     "reconhecimento" | "confirmacao" | null
   >(null);
   const [mostrarRecadastro, definirMostrarRecadastro] = useState(false);
+  // A equipe escolhida no caminho das trilhas — estado deste aparelho, que
+  // morre com a volta ao início, nunca gravado no núcleo (`RF-04-35`,
+  // documento 02 §5).
+  const [equipeEscolhidaId, definirEquipeEscolhidaId] = useState<string | null>(null);
 
   // Fim de cada atendimento: a sessão do Guerreiro(a) é limpa e a tela
   // volta ao início, sem dado do atendimento anterior (`RF-04-28`, design
@@ -61,6 +66,7 @@ export function TelaInicial({
     definirCaminho("inicio");
     definirViaDeEntrada(null);
     definirMostrarRecadastro(false);
+    definirEquipeEscolhidaId(null);
     sessionStorage.removeItem(CHAVE_DA_PARTIDA_DE_QUIZ);
     aoVoltarAoInicio();
   }
@@ -119,6 +125,15 @@ export function TelaInicial({
         />
       );
     }
+    if (equipeEscolhidaId) {
+      return (
+        <TelaDaProgramacao
+          equipeId={equipeEscolhidaId}
+          token={sessaoDoGuerreiro.token}
+          aoVoltar={() => definirEquipeEscolhidaId(null)}
+        />
+      );
+    }
     return (
       <TelaDeEquipes
         aulaId={aulaId}
@@ -126,6 +141,7 @@ export function TelaInicial({
         aoVoltar={voltarAoInicio}
         podeRecadastrarImagem={viaDeEntrada === "confirmacao"}
         aoRecadastrarImagem={() => definirMostrarRecadastro(true)}
+        aoEscolherEquipe={definirEquipeEscolhidaId}
       />
     );
   }

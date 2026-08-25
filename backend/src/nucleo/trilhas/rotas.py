@@ -53,9 +53,10 @@ class AtividadeSaida(BaseModel):
     formato: FormatoDeAtividade
     natureza: str
     producao_esperada: str
+    aula_id: uuid.UUID | None
 
 
-def _saida_da_atividade(atividade: Atividade) -> AtividadeSaida:
+def saida_da_atividade(atividade: Atividade) -> AtividadeSaida:
     return AtividadeSaida(
         id=atividade.id,
         missao_id=atividade.missao_id,
@@ -65,6 +66,7 @@ def _saida_da_atividade(atividade: Atividade) -> AtividadeSaida:
         formato=atividade.formato,
         natureza=atividade.natureza,
         producao_esperada=atividade.producao_esperada,
+        aula_id=atividade.aula_id,
     )
 
 
@@ -77,7 +79,7 @@ class BibliografiaPublicaSaida(BaseModel):
     apoiador_nome: str | None
 
 
-def _saida_da_bibliografia_publica(
+def saida_da_bibliografia_publica(
     sessao_bd: Session, bibliografia: BibliografiaDaMissao, *, ponto_de_apoio_id: uuid.UUID | None
 ) -> BibliografiaPublicaSaida:
     disponivel, apoiador = ler_disponibilidade_e_credito(
@@ -134,7 +136,7 @@ def _saida_da_missao(
         e_sondagem=missao.e_sondagem,
         etapa_do_ciclo=missao.etapa_do_ciclo,
         cadencia_de_retomada=missao.cadencia_de_retomada,
-        atividades=[_saida_da_atividade(atividade) for atividade in (atividades or [])],
+        atividades=[saida_da_atividade(atividade) for atividade in (atividades or [])],
         etiquetas_ods=[saida_da_etiqueta(etiqueta) for etiqueta in (etiquetas or [])],
         conteudos=[saida_do_conteudo(conteudo) for conteudo in (conteudos or [])],
         bibliografia=bibliografia or [],
@@ -322,6 +324,7 @@ class CriarAtividadeEntrada(BaseModel):
     formato: str | None = None
     natureza: str | None = None
     producao_esperada: str | None = None
+    aula_id: uuid.UUID | None = None
 
 
 @roteador.post("/missoes/{id_da_missao}/atividades", status_code=201)
@@ -331,9 +334,9 @@ def criar_atividade_rota(
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> AtividadeSaida:
-    """`RF-09-69`, `RF-09-70`: a posse do Mestre autor da trilha e as
-    recusas de título, modalidade e formato já são de `criar_atividade`
-    (design — decisão 1)."""
+    """`RF-09-69`, `RF-09-70`, `RF-09-73`: a posse do Mestre autor da
+    trilha, as recusas de título, modalidade e formato, e as do vínculo com
+    a aula do encontro já são de `criar_atividade` (design — decisão 1)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     missao = _obter_missao(sessao_bd, id_da_missao)
     atividade = criar_atividade(
@@ -346,9 +349,10 @@ def criar_atividade_rota(
         formato=entrada.formato,
         natureza=entrada.natureza,
         producao_esperada=entrada.producao_esperada,
+        aula_id=entrada.aula_id,
     )
     sessao_bd.commit()
-    return _saida_da_atividade(atividade)
+    return saida_da_atividade(atividade)
 
 
 class DeclararCadenciaDeRetomadaEntrada(BaseModel):
@@ -457,7 +461,7 @@ def obter_trilha_publica_rota(
                 etiquetas=_etiquetas_da_missao(sessao_bd, missao),
                 conteudos=consultar_conteudos_da_missao(sessao_bd, missao.id),
                 bibliografia=[
-                    _saida_da_bibliografia_publica(
+                    saida_da_bibliografia_publica(
                         sessao_bd, bibliografia, ponto_de_apoio_id=ponto_de_apoio_id
                     )
                     for bibliografia in bibliografias

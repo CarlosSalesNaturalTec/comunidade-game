@@ -1,9 +1,132 @@
+import uuid
+
 import pytest
 
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
 from nucleo.personas.modelo import Papel
 from nucleo.trilhas.modelo import Atividade, FormatoDeAtividade, ModalidadeDeAtividade
 from nucleo.trilhas.regra import criar_atividade
+
+# `RF-09-69`, `RF-09-73`: a atividade presencial declara a aula em que
+# acontece — cenários do delta `atividade-de-trilha`.
+
+
+def test_mestre_autor_declara_a_aula_da_atividade_presencial(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_comunidade, criar_aula
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    comunidade = criar_comunidade()
+    aula = criar_aula(mestre, comunidade)
+
+    atividade = criar_atividade(
+        sessao,
+        operador=mestre,
+        missao=missao,
+        titulo="Montagem do robô",
+        modalidade=ModalidadeDeAtividade.individual,
+        formato=FormatoDeAtividade.presencial,
+        natureza="construcao",
+        producao_esperada="Construir o próprio robô.",
+        aula_id=aula.id,
+    )
+    sessao.commit()
+
+    assert atividade.aula_id == aula.id
+
+
+def test_atividade_sem_aula_declarada_segue_valida(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    atividade = criar_atividade(
+        sessao,
+        operador=mestre,
+        missao=missao,
+        titulo="Montagem do robô",
+        modalidade=ModalidadeDeAtividade.individual,
+        formato=FormatoDeAtividade.presencial,
+        natureza="construcao",
+        producao_esperada="Construir o próprio robô.",
+    )
+    sessao.commit()
+
+    assert atividade.aula_id is None
+
+
+def test_atividade_on_line_ou_assincrona_que_declara_aula_e_recusada(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_comunidade, criar_aula
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    comunidade = criar_comunidade()
+    aula = criar_aula(mestre, comunidade)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        criar_atividade(
+            sessao,
+            operador=mestre,
+            missao=missao,
+            titulo="Fórum de discussão",
+            modalidade=ModalidadeDeAtividade.individual,
+            formato=FormatoDeAtividade.on_line_assincrona,
+            natureza="reflexao",
+            producao_esperada="Escrever uma reflexão.",
+            aula_id=aula.id,
+        )
+    assert excinfo.value.campo == "aula_id"
+    assert sessao.query(Atividade).count() == 0
+
+
+def test_mestre_que_nao_e_autor_nao_declara_a_aula(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_comunidade, criar_aula
+):
+    mestre_autor = criar_persona(Papel.mestre)
+    outro_mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre_autor)
+    missao = criar_missao(trilha, mestre_autor)
+    comunidade = criar_comunidade()
+    aula = criar_aula(mestre_autor, comunidade)
+
+    with pytest.raises(PermissaoNegada):
+        criar_atividade(
+            sessao,
+            operador=outro_mestre,
+            missao=missao,
+            titulo="Montagem do robô",
+            modalidade=ModalidadeDeAtividade.individual,
+            formato=FormatoDeAtividade.presencial,
+            natureza="construcao",
+            producao_esperada="Construir o próprio robô.",
+            aula_id=aula.id,
+        )
+    assert sessao.query(Atividade).count() == 0
+
+
+def test_aula_inexistente_e_recusada(sessao, criar_persona, criar_trilha, criar_missao):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        criar_atividade(
+            sessao,
+            operador=mestre,
+            missao=missao,
+            titulo="Montagem do robô",
+            modalidade=ModalidadeDeAtividade.individual,
+            formato=FormatoDeAtividade.presencial,
+            natureza="construcao",
+            producao_esperada="Construir o próprio robô.",
+            aula_id=uuid.uuid4(),
+        )
+    assert excinfo.value.campo == "aula_id"
+    assert sessao.query(Atividade).count() == 0
 
 
 def test_atividade_criada_com_titulo_e_descricao(sessao, criar_persona, criar_trilha, criar_missao):

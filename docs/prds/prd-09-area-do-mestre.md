@@ -350,7 +350,7 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-48`  | Toda escrita do Mestre entra na trilha de auditoria com autor, papel, data e hora                                                  | essencial  |
 | `RF-09-49`  | Aplicação recusa lançamento de atividade que não é do Mestre autenticado                                                           | essencial  |
 | `RF-09-50`  | Aplicação leva o Mestre ao painel do dia da sua aula, operado na App 03                                                            | desejável  |
-| `RF-09-73`  | Minhas atividades separa as presenciais do encontro das on-line entre encontros                                                    | essencial  |
+| `RF-09-73`  | Minhas atividades separa as presenciais do encontro das on-line entre encontros, trazendo a aula que cada presencial declarou      | essencial  |
 | `RF-09-74`  | Mestre lança a equipe inteira de uma vez, preservando o papel de cada integrante                                                   | essencial  |
 | `RF-09-75`  | Marco alcançado com recompensa declarada vira pendência de entrega para o Mestre                                                   | essencial  |
 | `RF-09-76`  | Mestre confirma a entrega da recompensa do marco, gerando a baixa no livro-razão                                                   | essencial  |

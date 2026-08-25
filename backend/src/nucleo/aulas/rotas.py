@@ -412,6 +412,7 @@ class AtividadeDoMestreSaida(BaseModel):
     formato: str
     modalidade: str
     natureza: str
+    aula_id: uuid.UUID | None
 
 
 class MinhasTurmasSaida(PaginaDeResultado[AulaSaida]):
@@ -427,6 +428,7 @@ def _saida_da_atividade(atividade: Atividade) -> AtividadeDoMestreSaida:
         formato=atividade.formato.value,
         modalidade=atividade.modalidade.value,
         natureza=atividade.natureza,
+        aula_id=atividade.aula_id,
     )
 
 

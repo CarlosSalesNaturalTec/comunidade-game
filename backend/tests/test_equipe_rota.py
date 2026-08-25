@@ -373,6 +373,192 @@ def test_aula_sem_equipe_devolve_conjunto_vazio_com_200(
     assert resposta.json()["itens"] == []
 
 
+def test_integrante_recebe_a_programacao_do_encontro(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+):
+    """`RF-04-35`: a equipe da aula lê a programação — a atividade
+    presencial declarada, com a missão dela."""
+    from nucleo.trilhas.modelo import SituacaoDaTrilha
+
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre, aula=aula)
+    equipe = criar_equipe(guerreiro, aula=aula)
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.get(f"/v1/equipes/{equipe.id}/missao", headers=_cabecalhos(chave, token))
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert len(corpo) == 1
+    assert corpo[0]["atividade"]["id"] == str(atividade.id)
+    assert corpo[0]["missao_id"] == str(missao.id)
+    assert corpo[0]["missao_titulo"] == missao.titulo
+
+
+def test_duas_trilhas_no_mesmo_encontro_saem_as_duas(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+):
+    from nucleo.trilhas.modelo import SituacaoDaTrilha
+
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre_um = criar_persona(Papel.mestre)
+    mestre_dois = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    trilha_um = criar_trilha(mestre_um, situacao=SituacaoDaTrilha.publicada)
+    trilha_dois = criar_trilha(mestre_dois, situacao=SituacaoDaTrilha.publicada)
+    missao_um = criar_missao(trilha_um, mestre_um)
+    missao_dois = criar_missao(trilha_dois, mestre_dois)
+    atividade_um = criar_atividade(missao_um, mestre_um, aula=aula)
+    atividade_dois = criar_atividade(missao_dois, mestre_dois, aula=aula)
+    equipe = criar_equipe(guerreiro, aula=aula)
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.get(f"/v1/equipes/{equipe.id}/missao", headers=_cabecalhos(chave, token))
+
+    assert resposta.status_code == 200
+    ids = {item["atividade"]["id"] for item in resposta.json()}
+    assert ids == {str(atividade_um.id), str(atividade_dois.id)}
+
+
+def test_encontro_sem_programacao_devolve_lista_vazia(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    equipe = criar_equipe(guerreiro, aula=aula)
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.get(f"/v1/equipes/{equipe.id}/missao", headers=_cabecalhos(chave, token))
+
+    assert resposta.status_code == 200
+    assert resposta.json() == []
+
+
+def test_atividade_de_trilha_em_rascunho_nao_aparece_na_programacao(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    trilha_em_rascunho = criar_trilha(mestre)
+    missao = criar_missao(trilha_em_rascunho, mestre)
+    criar_atividade(missao, mestre, aula=aula)
+    equipe = criar_equipe(guerreiro, aula=aula)
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.get(f"/v1/equipes/{equipe.id}/missao", headers=_cabecalhos(chave, token))
+
+    assert resposta.status_code == 200
+    assert resposta.json() == []
+
+
+def test_quem_nao_integra_a_equipe_e_recusado_na_programacao(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    criador = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    fora_da_equipe = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    equipe = criar_equipe(criador, aula=aula)
+    token, _ = criar_sessao_de_teste(fora_da_equipe)
+
+    resposta = cliente.get(f"/v1/equipes/{equipe.id}/missao", headers=_cabecalhos(chave, token))
+
+    assert resposta.status_code == 403
+    assert resposta.json()["codigo"] == "permissao_negada"
+
+
+def test_leitura_da_programacao_nao_grava_nada(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    sessao,
+):
+    from nucleo.equipes.modelo import Equipe
+    from nucleo.trilhas.modelo import SituacaoDaTrilha
+
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    criar_atividade(missao, mestre, aula=aula)
+    equipe = criar_equipe(guerreiro, aula=aula)
+    token, _ = criar_sessao_de_teste(guerreiro)
+    total_de_equipes_antes = sessao.query(Equipe).count()
+
+    cliente.get(f"/v1/equipes/{equipe.id}/missao", headers=_cabecalhos(chave, token))
+
+    assert sessao.query(Equipe).count() == total_de_equipes_antes
+
+
 def test_as_quatro_rotas_de_equipe_estao_no_openapi_sob_v1(cliente):
     schema = cliente.get("/openapi.json").json()
 

@@ -25,6 +25,9 @@ export interface AtividadeDoMestre {
   titulo: string;
   formato: FormatoDaAtividade;
   modalidade: string;
+  // A aula que a atividade presencial declarou, ou `null` quando ainda não
+  // vinculada a encontro algum (`RF-09-42`, `RF-09-73`).
+  aula_id: string | null;
 }
 
 export interface MinhasTurmas {

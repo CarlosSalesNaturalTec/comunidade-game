@@ -2,10 +2,12 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TelaDeAutoria } from "../autoria/TelaDeAutoria";
 import type { PoderDoCatalogo } from "../poderes/api";
 import * as poderesApi from "../poderes/api";
+import type { AulaDaTurma, MinhasTurmas } from "../turmas/api";
+import * as turmasApi from "../turmas/api";
 import type {
   AtividadeDaMissao,
   BibliografiaDaMissao,
@@ -79,6 +81,7 @@ function atividade(sobrescreve: Partial<AtividadeDaMissao> = {}): AtividadeDaMis
     formato: "presencial",
     natureza: "construcao",
     producao_esperada: "Construir o próprio robô.",
+    aula_id: null,
     ...sobrescreve,
   };
 }
@@ -139,6 +142,30 @@ function conteudo(sobrescreve: Partial<ConteudoDaMissao> = {}): ConteudoDaMissao
     tamanho: null,
     autoria: "propria",
     fonte: null,
+    ...sobrescreve,
+  };
+}
+
+function aula(sobrescreve: Partial<AulaDaTurma> = {}): AulaDaTurma {
+  return {
+    id: "aula-1",
+    comunidade_virtual_id: "comunidade-1",
+    ponto_de_apoio_id: "ponto-1",
+    inicio_em: "2026-08-01T10:00:00-03:00",
+    fim_em: "2026-08-01T12:00:00-03:00",
+    situacao: "confirmada",
+    cancelamento_motivo: null,
+    recursos_faltantes: [],
+    ...sobrescreve,
+  };
+}
+
+function minhasTurmas(sobrescreve: Partial<MinhasTurmas> = {}): MinhasTurmas {
+  return {
+    itens: [],
+    proximo_cursor: null,
+    atividades_presenciais: [],
+    atividades_on_line: [],
     ...sobrescreve,
   };
 }
@@ -452,6 +479,12 @@ describe("missão de sondagem (RF-09-81)", () => {
 });
 
 describe("autoria de atividade (RF-09-69, RF-09-70)", () => {
+  beforeEach(() => {
+    vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
+      minhasTurmas({ itens: [aula()] }),
+    );
+  });
+
   async function abrirFormularioDeAtividade() {
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByText("Robô Educa"));
@@ -532,6 +565,104 @@ describe("autoria de atividade (RF-09-69, RF-09-70)", () => {
     await usuario.click(screen.getByRole("button", { name: /acrescentar atividade/i }));
 
     expect(await screen.findByText(/montagem do robô|roda de capoeira/i)).toBeInTheDocument();
+  });
+});
+
+describe("aula do encontro na atividade (RF-09-69, RF-09-73)", () => {
+  beforeEach(() => {
+    vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
+      minhasTurmas({ itens: [aula()] }),
+    );
+  });
+
+  async function abrirFormularioDeAtividade() {
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByRole("button", { name: /nova atividade/i }));
+    return usuario;
+  }
+
+  it("a escolha da aula some ao trocar o formato para on-line", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirFormularioDeAtividade();
+    await usuario.selectOptions(screen.getByLabelText(/formato/i), "presencial");
+
+    expect(await screen.findByLabelText(/aula do encontro/i)).toBeInTheDocument();
+
+    await usuario.selectOptions(screen.getByLabelText(/formato/i), "on_line_assincrona");
+
+    expect(screen.queryByLabelText(/aula do encontro/i)).not.toBeInTheDocument();
+  });
+
+  it("a atividade presencial é enviada com a aula escolhida", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const criarAtividadeEspiado = vi
+      .spyOn(trilhasApi, "criarAtividade")
+      .mockResolvedValue(atividade({ aula_id: "aula-1" }));
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirFormularioDeAtividade();
+    await usuario.type(screen.getByLabelText(/^título$/i), "Montagem do robô");
+    await usuario.selectOptions(screen.getByLabelText(/modalidade/i), "individual");
+    await usuario.selectOptions(screen.getByLabelText(/formato/i), "presencial");
+    await usuario.type(screen.getByLabelText(/^natureza$/i), "construcao");
+    await usuario.type(
+      screen.getByLabelText(/produção esperada/i),
+      "Construir o próprio robô.",
+    );
+    await usuario.selectOptions(await screen.findByLabelText(/aula do encontro/i), "aula-1");
+    await usuario.click(screen.getByRole("button", { name: /acrescentar atividade/i }));
+
+    await waitFor(() => expect(criarAtividadeEspiado).toHaveBeenCalled());
+    const [, entrada] = criarAtividadeEspiado.mock.calls[0];
+    expect(entrada.aula_id).toBe("aula-1");
+  });
+
+  it("a atividade sem aula escolhida é enviada sem o campo", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const criarAtividadeEspiado = vi
+      .spyOn(trilhasApi, "criarAtividade")
+      .mockResolvedValue(atividade());
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirFormularioDeAtividade();
+    await usuario.type(screen.getByLabelText(/^título$/i), "Montagem do robô");
+    await usuario.selectOptions(screen.getByLabelText(/modalidade/i), "individual");
+    await usuario.selectOptions(screen.getByLabelText(/formato/i), "presencial");
+    await usuario.type(screen.getByLabelText(/^natureza$/i), "construcao");
+    await usuario.type(
+      screen.getByLabelText(/produção esperada/i),
+      "Construir o próprio robô.",
+    );
+    await usuario.click(screen.getByRole("button", { name: /acrescentar atividade/i }));
+
+    await waitFor(() => expect(criarAtividadeEspiado).toHaveBeenCalled());
+    const [, entrada] = criarAtividadeEspiado.mock.calls[0];
+    expect(entrada.aula_id).toBeUndefined();
   });
 });
 

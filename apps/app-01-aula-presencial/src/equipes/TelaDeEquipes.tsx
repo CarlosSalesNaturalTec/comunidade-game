@@ -18,6 +18,9 @@ interface Props {
    * (`RF-04-22`, design — decisão 4). */
   podeRecadastrarImagem?: boolean;
   aoRecadastrarImagem?: () => void;
+  /** Leva ao caminho das trilhas: da equipe escolhida — sempre uma em que
+   * o Guerreiro(a) já integra — à programação do encontro (`RF-04-35`). */
+  aoEscolherEquipe: (equipeId: string) => void;
 }
 
 function papelOuNulo(papel: string): string | null {
@@ -35,6 +38,7 @@ export function TelaDeEquipes({
   aoVoltar,
   podeRecadastrarImagem = false,
   aoRecadastrarImagem,
+  aoEscolherEquipe,
 }: Props) {
   const [equipes, definirEquipes] = useState<Equipe[] | null>(null);
   const [papel, definirPapel] = useState("");
@@ -132,13 +136,18 @@ export function TelaDeEquipes({
                   ))}
                 </div>
                 {jaEstaNesta ? (
-                  <Botao
-                    variante="secundaria"
-                    onClick={() => sair(equipe.id)}
-                    desabilitado={emAndamento}
-                  >
-                    Sair desta equipe
-                  </Botao>
+                  <>
+                    <Botao
+                      variante="secundaria"
+                      onClick={() => sair(equipe.id)}
+                      desabilitado={emAndamento}
+                    >
+                      Sair desta equipe
+                    </Botao>
+                    <Botao onClick={() => aoEscolherEquipe(equipe.id)}>
+                      Ver a missão desta equipe
+                    </Botao>
+                  </>
                 ) : (
                   <Botao
                     variante="secundaria"
