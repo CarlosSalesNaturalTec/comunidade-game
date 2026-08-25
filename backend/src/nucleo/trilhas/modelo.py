@@ -129,6 +129,11 @@ class Atividade(Base, ComAutoria):
     ortogonais do documento 11 §4: modalidade e formato fechados nos
     valores do documento; natureza aberta, no mesmo padrão que
     `Consentimento.tipo` já firmou (design — decisões).
+
+    `aula_id` é o vínculo opcional com o encontro em que a atividade
+    presencial acontece — a programação do encontro que a equipe lê nasce
+    daqui (`RF-09-69`, `RF-09-73`, documento 05 §4). Atividade on-line ou
+    assíncrona nunca o declara; a recusa é de `trilhas.regra.criar_atividade`.
     """
 
     __tablename__ = "atividade"
@@ -145,3 +150,6 @@ class Atividade(Base, ComAutoria):
     )
     natureza: Mapped[str] = mapped_column(String(64), nullable=False)
     producao_esperada: Mapped[str] = mapped_column(Text, nullable=False)
+    aula_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=True)
+
+    __table_args__ = (Index("ix_atividade_aula_id", "aula_id"),)

@@ -785,6 +785,7 @@ def criar_atividade(sessao):
         formato: FormatoDeAtividade = FormatoDeAtividade.presencial,
         natureza: str = "construcao",
         producao_esperada: str = "Produção de teste.",
+        aula: Aula | None = None,
     ) -> Atividade:
         atividade = Atividade(
             missao_id=missao.id,
@@ -794,6 +795,7 @@ def criar_atividade(sessao):
             formato=formato,
             natureza=natureza,
             producao_esperada=producao_esperada,
+            aula_id=aula.id if aula is not None else None,
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
         )

@@ -59,6 +59,7 @@ function atividade(sobrescreve: Partial<AtividadeDoMestre> = {}): AtividadeDoMes
     titulo: "Montagem do robô",
     formato: "presencial",
     modalidade: "individual",
+    aula_id: null,
     ...sobrescreve,
   };
 }

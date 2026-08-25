@@ -6,7 +6,7 @@ from ..aulas.modelo import Aula
 from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from ..tempo import agora
-from ..trilhas.modelo import Trilha
+from ..trilhas.modelo import Atividade, Missao, SituacaoDaTrilha, Trilha
 from .modelo import Equipe, IntegranteDaEquipe
 
 # `RF-01-38`, documento 02 §5: até cinco integrantes, no máximo um deles
@@ -175,3 +175,32 @@ def equipes_da_aula(sessao: Session, aula_id: uuid.UUID) -> list[Equipe]:
     """Leitura das equipes da aula em andamento — a equipe de uma aula
     nunca aparece em outra (`RF-01-37`)."""
     return sessao.query(Equipe).filter_by(aula_id=aula_id).all()
+
+
+def programacao_do_encontro(
+    sessao: Session, *, operador: Persona, equipe: Equipe
+) -> list[Atividade]:
+    """A programação do encontro da aula da equipe: as atividades
+    presenciais que a declararam, de trilha publicada (`RF-04-35`,
+    documento 05 §4). Restrita a quem integra a equipe (menor privilégio,
+    design — decisões); equipe da trilha, que não tem aula, e aula sem
+    programação declarada devolvem lista vazia, nunca erro.
+    """
+    integrante = (
+        sessao.query(IntegranteDaEquipe)
+        .filter_by(equipe_id=equipe.id, persona_id=operador.id)
+        .first()
+    )
+    if integrante is None:
+        raise PermissaoNegada(mensagem="Só integrante da equipe lê a programação do encontro.")
+
+    if equipe.aula_id is None:
+        return []
+
+    return (
+        sessao.query(Atividade)
+        .join(Missao, Missao.id == Atividade.missao_id)
+        .join(Trilha, Trilha.id == Missao.trilha_id)
+        .filter(Atividade.aula_id == equipe.aula_id, Trilha.situacao == SituacaoDaTrilha.publicada)
+        .all()
+    )

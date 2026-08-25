@@ -287,3 +287,73 @@ def test_cancelamento_sem_motivo_e_recusado_com_422_pela_rota(
 
     assert resposta.status_code == 422
     assert resposta.json()["codigo"] == "erro_de_validacao"
+
+
+def test_atividade_presencial_sai_com_a_aula_que_declarou(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    criar_vinculo_jogador,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+):
+    """`RF-09-42`, `RF-09-73`: a leitura de turmas do Mestre traz, em cada
+    atividade presencial, a aula que ela declarou."""
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    comunidade = criar_comunidade()
+    criar_vinculo_jogador(mestre, comunidade)
+    aula = criar_aula(mestre, comunidade)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre, aula=aula)
+
+    resposta = cliente.get(
+        "/v1/minhas-turmas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    presencial = next(
+        a for a in resposta.json()["atividades_presenciais"] if a["id"] == str(atividade.id)
+    )
+    assert presencial["aula_id"] == str(aula.id)
+
+
+def test_atividade_ainda_sem_encontro_sai_com_o_vinculo_em_branco(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    criar_vinculo_jogador,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    comunidade = criar_comunidade()
+    criar_vinculo_jogador(mestre, comunidade)
+    criar_aula(mestre, comunidade)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre)
+
+    resposta = cliente.get(
+        "/v1/minhas-turmas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    presencial = next(
+        a for a in resposta.json()["atividades_presenciais"] if a["id"] == str(atividade.id)
+    )
+    assert presencial["aula_id"] is None

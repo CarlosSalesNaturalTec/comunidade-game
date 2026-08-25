@@ -2,21 +2,32 @@ import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula
-from ..autenticacao import ContextoDaSessao
+from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
+from ..bibliografias.regra import consultar_bibliografia_da_missao
+from ..conteudos.regra import consultar_conteudos_da_missao
+from ..conteudos.rotas import ConteudoSaida, saida_do_conteudo
 from ..erros import NaoEncontrado
 from ..paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from ..permissoes import Operacao, exigir_permissao
 from ..personas.modelo import Persona
+from ..trilhas.modelo import Atividade, Missao
+from ..trilhas.rotas import (
+    AtividadeSaida,
+    BibliografiaPublicaSaida,
+    saida_da_atividade,
+    saida_da_bibliografia_publica,
+)
 from ..vitrine.publico import AvatarENickSaida, buscar_avatares_e_nicks
 from .modelo import Equipe, IntegranteDaEquipe
 from .regra import criar_equipe as _criar_equipe
 from .regra import entrar_na_equipe as _entrar_na_equipe
 from .regra import equipes_da_aula as _equipes_da_aula
+from .regra import programacao_do_encontro as _programacao_do_encontro
 from .regra import sair_da_equipe as _sair_da_equipe
 
 roteador = APIRouter()
@@ -145,3 +156,59 @@ def sair_da_equipe_rota(
     operador = sessao_bd.get(Persona, contexto.persona_id)
     _sair_da_equipe(sessao_bd, operador=operador, equipe=equipe, persona_id=contexto.persona_id)
     sessao_bd.commit()
+
+
+class ItemDaProgramacaoSaida(BaseModel):
+    atividade: AtividadeSaida
+    missao_id: uuid.UUID
+    missao_titulo: str
+    conteudos: list[ConteudoSaida] = Field(default_factory=list)
+    bibliografia: list[BibliografiaPublicaSaida] = Field(default_factory=list)
+
+
+def _saida_do_item_da_programacao(
+    sessao_bd: Session, atividade: Atividade, *, ponto_de_apoio_id: uuid.UUID | None
+) -> ItemDaProgramacaoSaida:
+    missao = sessao_bd.get(Missao, atividade.missao_id)
+    return ItemDaProgramacaoSaida(
+        atividade=saida_da_atividade(atividade),
+        missao_id=missao.id,
+        missao_titulo=missao.titulo,
+        conteudos=[
+            saida_do_conteudo(conteudo)
+            for conteudo in consultar_conteudos_da_missao(sessao_bd, missao.id)
+        ],
+        bibliografia=[
+            saida_da_bibliografia_publica(
+                sessao_bd, bibliografia, ponto_de_apoio_id=ponto_de_apoio_id
+            )
+            for bibliografia in consultar_bibliografia_da_missao(sessao_bd, missao.id)
+        ],
+    )
+
+
+@roteador.get("/equipes/{id_da_equipe}/missao")
+def obter_programacao_do_encontro_rota(
+    id_da_equipe: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[ItemDaProgramacaoSaida]:
+    """`RF-04-35`: a programação do encontro da aula da equipe — cada
+    atividade presencial declarada nela, com a missão, o conteúdo e a
+    bibliografia. A integrância na equipe, a trava de trilha publicada e a
+    lista vazia sem programação já são de `programacao_do_encontro`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    equipe = sessao_bd.get(Equipe, id_da_equipe)
+    if equipe is None:
+        raise NaoEncontrado(mensagem="Equipe não encontrada.")
+    atividades = _programacao_do_encontro(sessao_bd, operador=operador, equipe=equipe)
+
+    ponto_de_apoio_id = None
+    if equipe.aula_id is not None:
+        aula = sessao_bd.get(Aula, equipe.aula_id)
+        ponto_de_apoio_id = aula.ponto_de_apoio_id if aula is not None else None
+
+    return [
+        _saida_do_item_da_programacao(sessao_bd, atividade, ponto_de_apoio_id=ponto_de_apoio_id)
+        for atividade in atividades
+    ]

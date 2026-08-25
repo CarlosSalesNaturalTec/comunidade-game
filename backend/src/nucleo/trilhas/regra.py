@@ -3,6 +3,7 @@ import uuid
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
+from ..aulas.modelo import Aula
 from ..coletas.modelo import DesafioDeColeta
 from ..culminancias.modelo import Culminancia
 from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
@@ -292,6 +293,7 @@ def criar_atividade(
     formato: str | None,
     natureza: str | None,
     producao_esperada: str | None,
+    aula_id: uuid.UUID | None = None,
 ) -> Atividade:
     """Sempre pertence a uma missão, com a escrita restrita ao Mestre autor
     da trilha e a Admin, pela mesma conferência de posse da trilha
@@ -300,6 +302,10 @@ def criar_atividade(
     (documento 99 §6 invariante 19). O título é exigido — sem ele nenhuma
     tela lista a atividade; a descrição é opcional (`RF-09-69`, design —
     decisões 5).
+
+    `aula_id` é o vínculo opcional com o encontro (documento 05 §4): só
+    atividade de formato presencial o declara, e a aula precisa existir —
+    as duas recusas respondem 422 (`RF-09-69`, `RF-09-73`).
     """
     if missao is None:
         raise ErroDeValidacao(mensagem="Atividade exige uma missão.", campo="missao_id")
@@ -337,6 +343,15 @@ def criar_atividade(
             campo="producao_esperada",
         )
 
+    if aula_id is not None:
+        if formato_valido != FormatoDeAtividade.presencial:
+            raise ErroDeValidacao(
+                mensagem="Só atividade de formato presencial declara a aula do encontro.",
+                campo="aula_id",
+            )
+        if sessao.get(Aula, aula_id) is None:
+            raise ErroDeValidacao(mensagem="Aula não encontrada.", campo="aula_id")
+
     atividade = Atividade(
         missao_id=missao.id,
         titulo=titulo,
@@ -345,6 +360,7 @@ def criar_atividade(
         formato=formato_valido,
         natureza=_normalizar_natureza(natureza),
         producao_esperada=producao_esperada,
+        aula_id=aula_id,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
     )

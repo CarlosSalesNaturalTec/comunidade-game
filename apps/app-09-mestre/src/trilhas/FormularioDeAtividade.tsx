@@ -1,7 +1,9 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
-import { type FormEvent, useId, useState } from "react";
+import { type FormEvent, useEffect, useId, useState } from "react";
+import type { AulaDaTurma } from "../turmas/api";
+import { listarMinhasTurmas } from "../turmas/api";
 import { type AtividadeDaMissao, criarAtividade } from "./api";
 
 interface Props {
@@ -32,15 +34,39 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDaModalidade = useId();
   const idDoFormato = useId();
+  const idDaAula = useId();
   const [titulo, definirTitulo] = useState("");
   const [descricao, definirDescricao] = useState("");
   const [modalidade, definirModalidade] = useState("");
   const [formato, definirFormato] = useState("");
   const [natureza, definirNatureza] = useState("");
   const [producaoEsperada, definirProducaoEsperada] = useState("");
+  const [aulas, definirAulas] = useState<AulaDaTurma[]>([]);
+  const [aulaId, definirAulaId] = useState("");
   const [erroDeCampo, definirErroDeCampo] = useState<ErroDeCampo | null>(null);
   const [erroDeRecusa, definirErroDeRecusa] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
+
+  // A escolha da aula só faz sentido no formato presencial — o encontro do
+  // documento 05 §4 (`RF-09-69`, `RF-09-73`). Falha ao carregar as turmas
+  // não impede o cadastro: o campo simplesmente fica sem opção alguma.
+  useEffect(() => {
+    if (!sessao) return;
+    let cancelado = false;
+    listarMinhasTurmas(sessao.token)
+      .then((turmas) => {
+        if (!cancelado) definirAulas(turmas.itens);
+      })
+      .catch(() => {});
+    return () => {
+      cancelado = true;
+    };
+  }, [sessao]);
+
+  function aoAlterarFormato(novoFormato: string) {
+    definirFormato(novoFormato);
+    if (novoFormato !== "presencial") definirAulaId("");
+  }
 
   async function aoSubmeter(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
@@ -83,6 +109,7 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
           formato,
           natureza,
           producao_esperada: producaoEsperada,
+          aula_id: formato === "presencial" && aulaId ? aulaId : undefined,
         },
         sessao.token,
       );
@@ -141,7 +168,7 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
         <select
           id={idDoFormato}
           value={formato}
-          onChange={(evento) => definirFormato(evento.target.value)}
+          onChange={(evento) => aoAlterarFormato(evento.target.value)}
           aria-invalid={erroDeCampo?.campo === "formato" || undefined}
         >
           <option value="">Selecione</option>
@@ -157,6 +184,24 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
           </p>
         )}
       </div>
+
+      {formato === "presencial" && (
+        <div className="cg-campo">
+          <label htmlFor={idDaAula}>Aula do encontro (opcional)</label>
+          <select
+            id={idDaAula}
+            value={aulaId}
+            onChange={(evento) => definirAulaId(evento.target.value)}
+          >
+            <option value="">Sem aula declarada</option>
+            {aulas.map((aula) => (
+              <option key={aula.id} value={aula.id}>
+                {new Date(aula.inicio_em).toLocaleString("pt-BR")}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <Campo
         rotulo="Natureza"

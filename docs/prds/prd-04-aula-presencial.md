@@ -439,16 +439,16 @@ corpo, até três variações já testadas contra todo papel (documento 09, 2026
 
 Rotas do caminho das trilhas, todas autenticadas na **sessão do Guerreiro(a)**:
 
-| Método | Rota                                  | Uso nesta aplicação                                             |
-| ------ | ------------------------------------- | --------------------------------------------------------------- |
-| GET    | `/v1/aulas/{id}/equipes`              | Listar as equipes já formadas na aula, por avatar e nick        |
-| POST   | `/v1/aulas/{id}/equipes`              | Criar equipe da aula, com quem a criou como primeiro integrante |
-| POST   | `/v1/equipes/{id}/integrantes`        | Entrar em uma equipe existente                                  |
-| DELETE | `/v1/equipes/{id}/integrantes/eu`     | Sair da equipe                                                  |
-| GET    | `/v1/equipes/{id}/missao`             | Missão da equipe, com o conteúdo e a atividade do dia           |
-| POST   | `/v1/assistente/trilhas/consultas`    | Perguntar ao assistente de trilhas e gravar a transcrição       |
-| GET    | `/v1/partidas-de-quiz/{id}/pergunta`  | Receber a pergunta em andamento no aparelho da equipe           |
-| POST   | `/v1/partidas-de-quiz/{id}/respostas` | Enviar a resposta da equipe, nunca do aparelho de onde veio     |
+| Método | Rota                                  | Uso nesta aplicação                                                                                                                                            |
+| ------ | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/v1/aulas/{id}/equipes`              | Listar as equipes já formadas na aula, por avatar e nick                                                                                                       |
+| POST   | `/v1/aulas/{id}/equipes`              | Criar equipe da aula, com quem a criou como primeiro integrante                                                                                                |
+| POST   | `/v1/equipes/{id}/integrantes`        | Entrar em uma equipe existente                                                                                                                                 |
+| DELETE | `/v1/equipes/{id}/integrantes/eu`     | Sair da equipe                                                                                                                                                 |
+| GET    | `/v1/equipes/{id}/missao`             | Programação do encontro, em lista — missão, conteúdo e atividade do dia de cada atividade presencial da aula da equipe; restrita a quem a integra (`RF-04-35`) |
+| POST   | `/v1/assistente/trilhas/consultas`    | Perguntar ao assistente de trilhas e gravar a transcrição                                                                                                      |
+| GET    | `/v1/partidas-de-quiz/{id}/pergunta`  | Receber a pergunta em andamento no aparelho da equipe                                                                                                          |
+| POST   | `/v1/partidas-de-quiz/{id}/respostas` | Enviar a resposta da equipe, nunca do aparelho de onde veio                                                                                                    |
 
 Rotas do momento de troca por recompensa avulsa (`RF-04-49` a `RF-04-57`), oferecido só com o
 Mestre na sessão de trabalho:

@@ -33,6 +33,9 @@ export interface AtividadeDaMissao {
   formato: string;
   natureza: string;
   producao_esperada: string;
+  // O encontro em que a atividade presencial acontece — anulável, e nunca
+  // declarado por atividade on-line ou assíncrona (`RF-09-69`, `RF-09-73`).
+  aula_id: string | null;
 }
 
 export type TipoDeConteudo = "texto" | "imagem" | "link_externo" | "video" | "arquivo";
@@ -167,6 +170,7 @@ export interface CriarAtividadeEntrada {
   formato: string;
   natureza: string;
   producao_esperada: string;
+  aula_id?: string;
 }
 
 export function criarAtividade(

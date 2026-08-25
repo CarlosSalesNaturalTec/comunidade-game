@@ -219,6 +219,10 @@ Observações operacionais:
   que valide o bom estado do livro, da camisa ou do kit que recebeu; o Mestre confere e lança.
   A iniciativa é sempre da criança — a regra e o valor estão no documento 11.
 - Cada aula só acontece com os **recursos providos** por mestres ou apoiadores.
+- **A atividade presencial declara a aula em que acontece** (decisão do fundador, 2026-08-25):
+  é o vínculo que dá ao momento 5 sua programação — o App 01 mostra à equipe, em lista, a
+  missão, o conteúdo e a atividade do dia daquele encontro, e a equipe escolhe em qual
+  trabalhar quando houver mais de uma.
 
 ### Segurança física da atividade
 

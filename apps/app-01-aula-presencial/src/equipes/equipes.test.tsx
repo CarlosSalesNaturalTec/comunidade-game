@@ -26,7 +26,14 @@ describe("equipes da aula", () => {
       proximo_cursor: null,
     });
 
-    render(<TelaDeEquipes aulaId="aula-1" token="token-guerreiro" aoVoltar={vi.fn()} />);
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
 
     expect(await screen.findByText("zeferina")).toBeInTheDocument();
     expect(equipesApi.listarEquipesDaAula).toHaveBeenCalledWith("aula-1", "token-guerreiro");
@@ -38,7 +45,14 @@ describe("equipes da aula", () => {
       proximo_cursor: null,
     });
 
-    render(<TelaDeEquipes aulaId="aula-1" token="token-guerreiro" aoVoltar={vi.fn()} />);
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
 
     expect(await screen.findByText(/nenhuma equipe formada/i)).toBeInTheDocument();
   });
@@ -49,7 +63,14 @@ describe("equipes da aula", () => {
       .mockResolvedValueOnce({ itens: [equipe()], proximo_cursor: null });
     vi.spyOn(equipesApi, "criarEquipe").mockResolvedValue(equipe());
 
-    render(<TelaDeEquipes aulaId="aula-1" token="token-guerreiro" aoVoltar={vi.fn()} />);
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
     await screen.findByText(/nenhuma equipe formada/i);
 
     const usuario = userEvent.setup();
@@ -66,7 +87,14 @@ describe("equipes da aula", () => {
     });
     vi.spyOn(equipesApi, "criarEquipe").mockResolvedValue(equipe());
 
-    render(<TelaDeEquipes aulaId="aula-1" token="token-guerreiro" aoVoltar={vi.fn()} />);
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/seu papel/i), "quem constrói");
     await usuario.click(screen.getByRole("button", { name: /criar equipe/i }));
@@ -94,7 +122,14 @@ describe("equipes da aula", () => {
       }),
     );
 
-    render(<TelaDeEquipes aulaId="aula-1" token="token-guerreiro" aoVoltar={vi.fn()} />);
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
     await screen.findByText("zeferina");
 
     const usuario = userEvent.setup();
@@ -117,7 +152,14 @@ describe("equipes da aula", () => {
     vi.spyOn(equipesApi, "entrarNaEquipe").mockResolvedValue(equipe());
     vi.spyOn(equipesApi, "sairDaEquipe").mockResolvedValue(undefined);
 
-    render(<TelaDeEquipes aulaId="aula-1" token="token-guerreiro" aoVoltar={vi.fn()} />);
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByRole("button", { name: /entrar nesta equipe/i }));
     await usuario.click(await screen.findByRole("button", { name: /sair desta equipe/i }));
@@ -142,7 +184,14 @@ describe("equipes da aula", () => {
       }),
     );
 
-    render(<TelaDeEquipes aulaId="aula-1" token="token-guerreiro" aoVoltar={vi.fn()} />);
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByRole("button", { name: /entrar nesta equipe/i }));
 
@@ -155,7 +204,14 @@ describe("equipes da aula", () => {
       proximo_cursor: null,
     });
 
-    render(<TelaDeEquipes aulaId="aula-1" token="token-guerreiro" aoVoltar={vi.fn()} />);
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
 
     const item = await screen.findByText("zeferina");
     const linha = item.closest("li");
@@ -171,7 +227,14 @@ describe("equipes da aula", () => {
     });
     const aoVoltar = vi.fn();
 
-    render(<TelaDeEquipes aulaId="aula-1" token="token-guerreiro" aoVoltar={aoVoltar} />);
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={aoVoltar}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByRole("button", { name: /voltar ao início/i }));
 
