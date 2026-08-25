@@ -29,6 +29,7 @@ from nucleo.quiz.regra import (
     encerrar_partida,
     estado_da_partida,
     liberar_resultado,
+    partidas_da_aula,
     pergunta_para_equipe,
     perguntas_do_mestre,
     por_pergunta_no_ar,
@@ -1268,3 +1269,122 @@ def test_aparelho_que_caiu_volta_na_pergunta_corrente(sessao, partida_aberta):
     saida = pergunta_para_equipe(sessao, operador=guerreiro, partida=partida)
 
     assert saida.id == segunda.id
+
+
+def test_pergunta_para_equipe_oculta_o_resultado_antes_da_liberacao(sessao, partida_aberta):
+    cen, partida = partida_aberta()
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
+    equipe = cen.equipes[0]
+    guerreiro = cen.integrantes[equipe.id][0]
+    por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=pergunta)
+    _responder(sessao, cen, partida=partida, pergunta=pergunta, equipe=equipe, alternativa=CORRETA)
+    sessao.commit()
+
+    saida = pergunta_para_equipe(sessao, operador=guerreiro, partida=partida)
+
+    assert saida.resultado_liberado is False
+    assert saida.alternativa_correta is None
+    assert saida.acertou is None
+    assert saida.primeira_equipe_a_acertar is None
+
+
+def test_pergunta_para_equipe_revela_o_resultado_da_sua_equipe_apos_liberacao(
+    sessao, partida_aberta
+):
+    cen, partida = partida_aberta()
+    pergunta = _cadastrar(sessao, cen.mestre, cen.missao)
+    veloz, lenta = cen.equipes
+    por_pergunta_no_ar(sessao, operador=cen.mestre, partida=partida, pergunta=pergunta)
+    _responder(
+        sessao,
+        cen,
+        partida=partida,
+        pergunta=pergunta,
+        equipe=veloz,
+        alternativa=CORRETA,
+        momento=BASE,
+    )
+    _responder(
+        sessao,
+        cen,
+        partida=partida,
+        pergunta=pergunta,
+        equipe=lenta,
+        alternativa=ERRADA,
+        momento=BASE + timedelta(seconds=5),
+    )
+    liberar_resultado(sessao, operador=cen.mestre, partida=partida)
+    sessao.commit()
+
+    saida_de_quem_acertou = pergunta_para_equipe(
+        sessao, operador=cen.integrantes[veloz.id][0], partida=partida
+    )
+    saida_de_quem_errou = pergunta_para_equipe(
+        sessao, operador=cen.integrantes[lenta.id][0], partida=partida
+    )
+
+    assert saida_de_quem_acertou.resultado_liberado is True
+    assert saida_de_quem_acertou.alternativa_correta == CORRETA
+    assert saida_de_quem_acertou.acertou is True
+    assert saida_de_quem_acertou.primeira_equipe_a_acertar == veloz.id
+
+    assert saida_de_quem_errou.acertou is False
+    assert saida_de_quem_errou.primeira_equipe_a_acertar == veloz.id
+
+    # A leitura do resultado nunca credita — o crédito segue do encerramento.
+    assert sessao.query(PontoRegular).count() == 0
+
+
+# ---------------------------------------------------- descoberta da partida
+
+
+def test_equipe_vem_derivada_quando_o_guerreiro_integra_mais_de_uma_do_encontro(
+    sessao, cenario, criar_equipe
+):
+    """Design — decisão 1: o Guerreiro(a) integra mais de uma equipe do
+    encontro, e só uma delas disputa a partida corrente — a descoberta
+    devolve a que disputa, sem escolha alguma."""
+    cen = cenario(tamanhos=(1, 1))
+    compartilhado = cen.integrantes[cen.equipes[0].id][0]
+    criar_equipe(compartilhado, aula=cen.aula)
+
+    partida = abrir_partida(
+        sessao, operador=cen.mestre, aula=cen.aula, atividade=cen.atividade, equipes=cen.equipes
+    )
+    sessao.commit()
+
+    partidas = partidas_da_aula(sessao, operador=compartilhado, aula=cen.aula)
+
+    assert len(partidas) == 1
+    assert partidas[0].id == partida.id
+    assert partidas[0].equipe_id == cen.equipes[0].id
+
+
+def test_quem_nao_disputa_recebe_a_partida_com_equipe_nula(sessao, cenario, criar_persona):
+    cen = cenario()
+    abrir_partida(
+        sessao, operador=cen.mestre, aula=cen.aula, atividade=cen.atividade, equipes=cen.equipes
+    )
+    sessao.commit()
+    de_fora = criar_persona(Papel.guerreiro, comunidade=cen.comunidade)
+
+    partidas = partidas_da_aula(sessao, operador=de_fora, aula=cen.aula)
+
+    assert len(partidas) == 1
+    assert partidas[0].equipe_id is None
+
+
+def test_aula_sem_partida_devolve_lista_vazia(sessao, cenario):
+    cen = cenario()
+    guerreiro = cen.integrantes[cen.equipes[0].id][0]
+
+    partidas = partidas_da_aula(sessao, operador=guerreiro, aula=cen.aula)
+
+    assert partidas == []
+
+
+def test_mestre_recebe_403_ao_descobrir_partidas_da_aula(sessao, cenario):
+    cen = cenario()
+
+    with pytest.raises(PermissaoNegada):
+        partidas_da_aula(sessao, operador=cen.mestre, aula=cen.aula)

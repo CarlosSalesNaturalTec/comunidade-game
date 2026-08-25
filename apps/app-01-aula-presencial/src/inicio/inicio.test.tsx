@@ -249,4 +249,15 @@ describe("tela inicial da App 01", () => {
     expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
     expect(screen.queryByText(/cadastr/i)).not.toBeInTheDocument();
   });
+
+  it("o caminho do quiz está presente com o momento de troca fechado, e leva à entrada sem sessão aberta", async () => {
+    renderizar(vi.fn(), { momentoDeTrocaAberto: false });
+    const usuario = userEvent.setup();
+
+    const caminhoDoQuiz = await screen.findByRole("button", { name: /quiz ao vivo/i });
+    await usuario.click(caminhoDoQuiz);
+
+    expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
+    expect(screen.queryByText(/cadastr/i)).not.toBeInTheDocument();
+  });
 });

@@ -90,8 +90,9 @@ existe para impedir.
 - Anexo da digitalização do termo assinado: App 03, porque quem opera a câmera na porta da aula
   não é quem arquiva documento.
 - Agenda das aulas, conferência e ajuste das presenças recebidas: App 03.
-- Abertura e condução da partida de Quiz ao Vivo, com o vínculo aparelho–equipe: App 03
-  (PRD-02). Aqui a equipe só recebe a pergunta e responde.
+- Abertura e condução da partida de Quiz ao Vivo: App 03 (PRD-02). Aqui a equipe só recebe a
+  pergunta e responde; o vínculo entre o aparelho e a equipe é estado do próprio aparelho, não
+  entidade do núcleo (documento 05 §5).
 - Autoria da trilha, do conteúdo e do banco de perguntas: App 09 (PRD-09).
 - **Apoio às atividades escolares**, coleta de dados do território, ranking e canal de
   sugestões: são a App 05 (PRD-05), que atende as aulas remotas e o uso cotidiano. A App 05
@@ -233,9 +234,12 @@ dentro da mesma sessão de trabalho do aparelho.
 
 ### 5.9 Jogar o Quiz ao Vivo
 
-1. O Mestre abre a partida na App 03 e **vincula um aparelho a cada equipe**.
-2. Várias equipes disputam a partida. Vinculado o aparelho, o App 01 fixa **uma única equipe**
-   para cada Guerreiro(a), mesmo que ele integre outras nas demais atividades do encontro.
+1. O Mestre abre a partida na App 03, declarando a atividade de Quiz ao Vivo e as equipes
+   disputantes.
+2. Várias equipes disputam a partida. No App 01, cada Guerreiro(a) entra pelo nick e imagem e o
+   núcleo deriva **uma única equipe** para ele naquela partida — o aparelho não escolhe nem
+   guarda vínculo algum, mesmo que o Guerreiro(a) integre outras equipes nas demais atividades
+   do encontro.
 3. A pergunta aparece **simultaneamente** em todos os aparelhos da partida.
 4. A equipe se consulta e responde pelo seu aparelho; a resposta vale para **todos os
    integrantes** e a segunda tentativa é recusada.
@@ -315,7 +319,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-38` | Pergunta de tarefa escolar é encaminhada à App 05, sem ser respondida aqui                                    | essencial  |
 | `RF-04-39` | Microfone abre por ação do Guerreiro(a) e fecha ao fim da fala; não há captação do áudio ambiente             | essencial  |
 | `RF-04-40` | Áudio da pergunta é descartado assim que transcrito; guarda-se apenas a transcrição                           | essencial  |
-| `RF-04-41` | Aparelho vinculado à equipe recebe a pergunta da partida simultaneamente aos demais                           | essencial  |
+| `RF-04-41` | Aparelho da equipe disputante recebe a pergunta da partida simultaneamente aos demais                         | essencial  |
 | `RF-04-42` | Na partida, o Guerreiro(a) joga por uma única equipe, ainda que integre outras no encontro                    | essencial  |
 | `RF-04-43` | Aparelho envia uma única resposta por pergunta, válida para todos os integrantes, e recusa a segunda          | essencial  |
 | `RF-04-44` | Resultado da pergunta aparece para a equipe quando quem conduz a partida o libera                             | essencial  |

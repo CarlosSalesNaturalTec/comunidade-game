@@ -16,6 +16,7 @@ from ..trilhas.modelo import Atividade, Missao
 from .modelo import PartidaDeQuiz, PerguntaDeQuiz
 from .regra import (
     EstadoDaPartidaSaida,
+    PartidaDaAulaSaida,
     PartidaDeQuizSaida,
     PerguntaAnuladaSaida,
     PerguntaDeQuizSaida,
@@ -27,6 +28,7 @@ from .regra import (
     encerrar_partida,
     estado_da_partida,
     liberar_resultado,
+    partidas_da_aula,
     pergunta_para_equipe,
     perguntas_do_mestre,
     por_pergunta_no_ar,
@@ -121,6 +123,22 @@ def listar_minhas_perguntas_rota(
         cursor=parametros.cursor,
         tamanho=parametros.tamanho,
     )
+
+
+@roteador.get("/aulas/{id_da_aula}/partidas")
+def listar_partidas_da_aula_rota(
+    id_da_aula: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[PartidaDaAulaSaida]:
+    """`RF-04-41`, `RF-04-42`: a descoberta da partida pelo Guerreiro(a) em
+    sessão, com a equipe dele já derivada — a permissão e a derivação já
+    são de `partidas_da_aula` (design — decisão 1)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    aula = sessao_bd.get(Aula, id_da_aula)
+    if aula is None:
+        raise NaoEncontrado(mensagem="Aula não encontrada.")
+    return partidas_da_aula(sessao_bd, operador=operador, aula=aula)
 
 
 class AbrirPartidaEntrada(BaseModel):
@@ -245,14 +263,18 @@ def ler_estado_da_partida_rota(
     return estado_da_partida(sessao_bd, operador=operador, partida=partida)
 
 
-@roteador.get("/partidas-de-quiz/{id_da_partida}/pergunta")
+@roteador.get("/partidas-de-quiz/{id_da_partida}/pergunta", response_model_exclude_none=True)
 def ler_pergunta_da_partida_rota(
     id_da_partida: uuid.UUID,
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> PerguntaParaEquipeSaida:
-    """`RF-04-41`: a pergunta no ar para o aparelho da equipe, sondada a
-    cada 2 segundos, sem a correta (PRD-04 §9, design — decisão 3)."""
+    """`RF-04-41`, `RF-04-44`: a pergunta no ar para o aparelho da equipe,
+    sondada a cada 2 segundos, sem a correta antes da liberação; liberado o
+    resultado, a mesma leitura passa a trazê-lo (PRD-04 §9, design —
+    decisões 2, 3). `exclude_none` mantém os três campos do resultado fora
+    do corpo enquanto não liberados, no padrão que a fatia da condução já
+    fixou."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     partida = _obter_partida(sessao_bd, id_da_partida)
     return pergunta_para_equipe(sessao_bd, operador=operador, partida=partida)
