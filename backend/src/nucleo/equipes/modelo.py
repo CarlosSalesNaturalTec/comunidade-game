@@ -30,6 +30,13 @@ class Equipe(Base, ComAutoria):
         Uuid, ForeignKey("persona.id"), nullable=True
     )
     homologado_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    atividade_corrente_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("atividade.id"), nullable=True
+    )
+    """A atividade da programação que a equipe da aula declara estar
+    trabalhando — sobrescrita a cada declaração, nunca acumulada, e morre
+    com a aula, como a própria equipe (`RF-02-42`, `RF-04-35`, documento 02
+    §5). Só a equipe da aula a recebe; a da trilha nunca declara escolha."""
 
     __table_args__ = (
         CheckConstraint(

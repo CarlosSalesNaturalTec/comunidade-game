@@ -141,11 +141,11 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
 
 1. Aberto o encontro, o painel mostra **quem já chegou**, com as presenças que o App 01
    registrou automaticamente.
-2. Mostra, por equipe, **em que missão cada uma está** e quem está aguardando
-   aparelho.
-3. Mostra a atividade prevista, os recursos providos, o **saldo de kits MDF** e de exemplares
-   Alpha, e os **lançamentos pendentes** do dia.
-4. Mostra os **lançamentos pendentes** — o que precisa ser lançado antes de a aula terminar.
+2. Mostra, por equipe, **em que missão cada uma está** — a atividade que ela declarou pelo
+   App 01 — e quem está aguardando aparelho, derivado de quem chegou e ainda não formou equipe.
+3. Mostra a atividade prevista, os recursos providos e o **saldo dos tipos de recurso** do
+   ponto de apoio da aula, pelo catálogo configurável da gestão.
+4. Lista os **lançamentos pendentes** — o que falta lançar antes de a aula terminar.
 5. O Mestre lê esse mesmo painel para circular entre as equipes; tudo o que ele escreve
    continua na App 09.
 6. Presença que o reconhecimento não capturou é confirmada manualmente, com registro de quem
@@ -267,18 +267,17 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
 
 ### 6.4 Painel do dia
 
-| ID         | Requisito                                                                                | Prioridade |
-| ---------- | ---------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-41` | Painel do dia lista quem já chegou, com a presença registrada pelo App 01                | essencial  |
-| `RF-02-42` | Painel mostra, por equipe, a missão em que ela está                                      | essencial  |
-| `RF-02-43` | Painel mostra quem está aguardando aparelho                                              | essencial  |
-| `RF-02-44` | Painel mostra atividade prevista e recursos providos do encontro                         | essencial  |
-| `RF-02-45` | Painel mostra o saldo de kits MDF e de exemplares da linha Alpha                         | essencial  |
-| `RF-02-46` | Painel mostra os lançamentos pendentes antes do fim da aula                              | essencial  |
-| `RF-02-47` | Painel lista os lançamentos pendentes do encontro                                        | essencial  |
-| `RF-02-69` | Painel lista os termos de biometria assinados e ainda sem digitalização anexada          | essencial  |
-| `RF-02-48` | Painel atualiza sozinho durante o encontro, sem recarga manual                           | essencial  |
-| `RF-02-49` | Mestre lê o painel do dia e recebe recusa em toda escrita que não seja a do Quiz ao Vivo | essencial  |
+| ID                     | Requisito                                                                                                                             | Prioridade |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-02-41`             | Painel do dia lista quem já chegou, com a presença registrada pelo App 01                                                             | essencial  |
+| `RF-02-42`             | Painel mostra, por equipe, a missão em que ela está                                                                                   | essencial  |
+| `RF-02-43`             | Painel mostra quem está aguardando aparelho — derivado de quem tem presença sem equipe formada na aula, sem entidade nem fila própria | essencial  |
+| `RF-02-44`             | Painel mostra atividade prevista e recursos providos do encontro                                                                      | essencial  |
+| `RF-02-45`             | Painel mostra o saldo dos tipos de recurso do ponto de apoio da aula, pelo catálogo configurável da gestão                            | essencial  |
+| `RF-02-46`, `RF-02-47` | Painel lista os lançamentos pendentes do encontro — o que falta lançar antes de a aula terminar                                       | essencial  |
+| `RF-02-69`             | Painel lista os termos de biometria assinados e ainda sem digitalização anexada                                                       | essencial  |
+| `RF-02-48`             | Painel atualiza sozinho durante o encontro, sem recarga manual                                                                        | essencial  |
+| `RF-02-49`             | Mestre lê o painel do dia e recebe recusa em toda escrita que não seja a do Quiz ao Vivo                                              | essencial  |
 
 ### 6.5 Acervo, recursos e Quiz ao Vivo
 
@@ -500,8 +499,8 @@ do quiz ou a de ocorrência (403); condução de partida por Mestre que não min
   original preservado.
 - Presença registrada pelo App 01 aparece no painel do dia sem lançamento manual; a confirmação
   manual grava quem confirmou.
-- Painel do dia mostra saldo de kits MDF e os lançamentos pendentes do
-  encontro em andamento.
+- Painel do dia mostra o saldo dos tipos de recurso do ponto de apoio e os lançamentos
+  pendentes do encontro em andamento.
 - Mestre autenticado lê o painel do dia, abre e conduz a partida de quiz da sua aula, e recebe
   403 em qualquer outra escrita de gestão.
 - Mestre que tenta conduzir a partida de uma aula que não é dele recebe 403.

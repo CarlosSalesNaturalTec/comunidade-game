@@ -265,6 +265,12 @@ class CredencialDeDispositivoJaAtiva(ErroDeAplicacao):
     mensagem = "Esta série já tem uma credencial de dispositivo ativa."
 
 
+class DigitalizacaoDoTermoJaAnexada(ErroDeAplicacao):
+    status_code = 409
+    codigo = "digitalizacao_do_termo_ja_anexada"
+    mensagem = "Este consentimento já tem uma digitalização anexada."
+
+
 class ArquivoAcimaDoTeto(ErroDeAplicacao):
     status_code = 413
     codigo = "arquivo_acima_do_teto"

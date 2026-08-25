@@ -2,18 +2,20 @@ import uuid
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, UploadFile
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
+from ..armazenamento.fabrica import dependencia_de_armazenamento
+from ..armazenamento.porta import PortaDeArmazenamento
 from ..autenticacao import ContextoDaSessao
 from ..banco import obter_sessao
 from ..configuracao import Configuracao, obter_configuracao
 from ..erros import NaoEncontrado
 from ..permissoes import Operacao, exigir_permissao
 from ..personas.modelo import Papel, Persona
-from .modelo import DecisaoDeConsentimento, OrigemDoConsentimento
-from .regra import registrar_consentimento
+from .modelo import Consentimento, DecisaoDeConsentimento, OrigemDoConsentimento
+from .regra import anexar_digitalizacao_do_termo, registrar_consentimento
 
 roteador = APIRouter()
 
@@ -72,3 +74,40 @@ def registrar_consentimento_rota(
     )
     sessao_bd.commit()
     return ConsentimentoSaida(id=consentimento.id, registrado_em=consentimento.registrado_em)
+
+
+class AnexoDoTermoSaida(BaseModel):
+    id: uuid.UUID
+    consentimento_id: uuid.UUID
+    registrado_em: datetime
+
+
+@roteador.post("/consentimentos/{id_do_consentimento}/anexo", status_code=201)
+def anexar_digitalizacao_do_termo_rota(
+    id_do_consentimento: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+    digitalizacao: Annotated[UploadFile, File()],
+) -> AnexoDoTermoSaida:
+    """Restrita ao Admin (`RF-02-68`): anexa a digitalização do termo de
+    biometria assinado no encontro, sem alterar o consentimento, que segue
+    de somente inserção — o formato, o tipo de consentimento e o anexo
+    único já são de `anexar_digitalizacao_do_termo`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    consentimento = sessao_bd.get(Consentimento, id_do_consentimento)
+    conteudo = digitalizacao.file.read()
+
+    anexo = anexar_digitalizacao_do_termo(
+        sessao_bd,
+        operador=operador,
+        consentimento=consentimento,
+        conteudo=conteudo,
+        nome_original=digitalizacao.filename,
+        tipo_mime=digitalizacao.content_type,
+        armazenamento=armazenamento,
+    )
+    sessao_bd.commit()
+    return AnexoDoTermoSaida(
+        id=anexo.id, consentimento_id=anexo.consentimento_id, registrado_em=anexo.registrado_em
+    )

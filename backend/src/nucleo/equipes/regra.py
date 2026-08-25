@@ -204,3 +204,31 @@ def programacao_do_encontro(
         .filter(Atividade.aula_id == equipe.aula_id, Trilha.situacao == SituacaoDaTrilha.publicada)
         .all()
     )
+
+
+def declarar_escolha_da_equipe(
+    sessao: Session, *, operador: Persona, equipe: Equipe, atividade: Atividade | None
+) -> Equipe:
+    """Grava, na própria equipe da aula, a atividade da programação que ela
+    está trabalhando — substituída a cada declaração, nunca acumulada, e
+    servida ao painel do dia como a missão corrente (`RF-02-42`, `RF-04-35`,
+    documento 02 §5). Só integrante da equipe declara; a atividade precisa
+    pertencer à programação daquela aula.
+    """
+    integrante = (
+        sessao.query(IntegranteDaEquipe)
+        .filter_by(equipe_id=equipe.id, persona_id=operador.id)
+        .first()
+    )
+    if integrante is None:
+        raise PermissaoNegada(mensagem="Só integrante da equipe declara a escolha dela.")
+
+    if atividade is None or atividade.aula_id != equipe.aula_id:
+        raise ErroDeValidacao(
+            mensagem="A atividade declarada precisa pertencer à programação desta aula.",
+            campo="atividade_id",
+        )
+
+    equipe.atividade_corrente_id = atividade.id
+    sessao.flush()
+    return equipe
