@@ -102,7 +102,14 @@ MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {
                 Operacao.propostas_de_evolucao,
             }
         ),
-        "le": frozenset({Operacao.publico, Operacao.suas_turmas, Operacao.painel_do_dia_na_app_03}),
+        "le": frozenset(
+            {
+                Operacao.publico,
+                Operacao.suas_turmas,
+                Operacao.painel_do_dia_na_app_03,
+                Operacao.conducao_do_quiz_ao_vivo_das_suas_aulas,
+            }
+        ),
     },
     Papel.guerreiro: {
         "escreve": frozenset(
@@ -117,7 +124,12 @@ MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {
             }
         ),
         "le": frozenset(
-            {Operacao.seus_dados, Operacao.equipes_da_aula_em_andamento, Operacao.publico}
+            {
+                Operacao.seus_dados,
+                Operacao.equipes_da_aula_em_andamento,
+                Operacao.publico,
+                Operacao.resposta_de_quiz_da_equipe,
+            }
         ),
     },
     Papel.responsavel: {

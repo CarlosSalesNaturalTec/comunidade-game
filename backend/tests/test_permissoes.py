@@ -27,7 +27,12 @@ _TABELA_DO_PRD_01_PAR_4 = {
             Operacao.testemunho_do_termo_impresso,
             Operacao.propostas_de_evolucao,
         },
-        "le": {Operacao.publico, Operacao.suas_turmas, Operacao.painel_do_dia_na_app_03},
+        "le": {
+            Operacao.publico,
+            Operacao.suas_turmas,
+            Operacao.painel_do_dia_na_app_03,
+            Operacao.conducao_do_quiz_ao_vivo_das_suas_aulas,
+        },
     },
     Papel.guerreiro: {
         "escreve": {
@@ -39,7 +44,12 @@ _TABELA_DO_PRD_01_PAR_4 = {
             Operacao.resposta_de_quiz_da_equipe,
             Operacao.solicitacao_de_local,
         },
-        "le": {Operacao.seus_dados, Operacao.equipes_da_aula_em_andamento, Operacao.publico},
+        "le": {
+            Operacao.seus_dados,
+            Operacao.equipes_da_aula_em_andamento,
+            Operacao.publico,
+            Operacao.resposta_de_quiz_da_equipe,
+        },
     },
     Papel.responsavel: {
         "escreve": {
