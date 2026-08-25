@@ -360,6 +360,7 @@ próprio (PRD-09).
 | POST   | `/aulas/{id}/reservas`                   | gestão          | Reserva os recursos no agendamento da aula                           |
 | POST   | `/aulas/{id}/trocas`                     | Mestre          | Registra a troca de item por pontos extras, na entrega               |
 | GET    | `/trocas`                                | gestão          | Histórico de trocas, filtrado por persona                            |
+| GET    | `/eu/pontos-extras`                      | Guerreiro(a)    | Acumulado e saldo disponível de pontos extras do próprio             |
 | POST   | `/lancamentos/{id}/ajuste`               | Admin           | Lança ajuste referenciando o lançamento original                     |
 | GET    | `/meus-aportes`                          | Apoiador        | Aportes e Poder Sustentador do próprio Apoiador                      |
 | GET    | `/meus-aportes/ressarciveis`             | Mestre ou Admin | Situação dos aportes que absorveu                                    |
