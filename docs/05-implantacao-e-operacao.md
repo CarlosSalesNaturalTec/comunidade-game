@@ -61,6 +61,9 @@ recomendado**), e entram em uso pela primeira vez no Ciclo 01.
 O acervo **aprofunda** as missões das duas trilhas: quem quiser ir além do que a aula cobre tem
 o livro na mão. A assimetria do inventário define o regime de posse.
 
+A bibliografia da missão **pode** apontar para o exemplar tombado, e o vínculo é opcional: sem
+ele, a bibliografia é título e capítulo em texto, e nada promete sobre exemplar disponível.
+
 ### Definição vigente — regime misto
 
 | Linha                                                       | Exemplares | Regime                                                                               |

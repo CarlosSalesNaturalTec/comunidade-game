@@ -423,6 +423,22 @@ trabalho, e o registro sai sob essa mesma sessão. É a última fatia do PRD-04 
 outra aplicação; o que resta do §6.2 espera a autoria de conteúdo da App 09 e a condução da
 partida da App 03 (§14).
 
+A elicitação das pendências do PRD-09, em 2026-08-25, fechou cinco decisões do fundador antes
+da sexta fatia. O **custo de _cloud_ entra sempre por fatura**, aporte por absorção do fundador:
+nenhuma aplicação mede, conta ou lança consumo por ato, o que esvazia `RF-09-20` e `RF-09-90` e
+tira da autoria de conteúdo e do _template_ a medição que ambos previam (documento 04). A
+**bibliografia da missão pode apontar para o exemplar tombado, com vínculo opcional** — sem ele
+é título e capítulo em texto, e `RF-09-22` e `RF-09-23` passam a valer só quando o vínculo
+existe (documento 05 §3). O **conteúdo de terceiros é registrado com a fonte, em campo de
+texto**, sem anexo (documento 03 §11). O **fim de ciclo é ato de Admin na gestão**, isolado — o
+ciclo seguinte é declaração à parte —, que dispara o expurgo do motivo da ocorrência de conduta
+e a saída dela do ranking, e **não congela indicador**: os quatro da lista pública seguem
+apurados no instante da consulta, e nada do que está no ar muda. O ato é requisito do PRD-02
+(`RF-02-99`, `RF-02-100`, `RN-02-30`), não do PRD-09, porque quem encerra é Admin. A elicitação
+também achou `RF-09-100` e `RF-09-101` nomeando **dois requisitos cada um**: o catálogo avulso
+mantém os números, já consolidados nas specs, e o upload passa a `RF-09-115` e a sugestão de
+retomada do _template_, a `RF-09-116`. Os dois PRDs continuam **aprovados**.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

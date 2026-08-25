@@ -283,6 +283,11 @@ coletores.
 O ciclo é rótulo declarado na implantação, sem calendário: enquanto ele corre, "ao fim do ciclo"
 se apura **no instante da consulta**, a mesma régua que a auditoria por amostragem já usa.
 
+**O ciclo é encerrado por ato de Admin**, na gestão — ato isolado, que fecha o corrente e nada
+mais: o ciclo seguinte é declarado à parte, na implantação. O encerramento dispara o expurgo do
+motivo da ocorrência de conduta e a saída dela do ranking, e **não congela indicador**: os
+quatro seguem apurados no instante da consulta.
+
 **Comunidade abaixo do piso sai na lista sem os indicadores.** A comunidade é o topo da
 hierarquia e não há nível acima a que somá-la: ela permanece na lista, com nome e localização, e
 os quatro indicadores não saem. Some o número, nunca a comunidade — quem está começando aparece.
