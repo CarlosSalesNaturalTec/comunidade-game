@@ -16,6 +16,10 @@ vi.mock("comum/autenticacao", async () => {
   };
 });
 
+vi.mock("../api/configuracao", () => ({
+  URL_DA_APP_03: "https://gestao.example.org",
+}));
+
 import { useSessao } from "comum/autenticacao";
 
 const SESSAO_DE_MESTRE: SessaoAberta = {
@@ -107,6 +111,82 @@ describe("lista das turmas do Mestre (RF-09-42, RF-09-73)", () => {
     expect(await screen.findByText(/nenhuma aula agendada/i)).toBeInTheDocument();
     expect(screen.getByText(/nenhuma atividade presencial sua/i)).toBeInTheDocument();
     expect(screen.getByText(/nenhuma atividade on-line sua/i)).toBeInTheDocument();
+  });
+});
+
+const UMA_HORA_EM_MS = 60 * 60 * 1000;
+
+function janelaEmAndamento(): Pick<AulaDaTurma, "inicio_em" | "fim_em"> {
+  const agora = Date.now();
+  return {
+    inicio_em: new Date(agora - UMA_HORA_EM_MS).toISOString(),
+    fim_em: new Date(agora + UMA_HORA_EM_MS).toISOString(),
+  };
+}
+
+function janelaFutura(): Pick<AulaDaTurma, "inicio_em" | "fim_em"> {
+  const agora = Date.now();
+  return {
+    inicio_em: new Date(agora + UMA_HORA_EM_MS).toISOString(),
+    fim_em: new Date(agora + 2 * UMA_HORA_EM_MS).toISOString(),
+  };
+}
+
+function janelaPassada(): Pick<AulaDaTurma, "inicio_em" | "fim_em"> {
+  const agora = Date.now();
+  return {
+    inicio_em: new Date(agora - 2 * UMA_HORA_EM_MS).toISOString(),
+    fim_em: new Date(agora - UMA_HORA_EM_MS).toISOString(),
+  };
+}
+
+describe("caminho para o painel do dia (RF-09-50)", () => {
+  it("a aula em andamento oferece o caminho para o painel do dia", async () => {
+    configurarSessao();
+    vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
+      turmas({ itens: [aula(janelaEmAndamento())] }),
+    );
+
+    render(<TelaDeMinhasTurmas />);
+
+    const caminho = await screen.findByRole("link", { name: /painel do dia/i });
+    expect(caminho).toHaveAttribute("href", "https://gestao.example.org/?area=painel-do-dia");
+  });
+
+  it("aula futura não oferece o caminho", async () => {
+    configurarSessao();
+    vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
+      turmas({ itens: [aula(janelaFutura())] }),
+    );
+
+    render(<TelaDeMinhasTurmas />);
+
+    await screen.findByRole("button", { name: /presença e ocorrência/i });
+    expect(screen.queryByRole("link", { name: /painel do dia/i })).not.toBeInTheDocument();
+  });
+
+  it("aula já realizada não oferece o caminho", async () => {
+    configurarSessao();
+    vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
+      turmas({ itens: [aula({ ...janelaPassada(), situacao: "realizada" })] }),
+    );
+
+    render(<TelaDeMinhasTurmas />);
+
+    await screen.findByRole("button", { name: /presença e ocorrência/i });
+    expect(screen.queryByRole("link", { name: /painel do dia/i })).not.toBeInTheDocument();
+  });
+
+  it("aula cancelada dentro da janela não oferece o caminho", async () => {
+    configurarSessao();
+    vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
+      turmas({ itens: [aula({ ...janelaEmAndamento(), situacao: "cancelada" })] }),
+    );
+
+    render(<TelaDeMinhasTurmas />);
+
+    await screen.findByRole("button", { name: /presença e ocorrência/i });
+    expect(screen.queryByRole("link", { name: /painel do dia/i })).not.toBeInTheDocument();
   });
 });
 

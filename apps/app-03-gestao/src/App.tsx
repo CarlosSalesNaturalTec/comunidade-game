@@ -5,6 +5,7 @@ import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeChaves } from "./chaves/TelaDeChaves";
 import { TelaDeComunidades } from "./comunidades/TelaDeComunidades";
 import { TelaDeFilas } from "./filas/TelaDeFilas";
+import { TelaDoPainelDoDia } from "./painel-do-dia/TelaDoPainelDoDia";
 import { TelaDePersonas } from "./personas/TelaDePersonas";
 import { TelaDePoderes } from "./poderes/TelaDePoderes";
 import { TelaDePontosDeApoio } from "./pontos-de-apoio/TelaDePontosDeApoio";
@@ -18,6 +19,7 @@ type Area =
   | "personas"
   | "filas"
   | "chaves"
+  | "painel-do-dia"
   | "quiz";
 
 const AREAS: { chave: Area; rotulo: string }[] = [
@@ -28,14 +30,25 @@ const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "personas", rotulo: "Personas" },
   { chave: "filas", rotulo: "Filas" },
   { chave: "chaves", rotulo: "Chaves" },
+  { chave: "painel-do-dia", rotulo: "Painel do dia" },
   { chave: "quiz", rotulo: "Quiz ao Vivo" },
 ];
+
+const CHAVES_DE_AREA = new Set<string>(AREAS.map((item) => item.chave));
+
+// O caminho que a App 09 oferece para o painel do dia chega por parâmetro
+// de URL, porque a navegação é entre aplicações — cada uma no seu endereço
+// próprio, sem estado compartilhado (`RF-09-50`, documento 03 §1).
+function areaInicialDaUrl(): Area {
+  const area = new URLSearchParams(window.location.search).get("area");
+  return area && CHAVES_DE_AREA.has(area) ? (area as Area) : "comunidades";
+}
 
 // Sem sessão aberta, só a entrada aparece — nenhum dado de gestão aparece
 // antes disso (`RF-01-02`, `RN-01-32`, PRD-02 §4).
 function Conteudo() {
   const { sessao, restaurando } = useSessao();
-  const [area, definirArea] = useState<Area>("comunidades");
+  const [area, definirArea] = useState<Area>(areaInicialDaUrl);
 
   if (restaurando) {
     return null;
@@ -68,6 +81,7 @@ function Conteudo() {
       {area === "personas" && <TelaDePersonas />}
       {area === "filas" && <TelaDeFilas />}
       {area === "chaves" && <TelaDeChaves />}
+      {area === "painel-do-dia" && <TelaDoPainelDoDia />}
       {area === "quiz" && <TelaDeQuiz />}
     </>
   );

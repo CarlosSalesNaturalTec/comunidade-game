@@ -1,6 +1,10 @@
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
-import { useCallback, useEffect, useState } from "react";
-import { type ItemDaProgramacao, obterProgramacaoDoEncontro } from "../api/programacao";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  declararEscolhaDaEquipe,
+  type ItemDaProgramacao,
+  obterProgramacaoDoEncontro,
+} from "../api/programacao";
 
 interface Props {
   equipeId: string;
@@ -14,25 +18,34 @@ const MENSAGEM_SEM_PROGRAMACAO =
 const MENSAGEM_SEM_REDE =
   "Não foi possível atualizar a programação agora. O que já foi carregado continua aqui.";
 
+const MENSAGEM_ESCOLHA_INDISPONIVEL =
+  "A escolha está indisponível sem rede. Assim que a rede voltar, você pode escolher.";
+
 // O caminho das trilhas da tela inicial: da equipe escolhida à programação
 // do encontro — missão, conteúdo e atividade do dia (`RF-04-35`). A
-// programação é lista e a escolha entre atividades é estado deste
-// aparelho, nunca enviada ao núcleo (documento 05 §4, documento 02 §5).
+// programação é lista e a equipe é quem escolhe em qual trabalhar,
+// declarando a escolha ao núcleo — a aplicação nunca decide por conta
+// própria quando há mais de uma atividade (`RF-02-42`, `RF-04-58`,
+// documento 05 §4, documento 02 §5).
 export function TelaDaProgramacao({ equipeId, token, aoVoltar }: Props) {
   const [itens, definirItens] = useState<ItemDaProgramacao[] | null>(null);
   const [semRede, definirSemRede] = useState(false);
-  const [atividadeEscolhidaId, definirAtividadeEscolhidaId] = useState<string | null>(null);
+  const [idExibido, definirIdExibido] = useState<string | null>(null);
+  const [declarando, definirDeclarando] = useState(false);
+  const declaradaSozinhaRef = useRef<string | null>(null);
 
   const carregar = useCallback(async () => {
     try {
       const proximos = await obterProgramacaoDoEncontro(equipeId, token);
       definirItens(proximos);
       definirSemRede(false);
-      definirAtividadeEscolhidaId((atual) =>
-        atual && proximos.some((item) => item.atividade.id === atual)
-          ? atual
-          : (proximos[0]?.atividade.id ?? null),
-      );
+      const corrente = proximos.find((item) => item.corrente);
+      definirIdExibido((atual) => {
+        if (atual && proximos.some((item) => item.atividade.id === atual)) return atual;
+        if (corrente) return corrente.atividade.id;
+        if (proximos.length === 1) return proximos[0].atividade.id;
+        return null;
+      });
     } catch {
       // O conteúdo já carregado permanece na tela — a leitura é dado, não
       // fato a sincronizar, e nunca vai para fila de reenvio (`RF-04-58`).
@@ -43,6 +56,37 @@ export function TelaDaProgramacao({ equipeId, token, aoVoltar }: Props) {
   useEffect(() => {
     carregar();
   }, [carregar]);
+
+  const declarar = useCallback(
+    async (atividadeId: string) => {
+      if (semRede) return;
+      definirDeclarando(true);
+      try {
+        await declararEscolhaDaEquipe(equipeId, atividadeId, token);
+        definirItens((atual) =>
+          atual
+            ? atual.map((item) => ({ ...item, corrente: item.atividade.id === atividadeId }))
+            : atual,
+        );
+        definirIdExibido(atividadeId);
+      } catch {
+        definirSemRede(true);
+      } finally {
+        definirDeclarando(false);
+      }
+    },
+    [equipeId, token, semRede],
+  );
+
+  // Uma única atividade não é escolha: nada a decidir por conta própria, e
+  // sem a declaração o campo do painel do dia nasceria sempre vazio.
+  useEffect(() => {
+    if (itens?.length !== 1 || semRede) return;
+    const unica = itens[0];
+    if (unica.corrente || declaradaSozinhaRef.current === unica.atividade.id) return;
+    declaradaSozinhaRef.current = unica.atividade.id;
+    declarar(unica.atividade.id);
+  }, [itens, semRede, declarar]);
 
   if (itens === null && !semRede) {
     return (
@@ -56,8 +100,7 @@ export function TelaDaProgramacao({ equipeId, token, aoVoltar }: Props) {
     );
   }
 
-  const item =
-    itens?.find((candidato) => candidato.atividade.id === atividadeEscolhidaId) ?? null;
+  const item = itens?.find((candidato) => candidato.atividade.id === idExibido) ?? null;
 
   return (
     <Moldura>
@@ -80,16 +123,16 @@ export function TelaDaProgramacao({ equipeId, token, aoVoltar }: Props) {
             {itens.map((candidato) => (
               <li key={candidato.atividade.id}>
                 <Botao
-                  variante={
-                    candidato.atividade.id === atividadeEscolhidaId ? "primaria" : "secundaria"
-                  }
-                  onClick={() => definirAtividadeEscolhidaId(candidato.atividade.id)}
+                  variante={candidato.corrente ? "primaria" : "secundaria"}
+                  onClick={() => declarar(candidato.atividade.id)}
+                  desabilitado={declarando || semRede}
                 >
                   {candidato.missao_titulo} — {candidato.atividade.titulo}
                 </Botao>
               </li>
             ))}
           </ul>
+          {semRede && <Aviso tipo="atencao">{MENSAGEM_ESCOLHA_INDISPONIVEL}</Aviso>}
         </nav>
       )}
 

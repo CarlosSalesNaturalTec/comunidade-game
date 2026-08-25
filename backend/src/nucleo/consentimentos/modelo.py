@@ -1,7 +1,7 @@
 import enum
 import uuid
 
-from sqlalchemy import DDL, Enum, ForeignKey, String, Uuid, event
+from sqlalchemy import DDL, Enum, ForeignKey, Integer, String, Uuid, event
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
@@ -58,6 +58,27 @@ class Consentimento(Base, ComAutoria):
         Uuid, ForeignKey("persona.id"), nullable=True
     )
     anexo: Mapped[str | None] = mapped_column(String(512), nullable=True)
+
+
+class AnexoDoTermo(Base, ComAutoria):
+    """A digitalização do termo impresso de biometria, assinado no encontro
+    e anexada pela gestão depois do ato — registro próprio, à parte do
+    consentimento, que permanece de somente inserção (`RF-02-68`,
+    `RN-01-12`, design — Decisions). `ComAutoria` grava quem anexou e
+    quando. Único por consentimento: o segundo anexo é recusado com 409 na
+    regra, não aqui — substituir digitalização não é operação do Ciclo 01.
+    """
+
+    __tablename__ = "anexo_do_termo"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    consentimento_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("consentimento.id"), unique=True, nullable=False
+    )
+    digitalizacao_referencia: Mapped[str] = mapped_column(String(512), nullable=False)
+    digitalizacao_nome_original: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    digitalizacao_tipo: Mapped[str] = mapped_column(String(128), nullable=False)
+    digitalizacao_tamanho: Mapped[int] = mapped_column(Integer, nullable=False)
 
 
 def _recusar_alteracao(mapper, connection, target) -> None:

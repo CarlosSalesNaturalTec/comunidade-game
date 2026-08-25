@@ -502,6 +502,28 @@ e a fonte do terceiro é campo de texto sem anexo. Template de missão, edição
 publicada, duplicar trilha, desafio de desbloqueio e validação da criação original seguem
 pendentes — o PRD-09 continua **aprovado**.
 
+O PRD-02 recebeu a sétima fatia: a change `painel-do-dia-e-anexo-do-termo` abriu o **painel do
+dia** do §6.4 — o único bloco daquele PRD ainda sem requisito entregue. Nasce
+`GET /v1/painel-do-dia`, leitura agregada e sem entidade própria do encontro em andamento:
+presenças, quem aguarda aparelho, equipes com a missão de cada uma, atividade prevista e
+recursos providos, saldo dos tipos de recurso do ponto de apoio e lançamentos pendentes. A
+App 03 ganhou a área **Painel do dia**, atualizada por sondagem; a App 09 passa a levar o
+Mestre até ela a partir de Minhas turmas, fechando o `RF-09-50` que apontava para uma tela
+ainda inexistente. Nasce também `POST /v1/consentimentos/{id}/anexo`, que grava a digitalização
+do termo de biometria assinado no encontro como registro próprio, sem tocar no consentimento
+imutável (`RF-02-68`).
+
+A equipe da aula passa a **gravar** em que atividade da programação está trabalhando — decisão
+do fundador, 2026-08-25, que reverte a frase da **sétima fatia do PRD-04**
+(`programacao-do-encontro-e-missao-da-equipe`) proibindo a escolha, mantendo de pé a que
+proíbe guardar percurso: a escolha é sobrescrita, nunca acumulada, e morre com a aula, como a
+própria equipe dela. A mesma decisão trouxe três correções de redação do PRD-02, sem decisão
+nova — precedente do `RF-04-41` corrigido na sexta fatia do PRD-04: o `RF-02-43` ("aguardando
+aparelho") é derivado de presença sem equipe, sem entidade nem fila; o `RF-02-45` não fixa tipo
+de recurso em código — "kits MDF" e "linha Alpha" eram exemplo de operação, não catálogo; e o
+`RF-02-46` e o `RF-02-47`, que diziam a mesma coisa, se consolidam num só enunciado. O PRD-02
+continua **aprovado**.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

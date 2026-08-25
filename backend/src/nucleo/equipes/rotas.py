@@ -25,6 +25,7 @@ from ..trilhas.rotas import (
 from ..vitrine.publico import AvatarENickSaida, buscar_avatares_e_nicks
 from .modelo import Equipe, IntegranteDaEquipe
 from .regra import criar_equipe as _criar_equipe
+from .regra import declarar_escolha_da_equipe as _declarar_escolha_da_equipe
 from .regra import entrar_na_equipe as _entrar_na_equipe
 from .regra import equipes_da_aula as _equipes_da_aula
 from .regra import programacao_do_encontro as _programacao_do_encontro
@@ -164,10 +165,15 @@ class ItemDaProgramacaoSaida(BaseModel):
     missao_titulo: str
     conteudos: list[ConteudoSaida] = Field(default_factory=list)
     bibliografia: list[BibliografiaPublicaSaida] = Field(default_factory=list)
+    corrente: bool
 
 
 def _saida_do_item_da_programacao(
-    sessao_bd: Session, atividade: Atividade, *, ponto_de_apoio_id: uuid.UUID | None
+    sessao_bd: Session,
+    atividade: Atividade,
+    *,
+    ponto_de_apoio_id: uuid.UUID | None,
+    atividade_corrente_id: uuid.UUID | None,
 ) -> ItemDaProgramacaoSaida:
     missao = sessao_bd.get(Missao, atividade.missao_id)
     return ItemDaProgramacaoSaida(
@@ -184,6 +190,7 @@ def _saida_do_item_da_programacao(
             )
             for bibliografia in consultar_bibliografia_da_missao(sessao_bd, missao.id)
         ],
+        corrente=atividade.id == atividade_corrente_id,
     )
 
 
@@ -209,6 +216,46 @@ def obter_programacao_do_encontro_rota(
         ponto_de_apoio_id = aula.ponto_de_apoio_id if aula is not None else None
 
     return [
-        _saida_do_item_da_programacao(sessao_bd, atividade, ponto_de_apoio_id=ponto_de_apoio_id)
+        _saida_do_item_da_programacao(
+            sessao_bd,
+            atividade,
+            ponto_de_apoio_id=ponto_de_apoio_id,
+            atividade_corrente_id=equipe.atividade_corrente_id,
+        )
         for atividade in atividades
     ]
+
+
+class DeclararEscolhaEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    atividade_id: uuid.UUID
+
+
+class EscolhaDaEquipeSaida(BaseModel):
+    equipe_id: uuid.UUID
+    atividade_corrente_id: uuid.UUID
+
+
+@roteador.post("/equipes/{id_da_equipe}/atividade-corrente")
+def declarar_escolha_da_equipe_rota(
+    id_da_equipe: uuid.UUID,
+    entrada: DeclararEscolhaEntrada,
+    contexto: Annotated[
+        ContextoDaSessao, Depends(exigir_permissao(Operacao.equipe_que_forma_na_aula, "escreve"))
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> EscolhaDaEquipeSaida:
+    """`RF-02-42`, `RF-04-35`: a equipe declara, pelo aparelho, a atividade
+    da programação em que está trabalhando — a integrância e o pertencimento
+    à programação daquela aula já são de `declarar_escolha_da_equipe`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    equipe = sessao_bd.get(Equipe, id_da_equipe)
+    if equipe is None:
+        raise NaoEncontrado(mensagem="Equipe não encontrada.")
+    atividade = sessao_bd.get(Atividade, entrada.atividade_id)
+    _declarar_escolha_da_equipe(sessao_bd, operador=operador, equipe=equipe, atividade=atividade)
+    sessao_bd.commit()
+    return EscolhaDaEquipeSaida(
+        equipe_id=equipe.id, atividade_corrente_id=equipe.atividade_corrente_id
+    )

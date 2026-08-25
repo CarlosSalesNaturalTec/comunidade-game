@@ -2,6 +2,7 @@ import { ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
+import { URL_DA_APP_03 } from "../api/configuracao";
 import { type AtividadeDoMestre, type AulaDaTurma, listarMinhasTurmas } from "./api";
 import { TelaDaAula } from "./TelaDaAula";
 import { TelaDeLancamento } from "./TelaDeLancamento";
@@ -20,6 +21,18 @@ function formatarPeriodo(inicioEm: string, fimEm: string): string {
     timeStyle: "short",
   });
   return `${formatador.format(new Date(inicioEm))} – ${formatador.format(new Date(fimEm))}`;
+}
+
+// Só a aula cuja janela contém o instante atual oferece o caminho para o
+// painel do dia — aula futura, já realizada ou cancelada não tem encontro a
+// acompanhar (`RF-09-50`, decisão do fundador, 2026-08-25).
+function aulaEmAndamento(aula: AulaDaTurma): boolean {
+  const agora = Date.now();
+  return (
+    aula.situacao !== "cancelada" &&
+    agora >= new Date(aula.inicio_em).getTime() &&
+    agora <= new Date(aula.fim_em).getTime()
+  );
 }
 
 interface SelecaoDeLancamento {
@@ -110,6 +123,14 @@ export function TelaDeMinhasTurmas() {
                 <Botao variante="secundaria" onClick={() => definirAulaAberta(aula)}>
                   Presença e ocorrência
                 </Botao>
+                {aulaEmAndamento(aula) && URL_DA_APP_03 && (
+                  <a
+                    className="cg-botao cg-botao--secundaria"
+                    href={`${URL_DA_APP_03}/?area=painel-do-dia`}
+                  >
+                    Painel do dia
+                  </a>
+                )}
               </li>
             ))}
           </ul>

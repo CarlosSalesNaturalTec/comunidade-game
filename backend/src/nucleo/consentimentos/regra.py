@@ -5,16 +5,20 @@ from sqlalchemy import and_, func, select
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.elements import ColumnElement
 
-from ..erros import ErroDeValidacao, PermissaoNegada
-from ..personas.modelo import Persona
+from ..armazenamento.porta import PortaDeArmazenamento
+from ..erros import DigitalizacaoDoTermoJaAnexada, ErroDeValidacao, PermissaoNegada
+from ..personas.modelo import Papel, Persona
 from ..responsaveis.modelo import VinculoResponsavel
 from ..tempo import agora
 from .modelo import (
+    AnexoDoTermo,
     Consentimento,
     DecisaoDeConsentimento,
     OrigemDoConsentimento,
     TipoDeConsentimento,
 )
+
+_FORMATOS_DE_DIGITALIZACAO_ACEITOS = frozenset({"application/pdf", "image/jpeg", "image/png"})
 
 
 def registrar_consentimento(
@@ -158,3 +162,58 @@ def autorizacao_de_divulgacao_vigente(
     vez de compor a expressão numa consulta maior (`RN-01-10`)."""
     condicao = condicao_de_autorizacao_vigente(sessao, guerreiro_id, em=em)
     return bool(sessao.execute(select(condicao)).scalar())
+
+
+def anexar_digitalizacao_do_termo(
+    sessao: Session,
+    *,
+    operador: Persona,
+    consentimento: Consentimento | None,
+    conteudo: bytes | None,
+    nome_original: str | None,
+    tipo_mime: str | None,
+    armazenamento: PortaDeArmazenamento | None,
+) -> AnexoDoTermo:
+    """Anexa a digitalização do termo impresso de biometria assinado no
+    encontro, como registro próprio que aponta para o consentimento — este
+    permanece de somente inserção (`RF-02-68`, `RN-01-12`, design —
+    Decisions). Só o Admin anexa; só o consentimento de tipo `biometria`
+    recebe anexo, e só um por consentimento.
+    """
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin anexa a digitalização do termo.")
+    if consentimento is None:
+        raise ErroDeValidacao(mensagem="Consentimento não encontrado.", campo="consentimento_id")
+    if consentimento.tipo != TipoDeConsentimento.biometria:
+        raise ErroDeValidacao(
+            mensagem="Só o consentimento de biometria recebe a digitalização do termo.",
+            campo="consentimento_id",
+        )
+
+    ja_anexado = sessao.query(AnexoDoTermo).filter_by(consentimento_id=consentimento.id).first()
+    if ja_anexado is not None:
+        raise DigitalizacaoDoTermoJaAnexada()
+
+    if conteudo is None or tipo_mime not in _FORMATOS_DE_DIGITALIZACAO_ACEITOS:
+        raise ErroDeValidacao(
+            mensagem="Digitalização aceita apenas em PDF, JPG ou PNG.",
+            campo="digitalizacao",
+        )
+    if armazenamento is None:
+        raise ErroDeValidacao(mensagem="Porta de armazenamento não disponível.")
+
+    referencia = f"anexos-do-termo/{uuid.uuid4()}"
+    armazenamento.gravar(referencia=referencia, conteudo=conteudo)
+
+    anexo = AnexoDoTermo(
+        consentimento_id=consentimento.id,
+        digitalizacao_referencia=referencia,
+        digitalizacao_nome_original=nome_original,
+        digitalizacao_tipo=tipo_mime,
+        digitalizacao_tamanho=len(conteudo),
+        autor_id=operador.id,
+        papel_do_autor=operador.papel.value,
+    )
+    sessao.add(anexo)
+    sessao.flush()
+    return anexo
