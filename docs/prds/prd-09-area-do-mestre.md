@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                                           |
-| ---------------- | --------------------------------------------------------------- |
-| PRD              | PRD-09                                                          |
-| Aplicação        | App 09 — Área do Mestre                                         |
-| Onda             | 3                                                               |
-| Situação         | aprovado                                                        |
-| Versão e data    | v6 — 2026-08-10                                                 |
-| Depende de       | PRD-01                                                          |
-| Documentos-fonte | 02 §§1–4, 03 §§1, 11, 05 §§3, 5, 6, 06, 07, 11 §§2, 4, 5, 7, 15 |
+| Campo            | Valor                                                                  |
+| ---------------- | ---------------------------------------------------------------------- |
+| PRD              | PRD-09                                                                 |
+| Aplicação        | App 09 — Área do Mestre                                                |
+| Onda             | 3                                                                      |
+| Situação         | aprovado                                                               |
+| Versão e data    | v7 — 2026-08-25                                                        |
+| Depende de       | PRD-01                                                                 |
+| Documentos-fonte | 02 §§1–4, 03 §§1, 11, 04 §1, 05 §§3, 5, 6, 06, 07, 11 §§2, 4, 5, 7, 15 |
 
 ## 2. Contexto e objetivo
 
@@ -271,7 +271,7 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-81`  | Mestre cria a missão de sondagem que abre a trilha, na forma de quiz                                                                           | essencial  |
 | `RF-09-82`  | Aplicação recusa publicar trilha sem missão de sondagem                                                                                        | essencial  |
 | `RF-09-83`  | Mestre declara a cadência de retomada de uma missão, e pode deixá-la sem retomada                                                              | essencial  |
-| `RF-09-101` | Template sugere a retomada em 2, 7 e 21 dias do desbloqueio, e o Mestre altera à vontade                                                       | essencial  |
+| `RF-09-116` | Template sugere a retomada em 2, 7 e 21 dias do desbloqueio, e o Mestre altera à vontade                                                       | essencial  |
 | `RF-09-84`  | Mestre declara que o desbloqueio de uma missão libera recompensa, e em que quantidade                                                          | essencial  |
 | `RF-09-92`  | Mestre etiqueta a trilha com os ODS que ela toca, escolhendo o objetivo e, se souber, a meta                                                   | essencial  |
 | `RF-09-98`  | Mestre pode etiquetar uma missão à parte, quando ela tocar objetivo diferente do da trilha                                                     | essencial  |
@@ -290,26 +290,26 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-87` | Template não escreve o conteúdo da missão; o Mestre preenche e é o autor creditado           | essencial  |
 | `RF-09-88` | Em trilha de poder técnico, a estrutura sugerida inclui ao menos uma atividade desplugada    | essencial  |
 | `RF-09-89` | Mestre aceita, recusa ou altera cada sugestão, e nada entra na trilha sem confirmação dele   | essencial  |
-| `RF-09-90` | Consumo do modelo é lançado como recurso de _cloud_ no livro-razão                           | essencial  |
+| `RF-09-90` | Aplicação não mede nem lança o consumo do modelo; o custo entra pela fatura de _cloud_       | essencial  |
 | `RF-09-91` | Template funciona sem exigir do Mestre qualquer conhecimento técnico de TI                   | essencial  |
 
 ### 6.3 Conteúdo e bibliografia da missão
 
-| ID          | Requisito                                                                           | Prioridade |
-| ----------- | ----------------------------------------------------------------------------------- | ---------- |
-| `RF-09-14`  | Mestre escreve o conteúdo da missão em texto formatado, com imagens                 | essencial  |
-| `RF-09-15`  | Mestre inclui link para vídeo hospedado fora da plataforma                          | essencial  |
-| `RF-09-16`  | Mestre envia vídeo de até 200 MB por missão, hospedado pela plataforma              | essencial  |
-| `RF-09-17`  | Mestre envia arquivo de apoio de até 20 MB por missão — PDF, imagem ou áudio        | essencial  |
-| `RF-09-18`  | Aplicação recusa upload acima do limite informando tamanho e limite, sem jargão     | essencial  |
-| `RF-09-100` | Upload aceita só MP4, WebM, JPG, PNG, WebP, MP3 e PDF, recusando o que estiver fora | essencial  |
-| `RF-09-19`  | Upload é retomável e sobrevive à queda de rede sem recomeçar do zero                | essencial  |
-| `RF-09-20`  | Armazenamento consumido é lançado como recurso de _cloud_ no livro-razão            | essencial  |
-| `RF-09-21`  | Mestre vincula à missão o título e o capítulo do acervo que apoiam aquele conteúdo  | essencial  |
-| `RF-09-22`  | Bibliografia indica se há exemplar disponível no ponto de apoio do Guerreiro(a)     | essencial  |
-| `RF-09-23`  | Bibliografia credita o Apoiador que forneceu o material                             | essencial  |
-| `RF-09-24`  | Conteúdo de terceiros é registrado com fonte e autorização de uso                   | essencial  |
-| `RF-09-25`  | Mestre pré-visualiza a missão como o Guerreiro(a) a verá, antes de publicar         | desejável  |
+| ID          | Requisito                                                                                                       | Prioridade |
+| ----------- | --------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-09-14`  | Mestre escreve o conteúdo da missão em texto formatado, com imagens                                             | essencial  |
+| `RF-09-15`  | Mestre inclui link para vídeo hospedado fora da plataforma                                                      | essencial  |
+| `RF-09-16`  | Mestre envia vídeo de até 200 MB por missão, hospedado pela plataforma                                          | essencial  |
+| `RF-09-17`  | Mestre envia arquivo de apoio de até 20 MB por missão — PDF, imagem ou áudio                                    | essencial  |
+| `RF-09-18`  | Aplicação recusa upload acima do limite informando tamanho e limite, sem jargão                                 | essencial  |
+| `RF-09-115` | Upload aceita só MP4, WebM, JPG, PNG, WebP, MP3 e PDF, recusando o que estiver fora                             | essencial  |
+| `RF-09-19`  | Upload é retomável e sobrevive à queda de rede sem recomeçar do zero                                            | essencial  |
+| `RF-09-20`  | Aplicação não mede nem lança o armazenamento consumido; o custo entra pela fatura de _cloud_                    | essencial  |
+| `RF-09-21`  | Mestre vincula à missão o título e o capítulo que apoiam o conteúdo, apontando opcionalmente o exemplar tombado | essencial  |
+| `RF-09-22`  | Bibliografia vinculada a exemplar tombado indica se há exemplar disponível no ponto de apoio                    | essencial  |
+| `RF-09-23`  | Bibliografia vinculada a exemplar tombado credita o Apoiador que forneceu o material                            | essencial  |
+| `RF-09-24`  | Conteúdo de terceiros é registrado com a fonte, em campo de texto, sem anexo                                    | essencial  |
+| `RF-09-25`  | Mestre pré-visualiza a missão como o Guerreiro(a) a verá, antes de publicar                                     | desejável  |
 
 ### 6.4 Desafios, coleta e culminância
 
@@ -433,7 +433,7 @@ outras duas frentes já entregues — tombamento (PRD-07) e ficha de vida —, s
 | `RN-09-04` | A criação original é validada pelo Mestre autor e carrega a autoria por toda a vida do registro               | —                      | 02 §4, 11 §7   |
 | `RN-09-05` | O conteúdo educacional publicado sai sob CC BY-SA, com crédito ao Mestre autor                                | —                      | 03 §1          |
 | `RN-09-06` | Vídeo até 200 MB e arquivo até 20 MB por missão                                                               | —                      | 03 §11         |
-| `RN-09-07` | O armazenamento consumido é recurso de _cloud_ registrado no livro-razão                                      | 9                      | 04 §1          |
+| `RN-09-07` | O custo de _cloud_ entra no livro-razão pela fatura do período, nunca por medição no ato                      | —                      | 04 §1          |
 | `RN-09-08` | O Mestre lança apenas as atividades que propôs e as turmas em que atua                                        | —                      | 03 §11         |
 | `RN-09-09` | A pontuação negativa lançada pelo Mestre é efetivada sem revisão de outro Admin                               | —                      | 02 §4, 03 §11  |
 | `RN-09-10` | Pontos de habilidade só vêm de atividade realizada proposta por Mestre                                        | 8                      | 02 §4, 11 §5   |
@@ -684,12 +684,21 @@ missão é o que permite a mesma trilha atender dos 6 aos 16 anos.
 | Upload em lista fechada de formatos, moderado pela auditoria por amostragem          | 03 §11              | Formatos e moderação do upload do Mestre     |
 | Padrão de retomada sugerido pelo template: 2, 7 e 21 dias                            | 11 §2.2             | Cadência padrão da revisão espaçada          |
 | Amostra semanal de coleta: 10% dos registros por série ativa, mínimo de um           | 02 §1               | Composição da amostra de auditoria de coleta |
+| Conta de _cloud_ entra sempre por fatura; nenhuma aplicação mede consumo por ato     | 04 §1               | Custos de construção e conta de _cloud_      |
+| Bibliografia aponta para o exemplar tombado, com vínculo opcional                    | 05 §3               | Bibliografia da missão e bem tombado         |
+| Conteúdo de terceiros registrado com a fonte, em campo de texto                      | 03 §11              | Conteúdo de terceiros na missão              |
+| Fim de ciclo é ato de Admin, isolado, e não congela indicador                        | 02 §1               | Gatilho do fim de ciclo                      |
 
 As cinco entidades novas — `Conteudo`, `BibliografiaDaMissao`, `Culminancia`,
 `RecompensaDeMarco` e `SugestaoDeEstrutura` — foram acrescentadas ao modelo do PRD-01, e a
 `Atividade` passou a pertencer a uma missão. Na App 03 (PRD-02), a auditoria das trilhas
-publicadas entrou como ação de Admin e o cadastro de atividade ficou restrito à **atividade
-avulsa**.
+publicadas entrou como ação de Admin e o cadastro de atividade ficou restrito à \*\*atividade
+
+Correção de rastreabilidade, não decisão: `RF-09-100` e `RF-09-101` nomeavam **dois requisitos
+cada um** — o upload e o _template_, de um lado, e o catálogo avulso, de outro. O sentido do
+catálogo já estava consolidado nas specs e mantém os números; o upload passa a `RF-09-115` e a
+sugestão de retomada do _template_, a `RF-09-116`.
+avulsa\*\*.
 
 ## 14. Pendências que permanecem
 
@@ -749,3 +758,5 @@ travas da publicação (documento 03 §11).
 | `RF-09-92` a `RF-09-98`   | 11 §2.1 e 04 §4 (etiqueta ODS da trilha e cobertura)             |
 | `RF-09-99` a `RF-09-104`  | 02 §8.2 (recompensa avulsa) e 11 §5 (troca por pontos extras)    |
 | `RF-09-105` a `RF-09-112` | 04 §3 (desafio extra: proponente, teto, custeio e validação)     |
+| `RF-09-115`               | 03 §11 (lista fechada de formatos do upload)                     |
+| `RF-09-116`               | 11 §2.2 (cadência padrão sugerida pelo template)                 |

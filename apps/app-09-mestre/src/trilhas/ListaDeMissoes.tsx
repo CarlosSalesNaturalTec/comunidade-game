@@ -1,9 +1,12 @@
 import { Botao, EstadoDaLista } from "comum/react";
 import { useState } from "react";
 import type { EtapaDoCiclo, MissaoDaTrilha } from "./api";
+import { Bibliografia } from "./Bibliografia";
 import { CadenciaDeRetomada } from "./CadenciaDeRetomada";
 import { EtiquetasOds } from "./EtiquetasOds";
 import { FormularioDeAtividade } from "./FormularioDeAtividade";
+import { FormularioDeConteudo } from "./FormularioDeConteudo";
+import { PreVisualizacaoDaMissao } from "./PreVisualizacaoDaMissao";
 
 interface Props {
   missoes: MissaoDaTrilha[];
@@ -21,6 +24,12 @@ const ROTULO_DA_ETAPA: Record<EtapaDoCiclo, string> = {
 // o Mestre a declara (`RF-09-81`, design — decisões).
 export function ListaDeMissoes({ missoes, onAtualizarMissao }: Props) {
   const [missaoComFormulario, definirMissaoComFormulario] = useState<string | null>(null);
+  const [missaoComFormularioDeConteudo, definirMissaoComFormularioDeConteudo] = useState<
+    string | null
+  >(null);
+  const [missaoEmPreVisualizacao, definirMissaoEmPreVisualizacao] = useState<string | null>(
+    null,
+  );
 
   if (missoes.length === 0) {
     return <EstadoDaLista>Nenhuma missão acrescentada ainda.</EstadoDaLista>;
@@ -81,6 +90,67 @@ export function ListaDeMissoes({ missoes, onAtualizarMissao }: Props) {
           ) : (
             <Botao variante="secundaria" onClick={() => definirMissaoComFormulario(missao.id)}>
               Nova atividade
+            </Botao>
+          )}
+
+          <section aria-label={`Conteúdo de ${missao.titulo}`}>
+            <h3>Conteúdo</h3>
+            <ul>
+              {(missao.conteudos ?? []).map((conteudo) => (
+                <li key={conteudo.id}>
+                  {conteudo.tipo}
+                  {conteudo.autoria === "terceiro" && conteudo.fonte && (
+                    <> — fonte: {conteudo.fonte}</>
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            {missaoComFormularioDeConteudo === missao.id ? (
+              <FormularioDeConteudo
+                idDaMissao={missao.id}
+                onSalvo={(conteudo) => {
+                  definirMissaoComFormularioDeConteudo(null);
+                  onAtualizarMissao({
+                    ...missao,
+                    conteudos: [...(missao.conteudos ?? []), conteudo],
+                  });
+                }}
+                onCancelar={() => definirMissaoComFormularioDeConteudo(null)}
+              />
+            ) : (
+              <Botao
+                variante="secundaria"
+                onClick={() => definirMissaoComFormularioDeConteudo(missao.id)}
+              >
+                Novo conteúdo
+              </Botao>
+            )}
+          </section>
+
+          <Bibliografia
+            idDaMissao={missao.id}
+            entradas={missao.bibliografia ?? []}
+            onSalva={(bibliografia) =>
+              onAtualizarMissao({
+                ...missao,
+                bibliografia: [...(missao.bibliografia ?? []), bibliografia],
+              })
+            }
+          />
+
+          {missaoEmPreVisualizacao === missao.id ? (
+            <PreVisualizacaoDaMissao
+              missao={missao}
+              autorNome={null}
+              onFechar={() => definirMissaoEmPreVisualizacao(null)}
+            />
+          ) : (
+            <Botao
+              variante="secundaria"
+              onClick={() => definirMissaoEmPreVisualizacao(missao.id)}
+            >
+              Pré-visualizar missão
             </Botao>
           )}
         </li>

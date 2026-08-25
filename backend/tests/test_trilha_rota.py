@@ -781,3 +781,76 @@ def test_motivo_da_despublicacao_aparece_em_minhas_pela_rota(
     trilha_na_lista = next(item for item in resposta.json() if item["id"] == str(trilha.id))
     assert trilha_na_lista["situacao"] == "despublicada"
     assert trilha_na_lista["motivo_da_situacao"] == "Conteúdo desatualizado."
+
+
+def test_trilha_sem_conteudo_algum_continua_publicando_por_tres_travas(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_poder, criar_tipo_de_coleta
+):
+    """`RN-09-01` a `RN-09-03`: `conteudo-e-bibliografia-da-missao` não toca
+    `trilhas.regra` — as três travas de publicação continuam sendo as
+    únicas, sem conteúdo nem bibliografia declarados."""
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    trilha_id = _criar_trilha_completa_pela_rota(
+        cliente, cabecalhos, poder, criar_tipo_de_coleta, mestre
+    )
+
+    resposta = cliente.post(f"/v1/trilhas/{trilha_id}/publicacao", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    assert resposta.json()["situacao"] == "publicada"
+
+
+def test_leitura_publica_traz_conteudo_fonte_e_bibliografia_so_quando_publicada(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_poder, criar_tipo_de_coleta
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    trilha_id = _criar_trilha_completa_pela_rota(
+        cliente, cabecalhos, poder, criar_tipo_de_coleta, mestre
+    )
+    missao_id = cliente.get("/v1/trilhas/minhas", headers=cabecalhos).json()[0]["missoes"][0]["id"]
+
+    resposta_conteudo = cliente.post(
+        f"/v1/missoes/{missao_id}/conteudos",
+        json={
+            "tipo": "texto",
+            "ordem": 1,
+            "corpo": "Trecho citado de outro autor.",
+            "autoria": "terceiro",
+            "fonte": "Autor Exemplo, 2020.",
+        },
+        headers=cabecalhos,
+    )
+    assert resposta_conteudo.status_code == 201
+
+    resposta_bibliografia = cliente.post(
+        f"/v1/missoes/{missao_id}/bibliografia",
+        json={"titulo": "Robótica Educativa", "capitulo": "Capítulo 3"},
+        headers=cabecalhos,
+    )
+    assert resposta_bibliografia.status_code == 201
+
+    resposta_leitura_em_rascunho = cliente.get(
+        f"/v1/trilhas/{trilha_id}", headers={"X-Chave-Aplicacao": chave}
+    )
+    assert resposta_leitura_em_rascunho.status_code == 404
+
+    cliente.post(f"/v1/trilhas/{trilha_id}/publicacao", headers=cabecalhos)
+
+    resposta_leitura = cliente.get(f"/v1/trilhas/{trilha_id}", headers={"X-Chave-Aplicacao": chave})
+
+    assert resposta_leitura.status_code == 200
+    corpo = resposta_leitura.json()
+    assert corpo["licenca"] == "CC BY-SA"
+    missao = next(m for m in corpo["missoes"] if m["id"] == missao_id)
+    assert len(missao["conteudos"]) == 1
+    assert missao["conteudos"][0]["fonte"] == "Autor Exemplo, 2020."
+    assert len(missao["bibliografia"]) == 1
+    assert missao["bibliografia"][0]["titulo"] == "Robótica Educativa"

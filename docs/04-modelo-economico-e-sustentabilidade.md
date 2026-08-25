@@ -158,13 +158,17 @@ integrado** — proposta recusada ou abandonada não vira aporte. O Admin homolo
 não a arbitra: assim como no commit do fundador, revisar, documentar e discutir a solução também
 é produção.
 
-### Custos anteriores ao livro-razão
+### Custos de construção e conta de _cloud_
 
 **Definição vigente.** O custo de construir a plataforma — assinatura das ferramentas de IA do
 desenvolvimento e conta de _cloud_ — começa a correr **antes de o livro-razão existir**. As
 faturas do período são **guardadas e lançadas retroativamente** quando o livro-razão entrar no
 ar, como aporte por absorção do Admin e Mestre fundador, com o **período apurado** no registro
 e o comprovante anexado. Sem isso o Ciclo 01 fecharia sem contar a própria construção.
+
+**A conta de _cloud_ entra sempre por fatura**, também depois de o livro-razão existir: nenhuma
+aplicação mede, conta ou lança consumo por ato — nem o armazenamento do que o Mestre envia, nem
+o uso dos modelos de IA. A fatura do período vira aporte por absorção, pela mesma regra acima.
 
 **[Proposta]** Modelar tecnicamente como um **livro-razão (ledger) de dupla entrada**: cada
 atividade consome recursos (débito) aportados por provedores (crédito). Viabiliza relatórios

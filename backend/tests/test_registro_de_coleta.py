@@ -371,7 +371,7 @@ def test_midia_e_aceita_como_o_proprio_registro(
         criar_poder_do_territorio,
         forma_de_registro=FormaDeRegistro.foto,
     )
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
 
     registro = gravar_registro_de_coleta(
         sessao,
@@ -627,7 +627,7 @@ def test_registro_por_midia_credita_como_o_registro_por_numero(
         criar_poder_do_territorio,
         forma_de_registro=FormaDeRegistro.foto,
     )
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
 
     registro = gravar_registro_de_coleta(
         sessao,

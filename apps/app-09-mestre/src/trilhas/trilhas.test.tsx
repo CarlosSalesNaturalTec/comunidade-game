@@ -8,6 +8,8 @@ import type { PoderDoCatalogo } from "../poderes/api";
 import * as poderesApi from "../poderes/api";
 import type {
   AtividadeDaMissao,
+  BibliografiaDaMissao,
+  ConteudoDaMissao,
   CulminanciaDaTrilha,
   EtiquetaOds,
   MissaoDaTrilha,
@@ -121,6 +123,35 @@ function culminancia(sobrescreve: Partial<CulminanciaDaTrilha> = {}): Culminanci
     descricao: "Um robô que resolve um problema da comunidade.",
     modalidade: "individual",
     criterio_de_validacao: "O robô precisa funcionar.",
+    ...sobrescreve,
+  };
+}
+
+function conteudo(sobrescreve: Partial<ConteudoDaMissao> = {}): ConteudoDaMissao {
+  return {
+    id: "conteudo-1",
+    missao_id: "missao-1",
+    ordem: 1,
+    tipo: "texto",
+    corpo: "Texto da missão.",
+    endereco: null,
+    referencia: null,
+    tamanho: null,
+    autoria: "propria",
+    fonte: null,
+    ...sobrescreve,
+  };
+}
+
+function bibliografia(sobrescreve: Partial<BibliografiaDaMissao> = {}): BibliografiaDaMissao {
+  return {
+    id: "bibliografia-1",
+    missao_id: "missao-1",
+    titulo: "Robótica Educativa",
+    capitulo: "Capítulo 3",
+    item_patrimonial_id: null,
+    disponivel: null,
+    apoiador_nome: null,
     ...sobrescreve,
   };
 }
@@ -1182,5 +1213,370 @@ describe("cobertura de ODS da trilha (RF-09-94, RN-01-24)", () => {
       await screen.findByText(/nenhum ods coberto por esta trilha ainda/i),
     ).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+});
+
+async function abrirMissao() {
+  const usuario = userEvent.setup();
+  await usuario.click(await screen.findByText("Robô Educa"));
+  await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+  return usuario;
+}
+
+describe("conteúdo da missão (RF-09-14, RF-09-15, RF-09-24)", () => {
+  it("Mestre escreve o texto da missão", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const criarConteudoEspiado = vi
+      .spyOn(trilhasApi, "criarConteudo")
+      .mockResolvedValue(conteudo({ corpo: "Texto escrito pelo Mestre." }));
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByRole("button", { name: /novo conteúdo/i }));
+    await usuario.type(
+      screen.getByLabelText(/texto da missão/i),
+      "Texto escrito pelo Mestre.",
+    );
+    await usuario.click(screen.getByRole("button", { name: /salvar conteúdo/i }));
+
+    await waitFor(() => expect(criarConteudoEspiado).toHaveBeenCalled());
+    expect(criarConteudoEspiado.mock.calls[0][1]).toMatchObject({
+      tipo: "texto",
+      corpo: "Texto escrito pelo Mestre.",
+      autoria: "propria",
+    });
+  });
+
+  it("conteúdo de terceiro pede a fonte e não confirma sem ela", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const criarConteudoEspiado = vi.spyOn(trilhasApi, "criarConteudo");
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByRole("button", { name: /novo conteúdo/i }));
+    await usuario.type(screen.getByLabelText(/texto da missão/i), "Trecho citado.");
+    await usuario.selectOptions(screen.getByLabelText(/^autoria$/i), "terceiro");
+    expect(await screen.findByLabelText(/^fonte$/i)).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /salvar conteúdo/i }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(/fonte/i);
+    expect(criarConteudoEspiado).not.toHaveBeenCalled();
+  });
+
+  it("nenhum campo pede código, HTML ou marcação", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByRole("button", { name: /novo conteúdo/i }));
+
+    expect(screen.queryByLabelText(/html|código|marcação/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("envio de vídeo e arquivo (RF-09-16 a RF-09-19, RF-09-115)", () => {
+  async function escolherArquivoDeVideo(usuario: ReturnType<typeof userEvent.setup>) {
+    await usuario.click(await screen.findByRole("button", { name: /novo conteúdo/i }));
+    await usuario.selectOptions(screen.getByLabelText(/tipo de conteúdo/i), "video");
+    const arquivo = new File([new Uint8Array(100)], "aula.mp4", { type: "video/mp4" });
+    await usuario.upload(screen.getByLabelText(/^arquivo$/i), arquivo);
+  }
+
+  it("o envio mostra o progresso", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "criarConteudo").mockResolvedValue(
+      conteudo({ tipo: "video", corpo: null }),
+    );
+    vi.spyOn(trilhasApi, "abrirEnvio").mockResolvedValue("/v1/armazenamento/sessoes/x");
+    let liberarEnvio: (() => void) | undefined;
+    vi.spyOn(trilhasApi, "enviarArquivo").mockImplementation(
+      (_endereco, _arquivo, aoProgredir) =>
+        new Promise<void>((resolve) => {
+          aoProgredir(50, 100);
+          liberarEnvio = resolve;
+        }),
+    );
+    vi.spyOn(trilhasApi, "confirmarEnvio").mockResolvedValue(
+      conteudo({ tipo: "video", referencia: "conteudos/1/arquivo", tamanho: 100 }),
+    );
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await escolherArquivoDeVideo(usuario);
+    await usuario.click(screen.getByRole("button", { name: /salvar conteúdo/i }));
+
+    expect(await screen.findByText(/enviado 50%/i)).toBeInTheDocument();
+
+    liberarEnvio?.();
+    await waitFor(() => expect(trilhasApi.confirmarEnvio).toHaveBeenCalled());
+  });
+
+  it("a queda de rede retoma do ponto já enviado", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "criarConteudo").mockResolvedValue(
+      conteudo({ id: "conteudo-video", tipo: "video", corpo: null }),
+    );
+    vi.spyOn(trilhasApi, "abrirEnvio").mockResolvedValue("/v1/armazenamento/sessoes/x");
+    const enviarArquivoEspiado = vi.spyOn(trilhasApi, "enviarArquivo");
+    enviarArquivoEspiado.mockRejectedValueOnce(new Error("A rede caiu."));
+    enviarArquivoEspiado.mockResolvedValueOnce(undefined);
+    const consultarProgressoEspiado = vi
+      .spyOn(trilhasApi, "consultarProgressoDaSessao")
+      .mockResolvedValue(40);
+    vi.spyOn(trilhasApi, "confirmarEnvio").mockResolvedValue(
+      conteudo({
+        id: "conteudo-video",
+        tipo: "video",
+        referencia: "conteudos/x/arquivo",
+        tamanho: 100,
+      }),
+    );
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await escolherArquivoDeVideo(usuario);
+    await usuario.click(screen.getByRole("button", { name: /salvar conteúdo/i }));
+
+    expect(await screen.findByText(/conexão caiu/i)).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /tentar novamente/i }));
+
+    await waitFor(() => expect(trilhasApi.confirmarEnvio).toHaveBeenCalled());
+    expect(consultarProgressoEspiado).toHaveBeenCalledWith("/v1/armazenamento/sessoes/x", 100);
+  });
+
+  it("formato fora da lista é recusado em linguagem simples", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "criarConteudo").mockResolvedValue(
+      conteudo({ tipo: "arquivo", corpo: null }),
+    );
+    vi.spyOn(trilhasApi, "abrirEnvio").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem:
+          "Formato 'application/x-executable' não aceito. A lista aceita é MP4, WebM, JPG, PNG, WebP, MP3 e PDF.",
+        campo: "tipo_mime",
+      }),
+    );
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByRole("button", { name: /novo conteúdo/i }));
+    await usuario.selectOptions(screen.getByLabelText(/tipo de conteúdo/i), "arquivo");
+    // O `accept` do campo já orienta a escolha (`RF-09-115`); a recusa
+    // testada aqui é a do núcleo, que vale mesmo quando o navegador deixa
+    // passar um arquivo fora do que o núcleo aceita de fato.
+    const arquivo = new File([new Uint8Array(10)], "documento.pdf", {
+      type: "application/pdf",
+    });
+    await usuario.upload(screen.getByLabelText(/^arquivo$/i), arquivo);
+    await usuario.click(screen.getByRole("button", { name: /salvar conteúdo/i }));
+
+    const recusa = await screen.findByRole("alert");
+    expect(recusa).toHaveTextContent(/MP4, WebM, JPG, PNG, WebP, MP3 e PDF/i);
+    expect(recusa.textContent).not.toMatch(/422|erro_de_validacao/i);
+  });
+
+  it("arquivo grande demais é recusado dizendo o tamanho e o limite", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "criarConteudo").mockResolvedValue(
+      conteudo({ tipo: "video", corpo: null }),
+    );
+    vi.spyOn(trilhasApi, "abrirEnvio").mockRejectedValue(
+      new ErroDaApi(413, {
+        codigo: "arquivo_acima_do_teto",
+        mensagem: "O arquivo tem 240 MB e o limite para este tipo de conteúdo é 200 MB.",
+      }),
+    );
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await escolherArquivoDeVideo(usuario);
+    await usuario.click(screen.getByRole("button", { name: /salvar conteúdo/i }));
+
+    const recusa = await screen.findByRole("alert");
+    expect(recusa).toHaveTextContent(/240 MB/);
+    expect(recusa).toHaveTextContent(/200 MB/);
+    expect(recusa.textContent).not.toMatch(/413|arquivo_acima_do_teto/i);
+  });
+});
+
+describe("bibliografia da missão (RF-09-21 a RF-09-23)", () => {
+  it("entrada sem exemplar não apresenta disponibilidade nem crédito", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        missoes: [
+          missao({
+            bibliografia: [bibliografia({ item_patrimonial_id: null, disponivel: null })],
+          }),
+        ],
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    await abrirMissao();
+
+    expect(await screen.findByText(/robótica educativa/i)).toBeInTheDocument();
+    expect(screen.queryByText(/disponível/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/doado por/i)).not.toBeInTheDocument();
+  });
+
+  it("entrada com exemplar apresenta disponibilidade e o Apoiador creditado", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        missoes: [
+          missao({
+            bibliografia: [
+              bibliografia({
+                item_patrimonial_id: "item-1",
+                disponivel: true,
+                apoiador_nome: "Instituto Exemplo",
+              }),
+            ],
+          }),
+        ],
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    await abrirMissao();
+
+    expect(
+      await screen.findByText(/exemplar disponível no ponto de apoio/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/doado por instituto exemplo/i)).toBeInTheDocument();
+  });
+
+  it("não há campo para digitar o Apoiador", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "listarAcervo").mockResolvedValue([]);
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByRole("button", { name: /nova bibliografia/i }));
+
+    expect(screen.queryByLabelText(/apoiador/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("pré-visualização da missão (RF-09-25)", () => {
+  it("apresenta conteúdo e bibliografia como o Guerreiro(a) os verá", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        missoes: [
+          missao({
+            conteudos: [conteudo({ corpo: "Texto que o Guerreiro(a) vai ler." })],
+            bibliografia: [bibliografia()],
+          }),
+        ],
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByRole("button", { name: /pré-visualizar missão/i }));
+
+    const preVisualizacao = await screen.findByRole("region", {
+      name: /pré-visualização de primeira missão/i,
+    });
+    expect(
+      within(preVisualizacao).getByText("Texto que o Guerreiro(a) vai ler."),
+    ).toBeInTheDocument();
+    expect(within(preVisualizacao).getByText(/robótica educativa/i)).toBeInTheDocument();
+  });
+
+  it("a pré-visualização não grava nada", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        missoes: [missao({ conteudos: [conteudo()], bibliografia: [bibliografia()] })],
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const criarConteudoEspiado = vi.spyOn(trilhasApi, "criarConteudo");
+    const criarBibliografiaEspiado = vi.spyOn(trilhasApi, "criarBibliografia");
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByRole("button", { name: /pré-visualizar missão/i }));
+    await usuario.click(screen.getByRole("button", { name: /fechar pré-visualização/i }));
+
+    expect(criarConteudoEspiado).not.toHaveBeenCalled();
+    expect(criarBibliografiaEspiado).not.toHaveBeenCalled();
   });
 });

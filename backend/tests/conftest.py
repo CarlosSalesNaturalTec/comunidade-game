@@ -18,6 +18,7 @@ from nucleo.auditoria.modelo import Auditoria
 from nucleo.aulas.modelo import Aula, RecursoDeclaradoDaAula
 from nucleo.autenticacao import exigir_persona
 from nucleo.banco import Base, obter_sessao
+from nucleo.bibliografias.modelo import BibliografiaDaMissao
 from nucleo.biometria.cifra import cifrar_descritor
 from nucleo.catalogo_avulso.modelo import (
     ItemDeCatalogoAvulso,
@@ -46,6 +47,7 @@ from nucleo.consentimentos.modelo import (
     OrigemDoConsentimento,
     TipoDeConsentimento,
 )
+from nucleo.conteudos.modelo import AutoriaDoConteudo, ConteudoDaMissao, TipoDeConteudo
 from nucleo.equipes.modelo import Equipe, IntegranteDaEquipe
 from nucleo.fila.modelo import SituacaoDaSolicitacao, SolicitacaoDeChave, SolicitacaoDeParticipacao
 from nucleo.fila.regra import avaliar_solicitacao_de_chave, registrar_solicitacao_de_chave
@@ -194,6 +196,7 @@ def configuracao(tmp_path):
         argon2_iteracoes=1,
         argon2_paralelismo=1,
         armazenamento_diretorio_local=str(tmp_path / "armazenamento"),
+        armazenamento_diretorio_sessoes_locais=str(tmp_path / "armazenamento-sessoes"),
     )
 
 
@@ -258,14 +261,17 @@ def _montar_roteador_de_teste() -> APIRouter:
 @pytest.fixture
 def app(sessao, configuracao):
     from nucleo.aportes.rotas import roteador as roteador_de_aportes
+    from nucleo.armazenamento.rotas import roteador as roteador_de_armazenamento
     from nucleo.auditoria.rotas import roteador as roteador_de_auditoria
     from nucleo.aulas.rotas import roteador as roteador_de_aulas
+    from nucleo.bibliografias.rotas import roteador as roteador_de_bibliografias
     from nucleo.biometria.rotas import roteador as roteador_de_biometria
     from nucleo.catalogo_avulso.rotas import roteador as roteador_de_catalogo_avulso
     from nucleo.chaves.rotas import roteador as roteador_de_chaves
     from nucleo.coletas.rotas import roteador as roteador_de_coletas
     from nucleo.comunidades.rotas import roteador as roteador_de_comunidades
     from nucleo.consentimentos.rotas import roteador as roteador_de_consentimentos
+    from nucleo.conteudos.rotas import roteador as roteador_de_conteudos
     from nucleo.culminancias.rotas import roteador as roteador_de_culminancias
     from nucleo.equipes.rotas import roteador as roteador_de_equipes
     from nucleo.fila.rotas import roteador as roteador_de_fila
@@ -332,6 +338,9 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_equipes)
     incluir_roteador_de_dados(aplicacao, roteador_de_consentimentos)
     incluir_roteador_de_dados(aplicacao, roteador_de_ponto_extra)
+    incluir_roteador_de_dados(aplicacao, roteador_de_conteudos)
+    incluir_roteador_de_dados(aplicacao, roteador_de_bibliografias)
+    incluir_roteador_de_dados(aplicacao, roteador_de_armazenamento)
     return aplicacao
 
 
@@ -792,6 +801,66 @@ def criar_atividade(sessao):
         sessao.commit()
         sessao.refresh(atividade)
         return atividade
+
+    return _criar
+
+
+@pytest.fixture
+def criar_conteudo_da_missao(sessao):
+    def _criar(
+        missao: Missao,
+        autor: Persona,
+        tipo: TipoDeConteudo = TipoDeConteudo.texto,
+        ordem: int = 1,
+        corpo: str | None = "Corpo de teste.",
+        endereco: str | None = None,
+        referencia: str | None = None,
+        tamanho: int | None = None,
+        autoria: AutoriaDoConteudo = AutoriaDoConteudo.propria,
+        fonte: str | None = None,
+    ) -> ConteudoDaMissao:
+        conteudo = ConteudoDaMissao(
+            missao_id=missao.id,
+            ordem=ordem,
+            tipo=tipo,
+            corpo=corpo if tipo == TipoDeConteudo.texto else None,
+            endereco=endereco if tipo == TipoDeConteudo.link_externo else None,
+            referencia=referencia,
+            tamanho=tamanho,
+            autoria=autoria,
+            fonte=fonte,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(conteudo)
+        sessao.commit()
+        sessao.refresh(conteudo)
+        return conteudo
+
+    return _criar
+
+
+@pytest.fixture
+def criar_bibliografia_da_missao(sessao):
+    def _criar(
+        missao: Missao,
+        autor: Persona,
+        titulo: str = "Robótica Educativa — Eletrônica",
+        capitulo: str = "Capítulo 3 — Sensores",
+        item_patrimonial: ItemPatrimonial | None = None,
+    ) -> BibliografiaDaMissao:
+        bibliografia = BibliografiaDaMissao(
+            missao_id=missao.id,
+            titulo=titulo,
+            capitulo=capitulo,
+            item_patrimonial_id=item_patrimonial.id if item_patrimonial is not None else None,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(bibliografia)
+        sessao.commit()
+        sessao.refresh(bibliografia)
+        return bibliografia
 
     return _criar
 

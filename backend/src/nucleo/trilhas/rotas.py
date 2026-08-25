@@ -7,7 +7,12 @@ from sqlalchemy.orm import Session
 
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
+from ..bibliografias.modelo import BibliografiaDaMissao
+from ..bibliografias.regra import consultar_bibliografia_da_missao, ler_disponibilidade_e_credito
 from ..configuracao import Configuracao, obter_configuracao
+from ..conteudos.modelo import ConteudoDaMissao
+from ..conteudos.regra import consultar_conteudos_da_missao
+from ..conteudos.rotas import ConteudoSaida, saida_do_conteudo
 from ..erros import NaoEncontrado
 from ..ods.modelo import EtiquetaOds
 from ..ods.regra import cobertura_por_trilha
@@ -63,6 +68,31 @@ def _saida_da_atividade(atividade: Atividade) -> AtividadeSaida:
     )
 
 
+class BibliografiaPublicaSaida(BaseModel):
+    id: uuid.UUID
+    missao_id: uuid.UUID
+    titulo: str
+    capitulo: str
+    disponivel: bool | None
+    apoiador_nome: str | None
+
+
+def _saida_da_bibliografia_publica(
+    sessao_bd: Session, bibliografia: BibliografiaDaMissao, *, ponto_de_apoio_id: uuid.UUID | None
+) -> BibliografiaPublicaSaida:
+    disponivel, apoiador = ler_disponibilidade_e_credito(
+        sessao_bd, bibliografia, ponto_de_apoio_id=ponto_de_apoio_id
+    )
+    return BibliografiaPublicaSaida(
+        id=bibliografia.id,
+        missao_id=bibliografia.missao_id,
+        titulo=bibliografia.titulo,
+        capitulo=bibliografia.capitulo,
+        disponivel=disponivel,
+        apoiador_nome=apoiador.nome if apoiador is not None else None,
+    )
+
+
 class MissaoSaida(BaseModel):
     id: uuid.UUID
     trilha_id: uuid.UUID
@@ -75,6 +105,8 @@ class MissaoSaida(BaseModel):
     cadencia_de_retomada: list[int] | None
     atividades: list[AtividadeSaida] = Field(default_factory=list)
     etiquetas_ods: list[EtiquetaOdsSaida] = Field(default_factory=list)
+    conteudos: list[ConteudoSaida] = Field(default_factory=list)
+    bibliografia: list[BibliografiaPublicaSaida] = Field(default_factory=list)
 
 
 def _etiquetas_da_missao(sessao_bd: Session, missao: Missao) -> list[EtiquetaOds]:
@@ -89,6 +121,8 @@ def _saida_da_missao(
     *,
     atividades: list[Atividade] | None = None,
     etiquetas: list[EtiquetaOds] | None = None,
+    conteudos: list[ConteudoDaMissao] | None = None,
+    bibliografia: list[BibliografiaPublicaSaida] | None = None,
 ) -> MissaoSaida:
     return MissaoSaida(
         id=missao.id,
@@ -102,6 +136,8 @@ def _saida_da_missao(
         cadencia_de_retomada=missao.cadencia_de_retomada,
         atividades=[_saida_da_atividade(atividade) for atividade in (atividades or [])],
         etiquetas_ods=[saida_da_etiqueta(etiqueta) for etiqueta in (etiquetas or [])],
+        conteudos=[saida_do_conteudo(conteudo) for conteudo in (conteudos or [])],
+        bibliografia=bibliografia or [],
     )
 
 
@@ -394,11 +430,16 @@ def obter_trilha_publica_rota(
     id_da_trilha: uuid.UUID,
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
     configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
+    ponto_de_apoio_id: uuid.UUID | None = None,
 ) -> TrilhaPublicaSaida:
     """`RF-09-09`, `RN-09-05`: pública, sem persona em sessão — só serve
     trilha publicada; rascunho e despublicada respondem como não
     encontrada, para não vazar a existência de rascunho alheio (`RF-09-04`,
-    design — decisões 8). Destrava o consumo pela App 05 e pela App 01."""
+    design — decisões 8). Destrava o consumo pela App 05 e pela App 01.
+
+    `ponto_de_apoio_id` é opcional e só orienta a disponibilidade da
+    bibliografia vinculada (`RF-09-22`): sem ele, a disponibilidade
+    permanece indeterminada — nunca afirmada nem negada por suposição."""
     trilha = sessao_bd.get(Trilha, id_da_trilha)
     if trilha is None or trilha.situacao != SituacaoDaTrilha.publicada:
         raise NaoEncontrado(mensagem="Trilha não encontrada.")
@@ -408,9 +449,19 @@ def obter_trilha_publica_rota(
     missoes_saida = []
     for missao in missoes:
         atividades = sessao_bd.query(Atividade).filter_by(missao_id=missao.id).all()
+        bibliografias = consultar_bibliografia_da_missao(sessao_bd, missao.id)
         missoes_saida.append(
             _saida_da_missao(
-                missao, atividades=atividades, etiquetas=_etiquetas_da_missao(sessao_bd, missao)
+                missao,
+                atividades=atividades,
+                etiquetas=_etiquetas_da_missao(sessao_bd, missao),
+                conteudos=consultar_conteudos_da_missao(sessao_bd, missao.id),
+                bibliografia=[
+                    _saida_da_bibliografia_publica(
+                        sessao_bd, bibliografia, ponto_de_apoio_id=ponto_de_apoio_id
+                    )
+                    for bibliografia in bibliografias
+                ],
             )
         )
 

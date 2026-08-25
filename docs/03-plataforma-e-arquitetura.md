@@ -881,13 +881,15 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 - **Cada missão nasce declarada obrigatória ou opcional**, e o Mestre diz se o desbloqueio dela
   libera recompensa e em que cadência ela volta para revisão.
 - **Conteúdo da missão:** texto formatado, imagens, link externo e upload hospedado
-  pela plataforma — **vídeo até 200 MB e arquivo até 20 MB por missão**, com o
-  consumo lançado como recurso de _cloud_ no livro-razão.
+  pela plataforma — **vídeo até 200 MB e arquivo até 20 MB por missão**. O custo do
+  armazenamento corre pela fatura de _cloud_, sem medição por envio (documento 04).
 - **O upload aceita lista fechada de formatos**: vídeo MP4 e WebM, imagem JPG, PNG e WebP,
   áudio MP3 e documento PDF. O que está fora da lista é recusado no envio — o que fecha a porta
   a executável e a formato que o navegador não abre. **O que é enviado não passa por conferência
   prévia**: cai na auditoria mensal por amostragem do Admin, como a trilha e o corpus de apoio,
   e o Admin despublica com motivo.
+- **Conteúdo de terceiros usado na missão é registrado com a fonte**, em campo de texto — sem
+  anexo e sem documento de autorização.
 
 ## 12. Proteção de dados em toda a plataforma (LGPD)
 

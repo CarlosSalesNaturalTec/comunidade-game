@@ -61,6 +61,11 @@ class Configuracao(BaseSettings):
     armazenamento_diretorio_local: str = "./armazenamento"
     armazenamento_bucket_cloud_storage: str = ""
 
+    # Diretório das sessões de envio retomável, fora de produção — separado
+    # do diretório final, para que o arquivo em costura nunca seja servido
+    # antes de o envio ser confirmado (`RF-09-19`, design — Migration Plan).
+    armazenamento_diretorio_sessoes_locais: str = "./armazenamento-sessoes"
+
     # Rótulo do ciclo corrente, declarado na implantação — não é entidade,
     # não tem calendário (`RF-01-42`, `RF-01-43`, design — Decisions).
     ciclo_rotulo: str = "Ciclo 01"

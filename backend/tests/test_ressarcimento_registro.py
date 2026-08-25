@@ -63,7 +63,7 @@ def cenario(
 
 def test_admin_ressarce_uma_absorcao_com_comprovante(sessao, cenario, tmp_path):
     admin, _mestre, _apoiador, _ponto_de_apoio, _tipo, absorcao, receita = cenario
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
 
     ressarcimento = registrar_ressarcimento(
         sessao,
@@ -108,7 +108,7 @@ def test_aporte_nao_ressarcivel_nao_se_ressarce(
     sessao, cenario, criar_lancamento, criar_aporte, tmp_path
 ):
     admin, _mestre, apoiador, ponto_de_apoio, tipo, _absorcao, receita = cenario
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
     lancamento = criar_lancamento(admin, tipo, ponto_de_apoio)
     aporte_da_gestao = criar_aporte(
         admin,
@@ -138,7 +138,7 @@ def test_aporte_nao_ressarcivel_nao_se_ressarce(
 
 def test_aporte_ja_ressarcido_nao_se_ressarce_de_novo(sessao, cenario, tmp_path):
     admin, _mestre, _apoiador, _ponto_de_apoio, _tipo, absorcao, receita = cenario
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
     absorcao.situacao_de_ressarcimento = SituacaoDeRessarcimento.ressarcido
     sessao.commit()
 
@@ -161,7 +161,7 @@ def test_receita_de_destinacao_lastro_nao_financia_ressarcimento(
     sessao, cenario, criar_lancamento, criar_aporte, tmp_path
 ):
     admin, _mestre, apoiador, ponto_de_apoio, tipo, absorcao, _receita = cenario
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
     lancamento = criar_lancamento(admin, tipo, ponto_de_apoio)
     aporte_de_lastro = criar_aporte(
         admin,
@@ -193,7 +193,7 @@ def test_valor_acima_do_que_a_receita_cobre_e_recusado(
     sessao, cenario, criar_lancamento, criar_aporte, tmp_path
 ):
     admin, mestre, _apoiador, ponto_de_apoio, tipo, _absorcao, receita = cenario
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
     receita.valor_de_origem = Decimal("5.00")
     sessao.commit()
 
@@ -236,7 +236,7 @@ def test_nenhum_campo_da_entidade_guarda_dado_bancario():
 
 def test_mestre_nao_registra_ressarcimento(sessao, cenario, tmp_path):
     _admin, mestre, _apoiador, _ponto_de_apoio, _tipo, absorcao, receita = cenario
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
 
     with pytest.raises(PermissaoNegada):
         registrar_ressarcimento(
@@ -257,7 +257,7 @@ def test_mesmo_aporte_nao_tem_dois_ressarcimentos_no_banco(sessao, cenario, tmp_
     """A unicidade de `aporte_id` é reforçada também pela restrição do
     banco, não só pela checagem de situação (`RF-07-22`)."""
     admin, _mestre, _apoiador, _ponto_de_apoio, _tipo, absorcao, receita = cenario
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
 
     registrar_ressarcimento(
         sessao,

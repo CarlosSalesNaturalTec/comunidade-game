@@ -14,12 +14,14 @@ from .apoio_escolar import modelo as _modelo_apoio_escolar  # noqa: F401
 from .aportes import modelo as _modelo_aportes  # noqa: F401
 from .auditoria import modelo as _modelo_auditoria  # noqa: F401
 from .aulas import modelo as _modelo_aulas  # noqa: F401
+from .bibliografias import modelo as _modelo_bibliografias  # noqa: F401
 from .biometria import modelo as _modelo_biometria  # noqa: F401
 from .catalogo_avulso import modelo as _modelo_catalogo_avulso  # noqa: F401
 from .chaves import modelo as _modelo_chaves  # noqa: F401
 from .coletas import modelo as _modelo_coletas  # noqa: F401
 from .comunidades import modelo as _modelo_comunidades  # noqa: F401
 from .consentimentos import modelo as _modelo_consentimentos  # noqa: F401
+from .conteudos import modelo as _modelo_conteudos  # noqa: F401
 from .criacoes_originais import modelo as _modelo_criacoes_originais  # noqa: F401
 from .culminancias import modelo as _modelo_culminancias  # noqa: F401
 from .equipes import modelo as _modelo_equipes  # noqa: F401

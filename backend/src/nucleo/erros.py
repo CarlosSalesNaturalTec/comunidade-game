@@ -265,6 +265,12 @@ class CredencialDeDispositivoJaAtiva(ErroDeAplicacao):
     mensagem = "Esta série já tem uma credencial de dispositivo ativa."
 
 
+class ArquivoAcimaDoTeto(ErroDeAplicacao):
+    status_code = 413
+    codigo = "arquivo_acima_do_teto"
+    mensagem = "Arquivo acima do limite de tamanho para este tipo de conteúdo."
+
+
 class FreioPorOrigemAcionado(ErroDeAplicacao):
     """`RF-01-65`: leva o tempo de espera calculado pelo freio, que o
     manipulador de `principal.py` também expõe no cabeçalho `Retry-After`

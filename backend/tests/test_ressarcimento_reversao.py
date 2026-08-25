@@ -31,7 +31,7 @@ def cenario(
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
     tipo = criar_tipo_de_recurso(admin, nome="Lanche", natureza=NaturezaDoRecurso.consumivel)
     criar_valor_de_referencia(admin, tipo, valor_em_moedas=Decimal("1.00"))
-    armazenamento = ArmazenamentoEmDisco(str(tmp_path))
+    armazenamento = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
 
     absorcao_mantida = registrar_aporte_por_absorcao(
         sessao,
