@@ -557,6 +557,23 @@ Decisão do fundador, 2026-08-26: o ditado por voz é transcrito no aparelho, se
 (documento 09). Trilha, criação original e portfólio seguem pendentes — o PRD-05 continua
 **aprovado**.
 
+A elicitação das pendências do PRD-05, em 2026-08-26, fechou três decisões do fundador antes da
+terceira fatia. A **inscrição na trilha** passa a ser entidade do núcleo e ato do Guerreiro(a):
+exige trilha publicada, admite **várias trilhas ao mesmo tempo**, não se desfaz e não obriga a
+concluir — quem para no meio fica com a evolução limitada às etapas realizadas. Com ela, o nível
+1 passa a exigir as **duas** condições do documento 11 §6, e não só a segunda: até aqui o núcleo
+derivava "inscrito" de haver qualquer `Resultado` na trilha, o que fazia depender de ato do
+Mestre o que é ato da criança. A **criação original** pode ser entregue individualmente ou por
+qualquer integrante da equipe fixa da trilha, valendo pela equipe inteira, e a entrega aceita
+texto, imagem, vídeo, arquivo e link — o `RF-01-64` deixa de prever só o crédito aos
+integrantes. A **equipe da trilha** passa a ser formada **e homologada na App 01**, o mesmo
+aparelho em que nasce, corrigindo o documento 02 §5, que mandava homologar na App 03: sem isso
+nada no produto cria equipe da trilha, e a criação original ficava sem sujeito (`RF-04-61` e
+`RF-04-62`, novos no PRD-04). A elicitação também achou `RF-05-84` e `RF-05-85` nomeando **dois
+requisitos cada um**: o par de §6.7 — ranking da turma inteira e recusa sem rede — mantém os
+números, já consumidos em código, e o de §6.6 passa a `RF-05-87` e `RF-05-88`. Os três PRDs
+continuam **aprovados**.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

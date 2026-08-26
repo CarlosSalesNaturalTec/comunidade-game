@@ -105,6 +105,18 @@ TRILHA (autoria de um Mestre, vinculada a um Poder)
 são os momentos em que a recompensa é entregue — o Mestre autor declara qual marco concede o
 quê, conforme a regra do documento 02.
 
+#### Inscrição na trilha
+
+**Quem põe o Guerreiro(a) no percurso de uma trilha é a inscrição dele**, nunca o lançamento de
+um resultado. A trilha precisa estar **publicada**, e a inscrição é a primeira das duas
+condições do nível 1 (§6).
+
+- **Várias ao mesmo tempo**, sem limite: a escolha do poder é o caminho até as trilhas dele,
+  não um teto de uma trilha por poder.
+- **Uma inscrição por trilha** — inscrever-se de novo na mesma trilha não cria vínculo novo.
+- **Não se desfaz e não obriga a concluir.** Quem para no meio fica com a evolução limitada às
+  etapas realizadas, e o nível já conquistado não regride (§6).
+
 #### Etiqueta ODS da trilha
 
 O Mestre autor declara quais **Objetivos de Desenvolvimento Sustentável** a trilha toca: o

@@ -72,6 +72,8 @@ existe para impedir.
   em andamento e **encerra com ela**.
 - Participação em **mais de uma equipe** no encontro; na partida de quiz, várias equipes
   disputam e cada Guerreiro(a) joga por **uma única**.
+- **Equipe da trilha**: formada no mesmo aparelho e **homologada pelo Mestre presente**, a
+  partir de quando a composição fica fixa. É ela o sujeito da criação original da culminância.
 - **Missão da equipe**: onde ela está, o conteúdo e a atividade do dia.
 - **Entrega da produção da missão** no aparelho compartilhado, por escrita, fala ou foto do
   que a equipe fez à mão, com devolutiva construtiva e descarte de foto e áudio na leitura.
@@ -310,6 +312,8 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-33` | Guerreiro(a) integra mais de uma equipe no mesmo encontro                                                     | essencial  |
 | `RF-04-59` | Cada integrante declara o seu papel na formação da equipe, e ele vale para o encontro inteiro                 | essencial  |
 | `RF-04-34` | Tela mostra as equipes da aula por avatar e nick, sem qualquer dado pessoal                                   | essencial  |
+| `RF-04-61` | Guerreiro(a) forma a equipe da trilha no aparelho, com os mesmos limites de composição da aula                | essencial  |
+| `RF-04-62` | Mestre presente homologa a equipe da trilha, e a composição fica fixa a partir da homologação                 | essencial  |
 | `RF-04-45` | Equipe entrega a produção da missão por texto, áudio ou foto do manuscrito                                    | essencial  |
 | `RF-04-46` | Aplicação devolve retorno construtivo e descarta foto e áudio na leitura                                      | essencial  |
 | `RF-04-47` | Devolutiva automática não credita pontos; o resultado é lançado pelo Mestre                                   | essencial  |
@@ -443,6 +447,8 @@ Rotas do caminho das trilhas, todas autenticadas na **sessão do Guerreiro(a)**:
 | ------ | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GET    | `/v1/aulas/{id}/equipes`              | Listar as equipes já formadas na aula, por avatar e nick                                                                                                       |
 | POST   | `/v1/aulas/{id}/equipes`              | Criar equipe da aula, com quem a criou como primeiro integrante                                                                                                |
+| POST   | `/v1/trilhas/{id}/equipes`            | Criar a equipe da trilha, com quem a criou como primeiro integrante (`RF-04-61`)                                                                               |
+| POST   | `/v1/equipes/{id}/homologacao`        | Homologar a equipe da trilha — única escrita desta lista sob a **sessão de trabalho**, do Mestre, e não sob a do Guerreiro(a) (`RF-04-62`)                     |
 | POST   | `/v1/equipes/{id}/integrantes`        | Entrar em uma equipe existente                                                                                                                                 |
 | DELETE | `/v1/equipes/{id}/integrantes/eu`     | Sair da equipe                                                                                                                                                 |
 | GET    | `/v1/equipes/{id}/missao`             | Programação do encontro, em lista — missão, conteúdo e atividade do dia de cada atividade presencial da aula da equipe; restrita a quem a integra (`RF-04-35`) |
@@ -622,6 +628,7 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 | Presença já registrada é devolvida sem erro, no lugar do 409; quem avisa é a aplicação                           | 09 §1          | Presença já registrada não é erro                              |
 | Aparelho aberto por Admin não oferece o momento de troca — a troca é ato do Mestre                               | 09 §1          | Troca por recompensa avulsa exige Mestre na sessão de trabalho |
 | A troca é escrita sob a sessão de trabalho, com o Guerreiro(a) vindo da sessão aninhada                          | 09 §1          | A troca é escrita sob a sessão de trabalho do aparelho         |
+| Equipe da trilha formada **e** homologada na App 01, no mesmo aparelho                                           | 02 §5          | Onde a equipe da trilha é formada e homologada                 |
 
 A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do termo** ao
 `Consentimento` do PRD-01, e o acompanhamento do anexo pendente à App 03 (PRD-02).
@@ -673,29 +680,30 @@ a **forma do aviso** da exclusão do _template_, que acontece na App 07, com a d
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                                 |
-| ----------------------- | ------------------------------------------------------ |
-| `RF-04-01`, `RF-04-06`  | 03 §3.2 (tela inicial e interação cognitiva), 06 §3    |
-| `RF-04-02` e `RF-04-03` | 02 §1 e 03 §3.2 (comunidade vinda da aula agendada)    |
-| `RF-04-04` e `RF-04-05` | 03 §3.2 (condição de funcionamento)                    |
-| `RF-04-07`              | 03 §3.2 (dados coletados), 02 §9, 15 §7 (avatar)       |
-| `RF-04-08`              | 02 §1 (nick único)                                     |
-| `RF-04-09`              | 02 §1 (faixa de 6 a 16 anos)                           |
-| `RF-04-10`              | 02 §1 (vínculo obrigatório à comunidade)               |
-| `RF-04-11` a `RF-04-14` | 03 §3.3 (consentimento, minimização e retenção)        |
-| `RF-04-15` e `RF-04-16` | 03 §3.2 (criança sem o responsável)                    |
-| `RF-04-17` a `RF-04-19` | 03 §3.2 (registro de presença)                         |
-| `RF-04-20` a `RF-04-22` | 03 §§1.1, 3.2 (falha de identificação e alternativa)   |
-| `RF-04-23` a `RF-04-25` | 03 §3.4 (rede instável e fila local)                   |
-| `RF-04-26`              | 03 §12 (aviso visível e área detalhada)                |
-| `RF-04-27` e `RF-04-28` | 03 §3 (onboarding contínuo em aparelho compartilhado)  |
-| `RF-04-29`              | 03 §1.1 (entrada por nick e imagem)                    |
-| `RF-04-30` a `RF-04-34` | 02 §5 e 03 §4.1 (equipes formadas na aula)             |
-| `RF-04-35`              | 11 §2 (anatomia da trilha), 03 §4.2                    |
-| `RF-04-45` a `RF-04-47` | 11 §2.2 (produção e devolutiva), 03 §§4, 12.2          |
-| `RF-04-36` a `RF-04-40` | 03 §§4.2, 7 (assistente, corpus fechado e áudio)       |
-| `RF-04-41` a `RF-04-44` | 05 §5 (regras da partida de Quiz ao Vivo)              |
-| `RF-04-58`              | 03 §3.4 (rede instável)                                |
-| `RF-04-48`              | 03 §3.3 (_template_ gerado no aparelho)                |
-| `RF-04-49` a `RF-04-57` | 02 §8.2 (recompensa avulsa) e 11 §5 (saldo e troca)    |
-| `RF-04-60`              | 09 §1 (responsável mínimo no ato do encontro), 03 §3.3 |
+| Requisito               | Origem                                                    |
+| ----------------------- | --------------------------------------------------------- |
+| `RF-04-01`, `RF-04-06`  | 03 §3.2 (tela inicial e interação cognitiva), 06 §3       |
+| `RF-04-02` e `RF-04-03` | 02 §1 e 03 §3.2 (comunidade vinda da aula agendada)       |
+| `RF-04-04` e `RF-04-05` | 03 §3.2 (condição de funcionamento)                       |
+| `RF-04-07`              | 03 §3.2 (dados coletados), 02 §9, 15 §7 (avatar)          |
+| `RF-04-08`              | 02 §1 (nick único)                                        |
+| `RF-04-09`              | 02 §1 (faixa de 6 a 16 anos)                              |
+| `RF-04-10`              | 02 §1 (vínculo obrigatório à comunidade)                  |
+| `RF-04-11` a `RF-04-14` | 03 §3.3 (consentimento, minimização e retenção)           |
+| `RF-04-15` e `RF-04-16` | 03 §3.2 (criança sem o responsável)                       |
+| `RF-04-17` a `RF-04-19` | 03 §3.2 (registro de presença)                            |
+| `RF-04-20` a `RF-04-22` | 03 §§1.1, 3.2 (falha de identificação e alternativa)      |
+| `RF-04-23` a `RF-04-25` | 03 §3.4 (rede instável e fila local)                      |
+| `RF-04-26`              | 03 §12 (aviso visível e área detalhada)                   |
+| `RF-04-27` e `RF-04-28` | 03 §3 (onboarding contínuo em aparelho compartilhado)     |
+| `RF-04-29`              | 03 §1.1 (entrada por nick e imagem)                       |
+| `RF-04-30` a `RF-04-34` | 02 §5 e 03 §4.1 (equipes formadas na aula)                |
+| `RF-04-35`              | 11 §2 (anatomia da trilha), 03 §4.2                       |
+| `RF-04-61` e `RF-04-62` | 02 §5 (equipe da trilha formada e homologada no encontro) |
+| `RF-04-45` a `RF-04-47` | 11 §2.2 (produção e devolutiva), 03 §§4, 12.2             |
+| `RF-04-36` a `RF-04-40` | 03 §§4.2, 7 (assistente, corpus fechado e áudio)          |
+| `RF-04-41` a `RF-04-44` | 05 §5 (regras da partida de Quiz ao Vivo)                 |
+| `RF-04-58`              | 03 §3.4 (rede instável)                                   |
+| `RF-04-48`              | 03 §3.3 (_template_ gerado no aparelho)                   |
+| `RF-04-49` a `RF-04-57` | 02 §8.2 (recompensa avulsa) e 11 §5 (saldo e troca)       |
+| `RF-04-60`              | 09 §1 (responsável mínimo no ato do encontro), 03 §3.3    |

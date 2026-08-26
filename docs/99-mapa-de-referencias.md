@@ -184,6 +184,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Conceito                                    | Definição                 | PRDs                               |
 | ------------------------------------------- | ------------------------- | ---------------------------------- |
 | Trilha e missões                            | 02 §3 + 11 §2             | PRD-01, 09, 05                     |
+| Inscrição na trilha                         | 11 §2                     | PRD-05, 01                         |
 | Conteúdo e bibliografia por missão          | 05 §3 + 11 §2             | PRD-09, 07                         |
 | Atividades e taxonomia                      | 02 §4 + 11 §§2.1, 4       | PRD-09, 01, 02, 05                 |
 | Acompanhamento por nick e favoritos         | 02 §1 + 03 §10            | PRD-14, 03, 01                     |
@@ -286,7 +287,7 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     Guerreiro(a) pode integrar várias e pontua em todas em que colabora — **uma só na partida
     de Quiz ao Vivo** —; no máximo **1 familiar com 17 anos ou mais**. Cada integrante **declara
     o seu papel na formação da equipe**, e ele vale para o encontro. A gestão não forma nem
-    edita composição: o Mestre apenas **homologa a equipe da trilha, na App 03**.
+    edita composição: o Mestre apenas **homologa a equipe da trilha, na App 01**.
 16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.** Reais só aparecem
     na tela onde se paga, sempre ao lado do equivalente em moedas.
 17. **Os dados produzidos pela plataforma são gratuitos.** A vitrine mostra a visão macro e
