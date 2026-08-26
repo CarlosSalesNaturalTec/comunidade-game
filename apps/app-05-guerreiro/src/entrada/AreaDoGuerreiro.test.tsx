@@ -16,17 +16,19 @@ async function renderizarComSessaoAberta() {
     papel: "guerreiro",
     permissoes: {},
   });
-  render(
-    <ProvedorDeSessao chaveDeArmazenamento="app-05:sessao-guerreiro-teste">
-      <AreaDoGuerreiro />
-    </ProvedorDeSessao>,
-  );
-  await screen.findByRole("heading", { name: /minha área/i });
+  await act(async () => {
+    render(
+      <ProvedorDeSessao chaveDeArmazenamento="app-05:sessao-guerreiro-teste">
+        <AreaDoGuerreiro />
+      </ProvedorDeSessao>,
+    );
+  });
+  screen.getByRole("heading", { name: /minha área/i });
 }
 
 describe("encerramento por saída e por inatividade", () => {
   beforeEach(() => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
@@ -61,9 +63,7 @@ describe("encerramento por saída e por inatividade", () => {
       await vi.advanceTimersByTimeAsync(DURACAO_EM_MS);
     });
 
-    await vi.waitFor(() =>
-      expect(encerrarSessaoDoGuerreiro).toHaveBeenCalledWith("token-do-guerreiro"),
-    );
+    expect(encerrarSessaoDoGuerreiro).toHaveBeenCalledWith("token-do-guerreiro");
   });
 
   it("continuar recomeça a contagem, e a sessão segue aberta", async () => {
