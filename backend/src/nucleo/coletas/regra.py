@@ -386,6 +386,19 @@ def resolver_etiquetas_do_desafio(sessao: Session, desafio: DesafioDeColeta) -> 
     return resolver_etiquetas_da_missao(sessao, missao)
 
 
+def _desafio_esta_vigente(desafio: DesafioDeColeta, agora_: datetime) -> bool:
+    return desafio.vigencia_inicio <= agora_ <= desafio.vigencia_fim
+
+
+def _niveis_elegiveis_da_comunidade(comunidade: ComunidadeVirtual) -> list[NivelDoLocal]:
+    """Os níveis que cabem no teto de granularidade da comunidade — a régua
+    única que a abertura da série e a leitura dos desafios disponíveis
+    compartilham, para que a segunda jamais divirja da primeira
+    (`RN-08-25`, `RN-05-24`, design — decisão 4)."""
+    indice_teto = ORDEM_DOS_NIVEIS.index(NivelDoLocal(comunidade.granularidade_maxima))
+    return list(ORDEM_DOS_NIVEIS[: indice_teto + 1])
+
+
 def abrir_serie_de_coleta(
     sessao: Session,
     *,
@@ -407,7 +420,7 @@ def abrir_serie_de_coleta(
         )
 
     agora_ = agora()
-    if not (desafio.vigencia_inicio <= agora_ <= desafio.vigencia_fim):
+    if not _desafio_esta_vigente(desafio, agora_):
         raise ErroDeValidacao(
             mensagem="O desafio de coleta não está vigente.", campo="desafio_de_coleta_id"
         )
@@ -423,9 +436,7 @@ def abrir_serie_de_coleta(
         raise PermissaoNegada(mensagem="O local escolhido não pertence à sua Comunidade Virtual.")
 
     comunidade = sessao.get(ComunidadeVirtual, vinculo.comunidade_virtual_id)
-    indice_exigido = ORDEM_DOS_NIVEIS.index(desafio.granularidade_exigida)
-    indice_teto = ORDEM_DOS_NIVEIS.index(NivelDoLocal(comunidade.granularidade_maxima))
-    if indice_exigido > indice_teto:
+    if desafio.granularidade_exigida not in _niveis_elegiveis_da_comunidade(comunidade):
         raise ErroDeValidacao(
             mensagem="A granularidade exigida pelo desafio é mais fina que o teto da "
             "sua Comunidade Virtual.",
@@ -837,13 +848,45 @@ def invalidar_registro_de_coleta(
     return registro
 
 
+class TipoDeColetaResumoSaida(BaseModel):
+    """O que a tela precisa para pedir a medição na forma certa
+    (`RF-05-30`)."""
+
+    nome: str
+    forma_de_registro: str
+    unidade: str | None
+
+
+def _proxima_medicao_da_serie(serie: SerieDeColeta, estado: EstadoDaSerie) -> datetime | None:
+    """Início do período de cadência seguinte ao da última medição válida,
+    ou o período corrente sem medição válida nenhuma — a mesma régua de
+    `periodo_de_cadencia` que apura a interrupção, para nunca divergir dela
+    no fuso nem no mês. Série interrompida ou encerrada nunca declara
+    próxima medição (`RF-05-30`, `RN-05-10`, design — decisão 3)."""
+    if estado in (EstadoDaSerie.interrompida, EstadoDaSerie.encerrada):
+        return None
+    if serie.ultima_medicao_valida_em is not None:
+        _, fim_do_periodo_da_ultima = periodo_de_cadencia(
+            serie.ultima_medicao_valida_em, serie.cadencia
+        )
+        return fim_do_periodo_da_ultima
+    inicio_do_periodo_corrente, _ = periodo_de_cadencia(agora(), serie.cadencia)
+    return inicio_do_periodo_corrente
+
+
 class SerieDoGuerreiroSaida(BaseModel):
     id: uuid.UUID
     desafio_de_coleta_id: uuid.UUID
     local_id: uuid.UUID
+    # A comunidade do local da série — a mesma que `SolicitacaoDeLocalSaida`
+    # já expõe —, para que a aplicação resolva o rótulo do local sem uma
+    # rota nova (`GET /v1/locais?comunidade=...`).
+    comunidade_virtual_id: uuid.UUID
     cadencia: str
     estado: str
     pontos: int
+    proxima_medicao: datetime | None
+    tipo_de_coleta: TipoDeColetaResumoSaida
 
 
 def consultar_series_do_guerreiro(
@@ -894,14 +937,190 @@ def consultar_series_do_guerreiro(
             )
             .scalar()
         )
+        desafio = sessao.get(DesafioDeColeta, serie.desafio_de_coleta_id)
+        tipo = sessao.get(TipoDeColeta, desafio.tipo_de_coleta_id)
+        local = sessao.get(Local, serie.local_id)
         itens.append(
             SerieDoGuerreiroSaida(
                 id=serie.id,
                 desafio_de_coleta_id=serie.desafio_de_coleta_id,
                 local_id=serie.local_id,
+                comunidade_virtual_id=local.comunidade_virtual_id,
                 cadencia=serie.cadencia.value,
                 estado=estado.value,
                 pontos=pontos,
+                proxima_medicao=_proxima_medicao_da_serie(serie, estado),
+                tipo_de_coleta=TipoDeColetaResumoSaida(
+                    nome=tipo.nome,
+                    forma_de_registro=tipo.forma_de_registro.value,
+                    unidade=tipo.unidade,
+                ),
+            )
+        )
+    return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)
+
+
+class RegistroDoHistoricoSaida(BaseModel):
+    id: uuid.UUID
+    momento_do_fato: datetime
+    valor: float | None
+    unidade: str | None
+    midia_referencia: str | None
+    origem: str
+    situacao: str
+    a_conferir: bool
+    pontos_creditados: int
+    motivo_da_invalidacao: str | None
+
+
+def consultar_historico_da_serie(
+    sessao: Session,
+    *,
+    operador: Persona,
+    serie: SerieDeColeta | None,
+    cursor: str | None,
+    tamanho: int,
+) -> PaginaDeResultado[RegistroDoHistoricoSaida]:
+    """O histórico da própria série, do mais recente ao mais antigo — o
+    Mestre audita pela porta da auditoria, não por esta, e a série de outro
+    coletor é recusada com o mesmo 403 da série inexistente, sem denunciar
+    qual dos dois casos aconteceu (`RF-05-37`, `RF-05-38`, `RN-05-09`,
+    `RN-05-21`)."""
+    if operador.papel != Papel.guerreiro:
+        raise PermissaoNegada(mensagem="Só o Guerreiro(a) consulta o histórico das suas séries.")
+    if serie is None or serie.coletor_id != operador.id:
+        raise PermissaoNegada(mensagem="Só o coletor da série consulta o histórico dela.")
+
+    consulta = sessao.query(RegistroDeColeta).filter_by(serie_de_coleta_id=serie.id)
+
+    if cursor:
+        posicao = decodificar_cursor(cursor)
+        try:
+            momento_cursor = datetime.fromisoformat(posicao["momento_do_fato"])
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(
+            tuple_(RegistroDeColeta.momento_do_fato, RegistroDeColeta.id)
+            < (momento_cursor, id_cursor)
+        )
+
+    consulta = consulta.order_by(
+        RegistroDeColeta.momento_do_fato.desc(), RegistroDeColeta.id.desc()
+    ).limit(tamanho + 1)
+    registros = consulta.all()
+
+    proximo_cursor = None
+    if len(registros) > tamanho:
+        registros = registros[:tamanho]
+        ultimo = registros[-1]
+        proximo_cursor = codificar_cursor(
+            {"momento_do_fato": ultimo.momento_do_fato.isoformat(), "id": str(ultimo.id)}
+        )
+
+    itens = [
+        RegistroDoHistoricoSaida(
+            id=registro.id,
+            momento_do_fato=registro.momento_do_fato,
+            valor=registro.valor,
+            unidade=registro.unidade,
+            midia_referencia=registro.midia_referencia,
+            origem=registro.origem.value,
+            situacao=registro.situacao.value,
+            a_conferir=registro.a_conferir,
+            pontos_creditados=registro.pontos_creditados,
+            motivo_da_invalidacao=registro.motivo_da_invalidacao,
+        )
+        for registro in registros
+    ]
+    return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)
+
+
+class DesafioDisponivelSaida(BaseModel):
+    id: uuid.UUID
+    tipo_de_coleta: TipoDeColetaResumoSaida
+    cadencia: str
+    vigencia_inicio: datetime
+    vigencia_fim: datetime
+    granularidade_exigida: str
+    missao_id: uuid.UUID
+    trilha_id: uuid.UUID
+    ja_assumido: bool
+    # A comunidade do vínculo vigente do Guerreiro(a) — a mesma que
+    # `SolicitacaoDeLocalSaida` já expõe —, para que a aplicação escolha o
+    # local sem uma rota nova (`GET /v1/locais?comunidade=...`).
+    comunidade_virtual_id: uuid.UUID
+
+
+def consultar_desafios_disponiveis(
+    sessao: Session, *, operador: Persona, cursor: str | None, tamanho: int
+) -> PaginaDeResultado[DesafioDisponivelSaida]:
+    """Os desafios que o Guerreiro(a) da sessão pode assumir: vigentes e
+    dentro do teto de granularidade da sua Comunidade Virtual — exatamente
+    o que `_niveis_elegiveis_da_comunidade` e `_desafio_esta_vigente` já
+    conferem em `abrir_serie_de_coleta`, para que a leitura jamais ofereça o
+    que a abertura recusaria (`RF-05-30`, `RN-05-24`, design — decisão 4).
+    Sem vínculo vigente, não há comunidade contra a qual conferir o teto: a
+    página sai vazia.
+    """
+    if operador.papel != Papel.guerreiro:
+        raise PermissaoNegada(mensagem="Só o Guerreiro(a) consulta os desafios que pode assumir.")
+
+    agora_ = agora()
+    vinculo = resolver_vinculo_na_data(sessao, guerreiro_id=operador.id, data=agora_)
+    if vinculo is None:
+        return PaginaDeResultado(itens=[], proximo_cursor=None)
+    comunidade = sessao.get(ComunidadeVirtual, vinculo.comunidade_virtual_id)
+    niveis_elegiveis = _niveis_elegiveis_da_comunidade(comunidade)
+
+    consulta = sessao.query(DesafioDeColeta).filter(
+        DesafioDeColeta.vigencia_inicio <= agora_,
+        DesafioDeColeta.vigencia_fim >= agora_,
+        DesafioDeColeta.granularidade_exigida.in_(niveis_elegiveis),
+    )
+
+    if cursor:
+        posicao = decodificar_cursor(cursor)
+        try:
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(DesafioDeColeta.id > id_cursor)
+
+    consulta = consulta.order_by(DesafioDeColeta.id).limit(tamanho + 1)
+    desafios = consulta.all()
+
+    proximo_cursor = None
+    if len(desafios) > tamanho:
+        desafios = desafios[:tamanho]
+        proximo_cursor = codificar_cursor({"id": str(desafios[-1].id)})
+
+    itens = []
+    for desafio in desafios:
+        tipo = sessao.get(TipoDeColeta, desafio.tipo_de_coleta_id)
+        missao = sessao.get(Missao, desafio.missao_id)
+        ja_assumido = (
+            sessao.query(SerieDeColeta)
+            .filter_by(coletor_id=operador.id, desafio_de_coleta_id=desafio.id)
+            .first()
+            is not None
+        )
+        itens.append(
+            DesafioDisponivelSaida(
+                id=desafio.id,
+                tipo_de_coleta=TipoDeColetaResumoSaida(
+                    nome=tipo.nome,
+                    forma_de_registro=tipo.forma_de_registro.value,
+                    unidade=tipo.unidade,
+                ),
+                cadencia=desafio.cadencia.value,
+                vigencia_inicio=desafio.vigencia_inicio,
+                vigencia_fim=desafio.vigencia_fim,
+                granularidade_exigida=desafio.granularidade_exigida.value,
+                missao_id=missao.id,
+                trilha_id=missao.trilha_id,
+                ja_assumido=ja_assumido,
+                comunidade_virtual_id=vinculo.comunidade_virtual_id,
             )
         )
     return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)

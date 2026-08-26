@@ -78,3 +78,64 @@ textarea {
   max-width: var(--largura-de-leitura);
   margin-inline: auto;
 }
+
+/* O bloco da coleta do território — séries, abertura, registro, histórico
+ * e solicitação de local (proposal — App 05). */
+.cg-coleta,
+.cg-coleta-secao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-16);
+}
+
+.cg-coleta-secao__acoes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+}
+
+.cg-lista-de-series,
+.cg-lista-de-solicitacoes,
+.cg-lista-de-registros {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-16);
+}
+
+.cg-cartao-de-serie,
+.cg-cartao-de-solicitacao,
+.cg-cartao-de-registro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  padding: var(--espaco-16);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-campo);
+  background: var(--cor-superficie);
+}
+
+.cg-cartao-de-serie__titulo,
+.cg-cartao-de-solicitacao__titulo {
+  font-weight: var(--peso-rotulo);
+}
+
+.cg-aviso-de-coleta {
+  padding: var(--espaco-8) var(--espaco-12);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-campo);
+  color: var(--cor-texto-secundario);
+  font-size: var(--escala-0875);
+}
+
+.cg-aviso-de-coleta__botao {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--cor-acao);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}

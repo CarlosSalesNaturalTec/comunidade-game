@@ -341,6 +341,66 @@ def avaliar_solicitacao_de_local(
     return solicitacao
 
 
+def consultar_solicitacoes_do_guerreiro(
+    sessao: Session, *, operador: Persona, cursor: str | None, tamanho: int
+) -> PaginaDeResultado[SolicitacaoDeLocalSaida]:
+    """As próprias solicitações do Guerreiro(a) da sessão, em qualquer
+    situação — Admin e Mestre acompanham pela listagem das abertas, que é
+    outra porta e outro recorte (`RF-05-32`, `RN-05-11`, `RN-05-21`). Sem
+    filtro de comunidade obrigatório: a sessão do Guerreiro(a) já recorta
+    mais estreito que ele (`RF-01-28`).
+    """
+    if operador.papel != Papel.guerreiro:
+        raise PermissaoNegada(mensagem="Só o Guerreiro(a) consulta as suas solicitações de local.")
+
+    consulta = sessao.query(SolicitacaoDeLocal).filter_by(solicitante_id=operador.id)
+
+    if cursor:
+        posicao = decodificar_cursor(cursor)
+        try:
+            registrado_em_cursor = datetime.fromisoformat(posicao["registrado_em"])
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(
+            tuple_(SolicitacaoDeLocal.registrado_em, SolicitacaoDeLocal.id)
+            > (registrado_em_cursor, id_cursor)
+        )
+
+    consulta = consulta.order_by(SolicitacaoDeLocal.registrado_em, SolicitacaoDeLocal.id).limit(
+        tamanho + 1
+    )
+    solicitacoes = consulta.all()
+
+    proximo_cursor = None
+    if len(solicitacoes) > tamanho:
+        solicitacoes = solicitacoes[:tamanho]
+        ultima = solicitacoes[-1]
+        proximo_cursor = codificar_cursor(
+            {"registrado_em": ultima.registrado_em.isoformat(), "id": str(ultima.id)}
+        )
+
+    itens = [
+        SolicitacaoDeLocalSaida(
+            id=solicitacao.id,
+            solicitante_id=solicitacao.solicitante_id,
+            comunidade_virtual_id=solicitacao.comunidade_virtual_id,
+            desafio_de_coleta_id=solicitacao.desafio_de_coleta_id,
+            nivel_pretendido=solicitacao.nivel_pretendido.value,
+            rotulo=solicitacao.rotulo,
+            justificativa=solicitacao.justificativa,
+            situacao=solicitacao.situacao.value,
+            avaliador_id=solicitacao.avaliador_id,
+            motivo_da_recusa=solicitacao.motivo_da_recusa,
+            local_criado_id=solicitacao.local_criado_id,
+            avaliado_em=solicitacao.avaliado_em,
+            registrado_em=solicitacao.registrado_em,
+        )
+        for solicitacao in solicitacoes
+    ]
+    return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)
+
+
 def listar_solicitacoes_de_local_abertas(
     sessao: Session,
     *,

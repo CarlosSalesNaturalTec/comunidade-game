@@ -246,3 +246,49 @@ def test_guerreiro_recebe_403_ao_listar_abertas_pela_rota(
     )
 
     assert resposta.status_code == 403
+
+
+def test_guerreiro_consulta_as_proprias_solicitacoes_pela_rota(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+):
+    chave, _, _, guerreiro, _, _, solicitacao_id = _preparar_solicitacao_pela_rota(
+        cliente,
+        criar_chave,
+        criar_persona,
+        criar_comunidade,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+    )
+    token_guerreiro, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.get(
+        "/v1/solicitacoes-de-local/minhas", headers=_headers(chave, token_guerreiro)
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert [item["id"] for item in corpo["itens"]] == [solicitacao_id]
+    assert corpo["itens"][0]["situacao"] == "recebida"
+
+
+def test_mestre_recebe_403_ao_consultar_proprias_solicitacoes_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get("/v1/solicitacoes-de-local/minhas", headers=_headers(chave, token))
+
+    assert resposta.status_code == 403

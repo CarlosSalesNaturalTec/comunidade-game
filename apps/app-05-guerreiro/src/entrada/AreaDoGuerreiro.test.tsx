@@ -3,6 +3,7 @@ import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
 import { act } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import * as coletaApi from "../api/coleta";
 import { AreaDoGuerreiro } from "./AreaDoGuerreiro";
 
 const UM_MINUTO_EM_MS = 60_000;
@@ -15,6 +16,13 @@ async function renderizarComSessaoAberta() {
     persona_id: "guerreiro-1",
     papel: "guerreiro",
     permissoes: {},
+  });
+  // O bloco da coleta carrega as próprias séries assim que a área abre —
+  // isolado aqui, sem série nenhuma, porque este arquivo testa só o
+  // encerramento por inatividade (coberto em `../coleta/*.test.tsx`).
+  vi.spyOn(coletaApi, "listarMinhasSeries").mockResolvedValue({
+    itens: [],
+    proximo_cursor: null,
   });
   await act(async () => {
     render(

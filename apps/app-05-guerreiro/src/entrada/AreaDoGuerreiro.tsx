@@ -2,13 +2,15 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useEffect, useRef, useState } from "react";
 import { DURACAO_DE_INATIVIDADE_EM_MINUTOS } from "../api/configuracao";
+import { Coleta } from "../coleta/Coleta";
 
 const UM_MINUTO_EM_MS = 60_000;
 const EVENTOS_DE_ATIVIDADE = ["pointerdown", "keydown", "touchstart"] as const;
 
-// Conteúdo da sessão aberta — nesta fatia, só a própria sessão e o
-// encerramento por saída e por inatividade; trilha, coleta, portfólio e
-// acervo são fatias futuras do PRD-05 (proposal — Fora do escopo).
+// Conteúdo da sessão aberta: o encerramento por saída e por inatividade e o
+// bloco da coleta do território, o primeiro ato que o Guerreiro(a) exerce
+// na App 05 — trilha, portfólio e acervo são fatias futuras do PRD-05
+// (proposal — Why).
 export function AreaDoGuerreiro() {
   const { sair } = useSessao();
   const [avisando, definirAvisando] = useState(false);
@@ -59,6 +61,7 @@ export function AreaDoGuerreiro() {
           <Botao onClick={() => referenciaDeReiniciar.current()}>Continuar</Botao>
         </>
       )}
+      <Coleta />
     </Moldura>
   );
 }
