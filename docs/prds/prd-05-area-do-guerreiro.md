@@ -8,7 +8,7 @@
 | Aplicação        | App 05 — Área do Guerreiro(a)                                |
 | Onda             | 3                                                            |
 | Situação         | aprovado                                                     |
-| Versão e data    | v3 — 2026-08-06                                              |
+| Versão e data    | v4 — 2026-08-26                                              |
 | Depende de       | PRD-01, PRD-09                                               |
 | Documentos-fonte | 02 §§1–8, 03 §§1.1, 7, 12, 05 §§3, 5, 11 §§2, 4, 5, 6, 7, 15 |
 
@@ -21,8 +21,9 @@ precisar perguntar a ninguém**, mesmo longe do ponto de apoio.
 
 O que muda na operação do Ciclo 01: o Guerreiro(a) entra por nick e imagem, vê a próxima missão
 da trilha, faz o desafio de desbloqueio, registra a medição do território da semana, entrega a
-criação original na culminância e acompanha o que conquistou. É também por aqui que ele
-**propõe melhorias na plataforma** — o valor de protagonismo virando mecânica, não texto.
+criação original na culminância e acompanha o que conquistou. O canal de sugestões, o acervo do
+Guerreiro(a) e o apoio às atividades escolares — o protagonismo, o cuidado com o material comum
+e o suporte por IA virando mecânica — entram a partir do Ciclo 02 (§3.2).
 
 A aplicação é o lado do Guerreiro(a) de tudo o que os outros PRDs escrevem: a trilha vem do
 PRD-09, as séries de coleta do PRD-08, as recompensas e o acervo do PRD-07, e o motor de
@@ -57,11 +58,6 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
 - **Catálogo avulso** da comunidade, com preço em pontos extras, estoque e histórico das
   trocas já feitas — a troca em si acontece no encontro presencial, no App 01.
 - **Ranking** da comunidade, por trilha ou poder, apenas com pontos regulares.
-- **Acervo do Guerreiro(a)**: o exemplar da linha Alpha que é dele e os exemplares permanentes
-  do ponto de apoio, com a ficha de vida do livro.
-- **Apoio às atividades escolares** por assistente de voz com IA, respondendo apenas a partir
-  do conteúdo que os Mestres cadastraram.
-- **Canal de sugestões**, em texto ou áudio, com acompanhamento do status.
 - **Aviso de coleta de dados** em toda tela que coleta, com acesso à área detalhada.
 
 ### 3.2 Fora do escopo
@@ -89,12 +85,19 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
 - **Contato com Apoiadores, Mestres ou terceiros por mensagem** — não há canal de conversa
   entre pessoas nesta aplicação.
 - **Troca de comunidade**: existe no modelo, não é operada no Ciclo 01.
+- **Acervo do Guerreiro(a)**: o exemplar da linha Alpha e os exemplares permanentes com a
+  ficha de vida existem desde o Ciclo 01 (documento 05 §3), mas a exibição deles nesta
+  aplicação entra a partir do Ciclo 02.
+- **Apoio às atividades escolares por assistente de voz com IA**: entra a partir do Ciclo 02
+  (documento 03 §7).
+- **Canal de sugestões do Guerreiro(a)**: a fila de avaliação já recebe propostas de outras
+  personas (App 03); o registro pela App 05 entra a partir do Ciclo 02 (documento 03 §7).
 
 ## 4. Personas e permissões
 
 | Persona      | O que faz nesta aplicação                                                            | O que não pode fazer                                                    |
 | ------------ | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| Guerreiro(a) | Percorre trilhas, realiza desafios, registra coleta, entrega criação e propõe        | Lançar o próprio resultado, editar pontos, ver dados de outra criança   |
+| Guerreiro(a) | Percorre trilhas, realiza desafios, registra coleta e entrega criação                | Lançar o próprio resultado, editar pontos, ver dados de outra criança   |
 | Mestre       | Abre a sessão do Guerreiro(a) sem imagem gravada e confirma a identidade no encontro | Usar a aplicação em nome dele para realizar desafio ou registrar coleta |
 | Admin        | O mesmo do Mestre, quando é quem está na sala                                        | O mesmo do Mestre                                                       |
 | Responsável  | Nada: acompanha pela App 07                                                          | Entrar                                                                  |
@@ -175,52 +178,28 @@ avatar e nick.
 5. A criação **só aparece publicamente se o responsável tiver autorizado a divulgação**; sem
    autorização, ela existe no portfólio interno do Guerreiro(a).
 
-### 5.6 Conquistar recompensa e cuidar do acervo
+### 5.6 Conquistar recompensa e trocar por recompensa avulsa
 
 1. Alcançado um marco com recompensa declarada, a aplicação avisa **o que foi conquistado** e
    que a entrega será confirmada pelo Mestre — não há saldo debitado, porque **recompensa de
    marco não se compra**.
-2. O **acervo do Guerreiro(a)** mostra o exemplar da linha Alpha recebido na abertura da trilha
-   — que é dele, sem devolução — e os exemplares permanentes em uso de bancada.
-3. Cada exemplar permanente tem a **ficha de vida**: quem usou, quando e em que estado voltou.
-4. Devolução em bom estado ao fim do ciclo concede o badge **Guardião do Acervo**.
-5. No encontro presencial, apresentar ao Mestre o bem recebido — livro, camisa, kit — em bom
+2. No encontro presencial, apresentar ao Mestre o bem recebido — livro, camisa, kit — em bom
    estado e em uso rende **1 ponto extra por item**, pedido pelo Guerreiro(a) e lançado pelo
-   Mestre; cada item pontua uma vez por encontro.
-6. **Dano acidental não gera pontuação negativa nem dívida**, e a tela diz isso antes de o
-   Guerreiro(a) relatar qualquer problema com o material.
-7. O **catálogo avulso** mostra o que o Guerreiro(a) pode trocar por **pontos extras**, com
+   Mestre; cada item pontua uma vez por encontro. Devolução em bom estado do acervo permanente
+   ao fim do ciclo concede o badge **Guardião do Acervo**, visível no progresso (§5.2).
+3. O **catálogo avulso** mostra o que o Guerreiro(a) pode trocar por **pontos extras**, com
    preço e estoque, e o quanto ele tem: o **acumulado**, que nunca cai, e o **saldo
    disponível**, que é o que dá para trocar. A tela avisa que **a troca acontece no encontro
    presencial**, com o Mestre, e não ali.
 
-### 5.7 Pedir ajuda em uma atividade escolar
+O **acervo do Guerreiro(a)** — exemplar próprio da linha Alpha, exemplares permanentes em uso
+de bancada e a ficha de vida de cada um — entra a partir do Ciclo 02 (§3.2); até lá, a
+aplicação não tem essa tela. O **dano acidental segue sem gerar pontuação negativa nem dívida**
+(documento 05 §3), independente da tela existir.
 
-1. O Guerreiro(a) abre o apoio escolar, escolhe a **disciplina** entre as cadastradas e
-   pergunta **por voz ou por texto**.
-2. O assistente responde a partir **exclusivamente** do conteúdo que os Mestres cadastraram
-   para aquela disciplina, em áudio e em texto, na linguagem da faixa etária.
-3. A resposta **explica e conduz ao raciocínio**: dá o caminho, o exemplo e a próxima
-   pergunta — **não entrega a tarefa pronta**.
-4. Sendo a pergunta fora do conteúdo cadastrado, o assistente **diz que ainda não tem esse
-   material** e orienta a procurar um Mestre no encontro. Não inventa resposta.
-5. Sendo a pergunta imprópria, sensível ou sobre pessoas, o assistente recusa em linguagem
-   acolhedora e registra a ocorrência para a gestão, sem expor a criança.
-6. Pedido de dado pessoal — de si ou de um colega — nunca é atendido.
-7. Quem recusou o uso do assistente, ou o responsável que o recusou, continua com a
-   **alternativa equivalente**: perguntar ao Mestre no encontro.
-
-### 5.8 Propor uma melhoria
-
-1. O Guerreiro(a) registra a sugestão em **texto ou áudio de até 60 segundos**, que é
-   transcrito.
-2. A sugestão entra na **fila única da gestão**, a mesma que recebe as propostas do
-   responsável, do Apoiador e do Mestre.
-3. Ele acompanha o status: recebida, em avaliação, adotada ou não adotada, com o motivo em
-   linguagem simples.
-4. **Registrar não pontua.** Adotada, a proposta rende **pontos extras e o badge de
-   protagonismo** — quem joga também constrói o jogo.
-5. O retorno acontece em até 7 dias, dentro da plataforma.
+O **apoio às atividades escolares por assistente de voz** e o **canal de sugestões** entram a
+partir do Ciclo 02 (§3.2); até lá, quem precisa de ajuda numa atividade escolar pergunta ao
+Mestre no encontro, e quem quer propor uma melhoria também.
 
 ## 6. Requisitos funcionais
 
@@ -319,6 +298,9 @@ com a fusão das aplicações e **não são reaproveitados**.
 | `RF-05-50` | Guerreiro(a) vê o estado do seu perfil público e se a divulgação foi autorizada                     | essencial  |
 | `RF-05-51` | Guerreiro(a) escolhe e altera as características do próprio avatar                                  | desejável  |
 
+`RF-05-47` a `RF-05-49`, do acervo do Guerreiro(a), valem **a partir do Ciclo 02** (§3.2); a
+aplicação do Ciclo 01 não os atende.
+
 ### 6.7 Ranking, sugestões e avisos
 
 | ID         | Requisito                                                                                 | Prioridade |
@@ -332,7 +314,13 @@ com a fusão das aplicações e **não são reaproveitados**.
 | `RF-05-56` | Proposta adotada credita pontos extras e o badge de protagonismo ao autor                 | essencial  |
 | `RF-05-57` | Toda tela que coleta dado traz aviso discreto do que coleta, com acesso à área detalhada  | essencial  |
 
+`RF-05-54` a `RF-05-56`, do canal de sugestões do Guerreiro(a), valem **a partir do Ciclo 02**
+(§3.2); a aplicação do Ciclo 01 não os atende.
+
 ### 6.8 Apoio às atividades escolares
+
+Toda a tabela abaixo (`RF-05-58` a `RF-05-70`) vale **a partir do Ciclo 02** (§3.2); a
+aplicação do Ciclo 01 não oferece apoio escolar.
 
 | ID         | Requisito                                                                                       | Prioridade |
 | ---------- | ----------------------------------------------------------------------------------------------- | ---------- |
@@ -347,7 +335,7 @@ com a fusão das aplicações e **não são reaproveitados**.
 | `RF-05-66` | Guerreiro(a) que recusou o assistente segue com a alternativa de perguntar ao Mestre            | essencial  |
 | `RF-05-67` | Consumo do modelo é lançado como recurso de _cloud_ no livro-razão                              | essencial  |
 | `RF-05-69` | Áudio da pergunta é descartado assim que transcrito; guarda-se apenas a transcrição             | essencial  |
-| `RF-05-70` | Aplicação não impõe teto de uso do assistente no Ciclo 01, e registra a demanda para medição    | essencial  |
+| `RF-05-70` | Aplicação não impõe teto de uso do assistente, e registra a demanda para medição                | essencial  |
 | `RF-05-68` | Mestre e Admin veem as recusas registradas das suas turmas, para ajustar o conteúdo cadastrado  | desejável  |
 
 ## 7. Regras de negócio
@@ -397,6 +385,12 @@ com a fusão das aplicações e **não são reaproveitados**.
 | `RN-05-41` | Recompensa de marco é conquistada, nunca comprada; a troca alcança só a recompensa avulsa        | 23                     | 02 §8            |
 | `RN-05-42` | O saldo disponível de pontos extras nunca fica negativo                                          | 23                     | 11 §5            |
 
+`RN-05-17` (canal de sugestões) e `RN-05-19` (dano acidental ao acervo) valem **a partir do
+Ciclo 02** (§3.2), junto com os requisitos que as operacionalizam. `RN-05-25` a `RN-05-28` e
+`RN-05-30`, do apoio escolar, valem **a partir do Ciclo 02**; `RN-05-29`, `RN-05-31` e
+`RN-05-32` seguem vigentes no Ciclo 01 porque também regem a leitura da produção da missão
+(§5.3), que não depende do apoio escolar.
+
 ## 8. Modelo de dados
 
 A aplicação é majoritariamente **leitora**: trilha e conteúdo vêm do PRD-09, séries e registros
@@ -428,6 +422,10 @@ Avatar (características)                RecompensaDeMarco         (PRD-09)
 | `DisciplinaDeApoio`    | nome, faixa de dificuldade, situação (ativa ou inativa), Mestre autor do cadastro                                                                                 |
 | `ConteudoDeApoio`      | disciplina, título, corpo ou arquivo, fonte, autor do cadastro, data — é o corpus fechado que o modelo consulta                                                   |
 | `ConsultaAoAssistente` | Guerreiro(a), assistente (apoio escolar, aqui), disciplina, pergunta transcrita, situação (respondida, fora do corpus, recusada), data e hora                     |
+
+Nesta aplicação, `SugestaoOuProposta` (canal de sugestões) e a `ConsultaAoAssistente` de apoio
+escolar só passam a ser escritas **a partir do Ciclo 02**; a leitura de `ItemPatrimonial`
+(acervo do PRD-07) também entra a partir dele (§3.2).
 
 Imutabilidade e derivação:
 
@@ -485,6 +483,11 @@ série interrompida sem retomada (409); entrega de criação em trilha sem culmi
 pontos a partir do jogo (404, por não existir); consulta a disciplina sem conteúdo cadastrado
 (422); consulta recusada pelos filtros de segurança (422, com a ocorrência registrada).
 
+As rotas `GET /v1/eu/acervo`, `POST /v1/sugestoes`, `GET /v1/eu/sugestoes`,
+`GET /v1/apoio-escolar/disciplinas` e `POST /v1/apoio-escolar/consultas` — com os erros de
+consulta a disciplina sem conteúdo e de recusa pelos filtros de segurança — entram **a partir
+do Ciclo 02** (§3.2).
+
 ## 10. Requisitos não funcionais
 
 - Web App responsivo **Mobile First**, projetado para o **celular modesto do ponto de apoio** —
@@ -492,8 +495,9 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
 - **Aparelho compartilhado é a condição normal de uso**: troca de sessão em poucos segundos,
   nenhum dado do Guerreiro(a) anterior visível na tela seguinte e nenhuma imagem no aparelho.
 - **Rede instável**: a entrada exige rede, porque a conferência da imagem acontece no núcleo; o
-  conteúdo já carregado da missão continua legível durante uma queda. O apoio escolar
-  **só opera com rede** — o modelo roda no backend — e diz isso claramente quando indisponível.
+  conteúdo já carregado da missão continua legível durante uma queda. O apoio escolar, a partir
+  do Ciclo 02, **só opera com rede** — o modelo roda no backend — e diz isso claramente quando
+  indisponível.
 - **Áudio no navegador**: captação e reprodução por `navigator.mediaDevices.getUserMedia`, com
   reconhecimento e síntese de fala em pt-BR, na mesma base técnica do App 01.
 - **Linguagem de criança de 6 anos**: nenhum termo técnico, nenhum código de erro exposto e
@@ -507,16 +511,16 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                     | Finalidade                                 | Base legal        | Retenção                                                   | Quem acessa               |
-| --------------------------------- | ------------------------------------------ | ----------------- | ---------------------------------------------------------- | ------------------------- |
-| Imagem da entrada                 | Conferir que é o próprio Guerreiro(a)      | consentimento     | não é armazenada na entrada                                | núcleo, em conferência    |
-| Registro de coleta do território  | Construir a Comunidade Virtual             | interesse público | permanente, com autoria                                    | gestão, público agregado  |
-| Criação original                  | Autoria, portfólio e culminância           | consentimento     | permanente, com autoria                                    | gestão e responsável      |
-| Sugestão em texto ou áudio        | Evolução da plataforma                     | consentimento     | 90 dias após o retorno; permanente se adotada              | gestão                    |
-| Progresso na trilha               | Registro da participação e pontuação       | consentimento     | enquanto durar o vínculo                                   | gestão e responsável      |
-| Características do avatar         | Representação pública do Guerreiro(a)      | consentimento     | enquanto durar o vínculo                                   | público                   |
-| Produção da missão (foto e áudio) | Ler o que foi produzido e devolver retorno | consentimento     | **descartados na leitura**; ficam transcrição e devolutiva | gestão e Mestre da trilha |
-| Pergunta do apoio escolar         | Responder à dúvida da atividade            | consentimento     | 7 dias; até o fim do ciclo se recusada                     | gestão                    |
+| Dado coletado                         | Finalidade                                 | Base legal        | Retenção                                                   | Quem acessa               |
+| ------------------------------------- | ------------------------------------------ | ----------------- | ---------------------------------------------------------- | ------------------------- |
+| Imagem da entrada                     | Conferir que é o próprio Guerreiro(a)      | consentimento     | não é armazenada na entrada                                | núcleo, em conferência    |
+| Registro de coleta do território      | Construir a Comunidade Virtual             | interesse público | permanente, com autoria                                    | gestão, público agregado  |
+| Criação original                      | Autoria, portfólio e culminância           | consentimento     | permanente, com autoria                                    | gestão e responsável      |
+| Sugestão em texto ou áudio (Ciclo 02) | Evolução da plataforma                     | consentimento     | 90 dias após o retorno; permanente se adotada              | gestão                    |
+| Progresso na trilha                   | Registro da participação e pontuação       | consentimento     | enquanto durar o vínculo                                   | gestão e responsável      |
+| Características do avatar             | Representação pública do Guerreiro(a)      | consentimento     | enquanto durar o vínculo                                   | público                   |
+| Produção da missão (foto e áudio)     | Ler o que foi produzido e devolver retorno | consentimento     | **descartados na leitura**; ficam transcrição e devolutiva | gestão e Mestre da trilha |
+| Pergunta do apoio escolar (Ciclo 02)  | Responder à dúvida da atividade            | consentimento     | 7 dias; até o fim do ciclo se recusada                     | gestão                    |
 
 - **Consentimento**: a participação segue a adesão em duas etapas — o cadastro livre já permite
   usar a aplicação, e a **divulgação pública** depende de autorização do responsável, dada na
@@ -535,13 +539,13 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
   no ranking.
 - A **pontuação negativa** é dado sensível: o Guerreiro(a) vê a sua, com o motivo, e ela nunca
   aparece em ranking, vitrine ou tela de colega.
-- **Apoio escolar com IA**: a pergunta da criança sai do aparelho para o modelo de linguagem, e
-  a tela diz isso antes da primeira pergunta, em linguagem simples. O **corpus fechado** é
-  também salvaguarda de dados: o modelo responde sobre o material cadastrado, não sobre a
-  criança. Nenhum dado pessoal do Guerreiro(a) compõe a pergunta enviada ao modelo, e o
-  histórico de consultas fica restrito à gestão — nunca aparece em vitrine, ranking ou App 08.
-- **Recusa do assistente** é registrada como qualquer outra recusa e não exclui ninguém: a
-  alternativa é perguntar ao Mestre no encontro.
+- **Apoio escolar com IA** (a partir do Ciclo 02): a pergunta da criança sai do aparelho para o
+  modelo de linguagem, e a tela diz isso antes da primeira pergunta, em linguagem simples. O
+  **corpus fechado** é também salvaguarda de dados: o modelo responde sobre o material
+  cadastrado, não sobre a criança. Nenhum dado pessoal do Guerreiro(a) compõe a pergunta
+  enviada ao modelo, e o histórico de consultas fica restrito à gestão — nunca aparece em
+  vitrine, ranking ou App 08. **Recusa do assistente** é registrada como qualquer outra recusa
+  e não exclui ninguém: a alternativa é perguntar ao Mestre no encontro.
 
 ## 12. Critérios de aceite e métricas
 
@@ -562,15 +566,12 @@ pontos a partir do jogo (404, por não existir); consulta a disciplina sem conte
 - Criação validada de Guerreiro(a) sem autorização do responsável aparece no portfólio interno
   e **não** na vitrine.
 - Nenhuma tela oferece comprar recompensa com pontos.
-- Sugestão registrada por áudio de 45 segundos é transcrita, entra na fila e exibe status;
-  adotada, credita pontos extras sem alterar o nível.
-- Pergunta sobre conteúdo cadastrado é respondida em áudio e texto; a mesma pergunta em uma
-  disciplina sem conteúdo cadastrado é recusada com a orientação de procurar o Mestre.
-- Pergunta que pede a tarefa pronta recebe explicação e caminho, não a resposta final.
-- Pergunta imprópria é recusada em linguagem acolhedora e aparece na ocorrência da gestão, sem
-  exposição da criança.
-- Nenhuma consulta ao apoio escolar credita ponto, badge ou posição no ranking.
 - Nenhuma tela exibe imagem real, nome civil ou qualquer dado pessoal de outra criança.
+
+Os critérios do canal de sugestões, do acervo do Guerreiro(a) e do apoio escolar — sugestão
+transcrita e com status; disciplina sem conteúdo recusada com orientação de procurar o Mestre;
+pergunta imprópria recusada sem exposição da criança; nenhuma consulta creditando ponto, badge
+ou ranking — valem a partir do Ciclo 02 (§3.2), quando os requisitos entrarem.
 
 Hipóteses do Ciclo 01 (documento 10): este PRD **sustenta H1** — é a aplicação que mede quantos
 Guerreiros e Guerreiras iniciam uma trilha e quantos permanecem até a culminância. Sustenta
@@ -578,31 +579,33 @@ Guerreiros e Guerreiras iniciam uma trilha e quantos permanecem até a culminân
 16 anos funcionar sem segmentar por idade. Sustenta também **H5**: é aqui que o Guerreiro(a)
 responde à sondagem que abre a trilha e aos desafios de desbloqueio das missões — as duas
 pontas que a hipótese compara. E instrumenta o critério de **protagonismo** da avaliação do
-ciclo: número de criações originais apresentadas e de sugestões registradas.
+ciclo pelo número de criações originais apresentadas; a contagem de sugestões registradas se
+soma a ele a partir do Ciclo 02, quando o canal desta aplicação abrir.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                         | Gravada em      | Linha do doc 09                              |
-| ------------------------------------------------------------------------------- | --------------- | -------------------------------------------- |
-| Nível é percurso da trilha, com gates dos níveis 1 a 5 e sem regressão          | 11 §6           | Níveis 1 a 5 — critério de progressão        |
-| Resposta do Quiz ao Vivo enviada pelo App 01, com a partida conduzida na App 03 | 05 §5           | Aplicação de cada tipo de aula               |
-| Criação original vale 50 pontos e badge, integrais a cada integrante            | 11 §5 e 02 §4   | Criação original — pontos e badge            |
-| Valores de mérito, batalha, badge de conduta e pontuação negativa (−5)          | 11 §5           | Demais valores do motor de pontuação         |
-| Travas de integridade dos pontos, incluindo o valor fora de faixa               | 11 §5.1 e 02 §1 | Integridade dos pontos (antifraude)          |
-| Canal de sugestões: texto ou áudio de 60 s, adotada rende extras e badge        | 03 §7           | Canal de sugestões do Guerreiro(a)           |
-| Reparação que zera a ocorrência de conduta                                      | 13 §3           | Reparação de ocorrência de conduta           |
-| Apoio escolar por assistente de voz na App 05, com IA e corpus fechado          | 03 §§4, 7       | Apoio às atividades escolares                |
-| Corpus cadastrado só pelo Mestre; Admin audita por amostragem                   | 03 §§5, 7, 11   | Corpus, cota e áudio dos assistentes         |
-| Sem teto de uso no Ciclo 01, absorvido pelo fundador em conta Gemini PRO        | 03 §7 e 10 §4.3 | Corpus, cota e áudio dos assistentes         |
-| Áudio descartado na transcrição, nas Apps 05 e 01                               | 03 §§4, 7       | Corpus, cota e áudio dos assistentes         |
-| Prazos de guarda das transcrições e do _template_                               | 03 §12.2        | Prazos de guarda dos dados                   |
-| Sessão encerrada por 10 minutos de inatividade                                  | 03 §12.2        | Sessão em aparelho compartilhado             |
-| Ponto extra tem acumulado e saldo disponível; só o saldo é trocável             | 11 §5           | Troca de pontos extras por recompensa avulsa |
-| Recompensa avulsa é trocada por pontos extras; a de marco segue não comprada    | 02 §8           | Troca de pontos extras por recompensa avulsa |
-| A troca é presencial, no encontro, e não acontece nesta aplicação               | 02 §8.2         | Troca de pontos extras por recompensa avulsa |
-| Registro de coleta bloqueado até reconectar, sem fila local                     | 03 §7           | Registro de coleta com a rede fora           |
-| Ranking interno mostra a turma inteira, exceção declarada à divulgação          | 03 §12          | Ranking interno da App 05                    |
-| Janelas de acesso no ponto de apoio para quem não tem aparelho                  | 05 §2           | Acesso de quem não tem aparelho nem dados    |
+| Decisão                                                                          | Gravada em      | Linha do doc 09                                                                                                   |
+| -------------------------------------------------------------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Nível é percurso da trilha, com gates dos níveis 1 a 5 e sem regressão           | 11 §6           | Níveis 1 a 5 — critério de progressão                                                                             |
+| Resposta do Quiz ao Vivo enviada pelo App 01, com a partida conduzida na App 03  | 05 §5           | Aplicação de cada tipo de aula                                                                                    |
+| Criação original vale 50 pontos e badge, integrais a cada integrante             | 11 §5 e 02 §4   | Criação original — pontos e badge                                                                                 |
+| Valores de mérito, batalha, badge de conduta e pontuação negativa (−5)           | 11 §5           | Demais valores do motor de pontuação                                                                              |
+| Travas de integridade dos pontos, incluindo o valor fora de faixa                | 11 §5.1 e 02 §1 | Integridade dos pontos (antifraude)                                                                               |
+| Canal de sugestões: texto ou áudio de 60 s, adotada rende extras e badge         | 03 §7           | Canal de sugestões do Guerreiro(a)                                                                                |
+| Reparação que zera a ocorrência de conduta                                       | 13 §3           | Reparação de ocorrência de conduta                                                                                |
+| Apoio escolar por assistente de voz na App 05, com IA e corpus fechado           | 03 §§4, 7       | Apoio às atividades escolares                                                                                     |
+| Corpus cadastrado só pelo Mestre; Admin audita por amostragem                    | 03 §§5, 7, 11   | Corpus, cota e áudio dos assistentes                                                                              |
+| Sem teto de uso no Ciclo 01, absorvido pelo fundador em conta Gemini PRO         | 03 §7 e 10 §4.3 | Corpus, cota e áudio dos assistentes                                                                              |
+| Áudio descartado na transcrição, nas Apps 05 e 01                                | 03 §§4, 7       | Corpus, cota e áudio dos assistentes                                                                              |
+| Prazos de guarda das transcrições e do _template_                                | 03 §12.2        | Prazos de guarda dos dados                                                                                        |
+| Sessão encerrada por 10 minutos de inatividade                                   | 03 §12.2        | Sessão em aparelho compartilhado                                                                                  |
+| Ponto extra tem acumulado e saldo disponível; só o saldo é trocável              | 11 §5           | Troca de pontos extras por recompensa avulsa                                                                      |
+| Recompensa avulsa é trocada por pontos extras; a de marco segue não comprada     | 02 §8           | Troca de pontos extras por recompensa avulsa                                                                      |
+| A troca é presencial, no encontro, e não acontece nesta aplicação                | 02 §8.2         | Troca de pontos extras por recompensa avulsa                                                                      |
+| Registro de coleta bloqueado até reconectar, sem fila local                      | 03 §7           | Registro de coleta com a rede fora                                                                                |
+| Ranking interno mostra a turma inteira, exceção declarada à divulgação           | 03 §12          | Ranking interno da App 05                                                                                         |
+| Janelas de acesso no ponto de apoio para quem não tem aparelho                   | 05 §2           | Acesso de quem não tem aparelho nem dados                                                                         |
+| Acervo, apoio escolar e canal de sugestões desta App entram a partir do Ciclo 02 | 03 §7 e 05 §3   | Estratégia de conservação do acervo permanente; Canal de sugestões do Guerreiro(a); Apoio às atividades escolares |
 
 As entidades `DisciplinaDeApoio` e `ConteudoDeApoio` foram acrescentadas ao modelo do PRD-01,
 e `Nivel` passou a ser derivado do percurso. O badge **de protagonismo** entrou no catálogo do
@@ -627,21 +630,21 @@ coletores distintos no recorte publicado (documento 02 §1).
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                                                   |
-| ----------------------- | ------------------------------------------------------------------------ |
-| `RF-05-01` a `RF-05-07` | 03 §1.1 (entrada por nick e imagem) e PRD-04 (onboarding e fallback)     |
-| `RF-05-08` a `RF-05-18` | 03 §7 (guia da trilha), 11 §§2, 6 (anatomia e níveis)                    |
-| `RF-05-19` a `RF-05-24` | 02 §5 e 11 §§4, 5 (equipes, taxonomia e desafios), 04 §3 (extras)        |
-| `RF-05-30` a `RF-05-38` | 02 §1 e PRD-08 (séries, locais e validade do registro)                   |
-| `RF-05-39` a `RF-05-44` | 02 §4, 11 §7 e PRD-09 (culminância, autoria e validação)                 |
-| `RF-05-45` a `RF-05-49` | 02 §8.1 (recompensa em marco) e 05 §3 (acervo e ficha de vida)           |
-| `RF-05-82` a `RF-05-86` | 02 §8.2 (recompensa avulsa) e 11 §5 (acumulado e saldo disponível)       |
-| `RF-05-50` e `RF-05-51` | 03 §12 (adesão em duas etapas), 02 §1 e 15 §7 (avatar)                   |
-| `RF-05-52` e `RF-05-53` | 11 §8.1 (rankings com pontos regulares)                                  |
-| `RF-05-54` a `RF-05-56` | 03 §7 (canal de sugestões) e 11 §§5, 7 (pontos extras e badge)           |
-| `RF-05-57`              | 03 §12 (aviso visível de coleta e área detalhada)                        |
-| `RF-05-58` a `RF-05-66` | 03 §7 (apoio escolar com corpus fechado) e 03 §4 (filtros de segurança)  |
-| `RF-05-67` e `RF-05-68` | 04 §1 (custo de _cloud_ no livro-razão) e 01 §7 (transparência sobre IA) |
-| `RF-05-69` e `RF-05-70` | 03 §7 (descarte do áudio e ausência de teto no Ciclo 01)                 |
-| `RF-05-71`              | 03 §12.2 (sessão em aparelho compartilhado)                              |
-| `RF-05-72` a `RF-05-81` | 11 §2.2 (modelo de missão) e 03 §§7, 12.2 (produção e retenção)          |
+| Requisito               | Origem                                                                                                            |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `RF-05-01` a `RF-05-07` | 03 §1.1 (entrada por nick e imagem) e PRD-04 (onboarding e fallback)                                              |
+| `RF-05-08` a `RF-05-18` | 03 §7 (guia da trilha), 11 §§2, 6 (anatomia e níveis)                                                             |
+| `RF-05-19` a `RF-05-24` | 02 §5 e 11 §§4, 5 (equipes, taxonomia e desafios), 04 §3 (extras)                                                 |
+| `RF-05-30` a `RF-05-38` | 02 §1 e PRD-08 (séries, locais e validade do registro)                                                            |
+| `RF-05-39` a `RF-05-44` | 02 §4, 11 §7 e PRD-09 (culminância, autoria e validação)                                                          |
+| `RF-05-45` a `RF-05-49` | 02 §8.1 (recompensa em marco); `RF-05-47` a `RF-05-49` (acervo e ficha de vida, 05 §3) valem a partir do Ciclo 02 |
+| `RF-05-82` a `RF-05-86` | 02 §8.2 (recompensa avulsa) e 11 §5 (acumulado e saldo disponível)                                                |
+| `RF-05-50` e `RF-05-51` | 03 §12 (adesão em duas etapas), 02 §1 e 15 §7 (avatar)                                                            |
+| `RF-05-52` e `RF-05-53` | 11 §8.1 (rankings com pontos regulares)                                                                           |
+| `RF-05-54` a `RF-05-56` | 03 §7 (canal de sugestões) e 11 §§5, 7 (pontos extras e badge) — a partir do Ciclo 02                             |
+| `RF-05-57`              | 03 §12 (aviso visível de coleta e área detalhada)                                                                 |
+| `RF-05-58` a `RF-05-66` | 03 §7 (apoio escolar com corpus fechado) e 03 §4 (filtros de segurança) — a partir do Ciclo 02                    |
+| `RF-05-67` e `RF-05-68` | 04 §1 (custo de _cloud_ no livro-razão) e 01 §7 (transparência sobre IA) — a partir do Ciclo 02                   |
+| `RF-05-69` e `RF-05-70` | 03 §7 (descarte do áudio e ausência de teto no Ciclo 01) — a partir do Ciclo 02                                   |
+| `RF-05-71`              | 03 §12.2 (sessão em aparelho compartilhado)                                                                       |
+| `RF-05-72` a `RF-05-81` | 11 §2.2 (modelo de missão) e 03 §§7, 12.2 (produção e retenção)                                                   |

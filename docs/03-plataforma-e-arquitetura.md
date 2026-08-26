@@ -558,9 +558,10 @@ devolutiva —, e **o resultado só existe quando o Mestre o lança**: a leitura
 hipótese sobre o aprendizado, nunca nota. Quem não quiser ser fotografado ou gravado entrega
 ao Mestre no encontro, sem perder a missão.
 
-É onde fica o **apoio às atividades escolares**, atendido por um **assistente por voz com IA**
-— modelo **LLM Google Gemini** — que responde **exclusivamente a partir das disciplinas e do
-conteúdo cadastrados previamente pelos Mestres na App 09**. Quatro exigências formam a regra:
+**A partir do Ciclo 02**, é onde fica o **apoio às atividades escolares**, atendido por um
+**assistente por voz com IA** — modelo **LLM Google Gemini** — que responde **exclusivamente a
+partir das disciplinas e do conteúdo cadastrados previamente pelos Mestres na App 09**. Quatro
+exigências formam a regra:
 
 - **Corpus fechado.** Fora do conteúdo cadastrado o assistente não responde: diz que o assunto
   ainda não está no material da plataforma e orienta procurar um Mestre no encontro.
@@ -615,13 +616,13 @@ Guerreiro(a). No App 01 o aparelho é da equipe e a reescrita **sempre opera**: 
 ninguém em particular, e a personalização ali não perfila criança alguma — adapta na sessão e é
 descartada com ela. Um integrante com a chave desligada não desliga a reescrita da equipe.
 
-E é o **canal de sugestões do Guerreiro(a)**: ideias de melhoria para atividades, trilhas e
-para a própria plataforma são registradas aqui e caem na fila de avaliação da gestão — o mesmo
-mecanismo de evolução pactuada do Código de Conduta, estendido à plataforma inteira. O registro
-é feito **em texto ou em áudio de até 60 segundos**, transcrito — uma criança de 6 anos fala
-melhor do que escreve. **Registrar não pontua; a proposta adotada rende pontos extras e badge**,
-e o retorno acontece em até 7 dias na própria plataforma, com o motivo em linguagem simples
-quando não for adotada.
+**A partir do Ciclo 02**, é também o **canal de sugestões do Guerreiro(a)**: ideias de melhoria
+para atividades, trilhas e para a própria plataforma são registradas aqui e caem na fila de
+avaliação da gestão — o mesmo mecanismo de evolução pactuada do Código de Conduta, já em
+operação para responsável, Apoiador e Mestre pela App 03. O registro é feito **em texto ou em
+áudio de até 60 segundos**, transcrito — uma criança de 6 anos fala melhor do que escreve.
+**Registrar não pontua; a proposta adotada rende pontos extras e badge**, e o retorno acontece
+em até 7 dias na própria plataforma, com o motivo em linguagem simples quando não for adotada.
 
 ## 8. App 06 — Vitrine pública
 

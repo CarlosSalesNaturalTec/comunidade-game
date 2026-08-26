@@ -103,9 +103,10 @@ A vedação de cobrar da família **não é adiada**: vale desde o primeiro dia.
 1. **Tombamento e ficha de vida.** Cada exemplar recebe número de tombo e registro na gestão:
    título, ponto de apoio, estado de conservação e histórico de quem o usou. O **número de
    tombo é digitado por quem tomba**, nunca gerado pelo núcleo, e é **único por ponto de
-   apoio** — o mesmo número pode existir em pontos de apoio diferentes. O Guerreiro(a) vê
-   na Área do Guerreiro(a) **quais Guerreiros e Guerreiras cuidaram daquele livro antes**
-   — o exemplar carrega uma linhagem, e ninguém quer ser o elo que quebrou a corrente.
+   apoio** — o mesmo número pode existir em pontos de apoio diferentes. **A partir do Ciclo
+   02**, o Guerreiro(a) vê na Área do Guerreiro(a) **quais Guerreiros e Guerreiras cuidaram
+   daquele livro antes** — o exemplar carrega uma linhagem, e ninguém quer ser o elo que
+   quebrou a corrente; no Ciclo 01 a ficha de vida existe só na gestão.
 2. **Uso em bancada, com retirada registrada** — _ciclo seguinte_. O exemplar não sai do ponto
    de apoio; retirada e devolução são lançadas pelo Mestre, e o painel do dia mostra as
    devoluções pendentes antes do fim da aula. No Ciclo 01 o exemplar segue sem sair do ponto de
