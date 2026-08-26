@@ -22,6 +22,9 @@ export interface Eu {
   persona_id: string;
   papel: Papel;
   permissoes: Record<string, string[]>;
+  /** Só vem para o Guerreiro(a): se a divulgação de dados foi autorizada
+   * pelo responsável (`RF-05-50`). */
+  divulgacao_autorizada?: boolean;
 }
 
 export function eu(token: string): Promise<Eu> {

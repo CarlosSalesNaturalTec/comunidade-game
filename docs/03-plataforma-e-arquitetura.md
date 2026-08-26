@@ -480,10 +480,9 @@ A autoria de trilhas e conteúdos e as validações pedagógicas são do Mestre 
 esta aplicação continua sendo a da **gestão** — cadastros, lançamentos, aprovações de Admin e
 painéis do dia.
 
-**Acesso do Mestre a esta aplicação:** **leitura do painel do dia**, **condução do Quiz ao
-Vivo das aulas que ministra** e **homologação da equipe da trilha** das suas trilhas, ato
-presencial que ele pratica no mesmo encontro (documento 02 §5). Fora isso, tudo o que ele
-escreve continua na App 09.
+**Acesso do Mestre a esta aplicação:** **leitura do painel do dia** e **condução do Quiz ao
+Vivo das aulas que ministra**. Fora isso, tudo o que ele escreve continua na App 09, e a
+homologação da equipe da trilha, no aparelho do encontro (App 01, documento 02 §5).
 
 ## 6. App 04 — Jogo em JavaScript
 

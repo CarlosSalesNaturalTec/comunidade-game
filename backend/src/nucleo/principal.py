@@ -40,6 +40,7 @@ from .poder_sustentador.rotas import roteador as roteador_de_poder_sustentador
 from .poderes.rotas import roteador as roteador_de_poderes
 from .ponto_extra.rotas import roteador as roteador_de_ponto_extra
 from .pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
+from .pontuacao.rotas import roteador as roteador_de_pontuacao
 from .prestacao_de_contas.rotas import roteador as roteador_de_prestacao_de_contas
 from .protecao import registrar_premissa_de_conteiner_unico
 from .protecao.cota import exigir_cota_de_leitura
@@ -192,6 +193,7 @@ incluir_roteador_de_dados(app, roteador_de_conteudos)
 incluir_roteador_de_dados(app, roteador_de_bibliografias)
 incluir_roteador_de_dados(app, roteador_de_painel_do_dia)
 incluir_roteador_de_dados(app, roteador_de_ciclo)
+incluir_roteador_de_dados(app, roteador_de_pontuacao)
 # A rota local do protocolo `Content-Range` (`armazenamento.rotas`) só
 # conclui algo com o adaptador de disco — em produção, a dependência
 # devolve o Cloud Storage e o manipulador responde 404 (`RF-09-19`, design

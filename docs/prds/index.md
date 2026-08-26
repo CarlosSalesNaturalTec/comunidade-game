@@ -557,6 +557,36 @@ Decisão do fundador, 2026-08-26: o ditado por voz é transcrito no aparelho, se
 (documento 09). Trilha, criação original e portfólio seguem pendentes — o PRD-05 continua
 **aprovado**.
 
+A elicitação das pendências do PRD-05, em 2026-08-26, fechou três decisões do fundador antes da
+terceira fatia. A **inscrição na trilha** passa a ser entidade do núcleo e ato do Guerreiro(a):
+exige trilha publicada, admite **várias trilhas ao mesmo tempo**, não se desfaz e não obriga a
+concluir — quem para no meio fica com a evolução limitada às etapas realizadas. Com ela, o
+nível 1 passa a exigir as **duas** condições do documento 11 §6, e não só a segunda: até aqui o
+núcleo derivava "inscrito" de haver qualquer `Resultado` na trilha, o que fazia depender de ato
+do Mestre o que é ato da criança. A **criação original** pode ser entregue individualmente ou
+por qualquer integrante da equipe fixa da trilha, valendo pela equipe inteira, e a entrega
+aceita texto, imagem, vídeo, arquivo e link — o `RF-01-64` deixa de prever só o crédito aos
+integrantes. A **equipe da trilha** passa a ser formada **e homologada na App 01**, o mesmo
+aparelho em que nasce, corrigindo o documento 02 §5, que mandava homologar na App 03: sem isso
+nada no produto cria equipe da trilha, e a criação original ficava sem sujeito (`RF-04-61` e
+`RF-04-62`, novos no PRD-04). O acesso do Mestre à App 03 volta a ser painel do dia e Quiz ao
+Vivo: o `RF-02-94` do PRD-02 foi transferido para o PRD-04 e **não é reaproveitado**. A
+elicitação também achou `RF-05-84` e `RF-05-85` nomeando **dois requisitos cada um**: o par de
+§6.7 — ranking da turma inteira e recusa sem rede — mantém os números, já consumidos em código,
+e o de §6.6 passa a `RF-05-87` e `RF-05-88`. Os três PRDs continuam **aprovados**.
+
+A change `carteira-catalogo-conquistas-e-ranking` abriu a **terceira fatia do PRD-05**: as telas
+de carteira, catálogo avulso com histórico de trocas, conquistas, estado do perfil público e
+ranking da turma (`RF-05-45`, `RF-05-46`, `RF-05-50`, `RF-05-52`, `RF-05-53`, `RF-05-82` a
+`RF-05-88`). Duas leituras novas no núcleo — as recompensas de marco conquistadas pelo
+Guerreiro(a), com a situação da entrega, e o ranking logado `GET /v1/rankings/{comunidade}`, que
+alcança a turma inteira por ser tela restrita à própria comunidade — e um campo novo em
+`GET /v1/eu` com o estado da autorização de divulgação. A derivação do ranking, antes só em
+`vitrine/rotas.py`, foi extraída para `pontuacao/regra.py` e passou a servir as duas rotas. A §9
+do PRD-05 é corrigida nesta mesma fatia: a rota do ranking nasce **autenticada**, não pública —
+o PRD alcançando a fonte, não decisão nova. Guia da trilha, desafios, equipes, criação original
+e portfólio seguem pendentes — o PRD-05 continua **aprovado**.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

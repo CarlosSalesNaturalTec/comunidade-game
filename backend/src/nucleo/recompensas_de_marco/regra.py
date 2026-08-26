@@ -1,3 +1,4 @@
+import uuid
 from decimal import Decimal
 
 from sqlalchemy import func
@@ -220,6 +221,37 @@ def registrar_entrega(
     sessao.add(entrega)
     sessao.flush()
     return entrega
+
+
+def listar_recompensas_conquistadas(
+    sessao: Session, *, guerreiro: Persona
+) -> list[tuple[RecompensaDeMarco, EntregaDeRecompensa | None]]:
+    """As recompensas cujo marco o Guerreiro(a) já alcançou, entregues ou
+    não — reaproveita `missoes_concluidas_pelo_guerreiro`, a mesma derivação
+    que `_validar_entrega` já usa para recusar a entrega do marco não
+    alcançado, sem duplicar a consulta de percurso (`RF-05-45`, design —
+    Decisions). Agrupa as recompensas por trilha para chamar a derivação uma
+    vez por trilha, não uma vez por recompensa."""
+    recompensas_por_trilha: dict[uuid.UUID, list[RecompensaDeMarco]] = {}
+    for recompensa in sessao.query(RecompensaDeMarco).all():
+        recompensas_por_trilha.setdefault(recompensa.trilha_id, []).append(recompensa)
+
+    entregas_por_recompensa = {
+        entrega.recompensa_de_marco_id: entrega
+        for entrega in (
+            sessao.query(EntregaDeRecompensa).filter_by(guerreiro_id=guerreiro.id).all()
+        )
+    }
+
+    conquistadas: list[tuple[RecompensaDeMarco, EntregaDeRecompensa | None]] = []
+    for trilha_id, recompensas_da_trilha in recompensas_por_trilha.items():
+        concluidas = missoes_concluidas_pelo_guerreiro(
+            sessao, guerreiro_id=guerreiro.id, trilha_id=trilha_id
+        )
+        for recompensa in recompensas_da_trilha:
+            if recompensa.missao_id in concluidas:
+                conquistadas.append((recompensa, entregas_por_recompensa.get(recompensa.id)))
+    return conquistadas
 
 
 def listar_entregas(sessao: Session, *, operador: Persona) -> list[EntregaDeRecompensa]:

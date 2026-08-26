@@ -8,7 +8,8 @@ from sqlalchemy.orm import Session
 
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
-from ..personas.modelo import Persona
+from ..erros import PermissaoNegada
+from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
 from ..tempo import DataHoraComFuso
@@ -17,6 +18,7 @@ from .modelo import EntregaDeRecompensa, RecompensaDeMarco
 from .regra import (
     declarar_recompensa_de_marco,
     listar_entregas,
+    listar_recompensas_conquistadas,
     listar_recompensas_de_marco,
     registrar_entrega,
 )
@@ -147,6 +149,44 @@ def registrar_entrega_rota(
     )
     sessao_bd.commit()
     return _saida_da_entrega(sessao_bd, entrega)
+
+
+class RecompensaConquistadaSaida(BaseModel):
+    recompensa_de_marco_id: uuid.UUID
+    trilha_id: uuid.UUID
+    missao_id: uuid.UUID
+    tipo_de_recurso_id: uuid.UUID
+    quantidade: Decimal
+    entregue: bool
+    entregue_em: DataHoraComFuso | None
+
+
+@roteador.get("/eu/recompensas")
+def minhas_recompensas_conquistadas_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[RecompensaConquistadaSaida]:
+    """As recompensas de marco que o Guerreiro(a) em sessão já conquistou,
+    entregues ou aguardando o Mestre — nenhum valor em moedas nem em reais,
+    e nenhum caminho de compra (`RF-05-45`, `RF-05-46`, `RN-05-07`,
+    `RN-05-21`, `RN-05-41`)."""
+    if contexto.papel != Papel.guerreiro:
+        raise PermissaoNegada(mensagem="Só o Guerreiro(a) lê as próprias recompensas conquistadas.")
+
+    guerreiro = sessao_bd.get(Persona, contexto.persona_id)
+    conquistadas = listar_recompensas_conquistadas(sessao_bd, guerreiro=guerreiro)
+    return [
+        RecompensaConquistadaSaida(
+            recompensa_de_marco_id=recompensa.id,
+            trilha_id=recompensa.trilha_id,
+            missao_id=recompensa.missao_id,
+            tipo_de_recurso_id=recompensa.tipo_de_recurso_id,
+            quantidade=recompensa.quantidade,
+            entregue=entrega is not None,
+            entregue_em=entrega.registrado_em if entrega is not None else None,
+        )
+        for recompensa, entrega in conquistadas
+    ]
 
 
 @roteador.get("/entregas")

@@ -289,8 +289,8 @@ com a fusão das aplicações e **não são reaproveitados**.
 | `RF-05-46` | Aplicação não oferece nenhuma forma de comprar recompensa de marco, com pontos de qualquer natureza | essencial  |
 | `RF-05-82` | Aplicação exibe, separados, o acumulado e o saldo disponível de pontos extras                       | essencial  |
 | `RF-05-83` | Aplicação exibe o catálogo avulso da comunidade, com preço em pontos extras e estoque               | essencial  |
-| `RF-05-84` | Aplicação informa que a troca é feita presencialmente, com o Mestre, ao fim do encontro             | essencial  |
-| `RF-05-85` | Aplicação exibe o histórico de trocas do Guerreiro(a), com item, preço e data                       | essencial  |
+| `RF-05-87` | Aplicação informa que a troca é feita presencialmente, com o Mestre, ao fim do encontro             | essencial  |
+| `RF-05-88` | Aplicação exibe o histórico de trocas do Guerreiro(a), com item, preço e data                       | essencial  |
 | `RF-05-86` | Aplicação não oferece troca nem reserva de item do catálogo avulso                                  | essencial  |
 | `RF-05-47` | Acervo do Guerreiro(a) distingue o exemplar próprio da linha Alpha dos permanentes em uso           | essencial  |
 | `RF-05-48` | Exemplar permanente exibe a ficha de vida: quem usou, quando e em que estado voltou                 | essencial  |
@@ -357,7 +357,7 @@ aplicação do Ciclo 01 não oferece apoio escolar.
 | `RN-05-13` | A criação original carrega a autoria por toda a vida do registro, inclusive quando devolvida     | 5                      | 02 §4, 11 §7     |
 | `RN-05-14` | Criação original só é exposta publicamente com autorização do responsável                        | 11                     | 03 §12           |
 | `RN-05-15` | O Guerreiro(a) é representado exclusivamente por avatar e nick, nunca por imagem real            | 12                     | 03 §§3.3, 12     |
-| `RN-05-16` | Ranking usa somente pontos regulares e segue a mesma regra de exibição da vitrine                | —                      | 11 §8.1          |
+| `RN-05-16` | Ranking usa somente pontos regulares e, nesta aplicação logada, alcança a turma inteira          | —                      | 11 §8.1, 03 §12  |
 | `RN-05-17` | Registrar sugestão não pontua; a proposta adotada rende pontos extras e badge                    | —                      | 03 §7, 11 §5     |
 | `RN-05-18` | Pontos extras não alimentam níveis: são computados isoladamente                                  | —                      | 11 §5            |
 | `RN-05-19` | Dano acidental ao acervo não gera pontuação negativa nem dívida para a família                   | —                      | 13 §3            |
@@ -384,6 +384,8 @@ aplicação do Ciclo 01 não oferece apoio escolar.
 | `RN-05-40` | O acumulado de pontos extras nunca decresce por troca; quem decresce é o saldo disponível        | 23                     | 11 §5            |
 | `RN-05-41` | Recompensa de marco é conquistada, nunca comprada; a troca alcança só a recompensa avulsa        | 23                     | 02 §8            |
 | `RN-05-42` | O saldo disponível de pontos extras nunca fica negativo                                          | 23                     | 11 §5            |
+| `RN-05-43` | A inscrição é ato do Guerreiro(a), exige trilha publicada e admite várias trilhas ao mesmo tempo | —                      | 11 §2            |
+| `RN-05-44` | A inscrição não se desfaz e concluir não é obrigatório: a evolução para nas etapas realizadas    | 18                     | 11 §§2, 6        |
 
 `RN-05-17` (canal de sugestões) e `RN-05-19` (dano acidental ao acervo) valem **a partir do
 Ciclo 02** (§3.2), junto com os requisitos que as operacionalizam. `RN-05-25` a `RN-05-28` e
@@ -395,9 +397,9 @@ Ciclo 02** (§3.2), junto com os requisitos que as operacionalizam. `RN-05-25` a
 
 A aplicação é majoritariamente **leitora**: trilha e conteúdo vêm do PRD-09, séries e registros
 do PRD-08, recompensas e acervo do PRD-07, e pontos, níveis e badges do núcleo (PRD-01). Este
-PRD **acrescenta três entidades** ao núcleo — `DisciplinaDeApoio`, `ConteudoDeApoio` e
-`ProducaoDaMissao` — e escreve em outras quatro que já existem, além da `ConsultaAoAssistente`
-criada pelo PRD-04.
+PRD **acrescenta quatro entidades** ao núcleo — `InscricaoNaTrilha`, `DisciplinaDeApoio`,
+`ConteudoDeApoio` e `ProducaoDaMissao` — e escreve em outras quatro que já existem, além da
+`ConsultaAoAssistente` criada pelo PRD-04.
 
 ```text
 ESCREVE (por ato do Guerreiro(a))       LÊ (definidos em outro PRD)
@@ -407,6 +409,7 @@ CriacaoOriginal         (PRD-09)        Culminancia               (PRD-09)
 SugestaoOuProposta      (PRD-01)        Atividade / Resultado     (PRD-01)
 ConsultaAoAssistente    (PRD-04)        Equipe / Presenca         (PRD-01)
 ProducaoDaMissao        [nova]          Retomada da missao        (PRD-09)
+InscricaoNaTrilha       [nova]
                                         Ponto / Nivel / Badge     (PRD-01)
 Avatar (características)                RecompensaDeMarco         (PRD-09)
                                         ItemPatrimonial           (PRD-07)
@@ -417,6 +420,7 @@ Avatar (características)                RecompensaDeMarco         (PRD-09)
 
 | Entidade               | Atributos essenciais                                                                                                                                              |
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `InscricaoNaTrilha`    | Guerreiro(a), trilha, momento — sem situação: é fato com data, não máquina de estados                                                                             |
 | `ProducaoDaMissao`     | Guerreiro(a), missão, atividade, forma de entrega (texto, áudio ou foto), transcrição, devolutiva, momento — **sem a foto e sem o áudio, descartados na leitura** |
 | `Nivel`                | Guerreiro(a), trilha ou poder, número (1 a 5), data da conquista — derivado do percurso, nunca editado                                                            |
 | `DisciplinaDeApoio`    | nome, faixa de dificuldade, situação (ativa ou inativa), Mestre autor do cadastro                                                                                 |
@@ -429,6 +433,9 @@ escolar só passam a ser escritas **a partir do Ciclo 02**; a leitura de `ItemPa
 
 Imutabilidade e derivação:
 
+- `InscricaoNaTrilha` exige **trilha publicada**, é **uma por Guerreiro(a) e trilha** e **não
+  se desfaz**; concluir a trilha não é obrigatório. É ela a primeira das duas condições do
+  nível 1, que o núcleo derivava de haver `Resultado` na trilha.
 - `Nivel` é **calculado** a partir das missões desbloqueadas, do mérito extra e da
   culminância validada. Não é campo que se escreve à mão, e **não regride**.
 - `RegistroDeColeta` fora da faixa nasce na situação **a conferir** e só passa a válido pela
@@ -472,7 +479,7 @@ aparecem aqui apenas quando o ato é do Guerreiro(a).
 | GET    | `/v1/eu/portfolio`                    | Guerreiro(a) | Criações validadas, com situação de exposição pública            |
 | GET    | `/v1/eu/recompensas`                  | Guerreiro(a) | Recompensas conquistadas em marcos e situação da entrega         |
 | GET    | `/v1/eu/acervo`                       | Guerreiro(a) | Exemplar próprio e permanentes em uso, com a ficha de vida       |
-| GET    | `/v1/rankings/{comunidade}`           | pública      | Ranking por trilha ou poder, somente com pontos regulares        |
+| GET    | `/v1/rankings/{comunidade}`           | Guerreiro(a) | Ranking da turma por trilha ou poder, só com pontos regulares    |
 | POST   | `/v1/sugestoes`                       | Guerreiro(a) | Registra sugestão em texto ou áudio na fila única da gestão      |
 | GET    | `/v1/eu/sugestoes`                    | Guerreiro(a) | Status das próprias sugestões                                    |
 | GET    | `/v1/apoio-escolar/disciplinas`       | Guerreiro(a) | Disciplinas ativas com conteúdo cadastrado                       |
@@ -612,6 +619,9 @@ soma a ele a partir do Ciclo 02, quando o canal desta aplicação abrir.
 | Ranking interno mostra a turma inteira, exceção declarada à divulgação           | 03 §12          | Ranking interno da App 05                                                                                         |
 | Janelas de acesso no ponto de apoio para quem não tem aparelho                   | 05 §2           | Acesso de quem não tem aparelho nem dados                                                                         |
 | Acervo, apoio escolar e canal de sugestões desta App entram a partir do Ciclo 02 | 03 §7 e 05 §3   | Estratégia de conservação do acervo permanente; Canal de sugestões do Guerreiro(a); Apoio às atividades escolares |
+| Inscrição na trilha: entidade do núcleo, várias trilhas, sem desinscrição        | 11 §2           | Inscrição na trilha                                                                                               |
+| Criação original individual ou de equipe, entregue também em mídia               | 02 §4           | Criação original individual ou de equipe                                                                          |
+| Equipe da trilha formada **e** homologada na App 01                              | 02 §5           | Onde a equipe da trilha é formada e homologada                                                                    |
 
 As entidades `DisciplinaDeApoio` e `ConteudoDeApoio` foram acrescentadas ao modelo do PRD-01,
 e `Nivel` passou a ser derivado do percurso. O badge **de protagonismo** entrou no catálogo do
@@ -644,7 +654,7 @@ coletores distintos no recorte publicado (documento 02 §1).
 | `RF-05-30` a `RF-05-38` | 02 §1 e PRD-08 (séries, locais e validade do registro)                                                            |
 | `RF-05-39` a `RF-05-44` | 02 §4, 11 §7 e PRD-09 (culminância, autoria e validação)                                                          |
 | `RF-05-45` a `RF-05-49` | 02 §8.1 (recompensa em marco); `RF-05-47` a `RF-05-49` (acervo e ficha de vida, 05 §3) valem a partir do Ciclo 02 |
-| `RF-05-82` a `RF-05-86` | 02 §8.2 (recompensa avulsa) e 11 §5 (acumulado e saldo disponível)                                                |
+| `RF-05-82` a `RF-05-88` | 02 §8.2 (recompensa avulsa) e 11 §5 (acumulado e saldo disponível)                                                |
 | `RF-05-50` e `RF-05-51` | 03 §12 (adesão em duas etapas), 02 §1 e 15 §7 (avatar)                                                            |
 | `RF-05-52` e `RF-05-53` | 11 §8.1 (rankings com pontos regulares)                                                                           |
 | `RF-05-54` a `RF-05-56` | 03 §7 (canal de sugestões) e 11 §§5, 7 (pontos extras e badge) — a partir do Ciclo 02                             |

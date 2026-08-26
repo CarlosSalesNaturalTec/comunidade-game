@@ -451,8 +451,10 @@ alterado, uma ideia nova sobre o que a trilha ensinou. A criação original dist
   a vida do registro, pela mesma razão que vale para a coleta de dados.
 - **Vitrine pública** — as criações de Guerreiros e Guerreiras autorizados compõem o portfólio
   público.
-- Em **equipe** — a equipe fixa da trilha (§5) —, o crédito é da equipe **e** de cada membro,
-  com o papel que teve.
+- **Individual ou em equipe.** Entrega o Guerreiro(a) sozinho ou qualquer integrante da
+  equipe fixa da trilha (§5), valendo pela equipe inteira; em equipe, o crédito é da equipe
+  **e** de cada membro, com o papel que teve.
+- **A entrega aceita texto, imagem, vídeo, arquivo e link.**
 - A criação original **pontua e rende badge de autoria**, com o valor em pontos creditado
   **integralmente a cada integrante** da equipe — dividir puniria justamente a colaboração.
   Validá-la é ato do Mestre autor da trilha, e o valor está no documento 11.
@@ -502,8 +504,8 @@ altera composição. Há dois tempos de vida:
 | **Da trilha** | A criação original que encerra a trilha | Com a culminância da trilha             |
 
 - A **equipe da trilha é fixa**: os Guerreiros e Guerreiras a formam e o **Mestre a homologa
-  em encontro presencial, na App 03**, onde já conduz o Quiz ao Vivo; da homologação em diante
-  ninguém entra nem sai. Cada Guerreiro(a) tem **uma equipe da trilha por trilha** que percorre.
+  em encontro presencial, na App 01**, o mesmo aparelho em que ela é formada; da homologação em
+  diante ninguém entra nem sai. Cada Guerreiro(a) tem **uma equipe da trilha por trilha** que percorre.
 - Cada Guerreiro(a) pode participar de **uma ou mais equipes** e **pontua em todas as
   atividades em que participar e colaborar**. **No Quiz ao Vivo joga por uma única equipe**,
   porque a partida é simultânea — a disputa segue sendo entre várias equipes, o que é único é a

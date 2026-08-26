@@ -209,7 +209,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-36` | Núcleo mantém a resposta de quiz por equipe e pergunta, com o momento de chegada                                                                                                                | essencial  |
 | `RF-01-37` | Equipe da aula é criada pelo Guerreiro(a), vinculada a uma aula, e encerra com ela sem ser reaproveitada                                                                                        | essencial  |
 | `RF-01-63` | Equipe da trilha é formada pelos Guerreiros e Guerreiras e homologada pelo Mestre em encontro presencial, e a composição fica fixa a partir da homologação                                      | essencial  |
-| `RF-01-64` | Núcleo credita a criação original a cada integrante da equipe da trilha que a entregou, guardando o papel de cada um                                                                            | essencial  |
+| `RF-01-64` | Núcleo credita a criação original a quem a entregou sozinho ou a cada integrante da equipe da trilha, guardando o papel de cada um                                                              | essencial  |
 | `RF-01-38` | Núcleo recusa o sexto integrante e o segundo familiar de 17 anos ou mais na mesma equipe                                                                                                        | essencial  |
 | `RF-01-39` | Núcleo aceita o Guerreiro(a) em várias equipes da aula e em uma só por partida de quiz                                                                                                          | essencial  |
 | `RF-01-40` | Núcleo mantém a etiqueta ODS da trilha — objetivo de 1 a 18, com meta opcional — declarada pelo Mestre autor                                                                                    | essencial  |
@@ -311,6 +311,7 @@ Sessao              Conteudo
                     SugestaoDeEstrutura
                     ProducaoDaMissao
                     EtiquetaODS
+                    InscricaoNaTrilha
                     PARTICIPAÇÃO               TERRITÓRIO (PRD-08)  ECONOMIA (PRD-07)
                     SolicitacaoDeParticipacao  ComunidadeVirtual    PontoDeApoio
                     SolicitacaoDeDados         Local                TipoDeRecurso
@@ -345,6 +346,7 @@ Sessao              Conteudo
 | `ChaveDeAplicacao`          | aplicação, ambiente, natureza (do projeto ou de terceiro), resumo criptográfico do segredo, emitida por, emitida em, prazo de apresentação, URL apresentada, cota, situação (vigente, revogada), revogada por, motivo e data                                                                    |
 | `EtiquetaODS`               | trilha ou missão, objetivo (1 a 18), meta opcional (`4.7`, `13.3`, `17.18`), declarada por, data                                                                                                                                                                                                |
 | `Equipe`                    | vínculo — aula **ou** trilha, nunca os dois —, criada por, integrantes com o papel de cada um, e, na equipe da trilha, quem homologou e quando                                                                                                                                                  |
+| `InscricaoNaTrilha`         | Guerreiro(a), trilha publicada e momento; uma por Guerreiro(a) e trilha, sem situação e sem desfazimento — é ela que põe o Guerreiro(a) no percurso da trilha (documento 11 §2)                                                                                                                 |
 | `SolicitacaoDeParticipacao` | nome ou razão social, e-mail, WhatsApp, pretensão, apresentação, instituição e links opcionais, nick pretendido (só na pretensão de Apoiador, reservado por 7 dias), aporte declarado (necessidade, valor sugerido ou livre), comprovante anexado, situação, prazo, quem avaliou, parecer, data |
 | `SugestaoOuProposta`        | autor e persona, alvo (atividade, trilha ou plataforma), texto — a transcrição, quando o registro veio em áudio —, situação (recebida, em avaliação, adotada, não adotada), prazo, quem avaliou, motivo do retorno em linguagem simples e data do desfecho                                      |
 | `Apoiador`                  | identidade, avatar (próprio a partir de 10 moedas acumuladas; padrão do projeto abaixo do piso), nick opcional — do pré-cadastro, quando há um —, único em toda a plataforma, artefatos comprobatórios, Poder Sustentador derivado dos aportes homologados                                      |
