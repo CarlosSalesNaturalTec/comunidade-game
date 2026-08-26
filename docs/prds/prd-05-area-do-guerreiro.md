@@ -479,7 +479,7 @@ aparecem aqui apenas quando o ato é do Guerreiro(a).
 | GET    | `/v1/eu/portfolio`                    | Guerreiro(a) | Criações validadas, com situação de exposição pública            |
 | GET    | `/v1/eu/recompensas`                  | Guerreiro(a) | Recompensas conquistadas em marcos e situação da entrega         |
 | GET    | `/v1/eu/acervo`                       | Guerreiro(a) | Exemplar próprio e permanentes em uso, com a ficha de vida       |
-| GET    | `/v1/rankings/{comunidade}`           | pública      | Ranking por trilha ou poder, somente com pontos regulares        |
+| GET    | `/v1/rankings/{comunidade}`           | Guerreiro(a) | Ranking da turma por trilha ou poder, só com pontos regulares    |
 | POST   | `/v1/sugestoes`                       | Guerreiro(a) | Registra sugestão em texto ou áudio na fila única da gestão      |
 | GET    | `/v1/eu/sugestoes`                    | Guerreiro(a) | Status das próprias sugestões                                    |
 | GET    | `/v1/apoio-escolar/disciplinas`       | Guerreiro(a) | Disciplinas ativas com conteúdo cadastrado                       |

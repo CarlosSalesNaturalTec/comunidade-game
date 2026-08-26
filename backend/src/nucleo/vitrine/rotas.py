@@ -9,13 +9,11 @@ from sqlalchemy.orm import Session
 
 from ..banco import obter_sessao
 from ..comunidades.modelo import ComunidadeVirtual
-from ..comunidades.regra import filtrar_personas_por_comunidade
 from ..configuracao import Configuracao, obter_configuracao
 from ..consentimentos.regra import condicao_de_autorizacao_vigente
 from ..criacoes_originais.modelo import CriacaoOriginal, SituacaoDaCriacaoOriginal
 from ..equipes.modelo import IntegranteDaEquipe
 from ..erros import ErroDeValidacao, NaoEncontrado
-from ..ocorrencias_de_conduta.modelo import OcorrenciaDeConduta
 from ..ods.regra import cobertura_por_comunidade, comunidades_com_cobertura
 from ..paginacao import (
     PaginaDeResultado,
@@ -24,9 +22,9 @@ from ..paginacao import (
     contrato_de_listagem,
     decodificar_cursor,
 )
-from ..personas.modelo import Nick, Papel, Persona
 from ..poderes.modelo import Poder
 from ..pontuacao.modelo import Badge, Nivel, PontoRegular
+from ..pontuacao.regra import consulta_de_ranking
 from ..protecao.freio import exigir_freio_por_origem
 from ..trilhas.modelo import SituacaoDaTrilha, Trilha
 from .publico import (
@@ -136,54 +134,13 @@ def ranking_publico(
 ) -> PaginaDeResultado[ItemDeRankingSaida]:
     """Ordena por ponto regular; a posição é calculada sobre o conjunto já
     filtrado pelo portão da divulgação, de modo que quem não autorizou não
-    abre buraco na numeração (`RF-01-21`, `RF-01-28`, `RN-01-10`)."""
+    abre buraco na numeração (`RF-01-21`, `RF-01-28`, `RN-01-10`). A
+    derivação é a mesma que `pontuacao.regra.consulta_de_ranking` usa para o
+    ranking logado da turma — este ranking sempre exige o portão da
+    divulgação (design — Decisions)."""
     comunidade_id = _analisar_comunidade(parametros.filtros.get("comunidade"))
 
-    totais = (
-        sessao_bd.query(
-            PontoRegular.guerreiro_id.label("guerreiro_id"),
-            func.sum(PontoRegular.total).label("total"),
-        )
-        .group_by(PontoRegular.guerreiro_id)
-        .subquery()
-    )
-    # A ocorrência de ciclo encerrado sai do ranking devolvendo exatamente o
-    # que debitou de fato — nunca o nominal —, sem tocar o saldo de ponto
-    # regular (`RF-02-100`, documento 11 §5).
-    debitos_de_ciclo_encerrado = (
-        sessao_bd.query(
-            OcorrenciaDeConduta.guerreiro_id.label("guerreiro_id"),
-            func.sum(OcorrenciaDeConduta.valor_debitado).label("total"),
-        )
-        .filter(OcorrenciaDeConduta.encerrada_em.is_not(None))
-        .group_by(OcorrenciaDeConduta.guerreiro_id)
-        .subquery()
-    )
-    total_expr = func.coalesce(totais.c.total, 0) + func.coalesce(
-        debitos_de_ciclo_encerrado.c.total, 0
-    )
-    posicao_expr = func.row_number().over(order_by=[total_expr.desc(), Persona.id]).label("posicao")
-
-    base = (
-        sessao_bd.query(
-            Persona.id.label("persona_id"),
-            Persona.avatar.label("avatar"),
-            Nick.valor.label("nick"),
-            total_expr.label("total"),
-            posicao_expr,
-        )
-        .join(Nick, Nick.persona_id == Persona.id)
-        .outerjoin(totais, totais.c.guerreiro_id == Persona.id)
-        .outerjoin(
-            debitos_de_ciclo_encerrado, debitos_de_ciclo_encerrado.c.guerreiro_id == Persona.id
-        )
-        .filter(
-            Persona.papel == Papel.guerreiro,
-            condicao_de_autorizacao_vigente(sessao_bd, Persona.id),
-        )
-    )
-    if comunidade_id is not None:
-        base = filtrar_personas_por_comunidade(base, comunidade_id)
+    base = consulta_de_ranking(sessao_bd, exigir_divulgacao=True, comunidade_id=comunidade_id)
 
     subquery = base.subquery()
     consulta = sessao_bd.query(*subquery.c).order_by(subquery.c.posicao)

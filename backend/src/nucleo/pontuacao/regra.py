@@ -3,12 +3,16 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Query, Session
 
 from ..coletas.modelo import DesafioDeColeta, RegistroDeColeta, SerieDeColeta
+from ..comunidades.regra import filtrar_personas_por_comunidade
+from ..consentimentos.regra import condicao_de_autorizacao_vigente
 from ..criacoes_originais.modelo import CriacaoOriginal
 from ..equipes.modelo import IntegranteDaEquipe
 from ..erros import ErroDeValidacao, PoderDoTerritorioNaoDeclarado
+from ..ocorrencias_de_conduta.modelo import OcorrenciaDeConduta
+from ..personas.modelo import Nick, Papel, Persona
 from ..poderes.regra import buscar_poder_do_territorio
 from ..quiz.modelo import (
     EquipeNaPartida,
@@ -464,6 +468,73 @@ def creditar_pontuacao_da_partida_de_quiz(
             creditar_ponto_regular(
                 sessao, guerreiro_id=integrante.persona_id, trilha_id=trilha.id, valor=valor
             )
+
+
+def consulta_de_ranking(
+    sessao: Session,
+    *,
+    exigir_divulgacao: bool,
+    comunidade_id: uuid.UUID | None = None,
+    trilha_id: uuid.UUID | None = None,
+    poder_id: uuid.UUID | None = None,
+) -> Query:
+    """A derivação única do ranking — soma de `PontoRegular`, recortada por
+    trilha ou por poder quando declarado, menos o débito das ocorrências de
+    `RF-02-100` —, extraída de `vitrine.rotas.ranking_publico` para que o
+    ranking logado da turma (`RF-05-52`, `RF-05-53`) a reaproveite sem
+    duplicar a regra do ciclo encerrado (design — Decisions). `Persona.id`
+    desempata o `row_number()` de forma determinística quando o total
+    empata. O portão da divulgação é opcional: o ranking público sempre o
+    exige, e o ranking da turma sempre o dispensa (`RN-05-16`)."""
+    filtro_do_recorte = []
+    if trilha_id is not None:
+        filtro_do_recorte.append(PontoRegular.trilha_id == trilha_id)
+    if poder_id is not None:
+        filtro_do_recorte.append(PontoRegular.poder_id == poder_id)
+
+    totais = (
+        sessao.query(
+            PontoRegular.guerreiro_id.label("guerreiro_id"),
+            func.sum(PontoRegular.total).label("total"),
+        )
+        .filter(*filtro_do_recorte)
+        .group_by(PontoRegular.guerreiro_id)
+        .subquery()
+    )
+    debitos_de_ciclo_encerrado = (
+        sessao.query(
+            OcorrenciaDeConduta.guerreiro_id.label("guerreiro_id"),
+            func.sum(OcorrenciaDeConduta.valor_debitado).label("total"),
+        )
+        .filter(OcorrenciaDeConduta.encerrada_em.is_not(None))
+        .group_by(OcorrenciaDeConduta.guerreiro_id)
+        .subquery()
+    )
+    total_expr = func.coalesce(totais.c.total, 0) + func.coalesce(
+        debitos_de_ciclo_encerrado.c.total, 0
+    )
+    posicao_expr = func.row_number().over(order_by=[total_expr.desc(), Persona.id]).label("posicao")
+
+    consulta = (
+        sessao.query(
+            Persona.id.label("persona_id"),
+            Persona.avatar.label("avatar"),
+            Nick.valor.label("nick"),
+            total_expr.label("total"),
+            posicao_expr,
+        )
+        .join(Nick, Nick.persona_id == Persona.id)
+        .outerjoin(totais, totais.c.guerreiro_id == Persona.id)
+        .outerjoin(
+            debitos_de_ciclo_encerrado, debitos_de_ciclo_encerrado.c.guerreiro_id == Persona.id
+        )
+        .filter(Persona.papel == Papel.guerreiro)
+    )
+    if exigir_divulgacao:
+        consulta = consulta.filter(condicao_de_autorizacao_vigente(sessao, Persona.id))
+    if comunidade_id is not None:
+        consulta = filtrar_personas_por_comunidade(consulta, comunidade_id)
+    return consulta
 
 
 def creditar_pontuacao_da_criacao_original(

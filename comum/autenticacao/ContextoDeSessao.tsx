@@ -21,6 +21,9 @@ export interface SessaoAberta {
   papel: Papel;
   permissoes: Record<string, string[]>;
   persona_id: string;
+  /** Só vem para o Guerreiro(a): se a divulgação de dados foi autorizada
+   * pelo responsável (`RF-05-50`). */
+  divulgacao_autorizada?: boolean;
 }
 
 interface ContextoDeSessaoValor {
@@ -71,6 +74,7 @@ export function ProvedorDeSessao({
           papel: quemSou.papel,
           permissoes: quemSou.permissoes,
           persona_id: quemSou.persona_id,
+          divulgacao_autorizada: quemSou.divulgacao_autorizada,
         });
         return true;
       } catch {

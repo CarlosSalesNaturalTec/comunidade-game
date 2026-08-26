@@ -575,6 +575,18 @@ elicitação também achou `RF-05-84` e `RF-05-85` nomeando **dois requisitos ca
 §6.7 — ranking da turma inteira e recusa sem rede — mantém os números, já consumidos em código,
 e o de §6.6 passa a `RF-05-87` e `RF-05-88`. Os três PRDs continuam **aprovados**.
 
+A change `carteira-catalogo-conquistas-e-ranking` abriu a **terceira fatia do PRD-05**: as telas
+de carteira, catálogo avulso com histórico de trocas, conquistas, estado do perfil público e
+ranking da turma (`RF-05-45`, `RF-05-46`, `RF-05-50`, `RF-05-52`, `RF-05-53`, `RF-05-82` a
+`RF-05-88`). Duas leituras novas no núcleo — as recompensas de marco conquistadas pelo
+Guerreiro(a), com a situação da entrega, e o ranking logado `GET /v1/rankings/{comunidade}`, que
+alcança a turma inteira por ser tela restrita à própria comunidade — e um campo novo em
+`GET /v1/eu` com o estado da autorização de divulgação. A derivação do ranking, antes só em
+`vitrine/rotas.py`, foi extraída para `pontuacao/regra.py` e passou a servir as duas rotas. A §9
+do PRD-05 é corrigida nesta mesma fatia: a rota do ranking nasce **autenticada**, não pública —
+o PRD alcançando a fonte, não decisão nova. Guia da trilha, desafios, equipes, criação original
+e portfólio seguem pendentes — o PRD-05 continua **aprovado**.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

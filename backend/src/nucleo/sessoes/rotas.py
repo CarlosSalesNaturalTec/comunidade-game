@@ -12,6 +12,7 @@ from ..banco import obter_sessao
 from ..biometria.regra import autenticar_por_nick_e_descritor
 from ..chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from ..configuracao import Configuracao, obter_configuracao
+from ..consentimentos.regra import autorizacao_de_divulgacao_vigente
 from ..erros import (
     AutenticacaoBiometricaInvalida,
     ConfirmacaoDeGuerreiroRecusada,
@@ -222,13 +223,25 @@ class EuSaida(BaseModel):
     persona_id: uuid.UUID
     papel: Papel
     permissoes: dict[str, list[str]]
+    divulgacao_autorizada: bool | None = None
 
 
-@roteador.get("/eu")
-def eu(contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)]) -> EuSaida:
+@roteador.get("/eu", response_model_exclude_none=True)
+def eu(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> EuSaida:
+    """`divulgacao_autorizada` só aparece para o Guerreiro(a) — derivado do
+    mesmo histórico de consentimento que já vale para toda a plataforma, sem
+    estado à parte e sem revelar quem decidiu (`RF-05-50`, `RN-05-14`,
+    `RN-05-21`)."""
     matriz_do_papel = MATRIZ_DE_PERMISSOES[contexto.papel]
+    divulgacao_autorizada = None
+    if contexto.papel == Papel.guerreiro:
+        divulgacao_autorizada = autorizacao_de_divulgacao_vigente(sessao_bd, contexto.persona_id)
     return EuSaida(
         persona_id=contexto.persona_id,
         papel=contexto.papel,
         permissoes={acesso: sorted(operacoes) for acesso, operacoes in matriz_do_papel.items()},
+        divulgacao_autorizada=divulgacao_autorizada,
     )
