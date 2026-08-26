@@ -1,6 +1,7 @@
 import uuid
+from datetime import datetime
 
-from sqlalchemy import DDL, ForeignKey, Integer, Text, Uuid, event
+from sqlalchemy import DDL, DateTime, ForeignKey, Integer, Text, Uuid, event
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
@@ -22,9 +23,18 @@ class OcorrenciaDeConduta(Base, ComAutoria, ComMomentoDoFato):
     `NULL` sem tocar o lançamento — a nulidade existe só para o expurgo
     futuro, e a regra exige o motivo na criação (design — riscos).
 
+    `valor_debitado` grava o que o débito tirou de fato do saldo depois do
+    aparo em zero — `valor` é sempre o nominal do documento 11 §5, e os dois
+    divergem quando o saldo da trilha era menor que 5 (design — decisão 3).
+    `encerrada_em` marca a saída do ranking pelo fim de ciclo — efeito de
+    jogo, distinto da guarda do motivo, que é LGPD (design — decisão 4).
+
     Somente inserção, no padrão de `Lancamento`: os _listeners_ abaixo
     recusam `UPDATE` e `DELETE` também dentro do ORM, além do _trigger_ da
-    migração.
+    migração. O expurgo do fim de ciclo passa ao largo do ORM — é um
+    `UPDATE` de Core, que não dispara evento de mapper —, e o _trigger_ do
+    Postgres é quem admite exatamente essa forma de alteração (design —
+    decisão 2).
     """
 
     __tablename__ = "ocorrencia_de_conduta"
@@ -36,7 +46,9 @@ class OcorrenciaDeConduta(Base, ComAutoria, ComMomentoDoFato):
         Uuid, ForeignKey("atividade.id"), nullable=False
     )
     valor: Mapped[int] = mapped_column(Integer, nullable=False)
+    valor_debitado: Mapped[int] = mapped_column(Integer, nullable=False)
     motivo: Mapped[str | None] = mapped_column(Text, nullable=True)
+    encerrada_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 def _recusar_alteracao(mapper, connection, target) -> None:
@@ -58,8 +70,24 @@ event.listen(
         """
         CREATE FUNCTION recusar_alteracao_de_ocorrencia_de_conduta() RETURNS trigger AS $$
         BEGIN
+            IF TG_OP = 'UPDATE'
+                AND OLD.motivo IS NOT NULL AND NEW.motivo IS NULL
+                AND OLD.encerrada_em IS NULL AND NEW.encerrada_em IS NOT NULL
+                AND NEW.valor IS NOT DISTINCT FROM OLD.valor
+                AND NEW.valor_debitado IS NOT DISTINCT FROM OLD.valor_debitado
+                AND NEW.guerreiro_id IS NOT DISTINCT FROM OLD.guerreiro_id
+                AND NEW.aula_id IS NOT DISTINCT FROM OLD.aula_id
+                AND NEW.atividade_id IS NOT DISTINCT FROM OLD.atividade_id
+                AND NEW.autor_id IS NOT DISTINCT FROM OLD.autor_id
+                AND NEW.papel_do_autor IS NOT DISTINCT FROM OLD.papel_do_autor
+                AND NEW.momento_do_fato IS NOT DISTINCT FROM OLD.momento_do_fato
+                AND NEW.momento_do_registro IS NOT DISTINCT FROM OLD.momento_do_registro
+            THEN
+                RETURN NEW;
+            END IF;
             RAISE EXCEPTION
-                'ocorrencia_de_conduta é somente inserção: UPDATE e DELETE não são permitidos';
+                'ocorrencia_de_conduta é somente inserção: só o expurgo do fim de ciclo altera '
+                'motivo e encerrada_em, e nenhuma outra coluna junto';
         END;
         $$ LANGUAGE plpgsql;
 

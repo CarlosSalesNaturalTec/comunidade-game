@@ -323,9 +323,10 @@ O resultado da sondagem não credita nem define nível: ela mede o ponto de part
 devolutiva automática da produção **nunca pontua sozinha** — quem lança o resultado é o Mestre.
 
 **O débito não desfaz percurso.** O saldo da trilha **nunca fica negativo**, nível e badge já
-conquistados **não regridem**, e a ocorrência de conduta **sai do ranking ao fim do ciclo** — o
-registro permanece para a gestão e o responsável. Vale para a pontuação negativa e para o
-estorno da coleta: é consequência no jogo, não porta de saída.
+conquistados **não regridem**, e a ocorrência de conduta **sai do ranking ao fim do ciclo**,
+devolvendo **o que foi debitado de fato** — nunca o valor nominal do lançamento, e nunca virando
+crédito líquido —; o registro permanece para a gestão e o responsável. Vale para a pontuação
+negativa e para o estorno da coleta: é consequência no jogo, não porta de saída.
 
 ### 5.1 Integridade dos pontos
 

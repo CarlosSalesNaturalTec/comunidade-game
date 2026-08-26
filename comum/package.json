@@ -10,7 +10,8 @@
     "./react": "./react/indice.ts",
     "./api": "./api/indice.ts",
     "./autenticacao": "./autenticacao/indice.ts",
-    "./autenticacao/api": "./autenticacao/api.ts"
+    "./autenticacao/api": "./autenticacao/api.ts",
+    "./biometria": "./biometria/indice.ts"
   },
   "files": [
     "tokens.css",
@@ -18,11 +19,15 @@
     "fontes",
     "react",
     "api",
-    "autenticacao"
+    "autenticacao",
+    "biometria"
   ],
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@vladmandic/human": "^3.3.6"
   },
   "peerDependencies": {
     "react": "^19.2.8"

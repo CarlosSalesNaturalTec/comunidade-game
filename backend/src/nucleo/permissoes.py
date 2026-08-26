@@ -21,6 +21,9 @@ class Operacao(enum.StrEnum):
 
     # Admin
     tudo = TUDO
+    # Admin — sem entrada na matriz de nenhum outro papel: o Admin alcança
+    # por `Operacao.tudo`, e negar por padrão recusa os demais (`RF-02-99`).
+    encerramento_de_ciclo = "encerramento_de_ciclo"
     # Mestre — escreve
     suas_trilhas_e_conteudos = "suas_trilhas_e_conteudos"
     lancamentos_e_pontuacao_negativa_das_suas_atividades = (

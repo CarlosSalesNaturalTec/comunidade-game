@@ -1,6 +1,8 @@
 from datetime import UTC, datetime
 
 import pytest
+from sqlalchemy import text
+from sqlalchemy.exc import DBAPIError
 
 from nucleo.erros import ErroDeValidacao, OcorrenciaDeCondutaImutavel, PermissaoNegada
 from nucleo.ocorrencias_de_conduta.modelo import OcorrenciaDeConduta
@@ -338,6 +340,7 @@ def test_ocorrencia_sem_motivo_guardado_nao_o_devolve(
         aula_id=aula.id,
         atividade_id=atividade.id,
         valor=VALOR_DA_OCORRENCIA_DE_CONDUTA,
+        valor_debitado=VALOR_DA_OCORRENCIA_DE_CONDUTA,
         motivo=None,
         momento_do_fato=MOMENTO_DO_FATO,
         autor_id=mestre.id,
@@ -433,3 +436,150 @@ def test_lancamento_pela_rota_debita_e_confirma_teto(
 
 def test_teto_por_guerreiro_e_dez(sessao):
     assert TETO_POR_GUERREIRO_E_AULA == 10
+
+
+def test_valor_debitado_e_menor_que_o_nominal_quando_o_saldo_e_pequeno(
+    sessao, criar_persona, criar_comunidade, criar_aula, criar_trilha, criar_missao, criar_atividade
+):
+    """`valor` continua o nominal do documento 11 §5; `valor_debitado` é o
+    que o débito tirou de fato depois do aparo em zero — os dois divergem
+    quando o saldo da trilha era menor que 5 (design — decisão 3,
+    `RF-02-100`)."""
+    from nucleo.pontuacao.regra import creditar_ponto_regular
+
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre)
+    aula = criar_aula(mestre, comunidade)
+
+    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=3)
+    sessao.commit()
+
+    ocorrencia = _lancar(
+        sessao, operador=mestre, aula=aula, atividade=atividade, guerreiro=guerreiro
+    )
+    sessao.commit()
+
+    assert ocorrencia.valor == VALOR_DA_OCORRENCIA_DE_CONDUTA == 5
+    assert ocorrencia.valor_debitado == 3
+
+
+def test_valor_debitado_igual_ao_nominal_quando_ha_saldo_suficiente(
+    sessao, criar_persona, criar_comunidade, criar_aula, criar_trilha, criar_missao, criar_atividade
+):
+    from nucleo.pontuacao.regra import creditar_ponto_regular
+
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre)
+    aula = criar_aula(mestre, comunidade)
+
+    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=20)
+    sessao.commit()
+
+    ocorrencia = _lancar(
+        sessao, operador=mestre, aula=aula, atividade=atividade, guerreiro=guerreiro
+    )
+    sessao.commit()
+
+    assert ocorrencia.valor_debitado == VALOR_DA_OCORRENCIA_DE_CONDUTA == 5
+
+
+def test_expurgo_do_fim_de_ciclo_e_a_unica_alteracao_admitida_pelo_gatilho(
+    conexao,
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+):
+    """O _trigger_ estreitado admite exatamente o `UPDATE` que anula
+    `motivo` e carimba `encerrada_em`, sem tocar mais nada — a mesma forma
+    que `nucleo.ciclo.regra.encerrar_ciclo` emite (design — decisão 2,
+    `RF-02-100`)."""
+    from nucleo.pontuacao.regra import creditar_ponto_regular
+
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre)
+    aula = criar_aula(mestre, comunidade)
+
+    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=20)
+    sessao.commit()
+    ocorrencia = _lancar(
+        sessao, operador=mestre, aula=aula, atividade=atividade, guerreiro=guerreiro
+    )
+    sessao.commit()
+
+    conexao.execute(
+        text("UPDATE ocorrencia_de_conduta SET motivo = NULL, encerrada_em = now() WHERE id = :id"),
+        {"id": str(ocorrencia.id)},
+    )
+
+    expurgada = sessao.get(OcorrenciaDeConduta, ocorrencia.id)
+    sessao.refresh(expurgada)
+    assert expurgada.motivo is None
+    assert expurgada.encerrada_em is not None
+    assert expurgada.valor == VALOR_DA_OCORRENCIA_DE_CONDUTA
+    assert expurgada.valor_debitado == VALOR_DA_OCORRENCIA_DE_CONDUTA
+    assert expurgada.guerreiro_id == guerreiro.id
+
+
+def test_update_de_outra_coluna_e_recusado_mesmo_anulando_o_motivo_junto(
+    conexao,
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+):
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre)
+    aula = criar_aula(mestre, comunidade)
+
+    ocorrencia = _lancar(
+        sessao, operador=mestre, aula=aula, atividade=atividade, guerreiro=guerreiro
+    )
+    sessao.commit()
+
+    with pytest.raises(DBAPIError), conexao.begin_nested():
+        conexao.execute(
+            text(
+                "UPDATE ocorrencia_de_conduta "
+                "SET motivo = NULL, encerrada_em = now(), valor = 999 WHERE id = :id"
+            ),
+            {"id": str(ocorrencia.id)},
+        )
+
+    with pytest.raises(DBAPIError), conexao.begin_nested():
+        conexao.execute(
+            text("UPDATE ocorrencia_de_conduta SET valor = 999 WHERE id = :id"),
+            {"id": str(ocorrencia.id)},
+        )
+
+    with pytest.raises(DBAPIError), conexao.begin_nested():
+        conexao.execute(
+            text("DELETE FROM ocorrencia_de_conduta WHERE id = :id"), {"id": str(ocorrencia.id)}
+        )
+
+    intacta = sessao.get(OcorrenciaDeConduta, ocorrencia.id)
+    assert intacta.motivo == "Desrespeitou um colega."
+    assert intacta.valor == VALOR_DA_OCORRENCIA_DE_CONDUTA
+    assert intacta.encerrada_em is None

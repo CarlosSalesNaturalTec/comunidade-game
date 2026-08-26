@@ -2,10 +2,10 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import * as autenticacaoApi from "comum/autenticacao/api";
+import * as biometriaModulo from "comum/biometria";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as presencasApi from "../api/presencas";
 import * as sessoesDeGuerreiroApi from "../api/sessoesDeGuerreiro";
-import * as biometriaModulo from "../biometria/biometria";
 import { TelaDeEntradaDoGuerreiro } from "./TelaDeEntradaDoGuerreiro";
 
 vi.mock("comum/autenticacao", async () => {

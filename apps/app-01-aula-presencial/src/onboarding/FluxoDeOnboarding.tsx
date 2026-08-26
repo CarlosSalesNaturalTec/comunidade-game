@@ -1,7 +1,7 @@
+import { existeCamera } from "comum/biometria";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
 import type { GuerreiroCadastrado } from "../api/guerreiros";
-import { existeCamera } from "../biometria/biometria";
 import { TelaDeCadastro } from "./TelaDeCadastro";
 import { TelaDeCaptura } from "./TelaDeCaptura";
 import { TelaDoResponsavel } from "./TelaDoResponsavel";

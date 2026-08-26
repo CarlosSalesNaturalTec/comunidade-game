@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as biometriaModulo from "comum/biometria";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as consentimentosApi from "../api/consentimentos";
 import * as descritorApi from "../api/descritor";
 import * as guerreirosApi from "../api/guerreiros";
 import * as responsaveisApi from "../api/responsaveis";
-import * as biometriaModulo from "../biometria/biometria";
 import { FluxoDeOnboarding } from "./FluxoDeOnboarding";
 
 afterEach(() => {

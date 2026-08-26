@@ -1,6 +1,12 @@
 import { ErroDaApi } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { eu } from "comum/autenticacao/api";
+import {
+  encerrarCaptura,
+  existeCamera,
+  gerarDescritor,
+  provarVivacidade,
+} from "comum/biometria";
 import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
 import { useState } from "react";
 import { registrarPresenca } from "../api/presencas";
@@ -8,12 +14,6 @@ import {
   abrirSessaoPorReconhecimento,
   confirmarSessaoDeGuerreiro,
 } from "../api/sessoesDeGuerreiro";
-import {
-  encerrarCaptura,
-  existeCamera,
-  gerarDescritor,
-  provarVivacidade,
-} from "../biometria/biometria";
 
 interface Props {
   tokenDeTrabalho: string;

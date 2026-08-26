@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from ..aulas.modelo import Aula
 from ..erros import ErroDeValidacao
 from ..personas.modelo import Persona
+from ..pontuacao.modelo import PontoRegular
 from ..pontuacao.regra import debitar_ponto_regular
 from ..trilhas.modelo import Atividade, FormatoDeAtividade, Missao, Trilha
 from ..trilhas.regra import conferir_posse_da_trilha
@@ -81,11 +82,23 @@ def lancar_ocorrencia_de_conduta(
             campo="guerreiro_id",
         )
 
+    # O que o débito vai tirar de fato, depois do aparo em zero de
+    # `debitar_ponto_regular` (`RN-01-55`) — gravado na inserção porque o
+    # saldo muda depois, e o ranking do fim de ciclo precisa devolver
+    # exatamente isso, não o nominal (design — decisões 3 e 4, `RF-02-100`).
+    saldo_antes = (
+        sessao.query(PontoRegular.total)
+        .filter_by(guerreiro_id=guerreiro_id, trilha_id=trilha.id, poder_id=None)
+        .scalar()
+    ) or 0
+    valor_debitado = min(VALOR_DA_OCORRENCIA_DE_CONDUTA, saldo_antes)
+
     ocorrencia = OcorrenciaDeConduta(
         guerreiro_id=guerreiro_id,
         aula_id=aula.id,
         atividade_id=atividade.id,
         valor=VALOR_DA_OCORRENCIA_DE_CONDUTA,
+        valor_debitado=valor_debitado,
         motivo=motivo,
         momento_do_fato=momento_do_fato,
         autor_id=operador.id,

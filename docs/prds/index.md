@@ -524,6 +524,24 @@ de recurso em código — "kits MDF" e "linha Alpha" eram exemplo de operação,
 `RF-02-46` e o `RF-02-47`, que diziam a mesma coisa, se consolidam num só enunciado. O PRD-02
 continua **aprovado**.
 
+O PRD-02 recebeu a oitava fatia: a change `esqueleto-da-area-do-guerreiro-e-fim-de-ciclo` abriu
+o **fim de ciclo** do §6.1 — ato isolado de Admin que não declara o ciclo seguinte, expurga o
+motivo das ocorrências de conduta do ciclo e as tira do ranking público, sem congelar indicador
+(`RF-02-99`, `RF-02-100`, `RN-02-30`). A ocorrência ganhou `valor_debitado` e `encerrada_em`; o
+_trigger_ de somente inserção passou a admitir exatamente o `UPDATE` do expurgo. A App 03 ganhou
+a tela do ato, com confirmação explícita. Decisão do fundador, 2026-08-25: a saída do ranking
+devolve o que a ocorrência debitou de fato, nunca o valor nominal (documento 11 §5). Os demais
+cadastros do §6.1, as filas restantes e os lançamentos seguem pendentes — o PRD-02 continua
+**aprovado**.
+
+A mesma change abriu a **primeira fatia do PRD-05**: nasce `apps/app-05-guerreiro`, com a
+entrada por nick e imagem contra a conferência biométrica do núcleo, a recusa em aparelho sem
+câmera, a sessão assistida por Mestre ou Admin nos dois casos previstos e o encerramento por
+saída e por inatividade (`RF-05-01` a `RF-05-07`, `RF-05-71`). Nenhuma rota nova: os quatro
+endpoints de `sessao-do-guerreiro` já estavam no ar. `biometria.ts` subiu de
+`apps/app-01-aula-presencial/` para `comum/biometria/`, fronteira única da Human nas duas
+aplicações. Trilha, coleta, portfólio e acervo seguem pendentes — o PRD-05 continua **aprovado**.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

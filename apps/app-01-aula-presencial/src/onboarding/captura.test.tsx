@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
+import * as biometriaModulo from "comum/biometria";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as descritorApi from "../api/descritor";
-import * as biometriaModulo from "../biometria/biometria";
 import { TelaDeCaptura } from "./TelaDeCaptura";
 
 afterEach(() => {
