@@ -357,7 +357,7 @@ aplicação do Ciclo 01 não oferece apoio escolar.
 | `RN-05-13` | A criação original carrega a autoria por toda a vida do registro, inclusive quando devolvida     | 5                      | 02 §4, 11 §7     |
 | `RN-05-14` | Criação original só é exposta publicamente com autorização do responsável                        | 11                     | 03 §12           |
 | `RN-05-15` | O Guerreiro(a) é representado exclusivamente por avatar e nick, nunca por imagem real            | 12                     | 03 §§3.3, 12     |
-| `RN-05-16` | Ranking usa somente pontos regulares e segue a mesma regra de exibição da vitrine                | —                      | 11 §8.1          |
+| `RN-05-16` | Ranking usa somente pontos regulares e, nesta aplicação logada, alcança a turma inteira          | —                      | 11 §8.1, 03 §12  |
 | `RN-05-17` | Registrar sugestão não pontua; a proposta adotada rende pontos extras e badge                    | —                      | 03 §7, 11 §5     |
 | `RN-05-18` | Pontos extras não alimentam níveis: são computados isoladamente                                  | —                      | 11 §5            |
 | `RN-05-19` | Dano acidental ao acervo não gera pontuação negativa nem dívida para a família                   | —                      | 13 §3            |

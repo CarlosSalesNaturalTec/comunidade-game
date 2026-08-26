@@ -78,14 +78,16 @@ poder tocar a partida.
 
 ## 4. Personas e permissões
 
-| Persona   | O que faz nesta aplicação                                                              | O que não pode fazer                                                |
-| --------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Admin     | Tudo: cadastros, aprovações, agenda, lançamentos, filas, acervo, recursos e auditoria  | Registrar coleta no lugar do Guerreiro(a); criar conteúdo de trilha |
-| Mestre    | Lê o painel do dia, conduz o Quiz ao Vivo e homologa a equipe da trilha das suas aulas | Escrever nas demais rotas de gestão — o que é dele fica na App 09   |
-| Visitante | Nada: a aplicação é inteiramente autenticada                                           | Acessar qualquer tela                                               |
+| Persona   | O que faz nesta aplicação                                                             | O que não pode fazer                                                |
+| --------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Admin     | Tudo: cadastros, aprovações, agenda, lançamentos, filas, acervo, recursos e auditoria | Registrar coleta no lugar do Guerreiro(a); criar conteúdo de trilha |
+| Mestre    | Lê o painel do dia e conduz o Quiz ao Vivo das suas aulas                             | Escrever nas demais rotas de gestão — o que é dele fica na App 09   |
+| Visitante | Nada: a aplicação é inteiramente autenticada                                          | Acessar qualquer tela                                               |
 
-O Mestre entra por login social, como todo adulto. Nesta aplicação ele lê o painel do dia,
-conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada além disso.
+O Mestre entra por login social, como todo adulto. Nesta aplicação ele lê o painel do dia e
+conduz a partida de quiz das suas aulas — nada além disso. A homologação da equipe da trilha
+passou à App 01, o aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o
+PRD-04 (`RF-04-62`) e **não é reaproveitado**.
 
 ## 5. Jornadas principais
 
@@ -294,7 +296,6 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
 | `RF-02-57` | Admin registra e homologa aporte com provedor, tipo, comprovante e valor em moedas                 | essencial  |
 | `RF-02-58` | Aplicação exibe as necessidades de recurso em aberto das atividades previstas                      | essencial  |
 | `RF-02-59` | Mestre da aula ou Admin abre partida de Quiz ao Vivo com o banco do curador e as equipes da aula   | essencial  |
-| `RF-02-94` | Mestre autor homologa a equipe da trilha no encontro presencial, e da homologação nada muda nela   | essencial  |
 | `RF-02-60` | Partida exibe a pergunta simultaneamente nos dispositivos logados na aula                          | essencial  |
 | `RF-02-61` | Partida fixa uma equipe por Guerreiro(a) e aceita uma resposta por equipe e por pergunta           | essencial  |
 | `RF-02-62` | Partida credita toda equipe que acerta e o bônus à primeira, por ordem de chegada no servidor      | essencial  |
@@ -336,7 +337,7 @@ conduz a partida de quiz e homologa a equipe da trilha das suas aulas — nada a
 | `RN-02-17` | Exemplar da linha Alpha e camisa entregues têm baixa definitiva no livro-razão                                    | —          | 05 §3      |
 | `RN-02-18` | Exemplar permanente não sai do ponto de apoio; a retirada registrada é do ciclo seguinte                          | —          | 05 §3      |
 | `RN-02-19` | Aporte aparece publicamente em moedas da plataforma, nunca em reais                                               | 16         | 04 §1      |
-| `RN-02-20` | Mestre acessa esta aplicação para ler o painel, conduzir o quiz e homologar a equipe da trilha                    | —          | 03 §5      |
+| `RN-02-20` | Mestre acessa esta aplicação para ler o painel do dia e conduzir a partida de quiz                                | —          | 03 §5      |
 | `RN-02-21` | Toda escrita da gestão é registrada na trilha de auditoria, com autor, papel, data e hora                         | —          | 03 §1      |
 | `RN-02-22` | Nenhuma tela de gestão exibe a imagem real do Guerreiro(a) — a representação é o avatar                           | 12         | 03 §12     |
 | `RN-02-23` | Nenhuma recusa de consentimento exclui o Guerreiro(a) da atividade nem do lançamento                              | 11         | 03 §12     |
@@ -532,7 +533,7 @@ contar, e dá à gestão a distribuição etária que **H4** observa.
 | Prazo de 7 dias para as solicitações dos responsáveis                                         | 03 §9              | Canal de comunicação com os responsáveis       |
 | Sem notificação por e-mail no Ciclo 01                                                        | 03 §9              | Notificações no Ciclo 01                       |
 | Persona primária tratada por Guerreiro ou Guerreira                                           | 02 §1              | Termo da persona primária                      |
-| Equipe da trilha homologada pelo Mestre na App 03, no encontro presencial                     | 02 §5, 03 §5       | Aplicação que homologa a equipe da trilha      |
+| Equipe da trilha homologada pelo Mestre na App 01, o aparelho do encontro                     | 02 §5, 03 §5       | Onde a equipe da trilha é formada e homologada |
 | Amostra da auditoria de coleta: 10% da semana por série ativa, mínimo de um                   | 02 §1              | Composição da amostra de auditoria de coleta   |
 | Pontuação da atividade vem do motor do documento 11; o cadastro escolhe o tipo                | 11 §5              | Pontuação da atividade cadastrada              |
 | Acervo permanente no Ciclo 01: tombamento, ficha de vida e badge                              | 05 §3              | Estratégia de conservação do acervo permanente |
