@@ -18,6 +18,7 @@ from .catalogo_avulso.rotas import roteador as roteador_de_catalogo_avulso
 from .chaves.conferencia import NOME_DO_CABECALHO as NOME_DO_CABECALHO_DA_CHAVE
 from .chaves.conferencia import exigir_chave_de_aplicacao
 from .chaves.rotas import roteador as roteador_de_chaves
+from .ciclo.rotas import roteador as roteador_de_ciclo
 from .coletas.rotas import roteador as roteador_de_coletas
 from .comunidades.rotas import roteador as roteador_de_comunidades
 from .consentimentos.rotas import roteador as roteador_de_consentimentos
@@ -190,6 +191,7 @@ incluir_roteador_de_dados(app, roteador_de_ponto_extra)
 incluir_roteador_de_dados(app, roteador_de_conteudos)
 incluir_roteador_de_dados(app, roteador_de_bibliografias)
 incluir_roteador_de_dados(app, roteador_de_painel_do_dia)
+incluir_roteador_de_dados(app, roteador_de_ciclo)
 # A rota local do protocolo `Content-Range` (`armazenamento.rotas`) só
 # conclui algo com o adaptador de disco — em produção, a dependência
 # devolve o Cloud Storage e o manipulador responde 404 (`RF-09-19`, design

@@ -2,12 +2,12 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as sessaoApi from "comum/autenticacao/api";
+import * as biometriaModulo from "comum/biometria";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as descritorApi from "../api/descritor";
 import * as equipesApi from "../api/equipes";
 import * as presencasApi from "../api/presencas";
 import * as sessoesDeGuerreiroApi from "../api/sessoesDeGuerreiro";
-import * as biometriaModulo from "../biometria/biometria";
 import { TelaInicial } from "./TelaInicial";
 
 function mockarRegistrarPresencaEcoando() {

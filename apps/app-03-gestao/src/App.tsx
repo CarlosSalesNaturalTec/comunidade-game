@@ -4,6 +4,7 @@ import { TelaDaAgenda } from "./agenda/TelaDaAgenda";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeChaves } from "./chaves/TelaDeChaves";
 import { TelaDeComunidades } from "./comunidades/TelaDeComunidades";
+import { TelaDeEncerramentoDeCiclo } from "./encerramento-de-ciclo/TelaDeEncerramentoDeCiclo";
 import { TelaDeFilas } from "./filas/TelaDeFilas";
 import { TelaDoPainelDoDia } from "./painel-do-dia/TelaDoPainelDoDia";
 import { TelaDePersonas } from "./personas/TelaDePersonas";
@@ -20,7 +21,8 @@ type Area =
   | "filas"
   | "chaves"
   | "painel-do-dia"
-  | "quiz";
+  | "quiz"
+  | "encerramento-de-ciclo";
 
 const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "comunidades", rotulo: "Comunidades" },
@@ -32,6 +34,7 @@ const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "chaves", rotulo: "Chaves" },
   { chave: "painel-do-dia", rotulo: "Painel do dia" },
   { chave: "quiz", rotulo: "Quiz ao Vivo" },
+  { chave: "encerramento-de-ciclo", rotulo: "Encerramento do ciclo" },
 ];
 
 const CHAVES_DE_AREA = new Set<string>(AREAS.map((item) => item.chave));
@@ -83,6 +86,7 @@ function Conteudo() {
       {area === "chaves" && <TelaDeChaves />}
       {area === "painel-do-dia" && <TelaDoPainelDoDia />}
       {area === "quiz" && <TelaDeQuiz />}
+      {area === "encerramento-de-ciclo" && <TelaDeEncerramentoDeCiclo />}
     </>
   );
 }

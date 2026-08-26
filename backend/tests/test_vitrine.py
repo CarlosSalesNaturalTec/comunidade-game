@@ -1,7 +1,12 @@
+from datetime import UTC, datetime
+
 from nucleo.consentimentos.modelo import DecisaoDeConsentimento, TipoDeConsentimento
 from nucleo.criacoes_originais.regra import entregar_criacao_original, validar_criacao_original
+from nucleo.ocorrencias_de_conduta.modelo import OcorrenciaDeConduta
 from nucleo.personas.modelo import Papel
 from nucleo.trilhas.modelo import SituacaoDaTrilha
+
+MOMENTO_DO_FATO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
 
 TIPO = TipoDeConsentimento.autorizacao_de_divulgacao
 
@@ -431,3 +436,130 @@ def test_cobertura_publica_inclui_comunidade_so_com_coleta(
     assert resposta.status_code == 200
     linha = next(item for item in resposta.json() if item["comunidade_id"] == str(comunidade.id))
     assert linha["objetivos"] == [6]
+
+
+def _ocorrencia_de_conduta(
+    sessao, *, guerreiro, aula, atividade, autor, valor=5, valor_debitado=5, encerrada_em=None
+):
+    ocorrencia = OcorrenciaDeConduta(
+        guerreiro_id=guerreiro.id,
+        aula_id=aula.id,
+        atividade_id=atividade.id,
+        valor=valor,
+        valor_debitado=valor_debitado,
+        motivo=None if encerrada_em is not None else "Desrespeitou um colega.",
+        momento_do_fato=MOMENTO_DO_FATO,
+        autor_id=autor.id,
+        papel_do_autor=autor.papel.value,
+        encerrada_em=encerrada_em,
+    )
+    sessao.add(ocorrencia)
+    sessao.commit()
+    return ocorrencia
+
+
+def test_ocorrencia_de_ciclo_encerrado_nao_pesa_no_ranking(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+    criar_comunidade,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_aula,
+    criar_ponto_regular,
+    sessao,
+):
+    """A ocorrência de ciclo encerrado devolve o que foi debitado de fato,
+    não o nominal, e sai do ranking (`RF-02-100`, documento 11 §5)."""
+    comunidade = criar_comunidade("Comunidade do ranking do ciclo")
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+    trilha = criar_trilha(admin)
+    missao = criar_missao(trilha, admin)
+    atividade = criar_atividade(missao, admin)
+    aula = criar_aula(mestre, comunidade)
+
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_nick(guerreiro, "encerrada-no-ranking")
+    criar_vinculo(responsavel, guerreiro, cadastrado_por=admin)
+    criar_consentimento(
+        responsavel,
+        guerreiro,
+        tipo=TipoDeConsentimento.autorizacao_de_divulgacao,
+        decisao=DecisaoDeConsentimento.concede,
+    )
+    criar_ponto_regular(guerreiro, trilha, total=15)
+    _ocorrencia_de_conduta(
+        sessao,
+        guerreiro=guerreiro,
+        aula=aula,
+        atividade=atividade,
+        autor=mestre,
+        encerrada_em=MOMENTO_DO_FATO,
+    )
+
+    chave, _ = criar_chave()
+    resposta = cliente.get(
+        "/v1/vitrine/rankings",
+        params={"comunidade": str(comunidade.id)},
+        headers={"X-Chave-Aplicacao": chave},
+    )
+    assert resposta.status_code == 200
+    itens = resposta.json()["itens"]
+    assert itens[0]["nick"] == "encerrada-no-ranking"
+    assert itens[0]["pontos_regulares"] == 20  # 15 do saldo + 5 devolvidos pelo expurgo
+
+
+def test_ocorrencia_do_ciclo_corrente_segue_pesando_no_ranking(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+    criar_comunidade,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_aula,
+    criar_ponto_regular,
+    sessao,
+):
+    comunidade = criar_comunidade("Comunidade do ciclo corrente")
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+    trilha = criar_trilha(admin)
+    missao = criar_missao(trilha, admin)
+    atividade = criar_atividade(missao, admin)
+    aula = criar_aula(mestre, comunidade)
+
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_nick(guerreiro, "ciclo-corrente-no-ranking")
+    criar_vinculo(responsavel, guerreiro, cadastrado_por=admin)
+    criar_consentimento(
+        responsavel,
+        guerreiro,
+        tipo=TipoDeConsentimento.autorizacao_de_divulgacao,
+        decisao=DecisaoDeConsentimento.concede,
+    )
+    criar_ponto_regular(guerreiro, trilha, total=15)
+    _ocorrencia_de_conduta(
+        sessao, guerreiro=guerreiro, aula=aula, atividade=atividade, autor=mestre
+    )
+
+    chave, _ = criar_chave()
+    resposta = cliente.get(
+        "/v1/vitrine/rankings",
+        params={"comunidade": str(comunidade.id)},
+        headers={"X-Chave-Aplicacao": chave},
+    )
+    assert resposta.status_code == 200
+    itens = resposta.json()["itens"]
+    assert itens[0]["nick"] == "ciclo-corrente-no-ranking"
+    assert itens[0]["pontos_regulares"] == 15  # sem devolução: o ciclo não foi encerrado

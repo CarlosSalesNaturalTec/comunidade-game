@@ -1,8 +1,8 @@
 import { ErroDaApi } from "comum/api";
+import { encerrarCaptura, gerarDescritor, provarVivacidade } from "comum/biometria";
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useEffect, useState } from "react";
 import { enviarDescritor } from "../api/descritor";
-import { encerrarCaptura, gerarDescritor, provarVivacidade } from "../biometria/biometria";
 
 interface Props {
   tokenDeTrabalho: string;

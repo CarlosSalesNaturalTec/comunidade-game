@@ -15,6 +15,7 @@ from ..consentimentos.regra import condicao_de_autorizacao_vigente
 from ..criacoes_originais.modelo import CriacaoOriginal, SituacaoDaCriacaoOriginal
 from ..equipes.modelo import IntegranteDaEquipe
 from ..erros import ErroDeValidacao, NaoEncontrado
+from ..ocorrencias_de_conduta.modelo import OcorrenciaDeConduta
 from ..ods.regra import cobertura_por_comunidade, comunidades_com_cobertura
 from ..paginacao import (
     PaginaDeResultado,
@@ -146,7 +147,21 @@ def ranking_publico(
         .group_by(PontoRegular.guerreiro_id)
         .subquery()
     )
-    total_expr = func.coalesce(totais.c.total, 0)
+    # A ocorrência de ciclo encerrado sai do ranking devolvendo exatamente o
+    # que debitou de fato — nunca o nominal —, sem tocar o saldo de ponto
+    # regular (`RF-02-100`, documento 11 §5).
+    debitos_de_ciclo_encerrado = (
+        sessao_bd.query(
+            OcorrenciaDeConduta.guerreiro_id.label("guerreiro_id"),
+            func.sum(OcorrenciaDeConduta.valor_debitado).label("total"),
+        )
+        .filter(OcorrenciaDeConduta.encerrada_em.is_not(None))
+        .group_by(OcorrenciaDeConduta.guerreiro_id)
+        .subquery()
+    )
+    total_expr = func.coalesce(totais.c.total, 0) + func.coalesce(
+        debitos_de_ciclo_encerrado.c.total, 0
+    )
     posicao_expr = func.row_number().over(order_by=[total_expr.desc(), Persona.id]).label("posicao")
 
     base = (
@@ -159,6 +174,9 @@ def ranking_publico(
         )
         .join(Nick, Nick.persona_id == Persona.id)
         .outerjoin(totais, totais.c.guerreiro_id == Persona.id)
+        .outerjoin(
+            debitos_de_ciclo_encerrado, debitos_de_ciclo_encerrado.c.guerreiro_id == Persona.id
+        )
         .filter(
             Persona.papel == Papel.guerreiro,
             condicao_de_autorizacao_vigente(sessao_bd, Persona.id),

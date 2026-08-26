@@ -268,6 +268,7 @@ def app(sessao, configuracao):
     from nucleo.biometria.rotas import roteador as roteador_de_biometria
     from nucleo.catalogo_avulso.rotas import roteador as roteador_de_catalogo_avulso
     from nucleo.chaves.rotas import roteador as roteador_de_chaves
+    from nucleo.ciclo.rotas import roteador as roteador_de_ciclo
     from nucleo.coletas.rotas import roteador as roteador_de_coletas
     from nucleo.comunidades.rotas import roteador as roteador_de_comunidades
     from nucleo.consentimentos.rotas import roteador as roteador_de_consentimentos
@@ -343,6 +344,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_bibliografias)
     incluir_roteador_de_dados(aplicacao, roteador_de_armazenamento)
     incluir_roteador_de_dados(aplicacao, roteador_de_painel_do_dia)
+    incluir_roteador_de_dados(aplicacao, roteador_de_ciclo)
     return aplicacao
 
 
