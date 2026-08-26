@@ -14,7 +14,9 @@ válida, pela mesma régua de período civil com que a interrupção é apurada;
 não tem medição válida SHALL declarar o **período corrente** como próxima medição. A série
 **interrompida** e a **encerrada** NEVER SHALL declarar próxima medição. O tipo de coleta SHALL
 sair com o **nome**, a **forma de registro** e a **unidade** quando houver — o que a aplicação
-precisa para pedir a medição na forma certa. (`RF-05-30`)
+precisa para pedir a medição na forma certa. Cada série SHALL trazer também a **comunidade do
+seu local** — o mesmo dado que a solicitação de local já expõe —, para que a aplicação resolva
+o rótulo do local sem uma rota nova. (`RF-05-30`)
 
 A consulta SHALL ser **paginada**, como toda listagem do núcleo: SHALL aceitar **cursor** e
 **tamanho de página**, SHALL devolver os itens da página junto do **cursor seguinte** — nulo na

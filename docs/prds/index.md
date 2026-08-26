@@ -546,6 +546,17 @@ O PRD-05 teve o escopo revisto em 2026-08-26, na v4: o **acervo do Guerreiro(a)*
 atividades escolares por assistente de voz** e o **canal de sugestões** passam para o
 **Ciclo 02** (documento 09; PRD-05 §3.2), deixando de ser pendência do Ciclo 01 desta aplicação.
 
+A change `coleta-do-territorio-na-area-do-guerreiro` abriu a **segunda fatia do PRD-05**: o
+bloco da coleta do território — lista das próprias séries com próxima medição, abertura sobre um
+desafio e um local, registro por valor digitado, ditado por voz, foto ou vídeo, devolutiva do "a
+conferir", histórico com o motivo do que foi invalidado, solicitação de local faltante e a
+recusa sem rede (`RF-05-30` a `RF-05-38`, `RF-05-57`, `RF-05-85`). Quatro leituras novas no
+núcleo — próxima medição e tipo de coleta na série, histórico da série, desafios disponíveis e
+próprias solicitações de local —, todas derivadas de capacidades já entregues pelo PRD-08.
+Decisão do fundador, 2026-08-26: o ditado por voz é transcrito no aparelho, sem áudio ao núcleo
+(documento 09). Trilha, criação original e portfólio seguem pendentes — o PRD-05 continua
+**aprovado**.
+
 A coluna **Onda** é a ordem em que os PRDs foram **escritos**, e o motivo de cada onda está
 no documento 08. Ela não é a ordem em que o código entra: essa está no documento 99 §9.
 

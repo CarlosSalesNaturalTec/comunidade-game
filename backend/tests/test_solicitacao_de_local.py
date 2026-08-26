@@ -13,6 +13,7 @@ from nucleo.locais.modelo import (
 )
 from nucleo.locais.regra import (
     avaliar_solicitacao_de_local,
+    consultar_solicitacoes_do_guerreiro,
     listar_solicitacoes_de_local_abertas,
     solicitar_local,
 )
@@ -636,6 +637,88 @@ def test_persona_de_outro_papel_recebe_403_na_listagem(sessao, criar_persona, cr
         listar_solicitacoes_de_local_abertas(
             sessao, operador=guerreiro, comunidade_id=comunidade.id, cursor=None, tamanho=10
         )
+
+
+def test_guerreiro_ve_as_proprias_solicitacoes_em_qualquer_situacao(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+):
+    comunidade, raiz, guerreiro, mestre, desafio, recebida = _preparar_solicitacao(
+        sessao,
+        criar_persona,
+        criar_comunidade,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+    )
+    aprovada = _solicitar(sessao, guerreiro, desafio, comunidade, rotulo="Bairro Aprovado")
+    sessao.commit()
+    avaliar_solicitacao_de_local(
+        sessao,
+        aprovada,
+        operador=mestre,
+        situacao=SituacaoDaSolicitacaoDeLocal.aprovada,
+        local_pai_id=raiz.id,
+    )
+    sessao.commit()
+    recusada = _solicitar(sessao, guerreiro, desafio, comunidade, rotulo="Bairro Recusado")
+    sessao.commit()
+    avaliar_solicitacao_de_local(
+        sessao,
+        recusada,
+        operador=mestre,
+        situacao=SituacaoDaSolicitacaoDeLocal.recusada,
+        motivo="Já existe local equivalente.",
+    )
+    sessao.commit()
+
+    pagina = consultar_solicitacoes_do_guerreiro(
+        sessao, operador=guerreiro, cursor=None, tamanho=50
+    )
+
+    por_id = {item.id: item for item in pagina.itens}
+    assert len(pagina.itens) == 3
+    assert por_id[recebida.id].situacao == "recebida"
+    assert por_id[aprovada.id].situacao == "aprovada"
+    assert por_id[aprovada.id].local_criado_id is not None
+    assert por_id[recusada.id].situacao == "recusada"
+    assert por_id[recusada.id].motivo_da_recusa == "Já existe local equivalente."
+
+
+def test_consulta_nao_alcanca_solicitacao_de_outro_guerreiro(
+    sessao, criar_persona, criar_comunidade, criar_trilha, criar_missao, criar_desafio_de_coleta
+):
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    outro_guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    desafio = criar_desafio_de_coleta(missao, mestre)
+
+    minha = _solicitar(sessao, guerreiro, desafio, comunidade)
+    sessao.commit()
+    _solicitar(sessao, outro_guerreiro, desafio, comunidade, rotulo="Da Outra Pessoa")
+    sessao.commit()
+
+    pagina = consultar_solicitacoes_do_guerreiro(
+        sessao, operador=guerreiro, cursor=None, tamanho=50
+    )
+
+    assert [item.id for item in pagina.itens] == [minha.id]
+
+
+def test_mestre_nao_consulta_solicitacoes_pela_porta_do_guerreiro(sessao, criar_persona):
+    mestre = criar_persona(Papel.mestre)
+
+    with pytest.raises(PermissaoNegada):
+        consultar_solicitacoes_do_guerreiro(sessao, operador=mestre, cursor=None, tamanho=50)
 
 
 def test_solicitacao_de_local_nao_tem_prazo_nem_marca_de_atraso():

@@ -460,3 +460,181 @@ def test_serie_sem_desafio_e_recusada(sessao, criar_persona):
     with pytest.raises(ErroDeValidacao) as excinfo:
         abrir_serie_de_coleta(sessao, operador=guerreiro, desafio=None, local_id=None)
     assert excinfo.value.campo == "desafio_de_coleta_id"
+
+
+def _preparar_com_poder(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+    *,
+    granularidade_maxima="quadra",
+    granularidade_exigida=NivelDoLocal.rua,
+):
+    """Mesmo molde de `_preparar`, com o Poder do Território declarado — o
+    que a gravação de um registro exige para creditar (`RF-08-09`)."""
+    comunidade = _criar_comunidade(sessao, granularidade_maxima)
+    admin = criar_persona(Papel.admin)
+    criar_poder_do_territorio(admin)
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    desafio = criar_desafio_de_coleta(missao, mestre, granularidade_exigida=granularidade_exigida)
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    local = _criar_local_no_nivel(criar_local, comunidade, granularidade_exigida)
+    serie = abrir_serie_de_coleta(sessao, operador=guerreiro, desafio=desafio, local_id=local.id)
+    sessao.commit()
+    return comunidade, guerreiro, serie, desafio, local
+
+
+def test_serie_ativa_declara_proxima_medicao_do_periodo_seguinte(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, guerreiro, serie, _, _ = _preparar_com_poder(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    agora_do_teste = agora()
+
+    gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=agora_do_teste,
+        origem="manual",
+        valor=1.0,
+        unidade="unidade",
+    )
+    sessao.commit()
+
+    pagina = consultar_series_do_guerreiro(sessao, operador=guerreiro, cursor=None, tamanho=50)
+
+    _, fim_do_periodo_da_medicao = periodo_de_cadencia(agora_do_teste, serie.cadencia)
+    assert pagina.itens[0].proxima_medicao == fim_do_periodo_da_medicao
+
+
+def test_serie_sem_medicao_valida_espera_periodo_corrente(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, guerreiro, serie, _, _ = _preparar_com_poder(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+
+    pagina = consultar_series_do_guerreiro(sessao, operador=guerreiro, cursor=None, tamanho=50)
+
+    inicio_do_periodo_corrente, _ = periodo_de_cadencia(agora(), serie.cadencia)
+    assert pagina.itens[0].proxima_medicao == inicio_do_periodo_corrente
+
+
+def test_serie_interrompida_nao_declara_proxima_medicao(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, guerreiro, serie, _, _ = _preparar_com_poder(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    agora_do_teste = agora()
+    serie.aberta_em = _ancora_ha_n_periodos_completos(agora_do_teste, serie.cadencia, 2)
+    sessao.commit()
+
+    pagina = consultar_series_do_guerreiro(sessao, operador=guerreiro, cursor=None, tamanho=50)
+
+    assert pagina.itens[0].estado == EstadoDaSerie.interrompida.value
+    assert pagina.itens[0].proxima_medicao is None
+
+
+def test_serie_encerrada_nao_declara_proxima_medicao(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, guerreiro, serie, desafio, _ = _preparar_com_poder(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    desafio.vigencia_fim = agora() - timedelta(days=1)
+    sessao.commit()
+
+    pagina = consultar_series_do_guerreiro(sessao, operador=guerreiro, cursor=None, tamanho=50)
+
+    assert pagina.itens[0].estado == EstadoDaSerie.encerrada.value
+    assert pagina.itens[0].proxima_medicao is None
+
+
+def test_serie_sai_com_o_tipo_de_coleta_que_ela_mede(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    comunidade = _criar_comunidade(sessao)
+    admin = criar_persona(Papel.admin)
+    criar_poder_do_territorio(admin)
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    tipo = criar_tipo_de_coleta(admin, nome="Temperatura", unidade="°C")
+    desafio = criar_desafio_de_coleta(
+        missao, mestre, tipo=tipo, granularidade_exigida=NivelDoLocal.rua
+    )
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    local = _criar_local_no_nivel(criar_local, comunidade, NivelDoLocal.rua)
+    abrir_serie_de_coleta(sessao, operador=guerreiro, desafio=desafio, local_id=local.id)
+    sessao.commit()
+
+    pagina = consultar_series_do_guerreiro(sessao, operador=guerreiro, cursor=None, tamanho=50)
+
+    assert pagina.itens[0].tipo_de_coleta.nome == "Temperatura"
+    assert pagina.itens[0].tipo_de_coleta.forma_de_registro == "numero"
+    assert pagina.itens[0].tipo_de_coleta.unidade == "°C"
+    assert pagina.itens[0].comunidade_virtual_id == comunidade.id

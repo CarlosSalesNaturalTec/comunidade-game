@@ -544,7 +544,9 @@ conquistadas nos marcos e registro de dados do território.
 É também o instrumento de **coleta de dados da Comunidade Virtual**: as séries ativas, quando é
 a próxima medição, o que já foi registrado e **quantos pontos aquela série está rendendo**. O
 Guerreiro(a) seleciona o local do dado entre os cadastrados e, faltando um, solicita a
-inclusão.
+inclusão. O registro aceita **valor digitado ou ditado por voz** — a voz é transcrita **no
+próprio aparelho**, e só o número chega ao núcleo; o áudio nunca trafega nem fica guardado
+(§12.2).
 
 **O registro de coleta exige rede: sem ela, fica bloqueado até reconectar.** Não há fila local
 como a da presença do App 01 — a entrada na App 05 já depende de rede para a conferência da

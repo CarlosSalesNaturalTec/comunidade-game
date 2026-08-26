@@ -13,13 +13,15 @@ from nucleo.coletas.modelo import (
 from nucleo.coletas.regra import (
     abrir_serie_de_coleta,
     apurar_estado_da_serie,
+    consultar_historico_da_serie,
     gravar_registro_de_coleta,
+    invalidar_registro_de_coleta,
     periodo_de_cadencia,
 )
 from nucleo.comunidades.modelo import ComunidadeVirtual, VinculoJogador
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
 from nucleo.locais.modelo import ORDEM_DOS_NIVEIS, NivelDoLocal
-from nucleo.personas.modelo import Papel
+from nucleo.personas.modelo import Papel, Persona
 from nucleo.tempo import agora
 
 # Todos os cenários gravam medição em 2026, mas o vínculo do Guerreiro(a)
@@ -904,3 +906,242 @@ def test_interrupcao_nao_estorna_pontos_ja_creditados(
 
     assert serie.estado == EstadoDaSerie.interrompida
     assert registro.pontos_creditados == pontos_antes
+
+
+def test_historico_traz_registros_do_mais_recente_ao_mais_antigo(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, guerreiro, serie, _, _ = _preparar_serie(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    antigo = gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=MOMENTO_DA_MEDICAO - timedelta(days=10),
+        origem=OrigemDoRegistro.manual.value,
+        valor=20.0,
+        unidade="°C",
+    )
+    sessao.commit()
+    recente = gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=MOMENTO_DA_MEDICAO,
+        origem=OrigemDoRegistro.manual.value,
+        valor=25.0,
+        unidade="°C",
+    )
+    sessao.commit()
+
+    pagina = consultar_historico_da_serie(
+        sessao, operador=guerreiro, serie=serie, cursor=None, tamanho=50
+    )
+
+    assert [item.id for item in pagina.itens] == [recente.id, antigo.id]
+    assert pagina.itens[0].valor == 25.0
+    assert pagina.itens[0].unidade == "°C"
+    assert pagina.itens[0].origem == "manual"
+    assert pagina.itens[0].situacao == "valida"
+    assert pagina.itens[0].pontos_creditados == 5
+
+
+def test_historico_traz_registro_a_conferir_sem_pontos(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, guerreiro, serie, _, _ = _preparar_serie(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    registro = gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=MOMENTO_DA_MEDICAO,
+        origem=OrigemDoRegistro.manual.value,
+        valor=999.0,
+        unidade="°C",
+    )
+    sessao.commit()
+
+    pagina = consultar_historico_da_serie(
+        sessao, operador=guerreiro, serie=serie, cursor=None, tamanho=50
+    )
+
+    assert pagina.itens[0].id == registro.id
+    assert pagina.itens[0].a_conferir is True
+    assert pagina.itens[0].pontos_creditados == 0
+
+
+def test_historico_traz_motivo_do_registro_invalidado_e_preserva_os_demais(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, guerreiro, serie, desafio, _ = _preparar_serie(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    mestre = sessao.get(Persona, desafio.autor_id)
+    registro_valido = gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=MOMENTO_DA_MEDICAO - timedelta(days=10),
+        origem=OrigemDoRegistro.manual.value,
+        valor=20.0,
+        unidade="°C",
+    )
+    sessao.commit()
+    registro_invalidado = gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=MOMENTO_DA_MEDICAO,
+        origem=OrigemDoRegistro.manual.value,
+        valor=25.0,
+        unidade="°C",
+    )
+    sessao.commit()
+    invalidar_registro_de_coleta(
+        sessao, registro_invalidado, operador=mestre, motivo="Medição fora do padrão do local."
+    )
+    sessao.commit()
+
+    pagina = consultar_historico_da_serie(
+        sessao, operador=guerreiro, serie=serie, cursor=None, tamanho=50
+    )
+
+    por_id = {item.id: item for item in pagina.itens}
+    assert por_id[registro_invalidado.id].situacao == "invalidada"
+    assert (
+        por_id[registro_invalidado.id].motivo_da_invalidacao == "Medição fora do padrão do local."
+    )
+    assert por_id[registro_valido.id].situacao == "valida"
+    assert por_id[registro_valido.id].motivo_da_invalidacao is None
+    assert por_id[registro_valido.id].pontos_creditados == 5
+
+
+def test_historico_de_serie_interrompida_preserva_todos_os_registros(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, guerreiro, serie, _, _ = _preparar_serie(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    registro = gravar_registro_de_coleta(
+        sessao,
+        operador=guerreiro,
+        serie=serie,
+        momento_do_fato=MOMENTO_DA_MEDICAO,
+        origem=OrigemDoRegistro.manual.value,
+        valor=25.0,
+        unidade="°C",
+    )
+    sessao.commit()
+    serie.ultima_medicao_valida_em = _ancora_ha_n_periodos_completos(agora(), serie.cadencia, 2)
+    sessao.commit()
+    apurar_estado_da_serie(sessao, serie)
+    sessao.commit()
+    assert serie.estado == EstadoDaSerie.interrompida
+
+    pagina = consultar_historico_da_serie(
+        sessao, operador=guerreiro, serie=serie, cursor=None, tamanho=50
+    )
+
+    assert [item.id for item in pagina.itens] == [registro.id]
+    assert pagina.itens[0].pontos_creditados == registro.pontos_creditados
+
+
+def test_historico_de_serie_alheia_e_recusado(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, _, serie, _, _ = _preparar_serie(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    outro_guerreiro = criar_persona(Papel.guerreiro)
+
+    with pytest.raises(PermissaoNegada):
+        consultar_historico_da_serie(
+            sessao, operador=outro_guerreiro, serie=serie, cursor=None, tamanho=50
+        )
+
+
+def test_historico_de_outro_papel_e_recusado(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    _, _, serie, _, _ = _preparar_serie(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    mestre = criar_persona(Papel.mestre)
+
+    with pytest.raises(PermissaoNegada):
+        consultar_historico_da_serie(sessao, operador=mestre, serie=serie, cursor=None, tamanho=50)

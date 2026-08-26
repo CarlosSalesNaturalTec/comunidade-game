@@ -24,11 +24,15 @@ from ..tempo import DataHoraComFuso
 from ..trilhas.modelo import Missao
 from .modelo import DesafioDeColeta, RegistroDeColeta, SerieDeColeta
 from .regra import (
+    DesafioDisponivelSaida,
+    RegistroDoHistoricoSaida,
     SerieDoGuerreiroSaida,
     abrir_serie_de_coleta,
     cadastrar_tipo_de_coleta,
     compor_amostra_de_auditoria,
     confirmar_registro_de_coleta,
+    consultar_desafios_disponiveis,
+    consultar_historico_da_serie,
     consultar_series_do_guerreiro,
     criar_desafio_de_coleta,
     emitir_credencial_de_dispositivo,
@@ -218,6 +222,51 @@ def consultar_series_do_guerreiro_rota(
     (`RF-01-28`, `RF-01-18`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     pagina = consultar_series_do_guerreiro(
+        sessao_bd, operador=operador, cursor=parametros.cursor, tamanho=parametros.tamanho
+    )
+    sessao_bd.commit()
+    return pagina
+
+
+@roteador.get(
+    "/series-de-coleta/{id_da_serie}/registros",
+    response_model=PaginaDeResultado[RegistroDoHistoricoSaida],
+)
+def consultar_historico_da_serie_rota(
+    id_da_serie: uuid.UUID,
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[RegistroDoHistoricoSaida]:
+    """Restrita ao coletor da série — a recusa de qualquer outro papel e a
+    de série de outro coletor são o mesmo 403, devolvido por
+    `consultar_historico_da_serie` (`RF-05-37`, `RF-05-38`, `RN-05-21`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    serie = sessao_bd.get(SerieDeColeta, id_da_serie)
+    pagina = consultar_historico_da_serie(
+        sessao_bd,
+        operador=operador,
+        serie=serie,
+        cursor=parametros.cursor,
+        tamanho=parametros.tamanho,
+    )
+    sessao_bd.commit()
+    return pagina
+
+
+@roteador.get(
+    "/desafios-de-coleta/disponiveis", response_model=PaginaDeResultado[DesafioDisponivelSaida]
+)
+def consultar_desafios_disponiveis_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[DesafioDisponivelSaida]:
+    """Restrita ao Guerreiro(a) — a recusa de qualquer outro papel é 403,
+    devolvida por `consultar_desafios_disponiveis` (`RF-05-30`,
+    `RN-05-24`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    pagina = consultar_desafios_disponiveis(
         sessao_bd, operador=operador, cursor=parametros.cursor, tamanho=parametros.tamanho
     )
     sessao_bd.commit()

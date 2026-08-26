@@ -595,3 +595,154 @@ def test_consulta_das_series_pela_rota_nunca_alcanca_serie_de_outro_guerreiro(
     assert resposta.status_code == 200
     corpo = resposta.json()
     assert [item["id"] for item in corpo["itens"]] == [serie_id]
+
+
+def test_guerreiro_consulta_historico_da_serie_pela_rota(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    chave, token, guerreiro, desafio, local = _preparar_serie_pela_rota(
+        sessao,
+        criar_chave,
+        criar_persona,
+        criar_comunidade,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+        criar_tipo_de_coleta,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    resposta_serie = cliente.post(
+        "/v1/series-de-coleta",
+        json={"desafio_de_coleta_id": str(desafio.id), "local_id": str(local.id)},
+        headers=headers,
+    )
+    serie_id = resposta_serie.json()["id"]
+    cliente.post(
+        "/v1/registros-de-coleta",
+        data={
+            "serie_de_coleta_id": serie_id,
+            "momento_do_fato": MOMENTO_DA_MEDICAO,
+            "origem": "manual",
+            "valor": "25.0",
+            "unidade": "°C",
+        },
+        headers=headers,
+    )
+
+    resposta = cliente.get(f"/v1/series-de-coleta/{serie_id}/registros", headers=headers)
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert len(corpo["itens"]) == 1
+    assert corpo["itens"][0]["valor"] == 25.0
+    assert corpo["itens"][0]["situacao"] == "valida"
+
+
+def test_mestre_recebe_403_ao_consultar_historico_da_serie_pela_rota(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    chave, token, guerreiro, desafio, local = _preparar_serie_pela_rota(
+        sessao,
+        criar_chave,
+        criar_persona,
+        criar_comunidade,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+        criar_tipo_de_coleta,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    resposta_serie = cliente.post(
+        "/v1/series-de-coleta",
+        json={"desafio_de_coleta_id": str(desafio.id), "local_id": str(local.id)},
+        headers=headers,
+    )
+    serie_id = resposta_serie.json()["id"]
+    mestre = criar_persona(Papel.mestre)
+    token_mestre, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        f"/v1/series-de-coleta/{serie_id}/registros",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_mestre}"},
+    )
+
+    assert resposta.status_code == 403
+
+
+def test_guerreiro_consulta_desafios_disponiveis_pela_rota(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_local,
+    criar_poder_do_territorio,
+):
+    chave, token, guerreiro, desafio, local = _preparar_serie_pela_rota(
+        sessao,
+        criar_chave,
+        criar_persona,
+        criar_comunidade,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+        criar_tipo_de_coleta,
+        criar_desafio_de_coleta,
+        criar_local,
+        criar_poder_do_territorio,
+    )
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    resposta = cliente.get("/v1/desafios-de-coleta/disponiveis", headers=headers)
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert [item["id"] for item in corpo["itens"]] == [str(desafio.id)]
+
+
+def test_mestre_recebe_403_ao_consultar_desafios_disponiveis_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/desafios-de-coleta/disponiveis",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403

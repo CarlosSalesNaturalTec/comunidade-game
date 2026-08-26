@@ -18,6 +18,7 @@ from .regra import (
     SolicitacaoDeLocalSaida,
     avaliar_solicitacao_de_local,
     cadastrar_local,
+    consultar_solicitacoes_do_guerreiro,
     listar_solicitacoes_de_local_abertas,
     paginar_locais,
     solicitar_local,
@@ -145,6 +146,25 @@ def solicitar_local_rota(
     )
     sessao_bd.commit()
     return _saida_da_solicitacao(solicitacao)
+
+
+@roteador.get(
+    "/solicitacoes-de-local/minhas", response_model=PaginaDeResultado[SolicitacaoDeLocalSaida]
+)
+def consultar_solicitacoes_do_guerreiro_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[SolicitacaoDeLocalSaida]:
+    """Restrita ao Guerreiro(a) — a recusa de qualquer outro papel é 403,
+    devolvida por `consultar_solicitacoes_do_guerreiro` (`RF-05-32`,
+    `RN-05-11`, `RN-05-21`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    pagina = consultar_solicitacoes_do_guerreiro(
+        sessao_bd, operador=operador, cursor=parametros.cursor, tamanho=parametros.tamanho
+    )
+    sessao_bd.commit()
+    return pagina
 
 
 class AvaliarSolicitacaoDeLocalEntrada(BaseModel):

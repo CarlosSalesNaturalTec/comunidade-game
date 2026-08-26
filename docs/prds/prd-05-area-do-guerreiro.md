@@ -461,9 +461,13 @@ aparecem aqui apenas quando o ato é do Guerreiro(a).
 | GET    | `/v1/eu/progresso`                    | Guerreiro(a) | Pontos, nível por trilha ou poder, badges e o que falta          |
 | GET    | `/v1/eu/desafios`                     | Guerreiro(a) | Desafios semanais e extras vigentes e elegíveis                  |
 | GET    | `/v1/eu/equipes`                      | Guerreiro(a) | Equipes de que participa, com papel e atividades                 |
-| GET    | `/v1/eu/series`                       | Guerreiro(a) | Séries de coleta, próxima medição, situação e pontos rendidos    |
-| POST   | `/v1/series/{id}/registros`           | Guerreiro(a) | Registra a medição, com local, valor ou mídia e origem           |
+| GET    | `/v1/series-de-coleta/minhas`         | Guerreiro(a) | Séries de coleta, próxima medição, situação e pontos rendidos    |
+| POST   | `/v1/series-de-coleta`                | Guerreiro(a) | Abre série sobre um desafio de coleta e um local                 |
+| GET    | `/v1/desafios-de-coleta/disponiveis`  | Guerreiro(a) | Desafios de coleta vigentes que o Guerreiro(a) pode assumir      |
+| POST   | `/v1/registros-de-coleta`             | Guerreiro(a) | Registra a medição, com local, valor ou mídia e origem           |
+| GET    | `/v1/series-de-coleta/{id}/registros` | Guerreiro(a) | Histórico da própria série, com motivo do que foi invalidado     |
 | POST   | `/v1/solicitacoes-de-local`           | Guerreiro(a) | Solicita a inclusão de local faltante                            |
+| GET    | `/v1/solicitacoes-de-local/minhas`    | Guerreiro(a) | Próprias solicitações de local, com situação e motivo            |
 | POST   | `/v1/culminancias/{id}/criacoes`      | Guerreiro(a) | Entrega a criação original, individual ou de equipe              |
 | GET    | `/v1/eu/portfolio`                    | Guerreiro(a) | Criações validadas, com situação de exposição pública            |
 | GET    | `/v1/eu/recompensas`                  | Guerreiro(a) | Recompensas conquistadas em marcos e situação da entrega         |
@@ -530,6 +534,8 @@ do Ciclo 02** (§3.2).
   encontro. Recusa nunca exclui da atividade nem faz perder missão.
 - **Aviso visível**: toda tela que coleta dado traz o aviso discreto do que se coleta, com
   acesso à área detalhada sobre destino e uso.
+- **Ditado por voz do registro de coleta**: transcrito no próprio aparelho — o áudio nunca
+  trafega nem fica guardado, e ao núcleo vai só o número (documento 03 §§7, 12.2).
 - **Pedidos de acesso, correção e exclusão** são feitos pelo responsável na App 07; a
   aplicação não os recebe. O registro de coleta do território **é despersonalizado, não
   apagado**, e o texto da

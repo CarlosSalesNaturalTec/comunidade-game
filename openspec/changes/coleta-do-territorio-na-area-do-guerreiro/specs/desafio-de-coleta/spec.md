@@ -12,7 +12,9 @@ Cada desafio SHALL sair com o **tipo de coleta** — nome, forma de registro e u
 houver —, a **cadência**, a **vigência**, a **granularidade exigida** e a **missão** e a
 **trilha** de que ele nasce, para que a criança reconheça o que vai medir e por quê. O desafio
 sobre o qual o Guerreiro(a) **já tem série aberta naquele local** SHALL sair assinalado como
-tal, para que a aplicação não ofereça uma abertura que o núcleo recusaria.
+tal, para que a aplicação não ofereça uma abertura que o núcleo recusaria. Cada desafio SHALL
+trazer também a **comunidade do vínculo vigente** do Guerreiro(a) — o mesmo dado que a
+solicitação de local já expõe —, para que a aplicação escolha o local sem uma rota nova.
 
 A consulta SHALL ser paginada como toda listagem do núcleo e SHALL recusar com **403** a
 persona de outro papel.
