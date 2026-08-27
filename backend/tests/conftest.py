@@ -87,6 +87,7 @@ from nucleo.trilhas.modelo import (
     Atividade,
     EtapaDoCiclo,
     FormatoDeAtividade,
+    InscricaoNaTrilha,
     Missao,
     ModalidadeDeAtividade,
     SituacaoDaTrilha,
@@ -1669,6 +1670,18 @@ def criar_entrega_de_recompensa(sessao):
 def criar_nivel(sessao):
     def _criar(guerreiro: Persona, trilha: Trilha, valor: int = 1) -> Nivel:
         registro = Nivel(guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=valor)
+        sessao.add(registro)
+        sessao.commit()
+        sessao.refresh(registro)
+        return registro
+
+    return _criar
+
+
+@pytest.fixture
+def criar_inscricao_na_trilha(sessao):
+    def _criar(guerreiro: Persona, trilha: Trilha) -> InscricaoNaTrilha:
+        registro = InscricaoNaTrilha(guerreiro_id=guerreiro.id, trilha_id=trilha.id)
         sessao.add(registro)
         sessao.commit()
         sessao.refresh(registro)

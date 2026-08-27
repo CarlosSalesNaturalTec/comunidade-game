@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeAutoria } from "./autoria/TelaDeAutoria";
 import { TelaDoBancoDeQuiz } from "./quiz/TelaDoBancoDeQuiz";
+import { TelaDeDesbloqueiosPendentes } from "./turmas/TelaDeDesbloqueiosPendentes";
 import { TelaDeMinhasTurmas } from "./turmas/TelaDeMinhasTurmas";
 
 const MENSAGEM_DE_RECUSA_DO_GUERREIRO =
@@ -12,7 +13,7 @@ const MENSAGEM_DE_RECUSA_DO_GUERREIRO =
 // A App 09 é inteiramente autenticada: sem sessão, só a entrada aparece, e
 // o Guerreiro(a) nunca alcança a autoria — o papel vem do núcleo, não de
 // escolha na tela (`RF-01-02`, `RN-01-32`, PRD-09 §4).
-type Area = "autoria" | "turmas" | "quiz";
+type Area = "autoria" | "turmas" | "quiz" | "desbloqueios";
 
 function Conteudo() {
   const { sessao, restaurando, sair } = useSessao();
@@ -59,10 +60,17 @@ function Conteudo() {
         >
           Banco do Quiz
         </Botao>
+        <Botao
+          variante={area === "desbloqueios" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("desbloqueios")}
+        >
+          Desafios a julgar
+        </Botao>
       </nav>
       {area === "autoria" && <TelaDeAutoria />}
       {area === "turmas" && <TelaDeMinhasTurmas />}
       {area === "quiz" && <TelaDoBancoDeQuiz />}
+      {area === "desbloqueios" && <TelaDeDesbloqueiosPendentes />}
     </>
   );
 }

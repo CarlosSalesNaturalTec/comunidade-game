@@ -236,7 +236,7 @@ def test_debito_maior_que_o_saldo_para_em_zero(sessao, criar_persona, criar_tril
 
 
 def test_debito_nao_derruba_nivel_nem_badge_ja_conquistados(
-    sessao, criar_persona, criar_trilha, criar_missao
+    sessao, criar_persona, criar_trilha, criar_missao, criar_inscricao_na_trilha
 ):
     """`RF-01-70`, `RN-01-55`: nível e badge persistem mesmo que o saldo
     caia depois de certificados."""
@@ -244,6 +244,7 @@ def test_debito_nao_derruba_nivel_nem_badge_ja_conquistados(
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre, obrigatoria=False)
+    criar_inscricao_na_trilha(guerreiro, trilha)
     _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missao)
 
     nivel_antes = (
@@ -275,14 +276,17 @@ def test_debito_nao_derruba_nivel_nem_badge_ja_conquistados(
 
 
 def test_primeira_atividade_realizada_certifica_nivel_1(
-    sessao, criar_persona, criar_trilha, criar_missao
+    sessao, criar_persona, criar_trilha, criar_missao, criar_inscricao_na_trilha
 ):
     """Missão opcional: só o nível 1 entra em jogo, sem a trilha ter
-    obrigatória para também disparar o nível 2 nesta única missão."""
+    obrigatória para também disparar o nível 2 nesta única missão. O nível 1
+    exige as duas condições — inscrição e primeira atividade realizada
+    (`RF-05-09`, `RN-05-43`, documento 11 §6)."""
     mestre = criar_persona(Papel.mestre)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre, obrigatoria=False)
+    criar_inscricao_na_trilha(guerreiro, trilha)
 
     _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missao)
 
@@ -290,8 +294,53 @@ def test_primeira_atividade_realizada_certifica_nivel_1(
     assert nivel.valor == 1
 
 
+def test_resultado_sem_inscricao_nao_certifica_nivel_1(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_inscricao_na_trilha
+):
+    """Resultado lançado sem inscrição não certifica o nível 1 — e o
+    certifica assim que a inscrição existir (`RF-05-09`, `RN-05-43`,
+    documento 11 §6)."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre, obrigatoria=False)
+
+    _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missao)
+
+    assert (
+        sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).first()
+        is None
+    )
+
+    from nucleo.pontuacao.regra import avaliar_niveis
+
+    criar_inscricao_na_trilha(guerreiro, trilha)
+    avaliar_niveis(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id)
+    sessao.commit()
+
+    nivel = sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).one()
+    assert nivel.valor == 1
+
+
+def test_inscricao_sem_atividade_realizada_nao_certifica_nivel_1(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_inscricao_na_trilha
+):
+    """Inscrição sozinha, sem nenhum Resultado ainda registrado na trilha,
+    não certifica o nível 1 (documento 11 §6)."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    criar_missao(trilha, mestre, obrigatoria=False)
+    criar_inscricao_na_trilha(guerreiro, trilha)
+
+    assert (
+        sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).first()
+        is None
+    )
+
+
 def test_um_terco_das_obrigatorias_desbloqueadas_certifica_nivel_2(
-    sessao, criar_persona, criar_trilha, criar_missao
+    sessao, criar_persona, criar_trilha, criar_missao, criar_inscricao_na_trilha
 ):
     """Quatro obrigatórias, arredondando 1/3 para cima: exige duas
     concluídas — uma só basta para o nível 1, não para o nível 2."""
@@ -301,6 +350,7 @@ def test_um_terco_das_obrigatorias_desbloqueadas_certifica_nivel_2(
     missoes = [
         criar_missao(trilha, mestre, posicao=posicao, obrigatoria=True) for posicao in range(1, 5)
     ]
+    criar_inscricao_na_trilha(guerreiro, trilha)
 
     _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missoes[0])
     niveis = {
@@ -318,7 +368,7 @@ def test_um_terco_das_obrigatorias_desbloqueadas_certifica_nivel_2(
 
 
 def test_missao_opcional_nao_conta_para_o_nivel_2(
-    sessao, criar_persona, criar_trilha, criar_missao
+    sessao, criar_persona, criar_trilha, criar_missao, criar_inscricao_na_trilha
 ):
     """Só a missão obrigatória conta no percurso (11 §6): completar as
     opcionais não aproxima do limiar de nível 2."""
@@ -331,6 +381,7 @@ def test_missao_opcional_nao_conta_para_o_nivel_2(
     opcionais = [
         criar_missao(trilha, mestre, posicao=posicao, obrigatoria=False) for posicao in range(5, 8)
     ]
+    criar_inscricao_na_trilha(guerreiro, trilha)
 
     _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=obrigatorias[0])
     for opcional in opcionais:
@@ -344,7 +395,7 @@ def test_missao_opcional_nao_conta_para_o_nivel_2(
 
 
 def test_todas_obrigatorias_mais_merito_de_auxilio_certificam_nivel_4(
-    sessao, criar_persona, criar_trilha, criar_missao
+    sessao, criar_persona, criar_trilha, criar_missao, criar_inscricao_na_trilha
 ):
     mestre = criar_persona(Papel.mestre)
     guerreiro = criar_persona(Papel.guerreiro)
@@ -352,6 +403,7 @@ def test_todas_obrigatorias_mais_merito_de_auxilio_certificam_nivel_4(
     missoes = [
         criar_missao(trilha, mestre, posicao=posicao, obrigatoria=True) for posicao in range(1, 3)
     ]
+    criar_inscricao_na_trilha(guerreiro, trilha)
 
     _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missoes[0])
     niveis = {
@@ -394,7 +446,9 @@ def test_todas_obrigatorias_sem_merito_de_auxilio_nao_certifica_nivel_4(
     assert 4 not in niveis
 
 
-def test_nivel_certificado_nao_regride(sessao, criar_persona, criar_trilha, criar_missao):
+def test_nivel_certificado_nao_regride(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_inscricao_na_trilha
+):
     """Nível conquistado nunca regride, mesmo que o critério deixe de
     valer depois (`RF-01-21`, 11 §6): o registro nasce e nunca é apagado."""
     from nucleo.pontuacao.regra import avaliar_niveis
@@ -403,6 +457,7 @@ def test_nivel_certificado_nao_regride(sessao, criar_persona, criar_trilha, cria
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
+    criar_inscricao_na_trilha(guerreiro, trilha)
 
     resultado = _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missao)
     assert (
@@ -427,12 +482,13 @@ def test_nivel_certificado_nao_regride(sessao, criar_persona, criar_trilha, cria
 
 
 def test_badge_de_nivel_concedido_ao_certificar_um_nivel(
-    sessao, criar_persona, criar_trilha, criar_missao
+    sessao, criar_persona, criar_trilha, criar_missao, criar_inscricao_na_trilha
 ):
     mestre = criar_persona(Papel.mestre)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre, obrigatoria=False)
+    criar_inscricao_na_trilha(guerreiro, trilha)
 
     _lancar(sessao, mestre=mestre, guerreiro=guerreiro, missao=missao)
 

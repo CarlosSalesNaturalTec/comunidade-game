@@ -13,27 +13,38 @@ from ..configuracao import Configuracao, obter_configuracao
 from ..conteudos.modelo import ConteudoDaMissao
 from ..conteudos.regra import consultar_conteudos_da_missao
 from ..conteudos.rotas import ConteudoSaida, saida_do_conteudo
-from ..erros import NaoEncontrado
+from ..erros import NaoEncontrado, PermissaoNegada
 from ..ods.modelo import EtiquetaOds
 from ..ods.regra import cobertura_por_trilha
 from ..ods.rotas import EtiquetaOdsSaida, saida_da_etiqueta
-from ..personas.modelo import Persona
+from ..personas.modelo import Papel, Persona
 from .modelo import (
     Atividade,
+    DesbloqueioDaMissao,
     EtapaDoCiclo,
     FormatoDeAtividade,
     Missao,
     ModalidadeDeAtividade,
     SituacaoDaTrilha,
+    TipoDeDesafioDeDesbloqueio,
     Trilha,
 )
 from .regra import (
+    consultar_inscricoes_do_guerreiro,
+    consultar_progresso,
     criar_atividade,
     criar_missao,
     criar_trilha,
     declarar_cadencia_de_retomada,
+    declarar_desafio_de_desbloqueio,
+    derivar_percurso,
     despublicar_trilha,
+    inscrever_na_trilha,
+    julgar_desafio_pratico,
+    listar_desbloqueios_praticos_pendentes,
+    obter_proxima_missao,
     publicar_trilha,
+    submeter_desafio_de_desbloqueio,
 )
 
 roteador = APIRouter()
@@ -476,3 +487,338 @@ def obter_trilha_publica_rota(
         licenca=LICENCA_DO_CONTEUDO,
         autor_nome=autor.nome if autor is not None else None,
     )
+
+
+def _exigir_guerreiro(contexto: ContextoDaSessao) -> None:
+    if contexto.papel != Papel.guerreiro:
+        raise PermissaoNegada(mensagem="Só o Guerreiro(a) executa esta operação.")
+
+
+class InscricaoSaida(BaseModel):
+    id: uuid.UUID
+    trilha_id: uuid.UUID
+    momento: str
+
+
+@roteador.post("/eu/trilhas/{id_da_trilha}/inscricao", status_code=201)
+def inscrever_na_trilha_rota(
+    id_da_trilha: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> InscricaoSaida:
+    """`RF-05-09`: ato do próprio Guerreiro(a) em sessão — a exigência de
+    trilha publicada e a devolução da inscrição já existente são de
+    `inscrever_na_trilha` (design — decisão 1)."""
+    _exigir_guerreiro(contexto)
+    guerreiro = sessao_bd.get(Persona, contexto.persona_id)
+    trilha = sessao_bd.get(Trilha, id_da_trilha)
+    inscricao = inscrever_na_trilha(sessao_bd, guerreiro=guerreiro, trilha=trilha)
+    sessao_bd.commit()
+    return InscricaoSaida(
+        id=inscricao.id, trilha_id=inscricao.trilha_id, momento=inscricao.momento.isoformat()
+    )
+
+
+class TrilhaComProximaMissaoSaida(BaseModel):
+    id: uuid.UUID
+    nome: str
+    poder_id: uuid.UUID
+    proxima_missao_id: uuid.UUID | None
+    proxima_missao_titulo: str | None
+    proxima_missao_posicao: int | None
+
+
+@roteador.get("/eu/trilhas")
+def listar_minhas_trilhas_do_guerreiro_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[TrilhaComProximaMissaoSaida]:
+    """`RF-05-08`, `RF-05-17`, `RN-05-21`: as trilhas em que o Guerreiro(a)
+    em sessão está inscrito, cada uma com a próxima missão do percurso dele
+    — nunca inscrição de terceiro, porque não há outro identificador senão
+    o da própria sessão."""
+    _exigir_guerreiro(contexto)
+    saida = []
+    for inscricao in consultar_inscricoes_do_guerreiro(sessao_bd, guerreiro_id=contexto.persona_id):
+        trilha = sessao_bd.get(Trilha, inscricao.trilha_id)
+        proxima = obter_proxima_missao(
+            sessao_bd, guerreiro_id=contexto.persona_id, trilha_id=trilha.id
+        )
+        saida.append(
+            TrilhaComProximaMissaoSaida(
+                id=trilha.id,
+                nome=trilha.nome,
+                poder_id=trilha.poder_id,
+                proxima_missao_id=proxima.id if proxima is not None else None,
+                proxima_missao_titulo=proxima.titulo if proxima is not None else None,
+                proxima_missao_posicao=proxima.posicao if proxima is not None else None,
+            )
+        )
+    return saida
+
+
+class DesafioDeDesbloqueioSaida(BaseModel):
+    tipo: TipoDeDesafioDeDesbloqueio
+    enunciado: str
+    alternativas: list[str] | None = None
+
+
+class MissaoNoPercursoSaida(BaseModel):
+    id: uuid.UUID
+    titulo: str
+    posicao: int
+    obrigatoria: bool
+    e_sondagem: bool
+    desbloqueada: bool
+    e_proxima: bool
+    aguardando_mestre: bool
+    motivo_do_bloqueio: str | None
+    desafio_de_desbloqueio: DesafioDeDesbloqueioSaida | None
+
+
+def _saida_do_desafio_de_desbloqueio(missao: Missao) -> DesafioDeDesbloqueioSaida | None:
+    if missao.tipo_do_desafio_de_desbloqueio is None:
+        return None
+    alternativas = None
+    if missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.quiz:
+        alternativas = [
+            missao.desafio_de_desbloqueio_alternativa_1,
+            missao.desafio_de_desbloqueio_alternativa_2,
+            missao.desafio_de_desbloqueio_alternativa_3,
+            missao.desafio_de_desbloqueio_alternativa_4,
+        ]
+    return DesafioDeDesbloqueioSaida(
+        tipo=missao.tipo_do_desafio_de_desbloqueio,
+        enunciado=missao.desafio_de_desbloqueio_enunciado,
+        alternativas=alternativas,
+    )
+
+
+@roteador.get("/eu/trilhas/{id_da_trilha}/missoes/{ordem}")
+def obter_missao_no_percurso_rota(
+    id_da_trilha: uuid.UUID,
+    ordem: int,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> MissaoNoPercursoSaida:
+    """`RF-05-08`, `RF-05-10`, `RN-05-21`: o estado da missão no percurso do
+    Guerreiro(a) em sessão — desbloqueada, próxima, bloqueada com motivo ou
+    aguardando o Mestre. O conteúdo e a bibliografia continuam vindo de
+    `GET /v1/trilhas/{id}` (design — decisão 6); `ordem` é a posição da
+    missão na trilha."""
+    _exigir_guerreiro(contexto)
+    percurso = derivar_percurso(sessao_bd, guerreiro_id=contexto.persona_id, trilha_id=id_da_trilha)
+    item = next((item for item in percurso if item.missao.posicao == ordem), None)
+    if item is None:
+        raise NaoEncontrado(mensagem="Missão não encontrada nesta posição da trilha.")
+    return MissaoNoPercursoSaida(
+        id=item.missao.id,
+        titulo=item.missao.titulo,
+        posicao=item.missao.posicao,
+        obrigatoria=item.missao.obrigatoria,
+        e_sondagem=item.missao.e_sondagem,
+        desbloqueada=item.desbloqueada,
+        e_proxima=item.e_proxima,
+        aguardando_mestre=item.aguardando_mestre,
+        motivo_do_bloqueio=item.motivo_do_bloqueio,
+        desafio_de_desbloqueio=_saida_do_desafio_de_desbloqueio(item.missao),
+    )
+
+
+class DeclararDesafioDeDesbloqueioEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    tipo: str
+    enunciado: str = Field(min_length=1)
+    alternativas: list[str] | None = None
+    alternativa_correta: int | None = None
+
+
+class MissaoComDesafioDeDesbloqueioSaida(MissaoSaida):
+    """Só a resposta desta rota traz o desafio inteiro, alternativa correta
+    inclusa — nunca `MissaoSaida` das rotas públicas ou de leitura geral,
+    para que a resposta certa não vaze ao Guerreiro(a) (design — decisão 4).
+    """
+
+    tipo_do_desafio_de_desbloqueio: TipoDeDesafioDeDesbloqueio
+    desafio_de_desbloqueio_enunciado: str
+    desafio_de_desbloqueio_alternativas: list[str] | None
+    desafio_de_desbloqueio_alternativa_correta: int | None
+
+
+@roteador.post("/missoes/{id_da_missao}/desbloqueio")
+def declarar_desafio_de_desbloqueio_rota(
+    id_da_missao: uuid.UUID,
+    entrada: DeclararDesafioDeDesbloqueioEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> MissaoComDesafioDeDesbloqueioSaida:
+    """`RF-09-26`, `RF-09-117`: o Mestre autor declara o desafio de
+    desbloqueio, na forma de quiz ou de desafio prático — a posse e as
+    recusas de enunciado, alternativas e alternativa correta já são de
+    `declarar_desafio_de_desbloqueio` (design — decisão 4). Só esta
+    resposta, ao próprio Mestre autor, traz a alternativa correta."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    missao = _obter_missao(sessao_bd, id_da_missao)
+    missao = declarar_desafio_de_desbloqueio(
+        sessao_bd,
+        operador=operador,
+        missao=missao,
+        tipo=entrada.tipo,
+        enunciado=entrada.enunciado,
+        alternativas=entrada.alternativas,
+        alternativa_correta=entrada.alternativa_correta,
+    )
+    sessao_bd.commit()
+    alternativas = None
+    if missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.quiz:
+        alternativas = [
+            missao.desafio_de_desbloqueio_alternativa_1,
+            missao.desafio_de_desbloqueio_alternativa_2,
+            missao.desafio_de_desbloqueio_alternativa_3,
+            missao.desafio_de_desbloqueio_alternativa_4,
+        ]
+    return MissaoComDesafioDeDesbloqueioSaida(
+        **_saida_da_missao(missao, etiquetas=_etiquetas_da_missao(sessao_bd, missao)).model_dump(),
+        tipo_do_desafio_de_desbloqueio=missao.tipo_do_desafio_de_desbloqueio,
+        desafio_de_desbloqueio_enunciado=missao.desafio_de_desbloqueio_enunciado,
+        desafio_de_desbloqueio_alternativas=alternativas,
+        desafio_de_desbloqueio_alternativa_correta=missao.desafio_de_desbloqueio_alternativa_correta,
+    )
+
+
+class SubmeterDesafioDeDesbloqueioEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    alternativa_escolhida: int | None = None
+
+
+class SubmeterDesafioDeDesbloqueioSaida(BaseModel):
+    aprovado: bool | None
+    aguardando_mestre: bool
+
+
+@roteador.post("/eu/missoes/{id_da_missao}/desbloqueio", status_code=201)
+def submeter_desafio_de_desbloqueio_rota(
+    id_da_missao: uuid.UUID,
+    entrada: SubmeterDesafioDeDesbloqueioEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> SubmeterDesafioDeDesbloqueioSaida:
+    """`RF-05-13`, `RF-05-14`, `RN-05-06`, `RN-05-20`: o Guerreiro(a)
+    inscrito submete o desafio — a aferição do quiz, a declaração do
+    prático e a exigência de inscrição já são de
+    `submeter_desafio_de_desbloqueio`."""
+    _exigir_guerreiro(contexto)
+    guerreiro = sessao_bd.get(Persona, contexto.persona_id)
+    missao = _obter_missao(sessao_bd, id_da_missao)
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao_bd,
+        guerreiro=guerreiro,
+        missao=missao,
+        alternativa_escolhida=entrada.alternativa_escolhida,
+    )
+    sessao_bd.commit()
+    return SubmeterDesafioDeDesbloqueioSaida(
+        aprovado=resultado.aprovado, aguardando_mestre=resultado.aprovado is None
+    )
+
+
+class DesbloqueioPendenteSaida(BaseModel):
+    id: uuid.UUID
+    guerreiro_id: uuid.UUID
+    guerreiro_nome: str | None
+    missao_id: uuid.UUID
+    missao_titulo: str
+    momento: str
+
+
+@roteador.get("/missoes/desbloqueios-pendentes")
+def listar_desbloqueios_pendentes_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[DesbloqueioPendenteSaida]:
+    """`RF-09-117`: as declarações de desafio prático ainda não julgadas,
+    só das trilhas do Mestre autor em sessão."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    pendentes = listar_desbloqueios_praticos_pendentes(sessao_bd, operador=operador)
+    saida = []
+    for pendente in pendentes:
+        guerreiro = sessao_bd.get(Persona, pendente.guerreiro_id)
+        missao = sessao_bd.get(Missao, pendente.missao_id)
+        saida.append(
+            DesbloqueioPendenteSaida(
+                id=pendente.id,
+                guerreiro_id=pendente.guerreiro_id,
+                guerreiro_nome=guerreiro.nome if guerreiro is not None else None,
+                missao_id=pendente.missao_id,
+                missao_titulo=missao.titulo,
+                momento=pendente.momento.isoformat(),
+            )
+        )
+    return saida
+
+
+class JulgarDesafioPraticoEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    aprovado: bool
+
+
+@roteador.post("/missoes/{id_da_missao}/desbloqueios/{id_do_guerreiro}/julgamento")
+def julgar_desafio_pratico_rota(
+    id_da_missao: uuid.UUID,
+    id_do_guerreiro: uuid.UUID,
+    entrada: JulgarDesafioPraticoEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> dict[str, bool]:
+    """`RF-09-117`: o Mestre autor julga a declaração — aprovada, ela vira
+    o desbloqueio de fato e abre a missão seguinte; reprovada, ela é
+    apagada e o Guerreiro(a) declara de novo, sem limite (`RN-05-20`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    desbloqueio = (
+        sessao_bd.query(DesbloqueioDaMissao)
+        .filter_by(missao_id=id_da_missao, guerreiro_id=id_do_guerreiro)
+        .first()
+    )
+    julgar_desafio_pratico(
+        sessao_bd, operador=operador, desbloqueio=desbloqueio, aprovado=entrada.aprovado
+    )
+    sessao_bd.commit()
+    return {"aprovado": entrada.aprovado}
+
+
+class ProgressoDaTrilhaSaida(BaseModel):
+    trilha_id: uuid.UUID
+    trilha_nome: str
+    nivel_atual: int | None
+    obrigatorias_desbloqueadas: int
+    obrigatorias_totais: int
+    pontos_regulares: int
+    badges: list[str]
+
+
+@roteador.get("/eu/progresso")
+def obter_progresso_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[ProgressoDaTrilhaSaida]:
+    """`RF-05-15`, `RF-05-16`, `RN-05-03`, `RN-05-04`: nível e quanto falta
+    para o próximo, pontos e badges, por trilha inscrita — nível é
+    percurso, nunca saldo de pontos. As recompensas conquistadas continuam
+    servidas por `GET /v1/eu/recompensas`."""
+    _exigir_guerreiro(contexto)
+    progresso = consultar_progresso(sessao_bd, guerreiro_id=contexto.persona_id)
+    return [
+        ProgressoDaTrilhaSaida(
+            trilha_id=item.trilha.id,
+            trilha_nome=item.trilha.nome,
+            nivel_atual=item.nivel_atual,
+            obrigatorias_desbloqueadas=item.obrigatorias_desbloqueadas,
+            obrigatorias_totais=item.obrigatorias_totais,
+            pontos_regulares=item.pontos_regulares,
+            badges=item.badges,
+        )
+        for item in progresso
+    ]

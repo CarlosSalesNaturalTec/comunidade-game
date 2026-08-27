@@ -4,16 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import { DURACAO_DE_INATIVIDADE_EM_MINUTOS } from "../api/configuracao";
 import { Carteira } from "../carteira/Carteira";
 import { Coleta } from "../coleta/Coleta";
+import { Trilha } from "../trilha/Trilha";
 
 const UM_MINUTO_EM_MS = 60_000;
 const EVENTOS_DE_ATIVIDADE = ["pointerdown", "keydown", "touchstart"] as const;
 
-type Bloco = "coleta" | "carteira";
+type Bloco = "coleta" | "carteira" | "trilha";
 
 // Conteúdo da sessão aberta: o encerramento por saída e por inatividade, o
-// bloco da coleta do território e o bloco da carteira, catálogo,
-// conquistas e ranking — trilha, portfólio e acervo são fatias futuras do
-// PRD-05 (proposal — Why).
+// bloco da coleta do território, o bloco da trilha — inscrição, guia,
+// conteúdo, sondagem, desbloqueio e progresso — e o bloco da carteira,
+// catálogo, conquistas e ranking — portfólio e acervo são fatias futuras
+// do PRD-05 (proposal — Why).
 export function AreaDoGuerreiro() {
   const { sair } = useSessao();
   const [avisando, definirAvisando] = useState(false);
@@ -79,9 +81,17 @@ export function AreaDoGuerreiro() {
         >
           Minha carteira
         </Botao>
+        <Botao
+          variante={bloco === "trilha" ? "primaria" : "secundaria"}
+          onClick={() => definirBloco("trilha")}
+        >
+          Trilha
+        </Botao>
       </nav>
 
-      {bloco === "coleta" ? <Coleta /> : <Carteira />}
+      {bloco === "trilha" && <Trilha />}
+      {bloco === "coleta" && <Coleta />}
+      {bloco === "carteira" && <Carteira />}
     </Moldura>
   );
 }
