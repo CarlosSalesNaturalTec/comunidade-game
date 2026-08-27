@@ -134,12 +134,25 @@ export interface MissaoPublica {
   bibliografia: BibliografiaDaMissaoPublica[];
 }
 
+export type ModalidadeDaCulminancia = "individual" | "em_equipe";
+
+export interface CulminanciaDaTrilha {
+  id: string;
+  trilha_id: string;
+  descricao: string;
+  modalidade: ModalidadeDaCulminancia;
+  criterio_de_validacao: string;
+}
+
 export interface TrilhaPublicaComMissoes {
   id: string;
   nome: string;
   licenca: string;
   autor_nome: string | null;
   missoes: MissaoPublica[];
+  // `null` é "esta trilha ainda não declarou culminância" — a tela avisa
+  // em linguagem simples e não oferece a entrega (`RF-05-39`).
+  culminancia: CulminanciaDaTrilha | null;
 }
 
 // Conteúdo, bibliografia, crédito e licença — sem inventar rota nova: a

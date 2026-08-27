@@ -139,13 +139,15 @@ solidária** saíram do escopo.
 - Fatia 6 — `2026-08-25-aparelho-da-equipe-no-quiz`
 - Fatia 7 — `2026-08-25-programacao-do-encontro-e-missao-da-equipe`
 
-### PRD-05 — Área do Guerreiro(a) (App 05) — aprovado (4 fatias)
+### PRD-05 — Área do Guerreiro(a) (App 05) — aprovado (5 fatias)
 
 - Fatia 1 — `2026-08-26-esqueleto-da-area-do-guerreiro-e-fim-de-ciclo` (também fatia 8 do
   PRD-02)
 - Fatia 2 — `2026-08-26-coleta-do-territorio-na-area-do-guerreiro`
 - Fatia 3 — `2026-08-26-carteira-catalogo-conquistas-e-ranking`
 - Fatia 4 — `2026-08-27-inscricao-na-trilha-guia-e-desbloqueio` (também atende `RF-09-26` do
+  PRD-09, fatia avulsa)
+- Fatia 5 — `2026-08-27-criacao-original-e-portfolio` (também atende `RF-09-30` a `RF-09-34` do
   PRD-09, fatia avulsa)
 
 O escopo do PRD-05 foi revisto na v4 (2026-08-26): **acervo do Guerreiro(a)**, **apoio às

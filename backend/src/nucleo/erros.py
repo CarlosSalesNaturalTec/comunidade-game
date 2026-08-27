@@ -271,6 +271,18 @@ class DigitalizacaoDoTermoJaAnexada(ErroDeAplicacao):
     mensagem = "Este consentimento já tem uma digitalização anexada."
 
 
+class TrilhaSemCulminanciaDeclarada(ErroDeAplicacao):
+    status_code = 409
+    codigo = "trilha_sem_culminancia_declarada"
+    mensagem = "Esta trilha ainda não declarou o que a criação original precisa ser."
+
+
+class CriacaoOriginalJaValidada(ErroDeAplicacao):
+    status_code = 409
+    codigo = "criacao_original_ja_validada"
+    mensagem = "Esta criação original já foi validada; não é possível entregar de novo."
+
+
 class ArquivoAcimaDoTeto(ErroDeAplicacao):
     status_code = 413
     codigo = "arquivo_acima_do_teto"

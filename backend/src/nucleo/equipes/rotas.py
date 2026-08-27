@@ -47,7 +47,7 @@ class EquipeSaida(BaseModel):
     integrantes: list[IntegranteSaida]
 
 
-def _saida_da_equipe(sessao: Session, equipe: Equipe) -> EquipeSaida:
+def saida_da_equipe(sessao: Session, equipe: Equipe) -> EquipeSaida:
     integrantes = sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe.id).all()
     avatares_e_nicks = buscar_avatares_e_nicks(sessao, [i.persona_id for i in integrantes])
     return EquipeSaida(
@@ -81,7 +81,7 @@ def listar_equipes_da_aula_rota(
         raise NaoEncontrado(mensagem="Aula não encontrada.")
     equipes = _equipes_da_aula(sessao_bd, aula.id)
     return PaginaDeResultado(
-        itens=[_saida_da_equipe(sessao_bd, equipe) for equipe in equipes], proximo_cursor=None
+        itens=[saida_da_equipe(sessao_bd, equipe) for equipe in equipes], proximo_cursor=None
     )
 
 
@@ -111,7 +111,7 @@ def criar_equipe_rota(
         sessao_bd, operador=operador, aula=aula, trilha=None, papel_do_integrante=entrada.papel
     )
     sessao_bd.commit()
-    return _saida_da_equipe(sessao_bd, equipe)
+    return saida_da_equipe(sessao_bd, equipe)
 
 
 class EntrarNaEquipeEntrada(BaseModel):
@@ -138,7 +138,7 @@ def entrar_na_equipe_rota(
         raise NaoEncontrado(mensagem="Equipe não encontrada.")
     _entrar_na_equipe(sessao_bd, operador=operador, equipe=equipe, papel=entrada.papel)
     sessao_bd.commit()
-    return _saida_da_equipe(sessao_bd, equipe)
+    return saida_da_equipe(sessao_bd, equipe)
 
 
 @roteador.delete("/equipes/{id_da_equipe}/integrantes/eu", status_code=204)
@@ -259,3 +259,27 @@ def declarar_escolha_da_equipe_rota(
     return EscolhaDaEquipeSaida(
         equipe_id=equipe.id, atividade_corrente_id=equipe.atividade_corrente_id
     )
+
+
+@roteador.get("/eu/trilhas/{id_da_trilha}/equipe")
+def obter_minha_equipe_da_trilha_rota(
+    id_da_trilha: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> EquipeSaida:
+    """A equipe da trilha de que o Guerreiro(a) em sessão integra — só
+    consulta, nunca forma nem edita (`RN-05-12`, `RF-05-40`, `RF-05-41`):
+    a entrega da criação original em equipe precisa saber qual equipe
+    entrega e quem são os integrantes, sem que a App 05 ofereça formá-la."""
+    equipe = (
+        sessao_bd.query(Equipe)
+        .join(IntegranteDaEquipe, IntegranteDaEquipe.equipe_id == Equipe.id)
+        .filter(
+            Equipe.trilha_id == id_da_trilha,
+            IntegranteDaEquipe.persona_id == contexto.persona_id,
+        )
+        .first()
+    )
+    if equipe is None:
+        raise NaoEncontrado(mensagem="Você não integra nenhuma equipe desta trilha.")
+    return saida_da_equipe(sessao_bd, equipe)

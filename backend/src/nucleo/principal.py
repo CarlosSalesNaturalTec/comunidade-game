@@ -23,6 +23,7 @@ from .coletas.rotas import roteador as roteador_de_coletas
 from .comunidades.rotas import roteador as roteador_de_comunidades
 from .consentimentos.rotas import roteador as roteador_de_consentimentos
 from .conteudos.rotas import roteador as roteador_de_conteudos
+from .criacoes_originais.rotas import roteador as roteador_de_criacoes_originais
 from .culminancias.rotas import roteador as roteador_de_culminancias
 from .equipes.rotas import roteador as roteador_de_equipes
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
@@ -182,6 +183,7 @@ incluir_roteador_de_dados(app, roteador_de_patrimonio)
 incluir_roteador_de_dados(app, roteador_de_recompensas_de_marco)
 incluir_roteador_de_dados(app, roteador_de_trilhas)
 incluir_roteador_de_dados(app, roteador_de_culminancias)
+incluir_roteador_de_dados(app, roteador_de_criacoes_originais)
 incluir_roteador_de_dados(app, roteador_de_ods)
 incluir_roteador_de_dados(app, roteador_de_resultados)
 incluir_roteador_de_dados(app, roteador_de_ocorrencias_de_conduta)

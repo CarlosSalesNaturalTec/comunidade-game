@@ -1,7 +1,6 @@
 from datetime import UTC, datetime
 
 from nucleo.consentimentos.modelo import DecisaoDeConsentimento, TipoDeConsentimento
-from nucleo.criacoes_originais.regra import entregar_criacao_original, validar_criacao_original
 from nucleo.ocorrencias_de_conduta.modelo import OcorrenciaDeConduta
 from nucleo.personas.modelo import Papel
 from nucleo.trilhas.modelo import SituacaoDaTrilha
@@ -290,6 +289,7 @@ def test_criacao_com_integrante_sem_autorizacao_nao_aparece(
     criar_consentimento,
     criar_trilha,
     criar_equipe,
+    criar_criacao_original,
     adicionar_integrante,
 ):
     admin = criar_persona(Papel.admin)
@@ -313,11 +313,7 @@ def test_criacao_com_integrante_sem_autorizacao_nao_aparece(
     criar_consentimento(responsavel, colega, tipo=TIPO, decisao=DecisaoDeConsentimento.nega)
     adicionar_integrante(equipe, colega)
 
-    criacao = entregar_criacao_original(
-        sessao, guerreiro=autor, equipe=equipe, producao="Produção de teste."
-    )
-    validar_criacao_original(sessao, operador=admin, criacao=criacao)
-    sessao.commit()
+    criar_criacao_original(trilha, admin, equipe=equipe)
 
     chave, _ = criar_chave()
     resposta = cliente.get("/v1/vitrine/criacoes", headers={"X-Chave-Aplicacao": chave})
@@ -332,6 +328,7 @@ def test_criacao_com_todos_autorizados_aparece_com_autoria_creditada(
     criar_persona,
     criar_trilha,
     criar_equipe,
+    criar_criacao_original,
     guerreiro_publico,
 ):
     admin = criar_persona(Papel.admin)
@@ -339,11 +336,7 @@ def test_criacao_com_todos_autorizados_aparece_com_autoria_creditada(
     autor, nick = guerreiro_publico(nick="autora-da-obra")
     equipe = criar_equipe(autor, trilha=trilha, homologada=True)
 
-    criacao = entregar_criacao_original(
-        sessao, guerreiro=autor, equipe=equipe, producao="Produção de teste."
-    )
-    validar_criacao_original(sessao, operador=admin, criacao=criacao)
-    sessao.commit()
+    criar_criacao_original(trilha, admin, equipe=equipe)
 
     chave, _ = criar_chave()
     resposta = cliente.get("/v1/vitrine/criacoes", headers={"X-Chave-Aplicacao": chave})
@@ -351,6 +344,60 @@ def test_criacao_com_todos_autorizados_aparece_com_autoria_creditada(
     itens = resposta.json()["itens"]
     assert len(itens) == 1
     assert itens[0]["autores"] == [{"avatar": "avatar-de-teste", "nick": nick}]
+
+
+def test_criacao_individual_aparece_creditando_quem_entregou(
+    sessao,
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_criacao_original,
+    guerreiro_publico,
+):
+    """`RF-09-33`: a criação individual, com o Guerreiro(a) autorizado,
+    aparece na vitrine creditando quem a entregou."""
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    guerreiro, nick = guerreiro_publico(nick="guerreira-solo")
+
+    criar_criacao_original(trilha, admin, guerreiro=guerreiro)
+
+    chave, _ = criar_chave()
+    resposta = cliente.get("/v1/vitrine/criacoes", headers={"X-Chave-Aplicacao": chave})
+    assert resposta.status_code == 200
+    itens = resposta.json()["itens"]
+    assert len(itens) == 1
+    assert itens[0]["autores"] == [{"avatar": "avatar-de-teste", "nick": nick}]
+
+
+def test_criacao_individual_sem_autorizacao_nao_aparece(
+    sessao,
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+    criar_trilha,
+    criar_criacao_original,
+):
+    """`RN-09-19`: sem autorização vigente do responsável, a criação
+    individual não vaza para a rota pública."""
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+    guerreiro = criar_persona(Papel.guerreiro)
+    criar_nick(guerreiro, "guerreiro-sem-autorizacao")
+    criar_vinculo(responsavel, guerreiro, cadastrado_por=admin)
+    criar_consentimento(responsavel, guerreiro, tipo=TIPO, decisao=DecisaoDeConsentimento.nega)
+
+    criar_criacao_original(trilha, admin, guerreiro=guerreiro)
+
+    chave, _ = criar_chave()
+    resposta = cliente.get("/v1/vitrine/criacoes", headers={"X-Chave-Aplicacao": chave})
+    assert resposta.status_code == 200
+    assert resposta.json()["itens"] == []
 
 
 def test_cobertura_de_ods_agrega_por_comunidade_e_ciclo_sem_recorte_de_guerreiro(

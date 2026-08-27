@@ -68,6 +68,7 @@ describe("bloco da trilha", () => {
       nome: "Robô Educa",
       licenca: "CC BY-SA",
       autor_nome: "Mestre Ana",
+      culminancia: null,
       missoes: [],
     });
 

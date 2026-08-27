@@ -52,6 +52,7 @@ describe("missão no percurso", () => {
       nome: "Robô Educa",
       licenca: "CC BY-SA",
       autor_nome: "Mestre Ana",
+      culminancia: null,
       missoes: [
         {
           id: "missao-1",
@@ -127,6 +128,7 @@ describe("missão no percurso", () => {
       nome: "Robô Educa",
       licenca: "CC BY-SA",
       autor_nome: "Mestre Ana",
+      culminancia: null,
       missoes: [
         {
           id: "missao-1",

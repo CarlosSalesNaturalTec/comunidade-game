@@ -561,18 +561,23 @@ def creditar_pontuacao_da_criacao_original(
 ) -> None:
     """Ponto de entrada único, chamado por
     `criacoes_originais.regra.validar_criacao_original`: credita os 50
-    pontos regulares integrais a cada integrante da equipe da trilha, sem
-    rateio pelo tamanho, certifica o nível 5 e concede o badge de autoria a
-    cada um deles (`RF-01-21`, `RF-01-64`, 11 §§5-7)."""
-    integrantes = (
-        sessao.query(IntegranteDaEquipe).filter_by(equipe_id=criacao_original.equipe_id).all()
-    )
-    for integrante in integrantes:
+    pontos regulares, certifica o nível 5 e concede o badge de autoria — ao
+    autor individual, uma vez, ou a cada integrante da equipe da trilha,
+    sem rateio pelo tamanho, conforme a modalidade da criação (`RF-01-21`,
+    `RF-01-64`, `RF-09-31`, 11 §§5-7)."""
+    if criacao_original.guerreiro_id is not None:
+        guerreiro_ids = [criacao_original.guerreiro_id]
+    else:
+        guerreiro_ids = [
+            integrante.persona_id
+            for integrante in sessao.query(IntegranteDaEquipe)
+            .filter_by(equipe_id=criacao_original.equipe_id)
+            .all()
+        ]
+
+    for guerreiro_id in guerreiro_ids:
         creditar_ponto_regular(
-            sessao,
-            guerreiro_id=integrante.persona_id,
-            trilha_id=trilha.id,
-            valor=VALOR_DA_CRIACAO_ORIGINAL,
+            sessao, guerreiro_id=guerreiro_id, trilha_id=trilha.id, valor=VALOR_DA_CRIACAO_ORIGINAL
         )
-        certificar_nivel_5(sessao, guerreiro_id=integrante.persona_id, trilha_id=trilha.id)
-        conceder_badge_de_autoria(sessao, guerreiro_id=integrante.persona_id, trilha_id=trilha.id)
+        certificar_nivel_5(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha.id)
+        conceder_badge_de_autoria(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha.id)

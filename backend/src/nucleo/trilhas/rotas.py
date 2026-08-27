@@ -13,6 +13,8 @@ from ..configuracao import Configuracao, obter_configuracao
 from ..conteudos.modelo import ConteudoDaMissao
 from ..conteudos.regra import consultar_conteudos_da_missao
 from ..conteudos.rotas import ConteudoSaida, saida_do_conteudo
+from ..culminancias.modelo import Culminancia
+from ..culminancias.rotas import CulminanciaSaida, saida_da_culminancia
 from ..erros import NaoEncontrado, PermissaoNegada
 from ..ods.modelo import EtiquetaOds
 from ..ods.regra import cobertura_por_trilha
@@ -438,6 +440,10 @@ def despublicar_trilha_rota(
 class TrilhaPublicaSaida(TrilhaComMissoesSaida):
     licenca: str
     autor_nome: str | None
+    # `None` é "esta trilha ainda não declarou culminância" — a App 05
+    # exibe isso em linguagem simples e não oferece a entrega da criação
+    # original enquanto durar (`RF-05-39`).
+    culminancia: CulminanciaSaida | None
 
 
 @roteador.get("/trilhas/{id_da_trilha}")
@@ -480,12 +486,15 @@ def obter_trilha_publica_rota(
             )
         )
 
+    culminancia = sessao_bd.query(Culminancia).filter_by(trilha_id=trilha.id).first()
+
     return TrilhaPublicaSaida(
         **_saida_da_trilha_com_missoes(
             sessao_bd, trilha, missoes=missoes_saida, ciclo=configuracao.ciclo_rotulo
         ).model_dump(),
         licenca=LICENCA_DO_CONTEUDO,
         autor_nome=autor.nome if autor is not None else None,
+        culminancia=saida_da_culminancia(culminancia) if culminancia is not None else None,
     )
 
 

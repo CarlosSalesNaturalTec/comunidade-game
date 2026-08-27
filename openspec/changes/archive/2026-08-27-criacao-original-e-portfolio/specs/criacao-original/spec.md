@@ -1,10 +1,4 @@
-## Purpose
-
-A Criação Original é o registro de que um Guerreiro(a) — sozinho ou em equipe — entregou, ao
-final da trilha, algo criado a partir do que aprendeu — a trava viva da regra "toda trilha
-termina em criação original" (documento 99 §6 invariante 5), com autoria que nunca se perde.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Guerreiro(a) entrega a criação original contra uma trilha
 
@@ -147,6 +141,8 @@ momento. Na modalidade **individual**, a autoria SHALL ser o **Guerreiro(a)** qu
 
 - **WHEN** se lê a autoria de uma criação original individual
 - **THEN** ela traz o Guerreiro(a) que a entregou, e nenhuma equipe
+
+## ADDED Requirements
 
 ### Requirement: A produção da criação original é texto, imagem, vídeo, arquivo ou link
 

@@ -756,6 +756,30 @@ def test_get_trilha_publica_serve_so_publicada(cliente, criar_chave, criar_perso
     assert resposta_despublicada.status_code == 404
 
 
+def test_get_trilha_publica_traz_a_culminancia_declarada(
+    cliente, criar_chave, criar_persona, criar_trilha, criar_culminancia
+):
+    """`RF-05-39`: a App 05 lê a culminância pela mesma leitura pública da
+    trilha, sem rota própria de leitura."""
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha_com_culminancia = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    criar_culminancia(trilha_com_culminancia, mestre)
+    trilha_sem_culminancia = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+
+    resposta_com = cliente.get(
+        f"/v1/trilhas/{trilha_com_culminancia.id}", headers={"X-Chave-Aplicacao": chave}
+    )
+    resposta_sem = cliente.get(
+        f"/v1/trilhas/{trilha_sem_culminancia.id}", headers={"X-Chave-Aplicacao": chave}
+    )
+
+    assert resposta_com.status_code == 200
+    assert resposta_com.json()["culminancia"]["modalidade"] == "em_equipe"
+    assert resposta_sem.status_code == 200
+    assert resposta_sem.json()["culminancia"] is None
+
+
 def test_motivo_da_despublicacao_aparece_em_minhas_pela_rota(
     cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha
 ):

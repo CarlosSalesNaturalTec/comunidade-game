@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from sqlalchemy import func, tuple_
+from sqlalchemy import and_, func, tuple_
 from sqlalchemy.orm import Session
 
 from ..banco import obter_sessao
@@ -231,10 +231,15 @@ def listar_criacoes_publicas(
         .filter(~condicao_de_autorizacao_vigente(sessao_bd, IntegranteDaEquipe.persona_id))
         .exists()
     )
+    guerreiro_individual_nao_autorizado = and_(
+        CriacaoOriginal.guerreiro_id.is_not(None),
+        ~condicao_de_autorizacao_vigente(sessao_bd, CriacaoOriginal.guerreiro_id),
+    )
     consulta = (
         sessao_bd.query(CriacaoOriginal)
         .filter(CriacaoOriginal.situacao == SituacaoDaCriacaoOriginal.validada)
         .filter(~tem_integrante_nao_autorizado)
+        .filter(~guerreiro_individual_nao_autorizado)
     )
 
     if parametros.cursor:
@@ -262,7 +267,7 @@ def listar_criacoes_publicas(
             {"validado_em": ultima.validado_em.isoformat(), "id": str(ultima.id)}
         )
 
-    equipe_ids = [criacao.equipe_id for criacao in criacoes]
+    equipe_ids = [criacao.equipe_id for criacao in criacoes if criacao.equipe_id is not None]
     integrantes_por_equipe: dict[uuid.UUID, list[uuid.UUID]] = {}
     if equipe_ids:
         for integrante in sessao_bd.query(IntegranteDaEquipe).filter(
@@ -272,20 +277,32 @@ def listar_criacoes_publicas(
                 integrante.persona_id
             )
 
+    guerreiro_ids = {
+        criacao.guerreiro_id for criacao in criacoes if criacao.guerreiro_id is not None
+    }
     todas_as_personas_ids = {
         persona_id for ids in integrantes_por_equipe.values() for persona_id in ids
-    }
+    } | guerreiro_ids
     avatares_e_nicks = buscar_avatares_e_nicks(sessao_bd, todas_as_personas_ids)
+
+    def _autores_da_criacao(criacao: CriacaoOriginal) -> list[AvatarENickSaida]:
+        if criacao.guerreiro_id is not None:
+            return (
+                [avatares_e_nicks[criacao.guerreiro_id]]
+                if criacao.guerreiro_id in avatares_e_nicks
+                else []
+            )
+        return [
+            avatares_e_nicks[persona_id]
+            for persona_id in integrantes_por_equipe.get(criacao.equipe_id, [])
+            if persona_id in avatares_e_nicks
+        ]
 
     itens = [
         CriacaoPublicaSaida(
             trilha_id=criacao.trilha_id,
             producao=criacao.producao,
-            autores=[
-                avatares_e_nicks[persona_id]
-                for persona_id in integrantes_por_equipe.get(criacao.equipe_id, [])
-                if persona_id in avatares_e_nicks
-            ],
+            autores=_autores_da_criacao(criacao),
         )
         for criacao in criacoes
     ]
