@@ -18,7 +18,8 @@ lê-lo:
 
 | Para saber                          | Leia                                               |
 | ----------------------------------- | -------------------------------------------------- |
-| A situação de cada PRD              | `docs/prds/index.md`                               |
+| A situação de cada PRD              | `docs/prds/index.md` — só a tabela do topo         |
+| As fatias já entregues de um PRD    | `docs/prds/index.md` — só a seção daquele PRD      |
 | A ordem em que os PRDs viram código | documento 99 §9 — não é a ordem do documento 08    |
 | As changes em andamento             | `openspec list`, `openspec status --change <nome>` |
 | As fatias já entregues              | `openspec/changes/archive/`                        |
@@ -69,6 +70,13 @@ Cada assunto tem **um** documento normativo, listado em `docs/99-mapa-de-referen
 Ao alterar uma regra, altere **o documento-fonte** dela. Outro documento que precise mencionar
 o assunto resume em **uma frase**, sem repetir a regra completa, a tabela nem os números. Ao
 encontrar duplicidade, consolide no documento-fonte e reduza a menção nos demais.
+
+`docs/prds/index.md` é **índice**, não diário: registra a situação de cada PRD e a lista das
+fatias entregues, nunca o requisito, a decisão ou o porquê de uma fatia — isso já mora no
+`proposal.md`/`design.md` da change (`openspec/changes/archive/`) e, quando for decisão nova,
+no documento 09 §1. Fechar uma fatia acrescenta **uma linha** de tabela a esse arquivo, nunca
+um parágrafo novo; texto que reconta o que outro documento já registra é a duplicidade que esta
+regra proíbe.
 
 ### 3. Referências entre documentos ficam no doc 99
 
@@ -181,13 +189,13 @@ projeto entra em `openspec/config.yaml` ou aqui.
 A documentação do MkDocs anda junto com a implementação: **nenhuma change fecha deixando o
 site desatualizado**. No mesmo PR, atualize o que aquela change mudou — só isso:
 
-| Se a change                          | Atualize                                       |
-| ------------------------------------ | ---------------------------------------------- |
-| Tomou uma decisão nova               | o documento-fonte (doc 99 §1) e o documento 09 |
-| Mudou um requisito por essa decisão  | o PRD afetado                                  |
-| Mudou a situação de um PRD           | `docs/prds/index.md`                           |
-| Mudou a relação entre documentos     | o documento 99                                 |
-| Criou ou renomeou arquivo em `docs/` | a `nav` do `mkdocs.yml`                        |
+| Se a change                          | Atualize                                                                 |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| Tomou uma decisão nova               | o documento-fonte (doc 99 §1) e o documento 09                           |
+| Mudou um requisito por essa decisão  | o PRD afetado                                                            |
+| Mudou a situação de um PRD           | `docs/prds/index.md` — uma linha na tabela de fatias, nunca um parágrafo |
+| Mudou a relação entre documentos     | o documento 99                                                           |
+| Criou ou renomeou arquivo em `docs/` | a `nav` do `mkdocs.yml`                                                  |
 
 Documento técnico novo em `docs/` só entra por decisão do fundador: `docs/` é a documentação
 do produto, e o plano de execução vive em `openspec/changes/`.
@@ -258,6 +266,11 @@ passou. Valem para qualquer agente que trabalhe aqui:
   fatia atravessar o documento todo.
 - Para saber o que já existe, leia `openspec/specs/<capability>/spec.md` — é o consolidado.
   `openspec/changes/archive/` é histórico: só abra quando precisar do porquê de uma decisão.
+- `docs/prds/index.md` e `docs/09-topicos-em-aberto-e-sugestoes.md` só crescem — leia a parte
+  que a tarefa exige, não o arquivo inteiro por hábito: em `index.md`, a tabela de situação e a
+  seção de fatias do PRD alvo; em `docs/09`, a linha da pendência ou decisão pelo nome dela.
+  Use `Read` com `offset`/`limit`, ou grep pelo identificador, em vez de carregar o arquivo
+  todo.
 - **Não abra subagente** para sincronizar specs, arquivar change ou verificar implementação:
   o agente da sessão já tem o contexto, e um subagente o reconstrói do zero.
 - `/opsx:verify` confere o diff da change (`git diff --stat main...HEAD`) contra `tasks.md` e
