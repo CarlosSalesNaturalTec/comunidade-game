@@ -20,8 +20,10 @@ context: |
   PRD: PARE e pergunte ao fundador. Não preencha lacuna com suposição.
 
   LEITURA DIRIGIDA — o que abrir antes de escrever
-  1. `docs/prds/index.md` — só a tabela de situação (topo) e a seção de fatias do PRD alvo;
-     é índice, sem narrativa, e só cresce — não leia o arquivo inteiro por hábito.
+  1. `openspec/cronograma-de-fatias.md` — só o bloco do PRD alvo. A fatia já está numerada e
+     o recorte (RF/RN) escrito: NÃO redescubra o que falta varrendo `openspec/changes/archive/`
+     nem recontando a cobertura do PRD. Confira o recorte contra o PRD e siga; se divergir,
+     corrija a linha do cronograma na mesma change.
   2. Do PRD alvo: a §14 (pendências que permanecem), as seções que cobrem os RF/RN do
      recorte e, quando houver contrato de API, a §9. O PRD inteiro só quando a fatia
      atravessar o documento todo. Leia o PRD UMA vez por change, não uma vez por artefato.
@@ -81,8 +83,9 @@ context: |
 
   ORDEM DE CONSTRUÇÃO
   Está no documento 99 §9, com o piso de dependência de cada PRD. NÃO é a ordem de elaboração
-  do documento 08. A situação de cada PRD está em `docs/prds/index.md`, e as changes em
-  andamento em `openspec list`; nenhuma das duas se repete aqui, para não envelhecer.
+  do documento 08. A situação de cada PRD está em `docs/prds/index.md`, a fatia seguinte e a
+  situação dela em `openspec/cronograma-de-fatias.md`, e as changes em andamento em
+  `openspec list`; nenhuma das três se repete aqui, para não envelhecer.
 
   PENDÊNCIAS — ONDE PROCURAR ANTES DE SUPOR
   O que segue em aberto está na §14 do PRD alvo (o que trava aquele PRD) e em
@@ -110,8 +113,13 @@ context: |
 rules:
   proposal:
     - >-
-      Toda proposta declara, na abertura, o PRD que a origina e os identificadores
-      (RF-XX-nn, RN-XX-nn) que serão atendidos. Proposta sem âncora em PRD é inválida.
+      Toda proposta declara, na abertura, o PRD que a origina, o número da fatia no
+      `openspec/cronograma-de-fatias.md` e os identificadores (RF-XX-nn, RN-XX-nn) que serão
+      atendidos. Proposta sem âncora em PRD é inválida.
+    - >-
+      O recorte é o da fatia no cronograma. Ampliá-lo, reduzi-lo ou abrir fatia que não está
+      lá é decisão de planejamento: leve ao fundador e atualize o cronograma antes de escrever
+      a proposta. Trava anotada na fatia não se resolve dentro de um artefato do OpenSpec.
     - >-
       O escopo de uma change é um recorte de um PRD; respeite a ordem das ondas e as
       dependências entre PRDs do documento 99 §8.
@@ -171,10 +179,12 @@ rules:
       Não crie tarefa para rodar esteira: o ritmo de verificação de `CLAUDE.md` já define o
       que roda e quando. Nenhuma tarefa diz "rodar ruff, pytest, npm run lint ou mkdocs".
     - >-
-      Toda change termina com uma tarefa de documentação: atualizar em `docs/` apenas o que
+      Toda change termina com uma tarefa de documentação: marcar a fatia como implementada em
+      `openspec/cronograma-de-fatias.md` e atualizar em `docs/` apenas o que
       a change mudou — documento-fonte e documento 09 quando houve decisão nova, o PRD
-      afetado, `docs/prds/index.md` se a situação mudou (uma linha na tabela de fatias do
-      PRD, nunca um parágrafo novo — o porquê já está no proposal/design da própria change),
+      afetado, `docs/prds/index.md` se a situação do PRD mudou (a coluna da tabela de
+      situação, nunca um parágrafo novo — a lista de fatias vive no cronograma e o porquê no
+      proposal/design da própria change),
       o documento 99 se a relação entre documentos mudou e a `nav` do `mkdocs.yml` se nasceu
       arquivo novo. Se a change não mudou nada disso, a tarefa diz isso em uma linha.
     - >-
@@ -219,6 +229,10 @@ operations:
         suíte verde, o resultado já é conhecido.
       - >-
         Sincronize as specs no próprio agente da sessão — não abra subagente para isso.
+      - >-
+        Marque a fatia como `implementado` em `openspec/cronograma-de-fatias.md` e troque o
+        recorte previsto pelo slug da change. Change sem número de fatia entra como linha
+        sem número, no bloco do PRD que a exigiu.
       - >-
         Confira que `docs/prds/index.md` e o documento 99 refletem a situação e que todo
         arquivo novo de `docs/` está na `nav` do `mkdocs.yml`.

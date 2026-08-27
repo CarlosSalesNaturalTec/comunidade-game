@@ -846,21 +846,21 @@ passa a ter canal próprio:
 Web App autenticado dos **Mestres cadastrados** por um Admin. É a bancada de trabalho de quem
 ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 
-| Função                    | O que o Mestre faz                                                                                                                     |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **Autoria de trilhas**    | Cria trilhas, missões, conteúdos, bibliografia de apoio, **atividades da missão**, quizzes e desafios — inclusive o de coleta          |
-| **Template de missão**    | Cadastra o tópico que quer ensinar e recebe a **estrutura da missão** e o que ainda falta nela, conforme o modelo do documento 11      |
-| **Prova de habilidade**   | Publica os artefatos que comprovam sua habilidade, além de currículo, portfólio e redes sociais                                        |
-| **Minhas atividades**     | Acompanha as suas turmas e lança resultados, presenças e méritos das atividades que propôs                                             |
-| **Validação pedagógica**  | Valida os desafios extras que os Apoiadores propõem para as suas trilhas, antes da aprovação do Admin                                  |
-| **Banco do Quiz ao Vivo** | Cadastra as perguntas das suas aulas e **conduz a partida** das aulas que ministra, pela App 03                                        |
-| **Pontuação negativa**    | Lança a pontuação negativa das suas aulas, com motivo registrado e sem revisão de Admin                                                |
-| **Necessidades**          | Vê o que falta de recurso para as suas atividades e, se quiser, cobre a falta com **aporte por absorção**                              |
-| **Locais do território**  | Aprova as solicitações de novo local dos Guerreiros e Guerreiras das suas trilhas, com alerta das que estão em aberto                  |
-| **Responsáveis**          | Cadastra o responsável que se apresentou no encontro e vincula a ele **qualquer** Guerreiro(a) já cadastrado, com o grau de parentesco |
-| **Apoio escolar**         | Cadastra as disciplinas e o conteúdo — o corpus fechado que os assistentes das Apps 05 e 01 podem usar; o Admin audita por amostragem  |
-| **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                                                     |
-| **Ressarcimento**         | Acompanha a situação do que absorveu; havendo receita, envia a chave PIX por e-mail ao Admin — a plataforma não guarda dado bancário   |
+| Função                    | O que o Mestre faz                                                                                                                       |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Autoria de trilhas**    | Cria trilhas, missões, conteúdos, bibliografia de apoio, **atividades da missão**, quizzes e desafios — inclusive o de coleta            |
+| **Template de missão**    | Cadastra o tópico que quer ensinar e recebe a **estrutura da missão** e o que ainda falta nela, conforme o modelo do documento 11        |
+| **Prova de habilidade**   | Publica os artefatos que comprovam sua habilidade, além de currículo, portfólio e redes sociais                                          |
+| **Minhas atividades**     | Acompanha as suas turmas e lança resultados, presenças e méritos das atividades que propôs                                               |
+| **Validação pedagógica**  | Valida os desafios extras que os Apoiadores propõem para as suas trilhas, antes da aprovação do Admin                                    |
+| **Banco do Quiz ao Vivo** | Cadastra as perguntas das suas aulas e **conduz a partida** das aulas que ministra, pela App 03                                          |
+| **Pontuação negativa**    | Lança a pontuação negativa das suas aulas, com motivo registrado e sem revisão de Admin                                                  |
+| **Necessidades**          | Vê o que falta de recurso para as suas atividades e, se quiser, cobre a falta com **aporte por absorção**                                |
+| **Locais do território**  | Aprova as solicitações de novo local dos Guerreiros e Guerreiras das suas trilhas, com alerta das que estão em aberto                    |
+| **Responsáveis**          | Cadastra o responsável que se apresentou no encontro e vincula a ele **qualquer** Guerreiro(a) já cadastrado, com o grau de parentesco   |
+| **Apoio escolar**         | **A partir do Ciclo 02**: cadastra as disciplinas e o conteúdo — o corpus fechado do assistente da App 05; o Admin audita por amostragem |
+| **Propostas**             | Registra propostas de evolução da plataforma, na mesma fila de avaliação da gestão                                                       |
+| **Ressarcimento**         | Acompanha a situação do que absorveu; havendo receita, envia a chave PIX por e-mail ao Admin — a plataforma não guarda dado bancário     |
 
 **Regras obrigatórias:**
 
