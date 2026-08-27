@@ -559,6 +559,37 @@ def test_leitura_da_programacao_nao_grava_nada(
     assert sessao.query(Equipe).count() == total_de_equipes_antes
 
 
+def test_guerreiro_le_a_propria_equipe_da_trilha(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_nick,
+    criar_trilha,
+    criar_equipe,
+    criar_sessao_de_teste,
+):
+    """`RF-05-40`, `RF-05-41`, `RN-05-12`: a App 05 consulta a equipe
+    homologada da trilha para a entrega em equipe, sem oferecer formá-la."""
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    criar_nick(guerreiro, "guerreiro-da-equipe")
+    outro_guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    equipe = criar_equipe(guerreiro, trilha=trilha, homologada=True)
+    token, _ = criar_sessao_de_teste(guerreiro)
+    token_de_fora, _ = criar_sessao_de_teste(outro_guerreiro)
+
+    resposta = cliente.get(f"/v1/eu/trilhas/{trilha.id}/equipe", headers=_cabecalhos(chave, token))
+    resposta_de_fora = cliente.get(
+        f"/v1/eu/trilhas/{trilha.id}/equipe", headers=_cabecalhos(chave, token_de_fora)
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.json()["id"] == str(equipe.id)
+    assert resposta_de_fora.status_code == 404
+
+
 def test_as_quatro_rotas_de_equipe_estao_no_openapi_sob_v1(cliente):
     schema = cliente.get("/openapi.json").json()
 

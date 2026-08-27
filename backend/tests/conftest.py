@@ -48,6 +48,12 @@ from nucleo.consentimentos.modelo import (
     TipoDeConsentimento,
 )
 from nucleo.conteudos.modelo import AutoriaDoConteudo, ConteudoDaMissao, TipoDeConteudo
+from nucleo.criacoes_originais.modelo import (
+    CriacaoOriginal,
+    SituacaoDaCriacaoOriginal,
+    TipoDeProducaoDaCriacaoOriginal,
+)
+from nucleo.culminancias.modelo import Culminancia, ModalidadeDaCulminancia
 from nucleo.equipes.modelo import Equipe, IntegranteDaEquipe
 from nucleo.fila.modelo import SituacaoDaSolicitacao, SolicitacaoDeChave, SolicitacaoDeParticipacao
 from nucleo.fila.regra import avaliar_solicitacao_de_chave, registrar_solicitacao_de_chave
@@ -274,6 +280,7 @@ def app(sessao, configuracao):
     from nucleo.comunidades.rotas import roteador as roteador_de_comunidades
     from nucleo.consentimentos.rotas import roteador as roteador_de_consentimentos
     from nucleo.conteudos.rotas import roteador as roteador_de_conteudos
+    from nucleo.criacoes_originais.rotas import roteador as roteador_de_criacoes_originais
     from nucleo.culminancias.rotas import roteador as roteador_de_culminancias
     from nucleo.equipes.rotas import roteador as roteador_de_equipes
     from nucleo.fila.rotas import roteador as roteador_de_fila
@@ -335,6 +342,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_recompensas_de_marco)
     incluir_roteador_de_dados(aplicacao, roteador_de_trilhas)
     incluir_roteador_de_dados(aplicacao, roteador_de_culminancias)
+    incluir_roteador_de_dados(aplicacao, roteador_de_criacoes_originais)
     incluir_roteador_de_dados(aplicacao, roteador_de_ods)
     incluir_roteador_de_dados(aplicacao, roteador_de_resultados)
     incluir_roteador_de_dados(aplicacao, roteador_de_ocorrencias_de_conduta)
@@ -744,6 +752,70 @@ def criar_trilha(sessao, criar_poder):
         sessao.commit()
         sessao.refresh(trilha)
         return trilha
+
+    return _criar
+
+
+@pytest.fixture
+def criar_culminancia(sessao):
+    def _criar(
+        trilha: Trilha,
+        autor: Persona,
+        descricao: str = "Um robô de sucata que resolva um problema do bairro.",
+        modalidade: ModalidadeDaCulminancia = ModalidadeDaCulminancia.em_equipe,
+        criterio_de_validacao: str = "Funciona e resolve o problema declarado.",
+    ) -> Culminancia:
+        culminancia = Culminancia(
+            trilha_id=trilha.id,
+            descricao=descricao,
+            modalidade=modalidade,
+            criterio_de_validacao=criterio_de_validacao,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(culminancia)
+        sessao.commit()
+        sessao.refresh(culminancia)
+        return culminancia
+
+    return _criar
+
+
+@pytest.fixture
+def criar_criacao_original(sessao):
+    """Grava direto, sem passar por `entregar_criacao_original` — montar o
+    registro é cenário do teste, não o que ele exercita (mesmo padrão de
+    `adicionar_integrante`)."""
+
+    def _criar(
+        trilha: Trilha,
+        autor: Persona,
+        equipe: Equipe | None = None,
+        guerreiro: Persona | None = None,
+        tipo: TipoDeProducaoDaCriacaoOriginal = TipoDeProducaoDaCriacaoOriginal.texto,
+        producao: str | None = "Produção de teste.",
+        situacao: SituacaoDaCriacaoOriginal | None = None,
+        validado_em: datetime | None = None,
+    ) -> CriacaoOriginal:
+        situacao_gravada = situacao or SituacaoDaCriacaoOriginal.validada
+        if validado_em is None and situacao_gravada == SituacaoDaCriacaoOriginal.validada:
+            validado_em = datetime.now(UTC)
+
+        criacao = CriacaoOriginal(
+            trilha_id=trilha.id,
+            equipe_id=equipe.id if equipe is not None else None,
+            guerreiro_id=guerreiro.id if guerreiro is not None else None,
+            tipo=tipo,
+            producao=producao,
+            situacao=situacao_gravada,
+            validado_em=validado_em,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(criacao)
+        sessao.commit()
+        sessao.refresh(criacao)
+        return criacao
 
     return _criar
 

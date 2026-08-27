@@ -6,6 +6,7 @@ import {
   obterMissaoNoPercurso,
   type TrilhaComProximaMissao,
 } from "../api/trilha";
+import { Culminancia } from "./Culminancia";
 import { Missao } from "./Missao";
 
 interface Props {
@@ -71,9 +72,12 @@ export function GuiaDaTrilha({ trilha, aoAtualizarTrilhas, aoTrocarDeTrilha }: P
 
   if (trilha.proxima_missao_posicao === null) {
     return (
-      <Aviso tipo="sucesso">
-        Você já desbloqueou todas as missões desta trilha. Confira o seu progresso!
-      </Aviso>
+      <section aria-label={`Guia de ${trilha.nome}`} className="cg-trilha__guia">
+        <Aviso tipo="sucesso">
+          Você já desbloqueou todas as missões desta trilha. Agora é hora da culminância!
+        </Aviso>
+        <Culminancia trilhaId={trilha.id} />
+      </section>
     );
   }
 

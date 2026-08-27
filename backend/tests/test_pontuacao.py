@@ -4,11 +4,13 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 
+from nucleo.criacoes_originais.modelo import TipoDeProducaoDaCriacaoOriginal
 from nucleo.criacoes_originais.regra import (
     devolver_criacao_original,
     entregar_criacao_original,
     validar_criacao_original,
 )
+from nucleo.culminancias.modelo import ModalidadeDaCulminancia
 from nucleo.equipes.regra import entrar_na_equipe
 from nucleo.erros import DebitoDePontoRegularRecusado, ErroDeValidacao
 from nucleo.personas.modelo import Papel
@@ -548,14 +550,20 @@ def test_atividade_de_outra_natureza_nao_concede_badge_de_valores_e_causas(
 
 
 def test_validar_criacao_original_credita_cinquenta_pontos_regulares_ao_autor(
-    sessao, criar_persona, criar_trilha, criar_equipe
+    sessao, criar_persona, criar_trilha, criar_equipe, criar_culminancia
 ):
     mestre = criar_persona(Papel.mestre)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
+    criar_culminancia(trilha, mestre)
     equipe = criar_equipe(guerreiro, trilha=trilha)
     criacao = entregar_criacao_original(
-        sessao, guerreiro=guerreiro, equipe=equipe, producao="Produção."
+        sessao,
+        guerreiro=guerreiro,
+        trilha=trilha,
+        equipe=equipe,
+        tipo=TipoDeProducaoDaCriacaoOriginal.texto,
+        producao="Produção.",
     )
     sessao.commit()
 
@@ -569,14 +577,20 @@ def test_validar_criacao_original_credita_cinquenta_pontos_regulares_ao_autor(
 
 
 def test_validar_criacao_original_certifica_o_nivel_5_uma_unica_vez(
-    sessao, criar_persona, criar_trilha, criar_equipe
+    sessao, criar_persona, criar_trilha, criar_equipe, criar_culminancia
 ):
     mestre = criar_persona(Papel.mestre)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
+    criar_culminancia(trilha, mestre)
     equipe = criar_equipe(guerreiro, trilha=trilha)
     criacao = entregar_criacao_original(
-        sessao, guerreiro=guerreiro, equipe=equipe, producao="Produção."
+        sessao,
+        guerreiro=guerreiro,
+        trilha=trilha,
+        equipe=equipe,
+        tipo=TipoDeProducaoDaCriacaoOriginal.texto,
+        producao="Produção.",
     )
     sessao.commit()
 
@@ -588,14 +602,20 @@ def test_validar_criacao_original_certifica_o_nivel_5_uma_unica_vez(
 
 
 def test_validar_criacao_original_concede_o_badge_de_autoria(
-    sessao, criar_persona, criar_trilha, criar_equipe
+    sessao, criar_persona, criar_trilha, criar_equipe, criar_culminancia
 ):
     mestre = criar_persona(Papel.mestre)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
+    criar_culminancia(trilha, mestre)
     equipe = criar_equipe(guerreiro, trilha=trilha)
     criacao = entregar_criacao_original(
-        sessao, guerreiro=guerreiro, equipe=equipe, producao="Produção."
+        sessao,
+        guerreiro=guerreiro,
+        trilha=trilha,
+        equipe=equipe,
+        tipo=TipoDeProducaoDaCriacaoOriginal.texto,
+        producao="Produção.",
     )
     sessao.commit()
 
@@ -611,18 +631,24 @@ def test_validar_criacao_original_concede_o_badge_de_autoria(
 
 
 def test_devolver_criacao_original_nao_credita_nada(
-    sessao, criar_persona, criar_trilha, criar_equipe
+    sessao, criar_persona, criar_trilha, criar_equipe, criar_culminancia
 ):
     mestre = criar_persona(Papel.mestre)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
+    criar_culminancia(trilha, mestre)
     equipe = criar_equipe(guerreiro, trilha=trilha)
     criacao = entregar_criacao_original(
-        sessao, guerreiro=guerreiro, equipe=equipe, producao="Produção."
+        sessao,
+        guerreiro=guerreiro,
+        trilha=trilha,
+        equipe=equipe,
+        tipo=TipoDeProducaoDaCriacaoOriginal.texto,
+        producao="Produção.",
     )
     sessao.commit()
 
-    devolver_criacao_original(sessao, operador=mestre, criacao=criacao)
+    devolver_criacao_original(sessao, operador=mestre, criacao=criacao, motivo="Falta concluir.")
     sessao.commit()
 
     assert sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id).count() == 0
@@ -631,7 +657,7 @@ def test_devolver_criacao_original_nao_credita_nada(
 
 
 def test_validar_criacao_original_credita_cada_integrante_da_equipe(
-    sessao, criar_persona, criar_trilha, criar_equipe
+    sessao, criar_persona, criar_trilha, criar_equipe, criar_culminancia
 ):
     """`RF-01-64`: os 50 pontos, o nível 5 e o badge de autoria alcançam
     cada integrante — sem rateio pelo tamanho da equipe."""
@@ -640,13 +666,19 @@ def test_validar_criacao_original_credita_cada_integrante_da_equipe(
     colega_um = criar_persona(Papel.guerreiro)
     colega_dois = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
+    criar_culminancia(trilha, mestre)
     equipe = criar_equipe(autor, trilha=trilha)
     entrar_na_equipe(sessao, operador=colega_um, equipe=equipe)
     entrar_na_equipe(sessao, operador=colega_dois, equipe=equipe)
     sessao.commit()
 
     criacao = entregar_criacao_original(
-        sessao, guerreiro=autor, equipe=equipe, producao="Produção da equipe."
+        sessao,
+        guerreiro=autor,
+        trilha=trilha,
+        equipe=equipe,
+        tipo=TipoDeProducaoDaCriacaoOriginal.texto,
+        producao="Produção da equipe.",
     )
     sessao.commit()
 
@@ -675,21 +707,28 @@ def test_validar_criacao_original_credita_cada_integrante_da_equipe(
 
 
 def test_equipes_de_tamanhos_diferentes_creditam_os_mesmos_cinquenta_por_integrante(
-    sessao, criar_persona, criar_trilha, criar_equipe
+    sessao, criar_persona, criar_trilha, criar_equipe, criar_culminancia
 ):
     mestre = criar_persona(Papel.mestre)
     trilha = criar_trilha(mestre)
+    criar_culminancia(trilha, mestre)
 
     autor_solo = criar_persona(Papel.guerreiro)
     equipe_solo = criar_equipe(autor_solo, trilha=trilha)
     criacao_solo = entregar_criacao_original(
-        sessao, guerreiro=autor_solo, equipe=equipe_solo, producao="Produção solo."
+        sessao,
+        guerreiro=autor_solo,
+        trilha=trilha,
+        equipe=equipe_solo,
+        tipo=TipoDeProducaoDaCriacaoOriginal.texto,
+        producao="Produção solo.",
     )
     sessao.commit()
     validar_criacao_original(sessao, operador=mestre, criacao=criacao_solo)
     sessao.commit()
 
     trilha_dois = criar_trilha(mestre, nome="Outra Trilha")
+    criar_culminancia(trilha_dois, mestre)
     autor_trio = criar_persona(Papel.guerreiro)
     equipe_trio = criar_equipe(autor_trio, trilha=trilha_dois)
     colega_um = criar_persona(Papel.guerreiro)
@@ -698,7 +737,12 @@ def test_equipes_de_tamanhos_diferentes_creditam_os_mesmos_cinquenta_por_integra
     entrar_na_equipe(sessao, operador=colega_dois, equipe=equipe_trio)
     sessao.commit()
     criacao_trio = entregar_criacao_original(
-        sessao, guerreiro=autor_trio, equipe=equipe_trio, producao="Produção em trio."
+        sessao,
+        guerreiro=autor_trio,
+        trilha=trilha_dois,
+        equipe=equipe_trio,
+        tipo=TipoDeProducaoDaCriacaoOriginal.texto,
+        producao="Produção em trio.",
     )
     sessao.commit()
     validar_criacao_original(sessao, operador=mestre, criacao=criacao_trio)
@@ -713,3 +757,44 @@ def test_equipes_de_tamanhos_diferentes_creditam_os_mesmos_cinquenta_por_integra
         .one()
     )
     assert conta_solo.total == conta_trio.total == 50
+
+
+def test_validar_criacao_original_individual_credita_o_guerreiro_que_entregou(
+    sessao, criar_persona, criar_trilha, criar_culminancia
+):
+    """`RF-09-31`: na modalidade individual, os 50 pontos, o nível 5 e o
+    badge de autoria alcançam só o Guerreiro(a) que entregou."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    criar_culminancia(trilha, mestre, modalidade=ModalidadeDaCulminancia.individual)
+
+    criacao = entregar_criacao_original(
+        sessao,
+        guerreiro=guerreiro,
+        trilha=trilha,
+        equipe=None,
+        tipo=TipoDeProducaoDaCriacaoOriginal.texto,
+        producao="Produção individual.",
+    )
+    sessao.commit()
+
+    validar_criacao_original(sessao, operador=mestre, criacao=criacao)
+    sessao.commit()
+
+    conta = (
+        sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).one()
+    )
+    assert conta.total == 50
+    assert (
+        sessao.query(Nivel)
+        .filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=5)
+        .count()
+        == 1
+    )
+    assert (
+        sessao.query(Badge)
+        .filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id, tipo=TipoDeBadge.de_autoria)
+        .count()
+        == 1
+    )

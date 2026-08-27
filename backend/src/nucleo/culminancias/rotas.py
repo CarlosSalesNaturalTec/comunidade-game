@@ -24,7 +24,7 @@ class CulminanciaSaida(BaseModel):
     criterio_de_validacao: str
 
 
-def _saida(culminancia: Culminancia) -> CulminanciaSaida:
+def saida_da_culminancia(culminancia: Culminancia) -> CulminanciaSaida:
     return CulminanciaSaida(
         id=culminancia.id,
         trilha_id=culminancia.trilha_id,
@@ -65,4 +65,4 @@ def declarar_culminancia_rota(
         criterio_de_validacao=entrada.criterio_de_validacao,
     )
     sessao_bd.commit()
-    return _saida(culminancia)
+    return saida_da_culminancia(culminancia)

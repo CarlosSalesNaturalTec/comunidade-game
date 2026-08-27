@@ -2,6 +2,7 @@ import { act, render, screen } from "@testing-library/react";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import * as criacaoOriginalApi from "../api/criacaoOriginal";
 import * as trilhaApi from "../api/trilha";
 import { GuiaDaTrilha } from "./GuiaDaTrilha";
 
@@ -42,7 +43,9 @@ async function renderizar(props: Partial<Parameters<typeof GuiaDaTrilha>[0]> = {
     licenca: "CC BY-SA",
     autor_nome: "Mestre Ana",
     missoes: [],
+    culminancia: null,
   });
+  vi.spyOn(criacaoOriginalApi, "obterMinhaCriacaoDaTrilha").mockResolvedValue(null);
   await act(async () => {
     render(
       <ProvedorDeSessao chaveDeArmazenamento={CHAVE_DE_SESSAO}>
