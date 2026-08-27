@@ -121,7 +121,7 @@ pendência; **desafio extra** espera a entidade `DesafioExtra`; **empréstimo de
 | 6     | Condução da partida de quiz                        | `2026-08-25-conducao-da-partida-de-quiz`                                                           | implementado |
 | 7     | Painel do dia e anexo do termo                     | `2026-08-25-painel-do-dia-e-anexo-do-termo`                                                        | implementado |
 | 8     | Esqueleto da Área do Guerreiro(a) e fim de ciclo   | `2026-08-26-esqueleto-da-area-do-guerreiro-e-fim-de-ciclo` (também fatia 1 do PRD-05)              | implementado |
-| 9     | Território na gestão                               | `RF-02-15` a `RF-02-17`, `RF-02-21`, `RF-02-22`, `RN-02-06`                                        | em aberto    |
+| 9     | Território na gestão                               | `2026-08-27-territorio-na-gestao`                                                                  | implementado |
 | 10    | Lançamentos, conduta e ajuste                      | `RF-02-34`, `RF-02-36`, `RF-02-37`, `RF-02-39`, `RF-02-40`, `RN-02-13`, `RN-02-14`                 | em aberto    |
 | 11    | Aporte, necessidade e atividade avulsa na gestão   | `RF-02-29`, `RF-02-57`, `RF-02-58`, `RF-02-67`                                                     | em aberto    |
 | 12    | Acervo e patrimônio na gestão                      | `RF-02-52`, `RF-02-53`, `RF-02-55`, `RF-02-96`, `RN-02-18`                                         | em aberto    |

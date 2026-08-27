@@ -6,6 +6,11 @@ export interface GuerreiroDaLista {
   nascimento: string;
   nick: string;
   avatar: string;
+  // O vínculo vigente, para o Admin conferir o que a aula agendada
+  // atribuiu — vazio quando o Guerreiro(a) ainda não tem vínculo
+  // (`RF-02-15`, `RN-02-06`).
+  comunidade_virtual_id: string | null;
+  vinculo_iniciado_em: string | null;
 }
 
 interface ListaDeGuerreiros {

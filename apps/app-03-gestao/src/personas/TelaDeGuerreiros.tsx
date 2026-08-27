@@ -74,7 +74,11 @@ export function TelaDeGuerreiros() {
         />
       )}
 
-      <ListaDeGuerreiros guerreiros={guerreiros} onEditar={(g) => definirFormulario(g)} />
+      <ListaDeGuerreiros
+        guerreiros={guerreiros}
+        comunidades={comunidades}
+        onEditar={(g) => definirFormulario(g)}
+      />
     </div>
   );
 }

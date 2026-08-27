@@ -1,10 +1,10 @@
 import uuid
-from datetime import date
+from datetime import date, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from ..aulas.modelo import Aula, ModoDeComprovacao
 from ..aulas.regra import registrar_presenca
@@ -51,8 +51,14 @@ def _paginar_personas(
     sessao_bd: Session, *, papel: Papel, parametros: ParametrosDeListagem
 ) -> tuple[list[Persona], str | None]:
     """Paginação comum às três listas de persona por papel — cursor pelo
-    `id`, sem filtro de domínio (`RF-02-01`, `RF-02-02`, `RF-02-03`)."""
-    consulta = sessao_bd.query(Persona).filter_by(papel=papel)
+    `id`, sem filtro de domínio (`RF-02-01`, `RF-02-02`, `RF-02-03`). O
+    vínculo vigente vem numa única consulta a mais para a página inteira,
+    nunca uma por persona (`RF-02-15`, `RF-08-02`, design — decisão 2)."""
+    consulta = (
+        sessao_bd.query(Persona)
+        .filter_by(papel=papel)
+        .options(selectinload(Persona.vinculo_vigente))
+    )
 
     if parametros.cursor:
         posicao = decodificar_cursor(parametros.cursor)
@@ -78,16 +84,24 @@ class GuerreiroSaida(BaseModel):
     nascimento: date
     nick: str
     avatar: str
+    # O vínculo vigente do Guerreiro(a), para a gestão conferir o que a
+    # aula agendada atribuiu — vazio quando não há vínculo vigente, e nunca
+    # o histórico encerrado (`RF-02-15`, `RF-08-02`, `RN-02-06`).
+    comunidade_virtual_id: uuid.UUID | None
+    vinculo_iniciado_em: datetime | None
 
 
 def _saida_do_guerreiro(persona: Persona, sessao_bd: Session) -> GuerreiroSaida:
     nick = sessao_bd.query(Nick).filter_by(persona_id=persona.id).first()
+    vinculo = persona.vinculo_vigente
     return GuerreiroSaida(
         id=persona.id,
         nome=persona.nome or "",
         nascimento=persona.nascimento,
         nick=nick.valor if nick is not None else "",
         avatar=persona.avatar or "",
+        comunidade_virtual_id=vinculo.comunidade_virtual_id if vinculo is not None else None,
+        vinculo_iniciado_em=vinculo.data_inicio if vinculo is not None else None,
     )
 
 

@@ -28,7 +28,7 @@ from ..paginacao import PaginaDeResultado, codificar_cursor, decodificar_cursor
 from ..personas.modelo import Credencial, Papel, Persona, TipoDeCredencial
 from ..pontuacao.regra import creditar_pontuacao_da_coleta, estornar_pontuacao_da_coleta
 from ..tempo import agora
-from ..trilhas.modelo import Missao, Trilha
+from ..trilhas.modelo import Missao, SituacaoDaTrilha, Trilha
 from ..trilhas.regra import conferir_posse_da_trilha
 from .modelo import (
     Cadencia,
@@ -1121,6 +1121,91 @@ def consultar_desafios_disponiveis(
                 trilha_id=missao.trilha_id,
                 ja_assumido=ja_assumido,
                 comunidade_virtual_id=vinculo.comunidade_virtual_id,
+            )
+        )
+    return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)
+
+
+class DesafioPublicadoSaida(BaseModel):
+    id: uuid.UUID
+    missao_id: uuid.UUID
+    trilha_id: uuid.UUID
+    tipo_de_coleta: TipoDeColetaResumoSaida
+    cadencia: str
+    vigencia_inicio: datetime
+    vigencia_fim: datetime
+    granularidade_exigida: str
+    quantidade_de_series_ativas: int
+
+
+def consultar_desafios_publicados(
+    sessao: Session, *, operador: Persona, cursor: str | None, tamanho: int
+) -> PaginaDeResultado[DesafioPublicadoSaida]:
+    """Leitura de Admin dos desafios cuja missão pertence a trilha
+    **publicada** — "publicado" é a situação da trilha, porque o desafio não
+    tem situação própria (`RF-02-17`, decisão do fundador, 2026-08-27). Sem
+    filtro de comunidade: a trilha é bem comum da plataforma (`RN-01-42`).
+    A quantidade de séries `ativa` sai em agregação única sobre os desafios
+    da página, nunca uma consulta por desafio.
+    """
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin lê os desafios de coleta publicados.")
+
+    consulta = (
+        sessao.query(DesafioDeColeta)
+        .join(Missao, Missao.id == DesafioDeColeta.missao_id)
+        .join(Trilha, Trilha.id == Missao.trilha_id)
+        .filter(Trilha.situacao == SituacaoDaTrilha.publicada)
+    )
+
+    if cursor:
+        posicao = decodificar_cursor(cursor)
+        try:
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(DesafioDeColeta.id > id_cursor)
+
+    consulta = consulta.order_by(DesafioDeColeta.id).limit(tamanho + 1)
+    desafios = consulta.all()
+
+    proximo_cursor = None
+    if len(desafios) > tamanho:
+        desafios = desafios[:tamanho]
+        proximo_cursor = codificar_cursor({"id": str(desafios[-1].id)})
+
+    ids_dos_desafios = [desafio.id for desafio in desafios]
+    contagens: dict[uuid.UUID, int] = {}
+    if ids_dos_desafios:
+        contagens = dict(
+            sessao.query(SerieDeColeta.desafio_de_coleta_id, func.count(SerieDeColeta.id))
+            .filter(
+                SerieDeColeta.desafio_de_coleta_id.in_(ids_dos_desafios),
+                SerieDeColeta.estado == EstadoDaSerie.ativa,
+            )
+            .group_by(SerieDeColeta.desafio_de_coleta_id)
+            .all()
+        )
+
+    itens = []
+    for desafio in desafios:
+        tipo = sessao.get(TipoDeColeta, desafio.tipo_de_coleta_id)
+        missao = sessao.get(Missao, desafio.missao_id)
+        itens.append(
+            DesafioPublicadoSaida(
+                id=desafio.id,
+                missao_id=missao.id,
+                trilha_id=missao.trilha_id,
+                tipo_de_coleta=TipoDeColetaResumoSaida(
+                    nome=tipo.nome,
+                    forma_de_registro=tipo.forma_de_registro.value,
+                    unidade=tipo.unidade,
+                ),
+                cadencia=desafio.cadencia.value,
+                vigencia_inicio=desafio.vigencia_inicio,
+                vigencia_fim=desafio.vigencia_fim,
+                granularidade_exigida=desafio.granularidade_exigida.value,
+                quantidade_de_series_ativas=contagens.get(desafio.id, 0),
             )
         )
     return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)

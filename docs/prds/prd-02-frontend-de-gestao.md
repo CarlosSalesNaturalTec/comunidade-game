@@ -211,7 +211,7 @@ PRD-04 (`RF-04-62`) e **não é reaproveitado**.
 | `RF-02-14`  | Aplicação expõe as aulas vigentes da data e do horário, para o App 01 escolher a comunidade         | essencial  |
 | `RF-02-15`  | Admin confere o vínculo do Guerreiro(a) à comunidade herdada da aula                                | essencial  |
 | `RF-02-16`  | Admin cadastra locais do território na hierarquia da comunidade                                     | essencial  |
-| `RF-02-17`  | Admin consulta os desafios de coleta publicados, com cadência, vigência e séries ativas             | desejável  |
+| `RF-02-17`  | Admin consulta os desafios de coleta de trilha publicada, com cadência, vigência e séries ativas    | desejável  |
 
 ### 6.2 Filas de avaliação
 
@@ -521,23 +521,24 @@ contar, e dá à gestão a distribuição etária que **H4** observa.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                                       | Gravada em         | Linha do doc 09                                |
-| --------------------------------------------------------------------------------------------- | ------------------ | ---------------------------------------------- |
-| Não há comunidade default: a comunidade e a janela do App 01 vêm da aula agendada             | 02 §1, 03 §§3, 5   | Comunidade do onboarding                       |
-| Fim de ciclo é ato de Admin na gestão, isolado, e não congela indicador                       | 02 §1              | Gatilho do fim de ciclo                        |
-| No Ciclo 01 o Guerreiro(a) não muda de comunidade                                             | 02 §1              | Troca de comunidade no Ciclo 01                |
-| Quiz ao Vivo conduzido pelo Mestre que ministra a aula, além do Admin                         | 03 §§5, 11 e 05 §5 | Autenticação e arquitetura da API              |
-| Pontuação negativa lançada por Mestre e por Admin, sem revisão de terceiro                    | 02 §4, 03 §§5, 11  | Lançamento de pontuação negativa               |
-| Falta de lastro publica necessidade na vitrine e nas Apps 08 e 09, com absorção assumida dali | 04 §1              | Economia de recursos e ledger                  |
-| Dados mínimos e prazo de 7 dias da solicitação de participação                                | 02 §1              | Dados e prazo da solicitação de participação   |
-| Prazo de 7 dias para as solicitações dos responsáveis                                         | 03 §9              | Canal de comunicação com os responsáveis       |
-| Sem notificação por e-mail no Ciclo 01                                                        | 03 §9              | Notificações no Ciclo 01                       |
-| Persona primária tratada por Guerreiro ou Guerreira                                           | 02 §1              | Termo da persona primária                      |
-| Equipe da trilha homologada pelo Mestre na App 01, o aparelho do encontro                     | 02 §5, 03 §5       | Onde a equipe da trilha é formada e homologada |
-| Amostra da auditoria de coleta: 10% da semana por série ativa, mínimo de um                   | 02 §1              | Composição da amostra de auditoria de coleta   |
-| Pontuação da atividade vem do motor do documento 11; o cadastro escolhe o tipo                | 11 §5              | Pontuação da atividade cadastrada              |
-| Acervo permanente no Ciclo 01: tombamento, ficha de vida e badge                              | 05 §3              | Estratégia de conservação do acervo permanente |
-| Admin desativa e reativa ponto de apoio, bloqueado por aula futura e por saldo remanescente   | 05 §2              | Desativação de ponto de apoio                  |
+| Decisão                                                                                           | Gravada em         | Linha do doc 09                                |
+| ------------------------------------------------------------------------------------------------- | ------------------ | ---------------------------------------------- |
+| Não há comunidade default: a comunidade e a janela do App 01 vêm da aula agendada                 | 02 §1, 03 §§3, 5   | Comunidade do onboarding                       |
+| Fim de ciclo é ato de Admin na gestão, isolado, e não congela indicador                           | 02 §1              | Gatilho do fim de ciclo                        |
+| No Ciclo 01 o Guerreiro(a) não muda de comunidade                                                 | 02 §1              | Troca de comunidade no Ciclo 01                |
+| Quiz ao Vivo conduzido pelo Mestre que ministra a aula, além do Admin                             | 03 §§5, 11 e 05 §5 | Autenticação e arquitetura da API              |
+| Pontuação negativa lançada por Mestre e por Admin, sem revisão de terceiro                        | 02 §4, 03 §§5, 11  | Lançamento de pontuação negativa               |
+| Falta de lastro publica necessidade na vitrine e nas Apps 08 e 09, com absorção assumida dali     | 04 §1              | Economia de recursos e ledger                  |
+| Dados mínimos e prazo de 7 dias da solicitação de participação                                    | 02 §1              | Dados e prazo da solicitação de participação   |
+| Prazo de 7 dias para as solicitações dos responsáveis                                             | 03 §9              | Canal de comunicação com os responsáveis       |
+| Sem notificação por e-mail no Ciclo 01                                                            | 03 §9              | Notificações no Ciclo 01                       |
+| Persona primária tratada por Guerreiro ou Guerreira                                               | 02 §1              | Termo da persona primária                      |
+| Equipe da trilha homologada pelo Mestre na App 01, o aparelho do encontro                         | 02 §5, 03 §5       | Onde a equipe da trilha é formada e homologada |
+| Amostra da auditoria de coleta: 10% da semana por série ativa, mínimo de um                       | 02 §1              | Composição da amostra de auditoria de coleta   |
+| Pontuação da atividade vem do motor do documento 11; o cadastro escolhe o tipo                    | 11 §5              | Pontuação da atividade cadastrada              |
+| Acervo permanente no Ciclo 01: tombamento, ficha de vida e badge                                  | 05 §3              | Estratégia de conservação do acervo permanente |
+| Admin desativa e reativa ponto de apoio, bloqueado por aula futura e por saldo remanescente       | 05 §2              | Desativação de ponto de apoio                  |
+| "Publicado" no `RF-02-17` é a trilha em situação `publicada` — o desafio não tem situação própria | PRD-08 §8          | não se aplica — correção de redação            |
 
 A **trilha de auditoria das ações de Admin**, questão que o documento 08 listava para este PRD,
 foi definida no PRD-01 — a App 03 apenas a consulta.

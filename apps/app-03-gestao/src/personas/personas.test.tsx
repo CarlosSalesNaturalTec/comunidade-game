@@ -69,6 +69,18 @@ const GUERREIRO: GuerreiroDaLista = {
   nascimento: "2015-03-20",
   nick: "ZeferinaGuerreira",
   avatar: "avatar-opaco",
+  comunidade_virtual_id: COMUNIDADE.id,
+  vinculo_iniciado_em: "2026-08-01T10:00:00-03:00",
+};
+
+const GUERREIRO_SEM_VINCULO: GuerreiroDaLista = {
+  id: "guerreiro-2",
+  nome: "Sem Vínculo",
+  nascimento: "2015-03-20",
+  nick: "SemVinculo",
+  avatar: "avatar-opaco",
+  comunidade_virtual_id: null,
+  vinculo_iniciado_em: null,
 };
 
 afterEach(() => {
@@ -143,10 +155,58 @@ describe("cadastro do Guerreiro(a)", () => {
   });
 
   it("a gestão não vê a imagem do Guerreiro(a) — só nick e avatar", () => {
-    render(<ListaDeGuerreiros guerreiros={[GUERREIRO]} onEditar={vi.fn()} />);
+    render(
+      <ListaDeGuerreiros
+        guerreiros={[GUERREIRO]}
+        comunidades={[COMUNIDADE]}
+        onEditar={vi.fn()}
+      />,
+    );
 
     expect(screen.getByText("ZeferinaGuerreira")).toBeInTheDocument();
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
+  });
+});
+
+describe("o vínculo de comunidade na lista de Guerreiros e Guerreiras", () => {
+  it("apresenta a comunidade herdada da aula e a data de início do vínculo", () => {
+    render(
+      <ListaDeGuerreiros
+        guerreiros={[GUERREIRO]}
+        comunidades={[COMUNIDADE]}
+        onEditar={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/comunidade/i)).toBeInTheDocument();
+    expect(screen.getByText(/desde/i)).toBeInTheDocument();
+  });
+
+  it("Guerreiro(a) sem vínculo vigente é informado, não acusado", () => {
+    render(
+      <ListaDeGuerreiros
+        guerreiros={[GUERREIRO_SEM_VINCULO]}
+        comunidades={[COMUNIDADE]}
+        onEditar={vi.fn()}
+      />,
+    );
+
+    const ausencia = screen.getByText(/ainda sem vínculo de comunidade/i);
+    expect(ausencia).toHaveAttribute("role", "status");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("não existe caminho para mudar a comunidade do Guerreiro(a) na edição", () => {
+    render(
+      <FormularioDeGuerreiro
+        comunidades={[COMUNIDADE]}
+        guerreiroExistente={GUERREIRO}
+        onSalvo={vi.fn()}
+        onCancelar={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByLabelText(/^comunidade$/i)).not.toBeInTheDocument();
   });
 });
 
