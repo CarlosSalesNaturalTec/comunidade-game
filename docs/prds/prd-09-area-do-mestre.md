@@ -74,11 +74,12 @@ inteira sem escrever uma linha de código.
   Guerreiras já cadastrados.
 - **Artefatos comprobatórios** da habilidade do Mestre, que alimentam a sua página na vitrine.
 - **Registro de propostas** de evolução da plataforma, na fila única da gestão.
-- **Disciplinas e conteúdo do apoio escolar** — o corpus fechado que os assistentes das Apps 05
-  e 01 consomem. É autoria exclusiva do Mestre; o Admin audita por amostragem.
 
 ### 3.2 Fora do escopo
 
+- **Disciplinas e conteúdo do apoio escolar** (`RF-09-77` a `RF-09-79`) — entram a partir do
+  Ciclo 02, junto com o assistente da App 05 que os consome (documento 03 §§7, 11). O
+  assistente de trilhas da App 01 não depende deles: o corpus dele é o conteúdo da missão.
 - **Cadastro de Mestre e de qualquer outra persona além do responsável** — segue exclusivo de
   Admin, na App 03.
 - **Condução da partida do Quiz ao Vivo** — acontece na App 03, com o banco cadastrado aqui.
@@ -369,6 +370,9 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-77` | Mestre cadastra disciplinas do apoio escolar, com nome, faixa de dificuldade e situação        | essencial  |
 | `RF-09-78` | Mestre cadastra o conteúdo de cada disciplina, único insumo dos assistentes das Apps 05 e 01   | essencial  |
 | `RF-09-79` | Mestre vê o motivo quando o Admin despublica conteúdo de apoio auditado, e corrige             | essencial  |
+
+`RF-09-77` a `RF-09-79`, do apoio escolar, valem **a partir do Ciclo 02** (§3.2); a aplicação
+do Ciclo 01 não os atende.
 
 ### 6.8 Recursos, absorção e ressarcimento
 
@@ -755,7 +759,7 @@ travas da publicação (documento 03 §11).
 | `RF-09-68`                | 03 §12 (aviso visível de coleta e área detalhada)                     |
 | `RF-09-69` e `RF-09-70`   | 11 §§2.1, 4 (atividade dentro da missão)                              |
 | `RF-09-71` a `RF-09-76`   | 02 §8.1 e 11 §2.1 (recompensa conquistada no marco)                   |
-| `RF-09-77` a `RF-09-79`   | 03 §§7, 11 (disciplinas e conteúdo do apoio escolar)                  |
+| `RF-09-77` a `RF-09-79`   | 03 §§7, 11 (apoio escolar) — a partir do Ciclo 02                     |
 | `RF-09-80` a `RF-09-84`   | 11 §2.2 (modelo de missão) e 02 §§3, 8                                |
 | `RF-09-85` a `RF-09-91`   | 03 §11 (template e auxílio de IA na autoria) e 11 §2.2                |
 | `RF-09-113`               | 11 §5 (conservação do bem recebido, ponto extra por item)             |

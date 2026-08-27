@@ -125,10 +125,11 @@ pendência; **desafio extra** espera a entidade `DesafioExtra`; **empréstimo de
 | 10    | Lançamentos, conduta e ajuste                      | `RF-02-34`, `RF-02-36`, `RF-02-37`, `RF-02-39`, `RF-02-40`, `RN-02-13`, `RN-02-14`                 | em aberto    |
 | 11    | Aporte, necessidade e atividade avulsa na gestão   | `RF-02-29`, `RF-02-57`, `RF-02-58`, `RF-02-67`                                                     | em aberto    |
 | 12    | Acervo e patrimônio na gestão                      | `RF-02-52`, `RF-02-53`, `RF-02-55`, `RF-02-96`, `RN-02-18`                                         | em aberto    |
-| 13    | Auditoria, trilha de auditoria e aviso de coleta   | `RF-02-63`, `RF-02-64`, `RF-02-70`, `RF-02-74` a `RF-02-76`, `RN-02-23`, `RN-02-24`                | em aberto    |
+| 13    | Auditoria da trilha, trilha de auditoria e aviso   | `RF-02-63`, `RF-02-64`, `RF-02-70`, `RN-02-23`, `RN-02-24`                                         | em aberto    |
 | 14    | Fila de solicitações do responsável                | `RF-02-23`, `RF-02-24`, `RF-02-66` — entra junto da fatia 4 do PRD-13, que origina a solicitação   | em aberto    |
 | 15    | Desafio extra na gestão                            | `RF-02-27`, `RF-02-28`, `RN-02-10`, `RN-02-11` — **trava:** entidade `DesafioExtra` (PRD-14 §8)    | em aberto    |
 | 16    | Vitrine institucional e Apoiador na gestão         | `RF-02-80`, `RF-02-85` — depende do PRD-14 (cadastro de Apoiador) e do PRD-03 (vitrine)            | em aberto    |
+| 17    | Auditoria do corpus de apoio escolar               | `RF-02-74` a `RF-02-76` — **a confirmar:** o cadastro do corpus foi ao Ciclo 02 (PRD-09 §3.2); a auditoria dele segue junto? | em aberto    |
 
 Fora do cronograma: `RF-02-54` foi retirado e o identificador não se reaproveita; `RF-02-94`
 passou ao PRD-04 como `RF-04-62`; `RF-02-56` (conferência de inventário) está travado pela
@@ -153,10 +154,11 @@ mesma pendência do `RF-07-20`, no documento 09.
 | 13    | Recompensa por desbloqueio e duplicação de trilha | `RF-09-13`, `RF-09-84`, `RF-09-75`                                                                         | em aberto    |
 | 14    | Trilha de auditoria das escritas do Mestre       | `RF-09-48`                                                                                                  | em aberto    |
 | 15    | Desafio extra na Área do Mestre                  | `RF-09-51`, `RF-09-52`, `RN-09-11`, `RN-09-40` a `RN-09-42` — **trava:** entidade `DesafioExtra` (PRD-14 §8) | em aberto    |
-| 16    | Disciplinas e conteúdo do apoio escolar          | `RF-09-77` a `RF-09-79` — **a confirmar:** o apoio escolar da App 05 foi ao Ciclo 02 (PRD-05 §3.2); o cadastro segue no Ciclo 01? | em aberto    |
 
 Ciclo 02, fora do Ciclo 01: `RF-09-61` (empréstimo do acervo permanente), `RF-09-96` e
-`RF-09-97` (recusa de trilha sem etiqueta ODS) e `RN-09-35`.
+`RF-09-97` (recusa de trilha sem etiqueta ODS), `RN-09-35` e o **apoio escolar** — `RF-09-77` a
+`RF-09-79` —, que acompanha o assistente da App 05 (decisão do fundador, 2026-08-27,
+documento 09 §1).
 
 ## PRD-04 — Aula presencial (App 01)
 
@@ -171,7 +173,7 @@ Ciclo 02, fora do Ciclo 01: `RF-09-61` (empréstimo do acervo permanente), `RF-0
 | 7     | Programação do encontro e missão da equipe           | `2026-08-25-programacao-do-encontro-e-missao-da-equipe`                          | implementado |
 | 8     | Equipe da trilha formada e homologada no encontro    | `RF-04-61`, `RF-04-62`, `RN-04-17`, `RN-04-22`                                   | em aberto    |
 | 9     | Entrega da produção da missão e devolutiva           | `RF-04-45` a `RF-04-47`, `RN-04-31`                                              | em aberto    |
-| 10    | Assistente de trilhas no encontro                    | `RF-04-36` a `RF-04-40`, `RN-04-19` a `RN-04-21` — depende da fatia 16 do PRD-09 | em aberto    |
+| 10    | Assistente de trilhas no encontro                    | `RF-04-36` a `RF-04-40`, `RN-04-19` a `RN-04-21` — o corpus é o conteúdo da missão (documento 03 §4.2), entregue na fatia 6 do PRD-09; não é o apoio escolar | em aberto    |
 | 11    | Fila local sem rede                                  | `RF-04-23` a `RF-04-25`, `RN-04-13`                                              | em aberto    |
 | 12    | Aviso de coleta e encerramento do cadastro           | `RF-04-26`, `RF-04-27`                                                           | em aberto    |
 
