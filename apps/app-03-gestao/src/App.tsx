@@ -11,6 +11,7 @@ import { TelaDePersonas } from "./personas/TelaDePersonas";
 import { TelaDePoderes } from "./poderes/TelaDePoderes";
 import { TelaDePontosDeApoio } from "./pontos-de-apoio/TelaDePontosDeApoio";
 import { TelaDeQuiz } from "./quiz/TelaDeQuiz";
+import { TelaDeTerritorio } from "./territorio/TelaDeTerritorio";
 
 type Area =
   | "comunidades"
@@ -18,6 +19,7 @@ type Area =
   | "pontos-de-apoio"
   | "agenda"
   | "personas"
+  | "territorio"
   | "filas"
   | "chaves"
   | "painel-do-dia"
@@ -30,6 +32,7 @@ const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "pontos-de-apoio", rotulo: "Pontos de Apoio" },
   { chave: "agenda", rotulo: "Agenda" },
   { chave: "personas", rotulo: "Personas" },
+  { chave: "territorio", rotulo: "Território" },
   { chave: "filas", rotulo: "Filas" },
   { chave: "chaves", rotulo: "Chaves" },
   { chave: "painel-do-dia", rotulo: "Painel do dia" },
@@ -82,6 +85,7 @@ function Conteudo() {
       {area === "pontos-de-apoio" && <TelaDePontosDeApoio />}
       {area === "agenda" && <TelaDaAgenda />}
       {area === "personas" && <TelaDePersonas />}
+      {area === "territorio" && <TelaDeTerritorio />}
       {area === "filas" && <TelaDeFilas />}
       {area === "chaves" && <TelaDeChaves />}
       {area === "painel-do-dia" && <TelaDoPainelDoDia />}

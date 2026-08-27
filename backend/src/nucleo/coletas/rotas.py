@@ -25,6 +25,7 @@ from ..trilhas.modelo import Missao
 from .modelo import DesafioDeColeta, RegistroDeColeta, SerieDeColeta
 from .regra import (
     DesafioDisponivelSaida,
+    DesafioPublicadoSaida,
     RegistroDoHistoricoSaida,
     SerieDoGuerreiroSaida,
     abrir_serie_de_coleta,
@@ -32,6 +33,7 @@ from .regra import (
     compor_amostra_de_auditoria,
     confirmar_registro_de_coleta,
     consultar_desafios_disponiveis,
+    consultar_desafios_publicados,
     consultar_historico_da_serie,
     consultar_series_do_guerreiro,
     criar_desafio_de_coleta,
@@ -154,6 +156,22 @@ def criar_desafio_de_coleta_rota(
         vigencia_fim=desafio.vigencia_fim,
         granularidade_exigida=desafio.granularidade_exigida.value,
         registros_que_pontuam_por_periodo=desafio.registros_que_pontuam_por_periodo,
+    )
+
+
+@roteador.get("/desafios-de-coleta", response_model=PaginaDeResultado[DesafioPublicadoSaida])
+def consultar_desafios_publicados_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[DesafioPublicadoSaida]:
+    """Restrita ao Admin — a recusa de qualquer outro papel é 403, devolvida
+    por `consultar_desafios_publicados` (`RF-02-17`, `RF-08-06`,
+    `RF-01-28`). Leitura de acompanhamento da App 03: nunca cria, altera
+    nem apaga desafio."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    return consultar_desafios_publicados(
+        sessao_bd, operador=operador, cursor=parametros.cursor, tamanho=parametros.tamanho
     )
 
 

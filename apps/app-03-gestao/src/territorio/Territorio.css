@@ -1,0 +1,78 @@
+/* Lista densa do temperamento Operação (documento 15 §6), mesmo desenho de
+ * `pontos-de-apoio/ListaDePontosDeApoio.css`. */
+.hierarquia-de-locais,
+.hierarquia-de-locais__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--densidade);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.hierarquia-de-locais__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--espaco-8) var(--espaco-16);
+  padding: var(--espaco-8) var(--espaco-12);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.hierarquia-de-locais__rotulo {
+  font-weight: var(--peso-rotulo);
+}
+
+.hierarquia-de-locais__nivel {
+  color: var(--cor-texto-secundario);
+}
+
+.fila-de-solicitacoes-de-local {
+  display: flex;
+  flex-direction: column;
+  gap: var(--densidade);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.fila-de-solicitacoes-de-local__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  padding: var(--espaco-8) var(--espaco-12);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.fila-de-solicitacoes-de-local__linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--espaco-8) var(--espaco-16);
+}
+
+.fila-de-solicitacoes-de-local__solicitante {
+  font-weight: var(--peso-rotulo);
+}
+
+.lista-de-desafios-publicados {
+  display: flex;
+  flex-direction: column;
+  gap: var(--densidade);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.lista-de-desafios-publicados__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--espaco-8) var(--espaco-16);
+  padding: var(--espaco-8) var(--espaco-12);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.lista-de-desafios-publicados__nome {
+  font-weight: var(--peso-rotulo);
+}
