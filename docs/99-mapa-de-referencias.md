@@ -407,6 +407,11 @@ código. Conflito resolve-se sempre pelo nível superior. Decisão nova tomada d
 implementação é gravada no documento-fonte (§1), movida no documento 09 e aplicada ao PRD
 antes de virar código.
 
+O fatiamento de cada PRD — número da fatia, recorte em `RF-XX-nn`/`RN-XX-nn`, dependência e
+situação (`em aberto`, `em andamento`, `implementado`) — fica em
+`openspec/cronograma-de-fatias.md`, e é de onde sai a próxima change. `docs/prds/index.md`
+guarda a situação de cada PRD, não a das fatias.
+
 O contexto e as regras entregues aos agentes estão em `openspec/config.yaml`; o processo de
 trabalho e a entrega estão no `CLAUDE.md`. A pasta `openspec/` fica fora do site MkDocs e
 fora do lint de documentação.

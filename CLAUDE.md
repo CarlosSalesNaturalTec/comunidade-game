@@ -16,16 +16,23 @@ os jogos. O desenho das pastas está no documento 03 §1.2.
 Qual PRD está em implementação não se escreve aqui — é estado, e muda a cada entrega. Onde
 lê-lo:
 
-| Para saber                          | Leia                                               |
-| ----------------------------------- | -------------------------------------------------- |
-| A situação de cada PRD              | `docs/prds/index.md` — só a tabela do topo         |
-| As fatias já entregues de um PRD    | `docs/prds/index.md` — só a seção daquele PRD      |
-| A ordem em que os PRDs viram código | documento 99 §9 — não é a ordem do documento 08    |
-| As changes em andamento             | `openspec list`, `openspec status --change <nome>` |
-| As fatias já entregues              | `openspec/changes/archive/`                        |
+| Para saber                          | Leia                                                        |
+| ----------------------------------- | ----------------------------------------------------------- |
+| A situação de cada PRD              | `docs/prds/index.md` — só a tabela do topo                  |
+| Qual é a próxima fatia, e o recorte | `openspec/cronograma-de-fatias.md` — só o bloco do PRD alvo |
+| As fatias já entregues de um PRD    | `openspec/cronograma-de-fatias.md` — o mesmo bloco          |
+| A ordem em que os PRDs viram código | documento 99 §9 — não é a ordem do documento 08             |
+| As changes em andamento             | `openspec list`, `openspec status --change <nome>`          |
+| O porquê de uma fatia já fechada    | `openspec/changes/archive/<slug>/`                          |
 
 Código entra **apenas** por uma _change_ do OpenSpec cujos artefatos foram aprovados pelo
 fundador. PRD novo ou revisão de PRD existente segue as regras de `docs/prds/` abaixo.
+
+Qual fatia vem a seguir **não se redescobre a cada change**: está no
+`openspec/cronograma-de-fatias.md`, com número, recorte (`RF-XX-nn`, `RN-XX-nn`), dependência e
+situação. `/opsx:propose fatia N do PRD-XX` basta; `/opsx:explore` é para pensar quando algo não
+está claro, não etapa obrigatória. Fatia que não está lá, ou recorte que precisa mudar, é
+decisão de planejamento: pergunte ao fundador e corrija o cronograma antes de abrir a change.
 
 ## Hierarquia de autoridade
 
@@ -71,12 +78,12 @@ Ao alterar uma regra, altere **o documento-fonte** dela. Outro documento que pre
 o assunto resume em **uma frase**, sem repetir a regra completa, a tabela nem os números. Ao
 encontrar duplicidade, consolide no documento-fonte e reduza a menção nos demais.
 
-`docs/prds/index.md` é **índice**, não diário: registra a situação de cada PRD e a lista das
-fatias entregues, nunca o requisito, a decisão ou o porquê de uma fatia — isso já mora no
-`proposal.md`/`design.md` da change (`openspec/changes/archive/`) e, quando for decisão nova,
-no documento 09 §1. Fechar uma fatia acrescenta **uma linha** de tabela a esse arquivo, nunca
-um parágrafo novo; texto que reconta o que outro documento já registra é a duplicidade que esta
-regra proíbe.
+`docs/prds/index.md` é **índice**, não diário: registra a situação de cada PRD e nada mais. A
+lista das fatias — as entregues e as que faltam — é do `openspec/cronograma-de-fatias.md`; o
+requisito, a decisão e o porquê de uma fatia moram no `proposal.md`/`design.md` da change
+(`openspec/changes/archive/`) e, quando for decisão nova, no documento 09 §1. Fechar uma fatia
+muda **uma linha** do cronograma, nunca acrescenta parágrafo a `index.md`; texto que reconta o
+que outro documento já registra é a duplicidade que esta regra proíbe.
 
 ### 3. Referências entre documentos ficam no doc 99
 
@@ -189,13 +196,14 @@ projeto entra em `openspec/config.yaml` ou aqui.
 A documentação do MkDocs anda junto com a implementação: **nenhuma change fecha deixando o
 site desatualizado**. No mesmo PR, atualize o que aquela change mudou — só isso:
 
-| Se a change                          | Atualize                                                                 |
-| ------------------------------------ | ------------------------------------------------------------------------ |
-| Tomou uma decisão nova               | o documento-fonte (doc 99 §1) e o documento 09                           |
-| Mudou um requisito por essa decisão  | o PRD afetado                                                            |
-| Mudou a situação de um PRD           | `docs/prds/index.md` — uma linha na tabela de fatias, nunca um parágrafo |
-| Mudou a relação entre documentos     | o documento 99                                                           |
-| Criou ou renomeou arquivo em `docs/` | a `nav` do `mkdocs.yml`                                                  |
+| Se a change                          | Atualize                                                               |
+| ------------------------------------ | ---------------------------------------------------------------------- |
+| Tomou uma decisão nova               | o documento-fonte (doc 99 §1) e o documento 09                         |
+| Mudou um requisito por essa decisão  | o PRD afetado                                                          |
+| Fechou uma fatia                     | `openspec/cronograma-de-fatias.md` — a situação e o slug daquela linha |
+| Mudou a situação de um PRD           | `docs/prds/index.md` — a coluna da tabela, nunca um parágrafo novo     |
+| Mudou a relação entre documentos     | o documento 99                                                         |
+| Criou ou renomeou arquivo em `docs/` | a `nav` do `mkdocs.yml`                                                |
 
 Documento técnico novo em `docs/` só entra por decisão do fundador: `docs/` é a documentação
 do produto, e o plano de execução vive em `openspec/changes/`.
@@ -266,11 +274,13 @@ passou. Valem para qualquer agente que trabalhe aqui:
   fatia atravessar o documento todo.
 - Para saber o que já existe, leia `openspec/specs/<capability>/spec.md` — é o consolidado.
   `openspec/changes/archive/` é histórico: só abra quando precisar do porquê de uma decisão.
-- `docs/prds/index.md` e `docs/09-topicos-em-aberto-e-sugestoes.md` só crescem — leia a parte
-  que a tarefa exige, não o arquivo inteiro por hábito: em `index.md`, a tabela de situação e a
-  seção de fatias do PRD alvo; em `docs/09`, a linha da pendência ou decisão pelo nome dela.
-  Use `Read` com `offset`/`limit`, ou grep pelo identificador, em vez de carregar o arquivo
-  todo.
+- **Não recalcule o que falta de um PRD.** Varrer `openspec/changes/archive/` para descobrir
+  quais `RF`/`RN` já foram atendidos é caro e engana: o identificador aparece também nas seções
+  de fora do escopo. O cronograma existe para isso — leia o bloco do PRD alvo.
+- `openspec/cronograma-de-fatias.md` e `docs/09-topicos-em-aberto-e-sugestoes.md` só crescem —
+  leia a parte que a tarefa exige, não o arquivo inteiro por hábito: no cronograma, o bloco do
+  PRD alvo; em `docs/09`, a linha da pendência ou decisão pelo nome dela. Use `Read` com
+  `offset`/`limit`, ou grep pelo identificador, em vez de carregar o arquivo todo.
 - **Não abra subagente** para sincronizar specs, arquivar change ou verificar implementação:
   o agente da sessão já tem o contexto, e um subagente o reconstrói do zero.
 - `/opsx:verify` confere o diff da change (`git diff --stat main...HEAD`) contra `tasks.md` e
@@ -293,6 +303,8 @@ Documentação e PRD:
 
 Change do OpenSpec:
 
+- [ ] A change corresponde a uma fatia do `openspec/cronograma-de-fatias.md`, e a situação
+      daquela linha ficou correta ao fechar?
 - [ ] Cada requisito e cada tarefa cita o `RF-XX-nn` ou `RN-XX-nn` do PRD que atende?
 - [ ] Nenhum artefato criou regra, número, prazo ou provedor que não esteja no PRD, e as
       dúvidas foram levadas ao fundador em vez de resolvidas por suposição?
