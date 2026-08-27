@@ -20,7 +20,8 @@ context: |
   PRD: PARE e pergunte ao fundador. Não preencha lacuna com suposição.
 
   LEITURA DIRIGIDA — o que abrir antes de escrever
-  1. `docs/prds/index.md` — situação de cada PRD e ordem das ondas.
+  1. `docs/prds/index.md` — só a tabela de situação (topo) e a seção de fatias do PRD alvo;
+     é índice, sem narrativa, e só cresce — não leia o arquivo inteiro por hábito.
   2. Do PRD alvo: a §14 (pendências que permanecem), as seções que cobrem os RF/RN do
      recorte e, quando houver contrato de API, a §9. O PRD inteiro só quando a fatia
      atravessar o documento todo. Leia o PRD UMA vez por change, não uma vez por artefato.
@@ -28,6 +29,8 @@ context: |
   4. `openspec/specs/<capability>/spec.md` para saber o que já existe — é o consolidado.
      `openspec/changes/archive/` é histórico: só abra quando precisar do porquê de uma
      decisão.
+  5. Pendência ou decisão específica: a linha dela em `docs/09-topicos-em-aberto-e-sugestoes.md`
+     §1, localizada pelo nome — não o documento inteiro, que também só cresce.
 
   INVARIANTES (documento 99 §6 — resumo; valem para o código como valem para o texto)
   Oito aplicações Web responsivas Mobile First, sem app nativo e sem mensageria de terceiros;
@@ -170,9 +173,10 @@ rules:
     - >-
       Toda change termina com uma tarefa de documentação: atualizar em `docs/` apenas o que
       a change mudou — documento-fonte e documento 09 quando houve decisão nova, o PRD
-      afetado, `docs/prds/index.md` se a situação mudou, o documento 99 se a relação entre
-      documentos mudou e a `nav` do `mkdocs.yml` se nasceu arquivo novo. Se a change não
-      mudou nada disso, a tarefa diz isso em uma linha.
+      afetado, `docs/prds/index.md` se a situação mudou (uma linha na tabela de fatias do
+      PRD, nunca um parágrafo novo — o porquê já está no proposal/design da própria change),
+      o documento 99 se a relação entre documentos mudou e a `nav` do `mkdocs.yml` se nasceu
+      arquivo novo. Se a change não mudou nada disso, a tarefa diz isso em uma linha.
     - >-
       Não crie documento técnico novo em `docs/`: essa pasta é a documentação do produto e
       só recebe arquivo novo por decisão do fundador. O plano de execução fica na change.
