@@ -22,7 +22,7 @@ from ..quiz.modelo import (
     RespostaDeQuiz,
 )
 from ..resultados.modelo import DesfechoDoResultado, Resultado
-from ..trilhas.modelo import Atividade, Missao, ModalidadeDeAtividade, Trilha
+from ..trilhas.modelo import Atividade, InscricaoNaTrilha, Missao, ModalidadeDeAtividade, Trilha
 from .modelo import Badge, Nivel, PontoRegular, TipoDeBadge
 
 # Documento 11 §5, "Desafio semanal": valor-base pela modalidade da
@@ -199,20 +199,39 @@ def _tem_merito_de_auxilio_na_trilha(
     )
 
 
+def _guerreiro_inscrito_na_trilha(
+    sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID
+) -> bool:
+    return (
+        sessao.query(InscricaoNaTrilha)
+        .filter_by(guerreiro_id=guerreiro_id, trilha_id=trilha_id)
+        .first()
+        is not None
+    )
+
+
 def avaliar_niveis(sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID) -> None:
     """Certifica os níveis 1, 2 e 4 quando o critério verificável do
     documento 11 §6 é atingido pela primeira vez — 3 depende de entidade de
     outro PRD e fica fora desta fatia (proposta — o que esta fatia não
     tem); o 5 é `certificar_nivel_5`, disparado pela validação da criação
     original, não por Resultado. Só a missão obrigatória conta no percurso
-    (11 §6)."""
+    (11 §6). O nível 1 exige as **duas** condições — inscrição (capacidade
+    `inscricao-na-trilha`) e primeira atividade realizada — desde a change
+    `inscricao-na-trilha-guia-e-desbloqueio`: quem põe o Guerreiro(a) no
+    percurso é ato dele, nunca derivado de haver `Resultado` na trilha
+    (`RF-05-09`, `RN-05-43`)."""
     obrigatorias = _missoes_obrigatorias_da_trilha(sessao, trilha_id)
     concluidas = missoes_concluidas_pelo_guerreiro(
         sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id
     )
 
-    if concluidas and not _ja_certificado(
-        sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id, valor=NIVEL_1
+    if (
+        concluidas
+        and _guerreiro_inscrito_na_trilha(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id)
+        and not _ja_certificado(
+            sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id, valor=NIVEL_1
+        )
     ):
         _certificar_nivel(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id, valor=NIVEL_1)
 

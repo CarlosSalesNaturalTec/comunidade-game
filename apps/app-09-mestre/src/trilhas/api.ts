@@ -66,6 +66,8 @@ export interface BibliografiaDaMissao {
   apoiador_nome?: string | null;
 }
 
+export type TipoDeDesafioDeDesbloqueio = "quiz" | "pratico";
+
 export interface MissaoDaTrilha {
   id: string;
   trilha_id: string;
@@ -76,6 +78,16 @@ export interface MissaoDaTrilha {
   e_sondagem: boolean;
   etapa_do_ciclo: EtapaDoCiclo;
   cadencia_de_retomada: number[] | null;
+  // O desafio que abre a missão seguinte — fato do Guerreiro(a) na trilha,
+  // nunca da equipe; declarar de novo substitui o anterior (`RF-09-26`,
+  // `RF-09-117`, documento 11 §2.2). Só a resposta de `declararDesafioDe
+  // Desbloqueio` traz esses quatro campos, com a alternativa correta — a
+  // mesma resposta nunca sai de `GET /trilhas/minhas` nem da leitura
+  // pública, para que a resposta certa não vaze ao Guerreiro(a).
+  tipo_do_desafio_de_desbloqueio?: TipoDeDesafioDeDesbloqueio;
+  desafio_de_desbloqueio_enunciado?: string;
+  desafio_de_desbloqueio_alternativas?: string[] | null;
+  desafio_de_desbloqueio_alternativa_correta?: number | null;
   atividades: AtividadeDaMissao[];
   // As etiquetas **próprias** da missão: a leitura não cai para as da
   // trilha, ainda que a missão sem etiqueta própria responda por elas nos
@@ -197,6 +209,61 @@ export function declararCadenciaDeRetomada(
     corpo: { cadencia_de_retomada: cadenciaDeRetomada },
     token,
   });
+}
+
+export interface DeclararDesafioDeDesbloqueioEntrada {
+  tipo: TipoDeDesafioDeDesbloqueio;
+  enunciado: string;
+  alternativas?: string[] | null;
+  alternativa_correta?: number | null;
+}
+
+// Só o Mestre autor declara — a posse, a exigência das quatro alternativas
+// no quiz e a substituição do desafio anterior já são do núcleo
+// (`RF-09-26`, `RF-09-117`).
+export function declararDesafioDeDesbloqueio(
+  idDaMissao: string,
+  entrada: DeclararDesafioDeDesbloqueioEntrada,
+  token: string,
+): Promise<MissaoDaTrilha> {
+  return chamarNucleo<MissaoDaTrilha>(`/v1/missoes/${idDaMissao}/desbloqueio`, {
+    metodo: "POST",
+    corpo: entrada,
+    token,
+  });
+}
+
+export interface DesbloqueioPendente {
+  id: string;
+  guerreiro_id: string;
+  guerreiro_nome: string | null;
+  missao_id: string;
+  missao_titulo: string;
+  momento: string;
+}
+
+// As declarações de desafio prático ainda não julgadas, só das trilhas do
+// Mestre autor em sessão (`RF-09-26`, `RF-09-117`).
+export function listarDesbloqueiosPendentes(token: string): Promise<DesbloqueioPendente[]> {
+  return chamarNucleo<DesbloqueioPendente[]>("/v1/missoes/desbloqueios-pendentes", { token });
+}
+
+// Aprovada, a missão seguinte abre para aquele Guerreiro(a); reprovada, ele
+// pode declarar de novo, sem limite e sem punição (`RF-09-117`, `RN-05-20`).
+export function julgarDesafioPratico(
+  idDaMissao: string,
+  idDoGuerreiro: string,
+  aprovado: boolean,
+  token: string,
+): Promise<{ aprovado: boolean }> {
+  return chamarNucleo<{ aprovado: boolean }>(
+    `/v1/missoes/${idDaMissao}/desbloqueios/${idDoGuerreiro}/julgamento`,
+    {
+      metodo: "POST",
+      corpo: { aprovado },
+      token,
+    },
+  );
 }
 
 export interface DeclararCulminanciaEntrada {

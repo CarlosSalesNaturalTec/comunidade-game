@@ -716,6 +716,118 @@ describe("cadência de retomada da missão (RF-09-83, RF-09-101)", () => {
   });
 });
 
+describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117)", () => {
+  it("a bancada sinaliza a missão sem desafio", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    expect(
+      await screen.findByText(/ainda não tem desafio de desbloqueio/i),
+    ).toBeInTheDocument();
+  });
+
+  it("Mestre autor monta o desafio em forma de quiz da sua missão", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const declararEspiado = vi
+      .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
+      .mockResolvedValue(
+        missao({
+          tipo_do_desafio_de_desbloqueio: "quiz",
+          desafio_de_desbloqueio_enunciado: "Quanto é 1 + 1?",
+          desafio_de_desbloqueio_alternativas: ["1", "2", "3", "4"],
+          desafio_de_desbloqueio_alternativa_correta: 2,
+        }),
+      );
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    await usuario.type(screen.getByLabelText(/^enunciado$/i), "Quanto é 1 + 1?");
+    await usuario.type(screen.getByLabelText(/^alternativa 1$/i), "1");
+    await usuario.type(screen.getByLabelText(/^alternativa 2$/i), "2");
+    await usuario.type(screen.getByLabelText(/^alternativa 3$/i), "3");
+    await usuario.type(screen.getByLabelText(/^alternativa 4$/i), "4");
+    await usuario.click(screen.getByRole("radio", { name: /alternativa 2 é a correta/i }));
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    await waitFor(() => expect(declararEspiado).toHaveBeenCalled());
+    expect(declararEspiado).toHaveBeenCalledWith(
+      "missao-1",
+      expect.objectContaining({ tipo: "quiz", alternativa_correta: 2 }),
+      "token-do-mestre",
+    );
+    expect(
+      screen.queryByText(/ainda não tem desafio de desbloqueio/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("declarar de novo substitui o desafio anterior na tela", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        missoes: [
+          missao({
+            tipo_do_desafio_de_desbloqueio: "quiz",
+            desafio_de_desbloqueio_enunciado: "Pergunta antiga",
+            desafio_de_desbloqueio_alternativas: ["a", "b", "c", "d"],
+            desafio_de_desbloqueio_alternativa_correta: 1,
+          }),
+        ],
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "declararDesafioDeDesbloqueio").mockResolvedValue(
+      missao({
+        tipo_do_desafio_de_desbloqueio: "pratico",
+        desafio_de_desbloqueio_enunciado: "Monte o robô e mostre ao Mestre.",
+        desafio_de_desbloqueio_alternativas: null,
+        desafio_de_desbloqueio_alternativa_correta: null,
+      }),
+    );
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    await usuario.click(await screen.findByRole("radio", { name: /desafio prático/i }));
+    await usuario.clear(screen.getByLabelText(/^enunciado$/i));
+    await usuario.type(
+      screen.getByLabelText(/^enunciado$/i),
+      "Monte o robô e mostre ao Mestre.",
+    );
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    expect(
+      await screen.findByDisplayValue("Monte o robô e mostre ao Mestre."),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^alternativa 1$/i)).not.toBeInTheDocument();
+  });
+});
+
 describe("autoria sem jargão técnico (RF-09-12)", () => {
   it("nenhum campo da autoria pede código, marcação ou configuração técnica", async () => {
     configurarSessao();

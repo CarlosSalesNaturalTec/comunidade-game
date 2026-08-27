@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { EtapaDoCiclo, MissaoDaTrilha } from "./api";
 import { Bibliografia } from "./Bibliografia";
 import { CadenciaDeRetomada } from "./CadenciaDeRetomada";
+import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 import { EtiquetasOds } from "./EtiquetasOds";
 import { FormularioDeAtividade } from "./FormularioDeAtividade";
 import { FormularioDeConteudo } from "./FormularioDeConteudo";
@@ -59,6 +60,8 @@ export function ListaDeMissoes({ missoes, onAtualizarMissao }: Props) {
               : "Sem retomada declarada"}
           </p>
           <CadenciaDeRetomada missao={missao} onAtualizada={onAtualizarMissao} />
+
+          <DesafioDeDesbloqueio missao={missao} onAtualizada={onAtualizarMissao} />
 
           <EtiquetasOds
             alvo="missao"

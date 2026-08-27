@@ -1,4 +1,5 @@
 import uuid
+from dataclasses import dataclass
 
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
@@ -9,16 +10,22 @@ from ..culminancias.modelo import Culminancia
 from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from ..poderes.modelo import NaturezaDoPoder, Poder
+from ..pontuacao.regra import avaliar_niveis, missoes_concluidas_pelo_guerreiro
 from ..tempo import agora
 from .modelo import (
     Atividade,
+    DesbloqueioDaMissao,
     EtapaDoCiclo,
     FormatoDeAtividade,
+    InscricaoNaTrilha,
     Missao,
     ModalidadeDeAtividade,
     SituacaoDaTrilha,
+    TipoDeDesafioDeDesbloqueio,
     Trilha,
 )
+
+TOTAL_DE_ALTERNATIVAS_DO_DESAFIO = 4
 
 
 def conferir_posse_da_trilha(trilha: Trilha, persona: Persona) -> None:
@@ -367,3 +374,344 @@ def criar_atividade(
     sessao.add(atividade)
     sessao.flush()
     return atividade
+
+
+def inscrever_na_trilha(
+    sessao: Session, *, guerreiro: Persona, trilha: Trilha | None
+) -> InscricaoNaTrilha:
+    """Ato do próprio Guerreiro(a) em sessão — exige trilha publicada
+    (`RF-05-09`, `RN-05-43`). Inscrever-se de novo na mesma trilha devolve
+    a existente, sem gravar uma segunda (`RN-05-43`). Reavalia o nível 1
+    logo em seguida, para o caso raro de já existir `Resultado` anterior à
+    inscrição (documento 11 §6)."""
+    if trilha is None:
+        raise NaoEncontrado(mensagem="Trilha não encontrada.")
+    if trilha.situacao != SituacaoDaTrilha.publicada:
+        raise ErroDeValidacao(
+            mensagem="Só é possível se inscrever numa trilha publicada.", campo="trilha_id"
+        )
+
+    existente = (
+        sessao.query(InscricaoNaTrilha)
+        .filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id)
+        .first()
+    )
+    if existente is not None:
+        return existente
+
+    inscricao = InscricaoNaTrilha(guerreiro_id=guerreiro.id, trilha_id=trilha.id)
+    sessao.add(inscricao)
+    sessao.flush()
+    avaliar_niveis(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id)
+    return inscricao
+
+
+def consultar_inscricoes_do_guerreiro(
+    sessao: Session, *, guerreiro_id: uuid.UUID
+) -> list[InscricaoNaTrilha]:
+    return sessao.query(InscricaoNaTrilha).filter_by(guerreiro_id=guerreiro_id).all()
+
+
+def _conferir_inscricao(sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID) -> None:
+    """Comum à submissão do desafio e à leitura do percurso: só quem está
+    inscrito tem o que submeter ou ler (`RN-05-21`, documento 11 §2.2)."""
+    inscrito = (
+        sessao.query(InscricaoNaTrilha)
+        .filter_by(guerreiro_id=guerreiro_id, trilha_id=trilha_id)
+        .first()
+        is not None
+    )
+    if not inscrito:
+        raise ErroDeValidacao(
+            mensagem="Esta operação exige inscrição na própria trilha.", campo="trilha_id"
+        )
+
+
+def declarar_desafio_de_desbloqueio(
+    sessao: Session,
+    *,
+    operador: Persona,
+    missao: Missao | None,
+    tipo: str | None,
+    enunciado: str | None,
+    alternativas: list[str] | None = None,
+    alternativa_correta: int | None = None,
+) -> Missao:
+    """Só o Mestre autor da trilha declara — declarar de novo substitui o
+    anterior, como `declarar_cadencia_de_retomada` já faz (`RF-09-26`,
+    `RF-09-117`, design — decisão 4). O quiz segue o mesmo formato de
+    `quiz.modelo.PerguntaDeQuiz`: enunciado, quatro alternativas e a
+    correta entre elas; o prático usa só o enunciado, como a descrição do
+    que o Guerreiro(a) precisa cumprir. Missão sem desafio segue publicável
+    — esta declaração nunca é trava de publicação.
+    """
+    if missao is None:
+        raise NaoEncontrado(mensagem="Missão não encontrada.")
+    trilha = sessao.get(Trilha, missao.trilha_id)
+    conferir_posse_da_trilha(trilha, operador)
+
+    if not enunciado or not enunciado.strip():
+        raise ErroDeValidacao(
+            mensagem="Desafio de desbloqueio exige um enunciado.", campo="enunciado"
+        )
+    try:
+        tipo_valido = TipoDeDesafioDeDesbloqueio(tipo)
+    except (ValueError, TypeError) as exc:
+        raise ErroDeValidacao(
+            mensagem="Tipo de desafio fora dos valores previstos.", campo="tipo"
+        ) from exc
+
+    missao.tipo_do_desafio_de_desbloqueio = tipo_valido
+    missao.desafio_de_desbloqueio_enunciado = enunciado
+    if tipo_valido == TipoDeDesafioDeDesbloqueio.quiz:
+        if not alternativas or len(alternativas) != TOTAL_DE_ALTERNATIVAS_DO_DESAFIO:
+            raise ErroDeValidacao(
+                mensagem="Desafio em forma de quiz exige quatro alternativas.",
+                campo="alternativas",
+            )
+        if alternativa_correta is None or not (
+            1 <= alternativa_correta <= TOTAL_DE_ALTERNATIVAS_DO_DESAFIO
+        ):
+            raise ErroDeValidacao(
+                mensagem="Desafio em forma de quiz exige a alternativa correta.",
+                campo="alternativa_correta",
+            )
+        (
+            missao.desafio_de_desbloqueio_alternativa_1,
+            missao.desafio_de_desbloqueio_alternativa_2,
+            missao.desafio_de_desbloqueio_alternativa_3,
+            missao.desafio_de_desbloqueio_alternativa_4,
+        ) = alternativas
+        missao.desafio_de_desbloqueio_alternativa_correta = alternativa_correta
+    else:
+        missao.desafio_de_desbloqueio_alternativa_1 = None
+        missao.desafio_de_desbloqueio_alternativa_2 = None
+        missao.desafio_de_desbloqueio_alternativa_3 = None
+        missao.desafio_de_desbloqueio_alternativa_4 = None
+        missao.desafio_de_desbloqueio_alternativa_correta = None
+
+    sessao.flush()
+    return missao
+
+
+@dataclass
+class ResultadoDaSubmissaoDoDesbloqueio:
+    """`aprovado`: `True` desbloqueou na hora (quiz certo ou prático já
+    julgado antes), `None` aguardando o Mestre julgar o prático, `False`
+    não passou no quiz — nada gravado, submete de novo sem limite
+    (`RN-05-20`)."""
+
+    aprovado: bool | None
+    desbloqueio: DesbloqueioDaMissao | None
+
+
+def submeter_desafio_de_desbloqueio(
+    sessao: Session,
+    *,
+    guerreiro: Persona,
+    missao: Missao | None,
+    alternativa_escolhida: int | None = None,
+) -> ResultadoDaSubmissaoDoDesbloqueio:
+    """Só o Guerreiro(a) inscrito na trilha submete — sem inscrição, 422
+    (`RN-05-20`, `RN-05-06`, documento 11 §2.2). No quiz, o núcleo afere e
+    grava o desbloqueio na mesma operação quando passa; não passando, nada
+    é gravado. No prático, grava a declaração do Guerreiro(a), aguardando o
+    Mestre autor julgar. Em nenhum dos dois casos o desbloqueio credita
+    ponto (`RN-05-06`) — quem credita é sempre o Resultado.
+    """
+    if missao is None:
+        raise NaoEncontrado(mensagem="Missão não encontrada.")
+    if missao.tipo_do_desafio_de_desbloqueio is None:
+        raise ErroDeValidacao(
+            mensagem="Esta missão não tem desafio de desbloqueio declarado.", campo="missao_id"
+        )
+    _conferir_inscricao(sessao, guerreiro_id=guerreiro.id, trilha_id=missao.trilha_id)
+
+    existente = (
+        sessao.query(DesbloqueioDaMissao)
+        .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
+        .first()
+    )
+    if existente is not None:
+        return ResultadoDaSubmissaoDoDesbloqueio(aprovado=existente.aprovado, desbloqueio=existente)
+
+    if missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.quiz:
+        if alternativa_escolhida == missao.desafio_de_desbloqueio_alternativa_correta:
+            desbloqueio = DesbloqueioDaMissao(
+                guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=True
+            )
+            sessao.add(desbloqueio)
+            sessao.flush()
+            return ResultadoDaSubmissaoDoDesbloqueio(aprovado=True, desbloqueio=desbloqueio)
+        return ResultadoDaSubmissaoDoDesbloqueio(aprovado=False, desbloqueio=None)
+
+    desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=None)
+    sessao.add(desbloqueio)
+    sessao.flush()
+    return ResultadoDaSubmissaoDoDesbloqueio(aprovado=None, desbloqueio=desbloqueio)
+
+
+def listar_desbloqueios_praticos_pendentes(
+    sessao: Session, *, operador: Persona
+) -> list[DesbloqueioDaMissao]:
+    """Declarações de desafio prático ainda não julgadas, só das trilhas do
+    Mestre autor (`RF-09-26`, `RF-09-117`)."""
+    return (
+        sessao.query(DesbloqueioDaMissao)
+        .join(Missao, Missao.id == DesbloqueioDaMissao.missao_id)
+        .join(Trilha, Trilha.id == Missao.trilha_id)
+        .filter(
+            Trilha.autor_id == operador.id,
+            Missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.pratico,
+            DesbloqueioDaMissao.aprovado.is_(None),
+        )
+        .all()
+    )
+
+
+def julgar_desafio_pratico(
+    sessao: Session, *, operador: Persona, desbloqueio: DesbloqueioDaMissao | None, aprovado: bool
+) -> DesbloqueioDaMissao | None:
+    """Só o Mestre autor da trilha julga (`RF-09-117`). Aprovado, a linha
+    vira o desbloqueio de fato; reprovado, ela é apagada, para que o
+    Guerreiro(a) declare de novo, sem limite e sem punição (`RN-05-20`) —
+    nunca fica reprovação persistida."""
+    if desbloqueio is None:
+        raise NaoEncontrado(mensagem="Declaração de desafio prático não encontrada.")
+    missao = sessao.get(Missao, desbloqueio.missao_id)
+    trilha = sessao.get(Trilha, missao.trilha_id)
+    conferir_posse_da_trilha(trilha, operador)
+    if desbloqueio.aprovado is not None:
+        raise ErroDeValidacao(mensagem="Esta declaração já foi julgada.", campo="aprovado")
+
+    if aprovado:
+        desbloqueio.aprovado = True
+        desbloqueio.julgado_por_id = operador.id
+        sessao.flush()
+        return desbloqueio
+
+    sessao.delete(desbloqueio)
+    sessao.flush()
+    return None
+
+
+@dataclass
+class MissaoNoPercurso:
+    missao: Missao
+    desbloqueada: bool
+    e_proxima: bool
+    aguardando_mestre: bool
+    motivo_do_bloqueio: str | None
+
+
+def derivar_percurso(
+    sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID
+) -> list[MissaoNoPercurso]:
+    """Deriva o percurso na leitura, a partir da posição — sem tabela de
+    estado por missão (design — decisão 2). Só o próprio Guerreiro(a)
+    inscrito tem o que ler (`RF-05-08`, `RF-05-10`, `RN-05-21`)."""
+    _conferir_inscricao(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id)
+
+    missoes = sessao.query(Missao).filter_by(trilha_id=trilha_id).order_by(Missao.posicao).all()
+    desbloqueios = {
+        d.missao_id: d
+        for d in sessao.query(DesbloqueioDaMissao)
+        .filter(
+            DesbloqueioDaMissao.guerreiro_id == guerreiro_id,
+            DesbloqueioDaMissao.missao_id.in_([missao.id for missao in missoes]),
+        )
+        .all()
+    }
+    proxima = next(
+        (
+            missao
+            for missao in missoes
+            if desbloqueios.get(missao.id) is None or desbloqueios[missao.id].aprovado is not True
+        ),
+        None,
+    )
+
+    resultado = []
+    for missao in missoes:
+        desbloqueio = desbloqueios.get(missao.id)
+        desbloqueada = desbloqueio is not None and desbloqueio.aprovado is True
+        aguardando_mestre = desbloqueio is not None and desbloqueio.aprovado is None
+        e_proxima = proxima is not None and missao.id == proxima.id
+        motivo = None
+        if not desbloqueada and not e_proxima:
+            motivo = f'Desbloqueie "{proxima.titulo}" primeiro.' if proxima is not None else None
+        resultado.append(
+            MissaoNoPercurso(
+                missao=missao,
+                desbloqueada=desbloqueada,
+                e_proxima=e_proxima,
+                aguardando_mestre=aguardando_mestre,
+                motivo_do_bloqueio=motivo,
+            )
+        )
+    return resultado
+
+
+def obter_proxima_missao(
+    sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID
+) -> Missao | None:
+    """A próxima missão do percurso do Guerreiro(a) naquela trilha, para a
+    listagem de `GET /v1/eu/trilhas` (`RF-05-08`, `RF-05-17`)."""
+    percurso = derivar_percurso(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha_id)
+    proxima = next((item for item in percurso if item.e_proxima), None)
+    return proxima.missao if proxima is not None else None
+
+
+@dataclass
+class ProgressoDaTrilha:
+    trilha: Trilha
+    nivel_atual: int | None
+    obrigatorias_desbloqueadas: int
+    obrigatorias_totais: int
+    pontos_regulares: int
+    badges: list[str]
+
+
+def consultar_progresso(sessao: Session, *, guerreiro_id: uuid.UUID) -> list[ProgressoDaTrilha]:
+    """Por trilha inscrita: nível certificado, quantas obrigatórias faltam
+    para o próximo, pontos e badges — reaproveita `missoes_concluidas_
+    pelo_guerreiro`, `Nivel`, `PontoRegular` e `Badge`, sem recalcular nada
+    por conta própria (`RF-05-15`, `RF-05-16`, `RN-05-03`, `RN-05-04`,
+    design — decisão 7). As recompensas conquistadas continuam só em
+    `GET /v1/eu/recompensas`, que já as serve."""
+    from ..pontuacao.modelo import Badge, Nivel, PontoRegular
+
+    resultado = []
+    for inscricao in consultar_inscricoes_do_guerreiro(sessao, guerreiro_id=guerreiro_id):
+        trilha = sessao.get(Trilha, inscricao.trilha_id)
+        obrigatorias = sessao.query(Missao).filter_by(trilha_id=trilha.id, obrigatoria=True).all()
+        concluidas = missoes_concluidas_pelo_guerreiro(
+            sessao, guerreiro_id=guerreiro_id, trilha_id=trilha.id
+        )
+        ids_obrigatorias = {missao.id for missao in obrigatorias}
+        nivel_atual = (
+            sessao.query(Nivel.valor)
+            .filter_by(guerreiro_id=guerreiro_id, trilha_id=trilha.id)
+            .order_by(Nivel.valor.desc())
+            .limit(1)
+            .scalar()
+        )
+        conta_de_pontos = (
+            sessao.query(PontoRegular)
+            .filter_by(guerreiro_id=guerreiro_id, trilha_id=trilha.id)
+            .first()
+        )
+        badges = (
+            sessao.query(Badge.tipo).filter_by(guerreiro_id=guerreiro_id, trilha_id=trilha.id).all()
+        )
+        resultado.append(
+            ProgressoDaTrilha(
+                trilha=trilha,
+                nivel_atual=nivel_atual,
+                obrigatorias_desbloqueadas=len(concluidas & ids_obrigatorias),
+                obrigatorias_totais=len(obrigatorias),
+                pontos_regulares=conta_de_pontos.total if conta_de_pontos is not None else 0,
+                badges=[badge.tipo.value for badge in badges],
+            )
+        )
+    return resultado

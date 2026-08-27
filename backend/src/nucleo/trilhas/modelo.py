@@ -14,6 +14,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     Uuid,
+    func,
     text,
 )
 from sqlalchemy.orm import Mapped, mapped_column
@@ -64,6 +65,36 @@ class Trilha(Base, ComAutoria):
     )
 
 
+class InscricaoNaTrilha(Base):
+    """Fato de que o Guerreiro(a) entrou no percurso de uma trilha — ato
+    dele, nunca lançamento de terceiro (documento 11 §2.1, `RF-05-09`,
+    `RN-05-43`, `RN-05-44`). Guarda só o par e o momento: não se desfaz,
+    não tem situação e não obriga a concluir, no mesmo padrão de `Nivel`.
+    A trilha publicada é conferida por quem grava (`trilhas.regra.
+    inscrever_na_trilha`), nunca por esta tabela.
+    """
+
+    __tablename__ = "inscricao_na_trilha"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    guerreiro_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("persona.id"), nullable=False)
+    trilha_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("trilha.id"), nullable=False)
+    momento: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "guerreiro_id", "trilha_id", name="uq_inscricao_na_trilha_guerreiro_id_trilha_id"
+        ),
+    )
+
+
+class TipoDeDesafioDeDesbloqueio(enum.StrEnum):
+    quiz = "quiz"
+    pratico = "pratico"
+
+
 class EtapaDoCiclo(enum.StrEnum):
     abertura = "abertura"
     desenvolvimento = "desenvolvimento"
@@ -95,6 +126,23 @@ class Missao(Base, ComAutoria):
         Enum(EtapaDoCiclo, native_enum=False, length=16), nullable=False
     )
     cadencia_de_retomada: Mapped[list[int] | None] = mapped_column(ARRAY(Integer), nullable=True)
+    # O desafio de desbloqueio, declarado pelo Mestre autor (`RF-09-26`,
+    # design — decisão 4): coluna da missão, não entidade nova — declarar
+    # de novo substitui, como `cadencia_de_retomada` já faz. No quiz,
+    # `enunciado` e as quatro alternativas seguem o mesmo formato de
+    # `quiz.modelo.PerguntaDeQuiz` (`RF-09-36`); no prático, só `enunciado`
+    # é usado, como a descrição do que o Guerreiro(a) precisa cumprir.
+    tipo_do_desafio_de_desbloqueio: Mapped[TipoDeDesafioDeDesbloqueio | None] = mapped_column(
+        Enum(TipoDeDesafioDeDesbloqueio, native_enum=False, length=16), nullable=True
+    )
+    desafio_de_desbloqueio_enunciado: Mapped[str | None] = mapped_column(Text, nullable=True)
+    desafio_de_desbloqueio_alternativa_1: Mapped[str | None] = mapped_column(Text, nullable=True)
+    desafio_de_desbloqueio_alternativa_2: Mapped[str | None] = mapped_column(Text, nullable=True)
+    desafio_de_desbloqueio_alternativa_3: Mapped[str | None] = mapped_column(Text, nullable=True)
+    desafio_de_desbloqueio_alternativa_4: Mapped[str | None] = mapped_column(Text, nullable=True)
+    desafio_de_desbloqueio_alternativa_correta: Mapped[int | None] = mapped_column(
+        Integer, nullable=True
+    )
 
     __table_args__ = (
         UniqueConstraint(
@@ -109,6 +157,38 @@ class Missao(Base, ComAutoria):
             "trilha_id",
             unique=True,
             postgresql_where=text("e_sondagem"),
+        ),
+    )
+
+
+class DesbloqueioDaMissao(Base):
+    """Fato de que o Guerreiro(a) desbloqueou uma missão na própria trilha —
+    nunca da equipe (design — decisão 1, documento 11 §2.2). Uma linha por
+    par, com unicidade em (`guerreiro_id`, `missao_id`): no quiz, ela nasce
+    já `aprovado=True`, aferida e gravada na mesma transação da submissão;
+    no desafio prático, ela nasce com `aprovado` em aberto — a declaração
+    do Guerreiro(a) de que cumpriu — e só vira desbloqueio de fato quando o
+    Mestre autor julga (`julgado_por_id`). Julgado que não passou, a linha é
+    apagada para que o Guerreiro(a) declare de novo, sem limite e sem
+    punição (`RN-05-20`) — nada aqui é reprovação persistida.
+    """
+
+    __tablename__ = "desbloqueio_da_missao"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    guerreiro_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("persona.id"), nullable=False)
+    missao_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("missao.id"), nullable=False)
+    momento: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    aprovado: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    julgado_por_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("persona.id"), nullable=True
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "guerreiro_id", "missao_id", name="uq_desbloqueio_da_missao_guerreiro_id_missao_id"
         ),
     )
 

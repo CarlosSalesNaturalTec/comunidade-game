@@ -854,3 +854,41 @@ def test_leitura_publica_traz_conteudo_fonte_e_bibliografia_so_quando_publicada(
     assert missao["conteudos"][0]["fonte"] == "Autor Exemplo, 2020."
     assert len(missao["bibliografia"]) == 1
     assert missao["bibliografia"][0]["titulo"] == "Robótica Educativa"
+
+
+def test_leitura_publica_nunca_traz_a_alternativa_correta_do_desafio(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_poder, criar_tipo_de_coleta
+):
+    """A resposta certa do desafio de desbloqueio é só do Mestre autor — a
+    leitura pública que a App 05 e a App 01 consultam nunca a expõe
+    (design — decisão 4)."""
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    trilha_id = _criar_trilha_completa_pela_rota(
+        cliente, cabecalhos, poder, criar_tipo_de_coleta, mestre
+    )
+    missao_id = cliente.get("/v1/trilhas/minhas", headers=cabecalhos).json()[0]["missoes"][0]["id"]
+
+    resposta_declaracao = cliente.post(
+        f"/v1/missoes/{missao_id}/desbloqueio",
+        json={
+            "tipo": "quiz",
+            "enunciado": "Quanto é 1 + 1?",
+            "alternativas": ["1", "2", "3", "4"],
+            "alternativa_correta": 2,
+        },
+        headers=cabecalhos,
+    )
+    assert resposta_declaracao.status_code == 200
+    assert resposta_declaracao.json()["desafio_de_desbloqueio_alternativa_correta"] == 2
+
+    cliente.post(f"/v1/trilhas/{trilha_id}/publicacao", headers=cabecalhos)
+    resposta_leitura = cliente.get(f"/v1/trilhas/{trilha_id}", headers={"X-Chave-Aplicacao": chave})
+
+    assert resposta_leitura.status_code == 200
+    missao = next(m for m in resposta_leitura.json()["missoes"] if m["id"] == missao_id)
+    assert "desafio_de_desbloqueio_alternativa_correta" not in missao
+    assert "tipo_do_desafio_de_desbloqueio" not in missao
