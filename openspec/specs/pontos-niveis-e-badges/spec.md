@@ -11,8 +11,10 @@ Guerreiro(a).
 O núcleo SHALL creditar **ponto regular** por **trilha ou poder** — nunca globalmente — a partir
 de um Resultado, de uma **Criação Original validada**, de uma **partida de quiz encerrada** ou de
 um **registro de coleta válido**, conforme a fonte e o valor da tabela do documento 11 §5. Na
-criação original, o valor SHALL ser creditado **integral a cada integrante** da equipe da trilha
-que a entregou, sem divisão. Na partida de quiz, o crédito SHALL seguir a régua própria dela e
+criação original **em equipe**, o valor SHALL ser creditado **integral a cada integrante** da
+equipe da trilha que a entregou, sem divisão; na criação original **individual**, ao
+**Guerreiro(a)** que a entregou, no mesmo valor — a modalidade NEVER SHALL alterar o valor
+creditado a cada pessoa. Na partida de quiz, o crédito SHALL seguir a régua própria dela e
 alcançar **cada integrante** da equipe. No registro de coleta, o crédito SHALL seguir a régua
 própria dele e alcançar apenas o **coletor** da série.
 
@@ -21,7 +23,8 @@ extras. Ele SHALL debitar **apenas por fato desfeito** — o **estorno de regist
 invalidado** e a **ocorrência de conduta lançada**, ambos exercitáveis. O saldo NEVER
 SHALL ficar negativo: débito maior que o saldo da trilha ou do poder SHALL pará-lo em **zero**.
 O registro de ponto regular NEVER SHALL ser removido. (`RF-01-21`, `RF-01-57`, `RF-01-64`,
-`RF-01-69`, `RF-08-09`, `RN-01-38`, `RN-01-55`, invariante 23 do documento 99 §6, 11 §5)
+`RF-01-69`, `RF-08-09`, `RF-09-31`, `RN-01-38`, `RN-01-55`, invariante 23 do documento 99 §6,
+11 §5)
 
 #### Scenario: Resultado "realizada" credita o valor da atividade
 
@@ -71,6 +74,12 @@ O registro de ponto regular NEVER SHALL ser removido. (`RF-01-21`, `RF-01-57`, `
 - **WHEN** o Mestre autor valida uma criação original entregue por uma equipe de três integrantes
 - **THEN** o núcleo credita, à trilha da criação, 50 pontos regulares integrais a **cada um** dos
   três
+
+#### Scenario: Criação original individual validada credita os mesmos 50 pontos
+
+- **WHEN** o Mestre autor valida uma criação original entregue individualmente
+- **THEN** o núcleo credita, à trilha da criação, os mesmos 50 pontos regulares ao Guerreiro(a)
+  que a entregou
 
 #### Scenario: O valor da criação original não se divide pela equipe
 
@@ -140,12 +149,13 @@ núcleo SHALL certificar os níveis **1** (inscrito na trilha **e** primeira ati
 **duas** condições), **2** (um terço das missões obrigatórias desbloqueadas), **4** (todas as
 obrigatórias desbloqueadas e ao menos um Resultado com mérito extra por auxílio aos colegas) e
 **5 — Mestre Aprendiz** (a criação original da trilha validada pelo Mestre autor, certificada a
-**cada integrante** da equipe que a entregou). A condição "inscrito" do nível 1 SHALL ser a
+**cada integrante** da equipe que a entregou ou, na modalidade individual, ao **Guerreiro(a)**
+que a entregou). A condição "inscrito" do nível 1 SHALL ser a
 `InscricaoNaTrilha` da capacidade `inscricao-na-trilha`, e NEVER SHALL ser derivada de haver
 `Resultado` na trilha: quem põe o Guerreiro(a) no percurso é ato dele, não lançamento do Mestre.
 Nível conquistado SHALL **nunca regredir**, inclusive quando um **débito de ponto regular** reduz
 o saldo do Guerreiro(a); o badge já concedido SHALL igualmente permanecer. (`RF-01-21`,
-`RF-01-64`, `RF-01-70`, `RN-01-55`, `RF-05-09`, `RN-05-43`, 11 §6)
+`RF-01-64`, `RF-01-70`, `RN-01-55`, `RF-05-09`, `RF-09-31`, `RN-05-43`, 11 §6)
 
 #### Scenario: Primeira atividade realizada alcança o nível 1
 
@@ -185,6 +195,12 @@ o saldo do Guerreiro(a); o badge já concedido SHALL igualmente permanecer. (`RF
 - **THEN** o núcleo certifica o nível 5 — Mestre Aprendiz — naquela trilha a cada integrante da
   equipe
 
+#### Scenario: Criação original individual validada alcança o nível 5
+
+- **WHEN** o Mestre autor da trilha valida uma criação original entregue individualmente
+- **THEN** o núcleo certifica o nível 5 — Mestre Aprendiz — naquela trilha ao Guerreiro(a) que a
+  entregou
+
 ### Requirement: Badge é conquistado por trilha ou por poder, nunca global
 
 O núcleo SHALL conceder **badge** sempre vinculado a uma trilha ou a um poder, nunca de forma
@@ -193,11 +209,12 @@ proposta de evolução que o rende é sobre a plataforma inteira e não sobre um
 (`RN-01-50`). Nesta capacidade o núcleo SHALL conceder o **badge de nível** a cada nível
 certificado, o **badge de valores/causas** a Resultado de atividade de natureza "valores e
 temas transversais", o **badge de autoria** a **cada integrante** da equipe cuja criação
-original for validada pelo Mestre autor e o **badge de protagonismo** ao autor da sugestão
+original for validada pelo Mestre autor — ou, na modalidade individual, ao **Guerreiro(a)** que
+a entregou — e o **badge de protagonismo** ao autor da sugestão
 adotada pela gestão, na mesma operação em que a fila de avaliação grava o desfecho. O badge de
 conquista **Guardião do Acervo** não nasce de Resultado nem de Criação Original — ele depende
 de encontro presencial identificável (`Aula/Agenda`) — e fica para a fatia que o entregar.
-(`RF-01-21`, `RF-01-64`, `RN-01-50`, 11 §7)
+(`RF-01-21`, `RF-01-64`, `RF-09-31`, `RN-01-50`, 11 §7)
 
 #### Scenario: Badge de nível concedido ao certificar um nível
 
@@ -213,6 +230,11 @@ de encontro presencial identificável (`Aula/Agenda`) — e fica para a fatia qu
 
 - **WHEN** o Mestre autor da trilha valida a criação original entregue pela equipe da trilha
 - **THEN** o núcleo concede o badge de autoria daquela trilha a cada integrante da equipe
+
+#### Scenario: Badge de autoria concedido na criação original individual
+
+- **WHEN** o Mestre autor da trilha valida uma criação original entregue individualmente
+- **THEN** o núcleo concede o badge de autoria daquela trilha ao Guerreiro(a) que a entregou
 
 #### Scenario: Badge de protagonismo concedido ao adotar a proposta
 
