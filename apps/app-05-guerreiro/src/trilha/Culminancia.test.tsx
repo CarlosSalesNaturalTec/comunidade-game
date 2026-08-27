@@ -17,7 +17,10 @@ const TRILHA_BASE: trilhaApi.TrilhaPublicaComMissoes = {
   culminancia: null,
 };
 
-async function renderizar(trilha: trilhaApi.TrilhaPublicaComMissoes, criacao = null) {
+async function renderizar(
+  trilha: trilhaApi.TrilhaPublicaComMissoes,
+  criacao: criacaoOriginalApi.CriacaoOriginal | null = null,
+) {
   sessionStorage.setItem(CHAVE_DE_SESSAO, "token-do-guerreiro");
   vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
     persona_id: "guerreiro-1",
