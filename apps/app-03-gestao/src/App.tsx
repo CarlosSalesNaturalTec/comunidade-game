@@ -1,6 +1,7 @@
 import { ProvedorDeSessao, useSessao } from "comum/autenticacao";
 import { useState } from "react";
 import { TelaDaAgenda } from "./agenda/TelaDaAgenda";
+import { TelaDeAtividades } from "./atividades/TelaDeAtividades";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeChaves } from "./chaves/TelaDeChaves";
 import { TelaDeComunidades } from "./comunidades/TelaDeComunidades";
@@ -12,6 +13,7 @@ import { TelaDePersonas } from "./personas/TelaDePersonas";
 import { TelaDePoderes } from "./poderes/TelaDePoderes";
 import { TelaDePontosDeApoio } from "./pontos-de-apoio/TelaDePontosDeApoio";
 import { TelaDeQuiz } from "./quiz/TelaDeQuiz";
+import { TelaDeRecursos } from "./recursos/TelaDeRecursos";
 import { TelaDeTerritorio } from "./territorio/TelaDeTerritorio";
 
 type Area =
@@ -19,6 +21,8 @@ type Area =
   | "poderes"
   | "pontos-de-apoio"
   | "agenda"
+  | "recursos"
+  | "atividades"
   | "personas"
   | "territorio"
   | "filas"
@@ -33,6 +37,8 @@ const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "poderes", rotulo: "Poderes" },
   { chave: "pontos-de-apoio", rotulo: "Pontos de Apoio" },
   { chave: "agenda", rotulo: "Agenda" },
+  { chave: "recursos", rotulo: "Recursos" },
+  { chave: "atividades", rotulo: "Atividades" },
   { chave: "personas", rotulo: "Personas" },
   { chave: "territorio", rotulo: "Território" },
   { chave: "filas", rotulo: "Filas" },
@@ -87,6 +93,8 @@ function Conteudo() {
       {area === "poderes" && <TelaDePoderes />}
       {area === "pontos-de-apoio" && <TelaDePontosDeApoio />}
       {area === "agenda" && <TelaDaAgenda />}
+      {area === "recursos" && <TelaDeRecursos />}
+      {area === "atividades" && <TelaDeAtividades />}
       {area === "personas" && <TelaDePersonas />}
       {area === "territorio" && <TelaDeTerritorio />}
       {area === "filas" && <TelaDeFilas />}

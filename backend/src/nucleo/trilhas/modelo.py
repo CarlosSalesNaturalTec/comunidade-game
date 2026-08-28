@@ -5,6 +5,7 @@ from datetime import datetime
 from sqlalchemy import (
     ARRAY,
     Boolean,
+    CheckConstraint,
     DateTime,
     Enum,
     ForeignKey,
@@ -205,10 +206,13 @@ class FormatoDeAtividade(enum.StrEnum):
 
 
 class Atividade(Base, ComAutoria):
-    """Sempre pertencente a uma missão, classificada nos três eixos
-    ortogonais do documento 11 §4: modalidade e formato fechados nos
-    valores do documento; natureza aberta, no mesmo padrão que
-    `Consentimento.tipo` já firmou (design — decisões).
+    """Pertence a uma missão (atividade de trilha) ou declara um poder
+    (atividade avulsa, fora de trilha) — nunca as duas nem nenhuma, garantia
+    que o `CheckConstraint` abaixo mantém no esquema, no mesmo formato que
+    `PontoRegular` já aplica em código (`RF-02-29`, design — decisões 1, 2).
+    Classificada nos três eixos ortogonais do documento 11 §4: modalidade e
+    formato fechados nos valores do documento; natureza aberta, no mesmo
+    padrão que `Consentimento.tipo` já firmou (design — decisões).
 
     `aula_id` é o vínculo opcional com o encontro em que a atividade
     presencial acontece — a programação do encontro que a equipe lê nasce
@@ -219,7 +223,10 @@ class Atividade(Base, ComAutoria):
     __tablename__ = "atividade"
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    missao_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("missao.id"), nullable=False)
+    missao_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("missao.id"), nullable=True
+    )
+    poder_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("poder.id"), nullable=True)
     titulo: Mapped[str] = mapped_column(String(128), nullable=False)
     descricao: Mapped[str | None] = mapped_column(Text, nullable=True)
     modalidade: Mapped[ModalidadeDeAtividade] = mapped_column(
@@ -232,4 +239,10 @@ class Atividade(Base, ComAutoria):
     producao_esperada: Mapped[str] = mapped_column(Text, nullable=False)
     aula_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=True)
 
-    __table_args__ = (Index("ix_atividade_aula_id", "aula_id"),)
+    __table_args__ = (
+        Index("ix_atividade_aula_id", "aula_id"),
+        CheckConstraint(
+            "(missao_id IS NULL) != (poder_id IS NULL)",
+            name="ck_atividade_missao_id_ou_poder_id",
+        ),
+    )

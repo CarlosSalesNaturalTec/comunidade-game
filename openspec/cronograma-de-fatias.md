@@ -123,7 +123,7 @@ pendência; **desafio extra** espera a entidade `DesafioExtra`; **empréstimo de
 | 8     | Esqueleto da Área do Guerreiro(a) e fim de ciclo   | `2026-08-26-esqueleto-da-area-do-guerreiro-e-fim-de-ciclo` (também fatia 1 do PRD-05)              | implementado |
 | 9     | Território na gestão                               | `2026-08-27-territorio-na-gestao`                                                                  | implementado |
 | 10    | Lançamentos, conduta e ajuste                      | `2026-08-27-lancamentos-conduta-e-ajuste`                                                                                                                                        | implementado |
-| 11    | Aporte, necessidade e atividade avulsa na gestão   | `RF-02-29`, `RF-02-31`, `RF-02-32`, `RF-02-57`, `RF-02-58`, `RF-02-67`                             | em andamento |
+| 11    | Aporte, necessidade e atividade avulsa na gestão   | `aporte-necessidade-e-atividade-avulsa-na-gestao` — `RF-02-29`, `RF-02-31`, `RF-02-32`, `RF-02-57`, `RF-02-58`, `RF-02-67` | implementado |
 | 12    | Acervo e patrimônio na gestão                      | `RF-02-52`, `RF-02-53`, `RF-02-55`, `RF-02-96`, `RN-02-18`                                         | em aberto    |
 | 13    | Auditoria da trilha, trilha de auditoria e aviso   | `RF-02-63`, `RF-02-64`, `RF-02-70`, `RN-02-23`, `RN-02-24`                                         | em aberto    |
 | 14    | Fila de solicitações do responsável                | `RF-02-23`, `RF-02-24`, `RF-02-66` — entra junto da fatia 4 do PRD-13, que origina a solicitação   | em aberto    |

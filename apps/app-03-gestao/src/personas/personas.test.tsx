@@ -30,6 +30,7 @@ const AULA = {
   fim_em: "2026-08-21T12:00:00-03:00",
   situacao: "confirmada",
   cancelamento_motivo: null,
+  recursos_faltantes: [],
 };
 
 const SESSAO_DE_ADMIN: SessaoAberta = {

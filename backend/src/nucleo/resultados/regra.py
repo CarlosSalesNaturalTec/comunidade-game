@@ -34,13 +34,23 @@ def registrar_resultado(
     conferência de posse da quinta fatia (`RF-01-20`, `RF-01-16`,
     `RF-01-03`, 11 §4). A aula é quem liga o resultado às reservas que a
     baixa consome (`RF-07-09`, `RF-02-35`, documento 04 §1).
+
+    Na **atividade avulsa** — sem missão —, não há posse de Mestre a
+    conferir: o lançamento é restrito ao Admin, e o crédito segue o poder
+    declarado pela atividade, não uma trilha (`RF-02-29`, `RF-02-33`,
+    design — decisão 4).
     """
     if atividade is None:
         raise ErroDeValidacao(mensagem="Resultado exige uma atividade.", campo="atividade_id")
 
-    missao = sessao.get(Missao, atividade.missao_id)
-    trilha = sessao.get(Trilha, missao.trilha_id)
-    conferir_posse_da_trilha(trilha, operador)
+    trilha = None
+    if atividade.missao_id is None:
+        if operador.papel != Papel.admin:
+            raise PermissaoNegada(mensagem="Só o Admin lança o resultado da atividade avulsa.")
+    else:
+        missao = sessao.get(Missao, atividade.missao_id)
+        trilha = sessao.get(Trilha, missao.trilha_id)
+        conferir_posse_da_trilha(trilha, operador)
 
     if guerreiro_id is None:
         raise ErroDeValidacao(mensagem="Resultado exige um Guerreiro(a).", campo="guerreiro_id")

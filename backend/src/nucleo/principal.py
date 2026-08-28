@@ -8,6 +8,7 @@ from starlette.exceptions import HTTPException as ExcecaoHTTP
 
 from .aportes.rotas import roteador as roteador_de_aportes
 from .armazenamento.rotas import roteador as roteador_de_armazenamento
+from .atividades.rotas import roteador as roteador_de_atividades
 from .auditoria.middleware import MiddlewareDeAuditoria
 from .auditoria.rotas import roteador as roteador_de_auditoria
 from .aulas.rotas import roteador as roteador_de_aulas
@@ -182,6 +183,7 @@ incluir_roteador_de_dados(app, roteador_de_trocas)
 incluir_roteador_de_dados(app, roteador_de_patrimonio)
 incluir_roteador_de_dados(app, roteador_de_recompensas_de_marco)
 incluir_roteador_de_dados(app, roteador_de_trilhas)
+incluir_roteador_de_dados(app, roteador_de_atividades)
 incluir_roteador_de_dados(app, roteador_de_culminancias)
 incluir_roteador_de_dados(app, roteador_de_criacoes_originais)
 incluir_roteador_de_dados(app, roteador_de_ods)

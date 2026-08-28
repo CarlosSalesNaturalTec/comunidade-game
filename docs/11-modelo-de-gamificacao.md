@@ -295,6 +295,12 @@ App 03 para a atividade avulsa — **escolhe o tipo** e a pontuação vem daqui;
 valor no cadastro. É a mesma régua da tabela de preços do catálogo avulso (documento 02 §8.2):
 a mesma atividade não vale 10 numa comunidade e 30 na vizinha.
 
+**A atividade avulsa credita no poder que ela declara, nunca numa trilha** — sem missão, não
+há trilha em que o ponto pousar. O cadastro exige esse poder, e o ponto regular apurado pelo
+desfecho lançado vai integral a ele, pela mesma acumulação por trilha ou poder do §1. Nível e
+badge de valores e temas transversais continuam percurso de trilha (§6) e não se movem por
+resultado de atividade avulsa.
+
 **Ponto regular não se gasta; debita só por fato desfeito.** Gastar é trocar por recompensa, e
 isso só o saldo de pontos extras faz. Debitam o regular apenas dois fatos: a **ocorrência de
 conduta** lançada e o **estorno do registro de coleta invalidado** na auditoria do Mestre. Fora
