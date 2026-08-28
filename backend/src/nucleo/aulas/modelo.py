@@ -8,10 +8,11 @@ from sqlalchemy import (
     DateTime,
     Enum,
     ForeignKey,
+    Index,
     Numeric,
     Text,
-    UniqueConstraint,
     Uuid,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -97,10 +98,13 @@ class ModoDeComprovacao(enum.StrEnum):
 class Presenca(Base, ComAutoria, ComMomentoDoFato):
     """Quem esteve na aula, por reconhecimento do próprio Guerreiro(a) ou
     confirmação de Mestre ou Admin, com o registro de quem confirmou
-    (`RF-01-20`, `RF-01-03`). Única por (aula, guerreiro): o reenvio do
-    App 01 depois de operar com a rede fora não duplica o registro
-    (PRD-01 §10, design — decisões). `ComMomentoDoFato` guarda quando a
-    presença aconteceu, separado de quando o núcleo recebeu o registro.
+    (`RF-01-20`, `RF-01-03`). Única por (aula, guerreiro) **entre as não
+    anuladas**: o reenvio do App 01 depois de operar com a rede fora não
+    duplica o registro (PRD-01 §10, design — decisões), e a anulação por
+    engano libera o par para o registro correto, sem apagar o anterior
+    (`RF-02-36`, `RN-02-12`, design — decisão 4). `ComMomentoDoFato` guarda
+    quando a presença aconteceu, separado de quando o núcleo recebeu o
+    registro.
     """
 
     __tablename__ = "presenca"
@@ -114,7 +118,18 @@ class Presenca(Base, ComAutoria, ComMomentoDoFato):
     confirmador_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("persona.id"), nullable=True
     )
+    anulada_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    anulada_por_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("persona.id"), nullable=True
+    )
+    motivo_da_anulacao: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
-        UniqueConstraint("aula_id", "guerreiro_id", name="uq_presenca_aula_id_guerreiro_id"),
+        Index(
+            "uq_presenca_aula_id_guerreiro_id_nao_anulada",
+            "aula_id",
+            "guerreiro_id",
+            unique=True,
+            postgresql_where=text("anulada_em IS NULL"),
+        ),
     )

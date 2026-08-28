@@ -1,10 +1,12 @@
 import uuid
+from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import case, func
+from sqlalchemy import case, func, tuple_
 from sqlalchemy.orm import Session
 
 from ..erros import ErroDeValidacao, PermissaoNegada
+from ..paginacao import codificar_cursor, decodificar_cursor
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
@@ -243,6 +245,62 @@ def saldos_por_ponto_de_apoio(
         if saldo != 0:
             resultado.append((tipo_de_recurso_id, saldo))
     return resultado
+
+
+def listar_lancamentos(
+    sessao: Session,
+    *,
+    operador: Persona,
+    ponto_de_apoio_id: uuid.UUID | None,
+    tipo_de_recurso_id: uuid.UUID | None,
+    periodo_inicio: datetime | None,
+    periodo_fim: datetime | None,
+    cursor: str | None,
+    tamanho: int,
+) -> tuple[list[Lancamento], str | None]:
+    """Leitura de Admin do extrato de um ponto de apoio, com o filtro
+    obrigatório que evita misturar o livro-razão de espaços diferentes; é o
+    que dá ao ajuste do `RF-02-40` como alcançar o lançamento a corrigir
+    (`RF-07-19`, `RF-01-18`, `RF-01-28`)."""
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin lê os lançamentos de um ponto de apoio.")
+    if ponto_de_apoio_id is None:
+        raise ErroDeValidacao(
+            mensagem="Esta consulta exige o filtro de ponto de apoio.",
+            campo="ponto_de_apoio",
+        )
+
+    consulta = sessao.query(Lancamento).filter(Lancamento.ponto_de_apoio_id == ponto_de_apoio_id)
+    if tipo_de_recurso_id is not None:
+        consulta = consulta.filter(Lancamento.tipo_de_recurso_id == tipo_de_recurso_id)
+    if periodo_inicio is not None:
+        consulta = consulta.filter(Lancamento.registrado_em >= periodo_inicio)
+    if periodo_fim is not None:
+        consulta = consulta.filter(Lancamento.registrado_em <= periodo_fim)
+
+    if cursor:
+        posicao = decodificar_cursor(cursor)
+        try:
+            registrado_em_cursor = datetime.fromisoformat(posicao["registrado_em"])
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(
+            tuple_(Lancamento.registrado_em, Lancamento.id) > (registrado_em_cursor, id_cursor)
+        )
+
+    consulta = consulta.order_by(Lancamento.registrado_em, Lancamento.id).limit(tamanho + 1)
+    lancamentos = consulta.all()
+
+    proximo_cursor = None
+    if len(lancamentos) > tamanho:
+        lancamentos = lancamentos[:tamanho]
+        ultimo = lancamentos[-1]
+        proximo_cursor = codificar_cursor(
+            {"registrado_em": ultimo.registrado_em.isoformat(), "id": str(ultimo.id)}
+        )
+
+    return lancamentos, proximo_cursor
 
 
 def saldo_de(sessao: Session, *, tipo_de_recurso_id, ponto_de_apoio_id) -> Decimal:

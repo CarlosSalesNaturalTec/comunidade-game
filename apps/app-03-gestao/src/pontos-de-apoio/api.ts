@@ -119,3 +119,66 @@ export function transferirSaldo(
     token,
   });
 }
+
+export interface LancamentoDoExtrato {
+  id: string;
+  natureza: string;
+  tipo_de_recurso_id: string;
+  ponto_de_apoio_id: string;
+  quantidade: string;
+  valor_em_moedas: string;
+  lancamento_original_id: string | null;
+  motivo_do_ajuste: string | null;
+  lancamento_relacionado_id: string | null;
+}
+
+interface PaginaDeLancamentos {
+  itens: LancamentoDoExtrato[];
+  proximo_cursor: string | null;
+}
+
+export interface FiltroDoExtrato {
+  periodoInicio?: string;
+  periodoFim?: string;
+  tipoDeRecursoId?: string;
+  cursor?: string;
+}
+
+// O extrato de um ponto de apoio, com o filtro obrigatório que evita
+// misturar o livro-razão de espaços diferentes — é por ele que o ajuste
+// alcança o lançamento a corrigir (`RF-02-40`, `RF-01-18`, `RF-01-28`).
+export function listarLancamentos(
+  idDoPontoDeApoio: string,
+  token: string,
+  filtro: FiltroDoExtrato = {},
+): Promise<PaginaDeLancamentos> {
+  const parametros = new URLSearchParams({ ponto_de_apoio: idDoPontoDeApoio });
+  if (filtro.periodoInicio) parametros.set("periodo_inicio", filtro.periodoInicio);
+  if (filtro.periodoFim) parametros.set("periodo_fim", filtro.periodoFim);
+  if (filtro.tipoDeRecursoId) parametros.set("tipo_de_recurso", filtro.tipoDeRecursoId);
+  if (filtro.cursor) parametros.set("cursor", filtro.cursor);
+  return chamarNucleo<PaginaDeLancamentos>(`/v1/lancamentos?${parametros.toString()}`, {
+    token,
+  });
+}
+
+export interface LancarAjusteEntrada {
+  quantidade: string;
+  valor_em_moedas: string;
+  motivo: string;
+}
+
+// A correção se faz por lançamento novo, que referencia o original sem
+// alterá-lo — não há caminho de edição nem de remoção (`RF-02-40`,
+// `RN-02-12`).
+export function lancarAjuste(
+  idDoLancamento: string,
+  entrada: LancarAjusteEntrada,
+  token: string,
+): Promise<LancamentoDoExtrato> {
+  return chamarNucleo<LancamentoDoExtrato>(`/v1/lancamentos/${idDoLancamento}/ajuste`, {
+    metodo: "POST",
+    corpo: entrada,
+    token,
+  });
+}

@@ -6,7 +6,7 @@ from decimal import Decimal
 from sqlalchemy.orm import Session
 
 from ..comunidades.modelo import ComunidadeVirtual, VinculoJogador
-from ..erros import ErroDeValidacao, PermissaoNegada
+from ..erros import ErroDeValidacao, PermissaoNegada, PresencaJaAnulada
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
@@ -232,7 +232,11 @@ def registrar_presenca(
     if guerreiro is None:
         raise ErroDeValidacao(mensagem="Presença exige o Guerreiro(a).", campo="guerreiro_id")
 
-    existente = sessao.query(Presenca).filter_by(aula_id=aula.id, guerreiro_id=guerreiro.id).first()
+    existente = (
+        sessao.query(Presenca)
+        .filter_by(aula_id=aula.id, guerreiro_id=guerreiro.id, anulada_em=None)
+        .first()
+    )
     if existente is not None:
         return existente
 
@@ -269,5 +273,31 @@ def registrar_presenca(
         papel_do_autor=operador.papel.value,
     )
     sessao.add(presenca)
+    sessao.flush()
+    return presenca
+
+
+def anular_presenca(
+    sessao: Session,
+    *,
+    operador: Persona,
+    presenca: Presenca | None,
+    motivo: str | None,
+) -> Presenca:
+    """Restrita ao Admin — desfaz o registro por engano sem apagá-lo, para
+    que o par (aula, guerreiro) aceite o registro correto em seguida
+    (`RF-02-36`, `RN-02-12`, design — decisões 4 e 5)."""
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin anula presença.")
+    if presenca is None:
+        raise ErroDeValidacao(mensagem="Anulação exige uma presença.", campo="presenca_id")
+    if not motivo or not motivo.strip():
+        raise ErroDeValidacao(mensagem="Anulação exige motivo.", campo="motivo")
+    if presenca.anulada_em is not None:
+        raise PresencaJaAnulada
+
+    presenca.anulada_em = agora()
+    presenca.anulada_por_id = operador.id
+    presenca.motivo_da_anulacao = motivo
     sessao.flush()
     return presenca

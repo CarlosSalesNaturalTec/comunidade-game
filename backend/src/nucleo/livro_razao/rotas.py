@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from decimal import Decimal
 from typing import Annotated
 
@@ -8,12 +9,18 @@ from sqlalchemy.orm import Session
 
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
-from ..erros import NaoEncontrado, PermissaoNegada
+from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
+from ..paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
 from .modelo import Lancamento
-from .regra import lancar_ajuste, saldos_por_ponto_de_apoio, transferir_saldo
+from .regra import lancar_ajuste, listar_lancamentos, saldos_por_ponto_de_apoio, transferir_saldo
+
+# Filtros de domínio do extrato; período já vem dos universais de
+# `contrato_de_listagem` (`RF-01-28`). "ponto_de_apoio" não é "comunidade":
+# o livro-razão é por espaço, não por Comunidade Virtual (design — decisão 3).
+_FILTROS_DE_DOMINIO = frozenset({"ponto_de_apoio", "tipo_de_recurso"})
 
 roteador = APIRouter()
 
@@ -148,3 +155,57 @@ def listar_saldos_do_ponto_de_apoio_rota(
         )
         for tipo_de_recurso_id, saldo in saldos
     ]
+
+
+def _analisar_momento(bruto: str, campo: str) -> datetime:
+    """Toda data e hora de filtro exige fuso explícito, como em qualquer
+    entrada do núcleo (PRD-01 §9)."""
+    try:
+        valor = datetime.fromisoformat(bruto)
+    except ValueError as exc:
+        raise ErroDeValidacao(
+            mensagem=f"Filtro '{campo}' precisa ser uma data e hora ISO 8601.", campo=campo
+        ) from exc
+    if valor.tzinfo is None:
+        raise ErroDeValidacao(mensagem=f"Filtro '{campo}' exige fuso explícito.", campo=campo)
+    return valor
+
+
+@roteador.get("/lancamentos", response_model=PaginaDeResultado[LancamentoSaida])
+def listar_lancamentos_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem(_FILTROS_DE_DOMINIO))],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[LancamentoSaida]:
+    """Restrita ao Admin — o filtro de ponto de apoio é obrigatório, e é
+    por ela que o ajuste do `RF-02-40` alcança o lançamento a corrigir
+    (`RF-07-19`, `RF-01-18`, `RF-01-28`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+
+    ponto_de_apoio_bruto = parametros.filtros.get("ponto_de_apoio")
+    ponto_de_apoio_id = uuid.UUID(ponto_de_apoio_bruto) if ponto_de_apoio_bruto else None
+
+    tipo_de_recurso_bruto = parametros.filtros.get("tipo_de_recurso")
+    tipo_de_recurso_id = uuid.UUID(tipo_de_recurso_bruto) if tipo_de_recurso_bruto else None
+
+    periodo_inicio_bruto = parametros.filtros.get("periodo_inicio")
+    periodo_inicio = (
+        _analisar_momento(periodo_inicio_bruto, "periodo_inicio") if periodo_inicio_bruto else None
+    )
+    periodo_fim_bruto = parametros.filtros.get("periodo_fim")
+    periodo_fim = _analisar_momento(periodo_fim_bruto, "periodo_fim") if periodo_fim_bruto else None
+
+    lancamentos, proximo_cursor = listar_lancamentos(
+        sessao_bd,
+        operador=operador,
+        ponto_de_apoio_id=ponto_de_apoio_id,
+        tipo_de_recurso_id=tipo_de_recurso_id,
+        periodo_inicio=periodo_inicio,
+        periodo_fim=periodo_fim,
+        cursor=parametros.cursor,
+        tamanho=parametros.tamanho,
+    )
+    return PaginaDeResultado(
+        itens=[_saida(lancamento) for lancamento in lancamentos],
+        proximo_cursor=proximo_cursor,
+    )

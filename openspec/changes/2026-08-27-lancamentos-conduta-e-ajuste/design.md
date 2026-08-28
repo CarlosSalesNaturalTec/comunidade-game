@@ -28,7 +28,9 @@ atividades previstas e as pendências.
    resolve a aula vigente para o operador em sessão e traz participantes, presenças e
    atividades previstas — é o mesmo recorte que a tela precisa. Descartado: um
    `GET /v1/aulas/{id}` com o mesmo conteúdo, que duplicaria a montagem do painel para servir a
-   mesma aula.
+   mesma aula. Corolário: `PresencaDoPainelSaida` ganha o campo `id` — sem ele a tela não tem o
+   que passar para `POST .../presencas/{id}/anulacao`, e o painel nunca precisou do identificador
+   antes por ser só leitura.
 2. **A área é nova, e não um modo de escrita do Painel do dia.** A spec vigente exige que o
    painel seja de leitura e que cada pendência leve à tela que a resolve; misturar escrita ali
    contrariaria requisito já aprovado.

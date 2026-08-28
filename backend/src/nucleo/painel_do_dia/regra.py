@@ -28,6 +28,7 @@ _SITUACOES_COM_DESFECHO = (SituacaoDaAula.realizada, SituacaoDaAula.cancelada)
 
 
 class PresencaDoPainelSaida(BaseModel):
+    id: uuid.UUID
     guerreiro_id: uuid.UUID
     avatar: str | None
     nick: str
@@ -109,10 +110,11 @@ def _resolver_aula(sessao: Session, *, operador: Persona) -> Aula | None:
 
 
 def _presencas(sessao: Session, aula_id: uuid.UUID) -> list[PresencaDoPainelSaida]:
-    presencas = sessao.query(Presenca).filter_by(aula_id=aula_id).all()
+    presencas = sessao.query(Presenca).filter_by(aula_id=aula_id, anulada_em=None).all()
     avatares_e_nicks = buscar_avatares_e_nicks(sessao, [p.guerreiro_id for p in presencas])
     return [
         PresencaDoPainelSaida(
+            id=presenca.id,
             guerreiro_id=presenca.guerreiro_id,
             avatar=avatares_e_nicks[presenca.guerreiro_id].avatar,
             nick=avatares_e_nicks[presenca.guerreiro_id].nick,
@@ -134,7 +136,11 @@ def _aguardando_aparelho(sessao: Session, aula_id: uuid.UUID) -> list[GuerreiroD
     )
     presentes_sem_equipe = (
         sessao.query(Presenca.guerreiro_id)
-        .filter(Presenca.aula_id == aula_id, ~Presenca.guerreiro_id.in_(ja_em_equipe))
+        .filter(
+            Presenca.aula_id == aula_id,
+            Presenca.anulada_em.is_(None),
+            ~Presenca.guerreiro_id.in_(ja_em_equipe),
+        )
         .all()
     )
     ids = [guerreiro_id for (guerreiro_id,) in presentes_sem_equipe]
@@ -238,7 +244,9 @@ def _pendencias(sessao: Session, aula: Aula) -> list[PendenciaDoPainelSaida]:
 
     guerreiro_ids = [
         guerreiro_id
-        for (guerreiro_id,) in sessao.query(Presenca.guerreiro_id).filter_by(aula_id=aula.id).all()
+        for (guerreiro_id,) in sessao.query(Presenca.guerreiro_id)
+        .filter_by(aula_id=aula.id, anulada_em=None)
+        .all()
     ]
     if not guerreiro_ids:
         return pendencias
