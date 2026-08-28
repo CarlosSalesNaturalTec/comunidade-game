@@ -33,6 +33,7 @@ from .modelo import Aula, ModoDeComprovacao, Presenca, RecursoDeclaradoDaAula, S
 from .regra import (
     RecursoDeclaradoEntrada,
     agendar_aula,
+    anular_presenca,
     aulas_vigentes,
     cancelar_aula,
     escopo_de_comunidade_da_leitura,
@@ -349,6 +350,9 @@ class PresencaSaida(BaseModel):
     modo: str
     confirmador_id: uuid.UUID | None
     momento_do_fato: DataHoraComFuso
+    anulada_em: DataHoraComFuso | None
+    anulada_por_id: uuid.UUID | None
+    motivo_da_anulacao: str | None
 
 
 def _saida_da_presenca(presenca: Presenca) -> PresencaSaida:
@@ -359,6 +363,9 @@ def _saida_da_presenca(presenca: Presenca) -> PresencaSaida:
         modo=presenca.modo.value,
         confirmador_id=presenca.confirmador_id,
         momento_do_fato=presenca.momento_do_fato,
+        anulada_em=presenca.anulada_em,
+        anulada_por_id=presenca.anulada_por_id,
+        motivo_da_anulacao=presenca.motivo_da_anulacao,
     )
 
 
@@ -400,6 +407,35 @@ def confirmar_presenca_rota(
         modo=entrada.modo,
         confirmador=confirmador,
         momento_do_fato=entrada.momento_do_fato,
+    )
+    sessao_bd.commit()
+    return _saida_da_presenca(presenca)
+
+
+class AnularPresencaEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    motivo: str = Field(min_length=1)
+
+
+@roteador.post("/aulas/{id_da_aula}/presencas/{id_da_presenca}/anulacao", status_code=201)
+def anular_presenca_rota(
+    id_da_aula: uuid.UUID,
+    id_da_presenca: uuid.UUID,
+    entrada: AnularPresencaEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PresencaSaida:
+    """Restrita ao Admin — desfaz a presença registrada por engano sem
+    apagá-la, liberando o par (aula, guerreiro) para o registro correto
+    (`RF-02-36`, `RN-02-12`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    presenca = sessao_bd.get(Presenca, id_da_presenca)
+    if presenca is not None and presenca.aula_id != id_da_aula:
+        presenca = None
+
+    presenca = anular_presenca(
+        sessao_bd, operador=operador, presenca=presenca, motivo=entrada.motivo
     )
     sessao_bd.commit()
     return _saida_da_presenca(presenca)

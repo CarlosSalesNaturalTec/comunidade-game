@@ -454,11 +454,12 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
 - **Agenda de aulas** (on-line e presenciais) e atividades previstas.
 - **Lançamento de atividades realizadas**: data, mentores, Guerreiros e Guerreiras e
   resultados.
-- **Registro de presença** — automático via onboarding e ajustável manualmente.
+- **Registro de presença** — automático via onboarding e ajustável manualmente: o Admin
+  registra a que faltou e anula a registrada por engano, sem apagar o registro.
 - **Entradas manuais do dia**: presença, infrações ocorridas nas aulas e pontuação extra ao
   Guerreiro(a) que ajudou o colega.
-- **Lançamento de pontuação negativa** — o Mestre também lança, pela App 09, com motivo
-  registrado e sem revisão de outro Admin.
+- **Lançamento de pontuação negativa** — o Mestre também lança, pela App 03 ou pela App 09,
+  com motivo registrado e sem revisão de outro Admin.
 - **Gestão de recursos** necessários às atividades (aportes e baixa de consumo).
 - **Aprovação de desafios extras** propostos pelos Apoiadores na App 08, após validação
   pedagógica do Mestre da trilha.

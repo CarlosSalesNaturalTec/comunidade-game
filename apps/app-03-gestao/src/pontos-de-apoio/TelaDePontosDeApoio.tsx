@@ -4,6 +4,7 @@ import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useCallback, useEffect, useId, useState } from "react";
 import { type ComunidadeDaLista, listarComunidades } from "../comunidades/api";
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "./api";
+import { ExtratoDoPontoDeApoio } from "./ExtratoDoPontoDeApoio";
 import { FormularioDePontoDeApoio } from "./FormularioDePontoDeApoio";
 import { ListaDePontosDeApoio } from "./ListaDePontosDeApoio";
 import { TransferenciaDeSaldo } from "./TransferenciaDeSaldo";
@@ -17,6 +18,8 @@ export function TelaDePontosDeApoio() {
   const [erro, definirErro] = useState<string | null>(null);
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
   const [origemDaTransferencia, definirOrigemDaTransferencia] =
+    useState<PontoDeApoioDaLista | null>(null);
+  const [pontoDeApoioDoExtrato, definirPontoDeApoioDoExtrato] =
     useState<PontoDeApoioDaLista | null>(null);
 
   // O caminho de cadastro não é oferecido a quem não é Admin (`RF-07-47`).
@@ -110,12 +113,18 @@ export function TelaDePontosDeApoio() {
           }}
           onCancelar={() => definirOrigemDaTransferencia(null)}
         />
+      ) : pontoDeApoioDoExtrato ? (
+        <ExtratoDoPontoDeApoio
+          pontoDeApoio={pontoDeApoioDoExtrato}
+          onVoltar={() => definirPontoDeApoioDoExtrato(null)}
+        />
       ) : (
         <ListaDePontosDeApoio
           pontosDeApoio={pontosDeApoio}
           podeGerenciar={podeCadastrar}
           aoMudarSituacao={carregar}
           aoIrParaTransferencia={definirOrigemDaTransferencia}
+          aoIrParaExtrato={definirPontoDeApoioDoExtrato}
         />
       )}
     </Moldura>

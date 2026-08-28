@@ -81,13 +81,14 @@ poder tocar a partida.
 | Persona   | O que faz nesta aplicação                                                             | O que não pode fazer                                                |
 | --------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | Admin     | Tudo: cadastros, aprovações, agenda, lançamentos, filas, acervo, recursos e auditoria | Registrar coleta no lugar do Guerreiro(a); criar conteúdo de trilha |
-| Mestre    | Lê o painel do dia e conduz o Quiz ao Vivo das suas aulas                             | Escrever nas demais rotas de gestão — o que é dele fica na App 09   |
+| Mestre    | Lê o painel do dia, conduz o Quiz ao Vivo e registra a infração das suas aulas        | Escrever nas demais rotas de gestão — o que é dele fica na App 09   |
 | Visitante | Nada: a aplicação é inteiramente autenticada                                          | Acessar qualquer tela                                               |
 
-O Mestre entra por login social, como todo adulto. Nesta aplicação ele lê o painel do dia e
-conduz a partida de quiz das suas aulas — nada além disso. A homologação da equipe da trilha
-passou à App 01, o aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o
-PRD-04 (`RF-04-62`) e **não é reaproveitado**.
+O Mestre entra por login social, como todo adulto. Nesta aplicação ele lê o painel do dia,
+conduz a partida de quiz das suas aulas e registra a infração ocorrida sobre atividade de
+trilha que autora — nada além disso. A homologação da equipe da trilha passou à App 01, o
+aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 (`RF-04-62`) e
+**não é reaproveitado**.
 
 ## 5. Jornadas principais
 
@@ -279,7 +280,7 @@ PRD-04 (`RF-04-62`) e **não é reaproveitado**.
 | `RF-02-46`, `RF-02-47` | Painel lista os lançamentos pendentes do encontro — o que falta lançar antes de a aula terminar                                       | essencial  |
 | `RF-02-69`             | Painel lista os termos de biometria assinados e ainda sem digitalização anexada                                                       | essencial  |
 | `RF-02-48`             | Painel atualiza sozinho durante o encontro, sem recarga manual                                                                        | essencial  |
-| `RF-02-49`             | Mestre lê o painel do dia e recebe recusa em toda escrita que não seja a do Quiz ao Vivo                                              | essencial  |
+| `RF-02-49`             | Mestre lê o painel do dia e recebe recusa em toda escrita que não seja a do Quiz ao Vivo e da infração das suas atividades            | essencial  |
 
 ### 6.5 Acervo, recursos e Quiz ao Vivo
 
@@ -311,38 +312,38 @@ PRD-04 (`RF-04-62`) e **não é reaproveitado**.
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                                             | Invariante | Fonte      |
-| ---------- | ----------------------------------------------------------------------------------------------------------------- | ---------- | ---------- |
-| `RN-02-01` | Mestre e Apoiador são cadastrados só por Admin, com link comprobatório declarado                                  | 3          | 02 §1      |
-| `RN-02-02` | Novo Admin só entra por inclusão manual de outro Admin                                                            | 3          | 02 §1      |
-| `RN-02-03` | Solicitação de participação não cria cadastro nem acesso                                                          | 3          | 02 §1      |
-| `RN-02-26` | Nenhum conjunto de dados sai sem aprovação de Admin, e a entrega é gratuita e anonimizada                         | 17         | 03 §12.3   |
-| `RN-02-27` | Nenhuma chave é emitida sem aprovação de Admin; o formulário da vitrine só enfileira o pedido                     | 3          | 03 §8      |
-| `RN-02-28` | O segredo da chave é exibido uma única vez e não é recuperável depois                                             | —          | 03 §1      |
-| `RN-02-29` | Chave sem URL apresentada em 30 dias é revogada pelo núcleo, sem ato de Admin                                     | —          | 03 §8      |
-| `RN-02-30` | O encerramento do ciclo não congela indicador: os quatro da lista pública seguem apurados no instante da consulta | —          | 02 §1      |
-| `RN-02-04` | Comunidade Virtual é criada apenas por Admin e nasce vazia                                                        | 4          | 02 §1      |
-| `RN-02-05` | Sem aula agendada para a data e o horário, o App 01 não opera                                                     | 4          | 02 §1      |
-| `RN-02-06` | O Guerreiro(a) não muda de comunidade no Ciclo 01; a transferência existe no modelo, com data                     | 4          | 02 §1      |
-| `RN-02-07` | Equipe tem no máximo cinco integrantes e no máximo um familiar de 17 anos ou mais                                 | 15         | 02 §5      |
-| `RN-02-08` | Cada Guerreiro(a) tem no máximo três responsáveis, com grau de parentesco em texto livre                          | 3          | 02 §1      |
-| `RN-02-09` | Atividade sem lastro fica pendente e publica a necessidade; realizada, nunca sem recurso                          | 9          | 04 §1      |
-| `RN-02-10` | Desafio extra só é aprovado por Admin depois da validação do Mestre da trilha                                     | —          | 04 §3      |
-| `RN-02-11` | Desafio extra só é publicado com o lastro da recompensa registrado                                                | 9          | 04 §3      |
-| `RN-02-12` | Lançamento não é editado nem apagado: correção é novo lançamento de ajuste                                        | —          | 04 §1      |
-| `RN-02-13` | Pontuação negativa é lançada pelo Mestre ou pelo Admin, com motivo e sem revisão de terceiro                      | —          | 02 §4      |
-| `RN-02-14` | Descuido acidental com material comum não é infração e não gera pontuação negativa                                | —          | 05 §3      |
-| `RN-02-15` | Sobre o livro próprio do Guerreiro(a) não incide pontuação negativa em hipótese alguma                            | —          | 05 §3      |
-| `RN-02-16` | Perda ou dano de material comum não gera débito ao Guerreiro(a) nem à família                                     | —          | 05 §3      |
-| `RN-02-17` | Exemplar da linha Alpha e camisa entregues têm baixa definitiva no livro-razão                                    | —          | 05 §3      |
-| `RN-02-18` | Exemplar permanente não sai do ponto de apoio; a retirada registrada é do ciclo seguinte                          | —          | 05 §3      |
-| `RN-02-19` | Aporte aparece publicamente em moedas da plataforma, nunca em reais                                               | 16         | 04 §1      |
-| `RN-02-20` | Mestre acessa esta aplicação para ler o painel do dia e conduzir a partida de quiz                                | —          | 03 §5      |
-| `RN-02-21` | Toda escrita da gestão é registrada na trilha de auditoria, com autor, papel, data e hora                         | —          | 03 §1      |
-| `RN-02-22` | Nenhuma tela de gestão exibe a imagem real do Guerreiro(a) — a representação é o avatar                           | 12         | 03 §12     |
-| `RN-02-23` | Nenhuma recusa de consentimento exclui o Guerreiro(a) da atividade nem do lançamento                              | 11         | 03 §12     |
-| `RN-02-24` | Autoria de trilha, conteúdo, atividades da missão, marco e coleta é do Mestre, na App 09                          | —          | 03 §§5, 11 |
-| `RN-02-25` | No Ciclo 01 não há notificação por e-mail: todo retorno acontece dentro da plataforma                             | —          | 03 §9      |
+| ID         | Regra                                                                                                                        | Invariante | Fonte      |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------- | ---------- |
+| `RN-02-01` | Mestre e Apoiador são cadastrados só por Admin, com link comprobatório declarado                                             | 3          | 02 §1      |
+| `RN-02-02` | Novo Admin só entra por inclusão manual de outro Admin                                                                       | 3          | 02 §1      |
+| `RN-02-03` | Solicitação de participação não cria cadastro nem acesso                                                                     | 3          | 02 §1      |
+| `RN-02-26` | Nenhum conjunto de dados sai sem aprovação de Admin, e a entrega é gratuita e anonimizada                                    | 17         | 03 §12.3   |
+| `RN-02-27` | Nenhuma chave é emitida sem aprovação de Admin; o formulário da vitrine só enfileira o pedido                                | 3          | 03 §8      |
+| `RN-02-28` | O segredo da chave é exibido uma única vez e não é recuperável depois                                                        | —          | 03 §1      |
+| `RN-02-29` | Chave sem URL apresentada em 30 dias é revogada pelo núcleo, sem ato de Admin                                                | —          | 03 §8      |
+| `RN-02-30` | O encerramento do ciclo não congela indicador: os quatro da lista pública seguem apurados no instante da consulta            | —          | 02 §1      |
+| `RN-02-04` | Comunidade Virtual é criada apenas por Admin e nasce vazia                                                                   | 4          | 02 §1      |
+| `RN-02-05` | Sem aula agendada para a data e o horário, o App 01 não opera                                                                | 4          | 02 §1      |
+| `RN-02-06` | O Guerreiro(a) não muda de comunidade no Ciclo 01; a transferência existe no modelo, com data                                | 4          | 02 §1      |
+| `RN-02-07` | Equipe tem no máximo cinco integrantes e no máximo um familiar de 17 anos ou mais                                            | 15         | 02 §5      |
+| `RN-02-08` | Cada Guerreiro(a) tem no máximo três responsáveis, com grau de parentesco em texto livre                                     | 3          | 02 §1      |
+| `RN-02-09` | Atividade sem lastro fica pendente e publica a necessidade; realizada, nunca sem recurso                                     | 9          | 04 §1      |
+| `RN-02-10` | Desafio extra só é aprovado por Admin depois da validação do Mestre da trilha                                                | —          | 04 §3      |
+| `RN-02-11` | Desafio extra só é publicado com o lastro da recompensa registrado                                                           | 9          | 04 §3      |
+| `RN-02-12` | Lançamento não é editado nem apagado: correção é novo lançamento de ajuste                                                   | —          | 04 §1      |
+| `RN-02-13` | Pontuação negativa é lançada pelo Mestre ou pelo Admin, com motivo e sem revisão de terceiro                                 | —          | 02 §4      |
+| `RN-02-14` | Descuido acidental com material comum não é infração e não gera pontuação negativa                                           | —          | 05 §3      |
+| `RN-02-15` | Sobre o livro próprio do Guerreiro(a) não incide pontuação negativa em hipótese alguma                                       | —          | 05 §3      |
+| `RN-02-16` | Perda ou dano de material comum não gera débito ao Guerreiro(a) nem à família                                                | —          | 05 §3      |
+| `RN-02-17` | Exemplar da linha Alpha e camisa entregues têm baixa definitiva no livro-razão                                               | —          | 05 §3      |
+| `RN-02-18` | Exemplar permanente não sai do ponto de apoio; a retirada registrada é do ciclo seguinte                                     | —          | 05 §3      |
+| `RN-02-19` | Aporte aparece publicamente em moedas da plataforma, nunca em reais                                                          | 16         | 04 §1      |
+| `RN-02-20` | Mestre acessa esta aplicação para ler o painel do dia, conduzir a partida de quiz e registrar a infração das suas atividades | —          | 03 §5      |
+| `RN-02-21` | Toda escrita da gestão é registrada na trilha de auditoria, com autor, papel, data e hora                                    | —          | 03 §1      |
+| `RN-02-22` | Nenhuma tela de gestão exibe a imagem real do Guerreiro(a) — a representação é o avatar                                      | 12         | 03 §12     |
+| `RN-02-23` | Nenhuma recusa de consentimento exclui o Guerreiro(a) da atividade nem do lançamento                                         | 11         | 03 §12     |
+| `RN-02-24` | Autoria de trilha, conteúdo, atividades da missão, marco e coleta é do Mestre, na App 09                                     | —          | 03 §§5, 11 |
+| `RN-02-25` | No Ciclo 01 não há notificação por e-mail: todo retorno acontece dentro da plataforma                                        | —          | 03 §9      |
 
 ## 8. Modelo de dados
 
@@ -374,8 +375,8 @@ atributos que sustentam duas decisões: **comunidade, data e horários** — que
 e dão a comunidade do novo cadastro — e a **situação**, que distingue a atividade pendente de
 lastro da confirmada.
 
-A infração e a pontuação negativa **não criam entidade**: são `Resultado` de valor negativo,
-vinculado ao encontro ou à atividade, ao Guerreiro(a) e ao motivo registrado. Correção de
+A infração e a pontuação negativa são `OcorrenciaDeConduta`, entidade do núcleo (`RF-01-57`),
+vinculada ao encontro e à atividade, ao Guerreiro(a) e ao motivo registrado. Correção de
 lançamento é `Lancamento` de ajuste referenciando o original, conforme o PRD-07.
 
 ## 9. Contratos de API
@@ -414,8 +415,10 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | POST   | `/v1/aulas`                                       | Admin           | Agenda a aula com comunidade, data e horários, e dispara a reserva          |
 | POST   | `/v1/aulas/{id}/lancamentos`                      | Admin           | Lança a atividade realizada e os resultados, convertendo a reserva em baixa |
 | POST   | `/v1/aulas/{id}/cancelamento`                     | Admin ou Mestre | Cancela a aula agendada com motivo e libera a reserva                       |
-| POST   | `/v1/aulas/{id}/presencas`                        | Admin           | Confirma ou ajusta presença, com registro do ajuste                         |
-| POST   | `/v1/aulas/{id}/ocorrencias`                      | Mestre ou Admin | Registra infração e a pontuação negativa correspondente                     |
+| POST   | `/v1/aulas/{id}/presencas`                        | Admin           | Confirma a presença que faltou, com registro de quem confirmou              |
+| POST   | `/v1/aulas/{id}/presencas/{id}/anulacao`          | Admin           | Anula a presença registrada por engano, com motivo, sem apagar o registro   |
+| POST   | `/v1/ocorrencias-de-conduta`                      | Mestre ou Admin | Registra infração e a pontuação negativa correspondente                     |
+| GET    | `/v1/lancamentos`                                 | Admin           | Lançamentos de um ponto de apoio, filtro obrigatório de ponto de apoio      |
 | GET    | `/v1/painel-do-dia`                               | Mestre ou Admin | Estado do encontro em andamento, em leitura                                 |
 | POST   | `/v1/partidas-de-quiz`                            | Mestre ou Admin | Abre a partida com banco de perguntas e equipes                             |
 | POST   | `/v1/partidas-de-quiz/{id}/perguntas`             | Mestre ou Admin | Dá o _start_ da pergunta corrente                                           |
@@ -433,7 +436,8 @@ formada no App 01 (403); quarto responsável do mesmo
 Guerreiro(a) (422); aprovação de desafio extra sem validação do Mestre (409) ou sem lastro
 (422); tentativa de editar lançamento (405); escrita de Mestre em rota de gestão que não seja a
 do quiz ou a de ocorrência (403); condução de partida por Mestre que não ministra aquela aula
-(403).
+(403); anulação de presença já anulada (409) ou sem motivo (422); listagem de lançamentos sem o
+filtro de ponto de apoio (422).
 
 ## 10. Requisitos não funcionais
 

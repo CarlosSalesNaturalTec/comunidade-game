@@ -1,3 +1,4 @@
+import uuid
 from datetime import UTC, datetime, timedelta
 
 from nucleo.aulas.modelo import ModoDeComprovacao, Presenca
@@ -362,6 +363,323 @@ def test_atividades_saem_separadas_por_formato(
     corpo = resposta.json()
     assert [a["id"] for a in corpo["atividades_presenciais"]] == [str(presencial.id)]
     assert [a["id"] for a in corpo["atividades_on_line"]] == [str(on_line.id)]
+
+
+def test_admin_anula_presenca_registrada_por_engano(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    sessao,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    registrada = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "confirmacao",
+            "momento_do_fato": MOMENTO_DO_FATO.isoformat(),
+        },
+        headers=headers,
+    )
+    id_da_presenca = registrada.json()["id"]
+
+    resposta = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas/{id_da_presenca}/anulacao",
+        json={"motivo": "Reconhecimento apontou a pessoa errada."},
+        headers=headers,
+    )
+
+    assert resposta.status_code == 201
+    corpo = resposta.json()
+    assert corpo["anulada_em"] is not None
+    assert corpo["anulada_por_id"] == str(admin.id)
+    assert corpo["motivo_da_anulacao"] == "Reconhecimento apontou a pessoa errada."
+
+    presenca = sessao.query(Presenca).filter_by(id=id_da_presenca).one()
+    assert presenca.modo == ModoDeComprovacao.confirmacao
+    assert presenca.momento_do_fato == MOMENTO_DO_FATO
+
+
+def test_anulacao_sem_motivo_e_recusada(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    registrada = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "confirmacao",
+            "momento_do_fato": MOMENTO_DO_FATO.isoformat(),
+        },
+        headers=headers,
+    )
+    id_da_presenca = registrada.json()["id"]
+
+    resposta = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas/{id_da_presenca}/anulacao",
+        json={"motivo": ""},
+        headers=headers,
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_presenca_ja_anulada_nao_se_anula_de_novo(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    registrada = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "confirmacao",
+            "momento_do_fato": MOMENTO_DO_FATO.isoformat(),
+        },
+        headers=headers,
+    )
+    id_da_presenca = registrada.json()["id"]
+
+    primeira = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas/{id_da_presenca}/anulacao",
+        json={"motivo": "Engano."},
+        headers=headers,
+    )
+    segunda = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas/{id_da_presenca}/anulacao",
+        json={"motivo": "De novo."},
+        headers=headers,
+    )
+
+    assert primeira.status_code == 201
+    assert segunda.status_code == 409
+
+
+def test_mestre_nao_anula_presenca(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    criar_vinculo_jogador,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    token_do_admin, _ = criar_sessao_de_teste(admin)
+    token_do_mestre, _ = criar_sessao_de_teste(mestre)
+    comunidade = criar_comunidade()
+    criar_vinculo_jogador(mestre, comunidade)
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+
+    registrada = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "confirmacao",
+            "momento_do_fato": MOMENTO_DO_FATO.isoformat(),
+        },
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_admin}"},
+    )
+    id_da_presenca = registrada.json()["id"]
+
+    resposta = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas/{id_da_presenca}/anulacao",
+        json={"motivo": "Engano."},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_mestre}"},
+    )
+
+    assert resposta.status_code == 403
+
+
+def test_registro_correto_e_aceito_depois_da_anulacao(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    sessao,
+):
+    """Anulada a presença, o par (aula, guerreiro) volta a aceitar o
+    registro correto, sem que a anulada seja tocada (`RF-02-36`,
+    `RN-02-12`)."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    errada = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "confirmacao",
+            "momento_do_fato": MOMENTO_DO_FATO.isoformat(),
+        },
+        headers=headers,
+    )
+    id_da_errada = errada.json()["id"]
+
+    cliente.post(
+        f"/v1/aulas/{aula.id}/presencas/{id_da_errada}/anulacao",
+        json={"motivo": "Reconhecimento apontou a pessoa errada."},
+        headers=headers,
+    )
+
+    momento_correto = MOMENTO_DO_FATO + timedelta(minutes=10)
+    correta = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "confirmacao",
+            "momento_do_fato": momento_correto.isoformat(),
+        },
+        headers=headers,
+    )
+
+    assert correta.status_code == 201
+    assert correta.json()["id"] != id_da_errada
+    assert correta.json()["anulada_em"] is None
+
+    presencas = sessao.query(Presenca).filter_by(aula_id=aula.id, guerreiro_id=guerreiro.id).all()
+    assert len(presencas) == 2
+    anulada = next(p for p in presencas if p.id == uuid.UUID(id_da_errada))
+    assert anulada.anulada_em is not None
+
+
+def test_presenca_anulada_nao_aparece_no_painel_do_dia(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    registrada = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "confirmacao",
+            "momento_do_fato": MOMENTO_DO_FATO.isoformat(),
+        },
+        headers=headers,
+    )
+    id_da_presenca = registrada.json()["id"]
+
+    cliente.post(
+        f"/v1/aulas/{aula.id}/presencas/{id_da_presenca}/anulacao",
+        json={"motivo": "Engano."},
+        headers=headers,
+    )
+
+    painel = cliente.get("/v1/painel-do-dia", headers=headers)
+
+    assert painel.status_code == 200
+    ids_no_painel = [item["guerreiro_id"] for item in painel.json()["presencas"]]
+    assert str(guerreiro.id) not in ids_no_painel
+
+
+def test_reenvio_da_app_01_nao_ressuscita_presenca_anulada(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+):
+    """O reenvio idempotente não pode devolver a presença que o Admin
+    acabou de anular — sem isso o ajuste manual do `RF-02-36` não se
+    completa (design — decisão 6)."""
+    chave_da_gestao, _ = criar_chave()
+    chave_do_encontro, _ = criar_chave(aplicacao="app-01-aula-presencial")
+    admin = criar_persona(Papel.admin)
+    token_do_admin, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+
+    registrada = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "reconhecimento",
+            "momento_do_fato": MOMENTO_DO_FATO.isoformat(),
+        },
+        headers={
+            "X-Chave-Aplicacao": chave_do_encontro,
+            "Authorization": f"Bearer {token_do_admin}",
+        },
+    )
+    id_da_anulada = registrada.json()["id"]
+
+    cliente.post(
+        f"/v1/aulas/{aula.id}/presencas/{id_da_anulada}/anulacao",
+        json={"motivo": "Reconheceu a pessoa errada."},
+        headers={"X-Chave-Aplicacao": chave_da_gestao, "Authorization": f"Bearer {token_do_admin}"},
+    )
+
+    reenvio = cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": "reconhecimento",
+            "momento_do_fato": MOMENTO_DO_FATO.isoformat(),
+        },
+        headers={
+            "X-Chave-Aplicacao": chave_do_encontro,
+            "Authorization": f"Bearer {token_do_admin}",
+        },
+    )
+
+    assert reenvio.status_code == 201
+    assert reenvio.json()["id"] != id_da_anulada
+    assert reenvio.json()["anulada_em"] is None
 
 
 def test_papel_sem_a_operacao_e_recusado_em_minhas_turmas(

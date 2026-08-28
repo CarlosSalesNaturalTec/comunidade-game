@@ -2,10 +2,12 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as comunidadesApi from "../comunidades/api";
-import type { PontoDeApoioDaLista } from "./api";
+import * as recursosApi from "../recursos/api";
+import type { LancamentoDoExtrato, PontoDeApoioDaLista } from "./api";
 import * as pontosDeApoioApi from "./api";
+import { ExtratoDoPontoDeApoio } from "./ExtratoDoPontoDeApoio";
 import { FormularioDePontoDeApoio } from "./FormularioDePontoDeApoio";
 import { TelaDePontosDeApoio } from "./TelaDePontosDeApoio";
 import { TransferenciaDeSaldo } from "./TransferenciaDeSaldo";
@@ -472,5 +474,166 @@ describe("transferência de saldo entre pontos de apoio", () => {
       await screen.findByText(/o saldo dispon[íi]vel na origem é 3\.00/i),
     ).toBeInTheDocument();
     expect(transferirEspiado).not.toHaveBeenCalled();
+  });
+});
+
+describe("extrato e ajuste do livro-razão (RF-02-40)", () => {
+  const PONTO_DO_EXTRATO: PontoDeApoioDaLista = {
+    id: "ponto-1",
+    nome: "Sede",
+    comunidade_virtual_id: COMUNIDADE.id,
+    responsavel_id: null,
+    ativo: true,
+  };
+
+  const CREDITO: LancamentoDoExtrato = {
+    id: "lancamento-1",
+    natureza: "credito",
+    tipo_de_recurso_id: "tipo-1",
+    ponto_de_apoio_id: PONTO_DO_EXTRATO.id,
+    quantidade: "3.00",
+    valor_em_moedas: "3.00",
+    lancamento_original_id: null,
+    motivo_do_ajuste: null,
+    lancamento_relacionado_id: null,
+  };
+
+  beforeEach(() => {
+    vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([
+      {
+        id: "tipo-1",
+        nome: "Lanche",
+        natureza: "consumivel",
+        unidade: "unidade",
+        exige_comprovante: false,
+        valor_em_moedas: "1.00",
+        vigencia_inicio: "2026-01-01",
+      },
+    ]);
+  });
+
+  it("apresenta o extrato do ponto de apoio", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(pontosDeApoioApi, "listarLancamentos").mockResolvedValue({
+      itens: [CREDITO],
+      proximo_cursor: null,
+    });
+
+    render(<ExtratoDoPontoDeApoio pontoDeApoio={PONTO_DO_EXTRATO} onVoltar={vi.fn()} />);
+
+    expect(await screen.findByText(/credito/i)).toBeInTheDocument();
+    expect(screen.getByText(/3\.00/)).toBeInTheDocument();
+  });
+
+  it("nenhum lançamento oferece caminho de edição ou de remoção", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(pontosDeApoioApi, "listarLancamentos").mockResolvedValue({
+      itens: [CREDITO],
+      proximo_cursor: null,
+    });
+
+    render(<ExtratoDoPontoDeApoio pontoDeApoio={PONTO_DO_EXTRATO} onVoltar={vi.fn()} />);
+    await screen.findByText(/credito/i);
+
+    expect(
+      screen.queryByRole("button", { name: /editar|excluir|remover/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /ajustar/i })).toBeInTheDocument();
+  });
+
+  it("lança o ajuste referenciando o original, e o extrato o mostra", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(pontosDeApoioApi, "listarLancamentos")
+      .mockResolvedValueOnce({ itens: [CREDITO], proximo_cursor: null })
+      .mockResolvedValueOnce({
+        itens: [
+          CREDITO,
+          {
+            id: "lancamento-2",
+            natureza: "ajuste",
+            tipo_de_recurso_id: "tipo-1",
+            ponto_de_apoio_id: PONTO_DO_EXTRATO.id,
+            quantidade: "-1.00",
+            valor_em_moedas: "-1.00",
+            lancamento_original_id: CREDITO.id,
+            motivo_do_ajuste: "Corrige a maior.",
+            lancamento_relacionado_id: null,
+          },
+        ],
+        proximo_cursor: null,
+      });
+    const ajustar = vi.spyOn(pontosDeApoioApi, "lancarAjuste").mockResolvedValue({
+      id: "lancamento-2",
+      natureza: "ajuste",
+      tipo_de_recurso_id: "tipo-1",
+      ponto_de_apoio_id: PONTO_DO_EXTRATO.id,
+      quantidade: "-1.00",
+      valor_em_moedas: "-1.00",
+      lancamento_original_id: CREDITO.id,
+      motivo_do_ajuste: "Corrige a maior.",
+      lancamento_relacionado_id: null,
+    });
+
+    render(<ExtratoDoPontoDeApoio pontoDeApoio={PONTO_DO_EXTRATO} onVoltar={vi.fn()} />);
+    await screen.findByText(/credito/i);
+
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /ajustar/i }));
+    await usuario.type(screen.getByLabelText(/quantidade do ajuste/i), "-1");
+    await usuario.type(screen.getByLabelText(/valor em moedas do ajuste/i), "-1");
+    await usuario.type(screen.getByLabelText(/^motivo$/i), "Corrige a maior.");
+    await usuario.click(screen.getByRole("button", { name: /confirmar ajuste/i }));
+
+    await waitFor(() =>
+      expect(ajustar).toHaveBeenCalledWith(
+        CREDITO.id,
+        { quantidade: "-1", valor_em_moedas: "-1", motivo: "Corrige a maior." },
+        "token-do-admin",
+      ),
+    );
+    expect(await screen.findByText(/corrige a maior/i)).toBeInTheDocument();
+  });
+
+  it("motivo é obrigatório para o ajuste", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(pontosDeApoioApi, "listarLancamentos").mockResolvedValue({
+      itens: [CREDITO],
+      proximo_cursor: null,
+    });
+    const ajustar = vi.spyOn(pontosDeApoioApi, "lancarAjuste");
+
+    render(<ExtratoDoPontoDeApoio pontoDeApoio={PONTO_DO_EXTRATO} onVoltar={vi.fn()} />);
+    await screen.findByText(/credito/i);
+
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /ajustar/i }));
+    await usuario.type(screen.getByLabelText(/quantidade do ajuste/i), "-1");
+    await usuario.type(screen.getByLabelText(/valor em moedas do ajuste/i), "-1");
+    await usuario.click(screen.getByRole("button", { name: /confirmar ajuste/i }));
+
+    expect(await screen.findByText(/informe o motivo do ajuste/i)).toBeInTheDocument();
+    expect(ajustar).not.toHaveBeenCalled();
+  });
+
+  it("filtra o extrato por período e por tipo de recurso", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    const listar = vi.spyOn(pontosDeApoioApi, "listarLancamentos").mockResolvedValue({
+      itens: [CREDITO],
+      proximo_cursor: null,
+    });
+
+    render(<ExtratoDoPontoDeApoio pontoDeApoio={PONTO_DO_EXTRATO} onVoltar={vi.fn()} />);
+    await screen.findByText(/credito/i);
+
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/tipo de recurso/i), "tipo-1");
+
+    await waitFor(() =>
+      expect(listar).toHaveBeenLastCalledWith(
+        PONTO_DO_EXTRATO.id,
+        "token-do-admin",
+        expect.objectContaining({ tipoDeRecursoId: "tipo-1" }),
+      ),
+    );
   });
 });

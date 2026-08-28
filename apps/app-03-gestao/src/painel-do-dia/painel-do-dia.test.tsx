@@ -67,6 +67,7 @@ function painelDoEncontro(sobrescreve: Partial<PainelDoDia> = {}): PainelDoDia {
     ponto_de_apoio_id: "ponto-1",
     presencas: [
       {
+        id: "presenca-1",
         guerreiro_id: "guerreiro-1",
         avatar: null,
         nick: "zeferina",

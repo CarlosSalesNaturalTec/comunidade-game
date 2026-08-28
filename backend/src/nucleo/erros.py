@@ -271,6 +271,12 @@ class DigitalizacaoDoTermoJaAnexada(ErroDeAplicacao):
     mensagem = "Este consentimento já tem uma digitalização anexada."
 
 
+class PresencaJaAnulada(ErroDeAplicacao):
+    status_code = 409
+    codigo = "presenca_ja_anulada"
+    mensagem = "Esta presença já foi anulada."
+
+
 class TrilhaSemCulminanciaDeclarada(ErroDeAplicacao):
     status_code = 409
     codigo = "trilha_sem_culminancia_declarada"

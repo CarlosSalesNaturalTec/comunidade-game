@@ -6,6 +6,7 @@ export interface AvatarENick {
 }
 
 export interface PresencaDoPainel extends AvatarENick {
+  id: string;
   guerreiro_id: string;
   modo: "reconhecimento" | "confirmacao";
   confirmador_id: string | null;

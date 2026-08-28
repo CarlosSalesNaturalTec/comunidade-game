@@ -1,4 +1,4 @@
-import { EstadoDaLista } from "comum/react";
+import { Botao, EstadoDaLista } from "comum/react";
 import "./ListaDePontosDeApoio.css";
 import type { PontoDeApoioDaLista } from "./api";
 import { MudarSituacaoDoPontoDeApoio } from "./MudarSituacaoDoPontoDeApoio";
@@ -8,6 +8,7 @@ interface Props {
   podeGerenciar: boolean;
   aoMudarSituacao: () => void;
   aoIrParaTransferencia: (pontoDeApoio: PontoDeApoioDaLista) => void;
+  aoIrParaExtrato: (pontoDeApoio: PontoDeApoioDaLista) => void;
 }
 
 // O ponto de apoio sem responsável designado é informação, nunca pendência
@@ -20,6 +21,7 @@ export function ListaDePontosDeApoio({
   podeGerenciar,
   aoMudarSituacao,
   aoIrParaTransferencia,
+  aoIrParaExtrato,
 }: Props) {
   if (pontosDeApoio === null) {
     return <EstadoDaLista>Carregando pontos de apoio…</EstadoDaLista>;
@@ -58,6 +60,11 @@ export function ListaDePontosDeApoio({
               onConcluido={aoMudarSituacao}
               onIrParaTransferencia={() => aoIrParaTransferencia(pontoDeApoio)}
             />
+          )}
+          {podeGerenciar && (
+            <Botao variante="secundaria" onClick={() => aoIrParaExtrato(pontoDeApoio)}>
+              Extrato
+            </Botao>
           )}
         </li>
       ))}
