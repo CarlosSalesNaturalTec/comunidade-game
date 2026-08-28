@@ -1,5 +1,6 @@
 import { ProvedorDeSessao, useSessao } from "comum/autenticacao";
 import { useState } from "react";
+import { TelaDoAcervo } from "./acervo/TelaDoAcervo";
 import { TelaDaAgenda } from "./agenda/TelaDaAgenda";
 import { TelaDeAtividades } from "./atividades/TelaDeAtividades";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
@@ -20,6 +21,7 @@ type Area =
   | "comunidades"
   | "poderes"
   | "pontos-de-apoio"
+  | "acervo"
   | "agenda"
   | "recursos"
   | "atividades"
@@ -36,6 +38,7 @@ const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "comunidades", rotulo: "Comunidades" },
   { chave: "poderes", rotulo: "Poderes" },
   { chave: "pontos-de-apoio", rotulo: "Pontos de Apoio" },
+  { chave: "acervo", rotulo: "Acervo" },
   { chave: "agenda", rotulo: "Agenda" },
   { chave: "recursos", rotulo: "Recursos" },
   { chave: "atividades", rotulo: "Atividades" },
@@ -92,6 +95,7 @@ function Conteudo() {
       {area === "comunidades" && <TelaDeComunidades />}
       {area === "poderes" && <TelaDePoderes />}
       {area === "pontos-de-apoio" && <TelaDePontosDeApoio />}
+      {area === "acervo" && <TelaDoAcervo />}
       {area === "agenda" && <TelaDaAgenda />}
       {area === "recursos" && <TelaDeRecursos />}
       {area === "atividades" && <TelaDeAtividades />}

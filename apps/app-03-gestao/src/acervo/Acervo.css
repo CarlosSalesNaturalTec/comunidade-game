@@ -1,0 +1,54 @@
+/* Lista densa do temperamento Operação (documento 15 §6), mesmo desenho de
+ * `pontos-de-apoio/ListaDePontosDeApoio.css`. */
+.lista-do-acervo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--densidade);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.lista-do-acervo__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  padding: var(--espaco-8) var(--espaco-12);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.lista-do-acervo__linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--espaco-8) var(--espaco-16);
+}
+
+.lista-do-acervo__titulo {
+  font-weight: var(--peso-rotulo);
+}
+
+.lista-do-acervo__responsavel {
+  color: var(--cor-texto-secundario);
+}
+
+.lista-do-acervo__ficha {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  padding-left: var(--espaco-12);
+  border-left: 2px solid var(--cor-separador);
+}
+
+.ficha-de-vida {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.ficha-de-vida__teor {
+  font-weight: var(--peso-rotulo);
+}

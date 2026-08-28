@@ -4,6 +4,7 @@ import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as comunidadesApi from "../comunidades/api";
+import * as personasApi from "../personas/api";
 import * as recursosApi from "../recursos/api";
 import type { LancamentoDoExtrato, PontoDeApoioDaLista } from "./api";
 import * as pontosDeApoioApi from "./api";
@@ -62,6 +63,20 @@ function configurarSessao(sessao: SessaoAberta | null) {
 
 afterEach(() => {
   vi.restoreAllMocks();
+});
+
+// Os Mestres e Apoiadores cadastrados são carregados sempre que a tela
+// abre, para resolver o nome do responsável e oferecer a designação
+// (`RF-07-49`) — vazio por padrão, sobrescrito nos testes de designação.
+beforeEach(() => {
+  vi.spyOn(personasApi, "listarMestres").mockResolvedValue({
+    itens: [],
+    proximo_cursor: null,
+  });
+  vi.spyOn(personasApi, "listarApoiadores").mockResolvedValue({
+    itens: [],
+    proximo_cursor: null,
+  });
 });
 
 describe("cadastro de ponto de apoio", () => {
@@ -635,5 +650,120 @@ describe("extrato e ajuste do livro-razão (RF-02-40)", () => {
         expect.objectContaining({ tipoDeRecursoId: "tipo-1" }),
       ),
     );
+  });
+});
+
+describe("designação do responsável pelo acervo (RF-07-49)", () => {
+  const MESTRE = {
+    id: "mestre-1",
+    nome: "Mestre Um",
+    email: "m@x.com",
+    whatsapp: null,
+    nick: null,
+    artefatos: [],
+  };
+  const OUTRO_MESTRE = {
+    id: "mestre-2",
+    nome: "Mestre Dois",
+    email: "m2@x.com",
+    whatsapp: null,
+    nick: null,
+    artefatos: [],
+  };
+
+  it("Admin designa um Mestre, e a lista passa a apresentar o nome", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "listarMestres").mockResolvedValue({
+      itens: [MESTRE],
+      proximo_cursor: null,
+    });
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
+      itens: [COMUNIDADE],
+      proximo_cursor: null,
+      ciclo_rotulo: "2026",
+    });
+    vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio")
+      .mockResolvedValueOnce({ itens: [PONTO_ATIVO], proximo_cursor: null })
+      .mockResolvedValueOnce({
+        itens: [{ ...PONTO_ATIVO, responsavel_id: MESTRE.id }],
+        proximo_cursor: null,
+      });
+    const designar = vi.spyOn(pontosDeApoioApi, "designarResponsavel").mockResolvedValue({
+      ...PONTO_ATIVO,
+      responsavel_id: MESTRE.id,
+    });
+
+    render(<TelaDePontosDeApoio />);
+    const usuario = userEvent.setup();
+
+    await usuario.click(await screen.findByRole("button", { name: /designar responsável/i }));
+    await usuario.selectOptions(screen.getByLabelText(/responsável pelo acervo/i), MESTRE.id);
+    await usuario.click(screen.getByRole("button", { name: /^confirmar$/i }));
+
+    await waitFor(() =>
+      expect(designar).toHaveBeenCalledWith(PONTO_ATIVO.id, MESTRE.id, "token-do-admin"),
+    );
+    expect(await screen.findByText("Mestre Um")).toBeInTheDocument();
+  });
+
+  it("a troca substitui o responsável anterior", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "listarMestres").mockResolvedValue({
+      itens: [MESTRE, OUTRO_MESTRE],
+      proximo_cursor: null,
+    });
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
+      itens: [COMUNIDADE],
+      proximo_cursor: null,
+      ciclo_rotulo: "2026",
+    });
+    vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio")
+      .mockResolvedValueOnce({
+        itens: [{ ...PONTO_ATIVO, responsavel_id: MESTRE.id }],
+        proximo_cursor: null,
+      })
+      .mockResolvedValueOnce({
+        itens: [{ ...PONTO_ATIVO, responsavel_id: OUTRO_MESTRE.id }],
+        proximo_cursor: null,
+      });
+    vi.spyOn(pontosDeApoioApi, "designarResponsavel").mockResolvedValue({
+      ...PONTO_ATIVO,
+      responsavel_id: OUTRO_MESTRE.id,
+    });
+
+    render(<TelaDePontosDeApoio />);
+    const usuario = userEvent.setup();
+
+    expect(await screen.findByText("Mestre Um")).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /designar responsável/i }));
+    await usuario.selectOptions(
+      screen.getByLabelText(/responsável pelo acervo/i),
+      OUTRO_MESTRE.id,
+    );
+    await usuario.click(screen.getByRole("button", { name: /^confirmar$/i }));
+
+    expect(await screen.findByText("Mestre Dois")).toBeInTheDocument();
+    expect(screen.queryByText("Mestre Um")).not.toBeInTheDocument();
+  });
+
+  it("Mestre não recebe o caminho da designação", async () => {
+    configurarSessao(SESSAO_DE_MESTRE);
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
+      itens: [COMUNIDADE],
+      proximo_cursor: null,
+      ciclo_rotulo: "2026",
+    });
+    vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio").mockResolvedValue({
+      itens: [PONTO_ATIVO],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDePontosDeApoio />);
+
+    await screen.findByText("Sede");
+    expect(
+      screen.queryByRole("button", { name: /designar responsável/i }),
+    ).not.toBeInTheDocument();
   });
 });
