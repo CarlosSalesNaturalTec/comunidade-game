@@ -1,6 +1,6 @@
 """anulacao da presenca
 
-Revision ID: a1b2c3d4e5f6
+Revision ID: 628a65a05ddc
 Revises: d52e3c70c0f4
 Create Date: 2026-08-27 00:00:00.000000
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "a1b2c3d4e5f6"
+revision: str = "628a65a05ddc"
 down_revision: str | Sequence[str] | None = "d52e3c70c0f4"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
