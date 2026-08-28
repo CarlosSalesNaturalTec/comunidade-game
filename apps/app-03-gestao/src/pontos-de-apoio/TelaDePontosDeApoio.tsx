@@ -1,8 +1,9 @@
 import { ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { type ComunidadeDaLista, listarComunidades } from "../comunidades/api";
+import { type AdultoDaLista, listarApoiadores, listarMestres } from "../personas/api";
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "./api";
 import { ExtratoDoPontoDeApoio } from "./ExtratoDoPontoDeApoio";
 import { FormularioDePontoDeApoio } from "./FormularioDePontoDeApoio";
@@ -15,6 +16,7 @@ export function TelaDePontosDeApoio() {
   const [comunidades, definirComunidades] = useState<ComunidadeDaLista[]>([]);
   const [comunidadeId, definirComunidadeId] = useState("");
   const [pontosDeApoio, definirPontosDeApoio] = useState<PontoDeApoioDaLista[] | null>(null);
+  const [adultos, definirAdultos] = useState<AdultoDaLista[]>([]);
   const [erro, definirErro] = useState<string | null>(null);
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
   const [origemDaTransferencia, definirOrigemDaTransferencia] =
@@ -62,6 +64,22 @@ export function TelaDePontosDeApoio() {
   useEffect(() => {
     carregar();
   }, [carregar]);
+
+  // Os Mestres e Apoiadores cadastrados são o universo de quem pode ser
+  // designado responsável pelo acervo (`RF-07-49`, `RN-07-34`).
+  useEffect(() => {
+    if (!sessao) return;
+    Promise.all([listarMestres(sessao.token), listarApoiadores(sessao.token)]).then(
+      ([mestres, apoiadores]) => {
+        definirAdultos([...mestres.itens, ...apoiadores.itens]);
+      },
+    );
+  }, [sessao]);
+
+  const nomePorId = useMemo(
+    () => new Map(adultos.map((adulto) => [adulto.id, adulto.nome])),
+    [adultos],
+  );
 
   const aoCriar = useCallback(async () => {
     definirMostrarFormulario(false);
@@ -122,7 +140,10 @@ export function TelaDePontosDeApoio() {
         <ListaDePontosDeApoio
           pontosDeApoio={pontosDeApoio}
           podeGerenciar={podeCadastrar}
+          nomePorId={nomePorId}
+          adultos={adultos}
           aoMudarSituacao={carregar}
+          aoDesignar={carregar}
           aoIrParaTransferencia={definirOrigemDaTransferencia}
           aoIrParaExtrato={definirPontoDeApoioDoExtrato}
         />

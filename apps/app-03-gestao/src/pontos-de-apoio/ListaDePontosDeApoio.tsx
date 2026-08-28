@@ -1,25 +1,34 @@
 import { Botao, EstadoDaLista } from "comum/react";
 import "./ListaDePontosDeApoio.css";
+import type { AdultoDaLista } from "../personas/api";
 import type { PontoDeApoioDaLista } from "./api";
+import { DesignarResponsavel } from "./DesignarResponsavel";
 import { MudarSituacaoDoPontoDeApoio } from "./MudarSituacaoDoPontoDeApoio";
 
 interface Props {
   pontosDeApoio: PontoDeApoioDaLista[] | null;
   podeGerenciar: boolean;
+  nomePorId: Map<string, string>;
+  adultos: AdultoDaLista[];
   aoMudarSituacao: () => void;
+  aoDesignar: () => void;
   aoIrParaTransferencia: (pontoDeApoio: PontoDeApoioDaLista) => void;
   aoIrParaExtrato: (pontoDeApoio: PontoDeApoioDaLista) => void;
 }
 
 // O ponto de apoio sem responsável designado é informação, nunca pendência
 // a resolver — a designação é ato posterior (`RF-07-49`, `RN-07-34`). O
-// inativo continua na lista, distinguido do ativo por rótulo textual, nunca
-// só por cor (`RN-02-09`, `RN-02-21`). Lista densa do temperamento Operação
-// (documento 15 §6).
+// nome do designado é resolvido por mapa: o núcleo devolve identificador,
+// a lista nunca o exibe (design — decisão 3). O inativo continua na lista,
+// distinguido do ativo por rótulo textual, nunca só por cor (`RN-02-09`,
+// `RN-02-21`). Lista densa do temperamento Operação (documento 15 §6).
 export function ListaDePontosDeApoio({
   pontosDeApoio,
   podeGerenciar,
+  nomePorId,
+  adultos,
   aoMudarSituacao,
+  aoDesignar,
   aoIrParaTransferencia,
   aoIrParaExtrato,
 }: Props) {
@@ -48,11 +57,18 @@ export function ListaDePontosDeApoio({
               <EstadoDaLista>Sem responsável designado.</EstadoDaLista>
             ) : (
               <span className="lista-de-pontos-de-apoio__responsavel">
-                Responsável designado
+                {nomePorId.get(pontoDeApoio.responsavel_id) ?? pontoDeApoio.responsavel_id}
               </span>
             )}
           </div>
 
+          {podeGerenciar && (
+            <DesignarResponsavel
+              idDoPontoDeApoio={pontoDeApoio.id}
+              adultos={adultos}
+              onDesignado={aoDesignar}
+            />
+          )}
           {podeGerenciar && (
             <MudarSituacaoDoPontoDeApoio
               idDoPontoDeApoio={pontoDeApoio.id}

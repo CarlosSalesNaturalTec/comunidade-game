@@ -72,6 +72,20 @@ export function reativarPontoDeApoio(
   );
 }
 
+// Só o Admin designa ou troca o responsável pelo acervo, entre Mestres e
+// Apoiadores cadastrados; a troca substitui o designado anterior
+// (`RF-02-52`, `RF-07-49`, `RN-07-34`).
+export function designarResponsavel(
+  idDoPontoDeApoio: string,
+  responsavelId: string,
+  token: string,
+): Promise<PontoDeApoioCriado> {
+  return chamarNucleo<PontoDeApoioCriado>(
+    `/v1/pontos-de-apoio/${idDoPontoDeApoio}/responsavel`,
+    { metodo: "PUT", corpo: { responsavel_id: responsavelId }, token },
+  );
+}
+
 export interface SaldoDoTipoDeRecurso {
   tipo_de_recurso_id: string;
   nome: string;
