@@ -2,6 +2,7 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { useEffect, useId, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import type { PainelDoDia } from "../painel-do-dia/api";
 import { type GuerreiroDaLista, listarGuerreiros } from "../personas/api";
 import { anularPresenca, confirmarPresenca } from "./api";
@@ -12,6 +13,8 @@ interface Props {
   presencas: PainelDoDia["presencas"];
   onAlterado: () => void;
 }
+
+const DADO_COLETADO = "a presença do Guerreiro(a) no encontro";
 
 const ROTULO_DO_MODO: Record<string, string> = {
   reconhecimento: "reconhecimento",
@@ -131,6 +134,7 @@ export function ConferenciaDePresencas({
 
   return (
     <section aria-label="Conferência de presenças">
+      <AvisoDeColeta dado={DADO_COLETADO} />
       <h2>Presenças</h2>
       {presencas.length === 0 && <p role="status">Ninguém registrou presença ainda.</p>}
       {presencas.length > 0 && (

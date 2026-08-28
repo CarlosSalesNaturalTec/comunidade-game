@@ -728,6 +728,9 @@ avulsa\*\*.
   editá-la, mas o `GET /trilhas/{id}` deste PRD é público e só serve trilha publicada. Sem
   ela, a App 03 não tem por onde listar a trilha de um Mestre — **trava** a tela de
   despublicação, que entrega testada por contrato, sem tela, até a pendência ser decidida.
+- **Processos de auditoria ainda não implementados vão ao Ciclo 02**: a amostragem semanal de
+  coleta (`RF-09-35`, `RN-09-21`) e a trilha de auditoria das escritas do Mestre (`RF-09-48`).
+  Decisão do fundador, 2026-08-28, documento 09 §1.
 
 Cinco saíram desta lista, decididas: os **formatos aceitos no upload** — lista fechada de MP4,
 WebM, JPG, PNG, WebP, MP3 e PDF, com moderação pela auditoria mensal por amostragem —, a

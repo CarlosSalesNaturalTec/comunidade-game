@@ -2,6 +2,7 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import { incluirAdmin } from "./api";
 
 interface Props {
@@ -13,6 +14,8 @@ interface ErroDeCampo {
   campo: string;
   mensagem: string;
 }
+
+const DADO_COLETADO = "o nome, o e-mail e o WhatsApp do Admin";
 
 // Único caminho de entrada de um Admin novo — nunca autocadastro, nunca por
 // login (`RF-02-05`, `RN-02-02`).
@@ -65,6 +68,8 @@ export function FormularioDeAdmin({ onSalvo, onCancelar }: Props) {
 
   return (
     <form onSubmit={aoSubmeter} aria-label="Novo Admin">
+      <AvisoDeColeta dado={DADO_COLETADO} />
+
       <Campo
         rotulo="Nome"
         valor={nome}

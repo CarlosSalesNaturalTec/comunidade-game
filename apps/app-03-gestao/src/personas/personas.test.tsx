@@ -6,11 +6,19 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import * as agendaApi from "../agenda/api";
 import type { GuerreiroDaLista } from "./api";
 import * as personasApi from "./api";
+import { FormularioDeAdmin } from "./FormularioDeAdmin";
 import { FormularioDeAdulto } from "./FormularioDeAdulto";
 import { FormularioDeGuerreiro } from "./FormularioDeGuerreiro";
 import { FormularioDeResponsavel } from "./FormularioDeResponsavel";
 import { ListaDeAdultos } from "./ListaDeAdultos";
 import { ListaDeGuerreiros } from "./ListaDeGuerreiros";
+
+vi.mock("../direitos/ContextoDeDireitos", async () => {
+  const real = await vi.importActual<typeof import("../direitos/ContextoDeDireitos")>(
+    "../direitos/ContextoDeDireitos",
+  );
+  return { ...real, useDireitos: () => ({ irParaDireitos: vi.fn() }) };
+});
 
 const COMUNIDADE = {
   id: "c1",
@@ -118,6 +126,33 @@ describe("cadastro do Guerreiro(a)", () => {
     );
     const usuario = userEvent.setup();
 
+    await preencherFormularioDeCadastro(usuario);
+    await usuario.click(screen.getByRole("button", { name: /^cadastrar$/i }));
+
+    await waitFor(() => expect(personasApi.cadastrarGuerreiro).toHaveBeenCalled());
+  });
+
+  it("mostra o aviso de coleta do dado do Guerreiro(a), sem bloquear o envio", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "cadastrarGuerreiro").mockResolvedValue(GUERREIRO);
+    vi.spyOn(agendaApi, "listarAgenda").mockResolvedValue({
+      itens: [AULA],
+      proximo_cursor: null,
+    });
+
+    render(
+      <FormularioDeGuerreiro
+        comunidades={[COMUNIDADE]}
+        onSalvo={vi.fn()}
+        onCancelar={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByText(/nome, a data de nascimento, o nick e o avatar do guerreiro/i),
+    ).toHaveAttribute("role", "status");
+
+    const usuario = userEvent.setup();
     await preencherFormularioDeCadastro(usuario);
     await usuario.click(screen.getByRole("button", { name: /^cadastrar$/i }));
 
@@ -232,6 +267,41 @@ describe("cadastro de Mestre e de Apoiador", () => {
 
     expect(screen.queryByLabelText(/^nick$/i)).not.toBeInTheDocument();
   });
+
+  it("mostra o aviso de coleta dos artefatos comprobatórios do adulto", () => {
+    render(<FormularioDeAdulto papel="apoiador" onSalvo={vi.fn()} onCancelar={vi.fn()} />);
+
+    expect(screen.getByText(/artefatos comprobatórios do adulto/i)).toHaveAttribute(
+      "role",
+      "status",
+    );
+  });
+});
+
+describe("cadastro de Admin", () => {
+  it("mostra o aviso de coleta do dado do Admin, sem bloquear o envio", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    const cadastrarEspiado = vi.spyOn(personasApi, "incluirAdmin").mockResolvedValue({
+      id: "admin-2",
+      nome: "Admin de Tal",
+      email: "admin@example.org",
+      whatsapp: null,
+    });
+
+    render(<FormularioDeAdmin onSalvo={vi.fn()} onCancelar={vi.fn()} />);
+
+    expect(screen.getByText(/nome, o e-mail e o whatsapp do admin/i)).toHaveAttribute(
+      "role",
+      "status",
+    );
+
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/^nome$/i), "Admin de Tal");
+    await usuario.type(screen.getByLabelText(/e-mail/i), "admin@example.org");
+    await usuario.click(screen.getByRole("button", { name: /incluir/i }));
+
+    await waitFor(() => expect(cadastrarEspiado).toHaveBeenCalled());
+  });
 });
 
 describe("gravar o nick do adulto na colisão", () => {
@@ -278,6 +348,31 @@ describe("gravar o nick do adulto na colisão", () => {
 
     expect(screen.getByLabelText(/nick recebido por fora/i)).toHaveValue("");
     expect(screen.queryByText(/sugest/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("cadastro de responsável", () => {
+  it("mostra o aviso de coleta do vínculo e do usuário de acesso", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "cadastrarResponsavel").mockResolvedValue({ id: "resp-1" });
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [GUERREIRO],
+      proximo_cursor: null,
+    });
+
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} onCancelar={vi.fn()} />);
+
+    expect(screen.getByText(/vínculo do responsável com o guerreiro/i)).toHaveAttribute(
+      "role",
+      "status",
+    );
+
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /cadastrar responsável/i }));
+
+    expect(
+      await screen.findByText(/vínculo do responsável com o guerreiro/i),
+    ).toBeInTheDocument();
   });
 });
 

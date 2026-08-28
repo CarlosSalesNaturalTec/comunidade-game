@@ -3,6 +3,7 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao } from "comum/react";
 import { type FormEvent, useId, useState } from "react";
 import type { AporteHomologado } from "../aportes/api";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import type { AdultoDaLista } from "../personas/api";
 import { FormularioDeAdulto } from "../personas/FormularioDeAdulto";
 import { avaliarSolicitacaoDeParticipacao, type SolicitacaoDeParticipacao } from "./api";
@@ -13,6 +14,8 @@ interface Props {
   onFechar: () => void;
   onAvaliado: (solicitacao: SolicitacaoDeParticipacao) => void;
 }
+
+const DADO_COLETADO = "a solicitação de participação — nome, e-mail, WhatsApp e apresentação";
 
 // Detalhe da solicitação: desfecho, e — quando aceita — o encaminhamento
 // ao cadastro pré-preenchido e a homologação do aporte declarado
@@ -82,6 +85,8 @@ export function AvaliacaoDaSolicitacao({ solicitacao, onFechar, onAvaliado }: Pr
       <Botao variante="secundaria" onClick={onFechar}>
         Voltar para a fila
       </Botao>
+
+      <AvisoDeColeta dado={DADO_COLETADO} />
 
       <dl>
         <dt>Nome ou razão social</dt>

@@ -2,6 +2,7 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { useId, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import type { AtividadePrevista, PainelDoDia } from "../painel-do-dia/api";
 import { registrarOcorrenciaDeConduta } from "./api";
 
@@ -13,6 +14,8 @@ interface Props {
 
 const AVISO_DE_DESCUIDO_ACIDENTAL =
   "Descuido acidental com material comum não é infração e não gera pontuação negativa.";
+
+const DADO_COLETADO = "a infração e a pontuação negativa do Guerreiro(a)";
 
 // Registro no ato, sem fila de revisão e sem campo de valor: o número vem
 // da tabela do documento 11 §5 (`RF-02-37`, `RN-02-13`, `RN-02-14`).
@@ -81,6 +84,7 @@ export function RegistroDeInfracao({ aulaId, presencas, atividadesPrevistas }: P
 
   return (
     <section aria-label="Registrar infração">
+      <AvisoDeColeta dado={DADO_COLETADO} />
       <Aviso tipo="atencao">{AVISO_DE_DESCUIDO_ACIDENTAL}</Aviso>
 
       <div className="cg-campo">

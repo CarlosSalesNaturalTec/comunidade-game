@@ -2,6 +2,7 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useEffect, useId, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import {
   cadastrarResponsavel,
   criarCredencialProvisoria,
@@ -18,6 +19,8 @@ interface Props {
 
 const TETO_DE_RESPONSAVEIS_POR_MENSAGEM =
   "Este Guerreiro(a) já tem três responsáveis vigentes — o teto por criança.";
+
+const DADO_COLETADO = "o vínculo do responsável com o Guerreiro(a) e o usuário de acesso dele";
 
 // Cadastro, vínculo e credencial provisória em um só fluxo: o responsável
 // nasce sem nenhum acesso a Guerreiro(a) algum, o vínculo declara o grau de
@@ -130,6 +133,7 @@ export function FormularioDeResponsavel({ onConcluido, onCancelar }: Props) {
   if (responsavelId === null) {
     return (
       <div>
+        <AvisoDeColeta dado={DADO_COLETADO} />
         {erro && <Aviso tipo="erro">{erro}</Aviso>}
         <Botao onClick={aoCadastrarResponsavel} desabilitado={enviando}>
           Cadastrar responsável
@@ -143,6 +147,7 @@ export function FormularioDeResponsavel({ onConcluido, onCancelar }: Props) {
 
   return (
     <div>
+      <AvisoDeColeta dado={DADO_COLETADO} />
       <Aviso tipo="sucesso">
         Responsável cadastrado. Vincule os Guerreiros e Guerreiras dele.
       </Aviso>
