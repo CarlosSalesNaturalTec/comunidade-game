@@ -287,6 +287,53 @@ def test_autoria_de_quem_lancou_fica_gravada(
     assert resultado.registrado_em is not None
 
 
+def test_admin_registra_resultado_de_atividade_avulsa(
+    sessao, criar_persona, criar_atividade_avulsa
+):
+    admin = criar_persona(Papel.admin)
+    guerreiro = criar_persona(Papel.guerreiro)
+    atividade = criar_atividade_avulsa(admin)
+    aula = criar_aula_para_resultado(sessao, admin)
+
+    resultado = registrar_resultado(
+        sessao,
+        operador=admin,
+        aula=aula,
+        guerreiro_id=guerreiro.id,
+        atividade=atividade,
+        momento_do_fato=MOMENTO_DO_FATO,
+        producao="Produção do Guerreiro(a).",
+        desfecho=DesfechoDoResultado.realizada,
+    )
+    sessao.commit()
+
+    assert resultado.atividade_id == atividade.id
+    assert resultado.autor_id == admin.id
+
+
+def test_mestre_nao_registra_resultado_de_atividade_avulsa(
+    sessao, criar_persona, criar_atividade_avulsa
+):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    atividade = criar_atividade_avulsa(admin)
+    aula = criar_aula_para_resultado(sessao, admin)
+
+    with pytest.raises(PermissaoNegada):
+        registrar_resultado(
+            sessao,
+            operador=mestre,
+            aula=aula,
+            guerreiro_id=guerreiro.id,
+            atividade=atividade,
+            momento_do_fato=MOMENTO_DO_FATO,
+            producao="Produção do Guerreiro(a).",
+            desfecho=DesfechoDoResultado.realizada,
+        )
+    assert sessao.query(Resultado).count() == 0
+
+
 def test_registrar_resultado_credita_a_pontuacao_na_mesma_operacao(
     sessao, criar_persona, criar_trilha, criar_missao, criar_atividade
 ):

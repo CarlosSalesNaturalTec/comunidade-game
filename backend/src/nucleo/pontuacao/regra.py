@@ -283,13 +283,29 @@ def conceder_badge_de_valores_e_causas(
 
 
 def creditar_pontuacao_do_resultado(
-    sessao: Session, *, resultado: Resultado, atividade: Atividade, trilha: Trilha
+    sessao: Session,
+    *,
+    resultado: Resultado,
+    atividade: Atividade,
+    trilha: Trilha | None = None,
 ) -> None:
     """Ponto de entrada único, chamado por
     `resultados.regra.registrar_resultado`: credita o ponto regular,
     reavalia nível e concede o badge de valores/causas quando a natureza da
-    atividade for essa (`RF-01-20`, `RF-01-21`, 11 §§4, 5, 6, 7)."""
+    atividade for essa (`RF-01-20`, `RF-01-21`, 11 §§4, 5, 6, 7).
+
+    Recebe **trilha ou poder** — nunca os dois, refletindo a mesma âncora
+    da `Atividade` (design — decisão 4). Com poder — atividade avulsa, sem
+    missão —, credita no poder declarado e **não** reavalia nível nem
+    concede o badge de valores e causas, que são percurso de trilha
+    (`RF-02-29`, 11 §6)."""
     valor = _valor_regular(atividade, resultado.desfecho)
+    if trilha is None:
+        creditar_ponto_regular(
+            sessao, guerreiro_id=resultado.guerreiro_id, poder_id=atividade.poder_id, valor=valor
+        )
+        return
+
     creditar_ponto_regular(
         sessao, guerreiro_id=resultado.guerreiro_id, trilha_id=trilha.id, valor=valor
     )

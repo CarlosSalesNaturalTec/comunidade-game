@@ -1,10 +1,17 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, CampoDeDataHora } from "comum/react";
-import { type FormEvent, useEffect, useId, useState } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import type { ComunidadeDaLista } from "../comunidades/api";
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "../pontos-de-apoio/api";
+import { listarTiposDeRecurso, type TipoDeRecurso } from "../recursos/api";
 import { agendarAula } from "./api";
+
+interface RecursoDoFormulario {
+  chave: number;
+  tipoDeRecursoId: string;
+  quantidade: string;
+}
 
 interface Props {
   comunidades: ComunidadeDaLista[];
@@ -28,9 +35,47 @@ export function FormularioDeAgendamento({ comunidades, onAgendada, onCancelar }:
   const [pontoDeApoioId, definirPontoDeApoioId] = useState("");
   const [inicioEm, definirInicioEm] = useState("");
   const [fimEm, definirFimEm] = useState("");
+  const [tiposDeRecurso, definirTiposDeRecurso] = useState<TipoDeRecurso[]>([]);
+  const [recursos, definirRecursos] = useState<RecursoDoFormulario[]>([]);
+  const proximaChaveDeRecurso = useRef(0);
   const [erroDeCampo, definirErroDeCampo] = useState<ErroDeCampo | null>(null);
   const [erroDeRecusa, definirErroDeRecusa] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
+
+  useEffect(() => {
+    if (!sessao) return;
+    listarTiposDeRecurso(sessao.token)
+      .then(definirTiposDeRecurso)
+      .catch(() => definirTiposDeRecurso([]));
+  }, [sessao]);
+
+  function acrescentarRecurso() {
+    proximaChaveDeRecurso.current += 1;
+    definirRecursos((atuais) => [
+      ...atuais,
+      { chave: proximaChaveDeRecurso.current, tipoDeRecursoId: "", quantidade: "" },
+    ]);
+  }
+
+  function removerRecurso(chave: number) {
+    definirRecursos((atuais) => atuais.filter((recurso) => recurso.chave !== chave));
+  }
+
+  function alterarTipoDeRecurso(chave: number, tipoDeRecursoId: string) {
+    definirRecursos((atuais) =>
+      atuais.map((recurso) =>
+        recurso.chave === chave ? { ...recurso, tipoDeRecursoId } : recurso,
+      ),
+    );
+  }
+
+  function alterarQuantidadeDeRecurso(chave: number, quantidade: string) {
+    definirRecursos((atuais) =>
+      atuais.map((recurso) =>
+        recurso.chave === chave ? { ...recurso, quantidade } : recurso,
+      ),
+    );
+  }
 
   // O seletor de ponto de apoio refaz a consulta filtrada pela comunidade
   // escolhida, sempre que ela muda (design — decisão 5).
@@ -94,6 +139,24 @@ export function FormularioDeAgendamento({ comunidades, onAgendada, onCancelar }:
       });
       return;
     }
+    // Quantidade não positiva é apontada no próprio campo, antes de chegar
+    // ao núcleo (`RF-02-31`).
+    for (const recurso of recursos) {
+      if (!recurso.tipoDeRecursoId) {
+        definirErroDeCampo({
+          campo: `recurso.${recurso.chave}.tipo`,
+          mensagem: "Escolha o tipo de recurso.",
+        });
+        return;
+      }
+      if (!recurso.quantidade.trim() || Number(recurso.quantidade) <= 0) {
+        definirErroDeCampo({
+          campo: `recurso.${recurso.chave}.quantidade`,
+          mensagem: "Informe uma quantidade maior que zero.",
+        });
+        return;
+      }
+    }
 
     if (!sessao) return;
 
@@ -105,6 +168,10 @@ export function FormularioDeAgendamento({ comunidades, onAgendada, onCancelar }:
           ponto_de_apoio_id: pontoDeApoioId,
           inicio_em: inicioEm,
           fim_em: fimEm,
+          recursos_declarados: recursos.map((recurso) => ({
+            tipo_de_recurso_id: recurso.tipoDeRecursoId,
+            quantidade: recurso.quantidade,
+          })),
         },
         sessao.token,
       );
@@ -187,6 +254,56 @@ export function FormularioDeAgendamento({ comunidades, onAgendada, onCancelar }:
           </p>
         )}
       </div>
+
+      <fieldset className="cg-campo">
+        <legend>Recursos que a aula consome</legend>
+        {recursos.map((recurso) => (
+          <div key={recurso.chave} className="cg-campo">
+            <select
+              aria-label="Tipo de recurso"
+              value={recurso.tipoDeRecursoId}
+              onChange={(evento) => alterarTipoDeRecurso(recurso.chave, evento.target.value)}
+              aria-invalid={
+                erroDeCampo?.campo === `recurso.${recurso.chave}.tipo` || undefined
+              }
+            >
+              <option value="">Escolha um tipo</option>
+              {tiposDeRecurso.map((tipo) => (
+                <option key={tipo.id} value={tipo.id}>
+                  {tipo.nome}
+                </option>
+              ))}
+            </select>
+            {erroDeCampo?.campo === `recurso.${recurso.chave}.tipo` && (
+              <p role="alert" className="cg-campo__erro">
+                {erroDeCampo.mensagem}
+              </p>
+            )}
+            <input
+              type="number"
+              aria-label="Quantidade"
+              value={recurso.quantidade}
+              onChange={(evento) =>
+                alterarQuantidadeDeRecurso(recurso.chave, evento.target.value)
+              }
+              aria-invalid={
+                erroDeCampo?.campo === `recurso.${recurso.chave}.quantidade` || undefined
+              }
+            />
+            {erroDeCampo?.campo === `recurso.${recurso.chave}.quantidade` && (
+              <p role="alert" className="cg-campo__erro">
+                {erroDeCampo.mensagem}
+              </p>
+            )}
+            <Botao variante="secundaria" onClick={() => removerRecurso(recurso.chave)}>
+              Remover
+            </Botao>
+          </div>
+        ))}
+        <Botao variante="secundaria" onClick={acrescentarRecurso}>
+          Acrescentar recurso
+        </Botao>
+      </fieldset>
 
       {erroDeRecusa && <Aviso tipo="erro">{erroDeRecusa}</Aviso>}
 

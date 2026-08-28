@@ -12,13 +12,15 @@ from nucleo.criacoes_originais.regra import (
 )
 from nucleo.culminancias.modelo import ModalidadeDaCulminancia
 from nucleo.equipes.regra import entrar_na_equipe
-from nucleo.erros import DebitoDePontoRegularRecusado, ErroDeValidacao
+from nucleo.erros import DebitoDePontoRegularRecusado, ErroDeValidacao, PermissaoNegada
 from nucleo.personas.modelo import Papel
 from nucleo.pontuacao.modelo import Badge, Nivel, PontoRegular, TipoDeBadge
 from nucleo.pontuacao.regra import creditar_ponto_regular, debitar_ponto_regular
 from nucleo.resultados.modelo import DesfechoDoResultado, Resultado
 from nucleo.resultados.regra import registrar_resultado
-from nucleo.trilhas.modelo import FormatoDeAtividade, ModalidadeDeAtividade
+from nucleo.trilhas.modelo import FormatoDeAtividade, ModalidadeDeAtividade, SituacaoDaTrilha
+from nucleo.trilhas.regra import inscrever_na_trilha
+from tests.conftest import criar_aula_para_resultado
 
 MOMENTO_DO_FATO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
 
@@ -139,6 +141,94 @@ def test_resultado_merito_extra_por_auxilio_credita_o_valor_base_mais_dez(
         sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).one()
     )
     assert conta.total == 20
+
+
+def test_admin_lanca_atividade_avulsa_e_credita_no_poder(
+    sessao, criar_persona, criar_atividade_avulsa
+):
+    """`RF-02-29`: sem missão, o ponto regular pousa no poder declarado
+    pela atividade, nunca numa trilha."""
+    admin = criar_persona(Papel.admin)
+    guerreiro = criar_persona(Papel.guerreiro)
+    atividade = criar_atividade_avulsa(admin, modalidade=ModalidadeDeAtividade.individual)
+    aula = criar_aula_para_resultado(sessao, admin)
+
+    registrar_resultado(
+        sessao,
+        operador=admin,
+        aula=aula,
+        guerreiro_id=guerreiro.id,
+        atividade=atividade,
+        momento_do_fato=MOMENTO_DO_FATO,
+        producao="Produção do Guerreiro(a).",
+        desfecho=DesfechoDoResultado.realizada,
+    )
+    sessao.commit()
+
+    conta = (
+        sessao.query(PontoRegular)
+        .filter_by(guerreiro_id=guerreiro.id, poder_id=atividade.poder_id)
+        .one()
+    )
+    assert conta.total == 10
+    assert sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id).count() == 0
+
+
+def test_mestre_nao_lanca_atividade_avulsa(sessao, criar_persona, criar_atividade_avulsa):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    atividade = criar_atividade_avulsa(admin)
+    aula = criar_aula_para_resultado(sessao, admin)
+
+    with pytest.raises(PermissaoNegada):
+        registrar_resultado(
+            sessao,
+            operador=mestre,
+            aula=aula,
+            guerreiro_id=guerreiro.id,
+            atividade=atividade,
+            momento_do_fato=MOMENTO_DO_FATO,
+            producao="Produção do Guerreiro(a).",
+            desfecho=DesfechoDoResultado.realizada,
+        )
+    assert sessao.query(Resultado).count() == 0
+
+
+def test_atividade_avulsa_nao_move_trilha_do_guerreiro(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_atividade_avulsa
+):
+    """O crédito da avulsa não pousa em trilha alguma, ainda que o
+    Guerreiro(a) esteja inscrito numa (`RF-02-29`)."""
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    criar_missao(trilha, mestre)
+    inscrever_na_trilha(sessao, guerreiro=guerreiro, trilha=trilha)
+    sessao.commit()
+    atividade = criar_atividade_avulsa(admin)
+    aula = criar_aula_para_resultado(sessao, admin)
+
+    registrar_resultado(
+        sessao,
+        operador=admin,
+        aula=aula,
+        guerreiro_id=guerreiro.id,
+        atividade=atividade,
+        momento_do_fato=MOMENTO_DO_FATO,
+        producao="Produção do Guerreiro(a).",
+        desfecho=DesfechoDoResultado.realizada,
+    )
+    sessao.commit()
+
+    assert (
+        sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).first()
+        is None
+    )
+    assert (
+        sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).count() == 0
+    )
 
 
 def test_credito_de_ponto_regular_com_valor_nao_positivo_e_recusado(

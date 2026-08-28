@@ -1,5 +1,11 @@
 import { chamarNucleo } from "comum/api";
 
+export interface RecursoFaltante {
+  tipo_de_recurso_id: string;
+  quantidade_declarada: string;
+  quantidade_disponivel: string;
+}
+
 export interface AulaDaAgenda {
   id: string;
   comunidade_virtual_id: string;
@@ -8,6 +14,9 @@ export interface AulaDaAgenda {
   fim_em: string;
   situacao: string;
   cancelamento_motivo: string | null;
+  // Só a aula pendente de lastro tem o que faltar — as demais chegam com
+  // lista vazia (`RF-02-32`, `RF-07-08`).
+  recursos_faltantes: RecursoFaltante[];
 }
 
 interface ListaDeAulas {
@@ -35,11 +44,19 @@ export function listarAgenda(
   return chamarNucleo<ListaDeAulas>(`/v1/aulas${consulta ? `?${consulta}` : ""}`, { token });
 }
 
+export interface RecursoDeclarado {
+  tipo_de_recurso_id: string;
+  quantidade: string;
+}
+
 export interface AgendarAulaEntrada {
   comunidade_virtual_id: string;
   ponto_de_apoio_id: string;
   inicio_em: string;
   fim_em: string;
+  // O que a aula consome — a reserva é disparada pelo núcleo, nunca
+  // calculada aqui (`RF-02-31`, documento 04 §1).
+  recursos_declarados: RecursoDeclarado[];
 }
 
 export function agendarAula(

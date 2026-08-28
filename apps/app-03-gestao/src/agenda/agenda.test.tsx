@@ -4,6 +4,7 @@ import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as comunidadesApi from "../comunidades/api";
 import * as pontosDeApoioApi from "../pontos-de-apoio/api";
+import * as recursosApi from "../recursos/api";
 import * as agendaApi from "./api";
 import { FormularioDeAgendamento } from "./FormularioDeAgendamento";
 import { TelaDaAgenda } from "./TelaDaAgenda";
@@ -48,6 +49,26 @@ const PONTO_DE_APOIO = {
   comunidade_virtual_id: COMUNIDADE_UM.id,
   responsavel_id: null,
   ativo: true,
+};
+
+const TIPO_DE_RECURSO_UM = {
+  id: "tipo-1",
+  nome: "Lanche",
+  natureza: "material",
+  unidade: "unidade",
+  exige_comprovante: false,
+  valor_em_moedas: "1",
+  vigencia_inicio: "2026-01-01",
+};
+
+const TIPO_DE_RECURSO_DOIS = {
+  id: "tipo-2",
+  nome: "Transporte",
+  natureza: "material",
+  unidade: "passagem",
+  exige_comprovante: false,
+  valor_em_moedas: "2",
+  vigencia_inicio: "2026-01-01",
 };
 
 vi.mock("comum/autenticacao", async () => {
@@ -102,6 +123,7 @@ describe("agenda de aulas", () => {
             fim_em: "2026-08-10T12:00:00Z",
             situacao: "confirmada",
             cancelamento_motivo: null,
+            recursos_faltantes: [],
           },
         ],
         proximo_cursor: null,
@@ -114,6 +136,7 @@ describe("agenda de aulas", () => {
       fim_em: "2026-08-10T12:00:00Z",
       situacao: "confirmada",
       cancelamento_motivo: null,
+      recursos_faltantes: [],
     });
 
     render(<TelaDaAgenda />);
@@ -205,6 +228,99 @@ describe("agenda de aulas", () => {
     );
   });
 
+  it("o agendamento declara os recursos que a aula consome", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio").mockResolvedValue({
+      itens: [PONTO_DE_APOIO],
+      proximo_cursor: null,
+    });
+    vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([
+      TIPO_DE_RECURSO_UM,
+      TIPO_DE_RECURSO_DOIS,
+    ]);
+    const agendarEspiado = vi.spyOn(agendaApi, "agendarAula").mockResolvedValue({
+      id: "aula-1",
+      comunidade_virtual_id: COMUNIDADE_UM.id,
+      ponto_de_apoio_id: PONTO_DE_APOIO.id,
+      inicio_em: "2026-08-10T10:00:00Z",
+      fim_em: "2026-08-10T12:00:00Z",
+      situacao: "pendente_de_lastro",
+      cancelamento_motivo: null,
+      recursos_faltantes: [],
+    });
+
+    render(
+      <FormularioDeAgendamento
+        comunidades={[COMUNIDADE_UM]}
+        onAgendada={vi.fn()}
+        onCancelar={vi.fn()}
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    await screen.findByRole("option", { name: PONTO_DE_APOIO.nome });
+    const campoInicial = screen.getByLabelText(/horário inicial/i);
+    const campoFinal = screen.getByLabelText(/horário final/i);
+    fireEvent.change(campoInicial, { target: { value: "2026-08-10T10:00" } });
+    fireEvent.change(campoFinal, { target: { value: "2026-08-10T12:00" } });
+
+    await usuario.click(screen.getByRole("button", { name: /acrescentar recurso/i }));
+    await usuario.click(screen.getByRole("button", { name: /acrescentar recurso/i }));
+
+    const seletoresDeTipo = await screen.findAllByLabelText(/tipo de recurso/i);
+    const camposDeQuantidade = screen.getAllByLabelText(/quantidade/i);
+    await usuario.selectOptions(seletoresDeTipo[0], TIPO_DE_RECURSO_UM.id);
+    await usuario.type(camposDeQuantidade[0], "2");
+    await usuario.selectOptions(seletoresDeTipo[1], TIPO_DE_RECURSO_DOIS.id);
+    await usuario.type(camposDeQuantidade[1], "3");
+
+    await usuario.click(screen.getByRole("button", { name: /^agendar$/i }));
+
+    await waitFor(() => expect(agendarEspiado).toHaveBeenCalledTimes(1));
+    const [entrada] = vi.mocked(agendarEspiado).mock.calls[0];
+    expect(entrada.recursos_declarados).toEqual([
+      { tipo_de_recurso_id: TIPO_DE_RECURSO_UM.id, quantidade: "2" },
+      { tipo_de_recurso_id: TIPO_DE_RECURSO_DOIS.id, quantidade: "3" },
+    ]);
+  });
+
+  it("quantidade não positiva é apontada no próprio campo, sem agendar nada", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio").mockResolvedValue({
+      itens: [PONTO_DE_APOIO],
+      proximo_cursor: null,
+    });
+    vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([TIPO_DE_RECURSO_UM]);
+    const agendarEspiado = vi.spyOn(agendaApi, "agendarAula");
+
+    render(
+      <FormularioDeAgendamento
+        comunidades={[COMUNIDADE_UM]}
+        onAgendada={vi.fn()}
+        onCancelar={vi.fn()}
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    await screen.findByRole("option", { name: PONTO_DE_APOIO.nome });
+    const campoInicial = screen.getByLabelText(/horário inicial/i);
+    const campoFinal = screen.getByLabelText(/horário final/i);
+    fireEvent.change(campoInicial, { target: { value: "2026-08-10T10:00" } });
+    fireEvent.change(campoFinal, { target: { value: "2026-08-10T12:00" } });
+
+    await usuario.click(screen.getByRole("button", { name: /acrescentar recurso/i }));
+    const seletorDeTipo = await screen.findByLabelText(/tipo de recurso/i);
+    await usuario.selectOptions(seletorDeTipo, TIPO_DE_RECURSO_UM.id);
+    await usuario.type(screen.getByLabelText(/quantidade/i), "0");
+
+    await usuario.click(screen.getByRole("button", { name: /^agendar$/i }));
+
+    expect(
+      await screen.findByText(/informe uma quantidade maior que zero/i),
+    ).toBeInTheDocument();
+    expect(agendarEspiado).not.toHaveBeenCalled();
+  });
+
   it("a agenda distingue as situações e Mestre lê só as suas comunidades", async () => {
     configurarSessao(SESSAO_DE_MESTRE);
     vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
@@ -226,6 +342,7 @@ describe("agenda de aulas", () => {
           fim_em: "2026-08-10T12:00:00Z",
           situacao: "confirmada",
           cancelamento_motivo: null,
+          recursos_faltantes: [],
         },
         {
           id: "aula-pendente",
@@ -235,6 +352,7 @@ describe("agenda de aulas", () => {
           fim_em: "2026-08-11T12:00:00Z",
           situacao: "pendente_de_lastro",
           cancelamento_motivo: null,
+          recursos_faltantes: [],
         },
       ],
       proximo_cursor: null,
@@ -275,6 +393,7 @@ describe("agenda de aulas", () => {
             fim_em: "2026-08-10T12:00:00Z",
             situacao: "confirmada",
             cancelamento_motivo: null,
+            recursos_faltantes: [],
           },
         ],
         proximo_cursor: null,
@@ -289,6 +408,7 @@ describe("agenda de aulas", () => {
             fim_em: "2026-08-10T12:00:00Z",
             situacao: "cancelada",
             cancelamento_motivo: "Chuva forte.",
+            recursos_faltantes: [],
           },
         ],
         proximo_cursor: null,
@@ -301,6 +421,7 @@ describe("agenda de aulas", () => {
       fim_em: "2026-08-10T12:00:00Z",
       situacao: "cancelada",
       cancelamento_motivo: "Chuva forte.",
+      recursos_faltantes: [],
     });
 
     render(<TelaDaAgenda />);

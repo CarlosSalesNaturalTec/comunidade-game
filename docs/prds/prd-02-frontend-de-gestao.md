@@ -40,8 +40,8 @@ poder tocar a partida.
   final** — é ela que habilita o App 01.
 - Conferência do vínculo do Guerreiro(a) à comunidade herdada da aula.
 - Cadastro de locais do território e tratamento das solicitações de novo local.
-- Catálogo de poderes do Ciclo 01 e cadastro de atividades com pontuação, recompensas e
-  recursos necessários.
+- Catálogo de poderes do Ciclo 01 e cadastro de atividade avulsa com pontuação, recompensas e
+  o poder que ela desenvolve.
 - Agenda de aulas on-line e presenciais, com reserva de recursos e bloqueio sem lastro.
 - Lançamento das atividades realizadas e das entradas manuais do dia.
 - Conferência das presenças vindas do App 01 e ajuste manual.
@@ -251,7 +251,7 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 
 | ID         | Requisito                                                                                          | Prioridade |
 | ---------- | -------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-29` | Admin cadastra atividade avulsa, fora de trilha, com pontuação e recursos necessários              | essencial  |
+| `RF-02-29` | Admin cadastra atividade avulsa, fora de trilha, com o poder que ela desenvolve                    | essencial  |
 | `RF-02-71` | Admin consulta as atividades e as recompensas de marco autoradas pelo Mestre, sem editá-las        | essencial  |
 | `RF-02-30` | Admin agenda aula on-line ou presencial, com atividade prevista e ponto de apoio                   | essencial  |
 | `RF-02-31` | Agendamento reserva os recursos necessários no livro-razão                                         | essencial  |
@@ -540,6 +540,8 @@ contar, e dá à gestão a distribuição etária que **H4** observa.
 | Equipe da trilha homologada pelo Mestre na App 01, o aparelho do encontro                         | 02 §5, 03 §5       | Onde a equipe da trilha é formada e homologada |
 | Amostra da auditoria de coleta: 10% da semana por série ativa, mínimo de um                       | 02 §1              | Composição da amostra de auditoria de coleta   |
 | Pontuação da atividade vem do motor do documento 11; o cadastro escolhe o tipo                    | 11 §5              | Pontuação da atividade cadastrada              |
+| Atividade avulsa credita no poder que declara, sem missão nem trilha em que pousar                | 11 §5              | Pontuação da atividade cadastrada              |
+| Atividade avulsa não declara recurso — quem declara e reserva é a aula                            | 04 §1, 11 §5       | Recurso da atividade avulsa                    |
 | Acervo permanente no Ciclo 01: tombamento, ficha de vida e badge                                  | 05 §3              | Estratégia de conservação do acervo permanente |
 | Admin desativa e reativa ponto de apoio, bloqueado por aula futura e por saldo remanescente       | 05 §2              | Desativação de ponto de apoio                  |
 | "Publicado" no `RF-02-17` é a trilha em situação `publicada` — o desafio não tem situação própria | PRD-08 §8          | não se aplica — correção de redação            |

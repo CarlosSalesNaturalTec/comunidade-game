@@ -269,6 +269,7 @@ def _montar_roteador_de_teste() -> APIRouter:
 def app(sessao, configuracao):
     from nucleo.aportes.rotas import roteador as roteador_de_aportes
     from nucleo.armazenamento.rotas import roteador as roteador_de_armazenamento
+    from nucleo.atividades.rotas import roteador as roteador_de_atividades
     from nucleo.auditoria.rotas import roteador as roteador_de_auditoria
     from nucleo.aulas.rotas import roteador as roteador_de_aulas
     from nucleo.bibliografias.rotas import roteador as roteador_de_bibliografias
@@ -341,6 +342,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_patrimonio)
     incluir_roteador_de_dados(aplicacao, roteador_de_recompensas_de_marco)
     incluir_roteador_de_dados(aplicacao, roteador_de_trilhas)
+    incluir_roteador_de_dados(aplicacao, roteador_de_atividades)
     incluir_roteador_de_dados(aplicacao, roteador_de_culminancias)
     incluir_roteador_de_dados(aplicacao, roteador_de_criacoes_originais)
     incluir_roteador_de_dados(aplicacao, roteador_de_ods)
@@ -875,6 +877,39 @@ def criar_atividade(sessao):
             natureza=natureza,
             producao_esperada=producao_esperada,
             aula_id=aula.id if aula is not None else None,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(atividade)
+        sessao.commit()
+        sessao.refresh(atividade)
+        return atividade
+
+    return _criar
+
+
+@pytest.fixture
+def criar_atividade_avulsa(sessao, criar_poder):
+    def _criar(
+        autor: Persona,
+        poder: Poder | None = None,
+        titulo: str = "Atividade Avulsa de Teste",
+        descricao: str | None = None,
+        modalidade: ModalidadeDeAtividade = ModalidadeDeAtividade.individual,
+        formato: FormatoDeAtividade = FormatoDeAtividade.presencial,
+        natureza: str = "construcao",
+        producao_esperada: str = "Produção de teste.",
+    ) -> Atividade:
+        poder_da_atividade = poder or criar_poder(autor)
+        atividade = Atividade(
+            missao_id=None,
+            poder_id=poder_da_atividade.id,
+            titulo=titulo,
+            descricao=descricao,
+            modalidade=modalidade,
+            formato=formato,
+            natureza=natureza,
+            producao_esperada=producao_esperada,
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
         )
