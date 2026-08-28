@@ -16,6 +16,13 @@ vi.mock("comum/autenticacao", async () => {
   };
 });
 
+vi.mock("../direitos/ContextoDeDireitos", async () => {
+  const real = await vi.importActual<typeof import("../direitos/ContextoDeDireitos")>(
+    "../direitos/ContextoDeDireitos",
+  );
+  return { ...real, useDireitos: () => ({ irParaDireitos: vi.fn() }) };
+});
+
 import { useSessao } from "comum/autenticacao";
 
 const SESSAO_DE_ADMIN: SessaoAberta = {
@@ -208,6 +215,30 @@ describe("Painel do dia (RF-02-41 a RF-02-48, RF-02-68, RF-02-69)", () => {
     );
     expect(await screen.findByText(/digitalização anexada/i)).toBeInTheDocument();
     expect(consultar).toHaveBeenCalled();
+  });
+
+  it("mostra o aviso de coleta da digitalização do termo, sem bloquear o anexo", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(painelApi, "obterPainelDoDia").mockResolvedValue(
+      painelDoEncontro({
+        pendencias: [
+          {
+            tipo: "digitalizacao_do_termo",
+            guerreiro_id: "guerreiro-1",
+            nick: "zeferina",
+            consentimento_id: "consentimento-1",
+          },
+        ],
+      }),
+    );
+
+    render(<TelaDoPainelDoDia />);
+    await screen.findByLabelText(/anexar digitalização/i);
+
+    expect(screen.getByText(/digitalização do termo assinado no encontro/i)).toHaveAttribute(
+      "role",
+      "status",
+    );
   });
 
   it("recusa de formato é explicada em linguagem simples", async () => {

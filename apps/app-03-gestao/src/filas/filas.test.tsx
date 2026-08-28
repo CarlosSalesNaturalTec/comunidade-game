@@ -161,6 +161,13 @@ vi.mock("comum/autenticacao", async () => {
   };
 });
 
+vi.mock("../direitos/ContextoDeDireitos", async () => {
+  const real = await vi.importActual<typeof import("../direitos/ContextoDeDireitos")>(
+    "../direitos/ContextoDeDireitos",
+  );
+  return { ...real, useDireitos: () => ({ irParaDireitos: vi.fn() }) };
+});
+
 import { useSessao } from "comum/autenticacao";
 
 function configurarSessao(sessao: SessaoAberta | null) {
@@ -247,6 +254,20 @@ describe("área Filas", () => {
       ),
     );
     expect(await screen.findByText("Aceita")).toBeInTheDocument();
+  });
+
+  it("mostra o aviso de coleta da solicitação de participação, sem bloquear a avaliação", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSolicitacoesDeParticipacao").mockResolvedValue({
+      itens: [solicitacaoDeMestre()],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Fulano de Tal"));
+
+    expect(screen.getByText(/solicitação de participação/i)).toHaveAttribute("role", "status");
   });
 
   it("recusar com parecer vazio aponta o campo sem chamar o núcleo", async () => {
@@ -514,6 +535,7 @@ describe("área Filas", () => {
 
     expect(screen.getByText("Pesquisa acadêmica sobre evasão escolar.")).toBeInTheDocument();
     expect(screen.getByText("Comunidade de Teste, 2026")).toBeInTheDocument();
+    expect(screen.getByText(/solicitação de dados/i)).toHaveAttribute("role", "status");
   });
 
   it("a natureza chave mostra quem pediu e o que pretende construir", async () => {

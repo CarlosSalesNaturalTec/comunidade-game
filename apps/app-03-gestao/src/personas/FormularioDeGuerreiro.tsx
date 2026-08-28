@@ -4,6 +4,7 @@ import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useEffect, useId, useState } from "react";
 import { type AulaDaAgenda, listarAgenda } from "../agenda/api";
 import type { ComunidadeDaLista } from "../comunidades/api";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import { cadastrarGuerreiro, editarGuerreiro, type GuerreiroDaLista } from "./api";
 
 interface Props {
@@ -22,10 +23,7 @@ const RECUSA_POR_PAPEL = "Só o Admin cadastra ou edita Guerreiro(a).";
 
 // Nenhuma imagem real do Guerreiro(a) circula por esta tela: só o avatar e o
 // nick, como qualquer superfície da gestão (`RN-02-22`, PRD-02 §11).
-const AVISO_DE_COLETA =
-  "Este cadastro coleta nome, data de nascimento, nick e avatar da criança, usados só para a " +
-  "operação da comunidade e visíveis apenas à gestão e à família. Nenhuma imagem real é " +
-  "exibida aqui — a representação pública é sempre o avatar.";
+const DADO_COLETADO = "o nome, a data de nascimento, o nick e o avatar do Guerreiro(a)";
 
 export function FormularioDeGuerreiro({
   comunidades,
@@ -159,7 +157,7 @@ export function FormularioDeGuerreiro({
       onSubmit={aoSubmeter}
       aria-label={emEdicao ? "Editar Guerreiro(a)" : "Novo Guerreiro(a)"}
     >
-      <Aviso tipo="atencao">{AVISO_DE_COLETA}</Aviso>
+      <AvisoDeColeta dado={DADO_COLETADO} />
 
       <Campo
         rotulo="Nome"

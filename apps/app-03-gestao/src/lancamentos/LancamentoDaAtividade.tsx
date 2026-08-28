@@ -2,6 +2,7 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { useId, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import type { AtividadePrevista, PainelDoDia } from "../painel-do-dia/api";
 import { DESFECHOS, type Desfecho, lancarAtividadeRealizada } from "./api";
 
@@ -19,6 +20,8 @@ interface LinhaDoParticipante {
 
 const MENSAGEM_DE_SUCESSO =
   "Lançamento gravado: a aula passou a realizada e as reservas viraram baixa.";
+
+const DADO_COLETADO = "o resultado da atividade do Guerreiro(a)";
 
 // Um único ato por aula, com todos os participantes juntos — sem campo de
 // valor de pontuação, que vem da tabela do documento 11 §5 (`RF-02-34`,
@@ -113,6 +116,8 @@ export function LancamentoDaAtividade({
 
   return (
     <section aria-label="Lançar atividade realizada" className="cg-lancamento-da-atividade">
+      <AvisoDeColeta dado={DADO_COLETADO} />
+
       <div className="cg-campo">
         <label htmlFor={idDoSeletorDeAtividade}>Atividade lançada</label>
         <select

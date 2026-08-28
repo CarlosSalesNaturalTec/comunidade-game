@@ -6,6 +6,8 @@ import { TelaDeAtividades } from "./atividades/TelaDeAtividades";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeChaves } from "./chaves/TelaDeChaves";
 import { TelaDeComunidades } from "./comunidades/TelaDeComunidades";
+import { ProvedorDeDireitos } from "./direitos/ContextoDeDireitos";
+import { TelaDeDireitos } from "./direitos/TelaDeDireitos";
 import { TelaDeEncerramentoDeCiclo } from "./encerramento-de-ciclo/TelaDeEncerramentoDeCiclo";
 import { TelaDeFilas } from "./filas/TelaDeFilas";
 import { TelaDeLancamentos } from "./lancamentos/TelaDeLancamentos";
@@ -32,7 +34,8 @@ type Area =
   | "painel-do-dia"
   | "lancamentos"
   | "quiz"
-  | "encerramento-de-ciclo";
+  | "encerramento-de-ciclo"
+  | "direitos";
 
 const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "comunidades", rotulo: "Comunidades" },
@@ -50,6 +53,7 @@ const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "lancamentos", rotulo: "Lançamentos" },
   { chave: "quiz", rotulo: "Quiz ao Vivo" },
   { chave: "encerramento-de-ciclo", rotulo: "Encerramento do ciclo" },
+  { chave: "direitos", rotulo: "Direitos e dados" },
 ];
 
 const CHAVES_DE_AREA = new Set<string>(AREAS.map((item) => item.chave));
@@ -77,7 +81,7 @@ function Conteudo() {
   }
 
   return (
-    <>
+    <ProvedorDeDireitos irParaDireitos={() => definirArea("direitos")}>
       <nav className="cg-navegacao" aria-label="Áreas da gestão">
         {AREAS.map((item) => (
           <button
@@ -107,7 +111,8 @@ function Conteudo() {
       {area === "lancamentos" && <TelaDeLancamentos />}
       {area === "quiz" && <TelaDeQuiz />}
       {area === "encerramento-de-ciclo" && <TelaDeEncerramentoDeCiclo />}
-    </>
+      {area === "direitos" && <TelaDeDireitos />}
+    </ProvedorDeDireitos>
   );
 }
 

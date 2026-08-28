@@ -2,6 +2,7 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao } from "comum/react";
 import { type FormEvent, useId, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import { avaliarSolicitacaoDeDados, type SolicitacaoDeDados } from "./api";
 
 interface Props {
@@ -9,6 +10,9 @@ interface Props {
   onFechar: () => void;
   onAvaliado: (solicitacao: SolicitacaoDeDados) => void;
 }
+
+const DADO_COLETADO =
+  "a solicitação de dados — solicitante, instituição e finalidade declarada";
 
 // Os três critérios de aprovação aparecem antes da decisão, e o
 // compromisso de não reidentificação é exigido no próprio campo — quem
@@ -88,6 +92,8 @@ export function AvaliacaoDeDados({ solicitacao, onFechar, onAvaliado }: Props) {
       <Botao variante="secundaria" onClick={onFechar}>
         Voltar para a fila
       </Botao>
+
+      <AvisoDeColeta dado={DADO_COLETADO} />
 
       <dl>
         <dt>Solicitante</dt>

@@ -135,6 +135,24 @@ describe("atividade avulsa", () => {
     expect(cadastrarEspiado).not.toHaveBeenCalled();
   });
 
+  it("RN-02-24: a área diz que cadastra só atividade avulsa e onde fica a de missão", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [PODER],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAtividades />);
+
+    expect(
+      await screen.findByText(/cadastra apenas atividade avulsa, fora de trilha/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/autoria do mestre, na app 09/i)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /criar trilha|criar missão|editar trilha/i }),
+    ).not.toBeInTheDocument();
+  });
+
   it("quem não é Admin não alcança o cadastro", async () => {
     configurarSessao(SESSAO_DE_MESTRE);
 

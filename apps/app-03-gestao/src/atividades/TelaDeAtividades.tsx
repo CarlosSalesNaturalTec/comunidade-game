@@ -52,6 +52,11 @@ export function TelaDeAtividades() {
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 
+      <p role="status">
+        Esta área cadastra apenas atividade avulsa, fora de trilha. A atividade de missão é
+        autoria do Mestre, na App 09.
+      </p>
+
       <FormularioDeAtividadeAvulsa onCadastrada={aoCadastrar} />
 
       {atividades === null ? (

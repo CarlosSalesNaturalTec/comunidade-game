@@ -126,15 +126,20 @@ pendência; **desafio extra** espera a entidade `DesafioExtra`; **empréstimo de
 | 11    | Aporte, necessidade e atividade avulsa na gestão   | `aporte-necessidade-e-atividade-avulsa-na-gestao` — `RF-02-29`, `RF-02-31`, `RF-02-32`, `RF-02-57`, `RF-02-58`, `RF-02-67` | implementado |
 | 12    | Acervo e patrimônio na gestão                      | `acervo-e-patrimonio-na-gestao` — `RF-02-52`, `RF-02-53`, `RF-02-55`, `RF-07-49`, `RN-02-18`       | implementado |
 | —     | Entregas confirmadas                               | `RF-02-50`, `RF-02-51`                                                                             | em aberto    |
-| 13    | Auditoria da trilha, trilha de auditoria e aviso   | `RF-02-63`, `RF-02-64`, `RF-02-70`, `RN-02-23`, `RN-02-24`                                         | em aberto    |
+| 13    | Aviso de coleta e direitos na gestão               | `aviso-de-coleta-e-direitos-na-gestao` — `RF-02-64`, `RN-02-23`, `RN-02-24`                        | implementado |
 | 14    | Fila de solicitações do responsável                | `RF-02-23`, `RF-02-24`, `RF-02-66` — entra junto da fatia 4 do PRD-13, que origina a solicitação   | em aberto    |
 | 15    | Desafio extra na gestão                            | `RF-02-27`, `RF-02-28`, `RN-02-10`, `RN-02-11` — **trava:** entidade `DesafioExtra` (PRD-14 §8)    | em aberto    |
 | 16    | Vitrine institucional e Apoiador na gestão         | `RF-02-80`, `RF-02-85` — depende do PRD-14 (cadastro de Apoiador) e do PRD-03 (vitrine)            | em aberto    |
-| 17    | Auditoria do corpus de apoio escolar               | `RF-02-74` a `RF-02-76` — **a confirmar:** o cadastro do corpus foi ao Ciclo 02 (PRD-09 §3.2); a auditoria dele segue junto? | em aberto    |
 
 Fora do cronograma: `RF-02-54` foi retirado e o identificador não se reaproveita; `RF-02-94`
 passou ao PRD-04 como `RF-04-62`; `RF-02-56` (conferência de inventário) está travado pela
 mesma pendência do `RF-07-20`, no documento 09.
+
+Ciclo 02, fora do Ciclo 01: os processos de **auditoria** que o Ciclo 01 não implementou —
+`RF-02-63` (tela da trilha de auditoria), `RF-02-70` (amostragem das trilhas publicadas e
+despublicação), `RF-02-74` a `RF-02-76` (amostragem do corpus de apoio escolar, que segue o
+cadastro do corpus, já no Ciclo 02) e `RF-02-98` (amostra semanal de coleta na gestão). Decisão
+do fundador, 2026-08-28, documento 09 §1; a antiga fatia 17 deixou de existir.
 
 ## PRD-09 — Área do Mestre (App 09)
 
@@ -146,20 +151,22 @@ mesma pendência do `RF-07-20`, no documento 09.
 | 4     | Minhas turmas e lançamentos do Mestre            | `2026-08-23-minhas-turmas-e-lancamentos-do-mestre`                                                          | implementado |
 | 5     | Banco do Quiz ao Vivo                            | `2026-08-23-banco-do-quiz-ao-vivo`                                                                          | implementado |
 | 6     | Conteúdo e bibliografia da missão                | `2026-08-25-conteudo-e-bibliografia-da-missao`                                                              | implementado |
-| 7     | Desafio de coleta e auditoria por amostragem     | `RF-09-27`, `RF-09-28`, `RF-09-35`, `RN-09-21`                                                              | em aberto    |
+| 7     | Desafio de coleta                                | `RF-09-27`, `RF-09-28`                                                                                      | em aberto    |
 | 8     | Solicitação de local e proposta na fila única    | `RF-09-53` a `RF-09-55`                                                                                     | em aberto    |
 | 9     | Necessidade, absorção e ressarcimento do Mestre  | `RF-09-56` a `RF-09-60`, `RN-09-12`, `RN-09-13`, `RN-09-23`                                                 | em aberto    |
 | 10    | Responsável e credencial provisória pelo Mestre  | `RF-09-62` a `RF-09-65`, `RN-09-15`                                                                         | em aberto    |
 | 11    | Perfil do Mestre, prova de habilidade e aviso    | `RF-09-66` a `RF-09-68`, `RN-09-14`                                                                         | em aberto    |
 | 12    | Template da missão por IA                        | `RF-09-85` a `RF-09-91`, `RF-09-95`, `RN-09-33`, `RN-09-34`                                                 | em aberto    |
 | 13    | Recompensa por desbloqueio e duplicação de trilha | `RF-09-13`, `RF-09-84`, `RF-09-75`                                                                         | em aberto    |
-| 14    | Trilha de auditoria das escritas do Mestre       | `RF-09-48`                                                                                                  | em aberto    |
 | 15    | Desafio extra na Área do Mestre                  | `RF-09-51`, `RF-09-52`, `RN-09-11`, `RN-09-40` a `RN-09-42` — **trava:** entidade `DesafioExtra` (PRD-14 §8) | em aberto    |
 
 Ciclo 02, fora do Ciclo 01: `RF-09-61` (empréstimo do acervo permanente), `RF-09-96` e
 `RF-09-97` (recusa de trilha sem etiqueta ODS), `RN-09-35` e o **apoio escolar** — `RF-09-77` a
 `RF-09-79` —, que acompanha o assistente da App 05 (decisão do fundador, 2026-08-27,
-documento 09 §1).
+documento 09 §1). Junto deles vão os processos de **auditoria** não
+implementados: `RF-09-35` e `RN-09-21` (tela da amostragem semanal de coleta) e `RF-09-48`
+(trilha de auditoria das escritas do Mestre), que era a fatia 14 (decisão do fundador,
+2026-08-28, documento 09 §1).
 
 ## PRD-04 — Aula presencial (App 01)
 

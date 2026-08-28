@@ -19,6 +19,13 @@ vi.mock("comum/autenticacao", async () => {
   };
 });
 
+vi.mock("../direitos/ContextoDeDireitos", async () => {
+  const real = await vi.importActual<typeof import("../direitos/ContextoDeDireitos")>(
+    "../direitos/ContextoDeDireitos",
+  );
+  return { ...real, useDireitos: () => ({ irParaDireitos: vi.fn() }) };
+});
+
 import { useSessao } from "comum/autenticacao";
 
 const SESSAO_DE_ADMIN: SessaoAberta = {
@@ -383,6 +390,50 @@ describe("Lançamentos (RF-02-34, RF-02-36, RF-02-37, RF-02-39)", () => {
     expect(
       await dentro.findByText(/teto de pontuação negativa da aula foi alcançado/i),
     ).toBeInTheDocument();
+  });
+
+  it("mostra o aviso de coleta em cada tela, nomeando o dado dela", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(painelApi, "obterPainelDoDia").mockResolvedValue(painelDoEncontro());
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeLancamentos />);
+    await screen.findByLabelText(/o que zeferina produziu/i);
+
+    expect(screen.getByText(/resultado da atividade do guerreiro/i)).toHaveAttribute(
+      "role",
+      "status",
+    );
+    expect(screen.getByText(/presença do guerreiro\(a\) no encontro/i)).toHaveAttribute(
+      "role",
+      "status",
+    );
+    expect(screen.getByText(/infração e a pontuação negativa/i)).toHaveAttribute(
+      "role",
+      "status",
+    );
+  });
+
+  it("RN-02-23: quem não tem autorização aparece no lançamento como qualquer outro", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(painelApi, "obterPainelDoDia").mockResolvedValue(painelDoEncontro());
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeLancamentos />);
+    await screen.findByLabelText(/o que zeferina produziu/i);
+
+    // A lista é a do encontro inteiro — nenhum campo do painel carrega
+    // consentimento, e nenhuma tela oferece filtro, marcação ou ação por
+    // ele (`RN-02-23`).
+    expect((await screen.findAllByText(/zeferina/i)).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/consentimento/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/consentimento/i)).not.toBeInTheDocument();
   });
 
   it("o Mestre alcança apenas o registro da infração", async () => {

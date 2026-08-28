@@ -2,9 +2,12 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import type { AdultoDaLista, ArtefatoComprobatorio } from "./api";
 import { cadastrarApoiador, cadastrarMestre } from "./api";
 import { FormularioDeArtefatos } from "./FormularioDeArtefatos";
+
+const DADO_COLETADO = "o nome, o e-mail, o WhatsApp e os artefatos comprobatórios do adulto";
 
 interface ValorInicial {
   nome?: string;
@@ -107,6 +110,8 @@ export function FormularioDeAdulto({ papel, onSalvo, onCancelar, valorInicial }:
 
   return (
     <form onSubmit={aoSubmeter} aria-label={`Novo ${ROTULO_DO_PAPEL[papel]}`}>
+      <AvisoDeColeta dado={DADO_COLETADO} />
+
       <Campo
         rotulo="Nome"
         valor={nome}

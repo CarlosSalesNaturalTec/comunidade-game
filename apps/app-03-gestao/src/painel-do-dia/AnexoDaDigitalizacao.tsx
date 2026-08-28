@@ -2,6 +2,7 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso } from "comum/react";
 import { type ChangeEvent, useId, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import { anexarDigitalizacaoDoTermo } from "./api";
 
 interface Props {
@@ -11,6 +12,8 @@ interface Props {
 }
 
 const MENSAGEM_DE_FORMATO_RECUSADO = "Envie a digitalização em PDF, JPG ou PNG.";
+
+const DADO_COLETADO = "a digitalização do termo assinado no encontro";
 
 const MENSAGEM_DE_FALHA = "Não foi possível anexar a digitalização. Tente novamente.";
 
@@ -56,6 +59,7 @@ export function AnexoDaDigitalizacao({ consentimentoId, token, aoAnexar }: Props
 
   return (
     <div className="cg-campo">
+      <AvisoDeColeta dado={DADO_COLETADO} />
       <label htmlFor={idDoCampo}>Anexar digitalização do termo</label>
       <input
         id={idDoCampo}
