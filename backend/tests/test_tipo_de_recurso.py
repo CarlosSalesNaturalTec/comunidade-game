@@ -9,6 +9,7 @@ from nucleo.recursos.modelo import NaturezaDoRecurso, TipoDeRecurso, ValorDeRefe
 from nucleo.recursos.regra import (
     cadastrar_tipo_de_recurso,
     consultar_valor_de_referencia,
+    listar_tipos_de_recurso,
     registrar_valor_de_referencia,
 )
 
@@ -75,6 +76,27 @@ def test_mestre_nao_cadastra_tipo_de_recurso(sessao, criar_persona):
             unidade="unidade",
         )
     assert sessao.query(TipoDeRecurso).count() == 0
+
+
+def test_mestre_le_o_catalogo_com_os_mesmos_campos_do_admin(
+    sessao, criar_persona, criar_tipo_de_recurso
+):
+    admin = criar_persona(Papel.admin)
+    tipo = criar_tipo_de_recurso(admin, exige_comprovante=True)
+    mestre = criar_persona(Papel.mestre)
+
+    tipos = listar_tipos_de_recurso(sessao, operador=mestre)
+
+    assert tipos == [tipo]
+    assert tipos[0].natureza == tipo.natureza
+    assert tipos[0].exige_comprovante is True
+
+
+def test_apoiador_nao_le_o_catalogo_de_tipos_de_recurso(sessao, criar_persona):
+    apoiador = criar_persona(Papel.apoiador)
+
+    with pytest.raises(PermissaoNegada):
+        listar_tipos_de_recurso(sessao, operador=apoiador)
 
 
 def test_tipo_de_recurso_sem_unidade_e_recusado(sessao, criar_persona):

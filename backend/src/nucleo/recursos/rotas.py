@@ -51,11 +51,10 @@ def listar_tipos_de_recurso_rota(
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> list[TipoDeRecursoSaida]:
-    """Restrita ao Admin, mesma restrição do cadastro. Serve o seletor de
-    tipo de recurso da gestão — entre outros, o da homologação do aporte
-    (`RF-07-01`, `RF-02-84`, PRD-02 §6.2). Adição não prevista na proposal
-    desta change: sem ela não há como montar um seletor real, e a
-    proposal.md declarava "nenhuma rota nova"."""
+    """Admin e Mestre leem; a escrita segue privativa do Admin. Serve o
+    seletor de tipo de recurso da gestão — entre outros, o da homologação
+    do aporte — e, para o Mestre, o ato de absorção da necessidade
+    (`RF-07-01`, `RF-02-84`, `RF-09-56`, `RF-09-57`, PRD-02 §6.2)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     tipos = listar_tipos_de_recurso(sessao_bd, operador=operador)
     saida: list[TipoDeRecursoSaida] = []

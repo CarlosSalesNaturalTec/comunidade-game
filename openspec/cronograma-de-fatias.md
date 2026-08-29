@@ -153,7 +153,7 @@ do fundador, 2026-08-28, documento 09 §1; a antiga fatia 17 deixou de existir.
 | 6     | Conteúdo e bibliografia da missão                | `2026-08-25-conteudo-e-bibliografia-da-missao`                                                              | implementado |
 | 7     | Desafio de coleta                                | `2026-08-29-coleta-local-e-proposta-na-area-do-mestre`                                                      | implementado |
 | 8     | Solicitação de local e proposta na fila única    | `2026-08-29-coleta-local-e-proposta-na-area-do-mestre`                                                      | implementado |
-| 9     | Necessidade, absorção e ressarcimento do Mestre  | `RF-09-56` a `RF-09-60`, `RN-09-12`, `RN-09-13`, `RN-09-23`                                                 | em aberto    |
+| 9     | Necessidade, absorção e ressarcimento do Mestre  | `2026-08-29-necessidade-absorcao-e-ressarcimento-do-mestre`                                                 | implementado |
 | 10    | Responsável e credencial provisória pelo Mestre  | `RF-09-62` a `RF-09-65`, `RN-09-15`                                                                         | em aberto    |
 | 11    | Perfil do Mestre, prova de habilidade e aviso    | `RF-09-66` a `RF-09-68`, `RN-09-14`                                                                         | em aberto    |
 | 12    | Template da missão por IA                        | `RF-09-85` a `RF-09-91`, `RF-09-95`, `RN-09-33`, `RN-09-34`                                                 | em aberto    |

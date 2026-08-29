@@ -6,6 +6,7 @@ import { TelaDeAutoria } from "./autoria/TelaDeAutoria";
 import { TelaDeCriacoesAValidar } from "./criacoesOriginais/TelaDeCriacoesAValidar";
 import { TelaDePropostas } from "./propostas/TelaDePropostas";
 import { TelaDoBancoDeQuiz } from "./quiz/TelaDoBancoDeQuiz";
+import { TelaDeRecursos } from "./recursos/TelaDeRecursos";
 import { listarSolicitacoesAbertasDeTodasAsComunidades } from "./territorio/api";
 import { TelaDeTerritorio } from "./territorio/TelaDeTerritorio";
 import { TelaDeDesbloqueiosPendentes } from "./turmas/TelaDeDesbloqueiosPendentes";
@@ -24,7 +25,8 @@ type Area =
   | "desbloqueios"
   | "criacoes"
   | "territorio"
-  | "propostas";
+  | "propostas"
+  | "recursos";
 
 function Conteudo() {
   const { sessao, restaurando, sair } = useSessao();
@@ -121,6 +123,12 @@ function Conteudo() {
         >
           Propostas
         </Botao>
+        <Botao
+          variante={area === "recursos" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("recursos")}
+        >
+          Recursos
+        </Botao>
       </nav>
       {area === "autoria" && <TelaDeAutoria />}
       {area === "turmas" && <TelaDeMinhasTurmas />}
@@ -131,6 +139,7 @@ function Conteudo() {
         <TelaDeTerritorio onContagemAtualizada={definirContagemDeSolicitacoes} />
       )}
       {area === "propostas" && <TelaDePropostas />}
+      {area === "recursos" && <TelaDeRecursos />}
     </>
   );
 }

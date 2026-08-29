@@ -136,13 +136,49 @@ def test_admin_le_o_catalogo_de_tipos_de_recurso(
     assert corpo[0]["valor_em_moedas"] == "40.00"
 
 
-def test_quem_nao_e_admin_recebe_403_ao_ler_o_catalogo(
+def test_mestre_le_o_catalogo_de_tipos_de_recurso(
     cliente, criar_chave, criar_persona, criar_sessao_de_teste
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
+    headers_admin = {"X-Chave-Aplicacao": chave}
+    token_admin, _ = criar_sessao_de_teste(admin)
+    headers_admin["Authorization"] = f"Bearer {token_admin}"
+
+    cliente.post(
+        "/v1/tipos-de-recurso",
+        json={
+            "nome": "Lanche",
+            "natureza": NaturezaDoRecurso.consumivel.value,
+            "unidade": "unidade",
+            "valor_em_moedas": "1.50",
+            "vigencia_inicio": "2026-01-01",
+        },
+        headers=headers_admin,
+    )
+
     mestre = criar_persona(Papel.mestre, criada_por=admin)
-    token, _ = criar_sessao_de_teste(mestre)
+    token_mestre, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/tipos-de-recurso",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_mestre}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo[0]["nome"] == "Lanche"
+    assert corpo[0]["natureza"] == NaturezaDoRecurso.consumivel.value
+    assert "exige_comprovante" in corpo[0]
+
+
+def test_quem_nao_e_admin_nem_mestre_recebe_403_ao_ler_o_catalogo(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador, criada_por=admin)
+    token, _ = criar_sessao_de_teste(apoiador)
 
     resposta = cliente.get(
         "/v1/tipos-de-recurso",
