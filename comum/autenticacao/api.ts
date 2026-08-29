@@ -14,6 +14,25 @@ export function loginSocial(idToken: string): Promise<AberturaDeSessao> {
   });
 }
 
+// Usuário e senha criados pela gestão — o segundo caminho de entrada do
+// adulto, ao lado do social (`RF-01-02`, `RF-14-08`).
+export function loginPorCredencial(usuario: string, senha: string): Promise<AberturaDeSessao> {
+  return chamarNucleo<AberturaDeSessao>("/v1/sessoes/credencial", {
+    metodo: "POST",
+    corpo: { usuario, senha },
+  });
+}
+
+// Conclui a troca da senha provisória (`RF-01-12`); até isso acontecer,
+// `eu()` recusa com `troca_de_senha_pendente` toda outra rota da sessão.
+export function trocarSenha(token: string, senhaNova: string): Promise<void> {
+  return chamarNucleo<void>("/v1/credenciais/senha", {
+    metodo: "POST",
+    corpo: { senha_nova: senhaNova },
+    token,
+  });
+}
+
 export function encerrarSessao(token: string): Promise<void> {
   return chamarNucleo<void>("/v1/sessoes/atual", { metodo: "DELETE", token });
 }

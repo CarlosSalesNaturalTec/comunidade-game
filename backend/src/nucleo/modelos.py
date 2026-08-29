@@ -24,6 +24,7 @@ from .consentimentos import modelo as _modelo_consentimentos  # noqa: F401
 from .conteudos import modelo as _modelo_conteudos  # noqa: F401
 from .criacoes_originais import modelo as _modelo_criacoes_originais  # noqa: F401
 from .culminancias import modelo as _modelo_culminancias  # noqa: F401
+from .desafios_extras import modelo as _modelo_desafios_extras  # noqa: F401
 from .equipes import modelo as _modelo_equipes  # noqa: F401
 from .fila import modelo as _modelo_fila  # noqa: F401
 from .livro_razao import modelo as _modelo_livro_razao  # noqa: F401

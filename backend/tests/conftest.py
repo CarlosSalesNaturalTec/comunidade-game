@@ -54,6 +54,13 @@ from nucleo.criacoes_originais.modelo import (
     TipoDeProducaoDaCriacaoOriginal,
 )
 from nucleo.culminancias.modelo import Culminancia, ModalidadeDaCulminancia
+from nucleo.desafios_extras.modelo import (
+    CusteioDoDesafioExtra,
+    DesafioExtra,
+    FormatoDoDesafioExtra,
+    Modalidade,
+    SituacaoDoDesafioExtra,
+)
 from nucleo.equipes.modelo import Equipe, IntegranteDaEquipe
 from nucleo.fila.modelo import SituacaoDaSolicitacao, SolicitacaoDeChave, SolicitacaoDeParticipacao
 from nucleo.fila.regra import avaliar_solicitacao_de_chave, registrar_solicitacao_de_chave
@@ -283,6 +290,7 @@ def app(sessao, configuracao):
     from nucleo.conteudos.rotas import roteador as roteador_de_conteudos
     from nucleo.criacoes_originais.rotas import roteador as roteador_de_criacoes_originais
     from nucleo.culminancias.rotas import roteador as roteador_de_culminancias
+    from nucleo.desafios_extras.rotas import roteador as roteador_de_desafios_extras
     from nucleo.equipes.rotas import roteador as roteador_de_equipes
     from nucleo.fila.rotas import roteador as roteador_de_fila
     from nucleo.jogos.rotas import roteador as roteador_de_jogos
@@ -362,6 +370,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_ciclo)
     incluir_roteador_de_dados(aplicacao, roteador_de_pontuacao)
     incluir_roteador_de_dados(aplicacao, roteador_de_solicitacoes_do_responsavel)
+    incluir_roteador_de_dados(aplicacao, roteador_de_desafios_extras)
     return aplicacao
 
 
@@ -1797,6 +1806,57 @@ def criar_inscricao_na_trilha(sessao):
         sessao.commit()
         sessao.refresh(registro)
         return registro
+
+    return _criar
+
+
+@pytest.fixture
+def criar_desafio_extra(sessao):
+    def _criar(
+        proponente: Persona,
+        trilha: Trilha,
+        tipo: TipoDeRecurso,
+        ponto_de_apoio: PontoDeApoio,
+        missao: Missao | None = None,
+        modalidade: Modalidade = Modalidade.aberto,
+        nick_do_destinatario: str | None = None,
+        justificativa_do_vinculo: str | None = None,
+        quantidade_disponivel: int = 5,
+        criterio_de_atribuicao: str = "Quem entregar primeiro.",
+        pontos_extras: int = 5,
+        formato: FormatoDoDesafioExtra = FormatoDoDesafioExtra.on_line,
+        custeio: CusteioDoDesafioExtra = CusteioDoDesafioExtra.saldo_de_recurso,
+        aporte: Aporte | None = None,
+        vigencia_inicio: date | None = None,
+        vigencia_fim: date | None = None,
+        situacao: SituacaoDoDesafioExtra = SituacaoDoDesafioExtra.em_validacao_do_mestre,
+        motivo_da_recusa: str | None = None,
+    ) -> DesafioExtra:
+        desafio = DesafioExtra(
+            trilha_id=trilha.id,
+            missao_id=missao.id if missao is not None else None,
+            modalidade=modalidade,
+            nick_do_destinatario=nick_do_destinatario,
+            justificativa_do_vinculo=justificativa_do_vinculo,
+            tipo_de_recurso_id=tipo.id,
+            ponto_de_apoio_id=ponto_de_apoio.id,
+            quantidade_disponivel=quantidade_disponivel,
+            criterio_de_atribuicao=criterio_de_atribuicao,
+            pontos_extras=pontos_extras,
+            formato=formato,
+            custeio=custeio,
+            aporte_id=aporte.id if aporte is not None else None,
+            vigencia_inicio=vigencia_inicio or date(2026, 1, 1),
+            vigencia_fim=vigencia_fim or date(2026, 12, 31),
+            situacao=situacao,
+            motivo_da_recusa=motivo_da_recusa,
+            autor_id=proponente.id,
+            papel_do_autor=proponente.papel.value,
+        )
+        sessao.add(desafio)
+        sessao.commit()
+        sessao.refresh(desafio)
+        return desafio
 
     return _criar
 
