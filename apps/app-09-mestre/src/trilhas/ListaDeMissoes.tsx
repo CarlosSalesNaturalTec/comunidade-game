@@ -1,16 +1,24 @@
 import { Botao, EstadoDaLista } from "comum/react";
 import { useState } from "react";
-import type { EtapaDoCiclo, MissaoDaTrilha } from "./api";
+import type {
+  CadenciaDeColeta,
+  EtapaDoCiclo,
+  MissaoDaTrilha,
+  NivelDoLocal,
+  TipoDeColeta,
+} from "./api";
 import { Bibliografia } from "./Bibliografia";
 import { CadenciaDeRetomada } from "./CadenciaDeRetomada";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 import { EtiquetasOds } from "./EtiquetasOds";
 import { FormularioDeAtividade } from "./FormularioDeAtividade";
 import { FormularioDeConteudo } from "./FormularioDeConteudo";
+import { FormularioDeDesafioDeColeta, ROTULO_DO_NIVEL } from "./FormularioDeDesafioDeColeta";
 import { PreVisualizacaoDaMissao } from "./PreVisualizacaoDaMissao";
 
 interface Props {
   missoes: MissaoDaTrilha[];
+  tiposDeColeta: TipoDeColeta[];
   onAtualizarMissao: (missao: MissaoDaTrilha) => void;
 }
 
@@ -21,16 +29,30 @@ const ROTULO_DA_ETAPA: Record<EtapaDoCiclo, string> = {
   fechamento: "Fechamento",
 };
 
+const ROTULO_DA_CADENCIA_DE_COLETA: Record<CadenciaDeColeta, string> = {
+  diaria: "Diária",
+  semanal: "Semanal",
+  mensal: "Mensal",
+};
+
+function rotuloDoNivel(nivel: NivelDoLocal): string {
+  return ROTULO_DO_NIVEL[nivel] ?? nivel;
+}
+
 // A trilha em rascunho existe sem sondagem — a marcação só distingue quando
 // o Mestre a declara (`RF-09-81`, design — decisões).
-export function ListaDeMissoes({ missoes, onAtualizarMissao }: Props) {
+export function ListaDeMissoes({ missoes, tiposDeColeta, onAtualizarMissao }: Props) {
   const [missaoComFormulario, definirMissaoComFormulario] = useState<string | null>(null);
   const [missaoComFormularioDeConteudo, definirMissaoComFormularioDeConteudo] = useState<
+    string | null
+  >(null);
+  const [missaoComFormularioDeColeta, definirMissaoComFormularioDeColeta] = useState<
     string | null
   >(null);
   const [missaoEmPreVisualizacao, definirMissaoEmPreVisualizacao] = useState<string | null>(
     null,
   );
+  const tipoPorId = new Map(tiposDeColeta.map((tipo) => [tipo.id, tipo]));
 
   if (missoes.length === 0) {
     return <EstadoDaLista>Nenhuma missão acrescentada ainda.</EstadoDaLista>;
@@ -62,6 +84,49 @@ export function ListaDeMissoes({ missoes, onAtualizarMissao }: Props) {
           <CadenciaDeRetomada missao={missao} onAtualizada={onAtualizarMissao} />
 
           <DesafioDeDesbloqueio missao={missao} onAtualizada={onAtualizarMissao} />
+
+          <section aria-label={`Desafios de coleta de ${missao.titulo}`}>
+            <h4>Desafios de coleta</h4>
+            {(missao.desafios_de_coleta ?? []).length === 0 ? (
+              <p>Esta missão ainda não tem desafio de coleta declarado.</p>
+            ) : (
+              <ul>
+                {(missao.desafios_de_coleta ?? []).map((desafio) => {
+                  const tipo = tipoPorId.get(desafio.tipo_de_coleta_id);
+                  return (
+                    <li key={desafio.id}>
+                      {tipo ? tipo.nome : "Tipo de coleta"} ·{" "}
+                      {ROTULO_DA_CADENCIA_DE_COLETA[desafio.cadencia]} ·{" "}
+                      {rotuloDoNivel(desafio.granularidade_exigida)} ·{" "}
+                      {desafio.registros_que_pontuam_por_periodo} registro(s) por período
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+
+            {missaoComFormularioDeColeta === missao.id ? (
+              <FormularioDeDesafioDeColeta
+                idDaMissao={missao.id}
+                tiposDeColeta={tiposDeColeta}
+                onSalvo={(desafio) => {
+                  definirMissaoComFormularioDeColeta(null);
+                  onAtualizarMissao({
+                    ...missao,
+                    desafios_de_coleta: [...(missao.desafios_de_coleta ?? []), desafio],
+                  });
+                }}
+                onCancelar={() => definirMissaoComFormularioDeColeta(null)}
+              />
+            ) : (
+              <Botao
+                variante="secundaria"
+                onClick={() => definirMissaoComFormularioDeColeta(missao.id)}
+              >
+                Novo desafio de coleta
+              </Botao>
+            )}
+          </section>
 
           <EtiquetasOds
             alvo="missao"

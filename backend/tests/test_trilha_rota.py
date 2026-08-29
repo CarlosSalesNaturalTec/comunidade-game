@@ -807,6 +807,85 @@ def test_motivo_da_despublicacao_aparece_em_minhas_pela_rota(
     assert trilha_na_lista["motivo_da_situacao"] == "Conteúdo desatualizado."
 
 
+def test_desafio_de_coleta_declarado_aparece_na_missao_pela_rota(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    desafio = criar_desafio_de_coleta(missao, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/trilhas/minhas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    trilha_na_lista = next(item for item in resposta.json() if item["id"] == str(trilha.id))
+    missao_na_lista = next(
+        item for item in trilha_na_lista["missoes"] if item["id"] == str(missao.id)
+    )
+    assert len(missao_na_lista["desafios_de_coleta"]) == 1
+    assert missao_na_lista["desafios_de_coleta"][0]["id"] == str(desafio.id)
+    assert missao_na_lista["desafios_de_coleta"][0]["cadencia"] == "semanal"
+
+
+def test_missao_sem_desafio_de_coleta_vem_com_lista_vazia_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/trilhas/minhas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    trilha_na_lista = next(item for item in resposta.json() if item["id"] == str(trilha.id))
+    missao_na_lista = next(
+        item for item in trilha_na_lista["missoes"] if item["id"] == str(missao.id)
+    )
+    assert missao_na_lista["desafios_de_coleta"] == []
+
+
+def test_desafio_de_coleta_de_trilha_alheia_nao_aparece_pela_rota(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+):
+    chave, _ = criar_chave()
+    mestre_autor = criar_persona(Papel.mestre)
+    outro_mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre_autor)
+    missao = criar_missao(trilha, mestre_autor)
+    criar_desafio_de_coleta(missao, mestre_autor)
+    token, _ = criar_sessao_de_teste(outro_mestre)
+
+    resposta = cliente.get(
+        "/v1/trilhas/minhas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.json() == []
+
+
 def test_trilha_sem_conteudo_algum_continua_publicando_por_tres_travas(
     cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_poder, criar_tipo_de_coleta
 ):

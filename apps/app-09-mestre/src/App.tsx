@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeAutoria } from "./autoria/TelaDeAutoria";
 import { TelaDeCriacoesAValidar } from "./criacoesOriginais/TelaDeCriacoesAValidar";
+import { TelaDePropostas } from "./propostas/TelaDePropostas";
 import { TelaDoBancoDeQuiz } from "./quiz/TelaDoBancoDeQuiz";
+import { listarSolicitacoesAbertasDeTodasAsComunidades } from "./territorio/api";
+import { TelaDeTerritorio } from "./territorio/TelaDeTerritorio";
 import { TelaDeDesbloqueiosPendentes } from "./turmas/TelaDeDesbloqueiosPendentes";
 import { TelaDeMinhasTurmas } from "./turmas/TelaDeMinhasTurmas";
 
@@ -14,12 +17,20 @@ const MENSAGEM_DE_RECUSA_DO_GUERREIRO =
 // A App 09 é inteiramente autenticada: sem sessão, só a entrada aparece, e
 // o Guerreiro(a) nunca alcança a autoria — o papel vem do núcleo, não de
 // escolha na tela (`RF-01-02`, `RN-01-32`, PRD-09 §4).
-type Area = "autoria" | "turmas" | "quiz" | "desbloqueios" | "criacoes";
+type Area =
+  | "autoria"
+  | "turmas"
+  | "quiz"
+  | "desbloqueios"
+  | "criacoes"
+  | "territorio"
+  | "propostas";
 
 function Conteudo() {
   const { sessao, restaurando, sair } = useSessao();
   const [recusadoComoGuerreiro, definirRecusadoComoGuerreiro] = useState(false);
   const [area, definirArea] = useState<Area>("autoria");
+  const [contagemDeSolicitacoes, definirContagemDeSolicitacoes] = useState(0);
 
   useEffect(() => {
     if (sessao?.papel === "guerreiro") {
@@ -27,6 +38,25 @@ function Conteudo() {
       sair();
     }
   }, [sessao, sair]);
+
+  // O alerta fica fora da área de território, para o Mestre saber que há
+  // pedido parado sem precisar entrar nela; refeito a cada troca de área,
+  // inclusive ao sair do território depois de avaliar (`RF-09-54`).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `area` dispara a releitura de propósito, não é lida no corpo
+  useEffect(() => {
+    if (!sessao) return;
+    let cancelado = false;
+    listarSolicitacoesAbertasDeTodasAsComunidades(sessao.token)
+      .then((grupos) => {
+        if (cancelado) return;
+        const total = grupos.reduce((soma, grupo) => soma + grupo.solicitacoes.length, 0);
+        definirContagemDeSolicitacoes(total);
+      })
+      .catch(() => {});
+    return () => {
+      cancelado = true;
+    };
+  }, [sessao, area]);
 
   if (restaurando) {
     return null;
@@ -73,12 +103,34 @@ function Conteudo() {
         >
           Criações a validar
         </Botao>
+        <Botao
+          variante={area === "territorio" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("territorio")}
+        >
+          Território
+          {contagemDeSolicitacoes > 0 && (
+            <span className="cg-navegacao-de-area__alerta">
+              {" "}
+              ({contagemDeSolicitacoes} solicitação(ões) de novo local em aberto)
+            </span>
+          )}
+        </Botao>
+        <Botao
+          variante={area === "propostas" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("propostas")}
+        >
+          Propostas
+        </Botao>
       </nav>
       {area === "autoria" && <TelaDeAutoria />}
       {area === "turmas" && <TelaDeMinhasTurmas />}
       {area === "quiz" && <TelaDoBancoDeQuiz />}
       {area === "desbloqueios" && <TelaDeDesbloqueiosPendentes />}
       {area === "criacoes" && <TelaDeCriacoesAValidar />}
+      {area === "territorio" && (
+        <TelaDeTerritorio onContagemAtualizada={definirContagemDeSolicitacoes} />
+      )}
+      {area === "propostas" && <TelaDePropostas />}
     </>
   );
 }

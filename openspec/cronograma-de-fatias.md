@@ -151,8 +151,8 @@ do fundador, 2026-08-28, documento 09 §1; a antiga fatia 17 deixou de existir.
 | 4     | Minhas turmas e lançamentos do Mestre            | `2026-08-23-minhas-turmas-e-lancamentos-do-mestre`                                                          | implementado |
 | 5     | Banco do Quiz ao Vivo                            | `2026-08-23-banco-do-quiz-ao-vivo`                                                                          | implementado |
 | 6     | Conteúdo e bibliografia da missão                | `2026-08-25-conteudo-e-bibliografia-da-missao`                                                              | implementado |
-| 7     | Desafio de coleta                                | `RF-09-27`, `RF-09-28`                                                                                      | em aberto    |
-| 8     | Solicitação de local e proposta na fila única    | `RF-09-53` a `RF-09-55`                                                                                     | em aberto    |
+| 7     | Desafio de coleta                                | `2026-08-29-coleta-local-e-proposta-na-area-do-mestre`                                                      | implementado |
+| 8     | Solicitação de local e proposta na fila única    | `2026-08-29-coleta-local-e-proposta-na-area-do-mestre`                                                      | implementado |
 | 9     | Necessidade, absorção e ressarcimento do Mestre  | `RF-09-56` a `RF-09-60`, `RN-09-12`, `RN-09-13`, `RN-09-23`                                                 | em aberto    |
 | 10    | Responsável e credencial provisória pelo Mestre  | `RF-09-62` a `RF-09-65`, `RN-09-15`                                                                         | em aberto    |
 | 11    | Perfil do Mestre, prova de habilidade e aviso    | `RF-09-66` a `RF-09-68`, `RN-09-14`                                                                         | em aberto    |

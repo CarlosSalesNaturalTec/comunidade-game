@@ -4,6 +4,7 @@ from nucleo.coletas.modelo import FormaDeRegistro, TipoDeColeta
 from nucleo.coletas.regra import (
     alterar_tipo_de_coleta,
     cadastrar_tipo_de_coleta,
+    consultar_tipos_de_coleta,
     desativar_tipo_de_coleta,
 )
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
@@ -207,3 +208,69 @@ def test_alterar_tipo_de_coleta_para_nome_vazio_e_recusado(
     assert excinfo.value.campo == "nome"
     sessao.refresh(tipo)
     assert tipo.nome == "Nome original"
+
+
+def test_mestre_le_o_catalogo_para_escolher_o_tipo(sessao, criar_persona, criar_tipo_de_coleta):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    criar_tipo_de_coleta(admin, nome="Temperatura")
+
+    pagina = consultar_tipos_de_coleta(sessao, operador=mestre, cursor=None, tamanho=10)
+
+    assert len(pagina.itens) == 1
+    item = pagina.itens[0]
+    assert item.nome == "Temperatura"
+    assert item.forma_de_registro == FormaDeRegistro.numero.value
+    assert item.unidade == "°C"
+    assert item.faixa_minima == -10
+    assert item.faixa_maxima == 55
+    assert item.ativo is True
+
+
+def test_tipo_por_evidencia_sai_sem_unidade_e_sem_faixa(
+    sessao, criar_persona, criar_tipo_de_coleta
+):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    criar_tipo_de_coleta(
+        admin,
+        nome="Buraco na via",
+        forma_de_registro=FormaDeRegistro.foto,
+        unidade=None,
+        faixa_minima=None,
+        faixa_maxima=None,
+    )
+
+    pagina = consultar_tipos_de_coleta(sessao, operador=mestre, cursor=None, tamanho=10)
+
+    item = pagina.itens[0]
+    assert item.unidade is None
+    assert item.faixa_minima is None
+    assert item.faixa_maxima is None
+
+
+def test_tipo_desativado_sai_assinalado(sessao, criar_persona, criar_tipo_de_coleta):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    criar_tipo_de_coleta(admin, nome="Descontinuado", ativo=False)
+
+    pagina = consultar_tipos_de_coleta(sessao, operador=mestre, cursor=None, tamanho=10)
+
+    assert pagina.itens[0].ativo is False
+
+
+def test_admin_le_o_mesmo_catalogo(sessao, criar_persona, criar_tipo_de_coleta):
+    admin = criar_persona(Papel.admin)
+    criar_tipo_de_coleta(admin, nome="Temperatura")
+
+    pagina = consultar_tipos_de_coleta(sessao, operador=admin, cursor=None, tamanho=10)
+
+    assert len(pagina.itens) == 1
+
+
+@pytest.mark.parametrize("papel", [Papel.guerreiro, Papel.responsavel, Papel.apoiador])
+def test_papel_que_nao_escolhe_nem_cadastra_e_recusado(sessao, criar_persona, papel):
+    persona = criar_persona(papel)
+
+    with pytest.raises(PermissaoNegada):
+        consultar_tipos_de_coleta(sessao, operador=persona, cursor=None, tamanho=10)
