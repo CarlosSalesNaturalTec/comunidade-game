@@ -125,9 +125,9 @@ pendência; **desafio extra** espera a entidade `DesafioExtra`; **empréstimo de
 | 10    | Lançamentos, conduta e ajuste                      | `2026-08-27-lancamentos-conduta-e-ajuste`                                                                                                                                        | implementado |
 | 11    | Aporte, necessidade e atividade avulsa na gestão   | `aporte-necessidade-e-atividade-avulsa-na-gestao` — `RF-02-29`, `RF-02-31`, `RF-02-32`, `RF-02-57`, `RF-02-58`, `RF-02-67` | implementado |
 | 12    | Acervo e patrimônio na gestão                      | `acervo-e-patrimonio-na-gestao` — `RF-02-52`, `RF-02-53`, `RF-02-55`, `RF-07-49`, `RN-02-18`       | implementado |
-| —     | Entregas confirmadas                               | `RF-02-50`, `RF-02-51`                                                                             | em aberto    |
+| —     | Entregas confirmadas                               | `solicitacoes-do-responsavel-e-entregas-na-gestao` — `RF-02-50`, `RF-02-51`, `RN-02-17`            | implementado |
 | 13    | Aviso de coleta e direitos na gestão               | `aviso-de-coleta-e-direitos-na-gestao` — `RF-02-64`, `RN-02-23`, `RN-02-24`                        | implementado |
-| 14    | Fila de solicitações do responsável                | `RF-02-23`, `RF-02-24`, `RF-02-66` — entra junto da fatia 4 do PRD-13, que origina a solicitação   | em aberto    |
+| 14    | Fila de solicitações do responsável                | `solicitacoes-do-responsavel-e-entregas-na-gestao` — `RF-02-23`, `RF-02-24`, `RF-02-66`; traz também o núcleo da solicitação | implementado |
 | 15    | Desafio extra na gestão                            | `RF-02-27`, `RF-02-28`, `RN-02-10`, `RN-02-11` — **trava:** entidade `DesafioExtra` (PRD-14 §8)    | em aberto    |
 | 16    | Vitrine institucional e Apoiador na gestão         | `RF-02-80`, `RF-02-85` — depende do PRD-14 (cadastro de Apoiador) e do PRD-03 (vitrine)            | em aberto    |
 
@@ -213,7 +213,7 @@ passaram ao PRD-04.
 | 1     | Esqueleto da App 07, acesso e vínculo         | `RF-13-01` a `RF-13-06`, `RN-13-01` a `RN-13-04` — a credencial provisória vem da fatia 10 do PRD-09       | em aberto |
 | 2     | Evolução do Guerreiro(a)                      | `RF-13-07` a `RF-13-12`, `RN-13-20`, `RN-13-21`                                                            | em aberto |
 | 3     | Autorização única                             | `RF-13-13` a `RF-13-21`, `RN-13-05` a `RN-13-11`                                                           | em aberto |
-| 4     | Solicitações e direitos                       | `RF-13-22` a `RF-13-28`, `RF-13-43`, `RF-13-44`, `RN-13-12` a `RN-13-14`, `RN-13-22` — par da fatia 14 do PRD-02 | em aberto |
+| 4     | Solicitações e direitos                       | `RF-13-23`, `RF-13-27`, `RF-13-28`, `RF-13-43`, `RF-13-44`, `RN-13-12`, `RN-13-22` — o núcleo da solicitação (abertura e leitura das próprias, `RF-13-22`, `RF-13-24` a `RF-13-26`, `RN-13-13`, `RN-13-14`) já está pronto pela fatia 14 do PRD-02; esta fatia entrega as telas da App 07 sobre ele e o que só ela decide: o aviso do limite da despersonalização antes do aceite da exclusão, a recusa da imagem do onboarding e o apagamento do _template_ biométrico | em aberto |
 | 5     | Transparência, termos e histórico de acessos  | `RF-13-29` a `RF-13-34`, `RN-13-19` — **trava:** falta o texto do termo quanto à entrega de dados (PRD-13 §14) | em aberto |
 | 6     | Atendimento assistido, propostas e avisos     | `RF-13-35` a `RF-13-42`, `RN-13-15` a `RN-13-18`                                                           | em aberto |
 

@@ -6,7 +6,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import * as comunidadesApi from "../comunidades/api";
 import * as personasApi from "../personas/api";
 import * as pontosDeApoioApi from "../pontos-de-apoio/api";
-import type { ItemPatrimonialDaLista } from "./api";
+import * as recursosApi from "../recursos/api";
+import type { EntregaDeRecompensa, ItemPatrimonialDaLista } from "./api";
 import * as acervoApi from "./api";
 import { TelaDoAcervo } from "./TelaDoAcervo";
 
@@ -60,6 +61,56 @@ const APOIADOR = {
   artefatos: [],
 };
 
+const GUERREIRA = {
+  id: "guerreiro-1",
+  nome: "Zeferina de Tal",
+  nascimento: "2015-01-01",
+  nick: "zeferina",
+  avatar: "avatar-1",
+  comunidade_virtual_id: COMUNIDADE.id,
+  vinculo_iniciado_em: "2026-01-01T00:00:00-03:00",
+};
+
+const TIPO_ALPHA = {
+  id: "tipo-alpha",
+  nome: "Exemplar Linha Alpha",
+  natureza: "duravel",
+  unidade: "unidade",
+  exige_comprovante: false,
+  valor_em_moedas: "0.00",
+  vigencia_inicio: "2026-01-01",
+};
+
+const TIPO_CAMISA = {
+  id: "tipo-camisa",
+  nome: "Camisa",
+  natureza: "duravel",
+  unidade: "unidade",
+  exige_comprovante: false,
+  valor_em_moedas: "0.00",
+  vigencia_inicio: "2026-01-01",
+};
+
+const ENTREGA_DO_ALPHA: EntregaDeRecompensa = {
+  id: "entrega-1",
+  recompensa_de_marco_id: "recompensa-1",
+  missao_id: "missao-1",
+  trilha_id: "trilha-1",
+  tipo_de_recurso_id: TIPO_ALPHA.id,
+  quantidade: "1.00",
+  guerreiro_id: GUERREIRA.id,
+  ponto_de_apoio_id: PONTO_DE_APOIO.id,
+  lancamento_id: "lancamento-1",
+  autor_id: MESTRE.id,
+  registrado_em: "2026-08-10T10:00:00-03:00",
+};
+
+const ENTREGA_DA_CAMISA: EntregaDeRecompensa = {
+  ...ENTREGA_DO_ALPHA,
+  id: "entrega-2",
+  tipo_de_recurso_id: TIPO_CAMISA.id,
+};
+
 const ITEM_SEM_ANOTACAO: ItemPatrimonialDaLista = {
   id: "item-1",
   aporte_de_origem_id: null,
@@ -97,7 +148,10 @@ function configurarSessao(sessao: SessaoAberta | null) {
   });
 }
 
-function configurarListas(itens: ItemPatrimonialDaLista[]) {
+function configurarListas(
+  itens: ItemPatrimonialDaLista[],
+  entregas: EntregaDeRecompensa[] = [],
+) {
   vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
     itens: [COMUNIDADE],
     proximo_cursor: null,
@@ -115,7 +169,13 @@ function configurarListas(itens: ItemPatrimonialDaLista[]) {
     itens: [APOIADOR],
     proximo_cursor: null,
   });
+  vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+    itens: [GUERREIRA],
+    proximo_cursor: null,
+  });
+  vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([TIPO_ALPHA, TIPO_CAMISA]);
   vi.spyOn(acervoApi, "listarAcervo").mockResolvedValue(itens);
+  vi.spyOn(acervoApi, "listarEntregas").mockResolvedValue(entregas);
 }
 
 afterEach(() => {
@@ -253,6 +313,56 @@ describe("acervo", () => {
       }),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/R\$/)).not.toBeInTheDocument();
+  });
+});
+
+describe("entregas confirmadas", () => {
+  it("mostra o exemplar Alpha com Guerreiro(a), Mestre, ponto de apoio, data e baixa definitiva", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    configurarListas([], [ENTREGA_DO_ALPHA]);
+
+    render(<TelaDoAcervo />);
+
+    expect(await screen.findByText("zeferina")).toBeInTheDocument();
+    expect(screen.getByText("Exemplar Linha Alpha")).toBeInTheDocument();
+    expect(screen.getByText(/entregue por mestre um/i)).toBeInTheDocument();
+    expect(screen.getByText("Sede")).toBeInTheDocument();
+    expect(screen.getByText(/baixa definitiva/i)).toBeInTheDocument();
+  });
+
+  it("mostra a entrega da camisa ao Guerreiro(a) inscrito com a mesma baixa", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    configurarListas([], [ENTREGA_DO_ALPHA, ENTREGA_DA_CAMISA]);
+
+    render(<TelaDoAcervo />);
+
+    expect(await screen.findByText("Exemplar Linha Alpha")).toBeInTheDocument();
+    expect(screen.getByText("Camisa")).toBeInTheDocument();
+    expect(screen.getAllByText(/baixa definitiva/i)).toHaveLength(2);
+  });
+
+  it("a lista de entregas não mostra nenhum valor nem caminho de escrita", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    configurarListas([], [ENTREGA_DO_ALPHA]);
+
+    render(<TelaDoAcervo />);
+
+    await screen.findByText("Exemplar Linha Alpha");
+    expect(screen.queryByText(/R\$/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /confirmar|corrigir|desfazer/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("comunidade sem entregas tem texto próprio", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    configurarListas([], []);
+
+    render(<TelaDoAcervo />);
+
+    expect(
+      await screen.findByText(/nenhuma entrega confirmada nesta comunidade/i),
+    ).toBeInTheDocument();
   });
 });
 

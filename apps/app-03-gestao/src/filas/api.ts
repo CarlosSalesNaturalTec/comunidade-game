@@ -133,6 +133,52 @@ export function avaliarSolicitacaoDeChave(
   );
 }
 
+export type TipoDeSolicitacaoDoResponsavel =
+  | "acesso"
+  | "correcao"
+  | "exclusao"
+  | "esclarecimento";
+
+export interface SolicitacaoDoResponsavel {
+  id: string;
+  responsavel_id: string;
+  nick_do_responsavel: string | null;
+  guerreiro_id: string;
+  nick_do_guerreiro: string | null;
+  tipo: TipoDeSolicitacaoDoResponsavel;
+  texto: string;
+  situacao: "recebida" | "em_avaliacao" | "aceita" | "recusada";
+  prazo: string;
+  em_atraso: boolean;
+  tratado_por_id: string | null;
+  desfecho: string | null;
+  tratado_em: string | null;
+}
+
+export function listarSolicitacoesDoResponsavel(
+  token: string,
+): Promise<SolicitacaoDoResponsavel[]> {
+  return chamarNucleo<SolicitacaoDoResponsavel[]>("/v1/solicitacoes-do-responsavel", {
+    token,
+  });
+}
+
+export interface TratarSolicitacaoDoResponsavelEntrada {
+  situacao: "aceita" | "recusada";
+  desfecho?: string;
+}
+
+export function tratarSolicitacaoDoResponsavel(
+  idDaSolicitacao: string,
+  entrada: TratarSolicitacaoDoResponsavelEntrada,
+  token: string,
+): Promise<SolicitacaoDoResponsavel> {
+  return chamarNucleo<SolicitacaoDoResponsavel>(
+    `/v1/solicitacoes-do-responsavel/${idDaSolicitacao}/tratamento`,
+    { metodo: "POST", corpo: entrada, token },
+  );
+}
+
 export interface Sugestao {
   id: string;
   autor_id: string;

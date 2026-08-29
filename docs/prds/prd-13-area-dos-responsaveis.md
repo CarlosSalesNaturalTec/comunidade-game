@@ -318,7 +318,10 @@ Imutabilidade e derivação:
 ## 9. Contratos de API
 
 A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessão, erro em corpo
-único. O cadastro do responsável e do vínculo é rota de gestão e já está no PRD-01.
+único. O cadastro do responsável e do vínculo é rota de gestão e já está no PRD-01. `POST
+/v1/solicitacoes` e `GET /v1/eu/solicitacoes` já estão implementadas no núcleo, pela fatia 14 do
+PRD-02 (decisão do fundador, 2026-08-29, documento 09 §1); a fatia 4 desta PRD entrega as telas
+da App 07 sobre elas.
 
 | Método | Rota                                        | Autenticação    | Descrição                                                        |
 | ------ | ------------------------------------------- | --------------- | ---------------------------------------------------------------- |

@@ -10,24 +10,28 @@ import {
   listarSolicitacoesDeChave,
   listarSolicitacoesDeDados,
   listarSolicitacoesDeParticipacao,
+  listarSolicitacoesDoResponsavel,
   listarSugestoes,
   type SolicitacaoDeChave,
   type SolicitacaoDeDados,
   type SolicitacaoDeParticipacao,
+  type SolicitacaoDoResponsavel,
   type Sugestao,
 } from "./api";
 import { type ItemDeFila, ListaDeFilas } from "./ListaDeFilas";
+import { TratamentoDaSolicitacaoDoResponsavel } from "./TratamentoDaSolicitacaoDoResponsavel";
 
-// O filtro por natureza alcança as quatro naturezas da fila, fechando o que
-// a fatia anterior abriu só para participação (`RF-02-18`, `RF-02-25`,
-// `RF-02-77`, `RF-02-87`).
-type Natureza = "participacao" | "dados" | "chave" | "sugestao";
+// O filtro por natureza alcança as cinco naturezas da fila, fechando o que
+// a fatia anterior abriu só para participação (`RF-02-18`, `RF-02-23`,
+// `RF-02-25`, `RF-02-77`, `RF-02-87`).
+type Natureza = "participacao" | "dados" | "chave" | "sugestao" | "responsavel";
 
 const NATUREZAS: { chave: Natureza; rotulo: string }[] = [
   { chave: "participacao", rotulo: "Participação" },
   { chave: "dados", rotulo: "Dados" },
   { chave: "chave", rotulo: "Chave" },
   { chave: "sugestao", rotulo: "Sugestões" },
+  { chave: "responsavel", rotulo: "Responsável" },
 ];
 
 const MENSAGEM_VAZIA: Record<Natureza, string> = {
@@ -35,6 +39,17 @@ const MENSAGEM_VAZIA: Record<Natureza, string> = {
   dados: "Nenhuma solicitação de dados por enquanto.",
   chave: "Nenhuma solicitação de chave por enquanto.",
   sugestao: "Nenhuma sugestão ou proposta por enquanto.",
+  responsavel: "Nenhuma solicitação do responsável por enquanto.",
+};
+
+const ROTULO_DO_TIPO_DA_SOLICITACAO_DO_RESPONSAVEL: Record<
+  SolicitacaoDoResponsavel["tipo"],
+  string
+> = {
+  acesso: "Acesso",
+  correcao: "Correção",
+  exclusao: "Exclusão",
+  esclarecimento: "Esclarecimento",
 };
 
 const ROTULO_DA_PRETENSAO: Record<SolicitacaoDeParticipacao["pretensao"], string> = {
@@ -108,11 +123,25 @@ function normalizarSugestao(item: Sugestao): ItemDeFila {
   };
 }
 
+function normalizarSolicitacaoDoResponsavel(item: SolicitacaoDoResponsavel): ItemDeFila {
+  return {
+    id: item.id,
+    quem: item.nick_do_responsavel ?? item.responsavel_id,
+    detalhe: `${ROTULO_DO_TIPO_DA_SOLICITACAO_DO_RESPONSAVEL[item.tipo]} — ${
+      item.nick_do_guerreiro ?? item.guerreiro_id
+    }`,
+    situacaoRotulo: ROTULO_DA_SITUACAO[item.situacao],
+    em_atraso: item.em_atraso,
+    prazo: item.prazo,
+  };
+}
+
 type Selecionada =
   | { natureza: "participacao"; item: SolicitacaoDeParticipacao }
   | { natureza: "dados"; item: SolicitacaoDeDados }
   | { natureza: "chave"; item: SolicitacaoDeChave }
-  | { natureza: "sugestao"; item: Sugestao };
+  | { natureza: "sugestao"; item: Sugestao }
+  | { natureza: "responsavel"; item: SolicitacaoDoResponsavel };
 
 export function TelaDeFilas() {
   const { sessao, sair, tratarRecusaDeSessao } = useSessao();
@@ -124,6 +153,9 @@ export function TelaDeFilas() {
   const [dados, definirDados] = useState<SolicitacaoDeDados[] | null>(null);
   const [chaves, definirChaves] = useState<SolicitacaoDeChave[] | null>(null);
   const [sugestoes, definirSugestoes] = useState<Sugestao[] | null>(null);
+  const [solicitacoesDoResponsavel, definirSolicitacoesDoResponsavel] = useState<
+    SolicitacaoDoResponsavel[] | null
+  >(null);
   const [erro, definirErro] = useState<string | null>(null);
   const [selecionada, definirSelecionada] = useState<Selecionada | null>(null);
 
@@ -141,9 +173,12 @@ export function TelaDeFilas() {
       } else if (natureza === "chave") {
         const pagina = await listarSolicitacoesDeChave(sessao.token);
         definirChaves(pagina.itens);
-      } else {
+      } else if (natureza === "sugestao") {
         const pagina = await listarSugestoes(sessao.token);
         definirSugestoes(pagina.itens);
+      } else {
+        const itens = await listarSolicitacoesDoResponsavel(sessao.token);
+        definirSolicitacoesDoResponsavel(itens);
       }
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
@@ -173,9 +208,12 @@ export function TelaDeFilas() {
     } else if (natureza === "chave") {
       const item = chaves?.find((solicitacao) => solicitacao.id === id);
       if (item) definirSelecionada({ natureza: "chave", item });
-    } else {
+    } else if (natureza === "sugestao") {
       const item = sugestoes?.find((sugestao) => sugestao.id === id);
       if (item) definirSelecionada({ natureza: "sugestao", item });
+    } else {
+      const item = solicitacoesDoResponsavel?.find((solicitacao) => solicitacao.id === id);
+      if (item) definirSelecionada({ natureza: "responsavel", item });
     }
   }
 
@@ -186,7 +224,9 @@ export function TelaDeFilas() {
         ? (dados?.map(normalizarDados) ?? null)
         : natureza === "chave"
           ? (chaves?.map(normalizarChave) ?? null)
-          : (sugestoes?.map(normalizarSugestao) ?? null);
+          : natureza === "sugestao"
+            ? (sugestoes?.map(normalizarSugestao) ?? null)
+            : (solicitacoesDoResponsavel?.map(normalizarSolicitacaoDoResponsavel) ?? null);
 
   return (
     <Moldura>
@@ -254,6 +294,16 @@ export function TelaDeFilas() {
               onFechar={() => definirSelecionada(null)}
               onAvaliado={(atualizada) => {
                 definirSelecionada({ natureza: "sugestao", item: atualizada });
+                carregar();
+              }}
+            />
+          )}
+          {selecionada?.natureza === "responsavel" && (
+            <TratamentoDaSolicitacaoDoResponsavel
+              solicitacao={selecionada.item}
+              onFechar={() => definirSelecionada(null)}
+              onTratada={(atualizada) => {
+                definirSelecionada({ natureza: "responsavel", item: atualizada });
                 carregar();
               }}
             />

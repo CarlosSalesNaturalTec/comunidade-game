@@ -295,6 +295,12 @@ class ArquivoAcimaDoTeto(ErroDeAplicacao):
     mensagem = "Arquivo acima do limite de tamanho para este tipo de conteúdo."
 
 
+class SolicitacaoDoResponsavelDuplicada(ErroDeAplicacao):
+    status_code = 409
+    codigo = "solicitacao_do_responsavel_duplicada"
+    mensagem = "Já existe uma solicitação deste tipo em aberto para este Guerreiro(a)."
+
+
 class FreioPorOrigemAcionado(ErroDeAplicacao):
     """`RF-01-65`: leva o tempo de espera calculado pelo freio, que o
     manipulador de `principal.py` também expõe no cabeçalho `Retry-After`

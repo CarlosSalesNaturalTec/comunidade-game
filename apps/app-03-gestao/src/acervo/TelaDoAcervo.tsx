@@ -3,10 +3,23 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { type ComunidadeDaLista, listarComunidades } from "../comunidades/api";
-import { type AdultoDaLista, listarApoiadores, listarMestres } from "../personas/api";
+import {
+  type AdultoDaLista,
+  type GuerreiroDaLista,
+  listarApoiadores,
+  listarGuerreiros,
+  listarMestres,
+} from "../personas/api";
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "../pontos-de-apoio/api";
-import { type ItemPatrimonialDaLista, listarAcervo } from "./api";
+import { listarTiposDeRecurso, type TipoDeRecurso } from "../recursos/api";
+import {
+  type EntregaDeRecompensa,
+  type ItemPatrimonialDaLista,
+  listarAcervo,
+  listarEntregas,
+} from "./api";
 import { FormularioDeTombamento } from "./FormularioDeTombamento";
+import { ListaDeEntregas } from "./ListaDeEntregas";
 import { ListaDoAcervo } from "./ListaDoAcervo";
 
 export function TelaDoAcervo() {
@@ -17,6 +30,9 @@ export function TelaDoAcervo() {
   const [itens, definirItens] = useState<ItemPatrimonialDaLista[] | null>(null);
   const [pontosDeApoio, definirPontosDeApoio] = useState<PontoDeApoioDaLista[]>([]);
   const [adultos, definirAdultos] = useState<AdultoDaLista[]>([]);
+  const [entregas, definirEntregas] = useState<EntregaDeRecompensa[] | null>(null);
+  const [tiposDeRecurso, definirTiposDeRecurso] = useState<TipoDeRecurso[]>([]);
+  const [guerreiros, definirGuerreiros] = useState<GuerreiroDaLista[]>([]);
   const [erro, definirErro] = useState<string | null>(null);
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
 
@@ -40,16 +56,29 @@ export function TelaDoAcervo() {
   const carregar = useCallback(async () => {
     if (!sessao || !comunidadeId) return;
     try {
-      const [itensCarregados, paginaDePontosDeApoio, paginaDeMestres, paginaDeApoiadores] =
-        await Promise.all([
-          listarAcervo(comunidadeId, sessao.token),
-          listarPontosDeApoio(sessao.token, comunidadeId),
-          listarMestres(sessao.token),
-          listarApoiadores(sessao.token),
-        ]);
+      const [
+        itensCarregados,
+        paginaDePontosDeApoio,
+        paginaDeMestres,
+        paginaDeApoiadores,
+        entregasCarregadas,
+        tiposDeRecursoCarregados,
+        paginaDeGuerreiros,
+      ] = await Promise.all([
+        listarAcervo(comunidadeId, sessao.token),
+        listarPontosDeApoio(sessao.token, comunidadeId),
+        listarMestres(sessao.token),
+        listarApoiadores(sessao.token),
+        listarEntregas(sessao.token),
+        listarTiposDeRecurso(sessao.token),
+        listarGuerreiros(sessao.token),
+      ]);
       definirItens(itensCarregados);
       definirPontosDeApoio(paginaDePontosDeApoio.itens);
       definirAdultos([...paginaDeMestres.itens, ...paginaDeApoiadores.itens]);
+      definirEntregas(entregasCarregadas);
+      definirTiposDeRecurso(tiposDeRecursoCarregados);
+      definirGuerreiros(paginaDeGuerreiros.itens);
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
         tratarRecusaDeSessao();
@@ -73,6 +102,14 @@ export function TelaDoAcervo() {
   const nomePorId = useMemo(
     () => new Map(adultos.map((adulto) => [adulto.id, adulto.nome])),
     [adultos],
+  );
+  const tipoDeRecursoPorId = useMemo(
+    () => new Map(tiposDeRecurso.map((tipo) => [tipo.id, tipo.nome])),
+    [tiposDeRecurso],
+  );
+  const nickDoGuerreiroPorId = useMemo(
+    () => new Map(guerreiros.map((guerreiro) => [guerreiro.id, guerreiro.nick])),
+    [guerreiros],
   );
 
   // A releitura é do acervo inteiro da comunidade depois de tombar ou
@@ -122,6 +159,14 @@ export function TelaDoAcervo() {
         nomePorId={nomePorId}
         podeAnotar={podeAnotar}
         onAnotado={carregar}
+      />
+
+      <ListaDeEntregas
+        itens={entregas}
+        tipoDeRecursoPorId={tipoDeRecursoPorId}
+        pontoDeApoioPorId={pontoDeApoioPorId}
+        nomeDoMestrePorId={nomePorId}
+        nickDoGuerreiroPorId={nickDoGuerreiroPorId}
       />
     </Moldura>
   );

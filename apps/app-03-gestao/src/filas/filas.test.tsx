@@ -13,6 +13,7 @@ import type {
   SolicitacaoDeChave,
   SolicitacaoDeDados,
   SolicitacaoDeParticipacao,
+  SolicitacaoDoResponsavel,
   Sugestao,
 } from "./api";
 import * as filasApi from "./api";
@@ -129,6 +130,27 @@ function solicitacaoDeChave(parcial: Partial<SolicitacaoDeChave> = {}): Solicita
     parecer: null,
     decidido_em: null,
     chave_emitida: false,
+    ...parcial,
+  };
+}
+
+function solicitacaoDoResponsavel(
+  parcial: Partial<SolicitacaoDoResponsavel> = {},
+): SolicitacaoDoResponsavel {
+  return {
+    id: "responsavel-1",
+    responsavel_id: "responsavel-persona-1",
+    nick_do_responsavel: "mae-da-zeferina",
+    guerreiro_id: "guerreiro-1",
+    nick_do_guerreiro: "zeferina",
+    tipo: "acesso",
+    texto: "Quero ver os dados da minha filha.",
+    situacao: "recebida",
+    prazo: "2026-08-29T00:00:00-03:00",
+    em_atraso: false,
+    tratado_por_id: null,
+    desfecho: null,
+    tratado_em: null,
     ...parcial,
   };
 }
@@ -479,7 +501,7 @@ describe("área Filas", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("o filtro alcança as quatro naturezas", async () => {
+  it("o filtro alcança as cinco naturezas", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
     vi.spyOn(filasApi, "listarSolicitacoesDeParticipacao").mockResolvedValue({
       itens: [],
@@ -497,6 +519,7 @@ describe("área Filas", () => {
       itens: [],
       proximo_cursor: null,
     });
+    vi.spyOn(filasApi, "listarSolicitacoesDoResponsavel").mockResolvedValue([]);
 
     render(<TelaDeFilas />);
     const usuario = userEvent.setup();
@@ -505,7 +528,7 @@ describe("área Filas", () => {
     const opcoes = within(seletor)
       .getAllByRole("option")
       .map((opcao) => opcao.textContent);
-    expect(opcoes).toEqual(["Participação", "Dados", "Chave", "Sugestões"]);
+    expect(opcoes).toEqual(["Participação", "Dados", "Chave", "Sugestões", "Responsável"]);
 
     await usuario.selectOptions(seletor, "dados");
     await waitFor(() => expect(filasApi.listarSolicitacoesDeDados).toHaveBeenCalled());
@@ -515,6 +538,74 @@ describe("área Filas", () => {
 
     await usuario.selectOptions(seletor, "sugestao");
     await waitFor(() => expect(filasApi.listarSugestoes).toHaveBeenCalled());
+
+    await usuario.selectOptions(seletor, "responsavel");
+    await waitFor(() => expect(filasApi.listarSolicitacoesDoResponsavel).toHaveBeenCalled());
+  });
+
+  it("a natureza responsável mostra protocolo, tipo, situação e prazo na lista", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSolicitacoesDoResponsavel").mockResolvedValue([
+      solicitacaoDoResponsavel(),
+    ]);
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "responsavel");
+
+    expect(await screen.findByText("mae-da-zeferina")).toBeInTheDocument();
+    expect(screen.getByText(/acesso.*zeferina/i)).toBeInTheDocument();
+    expect(screen.getByText("Recebida")).toBeInTheDocument();
+  });
+
+  it("o destaque de atraso da solicitação do responsável não bloqueia o tratamento", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSolicitacoesDoResponsavel").mockResolvedValue([
+      solicitacaoDoResponsavel({ em_atraso: true }),
+    ]);
+    vi.spyOn(filasApi, "tratarSolicitacaoDoResponsavel").mockResolvedValue(
+      solicitacaoDoResponsavel({
+        situacao: "aceita",
+        desfecho: "Acesso concedido.",
+        tratado_por_id: "admin-1",
+        tratado_em: "2026-08-29T10:00:00-03:00",
+      }),
+    );
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "responsavel");
+
+    const rotulo = await screen.findByText("Em atraso");
+    expect(rotulo.tagName).toBe("SPAN");
+
+    await usuario.click(screen.getByText("mae-da-zeferina"));
+    await usuario.type(screen.getByLabelText(/o que foi tratado/i), "Acesso concedido.");
+    await usuario.click(screen.getByRole("button", { name: /^aceitar$/i }));
+
+    expect(await screen.findByText("Tratada por")).toBeInTheDocument();
+    expect(screen.getByText("admin-1")).toBeInTheDocument();
+  });
+
+  it("solicitação do responsável já tratada é apresentada em leitura", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarSolicitacoesDoResponsavel").mockResolvedValue([
+      solicitacaoDoResponsavel({
+        situacao: "aceita",
+        desfecho: "Acesso concedido por escrito.",
+        tratado_por_id: "admin-1",
+        tratado_em: "2026-08-25T10:00:00-03:00",
+      }),
+    ]);
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "responsavel");
+    await usuario.click(await screen.findByText("mae-da-zeferina"));
+
+    expect(screen.getByText("Acesso concedido por escrito.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^aceitar$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^recusar$/i })).not.toBeInTheDocument();
   });
 
   it("a natureza dados mostra solicitante, instituição, finalidade e recorte", async () => {

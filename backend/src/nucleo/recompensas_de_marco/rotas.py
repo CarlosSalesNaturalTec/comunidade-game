@@ -99,21 +99,31 @@ class EntregaDeRecompensaSaida(BaseModel):
     recompensa_de_marco_id: uuid.UUID
     missao_id: uuid.UUID
     trilha_id: uuid.UUID
+    tipo_de_recurso_id: uuid.UUID
+    quantidade: Decimal
     guerreiro_id: uuid.UUID
     ponto_de_apoio_id: uuid.UUID
+    lancamento_id: uuid.UUID
     autor_id: uuid.UUID
     registrado_em: DataHoraComFuso
 
 
 def _saida_da_entrega(sessao: Session, entrega: EntregaDeRecompensa) -> EntregaDeRecompensaSaida:
+    """`RF-02-50`, `RF-02-51`, `RN-02-17`: o tipo de recurso, a quantidade e
+    o lançamento da baixa entram na saída para a gestão distinguir o
+    exemplar da linha Alpha da camisa e alcançar a baixa definitiva — nunca
+    o valor em moedas nem em reais, que ficam só no lançamento."""
     recompensa = sessao.get(RecompensaDeMarco, entrega.recompensa_de_marco_id)
     return EntregaDeRecompensaSaida(
         id=entrega.id,
         recompensa_de_marco_id=entrega.recompensa_de_marco_id,
         missao_id=recompensa.missao_id,
         trilha_id=recompensa.trilha_id,
+        tipo_de_recurso_id=recompensa.tipo_de_recurso_id,
+        quantidade=recompensa.quantidade,
         guerreiro_id=entrega.guerreiro_id,
         ponto_de_apoio_id=entrega.ponto_de_apoio_id,
+        lancamento_id=entrega.lancamento_id,
         autor_id=entrega.autor_id,
         registrado_em=entrega.registrado_em,
     )
