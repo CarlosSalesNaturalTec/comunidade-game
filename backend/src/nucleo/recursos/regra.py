@@ -103,11 +103,14 @@ def registrar_valor_de_referencia(
 
 
 def listar_tipos_de_recurso(sessao: Session, *, operador: Persona) -> list[TipoDeRecurso]:
-    """Só Admin lê o catálogo — a mesma restrição do cadastro (`RF-07-01`).
-    Ordenado por nome: catálogo pequeno, sem paginação por cursor, e a
-    listagem serve o seletor de tipo de recurso da gestão (PRD-02 §6.2)."""
-    if operador.papel != Papel.admin:
-        raise PermissaoNegada(mensagem="Só o Admin lê o catálogo de tipos de recurso.")
+    """Admin e Mestre leem o catálogo — o Admin porque cadastra, o Mestre
+    porque escolhe entre os tipos ao assumir uma necessidade como absorção
+    e precisa saber a natureza e se exige comprovante (`RF-07-01`,
+    `RF-09-56`, `RF-09-57`). A escrita segue privativa do Admin. Ordenado
+    por nome: catálogo pequeno, sem paginação por cursor, e a listagem
+    serve o seletor de tipo de recurso da gestão (PRD-02 §6.2)."""
+    if operador.papel not in (Papel.admin, Papel.mestre):
+        raise PermissaoNegada(mensagem="Só Admin ou Mestre leem o catálogo de tipos de recurso.")
     return sessao.query(TipoDeRecurso).order_by(TipoDeRecurso.nome).all()
 
 
