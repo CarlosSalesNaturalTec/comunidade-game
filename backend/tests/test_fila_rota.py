@@ -1112,3 +1112,123 @@ def test_reavaliacao_de_sugestao_e_409(cliente, criar_chave, criar_persona, cria
     )
 
     assert resposta.status_code == 409
+
+
+def test_autor_ve_as_proprias_sugestoes_em_qualquer_situacao(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    guerreiro = criar_persona(Papel.guerreiro)
+    token_guerreiro, _ = criar_sessao_de_teste(guerreiro)
+    cliente.post(
+        "/v1/sugestoes",
+        json={"alvo_tipo": "plataforma", "texto": "Sugestão qualquer."},
+        headers=_headers(chave, token_guerreiro),
+    )
+
+    resposta = cliente.get("/v1/sugestoes/minhas", headers=_headers(chave, token_guerreiro))
+
+    assert resposta.status_code == 200
+    item = resposta.json()["itens"][0]
+    assert item["texto"] == "Sugestão qualquer."
+    assert item["situacao"] == "recebida"
+    assert item["alvo_tipo"] == "plataforma"
+    assert item["prazo"] is not None
+
+
+def test_proposta_nao_adotada_devolve_o_motivo_do_retorno(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token_admin, _ = criar_sessao_de_teste(admin)
+    mestre = criar_persona(Papel.mestre)
+    token_mestre, _ = criar_sessao_de_teste(mestre)
+    id_sugestao = cliente.post(
+        "/v1/sugestoes",
+        json={"alvo_tipo": "plataforma", "texto": "Proposta de evolução."},
+        headers=_headers(chave, token_mestre),
+    ).json()["id"]
+    cliente.post(
+        f"/v1/sugestoes/{id_sugestao}/avaliacao",
+        json={
+            "situacao": "nao_adotada",
+            "parecer": "Parecer interno.",
+            "motivo_do_retorno": "Já está no roteiro de outra fatia.",
+        },
+        headers=_headers(chave, token_admin),
+    )
+
+    resposta = cliente.get("/v1/sugestoes/minhas", headers=_headers(chave, token_mestre))
+
+    item = resposta.json()["itens"][0]
+    assert item["situacao"] == "nao_adotada"
+    assert item["motivo_do_retorno"] == "Já está no roteiro de outra fatia."
+    assert item["decidido_em"] is not None
+
+
+def test_proposta_com_prazo_vencido_sai_marcada_em_atraso_pela_minhas(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    token_mestre, _ = criar_sessao_de_teste(mestre)
+    id_sugestao = cliente.post(
+        "/v1/sugestoes",
+        json={"alvo_tipo": "plataforma", "texto": "Proposta qualquer."},
+        headers=_headers(chave, token_mestre),
+    ).json()["id"]
+    sugestao = sessao.get(SugestaoOuProposta, id_sugestao)
+    sugestao.prazo = agora() - timedelta(seconds=1)
+    sessao.commit()
+
+    resposta = cliente.get("/v1/sugestoes/minhas", headers=_headers(chave, token_mestre))
+
+    item = resposta.json()["itens"][0]
+    assert item["em_atraso"] is True
+    assert item["situacao"] == "recebida"
+
+
+def test_minhas_sugestoes_nao_alcanca_proposta_de_outro_autor(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    token_mestre, _ = criar_sessao_de_teste(mestre)
+    outro_mestre = criar_persona(Papel.mestre)
+    token_outro, _ = criar_sessao_de_teste(outro_mestre)
+    cliente.post(
+        "/v1/sugestoes",
+        json={"alvo_tipo": "plataforma", "texto": "Proposta do outro Mestre."},
+        headers=_headers(chave, token_outro),
+    )
+
+    resposta = cliente.get("/v1/sugestoes/minhas", headers=_headers(chave, token_mestre))
+
+    assert resposta.status_code == 200
+    assert resposta.json()["itens"] == []
+
+
+def test_minhas_sugestoes_nunca_traz_o_parecer_interno(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token_admin, _ = criar_sessao_de_teste(admin)
+    mestre = criar_persona(Papel.mestre)
+    token_mestre, _ = criar_sessao_de_teste(mestre)
+    id_sugestao = cliente.post(
+        "/v1/sugestoes",
+        json={"alvo_tipo": "plataforma", "texto": "Proposta qualquer."},
+        headers=_headers(chave, token_mestre),
+    ).json()["id"]
+    cliente.post(
+        f"/v1/sugestoes/{id_sugestao}/avaliacao",
+        json={"situacao": "adotada", "parecer": "Parecer que não pode vazar."},
+        headers=_headers(chave, token_admin),
+    )
+
+    resposta = cliente.get("/v1/sugestoes/minhas", headers=_headers(chave, token_mestre))
+
+    item = resposta.json()["itens"][0]
+    assert "parecer" not in item

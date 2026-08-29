@@ -3,7 +3,12 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import { listarPoderes, type PoderDoCatalogo } from "../poderes/api";
-import { listarMinhasTrilhas, type TrilhaDoMestre } from "../trilhas/api";
+import {
+  listarMinhasTrilhas,
+  listarTiposDeColeta,
+  type TipoDeColeta,
+  type TrilhaDoMestre,
+} from "../trilhas/api";
 import { FormularioDeTrilha } from "../trilhas/FormularioDeTrilha";
 import { ListaDeTrilhas } from "../trilhas/ListaDeTrilhas";
 import { TelaDaTrilha } from "../trilhas/TelaDaTrilha";
@@ -15,6 +20,7 @@ export function TelaDeAutoria() {
   const { sessao, sair, tratarRecusaDeSessao } = useSessao();
   const [trilhas, definirTrilhas] = useState<TrilhaDoMestre[] | null>(null);
   const [poderes, definirPoderes] = useState<PoderDoCatalogo[]>([]);
+  const [tiposDeColeta, definirTiposDeColeta] = useState<TipoDeColeta[]>([]);
   const [erro, definirErro] = useState<string | null>(null);
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
   const [idDaTrilhaAberta, definirIdDaTrilhaAberta] = useState<string | null>(null);
@@ -22,12 +28,14 @@ export function TelaDeAutoria() {
   const carregar = useCallback(async () => {
     if (!sessao) return;
     try {
-      const [lista, paginaDePoderes] = await Promise.all([
+      const [lista, paginaDePoderes, tipos] = await Promise.all([
         listarMinhasTrilhas(sessao.token),
         listarPoderes(sessao.token),
+        listarTiposDeColeta(sessao.token),
       ]);
       definirTrilhas(lista);
       definirPoderes(paginaDePoderes.itens);
+      definirTiposDeColeta(tipos);
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
         tratarRecusaDeSessao();
@@ -56,6 +64,7 @@ export function TelaDeAutoria() {
     return (
       <TelaDaTrilha
         trilha={trilhaAberta}
+        tiposDeColeta={tiposDeColeta}
         aoVoltar={() => definirIdDaTrilhaAberta(null)}
         onAtualizarTrilha={atualizarTrilhaLocal}
       />

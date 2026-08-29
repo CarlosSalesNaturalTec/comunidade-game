@@ -68,6 +68,32 @@ export interface BibliografiaDaMissao {
 
 export type TipoDeDesafioDeDesbloqueio = "quiz" | "pratico";
 
+// Os seis níveis do território, nessa ordem de contenção (`RF-08-04`,
+// PRD-08 §8) — os mesmos da App 03, aqui só para a granularidade exigida do
+// desafio de coleta.
+export type NivelDoLocal = "comunidade" | "bairro" | "rua" | "condominio" | "bloco" | "quadra";
+
+export const NIVEIS_DO_LOCAL: NivelDoLocal[] = [
+  "comunidade",
+  "bairro",
+  "rua",
+  "condominio",
+  "bloco",
+  "quadra",
+];
+
+export type CadenciaDeColeta = "diaria" | "semanal" | "mensal";
+
+export interface DesafioDeColetaDaMissao {
+  id: string;
+  tipo_de_coleta_id: string;
+  cadencia: CadenciaDeColeta;
+  vigencia_inicio: string;
+  vigencia_fim: string;
+  granularidade_exigida: NivelDoLocal;
+  registros_que_pontuam_por_periodo: number;
+}
+
 export interface MissaoDaTrilha {
   id: string;
   trilha_id: string;
@@ -93,6 +119,10 @@ export interface MissaoDaTrilha {
   // trilha, ainda que a missão sem etiqueta própria responda por elas nos
   // vínculos (`RF-09-98`, `RF-01-45`).
   etiquetas_ods: EtiquetaOds[];
+  // Só vem de `GET /trilhas/minhas` — a leitura pública não traz o desafio
+  // de coleta (`RF-09-27`, `RF-09-28`, design — decisão 1). `undefined` é
+  // "não veio desta leitura", distinto de lista vazia.
+  desafios_de_coleta?: DesafioDeColetaDaMissao[];
   // Nunca vem de `GET /trilhas/minhas` — só o que foi declarado nesta
   // sessão, no mesmo padrão que `culminancia` já firma nesta aplicação.
   conteudos?: ConteudoDaMissao[];
@@ -463,4 +493,52 @@ export function obterTrilhaPublica(
   token: string,
 ): Promise<TrilhaDoMestre> {
   return chamarNucleo<TrilhaDoMestre>(`/v1/trilhas/${idDaTrilha}`, { token });
+}
+
+export type FormaDeRegistroDeColeta = "numero" | "foto" | "video";
+
+export interface TipoDeColeta {
+  id: string;
+  nome: string;
+  forma_de_registro: FormaDeRegistroDeColeta;
+  unidade: string | null;
+  faixa_minima: number | null;
+  faixa_maxima: number | null;
+  ativo: boolean;
+}
+
+interface PaginaDeTiposDeColeta {
+  itens: TipoDeColeta[];
+  proximo_cursor: string | null;
+}
+
+// Só para o Mestre escolher o tipo ao declarar o desafio — o cadastro do
+// catálogo é privativo do Admin (`RF-09-27`, `RF-08-05`).
+export function listarTiposDeColeta(token: string): Promise<TipoDeColeta[]> {
+  return chamarNucleo<PaginaDeTiposDeColeta>("/v1/tipos-de-coleta", { token }).then(
+    (pagina) => pagina.itens,
+  );
+}
+
+export interface CriarDesafioDeColetaEntrada {
+  missao_id: string;
+  tipo_de_coleta_id: string;
+  cadencia: CadenciaDeColeta;
+  vigencia_inicio: string;
+  vigencia_fim: string;
+  granularidade_exigida: NivelDoLocal;
+  registros_que_pontuam_por_periodo: number;
+}
+
+// A escrita é a rota do PRD-08 já existente — nenhuma regra de coleta nasce
+// na App 09 (`RF-09-27`, `RF-09-28`).
+export function criarDesafioDeColeta(
+  entrada: CriarDesafioDeColetaEntrada,
+  token: string,
+): Promise<DesafioDeColetaDaMissao> {
+  return chamarNucleo<DesafioDeColetaDaMissao>("/v1/desafios-de-coleta", {
+    metodo: "POST",
+    corpo: entrada,
+    token,
+  });
 }

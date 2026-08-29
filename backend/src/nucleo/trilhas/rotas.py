@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -9,6 +10,7 @@ from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..bibliografias.modelo import BibliografiaDaMissao
 from ..bibliografias.regra import consultar_bibliografia_da_missao, ler_disponibilidade_e_credito
+from ..coletas.modelo import DesafioDeColeta
 from ..configuracao import Configuracao, obter_configuracao
 from ..conteudos.modelo import ConteudoDaMissao
 from ..conteudos.regra import consultar_conteudos_da_missao
@@ -207,6 +209,49 @@ def _saida_da_trilha_com_missoes(
     )
 
 
+class DesafioDeColetaDaMissaoSaida(BaseModel):
+    id: uuid.UUID
+    tipo_de_coleta_id: uuid.UUID
+    cadencia: str
+    vigencia_inicio: datetime
+    vigencia_fim: datetime
+    granularidade_exigida: str
+    registros_que_pontuam_por_periodo: int
+
+
+def _desafios_de_coleta_da_missao(
+    sessao_bd: Session, missao: Missao
+) -> list[DesafioDeColetaDaMissaoSaida]:
+    """Só para `GET /v1/trilhas/minhas`: a leitura do Mestre autor, inclusive
+    em rascunho — a mesma trilha própria em que atividades e etiquetas ODS já
+    vêm aninhadas (`RF-09-27`, `RF-09-28`, `RF-09-04`, design — decisão 1)."""
+    desafios = sessao_bd.query(DesafioDeColeta).filter_by(missao_id=missao.id).all()
+    return [
+        DesafioDeColetaDaMissaoSaida(
+            id=desafio.id,
+            tipo_de_coleta_id=desafio.tipo_de_coleta_id,
+            cadencia=desafio.cadencia.value,
+            vigencia_inicio=desafio.vigencia_inicio,
+            vigencia_fim=desafio.vigencia_fim,
+            granularidade_exigida=desafio.granularidade_exigida.value,
+            registros_que_pontuam_por_periodo=desafio.registros_que_pontuam_por_periodo,
+        )
+        for desafio in desafios
+    ]
+
+
+class MissaoDoMestreSaida(MissaoSaida):
+    """Só a saída de `GET /v1/trilhas/minhas` traz o desafio de coleta
+    aninhado — a trilha pública e as demais rotas de missão continuam em
+    `MissaoSaida` (design — decisão 1)."""
+
+    desafios_de_coleta: list[DesafioDeColetaDaMissaoSaida] = Field(default_factory=list)
+
+
+class TrilhaDoMestreSaida(TrilhaSaida):
+    missoes: list[MissaoDoMestreSaida] = Field(default_factory=list)
+
+
 def _obter_trilha(sessao_bd: Session, id_da_trilha: uuid.UUID) -> Trilha:
     trilha = sessao_bd.get(Trilha, id_da_trilha)
     if trilha is None:
@@ -258,12 +303,14 @@ def listar_minhas_trilhas_rota(
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
     configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
-) -> list[TrilhaComMissoesSaida]:
+) -> list[TrilhaDoMestreSaida]:
     """`RF-09-04`: as trilhas de que a persona em sessão é autora, rascunho
     incluso, com as missões na ordem da posição e as atividades de cada
     missão aninhadas na mesma resposta — o PRD-09 §9 não declara rota
     própria para nenhuma das duas (design — decisão 2). Bem comum da
-    plataforma: sem filtro de comunidade (`RN-01-42`)."""
+    plataforma: sem filtro de comunidade (`RN-01-42`). Cada missão traz
+    também os desafios de coleta já declarados nela (`RF-09-27`, `RF-09-28`,
+    design — decisão 1)."""
     persona = sessao_bd.get(Persona, contexto.persona_id)
     trilhas = sessao_bd.query(Trilha).filter_by(autor_id=persona.id).all()
 
@@ -276,15 +323,19 @@ def listar_minhas_trilhas_rota(
         for missao in missoes:
             atividades = sessao_bd.query(Atividade).filter_by(missao_id=missao.id).all()
             missoes_saida.append(
-                _saida_da_missao(
-                    missao,
-                    atividades=atividades,
-                    etiquetas=_etiquetas_da_missao(sessao_bd, missao),
+                MissaoDoMestreSaida(
+                    **_saida_da_missao(
+                        missao,
+                        atividades=atividades,
+                        etiquetas=_etiquetas_da_missao(sessao_bd, missao),
+                    ).model_dump(),
+                    desafios_de_coleta=_desafios_de_coleta_da_missao(sessao_bd, missao),
                 )
             )
         saida.append(
-            _saida_da_trilha_com_missoes(
-                sessao_bd, trilha, missoes=missoes_saida, ciclo=configuracao.ciclo_rotulo
+            TrilhaDoMestreSaida(
+                **_saida_da_trilha(sessao_bd, trilha, ciclo=configuracao.ciclo_rotulo).model_dump(),
+                missoes=missoes_saida,
             )
         )
     return saida

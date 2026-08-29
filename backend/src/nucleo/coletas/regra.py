@@ -848,6 +848,61 @@ def invalidar_registro_de_coleta(
     return registro
 
 
+class TipoDeColetaSaida(BaseModel):
+    id: uuid.UUID
+    nome: str
+    forma_de_registro: str
+    unidade: str | None
+    faixa_minima: float | None
+    faixa_maxima: float | None
+    ativo: bool
+
+
+def consultar_tipos_de_coleta(
+    sessao: Session, *, operador: Persona, cursor: str | None, tamanho: int
+) -> PaginaDeResultado[TipoDeColetaSaida]:
+    """Leitura do catálogo para quem escolhe entre os tipos — o Mestre — e
+    para o Admin que o cadastra; sai com todos, ativos e desativados,
+    porque a escrita já governa a escolha e a App 09 filtra os ativos na
+    tela (`RF-09-27`, `RF-08-05`, `RF-01-28`, design — decisão 2). Qualquer
+    outro papel recebe 403.
+    """
+    if operador.papel not in (Papel.mestre, Papel.admin):
+        raise PermissaoNegada(mensagem="Só o Mestre e o Admin leem o catálogo de tipos de coleta.")
+
+    consulta = sessao.query(TipoDeColeta)
+
+    if cursor:
+        posicao = decodificar_cursor(cursor)
+        try:
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(TipoDeColeta.id > id_cursor)
+
+    consulta = consulta.order_by(TipoDeColeta.id).limit(tamanho + 1)
+    tipos = consulta.all()
+
+    proximo_cursor = None
+    if len(tipos) > tamanho:
+        tipos = tipos[:tamanho]
+        proximo_cursor = codificar_cursor({"id": str(tipos[-1].id)})
+
+    itens = [
+        TipoDeColetaSaida(
+            id=tipo.id,
+            nome=tipo.nome,
+            forma_de_registro=tipo.forma_de_registro.value,
+            unidade=tipo.unidade,
+            faixa_minima=tipo.faixa_minima,
+            faixa_maxima=tipo.faixa_maxima,
+            ativo=tipo.ativo,
+        )
+        for tipo in tipos
+    ]
+    return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)
+
+
 class TipoDeColetaResumoSaida(BaseModel):
     """O que a tela precisa para pedir a medição na forma certa
     (`RF-05-30`)."""

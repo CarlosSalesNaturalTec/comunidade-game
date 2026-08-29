@@ -77,6 +77,9 @@ class Operacao(enum.StrEnum):
     catalogo_de_poderes = "catalogo_de_poderes"
     # Mesmo precedente: nenhum papel tem entrada, inclusive o Mestre, que
     # escolhe entre os tipos cadastrados e nunca cria um novo (`RF-08-05`).
+    # A leitura do Mestre não passa pela matriz — fora da tabela do PRD-01
+    # §4 —, e é conferida no próprio `consultar_tipos_de_coleta` (`RF-09-27`,
+    # design — decisão 2).
     catalogo_de_tipos_de_coleta = "catalogo_de_tipos_de_coleta"
 
 

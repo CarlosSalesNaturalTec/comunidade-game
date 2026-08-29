@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
@@ -13,8 +13,10 @@ import type {
   BibliografiaDaMissao,
   ConteudoDaMissao,
   CulminanciaDaTrilha,
+  DesafioDeColetaDaMissao,
   EtiquetaOds,
   MissaoDaTrilha,
+  TipoDeColeta,
   TrilhaDoMestre,
 } from "./api";
 import * as trilhasApi from "./api";
@@ -187,6 +189,40 @@ function bibliografia(sobrescreve: Partial<BibliografiaDaMissao> = {}): Bibliogr
     ...sobrescreve,
   };
 }
+
+function tipoDeColeta(sobrescreve: Partial<TipoDeColeta> = {}): TipoDeColeta {
+  return {
+    id: "tipo-1",
+    nome: "Temperatura",
+    forma_de_registro: "numero",
+    unidade: "°C",
+    faixa_minima: -10,
+    faixa_maxima: 55,
+    ativo: true,
+    ...sobrescreve,
+  };
+}
+
+function desafioDeColeta(
+  sobrescreve: Partial<DesafioDeColetaDaMissao> = {},
+): DesafioDeColetaDaMissao {
+  return {
+    id: "desafio-1",
+    tipo_de_coleta_id: "tipo-1",
+    cadencia: "semanal",
+    vigencia_inicio: "2026-01-01T00:00:00-03:00",
+    vigencia_fim: "2026-12-31T00:00:00-03:00",
+    granularidade_exigida: "rua",
+    registros_que_pontuam_por_periodo: 1,
+    ...sobrescreve,
+  };
+}
+
+// Todo teste que não é do desafio de coleta carrega a tela sem se importar
+// com o catálogo — o padrão evita repetir este mock em cada `it`.
+beforeEach(() => {
+  vi.spyOn(trilhasApi, "listarTiposDeColeta").mockResolvedValue([]);
+});
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -830,6 +866,250 @@ describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117)", () => {
       await screen.findByDisplayValue("Monte o robô e mostre ao Mestre."),
     ).toBeInTheDocument();
     expect(screen.queryByLabelText(/^alternativa 1$/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("O Mestre declara o desafio de coleta da missão (RF-09-27, RF-09-28)", () => {
+  it("declara o desafio completo e ele passa a aparecer na missão", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "listarTiposDeColeta").mockResolvedValue([tipoDeColeta()]);
+    const criarEspiado = vi
+      .spyOn(trilhasApi, "criarDesafioDeColeta")
+      .mockResolvedValue(desafioDeColeta());
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(
+      await screen.findByRole("button", { name: /novo desafio de coleta/i }),
+    );
+
+    const formulario = screen.getByRole("form", { name: /novo desafio de coleta/i });
+    await usuario.selectOptions(
+      within(formulario).getByLabelText(/tipo de coleta/i),
+      "tipo-1",
+    );
+    await usuario.selectOptions(within(formulario).getByLabelText(/cadência/i), "semanal");
+    fireEvent.change(within(formulario).getByLabelText(/início da vigência/i), {
+      target: { value: "2026-01-01T00:00" },
+    });
+    fireEvent.change(within(formulario).getByLabelText(/fim da vigência/i), {
+      target: { value: "2026-12-31T00:00" },
+    });
+    await usuario.selectOptions(
+      within(formulario).getByLabelText(/granularidade exigida/i),
+      "rua",
+    );
+    await usuario.click(within(formulario).getByRole("button", { name: /declarar desafio/i }));
+
+    await waitFor(() => expect(criarEspiado).toHaveBeenCalled());
+    expect(criarEspiado).toHaveBeenCalledWith(
+      expect.objectContaining({
+        missao_id: "missao-1",
+        tipo_de_coleta_id: "tipo-1",
+        cadencia: "semanal",
+        granularidade_exigida: "rua",
+        registros_que_pontuam_por_periodo: 1,
+      }),
+      "token-do-mestre",
+    );
+    expect(await screen.findByText(/temperatura/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/ainda não tem desafio de coleta declarado/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("o tipo vem do catálogo, e a aplicação não oferece criar um novo", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "listarTiposDeColeta").mockResolvedValue([
+      tipoDeColeta({ id: "tipo-ativo", nome: "Temperatura", ativo: true }),
+      tipoDeColeta({ id: "tipo-inativo", nome: "Descontinuado", ativo: false }),
+    ]);
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(
+      await screen.findByRole("button", { name: /novo desafio de coleta/i }),
+    );
+
+    const formulario = screen.getByRole("form", { name: /novo desafio de coleta/i });
+    const seletorDeTipo = within(formulario).getByLabelText(/tipo de coleta/i);
+    expect(within(seletorDeTipo).getByText("Temperatura")).toBeInTheDocument();
+    expect(within(seletorDeTipo).queryByText("Descontinuado")).not.toBeInTheDocument();
+    expect(
+      within(formulario).queryByRole("button", { name: /criar tipo/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(formulario).queryByRole("link", { name: /criar tipo/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("o tipo escolhido mostra a unidade que se mede", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "listarTiposDeColeta").mockResolvedValue([
+      tipoDeColeta({ id: "tipo-1", nome: "Temperatura", unidade: "°C" }),
+    ]);
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(
+      await screen.findByRole("button", { name: /novo desafio de coleta/i }),
+    );
+
+    const formulario = screen.getByRole("form", { name: /novo desafio de coleta/i });
+    await usuario.selectOptions(
+      within(formulario).getByLabelText(/tipo de coleta/i),
+      "tipo-1",
+    );
+
+    expect(within(formulario).getByText(/unidade:\s*°C/i)).toBeInTheDocument();
+  });
+
+  it("a vigência invertida recusada pelo núcleo vira mensagem simples", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "listarTiposDeColeta").mockResolvedValue([tipoDeColeta()]);
+    vi.spyOn(trilhasApi, "criarDesafioDeColeta").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "A vigência não pode terminar antes de começar.",
+        campo: "vigencia_fim",
+      }),
+    );
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(
+      await screen.findByRole("button", { name: /novo desafio de coleta/i }),
+    );
+
+    const formulario = screen.getByRole("form", { name: /novo desafio de coleta/i });
+    await usuario.selectOptions(
+      within(formulario).getByLabelText(/tipo de coleta/i),
+      "tipo-1",
+    );
+    fireEvent.change(within(formulario).getByLabelText(/início da vigência/i), {
+      target: { value: "2026-12-31T00:00" },
+    });
+    fireEvent.change(within(formulario).getByLabelText(/fim da vigência/i), {
+      target: { value: "2026-01-01T00:00" },
+    });
+    await usuario.click(within(formulario).getByRole("button", { name: /declarar desafio/i }));
+
+    const recusa = await screen.findByRole("alert");
+    expect(recusa).toHaveTextContent(/não pode terminar antes de começar/i);
+    expect(recusa.textContent).not.toMatch(/erro_de_validacao/i);
+  });
+
+  it("a trilha em rascunho mostra o desafio de coleta já declarado", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        situacao: "rascunho",
+        missoes: [missao({ desafios_de_coleta: [desafioDeColeta()] })],
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "listarTiposDeColeta").mockResolvedValue([tipoDeColeta()]);
+
+    render(<TelaDeAutoria />);
+    await abrirMissao();
+
+    expect(await screen.findByText(/temperatura/i)).toBeInTheDocument();
+  });
+
+  it("missão sem desafio de coleta é apresentada como tal", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    await abrirMissao();
+
+    expect(
+      await screen.findByText(/ainda não tem desafio de coleta declarado/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /novo desafio de coleta/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("o formulário do desafio não declara etiqueta ODS", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "listarTiposDeColeta").mockResolvedValue([tipoDeColeta()]);
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(
+      await screen.findByRole("button", { name: /novo desafio de coleta/i }),
+    );
+
+    const formulario = screen.getByRole("form", { name: /novo desafio de coleta/i });
+    expect(within(formulario).queryByLabelText(/ods/i)).not.toBeInTheDocument();
+    expect(within(formulario).queryByLabelText(/objetivo/i)).not.toBeInTheDocument();
+  });
+
+  it("a declaração não é oferecida na pré-visualização de trilha alheia", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByRole("button", { name: /pré-visualizar missão/i }));
+
+    const preVisualizacao = await screen.findByRole("region", {
+      name: /pré-visualização de primeira missão/i,
+    });
+    expect(
+      within(preVisualizacao).queryByRole("button", { name: /novo desafio de coleta/i }),
+    ).not.toBeInTheDocument();
   });
 });
 

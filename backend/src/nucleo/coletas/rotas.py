@@ -28,6 +28,7 @@ from .regra import (
     DesafioPublicadoSaida,
     RegistroDoHistoricoSaida,
     SerieDoGuerreiroSaida,
+    TipoDeColetaSaida,
     abrir_serie_de_coleta,
     cadastrar_tipo_de_coleta,
     compor_amostra_de_auditoria,
@@ -36,6 +37,7 @@ from .regra import (
     consultar_desafios_publicados,
     consultar_historico_da_serie,
     consultar_series_do_guerreiro,
+    consultar_tipos_de_coleta,
     criar_desafio_de_coleta,
     emitir_credencial_de_dispositivo,
     gravar_registro_de_coleta,
@@ -54,16 +56,6 @@ class CriarTipoDeColetaEntrada(BaseModel):
     unidade: str | None = None
     faixa_minima: float | None = None
     faixa_maxima: float | None = None
-
-
-class TipoDeColetaSaida(BaseModel):
-    id: uuid.UUID
-    nome: str
-    forma_de_registro: str
-    unidade: str | None
-    faixa_minima: float | None
-    faixa_maxima: float | None
-    ativo: bool
 
 
 @roteador.post("/tipos-de-coleta", status_code=201)
@@ -97,6 +89,24 @@ def cadastrar_tipo_de_coleta_rota(
         faixa_maxima=tipo.faixa_maxima,
         ativo=tipo.ativo,
     )
+
+
+@roteador.get("/tipos-de-coleta", response_model=PaginaDeResultado[TipoDeColetaSaida])
+def consultar_tipos_de_coleta_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[TipoDeColetaSaida]:
+    """Restrita ao Mestre, que escolhe o tipo ao declarar o desafio, e ao
+    Admin que o cadastra — qualquer outro papel recebe 403 por
+    `consultar_tipos_de_coleta`, fora da matriz de permissões do PRD-01 §4
+    (`RF-09-27`, `RF-08-05`, `RF-01-28`, design — decisão 2)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    pagina = consultar_tipos_de_coleta(
+        sessao_bd, operador=operador, cursor=parametros.cursor, tamanho=parametros.tamanho
+    )
+    sessao_bd.commit()
+    return pagina
 
 
 class CriarDesafioDeColetaEntrada(BaseModel):

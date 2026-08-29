@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from ..armazenamento.fabrica import dependencia_de_armazenamento
 from ..armazenamento.porta import PortaDeArmazenamento
-from ..autenticacao import ContextoDaSessao
+from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..erros import ErroDeValidacao, NaoEncontrado, SolicitacaoJaAvaliada
 from ..paginacao import (
@@ -698,3 +698,73 @@ def avaliar_sugestao_rota(
     )
     sessao_bd.commit()
     return _saida_da_sugestao(sugestao)
+
+
+class SugestaoDoAutorSaida(BaseModel):
+    """Leitura de quem propôs, na própria plataforma — nunca o `parecer`
+    interno da avaliação, que é só da leitura de Admin; o retorno chega pelo
+    `motivo_do_retorno` (`RF-09-55`, `RN-02-25`, design — decisão 3)."""
+
+    id: uuid.UUID
+    alvo_tipo: TipoDeAlvo
+    alvo_id: uuid.UUID | None
+    texto: str
+    situacao: SituacaoDaSugestao
+    prazo: datetime
+    em_atraso: bool
+    motivo_do_retorno: str | None
+    decidido_em: datetime | None
+
+
+def _saida_da_sugestao_do_autor(sugestao: SugestaoOuProposta) -> SugestaoDoAutorSaida:
+    return SugestaoDoAutorSaida(
+        id=sugestao.id,
+        alvo_tipo=sugestao.alvo_tipo,
+        alvo_id=sugestao.alvo_id,
+        texto=sugestao.texto,
+        situacao=sugestao.situacao,
+        prazo=sugestao.prazo,
+        em_atraso=esta_em_atraso(sugestao),
+        motivo_do_retorno=sugestao.motivo_do_retorno,
+        decidido_em=sugestao.decidido_em,
+    )
+
+
+@roteador.get("/sugestoes/minhas", response_model=PaginaDeResultado[SugestaoDoAutorSaida])
+def listar_minhas_sugestoes_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[SugestaoDoAutorSaida]:
+    """`RF-09-55`, `RF-01-25`: a persona em sessão acompanha as próprias
+    sugestões e propostas na fila única, sem depender do Admin — nunca a de
+    outro autor."""
+    consulta = sessao_bd.query(SugestaoOuProposta).filter_by(autor_id=contexto.persona_id)
+
+    if parametros.cursor:
+        posicao = decodificar_cursor(parametros.cursor)
+        try:
+            registrada_em_cursor = datetime.fromisoformat(posicao["registrado_em"])
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(
+            tuple_(SugestaoOuProposta.registrado_em, SugestaoOuProposta.id)
+            > (registrada_em_cursor, id_cursor)
+        )
+
+    consulta = consulta.order_by(SugestaoOuProposta.registrado_em, SugestaoOuProposta.id)
+    registros = consulta.limit(parametros.tamanho + 1).all()
+
+    proximo_cursor = None
+    if len(registros) > parametros.tamanho:
+        registros = registros[: parametros.tamanho]
+        ultimo = registros[-1]
+        proximo_cursor = codificar_cursor(
+            {"registrado_em": ultimo.registrado_em.isoformat(), "id": str(ultimo.id)}
+        )
+
+    return PaginaDeResultado(
+        itens=[_saida_da_sugestao_do_autor(registro) for registro in registros],
+        proximo_cursor=proximo_cursor,
+    )

@@ -2,7 +2,12 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
-import { type MissaoDaTrilha, publicarTrilha, type TrilhaDoMestre } from "./api";
+import {
+  type MissaoDaTrilha,
+  publicarTrilha,
+  type TipoDeColeta,
+  type TrilhaDoMestre,
+} from "./api";
 import { EtiquetasOds } from "./EtiquetasOds";
 import { FormularioDeCulminancia } from "./FormularioDeCulminancia";
 import { FormularioDeMissao } from "./FormularioDeMissao";
@@ -10,6 +15,7 @@ import { ListaDeMissoes } from "./ListaDeMissoes";
 
 interface Props {
   trilha: TrilhaDoMestre;
+  tiposDeColeta: TipoDeColeta[];
   aoVoltar: () => void;
   onAtualizarTrilha: (trilha: TrilhaDoMestre) => void;
 }
@@ -43,7 +49,7 @@ function comCoberturaRefeita(trilha: TrilhaDoMestre): TrilhaDoMestre {
   };
 }
 
-export function TelaDaTrilha({ trilha, aoVoltar, onAtualizarTrilha }: Props) {
+export function TelaDaTrilha({ trilha, tiposDeColeta, aoVoltar, onAtualizarTrilha }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
   const [mostrarFormularioDeCulminancia, definirMostrarFormularioDeCulminancia] =
@@ -179,7 +185,11 @@ export function TelaDaTrilha({ trilha, aoVoltar, onAtualizarTrilha }: Props) {
         />
       )}
 
-      <ListaDeMissoes missoes={trilha.missoes} onAtualizarMissao={aoAtualizarMissao} />
+      <ListaDeMissoes
+        missoes={trilha.missoes}
+        tiposDeColeta={tiposDeColeta}
+        onAtualizarMissao={aoAtualizarMissao}
+      />
     </Moldura>
   );
 }
