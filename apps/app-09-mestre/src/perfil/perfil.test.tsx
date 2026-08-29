@@ -53,6 +53,17 @@ afterEach(() => {
 });
 
 describe("publicação de artefato", () => {
+  it("mostra o aviso de coleta dos artefatos comprobatórios", async () => {
+    configurarSessao();
+    vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([]);
+
+    render(<TelaDoPerfil />);
+
+    expect(
+      await screen.findByText(/coleta os artefatos que comprovam a sua habilidade/i),
+    ).toHaveAttribute("role", "status");
+  });
+
   it("publica por endereço e rótulo, sem campo de anexo", async () => {
     configurarSessao();
     vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([]);

@@ -71,6 +71,18 @@ afterEach(() => {
 });
 
 describe("criações originais a validar (RF-09-31 a RF-09-34)", () => {
+  it("mostra o aviso de coleta da validação da criação original", async () => {
+    configurarSessao();
+    vi.spyOn(criacoesApi, "listarFilaDeCriacoes").mockResolvedValue([]);
+
+    render(<TelaDeCriacoesAValidar />);
+
+    expect(await screen.findByText(/coleta a validação da criação original/i)).toHaveAttribute(
+      "role",
+      "status",
+    );
+  });
+
   it("a fila traz a trilha, o critério e o papel de cada integrante", async () => {
     configurarSessao();
     vi.spyOn(criacoesApi, "listarFilaDeCriacoes").mockResolvedValue([criacaoNaFila()]);

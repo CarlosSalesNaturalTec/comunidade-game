@@ -1759,6 +1759,25 @@ async function abrirMissao() {
 }
 
 describe("conteúdo da missão (RF-09-14, RF-09-15, RF-09-24)", () => {
+  it("mostra o aviso de coleta do conteúdo autoral", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByRole("button", { name: /novo conteúdo/i }));
+
+    expect(
+      screen.getByText(/coleta o conteúdo autoral que você publica na missão/i),
+    ).toHaveAttribute("role", "status");
+  });
+
   it("Mestre escreve o texto da missão", async () => {
     configurarSessao();
     vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([

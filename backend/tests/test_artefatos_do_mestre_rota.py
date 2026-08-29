@@ -68,6 +68,22 @@ def test_mestre_nao_publica_no_perfil_de_outra_persona(
     assert resposta.status_code == 403
 
 
+def test_campo_de_cadastro_enviado_junto_e_recusado(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.post(
+        f"/v1/mestres/{mestre.id}/artefatos",
+        json={"endereco": "https://exemplo.org", "rotulo": "Currículo", "nome": "Outro nome"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+    assert resposta.status_code == 422
+
+
 def test_persona_de_outro_papel_recebe_403_na_rota_de_artefatos(
     cliente, criar_chave, criar_persona, criar_sessao_de_teste
 ):

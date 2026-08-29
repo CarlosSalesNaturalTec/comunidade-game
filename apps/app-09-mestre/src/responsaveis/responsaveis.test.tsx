@@ -63,6 +63,16 @@ describe("cadastro do responsável", () => {
     expect(screen.getByText(/apresentou pessoalmente/i)).toBeInTheDocument();
   });
 
+  it("mostra o aviso de coleta do cadastro e do vínculo", () => {
+    configurarSessao();
+    render(<TelaDeResponsaveis />);
+
+    expect(screen.getByText(/coleta o cadastro e o vínculo do responsável/i)).toHaveAttribute(
+      "role",
+      "status",
+    );
+  });
+
   it("recusa o cadastro sem nome", async () => {
     configurarSessao();
     const cadastrarEspiado = vi.spyOn(responsaveisApi, "cadastrarResponsavel");
