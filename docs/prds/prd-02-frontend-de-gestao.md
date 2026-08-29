@@ -432,7 +432,7 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | POST   | `/v1/partidas-de-quiz/{id}/anulacoes`             | Mestre ou Admin | Anula a pergunta contestada, sem crédito para ninguém                       |
 | GET    | `/v1/partidas-de-quiz/{id}`                       | Mestre ou Admin | Estado da partida, sondado a cada 2 segundos                                |
 | POST   | `/v1/partidas-de-quiz/{id}/encerramento`          | Mestre ou Admin | Encerra a partida e lança a pontuação                                       |
-| POST   | `/v1/entregas`                                    | Admin           | Registra entrega de exemplar Alpha ou camisa, com baixa                     |
+| GET    | `/v1/entregas`                                    | Admin           | Lê as entregas confirmadas pelo Mestre, com tipo de recurso e baixa         |
 | GET    | `/v1/auditoria`                                   | Admin           | Trilha de auditoria, com filtro por autor e período                         |
 
 Erros previstos: agenda de aula sem comunidade ou sem horário final (422); consulta de aulas

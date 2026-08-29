@@ -52,3 +52,30 @@
 .ficha-de-vida__teor {
   font-weight: var(--peso-rotulo);
 }
+
+/* Lista das entregas confirmadas, mesmo desenho de `.lista-do-acervo`. */
+.lista-de-entregas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--densidade);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.lista-de-entregas__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--espaco-8) var(--espaco-16);
+  padding: var(--espaco-8) var(--espaco-12);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.lista-de-entregas__guerreiro {
+  font-weight: var(--peso-rotulo);
+}
+
+.lista-de-entregas__baixa {
+  color: var(--cor-texto-secundario);
+}

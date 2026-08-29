@@ -56,6 +56,27 @@ export function tombarItem(
   });
 }
 
+export interface EntregaDeRecompensa {
+  id: string;
+  recompensa_de_marco_id: string;
+  missao_id: string;
+  trilha_id: string;
+  tipo_de_recurso_id: string;
+  quantidade: string;
+  guerreiro_id: string;
+  ponto_de_apoio_id: string;
+  lancamento_id: string;
+  autor_id: string;
+  registrado_em: string;
+}
+
+// Leitura da baixa definitiva já confirmada pelo Mestre — a área Acervo
+// nunca oferece confirmar, corrigir ou desfazer entrega (`RF-02-50`,
+// `RF-02-51`, `RN-02-17`).
+export function listarEntregas(token: string): Promise<EntregaDeRecompensa[]> {
+  return chamarNucleo<EntregaDeRecompensa[]>("/v1/entregas", { token });
+}
+
 export interface AnotarFichaDeVidaEntrada {
   teor: TeorDaAnotacao;
   estado_de_conservacao: string;

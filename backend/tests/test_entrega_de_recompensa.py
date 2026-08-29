@@ -442,3 +442,38 @@ def test_leitura_por_rota_nao_traz_moedas_nem_reais(
         assert "recompensa_de_marco_id" in item
         assert "missao_id" in item
         assert "trilha_id" in item
+        assert item["tipo_de_recurso_id"] == str(c["tipo"].id)
+        assert item["quantidade"] == "1.00"
+        assert "lancamento_id" in item
+
+
+def test_leitura_por_rota_traz_tipo_de_recurso_quantidade_e_lancamento_para_o_admin(
+    sessao, cliente, criar_chave, criar_sessao_de_teste, cenario, criar_vinculo_jogador
+):
+    c = cenario()
+    criar_vinculo_jogador(c["admin"], c["comunidade"])
+    entrega = registrar_entrega(
+        sessao,
+        operador=c["mestre"],
+        recompensa=c["recompensa"],
+        guerreiro=c["guerreiro"],
+        ponto_de_apoio=c["ponto_de_apoio"],
+    )
+    sessao.commit()
+
+    chave, _ = criar_chave()
+    token, _ = criar_sessao_de_teste(c["admin"])
+
+    resposta = cliente.get(
+        "/v1/entregas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert len(corpo) == 1
+    item = corpo[0]
+    assert item["tipo_de_recurso_id"] == str(c["tipo"].id)
+    assert item["lancamento_id"] == str(entrega.lancamento_id)
+    for chave_do_item in item:
+        assert "moeda" not in chave_do_item and "real" not in chave_do_item
