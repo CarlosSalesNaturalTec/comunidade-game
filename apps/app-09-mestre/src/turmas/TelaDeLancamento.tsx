@@ -2,6 +2,7 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo, CampoDeDataHora } from "comum/react";
 import { type FormEvent, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import type { AtividadeDoMestre, AulaDaTurma, DesfechoDoResultado } from "./api";
 import { lancarResultadosDaAtividade } from "./api";
 
@@ -92,6 +93,7 @@ export function TelaDeLancamento({ aula, atividade, aoVoltar }: Props) {
         </Botao>
       </header>
 
+      <AvisoDeColeta dado="o resultado da atividade de cada participante" />
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
       {confirmado && <Aviso tipo="sucesso">Lançamento registrado.</Aviso>}
 

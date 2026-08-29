@@ -30,6 +30,13 @@ vi.mock("comum/autenticacao", async () => {
   };
 });
 
+vi.mock("../direitos/ContextoDeDireitos", async () => {
+  const real = await vi.importActual<typeof import("../direitos/ContextoDeDireitos")>(
+    "../direitos/ContextoDeDireitos",
+  );
+  return { ...real, useDireitos: () => ({ irParaDireitos: vi.fn() }) };
+});
+
 import { useSessao } from "comum/autenticacao";
 
 const SESSAO_DE_MESTRE: SessaoAberta = {

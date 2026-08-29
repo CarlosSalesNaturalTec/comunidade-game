@@ -156,8 +156,9 @@ NEVER SHALL oferecer ao Mestre a edição do próprio nome, e-mail ou papel. (`R
 
 #### Scenario: O Mestre não edita o próprio cadastro
 
-- **WHEN** o Mestre abre a área do próprio perfil
-- **THEN** nome, e-mail e papel aparecem em leitura, sem caminho de edição
+- **WHEN** o Mestre percorre a área do próprio perfil
+- **THEN** não lhe é oferecido campo algum para alterar nome, e-mail ou papel — a área só
+  alcança os artefatos comprobatórios
 
 ### Requirement: Toda tela da App 09 que grava dado pessoal avisa o que ali se coleta
 

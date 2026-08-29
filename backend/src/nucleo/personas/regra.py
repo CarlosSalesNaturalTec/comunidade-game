@@ -435,7 +435,14 @@ def cadastrar_adulto_com_artefatos(
     )
 
     for endereco, rotulo in artefatos:
-        sessao.add(ArtefatoComprobatorio(persona_id=persona.id, endereco=endereco, rotulo=rotulo))
+        sessao.add(
+            ArtefatoComprobatorio(
+                persona_id=persona.id,
+                endereco=endereco,
+                rotulo=rotulo,
+                declarado_por_id=operador.id,
+            )
+        )
 
     _gravar_credencial_de_login_social(sessao, persona=persona, email=email, criada_por=operador)
     sessao.flush()

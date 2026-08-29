@@ -26,12 +26,14 @@ _TABELA_DO_PRD_01_PAR_4 = {
             Operacao.cadastro_do_guerreiro_no_encontro,
             Operacao.testemunho_do_termo_impresso,
             Operacao.propostas_de_evolucao,
+            Operacao.documentos_comprobatorios,
         },
         "le": {
             Operacao.publico,
             Operacao.suas_turmas,
             Operacao.painel_do_dia_na_app_03,
             Operacao.conducao_do_quiz_ao_vivo_das_suas_aulas,
+            Operacao.vinculo_com_guerreiros_e_guerreiras,
         },
     },
     Papel.guerreiro: {

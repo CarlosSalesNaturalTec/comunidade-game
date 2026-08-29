@@ -20,6 +20,13 @@ vi.mock("../api/configuracao", () => ({
   URL_DA_APP_03: "https://gestao.example.org",
 }));
 
+vi.mock("../direitos/ContextoDeDireitos", async () => {
+  const real = await vi.importActual<typeof import("../direitos/ContextoDeDireitos")>(
+    "../direitos/ContextoDeDireitos",
+  );
+  return { ...real, useDireitos: () => ({ irParaDireitos: vi.fn() }) };
+});
+
 import { useSessao } from "comum/autenticacao";
 
 const SESSAO_DE_MESTRE: SessaoAberta = {
