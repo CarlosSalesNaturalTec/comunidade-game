@@ -2,6 +2,7 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useEffect, useId, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import {
   type AutoriaDoConteudo,
   abrirEnvio,
@@ -196,6 +197,7 @@ export function FormularioDeConteudo({ idDaMissao, onSalvo, onCancelar }: Props)
 
   return (
     <form onSubmit={aoSubmeter} aria-label="Novo conteúdo da missão">
+      <AvisoDeColeta dado="o conteúdo autoral que você publica na missão" />
       <div className="cg-campo">
         <label htmlFor={idDoTipo}>Tipo de conteúdo</label>
         <select

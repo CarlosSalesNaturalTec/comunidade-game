@@ -565,8 +565,11 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | POST   | `/v1/aulas/{id}/presencas`                                | Mestre       | Registra e ajusta presença do próprio encontro                         |
 | POST   | `/v1/criacoes-originais/{id}/validacao`                   | Mestre       | Valida ou devolve a criação, creditando autoria e badge                |
 | POST   | `/v1/desafios-extras/{id}/validacao`                      | Mestre       | Validação pedagógica, com parecer ou motivo da recusa                  |
+| GET    | `/v1/guerreiros/vinculaveis`                              | Mestre       | Guerreiros e Guerreiras das suas comunidades, por nick e avatar        |
 | POST   | `/v1/responsaveis`                                        | Mestre       | Cadastra responsável e vincula Guerreiros e Guerreiras                 |
+| GET    | `/v1/mestres/{id}/artefatos`                              | Mestre       | Lê os próprios artefatos, com os declarados no cadastro marcados       |
 | POST   | `/v1/mestres/{id}/artefatos`                              | Mestre       | Publica currículo, portfólio, redes e artefatos comprobatórios         |
+| DELETE | `/v1/mestres/{id}/artefatos/{artefato_id}`                | Mestre       | Remove artefato próprio; recusa o declarado no cadastro                |
 | PUT    | `/v1/eu/mestre/identidade`                                | Mestre       | Define ou troca o próprio nick e avatar                                |
 | POST   | `/v1/sugestoes`                                           | Mestre       | Registra proposta de evolução na fila única da gestão                  |
 
@@ -579,7 +582,8 @@ sem fonte registrada (422); pergunta sem quatro alternativas ou sem correta decl
 lançamento de atividade que não é do Mestre autenticado (403); tentativa de editar lançamento
 (405); despublicação pedida por Mestre (403); quarto vínculo de responsável para o mesmo
 Guerreiro(a) (422); cadastro de Mestre por esta aplicação (403); publicação de criação original
-sem autorização do responsável (409).
+sem autorização do responsável (409); artefato comprobatório sem endereço ou sem rótulo (422);
+remoção de artefato declarado por Admin no cadastro, ou acesso ao perfil de outro Mestre (403).
 
 ## 10. Requisitos não funcionais
 

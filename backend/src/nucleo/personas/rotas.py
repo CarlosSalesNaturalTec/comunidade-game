@@ -575,3 +575,96 @@ def definir_identidade_do_mestre(
     definir_ou_trocar_nick(sessao_bd, persona, entrada.nick)
     sessao_bd.commit()
     return MinhaIdentidadeSaida(nick=entrada.nick)
+
+
+class ArtefatoDoMestreEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    endereco: str = Field(min_length=1)
+    rotulo: str = Field(min_length=1)
+
+
+class ArtefatoDoMestreSaida(BaseModel):
+    id: uuid.UUID
+    endereco: str
+    rotulo: str
+    declarado_no_cadastro: bool
+
+
+def _exigir_mestre_do_proprio_perfil(id: uuid.UUID, contexto: ContextoDaSessao) -> None:
+    if contexto.papel != Papel.mestre or contexto.persona_id != id:
+        raise PermissaoNegada(mensagem="Só o Mestre alcança os próprios artefatos.")
+
+
+def _saida_do_artefato_do_mestre(
+    artefato: ArtefatoComprobatorio, mestre_id: uuid.UUID
+) -> ArtefatoDoMestreSaida:
+    return ArtefatoDoMestreSaida(
+        id=artefato.id,
+        endereco=artefato.endereco,
+        rotulo=artefato.rotulo,
+        declarado_no_cadastro=artefato.declarado_por_id != mestre_id,
+    )
+
+
+@roteador.get("/mestres/{id}/artefatos")
+def listar_artefatos_do_mestre_rota(
+    id: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[ArtefatoDoMestreSaida]:
+    """Leitura da prova de habilidade do próprio Mestre em sessão —
+    qualquer outro `id` ou papel recebe 403 (`RF-09-66`, `RN-09-14`)."""
+    _exigir_mestre_do_proprio_perfil(id, contexto)
+    artefatos = sessao_bd.query(ArtefatoComprobatorio).filter_by(persona_id=id).all()
+    return [_saida_do_artefato_do_mestre(artefato, id) for artefato in artefatos]
+
+
+@roteador.post("/mestres/{id}/artefatos", status_code=201)
+def declarar_artefato_do_mestre_rota(
+    id: uuid.UUID,
+    entrada: ArtefatoDoMestreEntrada,
+    contexto: Annotated[
+        ContextoDaSessao, Depends(exigir_permissao(Operacao.documentos_comprobatorios, "escreve"))
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> ArtefatoDoMestreSaida:
+    """O Mestre publica a prova da própria habilidade — link declarado,
+    nunca anexo, e nunca no perfil de outra persona (`RF-09-66`, `RF-09-67`,
+    `RN-02-01`, `RN-09-14`)."""
+    _exigir_mestre_do_proprio_perfil(id, contexto)
+    persona = sessao_bd.get(Persona, id)
+    if persona is None or persona.papel != Papel.mestre:
+        raise NaoEncontrado(mensagem="Mestre não encontrado.", campo="id")
+
+    artefato = ArtefatoComprobatorio(
+        persona_id=id, endereco=entrada.endereco, rotulo=entrada.rotulo, declarado_por_id=id
+    )
+    sessao_bd.add(artefato)
+    sessao_bd.commit()
+    return _saida_do_artefato_do_mestre(artefato, id)
+
+
+@roteador.delete("/mestres/{id}/artefatos/{artefato_id}", status_code=204)
+def remover_artefato_do_mestre_rota(
+    id: uuid.UUID,
+    artefato_id: uuid.UUID,
+    contexto: Annotated[
+        ContextoDaSessao, Depends(exigir_permissao(Operacao.documentos_comprobatorios, "escreve"))
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> None:
+    """Remove apenas o que o próprio Mestre publicou — o artefato do
+    cadastro é recusado com 403 e permanece (`RF-09-66`, `RN-09-14`,
+    decisão do fundador, 2026-08-29, documento 09 §1)."""
+    _exigir_mestre_do_proprio_perfil(id, contexto)
+    artefato = sessao_bd.get(ArtefatoComprobatorio, artefato_id)
+    if artefato is None or artefato.persona_id != id:
+        raise NaoEncontrado(mensagem="Artefato não encontrado.", campo="artefato_id")
+    if artefato.declarado_por_id != id:
+        raise PermissaoNegada(
+            mensagem="Este artefato foi declarado no cadastro e não é removível por aqui."
+        )
+
+    sessao_bd.delete(artefato)
+    sessao_bd.commit()

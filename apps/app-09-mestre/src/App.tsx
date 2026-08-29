@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeAutoria } from "./autoria/TelaDeAutoria";
 import { TelaDeCriacoesAValidar } from "./criacoesOriginais/TelaDeCriacoesAValidar";
+import { ProvedorDeDireitos } from "./direitos/ContextoDeDireitos";
+import { TelaDeDireitos } from "./direitos/TelaDeDireitos";
+import { TelaDoPerfil } from "./perfil/TelaDoPerfil";
 import { TelaDePropostas } from "./propostas/TelaDePropostas";
 import { TelaDoBancoDeQuiz } from "./quiz/TelaDoBancoDeQuiz";
 import { TelaDeRecursos } from "./recursos/TelaDeRecursos";
+import { TelaDeResponsaveis } from "./responsaveis/TelaDeResponsaveis";
 import { listarSolicitacoesAbertasDeTodasAsComunidades } from "./territorio/api";
 import { TelaDeTerritorio } from "./territorio/TelaDeTerritorio";
 import { TelaDeDesbloqueiosPendentes } from "./turmas/TelaDeDesbloqueiosPendentes";
@@ -26,7 +30,10 @@ type Area =
   | "criacoes"
   | "territorio"
   | "propostas"
-  | "recursos";
+  | "recursos"
+  | "responsaveis"
+  | "perfil"
+  | "direitos";
 
 function Conteudo() {
   const { sessao, restaurando, sair } = useSessao();
@@ -73,7 +80,7 @@ function Conteudo() {
   }
 
   return (
-    <>
+    <ProvedorDeDireitos irParaDireitos={() => definirArea("direitos")}>
       <nav className="cg-navegacao-de-area" aria-label="Áreas do Mestre">
         <Botao
           variante={area === "autoria" ? "primaria" : "secundaria"}
@@ -129,6 +136,24 @@ function Conteudo() {
         >
           Recursos
         </Botao>
+        <Botao
+          variante={area === "responsaveis" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("responsaveis")}
+        >
+          Responsáveis
+        </Botao>
+        <Botao
+          variante={area === "perfil" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("perfil")}
+        >
+          Meu perfil
+        </Botao>
+        <Botao
+          variante={area === "direitos" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("direitos")}
+        >
+          Direitos e dados
+        </Botao>
       </nav>
       {area === "autoria" && <TelaDeAutoria />}
       {area === "turmas" && <TelaDeMinhasTurmas />}
@@ -140,7 +165,10 @@ function Conteudo() {
       )}
       {area === "propostas" && <TelaDePropostas />}
       {area === "recursos" && <TelaDeRecursos />}
-    </>
+      {area === "responsaveis" && <TelaDeResponsaveis />}
+      {area === "perfil" && <TelaDoPerfil />}
+      {area === "direitos" && <TelaDeDireitos />}
+    </ProvedorDeDireitos>
   );
 }
 

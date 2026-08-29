@@ -15,6 +15,13 @@ vi.mock("comum/autenticacao", async () => {
   };
 });
 
+vi.mock("../direitos/ContextoDeDireitos", async () => {
+  const real = await vi.importActual<typeof import("../direitos/ContextoDeDireitos")>(
+    "../direitos/ContextoDeDireitos",
+  );
+  return { ...real, useDireitos: () => ({ irParaDireitos: vi.fn() }) };
+});
+
 import { useSessao } from "comum/autenticacao";
 
 const SESSAO_DE_MESTRE: SessaoAberta = {
@@ -64,6 +71,18 @@ afterEach(() => {
 });
 
 describe("criações originais a validar (RF-09-31 a RF-09-34)", () => {
+  it("mostra o aviso de coleta da validação da criação original", async () => {
+    configurarSessao();
+    vi.spyOn(criacoesApi, "listarFilaDeCriacoes").mockResolvedValue([]);
+
+    render(<TelaDeCriacoesAValidar />);
+
+    expect(await screen.findByText(/coleta a validação da criação original/i)).toHaveAttribute(
+      "role",
+      "status",
+    );
+  });
+
   it("a fila traz a trilha, o critério e o papel de cada integrante", async () => {
     configurarSessao();
     vi.spyOn(criacoesApi, "listarFilaDeCriacoes").mockResolvedValue([criacaoNaFila()]);

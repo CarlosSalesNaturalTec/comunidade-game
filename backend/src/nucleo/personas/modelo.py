@@ -152,6 +152,13 @@ class ArtefatoComprobatorio(Base):
     persona_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("persona.id"), nullable=False)
     endereco: Mapped[str] = mapped_column(String(512), nullable=False)
     rotulo: Mapped[str] = mapped_column(String(256), nullable=False)
+    # Quem declarou o artefato — nulo é, por definição, o cadastro (todo o
+    # legado nasceu assim); a rota nova sempre grava a persona em sessão. É
+    # o que decide a remoção: só quem declarou remove (`RN-09-14`, decisão
+    # do fundador, 2026-08-29, documento 09 §1).
+    declarado_por_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("persona.id"), nullable=True
+    )
     criado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

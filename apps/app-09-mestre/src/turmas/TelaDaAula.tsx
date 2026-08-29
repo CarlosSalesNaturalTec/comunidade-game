@@ -2,6 +2,7 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo, CampoDeDataHora } from "comum/react";
 import { type FormEvent, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import type { AtividadeDoMestre, AulaDaTurma } from "./api";
 import { confirmarPresenca, lancarOcorrenciaDeConduta } from "./api";
 
@@ -139,6 +140,7 @@ export function TelaDaAula({
 
       <section aria-label="Confirmação de presença">
         <h2>Confirmar presença</h2>
+        <AvisoDeColeta dado="a presença do Guerreiro(a) na atividade" />
         {erroDaPresenca && <Aviso tipo="erro">{erroDaPresenca}</Aviso>}
         {presencaConfirmada && <Aviso tipo="sucesso">Presença confirmada.</Aviso>}
         <form onSubmit={aoConfirmarPresenca} aria-label="Confirmar presença">
@@ -164,6 +166,7 @@ export function TelaDaAula({
           O lançamento vale no ato, sem revisão de outro Admin. Nenhum valor é pedido: o débito
           é fixo.
         </p>
+        <AvisoDeColeta dado="a ocorrência de conduta e o motivo da pontuação negativa" />
         {erroDaOcorrencia && <Aviso tipo="erro">{erroDaOcorrencia}</Aviso>}
         {ocorrenciaLancada && <Aviso tipo="sucesso">Ocorrência registrada.</Aviso>}
         <form onSubmit={aoLancarOcorrencia} aria-label="Lançar ocorrência de conduta">

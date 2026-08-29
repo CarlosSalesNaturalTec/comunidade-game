@@ -432,7 +432,8 @@ Aplicação autenticada, para Admins e — conforme permissão — Mestres:
   admins, comunidades virtuais e poderes.
 - **Cadastro de responsáveis e vínculo com os Guerreiros e Guerreiras** — e-mail da conta
   Google ou credencial de usuário e senha provisória, grau de parentesco e no máximo três
-  responsáveis por Guerreiro(a). O Mestre faz o mesmo cadastro pela App 09.
+  responsáveis por Guerreiro(a). O Mestre faz o mesmo cadastro pela App 09, escolhendo entre os
+  Guerreiros e Guerreiras das comunidades em que atua.
 - **Criação das Comunidades Virtuais** — **exclusiva de Admins**, nascendo vazias.
 - **Agenda das aulas com comunidade, data, horário inicial e final** — é ela que **habilita o
   App 01**: sem aula agendada para o momento, não há onboarding, e é dela que sai a comunidade

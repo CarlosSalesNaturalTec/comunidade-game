@@ -20,6 +20,13 @@ vi.mock("../api/configuracao", () => ({
   URL_DA_APP_03: "https://gestao.example.org",
 }));
 
+vi.mock("../direitos/ContextoDeDireitos", async () => {
+  const real = await vi.importActual<typeof import("../direitos/ContextoDeDireitos")>(
+    "../direitos/ContextoDeDireitos",
+  );
+  return { ...real, useDireitos: () => ({ irParaDireitos: vi.fn() }) };
+});
+
 import { useSessao } from "comum/autenticacao";
 
 const SESSAO_DE_MESTRE: SessaoAberta = {
@@ -208,6 +215,14 @@ describe("lançamento da atividade (RF-09-43, RF-09-44, RF-09-74)", () => {
     return usuario;
   }
 
+  it("mostra o aviso de coleta do resultado de cada participante", async () => {
+    await abrirTelaDeLancamento();
+
+    expect(
+      screen.getByText(/coleta o resultado da atividade de cada participante/i),
+    ).toHaveAttribute("role", "status");
+  });
+
   it("o Mestre lança vários participantes num só envio", async () => {
     const usuario = await abrirTelaDeLancamento();
     const lancarEspiado = vi
@@ -253,6 +268,18 @@ describe("presença e ocorrência de conduta (RF-09-45, RF-09-46)", () => {
     await usuario.click(await screen.findByRole("button", { name: /presença e ocorrência/i }));
     return usuario;
   }
+
+  it("mostra o aviso de coleta da presença e da ocorrência, sem bloquear o envio", async () => {
+    await abrirTelaDaAula();
+
+    expect(screen.getByText(/coleta a presença do guerreiro/i)).toHaveAttribute(
+      "role",
+      "status",
+    );
+    expect(
+      screen.getByText(/coleta a ocorrência de conduta e o motivo da pontuação negativa/i),
+    ).toHaveAttribute("role", "status");
+  });
 
   it("o Mestre confirma a presença que faltou", async () => {
     const usuario = await abrirTelaDaAula();

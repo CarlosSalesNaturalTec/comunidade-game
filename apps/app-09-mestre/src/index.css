@@ -74,3 +74,43 @@ textarea {
   border-color: var(--cor-separador);
   font-weight: var(--peso-rotulo);
 }
+
+/* Aviso discreto de coleta de dado pessoal — nunca bloqueia a tela nem
+ * exige confirmação, sem cor como único sinal (`RF-09-68`, documento 15
+ * §5). Mesmo desenho da App 03. */
+.cg-aviso-de-coleta {
+  padding: var(--espaco-8) var(--espaco-12);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-campo);
+  color: var(--cor-texto-secundario);
+  font-size: var(--escala-0875);
+}
+
+.cg-aviso-de-coleta__botao {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--cor-acao);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+/* Tabela do PRD-09 §11, na área Direitos e dados. */
+.cg-tabela-de-direitos {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cg-tabela-de-direitos caption {
+  text-align: left;
+  color: var(--cor-texto-secundario);
+  padding-bottom: var(--espaco-8);
+}
+
+.cg-tabela-de-direitos th,
+.cg-tabela-de-direitos td {
+  border-bottom: 1px solid var(--cor-separador);
+  padding: var(--espaco-8) var(--espaco-12);
+  text-align: left;
+}

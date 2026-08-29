@@ -9,11 +9,51 @@ from sqlalchemy.orm import Session
 from ..autenticacao import ContextoDaSessao
 from ..banco import obter_sessao
 from ..erros import NaoEncontrado
+from ..paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from ..permissoes import Operacao, exigir_permissao
-from ..personas.modelo import Papel, Persona
-from .regra import cadastrar_responsavel, criar_vinculo
+from ..personas.modelo import Nick, Papel, Persona
+from .regra import cadastrar_responsavel, criar_vinculo, guerreiros_vinculaveis
 
 roteador = APIRouter()
+
+
+class GuerreiroVinculavelSaida(BaseModel):
+    id: uuid.UUID
+    nick: str
+    avatar: str
+
+
+def _saida_do_guerreiro_vinculavel(
+    persona: Persona, sessao_bd: Session
+) -> GuerreiroVinculavelSaida:
+    nick = sessao_bd.query(Nick).filter_by(persona_id=persona.id).first()
+    return GuerreiroVinculavelSaida(
+        id=persona.id,
+        nick=nick.valor if nick is not None else "",
+        avatar=persona.avatar or "",
+    )
+
+
+@roteador.get("/guerreiros/vinculaveis", response_model=PaginaDeResultado[GuerreiroVinculavelSaida])
+def listar_guerreiros_vinculaveis_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[
+        ContextoDaSessao,
+        Depends(exigir_permissao(Operacao.vinculo_com_guerreiros_e_guerreiras, "le")),
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[GuerreiroVinculavelSaida]:
+    """Restrita ao Mestre pela matriz — nick e avatar dos Guerreiros e
+    Guerreiras ativos da comunidade do seu vínculo vigente, nunca imagem
+    real, nome civil ou contato (`RF-09-62`, `RN-01-20`, `RN-09-18`)."""
+    mestre = sessao_bd.get(Persona, contexto.persona_id)
+    personas, proximo_cursor = guerreiros_vinculaveis(
+        sessao_bd, mestre=mestre, parametros=parametros
+    )
+    return PaginaDeResultado(
+        itens=[_saida_do_guerreiro_vinculavel(persona, sessao_bd) for persona in personas],
+        proximo_cursor=proximo_cursor,
+    )
 
 
 class CadastrarResponsavelEntrada(BaseModel):

@@ -2,6 +2,7 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import {
   type CriacaoNaFila,
   devolverCriacaoOriginal,
@@ -93,6 +94,7 @@ export function TelaDeCriacoesAValidar() {
         acao={{ rotulo: "Sair", aoAcionar: sair }}
       />
 
+      <AvisoDeColeta dado="a validação da criação original do Guerreiro(a) ou da equipe" />
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 
       {fila === null && <EstadoDaLista>Carregando a fila…</EstadoDaLista>}

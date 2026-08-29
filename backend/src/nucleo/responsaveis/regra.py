@@ -1,8 +1,11 @@
 import uuid
 
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
+from ..comunidades.modelo import VinculoJogador
 from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
+from ..paginacao import ParametrosDeListagem, codificar_cursor, decodificar_cursor
 from ..personas.modelo import Papel, Persona
 from ..personas.regra import criar_persona
 from .modelo import VinculoResponsavel
@@ -79,6 +82,48 @@ def guerreiros_vinculados(sessao: Session, responsavel_id: uuid.UUID) -> list[uu
         .all()
     )
     return [linha[0] for linha in linhas]
+
+
+def guerreiros_vinculaveis(
+    sessao: Session, *, mestre: Persona, parametros: ParametrosDeListagem
+) -> tuple[list[Persona], str | None]:
+    """Guerreiros e Guerreiras ativos da comunidade do vínculo vigente do
+    Mestre — sem vínculo, lista vazia, no mesmo molde de
+    `aulas.regra.escopo_de_comunidade_da_leitura` (`RF-09-62`, `RN-01-20`,
+    `RN-09-18`, decisão do fundador, 2026-08-29, documento 09 §1).
+    """
+    vinculo: VinculoJogador | None = mestre.vinculo_vigente
+    if vinculo is None:
+        return [], None
+
+    consulta = (
+        sessao.query(Persona)
+        .join(
+            VinculoJogador,
+            and_(VinculoJogador.guerreiro_id == Persona.id, VinculoJogador.data_fim.is_(None)),
+        )
+        .filter(
+            Persona.papel == Papel.guerreiro,
+            VinculoJogador.comunidade_virtual_id == vinculo.comunidade_virtual_id,
+        )
+    )
+
+    if parametros.cursor:
+        posicao = decodificar_cursor(parametros.cursor)
+        try:
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(Persona.id > id_cursor)
+
+    consulta = consulta.order_by(Persona.id).limit(parametros.tamanho + 1)
+    personas = consulta.all()
+
+    proximo_cursor = None
+    if len(personas) > parametros.tamanho:
+        personas = personas[: parametros.tamanho]
+        proximo_cursor = codificar_cursor({"id": str(personas[-1].id)})
+    return personas, proximo_cursor
 
 
 def exigir_vinculo_do_responsavel(

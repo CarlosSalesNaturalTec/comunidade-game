@@ -162,7 +162,9 @@ primeiro acesso — os dois sob a mesma unicidade do nick do Guerreiro(a).
 
 O **artefato comprobatório** de Mestre e Apoiador é **link declarado** — endereço e rótulo do
 que ele aponta. **Anexo de arquivo fica fora do Ciclo 01**: a prova é verificável por qualquer
-visitante, e arquivo guardado na plataforma não é.
+visitante, e arquivo guardado na plataforma não é. O que o Admin declara no cadastro **não é
+removível pelo próprio adulto**: ele acrescenta e remove só o que publicar depois, e a prova que
+sustentou o cadastro permanece.
 
 ### Comunidades Virtuais
 
