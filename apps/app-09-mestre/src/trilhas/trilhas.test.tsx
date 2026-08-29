@@ -47,6 +47,11 @@ function configurarSessao() {
     entrarComToken: vi.fn(),
     sair: vi.fn(),
     tratarRecusaDeSessao: vi.fn(),
+    entrarComCredencial: vi.fn(),
+    trocaDeSenhaPendente: false,
+    trocandoSenha: false,
+    erroDeTrocaDeSenha: null,
+    trocarSenhaProvisoria: vi.fn(),
   });
 }
 
