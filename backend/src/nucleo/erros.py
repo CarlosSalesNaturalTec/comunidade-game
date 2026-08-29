@@ -301,6 +301,12 @@ class SolicitacaoDoResponsavelDuplicada(ErroDeAplicacao):
     mensagem = "Já existe uma solicitação deste tipo em aberto para este Guerreiro(a)."
 
 
+class EdicaoDeDesafioExtraPublicadoRecusada(ErroDeAplicacao):
+    status_code = 405
+    codigo = "edicao_de_desafio_extra_publicado_recusada"
+    mensagem = "Desafio extra publicado não é editável; a correção é uma proposta nova."
+
+
 class FreioPorOrigemAcionado(ErroDeAplicacao):
     """`RF-01-65`: leva o tempo de espera calculado pelo freio, que o
     manipulador de `principal.py` também expõe no cabeçalho `Retry-After`

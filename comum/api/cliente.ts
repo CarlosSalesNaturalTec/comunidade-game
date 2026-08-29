@@ -26,6 +26,10 @@ export class ErroDaApi extends Error {
 // Decisions).
 const CODIGO_DE_RECUSA_DE_CHAVE = "chave_invalida";
 const CODIGOS_DE_RECUSA_DE_SESSAO = new Set(["sessao_ausente", "sessao_invalida"]);
+// A troca de senha provisória também recusa `GET /v1/eu` com 403 — não é
+// sessão inválida, é sessão presa até a troca (`RF-01-12`, `RF-14-09`,
+// documento 03 §1.1). Quem chama distingue as três para decidir a tela.
+const CODIGO_DE_TROCA_DE_SENHA_PENDENTE = "troca_de_senha_pendente";
 
 export function ehRecusaDeChave(erro: unknown): erro is ErroDaApi {
   return erro instanceof ErroDaApi && erro.codigo === CODIGO_DE_RECUSA_DE_CHAVE;
@@ -33,6 +37,10 @@ export function ehRecusaDeChave(erro: unknown): erro is ErroDaApi {
 
 export function ehRecusaDeSessao(erro: unknown): erro is ErroDaApi {
   return erro instanceof ErroDaApi && CODIGOS_DE_RECUSA_DE_SESSAO.has(erro.codigo);
+}
+
+export function ehTrocaDeSenhaPendente(erro: unknown): erro is ErroDaApi {
+  return erro instanceof ErroDaApi && erro.codigo === CODIGO_DE_TROCA_DE_SENHA_PENDENTE;
 }
 
 interface ConfiguracaoDeAcesso {

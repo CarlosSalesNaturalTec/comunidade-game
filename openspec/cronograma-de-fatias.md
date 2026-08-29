@@ -128,7 +128,7 @@ pendência; **desafio extra** espera a entidade `DesafioExtra`; **empréstimo de
 | —     | Entregas confirmadas                               | `solicitacoes-do-responsavel-e-entregas-na-gestao` — `RF-02-50`, `RF-02-51`, `RN-02-17`            | implementado |
 | 13    | Aviso de coleta e direitos na gestão               | `aviso-de-coleta-e-direitos-na-gestao` — `RF-02-64`, `RN-02-23`, `RN-02-24`                        | implementado |
 | 14    | Fila de solicitações do responsável                | `solicitacoes-do-responsavel-e-entregas-na-gestao` — `RF-02-23`, `RF-02-24`, `RF-02-66`; traz também o núcleo da solicitação | implementado |
-| 15    | Desafio extra na gestão                            | `RF-02-27`, `RF-02-28`, `RN-02-10`, `RN-02-11` — **trava:** entidade `DesafioExtra` (PRD-14 §8)    | em aberto    |
+| 15    | Desafio extra na gestão                            | `RF-02-27`, `RF-02-28`, `RN-02-10`, `RN-02-11`; a publicação traz a reserva e a liberação da recompensa (`RF-07-39`, `RF-07-40`) — **trava:** entidade `DesafioExtra` — fatia 1 do PRD-14    | em aberto    |
 | 16    | Vitrine institucional e Apoiador na gestão         | `RF-02-80`, `RF-02-85` — depende do PRD-14 (cadastro de Apoiador) e do PRD-03 (vitrine)            | em aberto    |
 
 Fora do cronograma: `RF-02-54` foi retirado e o identificador não se reaproveita; `RF-02-94`
@@ -158,7 +158,7 @@ do fundador, 2026-08-28, documento 09 §1; a antiga fatia 17 deixou de existir.
 | 11    | Perfil do Mestre, prova de habilidade e aviso    | `RF-09-66` a `RF-09-68`, `RN-09-14`                                                                         | em aberto    |
 | 12    | Template da missão por IA                        | `RF-09-85` a `RF-09-91`, `RF-09-95`, `RN-09-33`, `RN-09-34`                                                 | em aberto    |
 | 13    | Recompensa por desbloqueio e duplicação de trilha | `RF-09-13`, `RF-09-84`, `RF-09-75`                                                                         | em aberto    |
-| 15    | Desafio extra na Área do Mestre                  | `RF-09-51`, `RF-09-52`, `RN-09-11`, `RN-09-40` a `RN-09-42` — **trava:** entidade `DesafioExtra` (PRD-14 §8) | em aberto    |
+| 15    | Desafio extra na Área do Mestre                  | `RF-09-51`, `RF-09-52`, `RN-09-11`, `RN-09-40` a `RN-09-42` — **trava:** entidade `DesafioExtra` — fatia 1 do PRD-14 | em aberto    |
 
 Ciclo 02, fora do Ciclo 01: `RF-09-61` (empréstimo do acervo permanente), `RF-09-96` e
 `RF-09-97` (recusa de trilha sem etiqueta ODS), `RN-09-35` e o **apoio escolar** — `RF-09-77` a
@@ -199,7 +199,7 @@ que a tocar em vez de abrir recorte próprio.
 | 5     | Criação original e portfólio                        | `2026-08-27-criacao-original-e-portfolio` (também `RF-09-31` a `RF-09-34`)                    | implementado |
 | 6     | Desafios vigentes e equipes de que participa        | `RF-05-19`, `RF-05-22` a `RF-05-24`, `RN-05-15`, `RN-05-22`, `RN-05-23`                       | em aberto    |
 | 7     | Produção da missão, devolutiva e retomada           | `RF-05-74` a `RF-05-80`, `RN-05-05`, `RN-05-35` a `RN-05-38`                                  | em aberto    |
-| 8     | Desafio extra na Área do Guerreiro(a)               | `RF-05-20`, `RF-05-21` — **trava:** entidade `DesafioExtra` (PRD-14 §8)                       | em aberto    |
+| 8     | Desafio extra na Área do Guerreiro(a)               | `RF-05-20`, `RF-05-21` — **trava:** entidade `DesafioExtra` — fatia 1 do PRD-14                       | em aberto    |
 
 Ciclo 02, fora do Ciclo 01 (PRD-05 §3.2): **acervo do Guerreiro(a)** (`RF-05-47` a `RF-05-49`,
 `RN-05-19`), **canal de sugestões** (`RF-05-54` a `RF-05-56`, `RN-05-17`) e **apoio escolar por
@@ -217,6 +217,32 @@ passaram ao PRD-04.
 | 5     | Transparência, termos e histórico de acessos  | `RF-13-29` a `RF-13-34`, `RN-13-19` — **trava:** falta o texto do termo quanto à entrega de dados (PRD-13 §14) | em aberto |
 | 6     | Atendimento assistido, propostas e avisos     | `RF-13-35` a `RF-13-42`, `RN-13-15` a `RN-13-18`                                                           | em aberto |
 
+## PRD-14 — Área do Apoiador (App 08)
+
+| Fatia | Entrega                                          | Recorte                                                                                                                                                                                                                                                                                                    | Situação  |
+| ----- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- |
+| 1     | Esqueleto da App 08 e desafio extra              | `esqueleto-da-app-08-e-desafio-extra` | implementado |
+| 2     | Porta pública de pré-cadastro                    | `RF-14-01` a `RF-14-07`, `RN-14-01`, `RN-14-03`, `RN-14-05`, `RN-14-06`, `RN-14-39`, `RN-14-40`                                                                                                                                                                                                            | em aberto |
+| 3     | Identidade pública e comprobatórios              | `RF-14-12` a `RF-14-20`, `RN-14-10` a `RN-14-12`                                                                                                                                                                                                                                                          | em aberto |
+| 4     | Meus aportes, necessidades e aporte declarado    | `RF-14-21` a `RF-14-28`, `RN-14-07` a `RN-14-09`                                                                                                                                                                                                                                                          | em aberto |
+| 5     | Missões do Apoiador, sustento e selos            | `RF-14-60` a `RF-14-73`, `RN-14-29` a `RN-14-38`; entidades `MissaoDoApoiador` e `SeloDoApoiador` (PRD-14 §8) — depende da fatia 4                                                                                                                                                                         | em aberto |
+| 6     | Efetividade do apoio                             | `RF-14-40` a `RF-14-47`, `RN-14-21`, `RN-14-22`, `RN-14-28` — depende das fatias 1 e 5                                                                                                                                                                                                                     | em aberto |
+| 7     | Acompanhamento e favoritos                       | `RF-14-48` a `RF-14-55`, `RN-14-23` a `RN-14-25`; entidade `Favorito` (PRD-14 §8) — depende do PRD-03 (painel público)                                                                                                                                                                                     | em aberto |
+| 8     | Propostas, avisos e canal fechado                | `RF-14-56` a `RF-14-59`, `RN-14-26`, `RN-14-27`                                                                                                                                                                                                                                                           | em aberto |
+| 9     | Oferta ao catálogo avulso                        | `RF-14-77` a `RF-14-81`, `RN-14-42` a `RN-14-44` — **trava:** valores da tabela de preços do catálogo avulso (PRD-14 §14)                                                                                                                                                                                  | em aberto |
+
+A fatia 1 vem antes do pré-cadastro porque é ela que destrava as outras três: o acesso do
+Apoiador já existe no núcleo (`sessao-do-adulto`), e o cadastro dele é ato de Admin pela API,
+não da porta pública.
+
+Pendências do PRD-14 §14 que não travam o desenho, só o dado: os valores da tabela de valoração
+e o catálogo de recompensas por marco (fatias 1 e 5) e o catálogo de missões do Ciclo 01
+(fatia 5) — a aplicação exibe o que a gestão publicar.
+
+> **A definir:** quem publica a `MissaoDoApoiador`. O PRD-14 §8 diz que ela é publicada pela
+> gestão na App 03, e o PRD-02 não tem requisito para isso. Sem decisão do fundador, a fatia 5
+> fica sem quem crie a missão que ela lê.
+
 ## PRDs ainda não fatiados
 
 Cada um recebe as suas fatias quando entrar na fila, em uma sessão de fatiamento própria — não
@@ -224,14 +250,13 @@ a cada change.
 
 | Ordem (doc 99 §9) | PRD    | Entrega                        | Situação  |
 | ----------------- | ------ | ------------------------------ | --------- |
-| 9                 | PRD-14 | App 08 — Área do Apoiador      | a fatiar  |
 | 10                | PRD-03 | App 06 — vitrine pública       | a fatiar  |
 | 11                | PRD-10 | Batalhas e eventos presenciais | a fatiar  |
 | 12                | PRD-11 | Personalização por IA          | a fatiar  |
 | 13                | PRD-12 | App 04 — jogo em JavaScript    | a fatiar  |
 
-O PRD-14 é o primeiro a fatiar: a entidade `DesafioExtra` que ele define (§8) destrava a fatia
-15 do PRD-02, a 15 do PRD-09 e a 8 do PRD-05.
+O PRD-14 já está fatiado, no bloco acima: a entidade `DesafioExtra` que ele define (§8) destrava
+a fatia 15 do PRD-02, a 15 do PRD-09 e a 8 do PRD-05, e entra pela fatia 1 dele.
 
 ## Infraestrutura transversal (sem PRD)
 

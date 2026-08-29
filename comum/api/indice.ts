@@ -5,6 +5,7 @@ export {
   ErroDaApi,
   ehRecusaDeChave,
   ehRecusaDeSessao,
+  ehTrocaDeSenhaPendente,
   enviarParteComProgresso,
 } from "./cliente";
 export type { CorpoDeErro, Papel } from "./tipos";
