@@ -45,12 +45,14 @@ _TABELA_DO_PRD_01_PAR_4 = {
             Operacao.equipe_que_forma_na_aula,
             Operacao.resposta_de_quiz_da_equipe,
             Operacao.solicitacao_de_local,
+            Operacao.producao_da_equipe,
         },
         "le": {
             Operacao.seus_dados,
             Operacao.equipes_da_aula_em_andamento,
             Operacao.publico,
             Operacao.resposta_de_quiz_da_equipe,
+            Operacao.producao_da_equipe,
         },
     },
     Papel.responsavel: {
@@ -117,6 +119,15 @@ def test_testemunho_do_termo_impresso_e_de_mestre_e_admin_nao_do_responsavel():
     assert not conferir_permissao(
         Papel.responsavel, "escreve", Operacao.testemunho_do_termo_impresso
     )
+
+
+def test_producao_da_equipe_e_do_guerreiro_em_escreve_e_le():
+    """`RF-04-45`, design — decisão 6: só o Guerreiro(a) entrega e lê a
+    produção da equipe; Mestre e Apoiador ficam de fora."""
+    assert conferir_permissao(Papel.guerreiro, "escreve", Operacao.producao_da_equipe)
+    assert conferir_permissao(Papel.guerreiro, "le", Operacao.producao_da_equipe)
+    assert not conferir_permissao(Papel.mestre, "escreve", Operacao.producao_da_equipe)
+    assert not conferir_permissao(Papel.apoiador, "escreve", Operacao.producao_da_equipe)
 
 
 def test_operacao_de_outro_papel_nega_por_padrao():

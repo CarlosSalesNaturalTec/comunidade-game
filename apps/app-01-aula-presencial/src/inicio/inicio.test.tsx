@@ -52,6 +52,7 @@ function renderizar(
       <TelaInicial
         tokenDeTrabalho="token-de-trabalho"
         personaIdDeTrabalho="mestre-de-trabalho-1"
+        papelDeTrabalho="mestre"
         aulaId="aula-1"
         aoVoltarAoInicio={aoVoltarAoInicio}
         podeAbrirMomentoDeTroca={propsDeTroca.podeAbrirMomentoDeTroca ?? false}

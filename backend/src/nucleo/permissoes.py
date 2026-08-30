@@ -52,6 +52,7 @@ class Operacao(enum.StrEnum):
     equipe_que_forma_na_aula = "equipe_que_forma_na_aula"
     resposta_de_quiz_da_equipe = "resposta_de_quiz_da_equipe"
     solicitacao_de_local = "solicitacao_de_local"
+    producao_da_equipe = "producao_da_equipe"
     # Guerreiro(a) — lê
     seus_dados = "seus_dados"
     equipes_da_aula_em_andamento = "equipes_da_aula_em_andamento"
@@ -129,6 +130,7 @@ MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {
                 Operacao.equipe_que_forma_na_aula,
                 Operacao.resposta_de_quiz_da_equipe,
                 Operacao.solicitacao_de_local,
+                Operacao.producao_da_equipe,
             }
         ),
         "le": frozenset(
@@ -137,6 +139,7 @@ MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {
                 Operacao.equipes_da_aula_em_andamento,
                 Operacao.publico,
                 Operacao.resposta_de_quiz_da_equipe,
+                Operacao.producao_da_equipe,
             }
         ),
     },

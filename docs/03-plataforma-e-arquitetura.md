@@ -413,7 +413,8 @@ marca o texto gerado por IA.
 
 A equipe também **entrega aqui a produção da missão do dia**, por escrita, fala ou foto do que
 fez à mão, com a mesma regra da App 05 (§7): devolutiva construtiva, foto e áudio descartados
-na leitura, resultado lançado pelo Mestre.
+na leitura, resultado lançado pelo Mestre. A entrega é **da equipe**: um único registro, válido
+para todos os integrantes, sem cópia por Guerreiro(a) (decisão do fundador, 2026-08-30).
 
 No **Quiz ao Vivo**, é por aqui que a equipe recebe a pergunta e envia a resposta; as regras da
 partida estão no documento 05.

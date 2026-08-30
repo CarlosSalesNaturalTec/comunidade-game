@@ -37,6 +37,7 @@ from .poderes import modelo as _modelo_poderes  # noqa: F401
 from .ponto_extra import modelo as _modelo_ponto_extra  # noqa: F401
 from .pontos_de_apoio import modelo as _modelo_pontos_de_apoio  # noqa: F401
 from .pontuacao import modelo as _modelo_pontuacao  # noqa: F401
+from .producoes import modelo as _modelo_producoes  # noqa: F401
 from .quiz import modelo as _modelo_quiz  # noqa: F401
 from .recompensas_de_marco import modelo as _modelo_recompensas_de_marco  # noqa: F401
 from .recursos import modelo as _modelo_recursos  # noqa: F401

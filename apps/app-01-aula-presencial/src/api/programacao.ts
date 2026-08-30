@@ -41,6 +41,8 @@ export interface ItemDaProgramacao {
   atividade: AtividadeDoEncontro;
   missao_id: string;
   missao_titulo: string;
+  trilha_id: string;
+  trilha_titulo: string;
   conteudos: ConteudoDaMissao[];
   bibliografia: BibliografiaDaMissao[];
   corrente: boolean;

@@ -409,6 +409,45 @@ def test_integrante_recebe_a_programacao_do_encontro(
     assert corpo[0]["atividade"]["id"] == str(atividade.id)
     assert corpo[0]["missao_id"] == str(missao.id)
     assert corpo[0]["missao_titulo"] == missao.titulo
+    assert corpo[0]["trilha_id"] == str(trilha.id)
+    assert corpo[0]["trilha_titulo"] == trilha.nome
+
+
+def test_cada_item_traz_a_trilha_da_missao(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+):
+    """`RF-04-61`, design — decisão 7: o item da programação traz o
+    identificador e o título da trilha da missão, para o aparelho oferecer
+    a formação da equipe daquela trilha."""
+    from nucleo.trilhas.modelo import SituacaoDaTrilha
+
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    trilha = criar_trilha(mestre, nome="Trilha da Água", situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    criar_atividade(missao, mestre, aula=aula)
+    equipe = criar_equipe(guerreiro, aula=aula)
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.get(f"/v1/equipes/{equipe.id}/missao", headers=_cabecalhos(chave, token))
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo[0]["trilha_id"] == str(trilha.id)
+    assert corpo[0]["trilha_titulo"] == "Trilha da Água"
 
 
 def test_duas_trilhas_no_mesmo_encontro_saem_as_duas(
