@@ -12,6 +12,7 @@ export interface PoderDaLista {
   vigencia: VigenciaDoPoder;
   papel: PapelDoPoder | null;
   ativo: boolean;
+  tecnico: boolean;
 }
 
 interface ListaDePoderes {
@@ -30,6 +31,7 @@ export interface CadastrarPoderEntrada {
   natureza: NaturezaDoPoder;
   vigencia: VigenciaDoPoder;
   papel?: PapelDoPoder;
+  tecnico?: boolean;
 }
 
 export function cadastrarPoder(
@@ -45,11 +47,13 @@ export function cadastrarPoder(
 
 // A natureza e o papel ficam de fora: `PUT /poderes/{id}` não os admite —
 // mudar a natureza reescreveria o vínculo já concedido às trilhas
-// (`RN-01-43`, `RN-01-54`).
+// (`RN-01-43`, `RN-01-54`). A marca de técnico entra: dela não deriva
+// vínculo nem crédito, só a próxima sugestão do template (`RN-09-34`).
 export interface AlterarPoderEntrada {
   nome?: string;
   descricao?: string;
   vigencia?: VigenciaDoPoder;
+  tecnico?: boolean;
 }
 
 export function alterarPoder(

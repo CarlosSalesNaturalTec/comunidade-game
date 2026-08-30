@@ -1,11 +1,13 @@
 import { Botao, EstadoDaLista } from "comum/react";
 import type { PoderDoCatalogo } from "../poderes/api";
-import type { TrilhaDoMestre } from "./api";
+import type { TrilhaDaLista, TrilhaDoMestre } from "./api";
+import { DuplicarTrilha } from "./DuplicarTrilha";
 
 interface Props {
   trilhas: TrilhaDoMestre[] | null;
   poderes: PoderDoCatalogo[];
   aoAbrir: (trilha: TrilhaDoMestre) => void;
+  aoDuplicar: (copia: TrilhaDaLista) => void;
 }
 
 const ROTULO_DA_SITUACAO: Record<string, string> = {
@@ -17,7 +19,7 @@ const ROTULO_DA_SITUACAO: Record<string, string> = {
 // As trilhas do Mestre autor, rascunho incluso — a trilha de outro Mestre
 // nunca chega aqui, porque `GET /trilhas/minhas` já filtra por autoria
 // (`RF-09-04`).
-export function ListaDeTrilhas({ trilhas, poderes, aoAbrir }: Props) {
+export function ListaDeTrilhas({ trilhas, poderes, aoAbrir, aoDuplicar }: Props) {
   if (trilhas === null) {
     return <EstadoDaLista>Carregando as suas trilhas…</EstadoDaLista>;
   }
@@ -47,6 +49,7 @@ export function ListaDeTrilhas({ trilhas, poderes, aoAbrir }: Props) {
             <Botao variante="secundaria" onClick={() => aoAbrir(trilha)}>
               Abrir
             </Botao>
+            <DuplicarTrilha idDaTrilha={trilha.id} onDuplicada={aoDuplicar} />
           </li>
         );
       })}

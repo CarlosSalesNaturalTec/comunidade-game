@@ -48,6 +48,7 @@ export function FormularioDePoder({ poder, onSalvo, onCancelar }: Props) {
   const idDaNatureza = useId();
   const idDaVigencia = useId();
   const idDoPapel = useId();
+  const idDoTecnico = useId();
   const [nome, definirNome] = useState(poder?.nome ?? "");
   const [descricao, definirDescricao] = useState(poder?.descricao ?? "");
   const [natureza, definirNatureza] = useState<NaturezaDoPoder>(
@@ -55,6 +56,7 @@ export function FormularioDePoder({ poder, onSalvo, onCancelar }: Props) {
   );
   const [vigencia, definirVigencia] = useState<VigenciaDoPoder>(poder?.vigencia ?? "vigente");
   const [papel, definirPapel] = useState<PapelDoPoder | "">(poder?.papel ?? "");
+  const [tecnico, definirTecnico] = useState(poder?.tecnico ?? false);
   const [erroDeCampo, definirErroDeCampo] = useState<ErroDeCampo | null>(null);
   const [erroDeRecusa, definirErroDeRecusa] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
@@ -76,10 +78,10 @@ export function FormularioDePoder({ poder, onSalvo, onCancelar }: Props) {
     definirEnviando(true);
     try {
       if (emEdicao) {
-        await alterarPoder(poder.id, { nome, descricao, vigencia }, sessao.token);
+        await alterarPoder(poder.id, { nome, descricao, vigencia, tecnico }, sessao.token);
       } else {
         await cadastrarPoder(
-          { nome, descricao, natureza, vigencia, papel: papel || undefined },
+          { nome, descricao, natureza, vigencia, papel: papel || undefined, tecnico },
           sessao.token,
         );
       }
@@ -184,6 +186,22 @@ export function FormularioDePoder({ poder, onSalvo, onCancelar }: Props) {
             </option>
           ))}
         </select>
+      </div>
+
+      <div className="cg-campo">
+        <label htmlFor={idDoTecnico}>
+          <input
+            id={idDoTecnico}
+            type="checkbox"
+            checked={tecnico}
+            onChange={(evento) => definirTecnico(evento.target.checked)}
+          />{" "}
+          Este é um poder técnico
+        </label>
+        <p>
+          Marque para que o template de missão sugira, nas trilhas deste poder, uma atividade
+          desplugada — sem tela nem eletrônico.
+        </p>
       </div>
 
       {erroDeRecusa && <Aviso tipo="erro">{erroDeRecusa}</Aviso>}

@@ -1,7 +1,9 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { listarRecompensasDeMarco, type RecompensaDeMarco } from "../recompensas/api";
+import type { TipoDeRecurso } from "../recursos/api";
 import {
   type MissaoDaTrilha,
   publicarTrilha,
@@ -16,6 +18,7 @@ import { ListaDeMissoes } from "./ListaDeMissoes";
 interface Props {
   trilha: TrilhaDoMestre;
   tiposDeColeta: TipoDeColeta[];
+  tiposDeRecurso: TipoDeRecurso[];
   aoVoltar: () => void;
   onAtualizarTrilha: (trilha: TrilhaDoMestre) => void;
 }
@@ -49,13 +52,34 @@ function comCoberturaRefeita(trilha: TrilhaDoMestre): TrilhaDoMestre {
   };
 }
 
-export function TelaDaTrilha({ trilha, tiposDeColeta, aoVoltar, onAtualizarTrilha }: Props) {
+export function TelaDaTrilha({
+  trilha,
+  tiposDeColeta,
+  tiposDeRecurso,
+  aoVoltar,
+  onAtualizarTrilha,
+}: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
   const [mostrarFormularioDeCulminancia, definirMostrarFormularioDeCulminancia] =
     useState(false);
   const [recusaDaPublicacao, definirRecusaDaPublicacao] = useState<string | null>(null);
   const [publicando, definirPublicando] = useState(false);
+  const [recompensasDeMarco, definirRecompensasDeMarco] = useState<RecompensaDeMarco[]>([]);
+
+  const carregarRecompensas = useCallback(async () => {
+    if (!sessao) return;
+    try {
+      definirRecompensasDeMarco(await listarRecompensasDeMarco(trilha.id, sessao.token));
+    } catch {
+      // A leitura das recompensas já declaradas é auxiliar: falhar aqui não
+      // impede o Mestre de continuar declarando ou editando a trilha.
+    }
+  }, [sessao, trilha.id]);
+
+  useEffect(() => {
+    carregarRecompensas();
+  }, [carregarRecompensas]);
 
   function aoAcrescentarMissao(missao: MissaoDaTrilha) {
     definirMostrarFormulario(false);
@@ -186,9 +210,15 @@ export function TelaDaTrilha({ trilha, tiposDeColeta, aoVoltar, onAtualizarTrilh
       )}
 
       <ListaDeMissoes
+        idDaTrilha={trilha.id}
         missoes={trilha.missoes}
         tiposDeColeta={tiposDeColeta}
+        tiposDeRecurso={tiposDeRecurso}
+        recompensasDeMarco={recompensasDeMarco}
         onAtualizarMissao={aoAtualizarMissao}
+        onDeclararRecompensa={(recompensa) =>
+          definirRecompensasDeMarco((atuais) => [...atuais, recompensa])
+        }
       />
     </Moldura>
   );

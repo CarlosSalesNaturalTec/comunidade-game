@@ -1,20 +1,21 @@
 import uuid
+from dataclasses import dataclass
 from decimal import Decimal
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..comunidades.modelo import VinculoJogador
+from ..comunidades.regra import filtrar_personas_por_comunidade
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..livro_razao.regra import lancar_debito, saldo_de
-from ..personas.modelo import Papel, Persona
+from ..personas.modelo import Nick, Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
-from ..pontuacao.regra import missoes_concluidas_pelo_guerreiro
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
 from ..recursos.regra import consultar_valor_de_referencia
 from ..tempo import agora
 from ..trilhas.modelo import Missao, Trilha
-from ..trilhas.regra import conferir_posse_da_trilha
+from ..trilhas.regra import conferir_posse_da_trilha, missoes_desbloqueadas_pelo_guerreiro
 from .modelo import EntregaDeRecompensa, RecompensaDeMarco
 
 
@@ -150,10 +151,10 @@ def _validar_entrega(
             campo="guerreiro_id",
         )
 
-    concluidas = missoes_concluidas_pelo_guerreiro(
+    desbloqueadas = missoes_desbloqueadas_pelo_guerreiro(
         sessao, guerreiro_id=guerreiro.id, trilha_id=recompensa.trilha_id
     )
-    if recompensa.missao_id not in concluidas:
+    if recompensa.missao_id not in desbloqueadas:
         raise ErroDeValidacao(
             mensagem="Este Guerreiro(a) ainda não alcançou o marco declarado.",
             campo="guerreiro_id",
@@ -227,11 +228,11 @@ def listar_recompensas_conquistadas(
     sessao: Session, *, guerreiro: Persona
 ) -> list[tuple[RecompensaDeMarco, EntregaDeRecompensa | None]]:
     """As recompensas cujo marco o Guerreiro(a) já alcançou, entregues ou
-    não — reaproveita `missoes_concluidas_pelo_guerreiro`, a mesma derivação
-    que `_validar_entrega` já usa para recusar a entrega do marco não
-    alcançado, sem duplicar a consulta de percurso (`RF-05-45`, design —
-    Decisions). Agrupa as recompensas por trilha para chamar a derivação uma
-    vez por trilha, não uma vez por recompensa."""
+    não — reaproveita `missoes_desbloqueadas_pelo_guerreiro`, a mesma
+    derivação que `_validar_entrega` já usa para recusar a entrega do marco
+    não alcançado, sem duplicar a consulta de percurso (`RF-05-45`, design —
+    Decisions 6). Agrupa as recompensas por trilha para chamar a derivação
+    uma vez por trilha, não uma vez por recompensa."""
     recompensas_por_trilha: dict[uuid.UUID, list[RecompensaDeMarco]] = {}
     for recompensa in sessao.query(RecompensaDeMarco).all():
         recompensas_por_trilha.setdefault(recompensa.trilha_id, []).append(recompensa)
@@ -245,11 +246,11 @@ def listar_recompensas_conquistadas(
 
     conquistadas: list[tuple[RecompensaDeMarco, EntregaDeRecompensa | None]] = []
     for trilha_id, recompensas_da_trilha in recompensas_por_trilha.items():
-        concluidas = missoes_concluidas_pelo_guerreiro(
+        desbloqueadas = missoes_desbloqueadas_pelo_guerreiro(
             sessao, guerreiro_id=guerreiro.id, trilha_id=trilha_id
         )
         for recompensa in recompensas_da_trilha:
-            if recompensa.missao_id in concluidas:
+            if recompensa.missao_id in desbloqueadas:
                 conquistadas.append((recompensa, entregas_por_recompensa.get(recompensa.id)))
     return conquistadas
 
@@ -281,3 +282,88 @@ def listar_entregas(sessao: Session, *, operador: Persona) -> list[EntregaDeReco
             .all()
         )
     raise PermissaoNegada(mensagem="Persona sem histórico de entregas a consultar.")
+
+
+@dataclass(frozen=True)
+class PendenciaDeEntrega:
+    """Um par Guerreiro(a)/recompensa que o Mestre da comunidade precisa
+    entregar (`RF-09-75`, design — decisão 7). `quantidade_esgotada` marca a
+    pendência cuja recompensa já não tem mais o que entregar — ela continua
+    na fila, porque o Mestre precisa saber, e a recusa segue acontecendo no
+    ato pela mesma `_validar_entrega`."""
+
+    guerreiro_id: uuid.UUID
+    guerreiro_nick: str
+    guerreiro_avatar: str
+    trilha_id: uuid.UUID
+    trilha_nome: str
+    missao_id: uuid.UUID
+    missao_titulo: str
+    recompensa_de_marco_id: uuid.UUID
+    tipo_de_recurso_id: uuid.UUID
+    quantidade: Decimal
+    quantidade_esgotada: bool
+
+
+def listar_entregas_pendentes(sessao: Session, *, operador: Persona) -> list[PendenciaDeEntrega]:
+    """A fila do Mestre em sessão — todo Guerreiro(a) da **comunidade** dele
+    (vínculo vigente, não a autoria da trilha) que desbloqueou um marco com
+    recompensa declarada e ainda não a recebeu (`RF-09-75`, `RN-09-18`,
+    design — decisão 7). Persona que não é Mestre é recusada com 403; Mestre
+    sem vínculo vigente recebe fila vazia, nunca erro."""
+    if operador.papel != Papel.mestre:
+        raise PermissaoNegada(mensagem="Só o Mestre lê a fila de entregas pendentes.")
+
+    vinculo: VinculoJogador | None = operador.vinculo_vigente
+    if vinculo is None:
+        return []
+
+    consulta = sessao.query(Persona).filter(Persona.papel == Papel.guerreiro)
+    guerreiros_da_comunidade = filtrar_personas_por_comunidade(
+        consulta, vinculo.comunidade_virtual_id
+    ).all()
+
+    pendencias: list[PendenciaDeEntrega] = []
+    for recompensa in sessao.query(RecompensaDeMarco).all():
+        ja_entregues = (
+            sessao.query(func.count(EntregaDeRecompensa.id))
+            .filter_by(recompensa_de_marco_id=recompensa.id)
+            .scalar()
+        )
+        quantidade_esgotada = Decimal(ja_entregues) >= recompensa.quantidade
+
+        for guerreiro in guerreiros_da_comunidade:
+            desbloqueadas = missoes_desbloqueadas_pelo_guerreiro(
+                sessao, guerreiro_id=guerreiro.id, trilha_id=recompensa.trilha_id
+            )
+            if recompensa.missao_id not in desbloqueadas:
+                continue
+
+            ja_recebeu = (
+                sessao.query(EntregaDeRecompensa)
+                .filter_by(recompensa_de_marco_id=recompensa.id, guerreiro_id=guerreiro.id)
+                .first()
+                is not None
+            )
+            if ja_recebeu:
+                continue
+
+            nick = sessao.query(Nick).filter_by(persona_id=guerreiro.id).first()
+            trilha = sessao.get(Trilha, recompensa.trilha_id)
+            missao = sessao.get(Missao, recompensa.missao_id)
+            pendencias.append(
+                PendenciaDeEntrega(
+                    guerreiro_id=guerreiro.id,
+                    guerreiro_nick=nick.valor if nick is not None else "",
+                    guerreiro_avatar=guerreiro.avatar or "",
+                    trilha_id=recompensa.trilha_id,
+                    trilha_nome=trilha.nome if trilha is not None else "",
+                    missao_id=recompensa.missao_id,
+                    missao_titulo=missao.titulo if missao is not None else "",
+                    recompensa_de_marco_id=recompensa.id,
+                    tipo_de_recurso_id=recompensa.tipo_de_recurso_id,
+                    quantidade=recompensa.quantidade,
+                    quantidade_esgotada=quantidade_esgotada,
+                )
+            )
+    return pendencias

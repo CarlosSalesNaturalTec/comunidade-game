@@ -27,6 +27,36 @@ def test_admin_cadastra_poder_pela_rota(cliente, criar_chave, criar_persona, cri
     assert corpo["vigencia"] == VigenciaDoPoder.vigente.value
     assert corpo["papel"] == PapelDoPoder.territorio.value
     assert corpo["ativo"] is True
+    assert corpo["tecnico"] is False
+
+
+def test_admin_cadastra_e_altera_a_marca_de_tecnico_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    resposta_de_cadastro = cliente.post(
+        "/v1/poderes",
+        json={
+            "nome": "Poder da IA e Robótica",
+            "descricao": "Programação, eletrônica, robótica e IA.",
+            "natureza": NaturezaDoPoder.de_guerreiro.value,
+            "tecnico": True,
+        },
+        headers=headers,
+    )
+    assert resposta_de_cadastro.status_code == 201
+    assert resposta_de_cadastro.json()["tecnico"] is True
+    id_do_poder = resposta_de_cadastro.json()["id"]
+
+    resposta_de_alteracao = cliente.put(
+        f"/v1/poderes/{id_do_poder}", json={"tecnico": False}, headers=headers
+    )
+    assert resposta_de_alteracao.status_code == 200
+    assert resposta_de_alteracao.json()["tecnico"] is False
 
 
 def test_mestre_recebe_403_ao_cadastrar_alterar_e_desativar_poder(
@@ -129,6 +159,7 @@ def test_listagem_da_gestao_traz_natureza_vigencia_papel_e_ativo(
         nome="Poder do Território",
         papel=PapelDoPoder.territorio,
         vigencia=VigenciaDoPoder.ciclo_futuro,
+        tecnico=True,
     )
     token, _ = criar_sessao_de_teste(admin)
 
@@ -143,6 +174,7 @@ def test_listagem_da_gestao_traz_natureza_vigencia_papel_e_ativo(
     assert item["vigencia"] == VigenciaDoPoder.ciclo_futuro.value
     assert item["papel"] == PapelDoPoder.territorio.value
     assert item["ativo"] is True
+    assert item["tecnico"] is True
 
 
 def test_poder_desativado_aparece_na_gestao_e_some_da_vitrine(

@@ -3,10 +3,12 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import { listarPoderes, type PoderDoCatalogo } from "../poderes/api";
+import { listarTiposDeRecurso, type TipoDeRecurso } from "../recursos/api";
 import {
   listarMinhasTrilhas,
   listarTiposDeColeta,
   type TipoDeColeta,
+  type TrilhaDaLista,
   type TrilhaDoMestre,
 } from "../trilhas/api";
 import { FormularioDeTrilha } from "../trilhas/FormularioDeTrilha";
@@ -21,6 +23,7 @@ export function TelaDeAutoria() {
   const [trilhas, definirTrilhas] = useState<TrilhaDoMestre[] | null>(null);
   const [poderes, definirPoderes] = useState<PoderDoCatalogo[]>([]);
   const [tiposDeColeta, definirTiposDeColeta] = useState<TipoDeColeta[]>([]);
+  const [tiposDeRecurso, definirTiposDeRecurso] = useState<TipoDeRecurso[]>([]);
   const [erro, definirErro] = useState<string | null>(null);
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
   const [idDaTrilhaAberta, definirIdDaTrilhaAberta] = useState<string | null>(null);
@@ -28,14 +31,16 @@ export function TelaDeAutoria() {
   const carregar = useCallback(async () => {
     if (!sessao) return;
     try {
-      const [lista, paginaDePoderes, tipos] = await Promise.all([
+      const [lista, paginaDePoderes, tipos, tiposDeRecursoCarregados] = await Promise.all([
         listarMinhasTrilhas(sessao.token),
         listarPoderes(sessao.token),
         listarTiposDeColeta(sessao.token),
+        listarTiposDeRecurso(sessao.token),
       ]);
       definirTrilhas(lista);
       definirPoderes(paginaDePoderes.itens);
       definirTiposDeColeta(tipos);
+      definirTiposDeRecurso(tiposDeRecursoCarregados);
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
         tratarRecusaDeSessao();
@@ -60,11 +65,20 @@ export function TelaDeAutoria() {
     );
   }
 
+  // A cópia nasce sob a autoria de quem duplicou — `GET /trilhas/minhas` já
+  // a alcança na próxima carga; o Mestre é levado direto a ela para editar
+  // (`RF-09-13`).
+  async function aoDuplicar(copia: TrilhaDaLista) {
+    await carregar();
+    definirIdDaTrilhaAberta(copia.id);
+  }
+
   if (trilhaAberta) {
     return (
       <TelaDaTrilha
         trilha={trilhaAberta}
         tiposDeColeta={tiposDeColeta}
+        tiposDeRecurso={tiposDeRecurso}
         aoVoltar={() => definirIdDaTrilhaAberta(null)}
         onAtualizarTrilha={atualizarTrilhaLocal}
       />
@@ -96,6 +110,7 @@ export function TelaDeAutoria() {
         trilhas={trilhas}
         poderes={poderes}
         aoAbrir={(trilha) => definirIdDaTrilhaAberta(trilha.id)}
+        aoDuplicar={aoDuplicar}
       />
     </Moldura>
   );

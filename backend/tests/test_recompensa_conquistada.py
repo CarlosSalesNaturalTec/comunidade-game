@@ -7,37 +7,16 @@ from nucleo.livro_razao.modelo import NaturezaDoLancamento
 from nucleo.personas.modelo import Papel
 from nucleo.recompensas_de_marco.regra import registrar_entrega
 from nucleo.recursos.modelo import NaturezaDoRecurso
-from nucleo.resultados.regra import registrar_resultado
-from nucleo.trilhas.modelo import FormatoDeAtividade, ModalidadeDeAtividade
-from nucleo.trilhas.regra import criar_atividade
-from tests.conftest import criar_aula_para_resultado
+from nucleo.trilhas.modelo import DesbloqueioDaMissao
 
 MOMENTO_DO_FATO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
 
 
 def _marcar_marco_alcancado(sessao, *, mestre, guerreiro, missao):
-    atividade = criar_atividade(
-        sessao,
-        operador=mestre,
-        missao=missao,
-        titulo="Atividade de Teste",
-        modalidade=ModalidadeDeAtividade.individual,
-        formato=FormatoDeAtividade.presencial,
-        natureza="construcao",
-        producao_esperada="Produção esperada.",
-    )
-    aula = criar_aula_para_resultado(sessao, mestre)
-    sessao.commit()
-    registrar_resultado(
-        sessao,
-        operador=mestre,
-        aula=aula,
-        guerreiro_id=guerreiro.id,
-        atividade=atividade,
-        momento_do_fato=MOMENTO_DO_FATO,
-        producao="Produção do Guerreiro(a).",
-        desfecho="realizada",
-    )
+    """O marco alcançado é o desbloqueio aprovado (`RF-09-84`, design —
+    decisão 6)."""
+    desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=True)
+    sessao.add(desbloqueio)
     sessao.commit()
 
 

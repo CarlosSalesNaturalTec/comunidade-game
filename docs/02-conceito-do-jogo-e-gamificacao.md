@@ -339,6 +339,9 @@ Regras dos poderes:
   território credita o Poder do Território qualquer que seja a trilha em que o desafio nasceu,
   e é o catálogo que marca qual entrada exerce esse papel: o nome é rótulo de exibição e não
   identifica regra.
+- **A marca de técnico é declarada no catálogo, nunca deduzida do nome.** Mesmo princípio do
+  papel do poder: o Admin marca quais poderes são técnicos, e é essa marca — não o nome nem a
+  descrição — que orienta a sugestão de atividade desplugada no template da missão.
 
 **[Proposta]** Novos poderes alinhados aos valores: "Poder da Ancestralidade" (cultura
 afro-brasileira e povos originários) e "Poder do Cuidado" (respeito, combate ao racismo e à

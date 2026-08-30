@@ -507,7 +507,7 @@ Resultado / Presenca / Lancamento
 | `Missao`               | trilha, ordem, título, nível de dificuldade, **obrigatoriedade** (obrigatória ou opcional), **natureza** (sondagem ou comum), etapa do ciclo, cadência de retomada, desafio de desbloqueio |
 | `Atividade`            | missão, título, descrição, **modalidade** (individual, equipe, equipe com familiar), **formato** (presencial ou on-line), natureza, recursos                                               |
 | `RecompensaDeMarco`    | trilha, marco (missão, etapa, batalha ou culminância), tipo de recurso, quantidade — sem ponto de apoio nem situação de entrega própria (PRD-07)                                           |
-| `SugestaoDeEstrutura`  | missão, tópico cadastrado pelo Mestre, estrutura proposta, lacunas apontadas, situação (aceita, recusada ou alterada), custo de _cloud_ lançado                                            |
+| `SugestaoDeEstrutura`  | missão, tópico cadastrado pelo Mestre, estrutura proposta, lacunas apontadas, situação (aceita, recusada ou alterada)                                                                      |
 | `Conteudo`             | missão, tipo (texto, imagem, link externo, vídeo, arquivo), corpo ou endereço, tamanho, autoria (própria ou de terceiro), fonte e autorização                                              |
 | `BibliografiaDaMissao` | missão, título do acervo, capítulo recomendado, Apoiador creditado                                                                                                                         |
 | `Culminancia`          | trilha, descrição da criação original esperada, modalidade (individual ou equipe), critério de validação                                                                                   |
@@ -704,13 +704,17 @@ missão é o que permite a mesma trilha atender dos 6 aos 16 anos.
 As cinco entidades novas — `Conteudo`, `BibliografiaDaMissao`, `Culminancia`,
 `RecompensaDeMarco` e `SugestaoDeEstrutura` — foram acrescentadas ao modelo do PRD-01, e a
 `Atividade` passou a pertencer a uma missão. Na App 03 (PRD-02), a auditoria das trilhas
-publicadas entrou como ação de Admin e o cadastro de atividade ficou restrito à \*\*atividade
+publicadas entrou como ação de Admin e o cadastro de atividade ficou restrito à **atividade
+avulsa**.
 
 Correção de rastreabilidade, não decisão: `RF-09-100` e `RF-09-101` nomeavam **dois requisitos
 cada um** — o upload e o _template_, de um lado, e o catálogo avulso, de outro. O sentido do
 catálogo já estava consolidado nas specs e mantém os números; o upload passa a `RF-09-115` e a
 sugestão de retomada do _template_, a `RF-09-116`.
-avulsa\*\*.
+
+Correção de rastreabilidade, não decisão: a `SugestaoDeEstrutura` da tabela do §8 não traz mais
+o atributo "custo de _cloud_ lançado" — o `RF-09-90` e a `RN-09-07` proíbem medir o consumo do
+modelo por ato, e a coluna só existiria para ficar vazia.
 
 ## 14. Pendências que permanecem
 

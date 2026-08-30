@@ -31,6 +31,7 @@ class PoderSaida(BaseModel):
     vigencia: VigenciaDoPoder
     papel: PapelDoPoder | None
     ativo: bool
+    tecnico: bool
 
 
 def _saida(poder: Poder) -> PoderSaida:
@@ -42,6 +43,7 @@ def _saida(poder: Poder) -> PoderSaida:
         vigencia=poder.vigencia,
         papel=poder.papel,
         ativo=poder.ativo,
+        tecnico=poder.tecnico,
     )
 
 
@@ -53,6 +55,7 @@ class CadastrarPoderEntrada(BaseModel):
     natureza: NaturezaDoPoder
     vigencia: VigenciaDoPoder = VigenciaDoPoder.vigente
     papel: PapelDoPoder | None = None
+    tecnico: bool = False
 
 
 @roteador.post("/poderes", status_code=201)
@@ -72,6 +75,7 @@ def cadastrar_poder_rota(
         natureza=entrada.natureza,
         vigencia=entrada.vigencia,
         papel=entrada.papel,
+        tecnico=entrada.tecnico,
     )
     sessao_bd.commit()
     return _saida(poder)
@@ -118,6 +122,7 @@ class AlterarPoderEntrada(BaseModel):
     nome: str | None = None
     descricao: str | None = None
     vigencia: VigenciaDoPoder | None = None
+    tecnico: bool | None = None
 
 
 @roteador.put("/poderes/{id_do_poder}")
@@ -128,7 +133,8 @@ def alterar_poder_rota(
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> PoderSaida:
     """Restrita ao Admin — natureza e papel ficam fora do corpo, porque
-    `alterar_poder` não os admite (`RF-02-10`, `RN-01-43`, `RN-01-54`)."""
+    `alterar_poder` não os admite; a marca de técnico entra (`RF-02-10`,
+    `RN-01-43`, `RN-01-54`, `RN-09-34`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     poder = sessao_bd.get(Poder, id_do_poder)
     poder = alterar_poder(
@@ -138,6 +144,7 @@ def alterar_poder_rota(
         nome=entrada.nome,
         descricao=entrada.descricao,
         vigencia=entrada.vigencia,
+        tecnico=entrada.tecnico,
     )
     sessao_bd.commit()
     return _saida(poder)

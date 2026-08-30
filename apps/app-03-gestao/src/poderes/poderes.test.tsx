@@ -64,6 +64,7 @@ function poder(sobrescreve: Partial<PoderDaLista> = {}): PoderDaLista {
     vigencia: "vigente",
     papel: null,
     ativo: true,
+    tecnico: false,
     ...sobrescreve,
   };
 }
@@ -109,10 +110,64 @@ describe("catálogo de Poderes", () => {
           natureza: "derivado_do_aporte",
           vigencia: "ciclo_futuro",
           papel: "territorio",
+          tecnico: false,
         },
         "token-do-admin",
       ),
     );
+  });
+
+  it("marca um poder como técnico no cadastro", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(poderesApi, "cadastrarPoder").mockResolvedValue(poder({ tecnico: true }));
+
+    render(<FormularioDePoder onSalvo={vi.fn()} onCancelar={vi.fn()} />);
+    const usuario = userEvent.setup();
+
+    await usuario.type(screen.getByLabelText(/^nome$/i), "Poder da IA e Robótica");
+    await usuario.click(screen.getByLabelText(/este é um poder técnico/i));
+    await usuario.click(screen.getByRole("button", { name: /^cadastrar$/i }));
+
+    await waitFor(() =>
+      expect(poderesApi.cadastrarPoder).toHaveBeenCalledWith(
+        expect.objectContaining({ tecnico: true }),
+        "token-do-admin",
+      ),
+    );
+  });
+
+  it("desmarca a técnica de um poder já cadastrado", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    const poderTecnico = poder({ tecnico: true });
+    vi.spyOn(poderesApi, "alterarPoder").mockResolvedValue(poder({ tecnico: false }));
+
+    render(<FormularioDePoder poder={poderTecnico} onSalvo={vi.fn()} onCancelar={vi.fn()} />);
+    const usuario = userEvent.setup();
+
+    const marca = screen.getByLabelText(/este é um poder técnico/i);
+    expect(marca).toBeChecked();
+    await usuario.click(marca);
+    await usuario.click(screen.getByRole("button", { name: /^salvar$/i }));
+
+    await waitFor(() =>
+      expect(poderesApi.alterarPoder).toHaveBeenCalledWith(
+        poderTecnico.id,
+        expect.objectContaining({ tecnico: false }),
+        "token-do-admin",
+      ),
+    );
+  });
+
+  it("a lista mostra o poder marcado como técnico", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [poder({ tecnico: true })],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDePoderes />);
+
+    expect(await screen.findByText("Técnico")).toBeInTheDocument();
   });
 
   it("nome em falta é apontado no campo, sem chamar o núcleo", async () => {

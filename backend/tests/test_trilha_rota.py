@@ -995,3 +995,46 @@ def test_leitura_publica_nunca_traz_a_alternativa_correta_do_desafio(
     missao = next(m for m in resposta_leitura.json()["missoes"] if m["id"] == missao_id)
     assert "desafio_de_desbloqueio_alternativa_correta" not in missao
     assert "tipo_do_desafio_de_desbloqueio" not in missao
+
+
+def test_mestre_duplica_trilha_pela_rota(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+):
+    chave, _ = criar_chave()
+    autor = criar_persona(Papel.mestre)
+    poder = criar_poder(autor)
+    trilha = criar_trilha(autor, poder=poder, situacao=SituacaoDaTrilha.publicada)
+    criar_missao(trilha, autor)
+    outro_mestre = criar_persona(Papel.mestre)
+    token, _ = criar_sessao_de_teste(outro_mestre)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    resposta = cliente.post(f"/v1/trilhas/{trilha.id}/duplicacao", headers=headers)
+
+    assert resposta.status_code == 201
+    corpo = resposta.json()
+    assert corpo["id"] != str(trilha.id)
+    assert corpo["situacao"] == SituacaoDaTrilha.rascunho.value
+
+
+def test_admin_nao_duplica_trilha_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha
+):
+    chave, _ = criar_chave()
+    autor = criar_persona(Papel.mestre)
+    trilha = criar_trilha(autor, situacao=SituacaoDaTrilha.publicada)
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.post(
+        f"/v1/trilhas/{trilha.id}/duplicacao",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403

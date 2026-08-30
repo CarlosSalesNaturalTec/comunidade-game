@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TelaDeAutoria } from "../autoria/TelaDeAutoria";
 import type { PoderDoCatalogo } from "../poderes/api";
 import * as poderesApi from "../poderes/api";
+import * as recursosApi from "../recursos/api";
 import type { AulaDaTurma, MinhasTurmas } from "../turmas/api";
 import * as turmasApi from "../turmas/api";
 import type {
@@ -229,6 +230,7 @@ function desafioDeColeta(
 // com o catálogo — o padrão evita repetir este mock em cada `it`.
 beforeEach(() => {
   vi.spyOn(trilhasApi, "listarTiposDeColeta").mockResolvedValue([]);
+  vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([]);
 });
 
 afterEach(() => {

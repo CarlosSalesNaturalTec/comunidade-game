@@ -18,6 +18,7 @@ from .modelo import EntregaDeRecompensa, RecompensaDeMarco
 from .regra import (
     declarar_recompensa_de_marco,
     listar_entregas,
+    listar_entregas_pendentes,
     listar_recompensas_conquistadas,
     listar_recompensas_de_marco,
     registrar_entrega,
@@ -196,6 +197,48 @@ def minhas_recompensas_conquistadas_rota(
             entregue_em=entrega.registrado_em if entrega is not None else None,
         )
         for recompensa, entrega in conquistadas
+    ]
+
+
+class PendenciaDeEntregaSaida(BaseModel):
+    guerreiro_id: uuid.UUID
+    guerreiro_nick: str
+    guerreiro_avatar: str
+    trilha_id: uuid.UUID
+    trilha_nome: str
+    missao_id: uuid.UUID
+    missao_titulo: str
+    recompensa_de_marco_id: uuid.UUID
+    tipo_de_recurso_id: uuid.UUID
+    quantidade: Decimal
+    quantidade_esgotada: bool
+
+
+@roteador.get("/recompensas-de-marco/pendentes")
+def listar_entregas_pendentes_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[PendenciaDeEntregaSaida]:
+    """A fila do Mestre em sessão — quem desbloqueou marco com recompensa
+    declarada na comunidade dele e ainda não recebeu (`RF-09-75`,
+    `RN-09-18`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    pendencias = listar_entregas_pendentes(sessao_bd, operador=operador)
+    return [
+        PendenciaDeEntregaSaida(
+            guerreiro_id=pendencia.guerreiro_id,
+            guerreiro_nick=pendencia.guerreiro_nick,
+            guerreiro_avatar=pendencia.guerreiro_avatar,
+            trilha_id=pendencia.trilha_id,
+            trilha_nome=pendencia.trilha_nome,
+            missao_id=pendencia.missao_id,
+            missao_titulo=pendencia.missao_titulo,
+            recompensa_de_marco_id=pendencia.recompensa_de_marco_id,
+            tipo_de_recurso_id=pendencia.tipo_de_recurso_id,
+            quantidade=pendencia.quantidade,
+            quantidade_esgotada=pendencia.quantidade_esgotada,
+        )
+        for pendencia in pendencias
     ]
 
 

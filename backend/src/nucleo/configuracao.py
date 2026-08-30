@@ -66,6 +66,12 @@ class Configuracao(BaseSettings):
     # antes de o envio ser confirmado (`RF-09-19`, design — Migration Plan).
     armazenamento_diretorio_sessoes_locais: str = "./armazenamento-sessoes"
 
+    # Porta do template da missão (design — Decisions): local fora de
+    # produção, sem exigir credencial; Gemini em produção, no mesmo padrão
+    # de `armazenamento_bucket_cloud_storage` (documento 03 §1.12).
+    template_de_missao_gemini_chave_de_api: str = ""
+    template_de_missao_gemini_modelo: str = "gemini-2.5-flash"
+
     # Rótulo do ciclo corrente, declarado na implantação — não é entidade,
     # não tem calendário (`RF-01-42`, `RF-01-43`, design — Decisions).
     ciclo_rotulo: str = "Ciclo 01"

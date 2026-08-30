@@ -28,10 +28,12 @@ def cadastrar_poder(
     natureza: NaturezaDoPoder,
     vigencia: VigenciaDoPoder = VigenciaDoPoder.vigente,
     papel: PapelDoPoder | None = None,
+    tecnico: bool = False,
 ) -> Poder:
     """Restrito a Admin (`RF-01-62`, `RN-01-43`); o Mestre escolhe entre os
     poderes cadastrados e nunca cria poder novo ao escrever a trilha. O
-    papel é opcional e nunca deduzido do nome (`RN-01-54`).
+    papel e a marca de técnico são opcionais e nunca deduzidos do nome
+    (`RN-01-54`).
     """
     _exigir_admin(operador)
     if not nome or not nome.strip():
@@ -46,6 +48,7 @@ def cadastrar_poder(
         vigencia=vigencia,
         papel=papel,
         ativo=True,
+        tecnico=tecnico,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
     )
@@ -68,9 +71,12 @@ def alterar_poder(
     nome: str | None = None,
     descricao: str | None = None,
     vigencia: VigenciaDoPoder | None = None,
+    tecnico: bool | None = None,
 ) -> Poder:
-    """A natureza não entra aqui: mudar de que tipo um poder é reescreveria
-    o vínculo já concedido às trilhas existentes."""
+    """A natureza e o papel não entram aqui: mudar de que tipo um poder é
+    reescreveria o vínculo já concedido às trilhas existentes. A marca de
+    técnico é alterável — dela não deriva vínculo nem crédito, só a próxima
+    sugestão do template (`RN-01-54`, `RN-09-34`)."""
     _exigir_admin(operador)
     if nome is not None:
         if not nome.strip():
@@ -80,6 +86,8 @@ def alterar_poder(
         poder.descricao = descricao
     if vigencia is not None:
         poder.vigencia = vigencia
+    if tecnico is not None:
+        poder.tecnico = tecnico
     sessao.flush()
     return poder
 
