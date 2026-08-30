@@ -198,3 +198,79 @@ def test_papel_nao_e_deduzido_do_nome(sessao, criar_persona, criar_poder):
 
     assert encontrado.id == marcado.id
     assert encontrado.nome == "Outro nome qualquer"
+
+
+# --- 2.1 A marca de técnico -----------------------------------------------
+
+
+def test_admin_marca_o_poder_como_tecnico(sessao, criar_persona):
+    admin = criar_persona(Papel.admin)
+
+    poder = cadastrar_poder(
+        sessao,
+        operador=admin,
+        nome="Poder da IA e Robótica",
+        descricao="Programação, eletrônica, robótica e IA.",
+        natureza=NaturezaDoPoder.de_guerreiro,
+        tecnico=True,
+    )
+    sessao.commit()
+
+    assert poder.tecnico is True
+
+
+def test_poder_sem_a_marca_e_nao_tecnico(sessao, criar_persona):
+    admin = criar_persona(Papel.admin)
+
+    poder = cadastrar_poder(
+        sessao,
+        operador=admin,
+        nome="Poder da Rima",
+        descricao="Expressão artística.",
+        natureza=NaturezaDoPoder.de_guerreiro,
+    )
+    sessao.commit()
+
+    assert poder.tecnico is False
+
+
+def test_mais_de_um_poder_pode_ser_tecnico(sessao, criar_persona, criar_poder):
+    admin = criar_persona(Papel.admin)
+    primeiro = criar_poder(admin, nome="Poder da IA e Robótica", tecnico=True)
+    segundo = criar_poder(admin, nome="Poder da Capoeira", tecnico=True)
+
+    sessao.refresh(primeiro)
+    sessao.refresh(segundo)
+    assert primeiro.tecnico is True
+    assert segundo.tecnico is True
+
+
+def test_nome_tecnico_nao_torna_o_poder_tecnico(sessao, criar_persona, criar_poder):
+    admin = criar_persona(Papel.admin)
+    poder = criar_poder(admin, nome="Poder Técnico de Testes")
+
+    assert poder.tecnico is False
+
+
+def test_admin_altera_a_marca_de_tecnico(sessao, criar_persona, criar_poder):
+    admin = criar_persona(Papel.admin)
+    poder = criar_poder(admin, tecnico=False)
+
+    alterar_poder(sessao, poder, operador=admin, tecnico=True)
+    sessao.commit()
+    sessao.refresh(poder)
+
+    assert poder.tecnico is True
+    assert poder.natureza == NaturezaDoPoder.de_guerreiro
+    assert poder.papel is None
+
+
+def test_tirar_a_marca_de_tecnico_nao_recusa(sessao, criar_persona, criar_poder):
+    admin = criar_persona(Papel.admin)
+    poder = criar_poder(admin, tecnico=True)
+
+    alterar_poder(sessao, poder, operador=admin, tecnico=False)
+    sessao.commit()
+    sessao.refresh(poder)
+
+    assert poder.tecnico is False

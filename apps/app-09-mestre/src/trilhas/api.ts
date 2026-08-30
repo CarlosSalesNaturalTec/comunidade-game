@@ -542,3 +542,66 @@ export function criarDesafioDeColeta(
     token,
   });
 }
+
+// A duplicação é sempre de quem pede — bem comum sob CC BY-SA, mesmo quando
+// a origem é de outro Mestre (`RF-09-13`).
+export function duplicarTrilha(idDaTrilha: string, token: string): Promise<TrilhaDaLista> {
+  return chamarNucleo<TrilhaDaLista>(`/v1/trilhas/${idDaTrilha}/duplicacao`, {
+    metodo: "POST",
+    token,
+  });
+}
+
+export interface AtividadeSugerida {
+  titulo: string;
+  descricao: string | null;
+  modalidade: string;
+  formato: string;
+  natureza: string;
+  producao_esperada: string;
+  desplugada: boolean;
+}
+
+export type SituacaoDaSugestaoDeEstrutura = "proposta" | "aceita" | "recusada" | "alterada";
+
+// O que o template devolve: a estrutura proposta pelo modelo (`disponivel`
+// distingue de indisponibilidade — nunca erro) e as lacunas, sempre
+// calculadas pelo núcleo (`RF-09-85`, `RF-09-86`, `RF-09-91`, design —
+// decisão 3).
+export interface EstruturaSugerida {
+  sugestao_id: string;
+  disponivel: boolean;
+  aviso: string | null;
+  atividades: AtividadeSugerida[];
+  objetivo_ods: number | null;
+  meta_ods: string | null;
+  cadencia_de_retomada: number[];
+  lacunas: string[];
+}
+
+export function pedirEstruturaDaMissao(
+  idDaMissao: string,
+  topico: string,
+  token: string,
+): Promise<EstruturaSugerida> {
+  return chamarNucleo<EstruturaSugerida>(`/v1/missoes/${idDaMissao}/estrutura`, {
+    metodo: "POST",
+    corpo: { topico },
+    token,
+  });
+}
+
+// O desfecho é do que o Mestre autor decidiu sobre a sugestão inteira —
+// nunca grava nada na missão por si (`RF-09-89`, `RN-09-33`). O que ele
+// aceita ou altera é gravado à parte, pelas rotas de autoria já existentes.
+export function registrarDesfechoDaSugestao(
+  idDaSugestao: string,
+  situacao: SituacaoDaSugestaoDeEstrutura,
+  token: string,
+): Promise<{ id: string; situacao: SituacaoDaSugestaoDeEstrutura }> {
+  return chamarNucleo(`/v1/sugestoes-de-estrutura/${idDaSugestao}/desfecho`, {
+    metodo: "POST",
+    corpo: { situacao },
+    token,
+  });
+}

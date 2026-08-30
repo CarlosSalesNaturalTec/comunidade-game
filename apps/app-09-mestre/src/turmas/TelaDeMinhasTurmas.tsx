@@ -3,6 +3,7 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import { URL_DA_APP_03 } from "../api/configuracao";
+import { FilaDeEntregasPendentes } from "../recompensas/FilaDeEntregasPendentes";
 import { type AtividadeDoMestre, type AulaDaTurma, listarMinhasTurmas } from "./api";
 import { TelaDaAula } from "./TelaDaAula";
 import { TelaDeLancamento } from "./TelaDeLancamento";
@@ -169,6 +170,8 @@ export function TelaDeMinhasTurmas() {
           </ul>
         )}
       </section>
+
+      <FilaDeEntregasPendentes />
     </Moldura>
   );
 }

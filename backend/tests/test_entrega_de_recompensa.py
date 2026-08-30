@@ -13,7 +13,7 @@ from nucleo.recompensas_de_marco.modelo import EntregaDeRecompensa
 from nucleo.recompensas_de_marco.regra import listar_entregas, registrar_entrega
 from nucleo.recursos.modelo import NaturezaDoRecurso, ValorDeReferencia
 from nucleo.resultados.regra import registrar_resultado
-from nucleo.trilhas.modelo import FormatoDeAtividade, ModalidadeDeAtividade
+from nucleo.trilhas.modelo import DesbloqueioDaMissao, FormatoDeAtividade, ModalidadeDeAtividade
 from nucleo.trilhas.regra import criar_atividade
 from tests.conftest import criar_aula_para_resultado
 
@@ -21,6 +21,17 @@ MOMENTO_DO_FATO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
 
 
 def _marcar_marco_alcancado(sessao, *, mestre, guerreiro, missao):
+    """O marco alcançado é o desbloqueio aprovado (`RF-09-84`, design —
+    decisão 6) — `mestre` fica no parâmetro por compatibilidade com quem
+    chama, mesmo sem ser usado aqui."""
+    desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=True)
+    sessao.add(desbloqueio)
+    sessao.commit()
+
+
+def _lancar_resultado_sem_desbloqueio(sessao, *, mestre, guerreiro, missao):
+    """`Resultado` isolado, sem desbloqueio — usado para provar que ele
+    sozinho não alcança mais o marco (`RF-09-84`, design — decisão 6)."""
     atividade = criar_atividade(
         sessao,
         operador=mestre,
@@ -187,6 +198,44 @@ def test_mestre_de_outra_comunidade_nao_entrega(
 
 def test_marco_nao_alcancado_recusa_a_entrega(sessao, cenario):
     c = cenario(marco_alcancado=False)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_entrega(
+            sessao,
+            operador=c["mestre"],
+            recompensa=c["recompensa"],
+            guerreiro=c["guerreiro"],
+            ponto_de_apoio=c["ponto_de_apoio"],
+        )
+    assert excinfo.value.campo == "guerreiro_id"
+    assert sessao.query(EntregaDeRecompensa).count() == 0
+
+
+def test_resultado_sem_desbloqueio_nao_alcanca_o_marco(sessao, cenario):
+    c = cenario(marco_alcancado=False)
+    _lancar_resultado_sem_desbloqueio(
+        sessao, mestre=c["mestre"], guerreiro=c["guerreiro"], missao=c["missao"]
+    )
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_entrega(
+            sessao,
+            operador=c["mestre"],
+            recompensa=c["recompensa"],
+            guerreiro=c["guerreiro"],
+            ponto_de_apoio=c["ponto_de_apoio"],
+        )
+    assert excinfo.value.campo == "guerreiro_id"
+    assert sessao.query(EntregaDeRecompensa).count() == 0
+
+
+def test_desbloqueio_pratico_nao_julgado_nao_alcanca_o_marco(sessao, cenario):
+    c = cenario(marco_alcancado=False)
+    desbloqueio = DesbloqueioDaMissao(
+        guerreiro_id=c["guerreiro"].id, missao_id=c["missao"].id, aprovado=None
+    )
+    sessao.add(desbloqueio)
+    sessao.commit()
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         registrar_entrega(

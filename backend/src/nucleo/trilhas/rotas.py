@@ -43,6 +43,7 @@ from .regra import (
     declarar_desafio_de_desbloqueio,
     derivar_percurso,
     despublicar_trilha,
+    duplicar_trilha,
     inscrever_na_trilha,
     julgar_desafio_pratico,
     listar_desbloqueios_praticos_pendentes,
@@ -296,6 +297,23 @@ def criar_trilha_rota(
     )
     sessao_bd.commit()
     return _saida_da_trilha(sessao_bd, trilha, ciclo=configuracao.ciclo_rotulo)
+
+
+@roteador.post("/trilhas/{id_da_trilha}/duplicacao", status_code=201)
+def duplicar_trilha_rota(
+    id_da_trilha: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
+) -> TrilhaSaida:
+    """`RF-09-13`: o Mestre duplica uma trilha do catálogo como ponto de
+    partida de outra, em rascunho e sob a própria autoria — a recusa de
+    rascunho alheio e de quem não é Mestre já são de `duplicar_trilha`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    trilha_de_origem = sessao_bd.get(Trilha, id_da_trilha)
+    copia = duplicar_trilha(sessao_bd, trilha_de_origem, operador=operador)
+    sessao_bd.commit()
+    return _saida_da_trilha(sessao_bd, copia, ciclo=configuracao.ciclo_rotulo)
 
 
 @roteador.get("/trilhas/minhas")

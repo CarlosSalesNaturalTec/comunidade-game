@@ -183,6 +183,31 @@ def criar_trilha(
     return trilha
 
 
+def missoes_desbloqueadas_pelo_guerreiro(
+    sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID
+) -> set[uuid.UUID]:
+    """As missões da trilha que o Guerreiro(a) já **desbloqueou** — o marco
+    alcançado que `recompensas_de_marco.regra` verifica, e não mais a
+    existência de `Resultado` numa atividade (`RF-09-84`, documento 03 §11,
+    documento 11 §2.2, design — decisão 6). Desafio prático ainda não
+    julgado (`aprovado is None`) não conta: enquanto o Mestre não julga, a
+    missão aguarda. `missoes_concluidas_pelo_guerreiro` permanece em
+    `pontuacao.regra`, a serviço só do motor de níveis, que continua
+    contando por `Resultado`."""
+    linhas = (
+        sessao.query(Missao.id)
+        .join(DesbloqueioDaMissao, DesbloqueioDaMissao.missao_id == Missao.id)
+        .filter(
+            Missao.trilha_id == trilha_id,
+            DesbloqueioDaMissao.guerreiro_id == guerreiro_id,
+            DesbloqueioDaMissao.aprovado.is_(True),
+        )
+        .distinct()
+        .all()
+    )
+    return {linha[0] for linha in linhas}
+
+
 def consultar_trilhas(sessao: Session, *, persona: Persona | None = None) -> list[Trilha]:
     """Bem comum da plataforma: sem parâmetro nem filtro de comunidade
     (`RN-01-42`). O rascunho só aparece ao Mestre autor e ao Admin
@@ -197,6 +222,94 @@ def consultar_trilhas(sessao: Session, *, persona: Persona | None = None) -> lis
             or_(Trilha.situacao == SituacaoDaTrilha.publicada, Trilha.autor_id == persona.id)
         ).all()
     return consulta.filter(Trilha.situacao == SituacaoDaTrilha.publicada).all()
+
+
+def duplicar_trilha(
+    sessao: Session, trilha_de_origem: Trilha | None, *, operador: Persona
+) -> Trilha:
+    """Duplica a trilha do catálogo como ponto de partida de outra — bem
+    comum sob CC BY-SA, então a autoria da cópia é sempre de quem duplicou,
+    mesmo que a origem seja de outro Mestre (`RF-09-13`, documento 03 §11,
+    design — decisão 8).
+
+    Copia missões e atividades; nunca inscrição, desbloqueio, resultado,
+    criação original, recompensa de marco, entrega, desafio de coleta,
+    conteúdo, bibliografia, culminância, etiqueta ou auditoria — tudo o que
+    é fato de pessoa ou lastro da origem fica com ela. `aula_id` da
+    atividade também não é copiado: é vínculo do encontro da origem, não da
+    cópia. A origem nunca é alterada.
+    """
+    if trilha_de_origem is None:
+        raise NaoEncontrado(mensagem="Trilha não encontrada.")
+    if operador.papel != Papel.mestre:
+        raise PermissaoNegada(mensagem="Só o Mestre duplica trilha do catálogo.")
+    if (
+        trilha_de_origem.situacao == SituacaoDaTrilha.rascunho
+        and trilha_de_origem.autor_id != operador.id
+    ):
+        raise PermissaoNegada(mensagem="Rascunho de outro Mestre não pode ser duplicado.")
+
+    copia = Trilha(
+        nome=f"{trilha_de_origem.nome} (cópia)",
+        objetivo=trilha_de_origem.objetivo,
+        area_do_conhecimento=trilha_de_origem.area_do_conhecimento,
+        poder_id=trilha_de_origem.poder_id,
+        situacao=SituacaoDaTrilha.rascunho,
+        autor_id=operador.id,
+        papel_do_autor=operador.papel.value,
+    )
+    sessao.add(copia)
+    sessao.flush()
+
+    missoes_da_origem = (
+        sessao.query(Missao).filter_by(trilha_id=trilha_de_origem.id).order_by(Missao.posicao).all()
+    )
+    for missao_de_origem in missoes_da_origem:
+        missao_copiada = Missao(
+            trilha_id=copia.id,
+            titulo=missao_de_origem.titulo,
+            posicao=missao_de_origem.posicao,
+            nivel_de_dificuldade=missao_de_origem.nivel_de_dificuldade,
+            obrigatoria=missao_de_origem.obrigatoria,
+            e_sondagem=missao_de_origem.e_sondagem,
+            etapa_do_ciclo=missao_de_origem.etapa_do_ciclo,
+            cadencia_de_retomada=missao_de_origem.cadencia_de_retomada,
+            tipo_do_desafio_de_desbloqueio=missao_de_origem.tipo_do_desafio_de_desbloqueio,
+            desafio_de_desbloqueio_enunciado=missao_de_origem.desafio_de_desbloqueio_enunciado,
+            desafio_de_desbloqueio_alternativa_1=missao_de_origem.desafio_de_desbloqueio_alternativa_1,
+            desafio_de_desbloqueio_alternativa_2=missao_de_origem.desafio_de_desbloqueio_alternativa_2,
+            desafio_de_desbloqueio_alternativa_3=missao_de_origem.desafio_de_desbloqueio_alternativa_3,
+            desafio_de_desbloqueio_alternativa_4=missao_de_origem.desafio_de_desbloqueio_alternativa_4,
+            desafio_de_desbloqueio_alternativa_correta=(
+                missao_de_origem.desafio_de_desbloqueio_alternativa_correta
+            ),
+            autor_id=operador.id,
+            papel_do_autor=operador.papel.value,
+        )
+        sessao.add(missao_copiada)
+        sessao.flush()
+
+        atividades_da_origem = (
+            sessao.query(Atividade).filter_by(missao_id=missao_de_origem.id).all()
+        )
+        for atividade_de_origem in atividades_da_origem:
+            sessao.add(
+                Atividade(
+                    missao_id=missao_copiada.id,
+                    titulo=atividade_de_origem.titulo,
+                    descricao=atividade_de_origem.descricao,
+                    modalidade=atividade_de_origem.modalidade,
+                    formato=atividade_de_origem.formato,
+                    natureza=atividade_de_origem.natureza,
+                    producao_esperada=atividade_de_origem.producao_esperada,
+                    aula_id=None,
+                    autor_id=operador.id,
+                    papel_do_autor=operador.papel.value,
+                )
+            )
+
+    sessao.flush()
+    return copia
 
 
 def criar_missao(

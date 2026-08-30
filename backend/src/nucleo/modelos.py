@@ -46,5 +46,6 @@ from .ressarcimentos import modelo as _modelo_ressarcimentos  # noqa: F401
 from .resultados import modelo as _modelo_resultados  # noqa: F401
 from .sessoes import modelo as _modelo_sessoes  # noqa: F401
 from .solicitacoes_do_responsavel import modelo as _modelo_solicitacoes_do_responsavel  # noqa: F401
+from .template_de_missao import modelo as _modelo_template_de_missao  # noqa: F401
 from .trilhas import modelo as _modelo_trilhas  # noqa: F401
 from .trocas import modelo as _modelo_trocas  # noqa: F401

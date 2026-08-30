@@ -55,6 +55,11 @@ class Poder(Base, ComAutoria):
         Enum(PapelDoPoder, native_enum=False, length=16), nullable=True
     )
     ativo: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    # Declarada por Admin, nunca deduzida do nome — mesmo princípio do `papel`
+    # (`RN-01-54`). Só orienta a sugestão do template de atividade desplugada;
+    # não é papel e não tem limite de quantos poderes a recebem (`RF-01-62`,
+    # `RN-09-34`, decisão do fundador de 2026-08-29).
+    tecnico: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     __table_args__ = (
         Index(

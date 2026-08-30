@@ -1,5 +1,7 @@
 import { Botao, EstadoDaLista } from "comum/react";
 import { useState } from "react";
+import type { RecompensaDeMarco } from "../recompensas/api";
+import type { TipoDeRecurso } from "../recursos/api";
 import type {
   CadenciaDeColeta,
   EtapaDoCiclo,
@@ -9,17 +11,23 @@ import type {
 } from "./api";
 import { Bibliografia } from "./Bibliografia";
 import { CadenciaDeRetomada } from "./CadenciaDeRetomada";
+import { DeclaracaoDeRecompensa } from "./DeclaracaoDeRecompensa";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 import { EtiquetasOds } from "./EtiquetasOds";
 import { FormularioDeAtividade } from "./FormularioDeAtividade";
 import { FormularioDeConteudo } from "./FormularioDeConteudo";
 import { FormularioDeDesafioDeColeta, ROTULO_DO_NIVEL } from "./FormularioDeDesafioDeColeta";
 import { PreVisualizacaoDaMissao } from "./PreVisualizacaoDaMissao";
+import { TemplateDaMissao } from "./TemplateDaMissao";
 
 interface Props {
+  idDaTrilha: string;
   missoes: MissaoDaTrilha[];
   tiposDeColeta: TipoDeColeta[];
+  tiposDeRecurso: TipoDeRecurso[];
+  recompensasDeMarco: RecompensaDeMarco[];
   onAtualizarMissao: (missao: MissaoDaTrilha) => void;
+  onDeclararRecompensa: (recompensa: RecompensaDeMarco) => void;
 }
 
 const ROTULO_DA_ETAPA: Record<EtapaDoCiclo, string> = {
@@ -41,7 +49,15 @@ function rotuloDoNivel(nivel: NivelDoLocal): string {
 
 // A trilha em rascunho existe sem sondagem — a marcação só distingue quando
 // o Mestre a declara (`RF-09-81`, design — decisões).
-export function ListaDeMissoes({ missoes, tiposDeColeta, onAtualizarMissao }: Props) {
+export function ListaDeMissoes({
+  idDaTrilha,
+  missoes,
+  tiposDeColeta,
+  tiposDeRecurso,
+  recompensasDeMarco,
+  onAtualizarMissao,
+  onDeclararRecompensa,
+}: Props) {
   const [missaoComFormulario, definirMissaoComFormulario] = useState<string | null>(null);
   const [missaoComFormularioDeConteudo, definirMissaoComFormularioDeConteudo] = useState<
     string | null
@@ -82,6 +98,16 @@ export function ListaDeMissoes({ missoes, tiposDeColeta, onAtualizarMissao }: Pr
               : "Sem retomada declarada"}
           </p>
           <CadenciaDeRetomada missao={missao} onAtualizada={onAtualizarMissao} />
+
+          <TemplateDaMissao missao={missao} onAtualizada={onAtualizarMissao} />
+
+          <DeclaracaoDeRecompensa
+            idDaTrilha={idDaTrilha}
+            missao={missao}
+            tiposDeRecurso={tiposDeRecurso}
+            recompensas={recompensasDeMarco.filter((r) => r.missao_id === missao.id)}
+            onDeclarada={onDeclararRecompensa}
+          />
 
           <DesafioDeDesbloqueio missao={missao} onAtualizada={onAtualizarMissao} />
 
