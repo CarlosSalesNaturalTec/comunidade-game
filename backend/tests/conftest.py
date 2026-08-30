@@ -309,6 +309,7 @@ def app(sessao, configuracao):
     from nucleo.pontos_de_apoio.rotas import roteador as roteador_de_pontos_de_apoio
     from nucleo.pontuacao.rotas import roteador as roteador_de_pontuacao
     from nucleo.prestacao_de_contas.rotas import roteador as roteador_de_prestacao_de_contas
+    from nucleo.producoes.rotas import roteador as roteador_de_producoes
     from nucleo.quiz.rotas import roteador as roteador_de_quiz
     from nucleo.recompensas_de_marco.rotas import roteador as roteador_de_recompensas_de_marco
     from nucleo.recursos.rotas import roteador as roteador_de_recursos
@@ -374,6 +375,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_solicitacoes_do_responsavel)
     incluir_roteador_de_dados(aplicacao, roteador_de_desafios_extras)
     incluir_roteador_de_dados(aplicacao, roteador_de_template_de_missao)
+    incluir_roteador_de_dados(aplicacao, roteador_de_producoes)
     return aplicacao
 
 

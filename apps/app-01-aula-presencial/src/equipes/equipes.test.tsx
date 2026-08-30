@@ -10,6 +10,9 @@ function equipe(sobrescreve: Partial<Equipe> = {}): Equipe {
   return {
     id: "equipe-1",
     aula_id: "aula-1",
+    trilha_id: null,
+    homologado_por_id: null,
+    homologado_em: null,
     integrantes: [{ avatar: "avatar-1", nick: "zeferina", papel: null }],
     ...sobrescreve,
   };

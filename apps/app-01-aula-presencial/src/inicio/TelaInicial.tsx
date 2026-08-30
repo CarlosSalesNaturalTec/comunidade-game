@@ -14,6 +14,9 @@ type Caminho = "inicio" | "onboarding" | "trilhas" | "troca" | "quiz";
 interface Props {
   tokenDeTrabalho: string;
   personaIdDeTrabalho: string;
+  /** Só o Mestre, na sessão de trabalho, homologa a equipe da trilha ali
+   * mesmo (`RF-04-62`, `RN-04-18`). */
+  papelDeTrabalho: string;
   aulaId: string;
   /** Relê `GET /v1/aulas/vigentes`, para que a janela da aula seja
    * conferida a cada volta ao início (`RF-04-05`, design — decisão 3). */
@@ -34,6 +37,7 @@ interface Props {
 export function TelaInicial({
   tokenDeTrabalho,
   personaIdDeTrabalho,
+  papelDeTrabalho,
   aulaId,
   aoVoltarAoInicio,
   podeAbrirMomentoDeTroca,
@@ -131,6 +135,8 @@ export function TelaInicial({
           equipeId={equipeEscolhidaId}
           token={sessaoDoGuerreiro.token}
           aoVoltar={() => definirEquipeEscolhidaId(null)}
+          podeHomologarEquipeDaTrilha={papelDeTrabalho === "mestre"}
+          tokenDeTrabalho={tokenDeTrabalho}
         />
       );
     }

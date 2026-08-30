@@ -188,6 +188,7 @@ export function AparelhoDaAula() {
       <TelaInicial
         tokenDeTrabalho={sessao.token}
         personaIdDeTrabalho={sessao.persona_id}
+        papelDeTrabalho={sessao.papel}
         aulaId={aulaEscolhidaId}
         aoVoltarAoInicio={consultarAulasVigentes}
         podeAbrirMomentoDeTroca={sessao.papel === "mestre"}

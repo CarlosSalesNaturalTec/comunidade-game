@@ -5,11 +5,18 @@ import {
   type ItemDaProgramacao,
   obterProgramacaoDoEncontro,
 } from "../api/programacao";
+import { EntregaDaProducao } from "./EntregaDaProducao";
+import { EquipeDaTrilha } from "./EquipeDaTrilha";
 
 interface Props {
   equipeId: string;
   token: string;
   aoVoltar: () => void;
+  /** Presente só quando quem está na sessão de trabalho do aparelho é o
+   * Mestre — autoriza a homologação da equipe da trilha ali mesmo
+   * (`RF-04-62`, `RN-04-18`). */
+  podeHomologarEquipeDaTrilha?: boolean;
+  tokenDeTrabalho?: string | null;
 }
 
 const MENSAGEM_SEM_PROGRAMACAO =
@@ -27,7 +34,13 @@ const MENSAGEM_ESCOLHA_INDISPONIVEL =
 // declarando a escolha ao núcleo — a aplicação nunca decide por conta
 // própria quando há mais de uma atividade (`RF-02-42`, `RF-04-58`,
 // documento 05 §4, documento 02 §5).
-export function TelaDaProgramacao({ equipeId, token, aoVoltar }: Props) {
+export function TelaDaProgramacao({
+  equipeId,
+  token,
+  aoVoltar,
+  podeHomologarEquipeDaTrilha = false,
+  tokenDeTrabalho = null,
+}: Props) {
   const [itens, definirItens] = useState<ItemDaProgramacao[] | null>(null);
   const [semRede, definirSemRede] = useState(false);
   const [idExibido, definirIdExibido] = useState<string | null>(null);
@@ -185,6 +198,20 @@ export function TelaDaProgramacao({ equipeId, token, aoVoltar }: Props) {
               </ul>
             </>
           )}
+
+          <EquipeDaTrilha
+            trilhaId={item.trilha_id}
+            trilhaTitulo={item.trilha_titulo}
+            tokenDoGuerreiro={token}
+            podeHomologar={podeHomologarEquipeDaTrilha}
+            tokenDeTrabalho={tokenDeTrabalho}
+          />
+
+          <EntregaDaProducao
+            equipeId={equipeId}
+            token={token}
+            producaoEsperada={item.atividade.producao_esperada}
+          />
         </section>
       )}
     </Moldura>

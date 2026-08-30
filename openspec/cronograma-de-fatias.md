@@ -179,8 +179,8 @@ implementados: `RF-09-35` e `RN-09-21` (tela da amostragem semanal de coleta) e 
 | 5     | Troca por recompensa avulsa no encontro              | `2026-08-25-troca-por-recompensa-avulsa-no-encontro`                             | implementado |
 | 6     | Aparelho da equipe no quiz                           | `2026-08-25-aparelho-da-equipe-no-quiz`                                          | implementado |
 | 7     | Programação do encontro e missão da equipe           | `2026-08-25-programacao-do-encontro-e-missao-da-equipe`                          | implementado |
-| 8     | Equipe da trilha formada e homologada no encontro    | `RF-04-61`, `RF-04-62`, `RN-04-17`, `RN-04-22`                                   | em aberto    |
-| 9     | Entrega da produção da missão e devolutiva           | `RF-04-45` a `RF-04-47`, `RN-04-31`                                              | em aberto    |
+| 8     | Equipe da trilha formada e homologada no encontro    | `equipe-da-trilha-e-producao-da-missao` — `RF-04-61`, `RF-04-62` (`RN-04-17` e `RN-04-22` são regras da partida, atendidas nas fatias 6 e 7) | implementado |
+| 9     | Entrega da produção da missão e devolutiva           | `equipe-da-trilha-e-producao-da-missao` — `RF-04-45` a `RF-04-47`, `RN-04-31`    | implementado |
 | 10    | Assistente de trilhas no encontro                    | `RF-04-36` a `RF-04-40`, `RN-04-19` a `RN-04-21` — o corpus é o conteúdo da missão (documento 03 §4.2), entregue na fatia 6 do PRD-09; não é o apoio escolar | em aberto    |
 | 11    | Fila local sem rede                                  | `RF-04-23` a `RF-04-25`, `RN-04-13`                                              | em aberto    |
 | 12    | Aviso de coleta e encerramento do cadastro           | `RF-04-26`, `RF-04-27`                                                           | em aberto    |

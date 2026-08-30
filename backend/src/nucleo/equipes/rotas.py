@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -15,7 +16,7 @@ from ..erros import NaoEncontrado
 from ..paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from ..permissoes import Operacao, exigir_permissao
 from ..personas.modelo import Persona
-from ..trilhas.modelo import Atividade, Missao
+from ..trilhas.modelo import Atividade, Missao, Trilha
 from ..trilhas.rotas import (
     AtividadeSaida,
     BibliografiaPublicaSaida,
@@ -28,6 +29,7 @@ from .regra import criar_equipe as _criar_equipe
 from .regra import declarar_escolha_da_equipe as _declarar_escolha_da_equipe
 from .regra import entrar_na_equipe as _entrar_na_equipe
 from .regra import equipes_da_aula as _equipes_da_aula
+from .regra import homologar_equipe_da_trilha as _homologar_equipe_da_trilha
 from .regra import programacao_do_encontro as _programacao_do_encontro
 from .regra import sair_da_equipe as _sair_da_equipe
 
@@ -44,6 +46,9 @@ class IntegranteSaida(AvatarENickSaida):
 class EquipeSaida(BaseModel):
     id: uuid.UUID
     aula_id: uuid.UUID | None
+    trilha_id: uuid.UUID | None
+    homologado_por_id: uuid.UUID | None
+    homologado_em: datetime | None
     integrantes: list[IntegranteSaida]
 
 
@@ -53,6 +58,9 @@ def saida_da_equipe(sessao: Session, equipe: Equipe) -> EquipeSaida:
     return EquipeSaida(
         id=equipe.id,
         aula_id=equipe.aula_id,
+        trilha_id=equipe.trilha_id,
+        homologado_por_id=equipe.homologado_por_id,
+        homologado_em=equipe.homologado_em,
         integrantes=[
             IntegranteSaida(
                 avatar=avatares_e_nicks[i.persona_id].avatar,
@@ -114,6 +122,35 @@ def criar_equipe_rota(
     return saida_da_equipe(sessao_bd, equipe)
 
 
+class CriarEquipeDaTrilhaEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    papel: str | None = None
+
+
+@roteador.post("/trilhas/{id_da_trilha}/equipes", status_code=201)
+def criar_equipe_da_trilha_rota(
+    id_da_trilha: uuid.UUID,
+    entrada: CriarEquipeDaTrilhaEntrada,
+    contexto: Annotated[
+        ContextoDaSessao, Depends(exigir_permissao(Operacao.equipe_que_forma_na_aula, "escreve"))
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> EquipeSaida:
+    """`RF-04-61`: cria a equipe da trilha com o autor como primeiro
+    integrante — os tetos de composição, a equipe única por trilha e a
+    vedação de Admin e Mestre já são de `criar_equipe`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    trilha = sessao_bd.get(Trilha, id_da_trilha)
+    if trilha is None:
+        raise NaoEncontrado(mensagem="Trilha não encontrada.")
+    equipe = _criar_equipe(
+        sessao_bd, operador=operador, aula=None, trilha=trilha, papel_do_integrante=entrada.papel
+    )
+    sessao_bd.commit()
+    return saida_da_equipe(sessao_bd, equipe)
+
+
 class EntrarNaEquipeEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -159,10 +196,43 @@ def sair_da_equipe_rota(
     sessao_bd.commit()
 
 
+class HomologacaoDaEquipeSaida(BaseModel):
+    equipe_id: uuid.UUID
+    homologado_por_id: uuid.UUID
+    homologado_em: datetime
+
+
+@roteador.post("/equipes/{id_da_equipe}/homologacao")
+def homologar_equipe_da_trilha_rota(
+    id_da_equipe: uuid.UUID,
+    contexto: Annotated[
+        ContextoDaSessao,
+        Depends(exigir_permissao(Operacao.homologacao_da_equipe_da_trilha, "escreve")),
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> HomologacaoDaEquipeSaida:
+    """`RF-04-62`: a homologação da equipe da trilha pelo Mestre ou Admin —
+    a recusa da equipe da aula e a composição fixa depois já são de
+    `homologar_equipe_da_trilha`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    equipe = sessao_bd.get(Equipe, id_da_equipe)
+    if equipe is None:
+        raise NaoEncontrado(mensagem="Equipe não encontrada.")
+    equipe = _homologar_equipe_da_trilha(sessao_bd, operador=operador, equipe=equipe)
+    sessao_bd.commit()
+    return HomologacaoDaEquipeSaida(
+        equipe_id=equipe.id,
+        homologado_por_id=equipe.homologado_por_id,
+        homologado_em=equipe.homologado_em,
+    )
+
+
 class ItemDaProgramacaoSaida(BaseModel):
     atividade: AtividadeSaida
     missao_id: uuid.UUID
     missao_titulo: str
+    trilha_id: uuid.UUID
+    trilha_titulo: str
     conteudos: list[ConteudoSaida] = Field(default_factory=list)
     bibliografia: list[BibliografiaPublicaSaida] = Field(default_factory=list)
     corrente: bool
@@ -176,10 +246,13 @@ def _saida_do_item_da_programacao(
     atividade_corrente_id: uuid.UUID | None,
 ) -> ItemDaProgramacaoSaida:
     missao = sessao_bd.get(Missao, atividade.missao_id)
+    trilha = sessao_bd.get(Trilha, missao.trilha_id)
     return ItemDaProgramacaoSaida(
         atividade=saida_da_atividade(atividade),
         missao_id=missao.id,
         missao_titulo=missao.titulo,
+        trilha_id=trilha.id,
+        trilha_titulo=trilha.nome,
         conteudos=[
             saida_do_conteudo(conteudo)
             for conteudo in consultar_conteudos_da_missao(sessao_bd, missao.id)

@@ -382,9 +382,10 @@ dentro da mesma sessão de trabalho do aparelho.
 ## 8. Modelo de dados
 
 No caminho do onboarding a aplicação **escreve nas entidades que o PRD-01 já mantém**. O
-caminho das trilhas **acrescenta duas entidades** ao núcleo — `RespostaDeQuiz` e
-`ConsultaAoAssistente` — e escreve em `Equipe`, que o núcleo já mantém. O que existe só no
-aparelho é a **fila local**, que não é entidade do domínio e não sobrevive à sincronização.
+caminho das trilhas **acrescenta três entidades** ao núcleo — `RespostaDeQuiz`,
+`ConsultaAoAssistente` e `ProducaoDaMissao` — e escreve em `Equipe`, que o núcleo já mantém. O
+que existe só no aparelho é a **fila local**, que não é entidade do domínio e não sobrevive à
+sincronização.
 
 ```text
 CONSOME                        ESCREVE
@@ -396,6 +397,7 @@ PerguntaDeQuiz                 Auditoria             — quem confirmou o quê
 Corpus de apoio (App 09)       Equipe                — formada na aula, encerra com ela
                                RespostaDeQuiz        [entidade nova]
                                ConsultaAoAssistente  [entidade nova]
+                               ProducaoDaMissao      [entidade nova]
 ```
 
 | Entidade               | O que esta aplicação grava                                                                                    |
@@ -407,6 +409,7 @@ Corpus de apoio (App 09)       Equipe                — formada na aula, encerr
 | `Equipe`               | nome, aula a que pertence, integrantes com o papel de cada um, momento de formação e de encerramento          |
 | `RespostaDeQuiz`       | partida, pergunta, equipe, alternativa escolhida, momento de chegada no servidor, acerto                      |
 | `ConsultaAoAssistente` | Guerreiro(a) ou equipe, assistente (trilhas ou apoio escolar), transcrição da pergunta e da resposta, momento |
+| `ProducaoDaMissao`     | equipe **ou** Guerreiro(a), missão, atividade, forma de entrega, transcrição, devolutiva, momento             |
 
 Regras do modelo:
 
@@ -415,6 +418,9 @@ Regras do modelo:
 - `RespostaDeQuiz` é única por equipe e por pergunta; a segunda tentativa é recusada.
 - `ConsultaAoAssistente` guarda **apenas a transcrição** — o áudio não é persistido. É a mesma
   entidade que a App 05 usa para o apoio escolar (PRD-05).
+- `ProducaoDaMissao` guarda **exatamente um** entre equipe e Guerreiro(a) — o App 01 sempre
+  preenche a equipe, a porta individual do PRD-05 preenche o Guerreiro(a) — e **nunca** a foto
+  nem o áudio: só a transcrição e a devolutiva sobrevivem à leitura (`RF-04-46`).
 - `Consentimento` e `Auditoria` são somente inserção — revogação é registro novo.
 - A fila local guarda **apenas presença**, nunca imagem, e é descartada assim que sincroniza.
 
@@ -452,6 +458,7 @@ Rotas do caminho das trilhas, todas autenticadas na **sessão do Guerreiro(a)**:
 | POST   | `/v1/equipes/{id}/integrantes`        | Entrar em uma equipe existente                                                                                                                                 |
 | DELETE | `/v1/equipes/{id}/integrantes/eu`     | Sair da equipe                                                                                                                                                 |
 | GET    | `/v1/equipes/{id}/missao`             | Programação do encontro, em lista — missão, conteúdo e atividade do dia de cada atividade presencial da aula da equipe; restrita a quem a integra (`RF-04-35`) |
+| POST   | `/v1/equipes/{id}/producao`           | Entregar a produção da missão — texto, áudio ou foto — na atividade corrente da equipe (`RF-04-45` a `RF-04-47`)                                               |
 | POST   | `/v1/assistente/trilhas/consultas`    | Perguntar ao assistente de trilhas e gravar a transcrição                                                                                                      |
 | GET    | `/v1/partidas-de-quiz/{id}/pergunta`  | Receber a pergunta em andamento no aparelho da equipe                                                                                                          |
 | POST   | `/v1/partidas-de-quiz/{id}/respostas` | Enviar a resposta da equipe, nunca do aparelho de onde veio                                                                                                    |
@@ -475,7 +482,11 @@ ou mais na equipe (422); equipe de aula já encerrada (409); segunda resposta da
 a mesma pergunta (409); resposta de Guerreiro(a) que já joga por outra equipe na mesma partida
 (409); pergunta fora do corpus (200, com a recusa explicada no corpo); troca recusada por item
 inativo ou sem lastro, sem estoque, comunidade divergente ou saldo insuficiente (422, uma
-condição por vez); troca registrada por persona que não é Mestre (403).
+condição por vez); troca registrada por persona que não é Mestre (403); entrega da produção sem
+nenhuma forma ou com mais de uma ao mesmo tempo, ou sem atividade corrente declarada (422); leitura
+do áudio ou da foto da produção indisponível — o modelo não respondeu a tempo ou fora do formato
+esperado (**503**, sem gravar nada, para a equipe reenviar; a entrega em texto nunca recebe este
+erro, porque a transcrição é o próprio texto digitado).
 
 ## 10. Requisitos não funcionais
 
@@ -629,6 +640,8 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 | Aparelho aberto por Admin não oferece o momento de troca — a troca é ato do Mestre                               | 09 §1          | Troca por recompensa avulsa exige Mestre na sessão de trabalho |
 | A troca é escrita sob a sessão de trabalho, com o Guerreiro(a) vindo da sessão aninhada                          | 09 §1          | A troca é escrita sob a sessão de trabalho do aparelho         |
 | Equipe da trilha formada **e** homologada na App 01, no mesmo aparelho                                           | 02 §5          | Onde a equipe da trilha é formada e homologada                 |
+| A produção entregue no App 01 é da equipe — um registro só, válido para todos os integrantes                     | 02 §5, 03 §4.2 | A produção entregue no App 01 é da equipe                      |
+| A fatia 9 entrega a `ProducaoDaMissao` inteira; a fatia 7 do PRD-05 só acrescenta a porta individual             | PRD-05 §8      | A fatia 9 do PRD-04 entrega a `ProducaoDaMissao` inteira       |
 
 A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do termo** ao
 `Consentimento` do PRD-01, e o acompanhamento do anexo pendente à App 03 (PRD-02).
@@ -654,10 +667,16 @@ change `entrada-por-reconhecimento-e-falha-de-identificacao`: quem escreve a pre
 reconhecimento é a sessão de trabalho do aparelho, sem virar confirmadora, e a presença já
 registrada é devolvida sem erro, com a aplicação — não o núcleo — avisando a criança.
 
-As duas últimas linhas são decisão nova do fundador, em 2026-08-25, entregues pela change
+As duas linhas seguintes são decisão nova do fundador, em 2026-08-25, entregues pela change
 `troca-por-recompensa-avulsa-no-encontro`: a troca só é oferecida com Mestre na sessão de
 trabalho — Admin não recebe o controle —, e o registro sai sob a sessão de trabalho do
 aparelho, com o Guerreiro(a) identificado pela sessão aninhada, nunca por nick digitado.
+
+As duas últimas linhas são decisão nova do fundador, em 2026-08-30, entregues pela change
+`equipe-da-trilha-e-producao-da-missao`: a entrega da produção no encontro é sempre da equipe,
+num registro só que alcança todos os integrantes, e a `ProducaoDaMissao` nasce completa nesta
+fatia — a fatia 7 do PRD-05 só acrescenta a porta individual do Guerreiro(a) sobre a entidade já
+de pé.
 
 ## 14. Pendências que permanecem
 
