@@ -605,43 +605,43 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                                                          | Gravada em     | Linha do doc 09                                                |
-| ---------------------------------------------------------------------------------------------------------------- | -------------- | -------------------------------------------------------------- |
-| Fotografia original apagada assim que o _template_ é gerado                                                      | 03 §3.3        | Já decididos                                                   |
-| _Template_ gerado no aparelho pela biblioteca Human — vivacidade e depois descritor                              | 03 §3.3        | Já decididos                                                   |
-| Só o descritor trafega; a comparação continua no núcleo, que nunca devolve o _template_                          | 03 §3.3        | Já decididos                                                   |
-| _Template_ guardado enquanto durar o vínculo, excluído ao fim dele ou a pedido                                   | 03 §3.3        | Já decididos                                                   |
-| Consentimento biométrico em termo impresso assinado, com testemunha e anexo pela gestão                          | 03 §3.3        | Já decididos                                                   |
-| Nick único em toda a plataforma, com sugestão de variações no cadastro                                           | 02 §1          | Já decididos                                                   |
-| Rede fora: presença na fila local; cadastro e reconhecimento exigem rede                                         | 03 §3.4        | Já decididos                                                   |
-| App 02 incorporado ao App 01, que passa a ser a aplicação da aula presencial                                     | 03 §§2.1, 3, 4 | Já decididos                                                   |
-| Modo Ouvinte removido do produto; a aplicação não capta o áudio ambiente da aula                                 | 03 §4          | Já decididos                                                   |
-| Troca de pontos extras por recompensa avulsa, presencial, no encerramento do encontro                            | 02 §8.2        | Troca de pontos extras por recompensa avulsa                   |
-| Entrega no ato da troca, com baixa no livro-razão e sem reserva                                                  | 02 §8.2        | Troca de pontos extras por recompensa avulsa                   |
-| Debita o saldo disponível; o acumulado de pontos extras não muda                                                 | 11 §5          | Troca de pontos extras por recompensa avulsa                   |
-| `RF-04-49` é garantia da App 01, não regra que o núcleo verifica                                                 | 02 §8.2        | Janela de troca da recompensa avulsa                           |
-| Equipe formada pelos próprios Guerreiros e Guerreiras, válida para aquela aula                                   | 02 §5          | Já decididos                                                   |
-| Uma única equipe por Guerreiro(a) na partida de Quiz ao Vivo                                                     | 02 §5, 05 §5   | Já decididos                                                   |
-| Resposta do Quiz ao Vivo enviada pelo App 01, não mais pela App 05                                               | 05 §5          | Já decididos                                                   |
-| App 05 como aplicação das aulas remotas e do uso cotidiano                                                       | 03 §7          | Já decididos                                                   |
-| Papel de cada integrante declarado na formação da equipe, valendo para o encontro                                | 02 §5          | Papel de cada integrante na equipe                             |
-| Sessão de trabalho do aparelho é a janela da aula agendada                                                       | 03 §3.2        | Sessão de trabalho do aparelho da aula                         |
-| Aviso da exclusão do _template_ na App 07, com a data                                                            | 03 §9          | Aviso da exclusão do _template_ biométrico                     |
-| Reescrita por IA opera no App 01 mesmo com um integrante desligado                                               | 03 §7.1        | Personalização por IA no aparelho da equipe                    |
-| Não existe rota de conferência de nick do onboarding; a recusa da gravação devolve as variações de alcance total | 02 §1          | Busca por nick e exibição pública                              |
-| Confirmação humana recebe o nick, nunca um identificador de persona                                              | 02 §1          | Busca por nick e exibição pública                              |
-| Faixa de 6 a 16 anos exigida na regra do núcleo, retroativa ao caminho da gestão                                 | 09 §1          | Faixa etária do Guerreiro(a) retroativa ao caminho da gestão   |
-| Responsável mínimo e vínculo cadastrados pelo App 01 no ato do encontro, com grau de parentesco (`RF-04-60`)     | 09 §1          | Cadastro do responsável no ato do encontro                     |
-| O responsável mínimo é o nome, e só — sem e-mail, credencial nem digitalização do termo                          | 09 §1          | O responsável mínimo é o nome, e só                            |
-| A versão do termo é carimbada pelo núcleo, nunca recebida do cliente                                             | 09 §1          | A versão do termo é carimbada pelo núcleo                      |
-| Sem câmera, o onboarding continua — só a captura fecha                                                           | 09 §1          | Sem câmera, o onboarding continua                              |
-| Quem escreve a presença por reconhecimento é a sessão de trabalho do aparelho, sem confirmador                   | 09 §1          | Quem escreve a presença por reconhecimento                     |
-| Presença já registrada é devolvida sem erro, no lugar do 409; quem avisa é a aplicação                           | 09 §1          | Presença já registrada não é erro                              |
-| Aparelho aberto por Admin não oferece o momento de troca — a troca é ato do Mestre                               | 09 §1          | Troca por recompensa avulsa exige Mestre na sessão de trabalho |
-| A troca é escrita sob a sessão de trabalho, com o Guerreiro(a) vindo da sessão aninhada                          | 09 §1          | A troca é escrita sob a sessão de trabalho do aparelho         |
-| Equipe da trilha formada **e** homologada na App 01, no mesmo aparelho                                           | 02 §5          | Onde a equipe da trilha é formada e homologada                 |
-| A produção entregue no App 01 é da equipe — um registro só, válido para todos os integrantes                     | 02 §5, 03 §4.2 | A produção entregue no App 01 é da equipe                      |
-| A fatia 9 entrega a `ProducaoDaMissao` inteira; a fatia 7 do PRD-05 só acrescenta a porta individual             | PRD-05 §8      | A fatia 9 do PRD-04 entrega a `ProducaoDaMissao` inteira       |
+| Decisão                                                                                                          | Gravada em     | Linha do doc 09                                                       |
+| ---------------------------------------------------------------------------------------------------------------- | -------------- | --------------------------------------------------------------------- |
+| Fotografia original apagada assim que o _template_ é gerado                                                      | 03 §3.3        | Já decididos                                                          |
+| _Template_ gerado no aparelho pela biblioteca Human — vivacidade e depois descritor                              | 03 §3.3        | Já decididos                                                          |
+| Só o descritor trafega; a comparação continua no núcleo, que nunca devolve o _template_                          | 03 §3.3        | Já decididos                                                          |
+| _Template_ guardado enquanto durar o vínculo, excluído ao fim dele ou a pedido                                   | 03 §3.3        | Já decididos                                                          |
+| Consentimento biométrico em termo impresso assinado, com testemunha e anexo pela gestão                          | 03 §3.3        | Já decididos                                                          |
+| Nick único em toda a plataforma, com sugestão de variações no cadastro                                           | 02 §1          | Já decididos                                                          |
+| Rede fora: presença na fila local; cadastro e reconhecimento exigem rede                                         | 03 §3.4        | Já decididos                                                          |
+| App 02 incorporado ao App 01, que passa a ser a aplicação da aula presencial                                     | 03 §§2.1, 3, 4 | Já decididos                                                          |
+| Modo Ouvinte removido do produto; a aplicação não capta o áudio ambiente da aula                                 | 03 §4          | Já decididos                                                          |
+| Troca de pontos extras por recompensa avulsa, presencial, no encerramento do encontro                            | 02 §8.2        | Troca de pontos extras por recompensa avulsa                          |
+| Entrega no ato da troca, com baixa no livro-razão e sem reserva                                                  | 02 §8.2        | Troca de pontos extras por recompensa avulsa                          |
+| Debita o saldo disponível; o acumulado de pontos extras não muda                                                 | 11 §5          | Troca de pontos extras por recompensa avulsa                          |
+| `RF-04-49` é garantia da App 01, não regra que o núcleo verifica                                                 | 02 §8.2        | Janela de troca da recompensa avulsa                                  |
+| Equipe formada pelos próprios Guerreiros e Guerreiras, válida para aquela aula                                   | 02 §5          | Já decididos                                                          |
+| Uma única equipe por Guerreiro(a) na partida de Quiz ao Vivo                                                     | 02 §5, 05 §5   | Já decididos                                                          |
+| Resposta do Quiz ao Vivo enviada pelo App 01, não mais pela App 05                                               | 05 §5          | Já decididos                                                          |
+| App 05 como aplicação das aulas remotas e do uso cotidiano                                                       | 03 §7          | Já decididos                                                          |
+| Papel de cada integrante declarado na formação da equipe, valendo para o encontro                                | 02 §5          | Papel de cada integrante na equipe                                    |
+| Sessão de trabalho do aparelho é a janela da aula agendada                                                       | 03 §3.2        | Sessão de trabalho do aparelho da aula                                |
+| Aviso da exclusão do _template_ na App 07, com a data                                                            | 03 §9          | Aviso da exclusão do _template_ biométrico                            |
+| Reescrita por IA opera no App 01 mesmo com um integrante desligado                                               | 03 §7.1        | Personalização por IA no aparelho da equipe                           |
+| Não existe rota de conferência de nick do onboarding; a recusa da gravação devolve as variações de alcance total | 02 §1          | Busca por nick e exibição pública                                     |
+| Confirmação humana recebe o nick, nunca um identificador de persona                                              | 02 §1          | Busca por nick e exibição pública                                     |
+| Faixa de 6 a 16 anos exigida na regra do núcleo, retroativa ao caminho da gestão                                 | 09 §1          | Faixa etária do Guerreiro(a) retroativa ao caminho da gestão          |
+| Responsável mínimo e vínculo cadastrados pelo App 01 no ato do encontro, com grau de parentesco (`RF-04-60`)     | 09 §1          | Cadastro do responsável no ato do encontro                            |
+| O responsável mínimo é o nome, e só — sem e-mail, credencial nem digitalização do termo                          | 09 §1          | O responsável mínimo é o nome, e só                                   |
+| A versão do termo é carimbada pelo núcleo, nunca recebida do cliente                                             | 09 §1          | A versão do termo é carimbada pelo núcleo                             |
+| Sem câmera, o onboarding continua — só a captura fecha                                                           | 09 §1          | Sem câmera, o onboarding continua                                     |
+| Quem escreve a presença por reconhecimento é a sessão de trabalho do aparelho, sem confirmador                   | 09 §1          | Quem escreve a presença por reconhecimento                            |
+| Presença já registrada é devolvida sem erro, no lugar do 409; quem avisa é a aplicação                           | 09 §1          | Presença já registrada não é erro                                     |
+| Aparelho aberto por Admin não oferece o momento de troca — a troca é ato do Mestre                               | 09 §1          | Troca por recompensa avulsa exige Mestre na sessão de trabalho        |
+| A troca é escrita sob a sessão de trabalho, com o Guerreiro(a) vindo da sessão aninhada                          | 09 §1          | A troca é escrita sob a sessão de trabalho do aparelho                |
+| Equipe da trilha formada **e** homologada na App 01, no mesmo aparelho                                           | 02 §5          | Onde a equipe da trilha é formada e homologada                        |
+| A produção entregue no App 01 é da equipe — um registro só, válido para todos os integrantes                     | 02 §5, 03 §4.2 | A produção entregue no App 01 é da equipe                             |
+| A fatia 9 entrega a `ProducaoDaMissao` inteira; a fatia 7 do PRD-05 só acrescenta a porta individual             | PRD-05 §8      | A fatia 9 do PRD-04 entrega a `ProducaoDaMissao` inteira              |
 | O corpus do assistente é a missão da atividade corrente e as de posição anterior na trilha, nunca uma à frente   | 03 §4.2        | O corpus do assistente de trilhas é a missão corrente e as anteriores |
 
 A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do termo** ao

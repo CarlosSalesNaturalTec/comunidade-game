@@ -70,7 +70,9 @@ export function FluxoDeOnboarding({
           Este aparelho não tem câmera. O cadastro foi concluído e o Guerreiro(a) já participa
           da aula; a captura da imagem exige um aparelho com câmera.
         </Aviso>
-        <Botao onClick={() => definirPasso({ tipo: "despedida", guerreiro, comImagem: false })}>
+        <Botao
+          onClick={() => definirPasso({ tipo: "despedida", guerreiro, comImagem: false })}
+        >
           Concluir
         </Botao>
       </Moldura>

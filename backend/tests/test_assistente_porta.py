@@ -25,9 +25,7 @@ def test_local_responde_pergunta_sobre_o_corpus():
 def test_local_recusa_pergunta_fora_do_corpus():
     porta = AssistenteDeTrilhasLocal()
 
-    resposta = porta.responder(
-        texto="Qual é a capital da Mongólia?", arquivo=None, corpus=_CORPUS
-    )
+    resposta = porta.responder(texto="Qual é a capital da Mongólia?", arquivo=None, corpus=_CORPUS)
 
     assert resposta is not None
     assert resposta.desfecho == "fora_do_corpus"

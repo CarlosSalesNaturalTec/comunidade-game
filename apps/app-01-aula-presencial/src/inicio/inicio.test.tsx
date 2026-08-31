@@ -273,7 +273,9 @@ describe("tela inicial da App 01", () => {
     await usuario.click(await screen.findByRole("button", { name: /onboarding/i }));
 
     expect(await screen.findByText(/onboarding indisponível sem rede/i)).toBeInTheDocument();
-    expect(screen.getByText(/o cadastro de um novo guerreiro\(a\) exige rede/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/o cadastro de um novo guerreiro\(a\) exige rede/i),
+    ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /concluir cadastro/i }),
     ).not.toBeInTheDocument();

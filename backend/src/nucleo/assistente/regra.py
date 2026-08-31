@@ -72,7 +72,10 @@ def _montar_corpus(sessao: Session, equipe: Equipe) -> str:
             .all()
         )
         bloco = _bloco_da_missao(missao, conteudos)
-        if missao.id != missao_corrente.id and caracteres + len(bloco) > _TETO_DO_CORPUS_EM_CARACTERES:
+        if (
+            missao.id != missao_corrente.id
+            and caracteres + len(bloco) > _TETO_DO_CORPUS_EM_CARACTERES
+        ):
             break
         blocos_em_ordem_reversa.append(bloco)
         caracteres += len(bloco)
@@ -102,9 +105,7 @@ def consultar_assistente_de_trilhas(
         .first()
     )
     if integrante is None:
-        raise PermissaoNegada(
-            mensagem="Só integrante da equipe consulta o assistente pela equipe."
-        )
+        raise PermissaoNegada(mensagem="Só integrante da equipe consulta o assistente pela equipe.")
 
     if equipe.atividade_corrente_id is None:
         raise ErroDeValidacao(

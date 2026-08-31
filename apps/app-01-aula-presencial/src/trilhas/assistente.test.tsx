@@ -20,14 +20,7 @@ function configurarMicrofoneFalso() {
   const pistas = [{ stop: vi.fn() }];
   const getUserMedia = vi.fn().mockResolvedValue({ getTracks: () => pistas });
   vi.stubGlobal("navigator", { ...navigator, mediaDevices: { getUserMedia } });
-  vi.stubGlobal(
-    "MediaRecorder",
-    class {
-      constructor() {
-        return new GravadorFalso() as unknown as MediaRecorder;
-      }
-    },
-  );
+  vi.stubGlobal("MediaRecorder", GravadorFalso as unknown as typeof MediaRecorder);
   return getUserMedia;
 }
 
@@ -53,16 +46,18 @@ describe("assistente de trilhas (RF-04-36 a RF-04-40, RN-04-19 a RN-04-21)", () 
   });
 
   it("pergunta por texto mostra a resposta na conversa", async () => {
-    const consultar = vi.spyOn(assistenteApi, "consultarAssistenteDeTrilhas").mockResolvedValue({
-      id: "consulta-1",
-      equipe_id: "equipe-1",
-      guerreiro_id: null,
-      assistente: "trilhas",
-      desfecho: "respondida",
-      pergunta: "O que é uma variável?",
-      resposta: "É um espaço na memória.",
-      registrado_em: new Date().toISOString(),
-    });
+    const consultar = vi
+      .spyOn(assistenteApi, "consultarAssistenteDeTrilhas")
+      .mockResolvedValue({
+        id: "consulta-1",
+        equipe_id: "equipe-1",
+        guerreiro_id: null,
+        assistente: "trilhas",
+        desfecho: "respondida",
+        pergunta: "O que é uma variável?",
+        resposta: "É um espaço na memória.",
+        registrado_em: new Date().toISOString(),
+      });
 
     renderizar();
     const usuario = userEvent.setup();
@@ -87,21 +82,25 @@ describe("assistente de trilhas (RF-04-36 a RF-04-40, RN-04-19 a RN-04-21)", () 
 
   it("o microfone abre ao toque e fecha ao fim da fala, enviando o áudio", async () => {
     configurarMicrofoneFalso();
-    const consultar = vi.spyOn(assistenteApi, "consultarAssistenteDeTrilhas").mockResolvedValue({
-      id: "consulta-1",
-      equipe_id: "equipe-1",
-      guerreiro_id: null,
-      assistente: "trilhas",
-      desfecho: "respondida",
-      pergunta: "Transcrição da fala.",
-      resposta: "Resposta ao que foi falado.",
-      registrado_em: new Date().toISOString(),
-    });
+    const consultar = vi
+      .spyOn(assistenteApi, "consultarAssistenteDeTrilhas")
+      .mockResolvedValue({
+        id: "consulta-1",
+        equipe_id: "equipe-1",
+        guerreiro_id: null,
+        assistente: "trilhas",
+        desfecho: "respondida",
+        pergunta: "Transcrição da fala.",
+        resposta: "Resposta ao que foi falado.",
+        registrado_em: new Date().toISOString(),
+      });
 
     renderizar();
     const usuario = userEvent.setup();
     await usuario.click(screen.getByRole("button", { name: /perguntar por voz/i }));
-    expect(await screen.findByRole("button", { name: /parar a gravação/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: /parar a gravação/i }),
+    ).toBeInTheDocument();
 
     await usuario.click(screen.getByRole("button", { name: /parar a gravação/i }));
     expect(await screen.findByText(/pronta para enviar/i)).toBeInTheDocument();

@@ -4,7 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { registrarPresenca } from "../api/presencas";
 import { confirmarSessaoDeGuerreiro } from "../api/sessoesDeGuerreiro";
 import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
-import { type ItemDaFilaDePresenca, lerFilaDePresenca, removerDaFilaDePresenca } from "./filaDePresenca";
+import {
+  type ItemDaFilaDePresenca,
+  lerFilaDePresenca,
+  removerDaFilaDePresenca,
+} from "./filaDePresenca";
 
 function chaveDoItem(item: ItemDaFilaDePresenca): string {
   return `${item.nick}::${item.momento_do_fato}`;

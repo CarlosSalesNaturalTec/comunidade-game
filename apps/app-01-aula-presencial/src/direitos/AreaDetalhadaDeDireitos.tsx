@@ -22,7 +22,7 @@ const DADOS_COLETADOS: DadoColetado[] = [
     quemAcessa: "ninguém: ela não viaja pela rede nem fica guardada",
   },
   {
-    dado: "Descritor facial (o \"template\")",
+    dado: 'Descritor facial (o "template")',
     finalidade: "confirmar quem é você nos próximos encontros",
     prazo:
       "enquanto você participar, mais 30 dias — ou só 5 dias, se você pedir para apagar antes",
@@ -120,8 +120,8 @@ export function AreaDetalhadaDeDireitos({ aoVoltar }: Props) {
 
       <h3>Se você não quiser usar a câmera</h3>
       <p>
-        Sem problema nenhum — recusar a biometria não te tira de nada. Você entra do mesmo jeito
-        dizendo seu nick, com um Mestre ou Admin confirmando quem você é.
+        Sem problema nenhum — recusar a biometria não te tira de nada. Você entra do mesmo
+        jeito dizendo seu nick, com um Mestre ou Admin confirmando quem você é.
       </p>
 
       <h3>Quer pedir para ver, corrigir ou apagar seus dados?</h3>

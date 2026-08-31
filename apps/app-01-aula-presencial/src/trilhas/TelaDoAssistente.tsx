@@ -101,7 +101,10 @@ export function TelaDoAssistente({ equipeId, token, aoVoltar }: Props) {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Assistente de trilhas" acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }} />
+      <Cabecalho
+        titulo="Assistente de trilhas"
+        acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }}
+      />
 
       {semRede ? (
         <Aviso tipo="atencao">{MENSAGEM_SEM_REDE}</Aviso>
