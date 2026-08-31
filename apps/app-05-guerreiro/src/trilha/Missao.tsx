@@ -7,6 +7,7 @@ import {
   type TrilhaPublicaComMissoes,
 } from "../api/trilha";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
+import { EntregaDaProducao } from "./EntregaDaProducao";
 import { Sondagem } from "./Sondagem";
 
 interface Props {
@@ -132,6 +133,10 @@ export function Missao({ trilhaId, missao, aoDesbloquear }: Props) {
             aoDesbloquear={aoDesbloquear}
           />
         ))}
+
+      {missao.desbloqueada && missaoPublica && (
+        <EntregaDaProducao missaoId={missao.id} atividades={missaoPublica.atividades} />
+      )}
     </article>
   );
 }

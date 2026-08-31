@@ -1,5 +1,6 @@
 import uuid
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
@@ -817,6 +818,63 @@ def desafios_em_aberto_do_guerreiro(sessao: Session, *, guerreiro_id: uuid.UUID)
 
     atividades = sessao.query(Atividade).filter(Atividade.missao_id.in_(ids_das_missoes)).all()
     return [atividade for atividade in atividades if atividade.id not in ids_com_resultado]
+
+
+@dataclass
+class RetomadaEmAberto:
+    missao: Missao
+    trilha: Trilha
+    prazo: datetime
+
+
+def retomadas_em_aberto_do_guerreiro(
+    sessao: Session, *, guerreiro_id: uuid.UUID
+) -> list[RetomadaEmAberto]:
+    """As retomadas em aberto do Guerreiro(a): cada dia de
+    `cadencia_de_retomada` de uma missão que ele desbloqueou é um
+    agendamento, com prazo contado do desbloqueio aprovado dele (design —
+    decisão 4). Um agendamento está em aberto quando o prazo já venceu e
+    nenhuma produção individual dele naquela missão tem `registrado_em >=
+    prazo` — como os prazos crescem, uma produção posterior fecha aquele
+    agendamento e os anteriores, e uma produção anterior a todos (refazer
+    por conta própria) não fecha nenhum (`RF-05-79`, `RF-05-80`,
+    `RN-05-38`). Nenhum estado persistido: a lista nasce na leitura, como o
+    percurso já nasce.
+    """
+    from ..producoes.modelo import ProducaoDaMissao
+
+    desbloqueios = (
+        sessao.query(DesbloqueioDaMissao, Missao)
+        .join(Missao, Missao.id == DesbloqueioDaMissao.missao_id)
+        .filter(
+            DesbloqueioDaMissao.guerreiro_id == guerreiro_id,
+            DesbloqueioDaMissao.aprovado.is_(True),
+            Missao.cadencia_de_retomada.isnot(None),
+        )
+        .all()
+    )
+    if not desbloqueios:
+        return []
+
+    momento_atual = agora()
+    resultado = []
+    for desbloqueio, missao in desbloqueios:
+        momentos_de_producao = [
+            linha[0]
+            for linha in sessao.query(ProducaoDaMissao.registrado_em).filter(
+                ProducaoDaMissao.guerreiro_id == guerreiro_id,
+                ProducaoDaMissao.missao_id == missao.id,
+            )
+        ]
+        trilha = sessao.get(Trilha, missao.trilha_id)
+        for dias in missao.cadencia_de_retomada:
+            prazo = desbloqueio.momento + timedelta(days=dias)
+            if momento_atual < prazo:
+                continue
+            if any(momento >= prazo for momento in momentos_de_producao):
+                continue
+            resultado.append(RetomadaEmAberto(missao=missao, trilha=trilha, prazo=prazo))
+    return resultado
 
 
 @dataclass

@@ -105,6 +105,12 @@ export function obterProgresso(token: string): Promise<ProgressoDaTrilha[]> {
   return chamarNucleo<ProgressoDaTrilha[]>("/v1/eu/progresso", { token });
 }
 
+export interface AtividadeDaMissaoPublica {
+  id: string;
+  titulo: string;
+  producao_esperada: string;
+}
+
 export interface ConteudoDaMissaoPublico {
   id: string;
   ordem: number;
@@ -130,6 +136,7 @@ export interface MissaoPublica {
   posicao: number;
   obrigatoria: boolean;
   e_sondagem: boolean;
+  atividades: AtividadeDaMissaoPublica[];
   conteudos: ConteudoDaMissaoPublico[];
   bibliografia: BibliografiaDaMissaoPublica[];
 }
@@ -186,4 +193,62 @@ export interface PoderPublico {
 // (`RF-05-09`).
 export function listarPoderesDoCatalogo(): Promise<PoderPublico[]> {
   return chamarNucleo<PoderPublico[]>("/v1/vitrine/poderes");
+}
+
+export type FormaDeEntregaDaProducao = "texto" | "audio" | "foto";
+
+export interface ProducaoDaMissao {
+  id: string;
+  equipe_id: string | null;
+  guerreiro_id: string | null;
+  missao_id: string;
+  atividade_id: string;
+  forma: FormaDeEntregaDaProducao;
+  transcricao: string;
+  devolutiva: string | null;
+  registrado_em: string;
+}
+
+interface EntregarProducaoIndividualEntrada {
+  atividadeId: string;
+  forma: FormaDeEntregaDaProducao;
+  texto?: string;
+  arquivo?: Blob;
+}
+
+// `RF-05-74` a `RF-05-77`: a entrega individual, sobre uma missão do
+// próprio percurso — a mesma superfície `multipart/form-data` da porta de
+// equipe do App 01. A devolutiva volta construtiva e nunca credita ponto;
+// foto e áudio nunca ficam no aparelho depois do envio.
+export function entregarProducaoIndividual(
+  missaoId: string,
+  entrada: EntregarProducaoIndividualEntrada,
+  token: string,
+): Promise<ProducaoDaMissao> {
+  const formulario = new FormData();
+  formulario.set("forma", entrada.forma);
+  formulario.set("atividade_id", entrada.atividadeId);
+  if (entrada.texto !== undefined) formulario.set("texto", entrada.texto);
+  if (entrada.arquivo !== undefined) formulario.set("arquivo", entrada.arquivo);
+
+  return chamarNucleo<ProducaoDaMissao>(`/v1/eu/missoes/${missaoId}/producao`, {
+    metodo: "POST",
+    formulario,
+    token,
+  });
+}
+
+export interface RetomadaEmAberto {
+  missao_id: string;
+  missao_titulo: string;
+  trilha_id: string;
+  trilha_titulo: string;
+  prazo: string;
+}
+
+// As retomadas em aberto do Guerreiro(a) em sessão — missão, trilha e
+// prazo de cada agendamento vencido sem produção, sem lista vazia
+// distinguir de erro (`RF-05-79`, `RF-05-80`).
+export function listarMinhasRetomadas(token: string): Promise<RetomadaEmAberto[]> {
+  return chamarNucleo<RetomadaEmAberto[]>("/v1/eu/retomadas", { token });
 }
