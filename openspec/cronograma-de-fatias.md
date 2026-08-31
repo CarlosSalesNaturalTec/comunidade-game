@@ -197,7 +197,7 @@ que a tocar em vez de abrir recorte próprio.
 | 3     | Carteira, catálogo, conquistas e ranking            | `2026-08-26-carteira-catalogo-conquistas-e-ranking`                                           | implementado |
 | 4     | Inscrição na trilha, guia e desbloqueio             | `2026-08-27-inscricao-na-trilha-guia-e-desbloqueio` (também `RF-09-26`)                       | implementado |
 | 5     | Criação original e portfólio                        | `2026-08-27-criacao-original-e-portfolio` (também `RF-09-31` a `RF-09-34`)                    | implementado |
-| 6     | Desafios vigentes e equipes de que participa        | `RF-05-19`, `RF-05-22` a `RF-05-24`, `RN-05-15`, `RN-05-22`, `RN-05-23`                       | em aberto    |
+| 6     | Desafios vigentes e equipes de que participa        | `desafios-vigentes-e-equipes-de-que-participa` — `RF-05-19`, `RF-05-22` a `RF-05-24`, `RN-05-12`, `RN-05-15`, `RN-05-22` | implementado |
 | 7     | Produção da missão, devolutiva e retomada           | `RF-05-74` a `RF-05-80`, `RN-05-05`, `RN-05-35` a `RN-05-38`                                  | em aberto    |
 | 8     | Desafio extra na Área do Guerreiro(a)               | `RF-05-20`, `RF-05-21` — **trava:** entidade `DesafioExtra` — fatia 1 do PRD-14                       | em aberto    |
 

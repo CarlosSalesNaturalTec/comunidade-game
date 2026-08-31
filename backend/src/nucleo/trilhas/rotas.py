@@ -42,6 +42,7 @@ from .regra import (
     declarar_cadencia_de_retomada,
     declarar_desafio_de_desbloqueio,
     derivar_percurso,
+    desafios_em_aberto_do_guerreiro,
     despublicar_trilha,
     duplicar_trilha,
     inscrever_na_trilha,
@@ -900,3 +901,39 @@ def obter_progresso_rota(
         )
         for item in progresso
     ]
+
+
+class DesafioSaida(BaseModel):
+    atividade: AtividadeSaida
+    missao_id: uuid.UUID
+    missao_titulo: str
+    trilha_id: uuid.UUID
+    trilha_titulo: str
+
+
+@roteador.get("/eu/desafios")
+def listar_meus_desafios_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[DesafioSaida]:
+    """`RF-05-19`, `RN-05-21`, `RN-05-06`: as atividades em aberto do
+    Guerreiro(a) em sessão — desbloqueadas, de trilha inscrita, sem
+    Resultado lançado para ele (proposal — decisão de recorte). Sem nada em
+    aberto, conjunto vazio, nunca erro; a derivação já é de
+    `desafios_em_aberto_do_guerreiro`."""
+    _exigir_guerreiro(contexto)
+    atividades = desafios_em_aberto_do_guerreiro(sessao_bd, guerreiro_id=contexto.persona_id)
+    saida = []
+    for atividade in atividades:
+        missao = sessao_bd.get(Missao, atividade.missao_id)
+        trilha = sessao_bd.get(Trilha, missao.trilha_id)
+        saida.append(
+            DesafioSaida(
+                atividade=saida_da_atividade(atividade),
+                missao_id=missao.id,
+                missao_titulo=missao.titulo,
+                trilha_id=trilha.id,
+                trilha_titulo=trilha.nome,
+            )
+        )
+    return saida

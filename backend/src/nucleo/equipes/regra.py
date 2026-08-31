@@ -1,4 +1,5 @@
 import uuid
+from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
 
@@ -202,6 +203,49 @@ def programacao_do_encontro(
         .join(Missao, Missao.id == Atividade.missao_id)
         .join(Trilha, Trilha.id == Missao.trilha_id)
         .filter(Atividade.aula_id == equipe.aula_id, Trilha.situacao == SituacaoDaTrilha.publicada)
+        .all()
+    )
+
+
+@dataclass
+class EquipeDaPersona:
+    equipe: Equipe
+    papel: str | None
+
+
+def equipes_da_persona(sessao: Session, *, persona_id: uuid.UUID) -> list[EquipeDaPersona]:
+    """As equipes de que a persona é integrante — da aula e da trilha —,
+    com o papel que ela declarou em cada uma, lido do próprio vínculo e
+    nunca adivinhado da lista de integrantes (`RF-05-22`, `RF-05-24`,
+    `RN-05-12`, design — decisão 4). Leitura pura: nenhuma equipe é criada,
+    alterada nem homologada por ela.
+    """
+    vinculos = sessao.query(IntegranteDaEquipe).filter_by(persona_id=persona_id).all()
+    return [
+        EquipeDaPersona(equipe=sessao.get(Equipe, vinculo.equipe_id), papel=vinculo.papel)
+        for vinculo in vinculos
+    ]
+
+
+def atividades_da_equipe(sessao: Session, *, operador: Persona, equipe: Equipe) -> list[Atividade]:
+    """As atividades de uma equipe (`RF-05-22`, design — decisão 5): da
+    equipe da aula, a programação do encontro já definida — reaproveita
+    `programacao_do_encontro`; da equipe da trilha, as atividades das
+    missões daquela trilha publicada. Trilha ainda não publicada ou sem
+    vínculo devolve conjunto vazio, nunca erro.
+    """
+    if equipe.aula_id is not None:
+        return programacao_do_encontro(sessao, operador=operador, equipe=equipe)
+
+    if equipe.trilha_id is None:
+        return []
+    trilha = sessao.get(Trilha, equipe.trilha_id)
+    if trilha is None or trilha.situacao != SituacaoDaTrilha.publicada:
+        return []
+    return (
+        sessao.query(Atividade)
+        .join(Missao, Missao.id == Atividade.missao_id)
+        .filter(Missao.trilha_id == equipe.trilha_id)
         .all()
     )
 
