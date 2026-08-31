@@ -1,0 +1,76 @@
+/* A aplicação consome só a camada semântica e a de tema de `comum/tokens.css`
+ * (documento 15 §12) — nenhum valor primitivo é repetido aqui. */
+@import "comum/tokens.css";
+@import "comum/fontes.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fonte-texto);
+  font-size: var(--escala-100);
+  line-height: var(--entrelinha-corrido);
+  color: var(--cor-texto);
+  background: var(--cor-fundo);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fonte-destaque);
+  line-height: var(--entrelinha-titulo);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* Foco sempre visível, sem exceção (documento 15 §5). */
+:focus-visible {
+  outline: var(--largura-do-foco) solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+/* Nenhuma transição decorativa quando o aparelho pede menos movimento
+ * (documento 15 §5) — `--duracao` já cai para `0ms` em `comum/tokens.css`. */
+* {
+  transition-duration: var(--duracao, 0ms);
+}
+
+/* Navegação entre as áreas da gestão — alvo de toque de ao menos 48 px,
+ * como todo elemento acionável (documento 15 §5). */
+.cg-navegacao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-8);
+  padding: var(--espaco-8) var(--espaco-16);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.cg-navegacao__item {
+  min-height: var(--alvo-de-toque);
+  padding: 0 var(--espaco-16);
+  border: 1px solid transparent;
+  border-radius: var(--raio-campo);
+  background: none;
+  cursor: pointer;
+}
+
+.cg-navegacao__item[aria-current] {
+  border-color: var(--cor-separador);
+  font-weight: var(--peso-rotulo);
+}

@@ -12,7 +12,13 @@ from ..erros import NaoEncontrado
 from ..paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from ..permissoes import Operacao, exigir_permissao
 from ..personas.modelo import Nick, Papel, Persona
-from .regra import cadastrar_responsavel, criar_vinculo, guerreiros_vinculaveis
+from .modelo import VinculoResponsavel
+from .regra import (
+    cadastrar_responsavel,
+    criar_vinculo,
+    guerreiros_vinculados,
+    guerreiros_vinculaveis,
+)
 
 roteador = APIRouter()
 
@@ -54,6 +60,41 @@ def listar_guerreiros_vinculaveis_rota(
         itens=[_saida_do_guerreiro_vinculavel(persona, sessao_bd) for persona in personas],
         proximo_cursor=proximo_cursor,
     )
+
+
+class GuerreiroVinculadoSaida(BaseModel):
+    id: uuid.UUID
+    nick: str
+    avatar: str
+    grau_de_parentesco: str
+
+
+def _saida_do_guerreiro_vinculado(
+    vinculo: VinculoResponsavel, sessao_bd: Session
+) -> GuerreiroVinculadoSaida:
+    guerreiro = sessao_bd.get(Persona, vinculo.guerreiro_id)
+    nick = sessao_bd.query(Nick).filter_by(persona_id=vinculo.guerreiro_id).first()
+    return GuerreiroVinculadoSaida(
+        id=vinculo.guerreiro_id,
+        nick=nick.valor if nick is not None else "",
+        avatar=(guerreiro.avatar or "") if guerreiro is not None else "",
+        grau_de_parentesco=vinculo.grau_de_parentesco,
+    )
+
+
+@roteador.get("/eu/guerreiros")
+def listar_meus_guerreiros_rota(
+    contexto: Annotated[
+        ContextoDaSessao,
+        Depends(exigir_permissao(Operacao.guerreiros_sob_sua_responsabilidade, "le")),
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[GuerreiroVinculadoSaida]:
+    """Restrita ao responsável pela matriz (403 para outro papel) — os
+    vinculados por vínculo vigente, cada um com o grau de parentesco
+    declarado naquele vínculo (`RF-13-04`, `RF-13-05`, `RN-13-04`)."""
+    vinculos = guerreiros_vinculados(sessao_bd, contexto.persona_id)
+    return [_saida_do_guerreiro_vinculado(vinculo, sessao_bd) for vinculo in vinculos]
 
 
 class CadastrarResponsavelEntrada(BaseModel):

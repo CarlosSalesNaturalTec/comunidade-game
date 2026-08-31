@@ -447,6 +447,10 @@ documento 08 perdeu a questão em aberto do responsável sem smartphone.
 
 ## 14. Pendências que permanecem
 
+- **Estado da reparação da ocorrência de conduta** (`RF-13-09`): falta o requisito que registre
+  a reparação — quem a lança e se ela devolve os pontos debitados. Sem ele, a evolução exibe a
+  ocorrência com motivo e data, e nunca o estado da reparação. Decisão do fundador,
+  2026-08-31 (documento 09 §1).
 - **Redação do termo quanto à entrega de dados**: a regra, a licença CC BY-SA e o critério de
   aprovação do Admin estão decididos; falta o **texto** que declara isso ao responsável.
   **Trava o `RF-13-34` no texto, não no desenho.**
