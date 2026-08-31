@@ -40,9 +40,8 @@ guarda a **situação de cada PRD**, não as fatias, e não se repete aqui.
 
 ## Ordem de construção
 
-A do documento 99 §9, com o piso de dependência de cada PRD. Os quatro PRDs em execução
-(PRD-02, PRD-09, PRD-04 e PRD-05) têm o esqueleto de pé e resíduos abertos; PRD-13 é o próximo
-da fila que ainda não começou.
+A do documento 99 §9, com o piso de dependência de cada PRD. Os cinco PRDs em execução
+(PRD-02, PRD-09, PRD-04, PRD-05 e PRD-13) têm o esqueleto de pé e resíduos abertos.
 
 ---
 
@@ -206,12 +205,12 @@ Ciclo 02, fora do Ciclo 01 (PRD-05 §3.2): **acervo do Guerreiro(a)** (`RF-05-47
 assistente de voz** (`RF-05-58` a `RF-05-70`, `RN-05-25` a `RN-05-31`). `RF-05-25` a `RF-05-29`
 passaram ao PRD-04.
 
-## PRD-13 — Área dos pais e responsáveis (App 07) — próximo da fila
+## PRD-13 — Área dos pais e responsáveis (App 07)
 
 | Fatia | Entrega                                       | Recorte                                                                                                | Situação  |
 | ----- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------- | --------- |
-| 1     | Esqueleto da App 07, acesso e vínculo         | `RF-13-01` a `RF-13-06`, `RN-13-01` a `RN-13-04` — a credencial provisória vem da fatia 10 do PRD-09       | em andamento |
-| 2     | Evolução do Guerreiro(a)                      | `RF-13-07` a `RF-13-12`, `RN-13-20`, `RN-13-21` — `RF-13-09` sem o estado da reparação, que não tem requisito que o registre (PRD-13 §14) | em andamento |
+| 1     | Esqueleto da App 07, acesso e vínculo         | `esqueleto-da-app-07-e-evolucao-do-guerreiro`                                                              | implementado |
+| 2     | Evolução do Guerreiro(a)                      | `esqueleto-da-app-07-e-evolucao-do-guerreiro` — `RF-13-09` sem o estado da reparação, que não tem requisito que o registre (PRD-13 §14) | implementado |
 | 3     | Autorização única                             | `RF-13-13` a `RF-13-21`, `RN-13-05` a `RN-13-11`                                                           | em aberto |
 | 4     | Solicitações e direitos                       | `RF-13-23`, `RF-13-27`, `RF-13-28`, `RF-13-43`, `RF-13-44`, `RN-13-12`, `RN-13-22` — o núcleo da solicitação (abertura e leitura das próprias, `RF-13-22`, `RF-13-24` a `RF-13-26`, `RN-13-13`, `RN-13-14`) já está pronto pela fatia 14 do PRD-02; esta fatia entrega as telas da App 07 sobre ele e o que só ela decide: o aviso do limite da despersonalização antes do aceite da exclusão, a recusa da imagem do onboarding e o apagamento do _template_ biométrico | em aberto |
 | 5     | Transparência, termos e histórico de acessos  | `RF-13-29` a `RF-13-34`, `RN-13-19` — **trava:** falta o texto do termo quanto à entrega de dados (PRD-13 §14) | em aberto |

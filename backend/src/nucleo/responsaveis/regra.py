@@ -73,15 +73,14 @@ def criar_vinculo(
     return vinculo
 
 
-def guerreiros_vinculados(sessao: Session, responsavel_id: uuid.UUID) -> list[uuid.UUID]:
+def guerreiros_vinculados(sessao: Session, responsavel_id: uuid.UUID) -> list[VinculoResponsavel]:
     """Só os vínculos vigentes — o recorte de leitura do responsável
-    (`RF-01-15`)."""
-    linhas = (
-        sessao.query(VinculoResponsavel.guerreiro_id)
-        .filter_by(responsavel_id=responsavel_id, fim=None)
-        .all()
-    )
-    return [linha[0] for linha in linhas]
+    (`RF-01-15`). Devolve o vínculo inteiro, e não só o `id` do
+    Guerreiro(a), para que a leitura do próprio responsável
+    (`GET /v1/eu/guerreiros`) traga o grau de parentesco sem segunda
+    consulta (`RF-13-04`, `RF-13-05`).
+    """
+    return sessao.query(VinculoResponsavel).filter_by(responsavel_id=responsavel_id, fim=None).all()
 
 
 def guerreiros_vinculaveis(

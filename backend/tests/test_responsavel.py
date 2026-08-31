@@ -208,8 +208,9 @@ def test_guerreiros_vinculados_traz_so_os_vigentes_do_responsavel(sessao, criar_
     )
 
     alcancados = guerreiros_vinculados(sessao, responsavel.id)
-    assert alcancados == [guerreiro_vinculado.id]
-    assert guerreiro_nao_vinculado.id not in alcancados
+    ids_alcancados = [vinculo.guerreiro_id for vinculo in alcancados]
+    assert ids_alcancados == [guerreiro_vinculado.id]
+    assert guerreiro_nao_vinculado.id not in ids_alcancados
 
 
 def test_responsavel_recem_cadastrado_nao_enxerga_ninguem(sessao, criar_persona):

@@ -30,6 +30,7 @@ from .culminancias.rotas import roteador as roteador_de_culminancias
 from .desafios_extras.rotas import roteador as roteador_de_desafios_extras
 from .equipes.rotas import roteador as roteador_de_equipes
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
+from .evolucao.rotas import roteador as roteador_de_evolucao
 from .fila.rotas import roteador as roteador_de_fila
 from .jogos.rotas import roteador as roteador_de_jogos
 from .livro_razao.rotas import roteador as roteador_de_livro_razao
@@ -164,6 +165,7 @@ app = criar_app()
 incluir_roteador_de_dados(app, roteador_de_personas)
 incluir_roteador_de_dados(app, roteador_de_sessoes)
 incluir_roteador_de_dados(app, roteador_de_responsaveis)
+incluir_roteador_de_dados(app, roteador_de_evolucao)
 incluir_roteador_de_dados(app, roteador_de_biometria)
 incluir_roteador_de_dados(app, roteador_de_auditoria)
 incluir_roteador_de_dados(app, roteador_de_fila)
