@@ -14,8 +14,15 @@ from ..configuracao import Configuracao, obter_configuracao
 from ..erros import NaoEncontrado
 from ..permissoes import Operacao, exigir_permissao
 from ..personas.modelo import Papel, Persona
+from ..responsaveis.regra import exigir_vinculo_do_responsavel
 from .modelo import Consentimento, DecisaoDeConsentimento, OrigemDoConsentimento
-from .regra import anexar_digitalizacao_do_termo, registrar_consentimento
+from .regra import (
+    EstadoDaAutorizacao,
+    anexar_digitalizacao_do_termo,
+    decidir_autorizacao,
+    ler_autorizacao,
+    registrar_consentimento,
+)
 
 roteador = APIRouter()
 
@@ -110,4 +117,108 @@ def anexar_digitalizacao_do_termo_rota(
     sessao_bd.commit()
     return AnexoDoTermoSaida(
         id=anexo.id, consentimento_id=anexo.consentimento_id, registrado_em=anexo.registrado_em
+    )
+
+
+class QuemMotivouASuspensaoSaida(BaseModel):
+    responsavel_id: uuid.UUID
+    decidido_em: datetime
+
+
+class ItemDoHistoricoDaAutorizacaoSaida(BaseModel):
+    id: uuid.UUID
+    responsavel_id: uuid.UUID
+    decisao: DecisaoDeConsentimento
+    versao_do_termo: str
+    origem: OrigemDoConsentimento
+    registrado_em: datetime
+
+
+class AutorizacaoSaida(BaseModel):
+    estado: EstadoDaAutorizacao
+    suspensa_por: QuemMotivouASuspensaoSaida | None
+    historico: list[ItemDoHistoricoDaAutorizacaoSaida]
+
+
+@roteador.get("/eu/guerreiros/{id}/autorizacao")
+def ler_autorizacao_rota(
+    id: uuid.UUID,
+    contexto: Annotated[
+        ContextoDaSessao,
+        Depends(exigir_permissao(Operacao.guerreiros_sob_sua_responsabilidade, "le")),
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> AutorizacaoSaida:
+    """Restrita ao responsável pela matriz, e ao vínculo vigente com o
+    Guerreiro(a) pedido — sem vínculo, 403 sem revelar dado algum
+    (`RF-13-18`, `RF-13-21`, `RN-13-04`)."""
+    exigir_vinculo_do_responsavel(
+        sessao_bd, papel=contexto.papel, responsavel_id=contexto.persona_id, guerreiro_id=id
+    )
+    leitura = ler_autorizacao(sessao_bd, guerreiro_id=id)
+    return AutorizacaoSaida(
+        estado=leitura.estado,
+        suspensa_por=(
+            QuemMotivouASuspensaoSaida(
+                responsavel_id=leitura.suspensa_por.responsavel_id,
+                decidido_em=leitura.suspensa_por.decidido_em,
+            )
+            if leitura.suspensa_por is not None
+            else None
+        ),
+        historico=[
+            ItemDoHistoricoDaAutorizacaoSaida(
+                id=item.id,
+                responsavel_id=item.responsavel_id,
+                decisao=item.decisao,
+                versao_do_termo=item.versao_do_termo,
+                origem=item.origem,
+                registrado_em=item.registrado_em,
+            )
+            for item in leitura.historico
+        ],
+    )
+
+
+class DecidirAutorizacaoEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    decisao: DecisaoDeConsentimento
+
+
+class DecisaoDeAutorizacaoSaida(BaseModel):
+    id: uuid.UUID
+    decisao: DecisaoDeConsentimento
+    registrado_em: datetime
+    estado: EstadoDaAutorizacao
+
+
+@roteador.post("/eu/guerreiros/{id}/autorizacao", status_code=201)
+def decidir_autorizacao_rota(
+    id: uuid.UUID,
+    entrada: DecidirAutorizacaoEntrada,
+    contexto: Annotated[
+        ContextoDaSessao, Depends(exigir_permissao(Operacao.autorizacoes, "escreve"))
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
+) -> DecisaoDeAutorizacaoSaida:
+    """Restrita ao responsável em sessão, que decide em nome próprio, com
+    origem `propria` e a versão do termo carimbada pela configuração
+    vigente — nunca recebida do corpo (`RF-13-14`, `RF-13-15`, design —
+    decisão 2)."""
+    responsavel = sessao_bd.get(Persona, contexto.persona_id)
+    consentimento, estado = decidir_autorizacao(
+        sessao_bd,
+        responsavel=responsavel,
+        guerreiro_id=id,
+        decisao=entrada.decisao,
+        versao_do_termo=configuracao.consentimento_versao_vigente_do_termo,
+    )
+    sessao_bd.commit()
+    return DecisaoDeAutorizacaoSaida(
+        id=consentimento.id,
+        decisao=consentimento.decisao,
+        registrado_em=consentimento.registrado_em,
+        estado=estado,
     )
