@@ -8,6 +8,7 @@ from starlette.exceptions import HTTPException as ExcecaoHTTP
 
 from .aportes.rotas import roteador as roteador_de_aportes
 from .armazenamento.rotas import roteador as roteador_de_armazenamento
+from .assistente.rotas import roteador as roteador_de_assistente
 from .atividades.rotas import roteador as roteador_de_atividades
 from .auditoria.middleware import MiddlewareDeAuditoria
 from .auditoria.rotas import roteador as roteador_de_auditoria
@@ -206,6 +207,7 @@ incluir_roteador_de_dados(app, roteador_de_solicitacoes_do_responsavel)
 incluir_roteador_de_dados(app, roteador_de_desafios_extras)
 incluir_roteador_de_dados(app, roteador_de_template_de_missao)
 incluir_roteador_de_dados(app, roteador_de_producoes)
+incluir_roteador_de_dados(app, roteador_de_assistente)
 # A rota local do protocolo `Content-Range` (`armazenamento.rotas`) só
 # conclui algo com o adaptador de disco — em produção, a dependência
 # devolve o Cloud Storage e o manipulador responde 404 (`RF-09-19`, design

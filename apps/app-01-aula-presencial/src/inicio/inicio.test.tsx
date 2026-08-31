@@ -8,6 +8,7 @@ import * as descritorApi from "../api/descritor";
 import * as equipesApi from "../api/equipes";
 import * as presencasApi from "../api/presencas";
 import * as sessoesDeGuerreiroApi from "../api/sessoesDeGuerreiro";
+import { ProvedorDeEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import { TelaInicial } from "./TelaInicial";
 
 function mockarRegistrarPresencaEcoando() {
@@ -48,21 +49,23 @@ function renderizar(
   }> = {},
 ) {
   return render(
-    <ProvedorDeSessao chaveDeArmazenamento="teste:app-01:sessao-guerreiro">
-      <TelaInicial
-        tokenDeTrabalho="token-de-trabalho"
-        personaIdDeTrabalho="mestre-de-trabalho-1"
-        papelDeTrabalho="mestre"
-        aulaId="aula-1"
-        aoVoltarAoInicio={aoVoltarAoInicio}
-        podeAbrirMomentoDeTroca={propsDeTroca.podeAbrirMomentoDeTroca ?? false}
-        momentoDeTrocaAberto={propsDeTroca.momentoDeTrocaAberto ?? false}
-        abrindoMomentoDeTroca={propsDeTroca.abrindoMomentoDeTroca ?? false}
-        erroDeAberturaDaTroca={propsDeTroca.erroDeAberturaDaTroca ?? null}
-        aoAbrirMomentoDeTroca={vi.fn()}
-        aoFecharMomentoDeTroca={vi.fn()}
-      />
-    </ProvedorDeSessao>,
+    <ProvedorDeEstadoDeRede>
+      <ProvedorDeSessao chaveDeArmazenamento="teste:app-01:sessao-guerreiro">
+        <TelaInicial
+          tokenDeTrabalho="token-de-trabalho"
+          personaIdDeTrabalho="mestre-de-trabalho-1"
+          papelDeTrabalho="mestre"
+          aulaId="aula-1"
+          aoVoltarAoInicio={aoVoltarAoInicio}
+          podeAbrirMomentoDeTroca={propsDeTroca.podeAbrirMomentoDeTroca ?? false}
+          momentoDeTrocaAberto={propsDeTroca.momentoDeTrocaAberto ?? false}
+          abrindoMomentoDeTroca={propsDeTroca.abrindoMomentoDeTroca ?? false}
+          erroDeAberturaDaTroca={propsDeTroca.erroDeAberturaDaTroca ?? null}
+          aoAbrirMomentoDeTroca={vi.fn()}
+          aoFecharMomentoDeTroca={vi.fn()}
+        />
+      </ProvedorDeSessao>
+    </ProvedorDeEstadoDeRede>,
   );
 }
 
@@ -260,5 +263,36 @@ describe("tela inicial da App 01", () => {
 
     expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
     expect(screen.queryByText(/cadastr/i)).not.toBeInTheDocument();
+  });
+
+  it("sem rede, o onboarding não abre e nenhum dado é coletado", async () => {
+    renderizar();
+    window.dispatchEvent(new Event("offline"));
+    const usuario = userEvent.setup();
+
+    await usuario.click(await screen.findByRole("button", { name: /onboarding/i }));
+
+    expect(await screen.findByText(/onboarding indisponível sem rede/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/o cadastro de um novo guerreiro\(a\) exige rede/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /concluir cadastro/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/^nome$/i)).not.toBeInTheDocument();
+  });
+
+  it("sem rede, a entrada por reconhecimento não é oferecida e encaminha à confirmação humana", async () => {
+    renderizar();
+    window.dispatchEvent(new Event("offline"));
+    const usuario = userEvent.setup();
+
+    await usuario.click(await screen.findByRole("button", { name: /trilhas/i }));
+
+    expect(
+      await screen.findByText(/entrada por reconhecimento facial não funciona/i),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /confirmar identidade/i })).toBeInTheDocument();
+    expect(screen.queryByText(/digite o nick e olhe para a câmera/i)).not.toBeInTheDocument();
   });
 });

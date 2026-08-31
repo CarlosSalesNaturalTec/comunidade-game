@@ -7,6 +7,7 @@ import {
 } from "../api/programacao";
 import { EntregaDaProducao } from "./EntregaDaProducao";
 import { EquipeDaTrilha } from "./EquipeDaTrilha";
+import { TelaDoAssistente } from "./TelaDoAssistente";
 
 interface Props {
   equipeId: string;
@@ -45,6 +46,7 @@ export function TelaDaProgramacao({
   const [semRede, definirSemRede] = useState(false);
   const [idExibido, definirIdExibido] = useState<string | null>(null);
   const [declarando, definirDeclarando] = useState(false);
+  const [mostrarAssistente, definirMostrarAssistente] = useState(false);
   const declaradaSozinhaRef = useRef<string | null>(null);
 
   const carregar = useCallback(async () => {
@@ -110,6 +112,16 @@ export function TelaDaProgramacao({
         />
         <EstadoDaLista>Carregando a programação…</EstadoDaLista>
       </Moldura>
+    );
+  }
+
+  if (mostrarAssistente) {
+    return (
+      <TelaDoAssistente
+        equipeId={equipeId}
+        token={token}
+        aoVoltar={() => definirMostrarAssistente(false)}
+      />
     );
   }
 
@@ -184,6 +196,10 @@ export function TelaDaProgramacao({
           <p>{item.atividade.titulo}</p>
           {item.atividade.descricao && <p>{item.atividade.descricao}</p>}
           <p>{item.atividade.producao_esperada}</p>
+
+          <Botao variante="secundaria" onClick={() => definirMostrarAssistente(true)}>
+            Perguntar ao assistente de trilhas
+          </Botao>
 
           {item.bibliografia.length > 0 && (
             <>

@@ -46,6 +46,7 @@ _TABELA_DO_PRD_01_PAR_4 = {
             Operacao.resposta_de_quiz_da_equipe,
             Operacao.solicitacao_de_local,
             Operacao.producao_da_equipe,
+            Operacao.consulta_ao_assistente,
         },
         "le": {
             Operacao.seus_dados,
@@ -53,6 +54,7 @@ _TABELA_DO_PRD_01_PAR_4 = {
             Operacao.publico,
             Operacao.resposta_de_quiz_da_equipe,
             Operacao.producao_da_equipe,
+            Operacao.consulta_ao_assistente,
         },
     },
     Papel.responsavel: {
@@ -128,6 +130,17 @@ def test_producao_da_equipe_e_do_guerreiro_em_escreve_e_le():
     assert conferir_permissao(Papel.guerreiro, "le", Operacao.producao_da_equipe)
     assert not conferir_permissao(Papel.mestre, "escreve", Operacao.producao_da_equipe)
     assert not conferir_permissao(Papel.apoiador, "escreve", Operacao.producao_da_equipe)
+
+
+def test_consulta_ao_assistente_e_do_guerreiro_em_escreve_e_le():
+    """`RF-04-36`, design — decisão 6: só o Guerreiro(a) escreve e lê a
+    consulta ao assistente; Mestre, Admin e Apoiador ficam de fora da
+    matriz (o Admin alcança por `Operacao.tudo`, nunca pela entrada)."""
+    assert conferir_permissao(Papel.guerreiro, "escreve", Operacao.consulta_ao_assistente)
+    assert conferir_permissao(Papel.guerreiro, "le", Operacao.consulta_ao_assistente)
+    assert not conferir_permissao(Papel.mestre, "escreve", Operacao.consulta_ao_assistente)
+    assert not conferir_permissao(Papel.apoiador, "escreve", Operacao.consulta_ao_assistente)
+    assert not conferir_permissao(Papel.responsavel, "escreve", Operacao.consulta_ao_assistente)
 
 
 def test_operacao_de_outro_papel_nega_por_padrao():

@@ -14,6 +14,8 @@ import {
   abrirSessaoPorReconhecimento,
   confirmarSessaoDeGuerreiro,
 } from "../api/sessoesDeGuerreiro";
+import { enfileirarPresenca } from "../fila/filaDePresenca";
+import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 
 interface Props {
   tokenDeTrabalho: string;
@@ -25,7 +27,7 @@ interface Props {
   aoAbrirSessao?: (via: "reconhecimento" | "confirmacao") => void;
 }
 
-type Tela = "entrada" | "confirmando" | "presencaJaRegistrada";
+type Tela = "entrada" | "confirmando" | "presencaJaRegistrada" | "presencaEnfileirada";
 
 const MENSAGEM_DE_RECUSA =
   "Não foi possível reconhecer. Tente de novo, com o rosto bem posicionado, ou chame um Mestre ou Admin.";
@@ -43,6 +45,7 @@ export function TelaDeEntradaDoGuerreiro({
   aoAbrirSessao,
 }: Props) {
   const { entrarComToken } = useSessao();
+  const { semRede } = useEstadoDeRede();
   const [nick, definirNick] = useState("");
   const [tela, definirTela] = useState<Tela>("entrada");
   const [emAndamento, definirEmAndamento] = useState(false);
@@ -104,6 +107,18 @@ export function TelaDeEntradaDoGuerreiro({
 
   async function confirmar() {
     definirErroDeConfirmacao(null);
+    // Sem rede, a presença não se perde: entra na fila local do aparelho e
+    // sincroniza sozinha depois — nunca abre sessão nem tenta a chamada
+    // (`RF-04-23`, `RN-04-12`, `RN-04-13`, design — decisões 7, 8).
+    if (semRede) {
+      enfileirarPresenca({
+        aula_id: aulaId,
+        nick: nick.trim(),
+        momento_do_fato: new Date().toISOString(),
+      });
+      definirTela("presencaEnfileirada");
+      return;
+    }
     definirEmAndamento(true);
     try {
       const abertura = await confirmarSessaoDeGuerreiro(nick.trim(), tokenDeTrabalho);
@@ -131,7 +146,26 @@ export function TelaDeEntradaDoGuerreiro({
     );
   }
 
-  if (tela === "confirmando") {
+  if (tela === "presencaEnfileirada") {
+    return (
+      <Moldura>
+        <Cabecalho titulo="Presença registrada" />
+        <Aviso tipo="atencao">
+          A rede está fora. A presença de {nick.trim()} foi guardada neste aparelho e entra na
+          aula sozinha assim que a rede voltar.
+        </Aviso>
+        <Botao onClick={aoVoltar}>Voltar ao início</Botao>
+      </Moldura>
+    );
+  }
+
+  // Sem rede, a entrada por reconhecimento facial não é oferecida — o
+  // descritor nasce no aparelho, mas a comparação é no núcleo (`RF-04-24`,
+  // `RN-04-12`). A alternativa equivalente é a mesma tela de confirmação
+  // (`RN-04-09`), só que também sem chamar o núcleo.
+  const semRedeNaEntrada = tela === "entrada" && semRede;
+
+  if (tela === "confirmando" || semRedeNaEntrada) {
     return (
       <Moldura>
         <Cabecalho
@@ -139,6 +173,11 @@ export function TelaDeEntradaDoGuerreiro({
           subtitulo="A criança diz o nick, e um Mestre ou Admin confirma quem ela é."
           acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }}
         />
+        {semRedeNaEntrada && (
+          <Aviso tipo="atencao">
+            Sem rede, a entrada por reconhecimento facial não funciona. Confirme pelo nick.
+          </Aviso>
+        )}
         <Campo rotulo="Nick" valor={nick} aoAlterar={definirNick} />
         <Botao onClick={confirmar} desabilitado={emAndamento || nick.trim().length === 0}>
           {emAndamento ? "Confirmando…" : "Confirmar identidade"}

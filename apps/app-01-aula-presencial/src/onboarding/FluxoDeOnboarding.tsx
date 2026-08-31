@@ -17,10 +17,11 @@ interface Props {
 
 type Passo =
   | { tipo: "guerreiro" }
-  | { tipo: "sem_camera" }
+  | { tipo: "sem_camera"; guerreiro: GuerreiroCadastrado }
   | { tipo: "responsavel"; guerreiro: GuerreiroCadastrado }
   | { tipo: "termo"; guerreiro: GuerreiroCadastrado; responsavelId: string }
-  | { tipo: "captura"; guerreiro: GuerreiroCadastrado };
+  | { tipo: "captura"; guerreiro: GuerreiroCadastrado }
+  | { tipo: "despedida"; guerreiro: GuerreiroCadastrado; comImagem: boolean };
 
 // A cadeia de cinco chamadas HTTP da jornada 5.2, retomável por passo
 // concluído (design — decisão 4): cada passo só avança depois do anterior
@@ -41,7 +42,9 @@ export function FluxoDeOnboarding({
   // cadastro já está completo pela jornada 5.3 (design — decisão 6).
   async function aoCadastrarGuerreiro(guerreiro: GuerreiroCadastrado) {
     const temCamera = await existeCamera();
-    definirPasso(temCamera ? { tipo: "responsavel", guerreiro } : { tipo: "sem_camera" });
+    definirPasso(
+      temCamera ? { tipo: "responsavel", guerreiro } : { tipo: "sem_camera", guerreiro },
+    );
   }
 
   if (passo.tipo === "guerreiro") {
@@ -56,6 +59,7 @@ export function FluxoDeOnboarding({
   }
 
   if (passo.tipo === "sem_camera") {
+    const guerreiro = passo.guerreiro;
     return (
       <Moldura>
         <Cabecalho
@@ -66,7 +70,11 @@ export function FluxoDeOnboarding({
           Este aparelho não tem câmera. O cadastro foi concluído e o Guerreiro(a) já participa
           da aula; a captura da imagem exige um aparelho com câmera.
         </Aviso>
-        <Botao onClick={aoConcluir}>Concluir</Botao>
+        <Botao
+          onClick={() => definirPasso({ tipo: "despedida", guerreiro, comImagem: false })}
+        >
+          Concluir
+        </Botao>
       </Moldura>
     );
   }
@@ -97,12 +105,33 @@ export function FluxoDeOnboarding({
     );
   }
 
+  if (passo.tipo === "captura") {
+    const guerreiro = passo.guerreiro;
+    return (
+      <TelaDeCaptura
+        tokenDeTrabalho={tokenDeTrabalho}
+        guerreiroId={guerreiro.id}
+        aoConcluir={() => definirPasso({ tipo: "despedida", guerreiro, comImagem: true })}
+        aoVoltar={() => definirPasso({ tipo: "despedida", guerreiro, comImagem: false })}
+      />
+    );
+  }
+
+  // A despedida diz como o Guerreiro(a) entra da próxima vez — pelo nick e
+  // pela câmera para quem capturou a imagem, pelo nick com a confirmação
+  // do Mestre ou Admin para quem ficou sem ela (recusa da biometria ou
+  // aparelho sem câmera), sempre como caminho normal, nunca como falta
+  // (`RF-04-27`, `RF-04-28`, `RN-04-09`).
   return (
-    <TelaDeCaptura
-      tokenDeTrabalho={tokenDeTrabalho}
-      guerreiroId={passo.guerreiro.id}
-      aoConcluir={aoConcluir}
-      aoVoltar={aoConcluir}
-    />
+    <Moldura>
+      <Cabecalho titulo="Cadastro concluído" />
+      <Aviso tipo="sucesso">
+        {passo.comImagem
+          ? `Da próxima vez, ${passo.guerreiro.nick} entra digitando o nick e olhando para a câmera.`
+          : `Da próxima vez, ${passo.guerreiro.nick} entra dizendo o nick — um Mestre ou Admin ` +
+            "confirma quem é. É assim que funciona, sem problema nenhum."}
+      </Aviso>
+      <Botao onClick={aoConcluir}>Voltar ao início</Botao>
+    </Moldura>
   );
 }
