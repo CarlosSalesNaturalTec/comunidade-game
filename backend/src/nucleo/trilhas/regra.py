@@ -775,6 +775,50 @@ def obter_proxima_missao(
     return proxima.missao if proxima is not None else None
 
 
+def desafios_em_aberto_do_guerreiro(sessao: Session, *, guerreiro_id: uuid.UUID) -> list[Atividade]:
+    """As atividades **em aberto** do Guerreiro(a): das missões que ele já
+    desbloqueou, nas trilhas em que está inscrito, subtraídas as que já têm
+    `Resultado` lançado para ele — "vigente" como o fundador decidiu
+    (`RF-05-19`, proposal — decisão de recorte, design — decisão 1). A
+    atividade avulsa fica de fora, por não ter percurso de onde derivar
+    "desbloqueada" (design — decisão 2).
+    """
+    from ..resultados.modelo import Resultado
+
+    ids_das_trilhas = {
+        inscricao.trilha_id
+        for inscricao in consultar_inscricoes_do_guerreiro(sessao, guerreiro_id=guerreiro_id)
+    }
+    if not ids_das_trilhas:
+        return []
+
+    ids_das_missoes = {
+        linha[0]
+        for linha in sessao.query(Missao.id)
+        .join(DesbloqueioDaMissao, DesbloqueioDaMissao.missao_id == Missao.id)
+        .filter(
+            Missao.trilha_id.in_(ids_das_trilhas),
+            DesbloqueioDaMissao.guerreiro_id == guerreiro_id,
+            DesbloqueioDaMissao.aprovado.is_(True),
+        )
+        .distinct()
+        .all()
+    }
+    if not ids_das_missoes:
+        return []
+
+    ids_com_resultado = {
+        linha[0]
+        for linha in sessao.query(Resultado.atividade_id)
+        .filter(Resultado.guerreiro_id == guerreiro_id)
+        .distinct()
+        .all()
+    }
+
+    atividades = sessao.query(Atividade).filter(Atividade.missao_id.in_(ids_das_missoes)).all()
+    return [atividade for atividade in atividades if atividade.id not in ids_com_resultado]
+
+
 @dataclass
 class ProgressoDaTrilha:
     trilha: Trilha

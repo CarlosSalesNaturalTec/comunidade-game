@@ -4,18 +4,20 @@ import { useEffect, useRef, useState } from "react";
 import { DURACAO_DE_INATIVIDADE_EM_MINUTOS } from "../api/configuracao";
 import { Carteira } from "../carteira/Carteira";
 import { Coleta } from "../coleta/Coleta";
+import { DesafiosEEquipes } from "../desafios/DesafiosEEquipes";
 import { Trilha } from "../trilha/Trilha";
 
 const UM_MINUTO_EM_MS = 60_000;
 const EVENTOS_DE_ATIVIDADE = ["pointerdown", "keydown", "touchstart"] as const;
 
-type Bloco = "coleta" | "carteira" | "trilha";
+type Bloco = "coleta" | "carteira" | "trilha" | "desafios-e-equipes";
 
 // Conteúdo da sessão aberta: o encerramento por saída e por inatividade, o
 // bloco da coleta do território, o bloco da trilha — inscrição, guia,
-// conteúdo, sondagem, desbloqueio e progresso — e o bloco da carteira,
-// catálogo, conquistas e ranking — portfólio e acervo são fatias futuras
-// do PRD-05 (proposal — Why).
+// conteúdo, sondagem, desbloqueio e progresso —, o bloco da carteira,
+// catálogo, conquistas e ranking e o bloco dos desafios em aberto e das
+// equipes de que participa — portfólio e acervo são fatias futuras do
+// PRD-05 (proposal — Why).
 export function AreaDoGuerreiro() {
   const { sair } = useSessao();
   const [avisando, definirAvisando] = useState(false);
@@ -87,11 +89,18 @@ export function AreaDoGuerreiro() {
         >
           Trilha
         </Botao>
+        <Botao
+          variante={bloco === "desafios-e-equipes" ? "primaria" : "secundaria"}
+          onClick={() => definirBloco("desafios-e-equipes")}
+        >
+          Desafios e equipes
+        </Botao>
       </nav>
 
       {bloco === "trilha" && <Trilha />}
       {bloco === "coleta" && <Coleta />}
       {bloco === "carteira" && <Carteira />}
+      {bloco === "desafios-e-equipes" && <DesafiosEEquipes />}
     </Moldura>
   );
 }

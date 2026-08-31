@@ -25,10 +25,12 @@ from ..trilhas.rotas import (
 )
 from ..vitrine.publico import AvatarENickSaida, buscar_avatares_e_nicks
 from .modelo import Equipe, IntegranteDaEquipe
+from .regra import atividades_da_equipe as _atividades_da_equipe
 from .regra import criar_equipe as _criar_equipe
 from .regra import declarar_escolha_da_equipe as _declarar_escolha_da_equipe
 from .regra import entrar_na_equipe as _entrar_na_equipe
 from .regra import equipes_da_aula as _equipes_da_aula
+from .regra import equipes_da_persona as _equipes_da_persona
 from .regra import homologar_equipe_da_trilha as _homologar_equipe_da_trilha
 from .regra import programacao_do_encontro as _programacao_do_encontro
 from .regra import sair_da_equipe as _sair_da_equipe
@@ -356,3 +358,50 @@ def obter_minha_equipe_da_trilha_rota(
     if equipe is None:
         raise NaoEncontrado(mensagem="Você não integra nenhuma equipe desta trilha.")
     return saida_da_equipe(sessao_bd, equipe)
+
+
+class MinhaEquipeSaida(EquipeSaida):
+    """Estende `EquipeSaida` com o papel da persona em sessão naquela
+    equipe e as atividades dela (`RF-05-22`, design — decisão 4)."""
+
+    meu_papel: str | None
+    atividades: list[ItemDaProgramacaoSaida]
+
+
+@roteador.get("/eu/equipes")
+def listar_minhas_equipes_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[MinhaEquipeSaida]:
+    """`RF-05-22`, `RF-05-23`, `RF-05-24`, `RN-05-12`, `RN-05-15`,
+    `RN-05-21`: todas as equipes de que a persona em sessão é integrante —
+    da aula e da trilha —, com o papel dela em cada uma e as atividades de
+    cada equipe. Leitura apenas: nenhuma escrita nasce daqui."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    saida = []
+    for vinculo in _equipes_da_persona(sessao_bd, persona_id=contexto.persona_id):
+        equipe = vinculo.equipe
+        atividades = _atividades_da_equipe(sessao_bd, operador=operador, equipe=equipe)
+
+        ponto_de_apoio_id = None
+        if equipe.aula_id is not None:
+            aula = sessao_bd.get(Aula, equipe.aula_id)
+            ponto_de_apoio_id = aula.ponto_de_apoio_id if aula is not None else None
+
+        base = saida_da_equipe(sessao_bd, equipe)
+        saida.append(
+            MinhaEquipeSaida(
+                **base.model_dump(),
+                meu_papel=vinculo.papel,
+                atividades=[
+                    _saida_do_item_da_programacao(
+                        sessao_bd,
+                        atividade,
+                        ponto_de_apoio_id=ponto_de_apoio_id,
+                        atividade_corrente_id=equipe.atividade_corrente_id,
+                    )
+                    for atividade in atividades
+                ],
+            )
+        )
+    return saida
