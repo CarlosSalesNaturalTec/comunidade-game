@@ -5,8 +5,9 @@ import { listarMinhasTrilhas, type TrilhaComProximaMissao } from "../api/trilha"
 import { EscolhaDoPoder } from "./EscolhaDoPoder";
 import { GuiaDaTrilha } from "./GuiaDaTrilha";
 import { Progresso } from "./Progresso";
+import { Retomadas } from "./Retomadas";
 
-type Tela = "guia" | "trocar-de-trilha" | "progresso" | "escolher-poder";
+type Tela = "guia" | "trocar-de-trilha" | "progresso" | "retomadas" | "escolher-poder";
 
 // O bloco da trilha na Área do Guerreiro(a): sem nenhuma inscrição, leva à
 // escolha do poder; com uma ou mais, abre no guia da trilha e permite
@@ -89,6 +90,12 @@ export function Trilha() {
         >
           Progresso
         </Botao>
+        <Botao
+          variante={tela === "retomadas" ? "primaria" : "secundaria"}
+          onClick={() => definirTela("retomadas")}
+        >
+          Retomadas
+        </Botao>
       </nav>
 
       {tela === "guia" && (
@@ -123,6 +130,8 @@ export function Trilha() {
       )}
 
       {tela === "progresso" && <Progresso />}
+
+      {tela === "retomadas" && <Retomadas />}
     </div>
   );
 }

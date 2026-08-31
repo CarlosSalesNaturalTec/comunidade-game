@@ -48,6 +48,25 @@ def _montar_equipe_com_atividade_corrente(
     return guerreiro, equipe
 
 
+def _montar_guerreiro_com_missao_desbloqueada(
+    *,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_inscricao_na_trilha,
+    criar_desbloqueio_da_missao,
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre, producao_esperada="Um texto sobre o tema.")
+    criar_inscricao_na_trilha(guerreiro, trilha)
+    criar_desbloqueio_da_missao(guerreiro, missao, aprovado=True)
+    return guerreiro, missao, atividade
+
+
 def test_local_descarta_foto_e_audio_e_devolve_transcricao_e_devolutiva():
     porta = ProducaoDaMissaoLocal()
 
@@ -238,3 +257,208 @@ def test_entrega_nao_lanca_custo_no_livro_razao(
     assert "cota" not in corpo
     assert "contagem_de_uso" not in corpo
     assert sessao.query(Lancamento).count() == 0
+
+
+# --- Os mesmos desfechos de leitura, na porta individual ---
+
+
+def test_devolutiva_em_branco_no_texto_individual_quando_leitura_indisponivel(
+    app,
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_inscricao_na_trilha,
+    criar_desbloqueio_da_missao,
+    criar_sessao_de_teste,
+    sessao,
+):
+    app.dependency_overrides[dependencia_da_producao_da_missao] = lambda: _PortaSempreIndisponivel()
+    try:
+        chave, _ = criar_chave()
+        guerreiro, missao, atividade = _montar_guerreiro_com_missao_desbloqueada(
+            criar_persona=criar_persona,
+            criar_trilha=criar_trilha,
+            criar_missao=criar_missao,
+            criar_atividade=criar_atividade,
+            criar_inscricao_na_trilha=criar_inscricao_na_trilha,
+            criar_desbloqueio_da_missao=criar_desbloqueio_da_missao,
+        )
+        token, _ = criar_sessao_de_teste(guerreiro)
+
+        resposta = cliente.post(
+            f"/v1/eu/missoes/{missao.id}/producao",
+            data={
+                "forma": "texto",
+                "texto": "O que escrevi não pode se perder.",
+                "atividade_id": str(atividade.id),
+            },
+            headers=_cabecalhos(chave, token),
+        )
+
+        assert resposta.status_code == 201
+        corpo = resposta.json()
+        assert corpo["transcricao"] == "O que escrevi não pode se perder."
+        assert corpo["devolutiva"] is None
+    finally:
+        del app.dependency_overrides[dependencia_da_producao_da_missao]
+
+
+def test_503_na_foto_e_no_audio_individuais_quando_leitura_indisponivel(
+    app,
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_inscricao_na_trilha,
+    criar_desbloqueio_da_missao,
+    criar_sessao_de_teste,
+    sessao,
+):
+    app.dependency_overrides[dependencia_da_producao_da_missao] = lambda: _PortaSempreIndisponivel()
+    try:
+        chave, _ = criar_chave()
+        guerreiro, missao, atividade = _montar_guerreiro_com_missao_desbloqueada(
+            criar_persona=criar_persona,
+            criar_trilha=criar_trilha,
+            criar_missao=criar_missao,
+            criar_atividade=criar_atividade,
+            criar_inscricao_na_trilha=criar_inscricao_na_trilha,
+            criar_desbloqueio_da_missao=criar_desbloqueio_da_missao,
+        )
+        token, _ = criar_sessao_de_teste(guerreiro)
+
+        for forma, tipo in (("audio", "audio/webm"), ("foto", "image/jpeg")):
+            resposta = cliente.post(
+                f"/v1/eu/missoes/{missao.id}/producao",
+                data={"forma": forma, "atividade_id": str(atividade.id)},
+                files={"arquivo": (f"arquivo.{forma}", io.BytesIO(b"conteudo-fake"), tipo)},
+                headers=_cabecalhos(chave, token),
+            )
+            assert resposta.status_code == 503
+
+        assert sessao.query(ProducaoDaMissao).count() == 0
+    finally:
+        del app.dependency_overrides[dependencia_da_producao_da_missao]
+
+
+# --- Os cenários HTTP da rota individual — `RF-05-74`, `RF-01-16` ---
+
+
+def test_guerreiro_em_sessao_entrega_pela_porta_individual(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_inscricao_na_trilha,
+    criar_desbloqueio_da_missao,
+    criar_sessao_de_teste,
+    sessao,
+):
+    chave, _ = criar_chave()
+    guerreiro, missao, atividade = _montar_guerreiro_com_missao_desbloqueada(
+        criar_persona=criar_persona,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_inscricao_na_trilha=criar_inscricao_na_trilha,
+        criar_desbloqueio_da_missao=criar_desbloqueio_da_missao,
+    )
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/producao",
+        data={"forma": "texto", "texto": "Um texto", "atividade_id": str(atividade.id)},
+        headers=_cabecalhos(chave, token),
+    )
+
+    assert resposta.status_code == 201
+
+
+def test_mestre_e_admin_nao_entregam_pela_porta_individual(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_inscricao_na_trilha,
+    criar_desbloqueio_da_missao,
+    criar_sessao_de_teste,
+    sessao,
+):
+    chave, _ = criar_chave()
+    _, missao, atividade = _montar_guerreiro_com_missao_desbloqueada(
+        criar_persona=criar_persona,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_inscricao_na_trilha=criar_inscricao_na_trilha,
+        criar_desbloqueio_da_missao=criar_desbloqueio_da_missao,
+    )
+    for operador in (criar_persona(Papel.mestre), criar_persona(Papel.admin)):
+        token, _ = criar_sessao_de_teste(operador)
+        resposta = cliente.post(
+            f"/v1/eu/missoes/{missao.id}/producao",
+            data={"forma": "texto", "texto": "Um texto", "atividade_id": str(atividade.id)},
+            headers=_cabecalhos(chave, token),
+        )
+        assert resposta.status_code == 403
+
+
+def test_sem_sessao_a_porta_individual_nao_abre(cliente, criar_chave):
+    chave, _ = criar_chave()
+    resposta = cliente.post(
+        "/v1/eu/missoes/00000000-0000-0000-0000-000000000000/producao",
+        data={
+            "forma": "texto",
+            "texto": "Um texto",
+            "atividade_id": "00000000-0000-0000-0000-000000000000",
+        },
+        headers={"X-Chave-Aplicacao": chave},
+    )
+    assert resposta.status_code == 401
+
+
+def test_porta_de_equipe_segue_intacta_apos_a_porta_individual(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
+):
+    chave, _ = criar_chave()
+    guerreiro, equipe = _montar_equipe_com_atividade_corrente(
+        criar_persona=criar_persona,
+        criar_comunidade=criar_comunidade,
+        criar_aula=criar_aula,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_equipe=criar_equipe,
+        sessao=sessao,
+    )
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.post(
+        f"/v1/equipes/{equipe.id}/producao",
+        data={"forma": "texto", "texto": "Produção da equipe."},
+        headers=_cabecalhos(chave, token),
+    )
+
+    assert resposta.status_code == 201
+    corpo = resposta.json()
+    assert corpo["equipe_id"] == str(equipe.id)
+    assert corpo["guerreiro_id"] is None

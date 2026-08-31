@@ -60,6 +60,7 @@ describe("missão no percurso", () => {
           posicao: 1,
           obrigatoria: true,
           e_sondagem: false,
+          atividades: [],
           conteudos: [
             {
               id: "conteudo-2",
@@ -136,6 +137,7 @@ describe("missão no percurso", () => {
           posicao: 1,
           obrigatoria: false,
           e_sondagem: false,
+          atividades: [],
           conteudos: [],
           bibliografia: [],
         },

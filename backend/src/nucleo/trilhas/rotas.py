@@ -50,6 +50,7 @@ from .regra import (
     listar_desbloqueios_praticos_pendentes,
     obter_proxima_missao,
     publicar_trilha,
+    retomadas_em_aberto_do_guerreiro,
     submeter_desafio_de_desbloqueio,
 )
 
@@ -937,3 +938,34 @@ def listar_meus_desafios_rota(
             )
         )
     return saida
+
+
+class RetomadaSaida(BaseModel):
+    missao_id: uuid.UUID
+    missao_titulo: str
+    trilha_id: uuid.UUID
+    trilha_titulo: str
+    prazo: datetime
+
+
+@roteador.get("/eu/retomadas")
+def listar_minhas_retomadas_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[RetomadaSaida]:
+    """`RF-05-79`, `RF-05-80`, `RN-05-38`, `RN-05-21`: as retomadas em
+    aberto do Guerreiro(a) em sessão — missão, trilha e prazo de cada
+    agendamento vencido sem produção. Sem nada em aberto, lista vazia, sem
+    erro; a derivação já é de `retomadas_em_aberto_do_guerreiro`."""
+    _exigir_guerreiro(contexto)
+    retomadas = retomadas_em_aberto_do_guerreiro(sessao_bd, guerreiro_id=contexto.persona_id)
+    return [
+        RetomadaSaida(
+            missao_id=item.missao.id,
+            missao_titulo=item.missao.titulo,
+            trilha_id=item.trilha.id,
+            trilha_titulo=item.trilha.nome,
+            prazo=item.prazo,
+        )
+        for item in retomadas
+    ]

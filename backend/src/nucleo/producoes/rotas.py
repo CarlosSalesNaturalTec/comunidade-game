@@ -6,16 +6,17 @@ from fastapi import APIRouter, Depends, File, Form, UploadFile
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from ..autenticacao import ContextoDaSessao
+from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..equipes.modelo import Equipe
-from ..erros import NaoEncontrado
+from ..erros import NaoEncontrado, PermissaoNegada
 from ..permissoes import Operacao, exigir_permissao
-from ..personas.modelo import Persona
+from ..personas.modelo import Papel, Persona
+from ..trilhas.modelo import Missao
 from .fabrica import dependencia_da_producao_da_missao
 from .modelo import FormaDeEntregaDaProducao, ProducaoDaMissao
 from .porta import PortaDaProducaoDaMissao
-from .regra import registrar_producao
+from .regra import registrar_producao, registrar_producao_individual
 
 roteador = APIRouter()
 
@@ -75,6 +76,46 @@ def registrar_producao_rota(
         sessao_bd,
         operador=operador,
         equipe=equipe,
+        forma=forma,
+        texto=texto,
+        arquivo=conteudo,
+        porta=porta,
+    )
+    sessao_bd.commit()
+    return _saida_da_producao(producao)
+
+
+@roteador.post("/eu/missoes/{id_da_missao}/producao", status_code=201)
+def registrar_producao_individual_rota(
+    id_da_missao: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    porta: Annotated[PortaDaProducaoDaMissao, Depends(dependencia_da_producao_da_missao)],
+    forma: Annotated[FormaDeEntregaDaProducao, Form()],
+    atividade_id: Annotated[uuid.UUID, Form()],
+    texto: Annotated[str | None, Form()] = None,
+    arquivo: Annotated[UploadFile | None, File()] = None,
+) -> ProducaoDaMissaoSaida:
+    """`RF-05-74` a `RF-05-77`, PRD-05 §9: a entrega individual do
+    Guerreiro(a) em sessão, sobre uma missão do próprio percurso — a mesma
+    superfície `multipart/form-data` da porta de equipe, com a atividade
+    declarada no corpo (design — decisões 2, 6). A posse do percurso, a
+    forma única e o desfecho da indisponibilidade já são de
+    `registrar_producao_individual`."""
+    if contexto.papel != Papel.guerreiro:
+        raise PermissaoNegada(mensagem="Só o Guerreiro(a) entrega a produção da missão.")
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    missao = sessao_bd.get(Missao, id_da_missao)
+    if missao is None:
+        raise NaoEncontrado(mensagem="Missão não encontrada.")
+
+    conteudo = arquivo.file.read() if arquivo is not None else None
+
+    producao = registrar_producao_individual(
+        sessao_bd,
+        operador=operador,
+        missao=missao,
+        atividade_id=atividade_id,
         forma=forma,
         texto=texto,
         arquivo=conteudo,

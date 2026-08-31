@@ -1,81 +1,4 @@
-# producao-da-missao Specification
-
-## Purpose
-
-A produção da missão é o que se entrega depois de trabalhar uma atividade — por texto, fala ou
-foto do manuscrito — e a devolutiva construtiva que a plataforma lê de volta, sem creditar
-ponto algum e sem guardar a foto nem o áudio. Duas portas: a da **equipe**, sobre a atividade
-corrente do encontro, e a **individual** do Guerreiro(a), sobre uma missão do próprio percurso.
-
-## Requirements
-
-### Requirement: A equipe entrega a produção por texto, fala ou foto do manuscrito
-
-O núcleo SHALL aceitar, de uma equipe, a entrega da produção da missão em **uma** destas três
-formas: **texto** digitado, **áudio** da fala ou **foto** do que a equipe fez à mão. A forma da
-entrega SHALL ser gravada com a produção. Entrega sem nenhuma das três, ou com mais de uma ao
-mesmo tempo, SHALL ser recusada com **422**.
-
-A produção SHALL ser ancorada na **atividade corrente** que a equipe declarou na programação
-do encontro, e SHALL guardar a **missão** daquela atividade. Equipe sem atividade corrente
-declarada SHALL ser recusada com **422** — não há missão a que a produção pertença.
-(`RF-04-45`, documento 03 §4.2, documento 11 §2.2)
-
-#### Scenario: Entrega por texto
-
-- **WHEN** uma equipe com atividade corrente declarada entrega a produção em texto
-- **THEN** o núcleo grava a produção com a forma "texto", a missão e a atividade daquela
-  escolha
-
-#### Scenario: Entrega por fala
-
-- **WHEN** uma equipe entrega a produção em áudio
-- **THEN** o núcleo grava a produção com a forma "áudio" e a transcrição da fala
-
-#### Scenario: Entrega por foto do manuscrito
-
-- **WHEN** uma equipe entrega a foto do que fez à mão
-- **THEN** o núcleo grava a produção com a forma "foto" e a leitura do manuscrito em texto
-
-#### Scenario: Entrega sem conteúdo é recusada
-
-- **WHEN** chega uma entrega sem texto, sem áudio e sem foto
-- **THEN** o núcleo responde 422 e nada é gravado
-
-#### Scenario: Entrega com duas formas ao mesmo tempo é recusada
-
-- **WHEN** chega uma entrega com texto e foto juntos
-- **THEN** o núcleo responde 422 e nada é gravado
-
-#### Scenario: Equipe sem atividade corrente não entrega
-
-- **WHEN** uma equipe que ainda não declarou a atividade que está trabalhando tenta entregar
-- **THEN** o núcleo responde 422 e nada é gravado
-
-### Requirement: A produção é da equipe e vale para todos os integrantes
-
-A entrega feita no aparelho da equipe SHALL gerar **um único** registro, vinculado à **equipe
-da aula** e válido para **todos** os integrantes dela — o mesmo desenho da resposta de quiz
-(`RN-04-22`). O núcleo NEVER SHALL duplicar a produção por integrante, e a produção coletiva
-SHALL ficar **sem Guerreiro(a)** declarado: quem responde por ela é a equipe.
-
-A produção SHALL aparecer no histórico de **cada** integrante daquela equipe, pela composição
-gravada. Decisão do fundador, 2026-08-30. (`RF-04-45`, documento 02 §5, documento 03 §4.2)
-
-#### Scenario: Uma entrega gera um registro para a equipe
-
-- **WHEN** um integrante entrega a produção pelo aparelho de uma equipe de cinco
-- **THEN** o núcleo grava uma única produção, da equipe, e nenhuma cópia por integrante
-
-#### Scenario: A produção da equipe alcança todos os integrantes
-
-- **WHEN** se consulta a produção de um integrante que não foi quem enviou
-- **THEN** a produção da equipe está entre as dele
-
-#### Scenario: A produção coletiva não nomeia um Guerreiro(a)
-
-- **WHEN** o núcleo grava a produção entregue pela equipe
-- **THEN** o registro sai com a equipe declarada e o Guerreiro(a) em branco
+## ADDED Requirements
 
 ### Requirement: O Guerreiro(a) entrega sozinho a produção de uma missão do próprio percurso
 
@@ -159,7 +82,7 @@ NEVER SHALL alcançar colega algum, ainda que ele trabalhe a mesma missão. (`RF
 ### Requirement: A entrega individual é alcançável por HTTP pelo Guerreiro(a) em sessão
 
 O núcleo SHALL expor a entrega individual por `POST /v1/eu/missoes/{id}/producao`, sob a
-**sessão do Guerreiro(a)**, e sob a chave de aplicação, pelas convenções de erro do PRD-01.
+**sessão do Guerreiro(a)** e sob a chave de aplicação, pelas convenções de erro do PRD-01.
 Persona que não é Guerreiro(a) — Mestre ou Admin — SHALL receber **403**: a produção é da
 criança, como já vale na porta da equipe. Chamada sem persona em sessão SHALL ser recusada.
 
@@ -206,6 +129,8 @@ alterado por isso. (`RF-05-78`, `RN-05-37`, documento 03 §3.3)
 
 - **WHEN** o Guerreiro(a) opta por entregar ao Mestre no encontro em vez de fotografar ou gravar
 - **THEN** nenhuma operação do núcleo é recusada por isso e o percurso dele segue igual
+
+## MODIFIED Requirements
 
 ### Requirement: Foto e áudio são descartados na leitura e nunca persistidos
 
@@ -280,64 +205,6 @@ documento 99 §6 invariante 19)
 
 - **WHEN** o Mestre lança o resultado da atividade depois da entrega
 - **THEN** é esse lançamento que credita, e ele não é substituído nem antecipado pela devolutiva
-
-### Requirement: A devolutiva sempre opera no aparelho da equipe
-
-O núcleo NEVER SHALL consultar a chave de personalização de integrante algum para produzir a
-devolutiva no App 01: o aparelho é **da equipe**, a tela não é de ninguém em particular e a
-reescrita **sempre opera**. Integrante com a chave desligada NEVER SHALL desligar a devolutiva
-da equipe.
-
-A adaptação SHALL acontecer **na sessão** e SHALL ser descartada com ela: o núcleo NEVER SHALL
-inferir nem guardar traço algum sobre ritmo, dificuldade ou interesse de quem entregou.
-(`RN-04-31`, documento 03 §7.1, documento 99 §6 invariante 11)
-
-#### Scenario: Integrante com a chave desligada não desliga a devolutiva
-
-- **WHEN** uma equipe em que um integrante tem a personalização desligada entrega a produção
-- **THEN** a devolutiva é produzida normalmente para a equipe
-
-#### Scenario: Nada é inferido sobre quem entregou
-
-- **WHEN** a devolutiva é produzida
-- **THEN** nenhum traço de ritmo, dificuldade ou interesse de integrante algum é gravado
-
-### Requirement: A entrega é alcançável por HTTP pelo integrante da equipe em sessão
-
-O núcleo SHALL expor a entrega por `POST /v1/equipes/{id}/producao`, sob a **sessão do
-Guerreiro(a)** e sob a chave de aplicação, pelas convenções de erro do PRD-01. Quem entrega
-SHALL ser **integrante daquela equipe**; Guerreiro(a) em sessão que não a integra SHALL receber
-**403**, e Mestre ou Admin que tentarem entregar pela equipe SHALL receber **403** — a produção
-é da criança.
-
-Entrega em equipe cuja **aula já se encerrou** SHALL ser recusada com **422**. A resposta SHALL
-trazer a produção gravada, com a transcrição e a devolutiva. (`RF-04-45` a `RF-04-47`,
-`RF-01-16`, PRD-04 §9)
-
-#### Scenario: O integrante entrega pela porta
-
-- **WHEN** um integrante da equipe em sessão envia a produção
-- **THEN** o núcleo responde 201 com a produção gravada, a transcrição e a devolutiva
-
-#### Scenario: Quem não integra a equipe não entrega por ela
-
-- **WHEN** um Guerreiro(a) em sessão que não integra aquela equipe envia a produção
-- **THEN** o núcleo responde 403 e nada é gravado
-
-#### Scenario: A gestão não entrega pela equipe
-
-- **WHEN** um Mestre ou um Admin em sessão tenta entregar a produção de uma equipe
-- **THEN** o núcleo responde 403 e nada é gravado
-
-#### Scenario: Equipe de aula encerrada não entrega
-
-- **WHEN** um integrante tenta entregar numa equipe cuja aula já se encerrou
-- **THEN** o núcleo responde 422 e nada é gravado
-
-#### Scenario: Sem sessão de persona a porta não abre
-
-- **WHEN** chega uma entrega sem credencial de persona
-- **THEN** o núcleo recusa e nada é gravado
 
 ### Requirement: A leitura indisponível não perde o que já está legível
 
