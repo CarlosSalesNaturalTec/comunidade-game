@@ -181,9 +181,9 @@ implementados: `RF-09-35` e `RN-09-21` (tela da amostragem semanal de coleta) e 
 | 7     | Programação do encontro e missão da equipe           | `2026-08-25-programacao-do-encontro-e-missao-da-equipe`                          | implementado |
 | 8     | Equipe da trilha formada e homologada no encontro    | `2026-08-30-equipe-da-trilha-e-producao-da-missao` — `RF-04-61`, `RF-04-62` (`RN-04-17` e `RN-04-22` são regras da partida, atendidas nas fatias 6 e 7) | implementado |
 | 9     | Entrega da produção da missão e devolutiva           | `2026-08-30-equipe-da-trilha-e-producao-da-missao` — `RF-04-45` a `RF-04-47`, `RN-04-31`    | implementado |
-| 10    | Assistente de trilhas no encontro                    | `RF-04-36` a `RF-04-40`, `RN-04-19` a `RN-04-21` — o corpus é o conteúdo da missão (documento 03 §4.2), entregue na fatia 6 do PRD-09; não é o apoio escolar | em aberto    |
-| 11    | Fila local sem rede                                  | `RF-04-23` a `RF-04-25`, `RN-04-13`                                              | em aberto    |
-| 12    | Aviso de coleta e encerramento do cadastro           | `RF-04-26`, `RF-04-27`                                                           | em aberto    |
+| 10    | Assistente de trilhas no encontro                    | `2026-08-31-assistente-de-trilhas-fila-local-e-aviso-de-coleta` — `RF-04-36` a `RF-04-40`, `RN-04-19` a `RN-04-21` | implementado |
+| 11    | Fila local sem rede                                  | `2026-08-31-assistente-de-trilhas-fila-local-e-aviso-de-coleta` — `RF-04-23` a `RF-04-25`, `RN-04-13` | implementado |
+| 12    | Aviso de coleta e encerramento do cadastro           | `2026-08-31-assistente-de-trilhas-fila-local-e-aviso-de-coleta` — `RF-04-26`, `RF-04-27` | implementado |
 
 `RN-04-26` (recompensa de marco não se troca) é regra da fatia 5, já entregue; confira na fatia
 que a tocar em vez de abrir recorte próprio.

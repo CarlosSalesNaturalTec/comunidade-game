@@ -56,6 +56,16 @@ describe("fluxo de onboarding — jornada 5.2", () => {
 
     const usuario = userEvent.setup();
     await usuario.click(screen.getByRole("button", { name: /^concluir$/i }));
+
+    // A despedida diz como o Guerreiro(a) entra da próxima vez — pelo nick
+    // com a confirmação do Mestre ou Admin, nunca como falta (`RF-04-27`,
+    // `RN-04-09`).
+    expect(
+      await screen.findByText(/ZeferinaGuerreira entra dizendo o nick/i),
+    ).toBeInTheDocument();
+    expect(aoConcluir).not.toHaveBeenCalled();
+
+    await usuario.click(screen.getByRole("button", { name: /voltar ao início/i }));
     expect(aoConcluir).toHaveBeenCalled();
   });
 
@@ -117,7 +127,61 @@ describe("fluxo de onboarding — jornada 5.2", () => {
       { descritor: [0.1, 0.2] },
       "token-de-trabalho",
     );
-    await vi.waitFor(() => expect(aoConcluir).toHaveBeenCalled());
+
+    // A despedida de quem capturou a imagem diz nick e câmera (`RF-04-27`).
+    expect(
+      await screen.findByText(/ZeferinaGuerreira entra digitando o nick e olhando/i),
+    ).toBeInTheDocument();
+    expect(aoConcluir).not.toHaveBeenCalled();
+
+    await usuario.click(screen.getByRole("button", { name: /voltar ao início/i }));
+    expect(aoConcluir).toHaveBeenCalled();
+  });
+
+  it("desistir da captura — por recusa da biometria ou aparelho sem câmera adequada — encerra sem imagem", async () => {
+    vi.spyOn(guerreirosApi, "cadastrarGuerreiroNoEncontro").mockResolvedValue({
+      id: "guerreiro-1",
+      nome: "Zeferina",
+      nascimento: "2016-01-01",
+      nick: "ZeferinaGuerreira",
+      avatar: "opaco",
+    });
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(responsaveisApi, "cadastrarResponsavelNoEncontro").mockResolvedValue({
+      id: "responsavel-1",
+      nome: "Maria",
+    });
+    vi.spyOn(responsaveisApi, "criarVinculo").mockResolvedValue({
+      id: "vinculo-1",
+      responsavel_id: "responsavel-1",
+      guerreiro_id: "guerreiro-1",
+      grau_de_parentesco: "mãe",
+      inicio: new Date().toISOString(),
+    });
+    vi.spyOn(consentimentosApi, "registrarConsentimento").mockResolvedValue({
+      id: "consentimento-1",
+      registrado_em: new Date().toISOString(),
+    });
+    const aoConcluir = vi.fn();
+    renderizar(aoConcluir);
+
+    const usuario = await preencherCadastroDoGuerreiro();
+    await usuario.type(await screen.findByLabelText(/nome do responsável/i), "Maria");
+    await usuario.type(screen.getByLabelText(/grau de parentesco/i), "mãe");
+    await usuario.click(screen.getByRole("button", { name: /continuar para o termo/i }));
+    await usuario.click(
+      await screen.findByRole("button", { name: /confirmo: o termo impresso foi assinado/i }),
+    );
+
+    await usuario.click(await screen.findByRole("button", { name: /voltar ao início/i }));
+
+    expect(
+      await screen.findByText(/ZeferinaGuerreira entra dizendo o nick/i),
+    ).toBeInTheDocument();
+    expect(aoConcluir).not.toHaveBeenCalled();
+
+    await usuario.click(screen.getByRole("button", { name: /voltar ao início/i }));
+    expect(aoConcluir).toHaveBeenCalled();
   });
 
   it("retomada: falha no envio do descritor não volta ao termo nem recadastra o consentimento", async () => {

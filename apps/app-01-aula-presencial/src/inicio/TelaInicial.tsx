@@ -1,11 +1,15 @@
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
+import { AreaDetalhadaDeDireitos } from "../direitos/AreaDetalhadaDeDireitos";
 import { TelaDeEntradaDoGuerreiro } from "../entrada/TelaDeEntradaDoGuerreiro";
 import { TelaDeEquipes } from "../equipes/TelaDeEquipes";
+import { FilaDePresencaPendente } from "../fila/FilaDePresencaPendente";
+import { useSincronizacaoDaFilaDePresenca } from "../fila/sincronizacao";
 import { FluxoDeOnboarding } from "../onboarding/FluxoDeOnboarding";
 import { TelaDeCaptura } from "../onboarding/TelaDeCaptura";
 import { CHAVE_DA_PARTIDA_DE_QUIZ, TelaDaPartida } from "../quiz/TelaDaPartida";
+import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import { TelaDaProgramacao } from "../trilhas/TelaDaProgramacao";
 import { TelaDeTroca } from "../troca/TelaDeTroca";
 
@@ -48,6 +52,11 @@ export function TelaInicial({
   aoFecharMomentoDeTroca,
 }: Props) {
   const { sessao: sessaoDoGuerreiro, sair: sairDoGuerreiro } = useSessao();
+  const { semRede } = useEstadoDeRede();
+  const { itens: itensDaFila, tentarDeNovo } = useSincronizacaoDaFilaDePresenca(
+    aulaId,
+    tokenDeTrabalho,
+  );
   const [caminho, definirCaminho] = useState<Caminho>("inicio");
   // Só a sessão aberta por confirmação presencial autoriza o recadastro da
   // imagem — nunca a de reconhecimento, que já provou que a imagem serve
@@ -60,6 +69,10 @@ export function TelaInicial({
   // morre com a volta ao início, nunca gravado no núcleo (`RF-04-35`,
   // documento 02 §5).
   const [equipeEscolhidaId, definirEquipeEscolhidaId] = useState<string | null>(null);
+  // Alcançável do aviso discreto, de qualquer estado de rede — é texto da
+  // própria aplicação, sem chamada ao núcleo (`RF-04-26`, design — decisão
+  // 10).
+  const [mostrarDireitos, definirMostrarDireitos] = useState(false);
 
   // Fim de cada atendimento: a sessão do Guerreiro(a) é limpa e a tela
   // volta ao início, sem dado do atendimento anterior (`RF-04-28`, design
@@ -75,7 +88,28 @@ export function TelaInicial({
     aoVoltarAoInicio();
   }
 
+  if (mostrarDireitos) {
+    return <AreaDetalhadaDeDireitos aoVoltar={() => definirMostrarDireitos(false)} />;
+  }
+
   if (caminho === "onboarding") {
+    // Sem rede não há como abrir o cadastro: nenhum campo é sequer
+    // oferecido, e nenhum dado chega a ser coletado (`RF-04-24`,
+    // `RN-04-12`).
+    if (semRede) {
+      return (
+        <Moldura>
+          <Cabecalho
+            titulo="Onboarding indisponível sem rede"
+            acao={{ rotulo: "Voltar", aoAcionar: voltarAoInicio }}
+          />
+          <Aviso tipo="atencao">
+            O cadastro de um novo Guerreiro(a) exige rede. Nenhum dado foi coletado — assim que
+            a rede voltar, tente de novo.
+          </Aviso>
+        </Moldura>
+      );
+    }
     return (
       <FluxoDeOnboarding
         tokenDeTrabalho={tokenDeTrabalho}
@@ -191,6 +225,16 @@ export function TelaInicial({
           {erroDeAberturaDaTroca && <Aviso tipo="erro">{erroDeAberturaDaTroca}</Aviso>}
         </div>
       )}
+      {(papelDeTrabalho === "mestre" || papelDeTrabalho === "admin") && (
+        <FilaDePresencaPendente itens={itensDaFila} aoTentarDeNovo={tentarDeNovo} />
+      )}
+      <p className="cg-aviso-de-coleta">
+        A gente guarda alguns dados para o encontro funcionar.{" "}
+        <button type="button" className="cg-link" onClick={() => definirMostrarDireitos(true)}>
+          Veja o que a gente coleta e para quê
+        </button>
+        .
+      </p>
     </Moldura>
   );
 }

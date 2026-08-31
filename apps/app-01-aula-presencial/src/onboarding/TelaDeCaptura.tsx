@@ -3,6 +3,7 @@ import { encerrarCaptura, gerarDescritor, provarVivacidade } from "comum/biometr
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useEffect, useState } from "react";
 import { enviarDescritor } from "../api/descritor";
+import { AreaDetalhadaDeDireitos } from "../direitos/AreaDetalhadaDeDireitos";
 
 interface Props {
   tokenDeTrabalho: string;
@@ -20,12 +21,17 @@ type Estado = "pronta" | "capturando" | "vivacidade_reprovada" | "erro";
 export function TelaDeCaptura({ tokenDeTrabalho, guerreiroId, aoConcluir, aoVoltar }: Props) {
   const [estado, definirEstado] = useState<Estado>("pronta");
   const [mensagemDeErro, definirMensagemDeErro] = useState<string | null>(null);
+  const [mostrarDireitos, definirMostrarDireitos] = useState(false);
 
   useEffect(() => {
     return () => {
       encerrarCaptura();
     };
   }, []);
+
+  if (mostrarDireitos) {
+    return <AreaDetalhadaDeDireitos aoVoltar={() => definirMostrarDireitos(false)} />;
+  }
 
   async function iniciarCaptura() {
     definirEstado("capturando");
@@ -69,6 +75,13 @@ export function TelaDeCaptura({ tokenDeTrabalho, guerreiroId, aoConcluir, aoVolt
       <Botao onClick={iniciarCaptura} desabilitado={estado === "capturando"}>
         {estado === "capturando" ? "Capturando…" : "Iniciar captura"}
       </Botao>
+      <p className="cg-aviso-de-coleta">
+        A foto é apagada assim que o descritor é gerado.{" "}
+        <button type="button" className="cg-link" onClick={() => definirMostrarDireitos(true)}>
+          Veja o que a gente coleta e para quê
+        </button>
+        .
+      </p>
     </Moldura>
   );
 }

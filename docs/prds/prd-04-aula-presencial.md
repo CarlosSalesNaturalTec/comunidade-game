@@ -642,6 +642,7 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 | Equipe da trilha formada **e** homologada na App 01, no mesmo aparelho                                           | 02 §5          | Onde a equipe da trilha é formada e homologada                 |
 | A produção entregue no App 01 é da equipe — um registro só, válido para todos os integrantes                     | 02 §5, 03 §4.2 | A produção entregue no App 01 é da equipe                      |
 | A fatia 9 entrega a `ProducaoDaMissao` inteira; a fatia 7 do PRD-05 só acrescenta a porta individual             | PRD-05 §8      | A fatia 9 do PRD-04 entrega a `ProducaoDaMissao` inteira       |
+| O corpus do assistente é a missão da atividade corrente e as de posição anterior na trilha, nunca uma à frente   | 03 §4.2        | O corpus do assistente de trilhas é a missão corrente e as anteriores |
 
 A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do termo** ao
 `Consentimento` do PRD-01, e o acompanhamento do anexo pendente à App 03 (PRD-02).
@@ -672,11 +673,16 @@ As duas linhas seguintes são decisão nova do fundador, em 2026-08-25, entregue
 trabalho — Admin não recebe o controle —, e o registro sai sob a sessão de trabalho do
 aparelho, com o Guerreiro(a) identificado pela sessão aninhada, nunca por nick digitado.
 
-As duas últimas linhas são decisão nova do fundador, em 2026-08-30, entregues pela change
+As duas linhas seguintes são decisão nova do fundador, em 2026-08-30, entregues pela change
 `equipe-da-trilha-e-producao-da-missao`: a entrega da produção no encontro é sempre da equipe,
 num registro só que alcança todos os integrantes, e a `ProducaoDaMissao` nasce completa nesta
 fatia — a fatia 7 do PRD-05 só acrescenta a porta individual do Guerreiro(a) sobre a entidade já
 de pé.
+
+A última linha é decisão nova do fundador, em 2026-08-30, entregue pela change
+`assistente-de-trilhas-fila-local-e-aviso-de-coleta`: o corpus fechado do §4.2 do documento 03
+não dizia quais missões alcança, e passa a ser a missão da atividade corrente da equipe e as de
+posição anterior na mesma trilha.
 
 ## 14. Pendências que permanecem
 
@@ -692,6 +698,12 @@ de pé.
   condução da partida na App 03 (PRD-02) — o que a fase 3 do piloto já pressupõe.
 - **Comportamento do assistente por voz em sala barulhenta**, com a alternativa por texto sempre
   disponível.
+- **Falha de sincronização da fila local no painel do dia** (§5.6.5): a fila é estado do
+  aparelho, que o núcleo nunca vê; nas fatias 10 a 12 o que falha fica visível só ao Mestre
+  presente, no próprio aparelho. Listá-la no painel exigiria requisito e rota novos.
+- **Etiqueta de IA e nota de transparência do assistente de trilhas** (documento 03 §7.1): a
+  resposta do assistente sai sem a etiqueta até a fatia do PRD-03 que entregar a nota de
+  transparência da vitrine.
 
 Três saíram desta lista, decididas e gravadas na §13: o **papel de cada integrante**, declarado
 na formação da equipe; a **sessão de trabalho do aparelho**, que é a janela da aula agendada; e

@@ -12,6 +12,7 @@ importar os roteadores.
 
 from .apoio_escolar import modelo as _modelo_apoio_escolar  # noqa: F401
 from .aportes import modelo as _modelo_aportes  # noqa: F401
+from .assistente import modelo as _modelo_assistente  # noqa: F401
 from .auditoria import modelo as _modelo_auditoria  # noqa: F401
 from .aulas import modelo as _modelo_aulas  # noqa: F401
 from .bibliografias import modelo as _modelo_bibliografias  # noqa: F401

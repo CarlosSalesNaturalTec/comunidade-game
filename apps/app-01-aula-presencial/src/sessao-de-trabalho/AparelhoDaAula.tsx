@@ -5,6 +5,7 @@ import { type AulaVigente, listarAulasVigentes } from "../api/aulas";
 import { listarCatalogoAvulso } from "../api/catalogoAvulso";
 import { buscarNomeDaComunidade } from "../api/comunidades";
 import { TelaInicial } from "../inicio/TelaInicial";
+import { ProvedorDeEstadoDeRede, useEstadoDeRede } from "./EstadoDeRede";
 import { TelaDeEntradaDeTrabalho } from "./TelaDeEntradaDeTrabalho";
 
 // A sessão do Guerreiro(a) — um atendimento, não a aula inteira — vive
@@ -25,6 +26,29 @@ interface OpcaoDeComunidade {
 }
 
 export function AparelhoDaAula() {
+  return (
+    <ProvedorDeEstadoDeRede>
+      <AvisoDeOperacaoSemConexao />
+      <ConteudoDoAparelho />
+    </ProvedorDeEstadoDeRede>
+  );
+}
+
+// Aparece em toda tela enquanto durar a queda — o Mestre na porta precisa
+// saber sem sair da tela em que está (`RF-04-23`, `RF-04-24`).
+function AvisoDeOperacaoSemConexao() {
+  const { semRede } = useEstadoDeRede();
+  if (!semRede) return null;
+  return (
+    <Aviso tipo="atencao">
+      Operando sem conexão. A presença continua sendo registrada — ela entra na fila e
+      sincroniza sozinha quando a rede voltar. Cadastro novo, entrada por reconhecimento e o
+      assistente de trilhas ficam indisponíveis até lá.
+    </Aviso>
+  );
+}
+
+function ConteudoDoAparelho() {
   const { sessao, restaurando, sair } = useSessao();
   const [recusadoComoGuerreiro, definirRecusadoComoGuerreiro] = useState(false);
   const [aulasVigentes, definirAulasVigentes] = useState<AulaVigente[] | null>(null);

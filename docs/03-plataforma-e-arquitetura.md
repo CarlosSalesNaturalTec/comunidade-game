@@ -411,6 +411,10 @@ no nível mais restritivo e **guarda apenas da transcrição**, com o áudio des
 personalização também segue o desenho de §7.1 — adapta na sessão, reescreve dentro do corpus e
 marca o texto gerado por IA.
 
+**O corpus do assistente de trilhas é a missão da atividade corrente da equipe e as missões de
+posição anterior na mesma trilha** — nunca uma missão à frente, o que contornaria o desbloqueio
+(decisão do fundador, 2026-08-30, documento 09 §1).
+
 A equipe também **entrega aqui a produção da missão do dia**, por escrita, fala ou foto do que
 fez à mão, com a mesma regra da App 05 (§7): devolutiva construtiva, foto e áudio descartados
 na leitura, resultado lançado pelo Mestre. A entrega é **da equipe**: um único registro, válido
