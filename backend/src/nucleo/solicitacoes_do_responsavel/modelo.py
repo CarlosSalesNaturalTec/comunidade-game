@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Index, Text, Uuid, func
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Index, Text, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..banco import Base
@@ -51,6 +51,11 @@ class SolicitacaoDoResponsavel(Base):
     )
     desfecho: Mapped[str | None] = mapped_column(Text, nullable=True)
     tratado_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # Marca a solicitação que o próprio núcleo abre quando a suspensão por
+    # divergência nasce, em nome de quem recusou — mecanismo, não regra: a
+    # fila do Admin continua vendo um `esclarecimento` como qualquer outro
+    # (`RF-13-19`, design — decisão 4).
+    aberta_pela_suspensao: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     __table_args__ = (
         Index("ix_solicitacao_do_responsavel_responsavel_id", "responsavel_id"),

@@ -205,17 +205,17 @@ nem em ranking, nem em equipe, nem em criação de colega.
 
 ### 6.3 Autorização única
 
-| ID         | Requisito                                                                                     | Prioridade |
-| ---------- | --------------------------------------------------------------------------------------------- | ---------- |
-| `RF-13-13` | Tela declara o que a autorização libera e o que não depende dela, antes de qualquer ação      | essencial  |
-| `RF-13-14` | Responsável concede a autorização única, gravada com versão do termo, data e hora             | essencial  |
-| `RF-13-15` | Responsável revoga a autorização a qualquer tempo, com efeito imediato no que é público       | essencial  |
-| `RF-13-16` | Revogação retira perfil, criações e elenco do jogo do que é público, sem apagar o registro    | essencial  |
-| `RF-13-17` | Recusa de qualquer responsável vinculado suspende a autorização e prevalece sobre a concessão | essencial  |
-| `RF-13-18` | Estado suspenso exibe quem o motivou, com data e hora, aos demais responsáveis                | essencial  |
-| `RF-13-19` | Suspensão por divergência abre solicitação na fila da App 03 para a gestão tratar             | essencial  |
-| `RF-13-20` | Tela informa a alternativa equivalente vigente enquanto não houver autorização                | essencial  |
-| `RF-13-21` | Histórico da autorização mostra cada concessão e revogação, com a versão do termo             | essencial  |
+| ID         | Requisito                                                                                                                                       | Prioridade |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-13-13` | Tela declara o que a autorização libera e o que não depende dela, antes de qualquer ação                                                        | essencial  |
+| `RF-13-14` | Responsável concede a autorização única, gravada com versão do termo, data e hora                                                               | essencial  |
+| `RF-13-15` | Responsável revoga a autorização a qualquer tempo, com efeito imediato no que é público                                                         | essencial  |
+| `RF-13-16` | Revogação retira perfil, criações e elenco do jogo do que é público, sem apagar o registro                                                      | essencial  |
+| `RF-13-17` | Recusa de qualquer responsável vinculado suspende a autorização e prevalece sobre a concessão                                                   | essencial  |
+| `RF-13-18` | Estado suspenso exibe quem o motivou, com data e hora, aos demais responsáveis                                                                  | essencial  |
+| `RF-13-19` | Suspensão por divergência abre, em nome de quem recusou, uma solicitação de esclarecimento — uma só enquanto estiver em aberto por Guerreiro(a) | essencial  |
+| `RF-13-20` | Tela informa a alternativa equivalente vigente enquanto não houver autorização                                                                  | essencial  |
+| `RF-13-21` | Histórico da autorização mostra cada concessão e revogação, com a versão do termo                                                               | essencial  |
 
 ### 6.4 Solicitações e direitos
 
@@ -349,6 +349,10 @@ segunda solicitação idêntica em aberto (409); tentativa de criar vínculo ou 
 responsável (403); tentativa de ler consulta ao assistente ou transcrição de apoio escolar
 (403). O **pedido de exclusão é aceito** e respondido como despersonalização — não é erro.
 
+A solicitação da divergência (`RF-13-19`) é aberta pelo próprio núcleo, do tipo
+`esclarecimento`, em nome de quem recusou, e não pelo responsável — uma só enquanto estiver em
+aberto por Guerreiro(a) (documento 09 §1).
+
 ## 10. Requisitos não funcionais
 
 - Web App responsivo **Mobile First**, projetado para o **celular modesto** da família, que
@@ -430,14 +434,15 @@ adesão da criança.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                   | Gravada em | Linha do doc 09                            |
-| ------------------------------------------------------------------------- | ---------- | ------------------------------------------ |
-| Autorização única do responsável, cobrindo divulgação, eventos e produção | 03 §§9, 12 | Autorização única do responsável           |
-| Qualquer responsável autoriza ou revoga, e a recusa prevalece             | 02 §1      | Quem autoriza entre os responsáveis        |
-| Atendimento assistido e termo impresso para quem não tem smartphone       | 03 §9      | Responsável sem smartphone                 |
-| A exclusão do _template_ biométrico é requisito deste PRD, não do PRD-01  | 03 §3.3    | Exclusão do _template_ biométrico          |
-| Aviso da exclusão do _template_ na App 07, com a data                     | 03 §9      | Aviso da exclusão do _template_ biométrico |
-| Divergência sem acordo mantém a autorização suspensa, com alternativa     | 05 §4      | Desfecho da divergência entre responsáveis |
+| Decisão                                                                                                            | Gravada em | Linha do doc 09                                                            |
+| ------------------------------------------------------------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------- |
+| Autorização única do responsável, cobrindo divulgação, eventos e produção                                          | 03 §§9, 12 | Autorização única do responsável                                           |
+| Qualquer responsável autoriza ou revoga, e a recusa prevalece                                                      | 02 §1      | Quem autoriza entre os responsáveis                                        |
+| Atendimento assistido e termo impresso para quem não tem smartphone                                                | 03 §9      | Responsável sem smartphone                                                 |
+| A exclusão do _template_ biométrico é requisito deste PRD, não do PRD-01                                           | 03 §3.3    | Exclusão do _template_ biométrico                                          |
+| Aviso da exclusão do _template_ na App 07, com a data                                                              | 03 §9      | Aviso da exclusão do _template_ biométrico                                 |
+| Divergência sem acordo mantém a autorização suspensa, com alternativa                                              | 05 §4      | Desfecho da divergência entre responsáveis                                 |
+| Solicitação da divergência entra como `esclarecimento`, em nome de quem recusou, uma só em aberto por Guerreiro(a) | PRD-13 §9  | Tipo da solicitação que a suspensão por divergência abre na fila da App 03 |
 
 As três decisões fecharam a pendência do **consentimento da captação da produção** e a
 **[Proposta]** de consentimento por divulgação de vídeos e fotos de eventos, que deixou de

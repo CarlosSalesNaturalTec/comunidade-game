@@ -120,7 +120,7 @@ do Guerreiro(a) na atividade. (`RN-13-09`)
 - **THEN** ele continua participando das atividades e nenhuma operação de participação é
   recusada por causa disso
 
-### Requirement: A concessão contra recusa vigente e a revogação sem concessão própria são recusadas
+### Requirement: A concessão sobre recusa alheia e a revogação sem nenhuma concessão são recusadas
 
 O núcleo SHALL recusar com **409** a concessão de um responsável quando **outro** responsável
 vinculado tiver recusa como decisão mais recente, e a resposta SHALL trazer o estado da
@@ -129,8 +129,12 @@ um terceiro que a desfaz. O responsável que ele próprio recusou SHALL poder co
 tempo: quem recusou mudar de posição é o caminho que reabre o caso. (`RF-13-17`, `RN-13-07`,
 PRD-13 §9)
 
-O núcleo SHALL recusar com **409** a revogação de um responsável cuja decisão mais recente
-**não seja concessão**: não há o que revogar. (PRD-13 §9)
+O núcleo SHALL recusar com **409** a revogação quando **nenhum** responsável vinculado tiver
+concessão vigente — não há autorização alguma para revogar. Havendo concessão de **qualquer**
+responsável, a revogação SHALL ser aceita de **qualquer outro** responsável, ainda que ele
+próprio nunca tenha decidido antes: é assim que a divergência nasce — o segundo responsável não
+precisa ter concedido primeiro para poder recusar. (`RF-13-15`, `RF-13-17`, `RN-13-07`, PRD-13
+§9)
 
 #### Scenario: Concessão sobre recusa de outro responsável
 
@@ -144,10 +148,18 @@ O núcleo SHALL recusar com **409** a revogação de um responsável cuja decis�
 - **WHEN** o responsável cuja decisão mais recente é a própria recusa concede
 - **THEN** o núcleo grava a concessão, porque a recusa que ele desfaz é a dele
 
-#### Scenario: Revogação sem nada a revogar
+#### Scenario: Revogar sem que ninguém tenha concedido
 
-- **WHEN** um responsável revoga sem ter concessão como decisão mais recente
+- **WHEN** um responsável revoga e nenhum responsável vinculado tem concessão como decisão
+  mais recente
 - **THEN** o núcleo responde 409 e nada é gravado
+
+#### Scenario: Quem nunca decidiu revoga sobre a concessão de outro
+
+- **WHEN** um responsável concedeu e um segundo responsável, que nunca havia decidido antes,
+  revoga
+- **THEN** o núcleo grava a recusa do segundo responsável, porque havia concessão vigente de
+  outro para revogar
 
 ### Requirement: O responsável lê o estado, quem motivou a suspensão e o histórico
 

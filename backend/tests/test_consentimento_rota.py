@@ -1,4 +1,9 @@
-from nucleo.consentimentos.modelo import Consentimento, TipoDeConsentimento
+from nucleo.consentimentos.modelo import (
+    Consentimento,
+    DecisaoDeConsentimento,
+    OrigemDoConsentimento,
+    TipoDeConsentimento,
+)
 from nucleo.personas.modelo import Papel
 
 
@@ -177,3 +182,271 @@ def test_versao_trocada_nao_reescreve_o_passado(
     consentimento_novo = sessao.get(Consentimento, segundo.json()["id"])
     assert consentimento_antigo.versao_do_termo == "2026-08"
     assert consentimento_novo.versao_do_termo == "2026-09"
+
+
+def _vinculo_do_responsavel(sessao, criar_persona, criar_vinculo, grau="mãe"):
+    admin = criar_persona(Papel.admin)
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+    guerreiro = criar_persona(Papel.guerreiro)
+    criar_vinculo(responsavel, guerreiro, grau_de_parentesco=grau, cadastrado_por=admin)
+    return admin, responsavel, guerreiro
+
+
+def test_responsavel_concede_a_autorizacao_do_vinculado(
+    cliente, criar_chave, criar_persona, criar_vinculo, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    _, responsavel, guerreiro = _vinculo_do_responsavel(sessao, criar_persona, criar_vinculo)
+    token, _ = criar_sessao_de_teste(responsavel)
+
+    resposta = cliente.post(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        json={"decisao": "concede"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 201
+    corpo = resposta.json()
+    assert corpo["decisao"] == "concede"
+    assert corpo["estado"] == "vigente"
+    consentimento = sessao.get(Consentimento, corpo["id"])
+    assert consentimento.origem.value == "propria"
+    assert consentimento.autor_id == responsavel.id
+
+
+def test_responsavel_revoga_o_que_concedeu(
+    cliente, criar_chave, criar_persona, criar_vinculo, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    _, responsavel, guerreiro = _vinculo_do_responsavel(sessao, criar_persona, criar_vinculo)
+    token, _ = criar_sessao_de_teste(responsavel)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    cliente.post(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        json={"decisao": "concede"},
+        headers=cabecalhos,
+    )
+    resposta = cliente.post(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        json={"decisao": "nega"},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 201
+    corpo = resposta.json()
+    assert corpo["decisao"] == "nega"
+    assert corpo["estado"] == "nao_autorizada"
+
+
+def test_decidir_autorizacao_sem_vinculo_e_recusado(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+    guerreiro_sem_vinculo = criar_persona(Papel.guerreiro)
+    token, _ = criar_sessao_de_teste(responsavel)
+
+    resposta = cliente.post(
+        f"/v1/eu/guerreiros/{guerreiro_sem_vinculo.id}/autorizacao",
+        json={"decisao": "concede"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403
+    assert sessao.query(Consentimento).count() == 0
+
+
+def test_decidir_autorizacao_recusado_para_outro_papel(
+    cliente, criar_chave, criar_persona, criar_vinculo, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    admin, _, guerreiro = _vinculo_do_responsavel(sessao, criar_persona, criar_vinculo)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.post(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        json={"decisao": "concede"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403
+    assert sessao.query(Consentimento).count() == 0
+
+
+def test_decisao_do_responsavel_carrega_a_versao_vigente(
+    cliente, criar_chave, criar_persona, criar_vinculo, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    _, responsavel, guerreiro = _vinculo_do_responsavel(sessao, criar_persona, criar_vinculo)
+    token, _ = criar_sessao_de_teste(responsavel)
+
+    resposta = cliente.post(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        json={"decisao": "concede", "versao_do_termo": "9999-99"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_conceder_divulgacao_nao_concede_biometria(
+    cliente, criar_chave, criar_persona, criar_vinculo, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    _, responsavel, guerreiro = _vinculo_do_responsavel(sessao, criar_persona, criar_vinculo)
+    token, _ = criar_sessao_de_teste(responsavel)
+
+    cliente.post(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        json={"decisao": "concede"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert (
+        sessao.query(Consentimento)
+        .filter_by(guerreiro_id=guerreiro.id, tipo=TipoDeConsentimento.biometria)
+        .count()
+        == 0
+    )
+
+
+def test_leitura_com_historico_ordenado(
+    cliente, criar_chave, criar_persona, criar_vinculo, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    _, responsavel, guerreiro = _vinculo_do_responsavel(sessao, criar_persona, criar_vinculo)
+    token, _ = criar_sessao_de_teste(responsavel)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    cliente.post(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        json={"decisao": "concede"},
+        headers=cabecalhos,
+    )
+    cliente.post(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        json={"decisao": "nega"},
+        headers=cabecalhos,
+    )
+    cliente.post(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        json={"decisao": "concede"},
+        headers=cabecalhos,
+    )
+
+    resposta = cliente.get(f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["estado"] == "vigente"
+    assert corpo["suspensa_por"] is None
+    assert len(corpo["historico"]) == 3
+    decisoes = [item["decisao"] for item in corpo["historico"]]
+    assert decisoes == ["concede", "nega", "concede"]
+    assert all(item["versao_do_termo"] == "2026-08" for item in corpo["historico"])
+
+
+def test_leitura_do_estado_suspenso_nomeia_quem_recusou(
+    cliente, criar_chave, criar_persona, criar_vinculo, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    responsavel_a = criar_persona(Papel.responsavel, criada_por=admin)
+    responsavel_b = criar_persona(Papel.responsavel, criada_por=admin)
+    guerreiro = criar_persona(Papel.guerreiro)
+    criar_vinculo(responsavel_a, guerreiro, grau_de_parentesco="mãe", cadastrado_por=admin)
+    criar_vinculo(responsavel_b, guerreiro, grau_de_parentesco="pai", cadastrado_por=admin)
+
+    token_a, _ = criar_sessao_de_teste(responsavel_a)
+    cliente.post(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        json={"decisao": "concede"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_a}"},
+    )
+
+    token_b, _ = criar_sessao_de_teste(responsavel_b)
+    cliente.post(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        json={"decisao": "nega"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_b}"},
+    )
+
+    resposta = cliente.get(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_a}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["estado"] == "suspensa"
+    assert corpo["suspensa_por"]["responsavel_id"] == str(responsavel_b.id)
+
+
+def test_leitura_com_historico_vazio(
+    cliente, criar_chave, criar_persona, criar_vinculo, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    _, responsavel, guerreiro = _vinculo_do_responsavel(sessao, criar_persona, criar_vinculo)
+    token, _ = criar_sessao_de_teste(responsavel)
+
+    resposta = cliente.get(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["estado"] == "nao_autorizada"
+    assert corpo["historico"] == []
+
+
+def test_leitura_nao_alcanca_biometria(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_vinculo,
+    criar_sessao_de_teste,
+    criar_consentimento,
+    sessao,
+):
+    chave, _ = criar_chave()
+    admin, responsavel, guerreiro = _vinculo_do_responsavel(sessao, criar_persona, criar_vinculo)
+    criar_consentimento(
+        responsavel,
+        guerreiro,
+        tipo=TipoDeConsentimento.biometria,
+        decisao=DecisaoDeConsentimento.concede,
+        origem=OrigemDoConsentimento.impressa,
+        operado_por=admin,
+    )
+    token, _ = criar_sessao_de_teste(responsavel)
+
+    resposta = cliente.get(
+        f"/v1/eu/guerreiros/{guerreiro.id}/autorizacao",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["estado"] == "nao_autorizada"
+    assert corpo["historico"] == []
+
+
+def test_leitura_recusada_sem_vinculo(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+    guerreiro_sem_vinculo = criar_persona(Papel.guerreiro)
+    token, _ = criar_sessao_de_teste(responsavel)
+
+    resposta = cliente.get(
+        f"/v1/eu/guerreiros/{guerreiro_sem_vinculo.id}/autorizacao",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403

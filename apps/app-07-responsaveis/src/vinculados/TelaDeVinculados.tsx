@@ -1,8 +1,11 @@
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useEffect, useState } from "react";
+import { TelaDeAutorizacao } from "../autorizacao/TelaDeAutorizacao";
 import { TelaDeEvolucao } from "../evolucao/TelaDeEvolucao";
 import { type GuerreiroVinculado, listarMeusGuerreiros } from "./api";
+
+type Aba = "evolucao" | "autorizacao";
 
 // A lista dos vinculados, cada um com o grau de parentesco, e a alternância
 // entre eles como estado da própria aplicação — sem nova entrada e sem
@@ -14,6 +17,9 @@ export function TelaDeVinculados() {
   const [guerreiros, definirGuerreiros] = useState<GuerreiroVinculado[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
   const [selecionadoId, definirSelecionadoId] = useState<string | null>(null);
+  // A aba não reseta ao trocar de vinculado: trocar mantém a mesma aba,
+  // agora com os dados do novo vinculado (`RF-13-05`, `RN-13-04`).
+  const [aba, definirAba] = useState<Aba>("evolucao");
 
   useEffect(() => {
     if (!sessao) return;
@@ -66,7 +72,26 @@ export function TelaDeVinculados() {
           </Botao>
         ))}
       </nav>
-      {selecionado && <TelaDeEvolucao guerreiro={selecionado} />}
+      {selecionado && (
+        <>
+          <nav className="cg-navegacao-de-area" aria-label={`Áreas de ${selecionado.nick}`}>
+            <Botao
+              variante={aba === "evolucao" ? "primaria" : "secundaria"}
+              onClick={() => definirAba("evolucao")}
+            >
+              Evolução
+            </Botao>
+            <Botao
+              variante={aba === "autorizacao" ? "primaria" : "secundaria"}
+              onClick={() => definirAba("autorizacao")}
+            >
+              Autorização
+            </Botao>
+          </nav>
+          {aba === "evolucao" && <TelaDeEvolucao guerreiro={selecionado} />}
+          {aba === "autorizacao" && <TelaDeAutorizacao guerreiro={selecionado} />}
+        </>
+      )}
     </Moldura>
   );
 }

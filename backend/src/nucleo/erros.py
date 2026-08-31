@@ -301,6 +301,21 @@ class SolicitacaoDoResponsavelDuplicada(ErroDeAplicacao):
     mensagem = "Já existe uma solicitação deste tipo em aberto para este Guerreiro(a)."
 
 
+class AutorizacaoSuspensaPorOutroResponsavel(ErroDeAplicacao):
+    status_code = 409
+    codigo = "autorizacao_suspensa_por_outro_responsavel"
+    mensagem = (
+        "A autorização deste Guerreiro(a) está suspensa: outro responsável recusou, e a "
+        "recusa prevalece. Procure a gestão no encontro."
+    )
+
+
+class RevogacaoSemAutorizacaoVigente(ErroDeAplicacao):
+    status_code = 409
+    codigo = "revogacao_sem_autorizacao_vigente"
+    mensagem = "Não há autorização vigente para revogar sobre este Guerreiro(a)."
+
+
 class EdicaoDeDesafioExtraPublicadoRecusada(ErroDeAplicacao):
     status_code = 405
     codigo = "edicao_de_desafio_extra_publicado_recusada"

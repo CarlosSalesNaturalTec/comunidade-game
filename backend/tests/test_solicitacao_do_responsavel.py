@@ -17,6 +17,7 @@ from nucleo.solicitacoes_do_responsavel.modelo import (
 )
 from nucleo.solicitacoes_do_responsavel.regra import (
     abrir_solicitacao,
+    abrir_solicitacao_da_divergencia,
     esta_em_atraso,
     registrar_tratamento,
 )
@@ -221,3 +222,191 @@ def test_desfecho_de_exclusao_nao_apaga_nem_despersonaliza_nada(sessao, cenario)
     guerreiro_depois = sessao.get(Persona, c["guerreiro"].id)
     assert guerreiro_depois.nome == nome_antes
     assert guerreiro_depois.nascimento == nascimento_antes
+
+
+def test_abrir_solicitacao_da_divergencia_abre_em_nome_de_quem_recusou(sessao, cenario):
+    c = cenario()
+
+    solicitacao = abrir_solicitacao_da_divergencia(
+        sessao, guerreiro_id=c["guerreiro"].id, responsavel_que_recusou=c["responsavel"]
+    )
+    sessao.commit()
+
+    assert solicitacao is not None
+    assert solicitacao.responsavel_id == c["responsavel"].id
+    assert solicitacao.guerreiro_id == c["guerreiro"].id
+    assert solicitacao.tipo == TipoDeSolicitacaoDoResponsavel.esclarecimento
+    assert solicitacao.aberta_pela_suspensao is True
+    assert solicitacao.situacao == SituacaoDaSolicitacao.recebida
+    diferenca = solicitacao.prazo - solicitacao.registrado_em
+    assert abs(diferenca - PRAZO_DE_AVALIACAO) < timedelta(seconds=5)
+
+
+def test_segunda_chamada_com_a_primeira_em_aberto_nao_duplica(sessao, cenario):
+    c = cenario()
+
+    primeira = abrir_solicitacao_da_divergencia(
+        sessao, guerreiro_id=c["guerreiro"].id, responsavel_que_recusou=c["responsavel"]
+    )
+    sessao.commit()
+
+    segunda = abrir_solicitacao_da_divergencia(
+        sessao, guerreiro_id=c["guerreiro"].id, responsavel_que_recusou=c["responsavel"]
+    )
+    sessao.commit()
+
+    assert primeira is not None
+    assert segunda is None
+    assert (
+        sessao.query(SolicitacaoDoResponsavel)
+        .filter_by(guerreiro_id=c["guerreiro"].id, aberta_pela_suspensao=True)
+        .count()
+        == 1
+    )
+
+
+def test_divergencia_nova_depois_do_desfecho_da_primeira(sessao, cenario):
+    c = cenario()
+
+    primeira = abrir_solicitacao_da_divergencia(
+        sessao, guerreiro_id=c["guerreiro"].id, responsavel_que_recusou=c["responsavel"]
+    )
+    sessao.commit()
+
+    registrar_tratamento(
+        sessao,
+        primeira,
+        situacao=SituacaoDaSolicitacao.aceita,
+        tratado_por=c["admin"],
+        desfecho="Conversamos com a família.",
+    )
+    sessao.commit()
+
+    segunda = abrir_solicitacao_da_divergencia(
+        sessao, guerreiro_id=c["guerreiro"].id, responsavel_que_recusou=c["responsavel"]
+    )
+    sessao.commit()
+
+    assert segunda is not None
+    assert segunda.id != primeira.id
+    assert (
+        sessao.query(SolicitacaoDoResponsavel)
+        .filter_by(guerreiro_id=c["guerreiro"].id, aberta_pela_suspensao=True)
+        .count()
+        == 2
+    )
+
+
+def test_recusa_isolada_nao_abre_divergencia(sessao, cenario):
+    """A decisão de abrir cabe a quem chama (`consentimentos.decidir_autorizacao`),
+    não a esta função — mas a recusa isolada nunca leva o estado a
+    `suspensa` (não há concessão alguma para revogar), então a chamadora
+    nunca invoca esta abertura."""
+    from nucleo.consentimentos.modelo import DecisaoDeConsentimento
+    from nucleo.consentimentos.regra import decidir_autorizacao
+    from nucleo.erros import RevogacaoSemAutorizacaoVigente
+
+    c = cenario()
+
+    with pytest.raises(RevogacaoSemAutorizacaoVigente):
+        decidir_autorizacao(
+            sessao,
+            responsavel=c["responsavel"],
+            guerreiro_id=c["guerreiro"].id,
+            decisao=DecisaoDeConsentimento.nega,
+            versao_do_termo="1.0",
+        )
+
+    assert (
+        sessao.query(SolicitacaoDoResponsavel)
+        .filter_by(guerreiro_id=c["guerreiro"].id, aberta_pela_suspensao=True)
+        .count()
+        == 0
+    )
+
+
+def test_concessao_nunca_abre_divergencia(sessao, cenario):
+    from nucleo.consentimentos.modelo import DecisaoDeConsentimento
+    from nucleo.consentimentos.regra import decidir_autorizacao
+
+    c = cenario()
+
+    decidir_autorizacao(
+        sessao,
+        responsavel=c["responsavel"],
+        guerreiro_id=c["guerreiro"].id,
+        decisao=DecisaoDeConsentimento.concede,
+        versao_do_termo="1.0",
+    )
+    sessao.commit()
+
+    assert (
+        sessao.query(SolicitacaoDoResponsavel)
+        .filter_by(guerreiro_id=c["guerreiro"].id, aberta_pela_suspensao=True)
+        .count()
+        == 0
+    )
+
+
+def test_esclarecimento_do_responsavel_nao_bloqueia_a_divergencia(sessao, cenario):
+    c = cenario()
+
+    abrir_solicitacao(
+        sessao,
+        responsavel=c["responsavel"],
+        guerreiro_id=c["guerreiro"].id,
+        tipo=TipoDeSolicitacaoDoResponsavel.esclarecimento,
+        texto="Uma dúvida qualquer.",
+    )
+    sessao.commit()
+
+    divergencia = abrir_solicitacao_da_divergencia(
+        sessao, guerreiro_id=c["guerreiro"].id, responsavel_que_recusou=c["responsavel"]
+    )
+    sessao.commit()
+
+    assert divergencia is not None
+    assert (
+        sessao.query(SolicitacaoDoResponsavel).filter_by(guerreiro_id=c["guerreiro"].id).count()
+        == 2
+    )
+
+
+def test_divergencia_nao_bloqueia_o_pedido_do_responsavel(sessao, cenario):
+    c = cenario()
+
+    abrir_solicitacao_da_divergencia(
+        sessao, guerreiro_id=c["guerreiro"].id, responsavel_que_recusou=c["responsavel"]
+    )
+    sessao.commit()
+
+    pedido = abrir_solicitacao(
+        sessao,
+        responsavel=c["responsavel"],
+        guerreiro_id=c["guerreiro"].id,
+        tipo=TipoDeSolicitacaoDoResponsavel.esclarecimento,
+        texto="Quero entender o que houve.",
+    )
+    sessao.commit()
+
+    assert pedido is not None
+    assert pedido.aberta_pela_suspensao is False
+    assert (
+        sessao.query(SolicitacaoDoResponsavel).filter_by(guerreiro_id=c["guerreiro"].id).count()
+        == 2
+    )
+
+
+def test_solicitacao_da_divergencia_aparece_na_fila_do_admin(sessao, cenario):
+    from nucleo.solicitacoes_do_responsavel.regra import listar_fila_do_admin
+
+    c = cenario()
+
+    solicitacao = abrir_solicitacao_da_divergencia(
+        sessao, guerreiro_id=c["guerreiro"].id, responsavel_que_recusou=c["responsavel"]
+    )
+    sessao.commit()
+
+    fila = listar_fila_do_admin(sessao)
+
+    assert any(item.id == solicitacao.id for item in fila)

@@ -22,7 +22,11 @@ def abrir_solicitacao(
     """`RF-13-22`, `RF-13-24`: guarda de vínculo do responsável com o
     Guerreiro(a) (403, `RN-13-13`) e guarda de duplicata em aberto — mesmo
     responsável, mesmo Guerreiro(a), mesmo tipo, sem desfecho (409,
-    `RN-13-14`) —, sempre antes de gravar."""
+    `RN-13-14`) —, sempre antes de gravar. A guarda não alcança a
+    solicitação que o próprio núcleo abriu pela suspensão por divergência
+    (`aberta_pela_suspensao`): ela é ato do sistema, e nunca impede que
+    aquele mesmo responsável abra o próprio pedido (`RF-13-19`, design —
+    decisão 4)."""
     exigir_vinculo_do_responsavel(
         sessao,
         papel=responsavel.papel,
@@ -37,6 +41,7 @@ def abrir_solicitacao(
             guerreiro_id=guerreiro_id,
             tipo=tipo,
             tratado_em=None,
+            aberta_pela_suspensao=False,
         )
         .first()
     )
@@ -50,6 +55,46 @@ def abrir_solicitacao(
         texto=texto,
         situacao=SituacaoDaSolicitacao.recebida,
         prazo=agora() + PRAZO_DE_AVALIACAO,
+    )
+    sessao.add(solicitacao)
+    sessao.flush()
+    return solicitacao
+
+
+_TEXTO_DA_SOLICITACAO_DE_DIVERGENCIA = (
+    "A autorização única deste Guerreiro(a) ficou suspensa por divergência entre os "
+    "responsáveis: um recusou depois de outro ter concedido. A gestão precisa tratar o caso "
+    "com a família."
+)
+
+
+def abrir_solicitacao_da_divergencia(
+    sessao: Session, *, guerreiro_id: uuid.UUID, responsavel_que_recusou: Persona
+) -> SolicitacaoDoResponsavel | None:
+    """`RF-13-19`: abre, em nome de quem recusou, quando a suspensão por
+    divergência nasce — do tipo `esclarecimento`, com texto escrito pelo
+    núcleo. Uma só enquanto estiver sem desfecho para aquele Guerreiro(a)
+    (decisão do fundador, 2026-08-31, documento 09 §1): havendo uma em
+    aberto, não abre outra e devolve `None` sem levantar erro — a recusa
+    que a chama nunca é recusada por isso. Não reusa `abrir_solicitacao`:
+    aquela guarda de vínculo e de duplicata é do pedido do próprio
+    responsável (`RF-13-22`), e esta é ato do núcleo, por Guerreiro(a)."""
+    ja_aberta = (
+        sessao.query(SolicitacaoDoResponsavel)
+        .filter_by(guerreiro_id=guerreiro_id, aberta_pela_suspensao=True, tratado_em=None)
+        .first()
+    )
+    if ja_aberta is not None:
+        return None
+
+    solicitacao = SolicitacaoDoResponsavel(
+        responsavel_id=responsavel_que_recusou.id,
+        guerreiro_id=guerreiro_id,
+        tipo=TipoDeSolicitacaoDoResponsavel.esclarecimento,
+        texto=_TEXTO_DA_SOLICITACAO_DE_DIVERGENCIA,
+        situacao=SituacaoDaSolicitacao.recebida,
+        prazo=agora() + PRAZO_DE_AVALIACAO,
+        aberta_pela_suspensao=True,
     )
     sessao.add(solicitacao)
     sessao.flush()

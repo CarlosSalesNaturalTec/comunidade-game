@@ -51,17 +51,24 @@ cabeçalho — que nenhum documento decidiu.
 Descartado: índice único por (responsável, Guerreiro(a), tipo, decisão). Impediria o legítimo
 conceder → revogar → conceder de `RF-13-21`.
 
-### 3. Os dois 409 se decidem pela decisão mais recente de cada um
+### 3. Os dois 409 se decidem pelo conjunto das decisões mais recentes, não pela história pessoal
 
 - Concessão com recusa mais recente de **outro** responsável → 409 com o estado e a orientação
   de procurar a gestão (PRD-13 §9). A recusa prevalece, e não é a concessão de um terceiro que
   a desfaz.
-- Revogação quando a decisão mais recente **do próprio** responsável não é concessão → 409: não
-  há o que revogar.
+- Revogação quando **nenhum** responsável vinculado tem concessão como decisão mais recente →
+  409: não há autorização alguma para revogar.
 
 O responsável que ele próprio recusou **pode conceder** — é o caminho que o documento 09 nomeia
 ("o caso volta à pauta se quem recusou mudar de posição"). Sem essa distinção o estado suspenso
 seria definitivo, o que contraria a decisão do fundador gravada no documento 05 §4.
+
+A revogação **não exige que o próprio responsável tenha concedido antes**: o guard é sobre o
+estado geral (existe concessão de alguém), não sobre a história pessoal de quem decide. É assim
+que a divergência do `RF-13-17` nasce — o segundo responsável, que nunca havia decidido, revoga
+sobre a concessão do primeiro, e essa é a recusa que suspende. Bloquear por história pessoal
+quebraria o próprio caso de uso central desta fatia: ninguém jamais poderia divergir de uma
+concessão alheia sem primeiro ter concedido e desfeito a própria.
 
 ### 4. A solicitação da divergência é do tipo `esclarecimento`, com marca de origem no registro
 
