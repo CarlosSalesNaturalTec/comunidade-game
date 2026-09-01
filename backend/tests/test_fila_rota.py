@@ -1003,6 +1003,68 @@ def test_sugestao_adotada_credita_extras_e_badge_na_mesma_operacao(
     assert badge is not None
 
 
+def test_proposta_de_responsavel_adotada_nao_pontua(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+    token_do_responsavel, _ = criar_sessao_de_teste(responsavel)
+    id_sugestao = cliente.post(
+        "/v1/sugestoes",
+        json={"alvo_tipo": "plataforma", "texto": "Proposta do responsável."},
+        headers=_headers(chave, token_do_responsavel),
+    ).json()["id"]
+
+    resposta = cliente.post(
+        f"/v1/sugestoes/{id_sugestao}/avaliacao",
+        json={"situacao": "adotada", "parecer": "Boa ideia."},
+        headers=_headers(chave, token),
+    )
+
+    assert resposta.status_code == 200
+    assert sessao.query(PontoExtra).filter_by(guerreiro_id=responsavel.id).count() == 0
+    assert (
+        sessao.query(Badge)
+        .filter_by(guerreiro_id=responsavel.id, tipo=TipoDeBadge.de_protagonismo)
+        .count()
+        == 0
+    )
+
+
+def test_proposta_de_mestre_ou_apoiador_adotada_nao_pontua(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+
+    for papel in (Papel.mestre, Papel.apoiador):
+        autor = criar_persona(papel, criada_por=admin)
+        token_do_autor, _ = criar_sessao_de_teste(autor)
+        id_sugestao = cliente.post(
+            "/v1/sugestoes",
+            json={"alvo_tipo": "plataforma", "texto": f"Proposta de {papel.value}."},
+            headers=_headers(chave, token_do_autor),
+        ).json()["id"]
+
+        resposta = cliente.post(
+            f"/v1/sugestoes/{id_sugestao}/avaliacao",
+            json={"situacao": "adotada", "parecer": "Boa ideia."},
+            headers=_headers(chave, token),
+        )
+
+        assert resposta.status_code == 200
+        assert sessao.query(PontoExtra).filter_by(guerreiro_id=autor.id).count() == 0
+        assert (
+            sessao.query(Badge)
+            .filter_by(guerreiro_id=autor.id, tipo=TipoDeBadge.de_protagonismo)
+            .count()
+            == 0
+        )
+
+
 def test_regravar_sugestao_adotada_nao_credita_de_novo(
     cliente, criar_chave, criar_persona, criar_sessao_de_teste
 ):

@@ -3,6 +3,7 @@ from .banco import obter_fabrica_de_sessao
 from .chaves.semeadura import semear_ambiente
 from .configuracao import obter_configuracao
 from .personas.semeadura import semear_admin_fundador
+from .termos.semeadura import semear_termo_vigente
 
 
 def semear() -> None:
@@ -25,11 +26,19 @@ def semear() -> None:
         _relatar_chaves(configuracao.ambiente, segredos)
 
         persona_admin = semear_admin_fundador(sessao, configuracao.identidade_fundador)
+        termo = semear_termo_vigente(sessao, configuracao)
 
     if persona_admin is not None:
         print(f"Persona Admin do fundador semeada: {configuracao.identidade_fundador}")
     else:
         print("Persona Admin do fundador já existia: nada semeado.")
+
+    if termo is not None:
+        print(
+            f"Termo semeado na versão vigente: {configuracao.consentimento_versao_vigente_do_termo}"
+        )
+    else:
+        print("Termo da versão vigente já existia: nada semeado.")
 
 
 def _relatar_chaves(ambiente: str, segredos: dict[str, str]) -> None:

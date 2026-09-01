@@ -18,6 +18,7 @@ from .regra import (
     criar_vinculo,
     guerreiros_vinculados,
     guerreiros_vinculaveis,
+    responsaveis_vinculados,
 )
 
 roteador = APIRouter()
@@ -95,6 +96,46 @@ def listar_meus_guerreiros_rota(
     declarado naquele vínculo (`RF-13-04`, `RF-13-05`, `RN-13-04`)."""
     vinculos = guerreiros_vinculados(sessao_bd, contexto.persona_id)
     return [_saida_do_guerreiro_vinculado(vinculo, sessao_bd) for vinculo in vinculos]
+
+
+class ResponsavelVinculadoSaida(BaseModel):
+    id: uuid.UUID
+    nome: str
+    grau_de_parentesco: str
+
+
+@roteador.get("/guerreiros/{id}/responsaveis", response_model=list[ResponsavelVinculadoSaida])
+def listar_responsaveis_do_guerreiro_rota(
+    id: uuid.UUID,
+    contexto: Annotated[
+        ContextoDaSessao,
+        Depends(exigir_permissao(Operacao.vinculo_com_guerreiros_e_guerreiras, "le")),
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[ResponsavelVinculadoSaida]:
+    """Restrita a Admin e Mestre pela matriz — a mesma operação de vínculo
+    que os dois já têm, sem `Operacao` nova (`RF-13-35`, `RN-13-03`,
+    decisão do fundador, 2026-09-01). Nome e grau de parentesco, sem
+    credencial nem contato; vínculo encerrado não aparece."""
+    vinculos = responsaveis_vinculados(sessao_bd, id)
+    responsaveis_por_id: dict[uuid.UUID, Persona] = {}
+    if vinculos:
+        responsaveis_por_id = {
+            responsavel.id: responsavel
+            for responsavel in sessao_bd.query(Persona)
+            .filter(Persona.id.in_({vinculo.responsavel_id for vinculo in vinculos}))
+            .all()
+        }
+    return [
+        ResponsavelVinculadoSaida(
+            id=vinculo.responsavel_id,
+            nome=(responsavel.nome or "")
+            if (responsavel := responsaveis_por_id.get(vinculo.responsavel_id))
+            else "",
+            grau_de_parentesco=vinculo.grau_de_parentesco,
+        )
+        for vinculo in vinculos
+    ]
 
 
 class CadastrarResponsavelEntrada(BaseModel):

@@ -59,6 +59,8 @@ from .resultados.rotas import roteador as roteador_de_resultados
 from .sessoes.rotas import roteador as roteador_de_sessoes
 from .solicitacoes_do_responsavel.rotas import roteador as roteador_de_solicitacoes_do_responsavel
 from .template_de_missao.rotas import roteador as roteador_de_template_de_missao
+from .termos.rotas import roteador as roteador_de_termos
+from .transparencia.rotas import roteador as roteador_de_transparencia
 from .trilhas.rotas import roteador as roteador_de_trilhas
 from .trocas.rotas import roteador as roteador_de_trocas
 from .vinculo_do_guerreiro.rotas import roteador as roteador_de_vinculo_do_guerreiro
@@ -212,6 +214,8 @@ incluir_roteador_de_dados(app, roteador_de_template_de_missao)
 incluir_roteador_de_dados(app, roteador_de_producoes)
 incluir_roteador_de_dados(app, roteador_de_assistente)
 incluir_roteador_de_dados(app, roteador_de_vinculo_do_guerreiro)
+incluir_roteador_de_dados(app, roteador_de_termos)
+incluir_roteador_de_dados(app, roteador_de_transparencia)
 # A rota local do protocolo `Content-Range` (`armazenamento.rotas`) só
 # conclui algo com o adaptador de disco — em produção, a dependência
 # devolve o Cloud Storage e o manipulador responde 404 (`RF-09-19`, design

@@ -11,11 +11,16 @@ from ..armazenamento.porta import PortaDeArmazenamento
 from ..autenticacao import ContextoDaSessao
 from ..banco import obter_sessao
 from ..configuracao import Configuracao, obter_configuracao
-from ..erros import NaoEncontrado
+from ..erros import ErroDeValidacao, NaoEncontrado
 from ..permissoes import Operacao, exigir_permissao
 from ..personas.modelo import Papel, Persona
 from ..responsaveis.regra import exigir_vinculo_do_responsavel
-from .modelo import Consentimento, DecisaoDeConsentimento, OrigemDoConsentimento
+from .modelo import (
+    Consentimento,
+    DecisaoDeConsentimento,
+    OrigemDoConsentimento,
+    TipoDeConsentimento,
+)
 from .regra import (
     EstadoDaAutorizacao,
     anexar_digitalizacao_do_termo,
@@ -221,4 +226,65 @@ def decidir_autorizacao_rota(
         decisao=consentimento.decisao,
         registrado_em=consentimento.registrado_em,
         estado=estado,
+    )
+
+
+class RegistrarAutorizacaoAssistidaEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    responsavel_id: uuid.UUID
+    decisao: DecisaoDeConsentimento
+    testemunha_id: uuid.UUID
+
+
+class AutorizacaoAssistidaSaida(BaseModel):
+    id: uuid.UUID
+    responsavel_id: uuid.UUID
+    decisao: DecisaoDeConsentimento
+    registrado_em: datetime
+
+
+@roteador.post("/guerreiros/{id}/autorizacao/assistida", status_code=201)
+def registrar_autorizacao_assistida_rota(
+    id: uuid.UUID,
+    entrada: RegistrarAutorizacaoAssistidaEntrada,
+    contexto: Annotated[
+        ContextoDaSessao,
+        Depends(exigir_permissao(Operacao.testemunho_do_termo_impresso, "escreve")),
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
+) -> AutorizacaoAssistidaSaida:
+    """Restrita a Admin e Mestre pela matriz, sem `Operacao` nova — a mesma
+    do termo impresso (`RF-13-35`, `RF-13-36`, `RF-13-38`, `RN-13-16`,
+    design — decisão 5). O responsável presente precisa de vínculo vigente
+    com o Guerreiro(a) — 403 sem ele, via `registrar_consentimento`; sem
+    ele identificado, 422. A testemunha é sempre exigida no corpo (422 sem
+    ela), e a versão do termo é carimbada pela configuração, nunca
+    recebida do cliente. Tem a mesma força do ato do próprio: entra na
+    mesma derivação do estado vigente que `ler_autorizacao` computa."""
+    responsavel = sessao_bd.get(Persona, entrada.responsavel_id)
+    if responsavel is None or responsavel.papel != Papel.responsavel:
+        raise ErroDeValidacao(
+            mensagem="Responsável presente não identificado.", campo="responsavel_id"
+        )
+
+    operado_por = sessao_bd.get(Persona, contexto.persona_id)
+    consentimento = registrar_consentimento(
+        sessao_bd,
+        responsavel=responsavel,
+        guerreiro_id=id,
+        tipo=TipoDeConsentimento.autorizacao_de_divulgacao,
+        versao_do_termo=configuracao.consentimento_versao_vigente_do_termo,
+        decisao=entrada.decisao,
+        origem=OrigemDoConsentimento.assistida,
+        operado_por=operado_por,
+        testemunha_id=entrada.testemunha_id,
+    )
+    sessao_bd.commit()
+    return AutorizacaoAssistidaSaida(
+        id=consentimento.id,
+        responsavel_id=consentimento.responsavel_id,
+        decisao=consentimento.decisao,
+        registrado_em=consentimento.registrado_em,
     )

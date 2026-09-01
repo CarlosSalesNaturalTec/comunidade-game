@@ -7,6 +7,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../App";
 import type { EvolucaoDoGuerreiro } from "../evolucao/api";
 import * as evolucaoApi from "../evolucao/api";
+import type { CatalogoDeTermo } from "../termos/api";
+import * as termosApi from "../termos/api";
 import type { GuerreiroVinculado } from "../vinculados/api";
 import * as vinculadosApi from "../vinculados/api";
 import type { Autorizacao } from "./api";
@@ -317,5 +319,53 @@ describe("tela de autorização", () => {
     await testeDeUsuario.click(screen.getByRole("button", { name: /joaozinho · avó/i }));
 
     expect(await screen.findByText(/ainda não autorizada/i)).toBeInTheDocument();
+  });
+
+  it("abre, a partir de uma decisão antiga do histórico, o texto da versão que valia", async () => {
+    vi.spyOn(autorizacaoApi, "lerAutorizacao").mockResolvedValue({
+      estado: "vigente",
+      suspensa_por: null,
+      historico: [
+        {
+          id: "c1",
+          responsavel_id: PERSONA_ID,
+          decisao: "concede",
+          versao_do_termo: "2026-07",
+          origem: "propria",
+          registrado_em: "2026-07-01T10:00:00Z",
+        },
+      ],
+    });
+    const catalogo: CatalogoDeTermo[] = [
+      {
+        tipo: "autorizacao_de_divulgacao",
+        vigente: {
+          versao: "2026-08",
+          texto: "Texto vigente atual.",
+          vigente_desde: "2026-08-01T10:00:00Z",
+        },
+        historico: [
+          {
+            versao: "2026-07",
+            texto: "Texto que valia em julho.",
+            vigente_desde: "2026-07-01T10:00:00Z",
+          },
+        ],
+      },
+    ];
+    vi.spyOn(termosApi, "consultarTermos").mockResolvedValue(catalogo);
+    vi.spyOn(termosApi, "registrarLeituraDeTermo").mockResolvedValue({
+      id: "leitura-1",
+      versao: "2026-08",
+      lida_em: "2026-09-01T10:00:00Z",
+    });
+
+    const testeDeUsuario = await entrarComoResponsavel();
+    await abrirAbaDeAutorizacao(testeDeUsuario);
+    await testeDeUsuario.click(
+      await screen.findByRole("button", { name: /ver o termo desta decisão/i }),
+    );
+
+    expect(await screen.findByText(/texto que valia em julho/i)).toBeInTheDocument();
   });
 });

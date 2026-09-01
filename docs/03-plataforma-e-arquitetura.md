@@ -791,10 +791,11 @@ vínculo conferido por um Admin ou por um Mestre.
   volte — nova captura, com novo termo. O aviso vive no canal oficial, sem notificação por
   e-mail, como todo retorno do Ciclo 01.
 - **Linguagem simples**, na mesma medida exigida da política de privacidade.
-- **Responsável sem smartphone não fica de fora:** o ato pode ser feito por **atendimento
-  assistido** — Admin ou Mestre abre a aplicação com ele presente, gravando quem operou e quem
-  testemunhou — ou por **termo impresso digitalizado** e anexado pela gestão. Nos dois casos o
-  registro entra versionado, em nome do responsável.
+- **Responsável sem smartphone não fica de fora:** o ato entra pelo **atendimento assistido**,
+  no modo assistido da própria App 07 — Admin ou Mestre abre a aplicação com ele presente,
+  gravando quem operou e quem testemunhou. O papel assinado no encontro fica só no arquivo
+  físico da gestão, sem digitalização nem anexo — esse caminho é exclusivo do consentimento de
+  biometria (§3.3). O registro entra versionado, em nome do responsável.
 - **Sem contato direto com Apoiadores ou terceiros**: a área é canal entre família e
   plataforma, e nada mais.
 - Todas as solicitações caem na fila de atendimento da App 03, com registro de tratamento.
@@ -1034,3 +1035,6 @@ mesma autorização única do responsável, sem termo à parte por divulgação.
 - O Admin **aprova** o pedido com solicitante identificado, finalidade declarada compatível
   com pesquisa ou política pública e compromisso de não tentar reidentificar ninguém. A
   **recusa** é registrada com motivo, nessas mesmas três frentes.
+- O termo que o responsável lê na App 07 **declara** esta entrega — gratuita, anonimizada e
+  aprovada caso a caso — em linguagem simples; é declaração de transparência, não decisão à
+  parte (documento 09 §1, PRD-13 §11).

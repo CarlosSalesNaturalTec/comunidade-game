@@ -96,6 +96,7 @@ from nucleo.sessoes.modelo import ComoAutenticou, Sessao
 from nucleo.sessoes.token import calcular_resumo as calcular_resumo_do_token
 from nucleo.sessoes.token import gerar_token
 from nucleo.tempo import DataHoraComFuso
+from nucleo.termos.modelo import LeituraDeTermo, Termo
 from nucleo.trilhas.modelo import (
     Atividade,
     DesbloqueioDaMissao,
@@ -323,6 +324,8 @@ def app(sessao, configuracao):
         roteador as roteador_de_solicitacoes_do_responsavel,
     )
     from nucleo.template_de_missao.rotas import roteador as roteador_de_template_de_missao
+    from nucleo.termos.rotas import roteador as roteador_de_termos
+    from nucleo.transparencia.rotas import roteador as roteador_de_transparencia
     from nucleo.trilhas.rotas import roteador as roteador_de_trilhas
     from nucleo.trocas.rotas import roteador as roteador_de_trocas
     from nucleo.vinculo_do_guerreiro.rotas import roteador as roteador_de_vinculo_do_guerreiro
@@ -382,6 +385,8 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_producoes)
     incluir_roteador_de_dados(aplicacao, roteador_de_assistente)
     incluir_roteador_de_dados(aplicacao, roteador_de_vinculo_do_guerreiro)
+    incluir_roteador_de_dados(aplicacao, roteador_de_termos)
+    incluir_roteador_de_dados(aplicacao, roteador_de_transparencia)
     return aplicacao
 
 
@@ -682,6 +687,40 @@ def criar_consentimento(sessao):
         sessao.commit()
         sessao.refresh(consentimento)
         return consentimento
+
+    return _criar
+
+
+@pytest.fixture
+def criar_termo(sessao):
+    def _criar(
+        tipo: TipoDeConsentimento = TipoDeConsentimento.autorizacao_de_divulgacao,
+        versao: str = "2026-08",
+        texto: str = "Texto de teste do termo.",
+        vigente_desde: datetime | None = None,
+    ) -> Termo:
+        termo = Termo(
+            tipo=tipo,
+            versao=versao,
+            texto=texto,
+            vigente_desde=vigente_desde or (datetime.now(UTC) - timedelta(days=1)),
+        )
+        sessao.add(termo)
+        sessao.commit()
+        sessao.refresh(termo)
+        return termo
+
+    return _criar
+
+
+@pytest.fixture
+def criar_leitura_de_termo(sessao):
+    def _criar(responsavel: Persona, versao: str) -> LeituraDeTermo:
+        leitura = LeituraDeTermo(responsavel_id=responsavel.id, versao=versao)
+        sessao.add(leitura)
+        sessao.commit()
+        sessao.refresh(leitura)
+        return leitura
 
     return _criar
 
