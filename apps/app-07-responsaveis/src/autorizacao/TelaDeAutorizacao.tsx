@@ -2,6 +2,7 @@ import { ErroDaApi } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, EstadoDaLista } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import type { GuerreiroVinculado } from "../vinculados/api";
 import {
   type Autorizacao,
@@ -12,6 +13,9 @@ import {
 
 interface Props {
   guerreiro: GuerreiroVinculado;
+  /** Leva a tela do termo à versão que valia numa decisão do histórico
+   * (`RF-13-33`). */
+  aoAbrirVersaoDoTermo?: (versao: string) => void;
 }
 
 const FORMATADOR_DE_DATA_HORA = new Intl.DateTimeFormat("pt-BR", {
@@ -38,7 +42,7 @@ const CODIGO_DE_CONCESSAO_COLIDENTE = "autorizacao_suspensa_por_outro_responsave
 // motivou a suspensão e a alternativa equivalente enquanto não vigente
 // (`RF-13-17`, `RF-13-18`, `RF-13-20`, `RN-13-09`); e o histórico, sem
 // caminho de editar ou apagar (`RF-13-21`, `RN-13-10`).
-export function TelaDeAutorizacao({ guerreiro }: Props) {
+export function TelaDeAutorizacao({ guerreiro, aoAbrirVersaoDoTermo }: Props) {
   const { sessao } = useSessao();
   const [autorizacao, definirAutorizacao] = useState<Autorizacao | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
@@ -109,6 +113,8 @@ export function TelaDeAutorizacao({ guerreiro }: Props) {
 
   return (
     <section aria-label={`Autorização de ${guerreiro.nick}`}>
+      <AvisoDeColeta dado={`a decisão da autorização de ${guerreiro.nick}`} />
+
       <section>
         <h2>O que a autorização libera</h2>
         <ul>
@@ -167,6 +173,14 @@ export function TelaDeAutorizacao({ guerreiro }: Props) {
                   : " por outro responsável"}{" "}
                 em {formatarDataHora(item.registrado_em)} — versão {item.versao_do_termo} do
                 termo
+                {aoAbrirVersaoDoTermo && (
+                  <button
+                    type="button"
+                    onClick={() => aoAbrirVersaoDoTermo(item.versao_do_termo)}
+                  >
+                    Ver o termo desta decisão
+                  </button>
+                )}
               </li>
             ))}
           </ul>

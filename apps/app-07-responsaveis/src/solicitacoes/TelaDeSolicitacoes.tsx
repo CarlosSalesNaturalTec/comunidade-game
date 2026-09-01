@@ -2,6 +2,7 @@ import { ErroDaApi } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, EstadoDaLista } from "comum/react";
 import { type FormEvent, useCallback, useEffect, useId, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import type { GuerreiroVinculado } from "../vinculados/api";
 import {
   abrirSolicitacao,
@@ -103,6 +104,8 @@ export function TelaDeSolicitacoes({ guerreiro }: Props) {
 
   return (
     <section aria-label={`Solicitações de ${guerreiro.nick}`}>
+      <AvisoDeColeta dado={`o texto da sua solicitação sobre ${guerreiro.nick}`} />
+
       <section>
         <h2>Nova solicitação</h2>
         <form onSubmit={aoSubmeter} aria-label="Abrir solicitação">

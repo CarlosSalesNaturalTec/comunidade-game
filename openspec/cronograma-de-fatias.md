@@ -213,8 +213,8 @@ passaram ao PRD-04.
 | 2     | Evolução do Guerreiro(a)                      | `esqueleto-da-app-07-e-evolucao-do-guerreiro` — `RF-13-09` sem o estado da reparação, que não tem requisito que o registre (PRD-13 §14) | implementado |
 | 3     | Autorização única                             | `autorizacao-unica-na-area-dos-responsaveis`                                                               | implementado |
 | 4     | Solicitações e direitos                       | `solicitacoes-e-direitos-na-area-dos-responsaveis` — `RF-13-23`, `RF-13-27`, `RF-13-28`, `RF-13-43`, `RF-13-44`, `RN-13-12`, `RN-13-22`; a execução da despersonalização do registro de território (`RN-13-12`) ficou para o Ciclo 02, decisão do fundador de 2026-09-01 — aqui ela é só o limite declarado na tela | implementado |
-| 5     | Transparência, termos e histórico de acessos  | `RF-13-29` a `RF-13-34`, `RN-13-19` — **trava:** falta o texto do termo quanto à entrega de dados (PRD-13 §14) | em aberto |
-| 6     | Atendimento assistido, propostas e avisos     | `RF-13-35` a `RF-13-42`, `RN-13-15` a `RN-13-18`                                                           | em aberto |
+| 5     | Transparência, termos e histórico de acessos  | `transparencia-termos-atendimento-e-propostas` — `RF-13-29` a `RF-13-34`, `RN-13-19` | implementado |
+| 6     | Atendimento assistido, propostas e avisos     | `transparencia-termos-atendimento-e-propostas` — `RF-13-35` a `RF-13-42`, `RN-13-15` a `RN-13-18` — `RF-13-37` já atendido pelo anexo do termo de biometria | implementado |
 
 ## PRD-14 — Área do Apoiador (App 08)
 

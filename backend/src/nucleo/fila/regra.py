@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from ..armazenamento.porta import PortaDeArmazenamento
 from ..erros import ConjuntoDeDadosNaoLiberado, DocumentoPessoalRecusado, ErroDeValidacao
-from ..personas.modelo import Persona
+from ..personas.modelo import Papel, Persona
 from ..personas.regra import conferir_disponibilidade_de_nick
 from ..ponto_extra.regra import creditar_ponto_extra
 from ..pontuacao.regra import conceder_badge_de_protagonismo
@@ -319,10 +319,12 @@ def avaliar_sugestao(
     motivo_do_retorno: str | None = None,
 ) -> SugestaoOuProposta:
     """Adotada credita 20 extras e o badge de protagonismo na mesma
-    operação (`RF-01-56`, `RN-01-50`), idempotente pela marca
-    `creditado_em` — regravar "adotada" não credita de novo. Não adotada
-    grava o motivo em linguagem simples e a data de descarte da transcrição,
-    90 dias à frente (03 §12.2)."""
+    operação, mas **só quando o autor tem papel de Guerreiro(a)**: a
+    pontuação é da criança, e proposta de responsável, de Mestre ou de
+    Apoiador não credita (`RF-01-56`, `RN-01-50`, `RN-13-18`, design —
+    decisão 8). Idempotente pela marca `creditado_em` — regravar "adotada"
+    não credita de novo. Não adotada grava o motivo em linguagem simples e
+    a data de descarte da transcrição, 90 dias à frente (03 §12.2)."""
     if situacao not in (SituacaoDaSugestao.adotada, SituacaoDaSugestao.nao_adotada):
         raise ErroDeValidacao(
             mensagem="Desfecho precisa ser adotada ou não adotada.", campo="situacao"
@@ -338,7 +340,7 @@ def avaliar_sugestao(
     if situacao == SituacaoDaSugestao.nao_adotada:
         sugestao.motivo_do_retorno = motivo_do_retorno
         sugestao.descartar_em = sugestao.decidido_em + PRAZO_DE_DESCARTE_DA_TRANSCRICAO_NAO_ADOTADA
-    elif sugestao.creditado_em is None:
+    elif sugestao.creditado_em is None and sugestao.papel_do_autor == Papel.guerreiro.value:
         creditar_ponto_extra(
             sessao, guerreiro_id=sugestao.autor_id, valor=PONTOS_EXTRAS_DA_PROPOSTA_ADOTADA
         )

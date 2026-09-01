@@ -549,10 +549,16 @@ exigir o **motivo do retorno** em linguagem simples, sem o qual o núcleo SHALL 
 mesma operação, e SHALL guardar transcrição e autoria de forma permanente. (`RF-02-26`,
 `RF-01-25`, `RF-01-56`, `RN-01-50`)
 
+O crédito SHALL alcançar **apenas autor com papel de Guerreiro(a)**: a pontuação é da criança, e
+proposta de **responsável**, de Mestre ou de Apoiador NEVER SHALL creditar ponto extra nem
+badge. O desfecho dessas propostas SHALL ser gravado do mesmo jeito, com parecer, autor, data e
+o motivo do retorno quando não adotada — o que muda é só o crédito. (`RN-13-18`, PRD-13 §§5.7,
+7)
+
 O crédito SHALL ser **idempotente**: regravar o desfecho adotada NEVER SHALL creditar de novo.
 
 O retorno a quem propôs SHALL acontecer **dentro da plataforma**, e o núcleo NEVER SHALL
-enviar e-mail por causa dele. (`RN-02-25`)
+enviar e-mail por causa dele. (`RN-02-25`, `RN-13-15`)
 
 A sugestão já avaliada NEVER SHALL ser reavaliada: novo desfecho SHALL ser recusado com
 **409**. Quem não for Admin SHALL receber **403**, e toda escrita SHALL entrar na trilha de
@@ -560,9 +566,19 @@ auditoria. (`RN-02-01`, `RN-02-21`)
 
 #### Scenario: Sugestão adotada credita os extras e o badge
 
-- **WHEN** um Admin conclui uma sugestão como adotada
+- **WHEN** um Admin conclui como adotada uma sugestão de Guerreiro(a)
 - **THEN** o núcleo grava o desfecho e credita 20 pontos extras e o badge de protagonismo a
   quem propôs, na mesma operação
+
+#### Scenario: Proposta de responsável adotada não pontua
+
+- **WHEN** um Admin conclui como adotada a proposta de um responsável
+- **THEN** o núcleo grava o desfecho, e nenhum ponto extra e nenhum badge são creditados
+
+#### Scenario: Proposta de Mestre ou de Apoiador adotada não pontua
+
+- **WHEN** um Admin conclui como adotada a proposta de um Mestre ou de um Apoiador
+- **THEN** o núcleo grava o desfecho, e nenhum ponto extra e nenhum badge são creditados
 
 #### Scenario: O crédito da sugestão adotada não se repete
 

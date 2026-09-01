@@ -2,6 +2,7 @@ import { ErroDaApi } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, EstadoDaLista } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import type { GuerreiroVinculado } from "../vinculados/api";
 import {
   type EstadoDaBiometria,
@@ -85,6 +86,8 @@ export function TelaDaImagemDoOnboarding({ guerreiro }: Props) {
 
   return (
     <section aria-label={`Imagem do onboarding de ${guerreiro.nick}`}>
+      <AvisoDeColeta dado={`a recusa da imagem do onboarding de ${guerreiro.nick}`} />
+
       <section>
         <h2>Para que serve a imagem</h2>
         <p>

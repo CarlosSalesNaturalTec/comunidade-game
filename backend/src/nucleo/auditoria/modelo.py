@@ -71,3 +71,66 @@ event.listen(
         """
     ),
 )
+
+
+class AcessoAoDadoDoGuerreiro(Base):
+    """Tabela lateral da trilha: uma linha por (auditoria, Guerreiro(a)),
+    ligando a escrita ao(s) Guerreiro(a) que ela alcançou — colhida pelo
+    mesmo `MiddlewareDeAuditoria`, sem que rota alguma declare nada
+    (`RF-13-30`, design — decisão 1). Somente inserção, no mesmo padrão da
+    própria `Auditoria`.
+    """
+
+    __tablename__ = "acesso_ao_dado_do_guerreiro"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    auditoria_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("auditoria.id"), nullable=False
+    )
+    guerreiro_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("persona.id"), nullable=False)
+    momento: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    __table_args__ = (
+        Index("ix_acesso_ao_dado_do_guerreiro_guerreiro_id", "guerreiro_id"),
+        Index("ix_acesso_ao_dado_do_guerreiro_momento", "momento"),
+    )
+
+
+def _recusar_alteracao_de_acesso(mapper, connection, target) -> None:
+    raise AuditoriaImutavel()
+
+
+event.listen(AcessoAoDadoDoGuerreiro, "before_update", _recusar_alteracao_de_acesso)
+event.listen(AcessoAoDadoDoGuerreiro, "before_delete", _recusar_alteracao_de_acesso)
+
+event.listen(
+    AcessoAoDadoDoGuerreiro.__table__,
+    "after_create",
+    DDL(
+        """
+        CREATE FUNCTION recusar_alteracao_de_acesso_ao_dado_do_guerreiro() RETURNS trigger AS $$
+        BEGIN
+            RAISE EXCEPTION
+                'acesso_ao_dado_do_guerreiro é somente inserção: sem UPDATE nem DELETE';
+        END;
+        $$ LANGUAGE plpgsql;
+
+        CREATE TRIGGER trg_acesso_ao_dado_do_guerreiro_somente_insercao
+        BEFORE UPDATE OR DELETE ON acesso_ao_dado_do_guerreiro
+        FOR EACH ROW EXECUTE FUNCTION recusar_alteracao_de_acesso_ao_dado_do_guerreiro();
+        """
+    ),
+)
+event.listen(
+    AcessoAoDadoDoGuerreiro.__table__,
+    "before_drop",
+    DDL(
+        """
+        DROP TRIGGER trg_acesso_ao_dado_do_guerreiro_somente_insercao
+            ON acesso_ao_dado_do_guerreiro;
+        DROP FUNCTION recusar_alteracao_de_acesso_ao_dado_do_guerreiro();
+        """
+    ),
+)

@@ -74,14 +74,14 @@ esta aplicação apenas a **mostra ao adulto que responde por ela**.
 
 ## 4. Personas e permissões
 
-| Persona      | O que faz nesta aplicação                                                      | O que não pode fazer                                                     |
-| ------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| Responsável  | Acompanha os vinculados, autoriza, revoga, solicita, lê termos e propõe        | Cadastrar-se, criar vínculo, ver criança não vinculada, lançar resultado |
-| Admin        | Opera o atendimento assistido e anexa o termo impresso, com o ato em nome dele | Autorizar em nome próprio ou substituir a decisão do responsável         |
-| Mestre       | O mesmo do Admin, quando é quem está no encontro                               | O mesmo do Admin                                                         |
-| Guerreiro(a) | Nada: a sua jornada é a App 05                                                 | Entrar, conceder ou revogar a própria autorização                        |
-| Apoiador     | Nada: acompanha pelo nick cedido pela família, na App 08                       | Entrar, mesmo sendo parente                                              |
-| Visitante    | Nada: a aplicação é inteiramente autenticada                                   | Acessar qualquer tela                                                    |
+| Persona      | O que faz nesta aplicação                                                          | O que não pode fazer                                                     |
+| ------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Responsável  | Acompanha os vinculados, autoriza, revoga, solicita, lê termos e propõe            | Cadastrar-se, criar vínculo, ver criança não vinculada, lançar resultado |
+| Admin        | Opera o atendimento assistido, no modo assistido, com o ato em nome do responsável | Autorizar em nome próprio ou substituir a decisão do responsável         |
+| Mestre       | O mesmo do Admin, quando é quem está no encontro                                   | O mesmo do Admin                                                         |
+| Guerreiro(a) | Nada: a sua jornada é a App 05                                                     | Entrar, conceder ou revogar a própria autorização                        |
+| Apoiador     | Nada: acompanha pelo nick cedido pela família, na App 08                           | Entrar, mesmo sendo parente                                              |
+| Visitante    | Nada: a aplicação é inteiramente autenticada                                       | Acessar qualquer tela                                                    |
 
 O responsável vê **apenas os Guerreiros e Guerreiras vinculados a ele**. De terceiros, nada —
 nem em ranking, nem em equipe, nem em criação de colega.
@@ -172,13 +172,15 @@ nem em ranking, nem em equipe, nem em criação de colega.
 
 ### 5.8 Responsável sem smartphone
 
-1. No encontro presencial, um Admin ou Mestre abre a aplicação **com o responsável presente** e
-   percorre a tela com ele — é o **atendimento assistido**.
+1. No encontro presencial, um Admin ou Mestre abre a aplicação, no **modo assistido**, **com o
+   responsável presente**, escolhe o Guerreiro(a) e o responsável, e percorre com ele o texto
+   do termo — é o **atendimento assistido**.
 2. O ato é gravado **em nome do responsável**, com registro de quem operou e quem testemunhou.
-3. Preferindo papel, ele assina o **termo impresso**; a gestão digitaliza e anexa, e o
-   consentimento entra versionado do mesmo jeito.
-4. Nos dois caminhos o histórico do responsável fica idêntico ao de quem opera sozinho: mesma
-   versão de termo, mesma data e hora, mesma força.
+3. Se ele preferir assinar em papel, o registro na plataforma continua sendo o mesmo atendimento
+   assistido: o papel assinado fica só no **arquivo físico** da gestão, sem digitalização nem
+   anexo — esse caminho é exclusivo do consentimento de **biometria** (§3.3 do documento 03).
+4. O histórico do responsável fica idêntico ao de quem opera sozinho: mesma versão de termo,
+   mesma data e hora, mesma força.
 
 ## 6. Requisitos funcionais
 
@@ -245,16 +247,16 @@ nem em ranking, nem em equipe, nem em criação de colega.
 
 ### 6.6 Atendimento assistido, propostas e avisos
 
-| ID         | Requisito                                                                                 | Prioridade |
-| ---------- | ----------------------------------------------------------------------------------------- | ---------- |
-| `RF-13-35` | Admin ou Mestre opera a aplicação com o responsável presente, gravando o ato em nome dele | essencial  |
-| `RF-13-36` | Ato assistido registra quem operou e quem testemunhou                                     | essencial  |
-| `RF-13-37` | Gestão anexa a digitalização do termo impresso, que entra versionado                      | essencial  |
-| `RF-13-38` | Consentimento assistido ou impresso tem a mesma força do registrado pelo responsável      | essencial  |
-| `RF-13-39` | Responsável registra proposta de evolução da plataforma na fila única da gestão           | essencial  |
-| `RF-13-40` | Responsável acompanha o status da proposta, com motivo quando não adotada                 | essencial  |
-| `RF-13-41` | Toda tela que coleta dado traz aviso discreto, com acesso à área detalhada                | essencial  |
-| `RF-13-42` | Aplicação não oferece nenhum canal de contato com Apoiadores ou terceiros                 | essencial  |
+| ID         | Requisito                                                                                                                                                                            | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `RF-13-35` | Admin ou Mestre opera a aplicação com o responsável presente, gravando o ato em nome dele                                                                                            | essencial  |
+| `RF-13-36` | Ato assistido registra quem operou e quem testemunhou                                                                                                                                | essencial  |
+| `RF-13-37` | Digitalização do termo impresso de biometria entra anexada e versionada — atendido por `RF-02-68`, sem rota própria: o termo impresso da autorização única não é digitalizado (§5.8) | essencial  |
+| `RF-13-38` | Consentimento assistido ou impresso tem a mesma força do registrado pelo responsável                                                                                                 | essencial  |
+| `RF-13-39` | Responsável registra proposta de evolução da plataforma na fila única da gestão                                                                                                      | essencial  |
+| `RF-13-40` | Responsável acompanha o status da proposta, com motivo quando não adotada                                                                                                            | essencial  |
+| `RF-13-41` | Toda tela que coleta dado traz aviso discreto, com acesso à área detalhada                                                                                                           | essencial  |
+| `RF-13-42` | Aplicação não oferece nenhum canal de contato com Apoiadores ou terceiros                                                                                                            | essencial  |
 
 ## 7. Regras de negócio
 
@@ -325,26 +327,27 @@ PRD-02 (decisão do fundador, 2026-08-29, documento 09 §1); a fatia 4 desta PRD
 da App 07 sobre elas, e nela nasceram as três rotas de recusa da biometria e de fim do vínculo
 (decisão do fundador, 2026-09-01, documento 09 §1).
 
-| Método | Rota                                        | Autenticação    | Descrição                                                               |
-| ------ | ------------------------------------------- | --------------- | ----------------------------------------------------------------------- |
-| GET    | `/v1/eu/guerreiros`                         | Responsável     | Guerreiros e Guerreiras vinculados, com grau de parentesco              |
-| GET    | `/v1/eu/guerreiros/{id}/evolucao`           | Responsável     | Presença, atividades, pontos, poderes, badges, nível e progresso        |
-| GET    | `/v1/eu/guerreiros/{id}/ocorrencias`        | Responsável     | Ocorrências de conduta, com motivo e estado da reparação                |
-| GET    | `/v1/eu/guerreiros/{id}/autorizacao`        | Responsável     | Estado vigente da autorização e histórico de decisões                   |
-| POST   | `/v1/eu/guerreiros/{id}/autorizacao`        | Responsável     | Concede ou revoga, gravando a versão do termo                           |
-| POST   | `/v1/guerreiros/{id}/autorizacao/assistida` | Admin ou Mestre | Registra o ato em nome do responsável presente, com testemunha          |
-| POST   | `/v1/consentimentos/{id}/anexo`             | Admin ou Mestre | Anexa a digitalização do termo impresso assinado                        |
-| POST   | `/v1/eu/guerreiros/{id}/biometria/recusa`   | Responsável     | Grava a recusa da biometria e a data do apagamento do _template_        |
-| GET    | `/v1/eu/guerreiros/{id}/biometria`          | Responsável     | Estado da captura, decisão do termo e data do apagamento, quando houver |
-| POST   | `/v1/guerreiros/{id}/fim-de-vinculo`        | Admin           | Encerra o vínculo do Guerreiro(a) com o projeto, com motivo             |
-| GET    | `/v1/eu/guerreiros/{id}/dados`              | Responsável     | Dados armazenados, finalidade e prazo de guarda de cada um              |
-| GET    | `/v1/eu/guerreiros/{id}/acessos`            | Responsável     | Quem acessou, em que papel, qual dado e quando                          |
-| POST   | `/v1/solicitacoes`                          | Responsável     | Abre solicitação com protocolo e prazo de 7 dias                        |
-| GET    | `/v1/eu/solicitacoes`                       | Responsável     | Protocolo, tipo, situação e prazo das próprias solicitações             |
-| GET    | `/v1/termos`                                | autenticada     | Termos vigentes e versões anteriores                                    |
-| POST   | `/v1/termos/{versao}/leitura`               | Responsável     | Registra a leitura do termo, com data e hora                            |
-| POST   | `/v1/sugestoes`                             | Responsável     | Registra proposta na fila única da gestão                               |
-| GET    | `/v1/eu/sugestoes`                          | Responsável     | Status das próprias propostas                                           |
+| Método | Rota                                        | Autenticação    | Descrição                                                                                                                           |
+| ------ | ------------------------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/v1/eu/guerreiros`                         | Responsável     | Guerreiros e Guerreiras vinculados, com grau de parentesco                                                                          |
+| GET    | `/v1/eu/guerreiros/{id}/evolucao`           | Responsável     | Presença, atividades, pontos, poderes, badges, nível e progresso                                                                    |
+| GET    | `/v1/eu/guerreiros/{id}/ocorrencias`        | Responsável     | Ocorrências de conduta, com motivo e estado da reparação                                                                            |
+| GET    | `/v1/eu/guerreiros/{id}/autorizacao`        | Responsável     | Estado vigente da autorização e histórico de decisões                                                                               |
+| POST   | `/v1/eu/guerreiros/{id}/autorizacao`        | Responsável     | Concede ou revoga, gravando a versão do termo                                                                                       |
+| GET    | `/v1/guerreiros/{id}/responsaveis`          | Admin ou Mestre | Responsáveis com vínculo vigente, para o modo assistido escolher quem está presente                                                 |
+| POST   | `/v1/guerreiros/{id}/autorizacao/assistida` | Admin ou Mestre | Registra o ato em nome do responsável presente, com testemunha                                                                      |
+| POST   | `/v1/consentimentos/{id}/anexo`             | Admin           | Anexa a digitalização do termo impresso de **biometria** assinado — o termo impresso da autorização única não passa por aqui (§5.8) |
+| POST   | `/v1/eu/guerreiros/{id}/biometria/recusa`   | Responsável     | Grava a recusa da biometria e a data do apagamento do _template_                                                                    |
+| GET    | `/v1/eu/guerreiros/{id}/biometria`          | Responsável     | Estado da captura, decisão do termo e data do apagamento, quando houver                                                             |
+| POST   | `/v1/guerreiros/{id}/fim-de-vinculo`        | Admin           | Encerra o vínculo do Guerreiro(a) com o projeto, com motivo                                                                         |
+| GET    | `/v1/eu/guerreiros/{id}/dados`              | Responsável     | Dados armazenados, finalidade e prazo de guarda de cada um                                                                          |
+| GET    | `/v1/eu/guerreiros/{id}/acessos`            | Responsável     | Quem acessou, em que papel, qual dado e quando                                                                                      |
+| POST   | `/v1/solicitacoes`                          | Responsável     | Abre solicitação com protocolo e prazo de 7 dias                                                                                    |
+| GET    | `/v1/eu/solicitacoes`                       | Responsável     | Protocolo, tipo, situação e prazo das próprias solicitações                                                                         |
+| GET    | `/v1/termos`                                | autenticada     | Termos vigentes e versões anteriores                                                                                                |
+| POST   | `/v1/termos/{versao}/leitura`               | Responsável     | Registra a leitura do termo, com data e hora                                                                                        |
+| POST   | `/v1/sugestoes`                             | Responsável     | Registra proposta na fila única da gestão                                                                                           |
+| GET    | `/v1/eu/sugestoes`                          | Responsável     | Status das próprias propostas                                                                                                       |
 
 A recusa da biometria é rota **separada** da autorização única: a `/v1/eu/guerreiros/{id}/autorizacao`
 não alcança a biometria (`RN-13-06`). O fim do vínculo é restrito ao Admin pela matriz de
@@ -432,8 +435,10 @@ aberto por Guerreiro(a) (documento 09 §1).
   criança.
 - Ato assistido registrado por um Mestre aparece no histórico **em nome do responsável**, com
   quem operou e quem testemunhou.
-- Termo impresso digitalizado e anexado produz o mesmo estado de autorização que o registro
-  feito pelo responsável no aparelho.
+- Concessão pelo modo assistido produz o mesmo estado de autorização que o registro feito pelo
+  responsável no próprio aparelho.
+- O termo vigente traz a declaração da entrega gratuita e anonimizada de dados, e a leitura do
+  responsável fica registrada com data e hora.
 
 Hipóteses do Ciclo 01 (documento 10): este PRD **sustenta H2** e é o único instrumento que a
 mede — número de autorizações concedidas sobre o número de Guerreiros e Guerreiras ativos, com
@@ -447,7 +452,10 @@ adesão da criança.
 | ------------------------------------------------------------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------- |
 | Autorização única do responsável, cobrindo divulgação, eventos e produção                                          | 03 §§9, 12 | Autorização única do responsável                                           |
 | Qualquer responsável autoriza ou revoga, e a recusa prevalece                                                      | 02 §1      | Quem autoriza entre os responsáveis                                        |
-| Atendimento assistido e termo impresso para quem não tem smartphone                                                | 03 §9      | Responsável sem smartphone                                                 |
+| Atendimento assistido, no modo assistido da própria App 07, para quem não tem smartphone                           | 03 §9      | Responsável sem smartphone                                                 |
+| Termo impresso da autorização única fica só no arquivo físico da gestão, sem digitalização                         | 03 §9      | O termo impresso da autorização única fica no arquivo físico               |
+| Cláusula de entrega de dados redigida e semeada na versão vigente do termo                                         | 03 §12.3   | Redação da cláusula de entrega de dados                                    |
+| `GET /v1/guerreiros/{id}/responsaveis`, restrita a Admin e Mestre, sem `Operacao` nova                             | 03 §9      | O atendimento assistido acontece na própria App 07                         |
 | A exclusão do _template_ biométrico é requisito deste PRD, não do PRD-01                                           | 03 §3.3    | Exclusão do _template_ biométrico                                          |
 | Aviso da exclusão do _template_ na App 07, com a data                                                              | 03 §9      | Aviso da exclusão do _template_ biométrico                                 |
 | Divergência sem acordo mantém a autorização suspensa, com alternativa                                              | 05 §4      | Desfecho da divergência entre responsáveis                                 |
@@ -471,9 +479,6 @@ documento 08 perdeu a questão em aberto do responsável sem smartphone.
   a reparação — quem a lança e se ela devolve os pontos debitados. Sem ele, a evolução exibe a
   ocorrência com motivo e data, e nunca o estado da reparação. Decisão do fundador,
   2026-08-31 (documento 09 §1).
-- **Redação do termo quanto à entrega de dados**: a regra, a licença CC BY-SA e o critério de
-  aprovação do Admin estão decididos; falta o **texto** que declara isso ao responsável.
-  **Trava o `RF-13-34` no texto, não no desenho.**
 - **Metas numéricas de H2** (documento 10): quantas autorizações caracterizam a hipótese
   confirmada. Sem elas, a métrica existe e o critério de sucesso não.
 - **Tela da App 03 que encerra o vínculo do Guerreiro(a)**: o ato de Admin nasceu no núcleo

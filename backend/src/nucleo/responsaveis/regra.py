@@ -125,6 +125,13 @@ def guerreiros_vinculaveis(
     return personas, proximo_cursor
 
 
+def responsaveis_vinculados(sessao: Session, guerreiro_id: uuid.UUID) -> list[VinculoResponsavel]:
+    """Os vínculos vigentes de um Guerreiro(a) — para o modo assistido
+    escolher qual responsável está presente (`RF-13-35`, `RN-13-03`,
+    decisão do fundador, 2026-09-01)."""
+    return sessao.query(VinculoResponsavel).filter_by(guerreiro_id=guerreiro_id, fim=None).all()
+
+
 def exigir_vinculo_do_responsavel(
     sessao: Session, *, papel: Papel, responsavel_id: uuid.UUID, guerreiro_id: uuid.UUID
 ) -> None:
