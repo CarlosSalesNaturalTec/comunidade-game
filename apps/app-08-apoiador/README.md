@@ -22,5 +22,6 @@ fatia — a proposição e o acompanhamento do desafio extra. React com TypeScri
 
 ## Implantação
 
-Ainda não implantada: o alvo de _hosting_ do Apoiador não existe em `.firebaserc` — entra
-quando uma fatia de infraestrutura o criar, como aconteceu para a App 03.
+Publicada pelo `.github/workflows/app-08-deploy.yml` em `apoiador.comunidadegame.org`, via
+Firebase Hosting — alvo `apoiador` de `firebase.json`, chave do segredo
+`APP08_CHAVE_DE_APLICACAO`.

@@ -262,3 +262,4 @@ a fatia 15 do PRD-02, a 15 do PRD-09 e a 8 do PRD-05, e entra pela fatia 1 dele.
 | Fatia | Entrega                            | Recorte                                        | Situação     |
 | ----- | ---------------------------------- | ---------------------------------------------- | ------------ |
 | —     | Isolamento transacional dos testes | `2026-08-18-isolamento-transacional-dos-testes` | implementado |
+| —     | Esteira de deploy das Apps 07 e 08 | `2026-09-01-esteira-de-deploy-das-apps-07-e-08` | implementado |

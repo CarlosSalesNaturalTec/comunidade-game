@@ -9,7 +9,9 @@
         "app-03": ["comunidade-game-app-03"],
         "mestre": ["comunidade-game-mestre"],
         "aula": ["comunidade-game-aula"],
-        "minhaarea": ["comunidade-game-minhaarea"]
+        "minhaarea": ["comunidade-game-minhaarea"],
+        "responsavel": ["comunidade-game-responsavel"],
+        "apoiador": ["comunidade-game-apoiador"]
       }
     }
   }
