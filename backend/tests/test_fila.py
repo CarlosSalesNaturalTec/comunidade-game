@@ -6,6 +6,7 @@ from sqlalchemy import select
 from nucleo.armazenamento.disco import ArmazenamentoEmDisco
 from nucleo.erros import ConjuntoDeDadosNaoLiberado, DocumentoPessoalRecusado, ErroDeValidacao
 from nucleo.fila.modelo import (
+    PerfilDeApoiador,
     PretensaoDeParticipacao,
     SituacaoDaSolicitacao,
     SituacaoDaSugestao,
@@ -181,6 +182,59 @@ def test_comprovante_fora_da_pretensao_apoiador_e_recusado(sessao, tmp_path):
             armazenamento=porta,
         )
     assert excinfo.value.campo == "comprovante"
+
+
+def test_comprovante_em_formato_nao_aceito_e_recusado(sessao, tmp_path):
+    porta = ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes"))
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_solicitacao_de_participacao(
+            sessao,
+            nome_ou_razao_social="Apoiadora de Tal",
+            email="apoiadora@example.org",
+            whatsapp="+55 11 90000-0000",
+            pretensao=PretensaoDeParticipacao.apoiador,
+            apresentacao="Quero apoiar a comunidade.",
+            comprovante_conteudo=b"bytes",
+            comprovante_nome_original="comprovante.docx",
+            comprovante_tipo="application/msword",
+            armazenamento=porta,
+        )
+    assert excinfo.value.campo == "comprovante"
+    assert "PDF, JPG ou PNG" in excinfo.value.mensagem
+    assert sessao.query(SolicitacaoDeParticipacao).count() == 0
+
+
+@pytest.mark.parametrize(
+    "perfil", [PerfilDeApoiador.pessoa_fisica, PerfilDeApoiador.pessoa_juridica]
+)
+def test_perfil_gravado_como_veio_na_pretensao_de_apoiador(sessao, perfil):
+    solicitacao = registrar_solicitacao_de_participacao(
+        sessao,
+        nome_ou_razao_social="Apoiadora de Tal",
+        email="apoiadora@example.org",
+        whatsapp="+55 11 90000-0000",
+        pretensao=PretensaoDeParticipacao.apoiador,
+        apresentacao="Quero apoiar a comunidade.",
+        perfil=perfil,
+    )
+    sessao.commit()
+
+    assert solicitacao.perfil == perfil
+
+
+def test_perfil_declarado_em_solicitacao_de_mestre_e_recusado(sessao):
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_solicitacao_de_participacao(
+            sessao,
+            nome_ou_razao_social="Fulana de Tal",
+            email="fulana@example.org",
+            whatsapp="+55 11 90000-0000",
+            pretensao=PretensaoDeParticipacao.mestre,
+            apresentacao="Quero ser Mestre na comunidade.",
+            perfil=PerfilDeApoiador.pessoa_fisica,
+        )
+    assert excinfo.value.campo == "perfil"
+    assert sessao.query(SolicitacaoDeParticipacao).count() == 0
 
 
 def test_nick_gravado_no_pre_cadastro_sem_criar_persona(sessao):

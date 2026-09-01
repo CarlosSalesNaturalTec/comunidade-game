@@ -23,6 +23,7 @@ from ..permissoes import Operacao, exigir_permissao, exigir_qualquer_permissao
 from ..personas.modelo import Persona
 from ..protecao.freio import exigir_freio_por_origem
 from .modelo import (
+    PerfilDeApoiador,
     PretensaoDeParticipacao,
     SituacaoDaSolicitacao,
     SituacaoDaSugestao,
@@ -79,13 +80,14 @@ def registrar_solicitacao_de_participacao_rota(
     instituicao: Annotated[str | None, Form()] = None,
     links: Annotated[str | None, Form()] = None,
     nick: Annotated[str | None, Form()] = None,
+    perfil: Annotated[PerfilDeApoiador | None, Form()] = None,
     aporte_declarado: Annotated[str | None, Form()] = None,
     comprovante: Annotated[UploadFile | None, File()] = None,
 ) -> SolicitacaoSaida:
     """Pública, sem credencial de persona (`RF-01-25`, design — Decisions).
-    O pré-cadastro do Apoiador entra aqui, com aporte declarado, comprovante
-    e o nick pretendido; nenhum caminho cria cadastro (`RN-01-03`,
-    `RN-01-28`, `RF-14-13`)."""
+    O pré-cadastro do Apoiador entra aqui, com aporte declarado, perfil
+    declarado, comprovante e o nick pretendido; nenhum caminho cria cadastro
+    (`RN-01-03`, `RN-01-28`, `RF-14-01`, `RF-14-13`)."""
     conteudo = comprovante.file.read() if comprovante is not None else None
     solicitacao = registrar_solicitacao_de_participacao(
         sessao_bd,
@@ -97,6 +99,7 @@ def registrar_solicitacao_de_participacao_rota(
         instituicao=instituicao,
         links=links,
         nick=nick,
+        perfil=perfil,
         aporte_declarado=aporte_declarado,
         comprovante_conteudo=conteudo,
         comprovante_nome_original=comprovante.filename if comprovante is not None else None,
@@ -109,9 +112,9 @@ def registrar_solicitacao_de_participacao_rota(
 
 class SolicitacaoDeParticipacaoSaida(BaseModel):
     """Leitura e desfecho compartilham a mesma forma de saída. O aporte
-    declarado, o nick pretendido e a indicação de comprovante só se aplicam
-    à pretensão de Apoiador; o conteúdo do arquivo nunca sai daqui
-    (`RN-01-28`)."""
+    declarado, o perfil declarado, o nick pretendido e a indicação de
+    comprovante só se aplicam à pretensão de Apoiador; o conteúdo do arquivo
+    nunca sai daqui (`RN-01-28`, `RF-14-01`)."""
 
     id: uuid.UUID
     nome_ou_razao_social: str
@@ -128,6 +131,7 @@ class SolicitacaoDeParticipacaoSaida(BaseModel):
     parecer: str | None
     decidido_em: datetime | None
     nick: str | None = None
+    perfil: PerfilDeApoiador | None = None
     aporte_declarado: str | None = None
     comprovante_anexado: bool = False
 
@@ -152,6 +156,7 @@ def _saida_da_solicitacao_de_participacao(
         parecer=solicitacao.parecer,
         decidido_em=solicitacao.decidido_em,
         nick=solicitacao.nick if eh_apoiador else None,
+        perfil=solicitacao.perfil if eh_apoiador else None,
         aporte_declarado=solicitacao.aporte_declarado if eh_apoiador else None,
         comprovante_anexado=eh_apoiador and solicitacao.comprovante_referencia is not None,
     )

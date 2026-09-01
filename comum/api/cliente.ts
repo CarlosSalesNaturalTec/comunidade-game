@@ -10,13 +10,18 @@ export class ErroDaApi extends Error {
   readonly codigo: string;
   readonly campo?: string;
   readonly sugestoes?: string[];
+  /** Só o freio por origem leva este cabeçalho — o tempo de espera em
+   * segundos que a tela mostra em linguagem simples (`RF-01-65`,
+   * `RF-14-06`). */
+  readonly tempoDeEsperaEmSegundos?: number;
 
-  constructor(status: number, corpo: CorpoDeErro) {
+  constructor(status: number, corpo: CorpoDeErro, tempoDeEsperaEmSegundos?: number) {
     super(corpo.mensagem);
     this.status = status;
     this.codigo = corpo.codigo;
     this.campo = corpo.campo;
     this.sugestoes = corpo.sugestoes;
+    this.tempoDeEsperaEmSegundos = tempoDeEsperaEmSegundos;
   }
 }
 
@@ -113,7 +118,9 @@ export async function chamarNucleo<T>(
     const corpoDeErro: CorpoDeErro = corpo
       ? (corpo as CorpoDeErro)
       : { codigo: "erro_de_rede", mensagem: "Não foi possível falar com o núcleo." };
-    throw new ErroDaApi(resposta.status, corpoDeErro);
+    const cabecalhoDeEspera = resposta.headers.get("Retry-After");
+    const tempoDeEsperaEmSegundos = cabecalhoDeEspera ? Number(cabecalhoDeEspera) : undefined;
+    throw new ErroDaApi(resposta.status, corpoDeErro, tempoDeEsperaEmSegundos);
   }
 
   return corpo as T;

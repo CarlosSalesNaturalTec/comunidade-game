@@ -12,6 +12,7 @@ from ..ponto_extra.regra import creditar_ponto_extra
 from ..pontuacao.regra import conceder_badge_de_protagonismo
 from ..tempo import agora
 from .modelo import (
+    PerfilDeApoiador,
     PretensaoDeParticipacao,
     SituacaoDaSolicitacao,
     SituacaoDaSugestao,
@@ -21,6 +22,10 @@ from .modelo import (
     SugestaoOuProposta,
     TipoDeAlvo,
 )
+
+# Mesma lista que `aportes` e `ressarcimentos` já aplicam ao comprovante
+# (`RF-14-04`, `RN-14-06`).
+_FORMATOS_DE_COMPROVANTE_ACEITOS = frozenset({"application/pdf", "image/jpeg", "image/png"})
 
 # O prazo de resposta é promessa de produto (02 §1, 03 §§7, 12.3), gravado na
 # linha no registro e nunca recalculado na leitura (`RN-01-49`).
@@ -100,6 +105,7 @@ def registrar_solicitacao_de_participacao(
     instituicao: str | None = None,
     links: str | None = None,
     nick: str | None = None,
+    perfil: PerfilDeApoiador | None = None,
     aporte_declarado: str | None = None,
     comprovante_conteudo: bytes | None = None,
     comprovante_nome_original: str | None = None,
@@ -129,6 +135,9 @@ def registrar_solicitacao_de_participacao(
         if not conferir_disponibilidade_de_nick(sessao, nick):
             raise ErroDeValidacao(mensagem="Este nick já está em uso.", campo="nick")
 
+    if perfil is not None and pretensao != PretensaoDeParticipacao.apoiador:
+        raise ErroDeValidacao(mensagem="Só a pretensão de Apoiador declara perfil.", campo="perfil")
+
     solicitacao = SolicitacaoDeParticipacao(
         nome_ou_razao_social=nome_ou_razao_social,
         email=email,
@@ -138,6 +147,7 @@ def registrar_solicitacao_de_participacao(
         instituicao=instituicao,
         links=links,
         nick=nick,
+        perfil=perfil,
         aporte_declarado=aporte_declarado,
         prazo=agora() + PRAZO_DE_AVALIACAO,
     )
@@ -146,6 +156,10 @@ def registrar_solicitacao_de_participacao(
         if pretensao != PretensaoDeParticipacao.apoiador:
             raise ErroDeValidacao(
                 mensagem="Só a pretensão de Apoiador aceita comprovante.", campo="comprovante"
+            )
+        if comprovante_tipo not in _FORMATOS_DE_COMPROVANTE_ACEITOS:
+            raise ErroDeValidacao(
+                mensagem="Comprovante aceito apenas em PDF, JPG ou PNG.", campo="comprovante"
             )
         if armazenamento is None:
             raise ErroDeValidacao(mensagem="Porta de armazenamento não disponível.")
