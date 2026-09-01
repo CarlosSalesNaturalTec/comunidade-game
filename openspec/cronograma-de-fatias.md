@@ -224,7 +224,7 @@ passaram ao PRD-04.
 | 2     | Porta pública de pré-cadastro                    | `porta-publica-de-pre-cadastro`                                                                                                                                                                                                                                                                           | implementado |
 | 3     | Identidade pública e comprobatórios              | `identidade-publica-e-comprobatorios`                                                                                                                                                                                                                                                                     | implementado |
 | 4     | Meus aportes, necessidades e aporte declarado    | `meus-aportes-necessidades-e-aporte-declarado`                                                                                                                                                                                                                                                            | implementado |
-| 5     | Missões do Apoiador, sustento e selos            | `RF-14-60` a `RF-14-73`, `RN-14-29` a `RN-14-38`; entidades `MissaoDoApoiador` e `SeloDoApoiador` (PRD-14 §8) — depende da fatia 4; leva também a opção "missão aberta" do `RF-14-02`, que a fatia 2 deixou de fora por faltar a entidade                                                                | em aberto |
+| 5     | Missões do Apoiador, sustento e selos            | `missoes-do-apoiador-sustento-e-selos` — `RF-14-60` a `RF-14-73`, `RN-14-29` a `RN-14-38`; entidades `MissaoDoApoiador` e `SeloDoApoiador` (PRD-14 §8) — depende da fatia 4; leva também a opção "missão aberta" do `RF-14-02`, que a fatia 2 deixou de fora por faltar a entidade, e a publicação da missão na App 03 (`RF-02-102` a `RF-02-105`, `RN-02-31`) | em aberto |
 | 6     | Efetividade do apoio                             | `RF-14-40` a `RF-14-47`, `RN-14-21`, `RN-14-22`, `RN-14-28` — depende das fatias 1 e 5                                                                                                                                                                                                                     | em aberto |
 | 7     | Acompanhamento e favoritos                       | `RF-14-48` a `RF-14-55`, `RN-14-23` a `RN-14-25`; entidade `Favorito` (PRD-14 §8) — depende do PRD-03 (painel público)                                                                                                                                                                                     | em aberto |
 | 8     | Propostas, avisos e canal fechado                | `RF-14-56` a `RF-14-59`, `RN-14-26`, `RN-14-27`                                                                                                                                                                                                                                                           | em aberto |
@@ -238,9 +238,10 @@ Pendências do PRD-14 §14 que não travam o desenho, só o dado: os valores da 
 e o catálogo de recompensas por marco (fatias 1 e 5) e o catálogo de missões do Ciclo 01
 (fatia 5) — a aplicação exibe o que a gestão publicar.
 
-> **A definir:** quem publica a `MissaoDoApoiador`. O PRD-14 §8 diz que ela é publicada pela
-> gestão na App 03, e o PRD-02 não tem requisito para isso. Sem decisão do fundador, a fatia 5
-> fica sem quem crie a missão que ela lê.
+Quem publica a `MissaoDoApoiador` foi decidido pelo fundador em 2026-09-01: é a gestão, por ato
+de Admin na App 03. O documento 14 §§5 e 11 gravou a decisão e o PRD-02 ganhou os requisitos
+`RF-02-102` a `RF-02-105` e a `RN-02-31`, entregues pela fatia 5 do PRD-14 junto da entidade de
+que dependem.
 
 ## PRDs ainda não fatiados
 

@@ -364,7 +364,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD    | Arquivo                           | Depende de     | Documentos-fonte           |
 | ------ | --------------------------------- | -------------- | -------------------------- |
 | PRD-01 | `prd-01-backend-api.md`           | PRD-07, PRD-08 | 02, 03, 04, 05, 11         |
-| PRD-02 | `prd-02-frontend-de-gestao.md`    | PRD-01         | 02, 03, 04, 05             |
+| PRD-02 | `prd-02-frontend-de-gestao.md`    | PRD-01, PRD-14 | 02, 03, 04, 05, 14         |
 | PRD-03 | `prd-03-vitrine-publica.md`       | PRD-01, PRD-13 | 02, 03, 04, 11             |
 | PRD-04 | `prd-04-aula-presencial.md`       | PRD-01, PRD-02 | 02, 03, 05, 06, 11         |
 | PRD-05 | `prd-05-area-do-guerreiro.md`     | PRD-01, PRD-09 | 02, 03, 05, 11             |
@@ -386,6 +386,11 @@ O lastro, a reserva e o custeio do **desafio extra** (`RF-07-15` e `RF-07-39` a 
 são requisitos do PRD-07, mas dependem da entidade `DesafioExtra`, cujos atributos o PRD-14 §8
 define. Entram com a fatia do desafio extra do PRD-09 ou do PRD-14: é dependência de entidade,
 e não inverte a seta da tabela acima.
+
+A **publicação da missão do Apoiador** (`RF-02-102` a `RF-02-105`) é requisito do PRD-02 — quem
+publica é a gestão —, mas depende da entidade `MissaoDoApoiador`, cujos atributos o PRD-14 §8
+define. Entra com a fatia das missões do PRD-14, no mesmo desenho do `DesafioExtra` acima: é
+dependência de entidade.
 
 O PRD-09 passou a aplicar também o documento 04: o custo de _cloud_ do upload e do _template_
 entra por fatura, e não por medição no ato. O ato de **encerrar o ciclo** é do PRD-02, não do
