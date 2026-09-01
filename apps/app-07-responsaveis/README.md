@@ -22,5 +22,6 @@ de cada um. React com TypeScript sobre Vite (documento 03 §1).
 
 ## Implantação
 
-Ainda não implantada: o alvo de _hosting_ do responsável não existe em `.firebaserc` — entra
-quando uma fatia de infraestrutura o criar, como aconteceu para a App 03.
+Publicada pelo `.github/workflows/app-07-deploy.yml` em `responsavel.comunidadegame.org`, via
+Firebase Hosting — alvo `responsavel` de `firebase.json`, chave do segredo
+`APP07_CHAVE_DE_APLICACAO`.

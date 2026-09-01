@@ -1,0 +1,74 @@
+name: App 08 Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/app-08-apoiador/**"
+      - "comum/**"
+      - "firebase.json"
+      - ".firebaserc"
+      - ".github/workflows/app-08-deploy.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: app-08-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    name: Build e publicação no Firebase Hosting
+    runs-on: ubuntu-latest
+    environment: producao
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build de produção
+        working-directory: apps/app-08-apoiador
+        env:
+          VITE_CHAVE_DE_APLICACAO: ${{ secrets.APP08_CHAVE_DE_APLICACAO }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          # TEMPORÁRIO — reverter para https://api.comunidadegame.org assim que
+          # o TI liberar o domínio no filtro web. Mesmo contorno do
+          # app-01-deploy.yml, do app-03-deploy.yml, do app-05-deploy.yml e do
+          # app-09-deploy.yml: o FortiGate da rede corporativa bloqueia
+          # `*.comunidadegame.org` por ser domínio recém-registrado, e
+          # `.web.app` já é categorizado e passa no filtro.
+          VITE_URL_DO_NUCLEO: https://comunidade-game-api.web.app
+        run: npm run build
+
+      - name: Autenticar no Google Cloud (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      # Firebase CLI direto, e não `FirebaseExtended/action-hosting-deploy`:
+      # aquela ação exige `firebaseServiceAccount`, uma chave JSON de conta de
+      # serviço — justamente o que a Workload Identity Federation existe para
+      # evitar. O CLI honra as credenciais que o passo anterior exportou em
+      # GOOGLE_APPLICATION_CREDENTIALS.
+      #
+      # Versão exata, e não `@latest` nem faixa `^`: a CLI é baixada a cada
+      # publicação, e sem fixá-la o comportamento do deploy muda sozinho entre
+      # duas execuções. Subir a versão é ato revisado (design — Decisions),
+      # e a mesma versão das demais esteiras de deploy mantém todas iguais.
+      - name: Publicar no Firebase Hosting
+        run: |
+          npx --yes firebase-tools@15.28.1 deploy \
+            --only hosting:apoiador \
+            --project "${{ secrets.GCP_PROJECT_ID }}" \
+            --non-interactive
