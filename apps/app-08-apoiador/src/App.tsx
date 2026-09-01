@@ -5,6 +5,8 @@ import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeTrocaDeSenha } from "./autenticacao/TelaDeTrocaDeSenha";
 import { TelaDeAcompanhamento } from "./desafiosExtras/TelaDeAcompanhamento";
 import { TelaDeProposta } from "./desafiosExtras/TelaDeProposta";
+import { TelaDeComprobatorios } from "./documentos/TelaDeComprobatorios";
+import { TelaDeIdentidadePublica } from "./identidade/TelaDeIdentidadePublica";
 import { TelaDePreCadastro } from "./preCadastro/TelaDePreCadastro";
 
 const MENSAGEM_DE_RECUSA_DE_OUTRO_PAPEL =
@@ -16,7 +18,7 @@ const MENSAGEM_DE_RECUSA_DE_OUTRO_PAPEL =
 // cadastro, a um clique dela; a senha provisória tranca todas as demais
 // telas até a troca, sem caminho de contorno (`RF-01-02`, `RN-01-32`,
 // `RF-14-01`, `RF-14-09`, PRD-14 §4, design — decisão 1).
-type Area = "propor" | "acompanhar";
+type Area = "identidade" | "documentos" | "propor" | "acompanhar";
 type TelaSemSessao = "porta" | "entrada";
 
 function Conteudo() {
@@ -56,6 +58,18 @@ function Conteudo() {
     <>
       <nav className="cg-navegacao-de-area" aria-label="Áreas do Apoiador">
         <Botao
+          variante={area === "identidade" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("identidade")}
+        >
+          Identidade pública
+        </Botao>
+        <Botao
+          variante={area === "documentos" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("documentos")}
+        >
+          Documentos comprobatórios
+        </Botao>
+        <Botao
           variante={area === "propor" ? "primaria" : "secundaria"}
           onClick={() => definirArea("propor")}
         >
@@ -68,6 +82,8 @@ function Conteudo() {
           Meus desafios
         </Botao>
       </nav>
+      {area === "identidade" && <TelaDeIdentidadePublica />}
+      {area === "documentos" && <TelaDeComprobatorios />}
       {area === "propor" && <TelaDeProposta />}
       {area === "acompanhar" && <TelaDeAcompanhamento />}
     </>

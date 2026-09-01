@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from pydantic import BaseModel
 
 
@@ -332,6 +334,23 @@ class EdicaoDeDesafioExtraPublicadoRecusada(ErroDeAplicacao):
     status_code = 405
     codigo = "edicao_de_desafio_extra_publicado_recusada"
     mensagem = "Desafio extra publicado não é editável; a correção é uma proposta nova."
+
+
+class PisoDeMoedasNaoAlcancado(ErroDeAplicacao):
+    """`RF-14-14`, `RN-14-11`: o avatar próprio do Apoiador só grava a partir
+    de 10 moedas acumuladas em aportes homologados; `moedas_faltantes` é o
+    que falta, embutido na mensagem para a tela dizer sem calcular de
+    novo."""
+
+    status_code = 409
+    codigo = "piso_de_moedas_nao_alcancado"
+    mensagem = "Piso de moedas acumuladas ainda não alcançado."
+
+    def __init__(self, *, moedas_faltantes: Decimal) -> None:
+        super().__init__(
+            f"Faltam {moedas_faltantes} moedas acumuladas para liberar o avatar próprio."
+        )
+        self.moedas_faltantes = moedas_faltantes
 
 
 class FreioPorOrigemAcionado(ErroDeAplicacao):

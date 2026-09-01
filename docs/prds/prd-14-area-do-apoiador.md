@@ -484,7 +484,9 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessã
 | GET    | `/v1/missoes-do-apoiador`            | pública      | Missões abertas, por nível de necessidade, com o que falta em moedas |
 | GET    | `/v1/eu/apoiador/sustento`           | Apoiador     | Nível de sustento, selos e a frente que falta para o próximo         |
 | PUT    | `/v1/eu/apoiador/identidade`         | Apoiador     | Define ou troca avatar e nick exibidos no card                       |
+| GET    | `/v1/eu/apoiador/identidade`         | Apoiador     | Nick, avatar, moedas acumuladas e quanto falta para o avatar próprio |
 | POST   | `/v1/eu/apoiador/documentos`         | Apoiador     | Envia comprobatório para o Admin anexar ao cadastro                  |
+| GET    | `/v1/eu/apoiador/documentos`         | Apoiador     | O que foi declarado, com a marca de publicado ou pendente            |
 | GET    | `/v1/meus-aportes`                   | Apoiador     | Aportes homologados e Poder Sustentador, em moedas                   |
 | POST   | `/v1/aportes/declarados`             | Apoiador     | Declara aporte em dinheiro, com comprovante, pendente                |
 | GET    | `/v1/eu/aportes/declarados`          | Apoiador     | Situação dos aportes declarados: pendente, homologado, recusado      |

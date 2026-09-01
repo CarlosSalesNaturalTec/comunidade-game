@@ -166,6 +166,10 @@ visitante, e arquivo guardado na plataforma não é. O que o Admin declara no ca
 removível pelo próprio adulto**: ele acrescenta e remove só o que publicar depois, e a prova que
 sustentou o cadastro permanece.
 
+O Mestre publica o próprio artefato ao declará-lo. O Apoiador não: o que ele declara depois do
+cadastro nasce **pendente** e só vai à página pública quando um **Admin o anexa ao cadastro** —
+decisão do fundador, 2026-09-01.
+
 ### Comunidades Virtuais
 
 A Comunidade Virtual é a **representação digital da comunidade em que o Guerreiro(a) vive na

@@ -153,3 +153,44 @@ def test_artefato_declarado_por_admin_no_cadastro_nao_e_removido_pelo_mestre(
 
     leitura_apos = cliente.get(f"/v1/mestres/{mestre.id}/artefatos", headers=cabecalhos)
     assert len(leitura_apos.json()) == 1
+
+
+def test_artefato_do_mestre_e_do_cadastro_seguem_publicos_com_as_colunas_novas_vazias(
+    sessao, cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    """`anexado_por_id` e `anexado_em` nascem nulas para o legado do Mestre
+    e o declarado por Admin no cadastro, e nenhum dos dois gira em torno
+    delas: seguem públicos na leitura, sem gate algum de anexação — essa
+    exigência é só do Apoiador (`RF-09-66`, `RN-14-12`, design — decisão
+    5)."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+
+    publicado_pelo_mestre = ArtefatoComprobatorio(
+        persona_id=mestre.id,
+        endereco="https://exemplo.org/curriculo",
+        rotulo="Currículo",
+        declarado_por_id=mestre.id,
+    )
+    declarado_no_cadastro = ArtefatoComprobatorio(
+        persona_id=mestre.id,
+        endereco="https://exemplo.org/curriculo-do-cadastro",
+        rotulo="Currículo do cadastro",
+        declarado_por_id=admin.id,
+    )
+    sessao.add_all([publicado_pelo_mestre, declarado_no_cadastro])
+    sessao.commit()
+
+    assert publicado_pelo_mestre.anexado_por_id is None
+    assert publicado_pelo_mestre.anexado_em is None
+    assert declarado_no_cadastro.anexado_por_id is None
+    assert declarado_no_cadastro.anexado_em is None
+
+    token, _ = criar_sessao_de_teste(mestre)
+    leitura = cliente.get(
+        f"/v1/mestres/{mestre.id}/artefatos",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+    assert leitura.status_code == 200
+    assert len(leitura.json()) == 2

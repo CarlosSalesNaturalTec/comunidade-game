@@ -1,9 +1,19 @@
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
-from nucleo.aportes.modelo import FormaDeAporte
+from nucleo.aportes.modelo import FormaDeAporte, SituacaoDeRessarcimento
+from nucleo.fila.modelo import (
+    PretensaoDeParticipacao,
+    SituacaoDaSolicitacao,
+    SolicitacaoDeParticipacao,
+)
 from nucleo.livro_razao.modelo import NaturezaDoLancamento
 from nucleo.personas.modelo import Papel
-from nucleo.poder_sustentador.regra import contagem_de_absorcoes_de, poder_sustentador_de
+from nucleo.poder_sustentador.regra import (
+    contagem_de_absorcoes_de,
+    moedas_acumuladas_de,
+    poder_sustentador_de,
+)
 
 
 def test_o_aporte_sobe_o_poder_sustentador_exatamente_no_que_valeu(
@@ -265,3 +275,120 @@ def test_quem_nunca_absorveu_conta_zero(sessao, criar_persona):
     apoiador = criar_persona(Papel.apoiador)
 
     assert contagem_de_absorcoes_de(sessao, provedor_id=apoiador.id) == 0
+
+
+def test_moedas_acumuladas_soma_os_aportes_homologados(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_lancamento,
+    criar_aporte,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    tipo = criar_tipo_de_recurso(admin)
+
+    for valor in (Decimal("3.00"), Decimal("5.00")):
+        credito = criar_lancamento(
+            admin,
+            tipo,
+            ponto_de_apoio,
+            natureza=NaturezaDoLancamento.credito,
+            quantidade=valor,
+            valor_em_moedas=valor,
+        )
+        criar_aporte(
+            admin,
+            apoiador,
+            tipo,
+            ponto_de_apoio,
+            credito,
+            quantidade=valor,
+            valor_em_moedas=valor,
+            forma=FormaDeAporte.financeira,
+        )
+
+    assert moedas_acumuladas_de(sessao, provedor_id=apoiador.id) == Decimal("8.00")
+
+
+def test_moedas_acumuladas_deixa_solicitacao_pendente_fora_da_conta(sessao, criar_persona):
+    apoiador = criar_persona(Papel.apoiador)
+    # O aporte declarado no pré-cadastro só vira `Aporte` — e só então entra
+    # na conta — quando um Admin o homologa; enquanto isso é só a
+    # solicitação, fora da tabela que `moedas_acumuladas_de` soma
+    # (`RN-14-11`, design — Decisions 1).
+    sessao.add(
+        SolicitacaoDeParticipacao(
+            situacao=SituacaoDaSolicitacao.recebida,
+            nome_ou_razao_social=apoiador.nome or "Apoiador",
+            email="apoiador@example.com",
+            whatsapp="11999999999",
+            pretensao=PretensaoDeParticipacao.apoiador,
+            apresentacao="Aporte declarado ainda pendente de homologação.",
+            aporte_declarado="R$ 100,00",
+            prazo=datetime.now(UTC) + timedelta(days=30),
+        )
+    )
+    sessao.commit()
+
+    assert moedas_acumuladas_de(sessao, provedor_id=apoiador.id) == Decimal("0")
+
+
+def test_moedas_acumuladas_nao_regride_com_ressarcimento_pago(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_lancamento,
+    criar_aporte,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    tipo = criar_tipo_de_recurso(admin)
+
+    credito = criar_lancamento(
+        admin,
+        tipo,
+        ponto_de_apoio,
+        natureza=NaturezaDoLancamento.credito,
+        quantidade=Decimal("10.00"),
+        valor_em_moedas=Decimal("10.00"),
+    )
+    aporte = criar_aporte(
+        admin,
+        apoiador,
+        tipo,
+        ponto_de_apoio,
+        credito,
+        quantidade=Decimal("10.00"),
+        valor_em_moedas=Decimal("10.00"),
+        forma=FormaDeAporte.absorcao,
+        ressarcivel=True,
+        situacao_de_ressarcimento=SituacaoDeRessarcimento.em_aberto,
+    )
+
+    # O ressarcimento paga e emite o ajuste de quantidade zero que reverte
+    # as moedas do crédito original — é o que derruba o Poder Sustentador
+    # sem tocar no acumulado (`ressarcimentos.regra.registrar_ressarcimento`).
+    criar_lancamento(
+        admin,
+        tipo,
+        ponto_de_apoio,
+        natureza=NaturezaDoLancamento.ajuste,
+        quantidade=Decimal("0"),
+        valor_em_moedas=Decimal("-10.00"),
+        lancamento_original=credito,
+        motivo_do_ajuste=f"Ressarcimento do aporte {aporte.id}",
+    )
+    aporte.situacao_de_ressarcimento = SituacaoDeRessarcimento.ressarcido
+    sessao.commit()
+
+    assert poder_sustentador_de(sessao, provedor_id=apoiador.id) == Decimal("0")
+    assert moedas_acumuladas_de(sessao, provedor_id=apoiador.id) == Decimal("10.00")

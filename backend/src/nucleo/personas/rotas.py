@@ -1,5 +1,6 @@
 import uuid
 from datetime import date, datetime
+from decimal import Decimal
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -21,16 +22,22 @@ from ..paginacao import (
     decodificar_cursor,
 )
 from ..permissoes import Operacao, conferir_permissao, exigir_permissao
+from ..poder_sustentador.regra import moedas_acumuladas_de
 from ..protecao.freio import exigir_freio_por_origem
 from ..tempo import agora
 from .credenciais import criar_credencial_provisoria
 from .modelo import ArtefatoComprobatorio, Credencial, Nick, Papel, Persona, TipoDeCredencial
 from .regra import (
     MENSAGEM_NICK_EM_USO,
+    PISO_DE_MOEDAS_DO_AVATAR_PROPRIO,
+    anexar_documento_do_apoiador,
+    artefato_esta_publicado,
     cadastrar_adulto_com_artefatos,
     cadastrar_guerreiro_no_encontro,
     cadastrar_guerreiro_pela_gestao,
     conferir_disponibilidade_de_nick,
+    declarar_documento_do_apoiador,
+    definir_avatar_do_apoiador,
     definir_ou_trocar_nick,
     editar_guerreiro,
     incluir_admin,
@@ -542,21 +549,155 @@ class MinhaIdentidadeSaida(BaseModel):
     nick: str
 
 
+class IdentidadeDoApoiadorEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    # Cada um opcional: a tela grava nick e avatar juntos ou em separado, a
+    # qualquer tempo (`RF-14-12`, `RF-14-17`, design — Decisions 2).
+    nick: str | None = Field(default=None, min_length=1)
+    avatar: str | None = Field(default=None, min_length=1)
+
+
+class IdentidadeDoApoiadorSaida(BaseModel):
+    nick: str | None
+    avatar: str | None
+    moedas_acumuladas: Decimal
+    avatar_proprio_liberado: bool
+    moedas_faltantes_para_avatar_proprio: Decimal | None
+
+
+def _exigir_apoiador_em_sessao(contexto: ContextoDaSessao) -> None:
+    if contexto.papel != Papel.apoiador:
+        raise PermissaoNegada(mensagem="Só o Apoiador alcança a própria identidade por aqui.")
+
+
+def _saida_da_identidade_do_apoiador(
+    sessao_bd: Session, persona: Persona
+) -> IdentidadeDoApoiadorSaida:
+    nick = sessao_bd.query(Nick).filter_by(persona_id=persona.id).first()
+    acumulado = moedas_acumuladas_de(sessao_bd, provedor_id=persona.id)
+    liberado = acumulado >= PISO_DE_MOEDAS_DO_AVATAR_PROPRIO
+    return IdentidadeDoApoiadorSaida(
+        nick=nick.valor if nick is not None else None,
+        avatar=persona.avatar,
+        moedas_acumuladas=acumulado,
+        avatar_proprio_liberado=liberado,
+        moedas_faltantes_para_avatar_proprio=(
+            None if liberado else PISO_DE_MOEDAS_DO_AVATAR_PROPRIO - acumulado
+        ),
+    )
+
+
 @roteador.put("/eu/apoiador/identidade")
 def definir_identidade_do_apoiador(
-    entrada: DefinirNickEntrada,
+    entrada: IdentidadeDoApoiadorEntrada,
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
-) -> MinhaIdentidadeSaida:
-    """Define ou troca o próprio nick do Apoiador em sessão; outro papel
-    recebe 403 (`RF-14-12`, `RN-14-10`, `RN-01-30`, PRD-01 §9)."""
-    if contexto.papel != Papel.apoiador:
-        raise PermissaoNegada(mensagem="Só o Apoiador define o próprio nick por aqui.")
+) -> IdentidadeDoApoiadorSaida:
+    """Define ou troca o nick e o avatar do Apoiador em sessão; outro papel
+    recebe 403. O avatar só grava a partir do piso de moedas — abaixo dele
+    o núcleo recusa com 409 (`RF-14-12`, `RF-14-14`, `RF-14-17`, `RN-14-10`,
+    `RN-14-11`, PRD-01 §9)."""
+    _exigir_apoiador_em_sessao(contexto)
 
     persona = sessao_bd.get(Persona, contexto.persona_id)
-    definir_ou_trocar_nick(sessao_bd, persona, entrada.nick)
+    if entrada.nick is not None:
+        definir_ou_trocar_nick(sessao_bd, persona, entrada.nick)
+    if entrada.avatar is not None:
+        definir_avatar_do_apoiador(sessao_bd, persona, entrada.avatar)
     sessao_bd.commit()
-    return MinhaIdentidadeSaida(nick=entrada.nick)
+    return _saida_da_identidade_do_apoiador(sessao_bd, persona)
+
+
+@roteador.get("/eu/apoiador/identidade")
+def ler_identidade_do_apoiador(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> IdentidadeDoApoiadorSaida:
+    """Leitura da própria identidade — nick, avatar, moedas acumuladas e o
+    que falta para o avatar próprio, sem valor em reais; outro papel
+    recebe 403 (`RF-14-15`, `RF-14-16`, `RN-14-09`, `RN-14-11`)."""
+    _exigir_apoiador_em_sessao(contexto)
+
+    persona = sessao_bd.get(Persona, contexto.persona_id)
+    return _saida_da_identidade_do_apoiador(sessao_bd, persona)
+
+
+class DocumentoDoApoiadorEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    endereco: str = Field(min_length=1)
+    rotulo: str = Field(min_length=1)
+
+
+class DocumentoDoApoiadorSaida(BaseModel):
+    id: uuid.UUID
+    endereco: str
+    rotulo: str
+    publicado: bool
+
+
+def _saida_do_documento_do_apoiador(artefato: ArtefatoComprobatorio) -> DocumentoDoApoiadorSaida:
+    return DocumentoDoApoiadorSaida(
+        id=artefato.id,
+        endereco=artefato.endereco,
+        rotulo=artefato.rotulo,
+        publicado=artefato_esta_publicado(artefato),
+    )
+
+
+@roteador.post("/eu/apoiador/documentos", status_code=201)
+def declarar_documento_do_apoiador_rota(
+    entrada: DocumentoDoApoiadorEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> DocumentoDoApoiadorSaida:
+    """O Apoiador em sessão declara o próprio comprobatório, que nasce
+    pendente até um Admin o anexar; outro papel recebe 403 (`RF-14-18`,
+    `RF-14-19`, `RN-14-12`)."""
+    _exigir_apoiador_em_sessao(contexto)
+
+    persona = sessao_bd.get(Persona, contexto.persona_id)
+    artefato = declarar_documento_do_apoiador(
+        sessao_bd, persona, endereco=entrada.endereco, rotulo=entrada.rotulo
+    )
+    sessao_bd.commit()
+    return _saida_do_documento_do_apoiador(artefato)
+
+
+@roteador.get("/eu/apoiador/documentos")
+def listar_documentos_do_apoiador_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[DocumentoDoApoiadorSaida]:
+    """O Apoiador em sessão lê o que declarou e o que já está publicado;
+    outro papel recebe 403 (`RF-14-20`, `RN-14-12`)."""
+    _exigir_apoiador_em_sessao(contexto)
+
+    artefatos = (
+        sessao_bd.query(ArtefatoComprobatorio).filter_by(persona_id=contexto.persona_id).all()
+    )
+    return [_saida_do_documento_do_apoiador(artefato) for artefato in artefatos]
+
+
+@roteador.post("/apoiadores/{id}/artefatos/{artefato_id}/anexacao")
+def anexar_documento_do_apoiador_rota(
+    id: uuid.UUID,
+    artefato_id: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> DocumentoDoApoiadorSaida:
+    """Só o Admin anexa ao cadastro o documento que o Apoiador declarou —
+    a anexação é o que o publica, no molde de
+    `POST /v1/consentimentos/{id}/anexo` (`RF-14-19`, `RN-14-12`,
+    `RF-02-101`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    artefato = sessao_bd.get(ArtefatoComprobatorio, artefato_id)
+    artefato = anexar_documento_do_apoiador(
+        sessao_bd, operador=operador, apoiador_id=id, artefato=artefato
+    )
+    sessao_bd.commit()
+    return _saida_do_documento_do_apoiador(artefato)
 
 
 @roteador.put("/eu/mestre/identidade")

@@ -222,36 +222,37 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 
 ### 6.2 Filas de avaliação
 
-| ID         | Requisito                                                                                                                                      | Prioridade |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-18` | Fila de solicitações exibe nome, e-mail, WhatsApp, pretensão, apresentação, instituição e links                                                | essencial  |
-| `RF-02-19` | Admin conclui a solicitação como aceita ou recusada, com parecer, autor e data registrados                                                     | essencial  |
-| `RF-02-65` | Solicitação de participação sem desfecho em 7 dias aparece em atraso na fila                                                                   | essencial  |
-| `RF-02-20` | Solicitação aceita abre o cadastro de Mestre ou Apoiador pré-preenchido, sem criar acesso                                                      | essencial  |
-| `RF-02-77` | Fila de solicitações de dados exibe solicitante, instituição, finalidade declarada e recorte pedido                                            | essencial  |
-| `RF-02-78` | Admin aprova ou recusa a solicitação de dados, com motivo, autor e data registrados                                                            | essencial  |
-| `RF-02-93` | Fila da solicitação de dados apresenta ao Admin o critério de aprovação: solicitante identificado, finalidade compatível e não reidentificação | essencial  |
-| `RF-02-79` | Entrega aprovada é gratuita e anonimizada, com registro do que foi entregue e a quem                                                           | essencial  |
-| `RF-02-21` | Fila de solicitações de novo local alerta enquanto houver solicitação em aberto                                                                | essencial  |
-| `RF-02-22` | Admin aprova a solicitação de local, criando-o, ou recusa com motivo                                                                           | essencial  |
-| `RF-02-23` | Fila de solicitações dos responsáveis exibe protocolo, tipo, situação e o prazo de 7 dias                                                      | essencial  |
-| `RF-02-24` | Admin registra o desfecho da solicitação do responsável, com quem tratou e quando                                                              | essencial  |
-| `RF-02-66` | Solicitação de responsável sem desfecho em 7 dias aparece em atraso na fila                                                                    | essencial  |
-| `RF-02-25` | Fila única reúne sugestões e propostas das Apps 05, 07, 08 e 09, identificando autor e persona                                                 | essencial  |
-| `RF-02-26` | Admin avalia a sugestão, muda o status e registra o retorno a quem propôs                                                                      | essencial  |
-| `RF-02-80` | Admin edita o conteúdo institucional da vitrine, com autor e data do que publicou                                                              | essencial  |
-| `RF-02-83` | Fila do pré-cadastro exibe a identificação, o aporte declarado e o comprovante anexado                                                         | essencial  |
-| `RF-02-84` | Admin valida o comprovante e homologa o aporte, que é convertido em moedas                                                                     | essencial  |
-| `RF-02-85` | Aprovação cria o cadastro de Apoiador e publica o card na vitrine com o total em moedas                                                        | essencial  |
-| `RF-02-86` | Pré-cadastro sem comprovante legível é recusado com motivo, sem criar cadastro nem aporte                                                      | essencial  |
-| `RF-02-87` | Admin lê a fila das solicitações de chave, com quem pediu e o que pretende construir                                                           | essencial  |
-| `RF-02-88` | Admin aprova ou recusa a solicitação de chave, com parecer e autoria                                                                           | essencial  |
-| `RF-02-89` | Aprovação emite a chave e exibe o identificador e o segredo uma única vez, para entrega ao solicitante                                         | essencial  |
-| `RF-02-90` | Painel mostra as chaves emitidas com prazo de apresentação, URL apresentada e situação                                                         | essencial  |
-| `RF-02-91` | Painel destaca as chaves com prazo a vencer e as revogadas automaticamente por prazo vencido                                                   | essencial  |
-| `RF-02-92` | Admin revoga chave a qualquer tempo, com motivo registrado                                                                                     | essencial  |
-| `RF-02-27` | Fila de desafios extras mostra apenas os já validados pelo Mestre da trilha                                                                    | essencial  |
-| `RF-02-28` | Admin aprova o desafio extra, e a aprovação é recusada sem o lastro da recompensa registrado                                                   | essencial  |
+| ID          | Requisito                                                                                                                                      | Prioridade |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-02-18`  | Fila de solicitações exibe nome, e-mail, WhatsApp, pretensão, apresentação, instituição e links                                                | essencial  |
+| `RF-02-19`  | Admin conclui a solicitação como aceita ou recusada, com parecer, autor e data registrados                                                     | essencial  |
+| `RF-02-65`  | Solicitação de participação sem desfecho em 7 dias aparece em atraso na fila                                                                   | essencial  |
+| `RF-02-20`  | Solicitação aceita abre o cadastro de Mestre ou Apoiador pré-preenchido, sem criar acesso                                                      | essencial  |
+| `RF-02-77`  | Fila de solicitações de dados exibe solicitante, instituição, finalidade declarada e recorte pedido                                            | essencial  |
+| `RF-02-78`  | Admin aprova ou recusa a solicitação de dados, com motivo, autor e data registrados                                                            | essencial  |
+| `RF-02-93`  | Fila da solicitação de dados apresenta ao Admin o critério de aprovação: solicitante identificado, finalidade compatível e não reidentificação | essencial  |
+| `RF-02-79`  | Entrega aprovada é gratuita e anonimizada, com registro do que foi entregue e a quem                                                           | essencial  |
+| `RF-02-21`  | Fila de solicitações de novo local alerta enquanto houver solicitação em aberto                                                                | essencial  |
+| `RF-02-22`  | Admin aprova a solicitação de local, criando-o, ou recusa com motivo                                                                           | essencial  |
+| `RF-02-23`  | Fila de solicitações dos responsáveis exibe protocolo, tipo, situação e o prazo de 7 dias                                                      | essencial  |
+| `RF-02-24`  | Admin registra o desfecho da solicitação do responsável, com quem tratou e quando                                                              | essencial  |
+| `RF-02-66`  | Solicitação de responsável sem desfecho em 7 dias aparece em atraso na fila                                                                    | essencial  |
+| `RF-02-25`  | Fila única reúne sugestões e propostas das Apps 05, 07, 08 e 09, identificando autor e persona                                                 | essencial  |
+| `RF-02-26`  | Admin avalia a sugestão, muda o status e registra o retorno a quem propôs                                                                      | essencial  |
+| `RF-02-80`  | Admin edita o conteúdo institucional da vitrine, com autor e data do que publicou                                                              | essencial  |
+| `RF-02-83`  | Fila do pré-cadastro exibe a identificação, o aporte declarado e o comprovante anexado                                                         | essencial  |
+| `RF-02-84`  | Admin valida o comprovante e homologa o aporte, que é convertido em moedas                                                                     | essencial  |
+| `RF-02-85`  | Aprovação cria o cadastro de Apoiador e publica o card na vitrine com o total em moedas                                                        | essencial  |
+| `RF-02-86`  | Pré-cadastro sem comprovante legível é recusado com motivo, sem criar cadastro nem aporte                                                      | essencial  |
+| `RF-02-87`  | Admin lê a fila das solicitações de chave, com quem pediu e o que pretende construir                                                           | essencial  |
+| `RF-02-88`  | Admin aprova ou recusa a solicitação de chave, com parecer e autoria                                                                           | essencial  |
+| `RF-02-89`  | Aprovação emite a chave e exibe o identificador e o segredo uma única vez, para entrega ao solicitante                                         | essencial  |
+| `RF-02-90`  | Painel mostra as chaves emitidas com prazo de apresentação, URL apresentada e situação                                                         | essencial  |
+| `RF-02-91`  | Painel destaca as chaves com prazo a vencer e as revogadas automaticamente por prazo vencido                                                   | essencial  |
+| `RF-02-92`  | Admin revoga chave a qualquer tempo, com motivo registrado                                                                                     | essencial  |
+| `RF-02-27`  | Fila de desafios extras mostra apenas os já validados pelo Mestre da trilha                                                                    | essencial  |
+| `RF-02-28`  | Admin aprova o desafio extra, e a aprovação é recusada sem o lastro da recompensa registrado                                                   | essencial  |
+| `RF-02-101` | Admin anexa ao cadastro do Apoiador o documento comprobatório que ele declarou pela App 08, publicando-o                                       | essencial  |
 
 ### 6.3 Atividades, agenda e lançamentos
 
@@ -391,49 +392,50 @@ A aplicação consome as convenções do PRD-01 — prefixo `/v1`, token de sess
 único, listagem paginada com filtro de comunidade, período e persona. As rotas de território e
 de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 
-| Método | Rota                                              | Autenticação    | Descrição                                                                   |
-| ------ | ------------------------------------------------- | --------------- | --------------------------------------------------------------------------- |
-| POST   | `/v1/guerreiros`                                  | Admin           | Cadastra Guerreiro(a) pela gestão                                           |
-| POST   | `/v1/consentimentos/{id}/anexo`                   | Admin           | Anexa a digitalização do termo assinado no encontro                         |
-| POST   | `/v1/mestres`                                     | Admin           | Cadastra Mestre com os links comprobatórios declarados                      |
-| POST   | `/v1/apoiadores`                                  | Admin           | Cadastra Apoiador com os links e os termos de doação                        |
-| POST   | `/v1/admins`                                      | Admin           | Inclui novo Admin manualmente                                               |
-| GET    | `/v1/aulas/{id}/equipes`                          | Admin ou Mestre | Lista as equipes formadas no App 01 naquela aula                            |
-| POST   | `/v1/poderes`                                     | Admin           | Mantém o catálogo de poderes                                                |
-| GET    | `/v1/aulas/vigentes`                              | pública         | Aulas em curso na data e hora, para o App 01 identificar a comunidade       |
-| GET    | `/v1/solicitacoes-de-participacao`                | Admin           | Fila das solicitações, com aporte declarado e comprovante                   |
-| POST   | `/v1/solicitacoes-de-participacao/{id}/avaliacao` | Admin           | Aceita ou recusa, com parecer e autor                                       |
-| GET    | `/v1/solicitacoes-de-dados`                       | Admin           | Fila dos pedidos de conjunto de dados                                       |
-| POST   | `/v1/solicitacoes-de-dados/{id}/avaliacao`        | Admin           | Aprova ou recusa, com motivo, autor e o que foi entregue                    |
-| GET    | `/v1/solicitacoes-de-chave`                       | Admin           | Fila dos pedidos de chave da Área do Apoiador Desenvolvedor                 |
-| POST   | `/v1/solicitacoes-de-chave/{id}/avaliacao`        | Admin           | Aprova ou recusa, com parecer e autoria                                     |
-| POST   | `/v1/chaves`                                      | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez           |
-| GET    | `/v1/chaves`                                      | Admin           | Chaves emitidas, com prazo, URL apresentada e situação                      |
-| DELETE | `/v1/chaves/{id}`                                 | Admin           | Revoga a chave, com motivo e autoria                                        |
-| PUT    | `/v1/conteudo-institucional/{secao}`              | Admin           | Edita "Quem somos", "Contatos" ou "Como apoiar"                             |
-| GET    | `/v1/solicitacoes-do-responsavel`                 | Admin           | Fila das solicitações vindas da App 07                                      |
-| POST   | `/v1/solicitacoes-do-responsavel/{id}/tratamento` | Admin           | Registra o desfecho, com quem tratou e quando                               |
-| GET    | `/v1/sugestoes`                                   | Admin           | Fila única de sugestões e propostas das Apps 05, 07, 08, 09                 |
-| POST   | `/v1/sugestoes/{id}/avaliacao`                    | Admin           | Muda o status e registra o retorno a quem propôs                            |
-| GET    | `/v1/desafios-extras/pendentes`                   | Admin           | Desafios já validados pelo Mestre, aguardando aprovação                     |
-| POST   | `/v1/desafios-extras/{id}/aprovacao`              | Admin           | Aprova, exigindo lastro registrado, ou recusa com motivo                    |
-| POST   | `/v1/atividades`                                  | Admin           | Cadastra atividade com pontuação, recompensa e recursos                     |
-| POST   | `/v1/aulas`                                       | Admin           | Agenda a aula com comunidade, data e horários, e dispara a reserva          |
-| POST   | `/v1/aulas/{id}/lancamentos`                      | Admin           | Lança a atividade realizada e os resultados, convertendo a reserva em baixa |
-| POST   | `/v1/aulas/{id}/cancelamento`                     | Admin ou Mestre | Cancela a aula agendada com motivo e libera a reserva                       |
-| POST   | `/v1/aulas/{id}/presencas`                        | Admin           | Confirma a presença que faltou, com registro de quem confirmou              |
-| POST   | `/v1/aulas/{id}/presencas/{id}/anulacao`          | Admin           | Anula a presença registrada por engano, com motivo, sem apagar o registro   |
-| POST   | `/v1/ocorrencias-de-conduta`                      | Mestre ou Admin | Registra infração e a pontuação negativa correspondente                     |
-| GET    | `/v1/lancamentos`                                 | Admin           | Lançamentos de um ponto de apoio, filtro obrigatório de ponto de apoio      |
-| GET    | `/v1/painel-do-dia`                               | Mestre ou Admin | Estado do encontro em andamento, em leitura                                 |
-| POST   | `/v1/partidas-de-quiz`                            | Mestre ou Admin | Abre a partida com banco de perguntas e equipes                             |
-| POST   | `/v1/partidas-de-quiz/{id}/perguntas`             | Mestre ou Admin | Dá o _start_ da pergunta corrente                                           |
-| POST   | `/v1/partidas-de-quiz/{id}/resultado`             | Mestre ou Admin | Libera o resultado da pergunta no ar, sem creditar                          |
-| POST   | `/v1/partidas-de-quiz/{id}/anulacoes`             | Mestre ou Admin | Anula a pergunta contestada, sem crédito para ninguém                       |
-| GET    | `/v1/partidas-de-quiz/{id}`                       | Mestre ou Admin | Estado da partida, sondado a cada 2 segundos                                |
-| POST   | `/v1/partidas-de-quiz/{id}/encerramento`          | Mestre ou Admin | Encerra a partida e lança a pontuação                                       |
-| GET    | `/v1/entregas`                                    | Admin           | Lê as entregas confirmadas pelo Mestre, com tipo de recurso e baixa         |
-| GET    | `/v1/auditoria`                                   | Admin           | Trilha de auditoria, com filtro por autor e período                         |
+| Método | Rota                                                   | Autenticação    | Descrição                                                                         |
+| ------ | ------------------------------------------------------ | --------------- | --------------------------------------------------------------------------------- |
+| POST   | `/v1/guerreiros`                                       | Admin           | Cadastra Guerreiro(a) pela gestão                                                 |
+| POST   | `/v1/consentimentos/{id}/anexo`                        | Admin           | Anexa a digitalização do termo assinado no encontro                               |
+| POST   | `/v1/mestres`                                          | Admin           | Cadastra Mestre com os links comprobatórios declarados                            |
+| POST   | `/v1/apoiadores`                                       | Admin           | Cadastra Apoiador com os links e os termos de doação                              |
+| POST   | `/v1/admins`                                           | Admin           | Inclui novo Admin manualmente                                                     |
+| GET    | `/v1/aulas/{id}/equipes`                               | Admin ou Mestre | Lista as equipes formadas no App 01 naquela aula                                  |
+| POST   | `/v1/poderes`                                          | Admin           | Mantém o catálogo de poderes                                                      |
+| GET    | `/v1/aulas/vigentes`                                   | pública         | Aulas em curso na data e hora, para o App 01 identificar a comunidade             |
+| GET    | `/v1/solicitacoes-de-participacao`                     | Admin           | Fila das solicitações, com aporte declarado e comprovante                         |
+| POST   | `/v1/solicitacoes-de-participacao/{id}/avaliacao`      | Admin           | Aceita ou recusa, com parecer e autor                                             |
+| GET    | `/v1/solicitacoes-de-dados`                            | Admin           | Fila dos pedidos de conjunto de dados                                             |
+| POST   | `/v1/solicitacoes-de-dados/{id}/avaliacao`             | Admin           | Aprova ou recusa, com motivo, autor e o que foi entregue                          |
+| GET    | `/v1/solicitacoes-de-chave`                            | Admin           | Fila dos pedidos de chave da Área do Apoiador Desenvolvedor                       |
+| POST   | `/v1/solicitacoes-de-chave/{id}/avaliacao`             | Admin           | Aprova ou recusa, com parecer e autoria                                           |
+| POST   | `/v1/chaves`                                           | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez                 |
+| GET    | `/v1/chaves`                                           | Admin           | Chaves emitidas, com prazo, URL apresentada e situação                            |
+| DELETE | `/v1/chaves/{id}`                                      | Admin           | Revoga a chave, com motivo e autoria                                              |
+| PUT    | `/v1/conteudo-institucional/{secao}`                   | Admin           | Edita "Quem somos", "Contatos" ou "Como apoiar"                                   |
+| GET    | `/v1/solicitacoes-do-responsavel`                      | Admin           | Fila das solicitações vindas da App 07                                            |
+| POST   | `/v1/solicitacoes-do-responsavel/{id}/tratamento`      | Admin           | Registra o desfecho, com quem tratou e quando                                     |
+| GET    | `/v1/sugestoes`                                        | Admin           | Fila única de sugestões e propostas das Apps 05, 07, 08, 09                       |
+| POST   | `/v1/sugestoes/{id}/avaliacao`                         | Admin           | Muda o status e registra o retorno a quem propôs                                  |
+| GET    | `/v1/desafios-extras/pendentes`                        | Admin           | Desafios já validados pelo Mestre, aguardando aprovação                           |
+| POST   | `/v1/desafios-extras/{id}/aprovacao`                   | Admin           | Aprova, exigindo lastro registrado, ou recusa com motivo                          |
+| POST   | `/v1/atividades`                                       | Admin           | Cadastra atividade com pontuação, recompensa e recursos                           |
+| POST   | `/v1/aulas`                                            | Admin           | Agenda a aula com comunidade, data e horários, e dispara a reserva                |
+| POST   | `/v1/aulas/{id}/lancamentos`                           | Admin           | Lança a atividade realizada e os resultados, convertendo a reserva em baixa       |
+| POST   | `/v1/aulas/{id}/cancelamento`                          | Admin ou Mestre | Cancela a aula agendada com motivo e libera a reserva                             |
+| POST   | `/v1/aulas/{id}/presencas`                             | Admin           | Confirma a presença que faltou, com registro de quem confirmou                    |
+| POST   | `/v1/aulas/{id}/presencas/{id}/anulacao`               | Admin           | Anula a presença registrada por engano, com motivo, sem apagar o registro         |
+| POST   | `/v1/ocorrencias-de-conduta`                           | Mestre ou Admin | Registra infração e a pontuação negativa correspondente                           |
+| GET    | `/v1/lancamentos`                                      | Admin           | Lançamentos de um ponto de apoio, filtro obrigatório de ponto de apoio            |
+| GET    | `/v1/painel-do-dia`                                    | Mestre ou Admin | Estado do encontro em andamento, em leitura                                       |
+| POST   | `/v1/partidas-de-quiz`                                 | Mestre ou Admin | Abre a partida com banco de perguntas e equipes                                   |
+| POST   | `/v1/partidas-de-quiz/{id}/perguntas`                  | Mestre ou Admin | Dá o _start_ da pergunta corrente                                                 |
+| POST   | `/v1/partidas-de-quiz/{id}/resultado`                  | Mestre ou Admin | Libera o resultado da pergunta no ar, sem creditar                                |
+| POST   | `/v1/partidas-de-quiz/{id}/anulacoes`                  | Mestre ou Admin | Anula a pergunta contestada, sem crédito para ninguém                             |
+| GET    | `/v1/partidas-de-quiz/{id}`                            | Mestre ou Admin | Estado da partida, sondado a cada 2 segundos                                      |
+| POST   | `/v1/partidas-de-quiz/{id}/encerramento`               | Mestre ou Admin | Encerra a partida e lança a pontuação                                             |
+| GET    | `/v1/entregas`                                         | Admin           | Lê as entregas confirmadas pelo Mestre, com tipo de recurso e baixa               |
+| GET    | `/v1/auditoria`                                        | Admin           | Trilha de auditoria, com filtro por autor e período                               |
+| POST   | `/v1/apoiadores/{id}/artefatos/{artefato_id}/anexacao` | Admin           | Anexa ao cadastro o documento comprobatório que o Apoiador declarou, publicando-o |
 
 Erros previstos: agenda de aula sem comunidade ou sem horário final (422); consulta de aulas
 vigentes fora de qualquer janela agendada (200 com lista vazia — é o que faz o App 01 não
@@ -611,3 +613,4 @@ freio por origem: 3 envios por hora, com atraso progressivo e sem CAPTCHA (docum
 | `RF-02-66`               | 03 §9 (prazo de 7 dias da solicitação do responsável)     |
 | `RF-02-67`               | 04 §1 e PRD-07 (suprido o lastro, confirma e reserva)     |
 | `RF-02-68` e `RF-02-69`  | 03 §3.3 (digitalização do termo anexada pela gestão)      |
+| `RF-02-101`              | 02 §1 (anexação do comprobatório declarado pelo Apoiador) |
