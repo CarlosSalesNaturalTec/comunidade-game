@@ -2,10 +2,12 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useEffect, useState } from "react";
 import { TelaDeAutorizacao } from "../autorizacao/TelaDeAutorizacao";
+import { TelaDaImagemDoOnboarding } from "../biometria/TelaDaImagemDoOnboarding";
 import { TelaDeEvolucao } from "../evolucao/TelaDeEvolucao";
+import { TelaDeSolicitacoes } from "../solicitacoes/TelaDeSolicitacoes";
 import { type GuerreiroVinculado, listarMeusGuerreiros } from "./api";
 
-type Aba = "evolucao" | "autorizacao";
+type Aba = "evolucao" | "autorizacao" | "solicitacoes" | "imagem";
 
 // A lista dos vinculados, cada um com o grau de parentesco, e a alternância
 // entre eles como estado da própria aplicação — sem nova entrada e sem
@@ -87,9 +89,23 @@ export function TelaDeVinculados() {
             >
               Autorização
             </Botao>
+            <Botao
+              variante={aba === "solicitacoes" ? "primaria" : "secundaria"}
+              onClick={() => definirAba("solicitacoes")}
+            >
+              Solicitações
+            </Botao>
+            <Botao
+              variante={aba === "imagem" ? "primaria" : "secundaria"}
+              onClick={() => definirAba("imagem")}
+            >
+              Imagem do onboarding
+            </Botao>
           </nav>
           {aba === "evolucao" && <TelaDeEvolucao guerreiro={selecionado} />}
           {aba === "autorizacao" && <TelaDeAutorizacao guerreiro={selecionado} />}
+          {aba === "solicitacoes" && <TelaDeSolicitacoes guerreiro={selecionado} />}
+          {aba === "imagem" && <TelaDaImagemDoOnboarding guerreiro={selecionado} />}
         </>
       )}
     </Moldura>

@@ -61,6 +61,7 @@ from .solicitacoes_do_responsavel.rotas import roteador as roteador_de_solicitac
 from .template_de_missao.rotas import roteador as roteador_de_template_de_missao
 from .trilhas.rotas import roteador as roteador_de_trilhas
 from .trocas.rotas import roteador as roteador_de_trocas
+from .vinculo_do_guerreiro.rotas import roteador as roteador_de_vinculo_do_guerreiro
 from .vitrine.rotas import roteador as roteador_de_vitrine
 
 logger = logging.getLogger("nucleo")
@@ -210,6 +211,7 @@ incluir_roteador_de_dados(app, roteador_de_desafios_extras)
 incluir_roteador_de_dados(app, roteador_de_template_de_missao)
 incluir_roteador_de_dados(app, roteador_de_producoes)
 incluir_roteador_de_dados(app, roteador_de_assistente)
+incluir_roteador_de_dados(app, roteador_de_vinculo_do_guerreiro)
 # A rota local do protocolo `Content-Range` (`armazenamento.rotas`) só
 # conclui algo com o adaptador de disco — em produção, a dependência
 # devolve o Cloud Storage e o manipulador responde 404 (`RF-09-19`, design

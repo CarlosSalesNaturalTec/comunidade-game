@@ -1,5 +1,6 @@
 import uuid
-from datetime import UTC, datetime
+from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from functools import lru_cache
 from math import sqrt
 from random import Random
@@ -12,7 +13,13 @@ from ..consentimentos.regra import consultar_consentimento_vigente_em
 from ..erros import ErroDeValidacao
 from ..personas.modelo import Credencial, Nick, Papel, Persona, TipoDeCredencial
 from .cifra import cifrar_descritor, decifrar_descritor
-from .modelo import AcessoAoTemplate, DesfechoDoAcesso, NaturezaDoAcesso
+from .modelo import (
+    AcessoAoTemplate,
+    ApagamentoDeTemplate,
+    DesfechoDoAcesso,
+    GatilhoDeApagamento,
+    NaturezaDoAcesso,
+)
 
 # O tipo do consentimento que a captura biométrica exige (`RN-01-17`,
 # documento 03 §3.3), do conjunto fechado que `consentimentos.modelo` define
@@ -161,3 +168,102 @@ def autenticar_por_nick_e_descritor(
         )
 
     return guerreiro if confere else None
+
+
+# Os prazos do documento 03 §12.2, por gatilho (`RF-13-43`, `RF-13-44`,
+# `RN-13-22`, decisão do fundador, 2026-09-01).
+PRAZO_DE_APAGAMENTO_POR_GATILHO: dict[GatilhoDeApagamento, timedelta] = {
+    GatilhoDeApagamento.exclusao_deferida: timedelta(days=5),
+    GatilhoDeApagamento.recusa_biometria: timedelta(days=5),
+    GatilhoDeApagamento.fim_do_vinculo: timedelta(days=30),
+}
+
+
+def marcar_apagamento(
+    sessao: Session, *, guerreiro_id: uuid.UUID, gatilho: GatilhoDeApagamento
+) -> ApagamentoDeTemplate | None:
+    """Marca a data do apagamento do _template_ nos três gatilhos do
+    documento 03 §12.2. Sem _template_ gravado não marca e não falha: o ato
+    que disparou o gatilho é gravado do mesmo jeito. Havendo marca, não
+    substitui nem adia — o primeiro gatilho prevalece, e a marca nunca se
+    cancela (`RF-13-43`, `RF-13-44`, `RN-13-22`, decisão do fundador,
+    2026-09-01).
+    """
+    if _credencial_biometrica_ativa(sessao, guerreiro_id) is None:
+        return None
+
+    existente = sessao.query(ApagamentoDeTemplate).filter_by(guerreiro_id=guerreiro_id).first()
+    if existente is not None:
+        return existente
+
+    apagamento = ApagamentoDeTemplate(
+        guerreiro_id=guerreiro_id,
+        gatilho=gatilho,
+        apagar_em=datetime.now(UTC) + PRAZO_DE_APAGAMENTO_POR_GATILHO[gatilho],
+    )
+    sessao.add(apagamento)
+    sessao.flush()
+    return apagamento
+
+
+def apagar_templates_vencidos(sessao: Session) -> int:
+    """Remove a `Credencial` de tipo `biometria` cuja marca já venceu,
+    destruindo o dado cifrado sem deixar rastro do descritor. Audita o
+    apagamento como acesso de natureza `apagamento`, sem `acessado_por` —
+    o comando não tem persona — e preserva a auditoria anterior, que é
+    somente inserção. Repetível: quem já foi apagado não é contado de novo
+    (`RF-13-43`, `RN-01-14`, documento 03 §3.3).
+    """
+    vencidos = (
+        sessao.query(ApagamentoDeTemplate)
+        .filter(ApagamentoDeTemplate.apagar_em <= datetime.now(UTC))
+        .all()
+    )
+
+    apagados = 0
+    for marca in vencidos:
+        credencial = _credencial_biometrica_ativa(sessao, marca.guerreiro_id)
+        if credencial is None:
+            continue
+
+        sessao.delete(credencial)
+        sessao.flush()
+        _registrar_acesso(
+            sessao,
+            guerreiro_id=marca.guerreiro_id,
+            acessado_por=None,
+            natureza=NaturezaDoAcesso.apagamento,
+            desfecho=DesfechoDoAcesso.sucesso,
+        )
+        apagados += 1
+
+    return apagados
+
+
+@dataclass(frozen=True)
+class EstadoDaBiometria:
+    tem_template: bool
+    decisao_do_termo: DecisaoDeConsentimento | None
+    apagar_em: datetime | None
+    gatilho_do_apagamento: GatilhoDeApagamento | None
+
+
+def consultar_estado_da_biometria(sessao: Session, *, guerreiro_id: uuid.UUID) -> EstadoDaBiometria:
+    """`RF-13-27`, `RF-13-44`, `RN-13-04`: o estado da captura, a decisão
+    mais recente do termo próprio e, havendo marca, a data e o gatilho do
+    apagamento — nunca o descritor nem o _template_.
+    """
+    tem_template = _credencial_biometrica_ativa(sessao, guerreiro_id) is not None
+    vigente = consultar_consentimento_vigente_em(
+        sessao,
+        guerreiro_id=guerreiro_id,
+        tipo=TIPO_DE_CONSENTIMENTO_BIOMETRIA,
+        em=datetime.now(UTC),
+    )
+    apagamento = sessao.query(ApagamentoDeTemplate).filter_by(guerreiro_id=guerreiro_id).first()
+    return EstadoDaBiometria(
+        tem_template=tem_template,
+        decisao_do_termo=vigente.decisao if vigente is not None else None,
+        apagar_em=apagamento.apagar_em if apagamento is not None else None,
+        gatilho_do_apagamento=apagamento.gatilho if apagamento is not None else None,
+    )

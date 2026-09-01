@@ -359,8 +359,9 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
   Manager**, lida na subida do serviço — a cifra roda no próprio núcleo, sem chamada externa a
   cada entrada, e trocar de hospedagem só troca de onde a chave vem. **Todo acesso ao
   _template_ é auditado**, inclusive cada comparação de login, com guarda permanente.
-- **Retenção**: o _template_ é guardado enquanto durar o vínculo do Guerreiro(a) com o projeto
-  e excluído automaticamente ao fim dele, ou a pedido do responsável, nos prazos da §12.2.
+- **Retenção**: o _template_ é guardado enquanto durar o vínculo do Guerreiro(a) com o projeto,
+  e apagado — destruído, não só ocultado — nos três gatilhos e prazos da §12.2: fim do vínculo,
+  pedido de exclusão deferido e recusa da biometria pelo responsável.
 
 - **Direito de recusa**: quem não autoriza a imagem tem **alternativa equivalente** — nick mais
   confirmação do Mestre ou de um Admin, **no encontro**, tanto para registrar presença quanto
@@ -784,10 +785,11 @@ vínculo conferido por um Admin ou por um Mestre.
 - **Desligar a personalização não tira conteúdo.** Desligada, o Guerreiro(a) segue a trilha na
   ordem publicada e lê a explicação original do Mestre — é a alternativa equivalente exigida de
   toda recusa (§7.1).
-- **A exclusão do _template_ biométrico é avisada antes de acontecer.** Encerrado o vínculo, a
-  App 07 exibe ao responsável que o _template_ será apagado, **em que data** e o que isso
-  significa caso o Guerreiro(a) volte — nova captura, com novo termo. O aviso vive no canal
-  oficial, sem notificação por e-mail, como todo retorno do Ciclo 01.
+- **A exclusão do _template_ biométrico é avisada antes de acontecer.** Marcado o apagamento —
+  por fim do vínculo, pedido de exclusão deferido ou recusa da biometria —, a App 07 exibe ao
+  responsável **em que data**, o que o originou e o que isso significa caso o Guerreiro(a)
+  volte — nova captura, com novo termo. O aviso vive no canal oficial, sem notificação por
+  e-mail, como todo retorno do Ciclo 01.
 - **Linguagem simples**, na mesma medida exigida da política de privacidade.
 - **Responsável sem smartphone não fica de fora:** o ato pode ser feito por **atendimento
   assistido** — Admin ou Mestre abre a aplicação com ele presente, gravando quem operou e quem
@@ -965,23 +967,27 @@ Duas camadas, e a distinção entre elas é o que sustenta o desenho:
 
 ### 12.2 Prazos de guarda
 
-| Dado                                              | Prazo                                                             |
-| ------------------------------------------------- | ----------------------------------------------------------------- |
-| Transcrição de consulta respondida (Apps 05 e 01) | **7 dias** vinculada ao Guerreiro(a); depois só disciplina e data |
-| Transcrição de consulta recusada pelos filtros    | **Até o fim do ciclo**, restrita à gestão                         |
-| Transcrição de sugestão não adotada               | **90 dias** após o retorno a quem sugeriu                         |
-| Transcrição de sugestão adotada                   | Permanente, com autoria — é contribuição creditada                |
-| Foto e áudio da produção do Guerreiro(a)          | **Descartados na leitura**; ficam a transcrição e a devolutiva    |
-| Áudio de qualquer origem                          | **Descartado na transcrição**                                     |
-| Contexto de personalização da sessão              | **Descartado ao encerrar a sessão**; nada é inferido nem gravado  |
-| Motivo da ocorrência de conduta                   | **Até o fim do ciclo** em que ocorreu; o lançamento é que fica    |
-| _Template_ biométrico, fim do vínculo             | **30 dias**, com aviso prévio ao responsável                      |
-| _Template_ biométrico, pedido do responsável      | **5 dias**                                                        |
-| Métricas de custo e demanda de IA                 | Permanente, **sem nenhum dado pessoal** — só contadores           |
+| Dado                                                        | Prazo                                                             |
+| ----------------------------------------------------------- | ----------------------------------------------------------------- |
+| Transcrição de consulta respondida (Apps 05 e 01)           | **7 dias** vinculada ao Guerreiro(a); depois só disciplina e data |
+| Transcrição de consulta recusada pelos filtros              | **Até o fim do ciclo**, restrita à gestão                         |
+| Transcrição de sugestão não adotada                         | **90 dias** após o retorno a quem sugeriu                         |
+| Transcrição de sugestão adotada                             | Permanente, com autoria — é contribuição creditada                |
+| Foto e áudio da produção do Guerreiro(a)                    | **Descartados na leitura**; ficam a transcrição e a devolutiva    |
+| Áudio de qualquer origem                                    | **Descartado na transcrição**                                     |
+| Contexto de personalização da sessão                        | **Descartado ao encerrar a sessão**; nada é inferido nem gravado  |
+| Motivo da ocorrência de conduta                             | **Até o fim do ciclo** em que ocorreu; o lançamento é que fica    |
+| _Template_ biométrico, fim do vínculo                       | **30 dias**, com aviso prévio ao responsável                      |
+| _Template_ biométrico, pedido de exclusão deferido          | **5 dias**                                                        |
+| _Template_ biométrico, recusa da biometria pelo responsável | **5 dias**                                                        |
+| Métricas de custo e demanda de IA                           | Permanente, **sem nenhum dado pessoal** — só contadores           |
 
-**Fim do vínculo** é o marco desses prazos: ocorre **por pedido do responsável** ou
-**automaticamente após 12 meses sem nenhuma atividade registrada** — prazo que cobre o
-intervalo entre ciclos sem manter biometria de quem já saiu.
+**Fim do vínculo** do Guerreiro(a) com o projeto é o marco desses prazos: ocorre por **ato de
+Admin** ou por **varredura automática após 12 meses sem atividade registrada** — presença,
+resultado ou coleta, o que for mais recente; sem nenhum dos três, conta da criação da persona.
+Um **comando de manutenção periódico** cumpre os três prazos: encerra os vínculos vencidos e
+apaga os _templates_ vencidos, sem rota HTTP que dispare o apagamento. A marca do apagamento
+**não se cancela nem se adia**: quem volta ao projeto faz nova captura, com novo termo.
 
 **Ocorrência de conduta**: apaga-se a **descrição da conduta**, não o lançamento. Ao fim do
 ciclo — o mesmo marco em que a ocorrência sai do ranking (documento 11) — resta o lançamento

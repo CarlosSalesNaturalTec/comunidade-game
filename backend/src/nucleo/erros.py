@@ -316,6 +316,18 @@ class RevogacaoSemAutorizacaoVigente(ErroDeAplicacao):
     mensagem = "Não há autorização vigente para revogar sobre este Guerreiro(a)."
 
 
+class FimDeVinculoImutavel(ErroDeAplicacao):
+    status_code = 409
+    codigo = "fim_de_vinculo_imutavel"
+    mensagem = "Fim de vínculo é somente inserção: UPDATE e DELETE não são permitidos."
+
+
+class VinculoDoGuerreiroJaEncerrado(ErroDeAplicacao):
+    status_code = 409
+    codigo = "vinculo_do_guerreiro_ja_encerrado"
+    mensagem = "O vínculo deste Guerreiro(a) com o projeto já está encerrado."
+
+
 class EdicaoDeDesafioExtraPublicadoRecusada(ErroDeAplicacao):
     status_code = 405
     codigo = "edicao_de_desafio_extra_publicado_recusada"

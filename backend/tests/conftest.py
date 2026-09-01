@@ -325,6 +325,7 @@ def app(sessao, configuracao):
     from nucleo.template_de_missao.rotas import roteador as roteador_de_template_de_missao
     from nucleo.trilhas.rotas import roteador as roteador_de_trilhas
     from nucleo.trocas.rotas import roteador as roteador_de_trocas
+    from nucleo.vinculo_do_guerreiro.rotas import roteador as roteador_de_vinculo_do_guerreiro
     from nucleo.vitrine.rotas import roteador as roteador_de_vitrine
 
     aplicacao = criar_app()
@@ -380,6 +381,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_template_de_missao)
     incluir_roteador_de_dados(aplicacao, roteador_de_producoes)
     incluir_roteador_de_dados(aplicacao, roteador_de_assistente)
+    incluir_roteador_de_dados(aplicacao, roteador_de_vinculo_do_guerreiro)
     return aplicacao
 
 
