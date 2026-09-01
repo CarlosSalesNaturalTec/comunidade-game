@@ -1,5 +1,5 @@
 import { chamarNucleo } from "comum/api";
-import type { PerfilDeApoiador } from "./escada";
+import type { PerfilDeApoiador } from "../compartilhado/escada";
 
 export interface NecessidadeDeRecurso {
   aula_id: string;

@@ -353,6 +353,15 @@ class PisoDeMoedasNaoAlcancado(ErroDeAplicacao):
         self.moedas_faltantes = moedas_faltantes
 
 
+class DeclaracaoDeAporteJaResolvida(ErroDeAplicacao):
+    """`RF-14-27`, `RN-14-07`: a declaração já homologada ou já recusada não
+    aceita novo desfecho — a recusa é terminal como a homologação."""
+
+    status_code = 409
+    codigo = "declaracao_de_aporte_ja_resolvida"
+    mensagem = "Esta declaração de aporte já tem um desfecho gravado."
+
+
 class FreioPorOrigemAcionado(ErroDeAplicacao):
     """`RF-01-65`: leva o tempo de espera calculado pelo freio, que o
     manipulador de `principal.py` também expõe no cabeçalho `Retry-After`
