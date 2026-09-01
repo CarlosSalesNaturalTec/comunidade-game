@@ -397,33 +397,36 @@ Convenções válidas para todas as rotas:
 | Listagem     | paginada, com filtros de comunidade, período e persona                  |
 | Data e hora  | sempre com fuso, e a data do fato nunca é substituída pela do registro  |
 
-| Método | Rota                                | Autenticação    | Descrição                                                            |
-| ------ | ----------------------------------- | --------------- | -------------------------------------------------------------------- |
-| POST   | `/v1/sessoes/guerreiro`             | pública         | Autentica com nick e imagem e abre sessão curta                      |
-| POST   | `/v1/sessoes/guerreiro/confirmacao` | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana                 |
-| POST   | `/v1/sessoes/social`                | pública         | Autentica adulto por login social                                    |
-| POST   | `/v1/sessoes/credencial`            | pública         | Autentica adulto por usuário e senha                                 |
-| DELETE | `/v1/sessoes/atual`                 | autenticada     | Encerra a sessão                                                     |
-| POST   | `/v1/guerreiros/{id}/descritor`     | Mestre ou Admin | Grava ou recadastra o _template_ a partir do descritor, com registro |
-| POST   | `/v1/credenciais`                   | Admin ou Mestre | Cria credencial de usuário e senha provisória                        |
-| POST   | `/v1/credenciais/senha`             | autenticada     | Troca a senha; obrigatória no primeiro acesso                        |
-| POST   | `/v1/credenciais/dispositivo`       | Admin ou Mestre | Emite a credencial do sensor e devolve o segredo uma única vez       |
-| DELETE | `/v1/credenciais/dispositivo/{id}`  | Admin ou Mestre | Revoga a credencial do sensor, com motivo e autoria                  |
-| POST   | `/v1/responsaveis`                  | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele                     |
-| POST   | `/v1/responsaveis/{id}/vinculos`    | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco          |
-| GET    | `/v1/eu`                            | autenticada     | Persona, papéis e permissões da sessão                               |
-| GET    | `/v1/vitrine/...`                   | pública         | Consultas públicas de vitrine e rankings                             |
-| GET    | `/v1/vitrine/guerreiros/{nick}`     | pública         | Perfil público por nick exato, se houver divulgação autorizada       |
-| GET    | `/v1/vitrine/ods/cobertura`         | pública         | Cobertura de ODS agregada por comunidade e ciclo                     |
-| POST   | `/v1/solicitacoes-de-dados`         | pública         | Registra pedido do conjunto de dados, sem criar cadastro             |
-| POST   | `/v1/solicitacoes-de-participacao`  | pública         | Registra o pedido; do Apoiador, com aporte e comprovante             |
-| PUT    | `/v1/eu/apoiador/identidade`        | Apoiador        | Define ou troca o nick e, acima do piso de moedas, o avatar          |
-| GET    | `/v1/auditoria`                     | Admin           | Trilha de auditoria das ações de gestão                              |
-| POST   | `/v1/solicitacoes-de-chave`         | pública         | Registra pedido de chave feito na Área do Apoiador Desenvolvedor     |
-| POST   | `/v1/chaves`                        | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez    |
-| POST   | `/v1/chaves/{id}/url`               | pública         | Apresenta a URL do que foi construído, dentro dos 30 dias            |
-| DELETE | `/v1/chaves/{id}`                   | Admin           | Revoga a chave, com motivo e autoria                                 |
-| GET    | `/v1/chaves`                        | Admin           | Chaves emitidas, com prazo, URL apresentada e situação               |
+| Método | Rota                                                   | Autenticação    | Descrição                                                            |
+| ------ | ------------------------------------------------------ | --------------- | -------------------------------------------------------------------- |
+| POST   | `/v1/sessoes/guerreiro`                                | pública         | Autentica com nick e imagem e abre sessão curta                      |
+| POST   | `/v1/sessoes/guerreiro/confirmacao`                    | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana                 |
+| POST   | `/v1/sessoes/social`                                   | pública         | Autentica adulto por login social                                    |
+| POST   | `/v1/sessoes/credencial`                               | pública         | Autentica adulto por usuário e senha                                 |
+| DELETE | `/v1/sessoes/atual`                                    | autenticada     | Encerra a sessão                                                     |
+| POST   | `/v1/guerreiros/{id}/descritor`                        | Mestre ou Admin | Grava ou recadastra o _template_ a partir do descritor, com registro |
+| POST   | `/v1/credenciais`                                      | Admin ou Mestre | Cria credencial de usuário e senha provisória                        |
+| POST   | `/v1/credenciais/senha`                                | autenticada     | Troca a senha; obrigatória no primeiro acesso                        |
+| POST   | `/v1/credenciais/dispositivo`                          | Admin ou Mestre | Emite a credencial do sensor e devolve o segredo uma única vez       |
+| DELETE | `/v1/credenciais/dispositivo/{id}`                     | Admin ou Mestre | Revoga a credencial do sensor, com motivo e autoria                  |
+| POST   | `/v1/responsaveis`                                     | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele                     |
+| POST   | `/v1/responsaveis/{id}/vinculos`                       | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco          |
+| GET    | `/v1/eu`                                               | autenticada     | Persona, papéis e permissões da sessão                               |
+| GET    | `/v1/vitrine/...`                                      | pública         | Consultas públicas de vitrine e rankings                             |
+| GET    | `/v1/vitrine/guerreiros/{nick}`                        | pública         | Perfil público por nick exato, se houver divulgação autorizada       |
+| GET    | `/v1/vitrine/ods/cobertura`                            | pública         | Cobertura de ODS agregada por comunidade e ciclo                     |
+| POST   | `/v1/solicitacoes-de-dados`                            | pública         | Registra pedido do conjunto de dados, sem criar cadastro             |
+| POST   | `/v1/solicitacoes-de-participacao`                     | pública         | Registra o pedido; do Apoiador, com aporte e comprovante             |
+| PUT    | `/v1/eu/apoiador/identidade`                           | Apoiador        | Define ou troca o nick e, acima do piso de moedas, o avatar          |
+| GET    | `/v1/eu/apoiador/identidade`                           | Apoiador        | Nick, avatar, moedas acumuladas e quanto falta para o avatar próprio |
+| GET    | `/v1/eu/apoiador/documentos`                           | Apoiador        | O que foi declarado, com a marca de publicado ou pendente            |
+| POST   | `/v1/apoiadores/{id}/artefatos/{artefato_id}/anexacao` | Admin           | Anexa ao cadastro o documento comprobatório, publicando-o            |
+| GET    | `/v1/auditoria`                                        | Admin           | Trilha de auditoria das ações de gestão                              |
+| POST   | `/v1/solicitacoes-de-chave`                            | pública         | Registra pedido de chave feito na Área do Apoiador Desenvolvedor     |
+| POST   | `/v1/chaves`                                           | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez    |
+| POST   | `/v1/chaves/{id}/url`                                  | pública         | Apresenta a URL do que foi construído, dentro dos 30 dias            |
+| DELETE | `/v1/chaves/{id}`                                      | Admin           | Revoga a chave, com motivo e autoria                                 |
+| GET    | `/v1/chaves`                                           | Admin           | Chaves emitidas, com prazo, URL apresentada e situação               |
 
 **"Pública" nesta coluna significa "sem credencial de persona"** — a chave da aplicação
 continua obrigatória em todas elas. Nenhuma rota deste PRD responde sem chave válida.

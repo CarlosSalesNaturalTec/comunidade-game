@@ -35,6 +35,21 @@ def poder_sustentador_de(sessao: Session, *, provedor_id: uuid.UUID) -> Decimal:
     return Decimal(total)
 
 
+def moedas_acumuladas_de(sessao: Session, *, provedor_id: uuid.UUID) -> Decimal:
+    """A soma, em moedas, dos aportes homologados do provedor — direto na
+    tabela `Aporte`, sem olhar lançamento de ajuste (`RF-14-14`, `RN-14-11`,
+    design — Decisions 1). Não é `poder_sustentador_de`: aquela deriva do
+    livro-razão e o ressarcimento pago a derruba; esta mede o piso do
+    avatar próprio, um direito que, uma vez alcançado, não regride.
+    Provedor sem aporte soma zero."""
+    total = (
+        sessao.query(func.coalesce(func.sum(Aporte.valor_em_moedas), 0))
+        .filter(Aporte.provedor_id == provedor_id)
+        .scalar()
+    )
+    return Decimal(total)
+
+
 def poder_sustentador_por_provedor(sessao: Session) -> dict[uuid.UUID, Decimal]:
     """A mesma derivação de `poder_sustentador_de`, agregada para todo
     provedor de uma vez — usada tanto pelo movimentado total quanto pelo

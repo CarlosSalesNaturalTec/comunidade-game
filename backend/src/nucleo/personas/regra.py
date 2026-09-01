@@ -1,14 +1,21 @@
+import uuid
 from datetime import date
+from decimal import Decimal
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula
 from ..comunidades.regra import abrir_vinculo
-from ..erros import ErroDeValidacao, PermissaoNegada
+from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada, PisoDeMoedasNaoAlcancado
 from ..fila.modelo import SolicitacaoDeParticipacao
+from ..poder_sustentador.regra import moedas_acumuladas_de
 from ..tempo import agora
 from .modelo import ArtefatoComprobatorio, Credencial, Nick, Papel, Persona, TipoDeCredencial
+
+# `RF-14-14`, `RN-14-11`, PRD-14 §9: 10 moedas acumuladas em aportes
+# homologados liberam o avatar próprio do Apoiador.
+PISO_DE_MOEDAS_DO_AVATAR_PROPRIO = Decimal("10")
 
 # Mesma mensagem nos dois pontos de gravação que a aplicam (`criar_persona` e
 # `definir_ou_trocar_nick`) — a rota do cadastro do encontro reconhece a
@@ -201,6 +208,72 @@ def definir_ou_trocar_nick(sessao: Session, persona: Persona, nick: str) -> Pers
         registro.valor = nick
     sessao.flush()
     return persona
+
+
+def definir_avatar_do_apoiador(sessao: Session, persona: Persona, avatar: str) -> Persona:
+    """O Apoiador em sessão grava o avatar próprio só a partir do piso de
+    10 moedas acumuladas em aportes homologados — o direito que não
+    regride, medido por `moedas_acumuladas_de` e nunca pelo Poder
+    Sustentador, que o ressarcimento derruba. Opaco ao núcleo: nenhuma
+    validação de forma (`RF-14-12`, `RF-14-14`, `RF-14-17`, `RN-14-11`,
+    design — Decisions 1, 3)."""
+    acumulado = moedas_acumuladas_de(sessao, provedor_id=persona.id)
+    if acumulado < PISO_DE_MOEDAS_DO_AVATAR_PROPRIO:
+        raise PisoDeMoedasNaoAlcancado(
+            moedas_faltantes=PISO_DE_MOEDAS_DO_AVATAR_PROPRIO - acumulado
+        )
+    persona.avatar = avatar
+    sessao.flush()
+    return persona
+
+
+def declarar_documento_do_apoiador(
+    sessao: Session, persona: Persona, *, endereco: str | None, rotulo: str | None
+) -> ArtefatoComprobatorio:
+    """O Apoiador em sessão declara o próprio comprobatório — sempre link,
+    nunca anexo —, que nasce sem anexação e não vai a público até um Admin
+    o anexar (`RF-14-18`, `RF-14-19`, `RN-02-01`, `RN-14-12`)."""
+    if not endereco or not endereco.strip():
+        raise ErroDeValidacao(mensagem="Documento exige o endereço.", campo="endereco")
+    if not rotulo or not rotulo.strip():
+        raise ErroDeValidacao(mensagem="Documento exige o rótulo.", campo="rotulo")
+
+    artefato = ArtefatoComprobatorio(
+        persona_id=persona.id, endereco=endereco, rotulo=rotulo, declarado_por_id=persona.id
+    )
+    sessao.add(artefato)
+    sessao.flush()
+    return artefato
+
+
+def artefato_esta_publicado(artefato: ArtefatoComprobatorio) -> bool:
+    """Pendente é só o que o próprio Apoiador declarou e ninguém anexou — o
+    que o cadastro do Admin declarou, ou o Mestre publicou de si mesmo,
+    segue público sem anexação (`RN-14-12`, design — Decisions 5)."""
+    return artefato.declarado_por_id != artefato.persona_id or artefato.anexado_em is not None
+
+
+def anexar_documento_do_apoiador(
+    sessao: Session,
+    *,
+    operador: Persona,
+    apoiador_id: uuid.UUID,
+    artefato: ArtefatoComprobatorio | None,
+) -> ArtefatoComprobatorio:
+    """Só o Admin anexa ao cadastro o documento que o Apoiador declarou — a
+    anexação é o que o publica. Idempotente: anexação repetida mantém a
+    primeira autoria (`RF-14-19`, `RN-14-12`, `RF-02-101`, decisão do
+    fundador, 2026-09-01)."""
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin anexa o documento comprobatório.")
+    if artefato is None or artefato.persona_id != apoiador_id:
+        raise NaoEncontrado(mensagem="Documento não encontrado.", campo="artefato_id")
+
+    if artefato.anexado_em is None:
+        artefato.anexado_por_id = operador.id
+        artefato.anexado_em = agora()
+        sessao.flush()
+    return artefato
 
 
 def conferir_disponibilidade_de_nick_com_alcance_total(sessao: Session, nick: str) -> bool:

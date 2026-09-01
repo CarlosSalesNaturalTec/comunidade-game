@@ -159,6 +159,15 @@ class ArtefatoComprobatorio(Base):
     declarado_por_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("persona.id"), nullable=True
     )
+    # Pendente é só o que o próprio Apoiador declarou e ninguém anexou: as
+    # duas colunas nascem nulas, e só a anexação do Admin as preenche. O
+    # artefato do Mestre e o declarado por Admin no cadastro seguem
+    # públicos com as colunas vazias — a anexação é o que eles já são
+    # (`RF-14-19`, `RN-14-12`, design — decisão 5).
+    anexado_por_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("persona.id"), nullable=True
+    )
+    anexado_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     criado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
