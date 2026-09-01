@@ -7,6 +7,9 @@ interface Props {
   /** Recusa decidida pela própria App 08 — persona que entrou, mas não é
    * Apoiador (PRD-14 §4). Em linguagem simples, sem código de erro cru. */
   mensagemDeRecusa?: string | null;
+  /** Caminho de volta à porta pública, quando a entrada abriu a partir dela
+   * (design — decisão 1). */
+  aoVoltar?: () => void;
 }
 
 // Os dois caminhos de entrada do Apoiador — login social e usuário e senha
@@ -14,7 +17,7 @@ interface Props {
 // mensagem já traz a orientação de usar o pré-cadastro (`RF-14-08`,
 // `RF-14-10`, `RN-14-02`). Nenhuma tela de convite ou segundo acesso existe
 // nesta aplicação (`RF-14-11`, `RN-14-04`).
-export function TelaDeEntrada({ mensagemDeRecusa }: Props) {
+export function TelaDeEntrada({ mensagemDeRecusa, aoVoltar }: Props) {
   const { entrarComGoogle, entrarComCredencial, entrando, erroDeEntrada } = useSessao();
   const [usuario, definirUsuario] = useState("");
   const [senha, definirSenha] = useState("");
@@ -41,6 +44,11 @@ export function TelaDeEntrada({ mensagemDeRecusa }: Props) {
       {entrando && <Aviso tipo="andamento">Entrando…</Aviso>}
       {erroDeEntrada && <Aviso tipo="erro">{erroDeEntrada}</Aviso>}
       {mensagemDeRecusa && <Aviso tipo="erro">{mensagemDeRecusa}</Aviso>}
+      {aoVoltar && (
+        <Botao variante="secundaria" onClick={aoVoltar}>
+          Voltar à porta pública
+        </Botao>
+      )}
     </Moldura>
   );
 }

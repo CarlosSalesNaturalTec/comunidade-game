@@ -7,11 +7,16 @@ import {
   ehRecusaDeSessao,
 } from "./cliente";
 
-function respostaMock(status: number, corpo: unknown) {
+function respostaMock(
+  status: number,
+  corpo: unknown,
+  cabecalhos: Record<string, string> = {},
+) {
   return {
     ok: status >= 200 && status < 300,
     status,
     json: () => Promise.resolve(corpo),
+    headers: new Headers(cabecalhos),
   } as Response;
 }
 
@@ -62,6 +67,21 @@ describe("chamarNucleo", () => {
       campo: "nome",
       message: "Campo obrigatório.",
     });
+  });
+
+  it("leva o tempo de espera do freio por origem, do cabeçalho Retry-After", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      respostaMock(
+        429,
+        { codigo: "freio_por_origem_acionado", mensagem: "Muitas tentativas em pouco tempo." },
+        { "Retry-After": "120" },
+      ),
+    );
+
+    const erro = await chamarNucleo("/v1/solicitacoes-de-participacao").catch((e) => e);
+
+    expect(erro).toBeInstanceOf(ErroDaApi);
+    expect((erro as InstanceType<typeof ErroDaApi>).tempoDeEsperaEmSegundos).toBe(120);
   });
 
   it("distingue a recusa da chave da recusa da sessão", async () => {

@@ -54,6 +54,7 @@ async function entrarComoApoiador() {
 
   render(<App />);
   const testeDeUsuario = userEvent.setup();
+  await testeDeUsuario.click(await screen.findByRole("button", { name: /^entrar$/i }));
   await testeDeUsuario.type(await screen.findByLabelText(/^usuário$/i), "apoiadora");
   await testeDeUsuario.type(screen.getByLabelText(/^senha$/i), "senha-123");
   await testeDeUsuario.click(screen.getByRole("button", { name: /^entrar$/i }));

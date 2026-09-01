@@ -3,7 +3,7 @@ from datetime import timedelta
 import pytest
 from sqlalchemy.orm import sessionmaker
 
-from nucleo.fila.modelo import SolicitacaoDeDados, SugestaoOuProposta
+from nucleo.fila.modelo import SolicitacaoDeDados, SolicitacaoDeParticipacao, SugestaoOuProposta
 from nucleo.personas.modelo import Papel, Persona
 from nucleo.ponto_extra.modelo import PontoExtra
 from nucleo.pontuacao.modelo import Badge, TipoDeBadge
@@ -374,6 +374,7 @@ def test_solicitacao_de_apoiador_traz_pre_cadastro_na_fila(
             "apresentacao": "Quero apoiar a comunidade.",
             "aporte_declarado": "R$ 500,00 em material escolar",
             "nick": "ApoiadoraPretendida",
+            "perfil": "pessoa_fisica",
         },
         files={"comprovante": ("comprovante.pdf", b"conteudo", "application/pdf")},
         headers={"X-Chave-Aplicacao": chave},
@@ -384,8 +385,31 @@ def test_solicitacao_de_apoiador_traz_pre_cadastro_na_fila(
     item = resposta.json()["itens"][0]
     assert item["aporte_declarado"] == "R$ 500,00 em material escolar"
     assert item["nick"] == "ApoiadoraPretendida"
+    assert item["perfil"] == "pessoa_fisica"
     assert item["comprovante_anexado"] is True
     assert "conteudo" not in str(item)
+
+
+def test_comprovante_em_formato_nao_aceito_e_422(cliente, criar_chave, sessao):
+    chave, _ = criar_chave()
+
+    resposta = cliente.post(
+        "/v1/solicitacoes-de-participacao",
+        data={
+            "nome_ou_razao_social": "Apoiadora de Tal",
+            "email": "apoiadora@example.org",
+            "whatsapp": "+55 11 90000-0000",
+            "pretensao": "apoiador",
+            "apresentacao": "Quero apoiar a comunidade.",
+            "perfil": "pessoa_juridica",
+        },
+        files={"comprovante": ("comprovante.docx", b"conteudo", "application/msword")},
+        headers={"X-Chave-Aplicacao": chave},
+    )
+
+    assert resposta.status_code == 422
+    assert "PDF, JPG ou PNG" in resposta.json()["mensagem"]
+    assert sessao.query(SolicitacaoDeParticipacao).count() == 0
 
 
 def test_solicitacao_com_prazo_vencido_vem_marcada_em_atraso(

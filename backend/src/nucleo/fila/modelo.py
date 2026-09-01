@@ -45,6 +45,11 @@ class PretensaoDeParticipacao(enum.StrEnum):
     apoiador = "apoiador"
 
 
+class PerfilDeApoiador(enum.StrEnum):
+    pessoa_fisica = "pessoa_fisica"
+    pessoa_juridica = "pessoa_juridica"
+
+
 class TipoDeAlvo(enum.StrEnum):
     atividade = "atividade"
     trilha = "trilha"
@@ -75,6 +80,9 @@ class SolicitacaoDeParticipacao(Base, EmAvaliacao):
     instituicao: Mapped[str | None] = mapped_column(String(256), nullable=True)
     links: Mapped[str | None] = mapped_column(Text, nullable=True)
     nick: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    perfil: Mapped[PerfilDeApoiador | None] = mapped_column(
+        Enum(PerfilDeApoiador, native_enum=False, length=16), nullable=True
+    )
     aporte_declarado: Mapped[str | None] = mapped_column(Text, nullable=True)
     comprovante_referencia: Mapped[str | None] = mapped_column(String(512), nullable=True)
     comprovante_nome_original: Mapped[str | None] = mapped_column(String(256), nullable=True)

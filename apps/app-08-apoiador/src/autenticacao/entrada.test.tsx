@@ -15,9 +15,16 @@ vi.mock("comum/autenticacao", async () => {
   };
 });
 
-async function entrarComCredencial(usuario = "apoiadora", senha = "senha-provisoria") {
+async function irParaEntrada() {
   const testeDeUsuario = userEvent.setup();
-  await testeDeUsuario.type(await screen.findByLabelText(/^usuário$/i), usuario);
+  await testeDeUsuario.click(await screen.findByRole("button", { name: /^entrar$/i }));
+  await screen.findByRole("heading", { name: /comunidade game — apoiador/i });
+  return testeDeUsuario;
+}
+
+async function entrarComCredencial(usuario = "apoiadora", senha = "senha-provisoria") {
+  const testeDeUsuario = await irParaEntrada();
+  await testeDeUsuario.type(screen.getByLabelText(/^usuário$/i), usuario);
   await testeDeUsuario.type(screen.getByLabelText(/^senha$/i), senha);
   await testeDeUsuario.click(screen.getByRole("button", { name: /^entrar$/i }));
 }
@@ -32,13 +39,22 @@ describe("entrada e sessão da App 08", () => {
     limparToken();
   });
 
-  it("sem sessão, só a entrada aparece", async () => {
+  it("sem sessão, a porta pública aparece, sem nenhuma tela do Apoiador", async () => {
     render(<App />);
     expect(
-      await screen.findByRole("heading", { name: /comunidade game — apoiador/i }),
+      await screen.findByRole("heading", { name: /comunidade game — área do apoiador/i }),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText(/^usuário$/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^usuário$/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /propor desafio extra/i }),
+    ).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^sair$/i })).not.toBeInTheDocument();
+  });
+
+  it("a entrada abre a partir da porta pública, a um clique", async () => {
+    render(<App />);
+    await irParaEntrada();
+    expect(screen.getByLabelText(/^usuário$/i)).toBeInTheDocument();
   });
 
   it("Apoiador com senha provisória cai na troca, e nenhuma outra tela aparece", async () => {
