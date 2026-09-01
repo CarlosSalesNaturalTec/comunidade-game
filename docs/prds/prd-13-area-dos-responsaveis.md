@@ -60,8 +60,9 @@ esta aplicação apenas a **mostra ao adulto que responde por ela**.
 - **Autocadastro do responsável**: o cadastro é ato de Admin (App 03) ou Mestre (App 09).
 - **Cadastro e edição do vínculo com o Guerreiro(a)**, inclusive o grau de parentesco — é da
   gestão, no PRD-02.
-- **Consentimento biométrico**: tem termo impresso próprio, assinado no encontro, e é gravado
-  pelo App 01 (PRD-04); aqui só se consulta o estado.
+- **Concessão do consentimento biométrico**: tem termo impresso próprio, assinado no encontro,
+  gravada por Admin ou Mestre; a App 07 só oferece a **recusa** (`RF-13-27`) e a leitura do
+  estado — nunca a concessão.
 - **Tratamento das solicitações**: a resposta é dada na fila da App 03, não nesta aplicação.
 - **Qualquer canal com Apoiadores ou terceiros** — inclusive parentes que acompanham a criança
   como Apoiadores, que não têm acesso a esta área.
@@ -321,25 +322,33 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessã
 único. O cadastro do responsável e do vínculo é rota de gestão e já está no PRD-01. `POST
 /v1/solicitacoes` e `GET /v1/eu/solicitacoes` já estão implementadas no núcleo, pela fatia 14 do
 PRD-02 (decisão do fundador, 2026-08-29, documento 09 §1); a fatia 4 desta PRD entrega as telas
-da App 07 sobre elas.
+da App 07 sobre elas, e nela nasceram as três rotas de recusa da biometria e de fim do vínculo
+(decisão do fundador, 2026-09-01, documento 09 §1).
 
-| Método | Rota                                        | Autenticação    | Descrição                                                        |
-| ------ | ------------------------------------------- | --------------- | ---------------------------------------------------------------- |
-| GET    | `/v1/eu/guerreiros`                         | Responsável     | Guerreiros e Guerreiras vinculados, com grau de parentesco       |
-| GET    | `/v1/eu/guerreiros/{id}/evolucao`           | Responsável     | Presença, atividades, pontos, poderes, badges, nível e progresso |
-| GET    | `/v1/eu/guerreiros/{id}/ocorrencias`        | Responsável     | Ocorrências de conduta, com motivo e estado da reparação         |
-| GET    | `/v1/eu/guerreiros/{id}/autorizacao`        | Responsável     | Estado vigente da autorização e histórico de decisões            |
-| POST   | `/v1/eu/guerreiros/{id}/autorizacao`        | Responsável     | Concede ou revoga, gravando a versão do termo                    |
-| POST   | `/v1/guerreiros/{id}/autorizacao/assistida` | Admin ou Mestre | Registra o ato em nome do responsável presente, com testemunha   |
-| POST   | `/v1/consentimentos/{id}/anexo`             | Admin ou Mestre | Anexa a digitalização do termo impresso assinado                 |
-| GET    | `/v1/eu/guerreiros/{id}/dados`              | Responsável     | Dados armazenados, finalidade e prazo de guarda de cada um       |
-| GET    | `/v1/eu/guerreiros/{id}/acessos`            | Responsável     | Quem acessou, em que papel, qual dado e quando                   |
-| POST   | `/v1/solicitacoes`                          | Responsável     | Abre solicitação com protocolo e prazo de 7 dias                 |
-| GET    | `/v1/eu/solicitacoes`                       | Responsável     | Protocolo, tipo, situação e prazo das próprias solicitações      |
-| GET    | `/v1/termos`                                | autenticada     | Termos vigentes e versões anteriores                             |
-| POST   | `/v1/termos/{versao}/leitura`               | Responsável     | Registra a leitura do termo, com data e hora                     |
-| POST   | `/v1/sugestoes`                             | Responsável     | Registra proposta na fila única da gestão                        |
-| GET    | `/v1/eu/sugestoes`                          | Responsável     | Status das próprias propostas                                    |
+| Método | Rota                                        | Autenticação    | Descrição                                                               |
+| ------ | ------------------------------------------- | --------------- | ----------------------------------------------------------------------- |
+| GET    | `/v1/eu/guerreiros`                         | Responsável     | Guerreiros e Guerreiras vinculados, com grau de parentesco              |
+| GET    | `/v1/eu/guerreiros/{id}/evolucao`           | Responsável     | Presença, atividades, pontos, poderes, badges, nível e progresso        |
+| GET    | `/v1/eu/guerreiros/{id}/ocorrencias`        | Responsável     | Ocorrências de conduta, com motivo e estado da reparação                |
+| GET    | `/v1/eu/guerreiros/{id}/autorizacao`        | Responsável     | Estado vigente da autorização e histórico de decisões                   |
+| POST   | `/v1/eu/guerreiros/{id}/autorizacao`        | Responsável     | Concede ou revoga, gravando a versão do termo                           |
+| POST   | `/v1/guerreiros/{id}/autorizacao/assistida` | Admin ou Mestre | Registra o ato em nome do responsável presente, com testemunha          |
+| POST   | `/v1/consentimentos/{id}/anexo`             | Admin ou Mestre | Anexa a digitalização do termo impresso assinado                        |
+| POST   | `/v1/eu/guerreiros/{id}/biometria/recusa`   | Responsável     | Grava a recusa da biometria e a data do apagamento do _template_        |
+| GET    | `/v1/eu/guerreiros/{id}/biometria`          | Responsável     | Estado da captura, decisão do termo e data do apagamento, quando houver |
+| POST   | `/v1/guerreiros/{id}/fim-de-vinculo`        | Admin           | Encerra o vínculo do Guerreiro(a) com o projeto, com motivo             |
+| GET    | `/v1/eu/guerreiros/{id}/dados`              | Responsável     | Dados armazenados, finalidade e prazo de guarda de cada um              |
+| GET    | `/v1/eu/guerreiros/{id}/acessos`            | Responsável     | Quem acessou, em que papel, qual dado e quando                          |
+| POST   | `/v1/solicitacoes`                          | Responsável     | Abre solicitação com protocolo e prazo de 7 dias                        |
+| GET    | `/v1/eu/solicitacoes`                       | Responsável     | Protocolo, tipo, situação e prazo das próprias solicitações             |
+| GET    | `/v1/termos`                                | autenticada     | Termos vigentes e versões anteriores                                    |
+| POST   | `/v1/termos/{versao}/leitura`               | Responsável     | Registra a leitura do termo, com data e hora                            |
+| POST   | `/v1/sugestoes`                             | Responsável     | Registra proposta na fila única da gestão                               |
+| GET    | `/v1/eu/sugestoes`                          | Responsável     | Status das próprias propostas                                           |
+
+A recusa da biometria é rota **separada** da autorização única: a `/v1/eu/guerreiros/{id}/autorizacao`
+não alcança a biometria (`RN-13-06`). O fim do vínculo é restrito ao Admin pela matriz de
+permissões existente — nenhuma `Operacao` nova.
 
 Erros previstos: consulta a Guerreiro(a) não vinculado (403); concessão quando há recusa
 vigente de outro responsável (409, com o estado suspenso e a orientação de procurar a gestão);
@@ -443,8 +452,14 @@ adesão da criança.
 | Aviso da exclusão do _template_ na App 07, com a data                                                              | 03 §9      | Aviso da exclusão do _template_ biométrico                                 |
 | Divergência sem acordo mantém a autorização suspensa, com alternativa                                              | 05 §4      | Desfecho da divergência entre responsáveis                                 |
 | Solicitação da divergência entra como `esclarecimento`, em nome de quem recusou, uma só em aberto por Guerreiro(a) | PRD-13 §9  | Tipo da solicitação que a suspensão por divergência abre na fila da App 03 |
+| Fim do vínculo do Guerreiro(a) por ato de Admin e por varredura dos 12 meses sem atividade                         | 03 §12.2   | Marco do fim do vínculo do Guerreiro(a)                                    |
+| Comando de manutenção do núcleo cumpre os prazos de guarda — encerra vínculos e apaga _templates_                  | 03 §12.2   | Execução dos prazos de guarda                                              |
+| Recusa da biometria pelo responsável marca o apagamento do _template_ em 5 dias                                    | 03 §3.3    | Apagamento do _template_ biométrico por recusa                             |
+| Os três registros que contam como atividade nos 12 meses: presença, resultado e coleta                             | 03 §12.2   | O que conta como atividade na varredura dos 12 meses                       |
+| A marca de apagamento não se cancela nem se adia por gatilho posterior                                             | 03 §12.2   | A marca de apagamento é definitiva                                         |
+| Execução da despersonalização do registro de território (`RN-13-12`) adiada para o Ciclo 02                        | 09 §1      | Execução da despersonalização do dado de território                        |
 
-As três decisões fecharam a pendência do **consentimento da captação da produção** e a
+As três primeiras decisões fecharam a pendência do **consentimento da captação da produção** e a
 **[Proposta]** de consentimento por divulgação de vídeos e fotos de eventos, que deixou de
 existir como termo à parte. O `Consentimento` do PRD-01 ganhou os atributos **origem** e **quem
 operou**, e a `SolicitacaoDoResponsavel` teve seus atributos detalhados no mesmo PRD. O
@@ -461,10 +476,18 @@ documento 08 perdeu a questão em aberto do responsável sem smartphone.
   **Trava o `RF-13-34` no texto, não no desenho.**
 - **Metas numéricas de H2** (documento 10): quantas autorizações caracterizam a hipótese
   confirmada. Sem elas, a métrica existe e o critério de sucesso não.
+- **Tela da App 03 que encerra o vínculo do Guerreiro(a)**: o ato de Admin nasceu no núcleo
+  nesta fatia (`POST /v1/guerreiros/{id}/fim-de-vinculo`); a tela da gestão que o alcança é do
+  PRD-02, e entra no cronograma dele. Até lá, o ato só é alcançável pela API.
+- **Volta do Guerreiro(a) que teve o vínculo encerrado**: nenhum requisito descreve o que
+  acontece quando ele retorna ao projeto — a decisão do fundador de 2026-09-01 só fixa que a
+  volta exige nova captura biométrica, com novo termo (documento 09 §1).
   Duas saíram desta lista, decididas e gravadas na §13: o **desfecho da divergência**, em que a
   autorização permanece suspensa e vale a alternativa equivalente, e o **aviso da exclusão do
   _template_**, que a App 07 exibe com a data. A **reidentificação em comunidade com poucos
-  coletores** também saiu: a agregação mínima tem piso de três coletores (documento 02 §1).
+  coletores** também saiu: a agregação mínima tem piso de três coletores (documento 02 §1). O
+  **marco do fim do vínculo**, o **comando de manutenção** e a **execução da despersonalização
+  do território** também saíram, gravados na §13.
 
 ## 15. Rastreabilidade
 

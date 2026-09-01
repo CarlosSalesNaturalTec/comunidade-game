@@ -385,6 +385,60 @@ def decidir_autorizacao(
     return novo_registro, estado_apos
 
 
+def recusar_biometria(
+    sessao: Session,
+    *,
+    responsavel: Persona,
+    guerreiro_id: uuid.UUID,
+    versao_do_termo: str,
+) -> tuple[Consentimento, datetime | None]:
+    """`RF-13-27`: grava a recusa da biometria pelo responsável, restrita ao
+    vínculo vigente (403 sem ele, `RN-13-04`) e sem caminho de concessão —
+    essa é do termo impresso assinado no encontro (`RN-13-06`, PRD-13 §3.2).
+    A recusa é registro novo, nunca edição do anterior; repetida, não grava
+    segundo registro. Marca o apagamento do _template_ em 5 dias no mesmo
+    ato (`RF-13-43`, `RN-13-22`, decisão do fundador, 2026-09-01).
+    """
+    vinculo_vigente = (
+        sessao.query(VinculoResponsavel)
+        .filter_by(responsavel_id=responsavel.id, guerreiro_id=guerreiro_id, fim=None)
+        .first()
+    )
+    if vinculo_vigente is None:
+        raise PermissaoNegada(
+            mensagem="Responsável só recusa a biometria de Guerreiro(a) vinculado a ele."
+        )
+
+    momento = agora()
+    vigente = consultar_consentimento_vigente_em(
+        sessao, guerreiro_id=guerreiro_id, tipo=TipoDeConsentimento.biometria, em=momento
+    )
+    if vigente is not None and vigente.decisao == DecisaoDeConsentimento.nega:
+        consentimento = vigente
+    else:
+        consentimento = registrar_consentimento(
+            sessao,
+            responsavel=responsavel,
+            guerreiro_id=guerreiro_id,
+            tipo=TipoDeConsentimento.biometria,
+            versao_do_termo=versao_do_termo,
+            decisao=DecisaoDeConsentimento.nega,
+            origem=OrigemDoConsentimento.propria,
+            operado_por=responsavel,
+        )
+
+    # Import adiado: `biometria.regra` importa este módulo no topo do
+    # arquivo — o ciclo só existe se a importação daqui também fosse de
+    # topo (mesmo precedente de `decidir_autorizacao`).
+    from ..biometria.modelo import GatilhoDeApagamento
+    from ..biometria.regra import marcar_apagamento
+
+    apagamento = marcar_apagamento(
+        sessao, guerreiro_id=guerreiro_id, gatilho=GatilhoDeApagamento.recusa_biometria
+    )
+    return consentimento, apagamento.apagar_em if apagamento is not None else None
+
+
 def anexar_digitalizacao_do_termo(
     sessao: Session,
     *,

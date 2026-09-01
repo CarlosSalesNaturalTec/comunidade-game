@@ -13,6 +13,16 @@ class NaturezaDoAcesso(enum.StrEnum):
     gravacao = "gravacao"
     recadastro = "recadastro"
     comparacao_de_login = "comparacao_de_login"
+    apagamento = "apagamento"
+
+
+class GatilhoDeApagamento(enum.StrEnum):
+    """Os três gatilhos que marcam a data do apagamento do _template_, nos
+    prazos do documento 03 §12.2 (`RF-13-43`, `RF-13-44`, `RN-13-22`)."""
+
+    exclusao_deferida = "exclusao_deferida"
+    recusa_biometria = "recusa_biometria"
+    fim_do_vinculo = "fim_do_vinculo"
 
 
 class DesfechoDoAcesso(enum.StrEnum):
@@ -41,6 +51,29 @@ class AcessoAoTemplate(Base):
         Enum(DesfechoDoAcesso, native_enum=False, length=16), nullable=False
     )
     momento: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class ApagamentoDeTemplate(Base):
+    """Marca a data em que o _template_ biométrico de um Guerreiro(a) será
+    apagado — único por Guerreiro(a): é o que implementa "gatilho novo não
+    empurra a data" (`RF-13-43`, `RF-13-44`, `RN-13-22`, decisão do
+    fundador, 2026-09-01). Nenhuma rota edita ou substitui a marca; quem
+    executa o apagamento em si é `apagar_templates_vencidos`.
+    """
+
+    __tablename__ = "apagamento_de_template"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    guerreiro_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("persona.id"), unique=True, nullable=False
+    )
+    gatilho: Mapped[GatilhoDeApagamento] = mapped_column(
+        Enum(GatilhoDeApagamento, native_enum=False, length=32), nullable=False
+    )
+    apagar_em: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    criado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 

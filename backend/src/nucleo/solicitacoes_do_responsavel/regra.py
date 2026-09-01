@@ -2,6 +2,8 @@ import uuid
 
 from sqlalchemy.orm import Session
 
+from ..biometria.modelo import GatilhoDeApagamento
+from ..biometria.regra import marcar_apagamento
 from ..erros import ErroDeValidacao, SolicitacaoDoResponsavelDuplicada, SolicitacaoJaAvaliada
 from ..fila.modelo import SituacaoDaSolicitacao
 from ..fila.regra import PRAZO_DE_AVALIACAO
@@ -147,6 +149,20 @@ def registrar_tratamento(
     solicitacao.tratado_por_id = tratado_por.id
     solicitacao.tratado_em = agora()
     sessao.flush()
+
+    # A única execução que o desfecho dispara: o aceite de exclusão marca o
+    # apagamento do _template_ em 5 dias — nenhum outro dado do
+    # Guerreiro(a) é tocado (`RF-13-43`, `RN-13-12`, `RN-13-22`).
+    if (
+        situacao == SituacaoDaSolicitacao.aceita
+        and solicitacao.tipo == TipoDeSolicitacaoDoResponsavel.exclusao
+    ):
+        marcar_apagamento(
+            sessao,
+            guerreiro_id=solicitacao.guerreiro_id,
+            gatilho=GatilhoDeApagamento.exclusao_deferida,
+        )
+
     return solicitacao
 
 
