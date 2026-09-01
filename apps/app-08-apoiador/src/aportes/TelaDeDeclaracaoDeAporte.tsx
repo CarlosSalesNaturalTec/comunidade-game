@@ -1,26 +1,17 @@
 import { ErroDaApi } from "comum/api";
+import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
 import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
-import { URL_DO_FORMULARIO_DA_VITRINE } from "../api/configuracao";
 import {
   ESCADA_POR_PERFIL,
   formatarMoedas,
   type PerfilDeApoiador,
 } from "../compartilhado/escada";
-import {
-  listarNecessidadesEmAberto,
-  type NecessidadeDeRecurso,
-  registrarPreCadastroDeApoiador,
-} from "./api";
+import { declararAporte, listarNecessidadesEmAberto, type NecessidadeDeRecurso } from "./api";
 
 const FORMATOS_ACEITOS = "PDF, JPG ou PNG";
 
-type FormaDeAporte = "necessidade" | "escada" | "livre" | "sem_dinheiro";
-
-interface Props {
-  /** Caminho de volta para quem já tem cadastro (design — decisão 1). */
-  aoIrParaEntrada: () => void;
-}
+type FormaDeAporte = "necessidade" | "sugerido" | "livre" | "sem_dinheiro";
 
 function formatarDataDaAula(isoDeInicio: string): string {
   const data = new Date(isoDeInicio);
@@ -29,24 +20,16 @@ function formatarDataDaAula(isoDeInicio: string): string {
     : data.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
-function tempoDeEsperaEmLinguagemSimples(segundos: number): string {
-  if (segundos < 60) return `${segundos} segundo${segundos === 1 ? "" : "s"}`;
-  const minutos = Math.ceil(segundos / 60);
-  return `${minutos} minuto${minutos === 1 ? "" : "s"}`;
-}
-
-// A porta pública inteira: apresentação, pré-cadastro sem documento, as três
-// formas de declarar o aporte em dinheiro — cada uma com o equivalente em
-// moedas —, o comprovante obrigatório e o encaminhamento de quem apoia sem
-// dinheiro (`RF-14-01` a `RF-14-07`, PRD-14 §5.1).
-export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
-  const [nomeOuRazaoSocial, definirNomeOuRazaoSocial] = useState("");
-  const [email, definirEmail] = useState("");
-  const [whatsapp, definirWhatsapp] = useState("");
-  const [nick, definirNick] = useState("");
+// A declaração do aporte pelo Apoiador em sessão: os três caminhos —
+// necessidade, valor sugerido da escada do perfil escolhido nesta tela e
+// valor livre —, o equivalente em moedas, o comprovante obrigatório, o
+// aviso de que o aporte entra pendente e o encaminhamento de quem quer
+// aportar material, serviço ou divulgação (`RF-14-23`, `RF-14-25`,
+// `RF-14-26`, `RF-14-28`, `RN-14-05` a `RN-14-07`, `RN-14-09`).
+export function TelaDeDeclaracaoDeAporte() {
+  const { sessao } = useSessao();
   const [perfil, definirPerfil] = useState<PerfilDeApoiador>("pessoa_fisica");
-
-  const [formaDeAporte, definirFormaDeAporte] = useState<FormaDeAporte>("escada");
+  const [formaDeAporte, definirFormaDeAporte] = useState<FormaDeAporte>("sugerido");
   const [necessidades, definirNecessidades] = useState<NecessidadeDeRecurso[]>([]);
   const [necessidadeSelecionadaId, definirNecessidadeSelecionadaId] = useState("");
   const [degrauSelecionado, definirDegrauSelecionado] = useState(0);
@@ -55,7 +38,6 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
 
   const [enviando, definirEnviando] = useState(false);
   const [erro, definirErro] = useState<string | null>(null);
-  const [tempoDeEspera, definirTempoDeEspera] = useState<string | null>(null);
   const [sucesso, definirSucesso] = useState(false);
 
   useEffect(() => {
@@ -71,28 +53,6 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
   const valorLivreEmReais = Number(valorLivreTexto.replace(",", "."));
   const valorLivreValido = valorLivreTexto.trim() !== "" && !Number.isNaN(valorLivreEmReais);
 
-  function compoeAporteDeclarado(): string | null {
-    if (formaDeAporte === "necessidade") {
-      if (!necessidadeSelecionada) return null;
-      const moedas =
-        necessidadeSelecionada.valor_em_moedas ??
-        String(necessidadeSelecionada.quantidade_faltante);
-      return (
-        `Necessidade da aula de ${formatarDataDaAula(necessidadeSelecionada.inicio_em)}, ` +
-        `${necessidadeSelecionada.quantidade_faltante} unidades — equivalente a ${moedas} moedas.`
-      );
-    }
-    if (formaDeAporte === "escada") {
-      const valor = escada[degrauSelecionado];
-      return `Valor sugerido de R$ ${valor.toFixed(2)} — equivalente a ${formatarMoedas(valor)}.`;
-    }
-    if (formaDeAporte === "livre") {
-      if (!valorLivreValido) return null;
-      return `Valor livre de R$ ${valorLivreEmReais.toFixed(2)} — equivalente a ${formatarMoedas(valorLivreEmReais)}.`;
-    }
-    return null;
-  }
-
   function aoEscolherComprovante(evento: ChangeEvent<HTMLInputElement>) {
     definirComprovante(evento.target.files?.[0] ?? null);
   }
@@ -100,45 +60,62 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
   async function aoEnviar(evento: FormEvent) {
     evento.preventDefault();
     definirErro(null);
-    definirTempoDeEspera(null);
     definirSucesso(false);
 
-    const aporteDeclarado = compoeAporteDeclarado();
-    if (!aporteDeclarado) {
-      definirErro("Escolha uma forma de aporte válida.");
+    if (!sessao) return;
+    if (!comprovante) {
+      definirErro(`Anexe o comprovante em ${FORMATOS_ACEITOS} para enviar a declaração.`);
       return;
     }
-    if (!comprovante) {
-      definirErro(`Anexe o comprovante em ${FORMATOS_ACEITOS} para enviar o pré-cadastro.`);
-      return;
+
+    let valorDeclarado: number;
+    let aulaId: string | undefined;
+    let tipoDeRecursoId: string | undefined;
+    if (formaDeAporte === "necessidade") {
+      if (!necessidadeSelecionada) {
+        definirErro("Escolha uma necessidade.");
+        return;
+      }
+      valorDeclarado = Number(
+        necessidadeSelecionada.valor_em_moedas ?? necessidadeSelecionada.quantidade_faltante,
+      );
+      aulaId = necessidadeSelecionada.aula_id;
+      tipoDeRecursoId = necessidadeSelecionada.tipo_de_recurso_id;
+    } else if (formaDeAporte === "sugerido") {
+      valorDeclarado = escada[degrauSelecionado];
+    } else {
+      if (!valorLivreValido) {
+        definirErro("Informe um valor livre válido.");
+        return;
+      }
+      valorDeclarado = valorLivreEmReais;
     }
 
     definirEnviando(true);
     try {
-      await registrarPreCadastroDeApoiador({
-        nome_ou_razao_social: nomeOuRazaoSocial,
-        email,
-        whatsapp,
-        perfil,
-        nick,
-        aporte_declarado: aporteDeclarado,
-        comprovante,
-      });
+      await declararAporte(
+        {
+          valor_declarado: valorDeclarado,
+          origem_da_escolha:
+            formaDeAporte === "necessidade"
+              ? "necessidade"
+              : formaDeAporte === "sugerido"
+                ? "valor_sugerido"
+                : "valor_livre",
+          aula_id: aulaId,
+          tipo_de_recurso_id: tipoDeRecursoId,
+          comprovante,
+        },
+        sessao.token,
+      );
       definirSucesso(true);
       definirComprovante(null);
     } catch (erroCapturado) {
-      if (
-        erroCapturado instanceof ErroDaApi &&
-        erroCapturado.tempoDeEsperaEmSegundos != null
-      ) {
-        definirTempoDeEspera(
-          tempoDeEsperaEmLinguagemSimples(erroCapturado.tempoDeEsperaEmSegundos),
-        );
-      } else if (erroCapturado instanceof ErroDaApi) {
-        definirErro(erroCapturado.message);
-      } else {
-        definirErro("Não foi possível enviar o pré-cadastro. Tente novamente.");
-      }
+      definirErro(
+        erroCapturado instanceof ErroDaApi
+          ? erroCapturado.message
+          : "Não foi possível enviar a declaração. Tente novamente.",
+      );
     } finally {
       definirEnviando(false);
     }
@@ -147,27 +124,11 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
   return (
     <Moldura>
       <Cabecalho
-        titulo="Comunidade Game — Área do Apoiador"
-        subtitulo="Quem sustenta o projeto começa aqui. O pré-cadastro não cria acesso: um Admin confere o comprovante antes de qualquer coisa."
+        titulo="Declarar aporte"
+        subtitulo="O aporte pela aplicação é sempre em dinheiro. Material, serviço e divulgação entram pelo cadastro da gestão — procure a equipe do projeto."
       />
 
-      <p>
-        Já tem cadastro?{" "}
-        <Botao variante="secundaria" onClick={aoIrParaEntrada}>
-          Entrar
-        </Botao>
-      </p>
-
       <form onSubmit={aoEnviar}>
-        <Campo
-          rotulo="Nome ou razão social"
-          valor={nomeOuRazaoSocial}
-          aoAlterar={definirNomeOuRazaoSocial}
-        />
-        <Campo rotulo="E-mail" tipo="email" valor={email} aoAlterar={definirEmail} />
-        <Campo rotulo="WhatsApp" valor={whatsapp} aoAlterar={definirWhatsapp} />
-        <Campo rotulo="Nick" valor={nick} aoAlterar={definirNick} />
-
         <fieldset>
           <legend>Perfil</legend>
           <label>
@@ -193,7 +154,7 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
         </fieldset>
 
         <fieldset>
-          <legend>Como você quer apoiar</legend>
+          <legend>Como você quer aportar</legend>
           <label>
             <input
               type="radio"
@@ -208,9 +169,9 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
             <input
               type="radio"
               name="forma-de-aporte"
-              value="escada"
-              checked={formaDeAporte === "escada"}
-              onChange={() => definirFormaDeAporte("escada")}
+              value="sugerido"
+              checked={formaDeAporte === "sugerido"}
+              onChange={() => definirFormaDeAporte("sugerido")}
             />
             Um valor sugerido
           </label>
@@ -246,9 +207,12 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
             >
               <option value="">Selecione…</option>
               {necessidades.map((necessidade) => (
-                <option key={necessidade.aula_id} value={necessidade.aula_id}>
-                  Aula de {formatarDataDaAula(necessidade.inicio_em)} —{" "}
-                  {necessidade.quantidade_faltante} unidades
+                <option
+                  key={`${necessidade.aula_id}-${necessidade.tipo_de_recurso_id}`}
+                  value={necessidade.aula_id}
+                >
+                  {necessidade.tipo_de_recurso_nome} — aula de{" "}
+                  {formatarDataDaAula(necessidade.inicio_em)}
                   {necessidade.valor_em_moedas
                     ? ` — ${necessidade.valor_em_moedas} moedas`
                     : ""}
@@ -258,7 +222,7 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
           </div>
         )}
 
-        {formaDeAporte === "escada" && (
+        {formaDeAporte === "sugerido" && (
           <div className="cg-campo">
             <label htmlFor="degrau-da-escada">Valor sugerido</label>
             <select
@@ -287,18 +251,12 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
           </div>
         )}
 
-        {formaDeAporte === "sem_dinheiro" &&
-          (URL_DO_FORMULARIO_DA_VITRINE ? (
-            <p>
-              Apoio em material, serviço ou divulgação entra pelo{" "}
-              <a href={URL_DO_FORMULARIO_DA_VITRINE}>formulário de solicitação da vitrine</a>.
-            </p>
-          ) : (
-            <p>
-              Apoio em material, serviço ou divulgação entra pelo formulário de solicitação da
-              vitrine, na página inicial do Comunidade Game.
-            </p>
-          ))}
+        {formaDeAporte === "sem_dinheiro" && (
+          <p>
+            Material, serviço e divulgação entram pelo cadastro do Admin, com termo de doação
+            ou registro do material — procure a equipe do projeto.
+          </p>
+        )}
 
         {formaDeAporte !== "sem_dinheiro" && (
           <>
@@ -310,13 +268,13 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
             </div>
 
             <p>
-              O pré-cadastro não cria cadastro nem acesso. Um Admin vai conferir o comprovante,
-              e a plataforma não emite recibo — quem precisar de um pede à pessoa jurídica
-              vinculada, fora da plataforma.
+              O aporte entra <strong>pendente de homologação</strong>. Um Admin vai conferir o
+              comprovante, e até lá ele não vira moeda, não compõe o Poder Sustentador e não
+              abate o que falta a necessidade alguma.
             </p>
 
             <Botao tipo="submit" desabilitado={enviando}>
-              Enviar pré-cadastro
+              Enviar declaração
             </Botao>
           </>
         )}
@@ -324,15 +282,10 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
 
       {enviando && <Aviso tipo="andamento">Enviando…</Aviso>}
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
-      {tempoDeEspera && (
-        <Aviso tipo="erro">
-          Muitas tentativas em pouco tempo. Espere {tempoDeEspera} e tente de novo.
-        </Aviso>
-      )}
       {sucesso && (
         <Aviso tipo="sucesso">
-          Pedido registrado na fila da gestão. Nenhum cadastro nem acesso foi criado — aguarde
-          o contato depois da conferência do Admin.
+          Declaração registrada na fila da gestão. A necessidade escolhida continua com a mesma
+          quantidade faltante até a homologação.
         </Aviso>
       )}
     </Moldura>

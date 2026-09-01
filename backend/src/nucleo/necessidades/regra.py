@@ -6,8 +6,10 @@ from decimal import Decimal
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula, RecursoDeclaradoDaAula, SituacaoDaAula
+from ..comunidades.modelo import ComunidadeVirtual
 from ..erros import PermissaoNegada
 from ..personas.modelo import Papel, Persona
+from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
 from ..recursos.regra import consultar_valor_de_referencia
 from ..reservas.regra import disponivel_de
@@ -18,14 +20,19 @@ from ..tempo import agora
 class NecessidadeDeRecurso:
     """A falta de uma aula pendente de lastro, por tipo de recurso — nunca
     gravada, sempre recalculada da leitura, como o saldo (`RF-07-18`,
-    `RF-07-27`, design — Decisions 1)."""
+    `RF-07-27`, design — Decisions 1). O nome ao lado do identificador
+    poupa a App 08 de uma rota de cadastro da gestão (`RF-14-24`, design —
+    Decisions 6)."""
 
     aula_id: uuid.UUID
     tipo_de_recurso_id: uuid.UUID
+    tipo_de_recurso_nome: str
     quantidade_faltante: Decimal
     valor_em_moedas: Decimal | None
     comunidade_virtual_id: uuid.UUID
+    comunidade_virtual_nome: str
     ponto_de_apoio_id: uuid.UUID
+    ponto_de_apoio_nome: str
     inicio_em: datetime
     fim_em: datetime
 
@@ -62,6 +69,8 @@ def derivar_necessidades(
 
     hoje = agora().date()
     tipos: dict[uuid.UUID, TipoDeRecurso] = {}
+    comunidades: dict[uuid.UUID, ComunidadeVirtual] = {}
+    pontos_de_apoio: dict[uuid.UUID, PontoDeApoio] = {}
     necessidades: list[NecessidadeDeRecurso] = []
     for (tipo_id, ponto_de_apoio_id), pares in por_par.items():
         restante = disponivel_de(
@@ -83,14 +92,24 @@ def derivar_necessidades(
                 else None
             )
 
+            if aula.comunidade_virtual_id not in comunidades:
+                comunidades[aula.comunidade_virtual_id] = sessao.get(
+                    ComunidadeVirtual, aula.comunidade_virtual_id
+                )
+            if ponto_de_apoio_id not in pontos_de_apoio:
+                pontos_de_apoio[ponto_de_apoio_id] = sessao.get(PontoDeApoio, ponto_de_apoio_id)
+
             necessidades.append(
                 NecessidadeDeRecurso(
                     aula_id=aula.id,
                     tipo_de_recurso_id=tipo_id,
+                    tipo_de_recurso_nome=tipos[tipo_id].nome,
                     quantidade_faltante=falta,
                     valor_em_moedas=valor_em_moedas,
                     comunidade_virtual_id=aula.comunidade_virtual_id,
+                    comunidade_virtual_nome=comunidades[aula.comunidade_virtual_id].nome,
                     ponto_de_apoio_id=ponto_de_apoio_id,
+                    ponto_de_apoio_nome=pontos_de_apoio[ponto_de_apoio_id].nome,
                     inicio_em=aula.inicio_em,
                     fim_em=aula.fim_em,
                 )

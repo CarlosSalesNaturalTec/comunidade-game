@@ -1,6 +1,10 @@
 import { ProvedorDeSessao, useSessao } from "comum/autenticacao";
 import { Botao } from "comum/react";
 import { useEffect, useState } from "react";
+import { TelaDeDeclaracaoDeAporte } from "./aportes/TelaDeDeclaracaoDeAporte";
+import { TelaDeMeusAportes } from "./aportes/TelaDeMeusAportes";
+import { TelaDeNecessidadesEmAberto } from "./aportes/TelaDeNecessidadesEmAberto";
+import { TelaDeSituacaoDasDeclaracoes } from "./aportes/TelaDeSituacaoDasDeclaracoes";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeTrocaDeSenha } from "./autenticacao/TelaDeTrocaDeSenha";
 import { TelaDeAcompanhamento } from "./desafiosExtras/TelaDeAcompanhamento";
@@ -18,7 +22,15 @@ const MENSAGEM_DE_RECUSA_DE_OUTRO_PAPEL =
 // cadastro, a um clique dela; a senha provisória tranca todas as demais
 // telas até a troca, sem caminho de contorno (`RF-01-02`, `RN-01-32`,
 // `RF-14-01`, `RF-14-09`, PRD-14 §4, design — decisão 1).
-type Area = "identidade" | "documentos" | "propor" | "acompanhar";
+type Area =
+  | "identidade"
+  | "documentos"
+  | "propor"
+  | "acompanhar"
+  | "meus-aportes"
+  | "necessidades"
+  | "declarar-aporte"
+  | "situacao-de-declaracoes";
 type TelaSemSessao = "porta" | "entrada";
 
 function Conteudo() {
@@ -81,11 +93,39 @@ function Conteudo() {
         >
           Meus desafios
         </Botao>
+        <Botao
+          variante={area === "meus-aportes" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("meus-aportes")}
+        >
+          Meus aportes
+        </Botao>
+        <Botao
+          variante={area === "necessidades" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("necessidades")}
+        >
+          Necessidades em aberto
+        </Botao>
+        <Botao
+          variante={area === "declarar-aporte" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("declarar-aporte")}
+        >
+          Declarar aporte
+        </Botao>
+        <Botao
+          variante={area === "situacao-de-declaracoes" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("situacao-de-declaracoes")}
+        >
+          Situação das declarações
+        </Botao>
       </nav>
       {area === "identidade" && <TelaDeIdentidadePublica />}
       {area === "documentos" && <TelaDeComprobatorios />}
       {area === "propor" && <TelaDeProposta />}
       {area === "acompanhar" && <TelaDeAcompanhamento />}
+      {area === "meus-aportes" && <TelaDeMeusAportes />}
+      {area === "necessidades" && <TelaDeNecessidadesEmAberto />}
+      {area === "declarar-aporte" && <TelaDeDeclaracaoDeAporte />}
+      {area === "situacao-de-declaracoes" && <TelaDeSituacaoDasDeclaracoes />}
     </>
   );
 }

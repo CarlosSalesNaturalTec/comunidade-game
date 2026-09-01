@@ -22,10 +22,13 @@ roteador = APIRouter()
 class NecessidadeDeRecursoSaida(BaseModel):
     aula_id: uuid.UUID
     tipo_de_recurso_id: uuid.UUID
+    tipo_de_recurso_nome: str
     quantidade_faltante: Decimal
     valor_em_moedas: Decimal | None
     comunidade_virtual_id: uuid.UUID
+    comunidade_virtual_nome: str
     ponto_de_apoio_id: uuid.UUID
+    ponto_de_apoio_nome: str
     inicio_em: DataHoraComFuso
     fim_em: DataHoraComFuso
 
@@ -34,10 +37,13 @@ def _saida(necessidade: NecessidadeDeRecurso) -> NecessidadeDeRecursoSaida:
     return NecessidadeDeRecursoSaida(
         aula_id=necessidade.aula_id,
         tipo_de_recurso_id=necessidade.tipo_de_recurso_id,
+        tipo_de_recurso_nome=necessidade.tipo_de_recurso_nome,
         quantidade_faltante=necessidade.quantidade_faltante,
         valor_em_moedas=necessidade.valor_em_moedas,
         comunidade_virtual_id=necessidade.comunidade_virtual_id,
+        comunidade_virtual_nome=necessidade.comunidade_virtual_nome,
         ponto_de_apoio_id=necessidade.ponto_de_apoio_id,
+        ponto_de_apoio_nome=necessidade.ponto_de_apoio_nome,
         inicio_em=necessidade.inicio_em,
         fim_em=necessidade.fim_em,
     )

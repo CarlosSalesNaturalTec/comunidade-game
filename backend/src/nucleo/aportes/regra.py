@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from ..armazenamento.porta import PortaDeArmazenamento
 from ..aulas.modelo import Aula, RecursoDeclaradoDaAula
-from ..erros import ErroDeValidacao, PermissaoNegada
+from ..erros import DeclaracaoDeAporteJaResolvida, ErroDeValidacao, PermissaoNegada
 from ..fila.modelo import SolicitacaoDeParticipacao
 from ..livro_razao.modelo import DestinacaoDoAporte
 from ..livro_razao.regra import lancar_credito
@@ -15,7 +15,16 @@ from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
 from ..recursos.regra import consultar_valor_de_referencia
 from ..reservas.regra import confirmar_aulas_pendentes
-from .modelo import Aporte, FormaDeAporte, OrigemDoRegistro, SituacaoDeRessarcimento
+from ..tempo import agora
+from .modelo import (
+    Aporte,
+    AporteDeclarado,
+    FormaDeAporte,
+    OrigemDaEscolhaDoAporte,
+    OrigemDoRegistro,
+    SituacaoDaDeclaracao,
+    SituacaoDeRessarcimento,
+)
 
 _NATUREZAS_COM_DESEMBOLSO = frozenset(
     {NaturezaDoRecurso.consumivel, NaturezaDoRecurso.duravel, NaturezaDoRecurso.financeiro}
@@ -211,6 +220,7 @@ def registrar_aporte(
     valor_de_origem: Decimal | None = None,
     periodo_apurado: date | None = None,
     solicitacao_de_participacao: SolicitacaoDeParticipacao | None = None,
+    aporte_declarado: AporteDeclarado | None = None,
     comprovante_conteudo: bytes | None = None,
     comprovante_nome_original: str | None = None,
     comprovante_tipo: str | None = None,
@@ -219,10 +229,11 @@ def registrar_aporte(
     """Só Admin registra pela rota da gestão (`RF-07-04`). Quem homologa não
     pode ser o provedor (`RN-07-16`); a solicitação de origem, quando
     apontada, é a homologação do que o pré-cadastro só declarou, e não pode
-    ser homologada duas vezes (`RF-07-30`, `RN-07-21`). `destinacao` separa
-    o que vira lastro do que não vira; a doação destinada a ressarcir
-    credita o Poder Sustentador sem entrar em saldo (`RF-07-23`,
-    `RN-07-38`)."""
+    ser homologada duas vezes (`RF-07-30`, `RN-07-21`). `aporte_declarado`
+    é o mesmo desenho, para a declaração da App 08 (`RF-14-26`, `RN-14-07`,
+    `RN-14-08`, design — Decisions 1, 2, 5). `destinacao` separa o que vira
+    lastro do que não vira; a doação destinada a ressarcir credita o Poder
+    Sustentador sem entrar em saldo (`RF-07-23`, `RN-07-38`)."""
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin registra aporte pela rota da gestão.")
     if provedor is None:
@@ -243,11 +254,28 @@ def registrar_aporte(
             )
         origem_do_registro = OrigemDoRegistro.pre_cadastro
         solicitacao_id = solicitacao_de_participacao.id
+    elif aporte_declarado is not None:
+        if aporte_declarado.provedor_id == operador.id:
+            raise PermissaoNegada(
+                mensagem="Quem homologa o aporte não pode ser o próprio provedor."
+            )
+        if aporte_declarado.situacao != SituacaoDaDeclaracao.pendente:
+            raise ErroDeValidacao(
+                mensagem="Esta declaração de aporte já foi homologada.",
+                campo="aporte_declarado_id",
+            )
+        if provedor.id != aporte_declarado.provedor_id:
+            raise ErroDeValidacao(
+                mensagem="O provedor precisa ser quem fez a declaração de origem.",
+                campo="provedor_id",
+            )
+        origem_do_registro = OrigemDoRegistro.app_08
+        solicitacao_id = None
     else:
         origem_do_registro = OrigemDoRegistro.gestao
         solicitacao_id = None
 
-    return _registrar_aporte_base(
+    aporte = _registrar_aporte_base(
         sessao,
         operador=operador,
         provedor=provedor,
@@ -270,6 +298,15 @@ def registrar_aporte(
         comprovante_tipo=comprovante_tipo,
         armazenamento=armazenamento,
     )
+
+    if aporte_declarado is not None:
+        aporte.aporte_declarado_id = aporte_declarado.id
+        aporte_declarado.situacao = SituacaoDaDeclaracao.homologada
+        aporte_declarado.resolvido_por_id = operador.id
+        aporte_declarado.resolvido_em = agora()
+        sessao.flush()
+
+    return aporte
 
 
 def registrar_aporte_por_absorcao(
@@ -341,3 +378,123 @@ def registrar_aporte_por_absorcao(
         comprovante_tipo=comprovante_tipo,
         armazenamento=armazenamento,
     )
+
+
+def _processar_comprovante_da_declaracao(
+    *,
+    conteudo: bytes | None,
+    nome_original: str | None,
+    tipo_mime: str | None,
+    armazenamento: PortaDeArmazenamento | None,
+) -> tuple[str, str | None, str, int]:
+    """O comprovante é sempre obrigatório na declaração — sem exceção por
+    tipo de recurso, como o aporte da gestão tem (`RN-14-06`, design —
+    Decisions 7)."""
+    if conteudo is None:
+        raise ErroDeValidacao(
+            mensagem="Comprovante obrigatório, em PDF, JPG ou PNG.", campo="comprovante"
+        )
+    if tipo_mime not in _FORMATOS_DE_COMPROVANTE_ACEITOS:
+        raise ErroDeValidacao(
+            mensagem="Comprovante aceito apenas em PDF, JPG ou PNG.", campo="comprovante"
+        )
+    if armazenamento is None:
+        raise ErroDeValidacao(mensagem="Porta de armazenamento não disponível.")
+
+    referencia = f"aportes-declarados/{uuid.uuid4()}"
+    armazenamento.gravar(referencia=referencia, conteudo=conteudo)
+    return referencia, nome_original, tipo_mime, len(conteudo)
+
+
+def declarar_aporte(
+    sessao: Session,
+    *,
+    provedor: Persona,
+    valor_declarado: Decimal | None,
+    forma: FormaDeAporte | None,
+    origem_da_escolha: OrigemDaEscolhaDoAporte | None,
+    aula: Aula | None = None,
+    tipo: TipoDeRecurso | None = None,
+    comprovante_conteudo: bytes | None = None,
+    comprovante_nome_original: str | None = None,
+    comprovante_tipo: str | None = None,
+    armazenamento: PortaDeArmazenamento | None = None,
+) -> AporteDeclarado:
+    """A declaração do Apoiador em sessão: sempre em dinheiro, sempre
+    pendente, sem lançamento, crédito ou abatimento até a homologação
+    (`RF-14-25` a `RF-14-28`, `RN-14-05` a `RN-14-07`, design — Decisions
+    1, 3, 7). A origem `necessidade` guarda o par aula + tipo de recurso
+    que motivou a escolha, sem vínculo (design — Decisions 3)."""
+    if provedor.papel != Papel.apoiador:
+        raise PermissaoNegada(mensagem="Só o Apoiador declara aporte pela App 08.")
+    if forma is None or forma != FormaDeAporte.financeira:
+        raise ErroDeValidacao(
+            mensagem=(
+                "O aporte pela aplicação é só em dinheiro. Material, serviço e "
+                "divulgação entram pelo cadastro da gestão."
+            ),
+            campo="forma",
+        )
+    if valor_declarado is None or valor_declarado <= 0:
+        raise ErroDeValidacao(
+            mensagem="Declaração exige valor maior que zero.", campo="valor_declarado"
+        )
+    if origem_da_escolha is None:
+        raise ErroDeValidacao(
+            mensagem="Declaração exige a origem da escolha.", campo="origem_da_escolha"
+        )
+    if origem_da_escolha == OrigemDaEscolhaDoAporte.necessidade and (aula is None or tipo is None):
+        raise ErroDeValidacao(
+            mensagem="Declaração por necessidade exige a aula e o tipo de recurso escolhidos.",
+            campo="aula_id",
+        )
+
+    referencia, nome_original, tipo_mime, tamanho = _processar_comprovante_da_declaracao(
+        conteudo=comprovante_conteudo,
+        nome_original=comprovante_nome_original,
+        tipo_mime=comprovante_tipo,
+        armazenamento=armazenamento,
+    )
+
+    declaracao = AporteDeclarado(
+        provedor_id=provedor.id,
+        valor_declarado=valor_declarado,
+        origem_da_escolha=origem_da_escolha,
+        aula_id=aula.id if aula is not None else None,
+        tipo_de_recurso_id=tipo.id if tipo is not None else None,
+        comprovante_referencia=referencia,
+        comprovante_nome_original=nome_original,
+        comprovante_tipo=tipo_mime,
+        comprovante_tamanho=tamanho,
+        situacao=SituacaoDaDeclaracao.pendente,
+        autor_id=provedor.id,
+        papel_do_autor=provedor.papel.value,
+    )
+    sessao.add(declaracao)
+    sessao.flush()
+    return declaracao
+
+
+def recusar_declaracao_de_aporte(
+    sessao: Session,
+    declaracao: AporteDeclarado,
+    *,
+    operador: Persona,
+    motivo: str | None,
+) -> AporteDeclarado:
+    """Só Admin recusa, com motivo obrigatório; a recusa não gera
+    lançamento nem credita, e é terminal como a homologação (`RF-14-27`,
+    `RN-14-07`, design — Decisions 5)."""
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin recusa a declaração de aporte.")
+    if motivo is None or not motivo.strip():
+        raise ErroDeValidacao(mensagem="A recusa exige o motivo.", campo="motivo")
+    if declaracao.situacao != SituacaoDaDeclaracao.pendente:
+        raise DeclaracaoDeAporteJaResolvida()
+
+    declaracao.situacao = SituacaoDaDeclaracao.recusada
+    declaracao.motivo_da_recusa = motivo
+    declaracao.resolvido_por_id = operador.id
+    declaracao.resolvido_em = agora()
+    sessao.flush()
+    return declaracao

@@ -12,6 +12,8 @@ from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..erros import NaoEncontrado, PermissaoNegada
 from ..personas.modelo import Papel, Persona
+from ..pontos_de_apoio.modelo import PontoDeApoio
+from ..recursos.modelo import TipoDeRecurso
 from .regra import contagem_de_absorcoes_de, poder_sustentador_de
 
 roteador = APIRouter()
@@ -51,8 +53,10 @@ def poder_sustentador_do_provedor(
 class AporteDoApoiadorSaida(BaseModel):
     id: uuid.UUID
     tipo_de_recurso_id: uuid.UUID
+    tipo_de_recurso_nome: str
     quantidade: Decimal
     ponto_de_apoio_id: uuid.UUID
+    ponto_de_apoio_nome: str
     valor_em_moedas: Decimal
     forma: str
     situacao_de_ressarcimento: str
@@ -71,7 +75,11 @@ def meus_aportes(
 ) -> MeusAportesSaida:
     """Restrita ao Apoiador em sessão: os aportes dele e o Poder Sustentador
     dele, sem o valor de origem em reais e sem rota de escrita (`RF-07-17`,
-    `RN-07-05`, PRD-07 §§9, 11)."""
+    `RN-07-05`, PRD-07 §§9, 11). O nome do tipo de recurso e o destino —
+    ponto de apoio — acompanham o identificador, para que "Meus aportes" se
+    apresente sem rota de Admin (`RF-14-21`, design — Decisions 6). A
+    declaração pendente não aparece aqui: só vira `Aporte` na homologação
+    (`RN-14-07`)."""
     if contexto.papel != Papel.apoiador:
         raise PermissaoNegada(mensagem="Só o Apoiador lê os próprios aportes.")
 
@@ -81,21 +89,35 @@ def meus_aportes(
         .order_by(Aporte.data_do_aporte.desc())
         .all()
     )
-    return MeusAportesSaida(
-        poder_sustentador_em_moedas=poder_sustentador_de(
-            sessao_bd, provedor_id=contexto.persona_id
-        ),
-        aportes=[
+    tipos: dict[uuid.UUID, TipoDeRecurso] = {}
+    pontos_de_apoio: dict[uuid.UUID, PontoDeApoio] = {}
+    saida: list[AporteDoApoiadorSaida] = []
+    for aporte in aportes:
+        if aporte.tipo_de_recurso_id not in tipos:
+            tipos[aporte.tipo_de_recurso_id] = sessao_bd.get(
+                TipoDeRecurso, aporte.tipo_de_recurso_id
+            )
+        if aporte.ponto_de_apoio_id not in pontos_de_apoio:
+            pontos_de_apoio[aporte.ponto_de_apoio_id] = sessao_bd.get(
+                PontoDeApoio, aporte.ponto_de_apoio_id
+            )
+        saida.append(
             AporteDoApoiadorSaida(
                 id=aporte.id,
                 tipo_de_recurso_id=aporte.tipo_de_recurso_id,
+                tipo_de_recurso_nome=tipos[aporte.tipo_de_recurso_id].nome,
                 quantidade=aporte.quantidade,
                 ponto_de_apoio_id=aporte.ponto_de_apoio_id,
+                ponto_de_apoio_nome=pontos_de_apoio[aporte.ponto_de_apoio_id].nome,
                 valor_em_moedas=aporte.valor_em_moedas,
                 forma=aporte.forma.value,
                 situacao_de_ressarcimento=aporte.situacao_de_ressarcimento.value,
                 data_do_aporte=aporte.data_do_aporte,
             )
-            for aporte in aportes
-        ],
+        )
+    return MeusAportesSaida(
+        poder_sustentador_em_moedas=poder_sustentador_de(
+            sessao_bd, provedor_id=contexto.persona_id
+        ),
+        aportes=saida,
     )

@@ -74,10 +74,13 @@ def test_nenhuma_rota_devolve_reais_nem_pessoa(
     campos_esperados = {
         "aula_id",
         "tipo_de_recurso_id",
+        "tipo_de_recurso_nome",
         "quantidade_faltante",
         "valor_em_moedas",
         "comunidade_virtual_id",
+        "comunidade_virtual_nome",
         "ponto_de_apoio_id",
+        "ponto_de_apoio_nome",
         "inicio_em",
         "fim_em",
     }
@@ -93,6 +96,35 @@ def test_nenhuma_rota_devolve_reais_nem_pessoa(
         corpo = resposta.json()
         assert len(corpo) == 1
         assert set(corpo[0].keys()) == campos_esperados
+
+
+def test_nomes_acompanham_os_identificadores(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_aula,
+    criar_recurso_declarado_da_aula,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    tipo = criar_tipo_de_recurso(admin, nome="Lanche")
+    aula = criar_aula(admin, comunidade, ponto_de_apoio=ponto_de_apoio)
+    criar_recurso_declarado_da_aula(aula, tipo, quantidade=Decimal("2.00"))
+    _tornar_pendente(sessao, aula)
+
+    resposta = cliente.get("/v1/vitrine/necessidades", headers={"X-Chave-Aplicacao": chave})
+
+    assert resposta.status_code == 200
+    necessidade = resposta.json()[0]
+    assert necessidade["tipo_de_recurso_nome"] == "Lanche"
+    assert necessidade["comunidade_virtual_nome"] == comunidade.nome
+    assert necessidade["ponto_de_apoio_nome"] == ponto_de_apoio.nome
 
 
 def test_lista_do_mestre_filtra_pela_comunidade_vinculada(

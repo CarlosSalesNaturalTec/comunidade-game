@@ -61,8 +61,9 @@ Regras derivadas:
   o aporte nasce **não ressarcível**, mas credita o Poder Sustentador e ganha **destaque
   público** pelo ato, como qualquer outra absorção. A absorção **credita no ato, sem
   homologação** — é o que destrava a atividade na hora em que o recurso é provido. A homologação
-  por Admin, em que ninguém homologa o próprio aporte, vale para o registro da gestão e para o
-  do pré-cadastro.
+  por Admin, em que ninguém homologa o próprio aporte, vale para o registro da gestão, para o
+  do pré-cadastro e para a declaração de aporte da App 08, que o Admin também pode **recusar,
+  com motivo obrigatório**, sem crédito algum.
 - **Ressarcimento não é direito nem promessa.** Não há fila permanente nem expectativa de
   devolução: o ressarcimento só existe quando entra receita destinada a ele. Essa receita entra
   como **aporte financeiro com destinação a ressarcir**: credita o Poder Sustentador de quem
