@@ -2,11 +2,25 @@ import enum
 import uuid
 from datetime import date
 
-from sqlalchemy import CheckConstraint, Date, Enum, ForeignKey, Integer, Text, Uuid
+from sqlalchemy import (
+    DDL,
+    Boolean,
+    CheckConstraint,
+    Date,
+    Enum,
+    ForeignKey,
+    Integer,
+    Text,
+    UniqueConstraint,
+    Uuid,
+    event,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
 from ..banco import Base
+from ..erros import ConclusaoDeDesafioExtraImutavel
+from ..tempo import ComMomentoDoFato
 
 
 class Modalidade(enum.StrEnum):
@@ -130,3 +144,78 @@ class DesafioExtra(Base, ComAutoria):
             "vigencia_fim >= vigencia_inicio", name="ck_desafio_extra_fim_apos_ou_igual_ao_inicio"
         ),
     )
+
+
+class ConclusaoDeDesafioExtra(Base, ComMomentoDoFato):
+    """O registro de que um Guerreiro(a) concluiu um `DesafioExtra`
+    publicado (`RF-14-42`, `RF-14-37`, design — decisão 1). É do agregado
+    `DesafioExtra`, não do painel de efetividade: o ato de registrá-la —
+    atribuir a recompensa e creditar os pontos extras — é do PRD-09, ainda
+    sem fatia; aqui nasce só a entidade, com as guardas já postas, e o
+    painel a lê (design — Context, decisão 2).
+
+    Somente inserção, no padrão de `consentimentos.modelo`: os
+    `event.listen` abaixo recusam `UPDATE` e `DELETE` também dentro do
+    ORM, além do gatilho da migração. `UniqueConstraint(desafio_id,
+    guerreiro_id)` impede duas conclusões do mesmo Guerreiro(a) para o
+    mesmo desafio fora do ORM também.
+    """
+
+    __tablename__ = "conclusao_de_desafio_extra"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    desafio_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("desafio_extra.id"), nullable=False
+    )
+    guerreiro_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("persona.id"), nullable=False)
+    recompensa_entregue: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    pontos_extras_creditados: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "desafio_id", "guerreiro_id", name="uq_conclusao_de_desafio_extra_desafio_guerreiro"
+        ),
+    )
+
+
+def _recusar_alteracao_de_conclusao(mapper, connection, target) -> None:
+    raise ConclusaoDeDesafioExtraImutavel()
+
+
+event.listen(ConclusaoDeDesafioExtra, "before_update", _recusar_alteracao_de_conclusao)
+event.listen(ConclusaoDeDesafioExtra, "before_delete", _recusar_alteracao_de_conclusao)
+
+# O mesmo trigger da migração, preso à criação/remoção da tabela: garante que
+# `Base.metadata.create_all()` — caminho que os testes usam, fora do Alembic —
+# também recusa `UPDATE` e `DELETE` fora do ORM (mesmo padrão de
+# `consentimentos.modelo`).
+event.listen(
+    ConclusaoDeDesafioExtra.__table__,
+    "after_create",
+    DDL(
+        """
+        CREATE FUNCTION recusar_alteracao_de_conclusao_de_desafio_extra() RETURNS trigger AS $$
+        BEGIN
+            RAISE EXCEPTION
+                'conclusão de desafio extra é somente inserção: '
+                'UPDATE e DELETE não são permitidos';
+        END;
+        $$ LANGUAGE plpgsql;
+
+        CREATE TRIGGER trg_conclusao_de_desafio_extra_somente_insercao
+        BEFORE UPDATE OR DELETE ON conclusao_de_desafio_extra
+        FOR EACH ROW EXECUTE FUNCTION recusar_alteracao_de_conclusao_de_desafio_extra();
+        """
+    ),
+)
+event.listen(
+    ConclusaoDeDesafioExtra.__table__,
+    "before_drop",
+    DDL(
+        """
+        DROP TRIGGER trg_conclusao_de_desafio_extra_somente_insercao
+            ON conclusao_de_desafio_extra;
+        DROP FUNCTION recusar_alteracao_de_conclusao_de_desafio_extra();
+        """
+    ),
+)

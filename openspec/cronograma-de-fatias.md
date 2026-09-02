@@ -167,6 +167,11 @@ implementados: `RF-09-35` e `RN-09-21` (tela da amostragem semanal de coleta) e 
 (trilha de auditoria das escritas do Mestre), que era a fatia 14 (decisão do fundador,
 2026-08-28, documento 09 §1).
 
+Ainda sem fatia: o **ato de registrar a conclusão** de um `DesafioExtra` por um Guerreiro(a) —
+atribuir a recompensa e creditar os pontos extras. A fatia 6 do PRD-14
+(`efetividade-do-apoio`) já criou a entidade `ConclusaoDeDesafioExtra` só para leitura; quem a
+escreve é uma fatia do PRD-09, decisão do fundador, 2026-09-02.
+
 ## PRD-04 — Aula presencial (App 01)
 
 | Fatia | Entrega                                              | Recorte                                                                        | Situação     |
@@ -225,7 +230,7 @@ passaram ao PRD-04.
 | 3     | Identidade pública e comprobatórios              | `identidade-publica-e-comprobatorios`                                                                                                                                                                                                                                                                     | implementado |
 | 4     | Meus aportes, necessidades e aporte declarado    | `meus-aportes-necessidades-e-aporte-declarado`                                                                                                                                                                                                                                                            | implementado |
 | 5     | Missões do Apoiador, sustento e selos            | `missoes-do-apoiador-sustento-e-selos` — `RF-14-60` a `RF-14-73`, `RN-14-29` a `RN-14-38`; entidades `MissaoDoApoiador` e `SeloDoApoiador` (PRD-14 §8) — depende da fatia 4; leva também a opção "missão aberta" do `RF-14-02`, que a fatia 2 deixou de fora por faltar a entidade, e a publicação da missão na App 03 (`RF-02-102` a `RF-02-105`, `RN-02-31`) | implementado |
-| 6     | Efetividade do apoio                             | `RF-14-40` a `RF-14-47`, `RN-14-21`, `RN-14-22`, `RN-14-28` — depende das fatias 1 e 5                                                                                                                                                                                                                     | em aberto |
+| 6     | Efetividade do apoio                             | `efetividade-do-apoio`                                                                                                                                                                                                                                                                                    | implementado |
 | 7     | Acompanhamento e favoritos                       | `RF-14-48` a `RF-14-55`, `RN-14-23` a `RN-14-25`; entidade `Favorito` (PRD-14 §8) — depende do PRD-03 (painel público)                                                                                                                                                                                     | em aberto |
 | 8     | Propostas, avisos e canal fechado                | `RF-14-56` a `RF-14-59`, `RN-14-26`, `RN-14-27`                                                                                                                                                                                                                                                           | em aberto |
 | 9     | Oferta ao catálogo avulso                        | `RF-14-77` a `RF-14-81`, `RN-14-42` a `RN-14-44` — **trava:** valores da tabela de preços do catálogo avulso (PRD-14 §14)                                                                                                                                                                                  | em aberto |

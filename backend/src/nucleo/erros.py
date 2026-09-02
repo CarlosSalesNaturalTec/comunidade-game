@@ -336,6 +336,12 @@ class EdicaoDeDesafioExtraPublicadoRecusada(ErroDeAplicacao):
     mensagem = "Desafio extra publicado não é editável; a correção é uma proposta nova."
 
 
+class ConclusaoDeDesafioExtraImutavel(ErroDeAplicacao):
+    status_code = 409
+    codigo = "conclusao_de_desafio_extra_imutavel"
+    mensagem = "Conclusão de desafio extra é somente inserção; não há como alterá-la ou retirá-la."
+
+
 class PisoDeMoedasNaoAlcancado(ErroDeAplicacao):
     """`RF-14-14`, `RN-14-11`: o avatar próprio do Apoiador só grava a partir
     de 10 moedas acumuladas em aportes homologados; `moedas_faltantes` é o

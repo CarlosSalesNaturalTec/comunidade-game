@@ -24,6 +24,9 @@ from .regra import (
     motivo_de_lastro_faltante,
     propor_desafio_extra,
 )
+from .regra import (
+    quantidade_restante as calcular_quantidade_restante,
+)
 
 roteador = APIRouter()
 
@@ -63,9 +66,9 @@ def _saida(sessao: Session, desafio: DesafioExtra) -> DesafioExtraSaida:
         tipo_de_recurso_id=desafio.tipo_de_recurso_id,
         ponto_de_apoio_id=desafio.ponto_de_apoio_id,
         quantidade_disponivel=desafio.quantidade_disponivel,
-        # Nenhuma atribuição de recompensa acontece nesta fatia: a
-        # quantidade restante é sempre a disponível (`RF-14-37`).
-        quantidade_restante=desafio.quantidade_disponivel,
+        # A disponível menos as conclusões com recompensa entregue, nunca
+        # negativa (`RF-14-37`, `RF-14-42`).
+        quantidade_restante=calcular_quantidade_restante(sessao, desafio=desafio),
         criterio_de_atribuicao=desafio.criterio_de_atribuicao,
         pontos_extras=desafio.pontos_extras,
         formato=desafio.formato.value,

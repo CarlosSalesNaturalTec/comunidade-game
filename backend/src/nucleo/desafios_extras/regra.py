@@ -1,5 +1,5 @@
 import uuid
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 
 from sqlalchemy.orm import Session
@@ -12,6 +12,7 @@ from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
 from ..trilhas.modelo import Missao, SituacaoDaTrilha, Trilha
 from .modelo import (
+    ConclusaoDeDesafioExtra,
     CusteioDoDesafioExtra,
     DesafioExtra,
     FormatoDoDesafioExtra,
@@ -215,3 +216,55 @@ def listar_desafios_do_proponente(
         .order_by(DesafioExtra.registrado_em.desc())
         .all()
     )
+
+
+def registrar_conclusao_de_desafio_extra(
+    sessao: Session,
+    *,
+    desafio: DesafioExtra | None,
+    guerreiro_id: uuid.UUID,
+    momento_do_fato: datetime,
+    recompensa_entregue: bool,
+    pontos_extras_creditados: int,
+) -> ConclusaoDeDesafioExtra:
+    """A entidade nasce sem rota nesta fatia — o ato de chamar esta função é
+    do PRD-09, ainda sem fatia; aqui só as guardas (design — decisão 2).
+    Recusa desafio não publicado e segunda conclusão do mesmo Guerreiro(a)
+    para o mesmo desafio; a `UniqueConstraint` do modelo sustenta a segunda
+    guarda também fora desta função (`RF-14-42`)."""
+    if desafio is None or desafio.situacao != SituacaoDoDesafioExtra.publicado:
+        raise ErroDeValidacao(
+            mensagem="Só desafio extra publicado recebe conclusão.", campo="desafio_id"
+        )
+    ja_concluiu = (
+        sessao.query(ConclusaoDeDesafioExtra)
+        .filter_by(desafio_id=desafio.id, guerreiro_id=guerreiro_id)
+        .first()
+    )
+    if ja_concluiu is not None:
+        raise ErroDeValidacao(
+            mensagem="Este Guerreiro(a) já concluiu este desafio.", campo="guerreiro_id"
+        )
+
+    conclusao = ConclusaoDeDesafioExtra(
+        desafio_id=desafio.id,
+        guerreiro_id=guerreiro_id,
+        momento_do_fato=momento_do_fato,
+        recompensa_entregue=recompensa_entregue,
+        pontos_extras_creditados=pontos_extras_creditados,
+    )
+    sessao.add(conclusao)
+    sessao.flush()
+    return conclusao
+
+
+def quantidade_restante(sessao: Session, *, desafio: DesafioExtra) -> int:
+    """A disponível menos as conclusões com recompensa entregue, nunca
+    negativa — derivada na leitura, sem coluna de contador (`RF-14-37`,
+    `RF-14-42`, design — decisão 3)."""
+    entregues = (
+        sessao.query(ConclusaoDeDesafioExtra)
+        .filter_by(desafio_id=desafio.id, recompensa_entregue=True)
+        .count()
+    )
+    return max(desafio.quantidade_disponivel - entregues, 0)
