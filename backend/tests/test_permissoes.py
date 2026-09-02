@@ -27,6 +27,7 @@ _TABELA_DO_PRD_01_PAR_4 = {
             Operacao.testemunho_do_termo_impresso,
             Operacao.propostas_de_evolucao,
             Operacao.documentos_comprobatorios,
+            Operacao.propostas_de_desafio_extra,
         },
         "le": {
             Operacao.publico,

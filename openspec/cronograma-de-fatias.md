@@ -157,7 +157,7 @@ do fundador, 2026-08-28, documento 09 §1; a antiga fatia 17 deixou de existir.
 | 11    | Perfil do Mestre, prova de habilidade e aviso    | `2026-08-29-responsavel-credencial-e-perfil-do-mestre`                                                      | implementado |
 | 12    | Template da missão por IA                        | `RF-09-85` a `RF-09-91`, `RF-09-95`, `RF-09-116`, `RN-09-33`, `RN-09-34` — `2026-08-30-template-da-missao-recompensa-e-duplicacao-da-trilha` | implementado |
 | 13    | Recompensa por desbloqueio e duplicação de trilha | `RF-09-13`, `RF-09-84`, `RF-09-75` — `2026-08-30-template-da-missao-recompensa-e-duplicacao-da-trilha`     | implementado |
-| 15    | Desafio extra na Área do Mestre                  | `RF-09-51`, `RF-09-52`, `RF-09-105` a `RF-09-112`, `RN-09-11`, `RN-09-40` a `RN-09-42` — a validação pedagógica do Mestre e a proposta do próprio Mestre (PRD-09 §6.11), que o recorte omitia (decisão do fundador, 2026-09-02); a entidade `DesafioExtra` veio pela fatia 1 do PRD-14 | em aberto    |
+| 15    | Desafio extra na Área do Mestre                  | `2026-09-02-desafio-extra-na-area-do-mestre`                                                                | implementado |
 
 Ciclo 02, fora do Ciclo 01: `RF-09-61` (empréstimo do acervo permanente), `RF-09-96` e
 `RF-09-97` (recusa de trilha sem etiqueta ODS), `RN-09-35` e o **apoio escolar** — `RF-09-77` a

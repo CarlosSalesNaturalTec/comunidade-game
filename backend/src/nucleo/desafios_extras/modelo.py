@@ -119,6 +119,7 @@ class DesafioExtra(Base, ComAutoria):
     mestre_validador_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("persona.id"), nullable=True
     )
+    parecer_do_mestre: Mapped[str | None] = mapped_column(Text, nullable=True)
     admin_aprovador_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("persona.id"), nullable=True
     )

@@ -109,6 +109,7 @@ MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {
                 Operacao.testemunho_do_termo_impresso,
                 Operacao.propostas_de_evolucao,
                 Operacao.documentos_comprobatorios,
+                Operacao.propostas_de_desafio_extra,
             }
         ),
         "le": frozenset(

@@ -15,11 +15,14 @@ from nucleo.desafios_extras.regra import (
     conferir_publicacao_com_lastro,
     encerrar_desafio_extra,
     lastro_provido,
+    listar_desafios_a_validar_do_mestre,
     listar_desafios_do_proponente,
     listar_desafios_em_aprovacao_do_admin,
     listar_desafios_publicados,
     propor_desafio_extra,
     recusar_desafio_extra,
+    recusar_desafio_extra_pelo_mestre,
+    validar_desafio_extra,
 )
 from nucleo.erros import (
     EdicaoDeDesafioExtraPublicadoRecusada,
@@ -300,6 +303,298 @@ def test_direcionado_com_nick_inexistente_e_aceito(
     )
 
     assert desafio.nick_do_destinatario == "nick-que-nao-existe"
+
+
+# --- 2.1, 2.3, 2.4, 2.5 — o Mestre como proponente e como validador ----------
+
+
+def test_mestre_autor_propoe_e_nasce_em_aprovacao_do_admin(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+):
+    mestre_autor = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(mestre_autor)
+    ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
+
+    desafio = _propor(sessao, apoiador=mestre_autor, trilha=trilha, tipo=tipo, ponto=ponto)
+
+    assert desafio.autor_id == mestre_autor.id
+    assert desafio.situacao == SituacaoDoDesafioExtra.em_aprovacao_do_admin
+    assert desafio.mestre_validador_id is None
+
+
+def test_outro_mestre_propoe_e_nasce_em_validacao_e_aparece_na_fila_do_autor(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+):
+    mestre_autor = criar_persona(Papel.mestre)
+    outro_mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(mestre_autor)
+    ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
+
+    desafio = _propor(sessao, apoiador=outro_mestre, trilha=trilha, tipo=tipo, ponto=ponto)
+
+    assert desafio.situacao == SituacaoDoDesafioExtra.em_validacao_do_mestre
+    fila = listar_desafios_a_validar_do_mestre(sessao, operador=mestre_autor)
+    assert [d.id for d in fila] == [desafio.id]
+    assert listar_desafios_a_validar_do_mestre(sessao, operador=outro_mestre) == []
+
+
+def test_direcionado_do_mestre_sem_justificativa_e_recusado(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+):
+    mestre_autor = criar_persona(Papel.mestre)
+    outro_mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(mestre_autor)
+    ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
+
+    with pytest.raises(ErroDeValidacao):
+        _propor(
+            sessao,
+            apoiador=outro_mestre,
+            trilha=trilha,
+            tipo=tipo,
+            ponto=ponto,
+            modalidade=Modalidade.direcionado,
+            nick_do_destinatario="guerreiro-qualquer",
+            justificativa_do_vinculo=None,
+        )
+
+
+def test_direcionado_do_mestre_com_nick_inexistente_e_aceito(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+):
+    mestre_autor = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(mestre_autor)
+    ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
+
+    desafio = _propor(
+        sessao,
+        apoiador=mestre_autor,
+        trilha=trilha,
+        tipo=tipo,
+        ponto=ponto,
+        modalidade=Modalidade.direcionado,
+        nick_do_destinatario="nick-que-nao-existe",
+        justificativa_do_vinculo="Aluno com dificuldade em matemática.",
+    )
+
+    assert desafio.nick_do_destinatario == "nick-que-nao-existe"
+
+
+def test_validacao_com_parecer_leva_o_desafio_ao_admin(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    mestre_autor = criar_persona(Papel.mestre)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(mestre_autor)
+    ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
+    desafio = criar_desafio_extra(
+        apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre
+    )
+
+    validado = validar_desafio_extra(
+        sessao, operador=mestre_autor, desafio=desafio, parecer="Boa proposta pedagógica."
+    )
+
+    assert validado.situacao == SituacaoDoDesafioExtra.em_aprovacao_do_admin
+    assert validado.parecer_do_mestre == "Boa proposta pedagógica."
+    assert validado.mestre_validador_id == mestre_autor.id
+
+
+def test_validacao_sem_parecer_nao_passa(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    mestre_autor = criar_persona(Papel.mestre)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(mestre_autor)
+    ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
+    desafio = criar_desafio_extra(
+        apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre
+    )
+
+    with pytest.raises(ErroDeValidacao):
+        validar_desafio_extra(sessao, operador=mestre_autor, desafio=desafio, parecer=None)
+    assert desafio.situacao == SituacaoDoDesafioExtra.em_validacao_do_mestre
+
+
+def test_mestre_de_outra_trilha_nao_valida(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    mestre_autor = criar_persona(Papel.mestre)
+    outro_mestre = criar_persona(Papel.mestre)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(mestre_autor)
+    ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
+    desafio = criar_desafio_extra(
+        apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre
+    )
+
+    with pytest.raises(PermissaoNegada):
+        validar_desafio_extra(sessao, operador=outro_mestre, desafio=desafio, parecer="Ok.")
+    assert desafio.situacao == SituacaoDoDesafioExtra.em_validacao_do_mestre
+
+
+def test_validacao_de_desafio_em_outra_situacao_da_409(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    mestre_autor = criar_persona(Papel.mestre)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(mestre_autor)
+    ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
+    desafio = criar_desafio_extra(
+        apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin
+    )
+
+    with pytest.raises(SituacaoDoDesafioExtraIncompativel):
+        validar_desafio_extra(sessao, operador=mestre_autor, desafio=desafio, parecer="Ok.")
+
+
+def test_recusa_do_mestre_sem_motivo_nao_passa(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    mestre_autor = criar_persona(Papel.mestre)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(mestre_autor)
+    ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
+    desafio = criar_desafio_extra(
+        apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre
+    )
+
+    with pytest.raises(ErroDeValidacao):
+        recusar_desafio_extra_pelo_mestre(
+            sessao, operador=mestre_autor, desafio=desafio, motivo=None
+        )
+    assert desafio.situacao == SituacaoDoDesafioExtra.em_validacao_do_mestre
+
+
+def test_recusa_do_mestre_grava_o_motivo_e_nao_chega_a_fila_do_admin(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    mestre_autor = criar_persona(Papel.mestre)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(mestre_autor)
+    ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
+    desafio = criar_desafio_extra(
+        apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre
+    )
+
+    recusado = recusar_desafio_extra_pelo_mestre(
+        sessao, operador=mestre_autor, desafio=desafio, motivo="Sem mérito pedagógico."
+    )
+
+    assert recusado.situacao == SituacaoDoDesafioExtra.recusado
+    assert recusado.motivo_da_recusa == "Sem mérito pedagógico."
+    assert recusado.mestre_validador_id == mestre_autor.id
+    assert listar_desafios_em_aprovacao_do_admin(sessao) == []
+    assert sessao.query(Reserva).filter_by(desafio_extra_id=desafio.id).count() == 0
+
+
+def test_fila_do_mestre_so_traz_as_proprias_trilhas(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    mestre_autor = criar_persona(Papel.mestre)
+    outro_mestre = criar_persona(Papel.mestre)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha_do_autor = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
+    trilha_do_outro = criar_trilha(outro_mestre, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(mestre_autor)
+    ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
+    esperado = criar_desafio_extra(
+        apoiador,
+        trilha_do_autor,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre,
+    )
+    criar_desafio_extra(
+        apoiador,
+        trilha_do_outro,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre,
+    )
+    criar_desafio_extra(
+        apoiador,
+        trilha_do_autor,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin,
+    )
+
+    fila = listar_desafios_a_validar_do_mestre(sessao, operador=mestre_autor)
+
+    assert [d.id for d in fila] == [esperado.id]
 
 
 # --- 2.4 — lastro provido e a guarda da publicação ---------------------------

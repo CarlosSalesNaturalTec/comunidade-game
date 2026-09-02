@@ -1917,6 +1917,8 @@ def criar_desafio_extra(sessao):
         motivo_da_recusa: str | None = None,
         admin_encerrador: Persona | None = None,
         encerrado_em: datetime | None = None,
+        mestre_validador: Persona | None = None,
+        parecer_do_mestre: str | None = None,
     ) -> DesafioExtra:
         desafio = DesafioExtra(
             trilha_id=trilha.id,
@@ -1938,6 +1940,8 @@ def criar_desafio_extra(sessao):
             motivo_da_recusa=motivo_da_recusa,
             admin_encerrador_id=admin_encerrador.id if admin_encerrador is not None else None,
             encerrado_em=encerrado_em,
+            mestre_validador_id=mestre_validador.id if mestre_validador is not None else None,
+            parecer_do_mestre=parecer_do_mestre,
             autor_id=proponente.id,
             papel_do_autor=proponente.papel.value,
         )
