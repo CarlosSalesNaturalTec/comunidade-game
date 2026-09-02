@@ -85,6 +85,8 @@ quem valida e selo que rende.
   mutirão.
 - Missão sem necessidade real por trás não é publicada: o que se pede existe no livro-razão
   antes de virar chamado.
+- **Quem publica é a gestão.** Um Admin publica a missão na App 03, escolhendo a necessidade
+  de recurso que ela sustenta, o prazo e o selo que rende; o Apoiador só a lê e a cobre.
 
 ## 6. Catálogo de missões
 
@@ -196,7 +198,7 @@ definido. Quem cadastra continua sendo um Admin.
 | ------------------------- | ------------------------------------------------------------------------------------------------ |
 | App 06 — Vitrine          | Garfo de modalidade na chamada; a vitrine das aplicações de terceiros depende do apoio em código |
 | App 08 — Área do Apoiador | Missões, níveis de sustento e selos                                                              |
-| App 03 — Gestão           | Fila separada por modalidade e homologação que conclui a missão                                  |
+| App 03 — Gestão           | Publicação da missão, fila separada por modalidade e homologação que a conclui                   |
 | App 09 — Área do Mestre   | Validação do conteúdo educacional doado                                                          |
 
 ## 12. Pendências

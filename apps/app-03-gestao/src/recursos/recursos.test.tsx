@@ -5,6 +5,7 @@ import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as agendaApi from "../agenda/api";
 import * as comunidadesApi from "../comunidades/api";
+import * as missoesApi from "../missoes-do-apoiador/api";
 import * as personasApi from "../personas/api";
 import * as pontosDeApoioApi from "../pontos-de-apoio/api";
 import * as recursosApi from "./api";
@@ -128,6 +129,7 @@ function configurarCatalogos() {
     itens: [PONTO_DE_APOIO],
     proximo_cursor: null,
   });
+  vi.spyOn(missoesApi, "listarMissoes").mockResolvedValue([]);
 }
 
 afterEach(() => {

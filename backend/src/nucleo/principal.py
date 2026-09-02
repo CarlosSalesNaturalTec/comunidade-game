@@ -35,6 +35,7 @@ from .fila.rotas import roteador as roteador_de_fila
 from .jogos.rotas import roteador as roteador_de_jogos
 from .livro_razao.rotas import roteador as roteador_de_livro_razao
 from .locais.rotas import roteador as roteador_de_locais
+from .missoes_do_apoiador.rotas import roteador as roteador_de_missoes_do_apoiador
 from .necessidades.rotas import roteador as roteador_de_necessidades
 from .ocorrencias_de_conduta.rotas import roteador as roteador_de_ocorrencias_de_conduta
 from .ods.rotas import roteador as roteador_de_ods
@@ -56,6 +57,7 @@ from .recursos.rotas import roteador as roteador_de_recursos
 from .responsaveis.rotas import roteador as roteador_de_responsaveis
 from .ressarcimentos.rotas import roteador as roteador_de_ressarcimentos
 from .resultados.rotas import roteador as roteador_de_resultados
+from .selos_do_apoiador.rotas import roteador as roteador_de_selos_do_apoiador
 from .sessoes.rotas import roteador as roteador_de_sessoes
 from .solicitacoes_do_responsavel.rotas import roteador as roteador_de_solicitacoes_do_responsavel
 from .template_de_missao.rotas import roteador as roteador_de_template_de_missao
@@ -216,6 +218,8 @@ incluir_roteador_de_dados(app, roteador_de_assistente)
 incluir_roteador_de_dados(app, roteador_de_vinculo_do_guerreiro)
 incluir_roteador_de_dados(app, roteador_de_termos)
 incluir_roteador_de_dados(app, roteador_de_transparencia)
+incluir_roteador_de_dados(app, roteador_de_missoes_do_apoiador)
+incluir_roteador_de_dados(app, roteador_de_selos_do_apoiador)
 # A rota local do protocolo `Content-Range` (`armazenamento.rotas`) só
 # conclui algo com o adaptador de disco — em produção, a dependência
 # devolve o Cloud Storage e o manipulador responde 404 (`RF-09-19`, design

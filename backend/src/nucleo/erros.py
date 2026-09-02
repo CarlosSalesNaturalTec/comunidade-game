@@ -362,6 +362,27 @@ class DeclaracaoDeAporteJaResolvida(ErroDeAplicacao):
     mensagem = "Esta declaração de aporte já tem um desfecho gravado."
 
 
+class MissaoDoApoiadorFechada(ErroDeAplicacao):
+    """`RF-14-63` a `RF-14-65`, `RN-14-32`: a missão concluída, vencida,
+    despublicada ou inexistente não aceita nova declaração de aporte — a
+    mensagem diz o que aconteceu com ela."""
+
+    status_code = 409
+    codigo = "missao_do_apoiador_fechada"
+    mensagem = "Esta missão não aceita mais aporte."
+
+    def __init__(self, *, mensagem: str) -> None:
+        super().__init__(mensagem)
+
+
+class DespublicacaoDeMissaoConcluidaRecusada(ErroDeAplicacao):
+    """`RF-02-105`: a missão já concluída não se despublica."""
+
+    status_code = 409
+    codigo = "despublicacao_de_missao_concluida_recusada"
+    mensagem = "Missão concluída não se despublica."
+
+
 class FreioPorOrigemAcionado(ErroDeAplicacao):
     """`RF-01-65`: leva o tempo de espera calculado pelo freio, que o
     manipulador de `principal.py` também expõe no cabeçalho `Retry-After`

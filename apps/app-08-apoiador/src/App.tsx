@@ -11,7 +11,9 @@ import { TelaDeAcompanhamento } from "./desafiosExtras/TelaDeAcompanhamento";
 import { TelaDeProposta } from "./desafiosExtras/TelaDeProposta";
 import { TelaDeComprobatorios } from "./documentos/TelaDeComprobatorios";
 import { TelaDeIdentidadePublica } from "./identidade/TelaDeIdentidadePublica";
+import { TelaDeMissoes } from "./missoes/TelaDeMissoes";
 import { TelaDePreCadastro } from "./preCadastro/TelaDePreCadastro";
+import { TelaDeSustento } from "./sustento/TelaDeSustento";
 
 const MENSAGEM_DE_RECUSA_DE_OUTRO_PAPEL =
   "Esta área é só para Apoiadores. Quem ainda não tem cadastro pode pedir participação pelo " +
@@ -29,6 +31,8 @@ type Area =
   | "acompanhar"
   | "meus-aportes"
   | "necessidades"
+  | "missoes"
+  | "sustento"
   | "declarar-aporte"
   | "situacao-de-declaracoes";
 type TelaSemSessao = "porta" | "entrada";
@@ -106,6 +110,18 @@ function Conteudo() {
           Necessidades em aberto
         </Botao>
         <Botao
+          variante={area === "missoes" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("missoes")}
+        >
+          Missões
+        </Botao>
+        <Botao
+          variante={area === "sustento" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("sustento")}
+        >
+          Sustento
+        </Botao>
+        <Botao
           variante={area === "declarar-aporte" ? "primaria" : "secundaria"}
           onClick={() => definirArea("declarar-aporte")}
         >
@@ -124,6 +140,8 @@ function Conteudo() {
       {area === "acompanhar" && <TelaDeAcompanhamento />}
       {area === "meus-aportes" && <TelaDeMeusAportes />}
       {area === "necessidades" && <TelaDeNecessidadesEmAberto />}
+      {area === "missoes" && <TelaDeMissoes />}
+      {area === "sustento" && <TelaDeSustento />}
       {area === "declarar-aporte" && <TelaDeDeclaracaoDeAporte />}
       {area === "situacao-de-declaracoes" && <TelaDeSituacaoDasDeclaracoes />}
     </>

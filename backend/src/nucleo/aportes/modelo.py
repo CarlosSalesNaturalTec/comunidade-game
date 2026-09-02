@@ -31,8 +31,10 @@ class OrigemDoRegistro(enum.StrEnum):
 
 class OrigemDaEscolhaDoAporte(enum.StrEnum):
     """A partir de que o Apoiador declarou o valor (`RF-14-25`, design —
-    Decisions 3). A origem `missao` do `RF-14-25` é de fatia futura."""
+    Decisions 3). `missao` aponta `missao_do_apoiador_id` (`RF-14-63`,
+    design — Migration Plan)."""
 
+    missao = "missao"
     necessidade = "necessidade"
     valor_sugerido = "valor_sugerido"
     valor_livre = "valor_livre"
@@ -137,6 +139,9 @@ class AporteDeclarado(Base, ComAutoria):
     derivada e pode deixar de existir até a homologação (design —
     Decisions 3). `motivo_da_recusa`, `resolvido_por_id` e `resolvido_em`
     só existem depois do desfecho, homologação ou recusa.
+
+    `missao_do_apoiador_id` só existe na origem `missao` (`RF-14-63`,
+    `RN-14-32`, design — Decisions 1).
     """
 
     __tablename__ = "aporte_declarado"
@@ -150,6 +155,9 @@ class AporteDeclarado(Base, ComAutoria):
     aula_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=True)
     tipo_de_recurso_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("tipo_de_recurso.id"), nullable=True
+    )
+    missao_do_apoiador_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("missao_do_apoiador.id"), nullable=True
     )
     comprovante_referencia: Mapped[str | None] = mapped_column(String(512), nullable=True)
     comprovante_nome_original: Mapped[str | None] = mapped_column(String(256), nullable=True)

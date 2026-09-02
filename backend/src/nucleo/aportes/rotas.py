@@ -15,6 +15,7 @@ from ..banco import obter_sessao
 from ..erros import ErroDeValidacao, NaoEncontrado
 from ..fila.modelo import SolicitacaoDeParticipacao
 from ..livro_razao.modelo import DestinacaoDoAporte
+from ..missoes_do_apoiador.modelo import MissaoDoApoiador
 from ..personas.modelo import Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
@@ -183,6 +184,7 @@ class AporteDeclaradoSaida(BaseModel):
     origem_da_escolha: str
     aula_id: uuid.UUID | None
     tipo_de_recurso_id: uuid.UUID | None
+    missao_do_apoiador_id: uuid.UUID | None
     situacao: str
     registrado_em: datetime
     motivo_da_recusa: str | None
@@ -195,6 +197,7 @@ def _saida_da_declaracao(declaracao: AporteDeclarado) -> AporteDeclaradoSaida:
         origem_da_escolha=declaracao.origem_da_escolha.value,
         aula_id=declaracao.aula_id,
         tipo_de_recurso_id=declaracao.tipo_de_recurso_id,
+        missao_do_apoiador_id=declaracao.missao_do_apoiador_id,
         situacao=declaracao.situacao.value,
         registrado_em=declaracao.registrado_em,
         motivo_da_recusa=declaracao.motivo_da_recusa,
@@ -211,12 +214,15 @@ def declarar_aporte_rota(
     origem_da_escolha: Annotated[OrigemDaEscolhaDoAporte, Form()],
     aula_id: Annotated[uuid.UUID | None, Form()] = None,
     tipo_de_recurso_id: Annotated[uuid.UUID | None, Form()] = None,
+    missao_do_apoiador_id: Annotated[uuid.UUID | None, Form()] = None,
     comprovante: Annotated[UploadFile | None, File()] = None,
 ) -> AporteDeclaradoSaida:
     """Restrita ao Apoiador em sessão (`RF-14-25`, `RF-14-26`). A
     declaração nasce pendente, sem lançamento nem crédito, e alcança só
     dinheiro — material, serviço e divulgação são recusados com 422 e a
-    orientação de procurar a gestão (`RN-14-05` a `RN-14-07`, `RF-14-28`)."""
+    orientação de procurar a gestão (`RN-14-05` a `RN-14-07`, `RF-14-28`).
+    `missao_do_apoiador_id`, na origem `missao`, aponta a missão escolhida
+    (`RF-14-63`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     aula = sessao_bd.get(Aula, aula_id) if aula_id is not None else None
     if aula_id is not None and aula is None:
@@ -228,6 +234,11 @@ def declarar_aporte_rota(
         raise ErroDeValidacao(
             mensagem="Tipo de recurso não encontrado.", campo="tipo_de_recurso_id"
         )
+    missao = (
+        sessao_bd.get(MissaoDoApoiador, missao_do_apoiador_id)
+        if missao_do_apoiador_id is not None
+        else None
+    )
     conteudo = comprovante.file.read() if comprovante is not None else None
 
     declaracao = declarar_aporte(
@@ -238,6 +249,7 @@ def declarar_aporte_rota(
         origem_da_escolha=origem_da_escolha,
         aula=aula,
         tipo=tipo,
+        missao=missao,
         comprovante_conteudo=conteudo,
         comprovante_nome_original=comprovante.filename if comprovante is not None else None,
         comprovante_tipo=comprovante.content_type if comprovante is not None else None,

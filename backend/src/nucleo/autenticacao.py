@@ -105,6 +105,20 @@ def exigir_persona(
     return contexto
 
 
+def persona_opcional(
+    request: Request,
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> ContextoDaSessao | None:
+    """A mesma resolução de `exigir_persona`, mas devolve `None` sem token —
+    para a rota que responde às duas personas pelo mesmo caminho: sem
+    sessão como leitura pública, com sessão de Admin com o alcance da
+    gestão (`RF-14-60`, `RF-02-104`, design — Decisions 9). Token presente
+    e inválido continua recusado, como em `exigir_persona`."""
+    if _extrair_token(request) is None:
+        return None
+    return exigir_persona(request, sessao_bd)
+
+
 def _extrair_credencial_de_dispositivo(request: Request) -> tuple[str, str]:
     cabecalho = request.headers.get(NOME_DO_CABECALHO_DE_DISPOSITIVO)
     if not cabecalho or "." not in cabecalho:

@@ -52,6 +52,8 @@ poder tocar a partida.
   conferência de inventário.
 - Gestão de recursos: registro e homologação de aportes, e **publicação das necessidades** das
   atividades pendentes de lastro.
+- **Publicação da missão do Apoiador** a partir de uma necessidade em aberto, e a despublicação
+  da que foi publicada por engano.
 - Filas de avaliação: solicitações de participação, **solicitações de dados**, solicitações
   dos responsáveis, desafios extras dos Apoiadores e a fila única de sugestões e propostas.
 - Conteúdo institucional da vitrine — "Quem somos", "Contatos" e "Como apoiar".
@@ -291,31 +293,35 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 
 ### 6.5 Acervo, recursos e Quiz ao Vivo
 
-| ID         | Requisito                                                                                          | Prioridade |
-| ---------- | -------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-50` | Aplicação mostra a entrega do exemplar Alpha confirmada pelo Mestre, com a baixa definitiva        | essencial  |
-| `RF-02-51` | Aplicação mostra a entrega da camisa confirmada pelo Mestre ao Guerreiro(a) inscrito, com a baixa  | essencial  |
-| `RF-02-52` | Admin tomba o exemplar permanente com título, tombo, ponto de apoio e responsável designado        | essencial  |
-| `RF-02-96` | Admin desativa e reativa ponto de apoio, sempre com motivo; a lista distingue o inativo do ativo   | essencial  |
-| `RF-02-97` | Admin transfere saldo de um tipo de recurso entre pontos de apoio, com o saldo da origem mostrado  | essencial  |
-| `RF-02-53` | Aplicação mantém a ficha de vida do exemplar, com estado de conservação e histórico de uso         | essencial  |
-| `RF-02-55` | Perda ou dano é anotado na ficha de vida, sem débito ao Guerreiro(a) nem à família                 | essencial  |
-| `RF-02-56` | Admin realiza a conferência de inventário do módulo e publica o resultado na prestação de contas   | desejável  |
-| `RF-02-57` | Admin registra e homologa aporte com provedor, tipo, comprovante e valor em moedas                 | essencial  |
-| `RF-02-58` | Aplicação exibe as necessidades de recurso em aberto das atividades previstas                      | essencial  |
-| `RF-02-59` | Mestre da aula ou Admin abre partida de Quiz ao Vivo com o banco do curador e as equipes da aula   | essencial  |
-| `RF-02-60` | Partida exibe a pergunta simultaneamente nos dispositivos logados na aula                          | essencial  |
-| `RF-02-61` | Partida fixa uma equipe por Guerreiro(a) e aceita uma resposta por equipe e por pergunta           | essencial  |
-| `RF-02-62` | Partida credita toda equipe que acerta e o bônus à primeira, por ordem de chegada no servidor      | essencial  |
-| `RF-02-72` | Quem conduz a partida pode anular a pergunta contestada, sem crédito para ninguém                  | essencial  |
-| `RF-02-73` | Encerrada a partida, a pontuação é lançada automaticamente às equipes, respeitado o teto           | essencial  |
-| `RF-02-74` | Admin audita por amostragem o conteúdo de apoio escolar dos Mestres e despublica com motivo        | essencial  |
-| `RF-02-76` | Aplicação abre a amostra mensal de auditoria com 10% do conteúdo novo e 100% do que gerou recusa   | essencial  |
-| `RF-02-98` | Aplicação abre a amostra semanal de coleta com 10% dos registros por série ativa, mínimo de um     | essencial  |
-| `RF-02-75` | Aplicação recusa cadastro de conteúdo de apoio escolar por Admin: o corpus é autoria do Mestre     | essencial  |
-| `RF-02-63` | Admin consulta a trilha de auditoria das ações de gestão, com filtro por autor, período e entidade | essencial  |
-| `RF-02-64` | Toda tela que coleta dado exibe o aviso discreto e o acesso à área detalhada de direitos           | essencial  |
-| `RF-02-70` | Admin audita por amostragem as trilhas publicadas e despublica com motivo registrado               | essencial  |
+| ID          | Requisito                                                                                                                   | Prioridade |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-02-50`  | Aplicação mostra a entrega do exemplar Alpha confirmada pelo Mestre, com a baixa definitiva                                 | essencial  |
+| `RF-02-51`  | Aplicação mostra a entrega da camisa confirmada pelo Mestre ao Guerreiro(a) inscrito, com a baixa                           | essencial  |
+| `RF-02-52`  | Admin tomba o exemplar permanente com título, tombo, ponto de apoio e responsável designado                                 | essencial  |
+| `RF-02-96`  | Admin desativa e reativa ponto de apoio, sempre com motivo; a lista distingue o inativo do ativo                            | essencial  |
+| `RF-02-97`  | Admin transfere saldo de um tipo de recurso entre pontos de apoio, com o saldo da origem mostrado                           | essencial  |
+| `RF-02-53`  | Aplicação mantém a ficha de vida do exemplar, com estado de conservação e histórico de uso                                  | essencial  |
+| `RF-02-55`  | Perda ou dano é anotado na ficha de vida, sem débito ao Guerreiro(a) nem à família                                          | essencial  |
+| `RF-02-56`  | Admin realiza a conferência de inventário do módulo e publica o resultado na prestação de contas                            | desejável  |
+| `RF-02-57`  | Admin registra e homologa aporte com provedor, tipo, comprovante e valor em moedas                                          | essencial  |
+| `RF-02-58`  | Aplicação exibe as necessidades de recurso em aberto das atividades previstas                                               | essencial  |
+| `RF-02-102` | Admin publica missão do Apoiador declarando nível de necessidade, título, o que se pede, quantidade, prazo e selo que rende | essencial  |
+| `RF-02-103` | Aplicação recusa publicar missão sem necessidade de recurso publicada por trás                                              | essencial  |
+| `RF-02-104` | Aplicação lista as missões publicadas com o que já foi coberto, o que falta e a situação                                    | essencial  |
+| `RF-02-105` | Admin despublica missão publicada por engano, sem estornar aporte já homologado                                             | essencial  |
+| `RF-02-59`  | Mestre da aula ou Admin abre partida de Quiz ao Vivo com o banco do curador e as equipes da aula                            | essencial  |
+| `RF-02-60`  | Partida exibe a pergunta simultaneamente nos dispositivos logados na aula                                                   | essencial  |
+| `RF-02-61`  | Partida fixa uma equipe por Guerreiro(a) e aceita uma resposta por equipe e por pergunta                                    | essencial  |
+| `RF-02-62`  | Partida credita toda equipe que acerta e o bônus à primeira, por ordem de chegada no servidor                               | essencial  |
+| `RF-02-72`  | Quem conduz a partida pode anular a pergunta contestada, sem crédito para ninguém                                           | essencial  |
+| `RF-02-73`  | Encerrada a partida, a pontuação é lançada automaticamente às equipes, respeitado o teto                                    | essencial  |
+| `RF-02-74`  | Admin audita por amostragem o conteúdo de apoio escolar dos Mestres e despublica com motivo                                 | essencial  |
+| `RF-02-76`  | Aplicação abre a amostra mensal de auditoria com 10% do conteúdo novo e 100% do que gerou recusa                            | essencial  |
+| `RF-02-98`  | Aplicação abre a amostra semanal de coleta com 10% dos registros por série ativa, mínimo de um                              | essencial  |
+| `RF-02-75`  | Aplicação recusa cadastro de conteúdo de apoio escolar por Admin: o corpus é autoria do Mestre                              | essencial  |
+| `RF-02-63`  | Admin consulta a trilha de auditoria das ações de gestão, com filtro por autor, período e entidade                          | essencial  |
+| `RF-02-64`  | Toda tela que coleta dado exibe o aviso discreto e o acesso à área detalhada de direitos                                    | essencial  |
+| `RF-02-70`  | Admin audita por amostragem as trilhas publicadas e despublica com motivo registrado                                        | essencial  |
 
 ## 7. Regras de negócio
 
@@ -329,6 +335,7 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 | `RN-02-28` | O segredo da chave é exibido uma única vez e não é recuperável depois                                                        | —          | 03 §1      |
 | `RN-02-29` | Chave sem URL apresentada em 30 dias é revogada pelo núcleo, sem ato de Admin                                                | —          | 03 §8      |
 | `RN-02-30` | O encerramento do ciclo não congela indicador: os quatro da lista pública seguem apurados no instante da consulta            | —          | 02 §1      |
+| `RN-02-31` | A missão do Apoiador é publicada por Admin, sempre a partir de uma necessidade de recurso publicada                          | 21         | 14 §§5, 11 |
 | `RN-02-04` | Comunidade Virtual é criada apenas por Admin e nasce vazia                                                                   | 4          | 02 §1      |
 | `RN-02-05` | Sem aula agendada para a data e o horário, o App 01 não opera                                                                | 4          | 02 §1      |
 | `RN-02-06` | O Guerreiro(a) não muda de comunidade no Ciclo 01; a transferência existe no modelo, com data                                | 4          | 02 §1      |
@@ -370,12 +377,15 @@ Equipe                                           CONFERE (leitura)
 ComunidadeVirtual        ACERVO                  SerieDeColeta
 Local                    ItemPatrimonial         DesafioDeColeta
 Poder                    Emprestimo              Auditoria
-                         Aporte
+MissaoDoApoiador         Aporte
 ```
 
 | Entidade      | Atributos essenciais                                                                                                                                                                |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Aula/Agenda` | comunidade, data, horário inicial, horário final, modalidade, ponto de apoio, atividade prevista, Mestre, situação (prevista, pendente de lastro, confirmada, realizada, cancelada) |
+
+A `MissaoDoApoiador` que a gestão publica é entidade do PRD-14 §8; aqui ela é escrita, e o
+quanto falta dela segue derivado dos aportes homologados da necessidade de origem.
 
 **Este PRD não cria entidade nova.** `Aula/Agenda` já existe no PRD-01 e recebe aqui os
 atributos que sustentam duas decisões: **comunidade, data e horários** — que habilitam o App 01
@@ -436,6 +446,9 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | GET    | `/v1/entregas`                                         | Admin           | Lê as entregas confirmadas pelo Mestre, com tipo de recurso e baixa               |
 | GET    | `/v1/auditoria`                                        | Admin           | Trilha de auditoria, com filtro por autor e período                               |
 | POST   | `/v1/apoiadores/{id}/artefatos/{artefato_id}/anexacao` | Admin           | Anexa ao cadastro o documento comprobatório que o Apoiador declarou, publicando-o |
+| POST   | `/v1/missoes-do-apoiador`                              | Admin           | Publica a missão a partir de uma necessidade de recurso em aberto                 |
+| GET    | `/v1/missoes-do-apoiador`                              | Admin           | Missões publicadas em qualquer situação, com o coberto e o que falta              |
+| POST   | `/v1/missoes-do-apoiador/{id}/despublicacao`           | Admin           | Despublica a missão publicada por engano, sem estornar aporte homologado          |
 
 Erros previstos: agenda de aula sem comunidade ou sem horário final (422); consulta de aulas
 vigentes fora de qualquer janela agendada (200 com lista vazia — é o que faz o App 01 não
@@ -445,7 +458,8 @@ Guerreiro(a) (422); aprovação de desafio extra sem validação do Mestre (409)
 (422); tentativa de editar lançamento (405); escrita de Mestre em rota de gestão que não seja a
 do quiz ou a de ocorrência (403); condução de partida por Mestre que não ministra aquela aula
 (403); anulação de presença já anulada (409) ou sem motivo (422); listagem de lançamentos sem o
-filtro de ponto de apoio (422).
+filtro de ponto de apoio (422); publicação de missão sem necessidade de recurso publicada por
+trás (422); despublicação de missão já concluída (409).
 
 ## 10. Requisitos não funcionais
 
@@ -554,6 +568,7 @@ contar, e dá à gestão a distribuição etária que **H4** observa.
 | Admin desativa e reativa ponto de apoio, bloqueado por aula futura e por saldo remanescente                  | 05 §2              | Desativação de ponto de apoio                                  |
 | "Publicado" no `RF-02-17` é a trilha em situação `publicada` — o desafio não tem situação própria            | PRD-08 §8          | não se aplica — correção de redação                            |
 | Processos de auditoria ainda não implementados vão ao Ciclo 02, exceto o histórico de acessos do responsável | 02 §3.2            | Processos de auditoria ainda não implementados vão ao Ciclo 02 |
+| Quem publica a missão do Apoiador é a gestão: um Admin a publica na App 03                                   | 14 §§5, 11         | Missão do Apoiador                                             |
 
 A **trilha de auditoria das ações de Admin**, questão que o documento 08 listava para este PRD,
 foi definida no PRD-01 — a App 03 apenas a consulta.
@@ -579,38 +594,39 @@ freio por origem: 3 envios por hora, com atraso progressivo e sem CAPTCHA (docum
 
 ## 15. Rastreabilidade
 
-| Requisito                | Origem                                                    |
-| ------------------------ | --------------------------------------------------------- |
-| `RF-02-01` a `RF-02-10`  | 02 §§1, 5 e 03 §5 (cadastros e governança de personas)    |
-| `RF-02-99` e `RF-02-100` | 02 §1 e 11 §5 (encerramento do ciclo e seus dois efeitos) |
-| `RF-02-11` a `RF-02-17`  | 02 §1, 03 §5 e PRD-08 (comunidade, default e território)  |
-| `RF-02-18` a `RF-02-20`  | 02 §1 e 03 §§5, 8 (solicitação de participação)           |
-| `RF-02-77` a `RF-02-79`  | 03 §12.3 (entrega de dados aprovada por Admin)            |
-| `RF-02-93`               | 03 §12.3 (critério de aprovação da entrega)               |
-| `RF-02-80`               | 03 §8 (conteúdo institucional da vitrine)                 |
-| `RF-02-83` a `RF-02-86`  | 02 §1 e 04 §2 (pré-cadastro, comprovante e homologação)   |
-| `RF-02-87` a `RF-02-92`  | 03 §§1, 8 (solicitação, emissão, prazo e revogação)       |
-| `RF-02-21` e `RF-02-22`  | PRD-08 (solicitação de novo local)                        |
-| `RF-02-23` e `RF-02-24`  | 03 §9 (solicitações da área do responsável)               |
-| `RF-02-25` e `RF-02-26`  | 03 §§7, 9, 10, 11 (fila única de sugestões e propostas)   |
-| `RF-02-27` e `RF-02-28`  | 04 §3 e PRD-07 (desafios extras e lastro)                 |
-| `RF-02-29` a `RF-02-32`  | 04 §1 e PRD-07 (atividade, agenda e regra de lastro)      |
-| `RF-02-33` a `RF-02-35`  | 02 §4 e 11 §5 (resultados e motor de pontuação)           |
-| `RF-02-36`               | 03 §§3, 5 (presença vinda do onboarding)                  |
-| `RF-02-37` a `RF-02-40`  | 02 §4, 05 §3 e 13 (pontuação negativa e ajuste)           |
-| `RF-02-41` a `RF-02-49`  | 05 §4 e 03 §5 (encontro assíncrono e painel do dia)       |
-| `RF-02-50` a `RF-02-56`  | 05 §3 e PRD-07 (acervo, regime misto e patrimônio)        |
-| `RF-02-96` e `RF-02-97`  | 05 §2 e PRD-07 (desativação, reativação e transferência)  |
-| `RF-02-57` e `RF-02-58`  | 04 §1 e PRD-07 (aportes e necessidades)                   |
-| `RF-02-59` a `RF-02-62`  | 05 §5 (Quiz ao Vivo)                                      |
-| `RF-02-72` e `RF-02-73`  | 05 §5 e 11 §5 (regras e pontuação da partida)             |
-| `RF-02-74` a `RF-02-76`  | 03 §§5, 7, 11 (auditoria mensal do corpus e das trilhas)  |
-| `RF-02-63`               | PRD-01 (trilha de auditoria)                              |
-| `RF-02-64`               | 03 §12 (aviso visível de coleta e área detalhada)         |
-| `RF-02-70`               | 03 §11 e PRD-09 (auditoria das trilhas publicadas)        |
-| `RF-02-71`               | 11 §§2, 4 e PRD-09 (autoria da atividade e do marco)      |
-| `RF-02-65`               | 02 §1 (prazo de 7 dias da solicitação de participação)    |
-| `RF-02-66`               | 03 §9 (prazo de 7 dias da solicitação do responsável)     |
-| `RF-02-67`               | 04 §1 e PRD-07 (suprido o lastro, confirma e reserva)     |
-| `RF-02-68` e `RF-02-69`  | 03 §3.3 (digitalização do termo anexada pela gestão)      |
-| `RF-02-101`              | 02 §1 (anexação do comprobatório declarado pelo Apoiador) |
+| Requisito                 | Origem                                                    |
+| ------------------------- | --------------------------------------------------------- |
+| `RF-02-01` a `RF-02-10`   | 02 §§1, 5 e 03 §5 (cadastros e governança de personas)    |
+| `RF-02-99` e `RF-02-100`  | 02 §1 e 11 §5 (encerramento do ciclo e seus dois efeitos) |
+| `RF-02-11` a `RF-02-17`   | 02 §1, 03 §5 e PRD-08 (comunidade, default e território)  |
+| `RF-02-18` a `RF-02-20`   | 02 §1 e 03 §§5, 8 (solicitação de participação)           |
+| `RF-02-77` a `RF-02-79`   | 03 §12.3 (entrega de dados aprovada por Admin)            |
+| `RF-02-93`                | 03 §12.3 (critério de aprovação da entrega)               |
+| `RF-02-80`                | 03 §8 (conteúdo institucional da vitrine)                 |
+| `RF-02-83` a `RF-02-86`   | 02 §1 e 04 §2 (pré-cadastro, comprovante e homologação)   |
+| `RF-02-87` a `RF-02-92`   | 03 §§1, 8 (solicitação, emissão, prazo e revogação)       |
+| `RF-02-21` e `RF-02-22`   | PRD-08 (solicitação de novo local)                        |
+| `RF-02-23` e `RF-02-24`   | 03 §9 (solicitações da área do responsável)               |
+| `RF-02-25` e `RF-02-26`   | 03 §§7, 9, 10, 11 (fila única de sugestões e propostas)   |
+| `RF-02-27` e `RF-02-28`   | 04 §3 e PRD-07 (desafios extras e lastro)                 |
+| `RF-02-29` a `RF-02-32`   | 04 §1 e PRD-07 (atividade, agenda e regra de lastro)      |
+| `RF-02-33` a `RF-02-35`   | 02 §4 e 11 §5 (resultados e motor de pontuação)           |
+| `RF-02-36`                | 03 §§3, 5 (presença vinda do onboarding)                  |
+| `RF-02-37` a `RF-02-40`   | 02 §4, 05 §3 e 13 (pontuação negativa e ajuste)           |
+| `RF-02-41` a `RF-02-49`   | 05 §4 e 03 §5 (encontro assíncrono e painel do dia)       |
+| `RF-02-50` a `RF-02-56`   | 05 §3 e PRD-07 (acervo, regime misto e patrimônio)        |
+| `RF-02-96` e `RF-02-97`   | 05 §2 e PRD-07 (desativação, reativação e transferência)  |
+| `RF-02-57` e `RF-02-58`   | 04 §1 e PRD-07 (aportes e necessidades)                   |
+| `RF-02-59` a `RF-02-62`   | 05 §5 (Quiz ao Vivo)                                      |
+| `RF-02-72` e `RF-02-73`   | 05 §5 e 11 §5 (regras e pontuação da partida)             |
+| `RF-02-74` a `RF-02-76`   | 03 §§5, 7, 11 (auditoria mensal do corpus e das trilhas)  |
+| `RF-02-63`                | PRD-01 (trilha de auditoria)                              |
+| `RF-02-64`                | 03 §12 (aviso visível de coleta e área detalhada)         |
+| `RF-02-70`                | 03 §11 e PRD-09 (auditoria das trilhas publicadas)        |
+| `RF-02-71`                | 11 §§2, 4 e PRD-09 (autoria da atividade e do marco)      |
+| `RF-02-65`                | 02 §1 (prazo de 7 dias da solicitação de participação)    |
+| `RF-02-66`                | 03 §9 (prazo de 7 dias da solicitação do responsável)     |
+| `RF-02-67`                | 04 §1 e PRD-07 (suprido o lastro, confirma e reserva)     |
+| `RF-02-68` e `RF-02-69`   | 03 §3.3 (digitalização do termo anexada pela gestão)      |
+| `RF-02-101`               | 02 §1 (anexação do comprobatório declarado pelo Apoiador) |
+| `RF-02-102` a `RF-02-105` | 14 §§5, 11 (publicação da missão do Apoiador pela gestão) |

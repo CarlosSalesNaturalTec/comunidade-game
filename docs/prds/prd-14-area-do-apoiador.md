@@ -475,7 +475,8 @@ Imutabilidade e derivação:
 ## 9. Contratos de API
 
 A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessão, erro em corpo
-único. As rotas de homologação, cadastro e anexação de documento são da App 03 (PRD-02).
+único. As rotas de homologação, cadastro, anexação de documento e **publicação da missão** são
+da App 03 (PRD-02).
 
 | Método | Rota                                 | Autenticação | Descrição                                                            |
 | ------ | ------------------------------------ | ------------ | -------------------------------------------------------------------- |
@@ -664,6 +665,10 @@ o nível 5 de sustento**, que deixa de exigir virar Mestre.
 - **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 20
   estão decididos; os preços por tipo são cadastro da gestão. **Trava** o `RF-14-77` na
   prática, não no desenho.
+- **Nível 5 de sustento** (documento 09): as duas vias do Multiplicador — virou Mestre e aporte
+  em código homologado — não são verificáveis no núcleo, que não liga a persona Apoiador à
+  persona Mestre da mesma pessoa nem conhece modalidade de aporte. **Não trava** as missões nem
+  os selos: a escada derivada para no nível 4 até a decisão vir.
 - **Catálogo de missões do Ciclo 01** (documento 09): os arquétipos estão no documento 14, mas
   a quantidade, o prazo e o selo de cada missão dependem do catálogo de recompensas por marco e
   da tabela de valoração. A aplicação está pronta para exibir o que a gestão publicar.

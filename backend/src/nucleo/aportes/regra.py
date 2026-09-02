@@ -6,10 +6,17 @@ from sqlalchemy.orm import Session
 
 from ..armazenamento.porta import PortaDeArmazenamento
 from ..aulas.modelo import Aula, RecursoDeclaradoDaAula
-from ..erros import DeclaracaoDeAporteJaResolvida, ErroDeValidacao, PermissaoNegada
+from ..erros import (
+    DeclaracaoDeAporteJaResolvida,
+    ErroDeValidacao,
+    MissaoDoApoiadorFechada,
+    PermissaoNegada,
+)
 from ..fila.modelo import SolicitacaoDeParticipacao
 from ..livro_razao.modelo import DestinacaoDoAporte
 from ..livro_razao.regra import lancar_credito
+from ..missoes_do_apoiador.modelo import MissaoDoApoiador, SituacaoDaMissao
+from ..missoes_do_apoiador.regra import concluir_se_fechou
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
@@ -306,6 +313,13 @@ def registrar_aporte(
         aporte_declarado.resolvido_em = agora()
         sessao.flush()
 
+        if aporte_declarado.missao_do_apoiador_id is not None:
+            # A mesma homologação abate o que falta e, fechando o saldo,
+            # conclui a missão e credita os selos — um só ato, uma só
+            # transação (`RF-14-65`, `RF-14-66`, design — Decisions 5).
+            missao = sessao.get(MissaoDoApoiador, aporte_declarado.missao_do_apoiador_id)
+            concluir_se_fechou(sessao, missao=missao)
+
     return aporte
 
 
@@ -406,6 +420,20 @@ def _processar_comprovante_da_declaracao(
     return referencia, nome_original, tipo_mime, len(conteudo)
 
 
+def _validar_missao_para_declaracao(sessao: Session, missao: MissaoDoApoiador | None) -> None:
+    """Missão concluída, vencida, despublicada ou inexistente não aceita
+    nova declaração — a mensagem diz o que aconteceu com ela (`RF-14-63` a
+    `RF-14-65`, `RN-14-32`)."""
+    if missao is None:
+        raise MissaoDoApoiadorFechada(mensagem="Esta missão não existe mais.")
+    if missao.situacao == SituacaoDaMissao.concluida:
+        raise MissaoDoApoiadorFechada(mensagem="Esta missão já foi concluída.")
+    if missao.situacao == SituacaoDaMissao.despublicada:
+        raise MissaoDoApoiadorFechada(mensagem="Esta missão foi despublicada.")
+    if missao.prazo < agora().date():
+        raise MissaoDoApoiadorFechada(mensagem="O prazo desta missão já venceu.")
+
+
 def declarar_aporte(
     sessao: Session,
     *,
@@ -415,6 +443,7 @@ def declarar_aporte(
     origem_da_escolha: OrigemDaEscolhaDoAporte | None,
     aula: Aula | None = None,
     tipo: TipoDeRecurso | None = None,
+    missao: MissaoDoApoiador | None = None,
     comprovante_conteudo: bytes | None = None,
     comprovante_nome_original: str | None = None,
     comprovante_tipo: str | None = None,
@@ -424,7 +453,9 @@ def declarar_aporte(
     pendente, sem lançamento, crédito ou abatimento até a homologação
     (`RF-14-25` a `RF-14-28`, `RN-14-05` a `RN-14-07`, design — Decisions
     1, 3, 7). A origem `necessidade` guarda o par aula + tipo de recurso
-    que motivou a escolha, sem vínculo (design — Decisions 3)."""
+    que motivou a escolha, sem vínculo (design — Decisions 3). A origem
+    `missao` guarda a missão escolhida, inteira ou em parte, recusando a
+    fechada com 409 (`RF-14-63`, `RN-14-32`)."""
     if provedor.papel != Papel.apoiador:
         raise PermissaoNegada(mensagem="Só o Apoiador declara aporte pela App 08.")
     if forma is None or forma != FormaDeAporte.financeira:
@@ -448,6 +479,8 @@ def declarar_aporte(
             mensagem="Declaração por necessidade exige a aula e o tipo de recurso escolhidos.",
             campo="aula_id",
         )
+    if origem_da_escolha == OrigemDaEscolhaDoAporte.missao:
+        _validar_missao_para_declaracao(sessao, missao)
 
     referencia, nome_original, tipo_mime, tamanho = _processar_comprovante_da_declaracao(
         conteudo=comprovante_conteudo,
@@ -462,6 +495,7 @@ def declarar_aporte(
         origem_da_escolha=origem_da_escolha,
         aula_id=aula.id if aula is not None else None,
         tipo_de_recurso_id=tipo.id if tipo is not None else None,
+        missao_do_apoiador_id=missao.id if missao is not None else None,
         comprovante_referencia=referencia,
         comprovante_nome_original=nome_original,
         comprovante_tipo=tipo_mime,
