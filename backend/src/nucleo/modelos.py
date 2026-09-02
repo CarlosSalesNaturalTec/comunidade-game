@@ -30,6 +30,7 @@ from .equipes import modelo as _modelo_equipes  # noqa: F401
 from .fila import modelo as _modelo_fila  # noqa: F401
 from .livro_razao import modelo as _modelo_livro_razao  # noqa: F401
 from .locais import modelo as _modelo_locais  # noqa: F401
+from .missoes_do_apoiador import modelo as _modelo_missoes_do_apoiador  # noqa: F401
 from .ocorrencias_de_conduta import modelo as _modelo_ocorrencias_de_conduta  # noqa: F401
 from .ods import modelo as _modelo_ods  # noqa: F401
 from .patrimonio import modelo as _modelo_patrimonio  # noqa: F401
@@ -46,6 +47,7 @@ from .reservas import modelo as _modelo_reservas  # noqa: F401
 from .responsaveis import modelo as _modelo_responsaveis  # noqa: F401
 from .ressarcimentos import modelo as _modelo_ressarcimentos  # noqa: F401
 from .resultados import modelo as _modelo_resultados  # noqa: F401
+from .selos_do_apoiador import modelo as _modelo_selos_do_apoiador  # noqa: F401
 from .sessoes import modelo as _modelo_sessoes  # noqa: F401
 from .solicitacoes_do_responsavel import modelo as _modelo_solicitacoes_do_responsavel  # noqa: F401
 from .template_de_missao import modelo as _modelo_template_de_missao  # noqa: F401

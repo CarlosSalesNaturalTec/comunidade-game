@@ -44,7 +44,11 @@ export function listarNecessidadesEmAberto(): Promise<NecessidadeDeRecurso[]> {
   return chamarNucleo<NecessidadeDeRecurso[]>("/v1/vitrine/necessidades");
 }
 
-export type OrigemDaEscolhaDoAporte = "necessidade" | "valor_sugerido" | "valor_livre";
+export type OrigemDaEscolhaDoAporte =
+  | "missao"
+  | "necessidade"
+  | "valor_sugerido"
+  | "valor_livre";
 export type SituacaoDaDeclaracao = "pendente" | "homologada" | "recusada";
 
 export interface AporteDeclarado {
@@ -53,6 +57,7 @@ export interface AporteDeclarado {
   origem_da_escolha: OrigemDaEscolhaDoAporte;
   aula_id: string | null;
   tipo_de_recurso_id: string | null;
+  missao_do_apoiador_id: string | null;
   situacao: SituacaoDaDeclaracao;
   registrado_em: string;
   motivo_da_recusa: string | null;
@@ -63,12 +68,14 @@ export interface DeclararAporteEntrada {
   origem_da_escolha: OrigemDaEscolhaDoAporte;
   aula_id?: string;
   tipo_de_recurso_id?: string;
+  missao_do_apoiador_id?: string;
   comprovante: File;
 }
 
 // A declaração do Apoiador em sessão: sempre em dinheiro, sempre pendente,
 // sem creditar nada até a homologação do Admin (`RF-14-25`, `RF-14-26`,
-// `RN-14-07`).
+// `RN-14-07`). A origem `missao` aponta a missão escolhida, inteira ou em
+// parte (`RF-14-63`).
 export function declararAporte(
   entrada: DeclararAporteEntrada,
   token: string,
@@ -80,6 +87,8 @@ export function declararAporte(
   if (entrada.aula_id) formulario.set("aula_id", entrada.aula_id);
   if (entrada.tipo_de_recurso_id)
     formulario.set("tipo_de_recurso_id", entrada.tipo_de_recurso_id);
+  if (entrada.missao_do_apoiador_id)
+    formulario.set("missao_do_apoiador_id", entrada.missao_do_apoiador_id);
   formulario.set("comprovante", entrada.comprovante);
 
   return chamarNucleo<AporteDeclarado>("/v1/aportes/declarados", {

@@ -160,6 +160,7 @@ describe("situação das declarações", () => {
     origem_da_escolha: "valor_livre",
     aula_id: null,
     tipo_de_recurso_id: null,
+    missao_do_apoiador_id: null,
     situacao: "pendente",
     registrado_em: "2026-06-01T12:00:00Z",
     motivo_da_recusa: null,

@@ -48,11 +48,16 @@ PRD-14 §§5.1, 11)
 
 ### Requirement: A porta pública oferece as formas de declarar o aporte, sempre com o equivalente em moedas
 
-A porta pública SHALL oferecer, a quem aporta em dinheiro, a **necessidade publicada**, o
-**valor sugerido** da escada do perfil declarado e o **valor livre**, e SHALL exibir o
-**equivalente em moedas** ao lado de cada valor, na mesma tela. O degrau da escada SHALL ser
-sugestão e não piso: o valor livre SHALL aceitar qualquer quantia, com fração de duas casas.
-(`RF-14-02`, `RF-14-03`, `RN-14-40`, PRD-14 §§5.1, 12)
+A porta pública SHALL oferecer, a quem aporta em dinheiro, a **missão aberta**, a
+**necessidade publicada**, o **valor sugerido** da escada do perfil declarado e o **valor
+livre**, e SHALL exibir o **equivalente em moedas** ao lado de cada valor, na mesma tela. O
+degrau da escada SHALL ser sugestão e não piso: o valor livre SHALL aceitar qualquer quantia,
+com fração de duas casas. (`RF-14-02`, `RF-14-03`, `RN-14-40`, PRD-14 §§5.1, 12)
+
+#### Scenario: O visitante assume uma missão aberta
+
+- **WHEN** o visitante escolhe uma das missões abertas
+- **THEN** a tela declara o aporte por aquela missão, com o que ela pede em moedas
 
 #### Scenario: O visitante assume uma necessidade publicada
 

@@ -11,6 +11,7 @@ const RÓTULO_DA_SITUAÇÃO: Record<AporteDeclarado["situacao"], string> = {
 };
 
 const RÓTULO_DA_ORIGEM: Record<AporteDeclarado["origem_da_escolha"], string> = {
+  missao: "Missão aberta",
   necessidade: "Necessidade publicada",
   valor_sugerido: "Valor sugerido",
   valor_livre: "Valor livre",

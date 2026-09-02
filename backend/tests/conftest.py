@@ -300,6 +300,7 @@ def app(sessao, configuracao):
     from nucleo.jogos.rotas import roteador as roteador_de_jogos
     from nucleo.livro_razao.rotas import roteador as roteador_de_livro_razao
     from nucleo.locais.rotas import roteador as roteador_de_locais
+    from nucleo.missoes_do_apoiador.rotas import roteador as roteador_de_missoes_do_apoiador
     from nucleo.necessidades.rotas import roteador as roteador_de_necessidades
     from nucleo.ocorrencias_de_conduta.rotas import roteador as roteador_de_ocorrencias_de_conduta
     from nucleo.ods.rotas import roteador as roteador_de_ods
@@ -319,6 +320,7 @@ def app(sessao, configuracao):
     from nucleo.responsaveis.rotas import roteador as roteador_de_responsaveis
     from nucleo.ressarcimentos.rotas import roteador as roteador_de_ressarcimentos
     from nucleo.resultados.rotas import roteador as roteador_de_resultados
+    from nucleo.selos_do_apoiador.rotas import roteador as roteador_de_selos_do_apoiador
     from nucleo.sessoes.rotas import roteador as roteador_de_sessoes
     from nucleo.solicitacoes_do_responsavel.rotas import (
         roteador as roteador_de_solicitacoes_do_responsavel,
@@ -387,6 +389,8 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_vinculo_do_guerreiro)
     incluir_roteador_de_dados(aplicacao, roteador_de_termos)
     incluir_roteador_de_dados(aplicacao, roteador_de_transparencia)
+    incluir_roteador_de_dados(aplicacao, roteador_de_missoes_do_apoiador)
+    incluir_roteador_de_dados(aplicacao, roteador_de_selos_do_apoiador)
     return aplicacao
 
 

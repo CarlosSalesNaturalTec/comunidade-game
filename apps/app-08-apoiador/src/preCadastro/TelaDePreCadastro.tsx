@@ -8,14 +8,16 @@ import {
   type PerfilDeApoiador,
 } from "../compartilhado/escada";
 import {
+  listarMissoesAbertas,
   listarNecessidadesEmAberto,
+  type MissaoDoApoiador,
   type NecessidadeDeRecurso,
   registrarPreCadastroDeApoiador,
 } from "./api";
 
 const FORMATOS_ACEITOS = "PDF, JPG ou PNG";
 
-type FormaDeAporte = "necessidade" | "escada" | "livre" | "sem_dinheiro";
+type FormaDeAporte = "missao" | "necessidade" | "escada" | "livre" | "sem_dinheiro";
 
 interface Props {
   /** Caminho de volta para quem já tem cadastro (design — decisão 1). */
@@ -47,6 +49,8 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
   const [perfil, definirPerfil] = useState<PerfilDeApoiador>("pessoa_fisica");
 
   const [formaDeAporte, definirFormaDeAporte] = useState<FormaDeAporte>("escada");
+  const [missoes, definirMissoes] = useState<MissaoDoApoiador[]>([]);
+  const [missaoSelecionadaId, definirMissaoSelecionadaId] = useState("");
   const [necessidades, definirNecessidades] = useState<NecessidadeDeRecurso[]>([]);
   const [necessidadeSelecionadaId, definirNecessidadeSelecionadaId] = useState("");
   const [degrauSelecionado, definirDegrauSelecionado] = useState(0);
@@ -62,9 +66,13 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
     listarNecessidadesEmAberto()
       .then(definirNecessidades)
       .catch(() => definirNecessidades([]));
+    listarMissoesAbertas()
+      .then(definirMissoes)
+      .catch(() => definirMissoes([]));
   }, []);
 
   const escada = ESCADA_POR_PERFIL[perfil];
+  const missaoSelecionada = missoes.find((m) => m.id === missaoSelecionadaId);
   const necessidadeSelecionada = necessidades.find(
     (n) => n.aula_id === necessidadeSelecionadaId,
   );
@@ -72,6 +80,13 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
   const valorLivreValido = valorLivreTexto.trim() !== "" && !Number.isNaN(valorLivreEmReais);
 
   function compoeAporteDeclarado(): string | null {
+    if (formaDeAporte === "missao") {
+      if (!missaoSelecionada) return null;
+      return (
+        `Missão "${missaoSelecionada.titulo}" — falta ${missaoSelecionada.falta} moedas, ` +
+        `prazo ${formatarDataDaAula(missaoSelecionada.prazo)}.`
+      );
+    }
     if (formaDeAporte === "necessidade") {
       if (!necessidadeSelecionada) return null;
       const moedas =
@@ -198,6 +213,16 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
             <input
               type="radio"
               name="forma-de-aporte"
+              value="missao"
+              checked={formaDeAporte === "missao"}
+              onChange={() => definirFormaDeAporte("missao")}
+            />
+            Uma missão aberta
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="forma-de-aporte"
               value="necessidade"
               checked={formaDeAporte === "necessidade"}
               onChange={() => definirFormaDeAporte("necessidade")}
@@ -235,6 +260,24 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
             Quero apoiar sem transferir dinheiro — material, serviço ou divulgação
           </label>
         </fieldset>
+
+        {formaDeAporte === "missao" && (
+          <div className="cg-campo">
+            <label htmlFor="missao-selecionada">Missão aberta</label>
+            <select
+              id="missao-selecionada"
+              value={missaoSelecionadaId}
+              onChange={(evento) => definirMissaoSelecionadaId(evento.target.value)}
+            >
+              <option value="">Selecione…</option>
+              {missoes.map((missao) => (
+                <option key={missao.id} value={missao.id}>
+                  {missao.titulo} — falta {missao.falta} moedas
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {formaDeAporte === "necessidade" && (
           <div className="cg-campo">

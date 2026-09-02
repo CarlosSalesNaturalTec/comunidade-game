@@ -12,6 +12,27 @@ export interface NecessidadeDeRecurso {
   fim_em: string;
 }
 
+export interface MissaoDoApoiador {
+  id: string;
+  titulo: string;
+  o_que_se_pede: string;
+  falta: string;
+  prazo: string;
+}
+
+type NivelDeNecessidade = "existir" | "acontecer" | "reconhecer" | "permanecer";
+type MissoesAgrupadas = Record<NivelDeNecessidade, MissaoDoApoiador[]>;
+
+// As missões abertas, achatadas numa lista só — a porta pública não
+// distingue nível de necessidade na escolha, só o card de cada missão
+// (`RF-14-02`, `RF-14-60`).
+export async function listarMissoesAbertas(): Promise<MissaoDoApoiador[]> {
+  const agrupadas = await chamarNucleo<MissoesAgrupadas>("/v1/missoes-do-apoiador");
+  return (
+    ["existir", "acontecer", "reconhecer", "permanecer"] as NivelDeNecessidade[]
+  ).flatMap((nivel) => agrupadas[nivel]);
+}
+
 export interface PreCadastroDeApoiadorEntrada {
   nome_ou_razao_social: string;
   email: string;

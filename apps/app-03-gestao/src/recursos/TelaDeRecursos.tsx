@@ -3,6 +3,9 @@ import { Aviso, Cabecalho, Moldura } from "comum/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { type AulaDaAgenda, listarAgenda } from "../agenda/api";
 import { type ComunidadeDaLista, listarComunidades } from "../comunidades/api";
+import { listarMissoes, type MissaoDoApoiador } from "../missoes-do-apoiador/api";
+import { ListaDeMissoes } from "../missoes-do-apoiador/ListaDeMissoes";
+import { PublicacaoDeMissao } from "../missoes-do-apoiador/PublicacaoDeMissao";
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "../pontos-de-apoio/api";
 import {
   type AporteRegistrado,
@@ -29,6 +32,7 @@ export function TelaDeRecursos() {
   const [erro, definirErro] = useState<string | null>(null);
   const [ultimoAporte, definirUltimoAporte] = useState<AporteRegistrado | null>(null);
   const [aulasConfirmadas, definirAulasConfirmadas] = useState<AulaDaAgenda[]>([]);
+  const [missoes, definirMissoes] = useState<MissaoDoApoiador[] | null>(null);
 
   const carregarNecessidades = useCallback(async () => {
     try {
@@ -46,6 +50,7 @@ export function TelaDeRecursos() {
     });
     listarTiposDeRecurso(sessao.token).then(definirTipos);
     listarComunidades().then((pagina) => definirComunidades(pagina.itens));
+    listarMissoes(sessao.token).then(definirMissoes);
   }, [podeAcessar, sessao, carregarNecessidades]);
 
   // Os pontos de apoio de todas as comunidades, para rotular a necessidade
@@ -149,6 +154,24 @@ export function TelaDeRecursos() {
         nomeDaComunidade={nomeDaComunidade}
         nomeDoPontoDeApoio={nomeDoPontoDeApoio}
       />
+
+      <h2>Missões do Apoiador</h2>
+      <PublicacaoDeMissao
+        necessidades={necessidades ?? []}
+        nomeDoTipoDeRecurso={nomeDoTipoDeRecurso}
+        onPublicada={(missao) => definirMissoes((atual) => [missao, ...(atual ?? [])])}
+      />
+      {sessao && (
+        <ListaDeMissoes
+          missoes={missoes}
+          token={sessao.token}
+          aoDespublicada={(atualizada) =>
+            definirMissoes((atual) =>
+              (atual ?? []).map((item) => (item.id === atualizada.id ? atualizada : item)),
+            )
+          }
+        />
+      )}
     </Moldura>
   );
 }
