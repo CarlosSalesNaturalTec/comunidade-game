@@ -28,6 +28,7 @@ from .conteudos.rotas import roteador as roteador_de_conteudos
 from .criacoes_originais.rotas import roteador as roteador_de_criacoes_originais
 from .culminancias.rotas import roteador as roteador_de_culminancias
 from .desafios_extras.rotas import roteador as roteador_de_desafios_extras
+from .efetividade_do_apoio.rotas import roteador as roteador_de_efetividade_do_apoio
 from .equipes.rotas import roteador as roteador_de_equipes
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
 from .evolucao.rotas import roteador as roteador_de_evolucao
@@ -212,6 +213,7 @@ incluir_roteador_de_dados(app, roteador_de_ciclo)
 incluir_roteador_de_dados(app, roteador_de_pontuacao)
 incluir_roteador_de_dados(app, roteador_de_solicitacoes_do_responsavel)
 incluir_roteador_de_dados(app, roteador_de_desafios_extras)
+incluir_roteador_de_dados(app, roteador_de_efetividade_do_apoio)
 incluir_roteador_de_dados(app, roteador_de_template_de_missao)
 incluir_roteador_de_dados(app, roteador_de_producoes)
 incluir_roteador_de_dados(app, roteador_de_assistente)

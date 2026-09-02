@@ -10,6 +10,7 @@ import { TelaDeTrocaDeSenha } from "./autenticacao/TelaDeTrocaDeSenha";
 import { TelaDeAcompanhamento } from "./desafiosExtras/TelaDeAcompanhamento";
 import { TelaDeProposta } from "./desafiosExtras/TelaDeProposta";
 import { TelaDeComprobatorios } from "./documentos/TelaDeComprobatorios";
+import { TelaDeEfetividade } from "./efetividade/TelaDeEfetividade";
 import { TelaDeIdentidadePublica } from "./identidade/TelaDeIdentidadePublica";
 import { TelaDeMissoes } from "./missoes/TelaDeMissoes";
 import { TelaDePreCadastro } from "./preCadastro/TelaDePreCadastro";
@@ -29,6 +30,7 @@ type Area =
   | "documentos"
   | "propor"
   | "acompanhar"
+  | "efetividade"
   | "meus-aportes"
   | "necessidades"
   | "missoes"
@@ -98,6 +100,12 @@ function Conteudo() {
           Meus desafios
         </Botao>
         <Botao
+          variante={area === "efetividade" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("efetividade")}
+        >
+          Efetividade
+        </Botao>
+        <Botao
           variante={area === "meus-aportes" ? "primaria" : "secundaria"}
           onClick={() => definirArea("meus-aportes")}
         >
@@ -138,6 +146,7 @@ function Conteudo() {
       {area === "documentos" && <TelaDeComprobatorios />}
       {area === "propor" && <TelaDeProposta />}
       {area === "acompanhar" && <TelaDeAcompanhamento />}
+      {area === "efetividade" && <TelaDeEfetividade />}
       {area === "meus-aportes" && <TelaDeMeusAportes />}
       {area === "necessidades" && <TelaDeNecessidadesEmAberto />}
       {area === "missoes" && <TelaDeMissoes />}
