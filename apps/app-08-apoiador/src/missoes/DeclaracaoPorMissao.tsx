@@ -4,6 +4,7 @@ import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import { declararAporte } from "../aportes/api";
 import { formatarMoedas, REAIS_POR_MOEDA } from "../compartilhado/escada";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import type { MissaoDoApoiador } from "./api";
 
 const FORMATOS_ACEITOS = "PDF, JPG ou PNG";
@@ -82,6 +83,8 @@ export function DeclaracaoPorMissao({ missao, aoVoltar }: Props) {
         subtitulo={missao.o_que_se_pede}
         acao={{ rotulo: "Voltar às missões", aoAcionar: aoVoltar }}
       />
+
+      <AvisoDeColeta dado="o valor declarado e o comprovante da cobertura da missão" />
 
       <p>
         Falta {missao.falta} moedas para fechar esta missão — o selo é "{missao.selo_nome}".

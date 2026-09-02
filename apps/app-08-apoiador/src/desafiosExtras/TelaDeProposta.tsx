@@ -2,6 +2,7 @@ import { ErroDaApi } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
 import { type FormEvent, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import {
   type CusteioDoDesafioExtra,
   type FormatoDoDesafioExtra,
@@ -86,6 +87,7 @@ export function TelaDeProposta() {
         titulo="Propor desafio extra"
         subtitulo="Sobre uma trilha em andamento, com a recompensa que você provê."
       />
+      <AvisoDeColeta dado="a proposta de desafio extra, e o nick e a justificativa do direcionado, quando houver" />
       <form onSubmit={aoEnviar}>
         <Campo rotulo="Trilha" valor={trilhaId} aoAlterar={definirTrilhaId} />
         <Campo
