@@ -10,6 +10,7 @@ from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
 from ..recursos.regra import consultar_preco_de_referencia
 from ..tempo import agora
+from ..trocas.modelo import Troca
 from .modelo import ItemDeCatalogoAvulso, OrigemDoCadastroDoItem, SituacaoDeHomologacao
 
 ESTOQUE_MINIMO = Decimal("1")
@@ -299,3 +300,23 @@ def listar_catalogo(
     if not incluir_inativos:
         consulta = consulta.filter_by(ativo=True)
     return consulta.order_by(ItemDeCatalogoAvulso.registrado_em.desc()).all()
+
+
+def listar_ofertas_do_apoiador(sessao: Session, *, operador: Persona) -> list[ItemDeCatalogoAvulso]:
+    """Só os itens cadastrados pelo próprio Apoiador, em qualquer situação —
+    pendente, homologado, recusado, ativo ou inativo —, da mais recente para
+    a mais antiga (`RF-14-80`, `RF-14-77`, `RN-14-42`)."""
+    if operador.papel != Papel.apoiador:
+        raise PermissaoNegada(mensagem="Só o Apoiador lê os itens que ofertou.")
+    return (
+        sessao.query(ItemDeCatalogoAvulso)
+        .filter_by(autor_id=operador.id)
+        .order_by(ItemDeCatalogoAvulso.registrado_em.desc())
+        .all()
+    )
+
+
+def contar_trocas_por_item(sessao: Session, *, item: ItemDeCatalogoAvulso) -> int:
+    """A contagem agregada das trocas entregues do item, sem identificar
+    quem trocou (`RF-14-80`, `RF-14-81`, `RN-14-44`)."""
+    return sessao.query(Troca).filter_by(item_de_catalogo_avulso_id=item.id).count()

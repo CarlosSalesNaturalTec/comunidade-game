@@ -20,9 +20,11 @@ from .regra import (
     alterar_estoque,
     ativar_item,
     cadastrar_item,
+    contar_trocas_por_item,
     falta_de_lastro,
     homologar_item,
     listar_catalogo,
+    listar_ofertas_do_apoiador,
     retirar_item,
 )
 
@@ -73,6 +75,19 @@ def _saida(sessao: Session, item: ItemDeCatalogoAvulso) -> ItemDeCatalogoAvulsoS
         preco_em_pontos_extras=preco.preco_em_pontos_extras if preco is not None else None,
         preco_de_referencia_ausente=preco is None,
         quantidade_faltante=quantidade_faltante,
+    )
+
+
+class MinhaOfertaDeCatalogoAvulsoSaida(ItemDeCatalogoAvulsoSaida):
+    quantidade_de_trocas: int
+
+
+def _saida_da_oferta(
+    sessao: Session, item: ItemDeCatalogoAvulso
+) -> MinhaOfertaDeCatalogoAvulsoSaida:
+    return MinhaOfertaDeCatalogoAvulsoSaida(
+        **_saida(sessao, item).model_dump(),
+        quantidade_de_trocas=contar_trocas_por_item(sessao, item=item),
     )
 
 
@@ -134,6 +149,19 @@ def listar_catalogo_avulso_rota(
         sessao_bd, operador=operador, comunidade=comunidade, incluir_inativos=incluir_inativos
     )
     return [_saida(sessao_bd, item) for item in itens]
+
+
+@roteador.get("/eu/catalogo-avulso")
+def minhas_ofertas_de_catalogo_avulso_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[MinhaOfertaDeCatalogoAvulsoSaida]:
+    """Restrita ao Apoiador — os itens que ele ofertou, em qualquer situação,
+    com a contagem agregada de trocas, sem identificar quem trocou
+    (`RF-14-80`, `RF-14-81`, `RN-14-42`, `RN-14-43`, `RN-14-44`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    itens = listar_ofertas_do_apoiador(sessao_bd, operador=operador)
+    return [_saida_da_oferta(sessao_bd, item) for item in itens]
 
 
 class HomologarItemEntrada(BaseModel):

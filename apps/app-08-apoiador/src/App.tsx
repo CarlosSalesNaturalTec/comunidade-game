@@ -8,6 +8,8 @@ import { TelaDeNecessidadesEmAberto } from "./aportes/TelaDeNecessidadesEmAberto
 import { TelaDeSituacaoDasDeclaracoes } from "./aportes/TelaDeSituacaoDasDeclaracoes";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeTrocaDeSenha } from "./autenticacao/TelaDeTrocaDeSenha";
+import { TelaDeMinhasOfertas } from "./catalogoAvulso/TelaDeMinhasOfertas";
+import { TelaDeOferta } from "./catalogoAvulso/TelaDeOferta";
 import { TelaDeAcompanhamento } from "./desafiosExtras/TelaDeAcompanhamento";
 import { TelaDeProposta } from "./desafiosExtras/TelaDeProposta";
 import { ProvedorDeDireitos } from "./direitos/ContextoDeDireitos";
@@ -43,7 +45,9 @@ type Area =
   | "situacao-de-declaracoes"
   | "painel-e-favoritos"
   | "propostas"
-  | "direitos";
+  | "direitos"
+  | "ofertar-item"
+  | "minhas-ofertas";
 type TelaSemSessao = "porta" | "entrada" | "direitos";
 
 function Conteudo() {
@@ -176,6 +180,18 @@ function Conteudo() {
         >
           Direitos e dados
         </Botao>
+        <Botao
+          variante={area === "ofertar-item" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("ofertar-item")}
+        >
+          Ofertar item
+        </Botao>
+        <Botao
+          variante={area === "minhas-ofertas" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("minhas-ofertas")}
+        >
+          Minhas ofertas
+        </Botao>
       </nav>
       {area === "identidade" && <TelaDeIdentidadePublica />}
       {area === "documentos" && <TelaDeComprobatorios />}
@@ -191,6 +207,8 @@ function Conteudo() {
       {area === "painel-e-favoritos" && <TelaDePainelEFavoritos />}
       {area === "propostas" && <TelaDePropostas />}
       {area === "direitos" && <TelaDeDireitos />}
+      {area === "ofertar-item" && <TelaDeOferta />}
+      {area === "minhas-ofertas" && <TelaDeMinhasOfertas />}
     </ProvedorDeDireitos>
   );
 }
