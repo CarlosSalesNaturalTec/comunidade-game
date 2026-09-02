@@ -231,13 +231,18 @@ passaram ao PRD-04.
 | 4     | Meus aportes, necessidades e aporte declarado    | `meus-aportes-necessidades-e-aporte-declarado`                                                                                                                                                                                                                                                            | implementado |
 | 5     | Missões do Apoiador, sustento e selos            | `missoes-do-apoiador-sustento-e-selos` — `RF-14-60` a `RF-14-73`, `RN-14-29` a `RN-14-38`; entidades `MissaoDoApoiador` e `SeloDoApoiador` (PRD-14 §8) — depende da fatia 4; leva também a opção "missão aberta" do `RF-14-02`, que a fatia 2 deixou de fora por faltar a entidade, e a publicação da missão na App 03 (`RF-02-102` a `RF-02-105`, `RN-02-31`) | implementado |
 | 6     | Efetividade do apoio                             | `efetividade-do-apoio`                                                                                                                                                                                                                                                                                    | implementado |
-| 7     | Acompanhamento e favoritos                       | `RF-14-48` a `RF-14-55`, `RN-14-23` a `RN-14-25`; entidade `Favorito` (PRD-14 §8) — depende do PRD-03 (painel público)                                                                                                                                                                                     | em aberto |
+| 7     | Acompanhamento e favoritos                       | `acompanhamento-e-favoritos` — entidade `Favorito` (PRD-14 §8); o quinto fato da novidade do `RF-14-53` (resultado de batalha) chega com o PRD-10, e a página pública de onde se favorita o Mestre do `RF-14-52` chega com o PRD-03 | implementado |
 | 8     | Propostas, avisos e canal fechado                | `RF-14-56` a `RF-14-59`, `RN-14-26`, `RN-14-27`                                                                                                                                                                                                                                                           | em aberto |
 | 9     | Oferta ao catálogo avulso                        | `RF-14-77` a `RF-14-81`, `RN-14-42` a `RN-14-44` — **trava:** valores da tabela de preços do catálogo avulso (PRD-14 §14)                                                                                                                                                                                  | em aberto |
 
 A fatia 1 vem antes do pré-cadastro porque é ela que destrava as outras três: o acesso do
 Apoiador já existe no núcleo (`sessao-do-adulto`), e o cadastro dele é ato de Admin pela API,
 não da porta pública.
+
+Decisão do fundador de 2026-09-02 sobre a fatia 7: ela entra sem esperar o PRD-03 nem o PRD-10.
+A novidade do favorito sai com **quatro** dos cinco fatos, e o resultado de batalha entra com o
+PRD-10; a entidade e as rotas já aceitam alvo Mestre, e a página pública de onde se chega a ele
+entra com o PRD-03. Nenhuma das duas antecipa rota de outro PRD.
 
 Pendências do PRD-14 §14 que não travam o desenho, só o dado: os valores da tabela de valoração
 e o catálogo de recompensas por marco (fatias 1 e 5) e o catálogo de missões do Ciclo 01
@@ -262,6 +267,10 @@ a cada change.
 
 O PRD-14 já está fatiado, no bloco acima: a entidade `DesafioExtra` que ele define (§8) destrava
 a fatia 15 do PRD-02, a 15 do PRD-09 e a 8 do PRD-05, e entra pela fatia 1 dele.
+
+Dois pedaços do PRD-14 esperam por PRDs desta lista, e o fatiamento deles precisa recolhê-los: o
+**PRD-03** leva a página pública do Mestre, de onde o `RF-14-52` favorita, e o **PRD-10** leva o
+resultado de batalha, quinto fato da novidade do `RF-14-53`.
 
 ## Infraestrutura transversal (sem PRD)
 

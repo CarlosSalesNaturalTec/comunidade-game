@@ -32,6 +32,7 @@ from .efetividade_do_apoio.rotas import roteador as roteador_de_efetividade_do_a
 from .equipes.rotas import roteador as roteador_de_equipes
 from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
 from .evolucao.rotas import roteador as roteador_de_evolucao
+from .favoritos.rotas import roteador as roteador_de_favoritos
 from .fila.rotas import roteador as roteador_de_fila
 from .jogos.rotas import roteador as roteador_de_jogos
 from .livro_razao.rotas import roteador as roteador_de_livro_razao
@@ -222,6 +223,7 @@ incluir_roteador_de_dados(app, roteador_de_termos)
 incluir_roteador_de_dados(app, roteador_de_transparencia)
 incluir_roteador_de_dados(app, roteador_de_missoes_do_apoiador)
 incluir_roteador_de_dados(app, roteador_de_selos_do_apoiador)
+incluir_roteador_de_dados(app, roteador_de_favoritos)
 # A rota local do protocolo `Content-Range` (`armazenamento.rotas`) só
 # conclui algo com o adaptador de disco — em produção, a dependência
 # devolve o Cloud Storage e o manipulador responde 404 (`RF-09-19`, design

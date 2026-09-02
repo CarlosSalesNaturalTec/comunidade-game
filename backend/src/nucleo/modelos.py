@@ -27,6 +27,7 @@ from .criacoes_originais import modelo as _modelo_criacoes_originais  # noqa: F4
 from .culminancias import modelo as _modelo_culminancias  # noqa: F401
 from .desafios_extras import modelo as _modelo_desafios_extras  # noqa: F401
 from .equipes import modelo as _modelo_equipes  # noqa: F401
+from .favoritos import modelo as _modelo_favoritos  # noqa: F401
 from .fila import modelo as _modelo_fila  # noqa: F401
 from .livro_razao import modelo as _modelo_livro_razao  # noqa: F401
 from .locais import modelo as _modelo_locais  # noqa: F401
