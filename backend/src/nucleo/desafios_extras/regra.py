@@ -2,6 +2,7 @@ import uuid
 from datetime import date, datetime
 from decimal import Decimal
 
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from ..aportes.modelo import Aporte
@@ -12,12 +13,13 @@ from ..erros import (
     SituacaoDoDesafioExtraIncompativel,
 )
 from ..livro_razao.regra import saldo_de
-from ..personas.modelo import Papel, Persona
+from ..personas.modelo import Nick, Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
 from ..reservas.regra import liberar_reservas_do_desafio, reservar_recompensa_do_desafio
 from ..tempo import agora
 from ..trilhas.modelo import Missao, SituacaoDaTrilha, Trilha
+from ..trilhas.regra import consultar_inscricoes_do_guerreiro
 from .modelo import (
     ConclusaoDeDesafioExtra,
     CusteioDoDesafioExtra,
@@ -455,3 +457,42 @@ def encerrar_desafio_extra(
     desafio.encerrado_em = agora()
     sessao.flush()
     return desafio
+
+
+def desafios_extras_elegiveis_do_guerreiro(
+    sessao: Session, *, guerreiro_id: uuid.UUID, hoje: date
+) -> list[DesafioExtra]:
+    """Os desafios extras publicados e vigentes que alcançam o Guerreiro(a)
+    em sessão: da trilha em que está inscrito, e abertos ou direcionados ao
+    próprio nick, comparado sem distinguir maiúsculas de minúsculas — a
+    inscrição é exigida nas duas modalidades (`RF-05-20`, design — decisões
+    2 e 3). Sem inscrição, ou sem nada elegível, lista vazia. O esgotado
+    permanece na leitura: o filtro é de situação e vigência, nunca de
+    disponibilidade (design — decisão 4)."""
+    ids_das_trilhas = {
+        inscricao.trilha_id
+        for inscricao in consultar_inscricoes_do_guerreiro(sessao, guerreiro_id=guerreiro_id)
+    }
+    if not ids_das_trilhas:
+        return []
+
+    nick = sessao.query(Nick).filter_by(persona_id=guerreiro_id).first()
+    alcance = DesafioExtra.modalidade == Modalidade.aberto
+    if nick is not None:
+        alcance = or_(alcance, func.lower(DesafioExtra.nick_do_destinatario) == nick.valor.lower())
+
+    return (
+        sessao.query(DesafioExtra)
+        .filter(
+            DesafioExtra.situacao == SituacaoDoDesafioExtra.publicado,
+            DesafioExtra.encerrado_em.is_(None),
+            DesafioExtra.trilha_id.in_(ids_das_trilhas),
+            DesafioExtra.vigencia_inicio <= hoje,
+            DesafioExtra.vigencia_fim >= hoje,
+            alcance,
+        )
+        # O que está para acabar aparece primeiro; no empate, o registro
+        # mais recente (`RF-05-21`).
+        .order_by(DesafioExtra.vigencia_fim.asc(), DesafioExtra.registrado_em.desc())
+        .all()
+    )
