@@ -1,6 +1,7 @@
 import { ProvedorDeSessao, useSessao } from "comum/autenticacao";
 import { Botao } from "comum/react";
 import { useEffect, useState } from "react";
+import { TelaDeAcompanhamento as TelaDePainelEFavoritos } from "./acompanhamento/TelaDeAcompanhamento";
 import { TelaDeDeclaracaoDeAporte } from "./aportes/TelaDeDeclaracaoDeAporte";
 import { TelaDeMeusAportes } from "./aportes/TelaDeMeusAportes";
 import { TelaDeNecessidadesEmAberto } from "./aportes/TelaDeNecessidadesEmAberto";
@@ -36,7 +37,8 @@ type Area =
   | "missoes"
   | "sustento"
   | "declarar-aporte"
-  | "situacao-de-declaracoes";
+  | "situacao-de-declaracoes"
+  | "painel-e-favoritos";
 type TelaSemSessao = "porta" | "entrada";
 
 function Conteudo() {
@@ -141,6 +143,12 @@ function Conteudo() {
         >
           Situação das declarações
         </Botao>
+        <Botao
+          variante={area === "painel-e-favoritos" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("painel-e-favoritos")}
+        >
+          Acompanhamento
+        </Botao>
       </nav>
       {area === "identidade" && <TelaDeIdentidadePublica />}
       {area === "documentos" && <TelaDeComprobatorios />}
@@ -153,6 +161,7 @@ function Conteudo() {
       {area === "sustento" && <TelaDeSustento />}
       {area === "declarar-aporte" && <TelaDeDeclaracaoDeAporte />}
       {area === "situacao-de-declaracoes" && <TelaDeSituacaoDasDeclaracoes />}
+      {area === "painel-e-favoritos" && <TelaDePainelEFavoritos />}
     </>
   );
 }
