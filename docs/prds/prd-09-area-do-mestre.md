@@ -565,6 +565,8 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | POST   | `/v1/aulas/{id}/presencas`                                | Mestre       | Registra e ajusta presença do próprio encontro                         |
 | POST   | `/v1/criacoes-originais/{id}/validacao`                   | Mestre       | Valida ou devolve a criação, creditando autoria e badge                |
 | POST   | `/v1/desafios-extras/{id}/validacao`                      | Mestre       | Validação pedagógica, com parecer ou motivo da recusa                  |
+| GET    | `/v1/desafios-extras/a-validar`                           | Mestre       | Fila do que há para validar, das próprias trilhas                      |
+| POST   | `/v1/desafios-extras`                                     | Mestre       | Propõe desafio extra à própria trilha ou à de outro Mestre             |
 | GET    | `/v1/guerreiros/vinculaveis`                              | Mestre       | Guerreiros e Guerreiras das suas comunidades, por nick e avatar        |
 | POST   | `/v1/responsaveis`                                        | Mestre       | Cadastra responsável e vincula Guerreiros e Guerreiras                 |
 | GET    | `/v1/mestres/{id}/artefatos`                              | Mestre       | Lê os próprios artefatos, com os declarados no cadastro marcados       |
@@ -583,7 +585,9 @@ lançamento de atividade que não é do Mestre autenticado (403); tentativa de e
 (405); despublicação pedida por Mestre (403); quarto vínculo de responsável para o mesmo
 Guerreiro(a) (422); cadastro de Mestre por esta aplicação (403); publicação de criação original
 sem autorização do responsável (409); artefato comprobatório sem endereço ou sem rótulo (422);
-remoção de artefato declarado por Admin no cadastro, ou acesso ao perfil de outro Mestre (403).
+remoção de artefato declarado por Admin no cadastro, ou acesso ao perfil de outro Mestre (403);
+validação ou recusa de desafio extra sem parecer ou sem motivo (422), ou por quem não é o
+Mestre autor da trilha (403).
 
 ## 10. Requisitos não funcionais
 

@@ -25,12 +25,15 @@ from .modelo import (
 from .regra import (
     aprovar_desafio_extra,
     encerrar_desafio_extra,
+    listar_desafios_a_validar_do_mestre,
     listar_desafios_do_proponente,
     listar_desafios_em_aprovacao_do_admin,
     listar_desafios_publicados,
     motivo_de_lastro_faltante,
     propor_desafio_extra,
     recusar_desafio_extra,
+    recusar_desafio_extra_pelo_mestre,
+    validar_desafio_extra,
 )
 from .regra import (
     lastro_provido as calcular_lastro_provido,
@@ -61,6 +64,7 @@ class DesafioExtraSaida(BaseModel):
     vigencia_inicio: date
     vigencia_fim: date
     situacao: str
+    parecer_do_mestre: str | None
     motivo_da_recusa: str | None
     lastro_provido: bool
     lastro_faltante: str | None
@@ -90,6 +94,7 @@ def _saida(sessao: Session, desafio: DesafioExtra) -> DesafioExtraSaida:
         vigencia_inicio=desafio.vigencia_inicio,
         vigencia_fim=desafio.vigencia_fim,
         situacao=desafio.situacao.value,
+        parecer_do_mestre=desafio.parecer_do_mestre,
         motivo_da_recusa=desafio.motivo_da_recusa,
         lastro_provido=calcular_lastro_provido(sessao, desafio=desafio),
         lastro_faltante=motivo_de_lastro_faltante(sessao, desafio=desafio),
@@ -126,8 +131,10 @@ def propor_desafio_extra_rota(
     ],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> DesafioExtraSaida:
-    """Restrita ao Apoiador em sessão — nasce sempre em validação do Mestre
-    (`RF-14-29` a `RF-14-34`, `RF-14-74` a `RF-14-76`)."""
+    """Restrita a Apoiador e Mestre em sessão — a situação de nascimento
+    depende do proponente, decidida em `propor_desafio_extra` (`RF-14-29`
+    a `RF-14-34`, `RF-14-74` a `RF-14-76`, `RF-09-105`, `RF-09-108`,
+    `RF-09-109`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     trilha = sessao_bd.get(Trilha, entrada.trilha_id)
     missao = sessao_bd.get(Missao, entrada.missao_id) if entrada.missao_id is not None else None
@@ -162,13 +169,66 @@ def meus_desafios_extras_rota(
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> list[DesafioExtraSaida]:
-    """Restrita ao Apoiador — só os próprios, no mesmo molde de
-    `/eu/solicitacoes` (`RF-14-35` a `RF-14-39`)."""
-    if contexto.papel != Papel.apoiador:
-        raise PermissaoNegada(mensagem="Só o Apoiador lê os próprios desafios extras.")
-
+    """Cada proponente lê só os próprios — filtra por `proponente_id`, não
+    por papel, e alcança Apoiador e Mestre (`RF-14-35` a `RF-14-39`,
+    `RF-09-105`, design — decisão 6)."""
     desafios = listar_desafios_do_proponente(sessao_bd, proponente_id=contexto.persona_id)
     return [_saida(sessao_bd, desafio) for desafio in desafios]
+
+
+@roteador.get("/desafios-extras/a-validar")
+def desafios_a_validar_do_mestre_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[DesafioExtraSaida]:
+    """Restrita ao Mestre — os desafios em validação das trilhas de que ele
+    é autor (`RF-09-51`, `RN-09-11`)."""
+    if contexto.papel != Papel.mestre:
+        raise PermissaoNegada(mensagem="Só o Mestre lê a fila do que tem a validar.")
+
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    desafios = listar_desafios_a_validar_do_mestre(sessao_bd, operador=operador)
+    return [_saida(sessao_bd, desafio) for desafio in desafios]
+
+
+class ValidarDesafioExtraEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    situacao: str = Field(min_length=1)
+    parecer: str | None = None
+    motivo: str | None = None
+
+
+@roteador.post("/desafios-extras/{id_do_desafio}/validacao")
+def validar_desafio_extra_rota(
+    id_do_desafio: uuid.UUID,
+    entrada: ValidarDesafioExtraEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> DesafioExtraSaida:
+    """A posse fica na regra: só o Mestre autor da trilha decide, e
+    qualquer outra persona recebe 403 (`RF-09-51`, `RF-09-52`, `RN-09-11`,
+    design — decisão 3)."""
+    desafio = sessao_bd.get(DesafioExtra, id_do_desafio)
+    if desafio is None:
+        raise NaoEncontrado(mensagem="Desafio extra não encontrado.")
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+
+    if entrada.situacao == SituacaoDoDesafioExtra.em_aprovacao_do_admin.value:
+        desafio = validar_desafio_extra(
+            sessao_bd, operador=operador, desafio=desafio, parecer=entrada.parecer
+        )
+    elif entrada.situacao == SituacaoDoDesafioExtra.recusado.value:
+        desafio = recusar_desafio_extra_pelo_mestre(
+            sessao_bd, operador=operador, desafio=desafio, motivo=entrada.motivo
+        )
+    else:
+        raise ErroDeValidacao(
+            mensagem="Desfecho precisa ser em aprovação do Admin ou recusado.", campo="situacao"
+        )
+
+    sessao_bd.commit()
+    return _saida(sessao_bd, desafio)
 
 
 @roteador.get("/desafios-extras/pendentes")

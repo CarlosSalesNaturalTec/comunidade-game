@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeAutoria } from "./autoria/TelaDeAutoria";
 import { TelaDeCriacoesAValidar } from "./criacoesOriginais/TelaDeCriacoesAValidar";
+import { TelaDeDesafiosExtras } from "./desafiosExtras/TelaDeDesafiosExtras";
 import { ProvedorDeDireitos } from "./direitos/ContextoDeDireitos";
 import { TelaDeDireitos } from "./direitos/TelaDeDireitos";
 import { TelaDoPerfil } from "./perfil/TelaDoPerfil";
@@ -29,6 +30,7 @@ type Area =
   | "desbloqueios"
   | "criacoes"
   | "territorio"
+  | "desafiosExtras"
   | "propostas"
   | "recursos"
   | "responsaveis"
@@ -125,6 +127,12 @@ function Conteudo() {
           )}
         </Botao>
         <Botao
+          variante={area === "desafiosExtras" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("desafiosExtras")}
+        >
+          Desafios extras
+        </Botao>
+        <Botao
           variante={area === "propostas" ? "primaria" : "secundaria"}
           onClick={() => definirArea("propostas")}
         >
@@ -163,6 +171,7 @@ function Conteudo() {
       {area === "territorio" && (
         <TelaDeTerritorio onContagemAtualizada={definirContagemDeSolicitacoes} />
       )}
+      {area === "desafiosExtras" && <TelaDeDesafiosExtras />}
       {area === "propostas" && <TelaDePropostas />}
       {area === "recursos" && <TelaDeRecursos />}
       {area === "responsaveis" && <TelaDeResponsaveis />}

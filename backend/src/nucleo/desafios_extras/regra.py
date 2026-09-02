@@ -50,13 +50,17 @@ def propor_desafio_extra(
     vigencia_inicio: date | None,
     vigencia_fim: date | None,
 ) -> DesafioExtra:
-    """O Apoiador propõe o desafio sobre uma trilha em andamento — trilha
-    **publicada**, o mesmo estado que `trilhas.regra.inscrever_na_trilha`
-    exige do Guerreiro(a) (`RF-14-29`, `RF-14-30`). Não há teto de propostas
-    simultâneas (`RN-14-15`). Nasce sempre em `em_validacao_do_mestre`,
-    isolada da pontuação regular (`RF-14-35`, `RN-14-13`, `RN-14-19`)."""
-    if operador.papel != Papel.apoiador:
-        raise PermissaoNegada(mensagem="Só o Apoiador propõe desafio extra.")
+    """O Apoiador ou o Mestre propõem o desafio sobre uma trilha em
+    andamento — trilha **publicada**, o mesmo estado que
+    `trilhas.regra.inscrever_na_trilha` exige do Guerreiro(a) (`RF-14-29`,
+    `RF-14-30`, `RF-09-105`). Não há teto de propostas simultâneas
+    (`RN-14-15`). A situação de nascimento depende do proponente: o Mestre
+    autor da trilha dispensa a validação pedagógica e nasce em
+    `em_aprovacao_do_admin`; qualquer outro nasce em `em_validacao_do_mestre`,
+    isolado da pontuação regular (`RF-09-108`, `RF-09-109`, `RN-09-41`,
+    `RF-14-35`, `RN-14-13`, `RN-14-19`)."""
+    if operador.papel not in (Papel.apoiador, Papel.mestre):
+        raise PermissaoNegada(mensagem="Só o Apoiador ou o Mestre propõem desafio extra.")
     if trilha is None:
         raise ErroDeValidacao(mensagem="Desafio extra exige uma trilha.", campo="trilha_id")
     if trilha.situacao != SituacaoDaTrilha.publicada:
@@ -141,6 +145,13 @@ def propor_desafio_extra(
     else:
         aporte = None
 
+    dispensado = operador.papel == Papel.mestre and trilha.autor_id == operador.id
+    situacao_inicial = (
+        SituacaoDoDesafioExtra.em_aprovacao_do_admin
+        if dispensado
+        else SituacaoDoDesafioExtra.em_validacao_do_mestre
+    )
+
     desafio = DesafioExtra(
         trilha_id=trilha.id,
         missao_id=missao.id if missao is not None else None,
@@ -157,13 +168,82 @@ def propor_desafio_extra(
         aporte_id=aporte.id if aporte is not None else None,
         vigencia_inicio=vigencia_inicio,
         vigencia_fim=vigencia_fim,
-        situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre,
+        situacao=situacao_inicial,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
     )
     sessao.add(desafio)
     sessao.flush()
     return desafio
+
+
+def _conferir_mestre_autor_da_trilha(
+    sessao: Session, *, operador: Persona, desafio: DesafioExtra
+) -> None:
+    """Só o Mestre autor da trilha decide sobre a validação — nem outro
+    Mestre, nem Admin, que aprova depois, em outra rota (`RF-09-51`,
+    `RN-09-11`, design — decisão 3)."""
+    trilha = sessao.get(Trilha, desafio.trilha_id)
+    if operador.papel != Papel.mestre or trilha.autor_id != operador.id:
+        raise PermissaoNegada(mensagem="Só o Mestre autor da trilha valida este desafio extra.")
+
+
+def validar_desafio_extra(
+    sessao: Session, *, operador: Persona, desafio: DesafioExtra, parecer: str | None
+) -> DesafioExtra:
+    """Exige o parecer, grava quem validou e leva o desafio à aprovação do
+    Admin (`RF-09-51`, `RN-09-11`)."""
+    _conferir_mestre_autor_da_trilha(sessao, operador=operador, desafio=desafio)
+    if desafio.situacao != SituacaoDoDesafioExtra.em_validacao_do_mestre:
+        raise SituacaoDoDesafioExtraIncompativel(
+            mensagem="Só desafio em validação do Mestre é validável."
+        )
+    if not parecer or not parecer.strip():
+        raise ErroDeValidacao(mensagem="A validação exige o parecer.", campo="parecer")
+
+    desafio.situacao = SituacaoDoDesafioExtra.em_aprovacao_do_admin
+    desafio.parecer_do_mestre = parecer
+    desafio.mestre_validador_id = operador.id
+    sessao.flush()
+    return desafio
+
+
+def recusar_desafio_extra_pelo_mestre(
+    sessao: Session, *, operador: Persona, desafio: DesafioExtra, motivo: str | None
+) -> DesafioExtra:
+    """Exige o motivo, grava quem recusou e leva o desafio a `recusado` sem
+    passar pela fila do Admin, sem gravar reserva alguma (`RF-09-51`,
+    `RF-09-52`, `RN-09-11`)."""
+    _conferir_mestre_autor_da_trilha(sessao, operador=operador, desafio=desafio)
+    if desafio.situacao != SituacaoDoDesafioExtra.em_validacao_do_mestre:
+        raise SituacaoDoDesafioExtraIncompativel(
+            mensagem="Só desafio em validação do Mestre é recusável por ele."
+        )
+    if not motivo or not motivo.strip():
+        raise ErroDeValidacao(mensagem="A recusa exige o motivo.", campo="motivo")
+
+    desafio.situacao = SituacaoDoDesafioExtra.recusado
+    desafio.motivo_da_recusa = motivo
+    desafio.mestre_validador_id = operador.id
+    sessao.flush()
+    return desafio
+
+
+def listar_desafios_a_validar_do_mestre(
+    sessao: Session, *, operador: Persona
+) -> list[DesafioExtra]:
+    """Os desafios em `em_validacao_do_mestre` das trilhas de que o
+    operador é autor, nunca de trilha alheia (`RF-09-51`, `RN-09-11`)."""
+    return (
+        sessao.query(DesafioExtra)
+        .join(Trilha, Trilha.id == DesafioExtra.trilha_id)
+        .filter(
+            DesafioExtra.situacao == SituacaoDoDesafioExtra.em_validacao_do_mestre,
+            Trilha.autor_id == operador.id,
+        )
+        .order_by(DesafioExtra.registrado_em.asc())
+        .all()
+    )
 
 
 def lastro_provido(sessao: Session, *, desafio: DesafioExtra) -> bool:
