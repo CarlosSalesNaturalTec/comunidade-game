@@ -7,6 +7,7 @@ import {
   formatarMoedas,
   type PerfilDeApoiador,
 } from "../compartilhado/escada";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import {
   listarMissoesAbertas,
   listarNecessidadesEmAberto,
@@ -165,6 +166,8 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
         titulo="Comunidade Game — Área do Apoiador"
         subtitulo="Quem sustenta o projeto começa aqui. O pré-cadastro não cria acesso: um Admin confere o comprovante antes de qualquer coisa."
       />
+
+      <AvisoDeColeta dado="o nome ou razão social, e-mail, WhatsApp, nick e perfil do pré-cadastro" />
 
       <p>
         Já tem cadastro?{" "}

@@ -7,6 +7,7 @@ import {
   formatarMoedas,
   type PerfilDeApoiador,
 } from "../compartilhado/escada";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import { declararAporte, listarNecessidadesEmAberto, type NecessidadeDeRecurso } from "./api";
 
 const FORMATOS_ACEITOS = "PDF, JPG ou PNG";
@@ -127,6 +128,8 @@ export function TelaDeDeclaracaoDeAporte() {
         titulo="Declarar aporte"
         subtitulo="O aporte pela aplicação é sempre em dinheiro. Material, serviço e divulgação entram pelo cadastro da gestão — procure a equipe do projeto."
       />
+
+      <AvisoDeColeta dado="o valor declarado e o comprovante do aporte" />
 
       <form onSubmit={aoEnviar}>
         <fieldset>

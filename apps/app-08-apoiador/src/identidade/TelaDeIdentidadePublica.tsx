@@ -2,6 +2,7 @@ import { ErroDaApi } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import {
   conferirDisponibilidadeDeNick,
   gravarMinhaIdentidade,
@@ -141,6 +142,8 @@ export function TelaDeIdentidadePublica() {
         titulo="Identidade pública"
         subtitulo="Como você aparece para quem visita a comunidade — sempre em moedas, nunca em reais."
       />
+
+      <AvisoDeColeta dado="o nick e o avatar da sua identidade pública" />
 
       <CardDoApoiador identidade={identidade} />
 

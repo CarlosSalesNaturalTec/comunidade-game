@@ -2,6 +2,7 @@ import { ErroDaApi } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Campo, EstadoDaLista, Moldura } from "comum/react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import {
   type CoberturaPublicaDeOds,
   type CriacaoPublica,
@@ -210,6 +211,7 @@ function BlocoDeFavoritos() {
   return (
     <section aria-label="Favoritos">
       <h2>Favoritos</h2>
+      <AvisoDeColeta dado="o nick do Guerreiro(a) que você favorita" />
       <form onSubmit={aoFavoritar}>
         <Campo rotulo="Nick exato do Guerreiro(a)" valor={nick} aoAlterar={definirNick} />
         <p>

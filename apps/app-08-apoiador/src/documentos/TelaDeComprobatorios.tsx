@@ -2,6 +2,7 @@ import { ErroDaApi } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import { type DocumentoDoApoiador, declararDocumento, listarMeusDocumentos } from "./api";
 
 // Envia currículo, portfólio, rede social, termo de doação ou comprovante
@@ -65,6 +66,8 @@ export function TelaDeComprobatorios() {
         titulo="Documentos comprobatórios"
         subtitulo="Currículo, portfólio, rede social, termo de doação ou comprovante — sempre um link."
       />
+
+      <AvisoDeColeta dado="o endereço e o rótulo do documento comprobatório" />
 
       <form onSubmit={aoEnviar}>
         <Campo rotulo="Endereço (link)" valor={endereco} aoAlterar={definirEndereco} />

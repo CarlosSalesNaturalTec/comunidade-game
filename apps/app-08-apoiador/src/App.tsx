@@ -10,11 +10,14 @@ import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeTrocaDeSenha } from "./autenticacao/TelaDeTrocaDeSenha";
 import { TelaDeAcompanhamento } from "./desafiosExtras/TelaDeAcompanhamento";
 import { TelaDeProposta } from "./desafiosExtras/TelaDeProposta";
+import { ProvedorDeDireitos } from "./direitos/ContextoDeDireitos";
+import { TelaDeDireitos } from "./direitos/TelaDeDireitos";
 import { TelaDeComprobatorios } from "./documentos/TelaDeComprobatorios";
 import { TelaDeEfetividade } from "./efetividade/TelaDeEfetividade";
 import { TelaDeIdentidadePublica } from "./identidade/TelaDeIdentidadePublica";
 import { TelaDeMissoes } from "./missoes/TelaDeMissoes";
 import { TelaDePreCadastro } from "./preCadastro/TelaDePreCadastro";
+import { TelaDePropostas } from "./propostas/TelaDePropostas";
 import { TelaDeSustento } from "./sustento/TelaDeSustento";
 
 const MENSAGEM_DE_RECUSA_DE_OUTRO_PAPEL =
@@ -38,8 +41,10 @@ type Area =
   | "sustento"
   | "declarar-aporte"
   | "situacao-de-declaracoes"
-  | "painel-e-favoritos";
-type TelaSemSessao = "porta" | "entrada";
+  | "painel-e-favoritos"
+  | "propostas"
+  | "direitos";
+type TelaSemSessao = "porta" | "entrada" | "direitos";
 
 function Conteudo() {
   const { sessao, restaurando, trocaDeSenhaPendente, sair } = useSessao();
@@ -63,19 +68,29 @@ function Conteudo() {
   }
 
   if (trocaDeSenhaPendente) {
-    return <TelaDeTrocaDeSenha />;
+    return (
+      <ProvedorDeDireitos irParaDireitos={() => {}}>
+        <TelaDeTrocaDeSenha />
+      </ProvedorDeDireitos>
+    );
   }
 
   if (!sessao) {
-    return telaSemSessao === "entrada" ? (
-      <TelaDeEntrada aoVoltar={() => definirTelaSemSessao("porta")} />
-    ) : (
-      <TelaDePreCadastro aoIrParaEntrada={() => definirTelaSemSessao("entrada")} />
+    return (
+      <ProvedorDeDireitos irParaDireitos={() => definirTelaSemSessao("direitos")}>
+        {telaSemSessao === "direitos" ? (
+          <TelaDeDireitos aoVoltar={() => definirTelaSemSessao("porta")} />
+        ) : telaSemSessao === "entrada" ? (
+          <TelaDeEntrada aoVoltar={() => definirTelaSemSessao("porta")} />
+        ) : (
+          <TelaDePreCadastro aoIrParaEntrada={() => definirTelaSemSessao("entrada")} />
+        )}
+      </ProvedorDeDireitos>
     );
   }
 
   return (
-    <>
+    <ProvedorDeDireitos irParaDireitos={() => definirArea("direitos")}>
       <nav className="cg-navegacao-de-area" aria-label="Áreas do Apoiador">
         <Botao
           variante={area === "identidade" ? "primaria" : "secundaria"}
@@ -149,6 +164,18 @@ function Conteudo() {
         >
           Acompanhamento
         </Botao>
+        <Botao
+          variante={area === "propostas" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("propostas")}
+        >
+          Propostas
+        </Botao>
+        <Botao
+          variante={area === "direitos" ? "primaria" : "secundaria"}
+          onClick={() => definirArea("direitos")}
+        >
+          Direitos e dados
+        </Botao>
       </nav>
       {area === "identidade" && <TelaDeIdentidadePublica />}
       {area === "documentos" && <TelaDeComprobatorios />}
@@ -162,7 +189,9 @@ function Conteudo() {
       {area === "declarar-aporte" && <TelaDeDeclaracaoDeAporte />}
       {area === "situacao-de-declaracoes" && <TelaDeSituacaoDasDeclaracoes />}
       {area === "painel-e-favoritos" && <TelaDePainelEFavoritos />}
-    </>
+      {area === "propostas" && <TelaDePropostas />}
+      {area === "direitos" && <TelaDeDireitos />}
+    </ProvedorDeDireitos>
   );
 }
 

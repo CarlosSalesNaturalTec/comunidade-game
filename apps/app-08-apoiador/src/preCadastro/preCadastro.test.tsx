@@ -184,4 +184,29 @@ describe("porta pública de pré-cadastro", () => {
     ).toBeInTheDocument();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
+
+  it("o aviso de coleta nomeia o dado da porta e leva à área detalhada, sem sessão", async () => {
+    render(<App />);
+    await screen.findByRole("heading", { name: /comunidade game — área do apoiador/i });
+    const testeDeUsuario = userEvent.setup();
+
+    expect(
+      await screen.findByText(/coleta o nome ou razão social, e-mail, whatsapp/i),
+    ).toBeInTheDocument();
+
+    await testeDeUsuario.click(
+      screen.getByRole("button", { name: /ver em direitos e dados/i }),
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: /^direitos e dados$/i }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^sair$/i })).not.toBeInTheDocument();
+
+    await testeDeUsuario.click(screen.getByRole("button", { name: /^voltar$/i }));
+
+    expect(
+      await screen.findByRole("heading", { name: /comunidade game — área do apoiador/i }),
+    ).toBeInTheDocument();
+  });
 });
