@@ -13,6 +13,7 @@ from nucleo.desafios_extras.regra import (
     aprovar_desafio_extra,
     conferir_editavel,
     conferir_publicacao_com_lastro,
+    desafios_extras_elegiveis_do_guerreiro,
     encerrar_desafio_extra,
     lastro_provido,
     listar_desafios_a_validar_do_mestre,
@@ -20,8 +21,10 @@ from nucleo.desafios_extras.regra import (
     listar_desafios_em_aprovacao_do_admin,
     listar_desafios_publicados,
     propor_desafio_extra,
+    quantidade_restante,
     recusar_desafio_extra,
     recusar_desafio_extra_pelo_mestre,
+    registrar_conclusao_de_desafio_extra,
     validar_desafio_extra,
 )
 from nucleo.erros import (
@@ -36,6 +39,7 @@ from nucleo.personas.modelo import Papel
 from nucleo.recursos.modelo import NaturezaDoRecurso
 from nucleo.reservas.modelo import EstadoDaReserva, Reserva
 from nucleo.reservas.regra import disponivel_de
+from nucleo.tempo import agora
 from nucleo.trilhas.modelo import SituacaoDaTrilha
 
 
@@ -1142,3 +1146,300 @@ def test_vigencia_vencida_sem_encerramento_mantem_a_reserva(
     assert reserva.estado == EstadoDaReserva.reservada
     disponivel = disponivel_de(sessao, tipo_de_recurso_id=tipo.id, ponto_de_apoio_id=ponto.id)
     assert disponivel == Decimal("0.00")
+
+
+# --- 1.1 e 1.2 — a elegibilidade do Guerreiro(a) ------------------------------
+
+HOJE = date(2026, 6, 15)
+VIGENCIA_CORRENTE = {"vigencia_inicio": date(2026, 1, 1), "vigencia_fim": date(2026, 12, 31)}
+
+
+def test_aberto_alcanca_todos_os_inscritos_na_trilha(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_inscricao_na_trilha,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    criar_inscricao_na_trilha(guerreiro, trilha)
+    desafio = criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.publicado,
+        **VIGENCIA_CORRENTE,
+    )
+
+    elegiveis = desafios_extras_elegiveis_do_guerreiro(sessao, guerreiro_id=guerreiro.id, hoje=HOJE)
+
+    assert [d.id for d in elegiveis] == [desafio.id]
+
+
+def test_direcionado_alcanca_so_o_dono_do_nick(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_inscricao_na_trilha,
+    criar_nick,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    destinatario = criar_persona(Papel.guerreiro)
+    outro_guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    criar_inscricao_na_trilha(destinatario, trilha)
+    criar_inscricao_na_trilha(outro_guerreiro, trilha)
+    criar_nick(destinatario, "guerreira-zeferina")
+    criar_nick(outro_guerreiro, "outra-guerreira")
+    desafio = criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.publicado,
+        modalidade=Modalidade.direcionado,
+        nick_do_destinatario="guerreira-zeferina",
+        justificativa_do_vinculo="É minha vizinha.",
+        **VIGENCIA_CORRENTE,
+    )
+
+    elegiveis_do_destinatario = desafios_extras_elegiveis_do_guerreiro(
+        sessao, guerreiro_id=destinatario.id, hoje=HOJE
+    )
+    elegiveis_do_outro = desafios_extras_elegiveis_do_guerreiro(
+        sessao, guerreiro_id=outro_guerreiro.id, hoje=HOJE
+    )
+
+    assert [d.id for d in elegiveis_do_destinatario] == [desafio.id]
+    assert elegiveis_do_outro == []
+
+
+def test_nick_casa_sem_distinguir_maiusculas(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_inscricao_na_trilha,
+    criar_nick,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    destinatario = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    criar_inscricao_na_trilha(destinatario, trilha)
+    criar_nick(destinatario, "Guerreira-Zeferina")
+    desafio = criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.publicado,
+        modalidade=Modalidade.direcionado,
+        nick_do_destinatario="guerreira-zeferina",
+        justificativa_do_vinculo="É minha vizinha.",
+        **VIGENCIA_CORRENTE,
+    )
+
+    elegiveis = desafios_extras_elegiveis_do_guerreiro(
+        sessao, guerreiro_id=destinatario.id, hoje=HOJE
+    )
+
+    assert [d.id for d in elegiveis] == [desafio.id]
+
+
+def test_direcionado_a_quem_nao_esta_na_trilha_nao_aparece(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_nick,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    destinatario = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    criar_nick(destinatario, "guerreira-zeferina")
+    criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.publicado,
+        modalidade=Modalidade.direcionado,
+        nick_do_destinatario="guerreira-zeferina",
+        justificativa_do_vinculo="É minha vizinha.",
+        **VIGENCIA_CORRENTE,
+    )
+
+    elegiveis = desafios_extras_elegiveis_do_guerreiro(
+        sessao, guerreiro_id=destinatario.id, hoje=HOJE
+    )
+
+    assert elegiveis == []
+
+
+def test_nao_publicado_recusado_encerrado_ou_fora_da_vigencia_nao_aparecem(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_inscricao_na_trilha,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    criar_inscricao_na_trilha(guerreiro, trilha)
+
+    criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre,
+        **VIGENCIA_CORRENTE,
+    )
+    criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin,
+        **VIGENCIA_CORRENTE,
+    )
+    criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.recusado,
+        motivo_da_recusa="Sem mérito.",
+        **VIGENCIA_CORRENTE,
+    )
+    criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.publicado,
+        admin_encerrador=admin,
+        encerrado_em=agora(),
+        **VIGENCIA_CORRENTE,
+    )
+    criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.publicado,
+        vigencia_inicio=date(2020, 1, 1),
+        vigencia_fim=date(2020, 1, 31),
+    )
+
+    elegiveis = desafios_extras_elegiveis_do_guerreiro(sessao, guerreiro_id=guerreiro.id, hoje=HOJE)
+
+    assert elegiveis == []
+
+
+def test_esgotado_continua_aparecendo_com_restante_zero(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_inscricao_na_trilha,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    guerreiro = criar_persona(Papel.guerreiro)
+    outro_guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    criar_inscricao_na_trilha(guerreiro, trilha)
+    criar_inscricao_na_trilha(outro_guerreiro, trilha)
+    desafio = criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.publicado,
+        quantidade_disponivel=1,
+        **VIGENCIA_CORRENTE,
+    )
+    registrar_conclusao_de_desafio_extra(
+        sessao,
+        desafio=desafio,
+        guerreiro_id=outro_guerreiro.id,
+        momento_do_fato=agora(),
+        recompensa_entregue=True,
+        pontos_extras_creditados=desafio.pontos_extras,
+    )
+    sessao.commit()
+
+    elegiveis = desafios_extras_elegiveis_do_guerreiro(sessao, guerreiro_id=guerreiro.id, hoje=HOJE)
+
+    assert [d.id for d in elegiveis] == [desafio.id]
+    assert quantidade_restante(sessao, desafio=desafio) == 0
+
+
+def test_sem_inscricao_lista_vazia(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.publicado,
+        **VIGENCIA_CORRENTE,
+    )
+
+    elegiveis = desafios_extras_elegiveis_do_guerreiro(sessao, guerreiro_id=guerreiro.id, hoje=HOJE)
+
+    assert elegiveis == []

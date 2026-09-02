@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -17,11 +17,17 @@ from ..conteudos.regra import consultar_conteudos_da_missao
 from ..conteudos.rotas import ConteudoSaida, saida_do_conteudo
 from ..culminancias.modelo import Culminancia
 from ..culminancias.rotas import CulminanciaSaida, saida_da_culminancia
+from ..desafios_extras.modelo import DesafioExtra
+from ..desafios_extras.regra import desafios_extras_elegiveis_do_guerreiro
+from ..desafios_extras.regra import quantidade_restante as calcular_quantidade_restante_do_extra
 from ..erros import NaoEncontrado, PermissaoNegada
 from ..ods.modelo import EtiquetaOds
 from ..ods.regra import cobertura_por_trilha
 from ..ods.rotas import EtiquetaOdsSaida, saida_da_etiqueta
 from ..personas.modelo import Papel, Persona
+from ..pontos_de_apoio.modelo import PontoDeApoio
+from ..recursos.modelo import TipoDeRecurso
+from ..tempo import agora
 from .modelo import (
     Atividade,
     DesbloqueioDaMissao,
@@ -912,23 +918,85 @@ class DesafioSaida(BaseModel):
     trilha_titulo: str
 
 
+class RecompensaDoDesafioExtraSaida(BaseModel):
+    tipo_de_recurso_nome: str
+    ponto_de_apoio_nome: str
+
+
+class DesafioExtraDoGuerreiroSaida(BaseModel):
+    id: uuid.UUID
+    trilha_id: uuid.UUID
+    trilha_nome: str
+    missao_id: uuid.UUID | None
+    missao_titulo: str | None
+    modalidade: str
+    formato: str
+    criterio_de_atribuicao: str
+    pontos_extras: int
+    recompensa: RecompensaDoDesafioExtraSaida
+    quantidade_disponivel: int
+    quantidade_restante: int
+    vigencia_inicio: date
+    vigencia_fim: date
+
+
+def _saida_do_desafio_extra_do_guerreiro(
+    sessao_bd: Session, desafio: DesafioExtra
+) -> DesafioExtraDoGuerreiroSaida:
+    """A saída própria e enxuta do Guerreiro(a): nunca o nick do
+    destinatário, a justificativa, o parecer, o motivo de recusa, o custeio,
+    o aporte nem o lastro que a `DesafioExtraSaida` do proponente carrega
+    (`RF-05-21`, `RN-05-21`, `RN-14-20`, design — decisão 5)."""
+    trilha = sessao_bd.get(Trilha, desafio.trilha_id)
+    missao = sessao_bd.get(Missao, desafio.missao_id) if desafio.missao_id is not None else None
+    tipo_de_recurso = sessao_bd.get(TipoDeRecurso, desafio.tipo_de_recurso_id)
+    ponto_de_apoio = sessao_bd.get(PontoDeApoio, desafio.ponto_de_apoio_id)
+    return DesafioExtraDoGuerreiroSaida(
+        id=desafio.id,
+        trilha_id=trilha.id,
+        trilha_nome=trilha.nome,
+        missao_id=missao.id if missao is not None else None,
+        missao_titulo=missao.titulo if missao is not None else None,
+        modalidade=desafio.modalidade.value,
+        formato=desafio.formato.value,
+        criterio_de_atribuicao=desafio.criterio_de_atribuicao,
+        pontos_extras=desafio.pontos_extras,
+        recompensa=RecompensaDoDesafioExtraSaida(
+            tipo_de_recurso_nome=tipo_de_recurso.nome,
+            ponto_de_apoio_nome=ponto_de_apoio.nome,
+        ),
+        quantidade_disponivel=desafio.quantidade_disponivel,
+        quantidade_restante=calcular_quantidade_restante_do_extra(sessao_bd, desafio=desafio),
+        vigencia_inicio=desafio.vigencia_inicio,
+        vigencia_fim=desafio.vigencia_fim,
+    )
+
+
+class MeusDesafiosSaida(BaseModel):
+    semanais: list[DesafioSaida] = Field(default_factory=list)
+    extras: list[DesafioExtraDoGuerreiroSaida] = Field(default_factory=list)
+
+
 @roteador.get("/eu/desafios")
 def listar_meus_desafios_rota(
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
-) -> list[DesafioSaida]:
-    """`RF-05-19`, `RN-05-21`, `RN-05-06`: as atividades em aberto do
-    Guerreiro(a) em sessão — desbloqueadas, de trilha inscrita, sem
-    Resultado lançado para ele (proposal — decisão de recorte). Sem nada em
-    aberto, conjunto vazio, nunca erro; a derivação já é de
-    `desafios_em_aberto_do_guerreiro`."""
+) -> MeusDesafiosSaida:
+    """`RF-05-19`, `RF-05-20`, `RN-05-21`, `RN-05-06`: os dois conjuntos em
+    aberto do Guerreiro(a) em sessão — os **semanais**, as atividades
+    desbloqueadas de trilha inscrita sem Resultado lançado para ele
+    (proposal — decisão de recorte, `desafios_em_aberto_do_guerreiro`), e os
+    **extras**, os desafios extras publicados, vigentes e elegíveis a ele
+    (`desafios_extras_elegiveis_do_guerreiro`). Sem nada em aberto, os dois
+    conjuntos vazios, nunca erro (design — decisão 1). **BREAKING**: no
+    lugar da lista de atividades que a rota devolvia até a fatia 6."""
     _exigir_guerreiro(contexto)
     atividades = desafios_em_aberto_do_guerreiro(sessao_bd, guerreiro_id=contexto.persona_id)
-    saida = []
+    semanais = []
     for atividade in atividades:
         missao = sessao_bd.get(Missao, atividade.missao_id)
         trilha = sessao_bd.get(Trilha, missao.trilha_id)
-        saida.append(
+        semanais.append(
             DesafioSaida(
                 atividade=saida_da_atividade(atividade),
                 missao_id=missao.id,
@@ -937,7 +1005,15 @@ def listar_meus_desafios_rota(
                 trilha_titulo=trilha.nome,
             )
         )
-    return saida
+
+    desafios_extras = desafios_extras_elegiveis_do_guerreiro(
+        sessao_bd, guerreiro_id=contexto.persona_id, hoje=agora().date()
+    )
+    extras = [
+        _saida_do_desafio_extra_do_guerreiro(sessao_bd, desafio) for desafio in desafios_extras
+    ]
+
+    return MeusDesafiosSaida(semanais=semanais, extras=extras)
 
 
 class RetomadaSaida(BaseModel):

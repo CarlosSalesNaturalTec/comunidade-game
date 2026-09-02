@@ -203,7 +203,7 @@ que a tocar em vez de abrir recorte próprio.
 | 5     | Criação original e portfólio                        | `2026-08-27-criacao-original-e-portfolio` (também `RF-09-31` a `RF-09-34`)                    | implementado |
 | 6     | Desafios vigentes e equipes de que participa        | `desafios-vigentes-e-equipes-de-que-participa` — `RF-05-19`, `RF-05-22` a `RF-05-24`, `RN-05-12`, `RN-05-15`, `RN-05-22` | implementado |
 | 7     | Produção da missão, devolutiva e retomada           | `producao-da-missao-devolutiva-e-retomada` — `RF-05-74` a `RF-05-80`, `RN-05-05`, `RN-05-35` a `RN-05-38` | implementado |
-| 8     | Desafio extra na Área do Guerreiro(a)               | `RF-05-20`, `RF-05-21` — **trava:** entidade `DesafioExtra` — fatia 1 do PRD-14                       | em aberto    |
+| 8     | Desafio extra na Área do Guerreiro(a)               | `desafio-extra-na-area-do-guerreiro` — `RF-05-20`, `RF-05-21`                       | implementado    |
 
 Ciclo 02, fora do Ciclo 01 (PRD-05 §3.2): **acervo do Guerreiro(a)** (`RF-05-47` a `RF-05-49`,
 `RN-05-19`), **canal de sugestões** (`RF-05-54` a `RF-05-56`, `RN-05-17`) e **apoio escolar por

@@ -2,7 +2,11 @@ import { ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, EstadoDaLista } from "comum/react";
 import { useEffect, useState } from "react";
-import { type Desafio, listarMeusDesafios } from "../api/desafiosEEquipes";
+import {
+  listarMeusDesafios,
+  type MeusDesafios as MeusDesafiosResposta,
+} from "../api/desafiosEEquipes";
+import { MeusDesafiosExtras } from "./MeusDesafiosExtras";
 
 const ROTULO_DA_MODALIDADE: Record<string, string> = {
   individual: "Sozinho(a)",
@@ -21,7 +25,7 @@ const ROTULO_DO_FORMATO: Record<string, string> = {
 // `RN-05-06`).
 export function MeusDesafios() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
-  const [desafios, definirDesafios] = useState<Desafio[] | null>(null);
+  const [desafios, definirDesafios] = useState<MeusDesafiosResposta | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
 
   useEffect(() => {
@@ -60,32 +64,46 @@ export function MeusDesafios() {
       {desafios === null && !erro && (
         <EstadoDaLista>Carregando os seus desafios…</EstadoDaLista>
       )}
-      {desafios !== null && desafios.length === 0 && (
-        <EstadoDaLista>
-          Você não tem nenhum desafio em aberto agora. Continue na sua trilha!
-        </EstadoDaLista>
-      )}
-      {desafios !== null && desafios.length > 0 && (
-        <ul className="cg-lista-de-desafios">
-          {desafios.map((desafio) => (
-            <li key={desafio.atividade.id} className="cg-cartao-de-desafio">
-              <h3>{desafio.atividade.titulo}</h3>
-              <p className="cg-cartao-de-desafio__origem">
-                {desafio.trilha_titulo} — {desafio.missao_titulo}
-              </p>
-              <p>
-                <strong>Como fazer:</strong>{" "}
-                {ROTULO_DA_MODALIDADE[desafio.atividade.modalidade] ??
-                  desafio.atividade.modalidade}
-                {", "}
-                {ROTULO_DO_FORMATO[desafio.atividade.formato] ?? desafio.atividade.formato}
-              </p>
-              <p>
-                <strong>O que produzir:</strong> {desafio.atividade.producao_esperada}
-              </p>
-            </li>
-          ))}
-        </ul>
+
+      {desafios !== null && (
+        <>
+          <section aria-label="Desafios semanais">
+            <h2>Desafios da semana</h2>
+            {desafios.semanais.length === 0 && (
+              <EstadoDaLista>
+                Você não tem nenhum desafio em aberto agora. Continue na sua trilha!
+              </EstadoDaLista>
+            )}
+            {desafios.semanais.length > 0 && (
+              <ul className="cg-lista-de-desafios">
+                {desafios.semanais.map((desafio) => (
+                  <li key={desafio.atividade.id} className="cg-cartao-de-desafio">
+                    <h3>{desafio.atividade.titulo}</h3>
+                    <p className="cg-cartao-de-desafio__origem">
+                      {desafio.trilha_titulo} — {desafio.missao_titulo}
+                    </p>
+                    <p>
+                      <strong>Como fazer:</strong>{" "}
+                      {ROTULO_DA_MODALIDADE[desafio.atividade.modalidade] ??
+                        desafio.atividade.modalidade}
+                      {", "}
+                      {ROTULO_DO_FORMATO[desafio.atividade.formato] ??
+                        desafio.atividade.formato}
+                    </p>
+                    <p>
+                      <strong>O que produzir:</strong> {desafio.atividade.producao_esperada}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section aria-label="Desafios extras">
+            <h2>Desafios extras</h2>
+            <MeusDesafiosExtras extras={desafios.extras} />
+          </section>
+        </>
       )}
     </section>
   );

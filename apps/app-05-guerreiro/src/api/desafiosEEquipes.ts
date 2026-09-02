@@ -20,11 +20,39 @@ export interface Desafio {
   trilha_titulo: string;
 }
 
-// As atividades em aberto do Guerreiro(a) em sessão — desbloqueadas, de
-// trilha inscrita, sem Resultado lançado para ele. Conjunto vazio é "nada
-// em aberto agora", nunca erro (`RF-05-19`, `RN-05-21`).
-export function listarMeusDesafios(token: string): Promise<Desafio[]> {
-  return chamarNucleo<Desafio[]>("/v1/eu/desafios", { token });
+export interface RecompensaDoDesafioExtra {
+  tipo_de_recurso_nome: string;
+  ponto_de_apoio_nome: string;
+}
+
+export interface DesafioExtraDoGuerreiro {
+  id: string;
+  trilha_id: string;
+  trilha_nome: string;
+  missao_id: string | null;
+  missao_titulo: string | null;
+  modalidade: string;
+  formato: string;
+  criterio_de_atribuicao: string;
+  pontos_extras: number;
+  recompensa: RecompensaDoDesafioExtra;
+  quantidade_disponivel: number;
+  quantidade_restante: number;
+  vigencia_inicio: string;
+  vigencia_fim: string;
+}
+
+export interface MeusDesafios {
+  semanais: Desafio[];
+  extras: DesafioExtraDoGuerreiro[];
+}
+
+// Os dois conjuntos em aberto do Guerreiro(a) em sessão — os semanais,
+// desbloqueados, de trilha inscrita e sem Resultado lançado para ele, e os
+// extras, publicados, vigentes e elegíveis a ele. Sem nada em aberto, os
+// dois conjuntos vazios, nunca erro (`RF-05-19`, `RF-05-20`, `RN-05-21`).
+export function listarMeusDesafios(token: string): Promise<MeusDesafios> {
+  return chamarNucleo<MeusDesafios>("/v1/eu/desafios", { token });
 }
 
 export interface IntegranteDaMinhaEquipe {

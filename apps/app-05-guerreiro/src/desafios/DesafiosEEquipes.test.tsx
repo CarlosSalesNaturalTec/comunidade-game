@@ -14,7 +14,10 @@ async function renderizar() {
     papel: "guerreiro",
     permissoes: {},
   });
-  vi.spyOn(desafiosEEquipesApi, "listarMeusDesafios").mockResolvedValue([]);
+  vi.spyOn(desafiosEEquipesApi, "listarMeusDesafios").mockResolvedValue({
+    semanais: [],
+    extras: [],
+  });
   vi.spyOn(desafiosEEquipesApi, "listarMinhasEquipes").mockResolvedValue([]);
   await act(async () => {
     render(
