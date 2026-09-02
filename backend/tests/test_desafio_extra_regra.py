@@ -10,15 +10,29 @@ from nucleo.desafios_extras.modelo import (
     SituacaoDoDesafioExtra,
 )
 from nucleo.desafios_extras.regra import (
+    aprovar_desafio_extra,
     conferir_editavel,
     conferir_publicacao_com_lastro,
+    encerrar_desafio_extra,
     lastro_provido,
     listar_desafios_do_proponente,
+    listar_desafios_em_aprovacao_do_admin,
+    listar_desafios_publicados,
     propor_desafio_extra,
+    recusar_desafio_extra,
 )
-from nucleo.erros import EdicaoDeDesafioExtraPublicadoRecusada, ErroDeValidacao, PermissaoNegada
+from nucleo.erros import (
+    EdicaoDeDesafioExtraPublicadoRecusada,
+    ErroDeValidacao,
+    PermissaoNegada,
+    SituacaoDoDesafioExtraIncompativel,
+)
 from nucleo.livro_razao.modelo import NaturezaDoLancamento
+from nucleo.livro_razao.regra import saldo_de
 from nucleo.personas.modelo import Papel
+from nucleo.recursos.modelo import NaturezaDoRecurso
+from nucleo.reservas.modelo import EstadoDaReserva, Reserva
+from nucleo.reservas.regra import disponivel_de
 from nucleo.trilhas.modelo import SituacaoDaTrilha
 
 
@@ -469,3 +483,367 @@ def test_desafio_nao_publicado_e_editavel(
     )
 
     conferir_editavel(desafio)
+
+
+# --- 4.1 e 4.2 — fila, aprovação, recusa, reserva e encerramento --------------
+
+
+def test_desafio_em_validacao_do_mestre_nao_aparece_na_fila_e_aprovacao_da_409(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    desafio = criar_desafio_extra(
+        apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre
+    )
+
+    assert listar_desafios_em_aprovacao_do_admin(sessao) == []
+
+    with pytest.raises(SituacaoDoDesafioExtraIncompativel):
+        aprovar_desafio_extra(sessao, desafio, admin=admin)
+
+
+def test_aprovacao_sem_lastro_e_recusada_e_desafio_segue_na_fila(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    desafio = criar_desafio_extra(
+        apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin
+    )
+
+    with pytest.raises(ErroDeValidacao):
+        aprovar_desafio_extra(sessao, desafio, admin=admin)
+
+    assert desafio.situacao == SituacaoDoDesafioExtra.em_aprovacao_do_admin
+    assert [d.id for d in listar_desafios_em_aprovacao_do_admin(sessao)] == [desafio.id]
+
+
+def test_aprovacao_com_lastro_publica_e_grava_o_aprovador(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_lancamento,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    criar_lancamento(
+        admin, tipo, ponto, natureza=NaturezaDoLancamento.credito, quantidade=Decimal("5")
+    )
+    desafio = criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin,
+        quantidade_disponivel=5,
+    )
+
+    aprovado = aprovar_desafio_extra(sessao, desafio, admin=admin)
+
+    assert aprovado.situacao == SituacaoDoDesafioExtra.publicado
+    assert aprovado.admin_aprovador_id == admin.id
+    assert listar_desafios_em_aprovacao_do_admin(sessao) == []
+    assert [d.id for d in listar_desafios_publicados(sessao)] == [desafio.id]
+
+
+def test_recusa_sem_motivo_e_recusada(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    desafio = criar_desafio_extra(
+        apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin
+    )
+
+    with pytest.raises(ErroDeValidacao):
+        recusar_desafio_extra(sessao, desafio, admin=admin, motivo=None)
+    with pytest.raises(ErroDeValidacao):
+        recusar_desafio_extra(sessao, desafio, admin=admin, motivo="   ")
+
+
+def test_recusa_grava_o_motivo_e_nao_deixa_reserva(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    desafio = criar_desafio_extra(
+        apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin
+    )
+
+    recusado = recusar_desafio_extra(sessao, desafio, admin=admin, motivo="Sem mérito pedagógico.")
+
+    assert recusado.situacao == SituacaoDoDesafioExtra.recusado
+    assert recusado.motivo_da_recusa == "Sem mérito pedagógico."
+    assert sessao.query(Reserva).filter_by(desafio_extra_id=desafio.id).count() == 0
+
+
+def test_publicacao_grava_a_reserva_e_reduz_a_disponivel_sem_mexer_no_saldo(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_lancamento,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    criar_lancamento(
+        admin, tipo, ponto, natureza=NaturezaDoLancamento.credito, quantidade=Decimal("10")
+    )
+    desafio = criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin,
+        quantidade_disponivel=4,
+    )
+
+    aprovar_desafio_extra(sessao, desafio, admin=admin)
+    sessao.commit()
+
+    saldo = saldo_de(sessao, tipo_de_recurso_id=tipo.id, ponto_de_apoio_id=ponto.id)
+    disponivel = disponivel_de(sessao, tipo_de_recurso_id=tipo.id, ponto_de_apoio_id=ponto.id)
+    reserva = sessao.query(Reserva).filter_by(desafio_extra_id=desafio.id).one()
+    assert saldo == Decimal("10.00")
+    assert disponivel == Decimal("6.00")
+    assert reserva.quantidade == Decimal("4.00")
+    assert reserva.estado == EstadoDaReserva.reservada
+    assert reserva.aula_id is None
+
+
+def test_recompensa_que_nao_cabe_na_disponivel_e_recusada_sem_publicar(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_lancamento,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    criar_lancamento(
+        admin, tipo, ponto, natureza=NaturezaDoLancamento.credito, quantidade=Decimal("2")
+    )
+    desafio = criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin,
+        quantidade_disponivel=5,
+    )
+
+    with pytest.raises(ErroDeValidacao):
+        aprovar_desafio_extra(sessao, desafio, admin=admin)
+
+    assert desafio.situacao == SituacaoDoDesafioExtra.em_aprovacao_do_admin
+    assert sessao.query(Reserva).filter_by(desafio_extra_id=desafio.id).count() == 0
+
+
+def test_recompensa_de_tipo_duravel_e_recusada(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_lancamento,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin, natureza=NaturezaDoRecurso.duravel)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    desafio = criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin,
+        custeio=CusteioDoDesafioExtra.aporte_do_proponente,
+    )
+
+    with pytest.raises(ErroDeValidacao):
+        aprovar_desafio_extra(sessao, desafio, admin=admin)
+
+    assert sessao.query(Reserva).filter_by(desafio_extra_id=desafio.id).count() == 0
+
+
+def test_encerramento_libera_a_reserva_e_devolve_a_disponivel(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_lancamento,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    criar_lancamento(
+        admin, tipo, ponto, natureza=NaturezaDoLancamento.credito, quantidade=Decimal("5")
+    )
+    desafio = criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin,
+        quantidade_disponivel=5,
+    )
+    aprovar_desafio_extra(sessao, desafio, admin=admin)
+    sessao.commit()
+
+    encerrado = encerrar_desafio_extra(sessao, desafio, admin=admin)
+    sessao.commit()
+
+    assert encerrado.admin_encerrador_id == admin.id
+    assert encerrado.encerrado_em is not None
+    reserva = sessao.query(Reserva).filter_by(desafio_extra_id=desafio.id).one()
+    assert reserva.estado == EstadoDaReserva.liberada
+    disponivel = disponivel_de(sessao, tipo_de_recurso_id=tipo.id, ponto_de_apoio_id=ponto.id)
+    assert disponivel == Decimal("5.00")
+    # O encerramento não é um quinto estado: o desafio segue `publicado`,
+    # com `encerrado_em` como o fato gravado (design — decisão 1).
+    assert [d.id for d in listar_desafios_publicados(sessao)] == [desafio.id]
+
+
+def test_encerrar_fora_de_publicado_ou_duas_vezes_da_409(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_lancamento,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    desafio_nao_publicado = criar_desafio_extra(
+        apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin
+    )
+
+    with pytest.raises(SituacaoDoDesafioExtraIncompativel):
+        encerrar_desafio_extra(sessao, desafio_nao_publicado, admin=admin)
+
+    criar_lancamento(
+        admin, tipo, ponto, natureza=NaturezaDoLancamento.credito, quantidade=Decimal("5")
+    )
+    desafio_publicado = criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin,
+        quantidade_disponivel=5,
+    )
+    aprovar_desafio_extra(sessao, desafio_publicado, admin=admin)
+    sessao.commit()
+    encerrar_desafio_extra(sessao, desafio_publicado, admin=admin)
+    sessao.commit()
+
+    with pytest.raises(SituacaoDoDesafioExtraIncompativel):
+        encerrar_desafio_extra(sessao, desafio_publicado, admin=admin)
+
+
+def test_vigencia_vencida_sem_encerramento_mantem_a_reserva(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+    criar_lancamento,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    criar_lancamento(
+        admin, tipo, ponto, natureza=NaturezaDoLancamento.credito, quantidade=Decimal("5")
+    )
+    desafio = criar_desafio_extra(
+        apoiador,
+        trilha,
+        tipo,
+        ponto,
+        situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin,
+        quantidade_disponivel=5,
+        vigencia_inicio=date(2020, 1, 1),
+        vigencia_fim=date(2020, 1, 31),
+    )
+    aprovar_desafio_extra(sessao, desafio, admin=admin)
+    sessao.commit()
+
+    # Vigência vencida há muito, sem que ato algum de encerramento tenha
+    # acontecido: nada no núcleo observa o relógio (`RF-07-09`, PRD-07 §5.3).
+    reserva = sessao.query(Reserva).filter_by(desafio_extra_id=desafio.id).one()
+    assert reserva.estado == EstadoDaReserva.reservada
+    disponivel = disponivel_de(sessao, tipo_de_recurso_id=tipo.id, ponto_de_apoio_id=ponto.id)
+    assert disponivel == Decimal("0.00")

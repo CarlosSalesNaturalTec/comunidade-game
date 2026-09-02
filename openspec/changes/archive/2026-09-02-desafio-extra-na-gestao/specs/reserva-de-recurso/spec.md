@@ -1,12 +1,4 @@
-# reserva-de-recurso Specification
-
-## Purpose
-
-A reserva é o que faz valer o invariante 9: ela compromete o recurso que uma aula vai consumir
-no momento em que a aula é agendada, muito antes de o recurso sair do ponto de apoio, e só
-larga esse compromisso por baixa ou por liberação — nunca pelo relógio.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: A reserva compromete saldo sem movimentá-lo
 
@@ -62,24 +54,6 @@ de recurso publicada. Toda reserva SHALL registrar autor e momento, como toda es
 - **WHEN** o agendamento de uma aula é recusado por declarar tipo durável
 - **THEN** a aula não nasce pendente de lastro e nenhuma necessidade de recurso é publicada
   por ela
-
-### Requirement: O saldo disponível é o derivado menos o reservado
-
-O núcleo SHALL apurar, para cada par tipo de recurso e ponto de apoio, a **quantidade
-reservada** — a soma das reservas no estado **reservada** — e a **quantidade disponível**, que
-é o saldo derivado dos lançamentos **menos** a reservada. A decisão de reservar SHALL ser
-tomada contra a **disponível**, nunca contra o saldo total. (`RF-07-07`, `RF-07-08`, PRD-07 §8)
-
-#### Scenario: Reserva reduz o disponível sem reduzir o saldo
-
-- **WHEN** o saldo de um tipo num ponto de apoio é 10 e uma aula reserva 4
-- **THEN** o saldo continua 10 e a quantidade disponível passa a 6
-
-#### Scenario: Segunda aula não reserva o que a primeira já comprometeu
-
-- **WHEN** o saldo de um tipo num ponto de apoio é 10, uma aula já reservou 8 e outra aula
-  pede 5
-- **THEN** a segunda aula não reserva nada, porque a disponível é 2
 
 ### Requirement: A reserva sai por baixa ou por liberação, e nunca por decurso de prazo
 

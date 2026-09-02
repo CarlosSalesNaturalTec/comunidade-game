@@ -6,6 +6,7 @@ import { AvaliacaoDaSolicitacao } from "./AvaliacaoDaSolicitacao";
 import { AvaliacaoDeChave } from "./AvaliacaoDeChave";
 import { AvaliacaoDeDados } from "./AvaliacaoDeDados";
 import { AvaliacaoDeSugestao } from "./AvaliacaoDeSugestao";
+import { AvaliacaoDoDesafioExtra } from "./AvaliacaoDoDesafioExtra";
 import {
   listarSolicitacoesDeChave,
   listarSolicitacoesDeDados,
@@ -21,10 +22,16 @@ import {
 import { type ItemDeFila, ListaDeFilas } from "./ListaDeFilas";
 import { TratamentoDaSolicitacaoDoResponsavel } from "./TratamentoDaSolicitacaoDoResponsavel";
 
-// O filtro por natureza alcança as cinco naturezas da fila, fechando o que
+// O filtro por natureza alcança as seis naturezas da fila, fechando o que
 // a fatia anterior abriu só para participação (`RF-02-18`, `RF-02-23`,
-// `RF-02-25`, `RF-02-77`, `RF-02-87`).
-type Natureza = "participacao" | "dados" | "chave" | "sugestao" | "responsavel";
+// `RF-02-25`, `RF-02-27`, `RF-02-77`, `RF-02-87`).
+type Natureza =
+  | "participacao"
+  | "dados"
+  | "chave"
+  | "sugestao"
+  | "responsavel"
+  | "desafio_extra";
 
 const NATUREZAS: { chave: Natureza; rotulo: string }[] = [
   { chave: "participacao", rotulo: "Participação" },
@@ -32,6 +39,7 @@ const NATUREZAS: { chave: Natureza; rotulo: string }[] = [
   { chave: "chave", rotulo: "Chave" },
   { chave: "sugestao", rotulo: "Sugestões" },
   { chave: "responsavel", rotulo: "Responsável" },
+  { chave: "desafio_extra", rotulo: "Desafios extras" },
 ];
 
 const MENSAGEM_VAZIA: Record<Natureza, string> = {
@@ -40,6 +48,7 @@ const MENSAGEM_VAZIA: Record<Natureza, string> = {
   chave: "Nenhuma solicitação de chave por enquanto.",
   sugestao: "Nenhuma sugestão ou proposta por enquanto.",
   responsavel: "Nenhuma solicitação do responsável por enquanto.",
+  desafio_extra: "Nenhum desafio extra aguardando aprovação por enquanto.",
 };
 
 const ROTULO_DO_TIPO_DA_SOLICITACAO_DO_RESPONSAVEL: Record<
@@ -176,10 +185,13 @@ export function TelaDeFilas() {
       } else if (natureza === "sugestao") {
         const pagina = await listarSugestoes(sessao.token);
         definirSugestoes(pagina.itens);
-      } else {
+      } else if (natureza === "responsavel") {
         const itens = await listarSolicitacoesDoResponsavel(sessao.token);
         definirSolicitacoesDoResponsavel(itens);
       }
+      // "desafio_extra" carrega as próprias listas dentro de
+      // `AvaliacaoDoDesafioExtra` — não uma seleção sobre `ListaDeFilas`
+      // (design — decisão 7).
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
         tratarRecusaDeSessao();
@@ -211,7 +223,7 @@ export function TelaDeFilas() {
     } else if (natureza === "sugestao") {
       const item = sugestoes?.find((sugestao) => sugestao.id === id);
       if (item) definirSelecionada({ natureza: "sugestao", item });
-    } else {
+    } else if (natureza === "responsavel") {
       const item = solicitacoesDoResponsavel?.find((solicitacao) => solicitacao.id === id);
       if (item) definirSelecionada({ natureza: "responsavel", item });
     }
@@ -226,7 +238,9 @@ export function TelaDeFilas() {
           ? (chaves?.map(normalizarChave) ?? null)
           : natureza === "sugestao"
             ? (sugestoes?.map(normalizarSugestao) ?? null)
-            : (solicitacoesDoResponsavel?.map(normalizarSolicitacaoDoResponsavel) ?? null);
+            : natureza === "responsavel"
+              ? (solicitacoesDoResponsavel?.map(normalizarSolicitacaoDoResponsavel) ?? null)
+              : null;
 
   return (
     <Moldura>
@@ -308,7 +322,8 @@ export function TelaDeFilas() {
               }}
             />
           )}
-          {!selecionada && (
+          {natureza === "desafio_extra" && <AvaliacaoDoDesafioExtra />}
+          {!selecionada && natureza !== "desafio_extra" && (
             <ListaDeFilas
               itens={itensDaListaAtual}
               mensagemVazia={MENSAGEM_VAZIA[natureza]}

@@ -5,7 +5,11 @@ from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 
 from nucleo.desafios_extras.modelo import ConclusaoDeDesafioExtra, SituacaoDoDesafioExtra
-from nucleo.desafios_extras.regra import quantidade_restante, registrar_conclusao_de_desafio_extra
+from nucleo.desafios_extras.regra import (
+    encerrar_desafio_extra,
+    quantidade_restante,
+    registrar_conclusao_de_desafio_extra,
+)
 from nucleo.erros import ConclusaoDeDesafioExtraImutavel, ErroDeValidacao
 from nucleo.personas.modelo import Papel
 
@@ -215,3 +219,28 @@ def test_quantidade_restante_descontada_e_nunca_negativa(
 
     _registrar(sessao, desafio=desafio, guerreiro=terceiro_guerreiro, recompensa_entregue=True)
     assert quantidade_restante(sessao, desafio=desafio) == 0
+
+
+def test_conclusao_de_desafio_encerrado_e_recusada(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_tipo_de_recurso,
+    criar_ponto_de_apoio,
+    criar_comunidade,
+    criar_desafio_extra,
+):
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(admin)
+    tipo = criar_tipo_de_recurso(admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    desafio = criar_desafio_extra(
+        apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.publicado
+    )
+    encerrar_desafio_extra(sessao, desafio, admin=admin)
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao):
+        _registrar(sessao, desafio=desafio, guerreiro=guerreiro)

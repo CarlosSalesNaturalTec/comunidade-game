@@ -506,10 +506,6 @@ entrada segue proposta no documento 04, fora do Ciclo 01.
 pendências do Case 01. Não trava este PRD: o cadastro é da gestão e a entidade opera com
 qualquer número de pontos de apoio.
 
-`RF-07-15` e `RF-07-39` a `RF-07-41` — lastro, reserva e custeio do desafio extra — não são
-pendência de decisão: esperam a entidade `DesafioExtra`, cujos atributos o PRD-14 §8 define.
-Entram com a fatia do desafio extra do PRD-09 ou do PRD-14, nunca por change deste PRD.
-
 ## 15. Rastreabilidade
 
 | Requisito               | Origem                                           |

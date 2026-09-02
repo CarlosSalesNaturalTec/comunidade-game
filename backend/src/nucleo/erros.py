@@ -389,6 +389,19 @@ class DespublicacaoDeMissaoConcluidaRecusada(ErroDeAplicacao):
     mensagem = "Missão concluída não se despublica."
 
 
+class SituacaoDoDesafioExtraIncompativel(ErroDeAplicacao):
+    """`RF-02-27`, `RF-02-28`, `RF-02-106`: a aprovação, a recusa e o
+    encerramento do desafio extra exigem a situação certa — a mensagem diz
+    qual era a esperada."""
+
+    status_code = 409
+    codigo = "situacao_do_desafio_extra_incompativel"
+    mensagem = "O desafio extra não está na situação exigida para este ato."
+
+    def __init__(self, *, mensagem: str) -> None:
+        super().__init__(mensagem)
+
+
 class FreioPorOrigemAcionado(ErroDeAplicacao):
     """`RF-01-65`: leva o tempo de espera calculado pelo freio, que o
     manipulador de `principal.py` também expõe no cabeçalho `Retry-After`

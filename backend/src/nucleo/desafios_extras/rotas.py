@@ -1,28 +1,39 @@
 import uuid
-from datetime import date
+from datetime import date, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
 from ..aportes.modelo import Aporte
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
-from ..erros import PermissaoNegada
+from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from ..permissoes import Operacao, exigir_permissao
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
 from ..trilhas.modelo import Missao, Trilha
-from .modelo import CusteioDoDesafioExtra, DesafioExtra, FormatoDoDesafioExtra, Modalidade
-from .regra import (
-    lastro_provido as calcular_lastro_provido,
+from .modelo import (
+    CusteioDoDesafioExtra,
+    DesafioExtra,
+    FormatoDoDesafioExtra,
+    Modalidade,
+    SituacaoDoDesafioExtra,
 )
 from .regra import (
+    aprovar_desafio_extra,
+    encerrar_desafio_extra,
     listar_desafios_do_proponente,
+    listar_desafios_em_aprovacao_do_admin,
+    listar_desafios_publicados,
     motivo_de_lastro_faltante,
     propor_desafio_extra,
+    recusar_desafio_extra,
+)
+from .regra import (
+    lastro_provido as calcular_lastro_provido,
 )
 from .regra import (
     quantidade_restante as calcular_quantidade_restante,
@@ -53,6 +64,8 @@ class DesafioExtraSaida(BaseModel):
     motivo_da_recusa: str | None
     lastro_provido: bool
     lastro_faltante: str | None
+    admin_encerrador_id: uuid.UUID | None
+    encerrado_em: datetime | None
 
 
 def _saida(sessao: Session, desafio: DesafioExtra) -> DesafioExtraSaida:
@@ -80,6 +93,8 @@ def _saida(sessao: Session, desafio: DesafioExtra) -> DesafioExtraSaida:
         motivo_da_recusa=desafio.motivo_da_recusa,
         lastro_provido=calcular_lastro_provido(sessao, desafio=desafio),
         lastro_faltante=motivo_de_lastro_faltante(sessao, desafio=desafio),
+        admin_encerrador_id=desafio.admin_encerrador_id,
+        encerrado_em=desafio.encerrado_em,
     )
 
 
@@ -154,3 +169,79 @@ def meus_desafios_extras_rota(
 
     desafios = listar_desafios_do_proponente(sessao_bd, proponente_id=contexto.persona_id)
     return [_saida(sessao_bd, desafio) for desafio in desafios]
+
+
+@roteador.get("/desafios-extras/pendentes")
+def desafios_extras_pendentes_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "le"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[DesafioExtraSaida]:
+    """A fila do Admin: só os desafios já validados pelo Mestre da trilha,
+    nunca os em validação, publicados ou recusados (`RF-02-27`,
+    `RN-02-10`)."""
+    desafios = listar_desafios_em_aprovacao_do_admin(sessao_bd)
+    return [_saida(sessao_bd, desafio) for desafio in desafios]
+
+
+class AvaliarDesafioExtraEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    situacao: str = Field(min_length=1)
+    motivo: str | None = None
+
+
+@roteador.post("/desafios-extras/{id_do_desafio}/aprovacao")
+def avaliar_desafio_extra_rota(
+    id_do_desafio: uuid.UUID,
+    entrada: AvaliarDesafioExtraEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> DesafioExtraSaida:
+    """Restrita a Admin (`RF-02-28`). A aprovação publica o desafio e
+    reserva a recompensa; a recusa exige motivo e não grava reserva
+    alguma (`RN-02-10`, `RN-02-11`, `RF-07-39`)."""
+    desafio = sessao_bd.get(DesafioExtra, id_do_desafio)
+    if desafio is None:
+        raise NaoEncontrado(mensagem="Desafio extra não encontrado.")
+    admin = sessao_bd.get(Persona, contexto.persona_id)
+
+    if entrada.situacao == SituacaoDoDesafioExtra.publicado.value:
+        desafio = aprovar_desafio_extra(sessao_bd, desafio, admin=admin)
+    elif entrada.situacao == SituacaoDoDesafioExtra.recusado.value:
+        desafio = recusar_desafio_extra(sessao_bd, desafio, admin=admin, motivo=entrada.motivo)
+    else:
+        raise ErroDeValidacao(
+            mensagem="Desfecho precisa ser publicado ou recusado.", campo="situacao"
+        )
+
+    sessao_bd.commit()
+    return _saida(sessao_bd, desafio)
+
+
+@roteador.get("/desafios-extras/publicados")
+def desafios_extras_publicados_rota(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "le"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[DesafioExtraSaida]:
+    """Os desafios publicados, com a quantidade restante, para a tela do
+    encerramento (`RF-02-106`)."""
+    desafios = listar_desafios_publicados(sessao_bd)
+    return [_saida(sessao_bd, desafio) for desafio in desafios]
+
+
+@roteador.post("/desafios-extras/{id_do_desafio}/encerramento")
+def encerrar_desafio_extra_rota(
+    id_do_desafio: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> DesafioExtraSaida:
+    """Restrita a Admin. Fecha o desafio publicado e libera a reserva da
+    recompensa não entregue (`RF-02-106`, `RF-07-40`)."""
+    desafio = sessao_bd.get(DesafioExtra, id_do_desafio)
+    if desafio is None:
+        raise NaoEncontrado(mensagem="Desafio extra não encontrado.")
+
+    admin = sessao_bd.get(Persona, contexto.persona_id)
+    desafio = encerrar_desafio_extra(sessao_bd, desafio, admin=admin)
+    sessao_bd.commit()
+    return _saida(sessao_bd, desafio)
