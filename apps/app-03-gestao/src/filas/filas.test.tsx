@@ -10,6 +10,7 @@ import * as personasApi from "../personas/api";
 import * as pontosDeApoioApi from "../pontos-de-apoio/api";
 import * as recursosApi from "../recursos/api";
 import type {
+  DesafioExtra,
   SolicitacaoDeChave,
   SolicitacaoDeDados,
   SolicitacaoDeParticipacao,
@@ -170,6 +171,35 @@ function sugestao(parcial: Partial<Sugestao> = {}): Sugestao {
     parecer: null,
     motivo_do_retorno: null,
     decidido_em: null,
+    ...parcial,
+  };
+}
+
+function desafioExtra(parcial: Partial<DesafioExtra> = {}): DesafioExtra {
+  return {
+    id: "desafio-1",
+    trilha_id: "trilha-1",
+    missao_id: null,
+    modalidade: "aberto",
+    nick_do_destinatario: null,
+    justificativa_do_vinculo: null,
+    tipo_de_recurso_id: "tipo-1",
+    ponto_de_apoio_id: "ponto-1",
+    quantidade_disponivel: 5,
+    quantidade_restante: 5,
+    criterio_de_atribuicao: "Quem entregar primeiro.",
+    pontos_extras: 5,
+    formato: "on_line",
+    custeio: "saldo_de_recurso",
+    aporte_id: null,
+    vigencia_inicio: "2026-01-01",
+    vigencia_fim: "2026-12-31",
+    situacao: "em_aprovacao_do_admin",
+    motivo_da_recusa: null,
+    lastro_provido: true,
+    lastro_faltante: null,
+    admin_encerrador_id: null,
+    encerrado_em: null,
     ...parcial,
   };
 }
@@ -506,7 +536,7 @@ describe("área Filas", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("o filtro alcança as cinco naturezas", async () => {
+  it("o filtro alcança as seis naturezas, e os desafios extras", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
     vi.spyOn(filasApi, "listarSolicitacoesDeParticipacao").mockResolvedValue({
       itens: [],
@@ -525,6 +555,8 @@ describe("área Filas", () => {
       proximo_cursor: null,
     });
     vi.spyOn(filasApi, "listarSolicitacoesDoResponsavel").mockResolvedValue([]);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPendentes").mockResolvedValue([]);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPublicados").mockResolvedValue([]);
 
     render(<TelaDeFilas />);
     const usuario = userEvent.setup();
@@ -533,7 +565,14 @@ describe("área Filas", () => {
     const opcoes = within(seletor)
       .getAllByRole("option")
       .map((opcao) => opcao.textContent);
-    expect(opcoes).toEqual(["Participação", "Dados", "Chave", "Sugestões", "Responsável"]);
+    expect(opcoes).toEqual([
+      "Participação",
+      "Dados",
+      "Chave",
+      "Sugestões",
+      "Responsável",
+      "Desafios extras",
+    ]);
 
     await usuario.selectOptions(seletor, "dados");
     await waitFor(() => expect(filasApi.listarSolicitacoesDeDados).toHaveBeenCalled());
@@ -546,6 +585,10 @@ describe("área Filas", () => {
 
     await usuario.selectOptions(seletor, "responsavel");
     await waitFor(() => expect(filasApi.listarSolicitacoesDoResponsavel).toHaveBeenCalled());
+
+    await usuario.selectOptions(seletor, "desafio_extra");
+    await waitFor(() => expect(filasApi.listarDesafiosExtrasPendentes).toHaveBeenCalled());
+    await waitFor(() => expect(filasApi.listarDesafiosExtrasPublicados).toHaveBeenCalled());
   });
 
   it("a natureza responsável mostra protocolo, tipo, situação e prazo na lista", async () => {
@@ -852,5 +895,171 @@ describe("área Filas", () => {
       await screen.findByText(/20 pontos extras e o badge de protagonismo/i),
     ).toBeInTheDocument();
     expect(screen.queryByText(/e-mail/i)).not.toBeInTheDocument();
+  });
+
+  it("a natureza desafio extra mostra a fila vazia como informação", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPendentes").mockResolvedValue([]);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPublicados").mockResolvedValue([]);
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "desafio_extra");
+
+    expect(
+      await screen.findByText(/nenhum desafio extra aguardando aprovação/i),
+    ).toBeInTheDocument();
+    expect(await screen.findByText(/nenhum desafio extra publicado/i)).toBeInTheDocument();
+  });
+
+  it("sem lastro a aprovação não é oferecida, e o que falta aparece", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPendentes").mockResolvedValue([
+      desafioExtra({
+        lastro_provido: false,
+        lastro_faltante: "Falta saldo suficiente do tipo de recurso declarado.",
+      }),
+    ]);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPublicados").mockResolvedValue([]);
+    const avaliarEspiado = vi.spyOn(filasApi, "avaliarDesafioExtra");
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "desafio_extra");
+    await usuario.click(await screen.findByText(/quem entregar primeiro/i));
+
+    expect(
+      await screen.findByText(/falta saldo suficiente do tipo de recurso declarado/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^aprovar$/i })).not.toBeInTheDocument();
+    expect(avaliarEspiado).not.toHaveBeenCalled();
+  });
+
+  it("recusa sem motivo é apontada sem chamar o núcleo", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPendentes").mockResolvedValue([desafioExtra()]);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPublicados").mockResolvedValue([]);
+    const avaliarEspiado = vi.spyOn(filasApi, "avaliarDesafioExtra");
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "desafio_extra");
+    await usuario.click(await screen.findByText(/quem entregar primeiro/i));
+    await usuario.click(await screen.findByRole("button", { name: /^recusar$/i }));
+
+    expect(await screen.findByText(/informe o motivo da recusa/i)).toBeInTheDocument();
+    expect(avaliarEspiado).not.toHaveBeenCalled();
+  });
+
+  it("a aprovação com lastro publica e tira o desafio da fila", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    const pendente = desafioExtra();
+    vi.spyOn(filasApi, "listarDesafiosExtrasPendentes")
+      .mockResolvedValueOnce([pendente])
+      .mockResolvedValue([]);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPublicados").mockResolvedValue([]);
+    vi.spyOn(filasApi, "avaliarDesafioExtra").mockResolvedValue(
+      desafioExtra({ situacao: "publicado" }),
+    );
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "desafio_extra");
+    await usuario.click(await screen.findByText(/quem entregar primeiro/i));
+    await usuario.click(await screen.findByRole("button", { name: /^aprovar$/i }));
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText(/nenhum desafio extra aguardando aprovação/i),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  it("a recusa do núcleo por falta de disponível aparece na tela", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPendentes").mockResolvedValue([desafioExtra()]);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPublicados").mockResolvedValue([]);
+    vi.spyOn(filasApi, "avaliarDesafioExtra").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "A recompensa não cabe na quantidade disponível daquele ponto de apoio.",
+      }),
+    );
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "desafio_extra");
+    await usuario.click(await screen.findByText(/quem entregar primeiro/i));
+    await usuario.click(await screen.findByRole("button", { name: /^aprovar$/i }));
+
+    expect(
+      await screen.findByText(/a recompensa não cabe na quantidade disponível/i),
+    ).toBeInTheDocument();
+  });
+
+  it("o encerramento avisa antes e mostra quem encerrou depois", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    const publicado = desafioExtra({
+      id: "desafio-publicado-1",
+      situacao: "publicado",
+      quantidade_restante: 3,
+    });
+    vi.spyOn(filasApi, "listarDesafiosExtrasPendentes").mockResolvedValue([]);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPublicados")
+      .mockResolvedValueOnce([publicado])
+      .mockResolvedValue([
+        desafioExtra({
+          id: "desafio-publicado-1",
+          situacao: "publicado",
+          admin_encerrador_id: "admin-1",
+          encerrado_em: "2026-09-02T10:00:00-03:00",
+        }),
+      ]);
+    const encerrarEspiado = vi.spyOn(filasApi, "encerrarDesafioExtra").mockResolvedValue(
+      desafioExtra({
+        id: "desafio-publicado-1",
+        situacao: "publicado",
+        admin_encerrador_id: "admin-1",
+        encerrado_em: "2026-09-02T10:00:00-03:00",
+      }),
+    );
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "desafio_extra");
+    await usuario.click(await screen.findByRole("button", { name: /^encerrar$/i }));
+
+    expect(
+      await screen.findByText(/devolve ao ponto de apoio a recompensa ainda não entregue/i),
+    ).toBeInTheDocument();
+    expect(encerrarEspiado).not.toHaveBeenCalled();
+
+    await usuario.click(
+      await screen.findByRole("button", { name: /confirmar encerramento/i }),
+    );
+
+    expect(encerrarEspiado).toHaveBeenCalledWith("desafio-publicado-1", "token-do-admin");
+    expect(await screen.findByText(/encerrado em/i)).toBeInTheDocument();
+  });
+
+  it("nenhuma tela de desafio extra traz nome, avatar ou contato de Guerreiro(a)", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPendentes").mockResolvedValue([
+      desafioExtra({
+        modalidade: "direcionado",
+        nick_do_destinatario: "guerreira-fantasma",
+        justificativa_do_vinculo: "É minha vizinha.",
+      }),
+    ]);
+    vi.spyOn(filasApi, "listarDesafiosExtrasPublicados").mockResolvedValue([]);
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "desafio_extra");
+    await usuario.click(await screen.findByText(/direcionado/i));
+
+    expect(await screen.findByText("guerreira-fantasma")).toBeInTheDocument();
+    expect(screen.queryByText(/avatar/i)).not.toBeInTheDocument();
+    expect(screen.queryByAltText(/foto|avatar/i)).not.toBeInTheDocument();
   });
 });

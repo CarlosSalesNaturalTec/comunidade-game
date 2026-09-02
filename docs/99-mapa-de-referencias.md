@@ -382,11 +382,6 @@ do livro-razão (`backend/src/nucleo/recompensas_de_marco/`), e as rotas que a �
 consome para declarar o marco e confirmar a entrega (`RF-09-71`, `RF-09-76`) vivem lá, não em
 PRD-09.
 
-O lastro, a reserva e o custeio do **desafio extra** (`RF-07-15` e `RF-07-39` a `RF-07-41`)
-são requisitos do PRD-07, mas dependem da entidade `DesafioExtra`, cujos atributos o PRD-14 §8
-define. Entram com a fatia do desafio extra do PRD-09 ou do PRD-14: é dependência de entidade,
-e não inverte a seta da tabela acima.
-
 A **publicação da missão do Apoiador** (`RF-02-102` a `RF-02-105`) é requisito do PRD-02 — quem
 publica é a gestão —, mas depende da entidade `MissaoDoApoiador`, cujos atributos o PRD-14 §8
 define. Entra com a fatia das missões do PRD-14, no mesmo desenho do `DesafioExtra` acima: é

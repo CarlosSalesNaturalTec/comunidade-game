@@ -221,3 +221,81 @@ export function avaliarSugestao(
     token,
   });
 }
+
+export type ModalidadeDoDesafioExtra = "aberto" | "direcionado";
+export type FormatoDoDesafioExtra = "presencial" | "on_line";
+export type CusteioDoDesafioExtra = "aporte_do_proponente" | "saldo_de_recurso";
+export type SituacaoDoDesafioExtra =
+  | "em_validacao_do_mestre"
+  | "em_aprovacao_do_admin"
+  | "publicado"
+  | "recusado";
+
+export interface DesafioExtra {
+  id: string;
+  trilha_id: string;
+  missao_id: string | null;
+  modalidade: ModalidadeDoDesafioExtra;
+  nick_do_destinatario: string | null;
+  justificativa_do_vinculo: string | null;
+  tipo_de_recurso_id: string;
+  ponto_de_apoio_id: string;
+  quantidade_disponivel: number;
+  quantidade_restante: number;
+  criterio_de_atribuicao: string;
+  pontos_extras: number;
+  formato: FormatoDoDesafioExtra;
+  custeio: CusteioDoDesafioExtra;
+  aporte_id: string | null;
+  vigencia_inicio: string;
+  vigencia_fim: string;
+  situacao: SituacaoDoDesafioExtra;
+  motivo_da_recusa: string | null;
+  lastro_provido: boolean;
+  lastro_faltante: string | null;
+  admin_encerrador_id: string | null;
+  encerrado_em: string | null;
+}
+
+// A fila do Admin: só os desafios já validados pelo Mestre da trilha
+// (`RF-02-27`, `RN-02-10`).
+export function listarDesafiosExtrasPendentes(token: string): Promise<DesafioExtra[]> {
+  return chamarNucleo<DesafioExtra[]>("/v1/desafios-extras/pendentes", { token });
+}
+
+// Os desafios publicados, com a quantidade restante, para o encerramento
+// (`RF-02-106`).
+export function listarDesafiosExtrasPublicados(token: string): Promise<DesafioExtra[]> {
+  return chamarNucleo<DesafioExtra[]>("/v1/desafios-extras/publicados", { token });
+}
+
+export interface AvaliarDesafioExtraEntrada {
+  situacao: "publicado" | "recusado";
+  motivo?: string;
+}
+
+// A aprovação publica o desafio e reserva a recompensa; a recusa exige
+// motivo e não grava reserva alguma (`RF-02-28`, `RN-02-10`, `RN-02-11`).
+export function avaliarDesafioExtra(
+  idDoDesafio: string,
+  entrada: AvaliarDesafioExtraEntrada,
+  token: string,
+): Promise<DesafioExtra> {
+  return chamarNucleo<DesafioExtra>(`/v1/desafios-extras/${idDoDesafio}/aprovacao`, {
+    metodo: "POST",
+    corpo: entrada,
+    token,
+  });
+}
+
+// Fecha o desafio publicado e libera a reserva da recompensa não entregue
+// (`RF-02-106`, `RF-07-40`).
+export function encerrarDesafioExtra(
+  idDoDesafio: string,
+  token: string,
+): Promise<DesafioExtra> {
+  return chamarNucleo<DesafioExtra>(`/v1/desafios-extras/${idDoDesafio}/encerramento`, {
+    metodo: "POST",
+    token,
+  });
+}

@@ -5,11 +5,18 @@ from decimal import Decimal
 from sqlalchemy.orm import Session
 
 from ..aportes.modelo import Aporte
-from ..erros import EdicaoDeDesafioExtraPublicadoRecusada, ErroDeValidacao, PermissaoNegada
+from ..erros import (
+    EdicaoDeDesafioExtraPublicadoRecusada,
+    ErroDeValidacao,
+    PermissaoNegada,
+    SituacaoDoDesafioExtraIncompativel,
+)
 from ..livro_razao.regra import saldo_de
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
-from ..recursos.modelo import TipoDeRecurso
+from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
+from ..reservas.regra import liberar_reservas_do_desafio, reservar_recompensa_do_desafio
+from ..tempo import agora
 from ..trilhas.modelo import Missao, SituacaoDaTrilha, Trilha
 from .modelo import (
     ConclusaoDeDesafioExtra,
@@ -229,12 +236,19 @@ def registrar_conclusao_de_desafio_extra(
 ) -> ConclusaoDeDesafioExtra:
     """A entidade nasce sem rota nesta fatia — o ato de chamar esta função é
     do PRD-09, ainda sem fatia; aqui só as guardas (design — decisão 2).
-    Recusa desafio não publicado e segunda conclusão do mesmo Guerreiro(a)
-    para o mesmo desafio; a `UniqueConstraint` do modelo sustenta a segunda
-    guarda também fora desta função (`RF-14-42`)."""
-    if desafio is None or desafio.situacao != SituacaoDoDesafioExtra.publicado:
+    Recusa desafio não publicado, desafio encerrado — a reserva já voltou
+    à disponível e não há o que entregar (`RF-07-40`, design — decisão 8)
+    — e segunda conclusão do mesmo Guerreiro(a) para o mesmo desafio; a
+    `UniqueConstraint` do modelo sustenta a segunda guarda também fora
+    desta função (`RF-14-42`)."""
+    if (
+        desafio is None
+        or desafio.situacao != SituacaoDoDesafioExtra.publicado
+        or desafio.encerrado_em is not None
+    ):
         raise ErroDeValidacao(
-            mensagem="Só desafio extra publicado recebe conclusão.", campo="desafio_id"
+            mensagem="Só desafio extra publicado e não encerrado recebe conclusão.",
+            campo="desafio_id",
         )
     ja_concluiu = (
         sessao.query(ConclusaoDeDesafioExtra)
@@ -268,3 +282,96 @@ def quantidade_restante(sessao: Session, *, desafio: DesafioExtra) -> int:
         .count()
     )
     return max(desafio.quantidade_disponivel - entregues, 0)
+
+
+def listar_desafios_em_aprovacao_do_admin(sessao: Session) -> list[DesafioExtra]:
+    """A fila do Admin: só os já validados pelo Mestre da trilha, nunca os
+    em validação, publicados ou recusados — da mais antiga para a mais
+    recente (`RF-02-27`, `RN-02-10`)."""
+    return (
+        sessao.query(DesafioExtra)
+        .filter_by(situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin)
+        .order_by(DesafioExtra.registrado_em.asc())
+        .all()
+    )
+
+
+def listar_desafios_publicados(sessao: Session) -> list[DesafioExtra]:
+    """Os desafios publicados, para a tela do encerramento — a quantidade
+    restante e a vigência são lidas de cada um pela própria saída
+    (`RF-02-106`)."""
+    return (
+        sessao.query(DesafioExtra)
+        .filter_by(situacao=SituacaoDoDesafioExtra.publicado)
+        .order_by(DesafioExtra.registrado_em.asc())
+        .all()
+    )
+
+
+def aprovar_desafio_extra(
+    sessao: Session, desafio: DesafioExtra, *, admin: Persona
+) -> DesafioExtra:
+    """A ordem das guardas é situação → natureza → lastro → disponível,
+    para que o erro devolvido seja o que o Admin precisa resolver primeiro
+    (`RF-02-28`, `RN-02-10`, `RN-02-11`, `RF-07-15`, design — decisão 4).
+    A reserva da recompensa acontece no mesmo ato que publica, sob o
+    bloqueio que o agendamento concorrente já usa (`RF-07-39`, design —
+    decisão 3)."""
+    if desafio.situacao != SituacaoDoDesafioExtra.em_aprovacao_do_admin:
+        raise SituacaoDoDesafioExtraIncompativel(
+            mensagem="Só desafio já validado pelo Mestre, ainda sem desfecho, é aprovável."
+        )
+    tipo = sessao.get(TipoDeRecurso, desafio.tipo_de_recurso_id)
+    if tipo.natureza == NaturezaDoRecurso.duravel:
+        raise ErroDeValidacao(
+            mensagem=(
+                "Tipo de recurso de natureza durável não é reservável: o saldo é "
+                "patrimônio, não insumo de atividade."
+            ),
+            campo="tipo_de_recurso_id",
+        )
+    conferir_publicacao_com_lastro(sessao, desafio=desafio)
+    reservar_recompensa_do_desafio(sessao, desafio=desafio, operador=admin)
+
+    desafio.situacao = SituacaoDoDesafioExtra.publicado
+    desafio.admin_aprovador_id = admin.id
+    sessao.flush()
+    return desafio
+
+
+def recusar_desafio_extra(
+    sessao: Session, desafio: DesafioExtra, *, admin: Persona, motivo: str | None
+) -> DesafioExtra:
+    """Exige o motivo, que a leitura do proponente já devolve, e não grava
+    reserva alguma (`RF-02-28`, `RF-14-36`, `RN-14-13`)."""
+    if desafio.situacao != SituacaoDoDesafioExtra.em_aprovacao_do_admin:
+        raise SituacaoDoDesafioExtraIncompativel(
+            mensagem="Só desafio já validado pelo Mestre, ainda sem desfecho, é recusável."
+        )
+    if not motivo or not motivo.strip():
+        raise ErroDeValidacao(mensagem="A recusa exige o motivo.", campo="motivo")
+
+    desafio.situacao = SituacaoDoDesafioExtra.recusado
+    desafio.motivo_da_recusa = motivo
+    sessao.flush()
+    return desafio
+
+
+def encerrar_desafio_extra(
+    sessao: Session, desafio: DesafioExtra, *, admin: Persona
+) -> DesafioExtra:
+    """Só o desafio **publicado** encerra, uma única vez: leva a
+    **liberada** toda reserva ainda **reservada** daquele desafio,
+    devolvendo a quantidade à disponível, e grava quem encerrou e quando —
+    nunca por decurso da vigência (`RF-02-106`, `RF-07-40`, design —
+    decisão 1)."""
+    if desafio.situacao != SituacaoDoDesafioExtra.publicado:
+        raise SituacaoDoDesafioExtraIncompativel(mensagem="Só desafio publicado é encerrável.")
+    if desafio.encerrado_em is not None:
+        raise SituacaoDoDesafioExtraIncompativel(mensagem="Este desafio já foi encerrado.")
+
+    liberar_reservas_do_desafio(sessao, desafio=desafio)
+    desafio.admin_encerrador_id = admin.id
+    desafio.encerrado_em = agora()
+    sessao.flush()
+    return desafio

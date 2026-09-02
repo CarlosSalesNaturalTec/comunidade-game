@@ -5,12 +5,13 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula, RecursoDeclaradoDaAula, SituacaoDaAula
+from ..desafios_extras.modelo import DesafioExtra
 from ..erros import ErroDeValidacao
 from ..livro_razao.modelo import Lancamento
 from ..livro_razao.regra import lancar_debito, saldo_de
 from ..personas.modelo import Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
-from ..recursos.modelo import TipoDeRecurso
+from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
 from ..recursos.regra import consultar_valor_de_referencia
 from ..tempo import agora
 from .modelo import EstadoDaReserva, Reserva
@@ -184,6 +185,72 @@ def liberar_reservas_da_aula(sessao: Session, *, aula: Aula) -> None:
     `reserva-de-recurso`)."""
     reservas = (
         sessao.query(Reserva).filter_by(aula_id=aula.id, estado=EstadoDaReserva.reservada).all()
+    )
+    for reserva in reservas:
+        reserva.estado = EstadoDaReserva.liberada
+    sessao.flush()
+
+
+def reservar_recompensa_do_desafio(
+    sessao: Session, *, desafio: DesafioExtra, operador: Persona
+) -> Reserva:
+    """A publicação do desafio extra reserva, no mesmo ato, a quantidade
+    disponível declarada — a recompensa é aquela quantidade do tipo de
+    recurso no ponto de apoio da proposta, o mesmo par que `lastro_provido`
+    já consulta no custeio por saldo (`RF-07-39`, design — Decisions 5).
+    Bloqueia o par antes de conferir a disponível, o mesmo caminho do
+    agendamento concorrente (design — Decisions 3), recusa tipo de recurso
+    de natureza durável e recusa sem disponível suficiente — nos dois
+    casos, sem gravar reserva alguma (`RN-07-01`, `RN-07-07`)."""
+    _bloquear_par(
+        sessao,
+        tipo_de_recurso_id=desafio.tipo_de_recurso_id,
+        ponto_de_apoio_id=desafio.ponto_de_apoio_id,
+    )
+    tipo = sessao.get(TipoDeRecurso, desafio.tipo_de_recurso_id)
+    if tipo.natureza == NaturezaDoRecurso.duravel:
+        raise ErroDeValidacao(
+            mensagem=(
+                "Tipo de recurso de natureza durável não é reservável: o saldo é "
+                "patrimônio, não insumo de atividade."
+            ),
+            campo="tipo_de_recurso_id",
+        )
+
+    quantidade = Decimal(desafio.quantidade_disponivel)
+    disponivel = disponivel_de(
+        sessao,
+        tipo_de_recurso_id=desafio.tipo_de_recurso_id,
+        ponto_de_apoio_id=desafio.ponto_de_apoio_id,
+    )
+    if disponivel < quantidade:
+        raise ErroDeValidacao(
+            mensagem="A recompensa não cabe na quantidade disponível daquele ponto de apoio.",
+            campo="quantidade_disponivel",
+        )
+
+    reserva = Reserva(
+        desafio_extra_id=desafio.id,
+        tipo_de_recurso_id=desafio.tipo_de_recurso_id,
+        ponto_de_apoio_id=desafio.ponto_de_apoio_id,
+        quantidade=quantidade,
+        estado=EstadoDaReserva.reservada,
+        autor_id=operador.id,
+        papel_do_autor=operador.papel.value,
+    )
+    sessao.add(reserva)
+    sessao.flush()
+    return reserva
+
+
+def liberar_reservas_do_desafio(sessao: Session, *, desafio: DesafioExtra) -> None:
+    """O encerramento do desafio pelo Admin leva a **liberada** toda
+    reserva daquele desafio ainda **reservada**, devolvendo a quantidade à
+    disponível (`RF-07-40`, spec `reserva-de-recurso`)."""
+    reservas = (
+        sessao.query(Reserva)
+        .filter_by(desafio_extra_id=desafio.id, estado=EstadoDaReserva.reservada)
+        .all()
     )
     for reserva in reservas:
         reserva.estado = EstadoDaReserva.liberada

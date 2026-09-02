@@ -1518,14 +1518,16 @@ def criar_recurso_declarado_da_aula(sessao):
 def criar_reserva(sessao):
     def _criar(
         autor: Persona,
-        aula: Aula,
+        aula: Aula | None,
         tipo: TipoDeRecurso,
         ponto_de_apoio: PontoDeApoio,
         quantidade: Decimal = Decimal("1.00"),
         estado: EstadoDaReserva = EstadoDaReserva.reservada,
+        desafio: DesafioExtra | None = None,
     ) -> Reserva:
         reserva = Reserva(
-            aula_id=aula.id,
+            aula_id=aula.id if aula is not None else None,
+            desafio_extra_id=desafio.id if desafio is not None else None,
             tipo_de_recurso_id=tipo.id,
             ponto_de_apoio_id=ponto_de_apoio.id,
             quantidade=quantidade,
@@ -1913,6 +1915,8 @@ def criar_desafio_extra(sessao):
         vigencia_fim: date | None = None,
         situacao: SituacaoDoDesafioExtra = SituacaoDoDesafioExtra.em_validacao_do_mestre,
         motivo_da_recusa: str | None = None,
+        admin_encerrador: Persona | None = None,
+        encerrado_em: datetime | None = None,
     ) -> DesafioExtra:
         desafio = DesafioExtra(
             trilha_id=trilha.id,
@@ -1932,6 +1936,8 @@ def criar_desafio_extra(sessao):
             vigencia_fim=vigencia_fim or date(2026, 12, 31),
             situacao=situacao,
             motivo_da_recusa=motivo_da_recusa,
+            admin_encerrador_id=admin_encerrador.id if admin_encerrador is not None else None,
+            encerrado_em=encerrado_em,
             autor_id=proponente.id,
             papel_do_autor=proponente.papel.value,
         )

@@ -1,12 +1,13 @@
 import enum
 import uuid
-from datetime import date
+from datetime import date, datetime
 
 from sqlalchemy import (
     DDL,
     Boolean,
     CheckConstraint,
     Date,
+    DateTime,
     Enum,
     ForeignKey,
     Integer,
@@ -127,6 +128,10 @@ class DesafioExtra(Base, ComAutoria):
         default=SituacaoDoDesafioExtra.em_validacao_do_mestre,
     )
     motivo_da_recusa: Mapped[str | None] = mapped_column(Text, nullable=True)
+    admin_encerrador_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("persona.id"), nullable=True
+    )
+    encerrado_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     __table_args__ = (
         CheckConstraint(
