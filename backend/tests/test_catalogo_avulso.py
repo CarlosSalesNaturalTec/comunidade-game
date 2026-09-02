@@ -11,9 +11,11 @@ from nucleo.catalogo_avulso.regra import (
     alterar_estoque,
     ativar_item,
     cadastrar_item,
+    contar_trocas_por_item,
     falta_de_lastro,
     homologar_item,
     listar_catalogo,
+    listar_ofertas_do_apoiador,
     retirar_item,
 )
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
@@ -890,3 +892,246 @@ def test_saida_do_catalogo_pela_rota_nao_traz_moedas_nem_reais(
     for item in corpo:
         assert "valor_em_moedas" not in item
         assert "valor_em_reais" not in item
+
+
+# --- 4.7 Leitura das próprias ofertas -------------------------------------------
+
+
+def test_listar_ofertas_do_apoiador_recusa_persona_de_outro_papel(sessao, criar_persona):
+    mestre = criar_persona(Papel.mestre)
+
+    with pytest.raises(PermissaoNegada):
+        listar_ofertas_do_apoiador(sessao, operador=mestre)
+
+
+def test_apoiador_le_os_proprios_itens_em_qualquer_situacao(
+    sessao,
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_preco_de_referencia,
+    criar_lancamento,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto = criar_ponto_de_apoio(admin, comunidade)
+    tipo_com_preco = criar_tipo_de_recurso(admin, nome="Tipo com preço")
+    criar_preco_de_referencia(admin, tipo_com_preco)
+    tipo_sem_preco = criar_tipo_de_recurso(admin, nome="Tipo sem preço")
+    _cadastrar_lastro(criar_lancamento, admin, tipo_com_preco, ponto, "10")
+    apoiador = criar_persona(Papel.apoiador)
+    outro_apoiador = criar_persona(Papel.apoiador)
+
+    pendente = cadastrar_item(
+        sessao,
+        operador=apoiador,
+        nome="Item pendente",
+        tipo=tipo_com_preco,
+        estoque=Decimal("1"),
+        comunidade=comunidade,
+        ponto_de_apoio=ponto,
+    )
+    recusado = cadastrar_item(
+        sessao,
+        operador=apoiador,
+        nome="Item recusado",
+        tipo=tipo_com_preco,
+        estoque=Decimal("1"),
+        comunidade=comunidade,
+        ponto_de_apoio=ponto,
+    )
+    sem_lastro = cadastrar_item(
+        sessao,
+        operador=apoiador,
+        nome="Item sem lastro",
+        tipo=tipo_com_preco,
+        estoque=Decimal("100"),
+        comunidade=comunidade,
+        ponto_de_apoio=ponto,
+    )
+    sem_preco = cadastrar_item(
+        sessao,
+        operador=apoiador,
+        nome="Item sem preço",
+        tipo=tipo_sem_preco,
+        estoque=Decimal("1"),
+        comunidade=comunidade,
+        ponto_de_apoio=ponto,
+    )
+    sessao.commit()
+    homologar_item(
+        sessao,
+        operador=admin,
+        item=recusado,
+        decisao=SituacaoDeHomologacao.recusado.value,
+        motivo="Fora da política.",
+    )
+    homologar_item(
+        sessao, operador=admin, item=sem_lastro, decisao=SituacaoDeHomologacao.homologado.value
+    )
+    homologar_item(
+        sessao, operador=admin, item=sem_preco, decisao=SituacaoDeHomologacao.homologado.value
+    )
+    sessao.commit()
+    cadastrar_item(
+        sessao,
+        operador=outro_apoiador,
+        nome="Item de outro Apoiador",
+        tipo=tipo_com_preco,
+        estoque=Decimal("1"),
+        comunidade=comunidade,
+        ponto_de_apoio=ponto,
+    )
+    sessao.commit()
+
+    assert {item.nome for item in listar_ofertas_do_apoiador(sessao, operador=apoiador)} == {
+        pendente.nome,
+        recusado.nome,
+        sem_lastro.nome,
+        sem_preco.nome,
+    }
+
+    token, _ = criar_sessao_de_teste(apoiador)
+    resposta = cliente.get(
+        "/v1/eu/catalogo-avulso",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    nomes = {item["nome"] for item in corpo}
+    assert nomes == {"Item pendente", "Item recusado", "Item sem lastro", "Item sem preço"}
+
+    por_nome = {item["nome"]: item for item in corpo}
+    assert por_nome["Item pendente"]["situacao_de_homologacao"] == "pendente"
+    assert por_nome["Item pendente"]["ativo"] is False
+    assert por_nome["Item recusado"]["situacao_de_homologacao"] == "recusado"
+    assert por_nome["Item recusado"]["homologacao_motivo"] == "Fora da política."
+    assert por_nome["Item sem lastro"]["ativo"] is False
+    assert por_nome["Item sem lastro"]["quantidade_faltante"] is not None
+    assert por_nome["Item sem preço"]["ativo"] is False
+    assert por_nome["Item sem preço"]["preco_de_referencia_ausente"] is True
+    for item in corpo:
+        assert "valor_em_moedas" not in item
+        assert "valor_em_reais" not in item
+
+
+def test_persona_de_outro_papel_recebe_403_na_leitura_das_proprias_ofertas(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_vinculo_jogador,
+):
+    chave, _ = criar_chave()
+    comunidade = criar_comunidade()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    criar_vinculo_jogador(mestre, comunidade)
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    responsavel = criar_persona(Papel.responsavel)
+
+    for persona in (admin, mestre, guerreiro, responsavel):
+        token, _ = criar_sessao_de_teste(persona)
+        resposta = cliente.get(
+            "/v1/eu/catalogo-avulso",
+            headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+        )
+        assert resposta.status_code == 403
+
+
+# --- 4.8 Contagem de trocas ------------------------------------------------------
+
+
+def test_item_sem_troca_traz_contagem_zero(
+    sessao,
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto = criar_ponto_de_apoio(admin, comunidade)
+    tipo = criar_tipo_de_recurso(admin)
+    apoiador = criar_persona(Papel.apoiador)
+    item = cadastrar_item(
+        sessao,
+        operador=apoiador,
+        nome="Kit",
+        tipo=tipo,
+        estoque=Decimal("1"),
+        comunidade=comunidade,
+        ponto_de_apoio=ponto,
+    )
+    sessao.commit()
+
+    assert contar_trocas_por_item(sessao, item=item) == 0
+
+    token, _ = criar_sessao_de_teste(apoiador)
+    resposta = cliente.get(
+        "/v1/eu/catalogo-avulso",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+    assert resposta.json()[0]["quantidade_de_trocas"] == 0
+
+
+def test_item_com_tres_trocas_traz_a_contagem_agregada_sem_identificar_quem_trocou(
+    sessao,
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_aula,
+    criar_troca,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto = criar_ponto_de_apoio(admin, comunidade)
+    tipo = criar_tipo_de_recurso(admin)
+    apoiador = criar_persona(Papel.apoiador)
+    item = cadastrar_item(
+        sessao,
+        operador=apoiador,
+        nome="Kit",
+        tipo=tipo,
+        estoque=Decimal("1"),
+        comunidade=comunidade,
+        ponto_de_apoio=ponto,
+    )
+    sessao.commit()
+    mestre = criar_persona(Papel.mestre)
+    aula = criar_aula(mestre, comunidade, ponto)
+    guerreiro_1 = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    guerreiro_2 = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    guerreiro_3 = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_troca(mestre, item, guerreiro_1, aula)
+    criar_troca(mestre, item, guerreiro_2, aula)
+    criar_troca(mestre, item, guerreiro_3, aula)
+
+    assert contar_trocas_por_item(sessao, item=item) == 3
+
+    token, _ = criar_sessao_de_teste(apoiador)
+    resposta = cliente.get(
+        "/v1/eu/catalogo-avulso",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    corpo = resposta.json()
+    assert corpo[0]["quantidade_de_trocas"] == 3
+    for chave_do_campo in ("persona", "nick", "guerreiro_id", "aula_id", "data_da_troca"):
+        assert chave_do_campo not in corpo[0]
