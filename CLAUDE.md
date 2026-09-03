@@ -38,7 +38,7 @@ decisão de planejamento: pergunte ao fundador e corrija o cronograma antes de a
 
 | Nível | Artefato                                | Papel                                |
 | ----- | --------------------------------------- | ------------------------------------ |
-| 1     | `docs/01-*` a `docs/14-*` e `docs/99-*` | regra de negócio (fonte única)       |
+| 1     | `docs/01-*` a `docs/16-*` e `docs/99-*` | regra de negócio (fonte única)       |
 | 2     | `docs/prds/`                            | requisitos de produto (RF-XX, RN-XX) |
 | 3     | `openspec/changes/<change>/`            | plano de execução                    |
 | 4     | código                                  | execução                             |
@@ -87,7 +87,7 @@ que outro documento já registra é a duplicidade que esta regra proíbe.
 
 ### 3. Referências entre documentos ficam no doc 99
 
-- Os documentos 01–15 **não** carregam links `[XX §Y](arquivo.md#ancora)` entre si. Quando o
+- Os documentos 01–16 **não** carregam links `[XX §Y](arquivo.md#ancora)` entre si. Quando o
   leitor humano precisar mesmo ser encaminhado, escreva em texto simples: _"(documento 05)"_.
   A exceção é `docs/index.md`, cuja função é justamente indexar e linkar os demais.
 - Todo o mapa de relações — fonte única, dependências, conceitos, aplicações → PRDs,
@@ -133,10 +133,10 @@ Valem todas as regras acima, com as diferenças abaixo.
 
 ### 1. O PRD é derivado — nunca fonte única
 
-O PRD **aplica** as regras dos documentos 01–15; não cria regra própria. Decisão nova tomada
-durante a escrita de um PRD segue o fluxo da hierarquia de autoridade acima, e o PRD a aplica
-**sem repetir** tabela, número ou texto normativo. Regra que existe apenas dentro de um PRD
-está no lugar errado.
+O PRD **aplica** as regras dos documentos normativos; não cria regra própria. Decisão nova
+tomada durante a escrita de um PRD segue o fluxo da hierarquia de autoridade acima, e o PRD
+a aplica **sem repetir** tabela, número ou texto normativo. Regra que existe apenas dentro
+de um PRD está no lugar errado.
 
 ### 2. Elicitação antes da redação
 
@@ -293,7 +293,7 @@ passou. Valem para qualquer agente que trabalhe aqui:
 Documentação e PRD:
 
 - [ ] O texto ficou **menor** que antes, sem perder definição, e nenhuma regra foi duplicada?
-- [ ] Nenhum link cruzado entre documentos 01–15 foi introduzido?
+- [ ] Nenhum link cruzado entre documentos 01–16 foi introduzido?
 - [ ] O doc 99 foi atualizado, se alguma relação entre documentos mudou, e as pendências novas
       entraram no doc 09?
 - [ ] Os invariantes do doc 99 §6 continuam válidos e a numeração de seções está contínua?

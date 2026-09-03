@@ -21,7 +21,7 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 | Pontos de apoio, acervo didático (inventário, regime misto, guarda), roteiro do encontro, Quiz ao Vivo, formação de multiplicadores, replicabilidade, fases do piloto                                                                                                                 | 05          |
 | Trilha 1 — Robô Educa                                                                                                                                                                                                                                                                 | 06          |
 | Trilha 2 — Batalha de Laser                                                                                                                                                                                                                                                           | 07          |
-| Requisitos por PRD (**único documento extenso entre os 01–15**)                                                                                                                                                                                                                       | 08          |
+| Requisitos por PRD (**único documento extenso entre os 01–16**)                                                                                                                                                                                                                       | 08          |
 | Requisitos de produto por aplicação (**derivados — nenhum PRD é fonte única**)                                                                                                                                                                                                        | `prds/`     |
 | Decisões pendentes e propostas                                                                                                                                                                                                                                                        | 09          |
 | Case 01 — Guerreira Zeferina, Ciclo 01                                                                                                                                                                                                                                                | 10          |
@@ -30,6 +30,7 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 | Código de Conduta do Guerreiro(a)                                                                                                                                                                                                                                                     | 13          |
 | Gamificação do Apoiador: níveis de necessidade, modalidades de apoio, perfis PF e PJ, missão do Apoiador, níveis de sustento, selos, técnicas admitidas e vedadas, portas de entrada por modalidade                                                                                   | 14          |
 | Identidade visual das aplicações: paleta, tipografia, medida, marcos de largura, acessibilidade (WCAG AA), temperamentos, sistema de avatar, forma da carta, emblema de nível, silhueta de badge, glifo de poder, sistema de ícone, gráfico de série, fichas de ponto e moeda, tokens | 15          |
+| Sequência de telas de cada persona: em que aplicação, em que aba e em que ordem se opera a plataforma (documento **derivado**, sem regra própria)                                                                                                                                     | 16          |
 
 ## 2. Papel e dependência dos documentos
 
@@ -51,6 +52,7 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 | 13    | Normativo (conduta)                  | 01, 02                 | 05               |
 | 14    | Normativo (apoio)                    | 02, 04, 11             | 08, 12           |
 | 15    | Normativo (visual)                   | 01, 02, 03, 11         | `prds/`          |
+| 16    | **Derivado** — operação              | 02–05, 11, 13, 14      | —                |
 | prds/ | **Derivado** — requisitos de produto | 08, 01–07, 11, 13–15   | `openspec/` (§9) |
 
 **Divisão 02 × 11 (a confusão mais provável):** o doc 02 define **o que são** os elementos
