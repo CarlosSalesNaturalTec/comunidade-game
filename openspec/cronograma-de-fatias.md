@@ -281,4 +281,4 @@ resultado de batalha, quinto fato da novidade do `RF-14-53`.
 | ----- | ---------------------------------- | ---------------------------------------------- | ------------ |
 | —     | Isolamento transacional dos testes | `2026-08-18-isolamento-transacional-dos-testes` | implementado |
 | —     | Esteira de deploy das Apps 07 e 08 | `2026-09-01-esteira-de-deploy-das-apps-07-e-08` | implementado |
-| —     | Camada visual densa e navegação    | `camada-visual-densa-e-navegacao-comum`         | implementado |
+| —     | Camada visual densa e navegação    | `2026-09-06-camada-visual-densa-e-navegacao-comum` | implementado |
