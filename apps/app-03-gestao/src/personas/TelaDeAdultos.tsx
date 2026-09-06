@@ -1,8 +1,9 @@
 import { ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao } from "comum/react";
+import { Aviso, Botao, Dialogo } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import { type AdultoDaLista, listarApoiadores, listarMestres } from "./api";
+import { FichaDoAdulto } from "./FichaDoAdulto";
 import { FormularioDeAdulto } from "./FormularioDeAdulto";
 import { ListaDeAdultos } from "./ListaDeAdultos";
 
@@ -20,6 +21,7 @@ export function TelaDeAdultos({ papel }: Props) {
   const [adultos, definirAdultos] = useState<AdultoDaLista[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
+  const [adultoNaFicha, definirAdultoNaFicha] = useState<AdultoDaLista | null>(null);
 
   const podeCadastrar = sessao?.papel === "admin";
 
@@ -48,6 +50,11 @@ export function TelaDeAdultos({ papel }: Props) {
     await carregar();
   }, [carregar]);
 
+  const aoGravarNick = useCallback(async () => {
+    definirAdultoNaFicha(null);
+    await carregar();
+  }, [carregar]);
+
   return (
     <div>
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
@@ -66,7 +73,17 @@ export function TelaDeAdultos({ papel }: Props) {
         />
       )}
 
-      <ListaDeAdultos adultos={adultos} onNickGravado={carregar} />
+      <ListaDeAdultos adultos={adultos} onAbrirFicha={definirAdultoNaFicha} />
+
+      <Dialogo
+        aberto={adultoNaFicha !== null}
+        titulo={adultoNaFicha ? `Ficha de ${adultoNaFicha.nome}` : ""}
+        aoFechar={() => definirAdultoNaFicha(null)}
+      >
+        {adultoNaFicha && (
+          <FichaDoAdulto adulto={adultoNaFicha} onNickGravado={aoGravarNick} />
+        )}
+      </Dialogo>
     </div>
   );
 }

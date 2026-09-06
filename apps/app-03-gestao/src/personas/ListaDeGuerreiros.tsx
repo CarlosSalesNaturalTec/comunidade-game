@@ -1,4 +1,5 @@
-import { Botao, EstadoDaLista } from "comum/react";
+import type { ColunaDaTabela } from "comum/react";
+import { Botao, EstadoDaLista, Tabela } from "comum/react";
 import type { ComunidadeDaLista } from "../comunidades/api";
 import type { GuerreiroDaLista } from "./api";
 
@@ -14,7 +15,7 @@ function formatarData(valorComFuso: string): string {
   return data.toLocaleDateString("pt-BR");
 }
 
-// Lista densa do temperamento Operação (documento 15 §6). Nunca exibe
+// Tabela densa do temperamento Operação (documento 15 §6). Nunca exibe
 // imagem real — só nick e avatar, a representação pública do Guerreiro(a)
 // (`RN-02-22`, invariante 12 do documento 99 §6). A comunidade do vínculo
 // vigente é leitura, sem caminho de troca — não há transferência no Ciclo
@@ -28,30 +29,62 @@ export function ListaDeGuerreiros({ guerreiros, comunidades, onEditar }: Props) 
     return <EstadoDaLista>Nenhum Guerreiro(a) cadastrado ainda.</EstadoDaLista>;
   }
 
-  return (
-    <ul className="lista-de-personas" aria-label="Guerreiros e Guerreiras">
-      {guerreiros.map((guerreiro) => {
+  function comVinculo(guerreiro: GuerreiroDaLista) {
+    return Boolean(guerreiro.comunidade_virtual_id && guerreiro.vinculo_iniciado_em);
+  }
+
+  const colunas: ColunaDaTabela<GuerreiroDaLista>[] = [
+    {
+      chave: "nick",
+      rotulo: "Nick",
+      cabecalhoDeLinha: true,
+      renderizar: (guerreiro) => guerreiro.nick,
+    },
+    {
+      chave: "avatar",
+      rotulo: "Avatar",
+      recolhida: true,
+      renderizar: () => "Avatar definido",
+    },
+    {
+      chave: "comunidade",
+      rotulo: "Comunidade",
+      renderizar: (guerreiro) => {
+        if (!comVinculo(guerreiro)) {
+          return <EstadoDaLista>Ainda sem vínculo de comunidade.</EstadoDaLista>;
+        }
         const comunidade = comunidades.find(
           (item) => item.id === guerreiro.comunidade_virtual_id,
         );
-        return (
-          <li key={guerreiro.id} className="lista-de-personas__item">
-            <span className="lista-de-personas__nome">{guerreiro.nick}</span>
-            <span className="lista-de-personas__detalhe">Avatar definido</span>
-            {guerreiro.comunidade_virtual_id && guerreiro.vinculo_iniciado_em ? (
-              <span className="lista-de-personas__detalhe">
-                {comunidade ? comunidade.nome : "Comunidade"} — desde{" "}
-                {formatarData(guerreiro.vinculo_iniciado_em)}
-              </span>
-            ) : (
-              <EstadoDaLista>Ainda sem vínculo de comunidade.</EstadoDaLista>
-            )}
-            <Botao variante="secundaria" onClick={() => onEditar(guerreiro)}>
-              Editar
-            </Botao>
-          </li>
-        );
-      })}
-    </ul>
+        return comunidade ? comunidade.nome : "Comunidade";
+      },
+    },
+    {
+      chave: "vinculo",
+      rotulo: "Início do vínculo",
+      recolhida: true,
+      renderizar: (guerreiro) =>
+        comVinculo(guerreiro) && guerreiro.vinculo_iniciado_em
+          ? `Desde ${formatarData(guerreiro.vinculo_iniciado_em)}`
+          : "—",
+    },
+    {
+      chave: "acoes",
+      rotulo: "Ações",
+      renderizar: (guerreiro) => (
+        <Botao variante="secundaria" onClick={() => onEditar(guerreiro)}>
+          Editar
+        </Botao>
+      ),
+    },
+  ];
+
+  return (
+    <Tabela
+      legenda="Guerreiros e Guerreiras"
+      colunas={colunas}
+      linhas={guerreiros}
+      chaveDaLinha={(guerreiro) => guerreiro.id}
+    />
   );
 }

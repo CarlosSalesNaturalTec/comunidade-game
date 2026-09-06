@@ -97,3 +97,20 @@ textarea {
   cursor: pointer;
   font: inherit;
 }
+
+/* Agrupa rótulo, endereço e o botão de remover de um artefato comprobatório
+ * — sem forma, os três campos do formulário saem colados (`RF-02-04`,
+ * `RN-02-01`). */
+.cg-campo-de-artefato {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espaco-12);
+  padding: var(--espaco-12);
+  border: 1px solid var(--cor-separador);
+  border-radius: var(--raio-campo);
+}
+
+.cg-campo-de-artefato + .cg-campo-de-artefato {
+  margin-top: var(--espaco-12);
+}
