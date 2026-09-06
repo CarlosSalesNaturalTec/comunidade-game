@@ -1,5 +1,5 @@
 import { ProvedorDeSessao, useSessao } from "comum/autenticacao";
-import { Botao } from "comum/react";
+import { NavegacaoDeAreas } from "comum/react";
 import { useEffect, useState } from "react";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeAutoria } from "./autoria/TelaDeAutoria";
@@ -81,88 +81,39 @@ function Conteudo() {
     return <TelaDeEntrada />;
   }
 
+  const areas = [
+    { chave: "autoria", rotulo: "Minhas trilhas" },
+    { chave: "turmas", rotulo: "Minhas turmas" },
+    { chave: "quiz", rotulo: "Banco do Quiz" },
+    { chave: "desbloqueios", rotulo: "Desafios a julgar" },
+    { chave: "criacoes", rotulo: "Criações a validar" },
+    {
+      chave: "territorio",
+      rotulo: "Território",
+      conteudoExtra: contagemDeSolicitacoes > 0 && (
+        <span className="cg-navegacao-de-areas__alerta">
+          {" "}
+          ({contagemDeSolicitacoes} solicitação(ões) de novo local em aberto)
+        </span>
+      ),
+    },
+    { chave: "desafiosExtras", rotulo: "Desafios extras" },
+    { chave: "propostas", rotulo: "Propostas" },
+    { chave: "recursos", rotulo: "Recursos" },
+    { chave: "responsaveis", rotulo: "Responsáveis" },
+    { chave: "perfil", rotulo: "Meu perfil" },
+    { chave: "direitos", rotulo: "Direitos e dados" },
+  ];
+
   return (
     <ProvedorDeDireitos irParaDireitos={() => definirArea("direitos")}>
-      <nav className="cg-navegacao-de-area" aria-label="Áreas do Mestre">
-        <Botao
-          variante={area === "autoria" ? "primaria" : "secundaria"}
-          onClick={() => definirArea("autoria")}
-        >
-          Minhas trilhas
-        </Botao>
-        <Botao
-          variante={area === "turmas" ? "primaria" : "secundaria"}
-          onClick={() => definirArea("turmas")}
-        >
-          Minhas turmas
-        </Botao>
-        <Botao
-          variante={area === "quiz" ? "primaria" : "secundaria"}
-          onClick={() => definirArea("quiz")}
-        >
-          Banco do Quiz
-        </Botao>
-        <Botao
-          variante={area === "desbloqueios" ? "primaria" : "secundaria"}
-          onClick={() => definirArea("desbloqueios")}
-        >
-          Desafios a julgar
-        </Botao>
-        <Botao
-          variante={area === "criacoes" ? "primaria" : "secundaria"}
-          onClick={() => definirArea("criacoes")}
-        >
-          Criações a validar
-        </Botao>
-        <Botao
-          variante={area === "territorio" ? "primaria" : "secundaria"}
-          onClick={() => definirArea("territorio")}
-        >
-          Território
-          {contagemDeSolicitacoes > 0 && (
-            <span className="cg-navegacao-de-area__alerta">
-              {" "}
-              ({contagemDeSolicitacoes} solicitação(ões) de novo local em aberto)
-            </span>
-          )}
-        </Botao>
-        <Botao
-          variante={area === "desafiosExtras" ? "primaria" : "secundaria"}
-          onClick={() => definirArea("desafiosExtras")}
-        >
-          Desafios extras
-        </Botao>
-        <Botao
-          variante={area === "propostas" ? "primaria" : "secundaria"}
-          onClick={() => definirArea("propostas")}
-        >
-          Propostas
-        </Botao>
-        <Botao
-          variante={area === "recursos" ? "primaria" : "secundaria"}
-          onClick={() => definirArea("recursos")}
-        >
-          Recursos
-        </Botao>
-        <Botao
-          variante={area === "responsaveis" ? "primaria" : "secundaria"}
-          onClick={() => definirArea("responsaveis")}
-        >
-          Responsáveis
-        </Botao>
-        <Botao
-          variante={area === "perfil" ? "primaria" : "secundaria"}
-          onClick={() => definirArea("perfil")}
-        >
-          Meu perfil
-        </Botao>
-        <Botao
-          variante={area === "direitos" ? "primaria" : "secundaria"}
-          onClick={() => definirArea("direitos")}
-        >
-          Direitos e dados
-        </Botao>
-      </nav>
+      <NavegacaoDeAreas
+        rotulo="Áreas do Mestre"
+        areas={areas}
+        areaAtual={area}
+        aoSelecionarArea={(chave) => definirArea(chave as Area)}
+        aoSair={sair}
+      />
       {area === "autoria" && <TelaDeAutoria />}
       {area === "turmas" && <TelaDeMinhasTurmas />}
       {area === "quiz" && <TelaDoBancoDeQuiz />}

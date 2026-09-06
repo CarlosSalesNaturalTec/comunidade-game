@@ -17,7 +17,7 @@ const MENSAGEM_DE_FALHA =
 // dia segue de leitura — é daqui que a pendência dele é resolvida
 // (`RF-02-34`, `RF-02-36`, `RF-02-37`, `RF-02-39`, `RF-02-46`, `RF-02-47`).
 export function TelaDeLancamentos() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const [painel, definirPainel] = useState<PainelDoDia | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
 
@@ -44,7 +44,7 @@ export function TelaDeLancamentos() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Lançamentos" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Lançamentos" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

@@ -19,7 +19,7 @@ import { TelaDaTrilha } from "../trilhas/TelaDaTrilha";
 // ao abrir uma, a autoria de missão, atividade e cadência de retomada
 // (PRD-09 §6.1).
 export function TelaDeAutoria() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const [trilhas, definirTrilhas] = useState<TrilhaDoMestre[] | null>(null);
   const [poderes, definirPoderes] = useState<PoderDoCatalogo[]>([]);
   const [tiposDeColeta, definirTiposDeColeta] = useState<TipoDeColeta[]>([]);
@@ -87,7 +87,7 @@ export function TelaDeAutoria() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Minhas trilhas" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Minhas trilhas" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

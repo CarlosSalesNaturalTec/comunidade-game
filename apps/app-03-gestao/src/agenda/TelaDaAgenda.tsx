@@ -9,7 +9,7 @@ import { FormularioDeAgendamento } from "./FormularioDeAgendamento";
 import { ListaDaAgenda } from "./ListaDaAgenda";
 
 export function TelaDaAgenda() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoSeletorDeComunidade = useId();
   const [comunidades, definirComunidades] = useState<ComunidadeDaLista[]>([]);
   const [comunidadeId, definirComunidadeId] = useState("");
@@ -110,7 +110,7 @@ export function TelaDaAgenda() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Agenda de Aulas" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Agenda de Aulas" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

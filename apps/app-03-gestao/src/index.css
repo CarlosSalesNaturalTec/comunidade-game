@@ -51,8 +51,10 @@ textarea {
   transition-duration: var(--duracao, 0ms);
 }
 
-/* Navegação entre as áreas da gestão — alvo de toque de ao menos 48 px,
- * como todo elemento acionável (documento 15 §5). */
+/* Sub-navegação de tipo de persona, na área Personas (fatia própria, fora
+ * desta) — alvo de toque de ao menos 48 px, como todo elemento acionável
+ * (documento 15 §5). A navegação entre as áreas da aplicação usa o
+ * componente `NavegacaoDeAreas` de `comum/react`. */
 .cg-navegacao {
   display: flex;
   flex-wrap: wrap;
@@ -94,23 +96,4 @@ textarea {
   text-decoration: underline;
   cursor: pointer;
   font: inherit;
-}
-
-/* Tabela do PRD-02 §11, na área Direitos e dados. */
-.cg-tabela-de-direitos {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.cg-tabela-de-direitos caption {
-  text-align: left;
-  color: var(--cor-texto-secundario);
-  padding-bottom: var(--espaco-8);
-}
-
-.cg-tabela-de-direitos th,
-.cg-tabela-de-direitos td {
-  border-bottom: 1px solid var(--cor-separador);
-  padding: var(--espaco-8) var(--espaco-12);
-  text-align: left;
 }

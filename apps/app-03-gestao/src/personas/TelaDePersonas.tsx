@@ -1,4 +1,3 @@
-import { useSessao } from "comum/autenticacao";
 import { Botao, Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
 import { FormularioDeAdmin } from "./FormularioDeAdmin";
@@ -17,7 +16,6 @@ const SUB_AREAS: { chave: SubArea; rotulo: string }[] = [
 ];
 
 export function TelaDePersonas() {
-  const { sair } = useSessao();
   const [subArea, definirSubArea] = useState<SubArea>("guerreiros");
   const [mostrarFormularioDeAdmin, definirMostrarFormularioDeAdmin] = useState(false);
   const [mostrarFormularioDeResponsavel, definirMostrarFormularioDeResponsavel] =
@@ -25,7 +23,7 @@ export function TelaDePersonas() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Personas" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Personas" />
 
       <nav className="cg-navegacao" aria-label="Tipos de persona">
         {SUB_AREAS.map((item) => (

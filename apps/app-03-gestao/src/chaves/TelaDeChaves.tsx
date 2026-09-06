@@ -9,7 +9,7 @@ import { ListaDeChaves } from "./ListaDeChaves";
 // painel mostra chaves já emitidas, com ciclo próprio (design — decisão 4,
 // `RF-02-90`).
 export function TelaDeChaves() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const [chaves, definirChaves] = useState<ChaveDeAplicacao[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
 
@@ -35,7 +35,7 @@ export function TelaDeChaves() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Chaves" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Chaves" />
 
       {!ehAdmin && (
         <Aviso tipo="atencao">

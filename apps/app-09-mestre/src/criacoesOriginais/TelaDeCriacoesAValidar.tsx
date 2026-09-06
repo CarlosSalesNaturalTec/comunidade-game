@@ -16,7 +16,7 @@ import {
 // `RF-09-34`, `RN-09-04`). A App 09 nunca oferece editar a produção nem
 // reatribuir a autoria.
 export function TelaDeCriacoesAValidar() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const [fila, definirFila] = useState<CriacaoNaFila[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
   const [decidindo, definirDecidindo] = useState<string | null>(null);
@@ -89,10 +89,7 @@ export function TelaDeCriacoesAValidar() {
 
   return (
     <Moldura>
-      <Cabecalho
-        titulo="Criações originais a validar"
-        acao={{ rotulo: "Sair", aoAcionar: sair }}
-      />
+      <Cabecalho titulo="Criações originais a validar" />
 
       <AvisoDeColeta dado="a validação da criação original do Guerreiro(a) ou da equipe" />
       {erro && <Aviso tipo="erro">{erro}</Aviso>}

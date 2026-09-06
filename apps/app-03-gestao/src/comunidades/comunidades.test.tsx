@@ -236,9 +236,6 @@ describe("cadastro de Comunidade Virtual", () => {
     await screen.findByText(/nenhuma comunidade virtual cadastrada/i);
 
     await usuario.tab();
-    expect(screen.getByRole("button", { name: /sair/i })).toHaveFocus();
-
-    await usuario.tab();
     expect(screen.getByRole("button", { name: /nova comunidade/i })).toHaveFocus();
   });
 });

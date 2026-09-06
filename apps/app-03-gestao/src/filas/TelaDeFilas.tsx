@@ -153,7 +153,7 @@ type Selecionada =
   | { natureza: "responsavel"; item: SolicitacaoDoResponsavel };
 
 export function TelaDeFilas() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoFiltro = useId();
   const [natureza, definirNatureza] = useState<Natureza>("participacao");
   const [participacoes, definirParticipacoes] = useState<SolicitacaoDeParticipacao[] | null>(
@@ -244,7 +244,7 @@ export function TelaDeFilas() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Filas" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Filas" />
 
       {!ehAdmin && (
         <Aviso tipo="atencao">

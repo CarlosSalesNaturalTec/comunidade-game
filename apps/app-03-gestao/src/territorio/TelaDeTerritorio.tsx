@@ -18,7 +18,7 @@ import { HierarquiaDeLocais } from "./HierarquiaDeLocais";
 import { ListaDeDesafiosPublicados } from "./ListaDeDesafiosPublicados";
 
 export function TelaDeTerritorio() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoSeletor = useId();
   const [comunidades, definirComunidades] = useState<ComunidadeDaLista[]>([]);
   const [comunidadeId, definirComunidadeId] = useState("");
@@ -99,7 +99,7 @@ export function TelaDeTerritorio() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Território" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Território" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

@@ -23,7 +23,7 @@ import { ListaDeEntregas } from "./ListaDeEntregas";
 import { ListaDoAcervo } from "./ListaDoAcervo";
 
 export function TelaDoAcervo() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoSeletor = useId();
   const [comunidades, definirComunidades] = useState<ComunidadeDaLista[]>([]);
   const [comunidadeId, definirComunidadeId] = useState("");
@@ -121,7 +121,7 @@ export function TelaDoAcervo() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Acervo" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Acervo" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

@@ -1,5 +1,6 @@
 import { useSessao } from "comum/autenticacao";
-import { Cabecalho, Moldura } from "comum/react";
+import type { ColunaDaTabela } from "comum/react";
+import { Cabecalho, Moldura, Tabela } from "comum/react";
 
 interface LinhaDeDado {
   dado: string;
@@ -8,6 +9,34 @@ interface LinhaDeDado {
   retencao: string;
   quemAcessa: string;
 }
+
+const COLUNAS: ColunaDaTabela<LinhaDeDado>[] = [
+  {
+    chave: "dado",
+    rotulo: "Dado coletado",
+    cabecalhoDeLinha: true,
+    renderizar: (l) => l.dado,
+  },
+  { chave: "finalidade", rotulo: "Finalidade", renderizar: (l) => l.finalidade },
+  {
+    chave: "baseLegal",
+    rotulo: "Base legal",
+    recolhida: true,
+    renderizar: (l) => l.baseLegal,
+  },
+  {
+    chave: "retencao",
+    rotulo: "Retenção",
+    recolhida: true,
+    renderizar: (l) => l.retencao,
+  },
+  {
+    chave: "quemAcessa",
+    rotulo: "Quem acessa",
+    recolhida: true,
+    renderizar: (l) => l.quemAcessa,
+  },
+];
 
 const RETENCAO_DO_CADASTRO = "Enquanto durar o cadastro";
 const BASE_LEGAL_CONSENTIMENTO = "Consentimento";
@@ -98,7 +127,7 @@ export function TelaDeDireitos({ aoVoltar }: Props) {
   const { sessao, sair } = useSessao();
 
   return (
-    <Moldura>
+    <Moldura variante="densa">
       <Cabecalho
         titulo="Direitos e dados"
         acao={
@@ -110,31 +139,12 @@ export function TelaDeDireitos({ aoVoltar }: Props) {
         }
       />
 
-      <table className="cg-tabela-de-direitos">
-        <caption>
-          O que a App 08 coleta, para quê, com que base legal, por quanto tempo e quem acessa
-        </caption>
-        <thead>
-          <tr>
-            <th scope="col">Dado coletado</th>
-            <th scope="col">Finalidade</th>
-            <th scope="col">Base legal</th>
-            <th scope="col">Retenção</th>
-            <th scope="col">Quem acessa</th>
-          </tr>
-        </thead>
-        <tbody>
-          {DADOS.map((linha) => (
-            <tr key={linha.dado}>
-              <th scope="row">{linha.dado}</th>
-              <td>{linha.finalidade}</td>
-              <td>{linha.baseLegal}</td>
-              <td>{linha.retencao}</td>
-              <td>{linha.quemAcessa}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Tabela
+        legenda="O que a App 08 coleta, para quê, com que base legal, por quanto tempo e quem acessa"
+        colunas={COLUNAS}
+        linhas={DADOS}
+        chaveDaLinha={(linha) => linha.dado}
+      />
 
       <ul>
         <li>

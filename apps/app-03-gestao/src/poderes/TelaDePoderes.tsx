@@ -9,7 +9,7 @@ import { ListaDePoderes } from "./ListaDePoderes";
 // Área ao lado de Comunidades, por ser cadastro de catálogo — bem comum da
 // plataforma, e não dado de comunidade (design — decisões, `RF-02-10`).
 export function TelaDePoderes() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const [poderes, definirPoderes] = useState<PoderDaLista[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
@@ -49,7 +49,7 @@ export function TelaDePoderes() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Poderes" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Poderes" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

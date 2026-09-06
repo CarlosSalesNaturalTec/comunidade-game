@@ -22,7 +22,7 @@ const RECUSA_POR_PAPEL = "Só o Admin acessa a área Recursos.";
 // Reúne o registro do aporte e a lista das necessidades em aberto, restrita
 // ao Admin (`RF-02-57`, `RF-02-58`, PRD-02 §4).
 export function TelaDeRecursos() {
-  const { sessao, sair } = useSessao();
+  const { sessao } = useSessao();
   const podeAcessar = sessao?.papel === "admin";
 
   const [necessidades, definirNecessidades] = useState<NecessidadeDeRecurso[] | null>(null);
@@ -116,7 +116,7 @@ export function TelaDeRecursos() {
   if (!podeAcessar) {
     return (
       <Moldura>
-        <Cabecalho titulo="Recursos" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+        <Cabecalho titulo="Recursos" />
         <Aviso tipo="erro">{RECUSA_POR_PAPEL}</Aviso>
       </Moldura>
     );
@@ -124,7 +124,7 @@ export function TelaDeRecursos() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Recursos" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Recursos" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

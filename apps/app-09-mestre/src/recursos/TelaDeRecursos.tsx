@@ -21,7 +21,7 @@ import { MinhasAbsorcoes } from "./MinhasAbsorcoes";
 // Relê as duas listas depois de cada absorção confirmada, para nunca
 // divergir da falta derivada (design — decisão 8).
 export function TelaDeRecursos() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
 
   const [necessidades, definirNecessidades] = useState<NecessidadeDeRecurso[] | null>(null);
   const [absorcoes, definirAbsorcoes] = useState<AbsorcaoDoMestre[] | null>(null);
@@ -74,7 +74,7 @@ export function TelaDeRecursos() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Recursos" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Recursos" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

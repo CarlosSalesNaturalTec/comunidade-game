@@ -26,7 +26,7 @@ const ROTULO_DA_PENDENCIA: Record<string, string> = {
 // listada aponta para quem a resolve (`RF-02-41` a `RF-02-48`,
 // `RF-02-69`, `RN-02-12`, documento 03 §1).
 export function TelaDoPainelDoDia() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const [painel, definirPainel] = useState<PainelDoDia | null>(null);
   const [semRede, definirSemRede] = useState(false);
 
@@ -55,7 +55,7 @@ export function TelaDoPainelDoDia() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Painel do dia" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Painel do dia" />
 
       {semRede && <Aviso tipo="atencao">{MENSAGEM_DE_PERDA_DE_CONTATO}</Aviso>}
 

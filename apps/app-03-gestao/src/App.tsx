@@ -1,4 +1,5 @@
 import { ProvedorDeSessao, useSessao } from "comum/autenticacao";
+import { NavegacaoDeAreas } from "comum/react";
 import { useState } from "react";
 import { TelaDoAcervo } from "./acervo/TelaDoAcervo";
 import { TelaDaAgenda } from "./agenda/TelaDaAgenda";
@@ -69,7 +70,7 @@ function areaInicialDaUrl(): Area {
 // Sem sessão aberta, só a entrada aparece — nenhum dado de gestão aparece
 // antes disso (`RF-01-02`, `RN-01-32`, PRD-02 §4).
 function Conteudo() {
-  const { sessao, restaurando } = useSessao();
+  const { sessao, restaurando, sair } = useSessao();
   const [area, definirArea] = useState<Area>(areaInicialDaUrl);
 
   if (restaurando) {
@@ -82,19 +83,13 @@ function Conteudo() {
 
   return (
     <ProvedorDeDireitos irParaDireitos={() => definirArea("direitos")}>
-      <nav className="cg-navegacao" aria-label="Áreas da gestão">
-        {AREAS.map((item) => (
-          <button
-            key={item.chave}
-            type="button"
-            className="cg-navegacao__item"
-            aria-current={area === item.chave || undefined}
-            onClick={() => definirArea(item.chave)}
-          >
-            {item.rotulo}
-          </button>
-        ))}
-      </nav>
+      <NavegacaoDeAreas
+        rotulo="Áreas da gestão"
+        areas={AREAS.map(({ chave, rotulo }) => ({ chave, rotulo }))}
+        areaAtual={area}
+        aoSelecionarArea={(chave) => definirArea(chave as Area)}
+        aoSair={sair}
+      />
 
       {area === "comunidades" && <TelaDeComunidades />}
       {area === "poderes" && <TelaDePoderes />}

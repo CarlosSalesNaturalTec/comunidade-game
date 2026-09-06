@@ -11,7 +11,7 @@ const RECUSA_POR_PAPEL = "Só o Admin encerra o ciclo.";
 // declarar o ciclo seguinte, que é declaração à parte na implantação
 // (`RF-02-99`, `RF-02-100`, `RN-02-30`).
 export function TelaDeEncerramentoDeCiclo() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const [confirmando, definirConfirmando] = useState(false);
   const [enviando, definirEnviando] = useState(false);
   const [erro, definirErro] = useState<string | null>(null);
@@ -44,7 +44,7 @@ export function TelaDeEncerramentoDeCiclo() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Encerramento do ciclo" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Encerramento do ciclo" />
 
       {!ehAdmin && <Aviso tipo="atencao">{RECUSA_POR_PAPEL}</Aviso>}
 

@@ -1,5 +1,5 @@
-import { useSessao } from "comum/autenticacao";
-import { Cabecalho, Moldura } from "comum/react";
+import type { ColunaDaTabela } from "comum/react";
+import { Cabecalho, Moldura, Tabela } from "comum/react";
 
 interface LinhaDeDado {
   dado: string;
@@ -8,6 +8,34 @@ interface LinhaDeDado {
   retencao: string;
   quemAcessa: string;
 }
+
+const COLUNAS: ColunaDaTabela<LinhaDeDado>[] = [
+  {
+    chave: "dado",
+    rotulo: "Dado coletado",
+    cabecalhoDeLinha: true,
+    renderizar: (l) => l.dado,
+  },
+  { chave: "finalidade", rotulo: "Finalidade", renderizar: (l) => l.finalidade },
+  {
+    chave: "baseLegal",
+    rotulo: "Base legal",
+    recolhida: true,
+    renderizar: (l) => l.baseLegal,
+  },
+  {
+    chave: "retencao",
+    rotulo: "Retenção",
+    recolhida: true,
+    renderizar: (l) => l.retencao,
+  },
+  {
+    chave: "quemAcessa",
+    rotulo: "Quem acessa",
+    recolhida: true,
+    renderizar: (l) => l.quemAcessa,
+  },
+];
 
 const RETENCAO_DO_VINCULO = "Enquanto durar o vínculo";
 const RETENCAO_DA_FILA = "Enquanto durar a fila";
@@ -77,37 +105,16 @@ const DADOS: LinhaDeDado[] = [
 // coleta, na tabela do PRD-02 §11, mais os pontos que a §11 declara em
 // prosa. Nenhuma escrita, exclusão ou exportação aqui (`RF-02-64`).
 export function TelaDeDireitos() {
-  const { sair } = useSessao();
-
   return (
-    <Moldura>
-      <Cabecalho titulo="Direitos e dados" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+    <Moldura variante="densa">
+      <Cabecalho titulo="Direitos e dados" />
 
-      <table className="cg-tabela-de-direitos">
-        <caption>
-          O que a gestão coleta, para quê, com que base legal, por quanto tempo e quem acessa
-        </caption>
-        <thead>
-          <tr>
-            <th scope="col">Dado coletado</th>
-            <th scope="col">Finalidade</th>
-            <th scope="col">Base legal</th>
-            <th scope="col">Retenção</th>
-            <th scope="col">Quem acessa</th>
-          </tr>
-        </thead>
-        <tbody>
-          {DADOS.map((linha) => (
-            <tr key={linha.dado}>
-              <th scope="row">{linha.dado}</th>
-              <td>{linha.finalidade}</td>
-              <td>{linha.baseLegal}</td>
-              <td>{linha.retencao}</td>
-              <td>{linha.quemAcessa}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Tabela
+        legenda="O que a gestão coleta, para quê, com que base legal, por quanto tempo e quem acessa"
+        colunas={COLUNAS}
+        linhas={DADOS}
+        chaveDaLinha={(linha) => linha.dado}
+      />
 
       <ul>
         <li>A gestão não vê a imagem do Guerreiro(a): aqui só aparecem o avatar e o nick.</li>

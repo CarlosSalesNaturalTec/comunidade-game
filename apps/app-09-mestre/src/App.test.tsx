@@ -15,16 +15,16 @@ vi.mock("comum/autenticacao", async () => {
 
 import { useSessao } from "comum/autenticacao";
 
-const SESSAO_DE_ADMIN: SessaoAberta = {
-  token: "token-do-admin",
-  papel: "admin",
+const SESSAO_DE_MESTRE: SessaoAberta = {
+  token: "token-do-mestre",
+  papel: "mestre",
   permissoes: {},
-  persona_id: "admin-1",
+  persona_id: "mestre-1",
 };
 
 function configurarSessao() {
   vi.mocked(useSessao).mockReturnValue({
-    sessao: SESSAO_DE_ADMIN,
+    sessao: SESSAO_DE_MESTRE,
     restaurando: false,
     entrando: false,
     erroDeEntrada: null,
@@ -42,43 +42,6 @@ function configurarSessao() {
 
 afterEach(() => {
   vi.restoreAllMocks();
-  window.history.replaceState({}, "", "/");
-});
-
-// O caminho que a App 09 oferece para o painel do dia chega por parâmetro
-// de URL — as duas aplicações não compartilham estado (`RF-09-50`).
-describe("área inicial vinda da URL (RF-09-50)", () => {
-  it("abre direto no painel do dia quando a URL declara a área", () => {
-    window.history.replaceState({}, "", "/?area=painel-do-dia");
-    configurarSessao();
-
-    render(<App />);
-
-    expect(
-      screen.getByRole("button", { name: "Painel do dia", current: true }),
-    ).toBeInTheDocument();
-  });
-
-  it("área desconhecida na URL cai no padrão, sem quebrar", () => {
-    window.history.replaceState({}, "", "/?area=nao-existe");
-    configurarSessao();
-
-    render(<App />);
-
-    expect(
-      screen.getByRole("button", { name: "Comunidades", current: true }),
-    ).toBeInTheDocument();
-  });
-
-  it("sem parâmetro na URL abre em Comunidades, como sempre", () => {
-    configurarSessao();
-
-    render(<App />);
-
-    expect(
-      screen.getByRole("button", { name: "Comunidades", current: true }),
-    ).toBeInTheDocument();
-  });
 });
 
 // A saída fica só na navegação — nenhuma tela de área a monta de novo
@@ -89,7 +52,7 @@ describe("saída da sessão única (documento 15 §6)", () => {
     const usuario = userEvent.setup();
     render(<App />);
 
-    for (const rotulo of ["Poderes", "Direitos e dados", "Comunidades"]) {
+    for (const rotulo of ["Minhas turmas", "Direitos e dados", "Minhas trilhas"]) {
       await usuario.click(screen.getByRole("button", { name: rotulo }));
       expect(screen.getAllByRole("button", { name: "Sair" })).toHaveLength(1);
     }
@@ -98,7 +61,7 @@ describe("saída da sessão única (documento 15 §6)", () => {
   it("aciona a saída da sessão pela navegação", async () => {
     const aoSair = vi.fn();
     vi.mocked(useSessao).mockReturnValue({
-      sessao: SESSAO_DE_ADMIN,
+      sessao: SESSAO_DE_MESTRE,
       restaurando: false,
       entrando: false,
       erroDeEntrada: null,
