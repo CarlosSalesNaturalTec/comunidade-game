@@ -129,6 +129,7 @@ pendência; **desafio extra** espera a entidade `DesafioExtra`; **empréstimo de
 | 14    | Fila de solicitações do responsável                | `solicitacoes-do-responsavel-e-entregas-na-gestao` — `RF-02-23`, `RF-02-24`, `RF-02-66`; traz também o núcleo da solicitação | implementado |
 | 15    | Desafio extra na gestão                            | `desafio-extra-na-gestao` — `RF-02-27`, `RF-02-28`, `RF-02-106`, `RN-02-10`, `RN-02-11`; a publicação reserva a recompensa e o encerramento pelo Admin a libera (`RF-07-39`, `RF-07-40`); o `RF-02-106` e as rotas do encerramento entraram no PRD-02 por decisão do fundador de 2026-09-02 | implementado |
 | 16    | Vitrine institucional e Apoiador na gestão         | `RF-02-80`, `RF-02-85`, `RF-02-101` — depende do PRD-14 (cadastro de Apoiador) e do PRD-03 (vitrine); leva também a fila dos documentos comprobatórios pendentes e a tela da anexação (`RF-02-101`), e a fila da gestão para homologar ou recusar a declaração de aporte da App 08 — a rota já foi entregue pela fatia 4 do PRD-14 — o ato no núcleo já foi entregue pela fatia 3 do PRD-14 | em aberto    |
+| 18    | Tabela e ficha de personas na gestão               | `tabela-e-ficha-de-personas-na-gestao` — `RF-02-01`, `RF-02-02`, `RF-02-03`, `RF-02-04`, `RN-02-01`, `RN-14-10`: a lista de Mestres e Apoiadores passa a tabela, com ficha de leitura que mostra os artefatos comprobatórios — hoje o núcleo os serve e a tela os descarta. Depende da fatia transversal da camada visual densa; não cria requisito novo nem rota nova | em aberto    |
 
 Fora do cronograma: `RF-02-54` foi retirado e o identificador não se reaproveita; `RF-02-94`
 passou ao PRD-04 como `RF-04-62`; `RF-02-56` (conferência de inventário) está travado pela
@@ -138,7 +139,8 @@ Ciclo 02, fora do Ciclo 01: os processos de **auditoria** que o Ciclo 01 não im
 `RF-02-63` (tela da trilha de auditoria), `RF-02-70` (amostragem das trilhas publicadas e
 despublicação), `RF-02-74` a `RF-02-76` (amostragem do corpus de apoio escolar, que segue o
 cadastro do corpus, já no Ciclo 02) e `RF-02-98` (amostra semanal de coleta na gestão). Decisão
-do fundador, 2026-08-28, documento 09 §1; a antiga fatia 17 deixou de existir.
+do fundador, 2026-08-28, documento 09 §1; a antiga fatia 17 deixou de existir, e o número
+não se reaproveita.
 
 ## PRD-09 — Área do Mestre (App 09)
 
@@ -158,6 +160,7 @@ do fundador, 2026-08-28, documento 09 §1; a antiga fatia 17 deixou de existir.
 | 12    | Template da missão por IA                        | `RF-09-85` a `RF-09-91`, `RF-09-95`, `RF-09-116`, `RN-09-33`, `RN-09-34` — `2026-08-30-template-da-missao-recompensa-e-duplicacao-da-trilha` | implementado |
 | 13    | Recompensa por desbloqueio e duplicação de trilha | `RF-09-13`, `RF-09-84`, `RF-09-75` — `2026-08-30-template-da-missao-recompensa-e-duplicacao-da-trilha`     | implementado |
 | 15    | Desafio extra na Área do Mestre                  | `2026-09-02-desafio-extra-na-area-do-mestre`                                                                | implementado |
+| 16    | Identidade do Mestre e edição de artefato        | `identidade-do-mestre-e-edicao-de-artefato` — `RF-09-114`, `RF-09-66`, `RF-09-67`, `RN-09-14`: o Meu perfil ganha o nick e o avatar do próprio Mestre, que o núcleo já aceita pela metade, e a edição de rótulo e endereço dos seus artefatos, inclusive o declarado no cadastro, que segue irremovível e passa a guardar o original. Depende da fatia transversal da camada visual densa | em aberto    |
 
 Ciclo 02, fora do Ciclo 01: `RF-09-61` (empréstimo do acervo permanente), `RF-09-96` e
 `RF-09-97` (recusa de trilha sem etiqueta ODS), `RN-09-35` e o **apoio escolar** — `RF-09-77` a
@@ -278,3 +281,4 @@ resultado de batalha, quinto fato da novidade do `RF-14-53`.
 | ----- | ---------------------------------- | ---------------------------------------------- | ------------ |
 | —     | Isolamento transacional dos testes | `2026-08-18-isolamento-transacional-dos-testes` | implementado |
 | —     | Esteira de deploy das Apps 07 e 08 | `2026-09-01-esteira-de-deploy-das-apps-07-e-08` | implementado |
+| —     | Camada visual densa e navegação    | `camada-visual-densa-e-navegacao-comum`         | em aberto    |
