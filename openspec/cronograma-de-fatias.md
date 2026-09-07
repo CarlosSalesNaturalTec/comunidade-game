@@ -161,6 +161,7 @@ não se reaproveita.
 | 13    | Recompensa por desbloqueio e duplicação de trilha | `RF-09-13`, `RF-09-84`, `RF-09-75` — `2026-08-30-template-da-missao-recompensa-e-duplicacao-da-trilha`     | implementado |
 | 15    | Desafio extra na Área do Mestre                  | `2026-09-02-desafio-extra-na-area-do-mestre`                                                                | implementado |
 | 16    | Identidade do Mestre e edição de artefato        | `2026-09-07-identidade-do-mestre-e-edicao-de-artefato` — `RF-09-114`, `RF-09-66`, `RF-09-67`, `RN-09-14`: o Meu perfil ganha o nick e o avatar do próprio Mestre, que o núcleo já aceita pela metade, e a edição de rótulo e endereço dos seus artefatos, inclusive o declarado no cadastro, que segue irremovível e passa a guardar o original. Depende da fatia transversal da camada visual densa | implementado |
+| 17    | Trilha paginada por etapa e pendências da publicação | `RF-09-03`, `RF-09-06`, `RF-09-07`: a tela da trilha passa a paginar as missões pelas etapas do ciclo — abertura, desenvolvimento, marcos e fechamento —, que hoje só são etiqueta na linha da missão, e as três travas de publicação que o núcleo já calcula deixam de aparecer só na recusa e viram painel permanente. O tópico do template da missão segue descartável e a tela passa a dizê-lo. Depende da fatia transversal do bloco recolhível | em aberto |
 
 Ciclo 02, fora do Ciclo 01: `RF-09-61` (empréstimo do acervo permanente), `RF-09-96` e
 `RF-09-97` (recusa de trilha sem etiqueta ODS), `RN-09-35` e o **apoio escolar** — `RF-09-77` a
@@ -282,3 +283,4 @@ resultado de batalha, quinto fato da novidade do `RF-14-53`.
 | —     | Isolamento transacional dos testes | `2026-08-18-isolamento-transacional-dos-testes` | implementado |
 | —     | Esteira de deploy das Apps 07 e 08 | `2026-09-01-esteira-de-deploy-das-apps-07-e-08` | implementado |
 | —     | Camada visual densa e navegação    | `2026-09-06-camada-visual-densa-e-navegacao-comum` | implementado |
+| —     | Bloco recolhível e marca de gravação | Documento 15 §§6.1 e 6.2, decisão do fundador de 2026-09-07: `comum/react` ganha o bloco que nasce fechado, com o resumo do estado na linha, e a marca persistente de gravação; a adoção que prova os dois é a tela da missão da Área do Mestre, hoje com dez blocos abertos por missão. Não cria requisito de produto | em aberto |
