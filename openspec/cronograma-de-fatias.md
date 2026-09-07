@@ -160,7 +160,7 @@ não se reaproveita.
 | 12    | Template da missão por IA                        | `RF-09-85` a `RF-09-91`, `RF-09-95`, `RF-09-116`, `RN-09-33`, `RN-09-34` — `2026-08-30-template-da-missao-recompensa-e-duplicacao-da-trilha` | implementado |
 | 13    | Recompensa por desbloqueio e duplicação de trilha | `RF-09-13`, `RF-09-84`, `RF-09-75` — `2026-08-30-template-da-missao-recompensa-e-duplicacao-da-trilha`     | implementado |
 | 15    | Desafio extra na Área do Mestre                  | `2026-09-02-desafio-extra-na-area-do-mestre`                                                                | implementado |
-| 16    | Identidade do Mestre e edição de artefato        | `identidade-do-mestre-e-edicao-de-artefato` — `RF-09-114`, `RF-09-66`, `RF-09-67`, `RN-09-14`: o Meu perfil ganha o nick e o avatar do próprio Mestre, que o núcleo já aceita pela metade, e a edição de rótulo e endereço dos seus artefatos, inclusive o declarado no cadastro, que segue irremovível e passa a guardar o original. Depende da fatia transversal da camada visual densa | implementado |
+| 16    | Identidade do Mestre e edição de artefato        | `2026-09-07-identidade-do-mestre-e-edicao-de-artefato` — `RF-09-114`, `RF-09-66`, `RF-09-67`, `RN-09-14`: o Meu perfil ganha o nick e o avatar do próprio Mestre, que o núcleo já aceita pela metade, e a edição de rótulo e endereço dos seus artefatos, inclusive o declarado no cadastro, que segue irremovível e passa a guardar o original. Depende da fatia transversal da camada visual densa | implementado |
 
 Ciclo 02, fora do Ciclo 01: `RF-09-61` (empréstimo do acervo permanente), `RF-09-96` e
 `RF-09-97` (recusa de trilha sem etiqueta ODS), `RN-09-35` e o **apoio escolar** — `RF-09-77` a
