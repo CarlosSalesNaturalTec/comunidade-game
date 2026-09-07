@@ -139,6 +139,27 @@ cabeçalho ao rodapé, inclusive no painel do território e nos rankings.
 O Apoiador precisa reconhecer, na App 08, o mesmo jogo que o filho joga na App 05 — é por isso
 que os temperamentos não separam marca nem paleta.
 
+### 6.1 O bloco recolhível
+
+Tela da Operação que reúne muitos blocos de declaração recolhe cada um deles, e **todos nascem
+fechados**. A linha fechada carrega o **resumo do estado** do bloco — quantos itens ele guarda,
+ou que não guarda nenhum —, para a existência de cada parte ficar visível sem o peso do
+conteúdo de todas.
+
+O controle de abrir e fechar é botão com rótulo textual e `aria-expanded`, nunca ícone sozinho
+(§5). Abrir e fechar muda estado, não anima altura — não há movimento decorativo aqui.
+
+Não vale na Arena, cuja densidade baixa já põe uma decisão por tela.
+
+### 6.2 A marca de gravação
+
+Onde a escrita grava sozinha, sem um botão de salvar que feche a tela inteira, o bloco que
+gravou **declara que gravou**: um texto persistente — "Salvo às 14h32" — que fica ali até a
+escrita seguinte.
+
+A marca não some por tempo, não se comunica por cor e não anima: quem opera em pé, entre as
+bancadas, pode voltar a olhar depois (§5). Bloco sem marca é bloco que ainda não gravou nada.
+
 ## 7. Avatar do Guerreiro(a)
 
 O avatar é o **único retrato público** do Guerreiro(a), e no onboarding ele nasce de

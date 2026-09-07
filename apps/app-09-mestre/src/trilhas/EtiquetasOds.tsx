@@ -1,6 +1,6 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao, Campo } from "comum/react";
+import { Aviso, Botao, Campo, MarcaDeGravacao } from "comum/react";
 import { useId, useState } from "react";
 import {
   type EtiquetaOds,
@@ -48,6 +48,7 @@ export function EtiquetasOds({ alvo, id, etiquetas, onSalvo }: Props) {
   const [linhas, definirLinhas] = useState<LinhaEmEdicao[]>([]);
   const [erro, definirErro] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
+  const [gravadoEm, definirGravadoEm] = useState<Date | null>(null);
 
   function abrir() {
     definirLinhas(
@@ -91,6 +92,7 @@ export function EtiquetasOds({ alvo, id, etiquetas, onSalvo }: Props) {
           ? await substituirEtiquetasOdsDaTrilha(id, declaradas, sessao.token)
           : await substituirEtiquetasOdsDaMissao(id, declaradas, sessao.token);
       definirEditando(false);
+      definirGravadoEm(new Date());
       onSalvo(gravadas);
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
@@ -109,8 +111,6 @@ export function EtiquetasOds({ alvo, id, etiquetas, onSalvo }: Props) {
 
   return (
     <section className="etiquetas-ods" aria-label={ROTULO_DO_ALVO[alvo]}>
-      <h3>{ROTULO_DO_ALVO[alvo]}</h3>
-
       {alvo === "missao" && (
         <p className="etiquetas-ods__nota">
           Etiquete a missão só quando ela tocar objetivo diferente do da trilha. Missão sem
@@ -190,6 +190,7 @@ export function EtiquetasOds({ alvo, id, etiquetas, onSalvo }: Props) {
             : `Etiquetar ${ROTULO_DO_ALVO[alvo]}`}
         </Botao>
       )}
+      <MarcaDeGravacao instante={gravadoEm} />
     </section>
   );
 }

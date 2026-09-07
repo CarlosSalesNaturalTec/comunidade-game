@@ -201,14 +201,17 @@ export function TemplateDaMissao({ missao, onAtualizada }: Props) {
 
   return (
     <section className="template-da-missao" aria-label={`Template da missão ${missao.titulo}`}>
-      <h3>Template da missão</h3>
-
       <form onSubmit={aoPedirEstrutura}>
         <Campo
           rotulo="O que você quer ensinar nesta missão?"
           valor={topico}
           aoAlterar={definirTopico}
         />
+        {/* Estado local, viaja no pedido e é descartado — nada é gravado sem o
+            Mestre aceitar, recusar ou alterar (`RN-09-33`). */}
+        <p className="template-da-missao__nota">
+          Este tópico não é guardado — só o que você aceitar vira registro na missão.
+        </p>
         <Botao tipo="submit" desabilitado={pedindo}>
           Pedir estrutura sugerida
         </Botao>

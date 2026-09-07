@@ -1,6 +1,6 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao } from "comum/react";
+import { Aviso, Botao, MarcaDeGravacao } from "comum/react";
 import { type FormEvent, useId, useState } from "react";
 import { declararRecompensaDeMarco, type RecompensaDeMarco } from "../recompensas/api";
 import type { TipoDeRecurso } from "../recursos/api";
@@ -33,6 +33,7 @@ export function DeclaracaoDeRecompensa({
   const [quantidade, definirQuantidade] = useState("");
   const [erro, definirErro] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
+  const [gravadoEm, definirGravadoEm] = useState<Date | null>(null);
 
   const tipoPorId = new Map(tiposDeRecurso.map((tipo) => [tipo.id, tipo]));
 
@@ -60,6 +61,7 @@ export function DeclaracaoDeRecompensa({
       definirMostrarFormulario(false);
       definirTipoDeRecursoId("");
       definirQuantidade("");
+      definirGravadoEm(new Date());
       onDeclarada(recompensa);
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
@@ -78,8 +80,6 @@ export function DeclaracaoDeRecompensa({
 
   return (
     <section aria-label={`Recompensa de marco de ${missao.titulo}`}>
-      <h4>Recompensa pelo desbloqueio</h4>
-
       {recompensas.length > 0 ? (
         <ul>
           {recompensas.map((recompensa) => (
@@ -137,6 +137,7 @@ export function DeclaracaoDeRecompensa({
           Declarar recompensa
         </Botao>
       )}
+      <MarcaDeGravacao instante={gravadoEm} />
     </section>
   );
 }

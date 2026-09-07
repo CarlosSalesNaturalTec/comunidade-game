@@ -1,6 +1,6 @@
 import { ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao, Campo } from "comum/react";
+import { Aviso, Botao, Campo, MarcaDeGravacao } from "comum/react";
 import { useState } from "react";
 import { declararCadenciaDeRetomada, type MissaoDaTrilha } from "./api";
 
@@ -23,6 +23,7 @@ export function CadenciaDeRetomada({ missao, onAtualizada }: Props) {
   const [dias, definirDias] = useState(missao.cadencia_de_retomada?.join(", ") ?? "");
   const [erro, definirErro] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
+  const [gravadoEm, definirGravadoEm] = useState<Date | null>(null);
 
   async function declarar() {
     if (!sessao) return;
@@ -34,6 +35,7 @@ export function CadenciaDeRetomada({ missao, onAtualizada }: Props) {
         analisarDias(dias),
         sessao.token,
       );
+      definirGravadoEm(new Date());
       onAtualizada(atualizada);
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
@@ -53,6 +55,7 @@ export function CadenciaDeRetomada({ missao, onAtualizada }: Props) {
     try {
       const atualizada = await declararCadenciaDeRetomada(missao.id, null, sessao.token);
       definirDias("");
+      definirGravadoEm(new Date());
       onAtualizada(atualizada);
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
@@ -79,6 +82,7 @@ export function CadenciaDeRetomada({ missao, onAtualizada }: Props) {
       <Botao variante="secundaria" onClick={deixarSemRetomada} desabilitado={enviando}>
         Deixar sem retomada
       </Botao>
+      <MarcaDeGravacao instante={gravadoEm} />
     </div>
   );
 }
