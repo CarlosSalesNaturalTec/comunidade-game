@@ -283,4 +283,4 @@ resultado de batalha, quinto fato da novidade do `RF-14-53`.
 | —     | Isolamento transacional dos testes | `2026-08-18-isolamento-transacional-dos-testes` | implementado |
 | —     | Esteira de deploy das Apps 07 e 08 | `2026-09-01-esteira-de-deploy-das-apps-07-e-08` | implementado |
 | —     | Camada visual densa e navegação    | `2026-09-06-camada-visual-densa-e-navegacao-comum` | implementado |
-| —     | Bloco recolhível e marca de gravação | Documento 15 §§6.1 e 6.2, decisão do fundador de 2026-09-07: `comum/react` ganha o bloco que nasce fechado, com o resumo do estado na linha, e a marca persistente de gravação; a adoção que prova os dois é a tela da missão da Área do Mestre, hoje com dez blocos abertos por missão. Não cria requisito de produto | em aberto |
+| —     | Bloco recolhível e marca de gravação | Documento 15 §§6.1 e 6.2, decisão do fundador de 2026-09-07: `comum/react` ganha o bloco que nasce fechado, com o resumo do estado na linha, e a marca persistente de gravação; a adoção que prova os dois é a tela da missão da Área do Mestre, hoje com dez blocos abertos por missão. Não cria requisito de produto | em andamento |
