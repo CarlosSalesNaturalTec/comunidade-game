@@ -20,7 +20,7 @@ function nomeDaEquipe(equipe: EquipeDaAula): string {
 }
 
 export function TelaDeQuiz() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoCampoDeAula = useId();
   const idDoCampoDeAtividade = useId();
   const ehMestreOuAdmin = sessao?.papel === "mestre" || sessao?.papel === "admin";
@@ -116,7 +116,7 @@ export function TelaDeQuiz() {
   if (!ehMestreOuAdmin) {
     return (
       <Moldura>
-        <Cabecalho titulo="Quiz ao Vivo" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+        <Cabecalho titulo="Quiz ao Vivo" />
         <Aviso tipo="atencao">
           Esta área é do Mestre e do Admin. Fale com um Mestre se precisar conduzir uma
           partida.
@@ -128,7 +128,7 @@ export function TelaDeQuiz() {
   if (partidaAberta) {
     return (
       <Moldura>
-        <Cabecalho titulo="Quiz ao Vivo" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+        <Cabecalho titulo="Quiz ao Vivo" />
         <TelaDeConducao idDaPartida={partidaAberta.id} missaoId={partidaAberta.missaoId} />
       </Moldura>
     );
@@ -136,7 +136,7 @@ export function TelaDeQuiz() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Quiz ao Vivo" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Quiz ao Vivo" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

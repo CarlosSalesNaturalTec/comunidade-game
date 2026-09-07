@@ -7,7 +7,7 @@ import { FormularioDeComunidade } from "./FormularioDeComunidade";
 import { ListaDeComunidades } from "./ListaDeComunidades";
 
 export function TelaDeComunidades() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const [comunidades, definirComunidades] = useState<ComunidadeDaLista[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
@@ -40,7 +40,7 @@ export function TelaDeComunidades() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Comunidades Virtuais" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Comunidades Virtuais" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

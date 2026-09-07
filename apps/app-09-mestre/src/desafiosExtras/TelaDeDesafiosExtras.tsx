@@ -31,7 +31,7 @@ const RÓTULO_DA_SITUAÇÃO: Record<DesafioExtra["situacao"], string> = {
 // `RF-09-52`, `RF-09-105` a `RF-09-112`, `RN-09-11`, `RN-09-40` a `RN-09-42`,
 // `RN-14-20`, design — decisão 7).
 export function TelaDeDesafiosExtras() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
 
   const [minhasTrilhasIds, definirMinhasTrilhasIds] = useState<Set<string>>(new Set());
 
@@ -197,7 +197,7 @@ export function TelaDeDesafiosExtras() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Desafios extras" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Desafios extras" />
       <AvisoDeColeta dado="a proposta de desafio extra, o parecer da validação ou o motivo da recusa, e o nick e a justificativa pedagógica do direcionado, quando houver" />
 
       <h2>O que você tem a validar</h2>

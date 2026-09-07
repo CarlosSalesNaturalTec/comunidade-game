@@ -21,7 +21,7 @@ const ROTULO_DA_SITUACAO: Record<SituacaoDaProposta, string> = {
 // (`RF-09-55`, `RN-09-23`, PRD-09 §3.2). O retorno chega dentro da própria
 // aplicação; nenhum e-mail é construído aqui.
 export function TelaDePropostas() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoTexto = useId();
   const [propostas, definirPropostas] = useState<PropostaDoAutor[] | null>(null);
   const [texto, definirTexto] = useState("");
@@ -82,7 +82,7 @@ export function TelaDePropostas() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Propostas de evolução" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Propostas de evolução" />
 
       <form onSubmit={aoSubmeter} aria-label="Nova proposta de evolução">
         <div className="cg-campo">

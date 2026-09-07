@@ -4,14 +4,16 @@ import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as agendaApi from "../agenda/api";
-import type { GuerreiroDaLista } from "./api";
+import type { AdultoDaLista, GuerreiroDaLista } from "./api";
 import * as personasApi from "./api";
+import { FichaDoAdulto } from "./FichaDoAdulto";
 import { FormularioDeAdmin } from "./FormularioDeAdmin";
 import { FormularioDeAdulto } from "./FormularioDeAdulto";
 import { FormularioDeGuerreiro } from "./FormularioDeGuerreiro";
 import { FormularioDeResponsavel } from "./FormularioDeResponsavel";
 import { ListaDeAdultos } from "./ListaDeAdultos";
 import { ListaDeGuerreiros } from "./ListaDeGuerreiros";
+import { TelaDeAdultos } from "./TelaDeAdultos";
 
 vi.mock("../direitos/ContextoDeDireitos", async () => {
   const real = await vi.importActual<typeof import("../direitos/ContextoDeDireitos")>(
@@ -95,6 +97,24 @@ const GUERREIRO_SEM_VINCULO: GuerreiroDaLista = {
   avatar: "avatar-opaco",
   comunidade_virtual_id: null,
   vinculo_iniciado_em: null,
+};
+
+const MESTRE_COM_ARTEFATO: AdultoDaLista = {
+  id: "mestre-1",
+  nome: "Mestre de Tal",
+  email: "mestre@example.org",
+  whatsapp: "11999990000",
+  nick: "MestreDeTal",
+  artefatos: [{ rotulo: "Certificado de curso", endereco: "https://exemplo.org/certificado" }],
+};
+
+const ADULTO_SEM_NICK: AdultoDaLista = {
+  id: "a1",
+  nome: "Apoiador de Tal",
+  email: "a@example.org",
+  whatsapp: null,
+  nick: null,
+  artefatos: [],
 };
 
 afterEach(() => {
@@ -219,7 +239,7 @@ describe("o vínculo de comunidade na lista de Guerreiros e Guerreiras", () => {
       />,
     );
 
-    expect(screen.getByText(/comunidade/i)).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: /comunidade/i })).toBeInTheDocument();
     expect(screen.getByText(/desde/i)).toBeInTheDocument();
   });
 
@@ -309,50 +329,137 @@ describe("cadastro de Admin", () => {
   });
 });
 
-describe("gravar o nick do adulto na colisão", () => {
-  it("sinaliza na lista quem está sem nick", () => {
-    render(
-      <ListaDeAdultos
-        adultos={[
-          {
-            id: "a1",
-            nome: "Apoiador de Tal",
-            email: "a@example.org",
-            whatsapp: null,
-            nick: null,
-            artefatos: [],
-          },
-        ]}
-        onNickGravado={vi.fn()}
-      />,
-    );
+describe("a tabela de Mestres e de Apoiadores", () => {
+  it("lista os cadastrados, com nome, e-mail e nick", () => {
+    render(<ListaDeAdultos adultos={[MESTRE_COM_ARTEFATO]} onAbrirFicha={vi.fn()} />);
 
-    expect(screen.getByText(/sem nick/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /gravar nick/i })).toBeInTheDocument();
+    expect(screen.getByRole("table")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: MESTRE_COM_ARTEFATO.nome })).toBeInTheDocument();
+    expect(screen.getByText(MESTRE_COM_ARTEFATO.email)).toBeInTheDocument();
+    expect(screen.getByText(MESTRE_COM_ARTEFATO.nick as string)).toBeInTheDocument();
   });
 
-  it("a aplicação não sugere nick ao Admin", async () => {
-    configurarSessao(SESSAO_DE_ADMIN);
+  it("sinaliza na coluna própria quem está sem nick, sem sugerir nenhum", () => {
+    render(<ListaDeAdultos adultos={[ADULTO_SEM_NICK]} onAbrirFicha={vi.fn()} />);
+
+    expect(screen.getByText(/sem nick/i)).toBeInTheDocument();
+    expect(screen.queryByText(/sugest/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("a ficha do adulto", () => {
+  it("mostra os artefatos comprobatórios com rótulo e endereço alcançável", () => {
+    render(<FichaDoAdulto adulto={MESTRE_COM_ARTEFATO} onNickGravado={vi.fn()} />);
+
+    const [artefato] = MESTRE_COM_ARTEFATO.artefatos;
+    expect(screen.getByText(new RegExp(artefato.rotulo))).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: artefato.endereco })).toHaveAttribute(
+      "href",
+      artefato.endereco,
+    );
+  });
+
+  it("adulto sem artefato nenhum mostra a ficha sem lista, e não uma ficha quebrada", () => {
     render(
-      <ListaDeAdultos
-        adultos={[
-          {
-            id: "a1",
-            nome: "Apoiador de Tal",
-            email: "a@example.org",
-            whatsapp: null,
-            nick: null,
-            artefatos: [],
-          },
-        ]}
+      <FichaDoAdulto
+        adulto={{ ...MESTRE_COM_ARTEFATO, artefatos: [] }}
         onNickGravado={vi.fn()}
       />,
     );
+
+    expect(screen.queryByRole("list")).not.toBeInTheDocument();
+    expect(screen.getByText(/nenhum artefato registrado/i)).toBeInTheDocument();
+  });
+
+  it("não oferece campo algum para alterar nome, e-mail, WhatsApp ou artefato", () => {
+    render(<FichaDoAdulto adulto={MESTRE_COM_ARTEFATO} onNickGravado={vi.fn()} />);
+
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+  });
+
+  it("marca o artefato de cadastro editado e mostra o original ao lado do vigente", () => {
+    const mestreComArtefatoEditado: AdultoDaLista = {
+      ...MESTRE_COM_ARTEFATO,
+      artefatos: [
+        {
+          rotulo: "Certificado atualizado",
+          endereco: "https://exemplo.org/certificado-novo",
+          rotulo_original: "Certificado de curso",
+          endereco_original: "https://exemplo.org/certificado",
+        },
+      ],
+    };
+
+    render(<FichaDoAdulto adulto={mestreComArtefatoEditado} onNickGravado={vi.fn()} />);
+
+    expect(screen.getByText(/certificado atualizado/i)).toBeInTheDocument();
+    expect(screen.getByText(/editado pelo próprio adulto/i)).toBeInTheDocument();
+    expect(screen.getByText(/certificado de curso/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "https://exemplo.org/certificado" }),
+    ).toHaveAttribute("href", "https://exemplo.org/certificado");
+  });
+
+  it("artefato intocado aparece sem marca e sem valor original", () => {
+    render(<FichaDoAdulto adulto={MESTRE_COM_ARTEFATO} onNickGravado={vi.fn()} />);
+
+    expect(screen.queryByText(/editado pelo próprio adulto/i)).not.toBeInTheDocument();
+  });
+
+  it("não oferece editar, restaurar ou remover o artefato editado", () => {
+    const mestreComArtefatoEditado: AdultoDaLista = {
+      ...MESTRE_COM_ARTEFATO,
+      artefatos: [
+        {
+          rotulo: "Certificado atualizado",
+          endereco: "https://exemplo.org/certificado-novo",
+          rotulo_original: "Certificado de curso",
+          endereco_original: "https://exemplo.org/certificado",
+        },
+      ],
+    };
+
+    render(<FichaDoAdulto adulto={mestreComArtefatoEditado} onNickGravado={vi.fn()} />);
+
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("oferece gravar o nick que falta, sem sugerir nenhum", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    render(<FichaDoAdulto adulto={ADULTO_SEM_NICK} onNickGravado={vi.fn()} />);
     const usuario = userEvent.setup();
+
+    expect(screen.getByText(/sem nick/i)).toBeInTheDocument();
     await usuario.click(screen.getByRole("button", { name: /gravar nick/i }));
 
     expect(screen.getByLabelText(/nick recebido por fora/i)).toHaveValue("");
     expect(screen.queryByText(/sugest/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("a gestão liga a linha da tabela à ficha", () => {
+  it("abre a ficha ao acionar a linha e recarrega a lista quando o nick é gravado", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "listarMestres")
+      .mockResolvedValueOnce({ itens: [ADULTO_SEM_NICK], proximo_cursor: null })
+      .mockResolvedValueOnce({
+        itens: [{ ...ADULTO_SEM_NICK, nick: "NickGravado" }],
+        proximo_cursor: null,
+      });
+    vi.spyOn(personasApi, "gravarNickDoAdulto").mockResolvedValue({ nick: "NickGravado" });
+
+    render(<TelaDeAdultos papel="mestre" />);
+    const usuario = userEvent.setup();
+
+    await usuario.click(await screen.findByRole("button", { name: ADULTO_SEM_NICK.nome }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /gravar nick/i }));
+    await usuario.type(screen.getByLabelText(/nick recebido por fora/i), "NickGravado");
+    await usuario.click(screen.getByRole("button", { name: /^gravar$/i }));
+
+    await waitFor(() => expect(personasApi.listarMestres).toHaveBeenCalledTimes(2));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });
 

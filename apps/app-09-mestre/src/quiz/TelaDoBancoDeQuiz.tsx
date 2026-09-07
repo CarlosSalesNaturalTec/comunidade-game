@@ -11,7 +11,7 @@ import { ListaDoBanco } from "./ListaDoBanco";
 // que ela se refere e lê o próprio banco, filtrável por trilha e por
 // missão (`RF-09-36` a `RF-09-40`).
 export function TelaDoBancoDeQuiz() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const [trilhas, definirTrilhas] = useState<TrilhaDoMestre[]>([]);
   const [perguntas, definirPerguntas] = useState<PerguntaDeQuiz[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
@@ -59,7 +59,7 @@ export function TelaDoBancoDeQuiz() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Banco do Quiz" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Banco do Quiz" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

@@ -46,7 +46,7 @@ interface SelecaoDeLancamento {
 // on-line entre encontros. Nenhum Guerreiro(a) aparece por imagem real
 // (`RF-09-42`, `RF-09-73`, `RN-09-08`, `RN-09-18`).
 export function TelaDeMinhasTurmas() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const [aulas, definirAulas] = useState<AulaDaTurma[] | null>(null);
   const [atividadesPresenciais, definirAtividadesPresenciais] = useState<AtividadeDoMestre[]>(
     [],
@@ -103,7 +103,7 @@ export function TelaDeMinhasTurmas() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Minhas turmas" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Minhas turmas" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

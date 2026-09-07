@@ -95,22 +95,3 @@ textarea {
   cursor: pointer;
   font: inherit;
 }
-
-/* Tabela do PRD-14 §11, na área Direitos e dados. */
-.cg-tabela-de-direitos {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.cg-tabela-de-direitos caption {
-  text-align: left;
-  color: var(--cor-texto-secundario);
-  padding-bottom: var(--espaco-8);
-}
-
-.cg-tabela-de-direitos th,
-.cg-tabela-de-direitos td {
-  border-bottom: 1px solid var(--cor-separador);
-  padding: var(--espaco-8) var(--espaco-12);
-  text-align: left;
-}

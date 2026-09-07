@@ -9,7 +9,7 @@ const RECUSA_POR_PAPEL = "Só o Admin acessa a área Atividades.";
 // O cadastro da atividade avulsa, oferecido só ao Admin — o Mestre autora
 // a atividade de trilha na App 09 (`RF-02-29`, PRD-02 §3.2).
 export function TelaDeAtividades() {
-  const { sessao, sair } = useSessao();
+  const { sessao } = useSessao();
   const podeAcessar = sessao?.papel === "admin";
 
   const [atividades, definirAtividades] = useState<AtividadeAvulsa[] | null>(null);
@@ -40,7 +40,7 @@ export function TelaDeAtividades() {
   if (!podeAcessar) {
     return (
       <Moldura>
-        <Cabecalho titulo="Atividades" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+        <Cabecalho titulo="Atividades" />
         <Aviso tipo="erro">{RECUSA_POR_PAPEL}</Aviso>
       </Moldura>
     );
@@ -48,7 +48,7 @@ export function TelaDeAtividades() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Atividades" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Atividades" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

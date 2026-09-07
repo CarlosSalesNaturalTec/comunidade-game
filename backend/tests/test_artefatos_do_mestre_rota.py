@@ -155,6 +155,125 @@ def test_artefato_declarado_por_admin_no_cadastro_nao_e_removido_pelo_mestre(
     assert len(leitura_apos.json()) == 1
 
 
+def test_mestre_corrige_o_que_ele_mesmo_publicou(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    criado = cliente.post(
+        f"/v1/mestres/{mestre.id}/artefatos",
+        json={"endereco": "https://exemplo.org/errado", "rotulo": "Currículo"},
+        headers=cabecalhos,
+    ).json()
+
+    corrigido = cliente.patch(
+        f"/v1/mestres/{mestre.id}/artefatos/{criado['id']}",
+        json={"endereco": "https://exemplo.org/certo", "rotulo": "Currículo corrigido"},
+        headers=cabecalhos,
+    )
+    assert corrigido.status_code == 200
+    corpo = corrigido.json()
+    assert corpo["endereco"] == "https://exemplo.org/certo"
+    assert corpo["rotulo"] == "Currículo corrigido"
+
+
+def test_mestre_corrige_o_link_errado_do_cadastro_e_ele_permanece_no_perfil(
+    sessao, cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    artefato_do_cadastro = ArtefatoComprobatorio(
+        persona_id=mestre.id,
+        endereco="https://exemplo.org/errado-do-cadastro",
+        rotulo="Currículo do cadastro",
+        declarado_por_id=admin.id,
+    )
+    sessao.add(artefato_do_cadastro)
+    sessao.commit()
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    corrigido = cliente.patch(
+        f"/v1/mestres/{mestre.id}/artefatos/{artefato_do_cadastro.id}",
+        json={"endereco": "https://exemplo.org/certo-do-cadastro", "rotulo": "Currículo"},
+        headers=cabecalhos,
+    )
+    assert corrigido.status_code == 200
+    assert corrigido.json()["declarado_no_cadastro"] is True
+
+    leitura = cliente.get(f"/v1/mestres/{mestre.id}/artefatos", headers=cabecalhos)
+    assert len(leitura.json()) == 1
+
+
+def test_perfil_alheio_nao_se_edita(cliente, criar_chave, criar_persona, criar_sessao_de_teste):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    outro_mestre = criar_persona(Papel.mestre, criada_por=admin)
+    token_do_mestre, _ = criar_sessao_de_teste(mestre)
+    token_do_outro, _ = criar_sessao_de_teste(outro_mestre)
+
+    criado = cliente.post(
+        f"/v1/mestres/{mestre.id}/artefatos",
+        json={"endereco": "https://exemplo.org", "rotulo": "Currículo"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_mestre}"},
+    ).json()
+
+    resposta = cliente.patch(
+        f"/v1/mestres/{mestre.id}/artefatos/{criado['id']}",
+        json={"endereco": "https://exemplo.org/outro", "rotulo": "Outro"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_outro}"},
+    )
+    assert resposta.status_code == 403
+
+
+def test_primeira_edicao_do_artefato_do_cadastro_fixa_o_original_e_a_segunda_preserva(
+    sessao, cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    artefato_do_cadastro = ArtefatoComprobatorio(
+        persona_id=mestre.id,
+        endereco="https://exemplo.org/original",
+        rotulo="Rótulo original",
+        declarado_por_id=admin.id,
+    )
+    sessao.add(artefato_do_cadastro)
+    sessao.commit()
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    primeira = cliente.patch(
+        f"/v1/mestres/{mestre.id}/artefatos/{artefato_do_cadastro.id}",
+        json={"endereco": "https://exemplo.org/primeira-troca", "rotulo": "Primeira troca"},
+        headers=cabecalhos,
+    )
+    assert primeira.status_code == 200
+
+    sessao.refresh(artefato_do_cadastro)
+    assert artefato_do_cadastro.endereco_original == "https://exemplo.org/original"
+    assert artefato_do_cadastro.rotulo_original == "Rótulo original"
+    assert artefato_do_cadastro.editado_em is not None
+
+    segunda = cliente.patch(
+        f"/v1/mestres/{mestre.id}/artefatos/{artefato_do_cadastro.id}",
+        json={"endereco": "https://exemplo.org/segunda-troca", "rotulo": "Segunda troca"},
+        headers=cabecalhos,
+    )
+    assert segunda.status_code == 200
+
+    sessao.refresh(artefato_do_cadastro)
+    assert artefato_do_cadastro.endereco == "https://exemplo.org/segunda-troca"
+    assert artefato_do_cadastro.endereco_original == "https://exemplo.org/original"
+    assert artefato_do_cadastro.rotulo_original == "Rótulo original"
+
+
 def test_artefato_do_mestre_e_do_cadastro_seguem_publicos_com_as_colunas_novas_vazias(
     sessao, cliente, criar_chave, criar_persona, criar_sessao_de_teste
 ):

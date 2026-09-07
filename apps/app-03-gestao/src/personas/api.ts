@@ -63,6 +63,11 @@ export function editarGuerreiro(
 export interface ArtefatoComprobatorio {
   endereco: string;
   rotulo: string;
+  // Preenchidos só quando o próprio adulto editou o artefato do cadastro —
+  // a ficha marca o que foi mexido e mostra o original ao lado do vigente
+  // (`RF-02-04`, `RN-09-14`).
+  endereco_original?: string | null;
+  rotulo_original?: string | null;
 }
 
 export interface AdultoDaLista {

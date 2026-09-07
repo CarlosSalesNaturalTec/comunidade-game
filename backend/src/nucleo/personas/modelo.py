@@ -171,3 +171,10 @@ class ArtefatoComprobatorio(Base):
     criado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+    # Rótulo e endereço originais do artefato do cadastro, gravados só na
+    # primeira edição pelo próprio adulto — nascem nulos, e é assim que a
+    # leitura reconhece o artefato nunca mexido (`RN-09-14`, documento 02
+    # §1, design — decisão 3).
+    endereco_original: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    rotulo_original: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    editado_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

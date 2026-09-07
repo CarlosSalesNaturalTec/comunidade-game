@@ -123,14 +123,15 @@ próprio domínio. O App 04 usa as mesmas: o pixel fica nos sprites, nunca no te
 Um sistema, dois modos de aplicação. Ambos consomem os mesmos tokens de cor e tipografia: o que
 muda é densidade, raio, peso e presença de ilustração.
 
-| Eixo                | **Operação** — Apps 03, 07, 08 e 09                                                                             | **Arena** — Apps 01, 04, 05 e 06                                  |
-| ------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| Densidade           | Alta: tabela, lote e painel do dia em primeira classe                                                           | Baixa: poucos elementos, uma decisão por tela                     |
-| Ilustração          | Só onde é dado — avatar, carta, território                                                                      | Em primeiro plano; a carta domina a tela                          |
-| Cor                 | Neutro dominante; cor reservada a ação e estado                                                                 | Cor chapada e imagem de comunidade ao fundo                       |
-| Raio de carta       | `4` px                                                                                                          | `12` px                                                           |
-| Movimento           | Nenhum decorativo; `200` ms                                                                                     | Retorno de progresso e conquista; `300` ms                        |
-| Caso que dimensiona | Operado em pé, no celular, entre as bancadas; e o uso raro, que precisa ser entendido sem aprendizado acumulado | Criança de 6 anos, em aparelho compartilhado, podendo não digitar |
+| Eixo                  | **Operação** — Apps 03, 07, 08 e 09                                                                                                                       | **Arena** — Apps 01, 04, 05 e 06                                  |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Densidade             | Alta: tabela, lote e painel do dia em primeira classe                                                                                                     | Baixa: poucos elementos, uma decisão por tela                     |
+| Densidade progressiva | Alta desde o celular; **a partir do marco de `768` px (§4)**, mais coluna na tabela, diálogo e painel lado a lado — o piso continua sendo o celular em pé | Não se aplica — a densidade não muda com a largura                |
+| Ilustração            | Só onde é dado — avatar, carta, território                                                                                                                | Em primeiro plano; a carta domina a tela                          |
+| Cor                   | Neutro dominante; cor reservada a ação e estado                                                                                                           | Cor chapada e imagem de comunidade ao fundo                       |
+| Raio de carta         | `4` px                                                                                                                                                    | `12` px                                                           |
+| Movimento             | Nenhum decorativo; `200` ms                                                                                                                               | Retorno de progresso e conquista; `300` ms                        |
+| Caso que dimensiona   | Operado em pé, no celular, entre as bancadas; e o uso raro, que precisa ser entendido sem aprendizado acumulado                                           | Criança de 6 anos, em aparelho compartilhado, podendo não digitar |
 
 Toda transição usa `ease-in-out`, e o temperamento é da aplicação inteira: a App 06 é Arena do
 cabeçalho ao rodapé, inclusive no painel do território e nos rankings.

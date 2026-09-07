@@ -86,6 +86,16 @@
   --raio-ficha: 999px;
   --largura-do-foco: 2px;
 
+  /* Primitiva — marcos de largura e grade de colunas (documento 15 §4):
+   * o celular é o padrão, sem marco; a partir daqui a tela ganha coluna. */
+  --marco-768: 768px;
+  --marco-1024: 1024px;
+  --marco-1280: 1280px;
+  --colunas-celular: 4;
+  --colunas-tablet: 8;
+  --colunas-computador: 12;
+  --calha: 16px;
+
   /* Semântica — claro (padrão) */
   --cor-texto: var(--tinta-900);
   --cor-texto-secundario: var(--tinta-700);
@@ -115,6 +125,7 @@
   --cor-foco: var(--marca-500);
 
   --largura-de-leitura: 64ch;
+  --largura-de-area-densa: var(--marco-1280);
 }
 
 /* Semântica — escuro, pelo esquema de cor do sistema (documento 15 §5) */
@@ -150,6 +161,16 @@
   --densidade: var(--espaco-8);
   --raio-carta: var(--raio-campo);
   --duracao: 200ms;
+}
+
+/* Densidade progressiva a partir do marco de `768` px (documento 15 §6,
+ * decisão do fundador de 2026-09-06): o piso continua sendo o celular em
+ * pé — nada muda abaixo do marco —, e daqui em diante a Operação aperta o
+ * espaçamento das listas para caber mais coluna e mais linha na tela. */
+@media (min-width: 768px) {
+  :root[data-temperamento="operacao"] {
+    --densidade: var(--espaco-4);
+  }
 }
 
 /* Nenhum movimento decorativo, sem exceção (documento 15 §5) */

@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
@@ -77,5 +78,45 @@ describe("área inicial vinda da URL (RF-09-50)", () => {
     expect(
       screen.getByRole("button", { name: "Comunidades", current: true }),
     ).toBeInTheDocument();
+  });
+});
+
+// A saída fica só na navegação — nenhuma tela de área a monta de novo
+// (documento 15 §6, design — decisão 4).
+describe("saída da sessão única (documento 15 §6)", () => {
+  it("existe exatamente uma saída, sempre no mesmo lugar, ao trocar de área", async () => {
+    configurarSessao();
+    const usuario = userEvent.setup();
+    render(<App />);
+
+    for (const rotulo of ["Poderes", "Direitos e dados", "Comunidades"]) {
+      await usuario.click(screen.getByRole("button", { name: rotulo }));
+      expect(screen.getAllByRole("button", { name: "Sair" })).toHaveLength(1);
+    }
+  });
+
+  it("aciona a saída da sessão pela navegação", async () => {
+    const aoSair = vi.fn();
+    vi.mocked(useSessao).mockReturnValue({
+      sessao: SESSAO_DE_ADMIN,
+      restaurando: false,
+      entrando: false,
+      erroDeEntrada: null,
+      entrarComGoogle: vi.fn(),
+      entrarComToken: vi.fn(),
+      sair: aoSair,
+      tratarRecusaDeSessao: vi.fn(),
+      entrarComCredencial: vi.fn(),
+      trocaDeSenhaPendente: false,
+      trocandoSenha: false,
+      erroDeTrocaDeSenha: null,
+      trocarSenhaProvisoria: vi.fn(),
+    });
+    const usuario = userEvent.setup();
+    render(<App />);
+
+    await usuario.click(screen.getByRole("button", { name: "Sair" }));
+
+    expect(aoSair).toHaveBeenCalledOnce();
   });
 });

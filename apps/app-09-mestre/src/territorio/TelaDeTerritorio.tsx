@@ -50,7 +50,7 @@ interface Props {
 // ação de cadastrar local ou criar Comunidade Virtual: as duas seguem
 // privativas de Admin (PRD-09 §3.2).
 export function TelaDeTerritorio({ onContagemAtualizada }: Props = {}) {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const [grupos, definirGrupos] = useState<GrupoPorComunidade[] | null>(null);
   const [locaisPorComunidade, definirLocaisPorComunidade] = useState<
     Map<string, LocalDaLista[]>
@@ -122,7 +122,6 @@ export function TelaDeTerritorio({ onContagemAtualizada }: Props = {}) {
       <Cabecalho
         titulo="Território"
         subtitulo="Solicitações de novo local dos desafios das suas trilhas"
-        acao={{ rotulo: "Sair", aoAcionar: sair }}
       />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}

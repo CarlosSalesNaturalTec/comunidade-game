@@ -19,7 +19,7 @@ function formatarMomento(momento: string): string {
 // aquele Guerreiro(a), e não passar nunca o elimina (`RF-09-26`,
 // `RF-09-117`, `RF-05-13`, `RF-05-14`).
 export function TelaDeDesbloqueiosPendentes() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const [pendentes, definirPendentes] = useState<DesbloqueioPendente[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
   const [julgando, definirJulgando] = useState<string | null>(null);
@@ -67,10 +67,7 @@ export function TelaDeDesbloqueiosPendentes() {
 
   return (
     <Moldura>
-      <Cabecalho
-        titulo="Desafios práticos a julgar"
-        acao={{ rotulo: "Sair", aoAcionar: sair }}
-      />
+      <Cabecalho titulo="Desafios práticos a julgar" />
       <p>
         Julgar que passou abre a missão seguinte para aquele Guerreiro(a). Não passar não o
         elimina.

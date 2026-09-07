@@ -11,7 +11,7 @@ import { ListaDePontosDeApoio } from "./ListaDePontosDeApoio";
 import { TransferenciaDeSaldo } from "./TransferenciaDeSaldo";
 
 export function TelaDePontosDeApoio() {
-  const { sessao, sair, tratarRecusaDeSessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoSeletor = useId();
   const [comunidades, definirComunidades] = useState<ComunidadeDaLista[]>([]);
   const [comunidadeId, definirComunidadeId] = useState("");
@@ -88,7 +88,7 @@ export function TelaDePontosDeApoio() {
 
   return (
     <Moldura>
-      <Cabecalho titulo="Pontos de Apoio" acao={{ rotulo: "Sair", aoAcionar: sair }} />
+      <Cabecalho titulo="Pontos de Apoio" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 

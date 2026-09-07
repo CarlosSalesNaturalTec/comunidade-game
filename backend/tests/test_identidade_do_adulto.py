@@ -5,6 +5,7 @@ from nucleo.personas.modelo import Nick, Papel, Persona
 from nucleo.personas.regra import (
     conferir_disponibilidade_de_nick,
     criar_persona,
+    definir_avatar_do_mestre,
     definir_ou_trocar_nick,
     sugerir_variacoes_de_nick,
 )
@@ -143,6 +144,19 @@ def test_definir_nick_em_branco_e_recusado(sessao):
     assert excinfo.value.campo == "nick"
 
 
+def test_mestre_grava_avatar_sem_moeda_alguma(sessao):
+    admin = Persona(papel=Papel.admin)
+    sessao.add(admin)
+    sessao.flush()
+    mestre = criar_persona(sessao, papel=Papel.mestre, criada_por=admin)
+    sessao.commit()
+
+    definir_avatar_do_mestre(sessao, mestre, "avatar-do-mestre")
+    sessao.commit()
+
+    assert mestre.avatar == "avatar-do-mestre"
+
+
 # --- Rotas ---
 
 
@@ -199,6 +213,125 @@ def test_mestre_define_o_proprio_nick_pela_rota(
     )
     assert resposta.status_code == 200
     assert resposta.json()["nick"] == "MestreNovoPelaRota"
+
+
+def test_mestre_grava_nick_e_avatar_juntos_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    resposta = cliente.put(
+        "/v1/eu/mestre/identidade",
+        json={"nick": "MestreComAvatar", "avatar": "avatar-do-mestre"},
+        headers=cabecalhos,
+    )
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["nick"] == "MestreComAvatar"
+    assert corpo["avatar"] == "avatar-do-mestre"
+
+
+def test_mestre_troca_so_o_avatar_sem_mexer_no_nick(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    cliente.put(
+        "/v1/eu/mestre/identidade",
+        json={"nick": "NickQueFica"},
+        headers=cabecalhos,
+    )
+
+    resposta = cliente.put(
+        "/v1/eu/mestre/identidade",
+        json={"avatar": "avatar-novo"},
+        headers=cabecalhos,
+    )
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["nick"] == "NickQueFica"
+    assert corpo["avatar"] == "avatar-novo"
+
+
+def test_mestre_grava_avatar_pela_rota_sem_moeda_alguma(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    resposta = cliente.put(
+        "/v1/eu/mestre/identidade", json={"avatar": "avatar-sem-moeda"}, headers=cabecalhos
+    )
+    assert resposta.status_code == 200
+    assert resposta.json()["avatar"] == "avatar-sem-moeda"
+
+
+def test_leitura_da_identidade_do_mestre_devolve_nick_e_avatar_vigentes(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    cliente.put(
+        "/v1/eu/mestre/identidade",
+        json={"nick": "MestreLido", "avatar": "avatar-lido"},
+        headers=cabecalhos,
+    )
+
+    leitura = cliente.get("/v1/eu/mestre/identidade", headers=cabecalhos)
+    assert leitura.status_code == 200
+    corpo = leitura.json()
+    assert corpo["nick"] == "MestreLido"
+    assert corpo["avatar"] == "avatar-lido"
+    assert "moedas_acumuladas" not in corpo
+
+
+def test_leitura_da_identidade_do_mestre_ainda_sem_nick_devolve_vazio(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    leitura = cliente.get("/v1/eu/mestre/identidade", headers=cabecalhos)
+    assert leitura.status_code == 200
+    corpo = leitura.json()
+    assert corpo["nick"] is None
+    assert corpo["avatar"] is None
+
+
+def test_outro_papel_recebe_403_na_identidade_do_mestre(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador, criada_por=admin)
+    token, _ = criar_sessao_de_teste(apoiador)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    resposta_put = cliente.put(
+        "/v1/eu/mestre/identidade", json={"avatar": "avatar-qualquer"}, headers=cabecalhos
+    )
+    assert resposta_put.status_code == 403
+
+    resposta_get = cliente.get("/v1/eu/mestre/identidade", headers=cabecalhos)
+    assert resposta_get.status_code == 403
 
 
 def test_apoiador_troca_o_proprio_nick_pela_rota(
