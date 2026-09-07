@@ -377,6 +377,53 @@ describe("a ficha do adulto", () => {
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   });
 
+  it("marca o artefato de cadastro editado e mostra o original ao lado do vigente", () => {
+    const mestreComArtefatoEditado: AdultoDaLista = {
+      ...MESTRE_COM_ARTEFATO,
+      artefatos: [
+        {
+          rotulo: "Certificado atualizado",
+          endereco: "https://exemplo.org/certificado-novo",
+          rotulo_original: "Certificado de curso",
+          endereco_original: "https://exemplo.org/certificado",
+        },
+      ],
+    };
+
+    render(<FichaDoAdulto adulto={mestreComArtefatoEditado} onNickGravado={vi.fn()} />);
+
+    expect(screen.getByText(/certificado atualizado/i)).toBeInTheDocument();
+    expect(screen.getByText(/editado pelo próprio adulto/i)).toBeInTheDocument();
+    expect(screen.getByText(/certificado de curso/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "https://exemplo.org/certificado" }),
+    ).toHaveAttribute("href", "https://exemplo.org/certificado");
+  });
+
+  it("artefato intocado aparece sem marca e sem valor original", () => {
+    render(<FichaDoAdulto adulto={MESTRE_COM_ARTEFATO} onNickGravado={vi.fn()} />);
+
+    expect(screen.queryByText(/editado pelo próprio adulto/i)).not.toBeInTheDocument();
+  });
+
+  it("não oferece editar, restaurar ou remover o artefato editado", () => {
+    const mestreComArtefatoEditado: AdultoDaLista = {
+      ...MESTRE_COM_ARTEFATO,
+      artefatos: [
+        {
+          rotulo: "Certificado atualizado",
+          endereco: "https://exemplo.org/certificado-novo",
+          rotulo_original: "Certificado de curso",
+          endereco_original: "https://exemplo.org/certificado",
+        },
+      ],
+    };
+
+    render(<FichaDoAdulto adulto={mestreComArtefatoEditado} onNickGravado={vi.fn()} />);
+
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
   it("oferece gravar o nick que falta, sem sugerir nenhum", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
     render(<FichaDoAdulto adulto={ADULTO_SEM_NICK} onNickGravado={vi.fn()} />);

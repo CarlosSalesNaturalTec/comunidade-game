@@ -163,8 +163,10 @@ primeiro acesso — os dois sob a mesma unicidade do nick do Guerreiro(a).
 O **artefato comprobatório** de Mestre e Apoiador é **link declarado** — endereço e rótulo do
 que ele aponta. **Anexo de arquivo fica fora do Ciclo 01**: a prova é verificável por qualquer
 visitante, e arquivo guardado na plataforma não é. O que o Admin declara no cadastro **não é
-removível pelo próprio adulto**: ele acrescenta e remove só o que publicar depois, e a prova que
-sustentou o cadastro permanece.
+removível pelo próprio adulto**: ele acrescenta e remove só o que publicar depois. A prova do
+cadastro **permanece e é editável pelo próprio adulto**, nunca removível por ele — o núcleo
+guarda o rótulo e o endereço originais na primeira edição, para a gestão conferir (decisão do
+fundador, 2026-09-06).
 
 O Mestre publica o próprio artefato ao declará-lo. O Apoiador não: o que ele declara depois do
 cadastro nasce **pendente** e só vai à página pública quando um **Admin o anexa ao cadastro** —

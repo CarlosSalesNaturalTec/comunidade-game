@@ -227,6 +227,49 @@ def definir_avatar_do_apoiador(sessao: Session, persona: Persona, avatar: str) -
     return persona
 
 
+def definir_avatar_do_mestre(sessao: Session, persona: Persona, avatar: str) -> Persona:
+    """O Mestre em sessão grava o avatar próprio sem consultar moeda
+    alguma — o piso de moedas é regra de marca do Apoiador (`RN-14-11`) e
+    não o alcança. Opaco ao núcleo: nenhuma validação de forma (`RF-09-114`,
+    design — decisão 1)."""
+    persona.avatar = avatar
+    sessao.flush()
+    return persona
+
+
+def editar_artefato_do_mestre(
+    sessao: Session,
+    *,
+    mestre_id: uuid.UUID,
+    artefato: ArtefatoComprobatorio | None,
+    endereco: str,
+    rotulo: str,
+) -> ArtefatoComprobatorio:
+    """O Mestre em sessão corrige rótulo e endereço de um artefato do
+    próprio perfil, o declarado no cadastro incluído. Na primeira edição de
+    um artefato de cadastro, o rótulo e o endereço vigentes são guardados
+    como originais antes da troca; edições seguintes preservam o original
+    já guardado (`RF-09-66`, `RN-09-14`, documento 02 §1, design — decisões
+    3 e 4)."""
+    if artefato is None or artefato.persona_id != mestre_id:
+        raise NaoEncontrado(mensagem="Artefato não encontrado.", campo="artefato_id")
+    if not endereco or not endereco.strip():
+        raise ErroDeValidacao(mensagem="Artefato exige o endereço.", campo="endereco")
+    if not rotulo or not rotulo.strip():
+        raise ErroDeValidacao(mensagem="Artefato exige o rótulo.", campo="rotulo")
+
+    eh_do_cadastro = artefato.declarado_por_id != mestre_id
+    if eh_do_cadastro and artefato.editado_em is None:
+        artefato.endereco_original = artefato.endereco
+        artefato.rotulo_original = artefato.rotulo
+        artefato.editado_em = agora()
+
+    artefato.endereco = endereco
+    artefato.rotulo = rotulo
+    sessao.flush()
+    return artefato
+
+
 def declarar_documento_do_apoiador(
     sessao: Session, persona: Persona, *, endereco: str | None, rotulo: str | None
 ) -> ArtefatoComprobatorio:

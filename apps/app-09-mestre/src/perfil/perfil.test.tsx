@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -30,6 +30,8 @@ const SESSAO_DE_MESTRE: SessaoAberta = {
   persona_id: "mestre-1",
 };
 
+const IDENTIDADE_VAZIA: perfilApi.IdentidadeDoMestre = { nick: null, avatar: null };
+
 function configurarSessao() {
   vi.mocked(useSessao).mockReturnValue({
     sessao: SESSAO_DE_MESTRE,
@@ -52,9 +54,82 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+describe("identidade do Mestre", () => {
+  it("mostra a ausência de nick e avatar quando ainda não definidos", async () => {
+    configurarSessao();
+    vi.spyOn(perfilApi, "lerIdentidade").mockResolvedValue(IDENTIDADE_VAZIA);
+    vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([]);
+
+    render(<TelaDoPerfil />);
+
+    expect(await screen.findByLabelText(/^nick$/i)).toHaveValue("");
+    expect(screen.getByLabelText(/avatar \(endereço/i)).toHaveValue("");
+  });
+
+  it("mostra o nick e o avatar já gravados", async () => {
+    configurarSessao();
+    vi.spyOn(perfilApi, "lerIdentidade").mockResolvedValue({
+      nick: "MestreDeTal",
+      avatar: "https://exemplo.org/avatar.png",
+    });
+    vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([]);
+
+    render(<TelaDoPerfil />);
+
+    expect(await screen.findByLabelText(/^nick$/i)).toHaveValue("MestreDeTal");
+  });
+
+  it("grava o nick sem sugerir nenhum", async () => {
+    configurarSessao();
+    vi.spyOn(perfilApi, "lerIdentidade").mockResolvedValue(IDENTIDADE_VAZIA);
+    vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([]);
+    const gravarEspiado = vi.spyOn(perfilApi, "gravarIdentidade").mockResolvedValue({
+      nick: "MestreNovo",
+      avatar: null,
+    });
+
+    render(<TelaDoPerfil />);
+    const usuario = userEvent.setup();
+
+    expect(await screen.findByLabelText(/^nick$/i)).toHaveValue("");
+    await usuario.type(screen.getByLabelText(/^nick$/i), "MestreNovo");
+    await usuario.click(screen.getByRole("button", { name: /gravar nick/i }));
+
+    expect(gravarEspiado).toHaveBeenCalledWith({ nick: "MestreNovo" }, "token-do-mestre");
+    expect(await screen.findByText(/nick gravado/i)).toBeInTheDocument();
+  });
+
+  it("grava o avatar sem condicionar a moeda alguma", async () => {
+    configurarSessao();
+    vi.spyOn(perfilApi, "lerIdentidade").mockResolvedValue(IDENTIDADE_VAZIA);
+    vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([]);
+    const gravarEspiado = vi.spyOn(perfilApi, "gravarIdentidade").mockResolvedValue({
+      nick: null,
+      avatar: "https://exemplo.org/avatar.png",
+    });
+
+    render(<TelaDoPerfil />);
+    const usuario = userEvent.setup();
+
+    await usuario.type(
+      await screen.findByLabelText(/avatar \(endereço/i),
+      "https://exemplo.org/avatar.png",
+    );
+    await usuario.click(screen.getByRole("button", { name: /gravar avatar/i }));
+
+    expect(gravarEspiado).toHaveBeenCalledWith(
+      { avatar: "https://exemplo.org/avatar.png" },
+      "token-do-mestre",
+    );
+    expect(await screen.findByText(/avatar gravado/i)).toBeInTheDocument();
+    expect(screen.queryByText(/moeda/i)).not.toBeInTheDocument();
+  });
+});
+
 describe("publicação de artefato", () => {
   it("mostra o aviso de coleta dos artefatos comprobatórios", async () => {
     configurarSessao();
+    vi.spyOn(perfilApi, "lerIdentidade").mockResolvedValue(IDENTIDADE_VAZIA);
     vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([]);
 
     render(<TelaDoPerfil />);
@@ -66,6 +141,7 @@ describe("publicação de artefato", () => {
 
   it("publica por endereço e rótulo, sem campo de anexo", async () => {
     configurarSessao();
+    vi.spyOn(perfilApi, "lerIdentidade").mockResolvedValue(IDENTIDADE_VAZIA);
     vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([]);
     const declararEspiado = vi.spyOn(perfilApi, "declararArtefato").mockResolvedValue({
       id: "art-1",
@@ -78,10 +154,10 @@ describe("publicação de artefato", () => {
     const usuario = userEvent.setup();
 
     expect(screen.queryByLabelText(/arquivo/i)).not.toBeInTheDocument();
-    await screen.findByLabelText(/rótulo/i);
+    await screen.findByLabelText(/^rótulo$/i);
 
-    await usuario.type(screen.getByLabelText(/rótulo/i), "Currículo");
-    await usuario.type(screen.getByLabelText(/endereço/i), "https://exemplo.org/curriculo");
+    await usuario.type(screen.getByLabelText(/^rótulo$/i), "Currículo");
+    await usuario.type(screen.getByLabelText(/^endereço$/i), "https://exemplo.org/curriculo");
     await usuario.click(screen.getByRole("button", { name: /publicar artefato/i }));
 
     expect(declararEspiado).toHaveBeenCalledWith(
@@ -93,8 +169,9 @@ describe("publicação de artefato", () => {
 });
 
 describe("artefato do cadastro", () => {
-  it("aparece marcado e sem caminho de remoção", async () => {
+  it("aparece marcado, sem caminho de remoção", async () => {
     configurarSessao();
+    vi.spyOn(perfilApi, "lerIdentidade").mockResolvedValue(IDENTIDADE_VAZIA);
     vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([
       {
         id: "art-cadastro",
@@ -111,8 +188,47 @@ describe("artefato do cadastro", () => {
     expect(screen.queryByRole("button", { name: /remover/i })).not.toBeInTheDocument();
   });
 
+  it("o do cadastro oferece editar", async () => {
+    configurarSessao();
+    vi.spyOn(perfilApi, "lerIdentidade").mockResolvedValue(IDENTIDADE_VAZIA);
+    vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([
+      {
+        id: "art-cadastro",
+        endereco: "https://exemplo.org/do-cadastro",
+        rotulo: "Currículo do cadastro",
+        declarado_no_cadastro: true,
+      },
+    ]);
+    const editarEspiado = vi.spyOn(perfilApi, "editarArtefato").mockResolvedValue({
+      id: "art-cadastro",
+      endereco: "https://exemplo.org/corrigido",
+      rotulo: "Currículo do cadastro",
+      declarado_no_cadastro: true,
+    });
+
+    render(<TelaDoPerfil />);
+    const usuario = userEvent.setup();
+
+    await screen.findByText(/currículo do cadastro/i);
+    await usuario.click(screen.getByRole("button", { name: /editar/i }));
+
+    const formularioDeEdicao = screen.getByRole("form", { name: /editar artefato/i });
+    const campoDeEndereco = within(formularioDeEdicao).getByLabelText(/^endereço$/i);
+    await usuario.clear(campoDeEndereco);
+    await usuario.type(campoDeEndereco, "https://exemplo.org/corrigido");
+    await usuario.click(within(formularioDeEdicao).getByRole("button", { name: /^salvar$/i }));
+
+    expect(editarEspiado).toHaveBeenCalledWith(
+      "mestre-1",
+      "art-cadastro",
+      { endereco: "https://exemplo.org/corrigido", rotulo: "Currículo do cadastro" },
+      "token-do-mestre",
+    );
+  });
+
   it("o Mestre remove o que ele mesmo publicou", async () => {
     configurarSessao();
+    vi.spyOn(perfilApi, "lerIdentidade").mockResolvedValue(IDENTIDADE_VAZIA);
     vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([
       {
         id: "art-proprio",
@@ -136,6 +252,7 @@ describe("artefato do cadastro", () => {
 describe("cadastro de Mestre", () => {
   it("não oferece caminho de cadastro nem edição do próprio cadastro", async () => {
     configurarSessao();
+    vi.spyOn(perfilApi, "lerIdentidade").mockResolvedValue(IDENTIDADE_VAZIA);
     vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([]);
 
     render(<TelaDoPerfil />);
@@ -143,5 +260,6 @@ describe("cadastro de Mestre", () => {
     expect(await screen.findByText(/ato exclusivo de admin/i)).toBeInTheDocument();
     expect(screen.queryByLabelText(/^nome$/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/^e-mail$/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/^papel$/i)).not.toBeInTheDocument();
   });
 });

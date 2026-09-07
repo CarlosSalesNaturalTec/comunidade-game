@@ -38,7 +38,9 @@ from .regra import (
     conferir_disponibilidade_de_nick,
     declarar_documento_do_apoiador,
     definir_avatar_do_apoiador,
+    definir_avatar_do_mestre,
     definir_ou_trocar_nick,
+    editar_artefato_do_mestre,
     editar_guerreiro,
     incluir_admin,
     sugerir_variacoes_de_nick,
@@ -263,6 +265,11 @@ class ArtefatoEntrada(BaseModel):
 class ArtefatoSaida(BaseModel):
     endereco: str
     rotulo: str
+    # Preenchidos só quando o próprio adulto editou o artefato do cadastro
+    # — a gestão distingue o que foi mexido do que segue como o Admin
+    # declarou (`RF-02-04`, `RN-09-14`, design — decisão 5).
+    endereco_original: str | None = None
+    rotulo_original: str | None = None
 
 
 class AdultoSaida(BaseModel):
@@ -283,7 +290,15 @@ def _saida_do_adulto(persona: Persona, sessao_bd: Session) -> AdultoSaida:
         email=persona.email or "",
         whatsapp=persona.whatsapp,
         nick=nick.valor if nick is not None else None,
-        artefatos=[ArtefatoSaida(endereco=a.endereco, rotulo=a.rotulo) for a in artefatos],
+        artefatos=[
+            ArtefatoSaida(
+                endereco=a.endereco,
+                rotulo=a.rotulo,
+                endereco_original=a.endereco_original,
+                rotulo_original=a.rotulo_original,
+            )
+            for a in artefatos
+        ],
     )
 
 
@@ -539,16 +554,6 @@ def conferir_disponibilidade_de_nick_rota(
     return DisponibilidadeDeNickSaida(disponivel=disponivel, sugestoes=sugestoes)
 
 
-class DefinirNickEntrada(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    nick: str = Field(min_length=1)
-
-
-class MinhaIdentidadeSaida(BaseModel):
-    nick: str
-
-
 class IdentidadeDoApoiadorEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -700,22 +705,67 @@ def anexar_documento_do_apoiador_rota(
     return _saida_do_documento_do_apoiador(artefato)
 
 
+class IdentidadeDoMestreEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    # Cada um opcional, no mesmo molde da entrada do Apoiador — sem o piso
+    # de moedas, que é regra de marca dele e não alcança o Mestre
+    # (`RF-09-114`, `RN-14-11`, design — decisão 1).
+    nick: str | None = Field(default=None, min_length=1)
+    avatar: str | None = Field(default=None, min_length=1)
+
+
+class IdentidadeDoMestreSaida(BaseModel):
+    nick: str | None
+    avatar: str | None
+
+
+def _exigir_mestre_em_sessao(contexto: ContextoDaSessao) -> None:
+    if contexto.papel != Papel.mestre:
+        raise PermissaoNegada(mensagem="Só o Mestre alcança a própria identidade por aqui.")
+
+
+def _saida_da_identidade_do_mestre(sessao_bd: Session, persona: Persona) -> IdentidadeDoMestreSaida:
+    nick = sessao_bd.query(Nick).filter_by(persona_id=persona.id).first()
+    return IdentidadeDoMestreSaida(
+        nick=nick.valor if nick is not None else None,
+        avatar=persona.avatar,
+    )
+
+
 @roteador.put("/eu/mestre/identidade")
 def definir_identidade_do_mestre(
-    entrada: DefinirNickEntrada,
+    entrada: IdentidadeDoMestreEntrada,
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
-) -> MinhaIdentidadeSaida:
-    """Rota simétrica à do Apoiador, para o Mestre definir ou trocar o
-    próprio nick no primeiro acesso; outro papel recebe 403 (`RF-14-12`,
-    `RN-14-10`, `RN-01-30`, PRD-01 §9, design — Decisions)."""
-    if contexto.papel != Papel.mestre:
-        raise PermissaoNegada(mensagem="Só o Mestre define o próprio nick por aqui.")
+) -> IdentidadeDoMestreSaida:
+    """Define ou troca o nick e o avatar do Mestre em sessão, no mesmo
+    molde da rota do Apoiador, mas sem piso de moedas; outro papel recebe
+    403 (`RF-09-114`, `RN-14-10`, `RN-14-11`, decisão do fundador,
+    2026-09-06)."""
+    _exigir_mestre_em_sessao(contexto)
 
     persona = sessao_bd.get(Persona, contexto.persona_id)
-    definir_ou_trocar_nick(sessao_bd, persona, entrada.nick)
+    if entrada.nick is not None:
+        definir_ou_trocar_nick(sessao_bd, persona, entrada.nick)
+    if entrada.avatar is not None:
+        definir_avatar_do_mestre(sessao_bd, persona, entrada.avatar)
     sessao_bd.commit()
-    return MinhaIdentidadeSaida(nick=entrada.nick)
+    return _saida_da_identidade_do_mestre(sessao_bd, persona)
+
+
+@roteador.get("/eu/mestre/identidade")
+def ler_identidade_do_mestre(
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> IdentidadeDoMestreSaida:
+    """Leitura da própria identidade — nick e avatar vigentes, sem dado de
+    moeda; outro papel recebe 403 (`RF-09-114`, `RN-14-11`, decisão do
+    fundador, 2026-09-06)."""
+    _exigir_mestre_em_sessao(contexto)
+
+    persona = sessao_bd.get(Persona, contexto.persona_id)
+    return _saida_da_identidade_do_mestre(sessao_bd, persona)
 
 
 class ArtefatoDoMestreEntrada(BaseModel):
@@ -809,3 +859,31 @@ def remover_artefato_do_mestre_rota(
 
     sessao_bd.delete(artefato)
     sessao_bd.commit()
+
+
+@roteador.patch("/mestres/{id}/artefatos/{artefato_id}")
+def editar_artefato_do_mestre_rota(
+    id: uuid.UUID,
+    artefato_id: uuid.UUID,
+    entrada: ArtefatoDoMestreEntrada,
+    contexto: Annotated[
+        ContextoDaSessao, Depends(exigir_permissao(Operacao.documentos_comprobatorios, "escreve"))
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> ArtefatoDoMestreSaida:
+    """Corrige rótulo e endereço de um artefato do próprio perfil, o
+    declarado no cadastro incluído — que segue irremovível, mas passa a
+    guardar o original na primeira edição. Perfil alheio recebe 403, e
+    artefato fora do perfil, 404 (`RF-09-66`, `RN-09-14`, documento 02 §1,
+    decisão do fundador, 2026-09-06)."""
+    _exigir_mestre_do_proprio_perfil(id, contexto)
+    artefato = sessao_bd.get(ArtefatoComprobatorio, artefato_id)
+    artefato = editar_artefato_do_mestre(
+        sessao_bd,
+        mestre_id=id,
+        artefato=artefato,
+        endereco=entrada.endereco,
+        rotulo=entrada.rotulo,
+    )
+    sessao_bd.commit()
+    return _saida_do_artefato_do_mestre(artefato, id)

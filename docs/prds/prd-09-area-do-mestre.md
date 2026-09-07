@@ -571,8 +571,10 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | POST   | `/v1/responsaveis`                                        | Mestre       | Cadastra responsável e vincula Guerreiros e Guerreiras                 |
 | GET    | `/v1/mestres/{id}/artefatos`                              | Mestre       | Lê os próprios artefatos, com os declarados no cadastro marcados       |
 | POST   | `/v1/mestres/{id}/artefatos`                              | Mestre       | Publica currículo, portfólio, redes e artefatos comprobatórios         |
+| PATCH  | `/v1/mestres/{id}/artefatos/{artefato_id}`                | Mestre       | Corrige rótulo e endereço, o do cadastro incluído; guarda o original   |
 | DELETE | `/v1/mestres/{id}/artefatos/{artefato_id}`                | Mestre       | Remove artefato próprio; recusa o declarado no cadastro                |
 | PUT    | `/v1/eu/mestre/identidade`                                | Mestre       | Define ou troca o próprio nick e avatar                                |
+| GET    | `/v1/eu/mestre/identidade`                                | Mestre       | Lê o próprio nick e avatar vigentes, sem dado de moeda                 |
 | POST   | `/v1/sugestoes`                                           | Mestre       | Registra proposta de evolução na fila única da gestão                  |
 
 Erros previstos: publicação de trilha sem missão de sondagem (422); atividade de trilha sem

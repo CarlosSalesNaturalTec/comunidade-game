@@ -5,7 +5,7 @@ from decimal import Decimal
 from nucleo.aportes.modelo import FormaDeAporte, SituacaoDeRessarcimento
 from nucleo.comunidades.modelo import VinculoJogador
 from nucleo.livro_razao.modelo import NaturezaDoLancamento
-from nucleo.personas.modelo import Papel, Persona
+from nucleo.personas.modelo import ArtefatoComprobatorio, Papel, Persona
 
 
 def test_admin_cadastra_guerreiro_pela_rota(
@@ -154,6 +154,69 @@ def test_cadastro_de_mestre_sem_artefato_e_422_pela_rota(
     )
     assert resposta.status_code == 422
     assert resposta.json()["campo"] == "artefatos"
+
+
+def test_artefato_intocado_nao_traz_original_na_listagem_da_gestao(
+    sessao, cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    token, _ = criar_sessao_de_teste(admin)
+
+    sessao.add(
+        ArtefatoComprobatorio(
+            persona_id=mestre.id,
+            endereco="https://exemplo.org/intocado",
+            rotulo="Intocado",
+            declarado_por_id=admin.id,
+        )
+    )
+    sessao.commit()
+
+    listagem = cliente.get(
+        "/v1/mestres", headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    )
+    assert listagem.status_code == 200
+    lido = next(item for item in listagem.json()["itens"] if item["id"] == str(mestre.id))
+    assert lido["artefatos"][0]["endereco_original"] is None
+    assert lido["artefatos"][0]["rotulo_original"] is None
+
+
+def test_admin_ve_o_original_do_artefato_do_cadastro_editado_pelo_mestre(
+    sessao, cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+
+    artefato = ArtefatoComprobatorio(
+        persona_id=mestre.id,
+        endereco="https://exemplo.org/original",
+        rotulo="Rótulo original",
+        declarado_por_id=admin.id,
+    )
+    sessao.add(artefato)
+    sessao.commit()
+
+    token_do_mestre, _ = criar_sessao_de_teste(mestre)
+    cliente.patch(
+        f"/v1/mestres/{mestre.id}/artefatos/{artefato.id}",
+        json={"endereco": "https://exemplo.org/vigente", "rotulo": "Rótulo vigente"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_mestre}"},
+    )
+
+    token_do_admin, _ = criar_sessao_de_teste(admin)
+    listagem = cliente.get(
+        "/v1/mestres",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_admin}"},
+    )
+    assert listagem.status_code == 200
+    lido = next(item for item in listagem.json()["itens"] if item["id"] == str(mestre.id))
+    assert lido["artefatos"][0]["endereco"] == "https://exemplo.org/vigente"
+    assert lido["artefatos"][0]["rotulo"] == "Rótulo vigente"
+    assert lido["artefatos"][0]["endereco_original"] == "https://exemplo.org/original"
+    assert lido["artefatos"][0]["rotulo_original"] == "Rótulo original"
 
 
 def test_admin_cadastra_apoiador_pela_rota(
