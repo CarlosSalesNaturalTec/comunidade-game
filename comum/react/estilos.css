@@ -178,6 +178,58 @@
   margin-bottom: var(--espaco-16);
 }
 
+/* `BlocoRecolhivel` — sobre `details`/`summary` nativo; o navegador cuida
+ * do estado aberto/fechado, do teclado e do `aria-expanded` do controle.
+ * Sem `transition` de altura: abrir e fechar não anima (documento 15
+ * §6.1). */
+.cg-bloco-recolhivel {
+  border: 1px solid var(--cor-separador);
+  border-radius: var(--raio-campo);
+}
+
+.cg-bloco-recolhivel__controle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-8);
+  min-height: var(--alvo-de-toque);
+  padding: var(--espaco-8) var(--espaco-12);
+  cursor: pointer;
+  list-style: none;
+}
+
+.cg-bloco-recolhivel__controle::-webkit-details-marker {
+  display: none;
+}
+
+.cg-bloco-recolhivel__titulo {
+  font-weight: var(--peso-rotulo);
+}
+
+.cg-bloco-recolhivel__resumo {
+  color: var(--cor-texto-secundario);
+  flex: 1;
+}
+
+.cg-bloco-recolhivel__estado {
+  color: var(--cor-acao);
+  font-weight: var(--peso-rotulo);
+}
+
+.cg-bloco-recolhivel__conteudo {
+  padding: 0 var(--espaco-12) var(--espaco-12);
+  border-top: 1px solid var(--cor-separador);
+  padding-top: var(--espaco-12);
+}
+
+/* `MarcaDeGravacao` — texto persistente, sem cor como portador de sentido
+ * e sem movimento (documento 15 §6.2). */
+.cg-marca-de-gravacao {
+  color: var(--cor-texto-secundario);
+  font-size: var(--escala-0875);
+}
+
 /* `NavegacaoDeAreas` — alvo de toque de ao menos 48 px e a saída sempre
  * ao fim, num único lugar (documento 15 §§5, 6). */
 .cg-navegacao-de-areas {

@@ -1,6 +1,6 @@
 import { ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao, Campo } from "comum/react";
+import { Aviso, Botao, Campo, MarcaDeGravacao } from "comum/react";
 import { useState } from "react";
 import {
   declararDesafioDeDesbloqueio,
@@ -35,6 +35,7 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
   );
   const [erro, definirErro] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
+  const [gravadoEm, definirGravadoEm] = useState<Date | null>(null);
 
   function alterarAlternativa(indice: number, valor: string) {
     const novas = [...alternativas];
@@ -57,6 +58,7 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
         },
         sessao.token,
       );
+      definirGravadoEm(new Date());
       onAtualizada(atualizada);
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
@@ -71,7 +73,6 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
 
   return (
     <section className="desafio-de-desbloqueio" aria-label={`Desafio de ${missao.titulo}`}>
-      <h4>Desafio de desbloqueio</h4>
       <p>Esse desafio é que abre a missão seguinte para o Guerreiro(a).</p>
 
       {missao.tipo_do_desafio_de_desbloqueio === undefined && (
@@ -128,6 +129,7 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
       <Botao onClick={declarar} desabilitado={enviando}>
         {enviando ? "Salvando…" : "Declarar desafio"}
       </Botao>
+      <MarcaDeGravacao instante={gravadoEm} />
     </section>
   );
 }

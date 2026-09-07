@@ -1,6 +1,13 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
+import {
+  Aviso,
+  BlocoRecolhivel,
+  Botao,
+  Cabecalho,
+  MarcaDeGravacao,
+  Moldura,
+} from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import { listarRecompensasDeMarco, type RecompensaDeMarco } from "../recompensas/api";
 import type { TipoDeRecurso } from "../recursos/api";
@@ -52,6 +59,24 @@ function comCoberturaRefeita(trilha: TrilhaDoMestre): TrilhaDoMestre {
   };
 }
 
+function resumoDasEtiquetasDaTrilha(trilha: TrilhaDoMestre): string {
+  return trilha.etiquetas_ods.length > 0
+    ? `${trilha.etiquetas_ods.length} objetivo(s) etiquetado(s)`
+    : "Nenhum ODS etiquetado nesta trilha.";
+}
+
+function resumoDaCobertura(trilha: TrilhaDoMestre): string {
+  return trilha.cobertura_ods.objetivos.length > 0
+    ? `${trilha.cobertura_ods.objetivos.map((objetivo) => `ODS ${objetivo}`).join(", ")} · ${trilha.cobertura_ods.ciclo}`
+    : "Nenhum ODS coberto por esta trilha ainda.";
+}
+
+function resumoDaCulminancia(trilha: TrilhaDoMestre): string {
+  return trilha.culminancia
+    ? "Culminância declarada."
+    : "Esta trilha ainda não tem a culminância declarada.";
+}
+
 export function TelaDaTrilha({
   trilha,
   tiposDeColeta,
@@ -66,6 +91,8 @@ export function TelaDaTrilha({
   const [recusaDaPublicacao, definirRecusaDaPublicacao] = useState<string | null>(null);
   const [publicando, definirPublicando] = useState(false);
   const [recompensasDeMarco, definirRecompensasDeMarco] = useState<RecompensaDeMarco[]>([]);
+  const [culminanciaGravadaEm, definirCulminanciaGravadaEm] = useState<Date | null>(null);
+  const [missaoGravadaEm, definirMissaoGravadaEm] = useState<Date | null>(null);
 
   const carregarRecompensas = useCallback(async () => {
     if (!sessao) return;
@@ -83,6 +110,7 @@ export function TelaDaTrilha({
 
   function aoAcrescentarMissao(missao: MissaoDaTrilha) {
     definirMostrarFormulario(false);
+    definirMissaoGravadaEm(new Date());
     onAtualizarTrilha(
       comCoberturaRefeita({ ...trilha, missoes: [...trilha.missoes, missao] }),
     );
@@ -138,26 +166,28 @@ export function TelaDaTrilha({
 
       {trilha.motivo_da_situacao && <Aviso tipo="atencao">{trilha.motivo_da_situacao}</Aviso>}
 
-      <EtiquetasOds
-        alvo="trilha"
-        id={trilha.id}
-        etiquetas={trilha.etiquetas_ods}
-        onSalvo={(etiquetas) =>
-          onAtualizarTrilha(comCoberturaRefeita({ ...trilha, etiquetas_ods: etiquetas }))
-        }
-      />
+      <BlocoRecolhivel titulo="ODS da trilha" resumo={resumoDasEtiquetasDaTrilha(trilha)}>
+        <EtiquetasOds
+          alvo="trilha"
+          id={trilha.id}
+          etiquetas={trilha.etiquetas_ods}
+          onSalvo={(etiquetas) =>
+            onAtualizarTrilha(comCoberturaRefeita({ ...trilha, etiquetas_ods: etiquetas }))
+          }
+        />
+      </BlocoRecolhivel>
 
-      <section aria-label="Cobertura de ODS da trilha">
-        <h3>Cobertura de ODS da trilha</h3>
-        <p>
-          {trilha.cobertura_ods.objetivos.length > 0
-            ? `${trilha.cobertura_ods.objetivos.map((objetivo) => `ODS ${objetivo}`).join(", ")} · ${trilha.cobertura_ods.ciclo}`
-            : "Nenhum ODS coberto por esta trilha ainda."}
-        </p>
-      </section>
+      <BlocoRecolhivel titulo="Cobertura de ODS da trilha" resumo={resumoDaCobertura(trilha)}>
+        <section aria-label="Cobertura de ODS da trilha">
+          {trilha.cobertura_ods.objetivos.length > 0 ? (
+            <p>{resumoDaCobertura(trilha)}</p>
+          ) : (
+            <p>Ainda não há ODS coberto, nem pela trilha nem pelas missões dela.</p>
+          )}
+        </section>
+      </BlocoRecolhivel>
 
-      <section aria-label="Culminância">
-        <h2>Culminância</h2>
+      <BlocoRecolhivel titulo="Culminância" resumo={resumoDaCulminancia(trilha)}>
         {trilha.culminancia && !mostrarFormularioDeCulminancia && (
           <p>
             {trilha.culminancia.descricao} ·{" "}
@@ -175,6 +205,7 @@ export function TelaDaTrilha({
             culminancia={trilha.culminancia ?? null}
             onSalvo={(culminancia) => {
               definirMostrarFormularioDeCulminancia(false);
+              definirCulminanciaGravadaEm(new Date());
               onAtualizarTrilha({ ...trilha, culminancia });
             }}
             onCancelar={() => definirMostrarFormularioDeCulminancia(false)}
@@ -187,7 +218,8 @@ export function TelaDaTrilha({
             {trilha.culminancia ? "Alterar culminância" : "Declarar culminância"}
           </Botao>
         )}
-      </section>
+        <MarcaDeGravacao instante={culminanciaGravadaEm} />
+      </BlocoRecolhivel>
 
       {podePublicar && (
         <Botao onClick={aoPublicar} desabilitado={publicando}>
@@ -208,6 +240,7 @@ export function TelaDaTrilha({
           onCancelar={() => definirMostrarFormulario(false)}
         />
       )}
+      <MarcaDeGravacao instante={missaoGravadaEm} />
 
       <ListaDeMissoes
         idDaTrilha={trilha.id}

@@ -539,6 +539,7 @@ describe("autoria de atividade (RF-09-69, RF-09-70)", () => {
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByText("Robô Educa"));
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Atividades"));
     await usuario.click(await screen.findByRole("button", { name: /nova atividade/i }));
     return usuario;
   }
@@ -629,6 +630,7 @@ describe("aula do encontro na atividade (RF-09-69, RF-09-73)", () => {
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByText("Robô Educa"));
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Atividades"));
     await usuario.click(await screen.findByRole("button", { name: /nova atividade/i }));
     return usuario;
   }
@@ -734,11 +736,40 @@ describe("cadência de retomada da missão (RF-09-83, RF-09-101)", () => {
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByText("Robô Educa"));
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Cadência de retomada"));
 
     await usuario.type(screen.getByLabelText(/cadência de retomada/i), "2, 7, 21");
     await usuario.click(screen.getByRole("button", { name: /declarar cadência/i }));
 
     expect(await screen.findByText(/retomada em 2, 7, 21 dias/i)).toBeInTheDocument();
+    // O bloco que grava sozinho declara que gravou (documento 15 §6.2).
+    expect(await screen.findByText(/salvo às/i)).toBeInTheDocument();
+  });
+
+  it("a cadência recusada pelo núcleo não deixa marca de gravação", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "declararCadenciaDeRetomada").mockRejectedValue(new Error("falhou"));
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Cadência de retomada"));
+
+    await usuario.type(screen.getByLabelText(/cadência de retomada/i), "2, 7, 21");
+    await usuario.click(screen.getByRole("button", { name: /declarar cadência/i }));
+
+    expect(
+      await screen.findByText(/não foi possível declarar a cadência/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/salvo às/i)).not.toBeInTheDocument();
   });
 
   it("Mestre deixa a missão sem retomada", async () => {
@@ -760,6 +791,7 @@ describe("cadência de retomada da missão (RF-09-83, RF-09-101)", () => {
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
     expect(await screen.findByText(/retomada em 2, 7, 21 dias/i)).toBeInTheDocument();
 
+    await usuario.click(screen.getByText("Cadência de retomada"));
     await usuario.click(screen.getByRole("button", { name: /deixar sem retomada/i }));
 
     expect(await screen.findByText(/sem retomada declarada/i)).toBeInTheDocument();
@@ -781,6 +813,7 @@ describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117)", () => {
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByText("Robô Educa"));
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Desafio de desbloqueio"));
 
     expect(
       await screen.findByText(/ainda não tem desafio de desbloqueio/i),
@@ -811,6 +844,7 @@ describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117)", () => {
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByText("Robô Educa"));
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Desafio de desbloqueio"));
 
     await usuario.type(screen.getByLabelText(/^enunciado$/i), "Quanto é 1 + 1?");
     await usuario.type(screen.getByLabelText(/^alternativa 1$/i), "1");
@@ -862,6 +896,7 @@ describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117)", () => {
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByText("Robô Educa"));
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Desafio de desbloqueio"));
 
     await usuario.click(await screen.findByRole("radio", { name: /desafio prático/i }));
     await usuario.clear(screen.getByLabelText(/^enunciado$/i));
@@ -895,6 +930,7 @@ describe("O Mestre declara o desafio de coleta da missão (RF-09-27, RF-09-28)",
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Desafios de coleta"));
     await usuario.click(
       await screen.findByRole("button", { name: /novo desafio de coleta/i }),
     );
@@ -932,6 +968,9 @@ describe("O Mestre declara o desafio de coleta da missão (RF-09-27, RF-09-28)",
     expect(
       screen.queryByText(/ainda não tem desafio de coleta declarado/i),
     ).not.toBeInTheDocument();
+    // O bloco que permanece guarda o instante do formulário que fechou ao
+    // gravar (documento 15 §6.2, design — decisão 5).
+    expect(await screen.findByText(/salvo às/i)).toBeInTheDocument();
   });
 
   it("o tipo vem do catálogo, e a aplicação não oferece criar um novo", async () => {
@@ -950,6 +989,7 @@ describe("O Mestre declara o desafio de coleta da missão (RF-09-27, RF-09-28)",
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Desafios de coleta"));
     await usuario.click(
       await screen.findByRole("button", { name: /novo desafio de coleta/i }),
     );
@@ -981,6 +1021,7 @@ describe("O Mestre declara o desafio de coleta da missão (RF-09-27, RF-09-28)",
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Desafios de coleta"));
     await usuario.click(
       await screen.findByRole("button", { name: /novo desafio de coleta/i }),
     );
@@ -1014,6 +1055,7 @@ describe("O Mestre declara o desafio de coleta da missão (RF-09-27, RF-09-28)",
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Desafios de coleta"));
     await usuario.click(
       await screen.findByRole("button", { name: /novo desafio de coleta/i }),
     );
@@ -1034,6 +1076,8 @@ describe("O Mestre declara o desafio de coleta da missão (RF-09-27, RF-09-28)",
     const recusa = await screen.findByRole("alert");
     expect(recusa).toHaveTextContent(/não pode terminar antes de começar/i);
     expect(recusa.textContent).not.toMatch(/erro_de_validacao/i);
+    // A escrita recusada não produz marca (documento 15 §6.2).
+    expect(screen.queryByText(/salvo às/i)).not.toBeInTheDocument();
   });
 
   it("a trilha em rascunho mostra o desafio de coleta já declarado", async () => {
@@ -1051,7 +1095,8 @@ describe("O Mestre declara o desafio de coleta da missão (RF-09-27, RF-09-28)",
     vi.spyOn(trilhasApi, "listarTiposDeColeta").mockResolvedValue([tipoDeColeta()]);
 
     render(<TelaDeAutoria />);
-    await abrirMissao();
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Desafios de coleta"));
 
     expect(await screen.findByText(/temperatura/i)).toBeInTheDocument();
   });
@@ -1067,7 +1112,8 @@ describe("O Mestre declara o desafio de coleta da missão (RF-09-27, RF-09-28)",
     });
 
     render(<TelaDeAutoria />);
-    await abrirMissao();
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Desafios de coleta"));
 
     expect(
       await screen.findByText(/ainda não tem desafio de coleta declarado/i),
@@ -1090,6 +1136,7 @@ describe("O Mestre declara o desafio de coleta da missão (RF-09-27, RF-09-28)",
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Desafios de coleta"));
     await usuario.click(
       await screen.findByRole("button", { name: /novo desafio de coleta/i }),
     );
@@ -1193,6 +1240,7 @@ describe("culminância da trilha (RF-09-29, RF-09-30)", () => {
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByText("Robô Educa"));
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Culminância"));
     await usuario.click(await screen.findByRole("button", { name: /declarar culminância/i }));
     await usuario.type(
       screen.getByLabelText(/descrição da criação esperada/i),
@@ -1224,6 +1272,7 @@ describe("culminância da trilha (RF-09-29, RF-09-30)", () => {
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByText("Robô Educa"));
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Culminância"));
     await usuario.click(await screen.findByRole("button", { name: /declarar culminância/i }));
     await usuario.type(
       screen.getByLabelText(/descrição da criação esperada/i),
@@ -1257,6 +1306,7 @@ describe("culminância da trilha (RF-09-29, RF-09-30)", () => {
       await screen.findByText(/um robô que resolve um problema da comunidade/i),
     ).toBeInTheDocument();
 
+    await usuario.click(await screen.findByText("Culminância"));
     await usuario.click(screen.getByRole("button", { name: /alterar culminância/i }));
     await usuario.click(screen.getByRole("button", { name: /salvar culminância/i }));
 
@@ -1437,6 +1487,7 @@ describe("etiqueta ODS da trilha (RF-09-92, RF-09-12)", () => {
   async function abrirATrilha(usuario: ReturnType<typeof userEvent.setup>) {
     await usuario.click(await screen.findByText("Robô Educa"));
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("ODS da trilha"));
   }
 
   function comCatalogoVazio() {
@@ -1635,6 +1686,7 @@ describe("etiqueta ODS da trilha (RF-09-92, RF-09-12)", () => {
     // objetivo diferente do da trilha (`RF-09-98`).
     expect(screen.getByText(/responde pela etiqueta da trilha/i)).toBeInTheDocument();
 
+    await usuario.click(await screen.findByText("ODS da missão"));
     await usuario.click(screen.getByRole("button", { name: /etiquetar ods da missão/i }));
     await usuario.click(screen.getByRole("button", { name: /acrescentar objetivo/i }));
     await usuario.selectOptions(screen.getByLabelText(/^objetivo 1$/i), "13");
@@ -1691,6 +1743,7 @@ describe("cobertura de ODS da trilha (RF-09-94, RN-01-24)", () => {
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByText("Robô Educa"));
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Cobertura de ODS da trilha"));
 
     const cobertura = await screen.findByRole("region", {
       name: /cobertura de ods da trilha/i,
@@ -1719,12 +1772,14 @@ describe("cobertura de ODS da trilha (RF-09-94, RN-01-24)", () => {
     const usuario = userEvent.setup();
     await usuario.click(await screen.findByText("Robô Educa"));
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("ODS da trilha"));
 
     await usuario.click(screen.getByRole("button", { name: /alterar ods da trilha/i }));
     await usuario.click(screen.getByRole("button", { name: /acrescentar objetivo/i }));
     await usuario.selectOptions(screen.getByLabelText(/^objetivo 2$/i), "13");
     await usuario.click(screen.getByRole("button", { name: /confirmar ods da trilha/i }));
 
+    await usuario.click(await screen.findByText("Cobertura de ODS da trilha"));
     const cobertura = await screen.findByRole("region", {
       name: /cobertura de ods da trilha/i,
     });
@@ -1773,6 +1828,7 @@ describe("conteúdo da missão (RF-09-14, RF-09-15, RF-09-24)", () => {
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Conteúdo"));
     await usuario.click(await screen.findByRole("button", { name: /novo conteúdo/i }));
 
     expect(
@@ -1795,6 +1851,7 @@ describe("conteúdo da missão (RF-09-14, RF-09-15, RF-09-24)", () => {
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Conteúdo"));
     await usuario.click(await screen.findByRole("button", { name: /novo conteúdo/i }));
     await usuario.type(
       screen.getByLabelText(/texto da missão/i),
@@ -1823,6 +1880,7 @@ describe("conteúdo da missão (RF-09-14, RF-09-15, RF-09-24)", () => {
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Conteúdo"));
     await usuario.click(await screen.findByRole("button", { name: /novo conteúdo/i }));
     await usuario.type(screen.getByLabelText(/texto da missão/i), "Trecho citado.");
     await usuario.selectOptions(screen.getByLabelText(/^autoria$/i), "terceiro");
@@ -1846,6 +1904,7 @@ describe("conteúdo da missão (RF-09-14, RF-09-15, RF-09-24)", () => {
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Conteúdo"));
     await usuario.click(await screen.findByRole("button", { name: /novo conteúdo/i }));
 
     expect(screen.queryByLabelText(/html|código|marcação/i)).not.toBeInTheDocument();
@@ -1887,6 +1946,7 @@ describe("envio de vídeo e arquivo (RF-09-16 a RF-09-19, RF-09-115)", () => {
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Conteúdo"));
     await escolherArquivoDeVideo(usuario);
     await usuario.click(screen.getByRole("button", { name: /salvar conteúdo/i }));
 
@@ -1926,6 +1986,7 @@ describe("envio de vídeo e arquivo (RF-09-16 a RF-09-19, RF-09-115)", () => {
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Conteúdo"));
     await escolherArquivoDeVideo(usuario);
     await usuario.click(screen.getByRole("button", { name: /salvar conteúdo/i }));
 
@@ -1960,6 +2021,7 @@ describe("envio de vídeo e arquivo (RF-09-16 a RF-09-19, RF-09-115)", () => {
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Conteúdo"));
     await usuario.click(await screen.findByRole("button", { name: /novo conteúdo/i }));
     await usuario.selectOptions(screen.getByLabelText(/tipo de conteúdo/i), "arquivo");
     // O `accept` do campo já orienta a escolha (`RF-09-115`); a recusa
@@ -1997,6 +2059,7 @@ describe("envio de vídeo e arquivo (RF-09-16 a RF-09-19, RF-09-115)", () => {
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Conteúdo"));
     await escolherArquivoDeVideo(usuario);
     await usuario.click(screen.getByRole("button", { name: /salvar conteúdo/i }));
 
@@ -2076,6 +2139,7 @@ describe("bibliografia da missão (RF-09-21 a RF-09-23)", () => {
 
     render(<TelaDeAutoria />);
     const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Bibliografia"));
     await usuario.click(await screen.findByRole("button", { name: /nova bibliografia/i }));
 
     expect(screen.queryByLabelText(/apoiador/i)).not.toBeInTheDocument();

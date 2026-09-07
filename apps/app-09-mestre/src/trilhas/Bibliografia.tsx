@@ -1,6 +1,6 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao, Campo } from "comum/react";
+import { Aviso, Botao, Campo, MarcaDeGravacao } from "comum/react";
 import { type FormEvent, useEffect, useId, useState } from "react";
 import {
   type BibliografiaDaMissao,
@@ -30,6 +30,7 @@ export function Bibliografia({ idDaMissao, entradas, onSalva }: Props) {
   const [erroDeRecusa, definirErroDeRecusa] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
+  const [gravadoEm, definirGravadoEm] = useState<Date | null>(null);
 
   useEffect(() => {
     if (!sessao) return;
@@ -68,6 +69,7 @@ export function Bibliografia({ idDaMissao, entradas, onSalva }: Props) {
       definirCapitulo("");
       definirExemplarId("");
       definirMostrarFormulario(false);
+      definirGravadoEm(new Date());
       onSalva(bibliografia);
     } catch (erro) {
       if (ehRecusaDeSessao(erro)) {
@@ -86,8 +88,6 @@ export function Bibliografia({ idDaMissao, entradas, onSalva }: Props) {
 
   return (
     <section aria-label="Bibliografia da missão">
-      <h3>Bibliografia</h3>
-
       <ul>
         {entradas.map((entrada) => (
           <li key={entrada.id}>
@@ -151,6 +151,7 @@ export function Bibliografia({ idDaMissao, entradas, onSalva }: Props) {
           Nova bibliografia
         </Botao>
       )}
+      <MarcaDeGravacao instante={gravadoEm} />
     </section>
   );
 }
