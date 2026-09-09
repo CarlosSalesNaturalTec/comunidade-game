@@ -33,10 +33,20 @@ export function inscreverNaTrilha(trilhaId: string, token: string): Promise<Insc
 
 export type TipoDeDesafioDeDesbloqueio = "quiz" | "pratico";
 
+export interface PerguntaDoDesbloqueio {
+  id: string;
+  ordem: number;
+  enunciado: string;
+  // Nunca a alternativa correta: ela não sai do núcleo para o
+  // Guerreiro(a) (`RF-09-118`).
+  alternativas: string[];
+}
+
 export interface DesafioDeDesbloqueio {
   tipo: TipoDeDesafioDeDesbloqueio;
-  enunciado: string;
-  alternativas: string[] | null;
+  // O quiz traz `perguntas`, uma ou mais; o prático traz `enunciado`.
+  enunciado: string | null;
+  perguntas: PerguntaDoDesbloqueio[] | null;
 }
 
 export interface MissaoNoPercurso {
@@ -65,24 +75,32 @@ export function obterMissaoNoPercurso(
   });
 }
 
+export interface RespostaDoDesbloqueio {
+  pergunta_id: string;
+  alternativa_escolhida: number;
+}
+
 export interface ResultadoDaSubmissaoDoDesbloqueio {
   aprovado: boolean | null;
   aguardando_mestre: boolean;
+  acertos: number;
+  total: number;
 }
 
-// Submete o desafio de desbloqueio — no quiz, `alternativaEscolhida` é
-// exigida; no prático, a chamada é a própria declaração de que cumpriu
-// (`RF-05-13`, `RF-05-14`, `RN-05-20`).
+// Submete o desafio de desbloqueio — no quiz, a submissão leva a resposta
+// de **todas** as perguntas de uma vez e a devolutiva diz quantas ele
+// acertou; no prático, a chamada é a própria declaração de que cumpriu
+// (`RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`).
 export function submeterDesafioDeDesbloqueio(
   missaoId: string,
-  alternativaEscolhida: number | null,
+  respostas: RespostaDoDesbloqueio[] | null,
   token: string,
 ): Promise<ResultadoDaSubmissaoDoDesbloqueio> {
   return chamarNucleo<ResultadoDaSubmissaoDoDesbloqueio>(
     `/v1/eu/missoes/${missaoId}/desbloqueio`,
     {
       metodo: "POST",
-      corpo: { alternativa_escolhida: alternativaEscolhida },
+      corpo: { respostas },
       token,
     },
   );

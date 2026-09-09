@@ -35,6 +35,7 @@ from .modelo import (
     FormatoDeAtividade,
     Missao,
     ModalidadeDeAtividade,
+    PerguntaDoDesbloqueio,
     SituacaoDaTrilha,
     TipoDeDesafioDeDesbloqueio,
     Trilha,
@@ -55,6 +56,7 @@ from .regra import (
     julgar_desafio_pratico,
     listar_desbloqueios_praticos_pendentes,
     obter_proxima_missao,
+    perguntas_do_desbloqueio,
     publicar_trilha,
     retomadas_em_aberto_do_guerreiro,
     submeter_desafio_de_desbloqueio,
@@ -643,10 +645,20 @@ def listar_minhas_trilhas_do_guerreiro_rota(
     return saida
 
 
+class PerguntaDoDesbloqueioSaida(BaseModel):
+    """A pergunta como o Guerreiro(a) a vê: **sem** a alternativa correta,
+    que nunca sai do núcleo para ele (`RF-09-118`, design — decisão 6)."""
+
+    id: uuid.UUID
+    ordem: int
+    enunciado: str
+    alternativas: list[str]
+
+
 class DesafioDeDesbloqueioSaida(BaseModel):
     tipo: TipoDeDesafioDeDesbloqueio
-    enunciado: str
-    alternativas: list[str] | None = None
+    enunciado: str | None = None
+    perguntas: list[PerguntaDoDesbloqueioSaida] | None = None
 
 
 class MissaoNoPercursoSaida(BaseModel):
@@ -662,21 +674,37 @@ class MissaoNoPercursoSaida(BaseModel):
     desafio_de_desbloqueio: DesafioDeDesbloqueioSaida | None
 
 
-def _saida_do_desafio_de_desbloqueio(missao: Missao) -> DesafioDeDesbloqueioSaida | None:
+def _saida_das_perguntas(
+    perguntas: list[PerguntaDoDesbloqueio],
+) -> list[PerguntaDoDesbloqueioSaida]:
+    return [
+        PerguntaDoDesbloqueioSaida(
+            id=pergunta.id,
+            ordem=pergunta.ordem,
+            enunciado=pergunta.enunciado,
+            alternativas=[
+                pergunta.alternativa_1,
+                pergunta.alternativa_2,
+                pergunta.alternativa_3,
+                pergunta.alternativa_4,
+            ],
+        )
+        for pergunta in perguntas
+    ]
+
+
+def _saida_do_desafio_de_desbloqueio(
+    sessao: Session, missao: Missao
+) -> DesafioDeDesbloqueioSaida | None:
     if missao.tipo_do_desafio_de_desbloqueio is None:
         return None
-    alternativas = None
+    perguntas = None
     if missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.quiz:
-        alternativas = [
-            missao.desafio_de_desbloqueio_alternativa_1,
-            missao.desafio_de_desbloqueio_alternativa_2,
-            missao.desafio_de_desbloqueio_alternativa_3,
-            missao.desafio_de_desbloqueio_alternativa_4,
-        ]
+        perguntas = _saida_das_perguntas(perguntas_do_desbloqueio(sessao, missao_id=missao.id))
     return DesafioDeDesbloqueioSaida(
         tipo=missao.tipo_do_desafio_de_desbloqueio,
         enunciado=missao.desafio_de_desbloqueio_enunciado,
-        alternativas=alternativas,
+        perguntas=perguntas,
     )
 
 
@@ -707,17 +735,34 @@ def obter_missao_no_percurso_rota(
         e_proxima=item.e_proxima,
         aguardando_mestre=item.aguardando_mestre,
         motivo_do_bloqueio=item.motivo_do_bloqueio,
-        desafio_de_desbloqueio=_saida_do_desafio_de_desbloqueio(item.missao),
+        desafio_de_desbloqueio=_saida_do_desafio_de_desbloqueio(sessao_bd, item.missao),
     )
+
+
+class PerguntaDoDesbloqueioEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    enunciado: str
+    alternativas: list[str]
+    alternativa_correta: int
 
 
 class DeclararDesafioDeDesbloqueioEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     tipo: str
-    enunciado: str = Field(min_length=1)
-    alternativas: list[str] | None = None
-    alternativa_correta: int | None = None
+    # O quiz traz `perguntas`, uma ou mais; o prático traz `enunciado`
+    # (`RF-09-118`, design — decisões 2 e 6). A recusa de cada caso é da
+    # regra, não do schema, para que a mensagem chegue ao Mestre por campo.
+    enunciado: str | None = None
+    perguntas: list[PerguntaDoDesbloqueioEntrada] | None = None
+
+
+class PerguntaDoDesbloqueioAoAutorSaida(PerguntaDoDesbloqueioSaida):
+    """Só ao Mestre autor, e só nesta rota: a pergunta com a alternativa
+    correta."""
+
+    alternativa_correta: int
 
 
 class MissaoComDesafioDeDesbloqueioSaida(MissaoSaida):
@@ -727,9 +772,8 @@ class MissaoComDesafioDeDesbloqueioSaida(MissaoSaida):
     """
 
     tipo_do_desafio_de_desbloqueio: TipoDeDesafioDeDesbloqueio
-    desafio_de_desbloqueio_enunciado: str
-    desafio_de_desbloqueio_alternativas: list[str] | None
-    desafio_de_desbloqueio_alternativa_correta: int | None
+    desafio_de_desbloqueio_enunciado: str | None
+    perguntas_do_desbloqueio: list[PerguntaDoDesbloqueioAoAutorSaida]
 
 
 @roteador.post("/missoes/{id_da_missao}/desbloqueio")
@@ -752,36 +796,45 @@ def declarar_desafio_de_desbloqueio_rota(
         missao=missao,
         tipo=entrada.tipo,
         enunciado=entrada.enunciado,
-        alternativas=entrada.alternativas,
-        alternativa_correta=entrada.alternativa_correta,
+        perguntas=[pergunta.model_dump() for pergunta in entrada.perguntas]
+        if entrada.perguntas is not None
+        else None,
     )
     sessao_bd.commit()
-    alternativas = None
-    if missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.quiz:
-        alternativas = [
-            missao.desafio_de_desbloqueio_alternativa_1,
-            missao.desafio_de_desbloqueio_alternativa_2,
-            missao.desafio_de_desbloqueio_alternativa_3,
-            missao.desafio_de_desbloqueio_alternativa_4,
-        ]
+    perguntas = perguntas_do_desbloqueio(sessao_bd, missao_id=missao.id)
     return MissaoComDesafioDeDesbloqueioSaida(
         **_saida_da_missao(missao, etiquetas=_etiquetas_da_missao(sessao_bd, missao)).model_dump(),
         tipo_do_desafio_de_desbloqueio=missao.tipo_do_desafio_de_desbloqueio,
         desafio_de_desbloqueio_enunciado=missao.desafio_de_desbloqueio_enunciado,
-        desafio_de_desbloqueio_alternativas=alternativas,
-        desafio_de_desbloqueio_alternativa_correta=missao.desafio_de_desbloqueio_alternativa_correta,
+        perguntas_do_desbloqueio=[
+            PerguntaDoDesbloqueioAoAutorSaida(
+                **saida.model_dump(), alternativa_correta=pergunta.alternativa_correta
+            )
+            for saida, pergunta in zip(_saida_das_perguntas(perguntas), perguntas, strict=True)
+        ],
     )
+
+
+class RespostaDoDesbloqueioEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    pergunta_id: uuid.UUID
+    alternativa_escolhida: int
 
 
 class SubmeterDesafioDeDesbloqueioEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    alternativa_escolhida: int | None = None
+    # O quiz vai de uma vez, com a resposta de todas as perguntas
+    # (`RF-05-89`); o prático não tem o que responder.
+    respostas: list[RespostaDoDesbloqueioEntrada] | None = None
 
 
 class SubmeterDesafioDeDesbloqueioSaida(BaseModel):
     aprovado: bool | None
     aguardando_mestre: bool
+    acertos: int
+    total: int
 
 
 @roteador.post("/eu/missoes/{id_da_missao}/desbloqueio", status_code=201)
@@ -802,11 +855,16 @@ def submeter_desafio_de_desbloqueio_rota(
         sessao_bd,
         guerreiro=guerreiro,
         missao=missao,
-        alternativa_escolhida=entrada.alternativa_escolhida,
+        respostas=[resposta.model_dump() for resposta in entrada.respostas]
+        if entrada.respostas is not None
+        else None,
     )
     sessao_bd.commit()
     return SubmeterDesafioDeDesbloqueioSaida(
-        aprovado=resultado.aprovado, aguardando_mestre=resultado.aprovado is None
+        aprovado=resultado.aprovado,
+        aguardando_mestre=resultado.aprovado is None,
+        acertos=resultado.acertos,
+        total=resultado.total,
     )
 
 

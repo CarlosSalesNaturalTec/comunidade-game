@@ -105,15 +105,15 @@ export interface MissaoDaTrilha {
   etapa_do_ciclo: EtapaDoCiclo;
   cadencia_de_retomada: number[] | null;
   // O desafio que abre a missão seguinte — fato do Guerreiro(a) na trilha,
-  // nunca da equipe; declarar de novo substitui o anterior (`RF-09-26`,
-  // `RF-09-117`, documento 11 §2.2). Só a resposta de `declararDesafioDe
-  // Desbloqueio` traz esses quatro campos, com a alternativa correta — a
-  // mesma resposta nunca sai de `GET /trilhas/minhas` nem da leitura
-  // pública, para que a resposta certa não vaze ao Guerreiro(a).
+  // nunca da equipe; declarar de novo substitui o anterior, com as
+  // perguntas dele (`RF-09-26`, `RF-09-118`, documento 11 §2.2). O quiz tem
+  // quantas perguntas o Mestre quiser; o prático usa só o enunciado. Só a
+  // resposta de `declararDesafioDeDesbloqueio` traz as perguntas com a
+  // alternativa correta — ela nunca sai de `GET /trilhas/minhas` nem da
+  // leitura pública, para que a resposta certa não vaze ao Guerreiro(a).
   tipo_do_desafio_de_desbloqueio?: TipoDeDesafioDeDesbloqueio;
-  desafio_de_desbloqueio_enunciado?: string;
-  desafio_de_desbloqueio_alternativas?: string[] | null;
-  desafio_de_desbloqueio_alternativa_correta?: number | null;
+  desafio_de_desbloqueio_enunciado?: string | null;
+  perguntas_do_desbloqueio?: PerguntaDoDesbloqueio[];
   atividades: AtividadeDaMissao[];
   // As etiquetas **próprias** da missão: a leitura não cai para as da
   // trilha, ainda que a missão sem etiqueta própria responda por elas nos
@@ -241,16 +241,28 @@ export function declararCadenciaDeRetomada(
   });
 }
 
-export interface DeclararDesafioDeDesbloqueioEntrada {
-  tipo: TipoDeDesafioDeDesbloqueio;
+export interface PerguntaDoDesbloqueioEntrada {
   enunciado: string;
-  alternativas?: string[] | null;
-  alternativa_correta?: number | null;
+  alternativas: string[];
+  alternativa_correta: number;
 }
 
-// Só o Mestre autor declara — a posse, a exigência das quatro alternativas
+export interface PerguntaDoDesbloqueio extends PerguntaDoDesbloqueioEntrada {
+  id: string;
+  ordem: number;
+}
+
+export interface DeclararDesafioDeDesbloqueioEntrada {
+  tipo: TipoDeDesafioDeDesbloqueio;
+  // O quiz manda `perguntas`, uma ou mais; o prático manda `enunciado`
+  // (`RF-09-118`, `RN-09-43`).
+  enunciado?: string | null;
+  perguntas?: PerguntaDoDesbloqueioEntrada[] | null;
+}
+
+// Só o Mestre autor declara — a posse, a exigência de ao menos uma pergunta
 // no quiz e a substituição do desafio anterior já são do núcleo
-// (`RF-09-26`, `RF-09-117`).
+// (`RF-09-26`, `RF-09-117`, `RF-09-118`, `RN-09-43`).
 export function declararDesafioDeDesbloqueio(
   idDaMissao: string,
   entrada: DeclararDesafioDeDesbloqueioEntrada,

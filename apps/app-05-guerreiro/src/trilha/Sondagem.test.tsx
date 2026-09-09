@@ -28,8 +28,15 @@ describe("sondagem", () => {
             missaoId="sondagem-1"
             desafio={{
               tipo: "quiz",
-              enunciado: "Pergunta",
-              alternativas: ["a", "b", "c", "d"],
+              enunciado: null,
+              perguntas: [
+                {
+                  id: "p1",
+                  ordem: 1,
+                  enunciado: "Pergunta",
+                  alternativas: ["a", "b", "c", "d"],
+                },
+              ],
             }}
             aoResponder={vi.fn()}
           />
@@ -52,6 +59,8 @@ describe("sondagem", () => {
     vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio").mockResolvedValue({
       aprovado: true,
       aguardando_mestre: false,
+      acertos: 0,
+      total: 1,
     });
     const aoResponder = vi.fn();
 
@@ -62,8 +71,15 @@ describe("sondagem", () => {
             missaoId="sondagem-1"
             desafio={{
               tipo: "quiz",
-              enunciado: "Pergunta",
-              alternativas: ["a", "b", "c", "d"],
+              enunciado: null,
+              perguntas: [
+                {
+                  id: "p1",
+                  ordem: 1,
+                  enunciado: "Pergunta",
+                  alternativas: ["a", "b", "c", "d"],
+                },
+              ],
             }}
             aoResponder={aoResponder}
           />
@@ -71,10 +87,16 @@ describe("sondagem", () => {
       );
     });
 
+    // Errar tudo na sondagem abre a trilha do mesmo jeito: quem afere é o
+    // núcleo, e ele não aplica o corte de 60% aqui (`RN-05-46`).
     await act(async () => {
-      screen.getByRole("button", { name: "a" }).click();
+      screen.getByRole("radio", { name: "a" }).click();
+    });
+    await act(async () => {
+      screen.getByRole("button", { name: /enviar respostas/i }).click();
     });
 
     expect(aoResponder).toHaveBeenCalled();
+    expect(screen.queryByText(/não foi dessa vez/i)).not.toBeInTheDocument();
   });
 });

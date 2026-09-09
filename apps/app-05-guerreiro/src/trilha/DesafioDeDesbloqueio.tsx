@@ -12,27 +12,46 @@ interface Props {
   aoDesbloquear: () => void;
 }
 
-// Realiza o desafio de desbloqueio. Passando, a missão seguinte abre na
-// hora; não passando, convida a tentar de novo, sem contagem de fracassos
-// nem punição (`RF-05-13`, `RF-05-14`, `RN-05-20`).
+// Realiza o desafio de desbloqueio. No quiz, todas as perguntas aparecem
+// numa tela só e vão de uma vez; passando, a missão seguinte abre na hora.
+// Não passando, diz quantas ele acertou e convida a tentar de novo, sem
+// contagem de fracassos nem punição. Na sondagem nada disso aparece: o
+// núcleo abre a trilha ao ser respondida, e é `Sondagem` que dá o
+// enquadramento (`RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`,
+// `RN-05-45`, `RN-05-46`).
 export function DesafioDeDesbloqueio({ missaoId, desafio, aoDesbloquear }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [enviando, definirEnviando] = useState(false);
-  const [naoPassou, definirNaoPassou] = useState(false);
+  const [placar, definirPlacar] = useState<{ acertos: number; total: number } | null>(null);
   const [aguardandoMestre, definirAguardandoMestre] = useState(false);
   const [erro, definirErro] = useState<string | null>(null);
+  const [escolhas, definirEscolhas] = useState<Record<string, number>>({});
+  const [faltando, definirFaltando] = useState<string[]>([]);
 
-  async function submeter(alternativaEscolhida: number | null) {
+  const perguntas = desafio.perguntas ?? [];
+
+  async function submeter() {
     if (!sessao) return;
+    let respostas = null;
+    if (desafio.tipo === "quiz") {
+      const semResposta = perguntas
+        .filter((pergunta) => escolhas[pergunta.id] === undefined)
+        .map((pergunta) => pergunta.id);
+      if (semResposta.length > 0) {
+        definirFaltando(semResposta);
+        return;
+      }
+      respostas = perguntas.map((pergunta) => ({
+        pergunta_id: pergunta.id,
+        alternativa_escolhida: escolhas[pergunta.id],
+      }));
+    }
+    definirFaltando([]);
     definirEnviando(true);
     definirErro(null);
-    definirNaoPassou(false);
+    definirPlacar(null);
     try {
-      const resultado = await submeterDesafioDeDesbloqueio(
-        missaoId,
-        alternativaEscolhida,
-        sessao.token,
-      );
+      const resultado = await submeterDesafioDeDesbloqueio(missaoId, respostas, sessao.token);
       if (resultado.aprovado === true) {
         aoDesbloquear();
         return;
@@ -41,7 +60,7 @@ export function DesafioDeDesbloqueio({ missaoId, desafio, aoDesbloquear }: Props
         definirAguardandoMestre(true);
         return;
       }
-      definirNaoPassou(true);
+      definirPlacar({ acertos: resultado.acertos, total: resultado.total });
     } catch (erroCapturado) {
       if (
         erroCapturado &&
@@ -70,32 +89,57 @@ export function DesafioDeDesbloqueio({ missaoId, desafio, aoDesbloquear }: Props
   return (
     <section aria-label="Desafio de desbloqueio" className="cg-trilha__desafio">
       <h3>Desafio de desbloqueio</h3>
-      <p>{desafio.enunciado}</p>
+      {desafio.enunciado && <p>{desafio.enunciado}</p>}
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
-      {naoPassou && (
+      {faltando.length > 0 && (
         <Aviso tipo="atencao">
-          Não foi dessa vez! Você pode tentar de novo quando quiser.
+          Falta responder {faltando.length} pergunta(s) antes de enviar.
+        </Aviso>
+      )}
+      {placar && (
+        <Aviso tipo="atencao">
+          Não foi dessa vez! Você acertou {placar.acertos} de {placar.total}. Pode tentar de
+          novo quando quiser.
         </Aviso>
       )}
 
-      {desafio.tipo === "quiz" && desafio.alternativas && (
-        <ul className="cg-trilha__alternativas">
-          {desafio.alternativas.map((alternativa, indice) => (
-            <li key={alternativa}>
-              <Botao onClick={() => submeter(indice + 1)} desabilitado={enviando}>
-                {alternativa}
-              </Botao>
-            </li>
-          ))}
-        </ul>
-      )}
+      {desafio.tipo === "quiz" &&
+        perguntas.map((pergunta, indice) => (
+          <fieldset
+            key={pergunta.id}
+            className={
+              faltando.includes(pergunta.id)
+                ? "cg-trilha__pergunta cg-trilha__pergunta--falta"
+                : "cg-trilha__pergunta"
+            }
+          >
+            <legend>
+              {indice + 1}. {pergunta.enunciado}
+            </legend>
+            <ul className="cg-trilha__alternativas">
+              {pergunta.alternativas.map((alternativa, posicao) => (
+                <li key={alternativa}>
+                  <label>
+                    <input
+                      type="radio"
+                      name={`pergunta-${pergunta.id}`}
+                      checked={escolhas[pergunta.id] === posicao + 1}
+                      onChange={() =>
+                        definirEscolhas({ ...escolhas, [pergunta.id]: posicao + 1 })
+                      }
+                    />
+                    {alternativa}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </fieldset>
+        ))}
 
-      {desafio.tipo === "pratico" && (
-        <Botao onClick={() => submeter(null)} desabilitado={enviando}>
-          {enviando ? "Enviando…" : "Já cumpri!"}
-        </Botao>
-      )}
+      <Botao onClick={submeter} desabilitado={enviando}>
+        {enviando ? "Enviando…" : desafio.tipo === "quiz" ? "Enviar respostas" : "Já cumpri!"}
+      </Botao>
     </section>
   );
 }
