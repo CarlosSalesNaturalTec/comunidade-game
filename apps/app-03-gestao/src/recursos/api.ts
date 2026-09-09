@@ -17,6 +17,38 @@ export function listarTiposDeRecurso(token: string): Promise<TipoDeRecurso[]> {
   return chamarNucleo<TipoDeRecurso[]>("/v1/tipos-de-recurso", { token });
 }
 
+export type NaturezaDoRecurso = "consumivel" | "duravel" | "servico" | "financeiro";
+
+export const ROTULO_DA_NATUREZA_DO_RECURSO: Record<NaturezaDoRecurso, string> = {
+  consumivel: "Consumível",
+  duravel: "Durável",
+  servico: "Serviço",
+  financeiro: "Financeiro",
+};
+
+export interface CadastrarTipoDeRecursoEntrada {
+  nome: string;
+  natureza: NaturezaDoRecurso;
+  unidade: string;
+  valor_em_moedas: string;
+  vigencia_inicio: string;
+  exige_comprovante?: boolean;
+}
+
+// O tipo e a primeira vigência do valor de referência num ato só, porque é
+// assim que o núcleo os grava — a tela nunca oferece dois passos
+// (`RF-02-107`, `RF-07-01`, `RF-07-02`, design — decisão 2).
+export function cadastrarTipoDeRecurso(
+  entrada: CadastrarTipoDeRecursoEntrada,
+  token: string,
+): Promise<TipoDeRecurso> {
+  return chamarNucleo<TipoDeRecurso>("/v1/tipos-de-recurso", {
+    metodo: "POST",
+    corpo: entrada,
+    token,
+  });
+}
+
 export interface NecessidadeDeRecurso {
   aula_id: string;
   tipo_de_recurso_id: string;

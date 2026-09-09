@@ -5,6 +5,7 @@ import { TelaDoAcervo } from "./acervo/TelaDoAcervo";
 import { TelaDaAgenda } from "./agenda/TelaDaAgenda";
 import { TelaDeAtividades } from "./atividades/TelaDeAtividades";
 import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
+import { TelaDeCatalogos } from "./catalogos/TelaDeCatalogos";
 import { TelaDeChaves } from "./chaves/TelaDeChaves";
 import { TelaDeComunidades } from "./comunidades/TelaDeComunidades";
 import { ProvedorDeDireitos } from "./direitos/ContextoDeDireitos";
@@ -29,6 +30,7 @@ type Area =
   | "recursos"
   | "atividades"
   | "personas"
+  | "catalogos"
   | "territorio"
   | "filas"
   | "chaves"
@@ -41,6 +43,7 @@ type Area =
 const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "comunidades", rotulo: "Comunidades" },
   { chave: "poderes", rotulo: "Poderes" },
+  { chave: "catalogos", rotulo: "Catálogos" },
   { chave: "pontos-de-apoio", rotulo: "Pontos de Apoio" },
   { chave: "acervo", rotulo: "Acervo" },
   { chave: "agenda", rotulo: "Agenda" },
@@ -93,6 +96,7 @@ function Conteudo() {
 
       {area === "comunidades" && <TelaDeComunidades />}
       {area === "poderes" && <TelaDePoderes />}
+      {area === "catalogos" && <TelaDeCatalogos />}
       {area === "pontos-de-apoio" && <TelaDePontosDeApoio />}
       {area === "acervo" && <TelaDoAcervo />}
       {area === "agenda" && <TelaDaAgenda />}
