@@ -7,6 +7,7 @@ import { criarMissao, type EtapaDoCiclo, type MissaoDaTrilha } from "./api";
 interface Props {
   idDaTrilha: string;
   proximaPosicao: number;
+  etapaInicial: EtapaDoCiclo;
   onSalvo: (missao: MissaoDaTrilha) => void;
   onCancelar: () => void;
 }
@@ -28,6 +29,7 @@ const ROTULO_DA_ETAPA: Record<EtapaDoCiclo, string> = {
 export function FormularioDeMissao({
   idDaTrilha,
   proximaPosicao,
+  etapaInicial,
   onSalvo,
   onCancelar,
 }: Props) {
@@ -39,7 +41,7 @@ export function FormularioDeMissao({
   const [posicao, definirPosicao] = useState(String(proximaPosicao));
   const [nivelDeDificuldade, definirNivelDeDificuldade] = useState("1");
   const [obrigatoria, definirObrigatoria] = useState<"" | "sim" | "nao">("");
-  const [etapaDoCiclo, definirEtapaDoCiclo] = useState<EtapaDoCiclo>("abertura");
+  const [etapaDoCiclo, definirEtapaDoCiclo] = useState<EtapaDoCiclo>(etapaInicial);
   const [eSondagem, definirESondagem] = useState(false);
   const [erroDeCampo, definirErroDeCampo] = useState<ErroDeCampo | null>(null);
   const [erroDeRecusa, definirErroDeRecusa] = useState<string | null>(null);

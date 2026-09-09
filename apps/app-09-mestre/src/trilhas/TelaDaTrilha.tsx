@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 import { listarRecompensasDeMarco, type RecompensaDeMarco } from "../recompensas/api";
 import type { TipoDeRecurso } from "../recursos/api";
 import {
+  type EtapaDoCiclo,
   type MissaoDaTrilha,
   publicarTrilha,
   type TipoDeColeta,
@@ -38,6 +39,59 @@ const ROTULO_DA_MODALIDADE_DA_CULMINANCIA: Record<string, string> = {
 // A trilha em rascunho ou despublicada é a única que se publica — trilha já
 // publicada não oferece a ação de novo (`RF-09-05`, `RF-09-11`).
 const SITUACOES_QUE_PODEM_PUBLICAR = new Set(["rascunho", "despublicada"]);
+
+// As quatro etapas do ciclo, fixas e sempre apresentadas, mesmo vazias
+// (`RF-09-03`, design — decisão 3).
+const ETAPAS_DO_CICLO: EtapaDoCiclo[] = [
+  "abertura",
+  "desenvolvimento",
+  "marcos",
+  "fechamento",
+];
+
+const ROTULO_DA_ETAPA: Record<EtapaDoCiclo, string> = {
+  abertura: "Abertura",
+  desenvolvimento: "Desenvolvimento",
+  marcos: "Marcos",
+  fechamento: "Fechamento",
+};
+
+function missoesPorEtapa(trilha: TrilhaDoMestre): Record<EtapaDoCiclo, MissaoDaTrilha[]> {
+  const grupos: Record<EtapaDoCiclo, MissaoDaTrilha[]> = {
+    abertura: [],
+    desenvolvimento: [],
+    marcos: [],
+    fechamento: [],
+  };
+  for (const missao of trilha.missoes) {
+    grupos[missao.etapa_do_ciclo].push(missao);
+  }
+  return grupos;
+}
+
+function juntarEmPortugues(itens: string[]): string {
+  if (itens.length <= 1) return itens.join("");
+  return `${itens.slice(0, -1).join(", ")} e ${itens[itens.length - 1]}`;
+}
+
+// As mesmas três travas que o núcleo recusa, derivadas do payload que a
+// tela já tem — refeitas a cada declaração do Mestre, sem refetch, como
+// `coberturaDaTrilha` já faz. O painel é checklist: quem recusa a
+// publicação continua sendo o núcleo (`RF-09-06`, `RF-09-07`, `RF-09-82`,
+// design — decisões 1 e 2).
+function travasPendentesDaTrilha(trilha: TrilhaDoMestre): string[] {
+  const travas: string[] = [];
+  if (!trilha.missoes.some((missao) => missao.e_sondagem)) {
+    travas.push("a missão de sondagem");
+  }
+  if (!trilha.missoes.some((missao) => (missao.desafios_de_coleta ?? []).length > 0)) {
+    travas.push("o desafio de coleta de dados reais");
+  }
+  if (!trilha.culminancia) {
+    travas.push("a culminância");
+  }
+  return travas;
+}
 
 // A cobertura é a união dos objetivos da trilha e das missões dela, sempre
 // agregada por trilha e nunca por Guerreiro(a) — refeita a cada confirmação
@@ -93,6 +147,7 @@ export function TelaDaTrilha({
   const [recompensasDeMarco, definirRecompensasDeMarco] = useState<RecompensaDeMarco[]>([]);
   const [culminanciaGravadaEm, definirCulminanciaGravadaEm] = useState<Date | null>(null);
   const [missaoGravadaEm, definirMissaoGravadaEm] = useState<Date | null>(null);
+  const [etapaAberta, definirEtapaAberta] = useState<EtapaDoCiclo>("abertura");
 
   const carregarRecompensas = useCallback(async () => {
     if (!sessao) return;
@@ -155,6 +210,8 @@ export function TelaDaTrilha({
   }
 
   const podePublicar = SITUACOES_QUE_PODEM_PUBLICAR.has(trilha.situacao);
+  const grupos = missoesPorEtapa(trilha);
+  const travasPendentes = travasPendentesDaTrilha(trilha);
 
   return (
     <Moldura>
@@ -222,6 +279,16 @@ export function TelaDaTrilha({
       </BlocoRecolhivel>
 
       {podePublicar && (
+        <section aria-label="Pendências para publicar" className="tela-da-trilha__pendencias">
+          {travasPendentes.length > 0 ? (
+            <p>Ainda falta declarar: {juntarEmPortugues(travasPendentes)}.</p>
+          ) : (
+            <p>Não falta nada para publicar.</p>
+          )}
+        </section>
+      )}
+
+      {podePublicar && (
         <Botao onClick={aoPublicar} desabilitado={publicando}>
           Publicar trilha
         </Botao>
@@ -236,15 +303,30 @@ export function TelaDaTrilha({
         <FormularioDeMissao
           idDaTrilha={trilha.id}
           proximaPosicao={trilha.missoes.length + 1}
+          etapaInicial={etapaAberta}
           onSalvo={aoAcrescentarMissao}
           onCancelar={() => definirMostrarFormulario(false)}
         />
       )}
       <MarcaDeGravacao instante={missaoGravadaEm} />
 
+      <nav aria-label="Etapas do ciclo" className="tela-da-trilha__etapas">
+        {ETAPAS_DO_CICLO.map((etapa) => (
+          <button
+            key={etapa}
+            type="button"
+            className="tela-da-trilha__etapa"
+            aria-current={etapa === etapaAberta ? "true" : undefined}
+            onClick={() => definirEtapaAberta(etapa)}
+          >
+            {ROTULO_DA_ETAPA[etapa]} ({grupos[etapa].length})
+          </button>
+        ))}
+      </nav>
+
       <ListaDeMissoes
         idDaTrilha={trilha.id}
-        missoes={trilha.missoes}
+        missoes={grupos[etapaAberta]}
         tiposDeColeta={tiposDeColeta}
         tiposDeRecurso={tiposDeRecurso}
         recompensasDeMarco={recompensasDeMarco}

@@ -148,15 +148,106 @@ export function ListaDeMissoes({
             </span>
           </div>
 
-          <BlocoRecolhivel titulo="Cadência de retomada" resumo={resumoDaCadencia(missao)}>
-            <CadenciaDeRetomada missao={missao} onAtualizada={onAtualizarMissao} />
-          </BlocoRecolhivel>
-
           <BlocoRecolhivel
             titulo="Template da missão"
             resumo="Sugestão de estrutura por IA para esta missão."
           >
             <TemplateDaMissao missao={missao} onAtualizada={onAtualizarMissao} />
+          </BlocoRecolhivel>
+
+          <BlocoRecolhivel titulo="Conteúdo" resumo={resumoDosConteudos(missao)}>
+            <section aria-label={`Conteúdo de ${missao.titulo}`}>
+              <ul>
+                {(missao.conteudos ?? []).map((conteudo) => (
+                  <li key={conteudo.id}>
+                    {conteudo.tipo}
+                    {conteudo.autoria === "terceiro" && conteudo.fonte && (
+                      <> — fonte: {conteudo.fonte}</>
+                    )}
+                  </li>
+                ))}
+              </ul>
+
+              {missaoComFormularioDeConteudo === missao.id ? (
+                <FormularioDeConteudo
+                  idDaMissao={missao.id}
+                  onSalvo={(conteudo) => {
+                    definirMissaoComFormularioDeConteudo(null);
+                    marcarGravado(`${missao.id}:conteudo`);
+                    onAtualizarMissao({
+                      ...missao,
+                      conteudos: [...(missao.conteudos ?? []), conteudo],
+                    });
+                  }}
+                  onCancelar={() => definirMissaoComFormularioDeConteudo(null)}
+                />
+              ) : (
+                <Botao
+                  variante="secundaria"
+                  onClick={() => definirMissaoComFormularioDeConteudo(missao.id)}
+                >
+                  Novo conteúdo
+                </Botao>
+              )}
+              <MarcaDeGravacao instante={gravadoEm[`${missao.id}:conteudo`] ?? null} />
+            </section>
+          </BlocoRecolhivel>
+
+          <BlocoRecolhivel titulo="Bibliografia" resumo={resumoDaBibliografia(missao)}>
+            <Bibliografia
+              idDaMissao={missao.id}
+              entradas={missao.bibliografia ?? []}
+              onSalva={(bibliografia) =>
+                onAtualizarMissao({
+                  ...missao,
+                  bibliografia: [...(missao.bibliografia ?? []), bibliografia],
+                })
+              }
+            />
+          </BlocoRecolhivel>
+
+          <BlocoRecolhivel titulo="Cadência de retomada" resumo={resumoDaCadencia(missao)}>
+            <CadenciaDeRetomada missao={missao} onAtualizada={onAtualizarMissao} />
+          </BlocoRecolhivel>
+
+          <BlocoRecolhivel titulo="Atividades" resumo={resumoDasAtividades(missao)}>
+            <ul aria-label={`Atividades de ${missao.titulo}`}>
+              {missao.atividades.map((atividade) => (
+                <li key={atividade.id}>
+                  {atividade.titulo} — {atividade.modalidade} / {atividade.formato}
+                </li>
+              ))}
+            </ul>
+
+            {missaoComFormulario === missao.id ? (
+              <FormularioDeAtividade
+                idDaMissao={missao.id}
+                onSalvo={(atividade) => {
+                  definirMissaoComFormulario(null);
+                  marcarGravado(`${missao.id}:atividades`);
+                  onAtualizarMissao({
+                    ...missao,
+                    atividades: [...missao.atividades, atividade],
+                  });
+                }}
+                onCancelar={() => definirMissaoComFormulario(null)}
+              />
+            ) : (
+              <Botao
+                variante="secundaria"
+                onClick={() => definirMissaoComFormulario(missao.id)}
+              >
+                Nova atividade
+              </Botao>
+            )}
+            <MarcaDeGravacao instante={gravadoEm[`${missao.id}:atividades`] ?? null} />
+          </BlocoRecolhivel>
+
+          <BlocoRecolhivel
+            titulo="Desafio de desbloqueio"
+            resumo={resumoDoDesafioDeDesbloqueio(missao)}
+          >
+            <DesafioDeDesbloqueio missao={missao} onAtualizada={onAtualizarMissao} />
           </BlocoRecolhivel>
 
           <BlocoRecolhivel
@@ -172,13 +263,6 @@ export function ListaDeMissoes({
               recompensas={recompensasDeMarco.filter((r) => r.missao_id === missao.id)}
               onDeclarada={onDeclararRecompensa}
             />
-          </BlocoRecolhivel>
-
-          <BlocoRecolhivel
-            titulo="Desafio de desbloqueio"
-            resumo={resumoDoDesafioDeDesbloqueio(missao)}
-          >
-            <DesafioDeDesbloqueio missao={missao} onAtualizada={onAtualizarMissao} />
           </BlocoRecolhivel>
 
           <BlocoRecolhivel
@@ -237,90 +321,6 @@ export function ListaDeMissoes({
               etiquetas={missao.etiquetas_ods}
               onSalvo={(etiquetas) =>
                 onAtualizarMissao({ ...missao, etiquetas_ods: etiquetas })
-              }
-            />
-          </BlocoRecolhivel>
-
-          <BlocoRecolhivel titulo="Atividades" resumo={resumoDasAtividades(missao)}>
-            <ul aria-label={`Atividades de ${missao.titulo}`}>
-              {missao.atividades.map((atividade) => (
-                <li key={atividade.id}>
-                  {atividade.titulo} — {atividade.modalidade} / {atividade.formato}
-                </li>
-              ))}
-            </ul>
-
-            {missaoComFormulario === missao.id ? (
-              <FormularioDeAtividade
-                idDaMissao={missao.id}
-                onSalvo={(atividade) => {
-                  definirMissaoComFormulario(null);
-                  marcarGravado(`${missao.id}:atividades`);
-                  onAtualizarMissao({
-                    ...missao,
-                    atividades: [...missao.atividades, atividade],
-                  });
-                }}
-                onCancelar={() => definirMissaoComFormulario(null)}
-              />
-            ) : (
-              <Botao
-                variante="secundaria"
-                onClick={() => definirMissaoComFormulario(missao.id)}
-              >
-                Nova atividade
-              </Botao>
-            )}
-            <MarcaDeGravacao instante={gravadoEm[`${missao.id}:atividades`] ?? null} />
-          </BlocoRecolhivel>
-
-          <BlocoRecolhivel titulo="Conteúdo" resumo={resumoDosConteudos(missao)}>
-            <section aria-label={`Conteúdo de ${missao.titulo}`}>
-              <ul>
-                {(missao.conteudos ?? []).map((conteudo) => (
-                  <li key={conteudo.id}>
-                    {conteudo.tipo}
-                    {conteudo.autoria === "terceiro" && conteudo.fonte && (
-                      <> — fonte: {conteudo.fonte}</>
-                    )}
-                  </li>
-                ))}
-              </ul>
-
-              {missaoComFormularioDeConteudo === missao.id ? (
-                <FormularioDeConteudo
-                  idDaMissao={missao.id}
-                  onSalvo={(conteudo) => {
-                    definirMissaoComFormularioDeConteudo(null);
-                    marcarGravado(`${missao.id}:conteudo`);
-                    onAtualizarMissao({
-                      ...missao,
-                      conteudos: [...(missao.conteudos ?? []), conteudo],
-                    });
-                  }}
-                  onCancelar={() => definirMissaoComFormularioDeConteudo(null)}
-                />
-              ) : (
-                <Botao
-                  variante="secundaria"
-                  onClick={() => definirMissaoComFormularioDeConteudo(missao.id)}
-                >
-                  Novo conteúdo
-                </Botao>
-              )}
-              <MarcaDeGravacao instante={gravadoEm[`${missao.id}:conteudo`] ?? null} />
-            </section>
-          </BlocoRecolhivel>
-
-          <BlocoRecolhivel titulo="Bibliografia" resumo={resumoDaBibliografia(missao)}>
-            <Bibliografia
-              idDaMissao={missao.id}
-              entradas={missao.bibliografia ?? []}
-              onSalva={(bibliografia) =>
-                onAtualizarMissao({
-                  ...missao,
-                  bibliografia: [...(missao.bibliografia ?? []), bibliografia],
-                })
               }
             />
           </BlocoRecolhivel>
