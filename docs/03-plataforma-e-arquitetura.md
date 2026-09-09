@@ -900,6 +900,9 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 - **Conteúdo da missão:** texto formatado, imagens, link externo e upload hospedado
   pela plataforma — **vídeo até 200 MB e arquivo até 20 MB por missão**. O custo do
   armazenamento corre pela fatura de _cloud_, sem medição por envio (documento 04).
+- **Imagem da pergunta do desafio de desbloqueio:** opcional, uma por pergunta, **até 1 MB
+  cada**, nos mesmos formatos de imagem da lista fechada abaixo. O teto é menor que os do
+  conteúdo porque o quiz é lido no aparelho do Guerreiro(a), muitas vezes em rede fraca.
 - **O upload aceita lista fechada de formatos**: vídeo MP4 e WebM, imagem JPG, PNG e WebP,
   áudio MP3 e documento PDF. O que está fora da lista é recusado no envio — o que fecha a porta
   a executável e a formato que o navegador não abre. **O que é enviado não passa por conferência
