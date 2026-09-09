@@ -158,10 +158,12 @@ Toda missão declara:
 | **Recompensa**              | Quando o Mestre declara que aquele desbloqueio libera algo concreto                        |
 | **Etiqueta ODS**            | Opcional em qualquer ciclo; só quando a missão toca objetivo diferente do da trilha (§2.1) |
 
-Cinco regras fecham o modelo:
+Seis regras fecham o modelo:
 
 - **Sondagem antes de ensinar.** Toda trilha abre com uma missão de sondagem, e sem ela a
-  trilha não publica. Ela mede de onde a turma parte; **não define nível**, que é percurso (§6).
+  trilha não publica. Ela mede de onde a turma parte; **não define nível**, que é percurso
+  (§6), e **abre a trilha ao ser respondida, não ao ser acertada** — medir de onde se parte
+  não é filtrar quem entra.
 - **Repetir para fixar.** A retomada traz de volta o que já foi cumprido, na cadência que o
   Mestre declara — o mesmo vocabulário do desafio de coleta. Ela pontua **uma vez por
   agendamento**; refazer por conta própria não rende ponto novo. O _template_ de missão sugere
@@ -173,10 +175,14 @@ Cinco regras fecham o modelo:
 - **Poder técnico começa desplugado.** Em trilha de tecnologia, o modelo pede ao menos uma
   atividade desplugada: lógica e algoritmo com papel e corpo abrem a porta para quem ainda não
   pegou um aparelho.
-- **O desbloqueio é do Guerreiro(a) na trilha, nunca da equipe.** No quiz, o núcleo afere a
-  submissão sozinho. No desafio prático, sem critério que o núcleo possa aferir, o
-  Guerreiro(a) declara que cumpriu e o **Mestre autor julga**; enquanto não julga, a missão
-  aguarda, nunca reprovada.
+- **O desbloqueio é do Guerreiro(a) na trilha, nunca da equipe.** O quiz tem **quantas
+  perguntas o Mestre quiser**, cada uma com quatro alternativas e uma correta, e o núcleo
+  afere a submissão sozinho: **passa quem acerta ao menos 60%** delas. No desafio prático,
+  sem critério que o núcleo possa aferir, o Guerreiro(a) declara que cumpriu e o **Mestre
+  autor julga**; enquanto não julga, a missão aguarda, nunca reprovada.
+- **Toda tentativa fica registrada**, com o que o Guerreiro(a) respondeu em cada pergunta e
+  se acertou — na sondagem como nos desbloqueios. É desse registro que sai a medida do que a
+  trilha ensinou, ao fim do ciclo (documento 10).
 
 ### 2.3 O modelo aplicado — três exemplos
 
