@@ -150,3 +150,42 @@ def test_mestre_duplica_o_proprio_rascunho(sessao, criar_persona, criar_trilha):
 
     assert copia.autor_id == autor.id
     assert copia.situacao == SituacaoDaTrilha.rascunho
+
+
+def test_copia_traz_as_perguntas_do_quiz_de_cada_missao(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao, criar_atividade
+):
+    """`RF-09-13`: as perguntas deixaram de vir de carona nas colunas da
+    `Missao` e passam a ser copiadas uma a uma, na ordem da origem."""
+    from nucleo.trilhas.regra import declarar_desafio_de_desbloqueio, perguntas_do_desbloqueio
+
+    autor, trilha, missao = _montar_trilha_com_missao_e_atividade(
+        criar_persona, criar_poder, criar_trilha, criar_missao, criar_atividade
+    )
+    declarar_desafio_de_desbloqueio(
+        sessao,
+        operador=autor,
+        missao=missao,
+        tipo="quiz",
+        perguntas=[
+            {
+                "enunciado": f"Pergunta {ordem}",
+                "alternativas": ["Um", "Dois", "Três", "Quatro"],
+                "alternativa_correta": ordem,
+            }
+            for ordem in (1, 2, 3)
+        ],
+    )
+    sessao.commit()
+
+    outro_mestre = criar_persona(Papel.mestre)
+    copia = duplicar_trilha(sessao, operador=outro_mestre, trilha_de_origem=trilha)
+    sessao.commit()
+
+    missao_copiada = sessao.query(Missao).filter_by(trilha_id=copia.id).one()
+    perguntas = perguntas_do_desbloqueio(sessao, missao_id=missao_copiada.id)
+    assert [(p.ordem, p.enunciado, p.alternativa_correta) for p in perguntas] == [
+        (1, "Pergunta 1", 1),
+        (2, "Pergunta 2", 2),
+        (3, "Pergunta 3", 3),
+    ]

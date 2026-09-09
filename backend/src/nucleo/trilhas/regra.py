@@ -14,6 +14,8 @@ from ..poderes.modelo import NaturezaDoPoder, Poder
 from ..pontuacao.regra import avaliar_niveis, missoes_concluidas_pelo_guerreiro
 from ..tempo import agora
 from .modelo import (
+    PRIMEIRA_ALTERNATIVA_DO_DESBLOQUEIO,
+    TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO,
     Atividade,
     DesbloqueioDaMissao,
     EtapaDoCiclo,
@@ -21,12 +23,36 @@ from .modelo import (
     InscricaoNaTrilha,
     Missao,
     ModalidadeDeAtividade,
+    PerguntaDoDesbloqueio,
+    RespostaDaSubmissao,
     SituacaoDaTrilha,
+    SubmissaoDoDesbloqueio,
     TipoDeDesafioDeDesbloqueio,
     Trilha,
 )
 
-TOTAL_DE_ALTERNATIVAS_DO_DESAFIO = 4
+# Passa quem acerta ao menos 60% das perguntas do quiz (`RN-05-45`,
+# documento 11 §2.2). Em inteiro, para não depender de ponto flutuante:
+# 3 de 5 passa, 2 de 3 passa, 1 de 2 não passa (design — decisão 3).
+NUMERADOR_DO_CORTE_DO_QUIZ = 6
+DENOMINADOR_DO_CORTE_DO_QUIZ = 10
+
+
+def _passou_no_quiz(acertos: int, total: int) -> bool:
+    return acertos * DENOMINADOR_DO_CORTE_DO_QUIZ >= total * NUMERADOR_DO_CORTE_DO_QUIZ
+
+
+def perguntas_do_desbloqueio(
+    sessao: Session, *, missao_id: uuid.UUID
+) -> list[PerguntaDoDesbloqueio]:
+    """As perguntas do quiz na ordem declarada pelo Mestre autor
+    (`RF-09-118`)."""
+    return (
+        sessao.query(PerguntaDoDesbloqueio)
+        .filter_by(missao_id=missao_id)
+        .order_by(PerguntaDoDesbloqueio.ordem)
+        .all()
+    )
 
 
 def conferir_posse_da_trilha(trilha: Trilha, persona: Persona) -> None:
@@ -277,18 +303,25 @@ def duplicar_trilha(
             cadencia_de_retomada=missao_de_origem.cadencia_de_retomada,
             tipo_do_desafio_de_desbloqueio=missao_de_origem.tipo_do_desafio_de_desbloqueio,
             desafio_de_desbloqueio_enunciado=missao_de_origem.desafio_de_desbloqueio_enunciado,
-            desafio_de_desbloqueio_alternativa_1=missao_de_origem.desafio_de_desbloqueio_alternativa_1,
-            desafio_de_desbloqueio_alternativa_2=missao_de_origem.desafio_de_desbloqueio_alternativa_2,
-            desafio_de_desbloqueio_alternativa_3=missao_de_origem.desafio_de_desbloqueio_alternativa_3,
-            desafio_de_desbloqueio_alternativa_4=missao_de_origem.desafio_de_desbloqueio_alternativa_4,
-            desafio_de_desbloqueio_alternativa_correta=(
-                missao_de_origem.desafio_de_desbloqueio_alternativa_correta
-            ),
             autor_id=operador.id,
             papel_do_autor=operador.papel.value,
         )
         sessao.add(missao_copiada)
         sessao.flush()
+
+        for pergunta_de_origem in perguntas_do_desbloqueio(sessao, missao_id=missao_de_origem.id):
+            sessao.add(
+                PerguntaDoDesbloqueio(
+                    missao_id=missao_copiada.id,
+                    ordem=pergunta_de_origem.ordem,
+                    enunciado=pergunta_de_origem.enunciado,
+                    alternativa_1=pergunta_de_origem.alternativa_1,
+                    alternativa_2=pergunta_de_origem.alternativa_2,
+                    alternativa_3=pergunta_de_origem.alternativa_3,
+                    alternativa_4=pergunta_de_origem.alternativa_4,
+                    alternativa_correta=pergunta_de_origem.alternativa_correta,
+                )
+            )
 
         atividades_da_origem = (
             sessao.query(Atividade).filter_by(missao_id=missao_de_origem.id).all()
@@ -547,27 +580,23 @@ def declarar_desafio_de_desbloqueio(
     operador: Persona,
     missao: Missao | None,
     tipo: str | None,
-    enunciado: str | None,
-    alternativas: list[str] | None = None,
-    alternativa_correta: int | None = None,
+    enunciado: str | None = None,
+    perguntas: list[dict] | None = None,
 ) -> Missao:
     """Só o Mestre autor da trilha declara — declarar de novo substitui o
-    anterior, como `declarar_cadencia_de_retomada` já faz (`RF-09-26`,
-    `RF-09-117`, design — decisão 4). O quiz segue o mesmo formato de
-    `quiz.modelo.PerguntaDeQuiz`: enunciado, quatro alternativas e a
-    correta entre elas; o prático usa só o enunciado, como a descrição do
-    que o Guerreiro(a) precisa cumprir. Missão sem desafio segue publicável
-    — esta declaração nunca é trava de publicação.
+    anterior, com as perguntas dele, como `declarar_cadencia_de_retomada` já
+    faz (`RF-09-26`, `RF-09-117`, `RF-09-118`). O **quiz** traz uma ou mais
+    perguntas, cada uma com enunciado, quatro alternativas e a correta entre
+    elas; quiz sem nenhuma pergunta é recusado (`RN-09-43`). O **prático**
+    usa só o enunciado, como a descrição do que o Guerreiro(a) precisa
+    cumprir. Missão sem desafio segue publicável — esta declaração nunca é
+    trava de publicação.
     """
     if missao is None:
         raise NaoEncontrado(mensagem="Missão não encontrada.")
     trilha = sessao.get(Trilha, missao.trilha_id)
     conferir_posse_da_trilha(trilha, operador)
 
-    if not enunciado or not enunciado.strip():
-        raise ErroDeValidacao(
-            mensagem="Desafio de desbloqueio exige um enunciado.", campo="enunciado"
-        )
     try:
         tipo_valido = TipoDeDesafioDeDesbloqueio(tipo)
     except (ValueError, TypeError) as exc:
@@ -575,48 +604,82 @@ def declarar_desafio_de_desbloqueio(
             mensagem="Tipo de desafio fora dos valores previstos.", campo="tipo"
         ) from exc
 
-    missao.tipo_do_desafio_de_desbloqueio = tipo_valido
-    missao.desafio_de_desbloqueio_enunciado = enunciado
     if tipo_valido == TipoDeDesafioDeDesbloqueio.quiz:
-        if not alternativas or len(alternativas) != TOTAL_DE_ALTERNATIVAS_DO_DESAFIO:
-            raise ErroDeValidacao(
-                mensagem="Desafio em forma de quiz exige quatro alternativas.",
-                campo="alternativas",
+        perguntas_validas = _conferir_perguntas_do_quiz(perguntas)
+    elif not enunciado or not enunciado.strip():
+        raise ErroDeValidacao(mensagem="Desafio prático exige um enunciado.", campo="enunciado")
+
+    # Redeclarar substitui: as perguntas do desafio anterior saem antes de
+    # as novas entrarem, para que a missão nunca tenha duas séries de ordem.
+    for pergunta in perguntas_do_desbloqueio(sessao, missao_id=missao.id):
+        sessao.delete(pergunta)
+    sessao.flush()
+
+    missao.tipo_do_desafio_de_desbloqueio = tipo_valido
+    if tipo_valido == TipoDeDesafioDeDesbloqueio.quiz:
+        missao.desafio_de_desbloqueio_enunciado = None
+        for ordem, pergunta in enumerate(perguntas_validas, start=1):
+            sessao.add(
+                PerguntaDoDesbloqueio(
+                    missao_id=missao.id,
+                    ordem=ordem,
+                    enunciado=pergunta["enunciado"],
+                    alternativa_1=pergunta["alternativas"][0],
+                    alternativa_2=pergunta["alternativas"][1],
+                    alternativa_3=pergunta["alternativas"][2],
+                    alternativa_4=pergunta["alternativas"][3],
+                    alternativa_correta=pergunta["alternativa_correta"],
+                )
             )
-        if alternativa_correta is None or not (
-            1 <= alternativa_correta <= TOTAL_DE_ALTERNATIVAS_DO_DESAFIO
-        ):
-            raise ErroDeValidacao(
-                mensagem="Desafio em forma de quiz exige a alternativa correta.",
-                campo="alternativa_correta",
-            )
-        (
-            missao.desafio_de_desbloqueio_alternativa_1,
-            missao.desafio_de_desbloqueio_alternativa_2,
-            missao.desafio_de_desbloqueio_alternativa_3,
-            missao.desafio_de_desbloqueio_alternativa_4,
-        ) = alternativas
-        missao.desafio_de_desbloqueio_alternativa_correta = alternativa_correta
     else:
-        missao.desafio_de_desbloqueio_alternativa_1 = None
-        missao.desafio_de_desbloqueio_alternativa_2 = None
-        missao.desafio_de_desbloqueio_alternativa_3 = None
-        missao.desafio_de_desbloqueio_alternativa_4 = None
-        missao.desafio_de_desbloqueio_alternativa_correta = None
+        missao.desafio_de_desbloqueio_enunciado = enunciado
 
     sessao.flush()
     return missao
 
 
+def _conferir_perguntas_do_quiz(perguntas: list[dict] | None) -> list[dict]:
+    """Quiz exige ao menos uma pergunta, e cada uma exige enunciado, quatro
+    alternativas e a correta entre elas (`RN-09-43`, `RF-09-118`)."""
+    if not perguntas:
+        raise ErroDeValidacao(
+            mensagem="Desafio em forma de quiz exige ao menos uma pergunta.",
+            campo="perguntas",
+        )
+    for pergunta in perguntas:
+        if not pergunta.get("enunciado", "").strip():
+            raise ErroDeValidacao(
+                mensagem="Toda pergunta do quiz exige um enunciado.", campo="perguntas"
+            )
+        alternativas = pergunta.get("alternativas") or []
+        if len(alternativas) != TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO or not all(
+            alternativa and alternativa.strip() for alternativa in alternativas
+        ):
+            raise ErroDeValidacao(
+                mensagem="Toda pergunta do quiz exige quatro alternativas.", campo="perguntas"
+            )
+        correta = pergunta.get("alternativa_correta")
+        if correta is None or not (
+            PRIMEIRA_ALTERNATIVA_DO_DESBLOQUEIO <= correta <= TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO
+        ):
+            raise ErroDeValidacao(
+                mensagem="Toda pergunta do quiz exige a alternativa correta.", campo="perguntas"
+            )
+    return perguntas
+
+
 @dataclass
 class ResultadoDaSubmissaoDoDesbloqueio:
-    """`aprovado`: `True` desbloqueou na hora (quiz certo ou prático já
-    julgado antes), `None` aguardando o Mestre julgar o prático, `False`
-    não passou no quiz — nada gravado, submete de novo sem limite
-    (`RN-05-20`)."""
+    """`aprovado`: `True` desbloqueou na hora (quiz que alcançou o corte,
+    sondagem respondida ou prático já julgado antes), `None` aguardando o
+    Mestre julgar o prático, `False` não alcançou o corte do quiz — submete
+    de novo sem limite (`RN-05-20`). `acertos` e `total` são a devolutiva do
+    quiz (`RF-05-89`); no prático nascem em zero."""
 
     aprovado: bool | None
     desbloqueio: DesbloqueioDaMissao | None
+    acertos: int = 0
+    total: int = 0
 
 
 def submeter_desafio_de_desbloqueio(
@@ -624,14 +687,18 @@ def submeter_desafio_de_desbloqueio(
     *,
     guerreiro: Persona,
     missao: Missao | None,
-    alternativa_escolhida: int | None = None,
+    respostas: list[dict] | None = None,
 ) -> ResultadoDaSubmissaoDoDesbloqueio:
     """Só o Guerreiro(a) inscrito na trilha submete — sem inscrição, 422
-    (`RN-05-20`, `RN-05-06`, documento 11 §2.2). No quiz, o núcleo afere e
-    grava o desbloqueio na mesma operação quando passa; não passando, nada
-    é gravado. No prático, grava a declaração do Guerreiro(a), aguardando o
-    Mestre autor julgar. Em nenhum dos dois casos o desbloqueio credita
-    ponto (`RN-05-06`) — quem credita é sempre o Resultado.
+    (`RN-05-20`, `RN-05-06`, documento 11 §2.2). No quiz, a submissão traz a
+    resposta de todas as perguntas de uma vez e o núcleo afere pela
+    proporção de acertos: passa quem acerta ao menos 60% (`RF-05-89`,
+    `RN-05-45`). A **missão de sondagem** é exceção — abre a trilha ao ser
+    respondida, acertando ou não (`RN-05-46`), porque mede de onde o
+    Guerreiro(a) parte. No prático, grava a declaração do Guerreiro(a),
+    aguardando o Mestre autor julgar. **Toda tentativa fica gravada**, a que
+    passa e a que não passa (`RN-05-47`). Em nenhum caso o desbloqueio
+    credita ponto (`RN-05-06`) — quem credita é sempre o Resultado.
     """
     if missao is None:
         raise NaoEncontrado(mensagem="Missão não encontrada.")
@@ -650,19 +717,109 @@ def submeter_desafio_de_desbloqueio(
         return ResultadoDaSubmissaoDoDesbloqueio(aprovado=existente.aprovado, desbloqueio=existente)
 
     if missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.quiz:
-        if alternativa_escolhida == missao.desafio_de_desbloqueio_alternativa_correta:
-            desbloqueio = DesbloqueioDaMissao(
-                guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=True
+        perguntas = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+        if not perguntas:
+            raise ErroDeValidacao(
+                mensagem="Esta missão não tem desafio de desbloqueio declarado.",
+                campo="missao_id",
             )
-            sessao.add(desbloqueio)
-            sessao.flush()
-            return ResultadoDaSubmissaoDoDesbloqueio(aprovado=True, desbloqueio=desbloqueio)
-        return ResultadoDaSubmissaoDoDesbloqueio(aprovado=False, desbloqueio=None)
+        escolhas = _conferir_respostas_do_quiz(respostas, perguntas)
+        acertos = sum(
+            1 for pergunta in perguntas if escolhas[pergunta.id] == pergunta.alternativa_correta
+        )
+        _gravar_submissao(
+            sessao,
+            guerreiro_id=guerreiro.id,
+            missao_id=missao.id,
+            perguntas=perguntas,
+            escolhas=escolhas,
+            acertos=acertos,
+        )
+        # A sondagem abre ao ser respondida: o corte não se aplica a ela
+        # (`RN-05-46`, design — decisão 4).
+        passou = missao.e_sondagem or _passou_no_quiz(acertos, len(perguntas))
+        if not passou:
+            return ResultadoDaSubmissaoDoDesbloqueio(
+                aprovado=False, desbloqueio=None, acertos=acertos, total=len(perguntas)
+            )
+        desbloqueio = DesbloqueioDaMissao(
+            guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=True
+        )
+        sessao.add(desbloqueio)
+        sessao.flush()
+        return ResultadoDaSubmissaoDoDesbloqueio(
+            aprovado=True, desbloqueio=desbloqueio, acertos=acertos, total=len(perguntas)
+        )
 
+    _gravar_submissao(
+        sessao, guerreiro_id=guerreiro.id, missao_id=missao.id, perguntas=[], escolhas={}, acertos=0
+    )
     desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=None)
     sessao.add(desbloqueio)
     sessao.flush()
     return ResultadoDaSubmissaoDoDesbloqueio(aprovado=None, desbloqueio=desbloqueio)
+
+
+def _conferir_respostas_do_quiz(
+    respostas: list[dict] | None, perguntas: list[PerguntaDoDesbloqueio]
+) -> dict[uuid.UUID, int]:
+    """A submissão traz a resposta de todas as perguntas de uma vez
+    (`RF-05-89`): resposta faltando, repetida ou apontando pergunta de outra
+    missão é 422."""
+    escolhas: dict[uuid.UUID, int] = {}
+    esperadas = {pergunta.id for pergunta in perguntas}
+    for resposta in respostas or []:
+        pergunta_id = resposta.get("pergunta_id")
+        if pergunta_id not in esperadas:
+            raise ErroDeValidacao(
+                mensagem="Resposta de pergunta que não é deste desafio.", campo="respostas"
+            )
+        if pergunta_id in escolhas:
+            raise ErroDeValidacao(
+                mensagem="Cada pergunta aceita uma resposta só.", campo="respostas"
+            )
+        escolhida = resposta.get("alternativa_escolhida")
+        if escolhida is None or not (
+            PRIMEIRA_ALTERNATIVA_DO_DESBLOQUEIO <= escolhida <= TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO
+        ):
+            raise ErroDeValidacao(
+                mensagem="Alternativa escolhida fora das quatro da pergunta.", campo="respostas"
+            )
+        escolhas[pergunta_id] = escolhida
+    if len(escolhas) != len(esperadas):
+        raise ErroDeValidacao(
+            mensagem="Responda a todas as perguntas do quiz antes de enviar.", campo="respostas"
+        )
+    return escolhas
+
+
+def _gravar_submissao(
+    sessao: Session,
+    *,
+    guerreiro_id: uuid.UUID,
+    missao_id: uuid.UUID,
+    perguntas: list[PerguntaDoDesbloqueio],
+    escolhas: dict[uuid.UUID, int],
+    acertos: int,
+) -> SubmissaoDoDesbloqueio:
+    """Acrescenta a tentativa ao histórico, sem tocar nas anteriores
+    (`RN-05-47`)."""
+    submissao = SubmissaoDoDesbloqueio(
+        guerreiro_id=guerreiro_id, missao_id=missao_id, acertos=acertos, total=len(perguntas)
+    )
+    sessao.add(submissao)
+    sessao.flush()
+    for pergunta in perguntas:
+        sessao.add(
+            RespostaDaSubmissao(
+                submissao_id=submissao.id,
+                pergunta_id=pergunta.id,
+                alternativa_escolhida=escolhas[pergunta.id],
+                acertou=escolhas[pergunta.id] == pergunta.alternativa_correta,
+            )
+        )
+    sessao.flush()
+    return submissao
 
 
 def listar_desbloqueios_praticos_pendentes(

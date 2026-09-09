@@ -128,22 +128,15 @@ class Missao(Base, ComAutoria):
     )
     cadencia_de_retomada: Mapped[list[int] | None] = mapped_column(ARRAY(Integer), nullable=True)
     # O desafio de desbloqueio, declarado pelo Mestre autor (`RF-09-26`,
-    # design — decisão 4): coluna da missão, não entidade nova — declarar
-    # de novo substitui, como `cadencia_de_retomada` já faz. No quiz,
-    # `enunciado` e as quatro alternativas seguem o mesmo formato de
-    # `quiz.modelo.PerguntaDeQuiz` (`RF-09-36`); no prático, só `enunciado`
-    # é usado, como a descrição do que o Guerreiro(a) precisa cumprir.
+    # `RF-09-118`): o tipo fica aqui, porque é ele que diz se a missão tem
+    # desafio e de que natureza. No **quiz**, as perguntas são linhas de
+    # `PerguntaDoDesbloqueio` e o enunciado desce para cada uma; no
+    # **prático**, `desafio_de_desbloqueio_enunciado` descreve o que o
+    # Guerreiro(a) precisa cumprir (design — decisão 2).
     tipo_do_desafio_de_desbloqueio: Mapped[TipoDeDesafioDeDesbloqueio | None] = mapped_column(
         Enum(TipoDeDesafioDeDesbloqueio, native_enum=False, length=16), nullable=True
     )
     desafio_de_desbloqueio_enunciado: Mapped[str | None] = mapped_column(Text, nullable=True)
-    desafio_de_desbloqueio_alternativa_1: Mapped[str | None] = mapped_column(Text, nullable=True)
-    desafio_de_desbloqueio_alternativa_2: Mapped[str | None] = mapped_column(Text, nullable=True)
-    desafio_de_desbloqueio_alternativa_3: Mapped[str | None] = mapped_column(Text, nullable=True)
-    desafio_de_desbloqueio_alternativa_4: Mapped[str | None] = mapped_column(Text, nullable=True)
-    desafio_de_desbloqueio_alternativa_correta: Mapped[int | None] = mapped_column(
-        Integer, nullable=True
-    )
 
     __table_args__ = (
         UniqueConstraint(
@@ -159,6 +152,98 @@ class Missao(Base, ComAutoria):
             unique=True,
             postgresql_where=text("e_sondagem"),
         ),
+    )
+
+
+# As quatro alternativas do documento 11 §2.2 viram quatro colunas, como em
+# `quiz.modelo.PerguntaDeQuiz`: "exatamente quatro" é estrutura da tabela, e
+# não validação (`RF-09-118`).
+PRIMEIRA_ALTERNATIVA_DO_DESBLOQUEIO = 1
+TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO = 4
+
+
+class PerguntaDoDesbloqueio(Base):
+    """Pergunta do desafio de desbloqueio em forma de quiz, declarada pelo
+    Mestre autor (`RF-09-118`). Sem limite de quantidade por missão, e a
+    `ordem` preserva a sequência em que ele as dispôs. Não se confunde com
+    `quiz.modelo.PerguntaDeQuiz`, que é do banco do Mestre e serve a
+    partidas do Quiz ao Vivo: esta pertence à missão e morre com o desafio,
+    porque redeclarar o desafio substitui as perguntas dele (design —
+    decisão 1).
+    """
+
+    __tablename__ = "pergunta_do_desbloqueio"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    missao_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("missao.id"), nullable=False)
+    ordem: Mapped[int] = mapped_column(Integer, nullable=False)
+    enunciado: Mapped[str] = mapped_column(Text, nullable=False)
+    alternativa_1: Mapped[str] = mapped_column(Text, nullable=False)
+    alternativa_2: Mapped[str] = mapped_column(Text, nullable=False)
+    alternativa_3: Mapped[str] = mapped_column(Text, nullable=False)
+    alternativa_4: Mapped[str] = mapped_column(Text, nullable=False)
+    alternativa_correta: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    __table_args__ = (
+        CheckConstraint(
+            "alternativa_correta BETWEEN "
+            f"{PRIMEIRA_ALTERNATIVA_DO_DESBLOQUEIO} AND {TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO}",
+            name="ck_pergunta_do_desbloqueio_alternativa_correta",
+        ),
+        UniqueConstraint("missao_id", "ordem", name="uq_pergunta_do_desbloqueio_missao_id_ordem"),
+        Index("ix_pergunta_do_desbloqueio_missao_id", "missao_id"),
+    )
+
+
+class SubmissaoDoDesbloqueio(Base):
+    """Toda tentativa do desafio de desbloqueio, a que passa e a que não
+    passa, na sondagem como nas demais missões (`RN-05-47`). É histórico ao
+    lado de `DesbloqueioDaMissao`, que segue sendo o fato único por par:
+    repetir acrescenta uma linha aqui e nunca sobrescreve as anteriores
+    (design — decisão 1). `acertos` e `total` valem para o quiz; no prático
+    nascem em zero, porque não há o que aferir.
+    """
+
+    __tablename__ = "submissao_do_desbloqueio"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    guerreiro_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("persona.id"), nullable=False)
+    missao_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("missao.id"), nullable=False)
+    momento: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    acertos: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    total: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    __table_args__ = (
+        Index("ix_submissao_do_desbloqueio_guerreiro_id_missao_id", "guerreiro_id", "missao_id"),
+    )
+
+
+class RespostaDaSubmissao(Base):
+    """O que o Guerreiro(a) respondeu em cada pergunta de uma submissão, e
+    se acertou (`RN-05-47`). É o grão que a medida do ciclo lê ao comparar a
+    sondagem com os desbloqueios (documento 10 §3); esta fatia grava, não
+    lê.
+    """
+
+    __tablename__ = "resposta_da_submissao"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    submissao_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("submissao_do_desbloqueio.id"), nullable=False
+    )
+    pergunta_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("pergunta_do_desbloqueio.id"), nullable=False
+    )
+    alternativa_escolhida: Mapped[int] = mapped_column(Integer, nullable=False)
+    acertou: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "submissao_id", "pergunta_id", name="uq_resposta_da_submissao_submissao_id_pergunta_id"
+        ),
+        Index("ix_resposta_da_submissao_submissao_id", "submissao_id"),
     )
 
 

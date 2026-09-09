@@ -54,9 +54,16 @@ function resumoDaCadencia(missao: MissaoDaTrilha): string {
 }
 
 function resumoDoDesafioDeDesbloqueio(missao: MissaoDaTrilha): string {
-  return missao.tipo_do_desafio_de_desbloqueio === undefined
-    ? "Ainda sem desafio de desbloqueio."
-    : "Desafio de desbloqueio declarado.";
+  if (missao.tipo_do_desafio_de_desbloqueio === undefined) {
+    return "Ainda sem desafio de desbloqueio.";
+  }
+  // O quiz diz quantas perguntas tem, para o Mestre saber o tamanho do que
+  // escreveu sem abrir o bloco (`RF-09-118`).
+  if (missao.tipo_do_desafio_de_desbloqueio === "quiz") {
+    const total = (missao.perguntas_do_desbloqueio ?? []).length;
+    return `Quiz com ${total} pergunta(s).`;
+  }
+  return "Desafio prático declarado.";
 }
 
 function resumoDosDesafiosDeColeta(missao: MissaoDaTrilha): string {

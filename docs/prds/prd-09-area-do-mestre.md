@@ -327,6 +327,8 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-34`  | Mestre recusa a criação com motivo, devolvendo-a para ajuste sem perder a autoria                                                                                                                                 | essencial  |
 | `RF-09-35`  | Mestre audita por amostragem semanal os registros de coleta e invalida com motivo                                                                                                                                 | essencial  |
 | `RF-09-117` | No desafio de desbloqueio em forma de prático, o Mestre autor julga se o Guerreiro(a) que declarou tê-lo cumprido passou, abrindo a missão seguinte para ele; no quiz, o núcleo afere sozinho (documento 11 §2.2) | essencial  |
+| `RF-09-118` | Quiz do desbloqueio aceita quantas perguntas o Mestre declarar, cada uma com quatro alternativas e uma correta                                                                                                    | essencial  |
+| `RF-09-119` | Mestre anexa a cada pergunta do quiz uma imagem opcional de até 1 MB                                                                                                                                              | essencial  |
 
 ### 6.5 Banco do Quiz ao Vivo
 
@@ -474,6 +476,7 @@ outras duas frentes já entregues — tombamento (PRD-07) e ficha de vida —, s
 | `RN-09-40` | Pontos do desafio extra são no máximo 10, de qualquer proponente                                              | —                      | 04 §3          |
 | `RN-09-41` | Validação pedagógica só é dispensada para o Mestre autor da própria trilha; Admin aprova sempre               | —                      | 04 §3          |
 | `RN-09-42` | Desafio extra reserva a recompensa na publicação; sem saldo, não publica                                      | 9                      | 04 §3, PRD-07  |
+| `RN-09-43` | Quiz do desbloqueio exige ao menos uma pergunta declarada                                                     | —                      | 11 §2.2        |
 
 ## 8. Modelo de dados
 
@@ -786,3 +789,5 @@ travas da publicação (documento 03 §11).
 | `RF-09-115`               | 03 §11 (lista fechada de formatos do upload)                          |
 | `RF-09-116`               | 11 §2.2 (cadência padrão sugerida pelo template)                      |
 | `RF-09-117`               | 11 §2.2 (o desbloqueio é fato do Guerreiro(a); julgamento do prático) |
+| `RF-09-118`               | 11 §2.2 (quantas perguntas o Mestre quiser, quatro alternativas cada) |
+| `RF-09-119`               | 03 §11 (teto de 1 MB por pergunta, formatos da lista fechada)         |

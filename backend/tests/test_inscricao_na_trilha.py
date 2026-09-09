@@ -122,3 +122,68 @@ def test_guerreiro_inscreve_se_pela_rota(
 
     assert resposta.status_code == 201
     assert resposta.json()["trilha_id"] == str(trilha.id)
+
+
+def test_guerreiro_submete_o_quiz_pela_rota_com_todas_as_respostas(
+    sessao,
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    """`RF-05-89`, `RN-05-45`: a submissão leva a resposta de todas as
+    perguntas de uma vez, e a saída traz o placar ao lado de `aprovado`."""
+    from nucleo.trilhas.regra import declarar_desafio_de_desbloqueio, perguntas_do_desbloqueio
+
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    declarar_desafio_de_desbloqueio(
+        sessao,
+        operador=mestre,
+        missao=missao,
+        tipo="quiz",
+        perguntas=[
+            {
+                "enunciado": f"Pergunta {ordem}",
+                "alternativas": ["Um", "Dois", "Três", "Quatro"],
+                "alternativa_correta": 1,
+            }
+            for ordem in (1, 2, 3, 4)
+        ],
+    )
+    sessao.commit()
+    perguntas = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    token, _ = criar_sessao_de_teste(guerreiro)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    cliente.post(f"/v1/eu/trilhas/{trilha.id}/inscricao", headers=cabecalhos)
+
+    incompleta = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio",
+        json={"respostas": [{"pergunta_id": str(perguntas[0].id), "alternativa_escolhida": 1}]},
+        headers=cabecalhos,
+    )
+    assert incompleta.status_code == 422
+
+    resposta = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio",
+        json={
+            "respostas": [
+                {"pergunta_id": str(pergunta.id), "alternativa_escolhida": escolha}
+                for pergunta, escolha in zip(perguntas, [1, 1, 1, 2], strict=True)
+            ]
+        },
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 201
+    assert resposta.json() == {
+        "aprovado": True,
+        "aguardando_mestre": False,
+        "acertos": 3,
+        "total": 4,
+    }

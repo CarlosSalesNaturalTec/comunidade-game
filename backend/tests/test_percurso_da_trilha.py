@@ -8,6 +8,7 @@ from nucleo.trilhas.regra import (
     derivar_percurso,
     inscrever_na_trilha,
     obter_proxima_missao,
+    perguntas_do_desbloqueio,
     submeter_desafio_de_desbloqueio,
 )
 
@@ -20,10 +21,19 @@ def _declarar_quiz(sessao, mestre, missao, alternativa_correta=1):
         operador=mestre,
         missao=missao,
         tipo="quiz",
-        enunciado="Pergunta da missão.",
-        alternativas=ALTERNATIVAS,
-        alternativa_correta=alternativa_correta,
+        perguntas=[
+            {
+                "enunciado": "Pergunta da missão.",
+                "alternativas": ALTERNATIVAS,
+                "alternativa_correta": alternativa_correta,
+            }
+        ],
     )
+
+
+def _responder(sessao, missao, escolha):
+    pergunta = perguntas_do_desbloqueio(sessao, missao_id=missao.id)[0]
+    return [{"pergunta_id": pergunta.id, "alternativa_escolhida": escolha}]
 
 
 def test_proxima_missao_e_a_de_menor_posicao_nao_desbloqueada(
@@ -71,7 +81,10 @@ def test_missao_ja_desbloqueada_permanece_aberta(sessao, criar_persona, criar_tr
     sessao.commit()
 
     submeter_desafio_de_desbloqueio(
-        sessao, guerreiro=guerreiro, missao=missao_1, alternativa_escolhida=1
+        sessao,
+        guerreiro=guerreiro,
+        missao=missao_1,
+        respostas=_responder(sessao, missao_1, 1),
     )
     sessao.commit()
 
@@ -125,7 +138,10 @@ def test_respondida_a_sondagem_a_primeira_missao_comum_abre(
     sessao.commit()
 
     submeter_desafio_de_desbloqueio(
-        sessao, guerreiro=guerreiro, missao=sondagem, alternativa_escolhida=1
+        sessao,
+        guerreiro=guerreiro,
+        missao=sondagem,
+        respostas=_responder(sessao, sondagem, 1),
     )
     sessao.commit()
 
@@ -145,7 +161,10 @@ def test_sondagem_sem_nivel_nem_ponto(sessao, criar_persona, criar_trilha, criar
     sessao.commit()
 
     submeter_desafio_de_desbloqueio(
-        sessao, guerreiro=guerreiro, missao=sondagem, alternativa_escolhida=1
+        sessao,
+        guerreiro=guerreiro,
+        missao=sondagem,
+        respostas=_responder(sessao, sondagem, 1),
     )
     sessao.commit()
 

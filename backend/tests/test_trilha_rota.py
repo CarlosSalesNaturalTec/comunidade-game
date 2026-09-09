@@ -979,21 +979,31 @@ def test_leitura_publica_nunca_traz_a_alternativa_correta_do_desafio(
         f"/v1/missoes/{missao_id}/desbloqueio",
         json={
             "tipo": "quiz",
-            "enunciado": "Quanto é 1 + 1?",
-            "alternativas": ["1", "2", "3", "4"],
-            "alternativa_correta": 2,
+            "perguntas": [
+                {
+                    "enunciado": "Quanto é 1 + 1?",
+                    "alternativas": ["1", "2", "3", "4"],
+                    "alternativa_correta": 2,
+                },
+                {
+                    "enunciado": "Quanto é 2 + 2?",
+                    "alternativas": ["2", "3", "4", "5"],
+                    "alternativa_correta": 3,
+                },
+            ],
         },
         headers=cabecalhos,
     )
     assert resposta_declaracao.status_code == 200
-    assert resposta_declaracao.json()["desafio_de_desbloqueio_alternativa_correta"] == 2
+    perguntas = resposta_declaracao.json()["perguntas_do_desbloqueio"]
+    assert [pergunta["alternativa_correta"] for pergunta in perguntas] == [2, 3]
 
     cliente.post(f"/v1/trilhas/{trilha_id}/publicacao", headers=cabecalhos)
     resposta_leitura = cliente.get(f"/v1/trilhas/{trilha_id}", headers={"X-Chave-Aplicacao": chave})
 
     assert resposta_leitura.status_code == 200
     missao = next(m for m in resposta_leitura.json()["missoes"] if m["id"] == missao_id)
-    assert "desafio_de_desbloqueio_alternativa_correta" not in missao
+    assert "perguntas_do_desbloqueio" not in missao
     assert "tipo_do_desafio_de_desbloqueio" not in missao
 
 

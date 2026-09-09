@@ -853,7 +853,7 @@ describe("cadência de retomada da missão (RF-09-83, RF-09-101)", () => {
   });
 });
 
-describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117)", () => {
+describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117, RF-09-118, RN-09-43)", () => {
   it("a bancada sinaliza a missão sem desafio", async () => {
     configurarSessao();
     vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
@@ -889,9 +889,15 @@ describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117)", () => {
       .mockResolvedValue(
         missao({
           tipo_do_desafio_de_desbloqueio: "quiz",
-          desafio_de_desbloqueio_enunciado: "Quanto é 1 + 1?",
-          desafio_de_desbloqueio_alternativas: ["1", "2", "3", "4"],
-          desafio_de_desbloqueio_alternativa_correta: 2,
+          perguntas_do_desbloqueio: [
+            {
+              id: "pergunta-1",
+              ordem: 1,
+              enunciado: "Quanto é 1 + 1?",
+              alternativas: ["1", "2", "3", "4"],
+              alternativa_correta: 2,
+            },
+          ],
         }),
       );
 
@@ -901,18 +907,29 @@ describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117)", () => {
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
     await usuario.click(await screen.findByText("Desafio de desbloqueio"));
 
-    await usuario.type(screen.getByLabelText(/^enunciado$/i), "Quanto é 1 + 1?");
-    await usuario.type(screen.getByLabelText(/^alternativa 1$/i), "1");
-    await usuario.type(screen.getByLabelText(/^alternativa 2$/i), "2");
-    await usuario.type(screen.getByLabelText(/^alternativa 3$/i), "3");
-    await usuario.type(screen.getByLabelText(/^alternativa 4$/i), "4");
-    await usuario.click(screen.getByRole("radio", { name: /alternativa 2 é a correta/i }));
+    await usuario.type(screen.getByLabelText(/^enunciado da pergunta 1$/i), "Quanto é 1 + 1?");
+    await usuario.type(screen.getByLabelText(/^alternativa 1 da pergunta 1$/i), "1");
+    await usuario.type(screen.getByLabelText(/^alternativa 2 da pergunta 1$/i), "2");
+    await usuario.type(screen.getByLabelText(/^alternativa 3 da pergunta 1$/i), "3");
+    await usuario.type(screen.getByLabelText(/^alternativa 4 da pergunta 1$/i), "4");
+    await usuario.click(
+      screen.getByRole("radio", { name: /alternativa 2 da pergunta 1 é a correta/i }),
+    );
     await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
 
     await waitFor(() => expect(declararEspiado).toHaveBeenCalled());
     expect(declararEspiado).toHaveBeenCalledWith(
       "missao-1",
-      expect.objectContaining({ tipo: "quiz", alternativa_correta: 2 }),
+      expect.objectContaining({
+        tipo: "quiz",
+        perguntas: [
+          {
+            enunciado: "Quanto é 1 + 1?",
+            alternativas: ["1", "2", "3", "4"],
+            alternativa_correta: 2,
+          },
+        ],
+      }),
       "token-do-mestre",
     );
     expect(
@@ -927,9 +944,15 @@ describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117)", () => {
         missoes: [
           missao({
             tipo_do_desafio_de_desbloqueio: "quiz",
-            desafio_de_desbloqueio_enunciado: "Pergunta antiga",
-            desafio_de_desbloqueio_alternativas: ["a", "b", "c", "d"],
-            desafio_de_desbloqueio_alternativa_correta: 1,
+            perguntas_do_desbloqueio: [
+              {
+                id: "pergunta-1",
+                ordem: 1,
+                enunciado: "Pergunta antiga",
+                alternativas: ["a", "b", "c", "d"],
+                alternativa_correta: 1,
+              },
+            ],
           }),
         ],
       }),
@@ -942,8 +965,7 @@ describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117)", () => {
       missao({
         tipo_do_desafio_de_desbloqueio: "pratico",
         desafio_de_desbloqueio_enunciado: "Monte o robô e mostre ao Mestre.",
-        desafio_de_desbloqueio_alternativas: null,
-        desafio_de_desbloqueio_alternativa_correta: null,
+        perguntas_do_desbloqueio: [],
       }),
     );
 
@@ -954,7 +976,6 @@ describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117)", () => {
     await usuario.click(await screen.findByText("Desafio de desbloqueio"));
 
     await usuario.click(await screen.findByRole("radio", { name: /desafio prático/i }));
-    await usuario.clear(screen.getByLabelText(/^enunciado$/i));
     await usuario.type(
       screen.getByLabelText(/^enunciado$/i),
       "Monte o robô e mostre ao Mestre.",
@@ -964,7 +985,125 @@ describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117)", () => {
     expect(
       await screen.findByDisplayValue("Monte o robô e mostre ao Mestre."),
     ).toBeInTheDocument();
-    expect(screen.queryByLabelText(/^alternativa 1$/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/^alternativa 1 da pergunta 1$/i)).not.toBeInTheDocument();
+  });
+
+  it("o Mestre acrescenta e remove perguntas do quiz (RF-09-118)", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const declararEspiado = vi
+      .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
+      .mockResolvedValue(missao({ tipo_do_desafio_de_desbloqueio: "quiz" }));
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Desafio de desbloqueio"));
+
+    await usuario.click(screen.getByRole("button", { name: /acrescentar pergunta/i }));
+    await usuario.click(screen.getByRole("button", { name: /acrescentar pergunta/i }));
+    expect(screen.getByLabelText(/^enunciado da pergunta 3$/i)).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /remover pergunta 2/i }));
+    expect(screen.queryByLabelText(/^enunciado da pergunta 3$/i)).not.toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+    await waitFor(() => expect(declararEspiado).toHaveBeenCalled());
+    expect(declararEspiado.mock.calls[0][1].perguntas).toHaveLength(2);
+  });
+
+  it("o quiz sem nenhuma pergunta não grava (RN-09-43)", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const declararEspiado = vi.spyOn(trilhasApi, "declararDesafioDeDesbloqueio");
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Desafio de desbloqueio"));
+
+    await usuario.click(screen.getByRole("button", { name: /remover pergunta 1/i }));
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    expect(
+      await screen.findByText(/o quiz precisa de ao menos uma pergunta/i),
+    ).toBeInTheDocument();
+    expect(declararEspiado).not.toHaveBeenCalled();
+  });
+
+  it("a tela diz que passa quem acerta ao menos 60% (RN-05-45)", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Desafio de desbloqueio"));
+
+    expect(
+      await screen.findByText(/passa quem acerta ao menos 60% das perguntas/i),
+    ).toBeInTheDocument();
+  });
+
+  it("o resumo do bloco diz quantas perguntas o quiz tem (RF-09-118)", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        missoes: [
+          missao({
+            tipo_do_desafio_de_desbloqueio: "quiz",
+            perguntas_do_desbloqueio: [
+              {
+                id: "p1",
+                ordem: 1,
+                enunciado: "Uma",
+                alternativas: ["a", "b", "c", "d"],
+                alternativa_correta: 1,
+              },
+              {
+                id: "p2",
+                ordem: 2,
+                enunciado: "Outra",
+                alternativas: ["a", "b", "c", "d"],
+                alternativa_correta: 2,
+              },
+            ],
+          }),
+        ],
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    expect(await screen.findByText(/quiz com 2 pergunta\(s\)/i)).toBeInTheDocument();
   });
 });
 
