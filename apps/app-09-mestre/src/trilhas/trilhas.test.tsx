@@ -418,6 +418,61 @@ describe("autoria de missão (RF-09-02, RF-09-03, RF-09-80)", () => {
     const posicaoDaSegunda = titulos.findIndex((texto) => texto.includes("Segunda missão"));
     expect(posicaoDaPrimeira).toBeLessThan(posicaoDaSegunda);
   });
+
+  it("as missões aparecem separadas pela etapa do ciclo, e etapa sem missão continua visível", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        missoes: [
+          missao({ id: "missao-1", titulo: "Missão de abertura", posicao: 1 }),
+          missao({
+            id: "missao-2",
+            titulo: "Missão de marcos",
+            posicao: 1,
+            etapa_do_ciclo: "marcos",
+          }),
+        ],
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    expect(await screen.findByText("Missão de abertura")).toBeInTheDocument();
+    expect(screen.queryByText("Missão de marcos")).not.toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /^marcos/i }));
+    expect(await screen.findByText("Missão de marcos")).toBeInTheDocument();
+    expect(screen.queryByText("Missão de abertura")).not.toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /^fechamento/i }));
+    expect(await screen.findByText(/nenhuma missão acrescentada ainda/i)).toBeInTheDocument();
+  });
+
+  it("a nova missão nasce na etapa que o Mestre está lendo", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    await usuario.click(screen.getByRole("button", { name: /^marcos/i }));
+    await usuario.click(await screen.findByRole("button", { name: /nova missão/i }));
+
+    expect(screen.getByLabelText(/etapa do ciclo/i)).toHaveValue("marcos");
+  });
 });
 
 describe("missão de sondagem (RF-09-81)", () => {
@@ -1452,6 +1507,118 @@ describe("publicação da trilha (RF-09-05, RF-09-08, RF-09-82)", () => {
     expect(await screen.findByText(/nenhuma trilha criada/i)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /publicar trilha/i })).not.toBeInTheDocument();
   });
+
+  it("o painel aponta as três travas pendentes antes de qualquer tentativa de publicar", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    const painel = await screen.findByLabelText(/pendências para publicar/i);
+    expect(painel).toHaveTextContent(/missão de sondagem/i);
+    expect(painel).toHaveTextContent(/desafio de coleta/i);
+    expect(painel).toHaveTextContent(/culminância/i);
+  });
+
+  it("o painel declara que não falta nada quando as três travas são atendidas", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        missoes: [missao({ e_sondagem: true, desafios_de_coleta: [desafioDeColeta()] })],
+        culminancia: culminancia(),
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    const painel = await screen.findByLabelText(/pendências para publicar/i);
+    expect(painel).toHaveTextContent(/não falta nada/i);
+  });
+
+  it("a trava declarada sai do painel sem que a tela seja recarregada", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(trilhasApi, "declararCulminancia").mockResolvedValue(culminancia());
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    expect(await screen.findByLabelText(/pendências para publicar/i)).toHaveTextContent(
+      /culminância/i,
+    );
+
+    await usuario.click(await screen.findByText("Culminância"));
+    await usuario.click(await screen.findByRole("button", { name: /declarar culminância/i }));
+    await usuario.type(
+      screen.getByLabelText(/descrição da criação esperada/i),
+      "Um robô que resolve um problema da comunidade.",
+    );
+    await usuario.selectOptions(screen.getByLabelText(/modalidade/i), "individual");
+    await usuario.type(
+      screen.getByLabelText(/critério de validação/i),
+      "O robô precisa funcionar.",
+    );
+    await usuario.click(screen.getByRole("button", { name: /^declarar culminância$/i }));
+
+    await waitFor(() =>
+      expect(screen.getByLabelText(/pendências para publicar/i)).not.toHaveTextContent(
+        /culminância/i,
+      ),
+    );
+  });
+
+  it("o painel não impede a tentativa de publicar mesmo com trava pendente", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilha()]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const publicarTrilhaEspiado = vi.spyOn(trilhasApi, "publicarTrilha").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem:
+          "Para publicar, ainda falta declarar: a missão de sondagem, o desafio de " +
+          "coleta de dados reais e a culminância.",
+      }),
+    );
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+
+    expect(await screen.findByLabelText(/pendências para publicar/i)).toHaveTextContent(
+      /culminância/i,
+    );
+    expect(screen.getByRole("button", { name: /publicar trilha/i })).toBeEnabled();
+
+    await usuario.click(screen.getByRole("button", { name: /publicar trilha/i }));
+
+    await waitFor(() => expect(publicarTrilhaEspiado).toHaveBeenCalled());
+    const recusa = await screen.findByRole("alert");
+    expect(recusa).toHaveTextContent(/falta declarar/i);
+  });
 });
 
 describe("situação e motivo da despublicação na lista (RF-09-04, RF-09-10)", () => {
@@ -2198,5 +2365,45 @@ describe("pré-visualização da missão (RF-09-25)", () => {
 
     expect(criarConteudoEspiado).not.toHaveBeenCalled();
     expect(criarBibliografiaEspiado).not.toHaveBeenCalled();
+  });
+});
+
+describe("ordem dos blocos da missão (RF-09-25)", () => {
+  it("os blocos seguem template, conteúdo, bibliografia, cadência, atividades, desbloqueio, recompensa, coleta e ODS, com a pré-visualização por último", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    await abrirMissao();
+
+    const ORDEM_ESPERADA = [
+      "Template da missão",
+      "Conteúdo",
+      "Bibliografia",
+      "Cadência de retomada",
+      "Atividades",
+      "Desafio de desbloqueio",
+      "Recompensa pelo desbloqueio",
+      "Desafios de coleta",
+      "ODS da missão",
+    ];
+    const titulos = ORDEM_ESPERADA.map((titulo) => screen.getByText(titulo));
+    for (let i = 1; i < titulos.length; i++) {
+      expect(
+        titulos[i - 1].compareDocumentPosition(titulos[i]) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    }
+
+    const preVisualizar = screen.getByRole("button", { name: /pré-visualizar missão/i });
+    expect(
+      titulos[titulos.length - 1].compareDocumentPosition(preVisualizar) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 });
