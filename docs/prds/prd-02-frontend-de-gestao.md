@@ -200,27 +200,29 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 
 ### 6.1 Cadastros e catálogo
 
-| ID          | Requisito                                                                                           | Prioridade |
-| ----------- | --------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-01`  | Admin cadastra e edita Guerreiros e Guerreiras, com nome, nascimento, nick e avatar                 | essencial  |
-| `RF-02-02`  | Admin cadastra Mestre declarando os links de currículo, portfólio, redes e documentos externos      | essencial  |
-| `RF-02-03`  | Admin cadastra Apoiador declarando os mesmos links e os termos de doação                            | essencial  |
-| `RF-02-04`  | Aplicação recusa o cadastro de Mestre ou Apoiador sem ao menos um artefato comprobatório            | essencial  |
-| `RF-02-05`  | Admin inclui novo Admin manualmente                                                                 | essencial  |
-| `RF-02-06`  | Admin cadastra responsável e vincula Guerreiros e Guerreiras já cadastrados, com grau de parentesco | essencial  |
-| `RF-02-07`  | Admin cria credencial de usuário e senha provisória para adulto sem conta social                    | essencial  |
-| `RF-02-08`  | Painel do dia lista as equipes formadas no App 01 naquela aula, com os integrantes de cada uma      | essencial  |
-| `RF-02-09`  | Aplicação não cria, edita nem desfaz equipe: a composição é dos Guerreiros e Guerreiras             | essencial  |
-| `RF-02-10`  | Admin mantém o catálogo de poderes do ciclo                                                         | essencial  |
-| `RF-02-99`  | Admin encerra o ciclo corrente num ato isolado, que não declara o ciclo seguinte                    | essencial  |
-| `RF-02-100` | Encerramento expurga o motivo das ocorrências de conduta do ciclo e as tira do ranking              | essencial  |
-| `RF-02-11`  | Admin cria Comunidade Virtual, que nasce vazia                                                      | essencial  |
-| `RF-02-12`  | Agenda da aula exige comunidade, data, horário inicial e horário final                              | essencial  |
-| `RF-02-13`  | App 01 opera apenas dentro da janela de uma aula agendada, sem chave de liberação                   | essencial  |
-| `RF-02-14`  | Aplicação expõe as aulas vigentes da data e do horário, para o App 01 escolher a comunidade         | essencial  |
-| `RF-02-15`  | Admin confere o vínculo do Guerreiro(a) à comunidade herdada da aula                                | essencial  |
-| `RF-02-16`  | Admin cadastra locais do território na hierarquia da comunidade                                     | essencial  |
-| `RF-02-17`  | Admin consulta os desafios de coleta de trilha publicada, com cadência, vigência e séries ativas    | desejável  |
+| ID          | Requisito                                                                                            | Prioridade |
+| ----------- | ---------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-02-01`  | Admin cadastra e edita Guerreiros e Guerreiras, com nome, nascimento, nick e avatar                  | essencial  |
+| `RF-02-02`  | Admin cadastra Mestre declarando os links de currículo, portfólio, redes e documentos externos       | essencial  |
+| `RF-02-03`  | Admin cadastra Apoiador declarando os mesmos links e os termos de doação                             | essencial  |
+| `RF-02-04`  | Aplicação recusa o cadastro de Mestre ou Apoiador sem ao menos um artefato comprobatório             | essencial  |
+| `RF-02-05`  | Admin inclui novo Admin manualmente                                                                  | essencial  |
+| `RF-02-06`  | Admin cadastra responsável e vincula Guerreiros e Guerreiras já cadastrados, com grau de parentesco  | essencial  |
+| `RF-02-07`  | Admin cria credencial de usuário e senha provisória para adulto sem conta social                     | essencial  |
+| `RF-02-08`  | Painel do dia lista as equipes formadas no App 01 naquela aula, com os integrantes de cada uma       | essencial  |
+| `RF-02-09`  | Aplicação não cria, edita nem desfaz equipe: a composição é dos Guerreiros e Guerreiras              | essencial  |
+| `RF-02-10`  | Admin mantém o catálogo de poderes do ciclo                                                          | essencial  |
+| `RF-02-107` | Admin cadastra e lista o catálogo de tipos de recurso, com a primeira vigência do valor no mesmo ato | essencial  |
+| `RF-02-108` | Admin cadastra e lista o catálogo de tipos de coleta                                                 | essencial  |
+| `RF-02-99`  | Admin encerra o ciclo corrente num ato isolado, que não declara o ciclo seguinte                     | essencial  |
+| `RF-02-100` | Encerramento expurga o motivo das ocorrências de conduta do ciclo e as tira do ranking               | essencial  |
+| `RF-02-11`  | Admin cria Comunidade Virtual, que nasce vazia                                                       | essencial  |
+| `RF-02-12`  | Agenda da aula exige comunidade, data, horário inicial e horário final                               | essencial  |
+| `RF-02-13`  | App 01 opera apenas dentro da janela de uma aula agendada, sem chave de liberação                    | essencial  |
+| `RF-02-14`  | Aplicação expõe as aulas vigentes da data e do horário, para o App 01 escolher a comunidade          | essencial  |
+| `RF-02-15`  | Admin confere o vínculo do Guerreiro(a) à comunidade herdada da aula                                 | essencial  |
+| `RF-02-16`  | Admin cadastra locais do território na hierarquia da comunidade                                      | essencial  |
+| `RF-02-17`  | Admin consulta os desafios de coleta de trilha publicada, com cadência, vigência e séries ativas     | desejável  |
 
 ### 6.2 Filas de avaliação
 
@@ -448,6 +450,10 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | POST   | `/v1/partidas-de-quiz/{id}/encerramento`               | Mestre ou Admin | Encerra a partida e lança a pontuação                                             |
 | GET    | `/v1/entregas`                                         | Admin           | Lê as entregas confirmadas pelo Mestre, com tipo de recurso e baixa               |
 | GET    | `/v1/auditoria`                                        | Admin           | Trilha de auditoria, com filtro por autor e período                               |
+| GET    | `/v1/tipos-de-recurso`                                 | Mestre ou Admin | Catálogo de tipos de recurso, com o valor em moedas vigente na data               |
+| POST   | `/v1/tipos-de-recurso`                                 | Admin           | Cadastra o tipo e abre a primeira vigência do valor de referência num ato         |
+| GET    | `/v1/tipos-de-coleta`                                  | Mestre ou Admin | Catálogo de tipos de coleta, paginado, com a marca de ativo                       |
+| POST   | `/v1/tipos-de-coleta`                                  | Admin           | Cadastra o tipo de coleta com forma de registro, unidade e faixa esperada         |
 | POST   | `/v1/apoiadores/{id}/artefatos/{artefato_id}/anexacao` | Admin           | Anexa ao cadastro o documento comprobatório que o Apoiador declarou, publicando-o |
 | POST   | `/v1/missoes-do-apoiador`                              | Admin           | Publica a missão a partir de uma necessidade de recurso em aberto                 |
 | GET    | `/v1/missoes-do-apoiador`                              | Admin           | Missões publicadas em qualquer situação, com o coberto e o que falta              |
@@ -590,6 +596,12 @@ foi definida no PRD-01 — a App 03 apenas a consulta.
   atividade — pelo Admin, e o `GET /trilhas/{id}` do PRD-09 é público e serve trilha publicada,
   não o rascunho que o Admin precisa consultar. Sem decisão, o Admin não tem por onde ler o que
   os Mestres autoram.
+- **Os catálogos de tipo não têm edição nem desativação**: o núcleo serve criar e listar, e
+  não há rota para editar tipo de recurso ou de coleta, para abrir vigência nova do valor de
+  referência — `RF-07-02` tem regra e modelo, não rota — nem para desativar tipo de coleta,
+  cuja regra existe sem rota. `TipoDeRecurso` não tem sequer a marca de ativo. Tipo cadastrado
+  é, hoje, imutável, e o de recurso sai da listagem quando a vigência fecha. Levantado pela
+  fatia 19.
 - **Três consequências do adiamento da auditoria ao Ciclo 02, sobre o que já está
   implementado**: o registro de coleta "a conferir" fica sem validação do Mestre, a trilha
   publicada fica sem despublicação, e a trilha de auditoria fica sem consumidor nesta
