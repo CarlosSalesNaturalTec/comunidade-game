@@ -108,8 +108,15 @@ describe("missão no percurso", () => {
       motivo_do_bloqueio: null,
       desafio_de_desbloqueio: {
         tipo: "quiz",
-        enunciado: "Pergunta da missão.",
-        alternativas: ["a", "b", "c", "d"],
+        enunciado: null,
+        perguntas: [
+          {
+            id: "pergunta-1",
+            ordem: 1,
+            enunciado: "Pergunta da missão.",
+            alternativas: ["a", "b", "c", "d"],
+          },
+        ],
       },
     });
 
