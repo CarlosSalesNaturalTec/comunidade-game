@@ -560,3 +560,44 @@ def test_nuvem_devolve_a_leitura_quando_o_modelo_responde(monkeypatch, caplog):
     assert leitura.transcricao == "Plantamos dez mudas."
     assert leitura.devolutiva == "Bom relato."
     assert caplog.text == ""
+
+
+class _RespostaDeErro:
+    def __init__(self, codigo: int, corpo: str):
+        self.status_code = codigo
+        self.text = corpo
+
+    def raise_for_status(self):
+        raise httpx.HTTPStatusError("erro", request=None, response=self)
+
+
+def test_a_credencial_do_gemini_vai_no_cabecalho_e_nunca_na_url(monkeypatch):
+    """A URL entra na mensagem da `HTTPStatusError`, que o log registra:
+    chave na _query string_ vira segredo em texto claro (change
+    `template-da-missao-no-deepseek`, design — decisão 4)."""
+    capturado = {}
+
+    def _capturar(url, **kwargs):
+        capturado["url"] = url
+        capturado["headers"] = kwargs.get("headers", {})
+        return _RespostaFake(_corpo_gemini(json.dumps({"transcricao": "T", "devolutiva": "D"})))
+
+    monkeypatch.setattr(httpx, "post", _capturar)
+    porta = ProducaoDaMissaoNaNuvem(chave_de_api="chave-secreta", modelo="gemini-2.5-flash")
+
+    assert _ler(porta) is not None
+    assert "chave-secreta" not in capturado["url"]
+    assert capturado["headers"]["x-goog-api-key"] == "chave-secreta"
+
+
+def test_o_corpo_do_erro_de_http_entra_no_log(monkeypatch, caplog):
+    corpo = '{"error": {"code": 429, "message": "prepayment credits are depleted"}}'
+    monkeypatch.setattr(httpx, "post", lambda *a, **k: _RespostaDeErro(429, corpo))
+    porta = ProducaoDaMissaoNaNuvem(chave_de_api="chave-secreta", modelo="gemini-2.5-flash")
+
+    with caplog.at_level(logging.WARNING, logger="nucleo.producoes"):
+        assert _ler(porta) is None
+
+    assert "429" in caplog.text
+    assert "prepayment credits are depleted" in caplog.text
+    assert "chave-secreta" not in caplog.text

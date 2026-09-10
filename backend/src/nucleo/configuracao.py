@@ -75,6 +75,14 @@ class Configuracao(BaseSettings):
     gemini_chave_de_api: str = ""
     gemini_modelo: str = "gemini-2.5-flash"
 
+    # Credencial do DeepSeek, que atende a porta de texto — o template da
+    # missão (documento 03 §1.12). Mesma divisão da dupla acima: a chave vem
+    # do Secret Manager e o modelo do ambiente. Versão fixada, nunca um
+    # apelido móvel: o que o Mestre viu ontem precisa continuar reprodutível,
+    # e foi assim que o `gemini-2.5-flash` sumiu para contas novas.
+    deepseek_chave_de_api: str = ""
+    deepseek_modelo: str = "deepseek-v4-flash"
+
     # Rótulo do ciclo corrente, declarado na implantação — não é entidade,
     # não tem calendário (`RF-01-42`, `RF-01-43`, design — Decisions).
     ciclo_rotulo: str = "Ciclo 01"

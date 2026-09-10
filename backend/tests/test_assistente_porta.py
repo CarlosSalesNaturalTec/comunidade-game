@@ -141,3 +141,50 @@ def test_nuvem_nao_registra_o_byte_do_audio_em_log(monkeypatch, caplog):
 
     texto_do_log = " ".join(registro.getMessage() for registro in caplog.records)
     assert "segredo-do-audio" not in texto_do_log
+
+
+class _RespostaDeErro:
+    def __init__(self, codigo: int, corpo: str):
+        self.status_code = codigo
+        self.text = corpo
+
+    def raise_for_status(self):
+        raise httpx.HTTPStatusError("erro", request=None, response=self)
+
+
+def test_a_credencial_do_gemini_vai_no_cabecalho_e_nunca_na_url(monkeypatch):
+    """A URL entra na mensagem da `HTTPStatusError`, que o log registra:
+    chave na _query string_ vira segredo em texto claro (change
+    `template-da-missao-no-deepseek`, design — decisão 4)."""
+    capturado = {}
+
+    def _capturar(url, **kwargs):
+        capturado["url"] = url
+        capturado["headers"] = kwargs.get("headers", {})
+        return _RespostaFake(
+            _corpo_gemini(
+                json.dumps(
+                    {"desfecho": "respondida", "transcricao_da_pergunta": "P", "resposta": "R"}
+                )
+            )
+        )
+
+    monkeypatch.setattr(httpx, "post", _capturar)
+    porta = AssistenteDeTrilhasNaNuvem(chave_de_api="chave-secreta", modelo="gemini-2.5-flash")
+
+    assert porta.responder(texto="Uma pergunta", arquivo=None, corpus=_CORPUS) is not None
+    assert "chave-secreta" not in capturado["url"]
+    assert capturado["headers"]["x-goog-api-key"] == "chave-secreta"
+
+
+def test_o_corpo_do_erro_de_http_entra_no_log(monkeypatch, caplog):
+    corpo = '{"error": {"code": 429, "message": "prepayment credits are depleted"}}'
+    monkeypatch.setattr(httpx, "post", lambda *a, **k: _RespostaDeErro(429, corpo))
+    porta = AssistenteDeTrilhasNaNuvem(chave_de_api="chave-secreta", modelo="gemini-2.5-flash")
+
+    with caplog.at_level(logging.WARNING, logger="nucleo.assistente"):
+        assert porta.responder(texto="Uma pergunta", arquivo=None, corpus=_CORPUS) is None
+
+    assert "429" in caplog.text
+    assert "prepayment credits are depleted" in caplog.text
+    assert "chave-secreta" not in caplog.text

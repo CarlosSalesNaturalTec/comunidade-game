@@ -11,13 +11,14 @@ from .porta import PortaDoTemplateDeMissao
 def obter_porta_do_template_de_missao(configuracao: Configuracao) -> PortaDoTemplateDeMissao:
     """Escolhe o adaptador pelo ambiente, no mesmo padrão de
     `armazenamento.fabrica`: local fora de produção, sem exigir credencial;
-    Gemini em produção, pela chave única do projeto — a mesma que
-    `producoes` e `assistente` leem (documento 03 §1.12, design — decisão
-    2)."""
+    **DeepSeek** em produção. Esta porta manda só texto, e é a que o
+    documento 03 §1.12 destina ao provedor de menor custo — deixa, por isso,
+    de compartilhar credencial com `producoes` e `assistente`, que leem
+    imagem e áudio e seguem no Gemini."""
     if configuracao.ambiente == "producao":
         return TemplateDeMissaoNaNuvem(
-            chave_de_api=configuracao.gemini_chave_de_api,
-            modelo=configuracao.gemini_modelo,
+            chave_de_api=configuracao.deepseek_chave_de_api,
+            modelo=configuracao.deepseek_modelo,
         )
     return TemplateDeMissaoLocal()
 
