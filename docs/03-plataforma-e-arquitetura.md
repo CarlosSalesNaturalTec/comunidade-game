@@ -79,7 +79,10 @@
     consumo é por **endpoint global**, em qualquer provedor: no Ciclo 01 a região de
     processamento não é escolhida, e a revisão fica para o Ciclo 02 (documento 09). A
     **biometria facial do App 01 não usa modelo de linguagem** e é resolvida no próprio
-    aparelho (§3.3).
+    aparelho (§3.3). A **transcrição da fala** segue o mesmo caminho: acontece no **próprio
+    aparelho**, pela Web Speech API do navegador, e ao núcleo chega **texto** — o áudio nunca
+    trafega nem custa. Onde o navegador não oferecer a API, a tela oferece o mesmo registro
+    por texto digitado (documento 09).
 13. **Stack e hospedagem do Ciclo 01.** O Backend API é escrito em **Python 3.12 com FastAPI**
     e roda em **Cloud Run**; o banco é **Cloud SQL para PostgreSQL com PostGIS**, onde ficam
     também as **séries temporais do território**, particionadas por tempo; os arquivos de
@@ -409,7 +412,8 @@ equipe vê **em que missão da trilha está**, o conteúdo e a atividade do dia,
 assistente **por voz ou por texto**: quiz e explicação de conceitos das trilhas. O assistente
 segue **o mesmo desenho do assistente da App 05** (§7): modelo **LLM Google Gemini**, **corpus
 fechado** no conteúdo que os Mestres cadastraram, guardrails educacionais, filtros de segurança
-no nível mais restritivo e **guarda apenas da transcrição**, com o áudio descartado. A
+no nível mais restritivo e **guarda apenas da transcrição**, com a fala transcrita no
+aparelho (§1.12). A
 personalização também segue o desenho de §7.1 — adapta na sessão, reescreve dentro do corpus e
 marca o texto gerado por IA.
 
@@ -561,11 +565,11 @@ como a da presença do App 01 — a entrada na App 05 já depende de rede para a
 imagem, e sem sessão aberta não há a quem atribuir o registro.
 
 É onde o Guerreiro(a) **entrega a produção da missão**: escreve, fala ou fotografa o que fez à
-mão. A plataforma lê — com o mesmo **modelo Gemini**, na nuvem — e devolve retorno **sempre
-construtivo**, apontando o próximo passo em vez
-do erro. **Foto e áudio são descartados na leitura** — guardam-se apenas a transcrição e a
-devolutiva —, e **o resultado só existe quando o Mestre o lança**: a leitura automática é
-hipótese sobre o aprendizado, nunca nota. Quem não quiser ser fotografado ou gravado entrega
+mão. A fala é transcrita no próprio aparelho (§1.12); a foto, a plataforma lê na nuvem. Nos
+três casos devolve retorno **sempre construtivo**, apontando o próximo passo em vez do erro.
+**A foto é descartada na leitura** — guardam-se apenas a transcrição e a devolutiva —, e **o
+resultado só existe quando o Mestre o lança**: a leitura automática é hipótese sobre o
+aprendizado, nunca nota. Quem não quiser ser fotografado ou gravado entrega
 ao Mestre no encontro, sem perder a missão.
 
 **A partir do Ciclo 02**, é onde fica o **apoio às atividades escolares**, atendido por um
@@ -580,8 +584,9 @@ exigências formam a regra:
 - **Filtros de segurança no nível mais restritivo**, com aviso prévio ao Guerreiro(a) e ao
   responsável e **alternativa equivalente** — perguntar ao Mestre no encontro — para quem
   recusar.
-- **Só a transcrição é guardada**: o áudio da pergunta é descartado assim que transcrito,
-  pela mesma razão que a fotografia do onboarding é apagada na geração do _template_.
+- **Só a transcrição é guardada**: o áudio da pergunta nem chega ao núcleo, porque a fala é
+  transcrita no aparelho (§1.12) — a mesma razão que apaga a fotografia do onboarding na
+  geração do _template_.
 
 **Quem cadastra e quem confere.** O corpus é cadastrado **apenas pelos Mestres**; o Admin não
 cadastra conteúdo de apoio — ele **audita por amostragem** o que o Mestre publicou e pode
