@@ -199,6 +199,7 @@ escreve é uma fatia do PRD-09, decisão do fundador, 2026-09-02.
 | 10    | Assistente de trilhas no encontro                    | `2026-08-31-assistente-de-trilhas-fila-local-e-aviso-de-coleta` — `RF-04-36` a `RF-04-40`, `RN-04-19` a `RN-04-21` | implementado |
 | 11    | Fila local sem rede                                  | `2026-08-31-assistente-de-trilhas-fila-local-e-aviso-de-coleta` — `RF-04-23` a `RF-04-25`, `RN-04-13` | implementado |
 | 12    | Aviso de coleta e encerramento do cadastro           | `2026-08-31-assistente-de-trilhas-fila-local-e-aviso-de-coleta` — `RF-04-26`, `RF-04-27` | implementado |
+| —     | Pergunta falada transcrita no aparelho               | `RF-04-39`, `RF-04-40`, `RN-04-21`: a fala vira texto no navegador, pela Web Speech API, e a rota do assistente passa a receber só texto — o áudio nem chega ao núcleo (documento 03 §1.12, decisão do fundador 2026-09-10). A `consulta-ao-assistente` não grava a forma, então o contrato quase não muda; onde a API não existe (Firefox), a tela oferece o registro por texto, que a porta já aceita. Destrava a pergunta falada sem depender de crédito do Gemini | em aberto |
 
 `RN-04-26` (recompensa de marco não se troca) é regra da fatia 5, já entregue; confira na fatia
 que a tocar em vez de abrir recorte próprio.
@@ -215,6 +216,7 @@ que a tocar em vez de abrir recorte próprio.
 | 6     | Desafios vigentes e equipes de que participa        | `desafios-vigentes-e-equipes-de-que-participa` — `RF-05-19`, `RF-05-22` a `RF-05-24`, `RN-05-12`, `RN-05-15`, `RN-05-22` | implementado |
 | 7     | Produção da missão, devolutiva e retomada           | `producao-da-missao-devolutiva-e-retomada` — `RF-05-74` a `RF-05-80`, `RN-05-05`, `RN-05-35` a `RN-05-38` | implementado |
 | 8     | Desafio extra na Área do Guerreiro(a)               | `desafio-extra-na-area-do-guerreiro` — `RF-05-20`, `RF-05-21`                       | implementado    |
+| —     | Produção falada transcrita no aparelho              | `RF-05-74`, `RF-05-76`, `RN-05-32`: mesma decisão aplicada à entrega da produção. Aqui a **forma** (`texto`/`áudio`/`foto`) é dado gravado, e hoje o núcleo a deduz de qual campo veio preenchido — com a fala virando texto, `áudio` e `texto` ficam indistinguíveis e a rota precisa recebê-la explicitamente. **Tem delta de spec** em `producao-da-missao`, ao contrário da fatia irmã do PRD-04, e alcança as telas das Apps 01 e 05. Depende dela | em aberto |
 
 Ciclo 02, fora do Ciclo 01 (PRD-05 §3.2): **acervo do Guerreiro(a)** (`RF-05-47` a `RF-05-49`,
 `RN-05-19`), **canal de sugestões** (`RF-05-54` a `RF-05-56`, `RN-05-17`) e **apoio escolar por
