@@ -56,7 +56,7 @@ recomendação e desliga tudo com um toque, sem que a criança perca uma linha d
 - **Perfil persistente do Guerreiro(a)**: decidido que não existe — não é adiamento, é
   desenho.
 - **Geração de conteúdo novo pela IA**: autoria é do Mestre, e o corpus é fechado.
-- **Escolha do modelo**: já decidida — Google Gemini em todo o Ciclo 01.
+- **Escolha do modelo**: já decidida — por funcionalidade, ao menor custo (documento 03 §1.12).
 - **Auxílio de IA na autoria da trilha** (App 09): já está no PRD-09, e monta estrutura, não
   conteúdo.
 - **Assistente da Área do Apoiador Desenvolvedor**: é da vitrine, PRD-03, e não trata de
@@ -280,7 +280,7 @@ recomendação e desliga tudo com um toque, sem que a criança perca uma linha d
 | `RN-11-18` | Não há teto de uso no Ciclo 01; o consumo é aporte por absorção do Admin e Mestre fundador        | 9          | 03 §7        |
 | `RN-11-19` | Contadores de custo e demanda de IA são permanentes e não carregam dado pessoal                   | —          | 03 §12.2     |
 | `RN-11-20` | A vitrine não personaliza nada: o visitante não é perfilado, nem no servidor nem no aparelho      | —          | 03 §8        |
-| `RN-11-21` | Toda funcionalidade de IA do Ciclo 01 usa Google Gemini                                           | —          | 03 §1        |
+| `RN-11-21` | O modelo de cada funcionalidade de IA do Ciclo 01 é escolhido pelo que ela pede, ao menor custo   | —          | 03 §1        |
 
 ## 8. Modelo de dados
 
@@ -440,9 +440,9 @@ acrescentados ao modelo do PRD-01. Nenhuma entidade existente ganhou atributo.
 
 ## 14. Pendências que permanecem
 
-- **Retenção pelo provedor**: o Ciclo 01 opera em conta Google Gemini PRO, e a configuração que
-  desliga a retenção para treino precisa ser conferida na implantação e registrada. É tarefa de
-  operação, não decisão de produto.
+- **Retenção pelo provedor**: a configuração que desliga a retenção para treino precisa ser
+  conferida na implantação e registrada **em cada provedor usado** (documento 03 §1.12). É
+  tarefa de operação, não decisão de produto.
 - **Texto final da nota de transparência**: a localização e a forma da marcação estão decididas;
   falta redigir a nota, junto com os demais textos públicos.
 
