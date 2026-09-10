@@ -42,7 +42,7 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
   e o **desafio de desbloqueio** que abre a missão seguinte.
 - **Missão de sondagem** que abre a trilha e mede o nível de partida no poder.
 - **Entrega da produção da missão** por escrita, fala ou foto do que foi feito à mão, com
-  devolutiva construtiva; foto e áudio descartados na leitura.
+  devolutiva construtiva; a foto descartada na leitura e o áudio transcrito no aparelho.
 - **Retomada por revisão espaçada** das missões já cumpridas, na cadência que o Mestre
   declarou.
 - **Desafios semanais** (on-line, presencial, em equipe e em equipe com familiar) e **desafios
@@ -147,7 +147,8 @@ avatar e nick.
    ninguém.
 6. **Entrega a produção**: escreve, grava a resposta falada ou fotografa o que fez à mão.
 7. A aplicação lê, devolve retorno **construtivo** — o que está bom e qual o próximo passo — e
-   **descarta foto e áudio na hora**, guardando só a transcrição e a devolutiva.
+   **descarta a foto na hora** e nunca recebe o áudio, que o aparelho transcreve; guarda só
+   a transcrição e a devolutiva.
 8. Recusando ser fotografado ou gravado, ele entrega ao Mestre no encontro e **não perde a
    missão**.
 9. Os **pontos da atividade** só entram quando o Mestre lança o resultado; a devolutiva
@@ -236,7 +237,7 @@ Mestre no encontro, e quem quer propor uma melhoria também.
 | `RF-05-73` | Resultado da sondagem não altera nível, e a tela diz que ela serve para o Mestre ajustar                                           | essencial  |
 | `RF-05-74` | Guerreiro(a) entrega a produção da missão por texto, áudio ou foto do manuscrito                                                   | essencial  |
 | `RF-05-75` | Aplicação devolve retorno construtivo da produção, apontando o próximo passo                                                       | essencial  |
-| `RF-05-76` | Foto e áudio da produção são descartados na leitura; ficam a transcrição e a devolutiva                                            | essencial  |
+| `RF-05-76` | A foto é descartada na leitura e o áudio nem trafega — a fala é transcrita no aparelho; ficam a transcrição e a devolutiva         | essencial  |
 | `RF-05-77` | Devolutiva automática não credita pontos; o resultado só existe quando o Mestre o lança                                            | essencial  |
 | `RF-05-78` | Quem recusa foto ou áudio entrega ao Mestre no encontro, sem perder a missão                                                       | essencial  |
 | `RF-05-79` | Missão com retomada agendada reaparece na cadência declarada pelo Mestre                                                           | essencial  |
@@ -373,7 +374,7 @@ aplicação do Ciclo 01 não oferece apoio escolar.
 | `RN-05-28` | Recusar o assistente não exclui ninguém: a alternativa é perguntar ao Mestre no encontro         | 11                     | 03 §§7, 12       |
 | `RN-05-29` | O consumo do modelo de IA é custo de _cloud_ atribuído no livro-razão                            | 9                      | 04 §1            |
 | `RN-05-31` | No Ciclo 01 o consumo de IA é aportado por absorção pelo Admin e Mestre fundador, sem teto       | —                      | 10 §4.3          |
-| `RN-05-32` | O áudio da criança é descartado na transcrição; guarda-se apenas a transcrição                   | —                      | 03 §7            |
+| `RN-05-32` | O áudio da criança não sai do aparelho: transcreve-se ali e só a transcrição trafega             | —                      | 03 §7            |
 | `RN-05-30` | A plataforma declara o uso de IA, e a tela do apoio escolar diz isso à criança                   | —                      | 01 §7, 03 §1     |
 | `RN-05-33` | Só a missão obrigatória conta no percurso do nível; a opcional pontua sem entrar no denominador  | 18                     | 11 §§2.2, 6      |
 | `RN-05-34` | Toda trilha abre com missão de sondagem, cujo resultado não define nível                         | 5                      | 11 §2.2          |

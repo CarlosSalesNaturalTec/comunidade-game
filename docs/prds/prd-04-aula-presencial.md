@@ -322,7 +322,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-37` | Pergunta fora do corpus recebe recusa explicada, com orientação de procurar um Mestre no encontro             | essencial  |
 | `RF-04-38` | Pergunta de tarefa escolar é encaminhada à App 05, sem ser respondida aqui                                    | essencial  |
 | `RF-04-39` | Microfone abre por ação do Guerreiro(a) e fecha ao fim da fala; não há captação do áudio ambiente             | essencial  |
-| `RF-04-40` | Áudio da pergunta é descartado assim que transcrito; guarda-se apenas a transcrição                           | essencial  |
+| `RF-04-40` | Áudio da pergunta não chega ao núcleo: a fala é transcrita no aparelho e só a transcrição trafega             | essencial  |
 | `RF-04-41` | Aparelho da equipe disputante recebe a pergunta da partida simultaneamente aos demais                         | essencial  |
 | `RF-04-42` | Na partida, o Guerreiro(a) joga por uma única equipe, ainda que integre outras no encontro                    | essencial  |
 | `RF-04-43` | Aparelho envia uma única resposta por pergunta, válida para todos os integrantes, e recusa a segunda          | essencial  |
@@ -367,7 +367,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RN-04-18` | A gestão não forma nem edita equipe: acompanha as do dia no painel da App 03                                | —          | 03 §5         |
 | `RN-04-19` | O assistente responde apenas a partir do corpus fechado cadastrado pelos Mestres                            | —          | 03 §§4, 7     |
 | `RN-04-20` | A aplicação não capta o áudio ambiente da aula; só o áudio dirigido ao assistente                           | —          | 03 §4         |
-| `RN-04-21` | Do áudio do assistente guarda-se apenas a transcrição                                                       | —          | 03 §7         |
+| `RN-04-21` | Do áudio do assistente guarda-se apenas a transcrição, feita no aparelho                                    | —          | 03 §7         |
 | `RN-04-22` | Uma resposta por equipe e pergunta, válida para todos os integrantes                                        | —          | 05 §5         |
 | `RN-04-23` | Só o saldo de pontos extras é trocável; a troca nunca alcança o ponto regular                               | 23         | 11 §5         |
 | `RN-04-24` | A troca debita o saldo disponível e nunca o acumulado, que só cresce                                        | 23         | 11 §5         |
