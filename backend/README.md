@@ -59,9 +59,30 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    conector de acesso VPC: mais peças e mais custo, sem ganho real de proteção aqui.
 2. **Artifact Registry** — repositório Docker `comunidade-game` na mesma região.
 3. **Secret Manager** — um segredo por variável sem valor padrão, mais
-   `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM`, `CG_DSN_BANCO` e `CG_GEMINI_CHAVE_DE_API`. O workflow lê
-   a lista de mapeamentos `SECRET:CG_VAR` do segredo do repositório `GCP_SECRETOS_CG` (formato
-   aceito por `gcloud run deploy --set-secrets`).
+   `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM`, `CG_DSN_BANCO` e `CG_GEMINI_CHAVE_DE_API`. Um segredo
+   por variável, nomeado com o nome dela em minúsculas e hifens: `CG_DSN_BANCO` →
+   `cg-dsn-banco`.
+
+   O workflow lê a lista de mapeamentos do segredo do repositório `GCP_SECRETOS_CG`, no
+   formato de `gcloud run deploy --set-secrets` — **`CG_VARIAVEL=nome-do-segredo:versao`**,
+   separados por vírgula, numa linha só e sem espaços:
+
+   ```text
+   CG_IDENTIDADE_FUNDADOR=cg-identidade-fundador:latest,CG_DSN_BANCO=cg-dsn-banco:latest
+   ```
+
+   O GitHub **nunca exibe o valor de um secret**, nem para quem o criou: a caixa de edição
+   abre vazia e o que for salvo substitui a lista inteira. Para acrescentar uma variável,
+   recupere a lista corrente do serviço que está no ar — ela traz nomes de segredo e versão,
+   nunca os valores:
+
+   ```bash
+   gcloud run services describe nucleo-comunidade-game \
+     --region southamerica-east1 --project comunidade-game-506017 --format=json \
+   | jq -r '.spec.template.spec.containers[0].env[] | select(.valueFrom)
+            | "\(.name)=\(.valueFrom.secretKeyRef.name):\(.valueFrom.secretKeyRef.key)"' \
+   | paste -sd,
+   ```
 
    A chave do Gemini nasce em **APIs e serviços → Credenciais → Criar credenciais → Chave de
    API**, com três escolhas na tela:
