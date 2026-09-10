@@ -1,4 +1,5 @@
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import APIRouter, Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -23,6 +24,7 @@ from .chaves.rotas import roteador as roteador_de_chaves
 from .ciclo.rotas import roteador as roteador_de_ciclo
 from .coletas.rotas import roteador as roteador_de_coletas
 from .comunidades.rotas import roteador as roteador_de_comunidades
+from .configuracao import conferir_configuracao_de_producao, obter_configuracao
 from .consentimentos.rotas import roteador as roteador_de_consentimentos
 from .conteudos.rotas import roteador as roteador_de_conteudos
 from .criacoes_originais.rotas import roteador as roteador_de_criacoes_originais
@@ -117,8 +119,20 @@ async def _manipular_excecao_nao_tratada(request: Request, exc: Exception) -> JS
     return _resposta_de_erro(erro.status_code, erro.codigo, erro.mensagem)
 
 
+@asynccontextmanager
+async def _ciclo_de_vida(app: FastAPI):
+    """Implantação incompleta impede o serviço de **ficar pronto**, em vez de
+    falhar numa requisição de usuário: o Cloud Run mantém a revisão anterior
+    servindo quando a nova não sobe. Fica no `lifespan`, e não no corpo de
+    `criar_app`, para que importar o módulo não exija ambiente completo
+    (change `bucket-de-armazenamento-em-producao`, design — decisão 2)."""
+    conferir_configuracao_de_producao(obter_configuracao())
+    yield
+
+
 def criar_app() -> FastAPI:
     app = FastAPI(
+        lifespan=_ciclo_de_vida,
         title="Comunidade Game — Backend API",
         description=(
             "Núcleo consumido pelas oito aplicações do Comunidade Game e por "

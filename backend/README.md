@@ -34,8 +34,11 @@ Com valor padrão, ajustados em produção:
   **dentro de uma URL**: gere-a com `openssl rand -hex 24`, nunca `-base64`, porque `/` e `+`
   quebram a análise do DSN.
 - `CG_GOOGLE_CLIENT_ID` — o mesmo _client ID_ que os frontends usam.
-- `CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE` — bucket de produção; sem ele o núcleo cai para
-  disco local, que não sobrevive a um novo deploy do Cloud Run.
+- `CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE` — bucket de produção, `comunidade-game-armazenamento`.
+  **Declarada pelo `backend-deploy.yml`**, não pelo Secret Manager: nome de bucket não é
+  segredo. Em produção **não há queda para disco** — o disco do Cloud Run é efêmero e perderia
+  o envio no deploy seguinte —, então sem ela o serviço **não fica pronto**, e o Cloud Run
+  mantém a revisão anterior servindo.
 - `CG_GEMINI_CHAVE_DE_API` — credencial **única** do Gemini, lida pelas **três** portas de IA
   do Ciclo 01: template da missão (App 09), leitura da produção (Apps 01 e 05) e assistente de
   trilhas (App 01). Vem do **Secret Manager**. Sem ela as três respondem o aviso de
@@ -58,6 +61,21 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    banco pela internet. A alternativa, só IP privado, exigiria _Direct VPC egress_ ou um
    conector de acesso VPC: mais peças e mais custo, sem ganho real de proteção aqui.
 2. **Artifact Registry** — repositório Docker `comunidade-game` na mesma região.
+   Também aqui, o **bucket do Cloud Storage** `comunidade-game-armazenamento`, na mesma
+   região, que guarda conteúdo de missão, artefato comprobatório, anexo do termo e criação
+   original. Foto e áudio da produção **não** vão para ele: são descartados na leitura
+   (documento 03 §1). A conta de execução precisa criar, ler e remover objeto — inclusive
+   abrir sessão de envio retomável —, e o papel se concede **no bucket**, não no projeto:
+
+   ```bash
+   gcloud storage buckets create gs://comunidade-game-armazenamento \
+     --location=southamerica-east1 --project comunidade-game-506017
+
+   gcloud storage buckets add-iam-policy-binding gs://comunidade-game-armazenamento \
+     --member="serviceAccount:nucleo-runtime@comunidade-game-506017.iam.gserviceaccount.com" \
+     --role="roles/storage.objectAdmin"
+   ```
+
 3. **Secret Manager** — um segredo por variável sem valor padrão, mais
    `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM`, `CG_DSN_BANCO` e `CG_GEMINI_CHAVE_DE_API`. Um segredo
    por variável, nomeado com o nome dela em minúsculas e hifens: `CG_DSN_BANCO` →
