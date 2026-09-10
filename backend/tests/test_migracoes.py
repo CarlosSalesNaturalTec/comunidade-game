@@ -141,3 +141,22 @@ def test_a_revisao_do_topo_sobe_e_desce(banco_vazio, monkeypatch):
     finally:
         motor.dispose()
         obter_configuracao.cache_clear()
+
+
+def test_um_dsn_com_porcento_nao_derruba_a_migracao(banco_vazio, monkeypatch):
+    """`set_main_option` grava num `configparser`, que interpola `%`: sem
+    escapar, `invalid interpolation syntax` derrubava o Job de migração. O
+    README já lista `/` e `+` como proibidos na senha do DSN; este é o
+    terceiro caractere, e o conserto tira todos os três da lista (change
+    `template-da-missao-no-deepseek`, design — decisão 5)."""
+    com_porcento = banco_vazio.set(query={**banco_vazio.query, "application_name": "cg%25teste"})
+    configuracao = _configuracao_do_alembic(com_porcento, monkeypatch)
+
+    command.upgrade(configuracao, "head")
+
+    motor = sa.create_engine(banco_vazio)
+    try:
+        assert "recompensa_de_marco" in set(sa.inspect(motor).get_table_names())
+    finally:
+        motor.dispose()
+        obter_configuracao.cache_clear()

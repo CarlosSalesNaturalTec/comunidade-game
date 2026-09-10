@@ -18,7 +18,11 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-config.set_main_option("sqlalchemy.url", obter_configuracao().dsn_banco)
+# `set_main_option` grava num `configparser`, que interpola `%`: sem
+# escapar, um DSN que o contenha levanta `invalid interpolation syntax`
+# e derruba o Job de migração. O README já lista `/` e `+` como
+# proibidos na senha — este é o terceiro caractere, e sai da lista.
+config.set_main_option("sqlalchemy.url", obter_configuracao().dsn_banco.replace("%", "%%"))
 
 
 def run_migrations_offline() -> None:

@@ -8,9 +8,31 @@ from .porta import LeituraDaProducao, PortaDaProducaoDaMissao
 
 logger = logging.getLogger("nucleo.producoes")
 
-_ENDPOINT = (
-    "https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent?key={chave}"
-)
+_TETO_DO_CORPO_NO_LOG = 500
+
+
+def _registrar_falha(assunto: str, excecao: Exception) -> None:
+    """O corpo da resposta é onde o provedor explica a causa — modelo
+    indisponível, crédito esgotado, chave restrita. O `raise_for_status`
+    levanta com a linha de status e descarta o corpo, e sem ele cada
+    diagnóstico custa uma rodada de investigação. Truncado: resposta de erro
+    é curta, mas não tem teto declarado (change `template-da-missao-no-deepseek`,
+    design — decisão 3)."""
+    if isinstance(excecao, httpx.HTTPStatusError):
+        logger.warning(
+            "Falha ao consultar %s: HTTP %s — %s",
+            assunto,
+            excecao.response.status_code,
+            excecao.response.text[:_TETO_DO_CORPO_NO_LOG],
+        )
+    else:
+        logger.warning("Falha ao consultar %s.", assunto, exc_info=True)
+
+
+# Sem a chave na URL: a mensagem de uma `HTTPStatusError` carrega a URL
+# inteira, e o log a registraria em texto claro. A credencial vai no
+# cabeçalho `x-goog-api-key` (design — decisão 4).
+_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent"
 
 _MIME_POR_FORMA = {"audio": "audio/webm", "foto": "image/jpeg"}
 
@@ -56,7 +78,8 @@ class ProducaoDaMissaoNaNuvem(PortaDaProducaoDaMissao):
 
         try:
             resposta = httpx.post(
-                _ENDPOINT.format(modelo=self._modelo, chave=self._chave_de_api),
+                _ENDPOINT.format(modelo=self._modelo),
+                headers={"x-goog-api-key": self._chave_de_api},
                 json={"contents": [{"parts": partes}]},
                 timeout=20.0,
             )
@@ -69,8 +92,8 @@ class ProducaoDaMissaoNaNuvem(PortaDaProducaoDaMissao):
                     "Resposta do Gemini fora do formato esperado para a leitura da produção."
                 )
             return validada
-        except Exception:
-            logger.warning("Falha ao consultar a leitura da produção no Gemini.", exc_info=True)
+        except Exception as excecao:
+            _registrar_falha("a leitura da produção no Gemini", excecao)
             return None
 
 

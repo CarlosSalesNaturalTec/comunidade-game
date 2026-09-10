@@ -7,9 +7,28 @@ from .porta import AtividadeSugerida, EstruturaSugerida, PortaDoTemplateDeMissao
 
 logger = logging.getLogger("nucleo.template_de_missao")
 
-_ENDPOINT = (
-    "https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent?key={chave}"
-)
+_TETO_DO_CORPO_NO_LOG = 500
+
+
+def _registrar_falha(assunto: str, excecao: Exception) -> None:
+    """O corpo da resposta é onde o provedor explica a causa — modelo
+    indisponível, crédito esgotado, chave restrita. O `raise_for_status`
+    levanta com a linha de status e descarta o corpo, e sem ele cada
+    diagnóstico custa uma rodada de investigação. Truncado: resposta de erro
+    é curta, mas não tem teto declarado (change `template-da-missao-no-deepseek`,
+    design — decisão 3)."""
+    if isinstance(excecao, httpx.HTTPStatusError):
+        logger.warning(
+            "Falha ao consultar %s: HTTP %s — %s",
+            assunto,
+            excecao.response.status_code,
+            excecao.response.text[:_TETO_DO_CORPO_NO_LOG],
+        )
+    else:
+        logger.warning("Falha ao consultar %s.", assunto, exc_info=True)
+
+
+_ENDPOINT = "https://api.deepseek.com/chat/completions"
 
 _INSTRUCAO = (
     "Você ajuda um educador (Mestre) a montar a estrutura de uma missão educacional para "
@@ -30,11 +49,15 @@ _EXIGENCIA_DESPLUGADA = (
 
 
 class TemplateDeMissaoNaNuvem(PortaDoTemplateDeMissao):
-    """Adaptador de produção (documento 03 §1.12): fala com a API do Gemini
-    por HTTP simples — sem SDK novo, o mesmo `httpx` que `sessoes.social`
-    já usa para verificar o login social. Qualquer falha, demora ou
-    resposta fora do formato esperado devolve `None`: a indisponibilidade
-    nunca vira exceção (`RF-09-91`, design — decisões 2, 3)."""
+    """Adaptador de produção: fala com a API do DeepSeek por HTTP simples —
+    sem SDK novo, o mesmo `httpx` que `sessoes.social` já usa. O DeepSeek
+    atende a porta de texto do Ciclo 01 (documento 03 §1.12); a leitura da
+    produção e o assistente seguem no Gemini, porque leem imagem e áudio.
+
+    A credencial vai no cabeçalho, nunca na URL: a mensagem de uma
+    `HTTPStatusError` carrega a URL inteira, e o log a registraria em texto
+    claro. Qualquer falha, demora ou resposta fora do formato esperado
+    devolve `None` — a indisponibilidade nunca vira exceção (`RF-09-91`)."""
 
     def __init__(self, *, chave_de_api: str, modelo: str) -> None:
         self._chave_de_api = chave_de_api
@@ -44,7 +67,9 @@ class TemplateDeMissaoNaNuvem(PortaDoTemplateDeMissao):
         self, *, topico: str, exigir_atividade_desplugada: bool
     ) -> EstruturaSugerida | None:
         if not self._chave_de_api:
-            logger.warning("Chave de API do Gemini ausente: a estrutura da missão não foi pedida.")
+            logger.warning(
+                "Chave de API do DeepSeek ausente: a estrutura da missão não foi pedida."
+            )
             return None
 
         prompt = _INSTRUCAO.format(
@@ -53,21 +78,29 @@ class TemplateDeMissaoNaNuvem(PortaDoTemplateDeMissao):
         )
         try:
             resposta = httpx.post(
-                _ENDPOINT.format(modelo=self._modelo, chave=self._chave_de_api),
-                json={"contents": [{"parts": [{"text": prompt}]}]},
+                _ENDPOINT,
+                headers={"Authorization": f"Bearer {self._chave_de_api}"},
+                json={
+                    "model": self._modelo,
+                    "messages": [{"role": "user", "content": prompt}],
+                    # O modo JSON do DeepSeek exige a palavra "json" no
+                    # prompt, que o `_INSTRUCAO` já traz, e dispensa a cerca
+                    # de código que o `_extrair_json` desembrulha.
+                    "response_format": {"type": "json_object"},
+                },
                 timeout=10.0,
             )
             resposta.raise_for_status()
-            texto = resposta.json()["candidates"][0]["content"]["parts"][0]["text"]
+            texto = resposta.json()["choices"][0]["message"]["content"]
             dados = json.loads(_extrair_json(texto))
             validada = _validar_estrutura(dados)
             if validada is None:
                 logger.warning(
-                    "Resposta do Gemini fora do formato esperado para a estrutura da missão."
+                    "Resposta do DeepSeek fora do formato esperado para a estrutura da missão."
                 )
             return validada
-        except Exception:
-            logger.warning("Falha ao consultar o template da missão no Gemini.", exc_info=True)
+        except Exception as excecao:
+            _registrar_falha("a estrutura da missão no DeepSeek", excecao)
             return None
 
 
