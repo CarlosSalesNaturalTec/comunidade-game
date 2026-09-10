@@ -25,6 +25,9 @@ env:
   # guardá-lo lá faria uma troca de modelo custar edição de segredo em vez de
   # uma linha de diff revisável. A chave, essa sim, vem por `--set-secrets`.
   CG_GEMINI_MODELO: gemini-2.5-flash
+  # Nome de bucket não é segredo — está em toda URL de objeto assinado.
+  # Declarado aqui, trocar de bucket é uma linha de diff revisável.
+  CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE: comunidade-game-armazenamento
   REGIAO: southamerica-east1
   PROJETO_GCP: ${{ secrets.GCP_PROJECT_ID }}
   SERVICO: nucleo-comunidade-game
@@ -77,7 +80,7 @@ jobs:
             --command "alembic" \
             --args "upgrade,head" \
             --set-cloudsql-instances "${{ secrets.GCP_CLOUDSQL_INSTANCIA }}" \
-            --set-env-vars "CG_AMBIENTE=${{ env.CG_AMBIENTE }},CG_GEMINI_MODELO=${{ env.CG_GEMINI_MODELO }}" \
+            --set-env-vars "CG_AMBIENTE=${{ env.CG_AMBIENTE }},CG_GEMINI_MODELO=${{ env.CG_GEMINI_MODELO }},CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE=${{ env.CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE }}" \
             --set-secrets "${{ secrets.GCP_SECRETOS_CG }}" \
             --quiet
 
@@ -102,7 +105,7 @@ jobs:
             --min-instances 0 \
             --allow-unauthenticated \
             --add-cloudsql-instances "${{ secrets.GCP_CLOUDSQL_INSTANCIA }}" \
-            --set-env-vars "CG_AMBIENTE=${{ env.CG_AMBIENTE }},CG_GEMINI_MODELO=${{ env.CG_GEMINI_MODELO }}" \
+            --set-env-vars "CG_AMBIENTE=${{ env.CG_AMBIENTE }},CG_GEMINI_MODELO=${{ env.CG_GEMINI_MODELO }},CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE=${{ env.CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE }}" \
             --set-secrets "${{ secrets.GCP_SECRETOS_CG }}" \
             --quiet
 

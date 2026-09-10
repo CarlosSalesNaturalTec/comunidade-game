@@ -104,3 +104,29 @@ class Configuracao(BaseSettings):
 @lru_cache
 def obter_configuracao() -> Configuracao:
     return Configuracao()
+
+
+class ConfiguracaoDeProducaoIncompleta(RuntimeError):
+    """Variável de produção sem a qual o núcleo não tem como funcionar. Não é
+    recusa de operação nem indisponibilidade de terceiro: é implantação
+    incompleta, e o serviço não sobe até que se corrija (change
+    `bucket-de-armazenamento-em-producao`, design — decisão 2)."""
+
+
+def conferir_configuracao_de_producao(configuracao: Configuracao) -> None:
+    """Confere no arranque o que produção exige e o código não tem como
+    suprir. Falhar aqui mantém a revisão anterior servindo no Cloud Run;
+    falhar numa requisição faz o usuário pagar pelo erro de implantação.
+
+    Só entra aqui o que **não tem alternativa**: sem bucket, o armazenamento
+    em produção não cai para disco — o disco do Cloud Run é efêmero e não
+    sobrevive ao deploy seguinte. As portas de IA ficam de fora de propósito,
+    porque ali a indisponibilidade é comportamento previsto e a tela avisa em
+    linguagem simples (`RF-09-91`, `RN-04-21`, `RN-05-35`)."""
+    if configuracao.ambiente != "producao":
+        return
+    if not configuracao.armazenamento_bucket_cloud_storage:
+        raise ConfiguracaoDeProducaoIncompleta(
+            "CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE não foi declarada, e em produção o "
+            "armazenamento não cai para disco: declare o bucket do Cloud Storage."
+        )
