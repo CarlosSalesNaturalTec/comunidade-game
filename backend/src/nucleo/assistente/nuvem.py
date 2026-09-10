@@ -41,6 +41,9 @@ class AssistenteDeTrilhasNaNuvem(PortaDoAssistente):
         self, *, texto: str | None, arquivo: bytes | None, corpus: str
     ) -> RespostaDoAssistente | None:
         if not self._chave_de_api:
+            logger.warning(
+                "Chave de API do Gemini ausente: a resposta do assistente não foi pedida."
+            )
             return None
 
         partes: list[dict] = [{"text": _INSTRUCAO.format(corpus=corpus)}]
@@ -65,7 +68,12 @@ class AssistenteDeTrilhasNaNuvem(PortaDoAssistente):
             resposta.raise_for_status()
             texto_bruto = resposta.json()["candidates"][0]["content"]["parts"][0]["text"]
             dados = json.loads(_extrair_json(texto_bruto))
-            return _validar_resposta(dados)
+            validada = _validar_resposta(dados)
+            if validada is None:
+                logger.warning(
+                    "Resposta do Gemini fora do formato esperado para a resposta do assistente."
+                )
+            return validada
         except Exception:
             logger.warning("Falha ao consultar o assistente de trilhas no Gemini.", exc_info=True)
             return None

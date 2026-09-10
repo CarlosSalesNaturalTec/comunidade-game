@@ -11,12 +11,13 @@ from .porta import PortaDaProducaoDaMissao
 def obter_porta_da_producao_da_missao(configuracao: Configuracao) -> PortaDaProducaoDaMissao:
     """Escolhe o adaptador pelo ambiente, no mesmo padrão de
     `template_de_missao.fabrica`: local fora de produção, sem exigir
-    credencial; Gemini em produção, com a mesma chave e o mesmo modelo do
-    template da missão (documento 03 §1.12, design — decisão 4)."""
+    credencial; Gemini em produção, pela chave única do projeto — a mesma
+    que `template_de_missao` e `assistente` leem (documento 03 §1.12,
+    design — decisão 4)."""
     if configuracao.ambiente == "producao":
         return ProducaoDaMissaoNaNuvem(
-            chave_de_api=configuracao.template_de_missao_gemini_chave_de_api,
-            modelo=configuracao.template_de_missao_gemini_modelo,
+            chave_de_api=configuracao.gemini_chave_de_api,
+            modelo=configuracao.gemini_modelo,
         )
     return ProducaoDaMissaoLocal()
 

@@ -2,6 +2,7 @@
 decisões 1, 3 e 4."""
 
 import json
+import logging
 
 import httpx
 
@@ -66,10 +67,13 @@ def _corpo_gemini(texto: str) -> dict:
     return {"candidates": [{"content": {"parts": [{"text": texto}]}}]}
 
 
-def test_nuvem_sem_chave_devolve_none():
+def test_nuvem_sem_chave_devolve_none_e_registra_a_causa(caplog):
     porta = AssistenteDeTrilhasNaNuvem(chave_de_api="", modelo="gemini-2.5-flash")
 
-    assert porta.responder(texto="Uma pergunta", arquivo=None, corpus=_CORPUS) is None
+    with caplog.at_level(logging.WARNING, logger="nucleo.assistente"):
+        assert porta.responder(texto="Uma pergunta", arquivo=None, corpus=_CORPUS) is None
+
+    assert "Chave de API do Gemini ausente" in caplog.text
 
 
 def test_nuvem_devolve_none_em_erro_de_transporte(monkeypatch):
@@ -92,12 +96,17 @@ def test_nuvem_devolve_none_em_demora(monkeypatch):
     assert porta.responder(texto="Uma pergunta", arquivo=None, corpus=_CORPUS) is None
 
 
-def test_nuvem_devolve_none_em_json_fora_do_formato(monkeypatch):
+def test_nuvem_devolve_none_e_registra_json_fora_do_formato(monkeypatch, caplog):
+    """O validador devolve `None` de dentro do `try`, sem exceção: sem a linha
+    própria a causa ficaria indistinguível da chave ausente."""
     corpo = _corpo_gemini(json.dumps({"desfecho": "respondida"}))
     monkeypatch.setattr(httpx, "post", lambda *a, **k: _RespostaFake(corpo))
     porta = AssistenteDeTrilhasNaNuvem(chave_de_api="chave-de-teste", modelo="gemini-2.5-flash")
 
-    assert porta.responder(texto="Uma pergunta", arquivo=None, corpus=_CORPUS) is None
+    with caplog.at_level(logging.WARNING, logger="nucleo.assistente"):
+        assert porta.responder(texto="Uma pergunta", arquivo=None, corpus=_CORPUS) is None
+
+    assert "fora do formato esperado" in caplog.text
 
 
 def test_nuvem_responde_com_json_valido(monkeypatch):

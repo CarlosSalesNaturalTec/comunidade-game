@@ -44,6 +44,7 @@ class TemplateDeMissaoNaNuvem(PortaDoTemplateDeMissao):
         self, *, topico: str, exigir_atividade_desplugada: bool
     ) -> EstruturaSugerida | None:
         if not self._chave_de_api:
+            logger.warning("Chave de API do Gemini ausente: a estrutura da missão não foi pedida.")
             return None
 
         prompt = _INSTRUCAO.format(
@@ -59,7 +60,12 @@ class TemplateDeMissaoNaNuvem(PortaDoTemplateDeMissao):
             resposta.raise_for_status()
             texto = resposta.json()["candidates"][0]["content"]["parts"][0]["text"]
             dados = json.loads(_extrair_json(texto))
-            return _validar_estrutura(dados)
+            validada = _validar_estrutura(dados)
+            if validada is None:
+                logger.warning(
+                    "Resposta do Gemini fora do formato esperado para a estrutura da missão."
+                )
+            return validada
         except Exception:
             logger.warning("Falha ao consultar o template da missão no Gemini.", exc_info=True)
             return None

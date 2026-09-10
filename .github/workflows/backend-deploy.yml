@@ -21,6 +21,10 @@ env:
   # chaves contra o ambiente errado e recusava toda chamada com
   # `chave_invalida` — a chave semeada é de produção (`RN-01-34`).
   CG_AMBIENTE: producao
+  # Também aqui, e não no Secret Manager: nome de modelo não é segredo, e
+  # guardá-lo lá faria uma troca de modelo custar edição de segredo em vez de
+  # uma linha de diff revisável. A chave, essa sim, vem por `--set-secrets`.
+  CG_GEMINI_MODELO: gemini-2.5-flash
   REGIAO: southamerica-east1
   PROJETO_GCP: ${{ secrets.GCP_PROJECT_ID }}
   SERVICO: nucleo-comunidade-game
@@ -73,7 +77,7 @@ jobs:
             --command "alembic" \
             --args "upgrade,head" \
             --set-cloudsql-instances "${{ secrets.GCP_CLOUDSQL_INSTANCIA }}" \
-            --set-env-vars "CG_AMBIENTE=${{ env.CG_AMBIENTE }}" \
+            --set-env-vars "CG_AMBIENTE=${{ env.CG_AMBIENTE }},CG_GEMINI_MODELO=${{ env.CG_GEMINI_MODELO }}" \
             --set-secrets "${{ secrets.GCP_SECRETOS_CG }}" \
             --quiet
 
@@ -98,7 +102,7 @@ jobs:
             --min-instances 0 \
             --allow-unauthenticated \
             --add-cloudsql-instances "${{ secrets.GCP_CLOUDSQL_INSTANCIA }}" \
-            --set-env-vars "CG_AMBIENTE=${{ env.CG_AMBIENTE }}" \
+            --set-env-vars "CG_AMBIENTE=${{ env.CG_AMBIENTE }},CG_GEMINI_MODELO=${{ env.CG_GEMINI_MODELO }}" \
             --set-secrets "${{ secrets.GCP_SECRETOS_CG }}" \
             --quiet
 
