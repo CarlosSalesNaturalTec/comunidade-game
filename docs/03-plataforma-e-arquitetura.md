@@ -62,8 +62,9 @@
 9. **Construção assistida por IA, sob direção humana** — os artefatos da plataforma são
    construídos com auxílio de ferramentas de IA; a idealização, o contexto humano e social e
    as decisões são humanas, e a transparência sobre esse uso é pública. No Ciclo 01 a
-   construção usa os modelos **Claude 5 e Sonnet 5**, da Anthropic — uso distinto do Gemini,
-   que atende as pessoas na plataforma (§1.12). A nota pública declara os dois (documento 01).
+   construção usa os modelos **Claude 5 e Sonnet 5**, da Anthropic — uso distinto dos
+   modelos que atendem as pessoas na plataforma (§1.12). A nota pública declara ambos os usos
+   (documento 01).
 10. **Uma instância para todas as comunidades** — a Comunidade Virtual é um vínculo nos
     registros, não uma cópia da plataforma. É o que permite comparar territórios e somar o
     aporte de quem sustenta mais de uma comunidade; em troca, toda consulta filtra por
@@ -71,14 +72,14 @@
 11. **API versionada na rota**, começando em `/v1`. Quebra de contrato abre uma versão nova, e
     a anterior segue no ar por **180 dias** contados da abertura da seguinte — parâmetro
     declarado na implantação, como o prazo de apresentação da URL da chave (§8).
-12. **Modelos de IA do Ciclo 01: Google Gemini.** Toda funcionalidade que precisar de modelo
-    de IA neste ciclo é atendida por modelos **Gemini** — assistente do Guerreiro(a), leitura
-    da produção e assistente da Área do Apoiador Desenvolvedor —, com o custo lançado no
-    livro-razão como recurso de _cloud_. O consumo é feito pela **API do Gemini**, de
-    **endpoint global**: no Ciclo 01 a região de processamento não é escolhida, porque o
-    Vertex AI, que a permite escolher, custaria o _free tier_ que sustenta o ciclo — a
-    revisão fica para o Ciclo 02 (documento 09). A **biometria facial do App 01 não usa
-    modelo de linguagem** e é resolvida no próprio aparelho (§3.3).
+12. **Modelos de IA do Ciclo 01: escolhidos por funcionalidade.** Não há provedor único —
+    cada funcionalidade usa o modelo que dá conta do que ela pede, pelo menor custo. O que é
+    **só texto** vai para o **DeepSeek**; o que exige **leitura de imagem** segue no **Google
+    Gemini** (documento 09). O custo de todos entra no livro-razão como recurso de _cloud_. O
+    consumo é por **endpoint global**, em qualquer provedor: no Ciclo 01 a região de
+    processamento não é escolhida, e a revisão fica para o Ciclo 02 (documento 09). A
+    **biometria facial do App 01 não usa modelo de linguagem** e é resolvida no próprio
+    aparelho (§3.3).
 13. **Stack e hospedagem do Ciclo 01.** O Backend API é escrito em **Python 3.12 com FastAPI**
     e roda em **Cloud Run**; o banco é **Cloud SQL para PostgreSQL com PostGIS**, onde ficam
     também as **séries temporais do território**, particionadas por tempo; os arquivos de
@@ -588,8 +589,9 @@ despublicar com motivo, exatamente como faz com as trilhas.
 
 **Cota e custo no Ciclo 01.** Não há teto de uso: a demanda e o custo são observados ao longo
 do ciclo para dimensionar o ciclo seguinte. O consumo entra no livro-razão como recurso de
-_cloud_, **aportado por absorção pelo Admin e Mestre fundador**, começando no _free tier_ da
-conta **Google Gemini PRO** e passando a _pay-as-you-go_ quando o uso exigir.
+_cloud_, **aportado por absorção pelo Admin e Mestre fundador**, em _pay-as-you-go_ nos
+provedores usados: o _free tier_ do Gemini deixou de existir para conta nova, e é o que levou
+o texto para o DeepSeek (§1.12, documento 09).
 
 ### 7.1 Personalização por IA
 
@@ -721,7 +723,8 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   Guerreiro(a), procurar a gestão no encontro.
 - Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins. A **nota de transparência
   sobre IA** vive **dentro de "Quem somos"**, e não em seção própria: declara que a plataforma
-  é construída com Claude e atende as pessoas com Gemini (documento 01), que a IA **reescreve
+  é construída com Claude e atende as pessoas com Gemini e DeepSeek (documento 01), que a IA
+  **reescreve
   conteúdo do corpus do Mestre para crianças e não as perfila**, e remete à linha "Licenças"
   quanto ao que é gerado com auxílio de IA. É para ela que aponta a etiqueta do texto reescrito
   nas Apps 01 e 05 (§7.1).

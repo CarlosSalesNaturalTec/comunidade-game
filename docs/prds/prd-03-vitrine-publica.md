@@ -390,7 +390,7 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RN-03-23` | Toda tela indica o que a plataforma coleta, com acesso à área detalhada                   | —                      | 03 §12      |
 | `RN-03-29` | A Área do Apoiador Desenvolvedor é seção da vitrine, não uma nona aplicação               | 1                      | 03 §8       |
 | `RN-03-30` | O assistente do Desenvolvedor tem corpus fechado e nunca responde fora dele               | —                      | 03 §8       |
-| `RN-03-31` | O assistente usa modelo Gemini, como toda funcionalidade de IA do Ciclo 01                | —                      | 03 §1       |
+| `RN-03-31` | O assistente usa o modelo que o Ciclo 01 destinar à conversa por texto (03 §1.12)         | —                      | 03 §1       |
 | `RN-03-32` | Solicitação de chave não emite chave nem cria cadastro: quem emite é Admin, na App 03     | 3                      | 03 §8       |
 | `RN-03-33` | A vitrine consome a API com a chave da aplicação, e o visitante segue anônimo             | —                      | 03 §§1, 1.1 |
 
@@ -577,7 +577,7 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 | Chamada "Quero participar" em toda página individual                     | 03 §8      | Chamada "Quero participar" nos perfis     |
 | Área do Apoiador Desenvolvedor como seção da vitrine, não nona aplicação | 03 §8      | Acesso das aplicações de terceiros        |
 | Assistente de chat com corpus fechado e pergunta de múltipla escolha     | 03 §8      | Acesso das aplicações de terceiros        |
-| Modelo Gemini para toda funcionalidade de IA do Ciclo 01                 | 03 §1      | Modelos de IA do Ciclo 01                 |
+| Modelo de IA escolhido por funcionalidade, ao menor custo                | 03 §1      | Modelos de IA do Ciclo 01                 |
 | Solicitação de chave pela vitrine, com emissão por Admin                 | 03 §8      | Acesso das aplicações de terceiros        |
 | Card de Apoiador com avatar, nick, moedas em destaque e moldura comum    | 11 §8.2    | Identidade pública do Apoiador            |
 | Pré-cadastro do Apoiador, com aporte declarado e comprovante             | 02 §1      | Pré-cadastro do Apoiador                  |
@@ -598,7 +598,7 @@ entidade e não como contrato.
 ## 14. Pendências que permanecem
 
 - **Texto final da nota de transparência sobre IA**: o conteúdo e a localização estão decididos
-  — a nota vive dentro de "Quem somos", declara Claude na construção e Gemini no atendimento e
+  — a nota vive dentro de "Quem somos", declara Claude na construção e quem atende as pessoas e
   remete à linha "Licenças". Falta redigi-la, com os demais textos públicos. Trava o `RF-03-48`
   no texto, não no desenho.
 

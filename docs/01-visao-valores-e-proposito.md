@@ -263,7 +263,8 @@ transparência acompanha os artefatos públicos do projeto, a começar pela vitr
 
 **O que a nota pública diz.** São dois usos distintos, e a vitrine declara os dois: a
 plataforma é **construída** com os modelos **Claude 5 e Sonnet 5**, da Anthropic, e **atende**
-Guerreiros, Guerreiras, Mestres e Apoiadores com os modelos **Gemini**, do Google
-(documento 03). Quem constrói não é quem responde a uma criança na tela, e o público tem
-direito de saber a diferença. O texto final, a localização exata na vitrine e a forma de marcar
-o conteúdo gerado com auxílio de IA seguem em aberto (documento 09).
+Guerreiros, Guerreiras, Mestres e Apoiadores com modelos de terceiros — hoje **Gemini**, do
+Google, e **DeepSeek** (documento 03). Quem constrói não é quem responde a uma criança na
+tela, e o público tem direito de saber a diferença. O texto final, a localização exata na
+vitrine e a forma de marcar o conteúdo gerado com auxílio de IA seguem em aberto
+(documento 09).

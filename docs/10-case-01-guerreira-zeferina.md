@@ -112,9 +112,10 @@ Como qualquer outro recurso, entram no livro-razão e compõem o **Poder Sustent
 aportar.
 
 O **consumo de IA das Apps 05 e 01** entra na mesma conta: no Ciclo 01 ele é **aportado por
-absorção pelo Admin e Mestre fundador**, começando no _free tier_ da conta Google Gemini PRO e
-passando a _pay-as-you-go_ conforme o uso. **Não há teto de uso neste ciclo** — a demanda real
-e o custo são medidos aqui para dimensionar o ciclo seguinte, e essa medição é um dos
+absorção pelo Admin e Mestre fundador**, em _pay-as-you-go_ nos provedores usados — o _free
+tier_ do Gemini deixou de existir para conta nova (documento 03 §1.12). **Não há teto de uso
+neste ciclo** — a demanda real e o custo são medidos aqui para dimensionar o ciclo seguinte, e
+essa medição é um dos
 resultados esperados do piloto.
 
 A **produção executiva** do fundador — o tempo de construir a plataforma, apurado pelo

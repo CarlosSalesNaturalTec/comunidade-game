@@ -699,7 +699,7 @@ personalização e o motivo da recomendação vigente, e permite **desligá-la**
 Desligada, o Guerreiro(a) segue a trilha na ordem publicada e lê a explicação original do
 Mestre — alternativa equivalente, nunca exclusão da atividade.
 
-**Modelo de IA:** **Google Gemini**, como toda funcionalidade de IA do Ciclo 01.
+**Modelo de IA:** o que o Ciclo 01 destinar a esta funcionalidade (documento 03 §1.12).
 
 **Questões em aberto:** nenhuma que trave o PRD — resta o comportamento da personalização no
 aparelho compartilhado da equipe (App 01) quando um integrante está com ela desligada.
