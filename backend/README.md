@@ -63,10 +63,39 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    a lista de mapeamentos `SECRET:CG_VAR` do segredo do repositório `GCP_SECRETOS_CG` (formato
    aceito por `gcloud run deploy --set-secrets`).
 
-   A chave do Gemini nasce no console do GCP como **API Key restrita à Generative Language
-   API**. Restrição por IP não serve: com `min-instances=0` o Cloud Run não tem endereço de
-   saída estável sem conector VPC. Ela é credencial de servidor — vive no Secret Manager e
-   **nunca** entra em build de frontend, ao contrário de `VITE_GOOGLE_CLIENT_ID`.
+   A chave do Gemini nasce em **APIs e serviços → Credenciais → Criar credenciais → Chave de
+   API**, com três escolhas na tela:
+
+   - **Restrições da API**: `Gemini API`. Só ela — a chave não serve para mais nada.
+   - **Conta de serviço**: obrigatória — o console **exige** vincular a chave a uma conta
+     para a Gemini API. Use a `gemini-runtime`, criada só para isto e **sem nenhum outro
+     papel**; nunca a `nucleo-runtime`. É o mesmo argumento que criou a `nucleo-runtime` no
+     item 5: a chave viaja em _query string_, e a `nucleo-runtime` tem
+     `secretmanager.secretAccessor` no projeto inteiro. Vazando a chave da conta dedicada, o
+     estrago é cota do Gemini; vazando a da outra, a restrição por API é a única linha de
+     defesa entre ela e todos os segredos do projeto.
+
+     ```bash
+     gcloud iam service-accounts create gemini-runtime \
+       --display-name="Chave de API do Gemini" \
+       --project comunidade-game-506017
+     ```
+
+   - **Restrições do aplicativo**: `Nenhum`. Referrer, IP, Android e iOS são restrições de
+     cliente; com `min-instances=0` o Cloud Run nem tem endereço de saída estável sem
+     conector VPC.
+
+   A vinculação não alcança o código: o adaptador segue mandando `?key=` na URL, sem
+   cabeçalho `Authorization`. A conta nasce sem papel algum e é a permissão dela que governa
+   o que a chave faz, então a primeira chamada pode voltar `403` — o erro do Google nomeia a
+   permissão que falta, e é ela que se concede à `gemini-runtime`, a nenhuma outra.
+
+   Se a criação da chave vinculada for recusada, é **política da organização**: o próprio
+   console aponta qual. Vertex AI seria a alternativa e está adiada para o Ciclo 02, pelo
+   custo do _free tier_ (documento 09).
+
+   A chave é credencial de servidor: vive no Secret Manager e **nunca** entra em build de
+   frontend, ao contrário de `VITE_GOOGLE_CLIENT_ID`.
 4. **Workload Identity Federation** — um _pool_ e um provedor OIDC para o repositório GitHub,
    e uma conta de serviço de deploy com papel de executor no Cloud Run, no Cloud Run Jobs e no
    Artifact Registry. Os identificadores vão para os segredos do repositório
