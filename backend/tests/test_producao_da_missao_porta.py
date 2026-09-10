@@ -2,12 +2,17 @@
 `RF-09-90`, design — decisões 4 e 5."""
 
 import io
+import json
+import logging
+
+import httpx
 
 from nucleo.livro_razao.modelo import Lancamento
 from nucleo.personas.modelo import Papel
 from nucleo.producoes.fabrica import dependencia_da_producao_da_missao
 from nucleo.producoes.local import ProducaoDaMissaoLocal
 from nucleo.producoes.modelo import ProducaoDaMissao
+from nucleo.producoes.nuvem import ProducaoDaMissaoNaNuvem
 from nucleo.producoes.porta import PortaDaProducaoDaMissao
 from nucleo.trilhas.modelo import SituacaoDaTrilha
 
@@ -462,3 +467,96 @@ def test_porta_de_equipe_segue_intacta_apos_a_porta_individual(
     corpo = resposta.json()
     assert corpo["equipe_id"] == str(equipe.id)
     assert corpo["guerreiro_id"] is None
+
+
+# --- Adaptador de produção (Gemini) ------------------------------------------
+# Design da change `chave-do-gemini-em-producao` — decisão 3: nenhuma causa de
+# indisponibilidade é muda, e nenhuma delas vira exceção (`RF-04-46`,
+# `RN-05-35`).
+
+_LOGGER_DA_NUVEM = "nucleo.producoes"
+
+
+class _RespostaFake:
+    def __init__(self, corpo: dict):
+        self._corpo = corpo
+
+    def raise_for_status(self):
+        pass
+
+    def json(self):
+        return self._corpo
+
+
+def _corpo_gemini(texto: str) -> dict:
+    return {"candidates": [{"content": {"parts": [{"text": texto}]}}]}
+
+
+def _ler(porta):
+    return porta.ler(
+        forma="texto",
+        texto="A equipe plantou dez mudas.",
+        arquivo=None,
+        producao_esperada="Relato do plantio.",
+    )
+
+
+def test_nuvem_sem_chave_devolve_none_e_registra_a_causa(caplog):
+    porta = ProducaoDaMissaoNaNuvem(chave_de_api="", modelo="gemini-2.5-flash")
+
+    with caplog.at_level(logging.WARNING, logger=_LOGGER_DA_NUVEM):
+        assert _ler(porta) is None
+
+    assert "Chave de API do Gemini ausente" in caplog.text
+
+
+def test_nuvem_sem_chave_nao_chega_a_chamar_o_modelo(monkeypatch):
+    def _nao_deve_ser_chamado(*args, **kwargs):
+        raise AssertionError("sem chave, o adaptador não pode alcançar a rede")
+
+    monkeypatch.setattr(httpx, "post", _nao_deve_ser_chamado)
+    porta = ProducaoDaMissaoNaNuvem(chave_de_api="", modelo="gemini-2.5-flash")
+
+    assert _ler(porta) is None
+
+
+def test_nuvem_devolve_none_em_erro_de_transporte(monkeypatch, caplog):
+    def _levanta(*args, **kwargs):
+        raise httpx.ConnectError("rede indisponível")
+
+    monkeypatch.setattr(httpx, "post", _levanta)
+    porta = ProducaoDaMissaoNaNuvem(chave_de_api="chave-de-teste", modelo="gemini-2.5-flash")
+
+    with caplog.at_level(logging.WARNING, logger=_LOGGER_DA_NUVEM):
+        assert _ler(porta) is None
+
+    assert "Falha ao consultar a leitura da produção no Gemini." in caplog.text
+
+
+def test_nuvem_devolve_none_e_registra_json_fora_do_formato(monkeypatch, caplog):
+    """O validador devolve `None` de dentro do `try`, sem exceção: sem a linha
+    própria a causa ficaria indistinguível da chave ausente."""
+    corpo = _corpo_gemini(json.dumps({"devolutiva": "Muito bem!"}))
+    monkeypatch.setattr(httpx, "post", lambda *a, **k: _RespostaFake(corpo))
+    porta = ProducaoDaMissaoNaNuvem(chave_de_api="chave-de-teste", modelo="gemini-2.5-flash")
+
+    with caplog.at_level(logging.WARNING, logger=_LOGGER_DA_NUVEM):
+        assert _ler(porta) is None
+
+    assert "fora do formato esperado" in caplog.text
+
+
+def test_nuvem_devolve_a_leitura_quando_o_modelo_responde(monkeypatch, caplog):
+    corpo = _corpo_gemini(
+        json.dumps({"transcricao": "Plantamos dez mudas.", "devolutiva": "Bom relato."})
+    )
+    monkeypatch.setattr(httpx, "post", lambda *a, **k: _RespostaFake(corpo))
+    porta = ProducaoDaMissaoNaNuvem(chave_de_api="chave-de-teste", modelo="gemini-2.5-flash")
+
+    with caplog.at_level(logging.WARNING, logger=_LOGGER_DA_NUVEM):
+        leitura = _ler(porta)
+
+    assert leitura is not None
+    assert leitura.transcricao == "Plantamos dez mudas."
+    assert leitura.devolutiva == "Bom relato."
+    assert caplog.text == ""

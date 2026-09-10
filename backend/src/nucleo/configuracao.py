@@ -66,11 +66,14 @@ class Configuracao(BaseSettings):
     # antes de o envio ser confirmado (`RF-09-19`, design — Migration Plan).
     armazenamento_diretorio_sessoes_locais: str = "./armazenamento-sessoes"
 
-    # Porta do template da missão (design — Decisions): local fora de
-    # produção, sem exigir credencial; Gemini em produção, no mesmo padrão
-    # de `armazenamento_bucket_cloud_storage` (documento 03 §1.12).
-    template_de_missao_gemini_chave_de_api: str = ""
-    template_de_missao_gemini_modelo: str = "gemini-2.5-flash"
+    # Credencial única do Gemini, lida pelas três portas de IA do Ciclo 01 —
+    # template da missão, leitura da produção e assistente de trilhas
+    # (documento 03 §1.12). Local fora de produção, sem exigir credencial, no
+    # mesmo padrão de `armazenamento_bucket_cloud_storage`; sem a chave, as
+    # três respondem o aviso de indisponibilidade. O modelo não é segredo e
+    # vem do ambiente, ao lado de `CG_AMBIENTE`.
+    gemini_chave_de_api: str = ""
+    gemini_modelo: str = "gemini-2.5-flash"
 
     # Rótulo do ciclo corrente, declarado na implantação — não é entidade,
     # não tem calendário (`RF-01-42`, `RF-01-43`, design — Decisions).

@@ -38,6 +38,7 @@ class ProducaoDaMissaoNaNuvem(PortaDaProducaoDaMissao):
         self, *, forma: str, texto: str | None, arquivo: bytes | None, producao_esperada: str
     ) -> LeituraDaProducao | None:
         if not self._chave_de_api:
+            logger.warning("Chave de API do Gemini ausente: a leitura da produção não foi pedida.")
             return None
 
         partes: list[dict] = [{"text": _INSTRUCAO.format(producao_esperada=producao_esperada)}]
@@ -62,7 +63,12 @@ class ProducaoDaMissaoNaNuvem(PortaDaProducaoDaMissao):
             resposta.raise_for_status()
             texto_bruto = resposta.json()["candidates"][0]["content"]["parts"][0]["text"]
             dados = json.loads(_extrair_json(texto_bruto))
-            return _validar_leitura(dados)
+            validada = _validar_leitura(dados)
+            if validada is None:
+                logger.warning(
+                    "Resposta do Gemini fora do formato esperado para a leitura da produção."
+                )
+            return validada
         except Exception:
             logger.warning("Falha ao consultar a leitura da produção no Gemini.", exc_info=True)
             return None

@@ -36,6 +36,13 @@ Com valor padrão, ajustados em produção:
 - `CG_GOOGLE_CLIENT_ID` — o mesmo _client ID_ que os frontends usam.
 - `CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE` — bucket de produção; sem ele o núcleo cai para
   disco local, que não sobrevive a um novo deploy do Cloud Run.
+- `CG_GEMINI_CHAVE_DE_API` — credencial **única** do Gemini, lida pelas **três** portas de IA
+  do Ciclo 01: template da missão (App 09), leitura da produção (Apps 01 e 05) e assistente de
+  trilhas (App 01). Vem do **Secret Manager**. Sem ela as três respondem o aviso de
+  indisponibilidade em vez de falhar — provisionar uma vez acende as três.
+- `CG_GEMINI_MODELO` — **declarado pelo `backend-deploy.yml`**, não pelo Secret Manager: nome
+  de modelo não é segredo, e guardá-lo lá faria uma troca de modelo custar edição de segredo
+  em vez de uma linha de diff. Padrão `gemini-2.5-flash`.
 
 ## Provisionamento (uma vez por ambiente novo)
 
@@ -52,9 +59,14 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    conector de acesso VPC: mais peças e mais custo, sem ganho real de proteção aqui.
 2. **Artifact Registry** — repositório Docker `comunidade-game` na mesma região.
 3. **Secret Manager** — um segredo por variável sem valor padrão, mais
-   `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM` e `CG_DSN_BANCO`. O workflow lê a lista de mapeamentos
-   `SECRET:CG_VAR` do segredo do repositório `GCP_SECRETOS_CG` (formato aceito por
-   `gcloud run deploy --set-secrets`).
+   `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM`, `CG_DSN_BANCO` e `CG_GEMINI_CHAVE_DE_API`. O workflow lê
+   a lista de mapeamentos `SECRET:CG_VAR` do segredo do repositório `GCP_SECRETOS_CG` (formato
+   aceito por `gcloud run deploy --set-secrets`).
+
+   A chave do Gemini nasce no console do GCP como **API Key restrita à Generative Language
+   API**. Restrição por IP não serve: com `min-instances=0` o Cloud Run não tem endereço de
+   saída estável sem conector VPC. Ela é credencial de servidor — vive no Secret Manager e
+   **nunca** entra em build de frontend, ao contrário de `VITE_GOOGLE_CLIENT_ID`.
 4. **Workload Identity Federation** — um _pool_ e um provedor OIDC para o repositório GitHub,
    e uma conta de serviço de deploy com papel de executor no Cloud Run, no Cloud Run Jobs e no
    Artifact Registry. Os identificadores vão para os segredos do repositório
@@ -166,6 +178,31 @@ A linha traz os campos que decidem, e cada um aponta uma causa:
 | `segredo=False`     | segredo trocado: o `id` existe, o resumo não confere                 |
 | `ambiente=False`    | chave de um ambiente conferida contra o outro — veja `CG_AMBIENTE`   |
 | `vigente=False`     | chave revogada, à mão ou por decurso do prazo (`RF-01-52`)           |
+
+## Quando a sugestão, a leitura ou a resposta do assistente não vêm
+
+As três funcionalidades de IA tratam a indisponibilidade do modelo como desfecho previsto, não
+como erro: a tela avisa em linguagem simples e a pessoa segue sem a IA (`RF-09-91`, `RN-04-21`,
+`RN-05-35`). O efeito colateral é que **toda causa produz a mesma tela**. O motivo vai para o
+log, nos _loggers_ `nucleo.template_de_missao`, `nucleo.producoes` e `nucleo.assistente`:
+
+```bash
+gcloud run services logs read nucleo-comunidade-game \
+  --region southamerica-east1 --project comunidade-game-506017 --limit 20
+```
+
+| O que aparece no log                       | Causa                                                                    |
+| ------------------------------------------ | ------------------------------------------------------------------------ |
+| nenhuma linha, com a tela acionada         | o serviço não chegou ao adaptador de nuvem — confira `CG_AMBIENTE=producao` |
+| `Chave de API do Gemini ausente`           | `CG_GEMINI_CHAVE_DE_API` não chegou ao contêiner — confira o mapeamento em `GCP_SECRETOS_CG` |
+| `HTTPStatusError` com `400`                | `CG_GEMINI_MODELO` nomeia modelo que não existe no endpoint `v1beta`     |
+| `HTTPStatusError` com `403`                | chave restrita a outra API, ou Generative Language API desabilitada      |
+| `HTTPStatusError` com `429`                | cota da conta estourada                                                  |
+| `ReadTimeout` ou `TimeoutException`        | o modelo passou do tempo do adaptador                                    |
+| `Resposta do Gemini fora do formato esperado` | o modelo respondeu, mas não no JSON que o adaptador exige             |
+
+Provisionar a chave acende as três de uma vez: elas leem a **mesma** `CG_GEMINI_CHAVE_DE_API`.
+Fora de produção nada disso se aplica — o adaptador local responde sem rede e sem credencial.
 
 ## Conferência que fecha a publicação
 
