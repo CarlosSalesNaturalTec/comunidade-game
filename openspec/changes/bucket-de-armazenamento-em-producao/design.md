@@ -65,7 +65,9 @@ de projeto. Vincular o papel ao bucket mantém a conta no mesmo desenho enxuto q
 
 Duas decisões do fundador, ambas travando as tarefas:
 
-- **Nome do bucket.** A convenção dos sites do Firebase é `comunidade-game-*`.
-- **Versionamento e ciclo de vida.** O bucket guarda artefato comprobatório e conteúdo
-  produzido em comunidade; se há prazo de guarda ou exigência de versão anterior, é regra de
-  negócio e vem do documento-fonte, não daqui.
+- **Versionamento e ciclo de vida.** Decisão operacional do fundador, na criação do bucket: não
+  bloqueia as tarefas nem aparece no código. Se vier a existir prazo de guarda, é regra de
+  negócio e nasce no documento-fonte, não aqui.
+
+O **nome do bucket** foi decidido pelo fundador em 2026-09-10: `comunidade-game-armazenamento`,
+na convenção dos sites do Firebase, região `southamerica-east1`.
