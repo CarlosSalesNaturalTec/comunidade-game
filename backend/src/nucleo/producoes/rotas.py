@@ -60,11 +60,12 @@ def registrar_producao_rota(
     arquivo: Annotated[UploadFile | None, File()] = None,
 ) -> ProducaoDaMissaoSaida:
     """`RF-04-45` a `RF-04-47`, PRD-04 §9: a entrega da produção pela
-    equipe, em texto, áudio ou foto — a integrância, a atividade corrente,
-    a aula encerrada e o desfecho da indisponibilidade já são de
-    `registrar_producao`. O byte do arquivo é lido em memória e sai de
-    escopo ao fim da chamada, sem tocar `armazenamento`, disco ou log
-    (`RF-04-46`, design — decisão 3)."""
+    equipe — a integrância, a atividade corrente, a aula encerrada e o
+    desfecho da indisponibilidade já são de `registrar_producao`. `arquivo`
+    é só da **foto**: a fala chega transcrita no aparelho, em `texto`, e o
+    núcleo nunca recebe áudio (`RF-05-76`, `RN-05-32`). O byte da foto é
+    lido em memória e sai de escopo ao fim da chamada, sem tocar
+    `armazenamento`, disco ou log (`RF-04-46`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     equipe = sessao_bd.get(Equipe, id_da_equipe)
     if equipe is None:
@@ -98,9 +99,10 @@ def registrar_producao_individual_rota(
 ) -> ProducaoDaMissaoSaida:
     """`RF-05-74` a `RF-05-77`, PRD-05 §9: a entrega individual do
     Guerreiro(a) em sessão, sobre uma missão do próprio percurso — a mesma
-    superfície `multipart/form-data` da porta de equipe, com a atividade
-    declarada no corpo (design — decisões 2, 6). A posse do percurso, a
-    forma única e o desfecho da indisponibilidade já são de
+    superfície `multipart/form-data` da porta de equipe, que a foto mantém,
+    com a atividade declarada no corpo (design — decisão 1). A posse do
+    percurso, a forma única — `arquivo` só na foto, a fala em `texto` — e o
+    desfecho da indisponibilidade já são de
     `registrar_producao_individual`."""
     if contexto.papel != Papel.guerreiro:
         raise PermissaoNegada(mensagem="Só o Guerreiro(a) entrega a produção da missão.")

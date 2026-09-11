@@ -133,15 +133,14 @@ def test_entrega_por_fala(
 
     resposta = cliente.post(
         f"/v1/equipes/{equipe.id}/producao",
-        data={"forma": "audio"},
-        files={"arquivo": ("fala.webm", io.BytesIO(b"audio-fake"), "audio/webm")},
+        data={"forma": "audio", "texto": "O que a equipe falou, transcrito no aparelho."},
         headers=_cabecalhos(chave, token),
     )
 
     assert resposta.status_code == 201
     corpo = resposta.json()
     assert corpo["forma"] == "audio"
-    assert corpo["transcricao"]
+    assert corpo["transcricao"] == "O que a equipe falou, transcrito no aparelho."
 
 
 def test_entrega_por_foto_do_manuscrito(
@@ -253,6 +252,47 @@ def test_entrega_com_duas_formas_e_recusada(
     )
 
     assert resposta.status_code == 422
+    assert sessao.query(ProducaoDaMissao).count() == 0
+
+
+def test_entrega_por_fala_com_arquivo_e_recusada(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """`RF-05-76`, `RN-05-32`: o áudio não chega ao núcleo — a fala vem
+    transcrita do aparelho, em `texto`, e arquivo na forma "áudio" é recusa,
+    não mídia ignorada em silêncio."""
+    chave, _ = criar_chave()
+    guerreiro, equipe, _, _ = _montar_equipe_com_atividade_corrente(
+        criar_persona=criar_persona,
+        criar_comunidade=criar_comunidade,
+        criar_aula=criar_aula,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_equipe=criar_equipe,
+        sessao=sessao,
+    )
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.post(
+        f"/v1/equipes/{equipe.id}/producao",
+        data={"forma": "audio"},
+        files={"arquivo": ("fala.webm", io.BytesIO(b"audio-fake"), "audio/webm")},
+        headers=_cabecalhos(chave, token),
+    )
+
+    assert resposta.status_code == 422
+    assert resposta.json()["campo"] == "forma"
     assert sessao.query(ProducaoDaMissao).count() == 0
 
 
@@ -650,15 +690,18 @@ def test_entrega_individual_por_fala(
 
     resposta = cliente.post(
         f"/v1/eu/missoes/{missao.id}/producao",
-        data={"forma": "audio", "atividade_id": str(atividade.id)},
-        files={"arquivo": ("fala.webm", io.BytesIO(b"audio-fake"), "audio/webm")},
+        data={
+            "forma": "audio",
+            "atividade_id": str(atividade.id),
+            "texto": "O que eu falei, transcrito no aparelho.",
+        },
         headers=_cabecalhos(chave, token),
     )
 
     assert resposta.status_code == 201
     corpo = resposta.json()
     assert corpo["forma"] == "audio"
-    assert corpo["transcricao"]
+    assert corpo["transcricao"] == "O que eu falei, transcrito no aparelho."
 
 
 def test_entrega_individual_por_foto_do_manuscrito(
@@ -761,6 +804,43 @@ def test_entrega_individual_com_duas_formas_e_recusada(
     )
 
     assert resposta.status_code == 422
+    assert sessao.query(ProducaoDaMissao).count() == 0
+
+
+def test_entrega_individual_por_fala_com_arquivo_e_recusada(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_inscricao_na_trilha,
+    criar_desbloqueio_da_missao,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """`RF-05-76`, `RN-05-32`: a mesma recusa da porta de equipe, na porta
+    individual."""
+    chave, _ = criar_chave()
+    guerreiro, _, missao, atividade = _montar_guerreiro_com_missao_desbloqueada(
+        criar_persona=criar_persona,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_inscricao_na_trilha=criar_inscricao_na_trilha,
+        criar_desbloqueio_da_missao=criar_desbloqueio_da_missao,
+    )
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/producao",
+        data={"forma": "audio", "atividade_id": str(atividade.id)},
+        files={"arquivo": ("fala.webm", io.BytesIO(b"audio-fake"), "audio/webm")},
+        headers=_cabecalhos(chave, token),
+    )
+
+    assert resposta.status_code == 422
+    assert resposta.json()["campo"] == "forma"
     assert sessao.query(ProducaoDaMissao).count() == 0
 
 

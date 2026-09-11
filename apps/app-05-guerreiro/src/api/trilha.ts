@@ -247,8 +247,10 @@ interface EntregarProducaoIndividualEntrada {
 
 // `RF-05-74` a `RF-05-77`: a entrega individual, sobre uma missão do
 // próprio percurso — a mesma superfície `multipart/form-data` da porta de
-// equipe do App 01. A devolutiva volta construtiva e nunca credita ponto;
-// foto e áudio nunca ficam no aparelho depois do envio.
+// equipe do App 01, que a foto mantém. A devolutiva volta construtiva e
+// nunca credita ponto; a foto não fica no aparelho depois do envio, e a
+// fala vai transcrita em `texto` — o áudio não é enviado (`RF-05-76`,
+// `RN-05-32`).
 export function entregarProducaoIndividual(
   missaoId: string,
   entrada: EntregarProducaoIndividualEntrada,

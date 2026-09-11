@@ -34,7 +34,9 @@ def _registrar_falha(assunto: str, excecao: Exception) -> None:
 # cabeçalho `x-goog-api-key` (design — decisão 4).
 _ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent"
 
-_MIME_POR_FORMA = {"audio": "audio/webm", "foto": "image/jpeg"}
+# Só a foto sobe como mídia: a fala chega transcrita do aparelho e o núcleo
+# nunca recebe áudio (`RF-05-76`, `RN-05-32`, design — decisão 3).
+_MIME_DA_FOTO = "image/jpeg"
 
 _INSTRUCAO = (
     "Você é um educador (Mestre) que lê a produção que uma equipe de crianças e "
@@ -48,9 +50,11 @@ _INSTRUCAO = (
 
 class ProducaoDaMissaoNaNuvem(PortaDaProducaoDaMissao):
     """Adaptador de produção (documento 03 §1.12): fala com a API do Gemini
-    por HTTP simples, multimodal — a mesma passada lê e comenta, com metade
-    da latência num encontro presencial (design — decisão 4). Qualquer
-    falha, demora ou resposta fora do formato esperado devolve `None`."""
+    por HTTP simples. Na **foto**, multimodal — a mesma passada lê e comenta,
+    com metade da latência num encontro presencial; no texto e na fala já
+    transcrita no aparelho, passada só de texto (`RF-05-76`, `RN-05-32`).
+    Qualquer falha, demora ou resposta fora do formato esperado devolve
+    `None`."""
 
     def __init__(self, *, chave_de_api: str, modelo: str) -> None:
         self._chave_de_api = chave_de_api
@@ -64,17 +68,17 @@ class ProducaoDaMissaoNaNuvem(PortaDaProducaoDaMissao):
             return None
 
         partes: list[dict] = [{"text": _INSTRUCAO.format(producao_esperada=producao_esperada)}]
-        if forma == "texto":
-            partes.append({"text": f"Produção entregue pela equipe: {texto}"})
-        else:
+        if forma == "foto":
             partes.append(
                 {
                     "inlineData": {
-                        "mimeType": _MIME_POR_FORMA[forma],
+                        "mimeType": _MIME_DA_FOTO,
                         "data": base64.b64encode(arquivo or b"").decode("ascii"),
                     }
                 }
             )
+        else:
+            partes.append({"text": f"Produção entregue pela equipe: {texto}"})
 
         try:
             resposta = httpx.post(

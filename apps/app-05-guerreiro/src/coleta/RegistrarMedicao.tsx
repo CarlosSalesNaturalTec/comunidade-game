@@ -1,7 +1,8 @@
 import { ErroDaApi } from "comum/api";
 import { useSessao } from "comum/autenticacao";
+import { existeTranscricaoDeFala, iniciarTranscricao } from "comum/fala";
 import { Aviso, Botao, Campo } from "comum/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type RegistroGravado, registrarMedicao, type SerieDoGuerreiro } from "../api/coleta";
 import { AvisoDeColeta } from "./AvisoDeColeta";
 
@@ -9,29 +10,6 @@ import { AvisoDeColeta } from "./AvisoDeColeta";
 // fila, nenhuma medição, nenhuma mídia (`RF-05-85`, PRD-05 §§10, 13).
 const SEM_REDE =
   "Sem internet agora — não deu para gravar. Espere a conexão voltar e tente de novo.";
-
-type ConstrutorDeReconhecimento = new () => {
-  lang: string;
-  start: () => void;
-  onresult:
-    | ((evento: {
-        results: { [indice: number]: { [indice: number]: { transcript: string } } };
-      }) => void)
-    | null;
-  onerror: (() => void) | null;
-  onend: (() => void) | null;
-};
-
-// A API de voz do navegador não existe em todo aparelho modesto — o
-// ditado é oferecido só quando ela existe, e a digitação continua sendo o
-// caminho sempre disponível (design — Risks).
-function obterConstrutorDeReconhecimento(): ConstrutorDeReconhecimento | null {
-  const global = window as unknown as {
-    SpeechRecognition?: ConstrutorDeReconhecimento;
-    webkitSpeechRecognition?: ConstrutorDeReconhecimento;
-  };
-  return global.SpeechRecognition ?? global.webkitSpeechRecognition ?? null;
-}
 
 function extrairNumero(transcricao: string): number | null {
   const encontrado = transcricao.match(/-?\d+(?:[.,]\d+)?/);
@@ -56,29 +34,40 @@ export function RegistrarMedicao({ serie, aoConcluir }: Props) {
   const [enviando, definirEnviando] = useState(false);
   const [erro, definirErro] = useState<string | null>(null);
   const [resultado, definirResultado] = useState<RegistroGravado | null>(null);
+  const encerradorRef = useRef<(() => void) | null>(null);
 
   const formaDeRegistro = serie.tipo_de_coleta.forma_de_registro;
-  const construtorDeReconhecimento = obterConstrutorDeReconhecimento();
+  // A API de voz do navegador não existe em todo aparelho modesto — o ditado
+  // é oferecido só quando ela existe, e a digitação continua sendo o caminho
+  // sempre disponível. A transcrição vem de `comum/fala`, o mesmo módulo que
+  // a entrega da produção usa: o áudio não sai do aparelho (`RN-05-32`).
+  const transcreve = existeTranscricaoDeFala();
+
+  // Sair da tela com o microfone aberto o fecha junto (`RN-05-32`).
+  useEffect(() => {
+    return () => encerradorRef.current?.();
+  }, []);
 
   function ditarPorVoz() {
-    if (!construtorDeReconhecimento) return;
-    const reconhecimento = new construtorDeReconhecimento();
-    reconhecimento.lang = "pt-BR";
-    reconhecimento.onresult = (evento) => {
-      const transcricao = evento.results[0][0].transcript;
-      const numero = extrairNumero(transcricao);
-      if (numero === null) {
-        definirErro("Não entendi o valor dito. Tente digitar.");
-        return;
-      }
-      definirErro(null);
-      definirValorDigitado(String(numero));
-      definirOrigem("voz");
-    };
-    reconhecimento.onerror = () => definirOuvindo(false);
-    reconhecimento.onend = () => definirOuvindo(false);
+    if (!transcreve) return;
     definirOuvindo(true);
-    reconhecimento.start();
+    encerradorRef.current = iniciarTranscricao({
+      aoTranscrever: (transcricao) => {
+        const numero = extrairNumero(transcricao);
+        if (numero === null) {
+          definirErro("Não entendi o valor dito. Tente digitar.");
+          return;
+        }
+        definirErro(null);
+        definirValorDigitado(String(numero));
+        definirOrigem("voz");
+      },
+      aoFalhar: () => definirErro("Não entendi o valor dito. Tente digitar."),
+      aoEncerrar: () => {
+        definirOuvindo(false);
+        encerradorRef.current = null;
+      },
+    });
   }
 
   async function aoEnviar() {
@@ -151,7 +140,7 @@ export function RegistrarMedicao({ serie, aoConcluir }: Props) {
               definirOrigem("manual");
             }}
           />
-          {construtorDeReconhecimento && (
+          {transcreve && (
             <Botao variante="secundaria" onClick={ditarPorVoz} desabilitado={ouvindo}>
               {ouvindo ? "Ouvindo…" : "Falar o valor"}
             </Botao>

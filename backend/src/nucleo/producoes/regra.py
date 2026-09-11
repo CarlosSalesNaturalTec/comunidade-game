@@ -17,9 +17,9 @@ logger = logging.getLogger("nucleo.producoes")
 
 
 class LeituraDaProducaoIndisponivel(ErroDeAplicacao):
-    """`RF-04-46`: sem leitura não há transcrição do áudio ou da foto, e
-    gravar o registro vazio guardaria uma entrega que não diz nada (design
-    — decisão 5)."""
+    """`RF-04-46`: sem leitura não há transcrição da foto, e gravar o registro
+    vazio guardaria uma entrega que não diz nada. Só a foto chega ilegível — a
+    fala já vem transcrita do aparelho (design — decisão 4)."""
 
     status_code = 503
     codigo = "leitura_da_producao_indisponivel"
@@ -29,18 +29,21 @@ class LeituraDaProducaoIndisponivel(ErroDeAplicacao):
 def _conferir_forma_unica(
     forma: FormaDeEntregaDaProducao, texto: str | None, arquivo: bytes | None
 ) -> None:
-    if forma == FormaDeEntregaDaProducao.texto:
-        if not texto or arquivo is not None:
-            raise ErroDeValidacao(
-                mensagem="Envie a produção em uma única forma: texto, áudio ou foto.",
-                campo="forma",
-            )
-    else:
+    """A forma declarada diz qual conteúdo a entrega traz: só a **foto** vem
+    em arquivo; `texto` e `audio` vêm em texto, porque a fala é transcrita no
+    próprio aparelho e o que chega é a transcrição (`RF-05-76`, `RN-05-32`,
+    design — decisão 2)."""
+    if forma == FormaDeEntregaDaProducao.foto:
         if arquivo is None or texto is not None:
             raise ErroDeValidacao(
                 mensagem="Envie a produção em uma única forma: texto, áudio ou foto.",
                 campo="forma",
             )
+    elif not texto or arquivo is not None:
+        raise ErroDeValidacao(
+            mensagem="Envie a produção em uma única forma: texto, áudio ou foto.",
+            campo="forma",
+        )
 
 
 def _ler_e_montar_producao(
@@ -69,7 +72,10 @@ def _ler_e_montar_producao(
     if leitura is not None:
         transcricao = leitura.transcricao
         devolutiva = leitura.devolutiva
-    elif forma == FormaDeEntregaDaProducao.texto:
+    elif forma != FormaDeEntregaDaProducao.foto:
+        # Texto digitado e fala transcrita no aparelho já chegam legíveis: sem
+        # devolutiva a produção é gravada assim mesmo, e nada se perde por
+        # indisponibilidade do modelo (`RF-05-76`, design — decisão 4).
         transcricao = texto
         devolutiva = None
     else:

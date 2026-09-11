@@ -14,10 +14,12 @@ class ProducaoDaMissaoLocal(PortaDaProducaoDaMissao):
     def ler(
         self, *, forma: str, texto: str | None, arquivo: bytes | None, producao_esperada: str
     ) -> LeituraDaProducao | None:
-        if forma == "texto":
-            transcricao = texto or ""
-        else:
+        # Só a foto é mídia: a fala chega transcrita do aparelho e passa pelo
+        # mesmo caminho do texto digitado (`RF-05-76`, design — decisão 3).
+        if forma == "foto":
             transcricao = (
-                f"Transcrição simulada da entrega em {forma} ({len(arquivo or b'')} bytes)."
+                f"Transcrição simulada da foto do manuscrito ({len(arquivo or b'')} bytes)."
             )
+        else:
+            transcricao = texto or ""
         return LeituraDaProducao(transcricao=transcricao, devolutiva=_DEVOLUTIVA_FIXA)
