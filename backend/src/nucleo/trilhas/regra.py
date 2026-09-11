@@ -5,10 +5,11 @@ from datetime import datetime, timedelta
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
+from ..armazenamento.porta import PortaDeArmazenamento
 from ..aulas.modelo import Aula
 from ..coletas.modelo import DesafioDeColeta
 from ..culminancias.modelo import Culminancia
-from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
+from ..erros import ArquivoAcimaDoTeto, ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from ..poderes.modelo import NaturezaDoPoder, Poder
 from ..pontuacao.regra import avaliar_niveis, missoes_concluidas_pelo_guerreiro
@@ -45,14 +46,26 @@ def _passou_no_quiz(acertos: int, total: int) -> bool:
 def perguntas_do_desbloqueio(
     sessao: Session, *, missao_id: uuid.UUID
 ) -> list[PerguntaDoDesbloqueio]:
-    """As perguntas do quiz na ordem declarada pelo Mestre autor
-    (`RF-09-118`)."""
+    """As perguntas **vigentes** do quiz, na ordem declarada pelo Mestre
+    autor (`RF-09-118`). Acessor único: a pergunta substituída permanece
+    guardada, para a submissão que a aponta, e sai de toda leitura do
+    desafio por este filtro (`RN-05-47`, design — decisão 4)."""
     return (
         sessao.query(PerguntaDoDesbloqueio)
-        .filter_by(missao_id=missao_id)
+        .filter(
+            PerguntaDoDesbloqueio.missao_id == missao_id,
+            PerguntaDoDesbloqueio.substituida_em.is_(None),
+        )
         .order_by(PerguntaDoDesbloqueio.ordem)
         .all()
     )
+
+
+def referencia_da_imagem_da_pergunta(pergunta: PerguntaDoDesbloqueio) -> str:
+    """A referência nasce do id da pergunta que existia no momento do envio
+    e **nunca se renomeia**: substituída a pergunta, a linha nova recebe a
+    mesma string e o objeto continua onde está (design — decisão 2)."""
+    return f"perguntas-do-desbloqueio/{pergunta.id}/imagem"
 
 
 def conferir_posse_da_trilha(trilha: Trilha, persona: Persona) -> None:
@@ -320,6 +333,12 @@ def duplicar_trilha(
                     alternativa_3=pergunta_de_origem.alternativa_3,
                     alternativa_4=pergunta_de_origem.alternativa_4,
                     alternativa_correta=pergunta_de_origem.alternativa_correta,
+                    # A cópia aponta a **mesma** referência, sem copiar
+                    # bytes: imagem de trilha é bem comum como a trilha
+                    # (`RF-09-13`, `RF-09-119`).
+                    imagem_referencia=pergunta_de_origem.imagem_referencia,
+                    imagem_tipo=pergunta_de_origem.imagem_tipo,
+                    imagem_tamanho=pergunta_de_origem.imagem_tamanho,
                 )
             )
 
@@ -609,16 +628,27 @@ def declarar_desafio_de_desbloqueio(
     elif not enunciado or not enunciado.strip():
         raise ErroDeValidacao(mensagem="Desafio prático exige um enunciado.", campo="enunciado")
 
-    # Redeclarar substitui: as perguntas do desafio anterior saem antes de
-    # as novas entrarem, para que a missão nunca tenha duas séries de ordem.
-    for pergunta in perguntas_do_desbloqueio(sessao, missao_id=missao.id):
-        sessao.delete(pergunta)
+    vigentes = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    imagens = _conferir_imagens_declaradas(
+        perguntas_validas if tipo_valido == TipoDeDesafioDeDesbloqueio.quiz else [], vigentes
+    )
+
+    # Redeclarar substitui, mas nunca apaga: a pergunta anterior é
+    # **carimbada** e sai da leitura, de modo que a submissão já gravada
+    # siga apontando o que o Guerreiro(a) respondeu (`RN-05-47`, design —
+    # decisão 4). O carimbo precede a gravação das novas, para que o índice
+    # parcial de (missão, ordem) nunca veja duas gerações vigentes.
+    momento = agora()
+    for pergunta in vigentes:
+        pergunta.substituida_em = momento
     sessao.flush()
 
     missao.tipo_do_desafio_de_desbloqueio = tipo_valido
     if tipo_valido == TipoDeDesafioDeDesbloqueio.quiz:
         missao.desafio_de_desbloqueio_enunciado = None
-        for ordem, pergunta in enumerate(perguntas_validas, start=1):
+        for ordem, (pergunta, imagem) in enumerate(
+            zip(perguntas_validas, imagens, strict=True), start=1
+        ):
             sessao.add(
                 PerguntaDoDesbloqueio(
                     missao_id=missao.id,
@@ -629,6 +659,9 @@ def declarar_desafio_de_desbloqueio(
                     alternativa_3=pergunta["alternativas"][2],
                     alternativa_4=pergunta["alternativas"][3],
                     alternativa_correta=pergunta["alternativa_correta"],
+                    imagem_referencia=imagem.referencia if imagem is not None else None,
+                    imagem_tipo=imagem.tipo if imagem is not None else None,
+                    imagem_tamanho=imagem.tamanho if imagem is not None else None,
                 )
             )
     else:
@@ -636,6 +669,53 @@ def declarar_desafio_de_desbloqueio(
 
     sessao.flush()
     return missao
+
+
+@dataclass(frozen=True)
+class _ImagemPreservada:
+    """O que a referência devolvida traz de volta: os três campos da imagem
+    da pergunta de origem, copiados sem que byte algum seja reenviado."""
+
+    referencia: str
+    tipo: str | None
+    tamanho: int | None
+
+
+def _conferir_imagens_declaradas(
+    perguntas: list[dict], vigentes: list[PerguntaDoDesbloqueio]
+) -> list[_ImagemPreservada | None]:
+    """A referência que volta é conferida contra as imagens das perguntas
+    **daquela mesma missão**, antes da substituição: sem isso o campo seria
+    um endereço de armazenamento escolhido pelo cliente, capaz de apontar
+    arquivo de outra trilha (`RF-09-119`, design — decisão 3). A pergunta
+    que omite a referência nasce sem imagem — é assim que o Mestre a remove.
+    """
+    conhecidas = {
+        pergunta.imagem_referencia: _ImagemPreservada(
+            referencia=pergunta.imagem_referencia,
+            tipo=pergunta.imagem_tipo,
+            tamanho=pergunta.imagem_tamanho,
+        )
+        for pergunta in vigentes
+        if pergunta.imagem_referencia is not None
+    }
+    preservadas: list[_ImagemPreservada | None] = []
+    for pergunta in perguntas:
+        referencia = pergunta.get("imagem_referencia")
+        if referencia is None:
+            preservadas.append(None)
+            continue
+        imagem = conhecidas.get(referencia)
+        if imagem is None:
+            raise ErroDeValidacao(
+                mensagem=(
+                    "A imagem devolvida não é de uma pergunta desta missão. Reenvie a "
+                    "imagem ou deixe a pergunta sem imagem."
+                ),
+                campo="perguntas",
+            )
+        preservadas.append(imagem)
+    return preservadas
 
 
 def _conferir_perguntas_do_quiz(perguntas: list[dict] | None) -> list[dict]:
@@ -666,6 +746,151 @@ def _conferir_perguntas_do_quiz(perguntas: list[dict] | None) -> list[dict]:
                 mensagem="Toda pergunta do quiz exige a alternativa correta.", campo="perguntas"
             )
     return perguntas
+
+
+# A imagem da pergunta tem lista e teto próprios: só os **formatos de
+# imagem** da lista fechada do `RF-09-115`, e 1 MB — teto menor que o do
+# conteúdo da missão porque o quiz é lido no aparelho do Guerreiro(a),
+# muitas vezes em rede fraca (documento 03 §11).
+FORMATOS_DA_IMAGEM_DA_PERGUNTA = frozenset({"image/jpeg", "image/png", "image/webp"})
+TAMANHO_TETO_DA_IMAGEM_DA_PERGUNTA = 1024 * 1024
+
+
+def _formatar_mb(tamanho_em_bytes: int) -> str:
+    return f"{tamanho_em_bytes / (1024 * 1024):.1f} MB".replace(".0 MB", " MB")
+
+
+def _conferir_autoria_da_pergunta(
+    sessao: Session, pergunta: PerguntaDoDesbloqueio, operador: Persona
+) -> None:
+    """A imagem é da pergunta, e a pergunta é da missão do Mestre autor:
+    autoria estrita, o mesmo 403 que o conteúdo da missão já usa
+    (`RF-09-119`)."""
+    missao = sessao.get(Missao, pergunta.missao_id)
+    conferir_autoria_estrita_da_trilha(sessao.get(Trilha, missao.trilha_id), operador)
+
+
+def abrir_envio_da_imagem_da_pergunta(
+    sessao: Session,
+    pergunta: PerguntaDoDesbloqueio | None,
+    *,
+    operador: Persona,
+    tipo_mime: str | None,
+    tamanho_declarado: int | None,
+    armazenamento: PortaDeArmazenamento,
+) -> str:
+    """Confere autoria, formato e teto **antes** de abrir a sessão — a
+    recusa acontece sem nenhum byte enviado, como em `conteudos.regra`
+    (`RF-09-119`, `RF-09-115`)."""
+    if pergunta is None:
+        raise NaoEncontrado(mensagem="Pergunta não encontrada.")
+    _conferir_autoria_da_pergunta(sessao, pergunta, operador)
+
+    if tipo_mime not in FORMATOS_DA_IMAGEM_DA_PERGUNTA:
+        raise ErroDeValidacao(
+            mensagem=(
+                f"Formato '{tipo_mime}' não aceito na imagem da pergunta. A lista aceita é "
+                "JPG, PNG e WebP."
+            ),
+            campo="tipo_mime",
+        )
+    if tamanho_declarado is None or tamanho_declarado <= 0:
+        raise ErroDeValidacao(
+            mensagem="Envio exige o tamanho declarado do arquivo.", campo="tamanho_declarado"
+        )
+    if tamanho_declarado > TAMANHO_TETO_DA_IMAGEM_DA_PERGUNTA:
+        raise ArquivoAcimaDoTeto(
+            mensagem=(
+                f"A imagem tem {_formatar_mb(tamanho_declarado)} e o limite da imagem da "
+                f"pergunta é {_formatar_mb(TAMANHO_TETO_DA_IMAGEM_DA_PERGUNTA)}."
+            )
+        )
+
+    return armazenamento.abrir_sessao(
+        referencia=referencia_da_imagem_da_pergunta(pergunta),
+        tipo_mime=tipo_mime,
+        tamanho_declarado=tamanho_declarado,
+    )
+
+
+def confirmar_envio_da_imagem_da_pergunta(
+    sessao: Session,
+    pergunta: PerguntaDoDesbloqueio | None,
+    *,
+    operador: Persona,
+    armazenamento: PortaDeArmazenamento,
+) -> PerguntaDoDesbloqueio:
+    """Só grava a referência depois de o armazenamento apurar o tamanho e o
+    tipo **reais**: o teto vale de novo aqui, porque o recebido pode
+    divergir do declarado na abertura (`RF-09-119`)."""
+    if pergunta is None:
+        raise NaoEncontrado(mensagem="Pergunta não encontrada.")
+    _conferir_autoria_da_pergunta(sessao, pergunta, operador)
+
+    referencia = referencia_da_imagem_da_pergunta(pergunta)
+    envio = armazenamento.consultar_envio(referencia=referencia)
+    if envio is None:
+        raise ErroDeValidacao(mensagem="O envio ainda não foi concluído.", campo="imagem")
+    if envio.tamanho > TAMANHO_TETO_DA_IMAGEM_DA_PERGUNTA:
+        raise ArquivoAcimaDoTeto(
+            mensagem=(
+                f"A imagem enviada tem {_formatar_mb(envio.tamanho)} e o limite da imagem da "
+                f"pergunta é {_formatar_mb(TAMANHO_TETO_DA_IMAGEM_DA_PERGUNTA)}."
+            )
+        )
+
+    pergunta.imagem_referencia = referencia
+    pergunta.imagem_tipo = envio.tipo_mime
+    pergunta.imagem_tamanho = envio.tamanho
+    sessao.flush()
+    return pergunta
+
+
+@dataclass(frozen=True)
+class ImagemDaPergunta:
+    """Os bytes servidos pelo núcleo e o tipo declarado no envio."""
+
+    bytes_da_imagem: bytes
+    tipo_mime: str
+
+
+def ler_imagem_da_pergunta(
+    sessao: Session,
+    pergunta: PerguntaDoDesbloqueio | None,
+    *,
+    operador: Persona,
+    armazenamento: PortaDeArmazenamento,
+) -> ImagemDaPergunta:
+    """O primeiro caminho de saída de bytes do núcleo, e por isso de
+    autorização estrita: serve ao **Mestre autor** da trilha e ao
+    **Guerreiro(a) inscrito** nela — os mesmos que já leem a pergunta —, e a
+    ninguém mais (`RF-09-119`, `RF-05-89`, design — decisão 5). Servir 1 MB
+    pelo núcleo é aceitável; o que a arquitetura mantém fora dele é o
+    **envio**.
+    """
+    if pergunta is None:
+        raise NaoEncontrado(mensagem="Pergunta não encontrada.")
+    missao = sessao.get(Missao, pergunta.missao_id)
+    trilha = sessao.get(Trilha, missao.trilha_id)
+    if trilha.autor_id != operador.id:
+        inscrito = (
+            sessao.query(InscricaoNaTrilha)
+            .filter_by(guerreiro_id=operador.id, trilha_id=trilha.id)
+            .first()
+            is not None
+        )
+        if not inscrito:
+            raise PermissaoNegada(
+                mensagem="A imagem da pergunta é servida ao Mestre autor e a quem está "
+                "inscrito na trilha."
+            )
+
+    if pergunta.imagem_referencia is None:
+        raise NaoEncontrado(mensagem="Esta pergunta não tem imagem.")
+    return ImagemDaPergunta(
+        bytes_da_imagem=armazenamento.ler(referencia=pergunta.imagem_referencia),
+        tipo_mime=pergunta.imagem_tipo or "application/octet-stream",
+    )
 
 
 @dataclass

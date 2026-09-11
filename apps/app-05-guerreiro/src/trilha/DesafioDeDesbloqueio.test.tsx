@@ -8,8 +8,12 @@ import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 
 const CHAVE_DE_SESSAO = "app-05:teste-desafio-de-desbloqueio";
 
-function pergunta(id: string, enunciado: string): trilhaApi.PerguntaDoDesbloqueio {
-  return { id, ordem: 1, enunciado, alternativas: ["1", "2", "3", "4"] };
+function pergunta(
+  id: string,
+  enunciado: string,
+  imagem_referencia: string | null = null,
+): trilhaApi.PerguntaDoDesbloqueio {
+  return { id, ordem: 1, enunciado, alternativas: ["1", "2", "3", "4"], imagem_referencia };
 }
 
 const QUIZ_DE_DUAS: trilhaApi.DesafioDeDesbloqueio = {
@@ -116,5 +120,64 @@ describe("desafio de desbloqueio", () => {
     });
 
     expect(await screen.findByText(/aguardando|esperar o mestre/i)).toBeInTheDocument();
+  });
+});
+
+describe("a imagem da pergunta (RF-09-119, RF-05-89)", () => {
+  const QUIZ_COM_IMAGEM: trilhaApi.DesafioDeDesbloqueio = {
+    tipo: "quiz",
+    enunciado: null,
+    perguntas: [
+      pergunta("p1", "Quanto é 1 + 1?"),
+      pergunta("p2", "O que o gráfico mostra?", "perguntas-do-desbloqueio/p2/imagem"),
+    ],
+  };
+
+  it("a pergunta com imagem a exibe com o enunciado, antes das alternativas", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:imagem-da-p2"),
+      revokeObjectURL: vi.fn(),
+    });
+    const ler = vi
+      .spyOn(trilhaApi, "lerImagemDaPergunta")
+      .mockResolvedValue(new Blob(["bytes"], { type: "image/png" }));
+
+    await renderizar(QUIZ_COM_IMAGEM);
+
+    // Só a pergunta que tem imagem a busca.
+    expect(ler).toHaveBeenCalledTimes(1);
+    expect(ler.mock.calls[0][0]).toBe("p2");
+    const imagem = await screen.findByRole("img", {
+      name: /imagem da pergunta: o que o gráfico mostra\?/i,
+    });
+    expect(imagem).toBeInTheDocument();
+    // Antes das alternativas daquela pergunta, dentro do mesmo bloco.
+    const bloco = imagem.closest("fieldset");
+    expect(bloco?.textContent).toContain("O que o gráfico mostra?");
+    expect(
+      bloco?.querySelector(".cg-trilha__alternativas")?.compareDocumentPosition(imagem),
+    ).toBe(Node.DOCUMENT_POSITION_PRECEDING);
+    vi.unstubAllGlobals();
+  });
+
+  it("imagem que não carrega avisa e não tranca a pergunta", async () => {
+    vi.spyOn(trilhaApi, "lerImagemDaPergunta").mockRejectedValue(new Error("caiu a rede"));
+    const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio").mockResolvedValue({
+      aprovado: true,
+      aguardando_mestre: false,
+      acertos: 2,
+      total: 2,
+    });
+
+    await renderizar(QUIZ_COM_IMAGEM);
+    const usuario = userEvent.setup();
+
+    expect(await screen.findByText(/a imagem desta pergunta não abriu/i)).toBeInTheDocument();
+    await usuario.click(screen.getAllByRole("radio", { name: "2" })[0]);
+    await usuario.click(screen.getAllByRole("radio", { name: "2" })[1]);
+    await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
+
+    expect(submeter).toHaveBeenCalledTimes(1);
   });
 });

@@ -2,10 +2,12 @@ import uuid
 from datetime import date, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
+from ..armazenamento.fabrica import dependencia_de_armazenamento
+from ..armazenamento.porta import PortaDeArmazenamento
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..bibliografias.modelo import BibliografiaDaMissao
@@ -41,6 +43,8 @@ from .modelo import (
     Trilha,
 )
 from .regra import (
+    abrir_envio_da_imagem_da_pergunta,
+    confirmar_envio_da_imagem_da_pergunta,
     consultar_inscricoes_do_guerreiro,
     consultar_progresso,
     criar_atividade,
@@ -54,6 +58,7 @@ from .regra import (
     duplicar_trilha,
     inscrever_na_trilha,
     julgar_desafio_pratico,
+    ler_imagem_da_pergunta,
     listar_desbloqueios_praticos_pendentes,
     obter_proxima_missao,
     perguntas_do_desbloqueio,
@@ -647,12 +652,15 @@ def listar_minhas_trilhas_do_guerreiro_rota(
 
 class PerguntaDoDesbloqueioSaida(BaseModel):
     """A pergunta como o Guerreiro(a) a vê: **sem** a alternativa correta,
-    que nunca sai do núcleo para ele (`RF-09-118`, design — decisão 6)."""
+    que nunca sai do núcleo para ele (`RF-09-118`, design — decisão 6).
+    `imagem_referencia` diz apenas **se** a pergunta tem imagem — os bytes
+    vêm da rota própria, que confere quem pede (`RF-09-119`)."""
 
     id: uuid.UUID
     ordem: int
     enunciado: str
     alternativas: list[str]
+    imagem_referencia: str | None = None
 
 
 class DesafioDeDesbloqueioSaida(BaseModel):
@@ -688,6 +696,7 @@ def _saida_das_perguntas(
                 pergunta.alternativa_3,
                 pergunta.alternativa_4,
             ],
+            imagem_referencia=pergunta.imagem_referencia,
         )
         for pergunta in perguntas
     ]
@@ -745,6 +754,10 @@ class PerguntaDoDesbloqueioEntrada(BaseModel):
     enunciado: str
     alternativas: list[str]
     alternativa_correta: int
+    # A referência que volta conserva a imagem; omiti-la a remove. A
+    # conferência contra as imagens daquela missão é da regra
+    # (`RF-09-119`, design — decisão 3).
+    imagem_referencia: str | None = None
 
 
 class DeclararDesafioDeDesbloqueioEntrada(BaseModel):
@@ -813,6 +826,89 @@ def declarar_desafio_de_desbloqueio_rota(
             for saida, pergunta in zip(_saida_das_perguntas(perguntas), perguntas, strict=True)
         ],
     )
+
+
+def _obter_pergunta_do_desbloqueio(
+    sessao_bd: Session, id_da_pergunta: uuid.UUID
+) -> PerguntaDoDesbloqueio:
+    pergunta = sessao_bd.get(PerguntaDoDesbloqueio, id_da_pergunta)
+    if pergunta is None:
+        raise NaoEncontrado(mensagem="Pergunta não encontrada.")
+    return pergunta
+
+
+class AbrirEnvioDaImagemEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    tipo_mime: str
+    tamanho_declarado: int
+
+
+class AbrirEnvioDaImagemSaida(BaseModel):
+    endereco_da_sessao: str
+
+
+@roteador.post("/perguntas-do-desbloqueio/{id_da_pergunta}/imagem", status_code=201)
+def abrir_envio_da_imagem_da_pergunta_rota(
+    id_da_pergunta: uuid.UUID,
+    entrada: AbrirEnvioDaImagemEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> AbrirEnvioDaImagemSaida:
+    """`RF-09-119`, `RF-09-115`: abre a sessão retomável da imagem da
+    pergunta — a autoria, os formatos e o teto de 1 MB já são de
+    `abrir_envio_da_imagem_da_pergunta`. Os bytes nunca passam por aqui."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    pergunta = _obter_pergunta_do_desbloqueio(sessao_bd, id_da_pergunta)
+    endereco = abrir_envio_da_imagem_da_pergunta(
+        sessao_bd,
+        pergunta,
+        operador=operador,
+        tipo_mime=entrada.tipo_mime,
+        tamanho_declarado=entrada.tamanho_declarado,
+        armazenamento=armazenamento,
+    )
+    sessao_bd.commit()
+    return AbrirEnvioDaImagemSaida(endereco_da_sessao=endereco)
+
+
+@roteador.patch("/perguntas-do-desbloqueio/{id_da_pergunta}/imagem")
+def confirmar_envio_da_imagem_da_pergunta_rota(
+    id_da_pergunta: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> PerguntaDoDesbloqueioSaida:
+    """Confirma o envio encerrado pelo cliente — só agora a pergunta passa
+    a ter imagem, depois de o armazenamento apurar o tamanho real
+    (`RF-09-119`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    pergunta = _obter_pergunta_do_desbloqueio(sessao_bd, id_da_pergunta)
+    pergunta = confirmar_envio_da_imagem_da_pergunta(
+        sessao_bd, pergunta, operador=operador, armazenamento=armazenamento
+    )
+    sessao_bd.commit()
+    return _saida_das_perguntas([pergunta])[0]
+
+
+@roteador.get("/perguntas-do-desbloqueio/{id_da_pergunta}/imagem")
+def ler_imagem_da_pergunta_rota(
+    id_da_pergunta: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> Response:
+    """`RF-09-119`, `RF-05-89`: os bytes da imagem, ao Mestre autor da
+    trilha e ao Guerreiro(a) inscrito nela — a autorização e o 404 da
+    pergunta sem imagem são de `ler_imagem_da_pergunta` (design — decisão
+    5)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    pergunta = _obter_pergunta_do_desbloqueio(sessao_bd, id_da_pergunta)
+    imagem = ler_imagem_da_pergunta(
+        sessao_bd, pergunta, operador=operador, armazenamento=armazenamento
+    )
+    return Response(content=imagem.bytes_da_imagem, media_type=imagem.tipo_mime)
 
 
 class RespostaDoDesbloqueioEntrada(BaseModel):

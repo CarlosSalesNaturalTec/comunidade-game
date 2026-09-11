@@ -393,9 +393,10 @@ porque a trilha publicada é **bem comum** da plataforma, sob licença CC BY-SA.
 A cópia SHALL trazer o poder, a área do conhecimento, o objetivo, as **missões** com a ordem,
 o título, a dificuldade, a obrigatoriedade, a natureza de sondagem, a etapa do ciclo, a cadência
 de retomada e o desafio de desbloqueio de cada uma — **com todas as perguntas do quiz**, na
-ordem em que o autor da origem as declarou —, e as **atividades** de cada missão com
-modalidade, formato e natureza. O nome SHALL vir marcado como cópia, para que as duas não se
-confundam na lista do Mestre.
+ordem em que o autor da origem as declarou, e com a **imagem** de cada pergunta, pela
+referência, sem copiar bytes —, e as **atividades** de cada missão com modalidade, formato e
+natureza. O nome SHALL vir marcado como cópia, para que as duas não se confundam na lista do
+Mestre.
 
 A cópia NEVER SHALL trazer o que é **fato de pessoa** nem o que é lastro da origem: inscrição,
 desbloqueio, submissão de desbloqueio, resultado, criação original, entrega, recompensa de
@@ -403,7 +404,7 @@ marco, registro de coleta e auditoria ficam **todos** com a trilha de origem. A 
 origem NEVER SHALL ser alterada pela duplicação, e a nova SHALL nascer **sem versão publicada**
 e sem percurso algum. Duplicar trilha em **rascunho** de outro Mestre SHALL ser recusado com
 **403**: rascunho é visível apenas ao autor. Persona que não é Mestre SHALL ser recusada com
-**403**. (`RF-09-13`, `RF-09-04`, `RN-09-05`, documento 03 §11)
+**403**. (`RF-09-13`, `RF-09-04`, `RF-09-119`, `RN-09-05`, documento 03 §11)
 
 #### Scenario: Mestre duplica trilha publicada de outro autor
 
@@ -417,6 +418,11 @@ e sem percurso algum. Duplicar trilha em **rascunho** de outro Mestre SHALL ser 
   perguntas
 - **THEN** cada missão da cópia nasce com as mesmas perguntas, alternativas e corretas, na
   mesma ordem
+
+#### Scenario: A cópia traz a imagem das perguntas
+
+- **WHEN** um Mestre duplica uma trilha cujas perguntas de quiz têm imagem
+- **THEN** as perguntas da cópia apontam as mesmas imagens, e nenhum byte é copiado
 
 #### Scenario: A cópia não traz percurso nem fato de pessoa
 
@@ -446,4 +452,3 @@ e sem percurso algum. Duplicar trilha em **rascunho** de outro Mestre SHALL ser 
 
 - **WHEN** uma persona que não é Mestre pede a duplicação de uma trilha
 - **THEN** o núcleo responde 403 e nada é criado
-

@@ -4,6 +4,7 @@ from nucleo.erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from nucleo.personas.modelo import Papel
 from nucleo.trilhas.modelo import (
     DesbloqueioDaMissao,
+    PerguntaDoDesbloqueio,
     RespostaDaSubmissao,
     SituacaoDaTrilha,
     SubmissaoDoDesbloqueio,
@@ -571,3 +572,522 @@ def test_resposta_repetida_ou_de_outra_missao_e_recusada(
                 {"pergunta_id": de_outra.id, "alternativa_escolhida": 1},
             ],
         )
+
+
+# --- Fatia 19: a imagem opcional da pergunta do quiz -----------------------
+
+
+def _cabecalhos(chave, criar_sessao_de_teste, persona):
+    token, _ = criar_sessao_de_teste(persona)
+    return {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+
+def _primeira_pergunta(sessao, missao):
+    return perguntas_do_desbloqueio(sessao, missao_id=missao.id)[0]
+
+
+def _enviar_imagem(cliente, cabecalhos, pergunta_id, conteudo=b"PNG-de-teste", tipo="image/png"):
+    """Abre a sessão, envia os bytes direto ao armazenamento e confirma —
+    o mesmo trajeto que a App 09 percorre (`RF-09-119`)."""
+    resposta_sessao = cliente.post(
+        f"/v1/perguntas-do-desbloqueio/{pergunta_id}/imagem",
+        json={"tipo_mime": tipo, "tamanho_declarado": len(conteudo)},
+        headers=cabecalhos,
+    )
+    assert resposta_sessao.status_code == 201
+    endereco = resposta_sessao.json()["endereco_da_sessao"]
+    cliente.put(
+        endereco,
+        content=conteudo,
+        headers={**cabecalhos, "Content-Range": f"bytes 0-{len(conteudo) - 1}/{len(conteudo)}"},
+    )
+    return cliente.patch(f"/v1/perguntas-do-desbloqueio/{pergunta_id}/imagem", headers=cabecalhos)
+
+
+def test_mestre_autor_anexa_e_confirma_a_imagem_da_pergunta(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao)
+    sessao.commit()
+    pergunta = _primeira_pergunta(sessao, missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    resposta = _enviar_imagem(cliente, cabecalhos, pergunta.id)
+
+    assert resposta.status_code == 200
+    sessao.expire_all()
+    pergunta = _primeira_pergunta(sessao, missao)
+    assert pergunta.imagem_referencia == f"perguntas-do-desbloqueio/{pergunta.id}/imagem"
+    assert pergunta.imagem_tipo == "image/png"
+    assert pergunta.imagem_tamanho == len(b"PNG-de-teste")
+
+
+def test_pergunta_sem_imagem_segue_valida(sessao, criar_persona, criar_trilha, criar_missao):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    _declarar_quiz(sessao, mestre, missao, quantidade=3)
+    sessao.commit()
+
+    perguntas = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    assert len(perguntas) == 3
+    assert all(pergunta.imagem_referencia is None for pergunta in perguntas)
+
+
+def test_formato_fora_da_lista_e_recusado_antes_do_envio(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao)
+    sessao.commit()
+    pergunta = _primeira_pergunta(sessao, missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    resposta = cliente.post(
+        f"/v1/perguntas-do-desbloqueio/{pergunta.id}/imagem",
+        json={"tipo_mime": "image/gif", "tamanho_declarado": 10},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 422
+    assert "JPG, PNG e WebP" in resposta.json()["mensagem"]
+    sessao.expire_all()
+    assert _primeira_pergunta(sessao, missao).imagem_referencia is None
+
+
+def test_imagem_acima_de_um_mega_e_recusada_na_abertura(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao)
+    sessao.commit()
+    pergunta = _primeira_pergunta(sessao, missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    resposta = cliente.post(
+        f"/v1/perguntas-do-desbloqueio/{pergunta.id}/imagem",
+        json={"tipo_mime": "image/png", "tamanho_declarado": 3 * 1024 * 1024},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 413
+    mensagem = resposta.json()["mensagem"]
+    assert "3 MB" in mensagem and "1 MB" in mensagem
+
+
+def test_envio_que_diverge_do_declarado_e_recusado_na_confirmacao(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao)
+    sessao.commit()
+    pergunta = _primeira_pergunta(sessao, missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    # Declara 10 bytes; o que chega ao fim passa do teto de 1 MB.
+    resposta_sessao = cliente.post(
+        f"/v1/perguntas-do-desbloqueio/{pergunta.id}/imagem",
+        json={"tipo_mime": "image/png", "tamanho_declarado": 10},
+        headers=cabecalhos,
+    )
+    endereco = resposta_sessao.json()["endereco_da_sessao"]
+    real = 2 * 1024 * 1024
+    cliente.put(
+        endereco,
+        content=b"x" * real,
+        headers={**cabecalhos, "Content-Range": f"bytes 0-{real - 1}/{real}"},
+    )
+
+    resposta = cliente.patch(
+        f"/v1/perguntas-do-desbloqueio/{pergunta.id}/imagem", headers=cabecalhos
+    )
+
+    assert resposta.status_code == 413
+    sessao.expire_all()
+    assert _primeira_pergunta(sessao, missao).imagem_referencia is None
+
+
+def test_mestre_que_nao_e_autor_nao_anexa_imagem(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    mestre = criar_persona(Papel.mestre)
+    outro_mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao)
+    sessao.commit()
+    pergunta = _primeira_pergunta(sessao, missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, outro_mestre)
+
+    resposta = cliente.post(
+        f"/v1/perguntas-do-desbloqueio/{pergunta.id}/imagem",
+        json={"tipo_mime": "image/png", "tamanho_declarado": 10},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 403
+    sessao.expire_all()
+    assert _primeira_pergunta(sessao, missao).imagem_referencia is None
+
+
+def test_pergunta_sem_envio_confirmado_nao_serve_imagem(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao)
+    sessao.commit()
+    pergunta = _primeira_pergunta(sessao, missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    # A sessão é aberta, mas o envio não é confirmado.
+    cliente.post(
+        f"/v1/perguntas-do-desbloqueio/{pergunta.id}/imagem",
+        json={"tipo_mime": "image/png", "tamanho_declarado": 10},
+        headers=cabecalhos,
+    )
+
+    sessao.expire_all()
+    assert _primeira_pergunta(sessao, missao).imagem_referencia is None
+    resposta = cliente.get(f"/v1/perguntas-do-desbloqueio/{pergunta.id}/imagem", headers=cabecalhos)
+    assert resposta.status_code == 404
+
+
+# --- Fatia 19: a imagem servida a quem pode ver a pergunta -----------------
+
+
+def _missao_publicada_com_imagem(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao)
+    sessao.commit()
+    pergunta = _primeira_pergunta(sessao, missao)
+    chave, _ = criar_chave()
+    cabecalhos_do_mestre = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+    assert _enviar_imagem(cliente, cabecalhos_do_mestre, pergunta.id).status_code == 200
+    sessao.expire_all()
+    return mestre, trilha, missao, pergunta, chave, cabecalhos_do_mestre
+
+
+def test_guerreiro_inscrito_ve_a_imagem_da_pergunta(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    _, trilha, _, pergunta, chave, _ = _missao_publicada_com_imagem(
+        cliente,
+        sessao,
+        criar_chave,
+        criar_persona,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+    )
+    guerreiro = criar_persona(Papel.guerreiro)
+    inscrever_na_trilha(sessao, guerreiro=guerreiro, trilha=trilha)
+    sessao.commit()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, guerreiro)
+
+    resposta = cliente.get(f"/v1/perguntas-do-desbloqueio/{pergunta.id}/imagem", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    assert resposta.content == b"PNG-de-teste"
+    assert resposta.headers["content-type"] == "image/png"
+
+
+def test_mestre_autor_ve_a_imagem_que_anexou(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    _, _, _, pergunta, _, cabecalhos = _missao_publicada_com_imagem(
+        cliente,
+        sessao,
+        criar_chave,
+        criar_persona,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+    )
+
+    resposta = cliente.get(f"/v1/perguntas-do-desbloqueio/{pergunta.id}/imagem", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    assert resposta.content == b"PNG-de-teste"
+
+
+def test_quem_nao_e_inscrito_nem_autor_nao_ve_a_imagem(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    _, _, _, pergunta, chave, _ = _missao_publicada_com_imagem(
+        cliente,
+        sessao,
+        criar_chave,
+        criar_persona,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+    )
+    nao_inscrito = criar_persona(Papel.guerreiro)
+    outro_mestre = criar_persona(Papel.mestre)
+
+    for persona in (nao_inscrito, outro_mestre):
+        resposta = cliente.get(
+            f"/v1/perguntas-do-desbloqueio/{pergunta.id}/imagem",
+            headers=_cabecalhos(chave, criar_sessao_de_teste, persona),
+        )
+        assert resposta.status_code == 403
+        assert resposta.content != b"PNG-de-teste"
+
+
+def test_pergunta_sem_imagem_responde_404(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao)
+    sessao.commit()
+    pergunta = _primeira_pergunta(sessao, missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    resposta = cliente.get(f"/v1/perguntas-do-desbloqueio/{pergunta.id}/imagem", headers=cabecalhos)
+
+    assert resposta.status_code == 404
+
+
+# --- Fatia 19: a redeclaração preserva a imagem e não apaga pergunta -------
+
+
+def _redeclarar(sessao, mestre, missao, perguntas):
+    return declarar_desafio_de_desbloqueio(
+        sessao, operador=mestre, missao=missao, tipo="quiz", perguntas=perguntas
+    )
+
+
+def test_redeclarar_com_a_referencia_de_volta_conserva_a_imagem(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    mestre, _, missao, pergunta, _, _ = _missao_publicada_com_imagem(
+        cliente,
+        sessao,
+        criar_chave,
+        criar_persona,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+    )
+    referencia = _primeira_pergunta(sessao, missao).imagem_referencia
+
+    _redeclarar(
+        sessao,
+        mestre,
+        missao,
+        [
+            {
+                "enunciado": "Pergunta 1, com a vírgula corrigida",
+                "alternativas": ALTERNATIVAS,
+                "alternativa_correta": 2,
+                "imagem_referencia": referencia,
+            }
+        ],
+    )
+    sessao.commit()
+
+    vigente = _primeira_pergunta(sessao, missao)
+    assert vigente.id != pergunta.id
+    assert vigente.enunciado == "Pergunta 1, com a vírgula corrigida"
+    # A referência não se renomeia: a linha nova aponta o mesmo objeto, e
+    # nenhum byte foi reenviado (design — decisão 2).
+    assert vigente.imagem_referencia == referencia
+    assert vigente.imagem_tipo == "image/png"
+    assert vigente.imagem_tamanho == len(b"PNG-de-teste")
+
+
+def test_redeclarar_sem_a_referencia_remove_a_imagem(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    mestre, _, missao, _, _, _ = _missao_publicada_com_imagem(
+        cliente,
+        sessao,
+        criar_chave,
+        criar_persona,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+    )
+
+    _declarar_quiz(sessao, mestre, missao)
+    sessao.commit()
+
+    assert _primeira_pergunta(sessao, missao).imagem_referencia is None
+
+
+def test_referencia_de_outra_origem_e_recusada(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    mestre, trilha, missao, _, _, _ = _missao_publicada_com_imagem(
+        cliente,
+        sessao,
+        criar_chave,
+        criar_persona,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+    )
+    # A imagem de uma pergunta de **outra** missão não alcança esta.
+    outra = criar_missao(trilha, mestre, titulo="Outra", posicao=2)
+    _declarar_quiz(sessao, mestre, outra)
+    sessao.commit()
+    pergunta_da_outra = _primeira_pergunta(sessao, outra)
+    referencia_de_fora = f"perguntas-do-desbloqueio/{pergunta_da_outra.id}/imagem"
+
+    with pytest.raises(ErroDeValidacao):
+        _redeclarar(
+            sessao,
+            mestre,
+            missao,
+            [
+                {
+                    "enunciado": "Pergunta 1",
+                    "alternativas": ALTERNATIVAS,
+                    "alternativa_correta": 2,
+                    "imagem_referencia": referencia_de_fora,
+                }
+            ],
+        )
+    sessao.rollback()
+
+    assert _primeira_pergunta(sessao, missao).imagem_referencia is not None
+
+
+def test_redeclarar_depois_de_respondido_nao_falha_e_preserva_a_submissao(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-05-47`: a submissão gravada aponta a pergunta respondida, e a
+    substituição não a apaga nem estoura — o conserto da fatia 18."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao, alternativa_correta=2, quantidade=2)
+    inscrever_na_trilha(sessao, guerreiro=guerreiro, trilha=trilha)
+    sessao.commit()
+    respondidas = [
+        pergunta.id for pergunta in perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    ]
+    submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, respostas=_responder(sessao, missao, [2, 2])
+    )
+    sessao.commit()
+    submissoes_antes = sessao.query(SubmissaoDoDesbloqueio).count()
+    respostas_antes = sessao.query(RespostaDaSubmissao).count()
+
+    _declarar_quiz(sessao, mestre, missao, alternativa_correta=1, quantidade=3)
+    sessao.commit()
+
+    vigentes = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    assert len(vigentes) == 3
+    assert all(pergunta.id not in respondidas for pergunta in vigentes)
+    # Nada foi apagado: a submissão e as respostas seguem apontando as
+    # perguntas que o Guerreiro(a) respondeu.
+    assert sessao.query(SubmissaoDoDesbloqueio).count() == submissoes_antes
+    assert sessao.query(RespostaDaSubmissao).count() == respostas_antes
+    for pergunta_id in respondidas:
+        guardada = sessao.query(PerguntaDoDesbloqueio).filter_by(id=pergunta_id).one()
+        assert guardada.substituida_em is not None

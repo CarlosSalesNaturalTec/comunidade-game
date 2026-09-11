@@ -1,4 +1,4 @@
-import { chamarNucleo, enviarParteComProgresso } from "comum/api";
+import { chamarNucleo, enviarParteComProgresso, lerArquivoDoNucleo } from "comum/api";
 
 export type EtapaDoCiclo = "abertura" | "desenvolvimento" | "marcos" | "fechamento";
 
@@ -241,15 +241,61 @@ export function declararCadenciaDeRetomada(
   });
 }
 
+interface AbrirEnvioSaida {
+  endereco_da_sessao: string;
+}
+
 export interface PerguntaDoDesbloqueioEntrada {
   enunciado: string;
   alternativas: string[];
   alternativa_correta: number;
+  // Devolver a referência conserva a imagem; omiti-la a remove. É assim que
+  // corrigir o texto do quiz não custa reenviar arquivo (`RF-09-119`).
+  imagem_referencia?: string | null;
 }
 
 export interface PerguntaDoDesbloqueio extends PerguntaDoDesbloqueioEntrada {
   id: string;
   ordem: number;
+}
+
+// A imagem da pergunta tem lista e teto próprios, menores que os do
+// conteúdo da missão: o quiz é lido no aparelho do Guerreiro(a), muitas
+// vezes em rede fraca (`RF-09-119`, `RF-09-115`, documento 03 §11).
+export const FORMATOS_DA_IMAGEM_DA_PERGUNTA = ["image/jpeg", "image/png", "image/webp"];
+export const FORMATOS_DA_IMAGEM_DA_PERGUNTA_EM_PORTUGUES = "JPG, PNG e WebP";
+export const TAMANHO_TETO_DA_IMAGEM_DA_PERGUNTA = 1024 * 1024;
+
+// Abre a sessão retomável da imagem — a recusa por formato ou tamanho
+// acontece aqui, antes de qualquer byte (`RF-09-119`).
+export function abrirEnvioDaImagemDaPergunta(
+  idDaPergunta: string,
+  tipoMime: string,
+  tamanhoDeclarado: number,
+  token: string,
+): Promise<string> {
+  return chamarNucleo<AbrirEnvioSaida>(`/v1/perguntas-do-desbloqueio/${idDaPergunta}/imagem`, {
+    metodo: "POST",
+    corpo: { tipo_mime: tipoMime, tamanho_declarado: tamanhoDeclarado },
+    token,
+  }).then((saida) => saida.endereco_da_sessao);
+}
+
+// Só depois desta chamada a pergunta passa a ter imagem (`RF-09-119`).
+export function confirmarEnvioDaImagemDaPergunta(
+  idDaPergunta: string,
+  token: string,
+): Promise<PerguntaDoDesbloqueio> {
+  return chamarNucleo<PerguntaDoDesbloqueio>(
+    `/v1/perguntas-do-desbloqueio/${idDaPergunta}/imagem`,
+    { metodo: "PATCH", token },
+  );
+}
+
+// Os bytes vêm do núcleo, não de `<img src>`: toda rota sob `/v1` exige a
+// chave da aplicação em cabeçalho (`RF-09-119`, design — decisão 6).
+export function lerImagemDaPergunta(idDaPergunta: string, token: string): Promise<Blob> {
+  return lerArquivoDoNucleo(`/v1/perguntas-do-desbloqueio/${idDaPergunta}/imagem`, { token });
 }
 
 export interface DeclararDesafioDeDesbloqueioEntrada {
@@ -386,10 +432,6 @@ export function criarConteudo(
     corpo: entrada,
     token,
   });
-}
-
-interface AbrirEnvioSaida {
-  endereco_da_sessao: string;
 }
 
 // Abre a sessão retomável — a recusa por formato ou por tamanho acontece

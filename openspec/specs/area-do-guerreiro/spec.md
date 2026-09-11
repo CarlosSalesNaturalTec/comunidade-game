@@ -575,6 +575,11 @@ punição e sem qualquer mensagem que elimine ou classifique a criança. Na **mi
 a tela NEVER SHALL apresentar o resultado como aprovação ou reprovação: respondida, a trilha
 segue. (`RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`, `RN-05-45`, `RN-05-46`)
 
+A pergunta que tem **imagem** SHALL exibi-la junto do enunciado, antes das alternativas, com
+**texto alternativo** que a nomeie para quem usa leitor de tela. A imagem que não carrega NEVER
+SHALL impedir de responder: a pergunta SHALL continuar respondível, com aviso de que a imagem
+não abriu. A tela NEVER SHALL exigir a imagem para submeter o quiz. (`RF-09-119`)
+
 #### Scenario: Passar abre a seguinte na hora
 
 - **WHEN** o Guerreiro(a) responde a todas as perguntas do quiz, submete e passa
@@ -584,6 +589,18 @@ segue. (`RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`, `RN-05-45`, `RN-05-46`)
 
 - **WHEN** o Guerreiro(a) abre um quiz de seis perguntas
 - **THEN** a tela mostra as seis e só envia quando ele conclui, numa única submissão
+
+#### Scenario: A pergunta com imagem a exibe junto do enunciado
+
+- **WHEN** o Guerreiro(a) abre um quiz cuja segunda pergunta tem imagem
+- **THEN** a imagem aparece com o enunciado daquela pergunta, antes das alternativas, com texto
+  alternativo
+
+#### Scenario: Imagem que não carrega não tranca a pergunta
+
+- **WHEN** a imagem de uma pergunta não carrega
+- **THEN** a tela avisa que a imagem não abriu e o Guerreiro(a) segue podendo responder e
+  submeter
 
 #### Scenario: Pergunta sem resposta é sinalizada
 
@@ -600,7 +617,6 @@ segue. (`RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`, `RN-05-45`, `RN-05-46`)
 
 - **WHEN** o Guerreiro(a) responde a missão de sondagem
 - **THEN** a tela agradece e segue para a trilha, sem dizer que ele passou ou não passou
-
 ### Requirement: O progresso mostra o nível e o que falta, nunca saldo de pontos
 
 A aplicação SHALL exibir, por trilha ou poder, o **nível** do Guerreiro(a) e **quantas missões
