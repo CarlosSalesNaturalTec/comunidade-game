@@ -17,16 +17,8 @@ class AssistenteDeTrilhasLocal(PortaDoAssistente):
     por sobreposição simples de palavras com o corpus, sem chamar rede nem
     exigir credencial — o mesmo precedente de `producoes.local`."""
 
-    def responder(
-        self, *, texto: str | None, arquivo: bytes | None, corpus: str
-    ) -> RespostaDoAssistente | None:
-        if texto is not None:
-            transcricao_da_pergunta = texto
-        else:
-            transcricao_da_pergunta = (
-                f"Transcrição simulada da pergunta em áudio ({len(arquivo or b'')} bytes)."
-            )
-
+    def responder(self, *, texto: str, corpus: str) -> RespostaDoAssistente | None:
+        transcricao_da_pergunta = texto
         pergunta_normalizada = transcricao_da_pergunta.strip().lower()
         if any(termo in pergunta_normalizada for termo in _TERMOS_DE_TAREFA_ESCOLAR):
             return RespostaDoAssistente(

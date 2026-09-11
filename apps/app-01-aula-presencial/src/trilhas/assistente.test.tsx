@@ -6,22 +6,39 @@ import * as assistenteApi from "../api/assistente";
 import { ProvedorDeEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import { TelaDoAssistente } from "./TelaDoAssistente";
 
-class GravadorFalso {
-  ondataavailable: ((evento: { data: Blob }) => void) | null = null;
-  onstop: (() => void) | null = null;
+// Duplo da Web Speech API do navegador — o mesmo padrão de teste de
+// `comum/fala/fala.test.ts`, aqui verificando que a tela usa `comum/fala`
+// corretamente (`RF-04-39`, `RF-04-40`).
+class ReconhecimentoFalso {
+  lang = "";
+  continuous = true;
+  interimResults = true;
+  // biome-ignore lint/suspicious/noExplicitAny: espelha os eventos mínimos que comum/fala consome
+  onresult: ((evento: any) => void) | null = null;
+  // biome-ignore lint/suspicious/noExplicitAny: espelha os eventos mínimos que comum/fala consome
+  onerror: ((evento: any) => void) | null = null;
+  onend: (() => void) | null = null;
+  parado = false;
+
   start() {}
+
   stop() {
-    this.ondataavailable?.({ data: new Blob(["fala-fake"]) });
-    this.onstop?.();
+    this.parado = true;
+    this.onend?.();
   }
 }
 
-function configurarMicrofoneFalso() {
-  const pistas = [{ stop: vi.fn() }];
-  const getUserMedia = vi.fn().mockResolvedValue({ getTracks: () => pistas });
-  vi.stubGlobal("navigator", { ...navigator, mediaDevices: { getUserMedia } });
-  vi.stubGlobal("MediaRecorder", GravadorFalso as unknown as typeof MediaRecorder);
-  return getUserMedia;
+let reconhecimentoAtual: ReconhecimentoFalso | null = null;
+
+function instalarReconhecimentoFalso() {
+  reconhecimentoAtual = null;
+  class Construtor extends ReconhecimentoFalso {
+    constructor() {
+      super();
+      reconhecimentoAtual = this;
+    }
+  }
+  vi.stubGlobal("SpeechRecognition", Construtor);
 }
 
 afterEach(() => {
@@ -38,7 +55,8 @@ function renderizar(aoVoltar = vi.fn()) {
 }
 
 describe("assistente de trilhas (RF-04-36 a RF-04-40, RN-04-19 a RN-04-21)", () => {
-  it("as duas formas de perguntar estão em tela ao mesmo tempo", () => {
+  it("o campo de texto está sempre em tela, com o botão de falar ao lado", () => {
+    instalarReconhecimentoFalso();
     renderizar();
 
     expect(screen.getByLabelText(/pergunta/i)).toBeInTheDocument();
@@ -68,20 +86,37 @@ describe("assistente de trilhas (RF-04-36 a RF-04-40, RN-04-19 a RN-04-21)", () 
     expect(screen.getByText("O que é uma variável?")).toBeInTheDocument();
     expect(consultar).toHaveBeenCalledWith(
       "equipe-1",
-      { texto: "O que é uma variável?", arquivo: undefined },
+      "O que é uma variável?",
       "token-guerreiro",
     );
   });
 
   it("sem toque no microfone não há captação", () => {
-    const getUserMedia = configurarMicrofoneFalso();
+    instalarReconhecimentoFalso();
     renderizar();
 
-    expect(getUserMedia).not.toHaveBeenCalled();
+    expect(reconhecimentoAtual).toBeNull();
   });
 
-  it("o microfone abre ao toque e fecha ao fim da fala, enviando o áudio", async () => {
-    configurarMicrofoneFalso();
+  it("o microfone abre ao toque e a transcrição final entra no campo da pergunta", async () => {
+    instalarReconhecimentoFalso();
+    renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: /perguntar por voz/i }));
+    expect(await screen.findByText(/ouvindo/i)).toBeInTheDocument();
+
+    reconhecimentoAtual?.onresult?.({
+      results: { 0: { 0: { transcript: "o que é uma variável" }, length: 1 }, length: 1 },
+    });
+    reconhecimentoAtual?.onend?.();
+
+    expect(await screen.findByLabelText(/pergunta/i)).toHaveValue("o que é uma variável");
+    expect(screen.queryByText(/ouvindo/i)).not.toBeInTheDocument();
+  });
+
+  it("a transcrição é editável antes do envio, e o texto corrigido é o que segue ao núcleo", async () => {
+    instalarReconhecimentoFalso();
     const consultar = vi
       .spyOn(assistenteApi, "consultarAssistenteDeTrilhas")
       .mockResolvedValue({
@@ -90,29 +125,70 @@ describe("assistente de trilhas (RF-04-36 a RF-04-40, RN-04-19 a RN-04-21)", () 
         guerreiro_id: null,
         assistente: "trilhas",
         desfecho: "respondida",
-        pergunta: "Transcrição da fala.",
-        resposta: "Resposta ao que foi falado.",
+        pergunta: "pergunta corrigida",
+        resposta: "Resposta.",
         registrado_em: new Date().toISOString(),
       });
 
     renderizar();
     const usuario = userEvent.setup();
     await usuario.click(screen.getByRole("button", { name: /perguntar por voz/i }));
-    expect(
-      await screen.findByRole("button", { name: /parar a gravação/i }),
-    ).toBeInTheDocument();
+    reconhecimentoAtual?.onresult?.({
+      results: { 0: { 0: { transcript: "transcricao com erro" }, length: 1 }, length: 1 },
+    });
+    reconhecimentoAtual?.onend?.();
+    expect(await screen.findByLabelText(/pergunta/i)).toHaveValue("transcricao com erro");
 
-    await usuario.click(screen.getByRole("button", { name: /parar a gravação/i }));
-    expect(await screen.findByText(/pronta para enviar/i)).toBeInTheDocument();
-
+    await usuario.clear(screen.getByLabelText(/pergunta/i));
+    await usuario.type(screen.getByLabelText(/pergunta/i), "pergunta corrigida");
     await usuario.click(screen.getByRole("button", { name: /^perguntar$/i }));
 
     await vi.waitFor(() => expect(consultar).toHaveBeenCalled());
-    expect(consultar.mock.calls[0][1].texto).toBeUndefined();
-    expect(consultar.mock.calls[0][1].arquivo).toBeInstanceOf(Blob);
+    expect(consultar).toHaveBeenCalledWith(
+      "equipe-1",
+      "pergunta corrigida",
+      "token-guerreiro",
+    );
+  });
+
+  it("quando a transcrição falha, avisa sem apagar o que já estava escrito", async () => {
+    instalarReconhecimentoFalso();
+    renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.type(screen.getByLabelText(/pergunta/i), "texto que não deve sumir");
+    await usuario.click(screen.getByRole("button", { name: /perguntar por voz/i }));
+
+    reconhecimentoAtual?.onerror?.({ error: "no-speech" });
+    reconhecimentoAtual?.onend?.();
+
+    expect(await screen.findByText(/não foi possível entender a fala/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/pergunta/i)).toHaveValue("texto que não deve sumir");
+  });
+
+  it("o microfone fecha se a tela sair enquanto ainda ouve", async () => {
+    instalarReconhecimentoFalso();
+    const { unmount } = renderizar();
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /perguntar por voz/i }));
+
+    unmount();
+
+    expect(reconhecimentoAtual?.parado).toBe(true);
+  });
+
+  it("sem a API de fala do aparelho, a tela avisa e mantém só a pergunta por texto", () => {
+    renderizar();
+
+    expect(
+      screen.queryByRole("button", { name: /perguntar por voz/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText(/não transcreve fala/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/pergunta/i)).toBeInTheDocument();
   });
 
   it("a recusa explicada aparece como resposta, nunca como erro", async () => {
+    instalarReconhecimentoFalso();
     vi.spyOn(assistenteApi, "consultarAssistenteDeTrilhas").mockResolvedValue({
       id: "consulta-1",
       equipe_id: "equipe-1",

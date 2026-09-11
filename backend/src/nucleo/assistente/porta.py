@@ -16,10 +16,10 @@ class PortaDoAssistente(ABC):
     quem chama trata o desfecho como resposta indisponível, nunca como
     falha da operação (design — decisão 5). O desfecho vem do próprio
     modelo — a regra é quem decide o texto final de `fora_do_corpus` e de
-    `tarefa_escolar` (design — decisão 3).
+    `tarefa_escolar` (design — decisão 3). A pergunta chega sempre
+    transcrita no aparelho: a porta não recebe áudio (`RF-04-40`,
+    `RN-04-21`, documento 03 §1.12, design — decisão 3).
     """
 
     @abstractmethod
-    def responder(
-        self, *, texto: str | None, arquivo: bytes | None, corpus: str
-    ) -> RespostaDoAssistente | None: ...
+    def responder(self, *, texto: str, corpus: str) -> RespostaDoAssistente | None: ...

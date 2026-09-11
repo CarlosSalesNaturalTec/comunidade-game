@@ -1,6 +1,7 @@
 import { ErroDaApi } from "comum/api";
+import { existeTranscricaoDeFala, iniciarTranscricao } from "comum/fala";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { consultarAssistenteDeTrilhas } from "../api/assistente";
 import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 
@@ -15,8 +16,11 @@ interface TrocaDeConversa {
   resposta: string;
 }
 
-const MENSAGEM_SEM_MICROFONE =
-  "Não foi possível usar o microfone deste aparelho. Você pode perguntar por texto.";
+const MENSAGEM_SEM_TRANSCRICAO =
+  "Este aparelho não transcreve fala. Digite a pergunta no campo abaixo.";
+
+const MENSAGEM_DE_FALHA_NA_FALA =
+  "Não foi possível entender a fala. Fale de novo ou digite a pergunta.";
 
 const MENSAGEM_SEM_REDE =
   "Sem rede, o assistente de trilhas fica indisponível. Assim que a rede voltar, a equipe pode perguntar de novo.";
@@ -27,67 +31,57 @@ const MENSAGEM_DE_INDISPONIBILIDADE = "O assistente não respondeu agora. Pergun
 // (`RF-04-36` a `RF-04-40`, PRD-04 §9). A conversa vive só no estado desta
 // tela — nunca em `localStorage` nem em `sessionStorage` — e some com o
 // atendimento, porque o aparelho é compartilhado (`RF-04-28`). O microfone
-// abre só por toque e fecha ao fim da fala, no mesmo padrão de
-// `EntregaDaProducao` (`RN-04-20`); o texto está sempre disponível ao lado
-// dele, nunca escondido atrás de uma escolha de forma (`RF-04-39`).
+// abre só por toque e fecha ao fim da fala (`RN-04-20`); a fala é
+// transcrita no próprio aparelho, por `comum/fala`, e só o texto segue ao
+// núcleo — o áudio nunca sai dele (`RF-04-40`, `RN-04-21`, documento 03
+// §1.12). O texto está sempre disponível ao lado do botão de falar, nunca
+// escondido atrás de uma escolha de forma (`RF-04-39`); onde o aparelho
+// não transcreve, o botão de falar nem aparece.
 export function TelaDoAssistente({ equipeId, token, aoVoltar }: Props) {
   const { semRede, marcarFalhaDeRede, marcarSucessoDeRede } = useEstadoDeRede();
   const [conversa, definirConversa] = useState<TrocaDeConversa[]>([]);
   const [texto, definirTexto] = useState("");
-  const [arquivo, definirArquivo] = useState<Blob | null>(null);
-  const [gravando, definirGravando] = useState(false);
+  const [ouvindo, definirOuvindo] = useState(false);
   const [enviando, definirEnviando] = useState(false);
   const [indisponivel, definirIndisponivel] = useState(false);
-  const [erroDeMicrofone, definirErroDeMicrofone] = useState<string | null>(null);
-  const gravadorRef = useRef<MediaRecorder | null>(null);
+  const [avisoDeFala, definirAvisoDeFala] = useState<string | null>(null);
+  const encerradorRef = useRef<(() => void) | null>(null);
 
-  async function alternarGravacao() {
-    if (gravando) {
-      gravadorRef.current?.stop();
+  // O aparelho é compartilhado: se a tela sair enquanto o microfone ainda
+  // ouve, ele fecha junto — nunca fica captando sozinho (`RN-04-20`).
+  useEffect(() => {
+    return () => encerradorRef.current?.();
+  }, []);
+
+  function alternarFala() {
+    if (ouvindo) {
+      encerradorRef.current?.();
       return;
     }
-    definirErroDeMicrofone(null);
-    try {
-      const fluxo = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const gravador = new MediaRecorder(fluxo);
-      const pedacos: BlobPart[] = [];
-      gravador.ondataavailable = (evento) => pedacos.push(evento.data);
-      gravador.onstop = () => {
-        definirArquivo(new Blob(pedacos, { type: "audio/webm" }));
-        definirTexto("");
-        for (const trilha of fluxo.getTracks()) trilha.stop();
-        definirGravando(false);
-      };
-      gravadorRef.current = gravador;
-      gravador.start();
-      definirGravando(true);
-    } catch {
-      definirErroDeMicrofone(MENSAGEM_SEM_MICROFONE);
-    }
-  }
-
-  function alterarTexto(valor: string) {
-    definirTexto(valor);
-    if (valor) definirArquivo(null);
+    definirAvisoDeFala(null);
+    definirOuvindo(true);
+    encerradorRef.current = iniciarTranscricao({
+      aoTranscrever: (transcricao) => definirTexto(transcricao),
+      aoFalhar: () => definirAvisoDeFala(MENSAGEM_DE_FALHA_NA_FALA),
+      aoEncerrar: () => {
+        definirOuvindo(false);
+        encerradorRef.current = null;
+      },
+    });
   }
 
   async function enviar() {
-    if (semRede || (!texto.trim() && !arquivo)) return;
+    if (semRede || !texto.trim()) return;
     definirEnviando(true);
     definirIndisponivel(false);
     try {
-      const consulta = await consultarAssistenteDeTrilhas(
-        equipeId,
-        { texto: arquivo ? undefined : texto, arquivo: arquivo ?? undefined },
-        token,
-      );
+      const consulta = await consultarAssistenteDeTrilhas(equipeId, texto, token);
       marcarSucessoDeRede();
       definirConversa((atual) => [
         ...atual,
         { pergunta: consulta.pergunta, resposta: consulta.resposta },
       ]);
       definirTexto("");
-      definirArquivo(null);
     } catch (erroCapturado) {
       if (erroCapturado instanceof ErroDaApi) {
         definirIndisponivel(true);
@@ -126,21 +120,24 @@ export function TelaDoAssistente({ equipeId, token, aoVoltar }: Props) {
             <textarea
               id="assistente-pergunta"
               value={texto}
-              onChange={(evento) => alterarTexto(evento.target.value)}
+              onChange={(evento) => definirTexto(evento.target.value)}
               rows={3}
             />
           </div>
 
-          <Botao variante="secundaria" onClick={alternarGravacao} desabilitado={enviando}>
-            {gravando ? "Parar a gravação" : arquivo ? "Gravar de novo" : "Perguntar por voz"}
-          </Botao>
-          {arquivo && !gravando && <p role="status">Pergunta gravada — pronta para enviar.</p>}
-          {erroDeMicrofone && <Aviso tipo="erro">{erroDeMicrofone}</Aviso>}
+          {existeTranscricaoDeFala() ? (
+            <>
+              <Botao variante="secundaria" onClick={alternarFala} desabilitado={enviando}>
+                {ouvindo ? "Parar de ouvir" : "Perguntar por voz"}
+              </Botao>
+              {ouvindo && <p role="status">Ouvindo…</p>}
+              {avisoDeFala && <Aviso tipo="atencao">{avisoDeFala}</Aviso>}
+            </>
+          ) : (
+            <Aviso tipo="atencao">{MENSAGEM_SEM_TRANSCRICAO}</Aviso>
+          )}
 
-          <Botao
-            onClick={enviar}
-            desabilitado={enviando || gravando || (!texto.trim() && !arquivo)}
-          >
+          <Botao onClick={enviar} desabilitado={enviando || ouvindo || !texto.trim()}>
             {enviando ? "Perguntando…" : "Perguntar"}
           </Botao>
         </>

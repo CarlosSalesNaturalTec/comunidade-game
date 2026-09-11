@@ -1,4 +1,3 @@
-import base64
 import json
 import logging
 
@@ -51,35 +50,25 @@ _INSTRUCAO = (
 
 class AssistenteDeTrilhasNaNuvem(PortaDoAssistente):
     """Adaptador de produção (documento 03 §1.12): fala com a API do Gemini
-    por HTTP simples, multimodal — a mesma passada transcreve e responde
-    (design — decisão 4). Qualquer falha, demora ou resposta fora do
-    formato esperado devolve `None`."""
+    por HTTP simples, só texto — a fala já chega transcrita no aparelho
+    (`RF-04-40`, `RN-04-21`, design — decisão 3). Qualquer falha, demora ou
+    resposta fora do formato esperado devolve `None`."""
 
     def __init__(self, *, chave_de_api: str, modelo: str) -> None:
         self._chave_de_api = chave_de_api
         self._modelo = modelo
 
-    def responder(
-        self, *, texto: str | None, arquivo: bytes | None, corpus: str
-    ) -> RespostaDoAssistente | None:
+    def responder(self, *, texto: str, corpus: str) -> RespostaDoAssistente | None:
         if not self._chave_de_api:
             logger.warning(
                 "Chave de API do Gemini ausente: a resposta do assistente não foi pedida."
             )
             return None
 
-        partes: list[dict] = [{"text": _INSTRUCAO.format(corpus=corpus)}]
-        if texto is not None:
-            partes.append({"text": f"Pergunta da equipe: {texto}"})
-        else:
-            partes.append(
-                {
-                    "inlineData": {
-                        "mimeType": "audio/webm",
-                        "data": base64.b64encode(arquivo or b"").decode("ascii"),
-                    }
-                }
-            )
+        partes: list[dict] = [
+            {"text": _INSTRUCAO.format(corpus=corpus)},
+            {"text": f"Pergunta da equipe: {texto}"},
+        ]
 
         try:
             resposta = httpx.post(
