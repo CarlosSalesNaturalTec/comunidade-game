@@ -1107,6 +1107,140 @@ describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117, RF-09-118, RN-
   });
 });
 
+describe("a imagem da pergunta do quiz (RF-09-119)", () => {
+  function missaoComQuizGravado(imagem_referencia: string | null = null) {
+    return missao({
+      tipo_do_desafio_de_desbloqueio: "quiz",
+      perguntas_do_desbloqueio: [
+        {
+          id: "pergunta-1",
+          ordem: 1,
+          enunciado: "O que o gráfico mostra?",
+          alternativas: ["a", "b", "c", "d"],
+          alternativa_correta: 1,
+          imagem_referencia,
+        },
+      ],
+    });
+  }
+
+  async function abrirDesafioComQuizGravado(imagem_referencia: string | null = null) {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missaoComQuizGravado(imagem_referencia)] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Desafio de desbloqueio"));
+    return usuario;
+  }
+
+  it("a tela diz o teto e os formatos antes do envio", async () => {
+    await abrirDesafioComQuizGravado();
+
+    expect(await screen.findByText(/até 1.0 MB, em JPG, PNG e WebP/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/imagem da pergunta 1 \(opcional\)/i)).toBeInTheDocument();
+  });
+
+  it("anexar mostra o progresso e a pergunta passa a ter imagem", async () => {
+    const abrir = vi
+      .spyOn(trilhasApi, "abrirEnvioDaImagemDaPergunta")
+      .mockResolvedValue("/v1/armazenamento/sessoes/abc");
+    vi.spyOn(trilhasApi, "enviarArquivo").mockImplementation(
+      async (_endereco, arquivo, aoProgredir) => {
+        aoProgredir(arquivo.size, arquivo.size);
+      },
+    );
+    const confirmar = vi
+      .spyOn(trilhasApi, "confirmarEnvioDaImagemDaPergunta")
+      .mockResolvedValue({
+        id: "pergunta-1",
+        ordem: 1,
+        enunciado: "O que o gráfico mostra?",
+        alternativas: ["a", "b", "c", "d"],
+        alternativa_correta: 1,
+        imagem_referencia: "perguntas-do-desbloqueio/pergunta-1/imagem",
+      });
+
+    const usuario = await abrirDesafioComQuizGravado();
+    const arquivo = new File(["conteudo"], "grafico.png", { type: "image/png" });
+    await usuario.upload(screen.getByLabelText(/imagem da pergunta 1/i), arquivo);
+
+    await waitFor(() => expect(confirmar).toHaveBeenCalled());
+    expect(abrir).toHaveBeenCalledWith(
+      "pergunta-1",
+      "image/png",
+      arquivo.size,
+      "token-do-mestre",
+    );
+    expect(await screen.findByText(/esta pergunta tem imagem/i)).toBeInTheDocument();
+  });
+
+  it("imagem grande demais explica o motivo sem perder o que foi escrito", async () => {
+    const abrir = vi.spyOn(trilhasApi, "abrirEnvioDaImagemDaPergunta");
+    const usuario = await abrirDesafioComQuizGravado();
+
+    await usuario.clear(screen.getByLabelText(/^enunciado da pergunta 1$/i));
+    await usuario.type(
+      screen.getByLabelText(/^enunciado da pergunta 1$/i),
+      "Enunciado que não pode sumir",
+    );
+    const grande = new File([new Uint8Array(4 * 1024 * 1024)], "grande.png", {
+      type: "image/png",
+    });
+    await usuario.upload(screen.getByLabelText(/imagem da pergunta 1/i), grande);
+
+    expect(await screen.findByText(/4.0 MB e o limite é 1.0 MB/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^enunciado da pergunta 1$/i)).toHaveValue(
+      "Enunciado que não pode sumir",
+    );
+    // Nem uma sessão foi aberta: a recusa acontece antes de qualquer byte.
+    expect(abrir).not.toHaveBeenCalled();
+  });
+
+  it("corrigir o texto e gravar de novo devolve a referência da imagem", async () => {
+    const declararEspiado = vi
+      .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
+      .mockResolvedValue(missaoComQuizGravado("perguntas-do-desbloqueio/pergunta-1/imagem"));
+
+    const usuario = await abrirDesafioComQuizGravado(
+      "perguntas-do-desbloqueio/pergunta-1/imagem",
+    );
+    await usuario.type(screen.getByLabelText(/^enunciado da pergunta 1$/i), " mesmo?");
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    await waitFor(() => expect(declararEspiado).toHaveBeenCalled());
+    expect(declararEspiado.mock.calls[0][1].perguntas?.[0].imagem_referencia).toBe(
+      "perguntas-do-desbloqueio/pergunta-1/imagem",
+    );
+    // A imagem segue na tela depois da gravação: nenhum reenvio.
+    expect(await screen.findByText(/esta pergunta tem imagem/i)).toBeInTheDocument();
+  });
+
+  it("remover a imagem grava a pergunta sem referência", async () => {
+    const declararEspiado = vi
+      .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
+      .mockResolvedValue(missaoComQuizGravado(null));
+
+    const usuario = await abrirDesafioComQuizGravado(
+      "perguntas-do-desbloqueio/pergunta-1/imagem",
+    );
+    await usuario.click(
+      await screen.findByRole("button", { name: /remover imagem da pergunta 1/i }),
+    );
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    await waitFor(() => expect(declararEspiado).toHaveBeenCalled());
+    expect(declararEspiado.mock.calls[0][1].perguntas?.[0].imagem_referencia).toBeNull();
+    expect(screen.queryByText(/esta pergunta tem imagem/i)).not.toBeInTheDocument();
+  });
+});
+
 describe("O Mestre declara o desafio de coleta da missão (RF-09-27, RF-09-28)", () => {
   it("declara o desafio completo e ele passa a aparecer na missão", async () => {
     configurarSessao();

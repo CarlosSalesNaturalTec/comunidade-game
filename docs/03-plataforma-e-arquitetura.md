@@ -911,6 +911,13 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 - **Imagem da pergunta do desafio de desbloqueio:** opcional, uma por pergunta, **até 1 MB
   cada**, nos mesmos formatos de imagem da lista fechada abaixo. O teto é menor que os do
   conteúdo porque o quiz é lido no aparelho do Guerreiro(a), muitas vezes em rede fraca.
+  **A imagem sobrevive à redeclaração do desafio**: a pergunta que volta com a referência dela
+  conserva a imagem, e só a que a omite fica sem — corrigir texto não custa reenviar arquivo.
+  **Substituir as perguntas nunca apaga a que alguma submissão já respondeu**: ela sai da
+  leitura do desafio e permanece guardada, porque o registro da tentativa aponta para ela.
+- **Os bytes da imagem da pergunta são servidos pelo núcleo**, ao Mestre autor da trilha e ao
+  Guerreiro(a) inscrito nela, e a mais ninguém. É a única saída de arquivo pelo núcleo — o que
+  a arquitetura mantém fora dele é o **envio**, que vai direto ao armazenamento.
 - **O upload aceita lista fechada de formatos**: vídeo MP4 e WebM, imagem JPG, PNG e WebP,
   áudio MP3 e documento PDF. O que está fora da lista é recusado no envio — o que fecha a porta
   a executável e a formato que o navegador não abre. **O que é enviado não passa por conferência

@@ -167,9 +167,17 @@ class PerguntaDoDesbloqueio(Base):
     Mestre autor (`RF-09-118`). Sem limite de quantidade por missão, e a
     `ordem` preserva a sequência em que ele as dispôs. Não se confunde com
     `quiz.modelo.PerguntaDeQuiz`, que é do banco do Mestre e serve a
-    partidas do Quiz ao Vivo: esta pertence à missão e morre com o desafio,
-    porque redeclarar o desafio substitui as perguntas dele (design —
-    decisão 1).
+    partidas do Quiz ao Vivo: esta pertence à missão.
+
+    Redeclarar o desafio **substitui** as perguntas, mas nunca as apaga: a
+    substituída recebe `substituida_em` e sai da leitura, para que a
+    submissão já gravada siga apontando o que o Guerreiro(a) respondeu
+    (`RN-05-47`, design — decisão 4). Por isso a unicidade de (missão,
+    ordem) é índice **parcial** sobre as vigentes.
+
+    A imagem opcional é coluna daqui, como `ConteudoDaMissao` faz com o
+    arquivo dele: uma por pergunta, e só a referência — os bytes nunca
+    entram na tabela (`RF-09-119`, design — decisão 1).
     """
 
     __tablename__ = "pergunta_do_desbloqueio"
@@ -183,6 +191,12 @@ class PerguntaDoDesbloqueio(Base):
     alternativa_3: Mapped[str] = mapped_column(Text, nullable=False)
     alternativa_4: Mapped[str] = mapped_column(Text, nullable=False)
     alternativa_correta: Mapped[int] = mapped_column(Integer, nullable=False)
+    # `imagem_referencia` só é gravada quando a regra apura no armazenamento
+    # o tamanho e o tipo reais do envio — nunca ao abrir a sessão.
+    imagem_referencia: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    imagem_tipo: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    imagem_tamanho: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    substituida_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     __table_args__ = (
         CheckConstraint(
@@ -190,7 +204,13 @@ class PerguntaDoDesbloqueio(Base):
             f"{PRIMEIRA_ALTERNATIVA_DO_DESBLOQUEIO} AND {TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO}",
             name="ck_pergunta_do_desbloqueio_alternativa_correta",
         ),
-        UniqueConstraint("missao_id", "ordem", name="uq_pergunta_do_desbloqueio_missao_id_ordem"),
+        Index(
+            "uq_pergunta_do_desbloqueio_missao_id_ordem",
+            "missao_id",
+            "ordem",
+            unique=True,
+            postgresql_where=text("substituida_em IS NULL"),
+        ),
         Index("ix_pergunta_do_desbloqueio_missao_id", "missao_id"),
     )
 

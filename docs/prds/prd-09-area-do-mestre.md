@@ -549,6 +549,9 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | POST   | `/v1/missoes/{id}/bibliografia`                           | Mestre       | Vincula título e capítulo do acervo à missão                           |
 | POST   | `/v1/missoes/{id}/atividades`                             | Mestre       | Cria atividade da missão, com modalidade e formato                     |
 | POST   | `/v1/missoes/{id}/desbloqueio`                            | Mestre       | Define o quiz ou desafio que abre a missão seguinte                    |
+| POST   | `/v1/perguntas-do-desbloqueio/{id}/imagem`                | Mestre       | Abre o envio retomável da imagem de uma pergunta do quiz               |
+| PATCH  | `/v1/perguntas-do-desbloqueio/{id}/imagem`                | Mestre       | Confirma o envio, e só então a pergunta passa a ter imagem             |
+| GET    | `/v1/perguntas-do-desbloqueio/{id}/imagem`                | Persona      | Serve os bytes da imagem ao Mestre autor e ao Guerreiro(a) inscrito    |
 | GET    | `/v1/missoes/desbloqueios-pendentes`                      | Mestre       | Declarações de desafio prático das próprias trilhas ainda não julgadas |
 | POST   | `/v1/missoes/{id}/desbloqueios/{guerreiro_id}/julgamento` | Mestre       | Julga se o Guerreiro(a) passou no desafio prático declarado            |
 | POST   | `/v1/trilhas/{id}/ods`                                    | Mestre       | Declara ou altera a etiqueta ODS da trilha                             |
@@ -758,6 +761,11 @@ lançado como recurso de _cloud_ (documento 03 §§1, 7, 8) —, e a **situaçã
 fecha em três valores — rascunho, publicada, despublicada —, com o `RF-09-11` corrigido para
 "volta a ser editável, como rascunho" e a republicação privativa do Mestre autor pelas mesmas
 travas da publicação (documento 03 §11).
+
+O `RF-09-119` também não guarda pendência: além do teto e dos formatos, ficou decidido que a
+imagem **sobrevive à redeclaração** do desafio pela referência devolvida, que o **núcleo serve
+os bytes** ao Mestre autor e ao Guerreiro(a) inscrito, e que substituir a pergunta **não apaga**
+a que alguma submissão já respondeu (documento 03 §11).
 
 ## 15. Rastreabilidade
 

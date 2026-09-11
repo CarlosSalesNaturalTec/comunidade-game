@@ -126,6 +126,37 @@ export async function chamarNucleo<T>(
   return corpo as T;
 }
 
+/** Lê bytes de uma rota do núcleo — a imagem da pergunta do quiz é a
+ * primeira (`RF-09-119`). `chamarNucleo` não serve aqui: ele lê o corpo
+ * como JSON. Os dois cabeçalhos continuam obrigatórios, e é por isso que a
+ * tela precisa buscar o arquivo em vez de apontar `<img src>` direto para a
+ * rota — `<img>` não manda cabeçalho (design — decisão 6). */
+export async function lerArquivoDoNucleo(
+  caminho: string,
+  opcoes: { token?: string | null } = {},
+): Promise<Blob> {
+  const { chaveDeAplicacao, urlDoNucleo } = obterConfiguracao();
+
+  const cabecalhos: Record<string, string> = {
+    [NOME_DO_CABECALHO_DA_CHAVE]: chaveDeAplicacao,
+  };
+  if (opcoes.token) {
+    cabecalhos[NOME_DO_CABECALHO_DE_SESSAO] = `Bearer ${opcoes.token}`;
+  }
+
+  const resposta = await fetch(`${urlDoNucleo}${caminho}`, { headers: cabecalhos });
+
+  if (!resposta.ok) {
+    const corpo = (await resposta.json().catch(() => null)) as CorpoDeErro | null;
+    throw new ErroDaApi(
+      resposta.status,
+      corpo ?? { codigo: "erro_de_rede", mensagem: "Não foi possível falar com o núcleo." },
+    );
+  }
+
+  return await resposta.blob();
+}
+
 export interface ResultadoDoEnvioDeParte {
   concluido: boolean;
   /** Bytes que o armazenamento confirma ter recebido até agora — é daqui

@@ -5,6 +5,7 @@ import {
   ErroDaApi,
   ehRecusaDeChave,
   ehRecusaDeSessao,
+  lerArquivoDoNucleo,
 } from "./cliente";
 
 function respostaMock(
@@ -140,5 +141,57 @@ describe("chamarNucleo sem configuração", () => {
       /configurarAcessoAoNucleo/,
     );
     expect(fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("lerArquivoDoNucleo", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+    configurarAcessoAoNucleo({
+      chaveDeAplicacao: "chave-de-teste",
+      urlDoNucleo: "https://nucleo.teste",
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("devolve o Blob com a chave e a credencial nos cabeçalhos", async () => {
+    const bytes = new Blob(["imagem"], { type: "image/png" });
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      status: 200,
+      blob: () => Promise.resolve(bytes),
+      headers: new Headers(),
+    } as unknown as Response);
+
+    const recebido = await lerArquivoDoNucleo("/v1/perguntas-do-desbloqueio/p1/imagem", {
+      token: "token-da-persona",
+    });
+
+    expect(recebido).toBe(bytes);
+    const [url, opcoes] = vi.mocked(fetch).mock.calls[0];
+    expect(url).toBe("https://nucleo.teste/v1/perguntas-do-desbloqueio/p1/imagem");
+    const cabecalhos = opcoes?.headers as Record<string, string>;
+    expect(cabecalhos["X-Chave-Aplicacao"]).toBe("chave-de-teste");
+    expect(cabecalhos.Authorization).toBe("Bearer token-da-persona");
+  });
+
+  it("recusa vira ErroDaApi, com o corpo de erro do núcleo", async () => {
+    vi.mocked(fetch).mockResolvedValue({
+      ok: false,
+      status: 403,
+      json: () =>
+        Promise.resolve({ codigo: "permissao_negada", mensagem: "Não é para você." }),
+      headers: new Headers(),
+    } as unknown as Response);
+
+    const erro = await lerArquivoDoNucleo("/v1/perguntas-do-desbloqueio/p1/imagem").catch(
+      (e) => e,
+    );
+
+    expect(erro).toBeInstanceOf(ErroDaApi);
+    expect(erro.status).toBe(403);
   });
 });

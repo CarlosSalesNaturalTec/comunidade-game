@@ -1,4 +1,4 @@
-import { chamarNucleo } from "comum/api";
+import { chamarNucleo, lerArquivoDoNucleo } from "comum/api";
 
 export interface TrilhaComProximaMissao {
   id: string;
@@ -40,6 +40,17 @@ export interface PerguntaDoDesbloqueio {
   // Nunca a alternativa correta: ela não sai do núcleo para o
   // Guerreiro(a) (`RF-09-118`).
   alternativas: string[];
+  // Diz apenas **se** a pergunta tem imagem; os bytes vêm da rota própria,
+  // que confere quem pede (`RF-09-119`).
+  imagem_referencia: string | null;
+}
+
+// Os bytes da imagem da pergunta, servidos a quem está inscrito na trilha.
+// `<img src>` não manda cabeçalho, e toda rota sob `/v1` exige a chave da
+// aplicação — por isso a tela busca e cria a URL local (`RF-09-119`,
+// design — decisão 6).
+export function lerImagemDaPergunta(idDaPergunta: string, token: string): Promise<Blob> {
+  return lerArquivoDoNucleo(`/v1/perguntas-do-desbloqueio/${idDaPergunta}/imagem`, { token });
 }
 
 export interface DesafioDeDesbloqueio {
