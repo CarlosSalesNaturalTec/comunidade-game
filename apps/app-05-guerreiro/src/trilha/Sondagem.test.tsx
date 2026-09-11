@@ -35,6 +35,7 @@ describe("sondagem", () => {
                   ordem: 1,
                   enunciado: "Pergunta",
                   alternativas: ["a", "b", "c", "d"],
+                  imagem_referencia: null,
                 },
               ],
             }}
@@ -78,6 +79,7 @@ describe("sondagem", () => {
                   ordem: 1,
                   enunciado: "Pergunta",
                   alternativas: ["a", "b", "c", "d"],
+                  imagem_referencia: null,
                 },
               ],
             }}
