@@ -1,7 +1,7 @@
 """A consulta ao assistente de trilhas — `RF-04-36` a `RF-04-40`,
-`RN-04-19` a `RN-04-21`, PRD-04 §9."""
-
-import io
+`RN-04-19` a `RN-04-21`, PRD-04 §9. A pergunta chega sempre em texto: a
+fala é transcrita no aparelho, e a rota não recebe áudio (documento 03
+§1.12)."""
 
 from nucleo.assistente.fabrica import dependencia_do_assistente
 from nucleo.assistente.modelo import ConsultaAoAssistente
@@ -77,7 +77,7 @@ def test_integrante_pergunta_pela_equipe(
 
     resposta = cliente.post(
         "/v1/assistente/trilhas/consultas",
-        data={"equipe_id": str(equipe.id), "texto": "O que é uma variável?"},
+        json={"equipe_id": str(equipe.id), "texto": "O que é uma variável?"},
         headers=_cabecalhos(chave, token),
     )
 
@@ -121,7 +121,7 @@ def test_quem_nao_integra_a_equipe_e_recusado(
 
     resposta = cliente.post(
         "/v1/assistente/trilhas/consultas",
-        data={"equipe_id": str(equipe.id), "texto": "Uma pergunta qualquer"},
+        json={"equipe_id": str(equipe.id), "texto": "Uma pergunta qualquer"},
         headers=_cabecalhos(chave, token),
     )
 
@@ -159,14 +159,14 @@ def test_mestre_e_admin_nao_consultam_pela_equipe(
         token, _ = criar_sessao_de_teste(operador)
         resposta = cliente.post(
             "/v1/assistente/trilhas/consultas",
-            data={"equipe_id": str(equipe.id), "texto": "Uma pergunta qualquer"},
+            json={"equipe_id": str(equipe.id), "texto": "Uma pergunta qualquer"},
             headers=_cabecalhos(chave, token),
         )
         assert resposta.status_code == 403
     assert sessao.query(ConsultaAoAssistente).count() == 0
 
 
-def test_duas_formas_juntas_e_recusada(
+def test_pergunta_vazia_e_recusada(
     cliente,
     criar_chave,
     criar_persona,
@@ -180,6 +180,8 @@ def test_duas_formas_juntas_e_recusada(
     criar_sessao_de_teste,
     sessao,
 ):
+    """`RF-04-40`: sem áudio, a pergunta só chega em texto — vazia ou só de
+    espaços é recusada, e não há mais "segunda forma" para tentar."""
     chave, _ = criar_chave()
     guerreiro, equipe, _, _ = _montar_equipe_com_missao_corrente(
         criar_persona=criar_persona,
@@ -194,18 +196,18 @@ def test_duas_formas_juntas_e_recusada(
     )
     token, _ = criar_sessao_de_teste(guerreiro)
 
-    resposta = cliente.post(
-        "/v1/assistente/trilhas/consultas",
-        data={"equipe_id": str(equipe.id), "texto": "Uma pergunta"},
-        files={"arquivo": ("fala.webm", io.BytesIO(b"audio-fake"), "audio/webm")},
-        headers=_cabecalhos(chave, token),
-    )
+    for texto in ("", "   "):
+        resposta = cliente.post(
+            "/v1/assistente/trilhas/consultas",
+            json={"equipe_id": str(equipe.id), "texto": texto},
+            headers=_cabecalhos(chave, token),
+        )
+        assert resposta.status_code == 422
 
-    assert resposta.status_code == 422
     assert sessao.query(ConsultaAoAssistente).count() == 0
 
 
-def test_nenhuma_forma_e_recusada(
+def test_arquivo_no_corpo_e_recusado(
     cliente,
     criar_chave,
     criar_persona,
@@ -219,6 +221,9 @@ def test_nenhuma_forma_e_recusada(
     criar_sessao_de_teste,
     sessao,
 ):
+    """A rota deixou de aceitar `multipart`: `arquivo` no corpo é campo
+    estranho, recusado por `extra="forbid"` — nunca ignorado em silêncio
+    (`RF-04-40`, `RN-04-21`, design — decisão 2)."""
     chave, _ = criar_chave()
     guerreiro, equipe, _, _ = _montar_equipe_com_missao_corrente(
         criar_persona=criar_persona,
@@ -235,7 +240,7 @@ def test_nenhuma_forma_e_recusada(
 
     resposta = cliente.post(
         "/v1/assistente/trilhas/consultas",
-        data={"equipe_id": str(equipe.id)},
+        json={"equipe_id": str(equipe.id), "texto": "Uma pergunta", "arquivo": "qualquer-coisa"},
         headers=_cabecalhos(chave, token),
     )
 
@@ -263,7 +268,7 @@ def test_equipe_sem_atividade_corrente_e_recusada(
 
     resposta = cliente.post(
         "/v1/assistente/trilhas/consultas",
-        data={"equipe_id": str(equipe.id), "texto": "Uma pergunta"},
+        json={"equipe_id": str(equipe.id), "texto": "Uma pergunta"},
         headers=_cabecalhos(chave, token),
     )
 
@@ -301,7 +306,7 @@ def test_pergunta_fora_do_corpus_recebe_200_com_recusa_explicada(
 
     resposta = cliente.post(
         "/v1/assistente/trilhas/consultas",
-        data={"equipe_id": str(equipe.id), "texto": "Qual é a capital da Mongólia?"},
+        json={"equipe_id": str(equipe.id), "texto": "Qual é a capital da Mongólia?"},
         headers=_cabecalhos(chave, token),
     )
 
@@ -343,7 +348,7 @@ def test_pergunta_de_tarefa_escolar_e_encaminhada(
 
     resposta = cliente.post(
         "/v1/assistente/trilhas/consultas",
-        data={"equipe_id": str(equipe.id), "texto": "Preciso fazer o dever de casa de história"},
+        json={"equipe_id": str(equipe.id), "texto": "Preciso fazer o dever de casa de história"},
         headers=_cabecalhos(chave, token),
     )
 
@@ -395,7 +400,7 @@ def test_missao_posterior_nao_entra_no_corpus(
 
     resposta = cliente.post(
         "/v1/assistente/trilhas/consultas",
-        data={"equipe_id": str(equipe.id), "texto": "O que é criptografia quântica?"},
+        json={"equipe_id": str(equipe.id), "texto": "O que é criptografia quântica?"},
         headers=_cabecalhos(chave, token),
     )
 
@@ -445,7 +450,7 @@ def test_missao_anterior_entra_no_corpus(
 
     resposta = cliente.post(
         "/v1/assistente/trilhas/consultas",
-        data={"equipe_id": str(equipe.id), "texto": "O que é um algoritmo?"},
+        json={"equipe_id": str(equipe.id), "texto": "O que é um algoritmo?"},
         headers=_cabecalhos(chave, token),
     )
 
@@ -454,7 +459,7 @@ def test_missao_anterior_entra_no_corpus(
 
 
 class _PortaSempreIndisponivel(PortaDoAssistente):
-    def responder(self, *, texto, arquivo, corpus):
+    def responder(self, *, texto, corpus):
         return None
 
 
@@ -491,7 +496,7 @@ def test_indisponibilidade_nao_grava_nada(
 
         resposta = cliente.post(
             "/v1/assistente/trilhas/consultas",
-            data={"equipe_id": str(equipe.id), "texto": "Uma pergunta qualquer"},
+            json={"equipe_id": str(equipe.id), "texto": "Uma pergunta qualquer"},
             headers=_cabecalhos(chave, token),
         )
 
@@ -532,7 +537,7 @@ def test_consulta_nao_credita_ponto_nem_gera_resultado(
     for _ in range(3):
         resposta = cliente.post(
             "/v1/assistente/trilhas/consultas",
-            data={"equipe_id": str(equipe.id), "texto": "O que é uma variável?"},
+            json={"equipe_id": str(equipe.id), "texto": "O que é uma variável?"},
             headers=_cabecalhos(chave, token),
         )
         assert resposta.status_code == 200
@@ -540,47 +545,6 @@ def test_consulta_nao_credita_ponto_nem_gera_resultado(
     assert sessao.query(ConsultaAoAssistente).filter_by(equipe_id=equipe.id).count() == 3
     assert sessao.query(Resultado).count() == 0
     assert sessao.query(Lancamento).count() == 0
-
-
-def test_pergunta_por_audio_e_transcrita(
-    cliente,
-    criar_chave,
-    criar_persona,
-    criar_comunidade,
-    criar_aula,
-    criar_trilha,
-    criar_missao,
-    criar_atividade,
-    criar_equipe,
-    criar_conteudo_da_missao,
-    criar_sessao_de_teste,
-    sessao,
-):
-    chave, _ = criar_chave()
-    guerreiro, equipe, _, _ = _montar_equipe_com_missao_corrente(
-        criar_persona=criar_persona,
-        criar_comunidade=criar_comunidade,
-        criar_aula=criar_aula,
-        criar_trilha=criar_trilha,
-        criar_missao=criar_missao,
-        criar_atividade=criar_atividade,
-        criar_equipe=criar_equipe,
-        criar_conteudo_da_missao=criar_conteudo_da_missao,
-        sessao=sessao,
-    )
-    token, _ = criar_sessao_de_teste(guerreiro)
-
-    resposta = cliente.post(
-        "/v1/assistente/trilhas/consultas",
-        data={"equipe_id": str(equipe.id)},
-        files={"arquivo": ("fala.webm", io.BytesIO(b"audio-fake"), "audio/webm")},
-        headers=_cabecalhos(chave, token),
-    )
-
-    assert resposta.status_code == 200
-    corpo = resposta.json()
-    assert corpo["pergunta"]
-    assert "audio-fake" not in corpo["pergunta"]
 
 
 def test_rota_aparece_no_openapi_sob_v1(cliente):
@@ -594,7 +558,7 @@ def test_sem_sessao_a_porta_nao_abre(cliente, criar_chave):
     chave, _ = criar_chave()
     resposta = cliente.post(
         "/v1/assistente/trilhas/consultas",
-        data={"equipe_id": "00000000-0000-0000-0000-000000000000", "texto": "Uma pergunta"},
+        json={"equipe_id": "00000000-0000-0000-0000-000000000000", "texto": "Uma pergunta"},
         headers={"X-Chave-Aplicacao": chave},
     )
     assert resposta.status_code == 401

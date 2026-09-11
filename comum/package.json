@@ -11,7 +11,8 @@
     "./api": "./api/indice.ts",
     "./autenticacao": "./autenticacao/indice.ts",
     "./autenticacao/api": "./autenticacao/api.ts",
-    "./biometria": "./biometria/indice.ts"
+    "./biometria": "./biometria/indice.ts",
+    "./fala": "./fala/indice.ts"
   },
   "files": [
     "tokens.css",
@@ -20,7 +21,8 @@
     "react",
     "api",
     "autenticacao",
-    "biometria"
+    "biometria",
+    "fala"
   ],
   "scripts": {
     "test": "vitest run",

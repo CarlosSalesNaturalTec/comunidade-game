@@ -127,36 +127,39 @@ modo que a recusa (`RF-04-38`, documento 03 §4.2).
 - **WHEN** o assistente encaminha uma pergunta escolar
 - **THEN** a consulta é gravada com a transcrição da pergunta e a do encaminhamento
 
-### Requirement: A pergunta por fala é transcrita e o áudio descartado no ato
+### Requirement: A pergunta chega sempre em texto, e o áudio nunca alcança o núcleo
 
-O núcleo SHALL aceitar a pergunta em **texto** ou em **áudio**, e SHALL exigir **exatamente
-uma** das duas formas — as duas juntas, ou nenhuma, SHALL ser recusadas com **422**. Recebido
-o áudio, o núcleo SHALL transcrevê-lo e SHALL **descartá-lo assim que a transcrição existir**:
-o áudio NEVER SHALL ser gravado em disco, em armazenamento de arquivo ou em registro de log
-(`RF-04-39`, `RF-04-40`, `RN-04-21`, PRD-04 §11).
+A rota da consulta SHALL aceitar a pergunta **apenas em texto**, e SHALL exigir texto **não
+vazio**: pergunta ausente, vazia ou só com espaços SHALL ser recusada com **422**, e nenhuma
+consulta SHALL ser gravada. A rota NEVER SHALL receber arquivo de áudio, e o núcleo NEVER SHALL
+transcrever fala.
 
-#### Scenario: A pergunta falada vira transcrição
+A fala é transcrita **no próprio aparelho** e o que trafega é a transcrição — indistinguível,
+no contrato, da pergunta digitada (`RF-04-40`, `RN-04-21`, documento 03 §1.12, PRD-04 §11).
 
-- **WHEN** a equipe envia a pergunta em áudio
-- **THEN** o núcleo grava a transcrição da pergunta e responde a partir do corpus
+#### Scenario: A pergunta em texto é respondida
 
-#### Scenario: Duas formas ao mesmo tempo são recusadas
+- **WHEN** a equipe envia a pergunta em texto, venha ela do teclado ou da fala transcrita no
+  aparelho
+- **THEN** o núcleo responde a partir do corpus e grava a consulta com aquela transcrição
 
-- **WHEN** chega uma consulta com texto e áudio juntos, ou sem nenhum dos dois
+#### Scenario: Pergunta vazia é recusada
+
+- **WHEN** chega uma consulta sem pergunta, ou com pergunta só de espaços
 - **THEN** o núcleo responde 422 e nada é gravado
 
-#### Scenario: O áudio não sobrevive à chamada
+#### Scenario: Nenhum áudio entra na consulta
 
-- **WHEN** a consulta em áudio termina
-- **THEN** o áudio não está em armazenamento algum, nem em log
+- **WHEN** se examina o que a rota da consulta aceita
+- **THEN** não há campo de áudio nem de arquivo algum, e nada de áudio alcança o núcleo
 
 ### Requirement: A resposta indisponível não grava consulta pela metade
 
 Não vindo a resposta do assistente — erro, demora ou formato inesperado —, o núcleo SHALL
 responder **503** e NEVER SHALL gravar a consulta: consulta com pergunta e sem resposta
-guardaria uma conversa que não aconteceu. A equipe SHALL poder perguntar de novo, e a pergunta
-falada SHALL ser refeita, porque o áudio já foi descartado (PRD-04 §9, mesmo desfecho da
-leitura da produção).
+guardaria uma conversa que não aconteceu. A equipe SHALL poder perguntar de novo com **a mesma
+pergunta**, sem refazer a fala: a transcrição é texto, e o aparelho a conserva na tela (PRD-04
+§9).
 
 #### Scenario: Sem resposta, nada é gravado
 
@@ -165,7 +168,7 @@ leitura da produção).
 
 #### Scenario: A equipe pergunta de novo
 
-- **WHEN** a equipe reenvia a pergunta depois de um 503
+- **WHEN** a equipe reenvia a mesma pergunta depois de um 503
 - **THEN** o núcleo a trata como consulta nova, sem resíduo da tentativa anterior
 
 ### Requirement: A consulta não credita ponto e não altera progressão

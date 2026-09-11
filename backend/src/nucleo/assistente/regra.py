@@ -88,8 +88,7 @@ def consultar_assistente_de_trilhas(
     *,
     operador: Persona,
     equipe: Equipe,
-    texto: str | None,
-    arquivo: bytes | None,
+    texto: str,
     porta: PortaDoAssistente,
 ) -> ConsultaAoAssistente:
     """Restrita ao Guerreiro(a) integrante da equipe (`RF-04-36`, design —
@@ -113,14 +112,12 @@ def consultar_assistente_de_trilhas(
             campo="equipe_id",
         )
 
-    if (texto is None) == (arquivo is None):
-        raise ErroDeValidacao(
-            mensagem="Envie a pergunta em uma única forma: texto ou áudio.", campo="texto"
-        )
+    if not texto.strip():
+        raise ErroDeValidacao(mensagem="Envie a pergunta.", campo="texto")
 
     corpus = _montar_corpus(sessao, equipe)
 
-    resposta = porta.responder(texto=texto, arquivo=arquivo, corpus=corpus)
+    resposta = porta.responder(texto=texto, corpus=corpus)
     if resposta is None:
         logger.warning("Consulta ao assistente de trilhas indisponível.")
         raise ConsultaAoAssistenteIndisponivel()
