@@ -50,6 +50,13 @@ jobs:
       - name: biome check
         run: npx biome check comum apps
 
+      # `tsc -b` é o que a esteira de publicação roda antes do `vite build`,
+      # e alcança os arquivos de teste, que o Vitest executa sem conferir
+      # tipo. Rodá-lo aqui é o que faz o erro de tipo barrar o PR em vez de
+      # quebrar a publicação depois do merge.
+      - name: tsc -b (verificação de tipos e build)
+        run: npm run build --workspaces --if-present
+
       # A cobertura é medida aqui, e só aqui, sem limiar que bloqueie no
       # Ciclo 01 — o número fica publicado no log (mesma régua do backend).
       # `--workspaces --if-present` alcança cada aplicação nova sem editar

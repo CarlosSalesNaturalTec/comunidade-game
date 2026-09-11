@@ -115,6 +115,7 @@ describe("missão no percurso", () => {
             ordem: 1,
             enunciado: "Pergunta da missão.",
             alternativas: ["a", "b", "c", "d"],
+            imagem_referencia: null,
           },
         ],
       },
