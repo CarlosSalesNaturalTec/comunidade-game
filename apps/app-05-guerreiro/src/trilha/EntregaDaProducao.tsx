@@ -1,7 +1,8 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
+import { existeTranscricaoDeFala, iniciarTranscricao } from "comum/fala";
 import { Aviso, Botao } from "comum/react";
-import { type FormEvent, useId, useState } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import {
   type AtividadeDaMissaoPublica,
   entregarProducaoIndividual,
@@ -16,23 +17,31 @@ interface Props {
 
 type FormaDeEntrega = FormaDeEntregaDaProducao | "encontro";
 
-const FORMATOS_ACEITOS: Record<"audio" | "foto", string> = {
-  audio: "audio/webm,audio/mp4,audio/mpeg",
-  foto: "image/jpeg,image/png,image/webp",
-};
+const FORMATOS_DE_FOTO = "image/jpeg,image/png,image/webp";
 
-const OPCOES_DE_FORMA: { valor: FormaDeEntrega; rotulo: string }[] = [
-  { valor: "texto", rotulo: "Escrever" },
-  { valor: "audio", rotulo: "Gravar a fala" },
-  { valor: "foto", rotulo: "Fotografar" },
-  { valor: "encontro", rotulo: "Entregar ao Mestre no encontro" },
-];
+const MENSAGEM_SEM_TRANSCRICAO =
+  "Este aparelho não transforma a sua fala em texto. Você pode escrever, fotografar o que fez " +
+  "à mão ou levar ao Mestre no encontro.";
+
+const MENSAGEM_DE_FALHA_NA_FALA =
+  "Não consegui entender a sua fala. Fale de novo ou escreva o que você fez.";
+
+function opcoesDeForma(transcreve: boolean): { valor: FormaDeEntrega; rotulo: string }[] {
+  return [
+    { valor: "texto" as FormaDeEntrega, rotulo: "Escrever" },
+    ...(transcreve ? [{ valor: "audio" as FormaDeEntrega, rotulo: "Falar" }] : []),
+    { valor: "foto" as FormaDeEntrega, rotulo: "Fotografar" },
+    { valor: "encontro" as FormaDeEntrega, rotulo: "Entregar ao Mestre no encontro" },
+  ];
+}
 
 function SeletorDeForma({
   forma,
+  opcoes,
   aoEscolher,
 }: {
   forma: FormaDeEntrega;
+  opcoes: { valor: FormaDeEntrega; rotulo: string }[];
   aoEscolher: (forma: FormaDeEntrega) => void;
 }) {
   return (
@@ -41,7 +50,7 @@ function SeletorDeForma({
       role="radiogroup"
       aria-label="Forma de entrega"
     >
-      {OPCOES_DE_FORMA.map((opcao) => (
+      {opcoes.map((opcao) => (
         <Botao
           key={opcao.valor}
           variante={forma === opcao.valor ? "primaria" : "secundaria"}
@@ -56,10 +65,12 @@ function SeletorDeForma({
 
 // A entrega da produção da missão, nas três formas mais o caminho do
 // encontro presencial, sempre com o mesmo destaque (`RF-05-74`, `RF-05-78`,
-// `RN-05-37`). O aviso do descarte vem antes do envio de áudio ou foto
-// (`RF-05-76`, `RN-05-36`), e a devolutiva, depois, nunca como nota — só
-// como retorno construtivo que não vale ponto (`RF-05-75`, `RF-05-77`,
-// `RN-05-05`).
+// `RN-05-37`). A fala é transcrita no próprio aparelho, por `comum/fala`, e
+// ao núcleo vai só o texto — a gravação nunca sai daqui (`RF-05-76`,
+// `RN-05-32`, documento 03 §1.12); onde o aparelho não transcreve, a fala
+// nem é oferecida. O aviso do descarte da foto vem antes do envio
+// (`RN-05-36`), e a devolutiva, depois, nunca como nota — só como retorno
+// construtivo que não vale ponto (`RF-05-75`, `RF-05-77`, `RN-05-05`).
 export function EntregaDaProducao({ missaoId, atividades }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoCampo = useId();
@@ -68,10 +79,20 @@ export function EntregaDaProducao({ missaoId, atividades }: Props) {
   const [forma, definirForma] = useState<FormaDeEntrega>("texto");
   const [producao, definirProducao] = useState("");
   const [arquivo, definirArquivo] = useState<File | null>(null);
+  const [ouvindo, definirOuvindo] = useState(false);
+  const [avisoDeFala, definirAvisoDeFala] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
   const [erroDeCampo, definirErroDeCampo] = useState<string | null>(null);
   const [erroDeRecusa, definirErroDeRecusa] = useState<string | null>(null);
   const [resultado, definirResultado] = useState<ProducaoDaMissao | null>(null);
+  const encerradorRef = useRef<(() => void) | null>(null);
+  const transcreve = existeTranscricaoDeFala();
+
+  // Sair da tela com o microfone aberto o fecha junto: ele nunca fica
+  // ouvindo sozinho (`RN-05-32`).
+  useEffect(() => {
+    return () => encerradorRef.current?.();
+  }, []);
 
   if (atividades.length === 0) return null;
 
@@ -96,6 +117,24 @@ export function EntregaDaProducao({ missaoId, atividades }: Props) {
     );
   }
 
+  function alternarFala() {
+    if (ouvindo) {
+      encerradorRef.current?.();
+      return;
+    }
+    definirAvisoDeFala(null);
+    definirErroDeCampo(null);
+    definirOuvindo(true);
+    encerradorRef.current = iniciarTranscricao({
+      aoTranscrever: (transcricao) => definirProducao(transcricao),
+      aoFalhar: () => definirAvisoDeFala(MENSAGEM_DE_FALHA_NA_FALA),
+      aoEncerrar: () => {
+        definirOuvindo(false);
+        encerradorRef.current = null;
+      },
+    });
+  }
+
   async function aoSubmeter(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     definirErroDeCampo(null);
@@ -106,14 +145,14 @@ export function EntregaDaProducao({ missaoId, atividades }: Props) {
       definirErroDeCampo("Escolha a atividade que você está entregando.");
       return;
     }
-    if (forma === "texto" && !producao.trim()) {
-      definirErroDeCampo("Escreva a sua produção.");
+    if (forma !== "foto" && !producao.trim()) {
+      definirErroDeCampo(
+        forma === "audio" ? "Fale ou escreva a sua produção." : "Escreva a sua produção.",
+      );
       return;
     }
-    if ((forma === "audio" || forma === "foto") && !arquivo) {
-      definirErroDeCampo(
-        forma === "audio" ? "Grave o áudio para enviar." : "Escolha a foto para enviar.",
-      );
+    if (forma === "foto" && !arquivo) {
+      definirErroDeCampo("Escolha a foto para enviar.");
       return;
     }
     if (!sessao) return;
@@ -125,8 +164,8 @@ export function EntregaDaProducao({ missaoId, atividades }: Props) {
         {
           atividadeId,
           forma,
-          texto: forma === "texto" ? producao : undefined,
-          arquivo: forma !== "texto" && arquivo ? arquivo : undefined,
+          texto: forma === "foto" ? undefined : producao,
+          arquivo: forma === "foto" && arquivo ? arquivo : undefined,
         },
         sessao.token,
       );
@@ -155,7 +194,12 @@ export function EntregaDaProducao({ missaoId, atividades }: Props) {
   return (
     <section aria-label="Entrega da produção" className="cg-entrega-de-producao">
       <h3>Como você vai entregar o que fez?</h3>
-      <SeletorDeForma forma={forma} aoEscolher={definirForma} />
+      <SeletorDeForma
+        forma={forma}
+        opcoes={opcoesDeForma(transcreve)}
+        aoEscolher={definirForma}
+      />
+      {!transcreve && <Aviso tipo="atencao">{MENSAGEM_SEM_TRANSCRICAO}</Aviso>}
 
       {forma === "encontro" ? (
         <Aviso tipo="sucesso">
@@ -181,30 +225,48 @@ export function EntregaDaProducao({ missaoId, atividades }: Props) {
             </div>
           )}
 
-          {forma === "texto" && (
-            <div className="cg-campo">
-              <label htmlFor={idDoCampo}>Sua produção</label>
-              <textarea
-                id={idDoCampo}
-                value={producao}
-                onChange={(evento) => definirProducao(evento.target.value)}
-                rows={8}
-              />
-            </div>
+          {forma === "audio" && (
+            <Aviso tipo="atencao">
+              A sua fala virá para o texto aqui mesmo: a gravação não sai deste aparelho, e o
+              que fica guardado é só o texto e o retorno.
+            </Aviso>
           )}
 
-          {(forma === "audio" || forma === "foto") && (
+          {forma !== "foto" && (
+            <>
+              <div className="cg-campo">
+                <label htmlFor={idDoCampo}>Sua produção</label>
+                <textarea
+                  id={idDoCampo}
+                  value={producao}
+                  onChange={(evento) => definirProducao(evento.target.value)}
+                  rows={8}
+                />
+              </div>
+              {forma === "audio" && (
+                <div className="cg-campo">
+                  <Botao variante="secundaria" onClick={alternarFala} desabilitado={enviando}>
+                    {ouvindo ? "Parar de ouvir" : "Falar a produção"}
+                  </Botao>
+                  {ouvindo && <p role="status">Ouvindo…</p>}
+                  {avisoDeFala && <Aviso tipo="atencao">{avisoDeFala}</Aviso>}
+                </div>
+              )}
+            </>
+          )}
+
+          {forma === "foto" && (
             <>
               <Aviso tipo="atencao">
-                {forma === "audio" ? "O áudio" : "A foto"} é usado só para ler o que você fez —
-                depois é descartado. Fica guardado só o texto e o retorno.
+                A foto é usada só para ler o que você fez — depois é descartada. Fica guardado
+                só o texto e o retorno.
               </Aviso>
               <div className="cg-campo">
-                <label htmlFor={idDoCampo}>{forma === "audio" ? "Áudio" : "Foto"}</label>
+                <label htmlFor={idDoCampo}>Foto</label>
                 <input
                   id={idDoCampo}
                   type="file"
-                  accept={FORMATOS_ACEITOS[forma]}
+                  accept={FORMATOS_DE_FOTO}
                   onChange={(evento) => definirArquivo(evento.target.files?.[0] ?? null)}
                 />
               </div>
@@ -214,7 +276,7 @@ export function EntregaDaProducao({ missaoId, atividades }: Props) {
           {erroDeCampo && <Aviso tipo="erro">{erroDeCampo}</Aviso>}
           {erroDeRecusa && <Aviso tipo="erro">{erroDeRecusa}</Aviso>}
 
-          <Botao tipo="submit" desabilitado={enviando}>
+          <Botao tipo="submit" desabilitado={enviando || ouvindo}>
             Entregar
           </Botao>
         </form>

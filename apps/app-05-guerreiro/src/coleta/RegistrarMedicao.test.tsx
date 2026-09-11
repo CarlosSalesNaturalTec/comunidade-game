@@ -83,11 +83,17 @@ describe("registro de medição", () => {
   it("ditado por voz grava origem voz, e o áudio nunca é enviado", async () => {
     class ReconhecimentoFalso {
       lang = "";
+      continuous = false;
+      interimResults = false;
       onresult: ((evento: unknown) => void) | null = null;
       onerror: (() => void) | null = null;
       onend: (() => void) | null = null;
       start() {
         this.onresult?.({ results: { 0: { 0: { transcript: "vinte e cinco 25" } } } });
+        this.onend?.();
+      }
+      stop() {
+        this.onend?.();
       }
     }
     (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition =

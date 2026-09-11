@@ -21,9 +21,11 @@ interface EntregarProducaoEntrada {
 }
 
 // `RF-04-45` a `RF-04-47`: a entrega da produção pela equipe, na atividade
-// corrente que ela já declarou — texto, áudio ou foto, sempre uma única
-// forma. A devolutiva volta construtiva e nunca credita ponto; foto e
-// áudio nunca ficam no aparelho depois do envio (documento 03 §12.2).
+// corrente que ela já declarou — texto, fala ou foto, sempre uma única
+// forma. A devolutiva volta construtiva e nunca credita ponto. `arquivo` é
+// só da foto, que não fica no aparelho depois do envio (documento 03
+// §12.2); a fala vai transcrita no aparelho, em `texto`, e o áudio não é
+// enviado (`RF-05-76`, `RN-05-32`).
 export function entregarProducao(
   equipeId: string,
   entrada: EntregarProducaoEntrada,

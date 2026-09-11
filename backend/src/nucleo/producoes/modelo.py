@@ -21,9 +21,10 @@ class ProducaoDaMissao(Base, ComAutoria):
     pela equipe do App 01 nesta fatia; `guerreiro_id` fica reservado à porta
     individual da fatia 7 do PRD-05, sem migração nova (design — decisão 2).
 
-    Sem coluna de foto, de áudio nem de custo: as duas mídias são
-    descartadas na leitura (`RF-04-46`, documento 03 §12.2) e o consumo do
-    modelo nunca é medido por ato (`RF-09-90`). `ComAutoria` grava quem
+    Sem coluna de foto, de áudio nem de custo: a foto é descartada na
+    leitura, o áudio nunca chega — a fala é transcrita no aparelho
+    (`RF-04-46`, `RF-05-76`, `RN-05-32`, documento 03 §§1.12, 12.2) — e o
+    consumo do modelo nunca é medido por ato (`RF-09-90`). `ComAutoria` grava quem
     entregou de fato — o integrante em sessão —, separado de `equipe_id`,
     a quem a produção pertence.
     """

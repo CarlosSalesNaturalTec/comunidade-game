@@ -72,19 +72,25 @@ def _montar_guerreiro_com_missao_desbloqueada(
     return guerreiro, missao, atividade
 
 
-def test_local_descarta_foto_e_audio_e_devolve_transcricao_e_devolutiva():
+def test_local_ecoa_a_fala_transcrita_e_descarta_a_foto():
+    """`RF-05-76`, `RN-05-32`: a fala chega transcrita do aparelho e passa
+    pelo caminho do texto; só a foto é mídia, e o byte dela não vira
+    transcrição."""
     porta = ProducaoDaMissaoLocal()
 
-    leitura_audio = porta.ler(
-        forma="audio", texto=None, arquivo=b"bytes-de-audio", producao_esperada="Uma fala."
+    leitura_da_fala = porta.ler(
+        forma="audio",
+        texto="O que a equipe falou.",
+        arquivo=None,
+        producao_esperada="Uma fala.",
     )
     leitura_foto = porta.ler(
         forma="foto", texto=None, arquivo=b"bytes-de-foto", producao_esperada="Um desenho."
     )
 
-    assert leitura_audio is not None
-    assert "bytes-de-audio" not in leitura_audio.transcricao
-    assert leitura_audio.devolutiva
+    assert leitura_da_fala is not None
+    assert leitura_da_fala.transcricao == "O que a equipe falou."
+    assert leitura_da_fala.devolutiva
 
     assert leitura_foto is not None
     assert "bytes-de-foto" not in leitura_foto.transcricao
@@ -134,7 +140,7 @@ def test_devolutiva_em_branco_no_texto_quando_leitura_indisponivel(
         del app.dependency_overrides[dependencia_da_producao_da_missao]
 
 
-def test_503_na_foto_e_no_audio_quando_leitura_indisponivel(
+def test_503_so_na_foto_quando_leitura_indisponivel(
     app,
     cliente,
     criar_chave,
@@ -163,16 +169,28 @@ def test_503_na_foto_e_no_audio_quando_leitura_indisponivel(
         )
         token, _ = criar_sessao_de_teste(guerreiro)
 
-        for forma, tipo in (("audio", "audio/webm"), ("foto", "image/jpeg")):
-            resposta = cliente.post(
-                f"/v1/equipes/{equipe.id}/producao",
-                data={"forma": forma},
-                files={"arquivo": (f"arquivo.{forma}", io.BytesIO(b"conteudo-fake"), tipo)},
-                headers=_cabecalhos(chave, token),
-            )
-            assert resposta.status_code == 503
-
+        resposta_da_foto = cliente.post(
+            f"/v1/equipes/{equipe.id}/producao",
+            data={"forma": "foto"},
+            files={"arquivo": ("manuscrito.jpg", io.BytesIO(b"conteudo-fake"), "image/jpeg")},
+            headers=_cabecalhos(chave, token),
+        )
+        assert resposta_da_foto.status_code == 503
         assert sessao.query(ProducaoDaMissao).count() == 0
+
+        # `RF-05-76`: a fala já chega transcrita do aparelho, então a
+        # indisponibilidade do modelo não tem o que impedir — a produção é
+        # gravada com a devolutiva em branco, como a entrega por texto.
+        resposta_da_fala = cliente.post(
+            f"/v1/equipes/{equipe.id}/producao",
+            data={"forma": "audio", "texto": "O que a equipe falou."},
+            headers=_cabecalhos(chave, token),
+        )
+        assert resposta_da_fala.status_code == 201
+        corpo = resposta_da_fala.json()
+        assert corpo["transcricao"] == "O que a equipe falou."
+        assert corpo["devolutiva"] is None
+        assert sessao.query(ProducaoDaMissao).count() == 1
     finally:
         del app.dependency_overrides[dependencia_da_producao_da_missao]
 
@@ -210,14 +228,14 @@ def test_falha_na_leitura_nao_registra_o_byte_em_log(
         with caplog.at_level("WARNING", logger="nucleo.producoes"):
             cliente.post(
                 f"/v1/equipes/{equipe.id}/producao",
-                data={"forma": "audio"},
-                files={"arquivo": ("fala.webm", io.BytesIO(b"segredo-do-audio"), "audio/webm")},
+                data={"forma": "foto"},
+                files={"arquivo": ("manuscrito.jpg", io.BytesIO(b"segredo-da-foto"), "image/jpeg")},
                 headers=_cabecalhos(chave, token),
             )
 
         texto_do_log = " ".join(registro.getMessage() for registro in caplog.records)
-        assert "segredo-do-audio" not in texto_do_log
-        assert "forma=audio" in texto_do_log
+        assert "segredo-da-foto" not in texto_do_log
+        assert "forma=foto" in texto_do_log
     finally:
         del app.dependency_overrides[dependencia_da_producao_da_missao]
 
@@ -311,7 +329,7 @@ def test_devolutiva_em_branco_no_texto_individual_quando_leitura_indisponivel(
         del app.dependency_overrides[dependencia_da_producao_da_missao]
 
 
-def test_503_na_foto_e_no_audio_individuais_quando_leitura_indisponivel(
+def test_503_so_na_foto_individual_quando_leitura_indisponivel(
     app,
     cliente,
     criar_chave,
@@ -337,16 +355,27 @@ def test_503_na_foto_e_no_audio_individuais_quando_leitura_indisponivel(
         )
         token, _ = criar_sessao_de_teste(guerreiro)
 
-        for forma, tipo in (("audio", "audio/webm"), ("foto", "image/jpeg")):
-            resposta = cliente.post(
-                f"/v1/eu/missoes/{missao.id}/producao",
-                data={"forma": forma, "atividade_id": str(atividade.id)},
-                files={"arquivo": (f"arquivo.{forma}", io.BytesIO(b"conteudo-fake"), tipo)},
-                headers=_cabecalhos(chave, token),
-            )
-            assert resposta.status_code == 503
-
+        resposta_da_foto = cliente.post(
+            f"/v1/eu/missoes/{missao.id}/producao",
+            data={"forma": "foto", "atividade_id": str(atividade.id)},
+            files={"arquivo": ("manuscrito.jpg", io.BytesIO(b"conteudo-fake"), "image/jpeg")},
+            headers=_cabecalhos(chave, token),
+        )
+        assert resposta_da_foto.status_code == 503
         assert sessao.query(ProducaoDaMissao).count() == 0
+
+        resposta_da_fala = cliente.post(
+            f"/v1/eu/missoes/{missao.id}/producao",
+            data={
+                "forma": "audio",
+                "atividade_id": str(atividade.id),
+                "texto": "O que eu falei.",
+            },
+            headers=_cabecalhos(chave, token),
+        )
+        assert resposta_da_fala.status_code == 201
+        assert resposta_da_fala.json()["devolutiva"] is None
+        assert sessao.query(ProducaoDaMissao).count() == 1
     finally:
         del app.dependency_overrides[dependencia_da_producao_da_missao]
 
@@ -569,6 +598,40 @@ class _RespostaDeErro:
 
     def raise_for_status(self):
         raise httpx.HTTPStatusError("erro", request=None, response=self)
+
+
+def test_a_passada_ao_gemini_so_traz_midia_na_foto(monkeypatch):
+    """`RF-05-76`, `RN-05-32`: fora da foto, a passada é só de texto — a fala
+    já chega transcrita do aparelho e nenhum áudio é montado no corpo."""
+    corpos = []
+
+    def _capturar(url, **kwargs):
+        corpos.append(kwargs["json"])
+        return _RespostaFake(_corpo_gemini(json.dumps({"transcricao": "T", "devolutiva": "D"})))
+
+    monkeypatch.setattr(httpx, "post", _capturar)
+    porta = ProducaoDaMissaoNaNuvem(chave_de_api="chave-de-teste", modelo="gemini-2.5-flash")
+
+    porta.ler(
+        forma="audio",
+        texto="O que a equipe falou.",
+        arquivo=None,
+        producao_esperada="Relato do plantio.",
+    )
+    porta.ler(
+        forma="foto",
+        texto=None,
+        arquivo=b"bytes-da-foto",
+        producao_esperada="Relato do plantio.",
+    )
+
+    partes_da_fala = corpos[0]["contents"][0]["parts"]
+    assert all("inlineData" not in parte for parte in partes_da_fala)
+    assert any("O que a equipe falou." in parte.get("text", "") for parte in partes_da_fala)
+
+    partes_da_foto = corpos[1]["contents"][0]["parts"]
+    midia = next(parte["inlineData"] for parte in partes_da_foto if "inlineData" in parte)
+    assert midia["mimeType"] == "image/jpeg"
 
 
 def test_a_credencial_do_gemini_vai_no_cabecalho_e_nunca_na_url(monkeypatch):

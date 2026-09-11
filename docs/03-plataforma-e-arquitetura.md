@@ -992,7 +992,8 @@ Duas camadas, e a distinção entre elas é o que sustenta o desenho:
 | Transcrição de consulta recusada pelos filtros              | **Até o fim do ciclo**, restrita à gestão                         |
 | Transcrição de sugestão não adotada                         | **90 dias** após o retorno a quem sugeriu                         |
 | Transcrição de sugestão adotada                             | Permanente, com autoria — é contribuição creditada                |
-| Foto e áudio da produção do Guerreiro(a)                    | **Descartados na leitura**; ficam a transcrição e a devolutiva    |
+| Foto da produção do Guerreiro(a)                            | **Descartada na leitura**; ficam a transcrição e a devolutiva     |
+| Áudio da produção do Guerreiro(a)                           | **Nunca recebido**: a fala é transcrita no aparelho (§1.12)       |
 | Áudio de qualquer origem                                    | **Descartado na transcrição**                                     |
 | Contexto de personalização da sessão                        | **Descartado ao encerrar a sessão**; nada é inferido nem gravado  |
 | Motivo da ocorrência de conduta                             | **Até o fim do ciclo** em que ocorreu; o lançamento é que fica    |
