@@ -582,13 +582,49 @@ describe("entrega da produção (RF-04-45 a RF-04-47, RN-04-09, RN-04-12, RN-04-
       "o que a equipe falou",
     );
 
+    // A transcrição é editável antes do envio, e é o texto corrigido que
+    // segue ao núcleo (documento 09 §1, decisão de 2026-09-10).
+    await usuario.clear(screen.getByLabelText(/o que a equipe falou/i));
+    await usuario.type(
+      screen.getByLabelText(/o que a equipe falou/i),
+      "o que a equipe falou, corrigido",
+    );
     await usuario.click(screen.getByRole("button", { name: /^entregar$/i }));
 
     await waitFor(() => expect(entregar).toHaveBeenCalled());
     expect(entregar).toHaveBeenCalledWith(
       "equipe-1",
-      { forma: "audio", texto: "o que a equipe falou", arquivo: undefined },
+      { forma: "audio", texto: "o que a equipe falou, corrigido", arquivo: undefined },
       "token-guerreiro",
+    );
+  });
+
+  it("quando a fala não é entendida, avisa sem apagar o que já estava escrito", async () => {
+    instalarReconhecimentoFalso();
+    mockarAtividadeCorrente();
+    vi.spyOn(equipesApi, "obterMinhaEquipeDaTrilha").mockRejectedValue(
+      new Error("não encontrada"),
+    );
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+    await screen.findByText("Primeira missão");
+
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(screen.getByLabelText(/como vocês querem entregar/i), "audio");
+    await usuario.type(
+      screen.getByLabelText(/o que a equipe falou/i),
+      "texto que não deve sumir",
+    );
+    await usuario.click(screen.getByRole("button", { name: /falar a produção/i }));
+
+    reconhecimentoAtual?.onerror?.({ error: "no-speech" });
+    reconhecimentoAtual?.onend?.();
+
+    expect(await screen.findByText(/não foi possível entender a fala/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/o que a equipe falou/i)).toHaveValue(
+      "texto que não deve sumir",
     );
   });
 
