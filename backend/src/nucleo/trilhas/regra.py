@@ -61,6 +61,32 @@ def perguntas_do_desbloqueio(
     )
 
 
+def perguntas_do_desbloqueio_por_missao(
+    sessao: Session, *, missao_ids: list[uuid.UUID]
+) -> dict[uuid.UUID, list[PerguntaDoDesbloqueio]]:
+    """As perguntas vigentes de **várias** missões de uma vez, agrupadas por
+    missão — o mesmo filtro e a mesma ordem de `perguntas_do_desbloqueio`,
+    para que não haja duas noções de pergunta vigente. A leitura das trilhas
+    do Mestre percorre todas as missões de cada trilha: uma consulta por
+    missão multiplicaria as idas ao banco pelo tamanho da trilha (design —
+    decisão 3)."""
+    if not missao_ids:
+        return {}
+    perguntas = (
+        sessao.query(PerguntaDoDesbloqueio)
+        .filter(
+            PerguntaDoDesbloqueio.missao_id.in_(missao_ids),
+            PerguntaDoDesbloqueio.substituida_em.is_(None),
+        )
+        .order_by(PerguntaDoDesbloqueio.ordem)
+        .all()
+    )
+    agrupadas: dict[uuid.UUID, list[PerguntaDoDesbloqueio]] = {}
+    for pergunta in perguntas:
+        agrupadas.setdefault(pergunta.missao_id, []).append(pergunta)
+    return agrupadas
+
+
 def referencia_da_imagem_da_pergunta(pergunta: PerguntaDoDesbloqueio) -> str:
     """A referência nasce do id da pergunta que existia no momento do envio
     e **nunca se renomeia**: substituída a pergunta, a linha nova recebe a
