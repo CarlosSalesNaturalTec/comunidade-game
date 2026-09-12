@@ -163,6 +163,34 @@ def test_preflight_permite_os_cabecalhos_da_chave_e_da_sessao(cliente):
     assert resposta.headers["access-control-allow-origin"] == "*"
 
 
+def test_preflight_permite_o_content_range_da_sessao_retomavel(cliente):
+    """`RF-09-19`, `RF-09-119`: o envio de arquivo é um `PUT` por parte com
+    `Content-Range`, e o navegador só o deixa sair se o preflight aceitar o
+    cabeçalho. Sem isso nenhum byte de conteúdo, criação ou imagem de
+    pergunta chega ao armazenamento — e a tela recebe erro de rede, não
+    recusa do núcleo."""
+    resposta = cliente.options(
+        "/v1/armazenamento/sessoes/qualquer",
+        headers={
+            "Origin": "https://app-09-mestre.web.app",
+            "Access-Control-Request-Method": "PUT",
+            "Access-Control-Request-Headers": "content-range, x-chave-aplicacao",
+        },
+    )
+    assert resposta.status_code == 200
+    assert "content-range" in resposta.headers["access-control-allow-headers"].lower()
+
+
+def test_resposta_expoe_o_range_da_retomada(cliente):
+    """`RF-09-19`: o 308 responde `Range` com o que a sessão já recebeu, e
+    é de lá que a retomada depois de queda de rede sabe de onde continuar.
+    Cabeçalho de resposta fora da lista segura do CORS é invisível à tela
+    sem exposição explícita — a exposição vai na resposta real, não no
+    preflight."""
+    resposta = cliente.get("/v1/publica", headers={"Origin": "https://app-09-mestre.web.app"})
+    assert "range" in resposta.headers["access-control-expose-headers"].lower()
+
+
 def test_chamada_de_origem_qualquer_sem_chave_e_recusada_como_qualquer_outra(cliente):
     resposta = cliente.get("/v1/publica", headers={"Origin": "https://app-06-vitrine.web.app"})
     assert resposta.status_code == 401

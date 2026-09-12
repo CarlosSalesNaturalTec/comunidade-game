@@ -34,6 +34,19 @@ function perguntaVazia(): PerguntaEmEdicao {
   return { enunciado: "", alternativas: ["", "", "", ""], alternativa_correta: 1 };
 }
 
+// O `id` é da tela, não do contrato: `POST /missoes/{id}/desbloqueio` recusa
+// campo fora dos previstos, e mandá-lo derrubava com 422 justamente a
+// regravação do quiz já declarado — o caminho que o Mestre autor usa para
+// corrigir o que escreveu (`RF-09-118`, `RF-09-119`).
+function comoEntrada(pergunta: PerguntaEmEdicao): PerguntaDoDesbloqueioEntrada {
+  return {
+    enunciado: pergunta.enunciado,
+    alternativas: pergunta.alternativas,
+    alternativa_correta: pergunta.alternativa_correta,
+    imagem_referencia: pergunta.imagem_referencia ?? null,
+  };
+}
+
 function comoEdicao(missao: MissaoDaTrilha): PerguntaEmEdicao[] {
   return missao.perguntas_do_desbloqueio?.length
     ? missao.perguntas_do_desbloqueio.map((pergunta) => ({
@@ -230,7 +243,7 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
         {
           tipo,
           enunciado: tipo === "pratico" ? enunciado : null,
-          perguntas: tipo === "quiz" ? perguntas : null,
+          perguntas: tipo === "quiz" ? perguntas.map(comoEntrada) : null,
         },
         sessao.token,
       );
@@ -242,7 +255,14 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
         tratarRecusaDeSessao();
         return;
       }
-      definirErro("Não foi possível declarar o desafio. Tente novamente em instantes.");
+      // A recusa do núcleo chega por campo e em português: mostrá-la é o que
+      // permite ao Mestre corrigir a pergunta em vez de tentar de novo às
+      // cegas, como o envio da imagem já faz nesta mesma tela.
+      definirErro(
+        erroCapturado instanceof ErroDaApi
+          ? erroCapturado.message
+          : "Não foi possível declarar o desafio. Tente novamente em instantes.",
+      );
     } finally {
       definirEnviando(false);
     }

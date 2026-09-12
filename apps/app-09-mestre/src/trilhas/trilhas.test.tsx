@@ -932,6 +932,9 @@ describe("desafio de desbloqueio da missão (RF-09-26, RF-09-117, RF-09-118, RN-
             enunciado: "Quanto é 1 + 1?",
             alternativas: ["1", "2", "3", "4"],
             alternativa_correta: 2,
+            // Pergunta nova nasce sem imagem, e a referência nula é como a
+            // rota entende isso (`RF-09-119`).
+            imagem_referencia: null,
           },
         ],
       }),
@@ -1225,6 +1228,45 @@ describe("a imagem da pergunta do quiz (RF-09-119)", () => {
     );
     // A imagem segue na tela depois da gravação: nenhum reenvio.
     expect(await screen.findByText(/esta pergunta tem imagem/i)).toBeInTheDocument();
+  });
+
+  it("regravar manda só os campos do contrato — nunca o id da pergunta", async () => {
+    const declararEspiado = vi
+      .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
+      .mockResolvedValue(missaoComQuizGravado("perguntas-do-desbloqueio/pergunta-1/imagem"));
+
+    const usuario = await abrirDesafioComQuizGravado(
+      "perguntas-do-desbloqueio/pergunta-1/imagem",
+    );
+    await usuario.type(screen.getByLabelText(/^enunciado da pergunta 1$/i), " mesmo?");
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    await waitFor(() => expect(declararEspiado).toHaveBeenCalled());
+    // A rota recusa campo fora dos previstos: o `id`, que a tela usa para
+    // endereçar a imagem, derrubava a regravação com 422 (`RF-09-118`).
+    expect(Object.keys(declararEspiado.mock.calls[0][1].perguntas?.[0] ?? {}).sort()).toEqual([
+      "alternativa_correta",
+      "alternativas",
+      "enunciado",
+      "imagem_referencia",
+    ]);
+  });
+
+  it("a recusa do núcleo chega ao Mestre com o motivo, não em mensagem genérica", async () => {
+    vi.spyOn(trilhasApi, "declararDesafioDeDesbloqueio").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "Toda pergunta do quiz exige quatro alternativas.",
+        campo: "perguntas",
+      }),
+    );
+
+    const usuario = await abrirDesafioComQuizGravado();
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    expect(
+      await screen.findByText(/toda pergunta do quiz exige quatro alternativas/i),
+    ).toBeInTheDocument();
   });
 
   it("remover a imagem grava a pergunta sem referência", async () => {
