@@ -502,7 +502,12 @@ describe("missão de sondagem (RF-09-81)", () => {
     await usuario.click(screen.getByLabelText(/missão de sondagem/i));
     await usuario.click(screen.getByRole("button", { name: /acrescentar missão/i }));
 
-    expect(await screen.findByText("Sondagem")).toBeInTheDocument();
+    // A etiqueta da linha, não o rótulo do bloco recolhível, que passou a
+    // se chamar "Sondagem" também (`RF-09-81`).
+    const etiqueta = await screen.findByText("Sondagem", {
+      selector: ".lista-de-missoes__sondagem",
+    });
+    expect(etiqueta).toBeInTheDocument();
   });
 
   it("segunda sondagem é recusada em linguagem simples, sem código de erro cru", async () => {
@@ -2678,5 +2683,296 @@ describe("ordem dos blocos da missão (RF-09-25)", () => {
       titulos[titulos.length - 1].compareDocumentPosition(preVisualizar) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
+  });
+});
+
+// `RF-09-26`, `RF-09-118`, `RF-09-119`: a leitura das trilhas do Mestre traz
+// o desafio declarado, e é por ela que a tela reabre preenchida em sessão
+// nova. Antes o desafio só existia na resposta da própria declaração, e o
+// formulário voltava vazio depois de sair e entrar.
+describe("o desafio declarado reabre na Área do Mestre (RF-09-26, RF-09-118)", () => {
+  function missaoComQuiz(sobrescreve: Partial<MissaoDaTrilha> = {}) {
+    return missao({
+      tipo_do_desafio_de_desbloqueio: "quiz",
+      perguntas_do_desbloqueio: [
+        {
+          id: "pergunta-1",
+          ordem: 1,
+          enunciado: "Quanto é 1 + 1?",
+          alternativas: ["1", "2", "3", "4"],
+          alternativa_correta: 2,
+        },
+        {
+          id: "pergunta-2",
+          ordem: 2,
+          enunciado: "Quanto é 2 + 2?",
+          alternativas: ["2", "3", "4", "5"],
+          alternativa_correta: 3,
+        },
+      ],
+      ...sobrescreve,
+    });
+  }
+
+  async function abrirBloco(missaoDaVez: MissaoDaTrilha, rotulo = "Desafio de desbloqueio") {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missaoDaVez] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText(rotulo));
+    return usuario;
+  }
+
+  it("o quiz declarado reabre preenchido, com a alternativa correta marcada", async () => {
+    await abrirBloco(missaoComQuiz());
+
+    expect(await screen.findByDisplayValue("Quanto é 1 + 1?")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Quanto é 2 + 2?")).toBeInTheDocument();
+    expect(
+      screen.getByRole("radio", { name: /alternativa 2 da pergunta 1 é a correta/i }),
+    ).toBeChecked();
+    expect(
+      screen.getByRole("radio", { name: /alternativa 3 da pergunta 2 é a correta/i }),
+    ).toBeChecked();
+    expect(
+      screen.queryByText(/ainda não tem desafio de desbloqueio/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("o resumo da linha reflete o quiz que a leitura trouxe", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missaoComQuiz()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    await abrirMissao();
+
+    expect(await screen.findByText(/quiz com 2 pergunta\(s\)/i)).toBeInTheDocument();
+    expect(screen.queryByText(/ainda sem desafio de desbloqueio/i)).not.toBeInTheDocument();
+  });
+
+  it("o desafio prático reabre com o enunciado declarado", async () => {
+    await abrirBloco(
+      missao({
+        tipo_do_desafio_de_desbloqueio: "pratico",
+        desafio_de_desbloqueio_enunciado: "Monte o robô e mostre ao Mestre.",
+        perguntas_do_desbloqueio: [],
+      }),
+    );
+
+    expect(
+      await screen.findByDisplayValue("Monte o robô e mostre ao Mestre."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: /desafio prático/i })).toBeChecked();
+  });
+
+  it("missão sem desafio segue sinalizada como sem desafio", async () => {
+    await abrirBloco(missao());
+
+    expect(
+      await screen.findByText(/ainda não tem desafio de desbloqueio/i),
+    ).toBeInTheDocument();
+  });
+
+  it("o Mestre autor vê a imagem que anexou (RF-09-119)", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:imagem-da-pergunta-1"),
+      revokeObjectURL: vi.fn(),
+    });
+    const ler = vi
+      .spyOn(trilhasApi, "lerImagemDaPergunta")
+      .mockResolvedValue(new Blob(["bytes"], { type: "image/png" }));
+
+    await abrirBloco(
+      missaoComQuiz({
+        perguntas_do_desbloqueio: [
+          {
+            id: "pergunta-1",
+            ordem: 1,
+            enunciado: "O que o gráfico mostra?",
+            alternativas: ["a", "b", "c", "d"],
+            alternativa_correta: 1,
+            imagem_referencia: "perguntas-do-desbloqueio/pergunta-1/imagem",
+          },
+        ],
+      }),
+    );
+
+    const imagem = await screen.findByRole("img", {
+      name: /imagem da pergunta 1: o que o gráfico mostra\?/i,
+    });
+    expect(imagem).toHaveAttribute("src", "blob:imagem-da-pergunta-1");
+    expect(ler).toHaveBeenCalledWith("pergunta-1", "token-do-mestre");
+    vi.unstubAllGlobals();
+  });
+
+  it("imagem que não carrega avisa e não trava a edição (RF-09-119)", async () => {
+    vi.spyOn(trilhasApi, "lerImagemDaPergunta").mockRejectedValue(new Error("caiu a rede"));
+    const declarar = vi
+      .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
+      .mockResolvedValue(missaoComQuiz());
+
+    const usuario = await abrirBloco(
+      missaoComQuiz({
+        perguntas_do_desbloqueio: [
+          {
+            id: "pergunta-1",
+            ordem: 1,
+            enunciado: "O que o gráfico mostra?",
+            alternativas: ["a", "b", "c", "d"],
+            alternativa_correta: 1,
+            imagem_referencia: "perguntas-do-desbloqueio/pergunta-1/imagem",
+          },
+        ],
+      }),
+    );
+
+    expect(await screen.findByText(/essa imagem não abriu agora/i)).toBeInTheDocument();
+    await usuario.clear(screen.getByLabelText(/^enunciado da pergunta 1$/i));
+    await usuario.type(screen.getByLabelText(/^enunciado da pergunta 1$/i), "Corrigido");
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    await waitFor(() => expect(declarar).toHaveBeenCalled());
+  });
+
+  it("a imagem da pergunta declarada em sessão anterior é anexada sem gravar antes", async () => {
+    const abrir = vi
+      .spyOn(trilhasApi, "abrirEnvioDaImagemDaPergunta")
+      .mockResolvedValue("/v1/armazenamento/sessoes/abc");
+    vi.spyOn(trilhasApi, "enviarArquivo").mockImplementation(
+      async (_endereco, arquivo, aoProgredir) => {
+        aoProgredir(arquivo.size, arquivo.size);
+      },
+    );
+    const confirmar = vi
+      .spyOn(trilhasApi, "confirmarEnvioDaImagemDaPergunta")
+      .mockResolvedValue({
+        id: "pergunta-1",
+        ordem: 1,
+        enunciado: "Quanto é 1 + 1?",
+        alternativas: ["1", "2", "3", "4"],
+        alternativa_correta: 2,
+        imagem_referencia: "perguntas-do-desbloqueio/pergunta-1/imagem",
+      });
+
+    const usuario = await abrirBloco(missaoComQuiz());
+    const arquivo = new File(["conteudo"], "grafico.png", { type: "image/png" });
+    await usuario.upload(screen.getByLabelText(/imagem da pergunta 1 \(opcional\)/i), arquivo);
+
+    await waitFor(() => expect(confirmar).toHaveBeenCalled());
+    expect(abrir).toHaveBeenCalledWith(
+      "pergunta-1",
+      "image/png",
+      arquivo.size,
+      "token-do-mestre",
+    );
+    expect(
+      screen.queryByText(/grave o desafio antes de anexar a imagem/i),
+    ).not.toBeInTheDocument();
+  });
+});
+
+// `RF-09-81`, `RN-09-30`, `RN-05-46`: a sondagem abre a trilha ao ser
+// respondida — o corte de 60% não se aplica a ela, e ela é sempre quiz.
+describe("a sondagem se chama pelo nome na Área do Mestre (RF-09-81, RN-09-30)", () => {
+  const SONDAGEM = missao({ titulo: "De onde a turma parte", e_sondagem: true });
+
+  // Duas coisas se chamam "Sondagem" na tela: a etiqueta da linha e o rótulo
+  // do bloco recolhível. O teste mira o rótulo.
+  function rotuloDoBloco() {
+    return screen.findByText("Sondagem", { selector: ".cg-bloco-recolhivel__titulo" });
+  }
+
+  async function abrirSondagem(missaoDaVez = SONDAGEM) {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missaoDaVez] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await rotuloDoBloco());
+    return usuario;
+  }
+
+  it("o bloco se chama Sondagem e diz que ela abre a trilha", async () => {
+    await abrirSondagem();
+
+    expect(
+      await screen.findByText(
+        /essa sondagem abre a trilha e mostra a você de onde a turma parte/i,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/esse desafio é que abre a missão seguinte/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("a sondagem não anuncia o corte de 60%", async () => {
+    await abrirSondagem();
+
+    expect(await screen.findByText(/aqui não tem passar nem reprovar/i)).toBeInTheDocument();
+    expect(screen.queryByText(/passa quem acerta ao menos 60%/i)).not.toBeInTheDocument();
+  });
+
+  it("a sondagem não oferece a escolha de desafio prático", async () => {
+    await abrirSondagem();
+
+    await screen.findByLabelText(/^enunciado da pergunta 1$/i);
+    expect(screen.queryByRole("radio", { name: /desafio prático/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("radio", { name: /^quiz$/i })).not.toBeInTheDocument();
+  });
+
+  it("a sondagem sem perguntas é dita como sondagem", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [SONDAGEM] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+
+    expect(await screen.findByText(/sondagem ainda sem perguntas\./i)).toBeInTheDocument();
+    await usuario.click(await rotuloDoBloco());
+    expect(
+      await screen.findByText(/esta sondagem ainda não tem perguntas/i),
+    ).toBeInTheDocument();
+  });
+
+  it("a missão comum segue com o corte de 60% e com a escolha de tipo", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Desafio de desbloqueio"));
+
+    expect(await screen.findByText(/passa quem acerta ao menos 60%/i)).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: /desafio prático/i })).toBeInTheDocument();
   });
 });

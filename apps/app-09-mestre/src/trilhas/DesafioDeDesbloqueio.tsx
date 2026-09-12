@@ -1,7 +1,7 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo, MarcaDeGravacao } from "comum/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   abrirEnvioDaImagemDaPergunta,
   confirmarEnvioDaImagemDaPergunta,
@@ -9,6 +9,7 @@ import {
   enviarArquivo,
   FORMATOS_DA_IMAGEM_DA_PERGUNTA,
   FORMATOS_DA_IMAGEM_DA_PERGUNTA_EM_PORTUGUES,
+  lerImagemDaPergunta,
   type MissaoDaTrilha,
   type PerguntaDoDesbloqueioEntrada,
   TAMANHO_TETO_DA_IMAGEM_DA_PERGUNTA,
@@ -49,15 +50,73 @@ function emMegabytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+// O Mestre autor vê a imagem que anexou, não só o aviso de que ela existe:
+// ele precisa conferir o que o Guerreiro(a) vai ver. Os bytes vêm do núcleo
+// e são mostrados por URL local, porque toda rota sob `/v1` exige a chave da
+// aplicação em cabeçalho e `<img src>` não manda nenhum. Falhar em carregar
+// nunca impede de corrigir nem de gravar a pergunta (`RF-09-119`).
+function ImagemDaPergunta({
+  perguntaId,
+  rotulo,
+  token,
+}: {
+  perguntaId: string;
+  rotulo: string;
+  token: string | null;
+}) {
+  const [endereco, definirEndereco] = useState<string | null>(null);
+  const [naoAbriu, definirNaoAbriu] = useState(false);
+
+  useEffect(() => {
+    if (!token) return;
+    let local: string | null = null;
+    let descartado = false;
+    lerImagemDaPergunta(perguntaId, token)
+      .then((bytes) => {
+        if (descartado) return;
+        local = URL.createObjectURL(bytes);
+        definirEndereco(local);
+      })
+      .catch(() => {
+        if (!descartado) definirNaoAbriu(true);
+      });
+    return () => {
+      descartado = true;
+      if (local) URL.revokeObjectURL(local);
+    };
+  }, [perguntaId, token]);
+
+  if (naoAbriu) {
+    return <Aviso tipo="atencao">Essa imagem não abriu agora, mas segue anexada.</Aviso>;
+  }
+  if (!endereco) return null;
+  return (
+    <img
+      className="desafio-de-desbloqueio__imagem-anexada"
+      src={endereco}
+      alt={rotulo}
+      onError={() => definirNaoAbriu(true)}
+    />
+  );
+}
+
 // O Mestre autor monta o desafio de desbloqueio — quiz ou prático — que
 // abre a missão seguinte para o Guerreiro(a). O quiz tem quantas perguntas
 // ele quiser, cada uma com quatro alternativas; declarar de novo substitui
 // o anterior, e a missão sem desafio segue publicável (`RF-09-26`,
-// `RF-09-117`, `RF-09-118`, `RN-09-43`).
+// `RF-09-117`, `RF-09-118`, `RN-09-43`). O desafio já declarado chega pela
+// leitura das trilhas do Mestre e reabre preenchido, em sessão nova
+// inclusive (`RF-09-119`).
+//
+// Na **sondagem** a mesma tela fala outra língua: ela abre a trilha, não a
+// missão seguinte, e abre ao ser respondida — o corte de 60% não se aplica
+// (`RN-05-46`) e o resultado não define nível (`RN-09-30`). A sondagem é
+// sempre quiz, de modo que a escolha de tipo não aparece (`RF-09-81`).
 export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
+  const ehSondagem = missao.e_sondagem;
   const [tipo, definirTipo] = useState<TipoDeDesafioDeDesbloqueio>(
-    missao.tipo_do_desafio_de_desbloqueio ?? "quiz",
+    ehSondagem ? "quiz" : (missao.tipo_do_desafio_de_desbloqueio ?? "quiz"),
   );
   const [enunciado, definirEnunciado] = useState(
     missao.desafio_de_desbloqueio_enunciado ?? "",
@@ -72,6 +131,9 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
   const [progressoDaImagem, definirProgressoDaImagem] = useState<
     Record<number, { enviados: number; total: number }>
   >({});
+  // Trocar a imagem conserva a referência, que nasce do id da pergunta: sem
+  // esta marca a pré-visualização seguiria mostrando a anterior.
+  const [versaoDaImagem, definirVersaoDaImagem] = useState<Record<number, number>>({});
 
   function alterarPergunta(indice: number, mudanca: Partial<PerguntaEmEdicao>) {
     definirPerguntas(
@@ -133,6 +195,7 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
       );
       const confirmada = await confirmarEnvioDaImagemDaPergunta(pergunta.id, sessao.token);
       alterarPergunta(indice, { imagem_referencia: confirmada.imagem_referencia ?? null });
+      definirVersaoDaImagem((atual) => ({ ...atual, [indice]: (atual[indice] ?? 0) + 1 }));
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
         tratarRecusaDeSessao();
@@ -186,33 +249,46 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
   }
 
   return (
-    <section className="desafio-de-desbloqueio" aria-label={`Desafio de ${missao.titulo}`}>
-      <p>Esse desafio é que abre a missão seguinte para o Guerreiro(a).</p>
+    <section
+      className="desafio-de-desbloqueio"
+      aria-label={ehSondagem ? `Sondagem de ${missao.titulo}` : `Desafio de ${missao.titulo}`}
+    >
+      <p>
+        {ehSondagem
+          ? "Essa sondagem abre a trilha e mostra a você de onde a turma parte."
+          : "Esse desafio é que abre a missão seguinte para o Guerreiro(a)."}
+      </p>
 
-      {missao.tipo_do_desafio_de_desbloqueio === undefined && (
-        <Aviso tipo="andamento">Esta missão ainda não tem desafio de desbloqueio.</Aviso>
+      {missao.tipo_do_desafio_de_desbloqueio == null && (
+        <Aviso tipo="andamento">
+          {ehSondagem
+            ? "Esta sondagem ainda não tem perguntas."
+            : "Esta missão ainda não tem desafio de desbloqueio."}
+        </Aviso>
       )}
 
-      <div className="desafio-de-desbloqueio__tipo">
-        <label>
-          <input
-            type="radio"
-            name={`tipo-${missao.id}`}
-            checked={tipo === "quiz"}
-            onChange={() => definirTipo("quiz")}
-          />
-          Quiz
-        </label>
-        <label>
-          <input
-            type="radio"
-            name={`tipo-${missao.id}`}
-            checked={tipo === "pratico"}
-            onChange={() => definirTipo("pratico")}
-          />
-          Desafio prático
-        </label>
-      </div>
+      {!ehSondagem && (
+        <div className="desafio-de-desbloqueio__tipo">
+          <label>
+            <input
+              type="radio"
+              name={`tipo-${missao.id}`}
+              checked={tipo === "quiz"}
+              onChange={() => definirTipo("quiz")}
+            />
+            Quiz
+          </label>
+          <label>
+            <input
+              type="radio"
+              name={`tipo-${missao.id}`}
+              checked={tipo === "pratico"}
+              onChange={() => definirTipo("pratico")}
+            />
+            Desafio prático
+          </label>
+        </div>
+      )}
 
       {tipo === "pratico" && (
         <Campo rotulo="Enunciado" valor={enunciado} aoAlterar={definirEnunciado} />
@@ -221,7 +297,9 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
       {tipo === "quiz" && (
         <>
           <p className="desafio-de-desbloqueio__corte">
-            Passa quem acerta ao menos 60% das perguntas.
+            {ehSondagem
+              ? "Aqui não tem passar nem reprovar: a trilha abre assim que o Guerreiro(a) responde."
+              : "Passa quem acerta ao menos 60% das perguntas."}
           </p>
 
           {perguntas.map((pergunta, indice) => (
@@ -290,6 +368,14 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
                     <p className="desafio-de-desbloqueio__com-imagem">
                       Esta pergunta tem imagem.
                     </p>
+                    {pergunta.id && (
+                      <ImagemDaPergunta
+                        key={`${pergunta.id}-${versaoDaImagem[indice] ?? 0}`}
+                        perguntaId={pergunta.id}
+                        rotulo={`Imagem da pergunta ${indice + 1}: ${pergunta.enunciado}`}
+                        token={sessao?.token ?? null}
+                      />
+                    )}
                     <Botao
                       variante="secundaria"
                       onClick={() => alterarPergunta(indice, { imagem_referencia: null })}

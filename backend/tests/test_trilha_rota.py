@@ -1048,3 +1048,247 @@ def test_admin_nao_duplica_trilha_pela_rota(
     )
 
     assert resposta.status_code == 403
+
+
+# `RF-09-26`, `RF-09-118`, `RF-09-119`: a leitura das trilhas próprias é a
+# única porta por onde o Mestre autor reabre o desafio que declarou. Sem ela
+# o desafio só existia na resposta da própria declaração, e gravar de novo
+# em sessão nova substituía o quiz inteiro.
+
+
+def _declarar_quiz(cliente, cabecalhos, missao_id, perguntas):
+    resposta = cliente.post(
+        f"/v1/missoes/{missao_id}/desbloqueio",
+        json={"tipo": "quiz", "perguntas": perguntas},
+        headers=cabecalhos,
+    )
+    assert resposta.status_code == 200
+    return resposta.json()
+
+
+def _missao_das_minhas_trilhas(cliente, cabecalhos, trilha_id, missao_id):
+    resposta = cliente.get("/v1/trilhas/minhas", headers=cabecalhos)
+    assert resposta.status_code == 200
+    trilha = next(item for item in resposta.json() if item["id"] == str(trilha_id))
+    return next(missao for missao in trilha["missoes"] if missao["id"] == str(missao_id))
+
+
+def test_minhas_trilhas_devolvem_o_quiz_com_a_alternativa_correta(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    _declarar_quiz(
+        cliente,
+        cabecalhos,
+        missao.id,
+        [
+            {
+                "enunciado": f"Pergunta {numero}?",
+                "alternativas": ["a", "b", "c", "d"],
+                "alternativa_correta": numero,
+            }
+            for numero in (1, 2, 3)
+        ],
+    )
+
+    lida = _missao_das_minhas_trilhas(cliente, cabecalhos, trilha.id, missao.id)
+
+    assert lida["tipo_do_desafio_de_desbloqueio"] == "quiz"
+    perguntas = lida["perguntas_do_desbloqueio"]
+    assert [pergunta["ordem"] for pergunta in perguntas] == [1, 2, 3]
+    assert [pergunta["enunciado"] for pergunta in perguntas] == [
+        "Pergunta 1?",
+        "Pergunta 2?",
+        "Pergunta 3?",
+    ]
+    assert [pergunta["alternativa_correta"] for pergunta in perguntas] == [1, 2, 3]
+    assert all(pergunta["id"] for pergunta in perguntas)
+
+
+def test_minhas_trilhas_devolvem_a_referencia_da_imagem_de_cada_pergunta(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    sessao,
+):
+    from nucleo.trilhas.regra import perguntas_do_desbloqueio, referencia_da_imagem_da_pergunta
+
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    _declarar_quiz(
+        cliente,
+        cabecalhos,
+        missao.id,
+        [
+            {
+                "enunciado": "Com imagem?",
+                "alternativas": ["a", "b", "c", "d"],
+                "alternativa_correta": 1,
+            },
+            {
+                "enunciado": "Sem imagem?",
+                "alternativas": ["a", "b", "c", "d"],
+                "alternativa_correta": 2,
+            },
+        ],
+    )
+    primeira = perguntas_do_desbloqueio(sessao, missao_id=missao.id)[0]
+    primeira.imagem_referencia = referencia_da_imagem_da_pergunta(primeira)
+    primeira.imagem_tipo = "image/png"
+    primeira.imagem_tamanho = 1024
+    sessao.commit()
+
+    lida = _missao_das_minhas_trilhas(cliente, cabecalhos, trilha.id, missao.id)
+
+    perguntas = lida["perguntas_do_desbloqueio"]
+    assert perguntas[0]["imagem_referencia"] == f"perguntas-do-desbloqueio/{primeira.id}/imagem"
+    assert perguntas[1]["imagem_referencia"] is None
+
+
+def test_minhas_trilhas_nao_devolvem_pergunta_substituida(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    _declarar_quiz(
+        cliente,
+        cabecalhos,
+        missao.id,
+        [
+            {
+                "enunciado": "A primeira geração.",
+                "alternativas": ["a", "b", "c", "d"],
+                "alternativa_correta": 1,
+            }
+        ],
+    )
+    _declarar_quiz(
+        cliente,
+        cabecalhos,
+        missao.id,
+        [
+            {
+                "enunciado": "A segunda geração.",
+                "alternativas": ["a", "b", "c", "d"],
+                "alternativa_correta": 4,
+            }
+        ],
+    )
+
+    lida = _missao_das_minhas_trilhas(cliente, cabecalhos, trilha.id, missao.id)
+
+    perguntas = lida["perguntas_do_desbloqueio"]
+    assert [pergunta["enunciado"] for pergunta in perguntas] == ["A segunda geração."]
+
+
+def test_minhas_trilhas_devolvem_o_enunciado_do_desafio_pratico(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    resposta = cliente.post(
+        f"/v1/missoes/{missao.id}/desbloqueio",
+        json={"tipo": "pratico", "enunciado": "Monte o robô e mostre ao Mestre."},
+        headers=cabecalhos,
+    )
+    assert resposta.status_code == 200
+
+    lida = _missao_das_minhas_trilhas(cliente, cabecalhos, trilha.id, missao.id)
+
+    assert lida["tipo_do_desafio_de_desbloqueio"] == "pratico"
+    assert lida["desafio_de_desbloqueio_enunciado"] == "Monte o robô e mostre ao Mestre."
+    assert lida["perguntas_do_desbloqueio"] == []
+
+
+def test_minhas_trilhas_distinguem_missao_sem_desafio(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    lida = _missao_das_minhas_trilhas(cliente, cabecalhos, trilha.id, missao.id)
+
+    assert lida["tipo_do_desafio_de_desbloqueio"] is None
+    assert lida["desafio_de_desbloqueio_enunciado"] is None
+    assert lida["perguntas_do_desbloqueio"] == []
+
+
+def test_a_alternativa_correta_nao_sai_na_leitura_do_guerreiro(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    sessao,
+):
+    """A leitura das trilhas próprias carrega a alternativa correta porque é
+    exclusiva do Mestre autor; a do percurso do Guerreiro(a) nunca a traz
+    (`RF-09-118`, `RF-05-89`)."""
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre, e_sondagem=True)
+    token_do_mestre, _ = criar_sessao_de_teste(mestre)
+    cabecalhos_do_mestre = {
+        "X-Chave-Aplicacao": chave,
+        "Authorization": f"Bearer {token_do_mestre}",
+    }
+    _declarar_quiz(
+        cliente,
+        cabecalhos_do_mestre,
+        missao.id,
+        [
+            {
+                "enunciado": "Qual delas?",
+                "alternativas": ["a", "b", "c", "d"],
+                "alternativa_correta": 3,
+            }
+        ],
+    )
+
+    guerreiro = criar_persona(Papel.guerreiro)
+    token_do_guerreiro, _ = criar_sessao_de_teste(guerreiro)
+    cabecalhos_do_guerreiro = {
+        "X-Chave-Aplicacao": chave,
+        "Authorization": f"Bearer {token_do_guerreiro}",
+    }
+    assert (
+        cliente.post(
+            f"/v1/eu/trilhas/{trilha.id}/inscricao", headers=cabecalhos_do_guerreiro
+        ).status_code
+        == 201
+    )
+
+    resposta = cliente.get(
+        f"/v1/eu/trilhas/{trilha.id}/missoes/{missao.posicao}",
+        headers=cabecalhos_do_guerreiro,
+    )
+
+    assert resposta.status_code == 200
+    perguntas = resposta.json()["desafio_de_desbloqueio"]["perguntas"]
+    assert perguntas and all("alternativa_correta" not in pergunta for pergunta in perguntas)

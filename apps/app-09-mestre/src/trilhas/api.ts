@@ -107,11 +107,16 @@ export interface MissaoDaTrilha {
   // O desafio que abre a missão seguinte — fato do Guerreiro(a) na trilha,
   // nunca da equipe; declarar de novo substitui o anterior, com as
   // perguntas dele (`RF-09-26`, `RF-09-118`, documento 11 §2.2). O quiz tem
-  // quantas perguntas o Mestre quiser; o prático usa só o enunciado. Só a
-  // resposta de `declararDesafioDeDesbloqueio` traz as perguntas com a
-  // alternativa correta — ela nunca sai de `GET /trilhas/minhas` nem da
-  // leitura pública, para que a resposta certa não vaze ao Guerreiro(a).
-  tipo_do_desafio_de_desbloqueio?: TipoDeDesafioDeDesbloqueio;
+  // quantas perguntas o Mestre quiser; o prático usa só o enunciado.
+  //
+  // Vem de `GET /trilhas/minhas` **e** da resposta de
+  // `declararDesafioDeDesbloqueio`, na mesma forma, para que a tela alimente
+  // o mesmo formulário com as duas: é assim que o Mestre autor reabre e
+  // corrige o que declarou. As perguntas trazem a alternativa correta e a
+  // referência da imagem porque ambas as rotas são exclusivas dele — a
+  // leitura pública e a do Guerreiro(a) nunca as trazem. Tipo nulo ou
+  // ausente é missão **sem** desafio declarado.
+  tipo_do_desafio_de_desbloqueio?: TipoDeDesafioDeDesbloqueio | null;
   desafio_de_desbloqueio_enunciado?: string | null;
   perguntas_do_desbloqueio?: PerguntaDoDesbloqueio[];
   atividades: AtividadeDaMissao[];

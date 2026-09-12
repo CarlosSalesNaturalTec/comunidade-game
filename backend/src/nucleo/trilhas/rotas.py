@@ -62,6 +62,7 @@ from .regra import (
     listar_desbloqueios_praticos_pendentes,
     obter_proxima_missao,
     perguntas_do_desbloqueio,
+    perguntas_do_desbloqueio_por_missao,
     publicar_trilha,
     retomadas_em_aberto_do_guerreiro,
     submeter_desafio_de_desbloqueio,
@@ -256,12 +257,77 @@ def _desafios_de_coleta_da_missao(
     ]
 
 
+class PerguntaDoDesbloqueioSaida(BaseModel):
+    """A pergunta como o Guerreiro(a) a vê: **sem** a alternativa correta,
+    que nunca sai do núcleo para ele (`RF-09-118`, design — decisão 6).
+    `imagem_referencia` diz apenas **se** a pergunta tem imagem — os bytes
+    vêm da rota própria, que confere quem pede (`RF-09-119`)."""
+
+    id: uuid.UUID
+    ordem: int
+    enunciado: str
+    alternativas: list[str]
+    imagem_referencia: str | None = None
+
+
+class PerguntaDoDesbloqueioAoAutorSaida(PerguntaDoDesbloqueioSaida):
+    """Só ao Mestre autor, e só nesta rota: a pergunta com a alternativa
+    correta."""
+
+    alternativa_correta: int
+
+
+def _saida_das_perguntas(
+    perguntas: list[PerguntaDoDesbloqueio],
+) -> list[PerguntaDoDesbloqueioSaida]:
+    return [
+        PerguntaDoDesbloqueioSaida(
+            id=pergunta.id,
+            ordem=pergunta.ordem,
+            enunciado=pergunta.enunciado,
+            alternativas=[
+                pergunta.alternativa_1,
+                pergunta.alternativa_2,
+                pergunta.alternativa_3,
+                pergunta.alternativa_4,
+            ],
+            imagem_referencia=pergunta.imagem_referencia,
+        )
+        for pergunta in perguntas
+    ]
+
+
+def _saida_das_perguntas_ao_autor(
+    perguntas: list[PerguntaDoDesbloqueio],
+) -> list[PerguntaDoDesbloqueioAoAutorSaida]:
+    """A mesma pergunta, com a alternativa correta: só ao Mestre autor. A
+    declaração e a leitura das trilhas próprias usam esta forma única, para
+    que a App 09 alimente o mesmo formulário com as duas (design —
+    decisão 2)."""
+    return [
+        PerguntaDoDesbloqueioAoAutorSaida(
+            **saida.model_dump(), alternativa_correta=pergunta.alternativa_correta
+        )
+        for saida, pergunta in zip(_saida_das_perguntas(perguntas), perguntas, strict=True)
+    ]
+
+
 class MissaoDoMestreSaida(MissaoSaida):
-    """Só a saída de `GET /v1/trilhas/minhas` traz o desafio de coleta
-    aninhado — a trilha pública e as demais rotas de missão continuam em
-    `MissaoSaida` (design — decisão 1)."""
+    """Só a saída de `GET /v1/trilhas/minhas` traz o desafio de coleta e o
+    desafio de desbloqueio aninhados — a trilha pública e as demais rotas de
+    missão continuam em `MissaoSaida` (design — decisão 1).
+
+    O desafio de desbloqueio vem aqui com a **alternativa correta** e a
+    referência da imagem de cada pergunta porque esta rota é exclusiva do
+    Mestre autor: é ela que lhe permite reabrir e corrigir o que declarou,
+    sem reenviar arquivo nem reescrever o quiz (`RF-09-26`, `RF-09-118`,
+    `RF-09-119`). `tipo_do_desafio_de_desbloqueio` nulo é missão **sem**
+    desafio declarado."""
 
     desafios_de_coleta: list[DesafioDeColetaDaMissaoSaida] = Field(default_factory=list)
+    tipo_do_desafio_de_desbloqueio: TipoDeDesafioDeDesbloqueio | None = None
+    desafio_de_desbloqueio_enunciado: str | None = None
+    perguntas_do_desbloqueio: list[PerguntaDoDesbloqueioAoAutorSaida] = Field(default_factory=list)
 
 
 class TrilhaDoMestreSaida(TrilhaSaida):
@@ -343,7 +409,10 @@ def listar_minhas_trilhas_rota(
     própria para nenhuma das duas (design — decisão 2). Bem comum da
     plataforma: sem filtro de comunidade (`RN-01-42`). Cada missão traz
     também os desafios de coleta já declarados nela (`RF-09-27`, `RF-09-28`,
-    design — decisão 1)."""
+    design — decisão 1) e o **desafio de desbloqueio**, com a alternativa
+    correta e a referência da imagem de cada pergunta: é por esta leitura
+    que o Mestre autor reabre e corrige o que declarou (`RF-09-26`,
+    `RF-09-118`, `RF-09-119`)."""
     persona = sessao_bd.get(Persona, contexto.persona_id)
     trilhas = sessao_bd.query(Trilha).filter_by(autor_id=persona.id).all()
 
@@ -351,6 +420,9 @@ def listar_minhas_trilhas_rota(
     for trilha in trilhas:
         missoes = (
             sessao_bd.query(Missao).filter_by(trilha_id=trilha.id).order_by(Missao.posicao).all()
+        )
+        perguntas_por_missao = perguntas_do_desbloqueio_por_missao(
+            sessao_bd, missao_ids=[missao.id for missao in missoes]
         )
         missoes_saida = []
         for missao in missoes:
@@ -363,6 +435,11 @@ def listar_minhas_trilhas_rota(
                         etiquetas=_etiquetas_da_missao(sessao_bd, missao),
                     ).model_dump(),
                     desafios_de_coleta=_desafios_de_coleta_da_missao(sessao_bd, missao),
+                    tipo_do_desafio_de_desbloqueio=missao.tipo_do_desafio_de_desbloqueio,
+                    desafio_de_desbloqueio_enunciado=missao.desafio_de_desbloqueio_enunciado,
+                    perguntas_do_desbloqueio=_saida_das_perguntas_ao_autor(
+                        perguntas_por_missao.get(missao.id, [])
+                    ),
                 )
             )
         saida.append(
@@ -650,19 +727,6 @@ def listar_minhas_trilhas_do_guerreiro_rota(
     return saida
 
 
-class PerguntaDoDesbloqueioSaida(BaseModel):
-    """A pergunta como o Guerreiro(a) a vê: **sem** a alternativa correta,
-    que nunca sai do núcleo para ele (`RF-09-118`, design — decisão 6).
-    `imagem_referencia` diz apenas **se** a pergunta tem imagem — os bytes
-    vêm da rota própria, que confere quem pede (`RF-09-119`)."""
-
-    id: uuid.UUID
-    ordem: int
-    enunciado: str
-    alternativas: list[str]
-    imagem_referencia: str | None = None
-
-
 class DesafioDeDesbloqueioSaida(BaseModel):
     tipo: TipoDeDesafioDeDesbloqueio
     enunciado: str | None = None
@@ -680,26 +744,6 @@ class MissaoNoPercursoSaida(BaseModel):
     aguardando_mestre: bool
     motivo_do_bloqueio: str | None
     desafio_de_desbloqueio: DesafioDeDesbloqueioSaida | None
-
-
-def _saida_das_perguntas(
-    perguntas: list[PerguntaDoDesbloqueio],
-) -> list[PerguntaDoDesbloqueioSaida]:
-    return [
-        PerguntaDoDesbloqueioSaida(
-            id=pergunta.id,
-            ordem=pergunta.ordem,
-            enunciado=pergunta.enunciado,
-            alternativas=[
-                pergunta.alternativa_1,
-                pergunta.alternativa_2,
-                pergunta.alternativa_3,
-                pergunta.alternativa_4,
-            ],
-            imagem_referencia=pergunta.imagem_referencia,
-        )
-        for pergunta in perguntas
-    ]
 
 
 def _saida_do_desafio_de_desbloqueio(
@@ -771,13 +815,6 @@ class DeclararDesafioDeDesbloqueioEntrada(BaseModel):
     perguntas: list[PerguntaDoDesbloqueioEntrada] | None = None
 
 
-class PerguntaDoDesbloqueioAoAutorSaida(PerguntaDoDesbloqueioSaida):
-    """Só ao Mestre autor, e só nesta rota: a pergunta com a alternativa
-    correta."""
-
-    alternativa_correta: int
-
-
 class MissaoComDesafioDeDesbloqueioSaida(MissaoSaida):
     """Só a resposta desta rota traz o desafio inteiro, alternativa correta
     inclusa — nunca `MissaoSaida` das rotas públicas ou de leitura geral,
@@ -819,12 +856,7 @@ def declarar_desafio_de_desbloqueio_rota(
         **_saida_da_missao(missao, etiquetas=_etiquetas_da_missao(sessao_bd, missao)).model_dump(),
         tipo_do_desafio_de_desbloqueio=missao.tipo_do_desafio_de_desbloqueio,
         desafio_de_desbloqueio_enunciado=missao.desafio_de_desbloqueio_enunciado,
-        perguntas_do_desbloqueio=[
-            PerguntaDoDesbloqueioAoAutorSaida(
-                **saida.model_dump(), alternativa_correta=pergunta.alternativa_correta
-            )
-            for saida, pergunta in zip(_saida_das_perguntas(perguntas), perguntas, strict=True)
-        ],
+        perguntas_do_desbloqueio=_saida_das_perguntas_ao_autor(perguntas),
     )
 
 

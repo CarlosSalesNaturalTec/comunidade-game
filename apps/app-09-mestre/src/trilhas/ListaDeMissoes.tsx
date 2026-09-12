@@ -53,15 +53,22 @@ function resumoDaCadencia(missao: MissaoDaTrilha): string {
     : "Sem retomada declarada";
 }
 
+// A sondagem se chama pelo nome: para o Mestre ela não é o desbloqueio de
+// uma missão, é o que abre a trilha e mostra de onde a turma parte
+// (`RF-09-81`, `RN-09-30`).
 function resumoDoDesafioDeDesbloqueio(missao: MissaoDaTrilha): string {
-  if (missao.tipo_do_desafio_de_desbloqueio === undefined) {
-    return "Ainda sem desafio de desbloqueio.";
+  if (missao.tipo_do_desafio_de_desbloqueio == null) {
+    return missao.e_sondagem
+      ? "Sondagem ainda sem perguntas."
+      : "Ainda sem desafio de desbloqueio.";
   }
   // O quiz diz quantas perguntas tem, para o Mestre saber o tamanho do que
   // escreveu sem abrir o bloco (`RF-09-118`).
   if (missao.tipo_do_desafio_de_desbloqueio === "quiz") {
     const total = (missao.perguntas_do_desbloqueio ?? []).length;
-    return `Quiz com ${total} pergunta(s).`;
+    return missao.e_sondagem
+      ? `Sondagem com ${total} pergunta(s).`
+      : `Quiz com ${total} pergunta(s).`;
   }
   return "Desafio prático declarado.";
 }
@@ -251,7 +258,7 @@ export function ListaDeMissoes({
           </BlocoRecolhivel>
 
           <BlocoRecolhivel
-            titulo="Desafio de desbloqueio"
+            titulo={missao.e_sondagem ? "Sondagem" : "Desafio de desbloqueio"}
             resumo={resumoDoDesafioDeDesbloqueio(missao)}
           >
             <DesafioDeDesbloqueio missao={missao} onAtualizada={onAtualizarMissao} />
