@@ -4,14 +4,18 @@ import { Aviso, Botao, Campo, MarcaDeGravacao } from "comum/react";
 import { useEffect, useState } from "react";
 import {
   abrirEnvioDaImagemDaPergunta,
+  acrescentarPerguntaDoDesbloqueio,
   confirmarEnvioDaImagemDaPergunta,
+  corrigirPerguntaDoDesbloqueio,
   declararDesafioDeDesbloqueio,
   enviarArquivo,
   FORMATOS_DA_IMAGEM_DA_PERGUNTA,
   FORMATOS_DA_IMAGEM_DA_PERGUNTA_EM_PORTUGUES,
   lerImagemDaPergunta,
   type MissaoDaTrilha,
+  type PerguntaDoDesbloqueio,
   type PerguntaDoDesbloqueioEntrada,
+  removerPerguntaDoDesbloqueio,
   TAMANHO_TETO_DA_IMAGEM_DA_PERGUNTA,
   type TipoDeDesafioDeDesbloqueio,
 } from "./api";
@@ -23,15 +27,29 @@ interface Props {
 
 const TOTAL_DE_ALTERNATIVAS = 4;
 
-// A pergunta ganha `id` só depois de gravada — e é o id que endereça o
-// envio da imagem. Enquanto ela existe apenas na tela, não há o que anexar
-// (`RF-09-119`).
+// A pergunta ganha `id` quando é gravada — e é o id que a endereça nas
+// rotas de correção, de remoção e de imagem. Sem id, ela só existe na tela:
+// anexar imagem a uma dessas grava a pergunta antes, num gesto só
+// (`RF-09-119`, `RF-09-120`).
 interface PerguntaEmEdicao extends PerguntaDoDesbloqueioEntrada {
   id?: string;
 }
 
 function perguntaVazia(): PerguntaEmEdicao {
   return { enunciado: "", alternativas: ["", "", "", ""], alternativa_correta: 1 };
+}
+
+// O `id` é da tela, não do contrato: `POST /missoes/{id}/desbloqueio` recusa
+// campo fora dos previstos, e mandá-lo derrubava com 422 justamente a
+// regravação do quiz já declarado — o caminho que o Mestre autor usa para
+// corrigir o que escreveu (`RF-09-118`, `RF-09-119`).
+function comoEntrada(pergunta: PerguntaEmEdicao): PerguntaDoDesbloqueioEntrada {
+  return {
+    enunciado: pergunta.enunciado,
+    alternativas: pergunta.alternativas,
+    alternativa_correta: pergunta.alternativa_correta,
+    imagem_referencia: pergunta.imagem_referencia ?? null,
+  };
 }
 
 function comoEdicao(missao: MissaoDaTrilha): PerguntaEmEdicao[] {
@@ -48,6 +66,19 @@ function comoEdicao(missao: MissaoDaTrilha): PerguntaEmEdicao[] {
 
 function emMegabytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+// Os mapas de erro, marca e progresso são por **posição** na lista. Remover
+// uma pergunta desloca as de baixo, e sem este ajuste a marca de uma
+// passaria a aparecer na seguinte.
+function semAPosicao<T>(mapa: Record<number, T>, removida: number): Record<number, T> {
+  const ajustado: Record<number, T> = {};
+  for (const [chave, valor] of Object.entries(mapa)) {
+    const posicao = Number(chave);
+    if (posicao === removida) continue;
+    ajustado[posicao > removida ? posicao - 1 : posicao] = valor;
+  }
+  return ajustado;
 }
 
 // O Mestre autor vê a imagem que anexou, não só o aviso de que ela existe:
@@ -134,13 +165,87 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
   // Trocar a imagem conserva a referência, que nasce do id da pergunta: sem
   // esta marca a pré-visualização seguiria mostrando a anterior.
   const [versaoDaImagem, definirVersaoDaImagem] = useState<Record<number, number>>({});
+  // A gravação é **por pergunta**: cada uma tem a sua marca, o seu erro e o
+  // seu estado de envio, para que a recusa de uma nunca alcance as outras
+  // (`RF-09-120`, `RN-09-44`).
+  const [erroDaPergunta, definirErroDaPergunta] = useState<Record<number, string>>({});
+  const [gravadaEm, definirGravadaEm] = useState<Record<number, Date>>({});
+  const [gravandoPergunta, definirGravandoPergunta] = useState<Record<number, boolean>>({});
 
   function alterarPergunta(indice: number, mudanca: Partial<PerguntaEmEdicao>) {
-    definirPerguntas(
-      perguntas.map((pergunta, posicao) =>
+    definirPerguntas((atual) =>
+      atual.map((pergunta, posicao) =>
         posicao === indice ? { ...pergunta, ...mudanca } : pergunta,
       ),
     );
+  }
+
+  function recusaDoNucleo(erroCapturado: unknown, alternativa: string): string | null {
+    if (ehRecusaDeSessao(erroCapturado)) {
+      tratarRecusaDeSessao();
+      return null;
+    }
+    return erroCapturado instanceof ErroDaApi ? erroCapturado.message : alternativa;
+  }
+
+  // Grava **uma** pergunta: acrescenta quando ela ainda não tem id, corrige
+  // quando tem. Devolve a pergunta como o núcleo a gravou — o id inclusive,
+  // que muda quando a correção é de pergunta que alguém já respondeu
+  // (`RF-09-120`, `RN-05-47`).
+  async function gravarPergunta(indice: number): Promise<PerguntaDoDesbloqueio | null> {
+    if (!sessao) return null;
+    const pergunta = perguntas[indice];
+    const entrada = {
+      enunciado: pergunta.enunciado,
+      alternativas: pergunta.alternativas,
+      alternativa_correta: pergunta.alternativa_correta,
+    };
+
+    definirErroDaPergunta((atual) => ({ ...atual, [indice]: "" }));
+    definirGravandoPergunta((atual) => ({ ...atual, [indice]: true }));
+    try {
+      const gravada = pergunta.id
+        ? await corrigirPerguntaDoDesbloqueio(pergunta.id, entrada, sessao.token)
+        : await acrescentarPerguntaDoDesbloqueio(missao.id, entrada, sessao.token);
+      alterarPergunta(indice, {
+        id: gravada.id,
+        imagem_referencia: gravada.imagem_referencia ?? null,
+      });
+      definirGravadaEm((atual) => ({ ...atual, [indice]: new Date() }));
+      return gravada;
+    } catch (erroCapturado) {
+      const recusa = recusaDoNucleo(
+        erroCapturado,
+        "Não foi possível gravar esta pergunta. Tente novamente em instantes.",
+      );
+      if (recusa) definirErroDaPergunta((atual) => ({ ...atual, [indice]: recusa }));
+      return null;
+    } finally {
+      definirGravandoPergunta((atual) => ({ ...atual, [indice]: false }));
+    }
+  }
+
+  // Pergunta que nunca foi gravada sai só da tela; a gravada sai pelo
+  // núcleo, que recusa a remoção da última (`RF-09-120`, `RN-09-43`).
+  async function removerPergunta(indice: number) {
+    const pergunta = perguntas[indice];
+    if (pergunta.id && sessao) {
+      try {
+        await removerPerguntaDoDesbloqueio(pergunta.id, sessao.token);
+      } catch (erroCapturado) {
+        const recusa = recusaDoNucleo(
+          erroCapturado,
+          "Não foi possível remover esta pergunta. Tente novamente em instantes.",
+        );
+        if (recusa) definirErroDaPergunta((atual) => ({ ...atual, [indice]: recusa }));
+        return;
+      }
+    }
+    definirPerguntas((atual) => atual.filter((_, posicao) => posicao !== indice));
+    definirErroDaPergunta((atual) => semAPosicao(atual, indice));
+    definirErroDaImagem((atual) => semAPosicao(atual, indice));
+    definirGravadaEm((atual) => semAPosicao(atual, indice));
+    definirVersaoDaImagem((atual) => semAPosicao(atual, indice));
   }
 
   function alterarAlternativa(indice: number, posicao: number, valor: string) {
@@ -156,13 +261,6 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
   async function anexarImagem(indice: number, arquivo: File) {
     const pergunta = perguntas[indice];
     if (!sessao) return;
-    if (!pergunta.id) {
-      definirErroDaImagem({
-        ...erroDaImagem,
-        [indice]: "Grave o desafio antes de anexar a imagem desta pergunta.",
-      });
-      return;
-    }
     if (!FORMATOS_DA_IMAGEM_DA_PERGUNTA.includes(arquivo.type)) {
       definirErroDaImagem({
         ...erroDaImagem,
@@ -183,9 +281,21 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
     }
 
     definirErroDaImagem({ ...erroDaImagem, [indice]: "" });
+
+    // Anexar a pergunta ainda não gravada é um gesto só: a tela grava a
+    // pergunta e emenda o envio com o id que voltou. Incompleta, a recusa
+    // do núcleo aparece na própria pergunta e nenhum envio é aberto
+    // (`RF-09-120`, `RN-09-44`, design — decisão 6).
+    let idDaPergunta = pergunta.id;
+    if (!idDaPergunta) {
+      const gravada = await gravarPergunta(indice);
+      if (!gravada) return;
+      idDaPergunta = gravada.id;
+    }
+
     try {
       const endereco = await abrirEnvioDaImagemDaPergunta(
-        pergunta.id,
+        idDaPergunta,
         arquivo.type,
         arquivo.size,
         sessao.token,
@@ -193,21 +303,15 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
       await enviarArquivo(endereco, arquivo, (enviados, total) =>
         definirProgressoDaImagem((atual) => ({ ...atual, [indice]: { enviados, total } })),
       );
-      const confirmada = await confirmarEnvioDaImagemDaPergunta(pergunta.id, sessao.token);
+      const confirmada = await confirmarEnvioDaImagemDaPergunta(idDaPergunta, sessao.token);
       alterarPergunta(indice, { imagem_referencia: confirmada.imagem_referencia ?? null });
       definirVersaoDaImagem((atual) => ({ ...atual, [indice]: (atual[indice] ?? 0) + 1 }));
     } catch (erroCapturado) {
-      if (ehRecusaDeSessao(erroCapturado)) {
-        tratarRecusaDeSessao();
-        return;
-      }
-      definirErroDaImagem({
-        ...erroDaImagem,
-        [indice]:
-          erroCapturado instanceof ErroDaApi
-            ? erroCapturado.message
-            : "Não foi possível enviar a imagem. Tente novamente em instantes.",
-      });
+      const recusa = recusaDoNucleo(
+        erroCapturado,
+        "Não foi possível enviar a imagem. Tente novamente em instantes.",
+      );
+      if (recusa) definirErroDaImagem((atual) => ({ ...atual, [indice]: recusa }));
     } finally {
       definirProgressoDaImagem((atual) => {
         const { [indice]: _, ...resto } = atual;
@@ -230,7 +334,7 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
         {
           tipo,
           enunciado: tipo === "pratico" ? enunciado : null,
-          perguntas: tipo === "quiz" ? perguntas : null,
+          perguntas: tipo === "quiz" ? perguntas.map(comoEntrada) : null,
         },
         sessao.token,
       );
@@ -242,7 +346,14 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
         tratarRecusaDeSessao();
         return;
       }
-      definirErro("Não foi possível declarar o desafio. Tente novamente em instantes.");
+      // A recusa do núcleo chega por campo e em português: mostrá-la é o que
+      // permite ao Mestre corrigir a pergunta em vez de tentar de novo às
+      // cegas, como o envio da imagem já faz nesta mesma tela.
+      definirErro(
+        erroCapturado instanceof ErroDaApi
+          ? erroCapturado.message
+          : "Não foi possível declarar o desafio. Tente novamente em instantes.",
+      );
     } finally {
       definirEnviando(false);
     }
@@ -387,12 +498,17 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
                 {erroDaImagem[indice] && <Aviso tipo="erro">{erroDaImagem[indice]}</Aviso>}
               </div>
 
+              {erroDaPergunta[indice] && <Aviso tipo="erro">{erroDaPergunta[indice]}</Aviso>}
+
               <Botao
-                variante="secundaria"
-                onClick={() =>
-                  definirPerguntas(perguntas.filter((_, posicao) => posicao !== indice))
-                }
+                onClick={() => gravarPergunta(indice)}
+                desabilitado={gravandoPergunta[indice]}
               >
+                {gravandoPergunta[indice] ? "Salvando…" : `Salvar pergunta ${indice + 1}`}
+              </Botao>
+              <MarcaDeGravacao instante={gravadaEm[indice] ?? null} />
+
+              <Botao variante="secundaria" onClick={() => removerPergunta(indice)}>
                 Remover pergunta {indice + 1}
               </Botao>
             </fieldset>

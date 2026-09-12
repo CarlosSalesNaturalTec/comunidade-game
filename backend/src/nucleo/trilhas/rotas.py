@@ -44,9 +44,11 @@ from .modelo import (
 )
 from .regra import (
     abrir_envio_da_imagem_da_pergunta,
+    acrescentar_pergunta_do_desbloqueio,
     confirmar_envio_da_imagem_da_pergunta,
     consultar_inscricoes_do_guerreiro,
     consultar_progresso,
+    corrigir_pergunta_do_desbloqueio,
     criar_atividade,
     criar_missao,
     criar_trilha,
@@ -64,6 +66,7 @@ from .regra import (
     perguntas_do_desbloqueio,
     perguntas_do_desbloqueio_por_missao,
     publicar_trilha,
+    remover_pergunta_do_desbloqueio,
     retomadas_em_aberto_do_guerreiro,
     submeter_desafio_de_desbloqueio,
 )
@@ -858,6 +861,80 @@ def declarar_desafio_de_desbloqueio_rota(
         desafio_de_desbloqueio_enunciado=missao.desafio_de_desbloqueio_enunciado,
         perguntas_do_desbloqueio=_saida_das_perguntas_ao_autor(perguntas),
     )
+
+
+class PerguntaDoDesbloqueioEscritaEntrada(BaseModel):
+    """A pergunta que o Mestre autor grava isoladamente. Sem
+    `imagem_referencia`: a imagem daquela pergunta é das rotas de imagem,
+    que a endereçam pelo id — corrigir o texto nunca mexe nela
+    (`RF-09-120`, design — decisão 2)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enunciado: str
+    alternativas: list[str]
+    alternativa_correta: int
+
+
+@roteador.post("/missoes/{id_da_missao}/perguntas-do-desbloqueio", status_code=201)
+def acrescentar_pergunta_do_desbloqueio_rota(
+    id_da_missao: uuid.UUID,
+    entrada: PerguntaDoDesbloqueioEscritaEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PerguntaDoDesbloqueioAoAutorSaida:
+    """`RF-09-120`, `RN-09-44`: acrescenta uma pergunta ao quiz sem tocar
+    nas demais — a posse, a completude e a ordem já são de
+    `acrescentar_pergunta_do_desbloqueio`. A resposta traz a alternativa
+    correta e o id, que é o endereço da imagem daquela pergunta."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    missao = _obter_missao(sessao_bd, id_da_missao)
+    pergunta = acrescentar_pergunta_do_desbloqueio(
+        sessao_bd, operador=operador, missao=missao, pergunta=entrada.model_dump()
+    )
+    sessao_bd.commit()
+    return _saida_das_perguntas_ao_autor([pergunta])[0]
+
+
+@roteador.put("/perguntas-do-desbloqueio/{id_da_pergunta}")
+def corrigir_pergunta_do_desbloqueio_rota(
+    id_da_pergunta: uuid.UUID,
+    entrada: PerguntaDoDesbloqueioEscritaEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PerguntaDoDesbloqueioAoAutorSaida:
+    """`RF-09-120`, `RN-09-44`, `RN-05-47`: corrige uma pergunta sem tocar
+    nas demais. `PUT`, não `PATCH`, porque a pergunta só grava completa. A
+    resposta devolve a pergunta **como ficou**, id inclusive: a correção de
+    pergunta já respondida nasce em linha nova, e é por esta resposta que o
+    cliente sabe o id que passou a valer (design — decisões 1 e 2)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    pergunta = corrigir_pergunta_do_desbloqueio(
+        sessao_bd,
+        operador=operador,
+        pergunta=sessao_bd.get(PerguntaDoDesbloqueio, id_da_pergunta),
+        conteudo=entrada.model_dump(),
+    )
+    sessao_bd.commit()
+    return _saida_das_perguntas_ao_autor([pergunta])[0]
+
+
+@roteador.delete("/perguntas-do-desbloqueio/{id_da_pergunta}", status_code=204)
+def remover_pergunta_do_desbloqueio_rota(
+    id_da_pergunta: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> Response:
+    """`RF-09-120`, `RN-09-43`: tira uma pergunta do quiz. A recusa da
+    remoção da única pergunta é de `remover_pergunta_do_desbloqueio`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    remover_pergunta_do_desbloqueio(
+        sessao_bd,
+        operador=operador,
+        pergunta=sessao_bd.get(PerguntaDoDesbloqueio, id_da_pergunta),
+    )
+    sessao_bd.commit()
+    return Response(status_code=204)
 
 
 def _obter_pergunta_do_desbloqueio(

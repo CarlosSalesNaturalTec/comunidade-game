@@ -158,7 +158,18 @@ def criar_app() -> FastAPI:
         allow_origins=["*"],
         allow_credentials=False,
         allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE"],
-        allow_headers=[NOME_DO_CABECALHO_DA_CHAVE, NOME_DO_CABECALHO_DE_SESSAO, "Content-Type"],
+        # `Content-Range` é do protocolo da sessão retomável: sem ele na
+        # lista, o preflight do `PUT` de cada parte é recusado pelo próprio
+        # navegador e nenhum byte sai da tela (`RF-09-19`, `RF-09-119`).
+        allow_headers=[
+            NOME_DO_CABECALHO_DA_CHAVE,
+            NOME_DO_CABECALHO_DE_SESSAO,
+            "Content-Type",
+            "Content-Range",
+        ],
+        # `Range` é a resposta do 308 que diz de onde retomar — cabeçalho de
+        # resposta fora da lista segura do CORS, invisível à tela sem isto.
+        expose_headers=["Range"],
     )
 
     registrar_premissa_de_conteiner_unico()

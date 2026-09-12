@@ -640,6 +640,13 @@ dizer **quantas perguntas** o quiz tem. A tela SHALL dizer ao Mestre que **passa
 menos 60%** das perguntas, para que ele saiba o efeito de quantas escreve. (`RF-09-26`,
 `RF-09-118`, `RN-09-43`)
 
+Cada pergunta SHALL poder ser **gravada isoladamente**, sem que o Mestre grave o quiz inteiro:
+a tela SHALL oferecer a gravação **na própria pergunta** e SHALL mostrar, nela, a **marca de
+gravação** daquele ato. A recusa de uma pergunta SHALL ser mostrada **naquela pergunta** e
+NEVER SHALL apagar nem esconder o que o Mestre escreveu nas outras. A recusa SHALL chegar com o
+**motivo** que o núcleo deu — o que falta na pergunta —, nunca como falha genérica.
+(`RF-09-120`, `RN-09-44`)
+
 A tela SHALL **reabrir o desafio já declarado** toda vez que o Mestre autor volta à missão,
 em sessão nova inclusive: o tipo escolhido, o enunciado do prático e, no quiz, cada pergunta
 com o seu enunciado, as quatro alternativas, a **alternativa correta marcada** e a imagem que
@@ -656,6 +663,11 @@ anexada SHALL **permanecer** quando o Mestre grava o desafio de novo para corrig
 tela NEVER SHALL exigir habilidade técnica: nem formato digitado, nem redimensionamento, nem
 endereço de arquivo. (`RF-09-119`, decisão do fundador de 2026-09-11)
 
+Anexar imagem a pergunta **ainda não gravada** SHALL ser **um gesto só**: escolhido o arquivo,
+a tela SHALL gravar a pergunta e emendar o envio, sem pedir ao Mestre que grave antes. Estando
+a pergunta **incompleta**, a tela SHALL dizer o que falta nela e NEVER SHALL abrir envio algum.
+(`RF-09-120`, `RN-09-44`, decisão do fundador de 2026-09-12)
+
 A imagem anexada SHALL ser **exibida ao Mestre autor** na pergunta a que pertence, e não
 apenas anunciada em texto: o Mestre SHALL ver o que o Guerreiro(a) verá. A imagem que não
 carregar NEVER SHALL impedir o Mestre de ler, corrigir ou gravar a pergunta — a tela diz que
@@ -667,8 +679,9 @@ e mostra ao Mestre de onde a turma parte, e SHALL dizer que **não há passar ne
 a trilha abre assim que o Guerreiro(a) responde. A tela NEVER SHALL anunciar o corte de 60%
 na sondagem, porque ele não se aplica a ela (`RN-05-46`), e NEVER SHALL oferecer a escolha
 entre quiz e desafio prático, porque a sondagem é **na forma de quiz** (`RF-09-81`). O aviso
-de sondagem sem perguntas e o resumo da linha SHALL usar o mesmo vocabulário.
-(`RF-09-81`, `RN-09-30`)
+de sondagem sem perguntas e o resumo da linha SHALL usar o mesmo vocabulário. A gravação por
+pergunta e o anexo da imagem num gesto só SHALL valer na sondagem exatamente como no
+desbloqueio. (`RF-09-81`, `RN-09-30`, `RF-09-120`)
 
 #### Scenario: O Mestre autor monta o desafio da sua missão
 
@@ -679,6 +692,19 @@ de sondagem sem perguntas e o resumo da linha SHALL usar o mesmo vocabulário.
 
 - **WHEN** o Mestre autor acrescenta três perguntas ao quiz e remove a segunda
 - **THEN** a tela mantém as duas restantes na ordem em que ficaram, e grava só elas
+
+#### Scenario: O Mestre grava uma pergunta sem gravar as outras
+
+- **WHEN** o Mestre autor corrige o enunciado da segunda pergunta e usa a gravação daquela
+  pergunta
+- **THEN** a tela grava só ela, mostra nela a marca de gravação, e o que está escrito nas
+  outras perguntas permanece como estava
+
+#### Scenario: A recusa de uma pergunta não derruba as outras
+
+- **WHEN** o Mestre autor tenta gravar uma pergunta a que falta uma alternativa
+- **THEN** a tela mostra o motivo naquela pergunta e o que ele escreveu nas demais permanece
+  na tela
 
 #### Scenario: Quiz sem pergunta não grava
 
@@ -707,6 +733,19 @@ de sondagem sem perguntas e o resumo da linha SHALL usar o mesmo vocabulário.
 - **WHEN** o Mestre autor escolhe uma imagem para a terceira pergunta do quiz
 - **THEN** a tela mostra o progresso do envio e, ao fim, a pergunta passa a exibir a imagem
   anexada
+
+#### Scenario: Anexar imagem a pergunta nova grava a pergunta sozinha
+
+- **WHEN** o Mestre autor acrescenta uma pergunta completa, ainda não gravada, e escolhe uma
+  imagem para ela
+- **THEN** a tela grava a pergunta e envia a imagem na sequência, sem pedir que ele grave o
+  desafio antes
+
+#### Scenario: Anexar imagem a pergunta incompleta diz o que falta
+
+- **WHEN** o Mestre autor escolhe uma imagem para uma pergunta a que ainda falta a alternativa
+  correta
+- **THEN** a tela diz o que falta naquela pergunta e nenhum envio é aberto
 
 #### Scenario: Imagem recusada explica o motivo sem perder o que foi escrito
 
@@ -758,6 +797,11 @@ de sondagem sem perguntas e o resumo da linha SHALL usar o mesmo vocabulário.
 
 - **WHEN** o Mestre autor abre o bloco do desafio na missão marcada como sondagem
 - **THEN** o bloco se chama Sondagem e diz que ela abre a trilha e mostra de onde a turma parte
+
+#### Scenario: A sondagem grava pergunta a pergunta como qualquer quiz
+
+- **WHEN** o Mestre autor corrige uma pergunta da sondagem e usa a gravação daquela pergunta
+- **THEN** a tela grava só ela, com a mesma marca e as mesmas recusas do quiz do desbloqueio
 
 #### Scenario: A sondagem não anuncia o corte de 60%
 

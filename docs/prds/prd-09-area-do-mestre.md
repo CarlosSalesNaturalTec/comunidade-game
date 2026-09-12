@@ -329,6 +329,7 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-117` | No desafio de desbloqueio em forma de prático, o Mestre autor julga se o Guerreiro(a) que declarou tê-lo cumprido passou, abrindo a missão seguinte para ele; no quiz, o núcleo afere sozinho (documento 11 §2.2) | essencial  |
 | `RF-09-118` | Quiz do desbloqueio aceita quantas perguntas o Mestre declarar, cada uma com quatro alternativas e uma correta                                                                                                    | essencial  |
 | `RF-09-119` | Mestre anexa a cada pergunta do quiz uma imagem opcional de até 1 MB                                                                                                                                              | essencial  |
+| `RF-09-120` | Mestre grava, corrige e remove cada pergunta do quiz isoladamente — na sondagem como no desbloqueio —, sem regravar o quiz inteiro                                                                                | essencial  |
 
 ### 6.5 Banco do Quiz ao Vivo
 
@@ -477,6 +478,7 @@ outras duas frentes já entregues — tombamento (PRD-07) e ficha de vida —, s
 | `RN-09-41` | Validação pedagógica só é dispensada para o Mestre autor da própria trilha; Admin aprova sempre               | —                      | 04 §3          |
 | `RN-09-42` | Desafio extra reserva a recompensa na publicação; sem saldo, não publica                                      | 9                      | 04 §3, PRD-07  |
 | `RN-09-43` | Quiz do desbloqueio exige ao menos uma pergunta declarada                                                     | —                      | 11 §2.2        |
+| `RN-09-44` | Pergunta gravada isoladamente exige enunciado, quatro alternativas e a correta                                | —                      | 03 §11         |
 
 ## 8. Modelo de dados
 
@@ -549,6 +551,9 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | POST   | `/v1/missoes/{id}/bibliografia`                           | Mestre       | Vincula título e capítulo do acervo à missão                           |
 | POST   | `/v1/missoes/{id}/atividades`                             | Mestre       | Cria atividade da missão, com modalidade e formato                     |
 | POST   | `/v1/missoes/{id}/desbloqueio`                            | Mestre       | Define o quiz ou desafio que abre a missão seguinte                    |
+| POST   | `/v1/missoes/{id}/perguntas-do-desbloqueio`               | Mestre       | Acrescenta uma pergunta ao quiz, sem tocar nas demais                  |
+| PUT    | `/v1/perguntas-do-desbloqueio/{id}`                       | Mestre       | Corrige uma pergunta do quiz, sem tocar nas demais                     |
+| DELETE | `/v1/perguntas-do-desbloqueio/{id}`                       | Mestre       | Tira uma pergunta do quiz; a última é recusada                         |
 | POST   | `/v1/perguntas-do-desbloqueio/{id}/imagem`                | Mestre       | Abre o envio retomável da imagem de uma pergunta do quiz               |
 | PATCH  | `/v1/perguntas-do-desbloqueio/{id}/imagem`                | Mestre       | Confirma o envio, e só então a pergunta passa a ter imagem             |
 | GET    | `/v1/perguntas-do-desbloqueio/{id}/imagem`                | Persona      | Serve os bytes da imagem ao Mestre autor e ao Guerreiro(a) inscrito    |
@@ -799,3 +804,4 @@ a que alguma submissão já respondeu (documento 03 §11).
 | `RF-09-117`               | 11 §2.2 (o desbloqueio é fato do Guerreiro(a); julgamento do prático) |
 | `RF-09-118`               | 11 §2.2 (quantas perguntas o Mestre quiser, quatro alternativas cada) |
 | `RF-09-119`               | 03 §11 (teto de 1 MB por pergunta, formatos da lista fechada)         |
+| `RF-09-120` e `RN-09-44`  | 03 §11 (a pergunta do quiz se grava uma a uma, completa)              |

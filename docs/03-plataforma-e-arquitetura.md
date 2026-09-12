@@ -915,6 +915,13 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   conserva a imagem, e só a que a omite fica sem — corrigir texto não custa reenviar arquivo.
   **Substituir as perguntas nunca apaga a que alguma submissão já respondeu**: ela sai da
   leitura do desafio e permanece guardada, porque o registro da tentativa aponta para ela.
+- **A pergunta do quiz se grava uma a uma.** O Mestre acrescenta, corrige e remove **cada
+  pergunta** isoladamente — na sondagem como no desbloqueio —, sem regravar o quiz inteiro, e
+  anexa a imagem dela assim que ela existe. Gravar uma pergunta exige que ela esteja
+  **completa**: enunciado, quatro alternativas e a correta. A declaração do desafio inteiro
+  **continua** ao lado, e é ela que fixa o tipo, o enunciado do prático e a ordem das
+  perguntas. Remover a última pergunta de um quiz é recusado, porque quiz sem pergunta já é
+  recusado na declaração.
 - **Os bytes da imagem da pergunta são servidos pelo núcleo**, ao Mestre autor da trilha e ao
   Guerreiro(a) inscrito nela, e a mais ninguém. É a única saída de arquivo pelo núcleo — o que
   a arquitetura mantém fora dele é o **envio**, que vai direto ao armazenamento.
