@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 from nucleo.erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
@@ -11,11 +13,14 @@ from nucleo.trilhas.modelo import (
     TipoDeDesafioDeDesbloqueio,
 )
 from nucleo.trilhas.regra import (
+    acrescentar_pergunta_do_desbloqueio,
+    corrigir_pergunta_do_desbloqueio,
     declarar_desafio_de_desbloqueio,
     inscrever_na_trilha,
     julgar_desafio_pratico,
     listar_desbloqueios_praticos_pendentes,
     perguntas_do_desbloqueio,
+    remover_pergunta_do_desbloqueio,
     submeter_desafio_de_desbloqueio,
 )
 
@@ -1091,3 +1096,388 @@ def test_redeclarar_depois_de_respondido_nao_falha_e_preserva_a_submissao(
     for pergunta_id in respondidas:
         guardada = sessao.query(PerguntaDoDesbloqueio).filter_by(id=pergunta_id).one()
         assert guardada.substituida_em is not None
+
+
+# `RF-09-120`, `RN-09-44`: a escrita de **uma** pergunta, ao lado da
+# declaração do desafio inteiro, que não muda.
+
+
+def _uma(enunciado="Quanto é 1 + 1?", correta=2, alternativas=None):
+    return {
+        "enunciado": enunciado,
+        "alternativas": alternativas if alternativas is not None else ALTERNATIVAS,
+        "alternativa_correta": correta,
+    }
+
+
+def test_acrescentar_pergunta_entra_ao_fim_sem_tocar_nas_demais(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao, quantidade=3)
+    sessao.commit()
+    antes = [
+        (p.id, p.enunciado, p.ordem) for p in perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    ]
+
+    nova = acrescentar_pergunta_do_desbloqueio(
+        sessao, operador=mestre, missao=missao, pergunta=_uma()
+    )
+    sessao.commit()
+
+    vigentes = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    assert len(vigentes) == 4
+    assert nova.ordem == 4
+    # As três anteriores seguem com o mesmo id, enunciado e ordem.
+    assert [(p.id, p.enunciado, p.ordem) for p in vigentes[:3]] == antes
+
+
+def test_a_primeira_pergunta_declara_a_missao_como_quiz(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    assert missao.tipo_do_desafio_de_desbloqueio is None
+
+    acrescentar_pergunta_do_desbloqueio(sessao, operador=mestre, missao=missao, pergunta=_uma())
+    sessao.commit()
+
+    assert missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.quiz
+    assert len(perguntas_do_desbloqueio(sessao, missao_id=missao.id)) == 1
+
+
+def test_missao_de_desafio_pratico_nao_recebe_pergunta(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_pratico(sessao, mestre, missao)
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao):
+        acrescentar_pergunta_do_desbloqueio(sessao, operador=mestre, missao=missao, pergunta=_uma())
+
+
+def test_corrigir_uma_pergunta_nao_toca_nas_demais(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao, quantidade=5)
+    sessao.commit()
+    vigentes = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    segunda = vigentes[1]
+    outras = [(p.id, p.enunciado) for p in vigentes if p.id != segunda.id]
+
+    corrigida = corrigir_pergunta_do_desbloqueio(
+        sessao, operador=mestre, pergunta=segunda, conteudo=_uma(enunciado="Corrigida")
+    )
+    sessao.commit()
+
+    depois = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    assert len(depois) == 5
+    assert depois[1].enunciado == "Corrigida"
+    assert depois[1].ordem == segunda.ordem
+    # Ninguém respondeu: a linha é a mesma, e o id não muda.
+    assert corrigida.id == segunda.id
+    assert [(p.id, p.enunciado) for p in depois if p.id != segunda.id] == outras
+
+
+def test_pergunta_incompleta_e_recusada(sessao, criar_persona, criar_trilha, criar_missao):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    with pytest.raises(ErroDeValidacao):
+        acrescentar_pergunta_do_desbloqueio(
+            sessao,
+            operador=mestre,
+            missao=missao,
+            pergunta=_uma(alternativas=["Um", "Dois", "Três", ""]),
+        )
+    assert perguntas_do_desbloqueio(sessao, missao_id=missao.id) == []
+
+
+def test_pergunta_sem_alternativa_correta_e_recusada(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    with pytest.raises(ErroDeValidacao):
+        acrescentar_pergunta_do_desbloqueio(
+            sessao, operador=mestre, missao=missao, pergunta=_uma(correta=None)
+        )
+    assert perguntas_do_desbloqueio(sessao, missao_id=missao.id) == []
+
+
+def test_quem_nao_e_autor_nao_grava_pergunta(sessao, criar_persona, criar_trilha, criar_missao):
+    mestre = criar_persona(Papel.mestre)
+    outro = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao, quantidade=2)
+    sessao.commit()
+    primeira = perguntas_do_desbloqueio(sessao, missao_id=missao.id)[0]
+
+    with pytest.raises(PermissaoNegada):
+        acrescentar_pergunta_do_desbloqueio(sessao, operador=outro, missao=missao, pergunta=_uma())
+    with pytest.raises(PermissaoNegada):
+        corrigir_pergunta_do_desbloqueio(sessao, operador=outro, pergunta=primeira, conteudo=_uma())
+    with pytest.raises(PermissaoNegada):
+        remover_pergunta_do_desbloqueio(sessao, operador=outro, pergunta=primeira)
+
+
+def test_corrigir_pergunta_ja_respondida_nao_apaga_a_tentativa(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao, quantidade=2)
+    sessao.commit()
+    inscrever_na_trilha(sessao, guerreiro=guerreiro, trilha=trilha)
+    submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, respostas=_responder(sessao, missao, [2, 2])
+    )
+    sessao.commit()
+    respondida = perguntas_do_desbloqueio(sessao, missao_id=missao.id)[0]
+    respostas_antes = sessao.query(RespostaDaSubmissao).count()
+
+    corrigida = corrigir_pergunta_do_desbloqueio(
+        sessao, operador=mestre, pergunta=respondida, conteudo=_uma(enunciado="Outro enunciado")
+    )
+    sessao.commit()
+
+    # A corrigida nasce em linha nova, na mesma ordem; a anterior sai da
+    # leitura e permanece guardada (`RN-05-47`).
+    assert corrigida.id != respondida.id
+    assert corrigida.ordem == respondida.ordem
+    vigentes = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    assert [p.id for p in vigentes] == [corrigida.id, vigentes[1].id]
+    guardada = sessao.query(PerguntaDoDesbloqueio).filter_by(id=respondida.id).one()
+    assert guardada.substituida_em is not None
+    assert sessao.query(RespostaDaSubmissao).count() == respostas_antes
+
+
+def test_corrigir_o_texto_conserva_a_imagem_da_pergunta(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao, quantidade=1)
+    sessao.commit()
+    pergunta = perguntas_do_desbloqueio(sessao, missao_id=missao.id)[0]
+    pergunta.imagem_referencia = f"perguntas-do-desbloqueio/{pergunta.id}/imagem"
+    pergunta.imagem_tipo = "image/png"
+    pergunta.imagem_tamanho = 1234
+    sessao.commit()
+    referencia = pergunta.imagem_referencia
+
+    corrigida = corrigir_pergunta_do_desbloqueio(
+        sessao, operador=mestre, pergunta=pergunta, conteudo=_uma(enunciado="Só o texto mudou")
+    )
+    sessao.commit()
+
+    assert corrigida.imagem_referencia == referencia
+    assert corrigida.imagem_tipo == "image/png"
+    assert corrigida.imagem_tamanho == 1234
+
+
+def test_remover_uma_pergunta_tira_so_ela(sessao, criar_persona, criar_trilha, criar_missao):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao, quantidade=4)
+    sessao.commit()
+    vigentes = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    terceira = vigentes[2]
+    restantes = [p.id for p in vigentes if p.id != terceira.id]
+
+    remover_pergunta_do_desbloqueio(sessao, operador=mestre, pergunta=terceira)
+    sessao.commit()
+
+    depois = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    assert [p.id for p in depois] == restantes
+    # Não foi apagada, e as restantes não foram renumeradas.
+    guardada = sessao.query(PerguntaDoDesbloqueio).filter_by(id=terceira.id).one()
+    assert guardada.substituida_em is not None
+    assert [p.ordem for p in depois] == [1, 2, 4]
+
+
+def test_remover_a_unica_pergunta_e_recusado(sessao, criar_persona, criar_trilha, criar_missao):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao, quantidade=1)
+    sessao.commit()
+    unica = perguntas_do_desbloqueio(sessao, missao_id=missao.id)[0]
+
+    with pytest.raises(ErroDeValidacao):
+        remover_pergunta_do_desbloqueio(sessao, operador=mestre, pergunta=unica)
+
+    assert [p.id for p in perguntas_do_desbloqueio(sessao, missao_id=missao.id)] == [unica.id]
+
+
+def test_a_sondagem_grava_pergunta_a_pergunta_como_qualquer_quiz(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    sondagem = criar_missao(trilha, mestre, e_sondagem=True)
+
+    primeira = acrescentar_pergunta_do_desbloqueio(
+        sessao, operador=mestre, missao=sondagem, pergunta=_uma(enunciado="De onde você parte?")
+    )
+    segunda = acrescentar_pergunta_do_desbloqueio(
+        sessao, operador=mestre, missao=sondagem, pergunta=_uma(enunciado="E aqui?")
+    )
+    corrigir_pergunta_do_desbloqueio(
+        sessao, operador=mestre, pergunta=primeira, conteudo=_uma(enunciado="Corrigida")
+    )
+    remover_pergunta_do_desbloqueio(sessao, operador=mestre, pergunta=segunda)
+    sessao.commit()
+
+    vigentes = perguntas_do_desbloqueio(sessao, missao_id=sondagem.id)
+    assert [p.enunciado for p in vigentes] == ["Corrigida"]
+    assert sondagem.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.quiz
+
+
+def test_declarar_o_desafio_inteiro_sobre_quiz_gravado_pergunta_a_pergunta(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """Os dois caminhos convivem: a declaração substitui o conjunto, como já
+    fazia, e a escrita por pergunta atua sobre o que ela deixou
+    (`RF-09-118`, `RF-09-120`)."""
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    acrescentar_pergunta_do_desbloqueio(
+        sessao, operador=mestre, missao=missao, pergunta=_uma(enunciado="Gravada isolada")
+    )
+    sessao.commit()
+
+    _declarar_quiz(sessao, mestre, missao, quantidade=2)
+    sessao.commit()
+    assert [p.enunciado for p in perguntas_do_desbloqueio(sessao, missao_id=missao.id)] == [
+        "Pergunta 1",
+        "Pergunta 2",
+    ]
+
+    acrescentar_pergunta_do_desbloqueio(
+        sessao, operador=mestre, missao=missao, pergunta=_uma(enunciado="Depois da declaração")
+    )
+    sessao.commit()
+
+    vigentes = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    assert [p.enunciado for p in vigentes] == [
+        "Pergunta 1",
+        "Pergunta 2",
+        "Depois da declaração",
+    ]
+    assert [p.ordem for p in vigentes] == [1, 2, 3]
+
+
+def test_as_rotas_da_pergunta_gravam_uma_a_uma_e_a_nova_aceita_imagem(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    """`RF-09-120`, `RF-09-119`: o trajeto que a App 09 percorre — acrescenta
+    a pergunta, anexa a imagem dela sem declarar o desafio inteiro antes,
+    corrige o texto e remove — pelas três rotas novas."""
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    criada = cliente.post(
+        f"/v1/missoes/{missao.id}/perguntas-do-desbloqueio",
+        json=_uma(enunciado="O que o gráfico mostra?"),
+        headers=cabecalhos,
+    )
+    assert criada.status_code == 201
+    pergunta_id = criada.json()["id"]
+    assert criada.json()["alternativa_correta"] == 2
+    assert criada.json()["ordem"] == 1
+
+    # A pergunta nasceu isolada e já é endereço de imagem.
+    assert _enviar_imagem(cliente, cabecalhos, pergunta_id).status_code == 200
+
+    corrigida = cliente.put(
+        f"/v1/perguntas-do-desbloqueio/{pergunta_id}",
+        json=_uma(enunciado="E agora?", correta=3),
+        headers=cabecalhos,
+    )
+    assert corrigida.status_code == 200
+    # Ninguém respondeu: o id não muda, e a imagem segue na pergunta.
+    assert corrigida.json()["id"] == pergunta_id
+    assert corrigida.json()["enunciado"] == "E agora?"
+    assert corrigida.json()["imagem_referencia"] is not None
+
+    # Remover a única é recusado; com duas, remove só ela.
+    assert (
+        cliente.delete(
+            f"/v1/perguntas-do-desbloqueio/{pergunta_id}", headers=cabecalhos
+        ).status_code
+        == 422
+    )
+    segunda = cliente.post(
+        f"/v1/missoes/{missao.id}/perguntas-do-desbloqueio",
+        json=_uma(enunciado="A segunda"),
+        headers=cabecalhos,
+    ).json()
+    assert (
+        cliente.delete(
+            f"/v1/perguntas-do-desbloqueio/{segunda['id']}", headers=cabecalhos
+        ).status_code
+        == 204
+    )
+
+    sessao.expire_all()
+    assert [p.id for p in perguntas_do_desbloqueio(sessao, missao_id=missao.id)] == [
+        uuid.UUID(pergunta_id)
+    ]
+
+
+def test_a_declaracao_recusa_o_identificador_da_pergunta_no_corpo(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    """O id é endereço da pergunta, não campo declarável: devolvê-lo no corpo
+    da declaração é recusado, e era o que derrubava toda regravação de quiz
+    já declarado (`RF-09-118`)."""
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    _declarar_quiz(sessao, mestre, missao)
+    sessao.commit()
+    pergunta = _primeira_pergunta(sessao, missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    resposta = cliente.post(
+        f"/v1/missoes/{missao.id}/desbloqueio",
+        json={"tipo": "quiz", "perguntas": [{**_uma(), "id": str(pergunta.id)}]},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 422

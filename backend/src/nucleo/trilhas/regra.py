@@ -744,34 +744,185 @@ def _conferir_imagens_declaradas(
     return preservadas
 
 
+def conferir_pergunta_do_quiz(pergunta: dict, *, campo: str = "perguntas") -> dict:
+    """Uma pergunta exige enunciado, quatro alternativas e a correta entre
+    elas (`RF-09-118`, `RN-09-44`). Conferência **única**, de dois
+    chamadores: a declaração do desafio inteiro, que a aplica a cada
+    pergunta da lista, e a escrita de uma pergunta isolada, que grava
+    completa ou não grava (design — decisão 4). O `campo` distingue a
+    recusa por lista da recusa pela pergunta que o Mestre tem na tela.
+    """
+    if not pergunta.get("enunciado", "").strip():
+        raise ErroDeValidacao(mensagem="Toda pergunta do quiz exige um enunciado.", campo=campo)
+    alternativas = pergunta.get("alternativas") or []
+    if len(alternativas) != TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO or not all(
+        alternativa and alternativa.strip() for alternativa in alternativas
+    ):
+        raise ErroDeValidacao(
+            mensagem="Toda pergunta do quiz exige quatro alternativas.", campo=campo
+        )
+    correta = pergunta.get("alternativa_correta")
+    if correta is None or not (
+        PRIMEIRA_ALTERNATIVA_DO_DESBLOQUEIO <= correta <= TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO
+    ):
+        raise ErroDeValidacao(
+            mensagem="Toda pergunta do quiz exige a alternativa correta.", campo=campo
+        )
+    return pergunta
+
+
 def _conferir_perguntas_do_quiz(perguntas: list[dict] | None) -> list[dict]:
-    """Quiz exige ao menos uma pergunta, e cada uma exige enunciado, quatro
-    alternativas e a correta entre elas (`RN-09-43`, `RF-09-118`)."""
+    """Quiz exige ao menos uma pergunta, e cada uma exige o que
+    `conferir_pergunta_do_quiz` confere (`RN-09-43`, `RF-09-118`)."""
     if not perguntas:
         raise ErroDeValidacao(
             mensagem="Desafio em forma de quiz exige ao menos uma pergunta.",
             campo="perguntas",
         )
     for pergunta in perguntas:
-        if not pergunta.get("enunciado", "").strip():
-            raise ErroDeValidacao(
-                mensagem="Toda pergunta do quiz exige um enunciado.", campo="perguntas"
-            )
-        alternativas = pergunta.get("alternativas") or []
-        if len(alternativas) != TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO or not all(
-            alternativa and alternativa.strip() for alternativa in alternativas
-        ):
-            raise ErroDeValidacao(
-                mensagem="Toda pergunta do quiz exige quatro alternativas.", campo="perguntas"
-            )
-        correta = pergunta.get("alternativa_correta")
-        if correta is None or not (
-            PRIMEIRA_ALTERNATIVA_DO_DESBLOQUEIO <= correta <= TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO
-        ):
-            raise ErroDeValidacao(
-                mensagem="Toda pergunta do quiz exige a alternativa correta.", campo="perguntas"
-            )
+        conferir_pergunta_do_quiz(pergunta)
     return perguntas
+
+
+def _conferir_posse_da_pergunta(
+    sessao: Session, pergunta: PerguntaDoDesbloqueio | None, operador: Persona
+) -> PerguntaDoDesbloqueio:
+    """A pergunta é da missão, e a missão é da trilha do Mestre autor — a
+    mesma posse que a declaração do desafio inteiro confere (`RF-09-120`).
+    Pergunta já substituída não se escreve: ela pertence ao registro da
+    tentativa, não ao desafio vigente (`RN-05-47`)."""
+    if pergunta is None:
+        raise NaoEncontrado(mensagem="Pergunta não encontrada.")
+    if pergunta.substituida_em is not None:
+        raise NaoEncontrado(mensagem="Pergunta não encontrada.")
+    missao = sessao.get(Missao, pergunta.missao_id)
+    conferir_posse_da_trilha(sessao.get(Trilha, missao.trilha_id), operador)
+    return pergunta
+
+
+def _alguma_submissao_respondeu(sessao: Session, pergunta: PerguntaDoDesbloqueio) -> bool:
+    return sessao.query(RespostaDaSubmissao).filter_by(pergunta_id=pergunta.id).first() is not None
+
+
+def _aplicar_pergunta(alvo: PerguntaDoDesbloqueio, pergunta: dict) -> None:
+    alvo.enunciado = pergunta["enunciado"]
+    (
+        alvo.alternativa_1,
+        alvo.alternativa_2,
+        alvo.alternativa_3,
+        alvo.alternativa_4,
+    ) = pergunta["alternativas"]
+    alvo.alternativa_correta = pergunta["alternativa_correta"]
+
+
+def acrescentar_pergunta_do_desbloqueio(
+    sessao: Session,
+    *,
+    operador: Persona,
+    missao: Missao | None,
+    pergunta: dict,
+) -> PerguntaDoDesbloqueio:
+    """Acrescenta **uma** pergunta ao quiz sem tocar nas demais, ao fim da
+    ordem vigente (`RF-09-120`, design — decisão 3). Grava completa ou não
+    grava (`RN-09-44`). A pergunta nasce com id próprio, e é por ele que a
+    imagem dela passa a ser endereçável, sem declaração prévia do desafio
+    inteiro (`RF-09-119`)."""
+    if missao is None:
+        raise NaoEncontrado(mensagem="Missão não encontrada.")
+    conferir_posse_da_trilha(sessao.get(Trilha, missao.trilha_id), operador)
+    conferir_pergunta_do_quiz(pergunta, campo="pergunta")
+
+    if missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.pratico:
+        raise ErroDeValidacao(
+            mensagem=(
+                "O desafio desta missão é prático. Declare-a como quiz antes de acrescentar "
+                "perguntas."
+            ),
+            campo="pergunta",
+        )
+
+    vigentes = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    nova = PerguntaDoDesbloqueio(
+        missao_id=missao.id,
+        ordem=max((vigente.ordem for vigente in vigentes), default=0) + 1,
+    )
+    _aplicar_pergunta(nova, pergunta)
+    sessao.add(nova)
+
+    # Acrescentar pergunta a missão que ainda não tem desafio declarado a
+    # faz quiz: é o mesmo efeito da declaração, pela unidade menor.
+    if missao.tipo_do_desafio_de_desbloqueio is None:
+        missao.tipo_do_desafio_de_desbloqueio = TipoDeDesafioDeDesbloqueio.quiz
+        missao.desafio_de_desbloqueio_enunciado = None
+
+    sessao.flush()
+    return nova
+
+
+def corrigir_pergunta_do_desbloqueio(
+    sessao: Session,
+    *,
+    operador: Persona,
+    pergunta: PerguntaDoDesbloqueio | None,
+    conteudo: dict,
+) -> PerguntaDoDesbloqueio:
+    """Corrige **uma** pergunta sem tocar nas demais nem na ordem delas
+    (`RF-09-120`). Ninguém tendo respondido, a linha é atualizada no lugar e
+    o id, a ordem e a imagem seguem os mesmos — é o caminho comum da
+    autoria, e é o que mantém estável a referência da imagem, que nasce do
+    id. Havendo resposta gravada, a vigente é **carimbada** e uma linha nova
+    nasce na mesma ordem, com as três colunas da imagem copiadas: `RN-05-47`
+    protege a tentativa registrada, e onde não há tentativa não há o que
+    proteger (design — decisão 2)."""
+    alvo = _conferir_posse_da_pergunta(sessao, pergunta, operador)
+    conferir_pergunta_do_quiz(conteudo, campo="pergunta")
+
+    if not _alguma_submissao_respondeu(sessao, alvo):
+        _aplicar_pergunta(alvo, conteudo)
+        sessao.flush()
+        return alvo
+
+    # O carimbo precede a inserção, com o `flush` entre os dois, para que o
+    # índice parcial de (missão, ordem) nunca veja duas gerações vigentes.
+    ordem = alvo.ordem
+    alvo.substituida_em = agora()
+    sessao.flush()
+
+    corrigida = PerguntaDoDesbloqueio(
+        missao_id=alvo.missao_id,
+        ordem=ordem,
+        imagem_referencia=alvo.imagem_referencia,
+        imagem_tipo=alvo.imagem_tipo,
+        imagem_tamanho=alvo.imagem_tamanho,
+    )
+    _aplicar_pergunta(corrigida, conteudo)
+    sessao.add(corrigida)
+    sessao.flush()
+    return corrigida
+
+
+def remover_pergunta_do_desbloqueio(
+    sessao: Session, *, operador: Persona, pergunta: PerguntaDoDesbloqueio | None
+) -> None:
+    """Tira **uma** pergunta do quiz carimbando-a: ela sai da leitura e
+    permanece guardada, para a submissão que a aponta (`RN-05-47`). Não
+    renumera as restantes — a ordem é sequência, não índice, e reescrever
+    linha que o ato não pediu para mudar contraria o próprio requisito
+    (`RF-09-120`, design — decisão 3). Remover a **única** pergunta é
+    recusado: quiz sem nenhuma pergunta é o estado que `RN-09-43` já recusa
+    na declaração (design — decisão 5)."""
+    alvo = _conferir_posse_da_pergunta(sessao, pergunta, operador)
+
+    if len(perguntas_do_desbloqueio(sessao, missao_id=alvo.missao_id)) <= 1:
+        raise ErroDeValidacao(
+            mensagem=(
+                "O quiz precisa de ao menos uma pergunta. Acrescente outra antes de remover esta."
+            ),
+            campo="pergunta",
+        )
+
+    alvo.substituida_em = agora()
+    sessao.flush()
 
 
 # A imagem da pergunta tem lista e teto próprios: só os **formatos de

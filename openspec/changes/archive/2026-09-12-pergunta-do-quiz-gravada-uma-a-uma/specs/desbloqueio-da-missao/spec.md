@@ -19,6 +19,12 @@ A pergunta acrescentada SHALL entrar **ao fim** da ordem vigente do quiz. Corrig
 NEVER SHALL alterar a ordem dela nem a das demais. **Reordenar** as perguntas segue sendo da
 declaração do desafio inteiro, que permanece. (`RF-09-118`, `RF-09-120`)
 
+Acrescentar pergunta a missão que **ainda não tem desafio declarado** SHALL declará-la **quiz**,
+pelo mesmo ato: é o efeito que a declaração do desafio teria, alcançado pela unidade menor, e
+sem ele a primeira pergunta de um quiz novo não teria como nascer isolada. Missão que já tem
+desafio **prático** declarado NEVER SHALL receber pergunta por este caminho: SHALL ser recusada
+com **422**, dizendo que o desafio dela é prático. (`RF-09-120`, `RF-09-26`)
+
 Corrigir ou remover pergunta que alguma submissão já respondeu NEVER SHALL apagá-la nem
 alterá-la, nem falhar por causa dela: a pergunta anterior **sai da leitura do desafio** e
 permanece guardada, para que o registro da tentativa siga apontando o que o Guerreiro(a)
@@ -40,6 +46,18 @@ assim que existe — sem que o Mestre precise declarar o desafio inteiro antes. 
   tem três perguntas
 - **THEN** o núcleo grava a quarta ao fim da ordem, e as três anteriores seguem intactas, com
   os mesmos identificadores e as mesmas imagens
+
+#### Scenario: A primeira pergunta declara a missão como quiz
+
+- **WHEN** o Mestre autor acrescenta uma pergunta a uma missão que ainda não tem desafio de
+  desbloqueio declarado
+- **THEN** o núcleo grava a pergunta e a missão passa a ter desafio em forma de quiz
+
+#### Scenario: Missão de desafio prático não recebe pergunta
+
+- **WHEN** o Mestre autor acrescenta uma pergunta a uma missão cujo desafio declarado é prático
+- **THEN** o núcleo responde **422** dizendo que o desafio daquela missão é prático, e nada é
+  gravado
 
 #### Scenario: Corrigir uma pergunta não toca nas demais
 

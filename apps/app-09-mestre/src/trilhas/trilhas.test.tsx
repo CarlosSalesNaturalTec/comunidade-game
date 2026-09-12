@@ -1269,6 +1269,136 @@ describe("a imagem da pergunta do quiz (RF-09-119)", () => {
     ).toBeInTheDocument();
   });
 
+  it("grava uma pergunta sem gravar as outras (RF-09-120)", async () => {
+    const corrigir = vi.spyOn(trilhasApi, "corrigirPerguntaDoDesbloqueio").mockResolvedValue({
+      id: "pergunta-1",
+      ordem: 1,
+      enunciado: "O que o gráfico mostra? mesmo?",
+      alternativas: ["a", "b", "c", "d"],
+      alternativa_correta: 1,
+      imagem_referencia: null,
+    });
+    const declarar = vi.spyOn(trilhasApi, "declararDesafioDeDesbloqueio");
+
+    const usuario = await abrirDesafioComQuizGravado();
+    await usuario.type(screen.getByLabelText(/^enunciado da pergunta 1$/i), " mesmo?");
+    await usuario.click(screen.getByRole("button", { name: /salvar pergunta 1/i }));
+
+    await waitFor(() => expect(corrigir).toHaveBeenCalled());
+    expect(corrigir.mock.calls[0][0]).toBe("pergunta-1");
+    expect(corrigir.mock.calls[0][1]).toEqual({
+      enunciado: "O que o gráfico mostra? mesmo?",
+      alternativas: ["a", "b", "c", "d"],
+      alternativa_correta: 1,
+    });
+    // Gravar a pergunta nunca passa pela declaração do desafio inteiro.
+    expect(declarar).not.toHaveBeenCalled();
+  });
+
+  it("a recusa de uma pergunta não derruba o que está escrito nas outras", async () => {
+    vi.spyOn(trilhasApi, "corrigirPerguntaDoDesbloqueio").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "Toda pergunta do quiz exige quatro alternativas.",
+        campo: "pergunta",
+      }),
+    );
+
+    const usuario = await abrirDesafioComQuizGravado();
+    await usuario.click(await screen.findByRole("button", { name: /acrescentar pergunta/i }));
+    await usuario.type(
+      screen.getByLabelText(/^enunciado da pergunta 2$/i),
+      "Escrita que não pode sumir",
+    );
+    await usuario.click(screen.getByRole("button", { name: /salvar pergunta 1/i }));
+
+    expect(
+      await screen.findByText(/toda pergunta do quiz exige quatro alternativas/i),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/^enunciado da pergunta 2$/i)).toHaveValue(
+      "Escrita que não pode sumir",
+    );
+  });
+
+  it("anexar imagem a pergunta nova grava a pergunta sozinha (RF-09-120)", async () => {
+    const acrescentar = vi
+      .spyOn(trilhasApi, "acrescentarPerguntaDoDesbloqueio")
+      .mockResolvedValue({
+        id: "pergunta-2",
+        ordem: 2,
+        enunciado: "Pergunta nova",
+        alternativas: ["a", "b", "c", "d"],
+        alternativa_correta: 1,
+        imagem_referencia: null,
+      });
+    const abrir = vi
+      .spyOn(trilhasApi, "abrirEnvioDaImagemDaPergunta")
+      .mockResolvedValue("/v1/armazenamento/sessoes/abc");
+    vi.spyOn(trilhasApi, "enviarArquivo").mockResolvedValue(undefined);
+    const confirmar = vi
+      .spyOn(trilhasApi, "confirmarEnvioDaImagemDaPergunta")
+      .mockResolvedValue({
+        id: "pergunta-2",
+        ordem: 2,
+        enunciado: "Pergunta nova",
+        alternativas: ["a", "b", "c", "d"],
+        alternativa_correta: 1,
+        imagem_referencia: "perguntas-do-desbloqueio/pergunta-2/imagem",
+      });
+
+    const usuario = await abrirDesafioComQuizGravado();
+    await usuario.click(await screen.findByRole("button", { name: /acrescentar pergunta/i }));
+    const arquivo = new File(["conteudo"], "grafico.png", { type: "image/png" });
+    await usuario.upload(screen.getByLabelText(/imagem da pergunta 2/i), arquivo);
+
+    // Um gesto só: a pergunta é gravada e o envio emenda com o id que voltou.
+    await waitFor(() => expect(confirmar).toHaveBeenCalled());
+    expect(acrescentar).toHaveBeenCalled();
+    expect(abrir.mock.calls[0][0]).toBe("pergunta-2");
+    expect(confirmar.mock.calls[0][0]).toBe("pergunta-2");
+  });
+
+  it("anexar imagem a pergunta incompleta diz o que falta e não abre envio", async () => {
+    vi.spyOn(trilhasApi, "acrescentarPerguntaDoDesbloqueio").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "Toda pergunta do quiz exige quatro alternativas.",
+        campo: "pergunta",
+      }),
+    );
+    const abrir = vi.spyOn(trilhasApi, "abrirEnvioDaImagemDaPergunta");
+
+    const usuario = await abrirDesafioComQuizGravado();
+    await usuario.click(await screen.findByRole("button", { name: /acrescentar pergunta/i }));
+    const arquivo = new File(["conteudo"], "grafico.png", { type: "image/png" });
+    await usuario.upload(screen.getByLabelText(/imagem da pergunta 2/i), arquivo);
+
+    expect(
+      await screen.findByText(/toda pergunta do quiz exige quatro alternativas/i),
+    ).toBeInTheDocument();
+    expect(abrir).not.toHaveBeenCalled();
+  });
+
+  it("remover pergunta gravada passa pelo núcleo, que recusa a última", async () => {
+    const remover = vi.spyOn(trilhasApi, "removerPerguntaDoDesbloqueio").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "O quiz precisa de ao menos uma pergunta.",
+        campo: "pergunta",
+      }),
+    );
+
+    const usuario = await abrirDesafioComQuizGravado();
+    await usuario.click(await screen.findByRole("button", { name: /remover pergunta 1/i }));
+
+    await waitFor(() => expect(remover).toHaveBeenCalledWith("pergunta-1", "token-do-mestre"));
+    expect(
+      await screen.findByText(/o quiz precisa de ao menos uma pergunta/i),
+    ).toBeInTheDocument();
+    // A pergunta recusada segue na tela.
+    expect(screen.getByLabelText(/^enunciado da pergunta 1$/i)).toBeInTheDocument();
+  });
+
   it("remover a imagem grava a pergunta sem referência", async () => {
     const declararEspiado = vi
       .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
@@ -2963,6 +3093,39 @@ describe("a sondagem se chama pelo nome na Área do Mestre (RF-09-81, RN-09-30)"
     expect(
       screen.queryByText(/esse desafio é que abre a missão seguinte/i),
     ).not.toBeInTheDocument();
+  });
+
+  it("a sondagem grava pergunta a pergunta como qualquer quiz (RF-09-120)", async () => {
+    const corrigir = vi.spyOn(trilhasApi, "corrigirPerguntaDoDesbloqueio").mockResolvedValue({
+      id: "pergunta-da-sondagem",
+      ordem: 1,
+      enunciado: "De onde você parte? mesmo?",
+      alternativas: ["a", "b", "c", "d"],
+      alternativa_correta: 1,
+      imagem_referencia: null,
+    });
+
+    const usuario = await abrirSondagem(
+      missao({
+        titulo: "De onde a turma parte",
+        e_sondagem: true,
+        tipo_do_desafio_de_desbloqueio: "quiz",
+        perguntas_do_desbloqueio: [
+          {
+            id: "pergunta-da-sondagem",
+            ordem: 1,
+            enunciado: "De onde você parte?",
+            alternativas: ["a", "b", "c", "d"],
+            alternativa_correta: 1,
+          },
+        ],
+      }),
+    );
+    await usuario.type(screen.getByLabelText(/^enunciado da pergunta 1$/i), " mesmo?");
+    await usuario.click(screen.getByRole("button", { name: /salvar pergunta 1/i }));
+
+    await waitFor(() => expect(corrigir).toHaveBeenCalled());
+    expect(corrigir.mock.calls[0][0]).toBe("pergunta-da-sondagem");
   });
 
   it("a sondagem não anuncia o corte de 60%", async () => {

@@ -303,6 +303,58 @@ export function lerImagemDaPergunta(idDaPergunta: string, token: string): Promis
   return lerArquivoDoNucleo(`/v1/perguntas-do-desbloqueio/${idDaPergunta}/imagem`, { token });
 }
 
+// O que a escrita de uma pergunta isolada manda: só os três campos do
+// texto. A imagem não vai aqui — ela é endereçada pelo id da pergunta, nas
+// rotas próprias, e é isso que faz corrigir o texto nunca mexer nela
+// (`RF-09-120`, design — decisão 2).
+export interface PerguntaDoDesbloqueioEscritaEntrada {
+  enunciado: string;
+  alternativas: string[];
+  alternativa_correta: number;
+}
+
+// Acrescenta uma pergunta ao fim do quiz sem tocar nas demais. A primeira
+// pergunta de uma missão sem desafio declarado a torna quiz; a missão de
+// desafio prático recusa (`RF-09-120`, `RN-09-44`).
+export function acrescentarPerguntaDoDesbloqueio(
+  idDaMissao: string,
+  entrada: PerguntaDoDesbloqueioEscritaEntrada,
+  token: string,
+): Promise<PerguntaDoDesbloqueio> {
+  return chamarNucleo<PerguntaDoDesbloqueio>(
+    `/v1/missoes/${idDaMissao}/perguntas-do-desbloqueio`,
+    { metodo: "POST", corpo: entrada, token },
+  );
+}
+
+// Corrige uma pergunta sem tocar nas demais. A resposta traz a pergunta
+// **como ficou**, id inclusive: corrigir pergunta que alguém já respondeu
+// nasce em linha nova, e é por ela que a tela sabe o id que passou a valer
+// (`RF-09-120`, `RN-05-47`).
+export function corrigirPerguntaDoDesbloqueio(
+  idDaPergunta: string,
+  entrada: PerguntaDoDesbloqueioEscritaEntrada,
+  token: string,
+): Promise<PerguntaDoDesbloqueio> {
+  return chamarNucleo<PerguntaDoDesbloqueio>(`/v1/perguntas-do-desbloqueio/${idDaPergunta}`, {
+    metodo: "PUT",
+    corpo: entrada,
+    token,
+  });
+}
+
+// Tira a pergunta do quiz. Remover a única é recusado pelo núcleo, porque
+// quiz sem nenhuma pergunta é o que `RN-09-43` já recusa (`RF-09-120`).
+export function removerPerguntaDoDesbloqueio(
+  idDaPergunta: string,
+  token: string,
+): Promise<void> {
+  return chamarNucleo<void>(`/v1/perguntas-do-desbloqueio/${idDaPergunta}`, {
+    metodo: "DELETE",
+    token,
+  });
+}
+
 export interface DeclararDesafioDeDesbloqueioEntrada {
   tipo: TipoDeDesafioDeDesbloqueio;
   // O quiz manda `perguntas`, uma ou mais; o prático manda `enunciado`
