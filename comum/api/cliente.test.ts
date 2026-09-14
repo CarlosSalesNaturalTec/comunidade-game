@@ -5,6 +5,7 @@ import {
   ErroDaApi,
   ehRecusaDeChave,
   ehRecusaDeSessao,
+  enviarParteComProgresso,
   lerArquivoDoNucleo,
 } from "./cliente";
 
@@ -193,5 +194,163 @@ describe("lerArquivoDoNucleo", () => {
 
     expect(erro).toBeInstanceOf(ErroDaApi);
     expect(erro.status).toBe(403);
+  });
+});
+
+// O envio de bytes não passa por `fetch`: usa `XMLHttpRequest`, porque só
+// ele expõe o progresso. O dublê abaixo reproduz o que a camada lê da
+// requisição — status, corpo e cabeçalho `Range` — e dispara `onload` ou
+// `onerror` conforme o desfecho que o caso quer exercitar.
+class RequisicaoDeMentira {
+  static desfecho: {
+    status?: number;
+    corpo?: string;
+    range?: string;
+    semResposta?: boolean;
+  } = {};
+
+  status = 0;
+  responseText = "";
+  upload = { onprogress: null as ((evento: ProgressEvent) => void) | null };
+  onload: (() => void) | null = null;
+  onerror: (() => void) | null = null;
+  private cabecalhos: Record<string, string> = {};
+
+  open() {}
+  setRequestHeader() {}
+  getResponseHeader(nome: string): string | null {
+    return this.cabecalhos[nome] ?? null;
+  }
+
+  send() {
+    const desfecho = RequisicaoDeMentira.desfecho;
+    queueMicrotask(() => {
+      if (desfecho.semResposta) {
+        this.onerror?.();
+        return;
+      }
+      this.status = desfecho.status ?? 200;
+      this.responseText = desfecho.corpo ?? "";
+      if (desfecho.range) this.cabecalhos.Range = desfecho.range;
+      this.onload?.();
+    });
+  }
+}
+
+describe("enviarParteComProgresso", () => {
+  beforeEach(() => {
+    vi.stubGlobal("XMLHttpRequest", RequisicaoDeMentira);
+    RequisicaoDeMentira.desfecho = {};
+    configurarAcessoAoNucleo({
+      chaveDeAplicacao: "chave-de-teste",
+      urlDoNucleo: "https://nucleo.teste",
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("a parte aceita conclui o envio", async () => {
+    RequisicaoDeMentira.desfecho = { status: 200 };
+
+    const resultado = await enviarParteComProgresso(
+      "/v1/armazenamento/sessoes/uma-sessao",
+      new Blob(["abc"]),
+      "bytes 0-2/3",
+      () => {},
+    );
+
+    expect(resultado.concluido).toBe(true);
+  });
+
+  it("o 308 diz de onde retomar, pelo cabeçalho Range", async () => {
+    RequisicaoDeMentira.desfecho = { status: 308, range: "bytes=0-1023" };
+
+    const resultado = await enviarParteComProgresso(
+      "/v1/armazenamento/sessoes/uma-sessao",
+      new Blob(["abc"]),
+      "bytes */4096",
+      () => {},
+    );
+
+    expect(resultado.concluido).toBe(false);
+    expect(resultado.bytesRecebidos).toBe(1024);
+  });
+
+  it("a recusa com corpo de erro chega com o código e a mensagem", async () => {
+    // Era aqui que o motivo se perdia: toda recusa virava a mesma frase
+    // própria, e o Mestre lia "tente de novo" no lugar do que o núcleo
+    // tinha dito (`RF-01-02`).
+    RequisicaoDeMentira.desfecho = {
+      status: 413,
+      corpo: JSON.stringify({
+        codigo: "arquivo_acima_do_teto",
+        mensagem: "A imagem enviada tem 2,3 MB e o limite é 1,0 MB.",
+      }),
+    };
+
+    const erro = await enviarParteComProgresso(
+      "/v1/armazenamento/sessoes/uma-sessao",
+      new Blob(["abc"]),
+      "bytes 0-2/3",
+      () => {},
+    ).catch((e) => e);
+
+    expect(erro).toBeInstanceOf(ErroDaApi);
+    expect(erro.status).toBe(413);
+    expect(erro.codigo).toBe("arquivo_acima_do_teto");
+    expect(erro.message).toBe("A imagem enviada tem 2,3 MB e o limite é 1,0 MB.");
+  });
+
+  it("a recusa de sessão no envio é reconhecida como tal", async () => {
+    RequisicaoDeMentira.desfecho = {
+      status: 401,
+      corpo: JSON.stringify({ codigo: "sessao_invalida", mensagem: "Sessão expirada." }),
+    };
+
+    const erro = await enviarParteComProgresso(
+      "/v1/armazenamento/sessoes/uma-sessao",
+      new Blob(["abc"]),
+      "bytes 0-2/3",
+      () => {},
+    ).catch((e) => e);
+
+    expect(ehRecusaDeSessao(erro)).toBe(true);
+  });
+
+  it("a recusa sem corpo do nosso formato preserva o status", async () => {
+    // O armazenamento de produção é de terceiro e responde no formato dele:
+    // não há corpo a preservar, mas o status ainda diz que houve recusa.
+    RequisicaoDeMentira.desfecho = {
+      status: 403,
+      corpo: "<?xml version='1.0'?><Error><Code>AccessDenied</Code></Error>",
+    };
+
+    const erro = await enviarParteComProgresso(
+      "https://armazenamento.externo/sessao",
+      new Blob(["abc"]),
+      "bytes 0-2/3",
+      () => {},
+    ).catch((e) => e);
+
+    expect(erro).toBeInstanceOf(ErroDaApi);
+    expect(erro.status).toBe(403);
+  });
+
+  it("a falha sem resposta não se apresenta como recusa do núcleo", async () => {
+    // O preflight barrado pelo navegador cai aqui: não houve resposta, e
+    // atribuir ao núcleo uma recusa que ele não deu esconde o defeito.
+    RequisicaoDeMentira.desfecho = { semResposta: true };
+
+    const erro = await enviarParteComProgresso(
+      "https://armazenamento.externo/sessao",
+      new Blob(["abc"]),
+      "bytes 0-2/3",
+      () => {},
+    ).catch((e) => e);
+
+    expect(erro).toBeInstanceOf(Error);
+    expect(erro).not.toBeInstanceOf(ErroDaApi);
   });
 });

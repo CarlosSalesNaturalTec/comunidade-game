@@ -97,12 +97,31 @@ bytes NEVER SHALL trafegar pelo núcleo: o cliente envia direto ao armazenamento
 guarda apenas a **referência**. A sessão SHALL admitir continuação a partir do ponto já
 recebido, de modo que a queda de rede NEVER SHALL obrigar a recomeçar do zero. Encerrado o
 envio, o Mestre autor SHALL confirmá-lo, e só então o conteúdo passa a servir bytes.
+
+O endereço devolvido SHALL ser **alcançável pela aplicação que vai enviar**: o armazenamento
+SHALL admitir o envio partindo do endereço próprio de cada aplicação do projeto, com o
+cabeçalho de posição que o protocolo retomável exige, e SHALL devolver ao cliente o cabeçalho
+que diz de onde retomar. Endereço que a aplicação não alcança NEVER SHALL ser tratado como
+sessão aberta: sem isso o envio é barrado **antes** de o armazenamento ser chamado, e nenhuma
+recusa do núcleo explica ao Mestre o que houve. A exigência vale em **todos os ambientes**,
+qualquer que seja o armazenamento por trás.
 (`RF-09-16`, `RF-09-17`, `RF-09-19`, `RN-01-28`, PRD-09 §§9, 10)
 
 #### Scenario: A sessão é aberta e o endereço volta ao cliente
 
 - **WHEN** o Mestre autor pede o envio do arquivo de um conteúdo dele
 - **THEN** o núcleo abre a sessão retomável e devolve o endereço por onde o cliente enviará
+
+#### Scenario: O envio partindo da aplicação do projeto é admitido
+
+- **WHEN** a aplicação do Mestre envia os bytes ao endereço da sessão, a partir do endereço
+  próprio dela, declarando a posição da parte
+- **THEN** o armazenamento aceita o envio e nenhuma etapa anterior ao armazenamento o barra
+
+#### Scenario: A retomada lê do armazenamento de onde continuar
+
+- **WHEN** a aplicação consulta quanto a sessão já recebeu
+- **THEN** o cabeçalho que diz de onde retomar chega à aplicação, e ela continua do ponto certo
 
 #### Scenario: Queda de rede não recomeça o envio
 
@@ -123,7 +142,6 @@ envio, o Mestre autor SHALL confirmá-lo, e só então o conteúdo passa a servi
 
 - **WHEN** um Mestre que não é o autor pede a sessão de envio de um conteúdo
 - **THEN** o núcleo responde **403** e nenhuma sessão é aberta
-
 ### Requirement: O envio aceita só a lista fechada de formatos
 
 O núcleo SHALL aceitar no envio apenas **MP4, WebM, JPG, PNG, WebP, MP3 e PDF**, e SHALL

@@ -196,9 +196,11 @@ def abrir_envio_da_criacao(
     tipo_mime: str | None,
     tamanho_declarado: int | None,
     armazenamento: PortaDeArmazenamento,
+    origem: str | None = None,
 ) -> str:
     """Espelha `conteudos.regra.abrir_envio`: confere autoria, formato e
-    teto antes de abrir a sessão (design — decisão 4)."""
+    teto antes de abrir a sessão (design — decisão 4), e repassa a `origem`
+    ao armazenamento (`RF-09-19`)."""
     if criacao is None:
         raise NaoEncontrado(mensagem="Criação original não encontrada.")
     _conferir_autoria_do_envio(criacao, operador)
@@ -229,6 +231,7 @@ def abrir_envio_da_criacao(
         referencia=_referencia_do_arquivo(criacao),
         tipo_mime=tipo_mime,
         tamanho_declarado=tamanho_declarado,
+        origem=origem,
     )
 
 

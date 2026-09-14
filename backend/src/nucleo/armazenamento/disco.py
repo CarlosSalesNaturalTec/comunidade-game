@@ -43,7 +43,17 @@ class ArmazenamentoEmDisco(PortaDeArmazenamento):
     def _caminho_meta(self, chave: str) -> Path:
         return self._diretorio_sessoes / f"{chave}.meta.json"
 
-    def abrir_sessao(self, *, referencia: str, tipo_mime: str, tamanho_declarado: int) -> str:
+    def abrir_sessao(
+        self,
+        *,
+        referencia: str,
+        tipo_mime: str,
+        tamanho_declarado: int,
+        origem: str | None = None,
+    ) -> str:
+        """`origem` não tem uso aqui: o endereço devolvido é **relativo**, o
+        envio volta ao próprio núcleo e quem responde ao preflight é o CORS
+        dele. Fica na assinatura porque a porta é uma só (`RF-09-19`)."""
         chave = self.chave_da_sessao(referencia)
         self._caminho_meta(chave).write_text(
             json.dumps({"tipo_mime": tipo_mime, "tamanho_declarado": tamanho_declarado})

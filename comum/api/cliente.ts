@@ -157,6 +157,20 @@ export async function lerArquivoDoNucleo(
   return await resposta.blob();
 }
 
+/** O corpo único do PRD-01 quando a resposta do envio o traz. O
+ * armazenamento de produção é de terceiro e responde no formato dele, que
+ * não é este: aí não há corpo a preservar, e quem chama recebe a recusa com
+ * o status e a mensagem de reserva (`RF-01-02`). */
+function corpoDeErroDaResposta(requisicao: XMLHttpRequest): CorpoDeErro | null {
+  try {
+    const corpo = JSON.parse(requisicao.responseText) as Partial<CorpoDeErro>;
+    if (typeof corpo?.codigo !== "string" || typeof corpo?.mensagem !== "string") return null;
+    return corpo as CorpoDeErro;
+  } catch {
+    return null;
+  }
+}
+
 export interface ResultadoDoEnvioDeParte {
   concluido: boolean;
   /** Bytes que o armazenamento confirma ter recebido até agora — é daqui
@@ -202,8 +216,23 @@ export function enviarParteComProgresso(
         resolve({ concluido: false, bytesRecebidos });
         return;
       }
-      reject(new Error("Não foi possível enviar o arquivo."));
+      // A recusa do envio chega a quem consome como qualquer outra da
+      // camada: substituí-la por texto próprio é o que fazia a tela dizer
+      // "tente de novo" quando o núcleo já tinha explicado o motivo
+      // (`RF-01-02`, change `cors-do-bucket-de-armazenamento` — decisão 5).
+      reject(
+        new ErroDaApi(
+          requisicao.status,
+          corpoDeErroDaResposta(requisicao) ?? {
+            codigo: "erro_de_rede",
+            mensagem: "Não foi possível enviar o arquivo.",
+          },
+        ),
+      );
     };
+    // Sem resposta não há recusa: o navegador barrou, a rede caiu ou a
+    // sessão não foi alcançada. Dizer que o núcleo recusou seria inventar
+    // uma recusa que ele não deu.
     requisicao.onerror = () => reject(new Error("Não foi possível enviar o arquivo."));
     requisicao.send(parte);
   });

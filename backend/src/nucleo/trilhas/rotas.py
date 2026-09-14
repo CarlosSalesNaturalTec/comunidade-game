@@ -2,7 +2,7 @@ import uuid
 from datetime import date, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Request, Response
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
@@ -961,6 +961,7 @@ class AbrirEnvioDaImagemSaida(BaseModel):
 def abrir_envio_da_imagem_da_pergunta_rota(
     id_da_pergunta: uuid.UUID,
     entrada: AbrirEnvioDaImagemEntrada,
+    requisicao: Request,
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
     armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
@@ -970,6 +971,9 @@ def abrir_envio_da_imagem_da_pergunta_rota(
     `abrir_envio_da_imagem_da_pergunta`. Os bytes nunca passam por aqui."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     pergunta = _obter_pergunta_do_desbloqueio(sessao_bd, id_da_pergunta)
+    # A origem de quem vai enviar os bytes vai com a abertura da sessão: o
+    # envio parte do navegador e o armazenamento é outra origem, que só o
+    # aceita sabendo de onde vem (`RF-09-19`, design — decisão 3).
     endereco = abrir_envio_da_imagem_da_pergunta(
         sessao_bd,
         pergunta,
@@ -977,6 +981,7 @@ def abrir_envio_da_imagem_da_pergunta_rota(
         tipo_mime=entrada.tipo_mime,
         tamanho_declarado=entrada.tamanho_declarado,
         armazenamento=armazenamento,
+        origem=requisicao.headers.get("Origin"),
     )
     sessao_bd.commit()
     return AbrirEnvioDaImagemSaida(endereco_da_sessao=endereco)

@@ -28,9 +28,24 @@ class PortaDeArmazenamento(ABC):
     def remover(self, *, referencia: str) -> None: ...
 
     @abstractmethod
-    def abrir_sessao(self, *, referencia: str, tipo_mime: str, tamanho_declarado: int) -> str:
+    def abrir_sessao(
+        self,
+        *,
+        referencia: str,
+        tipo_mime: str,
+        tamanho_declarado: int,
+        origem: str | None = None,
+    ) -> str:
         """Abre a sessão de envio retomável e devolve o endereço por onde o
-        cliente enviará os bytes, em partes, direto ao armazenamento."""
+        cliente enviará os bytes, em partes, direto ao armazenamento.
+
+        `origem` é o endereço da aplicação que enviará os bytes, tal como
+        chegou na requisição que pediu a sessão. Quem envia é o **navegador**,
+        e o armazenamento de outra origem só o aceita se a sessão nascer
+        sabendo de onde o envio virá; sem isso o envio é barrado antes de
+        qualquer byte, e a recusa não passa pelo núcleo (`RF-09-19`, design —
+        decisão 3). Ausente, a sessão abre assim mesmo: quem admite ou recusa
+        a origem é o armazenamento, não o núcleo."""
         ...
 
     @abstractmethod
