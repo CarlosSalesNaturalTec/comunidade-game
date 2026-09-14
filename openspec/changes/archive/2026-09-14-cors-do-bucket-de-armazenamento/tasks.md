@@ -1,6 +1,6 @@
 ## 1. Confirmar o defeito antes de consertar
 
-- [ ] 1.1 Reproduzir em produção o anexo da imagem de uma pergunta do quiz, com a aba de rede
+- [ ] 1.1 **EM ABERTO — exige navegador em produção.** Reproduzir o anexo da imagem de uma pergunta do quiz, com a aba de rede
       aberta, e confirmar que o `POST` da sessão responde 201 e que o `PUT` ao armazenamento é
       barrado pelo navegador antes de qualquer byte. Registrar o que a aba mostra no
       `proposal.md`; se a falha for outra, parar a change e corrigir o recorte (`RF-09-119`,
@@ -17,7 +17,10 @@
       mesma sequência do `create` e do `add-iam-policy-binding`, e a linha que lê de volta o
       que o bucket guarda; verificar que a seção segue legível e que nenhuma outra afirma
       comportamento diferente (`RF-09-19`, design — decisão 1).
-- [ ] 2.3 Aplicar a configuração ao bucket de produção, ler de volta o que ele passou a
+- [ ] 2.3 **EM ABERTO — exige credencial de administração do bucket, que a conta de
+      execução não tem por desenho.** Enquanto não for feita, o defeito segue vivo em
+      produção: o código desta change não o resolve sozinho. Aplicar a configuração ao
+      bucket de produção, ler de volta o que ele passou a
       guardar e anexar o resultado à change, como a change do bucket fez com o IAM
       (`RF-09-19`, design — decisão 4).
 
@@ -49,7 +52,7 @@
 
 ## 5. Documentação
 
-- [ ] 5.1 Marcar como implementada a linha `—` desta change no bloco PRD-09 do
+- [x] 5.1 Marcar como implementada a linha `—` desta change no bloco PRD-09 do
       `openspec/cronograma-de-fatias.md`, acrescentada com situação `em andamento` na abertura.
       Nada muda em `docs/`, em `docs/prds/index.md` nem no documento 09: a change não toma
       decisão de produto, aplica o que o documento 03 §11 e o `RF-09-119` já decidiram.
