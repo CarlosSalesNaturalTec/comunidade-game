@@ -82,6 +82,25 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
      --role="roles/storage.objectAdmin"
    ```
 
+   O envio retomável sai do **navegador** direto para o bucket, que é outra origem: sem
+   autorização de origem o navegador barra o `PUT` antes de qualquer byte, e a recusa não vem
+   do núcleo nem aparece no log dele. A lista vigente está em
+   `cors-do-bucket-de-armazenamento.json`, que nomeia as aplicações que enviam bytes — App 09 e
+   App 05 —, o método do envio, o cabeçalho `Content-Range` do protocolo retomável e o `Range`
+   que diz de onde retomar. Aplicar e conferir:
+
+   ```bash
+   gcloud storage buckets update gs://comunidade-game-armazenamento \
+     --cors-file=cors-do-bucket-de-armazenamento.json
+
+   gcloud storage buckets describe gs://comunidade-game-armazenamento --format="default(cors)"
+   ```
+
+   O arquivo é a fonte: mudou aplicação que envia ou endereço dela, mude o arquivo e aplique de
+   novo. Enquanto o filtro web da rede corporativa bloquear `*.comunidadegame.org`, os dois
+   endereços de cada aplicação — o definitivo e o `.web.app` — precisam estar na lista, como no
+   `VITE_URL_DO_NUCLEO` dos workflows de frontend.
+
 3. **Secret Manager** — um segredo por variável sem valor padrão, mais
    `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM`, `CG_DSN_BANCO`, `CG_GEMINI_CHAVE_DE_API` e
    `CG_DEEPSEEK_CHAVE_DE_API` (segredo `cg-deepseek-api-key`). Um segredo

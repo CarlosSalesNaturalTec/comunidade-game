@@ -21,12 +21,27 @@ class ArmazenamentoNoCloudStorage(PortaDeArmazenamento):
     def remover(self, *, referencia: str) -> None:
         self._bucket.blob(referencia).delete()
 
-    def abrir_sessao(self, *, referencia: str, tipo_mime: str, tamanho_declarado: int) -> str:
+    def abrir_sessao(
+        self,
+        *,
+        referencia: str,
+        tipo_mime: str,
+        tamanho_declarado: int,
+        origem: str | None = None,
+    ) -> str:
         """A sessão retomável nativa do Cloud Storage, que já fala o
         protocolo `Content-Range` — não se inventa protocolo novo (design —
-        decisão 2)."""
+        decisão 2).
+
+        A sessão nasce declarando a **origem** de quem enviará os bytes: o
+        envio parte do navegador, e o bucket é outra origem. Quem admite ou
+        recusa a origem é o bucket, pela configuração de
+        `cors-do-bucket-de-armazenamento.json`; o núcleo só a repassa, e por
+        isso não guarda lista própria (`RF-09-19`, design — decisão 3)."""
         blob = self._bucket.blob(referencia)
-        return blob.create_resumable_upload_session(content_type=tipo_mime, size=tamanho_declarado)
+        return blob.create_resumable_upload_session(
+            content_type=tipo_mime, size=tamanho_declarado, origin=origem
+        )
 
     def consultar_envio(self, *, referencia: str) -> EnvioConsultado | None:
         blob = self._bucket.blob(referencia)

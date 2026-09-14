@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
@@ -143,6 +143,7 @@ class AbrirEnvioSaida(BaseModel):
 def abrir_envio_rota(
     id_da_criacao: uuid.UUID,
     entrada: AbrirEnvioEntrada,
+    requisicao: Request,
     contexto: Annotated[
         ContextoDaSessao, Depends(exigir_permissao(Operacao.suas_criacoes, "escreve"))
     ],
@@ -153,6 +154,9 @@ def abrir_envio_rota(
     `conteudos/rotas.py` (design — decisão 4)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     criacao = _obter_criacao(sessao_bd, id_da_criacao)
+    # A origem de quem vai enviar os bytes vai com a abertura da sessão: o
+    # envio parte do navegador e o armazenamento é outra origem, que só o
+    # aceita sabendo de onde vem (`RF-09-19`, design — decisão 3).
     endereco = abrir_envio_da_criacao(
         sessao_bd,
         criacao,
@@ -160,6 +164,7 @@ def abrir_envio_rota(
         tipo_mime=entrada.tipo_mime,
         tamanho_declarado=entrada.tamanho_declarado,
         armazenamento=armazenamento,
+        origem=requisicao.headers.get("Origin"),
     )
     sessao_bd.commit()
     return AbrirEnvioSaida(endereco_da_sessao=endereco)

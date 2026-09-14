@@ -97,7 +97,12 @@ export function EntregaDeCriacao({
       await enviarArquivo(endereco, arquivoAEnviar, (enviados, total) =>
         definirProgresso({ enviados, total }),
       );
-    } catch {
+    } catch (erro) {
+      // Recusa não é queda de rede: convertê-la aqui apagava o motivo que a
+      // camada de acesso agora preserva, e a tela dizia "conexão caiu"
+      // quando o núcleo tinha explicado o que houve (`RF-01-02`, change
+      // `cors-do-bucket-de-armazenamento` — decisão 5).
+      if (erro instanceof ErroDaApi) throw erro;
       throw new QuedaDeRedeDuranteEnvio();
     }
     return confirmarEnvio(idDaCriacao, sessao?.token ?? "");
@@ -117,8 +122,14 @@ export function EntregaDeCriacao({
       );
       await confirmarEnvio(criacaoId, sessao.token);
       aoEntregar();
-    } catch {
-      definirErroDeRecusa(MENSAGEM_DE_QUEDA_DE_REDE);
+    } catch (erro) {
+      if (ehRecusaDeSessao(erro)) {
+        tratarRecusaDeSessao();
+        return;
+      }
+      definirErroDeRecusa(
+        erro instanceof ErroDaApi ? erro.message : MENSAGEM_DE_QUEDA_DE_REDE,
+      );
     } finally {
       definirEnviando(false);
     }

@@ -1,0 +1,13 @@
+[
+  {
+    "origin": [
+      "https://mestre.comunidadegame.org",
+      "https://minhaarea.comunidadegame.org",
+      "https://comunidade-game-mestre.web.app",
+      "https://comunidade-game-minhaarea.web.app"
+    ],
+    "method": ["PUT"],
+    "responseHeader": ["Content-Type", "Content-Range", "Range"],
+    "maxAgeSeconds": 3600
+  }
+]

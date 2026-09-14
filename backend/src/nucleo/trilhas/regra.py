@@ -955,10 +955,12 @@ def abrir_envio_da_imagem_da_pergunta(
     tipo_mime: str | None,
     tamanho_declarado: int | None,
     armazenamento: PortaDeArmazenamento,
+    origem: str | None = None,
 ) -> str:
     """Confere autoria, formato e teto **antes** de abrir a sessão — a
     recusa acontece sem nenhum byte enviado, como em `conteudos.regra`
-    (`RF-09-119`, `RF-09-115`)."""
+    (`RF-09-119`, `RF-09-115`). `origem` é repassada ao armazenamento, que
+    decide se aceita o envio vindo dela (design — decisão 3)."""
     if pergunta is None:
         raise NaoEncontrado(mensagem="Pergunta não encontrada.")
     _conferir_autoria_da_pergunta(sessao, pergunta, operador)
@@ -987,6 +989,7 @@ def abrir_envio_da_imagem_da_pergunta(
         referencia=referencia_da_imagem_da_pergunta(pergunta),
         tipo_mime=tipo_mime,
         tamanho_declarado=tamanho_declarado,
+        origem=origem,
     )
 
 

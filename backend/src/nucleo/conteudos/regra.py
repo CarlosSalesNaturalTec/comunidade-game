@@ -117,10 +117,13 @@ def abrir_envio(
     tipo_mime: str | None,
     tamanho_declarado: int | None,
     armazenamento: PortaDeArmazenamento,
+    origem: str | None = None,
 ) -> str:
     """Confere autoria, formato e teto **antes** de abrir a sessão — a
     recusa de formato e de tamanho acontece sem nenhum byte enviado
-    (`RF-09-16`, `RF-09-17`, `RF-09-115`, `RN-09-06`, design — decisão 1)."""
+    (`RF-09-16`, `RF-09-17`, `RF-09-115`, `RN-09-06`, design — decisão 1).
+    `origem` é repassada ao armazenamento, que decide se aceita o envio
+    vindo dela (`RF-09-19`, design — decisão 3)."""
     if conteudo is None:
         raise ErroDeValidacao(mensagem="Conteúdo não encontrado.", campo="conteudo_id")
     missao = sessao.get(Missao, conteudo.missao_id)
@@ -152,6 +155,7 @@ def abrir_envio(
         referencia=_referencia_do_arquivo(conteudo),
         tipo_mime=tipo_mime,
         tamanho_declarado=tamanho_declarado,
+        origem=origem,
     )
 
 
