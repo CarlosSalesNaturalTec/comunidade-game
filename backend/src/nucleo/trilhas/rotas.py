@@ -415,7 +415,12 @@ def listar_minhas_trilhas_rota(
     design — decisão 1) e o **desafio de desbloqueio**, com a alternativa
     correta e a referência da imagem de cada pergunta: é por esta leitura
     que o Mestre autor reabre e corrige o que declarou (`RF-09-26`,
-    `RF-09-118`, `RF-09-119`)."""
+    `RF-09-118`, `RF-09-119`). Traz também o **conteúdo** e a **bibliografia**
+    já declarados, para o Mestre autor reler o que gravou em sessão anterior
+    (`RF-09-14`, `RF-09-15`, `RF-09-21`); a bibliografia sai sem
+    `ponto_de_apoio_id`, então `disponivel` vem sempre indeterminado — o
+    Mestre não lê como Guerreiro(a) de um ponto de apoio (`RF-09-22`,
+    `RF-09-23`, design — decisão 2)."""
     persona = sessao_bd.get(Persona, contexto.persona_id)
     trilhas = sessao_bd.query(Trilha).filter_by(autor_id=persona.id).all()
 
@@ -430,12 +435,20 @@ def listar_minhas_trilhas_rota(
         missoes_saida = []
         for missao in missoes:
             atividades = sessao_bd.query(Atividade).filter_by(missao_id=missao.id).all()
+            bibliografias = consultar_bibliografia_da_missao(sessao_bd, missao.id)
             missoes_saida.append(
                 MissaoDoMestreSaida(
                     **_saida_da_missao(
                         missao,
                         atividades=atividades,
                         etiquetas=_etiquetas_da_missao(sessao_bd, missao),
+                        conteudos=consultar_conteudos_da_missao(sessao_bd, missao.id),
+                        bibliografia=[
+                            saida_da_bibliografia_publica(
+                                sessao_bd, bibliografia, ponto_de_apoio_id=None
+                            )
+                            for bibliografia in bibliografias
+                        ],
                     ).model_dump(),
                     desafios_de_coleta=_desafios_de_coleta_da_missao(sessao_bd, missao),
                     tipo_do_desafio_de_desbloqueio=missao.tipo_do_desafio_de_desbloqueio,

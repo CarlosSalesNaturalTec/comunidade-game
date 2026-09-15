@@ -554,6 +554,23 @@ PRD-09 §10)
 - **WHEN** o Mestre autor percorre a tela de conteúdo inteira
 - **THEN** nenhum campo pede código, HTML, marcação nem configuração técnica
 
+A aplicação SHALL apresentar o conteúdo já gravado toda vez que o Mestre autor volta à missão,
+em sessão nova inclusive, e não apenas dentro da sessão em que foi escrito: a lista de
+conteúdo NEVER SHALL aparecer vazia quando a missão tem conteúdo gravado. (`RF-09-14`,
+`RF-09-15`)
+
+#### Scenario: O conteúdo gravado reabre em sessão nova
+
+- **WHEN** o Mestre autor anexou uma imagem como conteúdo da missão, saiu da aplicação e volta
+  à mesma missão
+- **THEN** a tela apresenta a imagem já gravada na lista de conteúdo, e não uma lista vazia
+
+#### Scenario: Vários conteúdos de tipos diferentes reabrem juntos
+
+- **WHEN** o Mestre autor declarou texto, imagem e vídeo na mesma missão e volta a ela em
+  sessão nova
+- **THEN** a tela apresenta os três, na ordem em que foram declarados
+
 ### Requirement: O Mestre envia vídeo e arquivo com progresso visível
 
 A App 09 SHALL enviar vídeo e arquivo de apoio pela **sessão retomável** que o núcleo abre,
@@ -607,12 +624,23 @@ SHALL apresentar nem pedir nenhum dos dois. (`RF-09-21`, `RF-09-22`, `RF-09-23`)
 - **WHEN** o Mestre autor declara bibliografia vinculada a exemplar
 - **THEN** a aplicação apresenta o Apoiador que o núcleo devolveu, e não oferece campo para digitá-lo
 
+A aplicação SHALL apresentar as entradas de bibliografia já gravadas toda vez que o Mestre
+autor volta à missão, em sessão nova inclusive, e não apenas dentro da sessão em que foram
+declaradas. (`RF-09-21`)
+
+#### Scenario: A bibliografia gravada reabre em sessão nova
+
+- **WHEN** o Mestre autor declarou duas entradas de bibliografia numa missão, saiu da
+  aplicação e volta a ela
+- **THEN** a tela apresenta as duas entradas já declaradas, e não uma lista vazia
+
 ### Requirement: O Mestre pré-visualiza a missão como o Guerreiro(a) a verá
 
 A App 09 SHALL oferecer ao Mestre autor a **pré-visualização** da missão, apresentando o
 conteúdo e a bibliografia na ordem e na forma em que o Guerreiro(a) os encontrará, antes de a
 trilha ser publicada. A pré-visualização NEVER SHALL gravar coisa alguma e NEVER SHALL alterar
-a situação da trilha. (`RF-09-25`)
+a situação da trilha. A pré-visualização SHALL refletir o conteúdo e a bibliografia gravados
+em qualquer sessão anterior, não só os declarados na sessão corrente. (`RF-09-25`)
 
 #### Scenario: Mestre pré-visualiza antes de publicar
 
@@ -623,6 +651,13 @@ a situação da trilha. (`RF-09-25`)
 
 - **WHEN** o Mestre autor fecha a pré-visualização
 - **THEN** nada foi gravado e a situação da trilha permanece inalterada
+
+#### Scenario: A pré-visualização reflete conteúdo gravado em sessão anterior
+
+- **WHEN** o Mestre autor declarou conteúdo numa sessão anterior e abre a pré-visualização em
+  sessão nova, sem declarar nada antes
+- **THEN** a pré-visualização apresenta o conteúdo já gravado, e não a mensagem de que a missão
+  ainda não tem conteúdo
 
 ### Requirement: A App 09 monta o desafio de desbloqueio da missão
 

@@ -128,8 +128,6 @@ export interface MissaoDaTrilha {
   // de coleta (`RF-09-27`, `RF-09-28`, design — decisão 1). `undefined` é
   // "não veio desta leitura", distinto de lista vazia.
   desafios_de_coleta?: DesafioDeColetaDaMissao[];
-  // Nunca vem de `GET /trilhas/minhas` — só o que foi declarado nesta
-  // sessão, no mesmo padrão que `culminancia` já firma nesta aplicação.
   conteudos?: ConteudoDaMissao[];
   bibliografia?: BibliografiaDaMissao[];
 }
