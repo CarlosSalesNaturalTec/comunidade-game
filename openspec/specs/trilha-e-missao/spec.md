@@ -381,6 +381,19 @@ A alternativa correta e a referência da imagem NEVER SHALL sair por leitura que
 Guerreiro(a) ou qualquer persona que não seja o Mestre autor da trilha: esta leitura é
 exclusiva do autor e é por isso que as carrega. (`RF-09-118`, `RF-05-89`)
 
+Cada missão devolvida por essa leitura SHALL trazer também o **conteúdo** que ela tem
+declarado — texto, imagem, link externo, vídeo e arquivo de apoio —, na ordem disposta pelo
+Mestre, com o tipo, a referência e o tamanho de cada um que tem arquivo, e a autoria e a fonte
+declaradas. Conteúdo sem envio confirmado SHALL vir sem referência de arquivo, do mesmo modo
+que a leitura pública já trata. Missão sem conteúdo declarado SHALL vir com lista vazia, nunca
+com erro. (`RF-09-14`, `RF-09-15`, `RF-09-24`)
+
+Cada missão devolvida por essa leitura SHALL trazer também a **bibliografia** que ela tem
+declarada — título, capítulo e o exemplar tombado apontado, quando houver. Missão sem
+bibliografia declarada SHALL vir com lista vazia, nunca com erro. Esta leitura é a do Mestre
+autor sobre a própria trilha, rascunho ou despublicada inclusive — diferente da leitura
+pública, que só serve trilha publicada. (`RF-09-21`)
+
 #### Scenario: O Mestre lê os próprios rascunhos
 
 - **WHEN** um Mestre em sessão consulta as trilhas dele
@@ -423,6 +436,44 @@ exclusiva do autor e é por isso que as carrega. (`RF-09-118`, `RF-05-89`)
 
 - **WHEN** o Mestre autor consulta as trilhas dele e uma missão nunca teve desafio declarado
 - **THEN** a missão vem sem desafio de desbloqueio, distinguível de um quiz sem pergunta
+
+#### Scenario: A leitura devolve o conteúdo já gravado da missão
+
+- **WHEN** o Mestre autor consulta as trilhas dele e uma missão tem texto, imagem e vídeo
+  declarados
+- **THEN** a missão vem com os três conteúdos, na ordem declarada, cada um com o tipo, a
+  referência de arquivo quando houver, a autoria e a fonte
+
+#### Scenario: A leitura devolve o conteúdo de trilha em rascunho
+
+- **WHEN** o Mestre autor consulta as trilhas dele e uma trilha em rascunho tem missão com
+  conteúdo já gravado
+- **THEN** a missão vem com o conteúdo, ainda que a trilha nunca tenha sido publicada
+
+#### Scenario: Conteúdo sem envio confirmado vem sem referência de arquivo
+
+- **WHEN** o Mestre autor consulta as trilhas dele e uma missão tem conteúdo de vídeo cujo
+  envio ainda não foi confirmado
+- **THEN** aquele conteúdo vem sem referência de arquivo, e nenhuma referência quebrada é
+  devolvida
+
+#### Scenario: Missão sem conteúdo vem com lista vazia
+
+- **WHEN** o Mestre autor consulta as trilhas dele e uma missão nunca teve conteúdo declarado
+- **THEN** a missão vem com a lista de conteúdo vazia, e nenhum erro é respondido
+
+#### Scenario: A leitura devolve a bibliografia já declarada
+
+- **WHEN** o Mestre autor consulta as trilhas dele e uma missão tem duas entradas de
+  bibliografia declaradas, uma vinculada a exemplar e outra não
+- **THEN** a missão vem com as duas entradas, cada uma com título e capítulo, e a vinculada
+  com o exemplar apontado
+
+#### Scenario: Missão sem bibliografia vem com lista vazia
+
+- **WHEN** o Mestre autor consulta as trilhas dele e uma missão nunca teve bibliografia
+  declarada
+- **THEN** a missão vem com a lista de bibliografia vazia, e nenhum erro é respondido
 
 ### Requirement: O Mestre duplica trilha existente como ponto de partida de outra
 

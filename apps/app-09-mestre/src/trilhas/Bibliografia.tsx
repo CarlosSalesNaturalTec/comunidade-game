@@ -95,10 +95,11 @@ export function Bibliografia({ idDaMissao, entradas, onSalva }: Props) {
             {entrada.item_patrimonial_id && (
               <>
                 {" "}
-                ·{" "}
-                {entrada.disponivel
-                  ? "Exemplar disponível no ponto de apoio"
-                  : "Exemplar não disponível neste ponto de apoio"}
+                · {entrada.disponivel === true && "Exemplar disponível no ponto de apoio"}
+                {entrada.disponivel === false &&
+                  "Exemplar não disponível neste ponto de apoio"}
+                {entrada.disponivel == null &&
+                  "Disponibilidade depende do ponto de apoio de cada Guerreiro(a)"}
                 {entrada.apoiador_nome && <> · Doado por {entrada.apoiador_nome}</>}
               </>
             )}

@@ -2509,6 +2509,46 @@ describe("conteúdo da missão (RF-09-14, RF-09-15, RF-09-24)", () => {
     expect(criarConteudoEspiado).not.toHaveBeenCalled();
   });
 
+  it("reabre o conteúdo já gravado em sessão anterior, sem depender de onSalvo", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        missoes: [
+          missao({
+            conteudos: [
+              conteudo({
+                id: "conteudo-terceiro",
+                tipo: "texto",
+                corpo: "Trecho citado de outro autor.",
+                autoria: "terceiro",
+                fonte: "Autor Exemplo, 2020.",
+              }),
+            ],
+            bibliografia: [bibliografia({ titulo: "Robótica Educativa — Sensores" })],
+          }),
+        ],
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const criarConteudoEspiado = vi.spyOn(trilhasApi, "criarConteudo");
+    const criarBibliografiaEspiada = vi.spyOn(trilhasApi, "criarBibliografia");
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Conteúdo"));
+
+    expect(await screen.findByText(/fonte: autor exemplo, 2020\./i)).toBeInTheDocument();
+
+    await usuario.click(await screen.findByText("Bibliografia"));
+    expect(await screen.findByText(/robótica educativa — sensores/i)).toBeInTheDocument();
+
+    expect(criarConteudoEspiado).not.toHaveBeenCalled();
+    expect(criarBibliografiaEspiada).not.toHaveBeenCalled();
+  });
+
   it("nenhum campo pede código, HTML ou marcação", async () => {
     configurarSessao();
     vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
@@ -2741,6 +2781,40 @@ describe("bibliografia da missão (RF-09-21 a RF-09-23)", () => {
       await screen.findByText(/exemplar disponível no ponto de apoio/i),
     ).toBeInTheDocument();
     expect(screen.getByText(/doado por instituto exemplo/i)).toBeInTheDocument();
+  });
+
+  it("entrada com exemplar e disponibilidade indeterminada nunca aparece como não disponível", async () => {
+    // `GET /trilhas/minhas` nunca informa `ponto_de_apoio_id`: toda entrada
+    // vinculada a exemplar chega com `disponivel: null` (design — decisão 3).
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        missoes: [
+          missao({
+            bibliografia: [
+              bibliografia({
+                item_patrimonial_id: "item-1",
+                disponivel: null,
+                apoiador_nome: "Instituto Exemplo",
+              }),
+            ],
+          }),
+        ],
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    await abrirMissao();
+
+    expect(await screen.findByText(/doado por instituto exemplo/i)).toBeInTheDocument();
+    expect(screen.queryByText(/não disponível/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/^exemplar disponível no ponto de apoio$/i),
+    ).not.toBeInTheDocument();
   });
 
   it("não há campo para digitar o Apoiador", async () => {
