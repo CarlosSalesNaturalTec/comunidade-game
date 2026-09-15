@@ -959,6 +959,111 @@ def test_leitura_publica_traz_conteudo_fonte_e_bibliografia_so_quando_publicada(
     assert missao["bibliografia"][0]["titulo"] == "Robótica Educativa"
 
 
+def test_minhas_trilhas_sem_conteudo_nem_bibliografia_vem_com_listas_vazias(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_poder, criar_tipo_de_coleta
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    _criar_trilha_completa_pela_rota(cliente, cabecalhos, poder, criar_tipo_de_coleta, mestre)
+
+    missao = cliente.get("/v1/trilhas/minhas", headers=cabecalhos).json()[0]["missoes"][0]
+
+    assert missao["conteudos"] == []
+    assert missao["bibliografia"] == []
+
+
+def test_minhas_trilhas_devolvem_conteudo_e_bibliografia_ja_gravados(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_tipo_de_coleta,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_item_patrimonial,
+):
+    """Conserto da change `2026-09-15-leitura-de-conteudo-e-bibliografia-pelo-mestre`:
+    `GET /v1/trilhas/minhas` nunca aninhava conteúdo nem bibliografia, só o
+    desafio de coleta e o de desbloqueio — o Mestre autor anexava conteúdo,
+    via o feedback de gravação e, ao sair da missão e voltar, a leitura
+    devolvia lista vazia, embora o dado estivesse no banco. A leitura
+    pública nunca serve rascunho, e é por isso que só a leitura do autor
+    sustenta reler o que foi declarado antes de publicar."""
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    _criar_trilha_completa_pela_rota(cliente, cabecalhos, poder, criar_tipo_de_coleta, mestre)
+    missao_id = cliente.get("/v1/trilhas/minhas", headers=cabecalhos).json()[0]["missoes"][0]["id"]
+
+    cliente.post(
+        f"/v1/missoes/{missao_id}/conteudos",
+        json={"tipo": "texto", "ordem": 1, "corpo": "Texto da missão.", "autoria": "propria"},
+        headers=cabecalhos,
+    )
+    cliente.post(
+        f"/v1/missoes/{missao_id}/conteudos",
+        json={
+            "tipo": "link_externo",
+            "ordem": 2,
+            "endereco": "https://video.exemplo/aula",
+            "autoria": "propria",
+        },
+        headers=cabecalhos,
+    )
+    cliente.post(
+        f"/v1/missoes/{missao_id}/conteudos",
+        json={"tipo": "imagem", "ordem": 3, "autoria": "propria"},
+        headers=cabecalhos,
+    )
+
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    item = criar_item_patrimonial(admin, ponto_de_apoio)
+
+    cliente.post(
+        f"/v1/missoes/{missao_id}/bibliografia",
+        json={"titulo": "Sem exemplar", "capitulo": "Capítulo 1"},
+        headers=cabecalhos,
+    )
+    cliente.post(
+        f"/v1/missoes/{missao_id}/bibliografia",
+        json={
+            "titulo": "Com exemplar",
+            "capitulo": "Capítulo 2",
+            "item_patrimonial_id": str(item.id),
+        },
+        headers=cabecalhos,
+    )
+
+    resposta = cliente.get("/v1/trilhas/minhas", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    trilha = resposta.json()[0]
+    assert trilha["situacao"] == "rascunho"
+    missao = next(m for m in trilha["missoes"] if m["id"] == missao_id)
+
+    conteudos = {c["tipo"]: c for c in missao["conteudos"]}
+    assert len(missao["conteudos"]) == 3
+    assert conteudos["texto"]["corpo"] == "Texto da missão."
+    assert conteudos["link_externo"]["endereco"] == "https://video.exemplo/aula"
+    assert conteudos["imagem"]["referencia"] is None
+
+    bibliografia = {b["titulo"]: b for b in missao["bibliografia"]}
+    assert len(missao["bibliografia"]) == 2
+    # Sem `ponto_de_apoio_id` na leitura do autor, a disponibilidade nunca é
+    # `false` — seria uma indisponibilidade que o núcleo não apurou.
+    assert bibliografia["Sem exemplar"]["disponivel"] is None
+    assert bibliografia["Com exemplar"]["item_patrimonial_id"] == str(item.id)
+    assert bibliografia["Com exemplar"]["disponivel"] is None
+
+
 def test_leitura_publica_nunca_traz_a_alternativa_correta_do_desafio(
     cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_poder, criar_tipo_de_coleta
 ):

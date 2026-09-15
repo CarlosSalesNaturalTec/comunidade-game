@@ -60,8 +60,14 @@ export interface BibliografiaDaMissao {
   titulo: string;
   capitulo: string;
   item_patrimonial_id: string | null;
-  // Só a leitura pública (`GET /trilhas/{id}`) devolve os dois — a criação
-  // nunca aceita nem grava nenhum (`RF-09-22`, `RF-09-23`).
+  // A criação nunca aceita nem grava nenhum dos dois (`RF-09-22`,
+  // `RF-09-23`); a leitura pública e a leitura das trilhas próprias do
+  // Mestre (`GET /trilhas/minhas`) já os devolvem. Nesta última,
+  // `disponivel` vem sempre `null` — o Mestre autor não lê como um
+  // Guerreiro(a) de um ponto de apoio específico, e a disponibilidade só
+  // se determina em relação a um: `null` é "indeterminado", nunca "não
+  // disponível" (change
+  // `2026-09-15-leitura-de-conteudo-e-bibliografia-pelo-mestre`).
   disponivel?: boolean | null;
   apoiador_nome?: string | null;
 }
@@ -128,8 +134,11 @@ export interface MissaoDaTrilha {
   // de coleta (`RF-09-27`, `RF-09-28`, design — decisão 1). `undefined` é
   // "não veio desta leitura", distinto de lista vazia.
   desafios_de_coleta?: DesafioDeColetaDaMissao[];
-  // Nunca vem de `GET /trilhas/minhas` — só o que foi declarado nesta
-  // sessão, no mesmo padrão que `culminancia` já firma nesta aplicação.
+  // Vem de `GET /trilhas/minhas`, na mesma forma que a leitura pública já
+  // traz, inclusive de trilha em rascunho — é assim que o Mestre autor
+  // relê o que já gravou (change
+  // `2026-09-15-leitura-de-conteudo-e-bibliografia-pelo-mestre`).
+  // `undefined` é "não veio desta leitura", distinto de lista vazia.
   conteudos?: ConteudoDaMissao[];
   bibliografia?: BibliografiaDaMissao[];
 }

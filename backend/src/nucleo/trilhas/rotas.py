@@ -110,6 +110,11 @@ class BibliografiaPublicaSaida(BaseModel):
     missao_id: uuid.UUID
     titulo: str
     capitulo: str
+    # Presente também na leitura do Mestre autor (`GET /v1/trilhas/minhas`),
+    # para a tela decidir se mostra disponibilidade e crédito — sem ele, uma
+    # entrada vinculada pareceria não ter exemplar algum (change
+    # `2026-09-15-leitura-de-conteudo-e-bibliografia-pelo-mestre`).
+    item_patrimonial_id: uuid.UUID | None
     disponivel: bool | None
     apoiador_nome: str | None
 
@@ -125,6 +130,7 @@ def saida_da_bibliografia_publica(
         missao_id=bibliografia.missao_id,
         titulo=bibliografia.titulo,
         capitulo=bibliografia.capitulo,
+        item_patrimonial_id=bibliografia.item_patrimonial_id,
         disponivel=disponivel,
         apoiador_nome=apoiador.nome if apoiador is not None else None,
     )
@@ -412,10 +418,17 @@ def listar_minhas_trilhas_rota(
     própria para nenhuma das duas (design — decisão 2). Bem comum da
     plataforma: sem filtro de comunidade (`RN-01-42`). Cada missão traz
     também os desafios de coleta já declarados nela (`RF-09-27`, `RF-09-28`,
-    design — decisão 1) e o **desafio de desbloqueio**, com a alternativa
-    correta e a referência da imagem de cada pergunta: é por esta leitura
-    que o Mestre autor reabre e corrige o que declarou (`RF-09-26`,
-    `RF-09-118`, `RF-09-119`)."""
+    design — decisão 1), o **desafio de desbloqueio**, com a alternativa
+    correta e a referência da imagem de cada pergunta (`RF-09-26`,
+    `RF-09-118`, `RF-09-119`), e o **conteúdo** e a **bibliografia** já
+    gravados, na mesma forma que a leitura pública já traz — é por esta
+    leitura que o Mestre autor reabre e corrige o que declarou (`RF-09-14`,
+    `RF-09-15`, `RF-09-21` a `RF-09-23`). A bibliografia sai sem
+    `ponto_de_apoio_id`, porque o Mestre autor não lê como um Guerreiro(a)
+    de um ponto específico: a disponibilidade fica indeterminada, e o
+    crédito ao Apoiador continua resolvido quando existe aporte de origem
+    (change `2026-09-15-leitura-de-conteudo-e-bibliografia-pelo-mestre`,
+    design — decisão 2)."""
     persona = sessao_bd.get(Persona, contexto.persona_id)
     trilhas = sessao_bd.query(Trilha).filter_by(autor_id=persona.id).all()
 
@@ -430,12 +443,20 @@ def listar_minhas_trilhas_rota(
         missoes_saida = []
         for missao in missoes:
             atividades = sessao_bd.query(Atividade).filter_by(missao_id=missao.id).all()
+            bibliografias = consultar_bibliografia_da_missao(sessao_bd, missao.id)
             missoes_saida.append(
                 MissaoDoMestreSaida(
                     **_saida_da_missao(
                         missao,
                         atividades=atividades,
                         etiquetas=_etiquetas_da_missao(sessao_bd, missao),
+                        conteudos=consultar_conteudos_da_missao(sessao_bd, missao.id),
+                        bibliografia=[
+                            saida_da_bibliografia_publica(
+                                sessao_bd, bibliografia, ponto_de_apoio_id=None
+                            )
+                            for bibliografia in bibliografias
+                        ],
                     ).model_dump(),
                     desafios_de_coleta=_desafios_de_coleta_da_missao(sessao_bd, missao),
                     tipo_do_desafio_de_desbloqueio=missao.tipo_do_desafio_de_desbloqueio,

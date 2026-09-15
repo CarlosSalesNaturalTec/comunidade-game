@@ -33,7 +33,8 @@ Ver `proposal.md` — Why. O que o desenho precisa considerar:
 - Mudar como a disponibilidade e o crédito são derivados (`bibliografia-da-missao` já fixa
   isso) — só estende onde a derivação é chamada.
 - Tocar o upload, a trava de fonte do conteúdo de terceiro ou a leitura pública — já corretos.
-- Mudar o formato de `ConteudoSaida` ou `BibliografiaPublicaSaida` — reaproveitados como estão.
+- Mudar o formato de `ConteudoSaida` — reaproveitado como está. `BibliografiaPublicaSaida`
+  ganha um campo (decisão 2), não muda os que já tinha.
 
 ## Decisions
 
@@ -53,6 +54,14 @@ apoio. _Descartada:_ um tipo `BibliografiaDoMestreSaida` sem `disponivel`/`apoia
 `area-do-mestre` spec já promete o crédito ao Mestre ("Havendo vínculo, a aplicação SHALL
 apresentar ao Mestre [...] o Apoiador creditado"), e omitir os campos privaria o Mestre do
 crédito que a função já sabe calcular.
+
+`BibliografiaPublicaSaida` ganha o campo `item_patrimonial_id`, que não tinha: a tela do Mestre
+(`Bibliografia.tsx`) decide se mostra a linha de disponibilidade por `entrada.item_patrimonial_id`
+truthy, e sem o campo toda entrada vinda de `GET /v1/trilhas/minhas` pareceria sem exemplar
+algum, vínculo incluso — a disponibilidade e o crédito calculados nunca apareceriam na tela. O
+campo é só um identificador interno, sem risco de expor dado sensível a quem já lê a
+bibliografia publicada; a leitura pública passa a trazê-lo também, sem precisar de um segundo
+tipo de saída.
 
 **3. A tela do Mestre passa a tratar `disponivel` como três estados, não dois.**
 `Bibliografia.tsx` (`apps/app-09-mestre/src/trilhas/Bibliografia.tsx`) usa hoje um ternário que
