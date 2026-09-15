@@ -1,3 +1,4 @@
+from nucleo.conteudos.modelo import AutoriaDoConteudo, TipoDeConteudo
 from nucleo.personas.modelo import Papel
 from nucleo.poderes.modelo import NaturezaDoPoder
 from nucleo.trilhas.modelo import EtapaDoCiclo, SituacaoDaTrilha
@@ -959,111 +960,6 @@ def test_leitura_publica_traz_conteudo_fonte_e_bibliografia_so_quando_publicada(
     assert missao["bibliografia"][0]["titulo"] == "Robótica Educativa"
 
 
-def test_minhas_trilhas_sem_conteudo_nem_bibliografia_vem_com_listas_vazias(
-    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_poder, criar_tipo_de_coleta
-):
-    chave, _ = criar_chave()
-    mestre = criar_persona(Papel.mestre)
-    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
-    token, _ = criar_sessao_de_teste(mestre)
-    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
-    _criar_trilha_completa_pela_rota(cliente, cabecalhos, poder, criar_tipo_de_coleta, mestre)
-
-    missao = cliente.get("/v1/trilhas/minhas", headers=cabecalhos).json()[0]["missoes"][0]
-
-    assert missao["conteudos"] == []
-    assert missao["bibliografia"] == []
-
-
-def test_minhas_trilhas_devolvem_conteudo_e_bibliografia_ja_gravados(
-    cliente,
-    criar_chave,
-    criar_persona,
-    criar_sessao_de_teste,
-    criar_poder,
-    criar_tipo_de_coleta,
-    criar_comunidade,
-    criar_ponto_de_apoio,
-    criar_item_patrimonial,
-):
-    """Conserto da change `2026-09-15-leitura-de-conteudo-e-bibliografia-pelo-mestre`:
-    `GET /v1/trilhas/minhas` nunca aninhava conteúdo nem bibliografia, só o
-    desafio de coleta e o de desbloqueio — o Mestre autor anexava conteúdo,
-    via o feedback de gravação e, ao sair da missão e voltar, a leitura
-    devolvia lista vazia, embora o dado estivesse no banco. A leitura
-    pública nunca serve rascunho, e é por isso que só a leitura do autor
-    sustenta reler o que foi declarado antes de publicar."""
-    chave, _ = criar_chave()
-    mestre = criar_persona(Papel.mestre)
-    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
-    token, _ = criar_sessao_de_teste(mestre)
-    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
-    _criar_trilha_completa_pela_rota(cliente, cabecalhos, poder, criar_tipo_de_coleta, mestre)
-    missao_id = cliente.get("/v1/trilhas/minhas", headers=cabecalhos).json()[0]["missoes"][0]["id"]
-
-    cliente.post(
-        f"/v1/missoes/{missao_id}/conteudos",
-        json={"tipo": "texto", "ordem": 1, "corpo": "Texto da missão.", "autoria": "propria"},
-        headers=cabecalhos,
-    )
-    cliente.post(
-        f"/v1/missoes/{missao_id}/conteudos",
-        json={
-            "tipo": "link_externo",
-            "ordem": 2,
-            "endereco": "https://video.exemplo/aula",
-            "autoria": "propria",
-        },
-        headers=cabecalhos,
-    )
-    cliente.post(
-        f"/v1/missoes/{missao_id}/conteudos",
-        json={"tipo": "imagem", "ordem": 3, "autoria": "propria"},
-        headers=cabecalhos,
-    )
-
-    admin = criar_persona(Papel.admin)
-    comunidade = criar_comunidade()
-    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
-    item = criar_item_patrimonial(admin, ponto_de_apoio)
-
-    cliente.post(
-        f"/v1/missoes/{missao_id}/bibliografia",
-        json={"titulo": "Sem exemplar", "capitulo": "Capítulo 1"},
-        headers=cabecalhos,
-    )
-    cliente.post(
-        f"/v1/missoes/{missao_id}/bibliografia",
-        json={
-            "titulo": "Com exemplar",
-            "capitulo": "Capítulo 2",
-            "item_patrimonial_id": str(item.id),
-        },
-        headers=cabecalhos,
-    )
-
-    resposta = cliente.get("/v1/trilhas/minhas", headers=cabecalhos)
-
-    assert resposta.status_code == 200
-    trilha = resposta.json()[0]
-    assert trilha["situacao"] == "rascunho"
-    missao = next(m for m in trilha["missoes"] if m["id"] == missao_id)
-
-    conteudos = {c["tipo"]: c for c in missao["conteudos"]}
-    assert len(missao["conteudos"]) == 3
-    assert conteudos["texto"]["corpo"] == "Texto da missão."
-    assert conteudos["link_externo"]["endereco"] == "https://video.exemplo/aula"
-    assert conteudos["imagem"]["referencia"] is None
-
-    bibliografia = {b["titulo"]: b for b in missao["bibliografia"]}
-    assert len(missao["bibliografia"]) == 2
-    # Sem `ponto_de_apoio_id` na leitura do autor, a disponibilidade nunca é
-    # `false` — seria uma indisponibilidade que o núcleo não apurou.
-    assert bibliografia["Sem exemplar"]["disponivel"] is None
-    assert bibliografia["Com exemplar"]["item_patrimonial_id"] == str(item.id)
-    assert bibliografia["Com exemplar"]["disponivel"] is None
-
-
 def test_leitura_publica_nunca_traz_a_alternativa_correta_do_desafio(
     cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_poder, criar_tipo_de_coleta
 ):
@@ -1340,6 +1236,137 @@ def test_minhas_trilhas_distinguem_missao_sem_desafio(
     assert lida["tipo_do_desafio_de_desbloqueio"] is None
     assert lida["desafio_de_desbloqueio_enunciado"] is None
     assert lida["perguntas_do_desbloqueio"] == []
+
+
+def test_minhas_trilhas_devolvem_o_conteudo_ja_gravado(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_conteudo_da_missao,
+):
+    """`RF-09-14`, `RF-09-15`: o Mestre autor relê, em qualquer sessão, o
+    conteúdo já gravado — antes desta change a leitura das trilhas próprias
+    nunca chamava `consultar_conteudos_da_missao`."""
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    criar_conteudo_da_missao(
+        missao,
+        mestre,
+        tipo=TipoDeConteudo.texto,
+        ordem=1,
+        corpo="Trecho citado de outro autor.",
+        autoria=AutoriaDoConteudo.terceiro,
+        fonte="Autor Exemplo, 2020.",
+    )
+    criar_conteudo_da_missao(
+        missao,
+        mestre,
+        tipo=TipoDeConteudo.imagem,
+        ordem=2,
+        corpo=None,
+        referencia="conteudos/algum-id/arquivo",
+        tamanho=1024,
+    )
+    criar_conteudo_da_missao(
+        missao,
+        mestre,
+        tipo=TipoDeConteudo.video,
+        ordem=3,
+        corpo=None,
+        referencia=None,
+    )
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    lida = _missao_das_minhas_trilhas(cliente, cabecalhos, trilha.id, missao.id)
+
+    conteudos = lida["conteudos"]
+    assert [conteudo["tipo"] for conteudo in conteudos] == ["texto", "imagem", "video"]
+    assert conteudos[0]["fonte"] == "Autor Exemplo, 2020."
+    assert conteudos[1]["referencia"] == "conteudos/algum-id/arquivo"
+    # Envio ainda não confirmado: sem referência de arquivo (`design.md`).
+    assert conteudos[2]["referencia"] is None
+
+
+def test_minhas_trilhas_sem_conteudo_saem_com_lista_vazia(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    lida = _missao_das_minhas_trilhas(cliente, cabecalhos, trilha.id, missao.id)
+
+    assert lida["conteudos"] == []
+    assert lida["bibliografia"] == []
+
+
+def test_minhas_trilhas_devolvem_a_bibliografia_ja_gravada(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_bibliografia_da_missao,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_item_patrimonial,
+    criar_tipo_de_recurso,
+    criar_lancamento,
+    criar_aporte,
+):
+    """`RF-09-21` a `RF-09-23`: a bibliografia sai sem `ponto_de_apoio_id` —
+    o Mestre não lê como Guerreiro(a) de um ponto de apoio —, então
+    `disponivel` vem sempre indeterminado, e o crédito ao Apoiador segue
+    resolvido quando o exemplar tem aporte de origem (design — decisão 2)."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador)
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    ponto_de_apoio = criar_ponto_de_apoio(admin, criar_comunidade())
+    tipo = criar_tipo_de_recurso(admin)
+    lancamento = criar_lancamento(admin, tipo, ponto_de_apoio)
+    aporte = criar_aporte(admin, apoiador, tipo, ponto_de_apoio, lancamento)
+    item_com_aporte = criar_item_patrimonial(
+        admin, ponto_de_apoio, aporte_de_origem=aporte, numero_de_tombo="0001"
+    )
+    item_sem_aporte = criar_item_patrimonial(
+        admin, ponto_de_apoio, aporte_de_origem=None, numero_de_tombo="0002"
+    )
+    criar_bibliografia_da_missao(
+        missao, mestre, titulo="Com exemplar", item_patrimonial=item_com_aporte
+    )
+    criar_bibliografia_da_missao(
+        missao, mestre, titulo="Sem exemplar", item_patrimonial=item_sem_aporte
+    )
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    lida = _missao_das_minhas_trilhas(cliente, cabecalhos, trilha.id, missao.id)
+
+    bibliografia = lida["bibliografia"]
+    assert [entrada["titulo"] for entrada in bibliografia] == ["Com exemplar", "Sem exemplar"]
+    # `item_patrimonial_id` sustenta a tela do Mestre decidir se mostra
+    # disponibilidade e crédito (`Bibliografia.tsx`); sem ele, uma entrada
+    # vinculada pareceria sem exemplar algum (conserto de
+    # `2026-09-15-leitura-de-conteudo-e-bibliografia-pelo-mestre`).
+    assert bibliografia[0]["item_patrimonial_id"] == str(item_com_aporte.id)
+    assert bibliografia[0]["disponivel"] is None
+    assert bibliografia[0]["apoiador_nome"] == apoiador.nome
+    assert bibliografia[1]["item_patrimonial_id"] == str(item_sem_aporte.id)
+    assert bibliografia[1]["disponivel"] is None
+    assert bibliografia[1]["apoiador_nome"] is None
 
 
 def test_a_alternativa_correta_nao_sai_na_leitura_do_guerreiro(

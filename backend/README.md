@@ -87,19 +87,32 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    do núcleo nem aparece no log dele. A lista vigente está em
    `cors-do-bucket-de-armazenamento.json`, que nomeia as aplicações que enviam bytes — App 09 e
    App 05 —, o método do envio, o cabeçalho `Content-Range` do protocolo retomável e o `Range`
-   que diz de onde retomar. Aplicar e conferir:
+   que diz de onde retomar. Aplicar de dentro de `backend/`, e conferir — **uma linha cada**,
+   sem continuação: colar comando quebrado com `\` no Cloud Shell pelo celular duplica a
+   primeira linha na continuação, e o `gcloud` repetido vira argumento posicional
+   (`Received: "file://gcloud"`):
 
    ```bash
-   gcloud storage buckets update gs://comunidade-game-armazenamento \
-     --cors-file=cors-do-bucket-de-armazenamento.json
-
+   gcloud storage buckets update gs://comunidade-game-armazenamento --cors-file=cors-do-bucket-de-armazenamento.json
    gcloud storage buckets describe gs://comunidade-game-armazenamento --format="default(cors)"
    ```
 
-   O arquivo é a fonte: mudou aplicação que envia ou endereço dela, mude o arquivo e aplique de
-   novo. Enquanto o filtro web da rede corporativa bloquear `*.comunidadegame.org`, os dois
-   endereços de cada aplicação — o definitivo e o `.web.app` — precisam estar na lista, como no
-   `VITE_URL_DO_NUCLEO` dos workflows de frontend.
+   O `--cors-file` é **relativo ao diretório corrente**: fora de `backend/` ele não acha o
+   arquivo. No Cloud Shell, onde a sessão abre em `~` e o repositório pode não estar clonado,
+   escreva o arquivo antes — também em uma linha:
+
+   ```bash
+   echo '[{"origin":["https://mestre.comunidadegame.org","https://minhaarea.comunidadegame.org","https://comunidade-game-mestre.web.app","https://comunidade-game-minhaarea.web.app"],"method":["PUT"],"responseHeader":["Content-Type","Content-Range","Range"],"maxAgeSeconds":3600}]' > ~/cors.json
+   ```
+
+   e aplique com `--cors-file=$HOME/cors.json`. O conteúdo é o mesmo do arquivo versionado, em
+   uma linha; se divergirem, o versionado é a fonte.
+
+   O `describe` devolve as quatro origens, `PUT` e os três cabeçalhos. Voltou vazio: não
+   aplicou. O arquivo é a fonte: mudou aplicação que envia ou endereço dela, mude o arquivo e
+   aplique de novo. Enquanto o filtro web da rede corporativa bloquear
+   `*.comunidadegame.org`, os dois endereços de cada aplicação — o definitivo e o `.web.app` —
+   precisam estar na lista, como no `VITE_URL_DO_NUCLEO` dos workflows de frontend.
 
 3. **Secret Manager** — um segredo por variável sem valor padrão, mais
    `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM`, `CG_DSN_BANCO`, `CG_GEMINI_CHAVE_DE_API` e
