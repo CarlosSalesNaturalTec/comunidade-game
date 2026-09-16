@@ -394,6 +394,13 @@ bibliografia declarada SHALL vir com lista vazia, nunca com erro. Esta leitura �
 autor sobre a própria trilha, rascunho ou despublicada inclusive — diferente da leitura
 pública, que só serve trilha publicada. (`RF-09-21`)
 
+Cada trilha devolvida por essa leitura SHALL trazer também a **culminância** que ela tem
+declarada — descrição da criação original esperada, modalidade e critério de validação.
+Trilha sem culminância declarada SHALL vir com a culminância **nula**, de modo distinto de
+não vir campo algum, e NEVER SHALL responder erro por isso. É esta leitura que permite ao
+Mestre autor **reabrir e corrigir** a culminância sem redigitá-la, e é dela que a aplicação
+tira o que ainda falta para publicar. (`RF-09-29`, `RF-09-30`, `RF-09-06`)
+
 #### Scenario: O Mestre lê os próprios rascunhos
 
 - **WHEN** um Mestre em sessão consulta as trilhas dele
@@ -474,6 +481,23 @@ pública, que só serve trilha publicada. (`RF-09-21`)
 - **WHEN** o Mestre autor consulta as trilhas dele e uma missão nunca teve bibliografia
   declarada
 - **THEN** a missão vem com a lista de bibliografia vazia, e nenhum erro é respondido
+
+#### Scenario: A leitura devolve a culminância já declarada
+
+- **WHEN** o Mestre autor consulta as trilhas dele e uma delas tem culminância declarada
+- **THEN** aquela trilha vem com a descrição, a modalidade e o critério de validação gravados
+
+#### Scenario: Trilha sem culminância vem com culminância nula
+
+- **WHEN** o Mestre autor consulta as trilhas dele e uma delas nunca teve culminância
+  declarada
+- **THEN** aquela trilha vem com a culminância nula, e nenhum erro é respondido
+
+#### Scenario: A culminância volta em trilha ainda em rascunho
+
+- **WHEN** o Mestre autor declarou a culminância de uma trilha em rascunho e a consulta em
+  sessão nova
+- **THEN** a culminância vem na leitura, ainda que a trilha nunca tenha sido publicada
 
 ### Requirement: O Mestre duplica trilha existente como ponto de partida de outra
 
