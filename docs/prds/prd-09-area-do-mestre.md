@@ -548,6 +548,7 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | POST   | `/v1/trilhas/{id}/missoes`                                | Mestre       | Acrescenta missão, com ordem e dificuldade                             |
 | POST   | `/v1/missoes/{id}/conteudos`                              | Mestre       | Cria conteúdo de texto, imagem ou link externo                         |
 | POST   | `/v1/conteudos/{id}/arquivo`                              | Mestre       | Envia vídeo ou arquivo, em upload retomável, dentro do limite          |
+| GET    | `/v1/conteudos/{id}/arquivo`                              | Persona      | Serve os bytes do arquivo ao Mestre autor e ao Guerreiro(a) inscrito   |
 | POST   | `/v1/missoes/{id}/bibliografia`                           | Mestre       | Vincula título e capítulo do acervo à missão                           |
 | POST   | `/v1/missoes/{id}/atividades`                             | Mestre       | Cria atividade da missão, com modalidade e formato                     |
 | POST   | `/v1/missoes/{id}/desbloqueio`                            | Mestre       | Define o quiz ou desafio que abre a missão seguinte                    |

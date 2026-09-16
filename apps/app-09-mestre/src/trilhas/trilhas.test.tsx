@@ -4,6 +4,7 @@ import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TelaDeAutoria } from "../autoria/TelaDeAutoria";
+import * as perfilApi from "../perfil/api";
 import type { PoderDoCatalogo } from "../poderes/api";
 import * as poderesApi from "../poderes/api";
 import * as recursosApi from "../recursos/api";
@@ -130,6 +131,7 @@ function trilha(sobrescreve: Partial<TrilhaDoMestre> = {}): TrilhaDoMestre {
     etiquetas_ods: [],
     cobertura_ods: { objetivos: [], ciclo: "Ciclo 01" },
     missoes: [],
+    culminancia: null,
     ...sobrescreve,
   };
 }
@@ -231,6 +233,9 @@ function desafioDeColeta(
 beforeEach(() => {
   vi.spyOn(trilhasApi, "listarTiposDeColeta").mockResolvedValue([]);
   vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([]);
+  // O crédito da pré-visualização é o nick do Mestre em sessão; sem nick
+  // declarado, a tela cai no texto de reserva (`RF-09-25`).
+  vi.spyOn(perfilApi, "lerIdentidade").mockResolvedValue({ nick: null, avatar: null });
 });
 
 afterEach(() => {
@@ -3294,5 +3299,179 @@ describe("a sondagem se chama pelo nome na Área do Mestre (RF-09-81, RN-09-30)"
 
     expect(await screen.findByText(/passa quem acerta ao menos 60%/i)).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: /desafio prático/i })).toBeInTheDocument();
+  });
+});
+
+// --- Conserto: a culminância reabre e a pré-visualização é fiel ----------
+
+describe("a culminância gravada reabre entre sessões (RF-09-29, RF-09-30)", () => {
+  async function abrirTrilha(trilhaDoMestre: TrilhaDoMestre) {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([trilhaDoMestre]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    return usuario;
+  }
+
+  it("a culminância declarada em sessão anterior aparece ao reabrir a trilha", async () => {
+    const usuario = await abrirTrilha(trilha({ culminancia: culminancia() }));
+
+    await usuario.click(await screen.findByText("Culminância"));
+
+    expect(
+      await screen.findByText(/um robô que resolve um problema da comunidade/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/o robô precisa funcionar/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/ainda não tem a culminância declarada/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("o botão oferece alterar, e o formulário nasce preenchido", async () => {
+    const usuario = await abrirTrilha(trilha({ culminancia: culminancia() }));
+
+    await usuario.click(await screen.findByText("Culminância"));
+    await usuario.click(await screen.findByRole("button", { name: /alterar culminância/i }));
+
+    // Formulário vazio faria o Mestre redigitar por cima e perder o critério
+    // já escrito, porque a segunda declaração substitui a primeira.
+    expect(screen.getByLabelText(/descrição da criação esperada/i)).toHaveValue(
+      "Um robô que resolve um problema da comunidade.",
+    );
+    expect(screen.getByLabelText(/critério de validação/i)).toHaveValue(
+      "O robô precisa funcionar.",
+    );
+    expect(screen.getByLabelText(/modalidade/i)).toHaveValue("individual");
+  });
+
+  it("o painel de pendências não acusa a culminância que já existe (RF-09-06)", async () => {
+    await abrirTrilha(trilha({ culminancia: culminancia() }));
+
+    const painel = await screen.findByLabelText("Pendências para publicar");
+    expect(within(painel).getByText(/ainda falta declarar/i).textContent).not.toMatch(
+      /culminância/i,
+    );
+  });
+
+  it("trilha sem culminância segue dizendo que falta declará-la", async () => {
+    const usuario = await abrirTrilha(trilha({ culminancia: null }));
+
+    await usuario.click(await screen.findByText("Culminância"));
+
+    // O resumo do bloco e o corpo dele dizem o mesmo: dois casamentos, e é
+    // esse o texto que o defeito exibia com a culminância já gravada.
+    expect(
+      await screen.findAllByText(/ainda não tem a culminância declarada/i),
+    ).not.toHaveLength(0);
+    expect(
+      screen.getByRole("button", { name: /^declarar culminância$/i }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe("a pré-visualização mostra o que o Guerreiro(a) verá (RF-09-25)", () => {
+  async function preVisualizar(missaoDaTrilha: MissaoDaTrilha) {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missaoDaTrilha] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByRole("button", { name: /pré-visualizar missão/i }));
+    return usuario;
+  }
+
+  it("apresenta as atividades declaradas, que é como o Guerreiro(a) entrega", async () => {
+    await preVisualizar(missao({ atividades: [atividade()] }));
+
+    const lista = await screen.findByLabelText("Atividades da missão");
+    expect(within(lista).getByText(/montagem do robô/i)).toBeInTheDocument();
+  });
+
+  it("apresenta o aviso de missão opcional", async () => {
+    await preVisualizar(missao({ obrigatoria: false }));
+
+    expect(await screen.findByText(/essa missão é opcional/i)).toBeInTheDocument();
+  });
+
+  it("apresenta o desafio de desbloqueio em leitura", async () => {
+    await preVisualizar(
+      missao({
+        tipo_do_desafio_de_desbloqueio: "pratico",
+        desafio_de_desbloqueio_enunciado: "Monte o robô e grave um vídeo.",
+      }),
+    );
+
+    expect(await screen.findByText(/monte o robô e grave um vídeo/i)).toBeInTheDocument();
+  });
+
+  it("credita o Mestre pelo nick em sessão (RF-09-114)", async () => {
+    vi.mocked(perfilApi.lerIdentidade).mockResolvedValue({
+      nick: "MestreZeferina",
+      avatar: null,
+    });
+
+    await preVisualizar(missao());
+
+    expect(await screen.findByText(/crédito: mestrezeferina/i)).toBeInTheDocument();
+  });
+
+  it("sem nick declarado, o crédito cai no texto de reserva", async () => {
+    await preVisualizar(missao());
+
+    expect(await screen.findByText(/crédito: mestre autor/i)).toBeInTheDocument();
+  });
+
+  it("exibe a imagem enviada, em vez de descrevê-la (RF-09-14)", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:conteudo-1"),
+      revokeObjectURL: vi.fn(),
+    });
+    const ler = vi
+      .spyOn(trilhasApi, "lerArquivoDoConteudo")
+      .mockResolvedValue(new Blob(["bytes"], { type: "image/png" }));
+
+    await preVisualizar(
+      missao({
+        conteudos: [
+          conteudo({
+            tipo: "imagem",
+            corpo: null,
+            referencia: "conteudos/conteudo-1/arquivo",
+          }),
+        ],
+      }),
+    );
+
+    const imagem = (await screen.findByRole("img")) as HTMLImageElement;
+    expect(imagem.src).toBe("blob:conteudo-1");
+    expect(ler).toHaveBeenCalledWith("conteudo-1", "token-do-mestre");
+    // A referência do armazenamento nunca chega à tela como se fosse o
+    // conteúdo — era isso que a frase "Arquivo enviado." escondia.
+    expect(screen.queryByText(/conteudos\/conteudo-1\/arquivo/)).not.toBeInTheDocument();
+  });
+
+  it("diz que o envio está pendente quando o arquivo não foi confirmado", async () => {
+    const ler = vi.spyOn(trilhasApi, "lerArquivoDoConteudo");
+
+    await preVisualizar(
+      missao({ conteudos: [conteudo({ tipo: "video", corpo: null, referencia: null })] }),
+    );
+
+    expect(await screen.findByText(/envio ainda não concluído/i)).toBeInTheDocument();
+    expect(ler).not.toHaveBeenCalled();
   });
 });

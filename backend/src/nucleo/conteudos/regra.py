@@ -1,11 +1,12 @@
 import uuid
+from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
 
 from ..armazenamento.porta import PortaDeArmazenamento
-from ..erros import ArquivoAcimaDoTeto, ErroDeValidacao
+from ..erros import ArquivoAcimaDoTeto, ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from ..personas.modelo import Persona
-from ..trilhas.modelo import Missao, Trilha
+from ..trilhas.modelo import InscricaoNaTrilha, Missao, Trilha
 from ..trilhas.regra import conferir_autoria_estrita_da_trilha
 from .modelo import AutoriaDoConteudo, ConteudoDaMissao, TipoDeConteudo
 
@@ -190,8 +191,61 @@ def confirmar_envio(
 
     conteudo.referencia = _referencia_do_arquivo(conteudo)
     conteudo.tamanho = envio.tamanho
+    # O tipo vem do armazenamento, como o tamanho: o recebido pode desmentir
+    # o declarado na abertura da sessão, e é este que serve os bytes de volta
+    # (`RF-09-16`, `RF-09-17`, `RF-09-115`, design — decisão 2).
+    conteudo.tipo_do_arquivo = envio.tipo_mime
     sessao.flush()
     return conteudo
+
+
+@dataclass
+class ArquivoDoConteudo:
+    """Os bytes e o tipo com que eles saem — `application/octet-stream` para
+    conteúdo gravado antes de o tipo passar a ser apurado (design — decisão
+    2)."""
+
+    bytes_do_arquivo: bytes
+    tipo_mime: str
+
+
+def ler_arquivo_do_conteudo(
+    sessao: Session,
+    conteudo: ConteudoDaMissao | None,
+    *,
+    operador: Persona,
+    armazenamento: PortaDeArmazenamento,
+) -> ArquivoDoConteudo:
+    """A segunda saída de bytes do núcleo, no molde da primeira: serve ao
+    **Mestre autor** da trilha e ao **Guerreiro(a) inscrito** nela — os
+    mesmos que já leem a missão —, e a ninguém mais (`RF-05-11`,
+    `RF-09-25`, design — decisão 3). Sem ela, a referência do armazenamento
+    chegava à tela no lugar do conteúdo. O que a arquitetura mantém fora do
+    núcleo é o **envio**, não a saída (`RN-01-28`).
+    """
+    if conteudo is None:
+        raise NaoEncontrado(mensagem="Conteúdo não encontrado.")
+    missao = sessao.get(Missao, conteudo.missao_id)
+    trilha = _trilha_da_missao(sessao, missao)
+    if trilha.autor_id != operador.id:
+        inscrito = (
+            sessao.query(InscricaoNaTrilha)
+            .filter_by(guerreiro_id=operador.id, trilha_id=trilha.id)
+            .first()
+            is not None
+        )
+        if not inscrito:
+            raise PermissaoNegada(
+                mensagem="O arquivo do conteúdo é servido ao Mestre autor e a quem está "
+                "inscrito na trilha."
+            )
+
+    if conteudo.referencia is None:
+        raise NaoEncontrado(mensagem="Este conteúdo não tem arquivo.")
+    return ArquivoDoConteudo(
+        bytes_do_arquivo=armazenamento.ler(referencia=conteudo.referencia),
+        tipo_mime=conteudo.tipo_do_arquivo or "application/octet-stream",
+    )
 
 
 def consultar_conteudos_da_missao(sessao: Session, missao_id: uuid.UUID) -> list[ConteudoDaMissao]:

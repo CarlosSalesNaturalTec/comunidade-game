@@ -340,7 +340,15 @@ class MissaoDoMestreSaida(MissaoSaida):
 
 
 class TrilhaDoMestreSaida(TrilhaSaida):
+    """A leitura do Mestre autor traz também a **culminância** declarada da
+    trilha — `None` é "esta trilha não tem culminância", dito e não suposto.
+    Sem ela, o autor reabria a trilha e a aplicação afirmava que nunca houve
+    culminância, oferecendo declarar de novo sobre um formulário vazio: a
+    segunda declaração substitui a primeira e o critério de validação já
+    escrito se perdia (`RF-09-29`, `RF-09-30`, `RF-09-06`)."""
+
     missoes: list[MissaoDoMestreSaida] = Field(default_factory=list)
+    culminancia: CulminanciaSaida | None = None
 
 
 def _obter_trilha(sessao_bd: Session, id_da_trilha: uuid.UUID) -> Trilha:
@@ -428,7 +436,12 @@ def listar_minhas_trilhas_rota(
     de um ponto específico: a disponibilidade fica indeterminada, e o
     crédito ao Apoiador continua resolvido quando existe aporte de origem
     (change `2026-09-15-leitura-de-conteudo-e-bibliografia-pelo-mestre`,
-    design — decisão 2)."""
+    design — decisão 2).
+
+    Cada trilha traz ainda a **culminância** declarada, `None` quando não
+    há — é por esta leitura que o Mestre autor a reabre e a corrige sem
+    redigitá-la, e dela que a aplicação tira o que falta para publicar
+    (`RF-09-29`, `RF-09-30`, `RF-09-06`)."""
     persona = sessao_bd.get(Persona, contexto.persona_id)
     trilhas = sessao_bd.query(Trilha).filter_by(autor_id=persona.id).all()
 
@@ -466,10 +479,14 @@ def listar_minhas_trilhas_rota(
                     ),
                 )
             )
+        culminancia = sessao_bd.query(Culminancia).filter_by(trilha_id=trilha.id).first()
         saida.append(
             TrilhaDoMestreSaida(
                 **_saida_da_trilha(sessao_bd, trilha, ciclo=configuracao.ciclo_rotulo).model_dump(),
                 missoes=missoes_saida,
+                culminancia=(
+                    saida_da_culminancia(culminancia) if culminancia is not None else None
+                ),
             )
         )
     return saida

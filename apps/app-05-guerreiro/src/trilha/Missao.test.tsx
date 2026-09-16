@@ -168,3 +168,116 @@ describe("missão no percurso", () => {
     expect(await screen.findByText(/não conta no que falta/i)).toBeInTheDocument();
   });
 });
+
+// --- Conserto: a imagem e o vídeo aparecem, a referência não (`RF-05-11`)
+
+describe("arquivo do conteúdo da missão", () => {
+  function trilhaComConteudo(conteudo: trilhaApi.ConteudoDaMissaoPublico) {
+    return {
+      id: "trilha-1",
+      nome: "Robô Educa",
+      licenca: "CC BY-SA",
+      autor_nome: "Mestre Ana",
+      culminancia: null,
+      missoes: [
+        {
+          id: "missao-1",
+          titulo: "Primeira Missão",
+          posicao: 1,
+          obrigatoria: true,
+          e_sondagem: false,
+          atividades: [],
+          conteudos: [conteudo],
+          bibliografia: [],
+        },
+      ],
+    };
+  }
+
+  const MISSAO_ABERTA: trilhaApi.MissaoNoPercurso = {
+    id: "missao-1",
+    titulo: "Primeira Missão",
+    posicao: 1,
+    obrigatoria: true,
+    e_sondagem: false,
+    desbloqueada: true,
+    e_proxima: false,
+    aguardando_mestre: false,
+    motivo_do_bloqueio: null,
+    desafio_de_desbloqueio: null,
+  };
+
+  it("a imagem enviada aparece como imagem, e a referência não chega à tela", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:conteudo-1"),
+      revokeObjectURL: vi.fn(),
+    });
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaComConteudo({
+        id: "conteudo-1",
+        ordem: 1,
+        tipo: "imagem",
+        corpo: null,
+        endereco: null,
+        referencia: "conteudos/conteudo-1/arquivo",
+        autoria: "propria",
+        fonte: null,
+      }),
+    );
+    const ler = vi
+      .spyOn(trilhaApi, "lerArquivoDoConteudo")
+      .mockResolvedValue(new Blob(["bytes"], { type: "image/png" }));
+
+    await renderizar(MISSAO_ABERTA);
+
+    const imagem = (await screen.findByRole("img")) as HTMLImageElement;
+    expect(imagem.src).toBe("blob:conteudo-1");
+    expect(ler).toHaveBeenCalledWith("conteudo-1", "token-do-guerreiro");
+    // A string do armazenamento nunca é o conteúdo: era ela que aparecia
+    // impressa no lugar da imagem.
+    expect(screen.queryByText(/conteudos\/conteudo-1\/arquivo/)).not.toBeInTheDocument();
+  });
+
+  it("envio não concluído não aparece quebrado nem pede bytes", async () => {
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaComConteudo({
+        id: "conteudo-1",
+        ordem: 1,
+        tipo: "video",
+        corpo: null,
+        endereco: null,
+        referencia: null,
+        autoria: "propria",
+        fonte: null,
+      }),
+    );
+    const ler = vi.spyOn(trilhaApi, "lerArquivoDoConteudo");
+
+    await renderizar(MISSAO_ABERTA);
+
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(ler).not.toHaveBeenCalled();
+  });
+
+  it("o texto segue saindo do próprio conteúdo, sem pedir bytes", async () => {
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaComConteudo({
+        id: "conteudo-1",
+        ordem: 1,
+        tipo: "texto",
+        corpo: "Parágrafo da missão.",
+        endereco: null,
+        referencia: null,
+        autoria: "propria",
+        fonte: null,
+      }),
+    );
+    const ler = vi.spyOn(trilhaApi, "lerArquivoDoConteudo");
+
+    await renderizar(MISSAO_ABERTA);
+
+    expect(await screen.findByText("Parágrafo da missão.")).toBeInTheDocument();
+    expect(ler).not.toHaveBeenCalled();
+  });
+});

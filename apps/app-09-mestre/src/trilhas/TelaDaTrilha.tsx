@@ -125,10 +125,15 @@ function resumoDaCobertura(trilha: TrilhaDoMestre): string {
     : "Nenhum ODS coberto por esta trilha ainda.";
 }
 
+// A culminância vem de `GET /trilhas/minhas`, gravada em qualquer sessão —
+// nunca só a declarada nesta. O resumo repete a modalidade para o Mestre
+// saber o que está valendo sem abrir o bloco (`RF-09-29`, `RF-09-30`).
 function resumoDaCulminancia(trilha: TrilhaDoMestre): string {
-  return trilha.culminancia
-    ? "Culminância declarada."
-    : "Esta trilha ainda não tem a culminância declarada.";
+  if (!trilha.culminancia) return "Esta trilha ainda não tem a culminância declarada.";
+  const modalidade =
+    ROTULO_DA_MODALIDADE_DA_CULMINANCIA[trilha.culminancia.modalidade] ??
+    trilha.culminancia.modalidade;
+  return `Culminância declarada · ${modalidade}`;
 }
 
 export function TelaDaTrilha({
@@ -246,11 +251,14 @@ export function TelaDaTrilha({
 
       <BlocoRecolhivel titulo="Culminância" resumo={resumoDaCulminancia(trilha)}>
         {trilha.culminancia && !mostrarFormularioDeCulminancia && (
-          <p>
-            {trilha.culminancia.descricao} ·{" "}
-            {ROTULO_DA_MODALIDADE_DA_CULMINANCIA[trilha.culminancia.modalidade] ??
-              trilha.culminancia.modalidade}
-          </p>
+          <>
+            <p>
+              {trilha.culminancia.descricao} ·{" "}
+              {ROTULO_DA_MODALIDADE_DA_CULMINANCIA[trilha.culminancia.modalidade] ??
+                trilha.culminancia.modalidade}
+            </p>
+            <p>Critério de validação: {trilha.culminancia.criterio_de_validacao}</p>
+          </>
         )}
         {!trilha.culminancia && !mostrarFormularioDeCulminancia && (
           <p>Esta trilha ainda não tem a culminância declarada.</p>

@@ -157,11 +157,13 @@ export interface TrilhaDaLista {
 
 export interface TrilhaDoMestre extends TrilhaDaLista {
   missoes: MissaoDaTrilha[];
-  // Nunca vem de `GET /trilhas/minhas` — só é conhecida depois que o Mestre
-  // a declara nesta sessão (`POST /trilhas/{id}/culminancia` não tem par de
-  // leitura, PRD-09 §9). `undefined` é "ainda não declarada nesta sessão",
-  // distinto de `null`, que o núcleo nunca devolve.
-  culminancia?: CulminanciaDaTrilha | null;
+  // Vem de `GET /trilhas/minhas`, inclusive de trilha em rascunho: `null` é
+  // "esta trilha não tem culminância", dito pelo núcleo e não suposto pela
+  // tela. Antes o campo só existia depois de o Mestre declarar na sessão
+  // corrente, e ao reabrir a trilha a tela afirmava que nunca houve
+  // culminância — oferecendo declarar de novo sobre um formulário vazio, o
+  // que substitui a anterior e perde o critério já escrito.
+  culminancia: CulminanciaDaTrilha | null;
 }
 
 export type ModalidadeDaCulminancia = "individual" | "em_equipe";
@@ -572,6 +574,14 @@ export async function enviarArquivo(
   }
 }
 
+// Os bytes do arquivo vêm do núcleo, não de `<img src>`: toda rota sob
+// `/v1` exige a chave da aplicação em cabeçalho (`RF-09-25`, `RF-05-11`,
+// design — decisão 6). Quem chama é responsável por liberar a URL de
+// objeto que criar a partir do blob.
+export function lerArquivoDoConteudo(idDoConteudo: string, token: string): Promise<Blob> {
+  return lerArquivoDoNucleo(`/v1/conteudos/${idDoConteudo}/arquivo`, { token });
+}
+
 export interface CriarBibliografiaEntrada {
   titulo: string;
   capitulo: string;
@@ -603,16 +613,6 @@ export interface ExemplarDoAcervo {
 // PRD-07 (`RF-09-21`).
 export function listarAcervo(token: string): Promise<ExemplarDoAcervo[]> {
   return chamarNucleo<ExemplarDoAcervo[]>("/v1/itens-patrimoniais", { token });
-}
-
-// A pré-visualização usa a mesma leitura pública que a App 05 vai consumir
-// — se a tela do Guerreiro(a) divergir depois, a pré-visualização
-// acompanha o contrato, não a tela (`RF-09-25`, design — Risks).
-export function obterTrilhaPublica(
-  idDaTrilha: string,
-  token: string,
-): Promise<TrilhaDoMestre> {
-  return chamarNucleo<TrilhaDoMestre>(`/v1/trilhas/${idDaTrilha}`, { token });
 }
 
 export type FormaDeRegistroDeColeta = "numero" | "foto" | "video";
