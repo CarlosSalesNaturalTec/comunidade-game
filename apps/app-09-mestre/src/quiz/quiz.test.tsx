@@ -70,6 +70,7 @@ function trilha(sobrescreve: Partial<TrilhaDoMestre> = {}): TrilhaDoMestre {
         etiquetas_ods: [],
       },
     ],
+    culminancia: null,
     ...sobrescreve,
   };
 }

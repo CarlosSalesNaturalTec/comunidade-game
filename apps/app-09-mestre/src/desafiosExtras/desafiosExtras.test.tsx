@@ -35,6 +35,7 @@ const SESSAO_DE_MESTRE: SessaoAberta = {
 };
 
 const TRILHA_PROPRIA: TrilhaDoMestre = {
+  culminancia: null,
   id: "trilha-propria",
   nome: "Robô Educa",
   objetivo: "Construir o próprio robô.",
