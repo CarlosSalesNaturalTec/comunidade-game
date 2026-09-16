@@ -50,6 +50,13 @@ class ConteudoDaMissao(Base, ComAutoria):
     endereco: Mapped[str | None] = mapped_column(String(2048), nullable=True)
     referencia: Mapped[str | None] = mapped_column(String(512), nullable=True)
     tamanho: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # O tipo **real** do arquivo, tal como o armazenamento o apurou na
+    # confirmação do envio — nunca o declarado na abertura da sessão, que o
+    # recebido pode desmentir. É ele que permite servir os bytes de volta de
+    # modo que a aplicação os exiba; nulo é conteúdo sem arquivo, ou gravado
+    # antes desta coluna, e sai como tipo indeterminado (`RF-09-16`,
+    # `RF-09-17`, `RF-05-11`, design — decisão 2).
+    tipo_do_arquivo: Mapped[str | None] = mapped_column(String(255), nullable=True)
     autoria: Mapped[AutoriaDoConteudo] = mapped_column(
         Enum(AutoriaDoConteudo, native_enum=False, length=16), nullable=False
     )

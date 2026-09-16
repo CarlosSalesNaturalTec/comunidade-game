@@ -599,3 +599,202 @@ def test_nenhuma_rota_expoe_total_de_bytes(cliente, criar_chave):
     chave, _ = criar_chave()
     resposta = cliente.get("/v1/missoes/consumo", headers={"X-Chave-Aplicacao": chave})
     assert resposta.status_code == 404
+
+
+# --- Conserto: o tipo do arquivo e a saída de bytes (`RF-05-11`,
+# `RF-09-16`, `RF-09-17`, `RF-09-25`) --------------------------------------
+
+
+def _conteudo_com_arquivo_enviado(
+    cliente, cabecalhos, missao_id, *, tipo="imagem", tipo_mime="image/png", corpo=b"PNG-falso"
+):
+    """Cria o conteúdo, envia os bytes e confirma — o caminho inteiro por
+    HTTP, como o Mestre o percorre."""
+    conteudo_id = _criar_conteudo_de_arquivo_pela_rota(cliente, cabecalhos, missao_id, tipo)
+    resposta_sessao = cliente.post(
+        f"/v1/conteudos/{conteudo_id}/arquivo",
+        json={"tipo_mime": tipo_mime, "tamanho_declarado": len(corpo)},
+        headers=cabecalhos,
+    )
+    assert resposta_sessao.status_code == 201
+    endereco = resposta_sessao.json()["endereco_da_sessao"]
+    cliente.put(
+        endereco,
+        content=corpo,
+        headers={**cabecalhos, "Content-Range": f"bytes 0-{len(corpo) - 1}/{len(corpo)}"},
+    )
+    assert (
+        cliente.patch(f"/v1/conteudos/{conteudo_id}/arquivo", headers=cabecalhos).status_code == 200
+    )
+    return conteudo_id
+
+
+def test_confirmacao_grava_o_tipo_apurado_no_armazenamento(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+    sessao,
+):
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    conteudo_id = _conteudo_com_arquivo_enviado(cliente, cabecalhos, missao.id)
+
+    conteudo = sessao.get(ConteudoDaMissao, uuid.UUID(conteudo_id))
+    assert conteudo.tipo_do_arquivo == "image/png"
+
+
+def test_mestre_autor_le_os_bytes_do_proprio_conteudo(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+):
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+    conteudo_id = _conteudo_com_arquivo_enviado(
+        cliente, cabecalhos, missao.id, corpo=b"bytes-da-imagem"
+    )
+
+    resposta = cliente.get(f"/v1/conteudos/{conteudo_id}/arquivo", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    assert resposta.content == b"bytes-da-imagem"
+    assert resposta.headers["content-type"].startswith("image/png")
+
+
+def test_guerreiro_inscrito_le_os_bytes(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+    criar_inscricao_na_trilha,
+):
+    mestre = criar_persona(Papel.mestre)
+    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
+    trilha = criar_trilha(mestre, poder=poder)
+    missao = criar_missao(trilha, mestre)
+    chave, _ = criar_chave()
+    cabecalhos_do_mestre = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+    conteudo_id = _conteudo_com_arquivo_enviado(cliente, cabecalhos_do_mestre, missao.id)
+
+    guerreiro = criar_persona(Papel.guerreiro)
+    criar_inscricao_na_trilha(guerreiro, trilha)
+    cabecalhos_do_guerreiro = _cabecalhos(chave, criar_sessao_de_teste, guerreiro)
+
+    resposta = cliente.get(f"/v1/conteudos/{conteudo_id}/arquivo", headers=cabecalhos_do_guerreiro)
+
+    assert resposta.status_code == 200
+    assert resposta.content == b"PNG-falso"
+
+
+def test_persona_nao_autora_nem_inscrita_e_recusada_com_403(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+):
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    chave, _ = criar_chave()
+    cabecalhos_do_mestre = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+    conteudo_id = _conteudo_com_arquivo_enviado(cliente, cabecalhos_do_mestre, missao.id)
+
+    estranho = criar_persona(Papel.guerreiro)
+    cabecalhos_do_estranho = _cabecalhos(chave, criar_sessao_de_teste, estranho)
+
+    resposta = cliente.get(f"/v1/conteudos/{conteudo_id}/arquivo", headers=cabecalhos_do_estranho)
+
+    assert resposta.status_code == 403
+
+
+def test_conteudo_sem_arquivo_responde_404(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+):
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    # Conteúdo de texto nunca tem arquivo; o de vídeo sem envio confirmado
+    # também não.
+    resposta_texto = cliente.post(
+        f"/v1/missoes/{missao.id}/conteudos",
+        json={"tipo": "texto", "ordem": 1, "corpo": "Só texto.", "autoria": "propria"},
+        headers=cabecalhos,
+    )
+    id_do_texto = resposta_texto.json()["id"]
+    id_sem_envio = _criar_conteudo_de_arquivo_pela_rota(cliente, cabecalhos, missao.id, "video")
+
+    assert (
+        cliente.get(f"/v1/conteudos/{id_do_texto}/arquivo", headers=cabecalhos).status_code == 404
+    )
+    assert (
+        cliente.get(f"/v1/conteudos/{id_sem_envio}/arquivo", headers=cabecalhos).status_code == 404
+    )
+
+
+def test_leitura_alcanca_trilha_em_rascunho_para_o_autor(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+):
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+    conteudo_id = _conteudo_com_arquivo_enviado(cliente, cabecalhos, missao.id)
+
+    # A trilha nunca foi publicada: a autoria basta, a publicação não é
+    # exigida (`RF-09-25` — a pré-visualização é do rascunho).
+    resposta = cliente.get(f"/v1/conteudos/{conteudo_id}/arquivo", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+
+
+def test_conteudo_gravado_antes_da_coluna_sai_com_tipo_indeterminado(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+    sessao,
+):
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+    conteudo_id = _conteudo_com_arquivo_enviado(cliente, cabecalhos, missao.id)
+
+    # Linha gravada antes da coluna existir: referência sim, tipo não.
+    conteudo = sessao.get(ConteudoDaMissao, uuid.UUID(conteudo_id))
+    conteudo.tipo_do_arquivo = None
+    sessao.commit()
+
+    resposta = cliente.get(f"/v1/conteudos/{conteudo_id}/arquivo", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    assert resposta.headers["content-type"].startswith("application/octet-stream")

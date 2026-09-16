@@ -922,9 +922,11 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   **continua** ao lado, e é ela que fixa o tipo, o enunciado do prático e a ordem das
   perguntas. Remover a última pergunta de um quiz é recusado, porque quiz sem pergunta já é
   recusado na declaração.
-- **Os bytes da imagem da pergunta são servidos pelo núcleo**, ao Mestre autor da trilha e ao
-  Guerreiro(a) inscrito nela, e a mais ninguém. É a única saída de arquivo pelo núcleo — o que
-  a arquitetura mantém fora dele é o **envio**, que vai direto ao armazenamento.
+- **Os bytes do arquivo enviado são servidos pelo núcleo** — a imagem da pergunta e também o
+  conteúdo da missão —, ao Mestre autor da trilha e ao Guerreiro(a) inscrito nela, e a mais
+  ninguém. O que a arquitetura mantém fora do núcleo é o **envio**, que vai direto ao
+  armazenamento. O conteúdo guarda o **tipo real do arquivo**, apurado no armazenamento na
+  confirmação do envio: sem ele o navegador não exibe o que foi enviado.
 - **O upload aceita lista fechada de formatos**: vídeo MP4 e WebM, imagem JPG, PNG e WebP,
   áudio MP3 e documento PDF. O que está fora da lista é recusado no envio — o que fecha a porta
   a executável e a formato que o navegador não abre. **O que é enviado não passa por conferência

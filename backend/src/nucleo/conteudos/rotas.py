@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
@@ -13,7 +13,7 @@ from ..erros import NaoEncontrado
 from ..personas.modelo import Persona
 from ..trilhas.modelo import Missao
 from .modelo import AutoriaDoConteudo, ConteudoDaMissao, TipoDeConteudo
-from .regra import abrir_envio, confirmar_envio, criar_conteudo
+from .regra import abrir_envio, confirmar_envio, criar_conteudo, ler_arquivo_do_conteudo
 
 roteador = APIRouter()
 
@@ -153,3 +153,24 @@ def confirmar_envio_rota(
     conteudo = confirmar_envio(sessao_bd, conteudo, operador=operador, armazenamento=armazenamento)
     sessao_bd.commit()
     return saida_do_conteudo(conteudo)
+
+
+@roteador.get("/conteudos/{id_do_conteudo}/arquivo")
+def ler_arquivo_do_conteudo_rota(
+    id_do_conteudo: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> Response:
+    """`RF-05-11`, `RF-09-25`: os bytes do arquivo, ao Mestre autor da
+    trilha e ao Guerreiro(a) inscrito nela — a autorização e o 404 do
+    conteúdo sem arquivo são de `ler_arquivo_do_conteudo` (design —
+    decisão 3). Sem esta rota, nem a pré-visualização do Mestre nem a tela
+    do Guerreiro(a) exibiam imagem ou vídeo: mostravam a referência do
+    armazenamento como se fosse o conteúdo."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    conteudo = _obter_conteudo(sessao_bd, id_do_conteudo)
+    arquivo = ler_arquivo_do_conteudo(
+        sessao_bd, conteudo, operador=operador, armazenamento=armazenamento
+    )
+    return Response(content=arquivo.bytes_do_arquivo, media_type=arquivo.tipo_mime)

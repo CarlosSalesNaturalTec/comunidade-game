@@ -85,6 +85,7 @@ const TIPO: TipoDeColeta = {
 };
 
 const TRILHA_COM_DESAFIO: TrilhaDoMestre = {
+  culminancia: null,
   id: "trilha-1",
   nome: "Robô Educa",
   objetivo: "Construir o próprio robô.",

@@ -1,5 +1,7 @@
+import { useSessao } from "comum/autenticacao";
 import { BlocoRecolhivel, Botao, EstadoDaLista, MarcaDeGravacao } from "comum/react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { lerIdentidade } from "../perfil/api";
 import type { RecompensaDeMarco } from "../recompensas/api";
 import type { TipoDeRecurso } from "../recursos/api";
 import type {
@@ -134,7 +136,26 @@ export function ListaDeMissoes({
   // guarda o instante da última gravação de cada um (documento 15 §6.2,
   // design — decisão 5).
   const [gravadoEm, definirGravadoEm] = useState<Record<string, Date>>({});
+  // O crédito da pré-visualização é o **nick** do Mestre em sessão, decisão
+  // do fundador de 2026-09-16 — o Guerreiro(a) lê o nome da persona, então
+  // os dois textos diferem de propósito (design — decisão 5).
+  const [nickDoMestre, definirNickDoMestre] = useState<string | null>(null);
+  const { sessao } = useSessao();
   const tipoPorId = new Map(tiposDeColeta.map((tipo) => [tipo.id, tipo]));
+
+  const carregarNick = useCallback(async () => {
+    if (!sessao) return;
+    try {
+      definirNickDoMestre((await lerIdentidade(sessao.token)).nick);
+    } catch {
+      // O crédito é acessório: falhar aqui deixa a pré-visualização no texto
+      // de reserva, e não impede o Mestre de pré-visualizar.
+    }
+  }, [sessao]);
+
+  useEffect(() => {
+    carregarNick();
+  }, [carregarNick]);
 
   if (missoes.length === 0) {
     return <EstadoDaLista>Nenhuma missão acrescentada ainda.</EstadoDaLista>;
@@ -342,7 +363,7 @@ export function ListaDeMissoes({
           {missaoEmPreVisualizacao === missao.id ? (
             <PreVisualizacaoDaMissao
               missao={missao}
-              autorNome={null}
+              autorNome={nickDoMestre}
               onFechar={() => definirMissaoEmPreVisualizacao(null)}
             />
           ) : (

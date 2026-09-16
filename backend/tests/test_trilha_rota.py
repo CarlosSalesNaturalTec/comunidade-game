@@ -1424,3 +1424,87 @@ def test_a_alternativa_correta_nao_sai_na_leitura_do_guerreiro(
     assert resposta.status_code == 200
     perguntas = resposta.json()["desafio_de_desbloqueio"]["perguntas"]
     assert perguntas and all("alternativa_correta" not in pergunta for pergunta in perguntas)
+
+
+# --- Conserto: a culminância volta ao Mestre autor (`RF-09-29`, `RF-09-30`,
+# `RF-09-04`) -------------------------------------------------------------
+
+
+def test_leitura_do_mestre_devolve_a_culminancia_declarada(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_culminancia
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    criar_culminancia(trilha, mestre)
+    chave, _ = criar_chave()
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/trilhas/minhas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    culminancia = next(
+        item["culminancia"] for item in resposta.json() if item["id"] == str(trilha.id)
+    )
+    assert culminancia["descricao"] == "Um robô de sucata que resolva um problema do bairro."
+    assert culminancia["modalidade"] == "em_equipe"
+    assert culminancia["criterio_de_validacao"] == "Funciona e resolve o problema declarado."
+
+
+def test_trilha_sem_culminancia_volta_com_culminancia_nula(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    chave, _ = criar_chave()
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/trilhas/minhas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    item = next(item for item in resposta.json() if item["id"] == str(trilha.id))
+    # A ausência é dita, não omitida: a chave existe e vale `None`.
+    assert "culminancia" in item
+    assert item["culminancia"] is None
+
+
+def test_culminancia_volta_em_trilha_ainda_em_rascunho(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_culminancia
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    assert trilha.situacao == SituacaoDaTrilha.rascunho
+    criar_culminancia(trilha, mestre, descricao="Uma horta que alimente a escola.")
+    chave, _ = criar_chave()
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/trilhas/minhas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    item = next(item for item in resposta.json() if item["id"] == str(trilha.id))
+    assert item["culminancia"]["descricao"] == "Uma horta que alimente a escola."
+
+
+def test_culminancia_de_outro_mestre_nao_sai_na_leitura(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_culminancia
+):
+    mestre = criar_persona(Papel.mestre)
+    outro = criar_persona(Papel.mestre)
+    trilha_alheia = criar_trilha(outro)
+    criar_culminancia(trilha_alheia, outro)
+    chave, _ = criar_chave()
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/trilhas/minhas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert all(item["id"] != str(trilha_alheia.id) for item in resposta.json())

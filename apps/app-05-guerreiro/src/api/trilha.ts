@@ -151,6 +151,15 @@ export interface ConteudoDaMissaoPublico {
   fonte: string | null;
 }
 
+// Os bytes do arquivo do conteúdo, servidos a quem está inscrito na trilha
+// — mesma razão da imagem da pergunta: `<img src>` não manda cabeçalho e
+// toda rota sob `/v1` exige a chave da aplicação (`RF-05-11`). Antes desta
+// leitura, a tela imprimia `referencia` — a string do armazenamento — como
+// se fosse o conteúdo.
+export function lerArquivoDoConteudo(idDoConteudo: string, token: string): Promise<Blob> {
+  return lerArquivoDoNucleo(`/v1/conteudos/${idDoConteudo}/arquivo`, { token });
+}
+
 export interface BibliografiaDaMissaoPublica {
   id: string;
   titulo: string;
