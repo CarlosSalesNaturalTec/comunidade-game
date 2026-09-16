@@ -15,6 +15,17 @@ interface Props {
   onSalva: (bibliografia: BibliografiaDaMissao) => void;
 }
 
+// `disponivel` tem três estados, não dois: `true`/`false` vêm da leitura
+// pública, com o ponto de apoio de quem lê; `null`/`undefined` é
+// indeterminado — a leitura das trilhas próprias do Mestre autor não tem
+// ponto de apoio a comparar, e a tela NEVER SHALL tratar isso como "não
+// disponível" (`RF-09-22`, `RF-09-23`).
+function rotuloDaDisponibilidade(disponivel: boolean | null | undefined): string {
+  if (disponivel === true) return "Exemplar disponível no ponto de apoio";
+  if (disponivel === false) return "Exemplar não disponível neste ponto de apoio";
+  return "Disponibilidade depende do ponto de apoio de cada Guerreiro(a)";
+}
+
 // Título e capítulo em texto, com o exemplar do acervo opcional — escolhido
 // de uma lista, nunca digitado como identificador, e sem nenhum campo para
 // digitar disponibilidade ou Apoiador: os dois só existem na leitura
@@ -95,11 +106,7 @@ export function Bibliografia({ idDaMissao, entradas, onSalva }: Props) {
             {entrada.item_patrimonial_id && (
               <>
                 {" "}
-                · {entrada.disponivel === true && "Exemplar disponível no ponto de apoio"}
-                {entrada.disponivel === false &&
-                  "Exemplar não disponível neste ponto de apoio"}
-                {entrada.disponivel == null &&
-                  "Disponibilidade depende do ponto de apoio de cada Guerreiro(a)"}
+                · {rotuloDaDisponibilidade(entrada.disponivel)}
                 {entrada.apoiador_nome && <> · Doado por {entrada.apoiador_nome}</>}
               </>
             )}

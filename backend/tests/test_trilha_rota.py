@@ -1357,8 +1357,14 @@ def test_minhas_trilhas_devolvem_a_bibliografia_ja_gravada(
 
     bibliografia = lida["bibliografia"]
     assert [entrada["titulo"] for entrada in bibliografia] == ["Com exemplar", "Sem exemplar"]
+    # `item_patrimonial_id` sustenta a tela do Mestre decidir se mostra
+    # disponibilidade e crédito (`Bibliografia.tsx`); sem ele, uma entrada
+    # vinculada pareceria sem exemplar algum (conserto de
+    # `2026-09-15-leitura-de-conteudo-e-bibliografia-pelo-mestre`).
+    assert bibliografia[0]["item_patrimonial_id"] == str(item_com_aporte.id)
     assert bibliografia[0]["disponivel"] is None
     assert bibliografia[0]["apoiador_nome"] == apoiador.nome
+    assert bibliografia[1]["item_patrimonial_id"] == str(item_sem_aporte.id)
     assert bibliografia[1]["disponivel"] is None
     assert bibliografia[1]["apoiador_nome"] is None
 

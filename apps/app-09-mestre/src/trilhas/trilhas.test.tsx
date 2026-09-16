@@ -2566,6 +2566,40 @@ describe("conteúdo da missão (RF-09-14, RF-09-15, RF-09-24)", () => {
 
     expect(screen.queryByLabelText(/html|código|marcação/i)).not.toBeInTheDocument();
   });
+
+  it("apresenta o conteúdo já gravado ao reabrir a missão, sem depender de gravação nesta sessão", async () => {
+    // Conserto de `2026-09-15-leitura-de-conteudo-e-bibliografia-pelo-mestre`:
+    // a leitura de `GET /trilhas/minhas` passa a trazer o conteúdo já
+    // gravado — a tela nunca precisou mudar, porque já lia `missao.conteudos`
+    // direto; o que faltava era a leitura devolver o dado.
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({
+        missoes: [
+          missao({
+            conteudos: [
+              conteudo({ id: "conteudo-texto", tipo: "texto", corpo: "Texto gravado antes." }),
+              conteudo({ id: "conteudo-imagem", tipo: "imagem", corpo: null, ordem: 2 }),
+            ],
+          }),
+        ],
+      }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const criarConteudoEspiado = vi.spyOn(trilhasApi, "criarConteudo");
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Conteúdo"));
+
+    const secaoDeConteudo = await screen.findByLabelText(/conteúdo de primeira missão/i);
+    expect(within(secaoDeConteudo).getByText("texto")).toBeInTheDocument();
+    expect(within(secaoDeConteudo).getByText("imagem")).toBeInTheDocument();
+    expect(criarConteudoEspiado).not.toHaveBeenCalled();
+  });
 });
 
 describe("envio de vídeo e arquivo (RF-09-16 a RF-09-19, RF-09-115)", () => {
@@ -2784,8 +2818,11 @@ describe("bibliografia da missão (RF-09-21 a RF-09-23)", () => {
   });
 
   it("entrada com exemplar e disponibilidade indeterminada nunca aparece como não disponível", async () => {
-    // `GET /trilhas/minhas` nunca informa `ponto_de_apoio_id`: toda entrada
-    // vinculada a exemplar chega com `disponivel: null` (design — decisão 3).
+    // Conserto de `2026-09-15-leitura-de-conteudo-e-bibliografia-pelo-mestre`:
+    // `GET /trilhas/minhas` nunca informa `ponto_de_apoio_id`, então toda
+    // entrada vinculada a exemplar chega com `disponivel: null` —
+    // indeterminado, nunca "não disponível" (`RF-09-22`, design — decisão 3).
+    // O crédito ao Apoiador não depende do ponto de apoio e segue aparecendo.
     configurarSessao();
     vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
       trilha({
@@ -2810,7 +2847,11 @@ describe("bibliografia da missão (RF-09-21 a RF-09-23)", () => {
     render(<TelaDeAutoria />);
     await abrirMissao();
 
-    expect(await screen.findByText(/doado por instituto exemplo/i)).toBeInTheDocument();
+    expect(await screen.findByText(/robótica educativa/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/depende do ponto de apoio de cada guerreiro/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/doado por instituto exemplo/i)).toBeInTheDocument();
     expect(screen.queryByText(/não disponível/i)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/^exemplar disponível no ponto de apoio$/i),
