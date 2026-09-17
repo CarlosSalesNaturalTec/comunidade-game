@@ -1,12 +1,16 @@
 import { useSessao } from "comum/autenticacao";
-import { Aviso, Cabecalho, Moldura } from "comum/react";
+import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { type AulaDaAgenda, listarAgenda } from "../agenda/api";
 import { type ComunidadeDaLista, listarComunidades } from "../comunidades/api";
 import { listarMissoes, type MissaoDoApoiador } from "../missoes-do-apoiador/api";
 import { ListaDeMissoes } from "../missoes-do-apoiador/ListaDeMissoes";
 import { PublicacaoDeMissao } from "../missoes-do-apoiador/PublicacaoDeMissao";
-import { listarPontosDeApoio, type PontoDeApoioDaLista } from "../pontos-de-apoio/api";
+import {
+  listarPontosDeApoio,
+  listarSaldosDoPontoDeApoio,
+  type PontoDeApoioDaLista,
+} from "../pontos-de-apoio/api";
 import {
   type AporteRegistrado,
   listarNecessidades,
@@ -15,6 +19,10 @@ import {
   type TipoDeRecurso,
 } from "./api";
 import { ListaDeNecessidades } from "./ListaDeNecessidades";
+import {
+  ListaDeSaldosDisponiveis,
+  type SaldoDoPontoDeApoio,
+} from "./ListaDeSaldosDisponiveis";
 import { RegistroDeAporte } from "./RegistroDeAporte";
 
 const RECUSA_POR_PAPEL = "Só o Admin acessa a área Recursos.";
@@ -29,10 +37,13 @@ export function TelaDeRecursos() {
   const [tipos, definirTipos] = useState<TipoDeRecurso[]>([]);
   const [comunidades, definirComunidades] = useState<ComunidadeDaLista[]>([]);
   const [pontosDeApoio, definirPontosDeApoio] = useState<PontoDeApoioDaLista[]>([]);
+  const [gruposDeSaldo, definirGruposDeSaldo] = useState<SaldoDoPontoDeApoio[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
   const [ultimoAporte, definirUltimoAporte] = useState<AporteRegistrado | null>(null);
   const [aulasConfirmadas, definirAulasConfirmadas] = useState<AulaDaAgenda[]>([]);
   const [missoes, definirMissoes] = useState<MissaoDoApoiador[] | null>(null);
+  const [mostrarFormularioDeAporte, definirMostrarFormularioDeAporte] = useState(false);
+  const [mostrarFormularioDeMissao, definirMostrarFormularioDeMissao] = useState(false);
 
   const carregarNecessidades = useCallback(async () => {
     try {
@@ -62,10 +73,24 @@ export function TelaDeRecursos() {
     ).then((paginas) => definirPontosDeApoio(paginas.flatMap((pagina) => pagina.itens)));
   }, [podeAcessar, sessao, comunidades]);
 
+  // O saldo disponível é apurado por ponto de apoio, no mesmo molde já usado
+  // em Pontos de Apoio — a tela nunca soma entre pontos (`RF-02-45`,
+  // `RF-02-97`).
+  useEffect(() => {
+    if (!podeAcessar || !sessao || pontosDeApoio.length === 0) return;
+    Promise.all(
+      pontosDeApoio.map(async (pontoDeApoio) => ({
+        pontoDeApoio,
+        saldos: await listarSaldosDoPontoDeApoio(pontoDeApoio.id, sessao.token),
+      })),
+    ).then(definirGruposDeSaldo);
+  }, [podeAcessar, sessao, pontosDeApoio]);
+
   const aoRegistrar = useCallback(
     async (aporte: AporteRegistrado) => {
       definirUltimoAporte(aporte);
       definirAulasConfirmadas([]);
+      definirMostrarFormularioDeAporte(false);
       const antes = necessidades ?? [];
       // Releitura, nunca estado local: a aula que a falta fechava é
       // derivada relendo o núcleo, não marcada como confirmada por conta
@@ -146,7 +171,10 @@ export function TelaDeRecursos() {
         </ul>
       )}
 
-      <RegistroDeAporte onRegistrado={aoRegistrar} />
+      {!mostrarFormularioDeAporte && (
+        <Botao onClick={() => definirMostrarFormularioDeAporte(true)}>Novo aporte</Botao>
+      )}
+      {mostrarFormularioDeAporte && <RegistroDeAporte onRegistrado={aoRegistrar} />}
 
       <ListaDeNecessidades
         necessidades={necessidades}
@@ -155,12 +183,22 @@ export function TelaDeRecursos() {
         nomeDoPontoDeApoio={nomeDoPontoDeApoio}
       />
 
+      <ListaDeSaldosDisponiveis gruposDeSaldo={gruposDeSaldo} />
+
       <h2>Missões do Apoiador</h2>
-      <PublicacaoDeMissao
-        necessidades={necessidades ?? []}
-        nomeDoTipoDeRecurso={nomeDoTipoDeRecurso}
-        onPublicada={(missao) => definirMissoes((atual) => [missao, ...(atual ?? [])])}
-      />
+      {!mostrarFormularioDeMissao && (
+        <Botao onClick={() => definirMostrarFormularioDeMissao(true)}>Nova missão</Botao>
+      )}
+      {mostrarFormularioDeMissao && (
+        <PublicacaoDeMissao
+          necessidades={necessidades ?? []}
+          nomeDoTipoDeRecurso={nomeDoTipoDeRecurso}
+          onPublicada={(missao) => {
+            definirMissoes((atual) => [missao, ...(atual ?? [])]);
+            definirMostrarFormularioDeMissao(false);
+          }}
+        />
+      )}
       {sessao && (
         <ListaDeMissoes
           missoes={missoes}

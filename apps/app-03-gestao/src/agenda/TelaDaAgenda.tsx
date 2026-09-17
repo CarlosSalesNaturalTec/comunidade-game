@@ -19,6 +19,8 @@ export function TelaDaAgenda() {
   const [aulas, definirAulas] = useState<AulaDaAgenda[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
   const [mostrarFormulario, definirMostrarFormulario] = useState(false);
+  const [exibirCanceladas, definirExibirCanceladas] = useState(false);
+  const idDeExibirCanceladas = useId();
 
   // O caminho de agendamento não é oferecido a quem não é Admin (`RF-02-12`).
   const podeAgendar = sessao?.papel === "admin";
@@ -108,6 +110,14 @@ export function TelaDaAgenda() {
     return (id: string) => porId.get(id) ?? id;
   }, [pontosDeApoio]);
 
+  // A cancelada some da lista por padrão — filtro só de apresentação, sobre
+  // o que a rota já devolveu (`RN-02-09`, `RN-02-20`).
+  const aulasApresentadas = useMemo(() => {
+    if (aulas === null) return null;
+    if (exibirCanceladas) return aulas;
+    return aulas.filter((aula) => aula.situacao !== "cancelada");
+  }, [aulas, exibirCanceladas]);
+
   return (
     <Moldura>
       <Cabecalho titulo="Agenda de Aulas" />
@@ -142,6 +152,18 @@ export function TelaDaAgenda() {
         aoAlterar={definirPeriodoFim}
       />
 
+      <div className="cg-campo">
+        <label htmlFor={idDeExibirCanceladas}>
+          <input
+            id={idDeExibirCanceladas}
+            type="checkbox"
+            checked={exibirCanceladas}
+            onChange={(evento) => definirExibirCanceladas(evento.target.checked)}
+          />{" "}
+          Exibir canceladas
+        </label>
+      </div>
+
       {podeAgendar && !mostrarFormulario && (
         <Botao onClick={() => definirMostrarFormulario(true)}>Nova aula</Botao>
       )}
@@ -155,7 +177,7 @@ export function TelaDaAgenda() {
       )}
 
       <ListaDaAgenda
-        aulas={aulas}
+        aulas={aulasApresentadas}
         nomeDaComunidade={nomeDaComunidade}
         nomeDoPontoDeApoio={nomeDoPontoDeApoio}
         podeCancelar={podeCancelar}
