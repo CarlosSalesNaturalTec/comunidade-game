@@ -64,6 +64,8 @@ corpo único do PRD-01" já proíbe substituir a recusa por texto próprio, e a 
 - Testes do backend que declaram a dimensão em fixture: `conftest.py`, `test_configuracao.py`,
   `test_portas_de_ia.py`, `test_armazenamento_porta.py`.
 - `backend/README.md`: a variável sai da lista das sem valor padrão.
+- `docs/03-plataforma-e-arquitetura.md` §3.3: o documento-fonte da biometria passa a declarar
+  que a dimensão é fato da biblioteca, fixo no núcleo.
 - `docs/09-topicos-em-aberto-e-sugestoes.md`: a linha "Parâmetros da entrada do Guerreiro(a)" e
   a decisão nova de 2026-09-17.
 - **Sem migração Alembic**: `credencial.segredo` é `Text` e comporta o cifrado de 1024 floats

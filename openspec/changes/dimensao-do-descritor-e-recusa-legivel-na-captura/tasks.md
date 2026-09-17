@@ -45,13 +45,17 @@
 
 ## 4. Documentação
 
-- [ ] 4.1 Separar, na linha "Parâmetros da entrada do Guerreiro(a)" do
+- [ ] 4.1 Declarar no **documento-fonte** da biometria, `docs/03-plataforma-e-arquitetura.md`
+      §3.3, que a **dimensão** do descritor é fato da biblioteca e fica fixa no núcleo, ao lado
+      do que a §3.3 já diz sobre a minimização e a comparação — é decisão nova, e decisão nova
+      mora no documento-fonte antes de morar no doc 09.
+- [ ] 4.2 Separar, na linha "Parâmetros da entrada do Guerreiro(a)" do
       `docs/09-topicos-em-aberto-e-sugestoes.md` §1, o que é calibrável do que não é: o limiar
       segue parâmetro de implantação calibrado no encontro real; a **dimensão do descritor** sai
       da lista e passa a ser fato da biblioteca, fixo no núcleo — decisão do fundador de
       2026-09-17, registrada na mesma linha. Conferir que nenhum outro documento afirma o
       contrário, e que o documento 03 §3.3 segue coerente.
-- [ ] 4.2 Marcar como implementada a linha `—` desta change no bloco do PRD-04 do
+- [ ] 4.3 Marcar como implementada a linha `—` desta change no bloco do PRD-04 do
       `openspec/cronograma-de-fatias.md`, acrescentada com situação `em andamento` na abertura,
       com a ressalva da tarefa 3.1 enquanto ela não for feita. `docs/prds/index.md` não muda: a
       situação do PRD-04 é a mesma, e o documento 99 não muda porque nenhuma relação entre
