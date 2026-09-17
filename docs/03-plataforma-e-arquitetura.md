@@ -359,6 +359,10 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
   guardado — nenhuma rota o devolve. Como o descritor nasce em código que roda no aparelho, a
   garantia da entrada é **também** presencial: o App 01 só opera com aula agendada, em
   aparelho do ponto de apoio e com Mestre ou Admin presente (§3.2).
+- **Calibração do limiar**: o limiar de comparação é medido **no aparelho do encontro**, pela
+  própria App 01, sob o **mesmo termo assinado** que a captura exige. A medição compara
+  descritores no aparelho, guarda **um** de referência por vez, descarta cada captura comparada
+  no mesmo ato e **nada envia ao núcleo**: o que se registra é a distância, nunca o descritor.
 - **Segurança**: o _template_ é guardado **cifrado**, com a chave de cifragem no **Secret
   Manager**, lida na subida do serviço — a cifra roda no próprio núcleo, sem chamada externa a
   cada entrada, e trocar de hospedagem só troca de onde a chave vem. **Todo acesso ao
