@@ -35,13 +35,19 @@
 
 ## 4. Implantação
 
-- [ ] 4.1 **EM ABERTO — exige um encontro real e acesso ao Secret Manager, que a sessão de
-      implementação não tem.** Medir no aparelho do encontro — mesma pessoa em capturas
-      sucessivas, e pessoas diferentes entre si —, escolher o limiar confortavelmente abaixo do
-      menor valor entre pessoas diferentes e acima do maior da mesma pessoa, e gravá-lo no
-      secret `cg-biometria-limiar-de-comparacao`, hoje em `0.5`. Na dúvida, apertado: recusar
-      criança legítima custa uma confirmação do Mestre; aceitar a errada não se desfaz
-      (documento 09, "Parâmetros da entrada do Guerreiro(a)"). Anexar os números à change.
+- [ ] 4.1 **EM ABERTO — exige acesso ao Secret Manager, que a sessão de implementação não
+      tem.** Medir no aparelho, escolher o limiar confortavelmente abaixo do menor valor entre
+      pessoas diferentes e acima do maior da mesma pessoa, e gravá-lo no secret
+      `cg-biometria-limiar-de-comparacao`, hoje em `0.5`. Na dúvida, apertado: recusar criança
+      legítima custa uma confirmação do Mestre; aceitar a errada não se desfaz (documento 09,
+      "Parâmetros da entrada do Guerreiro(a)"). Anexar os números à change.
+
+      A **primeira medição não depende de encontro real**, ao contrário do que esta tarefa
+      dizia quando foi escrita: o caminho do diagnóstico, da tela inicial, mede **quem opera**,
+      e dois adultos no mesmo aparelho já dão o piso (mesma pessoa em capturas sucessivas) e o
+      teto (pessoas diferentes). O encontro real serve para **conferir com rosto de criança** e
+      ajustar se divergir — não para começar. Corrigido depois do teste em produção de
+      2026-09-17, que confirmou a captura gravando e a entrada recusando com o limiar em `0.5`.
 
 ## 5. Documentação
 
