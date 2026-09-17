@@ -1,5 +1,6 @@
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, MidiaDoNucleo } from "comum/react";
+import { useEffect, useState } from "react";
 import {
   type ConteudoDaMissao,
   lerArquivoDoConteudo,
