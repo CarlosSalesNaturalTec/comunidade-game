@@ -5,14 +5,17 @@ from sqlalchemy.exc import DBAPIError
 from nucleo.biometria.cifra import cifrar_descritor, decifrar_descritor
 from nucleo.biometria.modelo import AcessoAoTemplate, DesfechoDoAcesso, NaturezaDoAcesso
 from nucleo.biometria.regra import (
+    DIMENSAO_DO_DESCRITOR,
     TIPO_DE_CONSENTIMENTO_BIOMETRIA,
     autenticar_por_nick_e_descritor,
     gravar_ou_recadastrar_template,
 )
+from nucleo.configuracao import Configuracao
 from nucleo.erros import AcessoAoTemplateImutavel, ErroDeValidacao
 from nucleo.personas.modelo import Credencial, Papel, TipoDeCredencial
+from tests.conftest import descritor_de_teste
 
-DESCRITOR = [0.1, 0.2, 0.3, 0.4]
+DESCRITOR = descritor_de_teste()
 
 
 def _guerreiro_com_nick(criar_persona, criar_nick, nick="Guerreira_de_teste"):
@@ -101,7 +104,7 @@ class TestGravacaoDoTemplate:
         )
         sessao.commit()
 
-        segundo_descritor = [0.9, 0.8, 0.7, 0.6]
+        segundo_descritor = descritor_de_teste(0.9)
         segunda = gravar_ou_recadastrar_template(
             sessao,
             configuracao,
@@ -146,6 +149,55 @@ class TestGravacaoDoTemplate:
             )
         assert excinfo.value.campo == "descritor"
 
+    def test_dimensao_da_biblioteca_e_aceita(
+        self, sessao, configuracao, criar_persona, criar_nick, conceder_consentimento_biometrico
+    ):
+        """A dimensão que o aparelho gera é a que o núcleo aceita, em todo
+        ambiente: é constante, não variável de implantação (`RF-01-05`,
+        decisão do fundador, 2026-09-17)."""
+        guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Guerreira_dimensao")
+        mestre = criar_persona(Papel.mestre)
+        admin = criar_persona(Papel.admin)
+        responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+        conceder_consentimento_biometrico(responsavel, guerreiro)
+
+        credencial = gravar_ou_recadastrar_template(
+            sessao,
+            configuracao,
+            guerreiro=guerreiro,
+            descritor=descritor_de_teste(),
+            operado_por=mestre,
+        )
+        sessao.commit()
+
+        assert credencial.ativa is True
+        assert len(decifrar_descritor(credencial.segredo, configuracao)) == DIMENSAO_DO_DESCRITOR
+
+    def test_dimensao_e_recusada_antes_do_consentimento(
+        self, sessao, configuracao, criar_persona, criar_nick
+    ):
+        """Sem consentimento E com dimensão errada, quem recusa é a dimensão:
+        a ordem importa porque foi ela que fez um erro de dimensão chegar ao
+        Mestre como recusa de consentimento (`RF-01-05`, `RF-01-07`)."""
+        guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Guerreiro_sem_termo")
+        mestre = criar_persona(Papel.mestre)
+
+        with pytest.raises(ErroDeValidacao) as excinfo:
+            gravar_ou_recadastrar_template(
+                sessao,
+                configuracao,
+                guerreiro=guerreiro,
+                descritor=[0.1, 0.2],
+                operado_por=mestre,
+            )
+        assert excinfo.value.campo == "descritor"
+        assert "consentimento" not in str(excinfo.value.mensagem).lower()
+
+    def test_nenhuma_variavel_de_ambiente_fixa_a_dimensao(self):
+        """A dimensão saiu da `Configuracao` e virou constante: o ambiente não
+        a declara mais (`RN-01-15`, decisão do fundador, 2026-09-17)."""
+        assert "biometria_dimensao_do_descritor" not in Configuracao.model_fields
+
 
 class TestAutenticacaoPorNickEDescritor:
     def test_nick_e_descritor_conferem(
@@ -184,7 +236,7 @@ class TestAutenticacaoPorNickEDescritor:
         criar_template_biometrico(guerreiro, descritor=DESCRITOR)
 
         resultado = autenticar_por_nick_e_descritor(
-            sessao, configuracao, nick="Guerreiro_recusa", descritor=[9.0, 9.0, 9.0, 9.0]
+            sessao, configuracao, nick="Guerreiro_recusa", descritor=descritor_de_teste(9.0)
         )
         assert resultado is None
 

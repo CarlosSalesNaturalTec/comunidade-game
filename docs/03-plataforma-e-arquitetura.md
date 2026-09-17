@@ -359,6 +359,10 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
   guardado — nenhuma rota o devolve. Como o descritor nasce em código que roda no aparelho, a
   garantia da entrada é **também** presencial: o App 01 só opera com aula agendada, em
   aparelho do ponto de apoio e com Mestre ou Admin presente (§3.2).
+- **Dimensão do descritor**: quantas posições ele tem é **fato da biblioteca**, não
+  parâmetro de implantação — não se calibra, e o núcleo a traz fixa no código, ao lado da
+  decisão que a produziu. Trocar de biblioteca é trocá-la junto. O **limiar de comparação**
+  segue no caminho oposto, calibrado no encontro real (documento 09).
 - **Segurança**: o _template_ é guardado **cifrado**, com a chave de cifragem no **Secret
   Manager**, lida na subida do serviço — a cifra roda no próprio núcleo, sem chamada externa a
   cada entrada, e trocar de hospedagem só troca de onde a chave vem. **Todo acesso ao

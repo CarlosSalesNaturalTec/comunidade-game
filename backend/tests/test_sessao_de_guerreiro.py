@@ -2,8 +2,9 @@ from datetime import UTC, datetime, timedelta
 
 from nucleo.personas.modelo import Papel
 from nucleo.sessoes.modelo import ComoAutenticou, Sessao
+from tests.conftest import descritor_de_teste
 
-DESCRITOR = [0.1, 0.2, 0.3, 0.4]
+DESCRITOR = descritor_de_teste()
 
 
 def _guerreiro_com_nick(criar_persona, criar_nick, nick="Guerreiro_da_rota"):
@@ -93,7 +94,7 @@ class TestAbrirSessaoDeGuerreiro:
         criar_template_biometrico(com_template, descritor=DESCRITOR)
         resposta_descritor_errado = cliente.post(
             "/v1/sessoes/guerreiro",
-            json={"nick": "Descritor_errado", "descritor": [9.0, 9.0, 9.0, 9.0]},
+            json={"nick": "Descritor_errado", "descritor": descritor_de_teste(9.0)},
             headers=cabecalhos,
         )
 
