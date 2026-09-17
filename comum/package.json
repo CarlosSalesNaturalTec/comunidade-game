@@ -12,6 +12,7 @@
     "./autenticacao": "./autenticacao/indice.ts",
     "./autenticacao/api": "./autenticacao/api.ts",
     "./biometria": "./biometria/indice.ts",
+    "./biometria/provisionamento": "./biometria/provisionamento.ts",
     "./fala": "./fala/indice.ts"
   },
   "files": [

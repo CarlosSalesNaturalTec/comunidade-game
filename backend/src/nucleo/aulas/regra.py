@@ -205,12 +205,20 @@ def escopo_de_comunidade_da_leitura(
 
 
 def aulas_vigentes(sessao: Session) -> list[Aula]:
-    """Todas as aulas cujo intervalo contém o momento corrente — havendo
-    mais de uma comunidade vigente ao mesmo tempo, a escolha é de quem abre,
-    nunca do núcleo (`RF-01-32`, `RF-01-18`).
+    """Todas as aulas cujo intervalo contém o momento corrente e cuja situação
+    não seja cancelada — havendo mais de uma comunidade vigente ao mesmo
+    tempo, a escolha é de quem abre, nunca do núcleo (`RF-01-32`, `RF-01-18`).
     """
     momento = agora()
-    return sessao.query(Aula).filter(Aula.inicio_em <= momento, Aula.fim_em >= momento).all()
+    return (
+        sessao.query(Aula)
+        .filter(
+            Aula.inicio_em <= momento,
+            Aula.fim_em >= momento,
+            Aula.situacao != SituacaoDaAula.cancelada,
+        )
+        .all()
+    )
 
 
 def registrar_presenca(

@@ -13,6 +13,10 @@ dist-ssr
 coverage
 *.local
 
+# Gerado pelo plugin Vite `modelos-de-biometria` (vite.config.ts) a partir
+# de node_modules/@vladmandic/human — nunca fonte, nunca versionado.
+public/modelos-de-biometria
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
