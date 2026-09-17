@@ -1,5 +1,5 @@
 import { useSessao } from "comum/autenticacao";
-import { Aviso, EstadoDaLista } from "comum/react";
+import { Aviso, EstadoDaLista, MidiaDoNucleo } from "comum/react";
 import { useEffect, useState } from "react";
 import {
   lerArquivoDoConteudo,
@@ -18,11 +18,13 @@ interface Props {
   aoDesbloquear: () => void;
 }
 
-// Texto e link saem do próprio conteúdo. Imagem, vídeo e arquivo vêm em
-// bytes do núcleo: `<img src>` não manda a chave da aplicação que toda rota
-// sob `/v1` exige (`RF-05-11`). Antes disto, os três caíam em
-// `conteudo.referencia` — a string do armazenamento impressa como se fosse
-// o conteúdo, que não diz nada a quem lê.
+// Texto e link saem do próprio conteúdo. Imagem e vídeo vêm em bytes do
+// núcleo, buscados por `MidiaDoNucleo` numa moldura de tamanho fixo: `<img
+// src>` não manda a chave da aplicação que toda rota sob `/v1` exige
+// (`RF-05-11`, design — decisão 3 e 4 de
+// `2026-09-17-moldura-fixa-de-midia-na-missao`). Antes da fatia anterior, os
+// três caíam em `conteudo.referencia` — a string do armazenamento impressa
+// como se fosse o conteúdo, que não diz nada a quem lê.
 function ConteudoDaMissao({
   conteudo,
   tituloDaMissao,
@@ -32,18 +34,46 @@ function ConteudoDaMissao({
   tituloDaMissao: string;
   token: string | null;
 }) {
+  const temArquivo = conteudo.referencia !== null;
+
+  if (conteudo.tipo === "texto") return <>{conteudo.corpo}</>;
+  if (conteudo.tipo === "link_externo") {
+    return <a href={conteudo.endereco ?? "#"}>{conteudo.endereco}</a>;
+  }
+
+  // Envio não concluído não aparece quebrado: some da tela.
+  if (!temArquivo) return null;
+
+  if (conteudo.tipo === "imagem" || conteudo.tipo === "video") {
+    return (
+      <MidiaDoNucleo
+        id={conteudo.id}
+        buscar={lerArquivoDoConteudo}
+        token={token}
+        tipo={conteudo.tipo}
+        alt={
+          conteudo.tipo === "imagem"
+            ? `Conteúdo de ${tituloDaMissao}`
+            : `Vídeo de ${tituloDaMissao}`
+        }
+        textoDeErro="Esse arquivo não abriu agora. Tente de novo em instantes."
+      />
+    );
+  }
+  return <ArquivoDeApoio conteudoId={conteudo.id} token={token} />;
+}
+
+// O arquivo de apoio não é mídia embutida: é link para o Guerreiro(a) abrir
+// o que o Mestre anexou.
+function ArquivoDeApoio({ conteudoId, token }: { conteudoId: string; token: string | null }) {
   const [endereco, definirEndereco] = useState<string | null>(null);
   const [naoAbriu, definirNaoAbriu] = useState(false);
 
-  const ehArquivo =
-    conteudo.tipo === "imagem" || conteudo.tipo === "video" || conteudo.tipo === "arquivo";
-  const temArquivo = conteudo.referencia !== null;
-
   useEffect(() => {
-    if (!token || !ehArquivo || !temArquivo) return;
+    if (!token) return;
     let local: string | null = null;
     let descartado = false;
-    lerArquivoDoConteudo(conteudo.id, token)
+    lerArquivoDoConteudo(conteudoId, token)
       .then((bytes) => {
         if (descartado) return;
         local = URL.createObjectURL(bytes);
@@ -56,35 +86,14 @@ function ConteudoDaMissao({
       descartado = true;
       if (local) URL.revokeObjectURL(local);
     };
-  }, [conteudo.id, token, ehArquivo, temArquivo]);
+  }, [conteudoId, token]);
 
-  if (conteudo.tipo === "texto") return <>{conteudo.corpo}</>;
-  if (conteudo.tipo === "link_externo") {
-    return <a href={conteudo.endereco ?? "#"}>{conteudo.endereco}</a>;
-  }
-
-  // Envio não concluído não aparece quebrado: some da tela.
-  if (!temArquivo) return null;
   if (naoAbriu) {
     return (
       <Aviso tipo="atencao">Esse arquivo não abriu agora. Tente de novo em instantes.</Aviso>
     );
   }
   if (!endereco) return <EstadoDaLista>Carregando o arquivo…</EstadoDaLista>;
-
-  if (conteudo.tipo === "imagem") {
-    return (
-      <img
-        src={endereco}
-        alt={`Conteúdo de ${tituloDaMissao}`}
-        onError={() => definirNaoAbriu(true)}
-      />
-    );
-  }
-  if (conteudo.tipo === "video") {
-    // biome-ignore lint/a11y/useMediaCaption: legenda do vídeo do Mestre não é declarada no Ciclo 01 — o PRD-09 não a prevê, e inventar faixa vazia não ajuda quem não ouve.
-    return <video src={endereco} controls aria-label={`Vídeo de ${tituloDaMissao}`} />;
-  }
   return <a href={endereco}>Abrir o arquivo de apoio</a>;
 }
 

@@ -230,6 +230,29 @@
   font-size: var(--escala-0875);
 }
 
+/* `MidiaDoNucleo` — moldura de tamanho fixo para imagem e vídeo buscados
+ * do núcleo em bytes: o conteúdo inteiro cabe dentro dela, nunca cortado,
+ * e o espaço que sobra fica em branco (documento 15 §12, decisão do
+ * fundador de 2026-09-17). */
+.cg-midia-do-nucleo {
+  width: var(--largura-de-miniatura);
+  height: var(--altura-de-miniatura);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--cor-separador);
+  border-radius: var(--raio-campo);
+  background: var(--cor-campo-desabilitado);
+}
+
+.cg-midia-do-nucleo img,
+.cg-midia-do-nucleo video {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
 /* `NavegacaoDeAreas` — alvo de toque de ao menos 48 px e a saída sempre
  * ao fim, num único lugar (documento 15 §§5, 6). */
 .cg-navegacao-de-areas {

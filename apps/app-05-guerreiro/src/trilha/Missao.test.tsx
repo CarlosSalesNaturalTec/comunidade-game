@@ -237,6 +237,40 @@ describe("arquivo do conteúdo da missão", () => {
     // A string do armazenamento nunca é o conteúdo: era ela que aparecia
     // impressa no lugar da imagem.
     expect(screen.queryByText(/conteudos\/conteudo-1\/arquivo/)).not.toBeInTheDocument();
+    // A moldura de tamanho fixo é a mesma para toda mídia do núcleo
+    // (`RF-05-11`, `RF-09-119`, decisão do fundador de 2026-09-17).
+    expect(imagem.closest(".cg-midia-do-nucleo")).not.toBeNull();
+  });
+
+  it("o vídeo enviado aparece na mesma moldura de tamanho fixo da imagem", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:conteudo-1"),
+      revokeObjectURL: vi.fn(),
+    });
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaComConteudo({
+        id: "conteudo-1",
+        ordem: 1,
+        tipo: "video",
+        corpo: null,
+        endereco: null,
+        referencia: "conteudos/conteudo-1/arquivo",
+        autoria: "propria",
+        fonte: null,
+      }),
+    );
+    vi.spyOn(trilhaApi, "lerArquivoDoConteudo").mockResolvedValue(
+      new Blob(["bytes"], { type: "video/mp4" }),
+    );
+
+    await renderizar(MISSAO_ABERTA);
+
+    const video = (await screen.findByLabelText(
+      /vídeo de primeira missão/i,
+    )) as HTMLVideoElement;
+    expect(video.tagName).toBe("VIDEO");
+    expect(video.closest(".cg-midia-do-nucleo")).not.toBeNull();
   });
 
   it("envio não concluído não aparece quebrado nem pede bytes", async () => {

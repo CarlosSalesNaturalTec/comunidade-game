@@ -158,6 +158,9 @@ describe("a imagem da pergunta (RF-09-119, RF-05-89)", () => {
     expect(
       bloco?.querySelector(".cg-trilha__alternativas")?.compareDocumentPosition(imagem),
     ).toBe(Node.DOCUMENT_POSITION_PRECEDING);
+    // A mesma moldura de tamanho fixo do conteúdo da missão (decisão do
+    // fundador de 2026-09-17).
+    expect(imagem.closest(".cg-midia-do-nucleo")).not.toBeNull();
     vi.unstubAllGlobals();
   });
 

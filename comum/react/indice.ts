@@ -10,6 +10,7 @@ export { CampoDeDataHora } from "./CampoDeDataHora";
 export { Dialogo } from "./Dialogo";
 export { EstadoDaLista } from "./EstadoDaLista";
 export { MarcaDeGravacao } from "./MarcaDeGravacao";
+export { MidiaDoNucleo } from "./MidiaDoNucleo";
 export { Moldura } from "./Moldura";
 export type { AreaDeNavegacao } from "./NavegacaoDeAreas";
 export { NavegacaoDeAreas } from "./NavegacaoDeAreas";
