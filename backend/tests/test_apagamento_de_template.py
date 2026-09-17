@@ -16,8 +16,9 @@ from nucleo.biometria.regra import (
     marcar_apagamento,
 )
 from nucleo.personas.modelo import Credencial, Papel, Persona, TipoDeCredencial
+from tests.conftest import descritor_de_teste
 
-DESCRITOR = [0.1, 0.2, 0.3, 0.4]
+DESCRITOR = descritor_de_teste()
 
 
 @pytest.mark.parametrize(

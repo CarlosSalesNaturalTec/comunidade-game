@@ -20,6 +20,7 @@ from nucleo.autenticacao import exigir_persona
 from nucleo.banco import Base, obter_sessao
 from nucleo.bibliografias.modelo import BibliografiaDaMissao
 from nucleo.biometria.cifra import cifrar_descritor
+from nucleo.biometria.regra import DIMENSAO_DO_DESCRITOR
 from nucleo.catalogo_avulso.modelo import (
     ItemDeCatalogoAvulso,
     OrigemDoCadastroDoItem,
@@ -115,9 +116,21 @@ DSN_DE_TESTE = os.environ.get(
     "postgresql+psycopg://comunidade:comunidade@localhost:5432/comunidade_game_teste",
 )
 
-# Dimensão pequena para os testes ficarem legíveis; chave fixa para que a
-# cifra e a decifra sejam determinísticas dentro da suíte.
-DIMENSAO_DE_TESTE_DO_DESCRITOR = 4
+# A dimensão é a **do núcleo**, não uma própria da suíte: foi a dimensão
+# própria que manteve os testes verdes enquanto produção recusava toda captura
+# por esperar outro tamanho. Importada, um número errado quebra o teste.
+# Chave fixa para que a cifra e a decifra sejam determinísticas dentro da suíte.
+DIMENSAO_DE_TESTE_DO_DESCRITOR = DIMENSAO_DO_DESCRITOR
+
+
+def descritor_de_teste(valor: float = 0.1) -> list[float]:
+    """Descritor do tamanho que o núcleo exige, com todas as posições no mesmo
+    valor: dois descritores assim ficam a `32 * |a - b|` de distância, o que
+    torna previsível quando conferem e quando não conferem, contra o limiar da
+    suíte."""
+    return [valor] * DIMENSAO_DO_DESCRITOR
+
+
 CHAVE_DE_CIFRAGEM_DE_TESTE = base64.urlsafe_b64encode(b"0" * 32).decode()
 
 
@@ -205,7 +218,6 @@ def configuracao(tmp_path):
         identidade_fundador="fundador-de-teste@example.org",
         sessao_adulto_duracao=timedelta(hours=8),
         sessao_guerreiro_duracao=timedelta(hours=4),
-        biometria_dimensao_do_descritor=DIMENSAO_DE_TESTE_DO_DESCRITOR,
         biometria_limiar_de_comparacao=0.5,
         biometria_chave_de_cifragem=CHAVE_DE_CIFRAGEM_DE_TESTE,
         argon2_memoria_kib=8,

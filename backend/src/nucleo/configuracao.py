@@ -22,10 +22,11 @@ class Configuracao(BaseSettings):
     sessao_adulto_duracao: timedelta
 
     # Parâmetros da entrada do Guerreiro(a), também sem valor padrão: duração
-    # da sessão curta, limiar de comparação do descritor, dimensão esperada
-    # dele e a chave que cifra o _template_ (`RN-01-14`, design — decisões).
+    # da sessão curta, limiar de comparação do descritor e a chave que cifra o
+    # _template_ (`RN-01-14`, design — decisões). A **dimensão** do descritor
+    # não está aqui: ela é fato da biblioteca, e mora em `biometria.regra`
+    # como constante (decisão do fundador, 2026-09-17).
     sessao_guerreiro_duracao: timedelta
-    biometria_dimensao_do_descritor: int
     biometria_limiar_de_comparacao: float
     biometria_chave_de_cifragem: str
 
