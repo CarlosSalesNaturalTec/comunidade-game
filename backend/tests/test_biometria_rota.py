@@ -1,6 +1,7 @@
 from nucleo.personas.modelo import Credencial, Papel, TipoDeCredencial
+from tests.conftest import descritor_de_teste
 
-DESCRITOR = [0.1, 0.2, 0.3, 0.4]
+DESCRITOR = descritor_de_teste()
 
 
 def _mestre_com_sessao(criar_persona, criar_sessao_de_teste):
@@ -133,7 +134,7 @@ class TestGravarDescritor:
         )
         cliente.post(
             f"/v1/guerreiros/{guerreiro.id}/descritor",
-            json={"descritor": [0.9, 0.8, 0.7, 0.6]},
+            json={"descritor": descritor_de_teste(0.9)},
             headers=cabecalhos,
         )
 
