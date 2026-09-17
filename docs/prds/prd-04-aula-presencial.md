@@ -293,10 +293,11 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-20` | Falha de identificação oferece nova tentativa sem revelar se o nick existe                                                                           | essencial  |
 | `RF-04-21` | Mestre ou Admin confirma a identidade e registra a presença quando a identificação falha, com registro de quem confirmou                             | essencial  |
 | `RF-04-22` | Mestre ou Admin recadastra a imagem de referência a partir da própria aplicação                                                                      | desejável  |
+| `RF-04-63` | Mestre ou Admin mede no aparelho a distância entre descritores capturados, para calibrar o limiar de comparação, sem enviar nada ao núcleo           | desejável  |
 | `RF-04-23` | Sem rede, a presença confirmada pelo Mestre ou Admin entra em fila local e sincroniza depois                                                         | essencial  |
 | `RF-04-24` | Sem rede, cadastro novo e reconhecimento facial ficam indisponíveis, com aviso na tela — o descritor nasce no aparelho, mas a comparação é no núcleo | essencial  |
 | `RF-04-25` | Sincronização preserva a hora do fato, não a do envio, e não duplica registro reenviado                                                              | essencial  |
-| `RF-04-26` | Aplicação exibe aviso discreto do que coleta, com acesso à área detalhada de direitos                                                                | essencial  |
+| `RF-04-26` | Aplicação exibe aviso discreto do que coleta, com acesso à área detalhada de direitos, incluindo a medição do limiar                                 | essencial  |
 | `RF-04-27` | Aplicação encerra a conversa dizendo ao Guerreiro(a) como ele entrará da próxima vez                                                                 | desejável  |
 | `RF-04-28` | Aplicação volta à tela inicial ao fim de cada atendimento, pronta para o próximo que chegar                                                          | essencial  |
 | `RF-04-60` | Cadastro do responsável mínimo no encontro coleta o **grau de parentesco** do vínculo com o Guerreiro(a)                                             | essencial  |
@@ -378,6 +379,8 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RN-04-29` | A sessão de trabalho do aparelho vale pela janela da aula agendada, e cai com ela                           | —          | 03 §3.2       |
 | `RN-04-30` | O papel do integrante é declarado na formação da equipe e vale para o encontro inteiro                      | —          | 02 §5         |
 | `RN-04-31` | A reescrita por IA opera no App 01 ainda que um integrante esteja com a chave desligada                     | 11         | 03 §7.1       |
+| `RN-04-32` | A medição do limiar guarda um descritor de referência por vez e descarta cada captura comparada no ato      | 12         | 03 §3.3       |
+| `RN-04-33` | Sobre Guerreiro(a), a medição do limiar só é oferecida dentro do onboarding, depois do consentimento        | 11         | 03 §3.3       |
 
 ## 8. Modelo de dados
 
@@ -517,6 +520,7 @@ erro, porque a transcrição é o próprio texto digitado).
 | ------------------------------------- | ---------------------------------------------- | ---------------------------- | ---------------------------------------------------------- | ------------------------------------- |
 | Imagem captada                        | Gerar o _template_ biométrico no aparelho      | consentimento do responsável | descartada na geração, sem sair do aparelho                | ninguém: não trafega nem é persistida |
 | _Template_ biométrico                 | Presença e autenticação                        | consentimento do responsável | vínculo + 30 dias; 5 dias a pedido                         | ninguém: só a comparação interna      |
+| Descritor da medição do limiar        | Calibrar o limiar de comparação                | consentimento do responsável | descartado no ato da comparação, sem sair do aparelho      | ninguém: não trafega nem é persistido |
 | Nome                                  | Identificação interna                          | consentimento                | enquanto durar o vínculo                                   | gestão e responsável                  |
 | Nick e forma de tratamento            | Identidade pública                             | consentimento                | enquanto durar o vínculo                                   | qualquer visitante                    |
 | Data de nascimento ou idade           | Faixa etária e nível da atividade              | consentimento                | enquanto durar o vínculo                                   | gestão e responsável                  |
@@ -535,6 +539,8 @@ erro, porque a transcrição é o próprio texto digitado).
   significa ficar de fora — e a conversa de cadastro diz isso com essas palavras.
 - **Aviso visível**: a tela inicial e a tela de captura indicam, de forma discreta, o que está
   sendo coletado, com um caminho para a área detalhada sobre destino e uso de cada dado.
+  A **medição do limiar** consta dessa área: ela abre a câmera, e quem opera precisa saber
+  disso tanto quanto a criança e o responsável.
 - **Pedido de acesso, correção ou exclusão**: a aplicação não os atende — ela informa que o
   canal é o responsável, pela App 07, e que o prazo de resposta é de 7 dias.
 - **A imagem não trafega**: o descritor é gerado no navegador do próprio aparelho, e só ele é
@@ -561,6 +567,12 @@ erro, porque a transcrição é o próprio texto digitado).
 - Cadastro criado sem o responsável fica **ativo e sem _template_**, e a captura acontece depois,
   quando o responsável aprova.
 - Tentativa de captura sem consentimento registrado é recusada, com mensagem em linguagem simples.
+- A medição do limiar mostra a distância entre duas capturas e, ao mostrá-la, já descartou a
+  segunda: em nenhum momento há mais de um descritor de referência guardado, e nenhuma requisição
+  sai do aparelho durante a medição.
+- Sobre Guerreiro(a), a medição só é oferecida dentro do onboarding, depois de o
+  consentimento ter sido registrado naquela mesma sessão; fora dele, a bancada mede apenas
+  quem opera, e nenhum caminho da aplicação abre a câmera sobre criança sem termo.
 - Nenhuma requisição do App 01 carrega imagem de criança: o que sai do aparelho é o descritor,
   e a fotografia não aparece em corpo de requisição nem em registro de erro.
 - A ordem prova de vivacidade e depois descritor é garantida no aparelho, pelo código da Human;
@@ -616,6 +628,7 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 | Rede fora: presença na fila local; cadastro e reconhecimento exigem rede                                         | 03 §3.4        | Já decididos                                                          |
 | App 02 incorporado ao App 01, que passa a ser a aplicação da aula presencial                                     | 03 §§2.1, 3, 4 | Já decididos                                                          |
 | Modo Ouvinte removido do produto; a aplicação não capta o áudio ambiente da aula                                 | 03 §4          | Já decididos                                                          |
+| Limiar de comparação calibrado no aparelho do encontro, pela própria App 01, sob o mesmo termo                   | 03 §3.3        | Bancada de calibração do limiar na App 01                             |
 | Troca de pontos extras por recompensa avulsa, presencial, no encerramento do encontro                            | 02 §8.2        | Troca de pontos extras por recompensa avulsa                          |
 | Entrega no ato da troca, com baixa no livro-razão e sem reserva                                                  | 02 §8.2        | Troca de pontos extras por recompensa avulsa                          |
 | Debita o saldo disponível; o acumulado de pontos extras não muda                                                 | 11 §5          | Troca de pontos extras por recompensa avulsa                          |
@@ -684,6 +697,13 @@ A última linha é decisão nova do fundador, em 2026-08-30, entregue pela chang
 não dizia quais missões alcança, e passa a ser a missão da atividade corrente da equipe e as de
 posição anterior na mesma trilha.
 
+A linha da **bancada de calibração** é decisão nova do fundador, em 2026-09-17, elicitada em
+`/opsx:explore`: o limiar em produção veio da convenção do `face-api.js`, de descritor
+normalizado de 128 posições, que não vale para a escala da biblioteca Human. Medir exige
+capturar no aparelho do encontro, e a tela **permanece** depois da calibração, como
+ferramenta de diagnóstico do Mestre — é por permanecer que ela vira requisito, e não código
+de apoio de uma change.
+
 ## 14. Pendências que permanecem
 
 - **Peso dos modelos da biblioteca Human** no primeiro carregamento, contra o requisito de
@@ -738,3 +758,4 @@ a **forma do aviso** da exclusão do _template_, que acontece na App 07, com a d
 | `RF-04-48`              | 03 §3.3 (_template_ gerado no aparelho)                   |
 | `RF-04-49` a `RF-04-57` | 02 §8.2 (recompensa avulsa) e 11 §5 (saldo e troca)       |
 | `RF-04-60`              | 09 §1 (responsável mínimo no ato do encontro), 03 §3.3    |
+| `RF-04-63`              | 03 §3.3 (calibração do limiar no aparelho do encontro)    |

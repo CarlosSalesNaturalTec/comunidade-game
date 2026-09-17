@@ -62,13 +62,13 @@ describe("captura da imagem", () => {
     expect(screen.getByRole("button", { name: /iniciar captura/i })).toBeEnabled();
   });
 
-  it("recusa por falta de consentimento explica em linguagem simples", async () => {
+  it("recusa por falta de consentimento traz a mensagem do núcleo", async () => {
     vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
     vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
     vi.spyOn(descritorApi, "enviarDescritor").mockRejectedValue(
       new ErroDaApi(422, {
         codigo: "erro_de_validacao",
-        mensagem: "Sem consentimento vigente.",
+        mensagem: "Cadastro biométrico exige consentimento vigente do responsável.",
       }),
     );
     renderizar();
@@ -76,7 +76,48 @@ describe("captura da imagem", () => {
 
     await usuario.click(screen.getByRole("button", { name: /iniciar captura/i }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(/consentimento/i);
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      /exige consentimento vigente do responsável/i,
+    );
+  });
+
+  // O defeito que esta change conserta: qualquer 422 virava a frase do
+  // consentimento, e o erro de dimensão do descritor chegou ao Mestre
+  // disfarçado dela por semanas (`RF-04-20`, `RF-01-02`).
+  it("recusa de outra causa não vira recusa de consentimento", async () => {
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    vi.spyOn(descritorApi, "enviarDescritor").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "Descritor fora da dimensão esperada.",
+        campo: "descritor",
+      }),
+    );
+    renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: /iniciar captura/i }));
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta).toHaveTextContent(/fora da dimensão esperada/i);
+    expect(alerta).not.toHaveTextContent(/consentimento/i);
+  });
+
+  it("falha sem resposta do núcleo tem frase própria", async () => {
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    vi.spyOn(descritorApi, "enviarDescritor").mockRejectedValue(
+      new TypeError("Failed to fetch"),
+    );
+    renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: /iniciar captura/i }));
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta).toHaveTextContent(/não foi possível concluir a captura/i);
+    expect(alerta).not.toHaveTextContent(/consentimento/i);
   });
 
   it("nenhuma imagem aparece em registro de erro", async () => {

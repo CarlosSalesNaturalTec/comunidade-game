@@ -26,6 +26,19 @@ from .modelo import (
 # (`RN-13-06`).
 TIPO_DE_CONSENTIMENTO_BIOMETRIA = TipoDeConsentimento.biometria
 
+# Quantas posições tem o descritor que o aparelho gera. NÃO é parâmetro de
+# implantação: é fato da biblioteca decidida no documento 03 §3.3 — o modelo
+# `faceres` da Human, cuja saída `global_pooling/Mean` tem shape `[1, 1024]`.
+# A biblioteca procura exatamente esse tensor (`src/face/faceres.ts`); o 128
+# que ela traz comentado é redução abandonada, da era do `face-api.js`.
+#
+# Ficou como variável de ambiente da implantação de 2026-08-12 até
+# 2026-09-17, declarada 17 dias antes de a Human entrar no projeto e com o
+# valor daquela outra convenção: toda captura respondia 422 e nenhum
+# _template_ chegou a ser gravado. Trocar de biblioteca é trocar este número
+# aqui, junto com a decisão que o produziu (decisão do fundador, 2026-09-17).
+DIMENSAO_DO_DESCRITOR = 1024
+
 
 @lru_cache(maxsize=1)
 def _template_de_descarte(dimensao: int) -> list[float]:
@@ -84,7 +97,7 @@ def gravar_ou_recadastrar_template(
     if guerreiro.papel != Papel.guerreiro:
         raise ErroDeValidacao(mensagem="Só Guerreiro(a) tem template biométrico.", campo="id")
 
-    if len(descritor) != configuracao.biometria_dimensao_do_descritor:
+    if len(descritor) != DIMENSAO_DO_DESCRITOR:
         raise ErroDeValidacao(mensagem="Descritor fora da dimensão esperada.", campo="descritor")
 
     vigente = consultar_consentimento_vigente_em(
@@ -144,11 +157,10 @@ def autenticar_por_nick_e_descritor(
 
     credencial = _credencial_biometrica_ativa(sessao, guerreiro_id) if guerreiro_id else None
 
-    dimensao = configuracao.biometria_dimensao_do_descritor
     template_para_comparar = (
         decifrar_descritor(credencial.segredo, configuracao)
         if credencial is not None
-        else _template_de_descarte(dimensao)
+        else _template_de_descarte(DIMENSAO_DO_DESCRITOR)
     )
 
     distancia = _distancia_euclidiana(descritor, template_para_comparar)

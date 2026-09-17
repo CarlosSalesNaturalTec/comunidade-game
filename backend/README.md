@@ -19,9 +19,12 @@ Sem valor padrão — o serviço não sobe sem elas declaradas:
 - `CG_SESSAO_ADULTO_DURACAO`, `CG_SESSAO_GUERREIRO_DURACAO` — duração das sessões, calibradas
   no encontro real (documento 09). Formato **ISO 8601 de duração**: `PT8H`, `PT4H`. `8h` não
   é aceito pelo Pydantic e derruba o contêiner no arranque.
-- `CG_BIOMETRIA_DIMENSAO_DO_DESCRITOR`, `CG_BIOMETRIA_LIMIAR_DE_COMPARACAO`,
-  `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM` — parâmetros da entrada do Guerreiro(a); a chave de
-  cifragem vem do **Secret Manager**, nunca hardcoded (documento 09).
+- `CG_BIOMETRIA_LIMIAR_DE_COMPARACAO`, `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM` — parâmetros da
+  entrada do Guerreiro(a); a chave de cifragem vem do **Secret Manager**, nunca hardcoded
+  (documento 09). A **dimensão do descritor** não é variável: é fato da biblioteca Human,
+  constante em `nucleo/biometria/regra.py`. Se a captura responder 422 com "Descritor fora da
+  dimensão esperada", o aparelho está gerando descritor de outro tamanho — trocou de
+  biblioteca ou de modelo, e a constante precisa acompanhar.
 
 Com valor padrão, ajustados em produção:
 

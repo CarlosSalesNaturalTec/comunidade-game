@@ -47,13 +47,17 @@ export function TelaDeCaptura({ tokenDeTrabalho, guerreiroId, aoConcluir, aoVolt
       aoConcluir();
     } catch (erroCapturado) {
       definirEstado("erro");
-      if (erroCapturado instanceof ErroDaApi && erroCapturado.status === 422) {
-        definirMensagemDeErro(
-          "O consentimento ainda não foi registrado. Volte ao termo antes de tentar de novo.",
-        );
-        return;
-      }
-      definirMensagemDeErro("Não foi possível concluir a captura. Tente novamente.");
+      // A recusa do núcleo chega inteira ao Mestre, como a `TelaDoTermo` ao
+      // lado já faz: a rota tem mais de um motivo para recusar com 422, e
+      // trocar todos por uma frase própria fez um erro de dimensão do
+      // descritor ser lido como falta de consentimento por semanas
+      // (`RF-04-13`, `RF-04-20`, `RF-01-02`). Frase própria só onde não há
+      // corpo de erro — a falha que acontece antes de a resposta existir.
+      definirMensagemDeErro(
+        erroCapturado instanceof ErroDaApi
+          ? erroCapturado.message
+          : "Não foi possível concluir a captura. Tente novamente.",
+      );
     }
   }
 
