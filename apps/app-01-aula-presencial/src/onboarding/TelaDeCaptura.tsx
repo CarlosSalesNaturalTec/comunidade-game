@@ -10,6 +10,10 @@ interface Props {
   guerreiroId: string;
   aoConcluir: () => void;
   aoVoltar: () => void;
+  /** Só existe no onboarding: aqui o consentimento acabou de ser registrado,
+   * e é a única situação em que a bancada pode medir um Guerreiro(a)
+   * (`RF-04-63`, `RN-04-33`). */
+  aoMedirOLimiar?: () => void;
 }
 
 type Estado = "pronta" | "capturando" | "vivacidade_reprovada" | "erro";
@@ -18,7 +22,13 @@ type Estado = "pronta" | "capturando" | "vivacidade_reprovada" | "erro";
 // sem ela passar (`RF-04-13`, `RF-04-48`, documento 03 §3.3). O módulo de
 // biometria é o único que toca a câmera — esta tela só chama as duas
 // funções que ele expõe e nunca vê a fotografia (`RN-04-08`, `RN-04-12`).
-export function TelaDeCaptura({ tokenDeTrabalho, guerreiroId, aoConcluir, aoVoltar }: Props) {
+export function TelaDeCaptura({
+  tokenDeTrabalho,
+  guerreiroId,
+  aoConcluir,
+  aoVoltar,
+  aoMedirOLimiar,
+}: Props) {
   const [estado, definirEstado] = useState<Estado>("pronta");
   const [mensagemDeErro, definirMensagemDeErro] = useState<string | null>(null);
   const [mostrarDireitos, definirMostrarDireitos] = useState(false);
@@ -79,6 +89,15 @@ export function TelaDeCaptura({ tokenDeTrabalho, guerreiroId, aoConcluir, aoVolt
       <Botao onClick={iniciarCaptura} desabilitado={estado === "capturando"}>
         {estado === "capturando" ? "Capturando…" : "Iniciar captura"}
       </Botao>
+      {aoMedirOLimiar && (
+        <Botao
+          variante="secundaria"
+          onClick={aoMedirOLimiar}
+          desabilitado={estado === "capturando"}
+        >
+          Medir o limiar com este Guerreiro(a)
+        </Botao>
+      )}
       <p className="cg-aviso-de-coleta">
         A foto é apagada assim que o descritor é gerado.{" "}
         <button type="button" className="cg-link" onClick={() => definirMostrarDireitos(true)}>

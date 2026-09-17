@@ -115,4 +115,24 @@ describe("aviso discreto de coleta (RF-04-26)", () => {
 
     expect(await screen.findByText(/o que a gente guarda sobre você/i)).toBeInTheDocument();
   });
+
+  it("a área detalhada declara a medição do limiar", async () => {
+    render(
+      <TelaDeCaptura
+        tokenDeTrabalho="token-de-trabalho"
+        guerreiroId="guerreiro-1"
+        aoConcluir={vi.fn()}
+        aoVoltar={vi.fn()}
+      />,
+    );
+
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /veja o que a gente coleta/i }));
+
+    const medicao = await screen.findByText(/compara com a anterior ali mesmo no aparelho/i);
+    expect(medicao).toBeInTheDocument();
+    expect(medicao).toHaveTextContent(/joga fora na mesma hora/i);
+    expect(medicao).toHaveTextContent(/nada disso é enviado para lugar nenhum/i);
+    expect(medicao).toHaveTextContent(/depois que seu responsável assinou o termo/i);
+  });
 });
