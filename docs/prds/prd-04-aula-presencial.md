@@ -380,6 +380,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RN-04-30` | O papel do integrante é declarado na formação da equipe e vale para o encontro inteiro                      | —          | 02 §5         |
 | `RN-04-31` | A reescrita por IA opera no App 01 ainda que um integrante esteja com a chave desligada                     | 11         | 03 §7.1       |
 | `RN-04-32` | A medição do limiar guarda um descritor de referência por vez e descarta cada captura comparada no ato      | 12         | 03 §3.3       |
+| `RN-04-33` | Sobre Guerreiro(a), a medição do limiar só é oferecida dentro do onboarding, depois do consentimento        | 11         | 03 §3.3       |
 
 ## 8. Modelo de dados
 
@@ -569,7 +570,9 @@ erro, porque a transcrição é o próprio texto digitado).
 - A medição do limiar mostra a distância entre duas capturas e, ao mostrá-la, já descartou a
   segunda: em nenhum momento há mais de um descritor de referência guardado, e nenhuma requisição
   sai do aparelho durante a medição.
-- A medição não abre a câmera sobre um Guerreiro(a) sem consentimento de biometria registrado.
+- Sobre Guerreiro(a), a medição só é oferecida dentro do onboarding, depois de o
+  consentimento ter sido registrado naquela mesma sessão; fora dele, a bancada mede apenas
+  quem opera, e nenhum caminho da aplicação abre a câmera sobre criança sem termo.
 - Nenhuma requisição do App 01 carrega imagem de criança: o que sai do aparelho é o descritor,
   e a fotografia não aparece em corpo de requisição nem em registro de erro.
 - A ordem prova de vivacidade e depois descritor é garantida no aparelho, pelo código da Human;
