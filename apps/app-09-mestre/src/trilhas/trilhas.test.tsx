@@ -3107,6 +3107,9 @@ describe("o desafio declarado reabre na Área do Mestre (RF-09-26, RF-09-118)", 
     });
     expect(imagem).toHaveAttribute("src", "blob:imagem-da-pergunta-1");
     expect(ler).toHaveBeenCalledWith("pergunta-1", "token-do-mestre");
+    // A mesma moldura de tamanho fixo da pré-visualização (decisão do
+    // fundador de 2026-09-17).
+    expect(imagem.closest(".cg-midia-do-nucleo")).not.toBeNull();
     vi.unstubAllGlobals();
   });
 
@@ -3462,6 +3465,38 @@ describe("a pré-visualização mostra o que o Guerreiro(a) verá (RF-09-25)", (
     // A referência do armazenamento nunca chega à tela como se fosse o
     // conteúdo — era isso que a frase "Arquivo enviado." escondia.
     expect(screen.queryByText(/conteudos\/conteudo-1\/arquivo/)).not.toBeInTheDocument();
+    // A moldura de tamanho fixo é a mesma para toda mídia do núcleo
+    // (`RF-09-25`, `RF-09-119`, decisão do fundador de 2026-09-17).
+    expect(imagem.closest(".cg-midia-do-nucleo")).not.toBeNull();
+  });
+
+  it("exibe o vídeo enviado na mesma moldura de tamanho fixo da imagem", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:conteudo-1"),
+      revokeObjectURL: vi.fn(),
+    });
+    vi.spyOn(trilhasApi, "lerArquivoDoConteudo").mockResolvedValue(
+      new Blob(["bytes"], { type: "video/mp4" }),
+    );
+
+    await preVisualizar(
+      missao({
+        conteudos: [
+          conteudo({
+            tipo: "video",
+            corpo: null,
+            referencia: "conteudos/conteudo-1/arquivo",
+          }),
+        ],
+      }),
+    );
+
+    const video = (await screen.findByLabelText(
+      /vídeo de primeira missão/i,
+    )) as HTMLVideoElement;
+    expect(video.tagName).toBe("VIDEO");
+    expect(video.closest(".cg-midia-do-nucleo")).not.toBeNull();
   });
 
   it("diz que o envio está pendente quando o arquivo não foi confirmado", async () => {
@@ -3473,5 +3508,38 @@ describe("a pré-visualização mostra o que o Guerreiro(a) verá (RF-09-25)", (
 
     expect(await screen.findByText(/envio ainda não concluído/i)).toBeInTheDocument();
     expect(ler).not.toHaveBeenCalled();
+  });
+
+  it("apresenta a imagem da pergunta do quiz, como o Guerreiro(a) a verá (RF-09-119)", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:imagem-da-pergunta-1"),
+      revokeObjectURL: vi.fn(),
+    });
+    const ler = vi
+      .spyOn(trilhasApi, "lerImagemDaPergunta")
+      .mockResolvedValue(new Blob(["bytes"], { type: "image/png" }));
+
+    await preVisualizar(
+      missao({
+        tipo_do_desafio_de_desbloqueio: "quiz",
+        perguntas_do_desbloqueio: [
+          {
+            id: "pergunta-1",
+            ordem: 1,
+            enunciado: "O que o gráfico mostra?",
+            alternativas: ["a", "b", "c", "d"],
+            alternativa_correta: 1,
+            imagem_referencia: "perguntas-do-desbloqueio/pergunta-1/imagem",
+          },
+        ],
+      }),
+    );
+
+    const imagem = (await screen.findByRole("img")) as HTMLImageElement;
+    expect(imagem.src).toBe("blob:imagem-da-pergunta-1");
+    expect(ler).toHaveBeenCalledWith("pergunta-1", "token-do-mestre");
+    expect(imagem.closest(".cg-midia-do-nucleo")).not.toBeNull();
+    vi.unstubAllGlobals();
   });
 });

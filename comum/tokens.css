@@ -126,6 +126,12 @@
 
   --largura-de-leitura: 64ch;
   --largura-de-area-densa: var(--marco-1280);
+
+  /* Moldura fixa de mídia — imagem e vídeo buscados do núcleo em bytes
+   * (documento 15 §12, decisão do fundador de 2026-09-17): tamanho igual
+   * para todos, sem crescer além dele. */
+  --largura-de-miniatura: 320px;
+  --altura-de-miniatura: 240px;
 }
 
 /* Semântica — escuro, pelo esquema de cor do sistema (documento 15 §5) */

@@ -1,7 +1,12 @@
 import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao } from "comum/react";
+import { Aviso, Botao, MidiaDoNucleo } from "comum/react";
 import { useEffect, useState } from "react";
-import { type ConteudoDaMissao, lerArquivoDoConteudo, type MissaoDaTrilha } from "./api";
+import {
+  type ConteudoDaMissao,
+  lerArquivoDoConteudo,
+  lerImagemDaPergunta,
+  type MissaoDaTrilha,
+} from "./api";
 
 interface Props {
   missao: MissaoDaTrilha;
@@ -24,6 +29,8 @@ const CREDITO_SEM_NICK = "Mestre autor";
 // (`RF-09-25`). Ela espelha aquela tela em vez de partilhar componente com
 // ela — as duas podem divergir, e é a suíte que segura (design — decisão 4).
 export function PreVisualizacaoDaMissao({ missao, autorNome, onFechar }: Props) {
+  const { sessao } = useSessao();
+  const token = sessao?.token ?? null;
   const conteudos = [...(missao.conteudos ?? [])].sort((a, b) => a.ordem - b.ordem);
   const bibliografia = missao.bibliografia ?? [];
   const perguntas = missao.perguntas_do_desbloqueio ?? [];
@@ -94,6 +101,16 @@ export function PreVisualizacaoDaMissao({ missao, autorNome, onFechar }: Props) 
           {perguntas.map((pergunta) => (
             <li key={pergunta.id}>
               {pergunta.enunciado}
+              {pergunta.imagem_referencia && (
+                <MidiaDoNucleo
+                  id={pergunta.id}
+                  buscar={lerImagemDaPergunta}
+                  token={token}
+                  tipo="imagem"
+                  alt={`Imagem da pergunta: ${pergunta.enunciado}`}
+                  textoDeErro="Essa imagem não abriu agora, mas segue anexada."
+                />
+              )}
               <ul>
                 {pergunta.alternativas.map((alternativa) => (
                   <li key={alternativa}>{alternativa}</li>
@@ -109,10 +126,11 @@ export function PreVisualizacaoDaMissao({ missao, autorNome, onFechar }: Props) 
   );
 }
 
-// Texto e link saem do próprio conteúdo; imagem, vídeo e arquivo vêm em
-// bytes do núcleo, porque toda rota sob `/v1` exige a chave da aplicação em
-// cabeçalho e `<img src>` não a manda (`RF-09-25`, design — decisão 6).
-// Antes desta leitura, os três apareciam como a frase "Arquivo enviado.".
+// Texto e link saem do próprio conteúdo; imagem e vídeo vêm em bytes do
+// núcleo, buscados por `MidiaDoNucleo` numa moldura de tamanho fixo, porque
+// toda rota sob `/v1` exige a chave da aplicação em cabeçalho e `<img src>`
+// não a manda (`RF-09-25`, design — decisão 3 e 4 desta fatia). Antes da
+// fatia anterior, os três apareciam como a frase "Arquivo enviado.".
 function ConteudoPreVisualizado({
   conteudo,
   tituloDaMissao,
@@ -122,15 +140,49 @@ function ConteudoPreVisualizado({
 }) {
   const { sessao } = useSessao();
   const token = sessao?.token ?? null;
+  const temArquivo = conteudo.referencia !== null;
+
+  if (conteudo.tipo === "texto") return <p>{conteudo.corpo}</p>;
+  if (conteudo.tipo === "link_externo") {
+    return <a href={conteudo.endereco ?? "#"}>{conteudo.endereco}</a>;
+  }
+
+  // Envio não concluído é dito pendente, nunca apresentado como quebrado.
+  if (!temArquivo) return <p>Envio ainda não concluído.</p>;
+
+  if (conteudo.tipo === "imagem" || conteudo.tipo === "video") {
+    return (
+      <MidiaDoNucleo
+        id={conteudo.id}
+        buscar={lerArquivoDoConteudo}
+        token={token}
+        tipo={conteudo.tipo}
+        alt={
+          conteudo.tipo === "imagem"
+            ? `Conteúdo de ${tituloDaMissao}`
+            : `Vídeo de ${tituloDaMissao}`
+        }
+        textoDeErro="Esse arquivo não abriu agora, mas segue anexado."
+      />
+    );
+  }
+  return <ArquivoDeApoio conteudo={conteudo} token={token} />;
+}
+
+// O arquivo de apoio não é mídia embutida: é link para o Mestre conferir o
+// que anexou (design — decisão 4, Risks/Trade-offs, desta fatia).
+function ArquivoDeApoio({
+  conteudo,
+  token,
+}: {
+  conteudo: ConteudoDaMissao;
+  token: string | null;
+}) {
   const [endereco, definirEndereco] = useState<string | null>(null);
   const [naoAbriu, definirNaoAbriu] = useState(false);
 
-  const temArquivo = conteudo.referencia !== null;
-  const ehArquivo =
-    conteudo.tipo === "imagem" || conteudo.tipo === "video" || conteudo.tipo === "arquivo";
-
   useEffect(() => {
-    if (!token || !ehArquivo || !temArquivo) return;
+    if (!token) return;
     let local: string | null = null;
     let descartado = false;
     lerArquivoDoConteudo(conteudo.id, token)
@@ -146,32 +198,11 @@ function ConteudoPreVisualizado({
       descartado = true;
       if (local) URL.revokeObjectURL(local);
     };
-  }, [conteudo.id, token, ehArquivo, temArquivo]);
+  }, [conteudo.id, token]);
 
-  if (conteudo.tipo === "texto") return <p>{conteudo.corpo}</p>;
-  if (conteudo.tipo === "link_externo") {
-    return <a href={conteudo.endereco ?? "#"}>{conteudo.endereco}</a>;
-  }
-
-  // Envio não concluído é dito pendente, nunca apresentado como quebrado.
-  if (!temArquivo) return <p>Envio ainda não concluído.</p>;
   if (naoAbriu) {
     return <Aviso tipo="atencao">Esse arquivo não abriu agora, mas segue anexado.</Aviso>;
   }
   if (!endereco) return <p>Carregando o arquivo…</p>;
-
-  if (conteudo.tipo === "imagem") {
-    return (
-      <img
-        src={endereco}
-        alt={`Conteúdo de ${tituloDaMissao}`}
-        onError={() => definirNaoAbriu(true)}
-      />
-    );
-  }
-  if (conteudo.tipo === "video") {
-    // biome-ignore lint/a11y/useMediaCaption: legenda do vídeo do Mestre não é declarada no Ciclo 01 — o PRD-09 não a prevê, e inventar faixa vazia não ajuda quem não ouve.
-    return <video src={endereco} controls aria-label={`Vídeo de ${tituloDaMissao}`} />;
-  }
   return <a href={endereco}>Abrir o arquivo de apoio</a>;
 }

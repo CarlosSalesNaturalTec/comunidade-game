@@ -1,7 +1,7 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao, Campo, MarcaDeGravacao } from "comum/react";
-import { useEffect, useState } from "react";
+import { Aviso, Botao, Campo, MarcaDeGravacao, MidiaDoNucleo } from "comum/react";
+import { useState } from "react";
 import {
   abrirEnvioDaImagemDaPergunta,
   acrescentarPerguntaDoDesbloqueio,
@@ -79,56 +79,6 @@ function semAPosicao<T>(mapa: Record<number, T>, removida: number): Record<numbe
     ajustado[posicao > removida ? posicao - 1 : posicao] = valor;
   }
   return ajustado;
-}
-
-// O Mestre autor vê a imagem que anexou, não só o aviso de que ela existe:
-// ele precisa conferir o que o Guerreiro(a) vai ver. Os bytes vêm do núcleo
-// e são mostrados por URL local, porque toda rota sob `/v1` exige a chave da
-// aplicação em cabeçalho e `<img src>` não manda nenhum. Falhar em carregar
-// nunca impede de corrigir nem de gravar a pergunta (`RF-09-119`).
-function ImagemDaPergunta({
-  perguntaId,
-  rotulo,
-  token,
-}: {
-  perguntaId: string;
-  rotulo: string;
-  token: string | null;
-}) {
-  const [endereco, definirEndereco] = useState<string | null>(null);
-  const [naoAbriu, definirNaoAbriu] = useState(false);
-
-  useEffect(() => {
-    if (!token) return;
-    let local: string | null = null;
-    let descartado = false;
-    lerImagemDaPergunta(perguntaId, token)
-      .then((bytes) => {
-        if (descartado) return;
-        local = URL.createObjectURL(bytes);
-        definirEndereco(local);
-      })
-      .catch(() => {
-        if (!descartado) definirNaoAbriu(true);
-      });
-    return () => {
-      descartado = true;
-      if (local) URL.revokeObjectURL(local);
-    };
-  }, [perguntaId, token]);
-
-  if (naoAbriu) {
-    return <Aviso tipo="atencao">Essa imagem não abriu agora, mas segue anexada.</Aviso>;
-  }
-  if (!endereco) return null;
-  return (
-    <img
-      className="desafio-de-desbloqueio__imagem-anexada"
-      src={endereco}
-      alt={rotulo}
-      onError={() => definirNaoAbriu(true)}
-    />
-  );
 }
 
 // O Mestre autor monta o desafio de desbloqueio — quiz ou prático — que
@@ -480,11 +430,14 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
                       Esta pergunta tem imagem.
                     </p>
                     {pergunta.id && (
-                      <ImagemDaPergunta
+                      <MidiaDoNucleo
                         key={`${pergunta.id}-${versaoDaImagem[indice] ?? 0}`}
-                        perguntaId={pergunta.id}
-                        rotulo={`Imagem da pergunta ${indice + 1}: ${pergunta.enunciado}`}
+                        id={pergunta.id}
+                        buscar={lerImagemDaPergunta}
                         token={sessao?.token ?? null}
+                        tipo="imagem"
+                        alt={`Imagem da pergunta ${indice + 1}: ${pergunta.enunciado}`}
+                        textoDeErro="Essa imagem não abriu agora, mas segue anexada."
                       />
                     )}
                     <Botao

@@ -346,6 +346,10 @@ Os tokens são propriedades personalizadas de CSS, independentes de framework, e
 Aplicação consome **apenas a camada semântica e a de tema** — nunca a primitiva direto. O
 arquivo nasce junto da primeira pasta de aplicação, compartilhado pelas oito.
 
+A camada semântica também guarda o tamanho de moldura de mídia — `--largura-de-miniatura` e
+`--altura-de-miniatura` —, para que toda imagem e vídeo buscados do núcleo em bytes usem a
+mesma caixa fixa, sem cortar o conteúdo (decisão do fundador de 2026-09-17).
+
 `comum/` também abriga os arquivos das duas famílias tipográficas (§4) e uma camada de
 componentes React que cumpre por construção o piso de acessibilidade da §5 — alvo de toque,
 foco visível, erro associado ao campo e nenhum significado só por cor (documento 03 §1.2).
