@@ -10,6 +10,7 @@ import * as personasApi from "../personas/api";
 import * as pontosDeApoioApi from "../pontos-de-apoio/api";
 import * as recursosApi from "./api";
 import { ListaDeNecessidades } from "./ListaDeNecessidades";
+import { ListaDeSaldosDisponiveis } from "./ListaDeSaldosDisponiveis";
 import { RegistroDeAporte } from "./RegistroDeAporte";
 import { TelaDeRecursos } from "./TelaDeRecursos";
 
@@ -129,6 +130,7 @@ function configurarCatalogos() {
     itens: [PONTO_DE_APOIO],
     proximo_cursor: null,
   });
+  vi.spyOn(pontosDeApoioApi, "listarSaldosDoPontoDeApoio").mockResolvedValue([]);
   vi.spyOn(missoesApi, "listarMissoes").mockResolvedValue([]);
 }
 
@@ -346,6 +348,7 @@ describe("área Recursos", () => {
 
     expect(await screen.findByText(/falta: 5/i)).toBeInTheDocument();
 
+    await usuario.click(screen.getByRole("button", { name: /novo aporte/i }));
     await usuario.selectOptions(screen.getByLabelText(/provedor/i), APOIADOR.id);
     await usuario.selectOptions(screen.getByLabelText(/^ponto de apoio$/i), PONTO_DE_APOIO.id);
     await usuario.selectOptions(
@@ -410,6 +413,7 @@ describe("área Recursos", () => {
 
     expect(await screen.findByText(/falta: 5/i)).toBeInTheDocument();
 
+    await usuario.click(screen.getByRole("button", { name: /novo aporte/i }));
     await usuario.selectOptions(screen.getByLabelText(/provedor/i), APOIADOR.id);
     await usuario.selectOptions(screen.getByLabelText(/^ponto de apoio$/i), PONTO_DE_APOIO.id);
     await usuario.selectOptions(
@@ -421,5 +425,77 @@ describe("área Recursos", () => {
     await usuario.click(screen.getByRole("button", { name: /registrar aporte/i }));
 
     expect(await screen.findByText(/falta: 3/i)).toBeInTheDocument();
+  });
+
+  it("os formulários de aporte e de missão abrem e fecham por toggle, um sem afetar o outro", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    configurarCatalogos();
+    vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([TIPO_SEM_COMPROVANTE]);
+    vi.spyOn(recursosApi, "listarNecessidades").mockResolvedValue([]);
+
+    render(<TelaDeRecursos />);
+    const usuario = userEvent.setup();
+
+    expect(
+      screen.queryByRole("form", { name: /^registrar aporte$/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("form", { name: /^publicar missão$/i })).not.toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /novo aporte/i }));
+    expect(screen.getByRole("form", { name: /^registrar aporte$/i })).toBeInTheDocument();
+    expect(screen.queryByRole("form", { name: /^publicar missão$/i })).not.toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /nova missão/i }));
+    expect(screen.getByRole("form", { name: /^registrar aporte$/i })).toBeInTheDocument();
+    expect(screen.getByRole("form", { name: /^publicar missão$/i })).toBeInTheDocument();
+  });
+});
+
+describe("lista de saldos disponíveis", () => {
+  const PONTO_DOIS = {
+    id: "ponto-2",
+    nome: "Anexo",
+    comunidade_virtual_id: COMUNIDADE.id,
+    responsavel_id: null,
+    ativo: true,
+  };
+
+  it("o saldo aparece agrupado por ponto de apoio, sem somar entre pontos", () => {
+    render(
+      <ListaDeSaldosDisponiveis
+        gruposDeSaldo={[
+          {
+            pontoDeApoio: PONTO_DE_APOIO,
+            saldos: [
+              { tipo_de_recurso_id: TIPO_SEM_COMPROVANTE.id, nome: "Lanche", saldo: "7" },
+            ],
+          },
+          {
+            pontoDeApoio: PONTO_DOIS,
+            saldos: [
+              { tipo_de_recurso_id: TIPO_SEM_COMPROVANTE.id, nome: "Lanche", saldo: "3" },
+            ],
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText(PONTO_DE_APOIO.nome)).toBeInTheDocument();
+    expect(screen.getByText(PONTO_DOIS.nome)).toBeInTheDocument();
+    expect(screen.getByText(/lanche: 7/i)).toBeInTheDocument();
+    expect(screen.getByText(/lanche: 3/i)).toBeInTheDocument();
+    expect(screen.queryByText(/lanche: 10/i)).not.toBeInTheDocument();
+  });
+
+  it("sem saldo em nenhum ponto de apoio a lista diz isso", () => {
+    render(
+      <ListaDeSaldosDisponiveis
+        gruposDeSaldo={[{ pontoDeApoio: PONTO_DE_APOIO, saldos: [] }]}
+      />,
+    );
+
+    expect(
+      screen.getByText(/não há saldo disponível em nenhum ponto de apoio/i),
+    ).toBeInTheDocument();
   });
 });

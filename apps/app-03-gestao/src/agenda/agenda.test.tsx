@@ -447,7 +447,64 @@ describe("agenda de aulas", () => {
     await waitFor(() =>
       expect(cancelarEspiado).toHaveBeenCalledWith("aula-1", "Chuva forte.", "token-do-admin"),
     );
+
+    // A cancelada some da lista por padrão — reexibe para conferir o motivo
+    // (`RN-02-09`, `RN-02-20`).
+    await usuario.click(screen.getByRole("checkbox", { name: /exibir canceladas/i }));
     expect(await screen.findByText("Cancelada")).toBeInTheDocument();
     expect(await screen.findByText(/motivo: chuva forte\./i)).toBeInTheDocument();
+  });
+
+  it("a aula cancelada some da lista por padrão e reaparece ao marcar 'Exibir canceladas'", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
+      itens: [COMUNIDADE_UM],
+      proximo_cursor: null,
+      ciclo_rotulo: "2026",
+    });
+    vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio").mockResolvedValue({
+      itens: [PONTO_DE_APOIO],
+      proximo_cursor: null,
+    });
+    vi.spyOn(agendaApi, "listarAgenda").mockResolvedValue({
+      itens: [
+        {
+          id: "aula-confirmada",
+          comunidade_virtual_id: COMUNIDADE_UM.id,
+          ponto_de_apoio_id: PONTO_DE_APOIO.id,
+          inicio_em: "2026-08-10T10:00:00Z",
+          fim_em: "2026-08-10T12:00:00Z",
+          situacao: "confirmada",
+          cancelamento_motivo: null,
+          recursos_faltantes: [],
+        },
+        {
+          id: "aula-cancelada",
+          comunidade_virtual_id: COMUNIDADE_UM.id,
+          ponto_de_apoio_id: PONTO_DE_APOIO.id,
+          inicio_em: "2026-08-11T10:00:00Z",
+          fim_em: "2026-08-11T12:00:00Z",
+          situacao: "cancelada",
+          cancelamento_motivo: "Feriado.",
+          recursos_faltantes: [],
+        },
+      ],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDaAgenda />);
+    const usuario = userEvent.setup();
+
+    expect(await screen.findByText("Confirmada")).toBeInTheDocument();
+    expect(screen.queryByText("Cancelada")).not.toBeInTheDocument();
+    expect(screen.queryByText(/motivo: feriado\./i)).not.toBeInTheDocument();
+    // O filtro de comunidade e período continua visível com a lista filtrada.
+    expect(screen.getByLabelText(/início do período/i)).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("checkbox", { name: /exibir canceladas/i }));
+
+    expect(await screen.findByText("Cancelada")).toBeInTheDocument();
+    expect(screen.getByText(/motivo: feriado\./i)).toBeInTheDocument();
+    expect(screen.getByText("Confirmada")).toBeInTheDocument();
   });
 });
