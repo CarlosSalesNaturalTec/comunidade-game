@@ -227,6 +227,19 @@ def test_aula_fora_do_horario_nao_e_vigente(sessao, criar_persona, criar_aula, c
     assert aula.id not in {a.id for a in vigentes}
 
 
+def test_aula_cancelada_nao_e_vigente(sessao, criar_persona, criar_aula, criar_comunidade):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    agora = datetime.now(UTC)
+    aula = criar_aula(
+        admin, comunidade, inicio_em=agora - timedelta(hours=1), fim_em=agora + timedelta(hours=1)
+    )
+    cancelar_aula(sessao, operador=admin, aula=aula, motivo="Chuva forte.")
+
+    vigentes = aulas_vigentes(sessao)
+    assert aula.id not in {a.id for a in vigentes}
+
+
 def test_duas_comunidades_no_mesmo_horario_devolvem_duas_aulas(
     sessao, criar_persona, criar_aula, criar_comunidade
 ):
