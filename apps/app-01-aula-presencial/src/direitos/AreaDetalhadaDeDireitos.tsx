@@ -118,6 +118,14 @@ export function AreaDetalhadaDeDireitos({ aoVoltar }: Props) {
         entra em nenhum ranking e nenhum outro Guerreiro ou Guerreira a vê.
       </p>
 
+      <h3>Quando a gente mede a câmera</h3>
+      <p>
+        De vez em quando o Mestre precisa conferir se a câmera está reconhecendo direito. Nessa
+        hora ela tira uma captura, compara com a anterior ali mesmo no aparelho e joga fora na
+        mesma hora — o que fica na tela é só um número. Nada disso é enviado para lugar nenhum.
+        E isso só acontece com você depois que seu responsável assinou o termo.
+      </p>
+
       <h3>Se você não quiser usar a câmera</h3>
       <p>
         Sem problema nenhum — recusar a biometria não te tira de nada. Você entra do mesmo

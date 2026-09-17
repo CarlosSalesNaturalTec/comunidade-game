@@ -1,26 +1,26 @@
 ## 1. A distância no aparelho, igual à do núcleo
 
-- [ ] 1.1 Expor em `comum/biometria` a função que calcula a distância euclidiana entre dois
+- [x] 1.1 Expor em `comum/biometria` a função que calcula a distância euclidiana entre dois
       descritores, no mesmo cálculo de `_distancia_euclidiana` do núcleo — raiz da soma dos
       quadrados, sobre o descritor cru (`RF-04-63`, design — decisão 1).
-- [ ] 1.2 Cobrir em `comum/biometria` a função com **valores fixos conhecidos**, cujos
+- [x] 1.2 Cobrir em `comum/biometria` a função com **valores fixos conhecidos**, cujos
       resultados estão escritos no teste: é o que prende as duas implementações e faz a
       divergência aparecer no CI em vez de no encontro (`RF-04-63`, design — Riscos).
 
 ## 2. A tela de medição
 
-- [ ] 2.1 Criar em `apps/app-01-aula-presencial/` a tela que captura pela `comum/biometria`,
+- [x] 2.1 Criar em `apps/app-01-aula-presencial/` a tela que captura pela `comum/biometria`,
       guarda **um** descritor de referência por vez, compara cada captura seguinte com ele,
       apresenta a distância e descarta a captura comparada no mesmo ato — sem nunca apresentar
       nem persistir descritor, e sem nenhuma chamada ao núcleo (`RF-04-63`, `RN-04-32`).
-- [ ] 2.2 Dar à tela a substituição explícita da referência, como ato de quem opera, e encerrar
+- [x] 2.2 Dar à tela a substituição explícita da referência, como ato de quem opera, e encerrar
       a câmera ao sair, como a `TelaDeCaptura` já faz (`RN-04-32`, `RN-04-12`, design —
       decisão 2).
-- [ ] 2.3 Ligar os dois caminhos com alcance diferente: pela tela inicial, em sessão de trabalho
+- [x] 2.3 Ligar os dois caminhos com alcance diferente: pela tela inicial, em sessão de trabalho
       de Mestre ou Admin, medindo **apenas quem opera**; e pelo passo da imagem do
       `FluxoDeOnboarding`, depois do termo, medindo **o Guerreiro(a) daquele cadastro**
       (`RN-04-33`, `RN-04-07`, design — decisões 3 e 4).
-- [ ] 2.4 Cobrir em teste da App 01 os cinco cenários do delta: a distância apresentada; só um
+- [x] 2.4 Cobrir em teste da App 01 os cinco cenários do delta: a distância apresentada; só um
       descritor de referência guardado ao longo de três capturas; nenhuma requisição ao núcleo
       durante a medição; fora do onboarding não há caminho que capture Guerreiro(a); e dentro
       do onboarding a medição é oferecida depois do consentimento (`RF-04-63`, `RN-04-32`,
@@ -28,7 +28,7 @@
 
 ## 3. O aviso de coleta
 
-- [ ] 3.1 Acrescentar a medição à área detalhada de direitos
+- [x] 3.1 Acrescentar a medição à área detalhada de direitos
       (`AreaDetalhadaDeDireitos.tsx`) — que ela abre a câmera, compara no aparelho, descarta no
       ato, não envia nada, e sobre Guerreiro(a) só acontece sob o termo assinado —, cobrindo em
       `direitos.test.tsx` o cenário correspondente do delta (`RF-04-26`, `RF-04-63`).
@@ -45,7 +45,7 @@
 
 ## 5. Documentação
 
-- [ ] 5.1 Marcar como implementada a **fatia 14** no bloco do PRD-04 do
+- [x] 5.1 Marcar como implementada a **fatia 14** no bloco do PRD-04 do
       `openspec/cronograma-de-fatias.md`, acrescentada com situação `em andamento` na abertura,
       com a ressalva da tarefa 4.1 enquanto o limiar não tiver sido medido e gravado. Nada muda
       em `docs/`: a decisão nova já está no documento 03 §3.3, no documento 09 §1 e no PRD-04,

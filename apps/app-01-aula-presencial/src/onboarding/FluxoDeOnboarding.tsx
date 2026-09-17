@@ -2,6 +2,7 @@ import { existeCamera } from "comum/biometria";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
 import type { GuerreiroCadastrado } from "../api/guerreiros";
+import { TelaDeMedicaoDoLimiar } from "../bancada/TelaDeMedicaoDoLimiar";
 import { TelaDeCadastro } from "./TelaDeCadastro";
 import { TelaDeCaptura } from "./TelaDeCaptura";
 import { TelaDoResponsavel } from "./TelaDoResponsavel";
@@ -21,6 +22,7 @@ type Passo =
   | { tipo: "responsavel"; guerreiro: GuerreiroCadastrado }
   | { tipo: "termo"; guerreiro: GuerreiroCadastrado; responsavelId: string }
   | { tipo: "captura"; guerreiro: GuerreiroCadastrado }
+  | { tipo: "medicao"; guerreiro: GuerreiroCadastrado }
   | { tipo: "despedida"; guerreiro: GuerreiroCadastrado; comImagem: boolean };
 
 // A cadeia de cinco chamadas HTTP da jornada 5.2, retomável por passo
@@ -113,6 +115,22 @@ export function FluxoDeOnboarding({
         guerreiroId={guerreiro.id}
         aoConcluir={() => definirPasso({ tipo: "despedida", guerreiro, comImagem: true })}
         aoVoltar={() => definirPasso({ tipo: "despedida", guerreiro, comImagem: false })}
+        aoMedirOLimiar={() => definirPasso({ tipo: "medicao", guerreiro })}
+      />
+    );
+  }
+
+  // O caminho da calibração: só aqui a bancada alcança um Guerreiro(a),
+  // porque o consentimento dele acabou de ser registrado no passo do termo —
+  // é a única forma que a aplicação tem de saber que o termo existe
+  // (`RN-04-33`, `RN-04-07`, design — decisão 3).
+  if (passo.tipo === "medicao") {
+    const guerreiro = passo.guerreiro;
+    return (
+      <TelaDeMedicaoDoLimiar
+        alcance="guerreiro"
+        nickDoGuerreiro={guerreiro.nick}
+        aoVoltar={() => definirPasso({ tipo: "captura", guerreiro })}
       />
     );
   }

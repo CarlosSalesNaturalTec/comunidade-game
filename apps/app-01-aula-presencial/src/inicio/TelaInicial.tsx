@@ -1,6 +1,7 @@
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
+import { TelaDeMedicaoDoLimiar } from "../bancada/TelaDeMedicaoDoLimiar";
 import { AreaDetalhadaDeDireitos } from "../direitos/AreaDetalhadaDeDireitos";
 import { TelaDeEntradaDoGuerreiro } from "../entrada/TelaDeEntradaDoGuerreiro";
 import { TelaDeEquipes } from "../equipes/TelaDeEquipes";
@@ -13,7 +14,7 @@ import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import { TelaDaProgramacao } from "../trilhas/TelaDaProgramacao";
 import { TelaDeTroca } from "../troca/TelaDeTroca";
 
-type Caminho = "inicio" | "onboarding" | "trilhas" | "troca" | "quiz";
+type Caminho = "inicio" | "onboarding" | "trilhas" | "troca" | "quiz" | "medicao";
 
 interface Props {
   tokenDeTrabalho: string;
@@ -121,6 +122,13 @@ export function TelaInicial({
     );
   }
 
+  // O caminho do diagnóstico: alcança só quem opera, porque fora do
+  // onboarding a aplicação não tem como saber que existe termo assinado de
+  // um Guerreiro(a) (`RN-04-33`, design — decisão 3).
+  if (caminho === "medicao") {
+    return <TelaDeMedicaoDoLimiar alcance="operador" aoVoltar={voltarAoInicio} />;
+  }
+
   if (caminho === "trilhas" || caminho === "troca" || caminho === "quiz") {
     if (!sessaoDoGuerreiro) {
       return (
@@ -202,6 +210,9 @@ export function TelaInicial({
         </button>
         <button type="button" className="cg-caminho" onClick={() => definirCaminho("quiz")}>
           Quiz ao Vivo — entrar com o nick e responder pela equipe
+        </button>
+        <button type="button" className="cg-caminho" onClick={() => definirCaminho("medicao")}>
+          Medição do limiar — conferir a distância entre capturas neste aparelho
         </button>
         {momentoDeTrocaAberto && (
           <button type="button" className="cg-caminho" onClick={() => definirCaminho("troca")}>
