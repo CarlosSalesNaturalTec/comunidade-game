@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import * as autenticacaoApi from "comum/autenticacao/api";
@@ -267,6 +267,75 @@ describe("entrada do Guerreiro(a) por confirmação", () => {
     renderizar();
 
     expect(screen.getByRole("button", { name: /entrar/i })).toBeDisabled();
+  });
+
+  // `RF-04-64`: também aqui quem chega se vê no visor antes de a captura
+  // julgar — a tela empresta o lugar, o módulo anexa o vídeo.
+  it("empresta ao módulo o lugar do visor, e ele está na tela", async () => {
+    configurarSessao();
+    const acoplar = vi.spyOn(biometriaModulo, "acoplarEspelho");
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(false);
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+
+    await vi.waitFor(() => expect(acoplar).toHaveBeenCalled());
+    expect(document.body.contains(acoplar.mock.calls[0][0])).toBe(true);
+  });
+
+  // `RF-04-65`: a indistinguibilidade do `RF-04-20` cobre as três causas da
+  // recusa do núcleo, não a câmera que nem chegou a funcionar.
+  it("falha de preparo tem frase própria, distinta da recusa do reconhecimento", async () => {
+    configurarSessao();
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "prepararCaptura").mockRejectedValue(
+      new biometriaModulo.ErroDePreparoDaCaptura("modelos não carregaram"),
+    );
+    const provar = vi.spyOn(biometriaModulo, "provarVivacidade");
+    const abrirSessao = vi.spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento");
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta).toHaveTextContent(/câmera não pôde ser preparada/i);
+    expect(alerta).not.toHaveTextContent(/não foi possível reconhecer/i);
+    expect(provar).not.toHaveBeenCalled();
+    expect(abrirSessao).not.toHaveBeenCalled();
+  });
+
+  // `RF-04-20`, `RN-01-22`: o que a change não pode ter quebrado — a recusa
+  // do núcleo continua a mesma frase da vivacidade reprovada.
+  it("a recusa do núcleo e a vivacidade reprovada continuam indistinguíveis", async () => {
+    configurarSessao();
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(false);
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+    const porVivacidade = (await screen.findByRole("alert")).textContent;
+
+    cleanup();
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2]);
+    vi.spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento").mockRejectedValue(
+      new ErroDaApi(401, {
+        codigo: "autenticacao_biometrica_invalida",
+        mensagem: "Não foi possível autenticar.",
+      }),
+    );
+    renderizar();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+    const porRecusaDoNucleo = (await screen.findByRole("alert")).textContent;
+
+    expect(porRecusaDoNucleo).toEqual(porVivacidade);
   });
 
   it("voltar aciona aoVoltar sem chamar reconhecimento nem confirmação", async () => {

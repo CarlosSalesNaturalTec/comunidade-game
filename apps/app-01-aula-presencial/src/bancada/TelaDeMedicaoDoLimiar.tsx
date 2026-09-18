@@ -1,11 +1,15 @@
 import {
+  acoplarEspelho,
   distanciaEntreDescritores,
+  type EstadoDaVivacidade,
   encerrarCaptura,
   gerarDescritor,
+  prepararCaptura,
   provarVivacidade,
 } from "comum/biometria";
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Visor } from "../captura/Visor";
 
 interface Props {
   /** Sobre quem a bancada pode abrir a câmera. `operador` é o caminho do
@@ -25,7 +29,13 @@ interface Medicao {
   momento: number;
 }
 
-type Estado = "pronta" | "capturando" | "vivacidade_reprovada" | "erro";
+type Estado =
+  | "pronta"
+  | "preparando"
+  | "capturando"
+  | "vivacidade_reprovada"
+  | "falha_de_preparo"
+  | "erro";
 
 // A bancada do `RF-04-63`: mede a distância entre descritores no aparelho do
 // encontro, na mesma unidade que o núcleo usa para decidir se confere, e
@@ -39,7 +49,9 @@ export function TelaDeMedicaoDoLimiar({ alcance, nickDoGuerreiro, aoVoltar }: Pr
   const [referencia, definirReferencia] = useState<number[] | null>(null);
   const [medicoes, definirMedicoes] = useState<Medicao[]>([]);
   const [estado, definirEstado] = useState<Estado>("pronta");
+  const [estadoDoLaco, definirEstadoDoLaco] = useState<EstadoDaVivacidade | null>(null);
   const [mensagemDeErro, definirMensagemDeErro] = useState<string | null>(null);
+  const lugarDoVisor = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     return () => {
@@ -48,9 +60,21 @@ export function TelaDeMedicaoDoLimiar({ alcance, nickDoGuerreiro, aoVoltar }: Pr
   }, []);
 
   async function capturar(): Promise<number[] | null> {
-    definirEstado("capturando");
+    definirEstado("preparando");
+    definirEstadoDoLaco(null);
     definirMensagemDeErro(null);
-    const vivacidadeAprovada = await provarVivacidade();
+
+    try {
+      await prepararCaptura();
+    } catch {
+      definirEstado("falha_de_preparo");
+      return null;
+    }
+
+    if (lugarDoVisor.current) acoplarEspelho(lugarDoVisor.current);
+    definirEstado("capturando");
+
+    const vivacidadeAprovada = await provarVivacidade(definirEstadoDoLaco);
     if (!vivacidadeAprovada) {
       definirEstado("vivacidade_reprovada");
       return null;
@@ -92,7 +116,7 @@ export function TelaDeMedicaoDoLimiar({ alcance, nickDoGuerreiro, aoVoltar }: Pr
     }
   }
 
-  const emAndamento = estado === "capturando";
+  const emAndamento = estado === "preparando" || estado === "capturando";
   const sujeito =
     alcance === "guerreiro" ? (nickDoGuerreiro ?? "o Guerreiro(a) do cadastro") : "quem opera";
 
@@ -111,7 +135,14 @@ export function TelaDeMedicaoDoLimiar({ alcance, nickDoGuerreiro, aoVoltar }: Pr
         </Aviso>
       )}
 
-      {emAndamento && <EstadoDaLista>Capturando e verificando…</EstadoDaLista>}
+      <Visor lugar={lugarDoVisor} estado={estado === "capturando" ? estadoDoLaco : null} />
+      {estado === "preparando" && <EstadoDaLista>Preparando a câmera…</EstadoDaLista>}
+      {estado === "falha_de_preparo" && (
+        <Aviso tipo="erro">
+          A câmera não pôde ser preparada neste aparelho. Tente de novo; se continuar, a
+          medição exige outro aparelho.
+        </Aviso>
+      )}
       {estado === "vivacidade_reprovada" && (
         <Aviso tipo="atencao">
           Não foi possível confirmar que há uma pessoa diante da câmera. Tente de novo.

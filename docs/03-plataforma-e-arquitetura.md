@@ -355,6 +355,13 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
   aberta **Human**, na ordem **prova de vivacidade e, depois, descritor facial**. Ao núcleo
   vai **apenas o descritor**: a fotografia não trafega e é descartada na geração. A plataforma
   não recebe nem guarda rosto de criança.
+- **Visor ao vivo, imagem capturada nunca exibida**: a tela da captura mostra o **espelho ao
+  vivo** da câmera. O espelho é **visor** — mostra a pessoa a si mesma antes de existir captura,
+  nada é guardado nem reexibido, e é o mesmo que qualquer câmera de celular faz. O que nunca
+  aparece é a **imagem capturada**: quadro congelado devolvido à tela é proibido, antes ou
+  depois de gerar o descritor. O retorno a quem opera é **abstrato** — se há rosto no visor, se
+  a prova de vivacidade passou —, nunca a fotografia. Capturar às cegas é o que faz a prova de
+  vivacidade reprovar sem que ninguém saiba por quê.
 - **Comparação sempre no núcleo**: o aparelho gera o descritor e **nunca recebe** o _template_
   guardado — nenhuma rota o devolve. Como o descritor nasce em código que roda no aparelho, a
   garantia da entrada é **também** presencial: o App 01 só opera com aula agendada, em

@@ -98,6 +98,39 @@ describe("bancada de medição do limiar", () => {
     expect(screen.queryByText("3.200")).not.toBeInTheDocument();
   });
 
+  // `RF-04-64`, `RN-04-34`: a bancada mede com o visor aberto, nas duas
+  // capturas, e o quadro capturado não volta à tela.
+  it("mede com o visor aberto nas duas capturas, sem devolver o quadro", async () => {
+    const acoplar = vi.spyOn(biometriaModulo, "acoplarEspelho");
+    prepararCapturas(0.1, 0.2);
+    const { container } = render(
+      <TelaDeMedicaoDoLimiar alcance="operador" aoVoltar={vi.fn()} />,
+    );
+
+    await clicar(/capturar a referência/i);
+    await clicar(/capturar e comparar/i);
+
+    expect(acoplar).toHaveBeenCalledTimes(2);
+    expect(document.body.contains(acoplar.mock.calls[0][0])).toBe(true);
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("canvas")).toBeNull();
+  });
+
+  // `RF-04-65`: preparo que falhou não se disfarça de ausência de pessoa.
+  it("falha de preparo tem frase própria e não chega a medir", async () => {
+    vi.spyOn(biometriaModulo, "prepararCaptura").mockRejectedValue(
+      new biometriaModulo.ErroDePreparoDaCaptura("modelos não carregaram"),
+    );
+    const provar = vi.spyOn(biometriaModulo, "provarVivacidade");
+    render(<TelaDeMedicaoDoLimiar alcance="operador" aoVoltar={vi.fn()} />);
+
+    await clicar(/capturar a referência/i);
+
+    expect(await screen.findByText(/câmera não pôde ser preparada/i)).toBeInTheDocument();
+    expect(screen.queryByText(/pessoa diante da câmera/i)).not.toBeInTheDocument();
+    expect(provar).not.toHaveBeenCalled();
+  });
+
   it("encerra a câmera ao sair da tela", () => {
     const encerrar = vi.spyOn(biometriaModulo, "encerrarCaptura").mockImplementation(() => {});
     const { unmount } = render(

@@ -276,7 +276,8 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     alternativa equivalente.
 12. **Guerreiros e Guerreiras aparecem publicamente só por avatar e nick.** A imagem do
     onboarding tem finalidade única de identificar o Guerreiro(a) — presença e autenticação — e
-    nunca é exibida. **Toda superfície pública** — vitrine, cards, rankings públicos, portfólio
+    **nunca é exibida**: o **visor ao vivo** da câmera é permitido, o **quadro capturado** nunca
+    volta à tela. **Toda superfície pública** — vitrine, cards, rankings públicos, portfólio
     e App 04 — mostra apenas quem tem **divulgação autorizada**. O **ranking interno da App 05
     é a única exceção declarada**: por ser tela logada, sem público externo, ele mostra a turma
     inteira.
