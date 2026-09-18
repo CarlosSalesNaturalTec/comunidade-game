@@ -2,18 +2,22 @@ import { ErroDaApi } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { eu } from "comum/autenticacao/api";
 import {
+  acoplarEspelho,
+  type EstadoDaVivacidade,
   encerrarCaptura,
   existeCamera,
   gerarDescritor,
+  prepararCaptura,
   provarVivacidade,
 } from "comum/biometria";
 import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { registrarPresenca } from "../api/presencas";
 import {
   abrirSessaoPorReconhecimento,
   confirmarSessaoDeGuerreiro,
 } from "../api/sessoesDeGuerreiro";
+import { Visor } from "../captura/Visor";
 import { enfileirarPresenca } from "../fila/filaDePresenca";
 import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 
@@ -31,6 +35,13 @@ type Tela = "entrada" | "confirmando" | "presencaJaRegistrada" | "presencaEnfile
 
 const MENSAGEM_DE_RECUSA =
   "Não foi possível reconhecer. Tente de novo, com o rosto bem posicionado, ou chame um Mestre ou Admin.";
+
+// Distinta da recusa acima de propósito: a indistinguibilidade do `RF-04-20`
+// cobre as três causas da recusa do núcleo, não a câmera que nem chegou a
+// funcionar. Preparo que falhou NEVER se disfarça de rosto que não confere
+// (`RF-04-65`).
+const MENSAGEM_DE_FALHA_DE_PREPARO =
+  "A câmera não pôde ser preparada neste aparelho. Tente de novo ou chame um Mestre ou Admin.";
 
 // A entrada por nick e imagem entra antes da confirmação humana, que passa
 // a ser a alternativa de quem não tem câmera, de quem a recusa persiste e
@@ -50,7 +61,10 @@ export function TelaDeEntradaDoGuerreiro({
   const [tela, definirTela] = useState<Tela>("entrada");
   const [emAndamento, definirEmAndamento] = useState(false);
   const [recusado, definirRecusado] = useState(false);
+  const [falhaDePreparo, definirFalhaDePreparo] = useState(false);
+  const [estadoDoLaco, definirEstadoDoLaco] = useState<EstadoDaVivacidade | null>(null);
   const [erroDeConfirmacao, definirErroDeConfirmacao] = useState<string | null>(null);
+  const lugarDoVisor = useRef<HTMLDivElement>(null);
 
   // Grava a presença no mesmo ato em que a sessão abre, sempre com o token
   // da sessão de trabalho (`RF-04-18`, `RF-04-21`). Só o reconhecimento
@@ -82,6 +96,8 @@ export function TelaDeEntradaDoGuerreiro({
 
   async function tentarReconhecimento() {
     definirRecusado(false);
+    definirFalhaDePreparo(false);
+    definirEstadoDoLaco(null);
     definirEmAndamento(true);
     try {
       const temCamera = await existeCamera();
@@ -89,7 +105,16 @@ export function TelaDeEntradaDoGuerreiro({
         definirTela("confirmando");
         return;
       }
-      const vivacidadeAprovada = await provarVivacidade();
+
+      try {
+        await prepararCaptura();
+      } catch {
+        definirFalhaDePreparo(true);
+        return;
+      }
+      if (lugarDoVisor.current) acoplarEspelho(lugarDoVisor.current);
+
+      const vivacidadeAprovada = await provarVivacidade(definirEstadoDoLaco);
       if (!vivacidadeAprovada) {
         definirRecusado(true);
         return;
@@ -195,12 +220,14 @@ export function TelaDeEntradaDoGuerreiro({
         acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }}
       />
       <Campo rotulo="Nick" valor={nick} aoAlterar={definirNick} />
+      <Visor lugar={lugarDoVisor} estado={estadoDoLaco} />
       <Botao
         onClick={tentarReconhecimento}
         desabilitado={emAndamento || nick.trim().length === 0}
       >
         {emAndamento ? "Reconhecendo…" : "Entrar"}
       </Botao>
+      {falhaDePreparo && <Aviso tipo="erro">{MENSAGEM_DE_FALHA_DE_PREPARO}</Aviso>}
       {recusado && (
         <>
           <Aviso tipo="erro">{MENSAGEM_DE_RECUSA}</Aviso>

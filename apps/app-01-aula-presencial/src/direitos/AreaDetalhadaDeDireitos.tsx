@@ -118,6 +118,14 @@ export function AreaDetalhadaDeDireitos({ aoVoltar }: Props) {
         entra em nenhum ranking e nenhum outro Guerreiro ou Guerreira a vê.
       </p>
 
+      <h3>A câmera que aparece na tela</h3>
+      <p>
+        Enquanto a captura acontece, você se vê na tela — é um espelho, para você saber se está
+        bem posicionado, e some junto com a câmera. A foto que a captura tira é outra coisa:
+        essa ninguém vê, nem você. Ela não volta para a tela nem antes nem depois, e a tela só
+        avisa se achou um rosto e se confirmou que há uma pessoa ali.
+      </p>
+
       <h3>Quando a gente mede a câmera</h3>
       <p>
         De vez em quando o Mestre precisa conferir se a câmera está reconhecendo direito. Nessa

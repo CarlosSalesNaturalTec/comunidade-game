@@ -126,3 +126,37 @@ textarea {
   cursor: not-allowed;
   opacity: 0.6;
 }
+
+/* O visor da captura: espelho ao vivo da câmera. O módulo de biometria anexa
+ * o vídeo dentro do lugar que a tela empresta, e o lugar vazio não ocupa
+ * espaço — assim ele já existe no DOM antes de o preparo terminar, sem
+ * corrida entre renderização e acoplamento (RF-04-64).
+ *
+ * A imagem capturada nunca aparece aqui: o que se vê é o fluxo ao vivo, e ele
+ * some com a câmera (RN-04-34, documento 99 §6 invariante 12). */
+.cg-visor-moldura {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  padding: 0 var(--espaco-16);
+}
+
+.cg-visor-lugar:empty {
+  display: none;
+}
+
+/* Espelhado na horizontal: quem se move para a direita se vê ir para a
+ * direita, como num espelho de verdade. */
+.cg-visor {
+  width: 100%;
+  max-height: 40vh;
+  border-radius: var(--raio-campo);
+  background: var(--cor-separador);
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.cg-visor-estado {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+}

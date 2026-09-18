@@ -132,4 +132,59 @@ describe("captura da imagem", () => {
     const alerta = await screen.findByRole("alert");
     expect(alerta.textContent).not.toMatch(/data:image|base64/i);
   });
+
+  // `RF-04-64`: a tela empresta um lugar ao módulo, que anexa o visor ali
+  // dentro — ela nunca recebe fluxo, quadro nem pixel.
+  it("empresta ao módulo o lugar do visor, e ele está na tela", async () => {
+    const acoplar = vi.spyOn(biometriaModulo, "acoplarEspelho");
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2]);
+    vi.spyOn(descritorApi, "enviarDescritor").mockResolvedValue({
+      guerreiro_id: "guerreiro-1",
+      gravado_em: new Date().toISOString(),
+    });
+    renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: /iniciar captura/i }));
+
+    expect(acoplar).toHaveBeenCalled();
+    expect(document.body.contains(acoplar.mock.calls[0][0])).toBe(true);
+  });
+
+  // `RN-04-34`: o quadro capturado não volta à tela, antes nem depois de o
+  // descritor ser gerado.
+  it("o quadro capturado não volta à tela", async () => {
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2]);
+    vi.spyOn(descritorApi, "enviarDescritor").mockResolvedValue({
+      guerreiro_id: "guerreiro-1",
+      gravado_em: new Date().toISOString(),
+    });
+    const { container } = renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: /iniciar captura/i }));
+
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("canvas")).toBeNull();
+  });
+
+  // `RF-04-65`: o defeito que esta change conserta — preparo que falhou
+  // anunciava ausência de pessoa diante da câmera.
+  it("falha de preparo tem frase própria, distinta da vivacidade reprovada", async () => {
+    vi.spyOn(biometriaModulo, "prepararCaptura").mockRejectedValue(
+      new biometriaModulo.ErroDePreparoDaCaptura("modelos não carregaram"),
+    );
+    const provar = vi.spyOn(biometriaModulo, "provarVivacidade");
+    renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: /iniciar captura/i }));
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta).toHaveTextContent(/câmera não pôde ser preparada/i);
+    expect(alerta).not.toHaveTextContent(/pessoa diante da câmera/i);
+    expect(provar).not.toHaveBeenCalled();
+  });
 });
