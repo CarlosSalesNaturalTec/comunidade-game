@@ -400,6 +400,12 @@ A tela SHALL apresentar o **visor ao vivo** da câmera enquanto a captura aconte
 detectar **em laço** até a vivacidade passar ou o tempo se esgotar, em vez de julgar um único
 quadro. O **quadro capturado** NEVER SHALL voltar à tela. (`RF-04-64`, `RN-04-34`)
 
+O **retorno abstrato do laço** — rosto procurado, rosto encontrado, pessoa confirmada — SHALL
+valer apenas enquanto a captura acontece, e NEVER SHALL permanecer na tela depois de a
+tentativa ter desfecho. Nenhuma tela SHALL apresentar, ao mesmo tempo, o retorno do laço e o
+desfecho da tentativa: quem opera leria as duas frases como um único julgamento contraditório.
+(`RF-04-64`, `RN-04-34`)
+
 Reconhecido o Guerreiro(a), a aplicação SHALL abrir a sessão dele e SHALL registrar a
 **presença do dia no modo reconhecimento**, no mesmo atendimento. Presença já constante do
 encontro NEVER SHALL ser duplicada nem tratada como erro: a aplicação SHALL avisar que ela já
@@ -429,6 +435,16 @@ PRD-04 §5.4)
 - **WHEN** a entrada por nick e imagem abre a câmera
 - **THEN** o visor ao vivo aparece na tela, e a detecção segue em laço até aprovar ou o tempo
   se esgotar
+
+#### Scenario: O retorno do laço não sobrevive à recusa do núcleo
+
+- **WHEN** a vivacidade é confirmada e, em seguida, o núcleo recusa a abertura da sessão
+- **THEN** a tela apresenta apenas a frase da recusa, e o retorno do laço já não está na tela
+
+#### Scenario: O retorno do laço não sobrevive à falha de preparo nem à vivacidade reprovada
+
+- **WHEN** a tentativa termina por preparo que falhou ou por vivacidade reprovada
+- **THEN** a tela apresenta apenas a frase daquele desfecho, sem o retorno do laço ao lado
 
 #### Scenario: Sem câmera, a entrada segue pela confirmação humana
 
