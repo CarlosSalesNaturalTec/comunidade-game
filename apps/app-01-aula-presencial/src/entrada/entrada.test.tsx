@@ -200,6 +200,87 @@ describe("entrada do Guerreiro(a) por reconhecimento", () => {
     expect(provarVivacidade).not.toHaveBeenCalled();
     expect(abrirSessao).not.toHaveBeenCalled();
   });
+  // `RF-04-64`, `RN-04-34`: o retorno do laço vale **enquanto** a tentativa
+  // corre — sem este caso, passar sempre `null` ao visor também passaria nos
+  // dois testes seguintes, e a tela ficaria muda.
+  it("apresenta o retorno do laço enquanto a captura acontece", async () => {
+    configurarSessao();
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockImplementation(
+      (aoMudarEstado) =>
+        new Promise(() => {
+          aoMudarEstado?.("procurando_rosto");
+        }),
+    );
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+
+    expect(await screen.findByText(/procurando um rosto/i)).toBeInTheDocument();
+  });
+
+  // `RF-04-64`, `RN-04-34`: e **cala no desfecho**. Observado em produção em
+  // 2026-09-18: "Pessoa confirmada." ao lado de "não foi possível reconhecer"
+  // faz quem opera ler as duas frases como um julgamento só, contraditório.
+  it("o retorno do laço não sobrevive à recusa do núcleo", async () => {
+    configurarSessao();
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockImplementation(async (aoMudarEstado) => {
+      aoMudarEstado?.("vivacidade_confirmada");
+      return true;
+    });
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2]);
+    vi.spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento").mockRejectedValue(
+      new ErroDaApi(401, {
+        codigo: "autenticacao_biometrica_invalida",
+        mensagem: "Não foi possível autenticar.",
+      }),
+    );
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(/não foi possível reconhecer/i);
+    expect(screen.queryByText(/pessoa confirmada/i)).not.toBeInTheDocument();
+  });
+
+  // `RF-04-64`, `RF-04-65`, `RN-04-34`: vale para todo desfecho, não só para o
+  // da recusa do núcleo.
+  it("o retorno do laço não sobrevive à vivacidade reprovada nem à falha de preparo", async () => {
+    configurarSessao();
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockImplementation(async (aoMudarEstado) => {
+      aoMudarEstado?.("rosto_encontrado");
+      return false;
+    });
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(/não foi possível reconhecer/i);
+    expect(screen.queryByText(/rosto encontrado/i)).not.toBeInTheDocument();
+
+    cleanup();
+    vi.spyOn(biometriaModulo, "prepararCaptura").mockRejectedValue(
+      new biometriaModulo.ErroDePreparoDaCaptura("modelos não carregaram"),
+    );
+
+    renderizar();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      /câmera não pôde ser preparada/i,
+    );
+    expect(screen.queryByText(/rosto encontrado/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/pessoa confirmada/i)).not.toBeInTheDocument();
+  });
 });
 
 describe("entrada do Guerreiro(a) por confirmação", () => {

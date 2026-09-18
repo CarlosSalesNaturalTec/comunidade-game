@@ -220,7 +220,11 @@ export function TelaDeEntradaDoGuerreiro({
         acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }}
       />
       <Campo rotulo="Nick" valor={nick} aoAlterar={definirNick} />
-      <Visor lugar={lugarDoVisor} estado={estadoDoLaco} />
+      {/* O retorno do laço vale enquanto a tentativa corre e cala no desfecho: sem
+          isto, o visor congela em "Pessoa confirmada." e fica ao lado da recusa do
+          núcleo, como se a tela se contradissesse (`RF-04-64`, `RN-04-34`, design —
+          decisão 1). É o mesmo condicionamento da `TelaDeCaptura` e da bancada. */}
+      <Visor lugar={lugarDoVisor} estado={emAndamento ? estadoDoLaco : null} />
       <Botao
         onClick={tentarReconhecimento}
         desabilitado={emAndamento || nick.trim().length === 0}
