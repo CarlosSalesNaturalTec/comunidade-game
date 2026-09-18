@@ -3,28 +3,28 @@
 A decisão nasce aqui e só então vira código — hierarquia de autoridade do `CLAUDE.md`. Nada
 das seções 2 a 6 começa antes desta seção fechar.
 
-- [ ] 1.1 No documento 03 §3.3, reescrever o item **"Calibração do limiar"**: o limiar é dado
+- [x] 1.1 No documento 03 §3.3, reescrever o item **"Calibração do limiar"**: o limiar é dado
       **de cada ponto de apoio**, medido no aparelho do encontro; a medição segue guardando um
       descritor de referência por vez e descartando a comparada no ato, e o que sai do aparelho
       é o **limiar confirmado com as distâncias medidas** — descritor e imagem, nunca. Corrigir
       a frase "nada envia ao núcleo", que deixa de ser verdade. Conferir que a §3.3 não passa a
       duplicar regra que já esteja em outro documento.
-- [ ] 1.2 Registrar a decisão em `docs/09-topicos-em-aberto-e-sugestoes.md` §1, movendo para
+- [x] 1.2 Registrar a decisão em `docs/09-topicos-em-aberto-e-sugestoes.md` §1, movendo para
       "Já decididos" a linha **"Parâmetros da entrada do Guerreiro(a)"** no que toca ao limiar:
       ele deixa de ser parâmetro de implantação e vira dado medido por ponto de apoio; ponto de
       apoio sem medição não reconhece ninguém, e a gestão mostra quem está nessa situação. A
       duração da sessão do Guerreiro(a) **continua** parâmetro de implantação e permanece na
       linha.
-- [ ] 1.3 Criar no PRD-01 o `RF-01-73` (limiar como dado medido do ponto de apoio, com
+- [x] 1.3 Criar no PRD-01 o `RF-01-73` (limiar como dado medido do ponto de apoio, com
       histórico, e comparação que recusa sem ele) e o `RN-01-56` (a recusa por ausência de
       limiar é indistinguível das três causas do `RN-01-22`), e corrigir na rastreabilidade do
       PRD-01 a linha que hoje declara o limiar como "parâmetro declarado na implantação" — a
       duração da sessão segue como está.
-- [ ] 1.4 Criar no PRD-04 o `RF-04-66` (bancada em duas séries, valor proposto e gravação) e o
+- [x] 1.4 Criar no PRD-04 o `RF-04-66` (bancada em duas séries, valor proposto e gravação) e o
       `RN-04-35` (critério de conclusão: mínimos, duas pessoas no teto, folga obrigatória, ponto
       médio como valor proposto, sobreposição não grava), e ampliar `RF-04-63` e `RN-04-32` no
       que a decisão mudou.
-- [ ] 1.5 Criar no PRD-02 o `RF-02-100` (consulta do limiar por ponto de apoio, com origem e
+- [x] 1.5 Criar no PRD-02 o `RF-02-109` (consulta do limiar por ponto de apoio, com origem e
       destaque de quem não tem), e registrar os cinco identificadores novos na rastreabilidade
       do documento 99 §8, sem repetir texto normativo do documento 03.
 
@@ -48,7 +48,7 @@ das seções 2 a 6 começa antes desta seção fechar.
 - [ ] 3.1 Rota de gravação da medição, restrita a Mestre e Admin pela matriz, recebendo a aula
       em curso — é ela que determina o ponto de apoio (`RF-01-73`, `RF-01-16`, design — decisão 3).
 - [ ] 3.2 Rota de leitura do limiar vigente por ponto de apoio, com a origem da medição, para a
-      App 03; e a marcação de quem não tem limiar medido (`RF-02-100`).
+      App 03; e a marcação de quem não tem limiar medido (`RF-02-109`).
 - [ ] 3.3 Em `POST /v1/sessoes/guerreiro`, receber a **aula**, conferir que ela está vigente e
       que o vínculo do Guerreiro(a) é da comunidade dela, e manter a recusa **única** para todas
       as causas — as três do `RN-01-22` mais as duas novas (`RF-01-04`, `RN-01-56`, design —
@@ -75,7 +75,7 @@ das seções 2 a 6 começa antes desta seção fechar.
 
 - [ ] 5.1 Na área Pontos de Apoio, apresentar o limiar vigente de cada espaço com quem mediu,
       quando e as duas séries, e **destacar** os pontos de apoio sem limiar medido, dizendo o
-      que aquilo significa no encontro. Sem caminho de edição (`RF-02-100`, `RN-01-56`, design —
+      que aquilo significa no encontro. Sem caminho de edição (`RF-02-109`, `RN-01-56`, design —
       decisão 2).
 
 ## 6. Testes
@@ -93,13 +93,13 @@ das seções 2 a 6 começa antes desta seção fechar.
       pessoa só, a sobreposição que não grava, o ponto médio proposto e a gravação só após
       confirmação (`RF-04-66`, `RN-04-35`).
 - [ ] 6.5 Na App 03, cobrir a consulta: limiar com a origem, ponto de apoio sem limiar destacado
-      e ausência de caminho de edição (`RF-02-100`).
+      e ausência de caminho de edição (`RF-02-109`).
 
 ## 7. Documentação
 
 - [ ] 7.1 Acrescentar ao bloco do PRD-04 do `openspec/cronograma-de-fatias.md` a **fatia 15**
       com o slug desta change, e ao bloco do PRD-02 a linha sem número que registra a consulta
-      do `RF-02-100`. Marcar como **superada** a tarefa em aberto da fatia 14 — trocar o segredo
+      do `RF-02-109`. Marcar como **superada** a tarefa em aberto da fatia 14 — trocar o segredo
       pelo valor medido —, porque o segredo deixa de existir. A situação dos PRDs em
       `docs/prds/index.md` não muda, e nenhum arquivo novo entra em `docs/`, então a `nav` do
       `mkdocs.yml` segue como está.

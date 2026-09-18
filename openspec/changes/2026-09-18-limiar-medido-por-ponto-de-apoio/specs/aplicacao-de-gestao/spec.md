@@ -4,14 +4,14 @@
 
 A App 03 SHALL apresentar ao Admin, na área Pontos de Apoio, o **limiar de comparação vigente**
 de cada ponto de apoio, com **quem mediu**, **quando** e as **duas séries de distâncias** da
-medição que o produziu. (`RF-02-100`, `RF-01-73`)
+medição que o produziu. (`RF-02-109`, `RF-01-73`)
 
 A aplicação SHALL **destacar** os pontos de apoio **sem limiar medido**, dizendo em linguagem
 simples o que aquilo significa no encontro: ali o reconhecimento facial não confere ninguém, e
-todo Guerreiro(a) entra pela confirmação de Mestre ou Admin. (`RF-02-100`, `RN-01-56`)
+todo Guerreiro(a) entra pela confirmação de Mestre ou Admin. (`RF-02-109`, `RN-01-56`)
 
 A tela SHALL ser de **consulta**: ela NEVER SHALL oferecer edição do limiar. O valor nasce de
-uma medição no aparelho do encontro, e medir de novo é o caminho de corrigi-lo. (`RF-02-100`,
+uma medição no aparelho do encontro, e medir de novo é o caminho de corrigi-lo. (`RF-02-109`,
 `RF-04-66`)
 
 #### Scenario: O limiar vigente aparece com a origem

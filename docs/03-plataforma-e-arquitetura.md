@@ -370,12 +370,15 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
   parâmetro de implantação — não se calibra, e o núcleo a traz fixa no código, ao lado da
   decisão que a produziu. Trocar de biblioteca é trocá-la junto.
 - **Calibração do limiar**: ao contrário da dimensão, o limiar de comparação se calibra, e é
-  medido **no aparelho do encontro**, pela própria App 01, sob o **mesmo termo assinado** que a
-  captura exige. A medição compara descritores no aparelho, guarda **um** de referência por vez,
-  descarta cada captura comparada no mesmo ato e **nada envia ao núcleo**: o que se registra é a
-  distância, nunca o descritor. Sobre **Guerreiro(a)**, a medição só acontece **dentro do
-  onboarding, depois do consentimento registrado** — a aplicação nunca tem outra forma de saber
-  que o termo existe. Fora dele, a bancada mede apenas quem opera.
+  **dado de cada ponto de apoio** — depende da câmera e da luz do espaço. É medido **no aparelho
+  do encontro**, pela própria App 01, sob o **mesmo termo assinado** que a captura exige,
+  comparando capturas da mesma pessoa e de pessoas diferentes. A medição guarda **um** descritor
+  de referência por vez e descarta cada captura comparada no mesmo ato; do aparelho saem o
+  **limiar confirmado e as distâncias medidas** — descritor e imagem, nunca. Ponto de apoio
+  **sem limiar medido não reconhece ninguém**, e a gestão mostra quais estão nessa situação.
+  Sobre **Guerreiro(a)**, a medição só acontece **dentro do onboarding, depois do consentimento
+  registrado** — a aplicação nunca tem outra forma de saber que o termo existe. Fora dele, a
+  bancada mede apenas quem opera.
 - **Segurança**: o _template_ é guardado **cifrado**, com a chave de cifragem no **Secret
   Manager**, lida na subida do serviço — a cifra roda no próprio núcleo, sem chamada externa a
   cada entrada, e trocar de hospedagem só troca de onde a chave vem. **Todo acesso ao

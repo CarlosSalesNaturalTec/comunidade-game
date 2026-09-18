@@ -161,6 +161,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-03` | Toda rota de escrita exige autenticação e registra autoria, data e hora                                                                                                                         | essencial  |
 | `RF-01-04` | Guerreiro(a) autentica com nick e imagem e recebe sessão de duração curta                                                                                                                       | essencial  |
 | `RF-01-05` | Núcleo recebe o descritor gerado no aparelho, guarda o _template_ cifrado e o confere no login, sem devolvê-lo                                                                                  | essencial  |
+| `RF-01-73` | Limiar de comparação do descritor é dado medido de cada ponto de apoio, gravado com as séries que o produziram, e sem medição a comparação recusa                                               | essencial  |
 | `RF-01-06` | Mestre ou Admin confirma a identidade do Guerreiro(a) e abre a sessão dele quando não há _template_ gravado, o reconhecimento falha ou a biometria foi recusada, com registro de quem confirmou | essencial  |
 | `RF-01-07` | Núcleo grava o _template_ do Guerreiro(a) cadastrado sem imagem assim que o responsável aprova a participação                                                                                   | essencial  |
 | `RF-01-08` | Mestre ou Admin recadastra a imagem de referência do Guerreiro(a), com registro de quem recadastrou                                                                                             | essencial  |
@@ -248,6 +249,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-13` | Criação original carrega o autor por toda a vida do registro                                                                                                         | 5          | 02 §4       |
 | `RN-01-14` | O _template_ biométrico é guardado cifrado, com acesso auditado, e nenhuma rota o devolve nem devolve a imagem original                                              | 12         | 03 §3.3     |
 | `RN-01-15` | A imagem do Guerreiro(a) serve só para identificá-lo — presença e autenticação; outro uso exige nova base legal                                                      | 12         | 03 §3.3     |
+| `RN-01-56` | A recusa por ponto de apoio sem limiar medido é indistinguível das demais causas da recusa da entrada por nick e imagem                                              | 12         | 03 §3.3     |
 | `RN-01-16` | Recusar a biometria não impede o acesso: a confirmação do Mestre ou Admin, no encontro, é a alternativa equivalente                                                  | 11         | 03 §3.3     |
 | `RN-01-17` | O _template_ só é gravado com consentimento do responsável registrado                                                                                                | 11         | 03 §3.3     |
 | `RN-01-18` | Senha provisória é guardada com hash, vale para um único acesso e é trocada pelo próprio adulto                                                                      | —          | 03 §1.1     |
@@ -578,7 +580,8 @@ e o dos desafios de desbloqueio de cada trilha.
 | Comparação do _template_ permanece no núcleo, que nunca o devolve                                    | 03 §3.3           | Já decididos                                                |
 | Chave que cifra o _template_ no Secret Manager, lida na subida, sem chamada externa por login        | 03 §3.3           | Guarda e auditoria do _template_ biométrico                 |
 | Acesso auditado ao _template_ alcança toda leitura, inclusive cada comparação de login               | 03 §3.3           | Guarda e auditoria do _template_ biométrico                 |
-| Duração da sessão do Guerreiro(a) e limiar da biometria são parâmetro declarado na implantação       | 03 §§3.2, 3.3     | Parâmetros da entrada do Guerreiro(a)                       |
+| Duração da sessão do Guerreiro(a) é parâmetro declarado na implantação                               | 03 §3.2           | Parâmetros da entrada do Guerreiro(a)                       |
+| Limiar da biometria é dado medido de cada ponto de apoio, não parâmetro de implantação               | 03 §3.3           | Parâmetros da entrada do Guerreiro(a)                       |
 | API documentada em OpenAPI desde o primeiro _endpoint_, com schema aberto fora de `/v1`              | 03 §§1, 1.1       | Documentação da API em OpenAPI                              |
 | Chave por aplicação e por ambiente; dois ambientes no Ciclo 01, e 16 chaves na implantação           | 03 §§1, 1.13      | Escopo da chave e ambientes do Ciclo 01                     |
 | Chave de terceiro sempre de produção, identificada pela solicitação aprovada e não pelo nome         | 03 §8             | Escopo da chave e ambientes do Ciclo 01                     |
@@ -621,6 +624,7 @@ antes no documento 09.
 | `RF-01-01`, `RF-01-31`  | 03 §1 (API versionada)                             |
 | `RF-01-02` e `RF-01-03` | 03 §1 (consulta sem login, escrita autenticada)    |
 | `RF-01-04` a `RF-01-08` | 03 §§1.1, 3.2 e 3.3 (nick e imagem, alternativa)   |
+| `RF-01-73` e `RN-01-56` | 03 §3.3 (limiar medido por ponto de apoio)         |
 | `RF-01-09` a `RF-01-12` | 03 §1.1 (como o adulto entra)                      |
 | `RF-01-61`              | 02 §1 (o fundador é o primeiro Admin)              |
 | `RF-01-13` a `RF-01-15` | 02 §1 e 03 §§1.1, 5, 9, 11 (responsável)           |

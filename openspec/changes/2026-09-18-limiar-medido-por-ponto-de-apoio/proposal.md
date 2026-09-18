@@ -2,7 +2,7 @@ PRD-04 (App 01 — Aula presencial), **fatia 15** — fatia nova, não prevista,
 `openspec/cronograma-de-fatias.md` com esta change. Alcança também o PRD-01 (o núcleo, onde o
 limiar mora e como a comparação o lê) e o PRD-02 (a tela de consulta na gestão).
 
-Cria os identificadores `RF-04-66`, `RN-04-35`, `RF-01-73`, `RN-01-56` e `RF-02-100`, a partir
+Cria os identificadores `RF-04-66`, `RN-04-35`, `RF-01-73`, `RN-01-56` e `RF-02-109`, a partir
 da **decisão do fundador de 2026-09-18**, e amplia `RF-04-63` e `RN-04-32`.
 
 ## Why
@@ -43,13 +43,13 @@ mais uma falha silenciosa, a gestão passa a mostrar quais pontos de apoio estã
 - Ponto de apoio **sem limiar medido** faz a comparação **recusar**, com a recusa indistinguível
   das três causas que o `RN-01-22` já funde (`RN-01-56`).
 - A **gestão** ganha a consulta do limiar vigente por ponto de apoio, com quem mediu, quando, as
-  duas séries e o destaque de quem ainda não tem limiar (`RF-02-100`).
+  duas séries e o destaque de quem ainda não tem limiar (`RF-02-109`).
 - Os documentos-fonte acompanham: o documento 03 §3.3 hoje diz que a medição **nada envia ao
   núcleo**, e isso deixa de ser verdade para o número e as distâncias.
 
 Fica **fora**:
 
-- **Editar** o limiar pela gestão. A tela do `RF-02-100` é de consulta: o número nasce de uma
+- **Editar** o limiar pela gestão. A tela do `RF-02-109` é de consulta: o número nasce de uma
   medição, e trocá-lo à mão desfaria a garantia de que todo limiar vigente foi medido.
 - **Normalizar o descritor** antes de comparar. A hipótese de que a distância euclidiana crua
   varia com a luz mais do que com a identidade existe, e esta change a torna verificável —

@@ -391,6 +391,12 @@ publica é a gestão —, mas depende da entidade `MissaoDoApoiador`, cujos atri
 define. Entra com a fatia das missões do PRD-14, no mesmo desenho do `DesafioExtra` acima: é
 dependência de entidade.
 
+O **limiar de comparação por ponto de apoio** atravessa três PRDs: a entidade da medição e a
+comparação que a lê são do PRD-01 (`RF-01-73`, `RN-01-56`); quem mede e grava é o PRD-04
+(`RF-04-66`, `RN-04-35`), na bancada da App 01; quem consulta é o PRD-02 (`RF-02-109`), na área
+Pontos de Apoio. É dependência de entidade, no mesmo desenho acima: as duas telas entram depois
+de o núcleo gravar a medição.
+
 O PRD-09 passou a aplicar também o documento 04: o custo de _cloud_ do upload e do _template_
 entra por fatura, e não por medição no ato. O ato de **encerrar o ciclo** é do PRD-02, não do
 PRD-09 — quem encerra é Admin, na gestão —, embora as duas consequências dele alcancem a

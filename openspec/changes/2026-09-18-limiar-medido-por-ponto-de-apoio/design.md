@@ -25,7 +25,7 @@ conhece a aula. O ponto de apoio, portanto, é sempre determinável nas duas pon
 
 2. **A ausência de limiar não é silenciosa, porque a gestão a mostra.** É a contrapartida da
    decisão 1: a recusa em si é indistinguível, como o `RN-01-22` exige, mas a área Pontos de
-   Apoio lista quem não tem limiar medido (`RF-02-100`). Sem isso, a decisão 1 criaria a quarta
+   Apoio lista quem não tem limiar medido (`RF-02-109`). Sem isso, a decisão 1 criaria a quarta
    falha silenciosa deste mesmo caminho, depois do 422 da dimensão, do CORS do bucket e do
    backend autosselecionado da Human.
 
@@ -47,7 +47,7 @@ conhece a aula. O ponto de apoio, portanto, é sempre determinável nas duas pon
 4. **A medição é a unidade gravada, e o limiar vigente é a medição mais recente do ponto de
    apoio.** Uma tabela só: ponto de apoio, o limiar, as duas séries de distâncias, quem mediu e
    quando. O histórico sai de graça, a medição suspeita pode ser reexaminada, e não há um segundo
-   registro "vigente" para sair de sincronia com o primeiro (`RF-01-73`, `RF-02-100`).
+   registro "vigente" para sair de sincronia com o primeiro (`RF-01-73`, `RF-02-109`).
 
 5. **O que trafega são distâncias e o número — nunca descritor nem imagem.** O documento 03 §3.3
    já dizia que "o que se registra é a distância, nunca o descritor"; o que muda é a frase
