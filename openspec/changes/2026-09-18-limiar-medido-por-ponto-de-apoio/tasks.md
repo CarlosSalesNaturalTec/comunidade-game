@@ -30,26 +30,26 @@ das seções 2 a 6 começa antes desta seção fechar.
 
 ## 2. O núcleo — o limiar como dado do ponto de apoio
 
-- [ ] 2.1 Modelar a **medição do limiar** em `nucleo/biometria/modelo.py`: ponto de apoio,
+- [x] 2.1 Modelar a **medição do limiar** em `nucleo/biometria/modelo.py`: ponto de apoio,
       limiar, as duas séries de distâncias, quem mediu e quando; o vigente é a medição mais
       recente do ponto de apoio. Migração Alembic correspondente (`RF-01-73`, design — decisão 4).
-- [ ] 2.2 Em `nucleo/biometria/regra.py`, ler o limiar vigente do ponto de apoio e fazer
+- [x] 2.2 Em `nucleo/biometria/regra.py`, ler o limiar vigente do ponto de apoio e fazer
       `autenticar_por_nick_e_descritor` **recusar** quando não houver medição — auditando a
       comparação como recusa, como já faz nos demais casos (`RF-01-73`, `RN-01-56`, `RN-01-14`).
-- [ ] 2.3 Escrever a regra da **gravação** da medição: confere o critério de conclusão do
+- [x] 2.3 Escrever a regra da **gravação** da medição: confere o critério de conclusão do
       `RN-04-35` também no núcleo — as duas séries, os mínimos e a folga —, recusa descritor no
       corpo e grava com o autor. O núcleo não confia no cálculo do aparelho (`RF-01-73`,
       `RN-04-35`, `RN-01-15`).
-- [ ] 2.4 Remover `biometria_limiar_de_comparacao` da `Configuracao` e a seção correspondente do
+- [x] 2.4 Remover `biometria_limiar_de_comparacao` da `Configuracao` e a seção correspondente do
       `backend/README.md`, deixando registrado que a variável saiu e por quê (`RF-01-73`).
 
 ## 3. O núcleo — as rotas
 
-- [ ] 3.1 Rota de gravação da medição, restrita a Mestre e Admin pela matriz, recebendo a aula
+- [x] 3.1 Rota de gravação da medição, restrita a Mestre e Admin pela matriz, recebendo a aula
       em curso — é ela que determina o ponto de apoio (`RF-01-73`, `RF-01-16`, design — decisão 3).
-- [ ] 3.2 Rota de leitura do limiar vigente por ponto de apoio, com a origem da medição, para a
+- [x] 3.2 Rota de leitura do limiar vigente por ponto de apoio, com a origem da medição, para a
       App 03; e a marcação de quem não tem limiar medido (`RF-02-109`).
-- [ ] 3.3 Em `POST /v1/sessoes/guerreiro`, receber a **aula**, conferir que ela está vigente e
+- [x] 3.3 Em `POST /v1/sessoes/guerreiro`, receber a **aula**, conferir que ela está vigente e
       que o vínculo do Guerreiro(a) é da comunidade dela, e manter a recusa **única** para todas
       as causas — as três do `RN-01-22` mais as duas novas (`RF-01-04`, `RN-01-56`, design —
       decisão 3).
@@ -80,13 +80,13 @@ das seções 2 a 6 começa antes desta seção fechar.
 
 ## 6. Testes
 
-- [ ] 6.1 No backend, cobrir a regra da comparação: limiar vigente lido do ponto de apoio da
+- [x] 6.1 No backend, cobrir a regra da comparação: limiar vigente lido do ponto de apoio da
       aula, pontos de apoio com limiares diferentes aplicando cada um o seu, ausência de medição
       recusando, e a auditoria da recusa (`RF-01-73`, `RN-01-56`, `RN-01-14`).
-- [ ] 6.2 No backend, cobrir a gravação: critério conferido no núcleo, sobreposição recusada,
+- [x] 6.2 No backend, cobrir a gravação: critério conferido no núcleo, sobreposição recusada,
       descritor no corpo recusado, medição nova substituindo a vigente sem apagar a anterior, e
       a permissão restrita a Mestre e Admin (`RF-01-73`, `RN-04-35`, `RF-01-16`, `RN-01-15`).
-- [ ] 6.3 No backend, cobrir a rota de sessão: pedido sem aula recusado com 422, aula de outra
+- [x] 6.3 No backend, cobrir a rota de sessão: pedido sem aula recusado com 422, aula de outra
       comunidade e aula não vigente recusadas com a **mesma** resposta das três causas do
       `RN-01-22` (`RF-01-04`, `RN-01-56`).
 - [ ] 6.4 Em `bancada.test.tsx`, cobrir as duas séries separadas, os mínimos, o teto com uma

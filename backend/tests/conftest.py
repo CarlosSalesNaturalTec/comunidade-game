@@ -1,6 +1,8 @@
 import base64
+import itertools
 import os
 import uuid
+from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from typing import Annotated
@@ -20,6 +22,7 @@ from nucleo.autenticacao import exigir_persona
 from nucleo.banco import Base, obter_sessao
 from nucleo.bibliografias.modelo import BibliografiaDaMissao
 from nucleo.biometria.cifra import cifrar_descritor
+from nucleo.biometria.modelo import MedicaoDoLimiar
 from nucleo.biometria.regra import DIMENSAO_DO_DESCRITOR
 from nucleo.catalogo_avulso.modelo import (
     ItemDeCatalogoAvulso,
@@ -218,7 +221,6 @@ def configuracao(tmp_path):
         identidade_fundador="fundador-de-teste@example.org",
         sessao_adulto_duracao=timedelta(hours=8),
         sessao_guerreiro_duracao=timedelta(hours=4),
-        biometria_limiar_de_comparacao=0.5,
         biometria_chave_de_cifragem=CHAVE_DE_CIFRAGEM_DE_TESTE,
         argon2_memoria_kib=8,
         argon2_iteracoes=1,
@@ -2009,3 +2011,103 @@ def guerreiro_publico(criar_persona, criar_nick, criar_vinculo, criar_consentime
         return guerreiro, nick
 
     return _criar
+
+
+@pytest.fixture
+def criar_medicao_do_limiar(sessao):
+    """A medição que dá limiar a um ponto de apoio (`RF-01-73`, `RN-04-35`).
+    Sem uma destas, a comparação por nick e imagem recusa — e é essa recusa
+    que o `RN-01-56` funde com as demais."""
+
+    def _criar(
+        ponto_de_apoio: PontoDeApoio,
+        autor: Persona,
+        limiar: float = 8.0,
+        distancias_do_piso: list[float] | None = None,
+        distancias_do_teto: list[float] | None = None,
+        pessoas_no_teto: int = 2,
+    ) -> MedicaoDoLimiar:
+        medicao = MedicaoDoLimiar(
+            ponto_de_apoio_id=ponto_de_apoio.id,
+            limiar=limiar,
+            distancias_do_piso=distancias_do_piso or [4.0] * 8,
+            distancias_do_teto=distancias_do_teto or [12.0] * 8,
+            pessoas_no_teto=pessoas_no_teto,
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        sessao.add(medicao)
+        sessao.commit()
+        sessao.refresh(medicao)
+        return medicao
+
+    return _criar
+
+
+@dataclass(frozen=True)
+class CenarioDeEntrada:
+    """O que a entrada por nick e imagem exige desde que o limiar passou a ser
+    dado do ponto de apoio: aula vigente, no ponto de apoio medido, da
+    comunidade do vínculo do Guerreiro(a) (`RF-01-73`, design — decisão 3)."""
+
+    admin: Persona
+    comunidade: ComunidadeVirtual
+    ponto_de_apoio: PontoDeApoio
+    aula: Aula
+    medicao: MedicaoDoLimiar | None
+
+
+@pytest.fixture
+def montar_cenario_de_entrada(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_aula,
+    criar_medicao_do_limiar,
+):
+    contador = itertools.count(1)
+
+    def _montar(
+        guerreiro: Persona | None = None,
+        limiar: float | None = 8.0,
+        comunidade: ComunidadeVirtual | None = None,
+        vigente: bool = True,
+    ):
+        # `comunidade` reaproveitada monta um **segundo ponto de apoio no
+        # mesmo bairro** — o caso que o limiar por ponto de apoio existe para
+        # atender, e o único possível: o Guerreiro(a) tem um vínculo vigente
+        # só (documento 99 §6 invariante 4).
+        numero = next(contador)
+        # A aula acontece na comunidade do próprio Guerreiro(a) — é o laço que
+        # a comparação exige (`RF-01-73`), e o vínculo dele já nasce com
+        # `criar_persona`. Comunidade só se cria quando não há Guerreiro(a).
+        if comunidade is None:
+            vinculo = guerreiro.vinculo_vigente if guerreiro is not None else None
+            comunidade = (
+                sessao.get(ComunidadeVirtual, vinculo.comunidade_virtual_id)
+                if vinculo is not None
+                else criar_comunidade(f"Comunidade do cenário {numero}")
+            )
+        admin = criar_persona(Papel.admin)
+        ponto = criar_ponto_de_apoio(admin, comunidade, nome=f"Ponto de apoio {numero}")
+        ontem = datetime.now(UTC) - timedelta(days=1)
+        aula = criar_aula(
+            admin,
+            comunidade,
+            ponto_de_apoio=ponto,
+            inicio_em=None if vigente else ontem,
+            fim_em=None if vigente else ontem + timedelta(hours=2),
+        )
+        medicao = (
+            criar_medicao_do_limiar(ponto, admin, limiar=limiar) if limiar is not None else None
+        )
+        return CenarioDeEntrada(
+            admin=admin,
+            comunidade=comunidade,
+            ponto_de_apoio=ponto,
+            aula=aula,
+            medicao=medicao,
+        )
+
+    return _montar

@@ -139,7 +139,12 @@ def test_auditoria_anterior_permanece_depois_do_apagamento(
 
 
 def test_entrada_por_imagem_deixa_de_conferir_apos_apagamento(
-    sessao, configuracao, criar_persona, criar_nick, criar_template_biometrico
+    sessao,
+    configuracao,
+    criar_persona,
+    criar_nick,
+    criar_template_biometrico,
+    montar_cenario_de_entrada,
 ):
     guerreiro = criar_persona(Papel.guerreiro)
     criar_nick(guerreiro, "guerreiro_apagado")
@@ -154,7 +159,11 @@ def test_entrada_por_imagem_deixa_de_conferir_apos_apagamento(
     sessao.commit()
 
     resultado = autenticar_por_nick_e_descritor(
-        sessao, configuracao, nick="guerreiro_apagado", descritor=DESCRITOR
+        sessao,
+        configuracao,
+        nick="guerreiro_apagado",
+        descritor=DESCRITOR,
+        aula=montar_cenario_de_entrada(guerreiro).aula,
     )
 
     assert resultado is None

@@ -38,7 +38,6 @@ def _configuracao(**extras) -> Configuracao:
         identidade_fundador="fundador@example.org",
         sessao_adulto_duracao="PT8H",
         sessao_guerreiro_duracao="PT4H",
-        biometria_limiar_de_comparacao=0.5,
         biometria_chave_de_cifragem="chave-de-cifragem-de-teste",
         **extras,
     )
