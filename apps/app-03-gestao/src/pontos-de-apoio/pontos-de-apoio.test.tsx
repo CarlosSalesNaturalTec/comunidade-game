@@ -839,6 +839,21 @@ describe("limiar de comparação por ponto de apoio (RF-02-109)", () => {
     expect(screen.getByText(/sem limiar medido/i)).toBeInTheDocument();
   });
 
+  it("apresenta sempre a medição vigente, e não o histórico", async () => {
+    // `RF-02-109`: a tela lê o vigente. Guardar as medições anteriores é do
+    // núcleo (`RF-01-73`); esta tela não as lê, e não afirma que lê.
+    const vigente = {
+      ...MEDIDO,
+      medicao: { ...MEDIDO.medicao, id: "medicao-2", limiar: 9.5 },
+    };
+    vi.spyOn(pontosDeApoioApi, "listarLimiaresDosPontosDeApoio").mockResolvedValue([vigente]);
+    renderizarTela();
+
+    expect(await screen.findByText(/limiar 9\.500/i)).toBeInTheDocument();
+    expect(screen.queryByText(/limiar 7\.040/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/medições anteriores/i)).not.toBeInTheDocument();
+  });
+
   it("não oferece caminho de edição do limiar", async () => {
     vi.spyOn(pontosDeApoioApi, "listarLimiaresDosPontosDeApoio").mockResolvedValue([MEDIDO]);
     renderizarTela();

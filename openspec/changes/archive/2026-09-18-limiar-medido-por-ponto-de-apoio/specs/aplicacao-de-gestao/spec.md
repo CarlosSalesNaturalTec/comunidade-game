@@ -30,7 +30,8 @@ uma medição no aparelho do encontro, e medir de novo é o caminho de corrigi-l
 - **WHEN** o Admin procura na tela um caminho para digitar ou corrigir o limiar
 - **THEN** nenhum existe, e a tela indica que corrigir é medir de novo na App 01
 
-#### Scenario: Medição nova aparece com a anterior preservada
+#### Scenario: Medição nova passa a ser a apresentada
 
 - **WHEN** um ponto de apoio recebe uma medição nova
-- **THEN** a tela passa a apresentar o limiar novo, e a medição anterior segue consultável
+- **THEN** a tela passa a apresentar o limiar e a origem da medição nova, sempre a vigente — o
+  histórico das anteriores é guardado pelo núcleo e não se lê por esta tela
