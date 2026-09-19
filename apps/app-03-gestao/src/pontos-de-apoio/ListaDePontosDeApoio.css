@@ -40,3 +40,30 @@
   border-radius: var(--raio-campo);
   padding: 0 var(--espaco-8);
 }
+
+/* A consulta do limiar por ponto de apoio (`RF-02-109`). O ausente é o caso
+ * que precisa saltar: ali o reconhecimento facial não confere ninguém. */
+.cg-limiares {
+  margin-top: var(--espaco-24);
+  padding-top: var(--espaco-16);
+  border-top: 1px solid var(--cor-separador);
+}
+
+.cg-limiares-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+}
+
+.cg-limiar-ausente {
+  color: var(--cor-atencao, var(--cor-texto-secundario));
+  font-weight: 600;
+}
+
+.cg-limiares-nota {
+  margin: var(--espaco-16) 0 0;
+  color: var(--cor-texto-secundario);
+}

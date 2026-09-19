@@ -56,24 +56,24 @@ das seções 2 a 6 começa antes desta seção fechar.
 
 ## 4. A bancada da App 01
 
-- [ ] 4.1 Em `TelaDeMedicaoDoLimiar`, declarar a **série** de cada captura — piso ou teto —, com
+- [x] 4.1 Em `TelaDeMedicaoDoLimiar`, declarar a **série** de cada captura — piso ou teto —, com
       as duas listas separadas na tela e o maior piso e o menor teto em destaque (`RF-04-66`).
-- [ ] 4.2 Implementar o **critério de conclusão** e o valor proposto: mínimos por série, duas
+- [x] 4.2 Implementar o **critério de conclusão** e o valor proposto: mínimos por série, duas
       pessoas no teto, folga obrigatória e ponto médio entre maior piso e menor teto. Séries que
       se sobrepõem não oferecem gravação e dizem que não há limiar viável (`RN-04-35`, design —
       decisões 6 e 7).
-- [ ] 4.3 Gravar o limiar confirmado, dizendo antes qual ponto de apoio o receberá e
+- [x] 4.3 Gravar o limiar confirmado, dizendo antes qual ponto de apoio o receberá e
       apresentando o desfecho a quem confirmou. A tela passa a precisar do token de trabalho e
       da aula, que a `TelaInicial` e o `FluxoDeOnboarding` já têm (`RF-04-66`).
-- [ ] 4.4 Conferir que a fronteira do aparelho segue de pé: um descritor de referência por vez,
+- [x] 4.4 Conferir que a fronteira do aparelho segue de pé: um descritor de referência por vez,
       comparada descartada no ato, e nenhum descritor ou imagem no corpo da gravação
       (`RN-04-32`, `RN-04-34`).
-- [ ] 4.5 Atualizar o aviso de coleta e a área detalhada de direitos: a medição passa a enviar
+- [x] 4.5 Atualizar o aviso de coleta e a área detalhada de direitos: a medição passa a enviar
       ao núcleo o limiar e as distâncias, e segue sem enviar descritor ou imagem (`RF-04-26`).
 
 ## 5. A consulta na App 03
 
-- [ ] 5.1 Na área Pontos de Apoio, apresentar o limiar vigente de cada espaço com quem mediu,
+- [x] 5.1 Na área Pontos de Apoio, apresentar o limiar vigente de cada espaço com quem mediu,
       quando e as duas séries, e **destacar** os pontos de apoio sem limiar medido, dizendo o
       que aquilo significa no encontro. Sem caminho de edição (`RF-02-109`, `RN-01-56`, design —
       decisão 2).
@@ -89,15 +89,15 @@ das seções 2 a 6 começa antes desta seção fechar.
 - [x] 6.3 No backend, cobrir a rota de sessão: pedido sem aula recusado com 422, aula de outra
       comunidade e aula não vigente recusadas com a **mesma** resposta das três causas do
       `RN-01-22` (`RF-01-04`, `RN-01-56`).
-- [ ] 6.4 Em `bancada.test.tsx`, cobrir as duas séries separadas, os mínimos, o teto com uma
+- [x] 6.4 Em `bancada.test.tsx`, cobrir as duas séries separadas, os mínimos, o teto com uma
       pessoa só, a sobreposição que não grava, o ponto médio proposto e a gravação só após
       confirmação (`RF-04-66`, `RN-04-35`).
-- [ ] 6.5 Na App 03, cobrir a consulta: limiar com a origem, ponto de apoio sem limiar destacado
+- [x] 6.5 Na App 03, cobrir a consulta: limiar com a origem, ponto de apoio sem limiar destacado
       e ausência de caminho de edição (`RF-02-109`).
 
 ## 7. Documentação
 
-- [ ] 7.1 Acrescentar ao bloco do PRD-04 do `openspec/cronograma-de-fatias.md` a **fatia 15**
+- [x] 7.1 Acrescentar ao bloco do PRD-04 do `openspec/cronograma-de-fatias.md` a **fatia 15**
       com o slug desta change, e ao bloco do PRD-02 a linha sem número que registra a consulta
       do `RF-02-109`. Marcar como **superada** a tarefa em aberto da fatia 14 — trocar o segredo
       pelo valor medido —, porque o segredo deixa de existir. A situação dos PRDs em

@@ -7,6 +7,7 @@ import { type AdultoDaLista, listarApoiadores, listarMestres } from "../personas
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "./api";
 import { ExtratoDoPontoDeApoio } from "./ExtratoDoPontoDeApoio";
 import { FormularioDePontoDeApoio } from "./FormularioDePontoDeApoio";
+import { LimiaresDosPontosDeApoio } from "./LimiaresDosPontosDeApoio";
 import { ListaDePontosDeApoio } from "./ListaDePontosDeApoio";
 import { TransferenciaDeSaldo } from "./TransferenciaDeSaldo";
 
@@ -148,6 +149,11 @@ export function TelaDePontosDeApoio() {
           aoIrParaExtrato={definirPontoDeApoioDoExtrato}
         />
       )}
+
+      {/* Consulta do limiar de comparação de cada espaço, e o destaque de quem
+          ainda não foi medido — sem ele, ali o reconhecimento facial não
+          confere ninguém (`RF-02-109`, `RN-01-56`). */}
+      {sessao && <LimiaresDosPontosDeApoio token={sessao.token} />}
     </Moldura>
   );
 }

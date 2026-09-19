@@ -82,6 +82,9 @@ beforeEach(() => {
     itens: [],
     proximo_cursor: null,
   });
+  // A consulta do limiar mora na mesma tela (`RF-02-109`): sem o dublê, todo
+  // teste desta tela acusaria falha de carga dela.
+  vi.spyOn(pontosDeApoioApi, "listarLimiaresDosPontosDeApoio").mockResolvedValue([]);
 });
 
 describe("cadastro de ponto de apoio", () => {
@@ -770,5 +773,80 @@ describe("designação do responsável pelo acervo (RF-07-49)", () => {
     expect(
       screen.queryByRole("button", { name: /designar responsável/i }),
     ).not.toBeInTheDocument();
+  });
+});
+
+describe("limiar de comparação por ponto de apoio (RF-02-109)", () => {
+  const MEDIDO = {
+    ponto_de_apoio_id: "ponto-1",
+    nome: "Casa da Zeferina",
+    medicao: {
+      id: "medicao-1",
+      ponto_de_apoio_id: "ponto-1",
+      limiar: 7.04,
+      distancias_do_piso: [1.2, 1.28, 1.1],
+      distancias_do_teto: [12.8, 13.0, 14.2],
+      pessoas_no_teto: 2,
+      medido_por: "mestre-1",
+      registrado_em: "2026-09-19T14:00:00Z",
+    },
+  };
+  const SEM_MEDICAO = {
+    ponto_de_apoio_id: "ponto-2",
+    nome: "Galpão do Beco",
+    medicao: null,
+  };
+
+  function renderizarTela() {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
+      itens: [COMUNIDADE],
+      proximo_cursor: null,
+      ciclo_rotulo: "Ciclo 01",
+    });
+    vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    return render(<TelaDePontosDeApoio />);
+  }
+
+  it("apresenta o limiar vigente e a origem da medição", async () => {
+    vi.spyOn(pontosDeApoioApi, "listarLimiaresDosPontosDeApoio").mockResolvedValue([MEDIDO]);
+    renderizarTela();
+
+    expect(await screen.findByText(/limiar 7\.040/i)).toBeInTheDocument();
+
+    const usuario = userEvent.setup();
+    // `BlocoRecolhivel` é um `<details>`: o controle é o `<summary>`.
+    await usuario.click(screen.getByText(/como este número foi medido/i));
+
+    expect(screen.getByText(/Piso — mesma pessoa, 3 capturas/i)).toBeInTheDocument();
+    expect(screen.getByText(/Teto — 2 pessoas, 3 capturas/i)).toBeInTheDocument();
+  });
+
+  it("destaca o ponto de apoio sem limiar medido e diz o que isso significa", async () => {
+    vi.spyOn(pontosDeApoioApi, "listarLimiaresDosPontosDeApoio").mockResolvedValue([
+      MEDIDO,
+      SEM_MEDICAO,
+    ]);
+    renderizarTela();
+
+    const aviso = await screen.findByText(/ainda não teve o limiar medido/i);
+    expect(aviso).toHaveTextContent(/Galpão do Beco/);
+    expect(aviso).toHaveTextContent(/não confere ninguém/i);
+    expect(aviso).toHaveTextContent(/confirmação de Mestre ou Admin/i);
+    expect(screen.getByText(/sem limiar medido/i)).toBeInTheDocument();
+  });
+
+  it("não oferece caminho de edição do limiar", async () => {
+    vi.spyOn(pontosDeApoioApi, "listarLimiaresDosPontosDeApoio").mockResolvedValue([MEDIDO]);
+    renderizarTela();
+
+    await screen.findByText(/limiar 7\.040/i);
+
+    expect(screen.queryByRole("button", { name: /editar o limiar/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/o limiar não se edita aqui/i)).toBeInTheDocument();
+    expect(pontosDeApoioApi).not.toHaveProperty("editarLimiarDoPontoDeApoio");
   });
 });

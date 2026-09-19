@@ -29,6 +29,13 @@ const DADOS_COLETADOS: DadoColetado[] = [
     quemAcessa: "ninguém vê: só a comparação interna confere",
   },
   {
+    dado: "Distâncias medidas na calibração",
+    finalidade:
+      "ajustar, para esta sala, a que distância duas capturas ainda são da mesma pessoa",
+    prazo: "guardadas com a medição, para o Mestre poder conferir depois",
+    quemAcessa: "a gestão — são números, nunca a foto nem o descritor",
+  },
+  {
     dado: "Nome",
     finalidade: "identificação para a gestão",
     prazo: "enquanto você participar",
@@ -130,8 +137,10 @@ export function AreaDetalhadaDeDireitos({ aoVoltar }: Props) {
       <p>
         De vez em quando o Mestre precisa conferir se a câmera está reconhecendo direito. Nessa
         hora ela tira uma captura, compara com a anterior ali mesmo no aparelho e joga fora na
-        mesma hora — o que fica na tela é só um número. Nada disso é enviado para lugar nenhum.
-        E isso só acontece com você depois que seu responsável assinou o termo.
+        mesma hora — o que fica na tela é só um número. Sua foto e seu descritor{" "}
+        <strong>não são enviados</strong>: o que o Mestre guarda no fim da medição são só esses
+        números, para a sala saber a que distância duas capturas ainda são da mesma pessoa. E
+        isso só acontece com você depois que seu responsável assinou o termo.
       </p>
 
       <h3>Se você não quiser usar a câmera</h3>
