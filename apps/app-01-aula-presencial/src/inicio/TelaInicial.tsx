@@ -126,7 +126,14 @@ export function TelaInicial({
   // onboarding a aplicação não tem como saber que existe termo assinado de
   // um Guerreiro(a) (`RN-04-33`, design — decisão 3).
   if (caminho === "medicao") {
-    return <TelaDeMedicaoDoLimiar alcance="operador" aoVoltar={voltarAoInicio} />;
+    return (
+      <TelaDeMedicaoDoLimiar
+        alcance="operador"
+        tokenDeTrabalho={tokenDeTrabalho}
+        aulaId={aulaId}
+        aoVoltar={voltarAoInicio}
+      />
+    );
   }
 
   if (caminho === "trilhas" || caminho === "troca" || caminho === "quiz") {
@@ -212,7 +219,7 @@ export function TelaInicial({
           Quiz ao Vivo — entrar com o nick e responder pela equipe
         </button>
         <button type="button" className="cg-caminho" onClick={() => definirCaminho("medicao")}>
-          Medição do limiar — conferir a distância entre capturas neste aparelho
+          Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio
         </button>
         {momentoDeTrocaAberto && (
           <button type="button" className="cg-caminho" onClick={() => definirCaminho("troca")}>

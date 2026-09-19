@@ -2,9 +2,11 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DDL, DateTime, Enum, ForeignKey, Uuid, event, func
+from sqlalchemy import DDL, DateTime, Enum, Float, ForeignKey, Integer, Uuid, event, func
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 
+from ..autoria import ComAutoria
 from ..banco import Base
 from ..erros import AcessoAoTemplateImutavel
 
@@ -76,6 +78,38 @@ class ApagamentoDeTemplate(Base):
     criado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+
+class MedicaoDoLimiar(Base, ComAutoria):
+    """O limiar de comparação de um ponto de apoio, e as duas séries de
+    distâncias que o produziram (`RF-01-73`, `RF-04-66`, `RN-04-35`,
+    documento 03 §3.3, decisão do fundador, 2026-09-18).
+
+    **A medição é a unidade gravada**, e o limiar vigente de um ponto de
+    apoio é o da medição mais recente dele: não existe um segundo registro
+    "vigente" para sair de sincronia com o histórico, e a medição suspeita
+    continua consultável depois de substituída (design — decisão 4).
+
+    Guarda **distâncias**, nunca descritor: o descritor nasce e morre no
+    aparelho, e a rota que grava aqui o recusa (`RN-04-32`, `RN-01-15`).
+
+    `pessoas_no_teto` é **declarado** por quem opera — o aparelho conta
+    quantas vezes a pessoa diante da câmera trocou durante a série do teto.
+    O núcleo não tem como conferir identidade aqui, e não finge que tem: o
+    que ele reconfere são os mínimos e a folga, que estão nas séries
+    (`RN-04-35`).
+    """
+
+    __tablename__ = "medicao_do_limiar"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    ponto_de_apoio_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("ponto_de_apoio.id"), nullable=False, index=True
+    )
+    limiar: Mapped[float] = mapped_column(Float, nullable=False)
+    distancias_do_piso: Mapped[list[float]] = mapped_column(ARRAY(Float), nullable=False)
+    distancias_do_teto: Mapped[list[float]] = mapped_column(ARRAY(Float), nullable=False)
+    pessoas_no_teto: Mapped[int] = mapped_column(Integer, nullable=False)
 
 
 def _recusar_alteracao(mapper, connection, target) -> None:

@@ -296,35 +296,36 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 
 ### 6.5 Acervo, recursos e Quiz ao Vivo
 
-| ID          | Requisito                                                                                                                   | Prioridade |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-50`  | Aplicação mostra a entrega do exemplar Alpha confirmada pelo Mestre, com a baixa definitiva                                 | essencial  |
-| `RF-02-51`  | Aplicação mostra a entrega da camisa confirmada pelo Mestre ao Guerreiro(a) inscrito, com a baixa                           | essencial  |
-| `RF-02-52`  | Admin tomba o exemplar permanente com título, tombo, ponto de apoio e responsável designado                                 | essencial  |
-| `RF-02-96`  | Admin desativa e reativa ponto de apoio, sempre com motivo; a lista distingue o inativo do ativo                            | essencial  |
-| `RF-02-97`  | Admin transfere saldo de um tipo de recurso entre pontos de apoio, com o saldo da origem mostrado                           | essencial  |
-| `RF-02-53`  | Aplicação mantém a ficha de vida do exemplar, com estado de conservação e histórico de uso                                  | essencial  |
-| `RF-02-55`  | Perda ou dano é anotado na ficha de vida, sem débito ao Guerreiro(a) nem à família                                          | essencial  |
-| `RF-02-56`  | Admin realiza a conferência de inventário do módulo e publica o resultado na prestação de contas                            | desejável  |
-| `RF-02-57`  | Admin registra e homologa aporte com provedor, tipo, comprovante e valor em moedas                                          | essencial  |
-| `RF-02-58`  | Aplicação exibe as necessidades de recurso em aberto das atividades previstas                                               | essencial  |
-| `RF-02-102` | Admin publica missão do Apoiador declarando nível de necessidade, título, o que se pede, quantidade, prazo e selo que rende | essencial  |
-| `RF-02-103` | Aplicação recusa publicar missão sem necessidade de recurso publicada por trás                                              | essencial  |
-| `RF-02-104` | Aplicação lista as missões publicadas com o que já foi coberto, o que falta e a situação                                    | essencial  |
-| `RF-02-105` | Admin despublica missão publicada por engano, sem estornar aporte já homologado                                             | essencial  |
-| `RF-02-59`  | Mestre da aula ou Admin abre partida de Quiz ao Vivo com o banco do curador e as equipes da aula                            | essencial  |
-| `RF-02-60`  | Partida exibe a pergunta simultaneamente nos dispositivos logados na aula                                                   | essencial  |
-| `RF-02-61`  | Partida fixa uma equipe por Guerreiro(a) e aceita uma resposta por equipe e por pergunta                                    | essencial  |
-| `RF-02-62`  | Partida credita toda equipe que acerta e o bônus à primeira, por ordem de chegada no servidor                               | essencial  |
-| `RF-02-72`  | Quem conduz a partida pode anular a pergunta contestada, sem crédito para ninguém                                           | essencial  |
-| `RF-02-73`  | Encerrada a partida, a pontuação é lançada automaticamente às equipes, respeitado o teto                                    | essencial  |
-| `RF-02-74`  | Admin audita por amostragem o conteúdo de apoio escolar dos Mestres e despublica com motivo                                 | essencial  |
-| `RF-02-76`  | Aplicação abre a amostra mensal de auditoria com 10% do conteúdo novo e 100% do que gerou recusa                            | essencial  |
-| `RF-02-98`  | Aplicação abre a amostra semanal de coleta com 10% dos registros por série ativa, mínimo de um                              | essencial  |
-| `RF-02-75`  | Aplicação recusa cadastro de conteúdo de apoio escolar por Admin: o corpus é autoria do Mestre                              | essencial  |
-| `RF-02-63`  | Admin consulta a trilha de auditoria das ações de gestão, com filtro por autor, período e entidade                          | essencial  |
-| `RF-02-64`  | Toda tela que coleta dado exibe o aviso discreto e o acesso à área detalhada de direitos                                    | essencial  |
-| `RF-02-70`  | Admin audita por amostragem as trilhas publicadas e despublica com motivo registrado                                        | essencial  |
+| ID          | Requisito                                                                                                                                                                 | Prioridade |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-02-50`  | Aplicação mostra a entrega do exemplar Alpha confirmada pelo Mestre, com a baixa definitiva                                                                               | essencial  |
+| `RF-02-51`  | Aplicação mostra a entrega da camisa confirmada pelo Mestre ao Guerreiro(a) inscrito, com a baixa                                                                         | essencial  |
+| `RF-02-52`  | Admin tomba o exemplar permanente com título, tombo, ponto de apoio e responsável designado                                                                               | essencial  |
+| `RF-02-96`  | Admin desativa e reativa ponto de apoio, sempre com motivo; a lista distingue o inativo do ativo                                                                          | essencial  |
+| `RF-02-109` | Área Pontos de Apoio apresenta o limiar de comparação vigente de cada espaço, com quem mediu, quando e as séries; destaca quem não tem limiar medido e não oferece edição | essencial  |
+| `RF-02-97`  | Admin transfere saldo de um tipo de recurso entre pontos de apoio, com o saldo da origem mostrado                                                                         | essencial  |
+| `RF-02-53`  | Aplicação mantém a ficha de vida do exemplar, com estado de conservação e histórico de uso                                                                                | essencial  |
+| `RF-02-55`  | Perda ou dano é anotado na ficha de vida, sem débito ao Guerreiro(a) nem à família                                                                                        | essencial  |
+| `RF-02-56`  | Admin realiza a conferência de inventário do módulo e publica o resultado na prestação de contas                                                                          | desejável  |
+| `RF-02-57`  | Admin registra e homologa aporte com provedor, tipo, comprovante e valor em moedas                                                                                        | essencial  |
+| `RF-02-58`  | Aplicação exibe as necessidades de recurso em aberto das atividades previstas                                                                                             | essencial  |
+| `RF-02-102` | Admin publica missão do Apoiador declarando nível de necessidade, título, o que se pede, quantidade, prazo e selo que rende                                               | essencial  |
+| `RF-02-103` | Aplicação recusa publicar missão sem necessidade de recurso publicada por trás                                                                                            | essencial  |
+| `RF-02-104` | Aplicação lista as missões publicadas com o que já foi coberto, o que falta e a situação                                                                                  | essencial  |
+| `RF-02-105` | Admin despublica missão publicada por engano, sem estornar aporte já homologado                                                                                           | essencial  |
+| `RF-02-59`  | Mestre da aula ou Admin abre partida de Quiz ao Vivo com o banco do curador e as equipes da aula                                                                          | essencial  |
+| `RF-02-60`  | Partida exibe a pergunta simultaneamente nos dispositivos logados na aula                                                                                                 | essencial  |
+| `RF-02-61`  | Partida fixa uma equipe por Guerreiro(a) e aceita uma resposta por equipe e por pergunta                                                                                  | essencial  |
+| `RF-02-62`  | Partida credita toda equipe que acerta e o bônus à primeira, por ordem de chegada no servidor                                                                             | essencial  |
+| `RF-02-72`  | Quem conduz a partida pode anular a pergunta contestada, sem crédito para ninguém                                                                                         | essencial  |
+| `RF-02-73`  | Encerrada a partida, a pontuação é lançada automaticamente às equipes, respeitado o teto                                                                                  | essencial  |
+| `RF-02-74`  | Admin audita por amostragem o conteúdo de apoio escolar dos Mestres e despublica com motivo                                                                               | essencial  |
+| `RF-02-76`  | Aplicação abre a amostra mensal de auditoria com 10% do conteúdo novo e 100% do que gerou recusa                                                                          | essencial  |
+| `RF-02-98`  | Aplicação abre a amostra semanal de coleta com 10% dos registros por série ativa, mínimo de um                                                                            | essencial  |
+| `RF-02-75`  | Aplicação recusa cadastro de conteúdo de apoio escolar por Admin: o corpus é autoria do Mestre                                                                            | essencial  |
+| `RF-02-63`  | Admin consulta a trilha de auditoria das ações de gestão, com filtro por autor, período e entidade                                                                        | essencial  |
+| `RF-02-64`  | Toda tela que coleta dado exibe o aviso discreto e o acesso à área detalhada de direitos                                                                                  | essencial  |
+| `RF-02-70`  | Admin audita por amostragem as trilhas publicadas e despublica com motivo registrado                                                                                      | essencial  |
 
 ## 7. Regras de negócio
 
@@ -637,6 +638,7 @@ freio por origem: 3 envios por hora, com atraso progressivo e sem CAPTCHA (docum
 | `RF-02-41` a `RF-02-49`   | 05 §4 e 03 §5 (encontro assíncrono e painel do dia)                   |
 | `RF-02-50` a `RF-02-56`   | 05 §3 e PRD-07 (acervo, regime misto e patrimônio)                    |
 | `RF-02-96` e `RF-02-97`   | 05 §2 e PRD-07 (desativação, reativação e transferência)              |
+| `RF-02-109`               | 03 §3.3 (limiar medido por ponto de apoio)                            |
 | `RF-02-57` e `RF-02-58`   | 04 §1 e PRD-07 (aportes e necessidades)                               |
 | `RF-02-59` a `RF-02-62`   | 05 §5 (Quiz ao Vivo)                                                  |
 | `RF-02-72` e `RF-02-73`   | 05 §5 e 11 §5 (regras e pontuação da partida)                         |

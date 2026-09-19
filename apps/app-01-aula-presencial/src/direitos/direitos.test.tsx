@@ -132,7 +132,11 @@ describe("aviso discreto de coleta (RF-04-26)", () => {
     const medicao = await screen.findByText(/compara com a anterior ali mesmo no aparelho/i);
     expect(medicao).toBeInTheDocument();
     expect(medicao).toHaveTextContent(/joga fora na mesma hora/i);
-    expect(medicao).toHaveTextContent(/nada disso é enviado para lugar nenhum/i);
+    // `RF-04-66`: a área passa a declarar o que a medição envia ao núcleo — os
+    // números — e o que segue sem sair do aparelho. A frase anterior, "nada
+    // disso é enviado para lugar nenhum", deixou de ser verdade.
+    expect(medicao).toHaveTextContent(/não são enviados/i);
+    expect(medicao).toHaveTextContent(/o que o Mestre guarda no fim da medição são só esses/i);
     expect(medicao).toHaveTextContent(/depois que seu responsável assinou o termo/i);
   });
 });

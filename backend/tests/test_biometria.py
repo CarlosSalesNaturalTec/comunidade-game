@@ -201,42 +201,62 @@ class TestGravacaoDoTemplate:
 
 class TestAutenticacaoPorNickEDescritor:
     def test_nick_e_descritor_conferem(
-        self, sessao, configuracao, criar_persona, criar_nick, criar_template_biometrico
+        self,
+        sessao,
+        configuracao,
+        criar_persona,
+        criar_nick,
+        criar_template_biometrico,
+        montar_cenario_de_entrada,
     ):
         guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Guerreiro_ok")
         criar_template_biometrico(guerreiro, descritor=DESCRITOR)
+        cenario = montar_cenario_de_entrada(guerreiro)
 
         resultado = autenticar_por_nick_e_descritor(
-            sessao, configuracao, nick="Guerreiro_ok", descritor=DESCRITOR
+            sessao, configuracao, nick="Guerreiro_ok", descritor=DESCRITOR, aula=cenario.aula
         )
         assert resultado is not None
         assert resultado.id == guerreiro.id
 
-    def test_nick_inexistente_nao_confere(self, sessao, configuracao):
+    def test_nick_inexistente_nao_confere(self, sessao, configuracao, montar_cenario_de_entrada):
+        cenario = montar_cenario_de_entrada()
         resultado = autenticar_por_nick_e_descritor(
-            sessao, configuracao, nick="ninguem", descritor=DESCRITOR
+            sessao, configuracao, nick="ninguem", descritor=DESCRITOR, aula=cenario.aula
         )
         assert resultado is None
         assert sessao.query(AcessoAoTemplate).count() == 0
 
     def test_guerreiro_sem_template_nao_confere(
-        self, sessao, configuracao, criar_persona, criar_nick
+        self, sessao, configuracao, criar_persona, criar_nick, montar_cenario_de_entrada
     ):
-        _guerreiro_com_nick(criar_persona, criar_nick, nick="Sem_template")
+        guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Sem_template")
+        cenario = montar_cenario_de_entrada(guerreiro)
 
         resultado = autenticar_por_nick_e_descritor(
-            sessao, configuracao, nick="Sem_template", descritor=DESCRITOR
+            sessao, configuracao, nick="Sem_template", descritor=DESCRITOR, aula=cenario.aula
         )
         assert resultado is None
 
     def test_descritor_que_nao_confere_e_recusado_e_audita_recusa(
-        self, sessao, configuracao, criar_persona, criar_nick, criar_template_biometrico
+        self,
+        sessao,
+        configuracao,
+        criar_persona,
+        criar_nick,
+        criar_template_biometrico,
+        montar_cenario_de_entrada,
     ):
         guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Guerreiro_recusa")
         criar_template_biometrico(guerreiro, descritor=DESCRITOR)
+        cenario = montar_cenario_de_entrada(guerreiro)
 
         resultado = autenticar_por_nick_e_descritor(
-            sessao, configuracao, nick="Guerreiro_recusa", descritor=descritor_de_teste(9.0)
+            sessao,
+            configuracao,
+            nick="Guerreiro_recusa",
+            descritor=descritor_de_teste(9.0),
+            aula=cenario.aula,
         )
         assert resultado is None
 
@@ -245,19 +265,138 @@ class TestAutenticacaoPorNickEDescritor:
         assert acesso.desfecho == DesfechoDoAcesso.recusa
 
     def test_comparacao_de_login_com_sucesso_audita_sucesso(
-        self, sessao, configuracao, criar_persona, criar_nick, criar_template_biometrico
+        self,
+        sessao,
+        configuracao,
+        criar_persona,
+        criar_nick,
+        criar_template_biometrico,
+        montar_cenario_de_entrada,
     ):
         guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Guerreiro_confere")
         criar_template_biometrico(guerreiro, descritor=DESCRITOR)
+        cenario = montar_cenario_de_entrada(guerreiro)
 
         autenticar_por_nick_e_descritor(
-            sessao, configuracao, nick="Guerreiro_confere", descritor=DESCRITOR
+            sessao, configuracao, nick="Guerreiro_confere", descritor=DESCRITOR, aula=cenario.aula
         )
 
         acesso = sessao.query(AcessoAoTemplate).filter_by(guerreiro_id=guerreiro.id).one()
         assert acesso.natureza == NaturezaDoAcesso.comparacao_de_login
         assert acesso.desfecho == DesfechoDoAcesso.sucesso
         assert acesso.acessado_por is None
+
+    # `RF-01-73`, `RN-01-56`: as duas causas novas da recusa, e o limiar que
+    # passa a vir do ponto de apoio da aula.
+    def test_ponto_de_apoio_sem_limiar_medido_nao_reconhece_ninguem(
+        self,
+        sessao,
+        configuracao,
+        criar_persona,
+        criar_nick,
+        criar_template_biometrico,
+        montar_cenario_de_entrada,
+    ):
+        guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Guerreiro_sem_limiar")
+        criar_template_biometrico(guerreiro, descritor=DESCRITOR)
+        cenario = montar_cenario_de_entrada(guerreiro, limiar=None)
+
+        resultado = autenticar_por_nick_e_descritor(
+            sessao,
+            configuracao,
+            nick="Guerreiro_sem_limiar",
+            descritor=DESCRITOR,
+            aula=cenario.aula,
+        )
+        assert resultado is None
+
+        acesso = sessao.query(AcessoAoTemplate).filter_by(guerreiro_id=guerreiro.id).one()
+        assert acesso.desfecho == DesfechoDoAcesso.recusa
+
+    def test_aula_de_outra_comunidade_nao_alcanca_o_limiar_dela(
+        self,
+        sessao,
+        configuracao,
+        criar_persona,
+        criar_nick,
+        criar_template_biometrico,
+        montar_cenario_de_entrada,
+    ):
+        guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Guerreiro_de_outra")
+        criar_template_biometrico(guerreiro, descritor=DESCRITOR)
+        montar_cenario_de_entrada(guerreiro)
+        alheio = montar_cenario_de_entrada()
+
+        resultado = autenticar_por_nick_e_descritor(
+            sessao,
+            configuracao,
+            nick="Guerreiro_de_outra",
+            descritor=DESCRITOR,
+            aula=alheio.aula,
+        )
+        assert resultado is None
+
+    def test_aula_nao_vigente_nao_alcanca_limiar(
+        self,
+        sessao,
+        configuracao,
+        criar_persona,
+        criar_nick,
+        criar_template_biometrico,
+        montar_cenario_de_entrada,
+    ):
+        guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Guerreiro_fora_de_hora")
+        criar_template_biometrico(guerreiro, descritor=DESCRITOR)
+        cenario = montar_cenario_de_entrada(guerreiro, vigente=False)
+
+        resultado = autenticar_por_nick_e_descritor(
+            sessao,
+            configuracao,
+            nick="Guerreiro_fora_de_hora",
+            descritor=DESCRITOR,
+            aula=cenario.aula,
+        )
+        assert resultado is None
+
+    def test_cada_ponto_de_apoio_compara_com_o_proprio_limiar(
+        self,
+        sessao,
+        configuracao,
+        criar_persona,
+        criar_nick,
+        criar_template_biometrico,
+        montar_cenario_de_entrada,
+    ):
+        """Dois limiares diferentes, o mesmo par de descritores: confere num
+        ponto de apoio e não no outro (`RF-01-73`)."""
+        guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Guerreiro_dois_pontos")
+        criar_template_biometrico(guerreiro, descritor=DESCRITOR)
+        # `descritor_de_teste` põe o mesmo valor em todas as posições: a
+        # distância entre 0.1 e 0.3 é `sqrt(1024) * 0.2`, ou seja 6.4.
+        distante = descritor_de_teste(0.3)
+        folgado = montar_cenario_de_entrada(guerreiro, limiar=8.0)
+        apertado = montar_cenario_de_entrada(guerreiro, limiar=1.0, comunidade=folgado.comunidade)
+
+        assert (
+            autenticar_por_nick_e_descritor(
+                sessao,
+                configuracao,
+                nick="Guerreiro_dois_pontos",
+                descritor=distante,
+                aula=folgado.aula,
+            )
+            is not None
+        )
+        assert (
+            autenticar_por_nick_e_descritor(
+                sessao,
+                configuracao,
+                nick="Guerreiro_dois_pontos",
+                descritor=distante,
+                aula=apertado.aula,
+            )
+            is None
+        )
 
 
 class TestImutabilidadeDoAcessoAoTemplate:

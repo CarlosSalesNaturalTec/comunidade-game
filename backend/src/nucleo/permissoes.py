@@ -37,6 +37,7 @@ class Operacao(enum.StrEnum):
     vinculo_com_guerreiros_e_guerreiras = "vinculo_com_guerreiros_e_guerreiras"
     confirmacao_de_identidade_do_guerreiro = "confirmacao_de_identidade_do_guerreiro"
     cadastro_biometrico_do_guerreiro = "cadastro_biometrico_do_guerreiro"
+    medicao_do_limiar_do_ponto_de_apoio = "medicao_do_limiar_do_ponto_de_apoio"
     homologacao_da_equipe_da_trilha = "homologacao_da_equipe_da_trilha"
     credencial_de_dispositivo_dos_seus_desafios = "credencial_de_dispositivo_dos_seus_desafios"
     cadastro_do_guerreiro_no_encontro = "cadastro_do_guerreiro_no_encontro"
@@ -103,6 +104,7 @@ MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {
                 Operacao.vinculo_com_guerreiros_e_guerreiras,
                 Operacao.confirmacao_de_identidade_do_guerreiro,
                 Operacao.cadastro_biometrico_do_guerreiro,
+                Operacao.medicao_do_limiar_do_ponto_de_apoio,
                 Operacao.homologacao_da_equipe_da_trilha,
                 Operacao.credencial_de_dispositivo_dos_seus_desafios,
                 Operacao.cadastro_do_guerreiro_no_encontro,

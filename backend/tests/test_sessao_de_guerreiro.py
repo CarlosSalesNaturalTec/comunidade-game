@@ -13,17 +13,30 @@ def _guerreiro_com_nick(criar_persona, criar_nick, nick="Guerreiro_da_rota"):
     return guerreiro
 
 
+def _corpo(nick: str, aula_id, descritor=DESCRITOR) -> dict:
+    """A entrada por nick e imagem passou a levar a **aula**: é ela que
+    determina o ponto de apoio, e com ele o limiar (`RF-01-73`)."""
+    return {"nick": nick, "descritor": descritor, "aula_id": str(aula_id)}
+
+
 class TestAbrirSessaoDeGuerreiro:
     def test_nick_e_descritor_conferem_abre_sessao(
-        self, cliente, criar_chave, criar_persona, criar_nick, criar_template_biometrico
+        self,
+        cliente,
+        criar_chave,
+        criar_persona,
+        criar_nick,
+        criar_template_biometrico,
+        montar_cenario_de_entrada,
     ):
         chave, _ = criar_chave()
         guerreiro = _guerreiro_com_nick(criar_persona, criar_nick)
         criar_template_biometrico(guerreiro, descritor=DESCRITOR)
+        cenario = montar_cenario_de_entrada(guerreiro)
 
         resposta = cliente.post(
             "/v1/sessoes/guerreiro",
-            json={"nick": "Guerreiro_da_rota", "descritor": DESCRITOR},
+            json=_corpo("Guerreiro_da_rota", cenario.aula.id),
             headers={"X-Chave-Aplicacao": chave},
         )
         assert resposta.status_code == 201
@@ -32,16 +45,23 @@ class TestAbrirSessaoDeGuerreiro:
         assert "token" in corpo
 
     def test_nao_exige_credencial_de_persona(
-        self, cliente, criar_chave, criar_persona, criar_nick, criar_template_biometrico
+        self,
+        cliente,
+        criar_chave,
+        criar_persona,
+        criar_nick,
+        criar_template_biometrico,
+        montar_cenario_de_entrada,
     ):
         """`RF-01-04`: pública quanto à persona — sem `Authorization`."""
         chave, _ = criar_chave()
         guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Sem_authorization")
         criar_template_biometrico(guerreiro, descritor=DESCRITOR)
+        cenario = montar_cenario_de_entrada(guerreiro)
 
         resposta = cliente.post(
             "/v1/sessoes/guerreiro",
-            json={"nick": "Sem_authorization", "descritor": DESCRITOR},
+            json=_corpo("Sem_authorization", cenario.aula.id),
             headers={"X-Chave-Aplicacao": chave},
         )
         assert resposta.status_code == 201
@@ -71,39 +91,90 @@ class TestAbrirSessaoDeGuerreiro:
         )
         assert resposta.status_code == 422
 
-    def test_tres_recusas_tem_corpo_e_codigo_identicos(
-        self, cliente, criar_chave, criar_persona, criar_nick, criar_template_biometrico
+    def test_cinco_recusas_tem_corpo_e_codigo_identicos(
+        self,
+        cliente,
+        criar_chave,
+        criar_persona,
+        criar_nick,
+        criar_template_biometrico,
+        montar_cenario_de_entrada,
     ):
+        """`RN-01-22`, `RN-01-56`: às três causas de sempre somam-se as duas
+        que o limiar por ponto de apoio traz — ponto de apoio sem medição e
+        aula que não vale para aquele Guerreiro(a). A resposta é a mesma."""
         chave, _ = criar_chave()
         cabecalhos = {"X-Chave-Aplicacao": chave}
+        qualquer_cenario = montar_cenario_de_entrada()
 
         nick_inexistente = cliente.post(
             "/v1/sessoes/guerreiro",
-            json={"nick": "ninguem-existe", "descritor": DESCRITOR},
+            json=_corpo("ninguem-existe", qualquer_cenario.aula.id),
             headers=cabecalhos,
         )
 
-        _guerreiro_com_nick(criar_persona, criar_nick, nick="Sem_template_rota")
+        sem_template = _guerreiro_com_nick(criar_persona, criar_nick, nick="Sem_template_rota")
+        cenario_sem_template = montar_cenario_de_entrada(sem_template)
         resposta_sem_template = cliente.post(
             "/v1/sessoes/guerreiro",
-            json={"nick": "Sem_template_rota", "descritor": DESCRITOR},
+            json=_corpo("Sem_template_rota", cenario_sem_template.aula.id),
             headers=cabecalhos,
         )
 
         com_template = _guerreiro_com_nick(criar_persona, criar_nick, nick="Descritor_errado")
         criar_template_biometrico(com_template, descritor=DESCRITOR)
+        cenario_errado = montar_cenario_de_entrada(com_template)
         resposta_descritor_errado = cliente.post(
             "/v1/sessoes/guerreiro",
-            json={"nick": "Descritor_errado", "descritor": descritor_de_teste(9.0)},
+            json=_corpo(
+                "Descritor_errado", cenario_errado.aula.id, descritor=descritor_de_teste(9.0)
+            ),
             headers=cabecalhos,
         )
 
-        respostas = [nick_inexistente, resposta_sem_template, resposta_descritor_errado]
+        sem_limiar = _guerreiro_com_nick(criar_persona, criar_nick, nick="Ponto_sem_limiar")
+        criar_template_biometrico(sem_limiar, descritor=DESCRITOR)
+        cenario_sem_limiar = montar_cenario_de_entrada(sem_limiar, limiar=None)
+        resposta_sem_limiar = cliente.post(
+            "/v1/sessoes/guerreiro",
+            json=_corpo("Ponto_sem_limiar", cenario_sem_limiar.aula.id),
+            headers=cabecalhos,
+        )
+
+        de_outra = _guerreiro_com_nick(criar_persona, criar_nick, nick="Aula_alheia")
+        criar_template_biometrico(de_outra, descritor=DESCRITOR)
+        montar_cenario_de_entrada(de_outra)
+        alheio = montar_cenario_de_entrada()
+        resposta_aula_alheia = cliente.post(
+            "/v1/sessoes/guerreiro",
+            json=_corpo("Aula_alheia", alheio.aula.id),
+            headers=cabecalhos,
+        )
+
+        respostas = [
+            nick_inexistente,
+            resposta_sem_template,
+            resposta_descritor_errado,
+            resposta_sem_limiar,
+            resposta_aula_alheia,
+        ]
         for resposta in respostas:
             assert resposta.status_code == 401
         corpos = [resposta.json() for resposta in respostas]
-        assert corpos[0] == corpos[1] == corpos[2]
+        assert all(corpo == corpos[0] for corpo in corpos)
         assert corpos[0]["codigo"] == "autenticacao_biometrica_invalida"
+
+    def test_sem_a_aula_e_recusado(self, cliente, criar_chave):
+        """`RF-01-73`: a aula determina o ponto de apoio, e sem ela não há
+        limiar com que comparar."""
+        chave, _ = criar_chave()
+        resposta = cliente.post(
+            "/v1/sessoes/guerreiro",
+            json={"nick": "qualquer", "descritor": DESCRITOR},
+            headers={"X-Chave-Aplicacao": chave},
+        )
+        assert resposta.status_code == 422
+        assert resposta.json()["campo"] == "aula_id"
 
     def test_sessao_aberta_tem_a_duracao_do_guerreiro_nao_a_do_adulto(
         self,
@@ -114,15 +185,17 @@ class TestAbrirSessaoDeGuerreiro:
         criar_template_biometrico,
         sessao,
         configuracao,
+        montar_cenario_de_entrada,
     ):
         chave, _ = criar_chave()
         guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Duracao_guerreiro")
+        cenario = montar_cenario_de_entrada(guerreiro)
         criar_template_biometrico(guerreiro, descritor=DESCRITOR)
 
         antes = datetime.now(UTC)
         resposta = cliente.post(
             "/v1/sessoes/guerreiro",
-            json={"nick": "Duracao_guerreiro", "descritor": DESCRITOR},
+            json=_corpo("Duracao_guerreiro", cenario.aula.id),
             headers={"X-Chave-Aplicacao": chave},
         )
         expira_em = datetime.fromisoformat(resposta.json()["expira_em"])
@@ -132,15 +205,23 @@ class TestAbrirSessaoDeGuerreiro:
         assert abs(diferenca - configuracao.sessao_guerreiro_duracao) < timedelta(seconds=5)
 
     def test_registro_de_sessao_guarda_como_autenticou_biometria(
-        self, cliente, criar_chave, criar_persona, criar_nick, criar_template_biometrico, sessao
+        self,
+        cliente,
+        criar_chave,
+        criar_persona,
+        criar_nick,
+        criar_template_biometrico,
+        sessao,
+        montar_cenario_de_entrada,
     ):
         chave, _ = criar_chave()
         guerreiro = _guerreiro_com_nick(criar_persona, criar_nick, nick="Como_autenticou_bio")
+        cenario = montar_cenario_de_entrada(guerreiro)
         criar_template_biometrico(guerreiro, descritor=DESCRITOR)
 
         cliente.post(
             "/v1/sessoes/guerreiro",
-            json={"nick": "Como_autenticou_bio", "descritor": DESCRITOR},
+            json=_corpo("Como_autenticou_bio", cenario.aula.id),
             headers={"X-Chave-Aplicacao": chave},
         )
 
@@ -285,6 +366,7 @@ class TestFluxoCompletoDoOnboardingSemImagem:
         criar_nick,
         criar_sessao_de_teste,
         conceder_consentimento_biometrico,
+        montar_cenario_de_entrada,
     ):
         """PRD-01 §12: Guerreiro(a) sem _template_ não entra sozinho, entra
         com a confirmação do Mestre; gravado o consentimento e o descritor,
@@ -295,11 +377,12 @@ class TestFluxoCompletoDoOnboardingSemImagem:
         token_do_mestre, _ = criar_sessao_de_teste(mestre)
         guerreiro = criar_persona(Papel.guerreiro)
         criar_nick(guerreiro, "Onboarding_sem_imagem")
+        cenario = montar_cenario_de_entrada(guerreiro)
         responsavel = criar_persona(Papel.responsavel, criada_por=admin)
 
         primeira_tentativa = cliente.post(
             "/v1/sessoes/guerreiro",
-            json={"nick": "Onboarding_sem_imagem", "descritor": DESCRITOR},
+            json=_corpo("Onboarding_sem_imagem", cenario.aula.id),
             headers={"X-Chave-Aplicacao": chave},
         )
         assert primeira_tentativa.status_code == 401
@@ -321,7 +404,7 @@ class TestFluxoCompletoDoOnboardingSemImagem:
 
         segunda_tentativa = cliente.post(
             "/v1/sessoes/guerreiro",
-            json={"nick": "Onboarding_sem_imagem", "descritor": DESCRITOR},
+            json=_corpo("Onboarding_sem_imagem", cenario.aula.id),
             headers={"X-Chave-Aplicacao": chave},
         )
         assert segunda_tentativa.status_code == 201

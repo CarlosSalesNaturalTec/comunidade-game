@@ -196,3 +196,32 @@ export function lancarAjuste(
     token,
   });
 }
+
+export interface MedicaoDoLimiar {
+  id: string;
+  ponto_de_apoio_id: string;
+  limiar: number;
+  distancias_do_piso: number[];
+  distancias_do_teto: number[];
+  pessoas_no_teto: number;
+  medido_por: string;
+  registrado_em: string;
+}
+
+export interface LimiarDoPontoDeApoio {
+  ponto_de_apoio_id: string;
+  nome: string;
+  /** Nulo no ponto de apoio que ainda não foi medido — e é justamente esse
+   * caso que a tela destaca, porque ali o reconhecimento facial não confere
+   * ninguém (`RF-02-109`, `RN-01-56`). */
+  medicao: MedicaoDoLimiar | null;
+}
+
+// Consulta apenas: o limiar nasce de uma medição no aparelho do encontro, e
+// não existe rota que o edite — corrigir é medir de novo na App 01
+// (`RF-02-109`, `RF-04-66`).
+export function listarLimiaresDosPontosDeApoio(
+  token: string,
+): Promise<LimiarDoPontoDeApoio[]> {
+  return chamarNucleo<LimiarDoPontoDeApoio[]>("/v1/pontos-de-apoio/limiares", { token });
+}

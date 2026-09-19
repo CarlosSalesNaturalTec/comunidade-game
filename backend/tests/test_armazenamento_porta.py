@@ -30,7 +30,6 @@ def _configuracao(**extras) -> Configuracao:
         identidade_fundador="fundador-de-teste@example.org",
         sessao_adulto_duracao=timedelta(hours=8),
         sessao_guerreiro_duracao=timedelta(hours=4),
-        biometria_limiar_de_comparacao=0.5,
         biometria_chave_de_cifragem=CHAVE_DE_CIFRAGEM,
         **extras,
     )
@@ -118,7 +117,6 @@ def test_o_lifespan_recusa_o_servico_em_producao_sem_bucket(monkeypatch):
         "CG_IDENTIDADE_FUNDADOR": "fundador-de-teste@example.org",
         "CG_SESSAO_ADULTO_DURACAO": "PT8H",
         "CG_SESSAO_GUERREIRO_DURACAO": "PT4H",
-        "CG_BIOMETRIA_LIMIAR_DE_COMPARACAO": "0.5",
         "CG_BIOMETRIA_CHAVE_DE_CIFRAGEM": CHAVE_DE_CIFRAGEM,
     }.items():
         monkeypatch.setenv(variavel, valor)

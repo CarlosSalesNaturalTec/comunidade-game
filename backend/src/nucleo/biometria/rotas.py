@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
+from ..aulas.modelo import Aula
 from ..autenticacao import ContextoDaSessao
 from ..banco import obter_sessao
 from ..configuracao import Configuracao, obter_configuracao
@@ -16,7 +17,12 @@ from ..permissoes import Operacao, exigir_permissao
 from ..personas.modelo import Papel, Persona
 from ..responsaveis.regra import exigir_vinculo_do_responsavel
 from .modelo import GatilhoDeApagamento
-from .regra import consultar_estado_da_biometria, gravar_ou_recadastrar_template
+from .regra import (
+    consultar_estado_da_biometria,
+    consultar_limiares_por_ponto_de_apoio,
+    gravar_medicao_do_limiar,
+    gravar_ou_recadastrar_template,
+)
 
 roteador = APIRouter()
 
@@ -122,3 +128,111 @@ def ler_estado_da_biometria_rota(
         apagar_em=estado.apagar_em,
         gatilho_do_apagamento=estado.gatilho_do_apagamento,
     )
+
+
+class GravarMedicaoDoLimiarEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    aula_id: uuid.UUID
+    distancias_do_piso: list[float] = Field(min_length=1)
+    distancias_do_teto: list[float] = Field(min_length=1)
+    pessoas_no_teto: int = Field(ge=1)
+
+
+class MedicaoDoLimiarSaida(BaseModel):
+    id: uuid.UUID
+    ponto_de_apoio_id: uuid.UUID
+    limiar: float
+    distancias_do_piso: list[float]
+    distancias_do_teto: list[float]
+    pessoas_no_teto: int
+    medido_por: uuid.UUID
+    registrado_em: datetime
+
+
+@roteador.post("/medicoes-do-limiar", status_code=201)
+def gravar_medicao_do_limiar_rota(
+    entrada: GravarMedicaoDoLimiarEntrada,
+    contexto: Annotated[
+        ContextoDaSessao,
+        Depends(exigir_permissao(Operacao.medicao_do_limiar_do_ponto_de_apoio, "escreve")),
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> MedicaoDoLimiarSaida:
+    """Restrita a Mestre e Admin pela matriz (`RF-01-16`). Recebe a **aula em
+    curso** — é ela que determina o ponto de apoio — e as duas séries de
+    **distâncias**; `extra="forbid"` recusa descritor no corpo (`RF-01-73`,
+    `RF-04-66`, `RN-01-15`, design — decisão 3).
+
+    O **limiar não vem do aparelho**: o núcleo o calcula das séries, pela
+    mesma fórmula que a bancada mostra a quem confirma (`RN-04-35`).
+    """
+    aula = sessao_bd.get(Aula, entrada.aula_id)
+    if aula is None:
+        raise NaoEncontrado(mensagem="Aula não encontrada.", campo="aula_id")
+
+    operado_por = sessao_bd.get(Persona, contexto.persona_id)
+    medicao = gravar_medicao_do_limiar(
+        sessao_bd,
+        ponto_de_apoio_id=aula.ponto_de_apoio_id,
+        distancias_do_piso=entrada.distancias_do_piso,
+        distancias_do_teto=entrada.distancias_do_teto,
+        pessoas_no_teto=entrada.pessoas_no_teto,
+        operado_por=operado_por,
+    )
+    sessao_bd.commit()
+    return MedicaoDoLimiarSaida(
+        id=medicao.id,
+        ponto_de_apoio_id=medicao.ponto_de_apoio_id,
+        limiar=medicao.limiar,
+        distancias_do_piso=medicao.distancias_do_piso,
+        distancias_do_teto=medicao.distancias_do_teto,
+        pessoas_no_teto=medicao.pessoas_no_teto,
+        medido_por=medicao.autor_id,
+        registrado_em=medicao.registrado_em,
+    )
+
+
+class LimiarDoPontoDeApoioSaida(BaseModel):
+    """O `medicao` é nulo no ponto de apoio que ainda não foi medido — e é
+    exatamente esse caso que a App 03 destaca, porque ali o reconhecimento
+    não confere ninguém (`RF-02-109`, `RN-01-56`)."""
+
+    ponto_de_apoio_id: uuid.UUID
+    nome: str
+    medicao: MedicaoDoLimiarSaida | None
+
+
+@roteador.get("/pontos-de-apoio/limiares")
+def listar_limiares_dos_pontos_de_apoio(
+    contexto: Annotated[
+        ContextoDaSessao,
+        Depends(exigir_permissao(Operacao.medicao_do_limiar_do_ponto_de_apoio, "le")),
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[LimiarDoPontoDeApoioSaida]:
+    """A consulta da App 03: o limiar vigente de cada ponto de apoio, com a
+    origem da medição, e quem ainda não tem (`RF-02-109`). Não existe rota de
+    edição — corrigir é medir de novo na App 01 (`RF-04-66`).
+    """
+    return [
+        LimiarDoPontoDeApoioSaida(
+            ponto_de_apoio_id=ponto.id,
+            nome=ponto.nome,
+            medicao=(
+                MedicaoDoLimiarSaida(
+                    id=medicao.id,
+                    ponto_de_apoio_id=medicao.ponto_de_apoio_id,
+                    limiar=medicao.limiar,
+                    distancias_do_piso=medicao.distancias_do_piso,
+                    distancias_do_teto=medicao.distancias_do_teto,
+                    pessoas_no_teto=medicao.pessoas_no_teto,
+                    medido_por=medicao.autor_id,
+                    registrado_em=medicao.registrado_em,
+                )
+                if medicao is not None
+                else None
+            ),
+        )
+        for ponto, medicao in consultar_limiares_por_ponto_de_apoio(sessao_bd)
+    ]

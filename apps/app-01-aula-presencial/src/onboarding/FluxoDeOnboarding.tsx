@@ -130,6 +130,8 @@ export function FluxoDeOnboarding({
       <TelaDeMedicaoDoLimiar
         alcance="guerreiro"
         nickDoGuerreiro={guerreiro.nick}
+        tokenDeTrabalho={tokenDeTrabalho}
+        aulaId={aulaId}
         aoVoltar={() => definirPasso({ tipo: "captura", guerreiro })}
       />
     );

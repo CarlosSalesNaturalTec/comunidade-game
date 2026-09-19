@@ -80,7 +80,6 @@ def _configuracao_do_alembic(url, monkeypatch) -> Config:
     monkeypatch.setenv("CG_IDENTIDADE_FUNDADOR", "fundador-de-teste@example.org")
     monkeypatch.setenv("CG_SESSAO_ADULTO_DURACAO", "PT8H")
     monkeypatch.setenv("CG_SESSAO_GUERREIRO_DURACAO", "PT4H")
-    monkeypatch.setenv("CG_BIOMETRIA_LIMIAR_DE_COMPARACAO", "0.5")
     monkeypatch.setenv("CG_BIOMETRIA_CHAVE_DE_CIFRAGEM", CHAVE_DE_CIFRAGEM_DE_TESTE)
     obter_configuracao.cache_clear()
     # `Config()` sem arquivo, de propósito: com o `.ini`, o `env.py` chama

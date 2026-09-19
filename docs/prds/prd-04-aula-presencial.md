@@ -295,7 +295,8 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-20` | Falha de identificação oferece nova tentativa sem revelar se o nick existe                                                                                          | essencial  |
 | `RF-04-21` | Mestre ou Admin confirma a identidade e registra a presença quando a identificação falha, com registro de quem confirmou                                            | essencial  |
 | `RF-04-22` | Mestre ou Admin recadastra a imagem de referência a partir da própria aplicação                                                                                     | desejável  |
-| `RF-04-63` | Mestre ou Admin mede no aparelho a distância entre descritores capturados, para calibrar o limiar de comparação, sem enviar nada ao núcleo                          | desejável  |
+| `RF-04-63` | Mestre ou Admin mede no aparelho a distância entre descritores capturados, para calibrar o limiar de comparação; descritor e imagem nunca saem do aparelho          | desejável  |
+| `RF-04-66` | A medição corre em duas séries — mesma pessoa dá o piso, pessoas diferentes dão o teto —, propõe o limiar e o grava no ponto de apoio da aula após confirmação      | essencial  |
 | `RF-04-23` | Sem rede, a presença confirmada pelo Mestre ou Admin entra em fila local e sincroniza depois                                                                        | essencial  |
 | `RF-04-24` | Sem rede, cadastro novo e reconhecimento facial ficam indisponíveis, com aviso na tela — o descritor nasce no aparelho, mas a comparação é no núcleo                | essencial  |
 | `RF-04-25` | Sincronização preserva a hora do fato, não a do envio, e não duplica registro reenviado                                                                             | essencial  |
@@ -348,42 +349,43 @@ dentro da mesma sessão de trabalho do aparelho.
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                                       | Invariante | Fonte         |
-| ---------- | ----------------------------------------------------------------------------------------------------------- | ---------- | ------------- |
-| `RN-04-01` | Sem aula agendada para a data e o horário, o App 01 não opera                                               | 4          | 02 §1         |
-| `RN-04-02` | O Guerreiro(a) nunca informa a comunidade: ela vem da aula vigente                                          | 4          | 02 §1         |
-| `RN-04-03` | Sem câmera no aparelho, o onboarding segue pelo caminho sem imagem — só a captura fecha                     | —          | 03 §3.2       |
-| `RN-04-04` | O Guerreiro(a) é a única persona com autocadastro                                                           | 3          | 02 §1         |
-| `RN-04-05` | O nick é único em toda a plataforma                                                                         | —          | 02 §1         |
-| `RN-04-06` | A imagem tem finalidade única: identificar o Guerreiro(a) — presença e autenticação                         | 12         | 03 §3.3       |
-| `RN-04-07` | Sem termo assinado pelo responsável presente não há captura de imagem                                       | 11         | 03 §3.3       |
-| `RN-04-08` | A fotografia original é apagada assim que o _template_ é gerado                                             | 12         | 03 §3.3       |
-| `RN-04-09` | Recusar a biometria não exclui ninguém: a confirmação humana no encontro é a alternativa equivalente        | 11         | 03 §3.3       |
-| `RN-04-10` | O cadastro nasce ativo sem autorização do responsável; ela só é exigida para a divulgação pública do perfil | —          | 03 §12        |
-| `RN-04-11` | A faixa etária dos Guerreiros e Guerreiras é de 6 a 16 anos                                                 | 2          | 02 §1         |
-| `RN-04-12` | Nenhuma imagem de criança fica armazenada no aparelho compartilhado                                         | 12         | 03 §§3.3, 3.4 |
-| `RN-04-13` | A presença é do fato, não do envio: a fila local preserva a hora em que a criança chegou                    | —          | 03 §3.4       |
-| `RN-04-14` | Nenhuma tela da aplicação exibe a imagem de um Guerreiro(a) para outro                                      | 12         | 03 §12        |
-| `RN-04-15` | A equipe é formada pelos próprios Guerreiros e Guerreiras e vale para aquela aula presencial                | 15         | 02 §5         |
-| `RN-04-16` | A equipe tem até 5 integrantes e no máximo 1 familiar de 17 anos ou mais                                    | 15         | 02 §5         |
-| `RN-04-17` | O Guerreiro(a) integra várias equipes, mas joga a partida de quiz por uma só                                | 15         | 02 §5, 05 §5  |
-| `RN-04-18` | A gestão não forma nem edita equipe: acompanha as do dia no painel da App 03                                | —          | 03 §5         |
-| `RN-04-19` | O assistente responde apenas a partir do corpus fechado cadastrado pelos Mestres                            | —          | 03 §§4, 7     |
-| `RN-04-20` | A aplicação não capta o áudio ambiente da aula; só o áudio dirigido ao assistente                           | —          | 03 §4         |
-| `RN-04-21` | Do áudio do assistente guarda-se apenas a transcrição, feita no aparelho                                    | —          | 03 §7         |
-| `RN-04-22` | Uma resposta por equipe e pergunta, válida para todos os integrantes                                        | —          | 05 §5         |
-| `RN-04-23` | Só o saldo de pontos extras é trocável; a troca nunca alcança o ponto regular                               | 23         | 11 §5         |
-| `RN-04-24` | A troca debita o saldo disponível e nunca o acumulado, que só cresce                                        | 23         | 11 §5         |
-| `RN-04-25` | O saldo disponível nunca fica negativo                                                                      | 23         | 11 §5         |
-| `RN-04-26` | Recompensa de marco não é trocada; a troca alcança só a recompensa avulsa                                   | 23         | 02 §8         |
-| `RN-04-27` | Entrega no ato da troca, sem reserva nem promessa para o encontro seguinte                                  | 9          | 02 §8.2       |
-| `RN-04-28` | Preço e diferença aparecem sempre em pontos, nunca em reais nem em moedas                                   | 16         | 02 §8.2       |
-| `RN-04-29` | A sessão de trabalho do aparelho vale pela janela da aula agendada, e cai com ela                           | —          | 03 §3.2       |
-| `RN-04-30` | O papel do integrante é declarado na formação da equipe e vale para o encontro inteiro                      | —          | 02 §5         |
-| `RN-04-31` | A reescrita por IA opera no App 01 ainda que um integrante esteja com a chave desligada                     | 11         | 03 §7.1       |
-| `RN-04-32` | A medição do limiar guarda um descritor de referência por vez e descarta cada captura comparada no ato      | 12         | 03 §3.3       |
-| `RN-04-33` | Sobre Guerreiro(a), a medição do limiar só é oferecida dentro do onboarding, depois do consentimento        | 11         | 03 §3.3       |
-| `RN-04-34` | O visor ao vivo da câmera é permitido; o quadro capturado nunca volta à tela, antes ou depois do descritor  | 12         | 03 §3.3       |
+| ID         | Regra                                                                                                                                                                                                                          | Invariante | Fonte         |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ------------- |
+| `RN-04-01` | Sem aula agendada para a data e o horário, o App 01 não opera                                                                                                                                                                  | 4          | 02 §1         |
+| `RN-04-02` | O Guerreiro(a) nunca informa a comunidade: ela vem da aula vigente                                                                                                                                                             | 4          | 02 §1         |
+| `RN-04-03` | Sem câmera no aparelho, o onboarding segue pelo caminho sem imagem — só a captura fecha                                                                                                                                        | —          | 03 §3.2       |
+| `RN-04-04` | O Guerreiro(a) é a única persona com autocadastro                                                                                                                                                                              | 3          | 02 §1         |
+| `RN-04-05` | O nick é único em toda a plataforma                                                                                                                                                                                            | —          | 02 §1         |
+| `RN-04-06` | A imagem tem finalidade única: identificar o Guerreiro(a) — presença e autenticação                                                                                                                                            | 12         | 03 §3.3       |
+| `RN-04-07` | Sem termo assinado pelo responsável presente não há captura de imagem                                                                                                                                                          | 11         | 03 §3.3       |
+| `RN-04-08` | A fotografia original é apagada assim que o _template_ é gerado                                                                                                                                                                | 12         | 03 §3.3       |
+| `RN-04-09` | Recusar a biometria não exclui ninguém: a confirmação humana no encontro é a alternativa equivalente                                                                                                                           | 11         | 03 §3.3       |
+| `RN-04-10` | O cadastro nasce ativo sem autorização do responsável; ela só é exigida para a divulgação pública do perfil                                                                                                                    | —          | 03 §12        |
+| `RN-04-11` | A faixa etária dos Guerreiros e Guerreiras é de 6 a 16 anos                                                                                                                                                                    | 2          | 02 §1         |
+| `RN-04-12` | Nenhuma imagem de criança fica armazenada no aparelho compartilhado                                                                                                                                                            | 12         | 03 §§3.3, 3.4 |
+| `RN-04-13` | A presença é do fato, não do envio: a fila local preserva a hora em que a criança chegou                                                                                                                                       | —          | 03 §3.4       |
+| `RN-04-14` | Nenhuma tela da aplicação exibe a imagem de um Guerreiro(a) para outro                                                                                                                                                         | 12         | 03 §12        |
+| `RN-04-15` | A equipe é formada pelos próprios Guerreiros e Guerreiras e vale para aquela aula presencial                                                                                                                                   | 15         | 02 §5         |
+| `RN-04-16` | A equipe tem até 5 integrantes e no máximo 1 familiar de 17 anos ou mais                                                                                                                                                       | 15         | 02 §5         |
+| `RN-04-17` | O Guerreiro(a) integra várias equipes, mas joga a partida de quiz por uma só                                                                                                                                                   | 15         | 02 §5, 05 §5  |
+| `RN-04-18` | A gestão não forma nem edita equipe: acompanha as do dia no painel da App 03                                                                                                                                                   | —          | 03 §5         |
+| `RN-04-19` | O assistente responde apenas a partir do corpus fechado cadastrado pelos Mestres                                                                                                                                               | —          | 03 §§4, 7     |
+| `RN-04-20` | A aplicação não capta o áudio ambiente da aula; só o áudio dirigido ao assistente                                                                                                                                              | —          | 03 §4         |
+| `RN-04-21` | Do áudio do assistente guarda-se apenas a transcrição, feita no aparelho                                                                                                                                                       | —          | 03 §7         |
+| `RN-04-22` | Uma resposta por equipe e pergunta, válida para todos os integrantes                                                                                                                                                           | —          | 05 §5         |
+| `RN-04-23` | Só o saldo de pontos extras é trocável; a troca nunca alcança o ponto regular                                                                                                                                                  | 23         | 11 §5         |
+| `RN-04-24` | A troca debita o saldo disponível e nunca o acumulado, que só cresce                                                                                                                                                           | 23         | 11 §5         |
+| `RN-04-25` | O saldo disponível nunca fica negativo                                                                                                                                                                                         | 23         | 11 §5         |
+| `RN-04-26` | Recompensa de marco não é trocada; a troca alcança só a recompensa avulsa                                                                                                                                                      | 23         | 02 §8         |
+| `RN-04-27` | Entrega no ato da troca, sem reserva nem promessa para o encontro seguinte                                                                                                                                                     | 9          | 02 §8.2       |
+| `RN-04-28` | Preço e diferença aparecem sempre em pontos, nunca em reais nem em moedas                                                                                                                                                      | 16         | 02 §8.2       |
+| `RN-04-29` | A sessão de trabalho do aparelho vale pela janela da aula agendada, e cai com ela                                                                                                                                              | —          | 03 §3.2       |
+| `RN-04-30` | O papel do integrante é declarado na formação da equipe e vale para o encontro inteiro                                                                                                                                         | —          | 02 §5         |
+| `RN-04-31` | A reescrita por IA opera no App 01 ainda que um integrante esteja com a chave desligada                                                                                                                                        | 11         | 03 §7.1       |
+| `RN-04-32` | A medição do limiar guarda um descritor de referência por vez, descarta cada captura comparada no ato e do aparelho só saem o limiar confirmado e as distâncias medidas                                                        | 12         | 03 §3.3       |
+| `RN-04-33` | Sobre Guerreiro(a), a medição do limiar só é oferecida dentro do onboarding, depois do consentimento                                                                                                                           | 11         | 03 §3.3       |
+| `RN-04-34` | O visor ao vivo da câmera é permitido; o quadro capturado nunca volta à tela, antes ou depois do descritor                                                                                                                     | 12         | 03 §3.3       |
+| `RN-04-35` | A medição só conclui com no mínimo 8 capturas de piso e 8 de teto, estas de ao menos 2 pessoas, e maior piso menor que menor teto; séries que se sobrepõem não gravam limiar, e o valor proposto é o ponto médio entre os dois | 12         | 03 §3.3       |
 
 ## 8. Modelo de dados
 
@@ -707,6 +709,15 @@ capturar no aparelho do encontro, e a tela **permanece** depois da calibração,
 ferramenta de diagnóstico do Mestre — é por permanecer que ela vira requisito, e não código
 de apoio de uma change.
 
+As linhas do **limiar por ponto de apoio** são decisão nova do fundador, em 2026-09-18,
+elicitada em `/opsx:explore`: o limiar deixa de ser parâmetro de implantação, único para a
+plataforma, e passa a ser dado medido de cada espaço — a câmera e a luz diferem de um ponto de
+apoio para outro, e um valor só nasce errado para o segundo. A medição passa a correr em duas
+séries porque é a folga entre elas que diz se existe limiar viável; sem folga, não há número
+certo a gravar. Ponto de apoio sem limiar medido não reconhece ninguém, e é a App 03 que torna
+essa ausência visível — sem ela, a decisão criaria mais uma falha silenciosa neste mesmo
+caminho.
+
 ## 14. Pendências que permanecem
 
 - **Peso dos modelos da biblioteca Human** no primeiro carregamento, contra o requisito de
@@ -762,4 +773,5 @@ a **forma do aviso** da exclusão do _template_, que acontece na App 07, com a d
 | `RF-04-49` a `RF-04-57` | 02 §8.2 (recompensa avulsa) e 11 §5 (saldo e troca)       |
 | `RF-04-60`              | 09 §1 (responsável mínimo no ato do encontro), 03 §3.3    |
 | `RF-04-63`              | 03 §3.3 (calibração do limiar no aparelho do encontro)    |
+| `RF-04-66` e `RN-04-35` | 03 §3.3 (limiar medido por ponto de apoio)                |
 | `RF-04-64` e `RF-04-65` | 03 §3.3 (visor ao vivo, imagem capturada nunca exibida)   |

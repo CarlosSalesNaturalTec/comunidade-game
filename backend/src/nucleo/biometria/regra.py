@@ -7,17 +7,21 @@ from random import Random
 
 from sqlalchemy.orm import Session
 
+from ..aulas.modelo import Aula, SituacaoDaAula
 from ..configuracao import Configuracao
 from ..consentimentos.modelo import DecisaoDeConsentimento, TipoDeConsentimento
 from ..consentimentos.regra import consultar_consentimento_vigente_em
 from ..erros import ErroDeValidacao
 from ..personas.modelo import Credencial, Nick, Papel, Persona, TipoDeCredencial
+from ..pontos_de_apoio.modelo import PontoDeApoio
+from ..tempo import agora
 from .cifra import cifrar_descritor, decifrar_descritor
 from .modelo import (
     AcessoAoTemplate,
     ApagamentoDeTemplate,
     DesfechoDoAcesso,
     GatilhoDeApagamento,
+    MedicaoDoLimiar,
     NaturezaDoAcesso,
 )
 
@@ -142,14 +146,146 @@ def gravar_ou_recadastrar_template(
     return credencial
 
 
+# Os mínimos por série e o piso de pessoas no teto do `RN-04-35`, conferidos
+# **também aqui**: o cálculo do aparelho não é autoridade sobre o que o núcleo
+# grava (design — decisão 2, decisão do fundador, 2026-09-18).
+MINIMO_DE_MEDICOES_POR_SERIE = 8
+MINIMO_DE_PESSOAS_NO_TETO = 2
+
+
+def limiar_proposto(distancias_do_piso: list[float], distancias_do_teto: list[float]) -> float:
+    """O ponto médio entre o maior piso e o menor teto — a escolha equidistante
+    das duas formas de errar: recusar quem é e aceitar quem não é (`RN-04-35`,
+    decisão do fundador, 2026-09-18).
+
+    O **núcleo** é quem calcula. O aparelho mostra o mesmo número para quem
+    opera confirmar, mas não o envia: número enviado é número em que se
+    precisaria confiar, e a fórmula é curta demais para valer essa confiança.
+    """
+    return (max(distancias_do_piso) + min(distancias_do_teto)) / 2
+
+
+def consultar_limiar_vigente(sessao: Session, *, ponto_de_apoio_id: uuid.UUID) -> float | None:
+    """O limiar vigente de um ponto de apoio é o da **medição mais recente**
+    dele; `None` quando nunca se mediu ali (`RF-01-73`, design — decisão 4)."""
+    medicao = (
+        sessao.query(MedicaoDoLimiar)
+        .filter_by(ponto_de_apoio_id=ponto_de_apoio_id)
+        .order_by(MedicaoDoLimiar.registrado_em.desc())
+        .first()
+    )
+    return medicao.limiar if medicao is not None else None
+
+
+def consultar_limiares_por_ponto_de_apoio(
+    sessao: Session,
+) -> list[tuple[PontoDeApoio, MedicaoDoLimiar | None]]:
+    """Cada ponto de apoio com a sua medição vigente, ou `None` quando nunca
+    se mediu ali — é esse `None` que a App 03 destaca, porque ali o
+    reconhecimento não confere ninguém (`RF-02-109`, `RN-01-56`)."""
+    pontos = sessao.query(PontoDeApoio).order_by(PontoDeApoio.nome).all()
+    return [
+        (
+            ponto,
+            sessao.query(MedicaoDoLimiar)
+            .filter_by(ponto_de_apoio_id=ponto.id)
+            .order_by(MedicaoDoLimiar.registrado_em.desc())
+            .first(),
+        )
+        for ponto in pontos
+    ]
+
+
+def gravar_medicao_do_limiar(
+    sessao: Session,
+    *,
+    ponto_de_apoio_id: uuid.UUID,
+    distancias_do_piso: list[float],
+    distancias_do_teto: list[float],
+    pessoas_no_teto: int,
+    operado_por: Persona,
+) -> MedicaoDoLimiar:
+    """Grava a medição que passa a valer para o ponto de apoio (`RF-01-73`,
+    `RF-04-66`, `RN-04-35`). A permissão de quem opera é conferida na rota,
+    pela matriz (`RF-01-16`) — aqui, o critério de conclusão.
+
+    Séries que se **sobrepõem** não geram limiar: não existe número que acerte
+    os dois lados, e gravar um ali seria gravar um erro (`RN-04-35`).
+    """
+    if (
+        len(distancias_do_piso) < MINIMO_DE_MEDICOES_POR_SERIE
+        or len(distancias_do_teto) < MINIMO_DE_MEDICOES_POR_SERIE
+    ):
+        raise ErroDeValidacao(
+            mensagem=(f"Cada série precisa de ao menos {MINIMO_DE_MEDICOES_POR_SERIE} medições."),
+            campo="distancias_do_piso",
+        )
+    if pessoas_no_teto < MINIMO_DE_PESSOAS_NO_TETO:
+        raise ErroDeValidacao(
+            mensagem=(
+                f"O teto precisa de ao menos {MINIMO_DE_PESSOAS_NO_TETO} pessoas diferentes "
+                "da referência."
+            ),
+            campo="pessoas_no_teto",
+        )
+    if max(distancias_do_piso) >= min(distancias_do_teto):
+        raise ErroDeValidacao(
+            mensagem=(
+                "As séries se sobrepõem: não existe limiar viável com essas capturas. Meça de novo."
+            ),
+            campo="distancias_do_teto",
+        )
+
+    medicao = MedicaoDoLimiar(
+        ponto_de_apoio_id=ponto_de_apoio_id,
+        limiar=limiar_proposto(distancias_do_piso, distancias_do_teto),
+        distancias_do_piso=distancias_do_piso,
+        distancias_do_teto=distancias_do_teto,
+        pessoas_no_teto=pessoas_no_teto,
+        autor_id=operado_por.id,
+        papel_do_autor=operado_por.papel.value,
+    )
+    sessao.add(medicao)
+    sessao.flush()
+    return medicao
+
+
+def _aula_vale_para(guerreiro: Persona | None, aula: Aula | None) -> bool:
+    """A aula informada determina o ponto de apoio, e com ele o limiar. Vale
+    apenas a aula **vigente** da **comunidade do próprio Guerreiro(a)** — o
+    mesmo laço que `registrar_presenca` já aplica —, para que escolher a aula
+    NUNCA alcance o limiar de outra comunidade (`RF-01-73`, design —
+    decisão 3)."""
+    if aula is None or guerreiro is None:
+        return False
+    if aula.situacao == SituacaoDaAula.cancelada:
+        return False
+    momento = agora()
+    if not (aula.inicio_em <= momento <= aula.fim_em):
+        return False
+    vinculo = guerreiro.vinculo_vigente
+    return vinculo is not None and vinculo.comunidade_virtual_id == aula.comunidade_virtual_id
+
+
 def autenticar_por_nick_e_descritor(
-    sessao: Session, configuracao: Configuracao, *, nick: str, descritor: list[float]
+    sessao: Session,
+    configuracao: Configuracao,
+    *,
+    nick: str,
+    descritor: list[float],
+    aula: Aula | None,
 ) -> Persona | None:
     """Confere o descritor contra o _template_ de um único Guerreiro(a),
-    restrito pelo nick (`RF-01-04`, design — decisões). Devolve `None` para
-    nick inexistente, Guerreiro(a) sem _template_ e descritor que não
-    confere — os três casos que a rota funde numa recusa indistinguível
-    (`RN-01-22`).
+    restrito pelo nick, com o **limiar do ponto de apoio da aula** em que a
+    entrada acontece (`RF-01-04`, `RF-01-73`, design — decisões). Devolve
+    `None` para nick inexistente, Guerreiro(a) sem _template_, descritor que
+    não confere, **ponto de apoio sem limiar medido** e **aula que não vale
+    para aquele Guerreiro(a)** — os cinco casos que a rota funde numa recusa
+    indistinguível (`RN-01-22`, `RN-01-56`).
+
+    O trabalho é o mesmo nos cinco, inclusive o cálculo da distância contra o
+    _template_ de descarte: a indistinguibilidade do `RN-01-22` alcança o
+    tempo, não só o corpo da resposta.
     """
     registro_de_nick = sessao.query(Nick).filter_by(valor=nick).first()
     guerreiro_id = registro_de_nick.persona_id if registro_de_nick is not None else None
@@ -163,11 +299,18 @@ def autenticar_por_nick_e_descritor(
         else _template_de_descarte(DIMENSAO_DO_DESCRITOR)
     )
 
+    limiar = (
+        consultar_limiar_vigente(sessao, ponto_de_apoio_id=aula.ponto_de_apoio_id)
+        if aula is not None and _aula_vale_para(guerreiro, aula)
+        else None
+    )
+
     distancia = _distancia_euclidiana(descritor, template_para_comparar)
     confere = (
         credencial is not None
+        and limiar is not None
         and distancia is not None
-        and distancia <= configuracao.biometria_limiar_de_comparacao
+        and distancia <= limiar
     )
 
     if guerreiro_id is not None:

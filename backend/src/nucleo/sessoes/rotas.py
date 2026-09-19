@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
+from ..aulas.modelo import Aula
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..biometria.regra import autenticar_por_nick_e_descritor
@@ -135,6 +136,9 @@ class AbrirSessaoDeGuerreiroEntrada(BaseModel):
 
     nick: str
     descritor: list[float] = Field(min_length=1)
+    # A aula determina o ponto de apoio, e o ponto de apoio determina o limiar
+    # com que a comparação é feita (`RF-01-73`, design — decisão 3).
+    aula_id: uuid.UUID
 
 
 @roteador.post("/sessoes/guerreiro", status_code=201)
@@ -145,12 +149,22 @@ def abrir_sessao_de_guerreiro(
     configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
 ) -> AberturaDeSessaoSaida:
     """Pública quanto à persona — dispensa credencial, nunca a chave de
-    aplicação (`RF-01-04`, `RF-01-05`). A recusa não diferencia nick
-    inexistente, Guerreiro(a) sem _template_ e descritor que não confere,
-    nem no corpo nem no tempo (`RN-01-22`).
+    aplicação (`RF-01-04`, `RF-01-05`). A **aula** informada determina o ponto
+    de apoio, e com ele o limiar (`RF-01-73`); aula de outra comunidade ou não
+    vigente não alcança limiar algum, pelo mesmo laço que o registro de
+    presença já aplica (design — decisão 3).
+
+    A recusa não diferencia nick inexistente, Guerreiro(a) sem _template_,
+    descritor que não confere, ponto de apoio sem limiar medido e aula que não
+    vale para aquele Guerreiro(a), nem no corpo nem no tempo (`RN-01-22`,
+    `RN-01-56`).
     """
     guerreiro = autenticar_por_nick_e_descritor(
-        sessao_bd, configuracao, nick=entrada.nick, descritor=entrada.descritor
+        sessao_bd,
+        configuracao,
+        nick=entrada.nick,
+        descritor=entrada.descritor,
+        aula=sessao_bd.get(Aula, entrada.aula_id),
     )
     if guerreiro is None:
         # O registro de acesso da comparação (RN-01-14) precisa persistir mesmo
