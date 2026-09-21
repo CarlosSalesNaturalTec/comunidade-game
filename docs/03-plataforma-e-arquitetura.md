@@ -113,6 +113,13 @@
     conexão longa (_WebSocket_ ou similar); o núcleo não guarda assinante nem sessão longa.
     O intervalo é **2 segundos** na partida do Quiz ao Vivo e **10 segundos** no painel do
     dia da App 03.
+16. **A aplicação nunca troca o erro declarado pelo núcleo por uma frase do domínio.** O corpo
+    único de erro traz código, mensagem em linguagem simples e campo em falta; a tela apresenta
+    o que o núcleo declarou e reserva a frase do domínio — _"não foi possível reconhecer"_,
+    _"falta consentimento"_ — à recusa que o núcleo declarou como tal. Falha de rede, de
+    validação, de chave ou de preparo do aparelho aparece como o que é. Erro disfarçado de
+    recusa do domínio já custou diagnósticos longos sobre defeito que o núcleo nomeava na
+    própria resposta.
 
 ### 1.1 Como cada persona entra
 
@@ -128,9 +135,13 @@
   anônimo.
 - **Não há PIN, senha nem pergunta secreta para a criança, e sem câmera não há entrada.** É a
   imagem que garante que quem faz a atividade é a própria criança, e não um terceiro.
-- **Enquanto o Guerreiro(a) não tem imagem gravada** — onboarding feito sem o responsável —,
-  quem abre a sessão dele é o Mestre ou um Admin, no encontro. Vale igualmente para a falha de
-  reconhecimento e para quem recusou a biometria: a criança resolve com quem está na sala.
+- **Quando a imagem não abre a sessão** — Guerreiro(a) ainda sem imagem gravada, falha de
+  reconhecimento ou recusa da biometria —, quem a abre é um adulto identificado, e **qual
+  adulto depende de onde a criança está**: no encontro, o **Mestre ou um Admin**; fora dele,
+  na App 05, o **responsável**, e **apenas dos Guerreiros e Guerreiras sob a responsabilidade
+  dele**. O responsável entra pelo seu próprio login — social ou usuário e senha —, nunca por
+  credencial da criança. A criança resolve com quem está na sala, e em casa quem está na sala
+  é ele.
 - **Login não cria cadastro.** Conta social ou usuário sem cadastro prévio recebe recusa.
 - **Quem não tem conta Google** recebe uma credencial de **usuário e senha provisória**, criada
   por Admin ou Mestre, com **troca de senha obrigatória no primeiro acesso**. O usuário não
@@ -379,6 +390,12 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
   Sobre **Guerreiro(a)**, a medição só acontece **dentro do onboarding, depois do consentimento
   registrado** — a aplicação nunca tem outra forma de saber que o termo existe. Fora dele, a
   bancada mede apenas quem opera.
+- **Limiar fora do encontro**: na App 05 não há aula nem ponto de apoio, e a câmera é a do
+  aparelho de casa. Vale ali o **limiar mais frouxo entre os pontos de apoio ativos da
+  comunidade do Guerreiro(a)** — o valor é **emprestado**, medido em espaço que não é aquele,
+  e a imprecisão é assumida: em troca, a recusa não tranca a criança fora da aplicação, porque
+  o responsável abre a sessão (§1.1). Sem vínculo vigente, ou sem nenhum ponto de apoio com
+  limiar medido na comunidade, a comparação recusa.
 - **Segurança**: o _template_ é guardado **cifrado**, com a chave de cifragem no **Secret
   Manager**, lida na subida do serviço — a cifra roda no próprio núcleo, sem chamada externa a
   cada entrada, e trocar de hospedagem só troca de onde a chave vem. **Todo acesso ao
@@ -388,7 +405,7 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
   pedido de exclusão deferido e recusa da biometria pelo responsável.
 
 - **Direito de recusa**: quem não autoriza a imagem tem **alternativa equivalente** — nick mais
-  confirmação do Mestre ou de um Admin, **no encontro**, tanto para registrar presença quanto
+  confirmação do adulto que a §1.1 define para cada lugar, tanto para registrar presença quanto
   para entrar nas aplicações. Recusar biometria nunca pode significar exclusão da atividade.
 - **Transparência**: política de privacidade em linguagem simples — para o responsável **e
   para a criança**.
