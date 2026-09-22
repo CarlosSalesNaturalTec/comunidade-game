@@ -43,6 +43,38 @@ const MENSAGEM_DE_RECUSA =
 const MENSAGEM_DE_FALHA_DE_PREPARO =
   "A câmera não pôde ser preparada neste aparelho. Tente de novo ou chame um Mestre ou Admin.";
 
+// A falha que não chega a produzir corpo de erro — rede fora, resposta
+// ilegível. Havendo corpo, quem fala é o núcleo, pela mensagem dele
+// (`RN-04-36`, `RF-01-27`).
+const MENSAGEM_DE_FALHA_DE_COMUNICACAO =
+  "Não foi possível falar com a plataforma. Tente de novo ou chame um Mestre ou Admin.";
+
+// O que roda depois de o núcleo ter reconhecido o rosto: a sessão já abriu no
+// núcleo, e falha aqui NEVER é recusa dele (`RN-04-36`, `RF-04-18`).
+const MENSAGEM_DE_FALHA_APOS_RECONHECIMENTO =
+  "O rosto foi reconhecido, mas a entrada não pôde ser concluída. Tente de novo ou chame um " +
+  "Mestre ou Admin.";
+
+// Nenhuma tentativa termina sem frase: tela muda é a falha silenciosa que a
+// invariante 25 fecha, e não diz causa que não se conhece (`RN-04-36`).
+const MENSAGEM_DE_FALHA_INESPERADA =
+  "Não foi possível concluir a entrada. Tente de novo ou chame um Mestre ou Admin.";
+
+// O código que o núcleo declara na recusa da conferência (`RF-01-27`). É ele,
+// e não o status, que separa a recusa do rosto de sessão expirada e de chave
+// recusada, que são outra coisa (design — decisão 2).
+const CODIGO_DE_RECUSA_DA_CONFERENCIA = "autenticacao_biometrica_invalida";
+
+// Falha de camada aparece pelo que é: a mensagem que o núcleo declarou no
+// corpo único quando há corpo, a frase própria quando não há (`RN-04-36`).
+function mensagemDaFalhaDeCamada(erro: unknown): string {
+  return erro instanceof ErroDaApi ? erro.message : MENSAGEM_DE_FALHA_DE_COMUNICACAO;
+}
+
+function ehRecusaDaConferencia(erro: unknown): boolean {
+  return erro instanceof ErroDaApi && erro.codigo === CODIGO_DE_RECUSA_DA_CONFERENCIA;
+}
+
 // A entrada por nick e imagem entra antes da confirmação humana, que passa
 // a ser a alternativa de quem não tem câmera, de quem a recusa persiste e
 // de quem não tem _template_ (`RF-04-18`, `RF-04-29`, `RN-04-09`, design —
@@ -62,6 +94,9 @@ export function TelaDeEntradaDoGuerreiro({
   const [emAndamento, definirEmAndamento] = useState(false);
   const [recusado, definirRecusado] = useState(false);
   const [falhaDePreparo, definirFalhaDePreparo] = useState(false);
+  // A falha de camada não é recusa do rosto e por isso não vive no mesmo
+  // estado dela: carrega a causa que o núcleo declarou (`RN-04-36`).
+  const [falhaDeCamada, definirFalhaDeCamada] = useState<string | null>(null);
   const [estadoDoLaco, definirEstadoDoLaco] = useState<EstadoDaVivacidade | null>(null);
   const [erroDeConfirmacao, definirErroDeConfirmacao] = useState<string | null>(null);
   const lugarDoVisor = useRef<HTMLDivElement>(null);
@@ -94,36 +129,76 @@ export function TelaDeEntradaDoGuerreiro({
     await entrarComToken(token);
   }
 
+  // Cada desfecho tem tratamento próprio, e nenhum empresta a frase do outro
+  // (`RN-04-36`, invariante 25). São três zonas: a captura local, cujos
+  // desfechos são indistinguíveis da recusa por exigência do `RF-04-20`; a
+  // conferência, em que só o código declarado pelo núcleo é recusa; e o que
+  // roda depois dela, já com o rosto reconhecido.
   async function tentarReconhecimento() {
     definirRecusado(false);
     definirFalhaDePreparo(false);
+    definirFalhaDeCamada(null);
     definirEstadoDoLaco(null);
     definirEmAndamento(true);
     try {
-      const temCamera = await existeCamera();
-      if (!temCamera) {
-        definirTela("confirmando");
-        return;
-      }
-
+      // Sondar a câmera, prepará-la e acoplar o espelho são a mesma zona: o
+      // aparelho que nem chegou a funcionar (`RF-04-65`).
       try {
+        const temCamera = await existeCamera();
+        if (!temCamera) {
+          definirTela("confirmando");
+          return;
+        }
         await prepararCaptura();
+        if (lugarDoVisor.current) acoplarEspelho(lugarDoVisor.current);
       } catch {
         definirFalhaDePreparo(true);
         return;
       }
-      if (lugarDoVisor.current) acoplarEspelho(lugarDoVisor.current);
 
-      const vivacidadeAprovada = await provarVivacidade(definirEstadoDoLaco);
-      if (!vivacidadeAprovada) {
+      // Captura local: vivacidade reprovada e descritor que não saiu dizem à
+      // criança a mesma coisa que a recusa do núcleo, e distingui-los
+      // revelaria o que o `RF-04-20` manda esconder.
+      let descritor: number[];
+      try {
+        const vivacidadeAprovada = await provarVivacidade(definirEstadoDoLaco);
+        if (!vivacidadeAprovada) {
+          definirRecusado(true);
+          return;
+        }
+        descritor = await gerarDescritor();
+      } catch {
         definirRecusado(true);
         return;
       }
-      const descritor = await gerarDescritor();
-      const abertura = await abrirSessaoPorReconhecimento({ nick: nick.trim(), descritor });
-      await registrarPresencaEEntrar(abertura.token, "reconhecimento");
+
+      // Conferência: só o código que o núcleo declara como recusa vira a
+      // frase do rosto. Todo o resto é falha de camada, e aparece pelo que é.
+      let token: string;
+      try {
+        const abertura = await abrirSessaoPorReconhecimento({
+          nick: nick.trim(),
+          descritor,
+          aula_id: aulaId,
+        });
+        token = abertura.token;
+      } catch (erroCapturado) {
+        if (ehRecusaDaConferencia(erroCapturado)) definirRecusado(true);
+        else definirFalhaDeCamada(mensagemDaFalhaDeCamada(erroCapturado));
+        return;
+      }
+
+      // Depois da conferência o rosto já foi reconhecido: o que falhar aqui
+      // NEVER se apresenta como recusa dele.
+      try {
+        await registrarPresencaEEntrar(token, "reconhecimento");
+      } catch {
+        definirFalhaDeCamada(MENSAGEM_DE_FALHA_APOS_RECONHECIMENTO);
+      }
     } catch {
-      definirRecusado(true);
+      // Rede de segurança: nenhum desfecho pode sair desta tela sem frase.
+      // Tela muda é a falha silenciosa que esta change existe para fechar.
+      definirFalhaDeCamada(MENSAGEM_DE_FALHA_INESPERADA);
     } finally {
       encerrarCaptura();
       definirEmAndamento(false);
@@ -232,6 +307,18 @@ export function TelaDeEntradaDoGuerreiro({
         {emAndamento ? "Reconhecendo…" : "Entrar"}
       </Botao>
       {falhaDePreparo && <Aviso tipo="erro">{MENSAGEM_DE_FALHA_DE_PREPARO}</Aviso>}
+      {/* A causa que o núcleo declarou, nunca a frase do rosto (`RN-04-36`). O
+          caminho humano continua oferecido: falha de camada também deixaria o
+          Guerreiro(a) fora da aula, e sem rede a confirmação enfileira a
+          presença (`RN-04-09`, `RF-04-23`). */}
+      {falhaDeCamada && (
+        <>
+          <Aviso tipo="erro">{falhaDeCamada}</Aviso>
+          <Botao variante="secundaria" onClick={() => definirTela("confirmando")}>
+            Chamar Mestre ou Admin
+          </Botao>
+        </>
+      )}
       {recusado && (
         <>
           <Aviso tipo="erro">{MENSAGEM_DE_RECUSA}</Aviso>

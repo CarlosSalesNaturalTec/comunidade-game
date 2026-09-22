@@ -36,6 +36,11 @@ class Operacao(enum.StrEnum):
     cadastro_de_responsavel = "cadastro_de_responsavel"
     vinculo_com_guerreiros_e_guerreiras = "vinculo_com_guerreiros_e_guerreiras"
     confirmacao_de_identidade_do_guerreiro = "confirmacao_de_identidade_do_guerreiro"
+    # Operação **com escopo**: o papel abre a porta, e o vínculo de
+    # responsável vigente diz sobre quem ela se abre. Separada da do Mestre
+    # de propósito — a dele não tem escopo, e fundi-las daria confirmação
+    # irrestrita ao responsável por um descuido de ordem (`RF-01-74`).
+    confirmacao_de_identidade_dos_seus_guerreiros = "confirmacao_de_identidade_dos_seus_guerreiros"
     cadastro_biometrico_do_guerreiro = "cadastro_biometrico_do_guerreiro"
     medicao_do_limiar_do_ponto_de_apoio = "medicao_do_limiar_do_ponto_de_apoio"
     homologacao_da_equipe_da_trilha = "homologacao_da_equipe_da_trilha"
@@ -151,7 +156,12 @@ MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {
     },
     Papel.responsavel: {
         "escreve": frozenset(
-            {Operacao.consentimentos, Operacao.autorizacoes, Operacao.solicitacoes_e_propostas}
+            {
+                Operacao.consentimentos,
+                Operacao.autorizacoes,
+                Operacao.solicitacoes_e_propostas,
+                Operacao.confirmacao_de_identidade_dos_seus_guerreiros,
+            }
         ),
         "le": frozenset({Operacao.guerreiros_sob_sua_responsabilidade, Operacao.publico}),
     },

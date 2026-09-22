@@ -10,6 +10,7 @@ from ..comunidades.regra import abrir_vinculo
 from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada, PisoDeMoedasNaoAlcancado
 from ..fila.modelo import SolicitacaoDeParticipacao
 from ..poder_sustentador.regra import moedas_acumuladas_de
+from ..responsaveis.modelo import VinculoResponsavel
 from ..tempo import agora
 from .modelo import ArtefatoComprobatorio, Credencial, Nick, Papel, Persona, TipoDeCredencial
 
@@ -132,6 +133,41 @@ def buscar_guerreiro_por_nick(sessao: Session, nick: str) -> Persona | None:
         .filter(func.lower(Nick.valor) == nick.strip().lower(), Persona.papel == Papel.guerreiro)
         .first()
     )
+
+
+# Um identificador que não é de ninguém: quando quem confirma não alcança o
+# Guerreiro(a), a consulta do vínculo roda do mesmo jeito, contra ele. Sem
+# isto, o nick alheio custaria uma consulta a mais que o inexistente, e o
+# relógio separaria os dois (`RN-01-58`, `RN-01-22`).
+_GUERREIRO_DE_DESCARTE = uuid.UUID(int=0)
+
+
+def buscar_guerreiro_confirmavel_por(
+    sessao: Session, *, nick: str, quem_confirma: Persona
+) -> Persona | None:
+    """O nick que **quem confirma** pode abrir, e nada além disso.
+
+    Mestre e Admin confirmam qualquer Guerreiro(a) — a autoridade deles é a do
+    encontro. O **responsável** confirma apenas quem está sob a
+    responsabilidade dele, por vínculo de responsável vigente (`RF-01-74`).
+
+    Nick que existe mas está fora do alcance de quem confirma devolve `None`,
+    exatamente como o nick que não existe: distingui-los daria ao responsável
+    um oráculo para descobrir quais nicks existem, que é o que o `RN-01-22`
+    veda. O trabalho é o mesmo nos dois casos, para que o tempo também não os
+    separe (`RN-01-58`).
+    """
+    guerreiro = buscar_guerreiro_por_nick(sessao, nick)
+    if quem_confirma.papel != Papel.responsavel:
+        return guerreiro
+
+    guerreiro_id = guerreiro.id if guerreiro is not None else _GUERREIRO_DE_DESCARTE
+    alcanca = (
+        sessao.query(VinculoResponsavel)
+        .filter_by(responsavel_id=quem_confirma.id, guerreiro_id=guerreiro_id, fim=None)
+        .first()
+    )
+    return guerreiro if alcanca is not None else None
 
 
 _PAPEIS_DE_ADULTO = (Papel.apoiador, Papel.mestre)

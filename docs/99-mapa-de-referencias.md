@@ -337,6 +337,10 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     significado sozinha**: sempre acompanhada de glifo, forma, numeral ou rótulo. **Ponto
     regular, ponto extra e moeda nunca se confundem na tela** — cada um com glifo, ficha e
     rótulo próprios.
+25. **Erro de camada nunca se disfarça de recusa do domínio.** A tela mostra a causa que o
+    núcleo declarou no corpo único de erro; só a recusa que ele declarou como tal vira a frase
+    do domínio. Falha de rede, de validação, de chave ou de preparo do aparelho aparece como o
+    que é. Vale para **toda** aplicação.
 
 ## 7. Como esta documentação deve ser editada
 

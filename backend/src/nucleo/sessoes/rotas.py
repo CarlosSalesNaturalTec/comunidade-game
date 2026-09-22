@@ -20,9 +20,13 @@ from ..erros import (
     CredencialInvalida,
     LoginSemCadastro,
 )
-from ..permissoes import MATRIZ_DE_PERMISSOES, Operacao, exigir_permissao
+from ..permissoes import (
+    MATRIZ_DE_PERMISSOES,
+    Operacao,
+    exigir_qualquer_permissao,
+)
 from ..personas.modelo import Credencial, Papel, Persona, TipoDeCredencial
-from ..personas.regra import buscar_guerreiro_por_nick
+from ..personas.regra import buscar_guerreiro_confirmavel_por
 from ..personas.senha import conferir_senha
 from .modelo import ComoAutenticou, Sessao
 from .social import TokenSocialInvalido, obter_verificador_social
@@ -136,9 +140,11 @@ class AbrirSessaoDeGuerreiroEntrada(BaseModel):
 
     nick: str
     descritor: list[float] = Field(min_length=1)
-    # A aula determina o ponto de apoio, e o ponto de apoio determina o limiar
-    # com que a comparação é feita (`RF-01-73`, design — decisão 3).
-    aula_id: uuid.UUID
+    # **Opcional**, e é a presença dela que escolhe de onde vem o limiar: com
+    # aula, o ponto de apoio dela; sem aula — a entrada fora do encontro, da
+    # App 05 —, a comunidade do vínculo vigente do Guerreiro(a) (`RF-01-73`,
+    # `RN-01-57`).
+    aula_id: uuid.UUID | None = None
 
 
 @roteador.post("/sessoes/guerreiro", status_code=201)
@@ -149,22 +155,27 @@ def abrir_sessao_de_guerreiro(
     configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
 ) -> AberturaDeSessaoSaida:
     """Pública quanto à persona — dispensa credencial, nunca a chave de
-    aplicação (`RF-01-04`, `RF-01-05`). A **aula** informada determina o ponto
-    de apoio, e com ele o limiar (`RF-01-73`); aula de outra comunidade ou não
-    vigente não alcança limiar algum, pelo mesmo laço que o registro de
-    presença já aplica (design — decisão 3).
+    aplicação (`RF-01-04`, `RF-01-05`).
+
+    **Com aula**, ela determina o ponto de apoio, e com ele o limiar
+    (`RF-01-73`); aula de outra comunidade ou não vigente não alcança limiar
+    algum, pelo mesmo laço que o registro de presença já aplica. **Sem aula** —
+    a entrada de fora do encontro —, o limiar vem da comunidade do vínculo
+    vigente do Guerreiro(a), e não há como o pedido alcançar comunidade alheia,
+    porque a busca parte do vínculo dele (`RN-01-57`).
 
     A recusa não diferencia nick inexistente, Guerreiro(a) sem _template_,
-    descritor que não confere, ponto de apoio sem limiar medido e aula que não
-    vale para aquele Guerreiro(a), nem no corpo nem no tempo (`RN-01-22`,
-    `RN-01-56`).
+    descritor que não confere, ponto de apoio sem limiar medido, aula que não
+    vale para aquele Guerreiro(a), Guerreiro(a) sem vínculo vigente e
+    comunidade sem nenhum limiar medido — nem no corpo nem, dentro de cada
+    caminho, no tempo (`RN-01-22`, `RN-01-56`, `RN-01-57`).
     """
     guerreiro = autenticar_por_nick_e_descritor(
         sessao_bd,
         configuracao,
         nick=entrada.nick,
         descritor=entrada.descritor,
-        aula=sessao_bd.get(Aula, entrada.aula_id),
+        aula=sessao_bd.get(Aula, entrada.aula_id) if entrada.aula_id is not None else None,
     )
     if guerreiro is None:
         # O registro de acesso da comparação (RN-01-14) precisa persistir mesmo
@@ -193,22 +204,38 @@ def confirmar_sessao_de_guerreiro(
     entrada: ConfirmarSessaoDeGuerreiroEntrada,
     contexto: Annotated[
         ContextoDaSessao,
-        Depends(exigir_permissao(Operacao.confirmacao_de_identidade_do_guerreiro, "escreve")),
+        Depends(
+            exigir_qualquer_permissao(
+                frozenset(
+                    {
+                        Operacao.confirmacao_de_identidade_do_guerreiro,
+                        Operacao.confirmacao_de_identidade_dos_seus_guerreiros,
+                    }
+                ),
+                "escreve",
+            )
+        ),
     ],
     contexto_da_chave: Annotated[ContextoDaChave, Depends(exigir_chave_de_aplicacao)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
     configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
 ) -> AberturaDeSessaoSaida:
-    """Restrita a Mestre e Admin pela matriz (`RF-01-06`, `RF-01-16`) — a
-    alternativa equivalente para quem não tem _template_, para a falha de
-    reconhecimento e para quem recusou a biometria (`RN-01-16`). Recebe o
-    **nick**, nunca um identificador: resolvê-lo por uma rota de busca
-    abriria o oráculo que `RN-01-22` veda para qualquer persona, adulto
-    autenticado incluído — a recusa por nick inexistente é indistinguível
-    da recusa por nick de outro papel (openspec —
-    esqueleto-da-aula-presencial-e-equipe-da-aula, design — decisão 1.1).
+    """Aberta a Mestre, Admin e **responsável** pela matriz (`RF-01-06`,
+    `RF-01-74`, `RF-01-16`) — a alternativa equivalente para quem não tem
+    _template_, para a falha de reconhecimento e para quem recusou a
+    biometria (`RN-01-16`). Recebe o **nick**, nunca um identificador:
+    resolvê-lo por uma rota de busca abriria o oráculo que `RN-01-22` veda
+    para qualquer persona, adulto autenticado incluído.
+
+    Mestre e Admin confirmam qualquer Guerreiro(a); o responsável, só os que
+    estão sob a responsabilidade dele. As três recusas — nick inexistente,
+    nick de outro papel e nick fora do alcance de quem confirma — são
+    indistinguíveis no corpo e no tempo (`RN-01-22`, `RN-01-58`).
     """
-    guerreiro = buscar_guerreiro_por_nick(sessao_bd, entrada.nick)
+    quem_confirma = sessao_bd.get(Persona, contexto.persona_id)
+    guerreiro = buscar_guerreiro_confirmavel_por(
+        sessao_bd, nick=entrada.nick, quem_confirma=quem_confirma
+    )
     if guerreiro is None:
         raise ConfirmacaoDeGuerreiroRecusada()
 
