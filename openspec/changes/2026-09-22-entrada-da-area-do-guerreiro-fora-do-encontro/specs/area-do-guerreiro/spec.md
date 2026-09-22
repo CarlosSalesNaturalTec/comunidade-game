@@ -116,7 +116,9 @@ não confere: a tela SHALL apresentar a causa pelo que ela é, em linguagem de c
 de erro nem termo técnico. (`RN-05-48`, `RF-01-27`, `RF-05-02`)
 
 O tratamento da recusa SHALL alcançar **apenas a conferência**. O que roda depois dela SHALL ter
-tratamento próprio, porque falha ali acontece com o rosto **já reconhecido**. (`RN-05-48`)
+tratamento próprio, porque falha ali acontece com o rosto **já reconhecido**. Alcança também a
+falha que a camada de sessão **guarda em vez de propagar**: desfecho sem frase na tela é a mesma
+falha silenciosa por outro caminho, e NEVER SHALL acontecer. (`RN-05-48`)
 
 #### Scenario: Erro de validação não vira rosto que não confere
 
@@ -128,6 +130,18 @@ tratamento próprio, porque falha ali acontece com o rosto **já reconhecido**. 
 - **WHEN** a chamada da conferência não chega a obter resposta do núcleo
 - **THEN** a tela diz que não conseguiu falar com a plataforma, e não que a criança não foi
   reconhecida
+
+#### Scenario: Falha depois do reconhecimento não vira recusa
+
+- **WHEN** o núcleo confere o rosto e, em seguida, a abertura da sessão no aparelho não se
+  completa
+- **THEN** a tela diz que o reconhecimento deu certo mas a entrada não terminou, e NEVER que a
+  criança não foi reconhecida
+
+#### Scenario: Nenhuma tentativa termina sem frase
+
+- **WHEN** a entrada falha por um caminho que a camada de sessão guarda em vez de propagar
+- **THEN** a tela ainda assim apresenta um desfecho, e não fica muda
 
 #### Scenario: Nenhum código técnico chega à criança na falha de camada
 

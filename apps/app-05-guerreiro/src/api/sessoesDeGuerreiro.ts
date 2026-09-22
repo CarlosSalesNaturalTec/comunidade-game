@@ -33,6 +33,13 @@ interface AbrirSessaoPorReconhecimentoEntrada {
 // persona — dispensa credencial, nunca a chave de aplicação —, e a recusa
 // não diferencia nick inexistente, Guerreiro(a) sem _template_ e descritor
 // que não confere (`RN-01-22`).
+//
+// **A entrada vai sem aula, de propósito.** A App 05 é usada fora do
+// encontro, em aparelho que não é de ponto de apoio algum: é a ausência da
+// aula que faz o núcleo emprestar o limiar da comunidade do Guerreiro(a)
+// (`RN-01-57`). Mandar uma aula qualquer aqui aplicaria o limiar de um espaço
+// onde a criança não está — a App 01 é que manda a dela, porque lá há
+// encontro (`RF-04-18`).
 export function abrirSessaoPorReconhecimento(
   entrada: AbrirSessaoPorReconhecimentoEntrada,
 ): Promise<AberturaDeSessao> {
