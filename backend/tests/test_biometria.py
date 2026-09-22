@@ -1,5 +1,7 @@
+from datetime import UTC, datetime
+
 import pytest
-from sqlalchemy import text
+from sqlalchemy import event, text
 from sqlalchemy.exc import DBAPIError
 
 from nucleo.biometria.cifra import cifrar_descritor, decifrar_descritor
@@ -7,9 +9,11 @@ from nucleo.biometria.modelo import AcessoAoTemplate, DesfechoDoAcesso, Natureza
 from nucleo.biometria.regra import (
     DIMENSAO_DO_DESCRITOR,
     TIPO_DE_CONSENTIMENTO_BIOMETRIA,
+    _limiar_fora_do_encontro,
     autenticar_por_nick_e_descritor,
     gravar_ou_recadastrar_template,
 )
+from nucleo.comunidades.modelo import VinculoJogador
 from nucleo.configuracao import Configuracao
 from nucleo.erros import AcessoAoTemplateImutavel, ErroDeValidacao
 from nucleo.personas.modelo import Credencial, Papel, TipoDeCredencial
@@ -454,3 +458,139 @@ def test_tipo_de_consentimento_biometrico_e_string_estavel():
     `biometria`, um dos dois do conjunto fechado que `TipoDeConsentimento`
     define (`RN-13-06`)."""
     assert TIPO_DE_CONSENTIMENTO_BIOMETRIA == "biometria"
+
+
+class TestLimiarDaComunidadeForaDoEncontro:
+    """`RN-01-57`: fora do encontro não há aula nem ponto de apoio, e o limiar
+    vem da comunidade do vínculo vigente do Guerreiro(a)."""
+
+    @staticmethod
+    def _contar_consultas(sessao, executar):
+        """Conta as idas ao banco de uma comparação. É a medida do que a
+        indistinguibilidade do `RN-01-22` protege: um número que caísse quando
+        o nick não existe, ou que crescesse com o tamanho da comunidade,
+        deixaria sondar nick pelo relógio."""
+        consultas = []
+        conexao = sessao.connection()
+
+        def _registrar(*_args, **_kwargs):
+            consultas.append(1)
+
+        event.listen(conexao.engine, "before_cursor_execute", _registrar)
+        try:
+            executar()
+        finally:
+            event.remove(conexao.engine, "before_cursor_execute", _registrar)
+        return len(consultas)
+
+    def test_a_resolucao_do_limiar_custa_o_mesmo_em_toda_causa(
+        self,
+        sessao,
+        criar_persona,
+        criar_comunidade,
+        criar_ponto_de_apoio,
+        criar_medicao_do_limiar,
+    ):
+        """`RN-01-57`, `RN-01-22`: resolver o limiar de fora do encontro custa
+        **duas** consultas, exista o Guerreiro(a) ou não, tenha ele vínculo ou
+        não, tenha a comunidade medição ou não.
+
+        É o que a minha parte deste caminho pode garantir. O número **total**
+        de consultas da comparação ainda difere entre nick que existe e nick
+        que não existe, porque a leitura da persona, a da credencial e o
+        registro de auditoria não acontecem para quem não existe — assimetria
+        anterior a esta fatia, e que a auditoria torna inevitável: não há linha
+        de acesso a gravar para um Guerreiro(a) que não há.
+        """
+        admin = criar_persona(Papel.admin)
+        comunidade_medida = criar_comunidade(nome="Medida")
+        ponto = criar_ponto_de_apoio(admin, comunidade_medida)
+        criar_medicao_do_limiar(ponto, admin, limiar=8.0)
+
+        com_limiar = criar_persona(Papel.guerreiro, comunidade=comunidade_medida)
+        sem_medicao = criar_persona(Papel.guerreiro, comunidade=criar_comunidade(nome="Crua"))
+        sem_vinculo = criar_persona(Papel.guerreiro)
+        sessao.query(VinculoJogador).filter_by(
+            guerreiro_id=sem_vinculo.id, data_fim=None
+        ).one().data_fim = datetime.now(UTC)
+        sessao.commit()
+
+        contagens = [
+            self._contar_consultas(sessao, lambda g=guerreiro: _limiar_fora_do_encontro(sessao, g))
+            for guerreiro in (com_limiar, sem_medicao, sem_vinculo, None)
+        ]
+
+        assert contagens == [2, 2, 2, 2], contagens
+
+    def test_o_numero_de_consultas_nao_separa_as_causas_entre_nicks_que_existem(
+        self,
+        sessao,
+        configuracao,
+        criar_persona,
+        criar_nick,
+        criar_comunidade,
+        criar_template_biometrico,
+    ):
+        """`RN-01-58`, `RN-01-22`: vínculo encerrado e comunidade sem medição
+        custam o mesmo, de ponta a ponta."""
+        comunidade = criar_comunidade()
+        sem_medicao = criar_persona(Papel.guerreiro, comunidade=comunidade)
+        criar_nick(sem_medicao, "Sem_medicao")
+        criar_template_biometrico(sem_medicao, DESCRITOR)
+
+        sem_vinculo = criar_persona(Papel.guerreiro)
+        sessao.query(VinculoJogador).filter_by(
+            guerreiro_id=sem_vinculo.id, data_fim=None
+        ).one().data_fim = datetime.now(UTC)
+        sessao.commit()
+        criar_nick(sem_vinculo, "Sem_vinculo")
+        criar_template_biometrico(sem_vinculo, DESCRITOR)
+
+        contagens = [
+            self._contar_consultas(
+                sessao,
+                lambda nick=nick: autenticar_por_nick_e_descritor(
+                    sessao, configuracao, nick=nick, descritor=DESCRITOR, aula=None
+                ),
+            )
+            for nick in ("Sem_medicao", "Sem_vinculo")
+        ]
+
+        assert contagens[0] == contagens[1], contagens
+
+    def test_o_numero_de_consultas_nao_cresce_com_a_comunidade(
+        self,
+        sessao,
+        configuracao,
+        criar_persona,
+        criar_nick,
+        criar_comunidade,
+        criar_template_biometrico,
+        criar_ponto_de_apoio,
+        criar_medicao_do_limiar,
+    ):
+        """`RN-01-57`: resolver o mais frouxo é **uma** ida ao banco, tenha a
+        comunidade um ponto de apoio ou cinco."""
+        admin = criar_persona(Papel.admin)
+        magra = criar_comunidade(nome="Magra")
+        gorda = criar_comunidade(nome="Gorda")
+        for comunidade, quantos in ((magra, 1), (gorda, 5)):
+            for indice in range(quantos):
+                ponto = criar_ponto_de_apoio(admin, comunidade, nome=f"Ponto {indice}")
+                criar_medicao_do_limiar(ponto, admin, limiar=8.0)
+
+        contagens = []
+        for comunidade, nick in ((magra, "Da_magra"), (gorda, "Da_gorda")):
+            guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+            criar_nick(guerreiro, nick)
+            criar_template_biometrico(guerreiro, descritor_de_teste(9.0))
+            contagens.append(
+                self._contar_consultas(
+                    sessao,
+                    lambda nick=nick: autenticar_por_nick_e_descritor(
+                        sessao, configuracao, nick=nick, descritor=DESCRITOR, aula=None
+                    ),
+                )
+            )
+
+        assert contagens[0] == contagens[1], contagens

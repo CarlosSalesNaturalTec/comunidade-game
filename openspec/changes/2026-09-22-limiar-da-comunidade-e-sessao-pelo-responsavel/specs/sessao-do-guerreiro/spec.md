@@ -70,8 +70,10 @@ medido**. A resposta SHALL orientar a chamar o Mestre. O núcleo SHALL NOT expor
 parcial ou sugestão de nick em qualquer rota desta capacidade. (`RF-01-04`, `RN-01-22`,
 `RN-01-56`, `RN-01-57`, PRD-01 §§9, 12)
 
-O trabalho feito SHALL ser o mesmo nas sete causas, no caminho com aula e no caminho sem ela:
-a indistinguibilidade alcança o **tempo**, não só o corpo da resposta. (`RN-01-22`, `RN-01-57`)
+**Dentro de cada caminho** — com aula e sem ela —, o trabalho feito SHALL ser o mesmo em
+todas as causas: a indistinguibilidade alcança o **tempo**, não só o corpo da resposta. É o
+que impede sondar nicks pelo relógio. Entre um caminho e o outro o trabalho difere, e não há o
+que esconder ali: quem chama já sabe se mandou aula. (`RN-01-22`, `RN-01-57`)
 
 #### Scenario: Nick que não existe
 
@@ -109,10 +111,11 @@ a indistinguibilidade alcança o **tempo**, não só o corpo da resposta. (`RN-0
 - **THEN** o núcleo responde 401 indistinguível dos demais casos, sem dizer que a medição é que
   falta
 
-#### Scenario: O tempo da resposta não separa o caminho com aula do caminho sem ela
+#### Scenario: No caminho sem aula, o tempo não separa as causas da recusa
 
-- **WHEN** se comparam os tempos de resposta das recusas nos dois caminhos
-- **THEN** o trabalho feito é equivalente, e o tempo não revela qual deles foi percorrido
+- **WHEN** se comparam as recusas sem aula de dois nicks que existem — um com vínculo encerrado,
+  outro com a comunidade sem medição
+- **THEN** o trabalho feito é o mesmo nos dois, e o tempo não revela qual delas ocorreu
 
 ### Requirement: Mestre, Admin ou responsável abre a sessão por confirmação humana
 

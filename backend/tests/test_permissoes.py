@@ -64,6 +64,9 @@ _TABELA_DO_PRD_01_PAR_4 = {
             Operacao.consentimentos,
             Operacao.autorizacoes,
             Operacao.solicitacoes_e_propostas,
+            # `RF-01-74`: operação **com escopo** — o papel abre a porta, e o
+            # vínculo de responsável vigente diz sobre quem ela se abre.
+            Operacao.confirmacao_de_identidade_dos_seus_guerreiros,
         },
         "le": {Operacao.guerreiros_sob_sua_responsabilidade, Operacao.publico},
     },

@@ -5,9 +5,11 @@ from functools import lru_cache
 from math import sqrt
 from random import Random
 
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula, SituacaoDaAula
+from ..comunidades.modelo import VinculoJogador
 from ..configuracao import Configuracao
 from ..consentimentos.modelo import DecisaoDeConsentimento, TipoDeConsentimento
 from ..consentimentos.regra import consultar_consentimento_vigente_em
@@ -177,6 +179,45 @@ def consultar_limiar_vigente(sessao: Session, *, ponto_de_apoio_id: uuid.UUID) -
     return medicao.limiar if medicao is not None else None
 
 
+def consultar_limiar_da_comunidade(
+    sessao: Session, *, comunidade_virtual_id: uuid.UUID
+) -> float | None:
+    """O limiar que vale **fora do encontro**: o **maior** entre os vigentes dos
+    pontos de apoio **ativos** da comunidade — o mais frouxo deles (`RN-01-57`,
+    documento 03 §3.3, decisão do fundador, 2026-09-21).
+
+    O valor é **emprestado**: foi medido em espaço que não é o daquela câmera. O
+    maior é o que não tranca a criança fora da aplicação, porque quem a recusa
+    alcança é o responsável, que abre a sessão (documento 03 §1.1). Ponto de
+    apoio inativo NÃO entra na conta: espaço que a comunidade encerrou não
+    empresta número.
+
+    Resolve em **uma** ida ao banco, de propósito: um número de consultas que
+    crescesse com o tamanho da comunidade, ou que caísse quando ela não existe,
+    deixaria sondar nick pelo relógio (`RN-01-22`).
+    """
+    vigentes = (
+        select(
+            MedicaoDoLimiar.limiar.label("limiar"),
+            func.row_number()
+            .over(
+                partition_by=MedicaoDoLimiar.ponto_de_apoio_id,
+                order_by=MedicaoDoLimiar.registrado_em.desc(),
+            )
+            .label("ordem"),
+        )
+        .join(PontoDeApoio, PontoDeApoio.id == MedicaoDoLimiar.ponto_de_apoio_id)
+        .where(
+            PontoDeApoio.comunidade_virtual_id == comunidade_virtual_id,
+            PontoDeApoio.ativo.is_(True),
+        )
+        .subquery()
+    )
+    return sessao.execute(
+        select(func.max(vigentes.c.limiar)).where(vigentes.c.ordem == 1)
+    ).scalar_one_or_none()
+
+
 def consultar_limiares_por_ponto_de_apoio(
     sessao: Session,
 ) -> list[tuple[PontoDeApoio, MedicaoDoLimiar | None]]:
@@ -267,6 +308,38 @@ def _aula_vale_para(guerreiro: Persona | None, aula: Aula | None) -> bool:
     return vinculo is not None and vinculo.comunidade_virtual_id == aula.comunidade_virtual_id
 
 
+# Um identificador que não é de ninguém, para o caminho sem aula consultar o
+# vínculo mesmo quando o nick não existe: sem isto, o Guerreiro(a) inexistente
+# faria uma consulta a menos que o existente, e o relógio separaria os dois
+# (`RN-01-22`, design — decisão 3).
+_PERSONA_DE_DESCARTE = uuid.UUID(int=0)
+
+
+def _limiar_do_encontro(sessao: Session, guerreiro: Persona | None, aula: Aula) -> float | None:
+    """O caminho de dentro do encontro: a aula dá o ponto de apoio, e ele o
+    limiar. Aula que não vale para aquele Guerreiro(a) não alcança limiar algum
+    (`RF-01-73`, `RN-01-56`)."""
+    if not _aula_vale_para(guerreiro, aula):
+        return None
+    return consultar_limiar_vigente(sessao, ponto_de_apoio_id=aula.ponto_de_apoio_id)
+
+
+def _limiar_fora_do_encontro(sessao: Session, guerreiro: Persona | None) -> float | None:
+    """O caminho de fora do encontro: a comunidade do vínculo vigente empresta o
+    mais frouxo dos seus limiares (`RN-01-57`).
+
+    São **duas** consultas, sempre — o vínculo e o limiar —, qualquer que seja a
+    causa da recusa. Guerreiro(a) que não existe consulta o vínculo de uma
+    persona de descarte, e comunidade que não existe consulta o limiar de uma
+    comunidade de descarte: nick inexistente, vínculo encerrado e comunidade sem
+    medição custam o mesmo (`RN-01-22`).
+    """
+    persona_id = guerreiro.id if guerreiro is not None else _PERSONA_DE_DESCARTE
+    vinculo = sessao.query(VinculoJogador).filter_by(guerreiro_id=persona_id, data_fim=None).first()
+    comunidade_id = vinculo.comunidade_virtual_id if vinculo is not None else _PERSONA_DE_DESCARTE
+    return consultar_limiar_da_comunidade(sessao, comunidade_virtual_id=comunidade_id)
+
+
 def autenticar_por_nick_e_descritor(
     sessao: Session,
     configuracao: Configuracao,
@@ -300,9 +373,9 @@ def autenticar_por_nick_e_descritor(
     )
 
     limiar = (
-        consultar_limiar_vigente(sessao, ponto_de_apoio_id=aula.ponto_de_apoio_id)
-        if aula is not None and _aula_vale_para(guerreiro, aula)
-        else None
+        _limiar_do_encontro(sessao, guerreiro, aula)
+        if aula is not None
+        else _limiar_fora_do_encontro(sessao, guerreiro)
     )
 
     distancia = _distancia_euclidiana(descritor, template_para_comparar)

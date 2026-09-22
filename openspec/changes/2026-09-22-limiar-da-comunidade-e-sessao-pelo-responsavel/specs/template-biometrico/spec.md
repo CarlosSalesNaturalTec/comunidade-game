@@ -26,9 +26,11 @@ conta. Guerreiro(a) **sem vínculo vigente**, e comunidade **sem nenhum ponto de
 medido**, SHALL fazer a comparação recusar, de forma indistinguível das demais.
 (`RN-01-57`, `RN-01-56`, `RN-01-22`, documento 03 §3.3, decisão do fundador, 2026-09-21)
 
-O trabalho da comparação SHALL ser equivalente nos dois caminhos, inclusive quando ela recusa:
-a indistinguibilidade do `RN-01-22` alcança o tempo, e um caminho que responda mais depressa que
-o outro revela por qual deles o pedido passou. (`RN-01-22`, `RN-01-57`)
+A **resolução do limiar** fora do encontro SHALL custar o mesmo qualquer que seja o desfecho —
+Guerreiro(a) inexistente, vínculo encerrado, comunidade sem medição ou comparação que confere —
+e SHALL NOT variar com **quantos** pontos de apoio a comunidade tem. Um custo que crescesse com
+a comunidade, ou que caísse quando o nick não existe, deixaria sondar nick pelo relógio.
+(`RN-01-22`, `RN-01-57`)
 
 Toda comparação SHALL continuar sendo auditada, inclusive a que recusa por ausência de limiar.
 (`RN-01-14`)
