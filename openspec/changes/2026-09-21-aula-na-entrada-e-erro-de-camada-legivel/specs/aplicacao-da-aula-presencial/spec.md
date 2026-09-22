@@ -84,11 +84,15 @@ Persistindo a falha, a aplicação SHALL encaminhar à **confirmação de Mestre
 NEVER SHALL encerrar o atendimento deixando o Guerreiro(a) fora da aula. (`RF-04-20`,
 `RN-01-22`, `RN-01-56`, `RN-04-09`, PRD-04 §5.5)
 
-Essa frase SHALL valer **apenas** para a recusa que o núcleo declarou como tal. Erro que o
-núcleo declara no corpo único — validação, chave, freio por origem — e falha que não chega a
-ele, como a de rede, NEVER SHALL ser apresentado como recusa do reconhecimento: a tela SHALL
-apresentar a causa declarada, pelo que ela é. Disfarçar falha de camada de rosto que não
-confere esconde defeito que o núcleo já nomeou na resposta. (`RN-04-36`, `RF-01-27`)
+A mesma frase SHALL valer para os desfechos da **captura local** que dizem à criança a mesma
+coisa — vivacidade reprovada e descritor que o aparelho não conseguiu gerar —, porque distingui-
+los revelaria o que o `RF-04-20` manda esconder.
+
+O que essa frase NEVER SHALL cobrir é a **falha de camada**: erro que o núcleo declara no corpo
+único — validação, chave, freio por origem — e falha que não chega a ele, como a de rede. Nesses
+casos a tela SHALL apresentar a causa declarada, pelo que ela é. Disfarçar falha de camada de
+rosto que não confere esconde defeito que o núcleo já nomeou na resposta. (`RN-04-36`,
+`RF-01-27`)
 
 O tratamento da recusa SHALL alcançar **apenas a conferência**. O que roda depois dela —
 leitura de quem entrou, registro da presença e abertura da sessão local — SHALL ter tratamento

@@ -26,6 +26,11 @@ export function confirmarSessaoDeGuerreiro(
 interface AbrirSessaoPorReconhecimentoEntrada {
   nick: string;
   descritor: number[];
+  /** A aula do encontro, herdada da sessão de trabalho do aparelho: é ela
+   * que determina o ponto de apoio e, com ele, o limiar da comparação
+   * (`RF-04-18`, `RF-01-73`). Nunca é digitada nem escolhida por quem
+   * opera. */
+  aula_id: string;
 }
 
 // Reconhecimento facial: nick digitado e descritor gerado no aparelho —
