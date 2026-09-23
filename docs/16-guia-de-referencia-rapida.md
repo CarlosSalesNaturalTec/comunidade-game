@@ -147,7 +147,7 @@ entrega da produção da missão e o momento de troca por recompensa avulsa.
 ## 5. Guerreiro(a) — App 05, Minha Área
 
 Entra por **nick e rosto**. Sem template gravado, ou quando o reconhecimento falha, um Mestre
-ou Admin em sessão confirma pelo nick e a sessão abre igual.
+ou Admin em sessão confirma pelo nick e pelo próprio PIN, e a sessão abre igual.
 
 Abas: Coleta do território · Minha carteira · Trilha · Desafios e equipes.
 

@@ -125,7 +125,8 @@ dentro da mesma sessão de trabalho do aparelho.
 
 ### 5.1 Abrir a sessão de trabalho do aparelho
 
-1. O Mestre ou o Admin abre o App 01 no aparelho do ponto de apoio e autentica-se.
+1. O Mestre ou o Admin abre o App 01 no aparelho do ponto de apoio e autentica-se; o aparelho
+   recebe o verificador do PIN dele, para confirmar identidade sem rede.
 2. A aplicação consulta as **aulas vigentes** para a data e a hora correntes.
 3. Não havendo nenhuma, ela avisa em uma frase que não há aula agendada e **não abre**.
 4. Havendo **uma**, ela assume a comunidade daquela aula e segue.
@@ -190,8 +191,10 @@ dentro da mesma sessão de trabalho do aparelho.
 ### 5.5 Falha de identificação
 
 1. Não reconhecida a imagem, a aplicação **não diz se o nick existe** e oferece nova tentativa.
-2. Persistindo a falha, ela chama o Mestre ou o Admin, que **confirma a identidade** da criança
-   e registra a presença, com o nome de quem confirmou.
+2. Persistindo a falha, ela chama o Mestre ou o Admin que abriu a sessão de trabalho, que vem
+   até a criança, **confirma a identidade** dela digitando o próprio **PIN** e registra a
+   presença, com o nome de quem confirmou. A sessão de trabalho aberta no aparelho, sozinha,
+   não confirma ninguém.
 3. Captura ruim ou imagem que envelheceu: o Mestre ou o Admin recadastra a imagem de
    referência, e a substituição fica registrada.
 4. Em nenhuma hipótese a falha deixa o Guerreiro(a) fora da aula.
@@ -199,8 +202,9 @@ dentro da mesma sessão de trabalho do aparelho.
 ### 5.6 Rede fora
 
 1. Caindo a rede, a aplicação avisa na tela que está operando **sem conexão**.
-2. A **presença** continua sendo registrada: o Mestre ou o Admin confirma a criança pelo nick e
-   o registro entra na **fila local**.
+2. A **presença** continua sendo registrada: o Mestre ou o Admin que abriu a sessão de trabalho
+   confirma a criança pelo nick e pelo próprio PIN, conferido no aparelho, e o registro entra
+   na **fila local**.
 3. **Cadastro novo e reconhecimento facial ficam indisponíveis** enquanto não houver rede —
    nenhuma imagem de criança fica guardada no aparelho compartilhado.
 4. Voltando a rede, a fila sincroniza sozinha, preservando **a hora do fato**, não a do envio.
@@ -268,42 +272,42 @@ dentro da mesma sessão de trabalho do aparelho.
 
 ### 6.1 Onboarding e presença
 
-| ID         | Requisito                                                                                                                                                           | Prioridade |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-04-01` | Tela inicial oferece a escolha entre onboarding e trilhas e, no onboarding, entre áudio e texto                                                                     | essencial  |
-| `RF-04-02` | Aplicação abre somente dentro da janela de uma aula agendada para a data e a hora correntes                                                                         | essencial  |
-| `RF-04-03` | Havendo mais de uma aula vigente, a aplicação pergunta uma única vez em qual comunidade opera                                                                       | essencial  |
-| `RF-04-04` | Aplicação verifica a presença de câmera e bloqueia a captura da imagem quando não há, sem bloquear o onboarding                                                     | essencial  |
-| `RF-04-05` | Sessão de trabalho do aparelho é aberta por Mestre ou Admin autenticado                                                                                             | essencial  |
-| `RF-04-06` | IA conduz a conversa aceitando respostas fora de ordem, repetindo e confirmando cada dado                                                                           | essencial  |
-| `RF-04-07` | Cadastro coleta nome, nick, forma de tratamento, data de nascimento ou idade e características do avatar                                                            | essencial  |
-| `RF-04-08` | Aplicação recusa nick já existente e sugere variações antes de concluir o cadastro                                                                                  | essencial  |
-| `RF-04-09` | Idade fora da faixa de 6 a 16 anos interrompe o cadastro e aciona o Mestre ou o Admin                                                                               | essencial  |
-| `RF-04-10` | Aplicação vincula o novo cadastro à comunidade da aula vigente, sem perguntá-la                                                                                     | essencial  |
-| `RF-04-11` | Termo de consentimento é exibido na tela e lido em voz alta na modalidade áudio                                                                                     | essencial  |
-| `RF-04-12` | Mestre ou Admin confirma na aplicação a assinatura do termo impresso e fica registrado como testemunha                                                              | essencial  |
-| `RF-04-13` | Captura da imagem só ocorre depois do registro do consentimento, com o responsável presente                                                                         | essencial  |
-| `RF-04-14` | Fotografia original é descartada assim que o _template_ biométrico é gerado, sem sair do aparelho                                                                   | essencial  |
-| `RF-04-48` | Aparelho gera o _template_ no navegador, na ordem prova de vivacidade e descritor facial, e envia ao núcleo só o descritor                                          | essencial  |
-| `RF-04-64` | Tela da captura mostra o visor ao vivo da câmera, confirma por retorno abstrato o rosto enquadrado e a vivacidade, e detecta em laço até aprovar ou esgotar o tempo | essencial  |
-| `RF-04-65` | Falha de preparo da câmera ou dos modelos aparece na tela distinta da reprovação de vivacidade, e a captura conclui em aparelho sem aceleração gráfica              | essencial  |
-| `RF-04-15` | Cadastro sem o responsável é criado ativo e sem imagem, com registro de quem confirmou                                                                              | essencial  |
-| `RF-04-16` | Aplicação captura a imagem do Guerreiro(a) já cadastrado assim que o responsável aprova a participação                                                              | essencial  |
-| `RF-04-17` | Novo cadastro nasce ativo e registra a presença do dia no mesmo ato                                                                                                 | essencial  |
-| `RF-04-18` | Guerreiro(a) já cadastrado informa o nick, captura a imagem e tem a presença registrada automaticamente                                                             | essencial  |
-| `RF-04-19` | Presença já registrada no mesmo encontro não é duplicada                                                                                                            | essencial  |
-| `RF-04-20` | Falha de identificação oferece nova tentativa sem revelar se o nick existe                                                                                          | essencial  |
-| `RF-04-21` | Mestre ou Admin confirma a identidade e registra a presença quando a identificação falha, com registro de quem confirmou                                            | essencial  |
-| `RF-04-22` | Mestre ou Admin recadastra a imagem de referência a partir da própria aplicação                                                                                     | desejável  |
-| `RF-04-63` | Mestre ou Admin mede no aparelho a distância entre descritores capturados, para calibrar o limiar de comparação; descritor e imagem nunca saem do aparelho          | desejável  |
-| `RF-04-66` | A medição corre em duas séries — mesma pessoa dá o piso, pessoas diferentes dão o teto —, propõe o limiar e o grava no ponto de apoio da aula após confirmação      | essencial  |
-| `RF-04-23` | Sem rede, a presença confirmada pelo Mestre ou Admin entra em fila local e sincroniza depois                                                                        | essencial  |
-| `RF-04-24` | Sem rede, cadastro novo e reconhecimento facial ficam indisponíveis, com aviso na tela — o descritor nasce no aparelho, mas a comparação é no núcleo                | essencial  |
-| `RF-04-25` | Sincronização preserva a hora do fato, não a do envio, e não duplica registro reenviado                                                                             | essencial  |
-| `RF-04-26` | Aplicação exibe aviso discreto do que coleta, com acesso à área detalhada de direitos, incluindo a medição do limiar                                                | essencial  |
-| `RF-04-27` | Aplicação encerra a conversa dizendo ao Guerreiro(a) como ele entrará da próxima vez                                                                                | desejável  |
-| `RF-04-28` | Aplicação volta à tela inicial ao fim de cada atendimento, pronta para o próximo que chegar                                                                         | essencial  |
-| `RF-04-60` | Cadastro do responsável mínimo no encontro coleta o **grau de parentesco** do vínculo com o Guerreiro(a)                                                            | essencial  |
+| ID         | Requisito                                                                                                                                                                                        | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `RF-04-01` | Tela inicial oferece a escolha entre onboarding e trilhas e, no onboarding, entre áudio e texto                                                                                                  | essencial  |
+| `RF-04-02` | Aplicação abre somente dentro da janela de uma aula agendada para a data e a hora correntes                                                                                                      | essencial  |
+| `RF-04-03` | Havendo mais de uma aula vigente, a aplicação pergunta uma única vez em qual comunidade opera                                                                                                    | essencial  |
+| `RF-04-04` | Aplicação verifica a presença de câmera e bloqueia a captura da imagem quando não há, sem bloquear o onboarding                                                                                  | essencial  |
+| `RF-04-05` | Sessão de trabalho do aparelho é aberta por Mestre ou Admin autenticado                                                                                                                          | essencial  |
+| `RF-04-06` | IA conduz a conversa aceitando respostas fora de ordem, repetindo e confirmando cada dado                                                                                                        | essencial  |
+| `RF-04-07` | Cadastro coleta nome, nick, forma de tratamento, data de nascimento ou idade e características do avatar                                                                                         | essencial  |
+| `RF-04-08` | Aplicação recusa nick já existente e sugere variações antes de concluir o cadastro                                                                                                               | essencial  |
+| `RF-04-09` | Idade fora da faixa de 6 a 16 anos interrompe o cadastro e aciona o Mestre ou o Admin                                                                                                            | essencial  |
+| `RF-04-10` | Aplicação vincula o novo cadastro à comunidade da aula vigente, sem perguntá-la                                                                                                                  | essencial  |
+| `RF-04-11` | Termo de consentimento é exibido na tela e lido em voz alta na modalidade áudio                                                                                                                  | essencial  |
+| `RF-04-12` | Mestre ou Admin confirma na aplicação a assinatura do termo impresso e fica registrado como testemunha                                                                                           | essencial  |
+| `RF-04-13` | Captura da imagem só ocorre depois do registro do consentimento, com o responsável presente                                                                                                      | essencial  |
+| `RF-04-14` | Fotografia original é descartada assim que o _template_ biométrico é gerado, sem sair do aparelho                                                                                                | essencial  |
+| `RF-04-48` | Aparelho gera o _template_ no navegador, na ordem prova de vivacidade e descritor facial, e envia ao núcleo só o descritor                                                                       | essencial  |
+| `RF-04-64` | Tela da captura mostra o visor ao vivo da câmera, confirma por retorno abstrato o rosto enquadrado e a vivacidade, e detecta em laço até aprovar ou esgotar o tempo                              | essencial  |
+| `RF-04-65` | Falha de preparo da câmera ou dos modelos aparece na tela distinta da reprovação de vivacidade, e a captura conclui em aparelho sem aceleração gráfica                                           | essencial  |
+| `RF-04-15` | Cadastro sem o responsável é criado ativo e sem imagem, com registro de quem confirmou                                                                                                           | essencial  |
+| `RF-04-16` | Aplicação captura a imagem do Guerreiro(a) já cadastrado assim que o responsável aprova a participação                                                                                           | essencial  |
+| `RF-04-17` | Novo cadastro nasce ativo e registra a presença do dia no mesmo ato                                                                                                                              | essencial  |
+| `RF-04-18` | Guerreiro(a) já cadastrado informa o nick, captura a imagem e tem a presença registrada automaticamente                                                                                          | essencial  |
+| `RF-04-19` | Presença já registrada no mesmo encontro não é duplicada                                                                                                                                         | essencial  |
+| `RF-04-20` | Falha de identificação oferece nova tentativa sem revelar se o nick existe                                                                                                                       | essencial  |
+| `RF-04-21` | Mestre ou Admin confirma a identidade e registra a presença quando a identificação falha, o adulto que abriu a sessão de trabalho digitando o próprio PIN no ato, com registro de quem confirmou | essencial  |
+| `RF-04-22` | Mestre ou Admin recadastra a imagem de referência a partir da própria aplicação                                                                                                                  | desejável  |
+| `RF-04-63` | Mestre ou Admin mede no aparelho a distância entre descritores capturados, para calibrar o limiar de comparação; descritor e imagem nunca saem do aparelho                                       | desejável  |
+| `RF-04-66` | A medição corre em duas séries — mesma pessoa dá o piso, pessoas diferentes dão o teto —, propõe o limiar e o grava no ponto de apoio da aula após confirmação                                   | essencial  |
+| `RF-04-23` | Sem rede, a presença confirmada pelo nick e pelo PIN do Mestre ou Admin que abriu a sessão de trabalho, conferido no aparelho, entra em fila local e sincroniza depois                           | essencial  |
+| `RF-04-24` | Sem rede, cadastro novo e reconhecimento facial ficam indisponíveis, com aviso na tela — o descritor nasce no aparelho, mas a comparação é no núcleo                                             | essencial  |
+| `RF-04-25` | Sincronização preserva a hora do fato, não a do envio, e não duplica registro reenviado                                                                                                          | essencial  |
+| `RF-04-26` | Aplicação exibe aviso discreto do que coleta, com acesso à área detalhada de direitos, incluindo a medição do limiar                                                                             | essencial  |
+| `RF-04-27` | Aplicação encerra a conversa dizendo ao Guerreiro(a) como ele entrará da próxima vez                                                                                                             | desejável  |
+| `RF-04-28` | Aplicação volta à tela inicial ao fim de cada atendimento, pronta para o próximo que chegar                                                                                                      | essencial  |
+| `RF-04-60` | Cadastro do responsável mínimo no encontro coleta o **grau de parentesco** do vínculo com o Guerreiro(a)                                                                                         | essencial  |
 
 ### 6.2 Trilhas e equipes
 
@@ -387,6 +391,8 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RN-04-34` | O visor ao vivo da câmera é permitido; o quadro capturado nunca volta à tela, antes ou depois do descritor                                                                                                                                    | 12         | 03 §3.3       |
 | `RN-04-35` | A medição só conclui com no mínimo 8 capturas de piso e 8 de teto, estas de ao menos 2 pessoas, e maior piso menor que menor teto; séries que se sobrepõem não gravam limiar, e o valor proposto é o ponto médio entre os dois                | 12         | 03 §3.3       |
 | `RN-04-36` | Erro que o núcleo declara no corpo único nunca é apresentado como recusa do reconhecimento: falha de rede, de validação, de chave ou de preparo do aparelho aparece como o que é, e só a recusa declarada pelo núcleo vira a frase do domínio | 25         | 03 §1         |
+| `RN-04-37` | A sessão de trabalho aberta no aparelho não confirma identidade: só quem a abriu confirma, e só com o próprio PIN digitado no ato                                                                                                             | —          | 03 §1.1       |
+| `RN-04-38` | O aparelho guarda só o verificador do PIN de quem abriu a sessão de trabalho, nunca o PIN; cinco erros seguidos o bloqueiam ali até novo login Google                                                                                         | —          | 03 §§1.1, 3.4 |
 
 ## 8. Modelo de dados
 
@@ -445,16 +451,19 @@ cadastro direto; a recusa por nick em uso é onde o nick é conferido, e devolve
 corpo, até três variações já testadas contra todo papel (documento 09, 2026-08-21 e
 2026-08-24).
 
-| Método | Rota                             | Autenticação     | Uso nesta aplicação                                              |
-| ------ | -------------------------------- | ---------------- | ---------------------------------------------------------------- |
-| GET    | `/v1/aulas/vigentes`             | pública          | Descobrir a aula e a comunidade do momento                       |
-| POST   | `/v1/guerreiros`                 | sessão do App 01 | Criar o cadastro, já vinculado à comunidade da aula              |
-| POST   | `/v1/responsaveis`               | sessão do App 01 | Cadastrar o responsável mínimo — só o nome (`RF-04-60`)          |
-| POST   | `/v1/responsaveis/{id}/vinculos` | sessão do App 01 | Vincular o responsável ao Guerreiro(a), com o grau de parentesco |
-| POST   | `/v1/consentimentos`             | sessão do App 01 | Registrar o termo assinado, com testemunha, data e hora          |
-| POST   | `/v1/guerreiros/{id}/descritor`  | sessão do App 01 | Enviar o descritor gerado no aparelho, que vira _template_       |
-| POST   | `/v1/aulas/{id}/presencas`       | sessão do App 01 | Registrar presença, por reconhecimento ou confirmação            |
-| POST   | `/v1/sessoes/guerreiro`          | pública          | Conferir nick e imagem na chegada de quem já é cadastrado        |
+| Método | Rota                                    | Autenticação     | Uso nesta aplicação                                                                                      |
+| ------ | --------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------- |
+| GET    | `/v1/aulas/vigentes`                    | pública          | Descobrir a aula e a comunidade do momento                                                               |
+| POST   | `/v1/guerreiros`                        | sessão do App 01 | Criar o cadastro, já vinculado à comunidade da aula                                                      |
+| POST   | `/v1/responsaveis`                      | sessão do App 01 | Cadastrar o responsável mínimo — só o nome (`RF-04-60`)                                                  |
+| POST   | `/v1/responsaveis/{id}/vinculos`        | sessão do App 01 | Vincular o responsável ao Guerreiro(a), com o grau de parentesco                                         |
+| POST   | `/v1/consentimentos`                    | sessão do App 01 | Registrar o termo assinado, com testemunha, data e hora                                                  |
+| POST   | `/v1/guerreiros/{id}/descritor`         | sessão do App 01 | Enviar o descritor gerado no aparelho, que vira _template_                                               |
+| POST   | `/v1/aulas/{id}/presencas`              | sessão do App 01 | Registrar presença, por reconhecimento ou confirmação                                                    |
+| POST   | `/v1/sessoes/guerreiro`                 | pública          | Conferir nick e imagem na chegada de quem já é cadastrado                                                |
+| POST   | `/v1/sessoes/guerreiro/confirmacao`     | sessão do App 01 | Confirmar a identidade pelo nick e pelo PIN de quem confirma (`RF-04-21`)                                |
+| GET    | `/v1/eu/pin-de-confirmacao/verificador` | sessão do App 01 | Receber, ao abrir a sessão de trabalho, o verificador do PIN de quem a abriu (`RF-04-23`)                |
+| POST   | `/v1/aulas/{id}/presencas/sem-rede`     | sessão do App 01 | Sincronizar a presença confirmada sem rede, pelo nick e pela hora do fato, sem abrir sessão (`RF-04-23`) |
 
 Rotas do caminho das trilhas, todas autenticadas na **sessão do Guerreiro(a)**:
 
@@ -662,6 +671,7 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 | A produção entregue no App 01 é da equipe — um registro só, válido para todos os integrantes                     | 02 §5, 03 §4.2 | A produção entregue no App 01 é da equipe                             |
 | A fatia 9 entrega a `ProducaoDaMissao` inteira; a fatia 7 do PRD-05 só acrescenta a porta individual             | PRD-05 §8      | A fatia 9 do PRD-04 entrega a `ProducaoDaMissao` inteira              |
 | O corpus do assistente é a missão da atividade corrente e as de posição anterior na trilha, nunca uma à frente   | 03 §4.2        | O corpus do assistente de trilhas é a missão corrente e as anteriores |
+| Confirmação de identidade exige o PIN de 4 dígitos de quem confirma; sem rede, conferido no aparelho             | 03 §§1.1, 3.4  | Confirmação de identidade no encontro exige o PIN do adulto           |
 
 A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do termo** ao
 `Consentimento` do PRD-01, e o acompanhamento do anexo pendente à App 03 (PRD-02).
@@ -718,6 +728,11 @@ séries porque é a folga entre elas que diz se existe limiar viável; sem folga
 certo a gravar. Ponto de apoio sem limiar medido não reconhece ninguém, e é a App 03 que torna
 essa ausência visível — sem ela, a decisão criaria mais uma falha silenciosa neste mesmo
 caminho.
+
+A linha do **PIN de confirmação** é decisão nova do fundador, em 2026-09-23, elicitada em
+`/opsx:explore`: o botão "Chamar Mestre ou Admin" só trocava de tela, e a confirmação saía com o
+token de quem destravou o aparelho — qualquer pessoa digitava o nick de outra criança, entrava em
+equipe e pontuava por ela. O PIN prova que o adulto está ao lado da criança no ato.
 
 ## 14. Pendências que permanecem
 
@@ -777,3 +792,4 @@ a **forma do aviso** da exclusão do _template_, que acontece na App 07, com a d
 | `RF-04-66` e `RN-04-35` | 03 §3.3 (limiar medido por ponto de apoio)                |
 | `RF-04-64` e `RF-04-65` | 03 §3.3 (visor ao vivo, imagem capturada nunca exibida)   |
 | `RN-04-36`              | 03 §1 (erro declarado pelo núcleo chega como ele é)       |
+| `RN-04-37` e `RN-04-38` | 03 §§1.1, 3.4 (PIN de confirmação do adulto)              |
