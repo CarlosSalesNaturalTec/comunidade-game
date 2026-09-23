@@ -1,8 +1,6 @@
 import { ErroDaApi } from "comum/api";
-import { eu } from "comum/autenticacao/api";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { registrarPresenca } from "../api/presencas";
-import { confirmarSessaoDeGuerreiro } from "../api/sessoesDeGuerreiro";
+import { registrarPresencaSemRede } from "../api/presencas";
 import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import {
   type ItemDaFilaDePresenca,
@@ -14,25 +12,18 @@ function chaveDoItem(item: ItemDaFilaDePresenca): string {
   return `${item.nick}::${item.momento_do_fato}`;
 }
 
-// Refaz, por item, a sequência que a entrada por confirmação já usa hoje —
-// nenhuma rota nova, nenhum contrato novo (design — decisão 7): abre uma
-// sessão de Guerreiro(a) que ninguém usará, lê `GET /v1/eu` para o
-// identificador e registra a presença com a hora do fato original. O token
-// aberto nunca é gravado — expira sozinho.
+// Cada item vai pela rota da presença sem rede, que grava pelo nick e nunca
+// abre sessão de Guerreiro(a): o PIN já foi conferido no aparelho, contra o
+// verificador de quem abriu a sessão de trabalho, na hora da chegada
+// (`RF-04-23`, `RN-04-38`, design — decisão 6).
 async function sincronizarItem(
   item: ItemDaFilaDePresenca,
   tokenDeTrabalho: string,
 ): Promise<"sincronizado" | "falha_de_rede" | "falha_de_dado"> {
   try {
-    const abertura = await confirmarSessaoDeGuerreiro(item.nick, tokenDeTrabalho);
-    const quemSou = await eu(abertura.token);
-    await registrarPresenca(
+    await registrarPresencaSemRede(
       item.aula_id,
-      {
-        guerreiro_id: quemSou.persona_id,
-        modo: "confirmacao",
-        momento_do_fato: item.momento_do_fato,
-      },
+      { nick: item.nick, momento_do_fato: item.momento_do_fato },
       tokenDeTrabalho,
     );
     removerDaFilaDePresenca(item);

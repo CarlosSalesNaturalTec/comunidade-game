@@ -1,3 +1,4 @@
+import { ErroDaApi } from "comum/api";
 import { ProvedorDeSessao, useSessao } from "comum/autenticacao";
 import { Aviso, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
@@ -5,6 +6,12 @@ import { type AulaVigente, listarAulasVigentes } from "../api/aulas";
 import { listarCatalogoAvulso } from "../api/catalogoAvulso";
 import { buscarNomeDaComunidade } from "../api/comunidades";
 import { TelaInicial } from "../inicio/TelaInicial";
+import {
+  apagarEstadoDoPin,
+  buscarVerificadorDoPin,
+  estadoDoPinDe,
+  guardarVerificadorDoPin,
+} from "../pin/pinDeConfirmacao";
 import { ProvedorDeEstadoDeRede, useEstadoDeRede } from "./EstadoDeRede";
 import { TelaDeEntradaDeTrabalho } from "./TelaDeEntradaDeTrabalho";
 
@@ -64,6 +71,8 @@ function ConteudoDoAparelho() {
   const [momentoDeTrocaAberto, definirMomentoDeTrocaAberto] = useState(false);
   const [abrindoMomentoDeTroca, definirAbrindoMomentoDeTroca] = useState(false);
   const [erroDeAberturaDaTroca, definirErroDeAberturaDaTroca] = useState<string | null>(null);
+  const [semPinCadastrado, definirSemPinCadastrado] = useState(false);
+  const { semRede } = useEstadoDeRede();
 
   useEffect(() => {
     if (sessao?.papel === "guerreiro") {
@@ -71,6 +80,42 @@ function ConteudoDoAparelho() {
       sair();
     }
   }, [sessao, sair]);
+
+  // O verificador do PIN de quem abriu a sessão de trabalho chega com ela e
+  // sai com ela — é o que deixa confirmar sem rede. O PIN nunca vem. Sem PIN
+  // cadastrado, o aparelho abre mesmo assim e avisa (`RN-04-38`, PRD-04 §5.1,
+  // design — decisão 7).
+  useEffect(() => {
+    if (restaurando) return;
+    if (!sessao || sessao.papel === "guerreiro") {
+      apagarEstadoDoPin();
+      definirSemPinCadastrado(false);
+      return;
+    }
+    const guardado = estadoDoPinDe(sessao.persona_id);
+    if (guardado?.verificador) {
+      definirSemPinCadastrado(false);
+      return;
+    }
+    if (semRede) return;
+    let cancelado = false;
+    buscarVerificadorDoPin(sessao.token)
+      .then((verificador) => {
+        if (cancelado) return;
+        guardarVerificadorDoPin(sessao.persona_id, verificador);
+        definirSemPinCadastrado(false);
+      })
+      .catch((erro) => {
+        if (cancelado) return;
+        if (erro instanceof ErroDaApi && erro.codigo === "pin_nao_cadastrado") {
+          guardarVerificadorDoPin(sessao.persona_id, null);
+          definirSemPinCadastrado(true);
+        }
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, [sessao, restaurando, semRede]);
 
   // Relida ao abrir a sessão de trabalho e a cada volta à tela inicial —
   // `voltarAoInicio`, em `TelaInicial`, chama esta mesma função de novo
@@ -209,6 +254,13 @@ function ConteudoDoAparelho() {
 
   return (
     <ProvedorDeSessao chaveDeArmazenamento={CHAVE_DE_SESSAO_DO_GUERREIRO}>
+      {semPinCadastrado && (
+        <Aviso tipo="atencao">
+          Você ainda não tem PIN de confirmação. Sem ele, não dá para confirmar a identidade de
+          quem o reconhecimento não identificou. O Mestre cadastra o PIN na App 09, e o Admin,
+          na App 03.
+        </Aviso>
+      )}
       <TelaInicial
         tokenDeTrabalho={sessao.token}
         personaIdDeTrabalho={sessao.persona_id}

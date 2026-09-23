@@ -78,7 +78,7 @@ class PainelDoDiaSaida(BaseModel):
     comunidade_virtual_id: uuid.UUID | None
     ponto_de_apoio_id: uuid.UUID | None
     presencas: list[PresencaDoPainelSaida] = Field(default_factory=list)
-    aguardando_aparelho: list[GuerreiroDoPainelSaida] = Field(default_factory=list)
+    sem_equipe: list[GuerreiroDoPainelSaida] = Field(default_factory=list)
     equipes: list[EquipeDoPainelSaida] = Field(default_factory=list)
     atividades_previstas: list[AtividadePrevistaSaida] = Field(default_factory=list)
     recursos_providos: list[RecursoProvidoSaida] = Field(default_factory=list)
@@ -126,7 +126,7 @@ def _presencas(sessao: Session, aula_id: uuid.UUID) -> list[PresencaDoPainelSaid
     ]
 
 
-def _aguardando_aparelho(sessao: Session, aula_id: uuid.UUID) -> list[GuerreiroDoPainelSaida]:
+def _sem_equipe(sessao: Session, aula_id: uuid.UUID) -> list[GuerreiroDoPainelSaida]:
     """Presente na aula e ainda sem equipe formada nela — lista derivada,
     sem entidade nem fila explícita (`RF-02-43`)."""
     ja_em_equipe = (
@@ -296,7 +296,7 @@ def montar_painel_do_dia(sessao: Session, *, operador: Persona) -> PainelDoDiaSa
         comunidade_virtual_id=aula.comunidade_virtual_id,
         ponto_de_apoio_id=aula.ponto_de_apoio_id,
         presencas=_presencas(sessao, aula.id),
-        aguardando_aparelho=_aguardando_aparelho(sessao, aula.id),
+        sem_equipe=_sem_equipe(sessao, aula.id),
         equipes=_equipes(sessao, aula.id),
         atividades_previstas=_atividades_previstas(sessao, aula.id),
         recursos_providos=_recursos_providos(sessao, aula.id),

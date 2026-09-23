@@ -19,6 +19,15 @@ import {
 } from "../api/sessoesDeGuerreiro";
 import { Visor } from "../captura/Visor";
 import { enfileirarPresenca } from "../fila/filaDePresenca";
+import {
+  FORMATO_DO_PIN,
+  marcarPinBloqueado,
+  pinBloqueadoNoAparelho,
+  pinConfereNoAparelho,
+  registrarErroDePin,
+  verificadorGuardado,
+  zerarErrosDePin,
+} from "../pin/pinDeConfirmacao";
 import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 
 interface Props {
@@ -65,6 +74,25 @@ const MENSAGEM_DE_FALHA_INESPERADA =
 // recusada, que são outra coisa (design — decisão 2).
 const CODIGO_DE_RECUSA_DA_CONFERENCIA = "autenticacao_biometrica_invalida";
 
+// A recusa do PIN de quem confirma, conferido antes do nick — a frase nunca
+// diz nada da criança (`RN-04-37`, `RN-01-22`).
+const MENSAGEM_DE_PIN_ERRADO = "PIN errado. Digite de novo o PIN de quem abriu o aparelho.";
+const MENSAGEM_DE_PIN_BLOQUEADO =
+  "PIN bloqueado neste aparelho depois de cinco erros seguidos. Para confirmar de novo, " +
+  "entre outra vez pelo Google.";
+const MENSAGEM_DE_PIN_NAO_CADASTRADO =
+  "Quem abriu o aparelho ainda não tem PIN de confirmação. O Mestre cadastra na App 09, e o " +
+  "Admin, na App 03.";
+const MENSAGEM_SEM_VERIFICADOR_SEM_REDE =
+  "Sem rede, a confirmação confere o PIN no aparelho, e este aparelho foi aberto sem PIN " +
+  "cadastrado. Cadastre o PIN e abra o aparelho de novo com rede.";
+
+const MENSAGENS_DO_PIN: Record<string, string> = {
+  pin_recusado: MENSAGEM_DE_PIN_ERRADO,
+  pin_bloqueado: MENSAGEM_DE_PIN_BLOQUEADO,
+  pin_nao_cadastrado: MENSAGEM_DE_PIN_NAO_CADASTRADO,
+};
+
 // Falha de camada aparece pelo que é: a mensagem que o núcleo declarou no
 // corpo único quando há corpo, a frase própria quando não há (`RN-04-36`).
 function mensagemDaFalhaDeCamada(erro: unknown): string {
@@ -90,6 +118,10 @@ export function TelaDeEntradaDoGuerreiro({
   const { entrarComToken } = useSessao();
   const { semRede } = useEstadoDeRede();
   const [nick, definirNick] = useState("");
+  // O PIN vive só neste estado, limpo a cada tentativa, e nunca é gravado no
+  // aparelho (`RN-04-38`).
+  const [pin, definirPin] = useState("");
+  const [bloqueado, definirBloqueado] = useState(pinBloqueadoNoAparelho);
   const [tela, definirTela] = useState<Tela>("entrada");
   const [emAndamento, definirEmAndamento] = useState(false);
   const [recusado, definirRecusado] = useState(false);
@@ -98,7 +130,9 @@ export function TelaDeEntradaDoGuerreiro({
   // estado dela: carrega a causa que o núcleo declarou (`RN-04-36`).
   const [falhaDeCamada, definirFalhaDeCamada] = useState<string | null>(null);
   const [estadoDoLaco, definirEstadoDoLaco] = useState<EstadoDaVivacidade | null>(null);
-  const [erroDeConfirmacao, definirErroDeConfirmacao] = useState<string | null>(null);
+  const [erroDeConfirmacao, definirErroDeConfirmacao] = useState<string | null>(() =>
+    pinBloqueadoNoAparelho() ? MENSAGEM_DE_PIN_BLOQUEADO : null,
+  );
   const lugarDoVisor = useRef<HTMLDivElement>(null);
 
   // Grava a presença no mesmo ato em que a sessão abre, sempre com o token
@@ -205,30 +239,74 @@ export function TelaDeEntradaDoGuerreiro({
     }
   }
 
+  function bloquear() {
+    marcarPinBloqueado();
+    definirBloqueado(true);
+    definirErroDeConfirmacao(MENSAGEM_DE_PIN_BLOQUEADO);
+  }
+
+  // Só quem abriu a sessão de trabalho confirma, e só com o próprio PIN
+  // digitado no ato — a sessão de trabalho sozinha não confirma ninguém
+  // (`RF-04-21`, `RN-04-37`). O PIN sai do estado a cada tentativa.
   async function confirmar() {
     definirErroDeConfirmacao(null);
-    // Sem rede, a presença não se perde: entra na fila local do aparelho e
-    // sincroniza sozinha depois — nunca abre sessão nem tenta a chamada
-    // (`RF-04-23`, `RN-04-12`, `RN-04-13`, design — decisões 7, 8).
+    const pinDigitado = pin;
+    definirPin("");
+    if (pinBloqueadoNoAparelho()) {
+      bloquear();
+      return;
+    }
+    // Sem rede, a presença não se perde: o PIN é conferido no aparelho,
+    // contra o verificador de quem abriu a sessão de trabalho, e só então a
+    // presença entra na fila — nunca abre sessão nem tenta a chamada
+    // (`RF-04-23`, `RN-04-38`, `RN-04-12`, `RN-04-13`).
     if (semRede) {
-      enfileirarPresenca({
-        aula_id: aulaId,
-        nick: nick.trim(),
-        momento_do_fato: new Date().toISOString(),
-      });
-      definirTela("presencaEnfileirada");
+      const verificador = verificadorGuardado();
+      if (!verificador) {
+        definirErroDeConfirmacao(MENSAGEM_SEM_VERIFICADOR_SEM_REDE);
+        return;
+      }
+      definirEmAndamento(true);
+      try {
+        if (!(await pinConfereNoAparelho(pinDigitado, verificador))) {
+          if (registrarErroDePin()) {
+            bloquear();
+          } else {
+            definirErroDeConfirmacao(MENSAGEM_DE_PIN_ERRADO);
+          }
+          return;
+        }
+        zerarErrosDePin();
+        enfileirarPresenca({
+          aula_id: aulaId,
+          nick: nick.trim(),
+          momento_do_fato: new Date().toISOString(),
+        });
+        definirTela("presencaEnfileirada");
+      } finally {
+        definirEmAndamento(false);
+      }
       return;
     }
     definirEmAndamento(true);
     try {
-      const abertura = await confirmarSessaoDeGuerreiro(nick.trim(), tokenDeTrabalho);
+      const abertura = await confirmarSessaoDeGuerreiro(
+        nick.trim(),
+        pinDigitado,
+        tokenDeTrabalho,
+      );
+      zerarErrosDePin();
       await registrarPresencaEEntrar(abertura.token, "confirmacao");
     } catch (erroCapturado) {
-      definirErroDeConfirmacao(
-        erroCapturado instanceof ErroDaApi
-          ? erroCapturado.message
-          : "Não foi possível confirmar. Tente novamente.",
-      );
+      if (erroCapturado instanceof ErroDaApi && erroCapturado.codigo === "pin_bloqueado") {
+        bloquear();
+      } else if (erroCapturado instanceof ErroDaApi) {
+        definirErroDeConfirmacao(
+          MENSAGENS_DO_PIN[erroCapturado.codigo] ?? erroCapturado.message,
+        );
+      } else {
+        definirErroDeConfirmacao("Não foi possível confirmar. Tente novamente.");
+      }
     } finally {
       definirEmAndamento(false);
     }
@@ -270,16 +348,28 @@ export function TelaDeEntradaDoGuerreiro({
       <Moldura>
         <Cabecalho
           titulo="Quem está chegando?"
-          subtitulo="A criança diz o nick, e um Mestre ou Admin confirma quem ela é."
+          subtitulo="A criança diz o nick, e quem abriu o aparelho confirma com o próprio PIN."
           acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }}
         />
         {semRedeNaEntrada && (
           <Aviso tipo="atencao">
-            Sem rede, a entrada por reconhecimento facial não funciona. Confirme pelo nick.
+            Sem rede, a entrada por reconhecimento facial não funciona. Confirme pelo nick e
+            pelo PIN.
           </Aviso>
         )}
         <Campo rotulo="Nick" valor={nick} aoAlterar={definirNick} />
-        <Botao onClick={confirmar} desabilitado={emAndamento || nick.trim().length === 0}>
+        <Campo
+          rotulo="PIN de quem confirma"
+          tipo="password"
+          valor={pin}
+          aoAlterar={(valor) => definirPin(valor.replace(/\D/g, "").slice(0, 4))}
+        />
+        <Botao
+          onClick={confirmar}
+          desabilitado={
+            bloqueado || emAndamento || nick.trim().length === 0 || !FORMATO_DO_PIN.test(pin)
+          }
+        >
           {emAndamento ? "Confirmando…" : "Confirmar identidade"}
         </Botao>
         {erroDeConfirmacao && <Aviso tipo="erro">{erroDeConfirmacao}</Aviso>}

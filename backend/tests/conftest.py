@@ -225,6 +225,7 @@ def configuracao(tmp_path):
         argon2_memoria_kib=8,
         argon2_iteracoes=1,
         argon2_paralelismo=1,
+        pin_iteracoes=1_000,
         armazenamento_diretorio_local=str(tmp_path / "armazenamento"),
         armazenamento_diretorio_sessoes_locais=str(tmp_path / "armazenamento-sessoes"),
     )
@@ -323,6 +324,7 @@ def app(sessao, configuracao):
     from nucleo.painel_do_dia.rotas import roteador as roteador_de_painel_do_dia
     from nucleo.patrimonio.rotas import roteador as roteador_de_patrimonio
     from nucleo.personas.rotas import roteador as roteador_de_personas
+    from nucleo.pin_de_confirmacao.rotas import roteador as roteador_de_pin_de_confirmacao
     from nucleo.poder_sustentador.rotas import roteador as roteador_de_poder_sustentador
     from nucleo.poderes.rotas import roteador as roteador_de_poderes
     from nucleo.ponto_extra.rotas import roteador as roteador_de_ponto_extra
@@ -355,6 +357,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, _montar_roteador_de_teste())
     incluir_roteador_de_dados(aplicacao, roteador_de_personas)
     incluir_roteador_de_dados(aplicacao, roteador_de_sessoes)
+    incluir_roteador_de_dados(aplicacao, roteador_de_pin_de_confirmacao)
     incluir_roteador_de_dados(aplicacao, roteador_de_responsaveis)
     incluir_roteador_de_dados(aplicacao, roteador_de_evolucao)
     incluir_roteador_de_dados(aplicacao, roteador_de_biometria)

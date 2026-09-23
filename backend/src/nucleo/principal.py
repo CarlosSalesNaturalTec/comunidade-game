@@ -46,6 +46,7 @@ from .ods.rotas import roteador as roteador_de_ods
 from .painel_do_dia.rotas import roteador as roteador_de_painel_do_dia
 from .patrimonio.rotas import roteador as roteador_de_patrimonio
 from .personas.rotas import roteador as roteador_de_personas
+from .pin_de_confirmacao.rotas import roteador as roteador_de_pin_de_confirmacao
 from .poder_sustentador.rotas import roteador as roteador_de_poder_sustentador
 from .poderes.rotas import roteador as roteador_de_poderes
 from .ponto_extra.rotas import roteador as roteador_de_ponto_extra
@@ -196,6 +197,7 @@ def incluir_roteador_de_dados(app: FastAPI, roteador: APIRouter) -> None:
 app = criar_app()
 incluir_roteador_de_dados(app, roteador_de_personas)
 incluir_roteador_de_dados(app, roteador_de_sessoes)
+incluir_roteador_de_dados(app, roteador_de_pin_de_confirmacao)
 incluir_roteador_de_dados(app, roteador_de_responsaveis)
 incluir_roteador_de_dados(app, roteador_de_evolucao)
 incluir_roteador_de_dados(app, roteador_de_biometria)

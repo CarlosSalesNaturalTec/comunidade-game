@@ -7,18 +7,20 @@ interface AberturaDeSessao {
   papel: Papel;
 }
 
-// Confirmação humana: o Mestre ou Admin em sessão de trabalho confere a
-// identidade pelo nick que o Guerreiro(a) informou. O núcleo resolve o
-// nick internamente e nunca devolve, nem exige, um identificador de
-// persona — só abre a sessão ou recusa (`RF-04-29`, `RN-01-22`, design —
-// decisão 1.1).
+// Confirmação humana: o Mestre ou Admin que abriu a sessão de trabalho
+// confere a identidade pelo nick que o Guerreiro(a) informou e pelo próprio
+// PIN, digitado no ato — a sessão de trabalho sozinha não confirma
+// (`RF-04-21`, `RN-04-37`). O núcleo confere o PIN antes do nick, resolve o
+// nick internamente e nunca devolve, nem exige, um identificador de persona
+// — só abre a sessão ou recusa (`RF-04-29`, `RN-01-22`).
 export function confirmarSessaoDeGuerreiro(
   nick: string,
+  pin: string,
   tokenDeTrabalho: string,
 ): Promise<AberturaDeSessao> {
   return chamarNucleo<AberturaDeSessao>("/v1/sessoes/guerreiro/confirmacao", {
     metodo: "POST",
-    corpo: { nick },
+    corpo: { nick, pin },
     token: tokenDeTrabalho,
   });
 }

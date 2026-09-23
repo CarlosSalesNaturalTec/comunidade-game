@@ -33,3 +33,25 @@ export function registrarPresenca(
     token: tokenDeTrabalho,
   });
 }
+
+interface RegistrarPresencaSemRedeEntrada {
+  nick: string;
+  momento_do_fato: string;
+}
+
+// A presença que entrou na fila sem rede, com o PIN já conferido no
+// aparelho: o núcleo a grava pelo nick, com quem abriu a sessão de trabalho
+// como confirmador, e nunca abre sessão do Guerreiro(a) — a sincronização
+// não abre o que a queda não abriu (`RF-04-23`, `RN-04-38`, design —
+// decisão 6).
+export function registrarPresencaSemRede(
+  aulaId: string,
+  entrada: RegistrarPresencaSemRedeEntrada,
+  tokenDeTrabalho: string,
+): Promise<PresencaRegistrada> {
+  return chamarNucleo<PresencaRegistrada>(`/v1/aulas/${aulaId}/presencas/sem-rede`, {
+    metodo: "POST",
+    corpo: entrada,
+    token: tokenDeTrabalho,
+  });
+}

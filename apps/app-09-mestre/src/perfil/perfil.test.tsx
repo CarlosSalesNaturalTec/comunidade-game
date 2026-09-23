@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -22,6 +22,7 @@ vi.mock("../direitos/ContextoDeDireitos", async () => {
 });
 
 import { useSessao } from "comum/autenticacao";
+import * as autenticacaoApi from "comum/autenticacao/api";
 
 const SESSAO_DE_MESTRE: SessaoAberta = {
   token: "token-do-mestre",
@@ -261,5 +262,31 @@ describe("cadastro de Mestre", () => {
     expect(screen.queryByLabelText(/^nome$/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/^e-mail$/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/^papel$/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("PIN de confirmação do Mestre (RF-09-121)", () => {
+  it("o perfil oferece o cadastro do PIN e o envia digitado duas vezes", async () => {
+    configurarSessao();
+    vi.spyOn(perfilApi, "lerIdentidade").mockResolvedValue(IDENTIDADE_VAZIA);
+    vi.spyOn(perfilApi, "listarArtefatos").mockResolvedValue([]);
+    vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
+      persona_id: "mestre-1",
+      papel: "mestre",
+      permissoes: {},
+      tem_pin_de_confirmacao: false,
+    });
+    const cadastrar = vi
+      .spyOn(autenticacaoApi, "cadastrarPinDeConfirmacao")
+      .mockResolvedValue(undefined);
+
+    render(<TelaDoPerfil />);
+    const usuario = userEvent.setup();
+    expect(await screen.findByText(/ainda não tem pin cadastrado/i)).toBeInTheDocument();
+    await usuario.type(screen.getByLabelText(/^pin \(4 dígitos\)/i), "4821");
+    await usuario.type(screen.getByLabelText(/repita o pin/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /cadastrar pin/i }));
+
+    await waitFor(() => expect(cadastrar).toHaveBeenCalledWith("token-do-mestre", "4821"));
   });
 });

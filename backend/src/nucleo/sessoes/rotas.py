@@ -18,6 +18,7 @@ from ..erros import (
     AutenticacaoBiometricaInvalida,
     ConfirmacaoDeGuerreiroRecusada,
     CredencialInvalida,
+    ErroDeValidacao,
     LoginSemCadastro,
 )
 from ..permissoes import (
@@ -28,6 +29,8 @@ from ..permissoes import (
 from ..personas.modelo import Credencial, Papel, Persona, TipoDeCredencial
 from ..personas.regra import buscar_guerreiro_confirmavel_por
 from ..personas.senha import conferir_senha
+from ..pin_de_confirmacao.regra import conferir_pin_da_sessao
+from ..pin_de_confirmacao.rotas import APLICACAO_DO_ENCONTRO
 from .modelo import ComoAutenticou, Sessao
 from .social import TokenSocialInvalido, obter_verificador_social
 from .token import calcular_resumo, gerar_token
@@ -197,6 +200,9 @@ class ConfirmarSessaoDeGuerreiroEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     nick: str = Field(min_length=1)
+    # Exigido só no encontro — chave do App 01, Mestre ou Admin —; a App 05
+    # segue sem PIN (`RF-01-06`, `RN-01-59`, design — decisão 4).
+    pin: str | None = Field(default=None, pattern=r"^[0-9]{4}$")
 
 
 @roteador.post("/sessoes/guerreiro/confirmacao", status_code=201)
@@ -233,6 +239,21 @@ def confirmar_sessao_de_guerreiro(
     indistinguíveis no corpo e no tempo (`RN-01-22`, `RN-01-58`).
     """
     quem_confirma = sessao_bd.get(Persona, contexto.persona_id)
+    # No encontro, confirma só quem abriu a sessão de trabalho, e só com o
+    # próprio PIN — conferido antes do nick, para que a recusa de PIN nunca
+    # revele se o nick existe (`RN-04-37`, `RN-01-59`, `RN-01-22`).
+    if contexto_da_chave.aplicacao == APLICACAO_DO_ENCONTRO and quem_confirma.papel in (
+        Papel.mestre,
+        Papel.admin,
+    ):
+        if entrada.pin is None:
+            raise ErroDeValidacao("O PIN de quem confirma é obrigatório.", campo="pin")
+        conferir_pin_da_sessao(
+            sessao_bd,
+            persona=quem_confirma,
+            sessao=sessao_bd.get(Sessao, contexto.sessao_id),
+            pin=entrada.pin,
+        )
     guerreiro = buscar_guerreiro_confirmavel_por(
         sessao_bd, nick=entrada.nick, quem_confirma=quem_confirma
     )
@@ -265,6 +286,7 @@ class EuSaida(BaseModel):
     papel: Papel
     permissoes: dict[str, list[str]]
     divulgacao_autorizada: bool | None = None
+    tem_pin_de_confirmacao: bool | None = None
 
 
 @roteador.get("/eu", response_model_exclude_none=True)
@@ -280,9 +302,16 @@ def eu(
     divulgacao_autorizada = None
     if contexto.papel == Papel.guerreiro:
         divulgacao_autorizada = autorizacao_de_divulgacao_vigente(sessao_bd, contexto.persona_id)
+    # Só para quem confirma no encontro: as telas das Apps 09 e 03 dizem se já
+    # há PIN, sem nunca mostrá-lo (`RF-09-121`, `RF-02-110`, design — decisão 8).
+    tem_pin_de_confirmacao = None
+    if contexto.papel in (Papel.mestre, Papel.admin):
+        persona = sessao_bd.get(Persona, contexto.persona_id)
+        tem_pin_de_confirmacao = persona.pin_verificador is not None
     return EuSaida(
         persona_id=contexto.persona_id,
         papel=contexto.papel,
         permissoes={acesso: sorted(operacoes) for acesso, operacoes in matriz_do_papel.items()},
         divulgacao_autorizada=divulgacao_autorizada,
+        tem_pin_de_confirmacao=tem_pin_de_confirmacao,
     )

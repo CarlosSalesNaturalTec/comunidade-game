@@ -54,8 +54,10 @@ troca). Isso seria decisão nova.
    `pin_bloqueado` vindo do núcleo também liga a marca local.
 8. **Rotas do PIN pelo `/v1/eu`**: `PUT /v1/eu/pin-de-confirmacao` e
    `GET /v1/eu/pin-de-confirmacao/verificador`. O `GET /v1/eu` ganha `tem_pin_de_confirmacao`,
-   um booleano, que as telas das Apps 09 e 03 usam para dizer se já há PIN. A permissão entra
-   na matriz como uma operação nova, só para Mestre e Admin.
+   um booleano, que as telas das Apps 09 e 03 usam para dizer se já há PIN. A permissão reusa
+   `confirmacao_de_identidade_do_guerreiro`, que só Mestre e Admin têm: o PIN serve só a esse
+   ato, e uma operação nova mudaria o `/v1/eu` de todos os papéis. A tela do PIN é uma só, em
+   `comum/autenticacao`, usada pelas duas aplicações.
 9. **O rótulo "Sem equipe" vai até o contrato**: o campo `aguardando_aparelho` do painel
    (`painel_do_dia/regra.py`, `apps/app-03-gestao/src/painel-do-dia/api.ts`) passa a se chamar
    `sem_equipe`. O único consumidor é a App 03, que muda no mesmo PR.

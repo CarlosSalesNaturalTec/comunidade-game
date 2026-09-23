@@ -1,5 +1,5 @@
-import { ProvedorDeSessao, useSessao } from "comum/autenticacao";
-import { NavegacaoDeAreas } from "comum/react";
+import { ProvedorDeSessao, SecaoDoPinDeConfirmacao, useSessao } from "comum/autenticacao";
+import { Cabecalho, Moldura, NavegacaoDeAreas } from "comum/react";
 import { useState } from "react";
 import { TelaDoAcervo } from "./acervo/TelaDoAcervo";
 import { TelaDaAgenda } from "./agenda/TelaDaAgenda";
@@ -38,7 +38,8 @@ type Area =
   | "lancamentos"
   | "quiz"
   | "encerramento-de-ciclo"
-  | "direitos";
+  | "direitos"
+  | "meu-pin";
 
 const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "comunidades", rotulo: "Comunidades" },
@@ -60,7 +61,11 @@ const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "direitos", rotulo: "Direitos e dados" },
 ];
 
-const CHAVES_DE_AREA = new Set<string>(AREAS.map((item) => item.chave));
+// O PIN de confirmação do Admin é cadastrado aqui; o do Mestre, na App 09
+// (`RF-02-110`, `RF-09-121`).
+const AREA_DO_PIN: { chave: Area; rotulo: string } = { chave: "meu-pin", rotulo: "Meu PIN" };
+
+const CHAVES_DE_AREA = new Set<string>([...AREAS, AREA_DO_PIN].map((item) => item.chave));
 
 // O caminho que a App 09 oferece para o painel do dia chega por parâmetro
 // de URL, porque a navegação é entre aplicações — cada uma no seu endereço
@@ -73,7 +78,7 @@ function areaInicialDaUrl(): Area {
 // Sem sessão aberta, só a entrada aparece — nenhum dado de gestão aparece
 // antes disso (`RF-01-02`, `RN-01-32`, PRD-02 §4).
 function Conteudo() {
-  const { sessao, restaurando, sair } = useSessao();
+  const { sessao, restaurando, sair, tratarRecusaDeSessao } = useSessao();
   const [area, definirArea] = useState<Area>(areaInicialDaUrl);
 
   if (restaurando) {
@@ -88,7 +93,9 @@ function Conteudo() {
     <ProvedorDeDireitos irParaDireitos={() => definirArea("direitos")}>
       <NavegacaoDeAreas
         rotulo="Áreas da gestão"
-        areas={AREAS.map(({ chave, rotulo }) => ({ chave, rotulo }))}
+        areas={(sessao.papel === "admin" ? [...AREAS, AREA_DO_PIN] : AREAS).map(
+          ({ chave, rotulo }) => ({ chave, rotulo }),
+        )}
         areaAtual={area}
         aoSelecionarArea={(chave) => definirArea(chave as Area)}
         aoSair={sair}
@@ -111,6 +118,15 @@ function Conteudo() {
       {area === "quiz" && <TelaDeQuiz />}
       {area === "encerramento-de-ciclo" && <TelaDeEncerramentoDeCiclo />}
       {area === "direitos" && <TelaDeDireitos />}
+      {area === "meu-pin" && sessao.papel === "admin" && (
+        <Moldura>
+          <Cabecalho titulo="Meu PIN" />
+          <SecaoDoPinDeConfirmacao
+            token={sessao.token}
+            aoRecusarSessao={tratarRecusaDeSessao}
+          />
+        </Moldura>
+      )}
     </ProvedorDeDireitos>
   );
 }

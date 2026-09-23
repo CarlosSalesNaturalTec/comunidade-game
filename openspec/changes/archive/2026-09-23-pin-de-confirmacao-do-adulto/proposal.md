@@ -49,6 +49,8 @@ e 3.4) fecha essa brecha.
 - `aplicacao-da-aula-presencial`: a confirmação na entrada pede o PIN; a fila sem rede só
   aceita presença com o PIN conferido no aparelho; o bloqueio vale naquele aparelho
   (`RF-04-21`, `RF-04-23`, `RN-04-37`, `RN-04-38`).
+- `aula-e-presenca`: a presença confirmada sem rede sincroniza pelo nick, sem abrir sessão
+  (`RF-04-23`, `RN-04-38`).
 - `painel-do-dia`: a lista de espera passa a se chamar "Sem equipe" (`RF-02-43`).
 - `area-do-mestre`: o Mestre cadastra e troca o próprio PIN (`RF-09-121`).
 - `aplicacao-de-gestao`: o Admin cadastra e troca o próprio PIN, e o painel mostra "Sem

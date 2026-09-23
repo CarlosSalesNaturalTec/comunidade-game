@@ -2,7 +2,19 @@ import enum
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, Enum, ForeignKey, Index, String, Text, Uuid, func, text
+from sqlalchemy import (
+    JSON,
+    Date,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Index,
+    String,
+    Text,
+    Uuid,
+    func,
+    text,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..banco import Base
@@ -42,6 +54,9 @@ class Persona(Base):
     email: Mapped[str | None] = mapped_column(String(256), nullable=True)
     whatsapp: Mapped[str | None] = mapped_column(String(32), nullable=True)
     avatar: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Só o verificador do PIN de confirmação de Mestre e Admin — algoritmo,
+    # iterações, sal e resumo —, nunca o PIN (`RF-01-75`, design — decisão 1).
+    pin_verificador: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     criada_por: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("persona.id"), nullable=True
     )

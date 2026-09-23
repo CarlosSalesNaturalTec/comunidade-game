@@ -1381,7 +1381,7 @@ o ajuste das presenças. (`RF-02-49`, `RN-02-20`, `RF-02-37`, `RN-02-13`, PRD-02
 ### Requirement: A App 03 abre a área Painel do dia, em leitura
 
 A App 03 SHALL apresentar a área **Painel do dia**, que mostra o encontro em andamento numa tela
-só: quem chegou, quem aguarda aparelho, as equipes com a missão de cada uma, a atividade prevista
+só: quem chegou, quem está **sem equipe**, as equipes com a missão de cada uma, a atividade prevista
 e os recursos providos, o saldo dos tipos de recurso do ponto de apoio e os lançamentos
 pendentes do encontro (`RF-02-41` a `RF-02-47`, `RF-02-69`).
 
@@ -1396,7 +1396,7 @@ andamento, sem apresentar tela vazia nem erro cru. (`RF-02-41` a `RF-02-47`, `RF
 #### Scenario: A área mostra o encontro em andamento
 
 - **WHEN** um Admin abre o Painel do dia durante a janela de uma aula
-- **THEN** a tela apresenta presenças, espera, equipes com missão, previsto e provido, saldo e
+- **THEN** a tela apresenta presenças, a lista "Sem equipe", equipes com missão, previsto e provido, saldo e
   lançamentos pendentes
 
 #### Scenario: Sem encontro, a área explica em uma frase
@@ -2328,3 +2328,26 @@ uma medição no aparelho do encontro, e medir de novo é o caminho de corrigi-l
 - **WHEN** um ponto de apoio recebe uma medição nova
 - **THEN** a tela passa a apresentar o limiar e a origem da medição nova, sempre a vigente — o
   histórico das anteriores é guardado pelo núcleo e não se lê por esta tela
+
+### Requirement: O Admin cadastra e troca o próprio PIN de confirmação na App 03
+
+A App 03 SHALL oferecer ao **Admin** em sessão uma tela para cadastrar ou trocar o **próprio**
+PIN de confirmação, de 4 dígitos, digitado duas vezes e mascarado. A tela SHALL dizer se o Admin
+já tem PIN cadastrado — sem mostrá-lo — e para que ele serve: confirmar a identidade de um
+Guerreiro(a) no App 01. PIN fora do formato ou com as duas digitações diferentes SHALL ser
+recusado na própria tela, antes do envio. (`RF-02-110`, `RF-01-75`)
+
+#### Scenario: O Admin cadastra o PIN
+
+- **WHEN** um Admin digita duas vezes o mesmo PIN de 4 dígitos e confirma
+- **THEN** a aplicação envia o PIN ao núcleo e diz que ele está cadastrado, sem mostrá-lo
+
+#### Scenario: As duas digitações diferem
+
+- **WHEN** as duas digitações do PIN não são iguais
+- **THEN** a aplicação não envia nada e pede que o Admin digite de novo
+
+#### Scenario: A tela diz se já há PIN
+
+- **WHEN** um Admin que já cadastrou o PIN abre a tela
+- **THEN** a tela diz que há PIN cadastrado e oferece a troca, sem exibir o PIN

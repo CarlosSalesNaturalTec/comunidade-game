@@ -414,3 +414,29 @@ class FreioPorOrigemAcionado(ErroDeAplicacao):
     def __init__(self, mensagem: str | None = None, *, tempo_de_espera_em_segundos: int) -> None:
         super().__init__(mensagem)
         self.tempo_de_espera_em_segundos = tempo_de_espera_em_segundos
+
+
+class PinRecusado(ErroDeAplicacao):
+    """PIN de confirmação errado — conferido antes do nick, para não revelar
+    se ele existe (`RN-01-59`, `RN-01-22`)."""
+
+    status_code = 401
+    codigo = "pin_recusado"
+    mensagem = "PIN errado."
+
+
+class PinBloqueado(ErroDeAplicacao):
+    status_code = 403
+    codigo = "pin_bloqueado"
+    mensagem = (
+        "PIN bloqueado neste aparelho depois de cinco erros seguidos. "
+        "Entre de novo pelo Google para desbloquear."
+    )
+
+
+class PinNaoCadastrado(ErroDeAplicacao):
+    status_code = 403
+    codigo = "pin_nao_cadastrado"
+    mensagem = (
+        "Sem PIN de confirmação cadastrado. O Mestre cadastra na App 09, e o Admin, na App 03."
+    )

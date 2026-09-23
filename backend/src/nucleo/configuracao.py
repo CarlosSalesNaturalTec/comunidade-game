@@ -39,6 +39,11 @@ class Configuracao(BaseSettings):
     argon2_iteracoes: int = 2
     argon2_paralelismo: int = 1
 
+    # Iterações do PBKDF2 do PIN de confirmação. Ficam gravadas no próprio
+    # verificador, para subir sem invalidar os PINs já cadastrados (`RF-01-75`,
+    # design — decisão 1).
+    pin_iteracoes: int = 600_000
+
     # Cota de leitura por faixa da chave, janela fixa de uma hora (`RF-01-55`,
     # 03 §8). Só os tetos por faixa são parâmetro; a janela é estrutural.
     protecao_cota_do_projeto_por_hora: int = 6_000

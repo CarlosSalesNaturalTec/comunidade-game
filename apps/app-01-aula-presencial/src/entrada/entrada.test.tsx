@@ -6,6 +6,8 @@ import * as biometriaModulo from "comum/biometria";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as presencasApi from "../api/presencas";
 import * as sessoesDeGuerreiroApi from "../api/sessoesDeGuerreiro";
+import { guardarVerificadorDeTeste } from "../pin/paraTestes";
+import { pinBloqueadoNoAparelho } from "../pin/pinDeConfirmacao";
 import { TelaDeEntradaDoGuerreiro } from "./TelaDeEntradaDoGuerreiro";
 
 vi.mock("comum/autenticacao", async () => {
@@ -315,10 +317,12 @@ describe("entrada do Guerreiro(a) por confirmação", () => {
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
     await usuario.click(screen.getByRole("button", { name: /entrar/i }));
-    await usuario.click(await screen.findByRole("button", { name: /confirmar identidade/i }));
+    await usuario.type(await screen.findByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
 
     expect(sessoesDeGuerreiroApi.confirmarSessaoDeGuerreiro).toHaveBeenCalledWith(
       "zeferina",
+      "4821",
       "token-de-trabalho",
     );
     await vi.waitFor(() => expect(entrarComToken).toHaveBeenCalledWith("token-do-guerreiro"));
@@ -345,7 +349,8 @@ describe("entrada do Guerreiro(a) por confirmação", () => {
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nick/i), "nick-que-nao-existe");
     await usuario.click(screen.getByRole("button", { name: /entrar/i }));
-    await usuario.click(await screen.findByRole("button", { name: /confirmar identidade/i }));
+    await usuario.type(await screen.findByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
 
     const recusa = await screen.findByRole("alert");
     expect(recusa.textContent).not.toMatch(/confirmacao_de_guerreiro_recusada/i);
@@ -544,5 +549,94 @@ describe("entrada do Guerreiro(a) por confirmação", () => {
     const alerta = await screen.findByRole("alert");
     expect(alerta).toHaveTextContent(/não foi possível reconhecer/i);
     expect(screen.getByRole("button", { name: /chamar mestre ou admin/i })).toBeVisible();
+  });
+});
+
+describe("PIN de quem confirma (RF-04-21, RN-04-37, RN-04-38)", () => {
+  afterEach(() => {
+    sessionStorage.clear();
+    localStorage.clear();
+  });
+
+  async function abrirConfirmacao(usuario: ReturnType<typeof userEvent.setup>) {
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(false);
+    renderizar();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+    await screen.findByRole("button", { name: /confirmar identidade/i });
+  }
+
+  it("sem o PIN, a confirmação não acontece", async () => {
+    configurarSessao();
+    const confirmar = vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro");
+    const usuario = userEvent.setup();
+    await abrirConfirmacao(usuario);
+
+    const botao = screen.getByRole("button", { name: /confirmar identidade/i });
+    expect(botao).toBeDisabled();
+    await usuario.type(screen.getByLabelText(/pin de quem confirma/i), "48");
+    expect(botao).toBeDisabled();
+    expect(confirmar).not.toHaveBeenCalled();
+  });
+
+  it("PIN errado é dito como tal, limpa o PIN e mantém o nick", async () => {
+    configurarSessao();
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockRejectedValue(
+      new ErroDaApi(401, { codigo: "pin_recusado", mensagem: "PIN errado." }),
+    );
+    const usuario = userEvent.setup();
+    await abrirConfirmacao(usuario);
+
+    await usuario.type(screen.getByLabelText(/pin de quem confirma/i), "0000");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+
+    expect(await screen.findByText(/pin errado/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/pin de quem confirma/i)).toHaveValue("");
+    expect(screen.getByLabelText(/nick/i)).toHaveValue("zeferina");
+  });
+
+  it("PIN bloqueado manda entrar de novo pelo Google e não oferece nova tentativa", async () => {
+    configurarSessao();
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockRejectedValue(
+      new ErroDaApi(403, { codigo: "pin_bloqueado", mensagem: "PIN bloqueado." }),
+    );
+    await guardarVerificadorDeTeste();
+    const usuario = userEvent.setup();
+    await abrirConfirmacao(usuario);
+
+    await usuario.type(screen.getByLabelText(/pin de quem confirma/i), "0000");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+
+    expect(await screen.findByText(/entre outra vez pelo google/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /confirmar identidade/i })).toBeDisabled();
+    expect(pinBloqueadoNoAparelho()).toBe(true);
+  });
+
+  it("o PIN não fica no aparelho depois de uma confirmação", async () => {
+    configurarSessao(vi.fn().mockResolvedValue(undefined));
+    await guardarVerificadorDeTeste();
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    mockarRegistrarPresencaEcoando();
+    const usuario = userEvent.setup();
+    await abrirConfirmacao(usuario);
+
+    await usuario.type(screen.getByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+
+    await vi.waitFor(() =>
+      expect(sessoesDeGuerreiroApi.confirmarSessaoDeGuerreiro).toHaveBeenCalled(),
+    );
+    const armazenado =
+      JSON.stringify({ ...sessionStorage }) + JSON.stringify({ ...localStorage });
+    expect(armazenado).not.toContain("4821");
   });
 });

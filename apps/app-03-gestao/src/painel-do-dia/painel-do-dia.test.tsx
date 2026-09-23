@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
@@ -63,7 +63,7 @@ function painelVazio(): PainelDoDia {
     comunidade_virtual_id: null,
     ponto_de_apoio_id: null,
     presencas: [],
-    aguardando_aparelho: [],
+    sem_equipe: [],
     equipes: [],
     atividades_previstas: [],
     recursos_providos: [],
@@ -87,7 +87,7 @@ function painelDoEncontro(sobrescreve: Partial<PainelDoDia> = {}): PainelDoDia {
         confirmador_id: null,
       },
     ],
-    aguardando_aparelho: [{ guerreiro_id: "guerreiro-2", avatar: null, nick: "tais" }],
+    sem_equipe: [{ guerreiro_id: "guerreiro-2", avatar: null, nick: "tais" }],
     equipes: [
       {
         id: "equipe-1",
@@ -131,7 +131,11 @@ describe("Painel do dia (RF-02-41 a RF-02-48, RF-02-68, RF-02-69)", () => {
     render(<TelaDoPainelDoDia />);
 
     expect((await screen.findAllByText(/zeferina/)).length).toBeGreaterThan(0);
-    expect(screen.getByText(/tais/)).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("region", { name: "Sem equipe" })).getByText(/tais/),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Sem equipe" })).toBeInTheDocument();
+    expect(screen.queryByText(/aguardando aparelho/i)).not.toBeInTheDocument();
     expect(screen.getAllByText(/montagem do robô/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/falta lançar a atividade realizada/i)).toBeInTheDocument();
   });
