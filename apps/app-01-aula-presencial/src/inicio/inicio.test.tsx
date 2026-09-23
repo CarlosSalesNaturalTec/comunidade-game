@@ -31,7 +31,8 @@ async function entrarPorConfirmacao(
   await usuario.click(screen.getByRole("button", { name: /trilhas/i }));
   await usuario.type(await screen.findByLabelText(/nick/i), nick);
   await usuario.click(screen.getByRole("button", { name: /entrar/i }));
-  await usuario.click(await screen.findByRole("button", { name: /confirmar identidade/i }));
+  await usuario.type(await screen.findByLabelText(/pin de quem confirma/i), "4821");
+  await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
 }
 
 afterEach(() => {

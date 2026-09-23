@@ -396,16 +396,17 @@ outras duas frentes já entregues — tombamento (PRD-07) e ficha de vida —, s
 
 ### 6.9 Responsáveis, perfil público e avisos
 
-| ID          | Requisito                                                                                           | Prioridade |
-| ----------- | --------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-09-62`  | Mestre cadastra responsável apresentado no encontro e vincula Guerreiros e Guerreiras já ativos     | essencial  |
-| `RF-09-63`  | Vínculo registra o grau de parentesco em texto livre                                                | essencial  |
-| `RF-09-64`  | Aplicação recusa o quarto vínculo de responsável para o mesmo Guerreiro(a)                          | essencial  |
-| `RF-09-65`  | Mestre cria credencial de usuário e senha provisória para responsável sem conta Google              | essencial  |
-| `RF-09-66`  | Mestre publica currículo, portfólio, redes sociais e artefatos comprobatórios da sua habilidade     | essencial  |
-| `RF-09-114` | Mestre define ou troca o próprio nick e avatar no card, sob a unicidade global e sem piso de moedas | essencial  |
-| `RF-09-67`  | Aplicação não cadastra Mestre nem cria acesso de Mestre                                             | essencial  |
-| `RF-09-68`  | Toda tela que coleta dado traz aviso discreto do que coleta, com acesso à área detalhada            | essencial  |
+| ID          | Requisito                                                                                                     | Prioridade |
+| ----------- | ------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-09-62`  | Mestre cadastra responsável apresentado no encontro e vincula Guerreiros e Guerreiras já ativos               | essencial  |
+| `RF-09-63`  | Vínculo registra o grau de parentesco em texto livre                                                          | essencial  |
+| `RF-09-64`  | Aplicação recusa o quarto vínculo de responsável para o mesmo Guerreiro(a)                                    | essencial  |
+| `RF-09-65`  | Mestre cria credencial de usuário e senha provisória para responsável sem conta Google                        | essencial  |
+| `RF-09-66`  | Mestre publica currículo, portfólio, redes sociais e artefatos comprobatórios da sua habilidade               | essencial  |
+| `RF-09-114` | Mestre define ou troca o próprio nick e avatar no card, sob a unicidade global e sem piso de moedas           | essencial  |
+| `RF-09-121` | Mestre cadastra e troca o próprio PIN de confirmação, de 4 dígitos, usado para confirmar identidade no App 01 | essencial  |
+| `RF-09-67`  | Aplicação não cadastra Mestre nem cria acesso de Mestre                                                       | essencial  |
+| `RF-09-68`  | Toda tela que coleta dado traz aviso discreto do que coleta, com acesso à área detalhada                      | essencial  |
 
 ### 6.10 Catálogo avulso e troca por pontos extras
 
@@ -690,34 +691,35 @@ missão é o que permite a mesma trilha atender dos 6 aos 16 anos.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                                         | Gravada em          | Linha do doc 09                                          |
-| ----------------------------------------------------------------------------------------------- | ------------------- | -------------------------------------------------------- |
-| Trilha vai ao ar sem aprovação prévia; Admin audita por amostragem e despublica                 | 03 §11              | Publicação e curadoria da trilha                         |
-| Publicação travada sem sondagem, sem desafio de coleta e sem culminância                        | 03 §11              | Trava de publicação da trilha                            |
-| Conteúdo da missão: texto, imagem, link e upload de vídeo (200 MB) e arquivo (20 MB)            | 03 §11              | Conteúdo da missão                                       |
-| Pergunta do Quiz ao Vivo em múltipla escolha, quatro alternativas, sem tempo                    | 05 §5               | Formato da pergunta do Quiz ao Vivo                      |
-| Conteúdo educacional publicado sob licença CC BY-SA                                             | 03 §1               | Licença do conteúdo educacional                          |
-| Atividade de trilha pertence a uma missão, com modalidade e formato                             | 11 §§2.1, 4         | Atividade da missão                                      |
-| Recompensa de marco conquistada na trilha, nunca comprada com pontos                            | 02 §8.1             | Recompensa conquistada em marco                          |
-| Missão declarada obrigatória ou opcional; só a obrigatória conta no nível                       | 11 §§2.2, 6         | Missão obrigatória ou opcional                           |
-| Missão de sondagem abre toda trilha e é a terceira trava de publicação                          | 11 §2.2             | Missão de sondagem — terceira trava                      |
-| Toda atividade exige produção do Guerreiro(a); a leitura automática é hipótese                  | 02 §4, 11 §2.2      | Produção obrigatória na atividade                        |
-| Cadência da retomada declarada pelo Mestre, com padrão sugerido pelo template                   | 11 §§2.2, 5         | Revisão espaçada — quem define a cadência                |
-| Template monta estrutura e checklist; a IA não escreve conteúdo                                 | 03 §11              | Auxílio de IA na autoria da trilha                       |
-| Camisa conquistada no marco de missão, não entregue a todo inscrito                             | 02 §8, 04 §1, 05 §3 | Camisa como recompensa de marco                          |
-| Catálogo avulso cadastrado pelo Mestre sem homologação, com lastro e estoque                    | 02 §8.2             | Troca de pontos extras por recompensa avulsa             |
-| Preço do catálogo vindo de tabela de referência da gestão, com piso de 20 pontos                | 02 §8.2             | Quem fixa o preço do catálogo avulso                     |
-| Mestre propõe desafio extra, presencial ou on-line, com teto de 10 pontos                       | 04 §3               | Desafio extra — proponente, teto e custeio               |
-| Custeio do desafio extra por absorção do proponente ou saldo da plataforma                      | 04 §3               | Desafio extra — proponente, teto e custeio               |
-| Validação pedagógica dispensada só para o Mestre autor; Admin aprova sempre                     | 04 §3               | Desafio extra — proponente, teto e custeio               |
-| Upload em lista fechada de formatos, moderado pela auditoria por amostragem                     | 03 §11              | Formatos e moderação do upload do Mestre                 |
-| Padrão de retomada sugerido pelo template: 2, 7 e 21 dias                                       | 11 §2.2             | Cadência padrão da revisão espaçada                      |
-| Amostra semanal de coleta: 10% dos registros por série ativa, mínimo de um                      | 02 §1               | Composição da amostra de auditoria de coleta             |
-| Conta de _cloud_ entra sempre por fatura; nenhuma aplicação mede consumo por ato                | 04 §1               | Custos de construção e conta de _cloud_                  |
-| Bibliografia aponta para o exemplar tombado, com vínculo opcional                               | 05 §3               | Bibliografia da missão e bem tombado                     |
-| Conteúdo de terceiros registrado com a fonte, em campo de texto                                 | 03 §11              | Conteúdo de terceiros na missão                          |
-| Fim de ciclo é ato de Admin, isolado, e não congela indicador                                   | 02 §1               | Gatilho do fim de ciclo                                  |
-| Desbloqueio é fato do Guerreiro(a) na trilha; quiz o núcleo afere, prático o Mestre autor julga | 11 §2.2             | O desbloqueio da missão é fato do Guerreiro(a) na trilha |
+| Decisão                                                                                         | Gravada em          | Linha do doc 09                                             |
+| ----------------------------------------------------------------------------------------------- | ------------------- | ----------------------------------------------------------- |
+| Trilha vai ao ar sem aprovação prévia; Admin audita por amostragem e despublica                 | 03 §11              | Publicação e curadoria da trilha                            |
+| Publicação travada sem sondagem, sem desafio de coleta e sem culminância                        | 03 §11              | Trava de publicação da trilha                               |
+| Conteúdo da missão: texto, imagem, link e upload de vídeo (200 MB) e arquivo (20 MB)            | 03 §11              | Conteúdo da missão                                          |
+| Pergunta do Quiz ao Vivo em múltipla escolha, quatro alternativas, sem tempo                    | 05 §5               | Formato da pergunta do Quiz ao Vivo                         |
+| Conteúdo educacional publicado sob licença CC BY-SA                                             | 03 §1               | Licença do conteúdo educacional                             |
+| Atividade de trilha pertence a uma missão, com modalidade e formato                             | 11 §§2.1, 4         | Atividade da missão                                         |
+| Recompensa de marco conquistada na trilha, nunca comprada com pontos                            | 02 §8.1             | Recompensa conquistada em marco                             |
+| Missão declarada obrigatória ou opcional; só a obrigatória conta no nível                       | 11 §§2.2, 6         | Missão obrigatória ou opcional                              |
+| Missão de sondagem abre toda trilha e é a terceira trava de publicação                          | 11 §2.2             | Missão de sondagem — terceira trava                         |
+| Toda atividade exige produção do Guerreiro(a); a leitura automática é hipótese                  | 02 §4, 11 §2.2      | Produção obrigatória na atividade                           |
+| Cadência da retomada declarada pelo Mestre, com padrão sugerido pelo template                   | 11 §§2.2, 5         | Revisão espaçada — quem define a cadência                   |
+| Template monta estrutura e checklist; a IA não escreve conteúdo                                 | 03 §11              | Auxílio de IA na autoria da trilha                          |
+| Camisa conquistada no marco de missão, não entregue a todo inscrito                             | 02 §8, 04 §1, 05 §3 | Camisa como recompensa de marco                             |
+| Catálogo avulso cadastrado pelo Mestre sem homologação, com lastro e estoque                    | 02 §8.2             | Troca de pontos extras por recompensa avulsa                |
+| Preço do catálogo vindo de tabela de referência da gestão, com piso de 20 pontos                | 02 §8.2             | Quem fixa o preço do catálogo avulso                        |
+| Mestre propõe desafio extra, presencial ou on-line, com teto de 10 pontos                       | 04 §3               | Desafio extra — proponente, teto e custeio                  |
+| Custeio do desafio extra por absorção do proponente ou saldo da plataforma                      | 04 §3               | Desafio extra — proponente, teto e custeio                  |
+| Validação pedagógica dispensada só para o Mestre autor; Admin aprova sempre                     | 04 §3               | Desafio extra — proponente, teto e custeio                  |
+| Upload em lista fechada de formatos, moderado pela auditoria por amostragem                     | 03 §11              | Formatos e moderação do upload do Mestre                    |
+| Padrão de retomada sugerido pelo template: 2, 7 e 21 dias                                       | 11 §2.2             | Cadência padrão da revisão espaçada                         |
+| Amostra semanal de coleta: 10% dos registros por série ativa, mínimo de um                      | 02 §1               | Composição da amostra de auditoria de coleta                |
+| Conta de _cloud_ entra sempre por fatura; nenhuma aplicação mede consumo por ato                | 04 §1               | Custos de construção e conta de _cloud_                     |
+| Bibliografia aponta para o exemplar tombado, com vínculo opcional                               | 05 §3               | Bibliografia da missão e bem tombado                        |
+| Conteúdo de terceiros registrado com a fonte, em campo de texto                                 | 03 §11              | Conteúdo de terceiros na missão                             |
+| Fim de ciclo é ato de Admin, isolado, e não congela indicador                                   | 02 §1               | Gatilho do fim de ciclo                                     |
+| Mestre cadastra e troca o PIN de confirmação na App 09                                          | 03 §1.1             | Confirmação de identidade no encontro exige o PIN do adulto |
+| Desbloqueio é fato do Guerreiro(a) na trilha; quiz o núcleo afere, prático o Mestre autor julga | 11 §2.2             | O desbloqueio da missão é fato do Guerreiro(a) na trilha    |
 
 As cinco entidades novas — `Conteudo`, `BibliografiaDaMissao`, `Culminancia`,
 `RecompensaDeMarco` e `SugestaoDeEstrutura` — foram acrescentadas ao modelo do PRD-01, e a
@@ -801,4 +803,5 @@ a que alguma submissão já respondeu (documento 03 §11).
 | `RF-09-117`               | 11 §2.2 (o desbloqueio é fato do Guerreiro(a); julgamento do prático) |
 | `RF-09-118`               | 11 §2.2 (quantas perguntas o Mestre quiser, quatro alternativas cada) |
 | `RF-09-119`               | 03 §11 (teto de 1 MB por pergunta, formatos da lista fechada)         |
+| `RF-09-121`               | 03 §1.1 (PIN de confirmação do adulto)                                |
 | `RF-09-120` e `RN-09-44`  | 03 §11 (a pergunta do quiz se grava uma a uma, completa)              |

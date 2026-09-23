@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ErroDaApi } from "comum/api";
 import { limparToken } from "comum/autenticacao";
 import * as sessaoApi from "comum/autenticacao/api";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -7,6 +8,8 @@ import App, { CHAVE_DE_SESSAO_DE_TRABALHO } from "../App";
 import type { AulaVigente } from "../api/aulas";
 import * as aulasApi from "../api/aulas";
 import * as comunidadesApi from "../api/comunidades";
+import { verificadorDeTeste } from "../pin/paraTestes";
+import * as pinApi from "../pin/pinDeConfirmacao";
 
 vi.mock("comum/autenticacao", async () => {
   const real =
@@ -185,5 +188,63 @@ describe("sessão de trabalho do aparelho", () => {
     await waitFor(() =>
       expect(screen.getByRole("button", { name: /entrar com google/i })).toBeInTheDocument(),
     );
+  });
+});
+
+describe("verificador do PIN de quem abriu a sessão de trabalho (RN-04-38)", () => {
+  function mockarMestreComUmaAula() {
+    vi.spyOn(sessaoApi, "loginSocial").mockResolvedValue({
+      token: "token-do-mestre",
+      expira_em: new Date().toISOString(),
+      papel: "mestre",
+    });
+    vi.spyOn(sessaoApi, "eu").mockResolvedValue({
+      persona_id: "mestre-1",
+      papel: "mestre",
+      permissoes: {},
+    });
+    vi.spyOn(aulasApi, "listarAulasVigentes").mockResolvedValue({
+      itens: [aula()],
+      proximo_cursor: null,
+    });
+  }
+
+  it("o verificador chega com a sessão de trabalho, e nenhum PIN", async () => {
+    mockarMestreComUmaAula();
+    const verificador = await verificadorDeTeste("4821");
+    const buscar = vi.spyOn(pinApi, "buscarVerificadorDoPin").mockResolvedValue(verificador);
+
+    render(<App />);
+    await entrarComoMestre();
+    await screen.findByText(/o que você quer fazer/i);
+
+    await waitFor(() => expect(pinApi.verificadorGuardado()).toEqual(verificador));
+    expect(buscar).toHaveBeenCalledWith("token-do-mestre");
+    const guardado = JSON.stringify({ ...sessionStorage });
+    expect(guardado).not.toContain("4821");
+    expect(screen.queryByText(/ainda não tem pin/i)).not.toBeInTheDocument();
+  });
+
+  it("sem PIN cadastrado, o aparelho abre e avisa", async () => {
+    mockarMestreComUmaAula();
+    vi.spyOn(pinApi, "buscarVerificadorDoPin").mockRejectedValue(
+      new ErroDaApi(403, { codigo: "pin_nao_cadastrado", mensagem: "Sem PIN." }),
+    );
+
+    render(<App />);
+    await entrarComoMestre();
+
+    expect(await screen.findByText(/o que você quer fazer/i)).toBeInTheDocument();
+    expect(await screen.findByText(/ainda não tem pin de confirmação/i)).toBeInTheDocument();
+    expect(pinApi.verificadorGuardado()).toBeNull();
+  });
+
+  it("sem sessão de trabalho, o verificador sai do aparelho", async () => {
+    pinApi.guardarVerificadorDoPin("mestre-1", await verificadorDeTeste());
+
+    render(<App />);
+    await screen.findByRole("button", { name: /entrar com google/i });
+
+    await waitFor(() => expect(pinApi.verificadorGuardado()).toBeNull());
   });
 });

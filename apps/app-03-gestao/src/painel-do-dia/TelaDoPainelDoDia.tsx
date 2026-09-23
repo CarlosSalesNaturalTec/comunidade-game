@@ -84,14 +84,14 @@ export function TelaDoPainelDoDia() {
             )}
           </section>
 
-          <section aria-label="Aguardando aparelho">
-            <h2>Aguardando aparelho</h2>
-            {painel.aguardando_aparelho.length === 0 && (
-              <EstadoDaLista>Ninguém aguardando aparelho.</EstadoDaLista>
+          <section aria-label="Sem equipe">
+            <h2>Sem equipe</h2>
+            {painel.sem_equipe.length === 0 && (
+              <EstadoDaLista>Ninguém sem equipe.</EstadoDaLista>
             )}
-            {painel.aguardando_aparelho.length > 0 && (
+            {painel.sem_equipe.length > 0 && (
               <ul>
-                {painel.aguardando_aparelho.map((guerreiro) => (
+                {painel.sem_equipe.map((guerreiro) => (
                   <li key={guerreiro.guerreiro_id}>{guerreiro.nick}</li>
                 ))}
               </ul>

@@ -66,7 +66,7 @@ function painelVazio(): PainelDoDia {
     comunidade_virtual_id: null,
     ponto_de_apoio_id: null,
     presencas: [],
-    aguardando_aparelho: [],
+    sem_equipe: [],
     equipes: [],
     atividades_previstas: [],
     recursos_providos: [],
@@ -90,7 +90,7 @@ function painelDoEncontro(sobrescreve: Partial<PainelDoDia> = {}): PainelDoDia {
         confirmador_id: null,
       },
     ],
-    aguardando_aparelho: [],
+    sem_equipe: [],
     equipes: [],
     atividades_previstas: [
       {

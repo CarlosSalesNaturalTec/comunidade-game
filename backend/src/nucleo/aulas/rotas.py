@@ -12,7 +12,12 @@ from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from ..comunidades.modelo import ComunidadeVirtual
-from ..erros import ErroDeValidacao, PermissaoNegada
+from ..erros import (
+    ConfirmacaoDeGuerreiroRecusada,
+    ErroDeValidacao,
+    PermissaoNegada,
+    PinNaoCadastrado,
+)
 from ..paginacao import (
     PaginaDeResultado,
     ParametrosDeListagem,
@@ -22,6 +27,7 @@ from ..paginacao import (
 )
 from ..permissoes import Operacao, exigir_permissao
 from ..personas.modelo import Papel, Persona
+from ..personas.regra import buscar_guerreiro_confirmavel_por
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
 from ..reservas.regra import disponivel_de
@@ -406,6 +412,54 @@ def confirmar_presenca_rota(
         guerreiro=guerreiro,
         modo=entrada.modo,
         confirmador=confirmador,
+        momento_do_fato=entrada.momento_do_fato,
+    )
+    sessao_bd.commit()
+    return _saida_da_presenca(presenca)
+
+
+class PresencaSemRedeEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    nick: str = Field(min_length=1)
+    momento_do_fato: DataHoraComFuso
+
+
+@roteador.post("/aulas/{id_da_aula}/presencas/sem-rede", status_code=201)
+def registrar_presenca_sem_rede_rota(
+    id_da_aula: uuid.UUID,
+    entrada: PresencaSemRedeEntrada,
+    contexto_da_chave: Annotated[ContextoDaChave, Depends(exigir_chave_de_aplicacao)],
+    contexto: Annotated[
+        ContextoDaSessao,
+        Depends(exigir_permissao(Operacao.confirmacao_de_identidade_do_guerreiro, "escreve")),
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PresencaSaida:
+    """A presença que o App 01 confirmou sem rede, com o PIN conferido no
+    aparelho contra o verificador de quem abriu a sessão de trabalho — por
+    isso o confirmador é esse adulto. Nunca abre sessão do Guerreiro(a): a
+    sincronização não abre o que a queda não abriu. O nick resolve pela mesma
+    recusa indistinguível da confirmação (`RF-04-23`, `RN-04-38`, `RN-01-22`,
+    design — decisão 6)."""
+    if contexto_da_chave.aplicacao != _APLICACAO_DO_ENCONTRO:
+        raise PermissaoNegada(mensagem="A presença sem rede só é aceita pela App 01.")
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    if operador.pin_verificador is None:
+        raise PinNaoCadastrado()
+    guerreiro = buscar_guerreiro_confirmavel_por(
+        sessao_bd, nick=entrada.nick, quem_confirma=operador
+    )
+    if guerreiro is None:
+        raise ConfirmacaoDeGuerreiroRecusada()
+
+    presenca = registrar_presenca(
+        sessao_bd,
+        operador=operador,
+        aula=sessao_bd.get(Aula, id_da_aula),
+        guerreiro=guerreiro,
+        modo=ModoDeComprovacao.confirmacao.value,
+        confirmador=operador,
         momento_do_fato=entrada.momento_do_fato,
     )
     sessao_bd.commit()

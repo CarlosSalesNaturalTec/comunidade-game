@@ -143,9 +143,19 @@ tempo — da recusa por nick inexistente: distinguir as duas daria ao responsáv
 descobrir quais nicks existem, que é exatamente o que o `RN-01-22` veda. (`RF-01-74`,
 `RN-01-58`, `RN-01-22`)
 
+No **encontro** — pedido feito com a **chave do App 01** por Mestre ou Admin —, a confirmação
+SHALL exigir o **PIN de confirmação** da persona em sessão, que é quem abriu a sessão de
+trabalho do aparelho: só ela confirma ali. O núcleo SHALL conferir o PIN **antes** de resolver o
+nick, para que a recusa de PIN nunca revele se o nick existe. Sem PIN cadastrado, com PIN
+bloqueado ou com PIN errado, a confirmação SHALL ser recusada com o erro que diz qual dos três,
+e nenhuma sessão é aberta. O erro de PIN conta para o bloqueio da capacidade
+`pin-de-confirmacao`; a recusa do nick não conta. Fora do App 01, o pedido segue sem PIN, como
+já era. (`RF-01-06`, `RN-01-59`, `RN-04-37`, documento 03 §1.1)
+
 #### Scenario: Mestre confirma quem não tem _template_
 
-- **WHEN** um Mestre em sessão confirma, pelo nick, um Guerreiro(a) sem _template_ gravado
+- **WHEN** um Mestre em sessão confirma, pelo nick e pelo PIN certo, um Guerreiro(a) sem
+  _template_ gravado
 - **THEN** o núcleo abre a sessão, registra a autenticação por confirmação humana e guarda o
   Mestre como quem confirmou
 
@@ -198,6 +208,27 @@ descobrir quais nicks existem, que é exatamente o que o `RN-01-22` veda. (`RF-0
 
 - **WHEN** chega um pedido de confirmação com um identificador de persona no lugar do nick
 - **THEN** o núcleo recusa a validação do corpo, e nenhuma sessão é aberta
+
+#### Scenario: No App 01, sem PIN não há confirmação
+
+- **WHEN** o Mestre da sessão de trabalho pede a confirmação pelo App 01 sem enviar o PIN
+- **THEN** o núcleo recusa a validação do corpo, e nenhuma sessão é aberta
+
+#### Scenario: PIN errado é recusado antes do nick
+
+- **WHEN** o Mestre envia pelo App 01 o PIN errado, com um nick que existe ou que não existe
+- **THEN** o núcleo responde o erro de PIN recusado nos dois casos, e nenhuma sessão é aberta
+
+#### Scenario: Adulto sem PIN cadastrado não confirma
+
+- **WHEN** um Admin que nunca cadastrou PIN pede a confirmação pelo App 01
+- **THEN** o núcleo responde o erro de PIN não cadastrado, e nenhuma sessão é aberta
+
+#### Scenario: A confirmação pela App 05 segue sem PIN
+
+- **WHEN** um responsável confirma pela App 05, pelo nick, um Guerreiro(a) sob a
+  responsabilidade dele
+- **THEN** o núcleo abre a sessão sem pedir PIN
 
 ### Requirement: A sessão do Guerreiro(a) é curta e expira sozinha
 

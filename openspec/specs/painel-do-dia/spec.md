@@ -46,19 +46,20 @@ encontro vazio**, e não erro — é o dia sem encontro. (`RF-02-41` a `RF-02-47
 - **WHEN** um Guerreiro(a) em sessão consulta o painel do dia
 - **THEN** o núcleo responde 403 e nada é devolvido
 
-### Requirement: O painel lista quem chegou e quem ainda aguarda aparelho
+### Requirement: O painel lista quem chegou e quem está sem equipe
 
 O painel SHALL listar os Guerreiros e Guerreiras com **presença registrada** naquela aula, com o
 **modo de comprovação** de cada uma — a que a App 01 registrou por reconhecimento e a que foi
 confirmada por Mestre ou Admin — sem que a gestão precise lançar coisa alguma para vê-las
 (`RF-02-41`, PRD-02 §12).
 
-O painel SHALL listar à parte quem **aguarda aparelho**: o Guerreiro(a) com presença registrada
+O painel SHALL listar à parte, sob o rótulo **"Sem equipe"**, quem chegou e ainda não formou
+equipe: o Guerreiro(a) com presença registrada
 naquela aula e **ainda sem equipe formada** nela. É lista **derivada**, e NEVER SHALL existir
 entidade, coluna ou fila explícita de espera — no Ciclo 01 a plataforma não controla aparelhos
 (documento 05 §5), e o aparelho é da equipe (documento 05 §4). Quem entra numa equipe SHALL
 deixar a lista no mesmo instante, sem ato de ninguém. (`RF-02-43`, decisão do fundador,
-2026-08-25)
+2026-08-25; rótulo "Sem equipe", decisão do fundador, 2026-09-23)
 
 #### Scenario: A presença do reconhecimento aparece sem lançamento manual
 
@@ -74,17 +75,17 @@ deixar a lista no mesmo instante, sem ato de ninguém. (`RF-02-43`, decisão do 
 #### Scenario: Presente sem equipe aparece aguardando aparelho
 
 - **WHEN** um Guerreiro(a) tem presença registrada e não integra equipe alguma daquela aula
-- **THEN** ele aparece na lista de quem aguarda aparelho
+- **THEN** ele aparece na lista "Sem equipe"
 
 #### Scenario: Entrar numa equipe tira da espera
 
-- **WHEN** um Guerreiro(a) que aguardava aparelho entra numa equipe da aula
-- **THEN** a consulta seguinte não o traz mais na lista de espera, e ninguém precisou marcá-lo
+- **WHEN** um Guerreiro(a) que estava sem equipe entra numa equipe da aula
+- **THEN** a consulta seguinte não o traz mais em "Sem equipe", e ninguém precisou marcá-lo
 
 #### Scenario: Quem não chegou não aparece em lista alguma
 
 - **WHEN** um Guerreiro(a) da comunidade não tem presença registrada naquela aula
-- **THEN** ele não aparece nem como chegado nem como aguardando aparelho
+- **THEN** ele não aparece nem como chegado nem em "Sem equipe"
 
 ### Requirement: O painel mostra cada equipe com a missão em que ela está
 

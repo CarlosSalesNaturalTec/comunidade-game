@@ -9,6 +9,8 @@ import * as presencasApi from "../api/presencas";
 import * as sessoesDeGuerreiroApi from "../api/sessoesDeGuerreiro";
 import { TelaDeEntradaDoGuerreiro } from "../entrada/TelaDeEntradaDoGuerreiro";
 import { TelaInicial } from "../inicio/TelaInicial";
+import { guardarVerificadorDeTeste } from "../pin/paraTestes";
+import { pinBloqueadoNoAparelho } from "../pin/pinDeConfirmacao";
 import { ProvedorDeEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import {
   enfileirarPresenca,
@@ -64,6 +66,7 @@ describe("fila local de presença — armazenamento (RF-04-23, RN-04-12, RN-04-1
 
 describe("entrada do Guerreiro(a) sem rede — enfileira em vez de perder (RF-04-23)", () => {
   it("a criança que chega sem rede entra na fila, sem abrir sessão", async () => {
+    await guardarVerificadorDeTeste();
     const confirmar = vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro");
 
     render(
@@ -82,6 +85,7 @@ describe("entrada do Guerreiro(a) sem rede — enfileira em vez de perder (RF-04
 
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.type(screen.getByLabelText(/pin de quem confirma/i), "4821");
     await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
 
     expect(await screen.findByText(/presença de zeferina foi guardada/i)).toBeInTheDocument();
@@ -113,24 +117,82 @@ describe("entrada do Guerreiro(a) sem rede — enfileira em vez de perder (RF-04
   });
 });
 
+describe("PIN conferido no aparelho sem rede (RF-04-23, RN-04-38)", () => {
+  function renderizarSemRede() {
+    render(
+      <ProvedorDeEstadoDeRede>
+        <ProvedorDeSessao chaveDeArmazenamento="teste:fila:pin">
+          <TelaDeEntradaDoGuerreiro
+            tokenDeTrabalho="token-de-trabalho"
+            aulaId="aula-1"
+            aoVoltar={vi.fn()}
+          />
+        </ProvedorDeSessao>
+      </ProvedorDeEstadoDeRede>,
+    );
+    window.dispatchEvent(new Event("offline"));
+  }
+
+  async function tentar(usuario: ReturnType<typeof userEvent.setup>, pin: string) {
+    await usuario.type(screen.getByLabelText(/pin de quem confirma/i), pin);
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+  }
+
+  it("PIN errado sem rede não enfileira", async () => {
+    await guardarVerificadorDeTeste();
+    renderizarSemRede();
+    await screen.findByText(/entrada por reconhecimento facial não funciona/i);
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+
+    await tentar(usuario, "0000");
+
+    expect(await screen.findByText(/pin errado/i)).toBeInTheDocument();
+    expect(lerFilaDePresenca("aula-1")).toHaveLength(0);
+  });
+
+  it("o quinto erro seguido sem rede bloqueia o aparelho", async () => {
+    await guardarVerificadorDeTeste();
+    renderizarSemRede();
+    await screen.findByText(/entrada por reconhecimento facial não funciona/i);
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+
+    for (let tentativa = 0; tentativa < 5; tentativa += 1) {
+      await tentar(usuario, "0000");
+      await waitFor(() =>
+        expect(screen.getByLabelText(/pin de quem confirma/i)).toHaveValue(""),
+      );
+    }
+
+    expect(await screen.findByText(/entre outra vez pelo google/i)).toBeInTheDocument();
+    expect(pinBloqueadoNoAparelho()).toBe(true);
+    await usuario.type(screen.getByLabelText(/pin de quem confirma/i), "4821");
+    expect(screen.getByRole("button", { name: /confirmar identidade/i })).toBeDisabled();
+    expect(lerFilaDePresenca("aula-1")).toHaveLength(0);
+  });
+
+  it("sem verificador, a confirmação sem rede fica indisponível e diz por quê", async () => {
+    renderizarSemRede();
+    await screen.findByText(/entrada por reconhecimento facial não funciona/i);
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+
+    await tentar(usuario, "4821");
+
+    expect(await screen.findByText(/aberto sem pin cadastrado/i)).toBeInTheDocument();
+    expect(lerFilaDePresenca("aula-1")).toHaveLength(0);
+  });
+});
+
 describe("sincronização automática da fila (RF-04-25, RN-04-13)", () => {
-  function mockarSequenciaDeSucesso(momentoDoFato: string) {
-    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
-      token: "token-do-guerreiro",
-      expira_em: new Date().toISOString(),
-      papel: "guerreiro",
-    });
-    vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
-      persona_id: "guerreiro-1",
-      papel: "guerreiro",
-      permissoes: {},
-    });
-    return vi.spyOn(presencasApi, "registrarPresenca").mockImplementation((aulaId, entrada) =>
+  function mockarPresencaSemRede(momentoDoFato: string) {
+    return vi.spyOn(presencasApi, "registrarPresencaSemRede").mockImplementation((aulaId) =>
       Promise.resolve({
         id: "presenca-1",
         aula_id: aulaId,
-        guerreiro_id: entrada.guerreiro_id,
-        modo: entrada.modo,
+        guerreiro_id: "guerreiro-1",
+        modo: "confirmacao",
         confirmador_id: "mestre-1",
         momento_do_fato: momentoDoFato,
       }),
@@ -143,19 +205,34 @@ describe("sincronização automática da fila (RF-04-25, RN-04-13)", () => {
       nick: "zeferina",
       momento_do_fato: "2026-08-30T14:00:00Z",
     });
-    const registrarPresenca = mockarSequenciaDeSucesso("2026-08-30T14:00:00Z");
+    const registrar = mockarPresencaSemRede("2026-08-30T14:00:00Z");
 
     renderHook(() => useSincronizacaoDaFilaDePresenca("aula-1", "token-de-trabalho"), {
       wrapper: envolver,
     });
 
-    await waitFor(() => expect(registrarPresenca).toHaveBeenCalled());
-    expect(registrarPresenca).toHaveBeenCalledWith(
+    await waitFor(() => expect(registrar).toHaveBeenCalled());
+    expect(registrar).toHaveBeenCalledWith(
       "aula-1",
-      expect.objectContaining({ momento_do_fato: "2026-08-30T14:00:00Z" }),
+      { nick: "zeferina", momento_do_fato: "2026-08-30T14:00:00Z" },
       "token-de-trabalho",
     );
     await waitFor(() => expect(lerFilaDePresenca("aula-1")).toHaveLength(0));
+  });
+
+  it("a sincronização não abre sessão de Guerreiro(a)", async () => {
+    enfileirarPresenca({ aula_id: "aula-1", nick: "zeferina", momento_do_fato: "t1" });
+    const registrar = mockarPresencaSemRede("t1");
+    const confirmar = vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro");
+    const eu = vi.spyOn(autenticacaoApi, "eu");
+
+    renderHook(() => useSincronizacaoDaFilaDePresenca("aula-1", "token-de-trabalho"), {
+      wrapper: envolver,
+    });
+
+    await waitFor(() => expect(registrar).toHaveBeenCalled());
+    expect(confirmar).not.toHaveBeenCalled();
+    expect(eu).not.toHaveBeenCalled();
   });
 
   it("o reenvio que devolve o registro já existente é sucesso — some da fila sem erro", async () => {
@@ -166,7 +243,7 @@ describe("sincronização automática da fila (RF-04-25, RN-04-13)", () => {
     });
     // O núcleo devolve o registro já existente, com o momento original —
     // sucesso, não duplicação (`RF-04-25`).
-    mockarSequenciaDeSucesso("2026-08-30T14:00:00Z");
+    mockarPresencaSemRede("2026-08-30T14:00:00Z");
 
     const { result } = renderHook(
       () => useSincronizacaoDaFilaDePresenca("aula-1", "token-de-trabalho"),
@@ -178,7 +255,7 @@ describe("sincronização automática da fila (RF-04-25, RN-04-13)", () => {
 
   it("falha de dado (nick errado) marca o item como falho, sem derrubar a rede", async () => {
     enfileirarPresenca({ aula_id: "aula-1", nick: "nick-errado", momento_do_fato: "t1" });
-    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockRejectedValue(
+    vi.spyOn(presencasApi, "registrarPresencaSemRede").mockRejectedValue(
       new ErroDaApi(401, {
         codigo: "confirmacao_de_guerreiro_recusada",
         mensagem: "Não foi possível confirmar esse nick.",
@@ -198,26 +275,16 @@ describe("sincronização automática da fila (RF-04-25, RN-04-13)", () => {
 
   it("o Mestre tenta de novo um item que falhou", async () => {
     enfileirarPresenca({ aula_id: "aula-1", nick: "zeferina", momento_do_fato: "t1" });
-    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro")
+    vi.spyOn(presencasApi, "registrarPresencaSemRede")
       .mockRejectedValueOnce(new Error("rede caiu"))
       .mockResolvedValueOnce({
-        token: "token-do-guerreiro",
-        expira_em: new Date().toISOString(),
-        papel: "guerreiro",
+        id: "presenca-1",
+        aula_id: "aula-1",
+        guerreiro_id: "guerreiro-1",
+        modo: "confirmacao",
+        confirmador_id: "mestre-1",
+        momento_do_fato: "t1",
       });
-    vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
-      persona_id: "guerreiro-1",
-      papel: "guerreiro",
-      permissoes: {},
-    });
-    vi.spyOn(presencasApi, "registrarPresenca").mockResolvedValue({
-      id: "presenca-1",
-      aula_id: "aula-1",
-      guerreiro_id: "guerreiro-1",
-      modo: "confirmacao",
-      confirmador_id: "mestre-1",
-      momento_do_fato: "t1",
-    });
 
     const { result } = renderHook(
       () => useSincronizacaoDaFilaDePresenca("aula-1", "token-de-trabalho"),

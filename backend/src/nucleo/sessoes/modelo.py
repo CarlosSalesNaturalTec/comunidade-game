@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, Uuid, func
+from sqlalchemy import DateTime, Enum, ForeignKey, Index, Integer, String, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..banco import Base
@@ -42,5 +42,10 @@ class Sessao(Base):
         Uuid, ForeignKey("persona.id"), nullable=True
     )
     encerrada_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # A sessão de trabalho é "aquele aparelho": o bloqueio do PIN vale nela e
+    # um novo login Google começa zerado (`RN-01-59`, design — decisão 3).
+    erros_de_pin_seguidos: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default="0"
+    )
 
     __table_args__ = (Index("uq_sessao_resumo_do_token", "resumo_do_token", unique=True),)

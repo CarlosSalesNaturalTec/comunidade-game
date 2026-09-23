@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -14,6 +14,7 @@ vi.mock("comum/autenticacao", async () => {
 });
 
 import { useSessao } from "comum/autenticacao";
+import * as autenticacaoApi from "comum/autenticacao/api";
 
 const SESSAO_DE_ADMIN: SessaoAberta = {
   token: "token-do-admin",
@@ -118,5 +119,42 @@ describe("saída da sessão única (documento 15 §6)", () => {
     await usuario.click(screen.getByRole("button", { name: "Sair" }));
 
     expect(aoSair).toHaveBeenCalledOnce();
+  });
+});
+
+describe("PIN de confirmação do Admin (RF-02-110)", () => {
+  it("o Admin cadastra o próprio PIN na área Meu PIN", async () => {
+    configurarSessao();
+    vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
+      persona_id: "admin-1",
+      papel: "admin",
+      permissoes: {},
+      tem_pin_de_confirmacao: true,
+    });
+    const cadastrar = vi
+      .spyOn(autenticacaoApi, "cadastrarPinDeConfirmacao")
+      .mockResolvedValue(undefined);
+    const usuario = userEvent.setup();
+    render(<App />);
+
+    await usuario.click(screen.getByRole("button", { name: "Meu PIN" }));
+    expect(await screen.findByText(/já tem pin cadastrado/i)).toBeInTheDocument();
+    await usuario.type(screen.getByLabelText(/^pin \(4 dígitos\)/i), "0007");
+    await usuario.type(screen.getByLabelText(/repita o pin/i), "0007");
+    await usuario.click(screen.getByRole("button", { name: /trocar pin/i }));
+
+    await waitFor(() => expect(cadastrar).toHaveBeenCalledWith("token-do-admin", "0007"));
+  });
+
+  it("o Mestre não vê a área Meu PIN na gestão — o dele fica na App 09", () => {
+    configurarSessao();
+    vi.mocked(useSessao).mockReturnValue({
+      ...vi.mocked(useSessao)(),
+      sessao: { ...SESSAO_DE_ADMIN, papel: "mestre", persona_id: "mestre-1" },
+    });
+
+    render(<App />);
+
+    expect(screen.queryByRole("button", { name: "Meu PIN" })).not.toBeInTheDocument();
   });
 });

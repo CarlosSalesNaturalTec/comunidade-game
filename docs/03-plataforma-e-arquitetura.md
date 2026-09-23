@@ -142,6 +142,11 @@
   dele**. O responsável entra pelo seu próprio login — social ou usuário e senha —, nunca por
   credencial da criança. A criança resolve com quem está na sala, e em casa quem está na sala
   é ele.
+- **No encontro, o adulto confirma com o próprio PIN.** A sessão de trabalho aberta no aparelho
+  não basta: quem a abriu — e só ele — digita, no ato, um **PIN de 4 dígitos** pessoal,
+  cadastrado e trocado na própria área — App 09 ou App 03 — depois do login Google. Sem PIN
+  cadastrado, não confirma. **Cinco erros seguidos** bloqueiam o PIN naquele aparelho até um
+  novo login Google.
 - **Login não cria cadastro.** Conta social ou usuário sem cadastro prévio recebe recusa.
 - **Quem não tem conta Google** recebe uma credencial de **usuário e senha provisória**, criada
   por Admin ou Mestre, com **troca de senha obrigatória no primeiro acesso**. O usuário não
@@ -343,8 +348,8 @@ autorização do responsável nesta etapa.
 2. Comparação com a base **combinada ao nick informado** (dois fatores: o nick restringe a
    busca, a imagem confirma).
 3. Presença registrada automaticamente na atividade — presencial ou on-line.
-4. Falha na identificação cai para confirmação manual por Admin/Mestre — nunca deixa o
-   Guerreiro(a) de fora da aula.
+4. Falha na identificação cai para confirmação manual por Admin/Mestre, com o PIN de quem
+   confirma (§1.1) — nunca deixa o Guerreiro(a) de fora da aula.
 
 ### 3.3 Requisitos de proteção de dados (LGPD aplicada)
 
@@ -413,10 +418,11 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
 ### 3.4 Requisitos não funcionais
 
 - Funcionar em **rede instável** e em aparelhos modestos, com fila local de sincronização.
-- **Rede fora:** a **presença** entra na fila local, confirmada pelo Mestre ou por um Admin
-  pelo nick, e sincroniza quando a rede voltar. **Cadastro novo e reconhecimento facial exigem
-  rede**: o descritor nasce no aparelho, mas a comparação é no núcleo, e nem imagem nem
-  _template_ de criança ficam guardados no aparelho compartilhado.
+- **Rede fora:** a **presença** entra na fila local, confirmada pelo nick e pelo PIN do Mestre
+  ou Admin que abriu a sessão de trabalho — o aparelho recebe, ao abri-la, só o verificador
+  desse PIN, nunca o PIN —, e sincroniza quando a rede voltar. **Cadastro novo e
+  reconhecimento facial exigem rede**: o descritor nasce no aparelho, mas a comparação é no
+  núcleo, e nem imagem nem _template_ de criança ficam guardados no aparelho compartilhado.
 - Registro de presença de Guerreiro(a) conhecido em **poucos segundos** — a aula não pode
   travar na porta.
 - Acessibilidade: a modalidade áudio atende quem ainda não lê com fluência e pessoas com

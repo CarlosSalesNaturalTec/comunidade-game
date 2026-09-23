@@ -327,7 +327,8 @@ describe("a abertura do quiz a partir da tela inicial", () => {
     await usuario.click(screen.getByRole("button", { name: /quiz ao vivo/i }));
     await usuario.type(await screen.findByLabelText(/nick/i), nick);
     await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
-    await usuario.click(await screen.findByRole("button", { name: /confirmar identidade/i }));
+    await usuario.type(await screen.findByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
   }
 
   it("sem sessão aberta, o caminho do quiz leva à entrada por nick e imagem", async () => {

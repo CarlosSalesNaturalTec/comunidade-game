@@ -54,7 +54,7 @@ export interface PainelDoDia {
   comunidade_virtual_id: string | null;
   ponto_de_apoio_id: string | null;
   presencas: PresencaDoPainel[];
-  aguardando_aparelho: GuerreiroDoPainel[];
+  sem_equipe: GuerreiroDoPainel[];
   equipes: EquipeDoPainel[];
   atividades_previstas: AtividadePrevista[];
   recursos_providos: RecursoProvido[];

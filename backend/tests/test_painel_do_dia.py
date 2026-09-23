@@ -127,7 +127,7 @@ def test_presenca_confirmada_mostra_quem_confirmou(sessao, criar_persona, cenari
     assert painel.presencas[0].confirmador_id == admin.id
 
 
-def test_presente_sem_equipe_aguarda_aparelho_e_sai_ao_entrar_numa_equipe(
+def test_presente_sem_equipe_aparece_em_sem_equipe_e_sai_ao_entrar_numa_equipe(
     sessao, criar_persona, cenario, criar_nick, criar_equipe
 ):
     admin, comunidade, _ponto, aula = cenario
@@ -145,13 +145,13 @@ def test_presente_sem_equipe_aguarda_aparelho_e_sai_ao_entrar_numa_equipe(
     sessao.commit()
 
     painel = montar_painel_do_dia(sessao, operador=admin)
-    assert len(painel.aguardando_aparelho) == 1
-    assert painel.aguardando_aparelho[0].guerreiro_id == guerreiro.id
+    assert len(painel.sem_equipe) == 1
+    assert painel.sem_equipe[0].guerreiro_id == guerreiro.id
 
     criar_equipe(guerreiro, aula=aula)
 
     painel = montar_painel_do_dia(sessao, operador=admin)
-    assert painel.aguardando_aparelho == []
+    assert painel.sem_equipe == []
 
 
 def test_quem_nao_chegou_nao_aparece_em_lista_alguma(sessao, criar_persona, cenario):
@@ -161,7 +161,7 @@ def test_quem_nao_chegou_nao_aparece_em_lista_alguma(sessao, criar_persona, cena
     painel = montar_painel_do_dia(sessao, operador=admin)
 
     assert painel.presencas == []
-    assert painel.aguardando_aparelho == []
+    assert painel.sem_equipe == []
 
 
 def test_equipe_com_e_sem_missao(

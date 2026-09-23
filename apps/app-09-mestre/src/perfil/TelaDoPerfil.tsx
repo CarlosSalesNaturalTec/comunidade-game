@@ -1,5 +1,5 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
-import { useSessao } from "comum/autenticacao";
+import { SecaoDoPinDeConfirmacao, useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
@@ -316,6 +316,9 @@ export function TelaDoPerfil() {
           Publicar artefato
         </Botao>
       </form>
+      {sessao && (
+        <SecaoDoPinDeConfirmacao token={sessao.token} aoRecusarSessao={tratarRecusaDeSessao} />
+      )}
     </Moldura>
   );
 }

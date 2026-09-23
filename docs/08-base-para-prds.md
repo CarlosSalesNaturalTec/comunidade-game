@@ -241,7 +241,7 @@ despublicação motivada — o Admin confere o corpus, não o cadastra.
 
 **Painel do dia em encontro assíncrono:** como os Guerreiros e Guerreiras chegam e avançam em
 ritmos diferentes, o painel precisa mostrar em tempo real **quem já chegou, em que missão
-cada equipe está, quem está aguardando aparelho e quais lançamentos ainda faltam** — é o
+cada equipe está, quem chegou e está sem equipe e quais lançamentos ainda faltam** — é o
 instrumento que substitui o controle visual de uma turma em bloco.
 
 **Questões em aberto:** nenhuma. A trilha de auditoria das ações de Admin ficou definida no
