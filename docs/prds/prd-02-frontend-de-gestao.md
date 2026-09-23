@@ -152,10 +152,12 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 
 1. Aberto o encontro, o painel mostra **quem já chegou**, com as presenças que o App 01
    registrou automaticamente.
-2. Mostra, por equipe, **em que missão cada uma está** — a atividade que ela declarou pelo
-   App 01 — e quem está **sem equipe**, derivado de quem chegou e ainda não formou equipe.
+2. Mostra, por equipe, o **nome**, os integrantes com o **papel** de cada um e **em que missão
+   ela está** — a atividade que ela declarou pelo App 01 — e quem está **sem equipe**,
+   derivado de quem chegou e ainda não formou equipe.
 3. Mostra a atividade prevista, os recursos providos e o **saldo dos tipos de recurso** do
-   ponto de apoio da aula, pelo catálogo configurável da gestão.
+   ponto de apoio da aula, pelo catálogo configurável da gestão — cada tipo pelo nome e pela
+   unidade, nunca pelo identificador interno.
 4. Lista os **lançamentos pendentes** — o que falta lançar antes de a aula terminar.
 5. O Mestre lê esse mesmo painel para circular entre as equipes; tudo o que ele escreve
    continua na App 09.
@@ -200,30 +202,30 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 
 ### 6.1 Cadastros e catálogo
 
-| ID          | Requisito                                                                                                    | Prioridade |
-| ----------- | ------------------------------------------------------------------------------------------------------------ | ---------- |
-| `RF-02-01`  | Admin cadastra e edita Guerreiros e Guerreiras, com nome, nascimento, nick e avatar                          | essencial  |
-| `RF-02-02`  | Admin cadastra Mestre declarando os links de currículo, portfólio, redes e documentos externos               | essencial  |
-| `RF-02-03`  | Admin cadastra Apoiador declarando os mesmos links e os termos de doação                                     | essencial  |
-| `RF-02-04`  | Aplicação recusa o cadastro de Mestre ou Apoiador sem ao menos um artefato comprobatório                     | essencial  |
-| `RF-02-05`  | Admin inclui novo Admin manualmente                                                                          | essencial  |
-| `RF-02-06`  | Admin cadastra responsável e vincula Guerreiros e Guerreiras já cadastrados, com grau de parentesco          | essencial  |
-| `RF-02-110` | Admin cadastra e troca o próprio PIN de confirmação, de 4 dígitos, usado para confirmar identidade no App 01 | essencial  |
-| `RF-02-07`  | Admin cria credencial de usuário e senha provisória para adulto sem conta social                             | essencial  |
-| `RF-02-08`  | Painel do dia lista as equipes formadas no App 01 naquela aula, com os integrantes de cada uma               | essencial  |
-| `RF-02-09`  | Aplicação não cria, edita nem desfaz equipe: a composição é dos Guerreiros e Guerreiras                      | essencial  |
-| `RF-02-10`  | Admin mantém o catálogo de poderes do ciclo                                                                  | essencial  |
-| `RF-02-107` | Admin cadastra e lista o catálogo de tipos de recurso, com a primeira vigência do valor no mesmo ato         | essencial  |
-| `RF-02-108` | Admin cadastra e lista o catálogo de tipos de coleta                                                         | essencial  |
-| `RF-02-99`  | Admin encerra o ciclo corrente num ato isolado, que não declara o ciclo seguinte                             | essencial  |
-| `RF-02-100` | Encerramento expurga o motivo das ocorrências de conduta do ciclo e as tira do ranking                       | essencial  |
-| `RF-02-11`  | Admin cria Comunidade Virtual, que nasce vazia                                                               | essencial  |
-| `RF-02-12`  | Agenda da aula exige comunidade, data, horário inicial e horário final                                       | essencial  |
-| `RF-02-13`  | App 01 opera apenas dentro da janela de uma aula agendada, sem chave de liberação                            | essencial  |
-| `RF-02-14`  | Aplicação expõe as aulas vigentes da data e do horário, para o App 01 escolher a comunidade                  | essencial  |
-| `RF-02-15`  | Admin confere o vínculo do Guerreiro(a) à comunidade herdada da aula                                         | essencial  |
-| `RF-02-16`  | Admin cadastra locais do território na hierarquia da comunidade                                              | essencial  |
-| `RF-02-17`  | Admin consulta os desafios de coleta de trilha publicada, com cadência, vigência e séries ativas             | desejável  |
+| ID          | Requisito                                                                                                          | Prioridade |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `RF-02-01`  | Admin cadastra e edita Guerreiros e Guerreiras, com nome, nascimento, nick e avatar                                | essencial  |
+| `RF-02-02`  | Admin cadastra Mestre declarando os links de currículo, portfólio, redes e documentos externos                     | essencial  |
+| `RF-02-03`  | Admin cadastra Apoiador declarando os mesmos links e os termos de doação                                           | essencial  |
+| `RF-02-04`  | Aplicação recusa o cadastro de Mestre ou Apoiador sem ao menos um artefato comprobatório                           | essencial  |
+| `RF-02-05`  | Admin inclui novo Admin manualmente                                                                                | essencial  |
+| `RF-02-06`  | Admin cadastra responsável e vincula Guerreiros e Guerreiras já cadastrados, com grau de parentesco                | essencial  |
+| `RF-02-110` | Admin cadastra e troca o próprio PIN de confirmação, de 4 dígitos, usado para confirmar identidade no App 01       | essencial  |
+| `RF-02-07`  | Admin cria credencial de usuário e senha provisória para adulto sem conta social                                   | essencial  |
+| `RF-02-08`  | Painel do dia lista as equipes formadas no App 01 naquela aula, pelo nome, com o nick e o papel de cada integrante | essencial  |
+| `RF-02-09`  | Aplicação não cria, edita nem desfaz equipe: a composição é dos Guerreiros e Guerreiras                            | essencial  |
+| `RF-02-10`  | Admin mantém o catálogo de poderes do ciclo                                                                        | essencial  |
+| `RF-02-107` | Admin cadastra e lista o catálogo de tipos de recurso, com a primeira vigência do valor no mesmo ato               | essencial  |
+| `RF-02-108` | Admin cadastra e lista o catálogo de tipos de coleta                                                               | essencial  |
+| `RF-02-99`  | Admin encerra o ciclo corrente num ato isolado, que não declara o ciclo seguinte                                   | essencial  |
+| `RF-02-100` | Encerramento expurga o motivo das ocorrências de conduta do ciclo e as tira do ranking                             | essencial  |
+| `RF-02-11`  | Admin cria Comunidade Virtual, que nasce vazia                                                                     | essencial  |
+| `RF-02-12`  | Agenda da aula exige comunidade, data, horário inicial e horário final                                             | essencial  |
+| `RF-02-13`  | App 01 opera apenas dentro da janela de uma aula agendada, sem chave de liberação                                  | essencial  |
+| `RF-02-14`  | Aplicação expõe as aulas vigentes da data e do horário, para o App 01 escolher a comunidade                        | essencial  |
+| `RF-02-15`  | Admin confere o vínculo do Guerreiro(a) à comunidade herdada da aula                                               | essencial  |
+| `RF-02-16`  | Admin cadastra locais do território na hierarquia da comunidade                                                    | essencial  |
+| `RF-02-17`  | Admin consulta os desafios de coleta de trilha publicada, com cadência, vigência e séries ativas                   | desejável  |
 
 ### 6.2 Filas de avaliação
 
@@ -586,6 +588,7 @@ contar, e dá à gestão a distribuição etária que **H4** observa.
 | Quem publica a missão do Apoiador é a gestão: um Admin a publica na App 03                                   | 14 §§5, 11         | Missão do Apoiador                                             |
 | Admin cadastra e troca o PIN de confirmação na App 03; "aguardando aparelho" passa a "sem equipe"            | 03 §1.1            | Confirmação de identidade no encontro exige o PIN do adulto    |
 | O que encerra um desafio extra é ato de Admin na gestão, nunca o decurso da vigência                         | 04 §3              | O que encerra um desafio extra                                 |
+| Painel do dia mostra o nome da equipe e o papel de cada integrante (`RF-02-08`)                              | 02 §5              | Presença e equipes em caminhos separados, e a equipe com nome  |
 
 A **trilha de auditoria das ações de Admin**, questão que o documento 08 listava para este PRD,
 foi definida no PRD-01 — a App 03 apenas a consulta.

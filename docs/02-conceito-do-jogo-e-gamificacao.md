@@ -523,6 +523,9 @@ altera composição. Há dois tempos de vida:
   equipe de cada jogador.
 - A composição segue o que a **atividade, o desafio ou a batalha determinar**: só Guerreiros e
   Guerreiras **ou** com **no máximo 1 familiar, de 17 anos ou mais**.
+- Toda equipe tem **nome**, obrigatório, em texto livre de até **20 caracteres** e **único**
+  entre as equipes da mesma aula — ou da mesma trilha. Qualquer integrante o troca.
+- Formar ou entrar em equipe exige **presença registrada** naquele encontro.
 
 **A equipe mistura idades.** É o principal instrumento do jogo para transformar a diferença
 de idades (6 a 16 anos) em força:

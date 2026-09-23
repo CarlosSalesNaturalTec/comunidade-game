@@ -354,9 +354,9 @@ aula tem **dois ou mais aparelhos, um por equipe**.
 
 **Requisitos:**
 
-- **Tela inicial com a escolha do caminho:** **onboarding** (uso individual) ou **trilhas**
-  (uso em equipe). Escolhido o onboarding, a tela seguinte oferece **começar por áudio** ou
-  **começar por texto (chat)**.
+- **Tela inicial com a escolha do caminho:** **onboarding** e **presença** (uso individual)
+  ou **equipes** (uso em equipe, com o conteúdo das trilhas). Escolhido o onboarding, a tela
+  seguinte oferece **começar por áudio** ou **começar por texto (chat)**.
 - Interação cognitiva conduzida por **IA**, tolerante a respostas fora de ordem, capaz de
   repetir e confirmar dados.
 - Captação e reprodução de áudio via `navigator.mediaDevices.getUserMedia`, com reconhecimento
@@ -383,12 +383,14 @@ aula tem **dois ou mais aparelhos, um por equipe**.
 - Operação com rede instável: fila local e sincronização posterior.
 - Registro de presença de Guerreiro(a) conhecido em poucos segundos.
 
-**Requisitos do caminho das trilhas (uso em equipe):**
+**Requisitos do caminho das equipes (uso em equipe):**
 
-- **Entrada por nick e imagem**, como em toda aplicação do Guerreiro(a).
+- **Entrada por nick e imagem**, como em toda aplicação do Guerreiro(a), só para quem já
+  registrou a presença do encontro — o caminho da presença termina nela, sem levar às equipes.
 - **Formação de equipe pelos próprios Guerreiros e Guerreiras**, válida para a aula em
-  andamento: criar equipe, entrar em equipe existente e sair dela, respeitados o limite de
-  cinco integrantes e o de um familiar de 17 anos ou mais. A equipe **termina com a aula**.
+  andamento: criar equipe com **nome** obrigatório, entrar em equipe existente, sair dela e
+  renomeá-la, respeitados o limite de cinco integrantes e o de um familiar de 17 anos ou mais.
+  A equipe **termina com a aula**.
 - Participação em **mais de uma equipe** no mesmo encontro e **em uma única equipe na partida
   de Quiz ao Vivo**.
 - **Missão da equipe**: onde ela está, o conteúdo e a atividade do dia.
