@@ -199,13 +199,16 @@ def test_saldo_pelo_ponto_de_apoio_da_aula_e_tipo_novo_aparece(
     painel_antes = montar_painel_do_dia(sessao, operador=admin)
     assert painel_antes.saldo_do_ponto_de_apoio == []
 
-    tipo = criar_tipo_de_recurso(admin, nome="Kit MDF")
+    tipo = criar_tipo_de_recurso(admin, nome="Kit MDF", unidade="kit")
     criar_lancamento(admin, tipo, ponto_de_apoio, quantidade=Decimal("5.00"))
 
     painel = montar_painel_do_dia(sessao, operador=admin)
 
-    saldos = {s.tipo_de_recurso_id: s.saldo for s in painel.saldo_do_ponto_de_apoio}
-    assert saldos[tipo.id] == Decimal("5.00")
+    saldos = {s.tipo_de_recurso_id: s for s in painel.saldo_do_ponto_de_apoio}
+    assert saldos[tipo.id].saldo == Decimal("5.00")
+    # O tipo aparece pelo nome e pela unidade do catálogo (`RF-02-45`).
+    assert saldos[tipo.id].tipo_de_recurso_nome == "Kit MDF"
+    assert saldos[tipo.id].tipo_de_recurso_unidade == "kit"
 
 
 def test_previsto_e_provido_saem_juntos(
@@ -223,7 +226,7 @@ def test_previsto_e_provido_saem_juntos(
     trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre, aula=aula)
-    tipo = criar_tipo_de_recurso(admin, nome="Lanche")
+    tipo = criar_tipo_de_recurso(admin, nome="Lanche", unidade="porção")
     criar_reserva(admin, aula, tipo, ponto_de_apoio, quantidade=Decimal("2.00"))
 
     painel = montar_painel_do_dia(sessao, operador=admin)
@@ -233,6 +236,9 @@ def test_previsto_e_provido_saem_juntos(
     assert len(painel.recursos_providos) == 1
     assert painel.recursos_providos[0].tipo_de_recurso_id == tipo.id
     assert painel.recursos_providos[0].quantidade == Decimal("2.00")
+    # A reserva aparece pelo nome e pela unidade do catálogo (`RF-02-44`).
+    assert painel.recursos_providos[0].tipo_de_recurso_nome == "Lanche"
+    assert painel.recursos_providos[0].tipo_de_recurso_unidade == "porção"
 
 
 def test_lancamento_pendente_entra_e_sai(sessao, cenario):
