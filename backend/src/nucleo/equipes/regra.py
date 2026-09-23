@@ -5,7 +5,13 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula
-from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
+from ..aulas.regra import presenca_vigente
+from ..erros import (
+    ErroDeValidacao,
+    NaoEncontrado,
+    PermissaoNegada,
+    PresencaDoEncontroAusente,
+)
 from ..personas.modelo import Papel, Persona
 from ..tempo import agora
 from ..trilhas.modelo import Atividade, Missao, SituacaoDaTrilha, Trilha
@@ -95,6 +101,21 @@ def _confirmar_uma_equipe_por_trilha(sessao: Session, *, persona_id: uuid.UUID, 
         )
 
 
+def _confirmar_presenca_no_encontro(
+    sessao: Session, *, persona: Persona, aula_id: uuid.UUID
+) -> None:
+    """Formar ou entrar em equipe da aula exige presença registrada naquela
+    aula (`RF-04-68`, `RN-04-40`). Vale só para o Guerreiro(a): presença é
+    registro dele, e barrar o familiar de 17 anos ou mais — que nunca tem
+    presença a registrar — revogaria o `RF-04-31`. A equipe da trilha fica
+    de fora, porque a rota dela não carrega a aula do encontro (design —
+    decisão 4)."""
+    if persona.papel != Papel.guerreiro:
+        return
+    if presenca_vigente(sessao, aula_id=aula_id, guerreiro_id=persona.id) is None:
+        raise PresencaDoEncontroAusente()
+
+
 def _confirmar_composicao(sessao: Session, *, equipe: Equipe, persona: Persona) -> None:
     total = sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe.id).count()
     if total >= TETO_DE_INTEGRANTES:
@@ -140,6 +161,8 @@ def criar_equipe(
 
     if trilha is not None:
         _confirmar_uma_equipe_por_trilha(sessao, persona_id=operador.id, trilha_id=trilha.id)
+    if aula is not None:
+        _confirmar_presenca_no_encontro(sessao, persona=operador, aula_id=aula.id)
 
     aula_id = aula.id if aula is not None else None
     trilha_id = trilha.id if trilha is not None else None
@@ -172,6 +195,8 @@ def entrar_na_equipe(
     _confirmar_equipe_aberta(sessao, equipe)
     if equipe.trilha_id is not None:
         _confirmar_uma_equipe_por_trilha(sessao, persona_id=operador.id, trilha_id=equipe.trilha_id)
+    if equipe.aula_id is not None:
+        _confirmar_presenca_no_encontro(sessao, persona=operador, aula_id=equipe.aula_id)
     _confirmar_composicao(sessao, equipe=equipe, persona=operador)
 
     integrante = IntegranteDaEquipe(equipe_id=equipe.id, persona_id=operador.id, papel=papel)

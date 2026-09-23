@@ -33,6 +33,10 @@ import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 interface Props {
   tokenDeTrabalho: string;
   aulaId: string;
+  /** O caminho que chamou a entrada. Só `presenca` registra a presença do
+   * dia e termina o atendimento ali; nos demais a entrada apenas abre a
+   * sessão (`RF-04-67`, design — decisão 1). */
+  caminho: CaminhoDaEntrada;
   aoVoltar: () => void;
   /** Avisa por qual caminho a sessão do Guerreiro(a) abriu — é o que
    * autoriza o recadastro da imagem atrás da confirmação presencial
@@ -40,7 +44,14 @@ interface Props {
   aoAbrirSessao?: (via: "reconhecimento" | "confirmacao") => void;
 }
 
-type Tela = "entrada" | "confirmando" | "presencaJaRegistrada" | "presencaEnfileirada";
+export type CaminhoDaEntrada = "presenca" | "equipes" | "quiz" | "troca";
+
+type Tela =
+  | "entrada"
+  | "confirmando"
+  | "presencaRegistrada"
+  | "presencaJaRegistrada"
+  | "presencaEnfileirada";
 
 const MENSAGEM_DE_RECUSA =
   "Não foi possível reconhecer. Tente de novo, com o rosto bem posicionado, ou chame um Mestre ou Admin.";
@@ -112,6 +123,7 @@ function ehRecusaDaConferencia(erro: unknown): boolean {
 export function TelaDeEntradaDoGuerreiro({
   tokenDeTrabalho,
   aulaId,
+  caminho,
   aoVoltar,
   aoAbrirSessao,
 }: Props) {
@@ -135,16 +147,25 @@ export function TelaDeEntradaDoGuerreiro({
   );
   const lugarDoVisor = useRef<HTMLDivElement>(null);
 
-  // Grava a presença no mesmo ato em que a sessão abre, sempre com o token
-  // da sessão de trabalho (`RF-04-18`, `RF-04-21`). Só o reconhecimento
-  // bloqueia a entrada quando a presença já constava — comparando o
-  // momento do fato como instante, não como texto, porque o núcleo
-  // devolve a data com precisão diferente da enviada (`RF-04-19`, design —
-  // decisão 3).
-  async function registrarPresencaEEntrar(
+  // Só o caminho Presença registra a presença: nos caminhos das equipes, do
+  // quiz e da troca a entrada apenas abre a sessão, e quem chega sem
+  // presença é barrado pela guarda, não pela entrada (`RF-04-67`,
+  // `RF-04-68`, design — decisão 1).
+  //
+  // Registrando, grava sempre com o token da sessão de trabalho
+  // (`RF-04-18`, `RF-04-21`), e só o reconhecimento avisa que a presença já
+  // constava — comparando o momento do fato como instante, não como texto,
+  // porque o núcleo devolve a data com precisão diferente da enviada
+  // (`RF-04-19`, design — decisão 3).
+  async function concluirEntrada(
     token: string,
     modo: "reconhecimento" | "confirmacao",
   ): Promise<void> {
+    if (caminho !== "presenca") {
+      aoAbrirSessao?.(modo);
+      await entrarComToken(token);
+      return;
+    }
     const quemSou = await eu(token);
     const momentoDoFato = new Date().toISOString();
     const presenca = await registrarPresenca(
@@ -161,6 +182,9 @@ export function TelaDeEntradaDoGuerreiro({
     }
     aoAbrirSessao?.(modo);
     await entrarComToken(token);
+    // Registrada a presença, o atendimento termina aqui: o caminho Presença
+    // não leva às equipes, que são outro momento (`RF-04-67`, PRD-04 §5.4).
+    definirTela("presencaRegistrada");
   }
 
   // Cada desfecho tem tratamento próprio, e nenhum empresta a frase do outro
@@ -225,7 +249,7 @@ export function TelaDeEntradaDoGuerreiro({
       // Depois da conferência o rosto já foi reconhecido: o que falhar aqui
       // NEVER se apresenta como recusa dele.
       try {
-        await registrarPresencaEEntrar(token, "reconhecimento");
+        await concluirEntrada(token, "reconhecimento");
       } catch {
         definirFalhaDeCamada(MENSAGEM_DE_FALHA_APOS_RECONHECIMENTO);
       }
@@ -296,7 +320,7 @@ export function TelaDeEntradaDoGuerreiro({
         tokenDeTrabalho,
       );
       zerarErrosDePin();
-      await registrarPresencaEEntrar(abertura.token, "confirmacao");
+      await concluirEntrada(abertura.token, "confirmacao");
     } catch (erroCapturado) {
       if (erroCapturado instanceof ErroDaApi && erroCapturado.codigo === "pin_bloqueado") {
         bloquear();
@@ -310,6 +334,19 @@ export function TelaDeEntradaDoGuerreiro({
     } finally {
       definirEmAndamento(false);
     }
+  }
+
+  if (tela === "presencaRegistrada") {
+    return (
+      <Moldura>
+        <Cabecalho titulo="Presença registrada" />
+        <Aviso tipo="sucesso">
+          Pronto, {nick.trim()}! A presença de hoje está registrada. Para trabalhar em equipe,
+          volte ao início e escolha Equipes.
+        </Aviso>
+        <Botao onClick={aoVoltar}>Voltar ao início</Botao>
+      </Moldura>
+    );
   }
 
   if (tela === "presencaJaRegistrada") {
@@ -333,6 +370,25 @@ export function TelaDeEntradaDoGuerreiro({
           aula sozinha assim que a rede voltar.
         </Aviso>
         <Botao onClick={aoVoltar}>Voltar ao início</Botao>
+      </Moldura>
+    );
+  }
+
+  // Sem rede, só o caminho Presença tem desfecho: a fila local é dele
+  // (`RF-04-23`). Formar equipe, responder ao quiz e trocar recompensa
+  // exigem rede, e nenhum deles enfileira coisa alguma (`RF-04-58`,
+  // `RF-04-68`).
+  if (semRede && caminho !== "presenca") {
+    return (
+      <Moldura>
+        <Cabecalho
+          titulo="Este caminho precisa de rede"
+          acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }}
+        />
+        <Aviso tipo="atencao">
+          A rede está fora. Assim que ela voltar, dá para entrar de novo por aqui. A presença
+          do dia continua sendo registrada no caminho Presença.
+        </Aviso>
       </Moldura>
     );
   }

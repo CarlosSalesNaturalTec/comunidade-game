@@ -17,7 +17,7 @@ from sqlalchemy.orm import sessionmaker
 from nucleo.aportes.modelo import Aporte, FormaDeAporte, SituacaoDeRessarcimento
 from nucleo.aportes.modelo import OrigemDoRegistro as OrigemDoRegistroDoAporte
 from nucleo.auditoria.modelo import Auditoria
-from nucleo.aulas.modelo import Aula, RecursoDeclaradoDaAula
+from nucleo.aulas.modelo import Aula, ModoDeComprovacao, Presenca, RecursoDeclaradoDaAula
 from nucleo.autenticacao import exigir_persona
 from nucleo.banco import Base, obter_sessao
 from nucleo.bibliografias.modelo import BibliografiaDaMissao
@@ -1606,6 +1606,44 @@ def criar_anotacao_da_ficha_de_vida(sessao):
         sessao.commit()
         sessao.refresh(anotacao)
         return anotacao
+
+    return _criar
+
+
+@pytest.fixture
+def criar_presenca(sessao):
+    """A presença do encontro, gravada direto: formar equipe da aula passou
+    a exigi-la (`RF-04-68`, `RN-04-40`), e montá-la é cenário do teste, não
+    o que ele exercita."""
+
+    def _criar(
+        aula: Aula,
+        guerreiro: Persona,
+        confirmador: Persona | None = None,
+        anulada: bool = False,
+    ) -> Presenca:
+        autor = confirmador or guerreiro
+        presenca = Presenca(
+            aula_id=aula.id,
+            guerreiro_id=guerreiro.id,
+            modo=(
+                ModoDeComprovacao.confirmacao
+                if confirmador is not None
+                else ModoDeComprovacao.reconhecimento
+            ),
+            confirmador_id=confirmador.id if confirmador is not None else None,
+            momento_do_fato=datetime.now(UTC),
+            autor_id=autor.id,
+            papel_do_autor=autor.papel.value,
+        )
+        if anulada:
+            presenca.anulada_em = datetime.now(UTC)
+            presenca.anulada_por_id = autor.id
+            presenca.motivo_da_anulacao = "Registro por engano."
+        sessao.add(presenca)
+        sessao.commit()
+        sessao.refresh(presenca)
+        return presenca
 
     return _criar
 

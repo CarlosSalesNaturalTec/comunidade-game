@@ -22,6 +22,7 @@ def test_a_leitura_reune_equipe_da_aula_e_equipe_da_trilha_com_papel(
     criar_trilha,
     criar_equipe,
     criar_nick,
+    criar_presenca,
     criar_sessao_de_teste,
 ):
     chave, _ = criar_chave()
@@ -41,6 +42,7 @@ def test_a_leitura_reune_equipe_da_aula_e_equipe_da_trilha_com_papel(
 
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     criar_nick(guerreiro, "zeferina")
+    criar_presenca(aula, guerreiro)
     entrar_na_equipe(sessao, operador=guerreiro, equipe=equipe_da_aula, papel="apoio")
     entrar_na_equipe(sessao, operador=guerreiro, equipe=equipe_da_trilha, papel="capitã")
     sessao.commit()

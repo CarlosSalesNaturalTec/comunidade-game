@@ -1,8 +1,9 @@
-import { useSessao } from "comum/autenticacao";
+import { type SessaoAberta, useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
 import { TelaDeMedicaoDoLimiar } from "../bancada/TelaDeMedicaoDoLimiar";
 import { AreaDetalhadaDeDireitos } from "../direitos/AreaDetalhadaDeDireitos";
+import { GuardaDePresenca } from "../entrada/GuardaDePresenca";
 import { TelaDeEntradaDoGuerreiro } from "../entrada/TelaDeEntradaDoGuerreiro";
 import { TelaDeEquipes } from "../equipes/TelaDeEquipes";
 import { FilaDePresencaPendente } from "../fila/FilaDePresencaPendente";
@@ -14,7 +15,7 @@ import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import { TelaDaProgramacao } from "../trilhas/TelaDaProgramacao";
 import { TelaDeTroca } from "../troca/TelaDeTroca";
 
-type Caminho = "inicio" | "onboarding" | "trilhas" | "troca" | "quiz" | "medicao";
+type Caminho = "inicio" | "onboarding" | "presenca" | "equipes" | "troca" | "quiz" | "medicao";
 
 interface Props {
   tokenDeTrabalho: string;
@@ -36,9 +37,10 @@ interface Props {
   aoFecharMomentoDeTroca: () => void;
 }
 
-// Os dois caminhos do PRD-04 §6.1 — onboarding e trilhas. O onboarding
-// entra em estado operante nesta fatia: cadastro do Guerreiro(a), do
-// responsável, o termo e a captura da imagem (`RF-04-01`, `RF-04-07`).
+// Os três caminhos do PRD-04 §6.1 — onboarding, presença e equipes. A
+// presença termina no registro e volta ao início; as equipes abrem por nick
+// e imagem ou PIN, sem registrar presença, e só para quem já a tem
+// (`RF-04-01`, `RF-04-67`, `RF-04-68`).
 export function TelaInicial({
   tokenDeTrabalho,
   personaIdDeTrabalho,
@@ -89,64 +91,20 @@ export function TelaInicial({
     aoVoltarAoInicio();
   }
 
-  if (mostrarDireitos) {
-    return <AreaDetalhadaDeDireitos aoVoltar={() => definirMostrarDireitos(false)} />;
+  // Recusado o caminho por falta de presença, a sessão aberta aqui não
+  // sobrevive ao encaminhamento: o atendimento seguinte começa limpo
+  // (`RF-04-67`, `RF-04-28`).
+  function irRegistrarPresenca() {
+    sairDoGuerreiro();
+    definirViaDeEntrada(null);
+    definirEquipeEscolhidaId(null);
+    definirMostrarRecadastro(false);
+    definirCaminho("presenca");
   }
 
-  if (caminho === "onboarding") {
-    // Sem rede não há como abrir o cadastro: nenhum campo é sequer
-    // oferecido, e nenhum dado chega a ser coletado (`RF-04-24`,
-    // `RN-04-12`).
-    if (semRede) {
-      return (
-        <Moldura>
-          <Cabecalho
-            titulo="Onboarding indisponível sem rede"
-            acao={{ rotulo: "Voltar", aoAcionar: voltarAoInicio }}
-          />
-          <Aviso tipo="atencao">
-            O cadastro de um novo Guerreiro(a) exige rede. Nenhum dado foi coletado — assim que
-            a rede voltar, tente de novo.
-          </Aviso>
-        </Moldura>
-      );
-    }
-    return (
-      <FluxoDeOnboarding
-        tokenDeTrabalho={tokenDeTrabalho}
-        personaIdDeTrabalho={personaIdDeTrabalho}
-        aulaId={aulaId}
-        aoConcluir={voltarAoInicio}
-        aoVoltar={voltarAoInicio}
-      />
-    );
-  }
-
-  // O caminho do diagnóstico: alcança só quem opera, porque fora do
-  // onboarding a aplicação não tem como saber que existe termo assinado de
-  // um Guerreiro(a) (`RN-04-33`, design — decisão 3).
-  if (caminho === "medicao") {
-    return (
-      <TelaDeMedicaoDoLimiar
-        alcance="operador"
-        tokenDeTrabalho={tokenDeTrabalho}
-        aulaId={aulaId}
-        aoVoltar={voltarAoInicio}
-      />
-    );
-  }
-
-  if (caminho === "trilhas" || caminho === "troca" || caminho === "quiz") {
-    if (!sessaoDoGuerreiro) {
-      return (
-        <TelaDeEntradaDoGuerreiro
-          tokenDeTrabalho={tokenDeTrabalho}
-          aulaId={aulaId}
-          aoVoltar={voltarAoInicio}
-          aoAbrirSessao={definirViaDeEntrada}
-        />
-      );
-    }
+  // As telas do caminho, já com a sessão do Guerreiro(a) aberta e a
+  // presença conferida pela guarda.
+  function conteudoDoCaminho(sessaoDoGuerreiro: SessaoAberta) {
     if (caminho === "troca") {
       return (
         <TelaDeTroca
@@ -201,6 +159,93 @@ export function TelaInicial({
     );
   }
 
+  if (mostrarDireitos) {
+    return <AreaDetalhadaDeDireitos aoVoltar={() => definirMostrarDireitos(false)} />;
+  }
+
+  if (caminho === "onboarding") {
+    // Sem rede não há como abrir o cadastro: nenhum campo é sequer
+    // oferecido, e nenhum dado chega a ser coletado (`RF-04-24`,
+    // `RN-04-12`).
+    if (semRede) {
+      return (
+        <Moldura>
+          <Cabecalho
+            titulo="Onboarding indisponível sem rede"
+            acao={{ rotulo: "Voltar", aoAcionar: voltarAoInicio }}
+          />
+          <Aviso tipo="atencao">
+            O cadastro de um novo Guerreiro(a) exige rede. Nenhum dado foi coletado — assim que
+            a rede voltar, tente de novo.
+          </Aviso>
+        </Moldura>
+      );
+    }
+    return (
+      <FluxoDeOnboarding
+        tokenDeTrabalho={tokenDeTrabalho}
+        personaIdDeTrabalho={personaIdDeTrabalho}
+        aulaId={aulaId}
+        aoConcluir={voltarAoInicio}
+        aoVoltar={voltarAoInicio}
+      />
+    );
+  }
+
+  // O caminho do diagnóstico: alcança só quem opera, porque fora do
+  // onboarding a aplicação não tem como saber que existe termo assinado de
+  // um Guerreiro(a) (`RN-04-33`, design — decisão 3).
+  if (caminho === "medicao") {
+    return (
+      <TelaDeMedicaoDoLimiar
+        alcance="operador"
+        tokenDeTrabalho={tokenDeTrabalho}
+        aulaId={aulaId}
+        aoVoltar={voltarAoInicio}
+      />
+    );
+  }
+
+  // O caminho Presença começa e termina na entrada: registrada a presença, a
+  // própria tela avisa e volta ao início (`RF-04-67`).
+  if (caminho === "presenca") {
+    return (
+      <TelaDeEntradaDoGuerreiro
+        tokenDeTrabalho={tokenDeTrabalho}
+        aulaId={aulaId}
+        caminho="presenca"
+        aoVoltar={voltarAoInicio}
+        aoAbrirSessao={definirViaDeEntrada}
+      />
+    );
+  }
+
+  if (caminho === "equipes" || caminho === "troca" || caminho === "quiz") {
+    if (!sessaoDoGuerreiro) {
+      return (
+        <TelaDeEntradaDoGuerreiro
+          tokenDeTrabalho={tokenDeTrabalho}
+          aulaId={aulaId}
+          caminho={caminho}
+          aoVoltar={voltarAoInicio}
+          aoAbrirSessao={definirViaDeEntrada}
+        />
+      );
+    }
+    // A guarda confere a presença assim que a sessão abre e, faltando,
+    // não deixa chegar às telas do caminho (`RF-04-68`, `RN-04-40`).
+    return (
+      <GuardaDePresenca
+        aulaId={aulaId}
+        tokenDoGuerreiro={sessaoDoGuerreiro.token}
+        aoRegistrarPresenca={irRegistrarPresenca}
+        aoVoltar={voltarAoInicio}
+      >
+        {conteudoDoCaminho(sessaoDoGuerreiro)}
+      </GuardaDePresenca>
+    );
+  }
+
   return (
     <Moldura>
       <Cabecalho titulo="Comunidade Game — Aula" subtitulo="O que você quer fazer?" />
@@ -212,8 +257,15 @@ export function TelaInicial({
         >
           Onboarding — cadastro do Guerreiro(a) e presença do dia
         </button>
-        <button type="button" className="cg-caminho" onClick={() => definirCaminho("trilhas")}>
-          Trilhas — entrar com o nick e trabalhar em equipe
+        <button
+          type="button"
+          className="cg-caminho"
+          onClick={() => definirCaminho("presenca")}
+        >
+          Presença — entrar com o nick e registrar a presença de hoje
+        </button>
+        <button type="button" className="cg-caminho" onClick={() => definirCaminho("equipes")}>
+          Equipes — formar a equipe e trabalhar a trilha
         </button>
         <button type="button" className="cg-caminho" onClick={() => definirCaminho("quiz")}>
           Quiz ao Vivo — entrar com o nick e responder pela equipe

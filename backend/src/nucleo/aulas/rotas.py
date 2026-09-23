@@ -15,6 +15,7 @@ from ..comunidades.modelo import ComunidadeVirtual
 from ..erros import (
     ConfirmacaoDeGuerreiroRecusada,
     ErroDeValidacao,
+    NaoEncontrado,
     PermissaoNegada,
     PinNaoCadastrado,
 )
@@ -43,6 +44,7 @@ from .regra import (
     aulas_vigentes,
     cancelar_aula,
     escopo_de_comunidade_da_leitura,
+    presenca_vigente,
     registrar_presenca,
     tentar_reservar_aula_pendente,
 )
@@ -493,6 +495,38 @@ def anular_presenca_rota(
     )
     sessao_bd.commit()
     return _saida_da_presenca(presenca)
+
+
+class MinhaPresencaSaida(BaseModel):
+    """Só o que a App 01 precisa para decidir se abre o caminho das
+    equipes: se há presença e, havendo, quando e como ela foi comprovada.
+    Nenhum dado pessoal além disso (`RF-04-68`, `RN-01-22`)."""
+
+    presente: bool
+    momento_do_fato: DataHoraComFuso | None = None
+    modo: str | None = None
+
+
+@roteador.get("/aulas/{id_da_aula}/presencas/eu")
+def ler_minha_presenca_rota(
+    id_da_aula: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.seus_dados, "le"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> MinhaPresencaSaida:
+    """`RF-04-68`, `RN-04-40`: a presença **não anulada** do Guerreiro(a) em
+    sessão naquela aula. O Guerreiro(a) vem do contexto, nunca do cliente
+    (invariante 15), e a ausência é resposta normal, não erro — é o que
+    permite à tela distinguir "não tem presença" de "não foi possível
+    perguntar" (`RN-04-36`, design — decisão 2)."""
+    aula = sessao_bd.get(Aula, id_da_aula)
+    if aula is None:
+        raise NaoEncontrado(mensagem="Aula não encontrada.")
+    presenca = presenca_vigente(sessao_bd, aula_id=aula.id, guerreiro_id=contexto.persona_id)
+    if presenca is None:
+        return MinhaPresencaSaida(presente=False)
+    return MinhaPresencaSaida(
+        presente=True, momento_do_fato=presenca.momento_do_fato, modo=presenca.modo.value
+    )
 
 
 class AtividadeDoMestreSaida(BaseModel):

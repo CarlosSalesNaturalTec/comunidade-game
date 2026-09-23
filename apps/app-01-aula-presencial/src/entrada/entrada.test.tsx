@@ -6,9 +6,11 @@ import * as biometriaModulo from "comum/biometria";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as presencasApi from "../api/presencas";
 import * as sessoesDeGuerreiroApi from "../api/sessoesDeGuerreiro";
+import * as filaDePresenca from "../fila/filaDePresenca";
 import { guardarVerificadorDeTeste } from "../pin/paraTestes";
 import { pinBloqueadoNoAparelho } from "../pin/pinDeConfirmacao";
-import { TelaDeEntradaDoGuerreiro } from "./TelaDeEntradaDoGuerreiro";
+import { ProvedorDeEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
+import { type CaminhoDaEntrada, TelaDeEntradaDoGuerreiro } from "./TelaDeEntradaDoGuerreiro";
 
 vi.mock("comum/autenticacao", async () => {
   const real =
@@ -39,11 +41,16 @@ function configurarSessao(entrarComToken = vi.fn()) {
   });
 }
 
-function renderizar(aoVoltar = vi.fn(), aoAbrirSessao = vi.fn()) {
+function renderizar(
+  aoVoltar = vi.fn(),
+  aoAbrirSessao = vi.fn(),
+  caminho: CaminhoDaEntrada = "presenca",
+) {
   return render(
     <TelaDeEntradaDoGuerreiro
       tokenDeTrabalho="token-de-trabalho"
       aulaId="aula-1"
+      caminho={caminho}
       aoVoltar={aoVoltar}
       aoAbrirSessao={aoAbrirSessao}
     />,
@@ -638,5 +645,104 @@ describe("PIN de quem confirma (RF-04-21, RN-04-37, RN-04-38)", () => {
     const armazenado =
       JSON.stringify({ ...sessionStorage }) + JSON.stringify({ ...localStorage });
     expect(armazenado).not.toContain("4821");
+  });
+});
+
+describe("o caminho decide quem registra a presença (RF-04-67)", () => {
+  it("no caminho das equipes, o reconhecimento abre a sessão e não registra presença", async () => {
+    const entrarComToken = vi.fn().mockResolvedValue(undefined);
+    configurarSessao(entrarComToken);
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    vi.spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    const quemSou = vi.spyOn(autenticacaoApi, "eu");
+    const registrarPresenca = mockarRegistrarPresencaEcoando();
+
+    renderizar(vi.fn(), vi.fn(), "equipes");
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+
+    await vi.waitFor(() => expect(entrarComToken).toHaveBeenCalledWith("token-do-guerreiro"));
+    expect(registrarPresenca).not.toHaveBeenCalled();
+    expect(quemSou).not.toHaveBeenCalled();
+  });
+
+  it("no caminho das equipes, a confirmação com PIN abre a sessão e não registra presença", async () => {
+    const entrarComToken = vi.fn().mockResolvedValue(undefined);
+    configurarSessao(entrarComToken);
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    const registrarPresenca = mockarRegistrarPresencaEcoando();
+
+    // Sem câmera, a entrada já abre na confirmação humana (`RN-04-09`).
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(false);
+    renderizar(vi.fn(), vi.fn(), "equipes");
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+    await usuario.type(await screen.findByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+
+    await vi.waitFor(() => expect(entrarComToken).toHaveBeenCalledWith("token-do-guerreiro"));
+    expect(registrarPresenca).not.toHaveBeenCalled();
+  });
+
+  it("no caminho da presença, o atendimento termina na confirmação do registro", async () => {
+    const entrarComToken = vi.fn().mockResolvedValue(undefined);
+    configurarSessao(entrarComToken);
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    vi.spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    mockarRegistrarPresencaEcoando();
+
+    renderizar(vi.fn(), vi.fn(), "presenca");
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+
+    expect(await screen.findByText(/presença registrada/i)).toBeInTheDocument();
+    expect(screen.getByText(/a presença de hoje está registrada/i)).toBeInTheDocument();
+  });
+});
+
+describe("sem rede, só o caminho da presença tem desfecho (RF-04-23, RF-04-58)", () => {
+  it("o caminho das equipes não abre sem rede e nada é enfileirado", async () => {
+    configurarSessao();
+    const enfileirar = vi.spyOn(filaDePresenca, "enfileirarPresenca");
+
+    render(
+      <ProvedorDeEstadoDeRede>
+        <TelaDeEntradaDoGuerreiro
+          tokenDeTrabalho="token-de-trabalho"
+          aulaId="aula-1"
+          caminho="equipes"
+          aoVoltar={vi.fn()}
+        />
+      </ProvedorDeEstadoDeRede>,
+    );
+    window.dispatchEvent(new Event("offline"));
+
+    expect(await screen.findByText(/este caminho precisa de rede/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/pin de quem confirma/i)).not.toBeInTheDocument();
+    expect(enfileirar).not.toHaveBeenCalled();
   });
 });

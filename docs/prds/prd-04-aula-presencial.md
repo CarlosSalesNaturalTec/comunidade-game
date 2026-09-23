@@ -251,7 +251,8 @@ dentro da mesma sessão de trabalho do aparelho.
 
 1. O Mestre abre a partida na App 03, declarando a atividade de Quiz ao Vivo e as equipes
    disputantes.
-2. Várias equipes disputam a partida. No App 01, cada Guerreiro(a) entra pelo nick e imagem e o
+2. Várias equipes disputam a partida. No App 01, cada Guerreiro(a) entra pelo nick e imagem —
+   já com a presença registrada no caminho Presença, que a entrada do quiz não repete — e o
    núcleo deriva **uma única equipe** para ele naquela partida — o aparelho não escolhe nem
    guarda vínculo algum, mesmo que o Guerreiro(a) integre outras equipes nas demais atividades
    do encontro.
@@ -266,8 +267,9 @@ dentro da mesma sessão de trabalho do aparelho.
 
 1. No fechamento do encontro, o Mestre **abre a troca** no aparelho. Fora desse momento a
    troca não existe: não há loja aberta entre encontros.
-2. O Guerreiro(a) entra por nick e imagem e vê o **catálogo avulso** da sua comunidade — o que
-   há, o preço em **pontos extras** e o **estoque restante**.
+2. O Guerreiro(a) entra por nick e imagem, já com a presença do dia registrada, e vê o
+   **catálogo avulso** da sua comunidade — o que há, o preço em **pontos extras** e o
+   **estoque restante**.
 3. Ele vê o próprio **saldo disponível**, e não o acumulado: o que dá para trocar hoje.
 4. Escolhido o item, a aplicação **debita o saldo** e registra a troca. O **acumulado não
    muda** — nada do que ele conquistou é apagado.
@@ -321,34 +323,34 @@ dentro da mesma sessão de trabalho do aparelho.
 
 ### 6.2 Trilhas e equipes
 
-| ID         | Requisito                                                                                                     | Prioridade |
-| ---------- | ------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-04-29` | Caminho das equipes abre sessão do Guerreiro(a) por nick e imagem                                             | essencial  |
-| `RF-04-68` | Caminho das equipes só abre para quem tem presença registrada no encontro, e o núcleo recusa equipe sem ela   | essencial  |
-| `RF-04-30` | Guerreiro(a) cria equipe da aula, entra em equipe existente e sai dela, sem aprovação de terceiro             | essencial  |
-| `RF-04-31` | Aplicação recusa o sexto integrante e o segundo familiar de 17 anos ou mais                                   | essencial  |
-| `RF-04-32` | Equipe é vinculada à aula em andamento e se encerra com ela, preservando o histórico realizado                | essencial  |
-| `RF-04-33` | Guerreiro(a) integra mais de uma equipe no mesmo encontro                                                     | essencial  |
-| `RF-04-59` | Cada integrante declara o seu papel na formação da equipe, e ele vale para o encontro inteiro                 | essencial  |
-| `RF-04-34` | Tela mostra as equipes da aula pelo nome e pelo avatar e nick dos integrantes, sem qualquer dado pessoal      | essencial  |
-| `RF-04-69` | Equipe nasce com nome obrigatório, de até 20 caracteres e único na aula — ou na trilha                        | essencial  |
-| `RF-04-70` | Qualquer integrante renomeia a equipe, com a mesma regra do nome, enquanto a composição puder mudar           | essencial  |
-| `RF-04-61` | Guerreiro(a) forma a equipe da trilha no aparelho, com os mesmos limites de composição da aula                | essencial  |
-| `RF-04-62` | Mestre presente homologa a equipe da trilha, e a composição fica fixa a partir da homologação                 | essencial  |
-| `RF-04-45` | Equipe entrega a produção da missão por texto, áudio ou foto do manuscrito                                    | essencial  |
-| `RF-04-46` | Aplicação devolve retorno construtivo e descarta foto e áudio na leitura                                      | essencial  |
-| `RF-04-47` | Devolutiva automática não credita pontos; o resultado é lançado pelo Mestre                                   | essencial  |
-| `RF-04-35` | Aplicação mostra à equipe a missão em que está, o conteúdo e a atividade do dia                               | essencial  |
-| `RF-04-36` | Assistente de trilhas responde por voz ou texto, apenas a partir do corpus cadastrado pelos Mestres           | essencial  |
-| `RF-04-37` | Pergunta fora do corpus recebe recusa explicada, com orientação de procurar um Mestre no encontro             | essencial  |
-| `RF-04-38` | Pergunta de tarefa escolar é encaminhada à App 05, sem ser respondida aqui                                    | essencial  |
-| `RF-04-39` | Microfone abre por ação do Guerreiro(a) e fecha ao fim da fala; não há captação do áudio ambiente             | essencial  |
-| `RF-04-40` | Áudio da pergunta não chega ao núcleo: a fala é transcrita no aparelho e só a transcrição trafega             | essencial  |
-| `RF-04-41` | Aparelho da equipe disputante recebe a pergunta da partida simultaneamente aos demais                         | essencial  |
-| `RF-04-42` | Na partida, o Guerreiro(a) joga por uma única equipe, ainda que integre outras no encontro                    | essencial  |
-| `RF-04-43` | Aparelho envia uma única resposta por pergunta, válida para todos os integrantes, e recusa a segunda          | essencial  |
-| `RF-04-44` | Resultado da pergunta aparece para a equipe quando quem conduz a partida o libera                             | essencial  |
-| `RF-04-58` | Sem rede, o conteúdo já carregado continua legível; equipe, assistente e resposta de quiz ficam indisponíveis | essencial  |
+| ID         | Requisito                                                                                                                                 | Prioridade |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-04-29` | Caminho das equipes abre sessão do Guerreiro(a) por nick e imagem                                                                         | essencial  |
+| `RF-04-68` | Caminhos das equipes, do quiz e da troca só abrem para quem tem presença registrada no encontro, e o núcleo recusa equipe da aula sem ela | essencial  |
+| `RF-04-30` | Guerreiro(a) cria equipe da aula, entra em equipe existente e sai dela, sem aprovação de terceiro                                         | essencial  |
+| `RF-04-31` | Aplicação recusa o sexto integrante e o segundo familiar de 17 anos ou mais                                                               | essencial  |
+| `RF-04-32` | Equipe é vinculada à aula em andamento e se encerra com ela, preservando o histórico realizado                                            | essencial  |
+| `RF-04-33` | Guerreiro(a) integra mais de uma equipe no mesmo encontro                                                                                 | essencial  |
+| `RF-04-59` | Cada integrante declara o seu papel na formação da equipe, e ele vale para o encontro inteiro                                             | essencial  |
+| `RF-04-34` | Tela mostra as equipes da aula pelo nome e pelo avatar e nick dos integrantes, sem qualquer dado pessoal                                  | essencial  |
+| `RF-04-69` | Equipe nasce com nome obrigatório, de até 20 caracteres e único na aula — ou na trilha                                                    | essencial  |
+| `RF-04-70` | Qualquer integrante renomeia a equipe, com a mesma regra do nome, enquanto a composição puder mudar                                       | essencial  |
+| `RF-04-61` | Guerreiro(a) forma a equipe da trilha no aparelho, com os mesmos limites de composição da aula                                            | essencial  |
+| `RF-04-62` | Mestre presente homologa a equipe da trilha, e a composição fica fixa a partir da homologação                                             | essencial  |
+| `RF-04-45` | Equipe entrega a produção da missão por texto, áudio ou foto do manuscrito                                                                | essencial  |
+| `RF-04-46` | Aplicação devolve retorno construtivo e descarta foto e áudio na leitura                                                                  | essencial  |
+| `RF-04-47` | Devolutiva automática não credita pontos; o resultado é lançado pelo Mestre                                                               | essencial  |
+| `RF-04-35` | Aplicação mostra à equipe a missão em que está, o conteúdo e a atividade do dia                                                           | essencial  |
+| `RF-04-36` | Assistente de trilhas responde por voz ou texto, apenas a partir do corpus cadastrado pelos Mestres                                       | essencial  |
+| `RF-04-37` | Pergunta fora do corpus recebe recusa explicada, com orientação de procurar um Mestre no encontro                                         | essencial  |
+| `RF-04-38` | Pergunta de tarefa escolar é encaminhada à App 05, sem ser respondida aqui                                                                | essencial  |
+| `RF-04-39` | Microfone abre por ação do Guerreiro(a) e fecha ao fim da fala; não há captação do áudio ambiente                                         | essencial  |
+| `RF-04-40` | Áudio da pergunta não chega ao núcleo: a fala é transcrita no aparelho e só a transcrição trafega                                         | essencial  |
+| `RF-04-41` | Aparelho da equipe disputante recebe a pergunta da partida simultaneamente aos demais                                                     | essencial  |
+| `RF-04-42` | Na partida, o Guerreiro(a) joga por uma única equipe, ainda que integre outras no encontro                                                | essencial  |
+| `RF-04-43` | Aparelho envia uma única resposta por pergunta, válida para todos os integrantes, e recusa a segunda                                      | essencial  |
+| `RF-04-44` | Resultado da pergunta aparece para a equipe quando quem conduz a partida o libera                                                         | essencial  |
+| `RF-04-58` | Sem rede, o conteúdo já carregado continua legível; equipe, assistente e resposta de quiz ficam indisponíveis                             | essencial  |
 
 ### 6.3 Troca por recompensa avulsa
 
@@ -407,7 +409,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RN-04-37` | A sessão de trabalho aberta no aparelho não confirma identidade: só quem a abriu confirma, e só com o próprio PIN digitado no ato                                                                                                             | —          | 03 §1.1       |
 | `RN-04-38` | O aparelho guarda só o verificador do PIN de quem abriu a sessão de trabalho, nunca o PIN; cinco erros seguidos o bloqueiam ali até novo login Google                                                                                         | —          | 03 §§1.1, 3.4 |
 | `RN-04-39` | Toda equipe tem nome em texto livre, de até 20 caracteres, único — sem distinguir maiúsculas — entre as equipes da mesma aula ou da mesma trilha                                                                                              | 15         | 02 §5         |
-| `RN-04-40` | Formar ou entrar em equipe exige presença registrada no encontro                                                                                                                                                                              | 15         | 02 §5         |
+| `RN-04-40` | Formar ou entrar em equipe, jogar o Quiz ao Vivo e trocar pontos extras exigem presença registrada no encontro                                                                                                                                | 15         | 02 §5, 03 §3  |
 
 ## 8. Modelo de dados
 

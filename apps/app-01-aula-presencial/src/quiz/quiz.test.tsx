@@ -311,16 +311,13 @@ describe("a abertura do quiz a partir da tela inicial", () => {
       papel: "guerreiro",
       permissoes: {},
     });
-    vi.spyOn(presencasApi, "registrarPresenca").mockImplementation((aulaId, entrada) =>
-      Promise.resolve({
-        id: `presenca-${guerreiroId}`,
-        aula_id: aulaId,
-        guerreiro_id: entrada.guerreiro_id,
-        modo: entrada.modo,
-        confirmador_id: "mestre-de-trabalho-1",
-        momento_do_fato: entrada.momento_do_fato,
-      }),
-    );
+    // O caminho do quiz não registra presença — ele a exige registrada
+    // (`RF-04-67`, `RF-04-68`, `RN-04-40`).
+    vi.spyOn(presencasApi, "lerMinhaPresenca").mockResolvedValue({
+      presente: true,
+      momento_do_fato: new Date().toISOString(),
+      modo: "reconhecimento",
+    });
   }
 
   async function entrarPeloQuiz(usuario: ReturnType<typeof userEvent.setup>, nick: string) {
