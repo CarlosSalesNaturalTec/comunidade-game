@@ -24,11 +24,21 @@ function mockarRegistrarPresencaEcoando() {
   );
 }
 
+function mockarPresencaNoEncontro(presente: boolean) {
+  return vi.spyOn(presencasApi, "lerMinhaPresenca").mockResolvedValue({
+    presente,
+    momento_do_fato: presente ? new Date().toISOString() : null,
+    modo: presente ? "reconhecimento" : null,
+  });
+}
+
+// O caminho das equipes abre a sessão e não registra presença: a guarda é
+// que confere se ela existe (`RF-04-67`, `RF-04-68`).
 async function entrarPorConfirmacao(
   usuario: ReturnType<typeof userEvent.setup>,
   nick = "zeferina",
 ) {
-  await usuario.click(screen.getByRole("button", { name: /trilhas/i }));
+  await usuario.click(screen.getByRole("button", { name: /equipes —/i }));
   await usuario.type(await screen.findByLabelText(/nick/i), nick);
   await usuario.click(screen.getByRole("button", { name: /entrar/i }));
   await usuario.type(await screen.findByLabelText(/pin de quem confirma/i), "4821");
@@ -71,12 +81,13 @@ function renderizar(
 }
 
 describe("tela inicial da App 01", () => {
-  it("os dois caminhos aparecem, e os dois estão habilitados", async () => {
+  it("os três caminhos aparecem, e os três estão habilitados", async () => {
     renderizar();
 
     expect(await screen.findByText(/o que você quer fazer/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /onboarding/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /trilhas/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /presença — entrar/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /equipes —/i })).toBeEnabled();
   });
 
   it("onboarding leva à tela de cadastro do Guerreiro(a)", async () => {
@@ -87,16 +98,49 @@ describe("tela inicial da App 01", () => {
     expect(await screen.findByText(/novo guerreiro/i)).toBeInTheDocument();
   });
 
-  it("trilhas sem sessão leva à entrada do Guerreiro(a), nunca ao cadastro", async () => {
+  it("equipes sem sessão leva à entrada do Guerreiro(a), nunca ao cadastro", async () => {
     renderizar();
     const usuario = userEvent.setup();
-    await usuario.click(screen.getByRole("button", { name: /trilhas/i }));
+    await usuario.click(screen.getByRole("button", { name: /equipes —/i }));
 
     expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
     expect(screen.queryByText(/cadastr/i)).not.toBeInTheDocument();
   });
 
-  it("a confirmação do Mestre abre a sessão do Guerreiro(a), registra a presença e leva às equipes", async () => {
+  it("no caminho da presença, a confirmação do Mestre registra a presença e termina o atendimento", async () => {
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(sessaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    const listarEquipes = vi.spyOn(equipesApi, "listarEquipesDaAula");
+    const registrarPresenca = mockarRegistrarPresencaEcoando();
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /presença — entrar/i }));
+    await usuario.type(await screen.findByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+    await usuario.type(await screen.findByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+
+    expect(await screen.findByText(/presença registrada/i)).toBeInTheDocument();
+    expect(registrarPresenca).toHaveBeenCalledWith(
+      "aula-1",
+      expect.objectContaining({ guerreiro_id: "guerreiro-1", modo: "confirmacao" }),
+      "token-de-trabalho",
+    );
+    // `RF-04-67`: o caminho da presença não leva às equipes.
+    expect(screen.queryByText(/equipes desta aula/i)).not.toBeInTheDocument();
+    expect(listarEquipes).not.toHaveBeenCalled();
+  });
+
+  it("o caminho das equipes abre a sessão sem registrar presença e mostra as equipes", async () => {
     vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
       token: "token-do-guerreiro",
       expira_em: new Date().toISOString(),
@@ -112,17 +156,66 @@ describe("tela inicial da App 01", () => {
       proximo_cursor: null,
     });
     const registrarPresenca = mockarRegistrarPresencaEcoando();
+    mockarPresencaNoEncontro(true);
 
     renderizar();
     const usuario = userEvent.setup();
     await entrarPorConfirmacao(usuario);
 
     expect(await screen.findByText(/equipes desta aula/i)).toBeInTheDocument();
-    expect(registrarPresenca).toHaveBeenCalledWith(
-      "aula-1",
-      expect.objectContaining({ guerreiro_id: "guerreiro-1", modo: "confirmacao" }),
-      "token-de-trabalho",
-    );
+    expect(registrarPresenca).not.toHaveBeenCalled();
+  });
+
+  it("sem presença registrada, o caminho das equipes não abre e oferece o caminho da presença", async () => {
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(sessaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    vi.spyOn(sessaoApi, "encerrarSessao").mockResolvedValue(undefined);
+    const listarEquipes = vi.spyOn(equipesApi, "listarEquipesDaAula");
+    mockarPresencaNoEncontro(false);
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await entrarPorConfirmacao(usuario);
+
+    expect(await screen.findByText(/registre a presença primeiro/i)).toBeInTheDocument();
+    expect(listarEquipes).not.toHaveBeenCalled();
+
+    // O encaminhamento encerra a sessão aberta aqui (`RF-04-28`).
+    await usuario.click(screen.getByRole("button", { name: /registrar a presença/i }));
+    expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
+    expect(sessaoApi.encerrarSessao).toHaveBeenCalledWith("token-do-guerreiro");
+  });
+
+  it("sem presença registrada, o caminho do quiz recusa do mesmo modo", async () => {
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(sessaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    mockarPresencaNoEncontro(false);
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /quiz ao vivo/i }));
+    await usuario.type(await screen.findByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+    await usuario.type(await screen.findByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+
+    expect(await screen.findByText(/registre a presença primeiro/i)).toBeInTheDocument();
   });
 
   it("voltar ao início encerra a sessão do Guerreiro(a) e limpa a tela", async () => {
@@ -141,7 +234,7 @@ describe("tela inicial da App 01", () => {
       itens: [],
       proximo_cursor: null,
     });
-    mockarRegistrarPresencaEcoando();
+    mockarPresencaNoEncontro(true);
 
     const aoVoltarAoInicio = vi.fn();
     renderizar(aoVoltarAoInicio);
@@ -172,7 +265,7 @@ describe("tela inicial da App 01", () => {
       itens: [],
       proximo_cursor: null,
     });
-    mockarRegistrarPresencaEcoando();
+    mockarPresencaNoEncontro(true);
     vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
     vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.4, 0.5, 0.6]);
     const enviarDescritor = vi.spyOn(descritorApi, "enviarDescritor").mockResolvedValue({
@@ -219,13 +312,13 @@ describe("tela inicial da App 01", () => {
       itens: [],
       proximo_cursor: null,
     });
-    mockarRegistrarPresencaEcoando();
+    mockarPresencaNoEncontro(true);
 
     renderizar();
     const usuario = userEvent.setup();
-    await usuario.click(screen.getByRole("button", { name: /trilhas/i }));
+    await usuario.click(screen.getByRole("button", { name: /equipes —/i }));
     await usuario.type(await screen.findByLabelText(/nick/i), "zeferina");
-    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
 
     expect(await screen.findByText(/equipes desta aula/i)).toBeInTheDocument();
     expect(
@@ -233,7 +326,7 @@ describe("tela inicial da App 01", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("o terceiro caminho não aparece com o momento de troca fechado", async () => {
+  it("o caminho da troca não aparece com o momento de troca fechado", async () => {
     renderizar(vi.fn(), { momentoDeTrocaAberto: false });
 
     expect(await screen.findByText(/o que você quer fazer/i)).toBeInTheDocument();
@@ -242,7 +335,7 @@ describe("tela inicial da App 01", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("o terceiro caminho aparece com o momento de troca aberto e leva à entrada, não ao cadastro", async () => {
+  it("o caminho da troca aparece com o momento aberto e leva à entrada, não ao cadastro", async () => {
     renderizar(vi.fn(), { momentoDeTrocaAberto: true });
     const usuario = userEvent.setup();
 
@@ -283,12 +376,35 @@ describe("tela inicial da App 01", () => {
     expect(screen.queryByLabelText(/^nome$/i)).not.toBeInTheDocument();
   });
 
+  it("falha ao conferir a presença aparece como falha, nunca como falta de presença", async () => {
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(sessaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    vi.spyOn(presencasApi, "lerMinhaPresenca").mockRejectedValue(new Error("rede fora"));
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await entrarPorConfirmacao(usuario);
+
+    // `RN-04-36`: quem não conseguiu perguntar não descobriu nada sobre a
+    // criança, e não manda registrar presença.
+    expect(await screen.findByText(/não deu para conferir/i)).toBeInTheDocument();
+    expect(screen.queryByText(/registre a presença primeiro/i)).not.toBeInTheDocument();
+  });
+
   it("sem rede, a entrada por reconhecimento não é oferecida e encaminha à confirmação humana", async () => {
     renderizar();
     window.dispatchEvent(new Event("offline"));
     const usuario = userEvent.setup();
 
-    await usuario.click(await screen.findByRole("button", { name: /trilhas/i }));
+    await usuario.click(await screen.findByRole("button", { name: /presença — entrar/i }));
 
     expect(
       await screen.findByText(/entrada por reconhecimento facial não funciona/i),

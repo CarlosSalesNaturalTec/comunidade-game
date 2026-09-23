@@ -17,12 +17,13 @@ from nucleo.personas.modelo import Papel
 
 
 def test_quem_cria_entra_como_primeiro_integrante(
-    sessao, criar_persona, criar_comunidade, criar_aula
+    sessao, criar_persona, criar_comunidade, criar_aula, criar_presenca
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     aula = criar_aula(admin, comunidade)
+    criar_presenca(aula, guerreiro)
 
     equipe = criar_equipe_pela_regra(
         sessao, nome="Leões", operador=guerreiro, aula=aula, trilha=None
@@ -99,7 +100,7 @@ def test_equipe_com_aula_e_trilha_e_recusada(
 
 
 def test_quinto_integrante_e_aceito_sexto_e_recusado(
-    sessao, criar_persona, criar_comunidade, criar_aula, criar_equipe
+    sessao, criar_persona, criar_comunidade, criar_aula, criar_equipe, criar_presenca
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -109,6 +110,7 @@ def test_quinto_integrante_e_aceito_sexto_e_recusado(
 
     guerreiros = [criar_persona(Papel.guerreiro, comunidade=comunidade) for _ in range(4)]
     for guerreiro in guerreiros:
+        criar_presenca(aula, guerreiro)
         entrar_na_equipe(sessao, operador=guerreiro, equipe=equipe)
     sessao.commit()
 
@@ -118,10 +120,49 @@ def test_quinto_integrante_e_aceito_sexto_e_recusado(
     )
 
     sexto = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_presenca(aula, sexto)
     with pytest.raises(ErroDeValidacao) as excinfo:
         entrar_na_equipe(sessao, operador=sexto, equipe=equipe)
     assert excinfo.value.campo == "equipe_id"
     assert sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe.id).count() == 5
+
+
+def test_o_familiar_de_17_anos_ou_mais_nao_e_barrado_por_presenca(
+    sessao, criar_persona, criar_comunidade, criar_aula, criar_equipe
+):
+    """Presença é registro do Guerreiro(a): barrar quem nunca tem presença a
+    registrar revogaria o `RF-04-31` (`RN-04-40`, design — decisão 3)."""
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    criador = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    equipe = criar_equipe(criador, aula=aula)
+
+    familiar = criar_persona(Papel.responsavel)
+    entrar_na_equipe(sessao, operador=familiar, equipe=equipe)
+    sessao.commit()
+
+    assert sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe.id).count() == 2
+
+
+def test_a_equipe_da_trilha_nao_recebe_a_guarda_de_presenca(
+    sessao, criar_persona, criar_comunidade, criar_trilha, criar_equipe
+):
+    """A rota da equipe da trilha não carrega a aula do encontro, e inventar
+    uma seria regra nova: no App 01 ela só é alcançada dentro do caminho das
+    equipes, já atrás da guarda do aparelho (`RN-04-40`, design — decisão
+    4)."""
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    criador = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    trilha = criar_trilha(mestre)
+    equipe = criar_equipe(criador, trilha=trilha)
+
+    sem_presenca = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    entrar_na_equipe(sessao, operador=sem_presenca, equipe=equipe)
+    sessao.commit()
+
+    assert sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe.id).count() == 2
 
 
 def test_primeiro_nao_guerreiro_e_aceito_segundo_e_recusado(
@@ -144,7 +185,7 @@ def test_primeiro_nao_guerreiro_e_aceito_segundo_e_recusado(
 
 
 def test_papel_declarado_e_gravado_e_papel_ausente_e_aceito(
-    sessao, criar_persona, criar_comunidade, criar_aula, criar_equipe
+    sessao, criar_persona, criar_comunidade, criar_aula, criar_equipe, criar_presenca
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -153,6 +194,7 @@ def test_papel_declarado_e_gravado_e_papel_ausente_e_aceito(
     equipe = criar_equipe(criador, aula=aula)
 
     outro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_presenca(aula, outro)
     integrante = entrar_na_equipe(sessao, operador=outro, equipe=equipe, papel="quem constrói")
     sessao.commit()
 
@@ -201,7 +243,7 @@ def test_equipe_de_aula_encerrada_nao_recebe_integrante(
 
 
 def test_mesmo_guerreiro_em_duas_equipes_da_aula(
-    sessao, criar_persona, criar_comunidade, criar_aula, criar_equipe
+    sessao, criar_persona, criar_comunidade, criar_aula, criar_equipe, criar_presenca
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -210,6 +252,7 @@ def test_mesmo_guerreiro_em_duas_equipes_da_aula(
     aula = criar_aula(admin, comunidade)
     equipe_um = criar_equipe(guerreiro, aula=aula)
     equipe_dois = criar_equipe(outro_criador, aula=aula)
+    criar_presenca(aula, guerreiro)
 
     entrar_na_equipe(sessao, operador=guerreiro, equipe=equipe_dois)
     sessao.commit()
@@ -346,7 +389,7 @@ def test_sair_da_equipe_inexistente_e_recusado(
 
 
 def test_sair_da_equipe_remove_o_integrante(
-    sessao, criar_persona, criar_comunidade, criar_aula, criar_equipe
+    sessao, criar_persona, criar_comunidade, criar_aula, criar_equipe, criar_presenca
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -354,6 +397,7 @@ def test_sair_da_equipe_remove_o_integrante(
     aula = criar_aula(admin, comunidade)
     equipe = criar_equipe(criador, aula=aula)
     outro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_presenca(aula, outro)
     entrar_na_equipe(sessao, operador=outro, equipe=equipe)
     sessao.commit()
 
@@ -385,11 +429,14 @@ def test_homologar_equipe_da_aula_e_recusado(
 
 
 @pytest.fixture
-def aula_com_guerreiro(criar_persona, criar_comunidade, criar_aula):
+def aula_com_guerreiro(criar_persona, criar_comunidade, criar_aula, criar_presenca):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     aula = criar_aula(admin, comunidade)
+    # Formar equipe da aula exige presença registrada (`RN-04-40`); o nome
+    # é o que estes testes exercitam.
+    criar_presenca(aula, guerreiro)
     return admin, comunidade, guerreiro, aula
 
 

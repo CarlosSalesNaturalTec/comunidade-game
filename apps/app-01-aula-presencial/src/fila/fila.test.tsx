@@ -75,6 +75,7 @@ describe("entrada do Guerreiro(a) sem rede — enfileira em vez de perder (RF-04
           <TelaDeEntradaDoGuerreiro
             tokenDeTrabalho="token-de-trabalho"
             aulaId="aula-1"
+            caminho="presenca"
             aoVoltar={vi.fn()}
           />
         </ProvedorDeSessao>
@@ -103,6 +104,7 @@ describe("entrada do Guerreiro(a) sem rede — enfileira em vez de perder (RF-04
           <TelaDeEntradaDoGuerreiro
             tokenDeTrabalho="token-de-trabalho"
             aulaId="aula-1"
+            caminho="presenca"
             aoVoltar={vi.fn()}
           />
         </ProvedorDeSessao>
@@ -125,6 +127,7 @@ describe("PIN conferido no aparelho sem rede (RF-04-23, RN-04-38)", () => {
           <TelaDeEntradaDoGuerreiro
             tokenDeTrabalho="token-de-trabalho"
             aulaId="aula-1"
+            caminho="presenca"
             aoVoltar={vi.fn()}
           />
         </ProvedorDeSessao>
@@ -355,7 +358,7 @@ describe("painel do Mestre — visibilidade da fila (RF-04-23, RN-04-14)", () =>
     await screen.findByText("zeferina");
 
     const usuario = userEvent.setup();
-    await usuario.click(screen.getByRole("button", { name: /trilhas/i }));
+    await usuario.click(screen.getByRole("button", { name: /presença — entrar/i }));
 
     expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
     expect(screen.queryByText("zeferina")).not.toBeInTheDocument();

@@ -193,7 +193,7 @@ def test_equipe_com_e_sem_missao(
 
 
 def test_equipe_sai_pelo_nome_com_o_papel_de_cada_integrante(
-    sessao, criar_persona, cenario, criar_equipe, criar_nick
+    sessao, criar_persona, cenario, criar_equipe, criar_nick, criar_presenca
 ):
     """`RF-02-08`: o nome da equipe e o papel de cada integrante; a troca
     do nome aparece na consulta seguinte (`RF-04-70`)."""
@@ -205,6 +205,7 @@ def test_equipe_sai_pelo_nome_com_o_papel_de_cada_integrante(
     equipe = criar_equipe(registra, aula=aula, nome="Leões")
     vinculo = sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe.id).one()
     vinculo.papel = "quem registra"
+    criar_presenca(aula, sem_papel)
     entrar_na_equipe(sessao, operador=sem_papel, equipe=equipe)
     sessao.commit()
 

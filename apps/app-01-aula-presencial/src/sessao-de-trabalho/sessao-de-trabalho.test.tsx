@@ -182,7 +182,7 @@ describe("sessão de trabalho do aparelho", () => {
     // A volta ao início relê `aulas/vigentes`, que desta vez não traz mais
     // a aula escolhida — a sessão de trabalho cai (`RN-04-29`).
     const usuario = userEvent.setup();
-    await usuario.click(screen.getByRole("button", { name: /trilhas/i }));
+    await usuario.click(screen.getByRole("button", { name: /presença — entrar/i }));
     await usuario.click(await screen.findByRole("button", { name: /voltar/i }));
 
     await waitFor(() =>

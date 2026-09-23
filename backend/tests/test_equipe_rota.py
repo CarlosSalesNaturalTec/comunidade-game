@@ -17,6 +17,7 @@ def test_guerreiro_cria_a_equipe_e_entra_como_primeiro_integrante(
     criar_persona,
     criar_comunidade,
     criar_aula,
+    criar_presenca,
     criar_sessao_de_teste,
     criar_nick,
 ):
@@ -26,6 +27,7 @@ def test_guerreiro_cria_a_equipe_e_entra_como_primeiro_integrante(
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade, avatar="avatar-1")
     criar_nick(guerreiro, "zeferina")
     aula = criar_aula(admin, comunidade)
+    criar_presenca(aula, guerreiro)
     token, _ = criar_sessao_de_teste(guerreiro)
 
     resposta = cliente.post(
@@ -46,6 +48,7 @@ def test_papel_declarado_e_gravado_e_papel_ausente_e_aceito(
     criar_comunidade,
     criar_aula,
     criar_equipe,
+    criar_presenca,
     criar_sessao_de_teste,
     criar_nick,
 ):
@@ -59,6 +62,7 @@ def test_papel_declarado_e_gravado_e_papel_ausente_e_aceito(
 
     outro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     criar_nick(outro, "outra")
+    criar_presenca(aula, outro)
     token, _ = criar_sessao_de_teste(outro)
 
     com_papel = cliente.post(
@@ -72,6 +76,7 @@ def test_papel_declarado_e_gravado_e_papel_ausente_e_aceito(
 
     terceiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     criar_nick(terceiro, "terceira")
+    criar_presenca(aula, terceiro)
     token_terceiro, _ = criar_sessao_de_teste(terceiro)
     sem_papel = cliente.post(
         f"/v1/equipes/{equipe.id}/integrantes", json={}, headers=_cabecalhos(chave, token_terceiro)
@@ -121,6 +126,7 @@ def test_sexto_integrante_e_recusado_com_422_pela_rota(
     criar_comunidade,
     criar_aula,
     criar_equipe,
+    criar_presenca,
     criar_sessao_de_teste,
     sessao,
 ):
@@ -133,12 +139,14 @@ def test_sexto_integrante_e_recusado_com_422_pela_rota(
 
     for _ in range(4):
         guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+        criar_presenca(aula, guerreiro)
         token, _ = criar_sessao_de_teste(guerreiro)
         cliente.post(
             f"/v1/equipes/{equipe.id}/integrantes", json={}, headers=_cabecalhos(chave, token)
         )
 
     sexto = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_presenca(aula, sexto)
     token_sexto, _ = criar_sessao_de_teste(sexto)
     resposta = cliente.post(
         f"/v1/equipes/{equipe.id}/integrantes", json={}, headers=_cabecalhos(chave, token_sexto)
@@ -740,3 +748,132 @@ def test_renomear_pela_rota_recusa_de_fora_e_nome_repetido(
 
     sessao.refresh(equipe)
     assert equipe.nome == "Leões"
+
+
+def test_sem_presenca_a_equipe_da_aula_nao_se_cria(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """`RF-04-68`, `RN-04-40`: formar equipe da aula exige presença
+    registrada naquela aula, e a recusa diz o que é — não é recusa de
+    composição nem falha de camada (`RN-04-36`)."""
+    from nucleo.equipes.modelo import Equipe
+
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.post(
+        f"/v1/aulas/{aula.id}/equipes", json={"nome": "Leões"}, headers=_cabecalhos(chave, token)
+    )
+
+    assert resposta.status_code == 422
+    assert resposta.json()["codigo"] == "presenca_do_encontro_ausente"
+    assert sessao.query(Equipe).count() == 0
+
+
+def test_sem_presenca_nao_se_entra_em_equipe_da_aula(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_presenca,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """`RF-04-68`, `RN-04-40`."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    criador = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    criar_presenca(aula, criador)
+    equipe = criar_equipe(criador, aula=aula)
+
+    sem_presenca = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    token, _ = criar_sessao_de_teste(sem_presenca)
+
+    resposta = cliente.post(
+        f"/v1/equipes/{equipe.id}/integrantes", json={}, headers=_cabecalhos(chave, token)
+    )
+
+    assert resposta.status_code == 422
+    assert resposta.json()["codigo"] == "presenca_do_encontro_ausente"
+    assert sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe.id).count() == 1
+
+
+def test_presenca_anulada_barra_a_formacao(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_presenca,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """A anulação devolve o par ao estado de quem não registrou
+    (`RF-02-36`, `RN-04-40`)."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    criador = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    criar_presenca(aula, criador)
+    equipe = criar_equipe(criador, aula=aula)
+
+    anulado = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_presenca(aula, anulado, confirmador=admin, anulada=True)
+    token, _ = criar_sessao_de_teste(anulado)
+
+    resposta = cliente.post(
+        f"/v1/equipes/{equipe.id}/integrantes", json={}, headers=_cabecalhos(chave, token)
+    )
+
+    assert resposta.status_code == 422
+    assert sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe.id).count() == 1
+
+
+def test_quem_ja_esta_dentro_sai_e_renomeia_sem_presenca(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_nick,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """Sair e renomear nunca exigiram presença, e continuam não exigindo:
+    a guarda é da formação (`RN-04-40`, `RF-04-70`)."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    criador = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_nick(criador, "zeferina")
+    aula = criar_aula(admin, comunidade)
+    equipe = criar_equipe(criador, aula=aula, nome="Leões")
+    token, _ = criar_sessao_de_teste(criador)
+
+    renomeada = cliente.patch(
+        f"/v1/equipes/{equipe.id}", json={"nome": "Onças"}, headers=_cabecalhos(chave, token)
+    )
+    assert renomeada.status_code == 200
+    assert renomeada.json()["nome"] == "Onças"
+
+    saida = cliente.delete(
+        f"/v1/equipes/{equipe.id}/integrantes/eu", headers=_cabecalhos(chave, token)
+    )
+    assert saida.status_code == 204

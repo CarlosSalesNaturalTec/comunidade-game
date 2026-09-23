@@ -55,3 +55,23 @@ export function registrarPresencaSemRede(
     token: tokenDeTrabalho,
   });
 }
+
+export interface MinhaPresenca {
+  presente: boolean;
+  momento_do_fato: string | null;
+  modo: "reconhecimento" | "confirmacao" | null;
+}
+
+// Com o token do **Guerreiro(a)**, não o da sessão de trabalho: a presença
+// lida é sempre a dele, e o núcleo a toma do contexto da sessão
+// (`RF-04-68`, `RN-04-40`, invariante 15). Ausência de presença é resposta
+// normal, e não erro — é ela que distingue "não tem presença" de "não foi
+// possível perguntar" (`RN-04-36`).
+export function lerMinhaPresenca(
+  aulaId: string,
+  tokenDoGuerreiro: string,
+): Promise<MinhaPresenca> {
+  return chamarNucleo<MinhaPresenca>(`/v1/aulas/${aulaId}/presencas/eu`, {
+    token: tokenDoGuerreiro,
+  });
+}

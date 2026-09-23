@@ -376,3 +376,35 @@ describe("equipes da aula", () => {
     expect(screen.getByRole("heading", { name: "Leões" })).toBeInTheDocument();
   });
 });
+
+describe("recusa do núcleo por falta de presença (RF-04-68, RN-04-40)", () => {
+  it("a falta de presença aparece como o que é, e não como recusa do reconhecimento", async () => {
+    vi.spyOn(equipesApi, "listarEquipesDaAula").mockResolvedValue({
+      itens: [equipe()],
+      proximo_cursor: null,
+    });
+    vi.spyOn(equipesApi, "entrarNaEquipe").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "presenca_do_encontro_ausente",
+        mensagem: "Registre a presença no encontro antes de formar equipe ou entrar em uma.",
+        campo: "aula_id",
+      }),
+    );
+
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
+    await screen.findByText("zeferina");
+
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /entrar nesta equipe/i }));
+
+    expect(await screen.findByText(/registre a presença no encontro/i)).toBeInTheDocument();
+    expect(screen.queryByText(/não foi possível reconhecer/i)).not.toBeInTheDocument();
+  });
+});

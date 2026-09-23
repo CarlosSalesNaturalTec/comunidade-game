@@ -115,6 +115,21 @@ class NickDeGuerreiroEmUsoNoEncontro(ErroDeValidacao):
         self.sugestoes = sugestoes
 
 
+class PresencaDoEncontroAusente(ErroDeValidacao):
+    """Mesma recusa 422 de `ErroDeValidacao`, com código próprio: formar ou
+    entrar em equipe da aula exige presença registrada no encontro, e quem
+    lê precisa distinguir esta falta da recusa de composição e da falha de
+    camada (`RF-04-68`, `RN-04-40`, `RN-04-36`)."""
+
+    codigo = "presenca_do_encontro_ausente"
+
+    def __init__(self) -> None:
+        super().__init__(
+            mensagem=("Registre a presença no encontro antes de formar equipe ou entrar em uma."),
+            campo="aula_id",
+        )
+
+
 class ErroInterno(ErroDeAplicacao):
     status_code = 500
     codigo = "erro_interno"

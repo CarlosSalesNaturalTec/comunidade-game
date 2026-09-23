@@ -221,6 +221,20 @@ def aulas_vigentes(sessao: Session) -> list[Aula]:
     )
 
 
+def presenca_vigente(
+    sessao: Session, *, aula_id: uuid.UUID, guerreiro_id: uuid.UUID
+) -> Presenca | None:
+    """A presença **não anulada** daquele par (aula, Guerreiro(a)), ou
+    `None`. A anulação devolve o par ao estado de quem não registrou, e é
+    por isso que ela também barra a formação de equipe (`RF-02-36`,
+    `RN-02-12`, `RN-04-40`)."""
+    return (
+        sessao.query(Presenca)
+        .filter_by(aula_id=aula_id, guerreiro_id=guerreiro_id, anulada_em=None)
+        .first()
+    )
+
+
 def registrar_presenca(
     sessao: Session,
     *,
@@ -240,11 +254,7 @@ def registrar_presenca(
     if guerreiro is None:
         raise ErroDeValidacao(mensagem="Presença exige o Guerreiro(a).", campo="guerreiro_id")
 
-    existente = (
-        sessao.query(Presenca)
-        .filter_by(aula_id=aula.id, guerreiro_id=guerreiro.id, anulada_em=None)
-        .first()
-    )
+    existente = presenca_vigente(sessao, aula_id=aula.id, guerreiro_id=guerreiro.id)
     if existente is not None:
         return existente
 

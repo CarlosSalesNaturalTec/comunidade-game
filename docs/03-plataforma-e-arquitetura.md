@@ -254,7 +254,10 @@ abrir, ela pergunta qual caminho a pessoa quer:
 
 Esta seção trata dos dois primeiros: **cadastrar novos Guerreiros e Guerreiras**, por
 conversa, sem formulário, e **registrar a presença** dos já cadastrados. Registrada a presença,
-o atendimento termina — formar equipe é outro momento, no caminho **Equipes**.
+o atendimento termina — formar equipe é outro momento, no caminho **Equipes**. **Só o caminho
+Presença registra presença**; os demais caminhos que pedem o Guerreiro(a) — Equipes, Quiz ao
+Vivo e troca por recompensa — apenas abrem a sessão dele, e **exigem a presença já registrada**
+(decisão do fundador, 2026-09-23).
 
 > O onboarding **roda continuamente** durante o encontro, e não apenas na abertura, porque a
 > dinâmica da aula é assíncrona.
@@ -437,7 +440,8 @@ O caminho **Equipes** do App 01 é o que a turma usa durante o encontro: **o con
 trilhas, em equipe**. A aula presencial tem **um aparelho por equipe**, em quantidade que
 varia a cada encontro — o mesmo aparelho em que a equipe acompanha a missão da trilha,
 responde ao Quiz ao Vivo e conversa com o assistente. A entrada é a de sempre: **nick e
-imagem** (§1.1), e só passa quem já registrou a presença do encontro no caminho **Presença**.
+imagem** (§1.1), e só passa quem já registrou a presença do encontro no caminho **Presença** —
+o mesmo vale para o Quiz ao Vivo e para a troca por recompensa.
 
 ### 4.1 Equipes formadas na hora
 
