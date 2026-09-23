@@ -19,6 +19,7 @@ from ..equipes.regra import equipes_da_aula
 from ..erros import PermissaoNegada
 from ..livro_razao.regra import saldos_por_ponto_de_apoio
 from ..personas.modelo import Papel, Persona
+from ..recursos.modelo import TipoDeRecurso
 from ..reservas.modelo import Reserva
 from ..tempo import agora
 from ..trilhas.modelo import Atividade, Missao, SituacaoDaTrilha, Trilha
@@ -58,11 +59,15 @@ class AtividadePrevistaSaida(BaseModel):
 
 class RecursoProvidoSaida(BaseModel):
     tipo_de_recurso_id: uuid.UUID
+    tipo_de_recurso_nome: str
+    tipo_de_recurso_unidade: str
     quantidade: Decimal
 
 
 class SaldoDoTipoSaida(BaseModel):
     tipo_de_recurso_id: uuid.UUID
+    tipo_de_recurso_nome: str
+    tipo_de_recurso_unidade: str
     saldo: Decimal
 
 
@@ -210,13 +215,26 @@ def _atividades_previstas(sessao: Session, aula_id: uuid.UUID) -> list[Atividade
     return resultado
 
 
+def _tipos_de_recurso(sessao: Session, ids: set[uuid.UUID]) -> dict[uuid.UUID, TipoDeRecurso]:
+    """O nome e a unidade de cada tipo vêm do catálogo, numa consulta só —
+    o painel nunca mostra o identificador interno (`RF-02-44`, `RF-02-45`)."""
+    if not ids:
+        return {}
+    tipos = sessao.query(TipoDeRecurso).filter(TipoDeRecurso.id.in_(ids)).all()
+    return {tipo.id: tipo for tipo in tipos}
+
+
 def _recursos_providos(sessao: Session, aula_id: uuid.UUID) -> list[RecursoProvidoSaida]:
     """As reservas que o agendamento constituiu, independente do estado —
     aula sem recurso declarado devolve lista vazia, sem erro (`RF-02-44`)."""
     reservas = sessao.query(Reserva).filter_by(aula_id=aula_id).all()
+    tipos = _tipos_de_recurso(sessao, {reserva.tipo_de_recurso_id for reserva in reservas})
     return [
         RecursoProvidoSaida(
-            tipo_de_recurso_id=reserva.tipo_de_recurso_id, quantidade=reserva.quantidade
+            tipo_de_recurso_id=reserva.tipo_de_recurso_id,
+            tipo_de_recurso_nome=tipos[reserva.tipo_de_recurso_id].nome,
+            tipo_de_recurso_unidade=tipos[reserva.tipo_de_recurso_id].unidade,
+            quantidade=reserva.quantidade,
         )
         for reserva in reservas
     ]
@@ -228,8 +246,14 @@ def _saldo_do_ponto_de_apoio(
     """O saldo dos tipos do catálogo configurável, sem tipo algum fixado em
     código (`RF-02-45`, `RN-07-36`)."""
     pares = saldos_por_ponto_de_apoio(sessao, ponto_de_apoio_id=ponto_de_apoio_id)
+    tipos = _tipos_de_recurso(sessao, {tipo_de_recurso_id for tipo_de_recurso_id, _ in pares})
     return [
-        SaldoDoTipoSaida(tipo_de_recurso_id=tipo_de_recurso_id, saldo=saldo)
+        SaldoDoTipoSaida(
+            tipo_de_recurso_id=tipo_de_recurso_id,
+            tipo_de_recurso_nome=tipos[tipo_de_recurso_id].nome,
+            tipo_de_recurso_unidade=tipos[tipo_de_recurso_id].unidade,
+            saldo=saldo,
+        )
         for tipo_de_recurso_id, saldo in pares
     ]
 

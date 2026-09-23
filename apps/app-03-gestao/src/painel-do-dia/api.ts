@@ -30,13 +30,19 @@ export interface AtividadePrevista {
   missao_titulo: string;
 }
 
+// O tipo de recurso chega com o nome e a unidade do catálogo — a tela
+// nunca mostra o identificador interno (`RF-02-44`, `RF-02-45`).
 export interface RecursoProvido {
   tipo_de_recurso_id: string;
+  tipo_de_recurso_nome: string;
+  tipo_de_recurso_unidade: string;
   quantidade: string;
 }
 
 export interface SaldoDoTipo {
   tipo_de_recurso_id: string;
+  tipo_de_recurso_nome: string;
+  tipo_de_recurso_unidade: string;
   saldo: string;
 }
 

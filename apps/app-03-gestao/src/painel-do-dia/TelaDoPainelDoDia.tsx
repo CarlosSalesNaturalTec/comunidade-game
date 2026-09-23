@@ -135,7 +135,8 @@ export function TelaDoPainelDoDia() {
               <ul>
                 {painel.recursos_providos.map((recurso) => (
                   <li key={recurso.tipo_de_recurso_id}>
-                    {recurso.tipo_de_recurso_id}: {recurso.quantidade}
+                    {recurso.tipo_de_recurso_nome}: {recurso.quantidade}{" "}
+                    {recurso.tipo_de_recurso_unidade}
                   </li>
                 ))}
               </ul>
@@ -151,7 +152,7 @@ export function TelaDoPainelDoDia() {
               <ul>
                 {painel.saldo_do_ponto_de_apoio.map((saldo) => (
                   <li key={saldo.tipo_de_recurso_id}>
-                    {saldo.tipo_de_recurso_id}: {saldo.saldo}
+                    {saldo.tipo_de_recurso_nome}: {saldo.saldo} {saldo.tipo_de_recurso_unidade}
                   </li>
                 ))}
               </ul>

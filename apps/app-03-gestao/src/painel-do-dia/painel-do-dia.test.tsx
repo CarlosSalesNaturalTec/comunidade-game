@@ -104,8 +104,22 @@ function painelDoEncontro(sobrescreve: Partial<PainelDoDia> = {}): PainelDoDia {
         missao_titulo: "Montagem do robô",
       },
     ],
-    recursos_providos: [{ tipo_de_recurso_id: "tipo-1", quantidade: "2.00" }],
-    saldo_do_ponto_de_apoio: [{ tipo_de_recurso_id: "tipo-1", saldo: "5.00" }],
+    recursos_providos: [
+      {
+        tipo_de_recurso_id: "e2fd9f23-bc5a-413d-ade3-ad6c9f3dce79",
+        tipo_de_recurso_nome: "Lanche",
+        tipo_de_recurso_unidade: "porção",
+        quantidade: "2.00",
+      },
+    ],
+    saldo_do_ponto_de_apoio: [
+      {
+        tipo_de_recurso_id: "e2fd9f23-bc5a-413d-ade3-ad6c9f3dce79",
+        tipo_de_recurso_nome: "Lanche",
+        tipo_de_recurso_unidade: "porção",
+        saldo: "5.00",
+      },
+    ],
     pendencias: [
       {
         tipo: "lancamento_da_atividade_realizada",
@@ -138,6 +152,19 @@ describe("Painel do dia (RF-02-41 a RF-02-48, RF-02-68, RF-02-69)", () => {
     expect(screen.queryByText(/aguardando aparelho/i)).not.toBeInTheDocument();
     expect(screen.getAllByText(/montagem do robô/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/falta lançar a atividade realizada/i)).toBeInTheDocument();
+  });
+
+  it("mostra o tipo de recurso pelo nome e pela unidade, nunca pelo identificador (RF-02-44, RF-02-45)", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(painelApi, "obterPainelDoDia").mockResolvedValue(painelDoEncontro());
+
+    render(<TelaDoPainelDoDia />);
+
+    const previsto = await screen.findByRole("region", { name: "Previsto e provido" });
+    expect(within(previsto).getByText("Lanche: 2.00 porção")).toBeInTheDocument();
+    const saldo = screen.getByRole("region", { name: "Saldo do ponto de apoio" });
+    expect(within(saldo).getByText("Lanche: 5.00 porção")).toBeInTheDocument();
+    expect(screen.queryByText(/e2fd9f23/)).not.toBeInTheDocument();
   });
 
   it("fora da janela de qualquer aula, diz que não há encontro em andamento", async () => {

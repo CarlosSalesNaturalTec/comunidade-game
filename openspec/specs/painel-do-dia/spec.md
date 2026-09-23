@@ -129,6 +129,10 @@ configurável** da gestão: o núcleo NEVER SHALL fixar tipo de recurso em códi
 "exemplares da linha Alpha" são exemplo de operação, não catálogo — decisão do fundador,
 2026-08-25, que corrige o texto do `RF-02-45`. (`RF-02-44`, `RF-02-45`, `RN-07-36`, PRD-02 §6.4)
 
+Em recursos providos e no saldo, cada tipo de recurso SHALL aparecer pelo **nome** e pela
+**unidade** do catálogo; o painel NEVER SHALL exibir o identificador interno do tipo.
+(`RF-02-44`, `RF-02-45`, PRD-02 §5.5.3)
+
 #### Scenario: O previsto e o provido saem juntos
 
 - **WHEN** o painel é consultado numa aula que reservou dois tipos de recurso
@@ -148,6 +152,12 @@ configurável** da gestão: o núcleo NEVER SHALL fixar tipo de recurso em códi
 
 - **WHEN** a aula não declarou recurso algum
 - **THEN** o painel mostra a atividade prevista e nenhuma reserva, sem erro
+
+#### Scenario: O tipo de recurso aparece pelo nome e pela unidade
+
+- **WHEN** a aula reservou um tipo de recurso do catálogo e o ponto de apoio tem saldo dele
+- **THEN** a reserva e o saldo aparecem com o nome, a quantidade e a unidade do tipo
+- **AND** o identificador interno do tipo não aparece na tela
 
 ### Requirement: O painel lista o que falta lançar antes de a aula terminar
 
