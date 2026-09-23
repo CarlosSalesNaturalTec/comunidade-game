@@ -245,14 +245,16 @@ A numeração é histórica: o antigo **App 02 — Assistente por voz e Modo Ouv
 ## 3. App 01 — Aula presencial: onboarding e presença
 
 O App 01 é **a aplicação da aula presencial**, usada pelos próprios Guerreiros e Guerreiras. Ao
-abrir, ela pergunta qual dos dois caminhos a pessoa quer:
+abrir, ela pergunta qual caminho a pessoa quer:
 
-- **Onboarding** — cadastro e registro de presença, de **uso individual**. É esta seção.
-- **Trilhas** — conteúdo, equipes, quiz e assistente, de **uso em equipe** (§4).
+- **Onboarding** — cadastro de quem chega pela primeira vez, de **uso individual**.
+- **Presença** — registro da presença de quem já é cadastrado, de **uso individual**.
+- **Equipes** — formar a equipe e, nela, conteúdo, quiz e assistente, de **uso em equipe**
+  (§4).
 
-Esta seção trata do primeiro caminho, que resolve dois problemas com a mesma jornada:
-**cadastrar novos Guerreiros e Guerreiras** e **registrar a presença** dos já cadastrados — por
-conversa, sem formulário.
+Esta seção trata dos dois primeiros: **cadastrar novos Guerreiros e Guerreiras**, por
+conversa, sem formulário, e **registrar a presença** dos já cadastrados. Registrada a presença,
+o atendimento termina — formar equipe é outro momento, no caminho **Equipes**.
 
 > O onboarding **roda continuamente** durante o encontro, e não apenas na abertura, porque a
 > dinâmica da aula é assíncrona.
@@ -261,7 +263,12 @@ conversa, sem formulário.
 
 ```text
 [Tela inicial do App 01]
-   ├── botão "TRILHAS"  → uso em equipe (§4)
+   ├── botão "EQUIPES"  → uso em equipe, só com presença registrada (§4)
+   ├── botão "PRESENÇA"
+   │         │
+   │         ▼
+   │   Guerreiro(a) JÁ CADASTRADO: nick + captura da imagem
+   │   → comparação com a base → presença registrada → volta à tela inicial
    └── botão "ONBOARDING"
              │
              ▼
@@ -271,23 +278,19 @@ conversa, sem formulário.
                                     ▼
                     [Interação cognitiva com IA]
                                     │
-                    ┌───────────────┴───────────────┐
-                    ▼                               ▼
-            Guerreiro(a) NOVO                    Guerreiro(a) JÁ CADASTRADO
-     nome, nick, nascimento/idade,        captura da imagem + nick
-     avatar + imagem, se o                → comparação com a base
-     responsável estiver junto                      │
-                    │                               ▼
-                    ▼                      presença registrada
-            cadastro criado +              automaticamente
-            presença registrada
+                                    ▼
+                          Guerreiro(a) NOVO
+                   nome, nick, nascimento/idade,
+                   avatar + imagem, se o responsável
+                   estiver junto → cadastro criado +
+                   presença registrada
 ```
 
 ### 3.2 Requisitos funcionais
 
 **Tela inicial** — layout Mobile First, alto contraste, poucos elementos. Primeiro a escolha
-entre **onboarding** e **trilhas**; escolhido o onboarding, dois botões: **começar por áudio** e
-**começar por texto (chat)**. Ambos levam ao mesmo fluxo cognitivo.
+entre **onboarding**, **presença** e **equipes**; escolhido o onboarding, dois botões:
+**começar por áudio** e **começar por texto (chat)**. Ambos levam ao mesmo fluxo cognitivo.
 
 **Interação cognitiva** — conduzida por **IA**: conversa natural, tolerante a respostas fora
 de ordem, capaz de repetir e confirmar dados. Na modalidade áudio, captação e reprodução via
@@ -430,15 +433,16 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
 
 ## 4. App 01 — Aula presencial: trilhas, equipes e assistente
 
-O segundo caminho do App 01 é o que a turma usa durante o encontro: **o conteúdo das trilhas,
-em equipe**. A aula presencial tem **um aparelho por equipe**, em quantidade que varia a cada
-encontro — o mesmo aparelho em que a equipe acompanha a missão da trilha, responde ao Quiz ao
-Vivo e conversa com o assistente. A entrada é a de sempre: **nick e imagem** (§1.1).
+O caminho **Equipes** do App 01 é o que a turma usa durante o encontro: **o conteúdo das
+trilhas, em equipe**. A aula presencial tem **um aparelho por equipe**, em quantidade que
+varia a cada encontro — o mesmo aparelho em que a equipe acompanha a missão da trilha,
+responde ao Quiz ao Vivo e conversa com o assistente. A entrada é a de sempre: **nick e
+imagem** (§1.1), e só passa quem já registrou a presença do encontro no caminho **Presença**.
 
 ### 4.1 Equipes formadas na hora
 
 **As equipes são formadas pelos próprios Guerreiros e Guerreiras, aqui no App 01**, e valem
-para **aquela aula**: começam e terminam com o encontro. Tamanho, composição e a regra do
+para **aquela aula**: começam e terminam com o encontro. Tamanho, composição, nome e a regra do
 familiar seguem o documento 02. A gestão **não forma nem edita equipe** — vê as equipes do dia
 no painel da App 03.
 

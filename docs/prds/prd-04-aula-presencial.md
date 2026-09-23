@@ -9,7 +9,7 @@
 | Onda             | 2                                                                 |
 | Situação         | aprovado                                                          |
 | Versão e data    | v5 — 2026-08-17                                                   |
-| Depende de       | PRD-01, PRD-02; o caminho das trilhas depende também do PRD-09    |
+| Depende de       | PRD-01, PRD-02; o caminho das equipes depende também do PRD-09    |
 | Documentos-fonte | 02 §§1, 5, 9, 03 §§1.1, 3, 4, 12, 05 §§4, 5, 06 §3, 11 §§4, 5, 15 |
 
 ## 2. Contexto e objetivo
@@ -17,11 +17,12 @@
 O App 01 é **a aplicação da aula presencial**, usada pelos próprios Guerreiros e Guerreiras. Ao
 abrir, ela pergunta o que a pessoa quer:
 
-- **Onboarding**, de uso individual: **cadastrar quem chega pela primeira vez** e **registrar a
-  presença de quem já é da casa** — por voz ou por chat, sem formulário, com a IA conduzindo e
-  confirmando cada dado.
-- **Trilhas**, de uso em equipe: a missão em que a equipe está, o conteúdo e a
-  atividade do dia, o Quiz ao Vivo e o assistente de trilhas.
+- **Onboarding**, de uso individual: **cadastrar quem chega pela primeira vez** — por voz ou
+  por chat, sem formulário, com a IA conduzindo e confirmando cada dado.
+- **Presença**, de uso individual: **registrar a presença de quem já é da casa**, por nick e
+  imagem, e voltar à tela inicial.
+- **Equipes**, de uso em equipe e só com a presença registrada: formar a equipe e, nela, a
+  missão em que ela está, o conteúdo e a atividade do dia e o assistente de trilhas.
 
 O onboarding roda **continuamente durante o encontro**, não só na abertura, porque a dinâmica
 da aula é assíncrona: os Guerreiros e Guerreiras chegam em ritmos diferentes e a porta fica
@@ -44,8 +45,8 @@ existe para impedir.
 
 #### Caminho do onboarding (individual)
 
-- Tela inicial Mobile First com a escolha entre **onboarding** e **trilhas**; no onboarding,
-  dois caminhos: **começar por áudio** e **começar por texto**.
+- Tela inicial Mobile First com a escolha entre **onboarding**, **presença** e **equipes**; no
+  onboarding, dois caminhos: **começar por áudio** e **começar por texto**.
 - Conversa conduzida por IA, tolerante a respostas fora de ordem, capaz de repetir e confirmar.
 - Abertura da sessão de trabalho: identificação da aula vigente e, havendo mais de uma no mesmo
   horário, pergunta única sobre em qual comunidade a aplicação está operando.
@@ -64,10 +65,11 @@ existe para impedir.
 - Fila local de presença com a rede fora, sincronizada quando ela volta.
 - Aviso visível do que se coleta, com acesso à área detalhada de direitos.
 
-#### Caminho das trilhas (em equipe)
+#### Caminho das equipes (em equipe)
 
-- Entrada do Guerreiro(a) por **nick e imagem**.
-- **Formação da equipe pelos próprios Guerreiros e Guerreiras**: criar, entrar e sair, com o
+- Entrada do Guerreiro(a) por **nick e imagem**, só com a presença do encontro já registrada.
+- **Formação da equipe pelos próprios Guerreiros e Guerreiras**: criar com nome, renomear,
+  entrar e sair, com o
   limite de cinco integrantes e o de um familiar de 17 anos ou mais. A equipe vale para a aula
   em andamento e **encerra com ela**.
 - Participação em **mais de uma equipe** no encontro; na partida de quiz, várias equipes
@@ -118,7 +120,7 @@ existe para impedir.
 
 O **onboarding não tem login próprio**: quem opera é a dupla que está na sala. O Mestre ou Admin
 autentica-se uma vez, ao abrir a sessão de trabalho do aparelho, e a partir daí a conversa é do
-Guerreiro(a). O **caminho das trilhas exige sessão do Guerreiro(a)**, aberta por nick e imagem
+Guerreiro(a). O **caminho das equipes exige sessão do Guerreiro(a)**, aberta por nick e imagem
 dentro da mesma sessão de trabalho do aparelho.
 
 ## 5. Jornadas principais
@@ -185,7 +187,9 @@ dentro da mesma sessão de trabalho do aparelho.
    tela devolve a confirmação em poucos segundos.
 4. Presença já registrada no mesmo encontro não é duplicada: a aplicação avisa que ela já
    existe e volta à tela inicial.
-5. Guerreiro(a) **sem _template_ gravado** — cadastro feito sem o responsável, ou biometria
+5. Registrada a presença, **o atendimento termina** e a tela volta ao início: o caminho
+   Presença não leva às equipes, que são outro momento (jornada 5.7).
+6. Guerreiro(a) **sem _template_ gravado** — cadastro feito sem o responsável, ou biometria
    recusada — segue direto para a confirmação humana da jornada 5.5, sem tentativa de captura.
 
 ### 5.5 Falha de identificação
@@ -209,20 +213,24 @@ dentro da mesma sessão de trabalho do aparelho.
    nenhuma imagem de criança fica guardada no aparelho compartilhado.
 4. Voltando a rede, a fila sincroniza sozinha, preservando **a hora do fato**, não a do envio.
 5. Registro que falhar na sincronização aparece para a gestão como pendência do painel do dia.
-6. No caminho das trilhas, o **conteúdo já carregado continua legível**; formação de equipe,
+6. No caminho das equipes, o **conteúdo já carregado continua legível**; formação de equipe,
    assistente e resposta de quiz **exigem rede** e voltam quando ela volta.
 
 ### 5.7 Formar a equipe da aula
 
-1. O Guerreiro(a) entra pelo caminho **trilhas**, com nick e imagem.
-2. A tela mostra as **equipes já formadas naquela aula**, por avatar e nick, e o botão de criar
-   uma nova.
-3. Criando, ele nomeia a equipe e ela nasce com ele dentro; entrando em uma existente, o
-   ingresso é imediato — não há aprovação, a formação é livre.
-4. A aplicação recusa o **sexto integrante** e o **segundo familiar de 17 anos ou mais**.
-5. O Guerreiro(a) pode integrar **mais de uma equipe** no mesmo encontro e sair de qualquer uma
+1. O Guerreiro(a) entra pelo caminho **Equipes**, com nick e imagem — ou pela confirmação do
+   adulto com PIN (jornada 5.5). Sem presença registrada no encontro, a aplicação o manda
+   registrá-la antes, no caminho **Presença**, e não abre as equipes.
+2. A tela mostra as **equipes já formadas naquela aula**, pelo nome e pelo avatar e nick dos
+   integrantes, e o botão de criar uma nova.
+3. Criando, ele **nomeia a equipe** — obrigatório, até 20 caracteres, sem repetir o nome de
+   outra equipe da aula — e ela nasce com ele dentro; entrando em uma existente, o ingresso é
+   imediato — não há aprovação, a formação é livre.
+4. Qualquer integrante **renomeia** a equipe, com a mesma regra do nome.
+5. A aplicação recusa o **sexto integrante** e o **segundo familiar de 17 anos ou mais**.
+6. O Guerreiro(a) pode integrar **mais de uma equipe** no mesmo encontro e sair de qualquer uma
    enquanto a aula durar.
-6. **Encerrada a aula, as equipes se encerram com ela**: o histórico do que a equipe realizou
+7. **Encerrada a aula, as equipes se encerram com ela**: o histórico do que a equipe realizou
    permanece; a composição não é reaproveitada no encontro seguinte.
 
 ### 5.8 Trabalhar a trilha com a equipe
@@ -274,7 +282,7 @@ dentro da mesma sessão de trabalho do aparelho.
 
 | ID         | Requisito                                                                                                                                                                                        | Prioridade |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
-| `RF-04-01` | Tela inicial oferece a escolha entre onboarding e trilhas e, no onboarding, entre áudio e texto                                                                                                  | essencial  |
+| `RF-04-01` | Tela inicial oferece a escolha entre onboarding, presença e equipes e, no onboarding, entre áudio e texto                                                                                        | essencial  |
 | `RF-04-02` | Aplicação abre somente dentro da janela de uma aula agendada para a data e a hora correntes                                                                                                      | essencial  |
 | `RF-04-03` | Havendo mais de uma aula vigente, a aplicação pergunta uma única vez em qual comunidade opera                                                                                                    | essencial  |
 | `RF-04-04` | Aplicação verifica a presença de câmera e bloqueia a captura da imagem quando não há, sem bloquear o onboarding                                                                                  | essencial  |
@@ -307,19 +315,23 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-26` | Aplicação exibe aviso discreto do que coleta, com acesso à área detalhada de direitos, incluindo a medição do limiar                                                                             | essencial  |
 | `RF-04-27` | Aplicação encerra a conversa dizendo ao Guerreiro(a) como ele entrará da próxima vez                                                                                                             | desejável  |
 | `RF-04-28` | Aplicação volta à tela inicial ao fim de cada atendimento, pronta para o próximo que chegar                                                                                                      | essencial  |
+| `RF-04-67` | Caminho da presença termina no registro dela e volta à tela inicial, sem levar às equipes                                                                                                        | essencial  |
 | `RF-04-60` | Cadastro do responsável mínimo no encontro coleta o **grau de parentesco** do vínculo com o Guerreiro(a)                                                                                         | essencial  |
 
 ### 6.2 Trilhas e equipes
 
 | ID         | Requisito                                                                                                     | Prioridade |
 | ---------- | ------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-04-29` | Caminho das trilhas abre sessão do Guerreiro(a) por nick e imagem                                             | essencial  |
+| `RF-04-29` | Caminho das equipes abre sessão do Guerreiro(a) por nick e imagem                                             | essencial  |
+| `RF-04-68` | Caminho das equipes só abre para quem tem presença registrada no encontro, e o núcleo recusa equipe sem ela   | essencial  |
 | `RF-04-30` | Guerreiro(a) cria equipe da aula, entra em equipe existente e sai dela, sem aprovação de terceiro             | essencial  |
 | `RF-04-31` | Aplicação recusa o sexto integrante e o segundo familiar de 17 anos ou mais                                   | essencial  |
 | `RF-04-32` | Equipe é vinculada à aula em andamento e se encerra com ela, preservando o histórico realizado                | essencial  |
 | `RF-04-33` | Guerreiro(a) integra mais de uma equipe no mesmo encontro                                                     | essencial  |
 | `RF-04-59` | Cada integrante declara o seu papel na formação da equipe, e ele vale para o encontro inteiro                 | essencial  |
-| `RF-04-34` | Tela mostra as equipes da aula por avatar e nick, sem qualquer dado pessoal                                   | essencial  |
+| `RF-04-34` | Tela mostra as equipes da aula pelo nome e pelo avatar e nick dos integrantes, sem qualquer dado pessoal      | essencial  |
+| `RF-04-69` | Equipe nasce com nome obrigatório, de até 20 caracteres e único na aula — ou na trilha                        | essencial  |
+| `RF-04-70` | Qualquer integrante renomeia a equipe, com a mesma regra do nome                                              | essencial  |
 | `RF-04-61` | Guerreiro(a) forma a equipe da trilha no aparelho, com os mesmos limites de composição da aula                | essencial  |
 | `RF-04-62` | Mestre presente homologa a equipe da trilha, e a composição fica fixa a partir da homologação                 | essencial  |
 | `RF-04-45` | Equipe entrega a produção da missão por texto, áudio ou foto do manuscrito                                    | essencial  |
@@ -393,11 +405,13 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RN-04-36` | Erro que o núcleo declara no corpo único nunca é apresentado como recusa do reconhecimento: falha de rede, de validação, de chave ou de preparo do aparelho aparece como o que é, e só a recusa declarada pelo núcleo vira a frase do domínio | 25         | 03 §1         |
 | `RN-04-37` | A sessão de trabalho aberta no aparelho não confirma identidade: só quem a abriu confirma, e só com o próprio PIN digitado no ato                                                                                                             | —          | 03 §1.1       |
 | `RN-04-38` | O aparelho guarda só o verificador do PIN de quem abriu a sessão de trabalho, nunca o PIN; cinco erros seguidos o bloqueiam ali até novo login Google                                                                                         | —          | 03 §§1.1, 3.4 |
+| `RN-04-39` | Toda equipe tem nome em texto livre, de até 20 caracteres, único entre as equipes da mesma aula — ou da mesma trilha                                                                                                                          | 15         | 02 §5         |
+| `RN-04-40` | Formar ou entrar em equipe exige presença registrada no encontro                                                                                                                                                                              | 15         | 02 §5         |
 
 ## 8. Modelo de dados
 
 No caminho do onboarding a aplicação **escreve nas entidades que o PRD-01 já mantém**. O
-caminho das trilhas **acrescenta três entidades** ao núcleo — `RespostaDeQuiz`,
+caminho das equipes **acrescenta três entidades** ao núcleo — `RespostaDeQuiz`,
 `ConsultaAoAssistente` e `ProducaoDaMissao` — e escreve em `Equipe`, que o núcleo já mantém. O
 que existe só no aparelho é a **fila local**, que não é entidade do domínio e não sobrevive à
 sincronização.
@@ -465,7 +479,7 @@ corpo, até três variações já testadas contra todo papel (documento 09, 2026
 | GET    | `/v1/eu/pin-de-confirmacao/verificador` | sessão do App 01 | Receber, ao abrir a sessão de trabalho, o verificador do PIN de quem a abriu (`RF-04-23`)                |
 | POST   | `/v1/aulas/{id}/presencas/sem-rede`     | sessão do App 01 | Sincronizar a presença confirmada sem rede, pelo nick e pela hora do fato, sem abrir sessão (`RF-04-23`) |
 
-Rotas do caminho das trilhas, todas autenticadas na **sessão do Guerreiro(a)**:
+Rotas do caminho das equipes, todas autenticadas na **sessão do Guerreiro(a)**:
 
 | Método | Rota                                  | Uso nesta aplicação                                                                                                                                            |
 | ------ | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -474,6 +488,7 @@ Rotas do caminho das trilhas, todas autenticadas na **sessão do Guerreiro(a)**:
 | POST   | `/v1/trilhas/{id}/equipes`            | Criar a equipe da trilha, com quem a criou como primeiro integrante (`RF-04-61`)                                                                               |
 | POST   | `/v1/equipes/{id}/homologacao`        | Homologar a equipe da trilha — única escrita desta lista sob a **sessão de trabalho**, do Mestre, e não sob a do Guerreiro(a) (`RF-04-62`)                     |
 | POST   | `/v1/equipes/{id}/integrantes`        | Entrar em uma equipe existente                                                                                                                                 |
+| PATCH  | `/v1/equipes/{id}`                    | Renomear a equipe — só quem a integra (`RF-04-70`)                                                                                                             |
 | DELETE | `/v1/equipes/{id}/integrantes/eu`     | Sair da equipe                                                                                                                                                 |
 | GET    | `/v1/equipes/{id}/missao`             | Programação do encontro, em lista — missão, conteúdo e atividade do dia de cada atividade presencial da aula da equipe; restrita a quem a integra (`RF-04-35`) |
 | POST   | `/v1/equipes/{id}/producao`           | Entregar a produção da missão — texto, áudio ou foto — na atividade corrente da equipe (`RF-04-45` a `RF-04-47`)                                               |
@@ -632,46 +647,47 @@ humana — esta última é o número que diz se a entrada por imagem funciona na
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                                                          | Gravada em     | Linha do doc 09                                                       |
-| ---------------------------------------------------------------------------------------------------------------- | -------------- | --------------------------------------------------------------------- |
-| Fotografia original apagada assim que o _template_ é gerado                                                      | 03 §3.3        | Já decididos                                                          |
-| _Template_ gerado no aparelho pela biblioteca Human — vivacidade e depois descritor                              | 03 §3.3        | Já decididos                                                          |
-| Só o descritor trafega; a comparação continua no núcleo, que nunca devolve o _template_                          | 03 §3.3        | Já decididos                                                          |
-| _Template_ guardado enquanto durar o vínculo, excluído ao fim dele ou a pedido                                   | 03 §3.3        | Já decididos                                                          |
-| Consentimento biométrico em termo impresso assinado, com testemunha e anexo pela gestão                          | 03 §3.3        | Já decididos                                                          |
-| Nick único em toda a plataforma, com sugestão de variações no cadastro                                           | 02 §1          | Já decididos                                                          |
-| Rede fora: presença na fila local; cadastro e reconhecimento exigem rede                                         | 03 §3.4        | Já decididos                                                          |
-| App 02 incorporado ao App 01, que passa a ser a aplicação da aula presencial                                     | 03 §§2.1, 3, 4 | Já decididos                                                          |
-| Modo Ouvinte removido do produto; a aplicação não capta o áudio ambiente da aula                                 | 03 §4          | Já decididos                                                          |
-| Limiar de comparação calibrado no aparelho do encontro, pela própria App 01, sob o mesmo termo                   | 03 §3.3        | Bancada de calibração do limiar na App 01                             |
-| Troca de pontos extras por recompensa avulsa, presencial, no encerramento do encontro                            | 02 §8.2        | Troca de pontos extras por recompensa avulsa                          |
-| Entrega no ato da troca, com baixa no livro-razão e sem reserva                                                  | 02 §8.2        | Troca de pontos extras por recompensa avulsa                          |
-| Debita o saldo disponível; o acumulado de pontos extras não muda                                                 | 11 §5          | Troca de pontos extras por recompensa avulsa                          |
-| `RF-04-49` é garantia da App 01, não regra que o núcleo verifica                                                 | 02 §8.2        | Janela de troca da recompensa avulsa                                  |
-| Equipe formada pelos próprios Guerreiros e Guerreiras, válida para aquela aula                                   | 02 §5          | Já decididos                                                          |
-| Uma única equipe por Guerreiro(a) na partida de Quiz ao Vivo                                                     | 02 §5, 05 §5   | Já decididos                                                          |
-| Resposta do Quiz ao Vivo enviada pelo App 01, não mais pela App 05                                               | 05 §5          | Já decididos                                                          |
-| App 05 como aplicação das aulas remotas e do uso cotidiano                                                       | 03 §7          | Já decididos                                                          |
-| Papel de cada integrante declarado na formação da equipe, valendo para o encontro                                | 02 §5          | Papel de cada integrante na equipe                                    |
-| Sessão de trabalho do aparelho é a janela da aula agendada                                                       | 03 §3.2        | Sessão de trabalho do aparelho da aula                                |
-| Aviso da exclusão do _template_ na App 07, com a data                                                            | 03 §9          | Aviso da exclusão do _template_ biométrico                            |
-| Reescrita por IA opera no App 01 mesmo com um integrante desligado                                               | 03 §7.1        | Personalização por IA no aparelho da equipe                           |
-| Não existe rota de conferência de nick do onboarding; a recusa da gravação devolve as variações de alcance total | 02 §1          | Busca por nick e exibição pública                                     |
-| Confirmação humana recebe o nick, nunca um identificador de persona                                              | 02 §1          | Busca por nick e exibição pública                                     |
-| Faixa de 6 a 16 anos exigida na regra do núcleo, retroativa ao caminho da gestão                                 | 09 §1          | Faixa etária do Guerreiro(a) retroativa ao caminho da gestão          |
-| Responsável mínimo e vínculo cadastrados pelo App 01 no ato do encontro, com grau de parentesco (`RF-04-60`)     | 09 §1          | Cadastro do responsável no ato do encontro                            |
-| O responsável mínimo é o nome, e só — sem e-mail, credencial nem digitalização do termo                          | 09 §1          | O responsável mínimo é o nome, e só                                   |
-| A versão do termo é carimbada pelo núcleo, nunca recebida do cliente                                             | 09 §1          | A versão do termo é carimbada pelo núcleo                             |
-| Sem câmera, o onboarding continua — só a captura fecha                                                           | 09 §1          | Sem câmera, o onboarding continua                                     |
-| Quem escreve a presença por reconhecimento é a sessão de trabalho do aparelho, sem confirmador                   | 09 §1          | Quem escreve a presença por reconhecimento                            |
-| Presença já registrada é devolvida sem erro, no lugar do 409; quem avisa é a aplicação                           | 09 §1          | Presença já registrada não é erro                                     |
-| Aparelho aberto por Admin não oferece o momento de troca — a troca é ato do Mestre                               | 09 §1          | Troca por recompensa avulsa exige Mestre na sessão de trabalho        |
-| A troca é escrita sob a sessão de trabalho, com o Guerreiro(a) vindo da sessão aninhada                          | 09 §1          | A troca é escrita sob a sessão de trabalho do aparelho                |
-| Equipe da trilha formada **e** homologada na App 01, no mesmo aparelho                                           | 02 §5          | Onde a equipe da trilha é formada e homologada                        |
-| A produção entregue no App 01 é da equipe — um registro só, válido para todos os integrantes                     | 02 §5, 03 §4.2 | A produção entregue no App 01 é da equipe                             |
-| A fatia 9 entrega a `ProducaoDaMissao` inteira; a fatia 7 do PRD-05 só acrescenta a porta individual             | PRD-05 §8      | A fatia 9 do PRD-04 entrega a `ProducaoDaMissao` inteira              |
-| O corpus do assistente é a missão da atividade corrente e as de posição anterior na trilha, nunca uma à frente   | 03 §4.2        | O corpus do assistente de trilhas é a missão corrente e as anteriores |
-| Confirmação de identidade exige o PIN de 4 dígitos de quem confirma; sem rede, conferido no aparelho             | 03 §§1.1, 3.4  | Confirmação de identidade no encontro exige o PIN do adulto           |
+| Decisão                                                                                                          | Gravada em       | Linha do doc 09                                                       |
+| ---------------------------------------------------------------------------------------------------------------- | ---------------- | --------------------------------------------------------------------- |
+| Fotografia original apagada assim que o _template_ é gerado                                                      | 03 §3.3          | Já decididos                                                          |
+| _Template_ gerado no aparelho pela biblioteca Human — vivacidade e depois descritor                              | 03 §3.3          | Já decididos                                                          |
+| Só o descritor trafega; a comparação continua no núcleo, que nunca devolve o _template_                          | 03 §3.3          | Já decididos                                                          |
+| _Template_ guardado enquanto durar o vínculo, excluído ao fim dele ou a pedido                                   | 03 §3.3          | Já decididos                                                          |
+| Consentimento biométrico em termo impresso assinado, com testemunha e anexo pela gestão                          | 03 §3.3          | Já decididos                                                          |
+| Nick único em toda a plataforma, com sugestão de variações no cadastro                                           | 02 §1            | Já decididos                                                          |
+| Rede fora: presença na fila local; cadastro e reconhecimento exigem rede                                         | 03 §3.4          | Já decididos                                                          |
+| App 02 incorporado ao App 01, que passa a ser a aplicação da aula presencial                                     | 03 §§2.1, 3, 4   | Já decididos                                                          |
+| Modo Ouvinte removido do produto; a aplicação não capta o áudio ambiente da aula                                 | 03 §4            | Já decididos                                                          |
+| Limiar de comparação calibrado no aparelho do encontro, pela própria App 01, sob o mesmo termo                   | 03 §3.3          | Bancada de calibração do limiar na App 01                             |
+| Troca de pontos extras por recompensa avulsa, presencial, no encerramento do encontro                            | 02 §8.2          | Troca de pontos extras por recompensa avulsa                          |
+| Entrega no ato da troca, com baixa no livro-razão e sem reserva                                                  | 02 §8.2          | Troca de pontos extras por recompensa avulsa                          |
+| Debita o saldo disponível; o acumulado de pontos extras não muda                                                 | 11 §5            | Troca de pontos extras por recompensa avulsa                          |
+| `RF-04-49` é garantia da App 01, não regra que o núcleo verifica                                                 | 02 §8.2          | Janela de troca da recompensa avulsa                                  |
+| Equipe formada pelos próprios Guerreiros e Guerreiras, válida para aquela aula                                   | 02 §5            | Já decididos                                                          |
+| Uma única equipe por Guerreiro(a) na partida de Quiz ao Vivo                                                     | 02 §5, 05 §5     | Já decididos                                                          |
+| Resposta do Quiz ao Vivo enviada pelo App 01, não mais pela App 05                                               | 05 §5            | Já decididos                                                          |
+| App 05 como aplicação das aulas remotas e do uso cotidiano                                                       | 03 §7            | Já decididos                                                          |
+| Papel de cada integrante declarado na formação da equipe, valendo para o encontro                                | 02 §5            | Papel de cada integrante na equipe                                    |
+| Sessão de trabalho do aparelho é a janela da aula agendada                                                       | 03 §3.2          | Sessão de trabalho do aparelho da aula                                |
+| Aviso da exclusão do _template_ na App 07, com a data                                                            | 03 §9            | Aviso da exclusão do _template_ biométrico                            |
+| Reescrita por IA opera no App 01 mesmo com um integrante desligado                                               | 03 §7.1          | Personalização por IA no aparelho da equipe                           |
+| Não existe rota de conferência de nick do onboarding; a recusa da gravação devolve as variações de alcance total | 02 §1            | Busca por nick e exibição pública                                     |
+| Confirmação humana recebe o nick, nunca um identificador de persona                                              | 02 §1            | Busca por nick e exibição pública                                     |
+| Faixa de 6 a 16 anos exigida na regra do núcleo, retroativa ao caminho da gestão                                 | 09 §1            | Faixa etária do Guerreiro(a) retroativa ao caminho da gestão          |
+| Responsável mínimo e vínculo cadastrados pelo App 01 no ato do encontro, com grau de parentesco (`RF-04-60`)     | 09 §1            | Cadastro do responsável no ato do encontro                            |
+| O responsável mínimo é o nome, e só — sem e-mail, credencial nem digitalização do termo                          | 09 §1            | O responsável mínimo é o nome, e só                                   |
+| A versão do termo é carimbada pelo núcleo, nunca recebida do cliente                                             | 09 §1            | A versão do termo é carimbada pelo núcleo                             |
+| Sem câmera, o onboarding continua — só a captura fecha                                                           | 09 §1            | Sem câmera, o onboarding continua                                     |
+| Quem escreve a presença por reconhecimento é a sessão de trabalho do aparelho, sem confirmador                   | 09 §1            | Quem escreve a presença por reconhecimento                            |
+| Presença já registrada é devolvida sem erro, no lugar do 409; quem avisa é a aplicação                           | 09 §1            | Presença já registrada não é erro                                     |
+| Aparelho aberto por Admin não oferece o momento de troca — a troca é ato do Mestre                               | 09 §1            | Troca por recompensa avulsa exige Mestre na sessão de trabalho        |
+| A troca é escrita sob a sessão de trabalho, com o Guerreiro(a) vindo da sessão aninhada                          | 09 §1            | A troca é escrita sob a sessão de trabalho do aparelho                |
+| Equipe da trilha formada **e** homologada na App 01, no mesmo aparelho                                           | 02 §5            | Onde a equipe da trilha é formada e homologada                        |
+| A produção entregue no App 01 é da equipe — um registro só, válido para todos os integrantes                     | 02 §5, 03 §4.2   | A produção entregue no App 01 é da equipe                             |
+| A fatia 9 entrega a `ProducaoDaMissao` inteira; a fatia 7 do PRD-05 só acrescenta a porta individual             | PRD-05 §8        | A fatia 9 do PRD-04 entrega a `ProducaoDaMissao` inteira              |
+| O corpus do assistente é a missão da atividade corrente e as de posição anterior na trilha, nunca uma à frente   | 03 §4.2          | O corpus do assistente de trilhas é a missão corrente e as anteriores |
+| Confirmação de identidade exige o PIN de 4 dígitos de quem confirma; sem rede, conferido no aparelho             | 03 §§1.1, 3.4    | Confirmação de identidade no encontro exige o PIN do adulto           |
+| Presença e equipes em caminhos separados; equipes exige presença; equipe com nome único e trocável               | 02 §5, 03 §§3, 4 | Presença e equipes em caminhos separados, e a equipe com nome         |
 
 A decisão do consentimento em papel acrescentou a **testemunha** e o **anexo do termo** ao
 `Consentimento` do PRD-01, e o acompanhamento do anexo pendente à App 03 (PRD-02).
@@ -734,6 +750,11 @@ A linha do **PIN de confirmação** é decisão nova do fundador, em 2026-09-23,
 token de quem destravou o aparelho — qualquer pessoa digitava o nick de outra criança, entrava em
 equipe e pontuava por ela. O PIN prova que o adulto está ao lado da criança no ato.
 
+A linha dos **caminhos separados** é decisão nova do fundador, em 2026-09-23, elicitada em
+`/opsx:explore`: a presença levava direto às equipes, e quem voltava ao aparelho esbarrava na
+presença já registrada. O nome da equipe já constava da §5.7 e da §8, mas não da §6 — por isso
+nenhuma fatia o entregou; a decisão fixa o tamanho, a unicidade e a troca.
+
 ## 14. Pendências que permanecem
 
 - **Peso dos modelos da biblioteca Human** no primeiro carregamento, contra o requisito de
@@ -743,7 +764,7 @@ equipe e pontuava por ela. O PIN prova que o adulto está ao lado da criança no
   fundador antes da primeira turma.
 - **Termo de consentimento**: a redação do documento impresso precisa existir antes da primeira
   aula com onboarding.
-- **Entrega em duas etapas**: o caminho do onboarding é da onda 2; o caminho das trilhas só
+- **Entrega em duas etapas**: o caminho do onboarding é da onda 2; o caminho das equipes só
   opera com trilha, conteúdo e banco de perguntas publicados na App 09 (PRD-09) e com a
   condução da partida na App 03 (PRD-02) — o que a fase 3 do piloto já pressupõe.
 - **Comportamento do assistente por voz em sala barulhenta**, com a alternativa por texto sempre
@@ -779,6 +800,8 @@ a **forma do aviso** da exclusão do _template_, que acontece na App 07, com a d
 | `RF-04-27` e `RF-04-28` | 03 §3 (onboarding contínuo em aparelho compartilhado)     |
 | `RF-04-29`              | 03 §1.1 (entrada por nick e imagem)                       |
 | `RF-04-30` a `RF-04-34` | 02 §5 e 03 §4.1 (equipes formadas na aula)                |
+| `RF-04-67` e `RF-04-68` | 03 §§3, 4 (presença e equipes em caminhos separados)      |
+| `RF-04-69` e `RF-04-70` | 02 §5 (nome da equipe)                                    |
 | `RF-04-35`              | 11 §2 (anatomia da trilha), 03 §4.2                       |
 | `RF-04-61` e `RF-04-62` | 02 §5 (equipe da trilha formada e homologada no encontro) |
 | `RF-04-45` a `RF-04-47` | 11 §2.2 (produção e devolutiva), 03 §§4, 12.2             |
