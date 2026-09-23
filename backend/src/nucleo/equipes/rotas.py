@@ -33,6 +33,7 @@ from .regra import equipes_da_aula as _equipes_da_aula
 from .regra import equipes_da_persona as _equipes_da_persona
 from .regra import homologar_equipe_da_trilha as _homologar_equipe_da_trilha
 from .regra import programacao_do_encontro as _programacao_do_encontro
+from .regra import renomear_equipe as _renomear_equipe
 from .regra import sair_da_equipe as _sair_da_equipe
 
 roteador = APIRouter()
@@ -47,6 +48,7 @@ class IntegranteSaida(AvatarENickSaida):
 
 class EquipeSaida(BaseModel):
     id: uuid.UUID
+    nome: str
     aula_id: uuid.UUID | None
     trilha_id: uuid.UUID | None
     homologado_por_id: uuid.UUID | None
@@ -59,6 +61,7 @@ def saida_da_equipe(sessao: Session, equipe: Equipe) -> EquipeSaida:
     avatares_e_nicks = buscar_avatares_e_nicks(sessao, [i.persona_id for i in integrantes])
     return EquipeSaida(
         id=equipe.id,
+        nome=equipe.nome,
         aula_id=equipe.aula_id,
         trilha_id=equipe.trilha_id,
         homologado_por_id=equipe.homologado_por_id,
@@ -98,6 +101,9 @@ def listar_equipes_da_aula_rota(
 class CriarEquipeEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    # Sem `max_length`: a regra recusa com a frase do domínio (`RN-04-39`,
+    # design — decisão 1).
+    nome: str | None = None
     papel: str | None = None
 
 
@@ -118,7 +124,12 @@ def criar_equipe_rota(
     if aula is None:
         raise NaoEncontrado(mensagem="Aula não encontrada.")
     equipe = _criar_equipe(
-        sessao_bd, operador=operador, aula=aula, trilha=None, papel_do_integrante=entrada.papel
+        sessao_bd,
+        operador=operador,
+        aula=aula,
+        trilha=None,
+        nome=entrada.nome,
+        papel_do_integrante=entrada.papel,
     )
     sessao_bd.commit()
     return saida_da_equipe(sessao_bd, equipe)
@@ -127,6 +138,9 @@ def criar_equipe_rota(
 class CriarEquipeDaTrilhaEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    # Sem `max_length`: a regra recusa com a frase do domínio (`RN-04-39`,
+    # design — decisão 1).
+    nome: str | None = None
     papel: str | None = None
 
 
@@ -147,7 +161,12 @@ def criar_equipe_da_trilha_rota(
     if trilha is None:
         raise NaoEncontrado(mensagem="Trilha não encontrada.")
     equipe = _criar_equipe(
-        sessao_bd, operador=operador, aula=None, trilha=trilha, papel_do_integrante=entrada.papel
+        sessao_bd,
+        operador=operador,
+        aula=None,
+        trilha=trilha,
+        nome=entrada.nome,
+        papel_do_integrante=entrada.papel,
     )
     sessao_bd.commit()
     return saida_da_equipe(sessao_bd, equipe)
@@ -176,6 +195,33 @@ def entrar_na_equipe_rota(
     if equipe is None:
         raise NaoEncontrado(mensagem="Equipe não encontrada.")
     _entrar_na_equipe(sessao_bd, operador=operador, equipe=equipe, papel=entrada.papel)
+    sessao_bd.commit()
+    return saida_da_equipe(sessao_bd, equipe)
+
+
+class RenomearEquipeEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    nome: str
+
+
+@roteador.patch("/equipes/{id_da_equipe}")
+def renomear_equipe_rota(
+    id_da_equipe: uuid.UUID,
+    entrada: RenomearEquipeEntrada,
+    contexto: Annotated[
+        ContextoDaSessao, Depends(exigir_permissao(Operacao.equipe_que_forma_na_aula, "escreve"))
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> EquipeSaida:
+    """`RF-04-70`: qualquer integrante troca o nome da equipe — a
+    integrância, a trava da composição e a regra do nome já são de
+    `renomear_equipe`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    equipe = sessao_bd.get(Equipe, id_da_equipe)
+    if equipe is None:
+        raise NaoEncontrado(mensagem="Equipe não encontrada.")
+    _renomear_equipe(sessao_bd, operador=operador, equipe=equipe, nome=entrada.nome)
     sessao_bd.commit()
     return saida_da_equipe(sessao_bd, equipe)
 

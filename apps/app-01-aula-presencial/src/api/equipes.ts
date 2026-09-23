@@ -8,12 +8,17 @@ export interface IntegranteDaEquipe {
 
 export interface Equipe {
   id: string;
+  nome: string;
   aula_id: string | null;
   trilha_id: string | null;
   homologado_por_id: string | null;
   homologado_em: string | null;
   integrantes: IntegranteDaEquipe[];
 }
+
+// `RN-04-39`: nome obrigatório, de até 20 caracteres — o campo não deixa
+// passar disso, e o núcleo confere de novo, com a unicidade.
+export const TETO_DO_NOME_DA_EQUIPE = 20;
 
 interface PaginaDeEquipes {
   itens: Equipe[];
@@ -29,12 +34,13 @@ export function listarEquipesDaAula(aulaId: string, token: string): Promise<Pagi
 
 export function criarEquipe(
   aulaId: string,
+  nome: string,
   papel: string | null,
   token: string,
 ): Promise<Equipe> {
   return chamarNucleo<Equipe>(`/v1/aulas/${aulaId}/equipes`, {
     metodo: "POST",
-    corpo: { papel },
+    corpo: { nome, papel },
     token,
   });
 }
@@ -51,6 +57,20 @@ export function entrarNaEquipe(
   });
 }
 
+// `RF-04-70`: qualquer integrante troca o nome, com a mesma regra da
+// criação — tamanho e unicidade são conferidos pelo núcleo (`RN-04-39`).
+export function renomearEquipe(
+  equipeId: string,
+  nome: string,
+  token: string,
+): Promise<Equipe> {
+  return chamarNucleo<Equipe>(`/v1/equipes/${equipeId}`, {
+    metodo: "PATCH",
+    corpo: { nome },
+    token,
+  });
+}
+
 export function sairDaEquipe(equipeId: string, token: string): Promise<void> {
   return chamarNucleo<void>(`/v1/equipes/${equipeId}/integrantes/eu`, {
     metodo: "DELETE",
@@ -63,12 +83,13 @@ export function sairDaEquipe(equipeId: string, token: string): Promise<void> {
 // integrante, sem aprovação de terceiro.
 export function criarEquipeDaTrilha(
   trilhaId: string,
+  nome: string,
   papel: string | null,
   token: string,
 ): Promise<Equipe> {
   return chamarNucleo<Equipe>(`/v1/trilhas/${trilhaId}/equipes`, {
     metodo: "POST",
-    corpo: { papel },
+    corpo: { nome, papel },
     token,
   });
 }

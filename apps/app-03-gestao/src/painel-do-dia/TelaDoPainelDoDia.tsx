@@ -12,10 +12,6 @@ const MENSAGEM_DE_PERDA_DE_CONTATO =
 
 const MENSAGEM_SEM_ENCONTRO = "Não há encontro em andamento agora.";
 
-function nomeDaEquipe(equipe: PainelDoDia["equipes"][number]): string {
-  return equipe.integrantes.map((integrante) => integrante.nick).join(", ") || "Equipe vazia";
-}
-
 const ROTULO_DA_PENDENCIA: Record<string, string> = {
   lancamento_da_atividade_realizada: "Falta lançar a atividade realizada desta aula.",
   digitalizacao_do_termo: "Termo de biometria assinado, aguardando o anexo da digitalização.",
@@ -107,7 +103,17 @@ export function TelaDoPainelDoDia() {
               <ul>
                 {painel.equipes.map((equipe) => (
                   <li key={equipe.id}>
-                    {nomeDaEquipe(equipe)} — {equipe.missao_titulo ?? "sem missão declarada"}
+                    <strong>{equipe.nome}</strong> —{" "}
+                    {equipe.missao_titulo ?? "sem missão declarada"}
+                    <ul aria-label={`Integrantes de ${equipe.nome}`}>
+                      {equipe.integrantes.map((integrante) => (
+                        <li key={integrante.nick}>
+                          {integrante.papel
+                            ? `${integrante.nick} — ${integrante.papel}`
+                            : integrante.nick}
+                        </li>
+                      ))}
+                    </ul>
                   </li>
                 ))}
               </ul>

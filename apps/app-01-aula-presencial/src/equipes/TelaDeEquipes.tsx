@@ -7,7 +7,9 @@ import {
   entrarNaEquipe,
   listarEquipesDaAula,
   sairDaEquipe,
+  TETO_DO_NOME_DA_EQUIPE,
 } from "../api/equipes";
+import { TrocaDoNome } from "./TrocaDoNome";
 
 interface Props {
   aulaId: string;
@@ -28,8 +30,9 @@ function papelOuNulo(papel: string): string | null {
   return aparado.length === 0 ? null : aparado;
 }
 
-// Formação da equipe da aula: criar, entrar e sair, sem aprovação de
-// terceiro (`RF-04-30` a `RF-04-34`, `RF-04-59`). Um Guerreiro(a) integra
+// Formação da equipe da aula: criar com nome, renomear, entrar e sair, sem
+// aprovação de terceiro (`RF-04-30` a `RF-04-34`, `RF-04-59`, `RF-04-69`,
+// `RF-04-70`). Um Guerreiro(a) integra
 // mais de uma equipe da mesma aula (`RF-04-33`) — por isso o pertencimento
 // é um conjunto, não um valor único.
 export function TelaDeEquipes({
@@ -41,6 +44,7 @@ export function TelaDeEquipes({
   aoEscolherEquipe,
 }: Props) {
   const [equipes, definirEquipes] = useState<Equipe[] | null>(null);
+  const [nome, definirNome] = useState("");
   const [papel, definirPapel] = useState("");
   const [minhasEquipesIds, definirMinhasEquipesIds] = useState<Set<string>>(new Set());
   const [erro, definirErro] = useState<string | null>(null);
@@ -74,8 +78,9 @@ export function TelaDeEquipes({
 
   function criar() {
     executar(async () => {
-      const equipe = await criarEquipe(aulaId, papelOuNulo(papel), token);
+      const equipe = await criarEquipe(aulaId, nome.trim(), papelOuNulo(papel), token);
       definirMinhasEquipesIds((atual) => new Set(atual).add(equipe.id));
+      definirNome("");
     });
   }
 
@@ -104,8 +109,14 @@ export function TelaDeEquipes({
         subtitulo="Crie uma equipe ou entre numa já formada."
         acao={{ rotulo: "Voltar ao início", aoAcionar: aoVoltar }}
       />
+      <Campo
+        rotulo="Nome da equipe"
+        valor={nome}
+        aoAlterar={definirNome}
+        maxLength={TETO_DO_NOME_DA_EQUIPE}
+      />
       <Campo rotulo="Seu papel na equipe (opcional)" valor={papel} aoAlterar={definirPapel} />
-      <Botao onClick={criar} desabilitado={emAndamento}>
+      <Botao onClick={criar} desabilitado={emAndamento || nome.trim().length === 0}>
         Criar equipe
       </Botao>
       {podeRecadastrarImagem && aoRecadastrarImagem && (
@@ -125,6 +136,7 @@ export function TelaDeEquipes({
             const jaEstaNesta = minhasEquipesIds.has(equipe.id);
             return (
               <li key={equipe.id} className="cg-equipe">
+                <h3 className="cg-equipe__nome">{equipe.nome}</h3>
                 <div className="cg-equipe__integrantes">
                   {equipe.integrantes.map((integrante) => (
                     <span key={integrante.nick} className="cg-integrante">
@@ -147,6 +159,11 @@ export function TelaDeEquipes({
                     <Botao onClick={() => aoEscolherEquipe(equipe.id)}>
                       Ver a missão desta equipe
                     </Botao>
+                    <TrocaDoNome
+                      equipe={equipe}
+                      token={token}
+                      aoRenomear={() => recarregar()}
+                    />
                   </>
                 ) : (
                   <Botao

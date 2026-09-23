@@ -1612,16 +1612,22 @@ def criar_anotacao_da_ficha_de_vida(sessao):
 
 @pytest.fixture
 def criar_equipe(sessao):
+    # `RN-04-39`: o nome é obrigatório e único na aula ou na trilha — sem
+    # nome declarado, cada equipe do teste ganha "Equipe N", que não colide.
+    contador = itertools.count(1)
+
     def _criar(
         criador: Persona,
         aula: Aula | None = None,
         trilha: Trilha | None = None,
         homologada: bool = False,
         homologado_por: Persona | None = None,
+        nome: str | None = None,
     ) -> Equipe:
         equipe = Equipe(
             aula_id=aula.id if aula is not None else None,
             trilha_id=trilha.id if trilha is not None else None,
+            nome=nome if nome is not None else f"Equipe {next(contador)}",
             autor_id=criador.id,
             papel_do_autor=criador.papel.value,
         )

@@ -51,4 +51,15 @@ describe("Campo", () => {
     expect(campo).not.toHaveAttribute("aria-invalid");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
+
+  it("repassa o teto de caracteres ao campo só quando declarado", () => {
+    const { unmount } = render(
+      <Campo rotulo="Nome da equipe" valor="" aoAlterar={vi.fn()} maxLength={20} />,
+    );
+    expect(screen.getByLabelText("Nome da equipe")).toHaveAttribute("maxlength", "20");
+    unmount();
+
+    render(<Campo rotulo="Nome" valor="" aoAlterar={vi.fn()} />);
+    expect(screen.getByLabelText("Nome")).not.toHaveAttribute("maxlength");
+  });
 });

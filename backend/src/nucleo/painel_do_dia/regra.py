@@ -43,9 +43,17 @@ class GuerreiroDoPainelSaida(BaseModel):
     nick: str
 
 
+class IntegranteDoPainelSaida(AvatarENickSaida):
+    """Nick e avatar, com o papel declarado na formação — o mesmo desenho
+    de `equipes.rotas.IntegranteSaida` (`RF-02-08`, design — decisão 5)."""
+
+    papel: str | None
+
+
 class EquipeDoPainelSaida(BaseModel):
     id: uuid.UUID
-    integrantes: list[AvatarENickSaida]
+    nome: str
+    integrantes: list[IntegranteDoPainelSaida]
     missao_id: uuid.UUID | None
     missao_titulo: str | None
 
@@ -179,8 +187,13 @@ def _equipes(sessao: Session, aula_id: uuid.UUID) -> list[EquipeDoPainelSaida]:
         resultado.append(
             EquipeDoPainelSaida(
                 id=equipe.id,
+                nome=equipe.nome,
                 integrantes=[
-                    avatares_e_nicks[i.persona_id]
+                    IntegranteDoPainelSaida(
+                        avatar=avatares_e_nicks[i.persona_id].avatar,
+                        nick=avatares_e_nicks[i.persona_id].nick,
+                        papel=i.papel,
+                    )
                     for i in integrantes
                     if i.persona_id in avatares_e_nicks
                 ],
