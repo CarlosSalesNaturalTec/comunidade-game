@@ -746,10 +746,6 @@ modelo por ato, e a coluna só existiria para ficar vazia.
 - **Quais recompensas em quais marcos**: a regra está decidida — recompensa se conquista em
   marco —, mas o catálogo do Ciclo 01 ainda não diz que marco entrega o quê. **Trava** o
   `RF-09-71` na prática, não no desenho.
-- **Atividade avulsa, fora de trilha**: este §8 a reconhece — "`Atividade` sem missão só
-  existe como atividade avulsa da gestão" —, mas `Atividade.missao_id` é obrigatório no
-  núcleo e a spec `atividade-de-trilha` exige a missão. Não existe onde gravá-la. **Trava** o
-  `RF-02-29` do PRD-02.
 - **`RF-02-71` continua sem rota**: o Admin lê a autoria de trilha, missão e atividade sem
   editá-la, mas o `GET /trilhas/{id}` deste PRD é público e só serve trilha publicada. Sem
   ela, a App 03 não tem por onde listar a trilha de um Mestre — **trava** a tela de
