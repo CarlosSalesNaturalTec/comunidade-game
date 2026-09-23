@@ -3,7 +3,7 @@
 
 from datetime import UTC, datetime, timedelta
 
-from nucleo.equipes.modelo import IntegranteDaEquipe
+from nucleo.equipes.modelo import Equipe, IntegranteDaEquipe
 from nucleo.personas.modelo import Papel
 
 
@@ -29,12 +29,13 @@ def test_guerreiro_cria_a_equipe_e_entra_como_primeiro_integrante(
     token, _ = criar_sessao_de_teste(guerreiro)
 
     resposta = cliente.post(
-        f"/v1/aulas/{aula.id}/equipes", json={}, headers=_cabecalhos(chave, token)
+        f"/v1/aulas/{aula.id}/equipes", json={"nome": "Leões"}, headers=_cabecalhos(chave, token)
     )
 
     assert resposta.status_code == 201
     corpo = resposta.json()
     assert corpo["aula_id"] == str(aula.id)
+    assert corpo["nome"] == "Leões"
     assert corpo["integrantes"] == [{"avatar": "avatar-1", "nick": "zeferina", "papel": None}]
 
 
@@ -221,7 +222,7 @@ def test_admin_nao_cria_equipe_pela_rota(
     token, _ = criar_sessao_de_teste(admin)
 
     resposta = cliente.post(
-        f"/v1/aulas/{aula.id}/equipes", json={}, headers=_cabecalhos(chave, token)
+        f"/v1/aulas/{aula.id}/equipes", json={"nome": "Leões"}, headers=_cabecalhos(chave, token)
     )
 
     assert resposta.status_code == 403
@@ -266,7 +267,7 @@ def test_pedido_sem_credencial_de_persona_e_recusado(
     aula = criar_aula(admin, comunidade)
 
     resposta = cliente.post(
-        f"/v1/aulas/{aula.id}/equipes", json={}, headers={"X-Chave-Aplicacao": chave}
+        f"/v1/aulas/{aula.id}/equipes", json={"nome": "Leões"}, headers={"X-Chave-Aplicacao": chave}
     )
 
     assert resposta.status_code == 401
@@ -637,3 +638,105 @@ def test_as_quatro_rotas_de_equipe_estao_no_openapi_sob_v1(cliente):
     assert "post" in schema["paths"]["/v1/aulas/{id_da_aula}/equipes"]
     assert "/v1/equipes/{id_da_equipe}/integrantes" in schema["paths"]
     assert "/v1/equipes/{id_da_equipe}/integrantes/eu" in schema["paths"]
+
+
+# `RF-04-69`, `RF-04-70`, `RN-04-39`: o nome da equipe pela porta.
+
+
+def test_criar_sem_nome_pela_rota_e_recusado_com_422(
+    cliente, criar_chave, criar_persona, criar_comunidade, criar_aula, criar_sessao_de_teste, sessao
+):
+    chave, _ = criar_chave()
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(criar_persona(Papel.admin), comunidade)
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.post(
+        f"/v1/aulas/{aula.id}/equipes", json={}, headers=_cabecalhos(chave, token)
+    )
+
+    assert resposta.status_code == 422
+    assert sessao.query(Equipe).count() == 0
+
+
+def test_a_leitura_da_aula_traz_o_nome_da_equipe(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    criar_nick,
+):
+    chave, _ = criar_chave()
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_nick(guerreiro, "zeferina")
+    aula = criar_aula(criar_persona(Papel.admin), comunidade)
+    criar_equipe(guerreiro, aula=aula, nome="Leões")
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.get(f"/v1/aulas/{aula.id}/equipes", headers=_cabecalhos(chave, token))
+
+    assert resposta.json()["itens"][0]["nome"] == "Leões"
+
+
+def test_integrante_renomeia_pela_rota(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    criar_nick,
+):
+    chave, _ = criar_chave()
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_nick(guerreiro, "zeferina")
+    aula = criar_aula(criar_persona(Papel.admin), comunidade)
+    equipe = criar_equipe(guerreiro, aula=aula, nome="Leões")
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.patch(
+        f"/v1/equipes/{equipe.id}", json={"nome": "Onças"}, headers=_cabecalhos(chave, token)
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.json()["nome"] == "Onças"
+
+
+def test_renomear_pela_rota_recusa_de_fora_e_nome_repetido(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
+):
+    chave, _ = criar_chave()
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(criar_persona(Papel.admin), comunidade)
+    criar_equipe(criar_persona(Papel.guerreiro, comunidade=comunidade), aula=aula, nome="Onças")
+    equipe = criar_equipe(guerreiro, aula=aula, nome="Leões")
+
+    de_fora, _ = criar_sessao_de_teste(criar_persona(Papel.guerreiro, comunidade=comunidade))
+    resposta = cliente.patch(
+        f"/v1/equipes/{equipe.id}", json={"nome": "Tatus"}, headers=_cabecalhos(chave, de_fora)
+    )
+    assert resposta.status_code == 403
+
+    token, _ = criar_sessao_de_teste(guerreiro)
+    resposta = cliente.patch(
+        f"/v1/equipes/{equipe.id}", json={"nome": "ONÇAS"}, headers=_cabecalhos(chave, token)
+    )
+    assert resposta.status_code == 422
+
+    sessao.refresh(equipe)
+    assert equipe.nome == "Leões"

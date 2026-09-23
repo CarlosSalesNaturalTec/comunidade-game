@@ -226,7 +226,8 @@ dentro da mesma sessão de trabalho do aparelho.
 3. Criando, ele **nomeia a equipe** — obrigatório, até 20 caracteres, sem repetir o nome de
    outra equipe da aula — e ela nasce com ele dentro; entrando em uma existente, o ingresso é
    imediato — não há aprovação, a formação é livre.
-4. Qualquer integrante **renomeia** a equipe, com a mesma regra do nome.
+4. Qualquer integrante **renomeia** a equipe, com a mesma regra do nome, enquanto a composição
+   puder mudar.
 5. A aplicação recusa o **sexto integrante** e o **segundo familiar de 17 anos ou mais**.
 6. O Guerreiro(a) pode integrar **mais de uma equipe** no mesmo encontro e sair de qualquer uma
    enquanto a aula durar.
@@ -331,7 +332,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-59` | Cada integrante declara o seu papel na formação da equipe, e ele vale para o encontro inteiro                 | essencial  |
 | `RF-04-34` | Tela mostra as equipes da aula pelo nome e pelo avatar e nick dos integrantes, sem qualquer dado pessoal      | essencial  |
 | `RF-04-69` | Equipe nasce com nome obrigatório, de até 20 caracteres e único na aula — ou na trilha                        | essencial  |
-| `RF-04-70` | Qualquer integrante renomeia a equipe, com a mesma regra do nome                                              | essencial  |
+| `RF-04-70` | Qualquer integrante renomeia a equipe, com a mesma regra do nome, enquanto a composição puder mudar           | essencial  |
 | `RF-04-61` | Guerreiro(a) forma a equipe da trilha no aparelho, com os mesmos limites de composição da aula                | essencial  |
 | `RF-04-62` | Mestre presente homologa a equipe da trilha, e a composição fica fixa a partir da homologação                 | essencial  |
 | `RF-04-45` | Equipe entrega a produção da missão por texto, áudio ou foto do manuscrito                                    | essencial  |
@@ -405,7 +406,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RN-04-36` | Erro que o núcleo declara no corpo único nunca é apresentado como recusa do reconhecimento: falha de rede, de validação, de chave ou de preparo do aparelho aparece como o que é, e só a recusa declarada pelo núcleo vira a frase do domínio | 25         | 03 §1         |
 | `RN-04-37` | A sessão de trabalho aberta no aparelho não confirma identidade: só quem a abriu confirma, e só com o próprio PIN digitado no ato                                                                                                             | —          | 03 §1.1       |
 | `RN-04-38` | O aparelho guarda só o verificador do PIN de quem abriu a sessão de trabalho, nunca o PIN; cinco erros seguidos o bloqueiam ali até novo login Google                                                                                         | —          | 03 §§1.1, 3.4 |
-| `RN-04-39` | Toda equipe tem nome em texto livre, de até 20 caracteres, único entre as equipes da mesma aula — ou da mesma trilha                                                                                                                          | 15         | 02 §5         |
+| `RN-04-39` | Toda equipe tem nome em texto livre, de até 20 caracteres, único — sem distinguir maiúsculas — entre as equipes da mesma aula ou da mesma trilha                                                                                              | 15         | 02 §5         |
 | `RN-04-40` | Formar ou entrar em equipe exige presença registrada no encontro                                                                                                                                                                              | 15         | 02 §5         |
 
 ## 8. Modelo de dados

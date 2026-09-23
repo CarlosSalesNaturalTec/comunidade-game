@@ -91,7 +91,11 @@ function painelDoEncontro(sobrescreve: Partial<PainelDoDia> = {}): PainelDoDia {
     equipes: [
       {
         id: "equipe-1",
-        integrantes: [{ avatar: null, nick: "zeferina" }],
+        nome: "Leões",
+        integrantes: [
+          { avatar: null, nick: "zeferina", papel: "quem apresenta" },
+          { avatar: null, nick: "dandara", papel: null },
+        ],
         missao_id: "missao-1",
         missao_titulo: "Montagem do robô",
       },
@@ -152,6 +156,22 @@ describe("Painel do dia (RF-02-41 a RF-02-48, RF-02-68, RF-02-69)", () => {
     expect(screen.queryByText(/aguardando aparelho/i)).not.toBeInTheDocument();
     expect(screen.getAllByText(/montagem do robô/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/falta lançar a atividade realizada/i)).toBeInTheDocument();
+  });
+
+  it("mostra a equipe pelo nome e o papel de cada integrante, sem renomear (RF-02-08)", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(painelApi, "obterPainelDoDia").mockResolvedValue(painelDoEncontro());
+
+    render(<TelaDoPainelDoDia />);
+
+    const equipes = await screen.findByRole("region", { name: "Equipes e missão" });
+    expect(within(equipes).getByText("Leões")).toBeInTheDocument();
+    const integrantes = within(equipes).getByRole("list", { name: "Integrantes de Leões" });
+    expect(within(integrantes).getByText("zeferina — quem apresenta")).toBeInTheDocument();
+    expect(within(integrantes).getByText("dandara")).toBeInTheDocument();
+    expect(within(equipes).queryByText(/dandara —/)).not.toBeInTheDocument();
+    expect(within(equipes).queryByRole("button")).not.toBeInTheDocument();
+    expect(within(equipes).queryByRole("textbox")).not.toBeInTheDocument();
   });
 
   it("mostra o tipo de recurso pelo nome e pela unidade, nunca pelo identificador (RF-02-44, RF-02-45)", async () => {

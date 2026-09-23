@@ -8,7 +8,8 @@ import pytest
 
 from nucleo.aulas.modelo import ModoDeComprovacao, SituacaoDaAula
 from nucleo.aulas.regra import registrar_presenca
-from nucleo.equipes.regra import declarar_escolha_da_equipe
+from nucleo.equipes.modelo import IntegranteDaEquipe
+from nucleo.equipes.regra import declarar_escolha_da_equipe, entrar_na_equipe, renomear_equipe
 from nucleo.painel_do_dia.regra import montar_painel_do_dia
 from nucleo.personas.modelo import Papel
 from nucleo.trilhas.modelo import SituacaoDaTrilha
@@ -189,6 +190,37 @@ def test_equipe_com_e_sem_missao(
     assert por_id[equipe_com_missao.id].missao_titulo == missao.titulo
     sem_missao = [e for e in painel.equipes if e.id != equipe_com_missao.id][0]
     assert sem_missao.missao_id is None
+
+
+def test_equipe_sai_pelo_nome_com_o_papel_de_cada_integrante(
+    sessao, criar_persona, cenario, criar_equipe, criar_nick
+):
+    """`RF-02-08`: o nome da equipe e o papel de cada integrante; a troca
+    do nome aparece na consulta seguinte (`RF-04-70`)."""
+    admin, comunidade, _ponto, aula = cenario
+    registra = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_nick(registra, "zeferina")
+    sem_papel = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_nick(sem_papel, "dandara")
+    equipe = criar_equipe(registra, aula=aula, nome="Leões")
+    vinculo = sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe.id).one()
+    vinculo.papel = "quem registra"
+    entrar_na_equipe(sessao, operador=sem_papel, equipe=equipe)
+    sessao.commit()
+
+    painel = montar_painel_do_dia(sessao, operador=admin)
+
+    [saida] = painel.equipes
+    assert saida.nome == "Leões"
+    assert {(i.nick, i.papel) for i in saida.integrantes} == {
+        ("zeferina", "quem registra"),
+        ("dandara", None),
+    }
+
+    renomear_equipe(sessao, operador=sem_papel, equipe=equipe, nome="Onças")
+    sessao.commit()
+
+    assert montar_painel_do_dia(sessao, operador=admin).equipes[0].nome == "Onças"
 
 
 def test_saldo_pelo_ponto_de_apoio_da_aula_e_tipo_novo_aparece(

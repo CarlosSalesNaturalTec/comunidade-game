@@ -7,7 +7,9 @@ import {
   homologarEquipeDaTrilha,
   obterMinhaEquipeDaTrilha,
   sairDaEquipe,
+  TETO_DO_NOME_DA_EQUIPE,
 } from "../api/equipes";
+import { TrocaDoNome } from "../equipes/TrocaDoNome";
 
 interface Props {
   trilhaId: string;
@@ -39,6 +41,7 @@ export function EquipeDaTrilha({
   tokenDeTrabalho,
 }: Props) {
   const [equipe, definirEquipe] = useState<Equipe | null | undefined>(undefined);
+  const [nome, definirNome] = useState("");
   const [papel, definirPapel] = useState("");
   const [erro, definirErro] = useState<string | null>(null);
   const [emAndamento, definirEmAndamento] = useState(false);
@@ -61,7 +64,12 @@ export function EquipeDaTrilha({
     definirErro(null);
     definirEmAndamento(true);
     try {
-      const criada = await criarEquipeDaTrilha(trilhaId, papelOuNulo(papel), tokenDoGuerreiro);
+      const criada = await criarEquipeDaTrilha(
+        trilhaId,
+        nome.trim(),
+        papelOuNulo(papel),
+        tokenDoGuerreiro,
+      );
       definirEquipe(criada);
     } catch (erroCapturado) {
       definirErro(
@@ -121,11 +129,17 @@ export function EquipeDaTrilha({
       {equipe === null && !podeHomologar && (
         <>
           <Campo
+            rotulo="Nome da equipe"
+            valor={nome}
+            aoAlterar={definirNome}
+            maxLength={TETO_DO_NOME_DA_EQUIPE}
+          />
+          <Campo
             rotulo="Seu papel na equipe (opcional)"
             valor={papel}
             aoAlterar={definirPapel}
           />
-          <Botao onClick={criar} desabilitado={emAndamento}>
+          <Botao onClick={criar} desabilitado={emAndamento || nome.trim().length === 0}>
             Formar a equipe desta trilha
           </Botao>
         </>
@@ -137,6 +151,7 @@ export function EquipeDaTrilha({
 
       {equipe && (
         <>
+          <h4 className="cg-equipe__nome">{equipe.nome}</h4>
           <ul aria-label="Integrantes da equipe da trilha">
             {equipe.integrantes.map((integrante) => (
               <li key={integrante.nick}>
@@ -165,6 +180,11 @@ export function EquipeDaTrilha({
               <Botao variante="secundaria" onClick={sair} desabilitado={emAndamento}>
                 Sair desta equipe
               </Botao>
+              <TrocaDoNome
+                equipe={equipe}
+                token={tokenDoGuerreiro}
+                aoRenomear={definirEquipe}
+              />
             </>
           )}
         </>

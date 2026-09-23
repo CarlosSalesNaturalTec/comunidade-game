@@ -102,6 +102,7 @@ const SEGUNDA_ATIVIDADE: ItemDaProgramacao = item({
 function equipeDaTrilha(sobrescreve: Partial<Equipe> = {}): Equipe {
   return {
     id: "equipe-da-trilha-1",
+    nome: "Onças",
     aula_id: null,
     trilha_id: "trilha-1",
     homologado_por_id: null,
@@ -341,12 +342,12 @@ describe("equipe da trilha (RF-04-61, RN-01-44)", () => {
     await screen.findByText("Primeira missão");
 
     const usuario = userEvent.setup();
-    await usuario.click(
-      await screen.findByRole("button", { name: /formar a equipe desta trilha/i }),
-    );
+    await usuario.type(await screen.findByLabelText("Nome da equipe"), "Onças");
+    await usuario.click(screen.getByRole("button", { name: /formar a equipe desta trilha/i }));
 
-    expect(criar).toHaveBeenCalledWith("trilha-1", null, "token-guerreiro");
+    expect(criar).toHaveBeenCalledWith("trilha-1", "Onças", null, "token-guerreiro");
     expect(await screen.findByText("zeferina")).toBeInTheDocument();
+    expect(screen.getByText("Onças")).toBeInTheDocument();
   });
 
   it("a segunda equipe da mesma trilha é recusada em linguagem simples", async () => {
@@ -365,11 +366,71 @@ describe("equipe da trilha (RF-04-61, RN-01-44)", () => {
       <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
     );
     const usuario = userEvent.setup();
-    await usuario.click(
-      await screen.findByRole("button", { name: /formar a equipe desta trilha/i }),
-    );
+    await usuario.type(await screen.findByLabelText("Nome da equipe"), "Onças");
+    await usuario.click(screen.getByRole("button", { name: /formar a equipe desta trilha/i }));
 
     expect(await screen.findByText(/já integra uma equipe desta trilha/i)).toBeInTheDocument();
+  });
+
+  it("sem nome, a formação da equipe da trilha não sai do aparelho (RF-04-69)", async () => {
+    mockarAtividadeCorrente();
+    vi.spyOn(equipesApi, "obterMinhaEquipeDaTrilha").mockRejectedValue(
+      new Error("não encontrada"),
+    );
+    const criar = vi.spyOn(equipesApi, "criarEquipeDaTrilha");
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+
+    expect(
+      await screen.findByRole("button", { name: /formar a equipe desta trilha/i }),
+    ).toBeDisabled();
+    expect(screen.getByLabelText("Nome da equipe")).toHaveAttribute("maxlength", "20");
+    expect(criar).not.toHaveBeenCalled();
+  });
+
+  it("nome repetido na trilha é recusado em linguagem simples (RN-04-39)", async () => {
+    mockarAtividadeCorrente();
+    vi.spyOn(equipesApi, "obterMinhaEquipeDaTrilha").mockRejectedValue(
+      new Error("não encontrada"),
+    );
+    vi.spyOn(equipesApi, "criarEquipeDaTrilha").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "Já existe uma equipe com esse nome nesta trilha. Escolham outro.",
+      }),
+    );
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+    const usuario = userEvent.setup();
+    await usuario.type(await screen.findByLabelText("Nome da equipe"), "Onças");
+    await usuario.click(screen.getByRole("button", { name: /formar a equipe desta trilha/i }));
+
+    expect(await screen.findByText(/já existe uma equipe com esse nome/i)).toBeInTheDocument();
+  });
+
+  it("a integrante renomeia a equipe da trilha ainda não homologada (RF-04-70)", async () => {
+    mockarAtividadeCorrente();
+    vi.spyOn(equipesApi, "obterMinhaEquipeDaTrilha").mockResolvedValue(equipeDaTrilha());
+    const renomear = vi
+      .spyOn(equipesApi, "renomearEquipe")
+      .mockResolvedValue(equipeDaTrilha({ nome: "Tatus" }));
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByRole("button", { name: /trocar o nome/i }));
+    const campo = screen.getByLabelText("Novo nome da equipe");
+    await usuario.clear(campo);
+    await usuario.type(campo, "Tatus");
+    await usuario.click(screen.getByRole("button", { name: /salvar o nome/i }));
+
+    expect(renomear).toHaveBeenCalledWith("equipe-da-trilha-1", "Tatus", "token-guerreiro");
+    expect(await screen.findByText("Tatus")).toBeInTheDocument();
   });
 
   it("equipe homologada não oferece entrar nem sair", async () => {
@@ -389,6 +450,7 @@ describe("equipe da trilha (RF-04-61, RN-01-44)", () => {
     expect(
       screen.queryByRole("button", { name: /formar a equipe desta trilha/i }),
     ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /trocar o nome/i })).not.toBeInTheDocument();
   });
 
   it("o Mestre em sessão de trabalho homologa a equipe formada", async () => {

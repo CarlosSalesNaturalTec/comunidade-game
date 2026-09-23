@@ -1,7 +1,17 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String, UniqueConstraint, Uuid, func
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Index,
+    String,
+    UniqueConstraint,
+    Uuid,
+    func,
+    text,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
@@ -26,6 +36,11 @@ class Equipe(Base, ComAutoria):
     trilha_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("trilha.id"), nullable=True
     )
+    nome: Mapped[str] = mapped_column(String(20), nullable=False)
+    """Texto livre, gravado aparado, de 1 a 20 caracteres e único — sem
+    caixa — entre as equipes da mesma aula ou da mesma trilha (`RF-04-69`,
+    `RN-04-39`, documento 02 §5). A regra confere antes de gravar; os dois
+    índices parciais abaixo travam a corrida entre dois aparelhos."""
     homologado_por_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("persona.id"), nullable=True
     )
@@ -43,6 +58,20 @@ class Equipe(Base, ComAutoria):
             "(aula_id IS NOT NULL AND trilha_id IS NULL) OR "
             "(aula_id IS NULL AND trilha_id IS NOT NULL)",
             name="ck_equipe_aula_ou_trilha",
+        ),
+        Index(
+            "uq_equipe_aula_id_nome",
+            "aula_id",
+            func.lower(nome),
+            unique=True,
+            postgresql_where=text("aula_id IS NOT NULL"),
+        ),
+        Index(
+            "uq_equipe_trilha_id_nome",
+            "trilha_id",
+            func.lower(nome),
+            unique=True,
+            postgresql_where=text("trilha_id IS NOT NULL"),
         ),
     )
 

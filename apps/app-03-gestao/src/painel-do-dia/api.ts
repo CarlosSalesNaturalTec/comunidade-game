@@ -16,9 +16,16 @@ export interface GuerreiroDoPainel extends AvatarENick {
   guerreiro_id: string;
 }
 
+// O papel é o que o integrante declarou na formação, no App 01 — nulo
+// quando não declarou (`RF-02-08`).
+export interface IntegranteDoPainel extends AvatarENick {
+  papel: string | null;
+}
+
 export interface EquipeDoPainel {
   id: string;
-  integrantes: AvatarENick[];
+  nome: string;
+  integrantes: IntegranteDoPainel[];
   missao_id: string | null;
   missao_titulo: string | null;
 }

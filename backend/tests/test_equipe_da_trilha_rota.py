@@ -26,12 +26,15 @@ def test_guerreiro_cria_a_equipe_da_trilha_e_entra_como_primeiro_integrante(
     token, _ = criar_sessao_de_teste(guerreiro)
 
     resposta = cliente.post(
-        f"/v1/trilhas/{trilha.id}/equipes", json={}, headers=_cabecalhos(chave, token)
+        f"/v1/trilhas/{trilha.id}/equipes",
+        json={"nome": "Leões"},
+        headers=_cabecalhos(chave, token),
     )
 
     assert resposta.status_code == 201
     corpo = resposta.json()
     assert corpo["aula_id"] is None
+    assert corpo["nome"] == "Leões"
     assert corpo["integrantes"] == [{"avatar": "avatar-1", "nick": "zeferina", "papel": None}]
 
 
@@ -89,7 +92,9 @@ def test_segunda_equipe_da_mesma_trilha_e_recusada_pela_porta(
     token, _ = criar_sessao_de_teste(guerreiro)
 
     resposta = cliente.post(
-        f"/v1/trilhas/{trilha.id}/equipes", json={}, headers=_cabecalhos(chave, token)
+        f"/v1/trilhas/{trilha.id}/equipes",
+        json={"nome": "Leões"},
+        headers=_cabecalhos(chave, token),
     )
 
     assert resposta.status_code == 422
@@ -105,7 +110,9 @@ def test_admin_e_mestre_nao_criam_equipe_da_trilha_pela_porta(
     for operador in (mestre, criar_persona(Papel.admin)):
         token, _ = criar_sessao_de_teste(operador)
         resposta = cliente.post(
-            f"/v1/trilhas/{trilha.id}/equipes", json={}, headers=_cabecalhos(chave, token)
+            f"/v1/trilhas/{trilha.id}/equipes",
+            json={"nome": "Leões"},
+            headers=_cabecalhos(chave, token),
         )
         assert resposta.status_code == 403
 
@@ -122,7 +129,9 @@ def test_trilha_inexistente_nao_forma_equipe(
     token, _ = criar_sessao_de_teste(guerreiro)
 
     resposta = cliente.post(
-        f"/v1/trilhas/{uuid.uuid4()}/equipes", json={}, headers=_cabecalhos(chave, token)
+        f"/v1/trilhas/{uuid.uuid4()}/equipes",
+        json={"nome": "Leões"},
+        headers=_cabecalhos(chave, token),
     )
 
     assert resposta.status_code == 404
@@ -228,6 +237,54 @@ def test_equipe_da_aula_nao_se_homologa_pela_porta(
 
     resposta = cliente.post(
         f"/v1/equipes/{equipe.id}/homologacao", headers=_cabecalhos(chave, token)
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_nome_repetido_na_trilha_e_recusado_pela_porta(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_trilha,
+    criar_equipe,
+    criar_sessao_de_teste,
+):
+    """`RF-04-69`, `RN-04-39`."""
+    chave, _ = criar_chave()
+    comunidade = criar_comunidade()
+    trilha = criar_trilha(criar_persona(Papel.mestre))
+    criar_equipe(criar_persona(Papel.guerreiro, comunidade=comunidade), trilha=trilha, nome="Onças")
+    token, _ = criar_sessao_de_teste(criar_persona(Papel.guerreiro, comunidade=comunidade))
+
+    resposta = cliente.post(
+        f"/v1/trilhas/{trilha.id}/equipes",
+        json={"nome": "onças"},
+        headers=_cabecalhos(chave, token),
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_equipe_da_trilha_homologada_nao_troca_de_nome_pela_porta(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_trilha,
+    criar_equipe,
+    criar_sessao_de_teste,
+):
+    """`RF-04-70`: a troca trava junto com a composição."""
+    chave, _ = criar_chave()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=criar_comunidade())
+    trilha = criar_trilha(criar_persona(Papel.mestre))
+    equipe = criar_equipe(guerreiro, trilha=trilha, homologada=True, nome="Leões")
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.patch(
+        f"/v1/equipes/{equipe.id}", json={"nome": "Onças"}, headers=_cabecalhos(chave, token)
     )
 
     assert resposta.status_code == 422

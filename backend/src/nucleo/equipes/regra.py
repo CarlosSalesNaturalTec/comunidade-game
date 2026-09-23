@@ -1,6 +1,7 @@
 import uuid
 from dataclasses import dataclass
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula
@@ -21,6 +22,9 @@ TETO_DE_INTEGRANTES_NAO_GUERREIROS = 1
 # ou sai por conta própria.
 _PAPEIS_QUE_NAO_ALTERAM_COMPOSICAO = frozenset({Papel.admin, Papel.mestre})
 
+# `RN-04-39`, documento 02 §5: nome em texto livre de até 20 caracteres.
+TETO_DO_NOME = 20
+
 
 def _confirmar_equipe_aberta(sessao: Session, equipe: Equipe) -> None:
     """A equipe da trilha fecha na homologação (`RN-01-44`); a da aula
@@ -38,6 +42,41 @@ def _confirmar_equipe_aberta(sessao: Session, equipe: Equipe) -> None:
                 mensagem="Esta aula já encerrou; a equipe não recebe nem perde integrante.",
                 campo="equipe_id",
             )
+
+
+def _nome_valido(
+    sessao: Session,
+    *,
+    nome: str | None,
+    aula_id: uuid.UUID | None,
+    trilha_id: uuid.UUID | None,
+    exceto_id: uuid.UUID | None = None,
+) -> str:
+    """Devolve o nome aparado, de 1 a 20 caracteres e único — sem caixa —
+    entre as equipes da mesma aula ou da mesma trilha, sem contar a própria
+    equipe na troca (`RF-04-69`, `RF-04-70`, `RN-04-39`, design — decisões
+    1 e 2)."""
+    aparado = (nome or "").strip()
+    if not aparado:
+        raise ErroDeValidacao(mensagem="A equipe precisa de um nome.", campo="nome")
+    if len(aparado) > TETO_DO_NOME:
+        raise ErroDeValidacao(
+            mensagem="O nome da equipe tem no máximo 20 caracteres.", campo="nome"
+        )
+
+    consulta = sessao.query(Equipe).filter(func.lower(Equipe.nome) == aparado.lower())
+    if aula_id is not None:
+        consulta = consulta.filter(Equipe.aula_id == aula_id)
+    else:
+        consulta = consulta.filter(Equipe.trilha_id == trilha_id)
+    if exceto_id is not None:
+        consulta = consulta.filter(Equipe.id != exceto_id)
+    if consulta.first() is not None:
+        onde = "nesta aula" if aula_id is not None else "nesta trilha"
+        raise ErroDeValidacao(
+            mensagem=f"Já existe uma equipe com esse nome {onde}. Escolham outro.", campo="nome"
+        )
+    return aparado
 
 
 def _confirmar_uma_equipe_por_trilha(sessao: Session, *, persona_id: uuid.UUID, trilha_id) -> None:
@@ -84,6 +123,7 @@ def criar_equipe(
     operador: Persona,
     aula: Aula | None,
     trilha: Trilha | None,
+    nome: str | None,
     papel_do_integrante: str | None = None,
 ) -> Equipe:
     """Restrita ao Guerreiro(a), que entra como primeiro integrante
@@ -101,9 +141,12 @@ def criar_equipe(
     if trilha is not None:
         _confirmar_uma_equipe_por_trilha(sessao, persona_id=operador.id, trilha_id=trilha.id)
 
+    aula_id = aula.id if aula is not None else None
+    trilha_id = trilha.id if trilha is not None else None
     equipe = Equipe(
-        aula_id=aula.id if aula is not None else None,
-        trilha_id=trilha.id if trilha is not None else None,
+        aula_id=aula_id,
+        trilha_id=trilha_id,
+        nome=_nome_valido(sessao, nome=nome, aula_id=aula_id, trilha_id=trilha_id),
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
     )
@@ -155,6 +198,32 @@ def sair_da_equipe(
         raise NaoEncontrado(mensagem="Este integrante não pertence a esta equipe.")
     sessao.delete(integrante)
     sessao.flush()
+
+
+def renomear_equipe(sessao: Session, *, operador: Persona, equipe: Equipe, nome: str) -> Equipe:
+    """Qualquer integrante troca o nome, com a regra da criação; a troca
+    trava junto com a composição — aula encerrada ou trilha homologada
+    (`RF-04-70`, `RN-04-39`, `RF-01-16`, design — decisão 3)."""
+    if operador.papel in _PAPEIS_QUE_NAO_ALTERAM_COMPOSICAO:
+        raise PermissaoNegada(mensagem="Admin e Mestre não renomeiam a equipe.")
+    integrante = (
+        sessao.query(IntegranteDaEquipe)
+        .filter_by(equipe_id=equipe.id, persona_id=operador.id)
+        .first()
+    )
+    if integrante is None:
+        raise PermissaoNegada(mensagem="Só quem integra a equipe troca o nome dela.")
+    _confirmar_equipe_aberta(sessao, equipe)
+
+    equipe.nome = _nome_valido(
+        sessao,
+        nome=nome,
+        aula_id=equipe.aula_id,
+        trilha_id=equipe.trilha_id,
+        exceto_id=equipe.id,
+    )
+    sessao.flush()
+    return equipe
 
 
 def homologar_equipe_da_trilha(sessao: Session, *, operador: Persona, equipe: Equipe) -> Equipe:
