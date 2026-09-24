@@ -334,7 +334,8 @@ describe("a abertura do quiz a partir da tela inicial", () => {
 
     await usuario.click(screen.getByRole("button", { name: /quiz ao vivo/i }));
 
-    expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
+    // A entrada anuncia o caminho do quiz, não o da presença (`RF-04-01`).
+    expect(await screen.findByText(/quem vai jogar o quiz/i)).toBeInTheDocument();
     expect(screen.queryByText(/cadastr/i)).not.toBeInTheDocument();
   });
 
