@@ -98,6 +98,18 @@ const MENSAGEM_SEM_VERIFICADOR_SEM_REDE =
   "Sem rede, a confirmação confere o PIN no aparelho, e este aparelho foi aberto sem PIN " +
   "cadastrado. Cadastre o PIN e abra o aparelho de novo com rede.";
 
+// A tela anuncia o caminho que serve: quem escolheu equipes, quiz ou troca na
+// tela inicial precisa reconhecer que chegou onde quis, e não ao caminho da
+// presença — os quatro se apresentavam iguais (`RF-04-01`, `RF-04-67`,
+// `RF-04-68`, design — decisão 1). O subtítulo não entra aqui: ele descreve o
+// ato, que é o mesmo nos quatro.
+const TITULO_DO_CAMINHO: Record<CaminhoDaEntrada, string> = {
+  presenca: "Quem está chegando?",
+  equipes: "Quem vai formar equipe?",
+  quiz: "Quem vai jogar o Quiz?",
+  troca: "Quem vai trocar recompensa?",
+};
+
 const MENSAGENS_DO_PIN: Record<string, string> = {
   pin_recusado: MENSAGEM_DE_PIN_ERRADO,
   pin_bloqueado: MENSAGEM_DE_PIN_BLOQUEADO,
@@ -403,7 +415,7 @@ export function TelaDeEntradaDoGuerreiro({
     return (
       <Moldura>
         <Cabecalho
-          titulo="Quem está chegando?"
+          titulo={TITULO_DO_CAMINHO[caminho]}
           subtitulo="A criança diz o nick, e quem abriu o aparelho confirma com o próprio PIN."
           acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }}
         />
@@ -436,7 +448,7 @@ export function TelaDeEntradaDoGuerreiro({
   return (
     <Moldura>
       <Cabecalho
-        titulo="Quem está chegando?"
+        titulo={TITULO_DO_CAMINHO[caminho]}
         subtitulo="Digite o nick e olhe para a câmera."
         acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }}
       />

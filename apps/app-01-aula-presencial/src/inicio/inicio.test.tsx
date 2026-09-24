@@ -103,8 +103,47 @@ describe("tela inicial da App 01", () => {
     const usuario = userEvent.setup();
     await usuario.click(screen.getByRole("button", { name: /equipes —/i }));
 
-    expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
+    // A entrada anuncia o caminho que serve, e não o da presença: quem escolheu
+    // Equipes precisa reconhecer que chegou onde quis (`RF-04-01`, `RF-04-67`).
+    expect(await screen.findByText(/quem vai formar equipe/i)).toBeInTheDocument();
+    expect(screen.queryByText(/quem está chegando/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/cadastr/i)).not.toBeInTheDocument();
+  });
+
+  // Os quatro caminhos passam pela mesma tela de entrada: sem título próprio,
+  // quem opera não distingue onde chegou (`RF-04-01`, `RF-04-67`, `RF-04-68`).
+  it("a entrada anuncia o caminho que serve, e não o da presença", async () => {
+    const usuario = userEvent.setup();
+
+    const presenca = renderizar();
+    await usuario.click(screen.getByRole("button", { name: /presença — entrar/i }));
+    expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
+    presenca.unmount();
+
+    const quiz = renderizar();
+    await usuario.click(screen.getByRole("button", { name: /quiz ao vivo/i }));
+    expect(await screen.findByText(/quem vai jogar o quiz/i)).toBeInTheDocument();
+    expect(screen.queryByText(/quem está chegando/i)).not.toBeInTheDocument();
+    quiz.unmount();
+
+    renderizar(vi.fn(), { momentoDeTrocaAberto: true });
+    await usuario.click(screen.getByRole("button", { name: /troca por recompensa avulsa/i }));
+    expect(await screen.findByText(/quem vai trocar recompensa/i)).toBeInTheDocument();
+    expect(screen.queryByText(/quem está chegando/i)).not.toBeInTheDocument();
+  });
+
+  // A entrada por confirmação é a outra forma da mesma tela, e anuncia o
+  // caminho do mesmo jeito (`RF-04-01`, design — decisão 2).
+  it("a entrada por confirmação de Mestre também anuncia o caminho", async () => {
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /equipes —/i }));
+    await usuario.type(await screen.findByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+
+    expect(await screen.findByLabelText(/pin de quem confirma/i)).toBeInTheDocument();
+    expect(screen.getByText(/quem vai formar equipe/i)).toBeInTheDocument();
+    expect(screen.queryByText(/quem está chegando/i)).not.toBeInTheDocument();
   });
 
   it("no caminho da presença, a confirmação do Mestre registra a presença e termina o atendimento", async () => {
@@ -344,7 +383,7 @@ describe("tela inicial da App 01", () => {
     });
     await usuario.click(caminhoDeTroca);
 
-    expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
+    expect(await screen.findByText(/quem vai trocar recompensa/i)).toBeInTheDocument();
     expect(screen.queryByText(/cadastr/i)).not.toBeInTheDocument();
   });
 
@@ -355,7 +394,7 @@ describe("tela inicial da App 01", () => {
     const caminhoDoQuiz = await screen.findByRole("button", { name: /quiz ao vivo/i });
     await usuario.click(caminhoDoQuiz);
 
-    expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
+    expect(await screen.findByText(/quem vai jogar o quiz/i)).toBeInTheDocument();
     expect(screen.queryByText(/cadastr/i)).not.toBeInTheDocument();
   });
 

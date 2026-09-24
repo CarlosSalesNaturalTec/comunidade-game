@@ -355,6 +355,13 @@ A App 01 SHALL oferecer, nos caminhos que pedem o Guerreiro(a) — **presença**
 facial. Ao núcleo SHALL ir apenas o descritor; a fotografia SHALL ser descartada sem sair do
 aparelho e NEVER SHALL ser gravada nem enviada.
 
+A tela da entrada SHALL anunciar **qual caminho serve**, para que quem escolheu equipes, quiz
+ou troca na tela inicial reconheça que chegou ao caminho escolhido, e não ao da presença. O
+anúncio SHALL valer nas duas formas da entrada — a por nick e imagem e a por confirmação de
+Mestre ou Admin —, que NEVER SHALL se apresentar com o mesmo enunciado nos quatro caminhos.
+O que a entrada **faz** em cada caminho não muda com isso. (`RF-04-01`, `RF-04-67`,
+`RF-04-68`)
+
 A aplicação SHALL informar ao núcleo, no mesmo pedido, a **aula em curso** — é ela que determina
 o ponto de apoio e, com ele, o limiar da comparação. A aula já é propriedade da tela da entrada,
 herdada da sessão de trabalho do aparelho, e NEVER SHALL ser digitada nem escolhida por quem
@@ -430,6 +437,12 @@ e voltar à tela inicial. (`RF-04-18`, `RF-04-19`, `RF-04-29`, `RF-04-67`, `RN-0
 - **WHEN** o aparelho não tem câmera disponível
 - **THEN** a aplicação não oferece a captura e encaminha o Guerreiro(a) à confirmação de Mestre
   ou Admin, sem deixá-lo fora da aula
+
+#### Scenario: A entrada anuncia o caminho que serve
+
+- **WHEN** a entrada do Guerreiro(a) é aberta pelo caminho das equipes, do quiz ou da troca
+- **THEN** a tela se anuncia pelo caminho escolhido, distinta da entrada do caminho da presença,
+  tanto na forma por nick e imagem quanto na por confirmação de Mestre ou Admin
 
 ### Requirement: A falha de identificação oferece nova tentativa sem revelar nada
 
