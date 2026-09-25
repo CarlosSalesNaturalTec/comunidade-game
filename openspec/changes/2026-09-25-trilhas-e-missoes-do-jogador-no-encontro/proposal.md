@@ -2,90 +2,57 @@
 
 **PRD de origem:** PRD-04 — Aula presencial (App 01).
 **Cronograma:** fatia **21** do bloco do PRD-04.
-**Identificadores atendidos:** `RF-04-72` — **novo**, a criar na revisão do PRD-04 —, alterando
-`RF-04-01`, `RF-04-67` e `RN-04-40`, e alcançando `RF-04-35`, `RF-04-68`, `RF-05-08`, `RF-05-10` e
-`RF-05-17`.
+**Identificadores atendidos:** `RF-04-72` e `RF-04-73` — **novos**, a criar na revisão do PRD-04 —,
+alterando `RF-04-01`, `RF-04-67` e `RN-04-40`, e alcançando `RF-04-35`, `RF-04-68`, `RF-05-08`,
+`RF-05-10`, `RF-05-13`, `RF-05-14`, `RF-05-17`, `RF-05-89`, `RN-05-20` e `RN-05-45` a `RN-05-47`.
 
 **Depende** de duas coisas, nenhuma delas resolvível aqui:
 
 1. O PR de revisão do **documento 03 §3**, que hoje determina que "registrada a presença, o
    atendimento termina — formar equipe é outro momento". É a fonte do `RF-04-67`, e esta fatia a
    contraria.
-2. O PR de revisão do **PRD-04**, que cria o `RF-04-72` e altera `RF-04-01`, `RF-04-67` e
-   `RN-04-40`.
+2. O PR de revisão do **PRD-04**, que cria o `RF-04-72` e o `RF-04-73`, altera `RF-04-01`,
+   `RF-04-67` e `RN-04-40`, e **retira da §3.2** a exclusão da sondagem e do desbloqueio, que passam
+   a ser desta aplicação por decisão do fundador de 2026-09-25.
 
-## Trava a resolver antes da implementação
+## A decisão que recortou esta fatia
 
-### O fato que decide
+A fatia nasceu recortada como **leitura apenas**, e a trava foi levada ao fundador com três opções
+medidas. Em 2026-09-25 ele escolheu a **opção B**: leitura, **mais a sondagem e o desbloqueio**, sem
+a entrega individual da produção.
 
-O documento 11 §2.2 diz da sondagem: ela **"abre a trilha ao ser respondida, não ao ser
-acertada"**. Não é avaliação — é o portão. Sem respondê-la, o percurso não anda.
+### O fato que pesou
 
-Com o recorte de **leitura apenas**, a consequência é concreta: a criança recém-inscrita que
-abrir a trilha no aparelho do encontro verá a sondagem, entenderá que é o primeiro passo e
-**não poderá dá-lo ali**. A tela anuncia um percurso que não se move, e o passo que falta só
-existe na App 05.
+O documento 11 §2.2 diz da sondagem que ela **"abre a trilha ao ser respondida, não ao ser
+acertada"**. Não é avaliação — é o portão. Com leitura apenas, a criança recém-inscrita veria a
+sondagem no aparelho do encontro, entenderia que é o primeiro passo e **não poderia dá-lo ali**: a
+tela anunciaria um percurso que não se move.
 
-E há um segundo caso, mais grave que o primeiro. A inscrição em trilha é da App 05
-(`RF-05-09`), usada em casa. **Quem não tem aparelho em casa não se inscreve, não responde
-sondagem e não desbloqueia missão em lugar nenhum** — e o aparelho do encontro é o único a que
-essa criança tem acesso. Num projeto para comunidades periféricas, isso não é detalhe de
-recorte.
+E o caso que pesou mais: a inscrição em trilha é da App 05 (`RF-05-09`), usada em casa. **Quem não
+tem aparelho em casa não responde sondagem nem desbloqueia missão em lugar nenhum**, e o aparelho do
+encontro é o único a que essa criança tem acesso.
 
-### As três opções, e o que cada uma custa
-
-**Opção A — leitura apenas** (o recorte escrito nesta proposta).
+### O que a opção B traz, e o que ficou fora
 
 | | |
 | --- | --- |
-| A criança faz no encontro | vê as trilhas inscritas, a missão atual, a seguinte trancada com o motivo e as atividades da equipe |
-| Requisitos novos alcançados | nenhum além do `RF-04-72` |
-| Rotas | nenhuma escrita |
-| Custo em código | o menor: os componentes promovidos entram com a escrita desligada |
-| O que fica quebrado | a sondagem visível e não respondível; quem não tem aparelho em casa não começa trilha nenhuma |
+| Entra | responder à sondagem, que abre a trilha, e submeter o desafio de desbloqueio — quiz aferido pelo núcleo a 60%, ou prático declarado e julgado pelo Mestre autor |
+| Requisitos | `RF-04-73` (novo), `RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`, `RN-05-45` a `RN-05-47` |
+| Rota | `POST /v1/eu/missoes/{id}/desbloqueio` — **já existe** |
+| Custo em código | **baixo**: `Sondagem` e `DesafioDeDesbloqueio` já existem e são promovidos a `comum/` por esta mesma fatia; a App 01 **liga** o que a decisão 3 do `design.md` deixa opcional |
+| Fica fora | a **entrega individual** da produção (`RF-05-74`), que colidiria com a entrega por **equipe** do `RF-04-45`, já existente nesta aplicação: duas entregas sobre a mesma missão exigiriam regra que nenhum documento declara |
 
-**Opção B — leitura, mais sondagem e desbloqueio.**
+O desbloqueio é **do Guerreiro(a), nunca da equipe** (documento 11 §2.2), e no aparelho compartilhado
+cada atendimento já é de um Guerreiro(a) só — a sessão dele —, então nada no modelo se quebra.
 
-| | |
-| --- | --- |
-| Acrescenta | responder à sondagem, que abre a trilha, e ao desafio de desbloqueio — quiz aferido pelo núcleo a 60%, ou prático declarado e julgado pelo Mestre autor |
-| Requisitos alcançados | `RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`, `RN-05-45` a `RN-05-47` |
-| Rotas | `POST /v1/eu/missoes/{id}/desbloqueio` — **já existe** |
-| Custo em código | **baixo**: `Sondagem` e `DesafioDeDesbloqueio` já existem e já estarão em `comum/` por esta fatia; é ligar o que a decisão 3 do `design.md` deixa opcional |
-| Custo real | de **escopo**: o PRD-04 passa a abrigar atos que hoje são só do PRD-05, e a §3.2 dele precisa deixar de excluí-los |
+### O que segue em aberto
 
-O desbloqueio é **do Guerreiro(a), nunca da equipe** (documento 11 §2.2), e no aparelho
-compartilhado cada atendimento já é de um Guerreiro(a) só — a sessão dele — então nada no
-modelo se quebra.
-
-**Opção C — B, mais entrega individual da produção.**
-
-| | |
-| --- | --- |
-| Acrescenta | `RF-05-74` a `RF-05-77`: entrega por texto, fala transcrita ou foto, com devolutiva construtiva que não credita ponto |
-| Colisão | a App 01 **já entrega produção por equipe** (`RF-04-45`), no caminho das equipes. Duas entregas na mesma aplicação, possivelmente sobre a mesma missão, exigem regra dizendo qual vale — e isso é decisão de produto, não de tela |
-
-### Recomendação
-
-**Opção B.** O custo em código é quase nulo, porque os componentes já estarão promovidos; sem
-ela a fatia entrega uma tela que anuncia um percurso que não anda; e é o que dá à criança sem
-aparelho em casa uma porta de entrada na trilha. A **opção C fica fora**: a colisão com a
-entrega por equipe é decisão de produto e merece fatia própria.
-
-### A pergunta que sobra dentro da B
-
-A inscrição em trilha e a escolha do poder (`RF-05-09`) **entram também**? Sem elas, a criança
-sem aparelho em casa continua sem começar: a sondagem só aparece depois de a inscrição existir.
-Abrir a inscrição no encontro é coerente com o precedente da **troca por recompensa**, que o
-PRD-04 §3.2 atribui à App 01 justamente por ser presencial. Mas amplia a fatia outra vez, e é
-decisão do fundador.
-
-### O que muda nos artefatos se a resposta não for A
-
-O `RF-04-72` cresce ou ganha um irmão; a §3.2 do PRD-04 deixa de excluir os atos admitidos; e
-neste delta o requisito "A tela SHALL ser de **leitura**" se inverte, com os cenários "A tela
-não escreve nada" trocados pelos da sondagem e do desbloqueio. O `design.md` já prevê o ponto de
-entrada: a decisão 3 deixa a escrita opcional nos componentes promovidos.
+**A inscrição em trilha e a escolha do poder (`RF-05-09`) entram no encontro?** A pergunta foi posta
+ao fundador junto das três opções e **não foi respondida**. Sem elas, a criança sem aparelho em casa
+continua sem começar: a sondagem só aparece depois de a inscrição existir. Há precedente a favor — o
+PRD-04 §3.2 atribui a **troca por recompensa** à App 01 justamente por ser presencial. A tarefa 0.1
+segue pedindo essa resposta, e ela **não bloqueia** o resto da fatia: sem ela, a tela continua
+dizendo que inscrever-se acontece na App 05, como a `proposal` descreve.
 
 ## Why
 
@@ -118,6 +85,10 @@ caminhos — o desfecho da presença e a tela inicial.
   não a lista inteira. Para quem acabou de se inscrever, a missão atual **é a sondagem**, porque é
   ela a próxima do percurso: "começar pela sondagem" sai do dado, sem regra nova.
 - As **atividades da aula** aparecem junto, pelas equipes do Guerreiro(a) naquela aula.
+- O Guerreiro(a) **responde à sondagem** e **submete o desafio de desbloqueio** ali mesmo, pela
+  porta que já existe. Respondida a sondagem, a trilha abre no mesmo atendimento.
+- A **entrega individual** da produção **não** entra: a entrega por equipe do `RF-04-45` segue sendo
+  a desta aplicação, no caminho das equipes.
 - Os componentes de trilha da App 05 são **promovidos a `comum/`** e passam a servir as duas
   aplicações. As aplicações não se importam entre si — cada `package.json` de `apps/*` depende só de
   `comum` —, então reusar é promover.
@@ -138,13 +109,12 @@ caminhos — o desfecho da presença e a tela inicial.
 ### Fora do escopo
 
 O que o PRD-04 §3.2 já exclui — em particular, apoio escolar, coleta de território, ranking e canal
-de sugestões, que são a App 05. Além disso, e sujeito à trava acima:
+de sugestões, que são a App 05. Além disso:
 
-- **Responder à sondagem e ao desafio de desbloqueio** no encontro (`RF-05-13`, `RF-05-14`,
-  `RF-05-89`).
 - **Entrega individual da produção** da missão (`RF-05-74`) — a entrega por **equipe** do
   `RF-04-45` continua onde está, no caminho das equipes.
-- **Inscrever-se em trilha** e escolher poder (`RF-05-09`): a tela diz onde acontece.
+- **Inscrever-se em trilha** e escolher poder (`RF-05-09`): a tela diz onde acontece — **enquanto o
+  fundador não decidir** a pergunta que ficou aberta acima.
 - A lista inteira do percurso e a distinção entre missão realizada, liberada e bloqueada,
   retiradas do escopo pelo fundador em 2026-09-25.
 - Progresso, retomadas e culminância (`RF-05-15`, `RF-05-39`, `RF-05-79`).
@@ -158,9 +128,9 @@ Nenhuma.
 ### Modified Capabilities
 
 - `aplicacao-da-aula-presencial`: o desfecho da presença deixa de terminar o atendimento como único
-  desfecho, a tela inicial ganha o caminho do percurso, e a App 01 passa a apresentar o percurso do
-  Guerreiro(a) e as atividades das equipes dele na aula (`RF-04-72`, `RF-04-01`, `RF-04-67`,
-  `RN-04-40`).
+  desfecho, a tela inicial ganha o caminho do percurso, a App 01 passa a apresentar o percurso do
+  Guerreiro(a) e as atividades das equipes dele na aula, e passa a admitir a **sondagem** e o
+  **desbloqueio** no encontro (`RF-04-72`, `RF-04-73`, `RF-04-01`, `RF-04-67`, `RN-04-40`).
 
 **Sem delta** em `area-do-guerreiro`: a App 05 não muda de comportamento — os componentes mudam de
 lugar, o que é desenho, não spec. **Sem delta** em `camada-visual-comum`: os componentes promovidos

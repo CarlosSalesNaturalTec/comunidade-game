@@ -21,7 +21,8 @@ exatamente o recorte desta fatia.
 
 **Non-Goals:**
 
-- Escrever sobre missão no encontro: sondagem, desbloqueio, entrega individual, inscrição.
+- Entrega individual da produção no encontro, e inscrição em trilha enquanto o fundador não a
+  decidir.
 - Lista inteira do percurso e distinção de missão realizada.
 - Progresso, retomadas e culminância.
 - Rota nova no núcleo.
@@ -43,12 +44,14 @@ exatamente o recorte desta fatia.
    aplicações e faria cada uma montar o mesmo encadeamento de chamadas.
    _Descartado:_ componentes sem cliente, alimentados por prop.
 
-3. **A entrega e a submissão entram como capacidade opcional dos componentes promovidos, e a App 01
-   não as liga.** `Missao` hoje monta `EntregaDaProducao` e `DesafioDeDesbloqueio`, que escrevem. A
-   App 01 é leitura nesta fatia (ver a Trava da `proposal`), e a App 05 continua escrevendo — então o
-   que escreve passa a ser opcional no componente, com a App 05 ligando e a App 01 não.
-   _Descartado:_ dois componentes distintos, um de leitura e um de escrita — divergiriam no
-   conteúdo, que é a parte grande e igual nos dois.
+3. **A escrita entra como capacidade opcional dos componentes promovidos, e cada aplicação liga a
+   sua.** `Missao` hoje monta `EntregaDaProducao` e `DesafioDeDesbloqueio`, que escrevem. Com a
+   opção B, a App 01 liga o **desbloqueio** — que carrega a sondagem — e **não** liga a entrega
+   individual; a App 05 liga os dois. O opcional deixa de ser "ligado na 05, desligado na 01" e passa
+   a ser por ato, que é o que a decisão do fundador exige. _Descartado:_ dois componentes distintos,
+   um de leitura e um de escrita — divergiriam no conteúdo, que é a parte grande e igual nos dois.
+   _Descartado:_ um único interruptor de escrita — juntaria desbloqueio e entrega individual, que
+   agora seguem caminhos diferentes.
 
 4. **As atividades vêm de `GET /v1/eu/equipes`, não de `GET /v1/equipes/{id}/missao`.** A primeira
    devolve, por equipe, o `aula_id` e as atividades já montadas; a segunda exige saber a equipe
@@ -63,8 +66,8 @@ exatamente o recorte desta fatia.
    fechou.
 
 6. **Nenhuma trilha inscrita é desfecho, não erro.** A tela diz que não há inscrição e que ela
-   acontece na App 05. Oferecer a inscrição aqui invadiria o `RF-05-09` e poria escrita numa tela
-   declarada de leitura.
+   acontece na App 05. Abrir a inscrição aqui é a pergunta que o fundador ainda não respondeu; até
+   lá, a tela encaminha, e nada nesta fatia depende da resposta.
 
 7. **O delta da tela inicial já traz o parágrafo do glifo.** Esta change e a do temperamento Arena
    alteram o mesmo requisito, e um bloco `MODIFIED` substitui o requisito inteiro. Por isso a change
@@ -73,9 +76,12 @@ exatamente o recorte desta fatia.
 
 ## Risks / Trade-offs
 
-- **A trava da `proposal` mudar o recorte** → se o fundador decidir que a sondagem e o desbloqueio
-  acontecem no encontro, a decisão 3 é o ponto de entrada: a App 01 passa a ligar o que já estará
-  promovido, e a spec perde o requisito de leitura apenas. O desenho não precisa mudar de forma.
+- **Aparelho compartilhado escrevendo no percurso de quem não está mais nele** → o desbloqueio grava
+  sob a sessão do Guerreiro(a), que morre a cada atendimento (`RF-04-28`), e a `GuardaDePresenca`
+  barra quem não tem presença. A janela é a do próprio atendimento, como já é na entrega por equipe.
+- **A inscrição ficar sendo pedida no encontro e não existir** → a tela encaminha à App 05 em
+  linguagem simples, e o cenário "Sem inscrição, a tela diz onde inscrever-se" a fixa; se o fundador
+  abrir a inscrição, é fatia própria e não retrabalho desta.
 - **Promover tela de domínio para `comum/` alargar o que `comum/` é** → a pasta nasce separada de
   `comum/react`, e o documento 03 §1.2 recebe a linha que a descreve.
 - **A App 05 regredir na promoção** → a fatia não muda comportamento dela; os testes dela ficam onde

@@ -225,10 +225,22 @@ aula**, lidas com as equipes de que ele é integrante. Quem não integra equipe 
 não há equipe dele no encontro — enunciado **distinto** do encontro sem programação declarada, que é
 outro fato. (`RF-04-72`, `RF-04-35`)
 
-A tela SHALL ser de **leitura**: NEVER SHALL responder à sondagem, NEVER SHALL submeter desafio de
-desbloqueio e NEVER SHALL entregar produção individual — os três são atos da App 05 (`RF-05-13`,
-`RF-05-14`, `RF-05-74`). A entrega por **equipe** do `RF-04-45` NEVER SHALL sair do caminho das
-equipes, onde já está.
+A aplicação SHALL permitir ao Guerreiro(a) **responder à sondagem** da trilha e **submeter o desafio
+de desbloqueio** da missão no aparelho do encontro, pela mesma porta e com a mesma aferição da App
+05: no quiz, a submissão leva a resposta de todas as perguntas de uma vez e passa quem acerta ao
+menos 60%; no desafio prático, a submissão é a declaração de que cumpriu, e a missão **aguarda o
+Mestre autor**, nunca reprovada. O desbloqueio é **do Guerreiro(a) na trilha, nunca da equipe**.
+(`RF-04-73`, `RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`, `RN-05-45` a `RN-05-47`, documento 11
+§2.2)
+
+Respondida a sondagem, a trilha SHALL abrir — ela abre **ao ser respondida, não ao ser acertada** —, e
+a aplicação SHALL apresentar o percurso já aberto sem exigir novo atendimento. (`RF-04-73`,
+documento 11 §2.2, invariante 5)
+
+A aplicação NEVER SHALL **entregar produção individual** da missão pelo caminho das trilhas
+(`RF-05-74`): a entrega por **equipe** do `RF-04-45` segue sendo a desta aplicação e NEVER SHALL
+sair do caminho das equipes, e duas entregas sobre a mesma missão exigiriam regra que nenhum
+documento declara. Decisão do fundador de 2026-09-25.
 
 Sem rede, o percurso SHALL ficar indisponível como os demais caminhos que pedem o Guerreiro(a), e
 NEVER SHALL enfileirar nada. (`RF-04-58`, `RF-04-68`)
@@ -270,11 +282,27 @@ NEVER SHALL enfileirar nada. (`RF-04-58`, `RF-04-68`)
 - **THEN** a tela diz que não há equipe dele no encontro, com enunciado distinto do de encontro sem
   programação declarada
 
-#### Scenario: A tela não escreve nada
+#### Scenario: O Guerreiro(a) responde à sondagem no encontro
+
+- **WHEN** o Guerreiro(a) recém-inscrito abre a trilha no aparelho do encontro e responde à sondagem
+- **THEN** a trilha abre, independentemente de quantas ele acertou, e o percurso aberto é apresentado
+  no mesmo atendimento
+
+#### Scenario: O quiz do desbloqueio é aferido pelo núcleo
+
+- **WHEN** o Guerreiro(a) submete o quiz de desbloqueio de uma missão pelo aparelho do encontro
+- **THEN** a submissão leva todas as perguntas de uma vez, e a devolutiva diz quantas ele acertou
+
+#### Scenario: O desafio prático fica aguardando o Mestre
+
+- **WHEN** o Guerreiro(a) declara ter cumprido um desafio prático de desbloqueio
+- **THEN** a missão passa a aguardar o Mestre autor, e em nenhum momento aparece como reprovada
+
+#### Scenario: A entrega individual não acontece por este caminho
 
 - **WHEN** o percurso é apresentado no aparelho do encontro
-- **THEN** não há como responder à sondagem, submeter desbloqueio nem entregar produção individual
-  por essa tela
+- **THEN** não há como entregar produção individual da missão por essa tela, e a entrega por equipe
+  segue no caminho das equipes
 
 #### Scenario: Sem rede, o percurso não abre
 

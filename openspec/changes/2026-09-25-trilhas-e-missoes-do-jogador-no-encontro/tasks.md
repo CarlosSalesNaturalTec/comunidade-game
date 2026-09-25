@@ -2,14 +2,15 @@
 
 ## 0. Antes de começar
 
-- [ ] 0.1 Obter do fundador a decisão da **trava da `proposal`**, entre as três opções detalhadas
-      lá: **A**, leitura apenas; **B**, com sondagem e desbloqueio (recomendada); **C**, com entrega
-      individual da produção. Dentro de B e C, a pergunta da inscrição em trilha (`RF-05-09`) também
-      precisa de resposta. Sem a decisão as tarefas 3 e 4 não começam, porque o recorte muda — e se
-      a resposta não for A, a `proposal`, o delta e o `RF-04-72` são revisados antes.
+- [ ] 0.1 Obter do fundador a resposta que ficou aberta: a **inscrição em trilha e a escolha do
+      poder** (`RF-05-09`) entram no encontro? **Não bloqueia** as demais tarefas — sem ela a tela
+      encaminha à App 05, como a `proposal` descreve —, mas se a resposta for sim, é fatia própria.
+      A trava do recorte já está decidida: **opção B**, com sondagem e desbloqueio, sem entrega
+      individual.
 - [ ] 0.2 Conferir que os PRs de revisão do **documento 03 §3** e do **PRD-04** entraram, com o
-      `RF-04-72` criado e `RF-04-01`, `RF-04-67` e `RN-04-40` alterados — a change **não** cria
-      identificador nem altera documento normativo.
+      `RF-04-72` e o `RF-04-73` criados, `RF-04-01`, `RF-04-67` e `RN-04-40` alterados, e a §3.2 do
+      PRD-04 já **sem** a exclusão da sondagem e do desbloqueio — a change **não** cria identificador
+      nem altera documento normativo.
 - [ ] 0.3 Conferir que a change do **temperamento Arena** entrou antes: o delta da tela inicial aqui
       já traz o parágrafo do glifo (design — decisão 7).
 
@@ -19,8 +20,9 @@
       vindos de `apps/app-05-guerreiro/src/trilha/`, e a fatia do cliente de API que eles usam —
       `listarMinhasTrilhas`, `obterMissaoNoPercurso`, `obterTrilhaPublica`, `lerArquivoDoConteudo` e
       `lerImagemDaPergunta` (`RF-05-08`, `RF-05-10`, `RF-05-17`, design — decisões 1 e 2).
-- [ ] 1.2 Tornar **opcional** o que escreve — a entrega da produção e a submissão do desbloqueio —,
-      de modo que quem monta o componente decida se oferece (design — decisão 3).
+- [ ] 1.2 Tornar opcional **cada ato de escrita separadamente** — a submissão do desbloqueio, que
+      carrega a sondagem, e a entrega individual da produção —, de modo que cada aplicação ligue os
+      seus: a App 05 os dois, a App 01 só o desbloqueio (design — decisão 3).
 - [ ] 1.3 Exportar a pasta em `comum/package.json` e conferir o `comum/tsconfig.json`.
 - [ ] 1.4 Em `apps/app-05-guerreiro/src/trilha/` e `src/api/trilha.ts`, passar a consumir o que foi
       promovido, **ligando** a escrita, sem mudar comportamento algum da App 05 (`RF-05-13`,
@@ -48,19 +50,25 @@
 - [ ] 3.2 Apresentar, junto do percurso, as atividades das equipes do Guerreiro(a) na aula em curso,
       com enunciado próprio para "não integra equipe no encontro", distinto do de encontro sem
       programação declarada (`RF-04-72`, `RF-04-35`).
-- [ ] 3.3 Não ligar a escrita nos componentes promovidos, e conferir que a tela não oferece
-      sondagem, desbloqueio nem entrega individual (design — decisão 3).
-- [ ] 3.4 Tratar a ausência de rede como os demais caminhos que pedem o Guerreiro(a), sem
-      enfileirar nada (`RF-04-58`, `RF-04-68`).
+- [ ] 3.3 Ligar o **desbloqueio** nos componentes promovidos — que traz a sondagem com ele — e
+      **não** ligar a entrega individual, conferindo que a tela não a oferece e que a entrega por
+      equipe segue intacta no caminho das equipes (`RF-04-73`, `RF-04-45`, design — decisão 3).
+- [ ] 3.4 Conferir que respondida a sondagem a trilha abre no mesmo atendimento, sem exigir entrada
+      nova, e que o desafio prático deixa a missão aguardando o Mestre autor em vez de reprovada
+      (`RF-04-73`, `RN-05-20`).
+- [ ] 3.5 Tratar a ausência de rede como os demais caminhos que pedem o Guerreiro(a), sem
+      enfileirar nada — nem resposta de sondagem, nem submissão de desbloqueio (`RF-04-58`,
+      `RF-04-68`).
 
 ## 4. Testes
 
 - [ ] 4.1 Em teste do `comum`, cobrir os componentes promovidos com a escrita ligada e desligada —
       é o contrato novo da decisão 3.
-- [ ] 4.2 Em `apps/app-01-aula-presencial/src/trilhas/trilhas.test.tsx`, cobrir os nove cenários do
-      requisito novo: uma trilha, mais de uma, nenhuma, sondagem como missão atual, seguinte
-      trancada com motivo, atividades pela equipe, sem equipe na aula, tela sem escrita e sem rede
-      (`RF-04-72`, `RF-04-35`).
+- [ ] 4.2 Em `apps/app-01-aula-presencial/src/trilhas/trilhas.test.tsx`, cobrir os doze cenários do
+      requisito novo: uma trilha, mais de uma, nenhuma, sondagem como missão atual, seguinte trancada
+      com motivo, atividades pela equipe, sem equipe na aula, sondagem respondida abrindo a trilha,
+      quiz aferido pelo núcleo, prático aguardando o Mestre, entrega individual ausente e sem rede
+      (`RF-04-72`, `RF-04-73`, `RF-04-35`).
 - [ ] 4.3 Em `entrada/entrada.test.tsx`, cobrir "O desfecho da presença oferece as trilhas" e o
       título próprio do caminho das trilhas nas duas formas da entrada (`RF-04-67`, `RF-04-72`).
 - [ ] 4.4 Em `inicio/inicio.test.tsx`, cobrir "A tela inicial leva às trilhas de quem já tem
