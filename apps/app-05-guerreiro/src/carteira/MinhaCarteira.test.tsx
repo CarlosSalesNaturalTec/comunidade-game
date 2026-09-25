@@ -1,14 +1,28 @@
 import { act, render, screen } from "@testing-library/react";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
+import * as trilhaComumApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as carteiraApi from "../api/carteira";
+import * as coletaApi from "../api/coleta";
+import * as criacaoApi from "../api/criacaoOriginal";
+import * as trilhaApi from "../api/trilha";
 import { MinhaCarteira } from "./MinhaCarteira";
 
 const CHAVE_DE_SESSAO = "app-05:teste-minha-carteira";
 
 async function renderizar(divulgacaoAutorizada?: boolean) {
   sessionStorage.setItem(CHAVE_DE_SESSAO, "token-do-guerreiro");
+  // A carta do próprio Guerreiro(a) vem à frente da carteira e tem teste
+  // próprio em `MinhaCarta.test.tsx`; aqui basta que ela não peça rede: sem
+  // comunidade não há carta, e a Área apresenta o que tem em outra forma.
+  vi.spyOn(coletaApi, "listarMinhasSeries").mockResolvedValue({
+    itens: [],
+    proximo_cursor: null,
+  } as Awaited<ReturnType<typeof coletaApi.listarMinhasSeries>>);
+  vi.spyOn(trilhaComumApi, "listarPoderesDoCatalogo").mockResolvedValue([]);
+  vi.spyOn(trilhaApi, "obterProgresso").mockResolvedValue([]);
+  vi.spyOn(criacaoApi, "obterPortfolio").mockResolvedValue([]);
   vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
     persona_id: "guerreiro-1",
     papel: "guerreiro",

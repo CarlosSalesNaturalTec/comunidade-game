@@ -185,3 +185,20 @@ textarea {
   align-items: center;
   gap: var(--espaco-8);
 }
+
+/* Os badges da trilha, no progresso: cada um pela silhueta da família dele,
+ * com o glifo do poder (documento 15 §§8.3, 8.4). */
+.cg-trilha__badges {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  margin: var(--espaco-8) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A carta do próprio Guerreiro(a), à frente da carteira: a Arena dá a ela o
+ * raio de `12` px, e a moldura vem do `comum` (documento 15 §8.1). */
+.cg-minha-carta {
+  margin-block-end: var(--espaco-16);
+}

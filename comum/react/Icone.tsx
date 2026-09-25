@@ -10,9 +10,19 @@ export type NomeDeGlifo =
   | "quiz"
   | "medicao"
   | "troca"
-  | "trilhas";
+  | "trilhas"
+  // Os glifos de poder do documento 15 §8.4 — um por poder do catálogo do
+  // documento 02 §2, mais o genérico. Quem os escolhe pelo nome do poder é
+  // `GlifoDePoder`; aqui são glifos como os demais, na mesma grade.
+  | "poder"
+  | "poder-ia-e-robotica"
+  | "poder-do-territorio"
+  | "poder-sustentador"
+  | "poder-da-rima"
+  | "poder-das-redes"
+  | "poder-da-capoeira";
 
-// Os sete glifos, desenhados na grade de `24` px do documento 15 §11.1.
+// Os glifos, desenhados na grade de `24` px do documento 15 §11.1.
 // Nenhum declara cor: o traço é `currentColor`, herdado do texto que o ícone
 // acompanha, e é assim que a camada semântica do §12 alcança o ícone sem
 // repetir cor nenhuma — trocar o tema troca o ícone junto.
@@ -73,6 +83,65 @@ const GLIFOS: Record<NomeDeGlifo, ReactElement> = {
       <circle cx="4" cy="19" r="1.5" />
       <circle cx="12" cy="12" r="1.5" />
       <circle cx="20" cy="5" r="1.5" />
+    </>
+  ),
+  // O genérico do documento 15 §8.4 — losango num círculo. Não é estrela nem
+  // hexágono de propósito: a estrela é a grandeza ponto do §9 e o hexágono é a
+  // silhueta do badge de protagonismo do §8.3, e o genérico não pode se
+  // confundir com nenhum dos dois.
+  poder: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 8l4 4-4 4-4-4Z" />
+    </>
+  ),
+  // Cabeça de robô com antena.
+  "poder-ia-e-robotica": (
+    <>
+      <rect x="5" y="8" width="14" height="11" rx="3" />
+      <path d="M12 4.5v3.5" />
+      <path d="M9.5 13h.01M14.5 13h.01" />
+      <path d="M2.5 12v3M21.5 12v3" />
+    </>
+  ),
+  // Marco fincado no chão do território.
+  "poder-do-territorio": (
+    <>
+      <path d="M12 3a5.5 5.5 0 0 1 5.5 5.5c0 4-5.5 9.5-5.5 9.5S6.5 12.5 6.5 8.5A5.5 5.5 0 0 1 12 3Z" />
+      <circle cx="12" cy="8.5" r="2" />
+      <path d="M3 20.5h18" />
+    </>
+  ),
+  // Mão aberta sustentando o que sobe.
+  "poder-sustentador": (
+    <>
+      <path d="M12 3v7" />
+      <path d="m8.5 6.5 3.5-3.5 3.5 3.5" />
+      <path d="M3.5 13.5v2a5 5 0 0 0 5 5h7a5 5 0 0 0 5-5v-2" />
+    </>
+  ),
+  // Microfone de mão.
+  "poder-da-rima": (
+    <>
+      <rect x="9" y="2.5" width="6" height="11" rx="3" />
+      <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0" />
+      <path d="M12 18v3.5M8.5 21.5h7" />
+    </>
+  ),
+  // Câmera de vídeo.
+  "poder-das-redes": (
+    <>
+      <rect x="2.5" y="6" width="13" height="12" rx="2.5" />
+      <path d="m15.5 11 6-3.5v9L15.5 13Z" />
+    </>
+  ),
+  // Figura em movimento, de pernas abertas.
+  "poder-da-capoeira": (
+    <>
+      <circle cx="12" cy="4.5" r="2.5" />
+      <path d="M12 7v6" />
+      <path d="m12 13-4.5 7.5M12 13l5 7" />
+      <path d="M12 9.5 5 7.5M12 9.5l7 1.5" />
     </>
   ),
 };

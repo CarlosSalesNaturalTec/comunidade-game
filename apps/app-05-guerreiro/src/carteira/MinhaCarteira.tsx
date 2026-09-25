@@ -2,11 +2,16 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, EstadoDaLista } from "comum/react";
 import { useEffect, useState } from "react";
 import { listarMeusPontosExtras, type PontosExtras } from "../api/carteira";
+import { MinhaCarta } from "./MinhaCarta";
 
 // A carteira: acumulado e saldo disponível separados e rotulados, sem soma
 // e sem ponto regular, mais o estado do próprio perfil público — leitura
 // apenas, já que autorizar é ato do responsável na App 07 (`RF-05-82`,
 // `RF-05-50`, `RN-05-39`, `RN-05-40`, `RN-05-42`).
+//
+// À frente de tudo, a **carta do próprio Guerreiro(a)** (`RF-05-50`,
+// `RF-05-51`, documento 11 §8.2): é a primeira coisa que ele vê de si na
+// Área dele.
 export function MinhaCarteira() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [pontos, definirPontos] = useState<PontosExtras | null>(null);
@@ -49,6 +54,8 @@ export function MinhaCarteira() {
 
   return (
     <section className="cg-carteira-secao" aria-label="Minha carteira">
+      <MinhaCarta />
+
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 
       {pontos === null && !erro && <EstadoDaLista>Carregando a sua carteira…</EstadoDaLista>}
