@@ -2,7 +2,7 @@
 
 ## Context
 
-Ver `proposal.md` — Travas e Why. A spec alterada é `camada-visual-comum`, que já declara os
+Ver `proposal.md` — os dois insumos e o Why. A spec alterada é `camada-visual-comum`, que já declara os
 temperamentos, a camada de tema da Arena e a proibição de movimento decorativo.
 
 Esta fatia fecha os três eixos do documento 15 §6 que a fatia do temperamento deixou de fora por
@@ -42,9 +42,10 @@ o que já dá para fazer antes.
    diz "cuidado com o contraste": diz que os pisos continuam cumpridos **sobre** a imagem, o que é
    verificável. _Descartado:_ imagem como token de cor, que não se mede.
 
-4. **A tarefa 1 pode rodar antes das travas.** A carta dominando a tela depende só da change da
-   carta. As tarefas da imagem e do retorno esperam as duas decisões do fundador, e a tarefa 0 as
-   bloqueia explicitamente.
+4. **A tarefa 1 pode rodar antes dos dois insumos.** A carta dominando a tela depende só da change
+   da carta. As tarefas da imagem e do retorno esperam o que o fundador fornece na implementação, e a
+   tarefa 0 é a porta delas — o que também torna a fatia entregável em duas partes, se a primeira
+   estiver pronta antes dos insumos.
 
 5. **O peso da imagem de fundo entra como conferência, não como número.** O princípio 4 do documento
    15 põe o celular modesto como alvo e o peso de arquivo como requisito de projeto, mas não fixa
@@ -53,9 +54,12 @@ o que já dá para fazer antes.
 
 ## Risks / Trade-offs
 
-- **A fatia ficar aberta por tempo indefinido** → é o custo de registrá-la em vez de esquecê-la; as
-  duas travas entram no documento 09, que é a pauta do fundador, e a tarefa 1 entrega algo útil
-  sozinha.
+- **Os dois insumos chegarem só em parte** → a tarefa 0 é porta de cada um separadamente: a imagem
+  abre a tarefa 2, os fatos abrem a tarefa 3, e a tarefa 1 não espera nenhuma. A fatia entrega o que
+  tiver insumo, sem ficar refém do que falta.
+- **Decisão recebida na implementação e não gravada** → a tarefa 4.2 manda gravar cada uma no
+  documento-fonte dela antes de virar código: a imagem no documento 15 §6, os fatos no documento 11.
+  Decisão que só existe no artefato da change é a duplicidade que o `CLAUDE.md` proíbe.
 - **Imagem de fundo virando decoração** → o requisito diz que nada se perde quando ela não carrega,
   com cenário próprio. Se algo se perder, a imagem estava carregando informação, o que o princípio 3
   proíbe.

@@ -8,24 +8,27 @@ três eixos já são norma do documento 15 §6.
 **Depende** da change da **carta do personagem** — não há como a carta dominar a tela antes de a
 carta existir.
 
-## Travas — a fatia nasce bloqueada
+## Dois insumos que o fundador fornece na implementação
 
-Duas coisas faltam, e nenhuma se resolve num artefato do OpenSpec.
+A fatia precisa de duas coisas que não estão no repositório e que nenhum artefato do OpenSpec pode
+decidir. Em 2026-09-25 o fundador declarou que **fornece as duas no momento da implementação** — não
+são, portanto, perguntas pendentes de planejamento, e a change não espera por elas para ser
+aprovada. Elas são a entrada das tarefas 2 e 3, que a tarefa 0 mantém como porta.
 
-**1. A imagem de comunidade não existe.** O documento 15 §6 dá à Arena "cor chapada e **imagem de
-comunidade ao fundo**". Não há fotografia alguma no repositório, e imagem de território tem regra de
-uso a definir — o documento 11 §8.3 prevê "fotos e memórias registradas" como dado da Comunidade
-Virtual, o que é outra coisa: ali a foto é conteúdo exibido, aqui seria fundo de interface. O
-fundador precisa fornecer as imagens e dizer de onde saem — acervo do projeto, foto da própria
-comunidade registrada na plataforma, ou ilustração no traço do documento 15 §2.
+**1. As imagens de comunidade.** O documento 15 §6 dá à Arena "cor chapada e **imagem de comunidade
+ao fundo**". Não há fotografia alguma no repositório. O fundador fornece as imagens e diz de onde
+saem — acervo do projeto, foto da própria comunidade registrada na plataforma, ou ilustração no traço
+do documento 15 §2 —, e a regra de uso de imagem de território é gravada no documento-fonte junto com
+elas. O documento 11 §8.3 prevê "fotos e memórias registradas" como **dado** da Comunidade Virtual,
+que é outra coisa: ali a foto é conteúdo exibido, aqui é fundo de interface.
 
-**2. Quais fatos ganham retorno.** O §6 dá à Arena "**retorno de progresso e conquista**" a `300`
-ms, sem enumerar os fatos. Os candidatos são conhecidos: missão desbloqueada, badge certificado,
-nível que subiu, ponto creditado, produção entregue. Escolher entre eles é decisão de produto —
-gamificação é o documento 11 —, e um artefato do OpenSpec não a toma.
+**2. Quais fatos ganham retorno.** O §6 dá à Arena "**retorno de progresso e conquista**" a `300` ms,
+sem enumerar os fatos. Os candidatos são conhecidos: missão desbloqueada, badge certificado, nível
+que subiu, ponto creditado, produção entregue. É decisão de gamificação — documento 11 —, e quando o
+fundador a der, ela é gravada lá antes de virar código.
 
-A fatia fica aberta com a tarefa 0 bloqueando as demais. O que **não** depende das travas é a carta
-dominando a tela, que a tarefa 1 já pode executar.
+**A tarefa 1 não depende de nenhuma das duas**: a carta dominando a tela precisa apenas da change da
+carta.
 
 ## Why
 
@@ -43,7 +46,7 @@ ainda não acontece.
 - **Imagem de comunidade ao fundo**, atrás da cor chapada, sem jamais carregar significado sozinha e
   sem baixar o contraste medido do texto que fica sobre ela (§§3.3, 5).
 - **Retorno de progresso e conquista** a `300` ms, com `ease-in-out`, nos fatos que o fundador
-  escolher. O retorno **informa dado real** — é o que o princípio 2 exige, e é o que o distingue do
+  declarar na implementação. O retorno **informa dado real** — é o que o princípio 2 exige, e é o que o distingue do
   movimento decorativo que a camada já proíbe. Suprimido por completo quando o aparelho pede menos
   movimento, e nunca a única via ao conteúdo.
 
@@ -73,6 +76,7 @@ Nenhuma.
 - `apps/app-01-aula-presencial/src/index.css` e `apps/app-05-guerreiro/src/index.css` — a composição
   da Arena.
 - As telas das Apps 01 e 05 que apresentam personagem e progresso.
-- `docs/09-topicos-em-aberto-e-sugestoes.md` — as duas travas, enquanto não decididas.
+- `docs/15-identidade-visual.md` §6 e `docs/11-modelo-de-gamificacao.md` — onde as duas decisões do
+  fundador são gravadas quando ele as der, com a linha correspondente no documento 09.
 - `openspec/cronograma-de-fatias.md` — a situação desta linha.
 - Sem alteração no núcleo, em rota ou em contrato de API.
