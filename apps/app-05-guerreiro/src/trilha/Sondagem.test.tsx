@@ -1,9 +1,9 @@
 import { act, render, screen } from "@testing-library/react";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
+import { Sondagem } from "comum/trilha";
+import * as trilhaApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import * as trilhaApi from "../api/trilha";
-import { Sondagem } from "./Sondagem";
 
 const CHAVE_DE_SESSAO = "app-05:teste-sondagem";
 
@@ -40,6 +40,7 @@ describe("sondagem", () => {
               ],
             }}
             aoResponder={vi.fn()}
+            submissaoLigada
           />
         </ProvedorDeSessao>,
       );
@@ -84,6 +85,7 @@ describe("sondagem", () => {
               ],
             }}
             aoResponder={aoResponder}
+            submissaoLigada
           />
         </ProvedorDeSessao>,
       );

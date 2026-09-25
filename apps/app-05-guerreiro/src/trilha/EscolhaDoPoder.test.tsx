@@ -1,9 +1,9 @@
 import { act, render, screen } from "@testing-library/react";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
+import { EscolhaDoPoder } from "comum/trilha";
+import * as trilhaApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import * as trilhaApi from "../api/trilha";
-import { EscolhaDoPoder } from "./EscolhaDoPoder";
 
 const CHAVE_DE_SESSAO = "app-05:teste-escolha-do-poder";
 
@@ -17,7 +17,7 @@ async function renderizar(aoInscrever = vi.fn()) {
   await act(async () => {
     render(
       <ProvedorDeSessao chaveDeArmazenamento={CHAVE_DE_SESSAO}>
-        <EscolhaDoPoder aoInscrever={aoInscrever} />
+        <EscolhaDoPoder aoInscrever={aoInscrever} inscricaoLigada />
       </ProvedorDeSessao>,
     );
   });

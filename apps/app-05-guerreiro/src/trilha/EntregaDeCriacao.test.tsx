@@ -1,9 +1,9 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
+import type { CulminanciaDaTrilha } from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as criacaoOriginalApi from "../api/criacaoOriginal";
-import type { CulminanciaDaTrilha } from "../api/trilha";
 import { EntregaDeCriacao } from "./EntregaDeCriacao";
 
 const CHAVE_DE_SESSAO = "app-05:teste-entrega-de-criacao";

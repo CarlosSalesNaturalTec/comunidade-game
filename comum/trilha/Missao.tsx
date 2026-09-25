@@ -1,30 +1,41 @@
-import { useSessao } from "comum/autenticacao";
-import { Aviso, EstadoDaLista, MidiaDoNucleo } from "comum/react";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
+import { useSessao } from "../autenticacao/ContextoDeSessao";
+import { Aviso } from "../react/Aviso";
+import { EstadoDaLista } from "../react/EstadoDaLista";
+import { MidiaDoNucleo } from "../react/MidiaDoNucleo";
 import {
+  type AtividadeDaMissaoPublica,
   lerArquivoDoConteudo,
   type MissaoNoPercurso,
   type MissaoPublica,
   obterTrilhaPublica,
   type TrilhaPublicaComMissoes,
-} from "../api/trilha";
+} from "./api";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
-import { EntregaDaProducao } from "./EntregaDaProducao";
 import { Sondagem } from "./Sondagem";
 
 interface Props {
   trilhaId: string;
   missao: MissaoNoPercurso;
   aoDesbloquear: () => void;
+  /** Liga a submissão do desbloqueio, que carrega a sondagem com ela — as
+   * duas aplicações a ligam (design — decisão 3). */
+  submissaoDoDesbloqueioLigada?: boolean;
+  /** A entrega individual da produção, ligada por quem a oferece. A App 01
+   * NUNCA a liga: a entrega dela é por equipe, no caminho das equipes
+   * (`RF-04-45`, `RF-05-74`, design — decisão 3). */
+  entregaDaProducao?: (dados: {
+    missaoId: string;
+    atividades: AtividadeDaMissaoPublica[];
+  }) => ReactNode;
 }
 
 // Texto e link saem do próprio conteúdo. Imagem e vídeo vêm em bytes do
 // núcleo, buscados por `MidiaDoNucleo` numa moldura de tamanho fixo: `<img
 // src>` não manda a chave da aplicação que toda rota sob `/v1` exige
-// (`RF-05-11`, design — decisão 3 e 4 de
-// `2026-09-17-moldura-fixa-de-midia-na-missao`). Antes da fatia anterior, os
-// três caíam em `conteudo.referencia` — a string do armazenamento impressa
-// como se fosse o conteúdo, que não diz nada a quem lê.
+// (`RF-05-11`). Antes da fatia da moldura fixa, os três caíam em
+// `conteudo.referencia` — a string do armazenamento impressa como se fosse
+// o conteúdo, que não diz nada a quem lê.
 function ConteudoDaMissao({
   conteudo,
   tituloDaMissao,
@@ -99,9 +110,15 @@ function ArquivoDeApoio({ conteudoId, token }: { conteudoId: string; token: stri
 
 // Conteúdo e bibliografia da missão, na ordem do autor, com crédito e
 // licença — vindos de `GET /v1/trilhas/{id}`, nunca duplicados na leitura
-// do percurso (`RF-05-11`, `RF-05-12`, design — decisão 6). Missão
-// bloqueada mostra o motivo, nunca cadeado mudo (`RF-05-10`).
-export function Missao({ trilhaId, missao, aoDesbloquear }: Props) {
+// do percurso (`RF-05-11`, `RF-05-12`). Missão bloqueada mostra o motivo,
+// nunca cadeado mudo (`RF-05-10`).
+export function Missao({
+  trilhaId,
+  missao,
+  aoDesbloquear,
+  submissaoDoDesbloqueioLigada,
+  entregaDaProducao,
+}: Props) {
   const { sessao } = useSessao();
   const token = sessao?.token ?? null;
   const [trilhaPublica, definirTrilhaPublica] = useState<TrilhaPublicaComMissoes | null>(null);
@@ -206,18 +223,20 @@ export function Missao({ trilhaId, missao, aoDesbloquear }: Props) {
             missaoId={missao.id}
             desafio={missao.desafio_de_desbloqueio}
             aoResponder={aoDesbloquear}
+            submissaoLigada={submissaoDoDesbloqueioLigada}
           />
         ) : (
           <DesafioDeDesbloqueio
             missaoId={missao.id}
             desafio={missao.desafio_de_desbloqueio}
             aoDesbloquear={aoDesbloquear}
+            submissaoLigada={submissaoDoDesbloqueioLigada}
           />
         ))}
 
-      {missao.desbloqueada && missaoPublica && (
-        <EntregaDaProducao missaoId={missao.id} atividades={missaoPublica.atividades} />
-      )}
+      {missao.desbloqueada &&
+        missaoPublica &&
+        entregaDaProducao?.({ missaoId: missao.id, atividades: missaoPublica.atividades })}
     </article>
   );
 }

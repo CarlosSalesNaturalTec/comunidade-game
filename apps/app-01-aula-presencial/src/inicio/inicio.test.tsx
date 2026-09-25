@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as sessaoApi from "comum/autenticacao/api";
 import * as biometriaModulo from "comum/biometria";
+import * as trilhaApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as descritorApi from "../api/descritor";
 import * as equipesApi from "../api/equipes";
@@ -115,6 +116,7 @@ describe("tela inicial da App 01", () => {
       "Quiz ao Vivo — entrar com o nick e responder pela equipe",
       "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
       "Troca por recompensa avulsa — entregar uma recompensa do encontro",
+      "Trilhas e missões — ver o seu percurso e as atividades do encontro",
     ];
 
     for (const rotulo of rotulos) {
@@ -306,6 +308,108 @@ describe("tela inicial da App 01", () => {
     await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
 
     expect(await screen.findByText(/registre a presença primeiro/i)).toBeInTheDocument();
+  });
+
+  // --- O caminho das trilhas e missões (`RF-04-72`, `RF-04-01`, `RN-04-40`)
+
+  it("a tela inicial leva às trilhas de quem já tem presença", async () => {
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(sessaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    const registrarPresenca = mockarRegistrarPresencaEcoando();
+    mockarPresencaNoEncontro(true);
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([]);
+    vi.spyOn(trilhaApi, "listarPoderesDoCatalogo").mockResolvedValue([]);
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /trilhas e missões/i }));
+    // A entrada anuncia o caminho que serve, como nos demais.
+    expect(await screen.findByText(/quem vai ver as próprias trilhas/i)).toBeInTheDocument();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+    await usuario.type(await screen.findByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+
+    expect(
+      await screen.findByRole("heading", { name: /trilhas e missões/i }),
+    ).toBeInTheDocument();
+    // O caminho abre a sessão e NUNCA registra presença (`RF-04-72`).
+    expect(registrarPresenca).not.toHaveBeenCalled();
+  });
+
+  it("sem presença, o caminho das trilhas não abre", async () => {
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(sessaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    mockarPresencaNoEncontro(false);
+    const listarTrilhas = vi.spyOn(trilhaApi, "listarMinhasTrilhas");
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /trilhas e missões/i }));
+    await usuario.type(await screen.findByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+    await usuario.type(await screen.findByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+
+    // A mesma recusa dos caminhos das equipes, do quiz e da troca
+    // (`RN-04-40`), e o mesmo encaminhamento ao caminho da presença.
+    expect(await screen.findByText(/registre a presença primeiro/i)).toBeInTheDocument();
+    expect(listarTrilhas).not.toHaveBeenCalled();
+  });
+
+  it("o caminho da presença continua não levando às equipes", async () => {
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(sessaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    mockarRegistrarPresencaEcoando();
+    mockarPresencaNoEncontro(true);
+    const listarEquipes = vi.spyOn(equipesApi, "listarEquipesDaAula");
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([]);
+    vi.spyOn(trilhaApi, "listarPoderesDoCatalogo").mockResolvedValue([]);
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /presença — entrar/i }));
+    await usuario.type(await screen.findByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+    await usuario.type(await screen.findByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+
+    // Registrada a presença, quem chegou segue às trilhas pelo desfecho — e
+    // nenhuma tela de equipe da aula aparece nesse atendimento (`RF-04-67`).
+    await usuario.click(
+      await screen.findByRole("button", { name: /ver as minhas trilhas e missões/i }),
+    );
+    expect(
+      await screen.findByRole("heading", { name: /trilhas e missões/i }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/equipes desta aula/i)).not.toBeInTheDocument();
+    expect(listarEquipes).not.toHaveBeenCalled();
   });
 
   it("voltar ao início encerra a sessão do Guerreiro(a) e limpa a tela", async () => {

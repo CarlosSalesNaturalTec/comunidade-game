@@ -3,9 +3,16 @@ import type { ReactElement } from "react";
 /** Os quatro tamanhos do documento 15 §11.1 — nenhum outro. */
 export type TamanhoDeIcone = 16 | 24 | 32 | 48;
 
-export type NomeDeGlifo = "onboarding" | "presenca" | "equipes" | "quiz" | "medicao" | "troca";
+export type NomeDeGlifo =
+  | "onboarding"
+  | "presenca"
+  | "equipes"
+  | "quiz"
+  | "medicao"
+  | "troca"
+  | "trilhas";
 
-// Os seis glifos, desenhados na grade de `24` px do documento 15 §11.1.
+// Os sete glifos, desenhados na grade de `24` px do documento 15 §11.1.
 // Nenhum declara cor: o traço é `currentColor`, herdado do texto que o ícone
 // acompanha, e é assim que a camada semântica do §12 alcança o ícone sem
 // repetir cor nenhuma — trocar o tema troca o ícone junto.
@@ -57,6 +64,15 @@ const GLIFOS: Record<NomeDeGlifo, ReactElement> = {
       <path d="m14 6 3 3-3 3" />
       <path d="M21 15H7" />
       <path d="m10 18-3-3 3-3" />
+    </>
+  ),
+  // Caminho em marcos, subindo da esquerda para a direita.
+  trilhas: (
+    <>
+      <path d="M4 19h3l3-7h4l3-7h3" />
+      <circle cx="4" cy="19" r="1.5" />
+      <circle cx="12" cy="12" r="1.5" />
+      <circle cx="20" cy="5" r="1.5" />
     </>
   ),
 };

@@ -14,7 +14,9 @@
     "./autenticacao/api": "./autenticacao/api.ts",
     "./biometria": "./biometria/indice.ts",
     "./biometria/provisionamento": "./biometria/provisionamento.ts",
-    "./fala": "./fala/indice.ts"
+    "./fala": "./fala/indice.ts",
+    "./trilha": "./trilha/indice.ts",
+    "./trilha/api": "./trilha/api.ts"
   },
   "files": [
     "tokens.css",
@@ -25,7 +27,8 @@
     "avatar",
     "autenticacao",
     "biometria",
-    "fala"
+    "fala",
+    "trilha"
   ],
   "scripts": {
     "test": "vitest run",

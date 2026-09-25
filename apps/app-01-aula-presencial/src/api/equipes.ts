@@ -1,4 +1,5 @@
 import { chamarNucleo } from "comum/api";
+import type { AtividadeDoEncontro } from "./programacao";
 
 export interface IntegranteDaEquipe {
   avatar: string | null;
@@ -117,4 +118,29 @@ export function homologarEquipeDaTrilha(
     metodo: "POST",
     token: tokenDeTrabalho,
   });
+}
+
+export interface AtividadeDaMinhaEquipe {
+  atividade: AtividadeDoEncontro;
+  missao_id: string;
+  missao_titulo: string;
+  trilha_id: string;
+  trilha_titulo: string;
+  corrente: boolean;
+}
+
+export interface MinhaEquipe extends Equipe {
+  meu_papel: string | null;
+  atividades: AtividadeDaMinhaEquipe[];
+}
+
+// As equipes de que o Guerreiro(a) em sessão é integrante — da aula e da
+// trilha —, cada uma já com as atividades dela. É esta leitura, e não
+// `GET /v1/equipes/{id}/missao`, que serve o caminho das trilhas: a lista
+// das equipes da aula traz integrante só com avatar, nick e papel, por
+// exigência do `RN-04-14`, e por isso esta aplicação não teria como saber
+// qual das equipes é a do Guerreiro(a) (`RF-04-72`, `RF-04-35`, design —
+// decisão 4).
+export function listarMinhasEquipes(token: string): Promise<MinhaEquipe[]> {
+  return chamarNucleo<MinhaEquipe[]>("/v1/eu/equipes", { token });
 }

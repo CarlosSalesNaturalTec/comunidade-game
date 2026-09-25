@@ -1,16 +1,22 @@
-import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao, MidiaDoNucleo } from "comum/react";
 import { useState } from "react";
+import { useSessao } from "../autenticacao/ContextoDeSessao";
+import { Aviso } from "../react/Aviso";
+import { Botao } from "../react/Botao";
+import { MidiaDoNucleo } from "../react/MidiaDoNucleo";
 import {
   type DesafioDeDesbloqueio as Desafio,
   lerImagemDaPergunta,
   submeterDesafioDeDesbloqueio,
-} from "../api/trilha";
+} from "./api";
 
 interface Props {
   missaoId: string;
   desafio: Desafio;
   aoDesbloquear: () => void;
+  /** A submissão é ato de escrita, e cada aplicação liga a sua: desligada,
+   * a tela apresenta o desafio e diz onde ele se submete, sem botão de
+   * envio (design — decisão 3). */
+  submissaoLigada?: boolean;
 }
 
 // Realiza o desafio de desbloqueio. No quiz, todas as perguntas aparecem
@@ -20,7 +26,12 @@ interface Props {
 // núcleo abre a trilha ao ser respondida, e é `Sondagem` que dá o
 // enquadramento (`RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`,
 // `RN-05-45`, `RN-05-46`).
-export function DesafioDeDesbloqueio({ missaoId, desafio, aoDesbloquear }: Props) {
+export function DesafioDeDesbloqueio({
+  missaoId,
+  desafio,
+  aoDesbloquear,
+  submissaoLigada = false,
+}: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [enviando, definirEnviando] = useState(false);
   const [placar, definirPlacar] = useState<{ acertos: number; total: number } | null>(null);
@@ -136,6 +147,7 @@ export function DesafioDeDesbloqueio({ missaoId, desafio, aoDesbloquear }: Props
                       type="radio"
                       name={`pergunta-${pergunta.id}`}
                       checked={escolhas[pergunta.id] === posicao + 1}
+                      disabled={!submissaoLigada}
                       onChange={() =>
                         definirEscolhas({ ...escolhas, [pergunta.id]: posicao + 1 })
                       }
@@ -148,9 +160,19 @@ export function DesafioDeDesbloqueio({ missaoId, desafio, aoDesbloquear }: Props
           </fieldset>
         ))}
 
-      <Botao onClick={submeter} desabilitado={enviando}>
-        {enviando ? "Enviando…" : desafio.tipo === "quiz" ? "Enviar respostas" : "Já cumpri!"}
-      </Botao>
+      {submissaoLigada ? (
+        <Botao onClick={submeter} desabilitado={enviando}>
+          {enviando
+            ? "Enviando…"
+            : desafio.tipo === "quiz"
+              ? "Enviar respostas"
+              : "Já cumpri!"}
+        </Botao>
+      ) : (
+        <Aviso tipo="andamento">
+          Aqui você só lê o desafio. Para enviar, abra a sua Área do Guerreiro(a).
+        </Aviso>
+      )}
     </section>
   );
 }

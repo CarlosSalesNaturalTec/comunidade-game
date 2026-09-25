@@ -1,9 +1,9 @@
 import { act, render, screen } from "@testing-library/react";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
+import { Missao } from "comum/trilha";
+import * as trilhaApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import * as trilhaApi from "../api/trilha";
-import { Missao } from "./Missao";
 
 const CHAVE_DE_SESSAO = "app-05:teste-missao";
 
@@ -17,7 +17,12 @@ async function renderizar(missao: trilhaApi.MissaoNoPercurso, aoDesbloquear = vi
   await act(async () => {
     render(
       <ProvedorDeSessao chaveDeArmazenamento={CHAVE_DE_SESSAO}>
-        <Missao trilhaId="trilha-1" missao={missao} aoDesbloquear={aoDesbloquear} />
+        <Missao
+          trilhaId="trilha-1"
+          missao={missao}
+          aoDesbloquear={aoDesbloquear}
+          submissaoDoDesbloqueioLigada
+        />
       </ProvedorDeSessao>,
     );
   });

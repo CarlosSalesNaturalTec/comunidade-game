@@ -23,6 +23,7 @@ import {
 import { CHAVE_DA_PARTIDA_DE_QUIZ, TelaDaPartida } from "../quiz/TelaDaPartida";
 import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import { TelaDaProgramacao } from "../trilhas/TelaDaProgramacao";
+import { TelaDeTrilhasDoGuerreiro } from "../trilhas/TelaDeTrilhasDoGuerreiro";
 import { TelaDeTroca } from "../troca/TelaDeTroca";
 
 type Caminho =
@@ -32,6 +33,7 @@ type Caminho =
   | "equipes"
   | "troca"
   | "quiz"
+  | "trilhas"
   | "medicao"
   | "encerramento";
 
@@ -59,9 +61,16 @@ interface Props {
 }
 
 // Os três caminhos do PRD-04 §6.1 — onboarding, presença e equipes. A
-// presença termina no registro e volta ao início; as equipes abrem por nick
-// e imagem ou PIN, sem registrar presença, e só para quem já a tem
-// (`RF-04-01`, `RF-04-67`, `RF-04-68`).
+// presença termina no registro, que oferece voltar ao início ou seguir às
+// trilhas e missões; as equipes abrem por nick e imagem ou PIN, sem
+// registrar presença, e só para quem já a tem (`RF-04-01`, `RF-04-67`,
+// `RF-04-68`).
+//
+// O caminho das **trilhas e missões** entra ao lado deles, para quem
+// registrou a presença em atendimento anterior: como os das equipes, do quiz
+// e da troca, abre a sessão pela entrada do Guerreiro(a) e passa pela guarda
+// de presença, sem registrar presença alguma (`RF-04-72`, `RN-04-40`,
+// decisão do fundador de 2026-09-25).
 //
 // Cada caminho leva o glifo da camada comum ao lado do rótulo que já tem —
 // nunca no lugar dele: é o que a criança reconhece antes de ler a frase
@@ -174,6 +183,15 @@ export function TelaInicial({
           guerreiroId={sessaoDoGuerreiro.persona_id}
           aoConcluir={() => definirMostrarRecadastro(false)}
           aoVoltar={() => definirMostrarRecadastro(false)}
+        />
+      );
+    }
+    if (caminho === "trilhas") {
+      return (
+        <TelaDeTrilhasDoGuerreiro
+          aulaId={aulaId}
+          token={sessaoDoGuerreiro.token}
+          aoVoltar={voltarAoInicio}
         />
       );
     }
@@ -292,11 +310,17 @@ export function TelaInicial({
         caminho="presenca"
         aoVoltar={voltarAoInicio}
         aoAbrirSessao={definirViaDeEntrada}
+        aoSeguirParaTrilhas={() => definirCaminho("trilhas")}
       />
     );
   }
 
-  if (caminho === "equipes" || caminho === "troca" || caminho === "quiz") {
+  if (
+    caminho === "equipes" ||
+    caminho === "troca" ||
+    caminho === "quiz" ||
+    caminho === "trilhas"
+  ) {
     if (!sessaoDoGuerreiro) {
       return (
         <TelaDeEntradaDoGuerreiro
@@ -356,6 +380,10 @@ export function TelaInicial({
         <button type="button" className="cg-caminho" onClick={() => definirCaminho("quiz")}>
           <Icone glifo="quiz" />
           Quiz ao Vivo — entrar com o nick e responder pela equipe
+        </button>
+        <button type="button" className="cg-caminho" onClick={() => definirCaminho("trilhas")}>
+          <Icone glifo="trilhas" />
+          Trilhas e missões — ver o seu percurso e as atividades do encontro
         </button>
         <button type="button" className="cg-caminho" onClick={() => definirCaminho("medicao")}>
           <Icone glifo="medicao" />

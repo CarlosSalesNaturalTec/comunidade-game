@@ -2,9 +2,9 @@ import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
+import { DesafioDeDesbloqueio } from "comum/trilha";
+import * as trilhaApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import * as trilhaApi from "../api/trilha";
-import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 
 const CHAVE_DE_SESSAO = "app-05:teste-desafio-de-desbloqueio";
 
@@ -36,6 +36,7 @@ async function renderizar(desafio: trilhaApi.DesafioDeDesbloqueio, aoDesbloquear
           missaoId="missao-1"
           desafio={desafio}
           aoDesbloquear={aoDesbloquear}
+          submissaoLigada
         />
       </ProvedorDeSessao>,
     );

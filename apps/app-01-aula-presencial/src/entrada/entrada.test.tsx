@@ -46,6 +46,7 @@ function renderizar(
   aoVoltar = vi.fn(),
   aoAbrirSessao = vi.fn(),
   caminho: CaminhoDaEntrada = "presenca",
+  aoSeguirParaTrilhas?: () => void,
 ) {
   return render(
     <TelaDeEntradaDoGuerreiro
@@ -54,6 +55,7 @@ function renderizar(
       caminho={caminho}
       aoVoltar={aoVoltar}
       aoAbrirSessao={aoAbrirSessao}
+      aoSeguirParaTrilhas={aoSeguirParaTrilhas}
     />,
   );
 }
@@ -725,6 +727,104 @@ describe("o caminho decide quem registra a presença (RF-04-67)", () => {
   });
 });
 
+describe("o desfecho da presença e o caminho das trilhas (RF-04-67, RF-04-72)", () => {
+  async function registrarPresencaPorReconhecimento(aoSeguirParaTrilhas?: () => void) {
+    const entrarComToken = vi.fn().mockResolvedValue(undefined);
+    configurarSessao(entrarComToken);
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    vi.spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    mockarRegistrarPresencaEcoando();
+
+    renderizar(vi.fn(), vi.fn(), "presenca", aoSeguirParaTrilhas);
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+    await screen.findByText(/presença registrada/i);
+    return { usuario, entrarComToken };
+  }
+
+  it("o desfecho da presença oferece as trilhas ao lado de voltar ao início", async () => {
+    const aoSeguirParaTrilhas = vi.fn();
+    const { usuario, entrarComToken } =
+      await registrarPresencaPorReconhecimento(aoSeguirParaTrilhas);
+
+    expect(screen.getByRole("button", { name: /voltar ao início/i })).toBeInTheDocument();
+    await usuario.click(
+      screen.getByRole("button", { name: /ver as minhas trilhas e missões/i }),
+    );
+
+    expect(aoSeguirParaTrilhas).toHaveBeenCalled();
+    // A sessão do Guerreiro(a) já está aberta quando o desfecho aparece:
+    // seguir às trilhas NUNCA pede nick nem imagem de novo (`RF-04-72`).
+    expect(entrarComToken).toHaveBeenCalledWith("token-do-guerreiro");
+    expect(screen.queryByLabelText(/nick/i)).not.toBeInTheDocument();
+  });
+
+  it("sem o desfecho ligado, a presença registrada só volta ao início", async () => {
+    await registrarPresencaPorReconhecimento();
+
+    expect(screen.getByRole("button", { name: /voltar ao início/i })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /trilhas e missões/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("o caminho das trilhas tem título próprio nas duas formas da entrada", async () => {
+    configurarSessao();
+    renderizar(vi.fn(), vi.fn(), "trilhas");
+
+    // A forma por nick e imagem.
+    expect(screen.getByText(/quem vai ver as próprias trilhas/i)).toBeInTheDocument();
+    expect(screen.queryByText(/quem está chegando/i)).not.toBeInTheDocument();
+
+    // A forma por confirmação de Mestre ou Admin, alcançada sem câmera.
+    cleanup();
+    configurarSessao();
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(false);
+    renderizar(vi.fn(), vi.fn(), "trilhas");
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+
+    expect(await screen.findByLabelText(/pin de quem confirma/i)).toBeInTheDocument();
+    expect(screen.getByText(/quem vai ver as próprias trilhas/i)).toBeInTheDocument();
+    expect(screen.queryByText(/quem está chegando/i)).not.toBeInTheDocument();
+  });
+
+  it("no caminho das trilhas a entrada não registra presença", async () => {
+    const entrarComToken = vi.fn().mockResolvedValue(undefined);
+    configurarSessao(entrarComToken);
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    vi.spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    const registrarPresenca = vi.spyOn(presencasApi, "registrarPresenca");
+
+    renderizar(vi.fn(), vi.fn(), "trilhas");
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+
+    await vi.waitFor(() => expect(entrarComToken).toHaveBeenCalledWith("token-do-guerreiro"));
+    expect(registrarPresenca).not.toHaveBeenCalled();
+  });
+});
+
 describe("sem rede, só o caminho da presença tem desfecho (RF-04-23, RF-04-58)", () => {
   it("o caminho das equipes não abre sem rede e nada é enfileirado", async () => {
     configurarSessao();
@@ -746,11 +846,31 @@ describe("sem rede, só o caminho da presença tem desfecho (RF-04-23, RF-04-58)
     expect(screen.queryByLabelText(/pin de quem confirma/i)).not.toBeInTheDocument();
     expect(enfileirar).not.toHaveBeenCalled();
   });
+
+  it("o caminho das trilhas não abre sem rede e nada é enfileirado", async () => {
+    configurarSessao();
+    const enfileirar = vi.spyOn(filaDePresenca, "enfileirarPresenca");
+
+    render(
+      <ProvedorDeEstadoDeRede>
+        <TelaDeEntradaDoGuerreiro
+          tokenDeTrabalho="token-de-trabalho"
+          aulaId="aula-1"
+          caminho="trilhas"
+          aoVoltar={vi.fn()}
+        />
+      </ProvedorDeEstadoDeRede>,
+    );
+    window.dispatchEvent(new Event("offline"));
+
+    expect(await screen.findByText(/este caminho precisa de rede/i)).toBeInTheDocument();
+    expect(enfileirar).not.toHaveBeenCalled();
+  });
 });
 
 describe("o foco inicial da entrada (RF-04-18, RF-04-21, RF-04-29)", () => {
-  it("a entrada abre com o nick focado nos quatro caminhos", () => {
-    const caminhos: CaminhoDaEntrada[] = ["presenca", "equipes", "quiz", "troca"];
+  it("a entrada abre com o nick focado nos cinco caminhos", () => {
+    const caminhos: CaminhoDaEntrada[] = ["presenca", "equipes", "quiz", "troca", "trilhas"];
 
     for (const caminho of caminhos) {
       configurarSessao();

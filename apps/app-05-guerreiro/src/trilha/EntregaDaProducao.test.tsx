@@ -2,13 +2,14 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { ErroDaApi } from "comum/api";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
+import type { AtividadeDaMissaoPublica } from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as trilhaApi from "../api/trilha";
 import { EntregaDaProducao } from "./EntregaDaProducao";
 
 const CHAVE_DE_SESSAO = "app-05:teste-entrega-da-producao";
 
-const ATIVIDADES: trilhaApi.AtividadeDaMissaoPublica[] = [
+const ATIVIDADES: AtividadeDaMissaoPublica[] = [
   { id: "atividade-1", titulo: "Atividade Única", producao_esperada: "Um texto." },
 ];
 

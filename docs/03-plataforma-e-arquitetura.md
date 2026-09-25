@@ -191,7 +191,8 @@ comunidade-game/
 ├─ jogos/
 │  └─ app-04-arena/             jogo em Phaser; novo jogo entra como irmão
 ├─ comum/                       o que as oito compartilham — tokens, fontes e componentes
-│  └─ avatar/                   catálogo e renderizador do avatar paramétrico
+│  ├─ avatar/                   catálogo e renderizador do avatar paramétrico
+│  └─ trilha/                   telas do percurso da trilha, usadas por mais de uma aplicação
 ├─ docs/                        documentação do produto — o site MkDocs
 └─ openspec/                    artefatos de implementação
 ```

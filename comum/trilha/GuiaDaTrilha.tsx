@@ -1,18 +1,30 @@
-import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao, EstadoDaLista } from "comum/react";
-import { useCallback, useEffect, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useState } from "react";
+import { useSessao } from "../autenticacao/ContextoDeSessao";
+import { Aviso } from "../react/Aviso";
+import { Botao } from "../react/Botao";
+import { EstadoDaLista } from "../react/EstadoDaLista";
 import {
+  type AtividadeDaMissaoPublica,
   type MissaoNoPercurso,
   obterMissaoNoPercurso,
   type TrilhaComProximaMissao,
-} from "../api/trilha";
-import { Culminancia } from "./Culminancia";
+} from "./api";
 import { Missao } from "./Missao";
 
 interface Props {
   trilha: TrilhaComProximaMissao;
   aoAtualizarTrilhas: () => void;
-  aoTrocarDeTrilha: () => void;
+  /** Ausente quando não há outra trilha para onde ir — a App 01 com uma
+   * inscrição só não oferece a troca. */
+  aoTrocarDeTrilha?: () => void;
+  submissaoDoDesbloqueioLigada?: boolean;
+  entregaDaProducao?: (dados: {
+    missaoId: string;
+    atividades: AtividadeDaMissaoPublica[];
+  }) => ReactNode;
+  /** A culminância da trilha, oferecida por quem a atende — a App 01 não a
+   * liga: culminância está fora desta fatia (`RF-05-39`). */
+  culminancia?: ReactNode;
 }
 
 // Abre direto na próxima missão do Guerreiro(a), sem que ele precise
@@ -20,7 +32,14 @@ interface Props {
 // o motivo (`RF-05-08`, `RF-05-10`). Alternar de trilha preserva o
 // contexto de cada uma, porque a posição vem sempre do núcleo, nunca de
 // estado local perdido ao trocar (`RF-05-17`).
-export function GuiaDaTrilha({ trilha, aoAtualizarTrilhas, aoTrocarDeTrilha }: Props) {
+export function GuiaDaTrilha({
+  trilha,
+  aoAtualizarTrilhas,
+  aoTrocarDeTrilha,
+  submissaoDoDesbloqueioLigada,
+  entregaDaProducao,
+  culminancia,
+}: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [missaoAtual, definirMissaoAtual] = useState<MissaoNoPercurso | null>(null);
   const [missaoSeguinte, definirMissaoSeguinte] = useState<MissaoNoPercurso | null>(null);
@@ -76,7 +95,7 @@ export function GuiaDaTrilha({ trilha, aoAtualizarTrilhas, aoTrocarDeTrilha }: P
         <Aviso tipo="sucesso">
           Você já desbloqueou todas as missões desta trilha. Agora é hora da culminância!
         </Aviso>
-        <Culminancia trilhaId={trilha.id} />
+        {culminancia}
       </section>
     );
   }
@@ -85,16 +104,24 @@ export function GuiaDaTrilha({ trilha, aoAtualizarTrilhas, aoTrocarDeTrilha }: P
     <section aria-label={`Guia de ${trilha.nome}`} className="cg-trilha__guia">
       <header className="cg-trilha__cabecalho-do-guia">
         <h2>{trilha.nome}</h2>
-        <Botao variante="secundaria" onClick={aoTrocarDeTrilha}>
-          Trocar de trilha
-        </Botao>
+        {aoTrocarDeTrilha && (
+          <Botao variante="secundaria" onClick={aoTrocarDeTrilha}>
+            Trocar de trilha
+          </Botao>
+        )}
       </header>
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
       {!erro && missaoAtual === null && <EstadoDaLista>Carregando a missão…</EstadoDaLista>}
 
       {missaoAtual && (
-        <Missao trilhaId={trilha.id} missao={missaoAtual} aoDesbloquear={aoDesbloquear} />
+        <Missao
+          trilhaId={trilha.id}
+          missao={missaoAtual}
+          aoDesbloquear={aoDesbloquear}
+          submissaoDoDesbloqueioLigada={submissaoDoDesbloqueioLigada}
+          entregaDaProducao={entregaDaProducao}
+        />
       )}
 
       {missaoSeguinte && !missaoSeguinte.desbloqueada && (

@@ -1,10 +1,9 @@
 import { act, render, screen } from "@testing-library/react";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
+import { GuiaDaTrilha } from "comum/trilha";
+import * as trilhaApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import * as criacaoOriginalApi from "../api/criacaoOriginal";
-import * as trilhaApi from "../api/trilha";
-import { GuiaDaTrilha } from "./GuiaDaTrilha";
 
 const CHAVE_DE_SESSAO = "app-05:teste-guia-da-trilha";
 
@@ -45,7 +44,6 @@ async function renderizar(props: Partial<Parameters<typeof GuiaDaTrilha>[0]> = {
     missoes: [],
     culminancia: null,
   });
-  vi.spyOn(criacaoOriginalApi, "obterMinhaCriacaoDaTrilha").mockResolvedValue(null);
   await act(async () => {
     render(
       <ProvedorDeSessao chaveDeArmazenamento={CHAVE_DE_SESSAO}>
@@ -53,6 +51,7 @@ async function renderizar(props: Partial<Parameters<typeof GuiaDaTrilha>[0]> = {
           trilha={TRILHA}
           aoAtualizarTrilhas={vi.fn()}
           aoTrocarDeTrilha={vi.fn()}
+          submissaoDoDesbloqueioLigada
           {...props}
         />
       </ProvedorDeSessao>,

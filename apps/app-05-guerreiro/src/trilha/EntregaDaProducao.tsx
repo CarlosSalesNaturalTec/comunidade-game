@@ -2,9 +2,9 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { existeTranscricaoDeFala, iniciarTranscricao } from "comum/fala";
 import { Aviso, Botao } from "comum/react";
+import type { AtividadeDaMissaoPublica } from "comum/trilha/api";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import {
-  type AtividadeDaMissaoPublica,
   entregarProducaoIndividual,
   type FormaDeEntregaDaProducao,
   type ProducaoDaMissao,
