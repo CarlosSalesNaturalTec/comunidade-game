@@ -160,6 +160,20 @@ escrita seguinte.
 A marca não some por tempo, não se comunica por cor e não anima: quem opera em pé, entre as
 bancadas, pode voltar a olhar depois (§5). Bloco sem marca é bloco que ainda não gravou nada.
 
+### 6.3 A imagem de comunidade ao fundo
+
+O fundo da Arena é a **foto da própria comunidade registrada na plataforma** — o mesmo acervo
+de fotos e memórias do território que o documento 11 §8.3 trata como dado —, escolhida pela
+gestão e **sem pessoa identificável**. Não há acervo de fundo próprio do projeto: comunidade
+sem foto escolhida fica só com a cor chapada.
+
+A foto é fundo de interface, nunca conteúdo: fica **atrás** da cor chapada, não carrega
+significado sozinha, não é a única via a informação alguma e nada do que a tela comunica se
+perde quando ela não carrega (§5, princípio 3). Os pisos de contraste do §3.3 continuam
+medidos **sobre** ela, e o peso do arquivo responde ao princípio 4.
+
+Decisão do fundador, 2026-09-25.
+
 ## 7. Avatar do Guerreiro(a)
 
 O avatar é o **único retrato público** do Guerreiro(a), e no onboarding ele nasce de

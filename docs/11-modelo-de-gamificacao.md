@@ -543,3 +543,21 @@ Três exigências acompanham o mapa:
 - **Balanceamento é conteúdo, não regra de plataforma.** Os números que convertem virtude em
   atributo vivem no código aberto do jogo e mudam em atividade de trilha; o que a plataforma
   fixa é o mapa acima e as duas exigências anteriores.
+
+### 8.5 Fatos que ganham retorno na interface
+
+O temperamento Arena devolve **retorno de progresso e conquista** (documento 15 §6). Quais
+fatos o merecem é decisão deste documento, porque são fatos do motor:
+
+| Fato do motor       | Quando acontece                                       |
+| ------------------- | ----------------------------------------------------- |
+| Missão desbloqueada | A missão seguinte destranca no percurso da trilha     |
+| Badge certificado   | O núcleo emite um badge de qualquer família da §7     |
+| Nível que subiu     | O poder alcança nível novo pela progressão da §6      |
+| Ponto creditado     | Ponto regular ou extra entra na conta do Guerreiro(a) |
+
+Fora dessa lista não há retorno: **movimento sem fato é decoração**, que o princípio do §8.3 —
+o visual representa dados reais — e o documento 15 §5 proíbem. Produção entregue fica de fora
+de propósito: o que se celebra é o Resultado que o Mestre lança sobre ela, não o envio.
+
+Decisão do fundador, 2026-09-25.

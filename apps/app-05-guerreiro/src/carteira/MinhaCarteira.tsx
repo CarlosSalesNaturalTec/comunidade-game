@@ -1,5 +1,5 @@
 import { useSessao } from "comum/autenticacao";
-import { Aviso, EstadoDaLista } from "comum/react";
+import { Aviso, EstadoDaLista, FundoDeComunidade, PalcoDoPersonagem } from "comum/react";
 import { useEffect, useState } from "react";
 import { listarMeusPontosExtras, type PontosExtras } from "../api/carteira";
 import { MinhaCarta } from "./MinhaCarta";
@@ -12,6 +12,12 @@ import { MinhaCarta } from "./MinhaCarta";
 // À frente de tudo, a **carta do próprio Guerreiro(a)** (`RF-05-50`,
 // `RF-05-51`, documento 11 §8.2): é a primeira coisa que ele vê de si na
 // Área dele.
+//
+// A tela é do temperamento **Arena** (documento 15 §6): a carta é o elemento
+// maior e as contas e o perfil ficam no apoio do palco — abaixo e menores —,
+// nunca disputando o primeiro plano com ela. Não há decisão nenhuma aqui: a
+// carteira é leitura, e autorizar a divulgação é ato do responsável na App 07
+// (`RN-05-42`).
 export function MinhaCarteira() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [pontos, definirPontos] = useState<PontosExtras | null>(null);
@@ -52,10 +58,8 @@ export function MinhaCarteira() {
     };
   }, [sessao, tratarRecusaDeSessao]);
 
-  return (
-    <section className="cg-carteira-secao" aria-label="Minha carteira">
-      <MinhaCarta />
-
+  const apoio = (
+    <>
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 
       {pontos === null && !erro && <EstadoDaLista>Carregando a sua carteira…</EstadoDaLista>}
@@ -88,6 +92,20 @@ export function MinhaCarteira() {
           </Aviso>
         )}
       </div>
+    </>
+  );
+
+  return (
+    <section className="cg-carteira-secao" aria-label="Minha carteira">
+      {/* A foto registrada da comunidade entra aqui quando o núcleo passar a
+          servi-la: `ComunidadeVirtual` ainda não tem o campo, e mexer no núcleo
+          está fora desta fatia (documento 15 §6.3, pendência no documento 09
+          §1). Sem foto, a tela é a cor chapada — e é exatamente a mesma. */}
+      <FundoDeComunidade imagem={null}>
+        <PalcoDoPersonagem rotulo="Minha carta" apoio={apoio}>
+          <MinhaCarta />
+        </PalcoDoPersonagem>
+      </FundoDeComunidade>
     </section>
   );
 }

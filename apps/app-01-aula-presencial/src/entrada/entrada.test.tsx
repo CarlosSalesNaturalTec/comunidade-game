@@ -3,6 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import * as autenticacaoApi from "comum/autenticacao/api";
 import * as biometriaModulo from "comum/biometria";
+import * as cartaApi from "comum/carta/api";
+import * as trilhaComumApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as presencasApi from "../api/presencas";
 import * as sessoesDeGuerreiroApi from "../api/sessoesDeGuerreiro";
@@ -1028,5 +1030,120 @@ describe("a conferência comum do PIN, vista da confirmação de identidade (RN-
     ).toBeInTheDocument();
     expect(pinBloqueadoNoAparelho()).toBe(true);
     expect(estadoDoPinDe(PERSONA_DE_TRABALHO)?.erros).toBe(5);
+  });
+});
+
+// A fatia "Arena em primeiro plano": o desfecho da presença é o único momento
+// em que esta aplicação apresenta o Guerreiro(a) a ele mesmo, e por isso é
+// onde a carta domina a tela (documento 15 §6, decisão do fundador de
+// 2026-09-25).
+describe("a carta domina a tela da Arena (documento 15 §6)", () => {
+  function mockarCarta() {
+    vi.spyOn(cartaApi, "listarMinhasSeriesDaCarta").mockResolvedValue({
+      itens: [{ comunidade_virtual_id: "comunidade-1" }],
+    });
+    vi.spyOn(cartaApi, "obterMinhaPosicaoNoRanking").mockResolvedValue({
+      minha_posicao: {
+        avatar: null,
+        nick: "Zeferina",
+        posicao: 2,
+        pontos_regulares: 40,
+      },
+    });
+    vi.spyOn(cartaApi, "obterProgressoDaCarta").mockResolvedValue([
+      {
+        trilha_id: "trilha-1",
+        trilha_nome: "Robô Educa",
+        nivel_atual: 3,
+        badges: ["de_nivel"],
+      },
+    ]);
+    vi.spyOn(cartaApi, "obterPortfolioDaCarta").mockResolvedValue([
+      { producao: "Mapa das águas do bairro" },
+    ]);
+    vi.spyOn(trilhaComumApi, "listarPoderesDoCatalogo").mockResolvedValue([]);
+  }
+
+  /** A sessão do Guerreiro(a) já aberta, que é o estado do desfecho. */
+  function configurarSessaoAberta() {
+    vi.mocked(useSessao).mockReturnValue({
+      sessao: {
+        token: "token-do-guerreiro",
+        persona_id: "guerreiro-1",
+        papel: "guerreiro",
+      },
+      restaurando: false,
+      entrando: false,
+      erroDeEntrada: null,
+      entrarComGoogle: vi.fn(),
+      entrarComToken: vi.fn(),
+      sair: vi.fn(),
+      tratarRecusaDeSessao: vi.fn(),
+      entrarComCredencial: vi.fn(),
+      trocaDeSenhaPendente: false,
+      trocandoSenha: false,
+      erroDeTrocaDeSenha: null,
+      trocarSenhaProvisoria: vi.fn(),
+    } as unknown as ReturnType<typeof useSessao>);
+  }
+
+  async function chegarAoDesfecho() {
+    configurarSessaoAberta();
+    mockarCarta();
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "prepararCaptura").mockResolvedValue(undefined);
+    vi.spyOn(biometriaModulo, "acoplarEspelho").mockImplementation(() => {});
+    vi.spyOn(biometriaModulo, "encerrarCaptura").mockImplementation(() => {});
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    vi.spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    mockarRegistrarPresencaEcoando();
+
+    const { container } = renderizar(vi.fn(), vi.fn(), "presenca", vi.fn());
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+    await screen.findByText(/presença registrada/i);
+    return container;
+  }
+
+  it("a carta é o elemento maior do desfecho da presença, com uma decisão só", async () => {
+    const container = await chegarAoDesfecho();
+
+    // A carta chega e ocupa o primeiro plano do palco.
+    const carta = await screen.findByRole("article", { name: /carta de zeferina/i });
+    expect(container.querySelector(".cg-palco__personagem")).toContainElement(carta);
+
+    // Uma decisão por tela: seguir às trilhas. Voltar ao início continua
+    // oferecido, mas como saída, na ação do cabeçalho — os dois caminhos do
+    // `RF-04-67` seguem inteiros, sem empilhar decisões.
+    const decisao = container.querySelector(".cg-palco__decisao");
+    expect(decisao?.querySelectorAll("button")).toHaveLength(1);
+    expect(decisao?.textContent).toMatch(/ver as minhas trilhas e missões/i);
+    expect(screen.getByRole("button", { name: /voltar ao início/i })).toBeInTheDocument();
+
+    // A frase da presença registrada não se perde: fica no apoio, abaixo da
+    // carta.
+    expect(container.querySelector(".cg-palco__apoio")?.textContent).toMatch(
+      /a presença de hoje está registrada/i,
+    );
+  });
+
+  it("sem foto escolhida, o desfecho é a cor chapada, e nenhuma imagem é pedida", async () => {
+    const container = await chegarAoDesfecho();
+
+    // `ComunidadeVirtual` ainda não tem campo de foto, e a tela não perde
+    // nada por isso (documento 15 §6.3).
+    expect(container.querySelector(".cg-fundo-de-comunidade")).not.toBeNull();
+    expect(container.querySelector("img")).toBeNull();
   });
 });

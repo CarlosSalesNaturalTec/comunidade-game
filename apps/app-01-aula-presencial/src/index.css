@@ -209,3 +209,14 @@ textarea {
   margin: var(--espaco-8) 0 0;
   color: var(--cor-texto-secundario);
 }
+
+/* O desfecho da presença, onde a carta domina a tela (documento 15 §6). A
+ * composição vem do palco de `comum/react`; aqui só se acomoda o fundo de
+ * comunidade, que ocupa a área inteira para cobrir a tela em vez de formar
+ * faixa (documento 15 §6.3).
+ *
+ * Nenhuma densidade da Operação entra por aqui — a Arena não declara o token
+ * —, e o alvo de toque de `48` px segue sendo o do `cg-botao`, intocado. */
+.cg-fundo-de-comunidade {
+  min-height: 100%;
+}

@@ -10,7 +10,16 @@ import {
   prepararCaptura,
   provarVivacidade,
 } from "comum/biometria";
-import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
+import { CartaDoGuerreiro } from "comum/carta";
+import {
+  Aviso,
+  Botao,
+  Cabecalho,
+  Campo,
+  FundoDeComunidade,
+  Moldura,
+  PalcoDoPersonagem,
+} from "comum/react";
 import { useRef, useState } from "react";
 import { registrarPresenca } from "../api/presencas";
 import {
@@ -354,20 +363,47 @@ export function TelaDeEntradaDoGuerreiro({
     }
   }
 
+  // O desfecho da presença é o único momento em que esta aplicação apresenta
+  // o Guerreiro(a) a ele mesmo — e por isso é onde a **carta domina a tela**,
+  // como o temperamento Arena manda (documento 15 §6, decisão do fundador de
+  // 2026-09-25). A montagem vem de `comum/carta`, a mesma da App 05, sem rota
+  // nova.
+  //
+  // Uma decisão só: seguir às trilhas e missões. Voltar ao início continua
+  // oferecido — os dois caminhos do `RF-04-67` seguem inteiros —, mas como
+  // saída, na ação do cabeçalho, que é onde sair mora em toda tela desta
+  // aplicação. Empilhar os dois como botões faria da tela uma da Operação.
   if (tela === "presencaRegistrada") {
     return (
       <Moldura>
-        <Cabecalho titulo="Presença registrada" />
-        <Aviso tipo="sucesso">
-          Pronto, {nick.trim()}! A presença de hoje está registrada. Para trabalhar em equipe,
-          volte ao início e escolha Equipes.
-        </Aviso>
-        {aoSeguirParaTrilhas && (
-          <Botao onClick={aoSeguirParaTrilhas}>Ver as minhas trilhas e missões</Botao>
-        )}
-        <Botao variante="secundaria" onClick={aoVoltar}>
-          Voltar ao início
-        </Botao>
+        <Cabecalho
+          titulo="Presença registrada"
+          acao={{ rotulo: "Voltar ao início", aoAcionar: aoVoltar }}
+        />
+        {/* A foto registrada da comunidade entra aqui quando o núcleo passar a
+            servi-la: `ComunidadeVirtual` ainda não tem o campo, e mexer no
+            núcleo está fora desta fatia (documento 15 §6.3, pendência no
+            documento 09 §1). */}
+        <FundoDeComunidade imagem={null}>
+          <PalcoDoPersonagem
+            rotulo={`Carta de ${nick.trim()}`}
+            decisao={
+              aoSeguirParaTrilhas && (
+                <Botao onClick={aoSeguirParaTrilhas}>Ver as minhas trilhas e missões</Botao>
+              )
+            }
+            apoio={
+              <Aviso tipo="sucesso">
+                Pronto, {nick.trim()}! A presença de hoje está registrada. Para trabalhar em
+                equipe, volte ao início e escolha Equipes.
+              </Aviso>
+            }
+          >
+            <CartaDoGuerreiro
+              aviso={`Pronto, ${nick.trim()}! A presença de hoje está registrada. A sua carta aparece aqui quando o seu percurso tiver tudo o que ela mostra.`}
+            />
+          </PalcoDoPersonagem>
+        </FundoDeComunidade>
       </Moldura>
     );
   }
