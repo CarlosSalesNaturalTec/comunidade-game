@@ -1825,6 +1825,11 @@ trabalho: diferentemente da troca, o PRD-04 não põe a partida atrás de um mom
 Mestre, e é a própria tela do quiz que diz não haver partida quando não há. (`RF-04-01`,
 `RF-04-28`, `RF-04-41`, `RF-04-49`, PRD-04 §12)
 
+Cada caminho SHALL apresentar, **ao lado do rótulo textual que já tem**, o glifo do sistema de
+ícone da camada comum, para que a criança reconheça o caminho antes de ler a linha inteira. O
+glifo NEVER SHALL substituir o rótulo nem ser a única forma de distinguir um caminho do outro.
+(`RF-04-01`, documento 15 §§5, 11.1, decisão do fundador de 2026-09-25)
+
 #### Scenario: Os três caminhos aparecem
 
 - **WHEN** a sessão de trabalho está aberta
@@ -1862,6 +1867,12 @@ Mestre, e é a própria tela do quiz que diz não haver partida quando não há.
 
 - **WHEN** a sessão de trabalho está aberta e o momento de troca está fechado
 - **THEN** a tela inicial apresenta o caminho do quiz
+
+#### Scenario: Cada caminho leva glifo ao lado do rótulo
+
+- **WHEN** a tela inicial é apresentada
+- **THEN** cada caminho apresenta um glifo junto do rótulo textual, o rótulo continua legível por
+  inteiro e nenhum caminho se identifica só pelo desenho
 
 ### Requirement: Os caminhos Equipes, Quiz e Troca só abrem para quem tem presença registrada
 

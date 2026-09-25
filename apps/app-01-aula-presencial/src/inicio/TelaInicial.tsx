@@ -1,5 +1,5 @@
 import { type SessaoAberta, useSessao } from "comum/autenticacao";
-import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
+import { Aviso, Botao, Cabecalho, Icone, Moldura } from "comum/react";
 import { useState } from "react";
 import { TelaDeMedicaoDoLimiar } from "../bancada/TelaDeMedicaoDoLimiar";
 import { AreaDetalhadaDeDireitos } from "../direitos/AreaDetalhadaDeDireitos";
@@ -41,6 +41,11 @@ interface Props {
 // presença termina no registro e volta ao início; as equipes abrem por nick
 // e imagem ou PIN, sem registrar presença, e só para quem já a tem
 // (`RF-04-01`, `RF-04-67`, `RF-04-68`).
+//
+// Cada caminho leva o glifo da camada comum ao lado do rótulo que já tem —
+// nunca no lugar dele: é o que a criança reconhece antes de ler a frase
+// inteira, e o rótulo segue sendo o nome acessível do botão (documento 15
+// §§5, 11.1, decisão do fundador de 2026-09-25).
 export function TelaInicial({
   tokenDeTrabalho,
   personaIdDeTrabalho,
@@ -255,6 +260,7 @@ export function TelaInicial({
           className="cg-caminho"
           onClick={() => definirCaminho("onboarding")}
         >
+          <Icone glifo="onboarding" />
           Onboarding — cadastro do Guerreiro(a) e presença do dia
         </button>
         <button
@@ -262,19 +268,24 @@ export function TelaInicial({
           className="cg-caminho"
           onClick={() => definirCaminho("presenca")}
         >
+          <Icone glifo="presenca" />
           Presença — entrar com o nick e registrar a presença de hoje
         </button>
         <button type="button" className="cg-caminho" onClick={() => definirCaminho("equipes")}>
+          <Icone glifo="equipes" />
           Equipes — formar a equipe e trabalhar a trilha
         </button>
         <button type="button" className="cg-caminho" onClick={() => definirCaminho("quiz")}>
+          <Icone glifo="quiz" />
           Quiz ao Vivo — entrar com o nick e responder pela equipe
         </button>
         <button type="button" className="cg-caminho" onClick={() => definirCaminho("medicao")}>
+          <Icone glifo="medicao" />
           Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio
         </button>
         {momentoDeTrocaAberto && (
           <button type="button" className="cg-caminho" onClick={() => definirCaminho("troca")}>
+            <Icone glifo="troca" />
             Troca por recompensa avulsa — entregar uma recompensa do encontro
           </button>
         )}

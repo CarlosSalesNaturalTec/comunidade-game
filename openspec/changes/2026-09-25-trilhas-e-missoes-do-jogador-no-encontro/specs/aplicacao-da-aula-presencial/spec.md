@@ -200,6 +200,12 @@ glifo NEVER SHALL substituir o rótulo nem ser a única forma de distinguir um c
 - **WHEN** a presença é registrada e quem chegou segue às trilhas
 - **THEN** nenhuma tela de equipe da aula aparece nesse atendimento
 
+#### Scenario: Cada caminho leva glifo ao lado do rótulo
+
+- **WHEN** a tela inicial é apresentada
+- **THEN** cada caminho apresenta um glifo junto do rótulo textual, o rótulo continua legível por
+  inteiro e nenhum caminho se identifica só pelo desenho
+
 ## ADDED Requirements
 
 ### Requirement: A App 01 apresenta o percurso do Guerreiro(a) e as atividades das equipes dele

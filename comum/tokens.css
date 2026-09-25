@@ -3,9 +3,10 @@
  * primitiva, semântica e tema. As oito aplicações e o jogo consomem só a
  * semântica e a de tema — a primitiva não é referenciada fora deste arquivo.
  *
- * A camada de tema aqui presente cobre o temperamento Operação (documento 15
- * §6); Arena entra quando a primeira aplicação daquele temperamento precisar
- * dela. Cada aplicação declara `data-temperamento` na raiz do documento.
+ * A camada de tema cobre os dois temperamentos do documento 15 §6 — Operação
+ * e Arena. Cada aplicação declara na raiz do documento `data-temperamento` com
+ * o temperamento que o documento 15 §6 lhe atribui, e nunca o da outra
+ * família: Operação nas Apps 03, 07, 08 e 09; Arena nas Apps 01, 04, 05 e 06.
  */
 
 :root {
@@ -179,9 +180,29 @@
   }
 }
 
-/* Nenhum movimento decorativo, sem exceção (documento 15 §5) */
+/* Tema — temperamento Arena: Apps 01, 04, 05 e 06 (documento 15 §6).
+ * Declara só o que o documento 15 §6 fixa em número para a Arena: o raio de
+ * carta e a duração. `--densidade` fica de fora de propósito — a densidade da
+ * Arena é descrita como composição, "poucos elementos, uma decisão por tela",
+ * sem número, e pôr um valor aqui seria criar regra que o documento não tem.
+ * Pendência registrada no documento 09 §1, para o fundador fixar quando a
+ * primeira tela da Arena precisar do token.
+ *
+ * A densidade progressiva do marco de `768` px também não vale aqui: o
+ * documento 15 §6 diz que na Arena a densidade não muda com a largura. */
+:root[data-temperamento="arena"] {
+  --raio-carta: 12px;
+  --duracao: 300ms;
+}
+
+/* Nenhum movimento decorativo, sem exceção (documento 15 §5): a preferência
+ * do aparelho vence o temperamento, nos dois. Os três seletores são
+ * necessários — `:root` sozinho perde para `:root[data-temperamento=…]`, que
+ * é mais específico, e a duração do tema sobreviveria à preferência. */
 @media (prefers-reduced-motion: reduce) {
-  :root {
+  :root,
+  :root[data-temperamento="operacao"],
+  :root[data-temperamento="arena"] {
     --duracao: 0ms;
   }
 }

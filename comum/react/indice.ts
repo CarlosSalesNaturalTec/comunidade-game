@@ -9,6 +9,8 @@ export { Campo } from "./Campo";
 export { CampoDeDataHora } from "./CampoDeDataHora";
 export { Dialogo } from "./Dialogo";
 export { EstadoDaLista } from "./EstadoDaLista";
+export type { NomeDeGlifo, TamanhoDeIcone } from "./Icone";
+export { Icone } from "./Icone";
 export { MarcaDeGravacao } from "./MarcaDeGravacao";
 export { MidiaDoNucleo } from "./MidiaDoNucleo";
 export { Moldura } from "./Moldura";

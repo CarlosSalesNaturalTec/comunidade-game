@@ -90,6 +90,47 @@ describe("tela inicial da App 01", () => {
     expect(screen.getByRole("button", { name: /equipes —/i })).toBeEnabled();
   });
 
+  // O glifo entra ao lado do rótulo, nunca no lugar dele: os testes localizam
+  // os caminhos pelo rótulo, e o desenho não pode roubar essa localização
+  // (`RF-04-01`, documento 15 §§5, 11.1).
+  it("cada caminho leva glifo ao lado do rótulo", async () => {
+    renderizar(vi.fn(), { momentoDeTrocaAberto: true });
+
+    expect(await screen.findByText(/o que você quer fazer/i)).toBeInTheDocument();
+
+    const rotulos = [
+      "Onboarding — cadastro do Guerreiro(a) e presença do dia",
+      "Presença — entrar com o nick e registrar a presença de hoje",
+      "Equipes — formar a equipe e trabalhar a trilha",
+      "Quiz ao Vivo — entrar com o nick e responder pela equipe",
+      "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
+      "Troca por recompensa avulsa — entregar uma recompensa do encontro",
+    ];
+
+    for (const rotulo of rotulos) {
+      // O rótulo continua sendo o nome acessível inteiro do botão: o glifo é
+      // decorativo e não acrescenta nem substitui palavra alguma.
+      const caminho = screen.getByRole("button", { name: rotulo });
+      expect(caminho).toHaveTextContent(rotulo);
+      // E o glifo está ali, junto do rótulo.
+      expect(caminho.querySelector("svg")).not.toBeNull();
+    }
+  });
+
+  it("nenhum caminho se identifica só pelo desenho", async () => {
+    renderizar(vi.fn(), { momentoDeTrocaAberto: true });
+    await screen.findByText(/o que você quer fazer/i);
+
+    for (const caminho of screen.getAllByRole("button")) {
+      const glifo = caminho.querySelector("svg");
+      if (!glifo) continue;
+      // O desenho não fala por si: é escondido da tecnologia assistiva, e o
+      // botão que o leva tem texto visível.
+      expect(glifo).toHaveAttribute("aria-hidden", "true");
+      expect(caminho.textContent?.trim()).not.toBe("");
+    }
+  });
+
   it("onboarding leva à tela de cadastro do Guerreiro(a)", async () => {
     renderizar();
     const usuario = userEvent.setup();
