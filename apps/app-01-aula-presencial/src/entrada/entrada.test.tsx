@@ -7,8 +7,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import * as presencasApi from "../api/presencas";
 import * as sessoesDeGuerreiroApi from "../api/sessoesDeGuerreiro";
 import * as filaDePresenca from "../fila/filaDePresenca";
-import { guardarVerificadorDeTeste } from "../pin/paraTestes";
-import { pinBloqueadoNoAparelho } from "../pin/pinDeConfirmacao";
+import { TelaInicial } from "../inicio/TelaInicial";
+import { guardarVerificadorDeTeste, PIN_DE_TESTE } from "../pin/paraTestes";
+import { estadoDoPinDe, pinBloqueadoNoAparelho } from "../pin/pinDeConfirmacao";
 import { ProvedorDeEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import { type CaminhoDaEntrada, TelaDeEntradaDoGuerreiro } from "./TelaDeEntradaDoGuerreiro";
 
@@ -773,5 +774,139 @@ describe("o foco inicial da entrada (RF-04-18, RF-04-21, RF-04-29)", () => {
 
     expect(document.activeElement).toBe(screen.getByLabelText(/nick/i));
     expect(document.activeElement).not.toBe(screen.getByLabelText(/pin de quem confirma/i));
+  });
+});
+
+// A conferência do PIN passou a viver num lugar só, alcançada pelos três atos
+// que a pedem. A confirmação de identidade continua recusando e concluindo do
+// mesmo jeito, e o contador de cinco erros é o mesmo dos três (`RF-04-21`,
+// `RN-04-37`, `RN-04-41`, design — decisão 1).
+describe("a conferência comum do PIN, vista da confirmação de identidade (RN-04-41)", () => {
+  const PERSONA_DE_TRABALHO = "mestre-de-trabalho-1";
+
+  afterEach(() => {
+    sessionStorage.clear();
+    localStorage.clear();
+  });
+
+  async function abrirConfirmacaoSemRede(usuario: ReturnType<typeof userEvent.setup>) {
+    render(
+      <ProvedorDeEstadoDeRede>
+        <TelaDeEntradaDoGuerreiro
+          tokenDeTrabalho="token-de-trabalho"
+          aulaId="aula-1"
+          caminho="presenca"
+          aoVoltar={vi.fn()}
+        />
+      </ProvedorDeEstadoDeRede>,
+    );
+    window.dispatchEvent(new Event("offline"));
+    await screen.findByText(/entrada por reconhecimento facial não funciona/i);
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+  }
+
+  async function confirmarComOPin(
+    usuario: ReturnType<typeof userEvent.setup>,
+    pin: string,
+    rotuloDoCampo: RegExp,
+    rotuloDaAcao: RegExp,
+  ) {
+    await usuario.type(screen.getByLabelText(rotuloDoCampo), pin);
+    await usuario.click(screen.getByRole("button", { name: rotuloDaAcao }));
+  }
+
+  it("a recusa e o desfecho da confirmação sem rede continuam os mesmos", async () => {
+    configurarSessao();
+    await guardarVerificadorDeTeste(PERSONA_DE_TRABALHO);
+    const usuario = userEvent.setup();
+    await abrirConfirmacaoSemRede(usuario);
+
+    await confirmarComOPin(usuario, "0000", /pin de quem confirma/i, /confirmar identidade/i);
+
+    expect(await screen.findByText(/pin errado/i)).toBeInTheDocument();
+    expect(filaDePresenca.lerFilaDePresenca("aula-1")).toHaveLength(0);
+    expect(estadoDoPinDe(PERSONA_DE_TRABALHO)?.erros).toBe(1);
+
+    await confirmarComOPin(
+      usuario,
+      PIN_DE_TESTE,
+      /pin de quem confirma/i,
+      /confirmar identidade/i,
+    );
+
+    // Mesmo desfecho de antes: a presença entra na fila e a tela diz isso.
+    expect(await screen.findByText(/guardada neste aparelho/i)).toBeInTheDocument();
+    expect(filaDePresenca.lerFilaDePresenca("aula-1")).toHaveLength(1);
+    // PIN que confere zera os erros seguidos, como sempre (`RN-04-38`).
+    expect(estadoDoPinDe(PERSONA_DE_TRABALHO)?.erros).toBe(0);
+  });
+
+  it("errar na entrada e depois no encerramento soma no mesmo contador", async () => {
+    configurarSessao();
+    await guardarVerificadorDeTeste(PERSONA_DE_TRABALHO);
+    const usuario = userEvent.setup();
+
+    render(
+      <ProvedorDeEstadoDeRede>
+        <TelaInicial
+          tokenDeTrabalho="token-de-trabalho"
+          personaIdDeTrabalho={PERSONA_DE_TRABALHO}
+          papelDeTrabalho="mestre"
+          aulaId="aula-1"
+          aoVoltarAoInicio={vi.fn()}
+          podeAbrirMomentoDeTroca={false}
+          momentoDeTrocaAberto={false}
+          abrindoMomentoDeTroca={false}
+          erroDeAberturaDaTroca={null}
+          aoAbrirMomentoDeTroca={vi.fn()}
+          aoFecharMomentoDeTroca={vi.fn()}
+          aoEncerrarSessaoDeTrabalho={vi.fn()}
+        />
+      </ProvedorDeEstadoDeRede>,
+    );
+    window.dispatchEvent(new Event("offline"));
+
+    // Três erros na confirmação de identidade, conferida no aparelho.
+    await usuario.click(await screen.findByRole("button", { name: /presença — entrar/i }));
+    await screen.findByText(/entrada por reconhecimento facial não funciona/i);
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    for (let tentativa = 0; tentativa < 3; tentativa += 1) {
+      await confirmarComOPin(
+        usuario,
+        "0000",
+        /pin de quem confirma/i,
+        /confirmar identidade/i,
+      );
+      await vi.waitFor(() =>
+        expect(screen.getByLabelText(/pin de quem confirma/i)).toHaveValue(""),
+      );
+    }
+    expect(estadoDoPinDe(PERSONA_DE_TRABALHO)?.erros).toBe(3);
+
+    // Mais dois no encerramento: o quinto bloqueia os três atos.
+    await usuario.click(screen.getByRole("button", { name: /^voltar$/i }));
+    await usuario.click(
+      await screen.findByRole("button", { name: /encerrar a sessão de trabalho/i }),
+    );
+    for (let tentativa = 0; tentativa < 2; tentativa += 1) {
+      await confirmarComOPin(
+        usuario,
+        "0000",
+        /pin de quem abriu o aparelho/i,
+        /^encerrar a sessão de trabalho$/i,
+      );
+      if (tentativa === 0) {
+        await vi.waitFor(() =>
+          expect(screen.getByLabelText(/pin de quem abriu o aparelho/i)).toHaveValue(""),
+        );
+      }
+    }
+
+    expect(await screen.findByText(/pin bloqueado neste aparelho/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/fechar a aba do navegador encerra a sessão/i),
+    ).toBeInTheDocument();
+    expect(pinBloqueadoNoAparelho()).toBe(true);
+    expect(estadoDoPinDe(PERSONA_DE_TRABALHO)?.erros).toBe(5);
   });
 });

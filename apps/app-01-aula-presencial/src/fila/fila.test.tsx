@@ -324,6 +324,7 @@ describe("painel do Mestre — visibilidade da fila (RF-04-23, RN-04-14)", () =>
             erroDeAberturaDaTroca={null}
             aoAbrirMomentoDeTroca={vi.fn()}
             aoFecharMomentoDeTroca={vi.fn()}
+            aoEncerrarSessaoDeTrabalho={vi.fn()}
           />
         </ProvedorDeSessao>
       </ProvedorDeEstadoDeRede>,
@@ -351,6 +352,7 @@ describe("painel do Mestre — visibilidade da fila (RF-04-23, RN-04-14)", () =>
             erroDeAberturaDaTroca={null}
             aoAbrirMomentoDeTroca={vi.fn()}
             aoFecharMomentoDeTroca={vi.fn()}
+            aoEncerrarSessaoDeTrabalho={vi.fn()}
           />
         </ProvedorDeSessao>
       </ProvedorDeEstadoDeRede>,
@@ -363,5 +365,88 @@ describe("painel do Mestre — visibilidade da fila (RF-04-23, RN-04-14)", () =>
     expect(await screen.findByText(/quem está chegando/i)).toBeInTheDocument();
     expect(screen.queryByText("zeferina")).not.toBeInTheDocument();
     expect(screen.queryByText(/fila de presença/i)).not.toBeInTheDocument();
+  });
+});
+
+// Encerrar a sessão de trabalho é ato do aparelho; a fila é do aparelho e da
+// aula, e sobrevive aos dois (`RF-04-71`, `RF-04-23`, `RF-04-25`).
+describe("a fila sobrevive ao encerramento da sessão de trabalho (RF-04-71, RF-04-25)", () => {
+  const PERSONA_DE_TRABALHO = "mestre-1";
+
+  function renderizarTelaInicial(aoEncerrarSessaoDeTrabalho = vi.fn()) {
+    return render(
+      <ProvedorDeEstadoDeRede>
+        <ProvedorDeSessao chaveDeArmazenamento="teste:fila:encerramento">
+          <TelaInicial
+            tokenDeTrabalho="token-de-trabalho"
+            personaIdDeTrabalho={PERSONA_DE_TRABALHO}
+            papelDeTrabalho="mestre"
+            aulaId="aula-1"
+            aoVoltarAoInicio={vi.fn()}
+            podeAbrirMomentoDeTroca={false}
+            momentoDeTrocaAberto={false}
+            abrindoMomentoDeTroca={false}
+            erroDeAberturaDaTroca={null}
+            aoAbrirMomentoDeTroca={vi.fn()}
+            aoFecharMomentoDeTroca={vi.fn()}
+            aoEncerrarSessaoDeTrabalho={aoEncerrarSessaoDeTrabalho}
+          />
+        </ProvedorDeSessao>
+      </ProvedorDeEstadoDeRede>,
+    );
+  }
+
+  it("encerrar não descarta a fila, e ela sincroniza quando o aparelho reabre", async () => {
+    await guardarVerificadorDeTeste(PERSONA_DE_TRABALHO);
+    enfileirarPresenca({
+      aula_id: "aula-1",
+      nick: "zeferina",
+      momento_do_fato: "2026-09-25T14:00:00Z",
+    });
+    // Enquanto a sessão de trabalho está aberta, o núcleo não responde: o item
+    // fica na fila (`RF-04-25`).
+    const registrar = vi
+      .spyOn(presencasApi, "registrarPresencaSemRede")
+      .mockRejectedValue(new Error("rede fora"));
+
+    const encerrar = vi.fn();
+    const { unmount } = renderizarTelaInicial(encerrar);
+    const usuario = userEvent.setup();
+
+    await usuario.click(
+      await screen.findByRole("button", { name: /encerrar a sessão de trabalho/i }),
+    );
+    expect(await screen.findByText(/1 presença aguarda sincronização/i)).toBeInTheDocument();
+    await usuario.type(screen.getByLabelText(/pin de quem abriu o aparelho/i), "4821");
+    await usuario.click(
+      screen.getByRole("button", { name: /^encerrar a sessão de trabalho$/i }),
+    );
+
+    await waitFor(() => expect(encerrar).toHaveBeenCalled());
+    expect(lerFilaDePresenca("aula-1")).toEqual([
+      { aula_id: "aula-1", nick: "zeferina", momento_do_fato: "2026-09-25T14:00:00Z" },
+    ]);
+    unmount();
+
+    // O aparelho reabre naquela aula: a fila retoma sozinha, com a hora do
+    // fato original (`RF-04-25`).
+    registrar.mockResolvedValue({
+      id: "presenca-1",
+      aula_id: "aula-1",
+      guerreiro_id: "guerreiro-1",
+      modo: "confirmacao",
+      confirmador_id: "mestre-1",
+      momento_do_fato: "2026-09-25T14:00:00Z",
+    });
+    renderHook(() => useSincronizacaoDaFilaDePresenca("aula-1", "token-de-trabalho"), {
+      wrapper: envolver,
+    });
+
+    await waitFor(() => expect(lerFilaDePresenca("aula-1")).toHaveLength(0));
+    expect(registrar).toHaveBeenLastCalledWith(
+      "aula-1",
+      { nick: "zeferina", momento_do_fato: "2026-09-25T14:00:00Z" },
+      "token-de-trabalho",
+    );
   });
 });

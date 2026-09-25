@@ -170,9 +170,27 @@ function ConteudoDoAparelho() {
     definirMomentoDeTrocaAberto(false);
   }, []);
 
+  // A saída do aparelho, oferecida só na tela inicial e confirmada ali pelo
+  // PIN de quem o abriu: derruba a sessão de trabalho, a aula escolhida, o
+  // momento de troca e o verificador do PIN, e a tela volta à abertura do
+  // aparelho — que só reabre por login Google (`RF-04-71`, `RF-04-05`,
+  // `RN-04-38`, `RN-04-41`). O estado do PIN sai aqui, e não só pelo efeito
+  // que o apaga quando a sessão cai, para que a ordem não dependa de quando o
+  // núcleo responder ao encerramento.
+  const encerrarSessaoDeTrabalho = useCallback(() => {
+    sessionStorage.removeItem(CHAVE_DA_AULA_ESCOLHIDA);
+    definirAulaEscolhidaId(null);
+    definirMomentoDeTrocaAberto(false);
+    apagarEstadoDoPin();
+    definirSemPinCadastrado(false);
+    sair();
+  }, [sair]);
+
   // Uma aula vigente dispensa a pergunta; mais de uma pergunta só uma vez
-  // (`RF-04-03`).
+  // (`RF-04-03`). Sem sessão de trabalho não há aula a escolher: encerrada a
+  // sessão, a escolha NEVER volta sozinha (`RF-04-71`).
   useEffect(() => {
+    if (!sessao) return;
     if (aulasVigentes === null || aulaEscolhidaId !== null) return;
     if (aulasVigentes.length === 0) return;
     if (aulasVigentes.length === 1) {
@@ -191,7 +209,7 @@ function ConteudoDoAparelho() {
     return () => {
       cancelado = true;
     };
-  }, [aulasVigentes, aulaEscolhidaId, escolherAula]);
+  }, [sessao, aulasVigentes, aulaEscolhidaId, escolherAula]);
 
   if (restaurando) {
     return null;
@@ -273,6 +291,7 @@ function ConteudoDoAparelho() {
         erroDeAberturaDaTroca={erroDeAberturaDaTroca}
         aoAbrirMomentoDeTroca={abrirMomentoDeTroca}
         aoFecharMomentoDeTroca={fecharMomentoDeTroca}
+        aoEncerrarSessaoDeTrabalho={encerrarSessaoDeTrabalho}
       />
     </ProvedorDeSessao>
   );

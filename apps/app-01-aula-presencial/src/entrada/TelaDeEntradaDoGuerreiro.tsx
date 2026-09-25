@@ -20,12 +20,13 @@ import {
 import { Visor } from "../captura/Visor";
 import { enfileirarPresenca } from "../fila/filaDePresenca";
 import {
+  conferirPinNoAparelho,
   FORMATO_DO_PIN,
+  MENSAGEM_DE_PIN_BLOQUEADO,
+  MENSAGEM_DE_PIN_ERRADO,
+  MENSAGEM_DE_PIN_NAO_CADASTRADO,
   marcarPinBloqueado,
   pinBloqueadoNoAparelho,
-  pinConfereNoAparelho,
-  registrarErroDePin,
-  verificadorGuardado,
   zerarErrosDePin,
 } from "../pin/pinDeConfirmacao";
 import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
@@ -86,14 +87,9 @@ const MENSAGEM_DE_FALHA_INESPERADA =
 const CODIGO_DE_RECUSA_DA_CONFERENCIA = "autenticacao_biometrica_invalida";
 
 // A recusa do PIN de quem confirma, conferido antes do nick — a frase nunca
-// diz nada da criança (`RN-04-37`, `RN-01-22`).
-const MENSAGEM_DE_PIN_ERRADO = "PIN errado. Digite de novo o PIN de quem abriu o aparelho.";
-const MENSAGEM_DE_PIN_BLOQUEADO =
-  "PIN bloqueado neste aparelho depois de cinco erros seguidos. Para confirmar de novo, " +
-  "entre outra vez pelo Google.";
-const MENSAGEM_DE_PIN_NAO_CADASTRADO =
-  "Quem abriu o aparelho ainda não tem PIN de confirmação. O Mestre cadastra na App 09, e o " +
-  "Admin, na App 03.";
+// diz nada da criança (`RN-04-37`, `RN-01-22`). As três primeiras vêm do
+// módulo do PIN, porque os outros dois atos que o pedem recusam com elas
+// (`RN-04-41`); esta é da confirmação sem rede, e só dela.
 const MENSAGEM_SEM_VERIFICADOR_SEM_REDE =
   "Sem rede, a confirmação confere o PIN no aparelho, e este aparelho foi aberto sem PIN " +
   "cadastrado. Cadastre o PIN e abra o aparelho de novo com rede.";
@@ -297,22 +293,24 @@ export function TelaDeEntradaDoGuerreiro({
     // presença entra na fila — nunca abre sessão nem tenta a chamada
     // (`RF-04-23`, `RN-04-38`, `RN-04-12`, `RN-04-13`).
     if (semRede) {
-      const verificador = verificadorGuardado();
-      if (!verificador) {
-        definirErroDeConfirmacao(MENSAGEM_SEM_VERIFICADOR_SEM_REDE);
-        return;
-      }
       definirEmAndamento(true);
       try {
-        if (!(await pinConfereNoAparelho(pinDigitado, verificador))) {
-          if (registrarErroDePin()) {
-            bloquear();
-          } else {
-            definirErroDeConfirmacao(MENSAGEM_DE_PIN_ERRADO);
-          }
+        const desfecho = await conferirPinNoAparelho(pinDigitado);
+        if (desfecho === "bloqueado") {
+          bloquear();
           return;
         }
-        zerarErrosDePin();
+        // Aparelho sem verificador e aparelho aberto sem PIN cadastrado dizem
+        // aqui a mesma coisa: sem rede, a confirmação não tem como acontecer, e
+        // a presença NEVER entra na fila sem PIN conferido (`RN-04-38`).
+        if (desfecho === "sem_verificador" || desfecho === "sem_pin_cadastrado") {
+          definirErroDeConfirmacao(MENSAGEM_SEM_VERIFICADOR_SEM_REDE);
+          return;
+        }
+        if (desfecho !== "confere") {
+          definirErroDeConfirmacao(MENSAGEM_DE_PIN_ERRADO);
+          return;
+        }
         enfileirarPresenca({
           aula_id: aulaId,
           nick: nick.trim(),

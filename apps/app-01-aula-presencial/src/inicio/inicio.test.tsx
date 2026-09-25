@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as sessaoApi from "comum/autenticacao/api";
@@ -8,6 +8,13 @@ import * as descritorApi from "../api/descritor";
 import * as equipesApi from "../api/equipes";
 import * as presencasApi from "../api/presencas";
 import * as sessoesDeGuerreiroApi from "../api/sessoesDeGuerreiro";
+import { enfileirarPresenca, lerFilaDePresenca } from "../fila/filaDePresenca";
+import { guardarVerificadorDeTeste, PIN_DE_TESTE } from "../pin/paraTestes";
+import {
+  estadoDoPinDe,
+  guardarVerificadorDoPin,
+  marcarPinBloqueado,
+} from "../pin/pinDeConfirmacao";
 import { ProvedorDeEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import { TelaInicial } from "./TelaInicial";
 
@@ -48,6 +55,7 @@ async function entrarPorConfirmacao(
 afterEach(() => {
   vi.restoreAllMocks();
   sessionStorage.clear();
+  localStorage.clear();
 });
 
 function renderizar(
@@ -58,6 +66,7 @@ function renderizar(
     abrindoMomentoDeTroca: boolean;
     erroDeAberturaDaTroca: string | null;
   }> = {},
+  aoEncerrarSessaoDeTrabalho = vi.fn(),
 ) {
   return render(
     <ProvedorDeEstadoDeRede>
@@ -74,6 +83,7 @@ function renderizar(
           erroDeAberturaDaTroca={propsDeTroca.erroDeAberturaDaTroca ?? null}
           aoAbrirMomentoDeTroca={vi.fn()}
           aoFecharMomentoDeTroca={vi.fn()}
+          aoEncerrarSessaoDeTrabalho={aoEncerrarSessaoDeTrabalho}
         />
       </ProvedorDeSessao>
     </ProvedorDeEstadoDeRede>,
@@ -491,5 +501,154 @@ describe("tela inicial da App 01", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /confirmar identidade/i })).toBeInTheDocument();
     expect(screen.queryByText(/digite o nick e olhe para a câmera/i)).not.toBeInTheDocument();
+  });
+});
+
+// A saída do aparelho, que nasce nesta fatia: só na tela inicial, atrás do PIN
+// de quem abriu a sessão de trabalho, e com alternativa quando o PIN bloqueia
+// (`RF-04-71`, `RN-04-41`).
+describe("encerrar a sessão de trabalho pela tela inicial (RF-04-71, RN-04-41)", () => {
+  const PERSONA_DE_TRABALHO = "mestre-de-trabalho-1";
+
+  async function abrirOEncerramento(usuario: ReturnType<typeof userEvent.setup>) {
+    await usuario.click(
+      await screen.findByRole("button", { name: /encerrar a sessão de trabalho/i }),
+    );
+  }
+
+  async function digitarOPin(usuario: ReturnType<typeof userEvent.setup>, pin = PIN_DE_TESTE) {
+    await usuario.type(await screen.findByLabelText(/pin de quem abriu o aparelho/i), pin);
+    await usuario.click(
+      screen.getByRole("button", { name: /^encerrar a sessão de trabalho$/i }),
+    );
+  }
+
+  it("a saída aparece na tela inicial e não nas telas de atendimento", async () => {
+    await guardarVerificadorDeTeste(PERSONA_DE_TRABALHO);
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(sessaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    vi.spyOn(equipesApi, "listarEquipesDaAula").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    mockarPresencaNoEncontro(true);
+
+    renderizar();
+    const usuario = userEvent.setup();
+    expect(
+      await screen.findByRole("button", { name: /encerrar a sessão de trabalho/i }),
+    ).toBeInTheDocument();
+
+    await entrarPorConfirmacao(usuario);
+    await screen.findByText(/equipes desta aula/i);
+
+    // No meio do atendimento, quem está com o aparelho é a criança: a saída
+    // NEVER é oferecida ali (`RF-04-28`, design — decisão 2).
+    expect(
+      screen.queryByRole("button", { name: /encerrar a sessão de trabalho/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("encerra com o PIN de quem abriu o aparelho", async () => {
+    await guardarVerificadorDeTeste(PERSONA_DE_TRABALHO);
+    const encerrar = vi.fn();
+
+    renderizar(vi.fn(), {}, encerrar);
+    const usuario = userEvent.setup();
+    await abrirOEncerramento(usuario);
+    await digitarOPin(usuario);
+
+    await waitFor(() => expect(encerrar).toHaveBeenCalled());
+  });
+
+  it("PIN errado recusa o encerramento e conta no contador de sempre", async () => {
+    await guardarVerificadorDeTeste(PERSONA_DE_TRABALHO);
+    const encerrar = vi.fn();
+
+    renderizar(vi.fn(), {}, encerrar);
+    const usuario = userEvent.setup();
+    await abrirOEncerramento(usuario);
+    await digitarOPin(usuario, "0000");
+
+    expect(await screen.findByText(/pin errado/i)).toBeInTheDocument();
+    expect(encerrar).not.toHaveBeenCalled();
+    // O mesmo contador da confirmação de identidade e da bancada (`RN-04-41`).
+    expect(estadoDoPinDe(PERSONA_DE_TRABALHO)?.erros).toBe(1);
+  });
+
+  it("PIN bloqueado recusa, e a recusa diz que fechar a aba encerra a sessão", async () => {
+    await guardarVerificadorDeTeste(PERSONA_DE_TRABALHO);
+    marcarPinBloqueado();
+    const encerrar = vi.fn();
+
+    renderizar(vi.fn(), {}, encerrar);
+    const usuario = userEvent.setup();
+    await abrirOEncerramento(usuario);
+
+    expect(await screen.findByText(/pin bloqueado neste aparelho/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/fechar a aba do navegador encerra a sessão/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText(/pin de quem abriu o aparelho/i)).not.toBeInTheDocument();
+    expect(encerrar).not.toHaveBeenCalled();
+  });
+
+  it("quem abriu o aparelho sem PIN cadastrado encerra sem PIN, com o aviso", async () => {
+    guardarVerificadorDoPin(PERSONA_DE_TRABALHO, null);
+    const encerrar = vi.fn();
+
+    renderizar(vi.fn(), {}, encerrar);
+    const usuario = userEvent.setup();
+    await abrirOEncerramento(usuario);
+
+    expect(await screen.findByText(/ainda não tem pin de confirmação/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/pin de quem abriu o aparelho/i)).not.toBeInTheDocument();
+
+    await usuario.click(
+      screen.getByRole("button", { name: /^encerrar a sessão de trabalho$/i }),
+    );
+    await waitFor(() => expect(encerrar).toHaveBeenCalled());
+  });
+
+  it("a fila local pendente é anunciada antes de encerrar, e sobrevive ao encerramento", async () => {
+    await guardarVerificadorDeTeste(PERSONA_DE_TRABALHO);
+    // A fila não sincroniza neste teste: sem resposta do núcleo, o item fica
+    // onde está (`RF-04-25`).
+    vi.spyOn(presencasApi, "registrarPresencaSemRede").mockRejectedValue(
+      new Error("rede fora"),
+    );
+    enfileirarPresenca({
+      aula_id: "aula-1",
+      nick: "zeferina",
+      momento_do_fato: "2026-09-25T14:00:00Z",
+    });
+    enfileirarPresenca({
+      aula_id: "aula-1",
+      nick: "joao",
+      momento_do_fato: "2026-09-25T14:01:00Z",
+    });
+    const encerrar = vi.fn();
+
+    renderizar(vi.fn(), {}, encerrar);
+    const usuario = userEvent.setup();
+    await abrirOEncerramento(usuario);
+
+    expect(await screen.findByText(/2 presenças aguardam sincronização/i)).toBeInTheDocument();
+    expect(screen.getByText(/aberto nesta mesma aula/i)).toBeInTheDocument();
+
+    await digitarOPin(usuario);
+
+    await waitFor(() => expect(encerrar).toHaveBeenCalled());
+    // Nada se perde: a fila vive em `localStorage` e não sai com a sessão
+    // (`RF-04-23`, `RF-04-25`).
+    expect(lerFilaDePresenca("aula-1")).toHaveLength(2);
   });
 });
