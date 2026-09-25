@@ -1,6 +1,7 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
+import type { CulminanciaDaTrilha } from "comum/trilha/api";
 import { type FormEvent, useEffect, useId, useState } from "react";
 import {
   abrirEnvio,
@@ -13,7 +14,6 @@ import {
   obterMinhaEquipeDaTrilha,
   type TipoDeProducaoDaCriacaoOriginal,
 } from "../api/criacaoOriginal";
-import type { CulminanciaDaTrilha } from "../api/trilha";
 
 interface Props {
   trilhaId: string;

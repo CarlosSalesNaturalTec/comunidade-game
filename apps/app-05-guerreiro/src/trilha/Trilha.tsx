@@ -1,9 +1,10 @@
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, EstadoDaLista } from "comum/react";
+import { EscolhaDoPoder, GuiaDaTrilha } from "comum/trilha";
+import { listarMinhasTrilhas, type TrilhaComProximaMissao } from "comum/trilha/api";
 import { useCallback, useEffect, useState } from "react";
-import { listarMinhasTrilhas, type TrilhaComProximaMissao } from "../api/trilha";
-import { EscolhaDoPoder } from "./EscolhaDoPoder";
-import { GuiaDaTrilha } from "./GuiaDaTrilha";
+import { Culminancia } from "./Culminancia";
+import { EntregaDaProducao } from "./EntregaDaProducao";
 import { Progresso } from "./Progresso";
 import { Retomadas } from "./Retomadas";
 
@@ -13,6 +14,12 @@ type Tela = "guia" | "trocar-de-trilha" | "progresso" | "retomadas" | "escolher-
 // escolha do poder; com uma ou mais, abre no guia da trilha e permite
 // alternar entre elas ou conferir o progresso (`RF-05-08`, `RF-05-09`,
 // `RF-05-17`).
+//
+// As telas vêm de `comum/trilha`, promovidas para servirem também o
+// aparelho do encontro. É aqui que a Área do Guerreiro(a) liga os **três**
+// atos de escrita dela — a inscrição, a submissão do desbloqueio e a
+// entrega individual da produção —, e a culminância, que só ela atende
+// (`RF-05-13`, `RF-05-14`, `RF-05-74`, `RF-05-39`, design — decisão 3).
 export function Trilha() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [trilhas, definirTrilhas] = useState<TrilhaComProximaMissao[] | null>(null);
@@ -69,7 +76,7 @@ export function Trilha() {
   if (trilhas === null) return <EstadoDaLista>Carregando as suas trilhas…</EstadoDaLista>;
 
   if (trilhas.length === 0 || tela === "escolher-poder") {
-    return <EscolhaDoPoder aoInscrever={aoInscrever} />;
+    return <EscolhaDoPoder aoInscrever={aoInscrever} inscricaoLigada />;
   }
 
   const trilhaSelecionada =
@@ -103,6 +110,11 @@ export function Trilha() {
           trilha={trilhaSelecionada}
           aoAtualizarTrilhas={() => carregarTrilhas(true)}
           aoTrocarDeTrilha={() => definirTela("trocar-de-trilha")}
+          submissaoDoDesbloqueioLigada
+          entregaDaProducao={({ missaoId, atividades }) => (
+            <EntregaDaProducao missaoId={missaoId} atividades={atividades} />
+          )}
+          culminancia={<Culminancia trilhaId={trilhaSelecionada.id} />}
         />
       )}
 

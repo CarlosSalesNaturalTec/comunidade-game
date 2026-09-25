@@ -1,8 +1,8 @@
 import { act, render, screen } from "@testing-library/react";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
+import * as trilhaApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import * as trilhaApi from "../api/trilha";
 import { Trilha } from "./Trilha";
 
 const CHAVE_DE_SESSAO = "app-05:teste-trilha";

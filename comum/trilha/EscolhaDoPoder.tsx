@@ -1,22 +1,28 @@
-import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao, EstadoDaLista } from "comum/react";
 import { useEffect, useState } from "react";
+import { useSessao } from "../autenticacao/ContextoDeSessao";
+import { Aviso } from "../react/Aviso";
+import { Botao } from "../react/Botao";
+import { EstadoDaLista } from "../react/EstadoDaLista";
 import {
   inscreverNaTrilha,
   listarPoderesDoCatalogo,
   type PoderPublico,
   type TrilhaPublica,
-} from "../api/trilha";
+} from "./api";
 
 interface Props {
   aoInscrever: (trilhaId: string) => void;
+  /** A inscrição é ato de escrita, e cada aplicação liga a sua: desligada,
+   * o catálogo é só leitura e a tela diz onde a inscrição acontece
+   * (design — decisão 3). */
+  inscricaoLigada?: boolean;
 }
 
 // Catálogo de poderes do ciclo e as trilhas publicadas de cada um — sem
 // teto de quantas trilhas o Guerreiro(a) escolhe, e sem ação de
 // desinscrever, porque a inscrição não se desfaz (`RF-05-09`, `RN-05-43`,
 // `RN-05-44`).
-export function EscolhaDoPoder({ aoInscrever }: Props) {
+export function EscolhaDoPoder({ aoInscrever, inscricaoLigada = false }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [poderes, definirPoderes] = useState<PoderPublico[] | null>(null);
   const [poderEscolhido, definirPoderEscolhido] = useState<PoderPublico | null>(null);
@@ -96,13 +102,24 @@ export function EscolhaDoPoder({ aoInscrever }: Props) {
       {poderEscolhido.trilhas.length === 0 && (
         <EstadoDaLista>Ainda não há trilha publicada para este poder.</EstadoDaLista>
       )}
+      {!inscricaoLigada && poderEscolhido.trilhas.length > 0 && (
+        <Aviso tipo="andamento">
+          Aqui você só vê as trilhas deste poder. Para se inscrever, abra a sua Área do
+          Guerreiro(a).
+        </Aviso>
+      )}
       <ul className="cg-trilha__lista-de-trilhas">
         {poderEscolhido.trilhas.map((trilha) => (
           <li key={trilha.id}>
             <span>{trilha.nome}</span>
-            <Botao onClick={() => inscrever(trilha)} desabilitado={inscrevendo === trilha.id}>
-              {inscrevendo === trilha.id ? "Inscrevendo…" : "Inscrever-se"}
-            </Botao>
+            {inscricaoLigada && (
+              <Botao
+                onClick={() => inscrever(trilha)}
+                desabilitado={inscrevendo === trilha.id}
+              >
+                {inscrevendo === trilha.id ? "Inscrevendo…" : "Inscrever-se"}
+              </Botao>
+            )}
           </li>
         ))}
       </ul>

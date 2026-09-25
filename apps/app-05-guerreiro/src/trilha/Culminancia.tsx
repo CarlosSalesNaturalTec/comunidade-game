@@ -1,9 +1,9 @@
 import { ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, EstadoDaLista } from "comum/react";
+import { obterTrilhaPublica, type TrilhaPublicaComMissoes } from "comum/trilha/api";
 import { useCallback, useEffect, useState } from "react";
 import { type CriacaoOriginal, obterMinhaCriacaoDaTrilha } from "../api/criacaoOriginal";
-import { obterTrilhaPublica, type TrilhaPublicaComMissoes } from "../api/trilha";
 import { EntregaDeCriacao } from "./EntregaDeCriacao";
 
 interface Props {

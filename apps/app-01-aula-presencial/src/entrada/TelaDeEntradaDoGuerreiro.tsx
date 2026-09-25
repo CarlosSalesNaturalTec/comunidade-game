@@ -43,9 +43,13 @@ interface Props {
    * autoriza o recadastro da imagem atrás da confirmação presencial
    * (`RF-04-22`, design — decisão 4). */
   aoAbrirSessao?: (via: "reconhecimento" | "confirmacao") => void;
+  /** O segundo desfecho da presença registrada: seguir às trilhas e
+   * missões, na sessão que acabou de abrir — sem pedir nick nem imagem de
+   * novo (`RF-04-67`, `RF-04-72`, design — decisão 5). */
+  aoSeguirParaTrilhas?: () => void;
 }
 
-export type CaminhoDaEntrada = "presenca" | "equipes" | "quiz" | "troca";
+export type CaminhoDaEntrada = "presenca" | "equipes" | "quiz" | "troca" | "trilhas";
 
 type Tela =
   | "entrada"
@@ -94,16 +98,17 @@ const MENSAGEM_SEM_VERIFICADOR_SEM_REDE =
   "Sem rede, a confirmação confere o PIN no aparelho, e este aparelho foi aberto sem PIN " +
   "cadastrado. Cadastre o PIN e abra o aparelho de novo com rede.";
 
-// A tela anuncia o caminho que serve: quem escolheu equipes, quiz ou troca na
-// tela inicial precisa reconhecer que chegou onde quis, e não ao caminho da
-// presença — os quatro se apresentavam iguais (`RF-04-01`, `RF-04-67`,
-// `RF-04-68`, design — decisão 1). O subtítulo não entra aqui: ele descreve o
-// ato, que é o mesmo nos quatro.
+// A tela anuncia o caminho que serve: quem escolheu equipes, quiz, troca ou
+// trilhas na tela inicial precisa reconhecer que chegou onde quis, e não ao
+// caminho da presença — os caminhos se apresentavam iguais (`RF-04-01`,
+// `RF-04-67`, `RF-04-68`, `RF-04-72`, design — decisão 1 e decisão 5). O
+// subtítulo não entra aqui: ele descreve o ato, que é o mesmo em todos.
 const TITULO_DO_CAMINHO: Record<CaminhoDaEntrada, string> = {
   presenca: "Quem está chegando?",
   equipes: "Quem vai formar equipe?",
   quiz: "Quem vai jogar o Quiz?",
   troca: "Quem vai trocar recompensa?",
+  trilhas: "Quem vai ver as próprias trilhas?",
 };
 
 const MENSAGENS_DO_PIN: Record<string, string> = {
@@ -134,6 +139,7 @@ export function TelaDeEntradaDoGuerreiro({
   caminho,
   aoVoltar,
   aoAbrirSessao,
+  aoSeguirParaTrilhas,
 }: Props) {
   const { entrarComToken } = useSessao();
   const { semRede } = useEstadoDeRede();
@@ -156,9 +162,9 @@ export function TelaDeEntradaDoGuerreiro({
   const lugarDoVisor = useRef<HTMLDivElement>(null);
 
   // Só o caminho Presença registra a presença: nos caminhos das equipes, do
-  // quiz e da troca a entrada apenas abre a sessão, e quem chega sem
-  // presença é barrado pela guarda, não pela entrada (`RF-04-67`,
-  // `RF-04-68`, design — decisão 1).
+  // quiz, da troca e das trilhas a entrada apenas abre a sessão, e quem
+  // chega sem presença é barrado pela guarda, não pela entrada (`RF-04-67`,
+  // `RF-04-68`, `RF-04-72`, design — decisão 1).
   //
   // Registrando, grava sempre com o token da sessão de trabalho
   // (`RF-04-18`, `RF-04-21`), e só o reconhecimento avisa que a presença já
@@ -190,8 +196,10 @@ export function TelaDeEntradaDoGuerreiro({
     }
     aoAbrirSessao?.(modo);
     await entrarComToken(token);
-    // Registrada a presença, o atendimento termina aqui: o caminho Presença
-    // não leva às equipes, que são outro momento (`RF-04-67`, PRD-04 §5.4).
+    // Registrada a presença, o desfecho oferece dois caminhos — voltar ao
+    // início e seguir às trilhas e missões —, e nenhum deles leva às
+    // equipes, que seguem sendo outro momento (`RF-04-67`, `RF-04-72`,
+    // PRD-04 §5.4, decisão do fundador de 2026-09-25).
     definirTela("presencaRegistrada");
   }
 
@@ -354,7 +362,12 @@ export function TelaDeEntradaDoGuerreiro({
           Pronto, {nick.trim()}! A presença de hoje está registrada. Para trabalhar em equipe,
           volte ao início e escolha Equipes.
         </Aviso>
-        <Botao onClick={aoVoltar}>Voltar ao início</Botao>
+        {aoSeguirParaTrilhas && (
+          <Botao onClick={aoSeguirParaTrilhas}>Ver as minhas trilhas e missões</Botao>
+        )}
+        <Botao variante="secundaria" onClick={aoVoltar}>
+          Voltar ao início
+        </Botao>
       </Moldura>
     );
   }
@@ -385,9 +398,9 @@ export function TelaDeEntradaDoGuerreiro({
   }
 
   // Sem rede, só o caminho Presença tem desfecho: a fila local é dele
-  // (`RF-04-23`). Formar equipe, responder ao quiz e trocar recompensa
-  // exigem rede, e nenhum deles enfileira coisa alguma (`RF-04-58`,
-  // `RF-04-68`).
+  // (`RF-04-23`). Formar equipe, responder ao quiz, trocar recompensa e ver
+  // as próprias trilhas exigem rede, e nenhum deles enfileira coisa alguma
+  // (`RF-04-58`, `RF-04-68`).
   if (semRede && caminho !== "presenca") {
     return (
       <Moldura>

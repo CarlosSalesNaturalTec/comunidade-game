@@ -1,15 +1,20 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
+import { ProvedorDeSessao } from "comum/autenticacao";
+import * as autenticacaoApi from "comum/autenticacao/api";
 import { escreverAvatar } from "comum/avatar";
+import * as trilhaApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { Equipe } from "../api/equipes";
+import type { Equipe, MinhaEquipe } from "../api/equipes";
 import * as equipesApi from "../api/equipes";
 import type { ProducaoDaMissao } from "../api/producao";
 import * as producaoApi from "../api/producao";
 import type { ItemDaProgramacao } from "../api/programacao";
 import * as programacaoApi from "../api/programacao";
+import { ProvedorDeEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import { TelaDaProgramacao } from "./TelaDaProgramacao";
+import { TelaDeTrilhasDoGuerreiro } from "./TelaDeTrilhasDoGuerreiro";
 
 // Duplo da Web Speech API do navegador — o mesmo padrão de
 // `assistente.test.tsx` e de `comum/fala/fala.test.ts` (`RF-05-76`,
@@ -790,5 +795,477 @@ describe("o avatar dos integrantes da equipe da trilha (`RF-04-34`, documento 15
     const desenhos = lista!.querySelectorAll("svg.cg-avatar");
     expect(desenhos).toHaveLength(2);
     expect(desenhos[0].outerHTML).toBe(desenhos[1].outerHTML);
+  });
+});
+
+// --- O caminho das trilhas e missões no aparelho do encontro
+// (`RF-04-72`, `RF-04-73`, `RF-04-74`, `RF-04-35`)
+
+const CHAVE_DE_SESSAO_DO_PERCURSO = "teste:app-01:percurso";
+
+function trilhaInscrita(
+  sobrescreve: Partial<trilhaApi.TrilhaComProximaMissao> = {},
+): trilhaApi.TrilhaComProximaMissao {
+  return {
+    id: "trilha-1",
+    nome: "Robô Educa",
+    poder_id: "poder-1",
+    proxima_missao_id: "missao-1",
+    proxima_missao_titulo: "Primeira Missão",
+    proxima_missao_posicao: 1,
+    ...sobrescreve,
+  };
+}
+
+function missaoNoPercurso(
+  sobrescreve: Partial<trilhaApi.MissaoNoPercurso> = {},
+): trilhaApi.MissaoNoPercurso {
+  return {
+    id: "missao-1",
+    titulo: "Primeira Missão",
+    posicao: 1,
+    obrigatoria: true,
+    e_sondagem: false,
+    desbloqueada: false,
+    e_proxima: true,
+    aguardando_mestre: false,
+    motivo_do_bloqueio: null,
+    desafio_de_desbloqueio: null,
+    ...sobrescreve,
+  };
+}
+
+const QUIZ_DO_DESBLOQUEIO: trilhaApi.DesafioDeDesbloqueio = {
+  tipo: "quiz",
+  enunciado: null,
+  perguntas: [
+    {
+      id: "p1",
+      ordem: 1,
+      enunciado: "Quanto é 1 + 1?",
+      alternativas: ["1", "2", "3", "4"],
+      imagem_referencia: null,
+    },
+  ],
+};
+
+function trilhaPublicaComMissao(
+  atividades: trilhaApi.AtividadeDaMissaoPublica[] = [],
+): trilhaApi.TrilhaPublicaComMissoes {
+  return {
+    id: "trilha-1",
+    nome: "Robô Educa",
+    licenca: "CC BY-SA",
+    autor_nome: "Mestre Ana",
+    culminancia: null,
+    missoes: [
+      {
+        id: "missao-1",
+        titulo: "Primeira Missão",
+        posicao: 1,
+        obrigatoria: true,
+        e_sondagem: false,
+        atividades,
+        conteudos: [],
+        bibliografia: [],
+      },
+    ],
+  };
+}
+
+function minhaEquipe(sobrescreve: Partial<MinhaEquipe> = {}): MinhaEquipe {
+  return {
+    id: "equipe-1",
+    nome: "Os Robôs",
+    aula_id: "aula-1",
+    trilha_id: null,
+    homologado_por_id: null,
+    homologado_em: null,
+    integrantes: [],
+    meu_papel: "montagem",
+    atividades: [
+      {
+        atividade: item().atividade,
+        missao_id: "missao-1",
+        missao_titulo: "Primeira Missão",
+        trilha_id: "trilha-1",
+        trilha_titulo: "Trilha Um",
+        corrente: true,
+      },
+    ],
+    ...sobrescreve,
+  };
+}
+
+// O palco do caminho: o estado de rede do aparelho e a sessão do
+// Guerreiro(a) em volta da tela, e a tela montada só quando `montar` pede —
+// é isso que deixa o cenário sem rede começar já sem rede, como acontece no
+// aparelho, em que a entrada é que barra o caminho antes da tela abrir.
+function PalcoDoPercurso({ montar }: { montar: boolean }) {
+  return (
+    <ProvedorDeEstadoDeRede>
+      <ProvedorDeSessao chaveDeArmazenamento={CHAVE_DE_SESSAO_DO_PERCURSO}>
+        {montar ? (
+          <TelaDeTrilhasDoGuerreiro
+            aulaId="aula-1"
+            token="token-do-guerreiro"
+            aoVoltar={vi.fn()}
+          />
+        ) : null}
+      </ProvedorDeSessao>
+    </ProvedorDeEstadoDeRede>
+  );
+}
+
+async function renderizarPercurso(offline = false) {
+  sessionStorage.setItem(CHAVE_DE_SESSAO_DO_PERCURSO, "token-do-guerreiro");
+  vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
+    persona_id: "guerreiro-1",
+    papel: "guerreiro",
+    permissoes: {},
+  });
+  const resultado = render(<PalcoDoPercurso montar={!offline} />);
+  if (offline) {
+    window.dispatchEvent(new Event("offline"));
+    resultado.rerender(<PalcoDoPercurso montar />);
+  }
+  return resultado;
+}
+
+afterEach(() => {
+  sessionStorage.clear();
+});
+
+describe("o percurso do Guerreiro(a) no encontro (RF-04-72)", () => {
+  it("uma trilha inscrita abre direto no percurso, sem lista de trilhas", async () => {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(missaoNoPercurso());
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    await renderizarPercurso();
+
+    expect(await screen.findByRole("heading", { name: "Robô Educa" })).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Suas trilhas" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /trocar de trilha/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("mais de uma trilha inscrita apresenta a lista, e a escolhida abre o percurso", async () => {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilhaInscrita(),
+      trilhaInscrita({ id: "trilha-2", nome: "Horta Viva" }),
+    ]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(missaoNoPercurso());
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    await renderizarPercurso();
+    const usuario = userEvent.setup();
+
+    expect(await screen.findByRole("region", { name: "Suas trilhas" })).toBeInTheDocument();
+    await usuario.click(screen.getByRole("button", { name: "Horta Viva" }));
+
+    // A escolhida é a que abre, e a troca de trilha segue oferecida porque há
+    // mais de uma (`RF-05-17`).
+    expect(await screen.findByRole("heading", { name: "Horta Viva" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /trocar de trilha/i })).toBeInTheDocument();
+  });
+
+  it("sem inscrição alguma, a tela leva ao catálogo de poderes do ciclo", async () => {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([]);
+    vi.spyOn(trilhaApi, "listarPoderesDoCatalogo").mockResolvedValue([
+      {
+        id: "poder-1",
+        nome: "Robótica",
+        descricao: "Descrição do poder.",
+        trilhas: [{ id: "trilha-1", nome: "Robô Educa" }],
+      },
+    ]);
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    await renderizarPercurso();
+    const usuario = userEvent.setup();
+
+    expect(await screen.findByText(/escolha um poder/i)).toBeInTheDocument();
+    await usuario.click(await screen.findByRole("button", { name: "Robótica" }));
+
+    expect(await screen.findByText("Robô Educa")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /inscrever-se/i })).toBeInTheDocument();
+  });
+
+  it("inscrito no encontro, o percurso abre na sondagem no mesmo atendimento", async () => {
+    const listar = vi
+      .spyOn(trilhaApi, "listarMinhasTrilhas")
+      .mockResolvedValueOnce([])
+      .mockResolvedValue([
+        trilhaInscrita({
+          proxima_missao_id: "sondagem-1",
+          proxima_missao_titulo: "Sondagem",
+        }),
+      ]);
+    vi.spyOn(trilhaApi, "listarPoderesDoCatalogo").mockResolvedValue([
+      {
+        id: "poder-1",
+        nome: "Robótica",
+        descricao: "Descrição do poder.",
+        trilhas: [{ id: "trilha-1", nome: "Robô Educa" }],
+      },
+    ]);
+    const inscrever = vi.spyOn(trilhaApi, "inscreverNaTrilha").mockResolvedValue({
+      id: "inscricao-1",
+      trilha_id: "trilha-1",
+      momento: "2026-09-25T00:00:00-03:00",
+    });
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(
+      missaoNoPercurso({
+        id: "sondagem-1",
+        titulo: "Sondagem",
+        e_sondagem: true,
+        desafio_de_desbloqueio: QUIZ_DO_DESBLOQUEIO,
+      }),
+    );
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    await renderizarPercurso();
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByRole("button", { name: "Robótica" }));
+    await usuario.click(screen.getByRole("button", { name: /inscrever-se/i }));
+
+    expect(inscrever).toHaveBeenCalledWith("trilha-1", "token-do-guerreiro");
+    // A posição vem do núcleo: a aplicação nunca calcula onde o percurso
+    // começa (invariante 5).
+    expect(await screen.findByRole("region", { name: "Sondagem" })).toBeInTheDocument();
+    expect(listar).toHaveBeenCalledTimes(2);
+  });
+
+  it("a inscrição não se desfaz e não tem teto", async () => {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(missaoNoPercurso());
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(trilhaApi, "listarPoderesDoCatalogo").mockResolvedValue([
+      {
+        id: "poder-1",
+        nome: "Robótica",
+        descricao: "Descrição do poder.",
+        trilhas: [
+          { id: "trilha-1", nome: "Robô Educa" },
+          { id: "trilha-2", nome: "Horta Viva" },
+        ],
+      },
+    ]);
+    // Repetir a mesma trilha devolve a inscrição existente, sem erro
+    // (`RN-05-43`).
+    const inscrever = vi.spyOn(trilhaApi, "inscreverNaTrilha").mockResolvedValue({
+      id: "inscricao-1",
+      trilha_id: "trilha-1",
+      momento: "2026-09-25T00:00:00-03:00",
+    });
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    await renderizarPercurso();
+    const usuario = userEvent.setup();
+
+    // Já inscrito numa, a tela segue oferecendo escolher outro poder: não há
+    // teto de quantas trilhas (`RN-05-44`).
+    await usuario.click(await screen.findByRole("button", { name: /escolher outro poder/i }));
+    await usuario.click(await screen.findByRole("button", { name: "Robótica" }));
+    const inscricoes = screen.getAllByRole("button", { name: /inscrever-se/i });
+    expect(inscricoes).toHaveLength(2);
+    await usuario.click(inscricoes[0]);
+
+    expect(inscrever).toHaveBeenCalledWith("trilha-1", "token-do-guerreiro");
+    // Em nenhum momento a tela oferece desinscrever-se.
+    expect(
+      screen.queryByRole("button", { name: /desinscrever|cancelar a inscrição/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("quem acabou de se inscrever começa na sondagem, e a seguinte aparece trancada com o motivo", async () => {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilhaInscrita({ proxima_missao_id: "sondagem-1", proxima_missao_titulo: "Sondagem" }),
+    ]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockImplementation((_id, ordem) =>
+      Promise.resolve(
+        ordem === 1
+          ? missaoNoPercurso({
+              id: "sondagem-1",
+              titulo: "Sondagem",
+              e_sondagem: true,
+              desafio_de_desbloqueio: QUIZ_DO_DESBLOQUEIO,
+            })
+          : missaoNoPercurso({
+              id: "missao-2",
+              titulo: "Segunda Missão",
+              posicao: 2,
+              e_proxima: false,
+              motivo_do_bloqueio: 'Responda a "Sondagem" primeiro.',
+            }),
+      ),
+    );
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    await renderizarPercurso();
+
+    expect(await screen.findByRole("region", { name: "Sondagem" })).toBeInTheDocument();
+    expect(screen.getByText(/ajuda o mestre/i)).toBeInTheDocument();
+    expect(screen.getByText("Segunda Missão")).toBeInTheDocument();
+    expect(screen.getByText(/responda a "sondagem" primeiro/i)).toBeInTheDocument();
+  });
+
+  it("as atividades da aula vêm pelas equipes do Guerreiro(a)", async () => {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(missaoNoPercurso());
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    // A equipe da trilha, sem `aula_id`, não é deste encontro.
+    const listar = vi
+      .spyOn(equipesApi, "listarMinhasEquipes")
+      .mockResolvedValue([
+        minhaEquipe(),
+        minhaEquipe({ id: "equipe-2", nome: "Equipe da Trilha", aula_id: null }),
+      ]);
+
+    await renderizarPercurso();
+
+    expect(await screen.findByRole("heading", { name: "Os Robôs" })).toBeInTheDocument();
+    expect(screen.getByText("Montagem do robô")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Equipe da Trilha" }),
+    ).not.toBeInTheDocument();
+    expect(listar).toHaveBeenCalledWith("token-do-guerreiro");
+  });
+
+  it("sem equipe na aula, a tela distingue os dois vazios", async () => {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(missaoNoPercurso());
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    await renderizarPercurso();
+
+    expect(
+      await screen.findByText(/ainda não está em nenhuma equipe deste encontro/i),
+    ).toBeInTheDocument();
+    // Enunciado distinto do de encontro sem programação declarada, que é
+    // outro fato (`RF-04-35`).
+    expect(
+      screen.queryByText(/este encontro ainda não tem atividade declarada/i),
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
+  async function abrirMissaoComDesafio(missao: Partial<trilhaApi.MissaoNoPercurso>) {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(missaoNoPercurso(missao));
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+    await renderizarPercurso();
+    return userEvent.setup();
+  }
+
+  it("respondida a sondagem, a trilha abre sem exigir entrada nova", async () => {
+    // O núcleo abre a trilha ao ser respondida, não ao ser acertada
+    // (documento 11 §2.2, `RN-05-46`).
+    const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio").mockResolvedValue({
+      aprovado: true,
+      aguardando_mestre: false,
+      acertos: 0,
+      total: 1,
+    });
+    const usuario = await abrirMissaoComDesafio({
+      id: "sondagem-1",
+      titulo: "Sondagem",
+      e_sondagem: true,
+      desafio_de_desbloqueio: QUIZ_DO_DESBLOQUEIO,
+    });
+
+    await usuario.click(await screen.findByRole("radio", { name: "1" }));
+    await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
+
+    expect(submeter).toHaveBeenCalledWith(
+      "sondagem-1",
+      [{ pergunta_id: "p1", alternativa_escolhida: 1 }],
+      "token-do-guerreiro",
+    );
+    // A trilha já reabre no mesmo atendimento: nenhuma entrada nova é pedida.
+    expect(screen.queryByLabelText(/nick/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/não foi dessa vez/i)).not.toBeInTheDocument();
+  });
+
+  it("o quiz do desbloqueio é aferido pelo núcleo, que diz quantas ele acertou", async () => {
+    vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio").mockResolvedValue({
+      aprovado: false,
+      aguardando_mestre: false,
+      acertos: 1,
+      total: 2,
+    });
+    const usuario = await abrirMissaoComDesafio({
+      desafio_de_desbloqueio: QUIZ_DO_DESBLOQUEIO,
+    });
+
+    await usuario.click(await screen.findByRole("radio", { name: "2" }));
+    await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
+
+    expect(await screen.findByText(/acertou 1 de 2/i)).toBeInTheDocument();
+  });
+
+  it("o desafio prático deixa a missão aguardando o Mestre, nunca reprovada", async () => {
+    vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio").mockResolvedValue({
+      aprovado: null,
+      aguardando_mestre: true,
+      acertos: 0,
+      total: 0,
+    });
+    const usuario = await abrirMissaoComDesafio({
+      desafio_de_desbloqueio: {
+        tipo: "pratico",
+        enunciado: "Monte o robô e mostre ao Mestre.",
+        perguntas: null,
+      },
+    });
+
+    await usuario.click(await screen.findByRole("button", { name: /já cumpri/i }));
+
+    expect(await screen.findByText(/esperar o mestre conferir/i)).toBeInTheDocument();
+    expect(screen.queryByText(/reprovad/i)).not.toBeInTheDocument();
+  });
+
+  it("a entrega individual da produção não acontece por este caminho", async () => {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(
+      missaoNoPercurso({ desbloqueada: true, e_proxima: false }),
+    );
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublicaComMissao([
+        { id: "atividade-1", titulo: "Atividade Única", producao_esperada: "Um texto." },
+      ]),
+    );
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    await renderizarPercurso();
+
+    expect(
+      await screen.findByRole("heading", { name: "Primeira Missão" }),
+    ).toBeInTheDocument();
+    // A entrega desta aplicação é por equipe, e segue no caminho das equipes
+    // (`RF-04-45`, `RF-05-74`).
+    expect(screen.queryByText(/o que a equipe fez/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /entregar/i })).not.toBeInTheDocument();
+  });
+
+  it("sem rede, o percurso não abre e nada é enfileirado", async () => {
+    const listar = vi.spyOn(trilhaApi, "listarMinhasTrilhas");
+    const listarEquipes = vi.spyOn(equipesApi, "listarMinhasEquipes");
+
+    await renderizarPercurso(true);
+
+    expect(await screen.findByText(/este caminho precisa de rede/i)).toBeInTheDocument();
+    expect(screen.getByText(/nada ficou guardado neste aparelho/i)).toBeInTheDocument();
+    expect(listar).not.toHaveBeenCalled();
+    expect(listarEquipes).not.toHaveBeenCalled();
   });
 });
