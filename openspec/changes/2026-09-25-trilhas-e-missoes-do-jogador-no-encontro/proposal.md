@@ -2,18 +2,20 @@
 
 **PRD de origem:** PRD-04 — Aula presencial (App 01).
 **Cronograma:** fatia **21** do bloco do PRD-04.
-**Identificadores atendidos:** `RF-04-72` e `RF-04-73` — **novos**, a criar na revisão do PRD-04 —,
-alterando `RF-04-01`, `RF-04-67` e `RN-04-40`, e alcançando `RF-04-35`, `RF-04-68`, `RF-05-08`,
-`RF-05-10`, `RF-05-13`, `RF-05-14`, `RF-05-17`, `RF-05-89`, `RN-05-20` e `RN-05-45` a `RN-05-47`.
+**Identificadores atendidos:** `RF-04-72`, `RF-04-73` e `RF-04-74` — **novos**, a criar na revisão
+do PRD-04 —, alterando `RF-04-01`, `RF-04-67` e `RN-04-40`, e alcançando `RF-04-35`, `RF-04-68`,
+`RF-05-08`, `RF-05-09`, `RF-05-10`, `RF-05-13`, `RF-05-14`, `RF-05-17`, `RF-05-89`, `RN-05-20`,
+`RN-05-43`, `RN-05-44` e `RN-05-45` a `RN-05-47`.
 
 **Depende** de duas coisas, nenhuma delas resolvível aqui:
 
 1. O PR de revisão do **documento 03 §3**, que hoje determina que "registrada a presença, o
    atendimento termina — formar equipe é outro momento". É a fonte do `RF-04-67`, e esta fatia a
    contraria.
-2. O PR de revisão do **PRD-04**, que cria o `RF-04-72` e o `RF-04-73`, altera `RF-04-01`,
-   `RF-04-67` e `RN-04-40`, e **retira da §3.2** a exclusão da sondagem e do desbloqueio, que passam
-   a ser desta aplicação por decisão do fundador de 2026-09-25.
+2. O PR de revisão do **PRD-04**, que cria o `RF-04-72`, o `RF-04-73` e o `RF-04-74`, altera
+   `RF-04-01`, `RF-04-67` e `RN-04-40`, e declara na §3.2 que a inscrição, a sondagem e o
+   desbloqueio passam a ser desta aplicação por decisão do fundador de 2026-09-25 — só a entrega
+   individual da produção segue fora.
 
 ## A decisão que recortou esta fatia
 
@@ -45,14 +47,21 @@ encontro é o único a que essa criança tem acesso.
 O desbloqueio é **do Guerreiro(a), nunca da equipe** (documento 11 §2.2), e no aparelho compartilhado
 cada atendimento já é de um Guerreiro(a) só — a sessão dele —, então nada no modelo se quebra.
 
-### O que segue em aberto
+### A inscrição em trilha também entra
 
-**A inscrição em trilha e a escolha do poder (`RF-05-09`) entram no encontro?** A pergunta foi posta
-ao fundador junto das três opções e **não foi respondida**. Sem elas, a criança sem aparelho em casa
-continua sem começar: a sondagem só aparece depois de a inscrição existir. Há precedente a favor — o
-PRD-04 §3.2 atribui a **troca por recompensa** à App 01 justamente por ser presencial. A tarefa 0.1
-segue pedindo essa resposta, e ela **não bloqueia** o resto da fatia: sem ela, a tela continua
-dizendo que inscrever-se acontece na App 05, como a `proposal` descreve.
+A pergunta que sobrava dentro da B — se a **inscrição em trilha e a escolha do poder** (`RF-05-09`)
+também acontecem no encontro — foi respondida pelo fundador em 2026-09-25: **sim**. Pelo mesmo
+argumento que decidiu a opção B, levado às últimas consequências: **sem inscrição não há sondagem a
+responder**, e a criança sem aparelho em casa seguiria sem começar trilha alguma. O precedente é o
+da troca por recompensa, que o PRD-04 atribui à App 01 justamente por ser presencial.
+
+Com ela, os **três atos individuais de partida** da trilha acontecem no aparelho do encontro —
+inscrição, sondagem e desbloqueio —, e só a **entrega individual da produção** fica fora. Quem não
+tem inscrição alguma chega ao catálogo de poderes do ciclo e inscreve-se ali, sem teto de quantas
+trilhas e sem desinscrição, que não existe. Feita a inscrição, o percurso abre no mesmo atendimento,
+na sondagem.
+
+Nada mais segue em aberto nesta fatia.
 
 ## Why
 
@@ -79,12 +88,14 @@ caminhos — o desfecho da presença e a tela inicial.
   | ------------------------------- | ---------------------------------------------------------- |
   | mais de uma trilha inscrita     | a lista das trilhas, e a escolhida abre o percurso dela    |
   | uma trilha inscrita             | direto o percurso dela                                     |
-  | nenhuma trilha inscrita         | que não há inscrição, e que inscrever-se acontece na App 05 |
+  | nenhuma trilha inscrita         | o catálogo de poderes do ciclo, para escolher e inscrever-se |
 
 - O percurso mantém o padrão da App 05: **a missão atual e a seguinte trancada, com o motivo** —
   não a lista inteira. Para quem acabou de se inscrever, a missão atual **é a sondagem**, porque é
   ela a próxima do percurso: "começar pela sondagem" sai do dado, sem regra nova.
 - As **atividades da aula** aparecem junto, pelas equipes do Guerreiro(a) naquela aula.
+- Quem não tem inscrição alguma chega ao **catálogo de poderes do ciclo** e **inscreve-se** ali
+  mesmo; feita a inscrição, o percurso abre na sondagem, no mesmo atendimento.
 - O Guerreiro(a) **responde à sondagem** e **submete o desafio de desbloqueio** ali mesmo, pela
   porta que já existe. Respondida a sondagem, a trilha abre no mesmo atendimento.
 - A **entrega individual** da produção **não** entra: a entrega por equipe do `RF-04-45` segue sendo
@@ -100,7 +111,10 @@ caminhos — o desfecho da presença e a tela inicial.
   | `GET /v1/eu/trilhas/{id}/missoes/{ordem}` | a missão atual e a seguinte, com o motivo do bloqueio |
   | `GET /v1/eu/equipes`                 | as equipes do Guerreiro(a), **com as atividades de cada uma** |
   | `GET /v1/trilhas/{id}`               | conteúdo e bibliografia da missão                    |
+  | `GET /v1/vitrine/poderes`            | o catálogo de poderes do ciclo, com as trilhas de cada um |
+  | `POST /v1/eu/trilhas/{id}/inscricao` | a inscrição, que devolve a existente sem erro se repetida |
 
+  As duas últimas entram com a inscrição, e são porta que **já existe**.
   `GET /v1/eu/equipes` substitui o `GET /v1/equipes/{id}/missao` previsto no cronograma: ela já
   devolve `aula_id` e as atividades de cada equipe, o que dispensa descobrir a equipe primeiro — e
   a App 01 **não** tem como identificar a equipe do Guerreiro(a) pela lista da aula, porque
@@ -113,8 +127,6 @@ de sugestões, que são a App 05. Além disso:
 
 - **Entrega individual da produção** da missão (`RF-05-74`) — a entrega por **equipe** do
   `RF-04-45` continua onde está, no caminho das equipes.
-- **Inscrever-se em trilha** e escolher poder (`RF-05-09`): a tela diz onde acontece — **enquanto o
-  fundador não decidir** a pergunta que ficou aberta acima.
 - A lista inteira do percurso e a distinção entre missão realizada, liberada e bloqueada,
   retiradas do escopo pelo fundador em 2026-09-25.
 - Progresso, retomadas e culminância (`RF-05-15`, `RF-05-39`, `RF-05-79`).
@@ -129,8 +141,9 @@ Nenhuma.
 
 - `aplicacao-da-aula-presencial`: o desfecho da presença deixa de terminar o atendimento como único
   desfecho, a tela inicial ganha o caminho do percurso, a App 01 passa a apresentar o percurso do
-  Guerreiro(a) e as atividades das equipes dele na aula, e passa a admitir a **sondagem** e o
-  **desbloqueio** no encontro (`RF-04-72`, `RF-04-73`, `RF-04-01`, `RF-04-67`, `RN-04-40`).
+  Guerreiro(a) e as atividades das equipes dele na aula, e passa a admitir a **inscrição**, a
+  **sondagem** e o **desbloqueio** no encontro (`RF-04-72`, `RF-04-73`, `RF-04-74`, `RF-04-01`,
+  `RF-04-67`, `RN-04-40`).
 
 **Sem delta** em `area-do-guerreiro`: a App 05 não muda de comportamento — os componentes mudam de
 lugar, o que é desenho, não spec. **Sem delta** em `camada-visual-comum`: os componentes promovidos

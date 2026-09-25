@@ -212,9 +212,15 @@ sem alteração. (`RF-04-72`, `RF-05-08`, `RF-05-10`, `RF-05-17`)
 
 Havendo **mais de uma** trilha inscrita, a aplicação SHALL apresentar a lista das trilhas e SHALL
 abrir o percurso da que for escolhida. Havendo **uma**, SHALL abrir o percurso dela direto, sem
-lista intermediária. Não havendo **nenhuma**, SHALL dizer que não há inscrição e **onde** inscrever-se
-— a inscrição em trilha e a escolha do poder são da App 05 (`RF-05-09`) e NEVER SHALL acontecer
-aqui. (`RF-04-72`)
+lista intermediária. Não havendo **nenhuma**, SHALL levar ao **catálogo de poderes do ciclo**, onde
+o Guerreiro(a) escolhe o poder e **inscreve-se na trilha ali mesmo**. (`RF-04-72`, `RF-04-74`)
+
+A inscrição no encontro SHALL seguir as mesmas regras da App 05: a escolha do poder NEVER SHALL ser
+teto — ele SHALL poder inscrever-se em quantas trilhas quiser, de um ou de vários poderes — e a
+aplicação NEVER SHALL oferecer desinscrição, porque a inscrição não se desfaz. Inscrever-se de novo
+na mesma trilha SHALL devolver a inscrição existente, sem erro. Feita a inscrição, a aplicação SHALL
+abrir o percurso daquela trilha no mesmo atendimento, na **sondagem**, que é a próxima missão dele.
+(`RF-04-74`, `RF-05-09`, `RN-05-43`, `RN-05-44`)
 
 Para quem acabou de se inscrever, a missão atual **é a sondagem**, porque é ela a próxima do
 percurso: a aplicação NEVER SHALL calcular por conta própria onde o percurso começa — a posição vem
@@ -255,11 +261,22 @@ NEVER SHALL enfileirar nada. (`RF-04-58`, `RF-04-68`)
 - **WHEN** o Guerreiro(a) inscrito em duas trilhas ou mais alcança as trilhas e missões
 - **THEN** a aplicação apresenta a lista das trilhas, e a escolhida abre o percurso dela
 
-#### Scenario: Sem inscrição, a tela diz onde inscrever-se
+#### Scenario: Sem inscrição, a tela leva ao catálogo de poderes
 
 - **WHEN** o Guerreiro(a) sem inscrição alguma alcança as trilhas e missões
-- **THEN** a aplicação diz que não há inscrição e que inscrever-se acontece na App 05, e não oferece
-  inscrição nem escolha de poder
+- **THEN** a aplicação apresenta os poderes do ciclo e as trilhas publicadas de cada um, com o
+  caminho de se inscrever
+
+#### Scenario: Inscrito no encontro, o percurso abre na sondagem
+
+- **WHEN** o Guerreiro(a) escolhe um poder e inscreve-se numa trilha pelo aparelho do encontro
+- **THEN** o percurso daquela trilha abre no mesmo atendimento, apresentando a missão de sondagem
+
+#### Scenario: A inscrição não se desfaz e não tem teto
+
+- **WHEN** o Guerreiro(a) já inscrito escolhe outra trilha, ou a mesma de novo
+- **THEN** a nova inscrição acontece e a repetida devolve a que já existe, sem erro; em nenhum
+  momento a tela oferece desinscrever-se
 
 #### Scenario: Quem acabou de se inscrever começa na sondagem
 
