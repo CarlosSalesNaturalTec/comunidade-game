@@ -242,7 +242,7 @@ usuário e sem tráfego de dados de crianças por plataformas de terceiros**.
 A numeração é histórica: o antigo **App 02 — Assistente por voz e Modo Ouvinte** foi
 **incorporado ao App 01**, e o número 02 não é reaproveitado.
 
-## 3. App 01 — Aula presencial: onboarding e presença
+## 3. App 01 — Aula presencial: onboarding, presença e percurso
 
 O App 01 é **a aplicação da aula presencial**, usada pelos próprios Guerreiros e Guerreiras. Ao
 abrir, ela pergunta qual caminho a pessoa quer:
@@ -251,13 +251,22 @@ abrir, ela pergunta qual caminho a pessoa quer:
 - **Presença** — registro da presença de quem já é cadastrado, de **uso individual**.
 - **Equipes** — formar a equipe e, nela, conteúdo, quiz e assistente, de **uso em equipe**
   (§4).
+- **Trilhas e missões** — o percurso do próprio Guerreiro(a) e as atividades da equipe dele no
+  encontro, de **uso individual**.
 
-Esta seção trata dos dois primeiros: **cadastrar novos Guerreiros e Guerreiras**, por
-conversa, sem formulário, e **registrar a presença** dos já cadastrados. Registrada a presença,
-o atendimento termina — formar equipe é outro momento, no caminho **Equipes**. **Só o caminho
-Presença registra presença**; os demais caminhos que pedem o Guerreiro(a) — Equipes, Quiz ao
-Vivo e troca por recompensa — apenas abrem a sessão dele, e **exigem a presença já registrada**
-(decisão do fundador, 2026-09-23).
+Esta seção trata dos três primeiros: **cadastrar novos Guerreiros e Guerreiras**, por
+conversa, sem formulário, **registrar a presença** dos já cadastrados e levá-los ao **próprio
+percurso**. Registrada a presença, a criança escolhe entre voltar ao início e seguir às trilhas
+e missões dela; formar equipe continua sendo outro momento, no caminho **Equipes**. **Só o
+caminho Presença registra presença**; os demais caminhos que pedem o Guerreiro(a) — Equipes,
+Quiz ao Vivo, troca por recompensa e trilhas — apenas abrem a sessão dele, e **exigem a presença
+já registrada** (decisão do fundador, 2026-09-23).
+
+No caminho das trilhas o Guerreiro(a) **responde à missão de sondagem** e **submete o desafio de
+desbloqueio** — a sondagem abre a trilha ao ser respondida, e sem ela o percurso não anda
+(documento 11). É o que dá a quem **não tem aparelho em casa** uma porta para começar a
+trilha, já que inscrever-se é da App 05. A **entrega da produção** no encontro continua sendo
+a da equipe, no caminho Equipes (decisão do fundador, 2026-09-25).
 
 > O onboarding **roda continuamente** durante o encontro, e não apenas na abertura, porque a
 > dinâmica da aula é assíncrona.
@@ -267,11 +276,13 @@ Vivo e troca por recompensa — apenas abrem a sessão dele, e **exigem a presen
 ```text
 [Tela inicial do App 01]
    ├── botão "EQUIPES"  → uso em equipe, só com presença registrada (§4)
+   ├── botão "TRILHAS"  → percurso individual, só com presença registrada
    ├── botão "PRESENÇA"
    │         │
    │         ▼
    │   Guerreiro(a) JÁ CADASTRADO: nick + captura da imagem
-   │   → comparação com a base → presença registrada → volta à tela inicial
+   │   → comparação com a base → presença registrada
+   │   → volta à tela inicial  ou  segue às trilhas e missões dele
    └── botão "ONBOARDING"
              │
              ▼
@@ -292,7 +303,8 @@ Vivo e troca por recompensa — apenas abrem a sessão dele, e **exigem a presen
 ### 3.2 Requisitos funcionais
 
 **Tela inicial** — layout Mobile First, alto contraste, poucos elementos. Primeiro a escolha
-entre **onboarding**, **presença** e **equipes**; escolhido o onboarding, dois botões:
+entre **onboarding**, **presença**, **equipes** e **trilhas e missões**; escolhido o onboarding,
+dois botões:
 **começar por áudio** e **começar por texto (chat)**. Ambos levam ao mesmo fluxo cognitivo.
 
 **Interação cognitiva** — conduzida por **IA**: conversa natural, tolerante a respostas fora
@@ -441,7 +453,7 @@ trilhas, em equipe**. A aula presencial tem **um aparelho por equipe**, em quant
 varia a cada encontro — o mesmo aparelho em que a equipe acompanha a missão da trilha,
 responde ao Quiz ao Vivo e conversa com o assistente. A entrada é a de sempre: **nick e
 imagem** (§1.1), e só passa quem já registrou a presença do encontro no caminho **Presença** —
-o mesmo vale para o Quiz ao Vivo e para a troca por recompensa.
+o mesmo vale para o Quiz ao Vivo, para a troca por recompensa e para as trilhas e missões (§3).
 
 ### 4.1 Equipes formadas na hora
 
