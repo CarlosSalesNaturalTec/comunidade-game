@@ -298,3 +298,143 @@
   background: none;
   cursor: pointer;
 }
+
+/* `CartaDoPersonagem` — os valores do documento 15 §8.1. A superfície e a
+ * borda vêm da camada semântica: `--cor-superficie` é `cal-000` no claro e
+ * `tinta-800` no escuro, e `--cor-borda` é `tinta-500` no claro, os mesmos
+ * valores que o §8.1 fixa. O **raio vem do temperamento** — `4` px na Operação
+ * e `12` na Arena —, e a carta só lê o token. */
+.cg-carta {
+  display: block;
+  padding: var(--espaco-16);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-carta);
+  background: var(--cor-superficie);
+}
+
+/* Avatar quadrado, recortado em círculo, ocupando **metade da largura** da
+ * carta (documento 15 §8.1). */
+.cg-carta__avatar {
+  width: 50%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--raio-ficha);
+}
+
+.cg-carta__avatar svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Nick na família de destaque, em `1,125` rem (documento 15 §8.1). */
+.cg-carta__nick {
+  margin: var(--espaco-8) 0 0;
+  font-family: var(--fonte-destaque);
+  font-size: var(--escala-1125);
+  font-weight: var(--peso-titulo);
+}
+
+.cg-carta__desempenho {
+  margin: var(--espaco-4) 0 0;
+  color: var(--cor-texto-secundario);
+}
+
+.cg-carta__rotulo {
+  margin: var(--espaco-16) 0 var(--espaco-4);
+  font-weight: var(--peso-rotulo);
+}
+
+.cg-carta__vazio {
+  margin: 0;
+  color: var(--cor-texto-apoio);
+}
+
+.cg-carta__poderes,
+.cg-carta__badges,
+.cg-carta__criacoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cg-carta__criacoes {
+  display: block;
+}
+
+/* `EmblemaDeNivel` — a moldura do documento 15 §8.2. Aberta abaixo do nível 5
+ * e **fechada** no 5, que é a marca de Mestre Aprendiz. Nenhuma cor própria:
+ * a moldura e as marcas herdam a cor do texto, e é por isso que o nível se lê
+ * sem depender de cor. */
+.cg-emblema-de-nivel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-8);
+  padding: var(--espaco-4) var(--espaco-8);
+  border: 1px dashed currentColor;
+  border-radius: var(--raio-ficha);
+}
+
+.cg-emblema-de-nivel--fechada {
+  border-style: solid;
+  border-width: var(--largura-do-foco);
+}
+
+.cg-emblema-de-nivel__marcas {
+  display: inline-flex;
+  gap: var(--espaco-4);
+}
+
+/* Cada marca é um traço contável — uma no nível 1, cinco no 5. */
+.cg-emblema-de-nivel__marca {
+  width: var(--espaco-4);
+  height: var(--espaco-12);
+  background: currentColor;
+}
+
+.cg-emblema-de-nivel__mestre {
+  font-weight: var(--peso-rotulo);
+}
+
+/* `BadgeDaFamilia` — a silhueta do documento 15 §8.3, legível a `24` px, com o
+ * glifo do poder dentro dela (§8.4). */
+.cg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-8);
+}
+
+.cg-badge__silhueta {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--espaco-24);
+  height: var(--espaco-24);
+}
+
+.cg-badge__forma {
+  width: var(--espaco-24);
+  height: var(--espaco-24);
+}
+
+.cg-badge__glifo {
+  position: absolute;
+  display: inline-flex;
+}
+
+.cg-badge__glifo svg {
+  width: var(--espaco-12);
+  height: var(--espaco-12);
+}
+
+/* `GlifoDePoder` — o glifo e o nome do poder, nessa ordem e nunca sozinhos
+ * (documento 15 §8.4). */
+.cg-glifo-de-poder {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-4);
+}
