@@ -438,3 +438,112 @@
   align-items: center;
   gap: var(--espaco-4);
 }
+
+/* O **palco da Arena** (documento 15 §6): a apresentação do personagem é o
+ * elemento maior da tela, e a tela pede uma decisão só. A apresentação recebe
+ * a largura inteira do palco e a carta dentro dela cresce até ocupá-la — é o
+ * que faz a carta dominar a tela, e não um tamanho fixo, que quebraria no
+ * celular. Densidade baixa: o espaçamento entre as três partes é o maior da
+ * escala, o contrário da densidade da Operação (invariante 24). */
+.cg-palco {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-24);
+}
+
+.cg-palco__personagem {
+  width: 100%;
+}
+
+/* A carta dentro do palco domina: largura inteira, e o avatar sobe de metade
+ * da largura da carta para um terço — a carta cresceu, e metade dela viraria
+ * um avatar maior que tudo o mais (documento 15 §8.1). */
+.cg-palco__personagem .cg-carta {
+  width: 100%;
+  padding: var(--espaco-24);
+}
+
+.cg-palco__personagem .cg-carta__avatar {
+  width: 33%;
+}
+
+.cg-palco__personagem .cg-carta__nick {
+  font-size: var(--escala-175);
+}
+
+/* A decisão única da tela, com o alvo de toque de `48` px que o `cg-botao` já
+ * garante — o palco não o altera. */
+.cg-palco__decisao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+}
+
+/* O apoio fica abaixo e menor que a apresentação: nunca disputa o primeiro
+ * plano com ela. */
+.cg-palco__apoio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-12);
+  font-size: var(--escala-0875);
+  color: var(--cor-texto-secundario);
+}
+
+/* A **imagem de comunidade ao fundo** (documento 15 §6.3). A foto cobre a
+ * área toda, atrás de tudo; o conteúdo vem à frente dela. Quem carrega texto,
+ * componente, borda que informa ou estado de foco se apoia em superfície
+ * opaca — daí `.cg-palco__personagem`, `.cg-palco__decisao` e
+ * `.cg-palco__apoio` receberem cor chapada quando há foto: é sobre essa cor,
+ * e nunca sobre a fotografia, que os pisos do documento 15 §3.3 são medidos. */
+.cg-fundo-de-comunidade {
+  position: relative;
+  isolation: isolate;
+}
+
+.cg-fundo-de-comunidade__imagem {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cg-fundo-de-comunidade__conteudo {
+  position: relative;
+}
+
+.cg-fundo-de-comunidade .cg-palco__personagem,
+.cg-fundo-de-comunidade .cg-palco__decisao,
+.cg-fundo-de-comunidade .cg-palco__apoio {
+  background: var(--cor-fundo);
+  border-radius: var(--raio-carta);
+  padding: var(--espaco-16);
+}
+
+/* O **retorno de progresso e conquista** (documento 15 §6; os fatos, no
+ * documento 11 §8.5). Dura `var(--duracao)` — `300` ms na Arena — com
+ * `ease-in-out`, e só corre quando o fato acontece: sem `data-retornando` não
+ * há animação nenhuma, e é isso que impede a abertura da tela de animar. */
+.cg-retorno-de-conquista[data-retornando="sim"] {
+  animation: cg-retorno var(--duracao, 0ms) ease-in-out;
+}
+
+@keyframes cg-retorno {
+  from {
+    transform: scale(0.96);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* Menos movimento suprime o retorno por completo (documento 15 §5). A duração
+ * já cai a `0ms` em `comum/tokens.css`; aqui a animação é desligada de vez,
+ * para não restar nem o quadro inicial. O fato continua anunciado pelo
+ * `role="status"`, que não depende de movimento. */
+@media (prefers-reduced-motion: reduce) {
+  .cg-retorno-de-conquista[data-retornando="sim"] {
+    animation: none;
+  }
+}

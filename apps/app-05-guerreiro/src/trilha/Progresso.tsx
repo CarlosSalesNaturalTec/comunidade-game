@@ -1,9 +1,16 @@
 import { useSessao } from "comum/autenticacao";
-import type { FamiliaDeBadge } from "comum/react";
-import { Aviso, BadgeDaFamilia, EmblemaDeNivel, EstadoDaLista } from "comum/react";
+import type { FamiliaDeBadge, FatoDaArena } from "comum/react";
+import {
+  Aviso,
+  BadgeDaFamilia,
+  EmblemaDeNivel,
+  EstadoDaLista,
+  RetornoDeConquista,
+} from "comum/react";
 import { listarPoderesDoCatalogo, type PoderPublico } from "comum/trilha/api";
 import { useEffect, useState } from "react";
 import { obterProgresso, type ProgressoDaTrilha } from "../api/trilha";
+import { fatosDoProgresso } from "./fatosDoProgresso";
 
 // Nível e quanto falta para o próximo, por trilha, mais pontos e badges —
 // nível é percurso, nunca saldo de pontos, e nenhuma ação daqui lança
@@ -47,6 +54,11 @@ function nomeDoPoder(poderes: PoderPublico[], item: ProgressoDaTrilha): string {
 export function Progresso() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [progresso, definirProgresso] = useState<ProgressoDaTrilha[] | null>(null);
+  // Qual fato aconteceu em cada trilha desde a última leitura desta sessão
+  // (documento 11 §8.5). Computado **junto com** a leitura, e não a cada
+  // renderização: a marca do que já se viu é consumida uma vez, senão a
+  // segunda renderização já não acharia fato nenhum.
+  const [fatos, definirFatos] = useState<Record<string, FatoDaArena>>({});
   const [poderes, definirPoderes] = useState<PoderPublico[]>([]);
   const [erro, definirErro] = useState<string | null>(null);
 
@@ -55,7 +67,9 @@ export function Progresso() {
     let cancelado = false;
     obterProgresso(sessao.token)
       .then((resultado) => {
-        if (!cancelado) definirProgresso(resultado);
+        if (cancelado) return;
+        definirFatos(fatosDoProgresso(resultado));
+        definirProgresso(resultado);
       })
       .catch((erroCapturado) => {
         if (cancelado) return;
@@ -116,11 +130,16 @@ export function Progresso() {
           return (
             <li key={item.trilha_id} className="cg-trilha__progresso-item">
               <h3>{item.trilha_nome}</h3>
-              {item.nivel_atual === null ? (
-                <p>Nível: ainda sem nível</p>
-              ) : (
-                <EmblemaDeNivel nivel={item.nivel_atual} poder={poder} />
-              )}
+              {/* O retorno acompanha o fato, e o nível continua legível pelo
+                  emblema contável com ou sem movimento (documento 15 §§5, 6).
+                  Sem fato novo, `fato` é `null` e nada anima. */}
+              <RetornoDeConquista fato={fatos[item.trilha_id] ?? null}>
+                {item.nivel_atual === null ? (
+                  <p>Nível: ainda sem nível</p>
+                ) : (
+                  <EmblemaDeNivel nivel={item.nivel_atual} poder={poder} />
+                )}
+              </RetornoDeConquista>
               <p>
                 Faltam {item.obrigatorias_totais - item.obrigatorias_desbloqueadas} de{" "}
                 {item.obrigatorias_totais} missões obrigatórias para o próximo nível

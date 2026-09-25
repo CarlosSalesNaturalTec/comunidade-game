@@ -198,7 +198,14 @@ textarea {
 }
 
 /* A carta do próprio Guerreiro(a), à frente da carteira: a Arena dá a ela o
- * raio de `12` px, e a moldura vem do `comum` (documento 15 §8.1). */
-.cg-minha-carta {
-  margin-block-end: var(--espaco-16);
+ * raio de `12` px, e a moldura vem do `comum` (documento 15 §8.1). A
+ * composição — a carta como elemento maior, uma decisão por tela — é do palco
+ * de `comum/react`, e não se repete aqui.
+ *
+ * Ao palco desta tela cabe só ocupar a altura inteira da área, para que a
+ * imagem de comunidade ao fundo cubra a tela em vez de formar faixa
+ * (documento 15 §6.3). Nada de densidade: a Arena não a declara, e o alvo de
+ * toque de `48` px continua sendo o do `cg-botao`, que esta folha não toca. */
+.cg-carteira-secao > .cg-fundo-de-comunidade {
+  min-height: 100%;
 }

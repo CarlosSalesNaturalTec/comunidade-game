@@ -1,26 +1,21 @@
 import { act, render, screen } from "@testing-library/react";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
+import * as cartaApi from "comum/carta/api";
 import * as trilhaComumApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import * as carteiraApi from "../api/carteira";
-import * as coletaApi from "../api/coleta";
-import * as criacaoApi from "../api/criacaoOriginal";
-import * as trilhaApi from "../api/trilha";
 import { MinhaCarta } from "./MinhaCarta";
+
+// As quatro leituras que montam a carta foram promovidas a `comum/carta/api`
+// quando a App 01 passou a apresentar a mesma carta (decisão do fundador de
+// 2026-09-25); é de lá que os mocks partem.
 
 const CHAVE_DE_SESSAO = "app-05:teste-minha-carta";
 
-const SERIE = {
-  id: "serie-1",
-  comunidade_virtual_id: "comunidade-1",
-} as unknown as coletaApi.SerieDoGuerreiro;
+const SERIE = { comunidade_virtual_id: "comunidade-1" };
 
 function mockarLeituras(opcoes: { avatar?: string | null } = {}) {
-  vi.spyOn(coletaApi, "listarMinhasSeries").mockResolvedValue({
-    itens: [SERIE],
-    proximo_cursor: null,
-  } as Awaited<ReturnType<typeof coletaApi.listarMinhasSeries>>);
+  vi.spyOn(cartaApi, "listarMinhasSeriesDaCarta").mockResolvedValue({ itens: [SERIE] });
 
   vi.spyOn(trilhaComumApi, "listarPoderesDoCatalogo").mockResolvedValue([
     {
@@ -31,9 +26,7 @@ function mockarLeituras(opcoes: { avatar?: string | null } = {}) {
     },
   ]);
 
-  vi.spyOn(carteiraApi, "listarRankingDaTurma").mockResolvedValue({
-    itens: [],
-    proximo_cursor: null,
+  vi.spyOn(cartaApi, "obterMinhaPosicaoNoRanking").mockResolvedValue({
     minha_posicao: {
       avatar: opcoes.avatar === undefined ? '{"v":1,"tom":"t3"}' : opcoes.avatar,
       nick: "Zeferina",
@@ -42,29 +35,17 @@ function mockarLeituras(opcoes: { avatar?: string | null } = {}) {
     },
   });
 
-  vi.spyOn(trilhaApi, "obterProgresso").mockResolvedValue([
+  vi.spyOn(cartaApi, "obterProgressoDaCarta").mockResolvedValue([
     {
       trilha_id: "trilha-1",
       trilha_nome: "Robô Educa",
       nivel_atual: 3,
-      obrigatorias_desbloqueadas: 3,
-      obrigatorias_totais: 5,
-      pontos_regulares: 40,
       badges: ["de_nivel", "de_autoria"],
     },
   ]);
 
-  vi.spyOn(criacaoApi, "obterPortfolio").mockResolvedValue([
-    {
-      id: "criacao-1",
-      trilha_id: "trilha-1",
-      tipo: "texto",
-      producao: "Robô de reuso da praça",
-      referencia: null,
-      validado_em: "2026-09-20T12:00:00Z",
-      autores: [{ avatar: null, nick: "Zeferina" }],
-      publica: true,
-    },
+  vi.spyOn(cartaApi, "obterPortfolioDaCarta").mockResolvedValue([
+    { producao: "Robô de reuso da praça" },
   ]);
 }
 
@@ -140,10 +121,7 @@ describe("a carta do próprio Guerreiro(a) (`RF-05-50`, `RF-05-51`)", () => {
     mockarLeituras();
     // Sem comunidade não há ranking, e sem ranking não há avatar, nick nem
     // desempenho — a Área diz o que tem, em outra forma.
-    vi.spyOn(coletaApi, "listarMinhasSeries").mockResolvedValue({
-      itens: [],
-      proximo_cursor: null,
-    } as Awaited<ReturnType<typeof coletaApi.listarMinhasSeries>>);
+    vi.spyOn(cartaApi, "listarMinhasSeriesDaCarta").mockResolvedValue({ itens: [] });
 
     await renderizar();
 
