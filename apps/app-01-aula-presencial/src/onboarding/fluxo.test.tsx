@@ -29,7 +29,6 @@ async function preencherCadastroDoGuerreiro() {
   await usuario.type(screen.getByLabelText(/^nome$/i), "Zeferina");
   await usuario.type(screen.getByLabelText(/^nick$/i), "ZeferinaGuerreira");
   await usuario.type(screen.getByLabelText(/data de nascimento/i), "2016-01-01");
-  await usuario.type(screen.getByLabelText(/características do avatar/i), "trança-e-capa");
   await usuario.click(screen.getByRole("button", { name: /concluir cadastro/i }));
   return usuario;
 }

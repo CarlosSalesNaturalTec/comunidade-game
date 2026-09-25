@@ -1,5 +1,6 @@
 import { ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
+import { Avatar } from "comum/avatar";
 import { Aviso, EstadoDaLista } from "comum/react";
 import { useEffect, useState } from "react";
 import { listarMinhasEquipes, type MinhaEquipe } from "../api/desafiosEEquipes";
@@ -72,7 +73,13 @@ export function MinhasEquipes() {
               <p className="cg-cartao-de-equipe__rotulo">Integrantes</p>
               <ul className="cg-lista-de-integrantes">
                 {equipe.integrantes.map((integrante) => (
-                  <li key={integrante.nick}>{integrante.nick}</li>
+                  <li key={integrante.nick} className="cg-integrante">
+                    {/* Colega reduzido a avatar desenhado e nick — avatar que
+                     * falta cai no padrão do projeto, na mesma moldura
+                     * (`RF-05-23`, `RN-05-12`, documento 15 §§7.2 e 7.3). */}
+                    <Avatar avatar={integrante.avatar} tamanho={32} />
+                    {integrante.nick}
+                  </li>
                 ))}
               </ul>
 

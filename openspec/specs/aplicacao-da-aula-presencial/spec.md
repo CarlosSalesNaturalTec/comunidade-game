@@ -724,6 +724,11 @@ cada uma, os integrantes por **avatar e nick**, e NEVER SHALL exibir nome civil,
 nascimento, imagem ou qualquer outro dado pessoal de um Guerreiro(a) para outro. (`RF-04-34`,
 `RN-04-14`, documento 99 §6 invariante 11)
 
+O avatar SHALL ser **desenhado** a partir do objeto do documento 15 §7.2, e NEVER SHALL ser
+apresentado como texto nem omitido: avatar ausente ou com traço desconhecido SHALL cair no **avatar
+padrão do projeto** (documento 15 §7.3), na mesma moldura dos demais e sem nenhuma outra marca de
+diferença. (`RF-04-34`, documento 15 §7)
+
 #### Scenario: As equipes da aula aparecem por avatar e nick
 
 - **WHEN** o Guerreiro(a) em sessão abre a tela das equipes da aula vigente
@@ -739,6 +744,16 @@ nascimento, imagem ou qualquer outro dado pessoal de um Guerreiro(a) para outro.
 
 - **WHEN** a tela das equipes da aula vigente é apresentada
 - **THEN** as equipes formadas em outras aulas não estão entre as exibidas
+
+#### Scenario: O avatar aparece desenhado ao lado do nick
+
+- **WHEN** a tela das equipes da aula apresenta os integrantes
+- **THEN** cada um aparece com o avatar desenhado e o nick, e nenhum aparece com o avatar em texto
+
+#### Scenario: Avatar que falta cai no padrão do projeto
+
+- **WHEN** um integrante não tem avatar, ou o avatar dele traz traço que o catálogo não conhece
+- **THEN** a tela desenha o avatar padrão do projeto, na mesma moldura, sem marca de diferença
 
 ### Requirement: A equipe forma a equipe da trilha pelo aparelho, a partir da programação
 
@@ -823,6 +838,16 @@ documento 99 §6 invariante 3)
 Nesta fatia o cadastro é **formulário guiado**, não conversa conduzida por modelo de IA: a
 condução por áudio e chat é de fatia posterior, e até lá a ordem dos campos é a da tela.
 
+O campo das **características do avatar** SHALL ser a composição do avatar no **catálogo fechado**
+da camada comum, nas nove camadas do documento 15 §7.1, e NEVER SHALL ser texto livre: o traço
+ditado em palavras não se desenha depois. A **forma de tratamento** SHALL continuar campo próprio,
+separado do avatar, porque nenhum item do catálogo carrega marca de gênero. O que a aplicação grava
+no campo `avatar` SHALL ser o **objeto versionado** do documento 15 §7.2. (`RF-04-07`, documento 15
+§7)
+
+A composição SHALL acontecer **no próprio aparelho, sem rede**, e NEVER SHALL depender de requisição
+ao núcleo nem a terceiro para desenhar o avatar. (documento 15 §7, princípio 6)
+
 #### Scenario: O caminho do onboarding está alcançável
 
 - **WHEN** a sessão de trabalho do aparelho está aberta e a tela inicial é apresentada
@@ -844,6 +869,23 @@ condução por áudio e chat é de fatia posterior, e até lá a ordem dos campo
 
 - **WHEN** não há sessão de trabalho do aparelho aberta
 - **THEN** o caminho do onboarding não é alcançável e nenhum cadastro é enviado ao núcleo
+
+#### Scenario: O avatar nasce do catálogo, não de texto livre
+
+- **WHEN** o cadastro do onboarding chega ao avatar
+- **THEN** a criança compõe o avatar escolhendo no catálogo das nove camadas, e nenhum campo pede
+  característica em texto livre
+
+#### Scenario: O que se grava é o objeto versionado
+
+- **WHEN** o cadastro é concluído
+- **THEN** o campo do avatar leva o objeto versionado do documento 15 §7.2, e a forma de tratamento
+  segue em campo próprio
+
+#### Scenario: Compor não depende de rede
+
+- **WHEN** a composição do avatar acontece
+- **THEN** nenhuma requisição sai do aparelho para desenhar o avatar
 
 ### Requirement: A aplicação recusa o nick em uso e oferece as variações devolvidas pelo núcleo
 

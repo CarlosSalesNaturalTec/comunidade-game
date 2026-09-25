@@ -177,3 +177,11 @@ textarea {
   color: var(--cor-texto-secundario);
   font-size: var(--escala-0875);
 }
+
+/* O integrante da equipe: avatar desenhado e nick, lado a lado — nada além
+ * disso aparece de um Guerreiro(a) para outro (`RF-05-23`, `RN-05-12`). */
+.cg-integrante {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-8);
+}
