@@ -40,3 +40,11 @@ export function removerDaFilaDePresenca(item: ItemDaFilaDePresenca): void {
   );
   gravarFilaDePresenca(item.aula_id, restante);
 }
+
+// Quantas presenças a fila desta aula guarda — a contagem, nunca o conteúdo:
+// é o que o encerramento da sessão de trabalho precisa dizer antes de sair, e
+// quem opera já vê a lista na tela inicial (`RF-04-23`, `RF-04-71`, design —
+// decisão 5).
+export function contarFilaDePresenca(aulaId: string): number {
+  return lerFilaDePresenca(aulaId).length;
+}

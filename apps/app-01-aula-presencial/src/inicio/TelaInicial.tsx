@@ -1,5 +1,5 @@
 import { type SessaoAberta, useSessao } from "comum/autenticacao";
-import { Aviso, Botao, Cabecalho, Icone, Moldura } from "comum/react";
+import { Aviso, Botao, Cabecalho, Campo, Icone, Moldura } from "comum/react";
 import { useState } from "react";
 import { TelaDeMedicaoDoLimiar } from "../bancada/TelaDeMedicaoDoLimiar";
 import { AreaDetalhadaDeDireitos } from "../direitos/AreaDetalhadaDeDireitos";
@@ -7,15 +7,33 @@ import { GuardaDePresenca } from "../entrada/GuardaDePresenca";
 import { TelaDeEntradaDoGuerreiro } from "../entrada/TelaDeEntradaDoGuerreiro";
 import { TelaDeEquipes } from "../equipes/TelaDeEquipes";
 import { FilaDePresencaPendente } from "../fila/FilaDePresencaPendente";
+import { contarFilaDePresenca } from "../fila/filaDePresenca";
 import { useSincronizacaoDaFilaDePresenca } from "../fila/sincronizacao";
 import { FluxoDeOnboarding } from "../onboarding/FluxoDeOnboarding";
 import { TelaDeCaptura } from "../onboarding/TelaDeCaptura";
+import {
+  conferirPinNoAparelho,
+  FORMATO_DO_PIN,
+  MENSAGEM_DE_PIN_BLOQUEADO,
+  MENSAGEM_DE_PIN_ERRADO,
+  MENSAGEM_DE_PIN_NAO_CADASTRADO,
+  MENSAGEM_SEM_VERIFICADOR_NO_APARELHO,
+  situacaoDoPinNoAparelho,
+} from "../pin/pinDeConfirmacao";
 import { CHAVE_DA_PARTIDA_DE_QUIZ, TelaDaPartida } from "../quiz/TelaDaPartida";
 import { useEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import { TelaDaProgramacao } from "../trilhas/TelaDaProgramacao";
 import { TelaDeTroca } from "../troca/TelaDeTroca";
 
-type Caminho = "inicio" | "onboarding" | "presenca" | "equipes" | "troca" | "quiz" | "medicao";
+type Caminho =
+  | "inicio"
+  | "onboarding"
+  | "presenca"
+  | "equipes"
+  | "troca"
+  | "quiz"
+  | "medicao"
+  | "encerramento";
 
 interface Props {
   tokenDeTrabalho: string;
@@ -35,6 +53,9 @@ interface Props {
   erroDeAberturaDaTroca: string | null;
   aoAbrirMomentoDeTroca: () => void;
   aoFecharMomentoDeTroca: () => void;
+  /** Derruba a sessão de trabalho do aparelho, já com o PIN de quem a abriu
+   * conferido nesta tela (`RF-04-71`, `RN-04-41`). */
+  aoEncerrarSessaoDeTrabalho: () => void;
 }
 
 // Os três caminhos do PRD-04 §6.1 — onboarding, presença e equipes. A
@@ -58,6 +79,7 @@ export function TelaInicial({
   erroDeAberturaDaTroca,
   aoAbrirMomentoDeTroca,
   aoFecharMomentoDeTroca,
+  aoEncerrarSessaoDeTrabalho,
 }: Props) {
   const { sessao: sessaoDoGuerreiro, sair: sairDoGuerreiro } = useSessao();
   const { semRede } = useEstadoDeRede();
@@ -81,6 +103,9 @@ export function TelaInicial({
   // própria aplicação, sem chamada ao núcleo (`RF-04-26`, design — decisão
   // 10).
   const [mostrarDireitos, definirMostrarDireitos] = useState(false);
+  // O PIN da bancada vale para a abertura daquela vez: voltar ao início o
+  // devolve ao zero, e a bancada seguinte pede de novo (`RN-04-41`).
+  const [pinDaMedicaoConferido, definirPinDaMedicaoConferido] = useState(false);
 
   // Fim de cada atendimento: a sessão do Guerreiro(a) é limpa e a tela
   // volta ao início, sem dado do atendimento anterior (`RF-04-28`, design
@@ -92,8 +117,19 @@ export function TelaInicial({
     definirViaDeEntrada(null);
     definirMostrarRecadastro(false);
     definirEquipeEscolhidaId(null);
+    definirPinDaMedicaoConferido(false);
     sessionStorage.removeItem(CHAVE_DA_PARTIDA_DE_QUIZ);
     aoVoltarAoInicio();
+  }
+
+  // Encerrar a sessão de trabalho, já com o PIN conferido: o atendimento em
+  // curso sai antes, para que nada dele sobreviva ao encerramento
+  // (`RF-04-71`, `RF-04-28`).
+  function encerrarSessaoDeTrabalho() {
+    sairDoGuerreiro();
+    sessionStorage.removeItem(CHAVE_DA_PARTIDA_DE_QUIZ);
+    definirCaminho("inicio");
+    aoEncerrarSessaoDeTrabalho();
   }
 
   // Recusado o caminho por falta de presença, a sessão aberta aqui não
@@ -201,12 +237,47 @@ export function TelaInicial({
   // onboarding a aplicação não tem como saber que existe termo assinado de
   // um Guerreiro(a) (`RN-04-33`, design — decisão 3).
   if (caminho === "medicao") {
+    // O PIN vem antes: a medição grava o limiar que decide se o
+    // reconhecimento confere neste ponto de apoio, e a sessão de trabalho
+    // sozinha não prova que o adulto responsável está aqui. A câmera não chega
+    // a ser preparada — a tela da bancada não monta — enquanto ele não
+    // conferir (`RF-04-63`, `RF-04-66`, `RN-04-41`, design — decisão 6).
+    if (!pinDaMedicaoConferido) {
+      return (
+        <PedidoDePinDoAparelho
+          titulo="Medição do limiar"
+          subtitulo="Quem abriu o aparelho confirma com o próprio PIN antes de a bancada abrir."
+          rotuloDaAcao="Abrir a bancada de medição"
+          aoConferir={() => definirPinDaMedicaoConferido(true)}
+          aoVoltar={voltarAoInicio}
+        />
+      );
+    }
     return (
       <TelaDeMedicaoDoLimiar
         alcance="operador"
         tokenDeTrabalho={tokenDeTrabalho}
         aulaId={aulaId}
         aoVoltar={voltarAoInicio}
+      />
+    );
+  }
+
+  // O encerramento da sessão de trabalho, alcançado só daqui: a tela inicial é
+  // a que aparece entre um atendimento e o seguinte, e fora dela quem está com
+  // o aparelho é uma criança no meio do dela (`RF-04-71`, `RF-04-28`, design —
+  // decisão 2).
+  if (caminho === "encerramento") {
+    const aguardandoNaFila = contarFilaDePresenca(aulaId);
+    return (
+      <PedidoDePinDoAparelho
+        titulo="Encerrar a sessão de trabalho"
+        subtitulo="Quem abriu o aparelho confirma com o próprio PIN. Depois de encerrada, a sessão só reabre pelo login Google."
+        rotuloDaAcao="Encerrar a sessão de trabalho"
+        aviso={aguardandoNaFila > 0 ? avisoDaFilaPendente(aguardandoNaFila) : null}
+        fraseDaAlternativa={MENSAGEM_DE_FECHAR_A_ABA}
+        aoConferir={encerrarSessaoDeTrabalho}
+        aoVoltar={() => definirCaminho("inicio")}
       />
     );
   }
@@ -253,7 +324,14 @@ export function TelaInicial({
 
   return (
     <Moldura>
-      <Cabecalho titulo="Comunidade Game — Aula" subtitulo="O que você quer fazer?" />
+      <Cabecalho
+        titulo="Comunidade Game — Aula"
+        subtitulo="O que você quer fazer?"
+        acao={{
+          rotulo: "Encerrar a sessão de trabalho",
+          aoAcionar: () => definirCaminho("encerramento"),
+        }}
+      />
       <div className="cg-caminhos">
         <button
           type="button"
@@ -316,6 +394,140 @@ export function TelaInicial({
         </button>
         .
       </p>
+    </Moldura>
+  );
+}
+
+// A saída que não depende do PIN, e a única que sobra com ele bloqueado: a
+// sessão de trabalho vive em `sessionStorage` e não sobrevive ao fechamento da
+// aba. Sem esta frase, PIN bloqueado deixaria o aparelho sem saída alguma
+// (`RN-04-41`, design — decisão 3).
+const MENSAGEM_DE_FECHAR_A_ABA =
+  "Fechar a aba do navegador encerra a sessão de trabalho deste aparelho.";
+
+// A fila é anunciada pela contagem, e o aviso diz o que falta para ela entrar
+// na aula. Nada se perde: ela fica no aparelho (`RF-04-23`, `RF-04-25`,
+// design — decisão 5).
+function avisoDaFilaPendente(quantas: number): string {
+  const presencas = quantas === 1 ? "1 presença aguarda" : `${quantas} presenças aguardam`;
+  return (
+    `${presencas} sincronização na fila deste aparelho. A sincronização exige o aparelho ` +
+    "aberto nesta mesma aula: a fila continua guardada aqui e entra assim que alguém " +
+    "reabrir."
+  );
+}
+
+interface PropsDoPedidoDePin {
+  titulo: string;
+  subtitulo: string;
+  rotuloDaAcao: string;
+  /** O que a tela precisa dizer antes de pedir o PIN — hoje, a fila local de
+   * presença pendente no encerramento (`RF-04-71`, `RF-04-23`). */
+  aviso?: string | null;
+  /** Acrescentada à recusa quando o ato tem alternativa fora do PIN: o
+   * encerramento a tem — fechar a aba —, e a bancada não (design — decisão 3). */
+  fraseDaAlternativa?: string;
+  aoConferir: () => void;
+  aoVoltar: () => void;
+}
+
+// O pedido do PIN de quem abriu o aparelho, comum ao encerramento da sessão de
+// trabalho e à bancada de medição: a mesma conferência no aparelho, o mesmo
+// contador de cinco erros e a mesma redação de recusa da confirmação de
+// identidade (`RN-04-41`, `RN-04-38`, design — decisão 1). Nenhum dos dois atos
+// fala com o núcleo para conferir PIN: a exigência é da tela.
+function PedidoDePinDoAparelho({
+  titulo,
+  subtitulo,
+  rotuloDaAcao,
+  aviso,
+  fraseDaAlternativa,
+  aoConferir,
+  aoVoltar,
+}: PropsDoPedidoDePin) {
+  // O PIN vive só neste estado, limpo a cada tentativa, e nunca é gravado no
+  // aparelho (`RN-04-38`).
+  const [pin, definirPin] = useState("");
+  const [emAndamento, definirEmAndamento] = useState(false);
+  // Lida ao abrir e atualizada pelo quinto erro: é ela que decide se a tela
+  // pede o PIN, passa sem ele ou recusa de saída.
+  const [situacao, definirSituacao] = useState(situacaoDoPinNoAparelho);
+  const [erro, definirErro] = useState<string | null>(null);
+
+  function comAlternativa(frase: string): string {
+    return fraseDaAlternativa ? `${frase} ${fraseDaAlternativa}` : frase;
+  }
+
+  async function conferir() {
+    definirErro(null);
+    const digitado = pin;
+    definirPin("");
+    definirEmAndamento(true);
+    try {
+      const desfecho = await conferirPinNoAparelho(digitado);
+      if (desfecho === "confere") {
+        aoConferir();
+        return;
+      }
+      if (desfecho === "pin_errado") {
+        definirErro(MENSAGEM_DE_PIN_ERRADO);
+        return;
+      }
+      // Bloqueado e sem verificador tiram o campo da tela: não há dígito que
+      // resolva nenhum dos dois.
+      definirSituacao(desfecho);
+    } finally {
+      definirEmAndamento(false);
+    }
+  }
+
+  if (situacao === "bloqueado" || situacao === "sem_verificador") {
+    return (
+      <Moldura>
+        <Cabecalho titulo={titulo} acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }} />
+        <Aviso tipo="erro">
+          {comAlternativa(
+            situacao === "bloqueado"
+              ? MENSAGEM_DE_PIN_BLOQUEADO
+              : MENSAGEM_SEM_VERIFICADOR_NO_APARELHO,
+          )}
+        </Aviso>
+      </Moldura>
+    );
+  }
+
+  const semPinCadastrado = situacao === "sem_pin_cadastrado";
+
+  return (
+    <Moldura>
+      <Cabecalho
+        titulo={titulo}
+        subtitulo={subtitulo}
+        acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }}
+      />
+      {aviso && <Aviso tipo="atencao">{aviso}</Aviso>}
+      {semPinCadastrado ? (
+        // Sem PIN cadastrado o ato passa, com o aviso que o aparelho já
+        // apresenta: trancar a saída e o diagnóstico por uma configuração que
+        // se resolve na App 09 deixaria o encontro pior do que está
+        // (`RN-04-41`, `RN-04-38`, design — decisão 4).
+        <Aviso tipo="atencao">{MENSAGEM_DE_PIN_NAO_CADASTRADO}</Aviso>
+      ) : (
+        <Campo
+          rotulo="PIN de quem abriu o aparelho"
+          tipo="password"
+          valor={pin}
+          aoAlterar={(valor) => definirPin(valor.replace(/\D/g, "").slice(0, 4))}
+          focoInicial
+        />
+      )}
+      <Botao
+        onClick={semPinCadastrado ? aoConferir : conferir}
+        desabilitado={emAndamento || (!semPinCadastrado && !FORMATO_DO_PIN.test(pin))}
+      >
+        {emAndamento ? "Conferindo…" : rotuloDaAcao}
+      </Botao>
+      {erro && <Aviso tipo="erro">{erro}</Aviso>}
     </Moldura>
   );
 }

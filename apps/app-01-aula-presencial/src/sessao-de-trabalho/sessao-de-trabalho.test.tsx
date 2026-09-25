@@ -239,6 +239,39 @@ describe("verificador do PIN de quem abriu a sessão de trabalho (RN-04-38)", ()
     expect(pinApi.verificadorGuardado()).toBeNull();
   });
 
+  // A saída do aparelho, pelo caminho novo: o encerramento pedido na tela
+  // inicial descarta o verificador e devolve a tela de abertura, que só reabre
+  // por login Google (`RF-04-71`, `RF-04-28`, `RN-04-38`, `RN-04-41`).
+  it("encerrar pela tela inicial derruba a sessão de trabalho e o verificador", async () => {
+    mockarMestreComUmaAula();
+    vi.spyOn(sessaoApi, "encerrarSessao").mockResolvedValue(undefined);
+    vi.spyOn(pinApi, "buscarVerificadorDoPin").mockResolvedValue(
+      await verificadorDeTeste("4821"),
+    );
+
+    render(<App />);
+    await entrarComoMestre();
+    await screen.findByText(/o que você quer fazer/i);
+    await waitFor(() => expect(pinApi.verificadorGuardado()).not.toBeNull());
+
+    const usuario = userEvent.setup();
+    await usuario.click(
+      screen.getByRole("button", { name: /encerrar a sessão de trabalho/i }),
+    );
+    await usuario.type(await screen.findByLabelText(/pin de quem abriu o aparelho/i), "4821");
+    await usuario.click(
+      screen.getByRole("button", { name: /^encerrar a sessão de trabalho$/i }),
+    );
+
+    // A tela de abertura do aparelho, sem dado de atendimento algum.
+    expect(
+      await screen.findByRole("button", { name: /entrar com google/i }),
+    ).toBeInTheDocument();
+    expect(pinApi.verificadorGuardado()).toBeNull();
+    expect(sessionStorage.getItem("app-01:sessao-trabalho:aula")).toBeNull();
+    expect(sessaoApi.encerrarSessao).toHaveBeenCalledWith("token-do-mestre");
+  });
+
   it("sem sessão de trabalho, o verificador sai do aparelho", async () => {
     pinApi.guardarVerificadorDoPin("mestre-1", await verificadorDeTeste());
 

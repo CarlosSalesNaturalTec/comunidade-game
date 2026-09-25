@@ -1,12 +1,18 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ProvedorDeSessao } from "comum/autenticacao";
 import * as biometriaModulo from "comum/biometria";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as medicoesApi from "../api/medicoesDoLimiar";
+import { TelaInicial } from "../inicio/TelaInicial";
+import { guardarVerificadorDeTeste, PIN_DE_TESTE } from "../pin/paraTestes";
+import { guardarVerificadorDoPin, marcarPinBloqueado } from "../pin/pinDeConfirmacao";
+import { ProvedorDeEstadoDeRede } from "../sessao-de-trabalho/EstadoDeRede";
 import { TelaDeMedicaoDoLimiar } from "./TelaDeMedicaoDoLimiar";
 
 afterEach(() => {
   vi.restoreAllMocks();
+  sessionStorage.clear();
 });
 
 function descritor(valor: number): number[] {
@@ -249,6 +255,10 @@ describe("bancada de medição do limiar", () => {
 
     expect(screen.getByText(/capturas de Zefa/i)).toBeInTheDocument();
     expect(screen.queryByText(/só mede quem opera/i)).not.toBeInTheDocument();
+    // O PIN guarda o caminho do diagnóstico, na tela inicial, e NEVER entra no
+    // meio do fluxo do termo: aqui o consentimento acabou de ser registrado
+    // (`RN-04-33`, `RN-04-07`, `RN-04-41`).
+    expect(screen.queryByLabelText(/pin de quem abriu o aparelho/i)).not.toBeInTheDocument();
   });
 
   it("a referência se troca por ato de quem opera, nunca sozinha", async () => {
@@ -304,5 +314,109 @@ describe("bancada de medição do limiar", () => {
     unmount();
 
     expect(encerrar).toHaveBeenCalled();
+  });
+});
+
+// O PIN antes da bancada, que nasce nesta fatia: a medição grava o número que
+// decide se o reconhecimento confere neste ponto de apoio, e a sessão de
+// trabalho sozinha não prova que o adulto responsável está ali (`RF-04-63`,
+// `RF-04-66`, `RN-04-41`).
+describe("o PIN de quem abriu o aparelho guarda a bancada (RF-04-66, RN-04-41)", () => {
+  const PERSONA_DE_TRABALHO = "mestre-de-trabalho-1";
+
+  function renderizarTelaInicial() {
+    return render(
+      <ProvedorDeEstadoDeRede>
+        <ProvedorDeSessao chaveDeArmazenamento="teste:bancada:sessao-guerreiro">
+          <TelaInicial
+            tokenDeTrabalho="token-de-trabalho"
+            personaIdDeTrabalho={PERSONA_DE_TRABALHO}
+            papelDeTrabalho="mestre"
+            aulaId="aula-1"
+            aoVoltarAoInicio={vi.fn()}
+            podeAbrirMomentoDeTroca={false}
+            momentoDeTrocaAberto={false}
+            abrindoMomentoDeTroca={false}
+            erroDeAberturaDaTroca={null}
+            aoAbrirMomentoDeTroca={vi.fn()}
+            aoFecharMomentoDeTroca={vi.fn()}
+            aoEncerrarSessaoDeTrabalho={vi.fn()}
+          />
+        </ProvedorDeSessao>
+      </ProvedorDeEstadoDeRede>,
+    );
+  }
+
+  async function escolherAMedicao(usuario: ReturnType<typeof userEvent.setup>) {
+    await usuario.click(await screen.findByRole("button", { name: /medição do limiar —/i }));
+  }
+
+  it("a bancada não abre sem o PIN, e a câmera não é preparada antes dele", async () => {
+    await guardarVerificadorDeTeste(PERSONA_DE_TRABALHO);
+    renderizarTelaInicial();
+    const usuario = userEvent.setup();
+
+    await escolherAMedicao(usuario);
+
+    expect(await screen.findByLabelText(/pin de quem abriu o aparelho/i)).toBeInTheDocument();
+    // A bancada não chega a montar: nem o aviso dela, nem a captura.
+    expect(screen.queryByText(/câmera só mede quem opera/i)).not.toBeInTheDocument();
+    expect(biometriaModulo.prepararCaptura).not.toHaveBeenCalled();
+
+    await usuario.type(screen.getByLabelText(/pin de quem abriu o aparelho/i), PIN_DE_TESTE);
+    await usuario.click(screen.getByRole("button", { name: /abrir a bancada de medição/i }));
+
+    expect(await screen.findByText(/câmera só mede quem opera/i)).toBeInTheDocument();
+    // Aberta a bancada, a câmera continua esperando o gesto de capturar.
+    expect(biometriaModulo.prepararCaptura).not.toHaveBeenCalled();
+  });
+
+  it("PIN bloqueado não abre a bancada, e recusa com a frase de sempre", async () => {
+    await guardarVerificadorDeTeste(PERSONA_DE_TRABALHO);
+    marcarPinBloqueado();
+    renderizarTelaInicial();
+    const usuario = userEvent.setup();
+
+    await escolherAMedicao(usuario);
+
+    expect(await screen.findByText(/pin bloqueado neste aparelho/i)).toBeInTheDocument();
+    expect(screen.queryByText(/câmera só mede quem opera/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/pin de quem abriu o aparelho/i)).not.toBeInTheDocument();
+    // A bancada não tem alternativa fora do PIN: a frase do encerramento,
+    // sobre fechar a aba, NEVER aparece aqui (design — decisão 3).
+    expect(screen.queryByText(/fechar a aba do navegador/i)).not.toBeInTheDocument();
+    expect(biometriaModulo.prepararCaptura).not.toHaveBeenCalled();
+  });
+
+  it("sem PIN cadastrado, a bancada abre com o aviso que o aparelho já apresenta", async () => {
+    guardarVerificadorDoPin(PERSONA_DE_TRABALHO, null);
+    renderizarTelaInicial();
+    const usuario = userEvent.setup();
+
+    await escolherAMedicao(usuario);
+
+    expect(await screen.findByText(/ainda não tem pin de confirmação/i)).toBeInTheDocument();
+    await usuario.click(screen.getByRole("button", { name: /abrir a bancada de medição/i }));
+
+    expect(await screen.findByText(/câmera só mede quem opera/i)).toBeInTheDocument();
+  });
+
+  it("voltar ao início faz a bancada pedir o PIN de novo", async () => {
+    await guardarVerificadorDeTeste(PERSONA_DE_TRABALHO);
+    renderizarTelaInicial();
+    const usuario = userEvent.setup();
+
+    await escolherAMedicao(usuario);
+    await usuario.type(
+      await screen.findByLabelText(/pin de quem abriu o aparelho/i),
+      PIN_DE_TESTE,
+    );
+    await usuario.click(screen.getByRole("button", { name: /abrir a bancada de medição/i }));
+    await screen.findByText(/câmera só mede quem opera/i);
+
+    await usuario.click(screen.getByRole("button", { name: /^voltar$/i }));
+    await escolherAMedicao(usuario);
+
+    expect(await screen.findByLabelText(/pin de quem abriu o aparelho/i)).toBeInTheDocument();
   });
 });

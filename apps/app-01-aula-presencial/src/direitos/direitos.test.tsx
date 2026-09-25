@@ -84,6 +84,7 @@ describe("aviso discreto de coleta (RF-04-26)", () => {
             erroDeAberturaDaTroca={null}
             aoAbrirMomentoDeTroca={vi.fn()}
             aoFecharMomentoDeTroca={vi.fn()}
+            aoEncerrarSessaoDeTrabalho={vi.fn()}
           />
         </ProvedorDeSessao>
       </ProvedorDeEstadoDeRede>,

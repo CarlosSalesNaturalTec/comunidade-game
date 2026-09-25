@@ -295,6 +295,7 @@ describe("a abertura do quiz a partir da tela inicial", () => {
           erroDeAberturaDaTroca={null}
           aoAbrirMomentoDeTroca={vi.fn()}
           aoFecharMomentoDeTroca={vi.fn()}
+          aoEncerrarSessaoDeTrabalho={vi.fn()}
         />
       </ProvedorDeSessao>,
     );
