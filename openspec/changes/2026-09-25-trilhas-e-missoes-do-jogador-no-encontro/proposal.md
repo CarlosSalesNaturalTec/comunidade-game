@@ -16,17 +16,76 @@
 
 ## Trava a resolver antes da implementação
 
-O pedido do fundador diz que as missões da trilha sejam **exibidas** a partir da sondagem. A
-sondagem e o desafio de desbloqueio são **atos de escrita** do Guerreiro(a) (`RF-05-13`,
-`RF-05-14`, `RF-05-89`), e a entrega individual da produção também (`RF-05-74`). Esta proposta
-recorta a fatia como **leitura apenas**, por três razões: "exibidas" é o verbo do pedido; a
-distinção entre missão realizada, liberada e bloqueada foi retirada do escopo pelo fundador; e
-escrita individual sobre missão é requisito do PRD-05, que a App 05 já atende.
+### O fato que decide
 
-O efeito colateral precisa de decisão: a criança que abre a trilha no encontro e encontra a
-sondagem **não poderá respondê-la ali** — verá o que ela é e a instrução de fazê-la na App 05.
-Antes de implementar, o fundador decide se é isso, ou se a sondagem e o desbloqueio entram no
-encontro e a fatia cresce.
+O documento 11 §2.2 diz da sondagem: ela **"abre a trilha ao ser respondida, não ao ser
+acertada"**. Não é avaliação — é o portão. Sem respondê-la, o percurso não anda.
+
+Com o recorte de **leitura apenas**, a consequência é concreta: a criança recém-inscrita que
+abrir a trilha no aparelho do encontro verá a sondagem, entenderá que é o primeiro passo e
+**não poderá dá-lo ali**. A tela anuncia um percurso que não se move, e o passo que falta só
+existe na App 05.
+
+E há um segundo caso, mais grave que o primeiro. A inscrição em trilha é da App 05
+(`RF-05-09`), usada em casa. **Quem não tem aparelho em casa não se inscreve, não responde
+sondagem e não desbloqueia missão em lugar nenhum** — e o aparelho do encontro é o único a que
+essa criança tem acesso. Num projeto para comunidades periféricas, isso não é detalhe de
+recorte.
+
+### As três opções, e o que cada uma custa
+
+**Opção A — leitura apenas** (o recorte escrito nesta proposta).
+
+| | |
+| --- | --- |
+| A criança faz no encontro | vê as trilhas inscritas, a missão atual, a seguinte trancada com o motivo e as atividades da equipe |
+| Requisitos novos alcançados | nenhum além do `RF-04-72` |
+| Rotas | nenhuma escrita |
+| Custo em código | o menor: os componentes promovidos entram com a escrita desligada |
+| O que fica quebrado | a sondagem visível e não respondível; quem não tem aparelho em casa não começa trilha nenhuma |
+
+**Opção B — leitura, mais sondagem e desbloqueio.**
+
+| | |
+| --- | --- |
+| Acrescenta | responder à sondagem, que abre a trilha, e ao desafio de desbloqueio — quiz aferido pelo núcleo a 60%, ou prático declarado e julgado pelo Mestre autor |
+| Requisitos alcançados | `RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`, `RN-05-45` a `RN-05-47` |
+| Rotas | `POST /v1/eu/missoes/{id}/desbloqueio` — **já existe** |
+| Custo em código | **baixo**: `Sondagem` e `DesafioDeDesbloqueio` já existem e já estarão em `comum/` por esta fatia; é ligar o que a decisão 3 do `design.md` deixa opcional |
+| Custo real | de **escopo**: o PRD-04 passa a abrigar atos que hoje são só do PRD-05, e a §3.2 dele precisa deixar de excluí-los |
+
+O desbloqueio é **do Guerreiro(a), nunca da equipe** (documento 11 §2.2), e no aparelho
+compartilhado cada atendimento já é de um Guerreiro(a) só — a sessão dele — então nada no
+modelo se quebra.
+
+**Opção C — B, mais entrega individual da produção.**
+
+| | |
+| --- | --- |
+| Acrescenta | `RF-05-74` a `RF-05-77`: entrega por texto, fala transcrita ou foto, com devolutiva construtiva que não credita ponto |
+| Colisão | a App 01 **já entrega produção por equipe** (`RF-04-45`), no caminho das equipes. Duas entregas na mesma aplicação, possivelmente sobre a mesma missão, exigem regra dizendo qual vale — e isso é decisão de produto, não de tela |
+
+### Recomendação
+
+**Opção B.** O custo em código é quase nulo, porque os componentes já estarão promovidos; sem
+ela a fatia entrega uma tela que anuncia um percurso que não anda; e é o que dá à criança sem
+aparelho em casa uma porta de entrada na trilha. A **opção C fica fora**: a colisão com a
+entrega por equipe é decisão de produto e merece fatia própria.
+
+### A pergunta que sobra dentro da B
+
+A inscrição em trilha e a escolha do poder (`RF-05-09`) **entram também**? Sem elas, a criança
+sem aparelho em casa continua sem começar: a sondagem só aparece depois de a inscrição existir.
+Abrir a inscrição no encontro é coerente com o precedente da **troca por recompensa**, que o
+PRD-04 §3.2 atribui à App 01 justamente por ser presencial. Mas amplia a fatia outra vez, e é
+decisão do fundador.
+
+### O que muda nos artefatos se a resposta não for A
+
+O `RF-04-72` cresce ou ganha um irmão; a §3.2 do PRD-04 deixa de excluir os atos admitidos; e
+neste delta o requisito "A tela SHALL ser de **leitura**" se inverte, com os cenários "A tela
+não escreve nada" trocados pelos da sondagem e do desbloqueio. O `design.md` já prevê o ponto de
+entrada: a decisão 3 deixa a escrita opcional nos componentes promovidos.
 
 ## Why
 

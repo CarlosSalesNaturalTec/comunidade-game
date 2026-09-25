@@ -2,9 +2,11 @@
 
 ## 0. Antes de começar
 
-- [ ] 0.1 Confirmar com o fundador a **trava da `proposal`**: o percurso no encontro é de leitura
-      apenas, sem responder à sondagem nem ao desafio de desbloqueio. Sem essa resposta as tarefas 3
-      e 4 não começam, porque o recorte muda.
+- [ ] 0.1 Obter do fundador a decisão da **trava da `proposal`**, entre as três opções detalhadas
+      lá: **A**, leitura apenas; **B**, com sondagem e desbloqueio (recomendada); **C**, com entrega
+      individual da produção. Dentro de B e C, a pergunta da inscrição em trilha (`RF-05-09`) também
+      precisa de resposta. Sem a decisão as tarefas 3 e 4 não começam, porque o recorte muda — e se
+      a resposta não for A, a `proposal`, o delta e o `RF-04-72` são revisados antes.
 - [ ] 0.2 Conferir que os PRs de revisão do **documento 03 §3** e do **PRD-04** entraram, com o
       `RF-04-72` criado e `RF-04-01`, `RF-04-67` e `RN-04-40` alterados — a change **não** cria
       identificador nem altera documento normativo.
