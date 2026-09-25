@@ -1,0 +1,8 @@
+/* A moldura do avatar — a mesma para todos, inclusive para o avatar padrão do
+ * projeto: o documento 15 §7.3 não admite nenhuma marca de diferença em quem
+ * não tem avatar próprio. */
+.cg-avatar {
+  flex: none;
+  border-radius: 50%;
+  background: var(--cor-superficie);
+}

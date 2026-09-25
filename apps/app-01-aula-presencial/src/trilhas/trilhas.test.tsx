@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
+import { escreverAvatar } from "comum/avatar";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Equipe } from "../api/equipes";
 import * as equipesApi from "../api/equipes";
@@ -738,5 +739,56 @@ describe("entrega da produção (RF-04-45 a RF-04-47, RN-04-09, RN-04-12, RN-04-
     expect(screen.getByRole("option", { name: /foto do que fizeram/i })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "Fala" })).not.toBeInTheDocument();
     expect(screen.getByText(/não transcreve fala/i)).toBeInTheDocument();
+  });
+});
+
+describe("o avatar dos integrantes da equipe da trilha (`RF-04-34`, documento 15 §7)", () => {
+  it("o avatar aparece desenhado ao lado do nick, nunca em texto", async () => {
+    mockarAtividadeCorrente();
+    const avatar = JSON.stringify({
+      formaDeTratamento: "guerreira",
+      avatar: escreverAvatar({ cabelo: "dreads", tom: "t2", acessorio: "oculos" }),
+    });
+    vi.spyOn(equipesApi, "obterMinhaEquipeDaTrilha").mockResolvedValue(
+      equipeDaTrilha({ integrantes: [{ avatar, nick: "zeferina", papel: "relatora" }] }),
+    );
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+
+    const linha = (await screen.findByText(/zeferina/)).closest("li");
+    expect(linha).not.toBeNull();
+    // biome-ignore lint/style/noNonNullAssertion: verificado na linha acima
+    expect(linha!.querySelectorAll("svg.cg-avatar > g[data-camada]")).toHaveLength(9);
+    // biome-ignore lint/style/noNonNullAssertion: verificado acima
+    expect(linha!.textContent).not.toMatch(/dreads|formaDeTratamento|\{/);
+  });
+
+  it("avatar que falta cai no padrão do projeto, na mesma moldura", async () => {
+    mockarAtividadeCorrente();
+    vi.spyOn(equipesApi, "obterMinhaEquipeDaTrilha").mockResolvedValue(
+      equipeDaTrilha({
+        integrantes: [
+          { avatar: null, nick: "sem-avatar", papel: null },
+          {
+            avatar: JSON.stringify({ caracteristicasDoAvatar: "trança-e-capa" }),
+            nick: "do-texto-livre",
+            papel: null,
+          },
+        ],
+      }),
+    );
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+
+    const lista = (await screen.findByText("sem-avatar")).closest("ul");
+    expect(lista).not.toBeNull();
+    // biome-ignore lint/style/noNonNullAssertion: verificado na linha acima
+    const desenhos = lista!.querySelectorAll("svg.cg-avatar");
+    expect(desenhos).toHaveLength(2);
+    expect(desenhos[0].outerHTML).toBe(desenhos[1].outerHTML);
   });
 });

@@ -1,4 +1,5 @@
 import { ErroDaApi } from "comum/api";
+import { Avatar } from "comum/avatar";
 import { Aviso, Botao, Cabecalho, Campo, EstadoDaLista, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -141,9 +142,11 @@ export function TelaDeEquipes({
                 <div className="cg-equipe__integrantes">
                   {equipe.integrantes.map((integrante) => (
                     <span key={integrante.nick} className="cg-integrante">
-                      <span className="cg-integrante__avatar" aria-hidden="true">
-                        {(integrante.avatar ?? integrante.nick).slice(0, 1).toUpperCase()}
-                      </span>
+                      {/* Avatar desenhado e nick, e nada além disso: avatar que
+                       * falta ou com traço desconhecido cai no padrão do
+                       * projeto, na mesma moldura (`RF-04-34`, `RN-04-14`,
+                       * documento 15 §§7.2 e 7.3). */}
+                      <Avatar avatar={integrante.avatar} tamanho={32} />
                       {integrante.nick}
                     </span>
                   ))}

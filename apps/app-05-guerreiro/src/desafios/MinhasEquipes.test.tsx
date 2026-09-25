@@ -1,6 +1,7 @@
 import { act, render, screen } from "@testing-library/react";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
+import { escreverAvatar } from "comum/avatar";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as desafiosEEquipesApi from "../api/desafiosEEquipes";
 import { MinhasEquipes } from "./MinhasEquipes";
@@ -74,6 +75,52 @@ describe("minhas equipes", () => {
     await renderizar();
 
     expect(await screen.findByText("zeferina")).toBeInTheDocument();
+  });
+
+  // O avatar desenhado do colega, pelo objeto do documento 15 §7.2, e nunca o
+  // texto opaco que o núcleo guarda (`RF-05-23`).
+  it("o avatar de cada integrante aparece desenhado ao lado do nick", async () => {
+    const avatar = JSON.stringify({
+      formaDeTratamento: "guerreira",
+      avatar: escreverAvatar({ cabelo: "black-power", tom: "t1", roupa: "moletom" }),
+    });
+    vi.spyOn(desafiosEEquipesApi, "listarMinhasEquipes").mockResolvedValue([
+      { ...EQUIPE_DA_AULA, integrantes: [{ avatar, nick: "zeferina", papel: null }] },
+    ]);
+
+    await renderizar();
+
+    const linha = (await screen.findByText("zeferina")).closest("li");
+    expect(linha).not.toBeNull();
+    // biome-ignore lint/style/noNonNullAssertion: verificado na linha acima
+    expect(linha!.querySelectorAll("svg.cg-avatar > g[data-camada]")).toHaveLength(9);
+    // biome-ignore lint/style/noNonNullAssertion: verificado acima
+    expect(linha!.textContent).not.toMatch(/black-power|formaDeTratamento|\{/);
+  });
+
+  it("avatar que falta, ou no formato antigo, cai no padrão do projeto", async () => {
+    vi.spyOn(desafiosEEquipesApi, "listarMinhasEquipes").mockResolvedValue([
+      {
+        ...EQUIPE_DA_AULA,
+        integrantes: [
+          { avatar: null, nick: "sem-avatar", papel: null },
+          {
+            avatar: JSON.stringify({ caracteristicasDoAvatar: "trança-e-capa" }),
+            nick: "do-texto-livre",
+            papel: null,
+          },
+        ],
+      },
+    ]);
+
+    await renderizar();
+
+    const lista = (await screen.findByText("sem-avatar")).closest("ul");
+    expect(lista).not.toBeNull();
+    // biome-ignore lint/style/noNonNullAssertion: verificado na linha acima
+    const desenhos = lista!.querySelectorAll("svg.cg-avatar");
+    expect(desenhos).toHaveLength(2);
+    expect(desenhos[0].outerHTML).toBe(desenhos[1].outerHTML);
   });
 
   it("sem equipe a tela diz isso e onde ela se forma", async () => {

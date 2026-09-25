@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
+import { AVATAR_PADRAO_DO_PROJETO, camadaDoAvatar } from "comum/avatar";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as guerreirosApi from "../api/guerreiros";
 import { TelaDeCadastro } from "./TelaDeCadastro";
@@ -33,8 +34,15 @@ async function preencherFormulario(idade = 10, nick = "ZeferinaGuerreira") {
   await usuario.type(screen.getByLabelText(/^nome$/i), "Zeferina");
   await usuario.type(screen.getByLabelText(/^nick$/i), nick);
   await usuario.type(screen.getByLabelText(/data de nascimento/i), nascimentoComIdade(idade));
-  await usuario.type(screen.getByLabelText(/características do avatar/i), "trança-e-capa");
   return usuario;
+}
+
+/** O objeto do documento 15 §7.2 que a tela gravou, de dentro do campo
+ * `avatar` — que leva também a forma de tratamento, campo próprio ao lado
+ * dele (design — decisão 3). */
+function avatarGravado(chamada: { avatar: string }): Record<string, unknown> {
+  const campo = JSON.parse(chamada.avatar);
+  return campo.avatar;
 }
 
 describe("cadastro do Guerreiro(a) no encontro", () => {
@@ -139,5 +147,79 @@ describe("cadastro do Guerreiro(a) no encontro", () => {
 
     expect(aoVoltar).toHaveBeenCalled();
     expect(cadastrar).not.toHaveBeenCalled();
+  });
+});
+
+describe("o avatar do onboarding se compõe no catálogo (`RF-04-07`, documento 15 §7)", () => {
+  it("o avatar nasce do catálogo, não de texto livre", () => {
+    renderizar();
+
+    // Nenhum campo pede característica em texto livre: a escolha é uma por
+    // camada, pelo nome dizível de cada traço.
+    expect(screen.queryByLabelText(/características do avatar/i)).not.toBeInTheDocument();
+
+    for (const camada of ["Tom de pele", "Cabelo", "Cor do cabelo", "Roupa", "Acessório"]) {
+      const escolha = screen.getByLabelText(camada);
+      expect(escolha.tagName).toBe("SELECT");
+    }
+
+    const tons = screen.getByLabelText("Tom de pele");
+    const nomes = [...tons.querySelectorAll("option")].map((opcao) => opcao.textContent);
+    expect(nomes[0]).toBe("Pele retinta");
+    expect(nomes).toHaveLength(8);
+  });
+
+  it("nasce no avatar padrão do projeto, com o avatar já desenhado", () => {
+    const { container } = renderizar();
+
+    expect(screen.getByLabelText("Cabelo")).toHaveValue(AVATAR_PADRAO_DO_PROJETO.cabelo);
+    expect(screen.getByLabelText("Roupa")).toHaveValue(AVATAR_PADRAO_DO_PROJETO.roupa);
+    expect(container.querySelectorAll("svg.cg-avatar")).toHaveLength(1);
+    expect(container.querySelectorAll("svg.cg-avatar g[data-camada]")).toHaveLength(9);
+  });
+
+  it("o que se grava é o objeto versionado, e a forma de tratamento fica ao lado dele", async () => {
+    const cadastrar = vi
+      .spyOn(guerreirosApi, "cadastrarGuerreiroNoEncontro")
+      .mockResolvedValue({
+        id: "guerreiro-1",
+        nome: "Zeferina",
+        nascimento: "2016-01-01",
+        nick: "ZeferinaGuerreira",
+        avatar: "opaco",
+      });
+
+    renderizar();
+    const usuario = await preencherFormulario();
+    const trancas = camadaDoAvatar("cabelo").tracos.find((traco) => traco.id === "trancas");
+    if (!trancas) throw new Error("O catálogo perdeu as tranças.");
+    await usuario.selectOptions(screen.getByLabelText("Cabelo"), trancas.id);
+    await usuario.selectOptions(screen.getByLabelText("Tom de pele"), "t3");
+    await usuario.selectOptions(screen.getByLabelText("Forma de tratamento"), "guerreira");
+    await usuario.click(screen.getByRole("button", { name: /concluir cadastro/i }));
+
+    const enviado = cadastrar.mock.calls[0][0] as unknown as { avatar: string };
+    expect(JSON.parse(enviado.avatar).formaDeTratamento).toBe("guerreira");
+    expect(avatarGravado(enviado)).toEqual({
+      ...AVATAR_PADRAO_DO_PROJETO,
+      cabelo: "trancas",
+      tom: "t3",
+    });
+    // Nada de texto livre vai gravado: o que sai é só o objeto do §7.2.
+    expect(enviado.avatar).not.toMatch(/caracteristicasDoAvatar/);
+  });
+
+  it("compor não depende de rede", async () => {
+    const rede = vi.spyOn(globalThis, "fetch");
+    const { container } = renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.selectOptions(screen.getByLabelText("Cabelo"), "dreads");
+    await usuario.selectOptions(screen.getByLabelText("Acessório"), "oculos");
+
+    expect(rede).not.toHaveBeenCalled();
+    const desenho = container.querySelector("svg.cg-avatar");
+    expect(desenho?.querySelector("image")).toBeNull();
+    expect(desenho?.outerHTML).not.toMatch(/https?:|url\(/);
   });
 });

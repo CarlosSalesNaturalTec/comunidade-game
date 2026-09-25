@@ -1,4 +1,5 @@
 import { ErroDaApi } from "comum/api";
+import { Avatar } from "comum/avatar";
 import { Aviso, Botao, Campo } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -155,7 +156,10 @@ export function EquipeDaTrilha({
           <h4 className="cg-equipe__nome">{equipe.nome}</h4>
           <ul aria-label="Integrantes da equipe da trilha">
             {equipe.integrantes.map((integrante) => (
-              <li key={integrante.nick}>
+              <li key={integrante.nick} className="cg-integrante">
+                {/* Avatar desenhado ao lado do nick, como na tela das equipes
+                 * da aula (`RF-04-34`, `RN-04-14`, documento 15 §7). */}
+                <Avatar avatar={integrante.avatar} tamanho={32} />
                 {integrante.nick}
                 {integrante.papel && ` — ${integrante.papel}`}
               </li>

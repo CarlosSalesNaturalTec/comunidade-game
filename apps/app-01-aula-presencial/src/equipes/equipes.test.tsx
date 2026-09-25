@@ -1,6 +1,7 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
+import { escreverAvatar } from "comum/avatar";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Equipe } from "../api/equipes";
 import * as equipesApi from "../api/equipes";
@@ -452,5 +453,79 @@ describe("recusa do núcleo por falta de presença (RF-04-68, RN-04-40)", () => 
 
     expect(await screen.findByText(/registre a presença no encontro/i)).toBeInTheDocument();
     expect(screen.queryByText(/não foi possível reconhecer/i)).not.toBeInTheDocument();
+  });
+});
+
+/** As nove camadas desenhadas dentro da linha do integrante. */
+function camadasDesenhadas(linha: HTMLElement): string[] {
+  return [...linha.querySelectorAll("svg.cg-avatar > g[data-camada]")].map(
+    (grupo) => grupo.getAttribute("data-camada") ?? "",
+  );
+}
+
+describe("o avatar dos integrantes é desenhado (`RF-04-34`, documento 15 §7)", () => {
+  it("o avatar aparece desenhado ao lado do nick, nunca em texto", async () => {
+    const avatar = JSON.stringify({
+      formaDeTratamento: "guerreira",
+      avatar: escreverAvatar({ cabelo: "trancas", tom: "t3", roupa: "regata" }),
+    });
+    vi.spyOn(equipesApi, "listarEquipesDaAula").mockResolvedValue({
+      itens: [equipe({ integrantes: [{ avatar, nick: "zeferina", papel: null }] })],
+      proximo_cursor: null,
+    });
+
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
+
+    const linha = (await screen.findByText("zeferina")).closest("li");
+    expect(linha).not.toBeNull();
+    // biome-ignore lint/style/noNonNullAssertion: verificado na linha acima
+    expect(camadasDesenhadas(linha!)).toHaveLength(9);
+    // O texto opaco do campo `avatar` nunca aparece na tela.
+    // biome-ignore lint/style/noNonNullAssertion: verificado acima
+    expect(linha!.textContent).not.toMatch(/trancas|formaDeTratamento|\{/);
+  });
+
+  it("avatar que falta, ou gravado no formato antigo, cai no padrão do projeto", async () => {
+    const antigo = JSON.stringify({
+      formaDeTratamento: "guerreiro",
+      caracteristicasDoAvatar: "cabelo crespo curto e capa vermelha",
+    });
+    vi.spyOn(equipesApi, "listarEquipesDaAula").mockResolvedValue({
+      itens: [
+        equipe({
+          integrantes: [
+            { avatar: null, nick: "sem-avatar", papel: null },
+            { avatar: antigo, nick: "do-texto-livre", papel: null },
+          ],
+        }),
+      ],
+      proximo_cursor: null,
+    });
+
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
+
+    const linha = (await screen.findByText("sem-avatar")).closest("li");
+    expect(linha).not.toBeNull();
+    // biome-ignore lint/style/noNonNullAssertion: verificado na linha acima
+    const desenhos = linha!.querySelectorAll("svg.cg-avatar");
+    // Os dois integrantes desenham, na mesma moldura e sem marca de diferença.
+    expect(desenhos).toHaveLength(2);
+    expect(desenhos[0].outerHTML).toBe(desenhos[1].outerHTML);
+    // biome-ignore lint/style/noNonNullAssertion: verificado acima
+    expect(linha!.textContent).not.toMatch(/capa vermelha/);
   });
 });
