@@ -187,7 +187,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Conceito                                    | Definição                 | PRDs                               |
 | ------------------------------------------- | ------------------------- | ---------------------------------- |
 | Trilha e missões                            | 02 §3 + 11 §2             | PRD-01, 09, 05                     |
-| Inscrição na trilha                         | 11 §2                     | PRD-05, 01                         |
+| Inscrição na trilha                         | 11 §2                     | PRD-05, 01, 04                     |
 | Conteúdo e bibliografia por missão          | 05 §3 + 11 §2             | PRD-09, 07                         |
 | Atividades e taxonomia                      | 02 §4 + 11 §§2.1, 4       | PRD-09, 01, 02, 05                 |
 | Acompanhamento por nick e favoritos         | 02 §1 + 03 §10            | PRD-14, 03, 01                     |

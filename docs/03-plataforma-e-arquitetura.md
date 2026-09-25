@@ -262,11 +262,12 @@ caminho Presença registra presença**; os demais caminhos que pedem o Guerreiro
 Quiz ao Vivo, troca por recompensa e trilhas — apenas abrem a sessão dele, e **exigem a presença
 já registrada** (decisão do fundador, 2026-09-23).
 
-No caminho das trilhas o Guerreiro(a) **responde à missão de sondagem** e **submete o desafio de
-desbloqueio** — a sondagem abre a trilha ao ser respondida, e sem ela o percurso não anda
-(documento 11). É o que dá a quem **não tem aparelho em casa** uma porta para começar a
-trilha, já que inscrever-se é da App 05. A **entrega da produção** no encontro continua sendo
-a da equipe, no caminho Equipes (decisão do fundador, 2026-09-25).
+No caminho das trilhas o Guerreiro(a) **escolhe o poder e inscreve-se na trilha**, **responde à
+missão de sondagem** e **submete o desafio de desbloqueio** — a sondagem abre a trilha ao ser
+respondida, e sem ela o percurso não anda (documento 11). Os três juntos dão a quem **não tem
+aparelho em casa** o percurso inteiro de partida: sem a inscrição, a sondagem nem apareceria. A
+**entrega da produção** no encontro continua sendo a da equipe, no caminho Equipes (decisão do
+fundador, 2026-09-25).
 
 > O onboarding **roda continuamente** durante o encontro, e não apenas na abertura, porque a
 > dinâmica da aula é assíncrona.

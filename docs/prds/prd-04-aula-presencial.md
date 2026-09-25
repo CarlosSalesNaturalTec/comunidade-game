@@ -90,6 +90,7 @@ existe para impedir.
 
 - Entrada do Guerreiro(a) por **nick e imagem**, só com a presença do encontro já registrada; e
   acesso direto no desfecho do caminho da presença, sem reabrir a sessão.
+- **Escolha do poder e inscrição na trilha** no encontro, a partir do catálogo do ciclo.
 - **Percurso do próprio Guerreiro(a)**: as trilhas em que está inscrito e, na escolhida, a missão
   em que está e a seguinte trancada, com o motivo.
 - **Missão de sondagem** respondida no encontro, que abre a trilha, e **desafio de desbloqueio**
@@ -114,8 +115,6 @@ existe para impedir.
   sugestões: são a App 05 (PRD-05), que atende as aulas remotas e o uso cotidiano. A App 05
   também **exibe** o catálogo avulso e o saldo, mas **não executa a troca**: ela é presencial
   e acontece aqui.
-- **Inscrição em trilha e escolha do poder**: são a App 05. No encontro, a tela das trilhas
-  encaminha quem não tem inscrição — abrir a inscrição aqui segue pendente (§14).
 - **Entrega individual da produção** da missão: é a App 05. No encontro a entrega é da **equipe**,
   no caminho das equipes, e duas entregas sobre a mesma missão exigiriam regra que nenhum
   documento declara (decisão do fundador, 2026-09-25).
@@ -305,7 +304,8 @@ dentro da mesma sessão de trabalho do aparelho.
    registrar, sem reabrir a sessão, ou o caminho **trilhas e missões** da tela inicial, entrando
    por nick e imagem como nos demais caminhos.
 2. **Uma** trilha inscrita abre direto o percurso dela; **mais de uma** apresenta a lista para
-   escolher. **Nenhuma** diz que inscrever-se acontece na App 05.
+   escolher. **Nenhuma** leva ao catálogo de poderes do ciclo, onde ela **escolhe o poder e se
+   inscreve** na trilha ali mesmo — sem teto de quantas, e sem desinscrição, que não existe.
 3. No percurso, ela vê **a missão em que está** e **a seguinte trancada, com o motivo** — não a
    lista inteira.
 4. Quem acabou de se inscrever cai na **missão de sondagem**, que é a próxima do percurso, e pode
@@ -394,6 +394,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-58` | Sem rede, o conteúdo já carregado continua legível; equipe, assistente e resposta de quiz ficam indisponíveis                                                | essencial  |
 | `RF-04-72` | Guerreiro(a) alcança o próprio percurso — trilhas inscritas, missão em que está, a seguinte trancada com o motivo — e as atividades das equipes dele na aula | essencial  |
 | `RF-04-73` | Guerreiro(a) responde à missão de sondagem, que abre a trilha, e submete o desafio de desbloqueio da missão no aparelho do encontro                          | essencial  |
+| `RF-04-74` | Guerreiro(a) escolhe o poder no catálogo do ciclo e inscreve-se na trilha pelo aparelho do encontro, sem teto de quantas e sem desinscrição                  | essencial  |
 
 ### 6.3 Troca por recompensa avulsa
 
@@ -806,18 +807,20 @@ nenhuma fatia o entregou; a decisão fixa o tamanho, a unicidade e a troca.
 
 Quatro decisões novas do fundador, elicitadas em `/opsx:explore` sobre o App 01.
 
-| Decisão                                                                    | O que ela resolve                                                                                                                                                                                           |
-| -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **O percurso do Guerreiro(a) entra no encontro** (`RF-04-72`)              | Quem registra presença e não vai formar equipe não tinha, no aparelho da aula, caminho até a própria trilha — o percurso individual vivia só na App 05, usada em casa                                       |
-| **A sondagem e o desbloqueio acontecem no encontro** (`RF-04-73`)          | A sondagem abre a trilha ao ser respondida (documento 11): sem respondê-la ali, a criança veria o primeiro passo do percurso e não poderia dá-lo. Pesou mais quem **não tem aparelho em casa**              |
-| **A saída do aparelho existe, na tela inicial, com PIN** (`RF-04-71`)      | Era a única das seis aplicações sem saída da sessão, e fechá-la exigia limpar o armazenamento do navegador à mão. Só na tela inicial, porque a criança no meio do atendimento derrubaria a sessão do Mestre |
-| **A bancada de medição exige o PIN de quem abriu o aparelho** (`RN-04-41`) | Ela grava o limiar que decide se o reconhecimento confere naquele ponto de apoio, e abria com a sessão de trabalho e mais nada — sem adulto no ato, a mesma lacuna que o `RN-04-37` fechou na confirmação   |
+| Decisão                                                                    | O que ela resolve                                                                                                                                                                                                                      |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **O percurso do Guerreiro(a) entra no encontro** (`RF-04-72`)              | Quem registra presença e não vai formar equipe não tinha, no aparelho da aula, caminho até a própria trilha — o percurso individual vivia só na App 05, usada em casa                                                                  |
+| **A sondagem e o desbloqueio acontecem no encontro** (`RF-04-73`)          | A sondagem abre a trilha ao ser respondida (documento 11): sem respondê-la ali, a criança veria o primeiro passo do percurso e não poderia dá-lo. Pesou mais quem **não tem aparelho em casa**                                         |
+| **A saída do aparelho existe, na tela inicial, com PIN** (`RF-04-71`)      | Era a única das seis aplicações sem saída da sessão, e fechá-la exigia limpar o armazenamento do navegador à mão. Só na tela inicial, porque a criança no meio do atendimento derrubaria a sessão do Mestre                            |
+| **A bancada de medição exige o PIN de quem abriu o aparelho** (`RN-04-41`) | Ela grava o limiar que decide se o reconhecimento confere naquele ponto de apoio, e abria com a sessão de trabalho e mais nada — sem adulto no ato, a mesma lacuna que o `RN-04-37` fechou na confirmação                              |
+| **A inscrição em trilha acontece no encontro** (`RF-04-74`)                | Completa a decisão da sondagem: sem inscrição não há sondagem a responder, e a criança **sem aparelho em casa** seguiria sem começar trilha alguma. Mesmo precedente da troca por recompensa, que é desta aplicação por ser presencial |
 
 Três recortes acompanham as decisões, e ficam registrados para não voltarem à pauta:
 
 - A **entrega individual da produção** fica fora do encontro. A entrega por **equipe** do
-  `RF-04-45` já é desta aplicação, e duas entregas sobre a mesma missão exigiriam regra que nenhum
-  documento declara.
+  `RF-04-45` já é desta aplicação, e duas entregas sobre a mesma missão exigiriam regra que
+  nenhum documento declara. É o único dos atos individuais da trilha que não entra: inscrição,
+  sondagem e desbloqueio entram.
 - O percurso mostra a **missão atual e a seguinte trancada**, não a lista inteira, e não classifica
   missão como realizada — é o mesmo recorte que a App 05 já atende.
 - O PIN dos dois atos novos é conferido **no aparelho**, contra o verificador que a sessão de
@@ -845,13 +848,6 @@ Três recortes acompanham as decisões, e ficam registrados para não voltarem �
 - **Etiqueta de IA e nota de transparência do assistente de trilhas** (documento 03 §7.1): a
   resposta do assistente sai sem a etiqueta até a fatia do PRD-03 que entregar a nota de
   transparência da vitrine.
-
-- **Inscrição em trilha no encontro**: a escolha do poder e a inscrição são da App 05
-  (`RF-05-09`), e no encontro a tela encaminha quem não tem inscrição. Sem abri-la aqui, a criança
-  **sem aparelho em casa** continua sem começar trilha alguma, porque a sondagem só aparece depois
-  de a inscrição existir — e foi esse mesmo argumento que trouxe a sondagem para o encontro. Há
-  precedente a favor: a **troca por recompensa** é desta aplicação justamente por ser presencial.
-  Pergunta aberta ao fundador em 2026-09-25, sem resposta; não trava o caminho das trilhas.
 
 Três saíram desta lista, decididas e gravadas na §13: o **papel de cada integrante**, declarado
 na formação da equipe; a **sessão de trabalho do aparelho**, que é a janela da aula agendada; e
@@ -895,3 +891,4 @@ a **forma do aviso** da exclusão do _template_, que acontece na App 07, com a d
 | `RN-04-37` e `RN-04-38` | 03 §§1.1, 3.4 (PIN de confirmação do adulto)              |
 | `RF-04-71` e `RN-04-41` | 03 §§1.1, 3 (saída do aparelho e PIN nos atos do adulto)  |
 | `RF-04-72` e `RF-04-73` | 03 §3 (percurso, sondagem e desbloqueio no encontro)      |
+| `RF-04-74`              | 03 §3 e 11 §2 (inscrição na trilha no encontro)           |
