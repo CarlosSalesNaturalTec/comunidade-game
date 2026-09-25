@@ -17,7 +17,7 @@ As telas e os campos SHALL ser:
 | Entrada do Guerreiro(a) por confirmação       | nick                | `RF-04-21`             |
 | Formação da equipe da aula                    | nome da equipe      | `RF-04-30`, `RF-04-69` |
 | Troca do nome da equipe                       | nome novo           | `RF-04-70`             |
-| Equipe da trilha                              | nick do integrante  | `RF-04-61`             |
+| Equipe da trilha                              | nome da equipe      | `RF-04-61`             |
 | Cadastro do responsável mínimo                | nome do responsável | `RF-04-60`             |
 
 A aplicação NEVER SHALL declarar como inicial **mais de um campo** da mesma tela, e NEVER SHALL

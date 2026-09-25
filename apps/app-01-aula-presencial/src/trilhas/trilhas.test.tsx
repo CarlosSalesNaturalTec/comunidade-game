@@ -433,6 +433,21 @@ describe("equipe da trilha (RF-04-61, RN-01-44)", () => {
     expect(await screen.findByText("Tatus")).toBeInTheDocument();
   });
 
+  it("a formação da equipe da trilha abre com o nome da equipe focado (RF-04-61)", async () => {
+    mockarAtividadeCorrente();
+    vi.spyOn(equipesApi, "obterMinhaEquipeDaTrilha").mockRejectedValue(
+      new Error("não encontrada"),
+    );
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+    const campo = await screen.findByLabelText("Nome da equipe");
+
+    expect(document.activeElement).toBe(campo);
+    expect(document.activeElement).not.toBe(screen.getByLabelText(/seu papel na equipe/i));
+  });
+
   it("equipe homologada não oferece entrar nem sair", async () => {
     mockarAtividadeCorrente();
     vi.spyOn(equipesApi, "obterMinhaEquipeDaTrilha").mockResolvedValue(

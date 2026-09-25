@@ -122,6 +122,14 @@ describe("cadastro do Guerreiro(a) no encontro", () => {
     expect(cadastrar).not.toHaveBeenCalled();
   });
 
+  it("o cadastro abre com o nome focado, e os campos seguintes não (RF-04-07)", () => {
+    renderizar();
+
+    expect(document.activeElement).toBe(screen.getByLabelText(/^nome$/i));
+    expect(document.activeElement).not.toBe(screen.getByLabelText(/^nick$/i));
+    expect(document.activeElement).not.toBe(screen.getByLabelText(/data de nascimento/i));
+  });
+
   it("voltar aciona aoVoltar sem cadastrar nada", async () => {
     const cadastrar = vi.spyOn(guerreirosApi, "cadastrarGuerreiroNoEncontro");
     const aoVoltar = vi.fn();

@@ -114,6 +114,7 @@ export function TelaDeEquipes({
         valor={nome}
         aoAlterar={definirNome}
         maxLength={TETO_DO_NOME_DA_EQUIPE}
+        focoInicial
       />
       <Campo rotulo="Seu papel na equipe (opcional)" valor={papel} aoAlterar={definirPapel} />
       <Botao onClick={criar} desabilitado={emAndamento || nome.trim().length === 0}>

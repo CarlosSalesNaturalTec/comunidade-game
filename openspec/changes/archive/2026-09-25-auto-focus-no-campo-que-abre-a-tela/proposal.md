@@ -32,7 +32,7 @@ tela, nas telas de propósito único do App 01.
   | Entrada do Guerreiro(a), confirmação por PIN            | nick                |
   | Formação da equipe da aula                              | nome da equipe      |
   | Troca do nome da equipe                                 | nome novo           |
-  | Equipe da trilha                                        | nick do integrante  |
+  | Equipe da trilha                                        | nome da equipe      |
   | Cadastro do responsável mínimo                          | nome do responsável |
 
 - Os **campos seguintes da mesma tela** ficam de fora — nick e nascimento no cadastro, papel na
@@ -71,7 +71,7 @@ Nenhuma.
   formas da entrada.
 - `apps/app-01-aula-presencial/src/equipes/TelaDeEquipes.tsx` — nome da equipe.
 - `apps/app-01-aula-presencial/src/equipes/TrocaDoNome.tsx` — nome novo.
-- `apps/app-01-aula-presencial/src/trilhas/EquipeDaTrilha.tsx` — nick do integrante.
+- `apps/app-01-aula-presencial/src/trilhas/EquipeDaTrilha.tsx` — nome da equipe da trilha.
 - Os testes das telas alteradas, ao lado de cada uma: `onboarding/onboarding.test.tsx`,
   `onboarding/responsavel.test.tsx`, `entrada/entrada.test.tsx`, `equipes/equipes.test.tsx` e
   `trilhas/trilhas.test.tsx`.

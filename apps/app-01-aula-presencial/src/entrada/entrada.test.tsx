@@ -746,3 +746,32 @@ describe("sem rede, só o caminho da presença tem desfecho (RF-04-23, RF-04-58)
     expect(enfileirar).not.toHaveBeenCalled();
   });
 });
+
+describe("o foco inicial da entrada (RF-04-18, RF-04-21, RF-04-29)", () => {
+  it("a entrada abre com o nick focado nos quatro caminhos", () => {
+    const caminhos: CaminhoDaEntrada[] = ["presenca", "equipes", "quiz", "troca"];
+
+    for (const caminho of caminhos) {
+      configurarSessao();
+      renderizar(vi.fn(), vi.fn(), caminho);
+
+      expect(document.activeElement).toBe(screen.getByLabelText(/nick/i));
+
+      cleanup();
+    }
+  });
+
+  it("a confirmação por PIN também começa no nick, e o PIN não toma o foco", async () => {
+    configurarSessao();
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(false);
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+    await screen.findByRole("button", { name: /confirmar identidade/i });
+
+    expect(document.activeElement).toBe(screen.getByLabelText(/nick/i));
+    expect(document.activeElement).not.toBe(screen.getByLabelText(/pin de quem confirma/i));
+  });
+});

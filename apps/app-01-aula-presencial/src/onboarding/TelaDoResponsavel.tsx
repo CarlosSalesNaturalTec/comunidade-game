@@ -89,6 +89,7 @@ export function TelaDoResponsavel({
           valor={nome}
           aoAlterar={definirNome}
           erro={erroDeCampo?.campo === "nome" ? erroDeCampo.mensagem : null}
+          focoInicial
         />
         <Campo
           rotulo="Grau de parentesco"

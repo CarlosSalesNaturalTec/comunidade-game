@@ -377,6 +377,52 @@ describe("equipes da aula", () => {
   });
 });
 
+describe("o foco inicial das equipes (RF-04-30, RF-04-69, RF-04-70)", () => {
+  it("a formação da equipe abre com o nome da equipe focado, e o papel não", async () => {
+    vi.spyOn(equipesApi, "listarEquipesDaAula").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
+    await screen.findByText(/nenhuma equipe formada/i);
+
+    expect(document.activeElement).toBe(screen.getByLabelText("Nome da equipe"));
+    expect(document.activeElement).not.toBe(screen.getByLabelText(/seu papel na equipe/i));
+  });
+
+  it("aberta a troca do nome, o campo do nome novo abre focado", async () => {
+    vi.spyOn(equipesApi, "listarEquipesDaAula").mockResolvedValue({
+      itens: [equipe()],
+      proximo_cursor: null,
+    });
+    vi.spyOn(equipesApi, "entrarNaEquipe").mockResolvedValue(equipe());
+
+    render(
+      <TelaDeEquipes
+        aulaId="aula-1"
+        token="token-guerreiro"
+        aoVoltar={vi.fn()}
+        aoEscolherEquipe={vi.fn()}
+      />,
+    );
+    await screen.findByText("zeferina");
+
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /entrar nesta equipe/i }));
+    await usuario.click(await screen.findByRole("button", { name: /trocar o nome/i }));
+
+    expect(document.activeElement).toBe(screen.getByLabelText("Novo nome da equipe"));
+  });
+});
+
 describe("recusa do núcleo por falta de presença (RF-04-68, RN-04-40)", () => {
   it("a falta de presença aparece como o que é, e não como recusa do reconhecimento", async () => {
     vi.spyOn(equipesApi, "listarEquipesDaAula").mockResolvedValue({

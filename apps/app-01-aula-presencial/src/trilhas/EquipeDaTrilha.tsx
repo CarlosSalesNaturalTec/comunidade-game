@@ -133,6 +133,7 @@ export function EquipeDaTrilha({
             valor={nome}
             aoAlterar={definirNome}
             maxLength={TETO_DO_NOME_DA_EQUIPE}
+            focoInicial
           />
           <Campo
             rotulo="Seu papel na equipe (opcional)"
