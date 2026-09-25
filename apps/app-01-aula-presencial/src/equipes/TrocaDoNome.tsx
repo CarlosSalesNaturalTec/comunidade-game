@@ -59,6 +59,7 @@ export function TrocaDoNome({ equipe, token, aoRenomear }: Props) {
         valor={nome}
         aoAlterar={definirNome}
         maxLength={TETO_DO_NOME_DA_EQUIPE}
+        focoInicial
       />
       <Botao onClick={salvar} desabilitado={emAndamento || nome.trim().length === 0}>
         Salvar o nome

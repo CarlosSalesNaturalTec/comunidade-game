@@ -100,4 +100,11 @@ describe("cadastro do responsável no encontro", () => {
     expect(criarVinculo).toHaveBeenCalledTimes(2);
     expect(aoConcluir).toHaveBeenCalledWith("responsavel-1");
   });
+
+  it("o cadastro do responsável abre com o nome focado (RF-04-60)", () => {
+    renderizar();
+
+    expect(document.activeElement).toBe(screen.getByLabelText(/nome do responsável/i));
+    expect(document.activeElement).not.toBe(screen.getByLabelText(/grau de parentesco/i));
+  });
 });

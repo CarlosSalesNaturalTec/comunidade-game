@@ -425,7 +425,7 @@ export function TelaDeEntradaDoGuerreiro({
             pelo PIN.
           </Aviso>
         )}
-        <Campo rotulo="Nick" valor={nick} aoAlterar={definirNick} />
+        <Campo rotulo="Nick" valor={nick} aoAlterar={definirNick} focoInicial />
         <Campo
           rotulo="PIN de quem confirma"
           tipo="password"
@@ -452,7 +452,7 @@ export function TelaDeEntradaDoGuerreiro({
         subtitulo="Digite o nick e olhe para a câmera."
         acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }}
       />
-      <Campo rotulo="Nick" valor={nick} aoAlterar={definirNick} />
+      <Campo rotulo="Nick" valor={nick} aoAlterar={definirNick} focoInicial />
       {/* O retorno do laço vale enquanto a tentativa corre e cala no desfecho: sem
           isto, o visor congela em "Pessoa confirmada." e fica ao lado da recusa do
           núcleo, como se a tela se contradissesse (`RF-04-64`, `RN-04-34`, design —

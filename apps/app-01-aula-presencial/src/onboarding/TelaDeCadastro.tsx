@@ -153,6 +153,7 @@ export function TelaDeCadastro({ tokenDeTrabalho, aulaId, aoConcluir, aoVoltar }
           valor={nome}
           aoAlterar={definirNome}
           erro={erroDeCampo?.campo === "nome" ? erroDeCampo.mensagem : null}
+          focoInicial
         />
         <Campo
           rotulo="Nick"

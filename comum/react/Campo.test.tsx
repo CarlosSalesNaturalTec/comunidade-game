@@ -52,6 +52,40 @@ describe("Campo", () => {
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
+  it("declarado como inicial, o campo abre com o foco", () => {
+    render(<Campo rotulo="Nome" valor="" aoAlterar={vi.fn()} focoInicial />);
+
+    expect(document.activeElement).toBe(screen.getByLabelText("Nome"));
+  });
+
+  it("sem declaração, campo algum toma o foco", () => {
+    render(<Campo rotulo="Nome" valor="" aoAlterar={vi.fn()} />);
+
+    expect(document.activeElement).not.toBe(screen.getByLabelText("Nome"));
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("o campo com foco inicial fica alcançado pelo contorno de foco", () => {
+    render(<Campo rotulo="Nome" valor="" aoAlterar={vi.fn()} focoInicial />);
+
+    // O contorno vem da regra `:focus-visible` das aplicações (documento 15
+    // §5): o que se afirma aqui é que o campo focado a alcança, e que o foco
+    // inicial não o tira dela.
+    expect(screen.getByLabelText("Nome").matches(":focus-visible")).toBe(true);
+  });
+
+  it("o foco inicial não muda o anúncio do campo com erro", () => {
+    render(
+      <Campo rotulo="Nome" valor="" aoAlterar={vi.fn()} erro="Informe o nome." focoInicial />,
+    );
+
+    const campo = screen.getByLabelText("Nome");
+    expect(document.activeElement).toBe(campo);
+    expect(campo).toHaveAttribute("aria-invalid", "true");
+    expect(campo).toHaveAccessibleDescription("Informe o nome.");
+    expect(screen.getByRole("alert")).toHaveTextContent("Informe o nome.");
+  });
+
   it("repassa o teto de caracteres ao campo só quando declarado", () => {
     const { unmount } = render(
       <Campo rotulo="Nome da equipe" valor="" aoAlterar={vi.fn()} maxLength={20} />,
