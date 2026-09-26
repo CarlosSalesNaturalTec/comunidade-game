@@ -83,6 +83,16 @@
     aparelho**, pela Web Speech API do navegador, e ao núcleo chega **texto** — o áudio nunca
     trafega nem custa. Onde o navegador não oferecer a API, a tela oferece o mesmo registro
     por texto digitado (documento 09).
+
+    A **síntese de fala** — a narração que lê as telas em voz alta (documento 15 §5.1) — vai
+    no sentido contrário e **não** cabe na mesma regra: as vozes em pt-BR dos navegadores são
+    em geral **de rede**, e o texto a sintetizar sai do aparelho. É aceito, porque o que sai
+    é texto **da plataforma**, não dado captado de criança — com uma trava: a narração jamais
+    fala o **nome** do Guerreiro(a); dele, só o **nick**, e nenhum outro dado pessoal
+    atravessa. **Sem rede** a narração cai para uma voz local do aparelho, se houver, e sem
+    ela fica em silêncio — sem mensagem de erro, porque nada se perde e o aviso a cada tela
+    custaria mais que o silêncio.
+
 13. **Stack e hospedagem do Ciclo 01.** O Backend API é escrito em **Python 3.12 com FastAPI**
     e roda em **Cloud Run**; o banco é **Cloud SQL para PostgreSQL com PostGIS**, onde ficam
     também as **séries temporais do território**, particionadas por tempo; os arquivos de
@@ -1027,6 +1037,10 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   realização. A **anonimização ocorre na saída**: painéis públicos, exportações, pesquisas e
   entregas a instituições recebem dados **anonimizados**, agregados conforme a finalidade
   (§12.3).
+- **A narração sintetiza texto da plataforma, nunca o nome da criança.** A voz de rede leva o
+  texto ao serviço do navegador para ser falado; o que se manda é conteúdo da própria
+  plataforma e, quando a tela saúda quem chegou, o **nick** — nunca o nome, a data de
+  nascimento, o vínculo nem qualquer outro dado do Guerreiro(a) (§1.12).
 - **A origem do freio das rotas públicas não é dado pessoal.** O resumo criptográfico do IP com
   sal rotativo (§8) não identifica ninguém e não se reverte: o sal troca, o resumo vive só na
   memória pela janela do freio e nunca é gravado. Fica fora do alcance da LGPD pela mesma razão
