@@ -738,8 +738,11 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
 
   - **Assistente de chat com IA** — modelo **Google Gemini** — que explica **proativamente**
     como a plataforma está montada, com **corpus fechado** na documentação e no repositório —
-    fora deles, não responde. **Toda mensagem termina com uma pergunta de múltipla escolha**
-    sobre o próximo passo a conhecer: é o que conduz quem chegou sem saber o que perguntar.
+    fora deles, não responde. O corpus é a documentação de `docs/`, o README da raiz e o
+    contrato OpenAPI que o próprio núcleo gera, montado **pela esteira a cada implantação do
+    núcleo** — sem requisição a terceiro no momento da resposta. **Toda mensagem termina
+    com uma pergunta de múltipla escolha** sobre o próximo passo a conhecer: é o que conduz
+    quem chegou sem saber o que perguntar.
   - **Link para a documentação** publicada com MkDocs.
   - **Formulário de solicitação de chave**, na mesma fila de avaliação dos Admins. Emitida a
     chave, o solicitante tem **30 dias para apresentar a URL** do que construiu; não

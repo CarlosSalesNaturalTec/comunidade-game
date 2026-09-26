@@ -128,7 +128,7 @@ pendência; **desafio extra** espera a entidade `DesafioExtra`; **empréstimo de
 | 13    | Aviso de coleta e direitos na gestão               | `aviso-de-coleta-e-direitos-na-gestao` — `RF-02-64`, `RN-02-23`, `RN-02-24`                        | implementado |
 | 14    | Fila de solicitações do responsável                | `solicitacoes-do-responsavel-e-entregas-na-gestao` — `RF-02-23`, `RF-02-24`, `RF-02-66`; traz também o núcleo da solicitação | implementado |
 | 15    | Desafio extra na gestão                            | `desafio-extra-na-gestao` — `RF-02-27`, `RF-02-28`, `RF-02-106`, `RN-02-10`, `RN-02-11`; a publicação reserva a recompensa e o encerramento pelo Admin a libera (`RF-07-39`, `RF-07-40`); o `RF-02-106` e as rotas do encerramento entraram no PRD-02 por decisão do fundador de 2026-09-02 | implementado |
-| 16    | Vitrine institucional e Apoiador na gestão         | `RF-02-80`, `RF-02-85`, `RF-02-101` — depende do PRD-14 (cadastro de Apoiador) e do PRD-03 (vitrine); leva também a fila dos documentos comprobatórios pendentes e a tela da anexação (`RF-02-101`), e a fila da gestão para homologar ou recusar a declaração de aporte da App 08 — a rota já foi entregue pela fatia 4 do PRD-14 — o ato no núcleo já foi entregue pela fatia 3 do PRD-14 | em aberto    |
+| 16    | Vitrine institucional e Apoiador na gestão         | `RF-02-80`, `RF-02-85`, `RF-02-101` — depende do PRD-14 (cadastro de Apoiador) e da fatia 5 do PRD-03, que leva a entidade e a rota pública do conteúdo institucional — aqui fica só a tela de edição do Admin (decisão do fundador, 2026-09-26); leva também a fila dos documentos comprobatórios pendentes e a tela da anexação (`RF-02-101`), e a fila da gestão para homologar ou recusar a declaração de aporte da App 08 — a rota já foi entregue pela fatia 4 do PRD-14 — o ato no núcleo já foi entregue pela fatia 3 do PRD-14 | em aberto    |
 | 18    | Tabela e ficha de personas na gestão               | `2026-09-06-tabela-e-ficha-de-personas-na-gestao` — `RF-02-01`, `RF-02-02`, `RF-02-03`, `RF-02-04`, `RN-02-01`, `RN-14-10`: a lista de Mestres e Apoiadores passa a tabela, com ficha de leitura que mostra os artefatos comprobatórios — hoje o núcleo os serve e a tela os descarta. Depende da fatia transversal da camada visual densa; não cria requisito novo nem rota nova | implementado |
 | 19    | Catálogo de tipos de recurso e de coleta na gestão  | `RF-02-107`, `RF-02-108`: os dois catálogos que o Admin mantém não têm tela em lugar nenhum — nascem vazios e assim ficam, e com eles ficam vazios os dois seletores da App 09, o da recompensa pelo desbloqueio e o do desafio de coleta. O núcleo já serve criar e listar os dois; a fatia é só de tela, em áreas que já existem — Recursos e Território. Editar, desativar e abrir vigência nova não têm rota e saem como pendência (decisão do fundador, 2026-09-09); `RF-07-03`, o cadastro no ato do aporte, é fatia própria — `2026-09-09-catalogo-de-tipos-de-recurso-e-de-coleta-na-gestao` | implementado |
 | 20    | Saldo disponível e formulário por toggle em Recursos e Agenda | `2026-09-17-recursos-disponiveis-e-agenda-filtrada-na-gestao` — reorganização de tela sobre requisito já entregue, decisão do fundador de 2026-09-17: em Recursos, o formulário de aporte (`RF-02-57`) e o de missão do Apoiador (`RF-02-102`) passam a ficar atrás de um botão de toggle cada, no padrão já usado em Acervo e Agenda, e a área ganha a lista do saldo disponível por tipo de recurso — conceito já normativo por `RF-02-45` e `RF-02-97`, reaproveitando a rota que a área Pontos de Apoio já consome, sem rota nova. Na Agenda, a lista some por padrão as aulas com situação `cancelada` — decisão de exibição do fundador, sem regra de negócio nova —, com opção de reexibir, e o filtro de comunidade e período continua sempre visível — sem mudar a rota `/v1/aulas`. Não cria requisito, rota nem entidade nova | implementado |
@@ -293,6 +293,32 @@ de Admin na App 03. O documento 14 §§5 e 11 gravou a decisão e o PRD-02 ganho
 `RF-02-102` a `RF-02-105` e a `RN-02-31`, entregues pela fatia 5 do PRD-14 junto da entidade de
 que dependem.
 
+## PRD-03 — Vitrine pública (App 06)
+
+| Fatia | Entrega                                                       | Recorte                                                                                                                                                                                                                                                                                                | Situação  |
+| ----- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- |
+| 1     | Esqueleto da App 06, raiz do domínio e botão "Entrar"         | `RF-03-01`, `RF-03-25`, `RF-03-26`, `RF-03-50`, `RF-03-51`, `RF-03-58` a `RF-03-62`, `RN-03-01`, `RN-03-21`, `RN-03-22`, `RN-03-27`, `RN-03-33` — pasta nova em `apps/app-06-vitrine`, e com ela a esteira de CI e o deploy dela. Temperamento **Arena** (documento 15 §6), cuja camada de tema já existe. Os três recortes de leitura entram como navegação, sem área restrita e sem nada guardado no aparelho. Sem rota nova: a vitrine consome a API com a chave da aplicação, e o visitante segue anônimo | em aberto |
+| 2     | Cards, páginas e portfólio dos Guerreiros e Guerreiras        | `RF-03-02` (parte), `RF-03-03` a `RF-03-06`, `RF-03-08`, `RF-03-09`, `RF-03-11` a `RF-03-14`, `RF-03-36`, `RF-03-37`, `RN-03-02` a `RN-03-08`, `RN-03-34` — o núcleo está pronto: `/vitrine/guerreiros`, `/vitrine/guerreiros/{nick}`, `/vitrine/criacoes`, `/vitrine/rankings` e `/vitrine/poderes`, com o freio por origem de `protecao-das-rotas-publicas`. Leva a busca por nick exato, com a mesma resposta para nick inexistente e nick sem autorização. A carta do Guerreiro(a) já existe em `comum/carta`; a rotação de 5 s do `RF-03-04` respeita `prefers-reduced-motion` e nunca é a única via ao conteúdo (documento 15 §§5, 8.1) | em aberto |
+| 3     | Painel do território, séries e cobertura da Agenda 2030       | `RF-03-02` (parte), `RF-03-15` a `RF-03-24`, `RF-03-63` a `RF-03-65`, `RN-03-09`, `RN-03-10`, `RN-03-19`, `RN-03-20`, `RN-03-28` — prontos `/comunidades`, `/comunidades/{id}`, `/comunidades/{id}/series` e `/vitrine/ods/cobertura`, com o piso de coletores já aplicado. **Tem delta de spec** em `leitura-publica-do-territorio`: a metodologia por série — o que mede, cadência, período coberto, origem da medição e número de registros válidos (`RF-03-17`, `RF-03-18`) — e o sinal de série inativa (`RF-03-19`) não saem na rota pública, que hoje leva só momento, valor e recorte. Leva a variante **Comunidade Virtual** da carta e a representação visual do documento 11 §8.3, e abre com o bloco do gestor público. O `/comunidades/{id}/ods` do PRD-03 §9 não existe: a `proposal` confere se o recorte da rota agregada basta | em aberto |
+| 4     | Formulários de participação e de dados                        | `RF-03-27` a `RF-03-35`, `RN-03-11` a `RN-03-14` — núcleo pronto em `fila-de-avaliacao`, com freio por origem nos dois formulários. É fatia de tela: os avisos de que nada cria cadastro nem acesso, o prazo de 7 dias, a confirmação do registro e a espera crescente em linguagem simples, sem CAPTCHA | em aberto |
+| 5     | Institucional, transparência e nota sobre IA                  | `RF-03-45`, `RF-03-46`, `RF-03-48`, `RF-03-49`, `RF-03-52`, `RF-03-53`, `RN-03-23` — **leva o núcleo**: a entidade do conteúdo institucional e a rota `GET /vitrine/conteudo-institucional`, que não existem. A tela de edição do Admin fica com a fatia 16 do PRD-02, que deixa de bloquear esta — decisão do fundador de 2026-09-26. Fecha a linha do documento 09 sobre a **etiqueta de IA**: a nota de transparência que as Apps 01 e 05 apontam passa a existir. **Entrega em parte:** o texto da nota (PRD-03 §14) e o vídeo de apresentação (`RF-03-49`, desejável) são insumos do fundador — a tela os admite e exibe o que for publicado | em aberto |
+| 6     | Convite ao acompanhamento e necessidades em aberto            | `RF-03-38` a `RF-03-44`, `RF-03-47`, `RN-03-15` a `RN-03-17`, `RN-03-25` — `/vitrine/necessidades` pronto, e a porta do pré-cadastro da App 08 já existe (`porta-publica-de-pre-cadastro`): a fatia liga a chamada "Quero participar" a ela, sem carregar quem estava sendo visto. A chave PIX do `RF-03-43` vem da fatia 5 | em aberto |
+| 7     | Cards e páginas de Mestres e Apoiadores                       | `RF-03-02` (parte), `RF-03-07`, `RF-03-10`, `RF-03-55` a `RF-03-57`, `RF-03-66`, `RN-03-18`, `RN-03-26` — leva no núcleo as rotas `GET /vitrine/mestres` e `GET /vitrine/apoiadores`, que não existem, e na camada comum as variantes **Mestre** e **Apoiador** da carta, que a fatia transversal de 2026-09-25 deixou "em fatia própria de cada uma". **Fecha a pendência do `RF-14-52`**: é a página pública de onde o Apoiador favorita o Mestre | em aberto |
+| 8     | Área do Apoiador Desenvolvedor                                | `RF-03-67` a `RF-03-77`, `RN-03-29` a `RN-03-32`, `RN-03-35` — `POST /solicitacoes-de-chave` e `POST /chaves/{id}/url` prontos; falta `POST /v1/assistente-do-desenvolvedor`, sobre o adaptador Gemini que `backend/src/nucleo/assistente/` já traz. O **corpus** foi decidido pelo fundador em 2026-09-26 e gravado no documento 03 §8 e no documento 09 §1: a documentação de `docs/`, o README da raiz e o contrato OpenAPI do núcleo, montado pela esteira a cada implantação. A área utilizável com o assistente fora do ar (`RF-03-72`) é tarefa da fatia, não fatia à parte | em aberto |
+
+O núcleo da vitrine já está quase todo de pé, entregue pelos PRDs 01, 07, 08 e 13: as seis
+rotas de `leitura-publica-da-vitrine`, as do território, as necessidades, as três solicitações
+públicas com freio por origem e a apresentação da URL da chave. Só três fatias levam rota nova
+— a 5, a 7 e a 8 —, e uma leva delta de spec, a 3.
+
+A sexta seção do `RF-03-02`, **batalhas**, não tem fatia aqui: o dado é do PRD-10 e
+`/vitrine/batalhas` não existe. Decisão do fundador de 2026-09-26: a vitrine entrega as cinco
+seções que têm dado, o `RF-03-02` sai declaradamente parcial, e a seção de batalhas entra no
+fatiamento do PRD-10.
+
+Fora do cronograma: `RF-03-54` e `RN-03-24` não existem no PRD — lacuna de numeração, não
+requisito retirado.
+
 ## PRDs ainda não fatiados
 
 Cada um recebe as suas fatias quando entrar na fila, em uma sessão de fatiamento própria — não
@@ -300,7 +326,6 @@ a cada change.
 
 | Ordem (doc 99 §9) | PRD    | Entrega                        | Situação  |
 | ----------------- | ------ | ------------------------------ | --------- |
-| 10                | PRD-03 | App 06 — vitrine pública       | a fatiar  |
 | 11                | PRD-10 | Batalhas e eventos presenciais | a fatiar  |
 | 12                | PRD-11 | Personalização por IA          | a fatiar  |
 | 13                | PRD-12 | App 04 — jogo em JavaScript    | a fatiar  |
@@ -308,9 +333,9 @@ a cada change.
 O PRD-14 já está fatiado, no bloco acima: a entidade `DesafioExtra` que ele define (§8) destrava
 a fatia 15 do PRD-02, a 15 do PRD-09 e a 8 do PRD-05, e entra pela fatia 1 dele.
 
-Dois pedaços do PRD-14 esperam por PRDs desta lista, e o fatiamento deles precisa recolhê-los: o
-**PRD-03** leva a página pública do Mestre, de onde o `RF-14-52` favorita, e o **PRD-10** leva o
-resultado de batalha, quinto fato da novidade do `RF-14-53`.
+Um pedaço do PRD-14 espera por um PRD desta lista, e o fatiamento dele precisa recolhê-lo: o
+**PRD-10** leva o resultado de batalha, quinto fato da novidade do `RF-14-53`. A página pública
+do Mestre, de onde o `RF-14-52` favorita, já está recolhida na fatia 7 do PRD-03.
 
 ## Infraestrutura transversal (sem PRD)
 
