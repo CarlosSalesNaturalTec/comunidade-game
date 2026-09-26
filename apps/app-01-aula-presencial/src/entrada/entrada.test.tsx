@@ -1038,17 +1038,12 @@ describe("a conferência comum do PIN, vista da confirmação de identidade (RN-
 // onde a carta domina a tela (documento 15 §6, decisão do fundador de
 // 2026-09-25).
 describe("a carta domina a tela da Arena (documento 15 §6)", () => {
-  function mockarCarta() {
-    vi.spyOn(cartaApi, "listarMinhasSeriesDaCarta").mockResolvedValue({
-      itens: [{ comunidade_virtual_id: "comunidade-1" }],
-    });
+  function mockarCarta(posicao?: { posicao: number; pontos_regulares: number }) {
+    // Nenhuma leitura de série de coleta: a identificação vem de `GET /v1/eu` e
+    // o desempenho do ranking, que o núcleo recorta pelo vínculo vigente
+    // (`RF-01-76`, decisão do fundador de 2026-09-26).
     vi.spyOn(cartaApi, "obterMinhaPosicaoNoRanking").mockResolvedValue({
-      minha_posicao: {
-        avatar: null,
-        nick: "Zeferina",
-        posicao: 2,
-        pontos_regulares: 40,
-      },
+      minha_posicao: posicao ?? { posicao: 2, pontos_regulares: 40 },
     });
     vi.spyOn(cartaApi, "obterProgressoDaCarta").mockResolvedValue([
       {
@@ -1087,9 +1082,17 @@ describe("a carta domina a tela da Arena (documento 15 §6)", () => {
     } as unknown as ReturnType<typeof useSessao>);
   }
 
-  async function chegarAoDesfecho() {
+  async function chegarAoDesfecho(
+    posicao?: { posicao: number; pontos_regulares: number },
+    opcoes: { semRanking?: boolean } = {},
+  ) {
     configurarSessaoAberta();
-    mockarCarta();
+    mockarCarta(posicao);
+    if (opcoes.semRanking) {
+      vi.spyOn(cartaApi, "obterMinhaPosicaoNoRanking").mockRejectedValue(
+        Object.assign(new Error("sem vínculo vigente"), { codigo: "permissao_negada" }),
+      );
+    }
     vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
     vi.spyOn(biometriaModulo, "prepararCaptura").mockResolvedValue(undefined);
     vi.spyOn(biometriaModulo, "acoplarEspelho").mockImplementation(() => {});
@@ -1105,6 +1108,7 @@ describe("a carta domina a tela da Arena (documento 15 §6)", () => {
       persona_id: "guerreiro-1",
       papel: "guerreiro",
       permissoes: {},
+      nick: "Zeferina",
     });
     mockarRegistrarPresencaEcoando();
 
@@ -1132,10 +1136,40 @@ describe("a carta domina a tela da Arena (documento 15 §6)", () => {
     expect(screen.getByRole("button", { name: /voltar ao início/i })).toBeInTheDocument();
 
     // A frase da presença registrada não se perde: fica no apoio, abaixo da
-    // carta.
+    // carta — e **uma vez só** na tela (`RF-04-67`).
     expect(container.querySelector(".cg-palco__apoio")?.textContent).toMatch(
       /a presença de hoje está registrada/i,
     );
+    const vezesQueConfirma = (container.textContent ?? "").match(
+      /a presença de hoje está registrada/gi,
+    );
+    expect(vezesQueConfirma).toHaveLength(1);
+  });
+
+  it("a carta aparece a quem nunca abriu série de coleta", async () => {
+    // O defeito que esta fatia corrige: a comunidade vinha das séries de
+    // coleta, e quem nunca abriu série via o aviso de carta incompleta no lugar
+    // da carta (decisão do fundador de 2026-09-26).
+    const container = await chegarAoDesfecho({ posicao: 9, pontos_regulares: 0 });
+
+    const carta = await screen.findByRole("article", { name: /carta de zeferina/i });
+    expect(container.querySelector(".cg-palco__personagem")).toContainElement(carta);
+    expect(screen.getByText(/9º na comunidade, com 0 pontos/)).toBeInTheDocument();
+  });
+
+  it("sem carta, o desfecho declara falta e não anuncia espera", async () => {
+    const container = await chegarAoDesfecho(undefined, { semRanking: true });
+
+    // Tom de falta, nunca de coisa em curso: a montagem já terminou, e
+    // "Em andamento:" mandava esperar uma tela que não ia mudar (`RF-04-67`).
+    const avisoDaCarta = await screen.findByText(/a sua carta aparece aqui quando/i);
+    expect(avisoDaCarta).toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/em andamento/i);
+    // E a confirmação da presença continua dita uma vez só.
+    const vezesQueConfirma = (container.textContent ?? "").match(
+      /a presença de hoje está registrada/gi,
+    );
+    expect(vezesQueConfirma).toHaveLength(1);
   });
 
   it("sem foto escolhida, o desfecho é a cor chapada, e nenhuma imagem é pedida", async () => {

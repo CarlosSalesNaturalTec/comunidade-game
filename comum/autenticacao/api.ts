@@ -47,6 +47,12 @@ export interface Eu {
   /** Só vem para Mestre e Admin: se já há PIN de confirmação cadastrado —
    * nunca o PIN (`RF-09-121`, `RF-02-110`). */
   tem_pin_de_confirmacao?: boolean;
+  /** Só vem para o Guerreiro(a), e só o dele: a única leitura logada que lhe
+   * devolve a própria identificação (`RF-01-76`, decisão do fundador de
+   * 2026-09-26). */
+  nick?: string;
+  /** Ausente é o avatar padrão do projeto, não falta (documento 15 §7.3). */
+  avatar?: string;
 }
 
 export function eu(token: string): Promise<Eu> {

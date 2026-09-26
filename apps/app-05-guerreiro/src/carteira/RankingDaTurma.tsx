@@ -7,7 +7,6 @@ import {
   type PoderPublico,
   type RankingDaTurma as RankingDaTurmaResposta,
 } from "../api/carteira";
-import { listarMinhasSeries } from "../api/coleta";
 
 type Recorte =
   | { tipo: "geral" }
@@ -26,57 +25,44 @@ function ehRecusaDeSessao(erro: unknown): boolean {
 // O ranking logado da turma: alcança a comunidade inteira, inclusive quem
 // não autorizou divulgação, e traz sempre a própria posição — a exceção
 // declarada porque a tela é logada (`RF-05-52`, `RF-05-53`, `RF-05-84`,
-// `RN-05-16`, `RN-05-21`). A comunidade do Guerreiro(a) não vem de nenhuma
-// leitura própria: é derivada das suas séries de coleta abertas, o mesmo
-// caminho que a tela da coleta já usa.
+// `RN-05-16`, `RN-05-21`). A comunidade é do **vínculo vigente**, derivada
+// pelo núcleo: a tela não a descobre antes de perguntar. Vinha das séries de
+// coleta abertas, e quem nunca abriu série ficava sem ranking (decisão do
+// fundador de 2026-09-26).
 export function RankingDaTurma() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
-  const [comunidadeId, definirComunidadeId] = useState<string | null | undefined>(undefined);
   const [poderes, definirPoderes] = useState<PoderPublico[]>([]);
   const [recorte, definirRecorte] = useState<Recorte>({ tipo: "geral" });
   const [ranking, definirRanking] = useState<RankingDaTurmaResposta | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
+
+  // O catálogo de poderes só alimenta o seletor de recorte: não é pré-condição
+  // do ranking, e falhar nele não deixa a tela sem ranking.
+  useEffect(() => {
+    let cancelado = false;
+
+    listarPoderesPublicos()
+      .then((poderesPublicos) => {
+        if (!cancelado) definirPoderes(poderesPublicos);
+      })
+      .catch(() => {
+        if (!cancelado) definirPoderes([]);
+      });
+
+    return () => {
+      cancelado = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!sessao) return;
     const token = sessao.token;
     let cancelado = false;
 
-    async function resolverComunidade() {
-      try {
-        const [pagina, poderesPublicos] = await Promise.all([
-          listarMinhasSeries(token),
-          listarPoderesPublicos(),
-        ]);
-        if (cancelado) return;
-        definirComunidadeId(pagina.itens[0]?.comunidade_virtual_id ?? null);
-        definirPoderes(poderesPublicos);
-      } catch (erroCapturado) {
-        if (cancelado) return;
-        if (ehRecusaDeSessao(erroCapturado)) {
-          tratarRecusaDeSessao();
-          return;
-        }
-        definirComunidadeId(null);
-      }
-    }
-
-    resolverComunidade();
-    return () => {
-      cancelado = true;
-    };
-  }, [sessao, tratarRecusaDeSessao]);
-
-  useEffect(() => {
-    if (!sessao || !comunidadeId) return;
-    const token = sessao.token;
-    const comunidade = comunidadeId;
-    let cancelado = false;
-
     async function carregarRanking() {
       definirErro(null);
       try {
-        const resultado = await listarRankingDaTurma(comunidade, token, {
+        const resultado = await listarRankingDaTurma(token, {
           trilhaId: recorte.tipo === "trilha" ? recorte.id : undefined,
           poderId: recorte.tipo === "poder" ? recorte.id : undefined,
         });
@@ -96,19 +82,7 @@ export function RankingDaTurma() {
     return () => {
       cancelado = true;
     };
-  }, [sessao, comunidadeId, recorte, tratarRecusaDeSessao]);
-
-  if (comunidadeId === undefined) {
-    return <EstadoDaLista>Carregando o ranking…</EstadoDaLista>;
-  }
-
-  if (comunidadeId === null) {
-    return (
-      <EstadoDaLista>
-        Abra uma série de coleta na sua trilha para ver o ranking da sua turma.
-      </EstadoDaLista>
-    );
-  }
+  }, [sessao, recorte, tratarRecusaDeSessao]);
 
   return (
     <section className="cg-ranking-da-turma" aria-label="Ranking da turma">

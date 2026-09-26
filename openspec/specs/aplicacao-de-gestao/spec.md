@@ -812,10 +812,26 @@ mesmo Guerreiro(a), respeitando o teto de três responsáveis, e SHALL oferecer 
 **credencial de usuário e senha provisória** para o adulto sem conta social (`RF-02-07`).
 (`RN-02-02`, `RN-02-08`, invariante 3 do documento 99 §6)
 
+O cadastro do responsável SHALL declarar o **nome** dele, e NEVER SHALL ser enviado sem o
+nome: é sobre esse nome que se apoia o consentimento que autoriza a captura da imagem da
+criança, e o núcleo o exige de toda aplicação que cadastra responsável. (`RF-02-06`,
+`responsavel-e-vinculo`)
+
 #### Scenario: Admin inclui outro Admin
 
 - **WHEN** um Admin em sessão informa nome e e-mail de um novo Admin e confirma
 - **THEN** o Admin novo passa a existir, sem nenhum caminho de autocadastro envolvido
+
+#### Scenario: O responsável é cadastrado com o nome dele
+
+- **WHEN** o Admin informa o nome do responsável e confirma o cadastro
+- **THEN** o responsável passa a existir com o nome declarado, e o cadastro segue para o
+  vínculo
+
+#### Scenario: Cadastro sem nome não chega ao núcleo
+
+- **WHEN** o Admin tenta cadastrar um responsável sem informar o nome
+- **THEN** a aplicação pede o nome e não envia o cadastro
 
 #### Scenario: Responsável é vinculado com grau de parentesco
 
