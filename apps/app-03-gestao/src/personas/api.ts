@@ -156,10 +156,19 @@ export function incluirAdmin(
 
 export interface ResponsavelCriado {
   id: string;
+  nome: string;
 }
 
-export function cadastrarResponsavel(token: string): Promise<ResponsavelCriado> {
-  return chamarNucleo<ResponsavelCriado>("/v1/responsaveis", { metodo: "POST", token });
+// O nome é o conteúdo mínimo do responsável, e o núcleo o exige de toda
+// aplicação que cadastra: é sobre ele que se apoia o consentimento que
+// autoriza a captura da imagem da criança (`RF-02-06`, `RF-04-60`). E-mail e
+// credencial não entram aqui — a credencial é ato próprio, mais abaixo.
+export function cadastrarResponsavel(nome: string, token: string): Promise<ResponsavelCriado> {
+  return chamarNucleo<ResponsavelCriado>("/v1/responsaveis", {
+    metodo: "POST",
+    corpo: { nome },
+    token,
+  });
 }
 
 export interface CriarVinculoEntrada {

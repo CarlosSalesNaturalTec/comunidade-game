@@ -1,3 +1,6 @@
+from datetime import UTC, datetime
+
+from nucleo.comunidades.modelo import VinculoJogador
 from nucleo.consentimentos.modelo import TipoDeConsentimento
 from nucleo.personas.modelo import Papel
 
@@ -66,7 +69,7 @@ def test_turma_inteira_aparece_mesmo_sem_autorizacao(
     )
 
     cabecalhos = _autenticar(cliente, criar_chave, criar_sessao_de_teste, eu)
-    resposta = cliente.get(f"/v1/rankings/{comunidade.id}", headers=cabecalhos)
+    resposta = cliente.get("/v1/eu/ranking", headers=cabecalhos)
 
     assert resposta.status_code == 200
     nicks = [item["nick"] for item in resposta.json()["itens"]]
@@ -111,9 +114,7 @@ def test_propria_posicao_vem_mesmo_fora_da_pagina(
         )
 
     cabecalhos = _autenticar(cliente, criar_chave, criar_sessao_de_teste, ultimo)
-    resposta = cliente.get(
-        f"/v1/rankings/{comunidade.id}", params={"tamanho": 2}, headers=cabecalhos
-    )
+    resposta = cliente.get("/v1/eu/ranking", params={"tamanho": 2}, headers=cabecalhos)
 
     assert resposta.status_code == 200
     corpo = resposta.json()
@@ -162,7 +163,7 @@ def test_ordena_so_por_ponto_regular(
     )
 
     cabecalhos = _autenticar(cliente, criar_chave, criar_sessao_de_teste, muito_extra_pouco_regular)
-    resposta = cliente.get(f"/v1/rankings/{comunidade.id}", headers=cabecalhos)
+    resposta = cliente.get("/v1/eu/ranking", headers=cabecalhos)
 
     assert resposta.status_code == 200
     itens = resposta.json()["itens"]
@@ -207,33 +208,30 @@ def test_filtra_por_trilha_e_por_poder(
     cabecalhos = _autenticar(cliente, criar_chave, criar_sessao_de_teste, eu)
 
     por_trilha = cliente.get(
-        f"/v1/rankings/{comunidade.id}", params={"trilha": str(trilha_a.id)}, headers=cabecalhos
+        "/v1/eu/ranking", params={"trilha": str(trilha_a.id)}, headers=cabecalhos
     )
     assert por_trilha.status_code == 200
     assert por_trilha.json()["itens"][0]["nick"] == "eu-recorte"
     assert por_trilha.json()["itens"][0]["pontos_regulares"] == 5
 
-    por_poder = cliente.get(
-        f"/v1/rankings/{comunidade.id}", params={"poder": str(poder.id)}, headers=cabecalhos
-    )
+    por_poder = cliente.get("/v1/eu/ranking", params={"poder": str(poder.id)}, headers=cabecalhos)
     assert por_poder.status_code == 200
     assert por_poder.json()["itens"][0]["nick"] == "eu-recorte"
     assert por_poder.json()["itens"][0]["pontos_regulares"] == 50
 
 
 def test_papel_que_nao_e_guerreiro_recebe_403(
-    cliente, criar_chave, criar_sessao_de_teste, criar_persona, criar_comunidade
+    cliente, criar_chave, criar_sessao_de_teste, criar_persona
 ):
-    comunidade = criar_comunidade("Comunidade fechada")
     mestre = criar_persona(Papel.mestre)
 
     cabecalhos = _autenticar(cliente, criar_chave, criar_sessao_de_teste, mestre)
-    resposta = cliente.get(f"/v1/rankings/{comunidade.id}", headers=cabecalhos)
+    resposta = cliente.get("/v1/eu/ranking", headers=cabecalhos)
 
     assert resposta.status_code == 403
 
 
-def test_ranking_de_outra_comunidade_e_recusado(
+def test_ranking_nao_alcanca_comunidade_alheia(
     cliente,
     criar_chave,
     criar_sessao_de_teste,
@@ -251,11 +249,22 @@ def test_ranking_de_outra_comunidade_e_recusado(
         comunidade=comunidade_do_guerreiro,
         nick="guerreiro-de-outra",
     )
+    _guerreiro_na_comunidade(
+        criar_persona,
+        criar_nick,
+        criar_vinculo_jogador,
+        comunidade=outra_comunidade,
+        nick="colega-de-fora",
+    )
 
     cabecalhos = _autenticar(cliente, criar_chave, criar_sessao_de_teste, guerreiro)
-    resposta = cliente.get(f"/v1/rankings/{outra_comunidade.id}", headers=cabecalhos)
+    resposta = cliente.get("/v1/eu/ranking", headers=cabecalhos)
 
-    assert resposta.status_code == 403
+    # Não há como pedir comunidade alheia: a rota devolve a do vínculo
+    # vigente, e nenhuma posição de fora dela chega a quem perguntou.
+    assert resposta.status_code == 200
+    nicks = [item["nick"] for item in resposta.json()["itens"]]
+    assert nicks == ["guerreiro-de-outra"]
 
 
 def test_saida_sem_dado_pessoal(
@@ -284,8 +293,92 @@ def test_saida_sem_dado_pessoal(
     )
 
     cabecalhos = _autenticar(cliente, criar_chave, criar_sessao_de_teste, eu)
-    resposta = cliente.get(f"/v1/rankings/{comunidade.id}", headers=cabecalhos)
+    resposta = cliente.get("/v1/eu/ranking", headers=cabecalhos)
 
     assert resposta.status_code == 200
     item = resposta.json()["itens"][0]
     assert set(item.keys()) == {"avatar", "nick", "posicao", "pontos_regulares"}
+
+
+def test_comunidade_vem_do_vinculo_sem_serie_de_coleta(
+    cliente,
+    criar_chave,
+    criar_sessao_de_teste,
+    criar_persona,
+    criar_nick,
+    criar_vinculo_jogador,
+    criar_comunidade,
+):
+    """O que prendia a carta e o ranking à coleta era a comunidade vir de
+    fora: quem nunca abriu série de coleta não tinha de onde tirá-la
+    (`RF-05-52`, decisão do fundador de 2026-09-26)."""
+    comunidade = criar_comunidade("Comunidade sem coleta alguma")
+    eu = _guerreiro_na_comunidade(
+        criar_persona,
+        criar_nick,
+        criar_vinculo_jogador,
+        comunidade=comunidade,
+        nick="sem-coleta",
+    )
+
+    cabecalhos = _autenticar(cliente, criar_chave, criar_sessao_de_teste, eu)
+    resposta = cliente.get("/v1/eu/ranking", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    assert resposta.json()["minha_posicao"]["nick"] == "sem-coleta"
+
+
+def test_propria_posicao_existe_sem_ponto_creditado(
+    cliente,
+    criar_chave,
+    criar_sessao_de_teste,
+    criar_persona,
+    criar_nick,
+    criar_vinculo_jogador,
+    criar_comunidade,
+):
+    comunidade = criar_comunidade("Comunidade de quem acabou de chegar")
+    eu = _guerreiro_na_comunidade(
+        criar_persona,
+        criar_nick,
+        criar_vinculo_jogador,
+        comunidade=comunidade,
+        nick="acabei-de-chegar",
+    )
+
+    cabecalhos = _autenticar(cliente, criar_chave, criar_sessao_de_teste, eu)
+    resposta = cliente.get("/v1/eu/ranking", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    minha_posicao = resposta.json()["minha_posicao"]
+    assert minha_posicao["pontos_regulares"] == 0
+    assert minha_posicao["posicao"] >= 1
+
+
+def test_sem_vinculo_vigente_nao_ha_ranking(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_sessao_de_teste,
+    criar_persona,
+    criar_nick,
+    criar_vinculo_jogador,
+    criar_comunidade,
+):
+    comunidade = criar_comunidade("Comunidade de quem saiu")
+    eu = _guerreiro_na_comunidade(
+        criar_persona,
+        criar_nick,
+        criar_vinculo_jogador,
+        comunidade=comunidade,
+        nick="vinculo-encerrado",
+    )
+    vinculo = sessao.query(VinculoJogador).filter_by(guerreiro_id=eu.id, data_fim=None).one()
+    vinculo.data_fim = datetime.now(UTC)
+    sessao.commit()
+
+    cabecalhos = _autenticar(cliente, criar_chave, criar_sessao_de_teste, eu)
+    resposta = cliente.get("/v1/eu/ranking", headers=cabecalhos)
+
+    # Recusa, não ranking vazio: sem vínculo não há turma a apresentar.
+    assert resposta.status_code == 403

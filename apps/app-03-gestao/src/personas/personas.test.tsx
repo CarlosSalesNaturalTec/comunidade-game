@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ErroDaApi } from "comum/api";
+import { configurarAcessoAoNucleo, ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as agendaApi from "../agenda/api";
@@ -464,9 +464,12 @@ describe("a gestão liga a linha da tabela à ficha", () => {
 });
 
 describe("cadastro de responsável", () => {
-  it("mostra o aviso de coleta do vínculo e do usuário de acesso", async () => {
+  it("mostra o aviso de coleta do nome, do vínculo e do usuário de acesso", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
-    vi.spyOn(personasApi, "cadastrarResponsavel").mockResolvedValue({ id: "resp-1" });
+    vi.spyOn(personasApi, "cadastrarResponsavel").mockResolvedValue({
+      id: "resp-1",
+      nome: "Dona Maria",
+    });
     vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
       itens: [GUERREIRO],
       proximo_cursor: null,
@@ -474,24 +477,73 @@ describe("cadastro de responsável", () => {
 
     render(<FormularioDeResponsavel onConcluido={vi.fn()} onCancelar={vi.fn()} />);
 
-    expect(screen.getByText(/vínculo do responsável com o guerreiro/i)).toHaveAttribute(
+    expect(screen.getByText(/nome do responsável, o vínculo/i)).toHaveAttribute(
       "role",
       "status",
     );
 
     const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nome do responsável/i), "Dona Maria");
     await usuario.click(screen.getByRole("button", { name: /cadastrar responsável/i }));
 
-    expect(
-      await screen.findByText(/vínculo do responsável com o guerreiro/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/nome do responsável, o vínculo/i)).toBeInTheDocument();
+  });
+
+  // O defeito que esta fatia corrige atravessou o CI porque o teste dublava
+  // `cadastrarResponsavel`: a tela mandava `POST /v1/responsaveis` **sem
+  // corpo** e o núcleo respondia 422 a toda tentativa. Estes dois afirmam o
+  // corpo que sai da tela, com o cliente real por cima de `fetch`
+  // (`RF-02-06`).
+  it("o cadastro leva o nome ao núcleo", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [GUERREIRO],
+      proximo_cursor: null,
+    });
+    configurarAcessoAoNucleo({
+      chaveDeAplicacao: "chave-de-teste",
+      urlDoNucleo: "https://nucleo.teste",
+    });
+    const requisicao = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 201,
+      json: () => Promise.resolve({ id: "resp-1", nome: "Dona Maria" }),
+      headers: new Headers(),
+    } as Response);
+    vi.stubGlobal("fetch", requisicao);
+
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} onCancelar={vi.fn()} />);
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nome do responsável/i), "  Dona Maria  ");
+    await usuario.click(screen.getByRole("button", { name: /cadastrar responsável/i }));
+
+    await screen.findByText(/vincule os guerreiros/i);
+    const [url, opcoes] = requisicao.mock.calls[0];
+    expect(String(url)).toContain("/v1/responsaveis");
+    expect(opcoes?.method).toBe("POST");
+    expect(JSON.parse(String(opcoes?.body))).toEqual({ nome: "Dona Maria" });
+  });
+
+  it("sem nome, o cadastro não chega ao núcleo", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    const cadastrar = vi.spyOn(personasApi, "cadastrarResponsavel");
+
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} onCancelar={vi.fn()} />);
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /cadastrar responsável/i }));
+
+    expect(await screen.findByText(/informe o nome do responsável/i)).toBeInTheDocument();
+    expect(cadastrar).not.toHaveBeenCalled();
   });
 });
 
 describe("o quarto responsável é barrado", () => {
   it("explica o teto de três e o vínculo não é criado", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
-    vi.spyOn(personasApi, "cadastrarResponsavel").mockResolvedValue({ id: "resp-1" });
+    vi.spyOn(personasApi, "cadastrarResponsavel").mockResolvedValue({
+      id: "resp-1",
+      nome: "Dona Maria",
+    });
     vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
       itens: [GUERREIRO],
       proximo_cursor: null,
@@ -507,6 +559,7 @@ describe("o quarto responsável é barrado", () => {
     render(<FormularioDeResponsavel onConcluido={vi.fn()} onCancelar={vi.fn()} />);
     const usuario = userEvent.setup();
 
+    await usuario.type(screen.getByLabelText(/nome do responsável/i), "Dona Maria");
     await usuario.click(screen.getByRole("button", { name: /cadastrar responsável/i }));
     await screen.findByText(/vincule os guerreiros/i);
 

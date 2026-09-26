@@ -167,6 +167,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-75` | Mestre e Admin cadastram e trocam o próprio PIN de confirmação, de 4 dígitos; o núcleo guarda só o verificador e o entrega ao aparelho da sessão de trabalho que o adulto abriu                                          | essencial  |
 | `RF-01-07` | Núcleo grava o _template_ do Guerreiro(a) cadastrado sem imagem assim que o responsável aprova a participação                                                                                                            | essencial  |
 | `RF-01-08` | Mestre ou Admin recadastra a imagem de referência do Guerreiro(a), com registro de quem recadastrou                                                                                                                      | essencial  |
+| `RF-01-76` | Leitura da sessão devolve ao Guerreiro(a) o nick e o avatar dele, e só a ele — é a única leitura logada que lhe entrega a própria identificação                                                                          | essencial  |
 | `RF-01-09` | Adulto autentica por login social vinculado a cadastro existente                                                                                                                                                         | essencial  |
 | `RF-01-10` | Login social ou usuário sem cadastro correspondente é recusado, sem criar persona                                                                                                                                        | essencial  |
 | `RF-01-61` | Núcleo semeia na implantação a persona Admin do fundador, com a identidade social declarada, sem passar por outro Admin                                                                                                  | essencial  |
@@ -404,39 +405,39 @@ Convenções válidas para todas as rotas:
 | Listagem     | paginada, com filtros de comunidade, período e persona                  |
 | Data e hora  | sempre com fuso, e a data do fato nunca é substituída pela do registro  |
 
-| Método | Rota                                                   | Autenticação    | Descrição                                                                        |
-| ------ | ------------------------------------------------------ | --------------- | -------------------------------------------------------------------------------- |
-| POST   | `/v1/sessoes/guerreiro`                                | pública         | Autentica com nick e imagem e abre sessão curta                                  |
-| POST   | `/v1/sessoes/guerreiro/confirmacao`                    | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana, com o PIN de quem confirma |
-| PUT    | `/v1/eu/pin-de-confirmacao`                            | Mestre ou Admin | Cadastra ou troca o próprio PIN de confirmação                                   |
-| GET    | `/v1/eu/pin-de-confirmacao/verificador`                | Mestre ou Admin | Entrega ao aparelho da sessão de trabalho o verificador do PIN, nunca o PIN      |
-| POST   | `/v1/aulas/{id}/presencas/sem-rede`                    | Mestre ou Admin | Registra a presença confirmada sem rede pelo nick, sem abrir sessão              |
-| POST   | `/v1/sessoes/social`                                   | pública         | Autentica adulto por login social                                                |
-| POST   | `/v1/sessoes/credencial`                               | pública         | Autentica adulto por usuário e senha                                             |
-| DELETE | `/v1/sessoes/atual`                                    | autenticada     | Encerra a sessão                                                                 |
-| POST   | `/v1/guerreiros/{id}/descritor`                        | Mestre ou Admin | Grava ou recadastra o _template_ a partir do descritor, com registro             |
-| POST   | `/v1/credenciais`                                      | Admin ou Mestre | Cria credencial de usuário e senha provisória                                    |
-| POST   | `/v1/credenciais/senha`                                | autenticada     | Troca a senha; obrigatória no primeiro acesso                                    |
-| POST   | `/v1/credenciais/dispositivo`                          | Admin ou Mestre | Emite a credencial do sensor e devolve o segredo uma única vez                   |
-| DELETE | `/v1/credenciais/dispositivo/{id}`                     | Admin ou Mestre | Revoga a credencial do sensor, com motivo e autoria                              |
-| POST   | `/v1/responsaveis`                                     | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele                                 |
-| POST   | `/v1/responsaveis/{id}/vinculos`                       | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco                      |
-| GET    | `/v1/eu`                                               | autenticada     | Persona, papéis e permissões da sessão                                           |
-| GET    | `/v1/vitrine/...`                                      | pública         | Consultas públicas de vitrine e rankings                                         |
-| GET    | `/v1/vitrine/guerreiros/{nick}`                        | pública         | Perfil público por nick exato, se houver divulgação autorizada                   |
-| GET    | `/v1/vitrine/ods/cobertura`                            | pública         | Cobertura de ODS agregada por comunidade e ciclo                                 |
-| POST   | `/v1/solicitacoes-de-dados`                            | pública         | Registra pedido do conjunto de dados, sem criar cadastro                         |
-| POST   | `/v1/solicitacoes-de-participacao`                     | pública         | Registra o pedido; do Apoiador, com aporte e comprovante                         |
-| PUT    | `/v1/eu/apoiador/identidade`                           | Apoiador        | Define ou troca o nick e, acima do piso de moedas, o avatar                      |
-| GET    | `/v1/eu/apoiador/identidade`                           | Apoiador        | Nick, avatar, moedas acumuladas e quanto falta para o avatar próprio             |
-| GET    | `/v1/eu/apoiador/documentos`                           | Apoiador        | O que foi declarado, com a marca de publicado ou pendente                        |
-| POST   | `/v1/apoiadores/{id}/artefatos/{artefato_id}/anexacao` | Admin           | Anexa ao cadastro o documento comprobatório, publicando-o                        |
-| GET    | `/v1/auditoria`                                        | Admin           | Trilha de auditoria das ações de gestão                                          |
-| POST   | `/v1/solicitacoes-de-chave`                            | pública         | Registra pedido de chave feito na Área do Apoiador Desenvolvedor                 |
-| POST   | `/v1/chaves`                                           | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez                |
-| POST   | `/v1/chaves/{id}/url`                                  | pública         | Apresenta a URL do que foi construído, dentro dos 30 dias                        |
-| DELETE | `/v1/chaves/{id}`                                      | Admin           | Revoga a chave, com motivo e autoria                                             |
-| GET    | `/v1/chaves`                                           | Admin           | Chaves emitidas, com prazo, URL apresentada e situação                           |
+| Método | Rota                                                   | Autenticação    | Descrição                                                                         |
+| ------ | ------------------------------------------------------ | --------------- | --------------------------------------------------------------------------------- |
+| POST   | `/v1/sessoes/guerreiro`                                | pública         | Autentica com nick e imagem e abre sessão curta                                   |
+| POST   | `/v1/sessoes/guerreiro/confirmacao`                    | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana, com o PIN de quem confirma  |
+| PUT    | `/v1/eu/pin-de-confirmacao`                            | Mestre ou Admin | Cadastra ou troca o próprio PIN de confirmação                                    |
+| GET    | `/v1/eu/pin-de-confirmacao/verificador`                | Mestre ou Admin | Entrega ao aparelho da sessão de trabalho o verificador do PIN, nunca o PIN       |
+| POST   | `/v1/aulas/{id}/presencas/sem-rede`                    | Mestre ou Admin | Registra a presença confirmada sem rede pelo nick, sem abrir sessão               |
+| POST   | `/v1/sessoes/social`                                   | pública         | Autentica adulto por login social                                                 |
+| POST   | `/v1/sessoes/credencial`                               | pública         | Autentica adulto por usuário e senha                                              |
+| DELETE | `/v1/sessoes/atual`                                    | autenticada     | Encerra a sessão                                                                  |
+| POST   | `/v1/guerreiros/{id}/descritor`                        | Mestre ou Admin | Grava ou recadastra o _template_ a partir do descritor, com registro              |
+| POST   | `/v1/credenciais`                                      | Admin ou Mestre | Cria credencial de usuário e senha provisória                                     |
+| POST   | `/v1/credenciais/senha`                                | autenticada     | Troca a senha; obrigatória no primeiro acesso                                     |
+| POST   | `/v1/credenciais/dispositivo`                          | Admin ou Mestre | Emite a credencial do sensor e devolve o segredo uma única vez                    |
+| DELETE | `/v1/credenciais/dispositivo/{id}`                     | Admin ou Mestre | Revoga a credencial do sensor, com motivo e autoria                               |
+| POST   | `/v1/responsaveis`                                     | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele                                  |
+| POST   | `/v1/responsaveis/{id}/vinculos`                       | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco                       |
+| GET    | `/v1/eu`                                               | autenticada     | Persona, papéis e permissões da sessão; do Guerreiro(a), também o nick e o avatar |
+| GET    | `/v1/vitrine/...`                                      | pública         | Consultas públicas de vitrine e rankings                                          |
+| GET    | `/v1/vitrine/guerreiros/{nick}`                        | pública         | Perfil público por nick exato, se houver divulgação autorizada                    |
+| GET    | `/v1/vitrine/ods/cobertura`                            | pública         | Cobertura de ODS agregada por comunidade e ciclo                                  |
+| POST   | `/v1/solicitacoes-de-dados`                            | pública         | Registra pedido do conjunto de dados, sem criar cadastro                          |
+| POST   | `/v1/solicitacoes-de-participacao`                     | pública         | Registra o pedido; do Apoiador, com aporte e comprovante                          |
+| PUT    | `/v1/eu/apoiador/identidade`                           | Apoiador        | Define ou troca o nick e, acima do piso de moedas, o avatar                       |
+| GET    | `/v1/eu/apoiador/identidade`                           | Apoiador        | Nick, avatar, moedas acumuladas e quanto falta para o avatar próprio              |
+| GET    | `/v1/eu/apoiador/documentos`                           | Apoiador        | O que foi declarado, com a marca de publicado ou pendente                         |
+| POST   | `/v1/apoiadores/{id}/artefatos/{artefato_id}/anexacao` | Admin           | Anexa ao cadastro o documento comprobatório, publicando-o                         |
+| GET    | `/v1/auditoria`                                        | Admin           | Trilha de auditoria das ações de gestão                                           |
+| POST   | `/v1/solicitacoes-de-chave`                            | pública         | Registra pedido de chave feito na Área do Apoiador Desenvolvedor                  |
+| POST   | `/v1/chaves`                                           | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez                 |
+| POST   | `/v1/chaves/{id}/url`                                  | pública         | Apresenta a URL do que foi construído, dentro dos 30 dias                         |
+| DELETE | `/v1/chaves/{id}`                                      | Admin           | Revoga a chave, com motivo e autoria                                              |
+| GET    | `/v1/chaves`                                           | Admin           | Chaves emitidas, com prazo, URL apresentada e situação                            |
 
 **"Pública" nesta coluna significa "sem credencial de persona"** — a chave da aplicação
 continua obrigatória em todas elas. Nenhuma rota deste PRD responde sem chave válida.
@@ -620,6 +621,7 @@ e o dos desafios de desbloqueio de cada trilha.
 | Credencial de dispositivo cai ao encerramento da série, e não ao fim do vínculo do Guerreiro(a)      | 03 §1.1           | Queda da credencial de dispositivo                          |
 | Mestre e Admin autenticam o autocadastro do Guerreiro(a) pela sessão de trabalho do App 01           | 02 §1             | Cadastro do Guerreiro(a) sob a sessão de trabalho do App 01 |
 | Confirmação de identidade no encontro exige o PIN de 4 dígitos de quem confirma                      | 03 §1.1           | Confirmação de identidade no encontro exige o PIN do adulto |
+| A leitura da sessão devolve ao Guerreiro(a) o próprio nick e avatar                                  | 11 §8.2           | `GET /v1/eu` devolve nick e avatar do Guerreiro(a)          |
 
 ## 14. Pendências que permanecem
 
@@ -637,6 +639,7 @@ antes no documento 09.
 | `RN-01-57`              | 03 §3.3 (limiar emprestado fora do encontro)       |
 | `RF-01-74` e `RN-01-58` | 03 §1.1 (quem abre a sessão fora do encontro)      |
 | `RF-01-75` e `RN-01-59` | 03 §1.1 (PIN de confirmação do adulto)             |
+| `RF-01-76`              | 11 §8.2 (a carta do Guerreiro(a) exige nick)       |
 | `RF-01-09` a `RF-01-12` | 03 §1.1 (como o adulto entra)                      |
 | `RF-01-61`              | 02 §1 (o fundador é o primeiro Admin)              |
 | `RF-01-13` a `RF-01-15` | 02 §1 e 03 §§1.1, 5, 9, 11 (responsável)           |

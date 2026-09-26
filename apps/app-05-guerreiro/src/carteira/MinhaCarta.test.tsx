@@ -6,17 +6,17 @@ import * as trilhaComumApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MinhaCarta } from "./MinhaCarta";
 
-// As quatro leituras que montam a carta foram promovidas a `comum/carta/api`
-// quando a App 01 passou a apresentar a mesma carta (decisão do fundador de
-// 2026-09-25); é de lá que os mocks partem.
+// As leituras que montam a carta foram promovidas a `comum/carta/api` quando a
+// App 01 passou a apresentar a mesma carta (decisão do fundador de
+// 2026-09-25); é de lá que os mocks partem. A identificação vem de
+// `comum/autenticacao/api`, e nenhuma delas passa pelas séries de coleta
+// (`RF-01-76`, decisão do fundador de 2026-09-26).
 
 const CHAVE_DE_SESSAO = "app-05:teste-minha-carta";
 
-const SERIE = { comunidade_virtual_id: "comunidade-1" };
-
-function mockarLeituras(opcoes: { avatar?: string | null } = {}) {
-  vi.spyOn(cartaApi, "listarMinhasSeriesDaCarta").mockResolvedValue({ itens: [SERIE] });
-
+function mockarLeituras(
+  opcoes: { posicao?: { posicao: number; pontos_regulares: number } } = {},
+) {
   vi.spyOn(trilhaComumApi, "listarPoderesDoCatalogo").mockResolvedValue([
     {
       id: "poder-1",
@@ -27,12 +27,7 @@ function mockarLeituras(opcoes: { avatar?: string | null } = {}) {
   ]);
 
   vi.spyOn(cartaApi, "obterMinhaPosicaoNoRanking").mockResolvedValue({
-    minha_posicao: {
-      avatar: opcoes.avatar === undefined ? '{"v":1,"tom":"t3"}' : opcoes.avatar,
-      nick: "Zeferina",
-      posicao: 3,
-      pontos_regulares: 40,
-    },
+    minha_posicao: opcoes.posicao ?? { posicao: 3, pontos_regulares: 40 },
   });
 
   vi.spyOn(cartaApi, "obterProgressoDaCarta").mockResolvedValue([
@@ -49,13 +44,15 @@ function mockarLeituras(opcoes: { avatar?: string | null } = {}) {
   ]);
 }
 
-async function renderizar() {
+async function renderizar(identidade: { nick?: string; avatar?: string } = {}) {
   sessionStorage.setItem(CHAVE_DE_SESSAO, "token-do-guerreiro");
   vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
     persona_id: "guerreiro-1",
     papel: "guerreiro",
     permissoes: {},
     divulgacao_autorizada: true,
+    nick: "nick" in identidade ? identidade.nick : "Zeferina",
+    avatar: "avatar" in identidade ? identidade.avatar : '{"v":1,"tom":"t3"}',
   });
   await act(async () => {
     render(
@@ -105,9 +102,9 @@ describe("a carta do próprio Guerreiro(a) (`RF-05-50`, `RF-05-51`)", () => {
   });
 
   it("sem avatar, a carta usa o padrão do projeto", async () => {
-    mockarLeituras({ avatar: null });
+    mockarLeituras();
 
-    await renderizar();
+    await renderizar({ avatar: undefined });
 
     const carta = await screen.findByRole("article", { name: /carta de zeferina/i });
     // Nenhum espaço vazio no lugar do avatar: o padrão do projeto ocupa a
@@ -119,13 +116,29 @@ describe("a carta do próprio Guerreiro(a) (`RF-05-50`, `RF-05-51`)", () => {
 
   it("faltando o que a variante exige, nenhuma carta pela metade aparece", async () => {
     mockarLeituras();
-    // Sem comunidade não há ranking, e sem ranking não há avatar, nick nem
-    // desempenho — a Área diz o que tem, em outra forma.
-    vi.spyOn(cartaApi, "listarMinhasSeriesDaCarta").mockResolvedValue({ itens: [] });
+    // Sem desempenho a variante do documento 11 §8.2 não fecha — a Área diz o
+    // que tem, em outra forma.
+    vi.spyOn(cartaApi, "obterMinhaPosicaoNoRanking").mockRejectedValue(
+      Object.assign(new Error("sem vínculo"), { codigo: "permissao_negada" }),
+    );
 
     await renderizar();
 
     expect(await screen.findByText(/A sua carta aparece aqui quando/i)).toBeInTheDocument();
     expect(screen.queryByRole("article")).not.toBeInTheDocument();
+  });
+
+  it("a carta aparece sem série de coleta aberta, com desempenho zerado", async () => {
+    // O defeito que esta fatia corrige: a comunidade vinha das séries de
+    // coleta, e quem nunca abriu série não tinha carta (decisão do fundador de
+    // 2026-09-26). Nenhuma leitura de série é chamada aqui.
+    mockarLeituras({ posicao: { posicao: 7, pontos_regulares: 0 } });
+
+    await renderizar();
+
+    const carta = await screen.findByRole("article", { name: /carta de zeferina/i });
+    expect(carta).toBeInTheDocument();
+    expect(screen.getByText(/7º na comunidade, com 0 pontos/)).toBeInTheDocument();
+    expect(cartaApi).not.toHaveProperty("listarMinhasSeriesDaCarta");
   });
 });

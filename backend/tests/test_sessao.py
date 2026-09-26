@@ -278,6 +278,93 @@ def test_eu_devolve_persona_papel_e_permissoes(
     assert corpo["permissoes"]["escreve"] == ["tudo"]
 
 
+def test_eu_devolve_ao_guerreiro_o_proprio_nick_e_avatar(
+    cliente, criar_chave, criar_persona, criar_nick, criar_sessao_de_teste
+):
+    """`RF-01-76`: é a única leitura logada que devolve ao Guerreiro(a) a
+    própria identificação. Sem ela a carta do documento 11 §8.2 dependia do
+    ranking — e, por ele, de ter série de coleta aberta."""
+    chave, _ = criar_chave()
+    guerreiro = criar_persona(Papel.guerreiro, avatar="cabelo:trancado")
+    criar_nick(guerreiro, "zeferina")
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.get(
+        "/v1/eu", headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["nick"] == "zeferina"
+    assert corpo["avatar"] == "cabelo:trancado"
+
+
+def test_eu_do_guerreiro_sem_avatar_composto_traz_o_nick(
+    cliente, criar_chave, criar_persona, criar_nick, criar_sessao_de_teste
+):
+    """Avatar ausente não é falta: o documento 15 §7.3 manda desenhar o avatar
+    padrão do projeto, e quem monta a tela é que decide."""
+    chave, _ = criar_chave()
+    guerreiro = criar_persona(Papel.guerreiro)
+    criar_nick(guerreiro, "sem-avatar")
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.get(
+        "/v1/eu", headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["nick"] == "sem-avatar"
+    assert "avatar" not in corpo
+
+
+def test_eu_do_adulto_nao_traz_nick_nem_avatar_de_guerreiro(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+
+    resposta = cliente.get(
+        "/v1/eu", headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert "nick" not in corpo
+    assert "avatar" not in corpo
+
+
+def test_eu_do_guerreiro_nao_expoe_dado_vedado(
+    cliente, criar_chave, criar_persona, criar_nick, criar_sessao_de_teste
+):
+    """Invariantes 9 e 10: nem imagem real, nem nome civil, nem canal de
+    contato — a leitura não passa a servi-los junto da identificação."""
+    chave, _ = criar_chave()
+    guerreiro = criar_persona(Papel.guerreiro)
+    criar_nick(guerreiro, "so-o-nick")
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.get(
+        "/v1/eu", headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert set(corpo.keys()) <= {
+        "persona_id",
+        "papel",
+        "permissoes",
+        "divulgacao_autorizada",
+        "tem_pin_de_confirmacao",
+        "nick",
+        "avatar",
+    }
+    for vedado in ("nome", "email", "whatsapp", "nascimento", "imagem", "descritor"):
+        assert vedado not in corpo
+
+
 def test_rota_nova_sem_chave_responde_401_sem_diferenciar_motivo(cliente):
     """Regressão da fatia anterior (RN-01-32): as rotas desta fatia também
     ficam atrás da exigência de chave."""

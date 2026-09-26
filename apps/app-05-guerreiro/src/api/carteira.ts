@@ -88,12 +88,11 @@ interface RecorteDoRanking {
   poderId?: string;
 }
 
-// O ranking logado é a única leitura restrita à própria Comunidade Virtual
-// por segmento na URL, e não por filtro de query — o núcleo recusa com 403
-// qualquer comunidade que não seja a do Guerreiro(a) em sessão (`RF-05-52`,
-// `RF-05-84`).
+// O núcleo deriva a comunidade do **vínculo vigente** de quem pergunta e
+// recusa com 403 quem não tem vínculo: a tela não declara comunidade alguma,
+// como já vale para o catálogo acima (`RF-05-52`, `RF-05-84`, `RN-05-16`,
+// decisão do fundador de 2026-09-26).
 export function listarRankingDaTurma(
-  comunidadeId: string,
   token: string,
   recorte?: RecorteDoRanking,
 ): Promise<RankingDaTurma> {
@@ -101,8 +100,7 @@ export function listarRankingDaTurma(
   if (recorte?.trilhaId) parametros.set("trilha", recorte.trilhaId);
   if (recorte?.poderId) parametros.set("poder", recorte.poderId);
   const consulta = parametros.toString();
-  return chamarNucleo<RankingDaTurma>(
-    `/v1/rankings/${encodeURIComponent(comunidadeId)}${consulta ? `?${consulta}` : ""}`,
-    { token },
-  );
+  return chamarNucleo<RankingDaTurma>(`/v1/eu/ranking${consulta ? `?${consulta}` : ""}`, {
+    token,
+  });
 }

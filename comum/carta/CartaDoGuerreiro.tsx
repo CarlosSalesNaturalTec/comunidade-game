@@ -1,5 +1,6 @@
 import { ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
+import { eu as lerSessao } from "comum/autenticacao/api";
 import {
   Aviso,
   type BadgeNaCarta,
@@ -13,7 +14,6 @@ import {
 import { listarPoderesDoCatalogo, type PoderPublico } from "comum/trilha/api";
 import { useEffect, useState } from "react";
 import {
-  listarMinhasSeriesDaCarta,
   type MinhaPosicaoNoRanking,
   obterMinhaPosicaoNoRanking,
   obterPortfolioDaCarta,
@@ -34,6 +34,12 @@ import {
 // Faltando qualquer coisa que a variante exige, **não se apresenta carta pela
 // metade** (documento 11 §8.2): quem monta a tela diz em uma frase o que tem,
 // e a carta não aparece.
+//
+// A identificação vem de `GET /v1/eu` e o desempenho do ranking logado da
+// própria turma, que o núcleo recorta pelo **vínculo vigente**. Antes as duas
+// vinham da `minha_posicao` do ranking, e a comunidade dele era adivinhada das
+// **séries de coleta**: quem nunca abriu série não tinha carta — nem na Área,
+// nem no desfecho da presença (`RF-01-76`, decisão do fundador de 2026-09-26).
 
 const FAMILIAS: Record<string, FamiliaDeBadge> = {
   de_nivel: "de_nivel",
@@ -99,27 +105,36 @@ export function CartaDoGuerreiro({ aviso }: Props) {
     async function montar() {
       // Cada leitura que falta deixa o campo dela `undefined`, e é isso que a
       // carta lê para recusar a montagem incompleta.
+      let identificacao: { nick?: string; avatar?: string } | undefined;
       let minhaPosicao: MinhaPosicaoNoRanking | undefined;
       let poderes: PoderPublico[] = [];
       let progresso: ProgressoDaTrilhaNaCarta[] | undefined;
       let criacoes: string[] | undefined;
 
       try {
-        const [series, catalogo] = await Promise.all([
-          listarMinhasSeriesDaCarta(token),
+        const [quemSou, catalogo] = await Promise.all([
+          lerSessao(token),
           listarPoderesDoCatalogo().catch(() => [] as PoderPublico[]),
         ]);
         poderes = catalogo;
-        const comunidade = series.itens[0]?.comunidade_virtual_id;
-        if (comunidade !== undefined) {
-          minhaPosicao = (await obterMinhaPosicaoNoRanking(comunidade, token)).minha_posicao;
-        }
+        identificacao = { nick: quemSou.nick, avatar: quemSou.avatar };
       } catch (erroCapturado) {
         if (cancelado) return;
         if (ehRecusaDeSessao(erroCapturado)) {
           tratarRecusaDeSessao();
           return;
         }
+      }
+
+      try {
+        minhaPosicao = (await obterMinhaPosicaoNoRanking(token)).minha_posicao;
+      } catch (erroCapturado) {
+        if (cancelado) return;
+        if (ehRecusaDeSessao(erroCapturado)) {
+          tratarRecusaDeSessao();
+          return;
+        }
+        minhaPosicao = undefined;
       }
 
       try {
@@ -139,8 +154,8 @@ export function CartaDoGuerreiro({ aviso }: Props) {
       if (cancelado) return;
       definirDados({
         variante: "guerreiro",
-        avatar: minhaPosicao?.avatar,
-        nick: minhaPosicao?.nick,
+        avatar: identificacao?.avatar,
+        nick: identificacao?.nick,
         desempenho: minhaPosicao && desempenho(minhaPosicao),
         poderes: progresso && poderesComNivel(progresso, poderes),
         badges: progresso && badgesDoProgresso(progresso, poderes),
@@ -156,7 +171,10 @@ export function CartaDoGuerreiro({ aviso }: Props) {
 
   if (dados === null) return <EstadoDaLista>Montando a sua carta…</EstadoDaLista>;
 
-  if (!cartaEstaCompleta(dados)) return <Aviso tipo="andamento">{aviso}</Aviso>;
+  // Tom de **falta**, não de coisa em curso: a montagem já terminou, e o
+  // rótulo "Em andamento:" mandava esperar uma tela que não ia mudar
+  // (`RF-04-67`, documento 15 §5).
+  if (!cartaEstaCompleta(dados)) return <Aviso tipo="atencao">{aviso}</Aviso>;
 
   return <CartaDoPersonagem dados={dados} />;
 }

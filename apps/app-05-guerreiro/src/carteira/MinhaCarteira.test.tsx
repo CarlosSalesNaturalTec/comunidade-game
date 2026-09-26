@@ -14,7 +14,9 @@ async function renderizar(divulgacaoAutorizada?: boolean) {
   // A carta do próprio Guerreiro(a) vem à frente da carteira e tem teste
   // próprio em `MinhaCarta.test.tsx`; aqui basta que ela não peça rede: sem
   // comunidade não há carta, e a Área apresenta o que tem em outra forma.
-  vi.spyOn(cartaApi, "listarMinhasSeriesDaCarta").mockResolvedValue({ itens: [] });
+  vi.spyOn(cartaApi, "obterMinhaPosicaoNoRanking").mockResolvedValue({
+    minha_posicao: { posicao: 1, pontos_regulares: 0 },
+  });
   vi.spyOn(trilhaComumApi, "listarPoderesDoCatalogo").mockResolvedValue([]);
   vi.spyOn(cartaApi, "obterProgressoDaCarta").mockResolvedValue([]);
   vi.spyOn(cartaApi, "obterPortfolioDaCarta").mockResolvedValue([]);
@@ -36,7 +38,9 @@ async function renderizar(divulgacaoAutorizada?: boolean) {
 /** Como `renderizar`, devolvendo o container para as asserções de composição. */
 async function renderizarRetornando() {
   sessionStorage.setItem(CHAVE_DE_SESSAO, "token-do-guerreiro");
-  vi.spyOn(cartaApi, "listarMinhasSeriesDaCarta").mockResolvedValue({ itens: [] });
+  vi.spyOn(cartaApi, "obterMinhaPosicaoNoRanking").mockResolvedValue({
+    minha_posicao: { posicao: 1, pontos_regulares: 0 },
+  });
   vi.spyOn(trilhaComumApi, "listarPoderesDoCatalogo").mockResolvedValue([]);
   vi.spyOn(cartaApi, "obterProgressoDaCarta").mockResolvedValue([]);
   vi.spyOn(cartaApi, "obterPortfolioDaCarta").mockResolvedValue([]);

@@ -47,9 +47,8 @@ class RankingDaTurmaSaida(BaseModel):
     minha_posicao: ItemDoRankingDaTurmaSaida
 
 
-@roteador.get("/rankings/{comunidade}")
+@roteador.get("/eu/ranking")
 def ranking_da_turma_rota(
-    comunidade: uuid.UUID,
     parametros: Annotated[
         ParametrosDeListagem, Depends(contrato_de_listagem(_FILTROS_DO_RANKING_DA_TURMA))
     ],
@@ -58,9 +57,14 @@ def ranking_da_turma_rota(
 ) -> RankingDaTurmaSaida:
     """Ranking logado da turma inteira, restrito ao Guerreiro(a) da própria
     comunidade — a exceção declarada à divulgação, porque a tela é logada e
-    a comunidade do segmento é sempre conferida contra o vínculo vigente de
-    quem pergunta (`RF-05-52`, `RF-05-53`, `RF-05-84`, `RN-05-16`,
-    `RN-05-21`)."""
+    a comunidade é a do vínculo vigente de quem pergunta (`RF-05-52`,
+    `RF-05-53`, `RF-05-84`, `RN-05-16`, `RN-05-21`).
+
+    A comunidade é **derivada** do vínculo, nunca declarada por quem
+    pergunta: o núcleo já a lia para recusar comunidade alheia, e exigi-la de
+    fora obrigava cada tela a descobri-la por outra leitura antes de poder
+    perguntar — era o que prendia a carta e o ranking a ter série de coleta
+    aberta (decisão do fundador de 2026-09-26, documento 09 §1)."""
     if contexto.papel != Papel.guerreiro:
         raise PermissaoNegada(mensagem="Só o Guerreiro(a) lê o ranking logado da turma.")
 
@@ -69,8 +73,11 @@ def ranking_da_turma_rota(
         .filter_by(guerreiro_id=contexto.persona_id, data_fim=None)
         .first()
     )
-    if vinculo is None or vinculo.comunidade_virtual_id != comunidade:
-        raise PermissaoNegada(mensagem="Só a própria comunidade é consultada por esta rota.")
+    if vinculo is None:
+        raise PermissaoNegada(
+            mensagem="Só o Guerreiro(a) com vínculo vigente tem ranking de turma."
+        )
+    comunidade = vinculo.comunidade_virtual_id
 
     trilha_id = _analisar_uuid(parametros.filtros.get("trilha"), "trilha")
     poder_id = _analisar_uuid(parametros.filtros.get("poder"), "poder")

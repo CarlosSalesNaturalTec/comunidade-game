@@ -20,15 +20,22 @@ interface Props {
 const TETO_DE_RESPONSAVEIS_POR_MENSAGEM =
   "Este Guerreiro(a) já tem três responsáveis vigentes — o teto por criança.";
 
-const DADO_COLETADO = "o vínculo do responsável com o Guerreiro(a) e o usuário de acesso dele";
+const DADO_COLETADO =
+  "o nome do responsável, o vínculo dele com o Guerreiro(a) e o usuário de acesso dele";
 
 // Cadastro, vínculo e credencial provisória em um só fluxo: o responsável
 // nasce sem nenhum acesso a Guerreiro(a) algum, o vínculo declara o grau de
 // parentesco, e o teto de três é do núcleo (`RF-02-06`, `RF-02-07`,
 // `RN-02-08`, invariante 3 do documento 99 §6).
+//
+// O cadastro declara o **nome**: é sobre ele que se apoia o consentimento que
+// autoriza a captura da imagem da criança, e o núcleo o exige. A tela nascera
+// sem o campo e mandava o cadastro **sem corpo**, o que respondia 422 a toda
+// tentativa — as Apps 09 e 01 já o mandavam.
 export function FormularioDeResponsavel({ onConcluido, onCancelar }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoCampoDeGuerreiro = useId();
+  const [nome, definirNome] = useState("");
   const [responsavelId, definirResponsavelId] = useState<string | null>(null);
   const [guerreiros, definirGuerreiros] = useState<GuerreiroDaLista[]>([]);
   const [guerreiroId, definirGuerreiroId] = useState("");
@@ -46,12 +53,19 @@ export function FormularioDeResponsavel({ onConcluido, onCancelar }: Props) {
       .catch(() => definirGuerreiros([]));
   }, [sessao, responsavelId]);
 
-  async function aoCadastrarResponsavel() {
-    if (!sessao) return;
+  async function aoCadastrarResponsavel(evento: FormEvent<HTMLFormElement>) {
+    evento.preventDefault();
     definirErro(null);
+
+    if (!nome.trim()) {
+      definirErro("Informe o nome do responsável.");
+      return;
+    }
+    if (!sessao) return;
+
     definirEnviando(true);
     try {
-      const criado = await cadastrarResponsavel(sessao.token);
+      const criado = await cadastrarResponsavel(nome.trim(), sessao.token);
       definirResponsavelId(criado.id);
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
@@ -134,10 +148,13 @@ export function FormularioDeResponsavel({ onConcluido, onCancelar }: Props) {
     return (
       <div>
         <AvisoDeColeta dado={DADO_COLETADO} />
-        {erro && <Aviso tipo="erro">{erro}</Aviso>}
-        <Botao onClick={aoCadastrarResponsavel} desabilitado={enviando}>
-          Cadastrar responsável
-        </Botao>
+        <form onSubmit={aoCadastrarResponsavel} aria-label="Cadastrar responsável">
+          <Campo rotulo="Nome do responsável" valor={nome} aoAlterar={definirNome} />
+          {erro && <Aviso tipo="erro">{erro}</Aviso>}
+          <Botao tipo="submit" desabilitado={enviando}>
+            Cadastrar responsável
+          </Botao>
+        </form>
         <Botao variante="secundaria" onClick={onCancelar}>
           Cancelar
         </Botao>
