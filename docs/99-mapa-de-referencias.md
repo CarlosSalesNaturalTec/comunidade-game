@@ -217,6 +217,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Identidade visual das aplicações            | 15                        | PRD-02, 03, 04, 05, 09, 12, 13, 14 |
 | Sistema de avatar do Guerreiro(a)           | 15 §7                     | PRD-04, 05, 03, 12                 |
 | Acessibilidade digital (WCAG 2.2 AA)        | 15 §5                     | todos os PRDs de aplicação         |
+| Narração por síntese de fala                | 15 §5.1 + 03 §1.12        | todos os PRDs de aplicação         |
 | Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10, 03                 |
 | Chave de aplicação e Área do Desenvolvedor  | 03 §§1, 8 + 14 §3         | PRD-03, 01, 02, 12                 |
 | Distribuição da trilha no ciclo             | 11 §2.4 + 10 §5           | PRD-09, 02                         |

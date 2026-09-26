@@ -118,6 +118,36 @@ próprio domínio. O App 04 usa as mesmas: o pixel fica nos sprites, nunca no te
 - **Ícone nunca sozinho**: todo ícone acionável leva rótulo textual visível ou acessível.
 - **Sem CAPTCHA**, que é barreira de acessibilidade.
 
+### 5.1 A narração por síntese de fala
+
+A aplicação **lê em voz alta o próprio texto**, em pt-BR, pela síntese de fala do navegador.
+Atende quem ainda não lê com fluência, quem não enxerga e quem lê com esforço, e dá ludicidade
+à plataforma. Vale para as oito aplicações. O que sai do aparelho para ser sintetizado é regra
+do documento 03.
+
+**Não substitui leitor de tela, e não concorre com ele.** O texto que a narração fala é
+marcado `aria-hidden`, para que TalkBack e VoiceOver não o anunciem em dobro. O piso de
+acessibilidade acima continua sendo cumprido sem ela: a narração é camada a mais, nunca a via
+única a informação alguma.
+
+| Eixo               | Regra                                                                                                                       |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| Liga e desliga     | Botão na tela inicial, com rótulo textual. **Ligado por padrão**; quem desliga não prende o próximo, que religa se preferir |
+| Onde mora o estado | No **aparelho**, não na pessoa: persiste entre atendimentos e não acompanha o Guerreiro(a) a outro aparelho                 |
+| Primeiro áudio     | O navegador exige gesto antes de falar: a **primeira interação** traz um botão de iniciar, e é ele que arma a narração      |
+| Fala sozinha       | Só o **texto curto** — título da tela, enunciado de pergunta, aviso —, ao entrar na tela                                    |
+| Fala sob toque     | O **texto longo** — conteúdo de missão —, por botão de alto-falante junto dele                                              |
+| Roteiro            | **Declarado por tela**, nunca extraído do DOM: a tela diz o que fala, e não se lê rótulo de interface em voz alta           |
+
+O texto curto fala sozinho e o longo espera o toque porque a aula presencial tem **um aparelho
+por equipe** (documento 03): meia dúzia deles lendo o conteúdo inteiro ao mesmo tempo é ruído,
+não acessibilidade.
+
+Trocar de tela **cancela** a fala em curso — narração de tela que já passou é ruído sobre a
+tela nova.
+
+Decisão do fundador, 2026-09-26.
+
 ## 6. Os dois temperamentos
 
 Um sistema, dois modos de aplicação. Ambos consomem os mesmos tokens de cor e tipografia: o que
@@ -149,7 +179,11 @@ conteúdo de todas.
 O controle de abrir e fechar é botão com rótulo textual e `aria-expanded`, nunca ícone sozinho
 (§5). Abrir e fechar muda estado, não anima altura — não há movimento decorativo aqui.
 
-Não vale na Arena, cuja densidade baixa já põe uma decisão por tela.
+Na Arena o bloco tem **outro uso**, e um só: tirar do fluxo de leitura o que é **secundário**
+— metadado e o que adianta o que vem pela frente —, sem apagá-lo da tela. Ali o resumo é
+**neutro** e não repete o conteúdo: quem quer sabe onde tocar, e quem veio ler a missão não
+tropeça no que não veio buscar. Empilhar blocos de declaração, esse é que continua sendo da
+Operação.
 
 ### 6.2 A marca de gravação
 
@@ -173,6 +207,22 @@ perde quando ela não carrega (§5, princípio 3). Os pisos de contraste do §3.
 medidos **sobre** ela, e o peso do arquivo responde ao princípio 4.
 
 Decisão do fundador, 2026-09-25.
+
+### 6.4 Um conteúdo por vez
+
+A Arena põe **uma decisão por tela** (§6), e a tela que empilha o conteúdo inteiro de uma
+missão, ou todas as perguntas de um desafio, contraria isso: quem tem 6 anos rola a tela até
+achar onde parou. Onde o conteúdo é uma **sequência** — os conteúdos de uma missão, as
+perguntas de um quiz —, a Arena apresenta **um item por vez**, com um botão de avançar.
+
+O que a sequência **não** muda é quando o dado sai do aparelho: desafio que se envia inteiro
+continua se enviando inteiro no fim, porque o critério de aprovação é do conjunto
+(documento 11). Avançar percorre; não grava e não submete.
+
+Não vale onde o ritmo é de outra pessoa: no Quiz ao Vivo quem passa a pergunta é o Mestre, e
+botão de avançar no aparelho da equipe mentiria sobre quem comanda (documento 05).
+
+Decisão do fundador, 2026-09-26.
 
 ## 7. Avatar do Guerreiro(a)
 
