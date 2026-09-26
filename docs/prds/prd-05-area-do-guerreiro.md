@@ -460,37 +460,37 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessã
 único. As rotas de coleta e de solicitação de local são do PRD-08 e as de acervo, do PRD-07;
 aparecem aqui apenas quando o ato é do Guerreiro(a).
 
-| Método | Rota                                  | Autenticação | Descrição                                                        |
-| ------ | ------------------------------------- | ------------ | ---------------------------------------------------------------- |
-| POST   | `/v1/sessoes/guerreiro`               | pública      | Abre sessão com nick e imagem, conferidos contra o _template_    |
-| POST   | `/v1/sessoes/guerreiro/assistida`     | Mestre/Admin | Abre sessão do Guerreiro(a) sem imagem gravada ou após falha     |
-| DELETE | `/v1/sessoes/guerreiro`               | Guerreiro(a) | Encerra a sessão no aparelho compartilhado                       |
-| GET    | `/v1/eu/trilhas`                      | Guerreiro(a) | Trilhas em que está inscrito, com a próxima missão de cada uma   |
-| POST   | `/v1/eu/trilhas/{id}/inscricao`       | Guerreiro(a) | Inscreve-se na trilha de um poder do catálogo do ciclo           |
-| GET    | `/v1/eu/trilhas/{id}/missoes/{ordem}` | Guerreiro(a) | Conteúdo da missão, bibliografia e desafio de desbloqueio        |
-| POST   | `/v1/eu/missoes/{id}/desbloqueio`     | Guerreiro(a) | Submete o desafio de desbloqueio da missão                       |
-| POST   | `/v1/eu/missoes/{id}/producao`        | Guerreiro(a) | Entrega a produção em texto, áudio ou foto e recebe a devolutiva |
-| GET    | `/v1/eu/retomadas`                    | Guerreiro(a) | Missões que voltaram para revisão espaçada, com o prazo          |
-| GET    | `/v1/eu/progresso`                    | Guerreiro(a) | Pontos, nível por trilha ou poder, badges e o que falta          |
-| GET    | `/v1/eu/desafios`                     | Guerreiro(a) | Desafios semanais e extras vigentes e elegíveis                  |
-| GET    | `/v1/eu/equipes`                      | Guerreiro(a) | Equipes de que participa, com papel e atividades                 |
-| GET    | `/v1/series-de-coleta/minhas`         | Guerreiro(a) | Séries de coleta, próxima medição, situação e pontos rendidos    |
-| POST   | `/v1/series-de-coleta`                | Guerreiro(a) | Abre série sobre um desafio de coleta e um local                 |
-| GET    | `/v1/desafios-de-coleta/disponiveis`  | Guerreiro(a) | Desafios de coleta vigentes que o Guerreiro(a) pode assumir      |
-| POST   | `/v1/registros-de-coleta`             | Guerreiro(a) | Registra a medição, com local, valor ou mídia e origem           |
-| GET    | `/v1/series-de-coleta/{id}/registros` | Guerreiro(a) | Histórico da própria série, com motivo do que foi invalidado     |
-| POST   | `/v1/solicitacoes-de-local`           | Guerreiro(a) | Solicita a inclusão de local faltante                            |
-| GET    | `/v1/solicitacoes-de-local/minhas`    | Guerreiro(a) | Próprias solicitações de local, com situação e motivo            |
-| POST   | `/v1/culminancias/{id}/criacoes`      | Guerreiro(a) | Entrega a criação original, individual ou de equipe              |
-| GET    | `/v1/eu/portfolio`                    | Guerreiro(a) | Criações validadas, com situação de exposição pública            |
-| GET    | `/v1/eu/recompensas`                  | Guerreiro(a) | Recompensas conquistadas em marcos e situação da entrega         |
-| GET    | `/v1/eu/acervo`                       | Guerreiro(a) | Exemplar próprio e permanentes em uso, com a ficha de vida       |
-| GET    | `/v1/rankings/{comunidade}`           | Guerreiro(a) | Ranking da turma por trilha ou poder, só com pontos regulares    |
-| POST   | `/v1/sugestoes`                       | Guerreiro(a) | Registra sugestão em texto ou áudio na fila única da gestão      |
-| GET    | `/v1/eu/sugestoes`                    | Guerreiro(a) | Status das próprias sugestões                                    |
-| GET    | `/v1/apoio-escolar/disciplinas`       | Guerreiro(a) | Disciplinas ativas com conteúdo cadastrado                       |
-| POST   | `/v1/apoio-escolar/consultas`         | Guerreiro(a) | Pergunta em texto ou áudio; responde a partir do corpus          |
-| PATCH  | `/v1/eu/avatar`                       | Guerreiro(a) | Altera as características do próprio avatar                      |
+| Método | Rota                                  | Autenticação | Descrição                                                                         |
+| ------ | ------------------------------------- | ------------ | --------------------------------------------------------------------------------- |
+| POST   | `/v1/sessoes/guerreiro`               | pública      | Abre sessão com nick e imagem, conferidos contra o _template_                     |
+| POST   | `/v1/sessoes/guerreiro/assistida`     | Mestre/Admin | Abre sessão do Guerreiro(a) sem imagem gravada ou após falha                      |
+| DELETE | `/v1/sessoes/guerreiro`               | Guerreiro(a) | Encerra a sessão no aparelho compartilhado                                        |
+| GET    | `/v1/eu/trilhas`                      | Guerreiro(a) | Trilhas em que está inscrito, com a próxima missão de cada uma                    |
+| POST   | `/v1/eu/trilhas/{id}/inscricao`       | Guerreiro(a) | Inscreve-se na trilha de um poder do catálogo do ciclo                            |
+| GET    | `/v1/eu/trilhas/{id}/missoes/{ordem}` | Guerreiro(a) | Conteúdo da missão, bibliografia e desafio de desbloqueio                         |
+| POST   | `/v1/eu/missoes/{id}/desbloqueio`     | Guerreiro(a) | Submete o desafio de desbloqueio da missão                                        |
+| POST   | `/v1/eu/missoes/{id}/producao`        | Guerreiro(a) | Entrega a produção em texto, áudio ou foto e recebe a devolutiva                  |
+| GET    | `/v1/eu/retomadas`                    | Guerreiro(a) | Missões que voltaram para revisão espaçada, com o prazo                           |
+| GET    | `/v1/eu/progresso`                    | Guerreiro(a) | Pontos, nível por trilha ou poder, badges e o que falta                           |
+| GET    | `/v1/eu/desafios`                     | Guerreiro(a) | Desafios semanais e extras vigentes e elegíveis                                   |
+| GET    | `/v1/eu/equipes`                      | Guerreiro(a) | Equipes de que participa, com papel e atividades                                  |
+| GET    | `/v1/series-de-coleta/minhas`         | Guerreiro(a) | Séries de coleta, próxima medição, situação e pontos rendidos                     |
+| POST   | `/v1/series-de-coleta`                | Guerreiro(a) | Abre série sobre um desafio de coleta e um local                                  |
+| GET    | `/v1/desafios-de-coleta/disponiveis`  | Guerreiro(a) | Desafios de coleta vigentes que o Guerreiro(a) pode assumir                       |
+| POST   | `/v1/registros-de-coleta`             | Guerreiro(a) | Registra a medição, com local, valor ou mídia e origem                            |
+| GET    | `/v1/series-de-coleta/{id}/registros` | Guerreiro(a) | Histórico da própria série, com motivo do que foi invalidado                      |
+| POST   | `/v1/solicitacoes-de-local`           | Guerreiro(a) | Solicita a inclusão de local faltante                                             |
+| GET    | `/v1/solicitacoes-de-local/minhas`    | Guerreiro(a) | Próprias solicitações de local, com situação e motivo                             |
+| POST   | `/v1/culminancias/{id}/criacoes`      | Guerreiro(a) | Entrega a criação original, individual ou de equipe                               |
+| GET    | `/v1/eu/portfolio`                    | Guerreiro(a) | Criações validadas, com situação de exposição pública                             |
+| GET    | `/v1/eu/recompensas`                  | Guerreiro(a) | Recompensas conquistadas em marcos e situação da entrega                          |
+| GET    | `/v1/eu/acervo`                       | Guerreiro(a) | Exemplar próprio e permanentes em uso, com a ficha de vida                        |
+| GET    | `/v1/eu/ranking`                      | Guerreiro(a) | Ranking da turma do vínculo vigente, por trilha ou poder, só com pontos regulares |
+| POST   | `/v1/sugestoes`                       | Guerreiro(a) | Registra sugestão em texto ou áudio na fila única da gestão                       |
+| GET    | `/v1/eu/sugestoes`                    | Guerreiro(a) | Status das próprias sugestões                                                     |
+| GET    | `/v1/apoio-escolar/disciplinas`       | Guerreiro(a) | Disciplinas ativas com conteúdo cadastrado                                        |
+| POST   | `/v1/apoio-escolar/consultas`         | Guerreiro(a) | Pergunta em texto ou áudio; responde a partir do corpus                           |
+| PATCH  | `/v1/eu/avatar`                       | Guerreiro(a) | Altera as características do próprio avatar                                       |
 
 Erros previstos: entrada sem câmera disponível (422); conferência biométrica sem
 correspondência (401), com o caminho da sessão assistida; consulta a dado de outro

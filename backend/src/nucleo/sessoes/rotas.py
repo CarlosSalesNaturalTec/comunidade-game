@@ -26,7 +26,7 @@ from ..permissoes import (
     Operacao,
     exigir_qualquer_permissao,
 )
-from ..personas.modelo import Credencial, Papel, Persona, TipoDeCredencial
+from ..personas.modelo import Credencial, Nick, Papel, Persona, TipoDeCredencial
 from ..personas.regra import buscar_guerreiro_confirmavel_por
 from ..personas.senha import conferir_senha
 from ..pin_de_confirmacao.regra import conferir_pin_da_sessao
@@ -287,6 +287,12 @@ class EuSaida(BaseModel):
     permissoes: dict[str, list[str]]
     divulgacao_autorizada: bool | None = None
     tem_pin_de_confirmacao: bool | None = None
+    # Só do Guerreiro(a), e só o dele: é a única leitura logada que lhe
+    # devolve a própria identificação, e sem ela a carta do documento 11 §8.2
+    # dependia do ranking — logo, de ter série de coleta aberta (`RF-01-76`,
+    # decisão do fundador de 2026-09-26, documento 09 §1).
+    nick: str | None = None
+    avatar: str | None = None
 
 
 @roteador.get("/eu", response_model_exclude_none=True)
@@ -308,10 +314,22 @@ def eu(
     if contexto.papel in (Papel.mestre, Papel.admin):
         persona = sessao_bd.get(Persona, contexto.persona_id)
         tem_pin_de_confirmacao = persona.pin_verificador is not None
+    # O avatar ausente não é falta: o documento 15 §7.3 manda desenhar o
+    # avatar padrão do projeto, e quem monta a tela é que decide.
+    nick = None
+    avatar = None
+    if contexto.papel == Papel.guerreiro:
+        registro_do_nick = (
+            sessao_bd.query(Nick).filter_by(persona_id=contexto.persona_id).one_or_none()
+        )
+        nick = registro_do_nick.valor if registro_do_nick is not None else None
+        avatar = sessao_bd.get(Persona, contexto.persona_id).avatar
     return EuSaida(
         persona_id=contexto.persona_id,
         papel=contexto.papel,
         permissoes={acesso: sorted(operacoes) for acesso, operacoes in matriz_do_papel.items()},
         divulgacao_autorizada=divulgacao_autorizada,
         tem_pin_de_confirmacao=tem_pin_de_confirmacao,
+        nick=nick,
+        avatar=avatar,
     )

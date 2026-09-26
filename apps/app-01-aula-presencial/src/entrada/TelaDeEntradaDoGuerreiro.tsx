@@ -399,9 +399,11 @@ export function TelaDeEntradaDoGuerreiro({
               </Aviso>
             }
           >
-            <CartaDoGuerreiro
-              aviso={`Pronto, ${nick.trim()}! A presença de hoje está registrada. A sua carta aparece aqui quando o seu percurso tiver tudo o que ela mostra.`}
-            />
+            {/* A confirmação da presença é dita **uma vez**, no apoio acima. O
+                aviso da carta diz só o que falta, e em tom de falta: repetir a
+                confirmação e anunciar "em andamento" o que já terminou fazia a
+                criança esperar uma tela que não ia mudar (`RF-04-67`). */}
+            <CartaDoGuerreiro aviso="A sua carta aparece aqui quando o seu percurso tiver tudo o que ela mostra." />
           </PalcoDoPersonagem>
         </FundoDeComunidade>
       </Moldura>
