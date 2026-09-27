@@ -1153,19 +1153,23 @@ nenhuma recusa SHALL deixá-lo fora da aula. (`RF-04-16`, `RN-04-07`, `RN-04-09`
 
 ### Requirement: O caminho das trilhas leva a equipe à programação do encontro
 
-Escolhida a equipe do momento, a App 01 SHALL mostrar à equipe a **programação do encontro**:
-para cada atividade presencial declarada naquela aula, a **missão** em que ela está, o
-**conteúdo** da missão e a **atividade do dia**, com a bibliografia de apoio (`RF-04-35`,
-jornada 5.8).
+A App 01 SHALL apresentar à equipe, no caminho das Equipes, em que **missão** da trilha ela
+está, o **conteúdo** da missão e a **atividade do dia**, com a bibliografia de apoio
+(`RF-04-35`, jornada 5.8).
 
 Havendo mais de uma atividade no encontro, a aplicação SHALL apresentá-las como **escolha da
 equipe** — nenhuma é eleita pela aplicação, e a escolha NEVER SHALL ser enviada ao núcleo. É o
 encontro assíncrono do documento 05 §4: cada equipe avança no seu ritmo.
 
 A aplicação SHALL mostrar o conteúdo da missão nos tipos que o núcleo serve — texto formatado,
-imagem, link externo, vídeo e arquivo de apoio —, com a **fonte** do conteúdo de terceiro e o
-**crédito ao Mestre autor** que a trilha publicada declara. Encontro sem programação declarada
-SHALL exibir aviso em linguagem simples, e não erro nem tela vazia.
+imagem, link externo, vídeo e arquivo de apoio —, **um conteúdo por vez**, com um controle de
+**avançar** que leva ao seguinte; avançar SHALL apenas percorrer, e NEVER SHALL gravar nem
+enviar coisa alguma. A tela SHALL dizer **onde a equipe está na sequência**, e conteúdo
+**único** NEVER SHALL apresentar controle de avançar. A **fonte** do conteúdo de terceiro SHALL
+acompanhar o conteúdo a que pertence, e NEVER SHALL ser recolhida: é atribuição de autoria
+alheia, não metadado da obra do Mestre. Encontro sem programação declarada SHALL exibir aviso
+em linguagem simples, e não erro nem tela vazia. (documento 15 §6.4, decisão do fundador de
+2026-09-26)
 
 Nenhuma tela deste caminho SHALL exibir dado pessoal de Guerreiro(a): a equipe segue
 identificada por **avatar e nick**, como já vale para a tela das equipes (`RF-04-34`,
@@ -1175,7 +1179,7 @@ identificada por **avatar e nick**, como já vale para a tela das equipes (`RF-0
 
 - **WHEN** a equipe escolhida entra no caminho das trilhas num encontro com programação
   declarada
-- **THEN** a aplicação mostra a missão, o conteúdo dela e a atividade do dia
+- **THEN** a aplicação mostra a missão, o primeiro conteúdo dela e a atividade do dia
 
 #### Scenario: Duas atividades no encontro viram escolha da equipe
 
@@ -1183,21 +1187,28 @@ identificada por **avatar e nick**, como já vale para a tela das equipes (`RF-0
 - **THEN** a aplicação apresenta as duas e a equipe escolhe, sem que a escolha seja enviada ao
   núcleo
 
-#### Scenario: Encontro sem programação avisa em linguagem simples
+#### Scenario: O conteúdo do dia sai um por vez
 
-- **WHEN** a equipe entra no caminho das trilhas e a programação do encontro está vazia
-- **THEN** a aplicação avisa que o encontro ainda não tem atividade declarada, sem erro na tela
+- **WHEN** a missão do dia traz três conteúdos
+- **THEN** o primeiro aparece sozinho, a tela diz onde a equipe está na sequência, e o controle
+  de avançar leva ao segundo
 
 #### Scenario: O conteúdo de terceiro sai com a fonte
 
-- **WHEN** a missão do dia tem conteúdo de terceiro
-- **THEN** a aplicação exibe a fonte registrada junto do conteúdo
+- **WHEN** a equipe alcança, na sequência, um conteúdo de terceiro
+- **THEN** a aplicação exibe a fonte registrada junto do conteúdo, no fluxo de leitura, não
+  recolhida
 
 #### Scenario: Nenhum dado pessoal aparece no caminho das trilhas
 
 - **WHEN** a equipe percorre as telas do caminho das trilhas
 - **THEN** os integrantes aparecem apenas por avatar e nick, e nenhuma imagem de Guerreiro(a) é
   exibida
+
+#### Scenario: Encontro sem programação avisa em linguagem simples
+
+- **WHEN** a equipe entra no caminho das trilhas num encontro sem programação declarada
+- **THEN** a tela avisa em linguagem simples, sem erro e sem tela vazia
 
 ### Requirement: A equipe declara pelo aparelho em que atividade da programação está
 
@@ -2146,9 +2157,17 @@ alcançadas.
 
 A App 01 SHALL apresentar, a quem tem presença registrada no encontro, o **percurso do próprio
 Guerreiro(a)**: as trilhas em que ele está inscrito e, na trilha escolhida, a **missão atual** e a
-**seguinte trancada, com o motivo do bloqueio**. NEVER SHALL apresentar a lista inteira do percurso
-nem classificar missão como realizada: é o mesmo recorte que a App 05 já atende, e ele vale aqui
-sem alteração. (`RF-04-72`, `RF-05-08`, `RF-05-10`, `RF-05-17`)
+**seguinte trancada, com o motivo do bloqueio**. A missão seguinte e o motivo SHALL ficar em
+**bloco recolhível de resumo neutro**, fora do fluxo de leitura da missão atual: adiantam o que
+o Guerreiro(a) ainda não desbloqueou, e a tela existe para ele trabalhar a missão de agora.
+Recolhidos, SHALL continuar **alcançáveis** — recolher não é suprimir, e o que a missão
+seguinte desbloqueia e o motivo do bloqueio seguem apresentados. NEVER SHALL apresentar a lista
+inteira do percurso nem classificar missão como realizada: é o mesmo recorte que a App 05 já
+atende, e ele vale aqui sem alteração. (`RF-04-72`, `RF-05-08`, `RF-05-10`, `RF-05-17`,
+documento 15 §§6.1, 6.4, decisão do fundador de 2026-09-26)
+
+O aviso que a **própria missão trancada** apresenta a quem tenta abri-la NEVER SHALL ser
+recolhido: ali o motivo é a resposta à ação, não informação secundária.
 
 Havendo **mais de uma** trilha inscrita, a aplicação SHALL apresentar a lista das trilhas e SHALL
 abrir o percurso da que for escolhida. Havendo **uma**, SHALL abrir o percurso dela direto, sem
@@ -2162,39 +2181,26 @@ na mesma trilha SHALL devolver a inscrição existente, sem erro. Feita a inscri
 abrir o percurso daquela trilha no mesmo atendimento, na **sondagem**, que é a próxima missão dele.
 (`RF-04-74`, `RF-05-09`, `RN-05-43`, `RN-05-44`)
 
-Para quem acabou de se inscrever, a missão atual **é a sondagem**, porque é ela a próxima do
-percurso: a aplicação NEVER SHALL calcular por conta própria onde o percurso começa — a posição vem
-do núcleo. (`RF-04-72`, `RF-05-08`, invariante 5)
+#### Scenario: A missão seguinte aparece trancada, com o motivo
 
-A aplicação SHALL apresentar, junto do percurso, as **atividades das equipes do Guerreiro(a) naquela
-aula**, lidas com as equipes de que ele é integrante. Quem não integra equipe na aula SHALL ler que
-não há equipe dele no encontro — enunciado **distinto** do encontro sem programação declarada, que é
-outro fato. (`RF-04-72`, `RF-04-35`)
+- **WHEN** o percurso de uma trilha é apresentado
+- **THEN** a missão atual aparece no fluxo de leitura, e a seguinte trancada fica num bloco
+  fechado de resumo neutro, que abre dizendo por que está trancada
 
-A aplicação SHALL permitir ao Guerreiro(a) **responder à sondagem** da trilha e **submeter o desafio
-de desbloqueio** da missão no aparelho do encontro, pela mesma porta e com a mesma aferição da App
-05: no quiz, a submissão leva a resposta de todas as perguntas de uma vez e passa quem acerta ao
-menos 60%; no desafio prático, a submissão é a declaração de que cumpriu, e a missão **aguarda o
-Mestre autor**, nunca reprovada. O desbloqueio é **do Guerreiro(a) na trilha, nunca da equipe**.
-(`RF-04-73`, `RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`, `RN-05-45` a `RN-05-47`, documento 11
-§2.2)
+#### Scenario: A missão trancada aberta responde com o motivo, sem recolher
 
-Respondida a sondagem, a trilha SHALL abrir — ela abre **ao ser respondida, não ao ser acertada** —, e
-a aplicação SHALL apresentar o percurso já aberto sem exigir novo atendimento. (`RF-04-73`,
-documento 11 §2.2, invariante 5)
-
-A aplicação NEVER SHALL **entregar produção individual** da missão pelo caminho das trilhas
-(`RF-05-74`): a entrega por **equipe** do `RF-04-45` segue sendo a desta aplicação e NEVER SHALL
-sair do caminho das equipes, e duas entregas sobre a mesma missão exigiriam regra que nenhum
-documento declara. Decisão do fundador de 2026-09-25.
-
-Sem rede, o percurso SHALL ficar indisponível como os demais caminhos que pedem o Guerreiro(a), e
-NEVER SHALL enfileirar nada. (`RF-04-58`, `RF-04-68`)
+- **WHEN** o Guerreiro(a) tenta abrir uma missão que ainda está trancada
+- **THEN** o motivo do bloqueio aparece direto na tela, não dentro de um bloco recolhido
 
 #### Scenario: Uma trilha inscrita abre direto no percurso
 
 - **WHEN** o Guerreiro(a) com uma única trilha inscrita alcança as trilhas e missões
 - **THEN** a aplicação apresenta o percurso daquela trilha, sem lista de trilhas no caminho
+
+#### Scenario: Inscrito no encontro, o percurso abre na sondagem
+
+- **WHEN** o Guerreiro(a) escolhe um poder e inscreve-se numa trilha pelo aparelho do encontro
+- **THEN** o percurso daquela trilha abre no mesmo atendimento, apresentando a missão de sondagem
 
 #### Scenario: Mais de uma trilha inscrita apresenta a lista
 
@@ -2207,11 +2213,6 @@ NEVER SHALL enfileirar nada. (`RF-04-58`, `RF-04-68`)
 - **THEN** a aplicação apresenta os poderes do ciclo e as trilhas publicadas de cada um, com o
   caminho de se inscrever
 
-#### Scenario: Inscrito no encontro, o percurso abre na sondagem
-
-- **WHEN** o Guerreiro(a) escolhe um poder e inscreve-se numa trilha pelo aparelho do encontro
-- **THEN** o percurso daquela trilha abre no mesmo atendimento, apresentando a missão de sondagem
-
 #### Scenario: A inscrição não se desfaz e não tem teto
 
 - **WHEN** o Guerreiro(a) já inscrito escolhe outra trilha, ou a mesma de novo
@@ -2222,11 +2223,6 @@ NEVER SHALL enfileirar nada. (`RF-04-58`, `RF-04-68`)
 
 - **WHEN** o Guerreiro(a) recém-inscrito abre o percurso da trilha
 - **THEN** a missão apresentada é a sondagem, porque é a próxima do percurso segundo o núcleo
-
-#### Scenario: A missão seguinte aparece trancada, com o motivo
-
-- **WHEN** o percurso de uma trilha é apresentado
-- **THEN** a missão atual aparece e a seguinte aparece trancada, dizendo por que está trancada
 
 #### Scenario: As atividades da aula vêm pelas equipes do Guerreiro(a)
 
@@ -2248,7 +2244,8 @@ NEVER SHALL enfileirar nada. (`RF-04-58`, `RF-04-68`)
 #### Scenario: O quiz do desbloqueio é aferido pelo núcleo
 
 - **WHEN** o Guerreiro(a) submete o quiz de desbloqueio de uma missão pelo aparelho do encontro
-- **THEN** a submissão leva todas as perguntas de uma vez, e a devolutiva diz quantas ele acertou
+- **THEN** a submissão leva todas as perguntas de uma vez, ao fim da sequência, e a devolutiva diz
+  quantas ele acertou
 
 #### Scenario: O desafio prático fica aguardando o Mestre
 

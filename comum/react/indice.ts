@@ -31,5 +31,6 @@ export { NavegacaoDeAreas } from "./NavegacaoDeAreas";
 export { PalcoDoPersonagem } from "./PalcoDoPersonagem";
 export type { FatoDaArena } from "./RetornoDeConquista";
 export { RetornoDeConquista } from "./RetornoDeConquista";
+export { SequenciaPaginada } from "./SequenciaPaginada";
 export type { ColunaDaTabela } from "./Tabela";
 export { Tabela } from "./Tabela";

@@ -6,6 +6,7 @@ import { ProvedorDeSessao } from "../autenticacao/ContextoDeSessao";
 import * as trilhaApi from "./api";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 import { EscolhaDoPoder } from "./EscolhaDoPoder";
+import { GuiaDaTrilha } from "./GuiaDaTrilha";
 import { Missao } from "./Missao";
 
 // O contrato novo da promoção: cada ato de escrita é opcional e separado dos
@@ -26,6 +27,26 @@ const QUIZ: trilhaApi.DesafioDeDesbloqueio = {
       alternativas: ["1", "2", "3", "4"],
       imagem_referencia: null,
     },
+  ],
+};
+
+function pergunta(id: string, ordem: number, enunciado: string) {
+  return {
+    id,
+    ordem,
+    enunciado,
+    alternativas: ["1", "2", "3", "4"],
+    imagem_referencia: null,
+  };
+}
+
+const QUIZ_DE_TRES: trilhaApi.DesafioDeDesbloqueio = {
+  tipo: "quiz",
+  enunciado: null,
+  perguntas: [
+    pergunta("p1", 1, "Quanto é 1 + 1?"),
+    pergunta("p2", 2, "Quanto é 2 + 2?"),
+    pergunta("p3", 3, "Quanto é 3 + 3?"),
   ],
 };
 
@@ -63,7 +84,23 @@ async function renderizar(conteudo: React.ReactNode) {
   });
 }
 
-function trilhaPublica(atividades: trilhaApi.AtividadeDaMissaoPublica[] = []) {
+function conteudoDeTexto(id: string, ordem: number, corpo: string) {
+  return {
+    id,
+    ordem,
+    tipo: "texto" as const,
+    corpo,
+    endereco: null,
+    referencia: null,
+    autoria: "propria" as const,
+    fonte: null,
+  };
+}
+
+function trilhaPublica(
+  atividades: trilhaApi.AtividadeDaMissaoPublica[] = [],
+  conteudos: trilhaApi.ConteudoDaMissaoPublico[] = [],
+) {
   return {
     id: "trilha-1",
     nome: "Robô Educa",
@@ -78,7 +115,7 @@ function trilhaPublica(atividades: trilhaApi.AtividadeDaMissaoPublica[] = []) {
         obrigatoria: true,
         e_sondagem: false,
         atividades,
-        conteudos: [],
+        conteudos,
         bibliografia: [],
       },
     ],
@@ -224,5 +261,209 @@ describe("a entrega individual da produção é ato opcional da missão", () => 
       await screen.findByRole("button", { name: /enviar respostas/i }),
     ).toBeInTheDocument();
     expect(screen.queryByText(/entrega/i)).not.toBeInTheDocument();
+  });
+});
+
+// --- Fatia 22: um conteúdo por vez, e o secundário recolhido
+// (`RF-05-11`, `RF-05-13`, `RN-05-45`, `RF-05-08`, `RF-05-10`,
+// documento 15 §§6.1, 6.4)
+
+describe("o conteúdo da missão sai um por vez, com o crédito recolhido", () => {
+  it("o primeiro conteúdo aparece sozinho, e avançar leva ao segundo", async () => {
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica(
+        [],
+        [
+          conteudoDeTexto("conteudo-2", 2, "Segundo parágrafo."),
+          conteudoDeTexto("conteudo-1", 1, "Primeiro parágrafo."),
+        ],
+      ),
+    );
+
+    await renderizar(
+      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+    );
+    const usuario = userEvent.setup();
+
+    // A ordem é a do autor, não a da resposta do núcleo.
+    expect(await screen.findByText("Primeiro parágrafo.")).toBeInTheDocument();
+    expect(screen.queryByText("Segundo parágrafo.")).not.toBeInTheDocument();
+    expect(screen.getByText("Conteúdo 1 de 2")).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: "Próximo conteúdo" }));
+
+    expect(screen.getByText("Segundo parágrafo.")).toBeInTheDocument();
+    expect(screen.queryByText("Primeiro parágrafo.")).not.toBeInTheDocument();
+    // No último não há para onde avançar.
+    expect(screen.queryByRole("button", { name: "Próximo conteúdo" })).not.toBeInTheDocument();
+  });
+
+  it("conteúdo único não pagina", async () => {
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
+    );
+
+    await renderizar(
+      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+    );
+
+    expect(await screen.findByText("Parágrafo único.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Próximo conteúdo" })).not.toBeInTheDocument();
+  });
+
+  it("o crédito e a licença ficam num bloco fechado, que abre ao ser acionado", async () => {
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
+    );
+
+    await renderizar(
+      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+    );
+    const usuario = userEvent.setup();
+
+    // Fechado, a linha nomeia o que guarda sem repetir o conteúdo.
+    expect(await screen.findByText("Crédito e licença")).toBeInTheDocument();
+    expect(screen.queryByText(/Mestre Ana/)).not.toBeVisible();
+
+    await usuario.click(screen.getByText("Crédito e licença"));
+
+    expect(screen.getByText(/Mestre Ana/)).toBeVisible();
+    expect(screen.getByText(/CC BY-SA/)).toBeVisible();
+  });
+});
+
+describe("o desafio de desbloqueio sai uma pergunta por vez", () => {
+  it("uma pergunta por vez, e voltar preserva e troca a resposta", async () => {
+    const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio").mockResolvedValue({
+      aprovado: true,
+      aguardando_mestre: false,
+      acertos: 3,
+      total: 3,
+    });
+
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={QUIZ_DE_TRES}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    expect(screen.getByText("1. Quanto é 1 + 1?")).toBeInTheDocument();
+    expect(screen.queryByText("2. Quanto é 2 + 2?")).not.toBeInTheDocument();
+    expect(screen.getByText("Pergunta 1 de 3")).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("radio", { name: "1" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+
+    expect(screen.getByText("2. Quanto é 2 + 2?")).toBeInTheDocument();
+    await usuario.click(screen.getByRole("radio", { name: "2" }));
+
+    // Voltar traz a resposta já dada, e ela pode ser trocada.
+    await usuario.click(screen.getByRole("button", { name: "Pergunta anterior" }));
+    expect(screen.getByRole("radio", { name: "1" })).toBeChecked();
+    await usuario.click(screen.getByRole("radio", { name: "3" }));
+    expect(screen.getByRole("radio", { name: "3" })).toBeChecked();
+
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    await usuario.click(screen.getByRole("radio", { name: "4" }));
+    await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
+
+    // O que protege o `RN-05-45`: uma submissão só, com todas as respostas.
+    expect(submeter).toHaveBeenCalledTimes(1);
+    expect(submeter.mock.calls[0][1]).toEqual([
+      { pergunta_id: "p1", alternativa_escolhida: 3 },
+      { pergunta_id: "p2", alternativa_escolhida: 2 },
+      { pergunta_id: "p3", alternativa_escolhida: 4 },
+    ]);
+  });
+
+  it("concluir com pendência leva até ela e não envia", async () => {
+    const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio");
+
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={QUIZ_DE_TRES}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("radio", { name: "1" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    await usuario.click(screen.getByRole("radio", { name: "1" }));
+    await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
+
+    // A tela não conta quantas faltam e deixa procurar: leva até a primeira.
+    expect(await screen.findByText(/falta responder 1 pergunta/i)).toBeInTheDocument();
+    expect(screen.getByText("2. Quanto é 2 + 2?")).toBeInTheDocument();
+    expect(screen.getByText("Pergunta 2 de 3")).toBeInTheDocument();
+    expect(submeter).not.toHaveBeenCalled();
+  });
+});
+
+describe("a missão seguinte fica recolhida no guia da trilha", () => {
+  const TRILHA: trilhaApi.TrilhaComProximaMissao = {
+    id: "trilha-1",
+    nome: "Robô Educa",
+    poder_id: "poder-1",
+    proxima_missao_id: "missao-1",
+    proxima_missao_titulo: "Primeira Missão",
+    proxima_missao_posicao: 1,
+  };
+
+  it("a seguinte abre num bloco fechado de resumo neutro, com o motivo dentro", async () => {
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublica());
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockImplementation((_id, posicao) =>
+      Promise.resolve(
+        posicao === 1
+          ? { ...MISSAO_ABERTA, desbloqueada: false, e_proxima: true }
+          : {
+              ...MISSAO_ABERTA,
+              id: "missao-2",
+              titulo: "Segunda Missão",
+              posicao: 2,
+              desbloqueada: false,
+              e_proxima: false,
+              motivo_do_bloqueio: 'Desbloqueie "Primeira Missão" primeiro.',
+            },
+      ),
+    );
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+    const usuario = userEvent.setup();
+
+    // Fechado, o resumo nomeia sem entregar o título nem o motivo.
+    expect(await screen.findByText("Próxima missão")).toBeInTheDocument();
+    expect(screen.queryByText("Segunda Missão")).not.toBeVisible();
+
+    await usuario.click(screen.getByText("Próxima missão"));
+
+    expect(screen.getByText("Segunda Missão")).toBeVisible();
+    expect(screen.getByText(/Desbloqueie "Primeira Missão" primeiro\./)).toBeVisible();
+  });
+
+  it("abrir uma missão trancada segue mostrando o motivo direto, sem recolher", async () => {
+    await renderizar(
+      <Missao
+        trilhaId="trilha-1"
+        missao={{
+          ...MISSAO_ABERTA,
+          desbloqueada: false,
+          e_proxima: false,
+          motivo_do_bloqueio: 'Desbloqueie "Primeira Missão" primeiro.',
+        }}
+        aoDesbloquear={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/ainda está trancada/i)).toBeVisible();
+    expect(screen.queryByText("Próxima missão")).not.toBeInTheDocument();
   });
 });
