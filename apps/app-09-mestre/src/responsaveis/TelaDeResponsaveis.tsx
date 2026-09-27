@@ -18,6 +18,26 @@ const MENSAGEM_DO_TETO =
 const DADO_COLETADO =
   "o cadastro e o vínculo do responsável, e a credencial de acesso dele quando criada";
 
+const SEM_NICK = "Guerreiro(a) sem nick";
+
+// O grau de parentesco sozinho não identifica o vínculo: ele se repete entre
+// irmãos, e duas linhas de "Pai" não dizem ao Mestre a quem cada uma se
+// refere — enquanto o seletor logo acima já apresenta cada Guerreiro(a) por
+// nick e avatar. O nick sai desse mesmo estado e o `guerreiro_id` vem na
+// resposta do vínculo, então o cruzamento é local (`RF-09-63`, design —
+// decisões 1 e 2).
+//
+// O avatar fica de fora: na confirmação o que distingue é o nick, e repeti-lo
+// alongaria a linha sem ganho (design — decisão 2). Sem correspondência no
+// estado carregado, a linha marca a ausência do nick em vez de cair no rótulo
+// mudo de antes (design — decisão 3).
+function rotuloDoVinculo(vinculo: VinculoCriado, guerreiros: GuerreiroVinculavel[]): string {
+  const nick = guerreiros
+    .find((guerreiro) => guerreiro.id === vinculo.guerreiro_id)
+    ?.nick.trim();
+  return `${nick || SEM_NICK} — ${vinculo.grau_de_parentesco}`;
+}
+
 // Cadastro, vínculo e credencial provisória em um só fluxo — o mesmo que a
 // gestão já resolve na App 03, aqui recortado pelo que o Mestre alcança: os
 // Guerreiros e Guerreiras que ele pode vincular vêm do núcleo, por nick e
@@ -183,7 +203,7 @@ export function TelaDeResponsaveis() {
       {vinculos.length > 0 && (
         <ul aria-label="Vínculos já criados">
           {vinculos.map((vinculo) => (
-            <li key={vinculo.id}>{vinculo.grau_de_parentesco}</li>
+            <li key={vinculo.id}>{rotuloDoVinculo(vinculo, guerreiros)}</li>
           ))}
         </ul>
       )}
