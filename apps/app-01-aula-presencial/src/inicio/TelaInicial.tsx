@@ -1,4 +1,5 @@
 import { type SessaoAberta, useSessao } from "comum/autenticacao";
+import { useNarracao } from "comum/narracao";
 import { Aviso, Botao, Cabecalho, Campo, Icone, Moldura } from "comum/react";
 import { useState } from "react";
 import { TelaDeMedicaoDoLimiar } from "../bancada/TelaDeMedicaoDoLimiar";
@@ -356,6 +357,7 @@ export function TelaInicial({
           aoAcionar: () => definirCaminho("encerramento"),
         }}
       />
+      <ControleDaNarracao />
       <div className="cg-caminhos">
         <button
           type="button"
@@ -423,6 +425,29 @@ export function TelaInicial({
         .
       </p>
     </Moldura>
+  );
+}
+
+// O liga e desliga da narração das telas mora na tela inicial porque é a que
+// aparece entre um atendimento e o seguinte: quem chega ao aparelho o encontra
+// antes de entrar no seu caminho. A escolha é do **aparelho** — a camada comum
+// a guarda nele, nunca na sessão de trabalho nem no Guerreiro(a) —, e por isso
+// voltar ao início e encerrar a sessão de trabalho não mexem nela (documento 15
+// §5.1). O estado sai por escrito, nunca só pela cor do botão (documento 15
+// §5).
+function ControleDaNarracao() {
+  const { ligada, alternarNarracao } = useNarracao();
+  return (
+    <div className="cg-narracao">
+      <Botao variante="secundaria" onClick={alternarNarracao}>
+        {ligada ? "Desligar a narração das telas" : "Ligar a narração das telas"}
+      </Botao>
+      <p className="cg-narracao__estado">
+        {ligada
+          ? "A narração está ligada: o aparelho lê as telas em voz alta."
+          : "A narração está desligada: o aparelho não lê nada em voz alta."}
+      </p>
+    </div>
   );
 }
 

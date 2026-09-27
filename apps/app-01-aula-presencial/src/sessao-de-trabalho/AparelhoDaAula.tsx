@@ -1,6 +1,7 @@
 import { ErroDaApi } from "comum/api";
 import { ProvedorDeSessao, useSessao } from "comum/autenticacao";
-import { Aviso, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
+import { useNarracao } from "comum/narracao";
+import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import { type AulaVigente, listarAulasVigentes } from "../api/aulas";
 import { listarCatalogoAvulso } from "../api/catalogoAvulso";
@@ -35,9 +36,28 @@ interface OpcaoDeComunidade {
 export function AparelhoDaAula() {
   return (
     <ProvedorDeEstadoDeRede>
+      <ConviteParaIniciarANarracao />
       <AvisoDeOperacaoSemConexao />
       <ConteudoDoAparelho />
     </ProvedorDeEstadoDeRede>
+  );
+}
+
+// O navegador não fala antes de um gesto da pessoa: este é o gesto. Aparece
+// depois de carregada e antes da primeira fala, em qualquer tela, e sai da
+// tela assim que a narração está armada. Com a narração **desligada** não há
+// o que armar, e sem síntese no navegador não há o que oferecer — nos dois
+// casos ele não é apresentado, e nenhum erro é anunciado (documento 15 §5.1,
+// design — decisão 6).
+function ConviteParaIniciarANarracao() {
+  const { ligada, armada, disponivel, armarNarracao } = useNarracao();
+  if (!ligada || armada || !disponivel) return null;
+  return (
+    <div className="cg-narracao-convite">
+      <Botao variante="secundaria" onClick={armarNarracao}>
+        Iniciar a narração das telas
+      </Botao>
+    </div>
   );
 }
 

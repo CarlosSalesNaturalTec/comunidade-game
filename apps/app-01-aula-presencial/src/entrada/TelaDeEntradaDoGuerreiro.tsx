@@ -393,7 +393,18 @@ export function TelaDeEntradaDoGuerreiro({
               )
             }
             apoio={
-              <Aviso tipo="sucesso">
+              // A saudação é o único lugar desta aplicação em que a narração
+              // fala um dado do Guerreiro(a), e o dado é o **nick** — nunca o
+              // nome, que o tipo `Fala` não tem por onde receber (documento 03
+              // §§1.12, 12).
+              <Aviso
+                tipo="sucesso"
+                narracao={{
+                  texto:
+                    "Pronto, {nick}! A presença de hoje está registrada. Para trabalhar em equipe, volte ao início e escolha Equipes.",
+                  nick: nick.trim(),
+                }}
+              >
                 Pronto, {nick.trim()}! A presença de hoje está registrada. Para trabalhar em
                 equipe, volte ao início e escolha Equipes.
               </Aviso>
@@ -426,7 +437,14 @@ export function TelaDeEntradaDoGuerreiro({
     return (
       <Moldura>
         <Cabecalho titulo="Presença registrada" />
-        <Aviso tipo="atencao">
+        <Aviso
+          tipo="atencao"
+          narracao={{
+            texto:
+              "A rede está fora. A presença de {nick} foi guardada neste aparelho e entra na aula sozinha assim que a rede voltar.",
+            nick: nick.trim(),
+          }}
+        >
           A rede está fora. A presença de {nick.trim()} foi guardada neste aparelho e entra na
           aula sozinha assim que a rede voltar.
         </Aviso>

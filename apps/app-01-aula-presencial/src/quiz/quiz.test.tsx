@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as sessaoApi from "comum/autenticacao/api";
+import { ProvedorDeNarracao, useNarracao } from "comum/narracao";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as presencasApi from "../api/presencas";
 import type { PartidaDaAula, PerguntaParaEquipe } from "../api/quiz";
@@ -371,5 +372,187 @@ describe("a abertura do quiz a partir da tela inicial", () => {
       partidaId: "partida-1",
       equipeId: "equipe-b",
     });
+  });
+});
+
+describe("a narração do enunciado da pergunta no ar (documento 15 §5.1)", () => {
+  class EnunciadoFalso {
+    lang = "";
+    voice: SpeechSynthesisVoice | null = null;
+    text: string;
+
+    constructor(text: string) {
+      this.text = text;
+    }
+  }
+
+  class MotorDeFalaFalso {
+    ditos: EnunciadoFalso[] = [];
+
+    getVoices() {
+      return [
+        {
+          lang: "pt-BR",
+          localService: true,
+          name: "local",
+          default: true,
+          voiceURI: "local",
+        } as SpeechSynthesisVoice,
+      ];
+    }
+
+    speak(dito: EnunciadoFalso) {
+      this.ditos.push(dito);
+    }
+
+    cancel() {}
+
+    addEventListener() {}
+
+    removeEventListener() {}
+  }
+
+  function instalarMotorDeFalaFalso() {
+    const motor = new MotorDeFalaFalso();
+    vi.stubGlobal("speechSynthesis", motor);
+    vi.stubGlobal("SpeechSynthesisUtterance", EnunciadoFalso);
+    return motor;
+  }
+
+  // O enunciado vazio é o gesto que arma a narração, não fala. O título da
+  // tela, falado enquanto a partida é procurada, é texto curto de tela como
+  // em qualquer outra e sai desta conta: o que estes testes medem é o
+  // enunciado da pergunta.
+  function falas(motor: MotorDeFalaFalso): string[] {
+    return motor.ditos
+      .map((dito) => dito.text)
+      .filter((texto) => texto !== "" && texto !== "Quiz ao Vivo");
+  }
+
+  // A partida com a narração já armada: o gesto que o navegador exige
+  // acontece antes de a tela montar, como na aplicação real.
+  function ArmadorDaNarracao() {
+    const { armarNarracao } = useNarracao();
+    return (
+      <button type="button" onClick={armarNarracao}>
+        Iniciar a narração
+      </button>
+    );
+  }
+
+  function renderizarNarrada() {
+    const resultado = render(
+      <ProvedorDeNarracao>
+        <ArmadorDaNarracao />
+      </ProvedorDeNarracao>,
+    );
+    screen.getByRole("button", { name: "Iniciar a narração" }).click();
+    resultado.rerender(
+      <ProvedorDeNarracao>
+        <ArmadorDaNarracao />
+        <TelaDaPartida
+          aulaId="aula-1"
+          tokenDoGuerreiro="token-guerreiro-a"
+          aoVoltar={vi.fn()}
+        />
+      </ProvedorDeNarracao>,
+    );
+    return resultado;
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    localStorage.clear();
+  });
+
+  it("a pergunta que entra no ar é falada, e as alternativas não", async () => {
+    const motor = instalarMotorDeFalaFalso();
+    vi.spyOn(quizApi, "listarPartidasDaAula").mockResolvedValue([partida()]);
+    vi.spyOn(quizApi, "lerPerguntaDaPartida").mockResolvedValue(pergunta());
+
+    renderizarNarrada();
+    await screen.findByRole("heading", { name: pergunta().enunciado ?? "" });
+
+    expect(falas(motor)).toEqual(["Qual é a primeira capital do Brasil?"]);
+    expect(falas(motor).join(" ")).not.toContain("Salvador");
+  });
+
+  it("a sondagem que devolve a mesma pergunta não fala de novo (design — decisão 7)", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const motor = instalarMotorDeFalaFalso();
+    vi.spyOn(quizApi, "listarPartidasDaAula").mockResolvedValue([partida()]);
+    // Objeto novo a cada leitura, como a sondagem real devolve.
+    vi.spyOn(quizApi, "lerPerguntaDaPartida").mockImplementation(() =>
+      Promise.resolve(pergunta()),
+    );
+
+    renderizarNarrada();
+    await screen.findByRole("heading", { name: pergunta().enunciado ?? "" });
+
+    await vi.advanceTimersByTimeAsync(2000);
+    await vi.advanceTimersByTimeAsync(2000);
+
+    expect(falas(motor)).toEqual(["Qual é a primeira capital do Brasil?"]);
+  });
+
+  it("a pergunta seguinte é falada, uma vez", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const motor = instalarMotorDeFalaFalso();
+    vi.spyOn(quizApi, "listarPartidasDaAula").mockResolvedValue([partida()]);
+    const lerPergunta = vi
+      .spyOn(quizApi, "lerPerguntaDaPartida")
+      .mockResolvedValue(pergunta());
+
+    renderizarNarrada();
+    await screen.findByRole("heading", { name: pergunta().enunciado ?? "" });
+
+    lerPergunta.mockResolvedValue(
+      pergunta({ id: "pergunta-2", enunciado: "Quem foi Zumbi dos Palmares?" }),
+    );
+    await vi.advanceTimersByTimeAsync(2000);
+    await vi.advanceTimersByTimeAsync(2000);
+
+    expect(falas(motor)).toEqual([
+      "Qual é a primeira capital do Brasil?",
+      "Quem foi Zumbi dos Palmares?",
+    ]);
+  });
+
+  it("o resultado liberado não é falado", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const motor = instalarMotorDeFalaFalso();
+    vi.spyOn(quizApi, "listarPartidasDaAula").mockResolvedValue([partida()]);
+    const lerPergunta = vi
+      .spyOn(quizApi, "lerPerguntaDaPartida")
+      .mockResolvedValue(pergunta());
+
+    renderizarNarrada();
+    await screen.findByRole("heading", { name: pergunta().enunciado ?? "" });
+
+    lerPergunta.mockResolvedValue(
+      pergunta({ resultado_liberado: true, alternativa_correta: 1, acertou: true }),
+    );
+    await vi.advanceTimersByTimeAsync(2000);
+
+    expect(await screen.findByText(/a alternativa correta é a 1/i)).toBeInTheDocument();
+    expect(falas(motor)).toEqual(["Qual é a primeira capital do Brasil?"]);
+  });
+
+  it("o aviso de perda de contato não é falado", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const motor = instalarMotorDeFalaFalso();
+    vi.spyOn(quizApi, "listarPartidasDaAula").mockResolvedValue([partida()]);
+    const lerPergunta = vi
+      .spyOn(quizApi, "lerPerguntaDaPartida")
+      .mockResolvedValue(pergunta());
+
+    renderizarNarrada();
+    await screen.findByRole("heading", { name: pergunta().enunciado ?? "" });
+
+    lerPergunta.mockRejectedValueOnce(new TypeError("fetch failed"));
+    await vi.advanceTimersByTimeAsync(2000);
+
+    expect(await screen.findByText(/perdemos contato com o núcleo/i)).toBeInTheDocument();
+    expect(falas(motor)).toEqual(["Qual é a primeira capital do Brasil?"]);
   });
 });

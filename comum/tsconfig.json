@@ -19,5 +19,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["react", "biometria", "trilha", "testes", "vitest.config.ts"]
+  "include": ["narracao", "react", "biometria", "trilha", "testes", "vitest.config.ts"]
 }

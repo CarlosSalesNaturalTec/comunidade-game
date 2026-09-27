@@ -281,3 +281,108 @@ describe("verificador do PIN de quem abriu a sessão de trabalho (RN-04-38)", ()
     await waitFor(() => expect(pinApi.verificadorGuardado()).toBeNull());
   });
 });
+
+describe("a narração se arma na primeira interação (documento 15 §5.1)", () => {
+  class EnunciadoFalso {
+    lang = "";
+    voice: SpeechSynthesisVoice | null = null;
+    text: string;
+
+    constructor(text: string) {
+      this.text = text;
+    }
+  }
+
+  class MotorDeFalaFalso {
+    ditos: EnunciadoFalso[] = [];
+
+    getVoices() {
+      return [
+        {
+          lang: "pt-BR",
+          localService: true,
+          name: "local",
+          default: true,
+          voiceURI: "local",
+        } as SpeechSynthesisVoice,
+      ];
+    }
+
+    speak(dito: EnunciadoFalso) {
+      this.ditos.push(dito);
+    }
+
+    cancel() {}
+
+    addEventListener() {}
+
+    removeEventListener() {}
+  }
+
+  function instalarMotorDeFalaFalso() {
+    const motor = new MotorDeFalaFalso();
+    vi.stubGlobal("speechSynthesis", motor);
+    vi.stubGlobal("SpeechSynthesisUtterance", EnunciadoFalso);
+    return motor;
+  }
+
+  // O enunciado vazio é o armar, não fala.
+  function falas(motor: MotorDeFalaFalso): string[] {
+    return motor.ditos.map((dito) => dito.text).filter((texto) => texto !== "");
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    localStorage.clear();
+  });
+
+  it("carregada e sem gesto, nada fala e o iniciar é oferecido", async () => {
+    const motor = instalarMotorDeFalaFalso();
+
+    render(<App />);
+
+    expect(
+      await screen.findByRole("button", { name: "Iniciar a narração das telas" }),
+    ).toBeInTheDocument();
+    expect(falas(motor)).toEqual([]);
+  });
+
+  it("acionado o iniciar, o convite sai da tela e a narração passa a falar", async () => {
+    instalarMotorDeFalaFalso();
+    const usuario = userEvent.setup();
+
+    render(<App />);
+    await usuario.click(
+      await screen.findByRole("button", { name: "Iniciar a narração das telas" }),
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Iniciar a narração das telas" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("desligada no aparelho, não há o que iniciar", async () => {
+    instalarMotorDeFalaFalso();
+    localStorage.setItem("cg:narracao", "desligada");
+
+    render(<App />);
+
+    expect(
+      await screen.findByRole("button", { name: /entrar com google/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Iniciar a narração das telas" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("sem síntese de fala no navegador, nada é oferecido e nenhum erro aparece", async () => {
+    render(<App />);
+
+    expect(
+      await screen.findByRole("button", { name: /entrar com google/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Iniciar a narração das telas" }),
+    ).not.toBeInTheDocument();
+  });
+});

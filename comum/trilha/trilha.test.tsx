@@ -3,6 +3,10 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as autenticacaoApi from "../autenticacao/api";
 import { ProvedorDeSessao } from "../autenticacao/ContextoDeSessao";
+import {
+  CHAVE_DA_NARRACAO_NO_APARELHO,
+  ProvedorDeNarracao,
+} from "../narracao/ProvedorDeNarracao";
 import * as trilhaApi from "./api";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 import { EscolhaDoPoder } from "./EscolhaDoPoder";
@@ -465,5 +469,151 @@ describe("a missão seguinte fica recolhida no guia da trilha", () => {
 
     expect(screen.getByText(/ainda está trancada/i)).toBeVisible();
     expect(screen.queryByText("Próxima missão")).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Ouvir o conteúdo da missão (documento 15 §5.1, documento 03 §4)
+// ---------------------------------------------------------------------------
+
+class EnunciadoFalso {
+  lang = "";
+  voice: SpeechSynthesisVoice | null = null;
+  text: string;
+
+  constructor(text: string) {
+    this.text = text;
+  }
+}
+
+class MotorDeFalaFalso {
+  ditos: EnunciadoFalso[] = [];
+
+  getVoices() {
+    return [
+      {
+        lang: "pt-BR",
+        localService: true,
+        name: "local",
+        default: true,
+        voiceURI: "local",
+      } as SpeechSynthesisVoice,
+    ];
+  }
+
+  speak(dito: EnunciadoFalso) {
+    this.ditos.push(dito);
+  }
+
+  cancel() {}
+
+  addEventListener() {}
+
+  removeEventListener() {}
+}
+
+function instalarMotorDeFalaFalso() {
+  const motor = new MotorDeFalaFalso();
+  vi.stubGlobal("speechSynthesis", motor);
+  vi.stubGlobal("SpeechSynthesisUtterance", EnunciadoFalso);
+  return motor;
+}
+
+function conteudoDeLink(id: string, ordem: number, endereco: string) {
+  return {
+    id,
+    ordem,
+    tipo: "link_externo" as const,
+    corpo: null,
+    endereco,
+    referencia: null,
+    autoria: "propria" as const,
+    fonte: null,
+  };
+}
+
+async function renderizarComNarracao(conteudo: React.ReactNode) {
+  await renderizar(<ProvedorDeNarracao>{conteudo}</ProvedorDeNarracao>);
+}
+
+describe("o conteúdo em texto oferece ouvi-lo, e nunca fala sozinho", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    localStorage.clear();
+  });
+
+  it("o controle aparece no conteúdo em texto, e o conteúdo não é falado sozinho", async () => {
+    const motor = instalarMotorDeFalaFalso();
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
+    );
+
+    await renderizarComNarracao(
+      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+    );
+
+    expect(
+      await screen.findByRole("button", { name: "Ouvir este texto" }),
+    ).toBeInTheDocument();
+    expect(motor.ditos).toHaveLength(0);
+  });
+
+  it("acioná-lo fala o corpo daquele texto", async () => {
+    const motor = instalarMotorDeFalaFalso();
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
+    );
+
+    await renderizarComNarracao(
+      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+    );
+    const usuario = userEvent.setup();
+
+    await usuario.click(await screen.findByRole("button", { name: "Ouvir este texto" }));
+
+    expect(motor.ditos.map((dito) => dito.text)).toEqual(["Parágrafo único."]);
+  });
+
+  it("conteúdo que não é texto não oferece o controle", async () => {
+    instalarMotorDeFalaFalso();
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [conteudoDeLink("conteudo-1", 1, "https://exemplo.org")]),
+    );
+
+    await renderizarComNarracao(
+      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+    );
+
+    expect(await screen.findByRole("link")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Ouvir este texto" })).not.toBeInTheDocument();
+  });
+
+  it("sem o provedor montado — a App 05 de hoje — o controle não aparece", async () => {
+    instalarMotorDeFalaFalso();
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
+    );
+
+    await renderizar(
+      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+    );
+
+    expect(await screen.findByText("Parágrafo único.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Ouvir este texto" })).not.toBeInTheDocument();
+  });
+
+  it("com a narração desligada no aparelho, o controle não é oferecido", async () => {
+    instalarMotorDeFalaFalso();
+    localStorage.setItem(CHAVE_DA_NARRACAO_NO_APARELHO, "desligada");
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
+    );
+
+    await renderizarComNarracao(
+      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+    );
+
+    expect(await screen.findByText("Parágrafo único.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Ouvir este texto" })).not.toBeInTheDocument();
   });
 });

@@ -220,3 +220,20 @@ textarea {
 .cg-fundo-de-comunidade {
   min-height: 100%;
 }
+
+/* O liga e desliga da narração das telas, na tela inicial, e o convite para
+ * armá-la na primeira interação. O alvo de toque de `48` px é o do `cg-botao`,
+ * intocado; daqui saem só o espaçamento e a linha que diz o estado por
+ * escrito, nunca só pela cor (documento 15 §§5, 5.1). */
+.cg-narracao,
+.cg-narracao-convite {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  padding: 0 var(--espaco-16);
+}
+
+.cg-narracao__estado {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+}
