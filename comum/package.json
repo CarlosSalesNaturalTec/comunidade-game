@@ -17,6 +17,7 @@
     "./biometria": "./biometria/indice.ts",
     "./biometria/provisionamento": "./biometria/provisionamento.ts",
     "./fala": "./fala/indice.ts",
+    "./narracao": "./narracao/indice.ts",
     "./trilha": "./trilha/indice.ts",
     "./trilha/api": "./trilha/api.ts"
   },
@@ -31,6 +32,7 @@
     "autenticacao",
     "biometria",
     "fala",
+    "narracao",
     "trilha"
   ],
   "scripts": {

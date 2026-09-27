@@ -1,4 +1,5 @@
 import { ErroDaApi } from "comum/api";
+import { useNarracao } from "comum/narracao";
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -47,6 +48,7 @@ export function TelaDaPartida({ aulaId, tokenDoGuerreiro, aoVoltar }: Props) {
   const [jaRespondida, definirJaRespondida] = useState(false);
   const [enviando, definirEnviando] = useState(false);
   const perguntaIdConhecidaRef = useRef<string | null>(null);
+  const { narrar } = useNarracao();
 
   // Descoberta: relida a cada entrada nesta tela, nunca confiada ao que o
   // `sessionStorage` guardou de um atendimento anterior (design — decisão
@@ -87,11 +89,18 @@ export function TelaDaPartida({ aulaId, tokenDoGuerreiro, aoVoltar }: Props) {
         perguntaIdConhecidaRef.current = proxima.id ?? null;
         definirMinhaResposta(null);
         definirJaRespondida(false);
+        // A fala entra **neste** ponto, e não num efeito sobre o objeto da
+        // pergunta: a sondagem devolve objeto novo a cada 2 s, e um efeito
+        // por identidade falaria trinta vezes por minuto. Só o enunciado —
+        // as alternativas, o resultado e os avisos de rede não são falados,
+        // porque o tempo em que a equipe responde é curto (documento 15
+        // §5.1, design — decisão 7).
+        if (proxima.enunciado) narrar({ texto: proxima.enunciado });
       }
     } catch {
       definirSemRede(true);
     }
-  }, [partidaId, tokenDoGuerreiro]);
+  }, [partidaId, tokenDoGuerreiro, narrar]);
 
   useEffect(() => {
     if (!partidaId) return;
@@ -151,12 +160,24 @@ export function TelaDaPartida({ aulaId, tokenDoGuerreiro, aoVoltar }: Props) {
 
   return (
     <Moldura>
+      {/* O cabeçalho desta tela cala: o que a partida tem a dizer é o
+          enunciado da pergunta no ar, e falar o título antes dele só o
+          cortaria — a camada não enfileira falas (design — decisão 7). */}
       <Cabecalho
         titulo="Quiz ao Vivo"
+        narracao={null}
         acao={{ rotulo: "Voltar ao início", aoAcionar: aoVoltar }}
       />
 
-      {semRede && <Aviso tipo="atencao">{MENSAGEM_DE_PERDA_DE_CONTATO}</Aviso>}
+      {/* Os avisos da partida e o resultado NUNCA são falados: o recorte da
+          decisão é o enunciado, e o tempo em que a equipe responde é curto
+          (documento 15 §5.1). Eles seguem em tela, com o `role` que o leitor
+          de tela anuncia. */}
+      {semRede && (
+        <Aviso tipo="atencao" narracao={null}>
+          {MENSAGEM_DE_PERDA_DE_CONTATO}
+        </Aviso>
+      )}
 
       {!pergunta?.id && (
         <EstadoDaLista>A próxima pergunta ainda não entrou no ar. Aguarde.</EstadoDaLista>
@@ -184,15 +205,19 @@ export function TelaDaPartida({ aulaId, tokenDoGuerreiro, aoVoltar }: Props) {
           </ul>
 
           {jaRespondida && !resultadoLiberado && (
-            <Aviso tipo="atencao">{MENSAGEM_DE_JA_RESPONDEU}</Aviso>
+            <Aviso tipo="atencao" narracao={null}>
+              {MENSAGEM_DE_JA_RESPONDEU}
+            </Aviso>
           )}
 
           {semRede && !respondida && !resultadoLiberado && (
-            <Aviso tipo="atencao">{MENSAGEM_DE_RESPOSTA_INDISPONIVEL}</Aviso>
+            <Aviso tipo="atencao" narracao={null}>
+              {MENSAGEM_DE_RESPOSTA_INDISPONIVEL}
+            </Aviso>
           )}
 
           {resultadoLiberado && (
-            <Aviso tipo="sucesso">
+            <Aviso tipo="sucesso" narracao={null}>
               A alternativa correta é a {pergunta.alternativa_correta}. Sua equipe{" "}
               {pergunta.acertou ? "acertou" : "não acertou"}.{" "}
               {pergunta.primeira_equipe_a_acertar &&

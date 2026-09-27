@@ -1,7 +1,9 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { useSessao } from "../autenticacao/ContextoDeSessao";
+import { useNarracao } from "../narracao/ProvedorDeNarracao";
 import { Aviso } from "../react/Aviso";
 import { BlocoRecolhivel } from "../react/BlocoRecolhivel";
+import { Botao } from "../react/Botao";
 import { EstadoDaLista } from "../react/EstadoDaLista";
 import { MidiaDoNucleo } from "../react/MidiaDoNucleo";
 import { SequenciaPaginada } from "../react/SequenciaPaginada";
@@ -30,6 +32,23 @@ interface Props {
     missaoId: string;
     atividades: AtividadeDaMissaoPublica[];
   }) => ReactNode;
+}
+
+// O conteúdo da missão é **texto longo**: NUNCA é falado ao entrar na tela.
+// No encontro há um aparelho por equipe, e meia dúzia deles lendo o conteúdo
+// inteiro ao mesmo tempo é ruído, não acessibilidade — ele espera este
+// controle (documento 15 §5.1, documento 03 §4). Só o conteúdo em texto o
+// tem: imagem, vídeo, link e arquivo de apoio não têm o que ler em voz alta.
+// Com a narração desligada — e na aplicação que ainda não monta a camada — o
+// controle não é oferecido.
+function ControleDeOuvirOConteudo({ corpo }: { corpo: string }) {
+  const { ligada, ouvir } = useNarracao();
+  if (!ligada) return null;
+  return (
+    <Botao variante="secundaria" onClick={() => ouvir({ texto: corpo })}>
+      Ouvir este texto
+    </Botao>
+  );
 }
 
 // Texto e link saem do próprio conteúdo. Imagem e vídeo vêm em bytes do
@@ -188,6 +207,9 @@ export function Missao({
                 />
                 {conteudo.autoria === "terceiro" && conteudo.fonte && (
                   <span className="cg-trilha__credito"> — fonte: {conteudo.fonte}</span>
+                )}
+                {conteudo.tipo === "texto" && conteudo.corpo && (
+                  <ControleDeOuvirOConteudo corpo={conteudo.corpo} />
                 )}
               </div>
             )}

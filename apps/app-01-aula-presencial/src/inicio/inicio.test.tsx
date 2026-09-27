@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as sessaoApi from "comum/autenticacao/api";
 import * as biometriaModulo from "comum/biometria";
+import { ProvedorDeNarracao, useNarracao } from "comum/narracao";
 import * as trilhaApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as descritorApi from "../api/descritor";
@@ -70,24 +71,26 @@ function renderizar(
   aoEncerrarSessaoDeTrabalho = vi.fn(),
 ) {
   return render(
-    <ProvedorDeEstadoDeRede>
-      <ProvedorDeSessao chaveDeArmazenamento="teste:app-01:sessao-guerreiro">
-        <TelaInicial
-          tokenDeTrabalho="token-de-trabalho"
-          personaIdDeTrabalho="mestre-de-trabalho-1"
-          papelDeTrabalho="mestre"
-          aulaId="aula-1"
-          aoVoltarAoInicio={aoVoltarAoInicio}
-          podeAbrirMomentoDeTroca={propsDeTroca.podeAbrirMomentoDeTroca ?? false}
-          momentoDeTrocaAberto={propsDeTroca.momentoDeTrocaAberto ?? false}
-          abrindoMomentoDeTroca={propsDeTroca.abrindoMomentoDeTroca ?? false}
-          erroDeAberturaDaTroca={propsDeTroca.erroDeAberturaDaTroca ?? null}
-          aoAbrirMomentoDeTroca={vi.fn()}
-          aoFecharMomentoDeTroca={vi.fn()}
-          aoEncerrarSessaoDeTrabalho={aoEncerrarSessaoDeTrabalho}
-        />
-      </ProvedorDeSessao>
-    </ProvedorDeEstadoDeRede>,
+    <ProvedorDeNarracao>
+      <ProvedorDeEstadoDeRede>
+        <ProvedorDeSessao chaveDeArmazenamento="teste:app-01:sessao-guerreiro">
+          <TelaInicial
+            tokenDeTrabalho="token-de-trabalho"
+            personaIdDeTrabalho="mestre-de-trabalho-1"
+            papelDeTrabalho="mestre"
+            aulaId="aula-1"
+            aoVoltarAoInicio={aoVoltarAoInicio}
+            podeAbrirMomentoDeTroca={propsDeTroca.podeAbrirMomentoDeTroca ?? false}
+            momentoDeTrocaAberto={propsDeTroca.momentoDeTrocaAberto ?? false}
+            abrindoMomentoDeTroca={propsDeTroca.abrindoMomentoDeTroca ?? false}
+            erroDeAberturaDaTroca={propsDeTroca.erroDeAberturaDaTroca ?? null}
+            aoAbrirMomentoDeTroca={vi.fn()}
+            aoFecharMomentoDeTroca={vi.fn()}
+            aoEncerrarSessaoDeTrabalho={aoEncerrarSessaoDeTrabalho}
+          />
+        </ProvedorDeSessao>
+      </ProvedorDeEstadoDeRede>
+    </ProvedorDeNarracao>,
   );
 }
 
@@ -754,5 +757,186 @@ describe("encerrar a sessão de trabalho pela tela inicial (RF-04-71, RN-04-41)"
     // Nada se perde: a fila vive em `localStorage` e não sai com a sessão
     // (`RF-04-23`, `RF-04-25`).
     expect(lerFilaDePresenca("aula-1")).toHaveLength(2);
+  });
+});
+
+describe("a narração das telas liga e desliga na tela inicial (documento 15 §5.1)", () => {
+  class EnunciadoFalso {
+    lang = "";
+    voice: SpeechSynthesisVoice | null = null;
+    text: string;
+
+    constructor(text: string) {
+      this.text = text;
+    }
+  }
+
+  class MotorDeFalaFalso {
+    ditos: EnunciadoFalso[] = [];
+
+    getVoices() {
+      return [
+        {
+          lang: "pt-BR",
+          localService: true,
+          name: "local",
+          default: true,
+          voiceURI: "local",
+        } as SpeechSynthesisVoice,
+      ];
+    }
+
+    speak(dito: EnunciadoFalso) {
+      this.ditos.push(dito);
+    }
+
+    cancel() {}
+
+    addEventListener() {}
+
+    removeEventListener() {}
+  }
+
+  function instalarMotorDeFalaFalso() {
+    const motor = new MotorDeFalaFalso();
+    vi.stubGlobal("speechSynthesis", motor);
+    vi.stubGlobal("SpeechSynthesisUtterance", EnunciadoFalso);
+    return motor;
+  }
+
+  function ArmadorDaNarracao() {
+    const { armarNarracao } = useNarracao();
+    return (
+      <button type="button" onClick={armarNarracao}>
+        Iniciar a narração
+      </button>
+    );
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("o controle aparece na tela inicial, com rótulo textual, e nasce ligada", async () => {
+    renderizar();
+
+    expect(
+      await screen.findByRole("button", { name: "Desligar a narração das telas" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/a narração está ligada/i)).toBeInTheDocument();
+  });
+
+  it("desligar troca o rótulo e diz o estado por escrito, nunca só pela cor", async () => {
+    renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.click(
+      await screen.findByRole("button", { name: "Desligar a narração das telas" }),
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Ligar a narração das telas" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/a narração está desligada/i)).toBeInTheDocument();
+  });
+
+  it("a escolha sobrevive ao atendimento seguinte no mesmo aparelho", async () => {
+    const primeira = renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.click(
+      await screen.findByRole("button", { name: "Desligar a narração das telas" }),
+    );
+    // O atendimento seguinte é a mesma tela inicial, montada de novo: a
+    // escolha é do aparelho, não do atendimento.
+    primeira.unmount();
+    renderizar();
+
+    expect(
+      await screen.findByRole("button", { name: "Ligar a narração das telas" }),
+    ).toBeInTheDocument();
+  });
+
+  it("quem desliga não prende o próximo, que religa", async () => {
+    const primeira = renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.click(
+      await screen.findByRole("button", { name: "Desligar a narração das telas" }),
+    );
+    primeira.unmount();
+    renderizar();
+    await usuario.click(
+      await screen.findByRole("button", { name: "Ligar a narração das telas" }),
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Desligar a narração das telas" }),
+    ).toBeInTheDocument();
+  });
+
+  it("a tela inicial fala o título dela, e nenhum rótulo de botão", async () => {
+    const motor = instalarMotorDeFalaFalso();
+
+    render(
+      <ProvedorDeNarracao>
+        <ArmadorDaNarracao />
+        <ProvedorDeEstadoDeRede>
+          <ProvedorDeSessao chaveDeArmazenamento="teste:app-01:sessao-guerreiro">
+            <TelaInicial
+              tokenDeTrabalho="token-de-trabalho"
+              personaIdDeTrabalho="mestre-de-trabalho-1"
+              papelDeTrabalho="mestre"
+              aulaId="aula-1"
+              aoVoltarAoInicio={vi.fn()}
+              podeAbrirMomentoDeTroca={false}
+              momentoDeTrocaAberto={false}
+              abrindoMomentoDeTroca={false}
+              erroDeAberturaDaTroca={null}
+              aoAbrirMomentoDeTroca={vi.fn()}
+              aoFecharMomentoDeTroca={vi.fn()}
+              aoEncerrarSessaoDeTrabalho={vi.fn()}
+            />
+          </ProvedorDeSessao>
+        </ProvedorDeEstadoDeRede>
+      </ProvedorDeNarracao>,
+    );
+    await screen.findByText(/o que você quer fazer/i);
+    screen.getByRole("button", { name: "Iniciar a narração" }).click();
+    await screen.findByText(/o que você quer fazer/i);
+
+    // O que fala é o título da tela — nunca o subtítulo, nunca o rótulo de um
+    // caminho, nunca o do botão de encerrar (documento 15 §5.1).
+    const ditos = motor.ditos.map((dito) => dito.text).filter((texto) => texto !== "");
+    expect(ditos.join(" | ")).not.toMatch(/onboarding —|equipes —|quiz ao vivo —/i);
+    expect(ditos.join(" | ")).not.toMatch(/encerrar a sessão de trabalho/i);
+    expect(ditos.join(" | ")).not.toMatch(/o que você quer fazer/i);
+  });
+
+  it("encerrar a sessão de trabalho não apaga a escolha do aparelho", async () => {
+    await guardarVerificadorDeTeste("mestre-de-trabalho-1");
+    const encerrar = vi.fn();
+
+    renderizar(vi.fn(), {}, encerrar);
+    const usuario = userEvent.setup();
+
+    await usuario.click(
+      await screen.findByRole("button", { name: "Desligar a narração das telas" }),
+    );
+    await usuario.click(
+      screen.getByRole("button", { name: /encerrar a sessão de trabalho/i }),
+    );
+    await usuario.type(
+      await screen.findByLabelText(/pin de quem abriu o aparelho/i),
+      PIN_DE_TESTE,
+    );
+    await usuario.click(
+      screen.getByRole("button", { name: /^encerrar a sessão de trabalho$/i }),
+    );
+
+    await waitFor(() => expect(encerrar).toHaveBeenCalled());
+    // A narração não é dado da sessão de trabalho nem do Guerreiro(a): ela
+    // continua onde estava, no aparelho.
+    expect(localStorage.getItem("cg:narracao")).toBe("desligada");
   });
 });
