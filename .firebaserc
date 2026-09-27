@@ -11,7 +11,8 @@
         "aula": ["comunidade-game-aula"],
         "minhaarea": ["comunidade-game-minhaarea"],
         "responsavel": ["comunidade-game-responsavel"],
-        "apoiador": ["comunidade-game-apoiador"]
+        "apoiador": ["comunidade-game-apoiador"],
+        "vitrine": ["comunidade-game-vitrine"]
       }
     }
   }
