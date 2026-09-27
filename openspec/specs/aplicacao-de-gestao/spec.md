@@ -817,6 +817,12 @@ nome: é sobre esse nome que se apoia o consentimento que autoriza a captura da 
 criança, e o núcleo o exige de toda aplicação que cadastra responsável. (`RF-02-06`,
 `responsavel-e-vinculo`)
 
+Cada vínculo já criado que a aplicação apresenta SHALL identificar o **Guerreiro(a) pelo
+nick**, ao lado do grau de parentesco. O parentesco sozinho NEVER SHALL bastar: ele se
+repete entre irmãos, e o Admin precisa conferir a quem cada vínculo se refere para saber se
+o ato que acabou de praticar está certo. O Guerreiro(a) sem nick gravado SHALL ser
+apresentado de modo que a linha continue distinguível. (`RF-02-06`)
+
 #### Scenario: Admin inclui outro Admin
 
 - **WHEN** um Admin em sessão informa nome e e-mail de um novo Admin e confirma
@@ -838,6 +844,25 @@ criança, e o núcleo o exige de toda aplicação que cadastra responsável. (`R
 - **WHEN** o Admin cadastra um responsável e o vincula a um Guerreiro(a) declarando o
   parentesco
 - **THEN** o vínculo passa a existir com o parentesco declarado
+
+#### Scenario: O vínculo confirmado identifica o Guerreiro(a) pelo nick
+
+- **WHEN** o Admin vincula um Guerreiro(a) a um responsável e o vínculo é criado
+- **THEN** a linha do vínculo apresenta o nick daquele Guerreiro(a) junto do grau de
+  parentesco declarado
+
+#### Scenario: Dois vínculos de mesmo parentesco continuam distinguíveis
+
+- **WHEN** o mesmo responsável é vinculado a dois Guerreiros e Guerreiras, os dois com o
+  parentesco "Pai"
+- **THEN** as duas linhas se distinguem pelo nick de cada Guerreiro(a), e não aparecem como
+  duas linhas iguais
+
+#### Scenario: Guerreiro(a) sem nick gravado não apaga a linha
+
+- **WHEN** o vínculo criado alcança um Guerreiro(a) que ainda não tem nick gravado
+- **THEN** a linha permanece visível e sinaliza a ausência do nick, sem sumir nem ficar
+  reduzida ao parentesco sozinho
 
 #### Scenario: Quarto responsável é barrado
 

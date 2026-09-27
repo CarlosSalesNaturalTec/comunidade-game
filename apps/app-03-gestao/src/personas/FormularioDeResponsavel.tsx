@@ -23,6 +23,24 @@ const TETO_DE_RESPONSAVEIS_POR_MENSAGEM =
 const DADO_COLETADO =
   "o nome do responsável, o vínculo dele com o Guerreiro(a) e o usuário de acesso dele";
 
+const SEM_NICK = "Guerreiro(a) sem nick";
+
+// O grau de parentesco sozinho não identifica o vínculo: ele se repete entre
+// irmãos, e duas linhas de "Pai" não dizem ao Admin a quem cada uma se refere.
+// O nick sai do mesmo estado que alimenta o seletor e o `guerreiro_id` vem na
+// resposta do vínculo, então o cruzamento é local — nenhuma consulta nova
+// (`RF-02-06`, design — decisões 1 e 2).
+//
+// Sem correspondência no estado carregado, a linha marca o Guerreiro(a) como
+// não identificado em vez de cair no rótulo mudo de antes: o silêncio é o
+// próprio defeito que esta correção fecha (design — decisão 3).
+function rotuloDoVinculo(vinculo: VinculoCriado, guerreiros: GuerreiroDaLista[]): string {
+  const nick = guerreiros
+    .find((guerreiro) => guerreiro.id === vinculo.guerreiro_id)
+    ?.nick.trim();
+  return `${nick || SEM_NICK} — ${vinculo.grau_de_parentesco}`;
+}
+
 // Cadastro, vínculo e credencial provisória em um só fluxo: o responsável
 // nasce sem nenhum acesso a Guerreiro(a) algum, o vínculo declara o grau de
 // parentesco, e o teto de três é do núcleo (`RF-02-06`, `RF-02-07`,
@@ -172,7 +190,7 @@ export function FormularioDeResponsavel({ onConcluido, onCancelar }: Props) {
       {vinculos.length > 0 && (
         <ul aria-label="Vínculos já criados">
           {vinculos.map((vinculo) => (
-            <li key={vinculo.id}>{vinculo.grau_de_parentesco}</li>
+            <li key={vinculo.id}>{rotuloDoVinculo(vinculo, guerreiros)}</li>
           ))}
         </ul>
       )}
