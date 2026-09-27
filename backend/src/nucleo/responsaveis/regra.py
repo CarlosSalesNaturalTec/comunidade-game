@@ -1,12 +1,12 @@
 import uuid
 
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 
 from ..comunidades.modelo import VinculoJogador
 from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from ..paginacao import ParametrosDeListagem, codificar_cursor, decodificar_cursor
-from ..personas.modelo import Papel, Persona
+from ..personas.modelo import Nick, Papel, Persona
 from ..personas.regra import criar_persona
 from .modelo import VinculoResponsavel
 
@@ -130,6 +130,101 @@ def responsaveis_vinculados(sessao: Session, guerreiro_id: uuid.UUID) -> list[Vi
     escolher qual responsável está presente (`RF-13-35`, `RN-13-03`,
     decisão do fundador, 2026-09-01)."""
     return sessao.query(VinculoResponsavel).filter_by(guerreiro_id=guerreiro_id, fim=None).all()
+
+
+def responsaveis_visiveis(
+    sessao: Session, *, operador: Persona, parametros: ParametrosDeListagem
+) -> tuple[list[Persona], str | None]:
+    """Os responsáveis que o operador em sessão alcança, paginados pelo `id`.
+
+    O Admin alcança todos. O Mestre alcança dois conjuntos somados: os
+    responsáveis com vínculo vigente a Guerreiro(a) da comunidade do seu
+    vínculo vigente — mesmo recorte de `guerreiros_vinculaveis` — e os que
+    **ele próprio cadastrou**, ainda que sem vínculo algum. Sem o segundo
+    ramo, o Mestre que cadastra no encontro e sai antes de vincular perde o
+    responsável para sempre, que é o defeito que esta leitura existe para
+    fechar (`RF-02-111`, `RF-09-122`, decisão do fundador, 2026-09-26).
+
+    Responsável sem vínculo aparece para quem o alcança: é o cadastro
+    interrompido. Vínculo encerrado nunca dá alcance, porque só o vigente
+    conta (`RN-01-20`, `RN-09-18`).
+    """
+    consulta = sessao.query(Persona).filter(Persona.papel == Papel.responsavel)
+
+    if operador.papel != Papel.admin:
+        vinculo_do_mestre: VinculoJogador | None = operador.vinculo_vigente
+        alcance = [Persona.criada_por == operador.id]
+        if vinculo_do_mestre is not None:
+            da_comunidade = (
+                sessao.query(VinculoResponsavel.responsavel_id)
+                .join(
+                    VinculoJogador,
+                    and_(
+                        VinculoJogador.guerreiro_id == VinculoResponsavel.guerreiro_id,
+                        VinculoJogador.data_fim.is_(None),
+                    ),
+                )
+                .filter(
+                    VinculoResponsavel.fim.is_(None),
+                    VinculoJogador.comunidade_virtual_id == vinculo_do_mestre.comunidade_virtual_id,
+                )
+            )
+            alcance.append(Persona.id.in_(da_comunidade))
+        consulta = consulta.filter(or_(*alcance))
+
+    if parametros.cursor:
+        posicao = decodificar_cursor(parametros.cursor)
+        try:
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(Persona.id > id_cursor)
+
+    consulta = consulta.order_by(Persona.id).limit(parametros.tamanho + 1)
+    responsaveis = consulta.all()
+
+    proximo_cursor = None
+    if len(responsaveis) > parametros.tamanho:
+        responsaveis = responsaveis[: parametros.tamanho]
+        proximo_cursor = codificar_cursor({"id": str(responsaveis[-1].id)})
+    return responsaveis, proximo_cursor
+
+
+def vinculados_por_responsavel(
+    sessao: Session, responsaveis: list[Persona]
+) -> dict[uuid.UUID, list[tuple[VinculoResponsavel, str]]]:
+    """Os vinculados vigentes de uma página inteira de responsáveis, em duas
+    consultas em lote — os vínculos e os nicks —, nunca uma por responsável
+    (`RF-02-111`, design — decisão 5). O nick ausente sai como texto vazio,
+    e quem apresenta decide o que dizer, como as demais leituras do núcleo
+    já fazem."""
+    if not responsaveis:
+        return {}
+
+    ids = {responsavel.id for responsavel in responsaveis}
+    vinculos = (
+        sessao.query(VinculoResponsavel)
+        .filter(VinculoResponsavel.responsavel_id.in_(ids), VinculoResponsavel.fim.is_(None))
+        .all()
+    )
+
+    nicks: dict[uuid.UUID, str] = {}
+    if vinculos:
+        nicks = {
+            nick.persona_id: nick.valor
+            for nick in sessao.query(Nick).filter(
+                Nick.persona_id.in_({vinculo.guerreiro_id for vinculo in vinculos})
+            )
+        }
+
+    por_responsavel: dict[uuid.UUID, list[tuple[VinculoResponsavel, str]]] = {
+        responsavel.id: [] for responsavel in responsaveis
+    }
+    for vinculo in vinculos:
+        por_responsavel[vinculo.responsavel_id].append(
+            (vinculo, nicks.get(vinculo.guerreiro_id, ""))
+        )
+    return por_responsavel
 
 
 def exigir_vinculo_do_responsavel(

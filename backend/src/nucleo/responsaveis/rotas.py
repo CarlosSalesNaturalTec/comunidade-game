@@ -19,6 +19,8 @@ from .regra import (
     guerreiros_vinculados,
     guerreiros_vinculaveis,
     responsaveis_vinculados,
+    responsaveis_visiveis,
+    vinculados_por_responsavel,
 )
 
 roteador = APIRouter()
@@ -136,6 +138,61 @@ def listar_responsaveis_do_guerreiro_rota(
         )
         for vinculo in vinculos
     ]
+
+
+class VinculadoDoResponsavelSaida(BaseModel):
+    guerreiro_id: uuid.UUID
+    nick: str
+    grau_de_parentesco: str
+
+
+class ResponsavelDaListaSaida(BaseModel):
+    id: uuid.UUID
+    nome: str
+    vinculados: list[VinculadoDoResponsavelSaida]
+
+
+@roteador.get("/responsaveis", response_model=PaginaDeResultado[ResponsavelDaListaSaida])
+def listar_responsaveis_rota(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    contexto: Annotated[
+        ContextoDaSessao,
+        Depends(exigir_permissao(Operacao.vinculo_com_guerreiros_e_guerreiras, "le")),
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[ResponsavelDaListaSaida]:
+    """Restrita a Admin e Mestre pela mesma operação de vínculo que os dois
+    já têm — nenhuma `Operacao` nova, como `RF-13-35` já fez. O Admin
+    alcança todos; o Mestre, os das comunidades em que atua mais os que ele
+    próprio cadastrou, e o recorte é da regra (`RF-02-111`, `RF-09-122`,
+    decisão do fundador, 2026-09-26).
+
+    Nome, nick e grau de parentesco: nunca credencial, senha, usuário ou
+    contato do responsável, nem imagem real, nome civil ou nascimento do
+    Guerreiro(a) (`RN-09-18`, invariante 12 do documento 99 §6)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    responsaveis, proximo_cursor = responsaveis_visiveis(
+        sessao_bd, operador=operador, parametros=parametros
+    )
+    vinculados = vinculados_por_responsavel(sessao_bd, responsaveis)
+    return PaginaDeResultado(
+        itens=[
+            ResponsavelDaListaSaida(
+                id=responsavel.id,
+                nome=responsavel.nome or "",
+                vinculados=[
+                    VinculadoDoResponsavelSaida(
+                        guerreiro_id=vinculo.guerreiro_id,
+                        nick=nick,
+                        grau_de_parentesco=vinculo.grau_de_parentesco,
+                    )
+                    for vinculo, nick in vinculados.get(responsavel.id, [])
+                ],
+            )
+            for responsavel in responsaveis
+        ],
+        proximo_cursor=proximo_cursor,
+    )
 
 
 class CadastrarResponsavelEntrada(BaseModel):

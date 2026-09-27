@@ -399,6 +399,7 @@ outras duas frentes já entregues — tombamento (PRD-07) e ficha de vida —, s
 | ID          | Requisito                                                                                                     | Prioridade |
 | ----------- | ------------------------------------------------------------------------------------------------------------- | ---------- |
 | `RF-09-62`  | Mestre cadastra responsável apresentado no encontro e vincula Guerreiros e Guerreiras já ativos               | essencial  |
+| `RF-09-122` | Mestre consulta os responsáveis das comunidades em que atua e os que ele próprio cadastrou                    | essencial  |
 | `RF-09-63`  | Vínculo registra o grau de parentesco em texto livre                                                          | essencial  |
 | `RF-09-64`  | Aplicação recusa o quarto vínculo de responsável para o mesmo Guerreiro(a)                                    | essencial  |
 | `RF-09-65`  | Mestre cria credencial de usuário e senha provisória para responsável sem conta Google                        | essencial  |
@@ -804,4 +805,5 @@ a que alguma submissão já respondeu (documento 03 §11).
 | `RF-09-118`               | 11 §2.2 (quantas perguntas o Mestre quiser, quatro alternativas cada) |
 | `RF-09-119`               | 03 §11 (teto de 1 MB por pergunta, formatos da lista fechada)         |
 | `RF-09-121`               | 03 §1.1 (PIN de confirmação do adulto)                                |
+| `RF-09-122`               | 02 §1 (consulta dos responsáveis cadastrados)                         |
 | `RF-09-120` e `RN-09-44`  | 03 §11 (a pergunta do quiz se grava uma a uma, completa)              |

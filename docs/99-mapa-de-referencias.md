@@ -379,7 +379,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD-05 | `prd-05-area-do-guerreiro.md`     | PRD-01, PRD-09         | 02, 03, 05, 11             |
 | PRD-07 | `prd-07-economia-e-ledger.md`     | PRD-08                 | 04, 05                     |
 | PRD-08 | `prd-08-comunidades-virtuais.md`  | —                      | 02, 03, 11                 |
-| PRD-09 | `prd-09-area-do-mestre.md`        | PRD-01, PRD-07         | 02, 03, 04, 05, 06, 07, 11 |
+| PRD-09 | `prd-09-area-do-mestre.md`        | PRD-01, PRD-07, PRD-02 | 02, 03, 04, 05, 06, 07, 11 |
 | PRD-10 | `prd-10-batalhas.md`              | PRD-01, PRD-09         | 02, 07, 11                 |
 | PRD-11 | `prd-11-personalizacao-por-ia.md` | PRD-01, PRD-04         | 02, 03, 11                 |
 | PRD-12 | `prd-12-jogo-em-javascript.md`    | PRD-01, PRD-03         | 02, 03, 04, 11             |
@@ -390,6 +390,9 @@ O PRD-09 passou a depender também do PRD-07: a recompensa de marco e a entrega 
 do livro-razão (`backend/src/nucleo/recompensas_de_marco/`), e as rotas que a Área do Mestre
 consome para declarar o marco e confirmar a entrega (`RF-09-71`, `RF-09-76`) vivem lá, não em
 PRD-09.
+
+O PRD-09 passou a depender também do PRD-02: `RF-09-122` — a consulta dos responsáveis pelo
+Mestre — lê a rota que o PRD-02 cria em `RF-02-111`, e a tela do Mestre não existe sem ela.
 
 A **publicação da missão do Apoiador** (`RF-02-102` a `RF-02-105`) é requisito do PRD-02 — quem
 publica é a gestão —, mas depende da entidade `MissaoDoApoiador`, cujos atributos o PRD-14 §8
