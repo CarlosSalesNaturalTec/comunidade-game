@@ -107,6 +107,8 @@ e revogam consentimentos, e têm acesso próprio à plataforma.
   responsáveis**.
 - Todo vínculo declara o **grau de parentesco** do responsável com o Guerreiro(a), em texto
   livre.
+- A gestão **consulta os responsáveis cadastrados** e os vinculados de cada um: o Admin
+  alcança todos; o Mestre, os das comunidades em que atua e os que ele próprio cadastrou.
 - **Qualquer um dos vinculados autoriza ou revoga**, e a **recusa prevalece**: divergindo os
   responsáveis, a autorização fica suspensa até a gestão tratar.
 - **Parentes e amigos além dos três responsáveis acompanham como Apoiador**, cadastrados pela

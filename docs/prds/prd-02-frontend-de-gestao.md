@@ -210,6 +210,7 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 | `RF-02-04`  | Aplicação recusa o cadastro de Mestre ou Apoiador sem ao menos um artefato comprobatório                           | essencial  |
 | `RF-02-05`  | Admin inclui novo Admin manualmente                                                                                | essencial  |
 | `RF-02-06`  | Admin cadastra responsável e vincula Guerreiros e Guerreiras já cadastrados, com grau de parentesco                | essencial  |
+| `RF-02-111` | Gestão apresenta os responsáveis cadastrados, com os vinculados de cada um, e retoma o vínculo de um deles         | essencial  |
 | `RF-02-110` | Admin cadastra e troca o próprio PIN de confirmação, de 4 dígitos, usado para confirmar identidade no App 01       | essencial  |
 | `RF-02-07`  | Admin cria credencial de usuário e senha provisória para adulto sem conta social                                   | essencial  |
 | `RF-02-08`  | Painel do dia lista as equipes formadas no App 01 naquela aula, pelo nome, com o nick e o papel de cada integrante | essencial  |
@@ -416,6 +417,7 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | POST   | `/v1/mestres`                                          | Admin           | Cadastra Mestre com os links comprobatórios declarados                            |
 | POST   | `/v1/apoiadores`                                       | Admin           | Cadastra Apoiador com os links e os termos de doação                              |
 | POST   | `/v1/admins`                                           | Admin           | Inclui novo Admin manualmente                                                     |
+| GET    | `/v1/responsaveis`                                     | Admin ou Mestre | Lista os responsáveis cadastrados, com os vinculados de cada um                   |
 | GET    | `/v1/aulas/{id}/equipes`                               | Admin ou Mestre | Lista as equipes formadas no App 01 naquela aula                                  |
 | POST   | `/v1/poderes`                                          | Admin           | Mantém o catálogo de poderes                                                      |
 | GET    | `/v1/aulas/vigentes`                                   | pública         | Aulas em curso na data e hora, para o App 01 identificar a comunidade             |
@@ -645,6 +647,7 @@ freio por origem: 3 envios por hora, com atraso progressivo e sem CAPTCHA (docum
 | `RF-02-96` e `RF-02-97`   | 05 §2 e PRD-07 (desativação, reativação e transferência)              |
 | `RF-02-109`               | 03 §3.3 (limiar medido por ponto de apoio)                            |
 | `RF-02-110`               | 03 §1.1 (PIN de confirmação do adulto)                                |
+| `RF-02-111`               | 02 §1 (consulta dos responsáveis cadastrados pela gestão)             |
 | `RF-02-57` e `RF-02-58`   | 04 §1 e PRD-07 (aportes e necessidades)                               |
 | `RF-02-59` a `RF-02-62`   | 05 §5 (Quiz ao Vivo)                                                  |
 | `RF-02-72` e `RF-02-73`   | 05 §5 e 11 §5 (regras e pontuação da partida)                         |

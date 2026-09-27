@@ -9,10 +9,15 @@ import {
   criarVinculo,
   type GuerreiroDaLista,
   listarGuerreiros,
+  type ResponsavelDaLista,
   type VinculoCriado,
 } from "./api";
 
 interface Props {
+  // Quando vem preenchido, a tela abre direto no passo de vínculo de um
+  // responsável já cadastrado, sem passar pelo cadastro: é a retomada que a
+  // lista oferece (`RF-02-111`, design — decisão 7).
+  responsavelExistente?: ResponsavelDaLista | null;
   onConcluido: () => void;
   onCancelar: () => void;
 }
@@ -50,11 +55,17 @@ function rotuloDoVinculo(vinculo: VinculoCriado, guerreiros: GuerreiroDaLista[])
 // autoriza a captura da imagem da criança, e o núcleo o exige. A tela nascera
 // sem o campo e mandava o cadastro **sem corpo**, o que respondia 422 a toda
 // tentativa — as Apps 09 e 01 já o mandavam.
-export function FormularioDeResponsavel({ onConcluido, onCancelar }: Props) {
+export function FormularioDeResponsavel({
+  responsavelExistente = null,
+  onConcluido,
+  onCancelar,
+}: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoCampoDeGuerreiro = useId();
   const [nome, definirNome] = useState("");
-  const [responsavelId, definirResponsavelId] = useState<string | null>(null);
+  const [responsavelId, definirResponsavelId] = useState<string | null>(
+    responsavelExistente?.id ?? null,
+  );
   const [guerreiros, definirGuerreiros] = useState<GuerreiroDaLista[]>([]);
   const [guerreiroId, definirGuerreiroId] = useState("");
   const [grauDeParentesco, definirGrauDeParentesco] = useState("");
@@ -184,7 +195,9 @@ export function FormularioDeResponsavel({ onConcluido, onCancelar }: Props) {
     <div>
       <AvisoDeColeta dado={DADO_COLETADO} />
       <Aviso tipo="sucesso">
-        Responsável cadastrado. Vincule os Guerreiros e Guerreiras dele.
+        {responsavelExistente === null
+          ? "Responsável cadastrado. Vincule os Guerreiros e Guerreiras dele."
+          : `Vincule mais Guerreiros e Guerreiras a ${responsavelExistente.nome}.`}
       </Aviso>
 
       {vinculos.length > 0 && (

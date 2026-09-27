@@ -1,9 +1,9 @@
 import { Botao, Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
 import { FormularioDeAdmin } from "./FormularioDeAdmin";
-import { FormularioDeResponsavel } from "./FormularioDeResponsavel";
 import { TelaDeAdultos } from "./TelaDeAdultos";
 import { TelaDeGuerreiros } from "./TelaDeGuerreiros";
+import { TelaDeResponsaveis } from "./TelaDeResponsaveis";
 
 type SubArea = "guerreiros" | "mestres" | "apoiadores" | "admins" | "responsaveis";
 
@@ -18,8 +18,6 @@ const SUB_AREAS: { chave: SubArea; rotulo: string }[] = [
 export function TelaDePersonas() {
   const [subArea, definirSubArea] = useState<SubArea>("guerreiros");
   const [mostrarFormularioDeAdmin, definirMostrarFormularioDeAdmin] = useState(false);
-  const [mostrarFormularioDeResponsavel, definirMostrarFormularioDeResponsavel] =
-    useState(false);
 
   return (
     <Moldura>
@@ -53,17 +51,7 @@ export function TelaDePersonas() {
           <Botao onClick={() => definirMostrarFormularioDeAdmin(true)}>Incluir Admin</Botao>
         ))}
 
-      {subArea === "responsaveis" &&
-        (mostrarFormularioDeResponsavel ? (
-          <FormularioDeResponsavel
-            onConcluido={() => definirMostrarFormularioDeResponsavel(false)}
-            onCancelar={() => definirMostrarFormularioDeResponsavel(false)}
-          />
-        ) : (
-          <Botao onClick={() => definirMostrarFormularioDeResponsavel(true)}>
-            Cadastrar responsável
-          </Botao>
-        ))}
+      {subArea === "responsaveis" && <TelaDeResponsaveis />}
     </Moldura>
   );
 }

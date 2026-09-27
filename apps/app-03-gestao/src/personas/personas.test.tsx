@@ -4,7 +4,12 @@ import { configurarAcessoAoNucleo, ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as agendaApi from "../agenda/api";
-import type { AdultoDaLista, GuerreiroDaLista, VinculoCriado } from "./api";
+import type {
+  AdultoDaLista,
+  GuerreiroDaLista,
+  ResponsavelDaLista,
+  VinculoCriado,
+} from "./api";
 import * as personasApi from "./api";
 import { FichaDoAdulto } from "./FichaDoAdulto";
 import { FormularioDeAdmin } from "./FormularioDeAdmin";
@@ -14,6 +19,7 @@ import { FormularioDeResponsavel } from "./FormularioDeResponsavel";
 import { ListaDeAdultos } from "./ListaDeAdultos";
 import { ListaDeGuerreiros } from "./ListaDeGuerreiros";
 import { TelaDeAdultos } from "./TelaDeAdultos";
+import { TelaDeResponsaveis } from "./TelaDeResponsaveis";
 
 vi.mock("../direitos/ContextoDeDireitos", async () => {
   const real = await vi.importActual<typeof import("../direitos/ContextoDeDireitos")>(
@@ -628,6 +634,159 @@ describe("o vínculo já criado identifica o Guerreiro(a) pelo nick", () => {
     const [linha] = linhasDosVinculos();
     expect(linha).toMatch(/sem nick/i);
     expect(linha).toMatch(/Mãe/);
+  });
+});
+
+// A sub-área Responsáveis tinha só o botão de cadastrar: responsável
+// cadastrado ficava inalcançável, e o cadastro interrompido antes do vínculo
+// não aparecia em lugar nenhum (`RF-02-111`).
+describe("lista de responsáveis na gestão", () => {
+  const COM_VINCULO: ResponsavelDaLista = {
+    id: "resp-1",
+    nome: "Dona Maria",
+    vinculados: [
+      {
+        guerreiro_id: GUERREIRO.id,
+        nick: GUERREIRO.nick,
+        grau_de_parentesco: "mãe",
+      },
+    ],
+  };
+
+  const SEM_VINCULO: ResponsavelDaLista = {
+    id: "resp-2",
+    nome: "Seu João",
+    vinculados: [],
+  };
+
+  function configurarLista(itens: ResponsavelDaLista[]) {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [GUERREIRO],
+      proximo_cursor: null,
+    });
+    return vi.spyOn(personasApi, "listarResponsaveis").mockResolvedValue({
+      itens,
+      proximo_cursor: null,
+    });
+  }
+
+  it("apresenta os responsáveis cadastrados, com os vinculados", async () => {
+    configurarLista([COM_VINCULO]);
+
+    render(<TelaDeResponsaveis />);
+
+    expect(await screen.findByText("Dona Maria")).toBeInTheDocument();
+    const tabela = screen.getByRole("table", { name: /responsáveis cadastrados/i });
+    expect(within(tabela).getByText(/ZeferinaGuerreira \(mãe\)/)).toBeInTheDocument();
+  });
+
+  it("sinaliza o cadastro interrompido, sem Guerreiro(a) vinculado", async () => {
+    configurarLista([SEM_VINCULO]);
+
+    render(<TelaDeResponsaveis />);
+
+    expect(await screen.findByText("Seu João")).toBeInTheDocument();
+    expect(screen.getByText(/cadastro por concluir/i)).toBeInTheDocument();
+  });
+
+  it("lista vazia é dita, e o cadastro continua oferecido", async () => {
+    configurarLista([]);
+
+    render(<TelaDeResponsaveis />);
+
+    expect(await screen.findByText(/nenhum responsável cadastrado/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cadastrar responsável/i })).toBeInTheDocument();
+  });
+
+  it("exibe o aviso de coleta da tela", async () => {
+    configurarLista([COM_VINCULO]);
+
+    render(<TelaDeResponsaveis />);
+
+    expect(await screen.findByText(/nome do responsável e o vínculo/i)).toHaveAttribute(
+      "role",
+      "status",
+    );
+  });
+
+  it("não expõe credencial nem dado civil da criança", async () => {
+    // Nick escolhido para não conter o nome civil: o do fixture padrão é
+    // "ZeferinaGuerreira", que traz "Zeferina" dentro, e a asserção passaria
+    // por acidente.
+    configurarLista([
+      {
+        id: "resp-3",
+        nome: "Dona Maria",
+        vinculados: [
+          {
+            guerreiro_id: GUERREIRO.id,
+            nick: "NickSemNomeCivil",
+            grau_de_parentesco: "mãe",
+          },
+        ],
+      },
+    ]);
+
+    render(<TelaDeResponsaveis />);
+    await screen.findByText("Dona Maria");
+
+    const tabela = screen.getByRole("table", { name: /responsáveis cadastrados/i });
+    expect(tabela.textContent).not.toMatch(/senha|usuário|credencial/i);
+    expect(tabela.textContent).not.toContain(GUERREIRO.nome);
+    expect(tabela.textContent).not.toContain(GUERREIRO.nascimento);
+  });
+
+  it("retoma um responsável e vincula outro Guerreiro(a), sem cadastrar ninguém", async () => {
+    configurarLista([SEM_VINCULO]);
+    const cadastrar = vi.spyOn(personasApi, "cadastrarResponsavel");
+    const criarVinculo = vi.spyOn(personasApi, "criarVinculo").mockResolvedValue({
+      id: "v-1",
+      responsavel_id: SEM_VINCULO.id,
+      guerreiro_id: GUERREIRO.id,
+      grau_de_parentesco: "Pai",
+      inicio: "2026-09-27T10:00:00-03:00",
+    });
+
+    render(<TelaDeResponsaveis />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByRole("button", { name: "Seu João" }));
+
+    expect(
+      await screen.findByText(/vincule mais guerreiros e guerreiras a seu joão/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText(/nome do responsável/i)).not.toBeInTheDocument();
+
+    await usuario.selectOptions(screen.getByLabelText(/^guerreiro\(a\)$/i), GUERREIRO.id);
+    await usuario.type(screen.getByLabelText(/grau de parentesco/i), "Pai");
+    await usuario.click(screen.getByRole("button", { name: /^vincular$/i }));
+
+    await waitFor(() => expect(criarVinculo).toHaveBeenCalledTimes(1));
+    expect(criarVinculo.mock.calls[0][0]).toBe(SEM_VINCULO.id);
+    expect(cadastrar).not.toHaveBeenCalled();
+    expect(await screen.findByText(`${GUERREIRO.nick} — Pai`)).toBeInTheDocument();
+  });
+
+  it("o teto de três continua explicado na retomada", async () => {
+    configurarLista([SEM_VINCULO]);
+    vi.spyOn(personasApi, "criarVinculo").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "Este Guerreiro(a) já tem três responsáveis vigentes.",
+        campo: "guerreiro_id",
+      }),
+    );
+
+    render(<TelaDeResponsaveis />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByRole("button", { name: "Seu João" }));
+    await screen.findByText(/vincule mais guerreiros/i);
+
+    await usuario.selectOptions(screen.getByLabelText(/^guerreiro\(a\)$/i), GUERREIRO.id);
+    await usuario.type(screen.getByLabelText(/grau de parentesco/i), "tio");
+    await usuario.click(screen.getByRole("button", { name: /^vincular$/i }));
+
+    expect(await screen.findByText(/três responsáveis/i)).toBeInTheDocument();
   });
 });
 

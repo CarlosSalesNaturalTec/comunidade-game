@@ -3,9 +3,11 @@ import uuid
 from datetime import UTC, datetime
 
 import pytest
+from sqlalchemy import event
 from sqlalchemy.orm import sessionmaker
 
 from nucleo.erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
+from nucleo.paginacao import ParametrosDeListagem
 from nucleo.personas.modelo import Papel, Persona
 from nucleo.responsaveis.modelo import VinculoResponsavel
 from nucleo.responsaveis.regra import (
@@ -13,6 +15,8 @@ from nucleo.responsaveis.regra import (
     criar_vinculo,
     exigir_vinculo_do_responsavel,
     guerreiros_vinculados,
+    responsaveis_visiveis,
+    vinculados_por_responsavel,
 )
 
 
@@ -351,3 +355,201 @@ def test_duas_criacoes_simultaneas_do_terceiro_vinculo_nao_passam_as_duas(
     assert (
         sessao.query(VinculoResponsavel).filter_by(guerreiro_id=guerreiro.id, fim=None).count() == 3
     )
+
+
+# `RF-02-111`, `RF-09-122`: a leitura dos responsáveis cadastrados, com os
+# dois recortes por papel. O ramo `criada_por` do Mestre não é conveniência —
+# sem ele, quem cadastra no encontro e sai antes de vincular perde o
+# responsável para sempre (decisão do fundador, 2026-09-26).
+def _pagina(tamanho: int = 50, cursor: str | None = None) -> ParametrosDeListagem:
+    return ParametrosDeListagem(tamanho=tamanho, cursor=cursor, filtros={})
+
+
+def test_admin_alcanca_todos_os_responsaveis(sessao, criar_persona, criar_comunidade):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    da_gestao = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
+    do_mestre = cadastrar_responsavel(sessao, criado_por=mestre, nome="pai")
+    sessao.commit()
+
+    responsaveis, cursor = responsaveis_visiveis(sessao, operador=admin, parametros=_pagina())
+
+    assert {responsavel.id for responsavel in responsaveis} == {da_gestao.id, do_mestre.id}
+    assert cursor is None
+
+
+def test_mestre_alcanca_os_responsaveis_da_comunidade_em_que_atua(
+    sessao, criar_persona, criar_comunidade, criar_vinculo_jogador
+):
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    criar_vinculo_jogador(mestre, comunidade)
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+
+    # Cadastrado pelo Admin, não pelo Mestre: o alcance vem do vínculo.
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
+    criar_vinculo(
+        sessao,
+        responsavel=responsavel,
+        guerreiro_id=guerreiro.id,
+        grau_de_parentesco="mãe",
+        cadastrado_por=admin,
+    )
+    sessao.commit()
+
+    responsaveis, _ = responsaveis_visiveis(sessao, operador=mestre, parametros=_pagina())
+
+    assert [r.id for r in responsaveis] == [responsavel.id]
+
+
+def test_responsavel_de_outra_comunidade_nao_aparece_ao_mestre(
+    sessao, criar_persona, criar_comunidade, criar_vinculo_jogador
+):
+    admin = criar_persona(Papel.admin)
+    comunidade_do_mestre = criar_comunidade("Comunidade do Mestre")
+    outra = criar_comunidade("Outra Comunidade")
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    criar_vinculo_jogador(mestre, comunidade_do_mestre)
+    guerreiro_alheio = criar_persona(Papel.guerreiro, comunidade=outra)
+
+    alheio = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
+    criar_vinculo(
+        sessao,
+        responsavel=alheio,
+        guerreiro_id=guerreiro_alheio.id,
+        grau_de_parentesco="mãe",
+        cadastrado_por=admin,
+    )
+    sessao.commit()
+
+    responsaveis, _ = responsaveis_visiveis(sessao, operador=mestre, parametros=_pagina())
+
+    assert responsaveis == []
+
+
+def test_mestre_reencontra_o_responsavel_que_cadastrou_sem_vincular(
+    sessao, criar_persona, criar_comunidade, criar_vinculo_jogador
+):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    criar_vinculo_jogador(mestre, criar_comunidade())
+    interrompido = cadastrar_responsavel(sessao, criado_por=mestre, nome="pai")
+    sessao.commit()
+
+    responsaveis, _ = responsaveis_visiveis(sessao, operador=mestre, parametros=_pagina())
+
+    assert [r.id for r in responsaveis] == [interrompido.id]
+    assert vinculados_por_responsavel(sessao, responsaveis) == {interrompido.id: []}
+
+
+def test_mestre_sem_vinculo_vigente_ainda_alcanca_o_que_cadastrou(
+    sessao, criar_persona, criar_comunidade
+):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    seu = cadastrar_responsavel(sessao, criado_por=mestre, nome="pai")
+    cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
+    sessao.commit()
+
+    responsaveis, _ = responsaveis_visiveis(sessao, operador=mestre, parametros=_pagina())
+
+    assert [r.id for r in responsaveis] == [seu.id]
+
+
+def test_responsavel_sem_vinculo_aparece_ao_admin_com_vinculados_vazios(sessao, criar_persona):
+    admin = criar_persona(Papel.admin)
+    sozinho = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
+    sessao.commit()
+
+    responsaveis, _ = responsaveis_visiveis(sessao, operador=admin, parametros=_pagina())
+
+    assert [r.id for r in responsaveis] == [sozinho.id]
+    assert vinculados_por_responsavel(sessao, responsaveis) == {sozinho.id: []}
+
+
+def test_vinculado_traz_o_nick_e_o_vinculo_encerrado_fica_de_fora(
+    sessao, criar_persona, criar_nick
+):
+    admin = criar_persona(Papel.admin)
+    responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
+    vigente = criar_persona(Papel.guerreiro)
+    criar_nick(vigente, "ZeferinaGuerreira")
+    encerrado = criar_persona(Papel.guerreiro)
+    criar_nick(encerrado, "OutroNick")
+
+    criar_vinculo(
+        sessao,
+        responsavel=responsavel,
+        guerreiro_id=vigente.id,
+        grau_de_parentesco="mãe",
+        cadastrado_por=admin,
+    )
+    saindo = criar_vinculo(
+        sessao,
+        responsavel=responsavel,
+        guerreiro_id=encerrado.id,
+        grau_de_parentesco="tia",
+        cadastrado_por=admin,
+    )
+    saindo.fim = datetime.now(UTC)
+    sessao.commit()
+
+    responsaveis, _ = responsaveis_visiveis(sessao, operador=admin, parametros=_pagina())
+    vinculados = vinculados_por_responsavel(sessao, responsaveis)
+
+    assert [(v.grau_de_parentesco, nick) for v, nick in vinculados[responsavel.id]] == [
+        ("mãe", "ZeferinaGuerreira")
+    ]
+
+
+def test_a_pagina_dos_vinculados_nao_consulta_um_por_responsavel(sessao, criar_persona, criar_nick):
+    admin = criar_persona(Papel.admin)
+    for indice in range(4):
+        responsavel = cadastrar_responsavel(sessao, criado_por=admin, nome=f"responsável {indice}")
+        guerreiro = criar_persona(Papel.guerreiro)
+        criar_nick(guerreiro, f"nick-{indice}")
+        criar_vinculo(
+            sessao,
+            responsavel=responsavel,
+            guerreiro_id=guerreiro.id,
+            grau_de_parentesco="mãe",
+            cadastrado_por=admin,
+        )
+    sessao.commit()
+
+    responsaveis, _ = responsaveis_visiveis(sessao, operador=admin, parametros=_pagina())
+
+    consultas: list[str] = []
+
+    def anotar(conexao, cursor, comando, *_resto):
+        consultas.append(comando)
+
+    ligacao = sessao.get_bind()
+    event.listen(ligacao, "before_cursor_execute", anotar)
+    try:
+        vinculados = vinculados_por_responsavel(sessao, responsaveis)
+    finally:
+        event.remove(ligacao, "before_cursor_execute", anotar)
+
+    assert len(responsaveis) == 4
+    assert sum(len(itens) for itens in vinculados.values()) == 4
+    # Duas consultas em lote — os vínculos e os nicks —, nunca uma por
+    # responsável (design — decisão 5).
+    assert len(consultas) == 2
+
+
+def test_a_paginacao_devolve_cursor_e_continua_a_lista(sessao, criar_persona):
+    admin = criar_persona(Papel.admin)
+    criados = {cadastrar_responsavel(sessao, criado_por=admin, nome=f"r{i}").id for i in range(3)}
+    sessao.commit()
+
+    primeira, cursor = responsaveis_visiveis(sessao, operador=admin, parametros=_pagina(tamanho=2))
+    assert len(primeira) == 2
+    assert cursor is not None
+
+    segunda, fim = responsaveis_visiveis(
+        sessao, operador=admin, parametros=_pagina(tamanho=2, cursor=cursor)
+    )
+    assert fim is None
+    assert {r.id for r in primeira} | {r.id for r in segunda} == criados

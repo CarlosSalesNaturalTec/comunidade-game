@@ -217,3 +217,29 @@ export function criarCredencialProvisoria(
     token,
   });
 }
+
+export interface VinculadoDoResponsavel {
+  guerreiro_id: string;
+  nick: string;
+  grau_de_parentesco: string;
+}
+
+export interface ResponsavelDaLista {
+  id: string;
+  nome: string;
+  vinculados: VinculadoDoResponsavel[];
+}
+
+interface ListaDeResponsaveis {
+  itens: ResponsavelDaLista[];
+  proximo_cursor: string | null;
+}
+
+// Nome do responsável e os vinculados dele por nick e grau de parentesco —
+// nunca credencial, usuário ou contato, nem nome civil ou nascimento do
+// Guerreiro(a). Responsável sem vínculo vem com `vinculados` vazio: é o
+// cadastro interrompido, e é para retomá-lo que a lista existe
+// (`RF-02-111`, `RN-09-18`).
+export function listarResponsaveis(token: string): Promise<ListaDeResponsaveis> {
+  return chamarNucleo<ListaDeResponsaveis>("/v1/responsaveis", { token });
+}
