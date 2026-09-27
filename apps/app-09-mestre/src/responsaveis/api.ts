@@ -86,3 +86,30 @@ export function criarCredencialProvisoria(
     token,
   });
 }
+
+export interface VinculadoDoResponsavel {
+  guerreiro_id: string;
+  nick: string;
+  grau_de_parentesco: string;
+}
+
+export interface ResponsavelDaLista {
+  id: string;
+  nome: string;
+  vinculados: VinculadoDoResponsavel[];
+}
+
+interface ListaDeResponsaveis {
+  itens: ResponsavelDaLista[];
+  proximo_cursor: string | null;
+}
+
+// O recorte é do núcleo: ao Mestre em sessão, os responsáveis com vínculo
+// vigente a Guerreiro(a) das comunidades em que ele atua, somados aos que
+// ele próprio cadastrou — estes últimos ainda que sem vínculo algum, que é
+// o cadastro interrompido no encontro. A tela não filtra nada por conta
+// própria. Nome, nick e grau de parentesco: nunca credencial, usuário ou
+// contato (`RF-09-122`, `RN-09-18`).
+export function listarResponsaveis(token: string): Promise<ListaDeResponsaveis> {
+  return chamarNucleo<ListaDeResponsaveis>("/v1/responsaveis", { token });
+}

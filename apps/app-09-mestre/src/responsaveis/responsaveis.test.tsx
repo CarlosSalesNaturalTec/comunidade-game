@@ -3,8 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { GuerreiroVinculavel, VinculoCriado } from "./api";
+import type { GuerreiroVinculavel, ResponsavelDaLista, VinculoCriado } from "./api";
 import * as responsaveisApi from "./api";
+import { FormularioDeResponsavel } from "./FormularioDeResponsavel";
 import { TelaDeResponsaveis } from "./TelaDeResponsaveis";
 
 vi.mock("comum/autenticacao", async () => {
@@ -59,14 +60,14 @@ afterEach(() => {
 describe("cadastro do responsável", () => {
   it("declara que o cadastro pressupõe a apresentação presencial", () => {
     configurarSessao();
-    render(<TelaDeResponsaveis />);
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} />);
 
     expect(screen.getByText(/apresentou pessoalmente/i)).toBeInTheDocument();
   });
 
   it("mostra o aviso de coleta do cadastro e do vínculo", () => {
     configurarSessao();
-    render(<TelaDeResponsaveis />);
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} />);
 
     expect(screen.getByText(/coleta o cadastro e o vínculo do responsável/i)).toHaveAttribute(
       "role",
@@ -77,7 +78,7 @@ describe("cadastro do responsável", () => {
   it("recusa o cadastro sem nome", async () => {
     configurarSessao();
     const cadastrarEspiado = vi.spyOn(responsaveisApi, "cadastrarResponsavel");
-    render(<TelaDeResponsaveis />);
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} />);
     const usuario = userEvent.setup();
 
     await usuario.click(screen.getByRole("button", { name: /cadastrar responsável/i }));
@@ -100,7 +101,7 @@ describe("vínculo com Guerreiro(a)", () => {
     });
     const criarVinculoEspiado = vi.spyOn(responsaveisApi, "criarVinculo");
 
-    render(<TelaDeResponsaveis />);
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} />);
     const usuario = userEvent.setup();
 
     await usuario.type(screen.getByLabelText(/nome do responsável/i), "Maria");
@@ -143,7 +144,7 @@ describe("vínculo com Guerreiro(a)", () => {
         inicio: "2026-08-29T10:05:00-03:00",
       });
 
-    render(<TelaDeResponsaveis />);
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} />);
     const usuario = userEvent.setup();
 
     await usuario.type(screen.getByLabelText(/nome do responsável/i), "Maria");
@@ -181,7 +182,7 @@ describe("vínculo com Guerreiro(a)", () => {
       }),
     );
 
-    render(<TelaDeResponsaveis />);
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} />);
     const usuario = userEvent.setup();
 
     await usuario.type(screen.getByLabelText(/nome do responsável/i), "Maria");
@@ -222,7 +223,7 @@ describe("o vínculo já criado identifica o Guerreiro(a) pelo nick", () => {
       proximo_cursor: null,
     });
 
-    render(<TelaDeResponsaveis />);
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} />);
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nome do responsável/i), "Maria");
     await usuario.click(screen.getByRole("button", { name: /cadastrar responsável/i }));
@@ -296,6 +297,154 @@ describe("o vínculo já criado identifica o Guerreiro(a) pelo nick", () => {
   });
 });
 
+// A área abria direto no cadastro, e responsável cadastrado ficava
+// inalcançável — pior no Mestre, que cadastra presencialmente e é quem mais
+// interrompe o cadastro antes do vínculo (`RF-09-122`).
+describe("área de responsáveis do Mestre", () => {
+  const COM_VINCULO: ResponsavelDaLista = {
+    id: "resp-1",
+    nome: "Dona Maria",
+    vinculados: [
+      { guerreiro_id: GUERREIRO.id, nick: GUERREIRO.nick, grau_de_parentesco: "mãe" },
+    ],
+  };
+
+  const SEM_VINCULO: ResponsavelDaLista = { id: "resp-2", nome: "Seu João", vinculados: [] };
+
+  function configurarArea(itens: ResponsavelDaLista[]) {
+    configurarSessao();
+    vi.spyOn(responsaveisApi, "listarGuerreirosVinculaveis").mockResolvedValue({
+      itens: [GUERREIRO],
+      proximo_cursor: null,
+    });
+    return vi.spyOn(responsaveisApi, "listarResponsaveis").mockResolvedValue({
+      itens,
+      proximo_cursor: null,
+    });
+  }
+
+  it("abre na lista dos responsáveis que o Mestre alcança, não no cadastro", async () => {
+    configurarArea([COM_VINCULO]);
+
+    render(<TelaDeResponsaveis />);
+
+    expect(await screen.findByText("Dona Maria")).toBeInTheDocument();
+    expect(screen.queryByLabelText(/nome do responsável/i)).not.toBeInTheDocument();
+    const tabela = screen.getByRole("table", { name: /responsáveis cadastrados/i });
+    expect(within(tabela).getByText(/guerreira-teste \(mãe\)/)).toBeInTheDocument();
+  });
+
+  it("sinaliza o cadastro interrompido, sem Guerreiro(a) vinculado", async () => {
+    configurarArea([SEM_VINCULO]);
+
+    render(<TelaDeResponsaveis />);
+
+    expect(await screen.findByText("Seu João")).toBeInTheDocument();
+    expect(screen.getByText(/cadastro por concluir/i)).toBeInTheDocument();
+  });
+
+  it("lista vazia é dita, e o cadastro continua oferecido", async () => {
+    configurarArea([]);
+
+    render(<TelaDeResponsaveis />);
+
+    expect(await screen.findByText(/nenhum responsável cadastrado/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cadastrar responsável/i })).toBeInTheDocument();
+  });
+
+  it("o cadastro é alcançável a partir da lista", async () => {
+    const listar = configurarArea([]);
+    vi.spyOn(responsaveisApi, "cadastrarResponsavel").mockResolvedValue({
+      id: "resp-3",
+      nome: "Nova",
+    });
+
+    render(<TelaDeResponsaveis />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByRole("button", { name: /cadastrar responsável/i }));
+
+    await usuario.type(screen.getByLabelText(/nome do responsável/i), "Nova");
+    await usuario.click(screen.getByRole("button", { name: /cadastrar responsável/i }));
+    await screen.findByText(/vincule os guerreiros e guerreiras de nova/i);
+
+    await usuario.click(screen.getByRole("button", { name: /^concluir$/i }));
+    await waitFor(() => expect(listar).toHaveBeenCalledTimes(2));
+  });
+
+  it("retoma um responsável e vincula outro Guerreiro(a), sem cadastrar ninguém", async () => {
+    configurarArea([SEM_VINCULO]);
+    const cadastrar = vi.spyOn(responsaveisApi, "cadastrarResponsavel");
+    const criarVinculo = vi.spyOn(responsaveisApi, "criarVinculo").mockResolvedValue({
+      id: "v-1",
+      responsavel_id: SEM_VINCULO.id,
+      guerreiro_id: GUERREIRO.id,
+      grau_de_parentesco: "Pai",
+      inicio: "2026-09-27T10:00:00-03:00",
+    });
+
+    render(<TelaDeResponsaveis />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByRole("button", { name: "Seu João" }));
+
+    expect(
+      await screen.findByText(/vincule mais guerreiros e guerreiras a seu joão/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText(/nome do responsável/i)).not.toBeInTheDocument();
+
+    await usuario.selectOptions(screen.getByLabelText(/^guerreiro\(a\)$/i), GUERREIRO.id);
+    await usuario.type(screen.getByLabelText(/grau de parentesco/i), "Pai");
+    await usuario.click(screen.getByRole("button", { name: /^vincular$/i }));
+
+    await waitFor(() => expect(criarVinculo).toHaveBeenCalledTimes(1));
+    expect(criarVinculo.mock.calls[0][0]).toBe(SEM_VINCULO.id);
+    expect(cadastrar).not.toHaveBeenCalled();
+    expect(await screen.findByText(`${GUERREIRO.nick} — Pai`)).toBeInTheDocument();
+  });
+
+  it("o teto de três continua explicado na retomada", async () => {
+    configurarArea([SEM_VINCULO]);
+    vi.spyOn(responsaveisApi, "criarVinculo").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "Este Guerreiro(a) já tem três responsáveis vigentes.",
+        campo: "guerreiro_id",
+      }),
+    );
+
+    render(<TelaDeResponsaveis />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByRole("button", { name: "Seu João" }));
+    await screen.findByText(/vincule mais guerreiros/i);
+
+    await usuario.selectOptions(screen.getByLabelText(/^guerreiro\(a\)$/i), GUERREIRO.id);
+    await usuario.type(screen.getByLabelText(/grau de parentesco/i), "tio");
+    await usuario.click(screen.getByRole("button", { name: /^vincular$/i }));
+
+    expect(await screen.findByText(/três responsáveis vigentes/i)).toBeInTheDocument();
+  });
+
+  it("não expõe credencial nem dado civil da criança", async () => {
+    // Nick escolhido para não conter nome civil algum, para a asserção não
+    // passar por acidente.
+    configurarArea([
+      {
+        id: "resp-4",
+        nome: "Dona Maria",
+        vinculados: [
+          { guerreiro_id: GUERREIRO.id, nick: "NickSemNomeCivil", grau_de_parentesco: "mãe" },
+        ],
+      },
+    ]);
+
+    render(<TelaDeResponsaveis />);
+    await screen.findByText("Dona Maria");
+
+    const tabela = screen.getByRole("table", { name: /responsáveis cadastrados/i });
+    expect(tabela.textContent).not.toMatch(/senha|usuário|credencial/i);
+    expect(tabela.textContent).not.toMatch(/nascimento|\d{4}-\d{2}-\d{2}/);
+  });
+});
+
 describe("credencial provisória", () => {
   it("mostra a senha provisória uma vez, sem caminho para recuperá-la", async () => {
     configurarSessao();
@@ -313,7 +462,7 @@ describe("credencial provisória", () => {
       senha_provisoria: "abc123",
     });
 
-    render(<TelaDeResponsaveis />);
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} />);
     const usuario = userEvent.setup();
 
     await usuario.type(screen.getByLabelText(/nome do responsável/i), "Maria");
