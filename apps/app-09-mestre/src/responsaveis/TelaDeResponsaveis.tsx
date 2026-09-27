@@ -1,260 +1,70 @@
-import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
+import { ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
-import { type FormEvent, useEffect, useId, useState } from "react";
+import { Aviso, Botao, Cabecalho, Moldura } from "comum/react";
+import { useCallback, useEffect, useState } from "react";
 import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
-import {
-  cadastrarResponsavel,
-  criarCredencialProvisoria,
-  criarVinculo,
-  type GuerreiroVinculavel,
-  listarGuerreirosVinculaveis,
-  type VinculoCriado,
-} from "./api";
+import { listarResponsaveis, type ResponsavelDaLista } from "./api";
+import { FormularioDeResponsavel } from "./FormularioDeResponsavel";
+import { ListaDeResponsaveis } from "./ListaDeResponsaveis";
 
-const MENSAGEM_DO_TETO =
-  "Este Guerreiro(a) já tem três responsáveis vigentes — o teto por criança.";
+const DADO_COLETADO = "o nome do responsável e o vínculo dele com os Guerreiros e Guerreiras";
 
-const DADO_COLETADO =
-  "o cadastro e o vínculo do responsável, e a credencial de acesso dele quando criada";
-
-const SEM_NICK = "Guerreiro(a) sem nick";
-
-// O grau de parentesco sozinho não identifica o vínculo: ele se repete entre
-// irmãos, e duas linhas de "Pai" não dizem ao Mestre a quem cada uma se
-// refere — enquanto o seletor logo acima já apresenta cada Guerreiro(a) por
-// nick e avatar. O nick sai desse mesmo estado e o `guerreiro_id` vem na
-// resposta do vínculo, então o cruzamento é local (`RF-09-63`, design —
-// decisões 1 e 2).
+// A área abria direto no cadastro, e responsável cadastrado ficava
+// inalcançável — pior no Mestre, que cadastra presencialmente e é quem mais
+// interrompe o cadastro antes do vínculo. Passa a abrir na lista que o núcleo
+// já recorta para ele, com o cadastro atrás de um botão e a retomada do
+// vínculo na linha (`RF-09-122`, design — decisões 1 e 3).
 //
-// O avatar fica de fora: na confirmação o que distingue é o nick, e repeti-lo
-// alongaria a linha sem ganho (design — decisão 2). Sem correspondência no
-// estado carregado, a linha marca a ausência do nick em vez de cair no rótulo
-// mudo de antes (design — decisão 3).
-function rotuloDoVinculo(vinculo: VinculoCriado, guerreiros: GuerreiroVinculavel[]): string {
-  const nick = guerreiros
-    .find((guerreiro) => guerreiro.id === vinculo.guerreiro_id)
-    ?.nick.trim();
-  return `${nick || SEM_NICK} — ${vinculo.grau_de_parentesco}`;
-}
-
-// Cadastro, vínculo e credencial provisória em um só fluxo — o mesmo que a
-// gestão já resolve na App 03, aqui recortado pelo que o Mestre alcança: os
-// Guerreiros e Guerreiras que ele pode vincular vêm do núcleo, por nick e
-// avatar, nunca por identificador digitado (`RF-09-62` a `RF-09-65`,
-// `RN-09-15`, `RN-09-23`, design — decisões 1 e 4).
+// O recorte não se repete aqui: quem decide o que o Mestre alcança é
+// `GET /v1/responsaveis` (design — decisão 5).
 export function TelaDeResponsaveis() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
-  const idDoCampoDeGuerreiro = useId();
-  const [nome, definirNome] = useState("");
-  const [responsavel, definirResponsavel] = useState<{ id: string; nome: string } | null>(
-    null,
-  );
-  const [guerreiros, definirGuerreiros] = useState<GuerreiroVinculavel[]>([]);
-  const [guerreiroId, definirGuerreiroId] = useState("");
-  const [grauDeParentesco, definirGrauDeParentesco] = useState("");
-  const [vinculos, definirVinculos] = useState<VinculoCriado[]>([]);
-  const [usuario, definirUsuario] = useState("");
-  const [senhaProvisoria, definirSenhaProvisoria] = useState<string | null>(null);
+  const [responsaveis, definirResponsaveis] = useState<ResponsavelDaLista[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
-  const [enviando, definirEnviando] = useState(false);
+  const [cadastrando, definirCadastrando] = useState(false);
+  const [emRetomada, definirEmRetomada] = useState<ResponsavelDaLista | null>(null);
+
+  const carregar = useCallback(async () => {
+    if (!sessao) return;
+    try {
+      const pagina = await listarResponsaveis(sessao.token);
+      definirResponsaveis(pagina.itens);
+    } catch (erroCapturado) {
+      if (ehRecusaDeSessao(erroCapturado)) {
+        tratarRecusaDeSessao();
+        return;
+      }
+      definirErro("Não foi possível carregar os responsáveis. Tente novamente em instantes.");
+    }
+  }, [sessao, tratarRecusaDeSessao]);
 
   useEffect(() => {
-    if (!sessao || responsavel === null) return;
-    listarGuerreirosVinculaveis(sessao.token)
-      .then((pagina) => definirGuerreiros(pagina.itens))
-      .catch(() => definirGuerreiros([]));
-  }, [sessao, responsavel]);
+    carregar();
+  }, [carregar]);
 
-  function recomecar() {
-    definirNome("");
-    definirResponsavel(null);
-    definirGuerreiros([]);
-    definirGuerreiroId("");
-    definirGrauDeParentesco("");
-    definirVinculos([]);
-    definirUsuario("");
-    definirSenhaProvisoria(null);
-    definirErro(null);
-  }
-
-  async function aoCadastrar(evento: FormEvent<HTMLFormElement>) {
-    evento.preventDefault();
-    definirErro(null);
-
-    if (!nome.trim()) {
-      definirErro("Informe o nome do responsável.");
-      return;
-    }
-    if (!sessao) return;
-
-    definirEnviando(true);
-    try {
-      const criado = await cadastrarResponsavel(nome.trim(), sessao.token);
-      definirResponsavel(criado);
-    } catch (erroCapturado) {
-      if (ehRecusaDeSessao(erroCapturado)) {
-        tratarRecusaDeSessao();
-        return;
-      }
-      definirErro("Não foi possível cadastrar o responsável. Tente novamente em instantes.");
-    } finally {
-      definirEnviando(false);
-    }
-  }
-
-  async function aoVincular(evento: FormEvent<HTMLFormElement>) {
-    evento.preventDefault();
-    definirErro(null);
-
-    if (!guerreiroId) {
-      definirErro("Escolha o Guerreiro(a).");
-      return;
-    }
-    if (!grauDeParentesco.trim()) {
-      definirErro("Informe o grau de parentesco.");
-      return;
-    }
-    if (!sessao || !responsavel) return;
-
-    definirEnviando(true);
-    try {
-      const vinculo = await criarVinculo(
-        responsavel.id,
-        { guerreiro_id: guerreiroId, grau_de_parentesco: grauDeParentesco.trim() },
-        sessao.token,
-      );
-      definirVinculos((atual) => [...atual, vinculo]);
-      definirGuerreiroId("");
-      definirGrauDeParentesco("");
-    } catch (erroCapturado) {
-      if (ehRecusaDeSessao(erroCapturado)) {
-        tratarRecusaDeSessao();
-        return;
-      }
-      if (erroCapturado instanceof ErroDaApi && erroCapturado.codigo === "erro_de_validacao") {
-        definirErro(MENSAGEM_DO_TETO);
-        return;
-      }
-      definirErro("Não foi possível vincular. Tente novamente em instantes.");
-    } finally {
-      definirEnviando(false);
-    }
-  }
-
-  async function aoCriarCredencial(evento: FormEvent<HTMLFormElement>) {
-    evento.preventDefault();
-    definirErro(null);
-
-    if (!usuario.trim()) {
-      definirErro("Informe o usuário.");
-      return;
-    }
-    if (!sessao || !responsavel) return;
-
-    definirEnviando(true);
-    try {
-      const credencial = await criarCredencialProvisoria(
-        { persona_id: responsavel.id, usuario: usuario.trim() },
-        sessao.token,
-      );
-      definirSenhaProvisoria(credencial.senha_provisoria);
-    } catch (erroCapturado) {
-      if (ehRecusaDeSessao(erroCapturado)) {
-        tratarRecusaDeSessao();
-        return;
-      }
-      definirErro("Não foi possível criar a credencial. Tente novamente em instantes.");
-    } finally {
-      definirEnviando(false);
-    }
-  }
-
-  if (responsavel === null) {
-    return (
-      <Moldura>
-        <Cabecalho
-          titulo="Responsáveis"
-          subtitulo="Cadastre o responsável que se apresentou pessoalmente no encontro."
-        />
-        <AvisoDeColeta dado={DADO_COLETADO} />
-        <form onSubmit={aoCadastrar} aria-label="Cadastro do responsável">
-          <Campo rotulo="Nome do responsável" valor={nome} aoAlterar={definirNome} />
-          {erro && <Aviso tipo="erro">{erro}</Aviso>}
-          <Botao tipo="submit" desabilitado={enviando}>
-            Cadastrar responsável
-          </Botao>
-        </form>
-      </Moldura>
-    );
-  }
+  const aoConcluir = useCallback(async () => {
+    definirCadastrando(false);
+    definirEmRetomada(null);
+    definirResponsaveis(null);
+    await carregar();
+  }, [carregar]);
 
   return (
     <Moldura>
       <Cabecalho
         titulo="Responsáveis"
-        subtitulo={`Vincular Guerreiros e Guerreiras a ${responsavel.nome}`}
+        subtitulo="Os responsáveis das suas comunidades e os que você cadastrou."
       />
-      <AvisoDeColeta dado={DADO_COLETADO} />
-      <Aviso tipo="sucesso">
-        Responsável cadastrado. Vincule os Guerreiros e Guerreiras dele.
-      </Aviso>
-
-      {vinculos.length > 0 && (
-        <ul aria-label="Vínculos já criados">
-          {vinculos.map((vinculo) => (
-            <li key={vinculo.id}>{rotuloDoVinculo(vinculo, guerreiros)}</li>
-          ))}
-        </ul>
-      )}
-
-      <form onSubmit={aoVincular} aria-label="Vincular Guerreiro(a)">
-        <div className="cg-campo">
-          <label htmlFor={idDoCampoDeGuerreiro}>Guerreiro(a)</label>
-          <select
-            id={idDoCampoDeGuerreiro}
-            value={guerreiroId}
-            onChange={(evento) => definirGuerreiroId(evento.target.value)}
-          >
-            <option value="">Selecione</option>
-            {guerreiros.map((guerreiro) => (
-              <option key={guerreiro.id} value={guerreiro.id}>
-                {guerreiro.nick} — {guerreiro.avatar}
-              </option>
-            ))}
-          </select>
-        </div>
-        <Campo
-          rotulo="Grau de parentesco"
-          valor={grauDeParentesco}
-          aoAlterar={definirGrauDeParentesco}
-        />
-        {erro && <Aviso tipo="erro">{erro}</Aviso>}
-        <Botao tipo="submit" desabilitado={enviando}>
-          Vincular
-        </Botao>
-      </form>
-
-      {senhaProvisoria === null ? (
-        <form onSubmit={aoCriarCredencial} aria-label="Criar credencial de usuário e senha">
-          <Campo
-            rotulo="Usuário (para quem não tem conta Google)"
-            valor={usuario}
-            aoAlterar={definirUsuario}
-          />
-          <Botao tipo="submit" desabilitado={enviando}>
-            Criar credencial provisória
-          </Botao>
-        </form>
+      {cadastrando || emRetomada !== null ? (
+        <FormularioDeResponsavel responsavelExistente={emRetomada} onConcluido={aoConcluir} />
       ) : (
-        <Aviso tipo="atencao">
-          Senha provisória: {senhaProvisoria} — anote agora, ela não aparece de novo.
-        </Aviso>
+        <div>
+          <AvisoDeColeta dado={DADO_COLETADO} />
+          {erro && <Aviso tipo="erro">{erro}</Aviso>}
+          <Botao onClick={() => definirCadastrando(true)}>Cadastrar responsável</Botao>
+          <ListaDeResponsaveis responsaveis={responsaveis} onRetomar={definirEmRetomada} />
+        </div>
       )}
-
-      <Botao variante="secundaria" onClick={recomecar}>
-        Concluir e cadastrar outro responsável
-      </Botao>
     </Moldura>
   );
 }
