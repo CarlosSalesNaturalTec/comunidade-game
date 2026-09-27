@@ -173,9 +173,7 @@ export function FormularioDeResponsavel({ responsavelExistente = null, onConclui
   if (responsavel === null) {
     return (
       <div>
-        <Aviso tipo="informacao">
-          Cadastre o responsável que se apresentou pessoalmente no encontro.
-        </Aviso>
+        <p>Cadastre o responsável que se apresentou pessoalmente no encontro.</p>
         <AvisoDeColeta dado={DADO_COLETADO} />
         <form onSubmit={aoCadastrar} aria-label="Cadastro do responsável">
           <Campo rotulo="Nome do responsável" valor={nome} aoAlterar={definirNome} />
