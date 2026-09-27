@@ -1,8 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { GuerreiroVinculavel, VinculoCriado } from "./api";
 import * as responsaveisApi from "./api";
 import { TelaDeResponsaveis } from "./TelaDeResponsaveis";
 
@@ -152,14 +153,14 @@ describe("vínculo com Guerreiro(a)", () => {
     await usuario.selectOptions(screen.getByLabelText(/^guerreiro\(a\)$/i), GUERREIRO.id);
     await usuario.type(screen.getByLabelText(/grau de parentesco/i), "mãe");
     await usuario.click(screen.getByRole("button", { name: /^vincular$/i }));
-    await screen.findByText("mãe");
+    await screen.findByText("guerreira-teste — mãe");
 
     await usuario.selectOptions(screen.getByLabelText(/^guerreiro\(a\)$/i), "guerreiro-2");
     await usuario.type(screen.getByLabelText(/grau de parentesco/i), "tia");
     await usuario.click(screen.getByRole("button", { name: /^vincular$/i }));
 
-    expect(await screen.findByText("tia")).toBeInTheDocument();
-    expect(screen.getByText("mãe")).toBeInTheDocument();
+    expect(await screen.findByText("guerreiro-dois — tia")).toBeInTheDocument();
+    expect(screen.getByText("guerreira-teste — mãe")).toBeInTheDocument();
   });
 
   it("o quarto vínculo é recusado com o teto de três, sem perder o que já foi criado", async () => {
@@ -193,6 +194,105 @@ describe("vínculo com Guerreiro(a)", () => {
 
     expect(await screen.findByText(/três responsáveis vigentes/i)).toBeInTheDocument();
     expect(screen.getByText(/responsável cadastrado/i)).toBeInTheDocument();
+  });
+});
+
+// A lista de vínculos já criados imprimia só o grau de parentesco, enquanto o
+// seletor logo acima já mostrava `nick — avatar`: dois vínculos de "Pai"
+// viravam duas linhas idênticas (`RF-09-63`).
+describe("o vínculo já criado identifica o Guerreiro(a) pelo nick", () => {
+  function vinculoDe(id: string, guerreiroId: string, grau: string): VinculoCriado {
+    return {
+      id,
+      responsavel_id: "resp-1",
+      guerreiro_id: guerreiroId,
+      grau_de_parentesco: grau,
+      inicio: "2026-09-27T10:00:00-03:00",
+    };
+  }
+
+  async function abrirOPassoDeVinculo(guerreiros: GuerreiroVinculavel[]) {
+    configurarSessao();
+    vi.spyOn(responsaveisApi, "cadastrarResponsavel").mockResolvedValue({
+      id: "resp-1",
+      nome: "Maria",
+    });
+    vi.spyOn(responsaveisApi, "listarGuerreirosVinculaveis").mockResolvedValue({
+      itens: guerreiros,
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeResponsaveis />);
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nome do responsável/i), "Maria");
+    await usuario.click(screen.getByRole("button", { name: /cadastrar responsável/i }));
+    await screen.findByText(/responsável cadastrado/i);
+    return usuario;
+  }
+
+  async function vincular(
+    usuario: ReturnType<typeof userEvent.setup>,
+    guerreiroId: string,
+    grau: string,
+  ) {
+    await usuario.selectOptions(screen.getByLabelText(/^guerreiro\(a\)$/i), guerreiroId);
+    await usuario.type(screen.getByLabelText(/grau de parentesco/i), grau);
+    await usuario.click(screen.getByRole("button", { name: /^vincular$/i }));
+  }
+
+  function linhasDosVinculos() {
+    const lista = screen.getByRole("list", { name: /vínculos já criados/i });
+    return within(lista)
+      .getAllByRole("listitem")
+      .map((item) => item.textContent);
+  }
+
+  it("traz o nick ao lado do grau de parentesco", async () => {
+    const usuario = await abrirOPassoDeVinculo([GUERREIRO]);
+    vi.spyOn(responsaveisApi, "criarVinculo").mockResolvedValue(
+      vinculoDe("v-1", GUERREIRO.id, "Pai"),
+    );
+
+    await vincular(usuario, GUERREIRO.id, "Pai");
+
+    await screen.findByRole("list", { name: /vínculos já criados/i });
+    expect(linhasDosVinculos()).toEqual([`${GUERREIRO.nick} — Pai`]);
+  });
+
+  it("dois vínculos de mesmo parentesco continuam distinguíveis", async () => {
+    const OUTRO: GuerreiroVinculavel = {
+      id: "guerreiro-2",
+      nick: "guerreiro-dois",
+      avatar: "avatar-2",
+    };
+    const usuario = await abrirOPassoDeVinculo([GUERREIRO, OUTRO]);
+    vi.spyOn(responsaveisApi, "criarVinculo")
+      .mockResolvedValueOnce(vinculoDe("v-1", GUERREIRO.id, "Pai"))
+      .mockResolvedValueOnce(vinculoDe("v-2", OUTRO.id, "Pai"));
+
+    await vincular(usuario, GUERREIRO.id, "Pai");
+    await screen.findByRole("list", { name: /vínculos já criados/i });
+    await vincular(usuario, OUTRO.id, "Pai");
+    await waitFor(() => expect(linhasDosVinculos()).toHaveLength(2));
+
+    const linhas = linhasDosVinculos();
+    expect(linhas).toEqual([`${GUERREIRO.nick} — Pai`, `${OUTRO.nick} — Pai`]);
+    expect(new Set(linhas).size).toBe(2);
+  });
+
+  it("Guerreiro(a) sem nick gravado não apaga a linha", async () => {
+    const semNick: GuerreiroVinculavel = { id: "guerreiro-9", nick: "", avatar: "avatar-9" };
+    const usuario = await abrirOPassoDeVinculo([semNick]);
+    vi.spyOn(responsaveisApi, "criarVinculo").mockResolvedValue(
+      vinculoDe("v-1", semNick.id, "Mãe"),
+    );
+
+    await vincular(usuario, semNick.id, "Mãe");
+
+    await screen.findByRole("list", { name: /vínculos já criados/i });
+    const [linha] = linhasDosVinculos();
+    expect(linha).toMatch(/sem nick/i);
+    expect(linha).toMatch(/Mãe/);
   });
 });
 
