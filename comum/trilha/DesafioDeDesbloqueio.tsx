@@ -3,6 +3,7 @@ import { useSessao } from "../autenticacao/ContextoDeSessao";
 import { Aviso } from "../react/Aviso";
 import { Botao } from "../react/Botao";
 import { MidiaDoNucleo } from "../react/MidiaDoNucleo";
+import { SequenciaPaginada } from "../react/SequenciaPaginada";
 import {
   type DesafioDeDesbloqueio as Desafio,
   lerImagemDaPergunta,
@@ -19,8 +20,13 @@ interface Props {
   submissaoLigada?: boolean;
 }
 
-// Realiza o desafio de desbloqueio. No quiz, todas as perguntas aparecem
-// numa tela só e vão de uma vez; passando, a missão seguinte abre na hora.
+// Realiza o desafio de desbloqueio. No quiz, a tela apresenta **uma
+// pergunta por vez**, com retorno à anterior para trocar a resposta, e a
+// submissão continua sendo **uma só, com todas as respostas**: o critério
+// de aprovação é do conjunto (`RN-05-45`), e submeter por pergunta o
+// tornaria incalculável. Pergunta sem resposta não é só contada — a tela
+// leva o Guerreiro(a) até ela (documento 15 §6.4). Passando, a missão
+// seguinte abre na hora.
 // Não passando, diz quantas ele acertou e convida a tentar de novo, sem
 // contagem de fracassos nem punição. Na sondagem nada disso aparece: o
 // núcleo abre a trilha ao ser respondida, e é `Sondagem` que dá o
@@ -39,6 +45,7 @@ export function DesafioDeDesbloqueio({
   const [erro, definirErro] = useState<string | null>(null);
   const [escolhas, definirEscolhas] = useState<Record<string, number>>({});
   const [faltando, definirFaltando] = useState<string[]>([]);
+  const [indiceDaPergunta, definirIndiceDaPergunta] = useState(0);
 
   const perguntas = desafio.perguntas ?? [];
 
@@ -51,6 +58,10 @@ export function DesafioDeDesbloqueio({
         .map((pergunta) => pergunta.id);
       if (semResposta.length > 0) {
         definirFaltando(semResposta);
+        // Com uma pergunta por vez, contar quantas faltam manda procurar:
+        // a tela leva até a primeira pendente (design — decisão 4).
+        const primeira = perguntas.findIndex((pergunta) => semResposta.includes(pergunta.id));
+        if (primeira >= 0) definirIndiceDaPergunta(primeira);
         return;
       }
       respostas = perguntas.map((pergunta) => ({
@@ -106,7 +117,8 @@ export function DesafioDeDesbloqueio({
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
       {faltando.length > 0 && (
         <Aviso tipo="atencao">
-          Falta responder {faltando.length} pergunta(s) antes de enviar.
+          Falta responder {faltando.length} pergunta(s) antes de enviar. Trouxemos você até a
+          primeira que falta.
         </Aviso>
       )}
       {placar && (
@@ -116,49 +128,58 @@ export function DesafioDeDesbloqueio({
         </Aviso>
       )}
 
-      {desafio.tipo === "quiz" &&
-        perguntas.map((pergunta, indice) => (
-          <fieldset
-            key={pergunta.id}
-            className={
-              faltando.includes(pergunta.id)
-                ? "cg-trilha__pergunta cg-trilha__pergunta--falta"
-                : "cg-trilha__pergunta"
-            }
-          >
-            <legend>
-              {indice + 1}. {pergunta.enunciado}
-            </legend>
-            {pergunta.imagem_referencia && (
-              <MidiaDoNucleo
-                id={pergunta.id}
-                buscar={lerImagemDaPergunta}
-                token={sessao?.token ?? null}
-                tipo="imagem"
-                alt={`Imagem da pergunta: ${pergunta.enunciado}`}
-                textoDeErro="A imagem desta pergunta não abriu, mas pode responder."
-              />
-            )}
-            <ul className="cg-trilha__alternativas">
-              {pergunta.alternativas.map((alternativa, posicao) => (
-                <li key={alternativa}>
-                  <label>
-                    <input
-                      type="radio"
-                      name={`pergunta-${pergunta.id}`}
-                      checked={escolhas[pergunta.id] === posicao + 1}
-                      disabled={!submissaoLigada}
-                      onChange={() =>
-                        definirEscolhas({ ...escolhas, [pergunta.id]: posicao + 1 })
-                      }
-                    />
-                    {alternativa}
-                  </label>
-                </li>
-              ))}
-            </ul>
-          </fieldset>
-        ))}
+      {desafio.tipo === "quiz" && (
+        <SequenciaPaginada
+          itens={perguntas}
+          nome="Pergunta"
+          rotuloDeAvancar="Próxima pergunta"
+          rotuloDeVoltar="Pergunta anterior"
+          indice={indiceDaPergunta}
+          aoIrPara={definirIndiceDaPergunta}
+        >
+          {(pergunta, indice) => (
+            <fieldset
+              className={
+                faltando.includes(pergunta.id)
+                  ? "cg-trilha__pergunta cg-trilha__pergunta--falta"
+                  : "cg-trilha__pergunta"
+              }
+            >
+              <legend>
+                {indice + 1}. {pergunta.enunciado}
+              </legend>
+              {pergunta.imagem_referencia && (
+                <MidiaDoNucleo
+                  id={pergunta.id}
+                  buscar={lerImagemDaPergunta}
+                  token={sessao?.token ?? null}
+                  tipo="imagem"
+                  alt={`Imagem da pergunta: ${pergunta.enunciado}`}
+                  textoDeErro="A imagem desta pergunta não abriu, mas pode responder."
+                />
+              )}
+              <ul className="cg-trilha__alternativas">
+                {pergunta.alternativas.map((alternativa, posicao) => (
+                  <li key={alternativa}>
+                    <label>
+                      <input
+                        type="radio"
+                        name={`pergunta-${pergunta.id}`}
+                        checked={escolhas[pergunta.id] === posicao + 1}
+                        disabled={!submissaoLigada}
+                        onChange={() =>
+                          definirEscolhas({ ...escolhas, [pergunta.id]: posicao + 1 })
+                        }
+                      />
+                      {alternativa}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </fieldset>
+          )}
+        </SequenciaPaginada>
+      )}
 
       {submissaoLigada ? (
         <Botao onClick={submeter} desabilitado={enviando}>

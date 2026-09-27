@@ -1,4 +1,5 @@
 import { act, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
 import { Missao } from "comum/trilha";
@@ -51,7 +52,7 @@ describe("missão no percurso", () => {
     expect(screen.getByText(/Desbloqueie "Primeira Missão" primeiro\./)).toBeInTheDocument();
   });
 
-  it("mostra o conteúdo na ordem do autor com crédito e licença", async () => {
+  it("mostra o conteúdo um por vez, na ordem do autor, com o crédito recolhido", async () => {
     vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue({
       id: "trilha-1",
       nome: "Robô Educa",
@@ -126,11 +127,22 @@ describe("missão no percurso", () => {
       },
     });
 
-    const paragrafos = await screen.findAllByText(/parágrafo/);
-    expect(paragrafos[0]).toHaveTextContent("Primeiro parágrafo.");
-    expect(paragrafos[1]).toHaveTextContent("Segundo parágrafo.");
-    expect(screen.getByText(/Mestre Ana/)).toBeInTheDocument();
-    expect(screen.getByText(/CC BY-SA/)).toBeInTheDocument();
+    const usuario = userEvent.setup();
+
+    // A ordem é a do autor, e sai um conteúdo por vez (documento 15 §6.4).
+    expect(await screen.findByText("Primeiro parágrafo.")).toBeInTheDocument();
+    expect(screen.queryByText("Segundo parágrafo.")).not.toBeInTheDocument();
+    expect(screen.getByText("Conteúdo 1 de 2")).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: "Próximo conteúdo" }));
+    expect(screen.getByText("Segundo parágrafo.")).toBeInTheDocument();
+
+    // O crédito é metadado da obra: fica recolhido, e continua alcançável.
+    expect(screen.getByText(/Mestre Ana/)).not.toBeVisible();
+    await usuario.click(screen.getByText("Crédito e licença"));
+    expect(screen.getByText(/Mestre Ana/)).toBeVisible();
+    expect(screen.getByText(/CC BY-SA/)).toBeVisible();
+
     expect(screen.getByText(/Livro X/)).toBeInTheDocument();
     expect(screen.queryByText(/disponível/)).not.toBeInTheDocument();
     expect(screen.getByText(/Pergunta da missão\./)).toBeInTheDocument();

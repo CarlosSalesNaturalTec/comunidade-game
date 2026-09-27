@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import * as indice from "./indice";
 
 describe("índice de comum/react", () => {
-  it("exporta os vinte e um componentes", () => {
+  it("exporta os vinte e dois componentes", () => {
     expect(indice.Aviso).toBeTypeOf("function");
     expect(indice.BadgeDaFamilia).toBeTypeOf("function");
     expect(indice.BlocoRecolhivel).toBeTypeOf("function");
@@ -23,6 +23,7 @@ describe("índice de comum/react", () => {
     expect(indice.NavegacaoDeAreas).toBeTypeOf("function");
     expect(indice.PalcoDoPersonagem).toBeTypeOf("function");
     expect(indice.RetornoDeConquista).toBeTypeOf("function");
+    expect(indice.SequenciaPaginada).toBeTypeOf("function");
     expect(indice.Tabela).toBeTypeOf("function");
   });
 });

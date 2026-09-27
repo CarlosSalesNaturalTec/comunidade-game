@@ -584,8 +584,20 @@ ela **não conta** no que falta para o próximo nível. (`RF-05-10`, `RF-05-81`,
 ### Requirement: O Guerreiro(a) percorre o conteúdo e a bibliografia da missão
 
 A aplicação SHALL exibir o **conteúdo da missão** — texto, imagens, vídeo e arquivos — na ordem
-em que o Mestre autor o dispôs, com o **crédito ao autor** e a **licença** que a trilha
-publicada declara. A **bibliografia** SHALL indicar **título** e **capítulo** e, quando o
+em que o Mestre autor o dispôs, **um conteúdo por vez**, com um controle de **avançar** que
+leva ao seguinte; avançar SHALL apenas percorrer, e NEVER SHALL gravar nem submeter coisa
+alguma. A tela SHALL dizer **onde o Guerreiro(a) está na sequência**, para que percorrer não
+vire caminhar às cegas, e no último conteúdo NEVER SHALL oferecer avançar para lugar nenhum.
+Missão com **um único** conteúdo NEVER SHALL apresentar controle de avançar. (`RF-05-11`,
+documento 15 §6.4, decisão do fundador de 2026-09-26)
+
+O **crédito ao autor** e a **licença** que a trilha publicada declara SHALL ser apresentados em
+**bloco recolhível de resumo neutro**, fora do fluxo de leitura do conteúdo: são metadado da
+obra, não o que a criança veio ler. Recolhido, o crédito SHALL continuar **alcançável** —
+recolher não é suprimir, e a atribuição que a licença exige continua sendo cumprida.
+(`RF-05-11`, documento 15 §§6.1, 6.4)
+
+A **bibliografia** SHALL indicar **título** e **capítulo** e, quando o
 Guerreiro(a) tiver ponto de apoio, **se há exemplar disponível nele**; sem essa informação, a
 disponibilidade SHALL ficar **indeterminada**, nunca afirmada nem negada por suposição.
 
@@ -597,8 +609,25 @@ nunca apresentado como quebrado. (`RF-05-11`, `RF-05-12`)
 
 #### Scenario: O conteúdo abre na ordem do autor
 
-- **WHEN** o Guerreiro(a) abre uma missão desbloqueada
-- **THEN** percorre o conteúdo dela na ordem declarada, com crédito ao Mestre autor e a licença
+- **WHEN** o Guerreiro(a) abre uma missão desbloqueada com quatro conteúdos
+- **THEN** o primeiro conteúdo da ordem declarada aparece sozinho, a tela diz onde ele está na
+  sequência, e o controle de avançar leva ao segundo
+
+#### Scenario: O último conteúdo não oferece avançar
+
+- **WHEN** o Guerreiro(a) alcança o último conteúdo da missão
+- **THEN** a tela não oferece avançar para outro conteúdo
+
+#### Scenario: Conteúdo único não pagina
+
+- **WHEN** a missão tem um único conteúdo
+- **THEN** ele aparece sem controle de avançar
+
+#### Scenario: O crédito está recolhido, e continua alcançável
+
+- **WHEN** o Guerreiro(a) abre o conteúdo de uma missão
+- **THEN** o crédito ao Mestre autor e a licença não aparecem no fluxo de leitura, e sim num
+  bloco fechado de resumo neutro, que abre ao ser acionado
 
 #### Scenario: A bibliografia diz onde encontrar o livro
 
@@ -612,8 +641,8 @@ nunca apresentado como quebrado. (`RF-05-11`, `RF-05-12`)
 
 #### Scenario: A imagem do conteúdo aparece como imagem
 
-- **WHEN** o Guerreiro(a) abre uma missão cujo conteúdo tem imagem com envio confirmado
-- **THEN** a imagem é exibida na ordem em que o Mestre a dispôs
+- **WHEN** o Guerreiro(a) alcança, na sequência, o conteúdo de imagem com envio confirmado
+- **THEN** a imagem é exibida na posição em que o Mestre a dispôs
 
 #### Scenario: A referência do armazenamento não chega à tela
 
@@ -675,34 +704,52 @@ apresentar a sondagem como prova nem exibir acerto e erro como nota. (`RF-05-72`
 ### Requirement: O Guerreiro(a) faz o desafio de desbloqueio e repete sem ser punido
 
 A aplicação SHALL permitir ao Guerreiro(a) **realizar o desafio de desbloqueio** da missão. No
-**quiz**, a tela SHALL apresentar **todas as perguntas** do desafio, na ordem declarada pelo
-Mestre autor, e SHALL submeter as respostas **de uma vez só**, nunca uma pergunta por
-submissão; pergunta ainda **sem resposta** SHALL ser sinalizada antes do envio. **Passando**, a
-missão seguinte SHALL abrir **na hora**, sem recarregar a aplicação nem esperar ato de
-terceiro. **Não passando**, a tela SHALL dizer **quantas perguntas ele acertou** e de quantas, e
-SHALL oferecer **tentar de novo** em linguagem acolhedora, sem contagem de fracassos, sem
-punição e sem qualquer mensagem que elimine ou classifique a criança. Na **missão de sondagem**,
-a tela NEVER SHALL apresentar o resultado como aprovação ou reprovação: respondida, a trilha
-segue. (`RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`, `RN-05-45`, `RN-05-46`)
+**quiz**, a tela SHALL apresentar **uma pergunta por vez**, na ordem declarada pelo Mestre
+autor, com um controle de **avançar** para a seguinte, e SHALL submeter as respostas **de uma
+vez só** ao fim, nunca uma pergunta por submissão: o critério de aprovação é do conjunto
+(`RN-05-45`), e submeter por pergunta o tornaria incalculável. A resposta já dada SHALL ser
+guardada **no aparelho** enquanto o Guerreiro(a) percorre as demais, e ele SHALL poder
+**voltar** a uma pergunta anterior para trocá-la antes de submeter. Pergunta ainda **sem
+resposta** SHALL ser sinalizada antes do envio, e a tela SHALL **levar** o Guerreiro(a) até
+ela, porque com uma pergunta por vez apenas contá-la não diz onde ela está. (documento 15
+§6.4, decisão do fundador de 2026-09-26)
+
+**Passando**, a missão seguinte SHALL abrir **na hora**, sem recarregar a aplicação nem esperar
+ato de terceiro. **Não passando**, a tela SHALL dizer **quantas perguntas ele acertou** e de
+quantas, e SHALL oferecer **tentar de novo** em linguagem acolhedora, sem contagem de
+fracassos, sem punição e sem qualquer mensagem que elimine ou classifique a criança. Na
+**missão de sondagem**, a tela NEVER SHALL apresentar o resultado como aprovação ou reprovação:
+respondida, a trilha segue. (`RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`, `RN-05-45`,
+`RN-05-46`)
 
 A pergunta que tem **imagem** SHALL exibi-la junto do enunciado, antes das alternativas, com
 **texto alternativo** que a nomeie para quem usa leitor de tela. A imagem que não carrega NEVER
 SHALL impedir de responder: a pergunta SHALL continuar respondível, com aviso de que a imagem
 não abriu. A tela NEVER SHALL exigir a imagem para submeter o quiz. (`RF-09-119`)
 
+#### Scenario: O quiz apresenta uma pergunta por vez
+
+- **WHEN** o Guerreiro(a) abre um quiz de seis perguntas
+- **THEN** a primeira pergunta aparece sozinha, com o controle de avançar para a seguinte
+
+#### Scenario: Voltar a uma pergunta anterior troca a resposta
+
+- **WHEN** o Guerreiro(a) na quarta pergunta volta à segunda
+- **THEN** a resposta que ele deu à segunda está lá, e ele pode trocá-la antes de submeter
+
+#### Scenario: A submissão leva todas as respostas de uma vez
+
+- **WHEN** o Guerreiro(a) percorre as seis perguntas do quiz e conclui
+- **THEN** as seis respostas vão numa única submissão, ao fim, nunca uma por pergunta
+
 #### Scenario: Passar abre a seguinte na hora
 
 - **WHEN** o Guerreiro(a) responde a todas as perguntas do quiz, submete e passa
 - **THEN** a missão seguinte aparece aberta imediatamente no percurso dele
 
-#### Scenario: A submissão leva todas as respostas de uma vez
-
-- **WHEN** o Guerreiro(a) abre um quiz de seis perguntas
-- **THEN** a tela mostra as seis e só envia quando ele conclui, numa única submissão
-
 #### Scenario: A pergunta com imagem a exibe junto do enunciado
 
-- **WHEN** o Guerreiro(a) abre um quiz cuja segunda pergunta tem imagem
+- **WHEN** o Guerreiro(a) alcança, no quiz, a pergunta que tem imagem
 - **THEN** a imagem aparece com o enunciado daquela pergunta, antes das alternativas, com texto
   alternativo
 
@@ -715,7 +762,7 @@ não abriu. A tela NEVER SHALL exigir a imagem para submeter o quiz. (`RF-09-119
 #### Scenario: Pergunta sem resposta é sinalizada
 
 - **WHEN** o Guerreiro(a) tenta enviar o quiz com uma pergunta ainda sem alternativa escolhida
-- **THEN** a tela aponta a pergunta que falta e não envia
+- **THEN** a tela aponta a pergunta que falta, leva o Guerreiro(a) até ela e não envia
 
 #### Scenario: Não passar convida a tentar de novo
 

@@ -1,4 +1,11 @@
-import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
+import {
+  Aviso,
+  Botao,
+  Cabecalho,
+  EstadoDaLista,
+  Moldura,
+  SequenciaPaginada,
+} from "comum/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   declararEscolhaDaEquipe,
@@ -166,9 +173,18 @@ export function TelaDaProgramacao({
           <h2>{item.missao_titulo}</h2>
 
           <h3>Conteúdo</h3>
-          <ul aria-label="Conteúdo da missão">
-            {item.conteudos.map((conteudo) => (
-              <li key={conteudo.id}>
+          {/* Um conteúdo por vez: a equipe de crianças lê o que está à
+           * frente, não a pilha inteira (`RF-04-35`, documento 15 §6.4). A
+           * fonte do conteúdo de terceiro acompanha o conteúdo a que
+           * pertence — é atribuição de autoria alheia, nunca recolhida. */}
+          <SequenciaPaginada
+            key={item.atividade.id}
+            itens={item.conteudos}
+            nome="Conteúdo"
+            rotuloDeAvancar="Próximo conteúdo"
+          >
+            {(conteudo) => (
+              <div className="cg-conteudo-da-missao">
                 {conteudo.tipo === "texto" && <p>{conteudo.corpo}</p>}
                 {conteudo.tipo === "link_externo" && (
                   <a href={conteudo.endereco ?? "#"} target="_blank" rel="noreferrer">
@@ -188,9 +204,9 @@ export function TelaDaProgramacao({
                 {conteudo.autoria === "terceiro" && conteudo.fonte && (
                   <p className="cg-fonte-do-conteudo">Fonte: {conteudo.fonte}</p>
                 )}
-              </li>
-            ))}
-          </ul>
+              </div>
+            )}
+          </SequenciaPaginada>
 
           <h3>Atividade do dia</h3>
           <p>{item.atividade.titulo}</p>

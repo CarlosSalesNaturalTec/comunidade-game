@@ -12,14 +12,15 @@ function pergunta(
   id: string,
   enunciado: string,
   imagem_referencia: string | null = null,
+  ordem = 1,
 ): trilhaApi.PerguntaDoDesbloqueio {
-  return { id, ordem: 1, enunciado, alternativas: ["1", "2", "3", "4"], imagem_referencia };
+  return { id, ordem, enunciado, alternativas: ["1", "2", "3", "4"], imagem_referencia };
 }
 
 const QUIZ_DE_DUAS: trilhaApi.DesafioDeDesbloqueio = {
   tipo: "quiz",
   enunciado: null,
-  perguntas: [pergunta("p1", "Quanto é 1 + 1?"), pergunta("p2", "Quanto é 2 + 2?")],
+  perguntas: [pergunta("p1", "Quanto é 1 + 1?"), pergunta("p2", "Quanto é 2 + 2?", null, 2)],
 };
 
 async function renderizar(desafio: trilhaApi.DesafioDeDesbloqueio, aoDesbloquear = vi.fn()) {
@@ -50,7 +51,7 @@ afterEach(() => {
 });
 
 describe("desafio de desbloqueio", () => {
-  it("todas as perguntas vão numa submissão só (RF-05-89)", async () => {
+  it("uma pergunta por vez, e todas vão numa submissão só (RF-05-89, RN-05-45)", async () => {
     const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio").mockResolvedValue({
       aprovado: true,
       aguardando_mestre: false,
@@ -60,8 +61,9 @@ describe("desafio de desbloqueio", () => {
     const aoDesbloquear = await renderizar(QUIZ_DE_DUAS);
     const usuario = userEvent.setup();
 
-    await usuario.click(screen.getAllByRole("radio", { name: "2" })[0]);
-    await usuario.click(screen.getAllByRole("radio", { name: "4" })[1]);
+    await usuario.click(screen.getByRole("radio", { name: "2" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    await usuario.click(screen.getByRole("radio", { name: "4" }));
     await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
 
     expect(submeter).toHaveBeenCalledTimes(1);
@@ -77,10 +79,13 @@ describe("desafio de desbloqueio", () => {
     await renderizar(QUIZ_DE_DUAS);
     const usuario = userEvent.setup();
 
-    await usuario.click(screen.getAllByRole("radio", { name: "2" })[0]);
+    await usuario.click(screen.getByRole("radio", { name: "2" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
     await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
 
     expect(await screen.findByText(/falta responder 1 pergunta/i)).toBeInTheDocument();
+    // A tela leva até a pendente, em vez de só contá-la (documento 15 §6.4).
+    expect(screen.getByText("2. Quanto é 2 + 2?")).toBeInTheDocument();
     expect(submeter).not.toHaveBeenCalled();
   });
 
@@ -94,8 +99,9 @@ describe("desafio de desbloqueio", () => {
     await renderizar(QUIZ_DE_DUAS);
     const usuario = userEvent.setup();
 
-    await usuario.click(screen.getAllByRole("radio", { name: "1" })[0]);
-    await usuario.click(screen.getAllByRole("radio", { name: "1" })[1]);
+    await usuario.click(screen.getByRole("radio", { name: "1" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    await usuario.click(screen.getByRole("radio", { name: "1" }));
     await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
 
     expect(await screen.findByText(/não foi dessa vez/i)).toBeInTheDocument();
@@ -130,7 +136,7 @@ describe("a imagem da pergunta (RF-09-119, RF-05-89)", () => {
     enunciado: null,
     perguntas: [
       pergunta("p1", "Quanto é 1 + 1?"),
-      pergunta("p2", "O que o gráfico mostra?", "perguntas-do-desbloqueio/p2/imagem"),
+      pergunta("p2", "O que o gráfico mostra?", "perguntas-do-desbloqueio/p2/imagem", 2),
     ],
   };
 
@@ -145,6 +151,11 @@ describe("a imagem da pergunta (RF-09-119, RF-05-89)", () => {
       .mockResolvedValue(new Blob(["bytes"], { type: "image/png" }));
 
     await renderizar(QUIZ_COM_IMAGEM);
+    const usuario = userEvent.setup();
+
+    // A primeira pergunta não tem imagem, e nada é buscado por ela.
+    expect(ler).not.toHaveBeenCalled();
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
 
     // Só a pergunta que tem imagem a busca.
     expect(ler).toHaveBeenCalledTimes(1);
@@ -177,9 +188,11 @@ describe("a imagem da pergunta (RF-09-119, RF-05-89)", () => {
     await renderizar(QUIZ_COM_IMAGEM);
     const usuario = userEvent.setup();
 
+    await usuario.click(screen.getByRole("radio", { name: "2" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+
     expect(await screen.findByText(/a imagem desta pergunta não abriu/i)).toBeInTheDocument();
-    await usuario.click(screen.getAllByRole("radio", { name: "2" })[0]);
-    await usuario.click(screen.getAllByRole("radio", { name: "2" })[1]);
+    await usuario.click(screen.getByRole("radio", { name: "2" }));
     await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
 
     expect(submeter).toHaveBeenCalledTimes(1);

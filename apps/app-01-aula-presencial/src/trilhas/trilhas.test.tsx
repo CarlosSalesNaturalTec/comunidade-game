@@ -257,6 +257,72 @@ describe("programação do encontro (RF-04-35, RF-02-42)", () => {
     expect(await screen.findByText(/fonte: instituto exemplo/i)).toBeInTheDocument();
   });
 
+  it("o conteúdo do dia sai um por vez, e a fonte acompanha o de terceiro", async () => {
+    vi.spyOn(programacaoApi, "obterProgramacaoDoEncontro").mockResolvedValue([
+      item({
+        conteudos: [
+          {
+            id: "conteudo-1",
+            missao_id: "missao-1",
+            ordem: 1,
+            tipo: "texto",
+            corpo: "Primeiro trecho.",
+            endereco: null,
+            referencia: null,
+            tamanho: null,
+            autoria: "propria",
+            fonte: null,
+          },
+          {
+            id: "conteudo-2",
+            missao_id: "missao-1",
+            ordem: 2,
+            tipo: "texto",
+            corpo: "Trecho de terceiro.",
+            endereco: null,
+            referencia: null,
+            tamanho: null,
+            autoria: "terceiro",
+            fonte: "Instituto Exemplo",
+          },
+          {
+            id: "conteudo-3",
+            missao_id: "missao-1",
+            ordem: 3,
+            tipo: "texto",
+            corpo: "Terceiro trecho.",
+            endereco: null,
+            referencia: null,
+            tamanho: null,
+            autoria: "propria",
+            fonte: null,
+          },
+        ],
+      }),
+    ]);
+    vi.spyOn(programacaoApi, "declararEscolhaDaEquipe").mockResolvedValue({
+      equipe_id: "equipe-1",
+      atividade_corrente_id: "atividade-1",
+    });
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+    const usuario = userEvent.setup();
+
+    expect(await screen.findByText("Primeiro trecho.")).toBeInTheDocument();
+    expect(screen.queryByText("Trecho de terceiro.")).not.toBeInTheDocument();
+    expect(screen.getByText("Conteúdo 1 de 3")).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: "Próximo conteúdo" }));
+
+    // A fonte do conteúdo de terceiro vem junto dele, no fluxo de leitura.
+    expect(screen.getByText("Trecho de terceiro.")).toBeInTheDocument();
+    expect(screen.getByText(/fonte: instituto exemplo/i)).toBeInTheDocument();
+    expect(screen.queryByText("Primeiro trecho.")).not.toBeInTheDocument();
+    expect(screen.getByText("Conteúdo 2 de 3")).toBeInTheDocument();
+  });
+
   it("nenhum dado pessoal de Guerreiro(a) aparece na tela", async () => {
     vi.spyOn(programacaoApi, "obterProgramacaoDoEncontro").mockResolvedValue([item()]);
     vi.spyOn(programacaoApi, "declararEscolhaDaEquipe").mockResolvedValue({
@@ -1112,8 +1178,15 @@ describe("o percurso do Guerreiro(a) no encontro (RF-04-72)", () => {
 
     expect(await screen.findByRole("region", { name: "Sondagem" })).toBeInTheDocument();
     expect(screen.getByText(/ajuda o mestre/i)).toBeInTheDocument();
-    expect(screen.getByText("Segunda Missão")).toBeInTheDocument();
-    expect(screen.getByText(/responda a "sondagem" primeiro/i)).toBeInTheDocument();
+    // Recolhida, mas nunca suprimida: a linha fechada nomeia, e abrir
+    // entrega o título e o motivo (documento 15 §§6.1, 6.4).
+    expect(screen.getByText("Próxima missão")).toBeInTheDocument();
+    expect(screen.getByText("Segunda Missão")).not.toBeVisible();
+
+    await userEvent.setup().click(screen.getByText("Próxima missão"));
+
+    expect(screen.getByText("Segunda Missão")).toBeVisible();
+    expect(screen.getByText(/responda a "sondagem" primeiro/i)).toBeVisible();
   });
 
   it("as atividades da aula vêm pelas equipes do Guerreiro(a)", async () => {

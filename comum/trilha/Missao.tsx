@@ -1,8 +1,10 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { useSessao } from "../autenticacao/ContextoDeSessao";
 import { Aviso } from "../react/Aviso";
+import { BlocoRecolhivel } from "../react/BlocoRecolhivel";
 import { EstadoDaLista } from "../react/EstadoDaLista";
 import { MidiaDoNucleo } from "../react/MidiaDoNucleo";
+import { SequenciaPaginada } from "../react/SequenciaPaginada";
 import {
   type AtividadeDaMissaoPublica,
   lerArquivoDoConteudo,
@@ -108,10 +110,13 @@ function ArquivoDeApoio({ conteudoId, token }: { conteudoId: string; token: stri
   return <a href={endereco}>Abrir o arquivo de apoio</a>;
 }
 
-// Conteúdo e bibliografia da missão, na ordem do autor, com crédito e
-// licença — vindos de `GET /v1/trilhas/{id}`, nunca duplicados na leitura
-// do percurso (`RF-05-11`, `RF-05-12`). Missão bloqueada mostra o motivo,
-// nunca cadeado mudo (`RF-05-10`).
+// Conteúdo e bibliografia da missão, na ordem do autor — vindos de
+// `GET /v1/trilhas/{id}`, nunca duplicados na leitura do percurso
+// (`RF-05-11`, `RF-05-12`). O conteúdo sai **um por vez**, e o crédito com
+// a licença ficam recolhidos: são metadado da obra, não o que a criança
+// veio ler (documento 15 §§6.1, 6.4). A fonte do conteúdo de terceiro
+// segue junto dele — é atribuição de autoria alheia. Missão bloqueada
+// mostra o motivo direto, nunca recolhido nem cadeado mudo (`RF-05-10`).
 export function Missao({
   trilhaId,
   missao,
@@ -168,28 +173,35 @@ export function Missao({
 
       {missaoPublica && (
         <>
-          <ol className="cg-trilha__conteudos">
-            {missaoPublica.conteudos
-              .slice()
-              .sort((a, b) => a.ordem - b.ordem)
-              .map((conteudo) => (
-                <li key={conteudo.id}>
-                  <ConteudoDaMissao
-                    conteudo={conteudo}
-                    tituloDaMissao={missao.titulo}
-                    token={token}
-                  />
-                  {conteudo.autoria === "terceiro" && conteudo.fonte && (
-                    <span className="cg-trilha__credito"> — fonte: {conteudo.fonte}</span>
-                  )}
-                </li>
-              ))}
-          </ol>
+          <SequenciaPaginada
+            key={missaoPublica.id}
+            itens={missaoPublica.conteudos.slice().sort((a, b) => a.ordem - b.ordem)}
+            nome="Conteúdo"
+            rotuloDeAvancar="Próximo conteúdo"
+          >
+            {(conteudo) => (
+              <div className="cg-trilha__conteudo">
+                <ConteudoDaMissao
+                  conteudo={conteudo}
+                  tituloDaMissao={missao.titulo}
+                  token={token}
+                />
+                {conteudo.autoria === "terceiro" && conteudo.fonte && (
+                  <span className="cg-trilha__credito"> — fonte: {conteudo.fonte}</span>
+                )}
+              </div>
+            )}
+          </SequenciaPaginada>
           {trilhaPublica && (
-            <p className="cg-trilha__credito">
-              Crédito: {trilhaPublica.autor_nome ?? "Mestre autor"} — licença{" "}
-              {trilhaPublica.licenca}
-            </p>
+            <BlocoRecolhivel
+              titulo="Crédito e licença"
+              resumo="Quem fez esta trilha e sob qual licença."
+            >
+              <p className="cg-trilha__credito">
+                Crédito: {trilhaPublica.autor_nome ?? "Mestre autor"} — licença{" "}
+                {trilhaPublica.licenca}
+              </p>
+            </BlocoRecolhivel>
           )}
 
           {missaoPublica.bibliografia.length > 0 && (

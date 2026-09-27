@@ -223,6 +223,28 @@
   padding-top: var(--espaco-12);
 }
 
+/* `SequenciaPaginada` — um item por vez, com a posição em texto e o
+ * controle de avançar. A posição nunca sai só por cor nem só por ícone, e
+ * o alvo de toque vem do próprio `Botao` (documento 15 §§5, 6.4). */
+.cg-sequencia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-12);
+}
+
+.cg-sequencia__controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-8);
+}
+
+.cg-sequencia__posicao {
+  color: var(--cor-texto-secundario);
+  flex: 1;
+  margin: 0;
+}
+
 /* `MarcaDeGravacao` — texto persistente, sem cor como portador de sentido
  * e sem movimento (documento 15 §6.2). */
 .cg-marca-de-gravacao {

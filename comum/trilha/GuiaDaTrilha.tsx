@@ -1,6 +1,7 @@
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { useSessao } from "../autenticacao/ContextoDeSessao";
 import { Aviso } from "../react/Aviso";
+import { BlocoRecolhivel } from "../react/BlocoRecolhivel";
 import { Botao } from "../react/Botao";
 import { EstadoDaLista } from "../react/EstadoDaLista";
 import {
@@ -28,8 +29,10 @@ interface Props {
 }
 
 // Abre direto na próxima missão do Guerreiro(a), sem que ele precise
-// procurar em menu, e mostra qual é a missão seguinte, ainda trancada, com
-// o motivo (`RF-05-08`, `RF-05-10`). Alternar de trilha preserva o
+// procurar em menu. A missão seguinte, ainda trancada, e o motivo dela
+// seguem apresentados, mas **recolhidos**: adiantam o que ele ainda não
+// desbloqueou, e a tela existe para a missão de agora (`RF-05-08`,
+// `RF-05-10`, documento 15 §§6.1, 6.4). Alternar de trilha preserva o
 // contexto de cada uma, porque a posição vem sempre do núcleo, nunca de
 // estado local perdido ao trocar (`RF-05-17`).
 export function GuiaDaTrilha({
@@ -125,10 +128,12 @@ export function GuiaDaTrilha({
       )}
 
       {missaoSeguinte && !missaoSeguinte.desbloqueada && (
-        <Aviso tipo="andamento">
-          A seguir: <strong>{missaoSeguinte.titulo}</strong> —{" "}
-          {missaoSeguinte.motivo_do_bloqueio}
-        </Aviso>
+        <BlocoRecolhivel titulo="Próxima missão" resumo="O que vem depois desta missão.">
+          <p>
+            A seguir: <strong>{missaoSeguinte.titulo}</strong> —{" "}
+            {missaoSeguinte.motivo_do_bloqueio}
+          </p>
+        </BlocoRecolhivel>
       )}
     </section>
   );

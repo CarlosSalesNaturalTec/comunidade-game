@@ -201,7 +201,7 @@ apresentar a saída da sessão dentro das telas de área. (PRD-02 §10, document
 - **THEN** o item correspondente da navegação é anunciado como o atual e se distingue por outro
   sinal além da cor
 
-### Requirement: A camada comum entrega o bloco recolhível das telas da Operação
+### Requirement: A camada comum entrega o bloco recolhível, com um uso em cada temperamento
 
 A camada comum SHALL entregar um bloco recolhível para as telas do temperamento Operação que
 reúnem muitos blocos de declaração. O bloco SHALL nascer **fechado** e SHALL apresentar, na
@@ -211,6 +211,18 @@ de todas. O controle de abrir e fechar SHALL ser botão com rótulo textual e SH
 o bloco está aberto ou fechado a quem navega por leitor de tela. O bloco NEVER SHALL animar a
 abertura, e NEVER SHALL comunicar seu estado apenas por cor ou apenas por ícone.
 (PRD-02 §10, documento 15 §§5, 6.1, decisão do fundador de 2026-09-07)
+
+Nas telas do temperamento **Arena** o mesmo bloco SHALL servir a **outro uso, e só a ele**:
+tirar do fluxo de leitura o que é **secundário** — metadado da obra, e o que adianta o que a
+pessoa ainda não alcançou —, sem apagá-lo da tela. Ali o resumo da linha fechada SHALL ser
+**neutro**: SHALL nomear o que o bloco guarda e NEVER SHALL repetir o conteúdo recolhido, sob
+pena de o recolhimento não recolher nada. **Empilhar blocos de declaração** na mesma tela
+NEVER SHALL acontecer na Arena, que põe uma decisão por tela. (documento 15 §§6.1, 6.4,
+decisão do fundador de 2026-09-26)
+
+O que o bloco recolhe SHALL continuar **alcançável** em qualquer temperamento: recolher NEVER
+SHALL equivaler a suprimir, e nenhuma informação que um requisito manda apresentar SHALL
+deixar de existir na tela por estar dentro de um bloco fechado.
 
 #### Scenario: Tela que reúne muitos blocos abre com todos fechados
 
@@ -234,6 +246,19 @@ abertura, e NEVER SHALL comunicar seu estado apenas por cor ou apenas por ícone
 - **WHEN** um leitor de tela percorre a tela
 - **THEN** o controle de cada bloco é anunciado com rótulo textual e com o estado de aberto
   ou fechado, sem depender de cor nem de ícone
+
+#### Scenario: Na Arena, o resumo neutro não entrega o que o bloco guarda
+
+- **WHEN** uma tela da Arena recolhe num bloco o que é secundário à leitura
+- **THEN** a linha fechada nomeia o que está ali sem repetir o conteúdo recolhido, e o bloco
+  abre ao ser acionado
+
+#### Scenario: O recolhido continua alcançável
+
+- **WHEN** uma informação que um requisito manda apresentar é posta dentro de um bloco
+  recolhível
+- **THEN** ela continua presente na tela e alcançável pelo controle do bloco, inclusive por
+  leitor de tela
 
 ### Requirement: A escrita que grava sozinha declara que gravou
 
