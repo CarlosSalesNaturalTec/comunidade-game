@@ -3,7 +3,14 @@ from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import text
 
-from nucleo.coletas.modelo import FormaDeRegistro, RegistroDeColeta
+from nucleo.coletas.modelo import (
+    Cadencia,
+    EstadoDaSerie,
+    FormaDeRegistro,
+    OrigemDoRegistro,
+    RegistroDeColeta,
+    SituacaoDoRegistro,
+)
 from nucleo.locais.modelo import NivelDoLocal
 from nucleo.locais.regra import resolver_locais_publicados
 from nucleo.personas.modelo import Papel
@@ -690,3 +697,323 @@ def test_comunidade_publica_traz_so_os_tipos_de_coleta_com_serie_aberta(
     nomes = {tipo["nome"] for tipo in resposta.json()["tipos_de_coleta"]}
     assert nomes == {"Com série"}
     assert tipo_sem_serie.nome not in resposta.text
+
+
+def _serie_com_estado_e_origem(
+    criar_persona,
+    criar_serie_de_coleta,
+    criar_registro_de_coleta,
+    *,
+    desafio,
+    local,
+    comunidade,
+    estado=EstadoDaSerie.ativa,
+    origem=OrigemDoRegistro.manual,
+    cadencia=None,
+    momento=None,
+    situacao=SituacaoDoRegistro.valida,
+):
+    """Como `_registrar`, mas com o estado da série, a cadência, a origem e a
+    situação do registro abertos — os quatro insumos da metodologia do
+    recorte (tasks — 5.1)."""
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    serie = criar_serie_de_coleta(guerreiro, desafio, local, cadencia=cadencia, estado=estado)
+    registro = criar_registro_de_coleta(
+        serie,
+        guerreiro,
+        comunidade.id,
+        momento_do_fato=momento or MOMENTO,
+        origem=origem,
+        situacao=situacao,
+    )
+    return guerreiro, serie, registro
+
+
+def _consultar_serie(cliente, chave, comunidade, **parametros):
+    return cliente.get(
+        f"/v1/comunidades/{comunidade.id}/series",
+        params=parametros,
+        headers={"X-Chave-Aplicacao": chave},
+    )
+
+
+def test_metodologia_declara_tipo_unidade_cadencias_periodo_e_origens(
+    cliente,
+    criar_chave,
+    criar_comunidade,
+    criar_local,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_serie_de_coleta,
+    criar_registro_de_coleta,
+):
+    """5.1: o recorte declara o que mede com a unidade, as cadências das
+    séries que o compõem, o período coberto e as origens (`RF-03-17`)."""
+    comunidade, _, bairro = _preparar_territorio(criar_comunidade, criar_local)
+    desafio, _ = _montar_desafio(
+        criar_persona, criar_trilha, criar_missao, criar_tipo_de_coleta, criar_desafio_de_coleta
+    )
+    _serie_com_estado_e_origem(
+        criar_persona,
+        criar_serie_de_coleta,
+        criar_registro_de_coleta,
+        desafio=desafio,
+        local=bairro,
+        comunidade=comunidade,
+        origem=OrigemDoRegistro.manual,
+        momento=MOMENTO,
+    )
+    _serie_com_estado_e_origem(
+        criar_persona,
+        criar_serie_de_coleta,
+        criar_registro_de_coleta,
+        desafio=desafio,
+        local=bairro,
+        comunidade=comunidade,
+        origem=OrigemDoRegistro.sensor,
+        cadencia=Cadencia.diaria,
+        momento=MOMENTO + timedelta(days=2),
+    )
+    _serie_com_estado_e_origem(
+        criar_persona,
+        criar_serie_de_coleta,
+        criar_registro_de_coleta,
+        desafio=desafio,
+        local=bairro,
+        comunidade=comunidade,
+        origem=OrigemDoRegistro.voz,
+        momento=MOMENTO + timedelta(days=4),
+    )
+
+    chave, _ = criar_chave()
+    corpo = _consultar_serie(cliente, chave, comunidade).json()
+
+    assert len(corpo["recortes"]) == 1
+    metodologia = corpo["recortes"][0]
+    assert metodologia["recorte"]["tipo_de_coleta_nome"] == "Temperatura"
+    assert metodologia["recorte"]["local_publicado_rotulo"] == "Bairro A"
+    assert metodologia["unidade"] == "°C"
+    assert metodologia["cadencias"] == ["diaria", "semanal"]
+    assert metodologia["origens"] == ["manual", "sensor", "voz"]
+    assert metodologia["registros_validos"] == 3
+    assert metodologia["primeira_medicao"].startswith("2026-06-01")
+    assert metodologia["ultima_medicao"].startswith("2026-06-05")
+
+
+def test_metodologia_nao_conta_registro_invalidado(
+    cliente,
+    criar_chave,
+    criar_comunidade,
+    criar_local,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_serie_de_coleta,
+    criar_registro_de_coleta,
+):
+    """5.1: o invalidado não entra na contagem nem move o período coberto
+    (`RF-03-18`, `RN-08-09`)."""
+    comunidade, _, bairro = _preparar_territorio(criar_comunidade, criar_local)
+    desafio, _ = _montar_desafio(
+        criar_persona, criar_trilha, criar_missao, criar_tipo_de_coleta, criar_desafio_de_coleta
+    )
+    for dia in range(3):
+        _serie_com_estado_e_origem(
+            criar_persona,
+            criar_serie_de_coleta,
+            criar_registro_de_coleta,
+            desafio=desafio,
+            local=bairro,
+            comunidade=comunidade,
+            momento=MOMENTO + timedelta(days=dia),
+        )
+    _serie_com_estado_e_origem(
+        criar_persona,
+        criar_serie_de_coleta,
+        criar_registro_de_coleta,
+        desafio=desafio,
+        local=bairro,
+        comunidade=comunidade,
+        momento=MOMENTO + timedelta(days=30),
+        situacao=SituacaoDoRegistro.invalidada,
+    )
+
+    chave, _ = criar_chave()
+    metodologia = _consultar_serie(cliente, chave, comunidade).json()["recortes"][0]
+
+    assert metodologia["registros_validos"] == 3
+    assert metodologia["ultima_medicao"].startswith("2026-06-03")
+
+
+def test_metodologia_se_recorta_pelo_periodo_consultado(
+    cliente,
+    criar_chave,
+    criar_comunidade,
+    criar_local,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_serie_de_coleta,
+    criar_registro_de_coleta,
+):
+    """5.1: o período coberto e a contagem são do período pedido, não da
+    série inteira (`RF-03-18`)."""
+    comunidade, _, bairro = _preparar_territorio(criar_comunidade, criar_local)
+    desafio, _ = _montar_desafio(
+        criar_persona, criar_trilha, criar_missao, criar_tipo_de_coleta, criar_desafio_de_coleta
+    )
+    guerreiros = []
+    for dia in (0, 1, 2):
+        guerreiro, serie, _ = _serie_com_estado_e_origem(
+            criar_persona,
+            criar_serie_de_coleta,
+            criar_registro_de_coleta,
+            desafio=desafio,
+            local=bairro,
+            comunidade=comunidade,
+            momento=MOMENTO + timedelta(days=dia),
+        )
+        guerreiros.append((guerreiro, serie))
+    # Os mesmos três coletores voltam a registrar fora do período pedido, para
+    # que o piso continue alcançado dentro e fora dele.
+    for _, serie in guerreiros:
+        criar_registro_de_coleta(
+            serie,
+            criar_persona(Papel.mestre),
+            comunidade.id,
+            momento_do_fato=MOMENTO + timedelta(days=60),
+        )
+
+    chave, _ = criar_chave()
+    metodologia = _consultar_serie(
+        cliente,
+        chave,
+        comunidade,
+        periodo_inicio=MOMENTO.isoformat(),
+        periodo_fim=(MOMENTO + timedelta(days=10)).isoformat(),
+    ).json()["recortes"][0]
+
+    assert metodologia["registros_validos"] == 3
+    assert metodologia["ultima_medicao"].startswith("2026-06-03")
+
+
+def test_recorte_e_inativo_so_quando_nenhuma_serie_dele_esta_ativa(
+    sessao,
+    cliente,
+    criar_chave,
+    criar_comunidade,
+    criar_local,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_serie_de_coleta,
+    criar_registro_de_coleta,
+):
+    """5.1: uma série ativa mantém o recorte ativo; com todas interrompidas
+    ele sai inativo, e em nenhum dos dois casos some da resposta
+    (`RF-03-19`)."""
+    comunidade, _, bairro = _preparar_territorio(criar_comunidade, criar_local)
+    desafio, _ = _montar_desafio(
+        criar_persona, criar_trilha, criar_missao, criar_tipo_de_coleta, criar_desafio_de_coleta
+    )
+    series = []
+    for indice in range(3):
+        _, serie, _ = _serie_com_estado_e_origem(
+            criar_persona,
+            criar_serie_de_coleta,
+            criar_registro_de_coleta,
+            desafio=desafio,
+            local=bairro,
+            comunidade=comunidade,
+            estado=EstadoDaSerie.interrompida if indice else EstadoDaSerie.ativa,
+        )
+        series.append(serie)
+
+    chave, _ = criar_chave()
+    corpo = _consultar_serie(cliente, chave, comunidade).json()
+    assert corpo["recortes"][0]["ativo"] is True
+
+    series[0].estado = EstadoDaSerie.interrompida
+    sessao.commit()
+
+    corpo = _consultar_serie(cliente, chave, comunidade).json()
+    assert len(corpo["recortes"]) == 1
+    assert corpo["recortes"][0]["ativo"] is False
+    assert len(corpo["itens"]) == 3
+
+
+def test_metodologia_nao_devolve_serie_individual_nem_coletor(
+    cliente,
+    criar_chave,
+    criar_comunidade,
+    criar_local,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_serie_de_coleta,
+    criar_registro_de_coleta,
+):
+    """5.1: a metodologia é do recorte — nenhum identificador de série nem de
+    coletor sai com ela (`RN-03-10`, `RN-08-12`)."""
+    comunidade, _, bairro = _preparar_territorio(criar_comunidade, criar_local)
+    desafio, _ = _montar_desafio(
+        criar_persona, criar_trilha, criar_missao, criar_tipo_de_coleta, criar_desafio_de_coleta
+    )
+    identificadores = []
+    for _ in range(3):
+        guerreiro, serie, _ = _serie_com_estado_e_origem(
+            criar_persona,
+            criar_serie_de_coleta,
+            criar_registro_de_coleta,
+            desafio=desafio,
+            local=bairro,
+            comunidade=comunidade,
+        )
+        identificadores += [str(guerreiro.id), str(serie.id)]
+
+    chave, _ = criar_chave()
+    resposta = _consultar_serie(cliente, chave, comunidade)
+    for identificador in identificadores:
+        assert identificador not in resposta.text
+    campos = set(resposta.json()["recortes"][0].keys())
+    assert campos == {
+        "recorte",
+        "unidade",
+        "cadencias",
+        "origens",
+        "primeira_medicao",
+        "ultima_medicao",
+        "registros_validos",
+        "ativo",
+    }
+
+
+def test_comunidade_publica_traz_o_numero_de_vinculados_sem_identificar_ninguem(
+    cliente, criar_chave, criar_comunidade, criar_local, criar_persona
+):
+    """5.2: a vitalidade do card sai como contagem, apurada pelo vínculo
+    vigente, e nenhum nick ou identificador a acompanha (`RF-03-02`,
+    `RF-03-16`)."""
+    comunidade, _, _ = _preparar_territorio(criar_comunidade, criar_local)
+    outra = criar_comunidade(nome="Outra Comunidade")
+    vinculados = [criar_persona(Papel.guerreiro, comunidade=comunidade) for _ in range(4)]
+    criar_persona(Papel.guerreiro, comunidade=outra)
+
+    chave, _ = criar_chave()
+    resposta = cliente.get(f"/v1/comunidades/{comunidade.id}", headers={"X-Chave-Aplicacao": chave})
+
+    assert resposta.status_code == 200
+    assert resposta.json()["guerreiros_vinculados"] == 4
+    for guerreiro in vinculados:
+        assert str(guerreiro.id) not in resposta.text

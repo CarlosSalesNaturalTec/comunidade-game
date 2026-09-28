@@ -321,6 +321,9 @@ def test_lista_de_comunidades_nao_identifica_coletor(
         "series_ativas",
         "registros_validos",
         "continuidade",
+        # A vitalidade do card do documento 11 §8.2 — contagem agregada, não
+        # indicador do documento 02 §1 (`RF-03-02`).
+        "guerreiros_vinculados",
     }
     for item in resposta.json()["itens"]:
         assert set(item.keys()) == campos_esperados
@@ -551,3 +554,49 @@ def test_lista_de_comunidades_supressao_nao_depende_da_pagina(
     assert corpo_segunda["itens"][0]["nome"] == "BBB Comunidade"
     assert corpo_segunda["itens"][0]["series_abertas"] is None
     assert corpo_segunda["itens"][0]["continuidade"] is None
+
+
+def test_lista_traz_a_vitalidade_inclusive_abaixo_do_piso(
+    cliente,
+    criar_chave,
+    criar_comunidade,
+    criar_local,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_serie_de_coleta,
+    criar_registro_de_coleta,
+):
+    """5.2: o número de vinculados sai ao lado dos quatro indicadores e não
+    entra na supressão por piso — o piso é de coletores distintos no recorte
+    publicado, e vinculado não é coletor (`RF-03-02`, `RN-08-28`, decisão do
+    fundador de 2026-09-28)."""
+    acima = criar_comunidade("AAA Comunidade")
+    abaixo = criar_comunidade("BBB Comunidade")
+    local_acima = _criar_bairro(criar_local, acima)
+    local_abaixo = _criar_bairro(criar_local, abaixo)
+    desafio = _preparar_desafio(
+        criar_persona, criar_trilha, criar_missao, criar_tipo_de_coleta, criar_desafio_de_coleta
+    )
+    for _ in range(3):
+        guerreiro = criar_persona(Papel.guerreiro, comunidade=acima)
+        serie = criar_serie_de_coleta(guerreiro, desafio, local_acima)
+        criar_registro_de_coleta(serie, guerreiro, acima.id, momento_do_fato=MOMENTO)
+    for _ in range(2):
+        guerreiro = criar_persona(Papel.guerreiro, comunidade=abaixo)
+        serie = criar_serie_de_coleta(guerreiro, desafio, local_abaixo)
+        criar_registro_de_coleta(serie, guerreiro, abaixo.id, momento_do_fato=MOMENTO)
+    # Vinculado sem coletar nada continua contando na vitalidade.
+    criar_persona(Papel.guerreiro, comunidade=abaixo)
+
+    chave, _ = criar_chave()
+    itens = cliente.get("/v1/comunidades", headers={"X-Chave-Aplicacao": chave}).json()["itens"]
+    por_nome = {item["nome"]: item for item in itens}
+
+    assert por_nome["AAA Comunidade"]["guerreiros_vinculados"] == 3
+    assert por_nome["AAA Comunidade"]["series_abertas"] == 3
+    assert por_nome["BBB Comunidade"]["guerreiros_vinculados"] == 3
+    assert por_nome["BBB Comunidade"]["series_abertas"] is None
+    assert por_nome["BBB Comunidade"]["continuidade"] is None

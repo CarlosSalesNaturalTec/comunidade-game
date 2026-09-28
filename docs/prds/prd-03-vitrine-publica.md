@@ -449,7 +449,6 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, erro em corpo �
 | GET    | `/v1/vitrine/conteudo-institucional` | pública      | "Quem somos", "Contatos", "Como apoiar" e a nota sobre IA    |
 | GET    | `/v1/comunidades`                    | pública      | Comunidades com indicadores agregados (PRD-08)               |
 | GET    | `/v1/comunidades/{id}/series`        | pública      | Séries históricas agregadas até o bairro, com metodologia    |
-| GET    | `/v1/comunidades/{id}/ods`           | pública      | Cobertura de ODS da comunidade, por ciclo                    |
 | GET    | `/v1/vitrine/ods/cobertura`          | pública      | Cobertura agregada de todas as comunidades do ciclo          |
 | GET    | `/v1/vitrine/necessidades`           | pública      | Necessidades de recurso em aberto (PRD-07)                   |
 | POST   | `/v1/solicitacoes-de-participacao`   | pública      | Registra pedido de inclusão como Mestre ou Apoiador          |
@@ -460,6 +459,10 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, erro em corpo �
 
 Nenhuma rota desta aplicação aceita ou devolve preferência de visitante: não há parâmetro de
 favorito, de perfil ou de sessão anônima.
+
+A cobertura de ODS de uma comunidade sai pela rota agregada, filtrada pela comunidade: não há
+rota por comunidade, e o ciclo é o rótulo corrente declarado na implantação (decisão do
+fundador, 2026-09-28).
 
 Erros previstos: nick não encontrado ou sem autorização (**404 idêntico nos dois casos**, sem
 revelar qual ocorreu); campo obrigatório ausente no formulário (422, com o campo em falta);

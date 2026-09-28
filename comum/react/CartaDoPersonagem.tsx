@@ -2,6 +2,7 @@ import { Avatar } from "../avatar/Avatar";
 import type { AvatarDoGuerreiro } from "../avatar/objeto";
 import { BadgeDaFamilia, type FamiliaDeBadge } from "./BadgeDaFamilia";
 import { EmblemaDeNivel } from "./EmblemaDeNivel";
+import { type CamadaDoTerritorio, TerritorioDaComunidade } from "./TerritorioDaComunidade";
 
 // A **carta do personagem** — o átomo da interface comum às oito aplicações
 // (documento 15 §8.1). Os valores dela vêm do temperamento e dos tokens, em
@@ -21,9 +22,9 @@ import { EmblemaDeNivel } from "./EmblemaDeNivel";
 // mesma decisão do fundador registrada no documento 09 §1 para a lista de
 // comunidades da App 03.
 //
-// Só a variante **Guerreiro(a)** entra aqui. Mestre, Apoiador e Comunidade
-// Virtual têm tabela de exibição própria no §8.2 e rotas de outras aplicações,
-// e entram na fatia da aplicação que as exibe.
+// Duas variantes entram aqui: **Guerreiro(a)** e **Comunidade Virtual**.
+// Mestre e Apoiador têm tabela de exibição própria no §8.2 e rotas que ainda
+// não existem, e entram na fatia da aplicação que as exibe.
 
 export interface BadgeNaCarta {
   familia: FamiliaDeBadge;
@@ -53,11 +54,30 @@ export interface CartaDeGuerreiro {
   criacoes: string[] | undefined;
 }
 
-export type DadosDaCarta = CartaDeGuerreiro;
+/** A variante Comunidade Virtual do documento 11 §8.2: nome, território,
+ * representação visual, séries ativas e número de Guerreiros e Guerreiras
+ * vinculados. Nada aqui desce abaixo do bairro, e nenhum campo carrega
+ * coletor — a tabela do §8.2 veda a granularidade que permita inferir
+ * endereço de criança (`RN-03-09`, `RN-03-10`). */
+export interface CartaDeComunidadeVirtual {
+  variante: "comunidade-virtual";
+  nome: string | undefined;
+  /** A localização da comunidade — o "território" da tabela do §8.2. */
+  territorio: string | undefined;
+  /** Nulo é o que a lista devolve para a comunidade abaixo do piso: a carta
+   * então não se apresenta, e a tela usa outra forma. */
+  seriesAtivas: number | null | undefined;
+  seriesAbertas: number | null | undefined;
+  vinculados: number | undefined;
+  /** Os insumos da representação visual (documento 11 §8.3). Lista vazia é
+   * "território ainda vazio", que é diferente de `undefined`. */
+  camadas: CamadaDoTerritorio[] | undefined;
+  bairrosPublicados: number | undefined;
+}
 
-/** `true` quando a leitura trouxe tudo o que a tabela do documento 11 §8.2
- * exige da variante. */
-export function cartaEstaCompleta(dados: DadosDaCarta): boolean {
+export type DadosDaCarta = CartaDeGuerreiro | CartaDeComunidadeVirtual;
+
+function guerreiroEstaCompleto(dados: CartaDeGuerreiro): boolean {
   return (
     dados.nick !== undefined &&
     dados.nick.trim().length > 0 &&
@@ -67,6 +87,28 @@ export function cartaEstaCompleta(dados: DadosDaCarta): boolean {
     dados.desempenho.trim().length > 0 &&
     dados.criacoes !== undefined
   );
+}
+
+function comunidadeEstaCompleta(dados: CartaDeComunidadeVirtual): boolean {
+  return (
+    dados.nome !== undefined &&
+    dados.nome.trim().length > 0 &&
+    dados.territorio !== undefined &&
+    dados.territorio.trim().length > 0 &&
+    dados.seriesAtivas !== undefined &&
+    dados.seriesAtivas !== null &&
+    dados.vinculados !== undefined &&
+    dados.camadas !== undefined
+  );
+}
+
+/** `true` quando a leitura trouxe tudo o que a tabela do documento 11 §8.2
+ * exige **daquela** variante. A decisão é por variante porque cada linha da
+ * tabela exige campos próprios. */
+export function cartaEstaCompleta(dados: DadosDaCarta): boolean {
+  return dados.variante === "guerreiro"
+    ? guerreiroEstaCompleto(dados)
+    : comunidadeEstaCompleta(dados);
 }
 
 interface Props {
@@ -83,6 +125,7 @@ function comChave<T>(itens: T[], nome: (item: T) => string): { chave: string; it
 
 export function CartaDoPersonagem({ dados }: Props) {
   if (!cartaEstaCompleta(dados)) return null;
+  if (dados.variante === "comunidade-virtual") return <CartaDeComunidade dados={dados} />;
 
   const { avatar, nick, badges = [], poderes = [], desempenho, criacoes = [] } = dados;
   const badgesNaOrdem = comChave(badges, (badge) => `${badge.familia}-${badge.poder ?? ""}`);
@@ -137,6 +180,33 @@ export function CartaDoPersonagem({ dados }: Props) {
           ))}
         </ul>
       )}
+    </article>
+  );
+}
+
+function CartaDeComunidade({ dados }: { dados: CartaDeComunidadeVirtual }) {
+  const { nome, territorio, seriesAtivas, seriesAbertas, vinculados, camadas = [] } = dados;
+  return (
+    <article
+      className="cg-carta"
+      data-variante={dados.variante}
+      aria-label={`Carta de ${nome}`}
+    >
+      <TerritorioDaComunidade
+        nome={nome ?? ""}
+        bairrosPublicados={dados.bairrosPublicados ?? 0}
+        camadas={camadas}
+        seriesAbertas={seriesAbertas ?? null}
+        seriesAtivas={seriesAtivas ?? null}
+      />
+      <p className="cg-carta__nick">{nome}</p>
+      <p className="cg-carta__desempenho">{territorio}</p>
+
+      <p className="cg-carta__rotulo">Séries ativas</p>
+      <p className="cg-carta__vazio">{seriesAtivas}</p>
+
+      <p className="cg-carta__rotulo">Guerreiros e Guerreiras vinculados</p>
+      <p className="cg-carta__vazio">{vinculados}</p>
     </article>
   );
 }

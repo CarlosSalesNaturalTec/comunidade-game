@@ -7,6 +7,7 @@ import { BadgeDaFamilia, type FamiliaDeBadge } from "./BadgeDaFamilia";
 import { CartaDoPersonagem, cartaEstaCompleta, type DadosDaCarta } from "./CartaDoPersonagem";
 import { EmblemaDeNivel } from "./EmblemaDeNivel";
 import { GLIFO_GENERICO_DE_PODER, GlifoDePoder, glifoDoPoder } from "./GlifoDePoder";
+import { TerritorioDaComunidade } from "./TerritorioDaComunidade";
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const ESTILOS = readFileSync(join(AQUI, "estilos.css"), "utf-8");
@@ -254,3 +255,132 @@ describe("GlifoDePoder — o glifo acompanha o nome (documento 15 §8.4)", () =>
     expect(ARQUIVO_DO_GLIFO).not.toMatch(/\brgba?\(|\bhsla?\(/);
   });
 });
+
+const COMUNIDADE_COMPLETA: DadosDaCarta = {
+  variante: "comunidade-virtual",
+  nome: "Guerreira Zeferina",
+  territorio: "Salvador, Bahia",
+  seriesAtivas: 4,
+  seriesAbertas: 6,
+  vinculados: 23,
+  camadas: [
+    { tipo: "Temperatura", registrosValidos: 30, ativo: true },
+    { tipo: "Resíduos", registrosValidos: 10, ativo: false },
+  ],
+  bairrosPublicados: 2,
+};
+
+describe("CartaDoPersonagem — a variante Comunidade Virtual do documento 11 §8.2", () => {
+  it("a carta da comunidade traz os cinco campos da variante", () => {
+    render(<CartaDoPersonagem dados={COMUNIDADE_COMPLETA} />);
+
+    expect(screen.getByText("Guerreira Zeferina")).toBeInTheDocument();
+    expect(screen.getByText("Salvador, Bahia")).toBeInTheDocument();
+    expect(screen.getByText("Séries ativas")).toBeInTheDocument();
+    expect(screen.getByText("4")).toBeInTheDocument();
+    expect(screen.getByText("Guerreiros e Guerreiras vinculados")).toBeInTheDocument();
+    expect(screen.getByText("23")).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: /Território de Guerreira Zeferina/ }),
+    ).toBeVisible();
+  });
+
+  it("a carta da comunidade não desce abaixo do bairro nem identifica coletor", () => {
+    const { container } = render(<CartaDoPersonagem dados={COMUNIDADE_COMPLETA} />);
+    const texto = container.textContent ?? "";
+
+    for (const proibido of ["Rua", "Condomínio", "Bloco", "Quadra", "nick", "coletor"]) {
+      expect(texto).not.toContain(proibido);
+    }
+    expect(container.querySelector(".cg-carta__avatar")).toBeNull();
+  });
+
+  it("comunidade sem os indicadores não vira carta incompleta", () => {
+    // O que a lista devolve para a comunidade abaixo do piso: nome e
+    // localização, com os quatro indicadores nulos (`RN-08-28`).
+    const abaixoDoPiso: DadosDaCarta = {
+      ...COMUNIDADE_COMPLETA,
+      seriesAtivas: null,
+      seriesAbertas: null,
+    };
+    expect(cartaEstaCompleta(abaixoDoPiso)).toBe(false);
+    const { container } = render(<CartaDoPersonagem dados={abaixoDoPiso} />);
+    expect(container.querySelector(".cg-carta")).toBeNull();
+  });
+});
+
+describe("TerritorioDaComunidade — a representação visual do documento 11 §8.3", () => {
+  it("comunidade recém-criada aparece como território vazio", () => {
+    const { container } = render(<TerritorioDaComunidade nome="Nova" />);
+
+    expect(screen.getByRole("img", { name: /Território de Nova, ainda vazio/ })).toBeVisible();
+    expect(screen.getByText(/Território ainda vazio/)).toBeInTheDocument();
+    expect(container.querySelectorAll(".cg-territorio__camada")).toHaveLength(0);
+    expect(container.querySelector(".cg-territorio__contorno")).not.toBeNull();
+  });
+
+  it("o desenho cresce e ganha detalhe conforme os registros e os bairros", () => {
+    const pequena = render(
+      <TerritorioDaComunidade
+        nome="Zeferina"
+        bairrosPublicados={1}
+        camadas={[{ tipo: "Temperatura", registrosValidos: 3, ativo: true }]}
+        seriesAbertas={2}
+        seriesAtivas={1}
+      />,
+    );
+    const ladosAntes = ladosDoContorno(pequena.container);
+    const aneisAntes = pequena.container.querySelectorAll(".cg-territorio__camada").length;
+    pequena.unmount();
+
+    const crescida = render(
+      <TerritorioDaComunidade
+        nome="Zeferina"
+        bairrosPublicados={5}
+        camadas={[
+          { tipo: "Temperatura", registrosValidos: 30, ativo: true },
+          { tipo: "Resíduos", registrosValidos: 12, ativo: true },
+        ]}
+        seriesAbertas={2}
+        seriesAtivas={2}
+      />,
+    );
+
+    expect(ladosDoContorno(crescida.container)).toBeGreaterThan(ladosAntes);
+    expect(
+      crescida.container.querySelectorAll(".cg-territorio__camada").length,
+    ).toBeGreaterThan(aneisAntes);
+    // O anel do tipo com mais registros é o maior — a medida é a participação
+    // dele nos registros válidos publicados, nunca um número de estilo.
+    const raios = [...crescida.container.querySelectorAll(".cg-territorio__camada")].map(
+      (anel) => Number(anel.getAttribute("r")),
+    );
+    expect(raios[0]).toBeGreaterThan(raios[1]);
+  });
+
+  it("a camada de recorte inativo permanece, marcada e legível sem cor", () => {
+    const { container } = render(
+      <TerritorioDaComunidade
+        nome="Zeferina"
+        bairrosPublicados={2}
+        camadas={[{ tipo: "Resíduos", registrosValidos: 8, ativo: false }]}
+      />,
+    );
+
+    const camada = container.querySelector(".cg-territorio__camada");
+    expect(camada).not.toBeNull();
+    expect(camada?.getAttribute("data-ativo")).toBe("nao");
+    expect(screen.getByText(/série inativa/)).toBeInTheDocument();
+  });
+
+  it("nenhum elemento visual aparece sem fato que o sustente", () => {
+    const { container } = render(<TerritorioDaComunidade nome="Nova" bairrosPublicados={0} />);
+    expect(container.querySelectorAll(".cg-territorio__camada")).toHaveLength(0);
+  });
+});
+
+function ladosDoContorno(container: HTMLElement): number {
+  const pontos =
+    container.querySelector(".cg-territorio__contorno")?.getAttribute("points") ?? "";
+  return pontos.trim().split(/\s+/).length;
+}

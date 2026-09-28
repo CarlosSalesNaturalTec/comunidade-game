@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime
 
 from pydantic import BaseModel
+from sqlalchemy import func
 from sqlalchemy.orm import Query, Session
 
 from ..coletas.modelo import DesafioDeColeta, SerieDeColeta, TipoDeColeta
@@ -112,6 +113,24 @@ def filtrar_personas_por_comunidade(consulta: Query, comunidade_id: uuid.UUID) -
     )
 
 
+def contar_guerreiros_vinculados(sessao: Session, comunidade_id: uuid.UUID) -> int:
+    """A **vitalidade** da comunidade do documento 11 §§8.2 e 8.3: quantos
+    Guerreiros e Guerreiras têm vínculo vigente com ela. Não é indicador do
+    documento 02 §1 — não entra na supressão por piso, que é de coletores
+    distintos no recorte publicado — e sai como contagem, nunca como lista
+    de pessoas (`RF-03-02`, `RF-03-16`, `RN-01-05`, decisão do fundador de
+    2026-09-28)."""
+    return (
+        sessao.query(func.count(VinculoJogador.id))
+        .filter(
+            VinculoJogador.comunidade_virtual_id == comunidade_id,
+            VinculoJogador.data_fim.is_(None),
+        )
+        .scalar()
+        or 0
+    )
+
+
 class LocalPublicoSaida(BaseModel):
     id: uuid.UUID
     nivel: str
@@ -129,6 +148,7 @@ class ComunidadePublicaSaida(BaseModel):
     nome: str
     locais: list[LocalPublicoSaida]
     tipos_de_coleta: list[TipoDeColetaPublicoSaida]
+    guerreiros_vinculados: int
 
 
 def consultar_comunidade_publica(
@@ -170,4 +190,5 @@ def consultar_comunidade_publica(
             for local in locais
         ],
         tipos_de_coleta=[TipoDeColetaPublicoSaida(id=tipo.id, nome=tipo.nome) for tipo in tipos],
+        guerreiros_vinculados=contar_guerreiros_vinculados(sessao, comunidade.id),
     )

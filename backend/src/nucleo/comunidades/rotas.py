@@ -12,15 +12,17 @@ from ..banco import obter_sessao
 from ..coletas.regra import (
     CAMPOS_DO_DICIONARIO_DE_DADOS,
     ComunidadeDaListaSaida,
+    MetodologiaDoRecorteSaida,
     PontoDaSeriePublicaSaida,
     apurar_periodo_coberto_da_exportacao,
     exportar_serie_do_territorio,
+    metodologia_dos_recortes_publicados,
     paginar_comunidades_publicas,
     paginar_serie_publica,
 )
 from ..configuracao import Configuracao, obter_configuracao
 from ..erros import ErroDeValidacao, NaoEncontrado
-from ..paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
+from ..paginacao import ParametrosDeListagem, contrato_de_listagem
 from ..personas.modelo import Persona
 from .modelo import ComunidadeVirtual
 from .regra import ComunidadePublicaSaida, consultar_comunidade_publica, criar_comunidade
@@ -135,16 +137,24 @@ def _analisar_momento(bruto: str, campo: str) -> datetime:
     return valor
 
 
-@roteador.get(
-    "/comunidades/{id_da_comunidade}/series",
-    response_model=PaginaDeResultado[PontoDaSeriePublicaSaida],
-)
+class SeriePublicaSaida(BaseModel):
+    """A página de pontos e, ao lado dela, a metodologia de **todos** os
+    recortes publicáveis do período — apurada antes do corte de página, para
+    que o número não mude de um cursor para o outro (`RF-03-17`, `RF-03-18`,
+    `RF-03-19`, design — Decisão 1)."""
+
+    itens: list[PontoDaSeriePublicaSaida]
+    proximo_cursor: str | None
+    recortes: list[MetodologiaDoRecorteSaida]
+
+
+@roteador.get("/comunidades/{id_da_comunidade}/series", response_model=SeriePublicaSaida)
 def serie_publica_da_comunidade(
     id_da_comunidade: uuid.UUID,
     parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
     configuracao: Annotated[Configuracao, Depends(obter_configuracao)],
-) -> PaginaDeResultado[PontoDaSeriePublicaSaida]:
+) -> SeriePublicaSaida:
     """Série histórica pública da comunidade, agregada por tipo de coleta e
     local, parando no bairro e sem coletor (`RF-08-16`, `RN-08-13`,
     `RN-08-12`, `RF-08-28`, `RN-08-24`, `RF-01-28`, `RF-01-02`,
@@ -160,7 +170,7 @@ def serie_publica_da_comunidade(
     periodo_fim_bruto = parametros.filtros.get("periodo_fim")
     periodo_fim = _analisar_momento(periodo_fim_bruto, "periodo_fim") if periodo_fim_bruto else None
 
-    return paginar_serie_publica(
+    pagina = paginar_serie_publica(
         sessao_bd,
         comunidade=comunidade,
         piso_de_coletores=configuracao.territorio_piso_de_coletores_distintos,
@@ -168,6 +178,17 @@ def serie_publica_da_comunidade(
         tamanho=parametros.tamanho,
         periodo_inicio=periodo_inicio,
         periodo_fim=periodo_fim,
+    )
+    return SeriePublicaSaida(
+        itens=pagina.itens,
+        proximo_cursor=pagina.proximo_cursor,
+        recortes=metodologia_dos_recortes_publicados(
+            sessao_bd,
+            comunidade=comunidade,
+            piso_de_coletores=configuracao.territorio_piso_de_coletores_distintos,
+            periodo_inicio=periodo_inicio,
+            periodo_fim=periodo_fim,
+        ),
     )
 
 

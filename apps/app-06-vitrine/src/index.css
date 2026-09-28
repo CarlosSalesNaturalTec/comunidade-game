@@ -178,3 +178,107 @@ textarea {
   color: var(--cor-texto-secundario);
   font-size: var(--escala-0875);
 }
+
+/* A seção Comunidades Virtuais: um card por comunidade, no padrão da carta
+ * do `comum`; aqui só a ação que abre a página do território. A comunidade
+ * abaixo do piso não vira card incompleto — sai no resumo em texto. */
+.cg-comunidades {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cg-comunidades__abrir {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  width: 100%;
+  min-height: var(--alvo-de-toque);
+  padding: var(--espaco-8);
+  border: 1px solid var(--cor-separador);
+  border-radius: var(--raio-campo);
+  background: none;
+  cursor: pointer;
+  text-align: start;
+}
+
+.cg-comunidades__nome {
+  font-family: var(--fonte-destaque);
+  font-weight: var(--peso-titulo);
+}
+
+.cg-comunidades__sem-indicadores,
+.cg-comunidades__ciclo {
+  color: var(--cor-texto-secundario);
+  font-size: var(--escala-0875);
+}
+
+/* O painel do território de uma comunidade. O recorte inativo permanece na
+ * lista, e a condição dele se lê em texto — nenhuma cor sozinha o
+ * distingue (`RF-03-19`, documento 15 §5). */
+.cg-territorio-painel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  align-items: flex-start;
+}
+
+.cg-territorio-painel__recortes,
+.cg-territorio-painel__pontos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cg-territorio-painel__recorte {
+  width: 100%;
+  padding-bottom: var(--espaco-8);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.cg-territorio-painel__situacao {
+  font-weight: var(--peso-rotulo);
+}
+
+.cg-territorio-painel__metodologia {
+  margin: var(--espaco-8) 0;
+}
+
+.cg-territorio-painel__metodologia dt {
+  font-weight: var(--peso-rotulo);
+}
+
+.cg-territorio-painel__metodologia dd {
+  margin: 0 0 var(--espaco-4);
+}
+
+.cg-territorio-painel__corte,
+.cg-territorio-painel__locais,
+.cg-territorio-painel__pontos {
+  color: var(--cor-texto-secundario);
+  font-size: var(--escala-0875);
+}
+
+/* A cobertura da Agenda 2030 e o bloco do gestor: texto e listas, sem
+ * espaço reservado a publicidade ou patrocínio (`RN-03-21`). */
+.cg-cobertura__comunidades {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cg-cobertura__destaque,
+.cg-bloco-do-gestor__limites {
+  margin-top: var(--espaco-16);
+  padding-top: var(--espaco-8);
+  border-top: 1px solid var(--cor-separador);
+}

@@ -386,6 +386,37 @@
   display: block;
 }
 
+/* `TerritorioDaComunidade` — a representação visual do documento 11 §8.3.
+ * Nenhuma cor própria e nenhuma medida própria: o contorno e os anéis herdam
+ * a cor do texto, e o tamanho de cada anel vem da contagem publicada. A
+ * legenda ao lado carrega a mesma informação em texto, de modo que o desenho
+ * nunca é a única via (documento 15 §5). */
+.cg-territorio__desenho {
+  display: block;
+  width: 50%;
+  aspect-ratio: 1;
+}
+
+.cg-territorio__contorno {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.cg-territorio__camada {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+
+.cg-territorio__vazio,
+.cg-territorio__legenda {
+  margin: var(--espaco-8) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--cor-texto-secundario);
+}
+
 /* `EmblemaDeNivel` — a moldura do documento 15 §8.2. Aberta abaixo do nível 5
  * e **fechada** no 5, que é a marca de Mestre Aprendiz. Nenhuma cor própria:
  * a moldura e as marcas herdam a cor do texto, e é por isso que o nível se lê
