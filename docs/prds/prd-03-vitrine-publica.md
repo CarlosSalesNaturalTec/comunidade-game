@@ -597,6 +597,9 @@ entidade e não como contrato.
 
 ## 14. Pendências que permanecem
 
+- **Título da criação original**: o `RF-03-08` pede título, trilha, data e autoria no portfólio,
+  e título não existe no modelo da criação original. O portfólio saiu com trilha, data e
+  autoria, e o requisito fica parcial até a decisão. Consta do documento 09.
 - **Texto final da nota de transparência sobre IA**: o conteúdo e a localização estão decididos
   — a nota vive dentro de "Quem somos", declara Claude na construção e quem atende as pessoas e
   remete à linha "Licenças". Falta redigi-la, com os demais textos públicos. Trava o `RF-03-48`
