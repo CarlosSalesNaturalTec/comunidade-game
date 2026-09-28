@@ -31,7 +31,8 @@
     {
       "target": "vitrine",
       "public": "apps/app-06-vitrine/dist",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [{ "source": "**", "destination": "/index.html" }]
     },
     {
       "target": "aula",

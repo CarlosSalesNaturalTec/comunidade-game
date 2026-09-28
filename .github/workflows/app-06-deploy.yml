@@ -1,0 +1,81 @@
+name: App 06 Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/app-06-vitrine/**"
+      - "comum/**"
+      - "firebase.json"
+      - ".firebaserc"
+      - ".github/workflows/app-06-deploy.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: app-06-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    name: Build e publicação no Firebase Hosting
+    runs-on: ubuntu-latest
+    environment: producao
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+
+      - name: Instalar dependências
+        run: npm ci
+
+      # Sem `VITE_GOOGLE_CLIENT_ID`: a vitrine encaminha, nunca autentica
+      # (`RN-03-27`).
+      - name: Build de produção
+        working-directory: apps/app-06-vitrine
+        env:
+          VITE_CHAVE_DE_APLICACAO: ${{ secrets.APP06_CHAVE_DE_APLICACAO }}
+          # TEMPORÁRIO — reverter para os endereços do documento 03 §1.1 assim
+          # que o TI liberar o domínio no filtro web. Mesmo contorno do
+          # app-01-deploy.yml e das demais esteiras: o FortiGate da rede
+          # corporativa bloqueia `*.comunidadegame.org` por ser domínio
+          # recém-registrado, e `.web.app` já é categorizado e passa no filtro.
+          VITE_URL_DO_NUCLEO: https://comunidade-game-api.web.app
+          # Os seis destinos do "Entrar" (`RF-03-59`, design — decisão 4).
+          VITE_URL_DA_APP_01_AULA: https://comunidade-game-aula.web.app
+          VITE_URL_DA_APP_03_GESTAO: https://comunidade-game-app-03.web.app
+          VITE_URL_DA_APP_05_GUERREIRO: https://comunidade-game-minhaarea.web.app
+          VITE_URL_DA_APP_07_RESPONSAVEL: https://comunidade-game-responsavel.web.app
+          VITE_URL_DA_APP_08_APOIADOR: https://comunidade-game-apoiador.web.app
+          VITE_URL_DA_APP_09_MESTRE: https://comunidade-game-mestre.web.app
+        run: npm run build
+
+      - name: Autenticar no Google Cloud (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      # Firebase CLI direto, e não `FirebaseExtended/action-hosting-deploy`:
+      # aquela ação exige `firebaseServiceAccount`, uma chave JSON de conta de
+      # serviço — justamente o que a Workload Identity Federation existe para
+      # evitar. O CLI honra as credenciais que o passo anterior exportou em
+      # GOOGLE_APPLICATION_CREDENTIALS.
+      #
+      # Versão exata, e não `@latest` nem faixa `^`: a CLI é baixada a cada
+      # publicação, e sem fixá-la o comportamento do deploy muda sozinho entre
+      # duas execuções. A mesma versão das demais esteiras de deploy mantém
+      # todas iguais.
+      - name: Publicar no Firebase Hosting
+        run: |
+          npx --yes firebase-tools@15.28.1 deploy \
+            --only hosting:vitrine \
+            --project "${{ secrets.GCP_PROJECT_ID }}" \
+            --non-interactive
