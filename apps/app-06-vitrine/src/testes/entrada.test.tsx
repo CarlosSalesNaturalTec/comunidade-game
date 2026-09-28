@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../App";
@@ -88,9 +88,13 @@ describe("o botão Entrar pergunta e encaminha", () => {
       screen.getByRole("button", { name: "Sou Guerreiro ou Guerreira" }),
     );
 
-    expect(screen.queryByRole("textbox")).toBeNull();
-    expect(screen.queryByLabelText(/nick|senha|usuário|e-mail/i)).not.toBeInTheDocument();
-    expect(screen.queryByRole("listbox")).toBeNull();
+    // A asserção é do **diálogo do "Entrar"**: a busca por nick exato da
+    // seção pública é outra tela, e é requisito próprio (`RF-03-11`).
+    const dialogo = within(screen.getByRole("dialog"));
+    expect(dialogo.queryByRole("textbox")).toBeNull();
+    expect(dialogo.queryByLabelText(/nick|senha|usuário|e-mail/i)).not.toBeInTheDocument();
+    expect(dialogo.queryByRole("listbox")).toBeNull();
+    expect(screen.queryByLabelText(/senha|usuário|e-mail/i)).not.toBeInTheDocument();
     expect(
       screen.getByText(/a vitrine não pede nem confere senha, nick ou imagem/i),
     ).toBeVisible();

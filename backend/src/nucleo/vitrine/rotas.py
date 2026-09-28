@@ -4,14 +4,13 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from sqlalchemy import and_, func, tuple_
+from sqlalchemy import tuple_
 from sqlalchemy.orm import Session
 
 from ..banco import obter_sessao
 from ..comunidades.modelo import ComunidadeVirtual
 from ..configuracao import Configuracao, obter_configuracao
-from ..consentimentos.regra import condicao_de_autorizacao_vigente
-from ..criacoes_originais.modelo import CriacaoOriginal, SituacaoDaCriacaoOriginal
+from ..criacoes_originais.modelo import CriacaoOriginal
 from ..equipes.modelo import IntegranteDaEquipe
 from ..erros import ErroDeValidacao, NaoEncontrado
 from ..ods.regra import cobertura_por_comunidade, comunidades_com_cobertura
@@ -23,15 +22,18 @@ from ..paginacao import (
     decodificar_cursor,
 )
 from ..poderes.modelo import Poder
-from ..pontuacao.modelo import Badge, Nivel, PontoRegular
 from ..pontuacao.regra import consulta_de_ranking
 from ..protecao.freio import exigir_freio_por_origem
 from ..trilhas.modelo import SituacaoDaTrilha, Trilha
 from .publico import (
     AvatarENickSaida,
+    CartaPublicaDeGuerreiroSaida,
     buscar_avatares_e_nicks,
     buscar_persona_guerreiro_publica_por_nick,
-    paginar_guerreiros_publicos,
+    condicoes_de_criacao_publica,
+    montar_cartas_publicas,
+    nomes_de_trilha,
+    paginar_cartas_publicas,
 )
 
 roteador = APIRouter()
@@ -49,15 +51,18 @@ def _analisar_comunidade(valor: str | None) -> uuid.UUID | None:
         ) from exc
 
 
-@roteador.get("/vitrine/guerreiros", response_model=PaginaDeResultado[AvatarENickSaida])
+@roteador.get("/vitrine/guerreiros", response_model=PaginaDeResultado[CartaPublicaDeGuerreiroSaida])
 def listar_guerreiros_publicos(
     parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
-) -> PaginaDeResultado[AvatarENickSaida]:
-    """Cards de quem tem autorização vigente, paginado e filtrável por
-    comunidade (`RF-01-02`, `RF-01-28`, `RN-01-10`, `RN-01-11`)."""
+) -> PaginaDeResultado[CartaPublicaDeGuerreiroSaida]:
+    """Cards de quem tem autorização vigente, cada um com a **carta inteira**
+    do documento 11 §8.2, paginado e filtrável por comunidade (`RF-01-02`,
+    `RF-01-28`, `RF-03-02`, `RF-03-04`, `RF-03-05`, `RN-01-10`, `RN-01-11`).
+    A composição sai na própria listagem: montá-la com uma consulta por nick
+    para cada card cairia no freio por origem (`RF-01-65`)."""
     comunidade_id = _analisar_comunidade(parametros.filtros.get("comunidade"))
-    return paginar_guerreiros_publicos(
+    return paginar_cartas_publicas(
         sessao_bd,
         comunidade_id=comunidade_id,
         cursor=parametros.cursor,
@@ -65,61 +70,24 @@ def listar_guerreiros_publicos(
     )
 
 
-class NivelPublicoSaida(BaseModel):
-    trilha_id: uuid.UUID
-    valor: int
-
-
-class BadgePublicoSaida(BaseModel):
-    tipo: str
-    trilha_id: uuid.UUID | None
-    poder_id: uuid.UUID | None
-
-
-class PerfilPublicoDeGuerreiroSaida(AvatarENickSaida):
-    pontos_regulares: int
-    niveis: list[NivelPublicoSaida]
-    badges: list[BadgePublicoSaida]
-
-
 @roteador.get(
     "/vitrine/guerreiros/{nick}",
-    response_model=PerfilPublicoDeGuerreiroSaida,
+    response_model=CartaPublicaDeGuerreiroSaida,
     dependencies=[Depends(exigir_freio_por_origem("consulta_por_nick"))],
 )
 def perfil_publico_de_guerreiro(
     nick: str,
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
-) -> PerfilPublicoDeGuerreiroSaida:
-    """Perfil por nick exato; nick inexistente e nick sem autorização
-    devolvem o mesmo 404, resolvidos na mesma consulta (`RF-01-33`,
-    `RF-01-34`, `RN-01-22`, `RF-01-65`)."""
+) -> CartaPublicaDeGuerreiroSaida:
+    """Perfil por nick exato, na **mesma** composição do card (`RF-03-03`,
+    `RF-03-05`); nick inexistente e nick sem autorização devolvem o mesmo
+    404, resolvidos na mesma consulta (`RF-01-33`, `RF-01-34`, `RN-01-22`,
+    `RF-01-65`)."""
     persona = buscar_persona_guerreiro_publica_por_nick(sessao_bd, nick)
     if persona is None:
         raise NaoEncontrado(mensagem="Guerreiro(a) não encontrado(a).")
 
-    total_pontos = (
-        sessao_bd.query(func.coalesce(func.sum(PontoRegular.total), 0))
-        .filter(PontoRegular.guerreiro_id == persona.id)
-        .scalar()
-    )
-    niveis = sessao_bd.query(Nivel).filter_by(guerreiro_id=persona.id).all()
-    badges = sessao_bd.query(Badge).filter_by(guerreiro_id=persona.id).all()
-
-    return PerfilPublicoDeGuerreiroSaida(
-        avatar=persona.avatar,
-        nick=nick,
-        pontos_regulares=total_pontos,
-        niveis=[
-            NivelPublicoSaida(trilha_id=nivel.trilha_id, valor=nivel.valor) for nivel in niveis
-        ],
-        badges=[
-            BadgePublicoSaida(
-                tipo=badge.tipo.value, trilha_id=badge.trilha_id, poder_id=badge.poder_id
-            )
-            for badge in badges
-        ],
-    )
+    return montar_cartas_publicas(sessao_bd, [(persona, nick)])[0]
 
 
 class ItemDeRankingSaida(AvatarENickSaida):
@@ -212,7 +180,13 @@ def listar_poderes_publicos(
 
 
 class CriacaoPublicaSaida(BaseModel):
+    """O portfólio público do `RF-03-08`: trilha, data e autoria por nick.
+    **Sem título** — a criação original não tem esse campo no modelo, e
+    inventá-lo seria decisão nova (decisão do fundador, 2026-09-28)."""
+
     trilha_id: uuid.UUID
+    trilha: str
+    validada_em: datetime
     producao: str
     autores: list[AvatarENickSaida]
 
@@ -225,22 +199,7 @@ def listar_criacoes_publicas(
     """Portfólio de criações validadas, exibidas só quando todos os
     creditados têm autorização vigente (`RF-01-26`, `RN-01-13`,
     `RN-01-10`)."""
-    tem_integrante_nao_autorizado = (
-        sessao_bd.query(IntegranteDaEquipe.id)
-        .filter(IntegranteDaEquipe.equipe_id == CriacaoOriginal.equipe_id)
-        .filter(~condicao_de_autorizacao_vigente(sessao_bd, IntegranteDaEquipe.persona_id))
-        .exists()
-    )
-    guerreiro_individual_nao_autorizado = and_(
-        CriacaoOriginal.guerreiro_id.is_not(None),
-        ~condicao_de_autorizacao_vigente(sessao_bd, CriacaoOriginal.guerreiro_id),
-    )
-    consulta = (
-        sessao_bd.query(CriacaoOriginal)
-        .filter(CriacaoOriginal.situacao == SituacaoDaCriacaoOriginal.validada)
-        .filter(~tem_integrante_nao_autorizado)
-        .filter(~guerreiro_individual_nao_autorizado)
-    )
+    consulta = sessao_bd.query(CriacaoOriginal).filter(*condicoes_de_criacao_publica(sessao_bd))
 
     if parametros.cursor:
         posicao = decodificar_cursor(parametros.cursor)
@@ -298,9 +257,13 @@ def listar_criacoes_publicas(
             if persona_id in avatares_e_nicks
         ]
 
+    trilhas = nomes_de_trilha(sessao_bd, {criacao.trilha_id for criacao in criacoes})
+
     itens = [
         CriacaoPublicaSaida(
             trilha_id=criacao.trilha_id,
+            trilha=trilhas.get(criacao.trilha_id, ""),
+            validada_em=criacao.validado_em,
             producao=criacao.producao,
             autores=_autores_da_criacao(criacao),
         )

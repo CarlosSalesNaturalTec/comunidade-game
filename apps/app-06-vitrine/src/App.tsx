@@ -1,8 +1,9 @@
-import { Cabecalho } from "comum/react";
+import { Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
 import { DialogoDeEntrada } from "./entrada/DialogoDeEntrada";
+import { PaginaDoGuerreiro } from "./guerreiros/PaginaDoGuerreiro";
 import { NavegacaoDeRecortes } from "./navegacao/NavegacaoDeRecortes";
-import { recorteDoCaminho } from "./navegacao/recortes";
+import { nickDoCaminho, recorteDoCaminho } from "./navegacao/recortes";
 import { useNavegacao } from "./navegacao/useNavegacao";
 import { TelaDoRecorte } from "./recortes/TelaDoRecorte";
 
@@ -14,6 +15,7 @@ export default function App() {
   const { caminho, irPara } = useNavegacao();
   const [entradaAberta, definirEntradaAberta] = useState(false);
   const recorte = recorteDoCaminho(caminho);
+  const nick = nickDoCaminho(caminho);
 
   return (
     <>
@@ -25,7 +27,17 @@ export default function App() {
         acao={{ rotulo: "Entrar", aoAcionar: () => definirEntradaAberta(true) }}
       />
       <NavegacaoDeRecortes recorteAtual={recorte.chave} aoSelecionarRecorte={irPara} />
-      <TelaDoRecorte recorte={recorte} />
+      {/* A página individual tem endereço próprio, compartilhável e
+          alcançável direto (`RF-03-03`); todo o resto é o recorte. */}
+      {nick === null ? (
+        <TelaDoRecorte recorte={recorte} irPara={irPara} />
+      ) : (
+        <Moldura>
+          <div className="cg-vitrine">
+            <PaginaDoGuerreiro nick={nick} irPara={irPara} />
+          </div>
+        </Moldura>
+      )}
       <DialogoDeEntrada aberto={entradaAberta} aoFechar={() => definirEntradaAberta(false)} />
     </>
   );

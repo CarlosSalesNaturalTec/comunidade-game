@@ -109,3 +109,72 @@ textarea {
   padding-top: var(--espaco-8);
   border-top: 1px solid var(--cor-separador);
 }
+
+/* Busca por nick exato: um campo, uma ação e a ajuda em texto — sem lista,
+ * sem sugestão e sem completação (`RF-03-12`). */
+.cg-busca {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  margin-bottom: var(--espaco-16);
+}
+
+.cg-busca__ajuda {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+  font-size: var(--escala-0875);
+}
+
+/* O card é a carta do `comum`; aqui só a ação que abre a página dele. */
+.cg-card-do-guerreiro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  align-items: stretch;
+}
+
+.cg-card-do-guerreiro__abrir {
+  min-height: var(--alvo-de-toque);
+  padding: 0 var(--espaco-16);
+  border: 1px solid var(--cor-separador);
+  border-radius: var(--raio-campo);
+  background: none;
+  cursor: pointer;
+}
+
+.cg-pagina-do-guerreiro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-16);
+  align-items: flex-start;
+}
+
+.cg-portfolio,
+.cg-ranking,
+.cg-poderes,
+.cg-poderes__trilhas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cg-ranking__posicao {
+  font-weight: var(--peso-rotulo);
+}
+
+.cg-portfolio__autoria {
+  color: var(--cor-texto-secundario);
+}
+
+.cg-poderes__item {
+  padding-bottom: var(--espaco-8);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.cg-poderes__trilhas {
+  color: var(--cor-texto-secundario);
+  font-size: var(--escala-0875);
+}

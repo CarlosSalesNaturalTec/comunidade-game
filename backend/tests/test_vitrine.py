@@ -132,7 +132,229 @@ def test_card_traz_avatar_e_nick_sem_dado_pessoal(cliente, criar_chave, guerreir
     resposta = cliente.get("/v1/vitrine/guerreiros", headers={"X-Chave-Aplicacao": chave})
     assert resposta.status_code == 200
     itens = resposta.json()["itens"]
-    assert itens == [{"avatar": "avatar-x", "nick": nick}]
+    assert itens == [
+        {
+            "avatar": "avatar-x",
+            "nick": nick,
+            "badges": [],
+            "poderes": [],
+            "pontos_regulares": 0,
+            "posicao_no_ranking": 1,
+            "criacoes": [],
+        }
+    ]
+
+
+def _cenario_de_carta(
+    criar_persona,
+    criar_poder,
+    criar_trilha,
+    criar_ponto_regular,
+    criar_nivel,
+    criar_badge,
+    criar_criacao_original,
+    guerreiro_publico,
+    *,
+    nick,
+):
+    """Um Guerreiro(a) com tudo o que a variante do documento 11 §8.2 exige:
+    ponto regular, nível, badge e criação original validada."""
+    admin = criar_persona(Papel.admin)
+    poder = criar_poder(admin)
+    trilha = criar_trilha(admin, poder=poder, situacao=SituacaoDaTrilha.publicada)
+    guerreiro, nick = guerreiro_publico(nick=nick)
+    criar_ponto_regular(guerreiro, trilha, total=40)
+    criar_nivel(guerreiro, trilha, valor=3)
+    criar_badge(guerreiro, trilha=trilha)
+    criar_criacao_original(trilha, admin, guerreiro=guerreiro)
+    return nick, trilha, poder
+
+
+def test_card_traz_a_carta_inteira_do_guerreiro(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_poder,
+    criar_trilha,
+    criar_ponto_regular,
+    criar_nivel,
+    criar_badge,
+    criar_criacao_original,
+    guerreiro_publico,
+):
+    """`RF-03-05`: o card traz badges, poderes com nível, desempenho e as
+    criações originais — a composição do documento 11 §8.2 inteira."""
+    nick, trilha, poder = _cenario_de_carta(
+        criar_persona,
+        criar_poder,
+        criar_trilha,
+        criar_ponto_regular,
+        criar_nivel,
+        criar_badge,
+        criar_criacao_original,
+        guerreiro_publico,
+        nick="guerreira-com-carta",
+    )
+    chave, _ = criar_chave()
+    resposta = cliente.get("/v1/vitrine/guerreiros", headers={"X-Chave-Aplicacao": chave})
+
+    assert resposta.status_code == 200
+    (item,) = resposta.json()["itens"]
+    assert item["nick"] == nick
+    assert item["pontos_regulares"] == 40
+    assert item["posicao_no_ranking"] == 1
+    assert item["poderes"] == [{"poder": poder.nome, "nivel": 3}]
+    assert item["badges"] == [{"familia": "de_nivel", "poder": poder.nome}]
+    assert [criacao["trilha"] for criacao in item["criacoes"]] == [trilha.nome]
+
+
+def test_pagina_por_nick_traz_a_mesma_composicao_do_card(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_poder,
+    criar_trilha,
+    criar_ponto_regular,
+    criar_nivel,
+    criar_badge,
+    criar_criacao_original,
+    guerreiro_publico,
+):
+    """`RF-03-03`, `RF-03-05`: o que o card mostra é o que a página mostra —
+    uma projeção só, nunca dois contratos para a mesma carta."""
+    nick, _, _ = _cenario_de_carta(
+        criar_persona,
+        criar_poder,
+        criar_trilha,
+        criar_ponto_regular,
+        criar_nivel,
+        criar_badge,
+        criar_criacao_original,
+        guerreiro_publico,
+        nick="guerreira-da-pagina",
+    )
+    chave, _ = criar_chave()
+    headers = {"X-Chave-Aplicacao": chave}
+
+    (card,) = cliente.get("/v1/vitrine/guerreiros", headers=headers).json()["itens"]
+    pagina = cliente.get(f"/v1/vitrine/guerreiros/{nick}", headers=headers)
+
+    assert pagina.status_code == 200
+    assert pagina.json() == card
+
+
+def test_pagina_de_cards_sai_de_uma_resposta_so(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_ponto_regular,
+    criar_nivel,
+    criar_badge,
+    criar_criacao_original,
+    guerreiro_publico,
+):
+    """A composição de todos os Guerreiros e Guerreiras da página vem na
+    própria listagem: montá-la por nick cairia no freio (`RF-01-65`)."""
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    for indice in range(3):
+        guerreiro, _ = guerreiro_publico(nick=f"guerreira-da-pagina-{indice}")
+        criar_ponto_regular(guerreiro, trilha, total=10 * (indice + 1))
+        criar_nivel(guerreiro, trilha, valor=indice + 1)
+        criar_badge(guerreiro, trilha=trilha)
+        criar_criacao_original(trilha, admin, guerreiro=guerreiro)
+
+    chave, _ = criar_chave()
+    resposta = cliente.get("/v1/vitrine/guerreiros", headers={"X-Chave-Aplicacao": chave})
+
+    assert resposta.status_code == 200
+    itens = resposta.json()["itens"]
+    assert len(itens) == 3
+    for item in itens:
+        assert item["poderes"] and item["badges"] and item["criacoes"]
+        assert item["posicao_no_ranking"] >= 1
+
+
+def test_carta_publica_nao_traz_nada_de_pessoal(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_poder,
+    criar_trilha,
+    criar_ponto_regular,
+    criar_nivel,
+    criar_badge,
+    criar_criacao_original,
+    guerreiro_publico,
+):
+    """`RF-03-06`, `RN-03-04`: nem o card nem a página levam nome civil,
+    nascimento, contato, imagem real ou valor em reais."""
+    nick, _, _ = _cenario_de_carta(
+        criar_persona,
+        criar_poder,
+        criar_trilha,
+        criar_ponto_regular,
+        criar_nivel,
+        criar_badge,
+        criar_criacao_original,
+        guerreiro_publico,
+        nick="guerreira-sem-dado-pessoal",
+    )
+    chave, _ = criar_chave()
+    headers = {"X-Chave-Aplicacao": chave}
+    proibidos = {"nome", "nome_civil", "nascimento", "contato", "email", "imagem", "reais"}
+
+    for corpo in (
+        cliente.get("/v1/vitrine/guerreiros", headers=headers).json()["itens"][0],
+        cliente.get(f"/v1/vitrine/guerreiros/{nick}", headers=headers).json(),
+    ):
+        assert proibidos.isdisjoint(corpo.keys())
+
+
+def test_projecao_minima_do_elenco_dos_jogos_nao_muda(cliente, criar_chave, guerreiro_publico):
+    """Invariante 8 do documento 99 §6: a carta é da vitrine; o elenco dos
+    jogos segue com a projeção mínima de avatar e nick."""
+    _, nick = guerreiro_publico(nick="guerreira-no-elenco", avatar="avatar-y")
+    chave, _ = criar_chave()
+    resposta = cliente.get("/v1/jogos/elenco", headers={"X-Chave-Aplicacao": chave})
+    assert resposta.status_code == 200
+    assert resposta.json()["itens"] == [{"avatar": "avatar-y", "nick": nick}]
+
+
+def test_carta_nao_traz_criacao_de_quem_nao_autorizou(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+    criar_trilha,
+    criar_equipe,
+    adicionar_integrante,
+    criar_criacao_original,
+    guerreiro_publico,
+):
+    """`RN-03-02`: a criação com creditado sem autorização não entra na
+    carta, pelo mesmo portão que a tira do portfólio."""
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+    autor, nick = guerreiro_publico(nick="autora-com-colega-oculto")
+    equipe = criar_equipe(autor, trilha=trilha, homologada=True)
+
+    colega = criar_persona(Papel.guerreiro)
+    criar_nick(colega, "colega-nao-autorizado")
+    criar_vinculo(responsavel, colega, cadastrado_por=admin)
+    criar_consentimento(responsavel, colega, tipo=TIPO, decisao=DecisaoDeConsentimento.nega)
+    adicionar_integrante(equipe, colega)
+
+    criar_criacao_original(trilha, admin, equipe=equipe)
+
+    chave, _ = criar_chave()
+    resposta = cliente.get(f"/v1/vitrine/guerreiros/{nick}", headers={"X-Chave-Aplicacao": chave})
+    assert resposta.status_code == 200
+    assert resposta.json()["criacoes"] == []
 
 
 def test_guerreiro_sem_autorizacao_nao_aparece_em_card(
@@ -344,6 +566,33 @@ def test_criacao_com_todos_autorizados_aparece_com_autoria_creditada(
     itens = resposta.json()["itens"]
     assert len(itens) == 1
     assert itens[0]["autores"] == [{"avatar": "avatar-de-teste", "nick": nick}]
+
+
+def test_criacao_publica_traz_trilha_e_data_e_nao_traz_titulo(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_criacao_original,
+    guerreiro_publico,
+):
+    """`RF-03-08`: o portfólio exibe trilha, data e autoria por nick. Título
+    não existe no modelo da criação original (decisão do fundador,
+    2026-09-28)."""
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(admin, nome="Trilha do Portfólio", situacao=SituacaoDaTrilha.publicada)
+    guerreiro, nick = guerreiro_publico(nick="autora-do-portfolio")
+    criacao = criar_criacao_original(trilha, admin, guerreiro=guerreiro)
+
+    chave, _ = criar_chave()
+    resposta = cliente.get("/v1/vitrine/criacoes", headers={"X-Chave-Aplicacao": chave})
+
+    assert resposta.status_code == 200
+    (item,) = resposta.json()["itens"]
+    assert item["trilha"] == "Trilha do Portfólio"
+    assert datetime.fromisoformat(item["validada_em"]) == criacao.validado_em
+    assert [autor["nick"] for autor in item["autores"]] == [nick]
+    assert "titulo" not in item
 
 
 def test_criacao_individual_aparece_creditando_quem_entregou(
