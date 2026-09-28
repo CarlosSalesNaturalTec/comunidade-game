@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from ..armazenamento.porta import PortaDeArmazenamento
 from ..chaves.segredo import calcular_resumo, gerar_segredo
 from ..comunidades.modelo import ComunidadeVirtual
-from ..comunidades.regra import resolver_vinculo_na_data
+from ..comunidades.regra import contar_guerreiros_vinculados, resolver_vinculo_na_data
 from ..erros import (
     ConfirmacaoDeRegistroInvalidadoRecusada,
     CredencialDeDispositivoJaAtiva,
@@ -1280,6 +1280,23 @@ class PontoDaSeriePublicaSaida(BaseModel):
     recorte: RecortePublicadoSaida
 
 
+class MetodologiaDoRecorteSaida(BaseModel):
+    """O que o recorte publicado declara sobre a própria medição: o que
+    mede, em que cadência, de que origem, sobre quantos registros válidos e
+    em que período — e se ainda está vivo (`RF-03-17`, `RF-03-18`,
+    `RF-03-19`). É do **recorte**, nunca da série: a série é de um coletor,
+    e publicá-la identificaria quem coletou (`RN-03-10`, `RN-08-12`)."""
+
+    recorte: RecortePublicadoSaida
+    unidade: str | None
+    cadencias: list[str]
+    origens: list[str]
+    primeira_medicao: datetime
+    ultima_medicao: datetime
+    registros_validos: int
+    ativo: bool
+
+
 def _consulta_de_registros_publicaveis(
     sessao: Session,
     *,
@@ -1301,6 +1318,8 @@ def _consulta_de_registros_publicaveis(
             RegistroDeColeta.momento_do_fato.label("momento_do_fato"),
             RegistroDeColeta.valor.label("valor"),
             SerieDeColeta.coletor_id.label("coletor_id"),
+            SerieDeColeta.id.label("serie_de_coleta_id"),
+            RegistroDeColeta.origem.label("origem"),
             DesafioDeColeta.tipo_de_coleta_id.label("tipo_de_coleta_id"),
             mapa_de_local.c.local_publicado_id.label("local_publicado_id"),
         )
@@ -1355,6 +1374,8 @@ def _consulta_de_registros_publicaveis(
             rotulados_sub.c.momento_do_fato,
             rotulados_sub.c.valor,
             rotulados_sub.c.coletor_id,
+            rotulados_sub.c.serie_de_coleta_id,
+            rotulados_sub.c.origem,
             rotulados_sub.c.tipo_de_coleta_id,
             local_promovido.label("local_final_id"),
         )
@@ -1385,6 +1406,8 @@ def _consulta_de_registros_publicaveis(
             promovidos.c.registro_id,
             promovidos.c.momento_do_fato,
             promovidos.c.valor,
+            promovidos.c.serie_de_coleta_id,
+            promovidos.c.origem,
             promovidos.c.tipo_de_coleta_id,
             promovidos.c.local_final_id,
         )
@@ -1495,6 +1518,106 @@ def paginar_serie_publica(
         for linha in linhas
     ]
     return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)
+
+
+def metodologia_dos_recortes_publicados(
+    sessao: Session,
+    *,
+    comunidade: ComunidadeVirtual,
+    piso_de_coletores: int,
+    periodo_inicio: datetime | None = None,
+    periodo_fim: datetime | None = None,
+) -> list[MetodologiaDoRecorteSaida]:
+    """A metodologia de cada recorte publicado, apurada sobre **o mesmo
+    conjunto** que a série publica — a consulta de registros publicáveis,
+    com o período, a situação válida e o piso já aplicados. Vale para a
+    consulta inteira, antes de qualquer corte de página, para que o número
+    não mude de um cursor para o outro (`RF-03-17`, `RF-03-18`, `RF-03-19`,
+    design — Decisions 1 e 2).
+
+    O recorte é **ativo** quando ao menos uma das séries dos registros
+    publicados dele está ativa no instante da consulta — a mesma régua do
+    indicador de séries ativas. Considerar as séries sem registro publicado
+    revelaria recorte que o piso suprimiu (design — Decisão 3).
+    """
+    publicaveis = _consulta_de_registros_publicaveis(
+        sessao,
+        comunidade=comunidade,
+        periodo_inicio=periodo_inicio,
+        periodo_fim=periodo_fim,
+        piso=piso_de_coletores,
+    ).subquery()
+
+    agregados = (
+        sessao.query(
+            publicaveis.c.tipo_de_coleta_id,
+            publicaveis.c.local_final_id,
+            TipoDeColeta.nome.label("tipo_de_coleta_nome"),
+            TipoDeColeta.unidade.label("unidade"),
+            Local.nivel.label("local_publicado_nivel"),
+            Local.rotulo.label("local_publicado_rotulo"),
+            func.count(publicaveis.c.registro_id).label("registros_validos"),
+            func.min(publicaveis.c.momento_do_fato).label("primeira_medicao"),
+            func.max(publicaveis.c.momento_do_fato).label("ultima_medicao"),
+            func.bool_or(SerieDeColeta.estado == EstadoDaSerie.ativa).label("ativo"),
+        )
+        .select_from(publicaveis)
+        .join(TipoDeColeta, TipoDeColeta.id == publicaveis.c.tipo_de_coleta_id)
+        .join(Local, Local.id == publicaveis.c.local_final_id)
+        .join(SerieDeColeta, SerieDeColeta.id == publicaveis.c.serie_de_coleta_id)
+        .group_by(
+            publicaveis.c.tipo_de_coleta_id,
+            publicaveis.c.local_final_id,
+            TipoDeColeta.nome,
+            TipoDeColeta.unidade,
+            Local.nivel,
+            Local.rotulo,
+        )
+        .order_by(publicaveis.c.tipo_de_coleta_id, publicaveis.c.local_final_id)
+        .all()
+    )
+
+    # Cadência e origem saem como **conjunto**: o recorte que subiu de nível
+    # reúne séries de cadências diferentes, e eleger uma só seria inventar
+    # dado que não existe (design — Risks).
+    cadencias: dict[tuple[uuid.UUID, uuid.UUID], set[str]] = {}
+    origens: dict[tuple[uuid.UUID, uuid.UUID], set[str]] = {}
+    pares = (
+        sessao.query(
+            publicaveis.c.tipo_de_coleta_id,
+            publicaveis.c.local_final_id,
+            SerieDeColeta.cadencia,
+            publicaveis.c.origem,
+        )
+        .select_from(publicaveis)
+        .join(SerieDeColeta, SerieDeColeta.id == publicaveis.c.serie_de_coleta_id)
+        .distinct()
+        .all()
+    )
+    for linha in pares:
+        chave = (linha.tipo_de_coleta_id, linha.local_final_id)
+        cadencias.setdefault(chave, set()).add(Cadencia(linha.cadencia).value)
+        origens.setdefault(chave, set()).add(OrigemDoRegistro(linha.origem).value)
+
+    return [
+        MetodologiaDoRecorteSaida(
+            recorte=RecortePublicadoSaida(
+                tipo_de_coleta_id=linha.tipo_de_coleta_id,
+                tipo_de_coleta_nome=linha.tipo_de_coleta_nome,
+                local_publicado_id=linha.local_final_id,
+                local_publicado_nivel=linha.local_publicado_nivel.value,
+                local_publicado_rotulo=linha.local_publicado_rotulo,
+            ),
+            unidade=linha.unidade,
+            cadencias=sorted(cadencias.get((linha.tipo_de_coleta_id, linha.local_final_id), set())),
+            origens=sorted(origens.get((linha.tipo_de_coleta_id, linha.local_final_id), set())),
+            primeira_medicao=linha.primeira_medicao,
+            ultima_medicao=linha.ultima_medicao,
+            registros_validos=linha.registros_validos,
+            ativo=bool(linha.ativo),
+        )
+        for linha in agregados
+    ]
 
 
 # Cabeçalho declarado da exportação e o dicionário de dados que descreve cada
@@ -1647,6 +1770,11 @@ def apurar_periodo_coberto_da_exportacao(
 
 
 class ComunidadeDaListaSaida(BaseModel):
+    """Os quatro indicadores do documento 02 §1 — nulos abaixo do piso — e,
+    ao lado deles, a **vitalidade** do card do documento 11 §8.2, que não é
+    indicador e por isso não entra na supressão (decisão do fundador de
+    2026-09-28)."""
+
     id: uuid.UUID
     nome: str
     localizacao: str
@@ -1654,6 +1782,7 @@ class ComunidadeDaListaSaida(BaseModel):
     series_ativas: int | None
     registros_validos: int | None
     continuidade: float | None
+    guerreiros_vinculados: int
 
 
 def _contar_coletores_distintos_da_comunidade(
@@ -1764,6 +1893,7 @@ def paginar_comunidades_publicas(
                 series_ativas=series_ativas,
                 registros_validos=registros_validos,
                 continuidade=continuidade,
+                guerreiros_vinculados=contar_guerreiros_vinculados(sessao, comunidade.id),
             )
         )
     return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)

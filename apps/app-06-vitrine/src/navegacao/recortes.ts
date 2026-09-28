@@ -3,6 +3,9 @@ import { SecaoDeGuerreiros } from "../guerreiros/SecaoDeGuerreiros";
 import { SecaoDePoderes } from "../poderes/SecaoDePoderes";
 import { SecaoDoPortfolio } from "../portfolio/SecaoDoPortfolio";
 import { SecaoDoRanking } from "../ranking/SecaoDoRanking";
+import { BlocoDoGestor } from "../territorio/BlocoDoGestor";
+import { SecaoDaCobertura } from "../territorio/SecaoDaCobertura";
+import { SecaoDeComunidades } from "../territorio/SecaoDeComunidades";
 
 /** Os três recortes de leitura do PRD-03 §6.2. Cada um tem **caminho
  * próprio**, e não é guardado em lugar nenhum: a raiz é sempre sociedade
@@ -58,15 +61,18 @@ const APOIADORES: Secao = {
 };
 const COMUNIDADES: Secao = {
   titulo: "Comunidades Virtuais",
-  pendente: "O painel de cada comunidade chega em entrega própria.",
+  Conteudo: SecaoDeComunidades,
 };
+// As séries e a metodologia moram na **página de cada comunidade**, que o
+// card abre: o painel é do território daquela comunidade, não de todas
+// juntas (`RF-03-15`, documento 11 §8.2).
 const TERRITORIO: Secao = {
   titulo: "Séries do território e metodologia",
-  pendente: "As séries e a metodologia de cada uma chegam em entrega própria.",
+  Conteudo: SecaoDeComunidades,
 };
 const COBERTURA: Secao = {
   titulo: "Cobertura da Agenda 2030",
-  pendente: "O painel de cobertura por comunidade e por ciclo chega em entrega própria.",
+  Conteudo: SecaoDaCobertura,
 };
 const SOLICITACAO_DE_DADOS: Secao = {
   titulo: "Solicitação do conjunto de dados",
@@ -74,7 +80,7 @@ const SOLICITACAO_DE_DADOS: Secao = {
 };
 const BLOCO_DO_GESTOR: Secao = {
   titulo: "Para que a plataforma serve ao município",
-  pendente: "O bloco em destaque do gestor público chega em entrega própria.",
+  Conteudo: BlocoDoGestor,
 };
 const COMO_APOIAR: Secao = {
   titulo: "Como apoiar",
@@ -103,7 +109,10 @@ export const RECORTES: Recorte[] = [
     chave: "pesquisadores",
     caminho: "/pesquisadores",
     rotulo: "Pesquisadores",
-    secoes: [TERRITORIO, COMUNIDADES, COBERTURA, SOLICITACAO_DE_DADOS],
+    // A seção é a mesma de "sociedade civil", com o título que o PRD-03 §5.2
+    // dá a ela aqui: o pesquisador chega direto às séries por comunidade.
+    // Entrar duas vezes duplicaria o conteúdo e a leitura (design — Decisão 7).
+    secoes: [TERRITORIO, COBERTURA, SOLICITACAO_DE_DADOS],
   },
   {
     chave: "gestores-publicos",
@@ -122,6 +131,21 @@ export function recorteDoCaminho(caminho: string): Recorte {
 }
 
 const PREFIXO_DA_PAGINA_DO_GUERREIRO = "/guerreiros/";
+const PREFIXO_DA_PAGINA_DA_COMUNIDADE = "/comunidades/";
+
+/** O endereço próprio da página da comunidade, no mesmo padrão da página do
+ * Guerreiro(a): compartilhável e alcançável direto (documento 11 §8.2). */
+export function caminhoDaComunidade(id: string): string {
+  return `${PREFIXO_DA_PAGINA_DA_COMUNIDADE}${encodeURIComponent(id)}`;
+}
+
+/** Devolve o identificador da comunidade no caminho, ou `null` quando o
+ * caminho não é de página de comunidade. */
+export function comunidadeDoCaminho(caminho: string): string | null {
+  if (!caminho.startsWith(PREFIXO_DA_PAGINA_DA_COMUNIDADE)) return null;
+  const id = decodeURIComponent(caminho.slice(PREFIXO_DA_PAGINA_DA_COMUNIDADE.length));
+  return id.length > 0 ? id : null;
+}
 
 /** A **página individual** é o único endereço próprio que esta fatia
  * acrescenta, porque o `RF-03-03` a exige compartilhável e alcançável

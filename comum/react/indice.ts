@@ -11,6 +11,7 @@ export { Campo } from "./Campo";
 export { CampoDeDataHora } from "./CampoDeDataHora";
 export type {
   BadgeNaCarta,
+  CartaDeComunidadeVirtual,
   CartaDeGuerreiro,
   DadosDaCarta,
   PoderComNivel,
@@ -34,3 +35,5 @@ export { RetornoDeConquista } from "./RetornoDeConquista";
 export { SequenciaPaginada } from "./SequenciaPaginada";
 export type { ColunaDaTabela } from "./Tabela";
 export { Tabela } from "./Tabela";
+export type { CamadaDoTerritorio } from "./TerritorioDaComunidade";
+export { TerritorioDaComunidade } from "./TerritorioDaComunidade";

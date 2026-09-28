@@ -98,3 +98,102 @@ export function listarRanking(): Promise<PaginaDoNucleo<ItemDeRankingPublico>> {
 export function listarPoderes(): Promise<PoderPublico[]> {
   return lerDoNucleo<PoderPublico[]>("/v1/vitrine/poderes");
 }
+
+/** A comunidade na lista pública: nome, localização, os quatro indicadores
+ * do documento 02 §1 — nulos abaixo do piso de coletores — e a
+ * **vitalidade**, que não é indicador e por isso nunca vem nula
+ * (`RF-03-02`). */
+export interface ComunidadeNaLista {
+  id: string;
+  nome: string;
+  localizacao: string;
+  series_abertas: number | null;
+  series_ativas: number | null;
+  registros_validos: number | null;
+  continuidade: number | null;
+  guerreiros_vinculados: number;
+}
+
+export interface ListaDeComunidades {
+  itens: ComunidadeNaLista[];
+  proximo_cursor: string | null;
+  ciclo_rotulo: string;
+}
+
+export interface LocalPublico {
+  id: string;
+  nivel: string;
+  rotulo: string;
+  local_pai_id: string | null;
+}
+
+/** A ficha pública da comunidade: locais **até o bairro** — a rota não serve
+ * nível mais fino —, os tipos de coleta ativos e a vitalidade
+ * (`RF-03-15`, `RN-03-09`). */
+export interface ComunidadePublica {
+  id: string;
+  nome: string;
+  locais: LocalPublico[];
+  tipos_de_coleta: { id: string; nome: string }[];
+  guerreiros_vinculados: number;
+}
+
+export interface RecortePublicado {
+  tipo_de_coleta_id: string;
+  tipo_de_coleta_nome: string;
+  local_publicado_id: string;
+  local_publicado_nivel: string;
+  local_publicado_rotulo: string;
+}
+
+export interface PontoDaSerie {
+  momento_da_medicao: string;
+  valor: number | null;
+  recorte: RecortePublicado;
+}
+
+/** A metodologia que cada recorte declara (`RF-03-17`, `RF-03-18`) e o sinal
+ * de série inativa (`RF-03-19`). Vale para a consulta inteira, não para a
+ * página: o núcleo a apura antes do corte. */
+export interface MetodologiaDoRecorte {
+  recorte: RecortePublicado;
+  unidade: string | null;
+  cadencias: string[];
+  origens: string[];
+  primeira_medicao: string;
+  ultima_medicao: string;
+  registros_validos: number;
+  ativo: boolean;
+}
+
+export interface SeriePublica {
+  itens: PontoDaSerie[];
+  proximo_cursor: string | null;
+  recortes: MetodologiaDoRecorte[];
+}
+
+/** A cobertura da Agenda 2030, por comunidade e por ciclo (`RF-03-22`). É
+ * sempre agregada: nenhum recorte por Guerreiro(a) existe nesta rota
+ * (`RF-03-24`, `RN-03-19`). */
+export interface CoberturaDeOds {
+  comunidade_id: string;
+  comunidade_nome: string;
+  objetivos: number[];
+  ciclo: string;
+}
+
+export function listarComunidades(): Promise<ListaDeComunidades> {
+  return lerDoNucleo<ListaDeComunidades>("/v1/comunidades");
+}
+
+export function obterComunidade(id: string): Promise<ComunidadePublica> {
+  return lerDoNucleo<ComunidadePublica>(`/v1/comunidades/${encodeURIComponent(id)}`);
+}
+
+export function lerSerieDaComunidade(id: string): Promise<SeriePublica> {
+  return lerDoNucleo<SeriePublica>(`/v1/comunidades/${encodeURIComponent(id)}/series`);
+}
+
+export function lerCoberturaDeOds(): Promise<CoberturaDeOds[]> {
+  return lerDoNucleo<CoberturaDeOds[]>("/v1/vitrine/ods/cobertura");
+}
