@@ -10,11 +10,11 @@ assistente do Desenvolvedor**, e SHALL recusar com **429** a que exceder o limit
 superfície na janela declarada no documento 03 §8. A
 recusa SHALL informar o tempo de espera. O atraso SHALL crescer a cada repetição, a partir do
 valor inicial e até o teto declarados no documento 03 §8. O freio NEVER SHALL exigir CAPTCHA,
-cadastro ou qualquer dado do visitante. (`RF-01-65`, `RN-01-27`, `RN-03-08`, 03 §8)
+cadastro ou qualquer dado do visitante. (`RF-01-65`, `RN-01-27`, `RN-03-08`, `RN-03-39`, 03 §8)
 
 A consulta ao assistente do Desenvolvedor é superfície freada porque cada pergunta consome
-modelo pago numa rota aberta a qualquer visitante, sem login (decisão do fundador de
-2026-09-29). Ela NEVER SHALL dividir contagem com as demais superfícies.
+modelo pago numa rota aberta a qualquer visitante, sem login (`RN-03-39`, decisão do fundador
+de 2026-09-29). Ela NEVER SHALL dividir contagem com as demais superfícies.
 
 #### Scenario: Consulta por nick dentro do limite responde
 

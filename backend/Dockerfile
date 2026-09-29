@@ -10,6 +10,12 @@ COPY pyproject.toml ./
 COPY src ./src
 COPY alembic ./alembic
 COPY alembic.ini ./
+# Corpus do assistente do Desenvolvedor, montado pela esteira antes do build:
+# `docs/` e o README da raiz não estão no contexto, que é `backend/` (change
+# `2026-09-29-area-do-apoiador-desenvolvedor`, design — decisão 1). O curinga
+# deixa a imagem subir sem ele — o núcleo então responde tudo como fora do
+# corpus, em vez de não subir.
+COPY corpus-do-desenvolvedo[r].json ./
 
 RUN pip install . \
     && useradd --create-home --shell /usr/sbin/nologin nucleo \

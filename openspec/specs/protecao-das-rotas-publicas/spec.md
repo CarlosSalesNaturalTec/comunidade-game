@@ -49,12 +49,17 @@ contagem. (`RF-01-55`, 03 §8)
 
 ### Requirement: O freio por origem atrasa a repetição nas superfícies públicas
 
-O núcleo SHALL contar por **origem** as chamadas à consulta por nick exato e aos envios dos
-formulários de solicitação de participação e de solicitação de dados, e SHALL recusar com
-**429** a que exceder o limite daquela superfície na janela declarada no documento 03 §8. A
+O núcleo SHALL contar por **origem** as chamadas à consulta por nick exato, aos envios dos
+formulários de solicitação de participação e de solicitação de dados e às **consultas ao
+assistente do Desenvolvedor**, e SHALL recusar com **429** a que exceder o limite daquela
+superfície na janela declarada no documento 03 §8. A
 recusa SHALL informar o tempo de espera. O atraso SHALL crescer a cada repetição, a partir do
 valor inicial e até o teto declarados no documento 03 §8. O freio NEVER SHALL exigir CAPTCHA,
-cadastro ou qualquer dado do visitante. (`RF-01-65`, `RN-01-27`, 03 §8)
+cadastro ou qualquer dado do visitante. (`RF-01-65`, `RN-01-27`, `RN-03-08`, `RN-03-39`, 03 §8)
+
+A consulta ao assistente do Desenvolvedor é superfície freada porque cada pergunta consome
+modelo pago numa rota aberta a qualquer visitante, sem login (`RN-03-39`, decisão do fundador
+de 2026-09-29). Ela NEVER SHALL dividir contagem com as demais superfícies.
 
 #### Scenario: Consulta por nick dentro do limite responde
 
@@ -98,6 +103,17 @@ cadastro ou qualquer dado do visitante. (`RF-01-65`, `RN-01-27`, 03 §8)
 - **WHEN** uma origem é freada na consulta por nick e, em seguida, envia um formulário de
   participação pela primeira vez
 - **THEN** o envio é processado, porque o limite de cada superfície é contado em separado
+
+#### Scenario: A repetição da pergunta ao assistente encontra o freio
+
+- **WHEN** uma origem excede o limite de consultas ao assistente do Desenvolvedor na janela
+- **THEN** o núcleo responde 429, informa o tempo de espera e nenhuma pergunta vai ao modelo
+
+#### Scenario: O freio do assistente não alcança a solicitação de chave
+
+- **WHEN** uma origem é freada no assistente do Desenvolvedor e, em seguida, envia o formulário
+  de solicitação de chave
+- **THEN** o envio é processado, porque a solicitação de chave não tem freio por origem
 
 ### Requirement: A origem se identifica sem guardar dado do visitante
 

@@ -3,7 +3,8 @@
 Origem: **PRD-03 — App 06: Vitrine pública**, **fatia 8** do
 `openspec/cronograma-de-fatias.md` ("Área do Apoiador Desenvolvedor").
 
-Atende `RF-03-67` a `RF-03-77`, `RN-03-29` a `RN-03-32` e `RN-03-35`.
+Atende `RF-03-67` a `RF-03-77`, `RN-03-29` a `RN-03-32` e `RN-03-35`. Acrescenta ao PRD-03 o
+`RF-03-81`, o `RN-03-38` e o `RN-03-39`, que aplicam as três decisões novas do fundador.
 
 ## Why
 
@@ -33,7 +34,8 @@ desenvolvedor de terceiro chega à vitrine e não encontra caminho nenhum, e o `
 - **Três decisões novas** do fundador, de 2026-09-29, descidas pelo fluxo da hierarquia de
   autoridade antes do código — documento 03 §8, documento 09 §1 e depois o PRD-03: o
   **recorte do corpus por pergunta com teto**, o **freio por origem** na rota do assistente e a
-  **abertura como texto fixo da aplicação**.
+  **abertura como texto fixo da aplicação** — que viram o `RN-03-38`, o `RN-03-39` e o
+  `RF-03-81` no PRD-03.
 
 Fora do escopo, como o PRD-03 §3.2 já exclui: emitir chave, avaliar a solicitação e a tela da
 fila — atos de Admin na App 03 (`RN-03-32`) —, e qualquer autenticação de visitante.

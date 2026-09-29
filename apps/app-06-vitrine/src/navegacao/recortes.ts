@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { SecaoDeApoiadores } from "../adultos/SecaoDeApoiadores";
 import { SecaoDeMestres } from "../adultos/SecaoDeMestres";
+import { SecaoDoDesenvolvedor } from "../desenvolvedor/SecaoDoDesenvolvedor";
 import { SecaoDeSolicitacaoDeDados } from "../formularios/SecaoDeSolicitacaoDeDados";
 import { SecaoDeGuerreiros } from "../guerreiros/SecaoDeGuerreiros";
 import {
@@ -103,6 +104,13 @@ const CONTATOS: Secao = {
   titulo: "Contatos",
   Conteudo: SecaoContatos,
 };
+// A Área do Apoiador Desenvolvedor é seção da vitrine (`RN-03-29`), e entra em
+// "sociedade civil": quem quer construir sobre a API chega pela raiz, não pelo
+// recorte de pesquisa nem pelo de gestão.
+const DESENVOLVEDOR: Secao = {
+  titulo: "Construir sobre a API",
+  Conteudo: SecaoDoDesenvolvedor,
+};
 
 // A sexta seção de cards do PRD-03 §3.1 — **batalhas** — não entra: o dado é
 // do PRD-10 e a rota não existe. Decisão do fundador de 2026-09-26.
@@ -120,6 +128,7 @@ export const RECORTES: Recorte[] = [
       MESTRES,
       APOIADORES,
       COMUNIDADES,
+      DESENVOLVEDOR,
       COMO_APOIAR,
       CONTATOS,
     ],

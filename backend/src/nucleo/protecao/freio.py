@@ -26,6 +26,13 @@ _CONFIGURACAO_POR_SUPERFICIE: dict[str, Callable[[Configuracao], tuple[int, time
         c.protecao_freio_formulario_limite,
         c.protecao_freio_formulario_janela,
     ),
+    # Superfície própria: não divide janela com a busca por nick nem com os
+    # formulários, e não alcança a solicitação de chave, que segue sem freio
+    # (`RN-03-08`, `RN-03-35`, decisão do fundador de 2026-09-29).
+    "assistente_do_desenvolvedor": lambda c: (
+        c.protecao_freio_assistente_do_desenvolvedor_limite,
+        c.protecao_freio_assistente_do_desenvolvedor_janela,
+    ),
 }
 
 

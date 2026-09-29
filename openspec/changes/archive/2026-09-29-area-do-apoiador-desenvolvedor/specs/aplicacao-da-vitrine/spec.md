@@ -27,7 +27,7 @@ plataforma está montada — a API, as oito aplicações e o contrato de somente
 terminando com a pergunta de múltipla escolha sobre o próximo passo (`RF-03-68`, `RF-03-69`).
 
 Essa abertura SHALL ser **texto da própria aplicação**, e não resposta do modelo: nenhuma
-chamada ao assistente acontece ao abrir a área (decisão do fundador de 2026-09-29). Ela SHALL
+chamada ao assistente acontece ao abrir a área (`RF-03-81`, decisão do fundador de 2026-09-29). Ela SHALL
 continuar de pé com o assistente fora do ar.
 
 #### Scenario: A primeira mensagem chega sozinha

@@ -5,12 +5,16 @@ import { PaginaDoMestre } from "./adultos/PaginaDoMestre";
 import { AreaDetalhada } from "./coleta/AreaDetalhada";
 import { AvisoDeColeta } from "./coleta/AvisoDeColeta";
 import { PortaDoConvite } from "./convite/PortaDoConvite";
+import { ApresentacaoDaUrl } from "./desenvolvedor/ApresentacaoDaUrl";
+import { AreaDoDesenvolvedor } from "./desenvolvedor/AreaDoDesenvolvedor";
 import { DialogoDeEntrada } from "./entrada/DialogoDeEntrada";
 import { FormularioDeDados } from "./formularios/FormularioDeDados";
 import { FormularioDeParticipacao } from "./formularios/FormularioDeParticipacao";
 import { PaginaDoGuerreiro } from "./guerreiros/PaginaDoGuerreiro";
 import {
+  CAMINHO_DA_APRESENTACAO_DA_URL,
   CAMINHO_DA_AREA_DETALHADA,
+  CAMINHO_DA_AREA_DO_DESENVOLVEDOR,
   CAMINHO_DA_PARTICIPACAO,
   CAMINHO_DA_SOLICITACAO_DE_DADOS,
   CAMINHO_DO_CONVITE,
@@ -60,6 +64,10 @@ export default function App() {
         <PortaDoConvite irPara={irPara} voltar={voltar} />
       ) : caminho === CAMINHO_DA_AREA_DETALHADA ? (
         <AreaDetalhada />
+      ) : caminho === CAMINHO_DA_AREA_DO_DESENVOLVEDOR ? (
+        <AreaDoDesenvolvedor irPara={irPara} />
+      ) : caminho === CAMINHO_DA_APRESENTACAO_DA_URL ? (
+        <ApresentacaoDaUrl irPara={irPara} />
       ) : nick !== null ? (
         <Moldura>
           <div className="cg-vitrine">

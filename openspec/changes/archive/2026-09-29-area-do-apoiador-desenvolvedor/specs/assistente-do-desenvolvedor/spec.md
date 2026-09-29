@@ -58,7 +58,7 @@ O assistente NEVER SHALL responder de conhecimento próprio nem de fora do corpu
 
 O corpus SHALL chegar ao modelo **em recorte por pergunta, com teto declarado**: o núcleo
 escolhe, entre os blocos do artefato montado pela esteira, os que atendem à pergunta, até o
-teto de caracteres (decisão do fundador de 2026-09-29). O recorte NEVER SHALL trazer texto que
+teto de caracteres (`RN-03-38`, decisão do fundador de 2026-09-29). O recorte NEVER SHALL trazer texto que
 não esteja no artefato.
 
 #### Scenario: A pergunta sobre a arquitetura é respondida pelo corpus

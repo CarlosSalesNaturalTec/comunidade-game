@@ -108,6 +108,10 @@ o **identificador** da chave e a URL, nunca o segredo.
 - **Montagem do artefato quebra a implantação** → o passo da esteira falha antes do `docker
   build`, e a revisão anterior segue servindo; o núcleo sem artefato ainda sobe, respondendo
   tudo como fora do corpus.
+- **O `COPY` opcional do artefato não foi exercitado** → o contêiner da implementação não tem
+  `docker` em execução, e o `COPY corpus-do-desenvolvedo[r].json` (o curinga que deixa o
+  arquivo ser opcional) não pôde ser provado por build local. Na esteira o arquivo sempre
+  existe, porque o passo da montagem roda antes; o curinga só cobre o build feito à mão.
 
 ## Migration Plan
 

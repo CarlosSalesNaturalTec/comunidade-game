@@ -60,6 +60,29 @@ jobs:
       - name: Autenticar o Docker no Artifact Registry
         run: gcloud auth configure-docker "${{ env.REGIAO }}-docker.pkg.dev" --quiet
 
+      # Antes do build: `docs/` e o README da raiz não estão no contexto da
+      # imagem, que é `backend/`. O artefato de corpus nasce aqui e o
+      # `Dockerfile` o copia — em tempo de resposta o núcleo só lê, sem
+      # requisição a terceiro (documento 03 §8, change
+      # `2026-09-29-area-do-apoiador-desenvolvedor`, design — decisão 1).
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.5.x"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Montar o corpus do assistente do Desenvolvedor
+        working-directory: backend
+        run: |
+          uv sync --no-dev
+          uv run python -m nucleo.corpus_do_desenvolvedor.montagem \
+            --raiz .. --saida corpus-do-desenvolvedor.json
+
       - name: Build e push da imagem
         working-directory: backend
         run: |
