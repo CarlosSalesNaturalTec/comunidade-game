@@ -7,6 +7,7 @@ import {
   EstadoDaLista,
 } from "comum/react";
 import { type GuerreiroPublico, obterGuerreiroPorNick } from "../api/leituras";
+import { ChamadaDeParticipacao } from "../convite/ChamadaDeParticipacao";
 import { esperaEmLinguagemSimples } from "../formularios/espera";
 import { useLeitura } from "../leitura/useLeitura";
 import { cartaDoGuerreiro, FORMATADOR_DE_DATA } from "./carta";
@@ -35,6 +36,11 @@ export function PaginaDoGuerreiro({ nick, irPara }: Props) {
       {estado.situacao === "falhou" && <RecusaDaLeitura erro={estado.erro} />}
 
       {estado.situacao === "pronta" && <Pagina guerreiro={estado.dado} />}
+
+      {/* A chamada fecha a página individual que publica alguém (`RF-03-39`):
+          ela é do projeto, e nada do Guerreiro(a) visto viaja com ela
+          (`RF-03-41`). A tela de "não encontrado" não convida a nada. */}
+      {estado.situacao === "pronta" && <ChamadaDeParticipacao irPara={irPara} />}
     </section>
   );
 }
