@@ -67,12 +67,20 @@ function comLeituras(mestres: MestrePublico[], apoiadores: ApoiadorPublico[]) {
   });
   vi.spyOn(leituras, "obterMestrePorId").mockImplementation(async (id) => {
     const achado = mestres.find((item) => item.id === id);
-    if (!achado) throw new ErroDaApi(404, { mensagem: "Mestre não encontrado." });
+    if (!achado)
+      throw new ErroDaApi(404, {
+        codigo: "nao_encontrado",
+        mensagem: "Mestre não encontrado.",
+      });
     return achado;
   });
   vi.spyOn(leituras, "obterApoiadorPorId").mockImplementation(async (id) => {
     const achado = apoiadores.find((item) => item.id === id);
-    if (!achado) throw new ErroDaApi(404, { mensagem: "Apoiador não encontrado." });
+    if (!achado)
+      throw new ErroDaApi(404, {
+        codigo: "nao_encontrado",
+        mensagem: "Apoiador não encontrado.",
+      });
     return achado;
   });
 }
