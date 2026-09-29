@@ -22,9 +22,8 @@ import { type CamadaDoTerritorio, TerritorioDaComunidade } from "./TerritorioDaC
 // mesma decisão do fundador registrada no documento 09 §1 para a lista de
 // comunidades da App 03.
 //
-// Duas variantes entram aqui: **Guerreiro(a)** e **Comunidade Virtual**.
-// Mestre e Apoiador têm tabela de exibição própria no §8.2 e rotas que ainda
-// não existem, e entram na fatia da aplicação que as exibe.
+// As quatro variantes do §8.2 entram aqui: **Guerreiro(a)**, **Comunidade
+// Virtual**, **Mestre** e **Apoiador**.
 
 export interface BadgeNaCarta {
   familia: FamiliaDeBadge;
@@ -75,7 +74,72 @@ export interface CartaDeComunidadeVirtual {
   bairrosPublicados: number | undefined;
 }
 
-export type DadosDaCarta = CartaDeGuerreiro | CartaDeComunidadeVirtual;
+/** Quem é o adulto na carta, **e o que o valor é**. O nick é opcional para
+ * Mestre e Apoiador: não havendo, vale o nome, e a carta o apresenta como
+ * nome — nunca no lugar reservado ao nick (`RF-03-79`, `RN-03-36`, documento
+ * 11 §8.2). NUNCA vale para Guerreiro(a), cuja variante só tem `nick`. */
+export interface IdentificacaoDoAdulto {
+  valor: string;
+  tipo: "nick" | "nome";
+}
+
+export interface ArtefatoNaCarta {
+  endereco: string;
+  rotulo: string;
+}
+
+/** A variante **Mestre** do documento 11 §8.2: avatar, nick, áreas de
+ * habilidade, artefatos comprobatórios, trilhas de autoria e o selo de quem
+ * sustentou atividade sem recurso. A tabela não veda nada para esta variante
+ * — o adulto aparece com a prova pública dele. */
+export interface CartaDeMestre {
+  variante: "mestre";
+  avatar: string | null | undefined;
+  identificacao: IdentificacaoDoAdulto | undefined;
+  areasDeHabilidade: string[] | undefined;
+  artefatos: ArtefatoNaCarta[] | undefined;
+  trilhasDeAutoria: string[] | undefined;
+  /** Quantas vezes sustentou atividade que estava sem recurso — o selo da
+   * tabela do §8.2. */
+  absorcoes: number | undefined;
+}
+
+/** A variante **Apoiador** do documento 11 §8.2: avatar, nick e total de
+ * moedas em destaque, nível de sustento, selos, desafios propostos e
+ * efetividade agregada. NUNCA exibe valor em reais nem dado de contato de
+ * Guerreiro(a) (`RN-03-18`, `RN-03-26`). */
+export interface CartaDeApoiador {
+  variante: "apoiador";
+  avatar: string | null | undefined;
+  identificacao: IdentificacaoDoAdulto | undefined;
+  /** Sempre em moedas da plataforma. A carta nunca recebe reais: o núcleo não
+   * os envia (`RF-03-10`, `RN-03-18`). */
+  totalEmMoedas: string | undefined;
+  /** `true` abaixo do piso de 10 moedas, quando o avatar próprio não é
+   * exibido (`RF-03-66`). A moldura e o resto da carta não mudam. */
+  avatarPadrao: boolean | undefined;
+  nivelDeSustento: number | undefined;
+  nomeDoNivel: string | undefined;
+  selos: string[] | undefined;
+  desafiosPropostos: DesafioNaCarta[] | undefined;
+  artefatos: ArtefatoNaCarta[] | undefined;
+}
+
+/** A efetividade **agregada** do `RF-03-80`: trilha, período e quantos
+ * concluíram. Nunca quem concluiu (`RN-03-37`). */
+export interface DesafioNaCarta {
+  trilha: string;
+  periodoInicio: string;
+  periodoFim: string;
+  concluiram: number;
+  direcionado: boolean;
+}
+
+export type DadosDaCarta =
+  | CartaDeGuerreiro
+  | CartaDeComunidadeVirtual
+  | CartaDeMestre
+  | CartaDeApoiador;
 
 function guerreiroEstaCompleto(dados: CartaDeGuerreiro): boolean {
   return (
@@ -102,13 +166,45 @@ function comunidadeEstaCompleta(dados: CartaDeComunidadeVirtual): boolean {
   );
 }
 
+function identificacaoEstaCompleta(identificacao: IdentificacaoDoAdulto | undefined): boolean {
+  return identificacao !== undefined && identificacao.valor.trim().length > 0;
+}
+
+function mestreEstaCompleto(dados: CartaDeMestre): boolean {
+  return (
+    identificacaoEstaCompleta(dados.identificacao) &&
+    dados.areasDeHabilidade !== undefined &&
+    dados.artefatos !== undefined &&
+    dados.trilhasDeAutoria !== undefined &&
+    dados.absorcoes !== undefined
+  );
+}
+
+function apoiadorEstaCompleto(dados: CartaDeApoiador): boolean {
+  return (
+    identificacaoEstaCompleta(dados.identificacao) &&
+    dados.totalEmMoedas !== undefined &&
+    dados.nivelDeSustento !== undefined &&
+    dados.selos !== undefined &&
+    dados.desafiosPropostos !== undefined &&
+    dados.artefatos !== undefined
+  );
+}
+
 /** `true` quando a leitura trouxe tudo o que a tabela do documento 11 §8.2
  * exige **daquela** variante. A decisão é por variante porque cada linha da
  * tabela exige campos próprios. */
 export function cartaEstaCompleta(dados: DadosDaCarta): boolean {
-  return dados.variante === "guerreiro"
-    ? guerreiroEstaCompleto(dados)
-    : comunidadeEstaCompleta(dados);
+  switch (dados.variante) {
+    case "guerreiro":
+      return guerreiroEstaCompleto(dados);
+    case "comunidade-virtual":
+      return comunidadeEstaCompleta(dados);
+    case "mestre":
+      return mestreEstaCompleto(dados);
+    case "apoiador":
+      return apoiadorEstaCompleto(dados);
+  }
 }
 
 interface Props {
@@ -126,6 +222,8 @@ function comChave<T>(itens: T[], nome: (item: T) => string): { chave: string; it
 export function CartaDoPersonagem({ dados }: Props) {
   if (!cartaEstaCompleta(dados)) return null;
   if (dados.variante === "comunidade-virtual") return <CartaDeComunidade dados={dados} />;
+  if (dados.variante === "mestre") return <CartaDoMestre dados={dados} />;
+  if (dados.variante === "apoiador") return <CartaDoApoiador dados={dados} />;
 
   const { avatar, nick, badges = [], poderes = [], desempenho, criacoes = [] } = dados;
   const badgesNaOrdem = comChave(badges, (badge) => `${badge.familia}-${badge.poder ?? ""}`);
@@ -207,6 +305,163 @@ function CartaDeComunidade({ dados }: { dados: CartaDeComunidadeVirtual }) {
 
       <p className="cg-carta__rotulo">Guerreiros e Guerreiras vinculados</p>
       <p className="cg-carta__vazio">{vinculados}</p>
+    </article>
+  );
+}
+
+/** O que identifica o adulto na carta. O `data-tipo` carrega se aquilo é nick
+ * ou nome, para que a superfície nunca apresente um no lugar do outro
+ * (`RF-03-79`, `RN-03-36`). */
+function IdentificacaoNaCarta({ identificacao }: { identificacao: IdentificacaoDoAdulto }) {
+  return (
+    <p className="cg-carta__nick" data-tipo={identificacao.tipo}>
+      {identificacao.valor}
+    </p>
+  );
+}
+
+function ArtefatosNaCarta({ artefatos }: { artefatos: ArtefatoNaCarta[] }) {
+  return (
+    <>
+      <p className="cg-carta__rotulo">Prova pública</p>
+      {artefatos.length === 0 ? (
+        <p className="cg-carta__vazio">Nenhum comprobatório declarado ainda.</p>
+      ) : (
+        <ul className="cg-carta__artefatos">
+          {artefatos.map((artefato) => (
+            <li key={artefato.endereco}>
+              {/* A prova é link declarado, nunca anexo de arquivo
+                  (`RN-02-01`, documento 02 §1). */}
+              <a href={artefato.endereco} rel="noreferrer noopener" target="_blank">
+                {artefato.rotulo}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+}
+
+function CartaDoMestre({ dados }: { dados: CartaDeMestre }) {
+  const {
+    avatar,
+    identificacao,
+    areasDeHabilidade = [],
+    artefatos = [],
+    trilhasDeAutoria = [],
+    absorcoes = 0,
+  } = dados;
+  const identidade = identificacao as IdentificacaoDoAdulto;
+
+  return (
+    <article
+      className="cg-carta"
+      data-variante={dados.variante}
+      aria-label={`Carta de ${identidade.valor}`}
+    >
+      <div className="cg-carta__avatar">
+        {/* Avatar ausente vira o avatar padrão do projeto (documento 15
+            §7.3), e isso não é carta incompleta. */}
+        <Avatar avatar={avatar ?? null} tamanho={96} />
+      </div>
+      <IdentificacaoNaCarta identificacao={identidade} />
+
+      <p className="cg-carta__rotulo">Áreas de habilidade</p>
+      {areasDeHabilidade.length === 0 ? (
+        <p className="cg-carta__vazio">Nenhuma trilha publicada ainda.</p>
+      ) : (
+        <ul className="cg-carta__areas">
+          {areasDeHabilidade.map((area) => (
+            <li key={area}>{area}</li>
+          ))}
+        </ul>
+      )}
+
+      <p className="cg-carta__rotulo">Trilhas de autoria</p>
+      {trilhasDeAutoria.length === 0 ? (
+        <p className="cg-carta__vazio">Nenhuma trilha publicada ainda.</p>
+      ) : (
+        <ul className="cg-carta__trilhas">
+          {trilhasDeAutoria.map((trilha) => (
+            <li key={trilha}>{trilha}</li>
+          ))}
+        </ul>
+      )}
+
+      <ArtefatosNaCarta artefatos={artefatos} />
+
+      <p className="cg-carta__rotulo">Sustentou atividade sem recurso</p>
+      <p className="cg-carta__vazio">{absorcoes === 1 ? "1 vez" : `${absorcoes} vezes`}</p>
+    </article>
+  );
+}
+
+function CartaDoApoiador({ dados }: { dados: CartaDeApoiador }) {
+  const {
+    avatar,
+    identificacao,
+    totalEmMoedas,
+    avatarPadrao = false,
+    nivelDeSustento = 0,
+    nomeDoNivel,
+    selos = [],
+    desafiosPropostos = [],
+    artefatos = [],
+  } = dados;
+  const identidade = identificacao as IdentificacaoDoAdulto;
+
+  return (
+    <article
+      className="cg-carta"
+      // A moldura é **a mesma** de todo Apoiador: avatar centralizado em
+      // proporção fixa, nick abaixo e o total em destaque. É o que impede a
+      // marca maior de dominar a página (`RF-03-56`, documento 11 §8.2).
+      data-variante={dados.variante}
+      data-avatar-padrao={avatarPadrao ? "sim" : "nao"}
+      aria-label={`Carta de ${identidade.valor}`}
+    >
+      <div className="cg-carta__avatar">
+        <Avatar avatar={avatar ?? null} tamanho={96} />
+      </div>
+      <IdentificacaoNaCarta identificacao={identidade} />
+
+      {/* Sempre em moedas da plataforma, nunca em reais (`RN-03-18`). */}
+      <p className="cg-carta__moedas">{totalEmMoedas} moedas</p>
+
+      <p className="cg-carta__rotulo">Nível de sustento</p>
+      <p className="cg-carta__vazio">
+        {nomeDoNivel ? `${nivelDeSustento} — ${nomeDoNivel}` : nivelDeSustento}
+      </p>
+
+      <p className="cg-carta__rotulo">Selos</p>
+      {selos.length === 0 ? (
+        <p className="cg-carta__vazio">Nenhum selo ainda.</p>
+      ) : (
+        <ul className="cg-carta__selos">
+          {selos.map((selo) => (
+            <li key={selo}>{selo}</li>
+          ))}
+        </ul>
+      )}
+
+      <p className="cg-carta__rotulo">Desafios propostos</p>
+      {desafiosPropostos.length === 0 ? (
+        <p className="cg-carta__vazio">Nenhum desafio publicado ainda.</p>
+      ) : (
+        <ul className="cg-carta__desafios">
+          {desafiosPropostos.map((desafio) => (
+            // Trilha, período e contagem — nunca quem concluiu
+            // (`RF-03-80`, `RN-03-37`).
+            <li key={`${desafio.trilha}-${desafio.periodoInicio}`}>
+              {desafio.trilha} — de {desafio.periodoInicio} a {desafio.periodoFim} —{" "}
+              {desafio.concluiram === 1 ? "1 concluiu" : `${desafio.concluiram} concluíram`}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <ArtefatosNaCarta artefatos={artefatos} />
     </article>
   );
 }

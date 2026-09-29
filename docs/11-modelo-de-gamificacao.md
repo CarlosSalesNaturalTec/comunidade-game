@@ -477,6 +477,16 @@ nenhuma outra marca de diferença. Alcançado o piso, o direito **não regride**
 sempre do Apoiador, em qualquer faixa. É o que impede a página pública de virar mural de marca
 a custo baixo sem apagar quem aportou pouco.
 
+**Adulto sem nick aparece pelo nome.** O nick é opcional para Mestre e para Apoiador. Não
+havendo nick, o card e a página exibem o **nome** da persona, apresentado como nome e nunca no
+lugar reservado ao nick. A regra **não alcança Guerreiro(a)**: nome civil de criança ou
+adolescente não aparece em superfície pública alguma.
+
+**A efetividade do Apoiador é pública em forma agregada.** O card e a página exibem, de cada
+desafio extra proposto, a **trilha**, o **período** e **quantos concluíram** — nunca nick,
+avatar ou qualquer dado de quem concluiu, e o desafio direcionado sai apenas como "houve
+conclusão". O painel detalhado continua sendo só do próprio Apoiador, na App 08.
+
 ### 8.3 Representação visual da Comunidade Virtual
 
 A Comunidade Virtual "ganha corpo" visualmente na medida da participação — o mapeamento entre

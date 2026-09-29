@@ -66,11 +66,84 @@ export interface TrilhaPublica {
   nome: string;
 }
 
+/** Quem é o adulto em público, **e o que o valor é**: o nick é opcional
+ * para Mestre e Apoiador, e não havendo vem o nome (`RF-03-79`,
+ * `RN-03-36`). */
+export interface IdentificacaoPublica {
+  valor: string;
+  tipo: "nick" | "nome";
+}
+
+export interface MestreResponsavel {
+  id: string;
+  avatar: string | null;
+  avatar_padrao: boolean;
+  identificacao: IdentificacaoPublica;
+}
+
 export interface PoderPublico {
   id: string;
   nome: string;
   descricao: string;
   trilhas: TrilhaPublica[];
+  /** Os autores das trilhas publicadas do poder (`RF-03-02`, documento 11
+   * §8.2). Lista vazia é "poder sem trilha publicada". */
+  mestres_responsaveis: MestreResponsavel[];
+}
+
+export interface ArtefatoPublico {
+  endereco: string;
+  rotulo: string;
+}
+
+export interface TrilhaDeAutoria {
+  id: string;
+  nome: string;
+  area_do_conhecimento: string;
+}
+
+export interface MestrePublico {
+  id: string;
+  avatar: string | null;
+  avatar_padrao: boolean;
+  identificacao: IdentificacaoPublica;
+  areas_de_habilidade: string[];
+  artefatos: ArtefatoPublico[];
+  trilhas_de_autoria: TrilhaDeAutoria[];
+  /** Quantas vezes sustentou atividade sem recurso — o selo do §8.2. */
+  absorcoes: number;
+}
+
+export interface SeloPublico {
+  familia: string;
+  nome: string;
+}
+
+/** A efetividade **agregada**: trilha, período e contagem, nunca quem
+ * concluiu (`RF-03-80`, `RN-03-37`). */
+export interface DesafioPublicoDoApoiador {
+  trilha: string;
+  periodo_inicio: string;
+  periodo_fim: string;
+  concluiram: number;
+  direcionado: boolean;
+}
+
+export interface ApoiadorPublico {
+  id: string;
+  avatar: string | null;
+  /** `true` abaixo do piso de 10 moedas, quando `avatar` já vem nulo: o
+   * núcleo resolve o piso, a tela só o apresenta (`RF-03-66`). */
+  avatar_padrao: boolean;
+  identificacao: IdentificacaoPublica;
+  /** Sempre em moedas da plataforma; o núcleo nunca envia reais
+   * (`RF-03-10`, `RN-03-18`). */
+  total_em_moedas: string;
+  nivel_de_sustento: number;
+  nome_do_nivel: string;
+  selos: SeloPublico[];
+  desafios_propostos: DesafioPublicoDoApoiador[];
+  artefatos: ArtefatoPublico[];
 }
 
 /** Os cards da seção, com a carta de cada um **na mesma resposta**: montar a
@@ -97,6 +170,29 @@ export function listarRanking(): Promise<PaginaDoNucleo<ItemDeRankingPublico>> {
 
 export function listarPoderes(): Promise<PoderPublico[]> {
   return lerDoNucleo<PoderPublico[]>("/v1/vitrine/poderes");
+}
+
+/** Os cards dos Mestres, com a carta de cada um na mesma resposta
+ * (`RF-03-02`, `RF-03-07`). */
+export function listarMestres(): Promise<PaginaDoNucleo<MestrePublico>> {
+  return lerDoNucleo<PaginaDoNucleo<MestrePublico>>("/v1/vitrine/mestres");
+}
+
+/** A página individual, por **identificador**: o nick é opcional para
+ * adulto, e por nick ficaria sem página quem ainda não o definiu
+ * (`RF-03-03`). */
+export function obterMestrePorId(id: string): Promise<MestrePublico> {
+  return lerDoNucleo<MestrePublico>(`/v1/vitrine/mestres/${encodeURIComponent(id)}`);
+}
+
+/** Os cards dos Apoiadores. Só vem quem tem aporte homologado — o portão é
+ * do núcleo (`RF-03-57`, `RN-03-26`). */
+export function listarApoiadores(): Promise<PaginaDoNucleo<ApoiadorPublico>> {
+  return lerDoNucleo<PaginaDoNucleo<ApoiadorPublico>>("/v1/vitrine/apoiadores");
+}
+
+export function obterApoiadorPorId(id: string): Promise<ApoiadorPublico> {
+  return lerDoNucleo<ApoiadorPublico>(`/v1/vitrine/apoiadores/${encodeURIComponent(id)}`);
 }
 
 /** A comunidade na lista pública: nome, localização, os quatro indicadores

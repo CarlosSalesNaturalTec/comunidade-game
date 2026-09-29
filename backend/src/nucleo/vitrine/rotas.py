@@ -21,19 +21,29 @@ from ..paginacao import (
     contrato_de_listagem,
     decodificar_cursor,
 )
+from ..personas.modelo import Papel
 from ..poderes.modelo import Poder
 from ..pontuacao.regra import consulta_de_ranking
 from ..protecao.freio import exigir_freio_por_origem
 from ..trilhas.modelo import SituacaoDaTrilha, Trilha
 from .publico import (
     AvatarENickSaida,
+    CartaPublicaDeApoiadorSaida,
     CartaPublicaDeGuerreiroSaida,
+    CartaPublicaDeMestreSaida,
+    MestreResponsavelSaida,
+    buscar_adulto_publico,
     buscar_avatares_e_nicks,
     buscar_persona_guerreiro_publica_por_nick,
     condicoes_de_criacao_publica,
+    mestres_responsaveis_por_poder,
+    montar_cartas_de_apoiador,
+    montar_cartas_de_mestre,
     montar_cartas_publicas,
     nomes_de_trilha,
+    paginar_apoiadores_publicos,
     paginar_cartas_publicas,
+    paginar_mestres_publicos,
 )
 
 roteador = APIRouter()
@@ -150,6 +160,10 @@ class PoderPublicoSaida(BaseModel):
     nome: str
     descricao: str
     trilhas: list[TrilhaPublicaSaida]
+    # Os Mestres responsáveis do documento 11 §8.2, que a fatia 2 deixou de
+    # fora por não haver rota de Mestre. Poder sem trilha publicada sai com a
+    # lista **vazia**, nunca omitida (`RF-03-02`).
+    mestres_responsaveis: list[MestreResponsavelSaida]
 
 
 @roteador.get("/vitrine/poderes", response_model=list[PoderPublicoSaida])
@@ -160,6 +174,7 @@ def listar_poderes_publicos(
     trilha nunca é filtrada por comunidade, bem comum da plataforma
     (`RF-01-62`, `RN-01-42`)."""
     poderes = sessao_bd.query(Poder).filter_by(ativo=True).order_by(Poder.nome).all()
+    mestres = mestres_responsaveis_por_poder(sessao_bd, [poder.id for poder in poderes])
     saida: list[PoderPublicoSaida] = []
     for poder in poderes:
         trilhas = (
@@ -174,9 +189,70 @@ def listar_poderes_publicos(
                 nome=poder.nome,
                 descricao=poder.descricao,
                 trilhas=[TrilhaPublicaSaida(id=trilha.id, nome=trilha.nome) for trilha in trilhas],
+                mestres_responsaveis=mestres.get(poder.id, []),
             )
         )
     return saida
+
+
+@roteador.get("/vitrine/mestres", response_model=PaginaDeResultado[CartaPublicaDeMestreSaida])
+def listar_mestres_publicos(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[CartaPublicaDeMestreSaida]:
+    """Cards de Mestre, cada um com a **carta inteira** do documento 11 §8.2,
+    para que a página individual não custe uma consulta por card (`RF-03-02`,
+    `RF-03-07`). Sem token de sessão e sem freio por origem próprio: a cota
+    por faixa da chave é o que cobre a navegação por card — o freio é da
+    superfície de busca (`RF-01-02`, `RN-03-01`)."""
+    return paginar_mestres_publicos(sessao_bd, cursor=parametros.cursor, tamanho=parametros.tamanho)
+
+
+@roteador.get("/vitrine/mestres/{mestre_id}", response_model=CartaPublicaDeMestreSaida)
+def pagina_publica_de_mestre(
+    mestre_id: uuid.UUID,
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> CartaPublicaDeMestreSaida:
+    """A página individual, na **mesma** composição do card (`RF-03-03`). Por
+    identificador, e não por nick: o nick é opcional para adulto, e por nick
+    ficaria sem página quem ainda não o definiu. Persona de outro papel e
+    identificador inexistente recebem o mesmo 404 (`RN-03-01`)."""
+    persona = buscar_adulto_publico(
+        sessao_bd, persona_id=mestre_id, papel=Papel.mestre, apenas_com_aporte=False
+    )
+    if persona is None:
+        raise NaoEncontrado(mensagem="Mestre não encontrado.")
+    return montar_cartas_de_mestre(sessao_bd, [persona])[0]
+
+
+@roteador.get("/vitrine/apoiadores", response_model=PaginaDeResultado[CartaPublicaDeApoiadorSaida])
+def listar_apoiadores_publicos(
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[CartaPublicaDeApoiadorSaida]:
+    """Cards de Apoiador. Só entra quem tem **aporte homologado**
+    (`RF-03-57`), o total sai em moedas (`RF-03-10`, `RN-03-18`) e a ordem é
+    a estável do cursor — **nunca** por valor aportado, que pódio de apoiador
+    é proibido (`RN-14-38`)."""
+    return paginar_apoiadores_publicos(
+        sessao_bd, cursor=parametros.cursor, tamanho=parametros.tamanho
+    )
+
+
+@roteador.get("/vitrine/apoiadores/{apoiador_id}", response_model=CartaPublicaDeApoiadorSaida)
+def pagina_publica_de_apoiador(
+    apoiador_id: uuid.UUID,
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> CartaPublicaDeApoiadorSaida:
+    """A página individual, na mesma composição do card (`RF-03-03`).
+    Apoiador sem aporte homologado, persona de outro papel e identificador
+    inexistente recebem **o mesmo 404** (`RF-03-57`, `RN-03-01`)."""
+    persona = buscar_adulto_publico(
+        sessao_bd, persona_id=apoiador_id, papel=Papel.apoiador, apenas_com_aporte=True
+    )
+    if persona is None:
+        raise NaoEncontrado(mensagem="Apoiador não encontrado.")
+    return montar_cartas_de_apoiador(sessao_bd, [persona])[0]
 
 
 class CriacaoPublicaSaida(BaseModel):

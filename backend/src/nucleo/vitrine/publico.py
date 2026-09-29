@@ -1,22 +1,33 @@
 import uuid
 from collections.abc import Iterable
-from datetime import datetime
+from datetime import date, datetime
+from decimal import Decimal
 
 from pydantic import BaseModel
-from sqlalchemy import and_, tuple_
+from sqlalchemy import and_, func, tuple_
 from sqlalchemy.orm import Session, aliased
 
+from ..aportes.modelo import Aporte
 from ..comunidades.regra import filtrar_personas_por_comunidade
 from ..consentimentos.regra import condicao_de_autorizacao_vigente
 from ..criacoes_originais.modelo import CriacaoOriginal, SituacaoDaCriacaoOriginal
+from ..desafios_extras.modelo import (
+    ConclusaoDeDesafioExtra,
+    DesafioExtra,
+    Modalidade,
+    SituacaoDoDesafioExtra,
+)
 from ..equipes.modelo import IntegranteDaEquipe
 from ..erros import ErroDeValidacao
 from ..paginacao import PaginaDeResultado, codificar_cursor, decodificar_cursor
-from ..personas.modelo import Nick, Papel, Persona
+from ..personas.modelo import ArtefatoComprobatorio, Nick, Papel, Persona
+from ..personas.regra import PISO_DE_MOEDAS_DO_AVATAR_PROPRIO
+from ..poder_sustentador.regra import contagem_de_absorcoes_de, moedas_acumuladas_de
 from ..poderes.modelo import Poder
 from ..pontuacao.modelo import Badge, Nivel
 from ..pontuacao.regra import consulta_de_ranking
-from ..trilhas.modelo import Trilha
+from ..selos_do_apoiador.regra import derivar_sustento, listar_selos
+from ..trilhas.modelo import SituacaoDaTrilha, Trilha
 
 
 class AvatarENickSaida(BaseModel):
@@ -377,3 +388,428 @@ def paginar_cartas_publicas(
     )
     itens = montar_cartas_publicas(sessao, linhas, comunidade_id=comunidade_id)
     return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)
+
+
+# ---------------------------------------------------------------------------
+# Mestre e Apoiador em público — as duas variantes da carta do documento 11
+# §8.2 que a vitrine não publicava (`RF-03-02`, `RF-03-07`).
+# ---------------------------------------------------------------------------
+
+# O piso do avatar próprio do Apoiador, em moedas acumuladas (`RF-03-66`,
+# `RN-14-11`, documento 11 §8.2). É o mesmo de `personas/regra.py`, importado
+# de lá para que a vitrine e a App 08 nunca discordem.
+
+
+class IdentificacaoPublicaSaida(BaseModel):
+    """Quem é o adulto em público, **e o que o valor é**. O nick é opcional
+    para Mestre e Apoiador, e a carta das duas variantes o exige: não havendo
+    nick, sai o nome, declarado como nome, para que superfície alguma o
+    apresente no lugar reservado ao nick (`RF-03-79`, `RN-03-36`, documento 11
+    §8.2, decisão do fundador de 2026-09-29).
+
+    NUNCA vale para Guerreiro(a): nome civil de criança não vai a público em
+    hipótese alguma (invariantes 9 e 12 do documento 99 §6) — por isso a
+    projeção do Guerreiro(a) segue sendo `AvatarENickSaida`, que só tem nick.
+    """
+
+    valor: str
+    tipo: str  # "nick" ou "nome"
+
+
+class ArtefatoPublicoSaida(BaseModel):
+    """A prova pública do adulto: link declarado com o rótulo do que aponta
+    (`RF-03-07`). O artefato não tem tipo no modelo — currículo, portfólio e
+    rede social são o mesmo registro, distinguidos pelo rótulo de quem o
+    declarou (`RN-02-01`, documento 02 §1)."""
+
+    endereco: str
+    rotulo: str
+
+
+class TrilhaPublicaDeAutoriaSaida(BaseModel):
+    id: uuid.UUID
+    nome: str
+    area_do_conhecimento: str
+
+
+class MestreResponsavelSaida(BaseModel):
+    """O Mestre responsável por um poder, na seção de poderes: o bastante
+    para o card e o **identificador** que leva à página individual dele
+    (`RF-03-02`, documento 11 §8.2)."""
+
+    id: uuid.UUID
+    avatar: str | None
+    avatar_padrao: bool
+    identificacao: IdentificacaoPublicaSaida
+
+
+class CartaPublicaDeMestreSaida(BaseModel):
+    """A variante **Mestre** do documento 11 §8.2, inteira: a mesma projeção
+    serve o card e a página individual, como a carta do Guerreiro(a) já faz
+    (`RF-03-02`, `RF-03-03`, `RF-03-07`).
+
+    Nada de contato: e-mail, WhatsApp e afins ficam fora da rota pública
+    (`RN-03-01`).
+    """
+
+    id: uuid.UUID
+    avatar: str | None
+    avatar_padrao: bool
+    identificacao: IdentificacaoPublicaSaida
+    areas_de_habilidade: list[str]
+    artefatos: list[ArtefatoPublicoSaida]
+    trilhas_de_autoria: list[TrilhaPublicaDeAutoriaSaida]
+    absorcoes: int
+
+
+class SeloPublicoSaida(BaseModel):
+    familia: str
+    nome: str
+
+
+class DesafioPublicoDoApoiadorSaida(BaseModel):
+    """A efetividade **agregada** do `RF-03-80`: trilha, período e quantos
+    concluíram. Nunca quem concluiu — nem nick, nem avatar, nem contagem que
+    identifique alguém —, e o direcionado sai só como "houve conclusão"
+    (`RN-03-37`, decisão do fundador de 2026-09-29). O painel detalhado segue
+    sendo do próprio Apoiador, na App 08 (`efetividade-do-apoio`)."""
+
+    trilha: str
+    periodo_inicio: date
+    periodo_fim: date
+    concluiram: int
+    direcionado: bool
+
+
+class CartaPublicaDeApoiadorSaida(BaseModel):
+    """A variante **Apoiador** do documento 11 §8.2, inteira. O total sai em
+    moedas e nunca em reais (`RF-03-10`, `RN-03-18`), e o avatar já vem
+    resolvido pelo piso (`RF-03-66`)."""
+
+    id: uuid.UUID
+    avatar: str | None
+    avatar_padrao: bool
+    identificacao: IdentificacaoPublicaSaida
+    total_em_moedas: Decimal
+    nivel_de_sustento: int
+    nome_do_nivel: str
+    selos: list[SeloPublicoSaida]
+    desafios_propostos: list[DesafioPublicoDoApoiadorSaida]
+    artefatos: list[ArtefatoPublicoSaida]
+
+
+def _identificacoes_publicas(
+    sessao: Session, personas: list[Persona]
+) -> dict[uuid.UUID, IdentificacaoPublicaSaida]:
+    """Nick quando há, nome quando não — num só round-trip para toda a
+    página (`RF-03-79`)."""
+    if not personas:
+        return {}
+    nicks = dict(
+        sessao.query(Nick.persona_id, Nick.valor)
+        .filter(Nick.persona_id.in_([p.id for p in personas]))
+        .all()
+    )
+    saida: dict[uuid.UUID, IdentificacaoPublicaSaida] = {}
+    for persona in personas:
+        nick = nicks.get(persona.id)
+        if nick:
+            saida[persona.id] = IdentificacaoPublicaSaida(valor=nick, tipo="nick")
+        else:
+            saida[persona.id] = IdentificacaoPublicaSaida(valor=persona.nome or "", tipo="nome")
+    return saida
+
+
+def _artefatos_publicos(
+    sessao: Session, personas_ids: list[uuid.UUID]
+) -> dict[uuid.UUID, list[ArtefatoPublicoSaida]]:
+    if not personas_ids:
+        return {}
+    linhas = (
+        sessao.query(ArtefatoComprobatorio)
+        .filter(ArtefatoComprobatorio.persona_id.in_(personas_ids))
+        .order_by(ArtefatoComprobatorio.criado_em)
+        .all()
+    )
+    saida: dict[uuid.UUID, list[ArtefatoPublicoSaida]] = {}
+    for artefato in linhas:
+        saida.setdefault(artefato.persona_id, []).append(
+            ArtefatoPublicoSaida(endereco=artefato.endereco, rotulo=artefato.rotulo)
+        )
+    return saida
+
+
+def _trilhas_de_autoria(
+    sessao: Session, mestres_ids: list[uuid.UUID]
+) -> dict[uuid.UUID, list[TrilhaPublicaDeAutoriaSaida]]:
+    """Só trilha **publicada**: rascunho e trilha retirada não são prova
+    pública de nada (`RF-03-07`)."""
+    if not mestres_ids:
+        return {}
+    linhas = (
+        sessao.query(Trilha)
+        .filter(
+            Trilha.autor_id.in_(mestres_ids),
+            Trilha.situacao == SituacaoDaTrilha.publicada,
+        )
+        .order_by(Trilha.nome)
+        .all()
+    )
+    saida: dict[uuid.UUID, list[TrilhaPublicaDeAutoriaSaida]] = {}
+    for trilha in linhas:
+        saida.setdefault(trilha.autor_id, []).append(
+            TrilhaPublicaDeAutoriaSaida(
+                id=trilha.id,
+                nome=trilha.nome,
+                area_do_conhecimento=trilha.area_do_conhecimento,
+            )
+        )
+    return saida
+
+
+def montar_cartas_de_mestre(
+    sessao: Session, personas: list[Persona]
+) -> list[CartaPublicaDeMestreSaida]:
+    """A carta inteira de cada Mestre da página, na mesma resposta — montar
+    uma a uma custaria uma consulta por card, o mesmo cuidado que a carta do
+    Guerreiro(a) já toma (`RF-03-02`, `RF-03-07`).
+
+    As **áreas de habilidade** do documento 11 §8.2 não têm campo na persona:
+    derivam da área do conhecimento das trilhas publicadas de autoria do
+    Mestre (decisão do fundador de 2026-09-29).
+    """
+    ids = [persona.id for persona in personas]
+    identificacoes = _identificacoes_publicas(sessao, personas)
+    artefatos = _artefatos_publicos(sessao, ids)
+    trilhas = _trilhas_de_autoria(sessao, ids)
+
+    cartas: list[CartaPublicaDeMestreSaida] = []
+    for persona in personas:
+        trilhas_do_mestre = trilhas.get(persona.id, [])
+        areas = sorted({trilha.area_do_conhecimento for trilha in trilhas_do_mestre})
+        cartas.append(
+            CartaPublicaDeMestreSaida(
+                id=persona.id,
+                avatar=persona.avatar,
+                # O avatar padrão do projeto ocupa o lugar de qualquer avatar
+                # que falte (documento 15 §7.3).
+                avatar_padrao=persona.avatar is None,
+                identificacao=identificacoes[persona.id],
+                areas_de_habilidade=areas,
+                artefatos=artefatos.get(persona.id, []),
+                trilhas_de_autoria=trilhas_do_mestre,
+                absorcoes=contagem_de_absorcoes_de(sessao, provedor_id=persona.id),
+            )
+        )
+    return cartas
+
+
+def _desafios_publicos_do_apoiador(
+    sessao: Session, apoiador_id: uuid.UUID
+) -> list[DesafioPublicoDoApoiadorSaida]:
+    """Só o que está **publicado** — proposta em validação ou recusada não é
+    fato público —, com a contagem de conclusões agregada numa consulta só
+    (`RF-03-80`, `RN-03-37`)."""
+    desafios = (
+        sessao.query(DesafioExtra, Trilha.nome)
+        .join(Trilha, Trilha.id == DesafioExtra.trilha_id)
+        .filter(
+            DesafioExtra.autor_id == apoiador_id,
+            DesafioExtra.situacao == SituacaoDoDesafioExtra.publicado,
+        )
+        .order_by(DesafioExtra.vigencia_inicio.desc())
+        .all()
+    )
+    if not desafios:
+        return []
+
+    conclusoes = dict(
+        sessao.query(
+            ConclusaoDeDesafioExtra.desafio_id,
+            func.count(ConclusaoDeDesafioExtra.id),
+        )
+        .filter(ConclusaoDeDesafioExtra.desafio_id.in_([d.id for d, _ in desafios]))
+        .group_by(ConclusaoDeDesafioExtra.desafio_id)
+        .all()
+    )
+    return [
+        DesafioPublicoDoApoiadorSaida(
+            trilha=nome_da_trilha,
+            periodo_inicio=desafio.vigencia_inicio,
+            periodo_fim=desafio.vigencia_fim,
+            concluiram=conclusoes.get(desafio.id, 0),
+            direcionado=desafio.modalidade == Modalidade.direcionado,
+        )
+        for desafio, nome_da_trilha in desafios
+    ]
+
+
+def montar_cartas_de_apoiador(
+    sessao: Session, personas: list[Persona]
+) -> list[CartaPublicaDeApoiadorSaida]:
+    """A carta inteira de cada Apoiador da página. O total é o **acumulado em
+    aportes homologados** (`moedas_acumuladas_de`), não o Poder Sustentador:
+    o `RF-03-66` e o `RN-14-11` falam de um direito que não regride, e o
+    ressarcimento pago derruba o Poder Sustentador (`RF-03-10`, `RF-03-55`,
+    `RN-03-18`)."""
+    ids = [persona.id for persona in personas]
+    identificacoes = _identificacoes_publicas(sessao, personas)
+    artefatos = _artefatos_publicos(sessao, ids)
+
+    cartas: list[CartaPublicaDeApoiadorSaida] = []
+    for persona in personas:
+        acumulado = moedas_acumuladas_de(sessao, provedor_id=persona.id)
+        # O piso decide no núcleo, não na tela: abaixo dele a resposta nem
+        # chega a carregar o avatar próprio (`RF-03-66`, documento 11 §8.2).
+        liberado = acumulado >= PISO_DE_MOEDAS_DO_AVATAR_PROPRIO
+        sustento = derivar_sustento(sessao, apoiador_id=persona.id)
+        selos_por_familia = listar_selos(sessao, apoiador_id=persona.id)
+        cartas.append(
+            CartaPublicaDeApoiadorSaida(
+                id=persona.id,
+                avatar=persona.avatar if liberado else None,
+                avatar_padrao=not liberado or persona.avatar is None,
+                identificacao=identificacoes[persona.id],
+                total_em_moedas=acumulado,
+                nivel_de_sustento=sustento.nivel,
+                nome_do_nivel=sustento.nome_do_nivel,
+                # `frente_que_falta` fica fora: é orientação ao próprio
+                # Apoiador, na App 08, não fato público.
+                selos=[
+                    SeloPublicoSaida(familia=str(familia), nome=selo.selo_nome)
+                    for familia, selos in selos_por_familia.items()
+                    for selo in selos
+                ],
+                desafios_propostos=_desafios_publicos_do_apoiador(sessao, persona.id),
+                artefatos=artefatos.get(persona.id, []),
+            )
+        )
+    return cartas
+
+
+def _paginar_adultos_publicos(
+    sessao: Session,
+    *,
+    papel: Papel,
+    apenas_com_aporte: bool,
+    cursor: str | None,
+    tamanho: int,
+) -> tuple[list[Persona], str | None]:
+    """Paginação por cursor sobre `(criada_em, id)`, no mesmo contrato das
+    demais listagens (`RF-01-28`). A ordem de apresentação é da tela: aqui a
+    ordem é a estável do cursor, e **nunca** por valor aportado — pódio de
+    apoiador é proibido (`RN-14-38`).
+
+    `apenas_com_aporte` é o portão do `RF-03-57`: aplicado **antes** de
+    paginar, para que a página não fique curta por exclusão. Linha em
+    `Aporte` é aporte já creditado — a declaração pendente vive em
+    `AporteDeclarado` e não cria nenhuma —, e a absorção conta mesmo sem
+    homologador, que ela credita sem homologação (`RN-07-35`). É o mesmo
+    portão que `derivar_sustento` usa para o nível 1.
+    """
+    consulta = sessao.query(Persona).filter(Persona.papel == papel)
+    if apenas_com_aporte:
+        consulta = consulta.filter(
+            sessao.query(Aporte.id).filter(Aporte.provedor_id == Persona.id).exists()
+        )
+
+    if cursor:
+        posicao = decodificar_cursor(cursor)
+        try:
+            criada_em_cursor = datetime.fromisoformat(posicao["criada_em"])
+            id_cursor = uuid.UUID(posicao["id"])
+        except (KeyError, ValueError) as exc:
+            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+        consulta = consulta.filter(
+            tuple_(Persona.criada_em, Persona.id) > (criada_em_cursor, id_cursor)
+        )
+
+    linhas = consulta.order_by(Persona.criada_em, Persona.id).limit(tamanho + 1).all()
+
+    proximo_cursor = None
+    if len(linhas) > tamanho:
+        linhas = linhas[:tamanho]
+        proximo_cursor = codificar_cursor(
+            {"criada_em": linhas[-1].criada_em.isoformat(), "id": str(linhas[-1].id)}
+        )
+    return linhas, proximo_cursor
+
+
+def paginar_mestres_publicos(
+    sessao: Session, *, cursor: str | None, tamanho: int
+) -> PaginaDeResultado[CartaPublicaDeMestreSaida]:
+    linhas, proximo_cursor = _paginar_adultos_publicos(
+        sessao, papel=Papel.mestre, apenas_com_aporte=False, cursor=cursor, tamanho=tamanho
+    )
+    return PaginaDeResultado(
+        itens=montar_cartas_de_mestre(sessao, linhas), proximo_cursor=proximo_cursor
+    )
+
+
+def paginar_apoiadores_publicos(
+    sessao: Session, *, cursor: str | None, tamanho: int
+) -> PaginaDeResultado[CartaPublicaDeApoiadorSaida]:
+    linhas, proximo_cursor = _paginar_adultos_publicos(
+        sessao, papel=Papel.apoiador, apenas_com_aporte=True, cursor=cursor, tamanho=tamanho
+    )
+    return PaginaDeResultado(
+        itens=montar_cartas_de_apoiador(sessao, linhas), proximo_cursor=proximo_cursor
+    )
+
+
+def buscar_adulto_publico(
+    sessao: Session, *, persona_id: uuid.UUID, papel: Papel, apenas_com_aporte: bool
+) -> Persona | None:
+    """Papel e portão resolvidos **na mesma consulta**: não há desvio no
+    código que possa vazar a diferença entre identificador inexistente,
+    persona de outro papel e Apoiador sem aporte — os três recebem o mesmo
+    404 (`RF-03-57`, `RN-03-01`, o mesmo desenho de
+    `buscar_persona_guerreiro_publica_por_nick`)."""
+    consulta = sessao.query(Persona).filter(Persona.id == persona_id, Persona.papel == papel)
+    if apenas_com_aporte:
+        consulta = consulta.filter(
+            sessao.query(Aporte.id).filter(Aporte.provedor_id == Persona.id).exists()
+        )
+    return consulta.first()
+
+
+def mestres_responsaveis_por_poder(
+    sessao: Session, poderes_ids: list[uuid.UUID]
+) -> dict[uuid.UUID, list[MestreResponsavelSaida]]:
+    """Os Mestres responsáveis do documento 11 §8.2: os autores das trilhas
+    **publicadas** de cada poder, deduplicados, num só round-trip para todo o
+    catálogo. Poder sem trilha publicada não entra no dicionário, e a rota o
+    devolve com a lista vazia (`RF-03-02`, decisão do fundador de
+    2026-09-29)."""
+    if not poderes_ids:
+        return {}
+    linhas = (
+        sessao.query(Trilha.poder_id, Persona)
+        .join(Persona, Persona.id == Trilha.autor_id)
+        .filter(
+            Trilha.poder_id.in_(poderes_ids),
+            Trilha.situacao == SituacaoDaTrilha.publicada,
+            Persona.papel == Papel.mestre,
+        )
+        .all()
+    )
+    personas = {persona.id: persona for _, persona in linhas}
+    identificacoes = _identificacoes_publicas(sessao, list(personas.values()))
+
+    saida: dict[uuid.UUID, list[MestreResponsavelSaida]] = {}
+    vistos: dict[uuid.UUID, set[uuid.UUID]] = {}
+    for poder_id, persona in linhas:
+        if persona.id in vistos.setdefault(poder_id, set()):
+            continue
+        vistos[poder_id].add(persona.id)
+        saida.setdefault(poder_id, []).append(
+            MestreResponsavelSaida(
+                id=persona.id,
+                avatar=persona.avatar,
+                avatar_padrao=persona.avatar is None,
+                identificacao=identificacoes[persona.id],
+            )
+        )
+    for lista in saida.values():
+        lista.sort(key=lambda mestre: mestre.identificacao.valor)
+    return saida
