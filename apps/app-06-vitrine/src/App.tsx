@@ -1,10 +1,13 @@
 import { Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
+import { AreaDetalhada } from "./coleta/AreaDetalhada";
+import { AvisoDeColeta } from "./coleta/AvisoDeColeta";
 import { DialogoDeEntrada } from "./entrada/DialogoDeEntrada";
 import { FormularioDeDados } from "./formularios/FormularioDeDados";
 import { FormularioDeParticipacao } from "./formularios/FormularioDeParticipacao";
 import { PaginaDoGuerreiro } from "./guerreiros/PaginaDoGuerreiro";
 import {
+  CAMINHO_DA_AREA_DETALHADA,
   CAMINHO_DA_PARTICIPACAO,
   CAMINHO_DA_SOLICITACAO_DE_DADOS,
 } from "./navegacao/caminhos";
@@ -41,6 +44,8 @@ export default function App() {
         <FormularioDeParticipacao irPara={irPara} />
       ) : caminho === CAMINHO_DA_SOLICITACAO_DE_DADOS ? (
         <FormularioDeDados irPara={irPara} />
+      ) : caminho === CAMINHO_DA_AREA_DETALHADA ? (
+        <AreaDetalhada />
       ) : nick !== null ? (
         <Moldura>
           <div className="cg-vitrine">
@@ -56,6 +61,9 @@ export default function App() {
       ) : (
         <TelaDoRecorte recorte={recorte} irPara={irPara} />
       )}
+      {/* O aviso de coleta vale para toda tela, e por isso mora aqui, fora do
+          recorte (`RN-03-23`). */}
+      <AvisoDeColeta irPara={irPara} />
       <DialogoDeEntrada aberto={entradaAberta} aoFechar={() => definirEntradaAberta(false)} />
     </>
   );

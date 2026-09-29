@@ -324,7 +324,7 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RF-03-45` | Seções "Quem somos", "Contatos" e "Como apoiar" exibem o conteúdo publicado na App 03                                                           | essencial  |
 | `RF-03-46` | "Como apoiar" exibe a chave PIX da pessoa jurídica vinculada                                                                                    | essencial  |
 | `RF-03-47` | Vitrine publica as necessidades de recurso em aberto, com tipo, quantidade, valor em moedas, comunidade, ponto de apoio, data e horário da aula | essencial  |
-| `RF-03-48` | Nota de transparência sobre IA vive dentro de "Quem somos" e remete à linha "Licenças"                                                          | essencial  |
+| `RF-03-48` | Nota de transparência sobre IA vive dentro de "Quem somos" e remete ao bloco "Licenças"                                                         | essencial  |
 | `RF-03-49` | Vitrine exibe o vídeo de apresentação e a identidade visual de comunidade                                                                       | desejável  |
 | `RF-03-50` | Vitrine não exibe publicidade nem patrocínio                                                                                                    | essencial  |
 | `RF-03-51` | Vitrine não instala cookie, rastreador ou perfilamento do visitante                                                                             | essencial  |
@@ -605,8 +605,8 @@ entidade e não como contrato.
   autoria, e o requisito fica parcial até a decisão. Consta do documento 09.
 - **Texto final da nota de transparência sobre IA**: o conteúdo e a localização estão decididos
   — a nota vive dentro de "Quem somos", declara Claude na construção e quem atende as pessoas e
-  remete à linha "Licenças". Falta redigi-la, com os demais textos públicos. Trava o `RF-03-48`
-  no texto, não no desenho.
+  remete ao bloco "Licenças". Um rascunho saiu semeado com a fatia 5; falta o texto final, com os
+  demais textos públicos, que é do fundador. Trava o `RF-03-48` no texto, não no desenho.
 
 As outras três que este PRD carregava foram decididas depois dele e constam do documento 09,
 em "Já decididos": o **formato, a licença e o critério de aprovação** do conjunto entregue —

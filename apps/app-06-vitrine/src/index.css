@@ -298,3 +298,33 @@ textarea {
 .cg-campo select[aria-invalid="true"] {
   border-color: var(--cor-erro);
 }
+
+/* Conteúdo institucional: parágrafos que respeitam a quebra de linha do
+ * texto publicado (o PIX e o titular vêm em linhas próprias). */
+.cg-institucional__paragrafo {
+  white-space: pre-line;
+}
+
+.cg-institucional__bloco h3:focus {
+  outline: 2px solid var(--cor-foco, currentColor);
+  outline-offset: 2px;
+}
+
+/* Aviso de coleta: uma linha discreta ao pé, sem bloquear a tela. */
+.cg-aviso-de-coleta {
+  max-width: var(--largura-de-leitura);
+  margin: 0 auto;
+  padding: var(--espaco-8) var(--espaco-16) var(--espaco-24);
+  color: var(--cor-texto-secundario);
+  font-size: var(--escala-0875);
+}
+
+.cg-aviso-de-coleta__botao {
+  min-height: var(--alvo-de-toque);
+  padding: 0 var(--espaco-8);
+  border: 0;
+  background: none;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}

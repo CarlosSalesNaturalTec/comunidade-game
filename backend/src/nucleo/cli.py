@@ -2,6 +2,7 @@ from . import modelos as _modelos  # noqa: F401 — popula Base.metadata com tod
 from .banco import obter_fabrica_de_sessao
 from .chaves.semeadura import semear_ambiente
 from .configuracao import obter_configuracao
+from .conteudo_institucional.semeadura import semear_conteudo_institucional
 from .personas.semeadura import semear_admin_fundador
 from .termos.semeadura import semear_termo_vigente
 
@@ -27,6 +28,7 @@ def semear() -> None:
 
         persona_admin = semear_admin_fundador(sessao, configuracao.identidade_fundador)
         termo = semear_termo_vigente(sessao, configuracao)
+        secoes = semear_conteudo_institucional(sessao)
 
     if persona_admin is not None:
         print(f"Persona Admin do fundador semeada: {configuracao.identidade_fundador}")
@@ -39,6 +41,11 @@ def semear() -> None:
         )
     else:
         print("Termo da versão vigente já existia: nada semeado.")
+
+    if secoes:
+        print(f"Conteúdo institucional semeado: {', '.join(secao.value for secao in secoes)}")
+    else:
+        print("Conteúdo institucional já existia: nada semeado.")
 
 
 def _relatar_chaves(ambiente: str, segredos: dict[str, str]) -> None:
