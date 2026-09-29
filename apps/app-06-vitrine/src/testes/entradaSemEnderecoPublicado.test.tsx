@@ -21,6 +21,9 @@ describe("sem endereço publicado", () => {
     expect(
       screen.getByText(/o endereço da Área do Mestre ainda não foi publicado/i),
     ).toBeVisible();
-    expect(screen.queryByRole("link")).toBeNull();
+    // Sem endereço da Área do Mestre, o único link é o do formulário de
+    // participação da própria vitrine (RF-03-62).
+    const links = screen.getAllByRole("link").map((no) => no.getAttribute("href"));
+    expect(links).toEqual(["/participar"]);
   });
 });

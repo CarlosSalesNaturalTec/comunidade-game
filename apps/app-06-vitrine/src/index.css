@@ -282,3 +282,19 @@ textarea {
   padding-top: var(--espaco-8);
   border-top: 1px solid var(--cor-separador);
 }
+
+.cg-campo textarea,
+.cg-campo select {
+  min-height: var(--alvo-de-toque);
+  padding: var(--espaco-8) var(--espaco-12);
+  border-radius: var(--raio-campo);
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  font: inherit;
+}
+
+.cg-campo textarea[aria-invalid="true"],
+.cg-campo select[aria-invalid="true"] {
+  border-color: var(--cor-erro);
+}

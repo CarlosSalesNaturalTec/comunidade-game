@@ -32,5 +32,5 @@ próprio, de erro 429 explicado e de "sem rastro no aparelho" já está em `apli
 
 - Dois formulários próximos podem ganhar componentes de campo repetidos: usar `Campo` e um
   campo de texto longo de `comum/react`; criar o que faltar ali só se os dois usarem.
-- O link do Mestre passa a existir; o teste `entradaSemEnderecoPublicado` não trata dele
-  (é dos destinos de outras aplicações) e segue valendo.
+- O link do Mestre passa a existir; `entrada.test.tsx` e `entradaSemEnderecoPublicado.test.tsx`
+  assumiam "sem link" e são ajustados para o link `/participar`.

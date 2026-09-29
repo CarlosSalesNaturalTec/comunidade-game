@@ -1,7 +1,13 @@
 import { Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
 import { DialogoDeEntrada } from "./entrada/DialogoDeEntrada";
+import { FormularioDeDados } from "./formularios/FormularioDeDados";
+import { FormularioDeParticipacao } from "./formularios/FormularioDeParticipacao";
 import { PaginaDoGuerreiro } from "./guerreiros/PaginaDoGuerreiro";
+import {
+  CAMINHO_DA_PARTICIPACAO,
+  CAMINHO_DA_SOLICITACAO_DE_DADOS,
+} from "./navegacao/caminhos";
 import { NavegacaoDeRecortes } from "./navegacao/NavegacaoDeRecortes";
 import { comunidadeDoCaminho, nickDoCaminho, recorteDoCaminho } from "./navegacao/recortes";
 import { useNavegacao } from "./navegacao/useNavegacao";
@@ -31,7 +37,11 @@ export default function App() {
       <NavegacaoDeRecortes recorteAtual={recorte.chave} aoSelecionarRecorte={irPara} />
       {/* A página individual tem endereço próprio, compartilhável e
           alcançável direto (`RF-03-03`); todo o resto é o recorte. */}
-      {nick !== null ? (
+      {caminho === CAMINHO_DA_PARTICIPACAO ? (
+        <FormularioDeParticipacao irPara={irPara} />
+      ) : caminho === CAMINHO_DA_SOLICITACAO_DE_DADOS ? (
+        <FormularioDeDados irPara={irPara} />
+      ) : nick !== null ? (
         <Moldura>
           <div className="cg-vitrine">
             <PaginaDoGuerreiro nick={nick} irPara={irPara} />
