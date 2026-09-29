@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { SecaoDeSolicitacaoDeDados } from "../formularios/SecaoDeSolicitacaoDeDados";
 import { SecaoDeGuerreiros } from "../guerreiros/SecaoDeGuerreiros";
 import { SecaoDePoderes } from "../poderes/SecaoDePoderes";
 import { SecaoDoPortfolio } from "../portfolio/SecaoDoPortfolio";
@@ -76,7 +77,7 @@ const COBERTURA: Secao = {
 };
 const SOLICITACAO_DE_DADOS: Secao = {
   titulo: "Solicitação do conjunto de dados",
-  pendente: "O formulário de solicitação de dados chega em entrega própria.",
+  Conteudo: SecaoDeSolicitacaoDeDados,
 };
 const BLOCO_DO_GESTOR: Secao = {
   titulo: "Para que a plataforma serve ao município",

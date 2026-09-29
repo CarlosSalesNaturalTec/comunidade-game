@@ -6,6 +6,7 @@ import {
   URL_DA_APP_08_APOIADOR,
   URL_DA_APP_09_MESTRE,
 } from "../api/configuracao";
+import { CAMINHO_DA_PARTICIPACAO } from "../navegacao/caminhos";
 
 export type ChaveDePersona =
   | "guerreiro"
@@ -23,9 +24,8 @@ export type ChaveDePersona =
  * é pessoa que se cadastra. */
 export interface OrientacaoSemCadastro {
   texto: string;
-  /** Endereço da orientação, quando existe. O formulário de participação da
-   * vitrine nasce em entrega posterior: até lá a orientação do Mestre é só
-   * texto, sem link quebrado (design — riscos). */
+  /** Endereço da orientação, quando existe. O do Mestre é o formulário de
+   * participação da própria vitrine (`RF-03-62`). */
   url?: string;
   rotuloDoLink?: string;
 }
@@ -68,6 +68,8 @@ export const PERSONAS: Persona[] = [
       texto:
         "Entrar não cria cadastro. Quem quer ser Mestre preenche o formulário de " +
         "solicitação de participação da vitrine, que um Admin avalia em até 7 dias.",
+      url: CAMINHO_DA_PARTICIPACAO,
+      rotuloDoLink: "Abrir o formulário de participação",
     },
   },
   {

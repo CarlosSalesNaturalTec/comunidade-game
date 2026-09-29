@@ -7,6 +7,7 @@ import {
   EstadoDaLista,
 } from "comum/react";
 import { type GuerreiroPublico, obterGuerreiroPorNick } from "../api/leituras";
+import { esperaEmLinguagemSimples } from "../formularios/espera";
 import { useLeitura } from "../leitura/useLeitura";
 import { cartaDoGuerreiro, FORMATADOR_DE_DATA } from "./carta";
 
@@ -19,16 +20,6 @@ interface Props {
  * revelar qual dos dois casos ocorreu (`RF-03-11`, `RN-03-07`, PRD-03
  * §§5.6, 5.7). */
 const NAO_ENCONTRADO = "Não encontrado.";
-
-function esperaEmLinguagemSimples(erro: ErroDaApi): string {
-  const segundos = erro.tempoDeEsperaEmSegundos ?? 0;
-  if (segundos <= 0) return "Tente de novo em instantes.";
-  if (segundos < 60) {
-    return `Tente de novo em ${segundos} ${segundos === 1 ? "segundo" : "segundos"}.`;
-  }
-  const minutos = Math.round(segundos / 60);
-  return `Tente de novo em ${minutos} ${minutos === 1 ? "minuto" : "minutos"}.`;
-}
 
 export function PaginaDoGuerreiro({ nick, irPara }: Props) {
   const estado = useLeitura(() => obterGuerreiroPorNick(nick), `vitrine/guerreiros/${nick}`);

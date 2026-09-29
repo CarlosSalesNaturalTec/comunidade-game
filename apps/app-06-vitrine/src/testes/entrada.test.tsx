@@ -147,7 +147,7 @@ describe("a orientação de quem ainda não tem cadastro", () => {
     },
   );
 
-  it("nomeia o formulário do Mestre em texto, sem link (RF-03-62)", async () => {
+  it("nomeia o formulário do Mestre e leva a ele por link (RF-03-62)", async () => {
     render(<App />);
     const testeDeUsuario = userEvent.setup();
 
@@ -158,7 +158,7 @@ describe("a orientação de quem ainda não tem cadastro", () => {
       screen.getByText(/formulário de solicitação de participação da vitrine/i),
     ).toBeVisible();
     const links = screen.getAllByRole("link").map((no) => no.getAttribute("href"));
-    expect(links).toEqual(["https://mestre.example.org"]);
+    expect(links).toEqual(["https://mestre.example.org", "/participar"]);
   });
 
   it("gestão e aparelho da aula não recebem orientação, que o PRD não lhes dá", async () => {
