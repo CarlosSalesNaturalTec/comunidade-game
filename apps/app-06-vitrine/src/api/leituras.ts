@@ -212,3 +212,26 @@ export interface SecaoInstitucionalPublica {
 export function lerConteudoInstitucional(): Promise<SecaoInstitucionalPublica[]> {
   return lerDoNucleo<SecaoInstitucionalPublica[]>("/v1/vitrine/conteudo-institucional");
 }
+
+/** As necessidades de recurso em aberto (`RF-03-47`). O núcleo devolve o nome
+ * ao lado de cada identificador, e o **valor em moedas chega `null`** quando o
+ * tipo de recurso não tem vigência de referência na data da leitura: a vitrine
+ * mostra a falta e **nenhum valor arbitrado** (`RN-03-18`). Nenhum campo traz
+ * reais, e nenhum identifica Guerreiro(a), responsável ou provedor. */
+export interface NecessidadePublica {
+  aula_id: string;
+  tipo_de_recurso_id: string;
+  tipo_de_recurso_nome: string;
+  quantidade_faltante: string;
+  valor_em_moedas: string | null;
+  comunidade_virtual_id: string;
+  comunidade_virtual_nome: string;
+  ponto_de_apoio_id: string;
+  ponto_de_apoio_nome: string;
+  inicio_em: string;
+  fim_em: string;
+}
+
+export function listarNecessidades(): Promise<NecessidadePublica[]> {
+  return lerDoNucleo<NecessidadePublica[]>("/v1/vitrine/necessidades");
+}

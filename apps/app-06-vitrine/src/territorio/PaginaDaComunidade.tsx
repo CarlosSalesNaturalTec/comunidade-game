@@ -9,6 +9,7 @@ import {
   type PontoDaSerie,
   type SeriePublica,
 } from "../api/leituras";
+import { ChamadaDeParticipacao } from "../convite/ChamadaDeParticipacao";
 import { useLeitura } from "../leitura/useLeitura";
 import { DestaqueDaMeta1718 } from "./DestaqueDaMeta1718";
 
@@ -27,6 +28,7 @@ import { DestaqueDaMeta1718 } from "./DestaqueDaMeta1718";
 
 interface Props {
   comunidadeId: string;
+  irPara: (destino: string) => void;
 }
 
 function chaveDoRecorte(recorte: { tipo_de_coleta_id: string; local_publicado_id: string }) {
@@ -94,7 +96,7 @@ function BlocoDoRecorte({
   );
 }
 
-export function PaginaDaComunidade({ comunidadeId }: Props) {
+export function PaginaDaComunidade({ comunidadeId, irPara }: Props) {
   const ficha = useLeitura<ComunidadePublica>(
     () => obterComunidade(comunidadeId),
     `comunidade/${comunidadeId}`,
@@ -187,6 +189,10 @@ export function PaginaDaComunidade({ comunidadeId }: Props) {
           <DestaqueDaMeta1718 />
         </>
       )}
+
+      {/* A chamada fecha a página individual da comunidade (`RF-03-39`): o
+          apoio é ao projeto, nunca àquela comunidade (`RF-03-41`). */}
+      <ChamadaDeParticipacao irPara={irPara} />
     </section>
   );
 }

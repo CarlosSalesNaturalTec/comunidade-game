@@ -2,6 +2,7 @@ import { Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
 import { AreaDetalhada } from "./coleta/AreaDetalhada";
 import { AvisoDeColeta } from "./coleta/AvisoDeColeta";
+import { PortaDoConvite } from "./convite/PortaDoConvite";
 import { DialogoDeEntrada } from "./entrada/DialogoDeEntrada";
 import { FormularioDeDados } from "./formularios/FormularioDeDados";
 import { FormularioDeParticipacao } from "./formularios/FormularioDeParticipacao";
@@ -10,6 +11,7 @@ import {
   CAMINHO_DA_AREA_DETALHADA,
   CAMINHO_DA_PARTICIPACAO,
   CAMINHO_DA_SOLICITACAO_DE_DADOS,
+  CAMINHO_DO_CONVITE,
 } from "./navegacao/caminhos";
 import { NavegacaoDeRecortes } from "./navegacao/NavegacaoDeRecortes";
 import { comunidadeDoCaminho, nickDoCaminho, recorteDoCaminho } from "./navegacao/recortes";
@@ -22,7 +24,7 @@ import { PaginaDaComunidade } from "./territorio/PaginaDaComunidade";
 // visitante é guardado (`RF-03-51`, `RN-03-01`, `RN-03-22`). Sem provedor, a
 // camada de narração fica inerte por construção.
 export default function App() {
-  const { caminho, irPara } = useNavegacao();
+  const { caminho, irPara, voltar } = useNavegacao();
   const [entradaAberta, definirEntradaAberta] = useState(false);
   const recorte = recorteDoCaminho(caminho);
   const nick = nickDoCaminho(caminho);
@@ -44,6 +46,8 @@ export default function App() {
         <FormularioDeParticipacao irPara={irPara} />
       ) : caminho === CAMINHO_DA_SOLICITACAO_DE_DADOS ? (
         <FormularioDeDados irPara={irPara} />
+      ) : caminho === CAMINHO_DO_CONVITE ? (
+        <PortaDoConvite irPara={irPara} voltar={voltar} />
       ) : caminho === CAMINHO_DA_AREA_DETALHADA ? (
         <AreaDetalhada />
       ) : nick !== null ? (
@@ -55,7 +59,7 @@ export default function App() {
       ) : comunidadeId !== null ? (
         <Moldura>
           <div className="cg-vitrine">
-            <PaginaDaComunidade comunidadeId={comunidadeId} />
+            <PaginaDaComunidade comunidadeId={comunidadeId} irPara={irPara} />
           </div>
         </Moldura>
       ) : (

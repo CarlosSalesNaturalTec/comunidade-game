@@ -1,6 +1,7 @@
 import { Aviso, EstadoDaLista } from "comum/react";
 import { useEffect } from "react";
 import type { ChaveDeSecaoInstitucional } from "../api/leituras";
+import { ListaDeNecessidades } from "../necessidades/ListaDeNecessidades";
 import { TextoInstitucional } from "./TextoInstitucional";
 import { useConteudoInstitucional } from "./useConteudoInstitucional";
 
@@ -79,9 +80,11 @@ export function SecaoComoApoiar() {
   return (
     <>
       <ConteudoDaSecao secao="como-apoiar" nome="Como apoiar" />
-      <p className="cg-secao__pendente">
-        As necessidades de recurso em aberto chegam em entrega própria.
-      </p>
+      {/* As necessidades em aberto aparecem aqui **e** na porta do convite: quem
+          navega pela vitrine e não aciona a chamada também vê o que falta
+          (`RF-03-47`, design — decisão 8). */}
+      <h3>Necessidades de recurso em aberto</h3>
+      <ListaDeNecessidades />
     </>
   );
 }

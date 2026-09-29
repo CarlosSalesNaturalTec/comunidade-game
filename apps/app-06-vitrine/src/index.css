@@ -328,3 +328,60 @@ textarea {
   text-decoration: underline;
   cursor: pointer;
 }
+
+/* A chamada "Quero participar" ao pé da página individual: uma decisão por
+ * vez, as duas ações empilhadas no celular (documento 15 §6.4). */
+.cg-chamada {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  align-items: flex-start;
+  padding-top: var(--espaco-16);
+  border-top: 1px solid var(--cor-separador);
+}
+
+.cg-chamada__ajuda {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+  font-size: var(--escala-0875);
+}
+
+/* A porta do convite: o garfo do que a pessoa traz, uma escolha por linha. */
+.cg-convite__modalidades {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cg-convite__destino {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  align-items: flex-start;
+}
+
+/* Necessidades em aberto: lista, e não tabela — sete campos por necessidade
+ * não cabem em tabela no celular (design — decisão 6). */
+.cg-necessidades {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cg-necessidades__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  padding-bottom: var(--espaco-8);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.cg-necessidades__item p {
+  margin: 0;
+}

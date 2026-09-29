@@ -178,8 +178,10 @@ fila, nunca acesso.
 2. A chamada é **do projeto**: não oferece apoiar aquela pessoa, e a tela seguinte não carrega
    o nome nem o nick de quem estava sendo visto.
 3. Ela abre a **porta da Área do Apoiador**, que explica o que é ser Apoiador — aportar, propor
-   desafios extras, acompanhar favoritos — e leva ao **pré-cadastro**, onde a pessoa se
-   identifica sem documento, escolhe o que vai aportar e anexa o comprovante.
+   desafios extras, acompanhar favoritos — e abre com a pergunta **o que a pessoa traz**,
+   encaminhando cada modalidade ao destino dela (documento 14 §10): dinheiro ao
+   **pré-cadastro**, onde a pessoa se identifica sem documento, escolhe o que vai aportar e
+   anexa o comprovante; as demais ao formulário de participação.
 4. A mesma tela mostra o caminho de quem não quer se cadastrar agora: **doar pela chave PIX** e
    ver as **necessidades de recurso em aberto**.
 5. A tela diz que o pré-cadastro **não cria cadastro nem acesso**: um Admin valida o
@@ -316,6 +318,7 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RF-03-42` | Porta apresenta o que é ser Apoiador e leva ao pré-cadastro da App 08                        | essencial  |
 | `RF-03-43` | Porta oferece também doar pela chave PIX e ver as necessidades de recurso em aberto          | essencial  |
 | `RF-03-44` | Recusar o convite devolve o visitante à navegação, sem gravar nada sobre a visita            | essencial  |
+| `RF-03-78` | Porta abre perguntando o que a pessoa traz e encaminha cada modalidade ao destino dela       | essencial  |
 
 ### 6.5 Institucional e transparência
 
@@ -629,6 +632,7 @@ IA apontando para ela.
 | `RF-03-35` a `RF-03-37`             | 03 §8 (proteção das rotas públicas)                            |
 | `RN-03-34` e `RN-03-35`             | 03 §8 (origem em memória e chave sem freio)                    |
 | `RF-03-38` a `RF-03-44`             | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)    |
+| `RF-03-78`                          | 02 §1 e 14 §§10, 11 (garfo do que a pessoa traz)               |
 | `RF-03-45` a `RF-03-49`             | 03 §8 (institucional), 04 §1 (PIX e lastro), 01 §7 (IA) e 15   |
 | `RF-03-50` e `RF-03-51`             | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)             |
 | `RF-03-52` e `RF-03-53`             | 03 §12 (aviso de coleta e área detalhada)                      |
