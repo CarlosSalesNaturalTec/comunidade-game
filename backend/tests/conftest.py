@@ -293,6 +293,9 @@ def _montar_roteador_de_teste() -> APIRouter:
 def app(sessao, configuracao):
     from nucleo.aportes.rotas import roteador as roteador_de_aportes
     from nucleo.armazenamento.rotas import roteador as roteador_de_armazenamento
+    from nucleo.assistente.desenvolvedor.rotas import (
+        roteador as roteador_do_assistente_do_desenvolvedor,
+    )
     from nucleo.assistente.rotas import roteador as roteador_de_assistente
     from nucleo.atividades.rotas import roteador as roteador_de_atividades
     from nucleo.auditoria.rotas import roteador as roteador_de_auditoria
@@ -408,6 +411,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_template_de_missao)
     incluir_roteador_de_dados(aplicacao, roteador_de_producoes)
     incluir_roteador_de_dados(aplicacao, roteador_de_assistente)
+    incluir_roteador_de_dados(aplicacao, roteador_do_assistente_do_desenvolvedor)
     incluir_roteador_de_dados(aplicacao, roteador_de_vinculo_do_guerreiro)
     incluir_roteador_de_dados(aplicacao, roteador_de_termos)
     incluir_roteador_de_dados(aplicacao, roteador_de_transparencia)

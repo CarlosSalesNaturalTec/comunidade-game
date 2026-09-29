@@ -740,9 +740,13 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
     como a plataforma está montada, com **corpus fechado** na documentação e no repositório —
     fora deles, não responde. O corpus é a documentação de `docs/`, o README da raiz e o
     contrato OpenAPI que o próprio núcleo gera, montado **pela esteira a cada implantação do
-    núcleo** — sem requisição a terceiro no momento da resposta. **Toda mensagem termina
+    núcleo** — sem requisição a terceiro no momento da resposta. Ao modelo vai, a cada
+    pergunta, um **recorte do corpus com teto declarado**, e não o corpus inteiro: ele passa de
+    1,8 milhão de caracteres. A **abertura é texto da aplicação**, não resposta do modelo — por
+    isso ela continua de pé com o assistente fora do ar. **Toda mensagem termina
     com uma pergunta de múltipla escolha** sobre o próximo passo a conhecer: é o que conduz
-    quem chegou sem saber o que perguntar.
+    quem chegou sem saber o que perguntar. A consulta é **superfície do freio por origem**, ao
+    contrário do formulário de chave.
   - **Link para a documentação** publicada com MkDocs.
   - **Formulário de solicitação de chave**, na mesma fila de avaliação dos Admins. Emitida a
     chave, o solicitante tem **30 dias para apresentar a URL** do que construiu; não

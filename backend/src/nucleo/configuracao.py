@@ -1,5 +1,6 @@
 from datetime import timedelta
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -62,6 +63,21 @@ class Configuracao(BaseSettings):
     protecao_freio_atraso_inicial: timedelta = timedelta(seconds=2)
     protecao_freio_atraso_fator_de_crescimento: float = 2.0
     protecao_freio_atraso_teto: timedelta = timedelta(minutes=15)
+    # Superfície própria porque cada pergunta consome modelo pago numa rota
+    # aberta a qualquer visitante, sem login (`RN-03-08`, decisão do fundador
+    # de 2026-09-29). Limite mais folgado que o dos formulários: conversar é o
+    # que a área pede, e são várias perguntas por visita.
+    protecao_freio_assistente_do_desenvolvedor_limite: int = 20
+    protecao_freio_assistente_do_desenvolvedor_janela: timedelta = timedelta(hours=1)
+
+    # Artefato de corpus do assistente do Desenvolvedor, montado pela esteira e
+    # copiado para dentro da imagem (documento 03 §8, design — decisão 1). O
+    # caminho é relativo ao diretório de trabalho do serviço.
+    corpus_do_desenvolvedor_caminho: Path = Path("corpus-do-desenvolvedor.json")
+    # Teto do recorte que vai ao modelo a cada pergunta — dobro do teto do
+    # assistente de trilhas, que basta para várias seções de documentação e
+    # mantém previsível o custo por pergunta (decisão do fundador, 2026-09-29).
+    corpus_do_desenvolvedor_teto: int = 40_000
 
     # Porta de armazenamento do comprovante (design — Decisions): disco fora
     # de produção, sem exigir credencial de nuvem; Cloud Storage em produção

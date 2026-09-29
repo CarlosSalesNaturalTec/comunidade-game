@@ -359,6 +359,7 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RF-03-75` | Área informa o prazo de 7 dias para a resposta e os 30 dias para apresentar a URL                      | essencial  |
 | `RF-03-76` | Área declara que a API não responde sem chave e que a chave não amplia direito de escrita              | essencial  |
 | `RF-03-77` | Área oferece o caminho de apresentar a URL do que foi construído, dentro do prazo                      | essencial  |
+| `RF-03-81` | Abertura do assistente é texto da aplicação, e segue de pé com o modelo fora do ar                     | essencial  |
 
 ## 7. Regras de negócio
 
@@ -398,6 +399,8 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RN-03-29` | A Área do Apoiador Desenvolvedor é seção da vitrine, não uma nona aplicação               | 1                      | 03 §8       |
 | `RN-03-30` | O assistente do Desenvolvedor tem corpus fechado e nunca responde fora dele               | —                      | 03 §8       |
 | `RN-03-31` | O assistente usa o modelo que o Ciclo 01 destinar à conversa por texto (03 §1.12)         | —                      | 03 §1       |
+| `RN-03-38` | Ao modelo vai um recorte do corpus por pergunta, com teto, nunca o corpus inteiro         | —                      | 03 §8       |
+| `RN-03-39` | A consulta ao assistente do Desenvolvedor é superfície do freio por origem                | —                      | 03 §8       |
 | `RN-03-32` | Solicitação de chave não emite chave nem cria cadastro: quem emite é Admin, na App 03     | 3                      | 03 §8       |
 | `RN-03-33` | A vitrine consome a API com a chave da aplicação, e o visitante segue anônimo             | —                      | 03 §§1, 1.1 |
 
@@ -587,6 +590,9 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 | Chamada "Quero participar" em toda página individual                     | 03 §8      | Chamada "Quero participar" nos perfis     |
 | Área do Apoiador Desenvolvedor como seção da vitrine, não nona aplicação | 03 §8      | Acesso das aplicações de terceiros        |
 | Assistente de chat com corpus fechado e pergunta de múltipla escolha     | 03 §8      | Acesso das aplicações de terceiros        |
+| Recorte do corpus por pergunta, com teto, em vez do corpus inteiro       | 03 §8      | Acesso das aplicações de terceiros        |
+| Freio por origem sobre a consulta ao assistente do Desenvolvedor         | 03 §8      | Acesso das aplicações de terceiros        |
+| Abertura do assistente como texto da aplicação, não resposta do modelo   | 03 §8      | Acesso das aplicações de terceiros        |
 | Modelo de IA escolhido por funcionalidade, ao menor custo                | 03 §1      | Modelos de IA do Ciclo 01                 |
 | Solicitação de chave pela vitrine, com emissão por Admin                 | 03 §8      | Acesso das aplicações de terceiros        |
 | Card de Apoiador com avatar, nick, moedas em destaque e moldura comum    | 11 §8.2    | Identidade pública do Apoiador            |
@@ -645,3 +651,4 @@ IA apontando para ela.
 | `RF-03-63` a `RF-03-65`             | 03 §8 (área do gestor) e 04 §4 (Agenda 2030 e meta 17.18)      |
 | `RF-03-67` a `RF-03-72`             | 03 §8 (Área do Desenvolvedor e assistente) e 03 §1 (Gemini)    |
 | `RF-03-73` a `RF-03-77`             | 03 §§1, 8 (chave, prazos e recusa sem chave)                   |
+| `RF-03-81`, `RN-03-38`, `RN-03-39`  | 03 §8 (abertura, recorte do corpus e freio do assistente)      |

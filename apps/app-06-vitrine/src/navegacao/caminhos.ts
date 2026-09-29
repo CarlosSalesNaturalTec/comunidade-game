@@ -14,3 +14,8 @@ export const CAMINHO_DO_CONVITE = "/quero-participar";
  * adulto, e por nick ficaria sem página quem ainda não o definiu. */
 export const PREFIXO_DA_PAGINA_DO_MESTRE = "/mestres/";
 export const PREFIXO_DA_PAGINA_DO_APOIADOR = "/apoiadores/";
+
+/** Endereços próprios da Área do Apoiador Desenvolvedor e da apresentação da
+ * URL do que foi construído (`RF-03-67`, `RF-03-77`, design — decisão 8). */
+export const CAMINHO_DA_AREA_DO_DESENVOLVEDOR = "/desenvolvedor";
+export const CAMINHO_DA_APRESENTACAO_DA_URL = "/apresentar-url";
