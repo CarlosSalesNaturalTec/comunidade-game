@@ -26,6 +26,7 @@ from .coletas.rotas import roteador as roteador_de_coletas
 from .comunidades.rotas import roteador as roteador_de_comunidades
 from .configuracao import conferir_configuracao_de_producao, obter_configuracao
 from .consentimentos.rotas import roteador as roteador_de_consentimentos
+from .conteudo_institucional.rotas import roteador as roteador_de_conteudo_institucional
 from .conteudos.rotas import roteador as roteador_de_conteudos
 from .criacoes_originais.rotas import roteador as roteador_de_criacoes_originais
 from .culminancias.rotas import roteador as roteador_de_culminancias
@@ -238,6 +239,7 @@ incluir_roteador_de_dados(app, roteador_de_conteudos)
 incluir_roteador_de_dados(app, roteador_de_bibliografias)
 incluir_roteador_de_dados(app, roteador_de_painel_do_dia)
 incluir_roteador_de_dados(app, roteador_de_ciclo)
+incluir_roteador_de_dados(app, roteador_de_conteudo_institucional)
 incluir_roteador_de_dados(app, roteador_de_pontuacao)
 incluir_roteador_de_dados(app, roteador_de_solicitacoes_do_responsavel)
 incluir_roteador_de_dados(app, roteador_de_desafios_extras)

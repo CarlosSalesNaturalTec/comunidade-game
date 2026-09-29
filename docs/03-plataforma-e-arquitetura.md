@@ -808,14 +808,14 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
 - Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins. A **nota de transparência
   sobre IA** vive **dentro de "Quem somos"**, e não em seção própria: declara que a plataforma
   é construída com Claude e atende as pessoas com Gemini e DeepSeek (documento 01), que a IA
-  **reescreve
-  conteúdo do corpus do Mestre para crianças e não as perfila**, e remete à linha "Licenças"
-  quanto ao que é gerado com auxílio de IA. É para ela que aponta a etiqueta do texto reescrito
-  nas Apps 01 e 05 (§7.1).
+  **reescreve conteúdo do corpus do Mestre para crianças e não as perfila**, e remete ao bloco
+  "Licenças", que fecha "Quem somos", quanto ao que é gerado com auxílio de IA. É para ela que
+  aponta a etiqueta do texto reescrito nas Apps 01 e 05 (§7.1).
 - **"Como apoiar"** — canais de doação, incluindo a chave PIX da pessoa jurídica vinculada.
 - Identidade visual: a da plataforma, no temperamento **Arena** (documento 15).
 - **Vídeo de apresentação**: os irmãos Susy e Otávio, os Rôbróders e o professor Carlos
-  Trenell (narrativa da trilha Robô Educa).
+  Trenell (narrativa da trilha Robô Educa), aberto por **link**, sem player de terceiro
+  embutido — o player carregaria cookie de fora.
 - **Sem publicidade e sem patrocínio no Ciclo 01** — e **sem cookie, rastreador ou
   perfilamento** do visitante, para qualquer finalidade (documento 04).
 

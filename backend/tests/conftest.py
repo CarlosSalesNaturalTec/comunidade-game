@@ -305,6 +305,7 @@ def app(sessao, configuracao):
     from nucleo.coletas.rotas import roteador as roteador_de_coletas
     from nucleo.comunidades.rotas import roteador as roteador_de_comunidades
     from nucleo.consentimentos.rotas import roteador as roteador_de_consentimentos
+    from nucleo.conteudo_institucional.rotas import roteador as roteador_de_conteudo_institucional
     from nucleo.conteudos.rotas import roteador as roteador_de_conteudos
     from nucleo.criacoes_originais.rotas import roteador as roteador_de_criacoes_originais
     from nucleo.culminancias.rotas import roteador as roteador_de_culminancias
@@ -399,6 +400,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_armazenamento)
     incluir_roteador_de_dados(aplicacao, roteador_de_painel_do_dia)
     incluir_roteador_de_dados(aplicacao, roteador_de_ciclo)
+    incluir_roteador_de_dados(aplicacao, roteador_de_conteudo_institucional)
     incluir_roteador_de_dados(aplicacao, roteador_de_pontuacao)
     incluir_roteador_de_dados(aplicacao, roteador_de_solicitacoes_do_responsavel)
     incluir_roteador_de_dados(aplicacao, roteador_de_desafios_extras)

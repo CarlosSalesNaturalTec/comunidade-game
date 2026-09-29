@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 import { SecaoDeSolicitacaoDeDados } from "../formularios/SecaoDeSolicitacaoDeDados";
 import { SecaoDeGuerreiros } from "../guerreiros/SecaoDeGuerreiros";
+import {
+  SecaoComoApoiar,
+  SecaoContatos,
+  SecaoQuemSomos,
+} from "../institucional/SecoesInstitucionais";
 import { SecaoDePoderes } from "../poderes/SecaoDePoderes";
 import { SecaoDoPortfolio } from "../portfolio/SecaoDoPortfolio";
 import { SecaoDoRanking } from "../ranking/SecaoDoRanking";
@@ -83,9 +88,17 @@ const BLOCO_DO_GESTOR: Secao = {
   titulo: "Para que a plataforma serve ao município",
   Conteudo: BlocoDoGestor,
 };
+const QUEM_SOMOS: Secao = {
+  titulo: "Quem somos",
+  Conteudo: SecaoQuemSomos,
+};
 const COMO_APOIAR: Secao = {
   titulo: "Como apoiar",
-  pendente: "O conteúdo institucional e as necessidades em aberto chegam em entrega própria.",
+  Conteudo: SecaoComoApoiar,
+};
+const CONTATOS: Secao = {
+  titulo: "Contatos",
+  Conteudo: SecaoContatos,
 };
 
 // A sexta seção de cards do PRD-03 §3.1 — **batalhas** — não entra: o dado é
@@ -96,6 +109,7 @@ export const RECORTES: Recorte[] = [
     caminho: "/",
     rotulo: "Sociedade civil",
     secoes: [
+      QUEM_SOMOS,
       GUERREIROS,
       PORTFOLIO,
       RANKING,
@@ -104,6 +118,7 @@ export const RECORTES: Recorte[] = [
       APOIADORES,
       COMUNIDADES,
       COMO_APOIAR,
+      CONTATOS,
     ],
   },
   {
@@ -113,13 +128,13 @@ export const RECORTES: Recorte[] = [
     // A seção é a mesma de "sociedade civil", com o título que o PRD-03 §5.2
     // dá a ela aqui: o pesquisador chega direto às séries por comunidade.
     // Entrar duas vezes duplicaria o conteúdo e a leitura (design — Decisão 7).
-    secoes: [TERRITORIO, COBERTURA, SOLICITACAO_DE_DADOS],
+    secoes: [TERRITORIO, COBERTURA, SOLICITACAO_DE_DADOS, CONTATOS],
   },
   {
     chave: "gestores-publicos",
     caminho: "/gestores-publicos",
     rotulo: "Gestores públicos",
-    secoes: [BLOCO_DO_GESTOR, TERRITORIO, COBERTURA, SOLICITACAO_DE_DADOS],
+    secoes: [BLOCO_DO_GESTOR, TERRITORIO, COBERTURA, SOLICITACAO_DE_DADOS, CONTATOS],
   },
 ];
 

@@ -22,6 +22,7 @@ from .chaves import modelo as _modelo_chaves  # noqa: F401
 from .coletas import modelo as _modelo_coletas  # noqa: F401
 from .comunidades import modelo as _modelo_comunidades  # noqa: F401
 from .consentimentos import modelo as _modelo_consentimentos  # noqa: F401
+from .conteudo_institucional import modelo as _modelo_conteudo_institucional  # noqa: F401
 from .conteudos import modelo as _modelo_conteudos  # noqa: F401
 from .criacoes_originais import modelo as _modelo_criacoes_originais  # noqa: F401
 from .culminancias import modelo as _modelo_culminancias  # noqa: F401

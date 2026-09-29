@@ -89,6 +89,9 @@ class Operacao(enum.StrEnum):
     # §4 —, e é conferida no próprio `consultar_tipos_de_coleta` (`RF-09-27`,
     # design — decisão 2).
     catalogo_de_tipos_de_coleta = "catalogo_de_tipos_de_coleta"
+    # Mesmo precedente: só o Admin publica o conteúdo institucional da
+    # vitrine, por `Operacao.tudo` (`RF-02-80`).
+    conteudo_institucional = "conteudo_institucional"
 
 
 MATRIZ_DE_PERMISSOES: dict[Papel, dict[Acesso, frozenset[Operacao]]] = {

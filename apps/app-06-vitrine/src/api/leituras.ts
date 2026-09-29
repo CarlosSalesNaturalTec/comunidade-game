@@ -197,3 +197,18 @@ export function lerSerieDaComunidade(id: string): Promise<SeriePublica> {
 export function lerCoberturaDeOds(): Promise<CoberturaDeOds[]> {
   return lerDoNucleo<CoberturaDeOds[]>("/v1/vitrine/ods/cobertura");
 }
+
+/** As três seções do conteúdo institucional (`RF-03-45`). O texto chega
+ * `null` quando a seção ainda não foi publicada, e o vídeo só existe em
+ * "Quem somos" (`RF-03-49`). O núcleo nunca devolve quem publicou. */
+export type ChaveDeSecaoInstitucional = "quem-somos" | "contatos" | "como-apoiar";
+
+export interface SecaoInstitucionalPublica {
+  secao: ChaveDeSecaoInstitucional;
+  texto: string | null;
+  video_url: string | null;
+}
+
+export function lerConteudoInstitucional(): Promise<SecaoInstitucionalPublica[]> {
+  return lerDoNucleo<SecaoInstitucionalPublica[]>("/v1/vitrine/conteudo-institucional");
+}
