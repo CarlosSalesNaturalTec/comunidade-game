@@ -384,3 +384,118 @@ function ladosDoContorno(container: HTMLElement): number {
     container.querySelector(".cg-territorio__contorno")?.getAttribute("points") ?? "";
   return pontos.trim().split(/\s+/).length;
 }
+
+describe("as variantes Mestre e Apoiador da carta (documento 11 §8.2)", () => {
+  const MESTRE: DadosDaCarta = {
+    variante: "mestre",
+    avatar: "avatar-do-mestre",
+    identificacao: { valor: "mestra_ana", tipo: "nick" },
+    areasDeHabilidade: ["Artes", "Tecnologia"],
+    artefatos: [{ endereco: "https://exemplo.org/cv", rotulo: "Currículo" }],
+    trilhasDeAutoria: ["Robótica de sucata"],
+    absorcoes: 2,
+  };
+
+  const APOIADOR: DadosDaCarta = {
+    variante: "apoiador",
+    avatar: "logo-propria",
+    identificacao: { valor: "apoia_norte", tipo: "nick" },
+    totalEmMoedas: "42.00",
+    avatarPadrao: false,
+    nivelDeSustento: 2,
+    nomeDoNivel: "Quem faz acontecer",
+    selos: ["Primeiro aporte"],
+    desafiosPropostos: [
+      {
+        trilha: "Trilha da Água",
+        periodoInicio: "2026-03-01",
+        periodoFim: "2026-04-30",
+        concluiram: 3,
+        direcionado: false,
+      },
+    ],
+    artefatos: [{ endereco: "https://exemplo.org/portfolio", rotulo: "Portfólio" }],
+  };
+
+  it("a carta do Mestre traz os seis campos da variante", () => {
+    render(<CartaDoPersonagem dados={MESTRE} />);
+    expect(screen.getByText("mestra_ana")).toBeTruthy();
+    expect(screen.getByText("Tecnologia")).toBeTruthy();
+    expect(screen.getByText("Robótica de sucata")).toBeTruthy();
+    expect(screen.getByText("Currículo")).toBeTruthy();
+    expect(screen.getByText("2 vezes")).toBeTruthy();
+  });
+
+  it("sem nick, a carta apresenta o nome, declarado como nome", () => {
+    render(
+      <CartaDoPersonagem
+        dados={{ ...MESTRE, identificacao: { valor: "Ana Clara", tipo: "nome" } }}
+      />,
+    );
+    const identificacao = screen.getByText("Ana Clara");
+    expect(identificacao.getAttribute("data-tipo")).toBe("nome");
+  });
+
+  it("com nick, a carta o declara como nick", () => {
+    render(<CartaDoPersonagem dados={MESTRE} />);
+    expect(screen.getByText("mestra_ana").getAttribute("data-tipo")).toBe("nick");
+  });
+
+  it("a prova do Mestre sai como link com rótulo, nunca como anexo", () => {
+    render(<CartaDoPersonagem dados={MESTRE} />);
+    const link = screen.getByText("Currículo") as HTMLAnchorElement;
+    expect(link.tagName).toBe("A");
+    expect(link.href).toContain("https://exemplo.org/cv");
+  });
+
+  it("a carta do Apoiador traz o total em moedas e nunca reais", () => {
+    const { container } = render(<CartaDoPersonagem dados={APOIADOR} />);
+    expect(screen.getByText("42.00 moedas")).toBeTruthy();
+    expect(container.textContent).not.toContain("R$");
+  });
+
+  it("abaixo do piso a carta usa o avatar padrão, sem outra marca de diferença", () => {
+    const { container } = render(
+      <CartaDoPersonagem
+        dados={{ ...APOIADOR, avatar: null, avatarPadrao: true, totalEmMoedas: "5.00" }}
+      />,
+    );
+    const carta = container.querySelector(".cg-carta") as HTMLElement;
+    expect(carta.getAttribute("data-avatar-padrao")).toBe("sim");
+    // A moldura e o conteúdo são os mesmos: nick e total seguem lá.
+    expect(screen.getByText("apoia_norte")).toBeTruthy();
+    expect(screen.getByText("5.00 moedas")).toBeTruthy();
+  });
+
+  it("logomarcas de proporções diferentes ocupam a mesma moldura", () => {
+    const { container: primeira } = render(<CartaDoPersonagem dados={APOIADOR} />);
+    const { container: segunda } = render(
+      <CartaDoPersonagem dados={{ ...APOIADOR, avatar: "outra-logo-bem-maior" }} />,
+    );
+    const classe = (raiz: HTMLElement) =>
+      (raiz.querySelector(".cg-carta") as HTMLElement).className;
+    expect(classe(primeira)).toBe(classe(segunda));
+  });
+
+  it("a efetividade na carta não alcança quem concluiu", () => {
+    const { container } = render(<CartaDoPersonagem dados={APOIADOR} />);
+    expect(container.textContent).toContain("Trilha da Água");
+    expect(container.textContent).toContain("3 concluíram");
+    expect(container.querySelector(".cg-carta__desafios a")).toBeNull();
+  });
+
+  it("variante incompleta não vira carta pela metade", () => {
+    expect(cartaEstaCompleta({ ...MESTRE, areasDeHabilidade: undefined })).toBe(false);
+    expect(cartaEstaCompleta({ ...APOIADOR, totalEmMoedas: undefined })).toBe(false);
+    expect(cartaEstaCompleta({ ...MESTRE, identificacao: undefined })).toBe(false);
+    const { container } = render(
+      <CartaDoPersonagem dados={{ ...MESTRE, artefatos: undefined }} />,
+    );
+    expect(container.querySelector(".cg-carta")).toBeNull();
+  });
+
+  it("as duas variantes completas se apresentam", () => {
+    expect(cartaEstaCompleta(MESTRE)).toBe(true);
+    expect(cartaEstaCompleta(APOIADOR)).toBe(true);
+  });
+});

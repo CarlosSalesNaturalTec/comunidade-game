@@ -262,6 +262,8 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RF-03-05` | Card e página de Guerreiro(a) exibem só avatar, nick, badges, poderes e desempenho                                      | essencial  |
 | `RF-03-06` | Nenhuma tela exibe imagem real, nome civil, rede social ou contato de Guerreiro(a)                                      | essencial  |
 | `RF-03-07` | Página de Mestre e de Apoiador exibe currículo, portfólios, redes sociais e comprobatórios                              | essencial  |
+| `RF-03-79` | Card e página de Mestre e de Apoiador sem nick exibem o nome da persona, apresentado como nome                          | essencial  |
+| `RF-03-80` | Página de Apoiador exibe cada desafio extra proposto com trilha, período e quantos concluíram, sem identificar ninguém  | essencial  |
 | `RF-03-55` | Card de Apoiador exibe avatar, nick e o total de moedas aportadas em destaque                                           | essencial  |
 | `RF-03-56` | Cards de Apoiador seguem moldura comum, com avatar centralizado em proporção fixa                                       | essencial  |
 | `RF-03-57` | Apoiador sem aporte homologado não aparece na vitrine                                                                   | essencial  |
@@ -383,6 +385,8 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RN-03-17` | O convite não cria cadastro nem acesso: cadastrar Apoiador é ato de Admin                 | 3                      | 02 §1       |
 | `RN-03-25` | A chamada de participação é do projeto e nunca vincula apoio a um Guerreiro(a) específico | 10                     | 03 §8       |
 | `RN-03-26` | Card de Apoiador só existe com aporte homologado, e exibe o total em moedas               | 16                     | 04 §2       |
+| `RN-03-36` | Nome no lugar do nick vale só para adulto; nome civil de Guerreiro(a) nunca vai a público | 9, 12                  | 11 §8.2     |
+| `RN-03-37` | A efetividade pública é agregada e nunca alcança quem concluiu o desafio extra            | 10                     | 11 §8.2     |
 | `RN-03-27` | A vitrine encaminha, nunca autentica: quem confere credencial é a aplicação de destino    | 1                      | 03 §1.1     |
 | `RN-03-28` | O dado publicado não substitui indicador oficial, e a vitrine diz isso ao gestor          | 7                      | 03 §8       |
 | `RN-03-18` | Aporte é exibido em moedas da plataforma, nunca em reais                                  | 16                     | 04 §1       |
@@ -633,6 +637,7 @@ IA apontando para ela.
 | `RN-03-34` e `RN-03-35`             | 03 §8 (origem em memória e chave sem freio)                    |
 | `RF-03-38` a `RF-03-44`             | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)    |
 | `RF-03-78`                          | 02 §1 e 14 §§10, 11 (garfo do que a pessoa traz)               |
+| `RF-03-79` e `RF-03-80`             | 11 §8.2 (identificação do adulto e efetividade agregada)       |
 | `RF-03-45` a `RF-03-49`             | 03 §8 (institucional), 04 §1 (PIX e lastro), 01 §7 (IA) e 15   |
 | `RF-03-50` e `RF-03-51`             | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)             |
 | `RF-03-52` e `RF-03-53`             | 03 §12 (aviso de coleta e área detalhada)                      |

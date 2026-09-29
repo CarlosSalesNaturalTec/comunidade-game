@@ -125,7 +125,7 @@ o documento 11 §8.2 exige as duas variantes da carta com identificação (decis
 
 Esta regra NEVER SHALL alcançar Guerreiro(a): o nome civil de criança ou adolescente não
 aparece em superfície pública alguma, em hipótese nenhuma. (`RF-03-07`, `RN-03-04`,
-invariantes 9 e 12 do documento 99 §6)
+`RF-03-79`, `RN-03-36`, invariantes 9 e 12 do documento 99 §6)
 
 #### Scenario: Mestre sem nick aparece pelo nome
 
@@ -153,7 +153,7 @@ conclusão.
 
 O painel completo de efetividade segue sendo **do próprio Apoiador e de mais ninguém**, na
 App 08: esta é uma projeção pública agregada, não aquele painel (decisão do fundador,
-2026-09-29). (`RF-03-02`, `RN-03-01`, `RN-14-38`, documento 11 §8.2)
+2026-09-29). (`RF-03-80`, `RN-03-37`, `RN-03-01`, `RN-14-38`, documento 11 §8.2)
 
 #### Scenario: O desafio proposto sai com trilha, período e contagem
 

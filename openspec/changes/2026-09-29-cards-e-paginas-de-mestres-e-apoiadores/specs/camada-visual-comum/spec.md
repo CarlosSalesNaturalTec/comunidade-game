@@ -11,7 +11,7 @@ apresentar a prova como **link declarado**, cada um com o rótulo do que aponta 
 portfólio, rede social ou documento externo —, que é a única forma da prova no Ciclo 01.
 
 Não havendo nick, a variante SHALL apresentar o **nome** do Mestre, e NEVER SHALL apresentar
-nome como se fosse nick (decisão do fundador, 2026-09-29). Faltando avatar, a variante SHALL
+nome como se fosse nick (`RF-03-79`, `RN-03-36`). Faltando avatar, a variante SHALL
 usar o **avatar padrão do projeto**, na mesma moldura (documento 15 §7.3).
 
 A variante SHALL seguir a regra já vigente da carta pela metade: leitura que não devolve o que
@@ -60,8 +60,8 @@ diferentes, e a variante NEVER SHALL variar a moldura de um para outro.
 A variante NEVER SHALL exibir valor em reais nem dado de contato de Guerreiro(a). Abaixo do
 piso de **10 moedas acumuladas** a variante SHALL usar o **avatar padrão do projeto**, na mesma
 moldura, com o mesmo nick e o mesmo total em moedas e **nenhuma outra marca de diferença**.
-Não havendo nick, a variante SHALL apresentar o **nome** do Apoiador, como nome (decisão do
-fundador, 2026-09-29).
+Não havendo nick, a variante SHALL apresentar o **nome** do Apoiador, como nome
+(`RF-03-79`, `RN-03-36`).
 
 A variante SHALL seguir a regra já vigente da carta pela metade. (`RF-03-02`, `RF-03-10`,
 `RF-03-55`, `RF-03-56`, `RF-03-66`, `RN-03-18`, `RN-03-26`, documentos 11 §8.2 e 15 §7.3)
@@ -93,4 +93,4 @@ A variante SHALL seguir a regra já vigente da carta pela metade. (`RF-03-02`, `
 
 - **WHEN** a carta de um Apoiador apresenta os desafios propostos com a efetividade deles
 - **THEN** aparecem trilha, período e quantos concluíram, e nenhum nick, avatar ou dado de
-  quem concluiu
+  quem concluiu (`RF-03-80`, `RN-03-37`)

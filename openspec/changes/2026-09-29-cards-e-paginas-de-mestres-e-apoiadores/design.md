@@ -82,7 +82,15 @@ O artefato comprobatório **não tem tipo**: currículo, portfólio e rede socia
 registro, distinguidos pelo rótulo que quem declarou escreveu. O `RF-03-07` sai atendido pela
 lista de links com rótulo, que é a forma que o Ciclo 01 decidiu para a prova.
 
-### 6. A efetividade pública é a projeção agregada, não o painel da App 08
+### 6. O portão do `RF-03-57` é a existência de aporte, não o homologador
+
+"Aporte homologado" não é `admin_homologador_id IS NOT NULL`: a **absorção**
+credita sem homologação e deixa essa coluna vazia (`RN-07-35`). Linha em `Aporte` já é
+aporte creditado — a declaração pendente vive em `AporteDeclarado` e não cria nenhuma —, e o
+portão é a existência da linha. É o mesmo teste que `derivar_sustento` usa para o nível 1, e
+usar a coluna do homologador tiraria da vitrine justamente quem absorveu custo.
+
+### 7. A efetividade pública é a projeção agregada, não o painel da App 08
 
 A capacidade `efetividade-do-apoio` permanece restrita ao próprio Apoiador. O que a vitrine
 publica é outra projeção, com **trilha, período e contagem de conclusões** — a decisão do
@@ -90,18 +98,21 @@ fundador de 2026-09-29 —, montada direto de `DesafioExtra` e `ConclusaoDoDesaf
 tocar naquela capacidade. Nada de nick, avatar ou dado de quem concluiu, e o direcionado sai
 apenas como "houve conclusão".
 
-### 7. A ordem é alfabética, porque pódio é proibido
+### 8. A ordem nunca é a do valor, porque pódio é proibido
 
-`RN-14-38` proíbe ordenar apoiadores por valor. A listagem ordena pela identificação exibida,
-o mesmo critério das demais listagens da vitrine, e o cursor de paginação segue esse campo.
+`RN-14-38` proíbe ordenar apoiadores por valor. A listagem sai na ordem **estável do cursor**
+— `(criada_em, id)`, a mesma das demais listagens da vitrine —, e nenhuma saída traz posição.
+A ordenação por identificação ficou só onde não há paginação: os Mestres responsáveis dentro
+de cada poder.
 
-### 8. As duas decisões novas descem pelo fluxo antes do código
+### 9. As duas decisões novas descem pelo fluxo antes do código
 
 A hierarquia do `CLAUDE.md` não admite decisão nascendo em artefato do OpenSpec. O **nome no
 lugar do nick ausente** e a **efetividade pública com trilha e período** mudam o que o
 documento 11 §8.2 permite em público: entram primeiro no documento 11 §8.2, depois na tabela
 do documento 09 §1 como já decididos, depois no PRD-03, e só então no código. As tarefas
-seguem essa ordem.
+seguem essa ordem, e as duas acrescentam ao PRD-03 o `RF-03-79`, o `RF-03-80`, o `RN-03-36` e
+o `RN-03-37` — o mesmo precedente do `RF-03-78`, que a fatia 6 abriu.
 
 ## Risks / Trade-offs
 
@@ -110,9 +121,13 @@ seguem essa ordem.
   spec grava a proibição explícita para criança e adolescente.
 - **Áreas de habilidade derivadas deixam sem áreas o Mestre que ainda não publicou trilha** →
   a regra da carta pela metade já cobre: ele é apresentado em outra forma, não em carta vazia.
-- **Contar conclusões por desafio é uma consulta por item** → a contagem sai agregada numa
-  consulta só por Apoiador, no mesmo cuidado que a fatia 2 tomou ao montar a carta na
-  listagem, para não multiplicar consulta por card.
+- **O card do Apoiador custa algumas consultas por persona** → nick, artefatos e trilhas saem
+  em lote para a página inteira, mas o total em moedas, o sustento, os selos e a efetividade
+  chamam as **regras canônicas** (`moedas_acumuladas_de`, `derivar_sustento`, `listar_selos`)
+  uma vez por Apoiador. É N+1 assumido: reescrever a escada do sustento em consulta agregada
+  duplicaria a regra e abriria espaço para a vitrine discordar da App 08, que é o defeito mais
+  caro dos dois. No Ciclo 01 a lista de Apoiadores é curta e a cota por faixa da chave cobre;
+  se crescer, o lote entra sem mudar a spec.
 - **`moedas_acumuladas_de` e `contagem_de_absorcoes_de` passam a ser chamadas em rota
   pública** → as duas já são leitura derivada de lançamentos homologados, sem dado sensível;
   a rota pública de Poder Sustentador já as expõe hoje.

@@ -4,7 +4,8 @@ Origem: **PRD-03 — Vitrine pública (App 06)**, **fatia 7** do
 `openspec/cronograma-de-fatias.md`, "Cards e páginas de Mestres e Apoiadores".
 
 Atende `RF-03-02` (parte), `RF-03-07`, `RF-03-10`, `RF-03-55`, `RF-03-56`, `RF-03-57`,
-`RF-03-66`, `RN-03-18` e `RN-03-26`. Fecha a pendência do `RF-14-52` — a página pública de
+`RF-03-66`, `RN-03-18` e `RN-03-26`. As duas decisões novas acrescentam ao PRD-03 os
+identificadores `RF-03-79`, `RF-03-80`, `RN-03-36` e `RN-03-37`, que esta fatia também atende. Fecha a pendência do `RF-14-52` — a página pública de
 onde o Apoiador favorita o Mestre — e o pedaço que a fatia 2 deixou em aberto na seção de
 poderes: os Mestres responsáveis de cada poder.
 
@@ -39,11 +40,13 @@ código:
 
 1. **Adulto sem nick aparece pelo nome.** O nick é opcional para Mestre e Apoiador, e o
    documento 11 §8.2 exige nick nas duas variantes da carta. A vitrine passa a exibir o
-   **nome** da persona quando não houver nick. Muda o documento 11 §8.2 e o `RF-03-07`.
+   **nome** da persona quando não houver nick. Muda o documento 11 §8.2 e acrescenta ao
+   PRD-03 o `RF-03-79` e o `RN-03-36`.
 2. **A efetividade do Apoiador sai em público com trilha e período.** A capacidade
    `efetividade-do-apoio` é do próprio Apoiador; a projeção pública leva os desafios extras
    propostos, quantos foram concluídos, a trilha e o período — nunca nick, avatar ou dado de
-   quem concluiu, nunca reais. Muda o documento 11 §8.2.
+   quem concluiu, nunca reais. Muda o documento 11 §8.2 e acrescenta ao PRD-03 o `RF-03-80`
+   e o `RN-03-37`.
 3. As **áreas de habilidade do Mestre** derivam da área do conhecimento das trilhas
    publicadas de autoria dele — deriva de dado que já existe, sem campo novo.
 4. Os **Mestres responsáveis do poder** derivam do autor das trilhas publicadas do poder, e

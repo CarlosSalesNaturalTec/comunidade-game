@@ -1,5 +1,7 @@
 import { Cabecalho, Moldura } from "comum/react";
 import { useState } from "react";
+import { PaginaDoApoiador } from "./adultos/PaginaDoApoiador";
+import { PaginaDoMestre } from "./adultos/PaginaDoMestre";
 import { AreaDetalhada } from "./coleta/AreaDetalhada";
 import { AvisoDeColeta } from "./coleta/AvisoDeColeta";
 import { PortaDoConvite } from "./convite/PortaDoConvite";
@@ -14,7 +16,13 @@ import {
   CAMINHO_DO_CONVITE,
 } from "./navegacao/caminhos";
 import { NavegacaoDeRecortes } from "./navegacao/NavegacaoDeRecortes";
-import { comunidadeDoCaminho, nickDoCaminho, recorteDoCaminho } from "./navegacao/recortes";
+import {
+  apoiadorDoCaminho,
+  comunidadeDoCaminho,
+  mestreDoCaminho,
+  nickDoCaminho,
+  recorteDoCaminho,
+} from "./navegacao/recortes";
 import { useNavegacao } from "./navegacao/useNavegacao";
 import { TelaDoRecorte } from "./recortes/TelaDoRecorte";
 import { PaginaDaComunidade } from "./territorio/PaginaDaComunidade";
@@ -29,6 +37,8 @@ export default function App() {
   const recorte = recorteDoCaminho(caminho);
   const nick = nickDoCaminho(caminho);
   const comunidadeId = comunidadeDoCaminho(caminho);
+  const mestreId = mestreDoCaminho(caminho);
+  const apoiadorId = apoiadorDoCaminho(caminho);
 
   return (
     <>
@@ -60,6 +70,18 @@ export default function App() {
         <Moldura>
           <div className="cg-vitrine">
             <PaginaDaComunidade comunidadeId={comunidadeId} irPara={irPara} />
+          </div>
+        </Moldura>
+      ) : mestreId !== null ? (
+        <Moldura>
+          <div className="cg-vitrine">
+            <PaginaDoMestre mestreId={mestreId} irPara={irPara} />
+          </div>
+        </Moldura>
+      ) : apoiadorId !== null ? (
+        <Moldura>
+          <div className="cg-vitrine">
+            <PaginaDoApoiador apoiadorId={apoiadorId} irPara={irPara} />
           </div>
         </Moldura>
       ) : (

@@ -38,6 +38,21 @@ function comConteudo() {
       nome: "Poder do Território",
       descricao: "Ler e cuidar do lugar onde se vive.",
       trilhas: [{ id: "t-1", nome: "Trilha da Água" }],
+      mestres_responsaveis: [
+        {
+          id: "m-1",
+          avatar: null,
+          avatar_padrao: true,
+          identificacao: { valor: "mestra_ana", tipo: "nick" },
+        },
+      ],
+    },
+    {
+      id: "p-2",
+      nome: "Poder sem trilha",
+      descricao: "Ainda sem trilha publicada.",
+      trilhas: [],
+      mestres_responsaveis: [],
     },
   ]);
 }
@@ -81,13 +96,36 @@ describe("portfólio, ranking e poderes", () => {
     expect(ranking.queryByText(/ponto extra|moeda|R\$/i)).toBeNull();
   });
 
-  it("a seção de poderes traz as trilhas e não promete Mestres (RF-03-02)", async () => {
+  it("a seção de poderes traz as trilhas e os Mestres responsáveis (RF-03-02)", async () => {
     render(<App />);
 
     const poderes = secaoDe("Poderes");
     expect(await poderes.findByText("Poder do Território")).toBeVisible();
     expect(poderes.getByText("Trilha da Água")).toBeVisible();
-    expect(poderes.queryByText(/mestre/i)).toBeNull();
+    expect(poderes.getByText("Mestres responsáveis")).toBeVisible();
+    expect(poderes.getByRole("button", { name: "mestra_ana" })).toBeVisible();
+  });
+
+  it("o Mestre responsável leva à página individual dele (RF-03-02)", async () => {
+    render(<App />);
+    const testeDeUsuario = userEvent.setup();
+
+    const poderes = secaoDe("Poderes");
+    await poderes.findByText("Poder do Território");
+    await testeDeUsuario.click(poderes.getByRole("button", { name: "mestra_ana" }));
+
+    expect(window.location.pathname).toBe("/mestres/m-1");
+  });
+
+  it("poder sem trilha publicada não mostra espaço vazio de Mestres (RF-03-02)", async () => {
+    const { container } = render(<App />);
+
+    const poderes = secaoDe("Poderes");
+    await poderes.findByText("Poder sem trilha");
+    const item = Array.from(container.querySelectorAll(".cg-poderes__item")).find((no) =>
+      no.textContent?.includes("Poder sem trilha"),
+    );
+    expect(item?.textContent).not.toContain("Mestres responsáveis");
   });
 
   it("nada da visita fica no aparelho (RF-03-14, RN-03-22)", async () => {

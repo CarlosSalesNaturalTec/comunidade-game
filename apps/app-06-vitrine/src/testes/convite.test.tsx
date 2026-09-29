@@ -2,7 +2,13 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../App";
-import type { ComunidadePublica, GuerreiroPublico, SeriePublica } from "../api/leituras";
+import type {
+  ApoiadorPublico,
+  ComunidadePublica,
+  GuerreiroPublico,
+  MestrePublico,
+  SeriePublica,
+} from "../api/leituras";
 import * as leituras from "../api/leituras";
 import { esquecerConteudoInstitucional } from "../institucional/useConteudoInstitucional";
 import { esquecerNecessidades } from "../necessidades/useNecessidades";
@@ -29,6 +35,33 @@ function guerreiro(): GuerreiroPublico {
   };
 }
 
+const ID_DO_MESTRE = "11111111-1111-4111-8111-111111111111";
+const ID_DO_APOIADOR = "22222222-2222-4222-8222-222222222222";
+
+const MESTRE: MestrePublico = {
+  id: ID_DO_MESTRE,
+  avatar: null,
+  avatar_padrao: true,
+  identificacao: { valor: "mestra_ana", tipo: "nick" },
+  areas_de_habilidade: [],
+  artefatos: [],
+  trilhas_de_autoria: [],
+  absorcoes: 0,
+};
+
+const APOIADOR: ApoiadorPublico = {
+  id: ID_DO_APOIADOR,
+  avatar: null,
+  avatar_padrao: true,
+  identificacao: { valor: "apoia_norte", tipo: "nick" },
+  total_em_moedas: "12.00",
+  nivel_de_sustento: 1,
+  nome_do_nivel: "Quem começou",
+  selos: [],
+  desafios_propostos: [],
+  artefatos: [],
+};
+
 function comLeituras() {
   const ficha: ComunidadePublica = {
     id: ID_DA_COMUNIDADE,
@@ -46,6 +79,13 @@ function comLeituras() {
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarPoderes").mockResolvedValue([]);
+  vi.spyOn(leituras, "listarMestres").mockResolvedValue({ itens: [], proximo_cursor: null });
+  vi.spyOn(leituras, "listarApoiadores").mockResolvedValue({
+    itens: [],
+    proximo_cursor: null,
+  });
+  vi.spyOn(leituras, "obterMestrePorId").mockResolvedValue(MESTRE);
+  vi.spyOn(leituras, "obterApoiadorPorId").mockResolvedValue(APOIADOR);
   vi.spyOn(leituras, "listarComunidades").mockResolvedValue({
     itens: [],
     proximo_cursor: null,
@@ -87,6 +127,31 @@ describe("o convite ao acompanhamento", () => {
 
     expect(await screen.findByRole("button", { name: "Quero participar" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Quero acompanhar" })).toBeVisible();
+  });
+
+  it("a página do Mestre traz a chamada e a ação de acompanhar (RF-03-39, RF-03-40)", async () => {
+    window.history.pushState(null, "", `/mestres/${ID_DO_MESTRE}`);
+    render(<App />);
+
+    expect(await screen.findByRole("button", { name: "Quero participar" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Quero acompanhar" })).toBeVisible();
+  });
+
+  it("a página do Apoiador traz a chamada e a ação de acompanhar (RF-03-39, RF-03-40)", async () => {
+    window.history.pushState(null, "", `/apoiadores/${ID_DO_APOIADOR}`);
+    render(<App />);
+
+    expect(await screen.findByRole("button", { name: "Quero participar" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Quero acompanhar" })).toBeVisible();
+  });
+
+  it("acompanhar na página do Mestre chega à mesma porta (RF-03-40, RF-14-52)", async () => {
+    window.history.pushState(null, "", `/mestres/${ID_DO_MESTRE}`);
+    render(<App />);
+
+    await userEvent.click(await screen.findByRole("button", { name: "Quero acompanhar" }));
+
+    expect(window.location.pathname).toBe("/quero-participar");
   });
 
   it("a chamada convida a participar do projeto, e não a apoiar quem está na tela (RF-03-41, RN-03-25)", async () => {

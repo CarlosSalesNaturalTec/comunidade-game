@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { SecaoDeApoiadores } from "../adultos/SecaoDeApoiadores";
+import { SecaoDeMestres } from "../adultos/SecaoDeMestres";
 import { SecaoDeSolicitacaoDeDados } from "../formularios/SecaoDeSolicitacaoDeDados";
 import { SecaoDeGuerreiros } from "../guerreiros/SecaoDeGuerreiros";
 import {
@@ -12,6 +14,7 @@ import { SecaoDoRanking } from "../ranking/SecaoDoRanking";
 import { BlocoDoGestor } from "../territorio/BlocoDoGestor";
 import { SecaoDaCobertura } from "../territorio/SecaoDaCobertura";
 import { SecaoDeComunidades } from "../territorio/SecaoDeComunidades";
+import { PREFIXO_DA_PAGINA_DO_APOIADOR, PREFIXO_DA_PAGINA_DO_MESTRE } from "./caminhos";
 
 /** Os três recortes de leitura do PRD-03 §6.2. Cada um tem **caminho
  * próprio**, e não é guardado em lugar nenhum: a raiz é sempre sociedade
@@ -59,11 +62,11 @@ const PODERES: Secao = {
 };
 const MESTRES: Secao = {
   titulo: "Mestres",
-  pendente: "Os cards e as páginas dos Mestres chegam em entrega própria.",
+  Conteudo: SecaoDeMestres,
 };
 const APOIADORES: Secao = {
   titulo: "Apoiadores",
-  pendente: "Os cards e as páginas dos Apoiadores chegam em entrega própria.",
+  Conteudo: SecaoDeApoiadores,
 };
 const COMUNIDADES: Secao = {
   titulo: "Comunidades Virtuais",
@@ -171,4 +174,21 @@ export function nickDoCaminho(caminho: string): string | null {
   if (!caminho.startsWith(PREFIXO_DA_PAGINA_DO_GUERREIRO)) return null;
   const nick = decodeURIComponent(caminho.slice(PREFIXO_DA_PAGINA_DO_GUERREIRO.length));
   return nick.length > 0 ? nick : null;
+}
+
+/** Devolve o identificador do Mestre no caminho, ou `null` quando o caminho
+ * não é o da página individual dele (`RF-03-03`). */
+export function mestreDoCaminho(caminho: string): string | null {
+  return identificadorDoCaminho(caminho, PREFIXO_DA_PAGINA_DO_MESTRE);
+}
+
+/** O mesmo, para o Apoiador. */
+export function apoiadorDoCaminho(caminho: string): string | null {
+  return identificadorDoCaminho(caminho, PREFIXO_DA_PAGINA_DO_APOIADOR);
+}
+
+function identificadorDoCaminho(caminho: string, prefixo: string): string | null {
+  if (!caminho.startsWith(prefixo)) return null;
+  const id = decodeURIComponent(caminho.slice(prefixo.length));
+  return id.length > 0 ? id : null;
 }

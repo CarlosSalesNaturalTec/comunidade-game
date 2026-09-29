@@ -52,8 +52,8 @@ A página SHALL detalhar o que o documento 11 §8.2 atribui a ela: os **aportes 
 A seção NEVER SHALL apresentar Apoiador sem aporte homologado, NEVER SHALL exibir valor em
 reais e NEVER SHALL ordenar, classificar ou comparar Apoiadores por valor aportado: a ordem é
 alfabética pela identificação que o card exibe. (`RF-03-02`, `RF-03-03`, `RF-03-07`,
-`RF-03-10`, `RF-03-55`, `RF-03-56`, `RF-03-57`, `RF-03-66`, `RN-03-18`, `RN-03-26`,
-`RN-14-38`)
+`RF-03-10`, `RF-03-55`, `RF-03-56`, `RF-03-57`, `RF-03-66`, `RF-03-80`, `RN-03-18`,
+`RN-03-26`, `RN-03-37`, `RN-14-38`)
 
 #### Scenario: Cada Apoiador com aporte homologado sai em card
 
