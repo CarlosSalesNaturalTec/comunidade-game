@@ -78,6 +78,13 @@
       com comunidade e sem pessoa nem formulário, e `robots.txt` (nível 2)
 - [x] 5.3 Escrever os testes de unidade de `montarSitemap` e `montarRobots`, cobrindo
       exclusão de pessoa e de formulário e o escape do XML (nível 3)
+- [x] 5.4 Escrever o teste do `firebase.json` — `rewrite` dos três prefixos de pessoa
+      para a casca `noindex`, `X-Robots-Tag` neles e nela, `**` como último e apontando
+      a casca, e nenhum cabeçalho em endereço institucional. **Acrescentada no
+      `/opsx:verify`**, que achou o cenário "as três páginas de pessoa declaram que não
+      se indexa" só meio coberto: a etiqueta estava no `dist/`, o `rewrite` e o
+      cabeçalho não estavam em teste nenhum, e errar um prefixo ali publicaria página
+      de Guerreiro(a) indexável (`RF-03-14`, invariante 12 do documento 99)
 
 ## 6. Documentação
 
