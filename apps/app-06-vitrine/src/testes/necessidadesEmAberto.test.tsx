@@ -1,10 +1,10 @@
 import { render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import type { NecessidadePublica } from "../api/leituras";
 import * as leituras from "../api/leituras";
 import { esquecerConteudoInstitucional } from "../institucional/useConteudoInstitucional";
 import { esquecerNecessidades } from "../necessidades/useNecessidades";
+import App from "./TelaDaVitrine";
 
 // As necessidades de recurso em aberto (`RF-03-47`): aparecem na porta do
 // convite e em "Como apoiar", com tipo, quantidade que falta, valor em moedas,

@@ -66,20 +66,22 @@
 
 ## 5. Testes
 
-- [ ] 5.1 Escrever o teste da saída do build, sobre `dist/`, cobrindo os cenários das
-      specs: conteúdo no documento institucional e na área detalhada, casca da
-      comunidade sem o painel, documento da pessoa sem perfil, `noindex` presente nas
-      três páginas de pessoa e ausente no institucional, `sitemap.xml` com comunidade e
-      sem pessoa nem formulário
-- [ ] 5.2 Escrever os testes de unidade da montagem do `sitemap.xml` e dos metadados de
-      cabeça, cobrindo exclusão de pessoa e de formulário e a ausência de dado de
-      Guerreiro(a) na prévia
-- [ ] 5.3 Rodar os 26 arquivos de teste de componente existentes e corrigir o que a
-      troca de casca quebrou, sem alterar comportamento de tela
+- [x] 5.1 Criar `src/testes/TelaDaVitrine.tsx`, a composição de tela equivalente à das
+      páginas de `src/pages/`, com navegação de cliente e declarada como sendo só para
+      teste; apontar para ela os 19 arquivos que montavam `<App />` e verificar que os
+      118 casos voltam a passar sem mudar o que afirmam (design — decisão 7, nível 1)
+- [x] 5.2 Escrever o teste da saída do build, sobre o `dist/` de um build real contra um
+      núcleo de mentira, cobrindo os cenários das specs: conteúdo no documento
+      institucional e na área detalhada, **títulos e seções por rota** — que é o que
+      guarda a composição de teste contra desvio —, casca da comunidade sem o painel,
+      documento da pessoa sem perfil, `noindex` só nas páginas de pessoa, `sitemap.xml`
+      com comunidade e sem pessoa nem formulário, e `robots.txt` (nível 2)
+- [x] 5.3 Escrever os testes de unidade de `montarSitemap` e `montarRobots`, cobrindo
+      exclusão de pessoa e de formulário e o escape do XML (nível 3)
 
 ## 6. Documentação
 
-- [ ] 6.1 Marcar a fatia 9 como `implementado` no `openspec/cronograma-de-fatias.md`,
+- [x] 6.1 Marcar a fatia 9 como `implementado` no `openspec/cronograma-de-fatias.md`,
       com o slug da change. Nenhuma decisão nova foi tomada nesta change, nenhum PRD
       muda, a situação do PRD-03 em `docs/prds/index.md` não muda, nenhuma relação entre
       documentos muda e nenhum arquivo nasce em `docs/` — nada mais a atualizar

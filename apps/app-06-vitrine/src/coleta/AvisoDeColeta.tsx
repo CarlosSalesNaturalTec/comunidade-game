@@ -7,7 +7,7 @@ import { navegarPara } from "../navegacao/navegar";
 export function AvisoDeColeta({
   irPara = navegarPara,
 }: {
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }) {
   return (
     <aside className="cg-aviso-de-coleta" aria-label="Aviso de coleta de dados">

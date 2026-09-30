@@ -1,9 +1,9 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import type { GuerreiroPublico } from "../api/leituras";
 import * as leituras from "../api/leituras";
+import App from "./TelaDaVitrine";
 
 // Critérios de aceite do PRD-03 §12 para os cards e a página individual:
 // Guerreiro(a) com autorização aparece em card e página; o card abre a

@@ -1,7 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import type {
   ApoiadorPublico,
   ComunidadePublica,
@@ -12,6 +11,7 @@ import type {
 import * as leituras from "../api/leituras";
 import { esquecerConteudoInstitucional } from "../institucional/useConteudoInstitucional";
 import { esquecerNecessidades } from "../necessidades/useNecessidades";
+import App from "./TelaDaVitrine";
 
 // Critérios de aceite do PRD-03 §12 para o convite: toda página individual traz
 // a chamada "Quero participar"; clicando nela, a tela seguinte não cita a pessoa

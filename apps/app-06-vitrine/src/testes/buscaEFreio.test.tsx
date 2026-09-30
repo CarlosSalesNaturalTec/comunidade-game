@@ -2,9 +2,9 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import type { GuerreiroPublico } from "../api/leituras";
 import * as leituras from "../api/leituras";
+import App from "./TelaDaVitrine";
 
 // Critérios de aceite do PRD-03 §12: a busca por nick inexistente e por nick
 // sem autorização devolvem **a mesma** resposta, e repetir a busca da mesma

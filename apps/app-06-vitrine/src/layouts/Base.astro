@@ -19,7 +19,13 @@ interface Props {
 }
 
 const { titulo, descricao, indexavel = true } = Astro.props;
-const canonica = new URL(Astro.url.pathname, Astro.site).href;
+// `build.format: "file"` emite `pesquisadores.html`, e o Firebase Hosting o
+// serve em `/pesquisadores`. A canônica tem de ser o endereço **público**: sem
+// o `.html`, e `/` para a abertura. Canônica em `/index.html` dividiria a
+// identidade da raiz para o buscador — exatamente o que ela existe para
+// evitar (PRD-03 §10).
+const publico = Astro.url.pathname.replace(/index\.html$/, "").replace(/\.html$/, "");
+const canonica = new URL(publico === "" ? "/" : publico, Astro.site).href;
 ---
 
 <!doctype html>

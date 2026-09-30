@@ -1,8 +1,8 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import * as leituras from "../api/leituras";
+import App from "./TelaDaVitrine";
 
 // Critérios de aceite do PRD-03 §12: quem não autorizou não aparece em card,
 // página, portfólio nem ranking; o ranking é de ponto regular; e, depois de

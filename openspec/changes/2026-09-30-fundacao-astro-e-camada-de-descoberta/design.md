@@ -111,17 +111,30 @@ código 0 — não quebra a esteira, mas polui.
 Manter o `.astro` compondo e a carga de dados num `.ts` importado resolve o ruído e é o
 desenho melhor de todo modo: a lógica volta a ser testável em unidade.
 
-### 7. Os testes se dividem em dois níveis
+### 7. Os testes se dividem em três níveis
 
-Os 26 testes de componente seguem como estão — as ilhas continuam React, e
-`@testing-library/react` continua valendo.
+**Corrigida durante a implementação, em 2026-09-30.** A versão anterior desta decisão
+dizia que os 26 arquivos de teste seguiriam valendo, porque as ilhas continuam React.
+Era verificável e estava errada: **19 deles renderizam `<App />`** — são os 118 casos da
+App 06 — e **19 casos afirmam navegação entre rotas** comparando `location.pathname`
+depois de um clique. Essa transição era de cliente e passou a ser carga de documento,
+que o jsdom não executa. Decisão do fundador de 2026-09-30, pela opção híbrida.
 
-O que esta fatia acrescenta não se testa em componente: "o documento devolvido já traz o
-conteúdo" é afirmação sobre o `dist/`. Então um arquivo novo de teste lê a saída do
-build e confere os cenários das specs — conteúdo no documento institucional, casca da
-comunidade sem o painel, ausência de perfil no documento da pessoa, `noindex` presente,
-`sitemap.xml` sem pessoa. As funções puras — montagem do sitemap e dos metadados —
-ganham teste de unidade próprio.
+**Nível 1 — ilha, no jsdom.** Os 118 casos seguem, e passam a montar
+`src/testes/TelaDaVitrine.tsx`: a composição de tela equivalente à das páginas de
+`src/pages/`, com navegação de cliente. Ela existe **só para teste** e é declarada como
+tal. O que cada caso afirma continua sendo comportamento de componente que a produção
+tem; o que a composição de teste substitui é a carga de documento, que o jsdom não faz.
+
+**Nível 2 — a saída do build.** É o que guarda o nível 1 contra desvio: se uma página de
+`src/pages/` deixar de trazer uma seção, o nível 1 não percebe e este percebe. Confere
+os cenários das specs sobre o `dist/` de um build real, contra um núcleo de mentira:
+conteúdo no documento institucional, títulos e seções por rota, casca da comunidade sem
+o painel, ausência de perfil no documento da pessoa, `noindex` presente só onde deve,
+`sitemap.xml` e `robots.txt`.
+
+**Nível 3 — unidade.** As funções puras de `src/descoberta/enderecos.ts` — montagem do
+`sitemap.xml` e do `robots.txt` — têm teste próprio, sem build.
 
 ### 8. `astro check` no lugar de `tsc -b`
 
@@ -149,7 +162,7 @@ comportamento declarado não muda.
 | Institucional editado na App 03 só aparece na publicação seguinte | É o preço de indexar. O institucional muda em dias, não em minutos |
 | `@astrojs/react` renderizando componente que supõe navegador | Só sete arquivos tocam API de navegador, e seis já são de cliente. O sétimo tem a rolagem de âncora isolada em ilha |
 | Aviso de variável não usada do Biome em `.astro` | Decisão 6: frontmatter fino. Conferido que não quebra a esteira |
-| Regressão silenciosa de tela na troca de casca | Os 26 testes de componente seguem rodando, e o nível novo cobre o que eles não alcançam |
+| A composição de teste do nível 1 desviar das páginas de `src/pages/` | O nível 2 confere títulos e seções por rota sobre o `dist/` de um build real |
 | Publicação com `noindex` faltando numa página de pessoa | Etiqueta **e** cabeçalho, em caminhos declarados no `firebase.json`, com teste sobre o `dist/` |
 
 ## Migration Plan

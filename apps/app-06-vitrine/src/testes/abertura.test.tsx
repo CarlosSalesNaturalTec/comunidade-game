@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
-import App from "../App";
+import App from "./TelaDaVitrine";
 
 // Critérios de aceite do PRD-03 §12: a vitrine abre inteira sem login, e
 // nenhuma tela oferece cadastro ou área restrita.
