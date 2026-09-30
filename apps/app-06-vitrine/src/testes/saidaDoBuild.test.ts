@@ -4,7 +4,7 @@ import type { Server } from "node:http";
 import { join } from "node:path";
 import { promisify } from "node:util";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { criarNucleoDeMentira, PORTA_PADRAO } from "./nucleoDeMentira.mjs";
+import { criarNucleoDeMentira } from "./nucleoDeMentira.mjs";
 
 const executar = promisify(execFile);
 
@@ -23,16 +23,24 @@ const executar = promisify(execFile);
 
 const RAIZ = join(__dirname, "..", "..");
 const DIST = join(RAIZ, "dist");
-const PORTA = PORTA_PADRAO;
 
-let servidor: Server;
+let servidor: Server | undefined;
 
 function ler(arquivo: string): string {
   return readFileSync(join(DIST, arquivo), "utf-8");
 }
 
 beforeAll(async () => {
-  servidor = await criarNucleoDeMentira(PORTA);
+  // Porta **efêmera**, pedida ao sistema. O `frontend-ci.yml` sobe o mesmo
+  // núcleo de mentira na porta padrão, para o `npm run build --workspaces`
+  // ter o que ler, e fixar a porta aqui faria os dois brigarem pela mesma
+  // (`EADDRINUSE`) sempre que rodassem na mesma máquina.
+  const aberto = await criarNucleoDeMentira(0);
+  servidor = aberto;
+  const endereco = aberto.address();
+  if (endereco === null || typeof endereco === "string") {
+    throw new Error("o núcleo de mentira não abriu porta");
+  }
 
   // Assíncrono, e nunca `execFileSync`: o núcleo de mentira vive **neste**
   // processo, e a versão síncrona bloquearia o event loop — o build não
@@ -42,7 +50,7 @@ beforeAll(async () => {
     cwd: RAIZ,
     env: {
       ...process.env,
-      VITE_URL_DO_NUCLEO: `http://127.0.0.1:${PORTA}`,
+      VITE_URL_DO_NUCLEO: `http://127.0.0.1:${endereco.port}`,
       VITE_CHAVE_DE_APLICACAO: "chave-de-teste",
       // O proxy do ambiente não deve alcançar o laço local.
       NO_PROXY: "127.0.0.1,localhost",
@@ -52,7 +60,10 @@ beforeAll(async () => {
 }, 180_000);
 
 afterAll(async () => {
-  await new Promise<void>((pronto) => servidor.close(() => pronto()));
+  // Pode não existir: se o `beforeAll` falhou antes de abrir, fechar aqui
+  // trocaria a causa real por um `TypeError`.
+  if (servidor === undefined) return;
+  await new Promise<void>((pronto) => servidor?.close(() => pronto()));
 });
 
 describe("o institucional sai no documento servido", () => {
