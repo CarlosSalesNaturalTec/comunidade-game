@@ -1,6 +1,7 @@
 import type { DadosDaCarta } from "comum/react";
 import { Aviso, CartaDoPersonagem, cartaEstaCompleta, EstadoDaLista } from "comum/react";
 import { useLeitura } from "../leitura/useLeitura";
+import { navegarPara } from "../navegacao/navegar";
 
 interface Props<Item> {
   /** A leitura da listagem e a chave de cache dela. */
@@ -13,7 +14,7 @@ interface Props<Item> {
   /** O prefixo do endereço próprio da página individual (`RF-03-03`). */
   prefixoDoCaminho: string;
   vazio: string;
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
 /** A seção de cards de um papel adulto. As duas variantes — Mestre e
@@ -31,7 +32,7 @@ export function SecaoDeAdultos<Item>({
   idDe,
   prefixoDoCaminho,
   vazio,
-  irPara,
+  irPara = navegarPara,
 }: Props<Item>) {
   const estado = useLeitura(listar, chave);
   const itens = estado.situacao === "pronta" ? estado.dado.itens : [];

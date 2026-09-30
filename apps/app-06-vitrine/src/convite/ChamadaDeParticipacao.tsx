@@ -1,8 +1,9 @@
 import { Botao } from "comum/react";
 import { CAMINHO_DO_CONVITE } from "../navegacao/caminhos";
+import { navegarPara } from "../navegacao/navegar";
 
 interface Props {
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
 /** A chamada "Quero participar" e a ação de acompanhar, que **toda página
@@ -14,7 +15,7 @@ interface Props {
  * `RN-03-25`; design — decisão 3). Favoritar é função de Apoiador cadastrado, na
  * App 08, e a vitrine não guarda favorito nenhum (`RF-03-38`, `RN-03-15`,
  * `RN-03-16`). */
-export function ChamadaDeParticipacao({ irPara }: Props) {
+export function ChamadaDeParticipacao({ irPara = navegarPara }: Props) {
   return (
     <section className="cg-chamada" aria-label="Quero participar">
       <p>

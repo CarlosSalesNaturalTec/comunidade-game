@@ -1,6 +1,5 @@
 import { Aviso, EstadoDaLista } from "comum/react";
-import { useEffect } from "react";
-import type { ChaveDeSecaoInstitucional } from "../api/leituras";
+import type { ChaveDeSecaoInstitucional, SecaoInstitucionalPublica } from "../api/leituras";
 import { ListaDeNecessidades } from "../necessidades/ListaDeNecessidades";
 import { TextoInstitucional } from "./TextoInstitucional";
 import { useConteudoInstitucional } from "./useConteudoInstitucional";
@@ -9,31 +8,22 @@ import { useConteudoInstitucional } from "./useConteudoInstitucional";
 // o núcleo devolve: **nenhum valor fica escrito aqui** — nem a chave PIX
 // (`RF-03-46`). Seção que ainda não foi publicada diz isso, sem inventar
 // conteúdo (design — decisão 6).
+//
+// A apresentação é **pura** e a leitura é **ilha**, separadas de propósito: o
+// institucional sai no documento servido (PRD-03 §10), e para isso o Astro
+// renderiza `ApresentacaoDaSecao` no build com o que buscou ali. As ilhas
+// abaixo seguem existindo para quem chega pela casca de cliente.
 
-function ConteudoDaSecao({
-  secao,
+/** A seção já lida, apresentada. Não busca nada: serve ao render do build e ao
+ * da ilha, e é o que faz o texto institucional existir no documento. */
+export function ApresentacaoDaSecao({
+  dado,
   nome,
-  aoChegar,
 }: {
-  secao: ChaveDeSecaoInstitucional;
+  dado: SecaoInstitucionalPublica;
   nome: string;
-  aoChegar?: () => void;
 }) {
-  const estado = useConteudoInstitucional(secao);
-  const publicada = estado.situacao === "pronta" && estado.dado.texto !== null;
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: só a chegada do texto dispara.
-  useEffect(() => {
-    if (publicada) aoChegar?.();
-  }, [publicada]);
-
-  if (estado.situacao === "carregando") return <EstadoDaLista>Carregando…</EstadoDaLista>;
-  if (estado.situacao === "falhou") {
-    return (
-      <Aviso tipo="erro">Não foi possível carregar esta seção agora. Tente de novo.</Aviso>
-    );
-  }
-  const { texto, video_url } = estado.dado;
+  const { texto, video_url } = dado;
   return (
     <>
       {video_url !== null && (
@@ -55,21 +45,20 @@ function ConteudoDaSecao({
   );
 }
 
-/** Leva a nota de transparência, que o texto reescrito por IA aponta pela
- * âncora do endereço, ao foco quando o conteúdo chega (`RF-03-48`). */
-function irParaAAncoraDoEndereco() {
-  const id = decodeURIComponent(window.location.hash.slice(1));
-  if (id === "") return;
-  const alvo = document.getElementById(id);
-  if (alvo === null) return;
-  alvo.scrollIntoView?.();
-  alvo.focus();
+function ConteudoDaSecao({ secao, nome }: { secao: ChaveDeSecaoInstitucional; nome: string }) {
+  const estado = useConteudoInstitucional(secao);
+
+  if (estado.situacao === "carregando") return <EstadoDaLista>Carregando…</EstadoDaLista>;
+  if (estado.situacao === "falhou") {
+    return (
+      <Aviso tipo="erro">Não foi possível carregar esta seção agora. Tente de novo.</Aviso>
+    );
+  }
+  return <ApresentacaoDaSecao dado={estado.dado} nome={nome} />;
 }
 
 export function SecaoQuemSomos() {
-  return (
-    <ConteudoDaSecao secao="quem-somos" nome="Quem somos" aoChegar={irParaAAncoraDoEndereco} />
-  );
+  return <ConteudoDaSecao secao="quem-somos" nome="Quem somos" />;
 }
 
 export function SecaoContatos() {
@@ -80,9 +69,18 @@ export function SecaoComoApoiar() {
   return (
     <>
       <ConteudoDaSecao secao="como-apoiar" nome="Como apoiar" />
-      {/* As necessidades em aberto aparecem aqui **e** na porta do convite: quem
-          navega pela vitrine e não aciona a chamada também vê o que falta
-          (`RF-03-47`, design — decisão 8). */}
+      <NecessidadesEmAberto />
+    </>
+  );
+}
+
+/** As necessidades em aberto aparecem aqui **e** na porta do convite: quem
+ * navega pela vitrine e não aciona a chamada também vê o que falta
+ * (`RF-03-47`, design — decisão 8). É ilha: a lista muda a cada aporte, e
+ * congelá-la na publicação mostraria necessidade já atendida. */
+export function NecessidadesEmAberto() {
+  return (
+    <>
       <h3>Necessidades de recurso em aberto</h3>
       <ListaDeNecessidades />
     </>

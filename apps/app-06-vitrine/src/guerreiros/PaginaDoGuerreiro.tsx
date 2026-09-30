@@ -10,11 +10,12 @@ import { type GuerreiroPublico, obterGuerreiroPorNick } from "../api/leituras";
 import { ChamadaDeParticipacao } from "../convite/ChamadaDeParticipacao";
 import { esperaEmLinguagemSimples } from "../formularios/espera";
 import { useLeitura } from "../leitura/useLeitura";
+import { navegarPara } from "../navegacao/navegar";
 import { cartaDoGuerreiro, FORMATADOR_DE_DATA } from "./carta";
 
 interface Props {
   nick: string;
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
 /** Nick inexistente e nick sem autorização recebem **a mesma** tela, sem
@@ -22,7 +23,7 @@ interface Props {
  * §§5.6, 5.7). */
 const NAO_ENCONTRADO = "Não encontrado.";
 
-export function PaginaDoGuerreiro({ nick, irPara }: Props) {
+export function PaginaDoGuerreiro({ nick, irPara = navegarPara }: Props) {
   const estado = useLeitura(() => obterGuerreiroPorNick(nick), `vitrine/guerreiros/${nick}`);
 
   return (

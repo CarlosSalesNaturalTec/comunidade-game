@@ -1,8 +1,9 @@
 import { Botao } from "comum/react";
 import { CAMINHO_DA_SOLICITACAO_DE_DADOS } from "../navegacao/caminhos";
-import type { PropsDaSecao } from "../navegacao/recortes";
+import type { PropsDaSecao } from "../navegacao/navegar";
+import { navegarPara } from "../navegacao/navegar";
 
-export function SecaoDeSolicitacaoDeDados({ irPara }: PropsDaSecao) {
+export function SecaoDeSolicitacaoDeDados({ irPara = navegarPara }: PropsDaSecao) {
   return (
     <>
       <p>

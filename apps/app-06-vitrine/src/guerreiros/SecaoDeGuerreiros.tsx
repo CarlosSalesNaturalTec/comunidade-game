@@ -8,11 +8,12 @@ import {
 import { useEffect, useState } from "react";
 import { listarGuerreiros } from "../api/leituras";
 import { useLeitura } from "../leitura/useLeitura";
+import { navegarPara } from "../navegacao/navegar";
 import { BuscaPorNick } from "./BuscaPorNick";
 import { cartaDoGuerreiro } from "./carta";
 
 interface Props {
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
 const INTERVALO_DA_ROTACAO_EM_MS = 5000;
@@ -42,7 +43,7 @@ function useRotacao(quantidade: number) {
   return { indice: quantidade === 0 ? 0 : indice % quantidade, definirIndice };
 }
 
-export function SecaoDeGuerreiros({ irPara }: Props) {
+export function SecaoDeGuerreiros({ irPara = navegarPara }: Props) {
   const estado = useLeitura(listarGuerreiros, "vitrine/guerreiros");
   const guerreiros = estado.situacao === "pronta" ? estado.dado.itens : [];
   const { indice, definirIndice } = useRotacao(guerreiros.length);

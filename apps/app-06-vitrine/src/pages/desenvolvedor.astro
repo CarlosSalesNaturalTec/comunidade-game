@@ -1,0 +1,14 @@
+---
+/** A Área do Apoiador Desenvolvedor (`RF-03-67` a `RF-03-77`, `RN-03-29`).
+ * Ilha inteira: o assistente é conversa, e a conversa não sobrevive à
+ * página (`RF-03-73`). */
+import { AreaDoDesenvolvedor } from "../desenvolvedor/AreaDoDesenvolvedor";
+import Vitrine from "../layouts/Vitrine.astro";
+---
+
+<Vitrine
+  titulo="Construir sobre a API — Comunidade Game"
+  descricao="A Área do Apoiador Desenvolvedor: a arquitetura da plataforma, o assistente que responde sobre ela e o pedido de chave de aplicação para construir sobre a API aberta."
+>
+  <AreaDoDesenvolvedor client:load />
+</Vitrine>

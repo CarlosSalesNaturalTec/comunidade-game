@@ -1,6 +1,7 @@
 import { Aviso, Botao, Moldura } from "comum/react";
 import { useState } from "react";
 import { enviarSolicitacaoDeDados } from "../api/solicitacoes";
+import { navegarPara } from "../navegacao/navegar";
 import { CampoDeTexto } from "./CampoDeTexto";
 import { useEnvio } from "./useEnvio";
 
@@ -8,12 +9,12 @@ const FORMATADOR = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" });
 const OBRIGATORIOS = "Preencha este campo.";
 
 interface Props {
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
 /** Solicitação do conjunto de dados (`RF-03-32` a `RF-03-34`, PRD-03 §5.2).
  * O recorte pedido é exigido pelo núcleo (design — decisão 3). */
-export function FormularioDeDados({ irPara }: Props) {
+export function FormularioDeDados({ irPara = navegarPara }: Props) {
   const [solicitante, definirSolicitante] = useState("");
   const [instituicao, definirInstituicao] = useState("");
   const [email, definirEmail] = useState("");

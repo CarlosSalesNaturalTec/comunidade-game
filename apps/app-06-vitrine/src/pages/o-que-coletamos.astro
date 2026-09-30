@@ -1,0 +1,13 @@
+---
+/** A área detalhada da coleta (`RF-03-52`, `RF-03-53`, `RN-03-23`). É texto
+ * fixo, sem leitura do núcleo: sai inteira no documento servido. */
+import { AreaDetalhada } from "../coleta/AreaDetalhada";
+import Vitrine from "../layouts/Vitrine.astro";
+---
+
+<Vitrine
+  titulo="O que a plataforma coleta — Comunidade Game"
+  descricao="O que o Comunidade Game coleta, de quem, para quê e por quanto tempo. A vitrine não coleta nada de quem visita: sem login, sem cadastro, sem cookie de rastreio."
+>
+  <AreaDetalhada />
+</Vitrine>

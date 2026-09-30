@@ -3,11 +3,12 @@ import { Aviso, Botao, Moldura } from "comum/react";
 import { useState } from "react";
 import { apresentarUrlDaChave } from "../api/desenvolvedor";
 import { CampoDeTexto } from "../formularios/CampoDeTexto";
+import { navegarPara } from "../navegacao/navegar";
 
 const OBRIGATORIO = "Preencha este campo.";
 
 interface Props {
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
 /** Apresentação da URL do que foi construído, dentro do prazo (`RF-03-77`).
@@ -15,7 +16,7 @@ interface Props {
  * emissão: o segredo nunca é pedido aqui (`RN-01-33`). A recusa que o núcleo
  * declarar — prazo vencido, chave inexistente — aparece como o que é, e nunca
  * disfarçada (documento 99 §6 invariante 25). */
-export function ApresentacaoDaUrl({ irPara }: Props) {
+export function ApresentacaoDaUrl({ irPara = navegarPara }: Props) {
   const [chaveId, definirChaveId] = useState("");
   const [url, definirUrl] = useState("");
   const [faltando, definirFaltando] = useState<Record<string, boolean>>({});

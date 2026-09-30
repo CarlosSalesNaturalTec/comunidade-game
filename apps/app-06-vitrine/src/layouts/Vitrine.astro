@@ -1,0 +1,35 @@
+---
+/**
+ * A moldura completa de uma tela pública da vitrine: cabeçalho com "Entrar",
+ * navegação dos recortes, o conteúdo, e o aviso de coleta que vale para toda
+ * tela e por isso mora aqui, fora do recorte (`RN-03-23`).
+ *
+ * A vitrine não monta `ProvedorDeSessao` nem `ProvedorDeNarracao`: o primeiro
+ * guarda sessão e o segundo guarda a preferência do aparelho, e aqui nada do
+ * visitante é guardado (`RF-03-51`, `RN-03-01`, `RN-03-22`).
+ */
+import { AvisoDeColeta } from "../coleta/AvisoDeColeta";
+import { CabecalhoDaVitrine } from "../componentes/CabecalhoDaVitrine";
+import NavegacaoDeRecortes from "../navegacao/NavegacaoDeRecortes.astro";
+import Base from "./Base.astro";
+
+interface Props {
+  titulo: string;
+  descricao: string;
+  indexavel?: boolean;
+  recorteAtual?: string;
+}
+
+const { titulo, descricao, indexavel = true, recorteAtual } = Astro.props;
+---
+
+<Base titulo={titulo} descricao={descricao} indexavel={indexavel}>
+  <CabecalhoDaVitrine client:load />
+  {recorteAtual && <NavegacaoDeRecortes recorteAtual={recorteAtual} />}
+  <main class="cg-moldura cg-moldura--leitura">
+    <div class="cg-vitrine">
+      <slot />
+    </div>
+  </main>
+  <AvisoDeColeta client:visible />
+</Base>

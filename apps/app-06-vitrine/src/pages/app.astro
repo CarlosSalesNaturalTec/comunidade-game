@@ -1,0 +1,29 @@
+---
+import Vitrine from "../layouts/Vitrine.astro";
+/**
+ * A casca das **páginas de pessoa** — Guerreiro(a), Mestre e Apoiador — e o
+ * destino do `rewrite` de fallback do `firebase.json`.
+ *
+ * Existe porque saída estática não tem rota dinâmica sem caminhos, e gerar um
+ * caminho por pessoa é exatamente o que a spec proíbe: conteúdo posto no
+ * documento na publicação sobreviveria à revogação até a publicação seguinte,
+ * contra o `RF-03-14` e o invariante 12 do documento 99.
+ *
+ * Nasce `indexavel={false}`, e o `X-Robots-Tag` do `firebase.json` acompanha a
+ * etiqueta: agente que não executa script lê o cabeçalho e não leria a
+ * etiqueta.
+ */
+import { PaginaDePessoa } from "../pessoa/PaginaDePessoa";
+---
+
+<Vitrine
+  titulo="Comunidade Game"
+  descricao="A vitrine pública do Comunidade Game."
+  indexavel={false}
+>
+  {/* `client:only`, e não `client:load`: `client:load` ainda renderiza uma
+      vez no servidor, e é justamente isso que a spec proíbe — nada de pessoa
+      pode ir ao documento servido. Aqui a proibição é estrutural, não
+      disciplina. */}
+  <PaginaDePessoa client:only="react" />
+</Vitrine>

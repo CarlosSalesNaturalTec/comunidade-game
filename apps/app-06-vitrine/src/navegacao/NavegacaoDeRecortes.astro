@@ -1,0 +1,33 @@
+---
+/**
+ * Os três recortes de leitura, em **link real**: cada um tem endereço próprio
+ * e agora arquivo próprio, então trocar de recorte é navegar de verdade
+ * (`RF-03-25`, `RF-03-26`).
+ *
+ * A `NavegacaoDeAreas` de `comum/react` não serve aqui: ela traz a saída da
+ * sessão, e a vitrine não tem sessão de que sair (`RN-03-01`). O recorte
+ * corrente é marcado por `aria-current` e por peso e borda, nunca só por cor
+ * (documento 15 §5).
+ */
+import { RECORTES } from "./recortes";
+
+interface Props {
+  recorteAtual: string;
+}
+
+const { recorteAtual } = Astro.props;
+---
+
+<nav class="cg-recortes" aria-label="Recortes de leitura">
+  {
+    RECORTES.map((recorte) => (
+      <a
+        class="cg-recortes__item"
+        href={recorte.caminho}
+        aria-current={recorte.chave === recorteAtual ? "true" : undefined}
+      >
+        {recorte.rotulo}
+      </a>
+    ))
+  }
+</nav>

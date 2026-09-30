@@ -2,6 +2,7 @@ import { Aviso, EstadoDaLista } from "comum/react";
 import { listarPoderes } from "../api/leituras";
 import { useLeitura } from "../leitura/useLeitura";
 import { PREFIXO_DA_PAGINA_DO_MESTRE } from "../navegacao/caminhos";
+import { navegarPara } from "../navegacao/navegar";
 
 // A seção de poderes do `RF-03-02`: cada poder com as **trilhas** dele e os
 // **Mestres responsáveis** que o documento 11 §8.2 pede — os autores das
@@ -11,10 +12,10 @@ import { PREFIXO_DA_PAGINA_DO_MESTRE } from "../navegacao/caminhos";
 // fundador, 2026-09-28).
 
 interface Props {
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
-export function SecaoDePoderes({ irPara }: Props) {
+export function SecaoDePoderes({ irPara = navegarPara }: Props) {
   const estado = useLeitura(listarPoderes, "vitrine/poderes");
 
   if (estado.situacao === "carregando") {

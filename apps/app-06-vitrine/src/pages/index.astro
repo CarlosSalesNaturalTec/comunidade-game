@@ -1,0 +1,58 @@
+---
+import { SecaoDeApoiadores } from "../adultos/SecaoDeApoiadores";
+import { SecaoDeMestres } from "../adultos/SecaoDeMestres";
+import { secaoInstitucionalDoBuild } from "../build/dados";
+import { SecaoDoDesenvolvedor } from "../desenvolvedor/SecaoDoDesenvolvedor";
+import { SecaoDeGuerreiros } from "../guerreiros/SecaoDeGuerreiros";
+import { RolagemAteAAncora } from "../institucional/RolagemAteAAncora";
+/**
+ * O recorte **sociedade civil**, na raiz do domínio (`RF-03-01`, `RF-03-25`).
+ *
+ * "Quem somos", "Como apoiar" e "Contatos" são renderizados **no build**, com
+ * o que o núcleo publicou: é o institucional que o PRD-03 §10 manda indexar.
+ * As demais seções são ilhas — mudam a cada visita e congelá-las na publicação
+ * mostraria dado velho.
+ */
+import {
+  ApresentacaoDaSecao,
+  NecessidadesEmAberto,
+} from "../institucional/SecoesInstitucionais";
+import Vitrine from "../layouts/Vitrine.astro";
+import { SecaoDePoderes } from "../poderes/SecaoDePoderes";
+import { SecaoDoPortfolio } from "../portfolio/SecaoDoPortfolio";
+import { SecaoDoRanking } from "../ranking/SecaoDoRanking";
+import { SecaoDeComunidades } from "../territorio/SecaoDeComunidades";
+
+const quemSomos = await secaoInstitucionalDoBuild("quem-somos");
+const comoApoiar = await secaoInstitucionalDoBuild("como-apoiar");
+const contatos = await secaoInstitucionalDoBuild("contatos");
+---
+
+<Vitrine
+  titulo="Comunidade Game — plataforma educacional gamificada de território"
+  descricao="A vitrine pública do Comunidade Game: os Guerreiros e Guerreiras, o território, quem sustenta o projeto e como participar. Aberta, sem cadastro e sem login."
+  recorteAtual="sociedade-civil"
+>
+  <section>
+    <h2>Quem somos</h2>
+    <ApresentacaoDaSecao dado={quemSomos} nome="Quem somos" />
+    <RolagemAteAAncora client:load />
+  </section>
+  <section><h2>Guerreiros e Guerreiras</h2><SecaoDeGuerreiros client:visible /></section>
+  <section><h2>Portfólio de criações originais</h2><SecaoDoPortfolio client:visible /></section>
+  <section><h2>Ranking</h2><SecaoDoRanking client:visible /></section>
+  <section><h2>Poderes</h2><SecaoDePoderes client:visible /></section>
+  <section><h2>Mestres</h2><SecaoDeMestres client:visible /></section>
+  <section><h2>Apoiadores</h2><SecaoDeApoiadores client:visible /></section>
+  <section><h2>Comunidades Virtuais</h2><SecaoDeComunidades client:visible /></section>
+  <section><h2>Construir sobre a API</h2><SecaoDoDesenvolvedor client:visible /></section>
+  <section>
+    <h2>Como apoiar</h2>
+    <ApresentacaoDaSecao dado={comoApoiar} nome="Como apoiar" />
+    <NecessidadesEmAberto client:visible />
+  </section>
+  <section>
+    <h2>Contatos</h2>
+    <ApresentacaoDaSecao dado={contatos} nome="Contatos" />
+  </section>
+</Vitrine>

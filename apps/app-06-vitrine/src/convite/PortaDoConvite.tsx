@@ -4,12 +4,13 @@ import { URL_DA_APP_08_APOIADOR } from "../api/configuracao";
 import { TextoInstitucional } from "../institucional/TextoInstitucional";
 import { useConteudoInstitucional } from "../institucional/useConteudoInstitucional";
 import { CAMINHO_DA_PARTICIPACAO } from "../navegacao/caminhos";
+import { navegarPara, voltarOuIrParaARaiz } from "../navegacao/navegar";
 import { ListaDeNecessidades } from "../necessidades/ListaDeNecessidades";
 import { MODALIDADES, type Modalidade } from "./modalidades";
 
 interface Props {
-  irPara: (destino: string) => void;
-  voltar: () => void;
+  irPara?: (destino: string) => void;
+  voltar?: () => void;
 }
 
 /** A porta do convite (`RF-03-42` a `RF-03-44`). É **tela da vitrine**, e não a
@@ -21,7 +22,7 @@ interface Props {
  * parâmetro: nada de quem estava sendo visto chega aqui, por construção
  * (`RF-03-41`, `RN-03-25`). A modalidade escolhida vive no estado deste
  * componente e morre com ele — nada vai ao aparelho (`RF-03-38`, `RN-03-15`). */
-export function PortaDoConvite({ irPara, voltar }: Props) {
+export function PortaDoConvite({ irPara = navegarPara, voltar = voltarOuIrParaARaiz }: Props) {
   const [escolhida, definirEscolhida] = useState<string | null>(null);
   const modalidade = MODALIDADES.find((candidata) => candidata.chave === escolhida);
 
@@ -94,11 +95,11 @@ export function PortaDoConvite({ irPara, voltar }: Props) {
  * destino é nomeado em texto, sem link quebrado, como no "Entrar". */
 function DestinoDaModalidade({
   modalidade,
-  irPara,
+  irPara = navegarPara,
   aoVoltar,
 }: {
   modalidade: Modalidade;
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
   aoVoltar: () => void;
 }) {
   return (
