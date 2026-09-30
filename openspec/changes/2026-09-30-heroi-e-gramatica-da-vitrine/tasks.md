@@ -5,11 +5,15 @@
 
 ## 1. A marca no repositório
 
+- [x] 1.0 Tirar `comum/marca/**` do alcance do Biome, como `apps/**/public` já está: o
+      Biome lê `.svg` como JSX e acusa `noSvgWithoutTitle` em arquivo de marca, onde o
+      rótulo é de quem apresenta e não do arquivo. Feito **antes** dos arquivos, para o
+      upload não derrubar a esteira
 - [ ] 1.1 Receber os arquivos em `comum/marca/`, conferir um a um contra o manifesto do
       `README.md` — formato, nome, grade e orçamento de peso — e registrar a procedência
       e a data no próprio `README.md`; verificar que nenhum arquivo traz valor de cor
       fora da paleta do documento 15 §3
-- [ ] 1.2 Escrever `comum/marca/LICENCA.md` com a reserva do documento 03 §1 — a marca
+- [x] 1.2 Escrever `comum/marca/LICENCA.md` com a reserva do documento 03 §1 — a marca
       fora da AGPL e da CC BY-SA, e a réplica trocando-a pela sua —, ao lado dos
       arquivos, como o `OFL-archivo.txt` fica ao lado das fontes
 - [ ] 1.3 Declarar `./marca` em `exports` e em `files` de `comum/package.json`;
