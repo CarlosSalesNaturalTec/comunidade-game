@@ -1,4 +1,4 @@
-import { Cabecalho, Moldura } from "comum/react";
+import { Cabecalho, FundoDeComunidade, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import { PaginaDoApoiador } from "../adultos/PaginaDoApoiador";
 import { PaginaDoMestre } from "../adultos/PaginaDoMestre";
@@ -224,7 +224,10 @@ export function TelaDaVitrine() {
   }
 
   return (
-    <>
+    // A moldura da Arena, como em `Vitrine.astro`: sem ela aqui, a composição
+    // de teste desviaria do layout — e é o teste da saída do build que
+    // acusaria (design — decisão 6).
+    <FundoDeComunidade imagem={null}>
       <Cabecalho
         titulo="Comunidade Game"
         subtitulo="A vitrine pública do projeto — aberta, sem cadastro e sem login."
@@ -248,7 +251,7 @@ export function TelaDaVitrine() {
       </Moldura>
       <AvisoDeColeta irPara={irPara} />
       <DialogoDeEntrada aberto={entradaAberta} aoFechar={() => definirEntradaAberta(false)} />
-    </>
+    </FundoDeComunidade>
   );
 }
 
