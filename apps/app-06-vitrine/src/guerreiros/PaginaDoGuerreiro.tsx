@@ -5,6 +5,7 @@ import {
   CartaDoPersonagem,
   cartaEstaCompleta,
   EstadoDaLista,
+  PalcoDoPersonagem,
 } from "comum/react";
 import { type GuerreiroPublico, obterGuerreiroPorNick } from "../api/leituras";
 import { ChamadaDeParticipacao } from "../convite/ChamadaDeParticipacao";
@@ -36,12 +37,7 @@ export function PaginaDoGuerreiro({ nick, irPara = navegarPara }: Props) {
 
       {estado.situacao === "falhou" && <RecusaDaLeitura erro={estado.erro} />}
 
-      {estado.situacao === "pronta" && <Pagina guerreiro={estado.dado} />}
-
-      {/* A chamada fecha a página individual que publica alguém (`RF-03-39`):
-          ela é do projeto, e nada do Guerreiro(a) visto viaja com ela
-          (`RF-03-41`). A tela de "não encontrado" não convida a nada. */}
-      {estado.situacao === "pronta" && <ChamadaDeParticipacao irPara={irPara} />}
+      {estado.situacao === "pronta" && <Pagina guerreiro={estado.dado} irPara={irPara} />}
     </section>
   );
 }
@@ -63,12 +59,45 @@ function RecusaDaLeitura({ erro }: { erro: unknown }) {
   return <Aviso tipo="erro">Não foi possível carregar a página agora. Tente de novo.</Aviso>;
 }
 
-function Pagina({ guerreiro }: { guerreiro: GuerreiroPublico }) {
+/** A página no **palco da Arena**: a carta é a apresentação e domina a tela, a
+ * chamada é a decisão única, e o portfólio fica de apoio — abaixo e menor
+ * (documento 15 §6). Voltar não entra no palco: é saída, e fica acima dele. */
+function Pagina({
+  guerreiro,
+  irPara,
+}: {
+  guerreiro: GuerreiroPublico;
+  irPara: (destino: string) => void;
+}) {
   const dados = cartaDoGuerreiro(guerreiro);
   const criacoes = guerreiro.criacoes ?? [];
 
   return (
-    <>
+    <PalcoDoPersonagem
+      rotulo={`Página de ${guerreiro.nick}`}
+      // A chamada fecha a página individual que publica alguém (`RF-03-39`):
+      // ela é do projeto, e nada do Guerreiro(a) visto viaja com ela
+      // (`RF-03-41`). A tela de "não encontrado" não convida a nada, e por
+      // isso ela só existe aqui, no ramo de leitura pronta.
+      decisao={<ChamadaDeParticipacao irPara={irPara} />}
+      apoio={
+        <>
+          <h3>Portfólio</h3>
+          {criacoes.length === 0 ? (
+            <EstadoDaLista>Nenhuma criação original validada ainda.</EstadoDaLista>
+          ) : (
+            <ul className="cg-portfolio">
+              {criacoes.map((criacao) => (
+                <li key={`${criacao.trilha}-${criacao.validada_em}`}>
+                  <strong>{criacao.trilha}</strong> —{" "}
+                  {FORMATADOR_DE_DATA.format(new Date(criacao.validada_em))}
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      }
+    >
       <h2>{guerreiro.nick}</h2>
       {cartaEstaCompleta(dados) ? (
         <CartaDoPersonagem dados={dados} />
@@ -77,20 +106,6 @@ function Pagina({ guerreiro }: { guerreiro: GuerreiroPublico }) {
           A leitura veio incompleta — a carta não é apresentada. O que há está abaixo.
         </EstadoDaLista>
       )}
-
-      <h3>Portfólio</h3>
-      {criacoes.length === 0 ? (
-        <EstadoDaLista>Nenhuma criação original validada ainda.</EstadoDaLista>
-      ) : (
-        <ul className="cg-portfolio">
-          {criacoes.map((criacao) => (
-            <li key={`${criacao.trilha}-${criacao.validada_em}`}>
-              <strong>{criacao.trilha}</strong> —{" "}
-              {FORMATADOR_DE_DATA.format(new Date(criacao.validada_em))}
-            </li>
-          ))}
-        </ul>
-      )}
-    </>
+    </PalcoDoPersonagem>
   );
 }

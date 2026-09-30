@@ -1,4 +1,4 @@
-import { Aviso, EstadoDaLista, TerritorioDaComunidade } from "comum/react";
+import { Aviso, EstadoDaLista, PalcoDoPersonagem, TerritorioDaComunidade } from "comum/react";
 import {
   type CoberturaDeOds,
   type ComunidadePublica,
@@ -135,8 +135,65 @@ export function PaginaDaComunidade({ comunidadeId, irPara = navegarPara }: Props
       ? cobertura.dado.find((linha) => linha.comunidade_id === comunidade.id)
       : undefined;
 
+  // A página no **palco da Arena**: aqui a apresentação é a representação
+  // visual do território — a carta desta variante —, a chamada é a decisão
+  // única, e as séries e a cobertura ficam de apoio, abaixo e menor
+  // (documento 15 §6).
   return (
-    <section className="cg-territorio-painel">
+    <PalcoDoPersonagem
+      rotulo={`Página de ${comunidade.nome}`}
+      // A chamada fecha a página individual da comunidade (`RF-03-39`): o
+      // apoio é ao projeto, nunca àquela comunidade (`RF-03-41`).
+      decisao={<ChamadaDeParticipacao irPara={irPara} />}
+      apoio={
+        <div className="cg-territorio-painel">
+          <h3>Séries do território</h3>
+          {/* O painel para no bairro, e quem precisa de mais fino é encaminhado
+          ao formulário de solicitação de dados (`RN-03-09`, `RN-03-13`). */}
+          <p className="cg-territorio-painel__corte">
+            Os dados saem agregados até o bairro, sem identificar quem coletou. Rua,
+            condomínio, bloco e quadra só saem no conjunto completo, pela solicitação de dados
+            avaliada por um Admin.
+          </p>
+          {serie.situacao === "carregando" && (
+            <EstadoDaLista>Carregando as séries…</EstadoDaLista>
+          )}
+          {serie.situacao === "falhou" && (
+            <Aviso tipo="erro">
+              Não foi possível carregar as séries desta comunidade agora.
+            </Aviso>
+          )}
+          {serie.situacao === "pronta" &&
+            (recortes.length === 0 ? (
+              <EstadoDaLista>
+                Nenhuma série publicada nesta comunidade ainda — o território segue vazio.
+              </EstadoDaLista>
+            ) : (
+              <ul className="cg-territorio-painel__recortes">
+                {recortes.map((metodologia) => (
+                  <BlocoDoRecorte
+                    key={chaveDoRecorte(metodologia.recorte)}
+                    metodologia={metodologia}
+                    pontos={pontosDoRecorte(serie.dado, metodologia)}
+                  />
+                ))}
+              </ul>
+            ))}
+
+          <h3>Cobertura da Agenda 2030</h3>
+          {daComunidade === undefined ? (
+            <EstadoDaLista>Nenhum objetivo coberto por esta comunidade ainda.</EstadoDaLista>
+          ) : (
+            <>
+              <p>
+                Ciclo {daComunidade.ciclo}: objetivos {daComunidade.objetivos.join(", ")}
+              </p>
+              <DestaqueDaMeta1718 />
+            </>
+          )}
+        </div>
+      }
+    >
       <h2>{comunidade.nome}</h2>
       <TerritorioDaComunidade
         nome={comunidade.nome}
@@ -149,51 +206,6 @@ export function PaginaDaComunidade({ comunidadeId, irPara = navegarPara }: Props
       <p className="cg-territorio-painel__locais">
         Território: {comunidade.locais.map((local) => local.rotulo).join(", ")}
       </p>
-
-      <h3>Séries do território</h3>
-      {/* O painel para no bairro, e quem precisa de mais fino é encaminhado
-          ao formulário de solicitação de dados (`RN-03-09`, `RN-03-13`). */}
-      <p className="cg-territorio-painel__corte">
-        Os dados saem agregados até o bairro, sem identificar quem coletou. Rua, condomínio,
-        bloco e quadra só saem no conjunto completo, pela solicitação de dados avaliada por um
-        Admin.
-      </p>
-      {serie.situacao === "carregando" && <EstadoDaLista>Carregando as séries…</EstadoDaLista>}
-      {serie.situacao === "falhou" && (
-        <Aviso tipo="erro">Não foi possível carregar as séries desta comunidade agora.</Aviso>
-      )}
-      {serie.situacao === "pronta" &&
-        (recortes.length === 0 ? (
-          <EstadoDaLista>
-            Nenhuma série publicada nesta comunidade ainda — o território segue vazio.
-          </EstadoDaLista>
-        ) : (
-          <ul className="cg-territorio-painel__recortes">
-            {recortes.map((metodologia) => (
-              <BlocoDoRecorte
-                key={chaveDoRecorte(metodologia.recorte)}
-                metodologia={metodologia}
-                pontos={pontosDoRecorte(serie.dado, metodologia)}
-              />
-            ))}
-          </ul>
-        ))}
-
-      <h3>Cobertura da Agenda 2030</h3>
-      {daComunidade === undefined ? (
-        <EstadoDaLista>Nenhum objetivo coberto por esta comunidade ainda.</EstadoDaLista>
-      ) : (
-        <>
-          <p>
-            Ciclo {daComunidade.ciclo}: objetivos {daComunidade.objetivos.join(", ")}
-          </p>
-          <DestaqueDaMeta1718 />
-        </>
-      )}
-
-      {/* A chamada fecha a página individual da comunidade (`RF-03-39`): o
-          apoio é ao projeto, nunca àquela comunidade (`RF-03-41`). */}
-      <ChamadaDeParticipacao irPara={irPara} />
-    </section>
+    </PalcoDoPersonagem>
   );
 }

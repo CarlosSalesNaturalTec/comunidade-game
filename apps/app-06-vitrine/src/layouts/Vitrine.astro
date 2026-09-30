@@ -8,6 +8,7 @@
  * guarda sessão e o segundo guarda a preferência do aparelho, e aqui nada do
  * visitante é guardado (`RF-03-51`, `RN-03-01`, `RN-03-22`).
  */
+import { FundoDeComunidade } from "comum/react";
 import { AvisoDeColeta } from "../coleta/AvisoDeColeta";
 import { CabecalhoDaVitrine } from "../componentes/CabecalhoDaVitrine";
 import NavegacaoDeRecortes from "../navegacao/NavegacaoDeRecortes.astro";
@@ -24,12 +25,24 @@ const { titulo, descricao, indexavel = true, recorteAtual } = Astro.props;
 ---
 
 <Base titulo={titulo} descricao={descricao} indexavel={indexavel}>
-  <CabecalhoDaVitrine client:load />
-  {recorteAtual && <NavegacaoDeRecortes recorteAtual={recorteAtual} />}
-  <main class="cg-moldura cg-moldura--leitura">
-    <div class="cg-vitrine">
-      <slot />
-    </div>
-  </main>
-  <AvisoDeColeta client:visible />
+  {/* A moldura da Arena envolve a tela inteira, e não região dela: o
+      temperamento é da aplicação, e a App 06 é Arena do cabeçalho ao rodapé
+      (documento 15 §6). Renderizada no build, sem diretiva de cliente — não
+      tem estado e não busca nada, então não custa JS.
+
+      `imagem={null}` enquanto a foto não existir na plataforma:
+      `ComunidadeVirtual` não tem campo de foto e nenhuma rota a serve, e é
+      pendência já registrada no documento 09. É o caso que o componente
+      contrata — sem foto, só a cor chapada, e a tela é exatamente a mesma
+      (§6.3). As Apps 01 e 05 fazem o mesmo desde 2026-09-25. */}
+  <FundoDeComunidade imagem={null}>
+    <CabecalhoDaVitrine client:load />
+    {recorteAtual && <NavegacaoDeRecortes recorteAtual={recorteAtual} />}
+    <main class="cg-moldura cg-moldura--leitura">
+      <div class="cg-vitrine">
+        <slot />
+      </div>
+    </main>
+    <AvisoDeColeta client:visible />
+  </FundoDeComunidade>
 </Base>

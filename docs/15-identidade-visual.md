@@ -414,9 +414,16 @@ A camada semântica também guarda o tamanho de moldura de mídia — `--largura
 `--altura-de-miniatura` —, para que toda imagem e vídeo buscados do núcleo em bytes usem a
 mesma caixa fixa, sem cortar o conteúdo (decisão do fundador de 2026-09-17).
 
-`comum/` também abriga os arquivos das duas famílias tipográficas (§4) e uma camada de
+`comum/` também abriga os arquivos das duas famílias tipográficas (§4), os da **marca** —
+logotipo, símbolo, submarcas e o elenco de personagens, em `comum/marca/` — e uma camada de
 componentes React que cumpre por construção o piso de acessibilidade da §5 — alvo de toque,
 foco visível, erro associado ao campo e nenhum significado só por cor (documento 03 §1.2).
+
+A marca é **arquivo versionado, e não registro do núcleo**: ela é constante da plataforma, que
+é instância única para todas as comunidades (documento 03 §1), e a reserva do documento 03 §1
+precisa viajar junto dos arquivos, como a licença das fontes. Vai ao documento servido no
+build, sem requisição em tempo de execução (§1, princípio 6). O que **varia por comunidade**
+— a foto de fundo da §6.3 — continua no núcleo. Decisão do fundador de 2026-09-30.
 
 ## 13. O que este documento não define
 

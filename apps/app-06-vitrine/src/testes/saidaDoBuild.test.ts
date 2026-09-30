@@ -244,6 +244,59 @@ describe("a camada de descoberta sai publicada", () => {
   });
 });
 
+describe("a moldura da Arena sai em toda tela pública", () => {
+  const todas = [
+    "index.html",
+    "pesquisadores.html",
+    "gestores-publicos.html",
+    "o-que-coletamos.html",
+    "quero-participar.html",
+    "participar.html",
+    "solicitar-dados.html",
+    "desenvolvedor.html",
+    "apresentar-url.html",
+    "app.html",
+    join("comunidades", "zeferina.html"),
+  ];
+
+  it("toda rota traz a moldura de fundo de comunidade (documento 15 §6.3)", () => {
+    for (const arquivo of todas) {
+      expect(ler(arquivo), arquivo).toContain("cg-fundo-de-comunidade");
+    }
+  });
+
+  it("sem foto escolhida, nenhuma imagem de fundo é buscada", () => {
+    // `imagem={null}` enquanto `ComunidadeVirtual` não tiver campo de foto
+    // (pendência do documento 09): só a cor chapada, e a tela é a mesma.
+    for (const arquivo of todas) {
+      expect(ler(arquivo), arquivo).not.toContain("cg-fundo-de-comunidade__imagem");
+    }
+  });
+
+  it("a moldura não traz recurso de terceiro (RF-03-51)", () => {
+    for (const arquivo of ["index.html", "app.html"]) {
+      const html = ler(arquivo);
+      const externos = [...html.matchAll(/(?:src|href)="(https?:\/\/[^"]+)"/g)].map(
+        (achado) => achado[1],
+      );
+      expect(externos.filter((url) => !url.startsWith("https://comunidadegame.org"))).toEqual(
+        [],
+      );
+    }
+  });
+
+  it("o estilo do palco e da moldura chega ao documento", () => {
+    // Nada de `@import` extra: os componentes vêm de `comum/react`, cujo
+    // índice importa `estilos.css`, e o Astro recolhe a folha no build.
+    const folhas = [...ler("index.html").matchAll(/href="(\/_astro\/[^"]+\.css)"/g)].map(
+      (achado) => achado[1],
+    );
+    expect(folhas.length).toBeGreaterThan(0);
+    const css = folhas.map((folha) => ler(folha.replace(/^\//, ""))).join("\n");
+    expect(css).toContain("cg-fundo-de-comunidade");
+  });
+});
+
 describe("nenhuma tela busca recurso de terceiro", () => {
   it("nenhum documento aponta domínio que não seja o próprio (RF-03-51)", () => {
     for (const arquivo of ["index.html", "o-que-coletamos.html", "app.html"]) {

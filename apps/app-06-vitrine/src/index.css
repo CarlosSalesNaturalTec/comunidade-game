@@ -58,10 +58,27 @@ textarea {
 .cg-vitrine {
   display: flex;
   flex-direction: column;
-  gap: var(--espaco-16);
+  /* O respiro da Arena: a densidade baixa do documento 15 §6 aplicada ao que
+   * a vitrine apresenta. A escala de espaçamento é a do §4 — nenhum valor
+   * fora dela —, e só a camada semântica é consumida (§12). */
+  gap: var(--espaco-32);
   max-width: var(--largura-de-leitura);
   margin: 0 auto;
-  padding: 0 var(--espaco-16) var(--espaco-24);
+  padding: 0 var(--espaco-16) var(--espaco-48);
+}
+
+/* Cada seção respira por dentro, para o título não colar no conteúdo: é a
+ * mesma escala, um degrau abaixo do que separa uma seção da outra. */
+.cg-vitrine > section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-16);
+}
+
+/* A seção de poderes ganha o glifo ao lado do nome (documento 15 §8.4). O
+ * título segue sendo o que identifica — o glifo nunca aparece sozinho. */
+.cg-poderes__item h3 {
+  margin: 0;
 }
 
 /* Navegação dos três recortes de leitura. O recorte corrente é marcado por

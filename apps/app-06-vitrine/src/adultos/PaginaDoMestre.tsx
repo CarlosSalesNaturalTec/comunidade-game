@@ -5,6 +5,7 @@ import {
   CartaDoPersonagem,
   cartaEstaCompleta,
   EstadoDaLista,
+  PalcoDoPersonagem,
 } from "comum/react";
 import { type MestrePublico, obterMestrePorId } from "../api/leituras";
 import { ChamadaDeParticipacao } from "../convite/ChamadaDeParticipacao";
@@ -40,21 +41,32 @@ export function PaginaDoMestre({ mestreId, irPara = navegarPara }: Props) {
           <Aviso tipo="erro">Não foi possível carregar a página agora. Tente de novo.</Aviso>
         ))}
 
-      {estado.situacao === "pronta" && <Pagina mestre={estado.dado} />}
-
-      {/* A chamada fecha toda página individual que publica alguém
-          (`RF-03-39`), e nada de quem estava sendo visto viaja com ela
-          (`RF-03-41`). */}
-      {estado.situacao === "pronta" && <ChamadaDeParticipacao irPara={irPara} />}
+      {estado.situacao === "pronta" && <Pagina mestre={estado.dado} irPara={irPara} />}
     </section>
   );
 }
 
-function Pagina({ mestre }: { mestre: MestrePublico }) {
+/** A página no **palco da Arena**: a carta é a apresentação e domina a
+ * tela, a chamada é a decisão única, e o resto fica de apoio — abaixo e
+ * menor (documento 15 §6). Voltar não entra no palco: é saída. */
+function Pagina({
+  mestre,
+  irPara,
+}: {
+  mestre: MestrePublico;
+  irPara: (destino: string) => void;
+}) {
   const dados = cartaDoMestre(mestre);
 
   return (
-    <>
+    <PalcoDoPersonagem
+      rotulo={`Página de ${mestre.identificacao.valor}`}
+      // A chamada fecha toda página individual que publica alguém
+      // (`RF-03-39`), e nada de quem estava sendo visto viaja com ela
+      // (`RF-03-41`).
+      decisao={<ChamadaDeParticipacao irPara={irPara} />}
+      apoio={<Apoio mestre={mestre} />}
+    >
       <h2>{mestre.identificacao.valor}</h2>
       {cartaEstaCompleta(dados) ? (
         <CartaDoPersonagem dados={dados} />
@@ -63,7 +75,15 @@ function Pagina({ mestre }: { mestre: MestrePublico }) {
           A leitura veio incompleta — a carta não é apresentada. O que há está abaixo.
         </EstadoDaLista>
       )}
+    </PalcoDoPersonagem>
+  );
+}
 
+/** O que a página ainda comunica depois da decisão, abaixo e menor que a
+ * carta — é o campo que o palco tem para isso. */
+function Apoio({ mestre }: { mestre: MestrePublico }) {
+  return (
+    <>
       <h3>Habilidades</h3>
       {mestre.areas_de_habilidade.length === 0 ? (
         <EstadoDaLista>Nenhuma trilha publicada ainda.</EstadoDaLista>

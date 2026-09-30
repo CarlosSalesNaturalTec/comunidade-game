@@ -1,4 +1,4 @@
-import { Aviso, EstadoDaLista } from "comum/react";
+import { Aviso, EstadoDaLista, GlifoDePoder } from "comum/react";
 import { listarPoderes } from "../api/leituras";
 import { useLeitura } from "../leitura/useLeitura";
 import { PREFIXO_DA_PAGINA_DO_MESTRE } from "../navegacao/caminhos";
@@ -38,7 +38,12 @@ export function SecaoDePoderes({ irPara = navegarPara }: Props) {
         const responsaveis = poder.mestres_responsaveis ?? [];
         return (
           <li key={poder.id} className="cg-poderes__item">
-            <h3>{poder.nome}</h3>
+            {/* O glifo acompanha o nome do poder, nunca o substitui
+                (documento 15 §8.4). Poder sem glifo próprio cai no genérico,
+                e o nome segue sendo o que identifica. */}
+            <h3>
+              <GlifoDePoder poder={poder.nome} />
+            </h3>
             <p>{poder.descricao}</p>
             {poder.trilhas.length === 0 ? (
               <EstadoDaLista>Nenhuma trilha publicada neste poder ainda.</EstadoDaLista>
