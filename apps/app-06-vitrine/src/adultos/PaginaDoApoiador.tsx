@@ -9,12 +9,13 @@ import {
 import { type ApoiadorPublico, obterApoiadorPorId } from "../api/leituras";
 import { ChamadaDeParticipacao } from "../convite/ChamadaDeParticipacao";
 import { useLeitura } from "../leitura/useLeitura";
+import { navegarPara } from "../navegacao/navegar";
 import { cartaDoApoiador } from "./cartas";
 import { ProvaPublica } from "./ProvaPublica";
 
 interface Props {
   apoiadorId: string;
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
 /** Apoiador sem aporte homologado, persona de outro papel e identificador
@@ -22,7 +23,7 @@ interface Props {
  * casos (`RF-03-57`, `RN-03-01`). */
 const NAO_ENCONTRADO = "Não encontrado.";
 
-export function PaginaDoApoiador({ apoiadorId, irPara }: Props) {
+export function PaginaDoApoiador({ apoiadorId, irPara = navegarPara }: Props) {
   const estado = useLeitura(
     () => obterApoiadorPorId(apoiadorId),
     `vitrine/apoiadores/${apoiadorId}`,

@@ -1,0 +1,41 @@
+---
+/**
+ * A página de cada Comunidade Virtual (`RF-03-02`, `RF-03-15`, `RF-03-03`).
+ *
+ * **Meio-termo**, decidido pelo fundador em 2026-09-30: a casca — nome e
+ * território — sai no documento e indexa; o **painel** é ilha e é lido a cada
+ * visita, porque série, cobertura e contagem mudam entre publicações e
+ * congelá-las mostraria número velho.
+ *
+ * `getStaticPaths` usa a lista do build. Comunidade criada depois da última
+ * publicação não tem arquivo e cai no `rewrite` de fallback do
+ * `firebase.json`, que a entrega pela casca de cliente; ela ganha arquivo
+ * próprio e entra no `sitemap.xml` na publicação seguinte.
+ */
+import { comunidadesDoBuild } from "../../build/dados";
+import Vitrine from "../../layouts/Vitrine.astro";
+import { PaginaDaComunidade } from "../../territorio/PaginaDaComunidade";
+
+export async function getStaticPaths() {
+  const comunidades = await comunidadesDoBuild();
+  return comunidades.map((comunidade) => ({
+    params: { id: comunidade.id },
+    props: { comunidade },
+  }));
+}
+
+const { comunidade } = Astro.props;
+---
+
+<Vitrine
+  titulo={`${comunidade.nome} — território e séries | Comunidade Game`}
+  descricao={`A Comunidade Virtual ${comunidade.nome}, em ${comunidade.localizacao}: as séries do território coletadas por Guerreiros e Guerreiras, a metodologia de cada recorte e a cobertura da Agenda 2030.`}
+>
+  {/* A casca: o que identifica a comunidade sai no documento, sem script. */}
+  <header class="cg-comunidade__casca">
+    <h2>{comunidade.nome}</h2>
+    <p>{comunidade.localizacao}</p>
+  </header>
+  {/* O painel: lido na visita, nunca o que valia na publicação. */}
+  <PaginaDaComunidade comunidadeId={comunidade.id} client:load />
+</Vitrine>

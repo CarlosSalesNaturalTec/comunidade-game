@@ -1,0 +1,13 @@
+---
+/** O formulário de participação (`RF-03-27` a `RF-03-31`). Casca no documento,
+ * formulário em ilha. Fora do `sitemap.xml`: formulário não é o que se busca. */
+import { FormularioDeParticipacao } from "../formularios/FormularioDeParticipacao";
+import Vitrine from "../layouts/Vitrine.astro";
+---
+
+<Vitrine
+  titulo="Pedir para participar — Comunidade Game"
+  descricao="O formulário para pedir para entrar no Comunidade Game. A solicitação não cria cadastro nem acesso: ela é avaliada pela gestão."
+>
+  <FormularioDeParticipacao client:load />
+</Vitrine>

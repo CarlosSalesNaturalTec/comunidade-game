@@ -1,10 +1,11 @@
 import { Botao } from "comum/react";
 import { CAMINHO_DA_AREA_DO_DESENVOLVEDOR } from "../navegacao/caminhos";
-import type { PropsDaSecao } from "../navegacao/recortes";
+import type { PropsDaSecao } from "../navegacao/navegar";
+import { navegarPara } from "../navegacao/navegar";
 
 /** A porta da área dentro da vitrine — é assim que ela é **seção**, e não uma
  * nona aplicação (`RF-03-67`, `RN-03-29`). */
-export function SecaoDoDesenvolvedor({ irPara }: PropsDaSecao) {
+export function SecaoDoDesenvolvedor({ irPara = navegarPara }: PropsDaSecao) {
   return (
     <>
       <p>

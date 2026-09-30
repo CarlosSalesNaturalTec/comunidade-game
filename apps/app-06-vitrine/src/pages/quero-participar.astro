@@ -1,0 +1,15 @@
+---
+/** A porta do convite (`RF-03-42`, `RF-03-43`). A casca é do documento; o
+ * garfo de modalidade e as necessidades em aberto são ilha, porque a lista
+ * muda a cada aporte. O endereço **não tem parâmetro**: nada de quem estava
+ * sendo visto viaja com ele (`RF-03-41`, `RN-03-25`). */
+import { PortaDoConvite } from "../convite/PortaDoConvite";
+import Vitrine from "../layouts/Vitrine.astro";
+---
+
+<Vitrine
+  titulo="Quero participar — Comunidade Game"
+  descricao="O que é ser Apoiador do Comunidade Game, os caminhos de apoio, a chave PIX e as necessidades de recurso em aberto. Nada aqui cria cadastro ou acesso."
+>
+  <PortaDoConvite client:load />
+</Vitrine>

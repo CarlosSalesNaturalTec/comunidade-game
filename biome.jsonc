@@ -24,6 +24,24 @@
       "preset": "recommended",
     },
   },
+  // O Biome analisa `.astro`, mas **só o frontmatter**: o que é definido ali e
+  // usado apenas no template é lido como não usado. Eram 58 falsos positivos
+  // na App 06 — todos import de componente que o template renderiza. A regra
+  // não tem como acertar sem enxergar o template, então não vale para
+  // `.astro`; o `astro check` é quem confere tipo e uso nesses arquivos.
+  "overrides": [
+    {
+      "includes": ["**/*.astro"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedImports": "off",
+            "noUnusedVariables": "off",
+          },
+        },
+      },
+    },
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "double",

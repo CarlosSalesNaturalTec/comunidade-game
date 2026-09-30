@@ -1,0 +1,94 @@
+# Tasks
+
+## 1. Fundação Astro
+
+- [x] 1.1 Acrescentar `astro`, `@astrojs/react` e `@astrojs/check` à App 06 e criar
+      `astro.config.mjs` com `output: "static"` e a integração React; verificar que
+      `npx astro build` produz `dist/` com HTML real (documento 03 §1, princípio 13)
+- [x] 1.2 Criar o layout base em `src/layouts/`, com `lang="pt-BR"`,
+      `data-temperamento="arena"`, os `@import` de `comum/tokens.css` e
+      `comum/fontes.css` e o encaixe de título, descrição e canônica; verificar que o
+      documento gerado traz as fontes do próprio domínio e nenhuma requisição a
+      terceiro (`RF-03-51`, documento 15 §1, princípio 6)
+- [x] 1.3 Extrair a carga de dados de build para `.ts` ao lado das páginas — conteúdo
+      institucional e lista de comunidades, sobre `src/api/leituras.ts` — e derrubar o
+      build quando o núcleo não responder; verificar com o núcleo inalcançável que
+      `astro build` falha em vez de publicar casca vazia (design — decisão 4)
+
+## 2. Rotas estáticas e ilhas
+
+- [x] 2.1 Criar as páginas institucionais — `/`, `/o-que-coletamos`,
+      `/quero-participar` — com o conteúdo no documento e os componentes de hoje como
+      ilhas `client:visible` nas seções de cards, ranking e necessidades; verificar que
+      o documento servido traz o conteúdo sem executar script (`RF-03-01`, `RF-03-45`,
+      `RF-03-52`, `RF-03-02`, `RF-03-47`)
+- [x] 2.2 Criar `/comunidades/[id]` com `getStaticPaths` sobre a lista do build: nome e
+      território no documento, painel do território em ilha; verificar que a casca abre
+      sem script e que o painel reflete a leitura da visita, não a da publicação
+      (`RF-03-02`, `RF-03-15`, `RF-03-03`)
+- [x] 2.3 Criar as cascas de formulário e de Desenvolvedor — `/participar`,
+      `/solicitar-dados`, `/desenvolvedor`, `/apresentar-url` — com o componente atual
+      em ilha `client:load`; verificar que os testes de componente dos quatro seguem
+      verdes (`RF-03-27` a `RF-03-35`, `RF-03-67`, `RF-03-77`)
+- [x] 2.4 Isolar em ilha própria a rolagem até a âncora de `SecoesInstitucionais.tsx`,
+      hoje sobre `window.location.hash`, para a seção renderizar no documento
+      (`RF-03-45`, `RF-03-48`)
+- [x] 2.5 Criar a casca `noindex` das páginas de pessoa, que lê o caminho no aparelho e
+      monta Guerreiro(a), Mestre ou Apoiador; verificar que o documento servido não traz
+      avatar, nick, badges, poderes nem desempenho (`RF-03-03`, `RF-03-07`, `RF-03-13`,
+      `RF-03-14`, design — decisão 3)
+
+## 3. Camada de descoberta
+
+- [x] 3.1 Dar título, descrição e canônica próprios a cada endereço indexável, sem
+      revelar nick ou nome de Guerreiro(a) na prévia de compartilhamento; verificar que
+      duas telas indexáveis não repetem o mesmo título (`RF-03-03`, `RF-03-06`,
+      `RF-03-61`)
+- [x] 3.2 Publicar `robots.txt`, barrando a casca de pessoa, e o endpoint
+      `sitemap.xml.ts` com os endereços institucionais e de comunidade do build;
+      verificar em unidade que a montagem exclui pessoa e formulário (`RF-03-51`,
+      `RN-03-21`, `RN-03-22`, design — decisão 5)
+- [x] 3.3 Declarar no `firebase.json` os `rewrite` de `/guerreiros/**`, `/mestres/**` e
+      `/apoiadores/**` para a casca `noindex`, o `X-Robots-Tag` nos mesmos caminhos e o
+      `**` como fallback atrás dos arquivos reais; verificar que a etiqueta e o
+      cabeçalho saem juntos e que nenhum endereço institucional os recebe (`RF-03-13`,
+      `RF-03-14`, invariante 12 do documento 99)
+
+## 4. Limpeza da casca antiga e esteiras
+
+- [x] 4.1 Remover `index.html`, `App.tsx`, `main.tsx`, `src/navegacao/` e
+      `vite.config.ts`, trocando a navegação entre rotas estáticas por `<a href>`;
+      verificar que o `voltar` da recusa do convite segue devolvendo à navegação e que
+      quem chega por endereço direto sai para a raiz (`RF-03-44`, `RN-03-15`)
+- [x] 4.2 Trocar o `build` da App 06 para `astro check && astro build` e ajustar
+      `app-06-deploy.yml` e `frontend-ci.yml`; verificar que `npm run build
+      --workspaces --if-present` alcança a App 06 e que erro de tipo a barra
+
+## 5. Testes
+
+- [x] 5.1 Criar `src/testes/TelaDaVitrine.tsx`, a composição de tela equivalente à das
+      páginas de `src/pages/`, com navegação de cliente e declarada como sendo só para
+      teste; apontar para ela os 19 arquivos que montavam `<App />` e verificar que os
+      118 casos voltam a passar sem mudar o que afirmam (design — decisão 7, nível 1)
+- [x] 5.2 Escrever o teste da saída do build, sobre o `dist/` de um build real contra um
+      núcleo de mentira, cobrindo os cenários das specs: conteúdo no documento
+      institucional e na área detalhada, **títulos e seções por rota** — que é o que
+      guarda a composição de teste contra desvio —, casca da comunidade sem o painel,
+      documento da pessoa sem perfil, `noindex` só nas páginas de pessoa, `sitemap.xml`
+      com comunidade e sem pessoa nem formulário, e `robots.txt` (nível 2)
+- [x] 5.3 Escrever os testes de unidade de `montarSitemap` e `montarRobots`, cobrindo
+      exclusão de pessoa e de formulário e o escape do XML (nível 3)
+- [x] 5.4 Escrever o teste do `firebase.json` — `rewrite` dos três prefixos de pessoa
+      para a casca `noindex`, `X-Robots-Tag` neles e nela, `**` como último e apontando
+      a casca, e nenhum cabeçalho em endereço institucional. **Acrescentada no
+      `/opsx:verify`**, que achou o cenário "as três páginas de pessoa declaram que não
+      se indexa" só meio coberto: a etiqueta estava no `dist/`, o `rewrite` e o
+      cabeçalho não estavam em teste nenhum, e errar um prefixo ali publicaria página
+      de Guerreiro(a) indexável (`RF-03-14`, invariante 12 do documento 99)
+
+## 6. Documentação
+
+- [x] 6.1 Marcar a fatia 9 como `implementado` no `openspec/cronograma-de-fatias.md`,
+      com o slug da change. Nenhuma decisão nova foi tomada nesta change, nenhum PRD
+      muda, a situação do PRD-03 em `docs/prds/index.md` não muda, nenhuma relação entre
+      documentos muda e nenhum arquivo nasce em `docs/` — nada mais a atualizar

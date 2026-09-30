@@ -1,7 +1,8 @@
 import { Aviso, CartaDoPersonagem, type DadosDaCarta, EstadoDaLista } from "comum/react";
 import { type ComunidadeNaLista, listarComunidades } from "../api/leituras";
 import { useLeitura } from "../leitura/useLeitura";
-import type { PropsDaSecao } from "../navegacao/recortes";
+import type { PropsDaSecao } from "../navegacao/navegar";
+import { navegarPara } from "../navegacao/navegar";
 import { caminhoDaComunidade } from "../navegacao/recortes";
 
 // A seção **Comunidades Virtuais** do `RF-03-02`, com a variante Comunidade
@@ -30,7 +31,7 @@ function cartaDaComunidade(comunidade: ComunidadeNaLista): DadosDaCarta {
   };
 }
 
-export function SecaoDeComunidades({ irPara }: PropsDaSecao) {
+export function SecaoDeComunidades({ irPara = navegarPara }: PropsDaSecao) {
   const estado = useLeitura(listarComunidades, "comunidades");
 
   if (estado.situacao === "carregando") {

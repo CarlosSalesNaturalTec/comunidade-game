@@ -1,8 +1,9 @@
 import { Botao, Campo } from "comum/react";
 import { type FormEvent, useState } from "react";
+import { navegarPara } from "../navegacao/navegar";
 
 interface Props {
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
 // Busca por **nick exato**: sem sugestão, sem completação e sem lista de
@@ -13,7 +14,7 @@ interface Props {
 // nick inexistente e o nick sem autorização chegam assim à mesma tela de
 // "não encontrado", pelo caminho da busca e pelo endereço direto
 // (`RN-03-07`).
-export function BuscaPorNick({ irPara }: Props) {
+export function BuscaPorNick({ irPara = navegarPara }: Props) {
   const [nick, definirNick] = useState("");
 
   function aoEnviar(evento: FormEvent) {

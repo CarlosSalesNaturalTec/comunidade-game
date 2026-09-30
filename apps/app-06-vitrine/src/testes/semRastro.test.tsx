@@ -2,11 +2,11 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { configurarAcessoAoNucleo } from "comum/api";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import * as leituras from "../api/leituras";
 import { lerDoNucleo } from "../api/nucleo";
 import { esquecerConteudoInstitucional } from "../institucional/useConteudoInstitucional";
 import { esquecerNecessidades } from "../necessidades/useNecessidades";
+import App from "./TelaDaVitrine";
 
 describe("a vitrine não deixa rastro no aparelho", () => {
   beforeEach(() => {

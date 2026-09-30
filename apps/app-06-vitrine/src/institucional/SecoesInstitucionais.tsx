@@ -1,39 +1,28 @@
-import { Aviso, EstadoDaLista } from "comum/react";
-import { useEffect } from "react";
-import type { ChaveDeSecaoInstitucional } from "../api/leituras";
+import { EstadoDaLista } from "comum/react";
+import type { SecaoInstitucionalPublica } from "../api/leituras";
 import { ListaDeNecessidades } from "../necessidades/ListaDeNecessidades";
 import { TextoInstitucional } from "./TextoInstitucional";
-import { useConteudoInstitucional } from "./useConteudoInstitucional";
 
 // As três seções institucionais do PRD-03 §6.5. O texto e o vídeo vêm do que
 // o núcleo devolve: **nenhum valor fica escrito aqui** — nem a chave PIX
 // (`RF-03-46`). Seção que ainda não foi publicada diz isso, sem inventar
 // conteúdo (design — decisão 6).
+//
+// A apresentação é **pura**: o institucional sai no documento servido
+// (PRD-03 §10), e para isso o Astro renderiza `ApresentacaoDaSecao` no build
+// com o que buscou ali. Quem ainda lê o institucional em tempo de visita é a
+// porta do convite, pela chave PIX, e ela tem a sua própria leitura.
 
-function ConteudoDaSecao({
-  secao,
+/** A seção já lida, apresentada. Não busca nada: serve ao render do build e ao
+ * da ilha, e é o que faz o texto institucional existir no documento. */
+export function ApresentacaoDaSecao({
+  dado,
   nome,
-  aoChegar,
 }: {
-  secao: ChaveDeSecaoInstitucional;
+  dado: SecaoInstitucionalPublica;
   nome: string;
-  aoChegar?: () => void;
 }) {
-  const estado = useConteudoInstitucional(secao);
-  const publicada = estado.situacao === "pronta" && estado.dado.texto !== null;
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: só a chegada do texto dispara.
-  useEffect(() => {
-    if (publicada) aoChegar?.();
-  }, [publicada]);
-
-  if (estado.situacao === "carregando") return <EstadoDaLista>Carregando…</EstadoDaLista>;
-  if (estado.situacao === "falhou") {
-    return (
-      <Aviso tipo="erro">Não foi possível carregar esta seção agora. Tente de novo.</Aviso>
-    );
-  }
-  const { texto, video_url } = estado.dado;
+  const { texto, video_url } = dado;
   return (
     <>
       {video_url !== null && (
@@ -55,34 +44,13 @@ function ConteudoDaSecao({
   );
 }
 
-/** Leva a nota de transparência, que o texto reescrito por IA aponta pela
- * âncora do endereço, ao foco quando o conteúdo chega (`RF-03-48`). */
-function irParaAAncoraDoEndereco() {
-  const id = decodeURIComponent(window.location.hash.slice(1));
-  if (id === "") return;
-  const alvo = document.getElementById(id);
-  if (alvo === null) return;
-  alvo.scrollIntoView?.();
-  alvo.focus();
-}
-
-export function SecaoQuemSomos() {
-  return (
-    <ConteudoDaSecao secao="quem-somos" nome="Quem somos" aoChegar={irParaAAncoraDoEndereco} />
-  );
-}
-
-export function SecaoContatos() {
-  return <ConteudoDaSecao secao="contatos" nome="Contatos" />;
-}
-
-export function SecaoComoApoiar() {
+/** As necessidades em aberto aparecem aqui **e** na porta do convite: quem
+ * navega pela vitrine e não aciona a chamada também vê o que falta
+ * (`RF-03-47`, design — decisão 8). É ilha: a lista muda a cada aporte, e
+ * congelá-la na publicação mostraria necessidade já atendida. */
+export function NecessidadesEmAberto() {
   return (
     <>
-      <ConteudoDaSecao secao="como-apoiar" nome="Como apoiar" />
-      {/* As necessidades em aberto aparecem aqui **e** na porta do convite: quem
-          navega pela vitrine e não aciona a chamada também vê o que falta
-          (`RF-03-47`, design — decisão 8). */}
       <h3>Necessidades de recurso em aberto</h3>
       <ListaDeNecessidades />
     </>

@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import * as leituras from "../api/leituras";
 import { esquecerConteudoInstitucional } from "../institucional/useConteudoInstitucional";
 import { esquecerNecessidades } from "../necessidades/useNecessidades";
+import App from "./TelaDaVitrine";
 
 // O garfo da entrada (`RF-03-42`, documentos 02 §1 e 14 §§10, 11): a porta
 // pergunta o que a pessoa traz e encaminha aos dois destinos que já existem —

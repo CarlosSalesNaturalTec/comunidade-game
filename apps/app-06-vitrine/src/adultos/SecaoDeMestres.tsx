@@ -1,13 +1,14 @@
 import { listarMestres, type MestrePublico } from "../api/leituras";
 import { PREFIXO_DA_PAGINA_DO_MESTRE } from "../navegacao/caminhos";
+import { navegarPara } from "../navegacao/navegar";
 import { cartaDoMestre } from "./cartas";
 import { SecaoDeAdultos } from "./SecaoDeAdultos";
 
 interface Props {
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
-export function SecaoDeMestres({ irPara }: Props) {
+export function SecaoDeMestres({ irPara = navegarPara }: Props) {
   return (
     <SecaoDeAdultos<MestrePublico>
       listar={listarMestres}

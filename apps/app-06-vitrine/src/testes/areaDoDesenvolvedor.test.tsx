@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import * as desenvolvedor from "../api/desenvolvedor";
 import { TEXTO_DA_ABERTURA } from "../desenvolvedor/abertura";
+import App from "./TelaDaVitrine";
 
 function abrirAArea() {
   window.history.pushState(null, "", "/desenvolvedor");

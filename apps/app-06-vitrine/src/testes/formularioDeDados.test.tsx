@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import * as solicitacoes from "../api/solicitacoes";
+import App from "./TelaDaVitrine";
 
 const REGISTRO = { id: "protocolo-456", prazo: "2026-10-06T12:00:00Z" };
 

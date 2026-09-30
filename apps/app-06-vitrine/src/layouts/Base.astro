@@ -1,0 +1,52 @@
+---
+/**
+ * A moldura de toda tela da vitrine. O temperamento é **Arena**, da App 06
+ * inteira (documento 15 §6), e as fontes e os tokens vêm de `comum/`, servidos
+ * pelo próprio domínio — nenhuma requisição a terceiro em tempo de execução
+ * (`RF-03-51`, documento 15 §1, princípio 6).
+ *
+ * Título, descrição e canônica são **por rota**: um `<title>` para o site
+ * inteiro é o que a fatia 9 existe para corrigir (PRD-03 §10). `indexavel`
+ * falso põe a etiqueta de não indexar — as páginas de pessoa a usam, e o
+ * `X-Robots-Tag` do `firebase.json` a acompanha.
+ */
+import "../index.css";
+
+interface Props {
+  titulo: string;
+  descricao: string;
+  indexavel?: boolean;
+}
+
+const { titulo, descricao, indexavel = true } = Astro.props;
+// `build.format: "file"` emite `pesquisadores.html`, e o Firebase Hosting o
+// serve em `/pesquisadores`. A canônica tem de ser o endereço **público**: sem
+// o `.html`, e `/` para a abertura. Canônica em `/index.html` dividiria a
+// identidade da raiz para o buscador — exatamente o que ela existe para
+// evitar (PRD-03 §10).
+const publico = Astro.url.pathname.replace(/index\.html$/, "").replace(/\.html$/, "");
+const canonica = new URL(publico === "" ? "/" : publico, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="pt-BR" data-temperamento="arena">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{titulo}</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={canonica} />
+    {!indexavel && <meta name="robots" content="noindex, nofollow" />}
+    {/* A prévia de compartilhamento repete o que a tela já mostra em público,
+        e nada além (`RF-03-06`, `RF-03-61`). */}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={canonica} />
+    <meta property="og:locale" content="pt_BR" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

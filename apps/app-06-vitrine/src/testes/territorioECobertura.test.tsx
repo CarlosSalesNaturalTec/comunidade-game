@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import type {
   CoberturaDeOds,
   ComunidadeNaLista,
@@ -10,6 +9,7 @@ import type {
   SeriePublica,
 } from "../api/leituras";
 import * as leituras from "../api/leituras";
+import App from "./TelaDaVitrine";
 
 // Critérios de aceite do PRD-03 §12 para o painel do território, a cobertura
 // da Agenda 2030 e o bloco do gestor: o dado sai agregado até o bairro e sem

@@ -2,9 +2,9 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import type { ApoiadorPublico, MestrePublico } from "../api/leituras";
 import * as leituras from "../api/leituras";
+import App from "./TelaDaVitrine";
 
 // Critérios de aceite do PRD-03 §12 para a fatia 7: card abre a página em
 // endereço próprio, a prova sai como link com rótulo, a vitrine não edita,

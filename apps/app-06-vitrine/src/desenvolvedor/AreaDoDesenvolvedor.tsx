@@ -1,11 +1,12 @@
 import { Aviso, Botao, Moldura } from "comum/react";
 import { CAMINHO_DA_APRESENTACAO_DA_URL } from "../navegacao/caminhos";
+import { navegarPara } from "../navegacao/navegar";
 import { ChatDoDesenvolvedor } from "./ChatDoDesenvolvedor";
 import { URL_DA_DOCUMENTACAO, URL_DO_REPOSITORIO } from "./enderecos";
 import { FormularioDeChave } from "./FormularioDeChave";
 
 interface Props {
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
 /** Área do Apoiador Desenvolvedor: **seção da vitrine**, pública e sem login,
@@ -15,7 +16,7 @@ interface Props {
  *
  * As quatro partes são independentes: o assistente fora do ar não derruba
  * nenhuma das outras três (`RF-03-72`). */
-export function AreaDoDesenvolvedor({ irPara }: Props) {
+export function AreaDoDesenvolvedor({ irPara = navegarPara }: Props) {
   return (
     <Moldura>
       <div className="cg-vitrine">

@@ -1,8 +1,10 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import * as leituras from "../api/leituras";
+import { RolagemAteAAncora } from "../institucional/RolagemAteAAncora";
+import { ApresentacaoDaSecao } from "../institucional/SecoesInstitucionais";
 import { esquecerConteudoInstitucional } from "../institucional/useConteudoInstitucional";
+import App from "./TelaDaVitrine";
 
 const QUEM_SOMOS =
   "## Nota de transparência sobre IA\n\nA plataforma usa IA e diz isso.\n\nSobre o gerado com IA, veja o bloco Licenças, logo abaixo.\n\n## Licenças\n\nCódigo aberto e conteúdo em CC BY-SA.";
@@ -56,14 +58,23 @@ describe("conteúdo institucional da vitrine", () => {
     expect(quemSomos).toContainElement(nota);
   });
 
+  // Monta o que a página `/` serve: o texto institucional **já no documento**,
+  // e a ilha da rolagem entrando depois dele. É a ordem da produção — o Astro
+  // renderiza a seção no build e o `client:load` monta a ilha sobre ela —, e
+  // por isso o caso não passa pela composição de teste (design — decisão 7).
   it("o endereço da nota leva direto a ela, em foco (RF-03-48)", async () => {
-    publicar();
     window.history.pushState(null, "", "/#nota-de-transparencia-sobre-ia");
-    render(<App />);
+    render(
+      <>
+        <ApresentacaoDaSecao
+          dado={{ secao: "quem-somos", texto: QUEM_SOMOS, video_url: null }}
+          nome="Quem somos"
+        />
+        <RolagemAteAAncora />
+      </>,
+    );
 
-    const nota = await screen.findByRole("heading", {
-      name: "Nota de transparência sobre IA",
-    });
+    const nota = screen.getByRole("heading", { name: "Nota de transparência sobre IA" });
     await waitFor(() => expect(nota).toHaveFocus());
   });
 
@@ -145,16 +156,19 @@ describe("conteúdo institucional da vitrine", () => {
     },
   );
 
+  // Na porta do convite, e não mais na abertura: a abertura passou a trazer o
+  // institucional do próprio documento, buscado no build, e lá a leitura não
+  // pode falhar em tempo de visita — núcleo fora do ar derruba a publicação
+  // (design — decisão 4). Quem ainda lê o institucional na visita é a porta,
+  // pela chave PIX, e é onde o aviso continua valendo (`RF-03-43`).
   it("falha na leitura avisa em linguagem simples, sem travar a tela", async () => {
     vi.spyOn(leituras, "lerConteudoInstitucional").mockRejectedValue(new Error("fora do ar"));
+    window.history.pushState(null, "", "/quero-participar");
     render(<App />);
 
     expect(
-      (
-        await screen.findAllByText(
-          "Não foi possível carregar esta seção agora. Tente de novo.",
-        )
-      ).length,
+      (await screen.findAllByText("Não foi possível carregar os canais de doação agora."))
+        .length,
     ).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: "Comunidade Game", level: 1 })).toBeVisible();
   });

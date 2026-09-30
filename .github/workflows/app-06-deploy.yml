@@ -48,6 +48,12 @@ jobs:
           # corporativa bloqueia `*.comunidadegame.org` por ser domínio
           # recém-registrado, e `.web.app` já é categorizado e passa no filtro.
           VITE_URL_DO_NUCLEO: https://comunidade-game-api.web.app
+          # De onde saem a canônica de cada rota e o `sitemap.xml`. Segue
+          # o mesmo contorno temporário acima: apontar `comunidadegame.org`
+          # enquanto o site é servido em `.web.app` publicaria canônica e
+          # sitemap para endereço que ainda não resolve. Volta ao endereço do
+          # documento 03 §1.1 junto com os demais.
+          URL_DA_VITRINE: https://comunidade-game-vitrine.web.app
           # Os seis destinos do "Entrar" (`RF-03-59`, design — decisão 4).
           VITE_URL_DA_APP_01_AULA: https://comunidade-game-aula.web.app
           VITE_URL_DA_APP_03_GESTAO: https://comunidade-game-app-03.web.app

@@ -11,6 +11,7 @@ import {
 } from "../api/leituras";
 import { ChamadaDeParticipacao } from "../convite/ChamadaDeParticipacao";
 import { useLeitura } from "../leitura/useLeitura";
+import { navegarPara } from "../navegacao/navegar";
 import { DestaqueDaMeta1718 } from "./DestaqueDaMeta1718";
 
 // A página da comunidade: as séries históricas do território **agregadas até
@@ -28,7 +29,7 @@ import { DestaqueDaMeta1718 } from "./DestaqueDaMeta1718";
 
 interface Props {
   comunidadeId: string;
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
 function chaveDoRecorte(recorte: { tipo_de_coleta_id: string; local_publicado_id: string }) {
@@ -96,7 +97,7 @@ function BlocoDoRecorte({
   );
 }
 
-export function PaginaDaComunidade({ comunidadeId, irPara }: Props) {
+export function PaginaDaComunidade({ comunidadeId, irPara = navegarPara }: Props) {
   const ficha = useLeitura<ComunidadePublica>(
     () => obterComunidade(comunidadeId),
     `comunidade/${comunidadeId}`,

@@ -1,0 +1,37 @@
+---
+import { secaoInstitucionalDoBuild } from "../build/dados";
+import { SecaoDeSolicitacaoDeDados } from "../formularios/SecaoDeSolicitacaoDeDados";
+import { ApresentacaoDaSecao } from "../institucional/SecoesInstitucionais";
+import Vitrine from "../layouts/Vitrine.astro";
+/** O recorte **gestores públicos** (PRD-03 §5.3), que abre com o bloco sobre a
+ * utilidade ao município (`RF-03-63` a `RF-03-65`). */
+import { BlocoDoGestor } from "../territorio/BlocoDoGestor";
+import { SecaoDaCobertura } from "../territorio/SecaoDaCobertura";
+import { SecaoDeComunidades } from "../territorio/SecaoDeComunidades";
+
+const contatos = await secaoInstitucionalDoBuild("contatos");
+---
+
+<Vitrine
+  titulo="Dado do território para a gestão pública — Comunidade Game"
+  descricao="Para que a plataforma serve ao município: usos concretos do dado coletado pelas comunidades, os limites do que é publicado e o caminho para pedir o conjunto completo."
+  recorteAtual="gestores-publicos"
+>
+  <section>
+    <h2>Para que a plataforma serve ao município</h2>
+    <BlocoDoGestor client:visible />
+  </section>
+  <section>
+    <h2>Séries do território e metodologia</h2>
+    <SecaoDeComunidades client:visible />
+  </section>
+  <section><h2>Cobertura da Agenda 2030</h2><SecaoDaCobertura client:visible /></section>
+  <section>
+    <h2>Solicitação do conjunto de dados</h2>
+    <SecaoDeSolicitacaoDeDados client:visible />
+  </section>
+  <section>
+    <h2>Contatos</h2>
+    <ApresentacaoDaSecao dado={contatos} nome="Contatos" />
+  </section>
+</Vitrine>

@@ -9,19 +9,20 @@ import {
 import { type MestrePublico, obterMestrePorId } from "../api/leituras";
 import { ChamadaDeParticipacao } from "../convite/ChamadaDeParticipacao";
 import { useLeitura } from "../leitura/useLeitura";
+import { navegarPara } from "../navegacao/navegar";
 import { cartaDoMestre } from "./cartas";
 import { ProvaPublica } from "./ProvaPublica";
 
 interface Props {
   mestreId: string;
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
 /** Identificador inexistente e persona de outro papel recebem **a mesma**
  * tela: o núcleo devolve o mesmo 404 nos dois casos (`RN-03-01`). */
 const NAO_ENCONTRADO = "Não encontrado.";
 
-export function PaginaDoMestre({ mestreId, irPara }: Props) {
+export function PaginaDoMestre({ mestreId, irPara = navegarPara }: Props) {
   const estado = useLeitura(() => obterMestrePorId(mestreId), `vitrine/mestres/${mestreId}`);
 
   return (

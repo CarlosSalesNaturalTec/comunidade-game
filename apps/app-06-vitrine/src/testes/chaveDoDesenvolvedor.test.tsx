@@ -2,8 +2,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import * as desenvolvedor from "../api/desenvolvedor";
+import App from "./TelaDaVitrine";
 
 const REGISTRO = { id: "protocolo-da-chave", prazo: "2026-10-06T12:00:00Z" };
 

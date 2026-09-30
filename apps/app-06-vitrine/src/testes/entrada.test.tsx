@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
+import App from "./TelaDaVitrine";
 
 // Os seis endereços de destino entram por variável de ambiente, uma por
 // ambiente (design — decisão 4). Este arquivo declara os seis para exercitar o

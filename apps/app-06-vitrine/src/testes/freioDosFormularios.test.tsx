@@ -2,8 +2,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import App from "../App";
 import * as solicitacoes from "../api/solicitacoes";
+import App from "./TelaDaVitrine";
 
 const freio = () =>
   new ErroDaApi(429, { codigo: "muitas_requisicoes", mensagem: "Espere." }, 120);

@@ -1,0 +1,13 @@
+---
+/** O formulário de solicitação do conjunto de dados (`RF-03-32` a
+ * `RF-03-35`). Casca no documento, formulário em ilha. */
+import { FormularioDeDados } from "../formularios/FormularioDeDados";
+import Vitrine from "../layouts/Vitrine.astro";
+---
+
+<Vitrine
+  titulo="Solicitar o conjunto de dados — Comunidade Game"
+  descricao="O formulário para solicitar o conjunto de dados do território. A entrega é anonimizada, aprovada por Admin, e a solicitação não cria cadastro nem acesso."
+>
+  <FormularioDeDados client:load />
+</Vitrine>

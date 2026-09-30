@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
-import App from "../App";
+import App from "./TelaDaVitrine";
 
 // Sem as variáveis de ambiente — o caso do desenvolvimento local e o de uma
 // aplicação ainda não publicada —, a tela nomeia o destino em texto e não

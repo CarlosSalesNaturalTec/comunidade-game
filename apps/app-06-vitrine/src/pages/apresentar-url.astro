@@ -1,0 +1,13 @@
+---
+/** A apresentação da URL do que foi construído (`RF-03-77`), por identificador
+ * da chave e nunca pelo segredo. */
+import { ApresentacaoDaUrl } from "../desenvolvedor/ApresentacaoDaUrl";
+import Vitrine from "../layouts/Vitrine.astro";
+---
+
+<Vitrine
+  titulo="Apresentar o que você construiu — Comunidade Game"
+  descricao="Apresente o endereço da aplicação que você construiu sobre a API aberta do Comunidade Game, pelo identificador da sua chave."
+>
+  <ApresentacaoDaUrl client:load />
+</Vitrine>

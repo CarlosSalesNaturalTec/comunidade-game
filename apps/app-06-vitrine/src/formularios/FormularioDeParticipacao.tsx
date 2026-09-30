@@ -1,13 +1,14 @@
 import { Aviso, Botao, Moldura } from "comum/react";
 import { useState } from "react";
 import { enviarParticipacao, type Pretensao } from "../api/solicitacoes";
+import { navegarPara } from "../navegacao/navegar";
 import { CampoDeTexto } from "./CampoDeTexto";
 import { useEnvio } from "./useEnvio";
 
 const FORMATADOR = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" });
 
 interface Props {
-  irPara: (destino: string) => void;
+  irPara?: (destino: string) => void;
 }
 
 const OBRIGATORIOS = "Preencha este campo.";
@@ -15,7 +16,7 @@ const OBRIGATORIOS = "Preencha este campo.";
 /** Solicitação de participação como Mestre ou Apoiador (`RF-03-27` a
  * `RF-03-31`, PRD-03 §5.4). Só os campos do PRD-03: aporte, comprovante e nick
  * são do pré-cadastro da App 08 (design — decisão 4). */
-export function FormularioDeParticipacao({ irPara }: Props) {
+export function FormularioDeParticipacao({ irPara = navegarPara }: Props) {
   const [nome, definirNome] = useState("");
   const [email, definirEmail] = useState("");
   const [whatsapp, definirWhatsapp] = useState("");
