@@ -134,6 +134,7 @@ doc 15**.
 | Acompanhamento por nick e favoritos (só do Apoiador)                       | 02 §1 e 03 §10                             | 03 §8, 04 §3, 08, 12           |
 | Licença do código (AGPL)                                                   | 03 §1                                      | 01, 08                         |
 | Licença do conteúdo educacional (CC BY-SA)                                 | 03 §1                                      | 01, 08, 09                     |
+| Marca reservada (fora da AGPL e da CC BY-SA)                               | 03 §1                                      | 09, 15                         |
 | Regra de lastro (atividade só com recurso provido)                         | 04 §1                                      | 02, 05, 10, 11, 12             |
 | Poder Sustentador                                                          | 04 §1                                      | 02, 12, 14                     |
 | Cobertura parcial da necessidade de recurso                                | 04 §1                                      | 08, 12, 14                     |
