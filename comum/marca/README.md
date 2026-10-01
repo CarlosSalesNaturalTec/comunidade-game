@@ -32,12 +32,18 @@ Todos em `comum/marca/`.
 | `simbolo.svg` | SVG | `48 × 48` | 3 KB | Espaço curto, onde o nome não cabe |
 | `simbolo-mono.svg` | SVG, `currentColor` | `48 × 48` | 2 KB | Idem, no escuro e sobre foto |
 | `favicon.svg` | SVG | `48 × 48` | 2 KB | Aba do navegador das sete aplicações |
-| `apple-touch-icon.png` | PNG opaco | `180 × 180` | 12 KB | Atalho em iOS, que não aceita SVG |
 
 **Uma versão colorida e uma monocromática**, e não um par claro/escuro: a monocromática
 usa `currentColor` e herda a cor do texto, então **um arquivo serve o modo escuro e o
 uso sobre foto**. Um par claro/escuro dobraria os arquivos e deixaria o caso da foto sem
 resposta.
+
+As monocromáticas **não são desenho novo** — é o mesmo vetor com os preenchimentos
+trocados por `currentColor`. Quem desenha pode entregá-las junto, ou entregar só as
+coloridas: a implementação as deriva, e quem encomendou confere.
+
+O **`apple-touch-icon.png`** (`180 × 180`, atalho em iOS, que não aceita SVG) **não se
+desenha**: é rasterizado do `favicon.svg` na implementação. Não entra na encomenda.
 
 O `favicon.svg` entra **uma vez** aqui e a esteira o copia para as sete
 `apps/*/public/`. Hoje as sete servem o logotipo padrão do Vite — o mesmo arquivo de
@@ -92,7 +98,35 @@ Sem estes quatro, a implementação não fecha o documento 15 §13:
 | Ícone de interface | `comum/react/Icone.tsx`, que é código e já tem a grade do §11.1 |
 | Avatar do Guerreiro(a) | `comum/avatar/`, que é paramétrico e composto em código (§7) |
 
-## 6. Regras que valem para todo arquivo desta pasta
+## 6. Como entregar, e o que acontece depois
+
+Esta seção existe para que a entrega **não dependa de nenhuma conversa**: quem chegar
+aqui com os arquivos na mão, meses depois, encontra o caminho inteiro.
+
+**Onde pôr.** Nesta pasta e em `elenco/`, com os nomes exatos das tabelas acima. Dois
+caminhos, e tanto faz qual:
+
+- **Pelo console do GitHub**, num branch — nunca direto na `main`. Branch → `comum/marca/`
+  → _Add file · Upload files_. Na `main` os arquivos entrariam sem passar pelo
+  `pull_request` da esteira, e sem diff para alguém olhar antes.
+- **Entregando os arquivos a quem implementa.** SVG é texto: dá para colar. Quem
+  implementa cria os arquivos com os nomes certos e confere antes de gravar.
+
+**O que destrava.** Com os arquivos aqui, a fatia 11 do `openspec/cronograma-de-fatias.md`
+sai da trava. A change é `2026-09-30-heroi-e-gramatica-da-vitrine`, e o `tasks.md` dela já
+tem as tarefas 1.0 e 1.2 fechadas — o Biome já ignora esta pasta, e a `LICENCA.md` já
+está escrita. A implementação retoma na **tarefa 1.1**, que é conferir cada arquivo
+contra as tabelas acima.
+
+**Ordem útil, se a entrega vier em lotes.** `favicon.svg` e `simbolo.svg` primeiro: são os
+menores, e o favicon tira da frente o logotipo do Vite que as sete aplicações servem hoje.
+Depois `marca-horizontal.svg` e `marca-empilhada.svg`, que destravam o cabeçalho e o
+herói. Submarcas e elenco por último.
+
+**O que não trava a entrega.** SVG com metadado de editor, `<style>` interno ou camada
+oculta — Figma e Illustrator exportam assim. Quem implementa limpa e diz o que mudou.
+
+## 7. Regras que valem para todo arquivo desta pasta
 
 - **Nenhuma cor fora da paleta** do documento 15 §3. A monocromática não declara cor
   nenhuma: usa `currentColor`.

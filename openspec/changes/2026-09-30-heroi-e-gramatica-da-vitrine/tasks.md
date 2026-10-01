@@ -12,7 +12,10 @@
 - [ ] 1.1 Receber os arquivos em `comum/marca/`, conferir um a um contra o manifesto do
       `README.md` — formato, nome, grade e orçamento de peso — e registrar a procedência
       e a data no próprio `README.md`; verificar que nenhum arquivo traz valor de cor
-      fora da paleta do documento 15 §3
+      fora da paleta do documento 15 §3. **Dois não são encomendados:** o
+      `apple-touch-icon.png` é rasterizado do `favicon.svg` aqui, e as versões `-mono`,
+      se não vierem prontas, são derivadas das coloridas trocando preenchimento por
+      `currentColor`
 - [x] 1.2 Escrever `comum/marca/LICENCA.md` com a reserva do documento 03 §1 — a marca
       fora da AGPL e da CC BY-SA, e a réplica trocando-a pela sua —, ao lado dos
       arquivos, como o `OFL-archivo.txt` fica ao lado das fontes
