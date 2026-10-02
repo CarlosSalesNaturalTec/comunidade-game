@@ -154,6 +154,36 @@ function normalizado(numeros: number[]): number[] {
   return numeros.map((v, i) => (i % 2 === 0 ? v - x0 : v - y0) / largura);
 }
 
+/** O contorno do escudo em pontos: cada cúbica amostrada, para dar um polígono
+ * com que se pergunta se um ponto está dentro. */
+function amostrado(numeros: number[]): Array<[number, number]> {
+  const pt = (i: number): [number, number] => [numeros[i * 2], numeros[i * 2 + 1]];
+  const saida: Array<[number, number]> = [];
+  for (let c = 0; c < 4; c += 1) {
+    const [p0, p1, p2, p3] = [pt(c * 3), pt(c * 3 + 1), pt(c * 3 + 2), pt(c * 3 + 3)];
+    for (let k = 0; k < 40; k += 1) {
+      const t = k / 40;
+      const u = 1 - t;
+      saida.push([
+        u ** 3 * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t ** 3 * p3[0],
+        u ** 3 * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t ** 3 * p3[1],
+      ]);
+    }
+  }
+  return saida;
+}
+
+/** Ponto dentro do polígono, pela regra do raio que cruza as arestas. */
+function dentro([x, y]: [number, number], poligono: Array<[number, number]>): boolean {
+  let sim = false;
+  for (let i = 0, j = poligono.length - 1; i < poligono.length; j = i, i += 1) {
+    const [xi, yi] = poligono[i];
+    const [xj, yj] = poligono[j];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) sim = !sim;
+  }
+  return sim;
+}
+
 describe("o escudo tem uma forma só, em todas as peças da marca", () => {
   const referencia = normalizado(escudo("simbolo.svg").numeros);
 
@@ -192,6 +222,32 @@ describe("o escudo tem uma forma só, em todas as peças da marca", () => {
     expect(xsNoTopo).toHaveLength(1);
     expect(xsNoTopo[0]).toBeCloseTo((Math.min(...xs) + Math.max(...xs)) / 2, 1);
   });
+
+  // O escudo ganhou altura e perdeu largura: o monograma não pode ter ficado
+  // de fora da forma nova. Vale para o **símbolo**, cujo monograma não é
+  // transformado; nos conjuntos ele reencaixa por `transform` (spec: cenário
+  // "O monograma continua dentro do escudo").
+  it.each(["simbolo.svg", "simbolo-mono.svg"])(
+    "%s mantém o monograma dentro do escudo",
+    (nome) => {
+      const contorno = amostrado(escudo(nome).numeros);
+      const monograma = conteudo(nome).match(/<path\b[^>]*?\/>/gs)?.[1] ?? "";
+      const n = [...(monograma.match(/d="([^"]+)"/)?.[1] ?? "").matchAll(/-?\d*\.?\d+/g)].map(
+        (achado) => Number(achado[0]),
+      );
+      const xs = eixo(n, 0);
+      const ys = eixo(n, 1);
+      const cantos: Array<[number, number]> = [
+        [Math.min(...xs), Math.min(...ys)],
+        [Math.max(...xs), Math.min(...ys)],
+        [Math.min(...xs), Math.max(...ys)],
+        [Math.max(...xs), Math.max(...ys)],
+      ];
+      for (const canto of cantos) {
+        expect(dentro(canto, contorno)).toBe(true);
+      }
+    },
+  );
 
   it.each(COM_ESCUDO)("%s não deixa a ponta sair cortada pela grade", (nome) => {
     const { numeros, contorno, juncao, grade } = escudo(nome);

@@ -57,8 +57,9 @@
 - [x] 4.1 Documento 15 §13.1: trocar a proporção `42 : 39` por `1 : 1,172` e descrever o topo em
       ponta por duas curvas, com a ponta a 18,1% da altura. Acertar o §13.4, cuja área de
       proteção é metade da altura do escudo
-- [ ] 4.2 Conferência visual do fundador no tamanho mínimo de 16 px, antes de fechar: por
-      cálculo a ponta mede 2,8 px, e o número não substitui o olho (documento 15 §13.4)
+- [x] 4.2 Conferência visual do fundador no tamanho mínimo de 16 px: **aprovada em 2026-10-02**,
+      sobre renderização no Chromium de 16 a 192 px, nas duas versões e nos dois conjuntos. A
+      ponta lê de 24 px para cima e, a 16 px, aparece como ressalto suave (documento 15 §13.4)
 - [x] 4.3 Documento 09 §1: gravar a decisão nova em "Já decididos" — a forma do escudo, a
       variante escolhida e a origem dela
 - [x] 4.4 `comum/marca/README.md` §8: corrigir a procedência, que descreve o símbolo como
