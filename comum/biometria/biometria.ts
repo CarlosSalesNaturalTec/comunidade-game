@@ -110,6 +110,43 @@ export async function prepararCaptura(): Promise<void> {
   }
 }
 
+// Os cinco modelos que a configuração de `face` acima habilita — detector,
+// mesh, description, antispoof e liveness. Está escrito à mão porque a
+// biblioteca não expõe a conta antes de carregar; `biometria.test.ts` afirma
+// que o número bate com o que `load()` produz.
+export const TOTAL_DE_MODELOS = 5;
+
+/** Quantos modelos já carregaram, dos habilitados. É a **granularidade que a
+ * biblioteca oferece**: ela não informa bytes, então o andamento é por modelo
+ * e nunca percentual contínuo (`RF-04-75`, design — decisão 5). */
+export function andamentoDosModelos(): { carregados: number; total: number } {
+  return { carregados: human.models.loaded().length, total: TOTAL_DE_MODELOS };
+}
+
+// Carrega os modelos ao fundo, para a primeira captura do encontro não pagar
+// os ~10 MB inteiros com a turma entrando pela porta (`RF-04-75`, documento 03
+// §§3.2, 3.4 — "a aula não pode travar na porta").
+//
+// **Nunca abre a câmera**: carrega modelo só. Câmera fora do consentimento
+// contraria o `RN-04-07`, e nenhuma pessoa pediu nada neste momento
+// (`RN-04-42`, design — decisão 2).
+//
+// **Nunca lança**: devolve se conseguiu. Quem chama é a abertura da sessão de
+// trabalho, que não tem o que dizer à pessoa sobre isto — o caminho de erro
+// visível continua sendo o de `prepararCaptura()` (`RF-04-65`).
+//
+// É idempotente com `prepararCaptura()`: `load()` acha pronto o que já veio,
+// e os modelos ficam em IndexedDB entre sessões, porque `cacheModels` vale
+// `true` por padrão em navegador e esta configuração não o desliga.
+export async function precarregarModelos(): Promise<boolean> {
+  try {
+    await human.load();
+  } catch {
+    return false;
+  }
+  return human.models.loaded().length > 0;
+}
+
 // Anexa o visor ao elemento que a tela forneceu. A tela **empresta um lugar**:
 // nem `MediaStream`, nem quadro, nem pixel saem deste módulo, e a fronteira
 // que garante o invariante 12 continua de pé por construção (`RF-04-64`,

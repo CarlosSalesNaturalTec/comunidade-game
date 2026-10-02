@@ -4,7 +4,12 @@
 > `RN-04-42`. Cada tarefa cita o identificador que atende.
 >
 > **A elicitação está fechada** — todas as respostas do fundador são de 2026-10-02 e estão na
-> `proposal.md`. As tarefas podem andar na ordem que convier.
+> `proposal.md`.
+>
+> **A seção 4 roda ANTES das seções 1 a 3.** `RF-04-75` e `RN-04-42` são identificadores novos, e
+> o CLAUDE.md não admite ajustar o PRD ao código já escrito: os documentos-fonte e o PRD vêm
+> primeiro, e só então o código que os cita. A numeração ficou como nasceu; a ordem de execução é
+> esta.
 
 ## 0. O que a elicitação fechou
 
@@ -80,17 +85,17 @@
 
 ## 4. Documentação
 
-- [ ] 4.1 PRD-04 §6.1: criar `RF-04-75`, e `RN-04-42` na §7, com enunciado verificável e as
+- [x] 4.1 PRD-04 §6.1: criar `RF-04-75`, e `RN-04-42` na §7, com enunciado verificável e as
       fontes `RN-04-07` e documento 03 §3.3. **Neste mesmo PR**, e não em PR próprio
-- [ ] 4.2 PRD-04 §5.1: a pré-carga entra como **nota do passo 1**, e o **passo 6 é corrigido** —
+- [x] 4.2 PRD-04 §5.1: a pré-carga entra como **nota do passo 1**, e o **passo 6 é corrigido** —
       ele diz que a aplicação verifica a câmera ao abrir a sessão de trabalho, e `existeCamera()`
       é chamado dentro de `TelaDeEntradaDoGuerreiro` e `FluxoDeOnboarding`, não na abertura.
       Defeito preexistente, corrigido junto por decisão do fundador
-- [ ] 4.3 PRD-04 §14: retirar **só** a pendência "peso dos modelos da biblioteca Human". As
+- [x] 4.3 PRD-04 §14: retirar **só** a pendência "peso dos modelos da biblioteca Human". As
       outras seis seguem abertas e não são tocadas
-- [ ] 4.4 Documento 03 §3.4: registrar a pré-carga como a resposta ao requisito de poucos
+- [x] 4.4 Documento 03 §3.4: registrar a pré-carga como a resposta ao requisito de poucos
       segundos, em uma frase — o documento é fonte única e não repete o desenho
-- [ ] 4.5 Documento 09 §1: gravar em "Já decididos" a pré-carga ao fundo, sem portão, **e o
+- [x] 4.5 Documento 09 §1: gravar em "Já decididos" a pré-carga ao fundo, sem portão, **e o
       descarte do service worker e do app instalável** — descartados, não adiados
 - [ ] 4.6 `openspec/cronograma-de-fatias.md`: fechar a situação da linha da fatia 24, e conferir
       que a linha da fatia da App 05 está registrada no bloco do PRD-05

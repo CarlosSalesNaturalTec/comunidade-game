@@ -460,7 +460,8 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
   reconhecimento facial exigem rede**: o descritor nasce no aparelho, mas a comparação é no
   núcleo, e nem imagem nem _template_ de criança ficam guardados no aparelho compartilhado.
 - Registro de presença de Guerreiro(a) conhecido em **poucos segundos** — a aula não pode
-  travar na porta.
+  travar na porta. Os modelos de reconhecimento carregam **ao fundo**, assim que a sessão de
+  trabalho do aparelho abre, e nenhuma tela espera por eles.
 - Acessibilidade: a modalidade áudio atende quem ainda não lê com fluência e pessoas com
   deficiência visual.
 
