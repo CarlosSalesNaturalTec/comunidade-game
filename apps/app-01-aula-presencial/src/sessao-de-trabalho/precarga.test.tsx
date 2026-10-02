@@ -77,6 +77,50 @@ afterEach(() => {
   localStorage.clear();
 });
 
+class EnunciadoFalso {
+  lang = "";
+  voice: SpeechSynthesisVoice | null = null;
+  text: string;
+  constructor(text: string) {
+    this.text = text;
+  }
+}
+
+class MotorDeFalaFalso {
+  ditos: EnunciadoFalso[] = [];
+  getVoices() {
+    return [
+      {
+        lang: "pt-BR",
+        localService: true,
+        name: "local",
+        default: true,
+        voiceURI: "local",
+      } as SpeechSynthesisVoice,
+    ];
+  }
+  speak(dito: EnunciadoFalso) {
+    this.ditos.push(dito);
+  }
+  cancel() {}
+  addEventListener() {}
+  removeEventListener() {}
+}
+
+function instalarMotorDeFalaFalso() {
+  const motor = new MotorDeFalaFalso();
+  vi.stubGlobal("speechSynthesis", motor);
+  vi.stubGlobal("SpeechSynthesisUtterance", EnunciadoFalso);
+  return motor;
+}
+
+/** O navegador não fala antes de um gesto da pessoa: este é o gesto. */
+async function darOGestoQueArmaANarracao() {
+  await userEvent
+    .setup()
+    .click(await screen.findByRole("button", { name: "Iniciar a narração das telas" }));
+}
+
 describe("pré-carga dos modelos de biometria", () => {
   it("começa ao abrir a sessão de trabalho, havendo rede", async () => {
     render(<App />);
@@ -141,50 +185,58 @@ describe("pré-carga dos modelos de biometria", () => {
     const falha = await screen.findByText(/não foi possível carregar os modelos/i);
     expect(falha.closest('[role="status"]')).not.toBeNull();
     expect(falha.closest('[role="alert"]')).toBeNull();
+    // O indicador não fica parado no passo em que travou: ele sai.
+    expect(
+      screen.queryByText(/carregando modelos de reconhecimento facial/i),
+    ).not.toBeInTheDocument();
   });
 
-  // A falha não vem do `Aviso`, que narra por omissão: ela pede a fala à mão.
-  // Este caso é o que impede a narração de se perder numa refatoração
-  // (documento 15 §5.1).
+  // A presença é o caminho que não pode esperar: é ele que o documento 03
+  // §3.4 protege quando diz que a aula não pode travar na porta.
+  it("a presença abre com a pré-carga em andamento", async () => {
+    const { promessa } = promessaControlada<boolean>();
+    vi.spyOn(biometria, "precarregarModelos").mockReturnValue(promessa);
+
+    render(<App />);
+    await entrarComoMestre();
+
+    const entrar = await screen.findByRole("button", { name: /presença — entrar/i });
+    expect(entrar).toBeEnabled();
+    await userEvent.setup().click(entrar);
+
+    // Saiu da tela inicial: o caminho abriu, com a pré-carga ainda correndo.
+    await waitFor(() =>
+      expect(screen.queryByText(/o que você quer fazer/i)).not.toBeInTheDocument(),
+    );
+  });
+
+  // O andamento vem do `Aviso`, que narra por omissão; a falha pede a fala à
+  // mão. Os dois casos abaixo impedem que qualquer um dos caminhos se perca
+  // numa refatoração (documento 15 §5.1).
+  it("a narração fala o andamento quando está ativada", async () => {
+    const motor = instalarMotorDeFalaFalso();
+    const { promessa } = promessaControlada<boolean>();
+    vi.spyOn(biometria, "precarregarModelos").mockReturnValue(promessa);
+    vi.spyOn(biometria, "andamentoDosModelos").mockReturnValue({ carregados: 1, total: 5 });
+
+    render(<App />);
+    await darOGestoQueArmaANarracao();
+    await entrarComoMestre();
+
+    await screen.findByText(/carregando modelos de reconhecimento facial/i);
+    await waitFor(() =>
+      expect(motor.ditos.map((dito) => dito.text)).toContain(
+        "Em andamento: Carregando modelos de reconhecimento facial (1 de 5)",
+      ),
+    );
+  });
+
   it("a narração fala a falha quando está ativada", async () => {
-    class EnunciadoFalso {
-      lang = "";
-      voice: SpeechSynthesisVoice | null = null;
-      text: string;
-      constructor(text: string) {
-        this.text = text;
-      }
-    }
-    class MotorDeFalaFalso {
-      ditos: EnunciadoFalso[] = [];
-      getVoices() {
-        return [
-          {
-            lang: "pt-BR",
-            localService: true,
-            name: "local",
-            default: true,
-            voiceURI: "local",
-          } as SpeechSynthesisVoice,
-        ];
-      }
-      speak(dito: EnunciadoFalso) {
-        this.ditos.push(dito);
-      }
-      cancel() {}
-      addEventListener() {}
-      removeEventListener() {}
-    }
-    const motor = new MotorDeFalaFalso();
-    vi.stubGlobal("speechSynthesis", motor);
-    vi.stubGlobal("SpeechSynthesisUtterance", EnunciadoFalso);
+    const motor = instalarMotorDeFalaFalso();
     vi.spyOn(biometria, "precarregarModelos").mockResolvedValue(false);
 
     render(<App />);
-    // O navegador não fala antes de um gesto: este é o gesto.
-    await userEvent
-      .setup()
-      .click(await screen.findByRole("button", { name: "Iniciar a narração das telas" }));
+    await darOGestoQueArmaANarracao();
     await entrarComoMestre();
 
     await screen.findByText(/não foi possível carregar os modelos/i);
