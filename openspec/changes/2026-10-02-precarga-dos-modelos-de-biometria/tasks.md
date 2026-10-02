@@ -103,9 +103,9 @@
       segundos, em uma frase — o documento é fonte única e não repete o desenho
 - [x] 4.5 Documento 09 §1: gravar em "Já decididos" a pré-carga ao fundo, sem portão, **e o
       descarte do service worker e do app instalável** — descartados, não adiados
-- [ ] 4.6 `openspec/cronograma-de-fatias.md`: fechar a situação da linha da fatia 24, e conferir
+- [x] 4.6 `openspec/cronograma-de-fatias.md`: fechar a situação da linha da fatia 24, e conferir
       que a linha da fatia da App 05 está registrada no bloco do PRD-05
-- [ ] 4.7 Conferir os invariantes do documento 99 §6 — em especial o 1, que fixa as oito como
+- [x] 4.7 Conferir os invariantes do documento 99 §6 — em especial o 1, que fixa as oito como
       Web Apps sem app nativo, e o 12, da imagem que não fica no aparelho
 
 ## 5. Verificação
