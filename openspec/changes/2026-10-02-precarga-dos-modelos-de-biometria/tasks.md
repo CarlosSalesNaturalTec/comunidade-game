@@ -70,13 +70,16 @@
 
 - [x] 3.1 A pré-carga começa ao abrir a sessão de trabalho com rede, e **não** começa sem rede
       (spec: "Os modelos de biometria se carregam antes da primeira captura, sem travar a aula")
-- [ ] 3.7 **Em aberto:** o cenário "A rede que volta retoma a pré-carga" **não ficou coberto**.
+- [x] 3.7 **Aceito sem guarda** (decisão do fundador, 2026-10-02): o cenário "A rede que volta
+      retoma a pré-carga" **fica sem teste**.
       `semRede` só volta a `false` por `marcarSucessoDeRede()`, que mora no laço de
       sincronização da fila de presença — chegar lá de teste exige dirigir o fluxo inteiro da
       presença sem rede, e **nenhum teste do repositório faz a volta da rede hoje**. A lógica
       está escrita e é simples (a situação volta a `ocioso` na falha, e o efeito depende de
-      `semRede`), mas não há guarda. Decisão do fundador: investir no teste de integração,
-      expor o contexto de rede para o teste, ou aceitar o cenário sem guarda
+      `semRede`), mas não há guarda. As alternativas — teste de integração pela fila de presença,
+      ou expor o contexto de rede só para o teste — foram descartadas: a primeira é cara e a
+      segunda abre a camada por causa do teste. **Quem mexer no efeito da pré-carga confere este
+      caminho à mão.**
 - [x] 3.2 A tela inicial e os caminhos dela aparecem e operam **com a pré-carga em andamento** —
       o teste que impede o indicador de virar portão (spec: mesmo requisito)
 - [x] 3.3 O registro de presença e a fila local operam com a pré-carga em andamento e com ela

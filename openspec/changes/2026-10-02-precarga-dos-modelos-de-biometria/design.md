@@ -136,6 +136,7 @@ espera por ele.
 | --- | --- |
 | A pré-carga competir com a rede da aula e atrasar a presença | É o teste 2 da tarefa 3.3: a fila de presença e a tela inicial não esperam por ela em momento nenhum. Prioridade é implícita — a pré-carga não tem prazo |
 | O jsdom tentar baixar 10,22 MB na suíte | Dublê em `src/testes/configuracao.ts`, no molde do que já existe para `prepararCaptura` e `acoplarEspelho` |
+| A volta da rede não retomar a pré-carga | **Aceito sem guarda** (fundador, 2026-10-02). `semRede` só volta a `false` por `marcarSucessoDeRede()`, no laço de sincronização da fila de presença, e nenhum teste do repositório faz a volta da rede. Quem mexer no efeito confere este caminho à mão |
 | A pré-carga abrir a câmera por engano numa refatoração | Teste que afirma que `precarregarModelos()` não toca `getUserMedia` (decisão 2) |
 | O indicador virar portão numa mudança futura | Cenário de spec próprio: a tela inicial aparece com a pré-carga em andamento |
 | `load()` concorrente, se a câmera abrir durante a pré-carga | `human.load()` é idempotente e `prepararCaptura()` confere `models.loaded()` depois; conferir que a chamada concorrente não deixa o preparo em falso negativo |
