@@ -33,54 +33,60 @@
 
 ## 1. A pré-carga em `comum/biometria`
 
-- [ ] 1.1 Criar `precarregarModelos()` em `comum/biometria/biometria.ts` — chama `human.load()`
+- [x] 1.1 Criar `precarregarModelos()` em `comum/biometria/biometria.ts` — chama `human.load()`
       e **nunca** `abrirCamera()`. Resolve sem lançar: falha é informada pelo retorno, não por
       exceção, porque quem chama é que decide o que dizer (`RN-04-42`; `design.md` — decisão 2)
-- [ ] 1.2 Exportá-la em `comum/biometria/indice.ts`, mantendo a fronteira: nenhuma tela importa
+- [x] 1.2 Exportá-la em `comum/biometria/indice.ts`, mantendo a fronteira: nenhuma tela importa
       a Human nem toca `modelBasePath` (`RN-04-12`, invariante 12)
-- [ ] 1.3 Expor o **andamento por modelo carregado**, a partir de `human.models.loaded()` contra
+- [x] 1.3 Expor o **andamento por modelo carregado**, a partir de `human.models.loaded()` contra
       os cinco habilitados — nunca percentual contínuo (`RF-04-75`; `design.md` — decisão 5)
-- [ ] 1.4 Em `comum/biometria/biometria.test.ts`: afirmar que `precarregarModelos()` **não toca
+- [x] 1.4 Em `comum/biometria/biometria.test.ts`: afirmar que `precarregarModelos()` **não toca
       `getUserMedia`**, que é idempotente com `prepararCaptura()` e que resolve sem lançar
       quando o carregamento falha (`RN-04-42`, `RF-04-65`)
 
 ## 2. O disparo, o andamento e a falha na App 01
 
-- [ ] 2.1 Em `src/testes/configuracao.ts`, dublar `precarregarModelos` — sem isso a suíte
+- [x] 2.1 Em `src/testes/configuracao.ts`, dublar `precarregarModelos` — sem isso a suíte
       tentaria buscar 10,22 MB em jsdom, no molde do que já se faz com `prepararCaptura` e
       `acoplarEspelho` (`design.md` — Risks)
-- [ ] 2.2 Disparar a pré-carga em `AparelhoDaAula.tsx` quando houver sessão de trabalho e rede,
+- [x] 2.2 Disparar a pré-carga em `AparelhoDaAula.tsx` quando houver sessão de trabalho e rede,
       com nova tentativa **quando a rede voltar**, pelo mesmo desenho do efeito que busca o
       verificador do PIN. Nunca aguardar por ela em caminho algum (`RF-04-75`; `design.md` —
       decisão 3)
-- [ ] 2.3 Apresentar o andamento com **`Aviso tipo="andamento"`** — "Carregando modelos de
+- [x] 2.3 Apresentar o andamento com **`Aviso tipo="andamento"`** — "Carregando modelos de
       reconhecimento facial" —, ao lado de `AvisoDeOperacaoSemConexao`. Sai ao concluir e não
       impede ação nenhuma. **Nenhum componente novo** (`RF-04-75`; `design.md` — decisão 4)
-- [ ] 2.4 Apresentar a falha como **linha de `role="status"`** local à App 01, no molde do
+- [x] 2.4 Apresentar a falha como **linha de `role="status"`** local à App 01, no molde do
       `EstadoDaLista` — "Não foi possível carregar os modelos de reconhecimento facial" —, no
       lugar do andamento, que não fica parado no passo que travou. **Não** usar
       `Aviso tipo="erro"` nem `tipo="atencao"`: os dois são `role="alert"` e interrompem. Sem
       cor: a frase inteira carrega a informação (`RF-04-75`; `design.md` — decisão 4)
-- [ ] 2.4.1 Narrar a falha pelo `useNarrarAoEntrar` de `comum/narracao`, já que ela não vem de
+- [x] 2.4.1 Narrar a falha pelo `useNarrarAoEntrar` de `comum/narracao`, já que ela não vem de
       graça pelo `Aviso`. A voz nunca interrompe — `narrar` enfileira (documento 15 §5.1)
-- [ ] 2.5 Conferir que o caminho de erro de `prepararCaptura()` segue intacto e **distinto** —
+- [x] 2.5 Conferir que o caminho de erro de `prepararCaptura()` segue intacto e **distinto** —
       a frase da captura não se confunde com a da pré-carga (`RF-04-65`)
 
 ## 3. Testes da aplicação
 
-- [ ] 3.1 A pré-carga começa ao abrir a sessão de trabalho com rede; não começa sem rede; e
-      recomeça quando a rede volta (spec: "Os modelos de biometria se carregam antes da primeira
-      captura, sem travar a aula")
-- [ ] 3.2 A tela inicial e os caminhos dela aparecem e operam **com a pré-carga em andamento** —
+- [x] 3.1 A pré-carga começa ao abrir a sessão de trabalho com rede, e **não** começa sem rede
+      (spec: "Os modelos de biometria se carregam antes da primeira captura, sem travar a aula")
+- [ ] 3.7 **Em aberto:** o cenário "A rede que volta retoma a pré-carga" **não ficou coberto**.
+      `semRede` só volta a `false` por `marcarSucessoDeRede()`, que mora no laço de
+      sincronização da fila de presença — chegar lá de teste exige dirigir o fluxo inteiro da
+      presença sem rede, e **nenhum teste do repositório faz a volta da rede hoje**. A lógica
+      está escrita e é simples (a situação volta a `ocioso` na falha, e o efeito depende de
+      `semRede`), mas não há guarda. Decisão do fundador: investir no teste de integração,
+      expor o contexto de rede para o teste, ou aceitar o cenário sem guarda
+- [x] 3.2 A tela inicial e os caminhos dela aparecem e operam **com a pré-carga em andamento** —
       o teste que impede o indicador de virar portão (spec: mesmo requisito)
-- [ ] 3.3 O registro de presença e a fila local operam com a pré-carga em andamento e com ela
+- [x] 3.3 O registro de presença e a fila local operam com a pré-carga em andamento e com ela
       falhada (`RF-04-23`, documento 03 §3.4)
-- [ ] 3.4 O andamento é apresentado como informação, sai ao concluir e é expresso por modelo
+- [x] 3.4 O andamento é apresentado como informação, sai ao concluir e é expresso por modelo
       carregado, nunca em percentual (spec: "O andamento da pré-carga é dito…")
-- [ ] 3.5 A falha é apresentada em região de `role="status"`, **nunca `role="alert"`**; nada do
+- [x] 3.5 A falha é apresentada em região de `role="status"`, **nunca `role="alert"`**; nada do
       sentido depende de cor; o andamento sai; a rede que volta limpa a mensagem (spec: "A falha
       da pré-carga é dita sem interromper…")
-- [ ] 3.6 Com a narração ativada, andamento e falha são falados como os demais avisos
+- [x] 3.6 Com a narração ativada, andamento e falha são falados como os demais avisos
       (documento 15 §5.1)
 
 ## 4. Documentação
@@ -104,7 +110,7 @@
 
 ## 5. Verificação
 
-- [ ] 5.1 `vitest run` em `comum/` e em `apps/app-01-aula-presencial/`, uma vez, ao fechar as
+- [x] 5.1 `vitest run` em `comum/` e em `apps/app-01-aula-presencial/`, uma vez, ao fechar as
       tarefas de código
-- [ ] 5.2 `biome format --check .` e `biome check .` nas duas pastas
-- [ ] 5.3 `npm run fix`, `npm run lint` e `mkdocs build --strict` — a change toca `docs/`
+- [x] 5.2 `biome format --check .` e `biome check .` nas duas pastas
+- [x] 5.3 `npm run fix`, `npm run lint` e `mkdocs build --strict` — a change toca `docs/`

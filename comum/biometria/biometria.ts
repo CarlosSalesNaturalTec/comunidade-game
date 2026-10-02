@@ -113,7 +113,8 @@ export async function prepararCaptura(): Promise<void> {
 // Os cinco modelos que a configuração de `face` acima habilita — detector,
 // mesh, description, antispoof e liveness. Está escrito à mão porque a
 // biblioteca não expõe a conta antes de carregar; `biometria.test.ts` afirma
-// que o número bate com o que `load()` produz.
+// que o número bate com o que a **configuração** habilita, que é o que se pode
+// conferir sem baixar modelo.
 export const TOTAL_DE_MODELOS = 5;
 
 /** Quantos modelos já carregaram, dos habilitados. É a **granularidade que a
