@@ -65,15 +65,37 @@ mesmo desenho, em vez de inventar outro:
 - Se o aparelho abriu sem rede, tenta de novo **quando a rede voltar** — a sala com rede
   intermitente é o caso normal, não a exceção.
 - Uma vez concluída, não repete.
-- Falha é **silenciosa**: nada na tela, nenhum erro anunciado. `prepararCaptura()` continua
-  sendo a rede de segurança, e ela é que fala com a pessoa.
+- Falha é **dita** (decisão do fundador, 2026-10-02, que reverteu a falha silenciosa que esta
+  change havia desenhado). `prepararCaptura()` segue sendo a rede de segurança e segue com o
+  **seu** caminho de erro, distinto deste.
 
 O indicador fica **ao lado de `AvisoDeOperacaoSemConexao`**, dentro de `AparelhoDaAula` e acima
 de `ConteudoDoAparelho` — o lugar que a aplicação já usa para estado ambiente do aparelho.
 
-## Decisão 4 — o indicador tem 5 passos, e diz isso
+## Decisão 4 — o indicador e a falha são `Aviso`, e nada mais
 
-O fundador confirmou em 2026-10-02 que **o indicador entra**: a pré-carga não é silenciosa.
+A elicitação de 2026-10-02 pediu indicador local à App 01, com a frase "Carregando modelos de
+reconhecimento facial", narrado quando a narração das telas estiver ativada, e falha **dita em
+vermelho**. Conferido o que existe: `comum/react/Aviso.tsx` **já atende os quatro pedidos**, e
+nenhum componente novo é preciso.
+
+| Pedido da elicitação | O que `Aviso` já dá |
+| --- | --- |
+| Indicador local, informação e não erro | `tipo="andamento"` → rótulo "Em andamento:", `role="status"` |
+| Falha em vermelho | `tipo="erro"` → rótulo "Erro:", `role="alert"` |
+| Narrado quando a narração está ativada | `narracao` é opcional e, omitida, fala rótulo e texto |
+| Não depender da cor | o rótulo textual é do componente, por construção (documento 15 §5) |
+
+Não se cria componente de progresso em `comum/react`: não existe nenhum hoje, e um componente
+comum sem segundo consumidor é peso sem uso. O "vermelho" pedido vem de graça com `tipo="erro"`,
+e **o sentido não depende dele** — o rótulo "Erro:" carrega a informação, como o documento 15 §5
+exige.
+
+**Consequência a registrar:** `tipo="erro"` é `role="alert"`, que **interrompe** o leitor de
+tela. É o preço de a falha ser dita em vermelho, e é uma escolha do fundador, não um descuido:
+`Aviso` não oferece vermelho que não interrompa.
+
+## Decisão 5 — o indicador tem 5 passos, e diz isso
 
 A Human não expõe progresso por byte. `human.models.loaded()` devolve a lista dos carregados, e
 os habilitados são cinco. O indicador, portanto, é **discreto e de 5 passos**, e NEVER promete

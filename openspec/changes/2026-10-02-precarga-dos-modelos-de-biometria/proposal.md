@@ -57,10 +57,13 @@ uma primeira captura lenta.
   `prepararCaptura()` segue como está e encontra tudo pronto — `load()` é idempotente.
 - **A App 01 dispara a pré-carga ao abrir a sessão de trabalho do aparelho**, ao fundo, só com
   rede, e **nunca espera por ela** para apresentar a tela inicial ou qualquer caminho.
-- **Um indicador discreto** mostra o andamento, em 5 passos. Ele **não é portão**: nenhuma tela
-  depende dele, e ele some ao concluir.
-- **Falha da pré-carga é silenciosa.** O caminho de erro na tela continua sendo o de
-  `prepararCaptura()` (`RF-04-65`), que não muda.
+- **Um indicador mostra o andamento**, em 5 passos, e **não é portão**: nenhuma tela depende
+  dele, e ele some ao concluir.
+- **Falha da pré-carga é dita na tela, como erro**, e o indicador não fica parado no passo em
+  que travou. O caminho de erro de `prepararCaptura()` (`RF-04-65`) segue **intacto e
+  distinto**, e não se confunde com este.
+- **Nenhum componente novo:** `comum/react/Aviso.tsx` já tem `tipo="andamento"` e `tipo="erro"`,
+  com rótulo textual e narração, que é exatamente o que a elicitação pediu.
 - **PRD-04**: a §14 perde a pendência do peso dos modelos; nascem `RF-04-75` e `RN-04-42`.
 - **Documento 03 §3.4** registra a pré-carga como resposta ao requisito de poucos segundos;
   **documento 09 §1** recebe a decisão nova e a descartada (service worker / PWA).
@@ -86,3 +89,19 @@ fecharem:
   novo, que a §14 do PRD-04 já cobriria como desenho de implementação — foi descartada.
 - **O disparo é ao abrir a sessão de trabalho do aparelho**, e não só com a aula já escolhida.
   Poupar o aparelho que abriu por engano não compensa chegar atrasado na primeira captura.
+- **Indicador local à App 01**, com a frase "Carregando modelos de reconhecimento facial", e
+  **narrado** quando a narração das telas estiver ativada.
+- **A falha é dita, em vermelho** — "Não foi possível carregar os modelos de reconhecimento
+  facial" —, e o indicador não fica parado no passo que travou. Isto **reverte** a falha
+  silenciosa que esta change havia desenhado antes da elicitação.
+- **A falha reaparece e some com a rede:** volta a rede, a mensagem sai e o andamento volta.
+- **`RN-04-42` desce do `RN-04-07` e do documento 03 §3.3**, confirmados como fonte.
+- **A pré-carga NÃO entra no aviso de coleta** (`RF-04-26`): não coleta dado nenhum.
+- **`RF-04-75` entra na §6.1 do PRD-04**, Onboarding e presença.
+- **Na §5.1, entra como nota do passo 1** — não como passo novo. E o **passo 6 é corrigido na
+  mesma revisão**: ele diz que a câmera é verificada ao abrir a sessão de trabalho, e o código
+  chama `existeCamera()` dentro das duas telas que precisam, não na abertura.
+- **Service worker e app instalável ficam descartados**, e não apenas adiados.
+- **A App 05 ganha o mesmo, em fatia própria** do PRD-05.
+- **A revisão do PRD-04 é PR próprio**, no padrão das fatias 20 e 21, e fecha **só** a pendência
+  dos modelos — as outras seis da §14 seguem abertas.
