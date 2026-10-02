@@ -315,11 +315,12 @@ O emblema é sempre de uma trilha ou poder, nunca global — a moldura carrega o
 ### 8.3 Badges — uma silhueta por família
 
 Cada família do documento 11 tem **forma própria**, legível a 24 px, para que a leitura não
-dependa de cor:
+dependa de cor. **Nenhuma é o escudo**, que é a forma da marca (§14): badge e marca não podem
+se confundir na mesma tela. O círculo também não entra — é da moeda (§9).
 
 | Família             | Silhueta                |
 | ------------------- | ----------------------- |
-| De nível            | Escudo                  |
+| De nível            | Losango                 |
 | De conquista        | Estrela                 |
 | De valores e causas | Coração                 |
 | De território       | Gota                    |
@@ -328,8 +329,8 @@ dependa de cor:
 
 ### 8.4 Glifo de poder
 
-A silhueta diz a **família** do badge, não o poder: dois badges de nível são ambos escudo. O que
-os separa é o **glifo do poder**, desenhado no sistema de ícone da §11.
+A silhueta diz a **família** do badge, não o poder: dois badges de nível são ambos losango. O
+que os separa é o **glifo do poder**, desenhado no sistema de ícone da §11.
 
 | Regra        | Valor                                                                             |
 | ------------ | --------------------------------------------------------------------------------- |
@@ -425,13 +426,65 @@ precisa viajar junto dos arquivos, como a licença das fontes. Vai ao documento 
 build, sem requisição em tempo de execução (§1, princípio 6). O que **varia por comunidade**
 — a foto de fundo da §6.3 — continua no núcleo. Decisão do fundador de 2026-09-30.
 
-## 13. O que este documento não define
+## 13. A marca do projeto
+
+A marca é **constante da plataforma** — não varia por comunidade —, é **reservada** (documento
+03 §1) e vive versionada em `comum/marca/`, com a licença e a procedência ao lado dos arquivos
+(§12). Decisão do fundador de 2026-10-02.
+
+### 13.1 Símbolo, logotipo e submarcas
+
+| Peça          | Construção                                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Símbolo**   | Escudo de base em ponta, contorno fino, com o monograma `CG` dentro. Proporção `42 : 39`, na grade de `48` px            |
+| **Logotipo**  | O símbolo mais "Comunidade Game" em **duas palavras**, numa linha na versão horizontal e em duas na empilhada            |
+| **Submarcas** | **Rôbróders** e **Robô Educa**, com a acentuação, **só em palavra** — sem escudo, porque o escudo significa a plataforma |
+
+O texto é **Archivo convertido em curvas**, peso `700`, eixo de largura `62` no logotipo e `87`
+nas submarcas: a largura equilibra o peso óptico de "Comunidade Game", que tem 15 caracteres,
+com o das submarcas, que têm 9 e 10. A família é a de destaque da §4, já servida pelo próprio
+domínio, e converter glifo em curva é o que impede a marca de quebrar em aparelho sem a fonte.
+
+### 13.2 Cor e contraste
+
+| Elemento             | Cor         | Sobre       | Razão  |
+| -------------------- | ----------- | ----------- | ------ |
+| Escudo               | `marca-500` | `cal-050`   | —      |
+| Contorno do escudo   | `marca-700` | —           | —      |
+| Monograma            | `tinta-900` | `marca-500` | 5,53:1 |
+| Logotipo e submarcas | `marca-700` | `cal-050`   | 5,41:1 |
+
+A regra do §3.2 vale aqui como em todo lugar: o degrau 500 é preenchimento **com contorno no
+700**, nunca sozinho contra o fundo. Branco sobre `marca-500` dá **3,33:1** e por isso não é
+usado no monograma.
+
+### 13.3 As duas versões
+
+**Colorida** no modo claro; **monocromática** no escuro e sobre a foto de comunidade (§6.3). A
+monocromática é **em traço** — contorno em `currentColor`, sem preenchimento, com o monograma
+cheio dentro — e por isso é desenho próprio, não derivação da colorida.
+
+### 13.4 Área de proteção e tamanho mínimo
+
+| Regra                        | Valor                                                                        |
+| ---------------------------- | ---------------------------------------------------------------------------- |
+| Área de proteção             | **Metade da altura do escudo**, livre de qualquer elemento, nos quatro lados |
+| Tamanho mínimo do símbolo    | **16** px de altura — o que a aba do navegador impõe                         |
+| Tamanho mínimo dos conjuntos | **24** px de altura, horizontal e empilhada                                  |
+
+### 13.5 Onde cada peça entra
+
+O **cabeçalho** de toda aplicação leva o **símbolo**, com o nome do projeto em texto ao lado —
+nunca a marca horizontal, que traria o nome uma segunda vez. A horizontal serve vitrine, rodapé
+e documento; a empilhada, o herói e o espaço vertical.
+
+O escudo é **forma da marca, e de nada mais**: nenhuma silhueta de badge o usa (§8.3).
+
+## 14. O que este documento não define
 
 | Assunto                                                      | Onde está                     |
 | ------------------------------------------------------------ | ----------------------------- |
-| Logotipo e marca gráfica do projeto                          | Pendente (documento 09)       |
 | Universo dos personagens — Susy, Otávio, Rôbróders e Trenell | Pendente (documento 09)       |
-| Submarcas Rôbróders e Robô Educa                             | Pendente (documento 09)       |
 | Framework de frontend das aplicações                         | Documento 03 §1               |
 | O que cada card mostra e como o território cresce            | Documento 11                  |
 | Peça gráfica impressa                                        | Não há a produzir no Ciclo 01 |

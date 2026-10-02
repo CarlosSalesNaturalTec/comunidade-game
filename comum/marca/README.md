@@ -85,7 +85,7 @@ de lado maior, até 120 KB cada — e diga qual, para a implementação prever `
 
 ## 4. O que precisa vir junto, e não é arquivo
 
-Sem estes quatro, a implementação não fecha o documento 15 §13:
+Sem estes quatro, a implementação não fecha o documento 15 §14:
 
 1. **Área de proteção** da marca — em múltiplos de alguma medida dela, do seu jeito.
 2. **Tamanho mínimo** de uso, em pixels, para o cabeçalho no celular.

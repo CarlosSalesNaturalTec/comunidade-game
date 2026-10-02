@@ -13,7 +13,7 @@ Três coisas estão paradas há tempo, e as três têm a mesma causa — a marca
 arquivo.
 
 **O documento 09 trava duas linhas.** "Logotipo e marca gráfica" e "Submarcas" seguem em
-Decisões pendentes, e o documento 15 §13 as declara não definidas. O licenciamento e o lugar
+Decisões pendentes, e o documento 15 as declarava não definidas. O licenciamento e o lugar
 já foram decididos — marca reservada, em `comum/marca/` —, e o manifesto do que entregar está
 escrito em `comum/marca/README.md`. Faltava o desenho.
 

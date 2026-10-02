@@ -19,7 +19,7 @@ Ver `proposal.md` — Why. O que o desenho precisa levar em conta:
 
 **Goals:**
 
-- Fechar a linha de "não define" do documento 15 §13 sobre o **universo dos personagens**,
+- Fechar a linha de "não define" do documento 15 §14 sobre o **universo dos personagens**,
   e a pendência correspondente do documento 09.
 - Manter o piso: a ilustração não entra no caminho crítico.
 

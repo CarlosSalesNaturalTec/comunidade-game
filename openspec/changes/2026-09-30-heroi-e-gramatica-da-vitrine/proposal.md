@@ -20,7 +20,7 @@ seções entram todas com o mesmo peso, e a primeira coisa que o visitante lê �
 
 O documento 15 §6 dá à Arena **ilustração em primeiro plano**, e a fatia 10 entregou tudo
 o que se podia entregar sem ilustração — a moldura, o palco, o glifo, o respiro. O que
-falta é a ilustração, e ela depende do **elenco de personagens**, que o documento 15 §13
+falta é a ilustração, e ela depende do **elenco de personagens**, que o documento 15 §14
 declara não definido e que o documento 09 mantém pendente.
 
 É por isso que a vitrine "não parece o projeto": o documento 15 §2 declara o traço do
@@ -60,7 +60,7 @@ Nenhuma.
 | `comum/marca/elenco/` | pasta nova, com os quatro personagens e a procedência deles |
 | `apps/app-06-vitrine/src/pages/index.astro` | recebe o herói |
 | Núcleo | **nenhuma rota nova e nenhuma alteração** |
-| Documentação | documento 15 §13 perde a linha do universo dos personagens; documento 09 move a pendência correspondente |
+| Documentação | documento 15 §14 perde a linha do universo dos personagens; documento 09 move a pendência correspondente |
 
 Fora do escopo, como o PRD-03 §3.2 já exclui: qualquer tela de login, cadastro ou área
 restrita. Fora do escopo por pendência do documento 09: a **foto da comunidade**, que

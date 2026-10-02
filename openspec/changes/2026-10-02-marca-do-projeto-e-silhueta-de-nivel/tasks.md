@@ -28,7 +28,7 @@
       do documento 15 §3, nenhum `<text>`, nenhum `<filter>`, nenhuma URL externa e nenhum
       `<script>`; as monocromáticas sem valor de cor; e o peso dentro do orçamento do manifesto
       (`comum/marca/README.md` §7)
-- [ ] 1.6 Gravar no documento 15 a construção da marca — escudo, monograma, eixos do Archivo,
+- [x] 1.6 Gravar no documento 15 a construção da marca — escudo, monograma, eixos do Archivo,
       degraus de cor com os contrastes medidos, a área de proteção e o tamanho mínimo declarados
       pelo fundador —, retirar do §13 as linhas de logotipo e de submarcas, e mover as duas
       pendências correspondentes do documento 09 §1 para "Já decididos". Verificar que a §13 não
@@ -69,17 +69,17 @@
       **losango**, mantendo a grade de `24` px, o traço de `2` px e o glifo do poder dentro.
       Atualizar o teste da silhueta e acrescentar o caso novo do delta — nenhuma silhueta de
       badge é o escudo, que passa a ser a forma da marca (documento 15 §§8.3, 8.4)
-- [ ] 4.2 Trocar no documento 15 §8.3 a silhueta da família "De nível" de escudo para losango, e
+- [x] 4.2 Trocar no documento 15 §8.3 a silhueta da família "De nível" de escudo para losango, e
       registrar em uma frase por que o escudo saiu. Verificar que as outras cinco silhuetas da
       tabela não mudaram
 
 ## 5. Fechamento
 
-- [ ] 5.1 Marcar como `implementado` a linha transversal da marca no
+- [x] 5.1 Marcar como `implementado` a linha transversal da marca no
       `openspec/cronograma-de-fatias.md`, com o slug desta change, e ajustar a linha da fatia 11
       do PRD-03, que deixa de depender da marca e passa a depender só do elenco. A situação do
       PRD-03 em `docs/prds/index.md` não muda, e nenhum arquivo nasce em `docs/`
-- [ ] 5.2 Atualizar o documento 99 §§1 e 8 se a relação entre documentos mudou com as seções
+- [x] 5.2 Atualizar o documento 99 §§1 e 8 se a relação entre documentos mudou com as seções
       novas do documento 15; verificar que os invariantes do §6 — em especial o 23, que separa
       ponto de moeda, e o 24, que proíbe significado só por cor — continuam válidos depois da
       troca da silhueta
