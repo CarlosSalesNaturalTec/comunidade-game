@@ -8,8 +8,9 @@ A marca é **reservada**: fica fora da AGPL e da CC BY-SA, e quem replica a plat
 troca-a pela sua (documento 03 §1). A reserva mora em `LICENCA.md`, ao lado dos
 arquivos, pelo mesmo motivo que a licença das fontes mora ao lado delas.
 
-**Os arquivos ainda não chegaram.** Este documento é o manifesto do que entregar, e foi
-escrito antes deles para que a entrega não precise de ida e volta.
+**A marca do projeto e as submarcas já estão aqui** — produzidas, não encomendadas (§8).
+**O elenco ainda não chegou**, e para ele este documento segue sendo o manifesto do que
+entregar, escrito antes dos arquivos para que a entrega não precise de ida e volta.
 
 ## O que é regra e o que é recomendação
 
@@ -26,11 +27,11 @@ Todos em `comum/marca/`.
 
 | Arquivo | Formato | Grade de desenho | Peso máximo | Para quê |
 | --- | --- | --- | --- | --- |
-| `marca-horizontal.svg` | SVG | altura `32`, largura livre | 6 KB | Cabeçalho das oito aplicações, modo claro |
-| `marca-horizontal-mono.svg` | SVG, `currentColor` | idem | 4 KB | Modo escuro e uso sobre a foto de comunidade |
-| `marca-empilhada.svg` | SVG | caixa `160 × 96` | 6 KB | Herói da vitrine e espaço vertical |
-| `simbolo.svg` | SVG | `48 × 48` | 3 KB | Espaço curto, onde o nome não cabe |
-| `simbolo-mono.svg` | SVG, `currentColor` | `48 × 48` | 2 KB | Idem, no escuro e sobre foto |
+| `marca-horizontal.svg` | SVG | altura `32`, largura livre | 10 KB | Vitrine, rodapé e documento — **não** o cabeçalho |
+| `marca-horizontal-mono.svg` | SVG, `currentColor` | idem | 10 KB | Modo escuro e uso sobre a foto de comunidade |
+| `marca-empilhada.svg` | SVG | caixa `160 × 96` | 10 KB | Herói da vitrine e espaço vertical |
+| `simbolo.svg` | SVG | `48 × 48` | 3 KB | **Cabeçalho das oito aplicações** e todo espaço curto |
+| `simbolo-mono.svg` | SVG, `currentColor` | `48 × 48` | 3 KB | Idem, no escuro e sobre foto |
 | `favicon.svg` | SVG | `48 × 48` | 2 KB | Aba do navegador das sete aplicações |
 
 **Uma versão colorida e uma monocromática**, e não um par claro/escuro: a monocromática
@@ -38,9 +39,12 @@ usa `currentColor` e herda a cor do texto, então **um arquivo serve o modo escu
 uso sobre foto**. Um par claro/escuro dobraria os arquivos e deixaria o caso da foto sem
 resposta.
 
-As monocromáticas **não são desenho novo** — é o mesmo vetor com os preenchimentos
-trocados por `currentColor`. Quem desenha pode entregá-las junto, ou entregar só as
-coloridas: a implementação as deriva, e quem encomendou confere.
+A monocromática é **em traço**: contorno em `currentColor` e preenchimento nenhum, com o
+monograma cheio dentro (decisão do fundador de 2026-10-02). Ela é, portanto, **desenho
+próprio** — não se deriva da colorida trocando preenchimento.
+
+**O orçamento da monocromática é igual ao da colorida**, e não menor: as duas carregam as
+mesmas curvas, e o que muda entre elas são alguns bytes de atributo de cor.
 
 O **`apple-touch-icon.png`** (`180 × 180`, atalho em iOS, que não aceita SVG) **não se
 desenha**: é rasterizado do `favicon.svg` na implementação. Não entra na encomenda.
@@ -56,9 +60,9 @@ Em `comum/marca/`. As duas que o documento 09 nomeia.
 | Arquivo | Formato | Grade | Peso máximo |
 | --- | --- | --- | --- |
 | `submarca-robroders.svg` | SVG | altura `32`, largura livre | 5 KB |
-| `submarca-robroders-mono.svg` | SVG, `currentColor` | idem | 3 KB |
+| `submarca-robroders-mono.svg` | SVG, `currentColor` | idem | 5 KB |
 | `submarca-robo-educa.svg` | SVG | altura `32`, largura livre | 5 KB |
-| `submarca-robo-educa-mono.svg` | SVG, `currentColor` | idem | 3 KB |
+| `submarca-robo-educa-mono.svg` | SVG, `currentColor` | idem | 5 KB |
 
 ## 3. Elenco de personagens
 
@@ -112,16 +116,10 @@ caminhos, e tanto faz qual:
 - **Entregando os arquivos a quem implementa.** SVG é texto: dá para colar. Quem
   implementa cria os arquivos com os nomes certos e confere antes de gravar.
 
-**O que destrava.** Com os arquivos aqui, a fatia 11 do `openspec/cronograma-de-fatias.md`
-sai da trava. A change é `2026-09-30-heroi-e-gramatica-da-vitrine`, e o `tasks.md` dela já
-tem as tarefas 1.0 e 1.2 fechadas — o Biome já ignora esta pasta, e a `LICENCA.md` já
-está escrita. A implementação retoma na **tarefa 1.1**, que é conferir cada arquivo
-contra as tabelas acima.
-
-**Ordem útil, se a entrega vier em lotes.** `favicon.svg` e `simbolo.svg` primeiro: são os
-menores, e o favicon tira da frente o logotipo do Vite que as sete aplicações servem hoje.
-Depois `marca-horizontal.svg` e `marca-empilhada.svg`, que destravam o cabeçalho e o
-herói. Submarcas e elenco por último.
+**O que destrava.** Com o elenco aqui, a fatia 11 do `openspec/cronograma-de-fatias.md`
+sai da trava. A change é `2026-09-30-heroi-e-gramatica-da-vitrine`, e a implementação
+retoma na **tarefa 1.1** dela, que é conferir cada arquivo contra a tabela do §3. A marca
+do projeto já foi entregue pela change `2026-10-02-marca-do-projeto-e-silhueta-de-nivel`.
 
 **O que não trava a entrega.** SVG com metadado de editor, `<style>` interno ou camada
 oculta — Figma e Illustrator exportam assim. Quem implementa limpa e diz o que mudou.
@@ -137,3 +135,22 @@ oculta — Figma e Illustrator exportam assim. Quem implementa limpa e diz o que
   O favicon atual, do Vite, é o contraexemplo — 9,5 KB quase todos de `feGaussianBlur`.
 - **Texto do logotipo em curvas**, nunca em `<text>`: fonte não instalada no aparelho
   quebraria a marca.
+
+## 8. Procedência do que já está aqui
+
+Os dez arquivos da marca do projeto e das submarcas — tudo o que os §§1 e 2 listam — foram
+**produzidos pelo próprio projeto em 2026-10-02**, e não encomendados.
+
+| | |
+| --- | --- |
+| **Logotipo e submarcas** | **Archivo** convertido em curvas, peso `700`, eixo de largura `62` no logotipo e `87` nas submarcas. A família já é servida pelo projeto e está em `comum/fontes/`, com a licença e a data de cópia ao lado |
+| **Símbolo** | Escudo geométrico com o monograma `CG`, desenho original do projeto |
+| **Cores** | Escudo em `marca-500`, contorno em `marca-700`, monograma em `tinta-900` — os três da paleta do documento 15 §3 |
+| **Licença da fonte** | SIL Open Font License 1.1, em `comum/fontes/OFL-archivo.txt`. Converter glifos em curvas dentro de um logotipo é uso permitido e **não** submete o logotipo à OFL: a cláusula de _Reserved Font Name_ restringe redistribuir a **fonte** modificada, não o desenho que a usa |
+| **Titularidade** | Da pessoa jurídica vinculada ao projeto, como manda a `LICENCA.md`. Não há cessão de terceiro a registrar, porque não houve autor externo |
+
+A construção completa — proporção do escudo, altura de maiúscula, contrastes medidos — está
+no documento 15, que é a fonte única da identidade visual. Aqui fica só a procedência.
+
+**O elenco do §3 não está coberto por esta seção**: ele é insumo externo, e a procedência
+dele — autor, data e acordo de cessão — se registra aqui quando os arquivos chegarem.

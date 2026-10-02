@@ -7,9 +7,14 @@ import { Icone } from "./Icone";
 // tamanho **sem depender de cor**, porque o que as separa é a forma.
 //
 // A silhueta diz a **família**, nunca o poder: dois badges de nível são ambos
-// escudo, e o que os distingue é o **glifo do poder** dentro deles (§8.4). Por
+// losango, e o que os distingue é o **glifo do poder** dentro deles (§8.4). Por
 // isso o glifo entra na silhueta, e o rótulo em texto acompanha as duas coisas
 // — forma sozinha não carrega significado (§5).
+//
+// **Nenhuma silhueta é o escudo**, que é a forma da marca do projeto: badge e
+// marca não podem se confundir na mesma tela, porque aqui a forma carrega
+// significado (documento 99, invariante 24). O nível usava o escudo até
+// 2026-10-02, e passou ao losango quando a marca o adotou.
 //
 // As seis são desenhadas de uma vez, e **duas ainda não têm dado**: o
 // `TipoDeBadge` do núcleo tem quatro valores, e as famílias **de conquista** e
@@ -36,11 +41,9 @@ interface Silhueta {
 
 const SILHUETAS: Record<FamiliaDeBadge, Silhueta> = {
   de_nivel: {
-    forma: "escudo",
+    forma: "losango",
     rotulo: "Badge de nível",
-    desenho: (
-      <path d="M12 2.5l7.5 2.5v6.5c0 4.7-3.2 8.2-7.5 10.5-4.3-2.3-7.5-5.8-7.5-10.5V5Z" />
-    ),
+    desenho: <path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" />,
   },
   de_conquista: {
     forma: "estrela",

@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { provisionarModelosDeBiometria } from "comum/biometria/provisionamento";
+import { provisionarFavicon } from "comum/marca/provisionamento";
 import { defineConfig, type Plugin } from "vite";
 
 // O especificador nu de `@vladmandic/human` resolve, pelas condições de
@@ -35,8 +36,20 @@ function modelosDeBiometria(): Plugin {
 }
 
 // https://vite.dev/config/
+// O favicon do projeto é arquivo único de `comum/marca/`, provisionado para
+// `public/` em `dev` e em `build` — nunca uma cópia versionada por aplicação
+// (change `2026-10-02-marca-do-projeto-e-silhueta-de-nivel`, design — decisão 5).
+function faviconDoProjeto(): Plugin {
+  return {
+    name: "favicon-do-projeto",
+    buildStart() {
+      provisionarFavicon(path.join(path.dirname(fileURLToPath(import.meta.url)), "public"));
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), modelosDeBiometria()],
+  plugins: [react(), modelosDeBiometria(), faviconDoProjeto()],
   resolve: {
     alias: {
       "@vladmandic/human": humanEsm,

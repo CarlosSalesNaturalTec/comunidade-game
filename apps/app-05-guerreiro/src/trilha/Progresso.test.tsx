@@ -113,7 +113,7 @@ describe("o nível e o badge do documento 15 §§8.2, 8.3", () => {
     await screen.findByText("Robô Educa");
     const silhuetas = [...document.querySelectorAll("[data-silhueta]")];
     expect(silhuetas.map((forma) => forma.getAttribute("data-silhueta"))).toEqual([
-      "escudo",
+      "losango",
       "folha-com-canto-dobrado",
     ]);
     // Cada badge leva o glifo do poder dentro da silhueta e o rótulo ao lado —

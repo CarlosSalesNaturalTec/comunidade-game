@@ -141,7 +141,7 @@ describe("EmblemaDeNivel — a marca é contável (documento 15 §8.2)", () => {
 });
 
 const FAMILIAS: [FamiliaDeBadge, string][] = [
-  ["de_nivel", "escudo"],
+  ["de_nivel", "losango"],
   ["de_conquista", "estrela"],
   ["de_valores_e_causas", "coracao"],
   ["de_territorio", "gota"],
@@ -180,6 +180,23 @@ describe("BadgeDaFamilia — uma silhueta por família (documento 15 §8.3)", ()
     expect(screen.getByText("Badge de protagonismo")).toBeInTheDocument();
   });
 
+  it("nenhuma silhueta é o escudo, que passou a ser a forma da marca", () => {
+    const { container } = render(
+      <div>
+        {FAMILIAS.map(([familia]) => (
+          <BadgeDaFamilia key={familia} familia={familia} />
+        ))}
+      </div>,
+    );
+
+    const formas = [...container.querySelectorAll("[data-silhueta]")].map((forma) =>
+      forma.getAttribute("data-silhueta"),
+    );
+    expect(formas).not.toContain("escudo");
+    // E as seis continuam distintas entre si, que é o que a §8.3 exige.
+    expect(new Set(formas).size).toBe(FAMILIAS.length);
+  });
+
   it("dois badges da mesma família se distinguem pelo poder", () => {
     const { container } = render(
       <>
@@ -189,10 +206,10 @@ describe("BadgeDaFamilia — uma silhueta por família (documento 15 §8.3)", ()
     );
 
     const silhuetas = [...container.querySelectorAll("[data-silhueta]")];
-    // Ambos escudo: a silhueta diz a família, nunca o poder.
+    // Ambos losango: a silhueta diz a família, nunca o poder.
     expect(silhuetas.map((forma) => forma.getAttribute("data-silhueta"))).toEqual([
-      "escudo",
-      "escudo",
+      "losango",
+      "losango",
     ]);
 
     // O que os separa é o glifo do poder, dentro da silhueta.

@@ -311,3 +311,21 @@ describe("nenhuma tela busca recurso de terceiro", () => {
     }
   });
 });
+
+describe("o favicon servido é o do projeto, e vem de um arquivo só", () => {
+  const DA_MARCA = join(RAIZ, "..", "..", "comum", "marca", "favicon.svg");
+
+  it("o que o build publica é byte a byte o de `comum/marca/`", () => {
+    expect(ler("favicon.svg")).toBe(readFileSync(DA_MARCA, "utf-8"));
+  });
+
+  it("não é mais o do Vite: sem filtro de desfoque e sem marca de terceiro", () => {
+    const svg = ler("favicon.svg");
+    expect(svg).not.toContain("feGaussianBlur");
+    expect(svg).not.toContain("<filter");
+    // A única URL é o espaço de nomes do próprio SVG (documento 15 §1, princípio 6).
+    expect([...svg.matchAll(/https?:\/\/[^"'\s)]+/g)].map((achado) => achado[0])).toEqual([
+      "http://www.w3.org/2000/svg",
+    ]);
+  });
+});
