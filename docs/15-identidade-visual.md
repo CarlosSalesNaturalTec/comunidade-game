@@ -434,11 +434,11 @@ A marca é **constante da plataforma** — não varia por comunidade —, é **r
 
 ### 13.1 Símbolo, logotipo e submarcas
 
-| Peça          | Construção                                                                                                               |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **Símbolo**   | Escudo de base em ponta, contorno fino, com o monograma `CG` dentro. Proporção `42 : 39`, na grade de `48` px            |
-| **Logotipo**  | O símbolo mais "Comunidade Game" em **duas palavras**, numa linha na versão horizontal e em duas na empilhada            |
-| **Submarcas** | **Rôbróders** e **Robô Educa**, com a acentuação, **só em palavra** — sem escudo, porque o escudo significa a plataforma |
+| Peça          | Construção                                                                                                                                                                                         |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Símbolo**   | Escudo de **topo e base em ponta** — no topo, duas curvas côncavas que se encontram —, contorno fino, com o monograma `CG` dentro. Proporção `1 : 1,172`, mais alto que largo, na grade de `48` px |
+| **Logotipo**  | O símbolo mais "Comunidade Game" em **duas palavras**, numa linha na versão horizontal e em duas na empilhada                                                                                      |
+| **Submarcas** | **Rôbróders** e **Robô Educa**, com a acentuação, **só em palavra** — sem escudo, porque o escudo significa a plataforma                                                                           |
 
 O texto é **Archivo convertido em curvas**, peso `700`, eixo de largura `62` no logotipo e `87`
 nas submarcas: a largura equilibra o peso óptico de "Comunidade Game", que tem 15 caracteres,

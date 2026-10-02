@@ -32,7 +32,6 @@ Todos em `comum/marca/`.
 | `marca-empilhada.svg` | SVG | caixa `160 × 96` | 10 KB | Herói da vitrine e espaço vertical |
 | `simbolo.svg` | SVG | `48 × 48` | 3 KB | **Cabeçalho das oito aplicações** e todo espaço curto |
 | `simbolo-mono.svg` | SVG, `currentColor` | `48 × 48` | 3 KB | Idem, no escuro e sobre foto |
-| `favicon.svg` | SVG | `48 × 48` | 2 KB | Aba do navegador das sete aplicações |
 
 **Uma versão colorida e uma monocromática**, e não um par claro/escuro: a monocromática
 usa `currentColor` e herda a cor do texto, então **um arquivo serve o modo escuro e o
@@ -47,11 +46,12 @@ próprio** — não se deriva da colorida trocando preenchimento.
 mesmas curvas, e o que muda entre elas são alguns bytes de atributo de cor.
 
 O **`apple-touch-icon.png`** (`180 × 180`, atalho em iOS, que não aceita SVG) **não se
-desenha**: é rasterizado do `favicon.svg` na implementação. Não entra na encomenda.
+desenha**: é rasterizado do `simbolo.svg` na implementação. Não entra na encomenda.
 
-O `favicon.svg` entra **uma vez** aqui e a esteira o copia para as sete
-`apps/*/public/`. Hoje as sete servem o logotipo padrão do Vite — o mesmo arquivo de
-9,5 KB, com filtros de desfoque —, e é isso que esta entrega substitui.
+**Não há arquivo de favicon.** Sob a forma de escudo com ponta, o favicon e o símbolo
+ficaram idênticos — os dois limitados pela mesma grade de 48 —, e a esteira copia o
+`simbolo.svg` para as sete `apps/*/public/` com o nome `favicon.svg`, que é o que cada
+`index.html` referencia (decisão do fundador de 2026-10-02).
 
 ## 2. Submarcas
 
@@ -138,13 +138,13 @@ oculta — Figma e Illustrator exportam assim. Quem implementa limpa e diz o que
 
 ## 8. Procedência do que já está aqui
 
-Os dez arquivos da marca do projeto e das submarcas — tudo o que os §§1 e 2 listam — foram
+Os nove arquivos da marca do projeto e das submarcas — tudo o que os §§1 e 2 listam — foram
 **produzidos pelo próprio projeto em 2026-10-02**, e não encomendados.
 
 | | |
 | --- | --- |
 | **Logotipo e submarcas** | **Archivo** convertido em curvas, peso `700`, eixo de largura `62` no logotipo e `87` nas submarcas. A família já é servida pelo projeto e está em `comum/fontes/`, com a licença e a data de cópia ao lado |
-| **Símbolo** | Escudo geométrico com o monograma `CG`, desenho original do projeto |
+| **Símbolo** | Escudo com o monograma `CG`, desenho original do projeto. O **topo em ponta**, por duas curvas côncavas, entrou em 2026-10-02 a partir de um modelo de referência do fundador, medido e não estimado: ponta a 18,1% da altura, proporção `1 : 1,172`. As cinco peças que carregam o escudo descrevem a **mesma silhueta**, diferindo só pela escala, e `comum/marca.test.ts` o confere |
 | **Cores** | Escudo em `marca-500`, contorno em `marca-700`, monograma em `tinta-900` — os três da paleta do documento 15 §3 |
 | **Licença da fonte** | SIL Open Font License 1.1, em `comum/fontes/OFL-archivo.txt`. Converter glifos em curvas dentro de um logotipo é uso permitido e **não** submete o logotipo à OFL: a cláusula de _Reserved Font Name_ restringe redistribuir a **fonte** modificada, não o desenho que a usa |
 | **Titularidade** | Da pessoa jurídica vinculada ao projeto, como manda a `LICENCA.md`. Não há cessão de terceiro a registrar, porque não houve autor externo |
