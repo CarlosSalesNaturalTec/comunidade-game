@@ -3,16 +3,15 @@
 > Fatia 24 do PRD-04. Fecha a primeira pendência da §14 do PRD-04 e cria `RF-04-75` e
 > `RN-04-42`. Cada tarefa cita o identificador que atende.
 >
-> **Tarefa 0 é porta:** as duas questões da `proposal.md` precisam de resposta do fundador antes
-> das tarefas 2.x. As tarefas 1.x não dependem delas e podem andar antes.
+> **As duas portas da elicitação estão abertas** — respondidas pelo fundador em 2026-10-02. As
+> tarefas podem andar na ordem que convier.
 
-## 0. Portas
+## 0. Portas — fechadas na elicitação
 
-- [ ] 0.1 Confirmar com o fundador se o **indicador** entra — e com ele o `RF-04-75` — ou se a
-      pré-carga é **silenciosa**, caso em que a fatia vira desenho de implementação puro e as
-      tarefas 2.3 e 4.x do indicador caem (`proposal.md` — questão 1)
-- [ ] 0.2 Confirmar o **momento do disparo**: ao abrir a sessão de trabalho, como esta change
-      assume, ou só com a aula já escolhida (`proposal.md` — questão 2)
+- [x] 0.1 **O indicador entra**, e com ele o `RF-04-75`. A pré-carga silenciosa foi descartada
+      (decisão do fundador, 2026-10-02)
+- [x] 0.2 **O disparo é ao abrir a sessão de trabalho do aparelho**, como as tarefas 2.2 e 3.1
+      já assumem (decisão do fundador, 2026-10-02)
 
 ## 1. A pré-carga em `comum/biometria`
 

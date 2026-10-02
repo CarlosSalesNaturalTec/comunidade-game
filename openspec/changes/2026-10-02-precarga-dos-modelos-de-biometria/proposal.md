@@ -77,14 +77,12 @@ uma primeira captura lenta.
   e fica disponível a ela, mas o disparo é só da App 01 — a App 05 não tem sessão de trabalho de
   aparelho, e o momento equivalente é decisão do PRD-05.
 
-## Open Questions
+## Decisões recebidas na elicitação
 
-1. **O indicador precisa de `RF` próprio?** A §14 do PRD-04 classifica o peso dos modelos como
-   "desenho de implementação, **não requisito novo**" — o que cobre a pré-carga em si, que é
-   invisível. O **indicador**, porém, é comportamento visível novo, e nenhum `RF` o cobre. Esta
-   proposal assume `RF-04-75` cobrindo os dois, no padrão já praticado pelas fatias 20 e 21
-   ("novos, a criar na revisão do PRD-04"). Se o fundador preferir a pré-carga **silenciosa**,
-   sem indicador algum, a fatia perde o `RF` novo e vira desenho de implementação puro.
-2. **Quando exatamente disparar.** Esta proposal assume **ao abrir a sessão de trabalho** — que é
-   o login do Mestre ou Admin, e o que o fundador pediu. A alternativa seria disparar só quando a
-   aula estiver escolhida, poupando o aparelho que abriu por engano. Decisão do fundador.
+Duas questões foram levadas ao fundador em **2026-10-02** e respondidas antes de os artefatos
+fecharem:
+
+- **O indicador entra**, e com ele o `RF-04-75`. A alternativa — pré-carga silenciosa, sem `RF`
+  novo, que a §14 do PRD-04 já cobriria como desenho de implementação — foi descartada.
+- **O disparo é ao abrir a sessão de trabalho do aparelho**, e não só com a aula já escolhida.
+  Poupar o aparelho que abriu por engano não compensa chegar atrasado na primeira captura.

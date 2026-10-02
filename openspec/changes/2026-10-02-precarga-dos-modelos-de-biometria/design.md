@@ -60,7 +60,8 @@ verificador do PIN: depende de `sessao`, desiste com `if (semRede) return;` e vo
 quando a rede retorna, pelas dependências `[sessao, restaurando, semRede]`. A pré-carga usa o
 mesmo desenho, em vez de inventar outro:
 
-- Dispara quando há **sessão de trabalho** e **há rede**.
+- Dispara quando há **sessão de trabalho** e **há rede** — o momento que o fundador confirmou
+  em 2026-10-02, descartando a alternativa de esperar a aula estar escolhida.
 - Se o aparelho abriu sem rede, tenta de novo **quando a rede voltar** — a sala com rede
   intermitente é o caso normal, não a exceção.
 - Uma vez concluída, não repete.
@@ -71,6 +72,8 @@ O indicador fica **ao lado de `AvisoDeOperacaoSemConexao`**, dentro de `Aparelho
 de `ConteudoDoAparelho` — o lugar que a aplicação já usa para estado ambiente do aparelho.
 
 ## Decisão 4 — o indicador tem 5 passos, e diz isso
+
+O fundador confirmou em 2026-10-02 que **o indicador entra**: a pré-carga não é silenciosa.
 
 A Human não expõe progresso por byte. `human.models.loaded()` devolve a lista dos carregados, e
 os habilitados são cinco. O indicador, portanto, é **discreto e de 5 passos**, e NEVER promete
