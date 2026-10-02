@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -106,5 +106,44 @@ describe("comum/marca — o manifesto é cumprido pelos arquivos (README §7)", 
 
   it.each(arquivos)("%s cabe no orçamento de peso do manifesto", (nome) => {
     expect(statSync(join(PASTA, nome)).size).toBeLessThanOrEqual(ORCAMENTO[nome] * 1024);
+  });
+});
+
+// A marca não basta existir: ela precisa **alcançar** toda aplicação. Estes
+// casos conferem a montagem pelo arquivo de configuração e pelo ponto de
+// entrada de cada uma — é o que faz uma aplicação nova nascer sem o símbolo
+// ser percebido antes de ir ao ar.
+
+const APPS = join(dirname(fileURLToPath(import.meta.url)), "..", "apps");
+const aplicacoes = readdirSync(APPS).filter((nome) => nome.startsWith("app-"));
+
+describe("a marca alcança todas as aplicações", () => {
+  it("há aplicação para conferir", () => {
+    expect(aplicacoes.length).toBeGreaterThan(0);
+  });
+
+  it.each(aplicacoes)("%s provisiona o favicon do arquivo único da camada comum", (app) => {
+    const config = ["vite.config.ts", "astro.config.mjs"]
+      .map((nome) => join(APPS, app, nome))
+      .find((caminho) => existsSync(caminho));
+    expect(config).toBeDefined();
+
+    const texto = readFileSync(config as string, "utf-8");
+    expect(texto).toContain("provisionarFavicon");
+    // Do arquivo único: a cópia em `public/` nasce do plugin e não é versionada,
+    // o que `.gitignore` garante e esta asserção não pode conferir sozinha.
+    expect(texto).toMatch(/provisionarFavicon\(\s*path\.join/);
+  });
+
+  it.each(aplicacoes)("%s monta a marca uma vez, no ponto de entrada", (app) => {
+    const entrada = ["src/main.tsx", "src/layouts/Vitrine.astro"]
+      .map((caminho) => join(APPS, app, caminho))
+      .find((caminho) => existsSync(caminho));
+    expect(entrada).toBeDefined();
+
+    const texto = readFileSync(entrada as string, "utf-8");
+    expect(texto).toContain("MarcaDoProjeto");
+    // Uma vez: a marca é do topo da aplicação, nunca de cada tela.
+    expect([...texto.matchAll(/<MarcaDoProjeto\b/g)]).toHaveLength(1);
   });
 });
