@@ -600,3 +600,67 @@
     animation: none;
   }
 }
+
+/* `MarcaDoProjeto` — o símbolo e o nome no topo de cada aplicação
+ * (documento 15 §§1, 5, princípios 3 e 6). As duas versões do símbolo saem no
+ * documento e **o CSS escolhe**: a colorida no claro, a monocromática no
+ * escuro e sobre a foto de comunidade, onde ela herda a cor do texto pelo
+ * `currentColor` (documento 15 §6.3). Nenhuma aplicação decide, e nenhuma
+ * pode esquecer de trocar. */
+.cg-marca {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-8);
+  color: inherit;
+  text-decoration: none;
+}
+
+.cg-marca__simbolo {
+  display: block;
+  flex: none;
+  /* O mínimo de uso do símbolo é `16` px; `32` é o do topo de aplicação. */
+  width: var(--espaco-32);
+  height: var(--espaco-32);
+}
+
+.cg-marca__simbolo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cg-marca__nome {
+  font-family: var(--fonte-destaque);
+  font-size: var(--escala-1125);
+  font-weight: var(--peso-numeral);
+  /* A área de proteção do documento 15: metade da altura do símbolo, livre, de
+   * todos os lados — aqui o que importa é a de dentro do conjunto. */
+  padding-inline-start: calc(var(--espaco-32) / 2);
+}
+
+/* No claro vale a colorida; no escuro, a monocromática. Os seletores sobem de
+ * especificidade na ordem em que aparecem — o da foto vem por último porque é
+ * o mais específico, e é ele que precisa vencer os dois anteriores. */
+.cg-marca__simbolo--mono {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cg-marca__simbolo--colorida {
+    display: none;
+  }
+
+  .cg-marca__simbolo--mono {
+    display: block;
+  }
+}
+
+/* Sobre a foto de comunidade a monocromática vale em qualquer modo: o que
+ * decide ali é a superfície, não o esquema de cor (documento 15 §6.3). */
+.cg-fundo-de-comunidade .cg-marca__simbolo--colorida {
+  display: none;
+}
+
+.cg-fundo-de-comunidade .cg-marca__simbolo--mono {
+  display: block;
+}

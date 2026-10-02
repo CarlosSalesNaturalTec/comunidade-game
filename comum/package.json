@@ -7,6 +7,8 @@
   "exports": {
     "./tokens.css": "./tokens.css",
     "./fontes.css": "./fontes.css",
+    "./marca/provisionamento": "./marca/provisionamento.ts",
+    "./marca/*": "./marca/*",
     "./react": "./react/indice.ts",
     "./api": "./api/indice.ts",
     "./avatar": "./avatar/indice.ts",
@@ -25,6 +27,7 @@
     "tokens.css",
     "fontes.css",
     "fontes",
+    "marca",
     "react",
     "api",
     "avatar",

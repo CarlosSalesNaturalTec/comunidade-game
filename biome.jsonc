@@ -9,11 +9,12 @@
   // dono de `.md` e da configuração da raiz (design — Decisions).
   "files": {
     "ignoreUnknown": false,
-    // `public/` e `comum/marca/` guardam ativos estáticos — ícone, favicon,
-    // logotipo, elenco —, não código. O Biome lê `.svg` como JSX e acusa
-    // `noSvgWithoutTitle` em arquivo de marca, onde o rótulo é
-    // responsabilidade de quem o apresenta, não do arquivo.
-    "includes": ["comum/**", "apps/**", "!apps/**/public", "!comum/marca/**"],
+    // `public/` e os `.svg` de `comum/marca/` guardam ativos estáticos —
+    // ícone, favicon, logotipo, elenco —, não código. O Biome lê `.svg` como
+    // JSX e acusa `noSvgWithoutTitle` em arquivo de marca, onde o rótulo é
+    // responsabilidade de quem o apresenta, não do arquivo. A exclusão alcança
+    // só os `.svg`: o `.ts` que mora ali é código e segue sob lint.
+    "includes": ["comum/**", "apps/**", "!apps/**/public", "!comum/marca/**/*.svg"],
   },
   "formatter": {
     "enabled": true,

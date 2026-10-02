@@ -1,6 +1,22 @@
 // @ts-check
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import react from "@astrojs/react";
 import { defineConfig } from "astro/config";
+import { provisionarFavicon } from "comum/marca/provisionamento";
+
+// O favicon do projeto é arquivo único de `comum/marca/`, provisionado para
+// `public/` em `dev` e em `build` — nunca uma cópia versionada por aplicação
+// (change `2026-10-02-marca-do-projeto-e-silhueta-de-nivel`, design — decisão 5).
+// O Astro roda sobre Vite, e aceita o mesmo plugin pela chave `vite`.
+function faviconDoProjeto() {
+  return {
+    name: "favicon-do-projeto",
+    buildStart() {
+      provisionarFavicon(path.join(path.dirname(fileURLToPath(import.meta.url)), "public"));
+    },
+  };
+}
 
 /**
  * Saída **estática**, sem runtime de servidor: é o que o documento 03 §1,
@@ -25,6 +41,7 @@ export default defineConfig({
     // Astro é `PUBLIC_`, e trocá-lo obrigaria a mexer no `app-06-deploy.yml`
     // e nos seis endereços do "Entrar" sem ganho nenhum.
     envPrefix: ["VITE_", "PUBLIC_"],
+    plugins: [faviconDoProjeto()],
   },
   build: {
     // Um arquivo por rota, e não `rota/index.html`: o Firebase Hosting serve
