@@ -26,14 +26,35 @@ Escolhida a **A**. A consequência que governa o desenho: com a proporção mais
 o escudo passa a ser **limitado pela altura** da grade em todos os arquivos — ganha altura e
 perde largura, nunca o contrário.
 
-Os números finais, com margem para o contorno (metade da espessura, senão a ponta sai cortada):
+Os números finais. **Corrigidos na implementação** — a primeira versão desta tabela errava a
+margem, e a nota abaixo diz por quê:
 
-| Arquivo | Escudo (L × A) | Ápice | Ombro | Base |
-| --- | --- | --- | --- | --- |
-| `simbolo`, `-mono` | 39,68 × 46,50 | y 0,75 | y 9,17 | y 47,25 |
-| `favicon` | 39,68 × 46,50 | y 0,75 | y 9,17 | y 47,25 |
-| `marca-empilhada` | 35,84 × 42,00 | y 5,00 | y 12,60 | y 47,00 |
-| `marca-horizontal`, `-mono` | 25,60 × 30,00 | y 1,00 | y 6,43 | y 31,00 |
+| Arquivo | Escudo (L × A) | Ápice | Ombro | Base | Contorno |
+| --- | --- | --- | --- | --- | --- |
+| `simbolo` | 38,40 × 45,00 | y 1,50 | y 9,65 | y 46,50 | 1,37 |
+| `simbolo-mono` | 38,40 × 45,00 | y 1,50 | y 9,65 | y 46,50 | 2,29 |
+| `marca-empilhada` | 35,84 × 42,00 | y 5,00 | y 12,60 | y 47,00 | 1,28 |
+| `marca-horizontal` | 25,26 × 29,60 | y 1,20 | y 6,56 | y 30,80 | 0,90 |
+| `marca-horizontal-mono` | 25,26 × 29,60 | y 1,20 | y 6,56 | y 30,80 | 1,50 |
+
+A proporção `1 : 1,172` e a ponta a 18,1% da altura são **idênticas nas cinco**; o que muda
+entre linhas é só a escala. `favicon` saiu da tabela: deixou de existir.
+
+### O que a implementação corrigiu, e por quê
+
+1. **Uma junção de traço estende metade da espessura a partir do vértice em TODA direção** — não
+   só perpendicular à linha. A margem de 0,75 que esta tabela trazia punha a ponta exatamente na
+   borda da grade; numa junção em **mitre**, que é o padrão do SVG, ela estenderia **1,06** e a
+   ponta sairia **cortada**. As cinco peças passam a declarar `stroke-linejoin="round"`, e o
+   ápice recua o bastante para o traço inteiro caber.
+2. **A monocromática tem o contorno mais grosso** — era `2.5` contra `1.5` da colorida. Como as
+   duas precisam da **mesma silhueta** (requisito desta change), a geometria é dimensionada pelo
+   **contorno mais grosso**, não pelo mais fino. É isso que fecha o símbolo em `38,40 × 45,00`,
+   e não nos `39,68 × 46,50` que a tabela trazia.
+3. **O contorno absoluto acompanha a escala.** Medidas as razões originais — colorida a
+   `1,5/42` = 3,571% da largura do escudo, monocromática a `2,5/42` = 5,952% —, manter os
+   valores antigos faria as razões divergirem entre peças, quebrando o requisito de forma única.
+   Os cinco contornos foram reescalados para preservar a razão de cada família.
 
 Nos dois conjuntos o escudo **mantém a altura que já ocupava** e estreita. Por isso a folga de
 1 unidade acima do escudo na marca horizontal — que seria o gargalo se o escudo crescesse para
@@ -72,6 +93,6 @@ hoje é "o arquivo é o artefato", e isso merece decisão própria, não carona 
 | Risco | Tratamento |
 | --- | --- |
 | A ponta some no tamanho mínimo de 16 px | Na Variante A ela mede 8,42 na grade de 48 → **2,8 px** a 16 px. Conferência visual do fundador na tarefa 4.2 |
-| A ponta sai cortada pelo contorno | Toda grade reserva metade da espessura do contorno acima do ápice; conferido por teste de caixa envolvente |
+| A ponta sai cortada pelo contorno | **Materializou-se.** Resolvido com `stroke-linejoin="round"` e recuo do ápice; conferido pelo teste "não deixa a ponta sair cortada pela grade" |
 | A horizontal estreita demais ao lado do logotipo | O escudo perde 21% da largura; o equilíbrio do conjunto é conferido na tarefa 2.2 |
 | O orçamento de peso estourar | Folga medida: `simbolo.svg` em 1.357 B de 3.072. Duas cúbicas custam ~50 B. Teste já existente cobre |

@@ -21,9 +21,10 @@ SHALL seguir em ponta, e o **monograma** SHALL continuar dentro do escudo. (docu
 ### Requirement: O escudo tem uma forma só, em todas as peças da marca
 
 Todas as peças da marca que carregam o escudo SHALL descrever a **mesma silhueta**, diferindo
-entre si **apenas pela escala**. Nenhuma peça SHALL trazer correção de forma própria — raio de
-canto, espessura de contorno e proporção SHALL guardar a mesma razão com a largura do escudo
-em todas elas. Entre a versão colorida e a monocromática SHALL variar preenchimento e cor,
+entre si **apenas pela escala**. Nenhuma peça SHALL trazer correção de forma própria, e a
+**proporção** SHALL ser a mesma em todas. A **espessura do contorno** SHALL guardar a mesma
+razão com a largura do escudo em todas as peças da mesma versão — uma razão para a colorida,
+outra para a monocromática, que é em traço e por isso mais pesada. Entre a versão colorida e a monocromática SHALL variar preenchimento e cor,
 **nunca a geometria**. (documento 15 §§13.1, 13.3; `comum/marca/README.md` §7)
 
 #### Scenario: As peças coincidem quando normalizadas

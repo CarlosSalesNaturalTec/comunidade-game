@@ -313,7 +313,10 @@ describe("nenhuma tela busca recurso de terceiro", () => {
 });
 
 describe("o favicon servido é o do projeto, e vem de um arquivo só", () => {
-  const DA_MARCA = join(RAIZ, "..", "..", "comum", "marca", "favicon.svg");
+  // O favicon nasce do **símbolo**: os dois ficaram idênticos sob a forma de
+  // escudo com ponta, e um arquivo só serve os dois (decisão do fundador de
+  // 2026-10-02).
+  const DA_MARCA = join(RAIZ, "..", "..", "comum", "marca", "simbolo.svg");
 
   it("o que o build publica é byte a byte o de `comum/marca/`", () => {
     expect(ler("favicon.svg")).toBe(readFileSync(DA_MARCA, "utf-8"));

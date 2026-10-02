@@ -20,7 +20,6 @@ const ORCAMENTO: Record<string, number> = {
   "marca-empilhada.svg": 10,
   "simbolo.svg": 3,
   "simbolo-mono.svg": 3,
-  "favicon.svg": 2,
   "submarca-robroders.svg": 5,
   "submarca-robroders-mono.svg": 5,
   "submarca-robo-educa.svg": 5,
@@ -75,7 +74,7 @@ const cores = (svg: string) =>
   [...svg.matchAll(/#[0-9A-Fa-f]{6}/g)].map((achado) => achado[0].toUpperCase());
 
 describe("comum/marca — o manifesto é cumprido pelos arquivos (README §7)", () => {
-  it("entrega exatamente os dez arquivos que os §§1 e 2 declaram", () => {
+  it("entrega exatamente os nove arquivos que os §§1 e 2 declaram", () => {
     expect(arquivos).toEqual(Object.keys(ORCAMENTO).sort());
   });
 
@@ -106,6 +105,104 @@ describe("comum/marca — o manifesto é cumprido pelos arquivos (README §7)", 
 
   it.each(arquivos)("%s cabe no orçamento de peso do manifesto", (nome) => {
     expect(statSync(join(PASTA, nome)).size).toBeLessThanOrEqual(ORCAMENTO[nome] * 1024);
+  });
+});
+
+// A forma do escudo é **uma**, em escalas diferentes. Antes desta change ela
+// estava escrita à mão em seis arquivos, e a medição mostrou que eram
+// escalamento puro — raio e contorno na mesma razão com a largura, sem
+// correção óptica a preservar. Estes casos impedem que as cinco voltem a
+// divergir sem ninguém notar (documento 15 §§13.1, 13.3; README §7).
+
+/** As peças que carregam o escudo. As submarcas não: o escudo significa a
+ * plataforma, e por isso só a palavra entra nelas (documento 15 §13.1). */
+const COM_ESCUDO = [
+  "simbolo.svg",
+  "simbolo-mono.svg",
+  "marca-horizontal.svg",
+  "marca-horizontal-mono.svg",
+  "marca-empilhada.svg",
+];
+
+/** Razões de contorno do desenho original, preservadas na mudança de forma:
+ * a colorida a `1.5/42` da largura do escudo, a monocromática a `2.5/42`. */
+const RAZAO_DE_CONTORNO = { colorida: 1.5 / 42, mono: 2.5 / 42 };
+
+/** O escudo é o **primeiro** `<path>` de cada peça. O traçado dele usa só `M`
+ * e `C`, então todo número é coordenada e os pares nunca escorregam. */
+function escudo(nome: string) {
+  const svg = conteudo(nome);
+  const elemento = svg.match(/<path\b[^>]*?\/>/s)?.[0] ?? "";
+  const d = elemento.match(/d="([^"]+)"/)?.[1] ?? "";
+  const grade = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
+  return {
+    numeros: [...d.matchAll(/-?\d*\.?\d+/g)].map((achado) => Number(achado[0])),
+    contorno: Number(elemento.match(/stroke-width="([\d.]+)"/)?.[1]),
+    juncao: elemento.includes('stroke-linejoin="round"'),
+    grade: [Number(grade?.[1]), Number(grade?.[2])] as [number, number],
+  };
+}
+
+const eixo = (numeros: number[], resto: number) => numeros.filter((_, i) => i % 2 === resto);
+
+/** O contorno em fração da largura do escudo, com origem no canto da caixa
+ * dele: duas peças da mesma forma coincidem, qualquer que seja a escala. */
+function normalizado(numeros: number[]): number[] {
+  const x0 = Math.min(...eixo(numeros, 0));
+  const y0 = Math.min(...eixo(numeros, 1));
+  const largura = Math.max(...eixo(numeros, 0)) - x0;
+  return numeros.map((v, i) => (i % 2 === 0 ? v - x0 : v - y0) / largura);
+}
+
+describe("o escudo tem uma forma só, em todas as peças da marca", () => {
+  const referencia = normalizado(escudo("simbolo.svg").numeros);
+
+  it.each(COM_ESCUDO)("%s descreve a mesma silhueta, normalizada pela largura", (nome) => {
+    const atual = normalizado(escudo(nome).numeros);
+    expect(atual).toHaveLength(referencia.length);
+    for (const [i, v] of atual.entries()) {
+      expect(v).toBeCloseTo(referencia[i], 2);
+    }
+  });
+
+  it.each(COM_ESCUDO)("%s guarda a razão de contorno da sua versão", (nome) => {
+    const { numeros, contorno } = escudo(nome);
+    const largura = Math.max(...eixo(numeros, 0)) - Math.min(...eixo(numeros, 0));
+    const esperada = nome.includes("-mono")
+      ? RAZAO_DE_CONTORNO.mono
+      : RAZAO_DE_CONTORNO.colorida;
+    expect(contorno / largura).toBeCloseTo(esperada, 3);
+  });
+
+  it("a proporção do escudo é a do modelo — mais alto que largo", () => {
+    const { numeros } = escudo("simbolo.svg");
+    const largura = Math.max(...eixo(numeros, 0)) - Math.min(...eixo(numeros, 0));
+    const altura = Math.max(...eixo(numeros, 1)) - Math.min(...eixo(numeros, 1));
+    expect(altura / largura).toBeCloseTo(1.172, 2);
+  });
+
+  it.each(COM_ESCUDO)("%s tem a ponta no topo, e não aresta reta", (nome) => {
+    const { numeros } = escudo(nome);
+    const xs = eixo(numeros, 0);
+    const ys = eixo(numeros, 1);
+    const topo = Math.min(...ys);
+    // Um só x no topo, no meio da largura. Aresta reta daria dois x distintos;
+    // o ápice aparece duas vezes no traçado porque abre e fecha o caminho.
+    const xsNoTopo = [...new Set(xs.filter((_, i) => ys[i] === topo))];
+    expect(xsNoTopo).toHaveLength(1);
+    expect(xsNoTopo[0]).toBeCloseTo((Math.min(...xs) + Math.max(...xs)) / 2, 1);
+  });
+
+  it.each(COM_ESCUDO)("%s não deixa a ponta sair cortada pela grade", (nome) => {
+    const { numeros, contorno, juncao, grade } = escudo(nome);
+    // Junta redonda: o traço estende metade da espessura a partir do vértice,
+    // em toda direção. Em mitre estenderia mais, e a ponta sairia cortada.
+    expect(juncao).toBe(true);
+    const folga = contorno / 2;
+    expect(Math.min(...eixo(numeros, 1)) - folga).toBeGreaterThanOrEqual(0);
+    expect(Math.max(...eixo(numeros, 1)) + folga).toBeLessThanOrEqual(grade[1]);
+    expect(Math.min(...eixo(numeros, 0)) - folga).toBeGreaterThanOrEqual(0);
+    expect(Math.max(...eixo(numeros, 0)) + folga).toBeLessThanOrEqual(grade[0]);
   });
 });
 
