@@ -42,11 +42,13 @@
 
 ## 2. O cabeçalho das oito aplicações
 
-- [ ] 2.1 Apresentar o **símbolo** em `comum/react/Cabecalho.tsx`, com o nome do projeto em
-      texto ao lado — colorido no modo claro, monocromático no escuro e sobre foto. Verificar
-      que o nome continua legível quando o símbolo não carrega e que ele não aparece em dobro
-      (design — decisão 2; documento 15 §§5, 6.3, princípio 3)
-- [ ] 2.2 Escrever os casos do cabeçalho, cobrindo os cenários do delta de
+- [x] 2.1 Entregar `comum/react/MarcaDoProjeto.tsx` — o **símbolo** e o nome do projeto em
+      texto ao lado — e montá-lo **uma vez por aplicação**: no `main.tsx` das seis em React e
+      no `Vitrine.astro` da App 06. Não em `Cabecalho.tsx`, que é cabeçalho **de tela** e o
+      repetiria em cada uma. Verificar que o nome continua legível quando o símbolo não
+      carrega e que ele não aparece em dobro (design — decisões 2 e 7; documento 15 §§5, 6.3,
+      princípio 3)
+- [x] 2.2 Escrever os casos do cabeçalho, cobrindo os cenários do delta de
       `camada-visual-comum`: o cabeçalho apresenta o símbolo servido pelo próprio domínio, o
       nome sobrevive à ausência da imagem, o nome não aparece em dobro, e o modo escuro recebe a
       monocromática

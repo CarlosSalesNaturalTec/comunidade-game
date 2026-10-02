@@ -25,6 +25,7 @@ export { GLIFO_GENERICO_DE_PODER, GlifoDePoder, glifoDoPoder } from "./GlifoDePo
 export type { NomeDeGlifo, TamanhoDeIcone } from "./Icone";
 export { Icone } from "./Icone";
 export { MarcaDeGravacao } from "./MarcaDeGravacao";
+export { MarcaDoProjeto } from "./MarcaDoProjeto";
 export { MidiaDoNucleo } from "./MidiaDoNucleo";
 export { Moldura } from "./Moldura";
 export type { AreaDeNavegacao } from "./NavegacaoDeAreas";

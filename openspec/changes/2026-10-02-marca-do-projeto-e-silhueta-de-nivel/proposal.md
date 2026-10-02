@@ -70,7 +70,8 @@ Nenhuma.
 | `comum/marca/` | dez arquivos novos, mais a procedência no `README.md` |
 | `comum/marca/README.md` | corrige o §1: a monocromática é **em traço** e não se deriva da colorida |
 | `comum/package.json` | `./marca` em `exports` e em `files` |
-| `comum/react/Cabecalho.tsx` | apresenta o símbolo e o nome — alcança as **oito** aplicações |
+| `comum/react/MarcaDoProjeto.tsx` | componente novo: o símbolo e o nome, montado uma vez por aplicação |
+| `apps/*/src/main.tsx` e `Vitrine.astro` | os sete pontos de montagem, um por aplicação |
 | `comum/react/BadgeDaFamilia.tsx` | a silhueta `de_nivel` passa de escudo a losango |
 | `apps/*/public/favicon.svg` | as sete trocam o favicon do Vite pelo do projeto |
 | Núcleo | **nenhuma rota nova e nenhuma alteração** |

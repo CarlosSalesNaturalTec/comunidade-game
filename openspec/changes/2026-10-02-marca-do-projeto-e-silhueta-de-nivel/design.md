@@ -92,6 +92,33 @@ Proporção do escudo, eixos do Archivo, degraus de cor e contrastes medidos sã
 fundador** e descem ao documento 15, que é a fonte única da identidade visual. Os artefatos
 desta change os aplicam e não os repetem.
 
+### 7. A marca é componente próprio, montado uma vez por aplicação
+
+`Cabecalho.tsx` é cabeçalho **de tela** — recebe título, subtítulo, ação e narração, e é
+montado em dezenas de telas. Pôr a marca ali a repetiria em todas. E não há em `comum/`
+nenhuma moldura que monte uma vez por aplicação: `NavegacaoDeAreas` é o mais próximo, e nem
+a vitrine nem o jogo a usam.
+
+Daí `MarcaDoProjeto`, montado no `main.tsx` das seis aplicações em React e no
+`Vitrine.astro` da App 06 — sete pontos, um por aplicação.
+
+_Descartado:_ propriedade opcional em `Cabecalho`, ligada só na tela de entrada de cada
+aplicação — esquecer de ligar, ou ligar em duas telas, não quebra nada que um teste perceba.
+
+### 8. As duas versões do símbolo saem embutidas, e o CSS escolhe
+
+A monocromática usa `currentColor`, e só herda a cor do texto quando está **no mesmo
+documento**: por `<img>` ela resolveria para preto. Por isso as duas versões são embutidas,
+lidas do arquivo por `?raw` — `comum/marca/` segue sendo a fonte única, e duplicar o traço
+no componente deixaria as duas cópias divergirem sem ninguém notar. O conteúdo é ativo
+versionado do próprio repositório, e `comum/marca.test.ts` garante que nenhum traz `<script>`.
+
+As duas são apresentadas sempre, e **o CSS escolhe**: colorida no claro, monocromática no
+escuro e sobre a foto de comunidade. A aplicação não decide, e nenhuma pode esquecer de trocar.
+
+_Descartado:_ `mask-image` com cor por `background-color` — funciona para a monocromática e
+achataria a colorida, que é de dois tons.
+
 ## Risks / Trade-offs
 
 | Risco | Mitigação |
