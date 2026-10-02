@@ -12,9 +12,11 @@
 - [x] 0.2 **O disparo é ao abrir a sessão de trabalho**, não com a aula já escolhida
 - [x] 0.3 **Indicador local à App 01**, texto "Carregando modelos de reconhecimento facial",
       **narrado** quando a narração das telas estiver ativada
-- [x] 0.4 **A falha é dita, em vermelho** — "Não foi possível carregar os modelos de
-      reconhecimento facial" —, sem deixar o indicador parado. **Reverte** a falha silenciosa
-      que esta change havia desenhado
+- [x] 0.4 **A falha é dita** — "Não foi possível carregar os modelos de reconhecimento
+      facial" —, sem deixar o indicador parado. **Reverte** a falha silenciosa que esta change
+      havia desenhado
+- [x] 0.4.1 **A falha NÃO interrompe**, e o vermelho cai por causa disso — entre os dois, não
+      interromper vem primeiro. `Aviso` só tem vermelho que interrompe
 - [x] 0.5 **A falha some quando a rede volta**, e o andamento volta com ela
 - [x] 0.6 **`RN-04-42` desce do `RN-04-07` e do documento 03 §3.3**
 - [x] 0.7 **Fora do aviso de coleta** (`RF-04-26`): a pré-carga não coleta dado nenhum
@@ -48,9 +50,13 @@
 - [ ] 2.3 Apresentar o andamento com **`Aviso tipo="andamento"`** — "Carregando modelos de
       reconhecimento facial" —, ao lado de `AvisoDeOperacaoSemConexao`. Sai ao concluir e não
       impede ação nenhuma. **Nenhum componente novo** (`RF-04-75`; `design.md` — decisão 4)
-- [ ] 2.4 Apresentar a falha com **`Aviso tipo="erro"`** — "Não foi possível carregar os modelos
-      de reconhecimento facial" —, no lugar do andamento, que não fica parado no passo que
-      travou. A mensagem sai quando a rede volta e o andamento retorna (`RF-04-75`)
+- [ ] 2.4 Apresentar a falha como **linha de `role="status"`** local à App 01, no molde do
+      `EstadoDaLista` — "Não foi possível carregar os modelos de reconhecimento facial" —, no
+      lugar do andamento, que não fica parado no passo que travou. **Não** usar
+      `Aviso tipo="erro"` nem `tipo="atencao"`: os dois são `role="alert"` e interrompem. Sem
+      cor: a frase inteira carrega a informação (`RF-04-75`; `design.md` — decisão 4)
+- [ ] 2.4.1 Narrar a falha pelo `useNarrarAoEntrar` de `comum/narracao`, já que ela não vem de
+      graça pelo `Aviso`. A voz nunca interrompe — `narrar` enfileira (documento 15 §5.1)
 - [ ] 2.5 Conferir que o caminho de erro de `prepararCaptura()` segue intacto e **distinto** —
       a frase da captura não se confunde com a da pré-carga (`RF-04-65`)
 
@@ -65,8 +71,9 @@
       falhada (`RF-04-23`, documento 03 §3.4)
 - [ ] 3.4 O andamento é apresentado como informação, sai ao concluir e é expresso por modelo
       carregado, nunca em percentual (spec: "O andamento da pré-carga é dito…")
-- [ ] 3.5 A falha é apresentada como erro, com rótulo textual que não depende da cor; o
-      andamento sai; a rede que volta limpa a mensagem (spec: "A falha da pré-carga é dita…")
+- [ ] 3.5 A falha é apresentada em região de `role="status"`, **nunca `role="alert"`**; nada do
+      sentido depende de cor; o andamento sai; a rede que volta limpa a mensagem (spec: "A falha
+      da pré-carga é dita sem interromper…")
 - [ ] 3.6 Com a narração ativada, andamento e falha são falados como os demais avisos
       (documento 15 §5.1)
 

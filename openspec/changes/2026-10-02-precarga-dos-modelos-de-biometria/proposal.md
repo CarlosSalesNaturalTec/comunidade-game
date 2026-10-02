@@ -59,11 +59,12 @@ uma primeira captura lenta.
   rede, e **nunca espera por ela** para apresentar a tela inicial ou qualquer caminho.
 - **Um indicador mostra o andamento**, em 5 passos, e **não é portão**: nenhuma tela depende
   dele, e ele some ao concluir.
-- **Falha da pré-carga é dita na tela, como erro**, e o indicador não fica parado no passo em
-  que travou. O caminho de erro de `prepararCaptura()` (`RF-04-65`) segue **intacto e
-  distinto**, e não se confunde com este.
-- **Nenhum componente novo:** `comum/react/Aviso.tsx` já tem `tipo="andamento"` e `tipo="erro"`,
-  com rótulo textual e narração, que é exatamente o que a elicitação pediu.
+- **Falha da pré-carga é dita na tela, sem interromper**, e o indicador não fica parado no
+  passo em que travou. O caminho de erro de `prepararCaptura()` (`RF-04-65`) segue **intacto e
+  distinto**, e esse sim interrompe, porque exige ação.
+- **Nenhum componente novo, e nenhum tipo novo na camada comum:** o andamento é
+  `Aviso tipo="andamento"`, que já é `role="status"`; a falha é uma linha de `role="status"`
+  local à App 01, no molde do `EstadoDaLista`.
 - **PRD-04**: a §14 perde a pendência do peso dos modelos; nascem `RF-04-75` e `RN-04-42`.
 - **Documento 03 §3.4** registra a pré-carga como resposta ao requisito de poucos segundos;
   **documento 09 §1** recebe a decisão nova e a descartada (service worker / PWA).

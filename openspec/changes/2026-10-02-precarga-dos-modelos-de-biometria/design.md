@@ -65,9 +65,10 @@ mesmo desenho, em vez de inventar outro:
 - Se o aparelho abriu sem rede, tenta de novo **quando a rede voltar** — a sala com rede
   intermitente é o caso normal, não a exceção.
 - Uma vez concluída, não repete.
-- Falha é **dita** (decisão do fundador, 2026-10-02, que reverteu a falha silenciosa que esta
-  change havia desenhado). `prepararCaptura()` segue sendo a rede de segurança e segue com o
-  **seu** caminho de erro, distinto deste.
+- Falha é **dita, sem interromper** (decisões do fundador de 2026-10-02: primeiro reverteu a
+  falha silenciosa que esta change havia desenhado, depois fixou que não interrompe).
+  `prepararCaptura()` segue sendo a rede de segurança e segue com o **seu** caminho de erro,
+  que é `alert` e distinto deste.
 
 O indicador fica **ao lado de `AvisoDeOperacaoSemConexao`**, dentro de `AparelhoDaAula` e acima
 de `ConteudoDoAparelho` — o lugar que a aplicação já usa para estado ambiente do aparelho.
@@ -79,21 +80,45 @@ reconhecimento facial", narrado quando a narração das telas estiver ativada, e
 vermelho**. Conferido o que existe: `comum/react/Aviso.tsx` **já atende os quatro pedidos**, e
 nenhum componente novo é preciso.
 
-| Pedido da elicitação | O que `Aviso` já dá |
+| Pedido da elicitação | Onde ele cai |
 | --- | --- |
-| Indicador local, informação e não erro | `tipo="andamento"` → rótulo "Em andamento:", `role="status"` |
-| Falha em vermelho | `tipo="erro"` → rótulo "Erro:", `role="alert"` |
+| Indicador local, informação e não erro | `Aviso tipo="andamento"` → "Em andamento:", `role="status"` |
 | Narrado quando a narração está ativada | `narracao` é opcional e, omitida, fala rótulo e texto |
 | Não depender da cor | o rótulo textual é do componente, por construção (documento 15 §5) |
+| **Falha sem interromper** | **não existe em `Aviso`** — ver abaixo |
 
 Não se cria componente de progresso em `comum/react`: não existe nenhum hoje, e um componente
-comum sem segundo consumidor é peso sem uso. O "vermelho" pedido vem de graça com `tipo="erro"`,
-e **o sentido não depende dele** — o rótulo "Erro:" carrega a informação, como o documento 15 §5
-exige.
+comum sem segundo consumidor é peso sem uso.
 
-**Consequência a registrar:** `tipo="erro"` é `role="alert"`, que **interrompe** o leitor de
-tela. É o preço de a falha ser dita em vermelho, e é uma escolha do fundador, não um descuido:
-`Aviso` não oferece vermelho que não interrompa.
+### A falha, e por que ela não é `Aviso tipo="erro"`
+
+O fundador pediu primeiro a falha **em vermelho** e, depois de ver a consequência, fixou a
+prioridade: **não interromper; se for preciso, abrir mão do vermelho** (2026-10-02). `Aviso`
+mapeia os quatro tipos em dois papéis, e os dois vermelhos interrompem:
+
+| `tipo` | Rótulo | `role` |
+| --- | --- | --- |
+| `erro` | "Erro:" | `alert` — **interrompe** |
+| `atencao` | "Atenção:" | `alert` — **interrompe** |
+| `sucesso` | "Sucesso:" | `status` |
+| `andamento` | "Em andamento:" | `status` |
+
+Não há tipo que diga "falhou" sem interromper, e `tipo="andamento"` mentiria no rótulo. Então a
+falha **sai do `Aviso`** e vira uma linha de `role="status"` local à App 01, no molde do
+`EstadoDaLista`, que o próprio repositório justifica assim: *"o estado vazio, o de carregamento
+e a ausência de indicadores são informação, nunca erro — por isso `role="status"`, nunca
+`role="alert"`"*.
+
+Isso **satisfaz o documento 15 §5 sem precisar de rótulo**: a linha não tem codificação de cor
+alguma, então não há sentido que dependa de cor — a frase inteira carrega a informação. É a
+leitura mais fiel à prioridade do fundador, e é também a mais barata: nenhum tipo novo na camada
+comum, que serviria as oito aplicações por causa de uma.
+
+A narração não era problema em nenhum dos dois eixos: `narrar` chama `falar`, que **enfileira**;
+`cancelar()` só roda ao **desligar** a narração. A voz nunca interrompeu.
+
+> **Se um dia a falha precisar de rótulo visual**, o caminho é um `TipoDeAviso` novo que informe
+> sem interromper — e isso é decisão da camada comum, das oito, não desta fatia.
 
 ## Decisão 5 — o indicador tem 5 passos, e diz isso
 

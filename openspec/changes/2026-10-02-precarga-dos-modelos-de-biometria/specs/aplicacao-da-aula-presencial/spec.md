@@ -72,12 +72,13 @@ ativada, o andamento SHALL ser falado como qualquer outro aviso. (`RF-04-75`, do
 - **WHEN** a narração das telas está ativada e o andamento é apresentado
 - **THEN** ele é falado, como os demais avisos da aplicação
 
-### Requirement: A falha da pré-carga é dita, e não trava o indicador
+### Requirement: A falha da pré-carga é dita sem interromper, e não trava o indicador
 
-Falha da pré-carga SHALL ser dita na tela **como erro**, nomeando o que não carregou, e NEVER
-SHALL deixar o indicador parado no passo em que travou. A mensagem NEVER SHALL depender da cor
-para ser entendida: ela SHALL trazer rótulo textual próprio, como todo estado da aplicação.
-(`RF-04-75`, documento 15 §5)
+Falha da pré-carga SHALL ser dita na tela, nomeando o que não carregou, e NEVER SHALL deixar o
+indicador parado no passo em que travou. A mensagem SHALL ser apresentada como **informação que
+não interrompe** — anunciada de modo a não cortar o que a tecnologia assistiva estiver lendo — e
+NEVER SHALL ser apresentada como alerta que interrompe. Ela NEVER SHALL depender da cor para ser
+entendida. (`RF-04-75`, documento 15 §5)
 
 A falha NEVER SHALL impedir ação alguma, e o **caminho de erro do preparo da captura** SHALL
 seguir intacto e distinto — a captura continua distinguindo preparo que não concluiu, vivacidade
@@ -89,10 +90,15 @@ reprovada e recusa do núcleo. (`RF-04-65`)
 - **THEN** a tela diz que não foi possível carregar os modelos de reconhecimento facial, e o
   indicador de andamento deixa de ser apresentado
 
+#### Scenario: A mensagem não interrompe quem está ouvindo
+
+- **WHEN** a falha da pré-carga é apresentada com a narração ou um leitor de tela em curso
+- **THEN** ela é anunciada sem cortar o que estava sendo lido ou falado
+
 #### Scenario: A mensagem não depende da cor
 
 - **WHEN** a falha da pré-carga é apresentada
-- **THEN** ela traz rótulo textual que a identifica como erro, sem depender da cor
+- **THEN** a frase inteira carrega a informação, e nada do sentido dela depende de cor
 
 #### Scenario: A rede que volta limpa a mensagem
 
