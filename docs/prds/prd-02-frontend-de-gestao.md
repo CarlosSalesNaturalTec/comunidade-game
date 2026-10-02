@@ -410,6 +410,10 @@ A aplicação consome as convenções do PRD-01 — prefixo `/v1`, token de sess
 único, listagem paginada com filtro de comunidade, período e persona. As rotas de território e
 de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 
+Na listagem de Apoiadores, cada documento comprobatório vem com o **identificador** e a marca de
+**publicado ou pendente** — é o que a gestão usa para alcançar a rota de anexação e montar a fila
+do que espera, sem rota própria para a fila (`RF-02-101`).
+
 | Método | Rota                                                   | Autenticação    | Descrição                                                                         |
 | ------ | ------------------------------------------------------ | --------------- | --------------------------------------------------------------------------------- |
 | POST   | `/v1/guerreiros`                                       | Admin           | Cadastra Guerreiro(a) pela gestão                                                 |
@@ -430,6 +434,7 @@ de livro-razão são as dos PRD-08 e PRD-07 e não se repetem aqui.
 | POST   | `/v1/chaves`                                           | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez                 |
 | GET    | `/v1/chaves`                                           | Admin           | Chaves emitidas, com prazo, URL apresentada e situação                            |
 | DELETE | `/v1/chaves/{id}`                                      | Admin           | Revoga a chave, com motivo e autoria                                              |
+| GET    | `/v1/conteudo-institucional`                           | Admin           | Lê as três seções com texto, vídeo, autor e data, para a tela de edição           |
 | PUT    | `/v1/conteudo-institucional/{secao}`                   | Admin           | Edita "Quem somos", "Contatos" ou "Como apoiar"                                   |
 | GET    | `/v1/solicitacoes-do-responsavel`                      | Admin           | Fila das solicitações vindas da App 07                                            |
 | POST   | `/v1/solicitacoes-do-responsavel/{id}/tratamento`      | Admin           | Registra o desfecho, com quem tratou e quando                                     |
@@ -591,6 +596,8 @@ contar, e dá à gestão a distribuição etária que **H4** observa.
 | Admin cadastra e troca o PIN de confirmação na App 03; "aguardando aparelho" passa a "sem equipe"            | 03 §1.1            | Confirmação de identidade no encontro exige o PIN do adulto    |
 | O que encerra um desafio extra é ato de Admin na gestão, nunca o decurso da vigência                         | 04 §3              | O que encerra um desafio extra                                 |
 | Painel do dia mostra o nome da equipe e o papel de cada integrante (`RF-02-08`)                              | 02 §5              | Presença e equipes em caminhos separados, e a equipe com nome  |
+| O Admin lê o institucional por rota própria de leitura, nunca por parâmetro na rota pública                  | PRD-02 §9          | O Admin lê o conteúdo institucional por rota própria           |
+| O comprobatório pendente chega à gestão pela listagem de Apoiadores, que leva o `id` e o `publicado`         | PRD-02 §9          | A fila do comprobatório deriva da listagem de Apoiadores       |
 
 A **trilha de auditoria das ações de Admin**, questão que o documento 08 listava para este PRD,
 foi definida no PRD-01 — a App 03 apenas a consulta.

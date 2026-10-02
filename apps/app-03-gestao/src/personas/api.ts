@@ -60,9 +60,19 @@ export function editarGuerreiro(
   });
 }
 
-export interface ArtefatoComprobatorio {
+/** O que o cadastro declara — endereço e rótulo, nada mais. O identificador e
+ * a marca de publicado são do núcleo e só existem na leitura. */
+export interface ArtefatoDeclarado {
   endereco: string;
   rotulo: string;
+}
+
+export interface ArtefatoComprobatorio extends ArtefatoDeclarado {
+  // A gestão precisa do identificador para alcançar a rota de anexação, e da
+  // marca de publicado para separar o que espera do que já está público; os
+  // dois vêm do núcleo, e `publicado` é derivado lá (`RF-02-101`).
+  id: string;
+  publicado: boolean;
   // Preenchidos só quando o próprio adulto editou o artefato do cadastro —
   // a ficha marca o que foi mexido e mostra o original ao lado do vigente
   // (`RF-02-04`, `RN-09-14`).
@@ -88,8 +98,67 @@ export function listarMestres(token: string): Promise<ListaDeAdultos> {
   return chamarNucleo<ListaDeAdultos>("/v1/mestres", { token });
 }
 
-export function listarApoiadores(token: string): Promise<ListaDeAdultos> {
-  return chamarNucleo<ListaDeAdultos>("/v1/apoiadores", { token });
+export function listarApoiadores(token: string, cursor?: string): Promise<ListaDeAdultos> {
+  const sufixo = cursor ? `?${new URLSearchParams({ cursor }).toString()}` : "";
+  return chamarNucleo<ListaDeAdultos>(`/v1/apoiadores${sufixo}`, { token });
+}
+
+/** Um documento comprobatório que um Apoiador declarou pela App 08 e que
+ * ainda espera a anexação do Admin, já com o Apoiador a que pertence. */
+export interface ComprobatorioPendente {
+  artefato_id: string;
+  apoiador_id: string;
+  apoiador: string;
+  endereco: string;
+  rotulo: string;
+}
+
+// A fila dos pendentes deriva da listagem de Apoiadores, sem rota própria no
+// núcleo — decisão do fundador, 2026-10-02 (design — decisão 2). A listagem é
+// paginada por cursor, e por isso percorre todas as páginas: documento em
+// página seguinte também espera anexação (`RF-02-101`).
+export async function listarComprobatoriosPendentes(
+  token: string,
+): Promise<ComprobatorioPendente[]> {
+  const pendentes: ComprobatorioPendente[] = [];
+  let cursor: string | null = null;
+  do {
+    const pagina: ListaDeAdultos = await listarApoiadores(token, cursor ?? undefined);
+    for (const apoiador of pagina.itens) {
+      for (const artefato of apoiador.artefatos) {
+        if (artefato.publicado) continue;
+        pendentes.push({
+          artefato_id: artefato.id,
+          apoiador_id: apoiador.id,
+          apoiador: apoiador.nome,
+          endereco: artefato.endereco,
+          rotulo: artefato.rotulo,
+        });
+      }
+    }
+    cursor = pagina.proximo_cursor;
+  } while (cursor);
+  return pendentes;
+}
+
+/** O que a anexação devolve: a anexação é o ato que publica o documento na
+ * página do Apoiador (`RF-02-101`, `RF-14-19`). */
+export interface DocumentoAnexado {
+  id: string;
+  endereco: string;
+  rotulo: string;
+  publicado: boolean;
+}
+
+export function anexarComprobatorio(
+  apoiadorId: string,
+  artefatoId: string,
+  token: string,
+): Promise<DocumentoAnexado> {
+  return chamarNucleo<DocumentoAnexado>(
+    `/v1/apoiadores/${apoiadorId}/artefatos/${artefatoId}/anexacao`,
+    { metodo: "POST", token },
+  );
 }
 
 export interface CadastrarAdultoEntrada {
@@ -97,7 +166,7 @@ export interface CadastrarAdultoEntrada {
   email: string;
   whatsapp?: string;
   nick?: string;
-  artefatos: ArtefatoComprobatorio[];
+  artefatos: ArtefatoDeclarado[];
 }
 
 export function cadastrarMestre(

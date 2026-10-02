@@ -248,3 +248,109 @@ def test_leitura_nao_alcanca_documento_alheio(
     leitura_de_2 = cliente.get("/v1/eu/apoiador/documentos", headers=cabecalhos_2)
     assert len(leitura_de_1.json()) == 1
     assert len(leitura_de_2.json()) == 0
+
+
+def test_listagem_da_gestao_distingue_o_pendente_do_publicado(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador, criada_por=admin)
+    token_do_apoiador, _ = criar_sessao_de_teste(apoiador)
+    cabecalhos_do_apoiador = {
+        "X-Chave-Aplicacao": chave,
+        "Authorization": f"Bearer {token_do_apoiador}",
+    }
+    token_do_admin, _ = criar_sessao_de_teste(admin)
+    cabecalhos_do_admin = {
+        "X-Chave-Aplicacao": chave,
+        "Authorization": f"Bearer {token_do_admin}",
+    }
+
+    anexado = cliente.post(
+        "/v1/eu/apoiador/documentos",
+        json={"endereco": "https://exemplo.org/termo", "rotulo": "Termo de doação"},
+        headers=cabecalhos_do_apoiador,
+    ).json()
+    pendente = cliente.post(
+        "/v1/eu/apoiador/documentos",
+        json={"endereco": "https://exemplo.org/curriculo", "rotulo": "Currículo"},
+        headers=cabecalhos_do_apoiador,
+    ).json()
+    cliente.post(
+        f"/v1/apoiadores/{apoiador.id}/artefatos/{anexado['id']}/anexacao",
+        headers=cabecalhos_do_admin,
+    )
+
+    listagem = cliente.get("/v1/apoiadores", headers=cabecalhos_do_admin)
+
+    assert listagem.status_code == 200
+    linha = next(item for item in listagem.json()["itens"] if item["id"] == str(apoiador.id))
+    por_id = {artefato["id"]: artefato for artefato in linha["artefatos"]}
+    assert por_id[anexado["id"]]["publicado"] is True
+    assert por_id[pendente["id"]]["publicado"] is False
+    assert por_id[pendente["id"]]["endereco"] == "https://exemplo.org/curriculo"
+    assert por_id[pendente["id"]]["rotulo"] == "Currículo"
+
+
+def test_identificador_vindo_da_listagem_serve_a_anexacao(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    apoiador = criar_persona(Papel.apoiador, criada_por=admin)
+    token_do_apoiador, _ = criar_sessao_de_teste(apoiador)
+    token_do_admin, _ = criar_sessao_de_teste(admin)
+    cabecalhos_do_admin = {
+        "X-Chave-Aplicacao": chave,
+        "Authorization": f"Bearer {token_do_admin}",
+    }
+    cliente.post(
+        "/v1/eu/apoiador/documentos",
+        json={"endereco": "https://exemplo.org/curriculo", "rotulo": "Currículo"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_apoiador}"},
+    )
+
+    listagem = cliente.get("/v1/apoiadores", headers=cabecalhos_do_admin).json()
+    linha = next(item for item in listagem["itens"] if item["id"] == str(apoiador.id))
+    pendente = next(a for a in linha["artefatos"] if not a["publicado"])
+
+    anexacao = cliente.post(
+        f"/v1/apoiadores/{apoiador.id}/artefatos/{pendente['id']}/anexacao",
+        headers=cabecalhos_do_admin,
+    )
+
+    assert anexacao.status_code == 200
+    assert anexacao.json()["publicado"] is True
+    depois = cliente.get("/v1/apoiadores", headers=cabecalhos_do_admin).json()
+    linha_depois = next(item for item in depois["itens"] if item["id"] == str(apoiador.id))
+    assert all(artefato["publicado"] for artefato in linha_depois["artefatos"])
+
+
+def test_artefato_do_cadastro_nasce_publicado_na_listagem_da_gestao(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    """O que o Admin declarou no cadastro NEVER espera anexação — a fila da
+    gestão não pode exibi-lo como pendente (`RN-14-12`)."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token_do_admin, _ = criar_sessao_de_teste(admin)
+    cabecalhos_do_admin = {
+        "X-Chave-Aplicacao": chave,
+        "Authorization": f"Bearer {token_do_admin}",
+    }
+
+    cadastrado = cliente.post(
+        "/v1/apoiadores",
+        json={
+            "nome": "Instituição de Tal",
+            "email": "instituicao@example.org",
+            "artefatos": [{"endereco": "https://exemplo.org/doacao", "rotulo": "Termos"}],
+        },
+        headers=cabecalhos_do_admin,
+    )
+
+    assert cadastrado.status_code == 201
+    artefato = cadastrado.json()["artefatos"][0]
+    assert artefato["publicado"] is True
+    assert uuid.UUID(artefato["id"])

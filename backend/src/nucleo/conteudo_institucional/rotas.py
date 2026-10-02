@@ -49,6 +49,29 @@ def ler_conteudo_institucional_rota(
     ]
 
 
+@roteador.get("/conteudo-institucional", response_model=list[SecaoPublicadaSaida])
+def ler_conteudo_institucional_de_admin_rota(
+    contexto: Annotated[
+        ContextoDaSessao, Depends(exigir_permissao(Operacao.conteudo_institucional, "le"))
+    ],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> list[SecaoPublicadaSaida]:
+    """Restrita a Admin, só de leitura: as três seções na mesma ordem fixa da
+    rota pública, acrescidas de quem publicou e quando — o que a tela de
+    edição exige e a leitura pública NEVER devolve (`RF-02-80`, `RF-03-45`).
+    Seção nunca publicada sai sem texto, sem autor e sem data."""
+    return [
+        SecaoPublicadaSaida(
+            secao=linha.secao,
+            texto=linha.texto,
+            video_url=linha.video_url,
+            autor_id=linha.autor_id,
+            publicado_em=linha.publicado_em,
+        )
+        for linha in ler_conteudo_institucional(sessao_bd)
+    ]
+
+
 @roteador.put("/conteudo-institucional/{secao}")
 def publicar_secao_rota(
     secao: SecaoInstitucional,

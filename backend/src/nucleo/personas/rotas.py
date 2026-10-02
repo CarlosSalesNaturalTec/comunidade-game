@@ -263,8 +263,14 @@ class ArtefatoEntrada(BaseModel):
 
 
 class ArtefatoSaida(BaseModel):
+    # `id` e `publicado` existem para a gestão: sem o identificador a App 03
+    # não alcança a rota de anexação, e sem a marca não separa o documento que
+    # espera do que já está público. `publicado` é derivado, nunca gravado
+    # (`RF-02-101`, `RN-14-12`, decisão do fundador, 2026-10-02).
+    id: uuid.UUID
     endereco: str
     rotulo: str
+    publicado: bool
     # Preenchidos só quando o próprio adulto editou o artefato do cadastro
     # — a gestão distingue o que foi mexido do que segue como o Admin
     # declarou (`RF-02-04`, `RN-09-14`, design — decisão 5).
@@ -292,8 +298,10 @@ def _saida_do_adulto(persona: Persona, sessao_bd: Session) -> AdultoSaida:
         nick=nick.valor if nick is not None else None,
         artefatos=[
             ArtefatoSaida(
+                id=a.id,
                 endereco=a.endereco,
                 rotulo=a.rotulo,
+                publicado=artefato_esta_publicado(a),
                 endereco_original=a.endereco_original,
                 rotulo_original=a.rotulo_original,
             )

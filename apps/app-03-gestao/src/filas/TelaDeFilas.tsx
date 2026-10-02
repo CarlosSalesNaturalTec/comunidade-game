@@ -2,6 +2,8 @@ import { ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Cabecalho, Moldura } from "comum/react";
 import { useCallback, useEffect, useId, useState } from "react";
+import { type ComprobatorioPendente, listarComprobatoriosPendentes } from "../personas/api";
+import { AnexacaoDoComprobatorio } from "./AnexacaoDoComprobatorio";
 import { AvaliacaoDaSolicitacao } from "./AvaliacaoDaSolicitacao";
 import { AvaliacaoDeChave } from "./AvaliacaoDeChave";
 import { AvaliacaoDeDados } from "./AvaliacaoDeDados";
@@ -31,7 +33,8 @@ type Natureza =
   | "chave"
   | "sugestao"
   | "responsavel"
-  | "desafio_extra";
+  | "desafio_extra"
+  | "comprobatorio";
 
 const NATUREZAS: { chave: Natureza; rotulo: string }[] = [
   { chave: "participacao", rotulo: "Participação" },
@@ -40,6 +43,7 @@ const NATUREZAS: { chave: Natureza; rotulo: string }[] = [
   { chave: "sugestao", rotulo: "Sugestões" },
   { chave: "responsavel", rotulo: "Responsável" },
   { chave: "desafio_extra", rotulo: "Desafios extras" },
+  { chave: "comprobatorio", rotulo: "Comprobatórios do Apoiador" },
 ];
 
 const MENSAGEM_VAZIA: Record<Natureza, string> = {
@@ -49,6 +53,7 @@ const MENSAGEM_VAZIA: Record<Natureza, string> = {
   sugestao: "Nenhuma sugestão ou proposta por enquanto.",
   responsavel: "Nenhuma solicitação do responsável por enquanto.",
   desafio_extra: "Nenhum desafio extra aguardando aprovação por enquanto.",
+  comprobatorio: "Nenhum documento comprobatório esperando anexação por enquanto.",
 };
 
 const ROTULO_DO_TIPO_DA_SOLICITACAO_DO_RESPONSAVEL: Record<
@@ -145,12 +150,25 @@ function normalizarSolicitacaoDoResponsavel(item: SolicitacaoDoResponsavel): Ite
   };
 }
 
+// O comprobatório não responde a prazo nenhum: a fila dele não leva `prazo`
+// nem `em_atraso`, e a situação é a única que tem — espera anexação
+// (`RF-02-101`).
+function normalizarComprobatorio(item: ComprobatorioPendente): ItemDeFila {
+  return {
+    id: item.artefato_id,
+    quem: item.apoiador,
+    detalhe: `${item.rotulo} — ${item.endereco}`,
+    situacaoRotulo: "Espera anexação",
+  };
+}
+
 type Selecionada =
   | { natureza: "participacao"; item: SolicitacaoDeParticipacao }
   | { natureza: "dados"; item: SolicitacaoDeDados }
   | { natureza: "chave"; item: SolicitacaoDeChave }
   | { natureza: "sugestao"; item: Sugestao }
-  | { natureza: "responsavel"; item: SolicitacaoDoResponsavel };
+  | { natureza: "responsavel"; item: SolicitacaoDoResponsavel }
+  | { natureza: "comprobatorio"; item: ComprobatorioPendente };
 
 export function TelaDeFilas() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
@@ -165,6 +183,9 @@ export function TelaDeFilas() {
   const [solicitacoesDoResponsavel, definirSolicitacoesDoResponsavel] = useState<
     SolicitacaoDoResponsavel[] | null
   >(null);
+  const [comprobatorios, definirComprobatorios] = useState<ComprobatorioPendente[] | null>(
+    null,
+  );
   const [erro, definirErro] = useState<string | null>(null);
   const [selecionada, definirSelecionada] = useState<Selecionada | null>(null);
 
@@ -188,6 +209,8 @@ export function TelaDeFilas() {
       } else if (natureza === "responsavel") {
         const itens = await listarSolicitacoesDoResponsavel(sessao.token);
         definirSolicitacoesDoResponsavel(itens);
+      } else if (natureza === "comprobatorio") {
+        definirComprobatorios(await listarComprobatoriosPendentes(sessao.token));
       }
       // "desafio_extra" carrega as próprias listas dentro de
       // `AvaliacaoDoDesafioExtra` — não uma seleção sobre `ListaDeFilas`
@@ -226,6 +249,9 @@ export function TelaDeFilas() {
     } else if (natureza === "responsavel") {
       const item = solicitacoesDoResponsavel?.find((solicitacao) => solicitacao.id === id);
       if (item) definirSelecionada({ natureza: "responsavel", item });
+    } else if (natureza === "comprobatorio") {
+      const item = comprobatorios?.find((pendente) => pendente.artefato_id === id);
+      if (item) definirSelecionada({ natureza: "comprobatorio", item });
     }
   }
 
@@ -240,7 +266,9 @@ export function TelaDeFilas() {
             ? (sugestoes?.map(normalizarSugestao) ?? null)
             : natureza === "responsavel"
               ? (solicitacoesDoResponsavel?.map(normalizarSolicitacaoDoResponsavel) ?? null)
-              : null;
+              : natureza === "comprobatorio"
+                ? (comprobatorios?.map(normalizarComprobatorio) ?? null)
+                : null;
 
   return (
     <Moldura>
@@ -318,6 +346,15 @@ export function TelaDeFilas() {
               onFechar={() => definirSelecionada(null)}
               onTratada={(atualizada) => {
                 definirSelecionada({ natureza: "responsavel", item: atualizada });
+                carregar();
+              }}
+            />
+          )}
+          {selecionada?.natureza === "comprobatorio" && (
+            <AnexacaoDoComprobatorio
+              pendente={selecionada.item}
+              onAnexado={() => {
+                definirSelecionada(null);
                 carregar();
               }}
             />

@@ -3,7 +3,7 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useState } from "react";
 import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
-import type { AdultoDaLista, ArtefatoComprobatorio } from "./api";
+import type { AdultoDaLista, ArtefatoDeclarado } from "./api";
 import { cadastrarApoiador, cadastrarMestre } from "./api";
 import { FormularioDeArtefatos } from "./FormularioDeArtefatos";
 
@@ -43,7 +43,7 @@ export function FormularioDeAdulto({ papel, onSalvo, onCancelar, valorInicial }:
   const [email, definirEmail] = useState(valorInicial?.email ?? "");
   const [whatsapp, definirWhatsapp] = useState(valorInicial?.whatsapp ?? "");
   const [nick, definirNick] = useState(valorInicial?.nick ?? "");
-  const [artefatos, definirArtefatos] = useState<ArtefatoComprobatorio[]>([]);
+  const [artefatos, definirArtefatos] = useState<ArtefatoDeclarado[]>([]);
   const [erroDeCampo, definirErroDeCampo] = useState<ErroDeCampo | null>(null);
   const [erroDeRecusa, definirErroDeRecusa] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);

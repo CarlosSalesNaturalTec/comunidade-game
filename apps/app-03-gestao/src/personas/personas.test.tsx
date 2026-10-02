@@ -111,7 +111,14 @@ const MESTRE_COM_ARTEFATO: AdultoDaLista = {
   email: "mestre@example.org",
   whatsapp: "11999990000",
   nick: "MestreDeTal",
-  artefatos: [{ rotulo: "Certificado de curso", endereco: "https://exemplo.org/certificado" }],
+  artefatos: [
+    {
+      id: "artefato-do-cadastro",
+      rotulo: "Certificado de curso",
+      endereco: "https://exemplo.org/certificado",
+      publicado: true,
+    },
+  ],
 };
 
 const ADULTO_SEM_NICK: AdultoDaLista = {
@@ -388,8 +395,10 @@ describe("a ficha do adulto", () => {
       ...MESTRE_COM_ARTEFATO,
       artefatos: [
         {
+          id: "artefato-do-cadastro",
           rotulo: "Certificado atualizado",
           endereco: "https://exemplo.org/certificado-novo",
+          publicado: true,
           rotulo_original: "Certificado de curso",
           endereco_original: "https://exemplo.org/certificado",
         },
@@ -417,8 +426,10 @@ describe("a ficha do adulto", () => {
       ...MESTRE_COM_ARTEFATO,
       artefatos: [
         {
+          id: "artefato-do-cadastro",
           rotulo: "Certificado atualizado",
           endereco: "https://exemplo.org/certificado-novo",
+          publicado: true,
           rotulo_original: "Certificado de curso",
           endereco_original: "https://exemplo.org/certificado",
         },
