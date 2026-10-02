@@ -19,11 +19,13 @@
 
 ## 2. A forma nova, nas demais peças
 
-- [ ] 2.1 `favicon.svg` fica **idêntico** a `simbolo.svg` — mesma forma, mesma grade `48 × 48`,
-      mesma margem (decisão do fundador, 2026-10-02). Resolver antes a questão 1 da
-      `proposal.md`: se os dois passam a ser **um arquivo só**, com `provisionamento.ts`
-      copiando `simbolo.svg` para o `public/` sob o nome `favicon.svg`, ou se seguem dois com
-      o mesmo conteúdo (documento 15 §13.4; `README.md` §§1, 7)
+- [ ] 2.1 **Remover `comum/marca/favicon.svg`** e fazer `provisionamento.ts` copiar
+      `simbolo.svg` para o `public/` de cada aplicação **sob o nome `favicon.svg`** — o nome de
+      destino não muda, e nenhuma `index.html` é tocada (decisão do fundador, 2026-10-02).
+      Conferir que as sete aplicações seguem servindo o favicon do projeto, de arquivo único da
+      camada comum (`README.md` §§1, 7; spec vigente "Nenhuma aplicação serve marca de terceiro")
+- [ ] 2.1.1 Retirar `favicon.svg` da tabela do `README.md` §1 e do mapa de orçamentos de
+      `comum/marca.test.ts` — o orçamento que passa a valer é o de `simbolo.svg`
 - [ ] 2.2 Redesenhar o escudo de `marca-horizontal.svg` e `marca-horizontal-mono.svg` —
       `25,60 × 30,00`, altura preservada e largura estreitando. Recalcular a posição do
       logotipo e a largura do `viewBox`, de `223,5` para o valor que o novo escudo pedir.
@@ -39,7 +41,7 @@
 > Assume a saída (a) da decisão 3 do `design.md` — guarda por teste. Se o fundador escolher
 > também a (b), a geração entra em fatia própria.
 
-- [ ] 3.1 Em `comum/marca.test.ts`, afirmar que o escudo das seis peças, **normalizado pela
+- [ ] 3.1 Em `comum/marca.test.ts`, afirmar que o escudo das cinco peças, **normalizado pela
       largura declarada**, descreve a mesma silhueta dentro de tolerância de arredondamento —
       e que raio de canto e espessura de contorno guardam a mesma razão com a largura em todas
       (spec: "O escudo tem uma forma só, em todas as peças da marca")
@@ -48,7 +50,7 @@
 - [ ] 3.3 Afirmar que o ápice, somado a metade da espessura do contorno, cabe na grade de cada
       peça — a ponta nunca sai cortada (spec: "A ponta do escudo sobrevive ao tamanho mínimo")
 - [ ] 3.4 Conferir que o orçamento de peso do manifesto segue valendo **sem alteração**, nas
-      seis peças (`README.md` §1)
+      cinco peças (`README.md` §1)
 
 ## 4. Documentação
 
@@ -61,7 +63,8 @@
       variante escolhida e a origem dela
 - [ ] 4.4 `comum/marca/README.md` §8: corrigir a procedência, que descreve o símbolo como
       "escudo geométrico" sem ponta, e retirar a atribuição de "afinação óptica própria" ao
-      favicon, que a medição mostrou não existir
+      favicon, que a medição mostrou não existir — e a linha dele da tabela do §1, já que o
+      arquivo deixa de existir
 - [ ] 4.5 `openspec/cronograma-de-fatias.md`: fechar a situação da linha desta fatia
 - [ ] 4.6 Conferir os invariantes do documento 99 §6 — em especial o 24, que proíbe o
       temperamento mudar a marca — e a numeração contínua das seções do documento 15

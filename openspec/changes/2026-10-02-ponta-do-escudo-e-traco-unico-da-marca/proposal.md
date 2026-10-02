@@ -63,9 +63,10 @@ vezes e deixar as seis divergirem depois sem ninguém notar — a duplicidade qu
 
 ## Impact
 
-- `comum/marca/`: seis arquivos redesenhados — `simbolo`, `simbolo-mono`, `favicon`,
-  `marca-horizontal`, `marca-horizontal-mono`, `marca-empilhada`. As submarcas não têm escudo
-  e não são tocadas.
+- `comum/marca/`: **cinco** arquivos redesenhados — `simbolo`, `simbolo-mono`,
+  `marca-horizontal`, `marca-horizontal-mono`, `marca-empilhada` — e `favicon.svg`
+  **removido**, com `provisionamento.ts` passando a servi-lo de `simbolo.svg`. As submarcas não
+  têm escudo e não são tocadas.
 - `comum/marca.test.ts`: o orçamento de peso **não muda** — `simbolo.svg` usa 1.357 B de
   3.072, e duas cúbicas no lugar de `H42` custam ~50 B. Ganha a verificação da forma única.
 - `docs/15-identidade-visual.md` §§13.1 e 13.4; `docs/09-topicos-em-aberto-e-sugestoes.md` §1.
@@ -79,16 +80,16 @@ vezes e deixar as seis divergirem depois sem ninguém notar — a duplicidade qu
   7,71% que tinha para preencher a grade. A alternativa — favicon com margem menor, seguindo
   maior — foi descartada.
 
+- **`favicon.svg` deixa de existir: fica um arquivo só** (decisão do fundador, 2026-10-02).
+  `comum/marca/provisionamento.ts` passa a copiar `simbolo.svg` para o `public/` de cada
+  aplicação sob o nome `favicon.svg` — o nome de destino nunca dependeu do nome de origem.
+  Manter dois arquivos de conteúdo idêntico seria a duplicidade que o `README.md` §7 proíbe e
+  que esta própria change combate na seção 3. O gancho que se perde — o lugar de uma afinação
+  a 16 px — nunca foi usado: a change anterior a prescreveu e não a executou.
+
 ## Open Questions
 
-1. **Dois arquivos idênticos, ou um só?** É a consequência direta da decisão acima, e ela não
-   se resolve sozinha: `simbolo.svg` e `favicon.svg` passam a ter o mesmo conteúdo, e manter
-   dois é a duplicidade que o `README.md` §7 proíbe e que esta própria change combate no §3.
-   `comum/marca/provisionamento.ts` copia o arquivo para o `public/` de cada aplicação sob o
-   nome `favicon.svg`, e **a origem dele pode ser `simbolo.svg`** — o nome de destino não
-   depende do nome de origem. Contra: manter o arquivo separado preserva o gancho para uma
-   afinação a 16 px, se um dia ela for mesmo feita. Decisão do fundador.
-2. **A legibilidade a 16 px foi conferida por cálculo, não por olho.** Na Variante A a ponta
+1. **A legibilidade a 16 px foi conferida por cálculo, não por olho.** Na Variante A a ponta
    mede 8,42 unidades na grade de 48, o que dá **2,8 px** no tamanho mínimo do documento 15
    §13.4. É o dobro do que daria um meio-termo, e por isso a Variante A é a que **sobrevive**
    ao tamanho mínimo; ainda assim, a conferência final é visual e é do fundador.
