@@ -72,12 +72,22 @@ vezes e deixar as seis divergirem depois sem ninguém notar — a duplicidade qu
 - Nenhuma aplicação muda de comportamento: `MarcaDoProjeto` embute os arquivos por `?raw` e
   não conhece a forma.
 
+## Decisões recebidas na elicitação
+
+- **`favicon.svg` e `simbolo.svg` ficam idênticos** sob a Variante A (decisão do fundador,
+  2026-10-02). Os dois são limitados pela mesma grade de 48, e o favicon perde a ampliação de
+  7,71% que tinha para preencher a grade. A alternativa — favicon com margem menor, seguindo
+  maior — foi descartada.
+
 ## Open Questions
 
-1. **Sob a Variante A, `favicon.svg` e `simbolo.svg` convergem.** Os dois passam a ser
-   limitados pela mesma grade de 48, e o favicon perde a ampliação de 7,71% que tinha para
-   preencher a grade. Ou os dois ficam idênticos — e então cabe perguntar por que são dois
-   arquivos —, ou o favicon aceita margem menor e segue maior. Decisão do fundador.
+1. **Dois arquivos idênticos, ou um só?** É a consequência direta da decisão acima, e ela não
+   se resolve sozinha: `simbolo.svg` e `favicon.svg` passam a ter o mesmo conteúdo, e manter
+   dois é a duplicidade que o `README.md` §7 proíbe e que esta própria change combate no §3.
+   `comum/marca/provisionamento.ts` copia o arquivo para o `public/` de cada aplicação sob o
+   nome `favicon.svg`, e **a origem dele pode ser `simbolo.svg`** — o nome de destino não
+   depende do nome de origem. Contra: manter o arquivo separado preserva o gancho para uma
+   afinação a 16 px, se um dia ela for mesmo feita. Decisão do fundador.
 2. **A legibilidade a 16 px foi conferida por cálculo, não por olho.** Na Variante A a ponta
    mede 8,42 unidades na grade de 48, o que dá **2,8 px** no tamanho mínimo do documento 15
    §13.4. É o dobro do que daria um meio-termo, e por isso a Variante A é a que **sobrevive**

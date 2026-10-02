@@ -19,10 +19,11 @@
 
 ## 2. A forma nova, nas demais peças
 
-- [ ] 2.1 Redesenhar `favicon.svg` com a mesma forma, na grade `48 × 48` — decisão do fundador.
-      Resolver antes a questão 1 da `proposal.md`: sob a Variante A ele converge com
-      `simbolo.svg`, e ou os dois ficam idênticos ou o favicon aceita margem menor
-      (documento 15 §13.4)
+- [ ] 2.1 `favicon.svg` fica **idêntico** a `simbolo.svg` — mesma forma, mesma grade `48 × 48`,
+      mesma margem (decisão do fundador, 2026-10-02). Resolver antes a questão 1 da
+      `proposal.md`: se os dois passam a ser **um arquivo só**, com `provisionamento.ts`
+      copiando `simbolo.svg` para o `public/` sob o nome `favicon.svg`, ou se seguem dois com
+      o mesmo conteúdo (documento 15 §13.4; `README.md` §§1, 7)
 - [ ] 2.2 Redesenhar o escudo de `marca-horizontal.svg` e `marca-horizontal-mono.svg` —
       `25,60 × 30,00`, altura preservada e largura estreitando. Recalcular a posição do
       logotipo e a largura do `viewBox`, de `223,5` para o valor que o novo escudo pedir.
