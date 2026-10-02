@@ -10,6 +10,11 @@ import "@testing-library/jest-dom/vitest";
 beforeEach(() => {
   vi.spyOn(biometria, "prepararCaptura").mockResolvedValue(undefined);
   vi.spyOn(biometria, "acoplarEspelho").mockImplementation(() => {});
+  // A pré-carga busca ~10 MB de modelo: sem dublê, toda suíte tentaria
+  // baixá-los (`RF-04-75`). O teste que precisa do andamento ou da falha
+  // sobrescreve o dublê.
+  vi.spyOn(biometria, "precarregarModelos").mockResolvedValue(true);
+  vi.spyOn(biometria, "andamentoDosModelos").mockReturnValue({ carregados: 0, total: 5 });
 });
 
 afterEach(() => {

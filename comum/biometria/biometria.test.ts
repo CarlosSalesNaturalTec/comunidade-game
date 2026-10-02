@@ -7,14 +7,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const detectar = vi.fn();
 const carregar = vi.fn();
 const modelosCarregados = vi.fn<() => string[]>();
-const configuracoesRecebidas: Array<{ backend?: string }> = [];
+const configuracoesRecebidas: Array<{ backend?: string; face?: Record<string, unknown> }> = [];
 
 vi.mock("@vladmandic/human", () => ({
   default: class HumanDublada {
     load = carregar;
     detect = detectar;
     models = { loaded: modelosCarregados };
-    constructor(configuracao: { backend?: string }) {
+    constructor(configuracao: { backend?: string; face?: Record<string, unknown> }) {
       configuracoesRecebidas.push(configuracao);
     }
   },
@@ -22,11 +22,14 @@ vi.mock("@vladmandic/human", () => ({
 
 const {
   acoplarEspelho,
+  andamentoDosModelos,
   encerrarCaptura,
   ErroDePreparoDaCaptura,
   gerarDescritor,
+  precarregarModelos,
   prepararCaptura,
   provarVivacidade,
+  TOTAL_DE_MODELOS,
 } = await import("./biometria");
 
 const ROSTO_VIVO = { real: 0.9, live: 0.9, embedding: [0.1, 0.2] };
@@ -81,6 +84,65 @@ describe("preparo da captura", () => {
       mediaDevices: { getUserMedia: vi.fn().mockRejectedValue(new Error("sem permissão")) },
     });
     await expect(prepararCaptura()).rejects.toBeInstanceOf(ErroDePreparoDaCaptura);
+  });
+});
+
+describe("pré-carga dos modelos", () => {
+  // A razão de a pré-carga existir como função própria, e não como uma
+  // chamada a `prepararCaptura()`: ela NUNCA abre a câmera. Câmera fora do
+  // consentimento contraria o `RN-04-07`, e aqui ninguém pediu nada
+  // (`RN-04-42`, design — decisão 2).
+  it("carrega os modelos sem tocar a câmera", async () => {
+    const pedirCamera = vi.fn();
+    vi.stubGlobal("navigator", { mediaDevices: { getUserMedia: pedirCamera } });
+
+    await expect(precarregarModelos()).resolves.toBe(true);
+
+    expect(carregar).toHaveBeenCalled();
+    expect(pedirCamera).not.toHaveBeenCalled();
+  });
+
+  // Quem chama é a abertura da sessão de trabalho, que não tem o que dizer à
+  // pessoa sobre isto: a falha é informada pelo retorno, nunca por exceção
+  // (`RF-04-75`).
+  it("não lança quando o carregamento falha: devolve que não conseguiu", async () => {
+    carregar.mockRejectedValue(new Error("rede caiu"));
+    await expect(precarregarModelos()).resolves.toBe(false);
+  });
+
+  it("devolve que não conseguiu quando load resolve sem buscar modelo nenhum", async () => {
+    modelosCarregados.mockReturnValue([]);
+    await expect(precarregarModelos()).resolves.toBe(false);
+  });
+
+  // Idempotente: a captura continua chamando `load()`, e acha pronto o que a
+  // pré-carga já trouxe. É o que deixa as duas conviverem sem coordenação.
+  it("convive com o preparo da captura, que conclui depois dela", async () => {
+    await precarregarModelos();
+    await expect(prepararCaptura()).resolves.toBeUndefined();
+  });
+
+  it("o andamento é por modelo carregado, contra o total habilitado", () => {
+    modelosCarregados.mockReturnValue(["blazeface", "faceres", "facemesh"]);
+    expect(andamentoDosModelos()).toEqual({ carregados: 3, total: TOTAL_DE_MODELOS });
+  });
+
+  // O total está escrito à mão porque a biblioteca não o expõe antes de
+  // carregar. Este caso o amarra à configuração que o módulo declara, para
+  // ligar ou desligar um modelo não deixar o andamento mentindo.
+  it("o total declarado bate com o que a configuração habilita", () => {
+    const face = configuracoesRecebidas[0].face ?? {};
+    // O detector sempre carrega quando `face` está ligado; os demais, só com
+    // `enabled: true`. `emotion`, `iris` e `gear` ficam de fora por isso.
+    const habilitados = Object.entries(face).filter(
+      ([chave, valor]) =>
+        chave === "detector" ||
+        (chave !== "enabled" &&
+          typeof valor === "object" &&
+          valor !== null &&
+          (valor as { enabled?: boolean }).enabled === true),
+    );
+    expect(habilitados).toHaveLength(TOTAL_DE_MODELOS);
   });
 });
 

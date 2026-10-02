@@ -1,8 +1,9 @@
 import { ErroDaApi } from "comum/api";
 import { ProvedorDeSessao, useSessao } from "comum/autenticacao";
-import { useNarracao } from "comum/narracao";
+import { andamentoDosModelos, precarregarModelos } from "comum/biometria";
+import { useNarracao, useNarrarAoEntrar } from "comum/narracao";
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { type AulaVigente, listarAulasVigentes } from "../api/aulas";
 import { listarCatalogoAvulso } from "../api/catalogoAvulso";
 import { buscarNomeDaComunidade } from "../api/comunidades";
@@ -28,6 +29,14 @@ const MENSAGEM_DE_RECUSA_DO_GUERREIRO =
 const MENSAGEM_DE_TROCA_SEM_REDE =
   "A troca exige rede. Verifique a conexão do aparelho e tente abrir de novo.";
 
+const MENSAGEM_DE_FALHA_DA_PRECARGA =
+  "Não foi possível carregar os modelos de reconhecimento facial.";
+
+// A biblioteca não informa bytes: o andamento só se lê perguntando quantos
+// modelos já carregaram. Daí a leitura periódica, e daí o andamento ser de
+// cinco passos (`RF-04-75`, design — decisão 5).
+const ESPERA_ENTRE_LEITURAS_DO_ANDAMENTO_MS = 300;
+
 interface OpcaoDeComunidade {
   aula: AulaVigente;
   nomeDaComunidade: string;
@@ -38,6 +47,7 @@ export function AparelhoDaAula() {
     <ProvedorDeEstadoDeRede>
       <ConviteParaIniciarANarracao />
       <AvisoDeOperacaoSemConexao />
+      <PrecargaDosModelos />
       <ConteudoDoAparelho />
     </ProvedorDeEstadoDeRede>
   );
@@ -59,6 +69,76 @@ function ConviteParaIniciarANarracao() {
       </Botao>
     </div>
   );
+}
+
+// Os cinco modelos da biometria somam ~10 MB e, sem isto, seriam buscados na
+// **primeira criança diante da câmera**, com a turma entrando pela porta. A
+// pré-carga os traz assim que a sessão de trabalho abre, **ao fundo**: nenhuma
+// tela, caminho ou botão espera por ela, porque a aula não pode travar na
+// porta (`RF-04-75`, documento 03 §§3.2, 3.4).
+//
+// Repete o desenho do efeito que busca o verificador do PIN: desiste sem rede
+// e tenta de novo quando ela volta — sala com rede intermitente é o caso
+// normal, não a exceção.
+function PrecargaDosModelos() {
+  const { sessao } = useSessao();
+  const { semRede } = useEstadoDeRede();
+  const [andamento, definirAndamento] = useState<{ carregados: number; total: number } | null>(
+    null,
+  );
+  const [falhou, definirFalhou] = useState(false);
+  // Em `ref`, e não em estado: reavaliar o efeito não pode disparar uma
+  // segunda carga sobre a primeira.
+  const situacao = useRef<"ocioso" | "carregando" | "pronto">("ocioso");
+
+  useEffect(() => {
+    if (situacao.current !== "ocioso") return;
+    if (!sessao || sessao.papel === "guerreiro") return;
+    if (semRede) return;
+
+    situacao.current = "carregando";
+    definirFalhou(false);
+    definirAndamento(andamentoDosModelos());
+    let cancelado = false;
+    const relogio = setInterval(() => {
+      if (!cancelado) definirAndamento(andamentoDosModelos());
+    }, ESPERA_ENTRE_LEITURAS_DO_ANDAMENTO_MS);
+
+    precarregarModelos().then((conseguiu) => {
+      clearInterval(relogio);
+      if (cancelado) return;
+      // Falhou volta a `ocioso`: a volta da rede tenta de novo.
+      situacao.current = conseguiu ? "pronto" : "ocioso";
+      definirAndamento(null);
+      definirFalhou(!conseguiu);
+    });
+
+    return () => {
+      cancelado = true;
+      clearInterval(relogio);
+    };
+  }, [sessao, semRede]);
+
+  if (andamento) {
+    return (
+      <Aviso tipo="andamento">
+        {`Carregando modelos de reconhecimento facial (${andamento.carregados} de ${andamento.total})`}
+      </Aviso>
+    );
+  }
+  if (falhou) return <FalhaDaPrecarga />;
+  return null;
+}
+
+// A falha é **dita, e não interrompe**. Por isso não é `Aviso`: os dois tipos
+// vermelhos dele — `erro` e `atencao` — são `role="alert"`, e o fundador fixou
+// em 2026-10-02 que não interromper vem antes do vermelho. Sem cor, a frase
+// inteira carrega a informação, e o documento 15 §5 fica satisfeito sem
+// precisar de rótulo. A narração é pedida à mão, já que não vem do `Aviso`
+// (`RF-04-75`, design — decisão 4).
+function FalhaDaPrecarga() {
+  useNarrarAoEntrar(MENSAGEM_DE_FALHA_DA_PRECARGA);
+  return <EstadoDaLista>{MENSAGEM_DE_FALHA_DA_PRECARGA}</EstadoDaLista>;
 }
 
 // Aparece em toda tela enquanto durar a queda — o Mestre na porta precisa
