@@ -104,5 +104,7 @@ fecharem:
   chama `existeCamera()` dentro das duas telas que precisam, não na abertura.
 - **Service worker e app instalável ficam descartados**, e não apenas adiados.
 - **A App 05 ganha o mesmo, em fatia própria** do PRD-05.
-- **A revisão do PRD-04 é PR próprio**, no padrão das fatias 20 e 21, e fecha **só** a pendência
-  dos modelos — as outras seis da §14 seguem abertas.
+- **A revisão do PRD-04 entra no mesmo PR da change** (decisão do fundador, 2026-10-02, que
+  revisou a resposta anterior de PR próprio). Ela fecha **só** a pendência dos modelos — as
+  outras seis da §14 seguem abertas. A change passa, portanto, a **não depender** de PR algum:
+  os identificadores nascem nela.

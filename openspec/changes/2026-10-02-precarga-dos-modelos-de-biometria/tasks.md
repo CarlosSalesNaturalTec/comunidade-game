@@ -22,8 +22,9 @@
 - [x] 0.7 **Fora do aviso de coleta** (`RF-04-26`): a pré-carga não coleta dado nenhum
 - [x] 0.8 **`RF-04-75` na §6.1**; na §5.1, **nota do passo 1**, e o **passo 6 corrigido junto**
 - [x] 0.9 **Service worker e app instalável: descartados**, não adiados
-- [x] 0.10 **App 05 em fatia própria** do PRD-05; **revisão do PRD-04 em PR próprio**, fechando
-      só a pendência dos modelos
+- [x] 0.10 **App 05 em fatia própria** do PRD-05
+- [x] 0.11 **A revisão do PRD-04 entra neste mesmo PR**, e não em PR próprio — decisão do
+      fundador que revisou a resposta anterior. A change não depende de PR algum
 
 ## 1. A pré-carga em `comum/biometria`
 
@@ -79,13 +80,12 @@
 
 ## 4. Documentação
 
-- [ ] 4.1 **Em PR próprio de revisão do PRD-04** — padrão das fatias 20 e 21 —, criar
-      `RF-04-75` na **§6.1** e `RN-04-42`, com enunciado verificável e as fontes `RN-04-07` e
-      documento 03 §3.3
-- [ ] 4.2 Na mesma revisão, §5.1: a pré-carga entra como **nota do passo 1**, e o **passo 6 é
-      corrigido** — ele diz que a aplicação verifica a câmera ao abrir a sessão de trabalho, e
-      `existeCamera()` é chamado dentro de `TelaDeEntradaDoGuerreiro` e `FluxoDeOnboarding`, não
-      na abertura. Defeito preexistente, corrigido junto por decisão do fundador
+- [ ] 4.1 PRD-04 §6.1: criar `RF-04-75`, e `RN-04-42` na §7, com enunciado verificável e as
+      fontes `RN-04-07` e documento 03 §3.3. **Neste mesmo PR**, e não em PR próprio
+- [ ] 4.2 PRD-04 §5.1: a pré-carga entra como **nota do passo 1**, e o **passo 6 é corrigido** —
+      ele diz que a aplicação verifica a câmera ao abrir a sessão de trabalho, e `existeCamera()`
+      é chamado dentro de `TelaDeEntradaDoGuerreiro` e `FluxoDeOnboarding`, não na abertura.
+      Defeito preexistente, corrigido junto por decisão do fundador
 - [ ] 4.3 PRD-04 §14: retirar **só** a pendência "peso dos modelos da biblioteca Human". As
       outras seis seguem abertas e não são tocadas
 - [ ] 4.4 Documento 03 §3.4: registrar a pré-carga como a resposta ao requisito de poucos
