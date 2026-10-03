@@ -150,3 +150,95 @@ def test_publicacao_entra_na_trilha_de_auditoria(
     registro = sessao.query(Auditoria).one()
     assert registro.autor_id == admin.id
     assert registro.acao == "PUT publicar_secao_rota"
+
+
+def test_admin_le_as_tres_secoes_com_a_autoria(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    cabecalhos = _cabecalhos(chave, token)
+    for secao, texto in (
+        ("quem-somos", "Somos a comunidade."),
+        ("contatos", "Fale conosco"),
+        ("como-apoiar", "PIX"),
+    ):
+        cliente.put(
+            f"/v1/conteudo-institucional/{secao}", json={"texto": texto}, headers=cabecalhos
+        )
+
+    resposta = cliente.get("/v1/conteudo-institucional", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert [item["secao"] for item in corpo] == ["quem-somos", "contatos", "como-apoiar"]
+    for item in corpo:
+        assert item["autor_id"] == str(admin.id)
+        assert item["publicado_em"] is not None
+    assert corpo[0]["texto"] == "Somos a comunidade."
+
+
+def test_secao_nunca_publicada_vem_vazia_para_o_admin(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    cabecalhos = _cabecalhos(chave, token)
+    cliente.put(
+        "/v1/conteudo-institucional/quem-somos",
+        json={"texto": "Somos a comunidade.", "video_url": "https://videos.exemplo.org/a"},
+        headers=cabecalhos,
+    )
+
+    corpo = cliente.get("/v1/conteudo-institucional", headers=cabecalhos).json()
+
+    quem_somos, contatos, _como_apoiar = corpo
+    assert quem_somos["texto"] == "Somos a comunidade."
+    assert quem_somos["video_url"] == "https://videos.exemplo.org/a"
+    assert contatos["texto"] is None
+    assert contatos["autor_id"] is None
+    assert contatos["publicado_em"] is None
+
+
+@pytest.mark.parametrize(
+    "papel", [Papel.mestre, Papel.apoiador, Papel.responsavel, Papel.guerreiro]
+)
+def test_quem_nao_e_admin_nao_le_a_autoria(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, papel
+):
+    chave, _ = criar_chave()
+    persona = criar_persona(papel)
+    token, _ = criar_sessao_de_teste(persona)
+
+    resposta = cliente.get("/v1/conteudo-institucional", headers=_cabecalhos(chave, token))
+
+    assert resposta.status_code == 403
+
+
+def test_leitura_de_admin_nao_tem_rota_de_escrita_nem_dispensa_sessao(cliente, criar_chave):
+    chave, _ = criar_chave()
+
+    sem_sessao = cliente.get("/v1/conteudo-institucional", headers=_cabecalhos(chave))
+
+    assert sem_sessao.status_code == 401
+
+
+def test_leitura_publica_continua_sem_autor_depois_da_rota_de_admin(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    cliente.put(
+        "/v1/conteudo-institucional/contatos",
+        json={"texto": "Fale conosco"},
+        headers=_cabecalhos(chave, token),
+    )
+
+    publica = cliente.get("/v1/vitrine/conteudo-institucional", headers=_cabecalhos(chave))
+
+    for item in publica.json():
+        assert set(item) == {"secao", "texto", "video_url"}
+    assert str(admin.id) not in publica.text

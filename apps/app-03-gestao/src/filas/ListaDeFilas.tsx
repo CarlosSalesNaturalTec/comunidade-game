@@ -1,17 +1,21 @@
 import { EstadoDaLista } from "comum/react";
 import "./ListaDeFilas.css";
 
-// Compartilhada pelas quatro naturezas da fila — quem chama normaliza os
-// campos próprios de cada uma antes de passar aqui, para que a lista, o
-// filtro e a apresentação do atraso não mudem de forma quando a natureza
-// muda (design — decisão 3, `RF-02-25`, `RF-02-77`, `RF-02-87`).
+// Compartilhada pelas naturezas da fila — quem chama normaliza os campos
+// próprios de cada uma antes de passar aqui, para que a lista, o filtro e a
+// apresentação do atraso não mudem de forma quando a natureza muda
+// (design — decisão 3, `RF-02-25`, `RF-02-77`, `RF-02-87`).
+//
+// `prazo` e `em_atraso` são opcionais porque não toda natureza responde a um
+// prazo: o comprobatório que espera anexação não tem nenhum, e a fila dele
+// não deve inventar um para caber na lista (`RF-02-101`).
 export interface ItemDeFila {
   id: string;
   quem: string;
   detalhe: string;
   situacaoRotulo: string;
-  em_atraso: boolean;
-  prazo: string;
+  em_atraso?: boolean;
+  prazo?: string;
 }
 
 function formatarPrazo(valorComFuso: string): string {
@@ -50,7 +54,7 @@ export function ListaDeFilas({ itens, mensagemVazia, aoSelecionar }: Props) {
             <span className="lista-de-filas__pretensao">{item.detalhe}</span>
             <span className="lista-de-filas__situacao">{item.situacaoRotulo}</span>
             {item.em_atraso && <span className="lista-de-filas__atraso">Em atraso</span>}
-            <span>Prazo: {formatarPrazo(item.prazo)}</span>
+            {item.prazo && <span>Prazo: {formatarPrazo(item.prazo)}</span>}
           </button>
         </li>
       ))}

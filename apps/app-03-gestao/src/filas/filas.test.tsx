@@ -204,6 +204,19 @@ function desafioExtra(parcial: Partial<DesafioExtra> = {}): DesafioExtra {
   };
 }
 
+function comprobatorioPendente(
+  parcial: Partial<personasApi.ComprobatorioPendente> = {},
+): personasApi.ComprobatorioPendente {
+  return {
+    artefato_id: "artefato-1",
+    apoiador_id: "apoiador-1",
+    apoiador: "Instituição de Tal",
+    endereco: "https://exemplo.org/termo",
+    rotulo: "Termo de doação",
+    ...parcial,
+  };
+}
+
 vi.mock("comum/autenticacao", async () => {
   const real =
     await vi.importActual<typeof import("comum/autenticacao")>("comum/autenticacao");
@@ -429,7 +442,14 @@ describe("área Filas", () => {
       email: "fulano@example.org",
       whatsapp: "11999990000",
       nick: "apoiador-pretendido",
-      artefatos: [{ endereco: "https://exemplo.org", rotulo: "Perfil" }],
+      artefatos: [
+        {
+          id: "artefato-1",
+          endereco: "https://exemplo.org",
+          rotulo: "Perfil",
+          publicado: true,
+        },
+      ],
     });
     vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
       itens: [COMUNIDADE],
@@ -491,7 +511,14 @@ describe("área Filas", () => {
       email: "fulano@example.org",
       whatsapp: "11999990000",
       nick: "apoiador-pretendido",
-      artefatos: [{ endereco: "https://exemplo.org", rotulo: "Perfil" }],
+      artefatos: [
+        {
+          id: "artefato-1",
+          endereco: "https://exemplo.org",
+          rotulo: "Perfil",
+          publicado: true,
+        },
+      ],
     });
     vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
       itens: [COMUNIDADE],
@@ -572,6 +599,7 @@ describe("área Filas", () => {
       "Sugestões",
       "Responsável",
       "Desafios extras",
+      "Comprobatórios do Apoiador",
     ]);
 
     await usuario.selectOptions(seletor, "dados");
@@ -1061,5 +1089,100 @@ describe("área Filas", () => {
     expect(await screen.findByText("guerreira-fantasma")).toBeInTheDocument();
     expect(screen.queryByText(/avatar/i)).not.toBeInTheDocument();
     expect(screen.queryByAltText(/foto|avatar/i)).not.toBeInTheDocument();
+  });
+
+  it("a fila do comprobatório mostra o Apoiador, o rótulo e o endereço do que espera", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "listarComprobatoriosPendentes").mockResolvedValue([
+      comprobatorioPendente(),
+    ]);
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "comprobatorio");
+
+    expect(await screen.findByText("Instituição de Tal")).toBeInTheDocument();
+    expect(
+      screen.getByText("Termo de doação — https://exemplo.org/termo"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Espera anexação")).toBeInTheDocument();
+  });
+
+  it("anexar publica o documento e ele deixa de aparecer entre os que esperam", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    const listarEspiado = vi
+      .spyOn(personasApi, "listarComprobatoriosPendentes")
+      .mockResolvedValueOnce([comprobatorioPendente()])
+      .mockResolvedValue([]);
+    const anexarEspiado = vi.spyOn(personasApi, "anexarComprobatorio").mockResolvedValue({
+      id: "artefato-1",
+      endereco: "https://exemplo.org/termo",
+      rotulo: "Termo de doação",
+      publicado: true,
+    });
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "comprobatorio");
+    await usuario.click(await screen.findByText("Instituição de Tal"));
+    await usuario.click(await screen.findByRole("button", { name: /anexar ao cadastro/i }));
+
+    await waitFor(() =>
+      expect(anexarEspiado).toHaveBeenCalledWith("apoiador-1", "artefato-1", "token-do-admin"),
+    );
+    await waitFor(() => expect(listarEspiado).toHaveBeenCalledTimes(2));
+    expect(
+      await screen.findByText(/nenhum documento comprobatório esperando anexação/i),
+    ).toBeInTheDocument();
+  });
+
+  it("a fila vazia se explica como informação, não como erro", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "listarComprobatoriosPendentes").mockResolvedValue([]);
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "comprobatorio");
+
+    const vazio = await screen.findByText(
+      /nenhum documento comprobatório esperando anexação/i,
+    );
+    expect(vazio).toHaveAttribute("role", "status");
+  });
+
+  it("a fila NUNCA oferece editar o endereço ou o rótulo que o Apoiador declarou", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "listarComprobatoriosPendentes").mockResolvedValue([
+      comprobatorioPendente(),
+    ]);
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "comprobatorio");
+    await usuario.click(await screen.findByText("Instituição de Tal"));
+
+    await screen.findByRole("button", { name: /anexar ao cadastro/i });
+    expect(screen.queryByLabelText(/endereço/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/rótulo/i)).not.toBeInTheDocument();
+  });
+
+  it("a recusa da anexação sai legível, sem código cru", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "listarComprobatoriosPendentes").mockResolvedValue([
+      comprobatorioPendente(),
+    ]);
+    vi.spyOn(personasApi, "anexarComprobatorio").mockRejectedValue(
+      new ErroDaApi(404, { codigo: "nao_encontrado", mensagem: "Documento não encontrado." }),
+    );
+
+    render(<TelaDeFilas />);
+    const usuario = userEvent.setup();
+    await usuario.selectOptions(await screen.findByLabelText(/natureza/i), "comprobatorio");
+    await usuario.click(await screen.findByText("Instituição de Tal"));
+    await usuario.click(await screen.findByRole("button", { name: /anexar ao cadastro/i }));
+
+    expect(await screen.findByText("Documento não encontrado.")).toBeInTheDocument();
+    expect(screen.queryByText(/nao_encontrado/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/404/)).not.toBeInTheDocument();
   });
 });

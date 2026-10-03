@@ -1,16 +1,16 @@
 import { Botao, Campo } from "comum/react";
-import type { ArtefatoComprobatorio } from "./api";
+import type { ArtefatoDeclarado } from "./api";
 
 interface Props {
-  artefatos: ArtefatoComprobatorio[];
-  aoAlterar: (artefatos: ArtefatoComprobatorio[]) => void;
+  artefatos: ArtefatoDeclarado[];
+  aoAlterar: (artefatos: ArtefatoDeclarado[]) => void;
   erro?: string | null;
 }
 
 // Endereço e rótulo declarados — nunca anexo de arquivo: a prova do adulto
 // é link, não arquivo (`RF-02-04`, `RN-02-01`, documento 02 §1).
 export function FormularioDeArtefatos({ artefatos, aoAlterar, erro }: Props) {
-  function alterarUm(indice: number, campo: keyof ArtefatoComprobatorio, valor: string) {
+  function alterarUm(indice: number, campo: keyof ArtefatoDeclarado, valor: string) {
     aoAlterar(
       artefatos.map((artefato, i) =>
         i === indice ? { ...artefato, [campo]: valor } : artefato,

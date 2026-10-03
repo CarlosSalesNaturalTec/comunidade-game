@@ -8,6 +8,7 @@ import { TelaDeEntrada } from "./autenticacao/TelaDeEntrada";
 import { TelaDeCatalogos } from "./catalogos/TelaDeCatalogos";
 import { TelaDeChaves } from "./chaves/TelaDeChaves";
 import { TelaDeComunidades } from "./comunidades/TelaDeComunidades";
+import { TelaDoConteudoInstitucional } from "./conteudo-institucional/TelaDoConteudoInstitucional";
 import { ProvedorDeDireitos } from "./direitos/ContextoDeDireitos";
 import { TelaDeDireitos } from "./direitos/TelaDeDireitos";
 import { TelaDeEncerramentoDeCiclo } from "./encerramento-de-ciclo/TelaDeEncerramentoDeCiclo";
@@ -39,6 +40,7 @@ type Area =
   | "quiz"
   | "encerramento-de-ciclo"
   | "direitos"
+  | "conteudo-institucional"
   | "meu-pin";
 
 const AREAS: { chave: Area; rotulo: string }[] = [
@@ -59,6 +61,7 @@ const AREAS: { chave: Area; rotulo: string }[] = [
   { chave: "quiz", rotulo: "Quiz ao Vivo" },
   { chave: "encerramento-de-ciclo", rotulo: "Encerramento do ciclo" },
   { chave: "direitos", rotulo: "Direitos e dados" },
+  { chave: "conteudo-institucional", rotulo: "Conteúdo institucional" },
 ];
 
 // O PIN de confirmação do Admin é cadastrado aqui; o do Mestre, na App 09
@@ -118,6 +121,7 @@ function Conteudo() {
       {area === "quiz" && <TelaDeQuiz />}
       {area === "encerramento-de-ciclo" && <TelaDeEncerramentoDeCiclo />}
       {area === "direitos" && <TelaDeDireitos />}
+      {area === "conteudo-institucional" && <TelaDoConteudoInstitucional />}
       {area === "meu-pin" && sessao.papel === "admin" && (
         <Moldura>
           <Cabecalho titulo="Meu PIN" />
