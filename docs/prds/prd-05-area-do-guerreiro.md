@@ -206,16 +206,17 @@ Mestre no encontro, e quem quer propor uma melhoria também.
 
 ### 6.1 Entrada e sessão
 
-| ID         | Requisito                                                                                                                                                            | Prioridade |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-05-01` | Guerreiro(a) entra informando o nick e submetendo a imagem à conferência biométrica                                                                                  | essencial  |
-| `RF-05-02` | Aplicação recusa a entrada em aparelho sem câmera, explicando em linguagem simples                                                                                   | essencial  |
-| `RF-05-03` | Responsável — só a de quem está sob a sua responsabilidade —, ou Mestre ou Admin presente, abre a sessão do Guerreiro(a) quando a conferência falha                  | essencial  |
-| `RF-05-04` | O mesmo adulto abre a sessão de quem ainda não tem imagem gravada, entrando por login social ou usuário e senha, com a troca de senha provisória resolvida ali mesmo | essencial  |
-| `RF-05-05` | Sessão encerra ao sair e por 10 minutos de inatividade, voltando ao pedido de nick                                                                                   | essencial  |
-| `RF-05-71` | Aviso um minuto antes do encerramento por inatividade, com opção de continuar                                                                                        | essencial  |
-| `RF-05-06` | Nenhuma imagem de Guerreiro(a) é armazenada no aparelho compartilhado                                                                                                | essencial  |
-| `RF-05-07` | Troca de sessão entre dois Guerreiros e Guerreiras acontece sem reiniciar a aplicação                                                                                | essencial  |
+| ID         | Requisito                                                                                                                                                                                                                 | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-05-01` | Guerreiro(a) entra informando o nick e submetendo a imagem à conferência biométrica                                                                                                                                       | essencial  |
+| `RF-05-02` | Aplicação recusa a entrada em aparelho sem câmera, explicando em linguagem simples                                                                                                                                        | essencial  |
+| `RF-05-03` | Responsável — só a de quem está sob a sua responsabilidade —, ou Mestre ou Admin presente, abre a sessão do Guerreiro(a) quando a conferência falha                                                                       | essencial  |
+| `RF-05-04` | O mesmo adulto abre a sessão de quem ainda não tem imagem gravada, entrando por login social ou usuário e senha, com a troca de senha provisória resolvida ali mesmo                                                      | essencial  |
+| `RF-05-05` | Sessão encerra ao sair e por 10 minutos de inatividade, voltando ao pedido de nick                                                                                                                                        | essencial  |
+| `RF-05-71` | Aviso um minuto antes do encerramento por inatividade, com opção de continuar                                                                                                                                             | essencial  |
+| `RF-05-06` | Nenhuma imagem de Guerreiro(a) é armazenada no aparelho compartilhado                                                                                                                                                     | essencial  |
+| `RF-05-07` | Troca de sessão entre dois Guerreiros e Guerreiras acontece sem reiniciar a aplicação                                                                                                                                     | essencial  |
+| `RF-05-90` | Verificada a câmera do aparelho, a entrada **carrega os modelos de biometria ao fundo**, sem bloquear o campo do nick, apresenta o andamento por modelo carregado e diz, sem interromper, quando não consegue carregá-los | essencial  |
 
 ### 6.2 Guia da trilha e progressão
 
@@ -392,6 +393,7 @@ aplicação do Ciclo 01 não oferece apoio escolar.
 | `RN-05-46` | A missão de sondagem abre a trilha ao ser respondida, nunca ao ser acertada                                                                                                      | —                      | 11 §2.2          |
 | `RN-05-47` | Toda tentativa de desbloqueio é gravada com a resposta de cada pergunta e se ela acertou                                                                                         | —                      | 11 §2.2          |
 | `RN-05-48` | Erro que o núcleo declara no corpo único nunca é apresentado como recusa do reconhecimento: falha de rede, de validação, de chave ou de preparo do aparelho aparece como o que é | 25                     | 03 §1            |
+| `RN-05-49` | A pré-carga dos modelos carrega **apenas os modelos** e nunca abre a câmera do aparelho; falha dela nunca interrompe a entrada nem veste a frase da recusa da conferência        | —                      | 03 §3.3          |
 
 `RN-05-17` (canal de sugestões) e `RN-05-19` (dano acidental ao acervo) valem **a partir do
 Ciclo 02** (§3.2), junto com os requisitos que as operacionalizam. `RN-05-25` a `RN-05-28` e
@@ -629,6 +631,7 @@ soma a ele a partir do Ciclo 02, quando o canal desta aplicação abrir.
 | Criação original individual ou de equipe, entregue também em mídia                              | 02 §4           | Criação original individual ou de equipe                                                                          |
 | Equipe da trilha formada **e** homologada na App 01                                             | 02 §5           | Onde a equipe da trilha é formada e homologada                                                                    |
 | Desbloqueio é fato do Guerreiro(a) na trilha; quiz o núcleo afere, prático o Mestre autor julga | 11 §2.2         | O desbloqueio da missão é fato do Guerreiro(a) na trilha                                                          |
+| Pré-carga dos modelos na entrada da App 05: depois da câmera, e com indicador                   | 09 §1           | Pré-carga dos modelos de biometria na Área do Guerreiro(a)                                                        |
 
 As entidades `DisciplinaDeApoio` e `ConteudoDeApoio` foram acrescentadas ao modelo do PRD-01,
 e `Nivel` passou a ser derivado do percurso. O badge **de protagonismo** entrou no catálogo do
@@ -657,6 +660,8 @@ coletores distintos no recorte publicado (documento 02 §1).
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `RF-05-01` a `RF-05-07` | 03 §1.1 (entrada por nick e imagem) e PRD-04 (onboarding e fallback)                                              |
 | `RN-05-48`              | 03 §1 (erro declarado pelo núcleo chega como ele é)                                                               |
+| `RF-05-90`              | 03 §3.4 (modelos ao fundo em aparelho modesto) e 15 §5 (estado sem depender de cor)                               |
+| `RN-05-49`              | 03 §3.3 (câmera só no pedido da pessoa), descendo do `RN-05-01`                                                   |
 | `RF-05-08` a `RF-05-18` | 03 §7 (guia da trilha), 11 §§2, 6 (anatomia e níveis)                                                             |
 | `RF-05-19` a `RF-05-24` | 02 §5 e 11 §§4, 5 (equipes, taxonomia e desafios), 04 §3 (extras)                                                 |
 | `RF-05-30` a `RF-05-38` | 02 §1 e PRD-08 (séries, locais e validade do registro)                                                            |
