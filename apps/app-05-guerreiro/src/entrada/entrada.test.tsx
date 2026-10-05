@@ -125,6 +125,181 @@ describe("aparelho sem câmera", () => {
   });
 });
 
+describe("pré-carga dos modelos na entrada", () => {
+  function promessaControlada<T>() {
+    let resolver!: (valor: T) => void;
+    const promessa = new Promise<T>((cumprir) => {
+      resolver = cumprir;
+    });
+    return { promessa, resolver };
+  }
+
+  it("começa quando a verificação acha câmera", async () => {
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+
+    renderizar();
+
+    await vi.waitFor(() => expect(biometriaModulo.precarregarModelos).toHaveBeenCalled());
+  });
+
+  // Aparelho sem câmera é recusado pelo `RF-05-02` e vai ao adulto do
+  // `RN-05-02`: descritor nenhum será gerado ali, e gastar a banda dele seria
+  // desperdício em rede de ponto de apoio.
+  it("nunca começa em aparelho sem câmera", async () => {
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(false);
+
+    renderizar();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(/não tem câmera/i);
+    expect(biometriaModulo.precarregarModelos).not.toHaveBeenCalled();
+  });
+
+  // Verificação que falha é o mesmo desfecho prático de aparelho sem câmera:
+  // a recusa do `RF-05-02` aparece, o caminho do adulto é oferecido e a
+  // pré-carga não começa. Tela vazia seria a falha silenciosa do `RN-05-48`.
+  it("verificação que falha apresenta a recusa e não começa a pré-carga", async () => {
+    vi.spyOn(biometriaModulo, "existeCamera").mockRejectedValue(new Error("sem permissão"));
+
+    renderizar();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(/não tem câmera/i);
+    expect(screen.getByRole("button", { name: /entrar com google/i })).toBeInTheDocument();
+    expect(biometriaModulo.precarregarModelos).not.toHaveBeenCalled();
+  });
+
+  // O caso que impede o indicador de virar portão numa mudança futura: a
+  // criança digita o nick **enquanto** os modelos carregam, que é a
+  // sobreposição que a pré-carga existe para comprar.
+  it("o nick continua utilizável, e a submissão não é recusada, durante a pré-carga", async () => {
+    const { promessa } = promessaControlada<boolean>();
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "precarregarModelos").mockReturnValue(promessa);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    const abrirSessao = vi
+      .spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento")
+      .mockResolvedValue({
+        token: "token-do-guerreiro",
+        expira_em: new Date().toISOString(),
+        papel: "guerreiro",
+      });
+
+    renderizar();
+    const usuario = userEvent.setup();
+    const campo = await screen.findByLabelText(/nick/i);
+    await usuario.type(campo, "zeferina");
+    expect(campo).toHaveValue("zeferina");
+
+    const entrar = screen.getByRole("button", { name: /entrar/i });
+    expect(entrar).toBeEnabled();
+    await usuario.click(entrar);
+
+    await vi.waitFor(() => expect(abrirSessao).toHaveBeenCalled());
+  });
+
+  it("o andamento é dito por modelo carregado, como estado e não como alerta", async () => {
+    const { promessa, resolver } = promessaControlada<boolean>();
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "precarregarModelos").mockReturnValue(promessa);
+    vi.spyOn(biometriaModulo, "andamentoDosModelos").mockReturnValue({
+      carregados: 2,
+      total: 5,
+    });
+
+    renderizar();
+
+    const andamento = await screen.findByText(/preparando o reconhecimento/i);
+    expect(andamento).toHaveTextContent("2 de 5");
+    expect(andamento.textContent).not.toMatch(/%/);
+    // Informação, nunca erro — e com rótulo textual, então se entende sem
+    // depender de cor (documento 15 §5).
+    expect(andamento.closest('[role="status"]')).not.toBeNull();
+    expect(andamento.closest('[role="alert"]')).toBeNull();
+    expect(andamento).toHaveTextContent(/em andamento/i);
+
+    resolver(true);
+    await vi.waitFor(() =>
+      expect(screen.queryByText(/preparando o reconhecimento/i)).not.toBeInTheDocument(),
+    );
+  });
+
+  // A falha é dita, e **não interrompe**: por isso não usa o `Aviso` em
+  // vermelho, cujos dois tipos são `role="alert"` (decisão do fundador de
+  // 2026-10-02).
+  it("a falha é dita em região de status e não interrompe a entrada", async () => {
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "precarregarModelos").mockResolvedValue(false);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    const abrirSessao = vi
+      .spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento")
+      .mockResolvedValue({
+        token: "token-do-guerreiro",
+        expira_em: new Date().toISOString(),
+        papel: "guerreiro",
+      });
+
+    renderizar();
+
+    const falha = await screen.findByText(/não consegui deixar o reconhecimento pronto/i);
+    expect(falha.closest('[role="status"]')).not.toBeNull();
+    expect(falha.closest('[role="alert"]')).toBeNull();
+    // O indicador não fica parado no passo em que travou: ele sai.
+    expect(screen.queryByText(/preparando o reconhecimento/i)).not.toBeInTheDocument();
+
+    // A entrada por nick e rosto segue disponível.
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+    await vi.waitFor(() => expect(abrirSessao).toHaveBeenCalled());
+  });
+
+  it("a falha não veste a frase da recusa do rosto", async () => {
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "precarregarModelos").mockResolvedValue(false);
+
+    renderizar();
+
+    const falha = await screen.findByText(/não consegui deixar o reconhecimento pronto/i);
+    expect(falha.textContent).not.toMatch(/não foi possível reconhecer/i);
+    expect(screen.queryByText(/não foi possível reconhecer/i)).not.toBeInTheDocument();
+    // Nem código técnico chega à criança (PRD-05 §10).
+    expect(falha.textContent).not.toMatch(/error|exception|c[oó]digo|getUserMedia/i);
+  });
+
+  // `RN-05-49`: no momento da pré-carga ninguém pediu nada, e câmera aberta
+  // fora do pedido da pessoa contraria o consentimento do documento 03 §3.3.
+  it("não acende a câmera nem deixa imagem no aparelho", async () => {
+    const { promessa, resolver } = promessaControlada<boolean>();
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "precarregarModelos").mockReturnValue(promessa);
+    const prepararCaptura = vi
+      .spyOn(biometriaModulo, "prepararCaptura")
+      .mockResolvedValue(undefined);
+    const acoplarEspelho = vi
+      .spyOn(biometriaModulo, "acoplarEspelho")
+      .mockImplementation(() => {});
+    const gerarDescritor = vi
+      .spyOn(biometriaModulo, "gerarDescritor")
+      .mockResolvedValue([0.1, 0.2, 0.3]);
+
+    renderizar();
+    await screen.findByLabelText(/nick/i);
+
+    resolver(true);
+    await vi.waitFor(() => expect(biometriaModulo.precarregarModelos).toHaveBeenCalled());
+
+    expect(prepararCaptura).not.toHaveBeenCalled();
+    expect(acoplarEspelho).not.toHaveBeenCalled();
+    expect(gerarDescritor).not.toHaveBeenCalled();
+    // Nenhuma imagem fica guardada no aparelho compartilhado (`RF-05-06`).
+    const guardado = [sessionStorage, localStorage]
+      .flatMap((armazem) => Object.values(armazem))
+      .join(" ");
+    expect(guardado).not.toMatch(/data:image|base64/i);
+  });
+});
+
 describe("sessão assistida pelo adulto — responsável, Mestre ou Admin", () => {
   it("o adulto se autentica, confirma a identidade e a sessão do Guerreiro(a) abre", async () => {
     vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);

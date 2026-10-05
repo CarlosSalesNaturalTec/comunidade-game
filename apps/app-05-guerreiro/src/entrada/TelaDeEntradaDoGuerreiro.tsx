@@ -1,12 +1,15 @@
 import { ErroDaApi } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import {
+  andamentoDosModelos,
   encerrarCaptura,
   existeCamera,
   gerarDescritor,
+  precarregarModelos,
   provarVivacidade,
 } from "comum/biometria";
-import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
+import { useNarrarAoEntrar } from "comum/narracao";
+import { Aviso, Botao, Cabecalho, Campo, EstadoDaLista, Moldura } from "comum/react";
 import { useEffect, useState } from "react";
 import { abrirSessaoPorReconhecimento } from "../api/sessoesDeGuerreiro";
 import { ConfirmacaoAssistida } from "./ConfirmacaoAssistida";
@@ -30,6 +33,18 @@ const MENSAGEM_DE_FALHA_APOS_RECONHECIMENTO =
 
 const MENSAGEM_DE_FALHA_INESPERADA = "Algo não funcionou aqui. Tente de novo!";
 
+// A falha da pré-carga é outra coisa que não a recusa do rosto: diz o que
+// aconteceu, convida a entrar do mesmo jeito e não empresta frase alguma do
+// caminho da conferência (`RN-05-48`, invariante 25). Em linguagem de criança,
+// sem termo técnico nem código de erro (PRD-05 §10).
+const MENSAGEM_DE_FALHA_DA_PRECARGA =
+  "Não consegui deixar o reconhecimento pronto antes. Pode tentar entrar do mesmo jeito!";
+
+// A biblioteca não informa bytes: o andamento só se lê perguntando quantos
+// modelos já carregaram. Daí a leitura periódica, e daí o andamento ser por
+// modelo e nunca percentual (`RF-05-90`).
+const ESPERA_ENTRE_LEITURAS_DO_ANDAMENTO_MS = 300;
+
 // O código que o núcleo declara na recusa da conferência (`RF-01-27`). É ele,
 // e não o status, que separa o rosto que não confere de sessão expirada e de
 // chave recusada, que são outra coisa.
@@ -37,6 +52,17 @@ const CODIGO_DE_RECUSA_DA_CONFERENCIA = "autenticacao_biometrica_invalida";
 
 function ehRecusaDaConferencia(erro: unknown): boolean {
   return erro instanceof ErroDaApi && erro.codigo === CODIGO_DE_RECUSA_DA_CONFERENCIA;
+}
+
+// A falha é **dita, e não interrompe**. Por isso não é `Aviso`: os dois tipos
+// vermelhos dele — `erro` e `atencao` — são `role="alert"`, e o fundador fixou
+// em 2026-10-02 que não interromper vem antes do vermelho. Sem cor, a frase
+// inteira carrega a informação, e o documento 15 §5 fica satisfeito sem
+// precisar de rótulo. A narração é pedida à mão, já que não vem do `Aviso`
+// (`RF-05-90`, design — decisão 3).
+function FalhaDaPrecarga() {
+  useNarrarAoEntrar(MENSAGEM_DE_FALHA_DA_PRECARGA);
+  return <EstadoDaLista>{MENSAGEM_DE_FALHA_DA_PRECARGA}</EstadoDaLista>;
 }
 
 // Porta de entrada da App 05: a sessão do Guerreiro(a) é pré-requisito de
@@ -59,20 +85,54 @@ export function TelaDeEntradaDoGuerreiro() {
   const [falhaDeCamada, definirFalhaDeCamada] = useState<string | null>(null);
   const [motivoDaConfirmacao, definirMotivoDaConfirmacao] =
     useState<MotivoDaConfirmacao>("conferenciaRecusada");
+  // A pré-carga vive aqui, e não na tela de entrada: voltar do caminho do
+  // adulto não pode recomeçar o download nem reacender o indicador.
+  const [andamentoDaPrecarga, definirAndamentoDaPrecarga] = useState<{
+    carregados: number;
+    total: number;
+  } | null>(null);
+  const [precargaFalhou, definirPrecargaFalhou] = useState(false);
 
+  // A pré-carga começa **depois de a câmera aparecer**, e só aqui: aparelho
+  // sem câmera é recusado pelo `RF-05-02` e vai ao adulto do `RN-05-02` sem
+  // nunca gerar descritor, então não gasta a banda dele. Carrega **modelo só**:
+  // nada acende a câmera neste momento, porque ninguém pediu nada
+  // (`RF-05-90`, `RN-05-49`, design — decisões 1 e 2).
   useEffect(() => {
     let cancelado = false;
-    existeCamera().then((temCamera) => {
-      if (cancelado) return;
-      if (temCamera) {
+    let relogio: ReturnType<typeof setInterval> | undefined;
+    // Verificação que **falha** é tratada como aparelho sem câmera: a recusa
+    // do `RF-05-02` é apresentada e o caminho do adulto é oferecido. Sem o
+    // `catch`, `enumerateDevices()` rejeitado — contexto não seguro, política
+    // de permissão — deixaria a criança diante de tela vazia, que é a falha
+    // silenciosa que o `RN-05-48` proíbe.
+    existeCamera()
+      .catch(() => false)
+      .then((temCamera) => {
+        if (cancelado) return;
+        if (!temCamera) {
+          definirMotivoDaConfirmacao("semCamera");
+          definirTela("confirmando");
+          return;
+        }
         definirTela("entrada");
-      } else {
-        definirMotivoDaConfirmacao("semCamera");
-        definirTela("confirmando");
-      }
-    });
+        definirAndamentoDaPrecarga(andamentoDosModelos());
+        relogio = setInterval(() => {
+          if (!cancelado) definirAndamentoDaPrecarga(andamentoDosModelos());
+        }, ESPERA_ENTRE_LEITURAS_DO_ANDAMENTO_MS);
+        // `precarregarModelos()` nunca lança: devolve se conseguiu.
+        precarregarModelos().then((conseguiu) => {
+          clearInterval(relogio);
+          if (cancelado) return;
+          // O indicador sai mesmo na falha: parado no passo em que travou,
+          // ele mentiria sobre haver carga em curso.
+          definirAndamentoDaPrecarga(null);
+          definirPrecargaFalhou(!conseguiu);
+        });
+      });
     return () => {
       cancelado = true;
+      clearInterval(relogio);
     };
   }, []);
 
@@ -167,6 +227,16 @@ export function TelaDeEntradaDoGuerreiro() {
         titulo="Quem está chegando?"
         subtitulo="Digite o nick e olhe para a câmera."
       />
+      {/* Informação, nunca erro: `andamento` é `role="status"` e leva rótulo
+          textual, então se entende sem depender de cor. O campo do nick fica
+          abaixo e segue utilizável — o indicador não é portão
+          (`RF-05-90`, documento 15 §5). */}
+      {andamentoDaPrecarga && (
+        <Aviso tipo="andamento">
+          {`Preparando o reconhecimento do seu rosto (${andamentoDaPrecarga.carregados} de ${andamentoDaPrecarga.total})`}
+        </Aviso>
+      )}
+      {precargaFalhou && <FalhaDaPrecarga />}
       <Campo rotulo="Nick" valor={nick} aoAlterar={definirNick} />
       <Botao
         onClick={tentarReconhecimento}
