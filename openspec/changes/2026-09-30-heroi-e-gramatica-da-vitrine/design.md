@@ -63,6 +63,30 @@ Nível 1: o herói apresenta a frase e as duas ações, e continua inteiro sem a
 Nível 2, sobre o `dist/`: o herói sai no documento servido e nenhuma requisição a terceiro
 entra com a ilustração. Nível 3: nenhum.
 
+### 4. O herói não repete o "Entrar", e a ação dele é link
+
+O `Cabecalho` já põe "Entrar" em toda tela pública (`RF-03-58`), e ele fica logo acima do
+herói. Um segundo botão de mesmo nome na mesma tela não acrescenta ação nenhuma e
+atrapalha quem navega por leitor de tela. O herói leva só **"Quero participar"** — decisão
+do fundador de 2026-10-09, aplicada ao delta de spec.
+
+A ação é **`<a href>`**, e não botão: trocar de tela é trocar de documento desde a fatia 9,
+e um link navega sem JS nenhum.
+
+### 5. O herói é componente React sem diretiva de cliente
+
+Não tem estado e não busca nada: sai no documento servido e não custa JS. É também o que
+permite à composição de teste montar **o próprio componente**, em vez de espelhar a
+marcação à mão como `NavegacaoDeRecortes.astro` obriga — some o risco de desvio para esta
+peça.
+
+### 6. As quatro figuras ficam na mesma altura
+
+Era a questão em aberto da tarefa 1.1. Resolvida ao montar: no traço chibi em que os quatro
+foram desenhados, a diferença de idade está na proporção da cabeça e do corpo, não na
+altura — e enfileirá-los na mesma altura lê como elenco, não como erro de escala. Nenhum
+número de proporção foi inventado, que é o que a alternativa exigiria.
+
 ## Risks / Trade-offs
 
 | Risco | Mitigação |
@@ -75,10 +99,5 @@ entra com a ilustração. Nível 3: nenhum.
 
 ## Open Questions
 
-Uma, e é de layout, não de arquivo:
-
-- **A escala relativa no herói**, achado da tarefa 1.1: as quatro figuras chegaram com
-  altura quase igual — o Trenell, adulto, a 1,00 e a Susy, de 6 anos, a 0,98. Compostas na
-  mesma altura, o adulto fica do tamanho da criança. Cada arquivo foi normalizado no
-  próprio quadro, como o manifesto manda, então a escala entre eles é decisão de layout da
-  tarefa 2.1 — não dos arquivos.
+Nenhuma. A escala relativa das figuras, que a tarefa 1.1 deixou em aberto, foi resolvida
+na 2.1 — ver decisão 6.

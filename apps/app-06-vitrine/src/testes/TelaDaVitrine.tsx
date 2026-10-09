@@ -1,5 +1,6 @@
 import { Cabecalho, FundoDeComunidade, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
+import { Heroi } from "../abertura/Heroi";
 import { PaginaDoApoiador } from "../adultos/PaginaDoApoiador";
 import { PaginaDoMestre } from "../adultos/PaginaDoMestre";
 import { SecaoDeApoiadores } from "../adultos/SecaoDeApoiadores";
@@ -101,6 +102,10 @@ function SecoesDoRecorte({
   if (recorte.chave === "sociedade-civil") {
     return (
       <>
+        {/* O mesmo componente que `index.astro` monta — e não uma cópia da
+            marcação: o herói não tem estado, então a composição de teste usa o
+            próprio, sem risco de desviar dele. */}
+        <Heroi />
         <Secao titulo="Quem somos">
           <SecaoInstitucional secao="quem-somos" nome="Quem somos" />
           <RolagemAteAAncora />

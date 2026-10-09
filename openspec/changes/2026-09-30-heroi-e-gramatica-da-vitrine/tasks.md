@@ -31,18 +31,18 @@
 
 ## 2. O herói da abertura
 
-- [ ] 2.1 Montar o herói em `src/pages/index.astro` — ilustração do elenco em primeiro
+- [x] 2.1 Montar o herói em `src/pages/index.astro` — ilustração do elenco em primeiro
       plano, a frase do projeto e as ações "Entrar" e "Quero participar", que já existem
       —, com a ilustração fora do caminho crítico; verificar que a frase e as ações
       continuam de pé sem ela e que nenhuma ação nova é oferecida (`RF-03-01`,
       `RF-03-58`, `RF-03-51`)
-- [ ] 2.2 Acrescentar o herói a `src/testes/TelaDaVitrine.tsx`, para a composição de
+- [x] 2.2 Acrescentar o herói a `src/testes/TelaDaVitrine.tsx`, para a composição de
       teste não desviar do layout; verificar que a suíte da App 06 segue verde
-- [ ] 2.3 Escrever os casos do herói, cobrindo os cenários do delta de
+- [x] 2.3 Escrever os casos do herói, cobrindo os cenários do delta de
       `aplicacao-da-vitrine`: o herói aparece antes da primeira seção com a frase e as
       duas ações; sobrevive à ausência da ilustração; não oferece ação que a vitrine não
       tenha; e não busca recurso de domínio de terceiro
-- [ ] 2.4 Acrescentar ao teste da saída do build o caso de nível 2: o herói sai no
+- [x] 2.4 Acrescentar ao teste da saída do build o caso de nível 2: o herói sai no
       documento servido da abertura, e nenhuma requisição a domínio de terceiro entra com
       a ilustração
 
@@ -54,7 +54,7 @@
       estreitado, as três decisões de 2026-10-09 no documento 09 e a linha do elenco no
       documento 99 §8 **já foram escritos** — conferir, não reescrever. Verificar que as
       linhas de logotipo e de submarcas já saíram pela change da marca
-- [ ] 3.2 Marcar a fatia 11 como `implementado` no `openspec/cronograma-de-fatias.md`, com
+- [x] 3.2 Marcar a fatia 11 como `implementado` no `openspec/cronograma-de-fatias.md`, com
       o slug da change. A linha transversal da marca já foi fechada pela change
       `2026-10-02-marca-do-projeto-e-silhueta-de-nivel`; a situação do PRD-03 em
       `docs/prds/index.md` não muda, e nenhum arquivo nasce em `docs/`

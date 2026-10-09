@@ -25,3 +25,22 @@ export function provisionarFavicon(diretorioDeDestino: string): void {
   mkdirSync(diretorioDeDestino, { recursive: true });
   copyFileSync(path.join(AQUI, "simbolo.svg"), path.join(diretorioDeDestino, "favicon.svg"));
 }
+
+/** Os quatro do elenco (documento 15 §13.6), no par AVIF com reserva WebP que
+ * o `README.md` §3 fixa. */
+const ELENCO = ["susy", "otavio", "trenell", "robo-educa"];
+
+/** Copia o elenco para `<destino>/elenco/`, mesmo caminho e mesmo motivo do
+ * favicon: ativo de `comum/` que precisa ser servido pelo próprio domínio da
+ * aplicação (documento 15 §1, princípio 6). Só a App 06 chama, porque só o
+ * herói da vitrine apresenta o elenco hoje. */
+export function provisionarElenco(diretorioDeDestino: string): void {
+  const destino = path.join(diretorioDeDestino, "elenco");
+  mkdirSync(destino, { recursive: true });
+  for (const nome of ELENCO) {
+    for (const extensao of ["avif", "webp"]) {
+      const arquivo = `${nome}.${extensao}`;
+      copyFileSync(path.join(AQUI, "elenco", arquivo), path.join(destino, arquivo));
+    }
+  }
+}

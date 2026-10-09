@@ -34,6 +34,13 @@ const DESTINOS: [string, string, string][] = [
   ["Este é o aparelho da aula", "Aula presencial", "https://aula.example.org"],
 ];
 
+/** O diálogo de entrada, pelo título que o rotula. Os casos abaixo afirmam
+ * sobre os links **dele** — a tela em volta tem os seus, e desde o herói a
+ * abertura tem o "Quero participar". */
+function dialogoDeEntrada(): HTMLElement {
+  return screen.getByRole("dialog", { name: /quem está entrando/i });
+}
+
 describe("o botão Entrar pergunta e encaminha", () => {
   beforeEach(() => {
     window.history.pushState(null, "", "/");
@@ -60,7 +67,9 @@ describe("o botão Entrar pergunta e encaminha", () => {
     for (const [rotulo] of DESTINOS) {
       expect(screen.getByRole("button", { name: rotulo })).toBeVisible();
     }
-    expect(screen.queryByRole("link")).toBeNull();
+    // Escopado ao diálogo: desde o herói a abertura tem o link "Quero
+    // participar", e o que este caso afirma é sobre o diálogo.
+    expect(within(dialogoDeEntrada()).queryByRole("link")).toBeNull();
   });
 
   it.each(DESTINOS)(
@@ -111,7 +120,9 @@ describe("o botão Entrar pergunta e encaminha", () => {
 
     expect(await screen.findByText(/quem está entrando/i)).toBeVisible();
     expect(screen.getByRole("button", { name: "Sou Mestre" })).toBeVisible();
-    expect(screen.queryByRole("link")).toBeNull();
+    // Escopado ao diálogo: desde o herói a abertura tem o link "Quero
+    // participar", e o que este caso afirma é sobre o diálogo.
+    expect(within(dialogoDeEntrada()).queryByRole("link")).toBeNull();
   });
 });
 
@@ -157,7 +168,9 @@ describe("a orientação de quem ainda não tem cadastro", () => {
     expect(
       screen.getByText(/formulário de solicitação de participação da vitrine/i),
     ).toBeVisible();
-    const links = screen.getAllByRole("link").map((no) => no.getAttribute("href"));
+    const links = within(dialogoDeEntrada())
+      .getAllByRole("link")
+      .map((no) => no.getAttribute("href"));
     expect(links).toEqual(["https://mestre.example.org", "/participar"]);
   });
 
