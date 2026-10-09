@@ -82,8 +82,8 @@ elenco: eles seguem só como submarca.
 **Pose neutra, um arquivo por personagem.** Expressões, se vierem, seguem o mesmo nome
 com sufixo — `susy-alegre.svg`, `otavio-pensativo.svg` — e não substituem a pose neutra.
 
-**Cor, contorno, fundo e keyline** seguem o documento 15 §13.6: cor livre, contorno
-`tinta-900` grosso e fechado, preenchimento chapado sem gradiente, fundo transparente, e
+**Cor, contorno, fundo e keyline** seguem o documento 15 §13.6: cor livre, contorno quase
+preto grosso e fechado, preenchimento chapado sem gradiente, fundo transparente, e
 o filete em `cal-050` por fora da silhueta. O keyline é **gravado no arquivo**, nunca
 aplicado em CSS.
 
@@ -170,20 +170,18 @@ Os nove arquivos da marca do projeto e das submarcas — tudo o que os §§1 e 2
 A construção completa — proporção do escudo, altura de maiúscula, contrastes medidos — está
 no documento 15, que é a fonte única da identidade visual. Aqui fica só a procedência.
 
-**O elenco** do §3 foi produzido pelo próprio projeto, com assistência de **IA generativa
-sob direção do fundador** — cor, traço, olhos, cabelo, enquadramento e pose dirigidos a cada
-geração. Não houve autor externo, e por isso não há cessão de terceiro a registrar: a
-titularidade é da pessoa jurídica, como manda a `LICENCA.md`. Os arquivos entregues passam
-por recorte do fundo, aplicação do keyline e redimensionamento antes de entrar aqui.
+**O elenco** do §3 foi produzido pelo próprio projeto em **2026-10-09**, com o
+**Google Nano Banana** sob direção do fundador — cor, traço, olhos, cabelo, enquadramento
+e pose dirigidos a cada geração. Não houve autor externo, e por isso não há cessão de
+terceiro a registrar: a titularidade é da pessoa jurídica, como manda a `LICENCA.md`. Os
+arquivos entregues passam por recorte do fundo, aplicação do keyline e redimensionamento
+antes de entrar aqui.
 
 Do que chegou para o que está aqui, o que mudou — o §6 manda dizer: as quatro origens
 vieram em JPEG sobre fundo magenta chapado, que foi recortado por distância de cor; a
 franja de magenta saiu só na faixa de borda, para não alterar cor legítima; a figura foi
 recortada, recebeu 3% de margem e desceu para `1024` px de lado maior; e o keyline em
-`cal-050` foi aplicado aqui, porque nenhuma origem o trazia. **O contorno veio entre
-`#261D29` e `#2E1C20`**, e não no `tinta-900` que o documento 15 §13.6 pede — ficou como
-veio, porque separar contorno de cabelo escuro automaticamente estragaria o cabelo, que
-em três dos quatro é marrom muito escuro.
+`cal-050` foi aplicado aqui, porque nenhuma origem o trazia. O contorno veio entre
+`#261D29` e `#2E1C20` — quase preto quente, aceito pelo fundador em 2026-10-09, e é essa
+decisão que o §13.6 registra.
 
-> **A definir:** a ferramenta usada e a data da produção do elenco, que completam este
-> registro.

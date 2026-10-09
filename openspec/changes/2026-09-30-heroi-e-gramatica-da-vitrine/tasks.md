@@ -19,10 +19,10 @@
 - [ ] 1.1 Receber os quatro personagens — Susy, Otávio, Trenell e Robô Educa — em
       `comum/marca/elenco/`, conferir um a um contra o manifesto do `README.md` §3
       (formato, nome, grade e orçamento de peso) e contra o documento 15 §13.6 (contorno
-      `tinta-900`, preenchimento chapado, fundo transparente e keyline em `cal-050`).
+      quase preto, preenchimento chapado, fundo transparente e keyline em `cal-050`).
       Arquivo que chegar sem o keyline o recebe no recorte, e o que mudou se registra,
       como o §6 do manifesto já manda para limpeza. Fechar a procedência do `README.md`
-      §8 — ferramenta e data. Decidir com os arquivos na mão entre **SVG** e a rota
+      §8. Decidir com os arquivos na mão entre **SVG** e a rota
       alternativa do §3, **AVIF com reserva em WebP** a `1024` px, e declarar qual
       personagem saiu por qual, para a implementação prever `srcset`
 - [x] 1.2 Escrever `comum/marca/LICENCA.md` com a reserva do documento 03 §1 — a marca
