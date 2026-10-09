@@ -34,8 +34,11 @@ exatamente o que está no ar.
 - **Herói na abertura**: a primeira tela ganha ilustração em primeiro plano, a frase que
   diz o que o projeto é, e as duas ações que já existem — "Entrar" e "Quero
   participar". Nenhuma ação nova.
-- **O elenco entra em `comum/marca/elenco/`**: Susy, Otávio, Rôbróders e prof. Carlos
-  Trenell, em pose neutra, um arquivo por personagem, no orçamento do manifesto.
+- **O elenco entra em `comum/marca/elenco/`**: Susy, Otávio, prof. Carlos Trenell e Robô
+  Educa, em pose neutra, um arquivo por personagem, no orçamento do manifesto. A
+  composição do elenco, a licença cromática e o keyline são decisões do fundador de
+  2026-10-09, registradas no documento 15 §13.6 — os **Rôbróders** saíram do elenco e
+  seguem só como submarca.
 - **O "como funciona" não entra como código.** Decisão do fundador de 2026-09-30: ele
   sai em **texto**, como bloco de "Quem somos", no molde do bloco "Licenças" — o Admin
   publica e a seção exibe (`RF-03-45`). Nada a implementar.
@@ -60,7 +63,7 @@ Nenhuma.
 | `comum/marca/elenco/` | pasta nova, com os quatro personagens e a procedência deles |
 | `apps/app-06-vitrine/src/pages/index.astro` | recebe o herói |
 | Núcleo | **nenhuma rota nova e nenhuma alteração** |
-| Documentação | documento 15 §14 perde a linha do universo dos personagens; documento 09 move a pendência correspondente |
+| Documentação | documento 15 ganha o §13.6 (elenco, licença cromática e keyline) e o §14 estreita para o roteiro; documento 09 estreita a pendência e registra as três decisões de 2026-10-09; documento 99 §8 ganha a linha do elenco |
 
 Fora do escopo, como o PRD-03 §3.2 já exclui: qualquer tela de login, cadastro ou área
 restrita. Fora do escopo por pendência do documento 09: a **foto da comunidade**, que

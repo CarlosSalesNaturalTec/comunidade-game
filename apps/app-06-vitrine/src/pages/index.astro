@@ -1,4 +1,5 @@
 ---
+import { Heroi } from "../abertura/Heroi";
 import { SecaoDeApoiadores } from "../adultos/SecaoDeApoiadores";
 import { SecaoDeMestres } from "../adultos/SecaoDeMestres";
 import { secaoInstitucionalDoBuild } from "../build/dados";
@@ -33,6 +34,10 @@ const contatos = await secaoInstitucionalDoBuild("contatos");
   descricao="A vitrine pública do Comunidade Game: os Guerreiros e Guerreiras, o território, quem sustenta o projeto e como participar. Aberta, sem cadastro e sem login."
   recorteAtual="sociedade-civil"
 >
+  {/* O herói abre a tela, antes da primeira seção: é a ilustração em primeiro
+      plano que o documento 15 §6 dá à Arena. Sem diretiva de cliente — não tem
+      estado e não busca nada, então sai no documento servido e não custa JS. */}
+  <Heroi />
   <section>
     <h2>Quem somos</h2>
     <ApresentacaoDaSecao dado={quemSomos} nome="Quem somos" />

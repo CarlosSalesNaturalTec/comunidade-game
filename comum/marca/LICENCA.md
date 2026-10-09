@@ -1,8 +1,10 @@
 # A marca é reservada
 
-Os arquivos desta pasta — logotipo, símbolo, submarcas **Rôbróders** e **Robô Educa**, e o
-elenco de personagens Susy, Otávio, Rôbróders e prof. Carlos Trenell — **não** estão
-cobertos pela AGPL nem pela CC BY-SA que licenciam o resto deste repositório.
+Os arquivos desta pasta — logotipo, símbolo, as submarcas **Rôbróders** e **Robô Educa**, e
+o elenco de personagens Susy, Otávio, prof. Carlos Trenell e Robô Educa — **não** estão
+cobertos pela AGPL nem pela CC BY-SA que licenciam o resto deste repositório. O **Robô
+Educa** aparece nas duas listas porque é as duas coisas: a palavra, que nomeia a trilha, e
+o personagem, que vive em `elenco/`.
 
 ## Por quê
 

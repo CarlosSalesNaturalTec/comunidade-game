@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "./TelaDaVitrine";
@@ -21,9 +21,13 @@ describe("sem endereço publicado", () => {
     expect(
       screen.getByText(/o endereço da Área do Mestre ainda não foi publicado/i),
     ).toBeVisible();
-    // Sem endereço da Área do Mestre, o único link é o do formulário de
-    // participação da própria vitrine (RF-03-62).
-    const links = screen.getAllByRole("link").map((no) => no.getAttribute("href"));
+    // Sem endereço da Área do Mestre, o único link **do diálogo** é o do
+    // formulário de participação da própria vitrine (RF-03-62). Escopado ao
+    // diálogo porque a abertura, desde o herói, tem o seu próprio link.
+    const dialogo = screen.getByRole("dialog", { name: /quem está entrando/i });
+    const links = within(dialogo)
+      .getAllByRole("link")
+      .map((no) => no.getAttribute("href"));
     expect(links).toEqual(["/participar"]);
   });
 });

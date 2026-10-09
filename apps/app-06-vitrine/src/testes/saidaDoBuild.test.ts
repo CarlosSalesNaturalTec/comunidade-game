@@ -312,6 +312,71 @@ describe("nenhuma tela busca recurso de terceiro", () => {
   });
 });
 
+describe("o herói sai no documento servido da abertura", () => {
+  const ELENCO = ["susy", "otavio", "trenell", "robo-educa"];
+  const DO_ELENCO = join(RAIZ, "..", "..", "comum", "marca", "elenco");
+
+  it("a abertura traz a frase do projeto e a ação, sem executar script (RF-03-01)", () => {
+    const html = ler("index.html");
+
+    expect(html).toContain("Plataforma educacional gamificada, de código aberto");
+    expect(html).toContain('href="/quero-participar"');
+  });
+
+  it("o herói vem antes da primeira seção (RF-03-01)", () => {
+    const html = ler("index.html");
+
+    expect(html.indexOf("cg-heroi")).toBeGreaterThan(-1);
+    expect(html.indexOf("cg-heroi")).toBeLessThan(html.indexOf("Quem somos"));
+  });
+
+  it("a ilustração sai em AVIF com reserva WebP, fora do caminho crítico", () => {
+    const html = ler("index.html");
+
+    for (const nome of ELENCO) {
+      expect(html, nome).toContain(`/elenco/${nome}.avif`);
+      expect(html, nome).toContain(`/elenco/${nome}.webp`);
+    }
+    // Quatro figuras, todas adiadas e com o lugar reservado: a frase e a ação
+    // não esperam por elas (documento 15 §1, princípio 4).
+    expect([...html.matchAll(/loading="lazy"/g)]).toHaveLength(ELENCO.length);
+    expect([...html.matchAll(/<img[^>]+width="\d+"[^>]+height="\d+"/g)]).toHaveLength(
+      ELENCO.length,
+    );
+  });
+
+  it("nenhuma requisição da ilustração sai do próprio domínio (RF-03-51)", () => {
+    const html = ler("index.html");
+    const heroi = /<section class="cg-heroi"[\s\S]*?<\/section>/.exec(html)?.[0] ?? "";
+
+    expect(heroi).not.toBe("");
+    // `srcset` com S maiúsculo nos bytes: o renderizador React do Astro emite
+    // `srcSet`, e o analisador de HTML minúscula o nome do atributo — por isso
+    // a busca aqui ignora caixa. Conferido em navegador: o Chromium pede os
+    // quatro `.avif` e nem busca a reserva WebP.
+    expect(
+      [...heroi.matchAll(/(?:src|srcset)="([^"]+)"/gi)].map((achado) => achado[1]),
+    ).toEqual(ELENCO.flatMap((nome) => [`/elenco/${nome}.avif`, `/elenco/${nome}.webp`]));
+  });
+
+  it("os oito arquivos publicados são byte a byte os de `comum/marca/elenco/`", () => {
+    for (const nome of ELENCO) {
+      for (const extensao of ["avif", "webp"]) {
+        const arquivo = `${nome}.${extensao}`;
+        expect(readFileSync(join(DIST, "elenco", arquivo)), arquivo).toEqual(
+          readFileSync(join(DO_ELENCO, arquivo)),
+        );
+      }
+    }
+  });
+
+  it("o herói é da abertura, e não dos outros recortes (RF-03-25)", () => {
+    for (const arquivo of ["pesquisadores.html", "gestores-publicos.html"]) {
+      expect(ler(arquivo), arquivo).not.toContain("cg-heroi");
+    }
+  });
+});
+
 describe("o favicon servido é o do projeto, e vem de um arquivo só", () => {
   // O favicon nasce do **símbolo**: os dois ficaram idênticos sob a forma de
   // escudo com ponta, e um arquivo só serve os dois (decisão do fundador de

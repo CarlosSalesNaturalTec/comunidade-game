@@ -14,13 +14,16 @@ Ver `proposal.md` — Why. O que o desenho precisa levar em conta:
 - O documento 15 §12 já fixa que a marca mora em `comum/marca/`, versionada, e o
   documento 03 §1 que ela é reservada. `comum/marca/**` já está fora do alcance do Biome e
   a `LICENCA.md` já cobre o elenco nominalmente.
+- Três decisões do fundador de **2026-10-09** delimitaram o elenco antes dos arquivos:
+  a composição, a licença cromática e o keyline. Estão no documento 15 §13.6 e no
+  documento 09; aqui não se repetem.
 
 ## Goals / Non-Goals
 
 **Goals:**
 
-- Fechar a linha de "não define" do documento 15 §14 sobre o **universo dos personagens**,
-  e a pendência correspondente do documento 09.
+- Fazer o documento 15 **definir** o elenco, no §13.6 novo, e estreitar a linha de "não
+  define" do §14 e a pendência do documento 09 para o que segue aberto: o **roteiro**.
 - Manter o piso: a ilustração não entra no caminho crítico.
 
 **Non-Goals:**
@@ -60,6 +63,30 @@ Nível 1: o herói apresenta a frase e as duas ações, e continua inteiro sem a
 Nível 2, sobre o `dist/`: o herói sai no documento servido e nenhuma requisição a terceiro
 entra com a ilustração. Nível 3: nenhum.
 
+### 4. O herói não repete o "Entrar", e a ação dele é link
+
+O `Cabecalho` já põe "Entrar" em toda tela pública (`RF-03-58`), e ele fica logo acima do
+herói. Um segundo botão de mesmo nome na mesma tela não acrescenta ação nenhuma e
+atrapalha quem navega por leitor de tela. O herói leva só **"Quero participar"** — decisão
+do fundador de 2026-10-09, aplicada ao delta de spec.
+
+A ação é **`<a href>`**, e não botão: trocar de tela é trocar de documento desde a fatia 9,
+e um link navega sem JS nenhum.
+
+### 5. O herói é componente React sem diretiva de cliente
+
+Não tem estado e não busca nada: sai no documento servido e não custa JS. É também o que
+permite à composição de teste montar **o próprio componente**, em vez de espelhar a
+marcação à mão como `NavegacaoDeRecortes.astro` obriga — some o risco de desvio para esta
+peça.
+
+### 6. As quatro figuras ficam na mesma altura
+
+Era a questão em aberto da tarefa 1.1. Resolvida ao montar: no traço chibi em que os quatro
+foram desenhados, a diferença de idade está na proporção da cabeça e do corpo, não na
+altura — e enfileirá-los na mesma altura lê como elenco, não como erro de escala. Nenhum
+número de proporção foi inventado, que é o que a alternativa exigiria.
+
 ## Risks / Trade-offs
 
 | Risco | Mitigação |
@@ -67,10 +94,10 @@ entra com a ilustração. Nível 3: nenhum.
 | A ilustração pesar e furar o piso de rede | Orçamento declarado no manifesto; fora do caminho crítico; o nível 2 confere o que o documento carrega |
 | Os arquivos chegarem fora do manifesto | O manifesto é escrito antes, e a tarefa 1.1 confere formato e nome antes de qualquer código |
 | O personagem só existir em raster, e o vetor não fechar o orçamento | O §3 do manifesto já prevê AVIF com reserva em WebP, e a tarefa decide com os arquivos na mão |
+| O arquivo chegar sem o keyline que o documento 15 §13.6 exige | A tarefa 1.1 o aplica no recorte e diz o que mudou, como o §6 do manifesto já prevê para limpeza |
+| A figura sumir sobre a foto de comunidade | É o que o keyline resolve; e como `cal-050` é o fundo do modo claro, um arquivo só serve claro, escuro e foto |
 
 ## Open Questions
 
-Uma, que fica para o fundador **junto com os arquivos**, e é declaração a registrar, não
-decisão técnica:
-
-- **Quais personagens são de uso público**, já que a vitrine é pública e indexável.
+Nenhuma. A escala relativa das figuras, que a tarefa 1.1 deixou em aberto, foi resolvida
+na 2.1 — ver decisão 6.

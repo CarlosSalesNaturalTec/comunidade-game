@@ -31,3 +31,4 @@ backend/corpus-do-desenvolvedor.json
 # versionadas (change `2026-10-02-marca-do-projeto-e-silhueta-de-nivel`,
 # design — decisão 5).
 apps/*/public/favicon.svg
+apps/*/public/elenco/

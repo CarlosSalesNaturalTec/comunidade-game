@@ -346,6 +346,59 @@ textarea {
   cursor: pointer;
 }
 
+/* O herói da abertura: ilustração em primeiro plano, a frase do projeto e a
+ * ação (documento 15 §6, temperamento Arena). Uma decisão por tela — a ação é
+ * uma só, e "Entrar" fica no cabeçalho. */
+.cg-heroi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-16);
+  text-align: center;
+}
+
+/* As quatro figuras em linha, do mais novo ao mais velho. No celular elas
+ * encolhem juntas, em vez de quebrar linha: o elenco é uma imagem só para quem
+ * lê, e quebrá-la em duas fileiras desmancharia a leitura. */
+.cg-heroi__elenco {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--espaco-8);
+  width: 100%;
+}
+
+/* A altura manda, e a largura acompanha a proporção de cada arquivo. O
+ * intervalo é o mesmo do celular modesto ao aparelho largo (documento 15 §1,
+ * princípio 4): nada de consultar largura de tela para isto. */
+.cg-heroi__elenco img {
+  height: clamp(96px, 22vw, 208px);
+  width: auto;
+  /* A altura declarada no atributo reserva o lugar antes de a imagem chegar;
+   * sem isto o `height` acima só valeria depois do carregamento, e a tela
+   * pularia. */
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.cg-heroi__frase {
+  margin: 0;
+  max-width: var(--largura-de-leitura);
+  font-family: var(--fonte-destaque);
+  font-size: var(--escala-1375);
+  line-height: var(--entrelinha-titulo);
+}
+
+/* O link que age como botão precisa do mesmo alvo de toque que o `cg-botao`
+ * garante a um `<button>`, e de centrar o rótulo que um `<a>` não centra
+ * sozinho (documento 15 §5). */
+.cg-heroi__acao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
 /* A chamada "Quero participar" ao pé da página individual: uma decisão por
  * vez, as duas ações empilhadas no celular (documento 15 §6.4). */
 .cg-chamada {
