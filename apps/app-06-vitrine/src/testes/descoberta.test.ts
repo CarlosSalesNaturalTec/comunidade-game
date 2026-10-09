@@ -65,6 +65,10 @@ describe("a montagem do robots.txt", () => {
     expect(robots).toContain("Disallow: /guerreiros/");
     expect(robots).toContain("Disallow: /mestres/");
     expect(robots).toContain("Disallow: /apoiadores/");
+    // Os dois endereços da casca: o `cleanUrls` serve o mesmo arquivo em
+    // `/app` e em `/app.html`, e barrar só um deixaria a casca alcançável pelo
+    // outro (`RF-03-14`, invariante 12 do documento 99).
+    expect(robots).toContain("Disallow: /app");
     expect(robots).toContain("Disallow: /app.html");
   });
 

@@ -16,6 +16,7 @@ const PREFIXOS = ["/guerreiros/**", "/mestres/**", "/apoiadores/**"];
 interface Alvo {
   target: string;
   public: string;
+  cleanUrls?: boolean;
   rewrites: { source: string; destination: string }[];
   headers?: { source: string; headers: { key: string; value: string }[] }[];
 }
@@ -33,6 +34,15 @@ const vitrine: Alvo = (() => {
 describe("a hospedagem da vitrine", () => {
   it("serve o que o Astro publicou", () => {
     expect(vitrine.public).toBe("apps/app-06-vitrine/dist");
+  });
+
+  it("declara `cleanUrls`, sem o que só a raiz é alcançável (RF-03-25, RF-03-26)", () => {
+    // `build.format: "file"` emite `pesquisadores.html`, e o Firebase serve
+    // arquivo real antes do `rewrite` — mas só por correspondência exata ou
+    // índice de diretório. Sem `cleanUrls`, `/pesquisadores` não alcança
+    // arquivo nenhum e cai no `**`, que é a casca de pessoa. Retirar esta
+    // linha volta a falhar aqui, e não em produção.
+    expect(vitrine.cleanUrls).toBe(true);
   });
 
   it("leva os três prefixos de pessoa à casca noindex (RF-03-13, RF-03-14)", () => {
@@ -78,6 +88,8 @@ describe("a hospedagem da vitrine", () => {
       "/",
       "/o-que-coletamos",
       "/pesquisadores",
+      "/gestores-publicos",
+      "/quero-participar",
       "/comunidades/**",
     ]) {
       expect(fontes).not.toContain(institucional);

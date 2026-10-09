@@ -4,6 +4,8 @@ import type { Server } from "node:http";
 import { join } from "node:path";
 import { promisify } from "node:util";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { ENDERECOS_FORA_DO_SITEMAP, ENDERECOS_INDEXAVEIS } from "../descoberta/enderecos";
+import { alvoDaHospedagem, arquivosPublicados, resolverEndereco } from "./enderecoServido";
 import { criarNucleoDeMentira } from "./nucleoDeMentira.mjs";
 
 const executar = promisify(execFile);
@@ -395,5 +397,110 @@ describe("o favicon servido é o do projeto, e vem de um arquivo só", () => {
     expect([...svg.matchAll(/https?:\/\/[^"'\s)]+/g)].map((achado) => achado[0])).toEqual([
       "http://www.w3.org/2000/svg",
     ]);
+  });
+});
+
+// O bloco que faltava, e por cuja falta a regressão chegou a produção: os
+// demais afirmam que o arquivo existe em `dist/`; este afirma por qual
+// **endereço** se chega até ele (design — decisão 4).
+describe("cada endereço público é servido pelo documento da própria rota", () => {
+  const REPO = join(RAIZ, "..", "..");
+
+  /** Os endereços públicos que a camada de descoberta declara, mais a página
+   * de comunidade do build. Vem da própria fonte, e não de lista escrita à
+   * mão: rota nova sem endereço cai aqui. */
+  function enderecosPublicos(): string[] {
+    return [...ENDERECOS_INDEXAVEIS, ...ENDERECOS_FORA_DO_SITEMAP, "/comunidades/zeferina"];
+  }
+
+  function servido(caminho: string) {
+    const alvo = alvoDaHospedagem(REPO, "vitrine");
+    return resolverEndereco(caminho, alvo, arquivosPublicados(DIST));
+  }
+
+  it("os três recortes abrem no endereço próprio (RF-03-25, RF-03-26)", () => {
+    expect(servido("/")).toEqual({ tipo: "arquivo", arquivo: "/index.html" });
+    expect(servido("/pesquisadores")).toEqual({
+      tipo: "arquivo",
+      arquivo: "/pesquisadores.html",
+    });
+    expect(servido("/gestores-publicos")).toEqual({
+      tipo: "arquivo",
+      arquivo: "/gestores-publicos.html",
+    });
+  });
+
+  it("nenhum endereço público é atendido pela casca de pessoa", () => {
+    for (const caminho of enderecosPublicos()) {
+      const alcance = servido(caminho);
+      expect(alcance.tipo, caminho).toBe("arquivo");
+      expect(alcance, caminho).not.toMatchObject({ arquivo: `/${"app.html"}` });
+    }
+  });
+
+  it("a página da comunidade abre no endereço que o sitemap declara (RF-03-15)", () => {
+    expect(servido("/comunidades/zeferina")).toEqual({
+      tipo: "arquivo",
+      arquivo: "/comunidades/zeferina.html",
+    });
+  });
+
+  it("todo endereço do sitemap é servido pelo documento da rota dele (PRD-03 §10)", () => {
+    // É a junta exata do defeito: o sitemap convidava o buscador a dez
+    // endereços que respondiam com a casca `noindex`.
+    const caminhos = [...ler("sitemap.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+      (achado) => new URL(achado[1]).pathname,
+    );
+
+    expect(caminhos.length).toBeGreaterThan(5);
+    for (const caminho of caminhos) {
+      expect(servido(caminho), caminho).toMatchObject({ tipo: "arquivo" });
+    }
+  });
+
+  it("o endereço público não depende da extensão do arquivo", () => {
+    // `/pesquisadores.html` não é o endereço público: o `cleanUrls` devolve o
+    // limpo, que é o mesmo que a canônica e o sitemap declaram.
+    expect(servido("/pesquisadores.html")).toEqual({
+      tipo: "redirecionamento",
+      para: "/pesquisadores",
+    });
+    expect(servido("/index.html")).toEqual({ tipo: "redirecionamento", para: "/" });
+  });
+
+  it("os três prefixos de pessoa continuam chegando à casca (RF-03-13, RF-03-14)", () => {
+    for (const prefixo of ["/guerreiros/ZeBita", "/mestres/abc", "/apoiadores/xyz"]) {
+      expect(servido(prefixo), prefixo).toEqual({
+        tipo: "rewrite",
+        arquivo: "/app.html",
+        regra: `${prefixo.replace(/\/[^/]+$/, "")}/**`,
+      });
+    }
+  });
+
+  it("a casca atende só o que não tem arquivo publicado", () => {
+    // Endereço que não existe continua atendido pela casca, sem erro de
+    // servidor — é o caso que a spec já exigia e que segue valendo.
+    expect(servido("/nao-existe-em-lugar-nenhum")).toEqual({
+      tipo: "rewrite",
+      arquivo: "/app.html",
+      regra: "**",
+    });
+  });
+
+  it("a casca de pessoa é alcançável nos dois endereços, e os dois são barrados", () => {
+    // O `cleanUrls` serve `app.html` também em `/app`. O `robots.txt` barra os
+    // dois, e a regra de `X-Robots-Tag` casa os dois (design — decisão 3).
+    expect(servido("/app")).toEqual({ tipo: "arquivo", arquivo: "/app.html" });
+
+    const robots = ler("robots.txt");
+    expect(robots).toContain("Disallow: /app");
+    expect(robots).toContain("Disallow: /app.html");
+
+    const fontes = (alvoDaHospedagem(REPO, "vitrine").headers ?? []).map(
+      (cabecalho) => cabecalho.source,
+    );
+    expect(fontes).toContain("/app");
+    expect(fontes).toContain("/app.html");
   });
 });
