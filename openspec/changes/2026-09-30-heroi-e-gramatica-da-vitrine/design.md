@@ -75,7 +75,14 @@ entra com a ilustração. Nível 3: nenhum.
 
 ## Open Questions
 
-Uma, que fica para o fundador **junto com os arquivos**, e é declaração a registrar, não
-decisão técnica:
+Três, as duas primeiras para o fundador — são declaração a registrar, não decisão
+técnica:
 
 - **Quais personagens são de uso público**, já que a vitrine é pública e indexável.
+- **A ferramenta de IA e a data** da produção do elenco, que fecham a procedência do
+  `comum/marca/README.md` §8.
+- **A escala relativa no herói**, achado da tarefa 1.1: as quatro figuras chegaram com
+  altura quase igual — o Trenell, adulto, a 1,00 e a Susy, de 6 anos, a 0,98. Compostas na
+  mesma altura, o adulto fica do tamanho da criança. Cada arquivo foi normalizado no
+  próprio quadro, como o manifesto manda, então a escala entre eles é decisão de layout da
+  tarefa 2.1 — não dos arquivos.

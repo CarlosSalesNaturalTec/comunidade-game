@@ -94,6 +94,11 @@ de lado maior, até 120 KB cada — e diga qual, para a implementação prever `
 Saindo em raster, o par é `<nome>.avif` com reserva `<nome>.webp`, e os nomes da tabela
 acima valem com a extensão trocada.
 
+**Os quatro saíram pela rota raster**, decisão tomada com os arquivos na mão: cada figura
+traz de 47 a 66 mil cores, de sombreado suave, e vetorizar isso não fecharia os 40 KB do
+SVG. Os oito arquivos entregues pesam de 34 a 50 KB, contra o teto de 120 KB. Nenhum
+personagem saiu em SVG, então o `srcset` tem só o par AVIF/WebP.
+
 ## 4. O que precisa vir junto, e não é arquivo
 
 Sem estes dois, a implementação não fecha o documento 15 §13.6:
@@ -170,6 +175,15 @@ sob direção do fundador** — cor, traço, olhos, cabelo, enquadramento e pose
 geração. Não houve autor externo, e por isso não há cessão de terceiro a registrar: a
 titularidade é da pessoa jurídica, como manda a `LICENCA.md`. Os arquivos entregues passam
 por recorte do fundo, aplicação do keyline e redimensionamento antes de entrar aqui.
+
+Do que chegou para o que está aqui, o que mudou — o §6 manda dizer: as quatro origens
+vieram em JPEG sobre fundo magenta chapado, que foi recortado por distância de cor; a
+franja de magenta saiu só na faixa de borda, para não alterar cor legítima; a figura foi
+recortada, recebeu 3% de margem e desceu para `1024` px de lado maior; e o keyline em
+`cal-050` foi aplicado aqui, porque nenhuma origem o trazia. **O contorno veio entre
+`#261D29` e `#2E1C20`**, e não no `tinta-900` que o documento 15 §13.6 pede — ficou como
+veio, porque separar contorno de cabelo escuro automaticamente estragaria o cabelo, que
+em três dos quatro é marrom muito escuro.
 
 > **A definir:** a ferramenta usada e a data da produção do elenco, que completam este
 > registro.
