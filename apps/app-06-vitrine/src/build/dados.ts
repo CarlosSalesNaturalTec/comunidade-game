@@ -1,11 +1,10 @@
-import { configurarAcessoAoNucleo } from "comum/api";
-import { CHAVE_DE_APLICACAO, URL_DO_NUCLEO } from "../api/configuracao";
 import {
   type ComunidadeNaLista,
   lerConteudoInstitucional,
   listarComunidades,
   type SecaoInstitucionalPublica,
 } from "../api/leituras";
+import { configurarAcessoUmaVez } from "../api/nucleo";
 
 /**
  * O que a vitrine busca **no build**, para sair no documento servido: o
@@ -21,24 +20,13 @@ import {
  * é o defeito que esta fatia existe para corrigir.
  */
 
-let configurado = false;
-
-function configurarUmaVez(): void {
-  if (configurado) return;
-  configurarAcessoAoNucleo({
-    chaveDeAplicacao: CHAVE_DE_APLICACAO,
-    urlDoNucleo: URL_DO_NUCLEO,
-  });
-  configurado = true;
-}
-
 /** Uma leitura por build, compartilhada por todas as páginas: cada página é
  * montada em sequência no mesmo processo, e repetir a chamada por página
  * cairia no freio por origem do próprio núcleo. */
 function umaVezPorBuild<T>(ler: () => Promise<T>): () => Promise<T> {
   let promessa: Promise<T> | null = null;
   return () => {
-    configurarUmaVez();
+    configurarAcessoUmaVez();
     if (promessa === null) {
       promessa = ler().catch((causa) => {
         promessa = null;

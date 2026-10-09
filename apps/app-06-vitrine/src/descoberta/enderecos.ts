@@ -32,8 +32,15 @@ export const ENDERECOS_FORA_DO_SITEMAP = [
 export const PREFIXOS_DE_PESSOA = ["/guerreiros/", "/mestres/", "/apoiadores/"] as const;
 
 /** A casca de cliente das páginas de pessoa, destino dos `rewrite` do
- * `firebase.json`. Barrada no `robots.txt` para não ser indexada por si. */
-export const CASCA_DE_PESSOA = "/app.html";
+ * `firebase.json`. Barrada no `robots.txt` para não ser indexada por si.
+ *
+ * **Dois endereços, e não um**: o `cleanUrls` do alvo `vitrine` serve o mesmo
+ * arquivo também em `/app`, e barrar só `/app.html` deixaria a casca
+ * alcançável pelo outro — contra o `RF-03-14` e o invariante 12 do documento
+ * 99 (change `2026-10-09-acesso-ao-nucleo-e-rotas-servidas-da-vitrine`,
+ * design — decisão 3). A etiqueta no documento da casca é a outra metade, e
+ * essa não depende de configuração de hospedagem. */
+export const CASCA_DE_PESSOA = ["/app", "/app.html"] as const;
 
 function escaparXml(texto: string): string {
   return texto
@@ -71,7 +78,7 @@ export function montarRobots(site: string): string {
   return [
     "User-agent: *",
     ...PREFIXOS_DE_PESSOA.map((prefixo) => `Disallow: ${prefixo}`),
-    `Disallow: ${CASCA_DE_PESSOA}`,
+    ...CASCA_DE_PESSOA.map((endereco) => `Disallow: ${endereco}`),
     ...ENDERECOS_FORA_DO_SITEMAP.map((caminho) => `Disallow: ${caminho}`),
     "Allow: /",
     "",

@@ -1,12 +1,26 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { configurarAcessoAoNucleo } from "comum/api";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as leituras from "../api/leituras";
 import { lerDoNucleo } from "../api/nucleo";
 import { esquecerConteudoInstitucional } from "../institucional/useConteudoInstitucional";
 import { esquecerNecessidades } from "../necessidades/useNecessidades";
 import App from "./TelaDaVitrine";
+
+// A chave e o endereço do núcleo entram como a produção os entrega — por
+// `../api/configuracao` —, e **não** por uma chamada de configuração feita no
+// próprio teste: era ela que fornecia o que a produção não fornecia, e por isso
+// este arquivo passava enquanto toda seção da vitrine falhava no navegador
+// (design — decisão 5).
+vi.mock("../api/configuracao", async () => {
+  const real =
+    await vi.importActual<typeof import("../api/configuracao")>("../api/configuracao");
+  return {
+    ...real,
+    CHAVE_DE_APLICACAO: "chave-da-vitrine",
+    URL_DO_NUCLEO: "https://nucleo.example.org",
+  };
+});
 
 describe("a vitrine não deixa rastro no aparelho", () => {
   beforeEach(() => {
@@ -88,10 +102,6 @@ describe("a chamada ao núcleo leva a chave e nenhuma credencial de persona", ()
   });
 
   it("o cabeçalho de sessão nunca é enviado (RN-03-33)", async () => {
-    configurarAcessoAoNucleo({
-      chaveDeAplicacao: "chave-da-vitrine",
-      urlDoNucleo: "https://nucleo.example.org",
-    });
     const buscar = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify([]), {
         status: 200,

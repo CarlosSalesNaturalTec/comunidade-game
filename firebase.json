@@ -40,6 +40,7 @@
       "target": "vitrine",
       "public": "apps/app-06-vitrine/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "cleanUrls": true,
       "rewrites": [
         {
           "source": "/guerreiros/**",
@@ -79,6 +80,15 @@
         },
         {
           "source": "/apoiadores/**",
+          "headers": [
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow"
+            }
+          ]
+        },
+        {
+          "source": "/app",
           "headers": [
             {
               "key": "X-Robots-Tag",
