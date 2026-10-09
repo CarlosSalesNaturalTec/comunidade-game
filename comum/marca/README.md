@@ -107,6 +107,10 @@ Sem estes dois, a implementação não fecha o documento 15 §13.6:
 2. **Procedência**: quem dirigiu, com que ferramenta, quando, e sob qual acordo — a
    titularidade é da pessoa jurídica (documento 03 §1), e isso precisa estar registrado.
 
+**Para o elenco atual, os dois estão fechados**: os quatro são inventados e de uso público
+(documento 15 §13.6), e a procedência está no §8. A lista continua valendo para o que vier
+depois — expressão nova, personagem novo.
+
 A área de proteção e o tamanho mínimo saíram desta lista: foram decididos pela change da
 marca e estão no documento 15 §13.4.
 

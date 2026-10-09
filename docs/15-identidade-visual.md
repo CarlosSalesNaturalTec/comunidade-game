@@ -506,7 +506,9 @@ como separar um do outro. O que a regra exige é **quase preto, grosso e fechado
 A licença de cor **não afrouxa o §6**: o temperamento muda a presença de ilustração, nunca a
 marca nem a paleta da interface.
 
-> **A definir:** quais personagens são de uso público. A vitrine é pública e indexável.
+Os quatro são **personagens inventados** e de **uso público**: podem aparecer na vitrine,
+que é pública e indexável, e em material de divulgação do projeto. A reserva da marca
+continua valendo — uso por terceiro é indevido (documento 03 §1).
 
 Decisão do fundador, 2026-10-09.
 

@@ -16,7 +16,7 @@
       Biome lê `.svg` como JSX e acusa `noSvgWithoutTitle` em arquivo de marca, onde o
       rótulo é de quem apresenta e não do arquivo. Feito **antes** dos arquivos, para o
       upload não derrubar a esteira
-- [ ] 1.1 Receber os quatro personagens — Susy, Otávio, Trenell e Robô Educa — em
+- [x] 1.1 Receber os quatro personagens — Susy, Otávio, Trenell e Robô Educa — em
       `comum/marca/elenco/`, conferir um a um contra o manifesto do `README.md` §3
       (formato, nome, grade e orçamento de peso) e contra o documento 15 §13.6 (contorno
       quase preto, preenchimento chapado, fundo transparente e keyline em `cal-050`).
@@ -48,7 +48,7 @@
 
 ## 3. Documentação
 
-- [ ] 3.1 Gravar no documento 15 §13.6 **quais personagens são de uso público**, que é o
+- [x] 3.1 Gravar no documento 15 §13.6 **quais personagens são de uso público**, que é o
       que resta da linha e chega com os arquivos, e remover de lá o `A definir`
       correspondente; mover do documento 09 a parte que isso fecha. O §13.6, o §14
       estreitado, as três decisões de 2026-10-09 no documento 09 e a linha do elenco no

@@ -75,9 +75,8 @@ entra com a ilustração. Nível 3: nenhum.
 
 ## Open Questions
 
-Duas, a primeira para o fundador — é declaração a registrar, não decisão técnica:
+Uma, e é de layout, não de arquivo:
 
-- **Quais personagens são de uso público**, já que a vitrine é pública e indexável.
 - **A escala relativa no herói**, achado da tarefa 1.1: as quatro figuras chegaram com
   altura quase igual — o Trenell, adulto, a 1,00 e a Susy, de 6 anos, a 0,98. Compostas na
   mesma altura, o adulto fica do tamanho da criança. Cada arquivo foi normalizado no
