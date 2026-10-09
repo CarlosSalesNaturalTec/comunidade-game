@@ -1,6 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { SecaoDeMestres } from "../adultos/SecaoDeMestres";
 import { SecaoDeGuerreiros } from "../guerreiros/SecaoDeGuerreiros";
+import { SecaoDoPortfolio } from "../portfolio/SecaoDoPortfolio";
 
 /**
  * O arquivo que **nunca** chama `configurarAcessoAoNucleo`.
@@ -95,6 +97,76 @@ describe("a configuração de acesso ao núcleo alcança as seções no navegado
     expect(
       screen.queryByText("Não foi possível carregar os cards agora. Tente de novo."),
     ).not.toBeInTheDocument();
+  });
+
+  it("as seções que leem na visita apresentam o que leram (RF-03-02, RF-03-15)", async () => {
+    // O cenário fala das **seções**, no plural: o defeito deixava o
+    // institucional de pé — ele vem da publicação — e todas as demais no aviso
+    // de erro. Três seções diferentes, cada uma com a sua rota, pelo mesmo
+    // gargalo: é o que afirma que a correção vale para as nove, e não para uma.
+    const porCaminho: Record<string, unknown> = {
+      "/v1/vitrine/guerreiros": UM_GUERREIRO,
+      "/v1/vitrine/criacoes": {
+        itens: [
+          {
+            trilha_id: "t-2",
+            trilha: "Trilha do Vento",
+            validada_em: "2026-08-01T10:00:00Z",
+            producao: "Mapa da nascente",
+            autores: [{ avatar: "avatar-de-teste", nick: "ZeBita" }],
+          },
+        ],
+        proximo_cursor: null,
+      },
+      "/v1/vitrine/mestres": {
+        itens: [
+          {
+            id: "m-1",
+            avatar: "avatar-de-teste",
+            avatar_padrao: false,
+            identificacao: { valor: "Dona Rosa", tipo: "nome" },
+            areas_de_habilidade: ["Ciências"],
+            artefatos: [],
+            trilhas_de_autoria: [
+              { id: "t-1", nome: "Trilha da Água", area_do_conhecimento: "Ciências" },
+            ],
+            absorcoes: 2,
+          },
+        ],
+        proximo_cursor: null,
+      },
+    };
+
+    vi.spyOn(globalThis, "fetch").mockImplementation((endereco) => {
+      const { pathname } = new URL(String(endereco));
+      const corpo = porCaminho[pathname];
+      if (corpo === undefined) throw new Error(`rota não dublada: ${pathname}`);
+      return Promise.resolve(
+        new Response(JSON.stringify(corpo), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    });
+
+    render(
+      <>
+        <SecaoDeGuerreiros />
+        <SecaoDoPortfolio />
+        <SecaoDeMestres />
+      </>,
+    );
+
+    expect(await screen.findByText("ZeBita")).toBeVisible();
+    expect(await screen.findByText("Trilha do Vento")).toBeVisible();
+    expect(await screen.findByText("Dona Rosa")).toBeVisible();
+
+    for (const aviso of [
+      "Não foi possível carregar os cards agora. Tente de novo.",
+      "Não foi possível carregar o portfólio agora. Tente de novo.",
+    ]) {
+      expect(screen.queryByText(aviso), aviso).not.toBeInTheDocument();
+    }
   });
 
   it("a leitura que falha falha pelo núcleo, e não pela configuração (RF-03-02)", async () => {
