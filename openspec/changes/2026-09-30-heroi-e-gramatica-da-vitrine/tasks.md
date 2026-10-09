@@ -1,7 +1,11 @@
 # Tasks
 
 > A tarefa 1.1 é a **trava**: sem os arquivos do elenco, nenhuma das demais começa. O
-> manifesto do que entregar está em `comum/marca/README.md` §3.
+> manifesto do que entregar está em `comum/marca/README.md` §3, e o que o elenco precisa
+> parecer, no documento 15 §13.6.
+>
+> O elenco são **Susy, Otávio, prof. Carlos Trenell e Robô Educa** — decisão do fundador
+> de 2026-10-09. Os **Rôbróders** saíram do elenco e seguem só como submarca.
 >
 > A marca do projeto — logotipo, símbolo, submarcas, cabeçalho e favicon — saiu desta
 > change e foi entregue por `2026-10-02-marca-do-projeto-e-silhueta-de-nivel`.
@@ -12,11 +16,15 @@
       Biome lê `.svg` como JSX e acusa `noSvgWithoutTitle` em arquivo de marca, onde o
       rótulo é de quem apresenta e não do arquivo. Feito **antes** dos arquivos, para o
       upload não derrubar a esteira
-- [ ] 1.1 Receber os quatro personagens em `comum/marca/elenco/`, conferir um a um contra
-      o manifesto do `README.md` §3 — formato, nome, grade e orçamento de peso — e
-      registrar a procedência e a data no próprio `README.md`. Decidir com os arquivos na
-      mão entre **SVG** e a rota alternativa do §3, **AVIF com reserva em WebP** a `1024`
-      px, e declarar qual personagem saiu por qual, para a implementação prever `srcset`
+- [ ] 1.1 Receber os quatro personagens — Susy, Otávio, Trenell e Robô Educa — em
+      `comum/marca/elenco/`, conferir um a um contra o manifesto do `README.md` §3
+      (formato, nome, grade e orçamento de peso) e contra o documento 15 §13.6 (contorno
+      `tinta-900`, preenchimento chapado, fundo transparente e keyline em `cal-050`).
+      Arquivo que chegar sem o keyline o recebe no recorte, e o que mudou se registra,
+      como o §6 do manifesto já manda para limpeza. Fechar a procedência do `README.md`
+      §8 — ferramenta e data. Decidir com os arquivos na mão entre **SVG** e a rota
+      alternativa do §3, **AVIF com reserva em WebP** a `1024` px, e declarar qual
+      personagem saiu por qual, para a implementação prever `srcset`
 - [x] 1.2 Escrever `comum/marca/LICENCA.md` com a reserva do documento 03 §1 — a marca
       fora da AGPL e da CC BY-SA, e a réplica trocando-a pela sua —, ao lado dos
       arquivos, como o `OFL-archivo.txt` fica ao lado das fontes
@@ -40,11 +48,12 @@
 
 ## 3. Documentação
 
-- [ ] 3.1 Fechar no documento 15 a linha do §13 que a entrega resolve — **universo dos
-      personagens** —, gravando no corpo do documento quais personagens são de uso
-      público, que chega com os arquivos; mover a pendência correspondente do documento 09
-      para "Já decididos" e atualizar o documento 99 se a relação entre documentos mudar.
-      Verificar que as linhas de logotipo e de submarcas já saíram pela change da marca
+- [ ] 3.1 Gravar no documento 15 §13.6 **quais personagens são de uso público**, que é o
+      que resta da linha e chega com os arquivos, e remover de lá o `A definir`
+      correspondente; mover do documento 09 a parte que isso fecha. O §13.6, o §14
+      estreitado, as três decisões de 2026-10-09 no documento 09 e a linha do elenco no
+      documento 99 §8 **já foram escritos** — conferir, não reescrever. Verificar que as
+      linhas de logotipo e de submarcas já saíram pela change da marca
 - [ ] 3.2 Marcar a fatia 11 como `implementado` no `openspec/cronograma-de-fatias.md`, com
       o slug da change. A linha transversal da marca já foi fechada pela change
       `2026-10-02-marca-do-projeto-e-silhueta-de-nivel`; a situação do PRD-03 em

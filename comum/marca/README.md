@@ -66,32 +66,44 @@ Em `comum/marca/`. As duas que o documento 09 nomeia.
 
 ## 3. Elenco de personagens
 
-Em `comum/marca/elenco/`. Os quatro que o documento 09 nomeia.
+Em `comum/marca/elenco/`. Os quatro que o documento 15 §13.6 nomeia.
 
 | Arquivo | Formato | Grade | Peso máximo |
 | --- | --- | --- | --- |
 | `susy.svg` | SVG | caixa `512 × 512` | 40 KB |
 | `otavio.svg` | SVG | caixa `512 × 512` | 40 KB |
-| `robroders.svg` | SVG | caixa `512 × 512` | 60 KB |
 | `trenell.svg` | SVG | caixa `512 × 512` | 40 KB |
+| `robo-educa.svg` | SVG | caixa `512 × 512` | 40 KB |
+
+Não confundir `elenco/robo-educa.*`, que é o **personagem**, com
+`submarca-robo-educa.svg` do §2, que é a **palavra**. Os **Rôbróders** não têm arquivo de
+elenco: eles seguem só como submarca.
 
 **Pose neutra, um arquivo por personagem.** Expressões, se vierem, seguem o mesmo nome
 com sufixo — `susy-alegre.svg`, `otavio-pensativo.svg` — e não substituem a pose neutra.
+
+**Cor, contorno, fundo e keyline** seguem o documento 15 §13.6: cor livre, contorno
+`tinta-900` grosso e fechado, preenchimento chapado sem gradiente, fundo transparente, e
+o filete em `cal-050` por fora da silhueta. O keyline é **gravado no arquivo**, nunca
+aplicado em CSS.
 
 **Por que SVG e não imagem:** o documento 15 §2 descreve o traço como *contorno grosso e
 cor chapada*, que é precisamente o que vetoriza bem e escala sem peso. Se algum
 personagem só existir em raster, entregue **AVIF** com fallback **WebP**, em `1024` px
 de lado maior, até 120 KB cada — e diga qual, para a implementação prever `srcset`.
+Saindo em raster, o par é `<nome>.avif` com reserva `<nome>.webp`, e os nomes da tabela
+acima valem com a extensão trocada.
 
 ## 4. O que precisa vir junto, e não é arquivo
 
-Sem estes quatro, a implementação não fecha o documento 15 §14:
+Sem estes dois, a implementação não fecha o documento 15 §13.6:
 
-1. **Área de proteção** da marca — em múltiplos de alguma medida dela, do seu jeito.
-2. **Tamanho mínimo** de uso, em pixels, para o cabeçalho no celular.
-3. **Quais personagens são de uso público.** A vitrine é pública e indexável.
-4. **Procedência**: quem desenhou, quando, e sob qual acordo de cessão — a titularidade
-   é da pessoa jurídica (documento 03 §1), e isso precisa estar registrado.
+1. **Quais personagens são de uso público.** A vitrine é pública e indexável.
+2. **Procedência**: quem dirigiu, com que ferramenta, quando, e sob qual acordo — a
+   titularidade é da pessoa jurídica (documento 03 §1), e isso precisa estar registrado.
+
+A área de proteção e o tamanho mínimo saíram desta lista: foram decididos pela change da
+marca e estão no documento 15 §13.4.
 
 ## 5. O que não entra aqui
 
@@ -126,7 +138,8 @@ oculta — Figma e Illustrator exportam assim. Quem implementa limpa e diz o que
 
 ## 7. Regras que valem para todo arquivo desta pasta
 
-- **Nenhuma cor fora da paleta** do documento 15 §3. A monocromática não declara cor
+- **Nenhuma cor fora da paleta** do documento 15 §3 — **exceto o elenco de `elenco/`**,
+  que tem licença cromática própria (documento 15 §13.6). A monocromática não declara cor
   nenhuma: usa `currentColor`.
 - **Nenhuma referência externa** — sem fonte de terceiro embutida, sem imagem
   referenciada por URL, sem `<script>`. O que a aplicação serve sai do próprio domínio
@@ -152,5 +165,11 @@ Os nove arquivos da marca do projeto e das submarcas — tudo o que os §§1 e 2
 A construção completa — proporção do escudo, altura de maiúscula, contrastes medidos — está
 no documento 15, que é a fonte única da identidade visual. Aqui fica só a procedência.
 
-**O elenco do §3 não está coberto por esta seção**: ele é insumo externo, e a procedência
-dele — autor, data e acordo de cessão — se registra aqui quando os arquivos chegarem.
+**O elenco** do §3 foi produzido pelo próprio projeto, com assistência de **IA generativa
+sob direção do fundador** — cor, traço, olhos, cabelo, enquadramento e pose dirigidos a cada
+geração. Não houve autor externo, e por isso não há cessão de terceiro a registrar: a
+titularidade é da pessoa jurídica, como manda a `LICENCA.md`. Os arquivos entregues passam
+por recorte do fundo, aplicação do keyline e redimensionamento antes de entrar aqui.
+
+> **A definir:** a ferramenta usada e a data da produção do elenco, que completam este
+> registro.

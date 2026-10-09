@@ -480,11 +480,37 @@ e documento; a empilhada, o herói e o espaço vertical.
 
 O escudo é **forma da marca, e de nada mais**: nenhuma silhueta de badge o usa (§8.3).
 
+### 13.6 O elenco de personagens
+
+O elenco são **quatro**: **Susy**, **Otávio**, o **professor Carlos Trenell** e o **Robô
+Educa**. Vive em `comum/marca/elenco/`, um arquivo por personagem em pose neutra, e é
+**ilustração, não interface**. Os **Rôbróders** seguem como submarca (§13.1) e estão fora
+do elenco; o personagem deles é pendência do documento 09.
+
+| Regra         | Valor                                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Cor           | **Livre.** A paleta do §3 rege interface e marca, não o elenco — ela é de tokens de interface e não tem tom de pele |
+| Contorno      | `tinta-900`, grosso, de espessura constante e fechado                                                               |
+| Preenchimento | Chapado, **sem gradiente**, com no máximo um degrau de sombra por área                                              |
+| Fundo         | Transparente, sem sombra projetada e sem auréola                                                                    |
+| Keyline       | Filete contínuo em `cal-050` por fora da silhueta, gravado no arquivo                                               |
+
+O keyline resolve **os três casos com um arquivo só**: `cal-050` é o fundo do modo claro,
+onde o filete desaparece; ele só aparece sobre a foto de comunidade (§6.3) e no escuro. É o
+mesmo raciocínio do `currentColor` da monocromática (§13.3).
+
+A licença de cor **não afrouxa o §6**: o temperamento muda a presença de ilustração, nunca a
+marca nem a paleta da interface.
+
+> **A definir:** quais personagens são de uso público. A vitrine é pública e indexável.
+
+Decisão do fundador, 2026-10-09.
+
 ## 14. O que este documento não define
 
-| Assunto                                                      | Onde está                     |
-| ------------------------------------------------------------ | ----------------------------- |
-| Universo dos personagens — Susy, Otávio, Rôbróders e Trenell | Pendente (documento 09)       |
-| Framework de frontend das aplicações                         | Documento 03 §1               |
-| O que cada card mostra e como o território cresce            | Documento 11                  |
-| Peça gráfica impressa                                        | Não há a produzir no Ciclo 01 |
+| Assunto                                           | Onde está                     |
+| ------------------------------------------------- | ----------------------------- |
+| Roteiro e narrativa do elenco                     | Pendente (documento 09)       |
+| Framework de frontend das aplicações              | Documento 03 §1               |
+| O que cada card mostra e como o território cresce | Documento 11                  |
+| Peça gráfica impressa                             | Não há a produzir no Ciclo 01 |

@@ -122,6 +122,7 @@ doc 15**.
 | Sistema de avatar do Guerreiro(a) e avatar padrão do projeto               | 15 §7                                      | 02 §1, 03 §3.2, 11 §8.2        |
 | Forma da carta, emblema de nível, silhueta de badge e glifo de poder       | 15 §8                                      | 02 §2, 11 §§7, 8.2             |
 | Desenho da marca: símbolo, logotipo, submarcas, área de proteção e mínimo  | 15 §13                                     | 03 §1, 09                      |
+| Elenco de personagens: composição, cor, contorno e keyline                 | 15 §13.6                                   | 03 §1, 09                      |
 | Fichas de ponto, ponto extra e moeda                                       | 15 §9                                      | 04 §1, 11 §5                   |
 | Sistema de ícone e gráfico de série das aplicações                         | 15 §11                                     | 11 §8.3                        |
 | Área do Mestre (App 09) — autoria e operação                               | 03 §11                                     | 02, 05, 08, 09                 |
