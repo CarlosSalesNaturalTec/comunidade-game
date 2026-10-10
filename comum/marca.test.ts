@@ -300,3 +300,79 @@ describe("a marca alcança todas as aplicações", () => {
     expect([...texto.matchAll(/<MarcaDoProjeto\b/g)]).toHaveLength(1);
   });
 });
+
+// O elenco não é conferido pelo bloco acima: ele é raster, não SVG, e o
+// manifesto dele é o §3 do `README.md`. Os casos abaixo leem **cabeçalho**, não
+// pixel — o monorepo não tem biblioteca de imagem, e decodificar AVIF pediria
+// dependência nova. O que exige pixel, a cor e a espessura do filete `cal-050`,
+// fica na conferência de entrada, como o §8 do manifesto registra.
+
+const ELENCO = join(PASTA, "elenco");
+
+/** O teto do §3 para a rota raster, em KB, e a grade do lado maior. */
+const TETO_DO_ELENCO = 120;
+const LADO_MAIOR = 1024;
+
+/** Dimensões e canal alfa de um WebP, pelo cabeçalho `VP8X` do contêiner RIFF. */
+function lerWebp(bytes: Buffer) {
+  expect(bytes.toString("ascii", 0, 4)).toBe("RIFF");
+  expect(bytes.toString("ascii", 8, 12)).toBe("WEBP");
+  expect(bytes.toString("ascii", 12, 16)).toBe("VP8X");
+  return {
+    // O `VP8X` guarda largura e altura menos um, em 24 bits little-endian.
+    largura: 1 + (bytes[24] | (bytes[25] << 8) | (bytes[26] << 16)),
+    altura: 1 + (bytes[27] | (bytes[28] << 8) | (bytes[29] << 16)),
+    temAlfa: Boolean(bytes[20] & 0x10),
+  };
+}
+
+/** Dimensões de um AVIF, pela caixa `ispe`; o alfa vem do item auxiliar `auxC`. */
+function lerAvif(bytes: Buffer) {
+  expect(bytes.toString("ascii", 8, 12)).toBe("avif");
+  const ispe = bytes.indexOf(Buffer.from("ispe", "ascii"));
+  expect(ispe, "caixa ispe").toBeGreaterThan(-1);
+  return {
+    largura: bytes.readUInt32BE(ispe + 8),
+    altura: bytes.readUInt32BE(ispe + 12),
+    temAlfa: bytes.indexOf(Buffer.from("auxC", "ascii")) > -1,
+  };
+}
+
+const personagens = [
+  ...new Set(readdirSync(ELENCO).map((arquivo) => arquivo.replace(/\.(avif|webp)$/, ""))),
+].sort();
+
+describe("o elenco cumpre o manifesto do §3", () => {
+  it("há personagem para conferir, e nenhum arquivo fora do par AVIF/WebP", () => {
+    expect(personagens.length).toBeGreaterThan(0);
+    expect(readdirSync(ELENCO).filter((arquivo) => !/\.(avif|webp)$/.test(arquivo))).toEqual(
+      [],
+    );
+  });
+
+  it.each(personagens)("%s tem o par AVIF com reserva WebP", (nome) => {
+    for (const extensao of ["avif", "webp"]) {
+      expect(existsSync(join(ELENCO, `${nome}.${extensao}`)), extensao).toBe(true);
+    }
+  });
+
+  it.each(personagens)("%s cabe na grade, declara alfa e respeita o teto de peso", (nome) => {
+    const webp = lerWebp(readFileSync(join(ELENCO, `${nome}.webp`)));
+    const avif = lerAvif(readFileSync(join(ELENCO, `${nome}.avif`)));
+
+    // A mesma figura nos dois formatos: divergir aqui é um dos dois ter sido
+    // regerado sozinho.
+    expect([avif.largura, avif.altura]).toEqual([webp.largura, webp.altura]);
+    expect(Math.max(webp.largura, webp.altura)).toBe(LADO_MAIOR);
+
+    // Fundo transparente é regra do documento 15 §13.6; sem canal alfa ele é
+    // impossível, e é isso que o cabeçalho consegue afirmar.
+    expect(webp.temAlfa, "alfa no WebP").toBe(true);
+    expect(avif.temAlfa, "alfa no AVIF").toBe(true);
+
+    for (const extensao of ["avif", "webp"]) {
+      const kb = statSync(join(ELENCO, `${nome}.${extensao}`)).size / 1024;
+      expect(kb, `${nome}.${extensao}`).toBeLessThanOrEqual(TETO_DO_ELENCO);
+    }
+  });
+});

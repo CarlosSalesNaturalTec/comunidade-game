@@ -27,7 +27,12 @@ export function provisionarFavicon(diretorioDeDestino: string): void {
 }
 
 /** Os quatro do elenco (documento 15 §13.6), no par AVIF com reserva WebP que
- * o `README.md` §3 fixa. */
+ * o `README.md` §3 fixa.
+ *
+ * **Nome base, nunca variante.** Susy e Otávio têm duas faixas etárias, e o
+ * arquivo sem sufixo é sempre a versão que se apresenta — hoje a adolescente.
+ * A criança fica versionada em `elenco/` e **fora** do `public/`: provisiona-se
+ * só o que se apresenta, senão o `dist/` carrega figura que ninguém busca. */
 const ELENCO = ["susy", "otavio", "trenell", "robo-educa"];
 
 /** Copia o elenco para `<destino>/elenco/`, mesmo caminho e mesmo motivo do
