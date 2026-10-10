@@ -13,7 +13,11 @@ describe("a vitrine abre pública, no recorte padrão", () => {
   it("abre inteira sem pedir login nem cadastro (RF-03-01, RN-03-01)", () => {
     render(<App />);
 
-    expect(screen.getByRole("heading", { name: "Comunidade Game", level: 1 })).toBeVisible();
+    // O `h1` da vitrine é a **saudação**, e não o nome do projeto: este é da
+    // `MarcaDoProjeto`, logo acima, e repeti-lo no cabeçalho o punha duas
+    // vezes no topo (decisão do fundador de 2026-10-10).
+    expect(screen.getByRole("heading", { name: "Boas-vindas!", level: 1 })).toBeVisible();
+    expect(screen.getByText(/sem cadastro e sem login/i)).toBeVisible();
     expect(screen.queryByLabelText(/senha/i)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /cadastrar|criar conta|sair/i })).toBeNull();
   });
@@ -21,7 +25,7 @@ describe("a vitrine abre pública, no recorte padrão", () => {
   it("a raiz é o recorte sociedade civil (RF-03-25)", () => {
     render(<App />);
 
-    expect(screen.getByRole("button", { name: "Sociedade civil" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Início" })).toHaveAttribute(
       "aria-current",
       "true",
     );
@@ -33,7 +37,7 @@ describe("a vitrine abre pública, no recorte padrão", () => {
 
     const recortes = screen.getByRole("navigation", { name: /recortes de leitura/i });
     expect(recortes).toBeVisible();
-    for (const rotulo of ["Sociedade civil", "Pesquisadores", "Gestores públicos"]) {
+    for (const rotulo of ["Início", "Pesquisadores", "Gestores públicos"]) {
       expect(screen.getByRole("button", { name: rotulo })).toBeVisible();
     }
   });
@@ -79,10 +83,10 @@ describe("trocar de recorte é navegação", () => {
     const testeDeUsuario = userEvent.setup();
 
     await testeDeUsuario.click(screen.getByRole("button", { name: "Pesquisadores" }));
-    await testeDeUsuario.click(screen.getByRole("button", { name: "Sociedade civil" }));
+    await testeDeUsuario.click(screen.getByRole("button", { name: "Início" }));
 
     expect(window.location.pathname).toBe("/");
-    expect(screen.getByRole("button", { name: "Sociedade civil" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Início" })).toHaveAttribute(
       "aria-current",
       "true",
     );

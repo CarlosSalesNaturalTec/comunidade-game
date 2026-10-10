@@ -7,7 +7,12 @@ import { PREFIXO_DA_PAGINA_DO_APOIADOR, PREFIXO_DA_PAGINA_DO_MESTRE } from "./ca
  *
  * Aqui mora só o que a navegação precisa. **Quais seções cada recorte abre, e
  * em que ordem, mora na página do recorte** em `src/pages/`: é ali que se vê,
- * seção a seção, o que sai no documento servido e o que é ilha (PRD-03 §10). */
+ * seção a seção, o que sai no documento servido e o que é ilha (PRD-03 §10).
+ *
+ * O **rótulo do recorte padrão é "Início"**, e não o nome dele: na navegação
+ * ele é a volta à raiz, e é assim que o visitante o lê. O recorte continua se
+ * chamando *sociedade civil* no domínio — a `chave` não muda, e nenhum
+ * documento normativo muda com ela (decisão do fundador de 2026-10-10). */
 export type ChaveDeRecorte = "sociedade-civil" | "pesquisadores" | "gestores-publicos";
 
 export interface Recorte {
@@ -17,7 +22,7 @@ export interface Recorte {
 }
 
 export const RECORTES: Recorte[] = [
-  { chave: "sociedade-civil", caminho: "/", rotulo: "Sociedade civil" },
+  { chave: "sociedade-civil", caminho: "/", rotulo: "Início" },
   { chave: "pesquisadores", caminho: "/pesquisadores", rotulo: "Pesquisadores" },
   { chave: "gestores-publicos", caminho: "/gestores-publicos", rotulo: "Gestores públicos" },
 ];

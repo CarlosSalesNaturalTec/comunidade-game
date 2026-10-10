@@ -116,16 +116,43 @@ describe("a abertura tem herói", () => {
     expect(acao).toHaveAttribute("href", "/quero-participar");
   });
 
-  it("não oferece ação que a vitrine não tenha, e não repete o Entrar (RF-03-58)", () => {
+  it("não oferece ação que a vitrine não tenha, e o Entrar é um só (RF-03-58)", () => {
     render(<App />);
 
-    // A única ação do herói é "Quero participar", que leva à mesma porta que o
-    // resto da vitrine já oferece.
+    // As duas ações do herói levam a portas que o resto da vitrine já oferece:
+    // "Quero participar" é link, "Entrar" abre a pergunta de persona.
     expect(within(heroi()).getAllByRole("link")).toHaveLength(1);
-    expect(within(heroi()).queryAllByRole("button")).toHaveLength(0);
-    // O "Entrar" continua sendo um só, o do cabeçalho (decisão do fundador de
-    // 2026-10-09).
+    expect(within(heroi()).getAllByRole("button", { name: "Entrar" })).toHaveLength(1);
+    // Um só na tela: o do herói. O cabeçalho da abertura não traz o seu
+    // (decisão do fundador de 2026-10-10).
     expect(screen.getAllByRole("button", { name: "Entrar" })).toHaveLength(1);
+  });
+
+  it("apresenta as duas ações como um par de iguais (RF-03-58)", () => {
+    render(<App />);
+
+    const participar = within(heroi()).getByRole("link", { name: "Quero participar" });
+    const entrar = within(heroi()).getByRole("button", { name: "Entrar" });
+
+    // No mesmo par, lado a lado, e com a mesma forma de botão da camada
+    // comum: o que distingue as duas é a cor **e** o rótulo, nunca a cor
+    // sozinha (documento 15 §5). A asserção é de **conter**, e não de pai
+    // direto: no build o Astro embrulha a ilha num `<astro-island>`.
+    const acoes = heroi().querySelector(".cg-heroi__acoes");
+    expect(acoes).toContainElement(participar);
+    expect(acoes).toContainElement(entrar);
+    expect(participar).toHaveClass("cg-botao");
+    expect(entrar).toHaveClass("cg-botao");
+    expect(participar.className).not.toBe(entrar.className);
+  });
+
+  it("sem a ilustração, as duas ações continuam acionáveis (RF-03-01)", () => {
+    render(<App />);
+
+    for (const figura of heroi().querySelectorAll("picture")) figura.remove();
+
+    expect(within(heroi()).getByRole("link", { name: "Quero participar" })).toBeVisible();
+    expect(within(heroi()).getByRole("button", { name: "Entrar" })).toBeVisible();
   });
 
   it("não busca recurso de domínio de terceiro (RF-03-51)", () => {

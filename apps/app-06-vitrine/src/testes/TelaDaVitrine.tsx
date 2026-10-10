@@ -1,5 +1,6 @@
 import { Cabecalho, FundoDeComunidade, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
+import { EntradaDaAbertura } from "../abertura/EntradaDaAbertura";
 import { Heroi } from "../abertura/Heroi";
 import { PaginaDoApoiador } from "../adultos/PaginaDoApoiador";
 import { PaginaDoMestre } from "../adultos/PaginaDoMestre";
@@ -104,8 +105,11 @@ function SecoesDoRecorte({
       <>
         {/* O mesmo componente que `index.astro` monta — e não uma cópia da
             marcação: o herói não tem estado, então a composição de teste usa o
-            próprio, sem risco de desviar dele. */}
-        <Heroi />
+            próprio, sem risco de desviar dele. O "Entrar" entra como filho,
+            como lá, e é o único da tela. */}
+        <Heroi>
+          <EntradaDaAbertura />
+        </Heroi>
         <Secao titulo="Quem somos">
           <SecaoInstitucional secao="quem-somos" nome="Quem somos" />
           <RolagemAteAAncora />
@@ -206,6 +210,10 @@ export function TelaDaVitrine() {
   const mestreId = mestreDoCaminho(caminho);
   const apoiadorId = apoiadorDoCaminho(caminho);
   const ehRecorte = RECORTES.some((recorte) => recorte.caminho === caminho);
+  // A abertura é a única tela com herói, e é o herói que traz o "Entrar" dela
+  // — o cabeçalho desta tela não traz o seu, como em `Vitrine.astro`
+  // (`RF-03-58`, decisão do fundador de 2026-10-10).
+  const comHeroi = ehRecorte && recorteDoCaminho(caminho).chave === "sociedade-civil";
 
   function conteudo() {
     if (caminho === CAMINHO_DA_PARTICIPACAO)
@@ -234,9 +242,13 @@ export function TelaDaVitrine() {
     // acusaria (design — decisão 6).
     <FundoDeComunidade imagem={null}>
       <Cabecalho
-        titulo="Comunidade Game"
-        subtitulo="A vitrine pública do projeto — aberta, sem cadastro e sem login."
-        acao={{ rotulo: "Entrar", aoAcionar: () => definirEntradaAberta(true) }}
+        titulo="Boas-vindas!"
+        subtitulo="Tudo aqui é aberto — sem cadastro e sem login."
+        acao={
+          comHeroi
+            ? undefined
+            : { rotulo: "Entrar", aoAcionar: () => definirEntradaAberta(true) }
+        }
       />
       <nav className="cg-recortes" aria-label="Recortes de leitura">
         {RECORTES.map((recorte) => (
@@ -255,7 +267,12 @@ export function TelaDaVitrine() {
         <div className="cg-vitrine">{conteudo()}</div>
       </Moldura>
       <AvisoDeColeta irPara={irPara} />
-      <DialogoDeEntrada aberto={entradaAberta} aoFechar={() => definirEntradaAberta(false)} />
+      {!comHeroi && (
+        <DialogoDeEntrada
+          aberto={entradaAberta}
+          aoFechar={() => definirEntradaAberta(false)}
+        />
+      )}
     </FundoDeComunidade>
   );
 }

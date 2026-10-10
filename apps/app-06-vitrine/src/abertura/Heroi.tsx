@@ -1,8 +1,9 @@
+import type { ReactNode } from "react";
 import { CAMINHO_DO_CONVITE } from "../navegacao/caminhos";
 
 /**
  * O herói da abertura: a ilustração do elenco em primeiro plano, a frase que
- * diz o que o projeto é, e a ação que a vitrine já oferece (`RF-03-01`,
+ * diz o que o projeto é, e as ações que a vitrine já oferece (`RF-03-01`,
  * `RF-03-51`, `RF-03-58`).
  *
  * O documento 15 §6 dá à Arena **ilustração em primeiro plano**, e sem ela a
@@ -14,10 +15,11 @@ import { CAMINHO_DO_CONVITE } from "../navegacao/caminhos";
  * composição de teste montar **este mesmo componente**, em vez de espelhar a
  * marcação à mão como `NavegacaoDeRecortes.astro` obriga.
  *
- * **"Entrar" não se repete aqui.** Ele é do cabeçalho, que fica logo acima e o
- * põe em toda tela pública (`RF-03-58`); um segundo botão de mesmo nome na
- * mesma tela não acrescenta ação nenhuma e atrapalha quem navega por leitor de
- * tela. Decisão do fundador de 2026-10-09.
+ * **O "Entrar" é do herói, e é um só na tela.** A página o passa como filho —
+ * `EntradaDaAbertura`, que é ilha porque o diálogo tem estado —, e
+ * `Vitrine.astro` diz ao cabeçalho para não trazer o dele. Até 2026-10-09 o
+ * botão morava só no cabeçalho; a decisão do fundador de 2026-10-10 o traz
+ * para junto do "Quero participar", **sem duplicá-lo**.
  *
  * "Quero participar" é **link**, não botão: trocar de tela é trocar de
  * documento desde a fatia 9, e um `<a>` navega sem JS nenhum.
@@ -47,7 +49,13 @@ const FRASE =
   "mestres e apoiadores para promover educação, tecnologia e cidadania em " +
   "comunidades periféricas.";
 
-export function Heroi() {
+interface Props {
+  /** O "Entrar" do par, montado pela página porque tem estado — o diálogo — e
+   * o herói não. Ausente, o herói apresenta só "Quero participar". */
+  children?: ReactNode;
+}
+
+export function Heroi({ children }: Props) {
   return (
     <section className="cg-heroi" aria-label="O que é o Comunidade Game">
       {/* Um rótulo só para as quatro figuras, e não um por imagem: quem usa
@@ -76,9 +84,15 @@ export function Heroi() {
         ))}
       </div>
       <p className="cg-heroi__frase">{FRASE}</p>
-      <a className="cg-botao cg-botao--primaria cg-heroi__acao" href={CAMINHO_DO_CONVITE}>
-        Quero participar
-      </a>
+      {/* As duas ações lado a lado, como **par de iguais**: mesma altura,
+          mesma forma e mesmo peso, distinguidas por cor e por rótulo. A cor
+          não é sinal único — cada botão diz o que faz (documento 15 §5). */}
+      <div className="cg-heroi__acoes">
+        <a className="cg-botao cg-botao--primaria cg-heroi__acao" href={CAMINHO_DO_CONVITE}>
+          Quero participar
+        </a>
+        {children}
+      </div>
     </section>
   );
 }

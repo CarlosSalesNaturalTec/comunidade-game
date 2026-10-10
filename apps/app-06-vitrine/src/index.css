@@ -81,27 +81,51 @@ textarea {
   margin: 0;
 }
 
-/* Navegação dos três recortes de leitura. O recorte corrente é marcado por
- * `aria-current` e por peso e borda, nunca só por cor (documento 15 §5). */
-.cg-recortes {
-  display: flex;
-  flex-wrap: wrap;
+/* A faixa de topo — marca, cabeçalho e recortes — divide a moldura do
+ * `<main>`: a mesma largura de leitura, e o respiro lateral alinhado ao do
+ * conteúdo, que soma o da moldura e o da `.cg-vitrine`. Fora dela a faixa
+ * encostava no corte do visor (documento 15 §4). */
+.cg-topo {
   gap: var(--espaco-8);
-  padding: var(--espaco-8) 0;
-  border-bottom: 1px solid var(--cor-separador);
+  padding-block: var(--espaco-16) 0;
+  padding-inline: var(--espaco-32);
 }
 
+/* Navegação dos três recortes de leitura, em **uma linha só** e em corpo
+ * menor: ela orienta, não disputa a abertura. O recorte corrente é marcado por
+ * peso e filete, nunca só por cor (documento 15 §5).
+ *
+ * `color` e `text-decoration` são declarados de propósito: sem eles o
+ * navegador aplica o próprio padrão de link, e os três saíam sublinhados em
+ * roxo. */
+.cg-recortes {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-16);
+  padding: var(--espaco-8) 0;
+  border-bottom: 1px solid var(--cor-separador);
+  font-size: var(--escala-0875);
+}
+
+/* O alvo de toque de 48 px vem da **altura da faixa**, não do corpo da fonte:
+ * a área acionável é a linha inteira, com o texto pequeno dentro dela
+ * (documento 15 §§4, 5). */
 .cg-recortes__item {
+  display: inline-flex;
+  align-items: center;
   min-height: var(--alvo-de-toque);
-  padding: 0 var(--espaco-16);
-  border: 1px solid transparent;
-  border-radius: var(--raio-campo);
+  border: none;
+  border-bottom: var(--largura-do-foco) solid transparent;
   background: none;
+  color: var(--cor-texto-secundario);
+  text-decoration: none;
+  white-space: nowrap;
   cursor: pointer;
 }
 
 .cg-recortes__item[aria-current] {
-  border-color: var(--cor-separador);
+  border-bottom-color: var(--cor-texto);
+  color: var(--cor-texto);
   font-weight: var(--peso-rotulo);
 }
 
@@ -355,6 +379,10 @@ textarea {
   align-items: center;
   gap: var(--espaco-16);
   text-align: center;
+  /* A sangria do elenco sai da moldura por `100vw`, e em navegador de mesa
+   * essa medida conta a barra de rolagem. Sem o corte aqui, a abertura
+   * ganharia rolagem horizontal de alguns pixels. */
+  overflow-x: clip;
 }
 
 /* As quatro figuras em linha, na ordem da composição: os dois estudantes nas
@@ -369,15 +397,22 @@ textarea {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: var(--espaco-8);
-  width: 100%;
+  /* Sem vão: as quatro figuras encostam, e a composição agradece — o professor
+   * fica de fato ao lado da criatura que a mão dele indica. */
+  gap: 0;
+  /* **Sangria até a borda do visor**, saindo do respiro da moldura. A fileira
+   * é 2,2 vezes mais larga do que alta, então é a largura que decide a altura
+   * possível: dentro da moldura o teto num visor de 360 px seria de cerca de
+   * 148 px, e sangrando passa de 160 px. */
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
 }
 
 /* A altura manda, e a largura acompanha a proporção de cada arquivo. O
  * intervalo é o mesmo do celular modesto ao aparelho largo (documento 15 §1,
  * princípio 4): nada de consultar largura de tela para isto. */
 .cg-heroi__elenco img {
-  height: clamp(96px, 22vw, 208px);
+  height: clamp(132px, 44vw, 288px);
   width: auto;
   /* A altura declarada no atributo reserva o lugar antes de a imagem chegar;
    * sem isto o `height` acima só valeria depois do carregamento, e a tela
@@ -390,18 +425,55 @@ textarea {
   margin: 0;
   max-width: var(--largura-de-leitura);
   font-family: var(--fonte-destaque);
-  font-size: var(--escala-1375);
+  /* Um degrau abaixo do que era: a frase diz o que o projeto é, e quem abre a
+   * tela em primeiro plano é o elenco (documento 15 §§4, 6). */
+  font-size: var(--escala-1125);
   line-height: var(--entrelinha-titulo);
+}
+
+/* O par de ações da abertura: lado a lado, e empilhado só quando a linha não
+ * couber. A separação de 8 px entre alvos vizinhos é a do documento 15 §4. */
+.cg-heroi__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-8);
+}
+
+/* O "Entrar" é ilha, e o Astro o embrulha num `<astro-island>` — sem isto o
+ * embrulho seria o item do flex, e não o botão: o par perderia o alinhamento e
+ * a quebra de linha. `display: contents` dissolve o embrulho na disposição e
+ * não altera a hidratação. */
+.cg-heroi__acoes > astro-island {
+  display: contents;
 }
 
 /* O link que age como botão precisa do mesmo alvo de toque que o `cg-botao`
  * garante a um `<button>`, e de centrar o rótulo que um `<a>` não centra
- * sozinho (documento 15 §5). */
+ * sozinho (documento 15 §5). A margem entre vizinhos é do `.cg-heroi__acoes`:
+ * aqui ela é zerada, senão o `.cg-botao + .cg-botao` da camada comum a somaria
+ * ao vão do par. */
 .cg-heroi__acao {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-inline-start: 0;
   text-decoration: none;
+}
+
+/* O "Entrar" do par, na família **Marca** — o "Quero participar" fica na
+ * família Ação. As duas ações são cheias e de mesma forma; o que as distingue
+ * é a cor **e** o rótulo, nunca a cor sozinha (documento 15 §§3.2, 3.3, 5).
+ * `cal-000` sobre `marca-600` mede 4,76:1, acima do piso de 4,5:1.
+ *
+ * Mora aqui, e não em `comum/react/estilos.css`: a variante é deste par, e as
+ * outras sete aplicações não pediram ação laranja (decisão do fundador de
+ * 2026-10-10). */
+.cg-botao--marca {
+  background: var(--cor-marca);
+  color: var(--cor-sobre-marca);
+  border-color: var(--cor-marca-contorno);
 }
 
 /* A chamada "Quero participar" ao pé da página individual: uma decisão por

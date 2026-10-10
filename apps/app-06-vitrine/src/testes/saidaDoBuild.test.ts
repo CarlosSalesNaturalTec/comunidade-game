@@ -120,11 +120,14 @@ describe("cada rota indexável declara título e canônica próprios", () => {
 // teste afirma a mesma ordem de seções, e aqui se confere que a página real a
 // tem (design — decisão 7).
 describe("cada recorte abre com as seções que o PRD-03 §5 lhe dá", () => {
-  /** Só os `h2` de dentro do `<main>`: o diálogo de entrada, que o cabeçalho
-   * monta, também tem um, e ele não é seção de recorte. */
+  /** Só os `h2` de dentro do `<main>`, e fora do diálogo de entrada: ele
+   * também tem um, e não é seção de recorte. Desde 2026-10-10 o diálogo da
+   * abertura mora **dentro** do `<main>`, porque o "Entrar" dessa tela é do
+   * herói; nas demais ele segue no cabeçalho, fora dele. */
   function titulos(arquivo: string): string[] {
     const principal = /<main[^>]*>([\s\S]*)<\/main>/.exec(ler(arquivo))?.[1] ?? "";
-    return [...principal.matchAll(/<h2[^>]*>([^<]+)<\/h2>/g)].map((achado) => achado[1]);
+    const semDialogo = principal.replace(/<dialog[\s\S]*?<\/dialog>/g, "");
+    return [...semDialogo.matchAll(/<h2[^>]*>([^<]+)<\/h2>/g)].map((achado) => achado[1]);
   }
 
   it("sociedade civil traz as onze seções, na ordem (RF-03-02, RF-03-25)", () => {
@@ -389,6 +392,24 @@ describe("o herói sai no documento servido da abertura", () => {
   it("o herói é da abertura, e não dos outros recortes (RF-03-25)", () => {
     for (const arquivo of ["pesquisadores.html", "gestores-publicos.html"]) {
       expect(ler(arquivo), arquivo).not.toContain("cg-heroi");
+    }
+  });
+
+  it("o par de ações sai no documento, e o Entrar é um só na tela (RF-03-58)", () => {
+    const html = ler("index.html");
+    const heroi = /<section class="cg-heroi"[\s\S]*?<\/section>/.exec(html)?.[0] ?? "";
+
+    // As duas ações saem no documento servido, lado a lado: o "Entrar" é ilha
+    // porque o diálogo tem estado, mas a marcação dele já vem publicada.
+    expect(heroi).toContain('href="/quero-participar"');
+    expect(heroi).toContain(">Entrar<");
+    // Um só na tela: o cabeçalho da abertura não traz o seu.
+    expect([...html.matchAll(/>Entrar</g)]).toHaveLength(1);
+  });
+
+  it("as demais telas públicas seguem com o Entrar do cabeçalho (RF-03-58)", () => {
+    for (const arquivo of ["pesquisadores.html", "gestores-publicos.html", "app.html"]) {
+      expect([...ler(arquivo).matchAll(/>Entrar</g)], arquivo).toHaveLength(1);
     }
   });
 });

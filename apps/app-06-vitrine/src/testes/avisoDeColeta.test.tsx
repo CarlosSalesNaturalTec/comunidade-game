@@ -35,7 +35,7 @@ describe("aviso de coleta em toda tela (RN-03-23)", () => {
     render(<App />);
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Sociedade civil" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Início" })).toBeEnabled();
     expect(localStorage.length).toBe(0);
     expect(sessionStorage.length).toBe(0);
     expect(document.cookie).toBe("");
