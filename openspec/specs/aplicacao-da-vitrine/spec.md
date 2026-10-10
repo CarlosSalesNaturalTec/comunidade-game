@@ -41,7 +41,13 @@ ação alguma e atrapalham quem navega por leitor de tela (decisão do fundador 
 O que o herói comunica NEVER SHALL depender da ilustração: some a ilustração — rede
 fora, preferência do aparelho —, e a frase e a ação continuam de pé. A ilustração
 NEVER SHALL entrar no caminho crítico da tela nem exigir recurso de domínio de terceiro.
-(documento 15 §§1, 6; `RF-03-01`, `RF-03-51`, `RF-03-58`, `RN-03-21`)
+
+A ilustração SHALL ser uma **composição**, e não quatro figuras em qualquer ordem: os dois
+estudantes nas extremidades, e ao centro o professor ao lado da criatura que a mão dele
+indica. A ordem NEVER SHALL mudar sem que a razão mude junto — o gesto do professor aponta
+para o vazio se a criatura sair do lado dele.
+(documento 15 §§1, 6, 13.6; `RF-03-01`, `RF-03-51`, `RF-03-58`, `RN-03-21`; decisão do
+fundador de 2026-10-10)
 
 #### Scenario: A abertura apresenta o herói antes das seções
 
@@ -64,6 +70,17 @@ NEVER SHALL entrar no caminho crítico da tela nem exigir recurso de domínio de
 - **WHEN** a abertura é servida
 - **THEN** nenhuma requisição sai para domínio que não seja o próprio
 
+#### Scenario: A composição põe o professor ao lado da criatura que ele indica
+
+- **WHEN** a ilustração do herói é apresentada
+- **THEN** o professor ocupa a posição vizinha à da criatura, do lado para onde a mão dele
+  aponta, e os dois estudantes ficam nas extremidades
+
+#### Scenario: Quem lê por leitor de tela ouve o elenco na ordem em que ele aparece
+
+- **WHEN** a ilustração é alcançada por leitor de tela
+- **THEN** ela é anunciada uma vez, como um grupo só, nomeando as quatro figuras na mesma
+  ordem em que aparecem na tela
 ### Requirement: O institucional é servido em HTML real, e a vitrine sai como arquivo estático
 
 A App 06 SHALL ser publicada como **saída estática**, sem runtime de servidor, e cada
