@@ -1,4 +1,4 @@
-import { Cabecalho, FundoDeComunidade, Moldura } from "comum/react";
+import { Cabecalho, FundoDeComunidade, MarcaDoProjeto, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import { EntradaDaAbertura } from "../abertura/EntradaDaAbertura";
 import { Heroi } from "../abertura/Heroi";
@@ -13,7 +13,6 @@ import { PortaDoConvite } from "../convite/PortaDoConvite";
 import { ApresentacaoDaUrl } from "../desenvolvedor/ApresentacaoDaUrl";
 import { AreaDoDesenvolvedor } from "../desenvolvedor/AreaDoDesenvolvedor";
 import { SecaoDoDesenvolvedor } from "../desenvolvedor/SecaoDoDesenvolvedor";
-import { DialogoDeEntrada } from "../entrada/DialogoDeEntrada";
 import { FormularioDeDados } from "../formularios/FormularioDeDados";
 import { FormularioDeParticipacao } from "../formularios/FormularioDeParticipacao";
 import { SecaoDeSolicitacaoDeDados } from "../formularios/SecaoDeSolicitacaoDeDados";
@@ -174,7 +173,6 @@ function SecoesDoRecorte({
 
 export function TelaDaVitrine() {
   const [caminho, definirCaminho] = useState(() => window.location.pathname);
-  const [entradaAberta, definirEntradaAberta] = useState(false);
   const empilhados = useState({ total: 0 })[0];
 
   useEffect(() => {
@@ -210,10 +208,6 @@ export function TelaDaVitrine() {
   const mestreId = mestreDoCaminho(caminho);
   const apoiadorId = apoiadorDoCaminho(caminho);
   const ehRecorte = RECORTES.some((recorte) => recorte.caminho === caminho);
-  // A abertura é a única tela com herói, e é o herói que traz o "Entrar" dela
-  // — o cabeçalho desta tela não traz o seu, como em `Vitrine.astro`
-  // (`RF-03-58`, decisão do fundador de 2026-10-10).
-  const comHeroi = ehRecorte && recorteDoCaminho(caminho).chave === "sociedade-civil";
 
   function conteudo() {
     if (caminho === CAMINHO_DA_PARTICIPACAO)
@@ -241,14 +235,17 @@ export function TelaDaVitrine() {
     // de teste desviaria do layout — e é o teste da saída do build que
     // acusaria (design — decisão 6).
     <FundoDeComunidade imagem={null}>
+      {/* A marca, como em `Vitrine.astro`: ela está em toda tela e leva à
+          abertura, e é por ela que quem está em outro recorte alcança o
+          "Entrar" (`RF-03-58`). Faltava na composição, e passou a importar
+          quando o botão deixou de estar em toda tela. */}
+      <MarcaDoProjeto href="/" />
+      {/* Sem ação: na vitrine o "Entrar" é do herói, e nenhuma outra tela
+          pública o apresenta (`RF-03-58`, decisão do fundador de
+          2026-10-10). */}
       <Cabecalho
         titulo="Boas-vindas!"
         subtitulo="Tudo aqui é aberto — sem cadastro e sem login."
-        acao={
-          comHeroi
-            ? undefined
-            : { rotulo: "Entrar", aoAcionar: () => definirEntradaAberta(true) }
-        }
       />
       <nav className="cg-recortes" aria-label="Recortes de leitura">
         {RECORTES.map((recorte) => (
@@ -267,12 +264,6 @@ export function TelaDaVitrine() {
         <div className="cg-vitrine">{conteudo()}</div>
       </Moldura>
       <AvisoDeColeta irPara={irPara} />
-      {!comHeroi && (
-        <DialogoDeEntrada
-          aberto={entradaAberta}
-          aoFechar={() => definirEntradaAberta(false)}
-        />
-      )}
     </FundoDeComunidade>
   );
 }

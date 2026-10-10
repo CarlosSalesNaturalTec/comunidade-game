@@ -234,18 +234,20 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 
 ### 5.9 Entrar na plataforma
 
-1. Qualquer pessoa que chega à raiz do domínio vê a vitrine e, sempre visível, o botão
-   **Entrar**.
-2. O botão pergunta **quem está entrando** e encaminha à aplicação correspondente:
+1. Qualquer pessoa que chega à raiz do domínio vê a vitrine e, na abertura, o botão
+   **Entrar**. Ele existe **uma vez** — nenhuma outra tela pública o apresenta.
+2. Quem está em outra tela e quer entrar chega à abertura pela **marca do projeto**, presente
+   em toda tela.
+3. O botão pergunta **quem está entrando** e encaminha à aplicação correspondente:
    Guerreiro(a) à App 05, responsável à App 07, Mestre à App 09, Apoiador à App 08, gestão à
    App 03 e o **aparelho da aula** à App 01.
-3. A vitrine **não autentica ninguém**: a conferência de nick e imagem, o login social e a
+4. A vitrine **não autentica ninguém**: a conferência de nick e imagem, o login social e a
    credencial de usuário e senha acontecem na aplicação de destino.
-4. A escolha **não é guardada**: quem volta encontra a mesma pergunta, porque a vitrine não
+5. A escolha **não é guardada**: quem volta encontra a mesma pergunta, porque a vitrine não
    grava preferência de visitante.
-5. Nenhuma tela do "Entrar" revela quem existe na plataforma — sem lista de nicks, sem
+6. Nenhuma tela do "Entrar" revela quem existe na plataforma — sem lista de nicks, sem
    sugestão, sem confirmação de que uma conta existe.
-6. Quem ainda não tem cadastro recebe a orientação da sua persona: **pré-cadastro** para quem
+7. Quem ainda não tem cadastro recebe a orientação da sua persona: **pré-cadastro** para quem
    quer ser Apoiador, **formulário de participação** para quem quer ser Mestre e **procurar a
    gestão no encontro** para responsável e Guerreiro(a) — login não cria cadastro.
 
@@ -335,7 +337,7 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RF-03-51` | Vitrine não instala cookie, rastreador ou perfilamento do visitante                                                                             | essencial  |
 | `RF-03-52` | Área detalhada explica o que a plataforma coleta, de quem, para quê e por quanto tempo                                                          | essencial  |
 | `RF-03-53` | Área detalhada declara que a vitrine não coleta dado do visitante                                                                               | essencial  |
-| `RF-03-58` | Botão "Entrar" fica sempre visível e pergunta qual persona está entrando                                                                        | essencial  |
+| `RF-03-58` | Botão "Entrar" fica na abertura, no herói, e pergunta qual persona está entrando                                                                | essencial  |
 | `RF-03-59` | Cada persona é encaminhada à sua aplicação, sem autenticação na vitrine                                                                         | essencial  |
 | `RF-03-60` | Escolha de persona não é guardada, no servidor ou no aparelho                                                                                   | essencial  |
 | `RF-03-61` | Nenhuma tela de entrada revela nick, conta ou existência de cadastro                                                                            | essencial  |

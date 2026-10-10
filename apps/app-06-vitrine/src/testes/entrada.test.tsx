@@ -46,14 +46,30 @@ describe("o botão Entrar pergunta e encaminha", () => {
     window.history.pushState(null, "", "/");
   });
 
-  it("o botão está em toda tela, em todos os recortes (RF-03-58)", async () => {
+  it("o botão é da abertura, e de nenhuma outra tela pública (RF-03-58)", async () => {
     render(<App />);
     const testeDeUsuario = userEvent.setup();
 
     expect(screen.getByRole("button", { name: "Entrar" })).toBeVisible();
     await testeDeUsuario.click(screen.getByRole("button", { name: "Pesquisadores" }));
-    expect(screen.getByRole("button", { name: "Entrar" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Entrar" })).toBeNull();
     await testeDeUsuario.click(screen.getByRole("button", { name: "Gestores públicos" }));
+    expect(screen.queryByRole("button", { name: "Entrar" })).toBeNull();
+  });
+
+  it("de outro recorte, a marca leva de volta à abertura (RF-03-58)", async () => {
+    render(<App />);
+    const testeDeUsuario = userEvent.setup();
+
+    await testeDeUsuario.click(screen.getByRole("button", { name: "Pesquisadores" }));
+
+    // A marca está em toda tela desde a fatia 9, e é o caminho de quem está
+    // fora da abertura e quer entrar (decisão do fundador de 2026-10-10).
+    expect(screen.getByRole("link", { name: /comunidade game/i })).toHaveAttribute(
+      "href",
+      "/",
+    );
+    await testeDeUsuario.click(screen.getByRole("button", { name: "Início" }));
     expect(screen.getByRole("button", { name: "Entrar" })).toBeVisible();
   });
 

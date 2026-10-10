@@ -389,6 +389,28 @@ describe("o herói sai no documento servido da abertura", () => {
     }
   });
 
+  it("a altura do elenco vem da largura do herói, e não do visor (RF-03-01)", () => {
+    // É o guarda da regressão do corte: a primeira tentativa dimensionava as
+    // figuras por `100vw` e protegia a sangria com `overflow-x: clip` no
+    // herói — e o corte recortava justamente a sangria, partindo a quarta
+    // figura na borda. Medido no Chromium em 320, 360, 412, 768 e 1280 px:
+    // nenhuma figura cortada e nenhuma rolagem horizontal.
+    const folhas = [...ler("index.html").matchAll(/href="(\/_astro\/[^"]+\.css)"/g)].map(
+      (achado) => achado[1],
+    );
+    const css = folhas.map((folha) => ler(folha.replace(/^\//, ""))).join("\n");
+
+    const heroi = /\.cg-heroi\{[^}]*\}/.exec(css.replace(/\s+/g, ""))?.[0] ?? "";
+    const figura = /\.cg-heroi__elencoimg\{[^}]*\}/.exec(css.replace(/\s+/g, ""))?.[0] ?? "";
+
+    expect(heroi).toContain("container-type:inline-size");
+    expect(figura).toMatch(/height:[\d.]+cqw/);
+    // Nenhuma das duas volta a depender do visor nem a esconder o que
+    // transborda: as duas juntas eram o defeito.
+    expect(figura).not.toContain("vw");
+    expect(heroi).not.toContain("overflow");
+  });
+
   it("o herói é da abertura, e não dos outros recortes (RF-03-25)", () => {
     for (const arquivo of ["pesquisadores.html", "gestores-publicos.html"]) {
       expect(ler(arquivo), arquivo).not.toContain("cg-heroi");
@@ -407,9 +429,45 @@ describe("o herói sai no documento servido da abertura", () => {
     expect([...html.matchAll(/>Entrar</g)]).toHaveLength(1);
   });
 
-  it("as demais telas públicas seguem com o Entrar do cabeçalho (RF-03-58)", () => {
-    for (const arquivo of ["pesquisadores.html", "gestores-publicos.html", "app.html"]) {
-      expect([...ler(arquivo).matchAll(/>Entrar</g)], arquivo).toHaveLength(1);
+  it("nenhuma tela além da abertura traz o Entrar (RF-03-58)", () => {
+    // Na vitrine o botão existe uma vez, no herói (decisão do fundador de
+    // 2026-10-10). O cabeçalho não o traz em tela nenhuma.
+    for (const arquivo of [
+      "pesquisadores.html",
+      "gestores-publicos.html",
+      "o-que-coletamos.html",
+      "quero-participar.html",
+      "participar.html",
+      "solicitar-dados.html",
+      "desenvolvedor.html",
+      "app.html",
+    ]) {
+      expect([...ler(arquivo).matchAll(/>Entrar</g)], arquivo).toHaveLength(0);
+    }
+  });
+
+  it("a marca leva à abertura em toda tela pública (RF-03-58)", () => {
+    // É o caminho de quem está fora da abertura e quer entrar: sem ela, a
+    // regra nova deixaria o visitante de outro recorte sem rota até a porta.
+    for (const arquivo of [
+      "index.html",
+      "pesquisadores.html",
+      "gestores-publicos.html",
+      "o-que-coletamos.html",
+      "quero-participar.html",
+      join("comunidades", "zeferina.html"),
+    ]) {
+      expect(ler(arquivo), arquivo).toContain('<a class="cg-marca" href="/">');
+    }
+  });
+
+  it("o cabeçalho sai no documento servido, e não como ilha (RF-03-51)", () => {
+    // Sem o botão não há estado, e sem estado não há ilha: uma a menos em
+    // toda tela pública (documento 15 §1, princípio 4).
+    for (const arquivo of ["index.html", "pesquisadores.html"]) {
+      const html = ler(arquivo);
+      expect(html, arquivo).toContain("Boas-vindas!");
+      expect(html, arquivo).not.toContain("CabecalhoDaVitrine");
     }
   });
 });

@@ -38,6 +38,8 @@ describe("a vitrine não deixa rastro no aparelho", () => {
 
     await testeDeUsuario.click(screen.getByRole("button", { name: "Pesquisadores" }));
     await testeDeUsuario.click(screen.getByRole("button", { name: "Gestores públicos" }));
+    // O "Entrar" é da abertura: a visita volta a ela para entrar (`RF-03-58`).
+    await testeDeUsuario.click(screen.getByRole("button", { name: "Início" }));
     await testeDeUsuario.click(screen.getByRole("button", { name: "Entrar" }));
     await testeDeUsuario.click(screen.getByRole("button", { name: "Sou Apoiador" }));
     await testeDeUsuario.click(screen.getByRole("button", { name: /fechar/i }));

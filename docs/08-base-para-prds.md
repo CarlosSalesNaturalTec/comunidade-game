@@ -254,7 +254,8 @@ lançada pelo Mestre (App 09) e pelo Admin (App 03), sem revisão de terceiro.
 ## PRD-03 — App 06: Vitrine pública
 
 **Escopo:** site público, sem login, na **raiz do domínio da plataforma** — é por ele que
-qualquer pessoa chega, e é dele que o botão **Entrar** encaminha cada persona à sua aplicação.
+qualquer pessoa chega, e é da **abertura** dele que o botão **Entrar** encaminha cada persona à
+sua aplicação.
 
 **Requisitos:** seções Guerreiros e Guerreiras, Poderes, Mestres, Batalhas, Apoiadores e
 Comunidades Virtuais com cards individuais; **página individual detalhada** aberta a partir de
@@ -273,7 +274,7 @@ leva à apresentação da Área do Apoiador, com solicitação de cadastro e cam
 **chamada "Quero participar" em toda página individual**, que leva à mesma porta, **abre pela
 pergunta do que a pessoa traz** — encaminhando dinheiro ao pré-cadastro da App 08 e as demais
 modalidades ao formulário da vitrine, cada uma com o seu campo comprobatório (documento 14) — e
-**nunca vincula o apoio à pessoa exibida**; **botão "Entrar"** sempre visível, encaminhando Guerreiro(a)
+**nunca vincula o apoio à pessoa exibida**; **botão "Entrar"** na abertura, encaminhando Guerreiro(a)
 à App 05, responsável à App 07, Mestre à App 09, Apoiador à App 08, gestão à App 03 e o aparelho
 da aula à App 01 — a vitrine não autentica ninguém e não guarda a escolha; **card de Apoiador
 padronizado** — moldura comum, avatar centralizado, nick e total de moedas em destaque, com

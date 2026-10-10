@@ -33,11 +33,10 @@ do elenco em primeiro plano, a frase que diz o que o projeto é, e as ações qu
 já oferece — "Quero participar" e "Entrar". NEVER SHALL oferecer ação que a vitrine não
 tenha em outra tela.
 
-O "Entrar" **migra para o herói, e nunca se repete**: na tela que tem herói ele é do
-herói, e o cabeçalho dessa tela NEVER SHALL trazer um segundo. Dois botões de mesmo nome
-na mesma tela não acrescentam ação alguma e atrapalham quem navega por leitor de tela —
-é a razão de 2026-10-09, e ela continua valendo; o que muda é **onde** o botão único
-mora (decisão do fundador de 2026-10-10).
+O "Entrar" da vitrine é **do herói, e só dele**: nenhuma outra tela pública o apresenta, e
+o cabeçalho NEVER SHALL trazer um segundo. Dois botões de mesmo nome na mesma tela não
+acrescentam ação alguma e atrapalham quem navega por leitor de tela (decisão do fundador de
+2026-10-10).
 
 As duas ações SHALL ser apresentadas como um **par de iguais**: lado a lado, de mesma
 altura, mesma forma e mesmo peso, distinguidas **por cor e por rótulo**, nunca por
@@ -50,9 +49,9 @@ NEVER SHALL entrar no caminho crítico da tela nem exigir recurso de domínio de
 A ilustração SHALL ser uma **composição**, e não quatro figuras em qualquer ordem: os dois
 estudantes nas extremidades, e ao centro o professor ao lado da criatura que a mão dele
 indica. A ordem NEVER SHALL mudar sem que a razão mude junto — o gesto do professor aponta
-para o vazio se a criatura sair do lado dele.
-(documento 15 §§1, 3.2, 6, 13.6; `RF-03-01`, `RF-03-51`, `RF-03-58`, `RN-03-21`; decisões
-do fundador de 2026-10-10)
+para o vazio se a criatura sair do lado dele. As quatro SHALL aparecer **inteiras**, sem
+corte nem redução de uma em relação às outras, do celular modesto ao aparelho largo.
+(documento 15 §§1, 3.2, 4, 6, 13.6; `RF-03-01`, `RF-03-51`, `RF-03-58`, `RN-03-21`)
 
 #### Scenario: A abertura apresenta o herói antes das seções
 
@@ -92,6 +91,12 @@ do fundador de 2026-10-10)
 - **WHEN** a ilustração do herói é apresentada
 - **THEN** o professor ocupa a posição vizinha à da criatura, do lado para onde a mão dele
   aponta, e os dois estudantes ficam nas extremidades
+
+#### Scenario: As quatro figuras aparecem inteiras, em qualquer largura de tela
+
+- **WHEN** a abertura é aberta num visor estreito de celular ou num aparelho largo
+- **THEN** as quatro figuras cabem na largura disponível, nenhuma é cortada na borda e a
+  tela não ganha rolagem horizontal
 
 #### Scenario: Quem lê por leitor de tela ouve o elenco na ordem em que ele aparece
 
@@ -446,40 +451,6 @@ pedir cadastro, coletar dado do visitante ou guardar o recorte escolhido. (`RF-0
 
 - **WHEN** o visitante troca de recorte e volta à vitrine depois
 - **THEN** a vitrine abre outra vez no recorte sociedade civil
-
-### Requirement: O botão "Entrar" fica sempre visível e pergunta qual persona está entrando
-
-A App 06 SHALL manter o botão **"Entrar"** visível em toda tela pública, e ao ser acionado ele
-SHALL perguntar **quem está entrando**, apresentando as personas que têm aplicação: Guerreiro(a),
-responsável, Mestre, Apoiador, gestão e o **aparelho da aula**.
-
-O botão SHALL ser **um só por tela**. Onde a tela tem herói, ele é do herói; onde não tem,
-é do cabeçalho. Qualquer que seja o lugar, ele abre a mesma pergunta, com as mesmas
-personas e sem escolha pré-marcada. (`RF-03-58`, PRD-03 §5.9; decisão do fundador de
-2026-10-10)
-
-#### Scenario: O botão está em toda tela
-
-- **WHEN** o visitante está em qualquer tela pública da vitrine
-- **THEN** o botão "Entrar" está visível
-
-#### Scenario: Há um "Entrar" por tela, e não dois
-
-- **WHEN** o visitante percorre as telas públicas da vitrine
-- **THEN** cada tela traz exatamente um "Entrar" — no herói, quando a tela tem herói, e no
-  cabeçalho, quando não tem
-
-#### Scenario: O botão pergunta antes de encaminhar
-
-- **WHEN** o visitante aciona "Entrar"
-- **THEN** a vitrine pergunta qual persona está entrando, sem encaminhar ninguém antes da
-  resposta
-
-#### Scenario: A pergunta é a mesma venha o botão de onde vier
-
-- **WHEN** o visitante aciona o "Entrar" do herói e, em outra tela, o do cabeçalho
-- **THEN** as duas vezes a vitrine apresenta a mesma pergunta, com as mesmas personas e sem
-  escolha pré-marcada
 
 ### Requirement: Cada persona é encaminhada à sua aplicação, e a vitrine nunca autentica
 
@@ -1520,3 +1491,42 @@ prazo vencido, chave inexistente ou identificador que não confere — com a cau
 
 - **WHEN** a apresentação é recusada por prazo vencido ou por identificador que não confere
 - **THEN** a tela mostra a causa que o núcleo declarou, sem disfarçá-la de outra coisa
+
+### Requirement: O "Entrar" é da abertura, e pergunta qual persona está entrando
+
+A App 06 SHALL apresentar o botão **"Entrar"** na **abertura**, dentro do herói, e NEVER
+SHALL apresentá-lo em outra tela pública. Ao ser acionado ele SHALL perguntar **quem está
+entrando**, apresentando as personas que têm aplicação: Guerreiro(a), responsável, Mestre,
+Apoiador, gestão e o **aparelho da aula**.
+
+Quem está em outra tela pública SHALL alcançar a entrada pela **marca do projeto**, que leva
+à abertura em toda tela. (`RF-03-58`, PRD-03 §5.9, documento 03 §8; decisão do fundador de
+2026-10-10)
+
+#### Scenario: O botão está na abertura
+
+- **WHEN** o visitante abre a raiz do domínio
+- **THEN** o botão "Entrar" está visível, no herói
+
+#### Scenario: Nenhuma outra tela pública traz o botão
+
+- **WHEN** o visitante percorre os outros recortes e as demais telas públicas
+- **THEN** nenhuma delas apresenta um "Entrar"
+
+#### Scenario: A marca leva de volta à abertura
+
+- **WHEN** o visitante está em outra tela pública e quer entrar
+- **THEN** a marca do projeto, presente em toda tela, o leva à abertura, onde o "Entrar"
+  está
+
+#### Scenario: O botão pergunta antes de encaminhar
+
+- **WHEN** o visitante aciona "Entrar"
+- **THEN** a vitrine pergunta qual persona está entrando, sem encaminhar ninguém antes da
+  resposta
+
+#### Scenario: A pergunta apresenta as seis personas que têm aplicação
+
+- **WHEN** a pergunta do "Entrar" é apresentada
+- **THEN** ela oferece Guerreiro(a), responsável, Mestre, Apoiador, gestão e o aparelho da
+  aula, sem escolha pré-marcada
