@@ -65,7 +65,14 @@ describe("trocar de recorte é navegação", () => {
     const titulos = screen.getAllByRole("heading", { level: 2 }).map((no) => no.textContent);
     expect(titulos[0]).toMatch(/serve ao município/i);
     expect(screen.queryByLabelText(/senha/i)).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Entrar" })).toBeVisible();
+    // O "Entrar" é da abertura: o outro recorte não o traz, e o caminho de
+    // volta é a marca (`RF-03-58`, decisão do fundador de 2026-10-10). O que
+    // o `RF-03-26` exige continua valendo — nada aqui está bloqueado.
+    expect(screen.queryByRole("button", { name: "Entrar" })).toBeNull();
+    expect(screen.getByRole("link", { name: /comunidade game/i })).toHaveAttribute(
+      "href",
+      "/",
+    );
   });
 
   it("o recorte pesquisadores abre pelas séries do território (RF-03-26)", async () => {

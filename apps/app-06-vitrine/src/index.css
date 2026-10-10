@@ -379,10 +379,11 @@ textarea {
   align-items: center;
   gap: var(--espaco-16);
   text-align: center;
-  /* A sangria do elenco sai da moldura por `100vw`, e em navegador de mesa
-   * essa medida conta a barra de rolagem. Sem o corte aqui, a abertura
-   * ganharia rolagem horizontal de alguns pixels. */
-  overflow-x: clip;
+  /* O herói é o **contêiner de consulta** do elenco: é da largura dele que a
+   * altura das figuras é tirada, e não da largura do visor. Assim a regra se
+   * corrige sozinha em qualquer tela, e não depende de saber quanto respiro a
+   * moldura tem — era essa dependência que fazia o elenco cortar. */
+  container-type: inline-size;
 }
 
 /* As quatro figuras em linha, na ordem da composição: os dois estudantes nas
@@ -400,24 +401,21 @@ textarea {
   /* Sem vão: as quatro figuras encostam, e a composição agradece — o professor
    * fica de fato ao lado da criatura que a mão dele indica. */
   gap: 0;
-  /* **Sangria até a borda do visor**, saindo do respiro da moldura. A fileira
-   * é 2,2 vezes mais larga do que alta, então é a largura que decide a altura
-   * possível: dentro da moldura o teto num visor de 360 px seria de cerca de
-   * 148 px, e sangrando passa de 160 px. */
-  width: 100vw;
-  margin-inline: calc(50% - 50vw);
+  align-self: stretch;
 }
 
-/* A altura manda, e a largura acompanha a proporção de cada arquivo. O
- * intervalo é o mesmo do celular modesto ao aparelho largo (documento 15 §1,
+/* Cada figura ocupa a altura inteira da fileira, e a largura acompanha a
+ * proporção do arquivo. A soma das quatro dá exatamente a largura da fileira,
+ * porque é dessa soma que a proporção dela foi tirada — nenhuma figura é
+ * reduzida nem cortada, do celular modesto ao aparelho largo (documento 15 §1,
  * princípio 4): nada de consultar largura de tela para isto. */
 .cg-heroi__elenco img {
-  height: clamp(132px, 44vw, 288px);
+  /* As quatro figuras somam 2254 × 1024: a fileira é 2,2 vezes mais larga do
+   * que alta, logo a altura que a faz caber é 45,4 % da largura do herói.
+   * `44cqw` deixa 3 % de folga, para arredondamento de sub-pixel nunca
+   * empurrar a última figura para fora. */
+  height: 44cqw;
   width: auto;
-  /* A altura declarada no atributo reserva o lugar antes de a imagem chegar;
-   * sem isto o `height` acima só valeria depois do carregamento, e a tela
-   * pularia. */
-  max-width: 100%;
   object-fit: contain;
 }
 

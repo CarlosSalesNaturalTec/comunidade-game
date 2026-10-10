@@ -44,7 +44,13 @@ describe("formulário de dados", () => {
 
     expect(await screen.findByText(/protocolo-456/)).toBeInTheDocument();
     expect(screen.getByText(/depende de aprovação de um Admin/)).toBeInTheDocument();
-    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    // A confirmação não acrescenta link nenhum: o único da tela é a marca do
+    // projeto, que está em toda tela e leva à abertura. Antes de o "Entrar"
+    // virar só do herói, a composição de teste não tinha a marca, e por isso
+    // este caso podia afirmar sobre o documento inteiro.
+    const links = screen.getAllByRole("link");
+    expect(links).toHaveLength(1);
+    expect(links[0]).toHaveClass("cg-marca");
   });
 
   it("a seção do recorte de pesquisadores leva ao formulário", async () => {

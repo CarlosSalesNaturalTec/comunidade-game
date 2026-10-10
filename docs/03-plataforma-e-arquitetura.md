@@ -808,10 +808,12 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
 - **Chamada "Quero participar"** em **toda página individual** — Guerreiro(a), Mestre, poder,
   apoiador e comunidade —, levando à **porta da Área do Apoiador**. A chamada é do projeto:
   **nunca vincula o apoio à pessoa exibida na página**.
-- **Botão "Entrar"**, sempre visível, que encaminha cada persona à sua aplicação: Guerreiro(a)
-  para a App 05, responsável para a App 07, Mestre para a App 09, Apoiador para a App 08,
-  gestão para a App 03 e o **aparelho da aula** para a App 01. A vitrine não autentica ninguém
-  — quem autentica é a aplicação de destino, na forma de §1.1 —, **não guarda a escolha** e não
+- **Botão "Entrar"**, na **abertura**, que encaminha cada persona à sua aplicação:
+  Guerreiro(a) para a App 05, responsável para a App 07, Mestre para a App 09, Apoiador para a
+  App 08, gestão para a App 03 e o **aparelho da aula** para a App 01. Ele existe **uma vez**,
+  e não em toda tela: quem está em outro recorte chega à abertura pela marca do projeto.
+  A vitrine não autentica ninguém — quem autentica é a aplicação de destino, na forma de
+  §1.1 —, **não guarda a escolha** e não
   revela quem existe na plataforma. Quem não tem cadastro recebe a orientação da sua persona:
   pré-cadastro do Apoiador, formulário de participação do Mestre e, para o responsável e o
   Guerreiro(a), procurar a gestão no encontro.
