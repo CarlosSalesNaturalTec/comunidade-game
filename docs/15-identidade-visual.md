@@ -483,12 +483,17 @@ O escudo é **forma da marca, e de nada mais**: nenhuma silhueta de badge o usa 
 ### 13.6 O elenco de personagens
 
 O elenco são **quatro**: **Susy**, **Otávio**, o **professor Carlos Trenell** e o **Robô
-Educa**. Vive em `comum/marca/elenco/`, um arquivo por personagem em pose neutra, e é
-**ilustração, não interface**. Os **Rôbróders** seguem como submarca (§13.1) e estão fora
-do elenco; o personagem deles é pendência do documento 09.
+Educa**. Vive em `comum/marca/elenco/` e é **ilustração, não interface**. Os **Rôbróders**
+seguem como submarca (§13.1) e estão fora do elenco; o personagem deles é pendência do
+documento 09.
+
+**Susy e Otávio têm duas faixas etárias**, criança e adolescente, porque o público vai dos 6
+aos 16 anos (documento 01). Trenell e o Robô Educa não têm variante. O arquivo de **nome base
+é sempre a versão que se apresenta**; a outra leva sufixo.
 
 | Regra         | Valor                                                                                                               |
 | ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Pose          | Neutra, admitido **adereço que caracteriza** o personagem                                                           |
 | Cor           | **Livre.** A paleta do §3 rege interface e marca, não o elenco — ela é de tokens de interface e não tem tom de pele |
 | Contorno      | Quase preto, grosso, de espessura constante e fechado — `tinta-900` ou o escuro quente da própria figura            |
 | Preenchimento | Chapado, **sem gradiente**, com no máximo um degrau de sombra por área                                              |
@@ -510,7 +515,11 @@ Os quatro são **personagens inventados** e de **uso público**: podem aparecer 
 que é pública e indexável, e em material de divulgação do projeto. A reserva da marca
 continua valendo — uso por terceiro é indevido (documento 03 §1).
 
-Decisão do fundador, 2026-10-09.
+**A composição do herói da vitrine** põe os dois estudantes nas extremidades e, ao centro, o
+professor ao lado da criatura que a mão dele indica. Trocar a ordem sem trocar a razão deixa
+o gesto apontando para o vazio.
+
+Decisões do fundador, 2026-10-09 e 2026-10-10.
 
 ## 14. O que este documento não define
 

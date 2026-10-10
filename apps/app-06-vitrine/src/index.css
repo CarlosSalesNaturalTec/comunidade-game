@@ -357,9 +357,14 @@ textarea {
   text-align: center;
 }
 
-/* As quatro figuras em linha, do mais novo ao mais velho. No celular elas
- * encolhem juntas, em vez de quebrar linha: o elenco é uma imagem só para quem
- * lê, e quebrá-la em duas fileiras desmancharia a leitura. */
+/* As quatro figuras em linha, na ordem da composição: os dois estudantes nas
+ * extremidades e, ao centro, o professor ao lado da criatura que a mão dele
+ * indica. Reordenar quebra o gesto — a ordem está em `Heroi.tsx` e o teste da
+ * saída do build a trava.
+ *
+ * No celular elas encolhem juntas, em vez de quebrar linha: o elenco é uma
+ * imagem só para quem lê, e quebrá-la em duas fileiras desmancharia a
+ * leitura. */
 .cg-heroi__elenco {
   display: flex;
   align-items: flex-end;

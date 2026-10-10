@@ -23,14 +23,19 @@ import { CAMINHO_DO_CONVITE } from "../navegacao/caminhos";
  * documento desde a fatia 9, e um `<a>` navega sem JS nenhum.
  */
 
-/** Os quatro do documento 15 §13.6, na ordem em que aparecem. A largura e a
- * altura são as do arquivo, declaradas para a tela não pular quando a
- * ilustração chega (documento 15 §1, princípio 4). */
+/** Os quatro do documento 15 §13.6, **na ordem da composição**: os dois
+ * estudantes nas extremidades e, ao centro, o professor ao lado da criatura que
+ * a mão dele indica. A ordem não é livre — Trenell precisa ficar vizinho ao
+ * Robô Educa, senão o gesto dele aponta para o vazio (decisão do fundador de
+ * 2026-10-10).
+ *
+ * A largura e a altura são as do arquivo, declaradas para a tela não pular
+ * quando a ilustração chega (documento 15 §1, princípio 4). */
 const ELENCO = [
-  { arquivo: "susy", largura: 570 },
-  { arquivo: "otavio", largura: 401 },
-  { arquivo: "trenell", largura: 551 },
+  { arquivo: "susy", largura: 578 },
   { arquivo: "robo-educa", largura: 764 },
+  { arquivo: "trenell", largura: 551 },
+  { arquivo: "otavio", largura: 361 },
 ] as const;
 
 const ALTURA = 1024;
@@ -52,7 +57,7 @@ export function Heroi() {
       <div
         className="cg-heroi__elenco"
         role="img"
-        aria-label="Susy, Otávio, o professor Carlos Trenell e o Robô Educa, o elenco do Comunidade Game"
+        aria-label="Susy, o Robô Educa, o professor Carlos Trenell e Otávio, o elenco do Comunidade Game"
       >
         {ELENCO.map(({ arquivo, largura }) => (
           <picture key={arquivo}>

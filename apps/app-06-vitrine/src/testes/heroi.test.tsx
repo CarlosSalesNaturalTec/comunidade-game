@@ -15,6 +15,13 @@ describe("a abertura tem herói", () => {
     return screen.getByRole("region", { name: "O que é o Comunidade Game" });
   }
 
+  /** Os nomes de arquivo das figuras, na ordem em que saem no documento. */
+  function ordemDasFiguras() {
+    return [...heroi().querySelectorAll("img")].map(
+      (figura) => figura.getAttribute("src")?.replace(/^\/elenco\/|\.webp$/g, "") ?? "",
+    );
+  }
+
   it("o herói vem antes da primeira seção (RF-03-01)", () => {
     const { container } = render(<App />);
 
@@ -46,6 +53,41 @@ describe("a abertura tem herói", () => {
       // soltos seriam ruído em leitor de tela.
       expect(figura).toHaveAttribute("alt", "");
     }
+  });
+
+  it("a composição põe o professor ao lado da criatura que ele indica", () => {
+    render(<App />);
+
+    // A ordem é decisão do fundador de 2026-10-10 e tem razão: os dois
+    // estudantes nas extremidades, e ao centro o professor ao lado do Robô
+    // Educa, para onde a mão dele aponta. Separar os dois quebra o gesto.
+    expect(ordemDasFiguras()).toEqual(["susy", "robo-educa", "trenell", "otavio"]);
+
+    const ordem = ordemDasFiguras();
+    expect(ordem.indexOf("trenell")).toBe(ordem.indexOf("robo-educa") + 1);
+    expect([ordem.at(0), ordem.at(-1)].sort()).toEqual(["otavio", "susy"]);
+  });
+
+  it("o rótulo único nomeia as quatro na ordem em que elas aparecem", () => {
+    render(<App />);
+
+    const rotulo =
+      within(heroi())
+        .getByRole("img", { name: /elenco do Comunidade Game/i })
+        .getAttribute("aria-label") ?? "";
+
+    // Um rótulo só, já conferido acima; aqui o que importa é ele não contar
+    // uma ordem diferente da que os olhos veem.
+    const NOME: Record<string, string> = {
+      susy: "Susy",
+      "robo-educa": "Robô Educa",
+      trenell: "Carlos Trenell",
+      otavio: "Otávio",
+    };
+    const posicoes = ordemDasFiguras().map((arquivo) => rotulo.indexOf(NOME[arquivo]));
+
+    expect(posicoes).not.toContain(-1);
+    expect(posicoes).toEqual([...posicoes].sort((a, b) => a - b));
   });
 
   it("a ilustração fica fora do caminho crítico e reserva o próprio lugar", () => {

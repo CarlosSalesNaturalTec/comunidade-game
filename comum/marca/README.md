@@ -66,21 +66,33 @@ Em `comum/marca/`. As duas que o documento 09 nomeia.
 
 ## 3. Elenco de personagens
 
-Em `comum/marca/elenco/`. Os quatro que o documento 15 §13.6 nomeia.
+Em `comum/marca/elenco/`. Os quatro que o documento 15 §13.6 nomeia, e as variantes de
+Susy e de Otávio.
 
-| Arquivo | Formato | Grade | Peso máximo |
-| --- | --- | --- | --- |
-| `susy.svg` | SVG | caixa `512 × 512` | 40 KB |
-| `otavio.svg` | SVG | caixa `512 × 512` | 40 KB |
-| `trenell.svg` | SVG | caixa `512 × 512` | 40 KB |
-| `robo-educa.svg` | SVG | caixa `512 × 512` | 40 KB |
+| Arquivo | Quem é | Formato | Grade | Peso máximo |
+| --- | --- | --- | --- | --- |
+| `susy.*` | Susy adolescente — **a que se apresenta** | SVG | caixa `512 × 512` | 40 KB |
+| `susy-crianca.*` | Susy criança | SVG | caixa `512 × 512` | 40 KB |
+| `otavio.*` | Otávio adolescente — **a que se apresenta** | SVG | caixa `512 × 512` | 40 KB |
+| `otavio-crianca.*` | Otávio criança | SVG | caixa `512 × 512` | 40 KB |
+| `trenell.*` | O professor Carlos Trenell | SVG | caixa `512 × 512` | 40 KB |
+| `robo-educa.*` | O Robô Educa | SVG | caixa `512 × 512` | 40 KB |
 
 Não confundir `elenco/robo-educa.*`, que é o **personagem**, com
 `submarca-robo-educa.svg` do §2, que é a **palavra**. Os **Rôbróders** não têm arquivo de
 elenco: eles seguem só como submarca.
 
-**Pose neutra, um arquivo por personagem.** Expressões, se vierem, seguem o mesmo nome
-com sufixo — `susy-alegre.svg`, `otavio-pensativo.svg` — e não substituem a pose neutra.
+**Um arquivo por versão apresentada, e o nome base é sempre a que se apresenta.** A
+variante leva sufixo no mesmo nome — por **faixa etária**, `susy-crianca`, ou por
+**expressão**, `susy-alegre`. Trocar qual versão se apresenta é trocar qual arquivo leva o
+nome base, nunca deixar a apresentada sob sufixo.
+
+**Provisiona-se só o que se apresenta.** `provisionamento.ts` copia ao `public/` de uma
+aplicação apenas as figuras que ela mostra; variante guardada aqui e não apresentada não
+vai ao ar.
+
+A **pose** é neutra, admitido **adereço que caracteriza** o personagem — o skate de Susy, o
+controle e o fone de Otávio (documento 15 §13.6).
 
 **Cor, contorno, fundo e keyline** seguem o documento 15 §13.6: cor livre, contorno quase
 preto grosso e fechado, preenchimento chapado sem gradiente, fundo transparente, e
@@ -94,10 +106,10 @@ de lado maior, até 120 KB cada — e diga qual, para a implementação prever `
 Saindo em raster, o par é `<nome>.avif` com reserva `<nome>.webp`, e os nomes da tabela
 acima valem com a extensão trocada.
 
-**Os quatro saíram pela rota raster**, decisão tomada com os arquivos na mão: cada figura
-traz de 47 a 66 mil cores, de sombreado suave, e vetorizar isso não fecharia os 40 KB do
-SVG. Os oito arquivos entregues pesam de 34 a 50 KB, contra o teto de 120 KB. Nenhum
-personagem saiu em SVG, então o `srcset` tem só o par AVIF/WebP.
+**Todos saíram pela rota raster**, decisão tomada com os arquivos na mão: cada figura traz
+de 47 a 66 mil cores, de sombreado suave, e vetorizar isso não fecharia os 40 KB do SVG. Os
+doze arquivos entregues pesam de 33 a 64 KB, contra o teto de 120 KB. Nenhum personagem saiu
+em SVG, então o `srcset` tem só o par AVIF/WebP.
 
 ## 4. O que precisa vir junto, e não é arquivo
 
@@ -174,18 +186,25 @@ Os nove arquivos da marca do projeto e das submarcas — tudo o que os §§1 e 2
 A construção completa — proporção do escudo, altura de maiúscula, contrastes medidos — está
 no documento 15, que é a fonte única da identidade visual. Aqui fica só a procedência.
 
-**O elenco** do §3 foi produzido pelo próprio projeto em **2026-10-09**, com o
+**O elenco** do §3 foi produzido pelo próprio projeto em **2026-10-09** (as quatro
+primeiras figuras) e em **2026-10-10** (Susy e Otávio adolescentes), com o
 **Google Nano Banana** sob direção do fundador — cor, traço, olhos, cabelo, enquadramento
 e pose dirigidos a cada geração. Não houve autor externo, e por isso não há cessão de
 terceiro a registrar: a titularidade é da pessoa jurídica, como manda a `LICENCA.md`. Os
 arquivos entregues passam por recorte do fundo, aplicação do keyline e redimensionamento
 antes de entrar aqui.
 
-Do que chegou para o que está aqui, o que mudou — o §6 manda dizer: as quatro origens
+Do que chegou para o que está aqui, o que mudou — o §6 manda dizer: **as seis origens**
 vieram em JPEG sobre fundo magenta chapado, que foi recortado por distância de cor; a
 franja de magenta saiu só na faixa de borda, para não alterar cor legítima; a figura foi
 recortada, recebeu 3% de margem e desceu para `1024` px de lado maior; e o keyline em
 `cal-050` foi aplicado aqui, porque nenhuma origem o trazia. O contorno veio entre
 `#261D29` e `#2E1C20` — quase preto quente, aceito pelo fundador em 2026-10-09, e é essa
 decisão que o §13.6 registra.
+
+**O filete tem 3 px** a `1024` px de altura: medida tirada das figuras de 2026-10-09 e
+repetida na leva de 2026-10-10, para as seis casarem. O que a conferência de entrada tem de
+olhar, porque o teste de `comum/marca.test.ts` lê cabeçalho e não pixel: a **cor** do filete
+(`cal-050`), a **espessura** dele e o fundo efetivamente transparente. O resto — par
+AVIF/WebP completo, grade, canal alfa declarado e peso — o teste confere sozinho.
 

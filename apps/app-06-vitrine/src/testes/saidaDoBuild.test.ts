@@ -315,7 +315,10 @@ describe("nenhuma tela busca recurso de terceiro", () => {
 });
 
 describe("o herói sai no documento servido da abertura", () => {
-  const ELENCO = ["susy", "otavio", "trenell", "robo-educa"];
+  // Na ordem da composição, que é o que esta sequência trava: os dois
+  // estudantes nas extremidades e o professor vizinho à criatura que ele
+  // indica (documento 15 §13.6).
+  const ELENCO = ["susy", "robo-educa", "trenell", "otavio"];
   const DO_ELENCO = join(RAIZ, "..", "..", "comum", "marca", "elenco");
 
   it("a abertura traz a frase do projeto e a ação, sem executar script (RF-03-01)", () => {
