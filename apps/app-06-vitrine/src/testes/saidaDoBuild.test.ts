@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import type { Server } from "node:http";
 import { join } from "node:path";
 import { promisify } from "node:util";
@@ -362,6 +362,17 @@ describe("o herói sai no documento servido da abertura", () => {
     expect(
       [...heroi.matchAll(/(?:src|srcset)="([^"]+)"/gi)].map((achado) => achado[1]),
     ).toEqual(ELENCO.flatMap((nome) => [`/elenco/${nome}.avif`, `/elenco/${nome}.webp`]));
+  });
+
+  it("só o que o herói apresenta é publicado — a variante guardada fica fora", () => {
+    // `comum/marca/elenco/` guarda doze arquivos: Susy e Otávio têm versão
+    // criança além da adolescente. O domínio serve só as oito que o herói
+    // mostra — provisionar a variante engordaria o `dist/` com figura que
+    // ninguém busca (documento 15 §13.6).
+    expect(readdirSync(join(DIST, "elenco")).sort()).toEqual(
+      ELENCO.flatMap((nome) => [`${nome}.avif`, `${nome}.webp`]).sort(),
+    );
+    expect(readdirSync(DO_ELENCO).length).toBeGreaterThan(ELENCO.length * 2);
   });
 
   it("os oito arquivos publicados são byte a byte os de `comum/marca/elenco/`", () => {
