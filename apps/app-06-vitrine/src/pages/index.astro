@@ -1,4 +1,5 @@
 ---
+import { EntradaDaAbertura } from "../abertura/EntradaDaAbertura";
 import { Heroi } from "../abertura/Heroi";
 import { SecaoDeApoiadores } from "../adultos/SecaoDeApoiadores";
 import { SecaoDeMestres } from "../adultos/SecaoDeMestres";
@@ -33,11 +34,18 @@ const contatos = await secaoInstitucionalDoBuild("contatos");
   titulo="Comunidade Game — plataforma educacional gamificada de território"
   descricao="A vitrine pública do Comunidade Game: os Guerreiros e Guerreiras, o território, quem sustenta o projeto e como participar. Aberta, sem cadastro e sem login."
   recorteAtual="sociedade-civil"
+  comHeroi
 >
   {/* O herói abre a tela, antes da primeira seção: é a ilustração em primeiro
       plano que o documento 15 §6 dá à Arena. Sem diretiva de cliente — não tem
-      estado e não busca nada, então sai no documento servido e não custa JS. */}
-  <Heroi />
+      estado e não busca nada, então sai no documento servido e não custa JS.
+
+      O "Entrar" entra como **filho**, e só ele é ilha: o diálogo tem estado, a
+      ilustração e a frase não. É também por ele estar aqui que o cabeçalho
+      desta tela não traz o seu — o botão é um só por tela (`RF-03-58`). */}
+  <Heroi>
+    <EntradaDaAbertura client:load />
+  </Heroi>
   <section>
     <h2>Quem somos</h2>
     <ApresentacaoDaSecao dado={quemSomos} nome="Quem somos" />

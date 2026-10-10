@@ -134,7 +134,7 @@ describe("portfólio, ranking e poderes", () => {
 
     expect(await screen.findByText("Poder do Território")).toBeVisible();
     await testeDeUsuario.click(screen.getByRole("button", { name: "Pesquisadores" }));
-    await testeDeUsuario.click(screen.getByRole("button", { name: "Sociedade civil" }));
+    await testeDeUsuario.click(screen.getByRole("button", { name: "Início" }));
 
     expect(window.localStorage.length).toBe(0);
     expect(window.sessionStorage.length).toBe(0);

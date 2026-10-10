@@ -1,8 +1,8 @@
 ---
 /**
- * A moldura completa de uma tela pública da vitrine: cabeçalho com "Entrar",
- * navegação dos recortes, o conteúdo, e o aviso de coleta que vale para toda
- * tela e por isso mora aqui, fora do recorte (`RN-03-23`).
+ * A moldura completa de uma tela pública da vitrine: a faixa de topo — marca,
+ * cabeçalho e navegação dos recortes —, o conteúdo, e o aviso de coleta que
+ * vale para toda tela e por isso mora aqui, fora do recorte (`RN-03-23`).
  *
  * A vitrine não monta `ProvedorDeSessao` nem `ProvedorDeNarracao`: o primeiro
  * guarda sessão e o segundo guarda a preferência do aparelho, e aqui nada do
@@ -19,9 +19,12 @@ interface Props {
   descricao: string;
   indexavel?: boolean;
   recorteAtual?: string;
+  /** A tela abre com herói? Então o "Entrar" é **do herói**, e o cabeçalho
+   * desta tela não traz o dele: o botão é um só por tela (`RF-03-58`). */
+  comHeroi?: boolean;
 }
 
-const { titulo, descricao, indexavel = true, recorteAtual } = Astro.props;
+const { titulo, descricao, indexavel = true, recorteAtual, comHeroi = false } = Astro.props;
 ---
 
 <Base titulo={titulo} descricao={descricao} indexavel={indexavel}>
@@ -36,12 +39,19 @@ const { titulo, descricao, indexavel = true, recorteAtual } = Astro.props;
       contrata — sem foto, só a cor chapada, e a tela é exatamente a mesma
       (§6.3). As Apps 01 e 05 fazem o mesmo desde 2026-09-25. */}
   <FundoDeComunidade imagem={null}>
-    {/* A marca do projeto no topo da vitrine, uma vez por tela. Sem diretiva
-        de cliente: não tem estado e não busca nada, então sai no documento
-        servido e não custa JS (documento 15 §§1, 5). */}
-    <MarcaDoProjeto href="/" />
-    <CabecalhoDaVitrine client:load />
-    {recorteAtual && <NavegacaoDeRecortes recorteAtual={recorteAtual} />}
+    {/* A faixa de topo **divide a moldura do `<main>`**: mesmo respiro lateral
+        e mesma largura de leitura. Fora dela — como esteve até 2026-10-10 — a
+        marca saía cortada e o "Entrar" transbordava o visor do celular, que é
+        conteúdo encostando no corte da tela (documento 15 §4, PRD-03 §10).
+
+        A marca do projeto sai uma vez por tela, sem diretiva de cliente: não
+        tem estado e não busca nada, então sai no documento servido e não custa
+        JS (documento 15 §§1, 5). */}
+    <div class="cg-moldura cg-moldura--leitura cg-topo">
+      <MarcaDoProjeto href="/" />
+      <CabecalhoDaVitrine client:load comEntrar={!comHeroi} />
+      {recorteAtual && <NavegacaoDeRecortes recorteAtual={recorteAtual} />}
+    </div>
     <main class="cg-moldura cg-moldura--leitura">
       <div class="cg-vitrine">
         <slot />

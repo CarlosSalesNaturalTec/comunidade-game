@@ -126,6 +126,31 @@ A conta de largura fecha: "Início · Pesquisadores · Gestores públicos" são 
 a `--escala-0875` põe em cerca de 260 px, mais separadores — dentro dos 328 px úteis de um
 visor de 360 px.
 
+### 8. O `h1` não some — é a saudação que passa a ocupá-lo
+
+Achado da implementação, e não decisão prévia: o `titulo` de `comum/react/Cabecalho.tsx` é
+**obrigatório** e sempre vira `<h1>`, e **dois testes já exigiam esse `h1`** —
+`abertura.test.tsx` ("abre inteira sem pedir login nem cadastro") e
+`conteudoInstitucional.test.tsx` ("sem travar a tela"). Tirá-lo deixaria toda tela da vitrine
+sem cabeçalho de nível 1, o que é regressão de estrutura, não limpeza.
+
+A decisão do fundador — o nome não aparece duas vezes no topo — é cumprida sem isso: o `h1`
+passa a ser **"Boas-vindas!"** e o subtítulo, **"Tudo aqui é aberto — sem cadastro e sem
+login."** O texto aprovado sai inteiro, partido na fronteira natural da frase; o nome fica só
+na `MarcaDoProjeto`; e `comum/` segue sem ser tocado, como a decisão 3 exige.
+
+### 9. O diálogo de entrada passa a morar dentro do `<main>` na abertura
+
+Consequência de a abertura ter o "Entrar" no herói. O `<h2>` do diálogo — "Quem está
+entrando?" — passou a cair dentro do `<main>` e a contar como décima segunda seção no guarda
+das onze. O guarda não foi afrouxado: ele passou a ignorar o conteúdo de `<dialog>`, que
+nunca foi seção de recorte — o próprio comentário dele já dizia isso, e só se apoiava no
+diálogo estar fora do `<main>`.
+
+Descartado: levar o diálogo ao `document.body` por portal. Resolveria o mesmo com máquina de
+montagem e risco de divergência entre o servido e o hidratado, para um ganho que o escopo do
+guarda já dá.
+
 ## Risks / Trade-offs
 
 - **A ilha cresce de uma para duas no caminho da abertura** → o par de ações é ilha, o herói

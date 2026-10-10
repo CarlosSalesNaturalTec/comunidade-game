@@ -170,6 +170,6 @@ describe("conteúdo institucional da vitrine", () => {
       (await screen.findAllByText("Não foi possível carregar os canais de doação agora."))
         .length,
     ).toBeGreaterThan(0);
-    expect(screen.getByRole("heading", { name: "Comunidade Game", level: 1 })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Boas-vindas!", level: 1 })).toBeVisible();
   });
 });
