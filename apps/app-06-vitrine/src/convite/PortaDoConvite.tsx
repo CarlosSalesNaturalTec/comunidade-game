@@ -29,7 +29,7 @@ export function PortaDoConvite({ irPara = navegarPara, voltar = voltarOuIrParaAR
   return (
     <Moldura>
       <div className="cg-vitrine cg-convite">
-        <h2>Quero participar</h2>
+        <h2>Quero apoiar</h2>
         <p>
           O apoio é ao projeto, nunca a uma pessoa: nada aqui vincula o que você traz a um
           Guerreiro, a uma Guerreira ou a uma comunidade que você viu.
@@ -139,9 +139,14 @@ function DestinoDaModalidade({
   );
 }
 
-/** A chave PIX vem do "Como apoiar" que o Admin publicou, pela leitura
+/** A chave PIX vem da seção "Como apoiar" que o Admin publicou, pela leitura
  * institucional já memorizada: **nenhum valor fica escrito aqui** (`RF-03-43`,
- * `RF-03-46`; design — decisão 5). */
+ * `RF-03-46`; design — decisão 5).
+ *
+ * Desde 2026-10-11 esta é a **única** tela pública que traz a chave: "Como
+ * apoiar" deixou de ser exibida na abertura, e segue gravável só no núcleo.
+ * Por isso a porta nunca deixa de oferecê-la quando o núcleo a devolve — não
+ * há mais uma segunda tela para cair. */
 function ChavePix() {
   const estado = useConteudoInstitucional("como-apoiar");
 

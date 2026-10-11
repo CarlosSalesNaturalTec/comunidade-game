@@ -26,7 +26,7 @@ export function EntradaDaAbertura() {
     <>
       <button
         type="button"
-        className="cg-botao cg-botao--marca cg-heroi__acao"
+        className="cg-botao cg-botao--entrada cg-heroi__acao"
         onClick={() => definirAberto(true)}
       >
         Entrar

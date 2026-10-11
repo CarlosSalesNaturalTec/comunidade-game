@@ -56,7 +56,9 @@ poder tocar a partida.
   da que foi publicada por engano.
 - Filas de avaliação: solicitações de participação, **solicitações de dados**, solicitações
   dos responsáveis, desafios extras dos Apoiadores e a fila única de sugestões e propostas.
-- Conteúdo institucional da vitrine — "Quem somos", "Contatos" e "Como apoiar".
+- Conteúdo institucional da vitrine — "Quem somos", "Contatos" e "Como apoiar". As três
+  continuam editáveis aqui; "Como apoiar" não tem tela pública na vitrine, e a chave PIX dela
+  chega ao visitante pela porta da chamada (documento 03 §8).
 - Aviso de coleta em toda tela que grava dado pessoal e área de leitura sobre o destino e o uso
   de cada dado.
 

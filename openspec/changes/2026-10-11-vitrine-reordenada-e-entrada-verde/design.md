@@ -120,9 +120,10 @@ memória nem estimado.
 
 - **O token de sucesso ganha dois papéis** → a frase no documento 15 §3.2 e o comentário no
   `index.css`. Quem for mexer na cor de aviso encontra o aviso.
-- **O herói perde a cor da família Marca**, e na abertura o laranja sobrevive só no símbolo do
-  cabeçalho → é consequência aceita da decisão, não defeito; registrada no cronograma para não
-  ser lida depois como regressão. Conferir no navegador antes de fechar.
+- **O par do herói perde a cor da família Marca** → conferido no navegador, e o receio era
+  maior que o fato: o laranja segue dominando a abertura **pela ilustração do elenco**, onde o
+  Robô Educa é laranja, além do símbolo do cabeçalho. O que muda é só a cor do botão, e a
+  abertura não esfriou. Consequência aceita, não defeito.
 - **"Quero apoiar" estreita a leitura da porta**, que atrás dela mantém as sete modalidades do
   documento 14 §10, a pretensão de ensinar incluída → risco real e aceito pelo fundador. O garfo
   não muda, e quem quer ensinar continua encaminhado; se a conversão de Mestre cair, é dado para
@@ -136,6 +137,15 @@ memória nem estimado.
 - **"Como apoiar" fica gravável sem tela**, o que pode parecer defeito a quem lê o Admin → o
   cenário do delta registra que a publicação segue aceita de propósito, e o PRD-02 §16 diz o
   mesmo.
+- **A chave PIX deixa o documento servido** — achado da implementação, não previsto neste
+  desenho. "Como apoiar" era renderizada **no build** (`secaoInstitucionalDoBuild`), e por isso
+  a chave saía dentro do `index.html`; a porta é ilha `client:load`, e busca a leitura
+  institucional no aparelho. Com a seção fora, a chave **não sai em documento nenhum**: quem
+  visita sem JS, e quem indexa, não a alcança mais. O `RF-03-46` continua cumprido — a porta a
+  exibe —, e o `saidaDoBuild.test.ts` passou a afirmar o que o build realmente emite, em vez de
+  afirmar a chave onde ela não está. **Fica para decisão do fundador** se a porta deve
+  pré-renderizar a chave no build, como "Como apoiar" fazia; não se resolve aqui, porque muda o
+  que o PRD-03 §10 exige do institucional servido.
 
 ## Migration Plan
 

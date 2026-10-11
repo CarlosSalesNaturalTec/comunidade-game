@@ -2,7 +2,6 @@ import { render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as leituras from "../api/leituras";
 import { PaginaDoGuerreiro } from "../guerreiros/PaginaDoGuerreiro";
-import { SecaoDePoderes } from "../poderes/SecaoDePoderes";
 
 /**
  * O **nível 1** da Arena na vitrine (design — decisão 6): o que se afirma
@@ -69,27 +68,5 @@ describe("a carta domina a página individual", () => {
 
     expect(await screen.findByText(/Não foi possível carregar a página/)).toBeVisible();
     expect(screen.queryByRole("region", { name: /Página de/ })).toBeNull();
-  });
-});
-
-describe("o glifo de poder acompanha o nome", () => {
-  it("apresenta o glifo ao lado do nome, nunca no lugar dele (documento 15 §8.4)", async () => {
-    vi.spyOn(leituras, "listarPoderes").mockResolvedValue([
-      {
-        id: "p-1",
-        nome: "Poder do Território",
-        descricao: "Ler o lugar onde se vive.",
-        trilhas: [],
-        mestres_responsaveis: [],
-      } as unknown as leituras.PoderPublico,
-    ]);
-    render(<SecaoDePoderes />);
-
-    const titulo = await screen.findByRole("heading", { name: "Poder do Território" });
-    expect(titulo).toBeVisible();
-    // O nome segue no documento: o glifo é acompanhamento, e o texto é o que
-    // identifica o poder.
-    expect(titulo.textContent).toContain("Poder do Território");
-    expect(titulo.querySelector("svg")).not.toBeNull();
   });
 });

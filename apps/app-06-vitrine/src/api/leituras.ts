@@ -61,34 +61,12 @@ export interface ItemDeRankingPublico {
   posicao: number;
 }
 
-export interface TrilhaPublica {
-  id: string;
-  nome: string;
-}
-
 /** Quem é o adulto em público, **e o que o valor é**: o nick é opcional
  * para Mestre e Apoiador, e não havendo vem o nome (`RF-03-79`,
  * `RN-03-36`). */
 export interface IdentificacaoPublica {
   valor: string;
   tipo: "nick" | "nome";
-}
-
-export interface MestreResponsavel {
-  id: string;
-  avatar: string | null;
-  avatar_padrao: boolean;
-  identificacao: IdentificacaoPublica;
-}
-
-export interface PoderPublico {
-  id: string;
-  nome: string;
-  descricao: string;
-  trilhas: TrilhaPublica[];
-  /** Os autores das trilhas publicadas do poder (`RF-03-02`, documento 11
-   * §8.2). Lista vazia é "poder sem trilha publicada". */
-  mestres_responsaveis: MestreResponsavel[];
 }
 
 export interface ArtefatoPublico {
@@ -166,10 +144,6 @@ export function listarCriacoes(): Promise<PaginaDoNucleo<CriacaoPublica>> {
 
 export function listarRanking(): Promise<PaginaDoNucleo<ItemDeRankingPublico>> {
   return lerDoNucleo<PaginaDoNucleo<ItemDeRankingPublico>>("/v1/vitrine/rankings");
-}
-
-export function listarPoderes(): Promise<PoderPublico[]> {
-  return lerDoNucleo<PoderPublico[]>("/v1/vitrine/poderes");
 }
 
 /** Os cards dos Mestres, com a carta de cada um na mesma resposta

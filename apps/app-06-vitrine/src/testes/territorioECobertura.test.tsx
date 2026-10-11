@@ -101,7 +101,6 @@ function comLeituras({
   });
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });
-  vi.spyOn(leituras, "listarPoderes").mockResolvedValue([]);
 }
 
 describe("a seção de Comunidades Virtuais", () => {

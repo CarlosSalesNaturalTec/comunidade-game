@@ -56,7 +56,6 @@ function comLeituras(mestres: MestrePublico[], apoiadores: ApoiadorPublico[]) {
   });
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });
-  vi.spyOn(leituras, "listarPoderes").mockResolvedValue([]);
   vi.spyOn(leituras, "listarMestres").mockResolvedValue({
     itens: mestres,
     proximo_cursor: null,

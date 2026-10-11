@@ -80,8 +80,17 @@ describe("o institucional sai no documento servido", () => {
     expect(html.length).toBeGreaterThan(2000);
   });
 
-  it("“Como apoiar” traz a chave PIX que o Admin publicou (RF-03-46)", () => {
-    expect(ler("index.html")).toContain("51.730.395/0001-19");
+  it("a chave PIX deixa o documento servido e passa a vir da porta (RF-03-46)", () => {
+    // "Como apoiar" era renderizada **no build**, e por isso a chave saía no
+    // `index.html`. Sem tela pública (decisão do fundador de 2026-10-11), ela
+    // não sai em documento nenhum: a porta é ilha `client:load`, e busca a
+    // leitura institucional no aparelho.
+    expect(ler("index.html")).not.toContain("51.730.395/0001-19");
+    expect(ler("quero-participar.html")).not.toContain("51.730.395/0001-19");
+
+    // O que o documento da porta garante é o **lugar** da chave, servido em
+    // HTML real: o bloco existe e se anuncia antes de o JS correr.
+    expect(ler("quero-participar.html")).toContain("Doar sem se cadastrar");
   });
 });
 
@@ -130,18 +139,20 @@ describe("cada recorte abre com as seções que o PRD-03 §5 lhe dá", () => {
     return [...semDialogo.matchAll(/<h2[^>]*>([^<]+)<\/h2>/g)].map((achado) => achado[1]);
   }
 
-  it("sociedade civil traz as onze seções, na ordem (RF-03-02, RF-03-25)", () => {
+  it("sociedade civil traz as dez seções, na ordem (RF-03-02, RF-03-25)", () => {
+    // A abertura abre pelo que o projeto produziu e fecha no institucional
+    // (decisão do fundador de 2026-10-11). Duas seções saíram: a de poderes e
+    // "Como apoiar"; as necessidades viraram seção própria.
     expect(titulos("index.html")).toEqual([
-      "Quem somos",
-      "Guerreiros e Guerreiras",
-      "Portfólio de criações originais",
       "Ranking",
-      "Poderes",
-      "Mestres",
+      "Portfólio de criações originais",
+      "Guerreiros e Guerreiras",
       "Apoiadores",
+      "Necessidades em aberto",
+      "Mestres",
       "Comunidades Virtuais",
       "Construir sobre a API",
-      "Como apoiar",
+      "Quem somos",
       "Contatos",
     ]);
   });

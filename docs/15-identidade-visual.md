@@ -64,6 +64,10 @@ apoio da própria coluna.
 usa o 400. O degrau 500 é a cor de identidade da família — usada em preenchimento **com
 contorno no degrau 700**, nunca sozinha contra o fundo.
 
+A família **Sucesso** tem dois papéis: o estado "deu certo" e o **"Entrar" do herói da vitrine**.
+Sem os degraus 700 e 500, ali ela preenche e contorna com o próprio 600 — contorno no 700 é
+regra de **ficha** (§7), não de botão.
+
 ### 3.3 Contraste medido
 
 | Par                                    | Razão   | Piso  |
@@ -73,6 +77,8 @@ contorno no degrau 700**, nunca sozinha contra o fundo.
 | `acao-600` sobre `cal-050`             | 6,90:1  | 4,5:1 |
 | `cal-000` sobre `acao-600`             | 7,51:1  | 4,5:1 |
 | `cal-000` sobre `marca-600`            | 4,76:1  | 4,5:1 |
+| `cal-000` sobre `sucesso-600`          | 5,39:1  | 4,5:1 |
+| `tinta-900` sobre `sucesso-400`        | 8,91:1  | 4,5:1 |
 | `tinta-900` sobre `ponto-500`          | 10,12:1 | 4,5:1 |
 | `cal-000` sobre `moeda-600`            | 5,19:1  | 4,5:1 |
 | `cal-050` sobre `tinta-900`            | 16,88:1 | 4,5:1 |

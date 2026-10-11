@@ -32,29 +32,6 @@ function comConteudo() {
     ],
     proximo_cursor: null,
   });
-  vi.spyOn(leituras, "listarPoderes").mockResolvedValue([
-    {
-      id: "p-1",
-      nome: "Poder do Território",
-      descricao: "Ler e cuidar do lugar onde se vive.",
-      trilhas: [{ id: "t-1", nome: "Trilha da Água" }],
-      mestres_responsaveis: [
-        {
-          id: "m-1",
-          avatar: null,
-          avatar_padrao: true,
-          identificacao: { valor: "mestra_ana", tipo: "nick" },
-        },
-      ],
-    },
-    {
-      id: "p-2",
-      nome: "Poder sem trilha",
-      descricao: "Ainda sem trilha publicada.",
-      trilhas: [],
-      mestres_responsaveis: [],
-    },
-  ]);
 }
 
 function secaoDe(titulo: string) {
@@ -64,7 +41,7 @@ function secaoDe(titulo: string) {
   return within(secao);
 }
 
-describe("portfólio, ranking e poderes", () => {
+describe("portfólio e ranking", () => {
   beforeEach(() => {
     window.history.pushState(null, "", "/");
     comConteudo();
@@ -96,43 +73,45 @@ describe("portfólio, ranking e poderes", () => {
     expect(ranking.queryByText(/ponto extra|moeda|R\$/i)).toBeNull();
   });
 
-  it("a seção de poderes traz as trilhas e os Mestres responsáveis (RF-03-02)", async () => {
+  it("a abertura não traz seção de poderes (RF-03-02)", async () => {
     render(<App />);
 
-    const poderes = secaoDe("Poderes");
-    expect(await poderes.findByText("Poder do Território")).toBeVisible();
-    expect(poderes.getByText("Trilha da Água")).toBeVisible();
-    expect(poderes.getByText("Mestres responsáveis")).toBeVisible();
-    expect(poderes.getByRole("button", { name: "mestra_ana" })).toBeVisible();
+    // A seção saiu em 2026-10-11: ela prometia uma página individual de poder
+    // que nunca existiu. O poder segue público como atributo do Guerreiro(a).
+    expect(await screen.findByRole("heading", { name: "Ranking", level: 2 })).toBeVisible();
+    expect(screen.queryByRole("heading", { name: "Poderes", level: 2 })).toBeNull();
+    expect(screen.queryByText(/Mestres responsáveis/)).toBeNull();
   });
 
-  it("o Mestre responsável leva à página individual dele (RF-03-02)", async () => {
+  it("a abertura abre pelo que o projeto produziu, e fecha no institucional", async () => {
     render(<App />);
-    const testeDeUsuario = userEvent.setup();
 
-    const poderes = secaoDe("Poderes");
-    await poderes.findByText("Poder do Território");
-    await testeDeUsuario.click(poderes.getByRole("button", { name: "mestra_ana" }));
+    await screen.findByText(/primeira-colocada/);
 
-    expect(window.location.pathname).toBe("/mestres/m-1");
-  });
-
-  it("poder sem trilha publicada não mostra espaço vazio de Mestres (RF-03-02)", async () => {
-    const { container } = render(<App />);
-
-    const poderes = secaoDe("Poderes");
-    await poderes.findByText("Poder sem trilha");
-    const item = Array.from(container.querySelectorAll(".cg-poderes__item")).find((no) =>
-      no.textContent?.includes("Poder sem trilha"),
-    );
-    expect(item?.textContent).not.toContain("Mestres responsáveis");
+    // A ordem é decisão do fundador de 2026-10-11, e mora na página do
+    // recorte — nenhum `RF` a fixa. "Como apoiar" não tem tela pública.
+    const titulos = screen
+      .getAllByRole("heading", { level: 2 })
+      .map((cabecalho) => cabecalho.textContent);
+    expect(titulos).toEqual([
+      "Ranking",
+      "Portfólio de criações originais",
+      "Guerreiros e Guerreiras",
+      "Apoiadores",
+      "Necessidades em aberto",
+      "Mestres",
+      "Comunidades Virtuais",
+      "Construir sobre a API",
+      "Quem somos",
+      "Contatos",
+    ]);
   });
 
   it("nada da visita fica no aparelho (RF-03-14, RN-03-22)", async () => {
     render(<App />);
     const testeDeUsuario = userEvent.setup();
 
-    expect(await screen.findByText("Poder do Território")).toBeVisible();
+    expect(await screen.findByText(/primeira-colocada/)).toBeVisible();
     await testeDeUsuario.click(screen.getByRole("button", { name: "Pesquisadores" }));
     await testeDeUsuario.click(screen.getByRole("button", { name: "Início" }));
 

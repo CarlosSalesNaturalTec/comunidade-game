@@ -271,7 +271,7 @@ Guerreiros e Guerreiras autorizados, com o nick dos autores; **painel de cobertu
 de que o ODS 18 é adoção voluntária do Brasil; **nota de transparência sobre IA**
 nas seções institucionais; **sem favoritos e sem preferência guardada** — o pedido de favoritar
 leva à apresentação da Área do Apoiador, com solicitação de cadastro e caminho de apoio;
-**chamada "Quero participar" em toda página individual**, que leva à mesma porta, **abre pela
+**chamada "Quero apoiar" em toda página individual**, que leva à mesma porta, **abre pela
 pergunta do que a pessoa traz** — encaminhando dinheiro ao pré-cadastro da App 08 e as demais
 modalidades ao formulário da vitrine, cada uma com o seu campo comprobatório (documento 14) — e
 **nunca vincula o apoio à pessoa exibida**; **botão "Entrar"** na abertura, encaminhando Guerreiro(a)

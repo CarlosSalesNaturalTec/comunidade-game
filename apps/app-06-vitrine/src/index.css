@@ -460,21 +460,31 @@ textarea {
   text-decoration: none;
 }
 
-/* O "Entrar" do par, na família **Marca** — o "Quero participar" fica na
- * família Ação. As duas ações são cheias e de mesma forma; o que as distingue
- * é a cor **e** o rótulo, nunca a cor sozinha (documento 15 §§3.2, 3.3, 5).
- * `cal-000` sobre `marca-600` mede 4,76:1, acima do piso de 4,5:1.
+/* O "Entrar" do par, na família **Sucesso** — o "Quero apoiar" fica na família
+ * Ação. As duas ações são cheias e de mesma forma; o que as distingue é a cor
+ * **e** o rótulo, nunca a cor sozinha (documento 15 §§3.2, 3.3, 5). Medido:
+ * `cal-000` sobre `sucesso-600` dá 5,39:1 no claro e `tinta-900` sobre
+ * `sucesso-400` dá 8,91:1 no escuro, os dois acima do piso de 4,5:1.
+ *
+ * O nome é **do papel**, não da família: a cor do par já mudou uma vez, de
+ * laranja para verde (decisão do fundador de 2026-10-11), e um nome de família
+ * mentiria na próxima.
+ *
+ * O contorno usa o **próprio 600**, e não um degrau 700: a família Sucesso não
+ * tem 700, e a regra do contorno no 700 é de **ficha** (documento 15 §7), não
+ * de botão — aqui o `border-color` existe só para reservar a largura do foco
+ * que `.cg-botao` declara. Não é esquecimento.
  *
  * Mora aqui, e não em `comum/react/estilos.css`: a variante é deste par, e as
- * outras sete aplicações não pediram ação laranja (decisão do fundador de
- * 2026-10-10). */
-.cg-botao--marca {
-  background: var(--cor-marca);
-  color: var(--cor-sobre-marca);
-  border-color: var(--cor-marca-contorno);
+ * outras sete aplicações não pediram ação verde (decisão do fundador de
+ * 2026-10-10, que a de 2026-10-11 preserva). */
+.cg-botao--entrada {
+  background: var(--cor-sucesso);
+  color: var(--cor-sobre-sucesso);
+  border-color: var(--cor-sucesso);
 }
 
-/* A chamada "Quero participar" ao pé da página individual: uma decisão por
+/* A chamada "Quero apoiar" ao pé da página individual: uma decisão por
  * vez, as duas ações empilhadas no celular (documento 15 §6.4). */
 .cg-chamada {
   display: flex;

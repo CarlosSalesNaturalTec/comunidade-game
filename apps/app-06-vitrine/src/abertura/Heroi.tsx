@@ -19,9 +19,9 @@ import { CAMINHO_DO_CONVITE } from "../navegacao/caminhos";
  * `EntradaDaAbertura`, que é ilha porque o diálogo tem estado —, e
  * `Vitrine.astro` diz ao cabeçalho para não trazer o dele. Até 2026-10-09 o
  * botão morava só no cabeçalho; a decisão do fundador de 2026-10-10 o traz
- * para junto do "Quero participar", **sem duplicá-lo**.
+ * para junto do "Quero apoiar", **sem duplicá-lo**.
  *
- * "Quero participar" é **link**, não botão: trocar de tela é trocar de
+ * "Quero apoiar" é **link**, não botão: trocar de tela é trocar de
  * documento desde a fatia 9, e um `<a>` navega sem JS nenhum.
  */
 
@@ -51,7 +51,7 @@ const FRASE =
 
 interface Props {
   /** O "Entrar" do par, montado pela página porque tem estado — o diálogo — e
-   * o herói não. Ausente, o herói apresenta só "Quero participar". */
+   * o herói não. Ausente, o herói apresenta só "Quero apoiar". */
   children?: ReactNode;
 }
 
@@ -89,7 +89,7 @@ export function Heroi({ children }: Props) {
           não é sinal único — cada botão diz o que faz (documento 15 §5). */}
       <div className="cg-heroi__acoes">
         <a className="cg-botao cg-botao--primaria cg-heroi__acao" href={CAMINHO_DO_CONVITE}>
-          Quero participar
+          Quero apoiar
         </a>
         {children}
       </div>
