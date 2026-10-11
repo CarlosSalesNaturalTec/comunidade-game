@@ -1,7 +1,7 @@
 import enum
 import uuid
 
-from sqlalchemy import Enum, ForeignKey, Text, Uuid
+from sqlalchemy import Enum, ForeignKey, Text, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
@@ -25,6 +25,12 @@ class Resultado(Base, ComAutoria, ComMomentoDoFato):
     `aula_id` é a aula em que o resultado foi lançado — é por ela que a
     baixa encontra as reservas a converter em débito (`RF-07-09`,
     `RF-02-35`, documento 04 §1).
+
+    O par `(guerreiro_id, atividade_id)` é **único**: o ato por atividade
+    roda várias vezes e o Resultado não se edita nem se remove, então dois
+    envios simultâneos dobrariam o ponto sem conserto. Unicidade total, não
+    parcial — diferente da presença, o Resultado não tem anulação
+    (`RN-02-33`, design — decisão 4).
     """
 
     __tablename__ = "resultado"
@@ -38,4 +44,10 @@ class Resultado(Base, ComAutoria, ComMomentoDoFato):
     producao: Mapped[str] = mapped_column(Text, nullable=False)
     desfecho: Mapped[DesfechoDoResultado] = mapped_column(
         Enum(DesfechoDoResultado, native_enum=False, length=32), nullable=False
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "guerreiro_id", "atividade_id", name="uq_resultado_guerreiro_id_atividade_id"
+        ),
     )

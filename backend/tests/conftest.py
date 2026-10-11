@@ -995,6 +995,7 @@ def criar_atividade_avulsa(sessao, criar_poder):
         formato: FormatoDeAtividade = FormatoDeAtividade.presencial,
         natureza: str = "construcao",
         producao_esperada: str = "Produção de teste.",
+        aula: Aula | None = None,
     ) -> Atividade:
         poder_da_atividade = poder or criar_poder(autor)
         atividade = Atividade(
@@ -1006,6 +1007,7 @@ def criar_atividade_avulsa(sessao, criar_poder):
             formato=formato,
             natureza=natureza,
             producao_esperada=producao_esperada,
+            aula_id=aula.id if aula is not None else None,
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
         )

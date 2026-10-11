@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
@@ -24,6 +24,7 @@ class AtividadeAvulsaSaida(BaseModel):
     natureza: str
     producao_esperada: str
     poder_id: uuid.UUID
+    aula_id: uuid.UUID | None
 
 
 def _saida(atividade: Atividade) -> AtividadeAvulsaSaida:
@@ -36,6 +37,7 @@ def _saida(atividade: Atividade) -> AtividadeAvulsaSaida:
         natureza=atividade.natureza,
         producao_esperada=atividade.producao_esperada,
         poder_id=atividade.poder_id,
+        aula_id=atividade.aula_id,
     )
 
 
@@ -49,6 +51,10 @@ class CadastrarAtividadeAvulsaEntrada(BaseModel):
     natureza: str | None = None
     producao_esperada: str | None = None
     poder_id: uuid.UUID | None = None
+    aula_id: uuid.UUID | None = None
+    """A aula do encontro em que a avulsa acontece — exigida pela regra.
+    Não há campo de **comunidade**: o `extra="forbid"` acima a recusa, e a
+    aula já a declara (`RF-02-29`, documento 09 §1)."""
 
 
 @roteador.post("/atividades", status_code=201)
@@ -71,6 +77,7 @@ def cadastrar_atividade_avulsa_rota(
         natureza=entrada.natureza,
         producao_esperada=entrada.producao_esperada,
         poder_id=entrada.poder_id,
+        aula_id=entrada.aula_id,
     )
     sessao_bd.commit()
     return _saida(atividade)
@@ -80,15 +87,19 @@ def cadastrar_atividade_avulsa_rota(
 def listar_atividades_avulsas_rota(
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    aula: Annotated[uuid.UUID | None, Query()] = None,
 ) -> list[AtividadeAvulsaSaida]:
     """Adição não prevista na proposal desta change, mesmo precedente de
     `recursos.rotas.listar_tipos_de_recurso_rota`: sem ela a `TelaDeAtividades`
     da App 03 não tem o que listar (`RF-02-29`). Restrita à mesma exigência
     de Admin do cadastro — a recusa é de `cadastrar_atividade_avulsa`, que
     esta leitura não invoca; a matriz de permissões desta fatia é só a do
-    cadastro, então a leitura confere o papel diretamente."""
+    cadastro, então a leitura confere o papel diretamente.
+
+    O filtro `aula` é o caminho da área Lançamentos até as avulsas da aula
+    vigente, sem passar pela programação do encontro (`RF-02-112`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin lê o cadastro de atividades avulsas.")
-    atividades = listar_atividades_avulsas(sessao_bd)
+    atividades = listar_atividades_avulsas(sessao_bd, aula_id=aula)
     return [_saida(atividade) for atividade in atividades]
