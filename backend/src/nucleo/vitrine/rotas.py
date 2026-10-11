@@ -274,7 +274,11 @@ def listar_criacoes_publicas(
 ) -> PaginaDeResultado[CriacaoPublicaSaida]:
     """Portfólio de criações validadas, exibidas só quando todos os
     creditados têm autorização vigente (`RF-01-26`, `RN-01-13`,
-    `RN-01-10`)."""
+    `RN-01-10`).
+
+    A ordem é **decrescente** por data de validação, da criação mais recente
+    para a mais antiga, e o keyset acompanha: o cursor desce (`RF-03-83`,
+    decisão do fundador, 2026-10-11)."""
     consulta = sessao_bd.query(CriacaoOriginal).filter(*condicoes_de_criacao_publica(sessao_bd))
 
     if parametros.cursor:
@@ -286,12 +290,12 @@ def listar_criacoes_publicas(
             raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
         consulta = consulta.filter(
             tuple_(CriacaoOriginal.validado_em, CriacaoOriginal.id)
-            > (validado_em_cursor, id_cursor)
+            < (validado_em_cursor, id_cursor)
         )
 
-    consulta = consulta.order_by(CriacaoOriginal.validado_em, CriacaoOriginal.id).limit(
-        parametros.tamanho + 1
-    )
+    consulta = consulta.order_by(
+        CriacaoOriginal.validado_em.desc(), CriacaoOriginal.id.desc()
+    ).limit(parametros.tamanho + 1)
     criacoes = consulta.all()
 
     proximo_cursor = None

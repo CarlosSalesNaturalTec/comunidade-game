@@ -50,10 +50,6 @@ function comLeituras(necessidades: NecessidadePublica[]) {
     { secao: "contatos", texto: null, video_url: null },
     { secao: "como-apoiar", texto: "Chave PIX: uma-chave", video_url: null },
   ]);
-  vi.spyOn(leituras, "listarGuerreiros").mockResolvedValue({
-    itens: [],
-    proximo_cursor: null,
-  });
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarComunidades").mockResolvedValue({

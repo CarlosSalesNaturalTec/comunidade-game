@@ -282,7 +282,11 @@ identificar visitante ou guardar qualquer coisa no aparelho. (PRD-03 §10, `RF-0
 
 A App 06 SHALL apresentar toda tela pública no temperamento **Arena**, inclusive o painel
 do território e os rankings, e NEVER SHALL reproduzir em tela nenhuma a densidade da
-Operação — tabela, lote e painel de declaração são da outra família.
+Operação — tabela, lote e painel de declaração são da outra família. A **lista de registros**
+das seções de leitura NEVER SHALL contar como essa densidade: ela não tem cabeçalho de coluna,
+grade nem coluna que apareça só a partir de uma largura, e a densidade baixa da Arena governa
+a tela que **apresenta personagem** — a página individual, onde a carta domina e a tela pede
+uma decisão só.
 
 Toda tela pública SHALL trazer a **moldura de fundo de comunidade**: a cor chapada com a
 foto da comunidade atrás dela quando houver foto, e **só a cor chapada** quando não
@@ -304,6 +308,12 @@ SHALL continuar medidos sobre superfície opaca, nunca sobre a fotografia. (docu
 
 - **WHEN** a moldura é apresentada
 - **THEN** nenhuma requisição sai para domínio que não seja o próprio
+
+#### Scenario: A lista de registros não traz a densidade da Operação
+
+- **WHEN** uma seção de leitura é aberta em qualquer largura de tela
+- **THEN** nenhuma linha traz cabeçalho de coluna ou grade, nenhuma coluna aparece ou
+  desaparece com a largura, e a página individual segue sendo onde a carta domina
 
 ### Requirement: A carta domina a página individual, com uma decisão só
 
@@ -515,40 +525,123 @@ PRD-03 §5.9)
 - **THEN** a orientação nomeia o formulário de participação e traz o link, que resolve para o
   formulário existente
 
-### Requirement: A seção de Guerreiros e Guerreiras apresenta cards que rotacionam a cada 5 segundos
+### Requirement: A seção de leitura apresenta um registro por linha
 
-A App 06 SHALL apresentar, no recorte sociedade civil, a seção **Guerreiros e Guerreiras** com
-os cards de quem tem autorização vigente, e os cards SHALL **rotacionar a cada 5 segundos**. A
-rotação SHALL parar quando o aparelho declarar `prefers-reduced-motion`, e NEVER SHALL ser a
-**única via** ao conteúdo: quem não espera a rotação SHALL alcançar os mesmos Guerreiros e
-Guerreiras pela navegação da própria seção. (`RF-03-02`, `RF-03-04`, documento 15 §§5, 8.1)
+A App 06 SHALL apresentar cada seção de leitura como **lista de registros**: uma linha por
+registro, com o **avatar** quando o registro tem um e os **dados principais** da carta daquele
+papel. A linha NEVER SHALL trazer cabeçalho de coluna, grade de tabela ou coluna que apareça
+só a partir de uma largura. (`RF-03-02`, documento 11 §8.2)
 
-#### Scenario: Os cards rotacionam sozinhos
+#### Scenario: Cada registro ocupa uma linha
 
-- **WHEN** o visitante abre a vitrine e permanece na seção de Guerreiros e Guerreiras
-- **THEN** os cards trocam a cada 5 segundos, sem que ele acione nada
+- **WHEN** uma seção de leitura é aberta e o núcleo devolve três registros
+- **THEN** três linhas aparecem, cada uma com o avatar, quando o registro tem um, e os dados
+  principais da carta daquele papel
 
-#### Scenario: Quem pede menos movimento não vê rotação
+#### Scenario: A lista não é tabela
 
-- **WHEN** o aparelho do visitante declara preferência por movimento reduzido
-- **THEN** os cards não rotacionam, e todos seguem alcançáveis
+- **WHEN** qualquer seção de leitura é aberta, em qualquer largura de tela
+- **THEN** nenhuma linha traz cabeçalho de coluna ou grade, e nenhuma coluna aparece ou
+  desaparece com a largura
 
-#### Scenario: A rotação não é a única via ao conteúdo
+#### Scenario: Registro sem avatar não abre buraco
 
-- **WHEN** o visitante quer ver um card que ainda não entrou na rotação
-- **THEN** ele o alcança pela navegação da seção, sem esperar a troca
+- **WHEN** a seção de comunidades é aberta, e a Comunidade Virtual não tem avatar
+- **THEN** a linha sai sem avatar, com nome, localização e vitalidade, e nenhum espaço vazio
+  anuncia a ausência
 
-### Requirement: Cada card abre a página individual, em endereço próprio
+### Requirement: A lista de leitura pagina em 10 registros, com avançar e voltar
 
-Cada card SHALL abrir a **página individual** do Guerreiro(a), em **endereço próprio**,
-compartilhável e alcançável diretamente. A página SHALL detalhar a trajetória nas trilhas, os
-badges e níveis por poder e o portfólio de criações originais com a autoria, na composição do
-documento 11 §8.2. (`RF-03-03`, PRD-03 §5.1)
+Cada seção de leitura SHALL apresentar **10 registros por página**, com controle de **avançar**
+e de **voltar** e a **posição declarada em texto**. Avançar e voltar SHALL percorrer a lista
+inteira sem pular nem repetir registro, e NEVER SHALL guardar nada no aparelho do visitante.
+(`RF-03-82`, `RN-03-22`)
 
-#### Scenario: O card leva à página
+#### Scenario: A primeira página traz dez registros
 
-- **WHEN** o visitante aciona um card de Guerreiro(a)
+- **WHEN** uma seção de leitura é aberta e o núcleo tem mais de dez registros
+- **THEN** dez linhas aparecem, com a posição em texto e o controle de avançar
+
+#### Scenario: Avançar e voltar percorrem a lista inteira
+
+- **WHEN** o visitante avança até a última página e volta até a primeira
+- **THEN** cada registro apareceu uma vez, nenhum foi pulado e nenhum se repetiu
+
+#### Scenario: A lista curta não oferece paginação
+
+- **WHEN** uma seção de leitura é aberta e o núcleo devolve menos de dez registros
+- **THEN** nenhum controle de avançar ou voltar é apresentado
+
+#### Scenario: Percorrer a lista não guarda nada
+
+- **WHEN** o visitante percorre várias páginas e fecha a aba
+- **THEN** nada da navegação dele ficou gravado no aparelho ou no servidor
+
+### Requirement: Cada seção de leitura declara a sua ordem
+
+Cada seção de leitura SHALL apresentar os registros na ordem que o `RF-03-83` fixa: o
+**ranking** por posição, o **portfólio** por data de validação **decrescente**, e **Mestres**,
+**Apoiadores** e **Comunidades Virtuais** em ordem **alfabética** pela identificação que a
+linha exibe. (`RF-03-83`)
+
+#### Scenario: O portfólio abre pela criação mais recente
+
+- **WHEN** o visitante abre o portfólio
+- **THEN** a primeira linha é a criação validada mais recentemente
+
+#### Scenario: Mestres, Apoiadores e comunidades saem em ordem alfabética
+
+- **WHEN** qualquer das três seções é aberta
+- **THEN** as linhas saem em ordem alfabética pela identificação que cada uma exibe
+
+### Requirement: A vitrine não lista Guerreiros e Guerreiras
+
+A App 06 SHALL apresentar a seção **Guerreiros e Guerreiras** com a **consulta por nick exato**
+e nada mais, e NEVER SHALL listar, paginar ou rotacionar Guerreiros e Guerreiras em seção
+alguma. A seção SHALL dizer, em uma frase, que a vitrine não lista quem está cadastrado.
+
+A App 06 NEVER SHALL consumir a listagem pública de Guerreiros e Guerreiras, que **permanece
+servida pelo núcleo** para quem constrói sobre a API. (`RF-03-12`, `RF-03-13`, `RN-03-06`)
+
+#### Scenario: A seção traz a consulta e nenhuma lista
+
+- **WHEN** o visitante abre a seção de Guerreiros e Guerreiras
+- **THEN** ele encontra o campo de nick exato e a frase de que a vitrine não lista quem está
+  cadastrado, e nenhum Guerreiro(a) é apresentado
+
+#### Scenario: Nenhuma tela pública rotaciona conteúdo
+
+- **WHEN** o visitante permanece em qualquer tela pública da vitrine
+- **THEN** nada troca sozinho, e nada que ele precise ler depende de animação
+
+#### Scenario: A listagem segue pública para terceiros
+
+- **WHEN** uma aplicação de terceiro com chave válida pede a listagem pública de Guerreiros e
+  Guerreiras
+- **THEN** o núcleo responde, mesmo que a vitrine não a consuma
+
+### Requirement: Cada linha abre a página individual, em endereço próprio
+
+Cada linha SHALL abrir a **página individual** do personagem, em **endereço próprio**,
+compartilhável e alcançável diretamente. A página de Guerreiro(a) SHALL ser alcançada pela
+**consulta por nick exato**, pela **linha do ranking** e pelo **nick do autor no portfólio** —
+nunca por linha de uma listagem de Guerreiros, que não existe. (`RF-03-03`, PRD-03 §5.1)
+
+#### Scenario: A linha leva à página
+
+- **WHEN** o visitante aciona uma linha de Mestre, de Apoiador ou de comunidade
+- **THEN** a página individual daquele personagem abre, em endereço próprio
+
+#### Scenario: A linha do ranking abre a página do Guerreiro(a)
+
+- **WHEN** o visitante aciona uma linha do ranking
 - **THEN** a página individual daquele Guerreiro(a) abre, em endereço próprio
+
+#### Scenario: No portfólio, é o nick do autor que abre a página
+
+- **WHEN** o visitante abre o portfólio e aciona o nick de um autor creditado
+- **THEN** a página individual daquele Guerreiro(a) abre, e acionar o resto da linha não abre
+  página alguma, porque a criação original não tem página individual
 
 #### Scenario: O endereço direto resolve
 
@@ -562,17 +655,24 @@ O card e a página do Guerreiro(a) SHALL exibir **avatar, nick, badges, poderes 
 desempenho**, mais as criações originais que a variante do documento 11 §8.2 pede. NEVER SHALL
 exibir imagem real, nome civil, rede social, canal de contato ou qualquer outro dado da criança,
 em tela nenhuma da vitrine. A vitrine NEVER SHALL oferecer canal de contato com o Guerreiro(a)
-ou com a família dele. (`RF-03-05`, `RF-03-06`, `RN-03-04`, `RN-03-05`, invariantes 10 e 12 do
-documento 99 §6)
+ou com a família dele. A **linha do ranking** e a do **portfólio** NEVER SHALL ir além de
+avatar, nick e o que o requisito daquela seção já exige. (`RF-03-05`, `RF-03-06`, `RN-03-04`,
+`RN-03-05`, invariantes 10 e 12 do documento 99 §6)
 
 Faltando à leitura o que a variante exige, a carta NEVER SHALL ser apresentada pela metade: a
 tela SHALL dizer em uma frase o que tem, como o documento 11 §8.2 determina.
 
 #### Scenario: O card mostra só o que é permitido
 
-- **WHEN** o visitante vê um card de Guerreiro(a)
+- **WHEN** o visitante vê o card de um Guerreiro(a), na página individual dele
 - **THEN** ele vê avatar, nick, badges, poderes e desempenho, e nenhuma imagem real, nome civil,
   rede social ou contato
+
+#### Scenario: A linha não mostra mais que o card
+
+- **WHEN** o visitante vê uma linha do ranking ou do portfólio
+- **THEN** ela não traz nada de criança além de avatar e nick, mais o que o requisito daquela
+  seção exige
 
 #### Scenario: A página não abre canal de contato
 
@@ -669,27 +769,42 @@ marca de quem foi freado. (`RF-03-36`, `RF-03-37`, `RN-03-08`, `RN-03-34`, PRD-0
 
 ### Requirement: O portfólio público exibe as criações autorizadas com trilha, data e autoria
 
-A App 06 SHALL exibir o **portfólio** das criações originais autorizadas, cada uma com a
-**trilha** de que nasceu, a **data** em que foi validada e a **autoria por nick** de cada
-creditado. NEVER SHALL exibir criação cujo creditado não tenha autorização vigente. O portfólio
-SHALL sair **sem título** enquanto a criação original não tiver esse campo no modelo. (`RF-03-08`,
-`RN-03-02`, decisão do fundador, 2026-09-28)
+A App 06 SHALL exibir o **portfólio** das criações originais autorizadas, cada uma em **uma
+linha**, com a **trilha** de que nasceu, a **data** em que foi validada e a **autoria por
+nick** de cada creditado, com o **avatar** de cada um. Cada **nick creditado** SHALL abrir a
+página individual daquele Guerreiro(a). NEVER SHALL exibir criação cujo creditado não tenha
+autorização vigente. O portfólio SHALL sair **sem título** enquanto a criação original não
+tiver esse campo no modelo, e SHALL sair em ordem **decrescente** por data de validação.
+(`RF-03-08`, `RF-03-83`, `RN-03-02`, decisão do fundador, 2026-09-28)
 
 #### Scenario: A criação aparece com trilha, data e autoria
 
 - **WHEN** o visitante abre o portfólio
-- **THEN** cada criação traz a trilha, a data de validação e o nick de cada autor creditado
+- **THEN** cada linha traz a trilha, a data de validação e o avatar e o nick de cada autor
+  creditado
 
 #### Scenario: O portfólio não exibe quem não autorizou
 
 - **WHEN** uma criação tem creditado sem autorização vigente
 - **THEN** ela não aparece no portfólio
 
+#### Scenario: A criação mais recente abre o portfólio
+
+- **WHEN** o visitante abre o portfólio
+- **THEN** a primeira linha é a criação validada mais recentemente
+
+#### Scenario: O nick creditado abre a página do autor
+
+- **WHEN** o visitante aciona o nick de um autor creditado
+- **THEN** a página individual daquele Guerreiro(a) abre, em endereço próprio
+
 ### Requirement: O ranking público exibe só pontos regulares e só quem autorizou
 
 A App 06 SHALL exibir o ranking público com **apenas pontos regulares** e **apenas** Guerreiros
 e Guerreiras com autorização de divulgação vigente. NEVER SHALL exibir ponto extra, saldo de
-moedas ou valor em reais no ranking. (`RF-03-09`, `RN-03-02`, invariante 16 do documento 99 §6)
+moedas ou valor em reais no ranking. Cada posição SHALL sair em **uma linha**, com **avatar**,
+nick, posição e pontos regulares, e a linha SHALL abrir a **página individual** daquele
+Guerreiro(a). (`RF-03-09`, `RF-03-03`, `RN-03-02`, invariante 16 do documento 99 §6)
 
 #### Scenario: O ranking é de ponto regular
 
@@ -701,34 +816,40 @@ moedas ou valor em reais no ranking. (`RF-03-09`, `RN-03-02`, invariante 16 do d
 - **WHEN** um Guerreiro(a) sem autorização vigente teria posição no ranking
 - **THEN** ele não aparece, e a numeração exibida não deixa buraco
 
-### Requirement: A seção de comunidades apresenta cada Comunidade Virtual em card e em página
+#### Scenario: A linha do ranking traz o avatar e abre a página
 
-A App 06 SHALL apresentar a seção **Comunidades Virtuais** com um card por comunidade, na
-variante Comunidade Virtual da carta, e cada card SHALL abrir a **página da comunidade** em
-endereço próprio, alcançável direto e compartilhável. Comunidade cuja leitura não devolve o que
-a carta exige SHALL ser apresentada em outra forma, nunca em carta incompleta.
+- **WHEN** o visitante abre o ranking e aciona uma linha
+- **THEN** a linha trazia avatar, nick, posição e pontos regulares, e a página individual
+  daquele Guerreiro(a) abre
+
+### Requirement: A seção de comunidades apresenta cada Comunidade Virtual em linha e em página
+
+A App 06 SHALL apresentar a seção **Comunidades Virtuais** com uma linha por comunidade, **sem
+avatar**, e cada linha SHALL abrir a **página da comunidade** em endereço próprio, alcançável
+direto e compartilhável. A **representação visual** do documento 11 §8.3 é da página, nunca da
+linha.
 
 A seção SHALL aparecer nos três recortes de leitura em que o PRD-03 §5 a descreve, sem mudar o
-conteúdo de um recorte para outro. (`RF-03-02`, `RF-03-15`, documento 11 §8.2, PRD-03 §§5.1,
-5.2, 5.3)
+conteúdo de um recorte para outro. (`RF-03-02`, `RF-03-15`, documento 11 §§8.2, 8.3, PRD-03
+§§5.1, 5.2, 5.3)
 
-#### Scenario: Cada comunidade sai em card
+#### Scenario: Cada comunidade sai em linha
 
 - **WHEN** a seção de comunidades é aberta e o núcleo devolve três comunidades
-- **THEN** três cards aparecem, cada um com nome, território, representação visual, séries
-  ativas e o número de vinculados
+- **THEN** três linhas aparecem, cada uma com nome, localização e o número de vinculados, e
+  nenhuma com avatar
 
-#### Scenario: O card abre a página da comunidade em endereço próprio
+#### Scenario: A linha abre a página da comunidade em endereço próprio
 
-- **WHEN** o visitante abre o card de uma comunidade
-- **THEN** a página daquela comunidade abre em endereço próprio, e o mesmo endereço, aberto
-  direto, leva à mesma página
+- **WHEN** o visitante aciona a linha de uma comunidade
+- **THEN** a página daquela comunidade abre em endereço próprio, com a representação visual, e
+  o mesmo endereço, aberto direto, leva à mesma página
 
-#### Scenario: Comunidade sem os indicadores não vira card incompleto
+#### Scenario: Comunidade sem os indicadores continua em linha
 
 - **WHEN** o núcleo devolve uma comunidade com os quatro indicadores nulos
-- **THEN** ela aparece na seção em outra forma, com o que a leitura devolveu, e nenhum card
-  incompleto é apresentado
+- **THEN** a linha dela aparece com o que a leitura devolveu, e a ausência de indicador não a
+  retira da lista
 
 ### Requirement: O painel da comunidade exibe as séries do território agregadas até o bairro
 
@@ -1220,32 +1341,30 @@ Não havendo necessidade em aberto, a tela SHALL dizer isso. (`RF-03-47`, `RF-03
 - **WHEN** não há necessidade de recurso em aberto
 - **THEN** a tela diz que nenhuma necessidade está em aberto
 
-### Requirement: A seção de Mestres apresenta cada Mestre em card e em página
+### Requirement: A seção de Mestres apresenta cada Mestre em linha e em página
 
-A App 06 SHALL apresentar a seção **Mestres**, com um card por Mestre na variante Mestre da
-carta, e cada card SHALL abrir a **página individual do Mestre** em endereço próprio,
-alcançável direto e compartilhável.
+A App 06 SHALL apresentar a seção **Mestres** com uma linha por Mestre, e cada linha SHALL
+abrir a **página individual do Mestre** em endereço próprio, alcançável direto e
+compartilhável.
 
 A página SHALL detalhar o que o documento 11 §8.2 atribui a ela: as **habilidades**, as
 **trilhas de autoria**, a **prova pública** — currículo, portfólios, redes sociais e
 documentos comprobatórios externos, cada um como link com rótulo — e **quantas vezes ele
-sustentou atividade que estava sem recurso**.
+sustentou atividade que estava sem recurso**, na variante Mestre da carta.
 
-Mestre cuja leitura não devolve o que a variante exige SHALL ser apresentado em outra forma,
-nunca em carta incompleta. A App 06 NEVER SHALL oferecer edição da página: editar é ato do
-próprio Mestre, na App 09. (`RF-03-02`, `RF-03-03`, `RF-03-07`, PRD-03 §4, documento 11 §8.2)
+A App 06 NEVER SHALL oferecer edição da página: editar é ato do próprio Mestre, na App 09.
+(`RF-03-02`, `RF-03-03`, `RF-03-07`, PRD-03 §4, documento 11 §8.2)
 
-#### Scenario: Cada Mestre sai em card
+#### Scenario: Cada Mestre sai em linha
 
 - **WHEN** a seção de Mestres é aberta e o núcleo devolve três Mestres
-- **THEN** três cards aparecem, cada um com avatar, nick, áreas de habilidade, comprobatórios,
-  trilhas de autoria e o selo de sustento
+- **THEN** três linhas aparecem, cada uma com avatar, a identificação e as áreas de habilidade
 
-#### Scenario: O card abre a página do Mestre em endereço próprio
+#### Scenario: A linha abre a página do Mestre em endereço próprio
 
-- **WHEN** o visitante abre o card de um Mestre
-- **THEN** a página daquele Mestre abre em endereço próprio, e o mesmo endereço, aberto
-  direto, leva à mesma página
+- **WHEN** o visitante aciona a linha de um Mestre
+- **THEN** a página daquele Mestre abre em endereço próprio, com a carta dominando a tela, e o
+  mesmo endereço, aberto direto, leva à mesma página
 
 #### Scenario: A página traz a prova pública como link
 
@@ -1257,10 +1376,10 @@ próprio Mestre, na App 09. (`RF-03-02`, `RF-03-03`, `RF-03-07`, PRD-03 §4, doc
 - **WHEN** o visitante abre a página de um Mestre
 - **THEN** nenhuma ação de editar, acrescentar ou remover é apresentada
 
-### Requirement: A seção de Apoiadores apresenta cada Apoiador em card e em página
+### Requirement: A seção de Apoiadores apresenta cada Apoiador em linha e em página
 
-A App 06 SHALL apresentar a seção **Apoiadores**, com um card por Apoiador na variante
-Apoiador da carta, e cada card SHALL abrir a **página individual do Apoiador** em endereço
+A App 06 SHALL apresentar a seção **Apoiadores** com uma linha por Apoiador, levando o
+**total em moedas**, e cada linha SHALL abrir a **página individual do Apoiador** em endereço
 próprio, alcançável direto e compartilhável.
 
 A página SHALL detalhar o que o documento 11 §8.2 atribui a ela: os **aportes em moedas**, o
@@ -1268,16 +1387,17 @@ A página SHALL detalhar o que o documento 11 §8.2 atribui a ela: os **aportes 
 — trilha, período e quantos concluíram — e a **prova do apoio**, como link com rótulo.
 
 A seção NEVER SHALL apresentar Apoiador sem aporte homologado, NEVER SHALL exibir valor em
-reais e NEVER SHALL ordenar, classificar ou comparar Apoiadores por valor aportado: a ordem é
-alfabética pela identificação que o card exibe. (`RF-03-02`, `RF-03-03`, `RF-03-07`,
-`RF-03-10`, `RF-03-55`, `RF-03-56`, `RF-03-57`, `RF-03-66`, `RF-03-80`, `RN-03-18`,
-`RN-03-26`, `RN-03-37`, `RN-14-38`)
+reais, NEVER SHALL exibir posição e NEVER SHALL ordenar, classificar, comparar ou oferecer
+ordenação de Apoiadores por valor aportado: a ordem é **alfabética** pela identificação que a
+linha exibe, e é ela, com a ausência de posição, que impede o pódio. (`RF-03-02`, `RF-03-03`,
+`RF-03-07`, `RF-03-10`, `RF-03-55`, `RF-03-56`, `RF-03-57`, `RF-03-66`, `RF-03-80`,
+`RN-03-18`, `RN-03-26`, `RN-03-37`, `RN-03-40`, `RN-14-38`)
 
-#### Scenario: Cada Apoiador com aporte homologado sai em card
+#### Scenario: Cada Apoiador com aporte homologado sai em linha
 
 - **WHEN** a seção de Apoiadores é aberta e o núcleo devolve dois Apoiadores
-- **THEN** dois cards aparecem, cada um com avatar, nick e o total de moedas em destaque, na
-  moldura comum
+- **THEN** duas linhas aparecem, cada uma com avatar, a identificação, o nível de sustento e o
+  total em moedas
 
 #### Scenario: Quem não teve aporte homologado não está lá
 
@@ -1287,7 +1407,8 @@ alfabética pela identificação que o card exibe. (`RF-03-02`, `RF-03-03`, `RF-
 #### Scenario: A seção não é um pódio
 
 - **WHEN** a seção de Apoiadores é aberta com Apoiadores de totais diferentes
-- **THEN** os cards aparecem em ordem alfabética, sem posição, pódio ou comparação por valor
+- **THEN** as linhas aparecem em ordem alfabética, sem posição, pódio ou comparação por valor,
+  e nenhum controle oferece ordenar por valor
 
 #### Scenario: A página traz os desafios propostos com a efetividade
 

@@ -1,5 +1,5 @@
 import uuid
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
 import pytest
@@ -31,6 +31,25 @@ def _guerreiro_com_decisao(
     criar_vinculo(responsavel, guerreiro, cadastrado_por=admin)
     criar_consentimento(responsavel, guerreiro, tipo=TIPO, decisao=decisao)
     return guerreiro, responsavel, admin
+
+
+def _percorrer_por_cursor(cliente, chave, caminho, *, tamanho=10):
+    """Percorre a listagem inteira por cursor, em páginas do tamanho pedido, e
+    devolve as páginas na ordem em que o núcleo as serviu. Quem confere se a
+    ordem não pula nem repete é o chamador, sobre a concatenação."""
+    paginas = []
+    cursor = None
+    while True:
+        parametros = {"tamanho": str(tamanho)}
+        if cursor is not None:
+            parametros["cursor"] = cursor
+        resposta = cliente.get(caminho, params=parametros, headers={"X-Chave-Aplicacao": chave})
+        assert resposta.status_code == 200
+        corpo = resposta.json()
+        paginas.append(corpo["itens"])
+        cursor = corpo["proximo_cursor"]
+        if cursor is None:
+            return paginas
 
 
 def test_vitrine_responde_sem_token_de_sessao(cliente, criar_chave, guerreiro_publico):
@@ -660,6 +679,71 @@ def test_criacao_individual_sem_autorizacao_nao_aparece(
     assert resposta.json()["itens"] == []
 
 
+def test_portfolio_responde_da_criacao_mais_recente_para_a_mais_antiga(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_criacao_original,
+    guerreiro_publico,
+):
+    """`RF-03-83`: o portfólio abre pela criação validada mais recentemente.
+    As criações entram **fora** de ordem para que a ordem apresentada não
+    possa ser a da gravação (decisão do fundador, 2026-10-11)."""
+    admin = criar_persona(Papel.admin)
+    guerreiro, _ = guerreiro_publico(nick="autora-da-ordem")
+    momentos = {
+        "Trilha do Meio": datetime(2026, 6, 1, 10, 0, tzinfo=UTC),
+        "Trilha Mais Nova": datetime(2026, 9, 1, 10, 0, tzinfo=UTC),
+        "Trilha Mais Velha": datetime(2026, 3, 1, 10, 0, tzinfo=UTC),
+    }
+    for nome, validado_em in momentos.items():
+        trilha = criar_trilha(admin, nome=nome, situacao=SituacaoDaTrilha.publicada)
+        criar_criacao_original(trilha, admin, guerreiro=guerreiro, validado_em=validado_em)
+
+    chave, _ = criar_chave()
+    itens = cliente.get("/v1/vitrine/criacoes", headers={"X-Chave-Aplicacao": chave}).json()[
+        "itens"
+    ]
+
+    assert [item["trilha"] for item in itens] == [
+        "Trilha Mais Nova",
+        "Trilha do Meio",
+        "Trilha Mais Velha",
+    ]
+
+
+def test_paginacao_do_portfolio_percorre_a_ordem_decrescente_sem_pular_nem_repetir(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_criacao_original,
+    guerreiro_publico,
+):
+    """`RF-03-83`: em páginas de dez, o cursor percorre o portfólio inteiro
+    na ordem decrescente, sem pular nem repetir criação."""
+    admin = criar_persona(Papel.admin)
+    guerreiro, _ = guerreiro_publico(nick="autora-da-paginacao")
+    momentos = [datetime(2026, 1, 1, 10, 0, tzinfo=UTC) + timedelta(days=dia) for dia in range(14)]
+    # Uma trilha por criação: o modelo aceita uma só criação por
+    # (Guerreiro(a), trilha).
+    for ordem, validado_em in enumerate(momentos[7:] + momentos[:7]):
+        trilha = criar_trilha(
+            admin, nome=f"Trilha {ordem:02d}", situacao=SituacaoDaTrilha.publicada
+        )
+        criar_criacao_original(trilha, admin, guerreiro=guerreiro, validado_em=validado_em)
+
+    chave, _ = criar_chave()
+    paginas = _percorrer_por_cursor(cliente, chave, "/v1/vitrine/criacoes")
+
+    assert [len(pagina) for pagina in paginas] == [10, 4]
+    percorridos = [
+        datetime.fromisoformat(item["validada_em"]) for pagina in paginas for item in pagina
+    ]
+    assert percorridos == sorted(momentos, reverse=True)
+
+
 def test_cobertura_de_ods_agrega_por_comunidade_e_ciclo_sem_recorte_de_guerreiro(
     cliente,
     criar_chave,
@@ -1238,6 +1322,139 @@ def test_a_listagem_de_apoiadores_nao_e_podio(
     # A ordem é a estável do cursor (criação), nunca a do valor.
     totais = [Decimal(item["total_em_moedas"]) for item in itens]
     assert totais != sorted(totais, reverse=True)
+
+
+def test_listagem_de_mestres_sai_em_ordem_alfabetica_com_nick_e_nome_juntos(
+    cliente, criar_chave, sessao, criar_persona, criar_nick
+):
+    """`RF-03-83`, `RF-03-79`: a ordem é alfabética pela **identificação
+    exibida** — nick quando há, nome quando não —, e as duas entram na
+    **mesma** ordenação. O acento dobra: "Ávila" cai entre "ana" e "Bento",
+    e não no fim (design — decisão 5)."""
+    for nick in ("zelia_mestra", "ana_mestra"):
+        criar_nick(criar_persona(Papel.mestre), nick)
+    for nome in ("Ávila Nogueira", "Bento Alves"):
+        _nomear(sessao, criar_persona(Papel.mestre), nome)
+
+    chave, _ = criar_chave()
+    itens = cliente.get("/v1/vitrine/mestres", headers={"X-Chave-Aplicacao": chave}).json()["itens"]
+
+    assert [item["identificacao"]["valor"] for item in itens] == [
+        "ana_mestra",
+        "Ávila Nogueira",
+        "Bento Alves",
+        "zelia_mestra",
+    ]
+
+
+def test_paginacao_de_mestres_percorre_a_ordem_alfabetica_sem_pular_nem_repetir(
+    cliente, criar_chave, criar_persona, criar_nick
+):
+    """`RF-03-83`: em páginas de dez, o cursor percorre a lista inteira. Os
+    nicks entram **fora** de ordem para que a ordem apresentada não possa
+    ser a da criação."""
+    nicks = [f"mestre_{numero:02d}" for numero in range(23)]
+    for nick in nicks[12:] + nicks[:12]:
+        criar_nick(criar_persona(Papel.mestre), nick)
+
+    chave, _ = criar_chave()
+    paginas = _percorrer_por_cursor(cliente, chave, "/v1/vitrine/mestres")
+
+    assert [len(pagina) for pagina in paginas] == [10, 10, 3]
+    percorridos = [item["identificacao"]["valor"] for pagina in paginas for item in pagina]
+    assert percorridos == nicks
+
+
+def test_listagem_de_apoiadores_sai_em_ordem_alfabetica(
+    cliente,
+    criar_chave,
+    sessao,
+    criar_persona,
+    criar_nick,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_lancamento,
+    criar_aporte,
+):
+    """`RF-03-83`, `RN-03-40`: é a ordem alfabética — e a ausência de
+    posição — que impede o pódio, não a omissão do total em moedas."""
+    admin = criar_persona(Papel.admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    tipo = criar_tipo_de_recurso(admin)
+
+    def _apoiar(moedas, *, nick=None, nome=None):
+        apoiador = criar_persona(Papel.apoiador)
+        if nick is not None:
+            criar_nick(apoiador, nick)
+        else:
+            _nomear(sessao, apoiador, nome)
+        _aportar(
+            criar_lancamento,
+            criar_aporte,
+            admin=admin,
+            apoiador=apoiador,
+            tipo=tipo,
+            ponto_de_apoio=ponto,
+            moedas=moedas,
+        )
+
+    _apoiar(Decimal("90.00"), nick="zuleica_apoia")
+    _apoiar(Decimal("2.00"), nick="ana_apoia")
+    _apoiar(Decimal("50.00"), nome="Ávila Comércio")
+    _apoiar(Decimal("7.00"), nome="Bento Serviços")
+
+    chave, _ = criar_chave()
+    itens = cliente.get("/v1/vitrine/apoiadores", headers={"X-Chave-Aplicacao": chave}).json()[
+        "itens"
+    ]
+
+    assert [item["identificacao"]["valor"] for item in itens] == [
+        "ana_apoia",
+        "Ávila Comércio",
+        "Bento Serviços",
+        "zuleica_apoia",
+    ]
+    assert all("posicao" not in item for item in itens)
+
+
+def test_paginacao_de_apoiadores_percorre_a_ordem_alfabetica_sem_pular_nem_repetir(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_nick,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_lancamento,
+    criar_aporte,
+):
+    """`RF-03-83`, `RN-03-40`: em páginas de dez, o cursor percorre os
+    Apoiadores inteiros, e nenhuma página traz posição."""
+    admin = criar_persona(Papel.admin)
+    ponto = criar_ponto_de_apoio(admin, criar_comunidade())
+    tipo = criar_tipo_de_recurso(admin)
+    nicks = [f"apoia_{numero:02d}" for numero in range(12)]
+    for nick in nicks[6:] + nicks[:6]:
+        apoiador = criar_persona(Papel.apoiador)
+        criar_nick(apoiador, nick)
+        _aportar(
+            criar_lancamento,
+            criar_aporte,
+            admin=admin,
+            apoiador=apoiador,
+            tipo=tipo,
+            ponto_de_apoio=ponto,
+            moedas=Decimal("3.00"),
+        )
+
+    chave, _ = criar_chave()
+    paginas = _percorrer_por_cursor(cliente, chave, "/v1/vitrine/apoiadores")
+
+    assert [len(pagina) for pagina in paginas] == [10, 2]
+    percorridos = [item["identificacao"]["valor"] for pagina in paginas for item in pagina]
+    assert percorridos == nicks
+    assert all("posicao" not in item for pagina in paginas for item in pagina)
 
 
 def test_adulto_sem_nick_sai_pelo_nome_e_com_nick_sai_pelo_nick(

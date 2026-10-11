@@ -118,16 +118,16 @@ function SecoesDoRecorte({
           <SecaoDeGuerreiros irPara={irPara} />
         </Secao>
         <Secao titulo="Apoiadores">
-          <SecaoDeApoiadores irPara={irPara} />
+          <SecaoDeApoiadores />
         </Secao>
         <Secao titulo="Necessidades em aberto">
           <NecessidadesEmAberto />
         </Secao>
         <Secao titulo="Mestres">
-          <SecaoDeMestres irPara={irPara} />
+          <SecaoDeMestres />
         </Secao>
         <Secao titulo="Comunidades Virtuais">
-          <SecaoDeComunidades irPara={irPara} />
+          <SecaoDeComunidades />
         </Secao>
         <Secao titulo="Construir sobre a API">
           <SecaoDoDesenvolvedor irPara={irPara} />
@@ -151,7 +151,7 @@ function SecoesDoRecorte({
         </Secao>
       )}
       <Secao titulo="Séries do território e metodologia">
-        <SecaoDeComunidades irPara={irPara} />
+        <SecaoDeComunidades />
       </Secao>
       <Secao titulo="Cobertura da Agenda 2030">
         <SecaoDaCobertura />

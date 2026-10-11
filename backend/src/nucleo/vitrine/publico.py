@@ -4,7 +4,7 @@ from datetime import date, datetime
 from decimal import Decimal
 
 from pydantic import BaseModel
-from sqlalchemy import and_, func, tuple_
+from sqlalchemy import and_, collate, func, tuple_
 from sqlalchemy.orm import Session, aliased
 
 from ..aportes.modelo import Aporte
@@ -687,6 +687,17 @@ def montar_cartas_de_apoiador(
     return cartas
 
 
+# A **collation ICU `pt-BR`** da ordenação alfabética das listagens de
+# adulto. Sem ela "Ávila" cairia fora do lugar, e um `lower()` simples não
+# dobra acento (design — decisão 5).
+COLLATION_ALFABETICA = "pt-BR-x-icu"
+
+# A identificação exibida, que é por onde o `RF-03-83` ordena: nick quando
+# há, nome quando não, e cadeia vazia quando nem um nem outro — nulo
+# quebraria o keyset, que compara valor a valor (`RF-03-79`).
+IDENTIFICACAO_ORDENAVEL = collate(func.coalesce(Nick.valor, Persona.nome, ""), COLLATION_ALFABETICA)
+
+
 def _paginar_adultos_publicos(
     sessao: Session,
     *,
@@ -695,10 +706,20 @@ def _paginar_adultos_publicos(
     cursor: str | None,
     tamanho: int,
 ) -> tuple[list[Persona], str | None]:
-    """Paginação por cursor sobre `(criada_em, id)`, no mesmo contrato das
-    demais listagens (`RF-01-28`). A ordem de apresentação é da tela: aqui a
-    ordem é a estável do cursor, e **nunca** por valor aportado — pódio de
-    apoiador é proibido (`RN-14-38`).
+    """Paginação por cursor **alfabética pela identificação exibida** —
+    `COALESCE(nick, nome)` —, que é a ordem que o `RF-03-83` fixa para as
+    duas listagens de adulto. As duas são alfabéticas, então o auxiliar não
+    se bifurca (design — decisão 5).
+
+    O keyset é `(identificação, id)`: o `id` desempata identificação
+    repetida, e é ele que mantém a página estável. A ordenação sai com a
+    **collation ICU `pt-BR`**, senão "Ávila" cai fora do lugar — e a mesma
+    collation entra na comparação do cursor, que precisa da ordem do banco
+    para não pular nem repetir.
+
+    Nunca se ordena por valor aportado: pódio de apoiador é proibido, e é a
+    ordem alfabética, com a ausência de posição, que o impede (`RN-03-40`,
+    `RN-14-38`).
 
     `apenas_com_aporte` é o portão do `RF-03-57`: aplicado **antes** de
     paginar, para que a página não fique curta por exclusão. Linha em
@@ -707,7 +728,11 @@ def _paginar_adultos_publicos(
     homologador, que ela credita sem homologação (`RN-07-35`). É o mesmo
     portão que `derivar_sustento` usa para o nível 1.
     """
-    consulta = sessao.query(Persona).filter(Persona.papel == papel)
+    consulta = (
+        sessao.query(Persona, IDENTIFICACAO_ORDENAVEL)
+        .outerjoin(Nick, Nick.persona_id == Persona.id)
+        .filter(Persona.papel == papel)
+    )
     if apenas_com_aporte:
         consulta = consulta.filter(
             sessao.query(Aporte.id).filter(Aporte.provedor_id == Persona.id).exists()
@@ -716,23 +741,22 @@ def _paginar_adultos_publicos(
     if cursor:
         posicao = decodificar_cursor(cursor)
         try:
-            criada_em_cursor = datetime.fromisoformat(posicao["criada_em"])
+            valor_cursor = str(posicao["valor"])
             id_cursor = uuid.UUID(posicao["id"])
-        except (KeyError, ValueError) as exc:
+        except (KeyError, TypeError, ValueError) as exc:
             raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
         consulta = consulta.filter(
-            tuple_(Persona.criada_em, Persona.id) > (criada_em_cursor, id_cursor)
+            tuple_(IDENTIFICACAO_ORDENAVEL, Persona.id) > (valor_cursor, id_cursor)
         )
 
-    linhas = consulta.order_by(Persona.criada_em, Persona.id).limit(tamanho + 1).all()
+    linhas = consulta.order_by(IDENTIFICACAO_ORDENAVEL, Persona.id).limit(tamanho + 1).all()
 
     proximo_cursor = None
     if len(linhas) > tamanho:
         linhas = linhas[:tamanho]
-        proximo_cursor = codificar_cursor(
-            {"criada_em": linhas[-1].criada_em.isoformat(), "id": str(linhas[-1].id)}
-        )
-    return linhas, proximo_cursor
+        ultima_persona, ultimo_valor = linhas[-1]
+        proximo_cursor = codificar_cursor({"valor": ultimo_valor, "id": str(ultima_persona.id)})
+    return [persona for persona, _ in linhas], proximo_cursor
 
 
 def paginar_mestres_publicos(

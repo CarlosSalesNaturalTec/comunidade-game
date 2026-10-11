@@ -5,9 +5,26 @@ import { lerDoNucleo } from "./nucleo";
 // persona: o visitante segue anônimo (`RN-03-33`).
 //
 // Os tipos trazem só o que as telas leem. A projeção do Guerreiro(a) é a
-// **carta do documento 11 §8.2 inteira**, a mesma no card e na página
+// **carta do documento 11 §8.2 inteira**, que monta a **página individual**
 // (`RF-03-03`, `RF-03-05`, decisão do fundador, 2026-09-28) — a vitrine não
 // cruza `trilha_id` com o catálogo de poderes para montá-la.
+//
+// As listagens de leitura são **paginadas em dez** e aceitam cursor: é a lista
+// de registros do `RF-03-82` que as consome, uma página por vez. O tamanho vem
+// na chamada, e não de padrão novo — `paginacao_tamanho_padrao` segue em 25
+// para as outras sete aplicações (design — decisão 6).
+
+/** Os dez registros por página do `RF-03-82`. Dentro do teto de 100 que o
+ * contrato de listagem já impõe. */
+export const TAMANHO_DA_PAGINA = 10;
+
+/** A consulta de uma página: o tamanho sempre, o cursor quando há. O cursor é
+ * opaco e vem da página anterior. */
+function paginaDe(cursor: string | null): string {
+  const parametros = new URLSearchParams({ tamanho: String(TAMANHO_DA_PAGINA) });
+  if (cursor) parametros.set("cursor", cursor);
+  return `?${parametros.toString()}`;
+}
 
 export interface PaginaDoNucleo<Item> {
   itens: Item[];
@@ -124,13 +141,6 @@ export interface ApoiadorPublico {
   artefatos: ArtefatoPublico[];
 }
 
-/** Os cards da seção, com a carta de cada um **na mesma resposta**: montar a
- * composição com uma consulta por nick para cada card cairia no freio por
- * origem (`RF-03-02`, `RF-03-04`, design — decisão 1). */
-export function listarGuerreiros(): Promise<PaginaDoNucleo<GuerreiroPublico>> {
-  return lerDoNucleo<PaginaDoNucleo<GuerreiroPublico>>("/v1/vitrine/guerreiros");
-}
-
 /** A página individual, por **nick exato**. Nick inexistente e nick sem
  * autorização devolvem o mesmo 404 (`RF-03-11`, `RN-03-07`), e a repetição
  * da consulta encontra o freio por origem (`RF-03-36`). */
@@ -138,18 +148,25 @@ export function obterGuerreiroPorNick(nick: string): Promise<GuerreiroPublico> {
   return lerDoNucleo<GuerreiroPublico>(`/v1/vitrine/guerreiros/${encodeURIComponent(nick)}`);
 }
 
-export function listarCriacoes(): Promise<PaginaDoNucleo<CriacaoPublica>> {
-  return lerDoNucleo<PaginaDoNucleo<CriacaoPublica>>("/v1/vitrine/criacoes");
+/** O portfólio, da criação validada mais recentemente para a mais antiga —
+ * a ordem é do núcleo (`RF-03-83`). */
+export function listarCriacoes(cursor: string | null = null) {
+  return lerDoNucleo<PaginaDoNucleo<CriacaoPublica>>(
+    `/v1/vitrine/criacoes${paginaDe(cursor)}`,
+  );
 }
 
-export function listarRanking(): Promise<PaginaDoNucleo<ItemDeRankingPublico>> {
-  return lerDoNucleo<PaginaDoNucleo<ItemDeRankingPublico>>("/v1/vitrine/rankings");
+export function listarRanking(cursor: string | null = null) {
+  return lerDoNucleo<PaginaDoNucleo<ItemDeRankingPublico>>(
+    `/v1/vitrine/rankings${paginaDe(cursor)}`,
+  );
 }
 
-/** Os cards dos Mestres, com a carta de cada um na mesma resposta
- * (`RF-03-02`, `RF-03-07`). */
-export function listarMestres(): Promise<PaginaDoNucleo<MestrePublico>> {
-  return lerDoNucleo<PaginaDoNucleo<MestrePublico>>("/v1/vitrine/mestres");
+/** As linhas dos Mestres, cada uma com o que a carta dele traz, na mesma
+ * resposta, em ordem alfabética pela identificação exibida (`RF-03-02`,
+ * `RF-03-07`, `RF-03-83`). */
+export function listarMestres(cursor: string | null = null) {
+  return lerDoNucleo<PaginaDoNucleo<MestrePublico>>(`/v1/vitrine/mestres${paginaDe(cursor)}`);
 }
 
 /** A página individual, por **identificador**: o nick é opcional para
@@ -159,10 +176,13 @@ export function obterMestrePorId(id: string): Promise<MestrePublico> {
   return lerDoNucleo<MestrePublico>(`/v1/vitrine/mestres/${encodeURIComponent(id)}`);
 }
 
-/** Os cards dos Apoiadores. Só vem quem tem aporte homologado — o portão é
- * do núcleo (`RF-03-57`, `RN-03-26`). */
-export function listarApoiadores(): Promise<PaginaDoNucleo<ApoiadorPublico>> {
-  return lerDoNucleo<PaginaDoNucleo<ApoiadorPublico>>("/v1/vitrine/apoiadores");
+/** As linhas dos Apoiadores, em ordem alfabética. Só vem quem tem aporte
+ * homologado — o portão é do núcleo (`RF-03-57`, `RN-03-26`) —, e a ordem
+ * nunca é a do valor aportado (`RN-03-40`, `RF-03-83`). */
+export function listarApoiadores(cursor: string | null = null) {
+  return lerDoNucleo<PaginaDoNucleo<ApoiadorPublico>>(
+    `/v1/vitrine/apoiadores${paginaDe(cursor)}`,
+  );
 }
 
 export function obterApoiadorPorId(id: string): Promise<ApoiadorPublico> {
@@ -252,8 +272,8 @@ export interface CoberturaDeOds {
   ciclo: string;
 }
 
-export function listarComunidades(): Promise<ListaDeComunidades> {
-  return lerDoNucleo<ListaDeComunidades>("/v1/comunidades");
+export function listarComunidades(cursor: string | null = null) {
+  return lerDoNucleo<ListaDeComunidades>(`/v1/comunidades${paginaDe(cursor)}`);
 }
 
 export function obterComunidade(id: string): Promise<ComunidadePublica> {

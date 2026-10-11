@@ -50,6 +50,14 @@ export function comunidadeDoCaminho(caminho: string): string | null {
   return identificadorDoCaminho(caminho, PREFIXO_DA_PAGINA_DA_COMUNIDADE);
 }
 
+/** O endereço próprio da página do Guerreiro(a), por **nick exato**. É por ele
+ * que a linha do ranking e o nick do autor no portfólio abrem a página —
+ * nenhuma listagem de Guerreiros e Guerreiras existe (`RF-03-03`,
+ * `RF-03-12`). */
+export function caminhoDoGuerreiro(nick: string): string {
+  return `${PREFIXO_DA_PAGINA_DO_GUERREIRO}${encodeURIComponent(nick)}`;
+}
+
 /** A **página individual** é endereço próprio porque o `RF-03-03` a exige
  * compartilhável e alcançável direto. Devolve o nick do caminho, ou `null`
  * quando o caminho não é de página individual. */
