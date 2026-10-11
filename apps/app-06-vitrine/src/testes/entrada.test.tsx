@@ -36,7 +36,7 @@ const DESTINOS: [string, string, string][] = [
 
 /** O diálogo de entrada, pelo título que o rotula. Os casos abaixo afirmam
  * sobre os links **dele** — a tela em volta tem os seus, e desde o herói a
- * abertura tem o "Quero participar". */
+ * abertura tem o "Quero apoiar". */
 function dialogoDeEntrada(): HTMLElement {
   return screen.getByRole("dialog", { name: /quem está entrando/i });
 }

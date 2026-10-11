@@ -24,7 +24,7 @@ aparecem com avatar, nick e portfólio; os painéis do território ficam abertos
 associações, escolas, pesquisadores e poder público; e a plataforma ganha suas **portas de
 entrada de gente nova** — o formulário de quem quer ser Mestre ou Apoiador, o formulário de quem
 quer o conjunto de dados, a **Área do Apoiador Desenvolvedor** de quem quer construir sobre a
-API e a chamada **"Quero participar"**, que leva ao pré-cadastro da Área do Apoiador. Nenhuma
+API e a chamada **"Quero apoiar"**, que leva ao pré-cadastro da Área do Apoiador. Nenhuma
 delas cadastra ninguém: todas viram fila na App 03.
 
 A vitrine é consequência, não causa. Ela só existe na medida em que a App 07 (PRD-13) produziu
@@ -36,8 +36,9 @@ hora — o sentido do fluxo é sempre esse.
 
 ### 3.1 Dentro do escopo
 
-- **Seis seções com cards**: Guerreiros e Guerreiras, Poderes, Mestres, Batalhas, Apoiadores e
-  Comunidades Virtuais, cada card abrindo a **página individual** do personagem.
+- **Cinco seções com cards**: Guerreiros e Guerreiras, Mestres, Batalhas, Apoiadores e
+  Comunidades Virtuais, cada card abrindo a **página individual** do personagem. O poder não
+  tem seção nem página próprias: aparece como atributo do Guerreiro(a).
 - **Cards rotativos** de Guerreiros e Guerreiras, com troca a cada 5 segundos.
 - **Consulta por nick exato**, para quem recebeu o nick da família — sem lista, sem sugestão e
   sem completação.
@@ -59,18 +60,20 @@ hora — o sentido do fluxo é sempre esse.
   com **assistente de chat com IA** (modelo Gemini, corpus fechado na documentação e no
   repositório, toda mensagem encerrada por pergunta de múltipla escolha), **link da
   documentação MkDocs**, **formulário de solicitação de chave** e **link do repositório**.
-- **Chamada "Quero participar"** em **toda página individual** e no pedido de favoritar,
-  levando à porta da Área do Apoiador — pré-cadastro e caminho de apoio.
-- **Botão "Entrar"** sempre visível, encaminhando cada persona à sua aplicação. A vitrine é a
-  **raiz do domínio** da plataforma.
+- **Chamada "Quero apoiar"** em **toda página individual** e no pedido de favoritar,
+  levando à porta da Área do Apoiador — pré-cadastro e caminho de apoio. O **endereço** da
+  porta não acompanha o rótulo.
+- **Botão "Entrar"** no herói da abertura, encaminhando cada persona à sua aplicação. A
+  vitrine é a **raiz do domínio** da plataforma.
 - **Área do gestor público**: bloco em destaque no recorte de gestores, explicando para que a
   plataforma serve ao município e ao estado, com os limites declarados na mesma tela.
 - **Card de Apoiador padronizado**: moldura comum, avatar centralizado, nick e **total de
   moedas em destaque**.
 - **Necessidades de recurso em aberto** das atividades sem lastro, com o caminho para apoiar.
-- **Seções institucionais** — "Quem somos", "Contatos" e "Como apoiar" com a chave PIX — e o
-  vídeo de apresentação. A **nota de transparência sobre IA** fica **dentro de "Quem somos"**, e
-  é para ela que aponta a etiqueta do texto reescrito por IA nas Apps 01 e 05.
+- **Seções institucionais** exibidas — "Quem somos" e "Contatos" — e o vídeo de apresentação.
+  "Como apoiar" segue publicável pelo Admin **sem tela pública**, e a chave PIX dela chega ao
+  visitante pela porta da chamada. A **nota de transparência sobre IA** fica **dentro de
+  "Quem somos"**, e é para ela que aponta a etiqueta do texto reescrito por IA nas Apps 01 e 05.
 - **Área detalhada de dados**, explicando o que a plataforma coleta, de quem, para quê e o que
   a vitrine **não** coleta do visitante.
 
@@ -120,10 +123,10 @@ fila, nunca acesso.
    Guerreiras autorizados, trocando a cada 5 segundos.
 3. Clica em um card e abre a **página individual**: trajetória nas trilhas, badges e níveis por
    poder, portfólio de criações e participação em batalhas.
-4. Navega para Poderes, Mestres, Batalhas, Apoiadores e Comunidades Virtuais pelo mesmo padrão
+4. Navega para Mestres, Batalhas, Apoiadores e Comunidades Virtuais pelo mesmo padrão
    de card e página.
-5. Em "Como apoiar", encontra a chave PIX e as **necessidades de recurso em aberto** das
-   atividades sem lastro.
+5. Encontra as **necessidades de recurso em aberto** das atividades sem lastro em seção
+   própria, e a chave PIX na porta da chamada — "Como apoiar" não tem tela pública.
 6. Trocando de recorte, continua na mesma vitrine: muda a porta de entrada e a ordem, não o
    conteúdo nem o direito de acesso.
 
@@ -173,8 +176,8 @@ fila, nunca acesso.
 
 ### 5.5 Quem quer participar, entrar ou apoiar
 
-1. **Toda página individual** — de Guerreiro(a), Mestre, poder, apoiador ou comunidade — traz a
-   chamada **"Quero participar"**. O pedido de favoritar leva ao mesmo lugar.
+1. **Toda página individual** — de Guerreiro(a), Mestre, apoiador ou comunidade — traz a
+   chamada **"Quero apoiar"**. O pedido de favoritar leva ao mesmo lugar.
 2. A chamada é **do projeto**: não oferece apoiar aquela pessoa, e a tela seguinte não carrega
    o nome nem o nick de quem estava sendo visto.
 3. Ela abre a **porta da Área do Apoiador**, que explica o que é ser Apoiador — aportar, propor
@@ -255,28 +258,28 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 
 ### 6.1 Navegação, cards e páginas
 
-| ID         | Requisito                                                                                                               | Prioridade |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-03-01` | Vitrine abre sem login e sem cadastro, na raiz do domínio da plataforma                                                 | essencial  |
-| `RF-03-02` | Aplicação exibe as seis seções com cards: Guerreiros e Guerreiras, poderes, Mestres, batalhas, apoiadores e comunidades | essencial  |
-| `RF-03-03` | Cada card abre a página individual do personagem, com a composição do documento 11                                      | essencial  |
-| `RF-03-04` | Cards de Guerreiros e Guerreiras rotacionam a cada 5 segundos                                                           | essencial  |
-| `RF-03-05` | Card e página de Guerreiro(a) exibem só avatar, nick, badges, poderes e desempenho                                      | essencial  |
-| `RF-03-06` | Nenhuma tela exibe imagem real, nome civil, rede social ou contato de Guerreiro(a)                                      | essencial  |
-| `RF-03-07` | Página de Mestre e de Apoiador exibe currículo, portfólios, redes sociais e comprobatórios                              | essencial  |
-| `RF-03-79` | Card e página de Mestre e de Apoiador sem nick exibem o nome da persona, apresentado como nome                          | essencial  |
-| `RF-03-80` | Página de Apoiador exibe cada desafio extra proposto com trilha, período e quantos concluíram, sem identificar ninguém  | essencial  |
-| `RF-03-55` | Card de Apoiador exibe avatar, nick e o total de moedas aportadas em destaque                                           | essencial  |
-| `RF-03-56` | Cards de Apoiador seguem moldura comum, com avatar centralizado em proporção fixa                                       | essencial  |
-| `RF-03-57` | Apoiador sem aporte homologado não aparece na vitrine                                                                   | essencial  |
-| `RF-03-66` | Card de Apoiador com menos de 10 moedas exibe o avatar padrão do projeto na mesma moldura                               | essencial  |
-| `RF-03-08` | Portfólio exibe as criações originais autorizadas, com título, trilha, data e autoria por nick                          | essencial  |
-| `RF-03-09` | Ranking público exibe apenas pontos regulares e apenas quem tem divulgação autorizada                                   | essencial  |
-| `RF-03-10` | Aporte de Apoiador é exibido em moedas da plataforma, nunca em reais                                                    | essencial  |
-| `RF-03-11` | Busca por nick exato devolve a página pública; nick inexistente e nick sem autorização têm a mesma resposta             | essencial  |
-| `RF-03-12` | Busca não oferece sugestão, completação nem lista de nicks; cards, ranking e portfólio exibem só quem autorizou         | essencial  |
-| `RF-03-13` | Guerreiro(a) sem autorização vigente não aparece em card, página, portfólio ou ranking                                  | essencial  |
-| `RF-03-14` | Revogação da autorização retira o perfil do público na leitura seguinte                                                 | essencial  |
+| ID         | Requisito                                                                                                              | Prioridade |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-03-01` | Vitrine abre sem login e sem cadastro, na raiz do domínio da plataforma                                                | essencial  |
+| `RF-03-02` | Aplicação exibe as cinco seções com cards: Guerreiros e Guerreiras, Mestres, batalhas, apoiadores e comunidades        | essencial  |
+| `RF-03-03` | Cada card abre a página individual do personagem, com a composição do documento 11                                     | essencial  |
+| `RF-03-04` | Cards de Guerreiros e Guerreiras rotacionam a cada 5 segundos                                                          | essencial  |
+| `RF-03-05` | Card e página de Guerreiro(a) exibem só avatar, nick, badges, poderes e desempenho                                     | essencial  |
+| `RF-03-06` | Nenhuma tela exibe imagem real, nome civil, rede social ou contato de Guerreiro(a)                                     | essencial  |
+| `RF-03-07` | Página de Mestre e de Apoiador exibe currículo, portfólios, redes sociais e comprobatórios                             | essencial  |
+| `RF-03-79` | Card e página de Mestre e de Apoiador sem nick exibem o nome da persona, apresentado como nome                         | essencial  |
+| `RF-03-80` | Página de Apoiador exibe cada desafio extra proposto com trilha, período e quantos concluíram, sem identificar ninguém | essencial  |
+| `RF-03-55` | Card de Apoiador exibe avatar, nick e o total de moedas aportadas em destaque                                          | essencial  |
+| `RF-03-56` | Cards de Apoiador seguem moldura comum, com avatar centralizado em proporção fixa                                      | essencial  |
+| `RF-03-57` | Apoiador sem aporte homologado não aparece na vitrine                                                                  | essencial  |
+| `RF-03-66` | Card de Apoiador com menos de 10 moedas exibe o avatar padrão do projeto na mesma moldura                              | essencial  |
+| `RF-03-08` | Portfólio exibe as criações originais autorizadas, com título, trilha, data e autoria por nick                         | essencial  |
+| `RF-03-09` | Ranking público exibe apenas pontos regulares e apenas quem tem divulgação autorizada                                  | essencial  |
+| `RF-03-10` | Aporte de Apoiador é exibido em moedas da plataforma, nunca em reais                                                   | essencial  |
+| `RF-03-11` | Busca por nick exato devolve a página pública; nick inexistente e nick sem autorização têm a mesma resposta            | essencial  |
+| `RF-03-12` | Busca não oferece sugestão, completação nem lista de nicks; cards, ranking e portfólio exibem só quem autorizou        | essencial  |
+| `RF-03-13` | Guerreiro(a) sem autorização vigente não aparece em card, página, portfólio ou ranking                                 | essencial  |
+| `RF-03-14` | Revogação da autorização retira o perfil do público na leitura seguinte                                                | essencial  |
 
 ### 6.2 Território, séries e ODS
 
@@ -316,7 +319,7 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | ID         | Requisito                                                                                    | Prioridade |
 | ---------- | -------------------------------------------------------------------------------------------- | ---------- |
 | `RF-03-38` | Vitrine não guarda favorito nem preferência do visitante, no servidor ou no aparelho         | essencial  |
-| `RF-03-39` | Toda página individual traz a chamada "Quero participar", que leva à Área do Apoiador        | essencial  |
+| `RF-03-39` | Toda página individual traz a chamada "Quero apoiar", que leva à Área do Apoiador            | essencial  |
 | `RF-03-40` | Ação de favoritar ou acompanhar leva à mesma porta                                           | essencial  |
 | `RF-03-41` | A chamada não vincula o apoio à pessoa exibida, e a tela seguinte não carrega quem era vista | essencial  |
 | `RF-03-42` | Porta apresenta o que é ser Apoiador e leva ao pré-cadastro da App 08                        | essencial  |
@@ -328,8 +331,8 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 
 | ID         | Requisito                                                                                                                                       | Prioridade |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-03-45` | Seções "Quem somos", "Contatos" e "Como apoiar" exibem o conteúdo publicado na App 03                                                           | essencial  |
-| `RF-03-46` | "Como apoiar" exibe a chave PIX da pessoa jurídica vinculada                                                                                    | essencial  |
+| `RF-03-45` | Seções "Quem somos" e "Contatos" exibem o conteúdo publicado na App 03; "Como apoiar" não tem tela pública                                      | essencial  |
+| `RF-03-46` | A porta da chamada exibe a chave PIX da pessoa jurídica vinculada, única tela pública que a traz                                                | essencial  |
 | `RF-03-47` | Vitrine publica as necessidades de recurso em aberto, com tipo, quantidade, valor em moedas, comunidade, ponto de apoio, data e horário da aula | essencial  |
 | `RF-03-48` | Nota de transparência sobre IA vive dentro de "Quem somos" e remete ao bloco "Licenças"                                                         | essencial  |
 | `RF-03-49` | Vitrine exibe o vídeo de apresentação e a identidade visual de comunidade                                                                       | desejável  |
@@ -558,7 +561,7 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   obrigatórios, e a tela informa os 7 dias.
 - Formulário de dados enviado não devolve arquivo nem link: a tela declara a aprovação de Admin
   como condição.
-- Toda página individual traz a chamada "Quero participar"; clicando nela, a tela seguinte não
+- Toda página individual traz a chamada "Quero apoiar"; clicando nela, a tela seguinte não
   cita a pessoa que estava sendo vista e leva ao pré-cadastro da App 08.
 - Pedir para favoritar chega à mesma porta; recusar devolve à navegação sem gravar nada.
 - Card de Apoiador exibe avatar, nick e total de moedas na moldura comum; quem não teve aporte
@@ -589,7 +592,7 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 | Solicitação de chave sem freio por origem, protegida pela cota da chave  | 03 §8      | Números da proteção das rotas públicas    |
 | Vitrine sem favoritos: o pedido vira convite a se cadastrar e apoiar     | 03 §8      | Favoritos apenas na App 08                |
 | Novidade dos favoritos na App 08: cinco fatos, em destaque por 30 dias   | 03 §10     | O que conta como "novidade" dos favoritos |
-| Chamada "Quero participar" em toda página individual                     | 03 §8      | Chamada "Quero participar" nos perfis     |
+| Chamada "Quero apoiar" em toda página individual                         | 03 §8      | Chamada "Quero apoiar" nos perfis         |
 | Área do Apoiador Desenvolvedor como seção da vitrine, não nona aplicação | 03 §8      | Acesso das aplicações de terceiros        |
 | Assistente de chat com corpus fechado e pergunta de múltipla escolha     | 03 §8      | Acesso das aplicações de terceiros        |
 | Recorte do corpus por pergunta, com teto, em vez do corpus inteiro       | 03 §8      | Acesso das aplicações de terceiros        |

@@ -111,7 +111,7 @@ describe("a abertura tem herói", () => {
     for (const figura of heroi().querySelectorAll("picture")) figura.remove();
 
     expect(heroi()).toHaveTextContent(/plataforma educacional gamificada/i);
-    const acao = within(heroi()).getByRole("link", { name: "Quero participar" });
+    const acao = within(heroi()).getByRole("link", { name: "Quero apoiar" });
     expect(acao).toBeVisible();
     expect(acao).toHaveAttribute("href", "/quero-participar");
   });
@@ -120,7 +120,7 @@ describe("a abertura tem herói", () => {
     render(<App />);
 
     // As duas ações do herói levam a portas que o resto da vitrine já oferece:
-    // "Quero participar" é link, "Entrar" abre a pergunta de persona.
+    // "Quero apoiar" é link, "Entrar" abre a pergunta de persona.
     expect(within(heroi()).getAllByRole("link")).toHaveLength(1);
     expect(within(heroi()).getAllByRole("button", { name: "Entrar" })).toHaveLength(1);
     // Um só na tela: o do herói. O cabeçalho da abertura não traz o seu
@@ -131,7 +131,7 @@ describe("a abertura tem herói", () => {
   it("apresenta as duas ações como um par de iguais (RF-03-58)", () => {
     render(<App />);
 
-    const participar = within(heroi()).getByRole("link", { name: "Quero participar" });
+    const participar = within(heroi()).getByRole("link", { name: "Quero apoiar" });
     const entrar = within(heroi()).getByRole("button", { name: "Entrar" });
 
     // No mesmo par, lado a lado, e com a mesma forma de botão da camada
@@ -144,6 +144,27 @@ describe("a abertura tem herói", () => {
     expect(participar).toHaveClass("cg-botao");
     expect(entrar).toHaveClass("cg-botao");
     expect(participar.className).not.toBe(entrar.className);
+
+    // Cada ação é de uma família de cor, e a variante do "Entrar" tem nome de
+    // **papel**, não de família: a cor do par já mudou de laranja para verde
+    // uma vez (decisão do fundador de 2026-10-11), e um nome de família
+    // mentiria na próxima.
+    expect(entrar).toHaveClass("cg-botao--entrada");
+    expect(entrar).not.toHaveClass("cg-botao--marca");
+
+    // E o rótulo sozinho já distingue as duas: quem não enxerga a cor lê
+    // "Entrar" e "Quero apoiar" (documento 15 §5).
+    expect(entrar).toHaveAccessibleName("Entrar");
+    expect(participar).toHaveAccessibleName("Quero apoiar");
+  });
+
+  it("o endereço da porta não mudou com o rótulo (RF-03-42)", () => {
+    render(<App />);
+
+    // O rótulo virou "Quero apoiar" em 2026-10-11; o caminho é público e
+    // compartilhável, está no sitemap, e por isso **não** acompanhou.
+    const acao = within(heroi()).getByRole("link", { name: "Quero apoiar" });
+    expect(acao).toHaveAttribute("href", "/quero-participar");
   });
 
   it("sem a ilustração, as duas ações continuam acionáveis (RF-03-01)", () => {
@@ -151,7 +172,7 @@ describe("a abertura tem herói", () => {
 
     for (const figura of heroi().querySelectorAll("picture")) figura.remove();
 
-    expect(within(heroi()).getByRole("link", { name: "Quero participar" })).toBeVisible();
+    expect(within(heroi()).getByRole("link", { name: "Quero apoiar" })).toBeVisible();
     expect(within(heroi()).getByRole("button", { name: "Entrar" })).toBeVisible();
   });
 

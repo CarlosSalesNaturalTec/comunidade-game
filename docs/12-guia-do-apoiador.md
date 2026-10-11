@@ -61,7 +61,7 @@ Perda ou dano nunca gera cobrança à família: vira necessidade de reposição 
 
 ## 4. Como apoiar
 
-1. **Diga o que você traz.** A chamada "Quero participar" começa por aí. Quem vai transferir
+1. **Diga o que você traz.** A chamada "Quero apoiar" começa por aí. Quem vai transferir
    dinheiro faz o **pré-cadastro na Área do Apoiador** e anexa o comprovante; quem traz insumo,
    equipamento, alimento, serviço, conteúdo, código ou divulgação — e quem quer ensinar — usa o
    **formulário da vitrine**. As duas portas caem na mesma fila de avaliação do Admin.

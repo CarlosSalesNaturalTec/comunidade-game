@@ -30,7 +30,7 @@ NEVER SHALL escrever qualquer coisa sobre um Guerreiro(a). (`RF-03-01`, `RN-03-0
 
 A abertura da vitrine SHALL apresentar, antes das seções, um **herói** com a ilustração
 do elenco em primeiro plano, a frase que diz o que o projeto é, e as ações que a vitrine
-já oferece — "Quero participar" e "Entrar". NEVER SHALL oferecer ação que a vitrine não
+já oferece — "Quero apoiar" e "Entrar". NEVER SHALL oferecer ação que a vitrine não
 tenha em outra tela.
 
 O "Entrar" da vitrine é **do herói, e só dele**: nenhuma outra tela pública o apresenta, e
@@ -41,6 +41,7 @@ acrescentam ação alguma e atrapalham quem navega por leitor de tela (decisão 
 As duas ações SHALL ser apresentadas como um **par de iguais**: lado a lado, de mesma
 altura, mesma forma e mesmo peso, distinguidas **por cor e por rótulo**, nunca por
 tamanho. A distinção NEVER SHALL se apoiar só na cor — o rótulo de cada uma já a carrega.
+Qual cor cada uma recebe é do documento 15 §3.2, e não deste requisito.
 
 O que o herói comunica NEVER SHALL depender da ilustração: some a ilustração — rede
 fora, preferência do aparelho —, e a frase e as ações continuam de pé. A ilustração
@@ -57,7 +58,7 @@ corte nem redução de uma em relação às outras, do celular modesto ao aparel
 
 - **WHEN** a raiz do domínio é aberta
 - **THEN** o herói aparece antes da primeira seção, com a frase do projeto e as ações
-  "Quero participar" e "Entrar"
+  "Quero apoiar" e "Entrar"
 
 #### Scenario: O "Entrar" do herói é o único da tela
 
@@ -68,7 +69,7 @@ corte nem redução de uma em relação às outras, do celular modesto ao aparel
 #### Scenario: As duas ações se leem como um par de iguais
 
 - **WHEN** o herói é apresentado
-- **THEN** "Quero participar" e "Entrar" aparecem lado a lado, de mesma altura, forma e
+- **THEN** "Quero apoiar" e "Entrar" aparecem lado a lado, de mesma altura, forma e
   peso, e cada uma se identifica pelo próprio rótulo, sem depender da cor
 
 #### Scenario: Sem a ilustração, a abertura continua inteira
@@ -700,32 +701,6 @@ moedas ou valor em reais no ranking. (`RF-03-09`, `RN-03-02`, invariante 16 do d
 - **WHEN** um Guerreiro(a) sem autorização vigente teria posição no ranking
 - **THEN** ele não aparece, e a numeração exibida não deixa buraco
 
-### Requirement: A seção de poderes apresenta cada poder com as trilhas dele
-
-A App 06 SHALL apresentar a seção **poderes**, com cada poder e as **trilhas** vinculadas a ele,
-e a página do poder com as mesmas trilhas. Cada poder SHALL apresentar também os **Mestres
-responsáveis** do documento 11 §8.2 — os autores das trilhas publicadas daquele poder —, cada
-um com **link para a página individual do Mestre**. Poder sem trilha publicada SHALL ser
-apresentado **sem espaço vazio** no lugar dos Mestres. (`RF-03-02`, documento 11 §8.2,
-decisões do fundador de 2026-09-28 e 2026-09-29)
-
-#### Scenario: O poder aparece com as trilhas
-
-- **WHEN** o visitante abre a seção de poderes
-- **THEN** cada poder aparece com as trilhas vinculadas a ele
-
-#### Scenario: O poder aparece com os Mestres responsáveis
-
-- **WHEN** o visitante abre a seção de poderes e um poder tem duas trilhas publicadas de
-  Mestres diferentes
-- **THEN** aquele poder aparece com os dois Mestres, cada um levando à página individual dele
-
-#### Scenario: A seção não promete o que ainda não tem
-
-- **WHEN** o visitante abre um poder que não tem trilha publicada alguma, e portanto nenhum
-  Mestre responsável
-- **THEN** nenhum espaço vazio ou promessa de Mestres responsáveis é apresentado
-
 ### Requirement: A seção de comunidades apresenta cada Comunidade Virtual em card e em página
 
 A App 06 SHALL apresentar a seção **Comunidades Virtuais** com um card por comunidade, na
@@ -1021,34 +996,6 @@ vazio. (`RF-03-49`, `RF-03-51`, `RN-03-22`)
 - **WHEN** "Quem somos" chega sem link de vídeo
 - **THEN** nada aparece no lugar do vídeo
 
-### Requirement: "Contatos" e "Como apoiar" exibem o que foi publicado, e "Como apoiar" traz a chave PIX
-
-A App 06 SHALL exibir a seção **"Contatos"** e a seção **"Como apoiar"** com o texto publicado,
-na ordem do recorte, sem publicidade nem patrocínio. Em "Como apoiar" SHALL aparecer a **chave
-PIX da pessoa jurídica vinculada**, com o titular, e as **necessidades de recurso em aberto**.
-A exibição SHALL vir do que o núcleo devolve, e nenhum valor SHALL ficar escrito na aplicação.
-(`RF-03-45`, `RF-03-46`, `RF-03-47`, `RN-03-21`)
-
-#### Scenario: A chave PIX aparece em "Como apoiar"
-
-- **WHEN** o visitante abre "Como apoiar" com o texto semeado
-- **THEN** a tela mostra a chave PIX e o titular
-
-#### Scenario: A chave publicada é a que o Admin editou
-
-- **WHEN** o Admin republica "Como apoiar" com outra chave
-- **THEN** a tela mostra a chave nova, sem depender de nova versão da aplicação
-
-#### Scenario: Seção não publicada diz isso
-
-- **WHEN** "Contatos" não tem texto publicado
-- **THEN** a tela diz que o conteúdo ainda não foi publicado
-
-#### Scenario: As necessidades em aberto aparecem em "Como apoiar"
-
-- **WHEN** o visitante abre "Como apoiar" e há necessidade de recurso em aberto
-- **THEN** a tela lista as necessidades, sem depender de passar pela porta do convite
-
 ### Requirement: Toda tela traz o aviso de coleta, com acesso à área detalhada
 
 A App 06 SHALL exibir, em **toda tela**, incluindo a página individual, a da comunidade e os
@@ -1092,39 +1039,47 @@ Desenvolvedor não é guardada. (`RF-03-52`, `RF-03-53`, `RN-03-22`, PRD-03 §11
 - **WHEN** o visitante abre a área detalhada e recarrega a página
 - **THEN** `localStorage`, `sessionStorage` e cookie seguem vazios
 
-### Requirement: Toda página individual traz a chamada "Quero participar", e acompanhar leva à mesma porta
+### Requirement: Toda página individual traz a chamada "Quero apoiar", e acompanhar leva à mesma porta
 
 A App 06 SHALL apresentar, em **toda página individual** que publica, a chamada **"Quero
-participar"**, e SHALL apresentar na mesma página a **ação de acompanhar ou favoritar**, que
+apoiar"**, e SHALL apresentar na mesma página a **ação de acompanhar ou favoritar**, que
 SHALL levar à **mesma porta** da chamada. As duas SHALL abrir a porta do convite sem exigir
 cadastro, login ou dado do visitante. Com as páginas de Mestre e de Apoiador publicadas, a
 chamada SHALL aparecer nas **quatro** páginas individuais que a vitrine tem — Guerreiro(a),
-comunidade, Mestre e Apoiador. (`RF-03-39`, `RF-03-40`, PRD-03 §5.5)
+comunidade, Mestre e Apoiador. O **endereço** da porta NEVER SHALL mudar com o rótulo: ele é
+público e compartilhável. (`RF-03-39`, `RF-03-40`, `RF-03-42`, PRD-03 §5.5, decisão do
+fundador de 2026-10-11)
 
 #### Scenario: A página do Guerreiro(a) convida
 
 - **WHEN** o visitante abre a página individual de um Guerreiro(a) com autorização vigente
-- **THEN** a página traz a chamada "Quero participar" e a ação de acompanhar
+- **THEN** a página traz a chamada "Quero apoiar" e a ação de acompanhar
 
 #### Scenario: A página da comunidade convida
 
 - **WHEN** o visitante abre a página de uma Comunidade Virtual
-- **THEN** a página traz a chamada "Quero participar" e a ação de acompanhar
+- **THEN** a página traz a chamada "Quero apoiar" e a ação de acompanhar
 
 #### Scenario: A página do Mestre convida
 
 - **WHEN** o visitante abre a página individual de um Mestre
-- **THEN** a página traz a chamada "Quero participar" e a ação de acompanhar
+- **THEN** a página traz a chamada "Quero apoiar" e a ação de acompanhar
 
 #### Scenario: A página do Apoiador convida
 
 - **WHEN** o visitante abre a página individual de um Apoiador
-- **THEN** a página traz a chamada "Quero participar" e a ação de acompanhar
+- **THEN** a página traz a chamada "Quero apoiar" e a ação de acompanhar
 
 #### Scenario: Acompanhar chega à porta do convite
 
 - **WHEN** o visitante aciona a ação de acompanhar
-- **THEN** a porta do convite abre, a mesma que a chamada "Quero participar" abre
+- **THEN** a porta do convite abre, a mesma que a chamada "Quero apoiar" abre
+
+#### Scenario: O endereço da porta não mudou com o rótulo
+
+- **WHEN** o visitante aciona a chamada "Quero apoiar", em qualquer tela que a traga
+- **THEN** a porta abre no mesmo endereço público de antes, e nenhum endereço anterior fica
+  sem resposta
 
 ### Requirement: A chamada é do projeto e a porta não sabe quem estava sendo visto
 
@@ -1195,19 +1150,27 @@ de **7 dias**. A porta NEVER SHALL pedir credencial, senha ou documento do visit
 ### Requirement: A porta oferece também doar pela chave PIX e ver as necessidades em aberto
 
 A porta SHALL oferecer, a quem não quer se cadastrar agora, os dois caminhos que dispensam
-cadastro: **doar pela chave PIX** da pessoa jurídica vinculada, a mesma que "Como apoiar"
-publica, e **ver as necessidades de recurso em aberto**. A chave PIX SHALL vir do que o núcleo
-devolve, e nenhum valor SHALL ficar escrito na aplicação. (`RF-03-43`, `RF-03-46`, PRD-03 §5.5)
+cadastro: **doar pela chave PIX** da pessoa jurídica vinculada, a que o conteúdo institucional
+guarda na seção "Como apoiar", e **ver as necessidades de recurso em aberto**. A chave PIX
+SHALL vir do que o núcleo devolve, e nenhum valor SHALL ficar escrito na aplicação. Sendo a
+porta o **único** lugar público onde a chave aparece, a porta NEVER SHALL deixar de oferecê-la
+quando o núcleo a devolve. (`RF-03-43`, `RF-03-46`, PRD-03 §5.5, decisão do fundador de
+2026-10-11)
 
 #### Scenario: Quem não quer se cadastrar encontra o PIX
 
-- **WHEN** o visitante abre a porta com "Como apoiar" publicado
+- **WHEN** o visitante abre a porta e o núcleo devolve a seção "Como apoiar" publicada
 - **THEN** a porta mostra a chave PIX e o titular, sem pedir cadastro
 
 #### Scenario: A porta mostra o que falta hoje
 
 - **WHEN** o visitante abre a porta e há necessidade de recurso em aberto
 - **THEN** a porta lista as necessidades em aberto
+
+#### Scenario: A chave publicada é a que o Admin editou
+
+- **WHEN** o Admin republica "Como apoiar" com outra chave
+- **THEN** a porta mostra a chave nova, sem depender de nova versão da aplicação
 
 ### Requirement: Recusar o convite devolve o visitante à navegação, sem gravar nada
 
@@ -1530,3 +1493,83 @@ Quem está em outra tela pública SHALL alcançar a entrada pela **marca do proj
 - **WHEN** a pergunta do "Entrar" é apresentada
 - **THEN** ela oferece Guerreiro(a), responsável, Mestre, Apoiador, gestão e o aparelho da
   aula, sem escolha pré-marcada
+
+### Requirement: A vitrine não apresenta seção de poderes nem página de poder
+
+A App 06 NEVER SHALL apresentar seção de poderes, card de poder ou página individual de poder.
+O poder continua existindo como atributo público do Guerreiro(a), no card e na página dele, e
+`GET /v1/vitrine/poderes` continua pública para quem constrói sobre a API — o que sai é a tela.
+(`RF-03-02`, `RF-03-39`, decisão do fundador de 2026-10-11)
+
+#### Scenario: A abertura não traz seção de poderes
+
+- **WHEN** a raiz do domínio é aberta
+- **THEN** nenhuma seção de poderes aparece, e nenhuma seção promete página de poder
+
+#### Scenario: O poder segue aparecendo no Guerreiro(a)
+
+- **WHEN** o visitante abre a página individual de um Guerreiro(a) com autorização vigente
+- **THEN** os poderes dele continuam apresentados, com os níveis, como atributo da pessoa
+
+#### Scenario: A rota pública de poderes continua respondendo
+
+- **WHEN** uma aplicação de terceiro com chave válida consulta a leitura pública de poderes
+- **THEN** o núcleo responde como antes, sem depender de a vitrine ter seção para isso
+
+### Requirement: "Necessidades em aberto" é seção da abertura, e não um bloco de outra seção
+
+A App 06 SHALL apresentar as necessidades de recurso em aberto como **seção própria da
+abertura**, com o rótulo "Necessidades em aberto". A seção NEVER SHALL depender de o visitante
+passar pela porta do convite, e NEVER SHALL ficar pendurada em outra seção. (`RF-03-47`,
+decisão do fundador de 2026-10-11)
+
+#### Scenario: A seção aparece por si na abertura
+
+- **WHEN** a raiz do domínio é aberta e há necessidade de recurso em aberto
+- **THEN** a seção "Necessidades em aberto" lista as necessidades, sem exigir que o visitante
+  abra a porta do convite nem outra seção
+
+#### Scenario: Sem necessidade em aberto, a seção diz isso
+
+- **WHEN** a raiz do domínio é aberta e não há necessidade de recurso em aberto
+- **THEN** a seção continua presente e diz que não há necessidade em aberto
+
+### Requirement: "Contatos" exibe o texto publicado que o núcleo devolve
+
+A App 06 SHALL exibir a seção **"Contatos"** com o texto publicado, na ordem do recorte, sem
+publicidade nem patrocínio. A exibição SHALL vir do que o núcleo devolve, e nenhum valor SHALL
+ficar escrito na aplicação. (`RF-03-45`, `RN-03-21`)
+
+#### Scenario: "Contatos" mostra o que o Admin publicou
+
+- **WHEN** o visitante abre "Contatos" com o texto publicado
+- **THEN** a tela mostra o texto publicado, sem depender de nova versão da aplicação
+
+#### Scenario: Seção não publicada diz isso
+
+- **WHEN** "Contatos" não tem texto publicado
+- **THEN** a tela diz que o conteúdo ainda não foi publicado
+
+### Requirement: A vitrine não apresenta tela de "Como apoiar", e a chave PIX fica na porta
+
+A App 06 NEVER SHALL exibir a seção **"Como apoiar"**, em recorte nenhum. A seção continua
+existindo no núcleo, gravável por Admin e legível na leitura pública: o que sai é a tela. A
+**chave PIX** da pessoa jurídica vinculada SHALL ser oferecida na **porta do convite**, e as
+**necessidades de recurso em aberto**, em seção própria da abertura. (`RF-03-45`, `RF-03-46`,
+`RF-03-47`, decisão do fundador de 2026-10-11)
+
+#### Scenario: Nenhuma tela pública apresenta "Como apoiar"
+
+- **WHEN** o visitante percorre a vitrine inteira, em qualquer recorte
+- **THEN** nenhuma tela apresenta a seção "Como apoiar", e nenhuma navegação a oferece
+
+#### Scenario: O Admin continua publicando "Como apoiar"
+
+- **WHEN** um Admin publica o texto de "Como apoiar"
+- **THEN** a publicação é aceita e fica legível pelo núcleo, como antes, sem tela pública que
+  a apresente
+
+#### Scenario: A chave PIX continua alcançável pelo visitante
+
+- **WHEN** o visitante quer doar e não encontra mais a seção "Como apoiar"
+- **THEN** a chave PIX e o titular continuam oferecidos na porta do convite

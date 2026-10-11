@@ -40,7 +40,6 @@ import {
   RECORTES,
   recorteDoCaminho,
 } from "../navegacao/recortes";
-import { SecaoDePoderes } from "../poderes/SecaoDePoderes";
 import { SecaoDoPortfolio } from "../portfolio/SecaoDoPortfolio";
 import { SecaoDoRanking } from "../ranking/SecaoDoRanking";
 import { BlocoDoGestor } from "../territorio/BlocoDoGestor";
@@ -109,27 +108,23 @@ function SecoesDoRecorte({
         <Heroi>
           <EntradaDaAbertura />
         </Heroi>
-        <Secao titulo="Quem somos">
-          <SecaoInstitucional secao="quem-somos" nome="Quem somos" />
-          <RolagemAteAAncora />
-        </Secao>
-        <Secao titulo="Guerreiros e Guerreiras">
-          <SecaoDeGuerreiros irPara={irPara} />
+        <Secao titulo="Ranking">
+          <SecaoDoRanking />
         </Secao>
         <Secao titulo="Portfólio de criações originais">
           <SecaoDoPortfolio />
         </Secao>
-        <Secao titulo="Ranking">
-          <SecaoDoRanking />
-        </Secao>
-        <Secao titulo="Poderes">
-          <SecaoDePoderes irPara={irPara} />
-        </Secao>
-        <Secao titulo="Mestres">
-          <SecaoDeMestres irPara={irPara} />
+        <Secao titulo="Guerreiros e Guerreiras">
+          <SecaoDeGuerreiros irPara={irPara} />
         </Secao>
         <Secao titulo="Apoiadores">
           <SecaoDeApoiadores irPara={irPara} />
+        </Secao>
+        <Secao titulo="Necessidades em aberto">
+          <NecessidadesEmAberto />
+        </Secao>
+        <Secao titulo="Mestres">
+          <SecaoDeMestres irPara={irPara} />
         </Secao>
         <Secao titulo="Comunidades Virtuais">
           <SecaoDeComunidades irPara={irPara} />
@@ -137,9 +132,9 @@ function SecoesDoRecorte({
         <Secao titulo="Construir sobre a API">
           <SecaoDoDesenvolvedor irPara={irPara} />
         </Secao>
-        <Secao titulo="Como apoiar">
-          <SecaoInstitucional secao="como-apoiar" nome="Como apoiar" />
-          <NecessidadesEmAberto />
+        <Secao titulo="Quem somos">
+          <SecaoInstitucional secao="quem-somos" nome="Quem somos" />
+          <RolagemAteAAncora />
         </Secao>
         <Secao titulo="Contatos">
           <SecaoInstitucional secao="contatos" nome="Contatos" />

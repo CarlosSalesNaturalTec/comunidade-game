@@ -119,6 +119,7 @@
   --cor-sobre-moeda: var(--cal-000);
 
   --cor-sucesso: var(--sucesso-600);
+  --cor-sobre-sucesso: var(--cal-000);
   --cor-atencao: var(--atencao-600);
   --cor-erro: var(--erro-600);
 
@@ -155,6 +156,7 @@
     --cor-sobre-moeda: var(--tinta-900);
 
     --cor-sucesso: var(--sucesso-400);
+    --cor-sobre-sucesso: var(--tinta-900);
     --cor-atencao: var(--atencao-400);
     --cor-erro: var(--erro-400);
 

@@ -14,7 +14,7 @@ import { esquecerNecessidades } from "../necessidades/useNecessidades";
 import App from "./TelaDaVitrine";
 
 // Critérios de aceite do PRD-03 §12 para o convite: toda página individual traz
-// a chamada "Quero participar"; clicando nela, a tela seguinte não cita a pessoa
+// a chamada "Quero apoiar"; clicando nela, a tela seguinte não cita a pessoa
 // que estava sendo vista e leva ao pré-cadastro da App 08; pedir para favoritar
 // chega à mesma porta; e recusar devolve à navegação sem gravar nada.
 
@@ -78,7 +78,6 @@ function comLeituras() {
   vi.spyOn(leituras, "obterGuerreiroPorNick").mockResolvedValue(guerreiro());
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });
-  vi.spyOn(leituras, "listarPoderes").mockResolvedValue([]);
   vi.spyOn(leituras, "listarMestres").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarApoiadores").mockResolvedValue({
     itens: [],
@@ -117,7 +116,7 @@ describe("o convite ao acompanhamento", () => {
     window.history.pushState(null, "", `/guerreiros/${NICK}`);
     render(<App />);
 
-    expect(await screen.findByRole("button", { name: "Quero participar" })).toBeVisible();
+    expect(await screen.findByRole("button", { name: "Quero apoiar" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Quero acompanhar" })).toBeVisible();
   });
 
@@ -125,7 +124,7 @@ describe("o convite ao acompanhamento", () => {
     window.history.pushState(null, "", `/comunidades/${ID_DA_COMUNIDADE}`);
     render(<App />);
 
-    expect(await screen.findByRole("button", { name: "Quero participar" })).toBeVisible();
+    expect(await screen.findByRole("button", { name: "Quero apoiar" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Quero acompanhar" })).toBeVisible();
   });
 
@@ -133,7 +132,7 @@ describe("o convite ao acompanhamento", () => {
     window.history.pushState(null, "", `/mestres/${ID_DO_MESTRE}`);
     render(<App />);
 
-    expect(await screen.findByRole("button", { name: "Quero participar" })).toBeVisible();
+    expect(await screen.findByRole("button", { name: "Quero apoiar" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Quero acompanhar" })).toBeVisible();
   });
 
@@ -141,7 +140,7 @@ describe("o convite ao acompanhamento", () => {
     window.history.pushState(null, "", `/apoiadores/${ID_DO_APOIADOR}`);
     render(<App />);
 
-    expect(await screen.findByRole("button", { name: "Quero participar" })).toBeVisible();
+    expect(await screen.findByRole("button", { name: "Quero apoiar" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Quero acompanhar" })).toBeVisible();
   });
 
@@ -158,7 +157,7 @@ describe("o convite ao acompanhamento", () => {
     window.history.pushState(null, "", `/guerreiros/${NICK}`);
     render(<App />);
 
-    const chamada = (await screen.findByRole("button", { name: "Quero participar" }))
+    const chamada = (await screen.findByRole("button", { name: "Quero apoiar" }))
       .parentElement as HTMLElement;
     expect(within(chamada).getByText(/sustentar o projeto — e não uma pessoa/)).toBeVisible();
     expect(
@@ -172,12 +171,10 @@ describe("o convite ao acompanhamento", () => {
     render(<App />);
     const testeDeUsuario = userEvent.setup();
 
-    await testeDeUsuario.click(
-      await screen.findByRole("button", { name: "Quero participar" }),
-    );
+    await testeDeUsuario.click(await screen.findByRole("button", { name: "Quero apoiar" }));
 
     expect(
-      await screen.findByRole("heading", { name: "Quero participar", level: 2 }),
+      await screen.findByRole("heading", { name: "Quero apoiar", level: 2 }),
     ).toBeVisible();
     expect(window.location.pathname).toBe("/quero-participar");
     expect(window.location.search).toBe("");
@@ -194,7 +191,7 @@ describe("o convite ao acompanhamento", () => {
     );
 
     expect(
-      await screen.findByRole("heading", { name: "Quero participar", level: 2 }),
+      await screen.findByRole("heading", { name: "Quero apoiar", level: 2 }),
     ).toBeVisible();
     expect(window.location.pathname).toBe("/quero-participar");
     expect(screen.queryByText(new RegExp(NOME_DA_COMUNIDADE))).not.toBeInTheDocument();
@@ -239,9 +236,7 @@ describe("o convite ao acompanhamento", () => {
     render(<App />);
     const testeDeUsuario = userEvent.setup();
 
-    await testeDeUsuario.click(
-      await screen.findByRole("button", { name: "Quero participar" }),
-    );
+    await testeDeUsuario.click(await screen.findByRole("button", { name: "Quero apoiar" }));
     await testeDeUsuario.click(
       await screen.findByRole("button", { name: "Não quero agora, voltar à vitrine" }),
     );

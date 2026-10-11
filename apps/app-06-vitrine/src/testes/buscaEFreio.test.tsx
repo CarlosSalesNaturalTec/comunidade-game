@@ -27,7 +27,6 @@ function semNadaNasOutrasSecoes() {
   });
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });
-  vi.spyOn(leituras, "listarPoderes").mockResolvedValue([]);
 }
 
 function recusa(status: number, codigo: string, tempoDeEsperaEmSegundos?: number) {

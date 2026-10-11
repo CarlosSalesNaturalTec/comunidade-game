@@ -34,7 +34,6 @@ function comLeituras(guerreiros: GuerreiroPublico[]) {
   });
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });
-  vi.spyOn(leituras, "listarPoderes").mockResolvedValue([]);
 }
 
 /** O efeito que arma a rotação só corre depois que a leitura chega: o
@@ -99,6 +98,9 @@ describe("a seção de Guerreiros e Guerreiras", () => {
 
     expect(await screen.findByText("guerreira-do-card")).toBeVisible();
     expect(screen.getByText(/1º no ranking · 40 pontos regulares/)).toBeVisible();
+    // O poder continua público **como atributo do Guerreiro(a)**, embora a
+    // seção de poderes tenha saído da vitrine em 2026-10-11: é aqui que o
+    // `RF-03-05` o exige, e não numa seção própria.
     expect(screen.getByText("Poder do Código", { selector: "*" })).toBeTruthy();
 
     expect(container.textContent).not.toMatch(/nome civil|nascimento|whatsapp|instagram/i);
@@ -148,7 +150,6 @@ describe("a seção de Guerreiros e Guerreiras", () => {
       proximo_cursor: null,
     });
     vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });
-    vi.spyOn(leituras, "listarPoderes").mockResolvedValue([]);
 
     render(<App />);
 

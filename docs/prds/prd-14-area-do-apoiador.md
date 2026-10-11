@@ -111,7 +111,7 @@ que responde pelos atos registrados no cadastro.
 
 ### 5.1 Pré-cadastro pela porta pública
 
-1. A pessoa chega pela vitrine — pelo botão "Entrar", pela chamada "Quero participar" ou pelo
+1. A pessoa chega pela vitrine — pelo botão "Entrar", pela chamada "Quero apoiar" ou pelo
    pedido de favoritar, que ali não existe.
 2. A tela se apresenta, diz o que é a Área do Apoiador e abre o pré-cadastro.
 3. Ela se identifica **sem documento**: nome ou razão social, e-mail, WhatsApp e o **nick**

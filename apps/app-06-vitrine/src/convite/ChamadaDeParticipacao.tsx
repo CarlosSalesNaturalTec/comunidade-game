@@ -6,7 +6,7 @@ interface Props {
   irPara?: (destino: string) => void;
 }
 
-/** A chamada "Quero participar" e a ação de acompanhar, que **toda página
+/** A chamada "Quero apoiar" e a ação de acompanhar, que **toda página
  * individual** traz e que levam à **mesma porta** (`RF-03-39`, `RF-03-40`).
  *
  * A chamada é **do projeto**: não oferece apoiar, apadrinhar ou favorecer quem
@@ -17,12 +17,12 @@ interface Props {
  * `RN-03-16`). */
 export function ChamadaDeParticipacao({ irPara = navegarPara }: Props) {
   return (
-    <section className="cg-chamada" aria-label="Quero participar">
+    <section className="cg-chamada" aria-label="Quero apoiar">
       <p>
         Gostou do que a comunidade construiu? Você pode sustentar o projeto — e não uma pessoa:
         o apoio é do Comunidade Game inteiro.
       </p>
-      <Botao onClick={() => irPara(CAMINHO_DO_CONVITE)}>Quero participar</Botao>
+      <Botao onClick={() => irPara(CAMINHO_DO_CONVITE)}>Quero apoiar</Botao>
       <Botao variante="secundaria" onClick={() => irPara(CAMINHO_DO_CONVITE)}>
         Quero acompanhar
       </Botao>

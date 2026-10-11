@@ -128,7 +128,7 @@ cadastra continua sendo um Admin.
 texto livre de apresentação. Instituição representada e links comprobatórios são opcionais.
 **Prazo de resposta ao solicitante: 7 dias.**
 
-**A pergunta de entrada é o que a pessoa traz.** A chamada "Quero participar" abre com essa
+**A pergunta de entrada é o que a pessoa traz.** A chamada "Quero apoiar" abre com essa
 escolha e encaminha conforme a resposta, pedindo o comprobatório que cabe a cada modalidade —
 descrição e foto do bem, disponibilidade do serviço, amostra do conteúdo, repositório e
 portfólio de quem apoia em código, artefatos da habilidade de quem quer ensinar. A tabela de

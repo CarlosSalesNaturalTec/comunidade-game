@@ -7,9 +7,11 @@ import { esquecerNecessidades } from "../necessidades/useNecessidades";
 import App from "./TelaDaVitrine";
 
 // As necessidades de recurso em aberto (`RF-03-47`): aparecem na porta do
-// convite e em "Como apoiar", com tipo, quantidade que falta, valor em moedas,
-// comunidade, ponto de apoio e o horário da aula. Nenhum campo em reais e
-// nenhuma pessoa (`RF-03-10`, `RN-03-18`).
+// convite e em **seção própria da abertura** — desde 2026-10-11 elas não
+// pendem mais de "Como apoiar", que deixou de ter tela pública. Saem com tipo,
+// quantidade que falta, valor em moedas, comunidade, ponto de apoio e o
+// horário da aula. Nenhum campo em reais e nenhuma pessoa (`RF-03-10`,
+// `RN-03-18`).
 
 // O horário é comparado pelo mesmo formatador da tela: o fuso da máquina que
 // roda o teste não muda o que se está verificando — que a aula sai com data e
@@ -54,7 +56,6 @@ function comLeituras(necessidades: NecessidadePublica[]) {
   });
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });
-  vi.spyOn(leituras, "listarPoderes").mockResolvedValue([]);
   vi.spyOn(leituras, "listarComunidades").mockResolvedValue({
     itens: [],
     proximo_cursor: null,
@@ -139,7 +140,33 @@ describe("as necessidades de recurso em aberto", () => {
     ).toBeVisible();
   });
 
-  it("a porta e Como apoiar compartilham uma única leitura por carga (RF-03-47)", async () => {
+  it("a seção da abertura aparece por si, sem passar pela porta (RF-03-47)", async () => {
+    comLeituras([necessidade()]);
+    render(<App />);
+
+    // A seção é própria: tem cabeçalho de nível 2 na abertura e não depende de
+    // o visitante abrir a porta do convite nem outra seção.
+    const cabecalho = await screen.findByRole("heading", {
+      name: "Necessidades em aberto",
+      level: 2,
+    });
+    const secao = cabecalho.closest("section");
+    if (!secao) throw new Error("A seção de necessidades não foi encontrada");
+    expect(
+      within(secao).getByRole("list", { name: "Necessidades de recurso em aberto" }),
+    ).toBeVisible();
+  });
+
+  it("nenhuma tela pública apresenta Como apoiar (RF-03-45)", async () => {
+    comLeituras([necessidade()]);
+    render(<App />);
+    await lista();
+
+    // A seção segue gravável no núcleo; o que saiu é a tela.
+    expect(screen.queryByRole("heading", { name: "Como apoiar" })).toBeNull();
+  });
+
+  it("a porta e a seção da abertura compartilham uma única leitura por carga (RF-03-47)", async () => {
     const leitura = comLeituras([necessidade()]);
     render(<App />);
     await lista();
@@ -159,6 +186,6 @@ describe("as necessidades de recurso em aberto", () => {
         "Não foi possível carregar as necessidades em aberto agora. Tente de novo.",
       ),
     ).toBeVisible();
-    expect(screen.getByRole("heading", { name: "Quero participar", level: 2 })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Quero apoiar", level: 2 })).toBeVisible();
   });
 });

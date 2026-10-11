@@ -177,7 +177,7 @@ Vedadas:
 ## 10. Portas de entrada
 
 Continuam **duas**, e nenhuma delas cadastra ninguém. O que muda é o garfo na entrada: a
-chamada "Quero participar" pergunta **o que a pessoa traz** e a encaminha.
+chamada "Quero apoiar" pergunta **o que a pessoa traz** e a encaminha.
 
 | O que traz                    | Para onde vai          | O que comprova               |
 | ----------------------------- | ---------------------- | ---------------------------- |

@@ -108,16 +108,29 @@ describe("conteúdo institucional da vitrine", () => {
     ).toBeVisible();
   });
 
-  it("Como apoiar mostra a chave PIX e o titular que o núcleo devolveu (RF-03-46)", async () => {
+  it("a porta mostra a chave PIX e o titular que o núcleo devolveu (RF-03-46)", async () => {
     publicar();
+    window.history.pushState(null, "", "/quero-participar");
     render(<App />);
 
     const chave = await screen.findByText(/51\.730\.395\/0001-19/);
     expect(chave).toHaveTextContent("Titular: Robô Educa — Kits Robóticos Educacionais");
   });
 
+  it("a abertura não apresenta Como apoiar nem a chave PIX (RF-03-45, RF-03-46)", async () => {
+    publicar();
+    render(<App />);
+
+    // A seção segue gravável no núcleo e lida pela porta; o que saiu em
+    // 2026-10-11 é a tela da abertura.
+    await screen.findByRole("heading", { name: "Quem somos", level: 2 });
+    expect(screen.queryByRole("heading", { name: "Como apoiar" })).toBeNull();
+    expect(screen.queryByText(/51\.730\.395/)).not.toBeInTheDocument();
+  });
+
   it("a chave publicada é a que o Admin editou, sem depender da versão da aplicação (RF-03-46)", async () => {
     publicar({ "como-apoiar": "Chave PIX: outra-chave-do-admin" });
+    window.history.pushState(null, "", "/quero-participar");
     render(<App />);
 
     expect(await screen.findByText(/outra-chave-do-admin/)).toBeVisible();
@@ -126,20 +139,25 @@ describe("conteúdo institucional da vitrine", () => {
 
   it("uma única leitura alimenta as três seções", async () => {
     const leitura = publicar();
+    window.history.pushState(null, "", "/quero-participar");
     render(<App />);
 
+    // A leitura é uma só e serve as três seções gravadas, inclusive a que não
+    // tem tela pública: é dela que a porta tira a chave PIX.
     await screen.findByText(/51\.730\.395/);
     expect(leitura).toHaveBeenCalledTimes(1);
   });
 
-  it("em sociedade civil, Quem somos abre e Como apoiar e Contatos fecham (RF-03-45)", async () => {
+  it("em sociedade civil, o institucional fecha a abertura (RF-03-45)", async () => {
     publicar();
     render(<App />);
-    await screen.findByText(/51\.730\.395/);
+    await screen.findByRole("heading", { name: "Quem somos", level: 2 });
 
+    // A abertura abre pelo que o projeto produziu, e o institucional fecha
+    // (decisão do fundador de 2026-10-11).
     const titulos = titulosDeSecao();
-    expect(titulos[0]).toBe("Quem somos");
-    expect(titulos.slice(-2)).toEqual(["Como apoiar", "Contatos"]);
+    expect(titulos[0]).toBe("Ranking");
+    expect(titulos.slice(-2)).toEqual(["Quem somos", "Contatos"]);
   });
 
   it.each(["/pesquisadores", "/gestores-publicos"])(

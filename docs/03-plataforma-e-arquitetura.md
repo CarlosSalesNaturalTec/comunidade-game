@@ -726,10 +726,11 @@ em até 7 dias na própria plataforma, com o motivo em linguagem simples quando 
 
 Web App de acesso público e **sem login** — a chave da API é da aplicação, não do visitante:
 
-- Apresenta **Guerreiros e Guerreiras, Poderes, Mestres, Batalhas, Apoiadores e Comunidades
-  Virtuais**, com navegação para seções específicas com cards individuais.
-- **Cada card abre a página individual do personagem** — Guerreiro(a), Mestre, poder, apoiador
-  ou comunidade —, com a versão detalhada do que o card resume (composição no documento 11).
+- Apresenta **Guerreiros e Guerreiras, Mestres, Batalhas, Apoiadores e Comunidades Virtuais**,
+  com navegação para seções específicas com cards individuais. O poder **não tem seção
+  própria**: aparece como atributo do Guerreiro(a), no card e na página dele.
+- **Cada card abre a página individual do personagem** — Guerreiro(a), Mestre, apoiador ou
+  comunidade —, com a versão detalhada do que o card resume (composição no documento 11).
 - **Cards rotativos** com avatares dos Guerreiros e Guerreiras, atualizados a cada 5 segundos.
   Exibem **apenas** avatar, nick, badges, poderes adquiridos e desempenho na plataforma — **sem
   links para redes sociais dos Guerreiros e Guerreiras** nem qualquer canal de contato direto.
@@ -805,9 +806,10 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   **formulário de solicitação de chave não tem freio por origem** — nova solicitação é sempre
   possível —, e o que o protege é a cota da chave da vitrine.
 
-- **Chamada "Quero participar"** em **toda página individual** — Guerreiro(a), Mestre, poder,
-  apoiador e comunidade —, levando à **porta da Área do Apoiador**. A chamada é do projeto:
-  **nunca vincula o apoio à pessoa exibida na página**.
+- **Chamada "Quero apoiar"** em **toda página individual** — Guerreiro(a), Mestre, apoiador e
+  comunidade —, levando à **porta da Área do Apoiador**. A chamada é do projeto: **nunca
+  vincula o apoio à pessoa exibida na página**. O endereço da porta não acompanha o rótulo:
+  é público e compartilhável.
 - **Botão "Entrar"**, na **abertura**, que encaminha cada persona à sua aplicação:
   Guerreiro(a) para a App 05, responsável para a App 07, Mestre para a App 09, Apoiador para a
   App 08, gestão para a App 03 e o **aparelho da aula** para a App 01. Ele existe **uma vez**,
@@ -823,7 +825,10 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   **reescreve conteúdo do corpus do Mestre para crianças e não as perfila**, e remete ao bloco
   "Licenças", que fecha "Quem somos", quanto ao que é gerado com auxílio de IA. É para ela que
   aponta a etiqueta do texto reescrito nas Apps 01 e 05 (§7.1).
-- **"Como apoiar"** — canais de doação, incluindo a chave PIX da pessoa jurídica vinculada.
+- **"Como apoiar"** — canais de doação, incluindo a chave PIX da pessoa jurídica vinculada —
+  **não tem tela pública**: segue editável pelos Admins e legível pela API, e a chave PIX
+  chega ao visitante pela porta da chamada. As **necessidades de recurso em aberto** são
+  seção própria da abertura.
 - Identidade visual: a da plataforma, no temperamento **Arena** (documento 15).
 - **Vídeo de apresentação**: os irmãos Susy e Otávio, os Rôbróders e o professor Carlos
   Trenell (narrativa da trilha Robô Educa), aberto por **link**, sem player de terceiro
@@ -834,11 +839,11 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
 A vitrine é uma só e **sem login**. O que muda por público é o **recorte de leitura** — a porta
 de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos:
 
-| Recorte               | Quem chega procurando                | O que a porta abre primeiro                                                                |
-| --------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------ |
-| **Sociedade civil**   | Conhecer, acompanhar e apoiar        | Narrativa, cards, criações originais, batalhas e "Como apoiar" — é o recorte **padrão**    |
-| **Pesquisadores**     | Dado do território para estudo       | Séries históricas por comunidade, com o que se mede, cadência, período e origem do dado    |
-| **Gestores públicos** | Evidência sobre o lugar para decidir | Painel do território por comunidade e ciclo e a cobertura da Agenda 2030, com a meta 17.18 |
+| Recorte               | Quem chega procurando                | O que a porta abre primeiro                                                                   |
+| --------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------- |
+| **Sociedade civil**   | Conhecer, acompanhar e apoiar        | Ranking, criações originais, cards, batalhas e as necessidades em aberto — recorte **padrão** |
+| **Pesquisadores**     | Dado do território para estudo       | Séries históricas por comunidade, com o que se mede, cadência, período e origem do dado       |
+| **Gestores públicos** | Evidência sobre o lugar para decidir | Painel do território por comunidade e ciclo e a cobertura da Agenda 2030, com a meta 17.18    |
 
 **Área do gestor público.** O recorte de gestores abre com um bloco em destaque que explica, na
 linguagem de quem decide, **para que a plataforma serve ao município e ao estado**: a série
