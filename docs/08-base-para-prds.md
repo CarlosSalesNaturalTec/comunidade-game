@@ -257,14 +257,15 @@ lançada pelo Mestre (App 09) e pelo Admin (App 03), sem revisão de terceiro.
 qualquer pessoa chega, e é da **abertura** dele que o botão **Entrar** encaminha cada persona à
 sua aplicação.
 
-**Requisitos:** seções Guerreiros e Guerreiras, Poderes, Mestres, Batalhas, Apoiadores e
-Comunidades Virtuais com cards individuais; **página individual detalhada** aberta a partir de
-cada card — Guerreiro(a), Mestre, poder, apoiador e comunidade —, com a composição do documento
-11; cards rotativos de Guerreiros e Guerreiras (rotação a cada 5 s); painel público de dados
+**Requisitos:** seções Mestres, Batalhas, Apoiadores e Comunidades Virtuais em **lista de
+registros paginada**, e os Guerreiros e Guerreiras alcançados pela **consulta por nick exato**;
+**página individual detalhada** aberta a partir de cada linha — Guerreiro(a), Mestre, apoiador
+e comunidade —, com a composição do documento
+11; painel público de dados
 por comunidade **em série histórica**, agregado **até o bairro**; "Quem somos" e "Contatos"
-editáveis; seção **"Como apoiar"** com a chave PIX do projeto; **sem publicidade e sem
+editáveis; a chave PIX do projeto na porta da chamada; **sem publicidade e sem
 patrocínio no Ciclo 01**, e sem qualquer rastreamento do visitante (documento 04); vídeo de
-apresentação (Susy, Otávio, Rôbróders, prof. Carlos Trenell); estética
+apresentação (Susy, Otávio, prof. Carlos Trenell e Robô Educa); estética
 de comunidade (grafite, cores, imagens do território); **portfólio de criações originais** dos
 Guerreiros e Guerreiras autorizados, com o nick dos autores; **painel de cobertura da Agenda
 2030** por comunidade e por ciclo, com destaque para a contribuição à meta 17.18 e a ressalva
@@ -288,7 +289,7 @@ recorte cria área restrita, cadastro ou coleta de dado do visitante, e a troca 
 navegação — o visitante circula livremente entre os três.
 
 - **Sociedade civil** — recorte **padrão**: narrativa do projeto, cards e páginas dos
-  personagens, criações originais, batalhas, "Quem somos" e "Como apoiar".
+  personagens, criações originais, batalhas, "Quem somos" e "Contatos".
 - **Pesquisadores** — séries históricas por comunidade com **metodologia legível**: o que se
   mede, cadência declarada no desafio, período coberto, origem da medição (registro manual ou
   sensor construído na trilha), número de registros válidos e licença de uso do conjunto.

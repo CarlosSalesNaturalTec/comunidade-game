@@ -119,8 +119,10 @@ próprio domínio. O App 04 usa as mesmas: o pixel fica nos sprites, nunca no te
 - **Alvo de toque de 48 px** — dedo de criança em tela pequena é a régua.
 - **Nenhum significado por cor sozinha**: sempre glifo, forma, numeral ou rótulo junto.
 - **Foco sempre visível**, com contorno de 2 px em `marca-500` no claro e `marca-400` no escuro.
-- **`prefers-reduced-motion` respeitado** — sem exceção, inclusive na rotação dos cards.
-- **Conteúdo legível sem depender de movimento**: quem não vê a rotação acessa o mesmo conteúdo.
+- **`prefers-reduced-motion` respeitado** — sem exceção, inclusive no retorno de progresso
+  e de conquista.
+- **Conteúdo legível sem depender de movimento**: nada do que a tela comunica depende de
+  animação.
 - **Ícone nunca sozinho**: todo ícone acionável leva rótulo textual visível ou acessível.
 - **Sem CAPTCHA**, que é barreira de acessibilidade.
 

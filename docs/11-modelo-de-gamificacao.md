@@ -429,19 +429,18 @@ nunca reescrito, pelas quatro superfícies públicas do ecossistema.
 
 ### 8.1 Vitrine pública (App 06)
 
-| Elemento do motor                                        | Como aparece na vitrine                                                                       |
-| -------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Guerreiros e Guerreiras (com autorização do responsável) | **Cards rotativos** (a cada 5 s) — composição em §8.2                                         |
-| Poderes                                                  | Seção de poderes, com trilhas e Mestres de cada um                                            |
-| Trilhas e realizações                                    | Portfólio público dos Guerreiros e Guerreiras autorizados                                     |
-| **Criações originais**                                   | Portfólio de autoria: a criação exposta com o nick do autor ou autores                        |
-| **Batalhas**                                             | Resultados e estatísticas de partida alimentando ranking e portfólio                          |
-| **Culminâncias**                                         | Vídeos e registros, com consentimento específico registrado na App 07                         |
-| Comunidades Virtuais                                     | Painel público por comunidade em série histórica, agregado e anonimizado                      |
-| **Etiquetas ODS**                                        | Painel de cobertura da Agenda 2030 por comunidade e por ciclo, com destaque para a meta 17.18 |
-| Mestres                                                  | Cards com os **artefatos que comprovam a habilidade** — de qualquer área                      |
-| Apoiadores                                               | Poder Sustentador e desafios extras propostos, com as realizações que o apoio produziu        |
-| Rankings                                                 | Somente pontos regulares; Guerreiros e Guerreiras sem autorização não aparecem                |
+| Elemento do motor                                        | Como aparece na vitrine                                                                                   |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Guerreiros e Guerreiras (com autorização do responsável) | **Consulta por nick exato** — não há listagem; a carta tem composição em §8.2                             |
+| Trilhas e realizações                                    | Portfólio público dos Guerreiros e Guerreiras autorizados                                                 |
+| **Criações originais**                                   | Portfólio de autoria: a criação exposta com o nick do autor ou autores                                    |
+| **Batalhas**                                             | Resultados e estatísticas de partida alimentando ranking e portfólio                                      |
+| **Culminâncias**                                         | Vídeos e registros, com consentimento específico registrado na App 07                                     |
+| Comunidades Virtuais                                     | Painel público por comunidade em série histórica, agregado e anonimizado                                  |
+| **Etiquetas ODS**                                        | Painel de cobertura da Agenda 2030 por comunidade e por ciclo, com destaque para a meta 17.18             |
+| Mestres                                                  | Lista de registros; os **artefatos que comprovam a habilidade** — de qualquer área — na página de cada um |
+| Apoiadores                                               | Poder Sustentador e desafios extras propostos, com as realizações que o apoio produziu                    |
+| Rankings                                                 | Somente pontos regulares; Guerreiros e Guerreiras sem autorização não aparecem                            |
 
 ### 8.2 Cards e páginas individuais dos personagens
 
@@ -456,8 +455,11 @@ moldura e emblema — está no documento 15:
 | **Apoiador**           | **Avatar, nick e total de moedas em destaque**, nível de sustento, selos, desafios propostos e efetividade agregada                    | Dados de contato de Guerreiros e Guerreiras; valores em reais     |
 | **Comunidade Virtual** | Nome, território, representação visual, séries ativas, nº de Guerreiros e Guerreiras vinculados                                        | Granularidade que permita inferir endereço de criança             |
 
-**Definição vigente — todo card abre uma página individual.** O card é o resumo; a página é a
-versão detalhada, com as mesmas restrições de exibição da tabela acima:
+**Definição vigente — a carta mora na página individual.** Em superfície pública a carta não é
+a porta: chega-se à página pela **linha da lista** daquele papel, pela consulta por nick exato
+ou pelo ranking, e é **na página** que a carta se apresenta, com as mesmas restrições de
+exibição da tabela acima. A **linha resume a carta** — avatar, identificação e os dados
+principais dela —, e a composição da carta não muda com a porta por onde se chega:
 
 | Página individual      | O que detalha                                                                                                                                                                                     |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
