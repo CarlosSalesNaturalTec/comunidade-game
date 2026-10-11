@@ -251,7 +251,8 @@ atividade pode ser _em equipe + presencial + de construção_):
 Regras transversais:
 
 - **Toda atividade de trilha pertence a uma missão** e é autorada pelo Mestre, que
-  declara a modalidade e o formato. Atividade avulsa, fora de trilha, é cadastro da gestão.
+  declara a modalidade e o formato. Atividade avulsa, fora de trilha, é cadastro da gestão:
+  declara a **aula** do encontro em que acontece e, por isso, é sempre **presencial**.
 - **Toda atividade exige produção** do Guerreiro(a) — escrever, falar ou construir (§2.2).
 - **Dificuldade gradual, independente de idade** (faixa 6–16).
 - **Um Guerreiro(a) pode integrar mais de uma equipe** e pontua em **todas** as atividades em
@@ -259,7 +260,8 @@ Regras transversais:
   ainda que várias equipes disputem a partida.
 - **Lastro**: nenhuma atividade acontece sem os recursos providos.
 - **Resultado lançado pela gestão**: realizada / realizada com mérito / mérito extra por
-  auxílio aos colegas.
+  auxílio aos colegas. O lançamento é **por Guerreiro(a) ou por equipe**; na equipe, o desfecho
+  e a produção são dela e valem **igualmente a cada Guerreiro(a) integrante presente**.
 
 ## 5. Motor de pontuação
 

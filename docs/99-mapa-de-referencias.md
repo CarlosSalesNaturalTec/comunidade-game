@@ -376,7 +376,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD    | Arquivo                           | Depende de             | Documentos-fonte           |
 | ------ | --------------------------------- | ---------------------- | -------------------------- |
 | PRD-01 | `prd-01-backend-api.md`           | PRD-07, PRD-08         | 02, 03, 04, 05, 11         |
-| PRD-02 | `prd-02-frontend-de-gestao.md`    | PRD-01, PRD-14         | 02, 03, 04, 05, 14         |
+| PRD-02 | `prd-02-frontend-de-gestao.md`    | PRD-01, PRD-14         | 02, 03, 04, 05, 11, 14     |
 | PRD-03 | `prd-03-vitrine-publica.md`       | PRD-01, PRD-13         | 02, 03, 04, 11             |
 | PRD-04 | `prd-04-aula-presencial.md`       | PRD-01, PRD-02, PRD-09 | 02, 03, 05, 06, 11         |
 | PRD-05 | `prd-05-area-do-guerreiro.md`     | PRD-01, PRD-09         | 02, 03, 05, 11             |
