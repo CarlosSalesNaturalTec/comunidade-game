@@ -2,7 +2,8 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import * as atividadesApi from "../atividades/api";
 import type { PainelDoDia } from "../painel-do-dia/api";
 import * as painelApi from "../painel-do-dia/api";
 import type { GuerreiroDaLista } from "../personas/api";
@@ -120,9 +121,41 @@ function guerreiroDaLista(sobrescreve: Partial<GuerreiroDaLista> = {}): Guerreir
   };
 }
 
+// A área lê as avulsas da aula vigente; os cenários que não as exercitam
+// abrem com a aula sem nenhuma (`RF-02-112`).
+beforeEach(() => {
+  vi.spyOn(atividadesApi, "listarAtividadesAvulsas").mockResolvedValue([]);
+});
+
 afterEach(() => {
   vi.restoreAllMocks();
 });
+
+function avulsa(sobrescreve: Partial<atividadesApi.AtividadeAvulsa> = {}) {
+  return {
+    id: "avulsa-1",
+    titulo: "Mutirão de limpeza",
+    descricao: null,
+    modalidade: "individual" as const,
+    formato: "presencial" as const,
+    natureza: "meio ambiente",
+    producao_esperada: "Registro fotográfico.",
+    poder_id: "poder-1",
+    aula_id: "aula-1",
+    ...sobrescreve,
+  };
+}
+
+const EQUIPE_DO_PAINEL = {
+  id: "equipe-1",
+  nome: "Tartarugas",
+  integrantes: [
+    { avatar: null, nick: "zeferina", papel: null },
+    { avatar: null, nick: "tais", papel: null },
+  ],
+  missao_id: null,
+  missao_titulo: null,
+};
 
 describe("Lançamentos (RF-02-34, RF-02-36, RF-02-37, RF-02-39)", () => {
   it("abre sobre a aula vigente", async () => {
@@ -455,5 +488,207 @@ describe("Lançamentos (RF-02-34, RF-02-36, RF-02-37, RF-02-39)", () => {
       screen.queryByRole("button", { name: /confirmar presença/i }),
     ).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /anular presença/i })).not.toBeInTheDocument();
+  });
+});
+
+describe("a atividade avulsa na área Lançamentos (RF-02-112, RN-02-32, RN-02-33)", () => {
+  it("as avulsas da aula aparecem na área, com o que o lançamento não faz", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(painelApi, "obterPainelDoDia").mockResolvedValue(painelDoEncontro());
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const listar = vi
+      .spyOn(atividadesApi, "listarAtividadesAvulsas")
+      .mockResolvedValue([avulsa(), avulsa({ id: "avulsa-2", titulo: "Horta da escola" })]);
+
+    render(<TelaDeLancamentos />);
+
+    expect(await screen.findByText("Mutirão de limpeza")).toBeInTheDocument();
+    expect(screen.getByText("Horta da escola")).toBeInTheDocument();
+    expect(listar).toHaveBeenCalledWith("token-do-admin", "aula-1");
+    expect(
+      screen.getAllByText(/não converte reserva em baixa nem passa a aula a realizada/i)
+        .length,
+    ).toBe(2);
+  });
+
+  it("aula sem avulsa diz isso em uma frase, sem erro cru", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(painelApi, "obterPainelDoDia").mockResolvedValue(painelDoEncontro());
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeLancamentos />);
+
+    expect(
+      await screen.findByText(/este encontro não tem atividade avulsa cadastrada/i),
+    ).toBeInTheDocument();
+  });
+
+  it("a individual só oferece lançar por aluno; a em equipe, só por equipe", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(painelApi, "obterPainelDoDia").mockResolvedValue(
+      painelDoEncontro({ equipes: [EQUIPE_DO_PAINEL] }),
+    );
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(atividadesApi, "listarAtividadesAvulsas").mockResolvedValue([
+      avulsa(),
+      avulsa({ id: "avulsa-2", titulo: "Horta da escola", modalidade: "em_equipe" }),
+    ]);
+
+    render(<TelaDeLancamentos />);
+
+    const individual = await screen.findByRole("region", {
+      name: /lançar a atividade avulsa mutirão de limpeza/i,
+    });
+    expect(within(individual).getByLabelText(/desfecho de zeferina/i)).toBeInTheDocument();
+    expect(
+      within(individual).queryByLabelText(/equipe que realizou/i),
+    ).not.toBeInTheDocument();
+
+    const emEquipe = screen.getByRole("region", {
+      name: /lançar a atividade avulsa horta da escola/i,
+    });
+    expect(within(emEquipe).getByLabelText(/equipe que realizou/i)).toBeInTheDocument();
+    expect(within(emEquipe).queryByLabelText(/desfecho de zeferina/i)).not.toBeInTheDocument();
+  });
+
+  it("no lançamento por equipe, diz quem ficou de fora e barra o envio sem desfecho", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(painelApi, "obterPainelDoDia").mockResolvedValue(
+      painelDoEncontro({ equipes: [EQUIPE_DO_PAINEL] }),
+    );
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(atividadesApi, "listarAtividadesAvulsas").mockResolvedValue([
+      avulsa({ modalidade: "em_equipe" }),
+    ]);
+    const lancar = vi.spyOn(lancamentosApi, "lancarResultadosDaAtividadeAvulsa");
+
+    render(<TelaDeLancamentos />);
+    const usuario = userEvent.setup();
+
+    await usuario.selectOptions(
+      await screen.findByLabelText(/equipe que realizou/i),
+      EQUIPE_DO_PAINEL.id,
+    );
+
+    // "tais" não tem presença neste encontro — só "zeferina" tem.
+    expect(
+      await screen.findByText(/fica de fora por não ter presença nesta aula: tais/i),
+    ).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /lançar atividade avulsa/i }));
+
+    expect(await screen.findByText(/escolha o desfecho da equipe/i)).toBeInTheDocument();
+    expect(lancar).not.toHaveBeenCalled();
+  });
+
+  it("lança por equipe com o desfecho e a produção dela", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(painelApi, "obterPainelDoDia").mockResolvedValue(
+      painelDoEncontro({ equipes: [EQUIPE_DO_PAINEL] }),
+    );
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(atividadesApi, "listarAtividadesAvulsas").mockResolvedValue([
+      avulsa({ modalidade: "em_equipe" }),
+    ]);
+    const lancar = vi
+      .spyOn(lancamentosApi, "lancarResultadosDaAtividadeAvulsa")
+      .mockResolvedValue({ resultados: [], fora_por_falta_de_presenca: [] });
+
+    render(<TelaDeLancamentos />);
+    const usuario = userEvent.setup();
+
+    await usuario.selectOptions(
+      await screen.findByLabelText(/equipe que realizou/i),
+      EQUIPE_DO_PAINEL.id,
+    );
+    await usuario.selectOptions(screen.getByLabelText(/desfecho da equipe/i), "realizada");
+    await usuario.type(screen.getByLabelText(/o que a equipe produziu/i), "Mural coletivo");
+    await usuario.click(screen.getByRole("button", { name: /lançar atividade avulsa/i }));
+
+    await waitFor(() =>
+      expect(lancar).toHaveBeenCalledWith(
+        "avulsa-1",
+        "aula-1",
+        {
+          equipe: expect.objectContaining({
+            equipe_id: EQUIPE_DO_PAINEL.id,
+            producao: "Mural coletivo",
+            desfecho: "realizada",
+          }),
+        },
+        "token-do-admin",
+      ),
+    );
+  });
+
+  it("a recusa do Resultado repetido é dita em linguagem simples", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(painelApi, "obterPainelDoDia").mockResolvedValue(painelDoEncontro());
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(atividadesApi, "listarAtividadesAvulsas").mockResolvedValue([avulsa()]);
+    vi.spyOn(lancamentosApi, "lancarResultadosDaAtividadeAvulsa").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "Este Guerreiro(a) já tem Resultado nesta atividade.",
+        campo: "guerreiro_id",
+      }),
+    );
+
+    render(<TelaDeLancamentos />);
+    const usuario = userEvent.setup();
+
+    const avulsaNaTela = await screen.findByRole("region", {
+      name: /lançar a atividade avulsa mutirão de limpeza/i,
+    });
+    await usuario.selectOptions(
+      within(avulsaNaTela).getByLabelText(/desfecho de zeferina/i),
+      "realizada",
+    );
+    await usuario.type(
+      within(avulsaNaTela).getByLabelText(/o que zeferina produziu/i),
+      "Recolheu o lixo",
+    );
+    await usuario.click(screen.getByRole("button", { name: /lançar atividade avulsa/i }));
+
+    expect(
+      await screen.findByText(/já recebeu resultado nesta atividade/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/422/)).not.toBeInTheDocument();
+  });
+
+  it("o lançamento da avulsa não oferece campo de valor de pontuação", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(painelApi, "obterPainelDoDia").mockResolvedValue(painelDoEncontro());
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(atividadesApi, "listarAtividadesAvulsas").mockResolvedValue([avulsa()]);
+
+    render(<TelaDeLancamentos />);
+    const avulsaNaTela = await screen.findByRole("region", {
+      name: /lançar a atividade avulsa mutirão de limpeza/i,
+    });
+
+    expect(within(avulsaNaTela).queryByLabelText(/pontuação/i)).not.toBeInTheDocument();
+    expect(within(avulsaNaTela).queryByLabelText(/valor/i)).not.toBeInTheDocument();
   });
 });

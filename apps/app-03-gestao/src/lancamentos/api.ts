@@ -112,3 +112,51 @@ export function registrarOcorrenciaDeConduta(
     token,
   });
 }
+
+export interface ParticipanteDaAvulsa {
+  guerreiro_id: string;
+  momento_do_fato: string;
+  producao: string;
+  desfecho: Desfecho;
+}
+
+export interface EquipeDaAvulsa {
+  equipe_id: string;
+  momento_do_fato: string;
+  producao: string;
+  desfecho: Desfecho;
+}
+
+interface ResultadoLancado {
+  id: string;
+  guerreiro_id: string;
+  atividade_id: string;
+  aula_id: string;
+  momento_do_fato: string;
+  producao: string;
+  desfecho: string;
+}
+
+export interface LancamentoDaAvulsa {
+  resultados: ResultadoLancado[];
+  // Quem o núcleo pulou por não ter presença não anulada na aula — a tela
+  // já o diz antes de enviar, e isto confirma (`RN-02-32`).
+  fora_por_falta_de_presenca: string[];
+}
+
+// O ato por atividade: grava Resultado e nada mais — nem baixa de reserva
+// nem situação de aula —, e por isso corre quantas vezes o encontro
+// exigir. É o caminho da atividade avulsa, por aluno ou por equipe da
+// aula (`RF-02-112`, `RN-02-32`).
+export function lancarResultadosDaAtividadeAvulsa(
+  idDaAtividade: string,
+  aulaId: string,
+  declaracao: { participantes: ParticipanteDaAvulsa[] } | { equipe: EquipeDaAvulsa },
+  token: string,
+): Promise<LancamentoDaAvulsa> {
+  return chamarNucleo<LancamentoDaAvulsa>(`/v1/atividades/${idDaAtividade}/lancamentos`, {
+    metodo: "POST",
+    corpo: { aula_id: aulaId, ...declaracao },
+    token,
+  });
+}

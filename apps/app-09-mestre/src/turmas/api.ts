@@ -69,17 +69,24 @@ export interface Resultado {
 // A equipe inteira num só envio — o Mestre autor lança a atividade que
 // propôs, sem consumir reserva nem mudar a situação da aula
 // (`RF-09-43`, `RF-09-44`, `RF-09-74`).
-export function lancarResultadosDaAtividade(
+interface LancamentoDaAtividade {
+  resultados: Resultado[];
+  // Só o lançamento por equipe da aula, da gestão, pula alguém por falta
+  // de presença — aqui chega sempre vazia (`RN-02-32`).
+  fora_por_falta_de_presenca: string[];
+}
+
+export async function lancarResultadosDaAtividade(
   idDaAtividade: string,
   aulaId: string,
   participantes: ParticipanteDoLancamento[],
   token: string,
 ): Promise<Resultado[]> {
-  return chamarNucleo<Resultado[]>(`/v1/atividades/${idDaAtividade}/lancamentos`, {
-    metodo: "POST",
-    corpo: { aula_id: aulaId, participantes },
-    token,
-  });
+  const lancamento = await chamarNucleo<LancamentoDaAtividade>(
+    `/v1/atividades/${idDaAtividade}/lancamentos`,
+    { metodo: "POST", corpo: { aula_id: aulaId, participantes }, token },
+  );
+  return lancamento.resultados;
 }
 
 export interface Presenca {

@@ -2,11 +2,12 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useEffect, useId, useState } from "react";
+import { type AulaDaAgenda, listarAgenda } from "../agenda/api";
+import { type ComunidadeDaLista, listarComunidades } from "../comunidades/api";
 import { listarPoderes, type PoderDaLista } from "../poderes/api";
 import {
   type AtividadeAvulsa,
   cadastrarAtividadeAvulsa,
-  type FormatoDeAtividade,
   type ModalidadeDeAtividade,
 } from "./api";
 
@@ -25,26 +26,34 @@ const MODALIDADES: { valor: ModalidadeDeAtividade; rotulo: string }[] = [
   { valor: "em_equipe_com_familiar", rotulo: "Em equipe com familiar" },
 ];
 
-const FORMATOS: { valor: FormatoDeAtividade; rotulo: string }[] = [
-  { valor: "presencial", rotulo: "Presencial" },
-  { valor: "on_line_assincrona", rotulo: "On-line assíncrona" },
-];
-
 const RECUSA_POR_PAPEL = "Só o Admin cadastra a atividade avulsa.";
+
+// O formato não é escolha: a avulsa declara a aula do encontro e, por
+// isso, é sempre presencial (`RF-02-29`, documento 11 §4).
+const LINHA_DO_FORMATO =
+  "A atividade avulsa acontece no encontro: é sempre presencial, e por isso declara a aula.";
+
+function rotuloDaAula(aula: AulaDaAgenda): string {
+  return new Date(aula.inicio_em).toLocaleString("pt-BR");
+}
 
 // Sem campo de pontuação — o motor deriva pelo desfecho lançado — e sem
 // campo de recurso — quem declara é a aula (`RF-02-29`, documento 11 §5).
 export function FormularioDeAtividadeAvulsa({ onCadastrada }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDaModalidade = useId();
-  const idDoFormato = useId();
+  const idDaComunidade = useId();
+  const idDaAula = useId();
   const idDoPoder = useId();
 
   const [poderes, definirPoderes] = useState<PoderDaLista[]>([]);
+  const [comunidades, definirComunidades] = useState<ComunidadeDaLista[]>([]);
+  const [aulas, definirAulas] = useState<AulaDaAgenda[]>([]);
+  const [comunidadeId, definirComunidadeId] = useState("");
+  const [aulaId, definirAulaId] = useState("");
   const [titulo, definirTitulo] = useState("");
   const [descricao, definirDescricao] = useState("");
   const [modalidade, definirModalidade] = useState<ModalidadeDeAtividade>("individual");
-  const [formato, definirFormato] = useState<FormatoDeAtividade>("presencial");
   const [natureza, definirNatureza] = useState("");
   const [producaoEsperada, definirProducaoEsperada] = useState("");
   const [poderId, definirPoderId] = useState("");
@@ -55,7 +64,22 @@ export function FormularioDeAtividadeAvulsa({ onCadastrada }: Props) {
   useEffect(() => {
     if (!sessao) return;
     listarPoderes(sessao.token).then((pagina) => definirPoderes(pagina.itens));
+    listarComunidades().then((pagina) => definirComunidades(pagina.itens));
   }, [sessao]);
+
+  // A comunidade é passo da tela, não dado do cadastro: estreita a lista
+  // às aulas dela, sem as canceladas (`RF-02-29`, documento 09 §1).
+  useEffect(() => {
+    if (!sessao || !comunidadeId) {
+      definirAulas([]);
+      definirAulaId("");
+      return;
+    }
+    listarAgenda(sessao.token, { comunidadeId }).then((pagina) => {
+      definirAulas(pagina.itens.filter((aula) => aula.situacao !== "cancelada"));
+      definirAulaId("");
+    });
+  }, [sessao, comunidadeId]);
 
   async function aoSubmeter(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
@@ -84,6 +108,13 @@ export function FormularioDeAtividadeAvulsa({ onCadastrada }: Props) {
       });
       return;
     }
+    if (!aulaId) {
+      definirErroDeCampo({
+        campo: "aula_id",
+        mensagem: "Escolha a aula do encontro em que ela acontece.",
+      });
+      return;
+    }
     if (!sessao) return;
 
     definirEnviando(true);
@@ -93,10 +124,11 @@ export function FormularioDeAtividadeAvulsa({ onCadastrada }: Props) {
           titulo,
           descricao: descricao.trim() || undefined,
           modalidade,
-          formato,
+          formato: "presencial",
           natureza,
           producao_esperada: producaoEsperada,
           poder_id: poderId,
+          aula_id: aulaId,
         },
         sessao.token,
       );
@@ -106,6 +138,7 @@ export function FormularioDeAtividadeAvulsa({ onCadastrada }: Props) {
       definirNatureza("");
       definirProducaoEsperada("");
       definirPoderId("");
+      definirAulaId("");
     } catch (erro) {
       if (ehRecusaDeSessao(erro)) {
         tratarRecusaDeSessao();
@@ -154,20 +187,7 @@ export function FormularioDeAtividadeAvulsa({ onCadastrada }: Props) {
         </select>
       </div>
 
-      <div className="cg-campo">
-        <label htmlFor={idDoFormato}>Formato</label>
-        <select
-          id={idDoFormato}
-          value={formato}
-          onChange={(evento) => definirFormato(evento.target.value as FormatoDeAtividade)}
-        >
-          {FORMATOS.map((item) => (
-            <option key={item.valor} value={item.valor}>
-              {item.rotulo}
-            </option>
-          ))}
-        </select>
-      </div>
+      <p role="status">{LINHA_DO_FORMATO}</p>
 
       <Campo
         rotulo="Natureza"
@@ -198,6 +218,44 @@ export function FormularioDeAtividadeAvulsa({ onCadastrada }: Props) {
           ))}
         </select>
         {erroDeCampo?.campo === "poder_id" && (
+          <p role="alert" className="cg-campo__erro">
+            {erroDeCampo.mensagem}
+          </p>
+        )}
+      </div>
+
+      <div className="cg-campo">
+        <label htmlFor={idDaComunidade}>Comunidade</label>
+        <select
+          id={idDaComunidade}
+          value={comunidadeId}
+          onChange={(evento) => definirComunidadeId(evento.target.value)}
+        >
+          <option value="">Escolha uma comunidade</option>
+          {comunidades.map((comunidade) => (
+            <option key={comunidade.id} value={comunidade.id}>
+              {comunidade.nome}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="cg-campo">
+        <label htmlFor={idDaAula}>Aula do encontro</label>
+        <select
+          id={idDaAula}
+          value={aulaId}
+          onChange={(evento) => definirAulaId(evento.target.value)}
+          aria-invalid={erroDeCampo?.campo === "aula_id" || undefined}
+        >
+          <option value="">Escolha uma aula</option>
+          {aulas.map((aula) => (
+            <option key={aula.id} value={aula.id}>
+              {rotuloDaAula(aula)}
+            </option>
+          ))}
+        </select>
+        {erroDeCampo?.campo === "aula_id" && (
           <p role="alert" className="cg-campo__erro">
             {erroDeCampo.mensagem}
           </p>

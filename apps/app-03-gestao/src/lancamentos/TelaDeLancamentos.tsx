@@ -3,6 +3,7 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import { obterPainelDoDia, type PainelDoDia } from "../painel-do-dia/api";
+import { BlocoDeAtividadesAvulsas } from "./BlocoDeAtividadesAvulsas";
 import { ConferenciaDePresencas } from "./ConferenciaDePresencas";
 import { LancamentoDaAtividade } from "./LancamentoDaAtividade";
 import { RegistroDeInfracao } from "./RegistroDeInfracao";
@@ -69,6 +70,13 @@ export function TelaDeLancamentos() {
               aulaId={painel.aula_id}
               presencas={painel.presencas}
               atividadesPrevistas={painel.atividades_previstas}
+              onLancado={carregar}
+            />
+
+            <BlocoDeAtividadesAvulsas
+              aulaId={painel.aula_id}
+              presencas={painel.presencas}
+              equipes={painel.equipes}
               onLancado={carregar}
             />
 
