@@ -726,14 +726,19 @@ em até 7 dias na própria plataforma, com o motivo em linguagem simples quando 
 
 Web App de acesso público e **sem login** — a chave da API é da aplicação, não do visitante:
 
-- Apresenta **Guerreiros e Guerreiras, Mestres, Batalhas, Apoiadores e Comunidades Virtuais**,
-  com navegação para seções específicas com cards individuais. O poder **não tem seção
-  própria**: aparece como atributo do Guerreiro(a), no card e na página dele.
-- **Cada card abre a página individual do personagem** — Guerreiro(a), Mestre, apoiador ou
-  comunidade —, com a versão detalhada do que o card resume (composição no documento 11).
-- **Cards rotativos** com avatares dos Guerreiros e Guerreiras, atualizados a cada 5 segundos.
-  Exibem **apenas** avatar, nick, badges, poderes adquiridos e desempenho na plataforma — **sem
-  links para redes sociais dos Guerreiros e Guerreiras** nem qualquer canal de contato direto.
+- Apresenta **Guerreiros e Guerreiras, Mestres, Batalhas, Apoiadores e Comunidades Virtuais**.
+  Mestres, Batalhas, Apoiadores e Comunidades Virtuais saem em **lista de registros** — uma
+  linha por registro, com o avatar quando o registro tem um, os dados principais da carta e
+  **10 linhas por página**, com avançar e voltar. Os **Guerreiros e Guerreiras não são
+  listados**: a seção deles é a **consulta por nick exato**, e quem tem divulgação autorizada
+  aparece pelo ranking e pelo portfólio. O poder **não tem seção própria**: é atributo do
+  Guerreiro(a), na carta e na página dele.
+- **Cada linha abre a página individual do personagem** — Guerreiro(a), Mestre, apoiador ou
+  comunidade —, em endereço próprio e compartilhável, com a versão detalhada do que a linha
+  resume. A **carta do personagem** é da página individual (composição no documento 11).
+- A vitrine exibe de Guerreiro(a) **apenas** avatar, nick, badges, poderes adquiridos e
+  desempenho na plataforma — **sem links para redes sociais dos Guerreiros e Guerreiras** nem
+  qualquer canal de contato direto.
 - **Página de Mestres e Apoiadores** com **currículo, portfólios, redes sociais e documentos
   comprobatórios externos** — a prova pública de habilidade e de apoio.
 - **Formulário de solicitação de participação** como Mestre ou Apoiador, aberto a pessoas e

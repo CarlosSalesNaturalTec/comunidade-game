@@ -36,10 +36,11 @@ hora — o sentido do fluxo é sempre esse.
 
 ### 3.1 Dentro do escopo
 
-- **Cinco seções com cards**: Guerreiros e Guerreiras, Mestres, Batalhas, Apoiadores e
-  Comunidades Virtuais, cada card abrindo a **página individual** do personagem. O poder não
-  tem seção nem página próprias: aparece como atributo do Guerreiro(a).
-- **Cards rotativos** de Guerreiros e Guerreiras, com troca a cada 5 segundos.
+- **Seções em lista de registros**: Mestres, Batalhas, Apoiadores e Comunidades Virtuais,
+  cada linha abrindo a **página individual** do personagem, com 10 registros por página. Os
+  Guerreiros e Guerreiras não são listados: chega-se a eles pela consulta por nick exato, pelo
+  ranking e pelo portfólio. O poder não tem seção nem página próprias: aparece como atributo do
+  Guerreiro(a).
 - **Consulta por nick exato**, para quem recebeu o nick da família — sem lista, sem sugestão e
   sem completação.
 - **Portfólio de criações originais** dos Guerreiros e Guerreiras autorizados, com autoria por
@@ -119,12 +120,12 @@ fila, nunca acesso.
 ### 5.1 Sociedade civil — o recorte padrão
 
 1. O visitante abre a vitrine e cai no recorte **sociedade civil**, sem escolher nada.
-2. Vê a narrativa do projeto, o vídeo de apresentação e os **cards rotativos** dos Guerreiros e
-   Guerreiras autorizados, trocando a cada 5 segundos.
-3. Clica em um card e abre a **página individual**: trajetória nas trilhas, badges e níveis por
-   poder, portfólio de criações e participação em batalhas.
+2. Vê a narrativa do projeto, o vídeo de apresentação e o **ranking** dos Guerreiros e
+   Guerreiras autorizados, 10 por página.
+3. Clica em uma linha e abre a **página individual**, onde a carta domina a tela: trajetória nas
+   trilhas, badges e níveis por poder, portfólio de criações e participação em batalhas.
 4. Navega para Mestres, Batalhas, Apoiadores e Comunidades Virtuais pelo mesmo padrão
-   de card e página.
+   de lista e página, e procura um Guerreiro(a) pelo nick exato.
 5. Encontra as **necessidades de recurso em aberto** das atividades sem lastro em seção
    própria, e a chave PIX na porta da chamada — "Como apoiar" não tem tela pública.
 6. Trocando de recorte, continua na mesma vitrine: muda a porta de entrada e a ordem, não o
@@ -188,7 +189,7 @@ fila, nunca acesso.
 4. A mesma tela mostra o caminho de quem não quer se cadastrar agora: **doar pela chave PIX** e
    ver as **necessidades de recurso em aberto**.
 5. A tela diz que o pré-cadastro **não cria cadastro nem acesso**: um Admin valida o
-   comprovante, com prazo de 7 dias, e só então o card aparece na vitrine.
+   comprovante, com prazo de 7 dias, e só então ele aparece na lista da vitrine.
 6. Quem desiste volta à navegação sem preencher nada, e nada é gravado sobre a visita.
 
 ### 5.6 Procurar alguém pelo nick
@@ -204,8 +205,8 @@ fila, nunca acesso.
 ### 5.7 Autorização revogada durante a visita
 
 1. O responsável revoga a autorização na App 07.
-2. Na primeira leitura seguinte, o card, a página individual, o portfólio e o ranking já não
-   trazem aquele Guerreiro(a).
+2. Na primeira leitura seguinte, a página individual, o portfólio e o ranking já não trazem
+   aquele Guerreiro(a).
 3. Um endereço direto para a página dele responde **"não encontrado"**, como se nunca tivesse
    existido publicamente.
 4. As criações em equipe permanecem, com os demais autores creditados e o revogado ausente.
@@ -256,30 +257,31 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 
 ## 6. Requisitos funcionais
 
-### 6.1 Navegação, cards e páginas
+### 6.1 Navegação, listas e páginas
 
-| ID         | Requisito                                                                                                              | Prioridade |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-03-01` | Vitrine abre sem login e sem cadastro, na raiz do domínio da plataforma                                                | essencial  |
-| `RF-03-02` | Aplicação exibe as cinco seções com cards: Guerreiros e Guerreiras, Mestres, batalhas, apoiadores e comunidades        | essencial  |
-| `RF-03-03` | Cada card abre a página individual do personagem, com a composição do documento 11                                     | essencial  |
-| `RF-03-04` | Cards de Guerreiros e Guerreiras rotacionam a cada 5 segundos                                                          | essencial  |
-| `RF-03-05` | Card e página de Guerreiro(a) exibem só avatar, nick, badges, poderes e desempenho                                     | essencial  |
-| `RF-03-06` | Nenhuma tela exibe imagem real, nome civil, rede social ou contato de Guerreiro(a)                                     | essencial  |
-| `RF-03-07` | Página de Mestre e de Apoiador exibe currículo, portfólios, redes sociais e comprobatórios                             | essencial  |
-| `RF-03-79` | Card e página de Mestre e de Apoiador sem nick exibem o nome da persona, apresentado como nome                         | essencial  |
-| `RF-03-80` | Página de Apoiador exibe cada desafio extra proposto com trilha, período e quantos concluíram, sem identificar ninguém | essencial  |
-| `RF-03-55` | Card de Apoiador exibe avatar, nick e o total de moedas aportadas em destaque                                          | essencial  |
-| `RF-03-56` | Cards de Apoiador seguem moldura comum, com avatar centralizado em proporção fixa                                      | essencial  |
-| `RF-03-57` | Apoiador sem aporte homologado não aparece na vitrine                                                                  | essencial  |
-| `RF-03-66` | Card de Apoiador com menos de 10 moedas exibe o avatar padrão do projeto na mesma moldura                              | essencial  |
-| `RF-03-08` | Portfólio exibe as criações originais autorizadas, com título, trilha, data e autoria por nick                         | essencial  |
-| `RF-03-09` | Ranking público exibe apenas pontos regulares e apenas quem tem divulgação autorizada                                  | essencial  |
-| `RF-03-10` | Aporte de Apoiador é exibido em moedas da plataforma, nunca em reais                                                   | essencial  |
-| `RF-03-11` | Busca por nick exato devolve a página pública; nick inexistente e nick sem autorização têm a mesma resposta            | essencial  |
-| `RF-03-12` | Busca não oferece sugestão, completação nem lista de nicks; cards, ranking e portfólio exibem só quem autorizou        | essencial  |
-| `RF-03-13` | Guerreiro(a) sem autorização vigente não aparece em card, página, portfólio ou ranking                                 | essencial  |
-| `RF-03-14` | Revogação da autorização retira o perfil do público na leitura seguinte                                                | essencial  |
+| ID         | Requisito                                                                                                                                               | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-03-01` | Vitrine abre sem login e sem cadastro, na raiz do domínio da plataforma                                                                                 | essencial  |
+| `RF-03-02` | Aplicação exibe Mestres, batalhas, apoiadores e comunidades em **lista de registros**, uma linha por registro; Guerreiros e Guerreiras não são listados | essencial  |
+| `RF-03-03` | Cada linha abre a página individual do personagem, em endereço próprio, com a composição do documento 11                                                | essencial  |
+| `RF-03-05` | Carta e página de Guerreiro(a) exibem só avatar, nick, badges, poderes e desempenho                                                                     | essencial  |
+| `RF-03-06` | Nenhuma tela exibe imagem real, nome civil, rede social ou contato de Guerreiro(a)                                                                      | essencial  |
+| `RF-03-07` | Página de Mestre e de Apoiador exibe currículo, portfólios, redes sociais e comprobatórios                                                              | essencial  |
+| `RF-03-79` | Card e página de Mestre e de Apoiador sem nick exibem o nome da persona, apresentado como nome                                                          | essencial  |
+| `RF-03-80` | Página de Apoiador exibe cada desafio extra proposto com trilha, período e quantos concluíram, sem identificar ninguém                                  | essencial  |
+| `RF-03-55` | Card de Apoiador exibe avatar, nick e o total de moedas aportadas em destaque                                                                           | essencial  |
+| `RF-03-56` | Cards de Apoiador seguem moldura comum, com avatar centralizado em proporção fixa                                                                       | essencial  |
+| `RF-03-57` | Apoiador sem aporte homologado não aparece na vitrine                                                                                                   | essencial  |
+| `RF-03-66` | Card de Apoiador com menos de 10 moedas exibe o avatar padrão do projeto na mesma moldura                                                               | essencial  |
+| `RF-03-08` | Portfólio exibe as criações originais autorizadas, com título, trilha, data e autoria por nick                                                          | essencial  |
+| `RF-03-09` | Ranking público exibe apenas pontos regulares e apenas quem tem divulgação autorizada                                                                   | essencial  |
+| `RF-03-10` | Aporte de Apoiador é exibido em moedas da plataforma, nunca em reais                                                                                    | essencial  |
+| `RF-03-11` | Busca por nick exato devolve a página pública; nick inexistente e nick sem autorização têm a mesma resposta                                             | essencial  |
+| `RF-03-12` | Busca não oferece sugestão, completação nem lista de nicks; ranking e portfólio exibem só quem autorizou                                                | essencial  |
+| `RF-03-13` | Guerreiro(a) sem autorização vigente não aparece em página, portfólio ou ranking                                                                        | essencial  |
+| `RF-03-14` | Revogação da autorização retira o perfil do público na leitura seguinte                                                                                 | essencial  |
+| `RF-03-82` | Cada lista pública exibe 10 registros por página, com controles de avançar e voltar e a posição declarada em texto                                      | essencial  |
+| `RF-03-83` | Cada lista pública declara a sua ordem: ranking por posição, portfólio por data decrescente, Mestres, apoiadores e comunidades em ordem alfabética      | essencial  |
 
 ### 6.2 Território, séries e ODS
 
@@ -368,46 +370,47 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                     | Invariante (doc 99 §6) | Fonte       |
-| ---------- | ----------------------------------------------------------------------------------------- | ---------------------- | ----------- |
-| `RN-03-01` | A vitrine é pública, sem login, e não escreve nada sobre Guerreiro(a)                     | 1                      | 03 §§1.1, 8 |
-| `RN-03-02` | Só aparece publicamente o Guerreiro(a) com autorização vigente do responsável             | 12                     | 03 §12      |
-| `RN-03-03` | A revogação vale para frente e é imediata no que é público                                | 11                     | 03 §9       |
-| `RN-03-04` | Guerreiro(a) aparece só por avatar e nick, sem imagem real, nome civil ou contato         | 12                     | 03 §12      |
-| `RN-03-05` | Não há canal de contato entre visitante e Guerreiro(a) ou família                         | 10                     | 02 §1       |
-| `RN-03-06` | A consulta é por nick exato e não devolve lista, sugestão ou completação                  | 12                     | 02 §1       |
-| `RN-03-07` | Nick inexistente e nick sem autorização recebem a mesma resposta                          | 12                     | 03 §8       |
-| `RN-03-08` | Rota pública tem limite por origem e atraso progressivo, sem CAPTCHA nem cadastro         | —                      | 03 §8       |
-| `RN-03-34` | A origem do freio nunca é gravada: agrupa-se por resumo do IP, mantido só pela janela     | —                      | 03 §8       |
-| `RN-03-35` | O formulário de solicitação de chave não tem freio por origem                             | —                      | 03 §8       |
-| `RN-03-09` | A saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin        | 7, 17                  | 02 §1       |
-| `RN-03-10` | O painel público nunca identifica o coletor, nem por código                               | 7                      | 02 §1       |
-| `RN-03-11` | Solicitação de participação não cria cadastro nem acesso, e a avaliação é de Admin        | 3                      | 02 §1       |
-| `RN-03-12` | O prazo de resposta ao solicitante é de 7 dias                                            | —                      | 02 §1       |
-| `RN-03-13` | Solicitação de dados não entrega nada no ato: a entrega exige aprovação de Admin          | 17                     | 03 §12.3    |
-| `RN-03-14` | A entrega do conjunto é gratuita e anonimizada em qualquer granularidade aprovada         | 17                     | 03 §12.3    |
-| `RN-03-15` | A vitrine não guarda favorito nem preferência do visitante, em lugar nenhum               | —                      | 03 §8       |
-| `RN-03-16` | Favoritar é função da App 08, de Apoiador cadastrado, e lá é leitura: não abre contato    | 10                     | 03 §10      |
-| `RN-03-17` | O convite não cria cadastro nem acesso: cadastrar Apoiador é ato de Admin                 | 3                      | 02 §1       |
-| `RN-03-25` | A chamada de participação é do projeto e nunca vincula apoio a um Guerreiro(a) específico | 10                     | 03 §8       |
-| `RN-03-26` | Card de Apoiador só existe com aporte homologado, e exibe o total em moedas               | 16                     | 04 §2       |
-| `RN-03-36` | Nome no lugar do nick vale só para adulto; nome civil de Guerreiro(a) nunca vai a público | 9, 12                  | 11 §8.2     |
-| `RN-03-37` | A efetividade pública é agregada e nunca alcança quem concluiu o desafio extra            | 10                     | 11 §8.2     |
-| `RN-03-27` | A vitrine encaminha, nunca autentica: quem confere credencial é a aplicação de destino    | 1                      | 03 §1.1     |
-| `RN-03-28` | O dado publicado não substitui indicador oficial, e a vitrine diz isso ao gestor          | 7                      | 03 §8       |
-| `RN-03-18` | Aporte é exibido em moedas da plataforma, nunca em reais                                  | 16                     | 04 §1       |
-| `RN-03-19` | A etiqueta ODS é descritiva, agregada por comunidade e ciclo, nunca por Guerreiro(a)      | 20                     | 11 §2.1     |
-| `RN-03-20` | O ODS 18 é citado como adoção voluntária do Brasil, não como objetivo da ONU              | 20                     | 04 §4       |
-| `RN-03-21` | A vitrine não veicula publicidade nem patrocínio no Ciclo 01                              | —                      | 04 §2       |
-| `RN-03-22` | A vitrine não instala cookie, rastreador ou perfilamento, para nenhuma finalidade         | —                      | 04 §2       |
-| `RN-03-23` | Toda tela indica o que a plataforma coleta, com acesso à área detalhada                   | —                      | 03 §12      |
-| `RN-03-29` | A Área do Apoiador Desenvolvedor é seção da vitrine, não uma nona aplicação               | 1                      | 03 §8       |
-| `RN-03-30` | O assistente do Desenvolvedor tem corpus fechado e nunca responde fora dele               | —                      | 03 §8       |
-| `RN-03-31` | O assistente usa o modelo que o Ciclo 01 destinar à conversa por texto (03 §1.12)         | —                      | 03 §1       |
-| `RN-03-38` | Ao modelo vai um recorte do corpus por pergunta, com teto, nunca o corpus inteiro         | —                      | 03 §8       |
-| `RN-03-39` | A consulta ao assistente do Desenvolvedor é superfície do freio por origem                | —                      | 03 §8       |
-| `RN-03-32` | Solicitação de chave não emite chave nem cria cadastro: quem emite é Admin, na App 03     | 3                      | 03 §8       |
-| `RN-03-33` | A vitrine consome a API com a chave da aplicação, e o visitante segue anônimo             | —                      | 03 §§1, 1.1 |
+| ID         | Regra                                                                                                                                                   | Invariante (doc 99 §6) | Fonte       |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ----------- |
+| `RN-03-01` | A vitrine é pública, sem login, e não escreve nada sobre Guerreiro(a)                                                                                   | 1                      | 03 §§1.1, 8 |
+| `RN-03-02` | Só aparece publicamente o Guerreiro(a) com autorização vigente do responsável                                                                           | 12                     | 03 §12      |
+| `RN-03-03` | A revogação vale para frente e é imediata no que é público                                                                                              | 11                     | 03 §9       |
+| `RN-03-04` | Guerreiro(a) aparece só por avatar e nick, sem imagem real, nome civil ou contato                                                                       | 12                     | 03 §12      |
+| `RN-03-05` | Não há canal de contato entre visitante e Guerreiro(a) ou família                                                                                       | 10                     | 02 §1       |
+| `RN-03-06` | A consulta é por nick exato e não devolve lista, sugestão ou completação                                                                                | 12                     | 02 §1       |
+| `RN-03-07` | Nick inexistente e nick sem autorização recebem a mesma resposta                                                                                        | 12                     | 03 §8       |
+| `RN-03-08` | Rota pública tem limite por origem e atraso progressivo, sem CAPTCHA nem cadastro                                                                       | —                      | 03 §8       |
+| `RN-03-34` | A origem do freio nunca é gravada: agrupa-se por resumo do IP, mantido só pela janela                                                                   | —                      | 03 §8       |
+| `RN-03-35` | O formulário de solicitação de chave não tem freio por origem                                                                                           | —                      | 03 §8       |
+| `RN-03-09` | A saída pública agrega até o bairro; rua e abaixo só na entrega aprovada por Admin                                                                      | 7, 17                  | 02 §1       |
+| `RN-03-10` | O painel público nunca identifica o coletor, nem por código                                                                                             | 7                      | 02 §1       |
+| `RN-03-11` | Solicitação de participação não cria cadastro nem acesso, e a avaliação é de Admin                                                                      | 3                      | 02 §1       |
+| `RN-03-12` | O prazo de resposta ao solicitante é de 7 dias                                                                                                          | —                      | 02 §1       |
+| `RN-03-13` | Solicitação de dados não entrega nada no ato: a entrega exige aprovação de Admin                                                                        | 17                     | 03 §12.3    |
+| `RN-03-14` | A entrega do conjunto é gratuita e anonimizada em qualquer granularidade aprovada                                                                       | 17                     | 03 §12.3    |
+| `RN-03-15` | A vitrine não guarda favorito nem preferência do visitante, em lugar nenhum                                                                             | —                      | 03 §8       |
+| `RN-03-16` | Favoritar é função da App 08, de Apoiador cadastrado, e lá é leitura: não abre contato                                                                  | 10                     | 03 §10      |
+| `RN-03-17` | O convite não cria cadastro nem acesso: cadastrar Apoiador é ato de Admin                                                                               | 3                      | 02 §1       |
+| `RN-03-25` | A chamada de participação é do projeto e nunca vincula apoio a um Guerreiro(a) específico                                                               | 10                     | 03 §8       |
+| `RN-03-26` | Apoiador só aparece com aporte homologado, e a linha e a carta exibem o total em moedas                                                                 | 16                     | 04 §2       |
+| `RN-03-36` | Nome no lugar do nick vale só para adulto; nome civil de Guerreiro(a) nunca vai a público                                                               | 9, 12                  | 11 §8.2     |
+| `RN-03-37` | A efetividade pública é agregada e nunca alcança quem concluiu o desafio extra                                                                          | 10                     | 11 §8.2     |
+| `RN-03-27` | A vitrine encaminha, nunca autentica: quem confere credencial é a aplicação de destino                                                                  | 1                      | 03 §1.1     |
+| `RN-03-28` | O dado publicado não substitui indicador oficial, e a vitrine diz isso ao gestor                                                                        | 7                      | 03 §8       |
+| `RN-03-18` | Aporte é exibido em moedas da plataforma, nunca em reais                                                                                                | 16                     | 04 §1       |
+| `RN-03-40` | A linha do Apoiador exibe o total em moedas, e nenhuma lista pública ordena, classifica, compara nem oferece ordenação de Apoiadores por valor aportado | 21                     | 14 §9       |
+| `RN-03-19` | A etiqueta ODS é descritiva, agregada por comunidade e ciclo, nunca por Guerreiro(a)                                                                    | 20                     | 11 §2.1     |
+| `RN-03-20` | O ODS 18 é citado como adoção voluntária do Brasil, não como objetivo da ONU                                                                            | 20                     | 04 §4       |
+| `RN-03-21` | A vitrine não veicula publicidade nem patrocínio no Ciclo 01                                                                                            | —                      | 04 §2       |
+| `RN-03-22` | A vitrine não instala cookie, rastreador ou perfilamento, para nenhuma finalidade                                                                       | —                      | 04 §2       |
+| `RN-03-23` | Toda tela indica o que a plataforma coleta, com acesso à área detalhada                                                                                 | —                      | 03 §12      |
+| `RN-03-29` | A Área do Apoiador Desenvolvedor é seção da vitrine, não uma nona aplicação                                                                             | 1                      | 03 §8       |
+| `RN-03-30` | O assistente do Desenvolvedor tem corpus fechado e nunca responde fora dele                                                                             | —                      | 03 §8       |
+| `RN-03-31` | O assistente usa o modelo que o Ciclo 01 destinar à conversa por texto (03 §1.12)                                                                       | —                      | 03 §1       |
+| `RN-03-38` | Ao modelo vai um recorte do corpus por pergunta, com teto, nunca o corpus inteiro                                                                       | —                      | 03 §8       |
+| `RN-03-39` | A consulta ao assistente do Desenvolvedor é superfície do freio por origem                                                                              | —                      | 03 §8       |
+| `RN-03-32` | Solicitação de chave não emite chave nem cria cadastro: quem emite é Admin, na App 03                                                                   | 3                      | 03 §8       |
+| `RN-03-33` | A vitrine consome a API com a chave da aplicação, e o visitante segue anônimo                                                                           | —                      | 03 §§1, 1.1 |
 
 ## 8. Modelo de dados
 
@@ -451,26 +454,26 @@ Derivações e imutabilidade:
 A aplicação segue as convenções do PRD-01 — prefixo `/v1`, erro em corpo único — e consome
 **apenas rotas públicas, sem token**. As rotas de avaliação e entrega são da App 03 (PRD-02).
 
-| Método | Rota                                 | Autenticação | Descrição                                                    |
-| ------ | ------------------------------------ | ------------ | ------------------------------------------------------------ |
-| GET    | `/v1/vitrine/guerreiros`             | pública      | Cards dos Guerreiros e Guerreiras com divulgação autorizada  |
-| GET    | `/v1/vitrine/guerreiros/{nick}`      | pública      | Página pública por nick exato                                |
-| GET    | `/v1/vitrine/mestres`                | pública      | Cards e páginas de Mestres, com os comprobatórios            |
-| GET    | `/v1/vitrine/apoiadores`             | pública      | Cards e páginas de Apoiadores, com aportes em moedas         |
-| GET    | `/v1/vitrine/poderes`                | pública      | Poderes, trilhas e Mestres de cada um                        |
-| GET    | `/v1/vitrine/batalhas`               | pública      | Batalhas, resultados e estatísticas de partida               |
-| GET    | `/v1/vitrine/criacoes`               | pública      | Portfólio de criações originais autorizadas                  |
-| GET    | `/v1/vitrine/rankings`               | pública      | Rankings por pontos regulares, só de quem autorizou          |
-| GET    | `/v1/vitrine/conteudo-institucional` | pública      | "Quem somos", "Contatos", "Como apoiar" e a nota sobre IA    |
-| GET    | `/v1/comunidades`                    | pública      | Comunidades com indicadores agregados (PRD-08)               |
-| GET    | `/v1/comunidades/{id}/series`        | pública      | Séries históricas agregadas até o bairro, com metodologia    |
-| GET    | `/v1/vitrine/ods/cobertura`          | pública      | Cobertura agregada de todas as comunidades do ciclo          |
-| GET    | `/v1/vitrine/necessidades`           | pública      | Necessidades de recurso em aberto (PRD-07)                   |
-| POST   | `/v1/solicitacoes-de-participacao`   | pública      | Registra pedido de inclusão como Mestre ou Apoiador          |
-| POST   | `/v1/solicitacoes-de-dados`          | pública      | Registra pedido do conjunto de dados                         |
-| POST   | `/v1/solicitacoes-de-chave`          | pública      | Registra pedido de chave da Área do Apoiador Desenvolvedor   |
-| POST   | `/v1/chaves/{id}/url`                | pública      | Apresenta a URL do que foi construído, dentro dos 30 dias    |
-| POST   | `/v1/assistente-do-desenvolvedor`    | pública      | Pergunta ao assistente, sobre a documentação e o repositório |
+| Método | Rota                                 | Autenticação | Descrição                                                                             |
+| ------ | ------------------------------------ | ------------ | ------------------------------------------------------------------------------------- |
+| GET    | `/v1/vitrine/guerreiros`             | pública      | Cartas dos Guerreiros e Guerreiras com divulgação autorizada; a vitrine não a consome |
+| GET    | `/v1/vitrine/guerreiros/{nick}`      | pública      | Página pública por nick exato                                                         |
+| GET    | `/v1/vitrine/mestres`                | pública      | Lista e páginas de Mestres, com os comprobatórios                                     |
+| GET    | `/v1/vitrine/apoiadores`             | pública      | Lista e páginas de Apoiadores, com aportes em moedas                                  |
+| GET    | `/v1/vitrine/poderes`                | pública      | Poderes, trilhas e Mestres de cada um                                                 |
+| GET    | `/v1/vitrine/batalhas`               | pública      | Batalhas, resultados e estatísticas de partida                                        |
+| GET    | `/v1/vitrine/criacoes`               | pública      | Portfólio de criações originais autorizadas                                           |
+| GET    | `/v1/vitrine/rankings`               | pública      | Rankings por pontos regulares, só de quem autorizou                                   |
+| GET    | `/v1/vitrine/conteudo-institucional` | pública      | "Quem somos", "Contatos", "Como apoiar" e a nota sobre IA                             |
+| GET    | `/v1/comunidades`                    | pública      | Comunidades com indicadores agregados (PRD-08)                                        |
+| GET    | `/v1/comunidades/{id}/series`        | pública      | Séries históricas agregadas até o bairro, com metodologia                             |
+| GET    | `/v1/vitrine/ods/cobertura`          | pública      | Cobertura agregada de todas as comunidades do ciclo                                   |
+| GET    | `/v1/vitrine/necessidades`           | pública      | Necessidades de recurso em aberto (PRD-07)                                            |
+| POST   | `/v1/solicitacoes-de-participacao`   | pública      | Registra pedido de inclusão como Mestre ou Apoiador                                   |
+| POST   | `/v1/solicitacoes-de-dados`          | pública      | Registra pedido do conjunto de dados                                                  |
+| POST   | `/v1/solicitacoes-de-chave`          | pública      | Registra pedido de chave da Área do Apoiador Desenvolvedor                            |
+| POST   | `/v1/chaves/{id}/url`                | pública      | Apresenta a URL do que foi construído, dentro dos 30 dias                             |
+| POST   | `/v1/assistente-do-desenvolvedor`    | pública      | Pergunta ao assistente, sobre a documentação e o repositório                          |
 
 Nenhuma rota desta aplicação aceita ou devolve preferência de visitante: não há parâmetro de
 favorito, de perfil ou de sessão anônima.
@@ -489,14 +492,14 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
 
 - Web App responsivo **Mobile First**: a maior parte das visitas vem de celular, inclusive as
   da própria comunidade.
-- **Celular modesto e rede instável**: os cards rotativos e a representação visual da
+- **Celular modesto e rede instável**: as listas de registro e a representação visual da
   comunidade não podem travar a página nem consumir dados desnecessariamente.
 - **Cacheável e tolerante a pico** — dia de culminância e de batalha concentram acesso, e a
   vitrine é a superfície onde isso aparece.
 - **Sem rastreador de terceiros**, inclusive de métricas: se houver medição de audiência, ela é
   agregada e sem identificador de visitante.
 - **Acessibilidade digital** no piso do documento 15 — **WCAG 2.2 AA**: contraste, alvos de
-  toque grandes, leitura por voz e conteúdo legível sem depender da rotação dos cards.
+  toque grandes, leitura por voz e conteúdo legível sem depender de animação.
 - **Linguagem simples** em toda tela pública, inclusive nas mensagens de erro e de espera.
 - **Indexável por buscadores** nas seções institucionais e de comunidade; a página individual
   de Guerreiro(a) **não é indexada**, para que a exposição não sobreviva à revogação.
@@ -543,8 +546,19 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   acessíveis, com aviso.
 - O envio do formulário de chave **não devolve chave nenhuma** — devolve protocolo e prazo.
 - Recarregar a página do assistente **perde a conversa**: nada dela foi guardado.
-- Guerreiro(a) com autorização aparece em card, página e ranking; sem autorização, não aparece
-  em nenhum dos três, nem por endereço direto.
+- Guerreiro(a) com autorização aparece em página, portfólio e ranking; sem autorização, não
+  aparece em nenhum dos três, nem por endereço direto.
+- Cada lista pública mostra **10 registros**, e avançar e voltar percorrem a lista inteira sem
+  pular nem repetir registro.
+- A seção de Guerreiros e Guerreiras **não lista ninguém**: traz a consulta por nick exato e
+  diz que a vitrine não lista quem está cadastrado.
+- Clicar numa linha abre a página individual daquele personagem, em endereço próprio; no
+  portfólio, é o **nick do autor** que abre a página dele.
+- Mestres, apoiadores e comunidades aparecem em ordem alfabética, e o portfólio abre pela
+  criação mais recente.
+- A lista de apoiadores exibe o total em moedas de cada um, **sem posição e sem qualquer
+  controle de ordenação por valor**.
+- Nenhuma tela pública anima nada que o conteúdo precise para ser lido.
 - Revogada a autorização na App 07, o perfil some da vitrine na leitura seguinte e o endereço
   direto responde "não encontrado".
 - Busca por nick inexistente e por nick sem autorização devolvem **a mesma resposta**.
@@ -635,25 +649,26 @@ IA apontando para ela.
 
 ## 15. Rastreabilidade
 
-| Requisito                           | Origem                                                         |
-| ----------------------------------- | -------------------------------------------------------------- |
-| `RF-03-01` a `RF-03-14`             | 03 §8 (vitrine), 11 §§8.1, 8.2 (cards e páginas) e 03 §12      |
-| `RF-03-55` a `RF-03-57`, `RF-03-66` | 11 §8.2 (card, moldura e piso do avatar) e 04 §2 (aporte)      |
-| `RF-03-15` a `RF-03-21`             | 02 §1 (série e granularidade) e 11 §8.3 (representação visual) |
-| `RF-03-22` a `RF-03-24`             | 04 §4 (Agenda 2030 e meta 17.18) e 11 §2.1 (etiqueta ODS)      |
-| `RF-03-25` e `RF-03-26`             | 03 §8 (três recortes de leitura)                               |
-| `RF-03-27` a `RF-03-31`             | 02 §1 (solicitação de participação, dados mínimos e prazo)     |
-| `RF-03-32` a `RF-03-34`             | 03 §12.3 (entrega sob solicitação aprovada)                    |
-| `RF-03-35` a `RF-03-37`             | 03 §8 (proteção das rotas públicas)                            |
-| `RN-03-34` e `RN-03-35`             | 03 §8 (origem em memória e chave sem freio)                    |
-| `RF-03-38` a `RF-03-44`             | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)    |
-| `RF-03-78`                          | 02 §1 e 14 §§10, 11 (garfo do que a pessoa traz)               |
-| `RF-03-79` e `RF-03-80`             | 11 §8.2 (identificação do adulto e efetividade agregada)       |
-| `RF-03-45` a `RF-03-49`             | 03 §8 (institucional), 04 §1 (PIX e lastro), 01 §7 (IA) e 15   |
-| `RF-03-50` e `RF-03-51`             | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)             |
-| `RF-03-52` e `RF-03-53`             | 03 §12 (aviso de coleta e área detalhada)                      |
-| `RF-03-58` a `RF-03-62`             | 03 §§1, 1.1, 8 (vitrine na raiz e entrada por persona)         |
-| `RF-03-63` a `RF-03-65`             | 03 §8 (área do gestor) e 04 §4 (Agenda 2030 e meta 17.18)      |
-| `RF-03-67` a `RF-03-72`             | 03 §8 (Área do Desenvolvedor e assistente) e 03 §1 (Gemini)    |
-| `RF-03-73` a `RF-03-77`             | 03 §§1, 8 (chave, prazos e recusa sem chave)                   |
-| `RF-03-81`, `RN-03-38`, `RN-03-39`  | 03 §8 (abertura, recorte do corpus e freio do assistente)      |
+| Requisito                           | Origem                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------- |
+| `RF-03-01` a `RF-03-14`             | 03 §8 (vitrine), 11 §§8.1, 8.2 (cartas e páginas) e 03 §12                |
+| `RF-03-82`, `RF-03-83`, `RN-03-40`  | 03 §8 (lista de registros e paginação) e 11 §8.2 (a linha resume a carta) |
+| `RF-03-55` a `RF-03-57`, `RF-03-66` | 11 §8.2 (card, moldura e piso do avatar) e 04 §2 (aporte)                 |
+| `RF-03-15` a `RF-03-21`             | 02 §1 (série e granularidade) e 11 §8.3 (representação visual)            |
+| `RF-03-22` a `RF-03-24`             | 04 §4 (Agenda 2030 e meta 17.18) e 11 §2.1 (etiqueta ODS)                 |
+| `RF-03-25` e `RF-03-26`             | 03 §8 (três recortes de leitura)                                          |
+| `RF-03-27` a `RF-03-31`             | 02 §1 (solicitação de participação, dados mínimos e prazo)                |
+| `RF-03-32` a `RF-03-34`             | 03 §12.3 (entrega sob solicitação aprovada)                               |
+| `RF-03-35` a `RF-03-37`             | 03 §8 (proteção das rotas públicas)                                       |
+| `RN-03-34` e `RN-03-35`             | 03 §8 (origem em memória e chave sem freio)                               |
+| `RF-03-38` a `RF-03-44`             | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)               |
+| `RF-03-78`                          | 02 §1 e 14 §§10, 11 (garfo do que a pessoa traz)                          |
+| `RF-03-79` e `RF-03-80`             | 11 §8.2 (identificação do adulto e efetividade agregada)                  |
+| `RF-03-45` a `RF-03-49`             | 03 §8 (institucional), 04 §1 (PIX e lastro), 01 §7 (IA) e 15              |
+| `RF-03-50` e `RF-03-51`             | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)                        |
+| `RF-03-52` e `RF-03-53`             | 03 §12 (aviso de coleta e área detalhada)                                 |
+| `RF-03-58` a `RF-03-62`             | 03 §§1, 1.1, 8 (vitrine na raiz e entrada por persona)                    |
+| `RF-03-63` a `RF-03-65`             | 03 §8 (área do gestor) e 04 §4 (Agenda 2030 e meta 17.18)                 |
+| `RF-03-67` a `RF-03-72`             | 03 §8 (Área do Desenvolvedor e assistente) e 03 §1 (Gemini)               |
+| `RF-03-73` a `RF-03-77`             | 03 §§1, 8 (chave, prazos e recusa sem chave)                              |
+| `RF-03-81`, `RN-03-38`, `RN-03-39`  | 03 §8 (abertura, recorte do corpus e freio do assistente)                 |
