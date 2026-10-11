@@ -71,10 +71,6 @@ function comLeituras() {
     guerreiros_vinculados: 23,
   };
   const serie: SeriePublica = { itens: [], proximo_cursor: null, recortes: [] };
-  vi.spyOn(leituras, "listarGuerreiros").mockResolvedValue({
-    itens: [guerreiro()],
-    proximo_cursor: null,
-  });
   vi.spyOn(leituras, "obterGuerreiroPorNick").mockResolvedValue(guerreiro());
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });

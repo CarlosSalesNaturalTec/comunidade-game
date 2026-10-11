@@ -179,6 +179,10 @@ que ela nasceu, que o portfólio público exibe junto da autoria. A criação or
 trazer título: o modelo não tem esse campo, e nenhum documento-fonte o define. (`RF-03-08`,
 decisão do fundador, 2026-09-28)
 
+O portfólio público SHALL responder em ordem **decrescente** por data de validação, da criação
+mais recente para a mais antiga, e a paginação por cursor SHALL percorrer essa ordem sem pular
+nem repetir criação. (`RF-03-83`, decisão do fundador, 2026-10-11)
+
 Cada poder do catálogo público SHALL trazer os **Mestres responsáveis** dele — os autores das
 trilhas publicadas daquele poder —, cada um com o **identificador** que alcança a leitura
 individual do Mestre, mais avatar e nick, ou o nome quando a persona não tiver nick. Poder sem
@@ -225,6 +229,16 @@ documento 11 §8.2, decisão do fundador, 2026-09-29)
 
 - **WHEN** uma criação original validada aparece no portfólio público
 - **THEN** ela traz a data em que foi validada e o nome da trilha de que nasceu
+
+#### Scenario: O portfólio responde da mais recente para a mais antiga
+
+- **WHEN** uma consulta pública pede o portfólio de criações originais
+- **THEN** a primeira criação da resposta é a validada mais recentemente
+
+#### Scenario: A paginação do portfólio não pula nem repete
+
+- **WHEN** uma consulta pública percorre o portfólio inteiro por cursor, em páginas de dez
+- **THEN** cada criação apareceu uma vez, em ordem decrescente de data de validação
 
 ### Requirement: A cobertura de ODS sai em rota pública, agregada por comunidade e ciclo
 
@@ -326,6 +340,10 @@ atividade sem recurso.
 As **áreas de habilidade** SHALL ser derivadas da área do conhecimento das trilhas publicadas
 de autoria do Mestre, sem campo próprio na persona (decisão do fundador, 2026-09-29).
 
+A listagem SHALL responder em ordem **alfabética** pela **identificação pública** de cada
+Mestre — o nick quando há, o nome quando não —, e a paginação por cursor SHALL percorrer essa
+ordem sem pular nem repetir Mestre. (`RF-03-83`, `RF-03-79`, decisão do fundador, 2026-10-11)
+
 A resposta NEVER SHALL trazer e-mail, WhatsApp, valor em reais, dado bancário ou qualquer
 canal de contato do Mestre, nem alcançar Guerreiro(a) algum. Identificador de persona que não
 é Mestre e identificador inexistente SHALL receber **a mesma recusa 404**, de modo que a
@@ -341,6 +359,17 @@ resposta não confirme a existência de ninguém. (`RF-03-02`, `RF-03-07`, `RN-0
 
 - **WHEN** um Mestre é autor de duas trilhas publicadas, de áreas do conhecimento diferentes
 - **THEN** a leitura pública dele traz as duas áreas, sem repetição
+
+#### Scenario: A listagem de Mestres sai em ordem alfabética
+
+- **WHEN** uma consulta pública pede os Mestres, e há Mestre com nick e Mestre só com nome
+- **THEN** a resposta sai em ordem alfabética pela identificação pública de cada um, com nick e
+  nome na mesma ordenação
+
+#### Scenario: A paginação de Mestres não pula nem repete
+
+- **WHEN** uma consulta pública percorre os Mestres por cursor, em páginas de dez
+- **THEN** cada Mestre apareceu uma vez, em ordem alfabética
 
 #### Scenario: A leitura pública do Mestre não traz contato
 
@@ -366,6 +395,12 @@ Apoiador **sem aporte homologado** NEVER SHALL aparecer: fica fora da listagem, 
 individual dele SHALL receber **o mesmo 404** do identificador inexistente. Nenhuma leitura
 desta capacidade SHALL ordenar, classificar ou comparar Apoiadores por valor aportado — o que
 se coleciona é selo e nível (`RN-14-38`).
+
+A listagem SHALL responder em ordem **alfabética** pela **identificação pública** de cada
+Apoiador — o nick quando há, o nome quando não —, e a paginação por cursor SHALL percorrer essa
+ordem sem pular nem repetir Apoiador. É essa ordem, e não a omissão do total em moedas, que
+cumpre a proibição de pódio. (`RF-03-83`, `RF-03-79`, `RN-03-40`, decisão do fundador,
+2026-10-11)
 
 A resposta NEVER SHALL trazer valor em reais, comprovante, dado bancário, e-mail, WhatsApp ou
 dado de contato de Guerreiro(a) algum. (`RF-03-02`, `RF-03-07`, `RF-03-57`, `RN-03-26`,
@@ -393,6 +428,17 @@ PRD-03 §9)
 - **WHEN** a listagem pública de Apoiadores é consultada
 - **THEN** a resposta não traz posição, pódio nem ordenação por valor aportado
 
+#### Scenario: A listagem de Apoiadores sai em ordem alfabética
+
+- **WHEN** uma consulta pública pede os Apoiadores, e há Apoiador com nick e Apoiador só com
+  nome
+- **THEN** a resposta sai em ordem alfabética pela identificação pública de cada um, com nick e
+  nome na mesma ordenação
+
+#### Scenario: A paginação de Apoiadores não pula nem repete
+
+- **WHEN** uma consulta pública percorre os Apoiadores por cursor, em páginas de dez
+- **THEN** cada Apoiador apareceu uma vez, em ordem alfabética, e nenhum totalizou posição
 ### Requirement: O total do Apoiador sai em moedas, e o piso de 10 moedas decide o avatar
 
 A leitura pública do Apoiador SHALL trazer o total **em moedas da plataforma**, medido pelas

@@ -1,5 +1,4 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type {
   CoberturaDeOds,
@@ -95,10 +94,6 @@ function comLeituras({
   vi.spyOn(leituras, "obterComunidade").mockResolvedValue(ficha);
   vi.spyOn(leituras, "lerSerieDaComunidade").mockResolvedValue(serie);
   vi.spyOn(leituras, "lerCoberturaDeOds").mockResolvedValue(cobertura);
-  vi.spyOn(leituras, "listarGuerreiros").mockResolvedValue({
-    itens: [],
-    proximo_cursor: null,
-  });
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });
 }
@@ -109,41 +104,70 @@ describe("a seção de Comunidades Virtuais", () => {
   });
   afterEach(() => vi.restoreAllMocks());
 
-  it("apresenta cada comunidade em card, com uma única leitura (RF-03-02)", async () => {
+  it("apresenta cada comunidade em linha, com uma única leitura (RF-03-02)", async () => {
     comLeituras({ comunidades: [comunidadeNaLista(), comunidadeNaLista({ id: "outra" })] });
-    render(<App />);
+    const { container } = render(<App />);
 
     expect(await screen.findAllByText("Guerreira Zeferina")).toHaveLength(2);
-    expect(screen.getAllByText("Salvador, Bahia")).toHaveLength(2);
-    expect(screen.getAllByText("23")).toHaveLength(2);
-    // Uma leitura monta todos os cards — nunca uma por card (`RF-03-36`).
+    const linhas = [...container.querySelectorAll(".cg-lista-de-registros__linha")];
+    expect(linhas).toHaveLength(2);
+    for (const linha of linhas) {
+      expect(linha.textContent).toContain("Salvador, Bahia");
+      expect(linha.textContent).toContain("23 Guerreiros e Guerreiras vinculados");
+      // **Sem avatar**: a representação visual do território é da página
+      // (documento 11 §8.3).
+      expect(linha.querySelector(".cg-lista-de-registros__avatar")).toBeNull();
+    }
+    expect(container.querySelector(".cg-carta")).toBeNull();
+    // Uma leitura monta a lista inteira — nunca uma por linha (`RF-03-36`).
     expect(leituras.listarComunidades).toHaveBeenCalledTimes(1);
     expect(leituras.obterComunidade).not.toHaveBeenCalled();
   });
 
-  it("o card abre a página da comunidade, em endereço próprio (RF-03-15)", async () => {
+  it("as comunidades saem na ordem alfabética que o núcleo devolveu (RF-03-83)", async () => {
+    comLeituras({
+      comunidades: [
+        comunidadeNaLista({ id: "a", nome: "Ávila do Norte" }),
+        comunidadeNaLista({ id: "g", nome: "Guerreira Zeferina" }),
+        comunidadeNaLista({ id: "z", nome: "Zumbi dos Palmares" }),
+      ],
+    });
+    const { container } = render(<App />);
+
+    await screen.findByText("Ávila do Norte");
+    // `/v1/comunidades` já responde por `(nome, id)`: a tela apresenta essa
+    // ordem, não a refaz.
+    const identificacoes = [
+      ...container.querySelectorAll(".cg-lista-de-registros__identificacao"),
+    ].map((celula) => celula.textContent);
+    expect(identificacoes).toEqual([
+      "Ávila do Norte",
+      "Guerreira Zeferina",
+      "Zumbi dos Palmares",
+    ]);
+  });
+
+  it("a linha abre a página da comunidade, em endereço próprio (RF-03-15)", async () => {
     comLeituras();
     render(<App />);
 
-    const abrir = await screen.findAllByRole("button", { name: /Ver o território/ });
-    await userEvent.click(abrir[0]);
+    const porta = await screen.findByRole("link", { name: "Guerreira Zeferina" });
+    expect(porta).toHaveAttribute("href", `/comunidades/${ID_DA_COMUNIDADE}`);
+  });
 
-    expect(window.location.pathname).toBe(`/comunidades/${ID_DA_COMUNIDADE}`);
+  it("o endereço da comunidade, aberto direto, leva à página dela (RF-03-15)", async () => {
+    comLeituras();
+    window.history.pushState(null, "", `/comunidades/${ID_DA_COMUNIDADE}`);
+    render(<App />);
+
     expect(await screen.findByText("Séries do território")).toBeVisible();
   });
 
   it("comunidade recém-criada aparece como território vazio (RF-03-20)", async () => {
-    comLeituras({
-      comunidades: [
-        comunidadeNaLista({
-          series_abertas: 0,
-          series_ativas: 0,
-          registros_validos: 0,
-          continuidade: null,
-          guerreiros_vinculados: 0,
-        }),
-      ],
-    });
+    comLeituras({ recortes: [] });
+    // A representação visual mora na **página** da comunidade: é lá que a
+    // série é lida, e é lá que o território vazio se desenha.
+    window.history.pushState(null, "", `/comunidades/${ID_DA_COMUNIDADE}`);
     render(<App />);
 
     // Nome e contorno, sem preenchimento — e nada de erro nem de ausência.
@@ -162,7 +186,7 @@ describe("a seção de Comunidades Virtuais", () => {
     expect(leituras.listarComunidades).toHaveBeenCalledTimes(1);
   });
 
-  it("comunidade abaixo do piso sai em outra forma, não em card incompleto (RN-08-28)", async () => {
+  it("comunidade abaixo do piso continua em linha, com o que a leitura devolveu (RN-08-28)", async () => {
     comLeituras({
       comunidades: [
         comunidadeNaLista({
@@ -175,8 +199,14 @@ describe("a seção de Comunidades Virtuais", () => {
     });
     const { container } = render(<App />);
 
-    expect(await screen.findByText(/Indicadores ainda não publicados/)).toBeVisible();
-    expect(screen.getByText("Guerreira Zeferina")).toBeVisible();
+    // A ausência de indicador não a retira da lista, e nenhum espaço vazio a
+    // anuncia: a linha não depende de indicador nenhum.
+    expect(await screen.findByRole("link", { name: "Guerreira Zeferina" })).toBeVisible();
+    const linhas = [...container.querySelectorAll(".cg-lista-de-registros__linha")];
+    expect(linhas).toHaveLength(1);
+    expect(linhas[0].textContent).toBe(
+      "Guerreira ZeferinaSalvador, Bahia · 23 Guerreiros e Guerreiras vinculados",
+    );
     expect(container.querySelector(".cg-carta")).toBeNull();
   });
 });

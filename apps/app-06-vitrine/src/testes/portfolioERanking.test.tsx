@@ -4,15 +4,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as leituras from "../api/leituras";
 import App from "./TelaDaVitrine";
 
-// Critérios de aceite do PRD-03 §12: quem não autorizou não aparece em card,
-// página, portfólio nem ranking; o ranking é de ponto regular; e, depois de
-// navegar e recarregar, nada da visita ficou no aparelho.
+// Critérios de aceite do PRD-03 §12: o portfólio e o ranking saem em **lista
+// de registros**, o ranking é de ponto regular, o portfólio abre pela criação
+// mais recente, cada nick de autor abre a página dele, e, depois de navegar e
+// recarregar, nada da visita ficou no aparelho (`RF-03-02`, `RF-03-03`,
+// `RF-03-08`, `RF-03-09`, `RF-03-83`).
 
 function comConteudo() {
-  vi.spyOn(leituras, "listarGuerreiros").mockResolvedValue({
-    itens: [],
-    proximo_cursor: null,
-  });
+  // O núcleo devolve o portfólio **da mais recente para a mais antiga**
+  // (`RF-03-83`): a tela apresenta essa ordem, não a refaz.
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({
     itens: [
       {
@@ -21,6 +21,13 @@ function comConteudo() {
         validada_em: "2026-08-01T10:00:00Z",
         producao: "Produção de teste.",
         autores: [{ avatar: "avatar-de-teste", nick: "autora-da-obra" }],
+      },
+      {
+        trilha_id: "t-2",
+        trilha: "Trilha do Vento",
+        validada_em: "2026-03-01T10:00:00Z",
+        producao: "Produção antiga.",
+        autores: [{ avatar: null, nick: "autor-antigo" }],
       },
     ],
     proximo_cursor: null,
@@ -53,7 +60,7 @@ describe("portfólio e ranking", () => {
     window.sessionStorage.clear();
   });
 
-  it("a criação aparece com trilha, data e autoria por nick (RF-03-08)", async () => {
+  it("a criação sai em linha, com trilha, data e autoria por nick (RF-03-08)", async () => {
     render(<App />);
 
     const portfolio = secaoDe("Portfólio de criações originais");
@@ -62,15 +69,45 @@ describe("portfólio e ranking", () => {
     expect(portfolio.getByText(/autora-da-obra/)).toBeVisible();
   });
 
-  it("o ranking é de ponto regular, em ordem (RF-03-09)", async () => {
+  it("o portfólio abre pela criação mais recente (RF-03-83)", async () => {
+    render(<App />);
+
+    const portfolio = secaoDe("Portfólio de criações originais");
+    await portfolio.findByText("Trilha da Água");
+    const trilhas = portfolio
+      .getAllByRole("listitem")
+      .map(
+        (linha) => linha.querySelector(".cg-lista-de-registros__identificacao")?.textContent,
+      );
+    expect(trilhas).toEqual(["Trilha da Água", "Trilha do Vento"]);
+  });
+
+  it("no portfólio é o nick do autor que abre a página dele (RF-03-03)", async () => {
+    render(<App />);
+
+    const portfolio = secaoDe("Portfólio de criações originais");
+    const porta = await portfolio.findByRole("link", { name: /autora-da-obra/ });
+    expect(porta).toHaveAttribute("href", "/guerreiros/autora-da-obra");
+    // A criação original não tem página individual: a linha dela não é
+    // acionável, só os nicks são.
+    const linha = porta.closest("li") as HTMLElement;
+    expect(linha.querySelectorAll("a")).toHaveLength(1);
+  });
+
+  it("o ranking é de ponto regular, em linha, em ordem (RF-03-09)", async () => {
     render(<App />);
 
     const ranking = secaoDe("Ranking");
     expect(await ranking.findByText(/primeira-colocada/)).toBeVisible();
     const posicoes = ranking.getAllByRole("listitem").map((item) => item.textContent);
-    expect(posicoes[0]).toMatch(/1º.*primeira-colocada.*40 pontos regulares/);
-    expect(posicoes[1]).toMatch(/2º.*segunda-colocada.*20 pontos regulares/);
+    expect(posicoes[0]).toMatch(/primeira-colocada.*1º.*40 pontos regulares/);
+    expect(posicoes[1]).toMatch(/segunda-colocada.*2º.*20 pontos regulares/);
     expect(ranking.queryByText(/ponto extra|moeda|R\$/i)).toBeNull();
+    // A linha abre a página individual daquele Guerreiro(a) (`RF-03-03`).
+    expect(ranking.getByRole("link", { name: "primeira-colocada" })).toHaveAttribute(
+      "href",
+      "/guerreiros/primeira-colocada",
+    );
   });
 
   it("a abertura não traz seção de poderes (RF-03-02)", async () => {

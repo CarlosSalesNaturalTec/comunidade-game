@@ -1,24 +1,30 @@
-import { listarMestres, type MestrePublico } from "../api/leituras";
+import { listarMestres } from "../api/leituras";
+import { ListaDeRegistros } from "../listas/ListaDeRegistros";
 import { PREFIXO_DA_PAGINA_DO_MESTRE } from "../navegacao/caminhos";
-import { navegarPara } from "../navegacao/navegar";
-import { cartaDoMestre } from "./cartas";
-import { SecaoDeAdultos } from "./SecaoDeAdultos";
 
-interface Props {
-  irPara?: (destino: string) => void;
-}
-
-export function SecaoDeMestres({ irPara = navegarPara }: Props) {
+/** A seção **Mestres**: uma linha por Mestre, com avatar, a identificação
+ * exibida e as áreas de habilidade, e a linha abrindo a página individual
+ * dele em endereço próprio (`RF-03-02`, `RF-03-03`, `RF-03-07`).
+ *
+ * A ordem é **alfabética** pela identificação exibida, e vem do núcleo
+ * (`RF-03-83`). O resto da carta — a prova pública, as trilhas de autoria e
+ * as absorções — mora na página, como o documento 11 §8.2 manda. */
+export function SecaoDeMestres() {
   return (
-    <SecaoDeAdultos<MestrePublico>
-      listar={listarMestres}
+    <ListaDeRegistros
+      ler={listarMestres}
       chave="vitrine/mestres"
-      cartaDe={cartaDoMestre}
-      identificacaoDe={(mestre) => mestre.identificacao.valor}
       idDe={(mestre) => mestre.id}
-      prefixoDoCaminho={PREFIXO_DA_PAGINA_DO_MESTRE}
+      linhaDe={(mestre) => ({
+        avatar: mestre.avatar,
+        identificacao: mestre.identificacao.valor,
+        destino: `${PREFIXO_DA_PAGINA_DO_MESTRE}${encodeURIComponent(mestre.id)}`,
+        dados: mestre.areas_de_habilidade.join(", "),
+      })}
+      rotulo="Mestres"
+      carregando="Carregando os Mestres…"
+      falha="Não foi possível carregar os Mestres agora. Tente de novo."
       vazio="Nenhum Mestre publicado por enquanto."
-      irPara={irPara}
     />
   );
 }

@@ -1,15 +1,16 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ApoiadorPublico, MestrePublico } from "../api/leituras";
 import * as leituras from "../api/leituras";
 import App from "./TelaDaVitrine";
 
-// Critérios de aceite do PRD-03 §12 para a fatia 7: card abre a página em
-// endereço próprio, a prova sai como link com rótulo, a vitrine não edita,
-// Apoiador sem aporte homologado não aparece, a seção não é pódio e a
-// efetividade sai sem quem concluiu.
+// Critérios de aceite do PRD-03 §12 para Mestres e Apoiadores, agora em
+// **lista de registros**: a linha abre a página em endereço próprio, as duas
+// seções saem em ordem alfabética, a prova sai como link com rótulo, a vitrine
+// não edita, Apoiador sem aporte homologado não aparece, a seção não é pódio —
+// sem posição e sem controle de ordenação — e a efetividade sai sem quem
+// concluiu (`RF-03-02`, `RF-03-03`, `RF-03-83`, `RN-03-40`).
 
 const MESTRE: MestrePublico = {
   id: "11111111-1111-4111-8111-111111111111",
@@ -50,10 +51,6 @@ const APOIADOR: ApoiadorPublico = {
 };
 
 function comLeituras(mestres: MestrePublico[], apoiadores: ApoiadorPublico[]) {
-  vi.spyOn(leituras, "listarGuerreiros").mockResolvedValue({
-    itens: [],
-    proximo_cursor: null,
-  });
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarMestres").mockResolvedValue({
@@ -84,6 +81,13 @@ function comLeituras(mestres: MestrePublico[], apoiadores: ApoiadorPublico[]) {
   });
 }
 
+function secaoDe(titulo: string) {
+  const cabecalho = screen.getByRole("heading", { name: titulo, level: 2 });
+  const secao = cabecalho.closest("section");
+  if (!secao) throw new Error(`Seção não encontrada: ${titulo}`);
+  return secao;
+}
+
 describe("as seções e páginas de Mestres e Apoiadores", () => {
   beforeEach(() => {
     window.history.pushState(null, "", "/");
@@ -93,16 +97,55 @@ describe("as seções e páginas de Mestres e Apoiadores", () => {
     vi.restoreAllMocks();
   });
 
-  it("o card do Mestre abre a página em endereço próprio (RF-03-03)", async () => {
+  it("cada Mestre sai em linha, e a linha abre a página dele (RF-03-02, RF-03-03)", async () => {
     comLeituras([MESTRE], [APOIADOR]);
     render(<App />);
 
-    await userEvent.click(
-      await screen.findByRole("button", { name: /Abrir a página de mestra_ana/ }),
-    );
+    const porta = await screen.findByRole("link", { name: "mestra_ana" });
+    expect(porta).toHaveAttribute("href", `/mestres/${MESTRE.id}`);
 
-    expect(window.location.pathname).toBe(`/mestres/${MESTRE.id}`);
-    expect(await screen.findByRole("heading", { name: "mestra_ana" })).toBeVisible();
+    const linha = porta.closest(".cg-lista-de-registros__linha");
+    // A linha traz o avatar e as áreas de habilidade; o resto da carta mora
+    // na página (documento 11 §8.2).
+    expect(linha?.querySelector(".cg-lista-de-registros__avatar")).not.toBeNull();
+    expect(linha?.textContent).toContain("Tecnologia");
+    // A seção não é tabela: nenhum cabeçalho de coluna, nenhuma grade.
+    expect(secaoDe("Mestres").querySelector("table")).toBeNull();
+  });
+
+  it("Mestres e Apoiadores saem na ordem alfabética que o núcleo devolveu (RF-03-83)", async () => {
+    const mestreA: MestrePublico = {
+      ...MESTRE,
+      id: "44444444-4444-4444-8444-444444444444",
+      identificacao: { valor: "Ávila Nogueira", tipo: "nome" },
+    };
+    const mestreZ: MestrePublico = {
+      ...MESTRE,
+      id: "55555555-5555-4555-8555-555555555555",
+      identificacao: { valor: "zelia_mestra", tipo: "nick" },
+    };
+    const apoiadorA: ApoiadorPublico = {
+      ...APOIADOR,
+      id: "66666666-6666-4666-8666-666666666666",
+      identificacao: { valor: "ana_apoia", tipo: "nick" },
+      total_em_moedas: "2.00",
+    };
+    comLeituras([mestreA, MESTRE, mestreZ], [apoiadorA, APOIADOR]);
+    render(<App />);
+
+    await screen.findByRole("link", { name: "mestra_ana" });
+    const identificacoes = (secao: HTMLElement) =>
+      [...secao.querySelectorAll(".cg-lista-de-registros__identificacao")].map(
+        (celula) => celula.textContent,
+      );
+
+    // A ordem é a do núcleo — a tela a apresenta, não a refaz.
+    expect(identificacoes(secaoDe("Mestres"))).toEqual([
+      "Ávila Nogueira",
+      "mestra_ana",
+      "zelia_mestra",
+    ]);
+    expect(identificacoes(secaoDe("Apoiadores"))).toEqual(["ana_apoia", "apoia_norte"]);
   });
 
   it("o mesmo endereço, aberto direto, leva à mesma página (RF-03-03)", async () => {
@@ -149,7 +192,7 @@ describe("as seções e páginas de Mestres e Apoiadores", () => {
     expect(await screen.findAllByText("Não encontrado.")).not.toHaveLength(0);
   });
 
-  it("a seção de Apoiadores não é pódio: sem posição e sem ordem por valor (RN-14-38)", async () => {
+  it("a linha do Apoiador leva o total em moedas, sem posição (RF-03-10, RN-03-40)", async () => {
     const modesto = {
       ...APOIADOR,
       id: "33333333-3333-4333-8333-333333333333",
@@ -157,19 +200,23 @@ describe("as seções e páginas de Mestres e Apoiadores", () => {
       identificacao: { valor: "apoia_pouco", tipo: "nick" as const },
     };
     comLeituras([MESTRE], [modesto, APOIADOR]);
-    const { container } = render(<App />);
+    render(<App />);
 
-    await screen.findByText("apoia_pouco");
-    // A asserção é sobre os cards de Apoiador, não sobre a página inteira:
-    // a seção de Ranking tem a palavra "posição" por direito próprio.
-    const cartas = Array.from(container.querySelectorAll('[data-variante="apoiador"]'));
-    expect(cartas).toHaveLength(2);
-    for (const carta of cartas) {
-      expect(carta.textContent).not.toMatch(/\dº|posição|pódio/i);
+    await screen.findByRole("link", { name: "apoia_pouco" });
+    // A asserção é sobre a seção de Apoiadores, não sobre a tela inteira: a
+    // de Ranking tem posição por direito próprio.
+    const secao = secaoDe("Apoiadores");
+    const linhas = [...secao.querySelectorAll(".cg-lista-de-registros__linha")];
+    expect(linhas).toHaveLength(2);
+    for (const linha of linhas) {
+      expect(linha.textContent).toContain("moedas");
+      expect(linha.textContent).not.toMatch(/\dº|posição|pódio|R\$/i);
     }
-    // A ordem apresentada é a que o núcleo devolveu, não a do valor.
-    const nicks = cartas.map((carta) => carta.querySelector(".cg-carta__nick")?.textContent);
-    expect(nicks).toEqual(["apoia_pouco", "apoia_norte"]);
+    // Nenhum controle oferece ordenar — nem por valor, nem por nada.
+    expect(secao.textContent).not.toMatch(/ordenar|classificar/i);
+    for (const botao of secao.querySelectorAll("button")) {
+      expect(botao.textContent).toMatch(/^(Próxima página|Página anterior)$/);
+    }
   });
 
   it("a página do Apoiador traz a efetividade sem quem concluiu (RF-03-80)", async () => {
@@ -192,12 +239,15 @@ describe("as seções e páginas de Mestres e Apoiadores", () => {
       total_em_moedas: "5.00",
     };
     comLeituras([MESTRE], [abaixoDoPiso]);
+    // O piso se lê na **carta**, e a carta mora na página individual: a linha
+    // apresenta o avatar, não o motivo dele.
+    window.history.pushState(null, "", `/apoiadores/${APOIADOR.id}`);
     const { container } = render(<App />);
 
-    await screen.findByText("apoia_norte");
+    await screen.findByRole("heading", { name: "apoia_norte" });
     const carta = container.querySelector('[data-variante="apoiador"]');
     expect(carta?.getAttribute("data-avatar-padrao")).toBe("sim");
-    expect(screen.getByText("5.00 moedas")).toBeVisible();
+    expect(screen.getAllByText("5.00 moedas").length).toBeGreaterThan(0);
   });
 
   it("o adulto sem nick aparece pelo nome, declarado como nome (RF-03-79)", async () => {
@@ -206,9 +256,18 @@ describe("as seções e páginas de Mestres e Apoiadores", () => {
       identificacao: { valor: "Ana Clara Ribeiro", tipo: "nome" },
     };
     comLeituras([semNick], [APOIADOR]);
-    const { container } = render(<App />);
+    render(<App />);
 
-    await screen.findByText("Ana Clara Ribeiro");
+    // Na linha, o nome ocupa a célula que identifica e abre a página.
+    expect(await screen.findByRole("link", { name: "Ana Clara Ribeiro" })).toHaveAttribute(
+      "href",
+      `/mestres/${MESTRE.id}`,
+    );
+
+    // O **tipo** da identificação é declarado na carta, na página individual.
+    window.history.pushState(null, "", `/mestres/${MESTRE.id}`);
+    const { container } = render(<App />);
+    await screen.findAllByRole("heading", { name: "Ana Clara Ribeiro" });
     const identificacao = container.querySelector('[data-variante="mestre"] .cg-carta__nick');
     expect(identificacao?.getAttribute("data-tipo")).toBe("nome");
   });

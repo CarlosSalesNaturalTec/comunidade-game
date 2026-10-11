@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { SecaoDeMestres } from "../adultos/SecaoDeMestres";
-import { SecaoDeGuerreiros } from "../guerreiros/SecaoDeGuerreiros";
 import { SecaoDoPortfolio } from "../portfolio/SecaoDoPortfolio";
+import { SecaoDoRanking } from "../ranking/SecaoDoRanking";
 
 /**
  * O arquivo que **nunca** chama `configurarAcessoAoNucleo`.
@@ -20,6 +20,9 @@ import { SecaoDoPortfolio } from "../portfolio/SecaoDoPortfolio";
  *
  * Aqui dubla-se **só o `fetch`**. As demais seções de leitura passam pelo mesmo
  * gargalo — `lerDoNucleo` —, então o que vale para esta vale para as nove.
+ *
+ * A sonda é o **ranking**: a seção de Guerreiros e Guerreiras deixou de ler
+ * (ela só tem a consulta por nick), e quem não lê não exercita o gargalo.
  */
 
 // Como a produção a entrega. Nenhuma chamada de configuração no teste.
@@ -33,18 +36,8 @@ vi.mock("../api/configuracao", async () => {
   };
 });
 
-const UM_GUERREIRO = {
-  itens: [
-    {
-      avatar: "avatar-de-teste",
-      nick: "ZeBita",
-      badges: [{ familia: "de_nivel", poder: "Poder do Código" }],
-      poderes: [{ poder: "Poder do Código", nivel: 3 }],
-      pontos_regulares: 40,
-      posicao_no_ranking: 1,
-      criacoes: [{ trilha: "Trilha da Água", validada_em: "2026-08-01T10:00:00Z" }],
-    },
-  ],
+const UM_RANKING = {
+  itens: [{ avatar: "avatar-de-teste", nick: "ZeBita", pontos_regulares: 40, posicao: 1 }],
   proximo_cursor: null,
 };
 
@@ -73,29 +66,31 @@ describe("a configuração de acesso ao núcleo alcança as seções no navegado
   });
 
   it("a chamada sai com a chave da App 06 e sem credencial de persona (RF-03-02, RN-03-33)", async () => {
-    const buscar = dublarFetch(UM_GUERREIRO);
+    const buscar = dublarFetch(UM_RANKING);
 
-    render(<SecaoDeGuerreiros />);
+    render(<SecaoDoRanking />);
     expect(await screen.findByText("ZeBita")).toBeVisible();
 
     // Se a configuração não alcançasse o navegador, `chamarNucleo` lançaria
     // antes daqui e `fetch` nunca teria sido chamado.
     expect(buscar).toHaveBeenCalled();
     const [endereco, opcoes] = buscar.mock.calls[0];
-    expect(String(endereco)).toBe("https://nucleo.example.org/v1/vitrine/guerreiros");
+    // O tamanho de dez vai na chamada: é a lista de registros que pagina
+    // (`RF-03-82`, design — decisão 6).
+    expect(String(endereco)).toBe("https://nucleo.example.org/v1/vitrine/rankings?tamanho=10");
     const cabecalhos = opcoes?.headers as Record<string, string>;
     expect(cabecalhos["X-Chave-Aplicacao"]).toBe("chave-da-app-06");
     expect(cabecalhos.Authorization).toBeUndefined();
   });
 
   it("a seção apresenta o que leu, e não o aviso de erro (RF-03-02)", async () => {
-    dublarFetch(UM_GUERREIRO);
+    dublarFetch(UM_RANKING);
 
-    render(<SecaoDeGuerreiros />);
+    render(<SecaoDoRanking />);
 
     expect(await screen.findByText("ZeBita")).toBeVisible();
     expect(
-      screen.queryByText("Não foi possível carregar os cards agora. Tente de novo."),
+      screen.queryByText("Não foi possível carregar o ranking agora. Tente de novo."),
     ).not.toBeInTheDocument();
   });
 
@@ -105,7 +100,7 @@ describe("a configuração de acesso ao núcleo alcança as seções no navegado
     // de erro. Três seções diferentes, cada uma com a sua rota, pelo mesmo
     // gargalo: é o que afirma que a correção vale para as nove, e não para uma.
     const porCaminho: Record<string, unknown> = {
-      "/v1/vitrine/guerreiros": UM_GUERREIRO,
+      "/v1/vitrine/rankings": UM_RANKING,
       "/v1/vitrine/criacoes": {
         itens: [
           {
@@ -151,18 +146,20 @@ describe("a configuração de acesso ao núcleo alcança as seções no navegado
 
     render(
       <>
-        <SecaoDeGuerreiros />
+        <SecaoDoRanking />
         <SecaoDoPortfolio />
         <SecaoDeMestres />
       </>,
     );
 
-    expect(await screen.findByText("ZeBita")).toBeVisible();
+    // "ZeBita" aparece duas vezes: na linha do ranking e como autor no
+    // portfólio — as duas seções leram.
+    expect(await screen.findAllByText("ZeBita")).toHaveLength(2);
     expect(await screen.findByText("Trilha do Vento")).toBeVisible();
     expect(await screen.findByText("Dona Rosa")).toBeVisible();
 
     for (const aviso of [
-      "Não foi possível carregar os cards agora. Tente de novo.",
+      "Não foi possível carregar o ranking agora. Tente de novo.",
       "Não foi possível carregar o portfólio agora. Tente de novo.",
     ]) {
       expect(screen.queryByText(aviso), aviso).not.toBeInTheDocument();
@@ -174,10 +171,10 @@ describe("a configuração de acesso ao núcleo alcança as seções no navegado
     // não sobre configuração em falta: a requisição chegou a sair.
     const buscar = dublarFetch({ codigo: "erro_interno", mensagem: "Falhou." }, 500);
 
-    render(<SecaoDeGuerreiros />);
+    render(<SecaoDoRanking />);
 
     expect(
-      await screen.findByText("Não foi possível carregar os cards agora. Tente de novo."),
+      await screen.findByText("Não foi possível carregar o ranking agora. Tente de novo."),
     ).toBeVisible();
     expect(buscar).toHaveBeenCalled();
   });

@@ -166,21 +166,65 @@ textarea {
   font-size: var(--escala-0875);
 }
 
-/* O card é a carta do `comum`; aqui só a ação que abre a página dele. */
-.cg-card-do-guerreiro {
+/* A **lista de registros** das seções de leitura: uma linha por registro, com
+ * o avatar quando o registro tem um, a identificação que abre a página e os
+ * dados principais da carta daquele papel (`RF-03-02`, `RF-03-82`).
+ *
+ * **Não é tabela**: sem cabeçalho de coluna, sem grade e sem coluna que
+ * apareça só a partir de uma largura — a densidade progressiva é da Operação,
+ * e o documento 15 §6 a nega à Arena. A linha empilha no estreito e alinha no
+ * largo pelo próprio conteúdo, não por marco de largura. */
+.cg-lista-de-registros {
   display: flex;
   flex-direction: column;
   gap: var(--espaco-8);
-  align-items: stretch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.cg-card-do-guerreiro__abrir {
+.cg-lista-de-registros__linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-8);
+  align-items: center;
+  min-height: var(--alvo-de-toque);
+  padding-bottom: var(--espaco-8);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.cg-lista-de-registros__avatar {
+  display: inline-flex;
+  flex: none;
+}
+
+.cg-lista-de-registros__identificacao {
+  font-weight: var(--peso-rotulo);
+}
+
+.cg-lista-de-registros__dados {
+  color: var(--cor-texto-secundario);
+}
+
+.cg-lista-de-registros__paginacao {
+  display: flex;
+  gap: var(--espaco-8);
+  align-items: center;
+  margin-top: var(--espaco-16);
+}
+
+.cg-lista-de-registros__paginacao button {
   min-height: var(--alvo-de-toque);
   padding: 0 var(--espaco-16);
   border: 1px solid var(--cor-separador);
   border-radius: var(--raio-campo);
   background: none;
   cursor: pointer;
+}
+
+.cg-lista-de-registros__posicao {
+  margin: 0;
+  color: var(--cor-texto-secundario);
 }
 
 .cg-pagina-do-guerreiro {
@@ -190,8 +234,9 @@ textarea {
   align-items: flex-start;
 }
 
+/* O portfólio da página individual continua lista simples: lá a carta domina
+ * a tela, e o apoio é texto. */
 .cg-portfolio,
-.cg-ranking,
 .cg-poderes,
 .cg-poderes__trilhas {
   display: flex;
@@ -210,6 +255,15 @@ textarea {
   color: var(--cor-texto-secundario);
 }
 
+/* Cada autor creditado abre a página dele: avatar e nick no mesmo
+ * acionável (`RF-03-03`). */
+.cg-portfolio__autor {
+  display: inline-flex;
+  gap: var(--espaco-8);
+  align-items: center;
+  margin-inline-end: var(--espaco-8);
+}
+
 .cg-poderes__item {
   padding-bottom: var(--espaco-8);
   border-bottom: 1px solid var(--cor-separador);
@@ -220,39 +274,11 @@ textarea {
   font-size: var(--escala-0875);
 }
 
-/* A seção Comunidades Virtuais: um card por comunidade, no padrão da carta
- * do `comum`; aqui só a ação que abre a página do território. A comunidade
- * abaixo do piso não vira card incompleto — sai no resumo em texto. */
-.cg-comunidades {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espaco-16);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.cg-comunidades__abrir {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espaco-8);
-  width: 100%;
-  min-height: var(--alvo-de-toque);
-  padding: var(--espaco-8);
-  border: 1px solid var(--cor-separador);
-  border-radius: var(--raio-campo);
-  background: none;
-  cursor: pointer;
-  text-align: start;
-}
-
-.cg-comunidades__nome {
-  font-family: var(--fonte-destaque);
-  font-weight: var(--peso-titulo);
-}
-
-.cg-comunidades__sem-indicadores,
+/* A seção Comunidades Virtuais sai na lista de registros, sem avatar: a
+ * representação visual do território é da página (documento 11 §8.3). Aqui
+ * fica só o rótulo do ciclo corrente, que acompanha a mesma leitura. */
 .cg-comunidades__ciclo {
+  margin: 0;
   color: var(--cor-texto-secundario);
   font-size: var(--escala-0875);
 }

@@ -21,10 +21,6 @@ const GUERREIRA: GuerreiroPublico = {
 };
 
 function semNadaNasOutrasSecoes() {
-  vi.spyOn(leituras, "listarGuerreiros").mockResolvedValue({
-    itens: [],
-    proximo_cursor: null,
-  });
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
   vi.spyOn(leituras, "listarRanking").mockResolvedValue({ itens: [], proximo_cursor: null });
 }
