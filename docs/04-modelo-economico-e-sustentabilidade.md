@@ -274,8 +274,9 @@ Apoiador** e escolhe uma de três formas:
 - **Sem documento fiscal**: a plataforma não coleta CPF, CNPJ nem documento de identidade de
   quem aporta.
 - **Recibo, quem quiser, fora da plataforma.** A tela de pré-cadastro declara que a plataforma
-  não emite recibo e que quem precisar de um escreve para a pessoa jurídica vinculada, que o
-  emite com os dados fiscais informados **diretamente a ela**. É o que permite atender quem
+  não emite recibo e que quem precisar de um escreve para a pessoa jurídica vinculada, no
+  canal de contato do projeto (documento 03), que o emite com os dados fiscais informados
+  **diretamente a ela**. É o que permite atender quem
   precisa comprovar a doação sem a plataforma passar a guardar dado fiscal de ninguém. A
   prestação de contas da pessoa jurídica sobre o que entra por PIX corre pela contabilidade
   dela, fora do livro-razão de transparência.

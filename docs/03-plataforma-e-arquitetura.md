@@ -48,6 +48,8 @@
    ele e quem poderia relicenciá-lo. Para manter essa titularidade íntegra, **toda
    contribuição externa entra por CLA**, com cessão dos direitos patrimoniais à pessoa
    jurídica; sem CLA assinado, o _pull request_ não é integrado.
+   O **auxílio de ferramentas de IA não altera a licença** de nada: o artefato segue a régua
+   do que ele é, e o crédito é de quem decidiu, revisou e publicou (documento 01 §7).
    A **marca é reservada** e não segue nenhuma das duas réguas: nome do projeto, logotipo,
    símbolo, submarcas e os personagens do universo narrativo ficam **fora da AGPL e da
    CC BY-SA**, sob titularidade da mesma pessoa jurídica. Quem replica usa o código inteiro
@@ -824,7 +826,10 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   revela quem existe na plataforma. Quem não tem cadastro recebe a orientação da sua persona:
   pré-cadastro do Apoiador, formulário de participação do Mestre e, para o responsável e o
   Guerreiro(a), procurar a gestão no encontro.
-- Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins. A **nota de transparência
+- Seções **"Quem somos"** e **"Contatos"**, editáveis pelos Admins. "Contatos" publica o
+  **canal único** do projeto — `comunidadegameorg@gmail.com` —, que atende aos direitos sobre
+  dados, ao recibo de doação (documento 04), ao assunto institucional e à conduta, e **nunca
+  alcança um Guerreiro(a)**. O endereço sai como texto, sem link. A **nota de transparência
   sobre IA** vive **dentro de "Quem somos"**, e não em seção própria: declara que a plataforma
   é construída com Claude e atende as pessoas com Gemini e DeepSeek (documento 01), que a IA
   **reescreve conteúdo do corpus do Mestre para crianças e não as perfila**, e remete ao bloco

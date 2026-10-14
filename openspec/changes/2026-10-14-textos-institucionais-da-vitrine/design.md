@@ -53,6 +53,21 @@ Quatro restrições da implementação já existente moldam o texto, e nenhuma �
    precisa fazer — `PUT` das três seções na App 03 e redeploy da App 06 —, e a change não
    automatiza nem dispara nada disso.
 
+**O que fica com o fundador, depois do merge.** Dois passos manuais, nesta ordem, e nenhuma
+tarefa desta change os executa: (1) publicar as três seções por
+`PUT /v1/conteudo-institucional/{secao}` pela tela de edição da App 03, porque a semeadura
+converge só onde a seção não tem texto e produção já foi semeada pela fatia 5 — sem isso,
+"Quem somos" e "Como apoiar" seguem com o texto antigo e "Contatos" segue vazia; (2) fazer o
+redeploy da App 06, sem o qual "Quem somos" e "Contatos" não mudam no site, porque renderizam
+no build. "Como apoiar" é a exceção e aparece na porta do convite já na primeira visita após o
+`PUT`.
+
+**Um desvio das tarefas, resolvido na aplicação.** A tarefa 1.2 previa o endereço só no
+documento 04 §1. Escrevê-lo ali com o que ele atende duplicaria assunto de outro documento, o
+que a regra de fonte única proíbe: o endereço foi para o documento 03 §8, onde "Contatos" é
+descrita, e o documento 04 §1 ficou com uma remissão de uma frase. O documento 99 §3 ganhou a
+linha do canal, porque a remissão é relação nova entre documentos.
+
 ## Textos
 
 ### "Quem somos"
