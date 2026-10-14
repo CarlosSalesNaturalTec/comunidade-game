@@ -28,7 +28,7 @@ seção que nunca foi publicada SHALL existir sem texto, e o núcleo NEVER SHALL
 
 #### Scenario: Seção nunca publicada não tem texto
 
-- **WHEN** nenhuma publicação foi feita em "Contatos"
+- **WHEN** uma das três seções nunca recebeu publicação nem semeadura
 - **THEN** a seção existe sem texto, e nenhum texto de exemplo ocupa o lugar
 
 ### Requirement: A leitura pública devolve as três seções, exige chave e nunca revela o autor
@@ -103,35 +103,6 @@ SHALL retirar o link anterior. O link em outra seção, ou fora de `https`, SHAL
 - **WHEN** o Admin envia link de vídeo em "Contatos", ou um link que não é `https`
 - **THEN** o núcleo responde 422 e nada é gravado
 
-### Requirement: A semeadura traz o que a documentação já decidiu, sem sobrescrever edição
-
-A semeadura da implantação SHALL criar, **só onde a seção ainda não tem texto**, o conteúdo já
-decidido: em "Como apoiar", a **chave PIX** e o **titular** da pessoa jurídica vinculada
-(documento 04 §1); em "Quem somos", o **rascunho da nota de transparência sobre IA** e o bloco
-**"Licenças"**. A nota SHALL declarar a plataforma **construída** com Claude, o atendimento por
-modelos de terceiros, que a IA **reescreve conteúdo do corpus do Mestre para crianças e não as
-perfila**, e SHALL remeter ao bloco "Licenças" quanto ao gerado com auxílio de IA. "Contatos"
-SHALL ficar sem texto. Repetir a semeadura NEVER SHALL alterar seção já publicada. (`RF-03-46`,
-`RF-03-48`, PRD-03 §14)
-
-#### Scenario: Banco novo recebe a chave PIX e o rascunho da nota
-
-- **WHEN** a semeadura roda sobre um banco sem conteúdo institucional
-- **THEN** "Como apoiar" traz a chave PIX e o titular do documento 04 §1, "Quem somos" traz a
-  nota com o bloco "Licenças", e "Contatos" fica sem texto
-
-#### Scenario: A nota declara construção, atendimento e ausência de perfilamento
-
-- **WHEN** se lê a nota semeada
-- **THEN** ela diz que a plataforma é construída com Claude, que atende as pessoas com modelos
-  de terceiros, que a IA reescreve o conteúdo do Mestre para crianças e não as perfila, e
-  remete ao bloco "Licenças"
-
-#### Scenario: Repetir a semeadura não desfaz a edição de um Admin
-
-- **WHEN** um Admin republicou "Como apoiar" e a semeadura roda de novo
-- **THEN** o texto do Admin continua o vigente
-
 ### Requirement: O Admin lê o conteúdo institucional com autor e data
 
 O núcleo SHALL responder `GET /v1/conteudo-institucional` **somente a Admin**, devolvendo as
@@ -166,3 +137,103 @@ inventá-los.
 
 - **WHEN** um visitante lê a rota pública do conteúdo institucional
 - **THEN** a resposta traz as três seções sem quem publicou e sem quando
+
+### Requirement: A semeadura traz as três seções com texto, sem sobrescrever edição
+
+A semeadura da implantação SHALL criar o conteúdo das **três seções**, **só onde a seção ainda
+não tem texto**. Nenhuma seção SHALL nascer com link de vídeo, porque o vídeo de apresentação
+ainda não existe. Repetir a semeadura NEVER SHALL alterar seção já publicada por um Admin.
+(`RF-03-45`, `RF-03-49`, decisão do fundador de 2026-10-14)
+
+#### Scenario: Banco novo recebe as três seções com texto
+
+- **WHEN** a semeadura roda sobre um banco sem conteúdo institucional
+- **THEN** as três seções nascem com texto, nenhuma delas sem autor registrado como semeadura
+
+#### Scenario: Nenhuma seção nasce com vídeo
+
+- **WHEN** a semeadura roda sobre um banco sem conteúdo institucional
+- **THEN** nenhuma das três seções tem link de vídeo, e a vitrine não oferece o link
+
+#### Scenario: Repetir a semeadura não desfaz a edição de um Admin
+
+- **WHEN** um Admin republicou "Como apoiar" e a semeadura roda de novo
+- **THEN** o texto do Admin continua o vigente
+
+### Requirement: "Quem somos" nasce com a apresentação e a nota de transparência final
+
+A seção "Quem somos" semeada SHALL trazer a **apresentação institucional** (documentos 01 e 04)
+e a **nota de transparência sobre IA** como **texto final**. A nota SHALL declarar a plataforma
+**construída** com Claude, o atendimento por modelos de terceiros e que a IA **reescreve o
+conteúdo do corpus do Mestre para crianças sem as perfilar**, e SHALL remeter ao bloco
+"Licenças". (`RF-03-45`, `RF-03-48`, PRD-03 §14)
+
+#### Scenario: A nota declara construção, atendimento e ausência de perfilamento
+
+- **WHEN** se lê a nota semeada
+- **THEN** ela diz que a plataforma é construída com Claude, que atende as pessoas com modelos
+  de terceiros, que a IA reescreve o conteúdo do Mestre para crianças e não as perfila, e
+  remete ao bloco "Licenças"
+
+#### Scenario: A apresentação institucional acompanha a nota
+
+- **WHEN** se lê o texto semeado de "Quem somos"
+- **THEN** ele apresenta o projeto antes da nota, e a nota não é a abertura da seção
+
+### Requirement: O título da nota de transparência é a âncora da etiqueta de IA
+
+O bloco da nota SHALL ter o título **"Nota de transparência sobre IA"**, porque o identificador
+derivado dele é o endereço para onde a **etiqueta do texto reescrito por IA** das Apps 01 e 05
+aponta. Mudar esse título SHALL ser tratado como quebra de contrato, não como melhoria de
+redação. (`RF-03-48`, documento 03 §7.1)
+
+#### Scenario: O título da nota é o que a etiqueta de IA ancora
+
+- **WHEN** se lê o texto semeado de "Quem somos"
+- **THEN** o bloco da nota tem exatamente o título "Nota de transparência sobre IA", de modo que
+  o endereço que a etiqueta das Apps 01 e 05 usa continua a encontrá-lo
+
+### Requirement: O bloco "Licenças" declara o que é aberto, o auxílio de IA e a marca reservada
+
+O bloco **"Licenças"**, que fecha "Quem somos", SHALL declarar as réguas do que é aberto —
+código em AGPL, conteúdo educacional e conjunto de dados em CC BY-SA —, que o **auxílio de
+ferramentas de IA não altera a licença** do artefato e que a **marca é reservada**, fora das
+duas licenças, cabendo a quem replica trocá-la pela sua (documento 03 §1, princípio 4).
+(`RF-03-48`)
+
+#### Scenario: "Licenças" declara o auxílio de IA e a marca reservada
+
+- **WHEN** se lê o bloco "Licenças" semeado
+- **THEN** ele diz que o auxílio de ferramentas de IA não altera a licença do artefato e que a
+  marca — nome, logotipo, símbolo, submarcas e personagens — fica fora da AGPL e da CC BY-SA, e
+  que quem replica a plataforma troca a marca pela sua
+
+### Requirement: "Contatos" nasce com um endereço único que não alcança criança
+
+A seção "Contatos" semeada SHALL trazer os caminhos de contato do projeto e **um endereço
+único**, que atende a direitos sobre dados, recibo, assunto institucional e conduta, e SHALL
+declarar que **nenhum desses canais alcança um Guerreiro(a)**. O endereço SHALL sair como
+texto, sem link. (`RF-03-45`, documento 99 §6, invariante 10)
+
+#### Scenario: "Contatos" traz um endereço único, que não alcança criança
+
+- **WHEN** se lê o texto semeado de "Contatos"
+- **THEN** ele traz um só endereço do projeto, atendendo a direitos sobre dados, recibo,
+  institucional e conduta, e declara que nenhum desses canais alcança um Guerreiro(a)
+
+### Requirement: "Como apoiar" nasce com a chave PIX, o comprovante e a regra do recibo
+
+A seção "Como apoiar" semeada SHALL trazer a **chave PIX** e o **titular** da pessoa jurídica
+vinculada, idênticos aos do documento 04 §1, o **comprovante obrigatório** e a regra de que a
+plataforma **não emite recibo**, com o endereço de quem o emite. (`RF-03-46`, documento 04 §1)
+
+#### Scenario: Banco novo recebe a chave PIX e o titular
+
+- **WHEN** a semeadura roda sobre um banco sem conteúdo institucional
+- **THEN** "Como apoiar" traz a chave PIX e o titular do documento 04 §1
+
+#### Scenario: A seção declara o comprovante e a ausência de recibo
+
+- **WHEN** se lê o texto semeado de "Como apoiar"
+- **THEN** ele pede o comprovante no pré-cadastro, diz que a plataforma não confirma PIX
+  automaticamente e que não emite recibo, e indica o endereço de quem o emite

@@ -54,7 +54,7 @@ Nenhuma. O conteúdo institucional já é capacidade consolidada.
 
 - `conteudo-institucional`: o requisito da semeadura **sai**, porque mandava semear a nota como
   **rascunho** e deixar **"Contatos" sem texto** — as duas coisas deixaram de valer. Em seu
-  lugar entram cinco requisitos, um por comportamento: a mecânica da semeadura das três seções,
+  lugar entram seis requisitos, um por comportamento: a mecânica da semeadura das três seções,
   e o conteúdo decidido de "Quem somos", do bloco "Licenças", de "Contatos" e de "Como apoiar".
   O requisito da entidade é ajustado num ponto só: o cenário da seção sem texto usava "Contatos"
   como exemplo, e "Contatos" passa a nascer com texto.

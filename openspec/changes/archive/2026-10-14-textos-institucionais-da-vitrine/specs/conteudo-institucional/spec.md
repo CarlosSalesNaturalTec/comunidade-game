@@ -36,7 +36,7 @@ deixaram de valer: a decisão do fundador de 2026-10-14 tornou a nota **texto fi
 a pendência do PRD-03 §14 — e criou o **canal único de contato** do projeto, descido ao
 documento 04 §1. Mantê-lo faria o requisito contradizer o que a semeadura passa a fazer.
 
-**Migration**: Substituído por cinco requisitos, um por comportamento: a mecânica da semeadura
+**Migration**: Substituído por seis requisitos, um por comportamento: a mecânica da semeadura
 das três seções, e o conteúdo decidido de "Quem somos", do bloco "Licenças", de "Contatos" e de
 "Como apoiar". Tudo o que este exigia continua exigido — a chave PIX e o titular do documento
 04 §1, a nota com o que ela declara, o bloco "Licenças", a convergência só onde a seção não tem
