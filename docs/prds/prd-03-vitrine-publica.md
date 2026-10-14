@@ -635,10 +635,10 @@ entidade e não como contrato.
 - **Título da criação original**: o `RF-03-08` pede título, trilha, data e autoria no portfólio,
   e título não existe no modelo da criação original. O portfólio saiu com trilha, data e
   autoria, e o requisito fica parcial até a decisão. Consta do documento 09.
-- **Texto final da nota de transparência sobre IA**: o conteúdo e a localização estão decididos
-  — a nota vive dentro de "Quem somos", declara Claude na construção e quem atende as pessoas e
-  remete ao bloco "Licenças". Um rascunho saiu semeado com a fatia 5; falta o texto final, com os
-  demais textos públicos, que é do fundador. Trava o `RF-03-48` no texto, não no desenho.
+
+O **texto final da nota de transparência sobre IA** saiu da lista: o rascunho semeado com a
+fatia 5 virou o texto final por decisão do fundador de 2026-10-14, junto dos textos de "Quem
+somos", "Contatos" e "Como apoiar", e o `RF-03-48` deixa de estar travado.
 
 As outras três que este PRD carregava foram decididas depois dele e constam do documento 09,
 em "Já decididos": o **formato, a licença e o critério de aprovação** do conjunto entregue —
