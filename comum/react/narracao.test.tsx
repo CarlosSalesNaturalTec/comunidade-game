@@ -47,13 +47,14 @@ function instalarMotorFalso() {
   return motor;
 }
 
-// A narração só fala depois do gesto que a arma: o botão está aqui para que
-// cada teste passe por ele antes de montar a tela que fala.
+// A narração nasce desligada, e o toque que a liga é o gesto que o navegador
+// exige: o botão está aqui para que cada teste passe por ele antes de montar a
+// tela que fala.
 function Armador() {
-  const { armarNarracao } = useNarracao();
+  const { alternarNarracao } = useNarracao();
   return (
-    <button type="button" onClick={armarNarracao}>
-      Iniciar a narração
+    <button type="button" onClick={alternarNarracao}>
+      Ligar a narração
     </button>
   );
 }
@@ -64,7 +65,7 @@ function renderizarArmada(tela: React.ReactNode) {
       <Armador />
     </ProvedorDeNarracao>,
   );
-  screen.getByRole("button", { name: "Iniciar a narração" }).click();
+  screen.getByRole("button", { name: "Ligar a narração" }).click();
   resultado.rerender(
     <ProvedorDeNarracao>
       <Armador />

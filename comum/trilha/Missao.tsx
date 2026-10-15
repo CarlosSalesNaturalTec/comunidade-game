@@ -39,11 +39,14 @@ interface Props {
 // inteiro ao mesmo tempo é ruído, não acessibilidade — ele espera este
 // controle (documento 15 §5.1, documento 03 §4). Só o conteúdo em texto o
 // tem: imagem, vídeo, link e arquivo de apoio não têm o que ler em voz alta.
-// Com a narração desligada — e na aplicação que ainda não monta a camada — o
-// controle não é oferecido.
+//
+// A guarda é `disponivel`, não `ligada`: o controle **não depende** do liga e
+// desliga das telas, porque quem o aciona está pedindo aquela leitura. E
+// `disponivel` é `false` na camada inerte, que é o que mantém o controle fora
+// da aplicação que ainda não monta o provedor (design — decisão 3).
 function ControleDeOuvirOConteudo({ corpo }: { corpo: string }) {
-  const { ligada, ouvir } = useNarracao();
-  if (!ligada) return null;
+  const { disponivel, ouvir } = useNarracao();
+  if (!disponivel) return null;
   return (
     <Botao variante="secundaria" onClick={() => ouvir({ texto: corpo })}>
       Ouvir este texto

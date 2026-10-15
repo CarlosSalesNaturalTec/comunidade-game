@@ -1,12 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-  CHAVE_DA_NARRACAO_NO_APARELHO,
-  ProvedorDeNarracao,
-  useNarracao,
-  useNarrarAoEntrar,
-} from "./ProvedorDeNarracao";
+import { ProvedorDeNarracao, useNarracao, useNarrarAoEntrar } from "./ProvedorDeNarracao";
 
 class EnunciadoFalso {
   lang = "";
@@ -62,22 +57,18 @@ function instalarMotorFalso(vozes: SpeechSynthesisVoice[] = [vozPtBr()]) {
   return motor;
 }
 
-// A tela de teste: declara a narração dela e expõe os controles que a
-// aplicação real põe na tela inicial e na primeira interação.
+// A tela de teste: declara a narração dela e expõe os dois controles que a
+// aplicação real tem — o alternador da tela inicial e o de ouvir o texto
+// longo, que **não** depende do alternador.
 function TelaDeTeste({ texto = "Tela de teste" }: { texto?: string | null }) {
-  const { ligada, armada, disponivel, alternarNarracao, armarNarracao, ouvir } = useNarracao();
+  const { ligada, disponivel, alternarNarracao, ouvir } = useNarracao();
   useNarrarAoEntrar(texto ?? null);
   return (
     <>
       <button type="button" onClick={alternarNarracao}>
         {ligada ? "Desligar a narração" : "Ligar a narração"}
       </button>
-      {ligada && !armada && disponivel && (
-        <button type="button" onClick={armarNarracao}>
-          Iniciar a narração
-        </button>
-      )}
-      {ligada && (
+      {disponivel && (
         <button type="button" onClick={() => ouvir({ texto: "O conteúdo longo da missão" })}>
           Ouvir este texto
         </button>
@@ -101,31 +92,81 @@ afterEach(() => {
 });
 
 describe("o liga e desliga do aparelho (documento 15 §5.1)", () => {
-  it("nasce ligada no aparelho onde ninguém escolheu", () => {
-    instalarMotorFalso();
+  it("nasce desligada, e nenhuma tela é falada sozinha", () => {
+    const motor = instalarMotorFalso();
     renderizarComProvedor();
+
+    expect(screen.getByRole("button", { name: "Ligar a narração" })).toBeInTheDocument();
+    expect(motor.ditos).toHaveLength(0);
+  });
+
+  it("ligar já arma, e a tela seguinte fala — sem segundo controle", async () => {
+    const motor = instalarMotorFalso();
+    const usuario = userEvent.setup();
+    const { rerender } = renderizarComProvedor("Tela de teste");
+
+    await usuario.click(screen.getByRole("button", { name: "Ligar a narração" }));
+
+    // O enunciado vazio é o armar, falado dentro do próprio gesto de ligar; e
+    // a tela que já está montada passa a ser falada no mesmo ato, porque ligar
+    // reavalia a narração dela.
+    expect(motor.ditos.map((dito) => dito.text)).toEqual(["", "Tela de teste"]);
+
+    rerender(
+      <ProvedorDeNarracao>
+        <TelaDeTeste texto="Quiz ao Vivo" />
+      </ProvedorDeNarracao>,
+    );
+
+    expect(motor.ditos.map((dito) => dito.text)).toContain("Quiz ao Vivo");
     expect(screen.getByRole("button", { name: "Desligar a narração" })).toBeInTheDocument();
   });
 
-  it("a escolha de desligar fica guardada no aparelho", async () => {
+  it("a escolha não é gravada em lugar algum", async () => {
     instalarMotorFalso();
     const usuario = userEvent.setup();
     renderizarComProvedor();
 
+    await usuario.click(screen.getByRole("button", { name: "Ligar a narração" }));
+
+    expect(localStorage.length).toBe(0);
+  });
+
+  it("a recarga devolve a narração ao desligado", async () => {
+    instalarMotorFalso();
+    const usuario = userEvent.setup();
+    const { unmount } = renderizarComProvedor();
+
+    await usuario.click(screen.getByRole("button", { name: "Ligar a narração" }));
+    expect(screen.getByRole("button", { name: "Desligar a narração" })).toBeInTheDocument();
+
+    // Recarregar a aplicação monta o provedor de novo, sem nada guardado de
+    // onde ler a escolha anterior.
+    unmount();
+    renderizarComProvedor();
+
+    expect(screen.getByRole("button", { name: "Ligar a narração" })).toBeInTheDocument();
+  });
+
+  it("desligada, nada fala sozinho, e nenhum alarme aparece", async () => {
+    const motor = instalarMotorFalso();
+    const usuario = userEvent.setup();
+    const { rerender } = renderizarComProvedor("Tela de teste");
+
+    await usuario.click(screen.getByRole("button", { name: "Ligar a narração" }));
     await usuario.click(screen.getByRole("button", { name: "Desligar a narração" }));
 
-    expect(localStorage.getItem(CHAVE_DA_NARRACAO_NO_APARELHO)).toBe("desligada");
-    expect(screen.getByRole("button", { name: "Ligar a narração" })).toBeInTheDocument();
+    rerender(
+      <ProvedorDeNarracao>
+        <TelaDeTeste texto="Quiz ao Vivo" />
+      </ProvedorDeNarracao>,
+    );
+
+    expect(motor.ditos.map((dito) => dito.text)).not.toContain("Quiz ao Vivo");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
-  it("abre desligada onde o aparelho guardou a escolha de desligar", () => {
-    instalarMotorFalso();
-    localStorage.setItem(CHAVE_DA_NARRACAO_NO_APARELHO, "desligada");
-    renderizarComProvedor();
-    expect(screen.getByRole("button", { name: "Ligar a narração" })).toBeInTheDocument();
-  });
-
-  it("`localStorage` que lança não derruba a camada — e ela nasce ligada", () => {
+  it("`localStorage` que lança não tem como derrubar a camada", () => {
     instalarMotorFalso();
     vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("dado de site bloqueado");
@@ -135,25 +176,31 @@ describe("o liga e desliga do aparelho (documento 15 §5.1)", () => {
     });
 
     expect(() => renderizarComProvedor()).not.toThrow();
-    expect(screen.getByRole("button", { name: "Desligar a narração" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Ligar a narração" })).toBeInTheDocument();
   });
 });
 
-describe("o gesto que arma a narração (design — decisão 6)", () => {
-  it("carregada e sem gesto, nada fala, e o iniciar é oferecido", () => {
-    const motor = instalarMotorFalso();
-    renderizarComProvedor();
-
-    expect(motor.ditos).toHaveLength(0);
-    expect(screen.getByRole("button", { name: "Iniciar a narração" })).toBeInTheDocument();
-  });
-
-  it("acionado o iniciar, a tela seguinte fala o que declarou", async () => {
+describe("o texto longo não depende do liga e desliga (documento 15 §5.1)", () => {
+  it("o toque fala o conteúdo com a narração desligada", async () => {
     const motor = instalarMotorFalso();
     const usuario = userEvent.setup();
-    const { rerender } = renderizarComProvedor("Tela de teste");
+    renderizarComProvedor(null);
 
-    await usuario.click(screen.getByRole("button", { name: "Iniciar a narração" }));
+    expect(screen.getByRole("button", { name: "Ligar a narração" })).toBeInTheDocument();
+    expect(motor.ditos).toHaveLength(0);
+
+    await usuario.click(screen.getByRole("button", { name: "Ouvir este texto" }));
+
+    // O enunciado vazio é o armar, que o próprio toque dispara.
+    expect(motor.ditos.map((dito) => dito.text)).toEqual(["", "O conteúdo longo da missão"]);
+  });
+
+  it("as telas continuam caladas depois de ouvir o texto longo", async () => {
+    const motor = instalarMotorFalso();
+    const usuario = userEvent.setup();
+    const { rerender } = renderizarComProvedor(null);
+
+    await usuario.click(screen.getByRole("button", { name: "Ouvir este texto" }));
 
     rerender(
       <ProvedorDeNarracao>
@@ -161,48 +208,13 @@ describe("o gesto que arma a narração (design — decisão 6)", () => {
       </ProvedorDeNarracao>,
     );
 
-    expect(motor.ditos.map((dito) => dito.text)).toContain("Quiz ao Vivo");
-    expect(
-      screen.queryByRole("button", { name: "Iniciar a narração" }),
-    ).not.toBeInTheDocument();
+    expect(motor.ditos.map((dito) => dito.text)).not.toContain("Quiz ao Vivo");
   });
 
-  it("desligada, não há o que iniciar nem o que ouvir, e nada fala", async () => {
-    const motor = instalarMotorFalso();
-    const usuario = userEvent.setup();
-    renderizarComProvedor();
-
-    await usuario.click(screen.getByRole("button", { name: "Desligar a narração" }));
-
-    expect(
-      screen.queryByRole("button", { name: "Iniciar a narração" }),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Ouvir este texto" })).not.toBeInTheDocument();
-    expect(motor.ditos).toHaveLength(0);
-  });
-
-  it("sem síntese no navegador, o iniciar não é oferecido e nada lança", () => {
+  it("sem síntese no navegador o controle de ouvir não é oferecido, e nada lança", () => {
     expect(() => renderizarComProvedor()).not.toThrow();
-    expect(
-      screen.queryByRole("button", { name: "Iniciar a narração" }),
-    ).not.toBeInTheDocument();
-  });
-});
-
-describe("o texto longo espera o toque (documento 15 §5.1)", () => {
-  it("o toque fala o conteúdo e arma a narração de vez", async () => {
-    const motor = instalarMotorFalso();
-    const usuario = userEvent.setup();
-    renderizarComProvedor(null);
-
-    expect(motor.ditos).toHaveLength(0);
-
-    await usuario.click(screen.getByRole("button", { name: "Ouvir este texto" }));
-
-    expect(motor.ditos.map((dito) => dito.text)).toEqual(["O conteúdo longo da missão"]);
-    expect(
-      screen.queryByRole("button", { name: "Iniciar a narração" }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Ouvir este texto" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });
 
@@ -220,7 +232,7 @@ describe("sem voz pt-BR, a camada cala sem alarme (design — decisão 5)", () =
     const usuario = userEvent.setup();
     renderizarComProvedor();
 
-    await usuario.click(screen.getByRole("button", { name: "Iniciar a narração" }));
+    await usuario.click(screen.getByRole("button", { name: "Ligar a narração" }));
     await usuario.click(screen.getByRole("button", { name: "Ouvir este texto" }));
 
     // Só o enunciado vazio do armar — nenhuma fala, e nenhum aviso na tela.
@@ -236,8 +248,5 @@ describe("sem provedor montado a camada é inerte (design — decisão 3)", () =
 
     expect(motor.ditos).toHaveLength(0);
     expect(screen.queryByRole("button", { name: "Ouvir este texto" })).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "Iniciar a narração" }),
-    ).not.toBeInTheDocument();
   });
 });

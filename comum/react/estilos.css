@@ -37,6 +37,20 @@
   cursor: not-allowed;
 }
 
+/* O alternador só de glifo: caixa quadrada no alvo de toque, sem o recheio
+ * lateral que o rótulo textual pediria. A borda e o foco continuam os do
+ * `cg-botao`, e nenhuma cor diz o estado — quem o diz é a forma do glifo e o
+ * `aria-pressed` (documento 15 §5). */
+.cg-botao--icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  color: var(--cor-texto);
+  border-color: var(--cor-borda);
+}
+
 .cg-moldura {
   margin-inline: auto;
   padding: var(--espaco-24) var(--espaco-16);
@@ -62,6 +76,15 @@
 
 .cg-cabecalho__texto p {
   color: var(--cor-texto-secundario);
+}
+
+/* O canto do cabeçalho: a ação e o controle do canto, quando a tela passa os
+ * dois. Fica em linha para que o alternador não empurre a ação para baixo no
+ * marco estreito. */
+.cg-cabecalho__canto {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-8);
 }
 
 .cg-campo {

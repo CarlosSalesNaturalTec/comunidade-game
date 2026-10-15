@@ -3,10 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as autenticacaoApi from "../autenticacao/api";
 import { ProvedorDeSessao } from "../autenticacao/ContextoDeSessao";
-import {
-  CHAVE_DA_NARRACAO_NO_APARELHO,
-  ProvedorDeNarracao,
-} from "../narracao/ProvedorDeNarracao";
+import { ProvedorDeNarracao } from "../narracao/ProvedorDeNarracao";
 import * as trilhaApi from "./api";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 import { EscolhaDoPoder } from "./EscolhaDoPoder";
@@ -571,7 +568,9 @@ describe("o conteúdo em texto oferece ouvi-lo, e nunca fala sozinho", () => {
 
     await usuario.click(await screen.findByRole("button", { name: "Ouvir este texto" }));
 
-    expect(motor.ditos.map((dito) => dito.text)).toEqual(["Parágrafo único."]);
+    // O enunciado vazio é o armar, que o próprio toque dispara: o controle não
+    // depende do liga e desliga das telas, então é ele que arma o que fala.
+    expect(motor.ditos.map((dito) => dito.text)).toEqual(["", "Parágrafo único."]);
   });
 
   it("conteúdo que não é texto não oferece o controle", async () => {
@@ -602,18 +601,22 @@ describe("o conteúdo em texto oferece ouvi-lo, e nunca fala sozinho", () => {
     expect(screen.queryByRole("button", { name: "Ouvir este texto" })).not.toBeInTheDocument();
   });
 
-  it("com a narração desligada no aparelho, o controle não é oferecido", async () => {
-    instalarMotorDeFalaFalso();
-    localStorage.setItem(CHAVE_DA_NARRACAO_NO_APARELHO, "desligada");
+  it("com a narração desligada o controle continua lá, e acioná-lo lê o texto", async () => {
+    const motor = instalarMotorDeFalaFalso();
     vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
       trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
     );
 
+    // A narração nasce desligada, e é assim que esta tela monta: o controle
+    // não depende dela (decisão do fundador de 2026-10-14).
     await renderizarComNarracao(
       <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
     );
+    const usuario = userEvent.setup();
 
     expect(await screen.findByText("Parágrafo único.")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Ouvir este texto" })).not.toBeInTheDocument();
+    await usuario.click(screen.getByRole("button", { name: "Ouvir este texto" }));
+
+    expect(motor.ditos.map((dito) => dito.text)).toEqual(["", "Parágrafo único."]);
   });
 });

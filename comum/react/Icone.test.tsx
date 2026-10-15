@@ -17,6 +17,10 @@ const GLIFOS: NomeDeGlifo[] = [
   "quiz",
   "medicao",
   "troca",
+  "som",
+  "som-desligado",
+  "encerrar",
+  "momento-de-troca",
 ];
 
 function desenhar(glifo: NomeDeGlifo): SVGSVGElement {
@@ -27,7 +31,7 @@ function desenhar(glifo: NomeDeGlifo): SVGSVGElement {
 }
 
 describe("Icone — nenhum ícone vem de fora (documento 15 §11.1, princípio 6)", () => {
-  it("desenha os seis glifos embutidos, sem pedir nada a domínio algum", () => {
+  it("desenha os glifos embutidos, sem pedir nada a domínio algum", () => {
     for (const glifo of GLIFOS) {
       const svg = desenhar(glifo);
       // SVG embutido: o desenho está no próprio documento, não numa imagem
@@ -85,6 +89,22 @@ describe("Icone — o ícone acompanha o tema (documento 15 §§11.1, 12)", () =
       expect(svg.getAttribute("width")).toBe(String(tamanho));
       expect(svg.getAttribute("height")).toBe(String(tamanho));
     }
+  });
+});
+
+describe("Icone — o par do alternador difere pela forma (documento 15 §5)", () => {
+  it("o som ligado e o som desligado são desenhos diferentes", () => {
+    const ligado = desenhar("som").innerHTML;
+    const desligado = desenhar("som-desligado").innerHTML;
+    // Não é o mesmo desenho em duas cores: nenhum estado se comunica por cor
+    // sozinha, e aqui nenhum dos dois declara cor alguma.
+    expect(ligado).not.toBe(desligado);
+  });
+
+  it("a chave do momento de troca não repete o glifo do caminho da troca", () => {
+    // Com o momento aberto os dois ficam encostados na tela inicial e têm
+    // funções opostas (design — decisão 6).
+    expect(desenhar("momento-de-troca").innerHTML).not.toBe(desenhar("troca").innerHTML);
   });
 });
 

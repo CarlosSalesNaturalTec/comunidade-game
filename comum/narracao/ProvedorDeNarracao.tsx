@@ -17,23 +17,19 @@ import {
   vozPreferida,
 } from "./narracao";
 
-/** O estado é do **aparelho**, não da pessoa: persiste entre atendimentos e
- * NUNCA acompanha o Guerreiro(a) a outro aparelho (documento 15 §5.1). */
-export const CHAVE_DA_NARRACAO_NO_APARELHO = "cg:narracao";
-
 interface ContextoDeNarracaoValor {
-  /** Nasce ligada; quem desliga não prende o próximo, que religa. */
+  /** Nasce **desligada**: o toque que a liga é o gesto que o navegador
+   * exige antes da primeira fala, e é por isso que não existe um controle
+   * de iniciar à parte (documento 15 §5.1). A escolha vale o aparelho, não
+   * a pessoa, e morre com a recarga — não é gravada em lugar algum. */
   ligada: boolean;
-  /** O gesto da pessoa já aconteceu — antes dele o navegador não fala. */
-  armada: boolean;
-  /** O navegador oferece síntese de fala. Sem ela não há o que armar. */
+  /** O navegador oferece síntese de fala. Sem ela a camada cala. */
   disponivel: boolean;
   alternarNarracao: () => void;
-  armarNarracao: () => void;
   /** O texto **curto** que a tela declarou, ao entrar nela. */
   narrar: (fala: Fala) => void;
-  /** O texto **longo**, sob toque: o próprio toque é o gesto que o
-   * navegador exige, e falar ali arma a narração de vez. */
+  /** O texto **longo**, sob toque, **independente do liga e desliga**: o
+   * próprio toque é o pedido e é o gesto que o navegador exige. */
   ouvir: (fala: Fala) => void;
   cancelarNarracao: () => void;
 }
@@ -43,35 +39,14 @@ interface ContextoDeNarracaoValor {
 // não oferece controle algum (design — decisão 3).
 const INERTE: ContextoDeNarracaoValor = {
   ligada: false,
-  armada: false,
   disponivel: false,
   alternarNarracao: () => {},
-  armarNarracao: () => {},
   narrar: () => {},
   ouvir: () => {},
   cancelarNarracao: () => {},
 };
 
 const ContextoDeNarracao = createContext<ContextoDeNarracaoValor | null>(null);
-
-// Aba privativa e dado de site bloqueado fazem `localStorage` lançar. A
-// leitura que falha cai no padrão **ligado**, e a escrita que falha não
-// derruba nada: a escolha vale a sessão (design — Risks).
-function lerEscolhaDoAparelho(): boolean {
-  try {
-    return localStorage.getItem(CHAVE_DA_NARRACAO_NO_APARELHO) !== "desligada";
-  } catch {
-    return true;
-  }
-}
-
-function gravarEscolhaDoAparelho(ligada: boolean): void {
-  try {
-    localStorage.setItem(CHAVE_DA_NARRACAO_NO_APARELHO, ligada ? "ligada" : "desligada");
-  } catch {
-    // Nada a fazer: a escolha vale esta sessão do aparelho.
-  }
-}
 
 /**
  * A camada que lê as telas em voz alta, montada ao lado do provedor de
@@ -80,14 +55,13 @@ function gravarEscolhaDoAparelho(ligada: boolean): void {
  * existe.
  */
 export function ProvedorDeNarracao({ children }: { children: ReactNode }) {
-  const [ligada, definirLigada] = useState(lerEscolhaDoAparelho);
-  const [armada, definirArmada] = useState(false);
+  const [ligada, definirLigada] = useState(false);
   const [voz, definirVoz] = useState<SpeechSynthesisVoice | null>(null);
   const disponivel = existeSinteseDeFala();
 
   // A voz se escolhe uma vez, depois de `voiceschanged` (design — decisão
-  // 5). Enquanto ela não vier, a camada cala — e nada fala antes do gesto
-  // de armar, que vem depois disto.
+  // 5). Enquanto ela não vier, a camada cala — e, nascendo desligada, nada
+  // fala antes de alguém ligar.
   useEffect(() => {
     if (!disponivel) return;
     definirVoz(vozPreferida());
@@ -96,33 +70,36 @@ export function ProvedorDeNarracao({ children }: { children: ReactNode }) {
 
   const narrar = useCallback(
     (fala: Fala) => {
-      if (!ligada || !armada || !voz) return;
-      falar(fala, voz);
-    },
-    [ligada, armada, voz],
-  );
-
-  const ouvir = useCallback(
-    (fala: Fala) => {
       if (!ligada || !voz) return;
-      definirArmada(true);
       falar(fala, voz);
     },
     [ligada, voz],
   );
 
+  // Independente do liga e desliga: quem aciona o controle de ouvir está
+  // pedindo aquela leitura, e o próprio acionamento é o gesto que o
+  // navegador exige. Atrás do `ligada` ele desapareceria por padrão, agora
+  // que a narração nasce desligada — justamente de quem menos lê (documento
+  // 15 §5.1, design — decisão 3).
+  const ouvir = useCallback(
+    (fala: Fala) => {
+      if (!voz) return;
+      armar();
+      falar(fala, voz);
+    },
+    [voz],
+  );
+
+  // O clique que **liga** é o gesto que libera o motor de fala — daí o
+  // `armar()` aqui dentro, e daí não existir um controle de iniciar à parte
+  // (design — decisões 1 e 2).
   const alternarNarracao = useCallback(() => {
     definirLigada((anterior) => {
       const proxima = !anterior;
-      gravarEscolhaDoAparelho(proxima);
-      if (!proxima) cancelar();
+      if (proxima) armar();
+      else cancelar();
       return proxima;
     });
-  }, []);
-
-  const armarNarracao = useCallback(() => {
-    armar();
-    definirArmada(true);
   }, []);
 
   const cancelarNarracao = useCallback(() => {
@@ -132,24 +109,13 @@ export function ProvedorDeNarracao({ children }: { children: ReactNode }) {
   const valor = useMemo(
     () => ({
       ligada,
-      armada,
       disponivel,
       alternarNarracao,
-      armarNarracao,
       narrar,
       ouvir,
       cancelarNarracao,
     }),
-    [
-      ligada,
-      armada,
-      disponivel,
-      alternarNarracao,
-      armarNarracao,
-      narrar,
-      ouvir,
-      cancelarNarracao,
-    ],
+    [ligada, disponivel, alternarNarracao, narrar, ouvir, cancelarNarracao],
   );
 
   return <ContextoDeNarracao.Provider value={valor}>{children}</ContextoDeNarracao.Provider>;

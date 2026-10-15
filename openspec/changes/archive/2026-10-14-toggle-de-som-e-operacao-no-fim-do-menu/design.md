@@ -90,10 +90,17 @@ título que o `Cabecalho` já declara.
 
 ### 6. Os dois cartões de operação, e por que o separador basta
 
-Os dois entram na lista `cg-caminhos`, com o separador entre eles e os caminhos: um título de
+Os dois entram na lista `cg-caminhos`, com o separador entre eles e os caminhos: um rótulo de
 grupo, com o cartão idêntico ao dos caminhos — foi o que o fundador pediu. O risco de misturar
 a linguagem visual de quem opera com a da criança está em Risks, e o que o contém é o PIN que o
 encerramento já exige (`RF-04-71`, `RN-04-41`), intocado por esta change.
+
+O grupo é **declarado**, em `fieldset` com `legend`, e não um `h2` solto: o rótulo precisa ser
+anunciado ao entrar no grupo, e um título solto só aparece na navegação por cabeçalho. Foi o
+que o Biome cobrou ao recusar `role="group"` num `div` — o elemento semântico existe, e a
+`legend` dá o nome nativo, sem `aria-` nenhum. O preço é o reset do `fieldset` (moldura,
+recheio e `min-inline-size: 0`, sem o qual ele estoura o marco do celular) e o `float` na
+`legend`, que a devolve ao fluxo para o separador atravessar a largura toda.
 
 O cartão da chave da troca é um **alternador**, não navegação como os demais `cg-caminho`. O que
 o distingue é o glifo próprio e o rótulo, que diz o ato ("Abrir"/"Fechar") em vez de nomear um

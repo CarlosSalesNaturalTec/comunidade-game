@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as sessaoApi from "comum/autenticacao/api";
 import * as biometriaModulo from "comum/biometria";
-import { ProvedorDeNarracao, useNarracao } from "comum/narracao";
+import { ProvedorDeNarracao } from "comum/narracao";
 import * as trilhaApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as descritorApi from "../api/descritor";
@@ -133,16 +133,19 @@ describe("tela inicial da App 01", () => {
   });
 
   it("nenhum caminho se identifica só pelo desenho", async () => {
-    renderizar(vi.fn(), { momentoDeTrocaAberto: true });
+    renderizar(vi.fn(), { momentoDeTrocaAberto: true, podeAbrirMomentoDeTroca: true });
     await screen.findByText(/o que você quer fazer/i);
 
     for (const caminho of screen.getAllByRole("button")) {
       const glifo = caminho.querySelector("svg");
       if (!glifo) continue;
       // O desenho não fala por si: é escondido da tecnologia assistiva, e o
-      // botão que o leva tem texto visível.
+      // botão que o leva tem rótulo — visível ou acessível, que é o que o
+      // documento 15 §5 exige. O alternador do som é o único de glifo só, e o
+      // rótulo dele vive em `aria-label`.
       expect(glifo).toHaveAttribute("aria-hidden", "true");
-      expect(caminho.textContent?.trim()).not.toBe("");
+      const rotulo = caminho.getAttribute("aria-label") ?? caminho.textContent ?? "";
+      expect(rotulo.trim()).not.toBe("");
     }
   });
 
@@ -760,7 +763,7 @@ describe("encerrar a sessão de trabalho pela tela inicial (RF-04-71, RN-04-41)"
   });
 });
 
-describe("a narração das telas liga e desliga na tela inicial (documento 15 §5.1)", () => {
+describe("o alternador do som no canto do cabeçalho (documento 15 §5.1)", () => {
   class EnunciadoFalso {
     lang = "";
     voice: SpeechSynthesisVoice | null = null;
@@ -804,125 +807,113 @@ describe("a narração das telas liga e desliga na tela inicial (documento 15 §
     return motor;
   }
 
-  function ArmadorDaNarracao() {
-    const { armarNarracao } = useNarracao();
-    return (
-      <button type="button" onClick={armarNarracao}>
-        Iniciar a narração
-      </button>
-    );
-  }
+  const ROTULO_LIGAR = "Ligar a leitura das telas em voz alta";
+  const ROTULO_DESLIGAR = "Desligar a leitura das telas em voz alta";
 
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
-  it("o controle aparece na tela inicial, com rótulo textual, e nasce ligada", async () => {
+  it("o alternador aparece no canto do cabeçalho, só pelo glifo, e nasce desligado", async () => {
     renderizar();
 
-    expect(
-      await screen.findByRole("button", { name: "Desligar a narração das telas" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/a narração está ligada/i)).toBeInTheDocument();
+    const alternador = await screen.findByRole("button", { name: ROTULO_LIGAR });
+    // Está no cabeçalho, ao lado do título — não numa faixa própria.
+    expect(alternador.closest("header")).not.toBeNull();
+    // É só o glifo: nenhum texto visível, e o estado em `aria-pressed`.
+    expect(alternador.textContent).toBe("");
+    expect(alternador.querySelector("svg")).not.toBeNull();
+    expect(alternador).toHaveAttribute("aria-pressed", "false");
+    // A frase que descrevia o estado por escrito saiu da tela.
+    expect(screen.queryByText(/a narração está/i)).not.toBeInTheDocument();
   });
 
-  it("desligar troca o rótulo e diz o estado por escrito, nunca só pela cor", async () => {
+  it("ligar troca o glifo e o rótulo, e marca o pressionado", async () => {
     renderizar();
     const usuario = userEvent.setup();
 
-    await usuario.click(
-      await screen.findByRole("button", { name: "Desligar a narração das telas" }),
-    );
+    const desligado = await screen.findByRole("button", { name: ROTULO_LIGAR });
+    const glifoDesligado = desligado.querySelector("svg")?.innerHTML;
+    await usuario.click(desligado);
 
-    expect(
-      screen.getByRole("button", { name: "Ligar a narração das telas" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/a narração está desligada/i)).toBeInTheDocument();
+    const ligado = screen.getByRole("button", { name: ROTULO_DESLIGAR });
+    expect(ligado).toHaveAttribute("aria-pressed", "true");
+    // O estado se reconhece pela forma, não pela cor.
+    expect(ligado.querySelector("svg")?.innerHTML).not.toBe(glifoDesligado);
   });
 
   it("a escolha sobrevive ao atendimento seguinte no mesmo aparelho", async () => {
-    const primeira = renderizar();
+    const aoVoltarAoInicio = vi.fn();
+    renderizar(aoVoltarAoInicio);
     const usuario = userEvent.setup();
 
-    await usuario.click(
-      await screen.findByRole("button", { name: "Desligar a narração das telas" }),
-    );
-    // O atendimento seguinte é a mesma tela inicial, montada de novo: a
-    // escolha é do aparelho, não do atendimento.
-    primeira.unmount();
-    renderizar();
+    await usuario.click(await screen.findByRole("button", { name: ROTULO_LIGAR }));
+    // O atendimento seguinte é a volta ao início, dentro da mesma sessão do
+    // aparelho: a escolha é do aparelho, não do atendimento.
+    await usuario.click(screen.getByRole("button", { name: /presença — entrar/i }));
+    await usuario.click(await screen.findByRole("button", { name: /^voltar$/i }));
 
-    expect(
-      await screen.findByRole("button", { name: "Ligar a narração das telas" }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: ROTULO_DESLIGAR })).toBeInTheDocument();
   });
 
-  it("quem desliga não prende o próximo, que religa", async () => {
+  it("a recarga da aplicação devolve o som ao desligado", async () => {
     const primeira = renderizar();
     const usuario = userEvent.setup();
 
-    await usuario.click(
-      await screen.findByRole("button", { name: "Desligar a narração das telas" }),
-    );
+    await usuario.click(await screen.findByRole("button", { name: ROTULO_LIGAR }));
+    // Recarregar monta o provedor de novo, e nada foi gravado de onde ler a
+    // escolha anterior (decisão do fundador de 2026-10-14).
     primeira.unmount();
     renderizar();
-    await usuario.click(
-      await screen.findByRole("button", { name: "Ligar a narração das telas" }),
-    );
 
-    expect(
-      screen.getByRole("button", { name: "Desligar a narração das telas" }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: ROTULO_LIGAR })).toBeInTheDocument();
+  });
+
+  it("a escolha não é gravada no aparelho", async () => {
+    renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.click(await screen.findByRole("button", { name: ROTULO_LIGAR }));
+
+    expect(localStorage.getItem("cg:narracao")).toBeNull();
+  });
+
+  it("nenhuma outra tela apresenta o alternador", async () => {
+    renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.click(await screen.findByRole("button", { name: /presença — entrar/i }));
+
+    await screen.findByRole("button", { name: /^voltar$/i });
+    expect(screen.queryByRole("button", { name: ROTULO_LIGAR })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: ROTULO_DESLIGAR })).not.toBeInTheDocument();
   });
 
   it("a tela inicial fala o título dela, e nenhum rótulo de botão", async () => {
     const motor = instalarMotorDeFalaFalso();
+    renderizar();
+    const usuario = userEvent.setup();
 
-    render(
-      <ProvedorDeNarracao>
-        <ArmadorDaNarracao />
-        <ProvedorDeEstadoDeRede>
-          <ProvedorDeSessao chaveDeArmazenamento="teste:app-01:sessao-guerreiro">
-            <TelaInicial
-              tokenDeTrabalho="token-de-trabalho"
-              personaIdDeTrabalho="mestre-de-trabalho-1"
-              papelDeTrabalho="mestre"
-              aulaId="aula-1"
-              aoVoltarAoInicio={vi.fn()}
-              podeAbrirMomentoDeTroca={false}
-              momentoDeTrocaAberto={false}
-              abrindoMomentoDeTroca={false}
-              erroDeAberturaDaTroca={null}
-              aoAbrirMomentoDeTroca={vi.fn()}
-              aoFecharMomentoDeTroca={vi.fn()}
-              aoEncerrarSessaoDeTrabalho={vi.fn()}
-            />
-          </ProvedorDeSessao>
-        </ProvedorDeEstadoDeRede>
-      </ProvedorDeNarracao>,
-    );
-    await screen.findByText(/o que você quer fazer/i);
-    screen.getByRole("button", { name: "Iniciar a narração" }).click();
-    await screen.findByText(/o que você quer fazer/i);
+    // Ligar é o gesto que arma, e a tela já montada passa a ser falada.
+    await usuario.click(await screen.findByRole("button", { name: ROTULO_LIGAR }));
 
     // O que fala é o título da tela — nunca o subtítulo, nunca o rótulo de um
-    // caminho, nunca o do botão de encerrar (documento 15 §5.1).
+    // caminho, nunca o do cartão de encerrar (documento 15 §5.1).
     const ditos = motor.ditos.map((dito) => dito.text).filter((texto) => texto !== "");
     expect(ditos.join(" | ")).not.toMatch(/onboarding —|equipes —|quiz ao vivo —/i);
     expect(ditos.join(" | ")).not.toMatch(/encerrar a sessão de trabalho/i);
     expect(ditos.join(" | ")).not.toMatch(/o que você quer fazer/i);
+    expect(ditos).toContain("Comunidade Game — Aula");
   });
 
-  it("encerrar a sessão de trabalho não apaga a escolha do aparelho", async () => {
+  it("encerrar a sessão de trabalho não mexe na escolha do aparelho", async () => {
     await guardarVerificadorDeTeste("mestre-de-trabalho-1");
     const encerrar = vi.fn();
 
     renderizar(vi.fn(), {}, encerrar);
     const usuario = userEvent.setup();
 
-    await usuario.click(
-      await screen.findByRole("button", { name: "Desligar a narração das telas" }),
-    );
+    await usuario.click(await screen.findByRole("button", { name: ROTULO_LIGAR }));
     await usuario.click(
       screen.getByRole("button", { name: /encerrar a sessão de trabalho/i }),
     );
@@ -935,8 +926,96 @@ describe("a narração das telas liga e desliga na tela inicial (documento 15 §
     );
 
     await waitFor(() => expect(encerrar).toHaveBeenCalled());
-    // A narração não é dado da sessão de trabalho nem do Guerreiro(a): ela
-    // continua onde estava, no aparelho.
-    expect(localStorage.getItem("cg:narracao")).toBe("desligada");
+    // A narração não é dado da sessão de trabalho nem do Guerreiro(a).
+    expect(screen.queryByText(/a narração está/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("as duas ações de quem opera fecham o menu (RF-04-71, RF-04-49)", () => {
+  it("o encerramento é o último cartão, sob o rótulo do grupo", async () => {
+    renderizar();
+
+    await screen.findByText(/o que você quer fazer/i);
+    expect(screen.getByText("Para quem opera o aparelho")).toBeInTheDocument();
+
+    const cartoes = Array.from(document.querySelectorAll(".cg-caminho"));
+    const ultimo = cartoes[cartoes.length - 1];
+    expect(ultimo.textContent).toMatch(/encerrar a sessão de trabalho/i);
+    // No mesmo padrão dos demais caminhos, com glifo ao lado do rótulo.
+    expect(ultimo.querySelector("svg")).not.toBeNull();
+  });
+
+  it("o grupo é declarado, não só desenhado: a legend o nomeia", async () => {
+    renderizar(vi.fn(), { podeAbrirMomentoDeTroca: true });
+
+    await screen.findByText(/o que você quer fazer/i);
+    // `fieldset` com `legend`: quem navega por leitor de tela ouve a fronteira
+    // que quem olha vê no separador.
+    const grupo = screen.getByRole("group", { name: "Para quem opera o aparelho" });
+    expect(grupo).toContainElement(
+      screen.getByRole("button", { name: /encerrar a sessão de trabalho/i }),
+    );
+    expect(grupo).toContainElement(
+      screen.getByRole("button", { name: /abrir o momento de troca/i }),
+    );
+    // Os caminhos da criança ficam fora dele.
+    expect(grupo).not.toContainElement(
+      screen.getByRole("button", { name: /presença — entrar/i }),
+    );
+  });
+
+  it("o aparelho que não abre a troca mostra só o encerramento", async () => {
+    renderizar(vi.fn(), { podeAbrirMomentoDeTroca: false });
+
+    await screen.findByText(/o que você quer fazer/i);
+    expect(
+      screen.getByRole("button", { name: /encerrar a sessão de trabalho/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /abrir o momento de troca/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("a abertura da troca é penúltima, e o encerramento continua por último", async () => {
+    renderizar(vi.fn(), { podeAbrirMomentoDeTroca: true });
+
+    await screen.findByText(/o que você quer fazer/i);
+    const cartoes = Array.from(document.querySelectorAll(".cg-caminho"));
+    expect(cartoes[cartoes.length - 2].textContent).toMatch(/abrir o momento de troca/i);
+    expect(cartoes[cartoes.length - 1].textContent).toMatch(/encerrar a sessão de trabalho/i);
+  });
+
+  it("o cartão da chave da troca não repete o glifo do caminho da troca", async () => {
+    renderizar(vi.fn(), { podeAbrirMomentoDeTroca: true, momentoDeTrocaAberto: true });
+
+    await screen.findByText(/o que você quer fazer/i);
+    const caminhoDaTroca = screen.getByRole("button", {
+      name: /troca por recompensa avulsa/i,
+    });
+    const chaveDaTroca = screen.getByRole("button", { name: /fechar o momento de troca/i });
+
+    expect(chaveDaTroca.querySelector("svg")?.innerHTML).not.toBe(
+      caminhoDaTroca.querySelector("svg")?.innerHTML,
+    );
+  });
+
+  it("abrindo, o cartão fica desabilitado e diz que está abrindo", async () => {
+    renderizar(vi.fn(), { podeAbrirMomentoDeTroca: true, abrindoMomentoDeTroca: true });
+
+    await screen.findByText(/o que você quer fazer/i);
+    const cartao = screen.getByRole("button", { name: /abrindo/i });
+    expect(cartao).toBeDisabled();
+  });
+
+  it("a falha da abertura aparece abaixo da lista, não entre os cartões", async () => {
+    renderizar(vi.fn(), {
+      podeAbrirMomentoDeTroca: true,
+      erroDeAberturaDaTroca: "A troca exige rede.",
+    });
+
+    const aviso = await screen.findByRole("alert");
+    expect(aviso).toHaveTextContent("A troca exige rede.");
+    // Fora da coluna de alvos de toque: nenhum cartão se desloca sob o dedo.
+    expect(aviso.closest(".cg-caminhos")).toBeNull();
   });
 });

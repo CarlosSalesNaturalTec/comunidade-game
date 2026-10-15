@@ -139,6 +139,41 @@ textarea {
   flex: 0 0 auto;
 }
 
+/* O rótulo do grupo que separa os caminhos da criança das duas ações de quem
+ * opera o aparelho. Agrupa sem mudar o cartão: encerrar e abrir a troca ficam
+ * no mesmo padrão dos demais, como o fundador pediu em 2026-10-14. O corpo é o
+ * do texto secundário, não o de um título de tela — o `h1` é do cabeçalho. */
+/* O grupo declarado das duas ações de operação: coluna com o mesmo intervalo
+ * da lista que o contém, para que o cartão dentro dele fique indistinguível
+ * dos caminhos — é o rótulo que separa, não o desenho do cartão.
+ *
+ * O `fieldset` entra sem a moldura e sem o recheio que o navegador lhe dá por
+ * padrão, e com `min-inline-size: 0`, sem o qual ele se recusa a encolher
+ * abaixo da largura do conteúdo e estoura o marco do celular. */
+.cg-caminhos__operacao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-16);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+.cg-caminhos__grupo {
+  /* A `legend` não participa do fluxo do `fieldset` por padrão: `float` a
+   * devolve a ele, e é o que faz a linha do separador atravessar a largura
+   * toda. */
+  float: left;
+  inline-size: 100%;
+  margin: var(--espaco-8) 0 0;
+  padding: var(--espaco-16) 0 0;
+  border-top: 1px solid var(--cor-separador);
+  color: var(--cor-texto-secundario);
+  font-size: var(--escala-0875);
+  font-weight: var(--peso-rotulo);
+}
+
 .cg-caminho:disabled {
   cursor: not-allowed;
   opacity: 0.6;
@@ -219,21 +254,4 @@ textarea {
  * —, e o alvo de toque de `48` px segue sendo o do `cg-botao`, intocado. */
 .cg-fundo-de-comunidade {
   min-height: 100%;
-}
-
-/* O liga e desliga da narração das telas, na tela inicial, e o convite para
- * armá-la na primeira interação. O alvo de toque de `48` px é o do `cg-botao`,
- * intocado; daqui saem só o espaçamento e a linha que diz o estado por
- * escrito, nunca só pela cor (documento 15 §§5, 5.1). */
-.cg-narracao,
-.cg-narracao-convite {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espaco-8);
-  padding: 0 var(--espaco-16);
-}
-
-.cg-narracao__estado {
-  margin: 0;
-  color: var(--cor-texto-secundario);
 }

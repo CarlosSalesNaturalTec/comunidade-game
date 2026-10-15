@@ -429,13 +429,14 @@ describe("a narração do enunciado da pergunta no ar (documento 15 §5.1)", () 
       .filter((texto) => texto !== "" && texto !== "Quiz ao Vivo");
   }
 
-  // A partida com a narração já armada: o gesto que o navegador exige
-  // acontece antes de a tela montar, como na aplicação real.
+  // A partida com a narração já ligada: o toque que a liga é o gesto que o
+  // navegador exige, e acontece antes de a tela montar, como na aplicação
+  // real — lá é o alternador do canto do cabeçalho da tela inicial.
   function ArmadorDaNarracao() {
-    const { armarNarracao } = useNarracao();
+    const { alternarNarracao } = useNarracao();
     return (
-      <button type="button" onClick={armarNarracao}>
-        Iniciar a narração
+      <button type="button" onClick={alternarNarracao}>
+        Ligar a narração
       </button>
     );
   }
@@ -446,7 +447,7 @@ describe("a narração do enunciado da pergunta no ar (documento 15 §5.1)", () 
         <ArmadorDaNarracao />
       </ProvedorDeNarracao>,
     );
-    screen.getByRole("button", { name: "Iniciar a narração" }).click();
+    screen.getByRole("button", { name: "Ligar a narração" }).click();
     resultado.rerender(
       <ProvedorDeNarracao>
         <ArmadorDaNarracao />

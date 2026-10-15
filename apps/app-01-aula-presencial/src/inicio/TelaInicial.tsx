@@ -1,6 +1,14 @@
 import { type SessaoAberta, useSessao } from "comum/autenticacao";
 import { useNarracao } from "comum/narracao";
-import { Aviso, Botao, Cabecalho, Campo, Icone, Moldura } from "comum/react";
+import {
+  Aviso,
+  Botao,
+  BotaoDeAlternancia,
+  Cabecalho,
+  Campo,
+  Icone,
+  Moldura,
+} from "comum/react";
 import { useState } from "react";
 import { TelaDeMedicaoDoLimiar } from "../bancada/TelaDeMedicaoDoLimiar";
 import { AreaDetalhadaDeDireitos } from "../direitos/AreaDetalhadaDeDireitos";
@@ -352,12 +360,8 @@ export function TelaInicial({
       <Cabecalho
         titulo="Comunidade Game — Aula"
         subtitulo="O que você quer fazer?"
-        acao={{
-          rotulo: "Encerrar a sessão de trabalho",
-          aoAcionar: () => definirCaminho("encerramento"),
-        }}
+        canto={<ControleDaNarracao />}
       />
-      <ControleDaNarracao />
       <div className="cg-caminhos">
         <button
           type="button"
@@ -397,23 +401,42 @@ export function TelaInicial({
             Troca por recompensa avulsa — entregar uma recompensa do encontro
           </button>
         )}
-      </div>
-      {podeAbrirMomentoDeTroca && (
-        <div className="cg-momento-de-troca">
-          <Botao
-            variante="secundaria"
-            onClick={momentoDeTrocaAberto ? aoFecharMomentoDeTroca : aoAbrirMomentoDeTroca}
-            desabilitado={abrindoMomentoDeTroca}
+        {/* As duas ações de quem opera o aparelho fecham o menu, no mesmo
+            padrão dos caminhos — o fundador pediu o cartão igual, e o que
+            separa é o rótulo do grupo (`RF-04-71`, `RF-04-49`, design —
+            decisão 6). O grupo é **declarado**, e não só desenhado: a
+            `legend` é anunciada ao entrar nele, e sem ela quem navega por
+            leitor de tela ouviria os dois cartões sem a fronteira que quem
+            olha vê. `fieldset` é o elemento que o documento 15 §5 pede aqui —
+            grupo nativo, com rótulo nativo, sem `aria-` nenhum. */}
+        <fieldset className="cg-caminhos__operacao">
+          <legend className="cg-caminhos__grupo">Para quem opera o aparelho</legend>
+          {podeAbrirMomentoDeTroca && (
+            <button
+              type="button"
+              className="cg-caminho"
+              onClick={momentoDeTrocaAberto ? aoFecharMomentoDeTroca : aoAbrirMomentoDeTroca}
+              disabled={abrindoMomentoDeTroca}
+            >
+              <Icone glifo="momento-de-troca" />
+              {momentoDeTrocaAberto
+                ? "Fechar o momento de troca"
+                : abrindoMomentoDeTroca
+                  ? "Abrindo…"
+                  : "Abrir o momento de troca"}
+            </button>
+          )}
+          <button
+            type="button"
+            className="cg-caminho"
+            onClick={() => definirCaminho("encerramento")}
           >
-            {momentoDeTrocaAberto
-              ? "Fechar o momento de troca"
-              : abrindoMomentoDeTroca
-                ? "Abrindo…"
-                : "Abrir o momento de troca"}
-          </Botao>
-          {erroDeAberturaDaTroca && <Aviso tipo="erro">{erroDeAberturaDaTroca}</Aviso>}
-        </div>
-      )}
+            <Icone glifo="encerrar" />
+            Encerrar a sessão de trabalho
+          </button>
+        </fieldset>
+      </div>
+      {erroDeAberturaDaTroca && <Aviso tipo="erro">{erroDeAberturaDaTroca}</Aviso>}
       {(papelDeTrabalho === "mestre" || papelDeTrabalho === "admin") && (
         <FilaDePresencaPendente itens={itensDaFila} aoTentarDeNovo={tentarDeNovo} />
       )}
@@ -428,26 +451,30 @@ export function TelaInicial({
   );
 }
 
-// O liga e desliga da narração das telas mora na tela inicial porque é a que
-// aparece entre um atendimento e o seguinte: quem chega ao aparelho o encontra
-// antes de entrar no seu caminho. A escolha é do **aparelho** — a camada comum
-// a guarda nele, nunca na sessão de trabalho nem no Guerreiro(a) —, e por isso
-// voltar ao início e encerrar a sessão de trabalho não mexem nela (documento 15
-// §5.1). O estado sai por escrito, nunca só pela cor do botão (documento 15
-// §5).
+// O liga e desliga da narração das telas mora no **canto do cabeçalho** da
+// tela inicial, porque ela é a que aparece entre um atendimento e o seguinte:
+// quem chega ao aparelho a encontra antes de entrar no seu caminho (documento
+// 15 §5.1). A escolha é do **aparelho** — voltar ao início e encerrar a sessão
+// de trabalho não mexem nela —, e nasce desligada a cada carregamento.
+//
+// É só o glifo, e é de propósito: a frase comprida de antes era texto para
+// quem a narração serve justamente porque ainda não lê. O estado sai pela
+// **forma** do glifo e pelo `aria-pressed` do `BotaoDeAlternancia`, nunca pela
+// cor (documento 15 §5, decisão do fundador de 2026-10-14).
 function ControleDaNarracao() {
   const { ligada, alternarNarracao } = useNarracao();
   return (
-    <div className="cg-narracao">
-      <Botao variante="secundaria" onClick={alternarNarracao}>
-        {ligada ? "Desligar a narração das telas" : "Ligar a narração das telas"}
-      </Botao>
-      <p className="cg-narracao__estado">
-        {ligada
-          ? "A narração está ligada: o aparelho lê as telas em voz alta."
-          : "A narração está desligada: o aparelho não lê nada em voz alta."}
-      </p>
-    </div>
+    <BotaoDeAlternancia
+      rotulo={
+        ligada
+          ? "Desligar a leitura das telas em voz alta"
+          : "Ligar a leitura das telas em voz alta"
+      }
+      ligado={ligada}
+      glifoLigado="som"
+      glifoDesligado="som-desligado"
+      onClick={alternarNarracao}
+    />
   );
 }
 

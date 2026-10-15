@@ -2105,6 +2105,13 @@ Cada caminho SHALL apresentar, **ao lado do rótulo textual que já tem**, o gli
 glifo NEVER SHALL substituir o rótulo nem ser a única forma de distinguir um caminho do outro.
 (`RF-04-01`, documento 15 §§5, 11.1, decisão do fundador de 2026-09-25)
 
+As duas ações de **quem opera o aparelho** — abrir e fechar o momento de troca, e encerrar a
+sessão de trabalho — SHALL ser apresentadas no **mesmo padrão dos caminhos**, ao fim da lista e
+depois de todos eles, sob um rótulo de grupo que as separe do que a criança escolhe. O
+**encerramento SHALL ser o último** dos dois. A abertura e o fechamento do momento de troca
+SHALL aparecer ali apenas para o aparelho que pode abri-lo. (`RF-04-71`, `RF-04-49`, decisão do
+fundador de 2026-10-14)
+
 #### Scenario: Os três caminhos aparecem
 
 - **WHEN** a sessão de trabalho está aberta
@@ -2172,6 +2179,19 @@ glifo NEVER SHALL substituir o rótulo nem ser a única forma de distinguir um c
 - **WHEN** a tela inicial é apresentada
 - **THEN** cada caminho apresenta um glifo junto do rótulo textual, o rótulo continua legível por
   inteiro e nenhum caminho se identifica só pelo desenho
+
+#### Scenario: As ações de quem opera fecham a lista, com o encerramento por último
+
+- **WHEN** a tela inicial é apresentada num aparelho que pode abrir o momento de troca
+- **THEN** depois de todos os caminhos aparecem, sob um rótulo de grupo que as separa deles e no
+  mesmo padrão dos caminhos, a abertura do momento de troca e, por último, o encerramento da
+  sessão de trabalho
+
+#### Scenario: O aparelho que não abre a troca mostra só o encerramento
+
+- **WHEN** a tela inicial é apresentada num aparelho que não pode abrir o momento de troca
+- **THEN** o encerramento da sessão de trabalho aparece ao fim da lista, e nenhuma abertura de
+  momento de troca é oferecida
 
 ### Requirement: Os caminhos Equipes, Quiz e Troca só abrem para quem tem presença registrada
 
@@ -2417,55 +2437,47 @@ documento 15 §5)
 
 ### Requirement: A tela inicial liga e desliga a narração do aparelho
 
-A App 01 SHALL oferecer, na **tela inicial**, o controle que liga e desliga a narração, com
-rótulo textual e o alvo de toque que o documento 15 §5 exige. A tela inicial é onde ele mora
+A App 01 SHALL oferecer, na **tela inicial**, o alternador que liga e desliga a narração, no
+**canto do cabeçalho** da tela, apresentado **só pelo glifo** do sistema de ícone da camada
+comum e cumprindo o alvo de toque que o documento 15 §5 exige. A tela inicial é onde ele mora
 porque é a tela que aparece **entre atendimentos**: quem chega ao aparelho a encontra antes de
-entrar no seu caminho. (documento 15 §5.1)
+entrar no seu caminho. O alternador NEVER SHALL ser apresentado nas demais telas da aplicação.
+(documento 15 §5.1, decisão do fundador de 2026-10-14)
+
+O estado SHALL ser dito pela **forma** — um glifo para ligado e outro para desligado — e pelo
+estado de pressionado do controle, e NEVER SHALL depender de cor nem de frase escrita na tela. O
+rótulo SHALL alcançar quem navega por leitor de tela.
 
 O estado SHALL valer para o **aparelho**, não para o atendimento: encerrar o atendimento e
-voltar ao início NEVER SHALL religar nem desligar a narração por conta própria, e a escolha
-SHALL sobreviver a recarregar a aplicação. Encerrar a **sessão de trabalho** NEVER SHALL
-apagá-la: ela não é dado da sessão nem do Guerreiro(a).
+voltar ao início NEVER SHALL religar nem desligar a narração por conta própria. Encerrar a
+**sessão de trabalho** NEVER SHALL apagá-la: ela não é dado da sessão nem do Guerreiro(a).
+Recarregar a aplicação SHALL devolvê-la ao **desligado**, que é como ela nasce.
 
 #### Scenario: O controle está na tela inicial
 
 - **WHEN** a tela inicial da App 01 é apresentada
-- **THEN** o controle de ligar e desligar a narração aparece ali, com rótulo textual
+- **THEN** o alternador da narração aparece no canto do cabeçalho, só pelo glifo, e nenhuma
+  frase descreve o estado dele em tela
+
+#### Scenario: As demais telas não o apresentam
+
+- **WHEN** qualquer outra tela da App 01 é apresentada
+- **THEN** o alternador da narração não aparece nela
 
 #### Scenario: A escolha sobrevive ao atendimento seguinte
 
-- **WHEN** alguém desliga a narração, conclui o atendimento e o aparelho volta ao início
-- **THEN** a narração continua desligada, e o próximo atendimento pode religá-la
+- **WHEN** alguém liga a narração, conclui o atendimento e o aparelho volta ao início
+- **THEN** a narração continua ligada, e o próximo atendimento pode desligá-la
 
 #### Scenario: Encerrar a sessão de trabalho não mexe na narração
 
 - **WHEN** a sessão de trabalho do aparelho é encerrada
 - **THEN** a escolha de narração do aparelho permanece como estava
 
-### Requirement: A App 01 arma a narração na primeira interação
+#### Scenario: A recarga devolve a narração ao desligado
 
-O navegador NEVER SHALL falar antes de um gesto da pessoa. A App 01 SHALL apresentar, depois de
-carregada e antes da primeira fala, um controle de **iniciar** que arma a narração; acionado
-ele, a narração passa a falar as telas dali em diante. Antes dele a aplicação NEVER SHALL
-tentar falar, e NEVER SHALL apresentar erro por não ter falado. (documento 15 §5.1)
-
-Estando a narração **desligada**, o controle de iniciar NEVER SHALL ser apresentado: não há o
-que armar.
-
-#### Scenario: Carregada e sem gesto, nada fala
-
-- **WHEN** a App 01 é carregada com a narração ligada e ninguém tocou em nada
-- **THEN** nada é falado, e a aplicação oferece o controle de iniciar
-
-#### Scenario: Acionado o iniciar, as telas passam a falar
-
-- **WHEN** alguém aciona o controle de iniciar
-- **THEN** a narração é armada, e as telas seguintes falam o que declararam
-
-#### Scenario: Desligada, não há o que iniciar
-
-- **WHEN** a App 01 é carregada com a narração desligada
-- **THEN** o controle de iniciar não é apresentado
+- **WHEN** a narração está ligada e a aplicação é recarregada
+- **THEN** ela volta a estar desligada
 
 ### Requirement: No Quiz ao Vivo a App 01 fala o enunciado da pergunta no ar
 
@@ -2495,24 +2507,32 @@ tornaria a tela inutilizável. Só a **pergunta nova** SHALL ser falada.
 
 ### Requirement: O conteúdo de missão em texto ganha o controle de ouvi-lo
 
-Com a narração ligada, a App 01 SHALL oferecer, junto do conteúdo de missão em **texto**, um
-controle próprio de **ouvir**, com rótulo textual. O conteúdo NEVER SHALL ser falado ao entrar
-na tela: no encontro há **um aparelho por equipe** e meia dúzia deles lendo o conteúdo inteiro
-ao mesmo tempo é ruído, não acessibilidade (documento 15 §5.1, documento 03 §4).
+Havendo síntese de fala no navegador, a App 01 SHALL oferecer, junto do conteúdo de missão em
+**texto**, um controle próprio de **ouvir**. O controle NEVER SHALL depender de a narração das
+telas estar ligada: quem o aciona está pedindo aquela leitura, e o próprio acionamento é o gesto
+que o navegador exige. (documento 15 §5.1, decisão do fundador de 2026-10-14)
+
+O conteúdo NEVER SHALL ser falado ao entrar na tela: no encontro há **um aparelho por equipe** e
+meia dúzia deles lendo o conteúdo inteiro ao mesmo tempo é ruído, não acessibilidade (documento
+15 §5.1, documento 03 §4).
 
 Conteúdo que não é texto — imagem, vídeo, link e arquivo de apoio — NEVER SHALL apresentar o
 controle: não há o que ler em voz alta.
 
 #### Scenario: O conteúdo em texto oferece ouvir
 
-- **WHEN** a equipe ou o Guerreiro(a) alcança um conteúdo de missão em texto, com a narração
-  ligada
+- **WHEN** a equipe ou o Guerreiro(a) alcança um conteúdo de missão em texto
 - **THEN** um controle de ouvir aparece junto dele, e o conteúdo não foi falado sozinho
 
 #### Scenario: Acionar o controle lê o conteúdo
 
 - **WHEN** o controle de ouvir é acionado
 - **THEN** o conteúdo daquele texto é falado
+
+#### Scenario: Com a narração desligada o controle continua lá
+
+- **WHEN** a narração das telas está desligada e um conteúdo de missão em texto é alcançado
+- **THEN** o controle de ouvir aparece, e acioná-lo lê aquele texto
 
 #### Scenario: Conteúdo que não é texto não oferece ouvir
 

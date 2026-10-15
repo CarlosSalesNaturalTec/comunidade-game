@@ -114,11 +114,16 @@ function instalarMotorDeFalaFalso() {
   return motor;
 }
 
-/** O navegador não fala antes de um gesto da pessoa: este é o gesto. */
+/** O navegador não fala antes de um gesto da pessoa, e a narração nasce
+ * desligada: ligá-la pelo alternador do canto do cabeçalho é o gesto. Ele mora
+ * na tela inicial, então vem **depois** de a sessão de trabalho abrir — a
+ * narração do andamento é reavaliada quando a escolha muda. */
 async function darOGestoQueArmaANarracao() {
   await userEvent
     .setup()
-    .click(await screen.findByRole("button", { name: "Iniciar a narração das telas" }));
+    .click(
+      await screen.findByRole("button", { name: "Ligar a leitura das telas em voz alta" }),
+    );
 }
 
 describe("pré-carga dos modelos de biometria", () => {
@@ -220,8 +225,8 @@ describe("pré-carga dos modelos de biometria", () => {
     vi.spyOn(biometria, "andamentoDosModelos").mockReturnValue({ carregados: 1, total: 5 });
 
     render(<App />);
-    await darOGestoQueArmaANarracao();
     await entrarComoMestre();
+    await darOGestoQueArmaANarracao();
 
     await screen.findByText(/carregando modelos de reconhecimento facial/i);
     await waitFor(() =>
@@ -236,8 +241,8 @@ describe("pré-carga dos modelos de biometria", () => {
     vi.spyOn(biometria, "precarregarModelos").mockResolvedValue(false);
 
     render(<App />);
-    await darOGestoQueArmaANarracao();
     await entrarComoMestre();
+    await darOGestoQueArmaANarracao();
 
     await screen.findByText(/não foi possível carregar os modelos/i);
     await waitFor(() =>
