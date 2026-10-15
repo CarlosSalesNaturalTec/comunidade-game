@@ -101,6 +101,7 @@ function conteudoDeTexto(id: string, ordem: number, corpo: string) {
 function trilhaPublica(
   atividades: trilhaApi.AtividadeDaMissaoPublica[] = [],
   conteudos: trilhaApi.ConteudoDaMissaoPublico[] = [],
+  bibliografia: trilhaApi.BibliografiaDaMissaoPublica[] = [],
 ) {
   return {
     id: "trilha-1",
@@ -117,10 +118,16 @@ function trilhaPublica(
         e_sondagem: false,
         atividades,
         conteudos,
-        bibliografia: [],
+        bibliografia,
       },
     ],
   };
+}
+
+// A `Missao` recebe o dado público por `prop` — quem busca a trilha
+// publicada é o `GuiaDaTrilha` (fatia 27 do PRD-04).
+function missaoDe(trilha: ReturnType<typeof trilhaPublica>) {
+  return trilha.missoes[0];
 }
 
 afterEach(() => {
@@ -208,12 +215,12 @@ describe("a entrega individual da produção é ato opcional da missão", () => 
   ];
 
   it("ligada, a missão desbloqueada apresenta a entrega de quem a ofereceu", async () => {
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublica(ATIVIDADES));
+    const publica = missaoDe(trilhaPublica(ATIVIDADES));
 
     await renderizar(
       <Missao
-        trilhaId="trilha-1"
         missao={MISSAO_ABERTA}
+        missaoPublica={publica}
         aoDesbloquear={vi.fn()}
         entregaDaProducao={({ missaoId, atividades }) => (
           <p>
@@ -229,10 +236,10 @@ describe("a entrega individual da produção é ato opcional da missão", () => 
   });
 
   it("desligada, a missão desbloqueada não oferece entrega alguma", async () => {
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublica(ATIVIDADES));
+    const publica = missaoDe(trilhaPublica(ATIVIDADES));
 
     await renderizar(
-      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+      <Missao missao={MISSAO_ABERTA} missaoPublica={publica} aoDesbloquear={vi.fn()} />,
     );
 
     expect(
@@ -242,17 +249,17 @@ describe("a entrega individual da produção é ato opcional da missão", () => 
   });
 
   it("os dois atos são independentes: o desbloqueio liga sem a entrega", async () => {
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublica(ATIVIDADES));
+    const publica = missaoDe(trilhaPublica(ATIVIDADES));
 
     await renderizar(
       <Missao
-        trilhaId="trilha-1"
         missao={{
           ...MISSAO_ABERTA,
           desbloqueada: false,
           e_proxima: true,
           desafio_de_desbloqueio: QUIZ,
         }}
+        missaoPublica={publica}
         aoDesbloquear={vi.fn()}
         submissaoDoDesbloqueioLigada
       />,
@@ -269,9 +276,9 @@ describe("a entrega individual da produção é ato opcional da missão", () => 
 // (`RF-05-11`, `RF-05-13`, `RN-05-45`, `RF-05-08`, `RF-05-10`,
 // documento 15 §§6.1, 6.4)
 
-describe("o conteúdo da missão sai um por vez, com o crédito recolhido", () => {
+describe("o conteúdo da missão sai um por vez", () => {
   it("o primeiro conteúdo aparece sozinho, e avançar leva ao segundo", async () => {
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+    const publica = missaoDe(
       trilhaPublica(
         [],
         [
@@ -282,7 +289,7 @@ describe("o conteúdo da missão sai um por vez, com o crédito recolhido", () =
     );
 
     await renderizar(
-      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+      <Missao missao={MISSAO_ABERTA} missaoPublica={publica} aoDesbloquear={vi.fn()} />,
     );
     const usuario = userEvent.setup();
 
@@ -300,36 +307,16 @@ describe("o conteúdo da missão sai um por vez, com o crédito recolhido", () =
   });
 
   it("conteúdo único não pagina", async () => {
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+    const publica = missaoDe(
       trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
     );
 
     await renderizar(
-      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+      <Missao missao={MISSAO_ABERTA} missaoPublica={publica} aoDesbloquear={vi.fn()} />,
     );
 
     expect(await screen.findByText("Parágrafo único.")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Próximo conteúdo" })).not.toBeInTheDocument();
-  });
-
-  it("o crédito e a licença ficam num bloco fechado, que abre ao ser acionado", async () => {
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
-      trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
-    );
-
-    await renderizar(
-      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
-    );
-    const usuario = userEvent.setup();
-
-    // Fechado, a linha nomeia o que guarda sem repetir o conteúdo.
-    expect(await screen.findByText("Crédito e licença")).toBeInTheDocument();
-    expect(screen.queryByText(/Mestre Ana/)).not.toBeVisible();
-
-    await usuario.click(screen.getByText("Crédito e licença"));
-
-    expect(screen.getByText(/Mestre Ana/)).toBeVisible();
-    expect(screen.getByText(/CC BY-SA/)).toBeVisible();
   });
 });
 
@@ -453,7 +440,6 @@ describe("a missão seguinte fica recolhida no guia da trilha", () => {
   it("abrir uma missão trancada segue mostrando o motivo direto, sem recolher", async () => {
     await renderizar(
       <Missao
-        trilhaId="trilha-1"
         missao={{
           ...MISSAO_ABERTA,
           desbloqueada: false,
@@ -541,12 +527,12 @@ describe("o conteúdo em texto oferece ouvi-lo, e nunca fala sozinho", () => {
 
   it("o controle aparece no conteúdo em texto, e o conteúdo não é falado sozinho", async () => {
     const motor = instalarMotorDeFalaFalso();
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+    const publica = missaoDe(
       trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
     );
 
     await renderizarComNarracao(
-      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+      <Missao missao={MISSAO_ABERTA} missaoPublica={publica} aoDesbloquear={vi.fn()} />,
     );
 
     expect(
@@ -557,12 +543,12 @@ describe("o conteúdo em texto oferece ouvi-lo, e nunca fala sozinho", () => {
 
   it("acioná-lo fala o corpo daquele texto", async () => {
     const motor = instalarMotorDeFalaFalso();
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+    const publica = missaoDe(
       trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
     );
 
     await renderizarComNarracao(
-      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+      <Missao missao={MISSAO_ABERTA} missaoPublica={publica} aoDesbloquear={vi.fn()} />,
     );
     const usuario = userEvent.setup();
 
@@ -575,12 +561,12 @@ describe("o conteúdo em texto oferece ouvi-lo, e nunca fala sozinho", () => {
 
   it("conteúdo que não é texto não oferece o controle", async () => {
     instalarMotorDeFalaFalso();
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+    const publica = missaoDe(
       trilhaPublica([], [conteudoDeLink("conteudo-1", 1, "https://exemplo.org")]),
     );
 
     await renderizarComNarracao(
-      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+      <Missao missao={MISSAO_ABERTA} missaoPublica={publica} aoDesbloquear={vi.fn()} />,
     );
 
     expect(await screen.findByRole("link")).toBeInTheDocument();
@@ -589,12 +575,12 @@ describe("o conteúdo em texto oferece ouvi-lo, e nunca fala sozinho", () => {
 
   it("sem o provedor montado — a App 05 de hoje — o controle não aparece", async () => {
     instalarMotorDeFalaFalso();
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+    const publica = missaoDe(
       trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
     );
 
     await renderizar(
-      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+      <Missao missao={MISSAO_ABERTA} missaoPublica={publica} aoDesbloquear={vi.fn()} />,
     );
 
     expect(await screen.findByText("Parágrafo único.")).toBeInTheDocument();
@@ -603,14 +589,14 @@ describe("o conteúdo em texto oferece ouvi-lo, e nunca fala sozinho", () => {
 
   it("com a narração desligada o controle continua lá, e acioná-lo lê o texto", async () => {
     const motor = instalarMotorDeFalaFalso();
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+    const publica = missaoDe(
       trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
     );
 
     // A narração nasce desligada, e é assim que esta tela monta: o controle
     // não depende dela (decisão do fundador de 2026-10-14).
     await renderizarComNarracao(
-      <Missao trilhaId="trilha-1" missao={MISSAO_ABERTA} aoDesbloquear={vi.fn()} />,
+      <Missao missao={MISSAO_ABERTA} missaoPublica={publica} aoDesbloquear={vi.fn()} />,
     );
     const usuario = userEvent.setup();
 
@@ -618,5 +604,264 @@ describe("o conteúdo em texto oferece ouvi-lo, e nunca fala sozinho", () => {
     await usuario.click(screen.getByRole("button", { name: "Ouvir este texto" }));
 
     expect(motor.ditos.map((dito) => dito.text)).toEqual(["", "Parágrafo único."]);
+  });
+});
+
+// --- Fatia 27: a tela da missão em quatro grupos, separados por linha muda
+// (`RF-04-72`, `RF-04-73`, `RF-05-08`, `RF-05-10` a `RF-05-12`,
+// documento 15 §6, decisão do fundador de 2026-10-15)
+
+describe("a tela da missão se divide em quatro grupos", () => {
+  const TRILHA: trilhaApi.TrilhaComProximaMissao = {
+    id: "trilha-1",
+    nome: "Robô Educa",
+    poder_id: "poder-1",
+    proxima_missao_id: "missao-1",
+    proxima_missao_titulo: "Primeira Missão",
+    proxima_missao_posicao: 1,
+  };
+
+  const TRILHA_CONCLUIDA: trilhaApi.TrilhaComProximaMissao = {
+    ...TRILHA,
+    proxima_missao_id: null,
+    proxima_missao_titulo: null,
+    proxima_missao_posicao: null,
+  };
+
+  const BIBLIOGRAFIA: trilhaApi.BibliografiaDaMissaoPublica[] = [
+    {
+      id: "bib-1",
+      titulo: "Livro X",
+      capitulo: "Capítulo 1",
+      disponivel: null,
+      apoiador_nome: null,
+    },
+  ];
+
+  // A missão de agora tem um desafio por responder, e a seguinte está
+  // trancada: é o caso em que os quatro grupos existem ao mesmo tempo.
+  function montarPercurso() {
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockImplementation((_id, posicao) =>
+      Promise.resolve(
+        posicao === 1
+          ? {
+              ...MISSAO_ABERTA,
+              desbloqueada: false,
+              e_proxima: true,
+              desafio_de_desbloqueio: QUIZ,
+            }
+          : {
+              ...MISSAO_ABERTA,
+              id: "missao-2",
+              titulo: "Segunda Missão",
+              posicao: 2,
+              desbloqueada: false,
+              e_proxima: false,
+              motivo_do_bloqueio: 'Desbloqueie "Primeira Missão" primeiro.',
+            },
+      ),
+    );
+  }
+
+  function grupos() {
+    const guia = screen.getByRole("region", { name: /Guia de Robô Educa/ });
+    return Array.from(guia.querySelectorAll<HTMLElement>(":scope > .cg-trilha__grupo"));
+  }
+
+  it("os quatro grupos saem na ordem decidida, com o ato junto do conteúdo", async () => {
+    montarPercurso();
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")], BIBLIOGRAFIA),
+    );
+
+    await renderizar(
+      <GuiaDaTrilha
+        trilha={TRILHA}
+        aoAtualizarTrilhas={vi.fn()}
+        submissaoDoDesbloqueioLigada
+        atividadesDoEncontro={<h2>Atividades do encontro</h2>}
+        aoEscolherOutroPoder={vi.fn()}
+      />,
+    );
+
+    expect(await screen.findByText("Parágrafo único.")).toBeInTheDocument();
+    const [conteudo, leDepois, encontro, rodape] = grupos();
+    expect(grupos()).toHaveLength(4);
+
+    // Grupo 1: o conteúdo e o ato da missão, acima da primeira linha.
+    expect(conteudo).toContainElement(screen.getByText("Parágrafo único."));
+    expect(conteudo).toContainElement(
+      screen.getByRole("button", { name: /enviar respostas/i }),
+    );
+
+    // Grupo 2: os dois recolhidos, e nada do ato.
+    expect(leDepois).toContainElement(screen.getByText("Próxima missão"));
+    expect(leDepois).toContainElement(screen.getByText("Bibliografia"));
+
+    // Grupo 3: as atividades do encontro, que vieram por slot.
+    expect(encontro).toContainElement(screen.getByText("Atividades do encontro"));
+
+    // Grupo 4: o rodapé — o caminho ao catálogo e o crédito da obra.
+    expect(rodape).toContainElement(
+      screen.getByRole("button", { name: "Escolher outro poder" }),
+    );
+    expect(rodape).toContainElement(screen.getByText("Crédito e licença"));
+  });
+
+  it("a linha é muda: não há separador anunciado nem rótulo nela", async () => {
+    montarPercurso();
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")], BIBLIOGRAFIA),
+    );
+
+    await renderizar(
+      <GuiaDaTrilha
+        trilha={TRILHA}
+        aoAtualizarTrilhas={vi.fn()}
+        atividadesDoEncontro={<h2>Atividades do encontro</h2>}
+        aoEscolherOutroPoder={vi.fn()}
+      />,
+    );
+
+    expect(await screen.findByText("Parágrafo único.")).toBeInTheDocument();
+    const guia = screen.getByRole("region", { name: /Guia de Robô Educa/ });
+
+    // A linha é `border-top` do grupo de baixo, nunca elemento próprio: `<hr>`
+    // carrega `role="separator"` implícito e é anunciado por parte dos
+    // leitores de tela, e o fundador pediu linha muda em 2026-10-15.
+    expect(screen.queryAllByRole("separator")).toHaveLength(0);
+    expect(guia.querySelectorAll("hr")).toHaveLength(0);
+    // Os quatro grupos estão lá — a ausência de separador não é tela vazia.
+    expect(grupos()).toHaveLength(4);
+  });
+
+  it("a bibliografia nasce fechada e abre com título e capítulo", async () => {
+    montarPercurso();
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [], BIBLIOGRAFIA),
+    );
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+    const usuario = userEvent.setup();
+
+    // Fechada, a linha nomeia sem entregar o conteúdo (documento 15 §6.1).
+    expect(await screen.findByText("Bibliografia")).toBeInTheDocument();
+    expect(screen.getByText("Onde ler mais sobre esta missão.")).toBeInTheDocument();
+    expect(screen.queryByText(/Livro X/)).not.toBeVisible();
+
+    await usuario.click(screen.getByText("Bibliografia"));
+
+    expect(screen.getByText(/Livro X/)).toBeVisible();
+    expect(screen.getByText(/Capítulo 1/)).toBeVisible();
+    // Sem vínculo com exemplar, a disponibilidade não é afirmada nem negada.
+    expect(screen.queryByText(/disponível no seu ponto de apoio/)).not.toBeInTheDocument();
+  });
+
+  it("missão sem bibliografia não apresenta o bloco", async () => {
+    montarPercurso();
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublica());
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+
+    expect(await screen.findByText("Próxima missão")).toBeInTheDocument();
+    expect(screen.queryByText("Bibliografia")).not.toBeInTheDocument();
+  });
+
+  it("grupo sem conteúdo não aparece, e leva a sua linha embora", async () => {
+    // Última missão da trilha — não há seguinte — e sem bibliografia: o
+    // grupo do meio não tem o que apresentar.
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockImplementation((_id, posicao) =>
+      posicao === 1
+        ? Promise.resolve(MISSAO_ABERTA)
+        : Promise.reject({ codigo: "nao_encontrado" }),
+    );
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
+    );
+
+    await renderizar(
+      <GuiaDaTrilha
+        trilha={TRILHA}
+        aoAtualizarTrilhas={vi.fn()}
+        atividadesDoEncontro={<h2>Atividades do encontro</h2>}
+      />,
+    );
+
+    expect(await screen.findByText("Parágrafo único.")).toBeInTheDocument();
+    expect(screen.queryByText("Próxima missão")).not.toBeInTheDocument();
+    expect(screen.queryByText("Bibliografia")).not.toBeInTheDocument();
+    // Restam o conteúdo, as atividades e o rodapé — nunca um grupo vazio
+    // entre duas linhas.
+    expect(grupos()).toHaveLength(3);
+  });
+
+  it("sem o slot das atividades, o grupo do encontro não existe", async () => {
+    // É o caso da App 05, que não tem encontro algum a apresentar.
+    montarPercurso();
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [], BIBLIOGRAFIA),
+    );
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+
+    expect(await screen.findByText("Bibliografia")).toBeInTheDocument();
+    expect(screen.queryByText("Atividades do encontro")).not.toBeInTheDocument();
+    // Conteúdo, o que se lê depois e o rodapé com o crédito.
+    expect(grupos()).toHaveLength(3);
+  });
+
+  it("o caminho ao catálogo só aparece quando quem monta a tela o passa", async () => {
+    montarPercurso();
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublica());
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+
+    expect(await screen.findByText("Crédito e licença")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Escolher outro poder" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("o crédito fica no rodapé, fechado, e abre ao ser acionado", async () => {
+    montarPercurso();
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
+      trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
+    );
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+    const usuario = userEvent.setup();
+
+    // Fechado, a linha nomeia o que guarda sem repetir o conteúdo.
+    expect(await screen.findByText("Crédito e licença")).toBeInTheDocument();
+    expect(screen.queryByText(/Mestre Ana/)).not.toBeVisible();
+
+    await usuario.click(screen.getByText("Crédito e licença"));
+
+    expect(screen.getByText(/Mestre Ana/)).toBeVisible();
+    expect(screen.getByText(/CC BY-SA/)).toBeVisible();
+
+    // E está no último grupo, não sob o conteúdo.
+    const todos = grupos();
+    expect(todos[todos.length - 1]).toContainElement(screen.getByText("Crédito e licença"));
+  });
+
+  it("a trilha concluída mantém os grupos, e credita a autoria", async () => {
+    // O caminho da culminância, em que o guia saía cedo e levava consigo as
+    // atividades do encontro e o crédito (invariante 5 do documento 99).
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublica());
+
+    await renderizar(
+      <GuiaDaTrilha
+        trilha={TRILHA_CONCLUIDA}
+        aoAtualizarTrilhas={vi.fn()}
+        atividadesDoEncontro={<h2>Atividades do encontro</h2>}
+      />,
+    );
+
+    expect(await screen.findByText(/hora da culminância/i)).toBeInTheDocument();
+    expect(screen.getByText("Atividades do encontro")).toBeInTheDocument();
+    expect(screen.getByText("Crédito e licença")).toBeInTheDocument();
+    expect(screen.queryByText("Próxima missão")).not.toBeInTheDocument();
+    expect(grupos()).toHaveLength(3);
   });
 });

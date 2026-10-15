@@ -168,22 +168,24 @@ export function TelaDeTrilhasDoGuerreiro({ aulaId, token, aoVoltar }: Props) {
     );
   }
 
+  // Uma trilha só não tem para onde trocar — e é justamente nesse caso que a
+  // lista de trilhas fica inalcançável. Então o rodapé do guia é o **único**
+  // caminho ao catálogo de poderes e tem de oferecê-lo; com duas trilhas ou
+  // mais a lista já o alcança, e repeti-lo no rodapé seria ruído
+  // (`RF-04-74`, design — decisão 3).
+  const temOutraTrilha = trilhas.length > 1;
+
   return (
     <Moldura>
       <Cabecalho titulo="Trilhas e missões" acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }} />
       <GuiaDaTrilha
         trilha={escolhida}
         aoAtualizarTrilhas={() => carregar(escolhida.id)}
-        // Uma trilha só não tem para onde trocar.
-        aoTrocarDeTrilha={trilhas.length > 1 ? () => definirEscolhidaId(null) : undefined}
+        aoTrocarDeTrilha={temOutraTrilha ? () => definirEscolhidaId(null) : undefined}
         submissaoDoDesbloqueioLigada
+        atividadesDoEncontro={<AtividadesDaAula aulaId={aulaId} equipes={equipes} />}
+        aoEscolherOutroPoder={temOutraTrilha ? undefined : () => definirMostrarCatalogo(true)}
       />
-      {trilhas.length === 1 && (
-        <Botao variante="secundaria" onClick={() => definirMostrarCatalogo(true)}>
-          Escolher outro poder
-        </Botao>
-      )}
-      <AtividadesDaAula aulaId={aulaId} equipes={equipes} />
     </Moldura>
   );
 }

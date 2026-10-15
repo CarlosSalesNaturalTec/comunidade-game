@@ -8,7 +8,15 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 const CHAVE_DE_SESSAO = "app-05:teste-missao";
 
-async function renderizar(missao: trilhaApi.MissaoNoPercurso, aoDesbloquear = vi.fn()) {
+// A `Missao` não busca mais nada: o dado público chega por `prop`, do
+// `GuiaDaTrilha`, que é quem passou a buscar a trilha publicada. A
+// bibliografia e o crédito deixaram de ser dela — são testados no guia, em
+// `comum/trilha/trilha.test.tsx` (fatia 27 do PRD-04).
+async function renderizar(
+  missao: trilhaApi.MissaoNoPercurso,
+  missaoPublica?: trilhaApi.MissaoPublica,
+  aoDesbloquear = vi.fn(),
+) {
   sessionStorage.setItem(CHAVE_DE_SESSAO, "token-do-guerreiro");
   vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
     persona_id: "guerreiro-1",
@@ -19,8 +27,8 @@ async function renderizar(missao: trilhaApi.MissaoNoPercurso, aoDesbloquear = vi
     render(
       <ProvedorDeSessao chaveDeArmazenamento={CHAVE_DE_SESSAO}>
         <Missao
-          trilhaId="trilha-1"
           missao={missao}
+          missaoPublica={missaoPublica}
           aoDesbloquear={aoDesbloquear}
           submissaoDoDesbloqueioLigada
         />
@@ -52,80 +60,74 @@ describe("missão no percurso", () => {
     expect(screen.getByText(/Desbloqueie "Primeira Missão" primeiro\./)).toBeInTheDocument();
   });
 
-  it("mostra o conteúdo um por vez, na ordem do autor, com o crédito recolhido", async () => {
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue({
-      id: "trilha-1",
-      nome: "Robô Educa",
-      licenca: "CC BY-SA",
-      autor_nome: "Mestre Ana",
-      culminancia: null,
-      missoes: [
-        {
-          id: "missao-1",
-          titulo: "Primeira Missão",
-          posicao: 1,
-          obrigatoria: true,
-          e_sondagem: false,
-          atividades: [],
-          conteudos: [
-            {
-              id: "conteudo-2",
-              ordem: 2,
-              tipo: "texto",
-              corpo: "Segundo parágrafo.",
-              endereco: null,
-              referencia: null,
-              autoria: "propria",
-              fonte: null,
-            },
-            {
-              id: "conteudo-1",
-              ordem: 1,
-              tipo: "texto",
-              corpo: "Primeiro parágrafo.",
-              endereco: null,
-              referencia: null,
-              autoria: "propria",
-              fonte: null,
-            },
-          ],
-          bibliografia: [
-            {
-              id: "bib-1",
-              titulo: "Livro X",
-              capitulo: "Capítulo 1",
-              disponivel: null,
-              apoiador_nome: null,
-            },
-          ],
-        },
-      ],
-    });
-
-    await renderizar({
+  it("mostra o conteúdo um por vez, na ordem do autor, com o ato junto dele", async () => {
+    const missaoPublica: trilhaApi.MissaoPublica = {
       id: "missao-1",
       titulo: "Primeira Missão",
       posicao: 1,
       obrigatoria: true,
       e_sondagem: false,
-      desbloqueada: false,
-      e_proxima: true,
-      aguardando_mestre: false,
-      motivo_do_bloqueio: null,
-      desafio_de_desbloqueio: {
-        tipo: "quiz",
-        enunciado: null,
-        perguntas: [
-          {
-            id: "pergunta-1",
-            ordem: 1,
-            enunciado: "Pergunta da missão.",
-            alternativas: ["a", "b", "c", "d"],
-            imagem_referencia: null,
-          },
-        ],
+      atividades: [],
+      conteudos: [
+        {
+          id: "conteudo-2",
+          ordem: 2,
+          tipo: "texto",
+          corpo: "Segundo parágrafo.",
+          endereco: null,
+          referencia: null,
+          autoria: "propria",
+          fonte: null,
+        },
+        {
+          id: "conteudo-1",
+          ordem: 1,
+          tipo: "texto",
+          corpo: "Primeiro parágrafo.",
+          endereco: null,
+          referencia: null,
+          autoria: "propria",
+          fonte: null,
+        },
+      ],
+      bibliografia: [
+        {
+          id: "bib-1",
+          titulo: "Livro X",
+          capitulo: "Capítulo 1",
+          disponivel: null,
+          apoiador_nome: null,
+        },
+      ],
+    };
+
+    await renderizar(
+      {
+        id: "missao-1",
+        titulo: "Primeira Missão",
+        posicao: 1,
+        obrigatoria: true,
+        e_sondagem: false,
+        desbloqueada: false,
+        e_proxima: true,
+        aguardando_mestre: false,
+        motivo_do_bloqueio: null,
+        desafio_de_desbloqueio: {
+          tipo: "quiz",
+          enunciado: null,
+          perguntas: [
+            {
+              id: "pergunta-1",
+              ordem: 1,
+              enunciado: "Pergunta da missão.",
+              alternativas: ["a", "b", "c", "d"],
+              imagem_referencia: null,
+            },
+          ],
+        },
       },
-    });
+      missaoPublica,
+    );
 
     const usuario = userEvent.setup();
 
@@ -137,50 +139,42 @@ describe("missão no percurso", () => {
     await usuario.click(screen.getByRole("button", { name: "Próximo conteúdo" }));
     expect(screen.getByText("Segundo parágrafo.")).toBeInTheDocument();
 
-    // O crédito é metadado da obra: fica recolhido, e continua alcançável.
-    expect(screen.getByText(/Mestre Ana/)).not.toBeVisible();
-    await usuario.click(screen.getByText("Crédito e licença"));
-    expect(screen.getByText(/Mestre Ana/)).toBeVisible();
-    expect(screen.getByText(/CC BY-SA/)).toBeVisible();
-
-    expect(screen.getByText(/Livro X/)).toBeInTheDocument();
-    expect(screen.queryByText(/disponível/)).not.toBeInTheDocument();
+    // O ato da missão fica no mesmo grupo do conteúdo, acima da primeira
+    // linha separadora (`RF-04-73`, decisão do fundador de 2026-10-15).
     expect(screen.getByText(/Pergunta da missão\./)).toBeInTheDocument();
+
+    // A bibliografia e o crédito saíram da missão: são do guia, e nem
+    // recolhidos aparecem aqui.
+    expect(screen.queryByText("Bibliografia")).not.toBeInTheDocument();
+    expect(screen.queryByText("Crédito e licença")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Livro X/)).not.toBeInTheDocument();
   });
 
   it("opcional aparece marcada e fora da conta", async () => {
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue({
-      id: "trilha-1",
-      nome: "Robô Educa",
-      licenca: "CC BY-SA",
-      autor_nome: "Mestre Ana",
-      culminancia: null,
-      missoes: [
-        {
-          id: "missao-1",
-          titulo: "Missão Opcional",
-          posicao: 1,
-          obrigatoria: false,
-          e_sondagem: false,
-          atividades: [],
-          conteudos: [],
-          bibliografia: [],
-        },
-      ],
-    });
-
-    await renderizar({
-      id: "missao-1",
-      titulo: "Missão Opcional",
-      posicao: 1,
-      obrigatoria: false,
-      e_sondagem: false,
-      desbloqueada: false,
-      e_proxima: true,
-      aguardando_mestre: false,
-      motivo_do_bloqueio: null,
-      desafio_de_desbloqueio: null,
-    });
+    await renderizar(
+      {
+        id: "missao-1",
+        titulo: "Missão Opcional",
+        posicao: 1,
+        obrigatoria: false,
+        e_sondagem: false,
+        desbloqueada: false,
+        e_proxima: true,
+        aguardando_mestre: false,
+        motivo_do_bloqueio: null,
+        desafio_de_desbloqueio: null,
+      },
+      {
+        id: "missao-1",
+        titulo: "Missão Opcional",
+        posicao: 1,
+        obrigatoria: false,
+        e_sondagem: false,
+        atividades: [],
+        conteudos: [],
+        bibliografia: [],
+      },
+    );
 
     expect(await screen.findByText(/não conta no que falta/i)).toBeInTheDocument();
   });
@@ -189,25 +183,18 @@ describe("missão no percurso", () => {
 // --- Conserto: a imagem e o vídeo aparecem, a referência não (`RF-05-11`)
 
 describe("arquivo do conteúdo da missão", () => {
-  function trilhaComConteudo(conteudo: trilhaApi.ConteudoDaMissaoPublico) {
+  function missaoComConteudo(
+    conteudo: trilhaApi.ConteudoDaMissaoPublico,
+  ): trilhaApi.MissaoPublica {
     return {
-      id: "trilha-1",
-      nome: "Robô Educa",
-      licenca: "CC BY-SA",
-      autor_nome: "Mestre Ana",
-      culminancia: null,
-      missoes: [
-        {
-          id: "missao-1",
-          titulo: "Primeira Missão",
-          posicao: 1,
-          obrigatoria: true,
-          e_sondagem: false,
-          atividades: [],
-          conteudos: [conteudo],
-          bibliografia: [],
-        },
-      ],
+      id: "missao-1",
+      titulo: "Primeira Missão",
+      posicao: 1,
+      obrigatoria: true,
+      e_sondagem: false,
+      atividades: [],
+      conteudos: [conteudo],
+      bibliografia: [],
     };
   }
 
@@ -230,8 +217,13 @@ describe("arquivo do conteúdo da missão", () => {
       createObjectURL: vi.fn(() => "blob:conteudo-1"),
       revokeObjectURL: vi.fn(),
     });
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
-      trilhaComConteudo({
+    const ler = vi
+      .spyOn(trilhaApi, "lerArquivoDoConteudo")
+      .mockResolvedValue(new Blob(["bytes"], { type: "image/png" }));
+
+    await renderizar(
+      MISSAO_ABERTA,
+      missaoComConteudo({
         id: "conteudo-1",
         ordem: 1,
         tipo: "imagem",
@@ -242,11 +234,6 @@ describe("arquivo do conteúdo da missão", () => {
         fonte: null,
       }),
     );
-    const ler = vi
-      .spyOn(trilhaApi, "lerArquivoDoConteudo")
-      .mockResolvedValue(new Blob(["bytes"], { type: "image/png" }));
-
-    await renderizar(MISSAO_ABERTA);
 
     const imagem = (await screen.findByRole("img")) as HTMLImageElement;
     expect(imagem.src).toBe("blob:conteudo-1");
@@ -265,8 +252,13 @@ describe("arquivo do conteúdo da missão", () => {
       createObjectURL: vi.fn(() => "blob:conteudo-1"),
       revokeObjectURL: vi.fn(),
     });
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
-      trilhaComConteudo({
+    vi.spyOn(trilhaApi, "lerArquivoDoConteudo").mockResolvedValue(
+      new Blob(["bytes"], { type: "video/mp4" }),
+    );
+
+    await renderizar(
+      MISSAO_ABERTA,
+      missaoComConteudo({
         id: "conteudo-1",
         ordem: 1,
         tipo: "video",
@@ -277,11 +269,6 @@ describe("arquivo do conteúdo da missão", () => {
         fonte: null,
       }),
     );
-    vi.spyOn(trilhaApi, "lerArquivoDoConteudo").mockResolvedValue(
-      new Blob(["bytes"], { type: "video/mp4" }),
-    );
-
-    await renderizar(MISSAO_ABERTA);
 
     const video = (await screen.findByLabelText(
       /vídeo de primeira missão/i,
@@ -291,8 +278,11 @@ describe("arquivo do conteúdo da missão", () => {
   });
 
   it("envio não concluído não aparece quebrado nem pede bytes", async () => {
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
-      trilhaComConteudo({
+    const ler = vi.spyOn(trilhaApi, "lerArquivoDoConteudo");
+
+    await renderizar(
+      MISSAO_ABERTA,
+      missaoComConteudo({
         id: "conteudo-1",
         ordem: 1,
         tipo: "video",
@@ -303,17 +293,17 @@ describe("arquivo do conteúdo da missão", () => {
         fonte: null,
       }),
     );
-    const ler = vi.spyOn(trilhaApi, "lerArquivoDoConteudo");
-
-    await renderizar(MISSAO_ABERTA);
 
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
     expect(ler).not.toHaveBeenCalled();
   });
 
   it("o texto segue saindo do próprio conteúdo, sem pedir bytes", async () => {
-    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(
-      trilhaComConteudo({
+    const ler = vi.spyOn(trilhaApi, "lerArquivoDoConteudo");
+
+    await renderizar(
+      MISSAO_ABERTA,
+      missaoComConteudo({
         id: "conteudo-1",
         ordem: 1,
         tipo: "texto",
@@ -324,9 +314,6 @@ describe("arquivo do conteúdo da missão", () => {
         fonte: null,
       }),
     );
-    const ler = vi.spyOn(trilhaApi, "lerArquivoDoConteudo");
-
-    await renderizar(MISSAO_ABERTA);
 
     expect(await screen.findByText("Parágrafo da missão.")).toBeInTheDocument();
     expect(ler).not.toHaveBeenCalled();

@@ -1,0 +1,22 @@
+/* A tela da missão em grupos: o conteúdo com o ato, o que se lê depois, as
+ * atividades do encontro e o rodapé. A linha que separa um grupo do
+ * seguinte é o `border-top` **do grupo de baixo**, nunca um elemento
+ * próprio: grupo que não renderiza leva a sua linha embora, e não sobra
+ * separador entre dois grupos vizinhos (design — decisão 2).
+ *
+ * A linha é **muda** — não tem rótulo e não é anunciada. Por isso não é
+ * `<hr>`, que carrega `role="separator"` implícito, nem o par
+ * `fieldset`/`legend` do menu da App 01, que existe para a `legend`
+ * carregar a borda. A fronteira que o leitor de tela percebe é o título do
+ * próprio grupo (decisão do fundador de 2026-10-15). */
+.cg-trilha__grupo + .cg-trilha__grupo {
+  border-block-start: 1px solid var(--cor-separador);
+  margin-block-start: var(--espaco-24);
+  padding-block-start: var(--espaco-24);
+}
+
+/* Os dois blocos recolhidos do grupo do meio — a próxima missão e a
+ * bibliografia — e o par do rodapé respiram entre si sem encostar. */
+.cg-trilha__grupo > * + * {
+  margin-block-start: var(--espaco-16);
+}
