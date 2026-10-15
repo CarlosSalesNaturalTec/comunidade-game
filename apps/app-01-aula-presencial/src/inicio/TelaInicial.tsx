@@ -85,6 +85,12 @@ interface Props {
 // nunca no lugar dele: é o que a criança reconhece antes de ler a frase
 // inteira, e o rótulo segue sendo o nome acessível do botão (documento 15
 // §§5, 11.1, decisão do fundador de 2026-09-25).
+//
+// A **ordem** dos caminhos é decisão do fundador de 2026-10-15 e está fixada
+// em spec, não é o acaso de quando cada fatia os acrescentou: onboarding,
+// presença, trilhas e missões, equipes, quiz e, com o momento aberto, a
+// troca. Trilhas e equipes andam lado a lado, por serem o par de trabalhar a
+// trilha (`RF-04-01`).
 export function TelaInicial({
   tokenDeTrabalho,
   personaIdDeTrabalho,
@@ -379,6 +385,10 @@ export function TelaInicial({
           <Icone glifo="presenca" />
           Presença — entrar com o nick e registrar a presença de hoje
         </button>
+        <button type="button" className="cg-caminho" onClick={() => definirCaminho("trilhas")}>
+          <Icone glifo="trilhas" />
+          Trilhas e missões — ver o seu percurso e as atividades do encontro
+        </button>
         <button type="button" className="cg-caminho" onClick={() => definirCaminho("equipes")}>
           <Icone glifo="equipes" />
           Equipes — formar a equipe e trabalhar a trilha
@@ -387,30 +397,42 @@ export function TelaInicial({
           <Icone glifo="quiz" />
           Quiz ao Vivo — entrar com o nick e responder pela equipe
         </button>
-        <button type="button" className="cg-caminho" onClick={() => definirCaminho("trilhas")}>
-          <Icone glifo="trilhas" />
-          Trilhas e missões — ver o seu percurso e as atividades do encontro
-        </button>
-        <button type="button" className="cg-caminho" onClick={() => definirCaminho("medicao")}>
-          <Icone glifo="medicao" />
-          Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio
-        </button>
         {momentoDeTrocaAberto && (
           <button type="button" className="cg-caminho" onClick={() => definirCaminho("troca")}>
             <Icone glifo="troca" />
             Troca por recompensa avulsa — entregar uma recompensa do encontro
           </button>
         )}
-        {/* As duas ações de quem opera o aparelho fecham o menu, no mesmo
-            padrão dos caminhos — o fundador pediu o cartão igual, e o que
-            separa é o rótulo do grupo (`RF-04-71`, `RF-04-49`, design —
+        {/* Os atos de quem opera o aparelho fecham o menu, no mesmo padrão
+            dos caminhos — o fundador pediu o cartão igual, e o que separa é o
+            rótulo do grupo (`RF-04-71`, `RF-04-49`, `RF-04-63`, design —
             decisão 6). O grupo é **declarado**, e não só desenhado: a
             `legend` é anunciada ao entrar nele, e sem ela quem navega por
-            leitor de tela ouviria os dois cartões sem a fronteira que quem
-            olha vê. `fieldset` é o elemento que o documento 15 §5 pede aqui —
-            grupo nativo, com rótulo nativo, sem `aria-` nenhum. */}
+            leitor de tela ouviria os cartões sem a fronteira que quem olha
+            vê. `fieldset` é o elemento que o documento 15 §5 pede aqui —
+            grupo nativo, com rótulo nativo, sem `aria-` nenhum.
+
+            A `legend` é o **primeiro filho** do `fieldset`, e tem de seguir
+            sendo: é ela que carrega o `border-top` do separador, e um cartão
+            antes dela joga a linha para o meio do grupo (design — decisão
+            2). */}
         <fieldset className="cg-caminhos__operacao">
           <legend className="cg-caminhos__grupo">Para quem opera o aparelho</legend>
+          {/* A medição abre o grupo: é diagnóstico do ponto de apoio, não
+              caminho da criança — `RF-04-63` a atribui a Mestre ou Admin, ela
+              mede só quem opera fora do onboarding (`RN-04-33`) e pede o mesmo
+              PIN do aparelho que o encerramento (`RN-04-41`). Vem antes da
+              chave da troca porque calibrar é ato de preparo, raríssimo,
+              enquanto a chave é do encontro em curso (decisão do fundador de
+              2026-10-15). */}
+          <button
+            type="button"
+            className="cg-caminho"
+            onClick={() => definirCaminho("medicao")}
+          >
+            <Icone glifo="medicao" />
+            Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio
+          </button>
           {podeAbrirMomentoDeTroca && (
             <button
               type="button"

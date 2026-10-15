@@ -2105,12 +2105,21 @@ Cada caminho SHALL apresentar, **ao lado do rótulo textual que já tem**, o gli
 glifo NEVER SHALL substituir o rótulo nem ser a única forma de distinguir um caminho do outro.
 (`RF-04-01`, documento 15 §§5, 11.1, decisão do fundador de 2026-09-25)
 
-As duas ações de **quem opera o aparelho** — abrir e fechar o momento de troca, e encerrar a
-sessão de trabalho — SHALL ser apresentadas no **mesmo padrão dos caminhos**, ao fim da lista e
-depois de todos eles, sob um rótulo de grupo que as separe do que a criança escolhe. O
-**encerramento SHALL ser o último** dos dois. A abertura e o fechamento do momento de troca
-SHALL aparecer ali apenas para o aparelho que pode abri-lo. (`RF-04-71`, `RF-04-49`, decisão do
-fundador de 2026-10-14)
+Os atos de **quem opera o aparelho** — a **medição do limiar**, abrir e fechar o momento de
+troca, e encerrar a sessão de trabalho — SHALL ser apresentados no **mesmo padrão dos
+caminhos**, ao fim da lista e depois de todos eles, sob um rótulo de grupo que os separe do que
+a criança escolhe. A ordem do grupo SHALL ser **medição do limiar**, momento de troca e
+encerramento, e o **encerramento SHALL ser o último do grupo**. A abertura e o fechamento do
+momento de troca SHALL aparecer ali apenas para o aparelho que pode abri-lo; a medição SHALL
+aparecer em toda sessão de trabalho, guardada pelo PIN do aparelho e não pelo papel. A medição
+NEVER SHALL ser apresentada entre os caminhos que a criança escolhe: ela mede quem opera, nunca
+um Guerreiro(a), fora do onboarding. (`RF-04-71`, `RF-04-49`, `RF-04-63`, `RN-04-33`,
+`RN-04-41`, decisões do fundador de 2026-10-14 e 2026-10-15)
+
+A ordem dos caminhos que a criança escolhe SHALL ser **onboarding**, **presença**, **trilhas e
+missões**, **equipes**, **quiz** e, quando o momento de troca estiver aberto, **troca por
+recompensa avulsa** — as trilhas e as equipes lado a lado, por serem o par de trabalhar a
+trilha. (`RF-04-01`, decisão do fundador de 2026-10-15)
 
 #### Scenario: Os três caminhos aparecem
 
@@ -2183,15 +2192,27 @@ fundador de 2026-10-14)
 #### Scenario: As ações de quem opera fecham a lista, com o encerramento por último
 
 - **WHEN** a tela inicial é apresentada num aparelho que pode abrir o momento de troca
-- **THEN** depois de todos os caminhos aparecem, sob um rótulo de grupo que as separa deles e no
-  mesmo padrão dos caminhos, a abertura do momento de troca e, por último, o encerramento da
-  sessão de trabalho
+- **THEN** depois de todos os caminhos aparecem, sob um rótulo de grupo que os separa deles e no
+  mesmo padrão dos caminhos, a medição do limiar, a abertura do momento de troca e, por último,
+  o encerramento da sessão de trabalho
 
-#### Scenario: O aparelho que não abre a troca mostra só o encerramento
+#### Scenario: O aparelho que não abre a troca mostra a medição e o encerramento
 
 - **WHEN** a tela inicial é apresentada num aparelho que não pode abrir o momento de troca
-- **THEN** o encerramento da sessão de trabalho aparece ao fim da lista, e nenhuma abertura de
-  momento de troca é oferecida
+- **THEN** o grupo de quem opera apresenta a medição do limiar e, por último, o encerramento da
+  sessão de trabalho, e nenhuma abertura de momento de troca é oferecida
+
+#### Scenario: Os caminhos aparecem na ordem decidida
+
+- **WHEN** a tela inicial é apresentada com o momento de troca aberto
+- **THEN** os caminhos aparecem na ordem onboarding, presença, trilhas e missões, equipes, quiz
+  e troca por recompensa avulsa, antes do rótulo do grupo de quem opera
+
+#### Scenario: A medição do limiar não fica entre os caminhos da criança
+
+- **WHEN** a tela inicial é apresentada
+- **THEN** a medição do limiar aparece dentro do grupo de quem opera o aparelho, nomeado por ele,
+  e nenhum caminho que a criança escolhe aparece depois dela
 
 ### Requirement: Os caminhos Equipes, Quiz e Troca só abrem para quem tem presença registrada
 
