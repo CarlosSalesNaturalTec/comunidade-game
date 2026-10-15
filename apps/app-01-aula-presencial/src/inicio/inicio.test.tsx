@@ -62,11 +62,12 @@ afterEach(() => {
 
 function renderizar(
   aoVoltarAoInicio = vi.fn(),
-  propsDeTroca: Partial<{
+  props: Partial<{
     podeAbrirMomentoDeTroca: boolean;
     momentoDeTrocaAberto: boolean;
     abrindoMomentoDeTroca: boolean;
     erroDeAberturaDaTroca: string | null;
+    papelDeTrabalho: string;
   }> = {},
   aoEncerrarSessaoDeTrabalho = vi.fn(),
 ) {
@@ -77,13 +78,13 @@ function renderizar(
           <TelaInicial
             tokenDeTrabalho="token-de-trabalho"
             personaIdDeTrabalho="mestre-de-trabalho-1"
-            papelDeTrabalho="mestre"
+            papelDeTrabalho={props.papelDeTrabalho ?? "mestre"}
             aulaId="aula-1"
             aoVoltarAoInicio={aoVoltarAoInicio}
-            podeAbrirMomentoDeTroca={propsDeTroca.podeAbrirMomentoDeTroca ?? false}
-            momentoDeTrocaAberto={propsDeTroca.momentoDeTrocaAberto ?? false}
-            abrindoMomentoDeTroca={propsDeTroca.abrindoMomentoDeTroca ?? false}
-            erroDeAberturaDaTroca={propsDeTroca.erroDeAberturaDaTroca ?? null}
+            podeAbrirMomentoDeTroca={props.podeAbrirMomentoDeTroca ?? false}
+            momentoDeTrocaAberto={props.momentoDeTrocaAberto ?? false}
+            abrindoMomentoDeTroca={props.abrindoMomentoDeTroca ?? false}
+            erroDeAberturaDaTroca={props.erroDeAberturaDaTroca ?? null}
             aoAbrirMomentoDeTroca={vi.fn()}
             aoFecharMomentoDeTroca={vi.fn()}
             aoEncerrarSessaoDeTrabalho={aoEncerrarSessaoDeTrabalho}
@@ -931,7 +932,7 @@ describe("o alternador do som no canto do cabeçalho (documento 15 §5.1)", () =
   });
 });
 
-describe("as duas ações de quem opera fecham o menu (RF-04-71, RF-04-49)", () => {
+describe("os atos de quem opera fecham o menu (RF-04-71, RF-04-49, RF-04-63)", () => {
   it("o encerramento é o último cartão, sob o rótulo do grupo", async () => {
     renderizar();
 
@@ -1017,5 +1018,137 @@ describe("as duas ações de quem opera fecham o menu (RF-04-71, RF-04-49)", () 
     expect(aviso).toHaveTextContent("A troca exige rede.");
     // Fora da coluna de alvos de toque: nenhum cartão se desloca sob o dedo.
     expect(aviso.closest(".cg-caminhos")).toBeNull();
+  });
+});
+
+// A ordem do menu é decisão do fundador de 2026-10-15 e está fixada em spec:
+// até esta fatia nenhum teste a protegia — o teste dos glifos lista os
+// rótulos e itera, sem asserir sequência alguma (`RF-04-01`).
+describe("a ordem do menu inicial (RF-04-01)", () => {
+  it("os caminhos vêm na ordem decidida, e o grupo de quem opera fecha a lista", async () => {
+    renderizar(vi.fn(), { momentoDeTrocaAberto: true, podeAbrirMomentoDeTroca: true });
+
+    await screen.findByText(/o que você quer fazer/i);
+
+    const cartoes = Array.from(document.querySelectorAll(".cg-caminho")).map((cartao) =>
+      cartao.textContent?.trim(),
+    );
+
+    expect(cartoes).toEqual([
+      "Onboarding — cadastro do Guerreiro(a) e presença do dia",
+      "Presença — entrar com o nick e registrar a presença de hoje",
+      "Trilhas e missões — ver o seu percurso e as atividades do encontro",
+      "Equipes — formar a equipe e trabalhar a trilha",
+      "Quiz ao Vivo — entrar com o nick e responder pela equipe",
+      "Troca por recompensa avulsa — entregar uma recompensa do encontro",
+      "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
+      "Fechar o momento de troca",
+      "Encerrar a sessão de trabalho",
+    ]);
+  });
+
+  it("sem o momento de troca aberto, a ordem dos caminhos não muda", async () => {
+    renderizar();
+
+    await screen.findByText(/o que você quer fazer/i);
+
+    const caminhos = Array.from(document.querySelectorAll(".cg-caminho"))
+      .map((cartao) => cartao.textContent?.trim() ?? "")
+      .filter((rotulo) => !rotulo.startsWith("Medição") && !rotulo.startsWith("Encerrar"));
+
+    expect(caminhos).toEqual([
+      "Onboarding — cadastro do Guerreiro(a) e presença do dia",
+      "Presença — entrar com o nick e registrar a presença de hoje",
+      "Trilhas e missões — ver o seu percurso e as atividades do encontro",
+      "Equipes — formar a equipe e trabalhar a trilha",
+      "Quiz ao Vivo — entrar com o nick e responder pela equipe",
+    ]);
+  });
+});
+
+// A medição é diagnóstico do ponto de apoio, não caminho da criança: `RF-04-63`
+// a atribui a Mestre ou Admin, ela mede só quem opera fora do onboarding
+// (`RN-04-33`) e pede o mesmo PIN do aparelho que o encerramento (`RN-04-41`).
+// Até esta fatia estava entre os caminhos.
+describe("a medição do limiar fica com quem opera (RF-04-63, RN-04-33)", () => {
+  it("a medição está dentro do grupo, e nenhum caminho da criança vem depois dela", async () => {
+    renderizar(vi.fn(), { momentoDeTrocaAberto: true, podeAbrirMomentoDeTroca: true });
+
+    await screen.findByText(/o que você quer fazer/i);
+
+    const grupo = screen.getByRole("group", { name: "Para quem opera o aparelho" });
+    const medicao = screen.getByRole("button", { name: /medição do limiar/i });
+    expect(grupo).toContainElement(medicao);
+
+    // Os caminhos da criança ficam todos antes dela — inclusive o da troca,
+    // que é o último deles quando o momento está aberto.
+    for (const rotulo of [
+      /onboarding/i,
+      /presença — entrar/i,
+      /trilhas e missões/i,
+      /equipes —/i,
+      /quiz ao vivo/i,
+      /troca por recompensa avulsa/i,
+    ]) {
+      const caminho = screen.getByRole("button", { name: rotulo });
+      expect(grupo).not.toContainElement(caminho);
+      expect(
+        caminho.compareDocumentPosition(medicao) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    }
+  });
+
+  it("a medição abre o grupo, antes da chave da troca e do encerramento", async () => {
+    renderizar(vi.fn(), { podeAbrirMomentoDeTroca: true });
+
+    await screen.findByText(/o que você quer fazer/i);
+
+    const grupo = screen.getByRole("group", { name: "Para quem opera o aparelho" });
+    // A `legend` continua sendo o primeiro filho: é ela que carrega o
+    // `border-top` do separador, e um cartão antes dela jogaria a linha para o
+    // meio do grupo (design — decisão 2).
+    expect(grupo.firstElementChild?.tagName).toBe("LEGEND");
+
+    const naOrdem = Array.from(grupo.querySelectorAll(".cg-caminho")).map((cartao) =>
+      cartao.textContent?.trim(),
+    );
+
+    expect(naOrdem).toEqual([
+      "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
+      "Abrir o momento de troca",
+      "Encerrar a sessão de trabalho",
+    ]);
+  });
+
+  it("o papel não guarda a medição: ela aparece em toda sessão de trabalho", async () => {
+    // O delta afirma que a medição aparece em toda sessão de trabalho, guardada
+    // pelo PIN do aparelho e não pelo papel (`RN-04-41`) — diferente da chave
+    // da troca, que é só do Mestre. Sem este caso a afirmação ficaria sem
+    // prova, porque os demais testes montam sempre com o papel `mestre`.
+    renderizar(vi.fn(), { papelDeTrabalho: "admin" });
+
+    await screen.findByText(/o que você quer fazer/i);
+
+    const grupo = screen.getByRole("group", { name: "Para quem opera o aparelho" });
+    expect(grupo).toContainElement(screen.getByRole("button", { name: /medição do limiar/i }));
+  });
+
+  it("o aparelho que não abre a troca mostra a medição e o encerramento", async () => {
+    renderizar(vi.fn(), { podeAbrirMomentoDeTroca: false });
+
+    await screen.findByText(/o que você quer fazer/i);
+
+    const grupo = screen.getByRole("group", { name: "Para quem opera o aparelho" });
+    const naOrdem = Array.from(grupo.querySelectorAll(".cg-caminho")).map((cartao) =>
+      cartao.textContent?.trim(),
+    );
+
+    expect(naOrdem).toEqual([
+      "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
+      "Encerrar a sessão de trabalho",
+    ]);
+    expect(
+      screen.queryByRole("button", { name: /abrir o momento de troca/i }),
+    ).not.toBeInTheDocument();
   });
 });

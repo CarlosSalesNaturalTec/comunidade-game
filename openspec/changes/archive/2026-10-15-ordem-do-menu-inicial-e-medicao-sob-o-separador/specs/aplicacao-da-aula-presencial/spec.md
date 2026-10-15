@@ -130,7 +130,7 @@ trilha. (`RF-04-01`, decisão do fundador de 2026-10-15)
   mesmo padrão dos caminhos, a medição do limiar, a abertura do momento de troca e, por último,
   o encerramento da sessão de trabalho
 
-#### Scenario: O aparelho que não abre a troca mostra só o encerramento
+#### Scenario: O aparelho que não abre a troca mostra a medição e o encerramento
 
 - **WHEN** a tela inicial é apresentada num aparelho que não pode abrir o momento de troca
 - **THEN** o grupo de quem opera apresenta a medição do limiar e, por último, o encerramento da
