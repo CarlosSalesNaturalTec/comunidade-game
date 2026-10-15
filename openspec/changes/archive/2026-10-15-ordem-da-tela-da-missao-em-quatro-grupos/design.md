@@ -25,6 +25,8 @@ recolhíveis da Arena estão em `camada-visual-comum`. Nada disso muda de dono a
 **Non-Goals:**
 
 - Componente ou tipo novo em `comum/react`: o separador é borda, não peça da camada visual.
+- Estilizar as demais classes `cg-trilha__*` que hoje não têm regra: é dívida da fatia 21, e
+  esta fatia escreve só o que a ordem nova exige.
 - Mudança de rota, de contrato ou de busca no núcleo além de **mover** a chamada existente.
 
 ## Decisions
@@ -56,9 +58,11 @@ tela renderiza depois do guia. Com a busca da trilha pública subindo, o crédit
 apresentado nesse caminho — hoje não é, porque a `Missao` nunca monta.
 
 **`comum/trilha/estilos.css` nasce e é importada pelo `indice.ts`**, no molde de
-`comum/react/indice.ts` e de `comum/avatar/Avatar.tsx`; as regras `cg-trilha__*` saem de
-`apps/app-05-guerreiro/src/index.css`. Descartado: repetir as regras no `index.css` da App 01,
-que duplicaria o estilo de um componente promovido e deixaria a dívida de pé.
+`comum/react/indice.ts` e de `comum/avatar/Avatar.tsx`. Não há regra a mover: `comum/trilha`
+não tem folha alguma, e das vinte classes `cg-trilha__*` só `.cg-trilha__badges` existe no
+CSS — e ela é do `Progresso.tsx` da App 05, que não é componente promovido. A folha nasce com
+o **mínimo da fatia**: a linha e o espaçamento dos grupos. Descartado: escrever a regra no
+`index.css` da App 01, que deixaria a App 05 sem a linha.
 
 **O resumo do bloco da bibliografia é "Onde ler mais sobre esta missão."** — neutro e sem
 repetir o conteúdo, como a Arena exige; o resumo de estado, que conta itens, é da Operação.

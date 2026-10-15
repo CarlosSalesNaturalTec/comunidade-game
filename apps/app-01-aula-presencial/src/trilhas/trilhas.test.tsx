@@ -1039,6 +1039,80 @@ describe("o percurso do Guerreiro(a) no encontro (RF-04-72)", () => {
     expect(screen.getByRole("button", { name: /trocar de trilha/i })).toBeInTheDocument();
   });
 
+  // --- Fatia 27: o rodapé da tela da missão (`RF-04-72`, `RF-04-74`)
+
+  it("com uma trilha, o rodapé oferece o catálogo — é o único caminho a ele", async () => {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(missaoNoPercurso());
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    await renderizarPercurso();
+
+    // Uma trilha só não oferece trocar de trilha, então a lista de trilhas é
+    // inalcançável e o rodapé é a única porta ao catálogo: sem ele, quem tem
+    // uma trilha nunca se inscreveria na segunda (`RF-04-74`).
+    expect(
+      await screen.findByRole("button", { name: "Escolher outro poder" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /trocar de trilha/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("com mais de uma trilha, o rodapé não repete o caminho ao catálogo", async () => {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilhaInscrita(),
+      trilhaInscrita({ id: "trilha-2", nome: "Horta Viva" }),
+    ]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(missaoNoPercurso());
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    await renderizarPercurso();
+    const usuario = userEvent.setup();
+
+    // A lista alcança o catálogo, e é lá que o caminho vive.
+    expect(await screen.findByRole("region", { name: "Suas trilhas" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Escolher outro poder" })).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: "Horta Viva" }));
+
+    expect(await screen.findByRole("heading", { name: "Horta Viva" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Escolher outro poder" }),
+    ).not.toBeInTheDocument();
+    // Quem quer outro poder volta pela troca de trilha, que a lista oferece.
+    expect(screen.getByRole("button", { name: /trocar de trilha/i })).toBeInTheDocument();
+  });
+
+  it("as atividades do encontro ficam em grupo próprio, antes do rodapé", async () => {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(missaoNoPercurso());
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    await renderizarPercurso();
+
+    const atividades = await screen.findByRole("region", {
+      name: /atividades do encontro/i,
+    });
+    const guia = screen.getByRole("region", { name: /Guia de Robô Educa/ });
+    const grupos = Array.from(
+      guia.querySelectorAll<HTMLElement>(":scope > .cg-trilha__grupo"),
+    );
+
+    // As atividades entram por slot, dentro do guia, e o rodapé vem depois
+    // delas (decisão do fundador de 2026-10-15).
+    expect(guia).toContainElement(atividades);
+    const indiceDasAtividades = grupos.findIndex((grupo) => grupo.contains(atividades));
+    const indiceDoRodape = grupos.findIndex((grupo) =>
+      grupo.contains(screen.getByText("Crédito e licença")),
+    );
+    expect(indiceDasAtividades).toBeGreaterThanOrEqual(0);
+    expect(indiceDoRodape).toBe(indiceDasAtividades + 1);
+  });
+
   it("sem inscrição alguma, a tela leva ao catálogo de poderes do ciclo", async () => {
     vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([]);
     vi.spyOn(trilhaApi, "listarPoderesDoCatalogo").mockResolvedValue([

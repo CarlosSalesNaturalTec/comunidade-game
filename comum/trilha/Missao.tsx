@@ -2,7 +2,6 @@ import { type ReactNode, useEffect, useState } from "react";
 import { useSessao } from "../autenticacao/ContextoDeSessao";
 import { useNarracao } from "../narracao/ProvedorDeNarracao";
 import { Aviso } from "../react/Aviso";
-import { BlocoRecolhivel } from "../react/BlocoRecolhivel";
 import { Botao } from "../react/Botao";
 import { EstadoDaLista } from "../react/EstadoDaLista";
 import { MidiaDoNucleo } from "../react/MidiaDoNucleo";
@@ -12,15 +11,18 @@ import {
   lerArquivoDoConteudo,
   type MissaoNoPercurso,
   type MissaoPublica,
-  obterTrilhaPublica,
-  type TrilhaPublicaComMissoes,
 } from "./api";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 import { Sondagem } from "./Sondagem";
 
 interface Props {
-  trilhaId: string;
   missao: MissaoNoPercurso;
+  /** O dado público da missão, buscado pelo `GuiaDaTrilha`: a missão não
+   * busca mais nada, porque a bibliografia e o crédito — que saíam da mesma
+   * resposta — passaram a ser dele (design — decisão 1). */
+  missaoPublica: MissaoPublica | undefined;
+  /** A falha da busca, dita por quem buscou. */
+  erroDoConteudo?: string | null;
   aoDesbloquear: () => void;
   /** Liga a submissão do desbloqueio, que carrega a sondagem com ela — as
    * duas aplicações a ligam (design — decisão 3). */
@@ -132,42 +134,26 @@ function ArquivoDeApoio({ conteudoId, token }: { conteudoId: string; token: stri
   return <a href={endereco}>Abrir o arquivo de apoio</a>;
 }
 
-// Conteúdo e bibliografia da missão, na ordem do autor — vindos de
-// `GET /v1/trilhas/{id}`, nunca duplicados na leitura do percurso
-// (`RF-05-11`, `RF-05-12`). O conteúdo sai **um por vez**, e o crédito com
-// a licença ficam recolhidos: são metadado da obra, não o que a criança
-// veio ler (documento 15 §§6.1, 6.4). A fonte do conteúdo de terceiro
+// O conteúdo da missão e **o ato dela** — a sondagem, o desafio de
+// desbloqueio ou a entrega da produção. É o primeiro grupo da tela, acima
+// da primeira linha separadora: é o que a criança veio fazer (`RF-04-73`,
+// `RF-05-11`, decisão do fundador de 2026-10-15).
+//
+// A **bibliografia** e o **crédito com a licença** NÃO moram aqui: são do
+// `GuiaDaTrilha`, que os põe no grupo seguinte e no rodapé. O conteúdo sai
+// **um por vez** (documento 15 §6.4), e a fonte do conteúdo de terceiro
 // segue junto dele — é atribuição de autoria alheia. Missão bloqueada
 // mostra o motivo direto, nunca recolhido nem cadeado mudo (`RF-05-10`).
 export function Missao({
-  trilhaId,
   missao,
+  missaoPublica,
+  erroDoConteudo = null,
   aoDesbloquear,
   submissaoDoDesbloqueioLigada,
   entregaDaProducao,
 }: Props) {
   const { sessao } = useSessao();
   const token = sessao?.token ?? null;
-  const [trilhaPublica, definirTrilhaPublica] = useState<TrilhaPublicaComMissoes | null>(null);
-  const [erro, definirErro] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelado = false;
-    obterTrilhaPublica(trilhaId)
-      .then((resultado) => {
-        if (!cancelado) definirTrilhaPublica(resultado);
-      })
-      .catch(() => {
-        if (!cancelado) {
-          definirErro(
-            "Não foi possível carregar o conteúdo agora. Tente de novo em instantes.",
-          );
-        }
-      });
-    return () => {
-      cancelado = true;
-    };
-  }, [trilhaId]);
 
   if (!missao.desbloqueada && !missao.e_proxima) {
     return (
@@ -176,8 +162,6 @@ export function Missao({
       </Aviso>
     );
   }
-
-  const missaoPublica = trilhaPublica?.missoes.find((item) => item.id === missao.id);
 
   return (
     <article aria-label={missao.titulo} className="cg-trilha__missao">
@@ -188,62 +172,34 @@ export function Missao({
         </Aviso>
       )}
 
-      {erro && <Aviso tipo="erro">{erro}</Aviso>}
-      {!erro && missaoPublica === undefined && (
+      {erroDoConteudo && <Aviso tipo="erro">{erroDoConteudo}</Aviso>}
+      {!erroDoConteudo && missaoPublica === undefined && (
         <EstadoDaLista>Carregando o conteúdo da missão…</EstadoDaLista>
       )}
 
       {missaoPublica && (
-        <>
-          <SequenciaPaginada
-            key={missaoPublica.id}
-            itens={missaoPublica.conteudos.slice().sort((a, b) => a.ordem - b.ordem)}
-            nome="Conteúdo"
-            rotuloDeAvancar="Próximo conteúdo"
-          >
-            {(conteudo) => (
-              <div className="cg-trilha__conteudo">
-                <ConteudoDaMissao
-                  conteudo={conteudo}
-                  tituloDaMissao={missao.titulo}
-                  token={token}
-                />
-                {conteudo.autoria === "terceiro" && conteudo.fonte && (
-                  <span className="cg-trilha__credito"> — fonte: {conteudo.fonte}</span>
-                )}
-                {conteudo.tipo === "texto" && conteudo.corpo && (
-                  <ControleDeOuvirOConteudo corpo={conteudo.corpo} />
-                )}
-              </div>
-            )}
-          </SequenciaPaginada>
-          {trilhaPublica && (
-            <BlocoRecolhivel
-              titulo="Crédito e licença"
-              resumo="Quem fez esta trilha e sob qual licença."
-            >
-              <p className="cg-trilha__credito">
-                Crédito: {trilhaPublica.autor_nome ?? "Mestre autor"} — licença{" "}
-                {trilhaPublica.licenca}
-              </p>
-            </BlocoRecolhivel>
-          )}
-
-          {missaoPublica.bibliografia.length > 0 && (
-            <div className="cg-trilha__bibliografia">
-              <h3>Bibliografia</h3>
-              <ul>
-                {missaoPublica.bibliografia.map((item) => (
-                  <li key={item.id}>
-                    {item.titulo} — {item.capitulo}
-                    {item.disponivel === true && " (disponível no seu ponto de apoio)"}
-                    {item.disponivel === false && " (sem exemplar no seu ponto de apoio)"}
-                  </li>
-                ))}
-              </ul>
+        <SequenciaPaginada
+          key={missaoPublica.id}
+          itens={missaoPublica.conteudos.slice().sort((a, b) => a.ordem - b.ordem)}
+          nome="Conteúdo"
+          rotuloDeAvancar="Próximo conteúdo"
+        >
+          {(conteudo) => (
+            <div className="cg-trilha__conteudo">
+              <ConteudoDaMissao
+                conteudo={conteudo}
+                tituloDaMissao={missao.titulo}
+                token={token}
+              />
+              {conteudo.autoria === "terceiro" && conteudo.fonte && (
+                <span className="cg-trilha__credito"> — fonte: {conteudo.fonte}</span>
+              )}
+              {conteudo.tipo === "texto" && conteudo.corpo && (
+                <ControleDeOuvirOConteudo corpo={conteudo.corpo} />
+              )}
             </div>
           )}
-        </>
+        </SequenciaPaginada>
       )}
 
       {missao.aguardando_mestre && (

@@ -1,3 +1,5 @@
+import "./estilos.css";
+
 export type {
   AtividadeDaMissaoPublica,
   BibliografiaDaMissaoPublica,

@@ -21,10 +21,11 @@ e a outra começa, contra a densidade baixa que o documento 15 §6 pede da Arena
 O fundador decidiu agrupar: o conteúdo e o ato primeiro, depois o que se lê em seguida,
 depois o encontro, e por último o rodapé. Quatro grupos, três linhas separadoras mudas.
 
-Entra no caminho uma **dívida da fatia 21**: `comum/trilha` foi promovida sem a folha de
-estilo, e as regras `cg-trilha__*` moram só em `apps/app-05-guerreiro/src/index.css`. A
-App 01 importa apenas o `index.css` dela, que não tem nenhuma delas — o separador nasceria
-visível na App 05 e invisível na App 01, que é justamente a aplicação que o pediu.
+Entra no caminho uma **dívida da fatia 21**: `comum/trilha` foi promovida **sem folha de
+estilo**, e nenhuma das classes `cg-trilha__*` que os seus componentes emitem tem regra em
+lugar algum do repositório — as telas de trilha se apoiam no que `comum/react` já estiliza.
+Não há, portanto, onde escrever a linha separadora de modo que as **duas** aplicações a
+recebam: a folha precisa nascer, e é esta fatia que a cria.
 
 ## What Changes
 
@@ -74,7 +75,8 @@ Nenhuma.
 - `comum/trilha`: `GuiaDaTrilha` passa a buscar a trilha pública e a compor os quatro
   grupos; `Missao` perde a bibliografia e o crédito e fica com o conteúdo e o ato; nasce
   `comum/trilha/estilos.css`, importada pelo `indice.ts`.
-- `apps/app-05-guerreiro/src/index.css`: devolve as regras `cg-trilha__*` à camada comum.
+- `apps/app-05-guerreiro/src/index.css`: intocado — a única regra `cg-trilha__*` que existe,
+  `.cg-trilha__badges`, é do `Progresso.tsx` da própria App 05.
 - `apps/app-01-aula-presencial`: a tela das trilhas passa `Atividades do encontro` como
   slot e decide quando oferecer `Escolher outro poder`.
 - `apps/app-05-guerreiro/src/trilha/Trilha.tsx`: não oferece `Escolher outro poder` no
