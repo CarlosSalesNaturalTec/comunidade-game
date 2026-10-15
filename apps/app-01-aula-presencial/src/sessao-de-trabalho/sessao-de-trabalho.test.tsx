@@ -282,7 +282,7 @@ describe("verificador do PIN de quem abriu a sessão de trabalho (RN-04-38)", ()
   });
 });
 
-describe("a narração se arma na primeira interação (documento 15 §5.1)", () => {
+describe("não existe controle de iniciar a narração (documento 15 §5.1)", () => {
   class EnunciadoFalso {
     lang = "";
     voice: SpeechSynthesisVoice | null = null;
@@ -336,42 +336,36 @@ describe("a narração se arma na primeira interação (documento 15 §5.1)", ()
     localStorage.clear();
   });
 
-  it("carregada e sem gesto, nada fala e o iniciar é oferecido", async () => {
+  it("carregada, nada fala e nenhum convite de iniciar é apresentado", async () => {
     const motor = instalarMotorDeFalaFalso();
-
-    render(<App />);
-
-    expect(
-      await screen.findByRole("button", { name: "Iniciar a narração das telas" }),
-    ).toBeInTheDocument();
-    expect(falas(motor)).toEqual([]);
-  });
-
-  it("acionado o iniciar, o convite sai da tela e a narração passa a falar", async () => {
-    instalarMotorDeFalaFalso();
-    const usuario = userEvent.setup();
-
-    render(<App />);
-    await usuario.click(
-      await screen.findByRole("button", { name: "Iniciar a narração das telas" }),
-    );
-
-    expect(
-      screen.queryByRole("button", { name: "Iniciar a narração das telas" }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("desligada no aparelho, não há o que iniciar", async () => {
-    instalarMotorDeFalaFalso();
-    localStorage.setItem("cg:narracao", "desligada");
 
     render(<App />);
 
     expect(
       await screen.findByRole("button", { name: /entrar com google/i }),
     ).toBeInTheDocument();
+    // A narração nasce desligada, e o controle de iniciar deixou de existir:
+    // quem a liga é o alternador da tela inicial, e esse toque a arma
+    // (decisão do fundador de 2026-10-14).
     expect(
-      screen.queryByRole("button", { name: "Iniciar a narração das telas" }),
+      screen.queryByRole("button", { name: /iniciar a narração/i }),
+    ).not.toBeInTheDocument();
+    expect(falas(motor)).toEqual([]);
+  });
+
+  it("a tela de abertura do aparelho não apresenta o alternador do som", async () => {
+    instalarMotorDeFalaFalso();
+
+    render(<App />);
+
+    // O alternador mora na tela inicial, que só existe com a sessão de
+    // trabalho aberta — antes dela quem está diante do aparelho ainda vai
+    // entrar pelo Google (documento 15 §5.1).
+    expect(
+      await screen.findByRole("button", { name: /entrar com google/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /leitura das telas em voz alta/i }),
     ).not.toBeInTheDocument();
   });
 
@@ -381,8 +375,6 @@ describe("a narração se arma na primeira interação (documento 15 §5.1)", ()
     expect(
       await screen.findByRole("button", { name: /entrar com google/i }),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "Iniciar a narração das telas" }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });

@@ -6,6 +6,7 @@ export type { FamiliaDeBadge } from "./BadgeDaFamilia";
 export { BadgeDaFamilia } from "./BadgeDaFamilia";
 export { BlocoRecolhivel } from "./BlocoRecolhivel";
 export { Botao } from "./Botao";
+export { BotaoDeAlternancia } from "./BotaoDeAlternancia";
 export { Cabecalho } from "./Cabecalho";
 export { Campo } from "./Campo";
 export { CampoDeDataHora } from "./CampoDeDataHora";

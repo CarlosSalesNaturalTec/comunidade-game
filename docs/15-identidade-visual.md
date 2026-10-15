@@ -138,23 +138,26 @@ marcado `aria-hidden`, para que TalkBack e VoiceOver não o anunciem em dobro. O
 acessibilidade acima continua sendo cumprido sem ela: a narração é camada a mais, nunca a via
 única a informação alguma.
 
-| Eixo               | Regra                                                                                                                       |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| Liga e desliga     | Botão na tela inicial, com rótulo textual. **Ligado por padrão**; quem desliga não prende o próximo, que religa se preferir |
-| Onde mora o estado | No **aparelho**, não na pessoa: persiste entre atendimentos e não acompanha o Guerreiro(a) a outro aparelho                 |
-| Primeiro áudio     | O navegador exige gesto antes de falar: a **primeira interação** traz um botão de iniciar, e é ele que arma a narração      |
-| Fala sozinha       | Só o **texto curto** — título da tela, enunciado de pergunta, aviso —, ao entrar na tela                                    |
-| Fala sob toque     | O **texto longo** — conteúdo de missão —, por botão de alto-falante junto dele                                              |
-| Roteiro            | **Declarado por tela**, nunca extraído do DOM: a tela diz o que fala, e não se lê rótulo de interface em voz alta           |
+| Eixo               | Regra                                                                                                             |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Liga e desliga     | Alternador no canto do cabeçalho da tela inicial, só pelo glifo de alto-falante. **Desligado por padrão**         |
+| Estado do controle | Pela **forma** do glifo — alto-falante e alto-falante cortado — e pelo pressionado, nunca pela cor nem por frase  |
+| Onde mora o estado | No **aparelho**: persiste entre atendimentos, não acompanha o Guerreiro(a) a outro aparelho e morre com a recarga |
+| Primeiro áudio     | O navegador exige gesto antes de falar: o **toque que liga** é esse gesto, e não existe botão de iniciar à parte  |
+| Fala sozinha       | Só o **texto curto** — título da tela, enunciado de pergunta, aviso —, ao entrar na tela                          |
+| Fala sob toque     | O **texto longo** — conteúdo de missão —, por botão de alto-falante junto dele, **fora do liga e desliga**        |
+| Roteiro            | **Declarado por tela**, nunca extraído do DOM: a tela diz o que fala, e não se lê rótulo de interface em voz alta |
 
 O texto curto fala sozinho e o longo espera o toque porque a aula presencial tem **um aparelho
 por equipe** (documento 03): meia dúzia deles lendo o conteúdo inteiro ao mesmo tempo é ruído,
-não acessibilidade.
+não acessibilidade. É também por isso que o padrão é desligado — e por isso o botão do texto
+longo não depende do alternador: senão a leitura do conteúdo desapareceria de quem menos lê.
 
 Trocar de tela **cancela** a fala em curso — narração de tela que já passou é ruído sobre a
 tela nova.
 
-Decisão do fundador, 2026-09-26.
+Decisão do fundador, 2026-09-26; o padrão desligado, o alternador de glifo e o texto longo fora
+do liga e desliga, 2026-10-14.
 
 ## 6. Os dois temperamentos
 

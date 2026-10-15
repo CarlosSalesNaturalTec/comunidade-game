@@ -11,6 +11,14 @@ export type NomeDeGlifo =
   | "medicao"
   | "troca"
   | "trilhas"
+  // Os dois estados do alternador da narração e as duas ações de quem opera
+  // o aparelho (decisão do fundador de 2026-10-14). `som` e `som-desligado`
+  // são desenhos diferentes, não o mesmo em duas cores: o estado se
+  // reconhece pela forma (documento 15 §5).
+  | "som"
+  | "som-desligado"
+  | "encerrar"
+  | "momento-de-troca"
   // Os glifos de poder do documento 15 §8.4 — um por poder do catálogo do
   // documento 02 §2, mais o genérico. Quem os escolhe pelo nome do poder é
   // `GlifoDePoder`; aqui são glifos como os demais, na mesma grade.
@@ -83,6 +91,42 @@ const GLIFOS: Record<NomeDeGlifo, ReactElement> = {
       <circle cx="4" cy="19" r="1.5" />
       <circle cx="12" cy="12" r="1.5" />
       <circle cx="20" cy="5" r="1.5" />
+    </>
+  ),
+  // Alto-falante com as ondas saindo dele.
+  som: (
+    <>
+      <path d="M11 5 6.5 9H3v6h3.5L11 19Z" />
+      <path d="M15 9.5a3.5 3.5 0 0 1 0 5" />
+      <path d="M17.5 7a7 7 0 0 1 0 10" />
+    </>
+  ),
+  // O mesmo alto-falante, sem as ondas e cortado em X: a forma difere do
+  // ligado, e não só a cor.
+  "som-desligado": (
+    <>
+      <path d="M11 5 6.5 9H3v6h3.5L11 19Z" />
+      <path d="m15.5 10 5 5M20.5 10l-5 5" />
+    </>
+  ),
+  // Porta com a flecha saindo dela.
+  encerrar: (
+    <>
+      <path d="M14 3h4a1.5 1.5 0 0 1 1.5 1.5v15A1.5 1.5 0 0 1 18 21h-4" />
+      <path d="M10 12H3" />
+      <path d="m6.5 8.5-3.5 3.5 3.5 3.5" />
+    </>
+  ),
+  // A chave do momento: as duas flechas da troca dentro de uma janela que
+  // abre e fecha. Não é o glifo `troca`, porque com o momento aberto os dois
+  // cartões ficam encostados e têm funções opostas (design — decisão 6).
+  "momento-de-troca": (
+    <>
+      <rect x="3" y="4.5" width="18" height="15" rx="2" />
+      <path d="M7.5 10h7" />
+      <path d="m12 7.5 2.5 2.5-2.5 2.5" />
+      <path d="M16.5 14h-7" />
+      <path d="m12 11.5-2.5 2.5 2.5 2.5" />
     </>
   ),
   // O genérico do documento 15 §8.4 — losango num círculo. Não é estrela nem

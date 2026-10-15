@@ -61,42 +61,6 @@ nunca conteúdo captado da criança.
 - **WHEN** uma tela tenta entregar à narração o nome do Guerreiro(a) ou outro dado pessoal
 - **THEN** a camada não o aceita, e o dado não chega ao serviço que sintetiza
 
-### Requirement: A narração liga e desliga, e o estado é do aparelho
-
-A narração SHALL nascer **ligada**. A aplicação SHALL oferecer um controle de **ligar e
-desligar** com rótulo textual, e o estado escolhido SHALL ser guardado **no aparelho**, não na
-pessoa: SHALL persistir entre atendimentos no mesmo aparelho e NEVER SHALL acompanhar o
-Guerreiro(a) a outro aparelho. Quem desliga NEVER SHALL prender a escolha de quem vier depois,
-que SHALL poder religar. (documento 15 §5.1)
-
-Desligada, a camada NEVER SHALL falar coisa alguma, e o controle de ouvir o texto longo NEVER
-SHALL ser oferecido.
-
-O navegador exige **gesto da pessoa** antes de a primeira fala acontecer. A aplicação SHALL
-oferecer, na **primeira interação** depois de carregada, um controle de **iniciar** que arma a
-narração; antes dele a camada NEVER SHALL tentar falar. O estado guardado NEVER SHALL, sozinho,
-dispensar esse gesto.
-
-#### Scenario: Nasce ligada no aparelho que nunca escolheu
-
-- **WHEN** a aplicação abre num aparelho onde ninguém escolheu ligar nem desligar
-- **THEN** a narração está ligada
-
-#### Scenario: A escolha persiste no aparelho e não viaja com a pessoa
-
-- **WHEN** alguém desliga a narração e outro atendimento começa no mesmo aparelho
-- **THEN** ela continua desligada ali, e o novo atendimento pode religá-la
-
-#### Scenario: Desligada, nada fala
-
-- **WHEN** a narração está desligada e uma tela que declara narração é aberta
-- **THEN** nada é falado, e o controle de ouvir o texto longo não é oferecido
-
-#### Scenario: A primeira fala espera o gesto
-
-- **WHEN** a aplicação é carregada com a narração ligada e ninguém tocou em nada ainda
-- **THEN** a camada não tenta falar, e a tela oferece o controle de iniciar que arma a narração
-
 ### Requirement: A narração não substitui nem concorre com o leitor de tela
 
 O texto que a camada fala SHALL ser marcado `aria-hidden`, para que leitor de tela não o
@@ -155,3 +119,82 @@ declarada** por quem montou a tela, não o que o navegador renderizou.
 
 - **WHEN** uma tela declara que determinado aviso não deve ser falado
 - **THEN** ele aparece na tela e não é narrado
+
+### Requirement: A narração nasce desligada, e o toque que a liga é o gesto que a arma
+
+A narração SHALL nascer **desligada**, e a aplicação SHALL oferecer um **alternador** que a liga
+e desliga. O navegador exige gesto da pessoa antes da primeira fala: o próprio acionamento que
+**liga** SHALL ser esse gesto. A camada NEVER SHALL exigir um controle de **iniciar** à parte, e
+NEVER SHALL tentar falar antes de um gesto. (documento 15 §5.1, decisão do fundador de
+2026-10-14)
+
+#### Scenario: Nasce desligada no aparelho que nunca escolheu
+
+- **WHEN** a aplicação abre num aparelho onde ninguém escolheu ligar nem desligar
+- **THEN** a narração está desligada, e nenhuma tela é falada sozinha
+
+#### Scenario: Ligar já arma, sem segundo controle
+
+- **WHEN** alguém liga a narração pelo alternador
+- **THEN** as telas seguintes falam o que declararam, e nenhum controle de iniciar é apresentado
+  em momento algum
+
+#### Scenario: Desligada, nada fala sozinho
+
+- **WHEN** a narração está desligada e uma tela que declara narração é aberta
+- **THEN** nada é falado sozinho, e nenhuma mensagem de erro aparece
+
+### Requirement: O estado da narração é do aparelho e não sobrevive à recarga
+
+O estado escolhido SHALL valer para o **aparelho**, não para a pessoa: SHALL persistir entre
+atendimentos no mesmo carregamento da aplicação e NEVER SHALL acompanhar o Guerreiro(a) a outro
+aparelho. NEVER SHALL sobreviver a **recarregar a aplicação** — ali a narração nasce de novo
+desligada. Quem escolhe NEVER SHALL prender a escolha de quem vier depois. (documento 15 §5.1,
+decisão do fundador de 2026-10-14)
+
+#### Scenario: A escolha persiste entre atendimentos e não viaja com a pessoa
+
+- **WHEN** alguém liga a narração e outro atendimento começa no mesmo aparelho
+- **THEN** ela continua ligada ali, quem chega pode desligá-la, e nada disso acompanha o
+  Guerreiro(a) a outro aparelho
+
+#### Scenario: A recarga devolve a narração ao desligado
+
+- **WHEN** a narração está ligada e a aplicação é recarregada
+- **THEN** ela volta a estar desligada, e ligar de novo é o gesto que a arma
+
+### Requirement: O alternador pode ser só glifo, com o estado dito pela forma
+
+O alternador SHALL poder ser apresentado **só por glifo**. Nesse caso o estado SHALL ser dito
+pela **forma** do glifo e pelo estado de pressionado do controle — NEVER SHALL depender de cor
+sozinha nem de frase escrita na tela —, e o **rótulo** SHALL alcançar quem navega por leitor de
+tela. (documento 15 §§5, 5.1, decisão do fundador de 2026-10-14)
+
+#### Scenario: O estado do alternador se reconhece sem cor
+
+- **WHEN** o alternador é apresentado só por glifo, ligado e desligado
+- **THEN** cada estado se reconhece pela forma do glifo e pelo estado de pressionado, sem
+  depender da cor
+
+#### Scenario: O rótulo chega a quem não vê o desenho
+
+- **WHEN** quem navega por leitor de tela alcança o alternador
+- **THEN** o rótulo dele é anunciado, e nenhuma descrição do desenho toma o lugar do rótulo
+
+### Requirement: O texto longo se ouve com a narração desligada
+
+O controle de ouvir o **texto longo** NEVER SHALL depender do alternador: quem o aciona está
+pedindo aquela leitura, e o próprio acionamento é o gesto que o navegador exige. Exigir o
+alternador ligado tiraria a leitura do texto longo de quem mais precisa dela, agora que a
+narração nasce desligada. (documento 15 §5.1, decisão do fundador de 2026-10-14)
+
+#### Scenario: O texto longo se ouve com a narração desligada
+
+- **WHEN** a narração está desligada e o controle de ouvir o texto longo é acionado
+- **THEN** aquele texto é falado, e as telas continuam não falando sozinhas
+
+#### Scenario: Sem síntese no navegador o controle não é oferecido
+
+- **WHEN** o navegador não oferece síntese de fala
+- **THEN** o controle de ouvir o texto longo não é apresentado, e nenhuma mensagem de erro
+  aparece
