@@ -1283,12 +1283,12 @@ encontro assíncrono do documento 05 §4: cada equipe avança no seu ritmo.
 A aplicação SHALL mostrar o conteúdo da missão nos tipos que o núcleo serve — texto formatado,
 imagem, link externo, vídeo e arquivo de apoio —, **um conteúdo por vez**, com um controle de
 **avançar** que leva ao seguinte; avançar SHALL apenas percorrer, e NEVER SHALL gravar nem
-enviar coisa alguma. A tela SHALL dizer **onde a equipe está na sequência**, e conteúdo
-**único** NEVER SHALL apresentar controle de avançar. A **fonte** do conteúdo de terceiro SHALL
-acompanhar o conteúdo a que pertence, e NEVER SHALL ser recolhida: é atribuição de autoria
-alheia, não metadado da obra do Mestre. Encontro sem programação declarada SHALL exibir aviso
-em linguagem simples, e não erro nem tela vazia. (documento 15 §6.4, decisão do fundador de
-2026-09-26)
+enviar coisa alguma. A tela NEVER SHALL declarar a **posição na sequência** — nem escrita, nem
+anunciada a quem usa leitor de tela —, e conteúdo **único** NEVER SHALL apresentar controle de
+avançar. A **fonte** do conteúdo de terceiro SHALL acompanhar o conteúdo a que pertence, e
+NEVER SHALL ser recolhida: é atribuição de autoria alheia, não metadado da obra do Mestre.
+Encontro sem programação declarada SHALL exibir aviso em linguagem simples, e não erro nem tela
+vazia. (documento 15 §6.4, decisão do fundador de 2026-09-26, revista em 2026-10-16)
 
 Nenhuma tela deste caminho SHALL exibir dado pessoal de Guerreiro(a): a equipe segue
 identificada por **avatar e nick**, como já vale para a tela das equipes (`RF-04-34`,
@@ -1309,8 +1309,12 @@ identificada por **avatar e nick**, como já vale para a tela das equipes (`RF-0
 #### Scenario: O conteúdo do dia sai um por vez
 
 - **WHEN** a missão do dia traz três conteúdos
-- **THEN** o primeiro aparece sozinho, a tela diz onde a equipe está na sequência, e o controle
-  de avançar leva ao segundo
+- **THEN** o primeiro aparece sozinho e o controle de avançar leva ao segundo
+
+#### Scenario: A posição na sequência não é declarada
+
+- **WHEN** a equipe percorre os conteúdos da missão do dia, com ou sem leitor de tela
+- **THEN** nenhuma contagem de posição é apresentada nem anunciada
 
 #### Scenario: O conteúdo de terceiro sai com a fonte
 
@@ -2658,3 +2662,29 @@ Guerreiro(a) sem caminho ao catálogo. (`RF-04-72`, `RF-04-74`, decisão do fund
   qualquer número de inscrições já feitas
 - **THEN** há sempre um caminho ao catálogo de poderes a partir da tela das trilhas e missões,
   cumprindo a inscrição sem teto
+
+### Requirement: A App 01 narra a pergunta do desafio de desbloqueio
+
+A App 01 SHALL declarar à camada de narração, no caminho das trilhas, a **pergunta da vez** do
+desafio de desbloqueio e da sondagem — enunciado e alternativas —, para que seja falada ao ser
+alcançada, avançando ou voltando. A fala SHALL obedecer ao alternador da tela inicial: nascendo
+a narração desligada, a pergunta NEVER SHALL ser falada antes de alguém ligá-la. (documento 15
+§5.1, decisão do fundador de 2026-10-16)
+
+#### Scenario: A pergunta da sondagem é falada no encontro
+
+- **WHEN** a narração está ligada e o Guerreiro(a) recém-inscrito alcança uma pergunta da
+  sondagem no aparelho do encontro
+- **THEN** o enunciado e as alternativas daquela pergunta são falados
+
+#### Scenario: Cada pergunta alcançada é falada uma vez
+
+- **WHEN** a narração está ligada e o Guerreiro(a) avança pelas perguntas do quiz e volta a uma
+  anterior
+- **THEN** cada pergunta alcançada é falada ao ser alcançada, e a fala anterior é cancelada
+  antes dela
+
+#### Scenario: Com a narração desligada a pergunta não fala
+
+- **WHEN** a narração está desligada e o Guerreiro(a) alcança uma pergunta do quiz
+- **THEN** nada é falado, e a pergunta segue inteiramente legível na tela

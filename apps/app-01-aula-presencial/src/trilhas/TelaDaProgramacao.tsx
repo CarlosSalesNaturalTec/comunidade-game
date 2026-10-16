@@ -180,7 +180,6 @@ export function TelaDaProgramacao({
           <SequenciaPaginada
             key={item.atividade.id}
             itens={item.conteudos}
-            nome="Conteúdo"
             rotuloDeAvancar="Próximo conteúdo"
           >
             {(conteudo) => (

@@ -119,4 +119,121 @@ describe("MidiaDoNucleo", () => {
 
     expect(buscar).not.toHaveBeenCalled();
   });
+
+  // Numa sequência paginada o React reaproveita a instância entre itens. O
+  // estado tem de acompanhar o `id`, senão a mídia do item anterior fica na
+  // tela sob o item novo (spec `area-do-guerreiro`, design — decisão 6).
+  it("trocando de item, não deixa a mídia do anterior na tela e diz que carrega", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(
+        (bytes: Blob) => `blob:${(bytes as Blob & { nome?: string }).nome}`,
+      ),
+      revokeObjectURL: vi.fn(),
+    });
+    const primeira = new Blob(["a"], { type: "image/png" }) as Blob & { nome?: string };
+    primeira.nome = "midia-1";
+    const segunda = new Blob(["b"], { type: "image/png" }) as Blob & { nome?: string };
+    segunda.nome = "midia-2";
+    let liberarSegunda: (bytes: Blob) => void = () => {};
+    const buscar = vi.fn((idBuscado: string) =>
+      idBuscado === "midia-1"
+        ? Promise.resolve(primeira as Blob)
+        : new Promise<Blob>((resolver) => {
+            liberarSegunda = resolver;
+          }),
+    );
+
+    const propriedades = {
+      buscar,
+      token: "token-1",
+      tipo: "imagem" as const,
+      alt: "Imagem de teste",
+      textoDeErro: "Essa imagem não abriu agora.",
+    };
+    const { rerender } = render(<MidiaDoNucleo id="midia-1" {...propriedades} />);
+    expect((await screen.findByRole("img")).getAttribute("src")).toBe("blob:midia-1");
+
+    rerender(<MidiaDoNucleo id="midia-2" {...propriedades} />);
+
+    // A imagem do item anterior sai na hora, e a moldura declara a carga.
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.getByText("Carregando…")).toBeInTheDocument();
+
+    liberarSegunda(segunda as Blob);
+    expect((await screen.findByRole("img")).getAttribute("src")).toBe("blob:midia-2");
+  });
+
+  it("a falha de um item não acompanha o item seguinte", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:midia-2"),
+      revokeObjectURL: vi.fn(),
+    });
+    const buscar = vi.fn((idBuscado: string) =>
+      idBuscado === "midia-1"
+        ? Promise.reject(new Error("falhou"))
+        : Promise.resolve(new Blob(["b"], { type: "image/png" })),
+    );
+
+    const propriedades = {
+      buscar,
+      token: "token-1",
+      tipo: "imagem" as const,
+      alt: "Imagem de teste",
+      textoDeErro: "Essa imagem não abriu agora.",
+    };
+    const { rerender } = render(<MidiaDoNucleo id="midia-1" {...propriedades} />);
+    expect(await screen.findByText("Essa imagem não abriu agora.")).toBeInTheDocument();
+
+    rerender(<MidiaDoNucleo id="midia-2" {...propriedades} />);
+
+    expect(screen.queryByText("Essa imagem não abriu agora.")).not.toBeInTheDocument();
+    expect(await screen.findByRole("img")).toBeInTheDocument();
+  });
+
+  // As duas quedas da trava de navegação: sem elas, mídia que não abre — ou
+  // item seguinte sem mídia — prende quem percorre a sequência.
+  it("reporta o fim da carga quando a busca falha", async () => {
+    const aoMudarCarregamento = vi.fn();
+    const buscar = vi.fn().mockRejectedValue(new Error("falhou"));
+
+    render(
+      <MidiaDoNucleo
+        id="midia-1"
+        buscar={buscar}
+        token="token-1"
+        tipo="imagem"
+        alt="Imagem de teste"
+        textoDeErro="Essa imagem não abriu agora."
+        aoMudarCarregamento={aoMudarCarregamento}
+      />,
+    );
+    await screen.findByText("Essa imagem não abriu agora.");
+
+    expect(aoMudarCarregamento).toHaveBeenNthCalledWith(1, true);
+    expect(aoMudarCarregamento).toHaveBeenLastCalledWith(false);
+  });
+
+  it("reporta o fim da carga ao desmontar com a busca em curso", async () => {
+    const aoMudarCarregamento = vi.fn();
+    const buscar = vi.fn(() => new Promise<Blob>(() => {}));
+
+    const { unmount } = render(
+      <MidiaDoNucleo
+        id="midia-1"
+        buscar={buscar}
+        token="token-1"
+        tipo="imagem"
+        alt="Imagem de teste"
+        textoDeErro="Essa imagem não abriu agora."
+        aoMudarCarregamento={aoMudarCarregamento}
+      />,
+    );
+    expect(aoMudarCarregamento).toHaveBeenLastCalledWith(true);
+
+    unmount();
+
+    expect(aoMudarCarregamento).toHaveBeenLastCalledWith(false);
+  });
 });

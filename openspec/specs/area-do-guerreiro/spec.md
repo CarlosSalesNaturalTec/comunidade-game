@@ -586,10 +586,11 @@ ela **não conta** no que falta para o próximo nível. (`RF-05-10`, `RF-05-81`,
 A aplicação SHALL exibir o **conteúdo da missão** — texto, imagens, vídeo e arquivos — na ordem
 em que o Mestre autor o dispôs, **um conteúdo por vez**, com um controle de **avançar** que
 leva ao seguinte; avançar SHALL apenas percorrer, e NEVER SHALL gravar nem submeter coisa
-alguma. A tela SHALL dizer **onde o Guerreiro(a) está na sequência**, para que percorrer não
-vire caminhar às cegas, e no último conteúdo NEVER SHALL oferecer avançar para lugar nenhum.
+alguma. A tela NEVER SHALL declarar a **posição na sequência** — nem escrita, nem anunciada a
+quem usa leitor de tela: numa Arena de uma decisão por tela a contagem é ruído, e o que orienta
+é o próprio conteúdo da vez. No último conteúdo NEVER SHALL oferecer avançar para lugar nenhum.
 Missão com **um único** conteúdo NEVER SHALL apresentar controle de avançar. (`RF-05-11`,
-documento 15 §6.4, decisão do fundador de 2026-09-26)
+documento 15 §6.4, decisão do fundador de 2026-09-26, revista em 2026-10-16)
 
 O **crédito ao autor** e a **licença** que a trilha publicada declara SHALL ser apresentados em
 **bloco recolhível de resumo neutro** no **rodapé da tela**, fora do fluxo de leitura do
@@ -614,8 +615,14 @@ nunca apresentado como quebrado. (`RF-05-11`, `RF-05-12`)
 #### Scenario: O conteúdo abre na ordem do autor
 
 - **WHEN** o Guerreiro(a) abre uma missão desbloqueada com quatro conteúdos
-- **THEN** o primeiro conteúdo da ordem declarada aparece sozinho, a tela diz onde ele está na
-  sequência, e o controle de avançar leva ao segundo
+- **THEN** o primeiro conteúdo da ordem declarada aparece sozinho e o controle de avançar leva
+  ao segundo
+
+#### Scenario: A posição na sequência não é declarada
+
+- **WHEN** o Guerreiro(a) percorre os conteúdos de uma missão, com ou sem leitor de tela
+- **THEN** nenhuma contagem de posição é apresentada nem anunciada, e o que se lê é o conteúdo
+  da vez
 
 #### Scenario: O último conteúdo não oferece avançar
 
@@ -680,6 +687,16 @@ dentro da moldura, sem ser cortado para preenchê-la, e o espaço que sobrar fic
 moldura NEVER SHALL oferecer ampliação nem abrir a mídia em tamanho maior. (`RF-05-11`,
 `RF-09-119`, decisão do fundador de 2026-09-17)
 
+Enquanto a mídia da vez está sendo buscada, a moldura SHALL **dizer que está carregando** e
+NEVER SHALL apresentar a mídia de **outro** item nem o erro de outro item: alcançado um item
+novo na sequência, a moldura SHALL partir do zero. Mídia obsoleta sob o item errado é
+informação falsa, não espera. (`RF-05-11`, `RF-09-119`, decisão do fundador de 2026-10-16)
+
+Enquanto a moldura carrega, os controles de **avançar e voltar** da sequência SHALL ficar
+indisponíveis, para que a troca não se acumule sobre uma mídia que ainda não chegou. A trava
+SHALL ceder quando a busca **falha**: mídia que não abriu NEVER SHALL prender quem percorre a
+sequência, sob pena de a rede ruim virar beco sem saída. (decisão do fundador de 2026-10-16)
+
 #### Scenario: Imagem grande do conteúdo cabe na moldura fixa, sem cortar
 
 - **WHEN** o Guerreiro(a) abre uma missão cujo conteúdo tem uma foto de alta resolução
@@ -699,6 +716,27 @@ moldura NEVER SHALL oferecer ampliação nem abrir a mídia em tamanho maior. (`
 
 - **WHEN** o Guerreiro(a) toca numa imagem ou num vídeo exibidos em moldura fixa
 - **THEN** nada se amplia; a mídia permanece no mesmo tamanho
+
+#### Scenario: A moldura diz que está carregando
+
+- **WHEN** o Guerreiro(a) alcança um item cuja mídia ainda está sendo buscada
+- **THEN** a moldura diz que está carregando, e avançar e voltar ficam indisponíveis
+
+#### Scenario: A mídia do item anterior não fica na tela
+
+- **WHEN** o Guerreiro(a) vai de um item com imagem direto para outro item com imagem
+- **THEN** a imagem do item anterior desaparece de imediato, e a moldura carrega a do item
+  alcançado
+
+#### Scenario: O erro de um item não gruda no seguinte
+
+- **WHEN** a mídia de um item não abre e o Guerreiro(a) avança para o item seguinte
+- **THEN** o aviso de falha não acompanha o item novo, cuja mídia é buscada do zero
+
+#### Scenario: Mídia que não abre libera a navegação
+
+- **WHEN** a busca da mídia do item da vez falha
+- **THEN** a tela avisa que ela não abriu e avançar e voltar voltam a estar disponíveis
 
 ### Requirement: O Guerreiro(a) responde à sondagem que abre a trilha
 
@@ -726,10 +764,21 @@ autor, com um controle de **avançar** para a seguinte, e SHALL submeter as resp
 vez só** ao fim, nunca uma pergunta por submissão: o critério de aprovação é do conjunto
 (`RN-05-45`), e submeter por pergunta o tornaria incalculável. A resposta já dada SHALL ser
 guardada **no aparelho** enquanto o Guerreiro(a) percorre as demais, e ele SHALL poder
-**voltar** a uma pergunta anterior para trocá-la antes de submeter. Pergunta ainda **sem
-resposta** SHALL ser sinalizada antes do envio, e a tela SHALL **levar** o Guerreiro(a) até
-ela, porque com uma pergunta por vez apenas contá-la não diz onde ela está. (documento 15
-§6.4, decisão do fundador de 2026-09-26)
+**voltar** a uma pergunta anterior para trocá-la antes de submeter. A tela NEVER SHALL declarar
+a **posição na sequência** de perguntas, nem escrita nem anunciada a leitor de tela.
+(documento 15 §6.4, decisão do fundador de 2026-09-26, revista em 2026-10-16)
+
+O controle de **enviar as respostas** SHALL ficar **indisponível enquanto houver pergunta sem
+resposta**, e SHALL ficar disponível quando todas estiverem respondidas: o inválido se impede
+antes do toque, não se explica depois dele. Esta condição SHALL valer **só para o quiz** — o
+desafio que se cumpre por **declaração** não tem pergunta a responder, e o controle dele SHALL
+seguir sempre disponível. O controle de enviar SHALL ser apresentado **junto** dos controles de
+avançar e voltar, e NEVER SHALL desaparecer no quiz de **uma única** pergunta, que não pagina.
+(`RF-05-89`, `RN-05-45`, decisão do fundador de 2026-10-16)
+
+Com a narração ligada, cada pergunta alcançada SHALL ser **falada** — enunciado e alternativas
+—, ao avançar e ao voltar, como a camada de narração determina. (documento 15 §5.1, decisão do
+fundador de 2026-10-16)
 
 **Passando**, a missão seguinte SHALL abrir **na hora**, sem recarregar a aplicação nem esperar
 ato de terceiro. **Não passando**, a tela SHALL dizer **quantas perguntas ele acertou** e de
@@ -749,6 +798,11 @@ não abriu. A tela NEVER SHALL exigir a imagem para submeter o quiz. (`RF-09-119
 - **WHEN** o Guerreiro(a) abre um quiz de seis perguntas
 - **THEN** a primeira pergunta aparece sozinha, com o controle de avançar para a seguinte
 
+#### Scenario: A posição entre as perguntas não é declarada
+
+- **WHEN** o Guerreiro(a) percorre as perguntas do quiz, com ou sem leitor de tela
+- **THEN** nenhuma contagem de posição é apresentada nem anunciada
+
 #### Scenario: Voltar a uma pergunta anterior troca a resposta
 
 - **WHEN** o Guerreiro(a) na quarta pergunta volta à segunda
@@ -758,6 +812,37 @@ não abriu. A tela NEVER SHALL exigir a imagem para submeter o quiz. (`RF-09-119
 
 - **WHEN** o Guerreiro(a) percorre as seis perguntas do quiz e conclui
 - **THEN** as seis respostas vão numa única submissão, ao fim, nunca uma por pergunta
+
+#### Scenario: Pergunta sem resposta é sinalizada
+
+- **WHEN** o Guerreiro(a) respondeu cinco das seis perguntas do quiz
+- **THEN** o controle de enviar as respostas permanece indisponível, nada é submetido, e é essa
+  indisponibilidade que sinaliza a pendência
+
+#### Scenario: Respondidas todas, enviar fica disponível
+
+- **WHEN** o Guerreiro(a) responde a última pergunta que faltava
+- **THEN** o controle de enviar as respostas fica disponível
+
+#### Scenario: Enviar aparece junto de avançar e voltar
+
+- **WHEN** o Guerreiro(a) percorre as perguntas do quiz
+- **THEN** o controle de enviar as respostas é apresentado junto dos de avançar e voltar
+
+#### Scenario: Quiz de uma pergunta oferece enviar
+
+- **WHEN** o quiz do desbloqueio tem uma única pergunta, e ela foi respondida
+- **THEN** o controle de enviar as respostas é apresentado, embora não haja o que paginar
+
+#### Scenario: O desafio por declaração não espera resposta
+
+- **WHEN** o Guerreiro(a) abre um desafio de desbloqueio que se cumpre por declaração
+- **THEN** o controle de declarar que cumpriu está disponível, sem pergunta alguma a responder
+
+#### Scenario: A pergunta alcançada é falada com as alternativas
+
+- **WHEN** a narração está ligada e o Guerreiro(a) avança para a pergunta seguinte do quiz
+- **THEN** o enunciado dela e as alternativas são falados
 
 #### Scenario: Passar abre a seguinte na hora
 
@@ -775,11 +860,6 @@ não abriu. A tela NEVER SHALL exigir a imagem para submeter o quiz. (`RF-09-119
 - **WHEN** a imagem de uma pergunta não carrega
 - **THEN** a tela avisa que a imagem não abriu e o Guerreiro(a) segue podendo responder e
   submeter
-
-#### Scenario: Pergunta sem resposta é sinalizada
-
-- **WHEN** o Guerreiro(a) tenta enviar o quiz com uma pergunta ainda sem alternativa escolhida
-- **THEN** a tela aponta a pergunta que falta, leva o Guerreiro(a) até ela e não envia
 
 #### Scenario: Não passar convida a tentar de novo
 

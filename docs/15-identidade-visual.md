@@ -133,20 +133,22 @@ Atende quem ainda não lê com fluência, quem não enxerga e quem lê com esfor
 à plataforma. Vale para as oito aplicações. O que sai do aparelho para ser sintetizado é regra
 do documento 03.
 
-**Não substitui leitor de tela, e não concorre com ele.** O texto que a narração fala é
-marcado `aria-hidden`, para que TalkBack e VoiceOver não o anunciem em dobro. O piso de
-acessibilidade acima continua sendo cumprido sem ela: a narração é camada a mais, nunca a via
-única a informação alguma.
+**Não substitui leitor de tela, e não concorre com ele.** A narração **nunca acrescenta texto à
+tela**: fala o que a tela já apresenta, ou uma frase montada do dado declarado que vai direto à
+síntese sem ser escrita. Não havendo texto que exista só para a voz, não há o que esconder de
+TalkBack e VoiceOver, e nada é anunciado em dobro — e o que está escrito nunca é escondido por
+ser também falado. O piso de acessibilidade acima continua sendo cumprido sem ela: a narração é
+camada a mais, nunca a via única a informação alguma.
 
-| Eixo               | Regra                                                                                                             |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| Liga e desliga     | Alternador no canto do cabeçalho da tela inicial, só pelo glifo de alto-falante. **Desligado por padrão**         |
-| Estado do controle | Pela **forma** do glifo — alto-falante e alto-falante cortado — e pelo pressionado, nunca pela cor nem por frase  |
-| Onde mora o estado | No **aparelho**: persiste entre atendimentos, não acompanha o Guerreiro(a) a outro aparelho e morre com a recarga |
-| Primeiro áudio     | O navegador exige gesto antes de falar: o **toque que liga** é esse gesto, e não existe botão de iniciar à parte  |
-| Fala sozinha       | Só o **texto curto** — título da tela, enunciado de pergunta, aviso —, ao entrar na tela                          |
-| Fala sob toque     | O **texto longo** — conteúdo de missão —, por botão de alto-falante junto dele, **fora do liga e desliga**        |
-| Roteiro            | **Declarado por tela**, nunca extraído do DOM: a tela diz o que fala, e não se lê rótulo de interface em voz alta |
+| Eixo               | Regra                                                                                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Liga e desliga     | Alternador no canto do cabeçalho da tela inicial, só pelo glifo de alto-falante. **Desligado por padrão**                                        |
+| Estado do controle | Pela **forma** do glifo — alto-falante e alto-falante cortado — e pelo pressionado, nunca pela cor nem por frase                                 |
+| Onde mora o estado | No **aparelho**: persiste entre atendimentos, não acompanha o Guerreiro(a) a outro aparelho e morre com a recarga                                |
+| Primeiro áudio     | O navegador exige gesto antes de falar: o **toque que liga** é esse gesto, e não existe botão de iniciar à parte                                 |
+| Fala sozinha       | Só o **texto curto** — título da tela, enunciado de pergunta, aviso —, ao entrar na tela. Na pergunta de quiz, o enunciado **e as alternativas** |
+| Fala sob toque     | O **texto longo** — conteúdo de missão —, por botão de alto-falante junto dele, **fora do liga e desliga**                                       |
+| Roteiro            | **Declarado por tela**, nunca extraído do DOM: a tela diz o que fala, e não se lê rótulo de interface em voz alta                                |
 
 O texto curto fala sozinho e o longo espera o toque porque a aula presencial tem **um aparelho
 por equipe** (documento 03): meia dúzia deles lendo o conteúdo inteiro ao mesmo tempo é ruído,
@@ -156,8 +158,12 @@ longo não depende do alternador: senão a leitura do conteúdo desapareceria de
 Trocar de tela **cancela** a fala em curso — narração de tela que já passou é ruído sobre a
 tela nova.
 
+Numa sequência apresentada um item por vez (§6.4), cada item alcançado fala como se fosse a
+entrada numa tela: avançar e voltar falam o item da vez, e calam o anterior.
+
 Decisão do fundador, 2026-09-26; o padrão desligado, o alternador de glifo e o texto longo fora
-do liga e desliga, 2026-10-14.
+do liga e desliga, 2026-10-14; as alternativas da pergunta, a fala por item da sequência e o
+texto que nunca entra na tela, 2026-10-16.
 
 ## 6. Os dois temperamentos
 
@@ -230,10 +236,18 @@ O que a sequência **não** muda é quando o dado sai do aparelho: desafio que s
 continua se enviando inteiro no fim, porque o critério de aprovação é do conjunto
 (documento 11). Avançar percorre; não grava e não submete.
 
+A sequência **não declara a posição** do item — nem escrita na tela, nem anunciada a leitor de
+tela. Contagem de posição é ruído onde há uma decisão por tela: o que orienta é o item da vez.
+
+O envio do desafio **só fica disponível com todas as perguntas respondidas**. Impedir o
+inválido antes do toque vale mais que explicá-lo depois, e com isso a tela não aponta pendência
+nem leva a ela. Vale só para o quiz: o desafio que se cumpre por declaração não tem pergunta.
+
 Não vale onde o ritmo é de outra pessoa: no Quiz ao Vivo quem passa a pergunta é o Mestre, e
 botão de avançar no aparelho da equipe mentiria sobre quem comanda (documento 05).
 
-Decisão do fundador, 2026-09-26.
+Decisão do fundador, 2026-09-26; a posição que não se declara e o envio só com tudo respondido,
+2026-10-16.
 
 ## 7. Avatar do Guerreiro(a)
 

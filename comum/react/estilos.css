@@ -262,12 +262,6 @@
   gap: var(--espaco-8);
 }
 
-.cg-sequencia__posicao {
-  color: var(--cor-texto-secundario);
-  flex: 1;
-  margin: 0;
-}
-
 /* `MarcaDeGravacao` — texto persistente, sem cor como portador de sentido
  * e sem movimento (documento 15 §6.2). */
 .cg-marca-de-gravacao {

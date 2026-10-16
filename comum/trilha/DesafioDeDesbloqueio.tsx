@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSessao } from "../autenticacao/ContextoDeSessao";
+import { useNarracao } from "../narracao/ProvedorDeNarracao";
 import { Aviso } from "../react/Aviso";
 import { Botao } from "../react/Botao";
 import { MidiaDoNucleo } from "../react/MidiaDoNucleo";
@@ -20,13 +21,33 @@ interface Props {
   submissaoLigada?: boolean;
 }
 
+type Pergunta = NonNullable<Desafio["perguntas"]>[number];
+
+// O que a narração fala ao se alcançar a pergunta: o enunciado **e as
+// alternativas**. Só o enunciado é o recorte do Quiz ao Vivo, onde o tempo de
+// resposta é curto; aqui não há cronômetro, e ouvir a pergunta sem as
+// respostas possíveis deixaria quem ainda não lê sem como responder
+// (documento 15 §5.1, decisão do fundador de 2026-10-16).
+//
+// A frase sai do **dado que a tela declara** — o enunciado e o array de
+// alternativas —, nunca do documento apresentado, e vai direto à síntese: ela
+// nunca entra na tela, e por isso não há nó algum a esconder de leitor de
+// tela, que segue lendo o enunciado e as alternativas como a tela os
+// apresenta. Nada é numerado, porque a tela não numera as alternativas:
+// inventar número seria ler rótulo de interface, que o contrato da camada
+// veda (design — decisão 2).
+function falaDaPergunta(pergunta: Pergunta): string {
+  return [pergunta.enunciado, ...pergunta.alternativas].join(". ");
+}
+
 // Realiza o desafio de desbloqueio. No quiz, a tela apresenta **uma
 // pergunta por vez**, com retorno à anterior para trocar a resposta, e a
 // submissão continua sendo **uma só, com todas as respostas**: o critério
 // de aprovação é do conjunto (`RN-05-45`), e submeter por pergunta o
-// tornaria incalculável. Pergunta sem resposta não é só contada — a tela
-// leva o Guerreiro(a) até ela (documento 15 §6.4). Passando, a missão
-// seguinte abre na hora.
+// tornaria incalculável. O envio **só fica disponível com todas as perguntas
+// respondidas**: o inválido se impede antes do toque, não se explica depois
+// dele (decisão do fundador de 2026-10-16). Passando, a missão seguinte abre
+// na hora.
 // Não passando, diz quantas ele acertou e convida a tentar de novo, sem
 // contagem de fracassos nem punição. Na sondagem nada disso aparece: o
 // núcleo abre a trilha ao ser respondida, e é `Sondagem` que dá o
@@ -39,37 +60,50 @@ export function DesafioDeDesbloqueio({
   submissaoLigada = false,
 }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
+  const { narrar } = useNarracao();
   const [enviando, definirEnviando] = useState(false);
   const [placar, definirPlacar] = useState<{ acertos: number; total: number } | null>(null);
   const [aguardandoMestre, definirAguardandoMestre] = useState(false);
   const [erro, definirErro] = useState<string | null>(null);
   const [escolhas, definirEscolhas] = useState<Record<string, number>>({});
-  const [faltando, definirFaltando] = useState<string[]>([]);
   const [indiceDaPergunta, definirIndiceDaPergunta] = useState(0);
+  const [midiaCarregando, definirMidiaCarregando] = useState(false);
 
   const perguntas = desafio.perguntas ?? [];
+  const ehQuiz = desafio.tipo === "quiz";
+  const perguntaDaVez = perguntas[Math.min(indiceDaPergunta, perguntas.length - 1)];
+  const todasRespondidas = perguntas.every((pergunta) => escolhas[pergunta.id] !== undefined);
+
+  // A fala entra na **mudança do `id`** da pergunta, guardada em referência, e
+  // não num efeito sobre o objeto dela: o objeto é novo a cada render de quem
+  // monta, e um efeito por identidade falaria em laço — o mesmo cuidado que o
+  // Quiz ao Vivo tem com a sondagem de 2 s (design — decisão 1).
+  // A referência guarda o `narrar` junto do `id`, e não o `id` sozinho: ele
+  // cala quando a narração está desligada ou quando a voz do aparelho ainda
+  // não chegou, e um `id` já marcado faria a pergunta nunca falar depois — o
+  // laço de `useNarrarAoEntrar`, que refala quando o `narrar` muda de
+  // identidade, sem o `id` só porque não precisa dele.
+  const perguntaFalada = useRef<{ id: string; narrar: typeof narrar } | null>(null);
+  useEffect(() => {
+    if (!ehQuiz || !perguntaDaVez) return;
+    const falada = perguntaFalada.current;
+    if (falada?.id === perguntaDaVez.id && falada.narrar === narrar) return;
+    perguntaFalada.current = { id: perguntaDaVez.id, narrar };
+    narrar({ texto: falaDaPergunta(perguntaDaVez) });
+  }, [ehQuiz, perguntaDaVez, narrar]);
 
   async function submeter() {
     if (!sessao) return;
     let respostas = null;
-    if (desafio.tipo === "quiz") {
-      const semResposta = perguntas
-        .filter((pergunta) => escolhas[pergunta.id] === undefined)
-        .map((pergunta) => pergunta.id);
-      if (semResposta.length > 0) {
-        definirFaltando(semResposta);
-        // Com uma pergunta por vez, contar quantas faltam manda procurar:
-        // a tela leva até a primeira pendente (design — decisão 4).
-        const primeira = perguntas.findIndex((pergunta) => semResposta.includes(pergunta.id));
-        if (primeira >= 0) definirIndiceDaPergunta(primeira);
-        return;
-      }
+    if (ehQuiz) {
+      // O envio não fica disponível antes disto; a guarda é a rede de
+      // segurança de quem chamar por outro caminho.
+      if (!todasRespondidas) return;
       respostas = perguntas.map((pergunta) => ({
         pergunta_id: pergunta.id,
         alternativa_escolhida: escolhas[pergunta.id],
       }));
     }
-    definirFaltando([]);
     definirEnviando(true);
     definirErro(null);
     definirPlacar(null);
@@ -109,18 +143,21 @@ export function DesafioDeDesbloqueio({
     );
   }
 
+  // O envio pertence ao **conjunto** das respostas, não à pergunta da vez, e
+  // por isso acompanha avançar e voltar na mesma linha (decisão do fundador de
+  // 2026-10-16).
+  const envioDoQuiz = submissaoLigada ? (
+    <Botao onClick={submeter} desabilitado={enviando || !todasRespondidas}>
+      {enviando ? "Enviando…" : "Enviar respostas"}
+    </Botao>
+  ) : undefined;
+
   return (
     <section aria-label="Desafio de desbloqueio" className="cg-trilha__desafio">
       <h3>Desafio de desbloqueio</h3>
       {desafio.enunciado && <p>{desafio.enunciado}</p>}
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
-      {faltando.length > 0 && (
-        <Aviso tipo="atencao">
-          Falta responder {faltando.length} pergunta(s) antes de enviar. Trouxemos você até a
-          primeira que falta.
-        </Aviso>
-      )}
       {placar && (
         <Aviso tipo="atencao">
           Não foi dessa vez! Você acertou {placar.acertos} de {placar.total}. Pode tentar de
@@ -128,26 +165,19 @@ export function DesafioDeDesbloqueio({
         </Aviso>
       )}
 
-      {desafio.tipo === "quiz" && (
+      {ehQuiz && (
         <SequenciaPaginada
           itens={perguntas}
-          nome="Pergunta"
           rotuloDeAvancar="Próxima pergunta"
           rotuloDeVoltar="Pergunta anterior"
           indice={indiceDaPergunta}
           aoIrPara={definirIndiceDaPergunta}
+          acoes={envioDoQuiz}
+          controlesTravados={midiaCarregando}
         >
-          {(pergunta, indice) => (
-            <fieldset
-              className={
-                faltando.includes(pergunta.id)
-                  ? "cg-trilha__pergunta cg-trilha__pergunta--falta"
-                  : "cg-trilha__pergunta"
-              }
-            >
-              <legend>
-                {indice + 1}. {pergunta.enunciado}
-              </legend>
+          {(pergunta) => (
+            <fieldset className="cg-trilha__pergunta">
+              <legend>{pergunta.enunciado}</legend>
               {pergunta.imagem_referencia && (
                 <MidiaDoNucleo
                   id={pergunta.id}
@@ -156,6 +186,7 @@ export function DesafioDeDesbloqueio({
                   tipo="imagem"
                   alt={`Imagem da pergunta: ${pergunta.enunciado}`}
                   textoDeErro="A imagem desta pergunta não abriu, mas pode responder."
+                  aoMudarCarregamento={definirMidiaCarregando}
                 />
               )}
               <ul className="cg-trilha__alternativas">
@@ -181,15 +212,15 @@ export function DesafioDeDesbloqueio({
         </SequenciaPaginada>
       )}
 
-      {submissaoLigada ? (
+      {/* O desafio que se cumpre por **declaração** não tem pergunta a
+          responder, e o controle dele segue sempre disponível. */}
+      {!ehQuiz && submissaoLigada && (
         <Botao onClick={submeter} desabilitado={enviando}>
-          {enviando
-            ? "Enviando…"
-            : desafio.tipo === "quiz"
-              ? "Enviar respostas"
-              : "Já cumpri!"}
+          {enviando ? "Enviando…" : "Já cumpri!"}
         </Botao>
-      ) : (
+      )}
+
+      {!submissaoLigada && (
         <Aviso tipo="andamento">
           Aqui você só lê o desafio. Para enviar, abra a sua Área do Guerreiro(a).
         </Aviso>
