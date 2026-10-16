@@ -4,6 +4,7 @@ import { ErroDaApi } from "comum/api";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
 import { escreverAvatar } from "comum/avatar";
+import { ProvedorDeNarracao, useNarracao } from "comum/narracao";
 import * as trilhaApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Equipe, MinhaEquipe } from "../api/equipes";
@@ -312,7 +313,9 @@ describe("programação do encontro (RF-04-35, RF-02-42)", () => {
 
     expect(await screen.findByText("Primeiro trecho.")).toBeInTheDocument();
     expect(screen.queryByText("Trecho de terceiro.")).not.toBeInTheDocument();
-    expect(screen.getByText("Conteúdo 1 de 3")).toBeInTheDocument();
+    // A posição na sequência não é declarada (decisão do fundador de
+    // 2026-10-16).
+    expect(screen.queryByText(/de 3/)).not.toBeInTheDocument();
 
     await usuario.click(screen.getByRole("button", { name: "Próximo conteúdo" }));
 
@@ -320,7 +323,7 @@ describe("programação do encontro (RF-04-35, RF-02-42)", () => {
     expect(screen.getByText("Trecho de terceiro.")).toBeInTheDocument();
     expect(screen.getByText(/fonte: instituto exemplo/i)).toBeInTheDocument();
     expect(screen.queryByText("Primeiro trecho.")).not.toBeInTheDocument();
-    expect(screen.getByText("Conteúdo 2 de 3")).toBeInTheDocument();
+    expect(screen.queryByText(/de 3/)).not.toBeInTheDocument();
   });
 
   it("nenhum dado pessoal de Guerreiro(a) aparece na tela", async () => {
@@ -1097,6 +1100,10 @@ describe("o percurso do Guerreiro(a) no encontro (RF-04-72)", () => {
     const atividades = await screen.findByRole("region", {
       name: /atividades do encontro/i,
     });
+    // As atividades e o rodapé vêm de buscas diferentes: esperar só pelas
+    // primeiras deixava a leitura do crédito numa corrida com a trilha
+    // pública, que esta espera fecha.
+    const credito = await screen.findByText("Crédito e licença");
     const guia = screen.getByRole("region", { name: /Guia de Robô Educa/ });
     const grupos = Array.from(
       guia.querySelectorAll<HTMLElement>(":scope > .cg-trilha__grupo"),
@@ -1106,9 +1113,7 @@ describe("o percurso do Guerreiro(a) no encontro (RF-04-72)", () => {
     // delas (decisão do fundador de 2026-10-15).
     expect(guia).toContainElement(atividades);
     const indiceDasAtividades = grupos.findIndex((grupo) => grupo.contains(atividades));
-    const indiceDoRodape = grupos.findIndex((grupo) =>
-      grupo.contains(screen.getByText("Crédito e licença")),
-    );
+    const indiceDoRodape = grupos.findIndex((grupo) => grupo.contains(credito));
     expect(indiceDasAtividades).toBeGreaterThanOrEqual(0);
     expect(indiceDoRodape).toBe(indiceDasAtividades + 1);
   });
@@ -1414,5 +1419,118 @@ describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
     expect(screen.getByText(/nada ficou guardado neste aparelho/i)).toBeInTheDocument();
     expect(listar).not.toHaveBeenCalled();
     expect(listarEquipes).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// A pergunta da sondagem fala no aparelho do encontro
+// (documento 15 §5.1, decisão do fundador de 2026-10-16)
+//
+// A camada vive em `comum/`, e é a App 01 que monta o provedor: só aqui a
+// pergunta chega a ser falada. Por isso a composição se prova nesta esteira,
+// e não só na do componente compartilhado.
+// ---------------------------------------------------------------------------
+
+class EnunciadoFalso {
+  lang = "";
+  voice: SpeechSynthesisVoice | null = null;
+  text: string;
+
+  constructor(text: string) {
+    this.text = text;
+  }
+}
+
+class MotorDeFalaFalso {
+  ditos: EnunciadoFalso[] = [];
+
+  getVoices() {
+    return [
+      {
+        lang: "pt-BR",
+        localService: true,
+        name: "local",
+        default: true,
+        voiceURI: "local",
+      } as SpeechSynthesisVoice,
+    ];
+  }
+
+  speak(dito: EnunciadoFalso) {
+    this.ditos.push(dito);
+  }
+
+  cancel() {}
+
+  addEventListener() {}
+
+  removeEventListener() {}
+}
+
+function LigarNarracao() {
+  const { alternarNarracao } = useNarracao();
+  return (
+    <button type="button" onClick={alternarNarracao}>
+      Ligar a narração
+    </button>
+  );
+}
+
+describe("a pergunta da sondagem é falada no encontro", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    sessionStorage.clear();
+  });
+
+  async function renderizarSondagemComNarracao() {
+    const motor = new MotorDeFalaFalso();
+    vi.stubGlobal("speechSynthesis", motor);
+    vi.stubGlobal("SpeechSynthesisUtterance", EnunciadoFalso);
+
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(
+      missaoNoPercurso({
+        id: "sondagem-1",
+        titulo: "Sondagem",
+        e_sondagem: true,
+        desafio_de_desbloqueio: QUIZ_DO_DESBLOQUEIO,
+      }),
+    );
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    sessionStorage.setItem(CHAVE_DE_SESSAO_DO_PERCURSO, "token-do-guerreiro");
+    vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    render(
+      <ProvedorDeNarracao>
+        <LigarNarracao />
+        <PalcoDoPercurso montar />
+      </ProvedorDeNarracao>,
+    );
+    await screen.findByRole("region", { name: "Sondagem" });
+    return motor;
+  }
+
+  it("ligada a narração, o enunciado e as alternativas da pergunta são falados", async () => {
+    const motor = await renderizarSondagemComNarracao();
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: "Ligar a narração" }));
+
+    // O enunciado vazio é o armar, disparado pelo próprio gesto que liga.
+    expect(motor.ditos.map((dito) => dito.text).filter((texto) => texto !== "")).toContain(
+      "Quanto é 1 + 1?. 1. 2. 3. 4",
+    );
+  });
+
+  it("desligada, a pergunta não fala e segue legível na tela", async () => {
+    const motor = await renderizarSondagemComNarracao();
+
+    expect(motor.ditos).toHaveLength(0);
+    expect(screen.getByText("Quanto é 1 + 1?")).toBeInTheDocument();
   });
 });

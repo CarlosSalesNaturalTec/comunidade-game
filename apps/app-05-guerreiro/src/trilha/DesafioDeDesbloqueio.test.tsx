@@ -74,18 +74,21 @@ describe("desafio de desbloqueio", () => {
     expect(aoDesbloquear).toHaveBeenCalled();
   });
 
-  it("pergunta sem resposta é sinalizada e nada é enviado (RF-05-89)", async () => {
+  it("pergunta sem resposta deixa o envio indisponível (RF-05-89)", async () => {
     const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio");
     await renderizar(QUIZ_DE_DUAS);
     const usuario = userEvent.setup();
 
     await usuario.click(screen.getByRole("radio", { name: "2" }));
     await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
-    await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
 
-    expect(await screen.findByText(/falta responder 1 pergunta/i)).toBeInTheDocument();
-    // A tela leva até a pendente, em vez de só contá-la (documento 15 §6.4).
-    expect(screen.getByText("2. Quanto é 2 + 2?")).toBeInTheDocument();
+    // O inválido se impede antes do toque: o aviso de falta e o salto até a
+    // pendente foram aposentados (decisão do fundador de 2026-10-16).
+    const enviar = screen.getByRole("button", { name: /enviar respostas/i });
+    expect(enviar).toBeDisabled();
+    expect(screen.queryByText(/falta responder/i)).not.toBeInTheDocument();
+
+    await usuario.click(enviar);
     expect(submeter).not.toHaveBeenCalled();
   });
 

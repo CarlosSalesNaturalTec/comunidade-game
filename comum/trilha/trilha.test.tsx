@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as autenticacaoApi from "../autenticacao/api";
 import { ProvedorDeSessao } from "../autenticacao/ContextoDeSessao";
-import { ProvedorDeNarracao } from "../narracao/ProvedorDeNarracao";
+import { ProvedorDeNarracao, useNarracao } from "../narracao/ProvedorDeNarracao";
 import * as trilhaApi from "./api";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 import { EscolhaDoPoder } from "./EscolhaDoPoder";
@@ -201,7 +201,7 @@ describe("a submissão do desbloqueio é ato opcional do desafio", () => {
       <DesafioDeDesbloqueio missaoId="missao-1" desafio={QUIZ} aoDesbloquear={vi.fn()} />,
     );
 
-    expect(screen.getByText("1. Quanto é 1 + 1?")).toBeInTheDocument();
+    expect(screen.getByText("Quanto é 1 + 1?")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /enviar respostas/i }),
     ).not.toBeInTheDocument();
@@ -296,7 +296,9 @@ describe("o conteúdo da missão sai um por vez", () => {
     // A ordem é a do autor, não a da resposta do núcleo.
     expect(await screen.findByText("Primeiro parágrafo.")).toBeInTheDocument();
     expect(screen.queryByText("Segundo parágrafo.")).not.toBeInTheDocument();
-    expect(screen.getByText("Conteúdo 1 de 2")).toBeInTheDocument();
+    // A posição na sequência não é declarada (decisão do fundador de
+    // 2026-10-16).
+    expect(screen.queryByText(/de 2/)).not.toBeInTheDocument();
 
     await usuario.click(screen.getByRole("button", { name: "Próximo conteúdo" }));
 
@@ -339,14 +341,14 @@ describe("o desafio de desbloqueio sai uma pergunta por vez", () => {
     );
     const usuario = userEvent.setup();
 
-    expect(screen.getByText("1. Quanto é 1 + 1?")).toBeInTheDocument();
-    expect(screen.queryByText("2. Quanto é 2 + 2?")).not.toBeInTheDocument();
-    expect(screen.getByText("Pergunta 1 de 3")).toBeInTheDocument();
+    expect(screen.getByText("Quanto é 1 + 1?")).toBeInTheDocument();
+    expect(screen.queryByText("Quanto é 2 + 2?")).not.toBeInTheDocument();
+    expect(screen.queryByText(/de 3/)).not.toBeInTheDocument();
 
     await usuario.click(screen.getByRole("radio", { name: "1" }));
     await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
 
-    expect(screen.getByText("2. Quanto é 2 + 2?")).toBeInTheDocument();
+    expect(screen.getByText("Quanto é 2 + 2?")).toBeInTheDocument();
     await usuario.click(screen.getByRole("radio", { name: "2" }));
 
     // Voltar traz a resposta já dada, e ela pode ser trocada.
@@ -369,7 +371,10 @@ describe("o desafio de desbloqueio sai uma pergunta por vez", () => {
     ]);
   });
 
-  it("concluir com pendência leva até ela e não envia", async () => {
+  // O envio impedido antes do toque substitui o salto até a pendente: o
+  // inválido não se explica depois, não acontece (decisão do fundador de
+  // 2026-10-16, que aposentou o aviso de falta e o salto).
+  it("com pergunta sem resposta, enviar fica indisponível e nada é submetido", async () => {
     const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio");
 
     await renderizar(
@@ -382,17 +387,86 @@ describe("o desafio de desbloqueio sai uma pergunta por vez", () => {
     );
     const usuario = userEvent.setup();
 
-    await usuario.click(screen.getByRole("radio", { name: "1" }));
-    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
-    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
-    await usuario.click(screen.getByRole("radio", { name: "1" }));
-    await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
+    expect(screen.getByRole("button", { name: /enviar respostas/i })).toBeDisabled();
 
-    // A tela não conta quantas faltam e deixa procurar: leva até a primeira.
-    expect(await screen.findByText(/falta responder 1 pergunta/i)).toBeInTheDocument();
-    expect(screen.getByText("2. Quanto é 2 + 2?")).toBeInTheDocument();
-    expect(screen.getByText("Pergunta 2 de 3")).toBeInTheDocument();
+    await usuario.click(screen.getByRole("radio", { name: "1" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    await usuario.click(screen.getByRole("radio", { name: "1" }));
+
+    // Duas das três respondidas: segue indisponível, e o aviso de falta não
+    // existe mais.
+    expect(screen.getByRole("button", { name: /enviar respostas/i })).toBeDisabled();
+    expect(screen.queryByText(/falta responder/i)).not.toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
     expect(submeter).not.toHaveBeenCalled();
+  });
+
+  it("respondidas todas, enviar fica disponível, ao lado de avançar e voltar", async () => {
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={QUIZ_DE_TRES}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("radio", { name: "1" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    await usuario.click(screen.getByRole("radio", { name: "1" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    expect(screen.getByRole("button", { name: /enviar respostas/i })).toBeDisabled();
+
+    await usuario.click(screen.getByRole("radio", { name: "1" }));
+
+    const enviar = screen.getByRole("button", { name: /enviar respostas/i });
+    expect(enviar).toBeEnabled();
+    // Na mesma linha de avançar e voltar, que é onde ele passou a morar.
+    const controles = enviar.closest(".cg-sequencia__controles");
+    expect(controles).not.toBeNull();
+    expect(controles).toContainElement(
+      screen.getByRole("button", { name: "Pergunta anterior" }),
+    );
+  });
+
+  it("quiz de uma pergunta não pagina, mas oferece enviar", async () => {
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={QUIZ}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+
+    expect(screen.queryByRole("button", { name: "Próxima pergunta" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /enviar respostas/i })).toBeInTheDocument();
+  });
+
+  it("o desafio por declaração não espera resposta e segue disponível", async () => {
+    const submeter = vi
+      .spyOn(trilhaApi, "submeterDesafioDeDesbloqueio")
+      .mockResolvedValue({ aprovado: null, aguardando_mestre: true, acertos: 0, total: 0 });
+
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={{ tipo: "pratico", enunciado: "Monte o robô.", perguntas: null }}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    const declarar = screen.getByRole("button", { name: /já cumpri/i });
+    expect(declarar).toBeEnabled();
+    expect(screen.queryByRole("radio")).not.toBeInTheDocument();
+
+    await usuario.click(declarar);
+    expect(submeter).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -863,5 +937,167 @@ describe("a tela da missão se divide em quatro grupos", () => {
     expect(screen.getByText("Crédito e licença")).toBeInTheDocument();
     expect(screen.queryByText("Próxima missão")).not.toBeInTheDocument();
     expect(grupos()).toHaveLength(3);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// A pergunta do quiz fala, e a mídia que carrega trava a troca de pergunta
+// (documento 15 §5.1 e §6.4, decisão do fundador de 2026-10-16)
+// ---------------------------------------------------------------------------
+
+// A narração nasce desligada, e o alternador mora na tela inicial da App 01 —
+// fora de `comum/`. Este controle é o gesto que a liga, para o teste alcançar
+// o que uma tela com narração ativada fala.
+function LigarNarracao() {
+  const { alternarNarracao } = useNarracao();
+  return (
+    <button type="button" onClick={alternarNarracao}>
+      Ligar a narração
+    </button>
+  );
+}
+
+const QUIZ_COM_IMAGEM: trilhaApi.DesafioDeDesbloqueio = {
+  tipo: "quiz",
+  enunciado: null,
+  perguntas: [
+    { ...pergunta("p1", 1, "Quanto é 1 + 1?"), imagem_referencia: "imagem-1" },
+    { ...pergunta("p2", 2, "Quanto é 2 + 2?"), imagem_referencia: "imagem-2" },
+  ],
+};
+
+describe("a pergunta do quiz é falada ao ser alcançada", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("fala o enunciado e as alternativas, avançando e voltando", async () => {
+    const motor = instalarMotorDeFalaFalso();
+
+    await renderizarComNarracao(
+      <>
+        <LigarNarracao />
+        <DesafioDeDesbloqueio
+          missaoId="missao-1"
+          desafio={QUIZ_DE_TRES}
+          aoDesbloquear={vi.fn()}
+          submissaoLigada
+        />
+      </>,
+    );
+    const usuario = userEvent.setup();
+
+    // Desligada, nada fala sozinho.
+    expect(motor.ditos).toHaveLength(0);
+
+    await usuario.click(screen.getByRole("button", { name: "Ligar a narração" }));
+    // O primeiro enunciado é o armar, disparado pelo próprio gesto que liga.
+    const faladas = () => motor.ditos.map((dito) => dito.text).filter((texto) => texto !== "");
+
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    expect(faladas()).toContain("Quanto é 2 + 2?. 1. 2. 3. 4");
+
+    await usuario.click(screen.getByRole("button", { name: "Pergunta anterior" }));
+    // Retornar fala de novo a pergunta alcançada.
+    expect(faladas().at(-1)).toBe("Quanto é 1 + 1?. 1. 2. 3. 4");
+  });
+
+  it("escolher alternativa não refaz a fala da mesma pergunta", async () => {
+    const motor = instalarMotorDeFalaFalso();
+
+    await renderizarComNarracao(
+      <>
+        <LigarNarracao />
+        <DesafioDeDesbloqueio
+          missaoId="missao-1"
+          desafio={QUIZ_DE_TRES}
+          aoDesbloquear={vi.fn()}
+          submissaoLigada
+        />
+      </>,
+    );
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: "Ligar a narração" }));
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    const quantas = motor.ditos.length;
+
+    // Render novo da mesma pergunta: a fala é por identidade do item, nunca
+    // por reapresentação — senão a tela falaria em laço.
+    await usuario.click(screen.getByRole("radio", { name: "3" }));
+
+    expect(motor.ditos).toHaveLength(quantas);
+  });
+
+  it("com a narração desligada a pergunta não fala, e segue legível", async () => {
+    const motor = instalarMotorDeFalaFalso();
+
+    await renderizarComNarracao(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={QUIZ_DE_TRES}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+
+    expect(motor.ditos).toHaveLength(0);
+    expect(screen.getByText("Quanto é 2 + 2?")).toBeInTheDocument();
+  });
+});
+
+describe("a imagem que carrega trava a troca de pergunta", () => {
+  it("trava avançar enquanto carrega e libera quando a imagem chega", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:imagem"),
+      revokeObjectURL: vi.fn(),
+    });
+    let liberar: (bytes: Blob) => void = () => {};
+    vi.spyOn(trilhaApi, "lerImagemDaPergunta").mockImplementation(
+      () =>
+        new Promise<Blob>((resolver) => {
+          liberar = resolver;
+        }),
+    );
+
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={QUIZ_COM_IMAGEM}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+
+    expect(await screen.findByText("Carregando…")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Próxima pergunta" })).toBeDisabled();
+
+    await act(async () => {
+      liberar(new Blob(["bytes"], { type: "image/png" }));
+    });
+
+    expect(screen.getByRole("button", { name: "Próxima pergunta" })).toBeEnabled();
+  });
+
+  it("imagem que não abre libera a navegação", async () => {
+    vi.spyOn(trilhaApi, "lerImagemDaPergunta").mockRejectedValue(new Error("falhou"));
+
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={QUIZ_COM_IMAGEM}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+
+    expect(
+      await screen.findByText("A imagem desta pergunta não abriu, mas pode responder."),
+    ).toBeInTheDocument();
+    // A válvula de escape: mídia que não abriu nunca prende quem percorre.
+    expect(screen.getByRole("button", { name: "Próxima pergunta" })).toBeEnabled();
   });
 });

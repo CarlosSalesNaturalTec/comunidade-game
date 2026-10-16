@@ -134,7 +134,7 @@ describe("missão no percurso", () => {
     // A ordem é a do autor, e sai um conteúdo por vez (documento 15 §6.4).
     expect(await screen.findByText("Primeiro parágrafo.")).toBeInTheDocument();
     expect(screen.queryByText("Segundo parágrafo.")).not.toBeInTheDocument();
-    expect(screen.getByText("Conteúdo 1 de 2")).toBeInTheDocument();
+    expect(screen.queryByText(/de 2/)).not.toBeInTheDocument();
 
     await usuario.click(screen.getByRole("button", { name: "Próximo conteúdo" }));
     expect(screen.getByText("Segundo parágrafo.")).toBeInTheDocument();

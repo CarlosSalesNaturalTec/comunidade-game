@@ -66,10 +66,12 @@ function ConteudoDaMissao({
   conteudo,
   tituloDaMissao,
   token,
+  aoMudarCarregamento,
 }: {
   conteudo: MissaoPublica["conteudos"][number];
   tituloDaMissao: string;
   token: string | null;
+  aoMudarCarregamento: (carregando: boolean) => void;
 }) {
   const temArquivo = conteudo.referencia !== null;
 
@@ -94,6 +96,7 @@ function ConteudoDaMissao({
             : `Vídeo de ${tituloDaMissao}`
         }
         textoDeErro="Esse arquivo não abriu agora. Tente de novo em instantes."
+        aoMudarCarregamento={aoMudarCarregamento}
       />
     );
   }
@@ -154,6 +157,7 @@ export function Missao({
 }: Props) {
   const { sessao } = useSessao();
   const token = sessao?.token ?? null;
+  const [midiaCarregando, definirMidiaCarregando] = useState(false);
 
   if (!missao.desbloqueada && !missao.e_proxima) {
     return (
@@ -181,8 +185,8 @@ export function Missao({
         <SequenciaPaginada
           key={missaoPublica.id}
           itens={missaoPublica.conteudos.slice().sort((a, b) => a.ordem - b.ordem)}
-          nome="Conteúdo"
           rotuloDeAvancar="Próximo conteúdo"
+          controlesTravados={midiaCarregando}
         >
           {(conteudo) => (
             <div className="cg-trilha__conteudo">
@@ -190,6 +194,7 @@ export function Missao({
                 conteudo={conteudo}
                 tituloDaMissao={missao.titulo}
                 token={token}
+                aoMudarCarregamento={definirMidiaCarregando}
               />
               {conteudo.autoria === "terceiro" && conteudo.fonte && (
                 <span className="cg-trilha__credito"> — fonte: {conteudo.fonte}</span>
