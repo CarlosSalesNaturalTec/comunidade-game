@@ -928,6 +928,19 @@ function trilhaPublicaComMissao(
     autor_nome: "Mestre Ana",
     culminancia: null,
     missoes: [
+      // A sondagem é missão da trilha como as demais, e a publicada traz as
+      // duas: sem a entrada dela, a tela não acha o dado público da missão
+      // aberta e fica em "carregando" para sempre.
+      {
+        id: "sondagem-1",
+        titulo: "Sondagem",
+        posicao: 0,
+        obrigatoria: true,
+        e_sondagem: true,
+        atividades: [],
+        conteudos: [],
+        bibliografia: [],
+      },
       {
         id: "missao-1",
         titulo: "Primeira Missão",

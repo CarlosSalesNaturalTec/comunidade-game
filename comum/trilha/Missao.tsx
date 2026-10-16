@@ -137,6 +137,107 @@ function ArquivoDeApoio({ conteudoId, token }: { conteudoId: string; token: stri
   return <a href={endereco}>Abrir o arquivo de apoio</a>;
 }
 
+// O **ato** da missão: a sondagem, que abre a trilha ao ser respondida, ou o
+// desafio de desbloqueio, que abre a missão seguinte. Um só dos dois, e
+// nenhum deles enquanto o Mestre não julgar o prático já declarado
+// (`RF-05-13`, `RF-05-14`, `RF-05-89`).
+function AtoDaMissao({
+  missao,
+  aoDesbloquear,
+  submissaoDoDesbloqueioLigada,
+}: Pick<Props, "missao" | "aoDesbloquear" | "submissaoDoDesbloqueioLigada">) {
+  if (!missao.e_proxima || missao.aguardando_mestre || !missao.desafio_de_desbloqueio) {
+    return null;
+  }
+  return missao.e_sondagem ? (
+    <Sondagem
+      missaoId={missao.id}
+      desafio={missao.desafio_de_desbloqueio}
+      aoResponder={aoDesbloquear}
+      submissaoLigada={submissaoDoDesbloqueioLigada}
+    />
+  ) : (
+    <DesafioDeDesbloqueio
+      missaoId={missao.id}
+      desafio={missao.desafio_de_desbloqueio}
+      aoDesbloquear={aoDesbloquear}
+      submissaoLigada={submissaoDoDesbloqueioLigada}
+    />
+  );
+}
+
+// O conteúdo um por vez e, **depois do último deles**, o ato da missão. O
+// ato ficava solto abaixo da sequência, visível desde o primeiro conteúdo:
+// a criança via o quiz antes de ler o que a missão ensina, e responder sem
+// percorrer o conteúdo transforma o corte de 60% em sorteio (`RN-05-45`,
+// decisão do fundador de 2026-10-16). Missão **sem conteúdo algum** não tem
+// o que percorrer e apresenta o ato de imediato — é o caso corrente da
+// sondagem, que sem essa borda travaria a trilha inteira.
+//
+// Quem monta **tem de passar `key={missaoPublica.id}`**: é esta `key` que
+// zera o índice quando a missão avança. Ela estava no `SequenciaPaginada` e
+// desce para cá junto com o índice, porque a `Missao` NÃO remonta na troca
+// de missão — índice guardado lá sobreviveria a ela, e a missão nova abriria
+// no índice da anterior, com o ato liberado de cara (design — decisão 1).
+//
+// A posição é comandada de fora pelas propriedades que o paginador já
+// oferece e que o quiz do desbloqueio já usa: `comum/react` não muda.
+function ConteudoEAtoDaMissao({
+  missao,
+  missaoPublica,
+  aoDesbloquear,
+  submissaoDoDesbloqueioLigada,
+}: Pick<Props, "missao" | "aoDesbloquear" | "submissaoDoDesbloqueioLigada"> & {
+  missaoPublica: MissaoPublica;
+}) {
+  const { sessao } = useSessao();
+  const token = sessao?.token ?? null;
+  const [midiaCarregando, definirMidiaCarregando] = useState(false);
+  const [indice, definirIndice] = useState(0);
+
+  const conteudos = missaoPublica.conteudos.slice().sort((a, b) => a.ordem - b.ordem);
+  // A sequência do conteúdo é de mão única — não há `rotuloDeVoltar` —, então
+  // alcançar o último é monotônico: o ato aparece uma vez e não pisca.
+  const alcancouOUltimo = conteudos.length === 0 || indice >= conteudos.length - 1;
+
+  return (
+    <>
+      <SequenciaPaginada
+        itens={conteudos}
+        rotuloDeAvancar="Próximo conteúdo"
+        indice={indice}
+        aoIrPara={definirIndice}
+        controlesTravados={midiaCarregando}
+      >
+        {(conteudo) => (
+          <div className="cg-trilha__conteudo">
+            <ConteudoDaMissao
+              conteudo={conteudo}
+              tituloDaMissao={missao.titulo}
+              token={token}
+              aoMudarCarregamento={definirMidiaCarregando}
+            />
+            {conteudo.autoria === "terceiro" && conteudo.fonte && (
+              <span className="cg-trilha__credito"> — fonte: {conteudo.fonte}</span>
+            )}
+            {conteudo.tipo === "texto" && conteudo.corpo && (
+              <ControleDeOuvirOConteudo corpo={conteudo.corpo} />
+            )}
+          </div>
+        )}
+      </SequenciaPaginada>
+
+      {alcancouOUltimo && (
+        <AtoDaMissao
+          missao={missao}
+          aoDesbloquear={aoDesbloquear}
+          submissaoDoDesbloqueioLigada={submissaoDoDesbloqueioLigada}
+        />
+      )}
+    </>
+  );
+}
+
 // O conteúdo da missão e **o ato dela** — a sondagem, o desafio de
 // desbloqueio ou a entrega da produção. É o primeiro grupo da tela, acima
 // da primeira linha separadora: é o que a criança veio fazer (`RF-04-73`,
@@ -155,10 +256,6 @@ export function Missao({
   submissaoDoDesbloqueioLigada,
   entregaDaProducao,
 }: Props) {
-  const { sessao } = useSessao();
-  const token = sessao?.token ?? null;
-  const [midiaCarregando, definirMidiaCarregando] = useState(false);
-
   if (!missao.desbloqueada && !missao.e_proxima) {
     return (
       <Aviso tipo="atencao">
@@ -181,30 +278,28 @@ export function Missao({
         <EstadoDaLista>Carregando o conteúdo da missão…</EstadoDaLista>
       )}
 
-      {missaoPublica && (
-        <SequenciaPaginada
+      {missaoPublica ? (
+        <ConteudoEAtoDaMissao
           key={missaoPublica.id}
-          itens={missaoPublica.conteudos.slice().sort((a, b) => a.ordem - b.ordem)}
-          rotuloDeAvancar="Próximo conteúdo"
-          controlesTravados={midiaCarregando}
-        >
-          {(conteudo) => (
-            <div className="cg-trilha__conteudo">
-              <ConteudoDaMissao
-                conteudo={conteudo}
-                tituloDaMissao={missao.titulo}
-                token={token}
-                aoMudarCarregamento={definirMidiaCarregando}
-              />
-              {conteudo.autoria === "terceiro" && conteudo.fonte && (
-                <span className="cg-trilha__credito"> — fonte: {conteudo.fonte}</span>
-              )}
-              {conteudo.tipo === "texto" && conteudo.corpo && (
-                <ControleDeOuvirOConteudo corpo={conteudo.corpo} />
-              )}
-            </div>
-          )}
-        </SequenciaPaginada>
+          missao={missao}
+          missaoPublica={missaoPublica}
+          aoDesbloquear={aoDesbloquear}
+          submissaoDoDesbloqueioLigada={submissaoDoDesbloqueioLigada}
+        />
+      ) : (
+        // Conteúdo que **falhou** não prende a missão: o gate existe para
+        // garantir o percurso, e o que não pode ser servido não tem o que
+        // guardar — fechado, deixaria a criança sem saída, porque o ato é o
+        // caminho adiante. Enquanto **carrega** segue oculto, para não
+        // aparecer e sumir quando a lista chegar (decisão do fundador de
+        // 2026-10-16).
+        erroDoConteudo && (
+          <AtoDaMissao
+            missao={missao}
+            aoDesbloquear={aoDesbloquear}
+            submissaoDoDesbloqueioLigada={submissaoDoDesbloqueioLigada}
+          />
+        )
       )}
 
       {missao.aguardando_mestre && (
@@ -212,25 +307,6 @@ export function Missao({
           Você declarou que cumpriu! Agora é só esperar o Mestre conferir.
         </Aviso>
       )}
-
-      {missao.e_proxima &&
-        !missao.aguardando_mestre &&
-        missao.desafio_de_desbloqueio &&
-        (missao.e_sondagem ? (
-          <Sondagem
-            missaoId={missao.id}
-            desafio={missao.desafio_de_desbloqueio}
-            aoResponder={aoDesbloquear}
-            submissaoLigada={submissaoDoDesbloqueioLigada}
-          />
-        ) : (
-          <DesafioDeDesbloqueio
-            missaoId={missao.id}
-            desafio={missao.desafio_de_desbloqueio}
-            aoDesbloquear={aoDesbloquear}
-            submissaoLigada={submissaoDoDesbloqueioLigada}
-          />
-        ))}
 
       {missao.desbloqueada &&
         missaoPublica &&

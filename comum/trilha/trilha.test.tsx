@@ -78,11 +78,24 @@ async function renderizar(conteudo: React.ReactNode) {
     papel: "guerreiro",
     permissoes: {},
   });
+  let resultado!: ReturnType<typeof render>;
   await act(async () => {
-    render(
+    resultado = render(
       <ProvedorDeSessao chaveDeArmazenamento={CHAVE_DE_SESSAO}>{conteudo}</ProvedorDeSessao>,
     );
   });
+  return {
+    ...resultado,
+    // Remonta sob o **mesmo** provedor de sessão: é assim que se observa a
+    // troca de missão sem recriar a sessão, que zeraria tudo por tabela.
+    rerenderizar: async (novo: React.ReactNode) => {
+      await act(async () => {
+        resultado.rerender(
+          <ProvedorDeSessao chaveDeArmazenamento={CHAVE_DE_SESSAO}>{novo}</ProvedorDeSessao>,
+        );
+      });
+    },
+  };
 }
 
 function conteudoDeTexto(id: string, ordem: number, corpo: string) {
@@ -1099,5 +1112,205 @@ describe("a imagem que carrega trava a troca de pergunta", () => {
     ).toBeInTheDocument();
     // A válvula de escape: mídia que não abriu nunca prende quem percorre.
     expect(screen.getByRole("button", { name: "Próxima pergunta" })).toBeEnabled();
+  });
+});
+
+// --- Fatia 29: o ato da missão só depois de todos os conteúdos
+// (`RF-04-73`, `RF-05-11`, `RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-45`,
+// decisão do fundador de 2026-10-16)
+
+describe("o ato da missão só aparece depois do último conteúdo", () => {
+  const MISSAO_COM_DESAFIO: trilhaApi.MissaoNoPercurso = {
+    ...MISSAO_ABERTA,
+    desbloqueada: false,
+    e_proxima: true,
+    desafio_de_desbloqueio: QUIZ,
+  };
+
+  function oDesafioEstaEmTela() {
+    return screen.queryByRole("heading", { name: "Desafio de desbloqueio" }) !== null;
+  }
+
+  it("o desafio fica oculto no primeiro conteúdo e aparece no último", async () => {
+    const publica = missaoDe(
+      trilhaPublica(
+        [],
+        [
+          conteudoDeTexto("conteudo-1", 1, "Primeiro parágrafo."),
+          conteudoDeTexto("conteudo-2", 2, "Segundo parágrafo."),
+          conteudoDeTexto("conteudo-3", 3, "Terceiro parágrafo."),
+        ],
+      ),
+    );
+
+    await renderizar(
+      <Missao missao={MISSAO_COM_DESAFIO} missaoPublica={publica} aoDesbloquear={vi.fn()} />,
+    );
+    const usuario = userEvent.setup();
+
+    expect(await screen.findByText("Primeiro parágrafo.")).toBeInTheDocument();
+    expect(oDesafioEstaEmTela()).toBe(false);
+
+    await usuario.click(screen.getByRole("button", { name: "Próximo conteúdo" }));
+    expect(screen.getByText("Segundo parágrafo.")).toBeInTheDocument();
+    expect(oDesafioEstaEmTela()).toBe(false);
+
+    await usuario.click(screen.getByRole("button", { name: "Próximo conteúdo" }));
+    expect(screen.getByText("Terceiro parágrafo.")).toBeInTheDocument();
+    expect(oDesafioEstaEmTela()).toBe(true);
+  });
+
+  it("missão sem conteúdo algum apresenta o ato de imediato", async () => {
+    const publica = missaoDe(trilhaPublica([], []));
+
+    await renderizar(
+      <Missao missao={MISSAO_COM_DESAFIO} missaoPublica={publica} aoDesbloquear={vi.fn()} />,
+    );
+
+    // Sem isto a sondagem — que costuma não ter conteúdo — travaria a trilha.
+    expect(
+      await screen.findByRole("heading", { name: "Desafio de desbloqueio" }),
+    ).toBeInTheDocument();
+  });
+
+  it("missão de um conteúdo só apresenta o ato junto dele", async () => {
+    const publica = missaoDe(
+      trilhaPublica([], [conteudoDeTexto("conteudo-1", 1, "Parágrafo único.")]),
+    );
+
+    await renderizar(
+      <Missao missao={MISSAO_COM_DESAFIO} missaoPublica={publica} aoDesbloquear={vi.fn()} />,
+    );
+
+    expect(await screen.findByText("Parágrafo único.")).toBeInTheDocument();
+    expect(oDesafioEstaEmTela()).toBe(true);
+  });
+
+  it("a sondagem segue a mesma regra do desafio", async () => {
+    const publica = missaoDe(
+      trilhaPublica(
+        [],
+        [
+          conteudoDeTexto("conteudo-1", 1, "Primeiro parágrafo."),
+          conteudoDeTexto("conteudo-2", 2, "Segundo parágrafo."),
+        ],
+      ),
+    );
+
+    await renderizar(
+      <Missao
+        missao={{ ...MISSAO_COM_DESAFIO, e_sondagem: true }}
+        missaoPublica={publica}
+        aoDesbloquear={vi.fn()}
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    expect(await screen.findByText("Primeiro parágrafo.")).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Sondagem" })).not.toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: "Próximo conteúdo" }));
+
+    expect(screen.getByRole("region", { name: "Sondagem" })).toBeInTheDocument();
+  });
+
+  // O risco central do desenho: a `Missao` NÃO remonta quando a missão
+  // avança, e índice guardado nela abriria a missão nova no índice da
+  // anterior, com o ato liberado de cara (design — decisão 1).
+  it("a missão seguinte recomeça no primeiro conteúdo, com o ato oculto", async () => {
+    const primeira = missaoDe(
+      trilhaPublica(
+        [],
+        [
+          conteudoDeTexto("conteudo-1", 1, "Primeiro parágrafo."),
+          conteudoDeTexto("conteudo-2", 2, "Segundo parágrafo."),
+        ],
+      ),
+    );
+    const segunda = {
+      ...missaoDe(
+        trilhaPublica(
+          [],
+          [
+            conteudoDeTexto("conteudo-3", 1, "Parágrafo da segunda."),
+            conteudoDeTexto("conteudo-4", 2, "Outro da segunda."),
+          ],
+        ),
+      ),
+      id: "missao-2",
+      titulo: "Segunda Missão",
+    };
+
+    const { rerenderizar } = await renderizar(
+      <Missao missao={MISSAO_COM_DESAFIO} missaoPublica={primeira} aoDesbloquear={vi.fn()} />,
+    );
+    const usuario = userEvent.setup();
+
+    await usuario.click(await screen.findByRole("button", { name: "Próximo conteúdo" }));
+    expect(oDesafioEstaEmTela()).toBe(true);
+
+    await rerenderizar(
+      <Missao
+        missao={{ ...MISSAO_COM_DESAFIO, id: "missao-2", titulo: "Segunda Missão" }}
+        missaoPublica={segunda}
+        aoDesbloquear={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Parágrafo da segunda.")).toBeInTheDocument();
+    expect(oDesafioEstaEmTela()).toBe(false);
+  });
+
+  it("o conteúdo que falha libera o ato, e o que carrega o mantém oculto", async () => {
+    // Carregando: o ato não aparece para sumir quando a lista chegar.
+    const { rerenderizar } = await renderizar(
+      <Missao missao={MISSAO_COM_DESAFIO} missaoPublica={undefined} aoDesbloquear={vi.fn()} />,
+    );
+
+    expect(await screen.findByText("Carregando o conteúdo da missão…")).toBeInTheDocument();
+    expect(oDesafioEstaEmTela()).toBe(false);
+
+    // Falhou: o gate não tem o que guardar, e fechado deixaria a missão sem
+    // saída — o ato é o caminho adiante.
+    await rerenderizar(
+      <Missao
+        missao={MISSAO_COM_DESAFIO}
+        missaoPublica={undefined}
+        erroDoConteudo="Não foi possível carregar o conteúdo agora. Tente de novo em instantes."
+        aoDesbloquear={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "Não foi possível carregar o conteúdo agora. Tente de novo em instantes.",
+      ),
+    ).toBeInTheDocument();
+    expect(oDesafioEstaEmTela()).toBe(true);
+  });
+
+  it("a entrega da produção não depende do percurso do conteúdo", async () => {
+    const publica = missaoDe(
+      trilhaPublica(
+        [],
+        [
+          conteudoDeTexto("conteudo-1", 1, "Primeiro parágrafo."),
+          conteudoDeTexto("conteudo-2", 2, "Segundo parágrafo."),
+        ],
+      ),
+    );
+
+    await renderizar(
+      <Missao
+        missao={MISSAO_ABERTA}
+        missaoPublica={publica}
+        aoDesbloquear={vi.fn()}
+        entregaDaProducao={() => <p>Entrega da produção</p>}
+      />,
+    );
+
+    // Missão já desbloqueada: outro estado, fora do gate.
+    expect(await screen.findByText("Primeiro parágrafo.")).toBeInTheDocument();
+    expect(screen.getByText("Entrega da produção")).toBeInTheDocument();
   });
 });
