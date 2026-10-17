@@ -173,19 +173,23 @@ dentro da mesma sessão de trabalho do aparelho.
 4. Nick já usado é recusado na hora, com **sugestão de variações** — o nick é único em toda a
    plataforma e é ele que localiza a pessoa na entrada.
 5. Idade fora da faixa de **6 a 16 anos** interrompe o cadastro e chama o Mestre ou o Admin.
-6. Confirmados os dados, a aplicação apresenta o **termo de consentimento** para a captura da
-   imagem — exibido na tela e **lido em voz alta** na modalidade áudio.
-7. O responsável **assina o termo impresso**, ali no encontro. O Mestre ou o Admin confirma na
-   aplicação que o termo foi assinado e fica registrado como **testemunha**.
-8. Só então a câmera captura a imagem. **No próprio aparelho** a aplicação verifica a
-   vivacidade e gera o **descritor facial**; ao núcleo vai apenas o descritor, e a
-   **fotografia é descartada sem sair do aparelho**.
+6. Confirmados os dados, a aplicação apresenta os **dois termos**, um de cada vez — o da
+   captura da imagem e o da **autorização de divulgação** —, exibidos na tela e **lidos em voz
+   alta** na modalidade áudio.
+7. O responsável **assina as duas folhas impressas**, ali no encontro, e decide cada uma por
+   si: conceder uma e recusar a outra é desfecho válido, e recusar a primeira não dispensa de
+   perguntar a segunda. O Mestre ou o Admin confirma na aplicação a decisão de cada termo e
+   fica registrado como **testemunha** nas duas.
+8. Concedida a biometria, a câmera captura a imagem; recusada, o cadastro segue sem ela, pela
+   alternativa equivalente. **No próprio aparelho** a aplicação verifica a vivacidade e gera o
+   **descritor facial**; ao núcleo vai apenas o descritor, e a **fotografia é descartada sem
+   sair do aparelho**.
 9. O cadastro é criado **ativo**, vinculado à comunidade da aula vigente, e a **presença do dia
    é registrada** no mesmo ato.
 10. A IA fecha a conversa dizendo o nick escolhido e como a criança vai entrar da próxima vez:
     **nick e foto, sem senha**.
-11. A digitalização do termo assinado é anexada ao cadastro depois, pela gestão, na App 03. Até
-    o anexo existir, a pendência aparece no painel do dia.
+11. A digitalização de **cada** termo assinado é anexada ao cadastro depois, pela gestão, na
+    App 03 — um anexo por termo. Até o anexo existir, a pendência aparece no painel do dia.
 
 ### 5.3 Novo Guerreiro(a), sem o responsável
 
@@ -340,6 +344,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-10` | Aplicação vincula o novo cadastro à comunidade da aula vigente, sem perguntá-la                                                                                                                                                             | essencial  |
 | `RF-04-11` | Termo de consentimento é exibido na tela e lido em voz alta na modalidade áudio                                                                                                                                                             | essencial  |
 | `RF-04-12` | Mestre ou Admin confirma na aplicação a assinatura do termo impresso e fica registrado como testemunha                                                                                                                                      | essencial  |
+| `RF-04-76` | App 01 apresenta o termo de divulgação ao lado do de biometria e registra concessão ou recusa de cada um, em atos separados, com testemunha                                                                                                 | essencial  |
 | `RF-04-13` | Captura da imagem só ocorre depois do registro do consentimento, com o responsável presente                                                                                                                                                 | essencial  |
 | `RF-04-14` | Fotografia original é descartada assim que o _template_ biométrico é gerado, sem sair do aparelho                                                                                                                                           | essencial  |
 | `RF-04-48` | Aparelho gera o _template_ no navegador, na ordem prova de vivacidade e descritor facial, e envia ao núcleo só o descritor                                                                                                                  | essencial  |
@@ -460,6 +465,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RN-04-40` | Formar ou entrar em equipe, jogar o Quiz ao Vivo, trocar pontos extras e ver as próprias trilhas e missões exigem presença registrada no encontro                                                                                             | 15         | 02 §5, 03 §3  |
 | `RN-04-41` | O PIN de quem abriu o aparelho é exigido também para encerrar a sessão de trabalho e para abrir a bancada de medição, conferido no aparelho, com um único contador de cinco erros para os três atos                                           | —          | 03 §§1.1, 3   |
 | `RN-04-42` | A pré-carga dos modelos carrega **apenas os modelos** e nunca abre a câmera do aparelho; falha dela nunca bloqueia caminho algum nem substitui o aviso de preparo da captura                                                                  | —          | 03 §§3.3, 3.4 |
+| `RN-04-43` | Nenhuma confirmação única alcança os dois termos do encontro: são decisões independentes, cada uma com recusa explícita, e a recusa de uma não dispensa de perguntar a outra                                                                  | —          | 03 §3.3       |
 
 ## 8. Modelo de dados
 
@@ -871,6 +877,7 @@ janela da aula agendada; e a **forma do aviso** da exclusão do _template_, que 
 | `RF-04-09`              | 02 §1 (faixa de 6 a 16 anos)                              |
 | `RF-04-10`              | 02 §1 (vínculo obrigatório à comunidade)                  |
 | `RF-04-11` a `RF-04-14` | 03 §3.3 (consentimento, minimização e retenção)           |
+| `RF-04-76` e `RN-04-43` | 03 §3.3 (dois termos, duas decisões)                      |
 | `RF-04-15` e `RF-04-16` | 03 §3.2 (criança sem o responsável)                       |
 | `RF-04-17` a `RF-04-19` | 03 §3.2 (registro de presença)                            |
 | `RF-04-20` a `RF-04-22` | 03 §§1.1, 3.2 (falha de identificação e alternativa)      |

@@ -404,6 +404,13 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
   é o **próprio App 01 que cadastra o responsável mínimo e o vínculo no ato do encontro**, para
   que o consentimento tenha a quem se apoiar; o anexo do termo segue sendo da gestão (PRD-04
   §3.2).
+- **Dois termos, duas decisões**: o encontro colhe, em folhas impressas separadas, o termo da
+  **biometria** e o da **autorização de divulgação** — finalidades próprias, decisões
+  independentes. Cada uma se concede ou se recusa por si; nenhuma tela as reúne num aceite
+  único, e recusar uma não dispensa de perguntar a outra. O App 01 registra as duas com
+  testemunha, e a **digitalização alcança os dois termos**, um anexo por termo — o da
+  divulgação passou a ser digitalizado porque a exposição pública de uma criança é o que mais
+  tarde se questiona, e o papel assinado é a única evidência que vem da mão do responsável.
 - **Minimização, com o processamento no aparelho**: o _template_ biométrico — representação
   matemática não reversível — é gerado **no navegador do próprio aparelho**, pela biblioteca
   aberta **Human**, na ordem **prova de vivacidade e, depois, descritor facial**. Ao núcleo
@@ -450,6 +457,7 @@ A imagem é **dado pessoal sensível de criança e adolescente**. Regras obrigat
 - **Direito de recusa**: quem não autoriza a imagem tem **alternativa equivalente** — nick mais
   confirmação do adulto que a §1.1 define para cada lugar, tanto para registrar presença quanto
   para entrar nas aplicações. Recusar biometria nunca pode significar exclusão da atividade.
+  Recusar a divulgação não tira ninguém do jogo: tira apenas do que é público.
 - **Transparência**: política de privacidade em linguagem simples — para o responsável **e
   para a criança**.
 
