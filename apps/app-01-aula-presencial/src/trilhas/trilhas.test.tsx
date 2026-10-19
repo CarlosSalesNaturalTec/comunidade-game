@@ -1425,6 +1425,12 @@ describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
   it("sem rede, o percurso não abre e nada é enfileirado", async () => {
     const listar = vi.spyOn(trilhaApi, "listarMinhasTrilhas");
     const listarEquipes = vi.spyOn(equipesApi, "listarMinhasEquipes");
+    // A tela da recompensa segue a mesma regra do caminho: sem rede não
+    // abre, e a ciência NUNCA entra em fila local — a fila do aparelho é da
+    // presença, e ciência guardada fora do núcleo consumiria o aviso sem a
+    // criança o ter visto (`RF-04-23`, `RN-05-50`).
+    const listarRecompensas = vi.spyOn(trilhaApi, "listarMinhasRecompensas");
+    const darCiencia = vi.spyOn(trilhaApi, "darCienciaDaRecompensa");
 
     await renderizarPercurso(true);
 
@@ -1432,6 +1438,105 @@ describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
     expect(screen.getByText(/nada ficou guardado neste aparelho/i)).toBeInTheDocument();
     expect(listar).not.toHaveBeenCalled();
     expect(listarEquipes).not.toHaveBeenCalled();
+    expect(listarRecompensas).not.toHaveBeenCalled();
+    expect(darCiencia).not.toHaveBeenCalled();
+    expect(screen.queryByLabelText("Recompensa conquistada")).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// A recompensa de desbloqueio no aparelho do encontro — fatia 10 do PRD-05,
+// decisão do fundador de 2026-10-19 (`RF-04-72`, `RF-04-73`, `RF-05-45`,
+// `RN-05-50`).
+
+describe("a recompensa conquistada no aparelho do encontro", () => {
+  function recompensaConquistada(
+    sobrescreve: Partial<trilhaApi.RecompensaConquistada> = {},
+  ): trilhaApi.RecompensaConquistada {
+    return {
+      recompensa_de_marco_id: "recompensa-1",
+      trilha_id: "trilha-1",
+      missao_id: "missao-1",
+      tipo_de_recurso_id: "tipo-1",
+      tipo_de_recurso_nome: "Camisa do Comunidade Game",
+      tipo_de_recurso_unidade: "unidade",
+      quantidade: 1,
+      entregue: false,
+      entregue_em: null,
+      ciente: false,
+      ...sobrescreve,
+    };
+  }
+
+  function montarPercursoComRecompensas(recompensas: trilhaApi.RecompensaConquistada[]) {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(missaoNoPercurso());
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+    vi.spyOn(trilhaApi, "listarMinhasRecompensas").mockResolvedValue(recompensas);
+  }
+
+  it("a tela chega pelos componentes compartilhados, antes da missão", async () => {
+    montarPercursoComRecompensas([recompensaConquistada()]);
+
+    await renderizarPercurso();
+
+    expect(await screen.findByLabelText("Recompensa conquistada")).toBeInTheDocument();
+    expect(screen.getByText("1 Camisa do Comunidade Game")).toBeInTheDocument();
+    expect(screen.getByText(/confirma a entrega/)).toBeInTheDocument();
+    expect(screen.queryByText("Primeira Missão")).not.toBeInTheDocument();
+  });
+
+  it("avançar grava a ciência no núcleo e leva à missão", async () => {
+    montarPercursoComRecompensas([recompensaConquistada()]);
+    const ciencia = vi.spyOn(trilhaApi, "darCienciaDaRecompensa").mockResolvedValue({
+      recompensa_de_marco_id: "recompensa-1",
+      guerreiro_id: "guerreiro-1",
+      registrado_em: "2026-10-19T10:00:00Z",
+    });
+
+    await renderizarPercurso();
+    const usuario = userEvent.setup();
+
+    await usuario.click(await screen.findByRole("button", { name: "Avançar" }));
+
+    expect(ciencia).toHaveBeenCalledWith("recompensa-1", "token-do-guerreiro");
+    expect(
+      await screen.findByRole("heading", { name: "Primeira Missão" }),
+    ).toBeInTheDocument();
+  });
+
+  it("a ciência não se perde no aparelho compartilhado", async () => {
+    // `RN-05-50`: a ciência é fato do Guerreiro(a) no núcleo, não do
+    // aparelho. Quem já deu ciência noutro aparelho — ou na Área do
+    // Guerreiro(a) — não volta a ver a tela aqui, e nada é lido do
+    // `sessionStorage`, que morre no fim do atendimento.
+    montarPercursoComRecompensas([recompensaConquistada({ ciente: true })]);
+
+    await renderizarPercurso();
+
+    expect(
+      await screen.findByRole("heading", { name: "Primeira Missão" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText("Recompensa conquistada")).not.toBeInTheDocument();
+  });
+
+  it("o prático que o Mestre ainda não julgou não apresenta recompensa", async () => {
+    // Marco não alcançado não consta da leitura do núcleo, então a tela não
+    // tem o que apresentar, e o percurso segue dizendo que a missão aguarda
+    // o Mestre (`RF-05-14`).
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(
+      missaoNoPercurso({ aguardando_mestre: true }),
+    );
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+    vi.spyOn(trilhaApi, "listarMinhasRecompensas").mockResolvedValue([]);
+
+    await renderizarPercurso();
+
+    expect(await screen.findByText(/esperar o mestre conferir/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText("Recompensa conquistada")).not.toBeInTheDocument();
   });
 });
 

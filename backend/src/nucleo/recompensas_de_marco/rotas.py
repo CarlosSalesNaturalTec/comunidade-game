@@ -16,6 +16,7 @@ from ..tempo import DataHoraComFuso
 from ..trilhas.modelo import Missao, Trilha
 from .modelo import EntregaDeRecompensa, RecompensaDeMarco
 from .regra import (
+    dar_ciencia_da_recompensa,
     declarar_recompensa_de_marco,
     listar_entregas,
     listar_entregas_pendentes,
@@ -167,9 +168,18 @@ class RecompensaConquistadaSaida(BaseModel):
     trilha_id: uuid.UUID
     missao_id: uuid.UUID
     tipo_de_recurso_id: uuid.UUID
+    # O nome e a unidade do tipo entram na saída porque sem eles a tela só
+    # tem o que dizer em quantidade — "1" sem dizer se é o livro, a camisa ou
+    # o kit (`RF-05-45`). O valor em moedas e em reais segue de fora
+    # (invariante 16).
+    tipo_de_recurso_nome: str
+    tipo_de_recurso_unidade: str
     quantidade: Decimal
     entregue: bool
     entregue_em: DataHoraComFuso | None
+    # `RN-05-50`: é este campo que faz a tela da recompensa aparecer uma vez
+    # e, no desafio prático, esperar o julgamento do Mestre.
+    ciente: bool
 
 
 @roteador.get("/eu/recompensas")
@@ -188,16 +198,49 @@ def minhas_recompensas_conquistadas_rota(
     conquistadas = listar_recompensas_conquistadas(sessao_bd, guerreiro=guerreiro)
     return [
         RecompensaConquistadaSaida(
-            recompensa_de_marco_id=recompensa.id,
-            trilha_id=recompensa.trilha_id,
-            missao_id=recompensa.missao_id,
-            tipo_de_recurso_id=recompensa.tipo_de_recurso_id,
-            quantidade=recompensa.quantidade,
-            entregue=entrega is not None,
-            entregue_em=entrega.registrado_em if entrega is not None else None,
+            recompensa_de_marco_id=conquistada.recompensa.id,
+            trilha_id=conquistada.recompensa.trilha_id,
+            missao_id=conquistada.recompensa.missao_id,
+            tipo_de_recurso_id=conquistada.recompensa.tipo_de_recurso_id,
+            tipo_de_recurso_nome=conquistada.tipo_de_recurso_nome,
+            tipo_de_recurso_unidade=conquistada.tipo_de_recurso_unidade,
+            quantidade=conquistada.recompensa.quantidade,
+            entregue=conquistada.entrega is not None,
+            entregue_em=(
+                conquistada.entrega.registrado_em if conquistada.entrega is not None else None
+            ),
+            ciente=conquistada.ciente,
         )
-        for recompensa, entrega in conquistadas
+        for conquistada in conquistadas
     ]
+
+
+class CienciaDaRecompensaSaida(BaseModel):
+    recompensa_de_marco_id: uuid.UUID
+    guerreiro_id: uuid.UUID
+    registrado_em: DataHoraComFuso
+
+
+@roteador.post("/eu/recompensas/{id_da_recompensa}/ciencia", status_code=201)
+def dar_ciencia_da_recompensa_rota(
+    id_da_recompensa: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> CienciaDaRecompensaSaida:
+    """Restrita ao **próprio Guerreiro(a)**: ninguém dá ciência pelo outro, e
+    por isso a rota não recebe corpo algum — o Guerreiro(a) é o da sessão.
+    Marco não alcançado é recusado com 422 pela mesma conferência que recusa
+    a entrega, que é o que faz o desafio prático esperar o julgamento do
+    Mestre autor (`RF-05-45`, `RF-05-14`, `RN-05-50`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    recompensa = sessao_bd.get(RecompensaDeMarco, id_da_recompensa)
+    ciencia = dar_ciencia_da_recompensa(sessao_bd, operador=operador, recompensa=recompensa)
+    sessao_bd.commit()
+    return CienciaDaRecompensaSaida(
+        recompensa_de_marco_id=ciencia.recompensa_de_marco_id,
+        guerreiro_id=ciencia.guerreiro_id,
+        registrado_em=ciencia.registrado_em,
+    )
 
 
 class PendenciaDeEntregaSaida(BaseModel):

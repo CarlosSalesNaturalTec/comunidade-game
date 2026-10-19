@@ -1,5 +1,6 @@
 import { useSessao } from "comum/autenticacao";
 import { Aviso, EstadoDaLista } from "comum/react";
+import { descreverRecompensa } from "comum/trilha";
 import { useEffect, useState } from "react";
 import { listarMinhasRecompensas, type RecompensaConquistada } from "../api/carteira";
 
@@ -66,7 +67,10 @@ export function Conquistas() {
         <ul className="cg-lista-de-conquistas">
           {recompensas.map((recompensa) => (
             <li key={recompensa.recompensa_de_marco_id} className="cg-cartao-de-conquista">
-              <p>Quantidade conquistada: {recompensa.quantidade}</p>
+              {/* A mesma frase da tela da recompensa no percurso, e não
+                  outra: "Quantidade conquistada: 1" não dizia se era o
+                  livro, a camisa ou o kit (`RF-05-45`). */}
+              <p>{descreverRecompensa(recompensa)}</p>
               {recompensa.entregue ? (
                 <Aviso tipo="sucesso">
                   Entregue em{" "}

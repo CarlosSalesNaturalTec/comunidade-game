@@ -24,3 +24,4 @@ export { EscolhaDoPoder } from "./EscolhaDoPoder";
 export { GuiaDaTrilha } from "./GuiaDaTrilha";
 export { Missao } from "./Missao";
 export { Sondagem } from "./Sondagem";
+export { descreverRecompensa, TelaDaRecompensa } from "./TelaDaRecompensa";

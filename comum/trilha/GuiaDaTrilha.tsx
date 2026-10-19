@@ -6,13 +6,17 @@ import { Botao } from "../react/Botao";
 import { EstadoDaLista } from "../react/EstadoDaLista";
 import {
   type AtividadeDaMissaoPublica,
+  darCienciaDaRecompensa,
+  listarMinhasRecompensas,
   type MissaoNoPercurso,
   obterMissaoNoPercurso,
   obterTrilhaPublica,
+  type RecompensaConquistada,
   type TrilhaComProximaMissao,
   type TrilhaPublicaComMissoes,
 } from "./api";
 import { Missao } from "./Missao";
+import { TelaDaRecompensa } from "./TelaDaRecompensa";
 
 interface Props {
   trilha: TrilhaComProximaMissao;
@@ -78,6 +82,10 @@ export function GuiaDaTrilha({
   const [trilhaPublica, definirTrilhaPublica] = useState<TrilhaPublicaComMissoes | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
   const [erroDoConteudo, definirErroDoConteudo] = useState<string | null>(null);
+  // As recompensas conquistadas **sem ciência** desta trilha, que entram
+  // antes da próxima missão (`RF-05-45`, `RN-05-50`).
+  const [recompensas, definirRecompensas] = useState<RecompensaConquistada[]>([]);
+  const [gravandoCiencia, definirGravandoCiencia] = useState(false);
 
   const tratarErro = useCallback(
     (erroCapturado: unknown) => {
@@ -119,6 +127,33 @@ export function GuiaDaTrilha({
     carregar();
   }, [carregar]);
 
+  // A regra é **uma**: havendo recompensa conquistada desta trilha sem
+  // ciência, a tela dela entra antes da missão. É isso que cobre os três
+  // caminhos sem polling — a sondagem e o quiz porque esta busca corre de
+  // novo no mesmo ato do desbloqueio, e o desafio prático porque a criança
+  // reencontra a tela ao voltar à trilha, depois do julgamento do Mestre
+  // (design — decisão 2).
+  //
+  // Filtra pela **trilha aberta**: recompensa de outra trilha nunca
+  // interrompe este percurso, e segue alcançável quando ela abrir aquela
+  // (design — decisão 3). A falha é silenciosa de propósito: recompensa que
+  // não carregou não pode trancar a missão, e a ciência não foi gravada,
+  // então a tela volta na próxima abertura.
+  const carregarRecompensas = useCallback(() => {
+    if (!sessao) return;
+    listarMinhasRecompensas(sessao.token)
+      .then((todas) =>
+        definirRecompensas(
+          todas.filter((item) => item.trilha_id === trilha.id && !item.ciente),
+        ),
+      )
+      .catch(() => definirRecompensas([]));
+  }, [sessao, trilha.id]);
+
+  useEffect(() => {
+    carregarRecompensas();
+  }, [carregarRecompensas]);
+
   // A trilha publicada é buscada aqui, uma vez por trilha aberta. Trocar de
   // trilha limpa o que estava em tela antes de a nova resposta chegar, para
   // o crédito de uma trilha nunca aparecer sob o conteúdo de outra.
@@ -140,7 +175,42 @@ export function GuiaDaTrilha({
 
   function aoDesbloquear() {
     aoAtualizarTrilhas();
+    carregarRecompensas();
   }
+
+  // O avançar **grava a ciência** e tira aquela recompensa da fila; a última
+  // deixa a tela e o percurso segue na missão. Falhando a gravação, a
+  // recompensa fica onde está: é melhor a tela voltar do que o aviso se
+  // perder sem a criança o ter visto (`RN-05-50`).
+  async function avancarDaRecompensa(recompensa: RecompensaConquistada) {
+    if (!sessao || gravandoCiencia) return;
+    definirGravandoCiencia(true);
+    try {
+      await darCienciaDaRecompensa(recompensa.recompensa_de_marco_id, sessao.token);
+      definirRecompensas((atuais) =>
+        atuais.filter(
+          (item) => item.recompensa_de_marco_id !== recompensa.recompensa_de_marco_id,
+        ),
+      );
+    } catch (erroCapturado) {
+      tratarErro(erroCapturado);
+    } finally {
+      definirGravandoCiencia(false);
+    }
+  }
+
+  // A ordem é a da **posição da missão** que é o marco (design — decisão 5).
+  // A posição vem da trilha publicada, que este componente já busca; missão
+  // que ainda não chegou vai para o fim, sem travar a apresentação.
+  const posicaoDaMissao = (missaoId: string) =>
+    trilhaPublica?.missoes.find((missao) => missao.id === missaoId)?.posicao ??
+    Number.MAX_SAFE_INTEGER;
+  const recompensaDaVez =
+    recompensas.length > 0
+      ? recompensas
+          .slice()
+          .sort((a, b) => posicaoDaMissao(a.missao_id) - posicaoDaMissao(b.missao_id))[0]
+      : null;
 
   const trilhaConcluida = trilha.proxima_missao_posicao === null;
   const missaoPublica = missaoAtual
@@ -165,87 +235,113 @@ export function GuiaDaTrilha({
         )}
       </header>
 
-      {/* Grupo 1 — o conteúdo e o ato da missão, ou, na trilha inteira
+      {/* A recompensa conquistada entra **antes** da próxima missão e ocupa
+          o corpo do guia, preservando o cabeçalho: o documento 15 §6 fixa uma
+          decisão por tela, e aqui a única é avançar (`RF-05-45`, design —
+          decisão 4). Uma tela por recompensa; a última deixa o percurso
+          seguir. */}
+      {recompensaDaVez !== null ? (
+        <div className="cg-trilha__grupo">
+          <TelaDaRecompensa
+            recompensa={recompensaDaVez}
+            aoAvancar={() => avancarDaRecompensa(recompensaDaVez)}
+            gravando={gravandoCiencia}
+          />
+        </div>
+      ) : (
+        <>
+          {/* Grupo 1 — o conteúdo e o ato da missão, ou, na trilha inteira
           desbloqueada, a culminância. Não tem linha: é o primeiro. */}
-      <div className="cg-trilha__grupo">
-        {trilhaConcluida ? (
-          <>
-            <Aviso tipo="sucesso">
-              Você já desbloqueou todas as missões desta trilha. Agora é hora da culminância!
-            </Aviso>
-            {culminancia}
-          </>
-        ) : (
-          <>
-            {erro && <Aviso tipo="erro">{erro}</Aviso>}
-            {!erro && missaoAtual === null && (
-              <EstadoDaLista>Carregando a missão…</EstadoDaLista>
+          <div className="cg-trilha__grupo">
+            {trilhaConcluida ? (
+              <>
+                <Aviso tipo="sucesso">
+                  Você já desbloqueou todas as missões desta trilha. Agora é hora da
+                  culminância!
+                </Aviso>
+                {culminancia}
+              </>
+            ) : (
+              <>
+                {erro && <Aviso tipo="erro">{erro}</Aviso>}
+                {!erro && missaoAtual === null && (
+                  <EstadoDaLista>Carregando a missão…</EstadoDaLista>
+                )}
+                {missaoAtual && (
+                  <Missao
+                    missao={missaoAtual}
+                    missaoPublica={missaoPublica}
+                    erroDoConteudo={erroDoConteudo}
+                    aoDesbloquear={aoDesbloquear}
+                    submissaoDoDesbloqueioLigada={submissaoDoDesbloqueioLigada}
+                    entregaDaProducao={entregaDaProducao}
+                  />
+                )}
+              </>
             )}
-            {missaoAtual && (
-              <Missao
-                missao={missaoAtual}
-                missaoPublica={missaoPublica}
-                erroDoConteudo={erroDoConteudo}
-                aoDesbloquear={aoDesbloquear}
-                submissaoDoDesbloqueioLigada={submissaoDoDesbloqueioLigada}
-                entregaDaProducao={entregaDaProducao}
-              />
-            )}
-          </>
-        )}
-      </div>
+          </div>
 
-      {/* Grupo 2 — o que se lê depois: os dois recolhidos, lado a lado. */}
-      {temGrupoDoQueSeLeDepois && (
-        <div className="cg-trilha__grupo">
-          {proximaTrancada && missaoSeguinte && (
-            <BlocoRecolhivel titulo="Próxima missão" resumo="O que vem depois desta missão.">
-              <p>
-                A seguir: <strong>{missaoSeguinte.titulo}</strong> —{" "}
-                {missaoSeguinte.motivo_do_bloqueio}
-              </p>
-            </BlocoRecolhivel>
+          {/* Grupo 2 — o que se lê depois: os dois recolhidos, lado a lado. */}
+          {temGrupoDoQueSeLeDepois && (
+            <div className="cg-trilha__grupo">
+              {proximaTrancada && missaoSeguinte && (
+                <BlocoRecolhivel
+                  titulo="Próxima missão"
+                  resumo="O que vem depois desta missão."
+                >
+                  <p>
+                    A seguir: <strong>{missaoSeguinte.titulo}</strong> —{" "}
+                    {missaoSeguinte.motivo_do_bloqueio}
+                  </p>
+                </BlocoRecolhivel>
+              )}
+              {bibliografia.length > 0 && (
+                <BlocoRecolhivel
+                  titulo="Bibliografia"
+                  resumo="Onde ler mais sobre esta missão."
+                >
+                  <ul className="cg-trilha__bibliografia">
+                    {bibliografia.map((item) => (
+                      <li key={item.id}>
+                        {item.titulo} — {item.capitulo}
+                        {item.disponivel === true && " (disponível no seu ponto de apoio)"}
+                        {item.disponivel === false && " (sem exemplar no seu ponto de apoio)"}
+                      </li>
+                    ))}
+                  </ul>
+                </BlocoRecolhivel>
+              )}
+            </div>
           )}
-          {bibliografia.length > 0 && (
-            <BlocoRecolhivel titulo="Bibliografia" resumo="Onde ler mais sobre esta missão.">
-              <ul className="cg-trilha__bibliografia">
-                {bibliografia.map((item) => (
-                  <li key={item.id}>
-                    {item.titulo} — {item.capitulo}
-                    {item.disponivel === true && " (disponível no seu ponto de apoio)"}
-                    {item.disponivel === false && " (sem exemplar no seu ponto de apoio)"}
-                  </li>
-                ))}
-              </ul>
-            </BlocoRecolhivel>
+
+          {/* Grupo 3 — as atividades do encontro, de quem as tem. */}
+          {atividadesDoEncontro && (
+            <div className="cg-trilha__grupo">{atividadesDoEncontro}</div>
           )}
-        </div>
-      )}
 
-      {/* Grupo 3 — as atividades do encontro, de quem as tem. */}
-      {atividadesDoEncontro && <div className="cg-trilha__grupo">{atividadesDoEncontro}</div>}
-
-      {/* Grupo 4 — o rodapé: o caminho ao catálogo, quando é o único, e o
+          {/* Grupo 4 — o rodapé: o caminho ao catálogo, quando é o único, e o
           crédito da trilha, que é metadado da obra. */}
-      {temRodape && (
-        <div className="cg-trilha__grupo">
-          {aoEscolherOutroPoder && (
-            <Botao variante="secundaria" onClick={aoEscolherOutroPoder}>
-              Escolher outro poder
-            </Botao>
+          {temRodape && (
+            <div className="cg-trilha__grupo">
+              {aoEscolherOutroPoder && (
+                <Botao variante="secundaria" onClick={aoEscolherOutroPoder}>
+                  Escolher outro poder
+                </Botao>
+              )}
+              {trilhaPublica && (
+                <BlocoRecolhivel
+                  titulo="Crédito e licença"
+                  resumo="Quem fez esta trilha e sob qual licença."
+                >
+                  <p className="cg-trilha__credito">
+                    Crédito: {trilhaPublica.autor_nome ?? "Mestre autor"} — licença{" "}
+                    {trilhaPublica.licenca}
+                  </p>
+                </BlocoRecolhivel>
+              )}
+            </div>
           )}
-          {trilhaPublica && (
-            <BlocoRecolhivel
-              titulo="Crédito e licença"
-              resumo="Quem fez esta trilha e sob qual licença."
-            >
-              <p className="cg-trilha__credito">
-                Crédito: {trilhaPublica.autor_nome ?? "Mestre autor"} — licença{" "}
-                {trilhaPublica.licenca}
-              </p>
-            </BlocoRecolhivel>
-          )}
-        </div>
+        </>
       )}
     </section>
   );

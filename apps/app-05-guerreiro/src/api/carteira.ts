@@ -43,9 +43,16 @@ export interface RecompensaConquistada {
   trilha_id: string;
   missao_id: string;
   tipo_de_recurso_id: string;
+  // O nome e a unidade do tipo: sem eles a lista imprimia só a quantidade, e
+  // "1" não diz se é o livro, a camisa ou o kit (`RF-05-45`).
+  tipo_de_recurso_nome: string;
+  tipo_de_recurso_unidade: string;
   quantidade: number;
   entregue: boolean;
   entregue_em: string | null;
+  // `RN-05-50`: a lista mostra o que foi conquistado, com ou sem ciência; é o
+  // percurso da trilha que usa este campo para avisar uma vez.
+  ciente: boolean;
 }
 
 export function listarMinhasRecompensas(token: string): Promise<RecompensaConquistada[]> {

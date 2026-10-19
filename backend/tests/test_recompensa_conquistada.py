@@ -186,3 +186,43 @@ def test_mestre_nao_le_esta_rota(cliente, criar_chave, criar_sessao_de_teste, ce
     resposta = cliente.get("/v1/eu/recompensas", headers=cabecalhos)
 
     assert resposta.status_code == 403
+
+
+def test_a_leitura_nomeia_o_recurso_conquistado(
+    sessao, cliente, criar_chave, criar_sessao_de_teste, cenario
+):
+    """`RF-05-45`: sem o nome e a unidade do tipo, a tela só tem a
+    quantidade — "1" sem dizer se é o livro, a camisa ou o kit."""
+    c = cenario()
+    _marcar_marco_alcancado(
+        sessao, mestre=c["mestre"], guerreiro=c["guerreiro"], missao=c["missao"]
+    )
+
+    cabecalhos = _autenticar(cliente, criar_chave, criar_sessao_de_teste, c["guerreiro"])
+    resposta = cliente.get("/v1/eu/recompensas", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    item = resposta.json()[0]
+    assert item["tipo_de_recurso_nome"] == c["tipo"].nome
+    assert item["tipo_de_recurso_unidade"] == c["tipo"].unidade
+
+
+def test_a_leitura_diz_se_ja_houve_ciencia(
+    sessao, cliente, criar_chave, criar_sessao_de_teste, cenario
+):
+    """`RN-05-50`: é este campo que faz a tela da recompensa aparecer uma
+    vez, e esperar o julgamento do Mestre no desafio prático."""
+    c = cenario()
+    _marcar_marco_alcancado(
+        sessao, mestre=c["mestre"], guerreiro=c["guerreiro"], missao=c["missao"]
+    )
+
+    cabecalhos = _autenticar(cliente, criar_chave, criar_sessao_de_teste, c["guerreiro"])
+    antes = cliente.get("/v1/eu/recompensas", headers=cabecalhos).json()
+    assert antes[0]["ciente"] is False
+
+    ciencia = cliente.post(f"/v1/eu/recompensas/{c['recompensa'].id}/ciencia", headers=cabecalhos)
+    assert ciencia.status_code == 201
+
+    depois = cliente.get("/v1/eu/recompensas", headers=cabecalhos).json()
+    assert depois[0]["ciente"] is True
