@@ -219,3 +219,51 @@ export interface PoderPublico {
 export function listarPoderesDoCatalogo(): Promise<PoderPublico[]> {
   return chamarNucleo<PoderPublico[]>("/v1/vitrine/poderes");
 }
+
+// A recompensa de marco que o Guerreiro(a) **conquistou** — o marco alcançado
+// é o desbloqueio da missão, e no desafio prático só depois de o Mestre autor
+// julgar (`RF-05-45`, `RN-05-50`).
+export interface RecompensaConquistada {
+  recompensa_de_marco_id: string;
+  trilha_id: string;
+  missao_id: string;
+  tipo_de_recurso_id: string;
+  // O nome e a unidade do tipo: sem eles a tela só tem a quantidade, e "1"
+  // não diz se é o livro, a camisa ou o kit. Nunca valor em moedas nem em
+  // reais, que ficam no lançamento (invariante 16).
+  tipo_de_recurso_nome: string;
+  tipo_de_recurso_unidade: string;
+  quantidade: number;
+  entregue: boolean;
+  entregue_em: string | null;
+  // `RN-05-50`: é o que faz a tela aparecer uma vez, e esperar o julgamento
+  // do Mestre no desafio prático.
+  ciente: boolean;
+}
+
+// As recompensas conquistadas pelo Guerreiro(a) em sessão, de **todas** as
+// trilhas que ele percorre — quem apresenta filtra pela trilha aberta, para
+// recompensa de outra trilha nunca interromper este percurso (design —
+// decisão 3).
+export function listarMinhasRecompensas(token: string): Promise<RecompensaConquistada[]> {
+  return chamarNucleo<RecompensaConquistada[]>("/v1/eu/recompensas", { token });
+}
+
+export interface CienciaDaRecompensa {
+  recompensa_de_marco_id: string;
+  guerreiro_id: string;
+  registrado_em: string;
+}
+
+// Dá ciência da recompensa — o ato do botão avançar. Ninguém a dá pelo outro,
+// e por isso não há corpo: o Guerreiro(a) é o da sessão. Chamar de novo
+// mantém a ciência que havia, sem erro (`RN-05-50`, design — decisão 8).
+export function darCienciaDaRecompensa(
+  recompensaId: string,
+  token: string,
+): Promise<CienciaDaRecompensa> {
+  return chamarNucleo<CienciaDaRecompensa>(`/v1/eu/recompensas/${recompensaId}/ciencia`, {
+    metodo: "POST",
+    token,
+  });
+}

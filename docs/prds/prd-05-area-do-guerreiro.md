@@ -183,7 +183,8 @@ avatar e nick.
 
 1. Alcançado um marco com recompensa declarada, a aplicação avisa **o que foi conquistado** e
    que a entrega será confirmada pelo Mestre — não há saldo debitado, porque **recompensa de
-   marco não se compra**.
+   marco não se compra**. O aviso acontece **no percurso da trilha, antes da próxima missão**,
+   e **uma vez** (`RN-05-50`); a lista de conquistas permanece, para rever depois.
 2. No encontro presencial, apresentar ao Mestre o bem recebido — livro, camisa, kit — em bom
    estado e em uso rende **1 ponto extra por item**, pedido pelo Guerreiro(a) e lançado pelo
    Mestre; cada item pontua uma vez por encontro. Devolução em bom estado do acervo permanente
@@ -394,6 +395,7 @@ aplicação do Ciclo 01 não oferece apoio escolar.
 | `RN-05-47` | Toda tentativa de desbloqueio é gravada com a resposta de cada pergunta e se ela acertou                                                                                         | —                      | 11 §2.2          |
 | `RN-05-48` | Erro que o núcleo declara no corpo único nunca é apresentado como recusa do reconhecimento: falha de rede, de validação, de chave ou de preparo do aparelho aparece como o que é | 25                     | 03 §1            |
 | `RN-05-49` | A pré-carga dos modelos carrega **apenas os modelos** e nunca abre a câmera do aparelho; falha dela nunca interrompe a entrada nem veste a frase da recusa da conferência        | —                      | 03 §3.3          |
+| `RN-05-50` | A recompensa conquistada é avisada **uma vez**: a ciência é do Guerreiro(a) no núcleo, nunca do aparelho, e no prático só depois do julgamento do Mestre autor                   | —                      | 15 §9            |
 
 `RN-05-17` (canal de sugestões) e `RN-05-19` (dano acidental ao acervo) valem **a partir do
 Ciclo 02** (§3.2), junto com os requisitos que as operacionalizam. `RN-05-25` a `RN-05-28` e
@@ -662,6 +664,7 @@ coletores distintos no recorte publicado (documento 02 §1).
 | `RN-05-48`              | 03 §1 (erro declarado pelo núcleo chega como ele é)                                                               |
 | `RF-05-90`              | 03 §3.4 (modelos ao fundo em aparelho modesto) e 15 §5 (estado sem depender de cor)                               |
 | `RN-05-49`              | 03 §3.3 (câmera só no pedido da pessoa), descendo do `RN-05-01`                                                   |
+| `RN-05-50`              | 15 §9 (o trio de estrelas e a exceção da grandeza ponto), servindo o `RF-05-45`                                   |
 | `RF-05-08` a `RF-05-18` | 03 §7 (guia da trilha), 11 §§2, 6 (anatomia e níveis)                                                             |
 | `RF-05-19` a `RF-05-24` | 02 §5 e 11 §§4, 5 (equipes, taxonomia e desafios), 04 §3 (extras)                                                 |
 | `RF-05-30` a `RF-05-38` | 02 §1 e PRD-08 (séries, locais e validade do registro)                                                            |

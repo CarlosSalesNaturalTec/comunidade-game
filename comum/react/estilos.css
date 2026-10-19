@@ -681,3 +681,21 @@
 .cg-fundo-de-comunidade .cg-marca__simbolo--mono {
   display: block;
 }
+
+/* `TrioDeEstrelas` — a recompensa de marco conquistada (documento 15 §9, com a
+ * exceção da estrela cheia declarada ali; `RF-05-45`). É uma das peças
+ * **preenchidas** do sistema de ícone, como a silhueta de badge: o
+ * preenchimento e o contorno saem dos tokens da família ponto, e nenhum valor
+ * de cor mora no componente. O contorno é o degrau 700 que a §9 manda para
+ * toda ficha — nunca preto literal, que não acompanharia o tema. */
+.cg-trio-de-estrelas {
+  display: inline-flex;
+  gap: var(--espaco-4);
+  align-items: center;
+  justify-content: center;
+}
+
+.cg-trio-de-estrelas__estrela {
+  fill: var(--cor-ponto);
+  stroke: var(--cor-ponto-contorno);
+}

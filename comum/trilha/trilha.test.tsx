@@ -1314,3 +1314,190 @@ describe("o ato da missão só aparece depois do último conteúdo", () => {
     expect(screen.getByText("Entrega da produção")).toBeInTheDocument();
   });
 });
+// A tela da recompensa de desbloqueio — fatia 10 do PRD-05, decisão do
+// fundador de 2026-10-19, que quita o `RF-05-45` e cria a `RN-05-50`.
+describe("a recompensa conquistada entra antes da próxima missão", () => {
+  const TRILHA: trilhaApi.TrilhaComProximaMissao = {
+    id: "trilha-1",
+    nome: "Robô Educa",
+    poder_id: "poder-1",
+    proxima_missao_id: "missao-1",
+    proxima_missao_titulo: "Primeira Missão",
+    proxima_missao_posicao: 1,
+  };
+
+  function recompensa(
+    sobrepor: Partial<trilhaApi.RecompensaConquistada> = {},
+  ): trilhaApi.RecompensaConquistada {
+    return {
+      recompensa_de_marco_id: "recompensa-1",
+      trilha_id: "trilha-1",
+      missao_id: "missao-1",
+      tipo_de_recurso_id: "tipo-1",
+      tipo_de_recurso_nome: "Camisa do Comunidade Game",
+      tipo_de_recurso_unidade: "unidade",
+      quantidade: 1,
+      entregue: false,
+      entregue_em: null,
+      ciente: false,
+      ...sobrepor,
+    };
+  }
+
+  function montarPercurso() {
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublica());
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockImplementation((_id, posicao) =>
+      Promise.resolve(
+        posicao === 1
+          ? { ...MISSAO_ABERTA, desbloqueada: false, e_proxima: true }
+          : { ...MISSAO_ABERTA, id: "missao-2", titulo: "Segunda Missão", posicao: 2 },
+      ),
+    );
+  }
+
+  it("apresenta o trio, o nome do recurso e o aviso de que o Mestre entrega", async () => {
+    montarPercurso();
+    vi.spyOn(trilhaApi, "listarMinhasRecompensas").mockResolvedValue([recompensa()]);
+
+    const { container } = await renderizar(
+      <GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />,
+    );
+
+    expect(await screen.findByLabelText("Recompensa conquistada")).toBeInTheDocument();
+    // Três estrelas, que é o que separa a recompensa da grandeza ponto.
+    expect(container.querySelectorAll(".cg-trio-de-estrelas svg")).toHaveLength(3);
+    expect(screen.getByText("1 Camisa do Comunidade Game")).toBeInTheDocument();
+    // `RF-05-45`/§5.6.1: o aviso da entrega pelo Mestre é obrigatório.
+    expect(screen.getByText(/confirma a entrega/)).toBeInTheDocument();
+    // A missão fica para depois do avançar.
+    expect(screen.queryByText("Primeira Missão")).not.toBeInTheDocument();
+  });
+
+  it("avançar grava a ciência e leva à missão", async () => {
+    montarPercurso();
+    vi.spyOn(trilhaApi, "listarMinhasRecompensas").mockResolvedValue([recompensa()]);
+    const ciencia = vi.spyOn(trilhaApi, "darCienciaDaRecompensa").mockResolvedValue({
+      recompensa_de_marco_id: "recompensa-1",
+      guerreiro_id: "guerreiro-1",
+      registrado_em: "2026-10-19T10:00:00Z",
+    });
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+    const usuario = userEvent.setup();
+
+    await usuario.click(await screen.findByRole("button", { name: "Avançar" }));
+
+    expect(ciencia).toHaveBeenCalledWith("recompensa-1", expect.any(String));
+    expect(await screen.findByText("Primeira Missão")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Recompensa conquistada")).not.toBeInTheDocument();
+  });
+
+  it("recompensa com ciência não interrompe o percurso", async () => {
+    // `RN-05-50`: a tela aparece **uma vez**; voltar à trilha não a traz de
+    // novo, ainda que a entrega siga aguardando o Mestre.
+    montarPercurso();
+    vi.spyOn(trilhaApi, "listarMinhasRecompensas").mockResolvedValue([
+      recompensa({ ciente: true }),
+    ]);
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+
+    expect(await screen.findByText("Primeira Missão")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Recompensa conquistada")).not.toBeInTheDocument();
+  });
+
+  it("marco sem recompensa não interrompe o percurso", async () => {
+    montarPercurso();
+    vi.spyOn(trilhaApi, "listarMinhasRecompensas").mockResolvedValue([]);
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+
+    expect(await screen.findByText("Primeira Missão")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Recompensa conquistada")).not.toBeInTheDocument();
+  });
+
+  it("recompensa de outra trilha nunca interrompe esta", async () => {
+    // Design — decisão 3: a leitura traz todas as trilhas, e a tela filtra.
+    montarPercurso();
+    vi.spyOn(trilhaApi, "listarMinhasRecompensas").mockResolvedValue([
+      recompensa({ trilha_id: "trilha-2", recompensa_de_marco_id: "recompensa-de-outra" }),
+    ]);
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+
+    expect(await screen.findByText("Primeira Missão")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Recompensa conquistada")).not.toBeInTheDocument();
+  });
+
+  it("duas recompensas saem uma por tela, na ordem da posição da missão", async () => {
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue({
+      ...trilhaPublica(),
+      missoes: [
+        { ...missaoDe(trilhaPublica()), id: "missao-1", posicao: 1 },
+        { ...missaoDe(trilhaPublica()), id: "missao-2", titulo: "Segunda", posicao: 2 },
+      ],
+    });
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockImplementation((_id, posicao) =>
+      Promise.resolve(
+        posicao === 1
+          ? { ...MISSAO_ABERTA, desbloqueada: false, e_proxima: true }
+          : { ...MISSAO_ABERTA, id: "missao-2", titulo: "Segunda Missão", posicao: 2 },
+      ),
+    );
+    // Devolvidas fora de ordem de propósito: quem ordena é a tela.
+    vi.spyOn(trilhaApi, "listarMinhasRecompensas").mockResolvedValue([
+      recompensa({
+        recompensa_de_marco_id: "recompensa-2",
+        missao_id: "missao-2",
+        tipo_de_recurso_nome: "Kit em MDF",
+      }),
+      recompensa({ recompensa_de_marco_id: "recompensa-1", missao_id: "missao-1" }),
+    ]);
+    const ciencia = vi.spyOn(trilhaApi, "darCienciaDaRecompensa").mockImplementation((id) =>
+      Promise.resolve({
+        recompensa_de_marco_id: id,
+        guerreiro_id: "guerreiro-1",
+        registrado_em: "2026-10-19T10:00:00Z",
+      }),
+    );
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+    const usuario = userEvent.setup();
+
+    // A da missão 1 vem primeiro, embora tenha chegado por último.
+    expect(await screen.findByText("1 Camisa do Comunidade Game")).toBeInTheDocument();
+    await usuario.click(screen.getByRole("button", { name: "Avançar" }));
+
+    // A segunda ocupa a tela, e só então a missão.
+    expect(await screen.findByText("1 Kit em MDF")).toBeInTheDocument();
+    await usuario.click(screen.getByRole("button", { name: "Avançar" }));
+
+    expect(await screen.findByText("Primeira Missão")).toBeInTheDocument();
+    expect(ciencia).toHaveBeenCalledTimes(2);
+  });
+
+  it("a tela não oferece compra nem mostra valor em moedas ou reais", async () => {
+    // `RF-05-46`, invariantes 16 e 23.
+    montarPercurso();
+    vi.spyOn(trilhaApi, "listarMinhasRecompensas").mockResolvedValue([recompensa()]);
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+
+    const tela = await screen.findByLabelText("Recompensa conquistada");
+    expect(tela.textContent).not.toMatch(/moeda|real|reais|R\$|ponto/i);
+    expect(screen.queryByRole("button", { name: /trocar|comprar|resgatar/i })).toBeNull();
+  });
+
+  it("a ciência que falha deixa a recompensa na tela, para o aviso não se perder", async () => {
+    montarPercurso();
+    vi.spyOn(trilhaApi, "listarMinhasRecompensas").mockResolvedValue([recompensa()]);
+    vi.spyOn(trilhaApi, "darCienciaDaRecompensa").mockRejectedValue(new Error("rede"));
+
+    await renderizar(<GuiaDaTrilha trilha={TRILHA} aoAtualizarTrilhas={vi.fn()} />);
+    const usuario = userEvent.setup();
+
+    await usuario.click(await screen.findByRole("button", { name: "Avançar" }));
+
+    expect(screen.getByLabelText("Recompensa conquistada")).toBeInTheDocument();
+  });
+});

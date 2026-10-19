@@ -378,6 +378,10 @@ São três grandezas distintas e **nunca podem ser confundidas na tela**:
 | **Moeda**         | Círculo de moeda | Ficha circular  | `moeda-500` | "moedas"        |
 
 - Toda ficha leva **contorno no degrau 700** da sua família, para ter limite discernível.
+- **Exceção da recompensa de marco:** ela é marcada por **três** estrelas cheias lado a lado,
+  na mesma família `ponto-500`. A grandeza ponto é sempre **uma** estrela, e é a contagem que
+  separa as duas — o trio nunca aparece sem o nome do que foi conquistado ao lado. Decisão do
+  fundador, 2026-10-19.
 - Do ponto extra, a superfície pública mostra o **acumulado**; a tela de troca mostra o **saldo
   disponível**, e os dois nunca aparecem sem rótulo que os separe.
 - **Real não aparece** fora da tela onde se paga, e ali sempre ao lado do equivalente em moedas.

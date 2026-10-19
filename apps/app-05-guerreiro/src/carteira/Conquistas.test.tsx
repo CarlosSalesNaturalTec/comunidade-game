@@ -36,9 +36,12 @@ describe("recompensas de marco conquistadas", () => {
         trilha_id: "trilha-1",
         missao_id: "missao-1",
         tipo_de_recurso_id: "recurso-1",
+        tipo_de_recurso_nome: "Camisa do Comunidade Game",
+        tipo_de_recurso_unidade: "unidade",
         quantidade: 1,
         entregue: false,
         entregue_em: null,
+        ciente: false,
       },
     ]);
 
@@ -55,15 +58,43 @@ describe("recompensas de marco conquistadas", () => {
         trilha_id: "trilha-1",
         missao_id: "missao-1",
         tipo_de_recurso_id: "recurso-1",
+        tipo_de_recurso_nome: "Camisa do Comunidade Game",
+        tipo_de_recurso_unidade: "unidade",
         quantidade: 1,
         entregue: true,
         entregue_em: "2026-08-01T10:00:00Z",
+        ciente: true,
       },
     ]);
 
     await renderizar();
 
     expect(await screen.findByText(/entregue em/i)).toBeInTheDocument();
+  });
+
+  it("a lista nomeia o que foi conquistado, não só a quantidade", async () => {
+    // `RF-05-45`: a leitura passou a trazer o nome e a unidade do tipo, e a
+    // lista imprimia "Quantidade conquistada: 1" — que não diz se é o livro,
+    // a camisa ou o kit.
+    vi.spyOn(carteiraApi, "listarMinhasRecompensas").mockResolvedValue([
+      {
+        recompensa_de_marco_id: "recompensa-1",
+        trilha_id: "trilha-1",
+        missao_id: "missao-1",
+        tipo_de_recurso_id: "recurso-1",
+        tipo_de_recurso_nome: "Livro da linha Alpha",
+        tipo_de_recurso_unidade: "unidade",
+        quantidade: 2,
+        entregue: false,
+        entregue_em: null,
+        ciente: false,
+      },
+    ]);
+
+    await renderizar();
+
+    expect(await screen.findByText("2 Livro da linha Alpha")).toBeInTheDocument();
+    expect(screen.queryByText(/Quantidade conquistada/i)).not.toBeInTheDocument();
   });
 
   it("sem conquista nenhuma, explica em vez de mostrar tela vazia", async () => {

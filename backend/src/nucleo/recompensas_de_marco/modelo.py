@@ -1,7 +1,7 @@
 import uuid
 from decimal import Decimal
 
-from sqlalchemy import ForeignKey, Index, Numeric, Uuid
+from sqlalchemy import ForeignKey, Index, Numeric, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
@@ -63,4 +63,40 @@ class EntregaDeRecompensa(Base, ComAutoria):
     __table_args__ = (
         Index("ix_entrega_de_recompensa_recompensa_de_marco_id", "recompensa_de_marco_id"),
         Index("ix_entrega_de_recompensa_guerreiro_id", "guerreiro_id"),
+    )
+
+
+class CienciaDaRecompensa(Base, ComAutoria):
+    """A ciência de uma `RecompensaDeMarco` por um Guerreiro(a) — o ato de
+    ele ter sido avisado do que conquistou (`RF-05-45`, `RN-05-50`).
+
+    É registro **do par**, como a `EntregaDeRecompensa`, e nunca coluna da
+    `RecompensaDeMarco`, que é uma só para quantos alcancem o marco: ciência
+    de um apagaria a dos demais (design — Decisions 1). Ciência **não é
+    entrega** — não move saldo, não emite lançamento e não altera a situação
+    da entrega —, então não contraria a regra de que a recompensa não guarda
+    situação de entrega própria.
+
+    Mora no núcleo, e não no navegador, porque o aparelho do encontro é
+    compartilhado e a sessão de trabalho morre no fim do atendimento: no
+    desafio prático o aviso espera o julgamento do Mestre, que pode vir dias
+    depois, noutro aparelho e noutra aplicação. `ComAutoria` já grava quem
+    deu ciência, o papel e a data e hora com fuso.
+    """
+
+    __tablename__ = "ciencia_da_recompensa"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    recompensa_de_marco_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid, ForeignKey("recompensa_de_marco.id"), nullable=False
+    )
+    guerreiro_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("persona.id"), nullable=False)
+
+    __table_args__ = (
+        # O par é único: dar ciência de novo mantém a que havia, e a unicidade
+        # é o que impede duas linhas para o mesmo aviso.
+        UniqueConstraint(
+            "recompensa_de_marco_id", "guerreiro_id", name="uq_ciencia_da_recompensa_par"
+        ),
+        Index("ix_ciencia_da_recompensa_guerreiro_id", "guerreiro_id"),
     )

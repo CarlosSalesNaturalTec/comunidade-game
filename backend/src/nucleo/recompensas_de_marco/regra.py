@@ -16,7 +16,7 @@ from ..recursos.regra import consultar_valor_de_referencia
 from ..tempo import agora
 from ..trilhas.modelo import Missao, Trilha
 from ..trilhas.regra import conferir_posse_da_trilha, missoes_desbloqueadas_pelo_guerreiro
-from .modelo import EntregaDeRecompensa, RecompensaDeMarco
+from .modelo import CienciaDaRecompensa, EntregaDeRecompensa, RecompensaDeMarco
 
 
 def declarar_recompensa_de_marco(
@@ -87,6 +87,31 @@ def _bloquear_recompensa(sessao: Session, *, recompensa: RecompensaDeMarco) -> N
     sessao.refresh(recompensa)
 
 
+def _conferir_marco_alcancado(
+    sessao: Session,
+    *,
+    recompensa: RecompensaDeMarco,
+    guerreiro: Persona,
+    campo: str = "guerreiro_id",
+) -> None:
+    """A conferência de **marco alcançado**, que é o desbloqueio da missão
+    pelo Guerreiro(a) — e, no desafio prático, só depois do julgamento do
+    Mestre autor, porque antes dele a missão não consta das desbloqueadas.
+
+    É **uma só** para a recusa da entrega e para a recusa da ciência: o
+    desenho não duplica a derivação do percurso, e a mesma regra que impede
+    entregar o que não foi conquistado impede avisar o que não foi
+    conquistado (`RF-05-14`, `RF-09-84`, `RN-05-50`, design — decisão 2)."""
+    desbloqueadas = missoes_desbloqueadas_pelo_guerreiro(
+        sessao, guerreiro_id=guerreiro.id, trilha_id=recompensa.trilha_id
+    )
+    if recompensa.missao_id not in desbloqueadas:
+        raise ErroDeValidacao(
+            mensagem="Este Guerreiro(a) ainda não alcançou o marco declarado.",
+            campo=campo,
+        )
+
+
 def _valorar_debito(sessao: Session, *, tipo: TipoDeRecurso, quantidade: Decimal) -> Decimal:
     """A baixa da entrega é valorada pela vigência do valor de referência no
     dia da entrega, no mesmo mecanismo de `trocas.regra._valorar_debito`
@@ -151,14 +176,7 @@ def _validar_entrega(
             campo="guerreiro_id",
         )
 
-    desbloqueadas = missoes_desbloqueadas_pelo_guerreiro(
-        sessao, guerreiro_id=guerreiro.id, trilha_id=recompensa.trilha_id
-    )
-    if recompensa.missao_id not in desbloqueadas:
-        raise ErroDeValidacao(
-            mensagem="Este Guerreiro(a) ainda não alcançou o marco declarado.",
-            campo="guerreiro_id",
-        )
+    _conferir_marco_alcancado(sessao, recompensa=recompensa, guerreiro=guerreiro)
 
 
 def registrar_entrega(
@@ -224,15 +242,33 @@ def registrar_entrega(
     return entrega
 
 
+@dataclass
+class RecompensaConquistada:
+    """Uma recompensa cujo marco o Guerreiro(a) alcançou, com o que a tela
+    precisa dizer a ele: o **nome** e a **unidade** do tipo de recurso, sem
+    os quais a criança não distingue o livro da camisa nem do kit, a
+    situação da entrega e se ele já teve **ciência** do aviso (`RF-05-45`,
+    `RN-05-50`).
+
+    NEVER traz valor em moedas nem em reais: o custo fica no lançamento,
+    invisível para a criança (invariante 16)."""
+
+    recompensa: RecompensaDeMarco
+    tipo_de_recurso_nome: str
+    tipo_de_recurso_unidade: str
+    entrega: EntregaDeRecompensa | None
+    ciente: bool
+
+
 def listar_recompensas_conquistadas(
     sessao: Session, *, guerreiro: Persona
-) -> list[tuple[RecompensaDeMarco, EntregaDeRecompensa | None]]:
+) -> list[RecompensaConquistada]:
     """As recompensas cujo marco o Guerreiro(a) já alcançou, entregues ou
     não — reaproveita `missoes_desbloqueadas_pelo_guerreiro`, a mesma
-    derivação que `_validar_entrega` já usa para recusar a entrega do marco
-    não alcançado, sem duplicar a consulta de percurso (`RF-05-45`, design —
-    Decisions 6). Agrupa as recompensas por trilha para chamar a derivação
-    uma vez por trilha, não uma vez por recompensa."""
+    derivação que `_conferir_marco_alcancado` já usa para recusar a entrega
+    e a ciência do marco não alcançado, sem duplicar a consulta de percurso
+    (`RF-05-45`, design — Decisions 6). Agrupa as recompensas por trilha
+    para chamar a derivação uma vez por trilha, não uma vez por recompensa."""
     recompensas_por_trilha: dict[uuid.UUID, list[RecompensaDeMarco]] = {}
     for recompensa in sessao.query(RecompensaDeMarco).all():
         recompensas_por_trilha.setdefault(recompensa.trilha_id, []).append(recompensa)
@@ -243,16 +279,82 @@ def listar_recompensas_conquistadas(
             sessao.query(EntregaDeRecompensa).filter_by(guerreiro_id=guerreiro.id).all()
         )
     }
+    # A ciência é do par, então a do Guerreiro(a) em sessão é o que basta.
+    ciencias = {
+        ciencia.recompensa_de_marco_id
+        for ciencia in (
+            sessao.query(CienciaDaRecompensa).filter_by(guerreiro_id=guerreiro.id).all()
+        )
+    }
+    tipos = {tipo.id: tipo for tipo in sessao.query(TipoDeRecurso).all()}
 
-    conquistadas: list[tuple[RecompensaDeMarco, EntregaDeRecompensa | None]] = []
+    conquistadas: list[RecompensaConquistada] = []
     for trilha_id, recompensas_da_trilha in recompensas_por_trilha.items():
         desbloqueadas = missoes_desbloqueadas_pelo_guerreiro(
             sessao, guerreiro_id=guerreiro.id, trilha_id=trilha_id
         )
         for recompensa in recompensas_da_trilha:
-            if recompensa.missao_id in desbloqueadas:
-                conquistadas.append((recompensa, entregas_por_recompensa.get(recompensa.id)))
+            if recompensa.missao_id not in desbloqueadas:
+                continue
+            tipo = tipos.get(recompensa.tipo_de_recurso_id)
+            conquistadas.append(
+                RecompensaConquistada(
+                    recompensa=recompensa,
+                    tipo_de_recurso_nome=tipo.nome if tipo is not None else "",
+                    tipo_de_recurso_unidade=tipo.unidade if tipo is not None else "",
+                    entrega=entregas_por_recompensa.get(recompensa.id),
+                    ciente=recompensa.id in ciencias,
+                )
+            )
     return conquistadas
+
+
+def dar_ciencia_da_recompensa(
+    sessao: Session,
+    *,
+    operador: Persona,
+    recompensa: RecompensaDeMarco | None,
+) -> CienciaDaRecompensa:
+    """A ciência é **do próprio Guerreiro(a)**: ninguém a dá por ele, e por
+    isso não há parâmetro de Guerreiro no corpo — é o operador em sessão
+    (`RF-05-45`, `RN-05-50`).
+
+    Marco não alcançado é recusado pela **mesma** conferência que recusa a
+    entrega, que é também o que faz o desafio prático esperar o julgamento do
+    Mestre autor. Dar ciência de novo **mantém** a que havia e devolve sem
+    erro: o avançar da tela pode chegar duas vezes numa rede ruim, e isso não
+    é erro a tratar (design — decisão 8)."""
+    if operador.papel != Papel.guerreiro:
+        raise PermissaoNegada(
+            mensagem="Só o Guerreiro(a) dá ciência das próprias recompensas conquistadas."
+        )
+    if recompensa is None:
+        raise ErroDeValidacao(
+            mensagem="Ciência exige uma recompensa de marco existente.",
+            campo="recompensa_de_marco_id",
+        )
+
+    _conferir_marco_alcancado(
+        sessao, recompensa=recompensa, guerreiro=operador, campo="recompensa_de_marco_id"
+    )
+
+    ja_tem = (
+        sessao.query(CienciaDaRecompensa)
+        .filter_by(recompensa_de_marco_id=recompensa.id, guerreiro_id=operador.id)
+        .first()
+    )
+    if ja_tem is not None:
+        return ja_tem
+
+    ciencia = CienciaDaRecompensa(
+        recompensa_de_marco_id=recompensa.id,
+        guerreiro_id=operador.id,
+        autor_id=operador.id,
+        papel_do_autor=operador.papel.value,
+    )
+    sessao.add(ciencia)
+    sessao.flush()
+    return ciencia
 
 
 def listar_entregas(sessao: Session, *, operador: Persona) -> list[EntregaDeRecompensa]:
