@@ -584,6 +584,11 @@ Cada traço do catálogo SHALL ter **nome dizível em português simples** — "
 "modelo 7" —, porque no onboarding o avatar nasce de características ditas em voz alta por uma
 criança de 6 anos. (documento 15 §7, `RF-04-06`)
 
+Cada traço SHALL ser **distinguível no desenho**: escolher um traço SHALL mudar o que se vê, e
+NEVER SHALL existir traço cujo desenho fique inteiramente coberto por outra camada. Nome dizível
+sem desenho correspondente devolve à criança outro traço que não o escolhido, e anula junto a
+camada que depende dele. (documento 15 §7, `RF-04-06`)
+
 A escala de **tons de pele** SHALL abrir pelo **mais retinto**, e as texturas de **cabelo crespo**
 SHALL vir antes das lisas. É requisito de conteúdo do catálogo, não ordem de tabela: o documento 15
 declara a representatividade como construção, e a ordem é onde ela se realiza. (documento 15 §7.1)
@@ -591,6 +596,14 @@ declara a representatividade como construção, e a ordem é onde ela se realiza
 Nenhum item do catálogo SHALL carregar marca de gênero, e todo item SHALL ser oferecido a qualquer
 pessoa. A **forma de tratamento** é campo próprio da persona e NEVER SHALL derivar do avatar nem
 restringi-lo. (documento 15 §7)
+
+A camada de **rosto** SHALL admitir, além da silhueta do rosto, as **orelhas** e a **peça do cabelo
+que cai à frente da testa**, esta na cor escolhida na camada de cor do cabelo. As nove camadas e a
+ordem delas SHALL permanecer as do documento 15 §7.1. (documento 15 §7.1)
+
+A camada de **roupa** SHALL sair com **contorno**, para que a silhueta do torso permaneça legível
+quando a cor da roupa coincidir com a cor do fundo. Escolher as duas iguais SHALL continuar
+permitido. (documento 15 §7.1)
 
 A composição SHALL acontecer **no próprio aparelho, sem rede**, e o desenho NEVER SHALL depender de
 requisição ao núcleo nem a domínio de terceiro. (documento 15 §7, princípio 6)
@@ -615,6 +628,17 @@ moldura e sem nenhuma outra marca de diferença. (documento 15 §7.3)
 - **WHEN** o catálogo é apresentado a quem escolhe
 - **THEN** cada traço aparece com nome em português simples, e nenhum aparece como código ou número
 
+#### Scenario: Trocar um traço muda o desenho
+
+- **WHEN** um traço de qualquer camada é trocado por outro da mesma camada
+- **THEN** o desenho resultante difere do anterior, e nenhum traço do catálogo desenha o mesmo que
+  outro traço da mesma camada
+
+#### Scenario: Nenhuma camada fica anulada pelo traço escolhido
+
+- **WHEN** uma textura de cabelo é escolhida e a cor do cabelo é trocada
+- **THEN** a troca de cor aparece no desenho, qualquer que seja a textura escolhida
+
 #### Scenario: A escala de pele abre pelo mais retinto
 
 - **WHEN** a camada de tom de pele é apresentada
@@ -624,6 +648,17 @@ moldura e sem nenhuma outra marca de diferença. (documento 15 §7.3)
 
 - **WHEN** qualquer camada do catálogo é apresentada
 - **THEN** todos os itens dela são oferecidos, sem depender da forma de tratamento da persona
+
+#### Scenario: O cabelo da frente é pintado por cima do rosto
+
+- **WHEN** um avatar é desenhado com qualquer textura de cabelo
+- **THEN** a peça da frente sai dentro da camada de rosto, na cor do cabelo, e as nove camadas
+  continuam na ordem do documento 15 §7.1
+
+#### Scenario: O torso continua legível sobre fundo da mesma cor
+
+- **WHEN** a cor da roupa escolhida coincide com a cor do fundo escolhida
+- **THEN** a silhueta do torso permanece distinguível do fundo, e a escolha não é recusada
 
 #### Scenario: Compor e desenhar não pedem rede
 
