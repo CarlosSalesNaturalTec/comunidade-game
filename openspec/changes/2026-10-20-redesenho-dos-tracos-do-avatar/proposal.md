@@ -69,5 +69,5 @@ Nenhuma.
 Sem backend, sem rota, sem glifo novo, sem migração. `comum/avatar/catalogo.ts` e
 `comum/avatar/objeto.ts` não mudam.
 
-**Fica fora do escopo** a moldura do avatar, que segue circular: trocá-la pelo escudo da marca
-alcança o documento 15 §8.1 e toda aplicação que exibe avatar, e é fatia própria.
+**A moldura do avatar segue circular.** Trocá-la pelo escudo da marca foi levantada e descartada
+pelo fundador em 2026-10-20 — descartada, não adiada.
