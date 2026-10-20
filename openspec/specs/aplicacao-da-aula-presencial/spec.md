@@ -847,6 +847,12 @@ separado do avatar, porque nenhum item do catálogo carrega marca de gênero. O 
 no campo `avatar` SHALL ser o **objeto versionado** do documento 15 §7.2. (`RF-04-07`, documento 15
 §7)
 
+A composição de partida da montagem SHALL abrir com a **cor do fundo diferente da cor da roupa**,
+para que o primeiro avatar que a criança vê tenha corpo. A escolha continua inteira dela: trocar
+depois para as duas cores iguais SHALL ser permitido. A composição de partida é da tela, e NEVER
+SHALL alterar o padrão de camada do catálogo nem o avatar padrão do projeto do documento 15 §7.3.
+(`RF-04-06`, `RF-04-07`, documento 15 §7)
+
 A composição SHALL acontecer **no próprio aparelho, sem rede**, e NEVER SHALL depender de requisição
 ao núcleo nem a terceiro para desenhar o avatar. (documento 15 §7, princípio 6)
 
@@ -877,6 +883,16 @@ ao núcleo nem a terceiro para desenhar o avatar. (documento 15 §7, princípio 
 - **WHEN** o cadastro do onboarding chega ao avatar
 - **THEN** a criança compõe o avatar escolhendo no catálogo das nove camadas, e nenhum campo pede
   característica em texto livre
+
+#### Scenario: A montagem abre com fundo e roupa de cores diferentes
+
+- **WHEN** a tela de cadastro apresenta o avatar pela primeira vez
+- **THEN** a cor do fundo e a cor da roupa são diferentes entre si
+
+#### Scenario: Escolher fundo e roupa da mesma cor continua permitido
+
+- **WHEN** a criança escolhe, na montagem, cor de fundo igual à cor da roupa
+- **THEN** a escolha é aceita e gravada, sem aviso nem recusa
 
 #### Scenario: O que se grava é o objeto versionado
 

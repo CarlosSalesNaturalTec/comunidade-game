@@ -278,6 +278,14 @@ características ditas em voz alta por uma criança de 6 anos. Daí as quatro ex
 retinto e a variedade de texturas de cabelo crespo vem antes da lisa — é a causa antirracista
 do projeto virando mecânica, e não declaração.
 
+**Traço oferecido aparece no desenho.** Nome dizível sem desenho correspondente devolve à
+criança um traço que não é o que ela escolheu.
+
+A camada 5 traz também as **orelhas** e o cabelo que cai **à frente da testa**, este na cor da
+camada 4: pintados antes do rosto, sumiriam sob o penteado. A camada 8 sai com **contorno**,
+para o torso não desaparecer quando a cor da roupa coincidir com a do fundo — o que segue
+sendo escolha de quem monta.
+
 ### 7.2 Forma do valor
 
 O núcleo guarda o avatar como texto opaco. A forma acordada é um objeto pequeno e versionado:
