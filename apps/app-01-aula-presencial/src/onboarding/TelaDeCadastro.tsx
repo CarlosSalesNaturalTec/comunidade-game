@@ -48,15 +48,25 @@ function idadeEm(nascimentoIso: string, referencia: Date): number | null {
 //
 // O avatar se **compõe no catálogo fechado** da camada comum, camada por
 // camada, pelo nome dizível de cada traço — nunca por texto livre, que ninguém
-// desenha depois (`RF-04-07`, documento 15 §7). Ele nasce no avatar padrão do
-// projeto, para a criança ver um avatar completo desde o primeiro toque e
-// trocar só o que quiser (design — decisão 4), e a composição acontece toda no
-// aparelho: nenhuma requisição sai por causa dela.
+// desenha depois (`RF-04-07`, documento 15 §7). Ele nasce quase no avatar
+// padrão do projeto, para a criança ver um avatar completo desde o primeiro
+// toque e trocar só o que quiser (design — decisão 4), e a composição acontece
+// toda no aparelho: nenhuma requisição sai por causa dela.
+//
+// **Quase**, por causa do fundo. O padrão da camada de fundo e a camada do
+// projeto são a mesma `var(--cor-marca)`, e o primeiro avatar que a criança
+// via não tinha corpo: o torso sumia no fundo e sobrava a listra de detalhe no
+// ar. A montagem abre no fundo azul, que é a cor mais distante do laranja na
+// paleta. Escolher as duas iguais depois continua valendo — é escolha dela.
+// O `padrao` da camada **não** muda com isso: ele tem outra função, que é
+// receber o traço desconhecido (documento 15 §7.2).
 //
 // No campo `avatar`, opaco ao núcleo, viajam duas coisas: o **objeto versionado
 // do documento 15 §7.2**, aninhado, e a **forma de tratamento** ao lado dele —
 // campo próprio, como o §7 exige, sem coluna própria no núcleo (design —
 // decisão 3).
+const FUNDO_DE_PARTIDA = "acao-100";
+
 export function TelaDeCadastro({ tokenDeTrabalho, aulaId, aoConcluir, aoVoltar }: Props) {
   const idDaFormaDeTratamento = useId();
   const idDaEscolhaDeAvatar = useId();
@@ -65,7 +75,9 @@ export function TelaDeCadastro({ tokenDeTrabalho, aulaId, aoConcluir, aoVoltar }
   const [formaDeTratamento, definirFormaDeTratamento] =
     useState<FormaDeTratamento>("guerreira");
   const [nascimento, definirNascimento] = useState("");
-  const [avatar, definirAvatar] = useState<AvatarDoGuerreiro>(() => escreverAvatar({}));
+  const [avatar, definirAvatar] = useState<AvatarDoGuerreiro>(() =>
+    escreverAvatar({ fundo: FUNDO_DE_PARTIDA }),
+  );
   const [erroDeCampo, definirErroDeCampo] = useState<ErroDeCampo | null>(null);
   const [variacoesDeNick, definirVariacoesDeNick] = useState<string[]>([]);
   const [idadeForaDaFaixa, definirIdadeForaDaFaixa] = useState(false);

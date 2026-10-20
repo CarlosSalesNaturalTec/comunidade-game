@@ -1,7 +1,12 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { Avatar } from "./Avatar";
-import { CAMADAS_DO_AVATAR, type NomeDeCamada } from "./catalogo";
+import {
+  CAMADAS_DO_AVATAR,
+  camadaDoAvatar,
+  type NomeDeCamada,
+  tracoDoCatalogo,
+} from "./catalogo";
 import { AVATAR_PADRAO_DO_PROJETO, escreverAvatar, lerAvatar } from "./objeto";
 
 // As nove camadas do documento 15 §7.1, na ordem de composição.
@@ -52,6 +57,94 @@ describe("o avatar se compõe pelas nove camadas do catálogo (documento 15 §7.
         const svg = desenhar({ ...AVATAR_PADRAO_DO_PROJETO, [camada.nome]: traco.id });
         expect(camadasDesenhadas(svg)).toEqual(CAMADAS_NA_ORDEM);
       }
+    }
+  });
+});
+
+describe("cada traço é distinguível no desenho (documento 15 §7, `RF-04-06`)", () => {
+  // Nome dizível sem desenho correspondente devolve à criança outro traço que
+  // não o escolhido. Foi o que aconteceu com `cabelo raspado`, cuja massa
+  // cabia inteira dentro dos quatro formatos de rosto.
+  it("nenhum traço desenha igual a outro da mesma camada", () => {
+    for (const camada of CAMADAS_DO_AVATAR) {
+      const desenhos = camada.tracos.map(
+        (traco) =>
+          desenhar({ ...AVATAR_PADRAO_DO_PROJETO, [camada.nome]: traco.id }).innerHTML,
+      );
+      expect(new Set(desenhos).size).toBe(camada.tracos.length);
+    }
+  });
+
+  it("a troca de cor do cabelo aparece sob qualquer textura", () => {
+    for (const textura of camadaDoAvatar("cabelo").tracos) {
+      const preto = desenhar({
+        ...AVATAR_PADRAO_DO_PROJETO,
+        cabelo: textura.id,
+        cabelo_cor: "c1",
+      }).innerHTML;
+      const loiro = desenhar({
+        ...AVATAR_PADRAO_DO_PROJETO,
+        cabelo: textura.id,
+        cabelo_cor: "c6",
+      }).innerHTML;
+      expect(preto).not.toBe(loiro);
+    }
+  });
+
+  it("toda textura desenha em cada um dos quatro formatos de rosto", () => {
+    for (const rosto of camadaDoAvatar("rosto").tracos) {
+      for (const textura of camadaDoAvatar("cabelo").tracos) {
+        const svg = desenhar({
+          ...AVATAR_PADRAO_DO_PROJETO,
+          rosto: rosto.id,
+          cabelo: textura.id,
+        });
+        expect(camadasDesenhadas(svg)).toEqual(CAMADAS_NA_ORDEM);
+        expect(
+          svg.querySelector('g[data-camada="cabelo"]')?.childElementCount,
+        ).toBeGreaterThan(0);
+      }
+    }
+  });
+});
+
+describe("as camadas do rosto e da roupa carregam o que o §7.1 lhes atribui", () => {
+  it("as orelhas são do grupo do rosto, não do tom de pele", () => {
+    const svg = desenhar(AVATAR_PADRAO_DO_PROJETO);
+    const tom = svg.querySelector('g[data-camada="tom"]');
+    const rosto = svg.querySelector('g[data-camada="rosto"]');
+
+    expect(tom?.querySelector("circle")).toBeNull();
+    expect(rosto?.querySelector('circle[cx="19.5"]')).not.toBeNull();
+    expect(rosto?.querySelector('circle[cx="44.5"]')).not.toBeNull();
+  });
+
+  it("o cabelo da frente é pintado dentro da camada de rosto, na cor do cabelo", () => {
+    const svg = desenhar({ ...AVATAR_PADRAO_DO_PROJETO, cabelo: "liso", cabelo_cor: "c6" });
+    const rosto = svg.querySelector('g[data-camada="rosto"]');
+    const corDoCabelo = tracoDoCatalogo("cabelo_cor", "c6")?.cor;
+
+    expect(
+      rosto?.querySelector(`g[fill="${corDoCabelo}"]`)?.childElementCount,
+    ).toBeGreaterThan(0);
+    // A ordem das nove camadas não muda por causa dela.
+    expect(camadasDesenhadas(svg)).toEqual(CAMADAS_NA_ORDEM);
+  });
+
+  it("a roupa sai com contorno, para o torso não sumir em fundo da mesma cor", () => {
+    // Quatro das seis cores de fundo têm peça de roupa de cor idêntica.
+    const colisoes = [
+      ["marca-100", "camisa-projeto"],
+      ["acao-100", "camisa"],
+      ["ponto-100", "moletom"],
+      ["moeda-100", "regata"],
+    ];
+
+    for (const [fundo, roupa] of colisoes) {
+      const svg = desenhar({ ...AVATAR_PADRAO_DO_PROJETO, fundo, roupa });
+      const camada = svg.querySelector('g[data-camada="roupa"]');
+      expect(camada?.getAttribute("fill")).toBe(tracoDoCatalogo("fundo", fundo)?.cor);
+      expect(camada?.getAttribute("stroke")).toBe("var(--cor-superficie)");
     }
   });
 });
@@ -125,6 +218,21 @@ describe("compor e desenhar não pedem rede (documento 15 §7, princípio 6)", (
     expect(svg.querySelector("image")).toBeNull();
     expect(svg.outerHTML).not.toMatch(/https?:|url\(/);
     rede.mockRestore();
+  });
+
+  // O realce do rosto e os fios de sombra do cabelo são `rgba()`, e o contorno
+  // da roupa é token: nenhum deles é referência, nem interna nem externa.
+  it("nenhuma textura introduz referência de domínio nem de fragmento", () => {
+    for (const textura of camadaDoAvatar("cabelo").tracos) {
+      for (const roupa of camadaDoAvatar("roupa").tracos) {
+        const svg = desenhar({
+          ...AVATAR_PADRAO_DO_PROJETO,
+          cabelo: textura.id,
+          roupa: roupa.id,
+        });
+        expect(svg.outerHTML).not.toMatch(/https?:|url\(/);
+      }
+    }
   });
 });
 

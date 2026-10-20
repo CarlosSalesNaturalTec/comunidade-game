@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
-import { AVATAR_PADRAO_DO_PROJETO, camadaDoAvatar } from "comum/avatar";
+import { AVATAR_PADRAO_DO_PROJETO, camadaDoAvatar, tracoDoCatalogo } from "comum/avatar";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as guerreirosApi from "../api/guerreiros";
 import { TelaDeCadastro } from "./TelaDeCadastro";
@@ -178,6 +178,46 @@ describe("o avatar do onboarding se compõe no catálogo (`RF-04-07`, documento 
     expect(container.querySelectorAll("svg.cg-avatar g[data-camada]")).toHaveLength(9);
   });
 
+  it("a montagem abre com fundo e roupa de cores diferentes", () => {
+    renderizar();
+
+    const fundo = (screen.getByLabelText("Cor do fundo") as HTMLSelectElement).value;
+    const roupa = (screen.getByLabelText("Roupa") as HTMLSelectElement).value;
+    const corDoFundo = tracoDoCatalogo("fundo", fundo)?.cor;
+
+    // O torso sumia no fundo: as duas camadas liam `var(--cor-marca)`.
+    expect(corDoFundo).toBeDefined();
+    expect(corDoFundo).not.toBe("var(--cor-marca)");
+    expect(roupa).toBe("camisa-projeto");
+    // O padrão da camada não muda: ele é onde cai o traço desconhecido (§7.2).
+    expect(camadaDoAvatar("fundo").padrao).toBe("marca-100");
+    expect(AVATAR_PADRAO_DO_PROJETO.fundo).toBe("marca-100");
+  });
+
+  it("escolher fundo e roupa da mesma cor continua permitido", async () => {
+    const cadastrar = vi
+      .spyOn(guerreirosApi, "cadastrarGuerreiroNoEncontro")
+      .mockResolvedValue({
+        id: "guerreiro-1",
+        nome: "Zeferina",
+        nascimento: "2016-01-01",
+        nick: "ZeferinaGuerreira",
+        avatar: "opaco",
+      });
+
+    renderizar();
+    const usuario = await preencherFormulario();
+    await usuario.selectOptions(screen.getByLabelText("Cor do fundo"), "marca-100");
+    await usuario.click(screen.getByRole("button", { name: /concluir cadastro/i }));
+
+    const enviado = cadastrar.mock.calls[0][0] as unknown as { avatar: string };
+    expect(avatarGravado(enviado)).toMatchObject({
+      fundo: "marca-100",
+      roupa: "camisa-projeto",
+    });
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
   it("o que se grava é o objeto versionado, e a forma de tratamento fica ao lado dele", async () => {
     const cadastrar = vi
       .spyOn(guerreirosApi, "cadastrarGuerreiroNoEncontro")
@@ -202,6 +242,7 @@ describe("o avatar do onboarding se compõe no catálogo (`RF-04-07`, documento 
     expect(JSON.parse(enviado.avatar).formaDeTratamento).toBe("guerreira");
     expect(avatarGravado(enviado)).toEqual({
       ...AVATAR_PADRAO_DO_PROJETO,
+      fundo: "acao-100",
       cabelo: "trancas",
       tom: "t3",
     });
