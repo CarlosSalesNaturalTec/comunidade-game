@@ -925,7 +925,6 @@ def test_leitura_publica_traz_conteudo_fonte_e_bibliografia_so_quando_publicada(
         f"/v1/missoes/{missao_id}/conteudos",
         json={
             "tipo": "texto",
-            "ordem": 1,
             "corpo": "Trecho citado de outro autor.",
             "autoria": "terceiro",
             "fonte": "Autor Exemplo, 2020.",

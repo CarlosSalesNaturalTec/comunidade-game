@@ -296,21 +296,25 @@ Guerreiras que percorrem as suas trilhas.
 
 ### 6.3 Conteúdo e bibliografia da missão
 
-| ID          | Requisito                                                                                                       | Prioridade |
-| ----------- | --------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-09-14`  | Mestre escreve o conteúdo da missão em texto formatado, com imagens                                             | essencial  |
-| `RF-09-15`  | Mestre inclui link para vídeo hospedado fora da plataforma                                                      | essencial  |
-| `RF-09-16`  | Mestre envia vídeo de até 200 MB por missão, hospedado pela plataforma                                          | essencial  |
-| `RF-09-17`  | Mestre envia arquivo de apoio de até 20 MB por missão — PDF, imagem ou áudio                                    | essencial  |
-| `RF-09-18`  | Aplicação recusa upload acima do limite informando tamanho e limite, sem jargão                                 | essencial  |
-| `RF-09-115` | Upload aceita só MP4, WebM, JPG, PNG, WebP, MP3 e PDF, recusando o que estiver fora                             | essencial  |
-| `RF-09-19`  | Upload é retomável e sobrevive à queda de rede sem recomeçar do zero                                            | essencial  |
-| `RF-09-20`  | Aplicação não mede nem lança o armazenamento consumido; o custo entra pela fatura de _cloud_                    | essencial  |
-| `RF-09-21`  | Mestre vincula à missão o título e o capítulo que apoiam o conteúdo, apontando opcionalmente o exemplar tombado | essencial  |
-| `RF-09-22`  | Bibliografia vinculada a exemplar tombado indica se há exemplar disponível no ponto de apoio                    | essencial  |
-| `RF-09-23`  | Bibliografia vinculada a exemplar tombado credita o Apoiador que forneceu o material                            | essencial  |
-| `RF-09-24`  | Conteúdo de terceiros é registrado com a fonte, em campo de texto, sem anexo                                    | essencial  |
-| `RF-09-25`  | Mestre pré-visualiza a missão como o Guerreiro(a) a verá, antes de publicar                                     | desejável  |
+| ID          | Requisito                                                                                                              | Prioridade |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-09-14`  | Mestre escreve o conteúdo da missão em texto formatado, com imagens                                                    | essencial  |
+| `RF-09-15`  | Mestre inclui link para vídeo hospedado fora da plataforma                                                             | essencial  |
+| `RF-09-16`  | Mestre envia vídeo de até 200 MB por missão, hospedado pela plataforma                                                 | essencial  |
+| `RF-09-17`  | Mestre envia arquivo de apoio de até 20 MB por missão — PDF, imagem ou áudio                                           | essencial  |
+| `RF-09-18`  | Aplicação recusa upload acima do limite informando tamanho e limite, sem jargão                                        | essencial  |
+| `RF-09-115` | Upload aceita só MP4, WebM, JPG, PNG, WebP, MP3 e PDF, recusando o que estiver fora                                    | essencial  |
+| `RF-09-19`  | Upload é retomável e sobrevive à queda de rede sem recomeçar do zero                                                   | essencial  |
+| `RF-09-20`  | Aplicação não mede nem lança o armazenamento consumido; o custo entra pela fatura de _cloud_                           | essencial  |
+| `RF-09-21`  | Mestre vincula à missão o título e o capítulo que apoiam o conteúdo, apontando opcionalmente o exemplar tombado        | essencial  |
+| `RF-09-22`  | Bibliografia vinculada a exemplar tombado indica se há exemplar disponível no ponto de apoio                           | essencial  |
+| `RF-09-23`  | Bibliografia vinculada a exemplar tombado credita o Apoiador que forneceu o material                                   | essencial  |
+| `RF-09-24`  | Conteúdo de terceiros é registrado com a fonte, em campo de texto, sem anexo                                           | essencial  |
+| `RF-09-25`  | Mestre pré-visualiza a missão como o Guerreiro(a) a verá, antes de publicar                                            | desejável  |
+| `RF-09-123` | Mestre corrige o conteúdo já cadastrado da missão — corpo, endereço, autoria e fonte —, em qualquer situação da trilha | essencial  |
+| `RF-09-124` | Mestre remove conteúdo já cadastrado da missão, e o arquivo enviado sai do armazenamento com ele                       | essencial  |
+| `RF-09-125` | Mestre exibe, na tela de cadastro, o conteúdo de cada item da missão; o que tem arquivo é exibido sob demanda          | essencial  |
+| `RF-09-126` | Mestre declara a ordem do conteúdo movendo-o na lista, para cima ou para baixo                                         | essencial  |
 
 ### 6.4 Desafios, coleta e culminância
 
@@ -481,6 +485,8 @@ outras duas frentes já entregues — tombamento (PRD-07) e ficha de vida —, s
 | `RN-09-42` | Desafio extra reserva a recompensa na publicação; sem saldo, não publica                                      | 9                      | 04 §3, PRD-07  |
 | `RN-09-43` | Quiz do desbloqueio exige ao menos uma pergunta declarada                                                     | —                      | 11 §2.2        |
 | `RN-09-44` | Pergunta gravada isoladamente exige enunciado, quatro alternativas e a correta                                | —                      | 03 §11         |
+| `RN-09-45` | O tipo e o arquivo de um conteúdo não se alteram: trocar um deles é remover o conteúdo e cadastrar outro      | —                      | 03 §11         |
+| `RN-09-46` | A tela de cadastro não busca os bytes de nenhum conteúdo antes de o Mestre pedir para exibi-lo                | —                      | 03 §11         |
 
 ## 8. Modelo de dados
 
@@ -774,36 +780,37 @@ a que alguma submissão já respondeu (documento 03 §11).
 
 ## 15. Rastreabilidade
 
-| Requisito                 | Origem                                                                |
-| ------------------------- | --------------------------------------------------------------------- |
-| `RF-09-01` a `RF-09-13`   | 11 §2 (anatomia da trilha) e 03 §11 (publicação e curadoria)          |
-| `RF-09-14` a `RF-09-25`   | 03 §11 (conteúdo e upload), 05 §3 e 11 §2.1 (bibliografia)            |
-| `RF-09-26` a `RF-09-28`   | 02 §§1, 3, PRD-08 (desafio de coleta e série temporal)                |
-| `RF-09-29` a `RF-09-34`   | 02 §4 e 11 §7 (criação original, autoria e badge)                     |
-| `RF-09-35`                | PRD-08 (auditoria por amostragem da coleta)                           |
-| `RF-09-36` a `RF-09-41`   | 05 §5 (Quiz ao Vivo) e PRD-02 (condução da partida)                   |
-| `RF-09-42` a `RF-09-50`   | 03 §11 e 11 §§4, 5 (lançamentos e motor de pontuação)                 |
-| `RF-09-51` a `RF-09-52`   | 04 §3 (desafios extras e validação pedagógica)                        |
-| `RF-09-53` a `RF-09-55`   | PRD-08 (solicitação de local) e 03 §§7, 9, 10, 11 (fila única)        |
-| `RF-09-56` a `RF-09-61`   | 04 §1 e PRD-07 (necessidades, absorção, ressarcimento e acervo)       |
-| `RF-09-62` a `RF-09-65`   | 03 §9 e PRD-01 (cadastro do responsável e credencial provisória)      |
-| `RF-09-66` a `RF-09-67`   | 02 §1 e 03 §11 (prova de habilidade e governança de personas)         |
-| `RF-09-114`               | 02 §1 e 11 §8.2 (nick e avatar do Mestre)                             |
-| `RF-09-68`                | 03 §12 (aviso visível de coleta e área detalhada)                     |
-| `RF-09-69` e `RF-09-70`   | 11 §§2.1, 4 (atividade dentro da missão)                              |
-| `RF-09-71` a `RF-09-76`   | 02 §8.1 e 11 §2.1 (recompensa conquistada no marco)                   |
-| `RF-09-77` a `RF-09-79`   | 03 §§7, 11 (apoio escolar) — a partir do Ciclo 02                     |
-| `RF-09-80` a `RF-09-84`   | 11 §2.2 (modelo de missão) e 02 §§3, 8                                |
-| `RF-09-85` a `RF-09-91`   | 03 §11 (template e auxílio de IA na autoria) e 11 §2.2                |
-| `RF-09-113`               | 11 §5 (conservação do bem recebido, ponto extra por item)             |
-| `RF-09-92` a `RF-09-98`   | 11 §2.1 e 04 §4 (etiqueta ODS da trilha e cobertura)                  |
-| `RF-09-99` a `RF-09-104`  | 02 §8.2 (recompensa avulsa) e 11 §5 (troca por pontos extras)         |
-| `RF-09-105` a `RF-09-112` | 04 §3 (desafio extra: proponente, teto, custeio e validação)          |
-| `RF-09-115`               | 03 §11 (lista fechada de formatos do upload)                          |
-| `RF-09-116`               | 11 §2.2 (cadência padrão sugerida pelo template)                      |
-| `RF-09-117`               | 11 §2.2 (o desbloqueio é fato do Guerreiro(a); julgamento do prático) |
-| `RF-09-118`               | 11 §2.2 (quantas perguntas o Mestre quiser, quatro alternativas cada) |
-| `RF-09-119`               | 03 §11 (teto de 1 MB por pergunta, formatos da lista fechada)         |
-| `RF-09-121`               | 03 §1.1 (PIN de confirmação do adulto)                                |
-| `RF-09-122`               | 02 §1 (consulta dos responsáveis cadastrados)                         |
-| `RF-09-120` e `RN-09-44`  | 03 §11 (a pergunta do quiz se grava uma a uma, completa)              |
+| Requisito                                          | Origem                                                                |
+| -------------------------------------------------- | --------------------------------------------------------------------- |
+| `RF-09-01` a `RF-09-13`                            | 11 §2 (anatomia da trilha) e 03 §11 (publicação e curadoria)          |
+| `RF-09-14` a `RF-09-25`                            | 03 §11 (conteúdo e upload), 05 §3 e 11 §2.1 (bibliografia)            |
+| `RF-09-26` a `RF-09-28`                            | 02 §§1, 3, PRD-08 (desafio de coleta e série temporal)                |
+| `RF-09-29` a `RF-09-34`                            | 02 §4 e 11 §7 (criação original, autoria e badge)                     |
+| `RF-09-35`                                         | PRD-08 (auditoria por amostragem da coleta)                           |
+| `RF-09-36` a `RF-09-41`                            | 05 §5 (Quiz ao Vivo) e PRD-02 (condução da partida)                   |
+| `RF-09-42` a `RF-09-50`                            | 03 §11 e 11 §§4, 5 (lançamentos e motor de pontuação)                 |
+| `RF-09-51` a `RF-09-52`                            | 04 §3 (desafios extras e validação pedagógica)                        |
+| `RF-09-53` a `RF-09-55`                            | PRD-08 (solicitação de local) e 03 §§7, 9, 10, 11 (fila única)        |
+| `RF-09-56` a `RF-09-61`                            | 04 §1 e PRD-07 (necessidades, absorção, ressarcimento e acervo)       |
+| `RF-09-62` a `RF-09-65`                            | 03 §9 e PRD-01 (cadastro do responsável e credencial provisória)      |
+| `RF-09-66` a `RF-09-67`                            | 02 §1 e 03 §11 (prova de habilidade e governança de personas)         |
+| `RF-09-114`                                        | 02 §1 e 11 §8.2 (nick e avatar do Mestre)                             |
+| `RF-09-68`                                         | 03 §12 (aviso visível de coleta e área detalhada)                     |
+| `RF-09-69` e `RF-09-70`                            | 11 §§2.1, 4 (atividade dentro da missão)                              |
+| `RF-09-71` a `RF-09-76`                            | 02 §8.1 e 11 §2.1 (recompensa conquistada no marco)                   |
+| `RF-09-77` a `RF-09-79`                            | 03 §§7, 11 (apoio escolar) — a partir do Ciclo 02                     |
+| `RF-09-80` a `RF-09-84`                            | 11 §2.2 (modelo de missão) e 02 §§3, 8                                |
+| `RF-09-85` a `RF-09-91`                            | 03 §11 (template e auxílio de IA na autoria) e 11 §2.2                |
+| `RF-09-113`                                        | 11 §5 (conservação do bem recebido, ponto extra por item)             |
+| `RF-09-92` a `RF-09-98`                            | 11 §2.1 e 04 §4 (etiqueta ODS da trilha e cobertura)                  |
+| `RF-09-99` a `RF-09-104`                           | 02 §8.2 (recompensa avulsa) e 11 §5 (troca por pontos extras)         |
+| `RF-09-105` a `RF-09-112`                          | 04 §3 (desafio extra: proponente, teto, custeio e validação)          |
+| `RF-09-115`                                        | 03 §11 (lista fechada de formatos do upload)                          |
+| `RF-09-116`                                        | 11 §2.2 (cadência padrão sugerida pelo template)                      |
+| `RF-09-117`                                        | 11 §2.2 (o desbloqueio é fato do Guerreiro(a); julgamento do prático) |
+| `RF-09-118`                                        | 11 §2.2 (quantas perguntas o Mestre quiser, quatro alternativas cada) |
+| `RF-09-119`                                        | 03 §11 (teto de 1 MB por pergunta, formatos da lista fechada)         |
+| `RF-09-121`                                        | 03 §1.1 (PIN de confirmação do adulto)                                |
+| `RF-09-122`                                        | 02 §1 (consulta dos responsáveis cadastrados)                         |
+| `RF-09-120` e `RN-09-44`                           | 03 §11 (a pergunta do quiz se grava uma a uma, completa)              |
+| `RF-09-123` a `RF-09-126`, `RN-09-45` e `RN-09-46` | 03 §11 (o conteúdo se corrige, se remove, se exibe e se reordena)     |

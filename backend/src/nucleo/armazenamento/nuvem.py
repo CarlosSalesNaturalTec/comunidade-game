@@ -19,7 +19,15 @@ class ArmazenamentoNoCloudStorage(PortaDeArmazenamento):
         return self._bucket.blob(referencia).download_as_bytes()
 
     def remover(self, *, referencia: str) -> None:
-        self._bucket.blob(referencia).delete()
+        """Referência que já não existe conta como removida — o fim
+        pretendido é não haver bytes, e o adaptador de disco já o cumpre com
+        `missing_ok` (`RF-09-124`, design — decisão 6)."""
+        from google.cloud.exceptions import NotFound
+
+        try:
+            self._bucket.blob(referencia).delete()
+        except NotFound:
+            return
 
     def abrir_sessao(
         self,

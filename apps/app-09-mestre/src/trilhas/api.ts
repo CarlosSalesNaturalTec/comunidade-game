@@ -479,14 +479,28 @@ export function substituirEtiquetasOdsDaMissao(
   });
 }
 
+// `ordem` não entra: o núcleo a atribui, posterior à dos conteúdos que a
+// missão já tem — e recusa com 422 quem a mandar. Enquanto o cliente a
+// declarava, declarava sempre 1, e os conteúdos da missão empatavam
+// (`RF-09-126`).
 export interface CriarConteudoEntrada {
   tipo: TipoDeConteudo;
-  ordem: number;
   corpo?: string;
   endereco?: string;
   autoria: AutoriaDoConteudo;
   fonte?: string;
 }
+
+// Redeclara os campos mutáveis — o tipo e o arquivo não se trocam, e para
+// isso o caminho é remover e cadastrar outro (`RF-09-123`, `RN-09-45`).
+export interface CorrigirConteudoEntrada {
+  corpo?: string;
+  endereco?: string;
+  autoria: AutoriaDoConteudo;
+  fonte?: string;
+}
+
+export type DirecaoDoMovimento = "cima" | "baixo";
 
 // A autoria estrita, a coerência de cada tipo e a fonte do terceiro já são
 // do núcleo (`RF-09-14`, `RF-09-15`, `RF-09-24`).
@@ -498,6 +512,44 @@ export function criarConteudo(
   return chamarNucleo<ConteudoDaMissao>(`/v1/missoes/${idDaMissao}/conteudos`, {
     metodo: "POST",
     corpo: entrada,
+    token,
+  });
+}
+
+// A autoria estrita e as recusas de coerência do tipo são as mesmas da
+// criação; vale em qualquer situação da trilha, publicada inclusive
+// (`RF-09-123`).
+export function corrigirConteudo(
+  idDoConteudo: string,
+  entrada: CorrigirConteudoEntrada,
+  token: string,
+): Promise<ConteudoDaMissao> {
+  return chamarNucleo<ConteudoDaMissao>(`/v1/conteudos/${idDoConteudo}`, {
+    metodo: "PATCH",
+    corpo: entrada,
+    token,
+  });
+}
+
+// Apaga o conteúdo e, havendo arquivo confirmado, os bytes dele
+// (`RF-09-124`).
+export function removerConteudo(idDoConteudo: string, token: string): Promise<void> {
+  return chamarNucleo<void>(`/v1/conteudos/${idDoConteudo}`, {
+    metodo: "DELETE",
+    token,
+  });
+}
+
+// Troca a ordem com a do vizinho no sentido pedido; o extremo é recusado
+// pelo núcleo, em linguagem simples (`RF-09-126`).
+export function moverConteudo(
+  idDoConteudo: string,
+  direcao: DirecaoDoMovimento,
+  token: string,
+): Promise<ConteudoDaMissao> {
+  return chamarNucleo<ConteudoDaMissao>(`/v1/conteudos/${idDoConteudo}/ordem`, {
+    metodo: "POST",
+    corpo: { direcao },
     token,
   });
 }

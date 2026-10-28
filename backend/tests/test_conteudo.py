@@ -1,13 +1,24 @@
+import importlib.util
+import pathlib
 import uuid
 
 import pytest
+import sqlalchemy as sa
 
+from nucleo.armazenamento.disco import ArmazenamentoEmDisco
 from nucleo.conteudos.modelo import AutoriaDoConteudo, ConteudoDaMissao, TipoDeConteudo
-from nucleo.conteudos.regra import criar_conteudo
+from nucleo.conteudos.regra import (
+    consultar_conteudos_da_missao,
+    corrigir_conteudo,
+    criar_conteudo,
+    mover_conteudo,
+    remover_conteudo,
+)
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
 from nucleo.livro_razao.modelo import Lancamento
 from nucleo.personas.modelo import Papel
 from nucleo.poderes.modelo import NaturezaDoPoder
+from nucleo.trilhas.modelo import SituacaoDaTrilha
 
 
 def _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao):
@@ -31,7 +42,6 @@ def test_mestre_autor_cria_conteudo_de_texto(
         operador=mestre,
         missao=missao,
         tipo="texto",
-        ordem=1,
         corpo="Texto da missão, sem marcação alguma.",
         endereco=None,
         autoria="propria",
@@ -58,7 +68,6 @@ def test_mestre_que_nao_e_autor_e_recusado(
             operador=outro_mestre,
             missao=missao,
             tipo="texto",
-            ordem=1,
             corpo="Texto.",
             endereco=None,
             autoria="propria",
@@ -77,7 +86,6 @@ def test_admin_nao_escreve_conteudo(sessao, criar_persona, criar_poder, criar_tr
             operador=admin,
             missao=missao,
             tipo="texto",
-            ordem=1,
             corpo="Texto.",
             endereco=None,
             autoria="propria",
@@ -96,7 +104,6 @@ def test_link_externo_e_gravado_com_endereco(
         operador=mestre,
         missao=missao,
         tipo="link_externo",
-        ordem=1,
         corpo=None,
         endereco="https://video.exemplo.org/aula",
         autoria="propria",
@@ -117,7 +124,6 @@ def test_texto_sem_corpo_e_recusado(sessao, criar_persona, criar_poder, criar_tr
             operador=mestre,
             missao=missao,
             tipo="texto",
-            ordem=1,
             corpo=None,
             endereco=None,
             autoria="propria",
@@ -138,7 +144,6 @@ def test_link_sem_endereco_e_recusado(
             operador=mestre,
             missao=missao,
             tipo="link_externo",
-            ordem=1,
             corpo=None,
             endereco=None,
             autoria="propria",
@@ -158,7 +163,6 @@ def test_conteudo_de_arquivo_nasce_sem_bytes(
         operador=mestre,
         missao=missao,
         tipo=tipo,
-        ordem=1,
         corpo=None,
         endereco=None,
         autoria="propria",
@@ -180,7 +184,6 @@ def test_conteudo_de_terceiro_com_fonte_e_aceito(
         operador=mestre,
         missao=missao,
         tipo="texto",
-        ordem=1,
         corpo="Trecho citado.",
         endereco=None,
         autoria="terceiro",
@@ -203,7 +206,6 @@ def test_conteudo_de_terceiro_sem_fonte_e_recusado(
             operador=mestre,
             missao=missao,
             tipo="texto",
-            ordem=1,
             corpo="Trecho citado.",
             endereco=None,
             autoria="terceiro",
@@ -223,7 +225,6 @@ def test_conteudo_proprio_dispensa_fonte(
         operador=mestre,
         missao=missao,
         tipo="texto",
-        ordem=1,
         corpo="Texto próprio.",
         endereco=None,
         autoria="propria",
@@ -245,7 +246,7 @@ def _cabecalhos(chave, criar_sessao_de_teste, persona):
 def _criar_conteudo_de_arquivo_pela_rota(cliente, cabecalhos, missao_id, tipo="arquivo"):
     resposta = cliente.post(
         f"/v1/missoes/{missao_id}/conteudos",
-        json={"tipo": tipo, "ordem": 1, "autoria": "propria"},
+        json={"tipo": tipo, "autoria": "propria"},
         headers=cabecalhos,
     )
     assert resposta.status_code == 201
@@ -502,7 +503,6 @@ def test_conteudo_sem_envio_confirmado_nao_serve_bytes(
         operador=mestre,
         missao=missao,
         tipo="video",
-        ordem=1,
         corpo=None,
         endereco=None,
         autoria="propria",
@@ -739,7 +739,7 @@ def test_conteudo_sem_arquivo_responde_404(
     # também não.
     resposta_texto = cliente.post(
         f"/v1/missoes/{missao.id}/conteudos",
-        json={"tipo": "texto", "ordem": 1, "corpo": "Só texto.", "autoria": "propria"},
+        json={"tipo": "texto", "corpo": "Só texto.", "autoria": "propria"},
         headers=cabecalhos,
     )
     id_do_texto = resposta_texto.json()["id"]
@@ -798,3 +798,549 @@ def test_conteudo_gravado_antes_da_coluna_sai_com_tipo_indeterminado(
 
     assert resposta.status_code == 200
     assert resposta.headers["content-type"].startswith("application/octet-stream")
+
+
+# --- fatia 24: corrigir, remover, exibir e ordenar -------------------------
+#
+# `RF-09-123` a `RF-09-126`, `RN-09-45` e `RN-09-46`, das quatro decisões do
+# fundador de 2026-10-27.
+
+
+def _tres_conteudos_de_texto(sessao, missao, mestre):
+    """Três conteúdos pela regra, que já atribui a ordem — 1, 2 e 3."""
+    return [
+        criar_conteudo(
+            sessao,
+            operador=mestre,
+            missao=missao,
+            tipo="texto",
+            corpo=f"Corpo {posicao}.",
+            endereco=None,
+            autoria="propria",
+            fonte=None,
+        )
+        for posicao in (1, 2, 3)
+    ]
+
+
+def test_o_conteudo_novo_entra_por_ultimo(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao
+):
+    """`RF-09-126`: a ordem é do núcleo, e cresce — antes, todo conteúdo
+    nascia com a ordem 1 que o cliente declarava."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+
+    conteudos = _tres_conteudos_de_texto(sessao, missao, mestre)
+
+    assert [conteudo.ordem for conteudo in conteudos] == [1, 2, 3]
+    assert [c.corpo for c in consultar_conteudos_da_missao(sessao, missao.id)] == [
+        "Corpo 1.",
+        "Corpo 2.",
+        "Corpo 3.",
+    ]
+
+
+def test_mandar_a_ordem_na_criacao_e_recusado(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+):
+    """`RF-09-126`, quebra de contrato (design — decisão 2): `ordem` saiu do
+    corpo, e `extra="forbid"` recusa quem insistir."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    resposta = cliente.post(
+        f"/v1/missoes/{missao.id}/conteudos",
+        json={"tipo": "texto", "ordem": 1, "corpo": "Com ordem.", "autoria": "propria"},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_o_conteudo_ja_gravado_e_renumerado(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao, criar_conteudo_da_missao
+):
+    """`RF-09-126`: exercita o **mesmo** SQL da revisão `c4e81b2a9d60`,
+    importado dela, sobre o estado de partida — todos em `ordem = 1`."""
+    caminho = (
+        pathlib.Path(__file__).resolve().parent.parent
+        / "alembic"
+        / "versions"
+        / "c4e81b2a9d60_ordem_do_conteudo_da_missao.py"
+    )
+    especificacao = importlib.util.spec_from_file_location("revisao_da_ordem", caminho)
+    revisao = importlib.util.module_from_spec(especificacao)
+    especificacao.loader.exec_module(revisao)
+
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    for posicao in (1, 2, 3):
+        criar_conteudo_da_missao(missao, mestre, ordem=1, corpo=f"Corpo {posicao}.")
+
+    sessao.execute(sa.text(revisao.SQL_RENUMERA_A_ORDEM))
+    sessao.commit()
+
+    conteudos = consultar_conteudos_da_missao(sessao, missao.id)
+    assert [conteudo.ordem for conteudo in conteudos] == [1, 2, 3]
+    assert [conteudo.corpo for conteudo in conteudos] == ["Corpo 1.", "Corpo 2.", "Corpo 3."]
+
+
+def test_mestre_autor_corrige_o_corpo_do_texto(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao
+):
+    """`RF-09-123`: corrigir não muda a missão nem a ordem."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudo = _tres_conteudos_de_texto(sessao, missao, mestre)[1]
+
+    corrigido = corrigir_conteudo(
+        sessao,
+        conteudo,
+        operador=mestre,
+        tipo=None,
+        corpo="Corpo corrigido.",
+        endereco=None,
+        autoria="propria",
+        fonte=None,
+    )
+
+    assert corrigido.corpo == "Corpo corrigido."
+    assert corrigido.ordem == 2
+    assert corrigido.missao_id == missao.id
+
+
+def test_a_correcao_alcanca_a_trilha_publicada(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao
+):
+    """`RF-09-123`, decisão do fundador de 2026-10-27: publicada inclusive, e
+    a situação não se altera."""
+    mestre = criar_persona(Papel.mestre)
+    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
+    trilha = criar_trilha(mestre, poder=poder, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    conteudo = criar_conteudo(
+        sessao,
+        operador=mestre,
+        missao=missao,
+        tipo="texto",
+        corpo="Corpo publicado.",
+        endereco=None,
+        autoria="terceiro",
+        fonte="Fonte errada.",
+    )
+
+    corrigido = corrigir_conteudo(
+        sessao,
+        conteudo,
+        operador=mestre,
+        tipo=None,
+        corpo="Corpo publicado.",
+        endereco=None,
+        autoria="terceiro",
+        fonte="Fonte certa, 2026.",
+    )
+
+    assert corrigido.fonte == "Fonte certa, 2026."
+    assert trilha.situacao == SituacaoDaTrilha.publicada
+
+
+def test_mestre_que_nao_e_autor_nao_corrige(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao
+):
+    """`RF-09-123`, `RN-09-16`: o mesmo 403 da criação."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudo = _tres_conteudos_de_texto(sessao, missao, mestre)[0]
+    outro = criar_persona(Papel.mestre)
+
+    with pytest.raises(PermissaoNegada):
+        corrigir_conteudo(
+            sessao,
+            conteudo,
+            operador=outro,
+            tipo=None,
+            corpo="Invadido.",
+            endereco=None,
+            autoria="propria",
+            fonte=None,
+        )
+    assert conteudo.corpo == "Corpo 1."
+
+
+def test_admin_nao_corrige_conteudo(sessao, criar_persona, criar_poder, criar_trilha, criar_missao):
+    """`RF-09-123`: o Admin audita e despublica a trilha, não a redige."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudo = _tres_conteudos_de_texto(sessao, missao, mestre)[0]
+    admin = criar_persona(Papel.admin)
+
+    with pytest.raises(PermissaoNegada):
+        corrigir_conteudo(
+            sessao,
+            conteudo,
+            operador=admin,
+            tipo=None,
+            corpo="Escrito pelo Admin.",
+            endereco=None,
+            autoria="propria",
+            fonte=None,
+        )
+
+
+def test_a_correcao_confere_a_coerencia_do_tipo(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao
+):
+    """`RF-09-123`: corrigir não é porta de entrada do estado que a criação
+    recusa."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudo = _tres_conteudos_de_texto(sessao, missao, mestre)[0]
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        corrigir_conteudo(
+            sessao,
+            conteudo,
+            operador=mestre,
+            tipo=None,
+            corpo="   ",
+            endereco=None,
+            autoria="propria",
+            fonte=None,
+        )
+    assert erro.value.campo == "corpo"
+
+
+def test_a_correcao_confere_a_fonte_do_terceiro(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao
+):
+    """`RF-09-24`: passar a autoria a terceiro sem fonte é recusado."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudo = _tres_conteudos_de_texto(sessao, missao, mestre)[0]
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        corrigir_conteudo(
+            sessao,
+            conteudo,
+            operador=mestre,
+            tipo=None,
+            corpo="Corpo 1.",
+            endereco=None,
+            autoria="terceiro",
+            fonte=None,
+        )
+    assert erro.value.campo == "fonte"
+
+
+def test_trocar_o_tipo_e_recusado(sessao, criar_persona, criar_poder, criar_trilha, criar_missao):
+    """`RN-09-45`: a recusa diz o caminho — remover e cadastrar outro."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudo = _tres_conteudos_de_texto(sessao, missao, mestre)[0]
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        corrigir_conteudo(
+            sessao,
+            conteudo,
+            operador=mestre,
+            tipo="video",
+            corpo="Corpo 1.",
+            endereco=None,
+            autoria="propria",
+            fonte=None,
+        )
+    assert erro.value.campo == "tipo"
+    assert "remova este conteúdo" in str(erro.value.mensagem)
+    assert conteudo.tipo == TipoDeConteudo.texto
+
+
+def test_reabrir_envio_de_conteudo_confirmado_e_recusado(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+):
+    """`RN-09-45`, design — decisão 5: sem esta guarda o arquivo é trocável
+    pela porta dos fundos, porque a referência deriva do id do conteúdo."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+    conteudo_id = _conteudo_com_arquivo_enviado(cliente, cabecalhos, missao.id)
+
+    resposta = cliente.post(
+        f"/v1/conteudos/{conteudo_id}/arquivo",
+        json={"tipo_mime": "image/png", "tamanho_declarado": 9},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 422
+    # Os bytes do primeiro envio seguem servidos.
+    assert cliente.get(f"/v1/conteudos/{conteudo_id}/arquivo", headers=cabecalhos).content == (
+        b"PNG-falso"
+    )
+
+
+def test_o_conteudo_de_texto_e_removido(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+    sessao,
+):
+    """`RF-09-124`: apaga de verdade — nada aponta para o conteúdo."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+    conteudos = _tres_conteudos_de_texto(sessao, missao, mestre)
+    sessao.commit()
+
+    resposta = cliente.delete(f"/v1/conteudos/{conteudos[0].id}", headers=cabecalhos)
+
+    assert resposta.status_code == 204
+    assert [c.corpo for c in consultar_conteudos_da_missao(sessao, missao.id)] == [
+        "Corpo 2.",
+        "Corpo 3.",
+    ]
+
+
+def test_remover_conteudo_com_arquivo_apaga_os_bytes(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+    tmp_path,
+):
+    """`RF-09-124`, design — decisão 6: byte algum fica órfão num
+    armazenamento que `RF-09-20` mantém fora da medição."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+    conteudo_id = _conteudo_com_arquivo_enviado(cliente, cabecalhos, missao.id)
+    arquivo = tmp_path / "armazenamento" / "conteudos" / conteudo_id / "arquivo"
+    assert arquivo.exists()
+
+    resposta = cliente.delete(f"/v1/conteudos/{conteudo_id}", headers=cabecalhos)
+
+    assert resposta.status_code == 204
+    assert not arquivo.exists()
+
+
+def test_remover_conteudo_sem_envio_confirmado_nao_falha(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+):
+    """`RF-09-124`: sem referência, nenhuma remoção de arquivo é tentada."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+    conteudo_id = _criar_conteudo_de_arquivo_pela_rota(cliente, cabecalhos, missao.id)
+
+    assert cliente.delete(f"/v1/conteudos/{conteudo_id}", headers=cabecalhos).status_code == 204
+
+
+def test_a_remocao_alcanca_a_trilha_publicada(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+    sessao,
+):
+    """`RF-09-124`, decisão do fundador de 2026-10-27."""
+    mestre = criar_persona(Papel.mestre)
+    poder = criar_poder(mestre, natureza=NaturezaDoPoder.de_guerreiro)
+    trilha = criar_trilha(mestre, poder=poder, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    conteudo = _tres_conteudos_de_texto(sessao, missao, mestre)[0]
+    sessao.commit()
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    resposta = cliente.delete(f"/v1/conteudos/{conteudo.id}", headers=cabecalhos)
+
+    assert resposta.status_code == 204
+    sessao.refresh(trilha)
+    assert trilha.situacao == SituacaoDaTrilha.publicada
+
+
+def test_quem_nao_e_o_autor_nao_remove(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao, tmp_path
+):
+    """`RF-09-124`: outro Mestre e o Admin são recusados, como na criação."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudo = _tres_conteudos_de_texto(sessao, missao, mestre)[0]
+
+    for intruso in (criar_persona(Papel.mestre), criar_persona(Papel.admin)):
+        with pytest.raises(PermissaoNegada):
+            remover_conteudo(
+                sessao,
+                conteudo,
+                operador=intruso,
+                armazenamento=ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes")),
+            )
+    assert consultar_conteudos_da_missao(sessao, missao.id)[0].id == conteudo.id
+
+
+def test_os_restantes_nao_sao_renumerados(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao, tmp_path
+):
+    """`RF-09-124`: a ordem é sequência, não índice — remover deixa lacuna, e
+    é o que `remover_pergunta_do_desbloqueio` já faz no quiz."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudos = _tres_conteudos_de_texto(sessao, missao, mestre)
+
+    remover_conteudo(
+        sessao,
+        conteudos[1],
+        operador=mestre,
+        armazenamento=ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes")),
+    )
+
+    restantes = consultar_conteudos_da_missao(sessao, missao.id)
+    assert [conteudo.ordem for conteudo in restantes] == [1, 3]
+
+
+def test_remocao_nao_gera_lancamento(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao, tmp_path
+):
+    """`RF-09-20`, `RN-09-07`: o custo de nuvem entra pela fatura do período,
+    e nenhuma aplicação o apura por ato — na remoção como no envio."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudo = _tres_conteudos_de_texto(sessao, missao, mestre)[0]
+    antes = sessao.query(Lancamento).count()
+
+    remover_conteudo(
+        sessao,
+        conteudo,
+        operador=mestre,
+        armazenamento=ArmazenamentoEmDisco(str(tmp_path), str(tmp_path / "sessoes")),
+    )
+
+    assert sessao.query(Lancamento).count() == antes
+
+
+def test_o_conteudo_sobe_uma_posicao(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao
+):
+    """`RF-09-126`: troca com o vizinho, e a leitura segue a nova ordem."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudos = _tres_conteudos_de_texto(sessao, missao, mestre)
+
+    mover_conteudo(sessao, conteudos[1], operador=mestre, direcao="cima")
+
+    assert [c.corpo for c in consultar_conteudos_da_missao(sessao, missao.id)] == [
+        "Corpo 2.",
+        "Corpo 1.",
+        "Corpo 3.",
+    ]
+
+
+def test_mover_o_primeiro_para_cima_e_recusado(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao
+):
+    """`RF-09-126`: recusa em linguagem simples, sem alterar nada."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudos = _tres_conteudos_de_texto(sessao, missao, mestre)
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        mover_conteudo(sessao, conteudos[0], operador=mestre, direcao="cima")
+
+    assert "já é o primeiro" in str(erro.value.mensagem)
+    assert [c.ordem for c in consultar_conteudos_da_missao(sessao, missao.id)] == [1, 2, 3]
+
+
+def test_mover_o_ultimo_para_baixo_e_recusado(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao
+):
+    """`RF-09-126`: o outro extremo, pelo mesmo caminho."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudos = _tres_conteudos_de_texto(sessao, missao, mestre)
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        mover_conteudo(sessao, conteudos[2], operador=mestre, direcao="baixo")
+
+    assert "já é o último" in str(erro.value.mensagem)
+
+
+def test_quem_nao_e_o_autor_nao_move(
+    sessao, criar_persona, criar_poder, criar_trilha, criar_missao
+):
+    """`RF-09-126`: a mesma autoria estrita das demais escritas."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudos = _tres_conteudos_de_texto(sessao, missao, mestre)
+    outro = criar_persona(Papel.mestre)
+
+    with pytest.raises(PermissaoNegada):
+        mover_conteudo(sessao, conteudos[1], operador=outro, direcao="cima")
+    assert [c.ordem for c in consultar_conteudos_da_missao(sessao, missao.id)] == [1, 2, 3]
+
+
+def test_mover_pela_rota_grava_a_nova_ordem(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+    sessao,
+):
+    """`RF-09-126`: substantivo de ação, no molde de `/trilhas/{id}/publicacao`."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudos = _tres_conteudos_de_texto(sessao, missao, mestre)
+    sessao.commit()
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    resposta = cliente.post(
+        f"/v1/conteudos/{conteudos[2].id}/ordem",
+        json={"direcao": "cima"},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.json()["ordem"] == 2
+
+
+def test_corrigir_pela_rota_devolve_o_conteudo_corrigido(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_poder,
+    criar_trilha,
+    criar_missao,
+    sessao,
+):
+    """`RF-09-123`: a rota devolve o conteúdo no mesmo formato da criação."""
+    mestre, missao = _missao_do_mestre(criar_persona, criar_poder, criar_trilha, criar_missao)
+    conteudo = _tres_conteudos_de_texto(sessao, missao, mestre)[0]
+    sessao.commit()
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    resposta = cliente.patch(
+        f"/v1/conteudos/{conteudo.id}",
+        json={"corpo": "Pela rota.", "autoria": "propria"},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.json()["corpo"] == "Pela rota."
+    assert resposta.json()["ordem"] == 1

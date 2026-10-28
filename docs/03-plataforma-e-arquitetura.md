@@ -1014,6 +1014,12 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 - **Conteúdo da missão:** texto formatado, imagens, link externo e upload hospedado
   pela plataforma — **vídeo até 200 MB e arquivo até 20 MB por missão**. O custo do
   armazenamento corre pela fatura de _cloud_, sem medição por envio (documento 04).
+- **O conteúdo da missão se corrige, se remove e se reordena.** O Mestre autor corrige o
+  texto, o endereço, a autoria e a fonte do que já cadastrou, move cada conteúdo na lista
+  para declarar a ordem e remove o que não serve — em qualquer situação da trilha,
+  publicada inclusive. **Tipo e arquivo não se trocam:** trocar um deles é remover o
+  conteúdo e cadastrar outro, e a remoção leva consigo o arquivo enviado. No cadastro o
+  Mestre **exibe** cada conteúdo; o que tem arquivo só busca os bytes quando ele pede.
 - **Imagem da pergunta do desafio de desbloqueio:** opcional, uma por pergunta, **até 1 MB
   cada**, nos mesmos formatos de imagem da lista fechada abaixo. O teto é menor que os do
   conteúdo porque o quiz é lido no aparelho do Guerreiro(a), muitas vezes em rede fraca.

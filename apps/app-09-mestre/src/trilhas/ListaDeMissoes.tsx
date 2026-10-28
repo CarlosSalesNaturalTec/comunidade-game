@@ -12,12 +12,12 @@ import type {
   TipoDeColeta,
 } from "./api";
 import { Bibliografia } from "./Bibliografia";
+import { BlocoDeConteudo } from "./BlocoDeConteudo";
 import { CadenciaDeRetomada } from "./CadenciaDeRetomada";
 import { DeclaracaoDeRecompensa } from "./DeclaracaoDeRecompensa";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 import { EtiquetasOds } from "./EtiquetasOds";
 import { FormularioDeAtividade } from "./FormularioDeAtividade";
-import { FormularioDeConteudo } from "./FormularioDeConteudo";
 import { FormularioDeDesafioDeColeta, ROTULO_DO_NIVEL } from "./FormularioDeDesafioDeColeta";
 import { PreVisualizacaoDaMissao } from "./PreVisualizacaoDaMissao";
 import { TemplateDaMissao } from "./TemplateDaMissao";
@@ -122,19 +122,16 @@ export function ListaDeMissoes({
   onDeclararRecompensa,
 }: Props) {
   const [missaoComFormulario, definirMissaoComFormulario] = useState<string | null>(null);
-  const [missaoComFormularioDeConteudo, definirMissaoComFormularioDeConteudo] = useState<
-    string | null
-  >(null);
   const [missaoComFormularioDeColeta, definirMissaoComFormularioDeColeta] = useState<
     string | null
   >(null);
   const [missaoEmPreVisualizacao, definirMissaoEmPreVisualizacao] = useState<string | null>(
     null,
   );
-  // Os três blocos que fecham ao gravar (atividade, conteúdo, desafio de
-  // coleta) desmontam o formulário — o bloco recolhível, que permanece,
-  // guarda o instante da última gravação de cada um (documento 15 §6.2,
-  // design — decisão 5).
+  // Os blocos que fecham ao gravar (atividade, desafio de coleta) desmontam
+  // o formulário — o bloco recolhível, que permanece, guarda o instante da
+  // última gravação de cada um (documento 15 §6.2, design — decisão 5). O
+  // bloco Conteúdo guarda o próprio, porque agora tem vários atos.
   const [gravadoEm, definirGravadoEm] = useState<Record<string, Date>>({});
   // O crédito da pré-visualização é o **nick** do Mestre em sessão, decisão
   // do fundador de 2026-09-16 — o Guerreiro(a) lê o nome da persona, então
@@ -191,41 +188,7 @@ export function ListaDeMissoes({
           </BlocoRecolhivel>
 
           <BlocoRecolhivel titulo="Conteúdo" resumo={resumoDosConteudos(missao)}>
-            <section aria-label={`Conteúdo de ${missao.titulo}`}>
-              <ul>
-                {(missao.conteudos ?? []).map((conteudo) => (
-                  <li key={conteudo.id}>
-                    {conteudo.tipo}
-                    {conteudo.autoria === "terceiro" && conteudo.fonte && (
-                      <> — fonte: {conteudo.fonte}</>
-                    )}
-                  </li>
-                ))}
-              </ul>
-
-              {missaoComFormularioDeConteudo === missao.id ? (
-                <FormularioDeConteudo
-                  idDaMissao={missao.id}
-                  onSalvo={(conteudo) => {
-                    definirMissaoComFormularioDeConteudo(null);
-                    marcarGravado(`${missao.id}:conteudo`);
-                    onAtualizarMissao({
-                      ...missao,
-                      conteudos: [...(missao.conteudos ?? []), conteudo],
-                    });
-                  }}
-                  onCancelar={() => definirMissaoComFormularioDeConteudo(null)}
-                />
-              ) : (
-                <Botao
-                  variante="secundaria"
-                  onClick={() => definirMissaoComFormularioDeConteudo(missao.id)}
-                >
-                  Novo conteúdo
-                </Botao>
-              )}
-              <MarcaDeGravacao instante={gravadoEm[`${missao.id}:conteudo`] ?? null} />
-            </section>
+            <BlocoDeConteudo missao={missao} onAtualizada={onAtualizarMissao} />
           </BlocoRecolhivel>
 
           <BlocoRecolhivel titulo="Bibliografia" resumo={resumoDaBibliografia(missao)}>
