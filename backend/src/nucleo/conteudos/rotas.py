@@ -13,7 +13,15 @@ from ..erros import NaoEncontrado
 from ..personas.modelo import Persona
 from ..trilhas.modelo import Missao
 from .modelo import AutoriaDoConteudo, ConteudoDaMissao, TipoDeConteudo
-from .regra import abrir_envio, confirmar_envio, criar_conteudo, ler_arquivo_do_conteudo
+from .regra import (
+    abrir_envio,
+    confirmar_envio,
+    corrigir_conteudo,
+    criar_conteudo,
+    ler_arquivo_do_conteudo,
+    mover_conteudo,
+    remover_conteudo,
+)
 
 roteador = APIRouter()
 
@@ -61,10 +69,14 @@ def _obter_conteudo(sessao_bd: Session, id_do_conteudo: uuid.UUID) -> ConteudoDa
 
 
 class CriarConteudoEntrada(BaseModel):
+    """`ordem` **não** é campo do corpo: o núcleo a atribui, posterior à dos
+    conteúdos que a missão já tem. Com `extra="forbid"`, mandá-la responde
+    422 — enquanto o cliente a declarava, ele declarava sempre 1
+    (`RF-09-126`, design — decisão 2)."""
+
     model_config = ConfigDict(extra="forbid")
 
     tipo: str
-    ordem: int
     corpo: str | None = None
     endereco: str | None = None
     autoria: str
@@ -87,12 +99,88 @@ def criar_conteudo_rota(
         operador=operador,
         missao=missao,
         tipo=entrada.tipo,
-        ordem=entrada.ordem,
         corpo=entrada.corpo,
         endereco=entrada.endereco,
         autoria=entrada.autoria,
         fonte=entrada.fonte,
     )
+    sessao_bd.commit()
+    return saida_do_conteudo(conteudo)
+
+
+class CorrigirConteudoEntrada(BaseModel):
+    """Redeclara os campos **mutáveis**, no molde do `PATCH` do artefato do
+    Mestre: a correção substitui o conjunto, não remenda campo a campo.
+    `tipo` é aceito só para ser recusado com motivo (`RN-09-45`)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    tipo: str | None = None
+    corpo: str | None = None
+    endereco: str | None = None
+    autoria: str
+    fonte: str | None = None
+
+
+@roteador.patch("/conteudos/{id_do_conteudo}")
+def corrigir_conteudo_rota(
+    id_do_conteudo: uuid.UUID,
+    entrada: CorrigirConteudoEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> ConteudoSaida:
+    """`RF-09-123`: a autoria estrita, a coerência do tipo e a recusa de
+    trocar o tipo são de `corrigir_conteudo`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    conteudo = _obter_conteudo(sessao_bd, id_do_conteudo)
+    conteudo = corrigir_conteudo(
+        sessao_bd,
+        conteudo,
+        operador=operador,
+        tipo=entrada.tipo,
+        corpo=entrada.corpo,
+        endereco=entrada.endereco,
+        autoria=entrada.autoria,
+        fonte=entrada.fonte,
+    )
+    sessao_bd.commit()
+    return saida_do_conteudo(conteudo)
+
+
+@roteador.delete("/conteudos/{id_do_conteudo}", status_code=204)
+def remover_conteudo_rota(
+    id_do_conteudo: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> None:
+    """`RF-09-124`: apaga a linha e os bytes, nesta ordem — a guarda de
+    autoria e a falha de camada são de `remover_conteudo`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    conteudo = _obter_conteudo(sessao_bd, id_do_conteudo)
+    remover_conteudo(sessao_bd, conteudo, operador=operador, armazenamento=armazenamento)
+    sessao_bd.commit()
+
+
+class MoverConteudoEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    direcao: str
+
+
+@roteador.post("/conteudos/{id_do_conteudo}/ordem")
+def mover_conteudo_rota(
+    id_do_conteudo: uuid.UUID,
+    entrada: MoverConteudoEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> ConteudoSaida:
+    """`RF-09-126`: substantivo de ação, no molde de
+    `/trilhas/{id}/publicacao` — a troca com o vizinho e as recusas de
+    extremo são de `mover_conteudo`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    conteudo = _obter_conteudo(sessao_bd, id_do_conteudo)
+    conteudo = mover_conteudo(sessao_bd, conteudo, operador=operador, direcao=entrada.direcao)
     sessao_bd.commit()
     return saida_do_conteudo(conteudo)
 

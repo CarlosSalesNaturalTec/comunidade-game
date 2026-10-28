@@ -9,7 +9,7 @@ alcançando **corpo**, **endereço**, **autoria** e **fonte**. A correção SHAL
 **qualquer situação da trilha** — rascunho, publicada ou despublicada —, e NEVER SHALL apagar
 nem alterar o que Guerreiros e Guerreiras já gravaram. Pedido de outro Mestre SHALL responder
 **403**, e o Admin NEVER SHALL corrigir conteúdo: ele audita e despublica a trilha, não a
-redige. (`RF-09-123`, PRD-09 §§8, 9)
+redige. (`RF-09-123`, PRD-09 §§6.3, 7)
 
 #### Scenario: O Mestre autor corrige o corpo do texto
 
@@ -48,7 +48,7 @@ O núcleo NEVER SHALL aceitar a troca do **tipo** de um `Conteudo` já gravado, 
 **arquivo** de um conteúdo de imagem, vídeo ou arquivo de apoio: trocar um deles é **remover**
 o conteúdo e **cadastrar outro**. Tentativa de alterar o tipo SHALL responder **422**, dizendo
 que o caminho é remover e cadastrar. A sessão de envio SHALL seguir aberta apenas para o
-conteúdo que **ainda não** teve envio confirmado. (`RN-09-45`, `RF-09-124`, PRD-09 §8)
+conteúdo que **ainda não** teve envio confirmado. (`RN-09-45`, `RF-09-124`, PRD-09 §6.3)
 
 #### Scenario: Trocar o tipo é recusado
 
@@ -66,7 +66,7 @@ O núcleo SHALL aceitar do **Mestre autor da trilha** a remoção de um `Conteud
 **qualquer situação da trilha**, e SHALL **apagá-lo**: nenhum registro aponta para o conteúdo da
 missão. Havendo arquivo com envio confirmado, o núcleo SHALL **removê-lo do armazenamento** no
 mesmo ato. Pedido de outro Mestre, ou de Admin, SHALL responder **403**.
-(`RF-09-124`, `RF-09-20`, `RN-09-07`, PRD-09 §§8, 9)
+(`RF-09-124`, `RF-09-20`, `RN-09-07`, PRD-09 §§6.3, 7)
 
 #### Scenario: O conteúdo de texto é removido
 
@@ -105,7 +105,7 @@ O núcleo SHALL aceitar do **Mestre autor da trilha** o pedido de **mover** um `
 cima ou para baixo entre os conteúdos da mesma missão, trocando a ordem dele com a do
 **vizinho** naquele sentido. Mover o primeiro para cima, ou o último para baixo, SHALL ser
 recusado sem alterar nada. A ordem resultante SHALL valer para toda leitura do conteúdo da
-missão. (`RF-09-126`, PRD-09 §8)
+missão. (`RF-09-126`, PRD-09 §6.3)
 
 #### Scenario: O conteúdo sobe uma posição
 
@@ -128,7 +128,7 @@ O núcleo SHALL atribuir a todo `Conteudo` novo uma **ordem posterior** à dos c
 missão já tem, e NEVER SHALL deixar dois conteúdos da mesma missão com a **mesma ordem** — sem
 o que a sequência que o Guerreiro(a) lê fica indefinida. Conteúdo gravado antes desta exigência
 SHALL ser renumerado, uma vez, pela sequência de criação dentro de cada missão.
-(`RF-09-126`, `RF-09-14`, PRD-09 §8)
+(`RF-09-126`, `RF-09-14`, PRD-09 §6.3)
 
 #### Scenario: O conteúdo novo entra por último
 

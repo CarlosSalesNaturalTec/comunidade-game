@@ -2601,8 +2601,12 @@ describe("conteúdo da missão (RF-09-14, RF-09-15, RF-09-24)", () => {
     await usuario.click(await screen.findByText("Conteúdo"));
 
     const secaoDeConteudo = await screen.findByLabelText(/conteúdo de primeira missão/i);
-    expect(within(secaoDeConteudo).getByText("texto")).toBeInTheDocument();
-    expect(within(secaoDeConteudo).getByText("imagem")).toBeInTheDocument();
+    // Desde a fatia 24 a linha traz o **rótulo derivado**, não o valor cru do
+    // tipo: imprimir "texto" não distinguia dois conteúdos de texto na mesma
+    // missão, e sem distinguir não há como escolher qual corrigir
+    // (`RF-09-125`).
+    expect(within(secaoDeConteudo).getByText("Texto gravado antes.")).toBeInTheDocument();
+    expect(within(secaoDeConteudo).getByText("Imagem — envio pendente")).toBeInTheDocument();
     expect(criarConteudoEspiado).not.toHaveBeenCalled();
   });
 });
@@ -3541,5 +3545,278 @@ describe("a pré-visualização mostra o que o Guerreiro(a) verá (RF-09-25)", (
     expect(ler).toHaveBeenCalledWith("pergunta-1", "token-do-mestre");
     expect(imagem.closest(".cg-midia-do-nucleo")).not.toBeNull();
     vi.unstubAllGlobals();
+  });
+});
+
+// Fatia 24: `RF-09-123` a `RF-09-126`, `RN-09-45` e `RN-09-46`, das quatro
+// decisões do fundador de 2026-10-27.
+describe("corrigir, remover, exibir e ordenar o conteúdo (RF-09-123 a RF-09-126)", () => {
+  function montarComConteudos(
+    conteudos: ConteudoDaMissao[],
+    situacao: TrilhaDoMestre["situacao"] = "rascunho",
+  ) {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ situacao, missoes: [missao({ conteudos })] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+  }
+
+  async function abrirBlocoDeConteudo() {
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByText("Conteúdo"));
+    return usuario;
+  }
+
+  it("distingue três conteúdos de texto pelo rótulo derivado", async () => {
+    montarComConteudos([
+      conteudo({ id: "c1", corpo: "Primeiro trecho da missão." }),
+      conteudo({ id: "c2", ordem: 2, corpo: "Segundo trecho da missão." }),
+      conteudo({ id: "c3", ordem: 3, corpo: "Terceiro trecho da missão." }),
+    ]);
+
+    render(<TelaDeAutoria />);
+    await abrirBlocoDeConteudo();
+
+    const secao = await screen.findByLabelText(/conteúdo de primeira missão/i);
+    expect(within(secao).getByText("Primeiro trecho da missão.")).toBeInTheDocument();
+    expect(within(secao).getByText("Segundo trecho da missão.")).toBeInTheDocument();
+    expect(within(secao).getByText("Terceiro trecho da missão.")).toBeInTheDocument();
+    // Nenhuma linha diz o valor cru do tipo, que repetia entre conteúdos.
+    expect(within(secao).queryByText("texto")).not.toBeInTheDocument();
+  });
+
+  it("identifica o link externo pelo domínio", async () => {
+    montarComConteudos([
+      conteudo({
+        id: "c-link",
+        tipo: "link_externo",
+        corpo: null,
+        endereco: "https://video.exemplo.org/aula/42",
+      }),
+    ]);
+
+    render(<TelaDeAutoria />);
+    await abrirBlocoDeConteudo();
+
+    const secao = await screen.findByLabelText(/conteúdo de primeira missão/i);
+    expect(within(secao).getByText("video.exemplo.org")).toBeInTheDocument();
+  });
+
+  it("traz a fonte do terceiro na linha do conteúdo", async () => {
+    montarComConteudos([
+      conteudo({ id: "c-terceiro", autoria: "terceiro", fonte: "Autor Exemplo, 2020." }),
+    ]);
+
+    render(<TelaDeAutoria />);
+    await abrirBlocoDeConteudo();
+
+    const secao = await screen.findByLabelText(/conteúdo de primeira missão/i);
+    expect(within(secao).getByText(/fonte: Autor Exemplo, 2020\./)).toBeInTheDocument();
+  });
+
+  it("diz pendente o conteúdo cujo envio nunca foi confirmado", async () => {
+    montarComConteudos([conteudo({ id: "c-video", tipo: "video", corpo: null })]);
+
+    render(<TelaDeAutoria />);
+    await abrirBlocoDeConteudo();
+
+    const secao = await screen.findByLabelText(/conteúdo de primeira missão/i);
+    expect(within(secao).getByText("Vídeo — envio pendente")).toBeInTheDocument();
+  });
+
+  it("não busca arquivo algum ao abrir a tela, e busca quando o Mestre pede", async () => {
+    // `RN-09-46`: `BlocoRecolhivel` monta os filhos mesmo fechado e
+    // `MidiaDoNucleo` busca os bytes na montagem — exibir de saída faria a
+    // abertura da trilha puxar os arquivos de todas as missões da etapa.
+    montarComConteudos([
+      conteudo({
+        id: "c-imagem",
+        tipo: "imagem",
+        corpo: null,
+        referencia: "conteudos/c-imagem/arquivo",
+        tamanho: 2 * 1024 * 1024,
+      }),
+    ]);
+    const ler = vi
+      .spyOn(trilhasApi, "lerArquivoDoConteudo")
+      .mockResolvedValue(new Blob(["bytes"], { type: "image/png" }));
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirBlocoDeConteudo();
+
+    const secao = await screen.findByLabelText(/conteúdo de primeira missão/i);
+    expect(within(secao).getByText("Imagem — 2.0 MB")).toBeInTheDocument();
+    expect(ler).not.toHaveBeenCalled();
+
+    await usuario.click(within(secao).getByRole("button", { name: /exibir imagem/i }));
+
+    await waitFor(() => expect(ler).toHaveBeenCalledWith("c-imagem", "token-do-mestre"));
+  });
+
+  it("corrige o texto já gravado pela rota de correção", async () => {
+    montarComConteudos([conteudo({ id: "c1", corpo: "Corpo com erro de digitacao." })]);
+    const corrigir = vi
+      .spyOn(trilhasApi, "corrigirConteudo")
+      .mockResolvedValue(conteudo({ id: "c1", corpo: "Corpo corrigido." }));
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirBlocoDeConteudo();
+    await usuario.click(await screen.findByRole("button", { name: /^corrigir$/i }));
+
+    const campo = await screen.findByLabelText(/texto da missão/i);
+    await usuario.clear(campo);
+    await usuario.type(campo, "Corpo corrigido.");
+    await usuario.click(screen.getByRole("button", { name: /salvar correção/i }));
+
+    await waitFor(() =>
+      expect(corrigir).toHaveBeenCalledWith(
+        "c1",
+        expect.objectContaining({ corpo: "Corpo corrigido.", autoria: "propria" }),
+        "token-do-mestre",
+      ),
+    );
+  });
+
+  it("não oferece a troca do tipo na correção, e diz o caminho", async () => {
+    montarComConteudos([
+      conteudo({
+        id: "c-video",
+        tipo: "video",
+        corpo: null,
+        referencia: "conteudos/c-video/arquivo",
+        tamanho: 1024,
+      }),
+    ]);
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirBlocoDeConteudo();
+    await usuario.click(await screen.findByRole("button", { name: /^corrigir$/i }));
+
+    const formulario = await screen.findByLabelText(/correção do conteúdo da missão/i);
+    expect(within(formulario).queryByLabelText(/tipo de conteúdo/i)).not.toBeInTheDocument();
+    expect(within(formulario).queryByLabelText(/^arquivo$/i)).not.toBeInTheDocument();
+    expect(
+      within(formulario).getByText(/remova este conteúdo e cadastre outro/i),
+    ).toBeInTheDocument();
+  });
+
+  it("guarda o rascunho por conteúdo, e a edição de um não invade a do outro", async () => {
+    // Design — decisão 8: a chave do rascunho, indexada só pela missão,
+    // sobrescrevia um texto com o outro.
+    montarComConteudos([
+      conteudo({ id: "c1", corpo: "Primeiro trecho da missão." }),
+      conteudo({ id: "c2", ordem: 2, corpo: "Segundo trecho da missão." }),
+    ]);
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirBlocoDeConteudo();
+    const secao = await screen.findByLabelText(/conteúdo de primeira missão/i);
+    const [corrigirPrimeiro, corrigirSegundo] = within(secao).getAllByRole("button", {
+      name: /^corrigir$/i,
+    });
+
+    await usuario.click(corrigirPrimeiro);
+    await usuario.type(await screen.findByLabelText(/texto da missão/i), " Rascunho um.");
+    await usuario.click(screen.getByRole("button", { name: /cancelar/i }));
+
+    await usuario.click(corrigirSegundo);
+
+    const campoDoSegundo = await screen.findByLabelText(/texto da missão/i);
+    expect(campoDoSegundo).toHaveValue("Segundo trecho da missão.");
+  });
+
+  it("remove o conteúdo e deixa de apresentá-lo", async () => {
+    montarComConteudos([
+      conteudo({ id: "c1", corpo: "Primeiro trecho da missão." }),
+      conteudo({ id: "c2", ordem: 2, corpo: "Segundo trecho da missão." }),
+    ]);
+    const remover = vi.spyOn(trilhasApi, "removerConteudo").mockResolvedValue(undefined);
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirBlocoDeConteudo();
+    const secao = await screen.findByLabelText(/conteúdo de primeira missão/i);
+    await usuario.click(within(secao).getAllByRole("button", { name: /^remover$/i })[0]);
+
+    await waitFor(() => expect(remover).toHaveBeenCalledWith("c1", "token-do-mestre"));
+    await waitFor(() =>
+      expect(screen.queryByText("Primeiro trecho da missão.")).not.toBeInTheDocument(),
+    );
+    expect(screen.getByText("Segundo trecho da missão.")).toBeInTheDocument();
+  });
+
+  it("move o conteúdo na lista e apresenta a nova ordem", async () => {
+    montarComConteudos([
+      conteudo({ id: "c1", corpo: "Primeiro trecho da missão." }),
+      conteudo({ id: "c2", ordem: 2, corpo: "Segundo trecho da missão." }),
+    ]);
+    const mover = vi
+      .spyOn(trilhasApi, "moverConteudo")
+      .mockResolvedValue(conteudo({ id: "c2", ordem: 1, corpo: "Segundo trecho da missão." }));
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirBlocoDeConteudo();
+    const secao = await screen.findByLabelText(/conteúdo de primeira missão/i);
+    await usuario.click(within(secao).getAllByRole("button", { name: /^subir$/i })[1]);
+
+    await waitFor(() => expect(mover).toHaveBeenCalledWith("c2", "cima", "token-do-mestre"));
+    const linhas = within(await screen.findByLabelText(/conteúdo de primeira missão/i))
+      .getAllByRole("listitem")
+      .map((linha) => linha.textContent ?? "");
+    expect(linhas[0]).toContain("Segundo trecho da missão.");
+    expect(linhas[1]).toContain("Primeiro trecho da missão.");
+  });
+
+  it("apresenta o motivo que o núcleo declarou na recusa", async () => {
+    // Invariante 25 do documento 99: erro de camada nunca se disfarça de
+    // recusa do domínio, e a recusa do domínio chega com o motivo.
+    montarComConteudos([conteudo({ id: "c1", corpo: "Primeiro trecho da missão." })]);
+    vi.spyOn(trilhasApi, "removerConteudo").mockRejectedValue(
+      new ErroDaApi(403, {
+        codigo: "permissao_negada",
+        mensagem: "Este conteúdo não é da sua trilha.",
+      }),
+    );
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirBlocoDeConteudo();
+    await usuario.click(await screen.findByRole("button", { name: /^remover$/i }));
+
+    expect(await screen.findByText("Este conteúdo não é da sua trilha.")).toBeInTheDocument();
+  });
+
+  it("corrige e remove em trilha já publicada", async () => {
+    // Decisão do fundador de 2026-10-27: em qualquer situação da trilha.
+    montarComConteudos(
+      [
+        conteudo({ id: "c1", corpo: "Primeiro trecho da missão." }),
+        conteudo({ id: "c2", ordem: 2, corpo: "Segundo trecho da missão." }),
+      ],
+      "publicada",
+    );
+    const corrigir = vi
+      .spyOn(trilhasApi, "corrigirConteudo")
+      .mockResolvedValue(conteudo({ id: "c1", corpo: "Corpo corrigido." }));
+    const remover = vi.spyOn(trilhasApi, "removerConteudo").mockResolvedValue(undefined);
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirBlocoDeConteudo();
+    const secao = await screen.findByLabelText(/conteúdo de primeira missão/i);
+
+    await usuario.click(within(secao).getAllByRole("button", { name: /^remover$/i })[1]);
+    await waitFor(() => expect(remover).toHaveBeenCalledWith("c2", "token-do-mestre"));
+
+    await usuario.click(
+      within(await screen.findByLabelText(/conteúdo de primeira missão/i)).getByRole(
+        "button",
+        { name: /^corrigir$/i },
+      ),
+    );
+    await usuario.click(await screen.findByRole("button", { name: /salvar correção/i }));
+
+    await waitFor(() => expect(corrigir).toHaveBeenCalled());
   });
 });

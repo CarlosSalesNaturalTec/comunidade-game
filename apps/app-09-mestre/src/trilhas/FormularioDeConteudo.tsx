@@ -9,6 +9,7 @@ import {
   type ConteudoDaMissao,
   confirmarEnvio,
   consultarProgressoDaSessao,
+  corrigirConteudo,
   criarConteudo,
   enviarArquivo,
   type TipoDeConteudo,
@@ -16,6 +17,10 @@ import {
 
 interface Props {
   idDaMissao: string;
+  /** Presente, a tela **corrige** aquele conteúdo em vez de criar outro: o
+   * tipo fica travado e o arquivo não se troca, porque para isso o caminho é
+   * remover e cadastrar outro (`RF-09-123`, `RN-09-45`). */
+  conteudo?: ConteudoDaMissao;
   onSalvo: (conteudo: ConteudoDaMissao) => void;
   onCancelar: () => void;
 }
@@ -38,8 +43,12 @@ const MENSAGEM_DE_QUEDA_DE_REDE =
 // única categoria em que a retomada faz sentido (`RF-09-19`).
 class QuedaDeRedeDuranteEnvio extends Error {}
 
-function chaveDoRascunho(idDaMissao: string): string {
-  return `comunidade-game:app-09-mestre:rascunho-de-conteudo:${idDaMissao}`;
+// A chave desce ao conteúdo quando a tela corrige: indexada só pela missão,
+// corrigir um conteúdo e começar outro na mesma missão sobrescreveria um
+// texto com o outro (design — decisão 8).
+function chaveDoRascunho(idDaMissao: string, idDoConteudo?: string): string {
+  const alvo = idDoConteudo ? `${idDaMissao}:${idDoConteudo}` : idDaMissao;
+  return `comunidade-game:app-09-mestre:rascunho-de-conteudo:${alvo}`;
 }
 
 // O tipo declara o formato aceito pelo `<input type="file">`, para o
@@ -50,15 +59,18 @@ const FORMATOS_ACEITOS: Record<string, string> = {
   arquivo: "application/pdf,image/jpeg,image/png,image/webp,audio/mpeg",
 };
 
-export function FormularioDeConteudo({ idDaMissao, onSalvo, onCancelar }: Props) {
+export function FormularioDeConteudo({ idDaMissao, conteudo, onSalvo, onCancelar }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoTipo = useId();
   const idDaAutoria = useId();
-  const [tipo, definirTipo] = useState<TipoDeConteudo>("texto");
-  const [corpo, definirCorpo] = useState("");
-  const [endereco, definirEndereco] = useState("");
-  const [autoria, definirAutoria] = useState<AutoriaDoConteudo>("propria");
-  const [fonte, definirFonte] = useState("");
+  const ehCorrecao = conteudo !== undefined;
+  const [tipo, definirTipo] = useState<TipoDeConteudo>(conteudo?.tipo ?? "texto");
+  const [corpo, definirCorpo] = useState(conteudo?.corpo ?? "");
+  const [endereco, definirEndereco] = useState(conteudo?.endereco ?? "");
+  const [autoria, definirAutoria] = useState<AutoriaDoConteudo>(
+    conteudo?.autoria ?? "propria",
+  );
+  const [fonte, definirFonte] = useState(conteudo?.fonte ?? "");
   const [arquivo, definirArquivo] = useState<File | null>(null);
   const [progresso, definirProgresso] = useState<{ enviados: number; total: number } | null>(
     null,
@@ -71,22 +83,24 @@ export function FormularioDeConteudo({ idDaMissao, onSalvo, onCancelar }: Props)
 
   // Rascunho do texto: salva a cada alteração e recupera ao abrir a tela —
   // a queda de rede nunca perde o que já foi escrito (PRD-09 §10).
+  const chave = chaveDoRascunho(idDaMissao, conteudo?.id);
+
   useEffect(() => {
-    const rascunho = localStorage.getItem(chaveDoRascunho(idDaMissao));
+    const rascunho = localStorage.getItem(chave);
     if (rascunho) definirCorpo(rascunho);
-  }, [idDaMissao]);
+  }, [chave]);
 
   useEffect(() => {
     if (tipo !== "texto") return;
     if (corpo) {
-      localStorage.setItem(chaveDoRascunho(idDaMissao), corpo);
+      localStorage.setItem(chave, corpo);
     } else {
-      localStorage.removeItem(chaveDoRascunho(idDaMissao));
+      localStorage.removeItem(chave);
     }
-  }, [corpo, tipo, idDaMissao]);
+  }, [corpo, tipo, chave]);
 
   function limparRascunho() {
-    localStorage.removeItem(chaveDoRascunho(idDaMissao));
+    localStorage.removeItem(chave);
   }
 
   async function enviarArquivoComRetomada(idDoConteudo: string, arquivoAEnviar: File) {
@@ -152,7 +166,7 @@ export function FormularioDeConteudo({ idDaMissao, onSalvo, onCancelar }: Props)
       definirErroDeCampo("Informe o endereço do vídeo.");
       return;
     }
-    if (TIPOS_COM_ENVIO.includes(tipo) && !arquivo) {
+    if (!ehCorrecao && TIPOS_COM_ENVIO.includes(tipo) && !arquivo) {
       definirErroDeCampo("Escolha o arquivo para enviar.");
       return;
     }
@@ -164,11 +178,26 @@ export function FormularioDeConteudo({ idDaMissao, onSalvo, onCancelar }: Props)
     if (!sessao) return;
     definirEnviando(true);
     try {
-      const conteudo = await criarConteudo(
+      if (ehCorrecao) {
+        const corrigido = await corrigirConteudo(
+          conteudo.id,
+          {
+            corpo: tipo === "texto" ? corpo : undefined,
+            endereco: tipo === "link_externo" ? endereco : undefined,
+            autoria,
+            fonte: autoria === "terceiro" ? fonte : undefined,
+          },
+          sessao.token,
+        );
+        limparRascunho();
+        onSalvo(corrigido);
+        return;
+      }
+
+      const criado = await criarConteudo(
         idDaMissao,
         {
           tipo,
-          ordem: 1,
           corpo: tipo === "texto" ? corpo : undefined,
           endereco: tipo === "link_externo" ? endereco : undefined,
           autoria,
@@ -178,15 +207,15 @@ export function FormularioDeConteudo({ idDaMissao, onSalvo, onCancelar }: Props)
       );
 
       if (TIPOS_COM_ENVIO.includes(tipo) && arquivo) {
-        definirConteudoId(conteudo.id);
-        const confirmado = await enviarArquivoComRetomada(conteudo.id, arquivo);
+        definirConteudoId(criado.id);
+        const confirmado = await enviarArquivoComRetomada(criado.id, arquivo);
         limparRascunho();
         onSalvo(confirmado);
         return;
       }
 
       limparRascunho();
-      onSalvo(conteudo);
+      onSalvo(criado);
     } catch (erro) {
       if (ehRecusaDeSessao(erro)) {
         tratarRecusaDeSessao();
@@ -207,25 +236,38 @@ export function FormularioDeConteudo({ idDaMissao, onSalvo, onCancelar }: Props)
   }
 
   return (
-    <form onSubmit={aoSubmeter} aria-label="Novo conteúdo da missão">
+    <form
+      onSubmit={aoSubmeter}
+      aria-label={ehCorrecao ? "Correção do conteúdo da missão" : "Novo conteúdo da missão"}
+    >
       <AvisoDeColeta dado="o conteúdo autoral que você publica na missão" />
-      <div className="cg-campo">
-        <label htmlFor={idDoTipo}>Tipo de conteúdo</label>
-        <select
-          id={idDoTipo}
-          value={tipo}
-          onChange={(evento) => {
-            definirTipo(evento.target.value as TipoDeConteudo);
-            definirArquivo(null);
-          }}
-        >
-          {Object.entries(ROTULO_DO_TIPO).map(([valor, rotulo]) => (
-            <option key={valor} value={valor}>
-              {rotulo}
-            </option>
-          ))}
-        </select>
-      </div>
+      {ehCorrecao ? (
+        // Nem tipo nem arquivo se trocam: a tela não os oferece e diz o
+        // caminho, em vez de deixar o Mestre descobrir pela recusa do núcleo
+        // (`RN-09-45`).
+        <div className="cg-campo">
+          <p>Tipo de conteúdo: {ROTULO_DO_TIPO[tipo]}</p>
+          <p>Para trocar o tipo ou o arquivo, remova este conteúdo e cadastre outro.</p>
+        </div>
+      ) : (
+        <div className="cg-campo">
+          <label htmlFor={idDoTipo}>Tipo de conteúdo</label>
+          <select
+            id={idDoTipo}
+            value={tipo}
+            onChange={(evento) => {
+              definirTipo(evento.target.value as TipoDeConteudo);
+              definirArquivo(null);
+            }}
+          >
+            {Object.entries(ROTULO_DO_TIPO).map(([valor, rotulo]) => (
+              <option key={valor} value={valor}>
+                {rotulo}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {tipo === "texto" && (
         <div className="cg-campo">
@@ -248,7 +290,7 @@ export function FormularioDeConteudo({ idDaMissao, onSalvo, onCancelar }: Props)
         />
       )}
 
-      {TIPOS_COM_ENVIO.includes(tipo) && (
+      {!ehCorrecao && TIPOS_COM_ENVIO.includes(tipo) && (
         <div className="cg-campo">
           <label htmlFor="conteudo-arquivo">Arquivo</label>
           <input
@@ -298,7 +340,7 @@ export function FormularioDeConteudo({ idDaMissao, onSalvo, onCancelar }: Props)
       {erroDeRecusa && <Aviso tipo="erro">{erroDeRecusa}</Aviso>}
 
       <Botao tipo="submit" desabilitado={enviando}>
-        Salvar conteúdo
+        {ehCorrecao ? "Salvar correção" : "Salvar conteúdo"}
       </Botao>
       <Botao variante="secundaria" onClick={onCancelar}>
         Cancelar

@@ -4,7 +4,7 @@
 
 Fatia **24 do PRD-09** (`openspec/cronograma-de-fatias.md`). Atende `RF-09-123` a
 `RF-09-126`, `RN-09-45` e `RN-09-46`, as seis entradas que as decisões do fundador de
-2026-10-27 criam no PRD-09 §8.
+2026-10-27 criam no PRD-09 §§6.3 e 7.
 
 O conteúdo da missão é rua de mão única. O núcleo só sabe criar (`POST
 /v1/missoes/{id}/conteudos`), abrir e confirmar envio, e servir bytes; não há `PATCH` nem
@@ -36,7 +36,7 @@ ordem que a spec diz que ele declara.
 ## What Changes
 
 As quatro decisões do fundador de 2026-10-27 entram no documento 03 §11, no documento 09 §1 e
-no PRD-09 §8 antes de virar código (§ *Impact*).
+no PRD-09 §6.3 antes de virar código (§ *Impact*).
 
 - **Nasce `PATCH /v1/conteudos/{id}`** (`RF-09-123`), privativo do Mestre autor da trilha,
   alcançando **corpo**, **endereço**, **autoria** e **fonte**. As mesmas recusas da criação
@@ -106,5 +106,5 @@ Nenhuma.
 - `apps/app-09-mestre/src/trilhas/PreVisualizacaoDaMissao.tsx` — `ConteudoPreVisualizado` sai
   para módulo próprio e é reusado pelo bloco de cadastro, que precisa concordar com ele.
 - Documentação, no mesmo PR: documento 03 §11 (marcador novo), documento 09 §1 (a linha da
-  decisão), PRD-09 §8 (os quatro `RF` e as duas `RN`) e a situação da fatia 24 no
+  decisão), PRD-09 §6.3 (os quatro `RF` e as duas `RN`) e a situação da fatia 24 no
   `openspec/cronograma-de-fatias.md`.

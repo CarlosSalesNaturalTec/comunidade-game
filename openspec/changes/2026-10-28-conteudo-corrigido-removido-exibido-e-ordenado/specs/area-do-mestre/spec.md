@@ -12,7 +12,7 @@ trilha**, publicada inclusive. Nenhum campo SHALL pedir código,
 HTML, marcação ou configuração técnica, e NEVER SHALL oferecer a escrita em missão de trilha de
 outro Mestre. A aplicação SHALL salvar o rascunho do texto automaticamente, de modo que queda de
 rede NEVER SHALL perder o que já foi escrito. (`RF-09-14`, `RF-09-15`, `RF-09-24`,
-`RF-09-123`, `RF-09-124`, `RF-09-126`, `RN-09-16`, PRD-09 §§8, 10)
+`RF-09-123`, `RF-09-124`, `RF-09-126`, `RN-09-16`, PRD-09 §§6.3, 10)
 
 #### Scenario: Mestre escreve o texto da missão
 
@@ -68,16 +68,23 @@ conteúdo NEVER SHALL aparecer vazia quando a missão tem conteúdo gravado. (`R
 
 A App 09 SHALL apresentar, para cada conteúdo da missão, um **rótulo** que o distinga dos
 demais: as primeiras palavras do corpo, no texto; o domínio do endereço, no link externo; o
-nome do arquivo, nos tipos com envio. A lista NEVER SHALL identificar um conteúdo apenas pelo
+**tipo em palavras e o tamanho do arquivo**, nos tipos com envio — o núcleo guarda a
+referência, nunca o nome do arquivo. A lista NEVER SHALL identificar um conteúdo apenas pelo
 valor do tipo, que repete entre conteúdos diferentes e não permite escolher qual corrigir. A
 autoria SHALL aparecer em todo conteúdo, e a fonte em todo conteúdo de terceiro.
-(`RF-09-125`, `RF-09-24`, PRD-09 §§8, 10)
+(`RF-09-125`, `RF-09-24`, PRD-09 §§6.3, 10)
 
 #### Scenario: Três conteúdos de texto se distinguem na lista
 
 - **WHEN** a missão tem três conteúdos de texto e o Mestre autor abre o bloco Conteúdo
 - **THEN** cada um traz as primeiras palavras do próprio corpo, e nenhuma linha diz apenas
   "texto"
+
+#### Scenario: O conteúdo com arquivo é identificado pelo tipo e pelo tamanho
+
+- **WHEN** a missão tem um conteúdo de imagem com o envio confirmado
+- **THEN** a linha dele traz o tipo em palavras e o tamanho do arquivo, e a do conteúdo sem
+  envio confirmado diz que o envio está pendente
 
 #### Scenario: O link é identificado pelo domínio
 
@@ -95,7 +102,7 @@ A App 09 SHALL **exibir** no bloco Conteúdo cada conteúdo já gravado: o texto
 de imediato, e a imagem, o vídeo e o arquivo de apoio **sob demanda**, por comando do Mestre
 autor. A aplicação NEVER SHALL buscar os bytes de conteúdo algum antes desse comando. A mídia
 exibida SHALL usar a moldura de tamanho fixo que a App 09 já aplica, e o conteúdo sem envio
-confirmado SHALL ser dito **pendente**. (`RF-09-125`, `RN-09-46`, PRD-09 §§9, 10)
+confirmado SHALL ser dito **pendente**. (`RF-09-125`, `RN-09-46`, PRD-09 §§6.3, 10)
 
 #### Scenario: O texto aparece sem pedir nada
 
@@ -123,7 +130,7 @@ A App 09 SHALL oferecer, em cada conteúdo listado, o caminho de **corrigi-lo** 
 endereço, autoria e fonte —, de **removê-lo** e de **movê-lo** para cima ou para baixo. A
 correção SHALL reaproveitar a tela da escrita, com o rascunho automático guardado **por
 conteúdo**. A aplicação NEVER SHALL oferecer a troca do tipo nem a do arquivo.
-(`RF-09-123`, `RF-09-124`, `RF-09-126`, `RN-09-45`, `RN-09-16`, PRD-09 §§8, 10)
+(`RF-09-123`, `RF-09-124`, `RF-09-126`, `RN-09-45`, `RN-09-16`, PRD-09 §§6.3, 10)
 
 #### Scenario: O Mestre corrige o texto já gravado
 
