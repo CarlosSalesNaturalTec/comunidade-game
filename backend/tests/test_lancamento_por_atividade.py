@@ -15,6 +15,7 @@ from nucleo.resultados.regra import (
     lancar_resultados_da_atividade,
 )
 from nucleo.trilhas.modelo import ModalidadeDeAtividade
+from nucleo.trilhas.regra import remover_atividade
 
 MOMENTO_DO_FATO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
 
@@ -858,3 +859,31 @@ def test_atividade_de_trilha_nao_se_lanca_pela_equipe(
 
     assert len(gravados) == 1
     assert fora == []
+
+
+def test_lancamento_sobre_atividade_carimbada_e_recusado(
+    sessao, criar_persona, criar_comunidade, criar_aula, criar_trilha, criar_missao, criar_atividade
+):
+    """`RN-09-47`: removida a atividade, nenhum fato novo a aponta — o que já
+    estava gravado permanece, mas o lançamento seguinte é recusado."""
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre)
+    aula = criar_aula(mestre, comunidade)
+    remover_atividade(sessao, operador=mestre, atividade=atividade)
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        lancar_resultados_da_atividade(
+            sessao,
+            operador=mestre,
+            aula=aula,
+            atividade=atividade,
+            resultados=[_entrada(guerreiro, atividade)],
+        )
+    assert excinfo.value.campo == "atividade_id"
+    sessao.rollback()
+    assert sessao.query(Resultado).count() == 0

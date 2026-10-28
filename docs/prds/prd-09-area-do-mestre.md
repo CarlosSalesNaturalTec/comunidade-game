@@ -280,6 +280,8 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-96`  | A partir do Ciclo 02, a aplicação recusa publicar trilha sem ao menos uma etiqueta ODS                                                         | essencial  |
 | `RF-09-97`  | A recusa por falta de etiqueta diz em linguagem simples que falta o ODS da trilha                                                              | essencial  |
 | `RF-09-94`  | Mestre vê, na sua trilha, a cobertura de ODS resultante do que etiquetou                                                                       | desejável  |
+| `RF-09-127` | Mestre corrige a atividade da missão — título, descrição, modalidade, formato e produção esperada —, em qualquer situação da trilha            | essencial  |
+| `RF-09-128` | Mestre remove atividade da missão, sabendo antes quantos fatos já apontam para ela                                                             | essencial  |
 
 ### 6.2 Template de missão
 
@@ -487,6 +489,9 @@ outras duas frentes já entregues — tombamento (PRD-07) e ficha de vida —, s
 | `RN-09-44` | Pergunta gravada isoladamente exige enunciado, quatro alternativas e a correta                                | —                      | 03 §11         |
 | `RN-09-45` | O tipo e o arquivo de um conteúdo não se alteram: trocar um deles é remover o conteúdo e cadastrar outro      | —                      | 03 §11         |
 | `RN-09-46` | A tela de cadastro não busca os bytes de nenhum conteúdo antes de o Mestre pedir para exibi-lo                | —                      | 03 §11         |
+| `RN-09-47` | Atividade removida é carimbada, não apagada: sai da leitura e segue guardada para o fato que a aponta         | —                      | 03 §11         |
+| `RN-09-48` | Corrigir o formato de uma atividade para fora do presencial limpa a aula declarada nela                       | —                      | 03 §11         |
+| `RN-09-49` | A natureza de uma atividade não se altera: trocá-la é remover a atividade e cadastrar outra                   | —                      | 03 §11         |
 
 ## 8. Modelo de dados
 
@@ -555,10 +560,15 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | GET    | `/v1/trilhas/minhas`                                      | Mestre       | Trilhas do próprio Mestre, com a situação de cada uma                  |
 | POST   | `/v1/trilhas/{id}/missoes`                                | Mestre       | Acrescenta missão, com ordem e dificuldade                             |
 | POST   | `/v1/missoes/{id}/conteudos`                              | Mestre       | Cria conteúdo de texto, imagem ou link externo                         |
+| PATCH  | `/v1/conteudos/{id}`                                      | Mestre       | Corrige corpo, endereço, autoria e fonte do conteúdo já cadastrado     |
+| DELETE | `/v1/conteudos/{id}`                                      | Mestre       | Remove o conteúdo, e o arquivo enviado sai do armazenamento com ele    |
 | POST   | `/v1/conteudos/{id}/arquivo`                              | Mestre       | Envia vídeo ou arquivo, em upload retomável, dentro do limite          |
 | GET    | `/v1/conteudos/{id}/arquivo`                              | Persona      | Serve os bytes do arquivo ao Mestre autor e ao Guerreiro(a) inscrito   |
 | POST   | `/v1/missoes/{id}/bibliografia`                           | Mestre       | Vincula título e capítulo do acervo à missão                           |
 | POST   | `/v1/missoes/{id}/atividades`                             | Mestre       | Cria atividade da missão, com modalidade e formato                     |
+| PATCH  | `/v1/atividades/{id}`                                     | Mestre       | Corrige título, descrição, modalidade, formato e produção esperada     |
+| DELETE | `/v1/atividades/{id}`                                     | Mestre       | Carimba a atividade; partida de quiz aberta impede a remoção           |
+| GET    | `/v1/atividades/{id}/fatos`                               | Mestre       | Quantos fatos já apontam para a atividade, antes de confirmar remoção  |
 | POST   | `/v1/missoes/{id}/desbloqueio`                            | Mestre       | Define o quiz ou desafio que abre a missão seguinte                    |
 | POST   | `/v1/missoes/{id}/perguntas-do-desbloqueio`               | Mestre       | Acrescenta uma pergunta ao quiz, sem tocar nas demais                  |
 | PUT    | `/v1/perguntas-do-desbloqueio/{id}`                       | Mestre       | Corrige uma pergunta do quiz, sem tocar nas demais                     |
@@ -814,3 +824,4 @@ a que alguma submissão já respondeu (documento 03 §11).
 | `RF-09-122`                                        | 02 §1 (consulta dos responsáveis cadastrados)                         |
 | `RF-09-120` e `RN-09-44`                           | 03 §11 (a pergunta do quiz se grava uma a uma, completa)              |
 | `RF-09-123` a `RF-09-126`, `RN-09-45` e `RN-09-46` | 03 §11 (o conteúdo se corrige, se remove, se exibe e se reordena)     |
+| `RF-09-127`, `RF-09-128` e `RN-09-47` a `RN-09-49` | 03 §11 (a atividade da missão se corrige e se remove)                 |

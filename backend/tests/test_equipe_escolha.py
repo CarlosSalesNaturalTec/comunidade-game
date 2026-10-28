@@ -3,10 +3,11 @@
 
 import pytest
 
-from nucleo.equipes.regra import declarar_escolha_da_equipe
+from nucleo.equipes.regra import declarar_escolha_da_equipe, programacao_do_encontro
 from nucleo.erros import ErroDeValidacao, PermissaoNegada
 from nucleo.personas.modelo import Papel
 from nucleo.trilhas.modelo import SituacaoDaTrilha
+from nucleo.trilhas.regra import remover_atividade
 
 
 def _cabecalhos(chave, token):
@@ -249,3 +250,88 @@ def test_rota_de_declaracao_esta_no_openapi_sob_v1(cliente):
 
     assert "/v1/equipes/{id_da_equipe}/atividade-corrente" in schema["paths"]
     assert "post" in schema["paths"]["/v1/equipes/{id_da_equipe}/atividade-corrente"]
+
+
+# `RN-09-47`: a atividade removida pelo Mestre autor sai da programação do
+# encontro, não se escolhe, e a escolha já declarada é zerada.
+
+
+def test_atividade_removida_pelo_mestre_nao_aparece_na_programacao(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    atividade = _montar_atividade(criar_trilha, criar_missao, criar_atividade, mestre, aula)
+    equipe = criar_equipe(guerreiro, aula=aula)
+
+    remover_atividade(sessao, operador=mestre, atividade=atividade)
+    sessao.commit()
+
+    programacao = programacao_do_encontro(sessao, operador=guerreiro, equipe=equipe)
+
+    assert programacao == []
+
+
+def test_atividade_removida_pelo_mestre_e_recusada_na_escolha(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    atividade = _montar_atividade(criar_trilha, criar_missao, criar_atividade, mestre, aula)
+    equipe = criar_equipe(guerreiro, aula=aula)
+
+    remover_atividade(sessao, operador=mestre, atividade=atividade)
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        declarar_escolha_da_equipe(sessao, operador=guerreiro, equipe=equipe, atividade=atividade)
+    assert excinfo.value.campo == "atividade_id"
+    sessao.rollback()
+    assert equipe.atividade_corrente_id is None
+
+
+def test_a_remocao_zera_a_escolha_ja_declarada(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_equipe,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    atividade = _montar_atividade(criar_trilha, criar_missao, criar_atividade, mestre, aula)
+    equipe = criar_equipe(guerreiro, aula=aula)
+    declarar_escolha_da_equipe(sessao, operador=guerreiro, equipe=equipe, atividade=atividade)
+    sessao.commit()
+
+    remover_atividade(sessao, operador=mestre, atividade=atividade)
+    sessao.commit()
+    sessao.refresh(equipe)
+
+    assert equipe.atividade_corrente_id is None

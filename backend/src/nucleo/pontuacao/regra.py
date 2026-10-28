@@ -58,6 +58,9 @@ NIVEL_4 = 4
 NIVEL_5 = 5
 
 
+# A pontuação parte sempre de um `Resultado` já gravado, e por isso **não**
+# filtra atividade carimbada: é dela que o fato fala, e esconder a atividade
+# aqui apagaria o ponto da vista (`RN-09-47`, `RF-09-47`).
 def _valor_regular(atividade: Atividade, desfecho: DesfechoDoResultado) -> int:
     valor_base = (
         VALOR_BASE_EM_EQUIPE_COM_FAMILIAR

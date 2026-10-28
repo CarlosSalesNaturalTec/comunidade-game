@@ -1507,3 +1507,136 @@ def test_culminancia_de_outro_mestre_nao_sai_na_leitura(
     )
 
     assert all(item["id"] != str(trilha_alheia.id) for item in resposta.json())
+
+
+# `RF-09-127`, `RF-09-128`, `RN-09-48`, `RN-09-49`: as três portas da fatia 25
+# pela rota — cenários dos deltas `atividade-de-trilha`.
+
+
+def _atividade_pela_rota(cliente, chave, token, missao_id):
+    resposta = cliente.post(
+        f"/v1/missoes/{missao_id}/atividades",
+        json={
+            "titulo": "Montagem do robô",
+            "modalidade": "individual",
+            "formato": "presencial",
+            "natureza": "construcao",
+            "producao_esperada": "Construir o próprio robô.",
+        },
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+    assert resposta.status_code == 201
+    return resposta.json()["id"]
+
+
+def test_mestre_autor_corrige_atividade_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    id_da_atividade = _atividade_pela_rota(cliente, chave, token, missao.id)
+
+    resposta = cliente.patch(
+        f"/v1/atividades/{id_da_atividade}",
+        json={"titulo": "Montagem da ponte", "descricao": "Em dupla."},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["titulo"] == "Montagem da ponte"
+    assert corpo["descricao"] == "Em dupla."
+    assert corpo["natureza"] == "construcao"
+
+
+def test_correcao_que_declara_natureza_e_recusada_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    id_da_atividade = _atividade_pela_rota(cliente, chave, token, missao.id)
+
+    resposta = cliente.patch(
+        f"/v1/atividades/{id_da_atividade}",
+        json={"natureza": "competicao ao vivo"},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_correcao_que_declara_aula_e_recusada_pela_rota(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_comunidade,
+    criar_aula,
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    aula = criar_aula(mestre, criar_comunidade())
+    token, _ = criar_sessao_de_teste(mestre)
+    id_da_atividade = _atividade_pela_rota(cliente, chave, token, missao.id)
+
+    resposta = cliente.patch(
+        f"/v1/atividades/{id_da_atividade}",
+        json={"aula_id": str(aula.id)},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_atividade_removida_sai_da_trilha_do_mestre(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    id_da_atividade = _atividade_pela_rota(cliente, chave, token, missao.id)
+
+    remocao = cliente.delete(f"/v1/atividades/{id_da_atividade}", headers=cabecalhos)
+    assert remocao.status_code == 204
+
+    minhas = cliente.get("/v1/trilhas/minhas", headers=cabecalhos)
+    assert minhas.status_code == 200
+    missoes = minhas.json()[0]["missoes"]
+    assert missoes[0]["atividades"] == []
+
+
+def test_fatos_da_atividade_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    id_da_atividade = _atividade_pela_rota(cliente, chave, token, missao.id)
+
+    resposta = cliente.get(f"/v1/atividades/{id_da_atividade}/fatos", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    assert resposta.json() == {
+        "resultados": 0,
+        "producoes": 0,
+        "partidas_de_quiz": 0,
+        "partidas_abertas": 0,
+        "ocorrencias_de_conduta": 0,
+        "equipes_com_ela_corrente": 0,
+    }

@@ -105,9 +105,12 @@ Ver `proposal.md` — *Why*. O que molda o desenho:
 9. **Na App 09, `FormularioDeAtividade` serve criação e correção**, pelo mesmo caminho que a
    fatia 24 abriu em `FormularioDeConteudo`: prop opcional `atividade` preenche os campos e troca
    a chamada; em modo de correção, a natureza é apresentada como texto inerte, não como campo, e
-   o seletor de aula desaparece. Os dois dicionários de rótulo passam a ser exportados do módulo
-   e consumidos por `ListaDeMissoes`. *Descartado:* mover os dicionários para `comum/` — só a App
-   09 nomeia os eixos da atividade hoje; extrair sem segundo consumidor é adiantamento.
+   o seletor de aula desaparece. Os dois dicionários de rótulo passam a ser exportados do módulo.
+   O bloco sai de `ListaDeMissoes` para **`BlocoDeAtividades.tsx`**, como a fatia 24 fez com
+   `BlocoDeConteudo`: com corrigir, remover e a confirmação por atividade, o estado deixa de
+   caber no mapa por missão que `ListaDeMissoes` mantém para os blocos de um ato só.
+   *Descartado:* mover os dicionários para `comum/` — só a App 09 nomeia os eixos da atividade
+   hoje; extrair sem segundo consumidor é adiantamento.
 
 10. **A contagem é buscada no clique de remover**, e a confirmação é apresentada depois que ela
     chega — a tela nunca pede contagem ao abrir (`RN-09-46`). Falha na busca da contagem não

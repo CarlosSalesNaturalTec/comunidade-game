@@ -4,10 +4,14 @@ import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useEffect, useId, useState } from "react";
 import type { AulaDaTurma } from "../turmas/api";
 import { listarMinhasTurmas } from "../turmas/api";
-import { type AtividadeDaMissao, criarAtividade } from "./api";
+import { type AtividadeDaMissao, corrigirAtividade, criarAtividade } from "./api";
 
 interface Props {
   idDaMissao: string;
+  // Presente, o formulário **corrige** aquela atividade em vez de criar outra
+  // (`RF-09-127`): os campos abrem com o que está gravado, a natureza passa a
+  // texto inerte e o seletor de aula sai de cena.
+  atividade?: AtividadeDaMissao;
   onSalvo: (atividade: AtividadeDaMissao) => void;
   onCancelar: () => void;
 }
@@ -17,30 +21,33 @@ interface ErroDeCampo {
   mensagem: string;
 }
 
-const ROTULO_DA_MODALIDADE: Record<string, string> = {
+export const ROTULO_DA_MODALIDADE: Record<string, string> = {
   individual: "Individual",
   em_equipe: "Em equipe",
   em_equipe_com_familiar: "Em equipe com familiar",
 };
 
-const ROTULO_DO_FORMATO: Record<string, string> = {
+export const ROTULO_DO_FORMATO: Record<string, string> = {
   presencial: "Presencial",
   on_line_assincrona: "On-line assíncrona",
 };
 
 // A natureza é lista aberta — texto livre, sem seletor fechado (`RF-09-69`,
 // design — decisões).
-export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props) {
+export function FormularioDeAtividade({ idDaMissao, atividade, onSalvo, onCancelar }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
+  const corrigindo = atividade !== undefined;
   const idDaModalidade = useId();
   const idDoFormato = useId();
   const idDaAula = useId();
-  const [titulo, definirTitulo] = useState("");
-  const [descricao, definirDescricao] = useState("");
-  const [modalidade, definirModalidade] = useState("");
-  const [formato, definirFormato] = useState("");
-  const [natureza, definirNatureza] = useState("");
-  const [producaoEsperada, definirProducaoEsperada] = useState("");
+  const [titulo, definirTitulo] = useState(atividade?.titulo ?? "");
+  const [descricao, definirDescricao] = useState(atividade?.descricao ?? "");
+  const [modalidade, definirModalidade] = useState(atividade?.modalidade ?? "");
+  const [formato, definirFormato] = useState(atividade?.formato ?? "");
+  const [natureza, definirNatureza] = useState(atividade?.natureza ?? "");
+  const [producaoEsperada, definirProducaoEsperada] = useState(
+    atividade?.producao_esperada ?? "",
+  );
   const [aulas, definirAulas] = useState<AulaDaTurma[]>([]);
   const [aulaId, definirAulaId] = useState("");
   const [erroDeCampo, definirErroDeCampo] = useState<ErroDeCampo | null>(null);
@@ -51,7 +58,7 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
   // documento 05 §4 (`RF-09-69`, `RF-09-73`). Falha ao carregar as turmas
   // não impede o cadastro: o campo simplesmente fica sem opção alguma.
   useEffect(() => {
-    if (!sessao) return;
+    if (!sessao || corrigindo) return;
     let cancelado = false;
     listarMinhasTurmas(sessao.token)
       .then((turmas) => {
@@ -61,7 +68,7 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
     return () => {
       cancelado = true;
     };
-  }, [sessao]);
+  }, [sessao, corrigindo]);
 
   function aoAlterarFormato(novoFormato: string) {
     definirFormato(novoFormato);
@@ -85,7 +92,7 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
       definirErroDeCampo({ campo: "formato", mensagem: "Escolha o formato." });
       return;
     }
-    if (!natureza.trim()) {
+    if (!corrigindo && !natureza.trim()) {
       definirErroDeCampo({ campo: "natureza", mensagem: "Informe a natureza da atividade." });
       return;
     }
@@ -100,20 +107,32 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
     if (!sessao) return;
     definirEnviando(true);
     try {
-      const atividade = await criarAtividade(
-        idDaMissao,
-        {
-          titulo,
-          descricao: descricao.trim() ? descricao : undefined,
-          modalidade,
-          formato,
-          natureza,
-          producao_esperada: producaoEsperada,
-          aula_id: formato === "presencial" && aulaId ? aulaId : undefined,
-        },
-        sessao.token,
-      );
-      onSalvo(atividade);
+      const salva = corrigindo
+        ? await corrigirAtividade(
+            atividade.id,
+            {
+              titulo,
+              descricao: descricao.trim() ? descricao : null,
+              modalidade,
+              formato,
+              producao_esperada: producaoEsperada,
+            },
+            sessao.token,
+          )
+        : await criarAtividade(
+            idDaMissao,
+            {
+              titulo,
+              descricao: descricao.trim() ? descricao : undefined,
+              modalidade,
+              formato,
+              natureza,
+              producao_esperada: producaoEsperada,
+              aula_id: formato === "presencial" && aulaId ? aulaId : undefined,
+            },
+            sessao.token,
+          );
+      onSalvo(salva);
     } catch (erro) {
       if (ehRecusaDeSessao(erro)) {
         tratarRecusaDeSessao();
@@ -124,7 +143,9 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
         return;
       }
       definirErroDeRecusa(
-        "Não foi possível acrescentar a atividade. Tente novamente em instantes.",
+        corrigindo
+          ? "Não foi possível gravar a correção. Tente novamente em instantes."
+          : "Não foi possível acrescentar a atividade. Tente novamente em instantes.",
       );
     } finally {
       definirEnviando(false);
@@ -132,7 +153,10 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
   }
 
   return (
-    <form onSubmit={aoSubmeter} aria-label="Nova atividade">
+    <form
+      onSubmit={aoSubmeter}
+      aria-label={corrigindo ? "Corrigir atividade" : "Nova atividade"}
+    >
       <Campo
         rotulo="Título"
         valor={titulo}
@@ -185,7 +209,14 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
         )}
       </div>
 
-      {formato === "presencial" && (
+      {corrigindo && atividade.aula_id && formato !== "presencial" && (
+        <Aviso tipo="atencao">
+          Fora do presencial a atividade deixa de pertencer a um encontro: a aula declarada
+          nela deixa de valer.
+        </Aviso>
+      )}
+
+      {!corrigindo && formato === "presencial" && (
         <div className="cg-campo">
           <label htmlFor={idDaAula}>Aula do encontro (opcional)</label>
           <select
@@ -203,12 +234,19 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
         </div>
       )}
 
-      <Campo
-        rotulo="Natureza"
-        valor={natureza}
-        aoAlterar={definirNatureza}
-        erro={erroDeCampo?.campo === "natureza" ? erroDeCampo.mensagem : null}
-      />
+      {corrigindo ? (
+        <p>
+          <strong>Natureza:</strong> {natureza} — a natureza não se corrige. Para trocá-la,
+          remova esta atividade e cadastre outra.
+        </p>
+      ) : (
+        <Campo
+          rotulo="Natureza"
+          valor={natureza}
+          aoAlterar={definirNatureza}
+          erro={erroDeCampo?.campo === "natureza" ? erroDeCampo.mensagem : null}
+        />
+      )}
       <Campo
         rotulo="Produção esperada"
         valor={producaoEsperada}
@@ -219,7 +257,7 @@ export function FormularioDeAtividade({ idDaMissao, onSalvo, onCancelar }: Props
       {erroDeRecusa && <Aviso tipo="erro">{erroDeRecusa}</Aviso>}
 
       <Botao tipo="submit" desabilitado={enviando}>
-        Acrescentar atividade
+        {corrigindo ? "Gravar correção" : "Acrescentar atividade"}
       </Botao>
       <Botao variante="secundaria" onClick={onCancelar}>
         Cancelar

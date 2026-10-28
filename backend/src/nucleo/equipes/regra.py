@@ -15,6 +15,7 @@ from ..erros import (
 from ..personas.modelo import Papel, Persona
 from ..tempo import agora
 from ..trilhas.modelo import Atividade, Missao, SituacaoDaTrilha, Trilha
+from ..trilhas.regra import atividade_vigente
 from .modelo import Equipe, IntegranteDaEquipe
 
 # `RF-01-38`, documento 02 §5: até cinco integrantes, no máximo um deles
@@ -292,13 +293,12 @@ def programacao_do_encontro(
     if equipe.aula_id is None:
         return []
 
-    return (
+    return atividade_vigente(
         sessao.query(Atividade)
         .join(Missao, Missao.id == Atividade.missao_id)
         .join(Trilha, Trilha.id == Missao.trilha_id)
         .filter(Atividade.aula_id == equipe.aula_id, Trilha.situacao == SituacaoDaTrilha.publicada)
-        .all()
-    )
+    ).all()
 
 
 @dataclass
@@ -336,12 +336,11 @@ def atividades_da_equipe(sessao: Session, *, operador: Persona, equipe: Equipe) 
     trilha = sessao.get(Trilha, equipe.trilha_id)
     if trilha is None or trilha.situacao != SituacaoDaTrilha.publicada:
         return []
-    return (
+    return atividade_vigente(
         sessao.query(Atividade)
         .join(Missao, Missao.id == Atividade.missao_id)
         .filter(Missao.trilha_id == equipe.trilha_id)
-        .all()
-    )
+    ).all()
 
 
 def declarar_escolha_da_equipe(
@@ -351,7 +350,8 @@ def declarar_escolha_da_equipe(
     está trabalhando — substituída a cada declaração, nunca acumulada, e
     servida ao painel do dia como a missão corrente (`RF-02-42`, `RF-04-35`,
     documento 02 §5). Só integrante da equipe declara; a atividade precisa
-    pertencer à programação daquela aula.
+    pertencer à programação daquela aula — a **carimbada** pelo Mestre autor
+    sai dela ao ser removida, e por isso cai na mesma recusa (`RN-09-47`).
     """
     integrante = (
         sessao.query(IntegranteDaEquipe)
@@ -361,7 +361,7 @@ def declarar_escolha_da_equipe(
     if integrante is None:
         raise PermissaoNegada(mensagem="Só integrante da equipe declara a escolha dela.")
 
-    if atividade is None or atividade.aula_id != equipe.aula_id:
+    if atividade is None or atividade.aula_id != equipe.aula_id or atividade.removida_em:
         raise ErroDeValidacao(
             mensagem="A atividade declarada precisa pertencer à programação desta aula.",
             campo="atividade_id",

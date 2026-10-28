@@ -368,9 +368,11 @@ def duplicar_trilha(
                 )
             )
 
-        atividades_da_origem = (
-            sessao.query(Atividade).filter_by(missao_id=missao_de_origem.id).all()
-        )
+        # A duplicação copia a trilha como ela é hoje: atividade carimbada
+        # não é parte dela e não atravessa (`RN-09-47`).
+        atividades_da_origem = atividade_vigente(
+            sessao.query(Atividade).filter_by(missao_id=missao_de_origem.id)
+        ).all()
         for atividade_de_origem in atividades_da_origem:
             sessao.add(
                 Atividade(
@@ -481,6 +483,74 @@ def _normalizar_natureza(natureza: str) -> str:
     return natureza.strip().lower()
 
 
+def _conferir_titulo_da_atividade(titulo: str | None) -> str:
+    """As quatro conferências de campo valem iguais na criação e na correção
+    da atividade de trilha: mensagem e campo são os mesmos nas duas portas
+    (`RF-09-70`, `RF-09-127`). A **natureza** não tem par aqui — ela só se
+    declara na criação (`RN-09-49`)."""
+    if not titulo or not titulo.strip():
+        raise ErroDeValidacao(mensagem="Atividade exige um título.", campo="titulo")
+    return titulo
+
+
+def _conferir_modalidade_da_atividade(modalidade: str | None) -> ModalidadeDeAtividade:
+    if not modalidade:
+        raise ErroDeValidacao(mensagem="Atividade exige modalidade.", campo="modalidade")
+    try:
+        return ModalidadeDeAtividade(modalidade)
+    except ValueError as exc:
+        raise ErroDeValidacao(
+            mensagem="Modalidade fora dos valores previstos.", campo="modalidade"
+        ) from exc
+
+
+def _conferir_formato_da_atividade(formato: str | None) -> FormatoDeAtividade:
+    if not formato:
+        raise ErroDeValidacao(mensagem="Atividade exige formato.", campo="formato")
+    try:
+        return FormatoDeAtividade(formato)
+    except ValueError as exc:
+        raise ErroDeValidacao(
+            mensagem="Formato fora dos valores previstos.", campo="formato"
+        ) from exc
+
+
+def _conferir_producao_esperada_da_atividade(producao_esperada: str | None) -> str:
+    if not producao_esperada or not producao_esperada.strip():
+        raise ErroDeValidacao(
+            mensagem="Atividade exige a declaração do que o Guerreiro(a) produz.",
+            campo="producao_esperada",
+        )
+    return producao_esperada
+
+
+def atividade_vigente(consulta):
+    """Acrescenta a uma consulta de `Atividade` o filtro do carimbo. Porta
+    **única** da exclusão: toda leitura de **autoria** (as missões da trilha
+    do Mestre e a pública) e de **execução** (os semanais do Guerreiro(a), a
+    programação do encontro, as atividades da equipe) passa por aqui, para
+    que não haja duas noções de atividade vigente (`RN-09-47`, design —
+    decisão 3).
+
+    A leitura que parte de um **fato gravado** — `pontuacao`, `evolucao`, a
+    equipe no painel do dia — **não** a chama: é da atividade carimbada que o
+    fato fala, e escondê-la ali apagaria o Resultado da vista.
+    """
+    return consulta.filter(Atividade.removida_em.is_(None))
+
+
+def conferir_atividade_vigente(atividade: Atividade) -> None:
+    """Recusa com 422 o **fato novo** sobre atividade carimbada: lançamento de
+    Resultado, entrega de produção, abertura de partida de quiz e ocorrência
+    de conduta. Porta única da recusa, par de `atividade_vigente`
+    (`RN-09-47`, design — decisão 3)."""
+    if atividade.removida_em is not None:
+        raise ErroDeValidacao(
+            mensagem="A atividade foi removida pelo Mestre autor e não recebe lançamento novo.",
+            campo="atividade_id",
+        )
+
+
 def criar_atividade(
     sessao: Session,
     *,
@@ -512,35 +582,14 @@ def criar_atividade(
     trilha = sessao.get(Trilha, missao.trilha_id)
     conferir_posse_da_trilha(trilha, operador)
 
-    if not titulo or not titulo.strip():
-        raise ErroDeValidacao(mensagem="Atividade exige um título.", campo="titulo")
-
-    if not modalidade:
-        raise ErroDeValidacao(mensagem="Atividade exige modalidade.", campo="modalidade")
-    try:
-        modalidade_valida = ModalidadeDeAtividade(modalidade)
-    except ValueError as exc:
-        raise ErroDeValidacao(
-            mensagem="Modalidade fora dos valores previstos.", campo="modalidade"
-        ) from exc
-
-    if not formato:
-        raise ErroDeValidacao(mensagem="Atividade exige formato.", campo="formato")
-    try:
-        formato_valido = FormatoDeAtividade(formato)
-    except ValueError as exc:
-        raise ErroDeValidacao(
-            mensagem="Formato fora dos valores previstos.", campo="formato"
-        ) from exc
+    titulo_valido = _conferir_titulo_da_atividade(titulo)
+    modalidade_valida = _conferir_modalidade_da_atividade(modalidade)
+    formato_valido = _conferir_formato_da_atividade(formato)
 
     if not natureza or not natureza.strip():
         raise ErroDeValidacao(mensagem="Atividade exige natureza.", campo="natureza")
 
-    if not producao_esperada or not producao_esperada.strip():
-        raise ErroDeValidacao(
-            mensagem="Atividade exige a declaração do que o Guerreiro(a) produz.",
-            campo="producao_esperada",
-        )
+    producao_valida = _conferir_producao_esperada_da_atividade(producao_esperada)
 
     if aula_id is not None:
         if formato_valido != FormatoDeAtividade.presencial:
@@ -553,12 +602,12 @@ def criar_atividade(
 
     atividade = Atividade(
         missao_id=missao.id,
-        titulo=titulo,
+        titulo=titulo_valido,
         descricao=descricao,
         modalidade=modalidade_valida,
         formato=formato_valido,
         natureza=_normalizar_natureza(natureza),
-        producao_esperada=producao_esperada,
+        producao_esperada=producao_valida,
         aula_id=aula_id,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
@@ -566,6 +615,175 @@ def criar_atividade(
     sessao.add(atividade)
     sessao.flush()
     return atividade
+
+
+@dataclass(frozen=True)
+class FatosDaAtividade:
+    """Quantos fatos já apontam para uma atividade de trilha — é o que a tela
+    diz ao Mestre **antes** de ele confirmar a remoção (`RF-09-128`)."""
+
+    resultados: int
+    producoes: int
+    partidas_de_quiz: int
+    partidas_abertas: int
+    ocorrencias_de_conduta: int
+    equipes_com_ela_corrente: int
+
+
+def _conferir_atividade_de_trilha_do_autor(
+    sessao: Session, atividade: Atividade | None, operador: Persona
+) -> Atividade:
+    """A guarda comum das três portas da fatia 25. Três recusas, nesta ordem:
+    atividade inexistente é 404; **avulsa** (a que declara `poder_id`) é 422,
+    porque é cadastro da gestão pela App 03, com matriz de permissão e âncora
+    de ponto próprios (`RF-02-29`); e **carimbada** é 422, porque já saiu.
+
+    A autoria é **estrita** — nem outro Mestre nem Admin: a criação aceita o
+    Admin, a correção não, pelo mesmo motivo que a fatia 24 fixou para o
+    conteúdo (ele audita e despublica a trilha, não a redige).
+    """
+    if atividade is None:
+        raise NaoEncontrado(mensagem="Atividade não encontrada.")
+    if atividade.missao_id is None:
+        raise ErroDeValidacao(
+            mensagem=(
+                "Esta é a atividade avulsa da gestão: ela se corrige e se remove na App 03, "
+                "não aqui."
+            ),
+            campo="atividade_id",
+        )
+    if atividade.removida_em is not None:
+        raise ErroDeValidacao(mensagem="Esta atividade já foi removida.", campo="atividade_id")
+
+    missao = sessao.get(Missao, atividade.missao_id)
+    conferir_autoria_estrita_da_trilha(sessao.get(Trilha, missao.trilha_id), operador)
+    return atividade
+
+
+def corrigir_atividade(
+    sessao: Session, *, operador: Persona, atividade: Atividade | None, campos: dict
+) -> Atividade:
+    """Corrige, na própria linha, **título**, **descrição**, **modalidade**,
+    **formato** e **produção esperada** de uma atividade de trilha já gravada,
+    em qualquer situação da trilha (`RF-09-127`). Campo ausente de `campos`
+    conserva o valor; campo presente passa pelas mesmas conferências da
+    criação.
+
+    Nada do que já foi gravado é tocado: `Resultado`, produção, partida e
+    ocorrência seguem como estavam, e nenhum ponto, badge ou nível é
+    estornado (`RF-09-47`). A **natureza** não chega aqui — ela é porta de
+    elegibilidade, não rótulo, e trocá-la é remover a atividade e cadastrar
+    outra (`RN-09-49`).
+
+    Levar o **formato** para fora do presencial **limpa a aula** declarada:
+    atividade on-line com aula é exatamente o estado que `criar_atividade`
+    recusa, e a correção não o faz nascer pela porta de trás (`RN-09-48`).
+    """
+    alvo = _conferir_atividade_de_trilha_do_autor(sessao, atividade, operador)
+
+    if "titulo" in campos:
+        alvo.titulo = _conferir_titulo_da_atividade(campos["titulo"])
+    if "descricao" in campos:
+        alvo.descricao = campos["descricao"]
+    if "modalidade" in campos:
+        alvo.modalidade = _conferir_modalidade_da_atividade(campos["modalidade"])
+    if "formato" in campos:
+        alvo.formato = _conferir_formato_da_atividade(campos["formato"])
+    if "producao_esperada" in campos:
+        alvo.producao_esperada = _conferir_producao_esperada_da_atividade(
+            campos["producao_esperada"]
+        )
+
+    if alvo.formato != FormatoDeAtividade.presencial:
+        alvo.aula_id = None
+
+    sessao.flush()
+    return alvo
+
+
+def remover_atividade(
+    sessao: Session, *, operador: Persona, atividade: Atividade | None
+) -> Atividade:
+    """Tira a atividade da trilha **carimbando-a**: ela sai de toda leitura de
+    autoria e de execução e permanece guardada, porque cinco tabelas a apontam
+    e `RF-09-47` veda editar ou remover Resultado gravado (`RF-09-128`,
+    `RN-09-47`). O carimbo é incondicional, como em
+    `remover_pergunta_do_desbloqueio` — um caminho só, sem ramo que dependa de
+    contagem.
+
+    Dos cinco ponteiros, quatro são **fato passado** e ficam intactos. O
+    quinto é **estado vivo**: a escolha corrente da equipe é zerada, para o
+    painel do dia não anunciar missão corrente de atividade que não existe
+    mais. Partida de quiz **aberta** impede a remoção — ela se encerra na tela
+    da turma, com consequência de pontuação, e não se apaga por baixo
+    (decisão do fundador, 2026-10-27).
+
+    Missão pode ficar com **nenhuma** atividade: nenhuma das travas de
+    publicação exige atividade (`RF-09-06`, `RF-09-07`, `RF-09-82`).
+    """
+    from ..equipes.modelo import Equipe
+    from ..quiz.modelo import PartidaDeQuiz, SituacaoDaPartida
+
+    alvo = _conferir_atividade_de_trilha_do_autor(sessao, atividade, operador)
+
+    abertas = (
+        sessao.query(PartidaDeQuiz)
+        .filter(
+            PartidaDeQuiz.atividade_id == alvo.id,
+            PartidaDeQuiz.situacao == SituacaoDaPartida.aberta,
+        )
+        .count()
+    )
+    if abertas:
+        raise ErroDeValidacao(
+            mensagem=(
+                "Corre uma partida de quiz aberta sobre esta atividade. Encerre a partida "
+                "antes de removê-la."
+            ),
+            campo="atividade_id",
+        )
+
+    alvo.removida_em = agora()
+    # `synchronize_session="fetch"` e não `False`: a equipe já carregada na
+    # sessão precisa enxergar a escolha zerada, senão a leitura que vier na
+    # mesma transação — o painel do dia, à frente — ainda anuncia a missão
+    # corrente da atividade que acabou de sair.
+    sessao.query(Equipe).filter(Equipe.atividade_corrente_id == alvo.id).update(
+        {Equipe.atividade_corrente_id: None}, synchronize_session="fetch"
+    )
+    sessao.flush()
+    return alvo
+
+
+def fatos_da_atividade(
+    sessao: Session, *, operador: Persona, atividade: Atividade | None
+) -> FatosDaAtividade:
+    """As contagens que a tela apresenta na confirmação da remoção
+    (`RF-09-128`). Leitura **própria**, nunca aninhada em `GET
+    /v1/trilhas/minhas`: cinco `COUNT` por atividade por missão seriam pagos
+    em toda abertura da tela da trilha, por uma remoção que quase nunca
+    acontece — o mesmo motivo de `RN-09-46` (design — decisão 7)."""
+    from ..equipes.modelo import Equipe
+    from ..ocorrencias_de_conduta.modelo import OcorrenciaDeConduta
+    from ..producoes.modelo import ProducaoDaMissao
+    from ..quiz.modelo import PartidaDeQuiz, SituacaoDaPartida
+    from ..resultados.modelo import Resultado
+
+    alvo = _conferir_atividade_de_trilha_do_autor(sessao, atividade, operador)
+
+    def _contar(modelo, *filtros) -> int:
+        return sessao.query(modelo).filter(modelo.atividade_id == alvo.id, *filtros).count()
+
+    return FatosDaAtividade(
+        resultados=_contar(Resultado),
+        producoes=_contar(ProducaoDaMissao),
+        partidas_de_quiz=_contar(PartidaDeQuiz),
+        partidas_abertas=_contar(PartidaDeQuiz, PartidaDeQuiz.situacao == SituacaoDaPartida.aberta),
+        ocorrencias_de_conduta=_contar(OcorrenciaDeConduta),
+        equipes_com_ela_corrente=(
+            sessao.query(Equipe).filter(Equipe.atividade_corrente_id == alvo.id).count()
+        ),
+    )
 
 
 def inscrever_na_trilha(
@@ -1344,7 +1562,10 @@ def desafios_em_aberto_do_guerreiro(sessao: Session, *, guerreiro_id: uuid.UUID)
     `Resultado` lançado para ele — "vigente" como o fundador decidiu
     (`RF-05-19`, proposal — decisão de recorte, design — decisão 1). A
     atividade avulsa fica de fora, por não ter percurso de onde derivar
-    "desbloqueada" (design — decisão 2).
+    "desbloqueada" (design — decisão 2). A **carimbada** também: sem o filtro
+    do carimbo, a atividade removida antes de qualquer lançamento ficaria nos
+    semanais para sempre, porque a subtração aqui é só pelo Resultado
+    (`RN-09-47`).
     """
     from ..resultados.modelo import Resultado
 
@@ -1378,7 +1599,9 @@ def desafios_em_aberto_do_guerreiro(sessao: Session, *, guerreiro_id: uuid.UUID)
         .all()
     }
 
-    atividades = sessao.query(Atividade).filter(Atividade.missao_id.in_(ids_das_missoes)).all()
+    atividades = atividade_vigente(
+        sessao.query(Atividade).filter(Atividade.missao_id.in_(ids_das_missoes))
+    ).all()
     return [atividade for atividade in atividades if atividade.id not in ids_com_resultado]
 
 

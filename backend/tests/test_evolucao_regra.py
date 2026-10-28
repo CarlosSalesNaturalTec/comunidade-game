@@ -8,6 +8,7 @@ from nucleo.personas.modelo import Papel
 from nucleo.resultados.modelo import DesfechoDoResultado
 from nucleo.resultados.regra import registrar_resultado
 from nucleo.trilhas.modelo import SituacaoDaTrilha
+from nucleo.trilhas.regra import remover_atividade
 from tests.conftest import criar_aula_para_resultado
 
 MOMENTO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
@@ -181,3 +182,45 @@ def test_ocorrencia_com_motivo_e_ocorrencia_ja_expurgada(
     assert len(ocorrencias) == 2
     motivos = {ocorrencia.motivo for ocorrencia in ocorrencias}
     assert motivos == {"Desrespeitou um colega.", None}
+
+
+def test_o_fato_gravado_segue_resolvendo_a_atividade_carimbada(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_inscricao_na_trilha,
+):
+    """`RN-09-47`: a leitura que parte de um `Resultado` gravado **não** filtra
+    o carimbo — é da atividade removida que o Resultado fala, e esconder a
+    atividade aqui apagaria o ponto da vista (`RF-09-47`)."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre, titulo="Missão 1")
+    atividade = criar_atividade(missao, mestre, titulo="Atividade 1")
+    aula = criar_aula_para_resultado(sessao, mestre)
+    criar_inscricao_na_trilha(guerreiro, trilha)
+    registrar_resultado(
+        sessao,
+        operador=mestre,
+        aula=aula,
+        guerreiro_id=guerreiro.id,
+        atividade=atividade,
+        momento_do_fato=MOMENTO,
+        producao="Produção do Guerreiro(a).",
+        desfecho=DesfechoDoResultado.realizada,
+    )
+    sessao.commit()
+    pontos_antes = montar_evolucao(sessao, guerreiro_id=guerreiro.id).pontos_por_poder
+
+    remover_atividade(sessao, operador=mestre, atividade=atividade)
+    sessao.commit()
+
+    evolucao = montar_evolucao(sessao, guerreiro_id=guerreiro.id)
+
+    assert len(evolucao.atividades) == 1
+    assert evolucao.atividades[0].atividade_id == atividade.id
+    assert evolucao.atividades[0].atividade_titulo == "Atividade 1"
+    assert evolucao.pontos_por_poder == pontos_antes

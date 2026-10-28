@@ -9,7 +9,7 @@ from ..erros import ErroDeAplicacao, ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from ..tempo import agora
 from ..trilhas.modelo import Atividade, Missao
-from ..trilhas.regra import derivar_percurso
+from ..trilhas.regra import conferir_atividade_vigente, derivar_percurso
 from .modelo import FormaDeEntregaDaProducao, ProducaoDaMissao
 from .porta import PortaDaProducaoDaMissao
 
@@ -182,6 +182,7 @@ def registrar_producao_individual(
         raise ErroDeValidacao(
             mensagem="A atividade declarada não pertence a esta missão.", campo="atividade_id"
         )
+    conferir_atividade_vigente(atividade)
 
     percurso = derivar_percurso(sessao, guerreiro_id=operador.id, trilha_id=missao.trilha_id)
     item_da_missao = next((item for item in percurso if item.missao.id == missao.id), None)

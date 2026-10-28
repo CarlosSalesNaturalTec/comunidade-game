@@ -14,7 +14,7 @@ from ..personas.modelo import Papel, Persona
 from ..pontuacao.regra import creditar_pontuacao_da_partida_de_quiz
 from ..tempo import agora
 from ..trilhas.modelo import Atividade, Missao, Trilha
-from ..trilhas.regra import conferir_posse_da_trilha
+from ..trilhas.regra import conferir_atividade_vigente, conferir_posse_da_trilha
 from .modelo import (
     PRIMEIRA_ALTERNATIVA,
     TOTAL_DE_ALTERNATIVAS,
@@ -269,6 +269,7 @@ def abrir_partida(
             campo="atividade_id",
         )
 
+    conferir_atividade_vigente(atividade)
     conferir_posse_da_trilha(_trilha_da_atividade(sessao, atividade), operador)
 
     if atividade.natureza != NATUREZA_DE_COMPETICAO_AO_VIVO:

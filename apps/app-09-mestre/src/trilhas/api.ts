@@ -243,6 +243,63 @@ export function criarAtividade(
   });
 }
 
+// A natureza e a aula **não** são campos da correção: a natureza é porta de
+// elegibilidade (Quiz ao Vivo, badge de valores e causas) e trocá-la é remover
+// a atividade e cadastrar outra (`RN-09-49`); a aula se declara na criação, e
+// sair do presencial a limpa no núcleo (`RN-09-48`). Campo omitido conserva o
+// valor gravado.
+export interface CorrigirAtividadeEntrada {
+  titulo?: string;
+  descricao?: string | null;
+  modalidade?: string;
+  formato?: string;
+  producao_esperada?: string;
+}
+
+export function corrigirAtividade(
+  idDaAtividade: string,
+  entrada: CorrigirAtividadeEntrada,
+  token: string,
+): Promise<AtividadeDaMissao> {
+  return chamarNucleo<AtividadeDaMissao>(`/v1/atividades/${idDaAtividade}`, {
+    metodo: "PATCH",
+    corpo: entrada,
+    token,
+  });
+}
+
+// Carimba a atividade: ela sai da leitura e o fato já gravado — Resultado,
+// produção, partida, ocorrência — permanece apontando para ela (`RN-09-47`).
+// Recusado com 422 enquanto houver partida de quiz aberta.
+export function removerAtividade(idDaAtividade: string, token: string): Promise<void> {
+  return chamarNucleo<void>(`/v1/atividades/${idDaAtividade}`, {
+    metodo: "DELETE",
+    token,
+  });
+}
+
+export interface FatosDaAtividade {
+  resultados: number;
+  producoes: number;
+  partidas_de_quiz: number;
+  partidas_abertas: number;
+  ocorrencias_de_conduta: number;
+  equipes_com_ela_corrente: number;
+}
+
+// Buscado **no clique de remover**, nunca ao abrir a tela da trilha: contar
+// cinco tabelas por atividade em toda abertura seria pagar pela remoção que
+// quase nunca acontece (`RN-09-46`, `RF-09-128`).
+export function fatosDaAtividade(
+  idDaAtividade: string,
+  token: string,
+): Promise<FatosDaAtividade> {
+  return chamarNucleo<FatosDaAtividade>(`/v1/atividades/${idDaAtividade}/fatos`, {
+    metodo: "GET",
+    token,
+  });
+}
+
 // `cadenciaDeRetomada` nulo deixa a missão sem retomada — o caminho que
 // `RF-09-83` exige preservar (design — decisão 4).
 export function declararCadenciaDeRetomada(

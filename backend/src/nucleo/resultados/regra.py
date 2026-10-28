@@ -12,7 +12,7 @@ from ..ponto_extra.regra import creditar_ponto_extra_do_resultado
 from ..pontuacao.regra import creditar_pontuacao_do_resultado
 from ..reservas.regra import consumir_reservas_da_aula
 from ..trilhas.modelo import Atividade, Missao, ModalidadeDeAtividade, Trilha
-from ..trilhas.regra import conferir_posse_da_trilha
+from ..trilhas.regra import conferir_atividade_vigente, conferir_posse_da_trilha
 from .modelo import DesfechoDoResultado, Resultado
 
 _SITUACOES_COM_DESFECHO = (SituacaoDaAula.realizada, SituacaoDaAula.cancelada)
@@ -303,6 +303,7 @@ def lancar_resultados_da_atividade(
     """
     if atividade is None:
         raise ErroDeValidacao(mensagem="Lançamento exige uma atividade.", campo="atividade_id")
+    conferir_atividade_vigente(atividade)
 
     if atividade.missao_id is None:
         if operador.papel != Papel.admin:

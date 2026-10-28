@@ -130,8 +130,11 @@ Nenhuma.
 - `apps/app-09-mestre/src/trilhas/api.ts` — as três chamadas novas.
 - `apps/app-09-mestre/src/trilhas/FormularioDeAtividade.tsx` — passa a servir criação **e**
   correção, com os dois dicionários de rótulo exportados para a lista usar.
-- `apps/app-09-mestre/src/trilhas/ListaDeMissoes.tsx` — o bloco Atividades com rótulo em
-  português, editar e remover, com a contagem dos fatos na confirmação.
+- `apps/app-09-mestre/src/trilhas/BlocoDeAtividades.tsx` — o bloco Atividades, extraído de
+  `ListaDeMissoes` no molde de `BlocoDeConteudo`: rótulo em português, corrigir, remover e a
+  contagem dos fatos na confirmação.
+- `apps/app-09-mestre/src/trilhas/ListaDeMissoes.tsx` — passa a montar o bloco novo, e perde o
+  estado do formulário de atividade, que desce para ele.
 - Documentação, no mesmo PR: documento 03 §11 (marcador novo), documento 09 §1 (a linha da
   decisão), PRD-09 §6.1 (os dois `RF`), §7 (as três `RN`) e §9 (as três rotas), e a situação
   da fatia 25 no `openspec/cronograma-de-fatias.md`.

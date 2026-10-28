@@ -15,6 +15,7 @@ from nucleo.pontuacao.modelo import PontoRegular
 from nucleo.pontuacao.regra import apurar_partida_de_quiz
 from nucleo.quiz.modelo import (
     EquipeNaPartida,
+    PartidaDeQuiz,
     PerguntaAnuladaNaPartida,
     PerguntaDeQuiz,
     PerguntaNaPartida,
@@ -35,6 +36,7 @@ from nucleo.quiz.regra import (
     por_pergunta_no_ar,
     registrar_resposta,
 )
+from nucleo.trilhas.regra import remover_atividade
 
 ALTERNATIVAS = ["Salvador", "Recife", "Cachoeira", "Ilhéus"]
 CORRETA = 3
@@ -1388,3 +1390,23 @@ def test_mestre_recebe_403_ao_descobrir_partidas_da_aula(sessao, cenario):
 
     with pytest.raises(PermissaoNegada):
         partidas_da_aula(sessao, operador=cen.mestre, aula=cen.aula)
+
+
+def test_partida_sobre_atividade_carimbada_e_recusada(sessao, cenario):
+    """`RN-09-47`: removida a atividade, nenhum fato novo a aponta — e a
+    partida nova é fato novo."""
+    cen = cenario()
+    remover_atividade(sessao, operador=cen.mestre, atividade=cen.atividade)
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        abrir_partida(
+            sessao,
+            operador=cen.mestre,
+            aula=cen.aula,
+            atividade=cen.atividade,
+            equipes=cen.equipes,
+        )
+    assert excinfo.value.campo == "atividade_id"
+    sessao.rollback()
+    assert sessao.query(PartidaDeQuiz).count() == 0

@@ -69,6 +69,8 @@ def _atividades_do_guerreiro(
     sessao: Session, guerreiro_id: uuid.UUID
 ) -> list[ItemDeAtividadeRealizada]:
     linhas = (
+        # Parte do `Resultado` gravado: atividade carimbada **continua**
+        # resolvendo aqui, porque é dela que o Resultado fala (`RN-09-47`).
         sessao.query(Resultado, Atividade)
         .join(Atividade, Atividade.id == Resultado.atividade_id)
         .filter(Resultado.guerreiro_id == guerreiro_id)
