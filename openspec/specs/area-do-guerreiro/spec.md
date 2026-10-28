@@ -1030,6 +1030,11 @@ Os **semanais** SHALL ser as **atividades em aberto** dele: as das missões que 
 lançou Resultado** para ele. Cada atividade SHALL trazer **modalidade** e **formato**, além do
 título, da descrição, da produção esperada e da missão e trilha a que pertence.
 
+Atividade **carimbada** pelo Mestre autor NEVER SHALL entrar nos semanais: ela foi removida da
+missão e não há mais o que o Guerreiro(a) entregue por ela. Sem essa exclusão a subtração pelo
+Resultado lançado nunca a alcançaria — atividade removida antes de qualquer lançamento ficaria
+na lista para sempre (`RN-09-47`).
+
 Os **extras** SHALL ser os desafios extras publicados, vigentes e elegíveis a ele, na forma da
 capacidade `desafio-extra`.
 
@@ -1038,7 +1043,7 @@ por identificador vindo do cliente, e NEVER SHALL devolver atividade de trilha e
 está inscrito, de missão que ele ainda não desbloqueou nem atividade cujo Resultado já foi
 lançado para ele. Guerreiro(a) sem nada em aberto SHALL receber **200** com os **dois conjuntos
 vazios**, nunca erro. Persona que não é Guerreiro(a) SHALL receber **403**. (`RF-05-19`,
-`RF-05-20`, `RN-05-21`, `RN-05-06`)
+`RF-05-20`, `RN-05-21`, `RN-05-06`, `RN-09-47`)
 
 #### Scenario: As atividades das missões desbloqueadas são devolvidas
 
@@ -1078,6 +1083,12 @@ vazios**, nunca erro. Persona que não é Guerreiro(a) SHALL receber **403**. (`
 
 - **WHEN** um Mestre, Admin, Apoiador ou responsável em sessão consulta a rota
 - **THEN** o núcleo responde 403 e nada é devolvido
+
+#### Scenario: Atividade removida pelo Mestre sai dos semanais
+
+- **WHEN** o Mestre autor remove uma atividade de missão que o Guerreiro(a) já desbloqueou, sem
+  que houvesse Resultado lançado
+- **THEN** ela deixa de aparecer entre os semanais dele
 
 ### Requirement: A App 05 mostra os desafios extras vigentes, apartados dos semanais
 

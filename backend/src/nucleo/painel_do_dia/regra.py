@@ -23,6 +23,7 @@ from ..recursos.modelo import TipoDeRecurso
 from ..reservas.modelo import Reserva
 from ..tempo import agora
 from ..trilhas.modelo import Atividade, Missao, SituacaoDaTrilha, Trilha
+from ..trilhas.regra import atividade_vigente
 from ..vitrine.publico import AvatarENickSaida, buscar_avatares_e_nicks
 
 _SITUACOES_COM_DESFECHO = (SituacaoDaAula.realizada, SituacaoDaAula.cancelada)
@@ -177,6 +178,9 @@ def _equipes(sessao: Session, aula_id: uuid.UUID) -> list[EquipeDoPainelSaida]:
 
         missao_id = None
         missao_titulo = None
+        # Sem filtro de carimbo: a remoção da atividade já **zera** o
+        # `atividade_corrente_id` da equipe, então aqui só chega o que vale
+        # (`RN-09-47`, `remover_atividade`).
         if equipe.atividade_corrente_id is not None:
             atividade = sessao.get(Atividade, equipe.atividade_corrente_id)
             if atividade is not None:
@@ -207,13 +211,12 @@ def _equipes(sessao: Session, aula_id: uuid.UUID) -> list[EquipeDoPainelSaida]:
 def _atividades_previstas(sessao: Session, aula_id: uuid.UUID) -> list[AtividadePrevistaSaida]:
     """A programação declarada na aula, de trilha publicada — a mesma que a
     equipe lê em `equipes.regra.programacao_do_encontro` (`RF-02-44`)."""
-    atividades = (
+    atividades = atividade_vigente(
         sessao.query(Atividade)
         .join(Missao, Missao.id == Atividade.missao_id)
         .join(Trilha, Trilha.id == Missao.trilha_id)
         .filter(Atividade.aula_id == aula_id, Trilha.situacao == SituacaoDaTrilha.publicada)
-        .all()
-    )
+    ).all()
     resultado = []
     for atividade in atividades:
         missao = sessao.get(Missao, atividade.missao_id)

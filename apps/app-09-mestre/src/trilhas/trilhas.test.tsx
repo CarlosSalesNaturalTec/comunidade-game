@@ -3820,3 +3820,178 @@ describe("corrigir, remover, exibir e ordenar o conteúdo (RF-09-123 a RF-09-126
     await waitFor(() => expect(corrigir).toHaveBeenCalled());
   });
 });
+
+describe("correção e remoção da atividade (RF-09-127, RF-09-128)", () => {
+  function semFato(): trilhasApi.FatosDaAtividade {
+    return {
+      resultados: 0,
+      producoes: 0,
+      partidas_de_quiz: 0,
+      partidas_abertas: 0,
+      ocorrencias_de_conduta: 0,
+      equipes_com_ela_corrente: 0,
+    };
+  }
+
+  async function abrirBlocoDeAtividades(atividades: AtividadeDaMissao[]) {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao({ atividades })] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
+      minhasTurmas({ itens: [aula()] }),
+    );
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Atividades"));
+    return usuario;
+  }
+
+  it("a linha da atividade nomeia modalidade e formato em português", async () => {
+    await abrirBlocoDeAtividades([
+      atividade({ modalidade: "em_equipe_com_familiar", formato: "on_line_assincrona" }),
+    ]);
+
+    expect(
+      await screen.findByText(/em equipe com familiar \/ on-line assíncrona/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/em_equipe_com_familiar/)).not.toBeInTheDocument();
+  });
+
+  it("o formulário de correção abre preenchido e não oferece a natureza", async () => {
+    const usuario = await abrirBlocoDeAtividades([atividade()]);
+
+    await usuario.click(await screen.findByRole("button", { name: /^corrigir$/i }));
+
+    expect(screen.getByLabelText(/^título$/i)).toHaveValue("Montagem do robô");
+    expect(screen.getByLabelText(/modalidade/i)).toHaveValue("individual");
+    expect(screen.getByLabelText(/formato/i)).toHaveValue("presencial");
+    expect(screen.getByLabelText(/produção esperada/i)).toHaveValue(
+      "Construir o próprio robô.",
+    );
+    expect(screen.queryByLabelText(/^natureza$/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/a natureza não se corrige/i)).toBeInTheDocument();
+  });
+
+  it("o Mestre corrige o título da atividade", async () => {
+    const corrigirEspiado = vi
+      .spyOn(trilhasApi, "corrigirAtividade")
+      .mockResolvedValue(atividade({ titulo: "Montagem da ponte" }));
+    const usuario = await abrirBlocoDeAtividades([atividade()]);
+
+    await usuario.click(await screen.findByRole("button", { name: /^corrigir$/i }));
+    await usuario.clear(screen.getByLabelText(/^título$/i));
+    await usuario.type(screen.getByLabelText(/^título$/i), "Montagem da ponte");
+    await usuario.click(screen.getByRole("button", { name: /gravar correção/i }));
+
+    await waitFor(() => expect(corrigirEspiado).toHaveBeenCalled());
+    const entrada = corrigirEspiado.mock.calls[0][1];
+    expect(entrada.titulo).toBe("Montagem da ponte");
+    expect(entrada).not.toHaveProperty("natureza");
+    expect(entrada).not.toHaveProperty("aula_id");
+    expect(await screen.findByText(/montagem da ponte/i)).toBeInTheDocument();
+  });
+
+  it("levar o formato para fora do presencial avisa sobre a aula", async () => {
+    const usuario = await abrirBlocoDeAtividades([atividade({ aula_id: "aula-1" })]);
+
+    await usuario.click(await screen.findByRole("button", { name: /^corrigir$/i }));
+    await usuario.selectOptions(screen.getByLabelText(/formato/i), "on_line_assincrona");
+
+    expect(
+      await screen.findByText(/a aula declarada nela deixa de valer/i),
+    ).toBeInTheDocument();
+  });
+
+  it("a recusa do núcleo aponta o campo na correção", async () => {
+    vi.spyOn(trilhasApi, "corrigirAtividade").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "Atividade exige um título.",
+        campo: "titulo",
+      }),
+    );
+    const usuario = await abrirBlocoDeAtividades([atividade()]);
+
+    await usuario.click(await screen.findByRole("button", { name: /^corrigir$/i }));
+    await usuario.click(screen.getByRole("button", { name: /gravar correção/i }));
+
+    expect(await screen.findByText(/atividade exige um título/i)).toBeInTheDocument();
+  });
+
+  it("a confirmação diz quantos fatos apontam antes de remover", async () => {
+    vi.spyOn(trilhasApi, "fatosDaAtividade").mockResolvedValue({
+      ...semFato(),
+      resultados: 2,
+    });
+    const removerEspiado = vi.spyOn(trilhasApi, "removerAtividade").mockResolvedValue();
+    const usuario = await abrirBlocoDeAtividades([atividade()]);
+
+    await usuario.click(await screen.findByRole("button", { name: /^remover$/i }));
+
+    expect(
+      await screen.findByText(/2 resultados lançados seguem apontando/i),
+    ).toBeInTheDocument();
+    expect(removerEspiado).not.toHaveBeenCalled();
+
+    await usuario.click(screen.getByRole("button", { name: /confirmar remoção/i }));
+    await waitFor(() =>
+      expect(removerEspiado).toHaveBeenCalledWith("atividade-1", "token-do-mestre"),
+    );
+  });
+
+  it("atividade sem fato algum é removida direto da confirmação", async () => {
+    vi.spyOn(trilhasApi, "fatosDaAtividade").mockResolvedValue(semFato());
+    vi.spyOn(trilhasApi, "removerAtividade").mockResolvedValue();
+    const usuario = await abrirBlocoDeAtividades([atividade()]);
+
+    await usuario.click(await screen.findByRole("button", { name: /^remover$/i }));
+    expect(
+      await screen.findByText(/nenhum fato aponta para esta atividade/i),
+    ).toBeInTheDocument();
+    await usuario.click(screen.getByRole("button", { name: /confirmar remoção/i }));
+
+    await waitFor(() =>
+      expect(screen.queryByText(/montagem do robô/i)).not.toBeInTheDocument(),
+    );
+  });
+
+  it("a contagem não é buscada ao abrir a tela da trilha", async () => {
+    const fatosEspiado = vi.spyOn(trilhasApi, "fatosDaAtividade").mockResolvedValue(semFato());
+    await abrirBlocoDeAtividades([atividade()]);
+
+    expect(await screen.findByRole("button", { name: /^remover$/i })).toBeInTheDocument();
+    expect(fatosEspiado).not.toHaveBeenCalled();
+  });
+
+  it("partida aberta é recusada em linguagem simples", async () => {
+    vi.spyOn(trilhasApi, "fatosDaAtividade").mockResolvedValue({
+      ...semFato(),
+      partidas_de_quiz: 1,
+      partidas_abertas: 1,
+    });
+    vi.spyOn(trilhasApi, "removerAtividade").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem:
+          "Corre uma partida de quiz aberta sobre esta atividade. Encerre a partida antes de removê-la.",
+        campo: "atividade_id",
+      }),
+    );
+    const usuario = await abrirBlocoDeAtividades([atividade()]);
+
+    await usuario.click(await screen.findByRole("button", { name: /^remover$/i }));
+    await usuario.click(await screen.findByRole("button", { name: /confirmar remoção/i }));
+
+    expect(
+      await screen.findByText(/encerre a partida antes de removê-la/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/montagem do robô/i)).toBeInTheDocument();
+  });
+});

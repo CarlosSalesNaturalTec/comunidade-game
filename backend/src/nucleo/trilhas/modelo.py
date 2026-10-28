@@ -323,6 +323,14 @@ class Atividade(Base, ComAutoria):
     presencial acontece — a programação do encontro que a equipe lê nasce
     daqui (`RF-09-69`, `RF-09-73`, documento 05 §4). Atividade on-line ou
     assíncrona nunca o declara; a recusa é de `trilhas.regra.criar_atividade`.
+
+    Remover uma atividade a **carimba**, nunca a apaga: cinco tabelas a
+    apontam — `resultado`, `producao_da_missao`, `partida_de_quiz`,
+    `ocorrencia_de_conduta` e `equipe.atividade_corrente_id` — e `RF-09-47`
+    veda editar ou remover Resultado gravado. A carimbada recebe
+    `removida_em`, sai de toda leitura de autoria e de execução e permanece
+    guardada para o fato que a nomeia, no mesmo padrão que
+    `PerguntaDoDesbloqueio.substituida_em` já firmou (`RN-09-47`).
     """
 
     __tablename__ = "atividade"
@@ -343,6 +351,7 @@ class Atividade(Base, ComAutoria):
     natureza: Mapped[str] = mapped_column(String(64), nullable=False)
     producao_esperada: Mapped[str] = mapped_column(Text, nullable=False)
     aula_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=True)
+    removida_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     __table_args__ = (
         Index("ix_atividade_aula_id", "aula_id"),

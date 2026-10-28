@@ -5,10 +5,11 @@ a `RF-05-78`, `RN-05-05`, `RN-05-21`, `RN-05-35` a `RN-05-37`, do PRD-05 §9."""
 import io
 
 from nucleo.livro_razao.modelo import Lancamento
-from nucleo.personas.modelo import Papel
+from nucleo.personas.modelo import Papel, Persona
 from nucleo.producoes.modelo import ProducaoDaMissao
 from nucleo.resultados.modelo import Resultado
 from nucleo.trilhas.modelo import SituacaoDaTrilha
+from nucleo.trilhas.regra import remover_atividade
 
 
 def _cabecalhos(chave, token):
@@ -1148,3 +1149,45 @@ def test_missao_sem_producao_individual_segue_desbloqueada(
     percurso = derivar_percurso(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id)
     item = next(item for item in percurso if item.missao.id == missao.id)
     assert item.desbloqueada is True
+
+
+def test_entrega_sobre_atividade_carimbada_e_recusada(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_inscricao_na_trilha,
+    criar_desbloqueio_da_missao,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """`RN-09-47`: removida a atividade, nenhum fato novo a aponta — nem a
+    produção que o Guerreiro(a) tenta entregar por ela."""
+    chave, _ = criar_chave()
+    guerreiro, _trilha, missao, atividade = _montar_guerreiro_com_missao_desbloqueada(
+        criar_persona=criar_persona,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_inscricao_na_trilha=criar_inscricao_na_trilha,
+        criar_desbloqueio_da_missao=criar_desbloqueio_da_missao,
+    )
+    mestre = sessao.get(Persona, atividade.autor_id)
+    remover_atividade(sessao, operador=mestre, atividade=atividade)
+    sessao.commit()
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/producao",
+        data={
+            "forma": "texto",
+            "texto": "Minha produção em texto.",
+            "atividade_id": str(atividade.id),
+        },
+        headers=_cabecalhos(chave, token),
+    )
+
+    assert resposta.status_code == 422
+    assert sessao.query(ProducaoDaMissao).count() == 0

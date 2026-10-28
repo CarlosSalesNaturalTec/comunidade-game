@@ -10,7 +10,7 @@ from ..personas.modelo import Persona
 from ..pontuacao.modelo import PontoRegular
 from ..pontuacao.regra import debitar_ponto_regular
 from ..trilhas.modelo import Atividade, FormatoDeAtividade, Missao, Trilha
-from ..trilhas.regra import conferir_posse_da_trilha
+from ..trilhas.regra import conferir_atividade_vigente, conferir_posse_da_trilha
 from .modelo import OcorrenciaDeConduta
 
 # Documento 11 §5, única fonte do valor: 5 pontos por ocorrência, com teto de
@@ -40,6 +40,7 @@ def lancar_ocorrencia_de_conduta(
             mensagem="Ocorrência de conduta exige uma atividade.", campo="atividade_id"
         )
 
+    conferir_atividade_vigente(atividade)
     missao = sessao.get(Missao, atividade.missao_id)
     trilha = sessao.get(Trilha, missao.trilha_id)
     conferir_posse_da_trilha(trilha, operador)

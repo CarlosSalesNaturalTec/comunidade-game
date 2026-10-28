@@ -1020,6 +1020,16 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   publicada inclusive. **Tipo e arquivo não se trocam:** trocar um deles é remover o
   conteúdo e cadastrar outro, e a remoção leva consigo o arquivo enviado. No cadastro o
   Mestre **exibe** cada conteúdo; o que tem arquivo só busca os bytes quando ele pede.
+- **A atividade da missão se corrige e se remove.** O Mestre autor corrige título, descrição,
+  modalidade, formato e produção esperada do que já criou, em qualquer situação da trilha. A
+  **natureza não se troca**: ela é porta de elegibilidade — o Quiz ao Vivo só corre sobre
+  atividade de competição ao vivo, e o badge de valores e causas sai dela —, então trocá-la é
+  remover a atividade e cadastrar outra. Levar o **formato** para fora do presencial **limpa a
+  aula** declarada. Remover **carimba**, nunca apaga: a atividade sai da leitura e permanece
+  guardada, porque Resultado, produção, partida de quiz e ocorrência de conduta apontam para
+  ela, e lançamento gravado não se edita nem se remove. A tela diz **quantos fatos seguem
+  apontando** antes de confirmar. O estado vivo é tratado: a remoção **zera a escolha corrente**
+  das equipes, e é recusada enquanto houver **partida de quiz aberta** sobre a atividade.
 - **Imagem da pergunta do desafio de desbloqueio:** opcional, uma por pergunta, **até 1 MB
   cada**, nos mesmos formatos de imagem da lista fechada abaixo. O teto é menor que os do
   conteúdo porque o quiz é lido no aparelho do Guerreiro(a), muitas vezes em rede fraca.

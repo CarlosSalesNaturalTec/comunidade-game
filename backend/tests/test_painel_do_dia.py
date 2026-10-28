@@ -13,6 +13,7 @@ from nucleo.equipes.regra import declarar_escolha_da_equipe, entrar_na_equipe, r
 from nucleo.painel_do_dia.regra import montar_painel_do_dia
 from nucleo.personas.modelo import Papel
 from nucleo.trilhas.modelo import SituacaoDaTrilha
+from nucleo.trilhas.regra import remover_atividade
 
 
 def _cabecalhos(chave, token):
@@ -393,3 +394,35 @@ def test_rota_do_painel_esta_no_openapi_sob_v1(cliente):
 
     assert "/v1/painel-do-dia" in schema["paths"]
     assert "get" in schema["paths"]["/v1/painel-do-dia"]
+
+
+def test_atividade_removida_sai_do_previsto_e_a_equipe_fica_sem_missao(
+    sessao,
+    criar_persona,
+    cenario,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_equipe,
+):
+    """`RN-09-47`: removida a atividade, ela sai da programação do encontro, e
+    a equipe que a declarava corrente volta a aparecer sem missão — o painel
+    não anuncia missão corrente de atividade que não existe mais."""
+    admin, comunidade, _ponto_de_apoio, aula = cenario
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre, aula=aula)
+    equipe = criar_equipe(guerreiro, aula=aula)
+    declarar_escolha_da_equipe(sessao, operador=guerreiro, equipe=equipe, atividade=atividade)
+    sessao.commit()
+
+    remover_atividade(sessao, operador=mestre, atividade=atividade)
+    sessao.commit()
+
+    painel = montar_painel_do_dia(sessao, operador=admin)
+
+    assert painel.atividades_previstas == []
+    assert painel.equipes[0].missao_id is None
+    assert painel.equipes[0].missao_titulo is None

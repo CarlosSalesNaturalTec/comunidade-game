@@ -14,6 +14,7 @@ from nucleo.ocorrencias_de_conduta.regra import (
 from nucleo.personas.modelo import Papel
 from nucleo.pontuacao.modelo import Badge, Nivel, PontoRegular, TipoDeBadge
 from nucleo.trilhas.modelo import FormatoDeAtividade
+from nucleo.trilhas.regra import remover_atividade
 
 MOMENTO_DO_FATO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
 
@@ -583,3 +584,24 @@ def test_update_de_outra_coluna_e_recusado_mesmo_anulando_o_motivo_junto(
     assert intacta.motivo == "Desrespeitou um colega."
     assert intacta.valor == VALOR_DA_OCORRENCIA_DE_CONDUTA
     assert intacta.encerrada_em is None
+
+
+def test_ocorrencia_sobre_atividade_carimbada_e_recusada(
+    sessao, criar_persona, criar_comunidade, criar_aula, criar_trilha, criar_missao, criar_atividade
+):
+    """`RN-09-47`: removida a atividade, nenhum fato novo a aponta."""
+    mestre = criar_persona(Papel.mestre)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre)
+    aula = criar_aula(mestre, comunidade)
+    remover_atividade(sessao, operador=mestre, atividade=atividade)
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        _lancar(sessao, operador=mestre, aula=aula, atividade=atividade, guerreiro=guerreiro)
+    assert excinfo.value.campo == "atividade_id"
+    sessao.rollback()
+    assert sessao.query(OcorrenciaDeConduta).count() == 0

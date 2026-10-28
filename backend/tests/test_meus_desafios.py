@@ -9,6 +9,7 @@ from nucleo.personas.modelo import Papel
 from nucleo.resultados.modelo import DesfechoDoResultado
 from nucleo.resultados.regra import registrar_resultado
 from nucleo.trilhas.modelo import SituacaoDaTrilha
+from nucleo.trilhas.regra import remover_atividade
 from tests.conftest import criar_aula_para_resultado
 
 MOMENTO_DO_FATO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
@@ -288,3 +289,37 @@ def test_saida_do_extra_traz_o_que_o_rf_05_21_pede_e_nada_do_tramite_da_proposta
         "lastro_faltante",
     }
     assert campos_nunca_expostos.isdisjoint(item.keys())
+
+
+def test_atividade_removida_pelo_mestre_sai_dos_semanais(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_inscricao_na_trilha,
+    criar_desbloqueio_da_missao,
+    criar_sessao_de_teste,
+):
+    """`RN-09-47`: sem o filtro do carimbo, a atividade removida antes de
+    qualquer lançamento ficaria nos semanais para sempre — a subtração ali é
+    só pelo Resultado."""
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre)
+    criar_inscricao_na_trilha(guerreiro, trilha)
+    criar_desbloqueio_da_missao(guerreiro, missao, aprovado=True)
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    remover_atividade(sessao, operador=mestre, atividade=atividade)
+    sessao.commit()
+
+    resposta = cliente.get("/v1/eu/desafios", headers=_cabecalhos(chave, token))
+
+    assert resposta.status_code == 200
+    assert resposta.json()["semanais"] == []

@@ -380,11 +380,13 @@ assíncrono, com vários Mestres e várias trilhas ao mesmo tempo, e é a **equi
 em qual trabalhar.
 
 A leitura SHALL trazer apenas atividade cuja trilha esteja **publicada**; atividade de trilha
-em rascunho ou despublicada NEVER SHALL aparecer. Aula sem atividade presencial declarada SHALL
+em rascunho ou despublicada NEVER SHALL aparecer. Atividade **carimbada** pelo Mestre autor
+NEVER SHALL aparecer: removida da missão, ela sai da programação do encontro como sai de toda
+leitura de execução (`RN-09-47`). Aula sem atividade presencial declarada SHALL
 devolver **lista vazia**, não erro — é o encontro cuja programação ainda não foi declarada.
 
 Quem lê SHALL ser **integrante daquela equipe**; Guerreiro(a) em sessão que não a integra SHALL
-receber **403**. (`RF-04-35`, `RF-04-61`, `RF-01-16`, documento 05 §4, documento 02 §5,
+receber **403**. (`RF-04-35`, `RF-04-61`, `RF-01-16`, `RN-09-47`, documento 05 §4, documento 02 §5,
 PRD-04 §9)
 
 #### Scenario: A equipe recebe a programação do seu encontro
@@ -425,6 +427,11 @@ PRD-04 §9)
 - **THEN** o núcleo não grava escolha nem progresso por causa da leitura: quem grava a escolha
   é a declaração da equipe, e sem ela a corrente segue em branco
 
+#### Scenario: Atividade removida pelo Mestre não aparece
+
+- **WHEN** o Mestre autor remove uma atividade que havia declarado aquela aula
+- **THEN** ela deixa de entrar na programação do encontro
+
 ### Requirement: A equipe da aula declara em que atividade da programação está
 
 O núcleo SHALL guardar, na **equipe da aula**, a **atividade da programação** que ela está
@@ -440,12 +447,15 @@ da trilha, progresso do Guerreiro(a) nem missão concluída: continua valendo qu
 NEVER SHALL guardar estado de percurso (documento 02 §5).
 
 A atividade declarada SHALL pertencer à **programação daquela aula**; atividade fora dela SHALL
-ser recusada com **422**. Declarar SHALL ser ato de **integrante daquela equipe**; qualquer outro
+ser recusada com **422**, e atividade **carimbada** SHALL ser recusada pela mesma porta, porque
+sai da programação ao ser removida. A escolha já declarada SHALL ser **zerada** quando o Mestre
+autor remover a atividade escolhida: o painel do dia NEVER SHALL anunciar como missão corrente a
+missão de atividade que não existe mais (`RN-09-47`). Declarar SHALL ser ato de **integrante daquela equipe**; qualquer outro
 Guerreiro(a) em sessão SHALL receber **403**. Equipe sem escolha declarada SHALL ser servida com
 a escolha **em branco**, não erro — é a equipe que ainda não começou.
 
 Decisão do fundador, 2026-08-25: a escolha passa a ser gravada, revertendo a frase da sétima
-fatia do PRD-04 que a proibia. (`RF-02-42`, `RF-04-35`, `RF-01-16`, documento 02 §5,
+fatia do PRD-04 que a proibia. (`RF-02-42`, `RF-04-35`, `RF-01-16`, `RN-09-47`, documento 02 §5,
 documento 05 §4)
 
 #### Scenario: A equipe declara a atividade que está trabalhando
@@ -478,6 +488,17 @@ documento 05 §4)
 - **WHEN** a aula se encerra e as equipes dela deixam de valer
 - **THEN** a escolha declarada não é reaproveitada em encontro algum, e nenhum percurso é
   gravado a partir dela
+
+#### Scenario: Atividade removida pelo Mestre é recusada na escolha
+
+- **WHEN** um integrante declara uma atividade que o Mestre autor já removeu
+- **THEN** o núcleo responde **422** e nada é gravado
+
+#### Scenario: A remoção zera a escolha já declarada
+
+- **WHEN** o Mestre autor remove a atividade que uma equipe havia declarado estar trabalhando
+- **THEN** a equipe passa a ser servida com a escolha em branco, e o painel do dia deixa de
+  anunciar missão corrente para ela
 
 ### Requirement: As equipes de que a persona em sessão participa são alcançáveis numa só leitura
 

@@ -1,4 +1,5 @@
 import uuid
+from dataclasses import asdict
 from datetime import date, datetime
 from typing import Annotated
 
@@ -45,9 +46,11 @@ from .modelo import (
 from .regra import (
     abrir_envio_da_imagem_da_pergunta,
     acrescentar_pergunta_do_desbloqueio,
+    atividade_vigente,
     confirmar_envio_da_imagem_da_pergunta,
     consultar_inscricoes_do_guerreiro,
     consultar_progresso,
+    corrigir_atividade,
     corrigir_pergunta_do_desbloqueio,
     criar_atividade,
     criar_missao,
@@ -58,6 +61,7 @@ from .regra import (
     desafios_em_aberto_do_guerreiro,
     despublicar_trilha,
     duplicar_trilha,
+    fatos_da_atividade,
     inscrever_na_trilha,
     julgar_desafio_pratico,
     ler_imagem_da_pergunta,
@@ -66,6 +70,7 @@ from .regra import (
     perguntas_do_desbloqueio,
     perguntas_do_desbloqueio_por_missao,
     publicar_trilha,
+    remover_atividade,
     remover_pergunta_do_desbloqueio,
     retomadas_em_aberto_do_guerreiro,
     submeter_desafio_de_desbloqueio,
@@ -455,7 +460,9 @@ def listar_minhas_trilhas_rota(
         )
         missoes_saida = []
         for missao in missoes:
-            atividades = sessao_bd.query(Atividade).filter_by(missao_id=missao.id).all()
+            atividades = atividade_vigente(
+                sessao_bd.query(Atividade).filter_by(missao_id=missao.id)
+            ).all()
             bibliografias = consultar_bibliografia_da_missao(sessao_bd, missao.id)
             missoes_saida.append(
                 MissaoDoMestreSaida(
@@ -570,6 +577,87 @@ def criar_atividade_rota(
     return saida_da_atividade(atividade)
 
 
+class CorrigirAtividadeEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    titulo: str | None = None
+    descricao: str | None = None
+    modalidade: str | None = None
+    formato: str | None = None
+    producao_esperada: str | None = None
+    """Cinco campos, todos opcionais: o que não vier conserva o valor gravado.
+    Não há `natureza` nem `aula_id` — com o `extra="forbid"` acima, mandar um
+    deles responde **422** pelo próprio contrato (`RN-09-48`, `RN-09-49`)."""
+
+
+@roteador.patch("/atividades/{id_da_atividade}")
+def corrigir_atividade_rota(
+    id_da_atividade: uuid.UUID,
+    entrada: CorrigirAtividadeEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> AtividadeSaida:
+    """`RF-09-127`: a autoria estrita, a recusa da avulsa e da carimbada, as
+    conferências de campo e a limpeza da aula são de `corrigir_atividade`. O
+    corpo vai como dicionário do que foi **declarado** — é o que distingue
+    campo omitido de campo esvaziado (design — decisão 4)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    atividade = corrigir_atividade(
+        sessao_bd,
+        operador=operador,
+        atividade=sessao_bd.get(Atividade, id_da_atividade),
+        campos=entrada.model_dump(exclude_unset=True),
+    )
+    sessao_bd.commit()
+    return saida_da_atividade(atividade)
+
+
+@roteador.delete("/atividades/{id_da_atividade}", status_code=204)
+def remover_atividade_rota(
+    id_da_atividade: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> None:
+    """`RF-09-128`, `RN-09-47`: carimba a atividade, zera a escolha corrente
+    das equipes e recusa com 422 enquanto houver partida aberta — tudo de
+    `remover_atividade`. Devolve 204: a atividade sai da leitura, e não há
+    corpo que faça sentido devolver."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    remover_atividade(
+        sessao_bd,
+        operador=operador,
+        atividade=sessao_bd.get(Atividade, id_da_atividade),
+    )
+    sessao_bd.commit()
+
+
+class FatosDaAtividadeSaida(BaseModel):
+    resultados: int
+    producoes: int
+    partidas_de_quiz: int
+    partidas_abertas: int
+    ocorrencias_de_conduta: int
+    equipes_com_ela_corrente: int
+
+
+@roteador.get("/atividades/{id_da_atividade}/fatos")
+def fatos_da_atividade_rota(
+    id_da_atividade: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> FatosDaAtividadeSaida:
+    """`RF-09-128`: o que a tela diz ao Mestre antes de ele confirmar a
+    remoção. Leitura própria, sob demanda — nunca aninhada na leitura das
+    trilhas do Mestre (`RN-09-46`, design — decisão 7)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    fatos = fatos_da_atividade(
+        sessao_bd,
+        operador=operador,
+        atividade=sessao_bd.get(Atividade, id_da_atividade),
+    )
+    return FatosDaAtividadeSaida(**asdict(fatos))
+
+
 class DeclararCadenciaDeRetomadaEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -671,7 +759,9 @@ def obter_trilha_publica_rota(
     missoes = sessao_bd.query(Missao).filter_by(trilha_id=trilha.id).order_by(Missao.posicao).all()
     missoes_saida = []
     for missao in missoes:
-        atividades = sessao_bd.query(Atividade).filter_by(missao_id=missao.id).all()
+        atividades = atividade_vigente(
+            sessao_bd.query(Atividade).filter_by(missao_id=missao.id)
+        ).all()
         bibliografias = consultar_bibliografia_da_missao(sessao_bd, missao.id)
         missoes_saida.append(
             _saida_da_missao(

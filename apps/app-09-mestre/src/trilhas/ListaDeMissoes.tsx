@@ -12,12 +12,12 @@ import type {
   TipoDeColeta,
 } from "./api";
 import { Bibliografia } from "./Bibliografia";
+import { BlocoDeAtividades } from "./BlocoDeAtividades";
 import { BlocoDeConteudo } from "./BlocoDeConteudo";
 import { CadenciaDeRetomada } from "./CadenciaDeRetomada";
 import { DeclaracaoDeRecompensa } from "./DeclaracaoDeRecompensa";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 import { EtiquetasOds } from "./EtiquetasOds";
-import { FormularioDeAtividade } from "./FormularioDeAtividade";
 import { FormularioDeDesafioDeColeta, ROTULO_DO_NIVEL } from "./FormularioDeDesafioDeColeta";
 import { PreVisualizacaoDaMissao } from "./PreVisualizacaoDaMissao";
 import { TemplateDaMissao } from "./TemplateDaMissao";
@@ -121,7 +121,6 @@ export function ListaDeMissoes({
   onAtualizarMissao,
   onDeclararRecompensa,
 }: Props) {
-  const [missaoComFormulario, definirMissaoComFormulario] = useState<string | null>(null);
   const [missaoComFormularioDeColeta, definirMissaoComFormularioDeColeta] = useState<
     string | null
   >(null);
@@ -209,36 +208,7 @@ export function ListaDeMissoes({
           </BlocoRecolhivel>
 
           <BlocoRecolhivel titulo="Atividades" resumo={resumoDasAtividades(missao)}>
-            <ul aria-label={`Atividades de ${missao.titulo}`}>
-              {missao.atividades.map((atividade) => (
-                <li key={atividade.id}>
-                  {atividade.titulo} — {atividade.modalidade} / {atividade.formato}
-                </li>
-              ))}
-            </ul>
-
-            {missaoComFormulario === missao.id ? (
-              <FormularioDeAtividade
-                idDaMissao={missao.id}
-                onSalvo={(atividade) => {
-                  definirMissaoComFormulario(null);
-                  marcarGravado(`${missao.id}:atividades`);
-                  onAtualizarMissao({
-                    ...missao,
-                    atividades: [...missao.atividades, atividade],
-                  });
-                }}
-                onCancelar={() => definirMissaoComFormulario(null)}
-              />
-            ) : (
-              <Botao
-                variante="secundaria"
-                onClick={() => definirMissaoComFormulario(missao.id)}
-              >
-                Nova atividade
-              </Botao>
-            )}
-            <MarcaDeGravacao instante={gravadoEm[`${missao.id}:atividades`] ?? null} />
+            <BlocoDeAtividades missao={missao} onAtualizada={onAtualizarMissao} />
           </BlocoRecolhivel>
 
           <BlocoRecolhivel
