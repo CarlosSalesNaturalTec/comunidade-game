@@ -67,12 +67,10 @@ conteúdo NEVER SHALL aparecer vazia quando a missão tem conteúdo gravado. (`R
 ### Requirement: O bloco Conteúdo identifica cada conteúdo que lista
 
 A App 09 SHALL apresentar, para cada conteúdo da missão, um **rótulo** que o distinga dos
-demais: as primeiras palavras do corpo, no texto; o domínio do endereço, no link externo; o
-**tipo em palavras e o tamanho do arquivo**, nos tipos com envio — o núcleo guarda a
-referência, nunca o nome do arquivo. A lista NEVER SHALL identificar um conteúdo apenas pelo
-valor do tipo, que repete entre conteúdos diferentes e não permite escolher qual corrigir. A
-autoria SHALL aparecer em todo conteúdo, e a fonte em todo conteúdo de terceiro.
-(`RF-09-125`, `RF-09-24`, PRD-09 §§6.3, 10)
+demais, e NEVER SHALL identificar um conteúdo apenas pelo valor do tipo, que repete entre
+conteúdos diferentes e não permite escolher qual corrigir. A autoria SHALL aparecer em todo
+conteúdo, e a fonte em todo conteúdo de terceiro. (`RF-09-125`, `RF-09-24`,
+PRD-09 §§6.3, 10)
 
 #### Scenario: Três conteúdos de texto se distinguem na lista
 
@@ -83,8 +81,9 @@ autoria SHALL aparecer em todo conteúdo, e a fonte em todo conteúdo de terceir
 #### Scenario: O conteúdo com arquivo é identificado pelo tipo e pelo tamanho
 
 - **WHEN** a missão tem um conteúdo de imagem com o envio confirmado
-- **THEN** a linha dele traz o tipo em palavras e o tamanho do arquivo, e a do conteúdo sem
-  envio confirmado diz que o envio está pendente
+- **THEN** a linha dele traz o tipo em palavras e o tamanho do arquivo — o núcleo guarda a
+  referência, nunca o nome do arquivo —, e a do conteúdo sem envio confirmado diz que o envio
+  está pendente
 
 #### Scenario: O link é identificado pelo domínio
 

@@ -84,7 +84,20 @@ pré-visualização segue exibindo tudo de imediato, porque é uma missão por a
 bloco de cadastro envolve o renderizador num estado por item, e nenhum `MidiaDoNucleo` monta
 antes do comando do Mestre.
 
-**8. O rascunho do texto desce ao conteúdo.** `chaveDoRascunho` passa a levar o id do conteúdo
+**8. A correção redeclara o conjunto mutável, não remenda campo a campo.** `PATCH
+/v1/conteudos/{id}` recebe corpo, endereço, autoria e fonte e substitui os quatro, pelas
+mesmas recusas da criação — o idioma que `personas.regra.editar_artefato_do_mestre` já firmou
+no `PATCH` do artefato do Mestre. _Descartado:_ semântica parcial, com sentinela para
+distinguir campo omitido de campo esvaziado — nenhuma regra deste núcleo a usa, e ela abre a
+pergunta "corrigir a fonte apaga o corpo?" que a redeclaração não tem.
+
+**9. O rótulo dos tipos com arquivo sai do tipo e do tamanho.** O núcleo nunca guardou o
+**nome** do arquivo: a referência deriva do id do conteúdo, e o nome que o navegador tinha no
+envio não trafega. "Imagem — 2,0 MB" e "Vídeo — envio pendente" distinguem os itens com o que
+existe. Guardar o nome seria coluna nova e decisão de produto que ninguém tomou: fica como
+pergunta ao fundador, não como suposição.
+
+**10. O rascunho do texto desce ao conteúdo.** `chaveDoRascunho` passa a levar o id do conteúdo
 em correção; a criação continua com a chave da missão. Sem isso, editar um conteúdo e começar
 outro na mesma missão sobrescreveria um texto com o outro.
 
@@ -102,9 +115,12 @@ outro na mesma missão sobrescreveria um texto com o outro.
 - **Exibir arquivo grande ainda passa pelo núcleo** → sob demanda e um por vez, o custo fica no
   patamar que a pré-visualização já pratica. O que esta fatia impede é o pior caso novo: todas
   as missões da etapa buscando arquivo ao abrir a tela.
-- **`PATCH` parcial e campo omitido** → omitir campo deixa o valor como está; apagar valor é
-  mandá-lo vazio, e aí valem as recusas de coerência do tipo. Sem isso, corrigir a fonte
-  apagaria o corpo.
+- **A correção exige o conjunto mutável inteiro** → quem corrige só a fonte manda de volta o
+  corpo como está. É o preço de não ter semântica parcial, e o mesmo que o `PATCH` do artefato
+  do Mestre já cobra; em troca, nenhum campo se apaga por omissão.
+- **O rótulo do texto curto e o texto exibido são o mesmo parágrafo** → quando o corpo inteiro
+  cabe no rótulo, o bloco não repete a exibição embaixo. Exibe-se o texto quando há mais para
+  ver do que o rótulo já mostra.
 
 ## Migration Plan
 
