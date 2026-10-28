@@ -249,8 +249,12 @@ site MkDocs.
 - O backend é Python **3.12**, com Ruff nos conjuntos **`E`, `F`, `I`, `UP` e `B`**. Ruff e
   Biome fazem formatador e _linter_ numa ferramenta só.
 - A **cobertura é medida sem limiar que bloqueie** no Ciclo 01, e é medida no CI.
-- Cada workflow em `.github/workflows/` dispara só pelo caminho que cobre. **A change que cria
-  uma pasta de código entrega, no mesmo PR, a esteira daquela pasta.**
+- Cada workflow em `.github/workflows/` dispara só pelo caminho que cobre, **o próprio
+  workflow incluído**. **A change que cria uma pasta de código entrega, no mesmo PR, a esteira
+  daquela pasta.**
+- **CLI de publicação vai em versão exata** — nunca `@latest` nem faixa `^`: ela é baixada a
+  cada execução, e sem fixá-la o deploy muda de comportamento sem revisão. Subir a versão é
+  ato revisado.
 - O deploy do site (`docs-deploy.yml`) acontece **somente após merge em `main`**.
 
 Preparação do ambiente local (uma vez):
