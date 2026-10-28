@@ -3,8 +3,16 @@ name: Backend Deploy
 on:
   push:
     branches: [main]
-    # Markdown de fora: editar um README não pode redeployar produção.
-    paths: [backend/**, "!backend/**.md"]
+    # Markdown de fora: editar um README não pode redeployar produção. O
+    # próprio workflow entra: editá-lo muda como o núcleo é publicado, e sem
+    # ele a correção de uma esteira não se prova no merge que a traz. O
+    # `firebase.json` fica fora, ao contrário das esteiras das Apps: dez alvos
+    # compartilham o arquivo, e ali uma mudança em alvo alheio dispararia
+    # build de imagem, migração e deploy do núcleo.
+    paths:
+      - "backend/**"
+      - "!backend/**.md"
+      - ".github/workflows/backend-deploy.yml"
   workflow_dispatch:
 
 concurrency:
@@ -140,9 +148,15 @@ jobs:
         with:
           node-version: "lts/*"
 
+      # Versão exata, e não `@latest` nem faixa `^`: a CLI é baixada a cada
+      # publicação, e sem fixá-la o comportamento do deploy muda sozinho entre
+      # duas execuções. Subir a versão é ato revisado. A mesma versão das sete
+      # esteiras das Apps mantém as oito iguais — foi `@latest` aqui que, em
+      # 2026-10-28, passou a abortar na recusa da Service Usage API que o
+      # gcloud tolera, e derrubou a publicação do _rewrite_.
       - name: Publicar o alvo `api` no Firebase Hosting
         run: |
-          npx --yes firebase-tools@latest deploy \
+          npx --yes firebase-tools@15.28.1 deploy \
             --only hosting:api \
             --project "${{ env.PROJETO_GCP }}" \
             --non-interactive
