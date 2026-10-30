@@ -25,6 +25,11 @@ SHALL receber **403**. Fora da janela de qualquer aula, o painel SHALL devolver 
 encontro vazio**, e não erro — é o dia sem encontro. (`RF-02-41` a `RF-02-47`, `RF-02-69`,
 `RN-02-20`, PRD-02 §§6.4, 9, 12)
 
+Havendo **mais de uma aula vigente** no instante da consulta entre as comunidades de quem
+consulta, o painel SHALL servir **uma** delas — a de início mais antigo —, pelo mesmo
+precedente que já vale para o Admin: não é do núcleo escolher entre comunidades, e o painel
+serve um encontro por vez (`RF-01-32`, `RF-01-18`).
+
 #### Scenario: O painel devolve o encontro em andamento numa leitura
 
 - **WHEN** um Admin consulta o painel do dia durante a janela de uma aula
@@ -38,8 +43,15 @@ encontro vazio**, e não erro — é o dia sem encontro. (`RF-02-41` a `RF-02-47
 
 #### Scenario: O Mestre lê apenas o encontro da comunidade dele
 
-- **WHEN** um Mestre consulta o painel e há aula em andamento em outra comunidade
+- **WHEN** um Mestre consulta o painel e há aula em andamento em comunidade a que ele não está
+  vinculado
 - **THEN** aquela aula não aparece para ele
+
+#### Scenario: Duas aulas vigentes nas comunidades do Mestre servem a mais antiga
+
+- **WHEN** um Mestre vinculado a duas comunidades consulta o painel e há aula em andamento em
+  cada uma
+- **THEN** o painel serve a de início mais antigo, e só ela
 
 #### Scenario: Guerreiro(a) não lê o painel
 

@@ -223,7 +223,8 @@ em hipótese alguma (`RN-07-09`, `RN-02-15`, `RN-02-16`, 05 §3).
 ### Requirement: O histórico da entrega é lido sem moedas e sem reais
 
 O núcleo SHALL expor o histórico das entregas filtrado por persona: o Guerreiro(a) lê as
-**próprias**, e o Mestre e o Admin leem as da **comunidade** a que estão vinculados. A saída
+**próprias**; o **Mestre**, as das **comunidades a que está vinculado**; e o **Admin**, **todas**,
+sem filtro de comunidade. A saída
 SHALL trazer a recompensa, o marco, a trilha, o ponto de apoio, a data, o **tipo de recurso**
 entregue, a **quantidade** e o **identificador do lançamento** da baixa — sem o que a gestão não
 distingue o exemplar da linha Alpha da camisa nem mostra a baixa definitiva —, e NEVER SHALL
@@ -231,10 +232,25 @@ trazer o valor em moedas nem o valor em reais do recurso entregue: o custo segue
 invisível para a criança (`RF-07-13`, `RN-07-05`, `RF-02-50`, `RF-02-51`, `RN-02-17`,
 invariante 16, 02 §8).
 
+O Admin lê sem recorte porque **não tem vínculo de comunidade** — a redação anterior o mandava
+ler "a comunidade a que está vinculado", condição que nenhuma persona de Admin satisfaz, de
+modo que a leitura dele saía sempre vazia. É o mesmo alcance que `troca-de-recompensa-avulsa`
+já dá ao Admin no histórico de trocas (decisão do fundador de 2026-10-30).
+
 #### Scenario: Guerreiro(a) lê as próprias entregas
 
 - **WHEN** um Guerreiro(a) consulta o histórico de entregas
 - **THEN** recebe apenas as suas, com recompensa, marco, trilha, ponto de apoio e data
+
+#### Scenario: O Mestre lê as entregas das comunidades dele
+
+- **WHEN** um Mestre vinculado a duas comunidades consulta o histórico
+- **THEN** recebe as entregas das duas, e nenhuma de comunidade a que não está vinculado
+
+#### Scenario: O Admin lê as entregas de todas as comunidades
+
+- **WHEN** um Admin consulta o histórico de entregas
+- **THEN** recebe as entregas de qualquer comunidade, sem declarar filtro algum
 
 #### Scenario: O histórico não mostra o custo
 
@@ -318,11 +334,12 @@ Guerreiro(a) e recompensa de marco cujo **marco ele desbloqueou** e cuja **entre
 confirmada**. Cada pendência SHALL trazer o Guerreiro(a) pelo **nick e avatar**, a trilha, a
 missão que é o marco, o **tipo de recurso** e a **quantidade**.
 
-A fila SHALL alcançar apenas os Guerreiros e Guerreiras da **Comunidade Virtual a que o Mestre
-está vinculado** — a mesma condição que a entrega já exige — e NEVER SHALL se limitar às trilhas
-de autoria dele: quem entrega é quem está no encontro, não quem escreveu a trilha. Mestre sem
-vínculo vigente SHALL receber fila **vazia**, nunca erro. Persona que não é Mestre SHALL ser
-recusada com **403**.
+A fila SHALL alcançar apenas os Guerreiros e Guerreiras das **Comunidades Virtuais a que o
+Mestre está vinculado** — a mesma condição que a entrega já exige — e NEVER SHALL se limitar às
+trilhas de autoria dele: quem entrega é quem está no encontro, não quem escreveu a trilha.
+Estando o Mestre vinculado a mais de uma comunidade, a fila SHALL trazer as pendências de
+**todas elas**. Mestre sem vínculo com comunidade alguma SHALL receber fila **vazia**, nunca
+erro. Persona que não é Mestre SHALL ser recusada com **403**.
 
 Confirmada a entrega, a pendência SHALL **sair** da fila. A pendência cuja quantidade declarada
 já se esgotou nas entregas anteriores SHALL continuar na fila, marcada com o motivo, porque é o
@@ -338,6 +355,12 @@ em reais, nem imagem real de Guerreiro(a). (`RF-09-75`, `RF-09-76`, `RN-09-26`, 
 - **THEN** a fila do Mestre passa a trazer aquela pendência, com o nick e o avatar do
   Guerreiro(a), a trilha, o marco, o tipo de recurso e a quantidade
 
+#### Scenario: A fila reúne as pendências de todas as comunidades do Mestre
+
+- **WHEN** um Mestre vinculado a duas comunidades consulta a fila, e há marco desbloqueado com
+  recompensa em cada uma delas
+- **THEN** a fila traz as pendências das duas
+
 #### Scenario: Entrega confirmada sai da fila
 
 - **WHEN** o Mestre confirma a entrega daquela recompensa àquele Guerreiro(a)
@@ -351,13 +374,13 @@ em reais, nem imagem real de Guerreiro(a). (`RF-09-75`, `RF-09-76`, `RN-09-26`, 
 
 #### Scenario: Guerreiro(a) de outra comunidade não aparece
 
-- **WHEN** um Guerreiro(a) de Comunidade Virtual diversa da do Mestre desbloqueia um marco com
+- **WHEN** um Guerreiro(a) de Comunidade Virtual diversa das do Mestre desbloqueia um marco com
   recompensa
 - **THEN** a pendência não aparece na fila daquele Mestre
 
 #### Scenario: Mestre sem vínculo recebe fila vazia
 
-- **WHEN** um Mestre sem vínculo vigente com comunidade alguma consulta a fila
+- **WHEN** um Mestre sem vínculo com comunidade alguma consulta a fila
 - **THEN** recebe a fila vazia, e nenhum erro
 
 #### Scenario: Quem não é Mestre não lê a fila

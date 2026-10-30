@@ -264,14 +264,20 @@ autor. Ajuste sem motivo SHALL impedir o envio. (`RF-02-40`, `RN-02-12`, `RN-02-
 ### Requirement: O Admin agenda a aula com comunidade, data e horários
 
 A App 03 SHALL permitir ao Admin agendar a aula informando **comunidade**, **data**, **horário
-inicial**, **horário final** e o **ponto de apoio** em que ela acontece. A data e os horários
-SHALL trafegar com **fuso**, e a aplicação NEVER SHALL enviar horário sem ele.
+inicial**, **horário final**, o **ponto de apoio** em que ela acontece e **um ou mais Mestres**
+que a ministram. A data e os horários SHALL trafegar com **fuso**, e a aplicação NEVER SHALL
+enviar horário sem ele.
 
 A aplicação SHALL oferecer, como ponto de apoio, apenas os da **comunidade escolhida**, e SHALL
 apresentar no próprio campo a recusa do núcleo a horário final não posterior ao inicial e a
 ponto de apoio de outra comunidade. Aula agendada sem recurso declarado SHALL nascer
 **confirmada**, e a aplicação SHALL apresentar a situação como ela vem do núcleo, sem
 recalculá-la.
+
+A aplicação SHALL oferecer, como Mestres, os do **cadastro de Mestres da gestão**, sem recorte
+por comunidade — é este agendamento que dá comunidade ao Mestre, de modo que filtrar por ela
+deixaria o primeiro agendamento sem candidato algum. A aplicação NEVER SHALL confirmar
+agendamento **sem Mestre**, apontando a falta no próprio campo. (`RF-02-30`)
 
 O formulário SHALL permitir declarar, no mesmo ato, os **recursos que a aula consome**, como
 pares de **tipo de recurso** e **quantidade**, escolhidos no catálogo de tipos da gestão. A
@@ -283,9 +289,19 @@ aplicação NEVER SHALL calcular saldo, reserva ou falta por conta própria. (`R
 
 #### Scenario: Admin agenda a aula
 
-- **WHEN** um Admin em sessão informa comunidade, data, horário inicial, horário final e ponto
-  de apoio, e confirma
+- **WHEN** um Admin em sessão informa comunidade, data, horário inicial, horário final, ponto
+  de apoio e ao menos um Mestre, e confirma
 - **THEN** a aula passa a existir, confirmada, e a aplicação a apresenta na agenda
+
+#### Scenario: Agendamento sem Mestre é apontado no campo
+
+- **WHEN** o Admin confirma o agendamento sem escolher Mestre algum
+- **THEN** a aplicação aponta a falta no próprio campo e nenhuma aula passa a existir
+
+#### Scenario: Os Mestres oferecidos não são recortados por comunidade
+
+- **WHEN** o Admin escolhe a comunidade e abre o campo de Mestres
+- **THEN** todos os Mestres do cadastro lhe são oferecidos, vinculados àquela comunidade ou não
 
 #### Scenario: Horário final anterior ao inicial é apontado no campo
 
