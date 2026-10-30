@@ -275,7 +275,7 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 | ----------- | ---------------------------------------------------------------------------------------------------- | ---------- |
 | `RF-02-29`  | Admin cadastra atividade avulsa, fora de trilha, com a aula do encontro e o poder que ela desenvolve | essencial  |
 | `RF-02-71`  | Admin consulta as atividades e as recompensas de marco autoradas pelo Mestre, sem editá-las          | essencial  |
-| `RF-02-30`  | Admin agenda aula on-line ou presencial, com atividade prevista e ponto de apoio                     | essencial  |
+| `RF-02-30`  | Admin agenda aula on-line ou presencial, com atividade prevista, ponto de apoio e um ou mais Mestres | essencial  |
 | `RF-02-31`  | Agendamento reserva os recursos necessários no livro-razão                                           | essencial  |
 | `RF-02-95`  | Admin, ou Mestre da comunidade da aula, cancela aula agendada com motivo, liberando a reserva        | essencial  |
 | `RF-02-32`  | Atividade sem lastro fica pendente de lastro e publica a necessidade na vitrine e nas Apps 08 e 09   | essencial  |
@@ -309,8 +309,8 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 
 | ID          | Requisito                                                                                                                                                                 | Prioridade |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-50`  | Aplicação mostra a entrega do exemplar Alpha confirmada pelo Mestre, com a baixa definitiva                                                                               | essencial  |
-| `RF-02-51`  | Aplicação mostra a entrega da camisa confirmada pelo Mestre ao Guerreiro(a) inscrito, com a baixa                                                                         | essencial  |
+| `RF-02-50`  | Aplicação mostra ao Admin a entrega do exemplar Alpha confirmada pelo Mestre, de qualquer comunidade, com a baixa definitiva                                              | essencial  |
+| `RF-02-51`  | Aplicação mostra ao Admin a entrega da camisa confirmada pelo Mestre ao Guerreiro(a) inscrito, de qualquer comunidade, com a baixa                                        | essencial  |
 | `RF-02-52`  | Admin tomba o exemplar permanente com título, tombo, ponto de apoio e responsável designado                                                                               | essencial  |
 | `RF-02-96`  | Admin desativa e reativa ponto de apoio, sempre com motivo; a lista distingue o inativo do ativo                                                                          | essencial  |
 | `RF-02-109` | Área Pontos de Apoio apresenta o limiar de comparação vigente de cada espaço, com quem mediu, quando e as séries; destaca quem não tem limiar medido e não oferece edição | essencial  |
@@ -324,7 +324,7 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 | `RF-02-103` | Aplicação recusa publicar missão sem necessidade de recurso publicada por trás                                                                                            | essencial  |
 | `RF-02-104` | Aplicação lista as missões publicadas com o que já foi coberto, o que falta e a situação                                                                                  | essencial  |
 | `RF-02-105` | Admin despublica missão publicada por engano, sem estornar aporte já homologado                                                                                           | essencial  |
-| `RF-02-59`  | Mestre da aula ou Admin abre partida de Quiz ao Vivo com o banco do curador e as equipes da aula                                                                          | essencial  |
+| `RF-02-59`  | Um dos Mestres da aula, ou um Admin, abre partida de Quiz ao Vivo com o banco do curador e as equipes da aula                                                             | essencial  |
 | `RF-02-60`  | Partida exibe a pergunta simultaneamente nos dispositivos logados na aula                                                                                                 | essencial  |
 | `RF-02-61`  | Partida fixa uma equipe por Guerreiro(a) e aceita uma resposta por equipe e por pergunta                                                                                  | essencial  |
 | `RF-02-62`  | Partida credita toda equipe que acerta e o bônus à primeira, por ordem de chegada no servidor                                                                             | essencial  |
@@ -397,9 +397,9 @@ Poder                    Emprestimo              Auditoria
 MissaoDoApoiador         Aporte
 ```
 
-| Entidade      | Atributos essenciais                                                                                                                                                                |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Aula/Agenda` | comunidade, data, horário inicial, horário final, modalidade, ponto de apoio, atividade prevista, Mestre, situação (prevista, pendente de lastro, confirmada, realizada, cancelada) |
+| Entidade      | Atributos essenciais                                                                                                                                                                              |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Aula/Agenda` | comunidade, data, horário inicial, horário final, modalidade, ponto de apoio, atividade prevista, Mestres (um ou mais), situação (prevista, pendente de lastro, confirmada, realizada, cancelada) |
 
 A `MissaoDoApoiador` que a gestão publica é entidade do PRD-14 §8; aqui ela é escrita, e o
 quanto falta dela segue derivado dos aportes homologados da necessidade de origem.

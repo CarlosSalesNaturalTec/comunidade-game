@@ -16,6 +16,7 @@ def test_admin_agenda_aula_pela_rota(
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     token, _ = criar_sessao_de_teste(admin)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
@@ -25,6 +26,7 @@ def test_admin_agenda_aula_pela_rota(
         json={
             "comunidade_virtual_id": str(comunidade.id),
             "ponto_de_apoio_id": str(ponto_de_apoio.id),
+            "mestres": [str(mestre.id)],
             "inicio_em": INICIO,
             "fim_em": FIM,
         },
@@ -48,6 +50,7 @@ def test_agendamento_sem_saldo_devolve_o_que_falta(
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     token, _ = criar_sessao_de_teste(admin)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
@@ -58,6 +61,7 @@ def test_agendamento_sem_saldo_devolve_o_que_falta(
         json={
             "comunidade_virtual_id": str(comunidade.id),
             "ponto_de_apoio_id": str(ponto_de_apoio.id),
+            "mestres": [str(mestre.id)],
             "inicio_em": INICIO,
             "fim_em": FIM,
             "recursos_declarados": [{"tipo_de_recurso_id": str(tipo.id), "quantidade": "3.00"}],
@@ -97,6 +101,7 @@ def test_mestre_nao_agenda_aula_pela_rota(
         json={
             "comunidade_virtual_id": str(comunidade.id),
             "ponto_de_apoio_id": str(ponto_de_apoio.id),
+            "mestres": [str(mestre.id)],
             "inicio_em": INICIO,
             "fim_em": FIM,
         },
@@ -232,14 +237,14 @@ def test_mestre_da_comunidade_cancela_aula_pela_rota(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
     mestre = criar_persona(Papel.mestre)
     token, _ = criar_sessao_de_teste(mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     aula = criar_aula(admin, comunidade)
 
     resposta = cliente.post(
@@ -296,7 +301,7 @@ def test_atividade_presencial_sai_com_a_aula_que_declarou(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_trilha,
     criar_missao,
     criar_atividade,
@@ -307,7 +312,7 @@ def test_atividade_presencial_sai_com_a_aula_que_declarou(
     mestre = criar_persona(Papel.mestre)
     token, _ = criar_sessao_de_teste(mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     aula = criar_aula(mestre, comunidade)
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
@@ -332,7 +337,7 @@ def test_atividade_ainda_sem_encontro_sai_com_o_vinculo_em_branco(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_trilha,
     criar_missao,
     criar_atividade,
@@ -341,7 +346,7 @@ def test_atividade_ainda_sem_encontro_sai_com_o_vinculo_em_branco(
     mestre = criar_persona(Papel.mestre)
     token, _ = criar_sessao_de_teste(mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     criar_aula(mestre, comunidade)
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
@@ -357,3 +362,40 @@ def test_atividade_ainda_sem_encontro_sai_com_o_vinculo_em_branco(
         a for a in resposta.json()["atividades_presenciais"] if a["id"] == str(atividade.id)
     )
     assert presencial["aula_id"] is None
+
+
+def test_rota_recusa_aula_sem_mestre_e_devolve_os_escalados(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+):
+    """Os Mestres passam a ser obrigatórios no corpo e a sair na resposta
+    (`RF-02-30`, decisão do fundador de 2026-10-30). Os cenários de regra
+    ficam em `test_vinculo_do_mestre.py`."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    corpo = {
+        "comunidade_virtual_id": str(comunidade.id),
+        "ponto_de_apoio_id": str(ponto_de_apoio.id),
+        "inicio_em": "2026-08-10T10:00:00+00:00",
+        "fim_em": "2026-08-10T12:00:00+00:00",
+        "recursos_declarados": [],
+    }
+
+    sem_mestre = cliente.post("/v1/aulas", json={**corpo, "mestres": []}, headers=cabecalhos)
+    assert sem_mestre.status_code == 422
+    assert sem_mestre.json()["campo"] == "mestres"
+
+    com_mestre = cliente.post(
+        "/v1/aulas", json={**corpo, "mestres": [str(mestre.id)]}, headers=cabecalhos
+    )
+    assert com_mestre.status_code == 201
+    assert com_mestre.json()["mestres"] == [str(mestre.id)]

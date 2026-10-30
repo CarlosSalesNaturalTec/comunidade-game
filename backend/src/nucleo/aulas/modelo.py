@@ -72,6 +72,26 @@ class Aula(Base, ComAutoria):
     __table_args__ = (CheckConstraint("fim_em > inicio_em", name="ck_aula_fim_em_apos_inicio_em"),)
 
 
+class MestreDaAula(Base):
+    """Quem **ministra** a aula — N:N, porque o fundador decidiu em
+    2026-10-30 que uma aula tem **um ou mais** Mestres (documento 09 §1).
+    Por isso não é coluna em `Aula`: o PRD-02 §8 listava "Mestre" no
+    singular, e o plural é o que passa a valer.
+
+    É a escalação aqui que abre o vínculo do Mestre com a comunidade da
+    aula, no mesmo ato de agendar (`RF-02-30`). Cancelar a aula não apaga
+    nem esta linha nem aquele vínculo: o que aconteceu, aconteceu.
+    """
+
+    __tablename__ = "mestre_da_aula"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    aula_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=False)
+    mestre_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("persona.id"), nullable=False)
+
+    __table_args__ = (Index("uq_mestre_da_aula", "aula_id", "mestre_id", unique=True),)
+
+
 class RecursoDeclaradoDaAula(Base):
     """O que a aula **precisa** para acontecer, declarado no agendamento
     como pares de tipo de recurso e quantidade — separado da `Reserva`, que

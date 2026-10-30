@@ -28,7 +28,7 @@ def cenario(
     criar_tipo_de_recurso,
     criar_valor_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_trilha,
     criar_missao,
     criar_recompensa_de_marco,
@@ -44,7 +44,7 @@ def cenario(
         )
 
         mestre = criar_persona(Papel.mestre)
-        criar_vinculo_jogador(mestre, comunidade)
+        criar_vinculo_do_mestre(mestre, comunidade)
 
         trilha = criar_trilha(mestre)
         missao = criar_missao(trilha, mestre)
@@ -102,11 +102,13 @@ def test_entrega_confirmada_sai_da_fila(sessao, cenario):
     assert pendencias == []
 
 
-def test_fila_e_da_comunidade_nao_da_autoria(sessao, cenario, criar_persona, criar_vinculo_jogador):
+def test_fila_e_da_comunidade_nao_da_autoria(
+    sessao, cenario, criar_persona, criar_vinculo_do_mestre
+):
     c = cenario()
     _desbloquear(sessao, guerreiro=c["guerreiro"], missao=c["missao"])
     outro_mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(outro_mestre, c["comunidade"])
+    criar_vinculo_do_mestre(outro_mestre, c["comunidade"])
 
     pendencias = listar_entregas_pendentes(sessao, operador=outro_mestre)
 
@@ -206,3 +208,26 @@ def test_persona_que_nao_e_mestre_recebe_403_na_rota(
     )
 
     assert resposta.status_code == 403
+
+
+def test_fila_reune_as_pendencias_das_duas_comunidades_do_mestre(
+    sessao, cenario, criar_vinculo_do_mestre
+):
+    """O plural que a spec já escrevia e o núcleo não servia: antes do
+    vínculo próprio do Mestre, `operador.vinculo_vigente` resolvia sempre
+    nulo e a fila saía vazia (decisão do fundador, 2026-10-30)."""
+    c1 = cenario()
+    c2 = cenario()
+    # O mesmo Mestre atua nas duas comunidades.
+    criar_vinculo_do_mestre(c1["mestre"], c2["comunidade"])
+
+    _desbloquear(sessao, guerreiro=c1["guerreiro"], missao=c1["missao"])
+    _desbloquear(sessao, guerreiro=c2["guerreiro"], missao=c2["missao"])
+    sessao.commit()
+
+    pendencias = listar_entregas_pendentes(sessao, operador=c1["mestre"])
+
+    assert {p.guerreiro_id for p in pendencias} == {
+        c1["guerreiro"].id,
+        c2["guerreiro"].id,
+    }

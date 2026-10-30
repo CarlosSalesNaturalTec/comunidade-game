@@ -42,14 +42,14 @@ def test_mestre_cadastra_item_na_sua_comunidade(
     criar_comunidade,
     criar_ponto_de_apoio,
     criar_tipo_de_recurso,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
     tipo = criar_tipo_de_recurso(admin)
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
 
     item = cadastrar_item(
         sessao,
@@ -121,7 +121,7 @@ def test_mestre_fora_do_vinculo_nao_cadastra(
     criar_comunidade,
     criar_ponto_de_apoio,
     criar_tipo_de_recurso,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -129,7 +129,7 @@ def test_mestre_fora_do_vinculo_nao_cadastra(
     ponto = criar_ponto_de_apoio(admin, comunidade)
     tipo = criar_tipo_de_recurso(admin)
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, outra_comunidade)
+    criar_vinculo_do_mestre(mestre, outra_comunidade)
 
     with pytest.raises(PermissaoNegada):
         cadastrar_item(
@@ -222,14 +222,14 @@ def test_item_de_mestre_dispensa_homologacao(
     criar_comunidade,
     criar_ponto_de_apoio,
     criar_tipo_de_recurso,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
     tipo = criar_tipo_de_recurso(admin)
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
 
     item = cadastrar_item(
         sessao,
@@ -352,7 +352,7 @@ def test_mestre_nao_homologa_item_de_apoiador(
     criar_comunidade,
     criar_ponto_de_apoio,
     criar_tipo_de_recurso,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -370,7 +370,7 @@ def test_mestre_nao_homologa_item_de_apoiador(
     )
     sessao.commit()
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
 
     with pytest.raises(PermissaoNegada):
         homologar_item(
@@ -394,7 +394,7 @@ def test_item_com_saldo_igual_ao_estoque_nasce_ativo(
     criar_tipo_de_recurso,
     criar_preco_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -403,7 +403,7 @@ def test_item_com_saldo_igual_ao_estoque_nasce_ativo(
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
 
     item = cadastrar_item(
         sessao,
@@ -427,7 +427,7 @@ def test_item_sem_lastro_suficiente_nasce_inativo_dizendo_o_que_falta(
     criar_tipo_de_recurso,
     criar_preco_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -436,7 +436,7 @@ def test_item_sem_lastro_suficiente_nasce_inativo_dizendo_o_que_falta(
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "4")
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
 
     item = cadastrar_item(
         sessao,
@@ -461,7 +461,7 @@ def test_saldo_de_outro_ponto_de_apoio_nao_lastreia_o_item(
     criar_tipo_de_recurso,
     criar_preco_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -471,7 +471,7 @@ def test_saldo_de_outro_ponto_de_apoio_nao_lastreia_o_item(
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, outro_ponto, "10")
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
 
     item = cadastrar_item(
         sessao,
@@ -495,7 +495,7 @@ def test_ativacao_reverifica_o_lastro(
     criar_tipo_de_recurso,
     criar_preco_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -504,7 +504,7 @@ def test_ativacao_reverifica_o_lastro(
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "4")
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     item = cadastrar_item(
         sessao,
         operador=mestre,
@@ -531,7 +531,7 @@ def test_ativacao_sem_lastro_e_recusada(
     criar_ponto_de_apoio,
     criar_tipo_de_recurso,
     criar_preco_de_referencia,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -539,7 +539,7 @@ def test_ativacao_sem_lastro_e_recusada(
     tipo = criar_tipo_de_recurso(admin)
     criar_preco_de_referencia(admin, tipo)
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     item = cadastrar_item(
         sessao,
         operador=mestre,
@@ -565,7 +565,7 @@ def test_item_pendente_de_homologacao_nao_ativa(
     criar_tipo_de_recurso,
     criar_preco_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -585,7 +585,7 @@ def test_item_pendente_de_homologacao_nao_ativa(
     )
     sessao.commit()
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
 
     with pytest.raises(ErroDeValidacao):
         ativar_item(sessao, operador=mestre, item=item)
@@ -600,7 +600,7 @@ def test_tipo_sem_preco_vigente_nasce_inativo(
     criar_ponto_de_apoio,
     criar_tipo_de_recurso,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -608,7 +608,7 @@ def test_tipo_sem_preco_vigente_nasce_inativo(
     tipo = criar_tipo_de_recurso(admin)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
 
     item = cadastrar_item(
         sessao,
@@ -635,7 +635,7 @@ def test_mestre_altera_estoque_dentro_do_lastro(
     criar_tipo_de_recurso,
     criar_preco_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -644,7 +644,7 @@ def test_mestre_altera_estoque_dentro_do_lastro(
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     item = cadastrar_item(
         sessao,
         operador=mestre,
@@ -672,7 +672,7 @@ def test_estoque_acima_do_lastro_desativa_o_item(
     criar_tipo_de_recurso,
     criar_preco_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -681,7 +681,7 @@ def test_estoque_acima_do_lastro_desativa_o_item(
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     item = cadastrar_item(
         sessao,
         operador=mestre,
@@ -710,7 +710,7 @@ def test_mestre_retira_o_item_do_catalogo(
     criar_tipo_de_recurso,
     criar_preco_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -719,7 +719,7 @@ def test_mestre_retira_o_item_do_catalogo(
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     item = cadastrar_item(
         sessao,
         operador=mestre,
@@ -772,7 +772,7 @@ def test_catalogo_filtrado_pela_comunidade_do_guerreiro(
     criar_tipo_de_recurso,
     criar_preco_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -784,9 +784,9 @@ def test_catalogo_filtrado_pela_comunidade_do_guerreiro(
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto_de_outra, "10")
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     outro_mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(outro_mestre, outra_comunidade)
+    criar_vinculo_do_mestre(outro_mestre, outra_comunidade)
     cadastrar_item(
         sessao,
         operador=mestre,
@@ -820,7 +820,7 @@ def test_inativos_so_para_admin_e_mestre_vinculado(
     criar_ponto_de_apoio,
     criar_tipo_de_recurso,
     criar_item_de_catalogo_avulso,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
@@ -829,7 +829,7 @@ def test_inativos_so_para_admin_e_mestre_vinculado(
     criar_item_de_catalogo_avulso(admin, tipo, comunidade, ponto, ativo=False)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
 
     itens_do_guerreiro = listar_catalogo(
         sessao, operador=guerreiro, comunidade=None, incluir_inativos=True
@@ -857,7 +857,7 @@ def test_saida_do_catalogo_pela_rota_nao_traz_moedas_nem_reais(
     criar_tipo_de_recurso,
     criar_preco_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -867,7 +867,7 @@ def test_saida_do_catalogo_pela_rota_nao_traz_moedas_nem_reais(
     criar_preco_de_referencia(admin, tipo, preco_em_pontos_extras=25)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     cadastrar_item(
         sessao,
         operador=mestre,
@@ -1027,13 +1027,13 @@ def test_persona_de_outro_papel_recebe_403_na_leitura_das_proprias_ofertas(
     criar_persona,
     criar_sessao_de_teste,
     criar_comunidade,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     chave, _ = criar_chave()
     comunidade = criar_comunidade()
     admin = criar_persona(Papel.admin)
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     responsavel = criar_persona(Papel.responsavel)
 
@@ -1135,3 +1135,40 @@ def test_item_com_tres_trocas_traz_a_contagem_agregada_sem_identificar_quem_troc
     assert corpo[0]["quantidade_de_trocas"] == 3
     for chave_do_campo in ("persona", "nick", "guerreiro_id", "aula_id", "data_da_troca"):
         assert chave_do_campo not in corpo[0]
+
+
+def test_mestre_le_o_catalogo_das_duas_comunidades(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_tipo_de_recurso,
+    criar_item_de_catalogo_avulso,
+    criar_vinculo_do_mestre,
+):
+    """O enunciado de `catalogo-avulso` já dizia "as comunidades a que estão
+    vinculados"; sem o vínculo próprio do Mestre, a leitura dele saía vazia
+    (decisão do fundador, 2026-10-30)."""
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    comunidade_a = criar_comunidade("Comunidade A")
+    comunidade_b = criar_comunidade("Comunidade B")
+    de_fora = criar_comunidade("Comunidade de Fora")
+    tipo = criar_tipo_de_recurso(admin)
+
+    item_a = criar_item_de_catalogo_avulso(
+        admin, tipo, comunidade_a, criar_ponto_de_apoio(admin, comunidade_a), ativo=True
+    )
+    item_b = criar_item_de_catalogo_avulso(
+        admin, tipo, comunidade_b, criar_ponto_de_apoio(admin, comunidade_b), ativo=True
+    )
+    criar_item_de_catalogo_avulso(
+        admin, tipo, de_fora, criar_ponto_de_apoio(admin, de_fora), ativo=True
+    )
+
+    criar_vinculo_do_mestre(mestre, comunidade_a)
+    criar_vinculo_do_mestre(mestre, comunidade_b)
+
+    itens = listar_catalogo(sessao, operador=mestre, comunidade=None)
+
+    assert {item.id for item in itens} == {item_a.id, item_b.id}

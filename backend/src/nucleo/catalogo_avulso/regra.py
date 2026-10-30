@@ -3,6 +3,7 @@ from decimal import Decimal
 from sqlalchemy.orm import Session
 
 from ..comunidades.modelo import ComunidadeVirtual, VinculoJogador
+from ..comunidades.regra import comunidades_do_mestre
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..livro_razao.regra import saldo_de
 from ..personas.modelo import Papel, Persona
@@ -53,12 +54,13 @@ def _recalcular_ativo(sessao: Session, *, item: ItemDeCatalogoAvulso) -> None:
     item.ativo = falta_de_lastro(sessao, item=item) <= 0
 
 
-def _exigir_admin_ou_mestre_vinculado(operador: Persona, item: ItemDeCatalogoAvulso) -> None:
+def _exigir_admin_ou_mestre_vinculado(
+    sessao: Session, operador: Persona, item: ItemDeCatalogoAvulso
+) -> None:
     if operador.papel == Papel.admin:
         return
     if operador.papel == Papel.mestre:
-        vinculo: VinculoJogador | None = operador.vinculo_vigente
-        if vinculo is not None and vinculo.comunidade_virtual_id == item.comunidade_virtual_id:
+        if item.comunidade_virtual_id in comunidades_do_mestre(sessao, mestre=operador):
             return
     raise PermissaoNegada(
         mensagem="Só Admin ou Mestre vinculado à comunidade do item operam sobre ele."
@@ -126,8 +128,7 @@ def cadastrar_item(
         )
 
     if operador.papel == Papel.mestre:
-        vinculo: VinculoJogador | None = operador.vinculo_vigente
-        if vinculo is None or vinculo.comunidade_virtual_id != comunidade.id:
+        if comunidade.id not in comunidades_do_mestre(sessao, mestre=operador):
             raise PermissaoNegada(mensagem="Só o Mestre vinculado à comunidade cadastra item nela.")
         origem = OrigemDoCadastroDoItem.mestre
         situacao_de_homologacao = SituacaoDeHomologacao.nao_se_aplica
@@ -203,7 +204,7 @@ def ativar_item(
     `RN-14-42`)."""
     if item is None:
         raise ErroDeValidacao(mensagem="Ativação exige um item existente.", campo="item_id")
-    _exigir_admin_ou_mestre_vinculado(operador, item)
+    _exigir_admin_ou_mestre_vinculado(sessao, operador, item)
 
     if item.situacao_de_homologacao in SITUACOES_QUE_NUNCA_ATIVAM:
         raise ErroDeValidacao(
@@ -241,7 +242,7 @@ def alterar_estoque(
         raise ErroDeValidacao(
             mensagem="Alteração de estoque exige um item existente.", campo="item_id"
         )
-    _exigir_admin_ou_mestre_vinculado(operador, item)
+    _exigir_admin_ou_mestre_vinculado(sessao, operador, item)
     if estoque is None or estoque < ESTOQUE_MINIMO:
         raise ErroDeValidacao(mensagem="Estoque exige quantidade de ao menos 1.", campo="estoque")
 
@@ -259,7 +260,7 @@ def retirar_item(
     e preserva o registro, nunca apaga (`RF-09-102`)."""
     if item is None:
         raise ErroDeValidacao(mensagem="Retirada exige um item existente.", campo="item_id")
-    _exigir_admin_ou_mestre_vinculado(operador, item)
+    _exigir_admin_ou_mestre_vinculado(sessao, operador, item)
 
     item.ativo = False
     sessao.flush()
@@ -273,30 +274,34 @@ def listar_catalogo(
     comunidade: ComunidadeVirtual | None,
     incluir_inativos: bool = False,
 ) -> list[ItemDeCatalogoAvulso]:
-    """Guerreiro(a) lê a comunidade do seu vínculo; Mestre e Apoiador, a
-    comunidade do vínculo vigente deles — o mesmo `vinculo_vigente` que
-    `aulas.regra` já usa para o Mestre, aqui também alcançando o Apoiador;
-    Admin lê qualquer comunidade, sempre declarada. Inativos só para Admin e
-    Mestre vinculado (`RF-07-33`, `RF-04-50`, `RF-05-83`, `RF-09-103`,
-    `RF-01-24`)."""
+    """Guerreiro(a) e Apoiador leem a comunidade do vínculo deles; o Mestre,
+    **as comunidades a que está vinculado**, pela entidade própria que o
+    agendamento abre; Admin lê qualquer comunidade, sempre declarada.
+    Inativos só para Admin e Mestre vinculado (`RF-07-33`, `RF-04-50`,
+    `RF-05-83`, `RF-09-103`, `RF-01-24`)."""
     if operador.papel == Papel.admin:
         if comunidade is None:
             raise ErroDeValidacao(
                 mensagem="Leitura do catálogo avulso exige o filtro de comunidade.",
                 campo="comunidade_virtual_id",
             )
-        alvo_id = comunidade.id
-    elif operador.papel in (Papel.guerreiro, Papel.mestre, Papel.apoiador):
+        alvos = {comunidade.id}
+    elif operador.papel == Papel.mestre:
+        alvos = comunidades_do_mestre(sessao, mestre=operador)
+    elif operador.papel in (Papel.guerreiro, Papel.apoiador):
         vinculo: VinculoJogador | None = operador.vinculo_vigente
         if vinculo is None:
             return []
-        alvo_id = vinculo.comunidade_virtual_id
-        if operador.papel != Papel.mestre:
-            incluir_inativos = False
+        alvos = {vinculo.comunidade_virtual_id}
+        incluir_inativos = False
     else:
         raise PermissaoNegada(mensagem="Persona sem catálogo avulso a consultar.")
 
-    consulta = sessao.query(ItemDeCatalogoAvulso).filter_by(comunidade_virtual_id=alvo_id)
+    if not alvos:
+        return []
+    consulta = sessao.query(ItemDeCatalogoAvulso).filter(
+        ItemDeCatalogoAvulso.comunidade_virtual_id.in_(alvos)
+    )
     if not incluir_inativos:
         consulta = consulta.filter_by(ativo=True)
     return consulta.order_by(ItemDeCatalogoAvulso.registrado_em.desc()).all()

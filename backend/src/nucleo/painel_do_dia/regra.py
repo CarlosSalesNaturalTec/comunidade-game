@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula, Presenca, SituacaoDaAula
 from ..aulas.regra import aulas_vigentes
-from ..comunidades.modelo import VinculoJogador
+from ..comunidades.regra import comunidades_do_mestre
 from ..consentimentos.modelo import (
     AnexoDoTermo,
     DecisaoDeConsentimento,
@@ -110,14 +110,10 @@ def _resolver_aula(sessao: Session, *, operador: Persona) -> Aula | None:
     """
     candidatas = aulas_vigentes(sessao)
     if operador.papel == Papel.mestre:
-        vinculo: VinculoJogador | None = operador.vinculo_vigente
-        if vinculo is None:
+        alvos = comunidades_do_mestre(sessao, mestre=operador)
+        if not alvos:
             return None
-        candidatas = [
-            aula
-            for aula in candidatas
-            if aula.comunidade_virtual_id == vinculo.comunidade_virtual_id
-        ]
+        candidatas = [aula for aula in candidatas if aula.comunidade_virtual_id in alvos]
     if not candidatas:
         return None
     return sorted(candidatas, key=lambda aula: aula.inicio_em)[0]

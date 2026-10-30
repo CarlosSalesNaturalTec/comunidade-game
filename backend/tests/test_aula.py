@@ -25,6 +25,7 @@ def test_admin_agenda_aula_com_autoria_gravada(
     sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
 
@@ -33,6 +34,7 @@ def test_admin_agenda_aula_com_autoria_gravada(
         operador=admin,
         comunidade=comunidade,
         ponto_de_apoio=ponto_de_apoio,
+        mestres=[mestre],
         inicio_em=INICIO,
         fim_em=FIM,
     )
@@ -58,6 +60,7 @@ def test_mestre_nao_agenda_aula(sessao, criar_persona, criar_comunidade, criar_p
             operador=mestre,
             comunidade=comunidade,
             ponto_de_apoio=ponto_de_apoio,
+            mestres=[mestre],
             inicio_em=INICIO,
             fim_em=FIM,
         )
@@ -68,6 +71,7 @@ def test_aula_sem_comunidade_e_recusada(
     sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
 
@@ -77,6 +81,7 @@ def test_aula_sem_comunidade_e_recusada(
             operador=admin,
             comunidade=None,
             ponto_de_apoio=ponto_de_apoio,
+            mestres=[mestre],
             inicio_em=INICIO,
             fim_em=FIM,
         )
@@ -86,6 +91,7 @@ def test_aula_sem_comunidade_e_recusada(
 
 def test_aula_sem_ponto_de_apoio_e_recusada(sessao, criar_persona, criar_comunidade):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
 
     with pytest.raises(ErroDeValidacao) as excinfo:
@@ -94,6 +100,7 @@ def test_aula_sem_ponto_de_apoio_e_recusada(sessao, criar_persona, criar_comunid
             operador=admin,
             comunidade=comunidade,
             ponto_de_apoio=None,
+            mestres=[mestre],
             inicio_em=INICIO,
             fim_em=FIM,
         )
@@ -105,6 +112,7 @@ def test_aula_com_ponto_de_apoio_inativo_e_recusada(
     sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
     desativar_ponto_de_apoio(sessao, ponto_de_apoio, operador=admin, motivo="Fechou o espaço.")
@@ -116,6 +124,7 @@ def test_aula_com_ponto_de_apoio_inativo_e_recusada(
             operador=admin,
             comunidade=comunidade,
             ponto_de_apoio=ponto_de_apoio,
+            mestres=[mestre],
             inicio_em=INICIO,
             fim_em=FIM,
         )
@@ -127,6 +136,7 @@ def test_aula_com_ponto_de_apoio_de_outra_comunidade_e_recusada(
     sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade_da_aula = criar_comunidade("Comunidade da Aula")
     comunidade_do_ponto = criar_comunidade("Comunidade do Ponto")
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade_do_ponto)
@@ -137,6 +147,7 @@ def test_aula_com_ponto_de_apoio_de_outra_comunidade_e_recusada(
             operador=admin,
             comunidade=comunidade_da_aula,
             ponto_de_apoio=ponto_de_apoio,
+            mestres=[mestre],
             inicio_em=INICIO,
             fim_em=FIM,
         )
@@ -148,6 +159,7 @@ def test_aula_sem_horario_inicial_e_recusada(
     sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
 
@@ -157,6 +169,7 @@ def test_aula_sem_horario_inicial_e_recusada(
             operador=admin,
             comunidade=comunidade,
             ponto_de_apoio=ponto_de_apoio,
+            mestres=[mestre],
             inicio_em=None,
             fim_em=FIM,
         )
@@ -168,6 +181,7 @@ def test_aula_sem_horario_final_e_recusada(
     sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
 
@@ -177,6 +191,7 @@ def test_aula_sem_horario_final_e_recusada(
             operador=admin,
             comunidade=comunidade,
             ponto_de_apoio=ponto_de_apoio,
+            mestres=[mestre],
             inicio_em=INICIO,
             fim_em=None,
         )
@@ -188,6 +203,7 @@ def test_horario_final_anterior_ao_inicial_e_recusado(
     sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
 
@@ -197,6 +213,7 @@ def test_horario_final_anterior_ao_inicial_e_recusado(
             operador=admin,
             comunidade=comunidade,
             ponto_de_apoio=ponto_de_apoio,
+            mestres=[mestre],
             inicio_em=FIM,
             fim_em=INICIO,
         )
@@ -475,6 +492,7 @@ def test_aula_sem_recursos_declarados_nasce_confirmada(
     sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
 
@@ -483,6 +501,7 @@ def test_aula_sem_recursos_declarados_nasce_confirmada(
         operador=admin,
         comunidade=comunidade,
         ponto_de_apoio=ponto_de_apoio,
+        mestres=[mestre],
         inicio_em=INICIO,
         fim_em=FIM,
     )
@@ -501,6 +520,7 @@ def test_saldo_suficiente_reserva_e_confirma_a_aula(
     criar_lancamento,
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
     tipo = criar_tipo_de_recurso(admin)
@@ -511,6 +531,7 @@ def test_saldo_suficiente_reserva_e_confirma_a_aula(
         operador=admin,
         comunidade=comunidade,
         ponto_de_apoio=ponto_de_apoio,
+        mestres=[mestre],
         inicio_em=INICIO,
         fim_em=FIM,
         recursos_declarados=[RecursoDeclaradoEntrada(tipo=tipo, quantidade=Decimal("4.00"))],
@@ -533,6 +554,7 @@ def test_falta_em_um_tipo_deixa_a_aula_pendente_de_lastro(
     criar_lancamento,
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
     tipo_com_saldo = criar_tipo_de_recurso(admin, nome="Lanche")
@@ -544,6 +566,7 @@ def test_falta_em_um_tipo_deixa_a_aula_pendente_de_lastro(
         operador=admin,
         comunidade=comunidade,
         ponto_de_apoio=ponto_de_apoio,
+        mestres=[mestre],
         inicio_em=INICIO,
         fim_em=FIM,
         recursos_declarados=[
@@ -565,6 +588,7 @@ def test_aula_pendente_de_lastro_e_agendada_com_sucesso(
     criar_tipo_de_recurso,
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
     tipo = criar_tipo_de_recurso(admin)
@@ -574,6 +598,7 @@ def test_aula_pendente_de_lastro_e_agendada_com_sucesso(
         operador=admin,
         comunidade=comunidade,
         ponto_de_apoio=ponto_de_apoio,
+        mestres=[mestre],
         inicio_em=INICIO,
         fim_em=FIM,
         recursos_declarados=[RecursoDeclaradoEntrada(tipo=tipo, quantidade=Decimal("1.00"))],
@@ -588,6 +613,7 @@ def test_recurso_com_quantidade_zero_e_recusado(
     sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio, criar_tipo_de_recurso
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
     tipo = criar_tipo_de_recurso(admin)
@@ -598,6 +624,7 @@ def test_recurso_com_quantidade_zero_e_recusado(
             operador=admin,
             comunidade=comunidade,
             ponto_de_apoio=ponto_de_apoio,
+            mestres=[mestre],
             inicio_em=INICIO,
             fim_em=FIM,
             recursos_declarados=[RecursoDeclaradoEntrada(tipo=tipo, quantidade=Decimal("0"))],
@@ -610,6 +637,7 @@ def test_recurso_de_tipo_inexistente_e_recusado(
     sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio
 ):
     admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
 
@@ -619,6 +647,7 @@ def test_recurso_de_tipo_inexistente_e_recusado(
             operador=admin,
             comunidade=comunidade,
             ponto_de_apoio=ponto_de_apoio,
+            mestres=[mestre],
             inicio_em=INICIO,
             fim_em=FIM,
             recursos_declarados=[RecursoDeclaradoEntrada(tipo=None, quantidade=Decimal("1.00"))],
@@ -674,12 +703,12 @@ def test_mestre_da_comunidade_cancela_a_aula(
     criar_persona,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     aula = criar_aula(admin, comunidade)
 
     cancelada = cancelar_aula(sessao, operador=mestre, aula=aula, motivo="Chuva forte.")
@@ -690,13 +719,13 @@ def test_mestre_da_comunidade_cancela_a_aula(
 
 
 def test_mestre_de_outra_comunidade_e_recusado(
-    sessao, criar_persona, criar_comunidade, criar_aula, criar_vinculo_jogador
+    sessao, criar_persona, criar_comunidade, criar_aula, criar_vinculo_do_mestre
 ):
     admin = criar_persona(Papel.admin)
     comunidade_da_aula = criar_comunidade("Comunidade da Aula")
     outra_comunidade = criar_comunidade("Outra Comunidade")
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, outra_comunidade)
+    criar_vinculo_do_mestre(mestre, outra_comunidade)
     aula = criar_aula(admin, comunidade_da_aula)
 
     with pytest.raises(PermissaoNegada):
@@ -790,7 +819,7 @@ def test_mestre_le_apenas_a_agenda_das_suas_comunidades(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -799,7 +828,7 @@ def test_mestre_le_apenas_a_agenda_das_suas_comunidades(
     aula_da_comunidade = criar_aula(admin, comunidade)
     criar_aula(admin, outra_comunidade)
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     token, _ = criar_sessao_de_teste(mestre)
 
     resposta = cliente.get(

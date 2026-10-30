@@ -6,6 +6,7 @@ from ..aulas.modelo import Aula
 from ..catalogo_avulso.modelo import ItemDeCatalogoAvulso
 from ..catalogo_avulso.regra import falta_de_lastro
 from ..comunidades.modelo import VinculoJogador
+from ..comunidades.regra import comunidades_do_mestre
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..livro_razao.regra import lancar_debito
 from ..personas.modelo import Papel, Persona
@@ -98,8 +99,7 @@ def registrar_troca(
         raise PermissaoNegada(mensagem="Só o Mestre registra a troca.")
     if aula is None:
         raise ErroDeValidacao(mensagem="Troca exige uma aula.", campo="aula_id")
-    vinculo: VinculoJogador | None = operador.vinculo_vigente
-    if vinculo is None or vinculo.comunidade_virtual_id != aula.comunidade_virtual_id:
+    if aula.comunidade_virtual_id not in comunidades_do_mestre(sessao, mestre=operador):
         raise PermissaoNegada(
             mensagem="Só o Mestre vinculado à comunidade da aula registra a troca."
         )
@@ -156,13 +156,13 @@ def listar_trocas(sessao: Session, *, operador: Persona) -> list[Troca]:
             .all()
         )
     if operador.papel == Papel.mestre:
-        vinculo: VinculoJogador | None = operador.vinculo_vigente
-        if vinculo is None:
+        alvos = comunidades_do_mestre(sessao, mestre=operador)
+        if not alvos:
             return []
         return (
             sessao.query(Troca)
             .join(Aula, Aula.id == Troca.aula_id)
-            .filter(Aula.comunidade_virtual_id == vinculo.comunidade_virtual_id)
+            .filter(Aula.comunidade_virtual_id.in_(alvos))
             .order_by(Troca.registrado_em.desc())
             .all()
         )

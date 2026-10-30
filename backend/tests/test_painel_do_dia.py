@@ -60,12 +60,17 @@ def test_fora_de_qualquer_janela_o_painel_volta_vazio(
 
 
 def test_mestre_le_apenas_o_encontro_da_sua_comunidade(
-    sessao, criar_persona, criar_comunidade, criar_ponto_de_apoio, criar_aula, criar_vinculo_jogador
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_aula,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     mestre = criar_persona(Papel.mestre)
     comunidade_do_mestre = criar_comunidade("Comunidade do Mestre")
-    criar_vinculo_jogador(mestre, comunidade_do_mestre)
+    criar_vinculo_do_mestre(mestre, comunidade_do_mestre)
     outra_comunidade = criar_comunidade("Outra Comunidade")
     criar_aula(admin, outra_comunidade)
 
@@ -426,3 +431,40 @@ def test_atividade_removida_sai_do_previsto_e_a_equipe_fica_sem_missao(
     assert painel.atividades_previstas == []
     assert painel.equipes[0].missao_id is None
     assert painel.equipes[0].missao_titulo is None
+
+
+def test_duas_aulas_vigentes_nas_comunidades_do_mestre_servem_a_mais_antiga(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_vinculo_do_mestre,
+):
+    """Caso que **só o Mestre com mais de uma comunidade alcança** — antes
+    do vínculo próprio ele tinha uma só, e o desempate era exclusivo do
+    Admin. O painel serve um encontro por vez, e a escolha é a de início
+    mais antigo (`RF-01-32`, `RF-01-18`)."""
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    comunidade_a = criar_comunidade("Comunidade A")
+    comunidade_b = criar_comunidade("Comunidade B")
+    criar_vinculo_do_mestre(mestre, comunidade_a)
+    criar_vinculo_do_mestre(mestre, comunidade_b)
+
+    agora = datetime.now(UTC)
+    mais_antiga = criar_aula(
+        admin,
+        comunidade_a,
+        inicio_em=agora - timedelta(hours=2),
+        fim_em=agora + timedelta(hours=1),
+    )
+    criar_aula(
+        admin,
+        comunidade_b,
+        inicio_em=agora - timedelta(minutes=30),
+        fim_em=agora + timedelta(hours=1),
+    )
+
+    painel = montar_painel_do_dia(sessao, operador=mestre)
+
+    assert painel.aula_id == mais_antiga.id

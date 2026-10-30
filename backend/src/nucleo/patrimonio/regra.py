@@ -4,7 +4,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..aportes.modelo import Aporte
-from ..comunidades.modelo import VinculoJogador
+from ..comunidades.regra import escopo_de_comunidade_da_leitura
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
@@ -156,28 +156,22 @@ def listar_ficha_de_vida(
 def listar_acervo(
     sessao: Session, *, operador: Persona, comunidade_virtual_id: uuid.UUID | None
 ) -> list[ItemPatrimonial]:
-    """Admin lê qualquer comunidade, sempre declarada; Mestre lê só a do
-    seu vínculo vigente. Apoiador, Guerreiro(a) e responsável recebem 403
-    (`RF-07-11`, `RN-07-10`, `RF-01-16`)."""
-    if operador.papel == Papel.admin:
-        if comunidade_virtual_id is None:
-            raise ErroDeValidacao(
-                mensagem="Leitura do acervo exige o filtro de comunidade.",
-                campo="comunidade_virtual_id",
-            )
-        alvo_id = comunidade_virtual_id
-    elif operador.papel == Papel.mestre:
-        vinculo: VinculoJogador | None = operador.vinculo_vigente
-        if vinculo is None:
-            return []
-        alvo_id = vinculo.comunidade_virtual_id
-    else:
-        raise PermissaoNegada(mensagem="Persona sem acervo patrimonial a consultar.")
+    """Admin lê qualquer comunidade, sempre declarada; Mestre lê **as
+    comunidades a que está vinculado**. Apoiador, Guerreiro(a) e responsável
+    recebem 403 (`RF-07-11`, `RN-07-10`, `RF-01-16`)."""
+    alvos = escopo_de_comunidade_da_leitura(
+        sessao,
+        operador=operador,
+        comunidade_virtual_id=comunidade_virtual_id,
+        mensagem_de_recusa="Persona sem acervo patrimonial a consultar.",
+    )
+    if not alvos:
+        return []
 
     return (
         sessao.query(ItemPatrimonial)
         .join(PontoDeApoio, PontoDeApoio.id == ItemPatrimonial.ponto_de_apoio_id)
-        .filter(PontoDeApoio.comunidade_virtual_id == alvo_id)
+        .filter(PontoDeApoio.comunidade_virtual_id.in_(alvos))
         .order_by(ItemPatrimonial.registrado_em.desc())
         .all()
     )

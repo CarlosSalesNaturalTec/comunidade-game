@@ -54,6 +54,10 @@ export interface AgendarAulaEntrada {
   ponto_de_apoio_id: string;
   inicio_em: string;
   fim_em: string;
+  // Um ou mais Mestres, obrigatórios: é o agendamento que dá comunidade ao
+  // Mestre, como já dá ao Guerreiro(a) que nela se cadastra (`RF-02-30`,
+  // decisão do fundador de 2026-10-30).
+  mestres: string[];
   // O que a aula consome — a reserva é disparada pelo núcleo, nunca
   // calculada aqui (`RF-02-31`, documento 04 §1).
   recursos_declarados: RecursoDeclarado[];

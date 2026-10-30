@@ -10,7 +10,7 @@ TIPO = TipoDeConsentimento.autorizacao_de_divulgacao
 def _guerreiro_na_comunidade(
     criar_persona,
     criar_nick,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     *,
     comunidade,
     nick,
@@ -38,7 +38,7 @@ def test_turma_inteira_aparece_mesmo_sem_autorizacao(
     criar_sessao_de_teste,
     criar_persona,
     criar_nick,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_comunidade,
     criar_trilha,
     criar_ponto_regular,
@@ -50,7 +50,7 @@ def test_turma_inteira_aparece_mesmo_sem_autorizacao(
     eu = _guerreiro_na_comunidade(
         criar_persona,
         criar_nick,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         comunidade=comunidade,
         nick="eu-mesma",
         total=10,
@@ -60,7 +60,7 @@ def test_turma_inteira_aparece_mesmo_sem_autorizacao(
     _guerreiro_na_comunidade(
         criar_persona,
         criar_nick,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         comunidade=comunidade,
         nick="sem-divulgacao",
         total=20,
@@ -82,7 +82,7 @@ def test_propria_posicao_vem_mesmo_fora_da_pagina(
     criar_sessao_de_teste,
     criar_persona,
     criar_nick,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_comunidade,
     criar_trilha,
     criar_ponto_regular,
@@ -94,7 +94,7 @@ def test_propria_posicao_vem_mesmo_fora_da_pagina(
     ultimo = _guerreiro_na_comunidade(
         criar_persona,
         criar_nick,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         comunidade=comunidade,
         nick="ultima-posicao",
         total=1,
@@ -105,7 +105,7 @@ def test_propria_posicao_vem_mesmo_fora_da_pagina(
         _guerreiro_na_comunidade(
             criar_persona,
             criar_nick,
-            criar_vinculo_jogador,
+            criar_vinculo_do_mestre,
             comunidade=comunidade,
             nick=f"na-frente-{indice}",
             total=100 - indice,
@@ -129,7 +129,7 @@ def test_ordena_so_por_ponto_regular(
     criar_sessao_de_teste,
     criar_persona,
     criar_nick,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_comunidade,
     criar_trilha,
     criar_ponto_regular,
@@ -142,7 +142,7 @@ def test_ordena_so_por_ponto_regular(
     muito_extra_pouco_regular = _guerreiro_na_comunidade(
         criar_persona,
         criar_nick,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         comunidade=comunidade,
         nick="muito-extra",
         total=5,
@@ -154,7 +154,7 @@ def test_ordena_so_por_ponto_regular(
     _guerreiro_na_comunidade(
         criar_persona,
         criar_nick,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         comunidade=comunidade,
         nick="so-regular",
         total=50,
@@ -178,7 +178,7 @@ def test_filtra_por_trilha_e_por_poder(
     criar_sessao_de_teste,
     criar_persona,
     criar_nick,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_comunidade,
     criar_trilha,
     criar_poder,
@@ -191,7 +191,7 @@ def test_filtra_por_trilha_e_por_poder(
     poder = criar_poder(admin)
 
     eu = _guerreiro_na_comunidade(
-        criar_persona, criar_nick, criar_vinculo_jogador, comunidade=comunidade, nick="eu-recorte"
+        criar_persona, criar_nick, criar_vinculo_do_mestre, comunidade=comunidade, nick="eu-recorte"
     )
     criar_ponto_regular(eu, trilha_a, total=5)
     criar_ponto_regular(eu, poder=poder, total=50)
@@ -199,7 +199,7 @@ def test_filtra_por_trilha_e_por_poder(
     colega = _guerreiro_na_comunidade(
         criar_persona,
         criar_nick,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         comunidade=comunidade,
         nick="colega-recorte",
     )
@@ -237,7 +237,7 @@ def test_ranking_nao_alcanca_comunidade_alheia(
     criar_sessao_de_teste,
     criar_persona,
     criar_nick,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_comunidade,
 ):
     comunidade_do_guerreiro = criar_comunidade("Minha comunidade")
@@ -245,14 +245,14 @@ def test_ranking_nao_alcanca_comunidade_alheia(
     guerreiro = _guerreiro_na_comunidade(
         criar_persona,
         criar_nick,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         comunidade=comunidade_do_guerreiro,
         nick="guerreiro-de-outra",
     )
     _guerreiro_na_comunidade(
         criar_persona,
         criar_nick,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         comunidade=outra_comunidade,
         nick="colega-de-fora",
     )
@@ -273,7 +273,7 @@ def test_saida_sem_dado_pessoal(
     criar_sessao_de_teste,
     criar_persona,
     criar_nick,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_comunidade,
     criar_trilha,
     criar_ponto_regular,
@@ -284,7 +284,7 @@ def test_saida_sem_dado_pessoal(
     eu = _guerreiro_na_comunidade(
         criar_persona,
         criar_nick,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         comunidade=comunidade,
         nick="sem-dado-pessoal",
         total=10,
@@ -306,7 +306,7 @@ def test_comunidade_vem_do_vinculo_sem_serie_de_coleta(
     criar_sessao_de_teste,
     criar_persona,
     criar_nick,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_comunidade,
 ):
     """O que prendia a carta e o ranking à coleta era a comunidade vir de
@@ -316,7 +316,7 @@ def test_comunidade_vem_do_vinculo_sem_serie_de_coleta(
     eu = _guerreiro_na_comunidade(
         criar_persona,
         criar_nick,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         comunidade=comunidade,
         nick="sem-coleta",
     )
@@ -334,14 +334,14 @@ def test_propria_posicao_existe_sem_ponto_creditado(
     criar_sessao_de_teste,
     criar_persona,
     criar_nick,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_comunidade,
 ):
     comunidade = criar_comunidade("Comunidade de quem acabou de chegar")
     eu = _guerreiro_na_comunidade(
         criar_persona,
         criar_nick,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         comunidade=comunidade,
         nick="acabei-de-chegar",
     )
@@ -362,14 +362,14 @@ def test_sem_vinculo_vigente_nao_ha_ranking(
     criar_sessao_de_teste,
     criar_persona,
     criar_nick,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_comunidade,
 ):
     comunidade = criar_comunidade("Comunidade de quem saiu")
     eu = _guerreiro_na_comunidade(
         criar_persona,
         criar_nick,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         comunidade=comunidade,
         nick="vinculo-encerrado",
     )

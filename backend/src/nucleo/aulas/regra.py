@@ -6,13 +6,21 @@ from decimal import Decimal
 from sqlalchemy.orm import Session
 
 from ..comunidades.modelo import ComunidadeVirtual, VinculoJogador
+from ..comunidades.regra import abrir_vinculo_do_mestre, comunidades_do_mestre
 from ..erros import ErroDeValidacao, PermissaoNegada, PresencaJaAnulada
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
 from ..reservas.regra import liberar_reservas_da_aula, tentar_reservar_recursos
 from ..tempo import agora
-from .modelo import Aula, ModoDeComprovacao, Presenca, RecursoDeclaradoDaAula, SituacaoDaAula
+from .modelo import (
+    Aula,
+    MestreDaAula,
+    ModoDeComprovacao,
+    Presenca,
+    RecursoDeclaradoDaAula,
+    SituacaoDaAula,
+)
 
 _SITUACOES_COM_DESFECHO = (SituacaoDaAula.realizada, SituacaoDaAula.cancelada)
 
@@ -35,6 +43,7 @@ def agendar_aula(
     ponto_de_apoio: PontoDeApoio | None,
     inicio_em: datetime | None,
     fim_em: datetime | None,
+    mestres: list[Persona | None] | None = None,
     recursos_declarados: list[RecursoDeclaradoEntrada] | None = None,
 ) -> Aula:
     """Restrita ao Admin — o Mestre lê o painel do dia, mas não escreve em
@@ -76,6 +85,20 @@ def agendar_aula(
             campo="fim_em",
         )
 
+    # Um ou mais Mestres, obrigatórios desde a decisão do fundador de
+    # 2026-10-30 (`RF-02-30`, documento 09 §1): é este ato que dá comunidade
+    # ao Mestre, como a aula agendada já dá ao Guerreiro(a) que nela se
+    # cadastra (invariante 4 do documento 99 §6).
+    mestres = mestres or []
+    if not mestres:
+        raise ErroDeValidacao(mensagem="Aula exige ao menos um Mestre.", campo="mestres")
+    for mestre in mestres:
+        if mestre is None or mestre.papel != Papel.mestre:
+            raise ErroDeValidacao(
+                mensagem="Só o Mestre ministra aula.",
+                campo="mestres",
+            )
+
     recursos_declarados = recursos_declarados or []
     for entrada in recursos_declarados:
         if entrada.tipo is None:
@@ -106,6 +129,11 @@ def agendar_aula(
         papel_do_autor=operador.papel.value,
     )
     sessao.add(aula)
+    sessao.flush()
+
+    for mestre in mestres:
+        sessao.add(MestreDaAula(aula_id=aula.id, mestre_id=mestre.id))
+        abrir_vinculo_do_mestre(sessao, mestre=mestre, comunidade_id=comunidade.id)
     sessao.flush()
 
     for entrada in recursos_declarados:
@@ -159,8 +187,7 @@ def cancelar_aula(
     if operador.papel == Papel.admin:
         pass
     elif operador.papel == Papel.mestre:
-        vinculo: VinculoJogador | None = operador.vinculo_vigente
-        if vinculo is None or vinculo.comunidade_virtual_id != aula.comunidade_virtual_id:
+        if aula.comunidade_virtual_id not in comunidades_do_mestre(sessao, mestre=operador):
             raise PermissaoNegada(mensagem="Só o Mestre vinculado à comunidade da aula a cancela.")
     else:
         raise PermissaoNegada(mensagem="Só Admin ou Mestre da comunidade cancelam aula.")
@@ -179,29 +206,6 @@ def cancelar_aula(
 
     liberar_reservas_da_aula(sessao, aula=aula)
     return aula
-
-
-def escopo_de_comunidade_da_leitura(
-    *, operador: Persona, comunidade_virtual_id: uuid.UUID | None
-) -> uuid.UUID | None:
-    """Resolve a comunidade a que a leitura da agenda se restringe, no molde
-    de `listar_acervo` (`patrimonio/regra.py`) e de
-    `pontos_de_apoio.regra.escopo_de_comunidade_da_leitura`: Admin declara a
-    comunidade, sempre obrigatória; Mestre herda do vínculo vigente, e sem
-    vínculo não tem o que listar — `None` aqui sinaliza lista vazia, nunca
-    erro. Demais papéis são recusados (`RF-02-12`, `RF-01-28`, `RF-01-18`,
-    `RF-01-16`).
-    """
-    if operador.papel == Papel.admin:
-        if comunidade_virtual_id is None:
-            raise ErroDeValidacao(
-                mensagem="Esta consulta exige o filtro de comunidade.", campo="comunidade"
-            )
-        return comunidade_virtual_id
-    if operador.papel == Papel.mestre:
-        vinculo: VinculoJogador | None = operador.vinculo_vigente
-        return vinculo.comunidade_virtual_id if vinculo is not None else None
-    raise PermissaoNegada(mensagem="Persona sem agenda de gestão a consultar.")
 
 
 def aulas_vigentes(sessao: Session) -> list[Aula]:

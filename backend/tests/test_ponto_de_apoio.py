@@ -212,7 +212,7 @@ def test_mestre_le_apenas_pontos_de_apoio_do_seu_vinculo(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_ponto_de_apoio,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -221,7 +221,7 @@ def test_mestre_le_apenas_pontos_de_apoio_do_seu_vinculo(
     criar_ponto_de_apoio(admin, comunidade, nome="Sede")
     criar_ponto_de_apoio(admin, outra_comunidade, nome="Sede de Outra Comunidade")
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     token, _ = criar_sessao_de_teste(mestre)
 
     resposta = cliente.get(

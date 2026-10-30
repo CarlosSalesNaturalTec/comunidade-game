@@ -253,7 +253,10 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
    novos Admins entram manualmente por outro Admin. **Login não cria cadastro.**
 4. **Comunidade Virtual é criada vazia por Admin**; todo Guerreiro(a) é vinculado a exatamente
    uma, pela **comunidade da aula agendada** em que se cadastra — e sem aula agendada o App 01
-   não opera. **No Ciclo 01 não há troca de comunidade.**
+   não opera. **No Ciclo 01 não há troca de comunidade.** O **Mestre** tem vínculo próprio, em
+   entidade separada: **uma ou mais** comunidades, abertas pelo agendamento das aulas que ele
+   ministra, e **sem encerramento** no Ciclo 01. O **Admin não tem vínculo de comunidade** —
+   declara a comunidade em cada leitura de gestão, ou alcança todas.
 5. **Toda trilha abre com missão de sondagem, tem ao menos um desafio de coleta de dados
    reais** e termina em **criação original** apresentada publicamente, com autoria creditada.
    As três são trava de publicação da trilha, não recomendação; a etiqueta ODS se junta a elas

@@ -392,14 +392,14 @@ class TestPresencaSemRede:
         criar_sessao_de_teste,
         criar_comunidade,
         criar_aula,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         criar_nick,
         com_pin,
     ):
         chave, _ = criar_chave(APP_01)
         mestre = com_pin(criar_persona(Papel.mestre))
         comunidade = criar_comunidade()
-        criar_vinculo_jogador(mestre, comunidade)
+        criar_vinculo_do_mestre(mestre, comunidade)
         guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
         criar_nick(guerreiro, "Chegou_sem_rede")
         aula = criar_aula(mestre, comunidade)

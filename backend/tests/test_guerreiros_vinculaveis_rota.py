@@ -6,7 +6,7 @@ def test_mestre_ve_os_guerreiros_ativos_da_sua_comunidade(
     criar_chave,
     criar_persona,
     criar_comunidade,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_nick,
     criar_sessao_de_teste,
 ):
@@ -14,7 +14,7 @@ def test_mestre_ve_os_guerreiros_ativos_da_sua_comunidade(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     mestre = criar_persona(Papel.mestre, criada_por=admin)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade, avatar="avatar-1")
     criar_nick(guerreiro, "guerreira-teste")
     token, _ = criar_sessao_de_teste(mestre)
@@ -39,7 +39,7 @@ def test_guerreiro_de_outra_comunidade_nao_aparece(
     criar_chave,
     criar_persona,
     criar_comunidade,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_sessao_de_teste,
 ):
     chave, _ = criar_chave()
@@ -47,7 +47,7 @@ def test_guerreiro_de_outra_comunidade_nao_aparece(
     comunidade_do_mestre = criar_comunidade("Comunidade do Mestre")
     outra_comunidade = criar_comunidade("Outra Comunidade")
     mestre = criar_persona(Papel.mestre, criada_por=admin)
-    criar_vinculo_jogador(mestre, comunidade_do_mestre)
+    criar_vinculo_do_mestre(mestre, comunidade_do_mestre)
     criar_persona(Papel.guerreiro, comunidade=outra_comunidade)
     token, _ = criar_sessao_de_teste(mestre)
 
