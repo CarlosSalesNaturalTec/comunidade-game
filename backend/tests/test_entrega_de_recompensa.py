@@ -530,3 +530,31 @@ def test_leitura_por_rota_traz_tipo_de_recurso_quantidade_e_lancamento_para_o_ad
     assert item["lancamento_id"] == str(entrega.lancamento_id)
     for chave_do_item in item:
         assert "moeda" not in chave_do_item and "real" not in chave_do_item
+
+
+def test_mestre_le_entregas_das_duas_comunidades(sessao, cenario, criar_vinculo_do_mestre):
+    """O plural que a spec passou a declarar: o Mestre vinculado a duas
+    comunidades lê o histórico das duas (decisão do fundador, 2026-10-30)."""
+    c1 = cenario()
+    c2 = cenario()
+    criar_vinculo_do_mestre(c1["mestre"], c2["comunidade"])
+
+    entrega1 = registrar_entrega(
+        sessao,
+        operador=c1["mestre"],
+        recompensa=c1["recompensa"],
+        guerreiro=c1["guerreiro"],
+        ponto_de_apoio=c1["ponto_de_apoio"],
+    )
+    entrega2 = registrar_entrega(
+        sessao,
+        operador=c1["mestre"],
+        recompensa=c2["recompensa"],
+        guerreiro=c2["guerreiro"],
+        ponto_de_apoio=c2["ponto_de_apoio"],
+    )
+    sessao.commit()
+
+    entregas = listar_entregas(sessao, operador=c1["mestre"])
+
+    assert {e.id for e in entregas} == {entrega1.id, entrega2.id}

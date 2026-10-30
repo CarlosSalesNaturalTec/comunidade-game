@@ -177,3 +177,22 @@ def test_persona_que_nao_e_mestre_e_recusada_na_escalacao(
         )
 
     assert excinfo.value.campo == "mestres"
+
+
+def test_o_vinculo_do_mestre_nao_tem_como_ser_encerrado(sessao, criar_persona, criar_comunidade):
+    """O "nunca encerra" é garantido pela **estrutura**, não por disciplina:
+    a tabela não tem `data_fim`, e o módulo de regra não expõe função que
+    encerre o vínculo — diferente do Guerreiro(a), que tem
+    `fim-de-vinculo` (`RF-13-44`). Se algum dia houver encerramento, é
+    decisão do fundador e este teste é o que a obriga a passar por aqui.
+    """
+    from nucleo.comunidades import regra as regra_de_comunidades
+
+    assert "data_fim" not in VinculoDoMestre.__table__.columns
+
+    encerramentos = [
+        nome
+        for nome in dir(regra_de_comunidades)
+        if "encerrar" in nome and "mestre" in nome.lower()
+    ]
+    assert encerramentos == []
