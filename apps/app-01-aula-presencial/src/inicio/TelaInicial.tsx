@@ -14,6 +14,7 @@ import { TelaDeMedicaoDoLimiar } from "../bancada/TelaDeMedicaoDoLimiar";
 import { AreaDetalhadaDeDireitos } from "../direitos/AreaDetalhadaDeDireitos";
 import { GuardaDePresenca } from "../entrada/GuardaDePresenca";
 import { TelaDeEntradaDoGuerreiro } from "../entrada/TelaDeEntradaDoGuerreiro";
+import { TelaDeEntregasDoEncontro } from "../entregas/TelaDeEntregasDoEncontro";
 import { TelaDeEquipes } from "../equipes/TelaDeEquipes";
 import { FilaDePresencaPendente } from "../fila/FilaDePresencaPendente";
 import { contarFilaDePresenca } from "../fila/filaDePresenca";
@@ -44,6 +45,7 @@ type Caminho =
   | "quiz"
   | "trilhas"
   | "medicao"
+  | "entregas"
   | "encerramento";
 
 interface Props {
@@ -296,6 +298,20 @@ export function TelaInicial({
     );
   }
 
+  // As entregas pendentes do encontro: ato de quem opera, como a medição —
+  // não abre sessão de Guerreiro(a) e não passa pela guarda de presença, que
+  // é dos caminhos da criança. A presença de quem recebe é conferida pelo
+  // núcleo, no ato da confirmação (`RF-09-75`, `RF-09-76`).
+  if (caminho === "entregas") {
+    return (
+      <TelaDeEntregasDoEncontro
+        tokenDeTrabalho={tokenDeTrabalho}
+        aulaId={aulaId}
+        aoVoltar={() => definirCaminho("inicio")}
+      />
+    );
+  }
+
   // O encerramento da sessão de trabalho, alcançado só daqui: a tela inicial é
   // a que aparece entre um atendimento e o seguinte, e fora dela quem está com
   // o aparelho é uma criança no meio do dela (`RF-04-71`, `RF-04-28`, design —
@@ -446,6 +462,21 @@ export function TelaInicial({
                 : abrindoMomentoDeTroca
                   ? "Abrindo…"
                   : "Abrir o momento de troca"}
+            </button>
+          )}
+          {/* As entregas acompanham a chave do momento de troca, por serem
+              as duas do encontro em curso, e aparecem **só ao Mestre**: o
+              Admin nunca confirma entrega, e o núcleo recusaria de todo modo
+              — a guarda é das duas pontas, como já é na troca (`RF-07-13`,
+              `RN-02-17`, design — decisão 4). */}
+          {papelDeTrabalho === "mestre" && (
+            <button
+              type="button"
+              className="cg-caminho"
+              onClick={() => definirCaminho("entregas")}
+            >
+              <Icone glifo="entregas" />
+              Entregas pendentes do encontro — confirmar a recompensa conquistada
             </button>
           )}
           <button

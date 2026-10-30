@@ -231,3 +231,80 @@ def test_fila_reune_as_pendencias_das_duas_comunidades_do_mestre(
         c1["guerreiro"].id,
         c2["guerreiro"].id,
     }
+
+
+# --- A fila do encontro na App 01 (`RF-09-75`, fatia 31) -----------------------
+
+
+def test_fila_da_aula_traz_so_quem_registrou_presenca(
+    sessao, cenario, criar_persona, criar_aula, criar_presenca
+):
+    c = cenario()
+    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=c["ponto_de_apoio"])
+    _desbloquear(sessao, guerreiro=c["guerreiro"], missao=c["missao"])
+    criar_presenca(aula, c["guerreiro"])
+
+    ausente = criar_persona(Papel.guerreiro, comunidade=c["comunidade"])
+    _desbloquear(sessao, guerreiro=ausente, missao=c["missao"])
+
+    pendencias = listar_entregas_pendentes(sessao, operador=c["mestre"], aula_id=aula.id)
+
+    assert [p.guerreiro_id for p in pendencias] == [c["guerreiro"].id]
+
+
+def test_presenca_anulada_tira_a_pendencia_da_fila_da_aula(
+    sessao, cenario, criar_aula, criar_presenca
+):
+    c = cenario()
+    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=c["ponto_de_apoio"])
+    _desbloquear(sessao, guerreiro=c["guerreiro"], missao=c["missao"])
+    criar_presenca(aula, c["guerreiro"], confirmador=c["mestre"], anulada=True)
+
+    pendencias = listar_entregas_pendentes(sessao, operador=c["mestre"], aula_id=aula.id)
+
+    assert pendencias == []
+
+
+def test_fila_sem_recorte_segue_sendo_das_comunidades(
+    sessao, cenario, criar_persona, criar_aula, criar_presenca
+):
+    c = cenario()
+    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=c["ponto_de_apoio"])
+    _desbloquear(sessao, guerreiro=c["guerreiro"], missao=c["missao"])
+    criar_presenca(aula, c["guerreiro"])
+
+    sem_presenca = criar_persona(Papel.guerreiro, comunidade=c["comunidade"])
+    _desbloquear(sessao, guerreiro=sem_presenca, missao=c["missao"])
+
+    pendencias = listar_entregas_pendentes(sessao, operador=c["mestre"])
+
+    assert {p.guerreiro_id for p in pendencias} == {c["guerreiro"].id, sem_presenca.id}
+
+
+def test_fila_de_aula_de_outra_comunidade_e_recusada(sessao, cenario, criar_comunidade, criar_aula):
+    c = cenario()
+    outra_comunidade = criar_comunidade("Outra Comunidade")
+    aula_de_fora = criar_aula(c["admin"], outra_comunidade)
+
+    with pytest.raises(PermissaoNegada):
+        listar_entregas_pendentes(sessao, operador=c["mestre"], aula_id=aula_de_fora.id)
+
+
+def test_fila_do_encontro_por_rota(
+    sessao, cliente, criar_chave, criar_sessao_de_teste, cenario, criar_aula, criar_presenca
+):
+    c = cenario()
+    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=c["ponto_de_apoio"])
+    _desbloquear(sessao, guerreiro=c["guerreiro"], missao=c["missao"])
+    criar_presenca(aula, c["guerreiro"])
+    chave, _ = criar_chave()
+    token, _ = criar_sessao_de_teste(c["mestre"])
+
+    resposta = cliente.get(
+        f"/v1/recompensas-de-marco/pendentes?aula_id={aula.id}",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert [item["guerreiro_id"] for item in corpo] == [str(c["guerreiro"].id)]

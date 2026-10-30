@@ -591,12 +591,14 @@ desde o começo o que cada conquista lhe rende. A trilha é bem comum e não tem
 lastro do recurso **não** é exigido na publicação, e a garantia de que a recompensa está provida
 passa a valer no ato da entrega.
 
-| Regra                | Definição                                                                                                                       |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Quem confirma        | O **Mestre vinculado à comunidade do Guerreiro(a)**, que escolhe o ponto de apoio de onde o recurso sai; o Admin nunca confirma |
-| Lastro               | **Reverificado no ato da entrega**, contra o saldo do ponto de apoio escolhido                                                  |
-| Marco alcançado      | Conferido contra o percurso já derivado da pontuação (missões concluídas)                                                       |
-| Baixa no livro-razão | Sai **nesse ato**, junto da entrega, sem aula declarada e sem devolução possível                                                |
+| Regra                 | Definição                                                                                                                                     |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Quem confirma         | O **Mestre vinculado à comunidade do Guerreiro(a)**; o Admin nunca confirma                                                                   |
+| De onde o recurso sai | **No encontro**, o ponto de apoio **da aula**, automático; **fora do encontro**, o que o Mestre escolhe                                       |
+| Lastro                | **Reverificado no ato da entrega**, contra o saldo do ponto de apoio de onde o recurso sai                                                    |
+| Marco alcançado       | Conferido contra o percurso já derivado da pontuação (missões concluídas)                                                                     |
+| Alcance               | **No encontro**, só quem tem **presença registrada naquela aula** — quem o Mestre tem à frente é quem chegou; fora dele, a comunidade inteira |
+| Baixa no livro-razão  | Sai **nesse ato**, junto da entrega, sem aula declarada e sem devolução possível                                                              |
 
 **A missão é o marco de uso corrente.** Ao cadastrar uma missão, o Mestre declara se o
 desbloqueio dela libera recompensa — e é por aí que saem **as camisas, os livros e os kits do

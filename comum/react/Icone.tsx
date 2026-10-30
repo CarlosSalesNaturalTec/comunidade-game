@@ -19,6 +19,7 @@ export type NomeDeGlifo =
   | "som-desligado"
   | "encerrar"
   | "momento-de-troca"
+  | "entregas"
   // Os glifos de poder do documento 15 §8.4 — um por poder do catálogo do
   // documento 02 §2, mais o genérico. Quem os escolhe pelo nome do poder é
   // `GlifoDePoder`; aqui são glifos como os demais, na mesma grade.
@@ -127,6 +128,18 @@ const GLIFOS: Record<NomeDeGlifo, ReactElement> = {
       <path d="m12 7.5 2.5 2.5-2.5 2.5" />
       <path d="M16.5 14h-7" />
       <path d="m12 11.5-2.5 2.5 2.5 2.5" />
+    </>
+  ),
+  // As entregas pendentes do encontro: o pacote que sai da mão do Mestre,
+  // com o visto do que já foi conferido. Não é o glifo `troca` nem o
+  // `momento-de-troca` — os três ficam encostados no mesmo grupo de quem
+  // opera o aparelho, e cada um é um ato diferente (`RF-09-75`, documento 15
+  // §11.1).
+  entregas: (
+    <>
+      <path d="M4 7.5 12 3.5l8 4v9l-8 4-8-4z" />
+      <path d="M4 7.5l8 4 8-4" />
+      <path d="m9 13.5 2 2 4-4" />
     </>
   ),
   // O genérico do documento 15 §8.4 — losango num círculo. Não é estrela nem

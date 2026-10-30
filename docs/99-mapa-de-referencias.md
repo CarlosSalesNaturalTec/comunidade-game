@@ -377,21 +377,21 @@ delas. Decisão nova tomada durante a escrita de um PRD é gravada primeiro no d
 do assunto (§1) e movida no documento 09 para "Já decididos"; só então o PRD a aplica. Regra
 que existe apenas dentro de um PRD está no lugar errado.
 
-| PRD    | Arquivo                           | Depende de             | Documentos-fonte           |
-| ------ | --------------------------------- | ---------------------- | -------------------------- |
-| PRD-01 | `prd-01-backend-api.md`           | PRD-07, PRD-08         | 02, 03, 04, 05, 11         |
-| PRD-02 | `prd-02-frontend-de-gestao.md`    | PRD-01, PRD-14         | 02, 03, 04, 05, 11, 14     |
-| PRD-03 | `prd-03-vitrine-publica.md`       | PRD-01, PRD-13         | 02, 03, 04, 11             |
-| PRD-04 | `prd-04-aula-presencial.md`       | PRD-01, PRD-02, PRD-09 | 02, 03, 05, 06, 11         |
-| PRD-05 | `prd-05-area-do-guerreiro.md`     | PRD-01, PRD-09         | 02, 03, 05, 11             |
-| PRD-07 | `prd-07-economia-e-ledger.md`     | PRD-08                 | 04, 05                     |
-| PRD-08 | `prd-08-comunidades-virtuais.md`  | —                      | 02, 03, 11                 |
-| PRD-09 | `prd-09-area-do-mestre.md`        | PRD-01, PRD-07, PRD-02 | 02, 03, 04, 05, 06, 07, 11 |
-| PRD-10 | `prd-10-batalhas.md`              | PRD-01, PRD-09         | 02, 07, 11                 |
-| PRD-11 | `prd-11-personalizacao-por-ia.md` | PRD-01, PRD-04         | 02, 03, 11                 |
-| PRD-12 | `prd-12-jogo-em-javascript.md`    | PRD-01, PRD-03         | 02, 03, 04, 11             |
-| PRD-13 | `prd-13-area-dos-responsaveis.md` | PRD-01, PRD-02         | 02, 03, 10                 |
-| PRD-14 | `prd-14-area-do-apoiador.md`      | PRD-07, PRD-02         | 02, 03, 04, 11, 12, 14     |
+| PRD    | Arquivo                           | Depende de                     | Documentos-fonte           |
+| ------ | --------------------------------- | ------------------------------ | -------------------------- |
+| PRD-01 | `prd-01-backend-api.md`           | PRD-07, PRD-08                 | 02, 03, 04, 05, 11         |
+| PRD-02 | `prd-02-frontend-de-gestao.md`    | PRD-01, PRD-14                 | 02, 03, 04, 05, 11, 14     |
+| PRD-03 | `prd-03-vitrine-publica.md`       | PRD-01, PRD-13                 | 02, 03, 04, 11             |
+| PRD-04 | `prd-04-aula-presencial.md`       | PRD-01, PRD-02, PRD-09, PRD-07 | 02, 03, 05, 06, 11         |
+| PRD-05 | `prd-05-area-do-guerreiro.md`     | PRD-01, PRD-09                 | 02, 03, 05, 11             |
+| PRD-07 | `prd-07-economia-e-ledger.md`     | PRD-08                         | 04, 05                     |
+| PRD-08 | `prd-08-comunidades-virtuais.md`  | —                              | 02, 03, 11                 |
+| PRD-09 | `prd-09-area-do-mestre.md`        | PRD-01, PRD-07, PRD-02         | 02, 03, 04, 05, 06, 07, 11 |
+| PRD-10 | `prd-10-batalhas.md`              | PRD-01, PRD-09                 | 02, 07, 11                 |
+| PRD-11 | `prd-11-personalizacao-por-ia.md` | PRD-01, PRD-04                 | 02, 03, 11                 |
+| PRD-12 | `prd-12-jogo-em-javascript.md`    | PRD-01, PRD-03                 | 02, 03, 04, 11             |
+| PRD-13 | `prd-13-area-dos-responsaveis.md` | PRD-01, PRD-02                 | 02, 03, 10                 |
+| PRD-14 | `prd-14-area-do-apoiador.md`      | PRD-07, PRD-02                 | 02, 03, 04, 11, 12, 14     |
 
 O PRD-09 passou a depender também do PRD-07: a recompensa de marco e a entrega são capacidade
 do livro-razão (`backend/src/nucleo/recompensas_de_marco/`), e as rotas que a Área do Mestre
@@ -400,6 +400,11 @@ PRD-09.
 
 O PRD-09 passou a depender também do PRD-02: `RF-09-122` — a consulta dos responsáveis pelo
 Mestre — lê a rota que o PRD-02 cria em `RF-02-111`, e a tela do Mestre não existe sem ela.
+
+O PRD-04 passou a depender também do PRD-07: as entregas pendentes do encontro (PRD-04 §5.12)
+leem e confirmam pelas mesmas rotas de `recompensas_de_marco` que o PRD-09 consome
+(`RF-09-75`, `RF-09-76`, `RF-07-13`), e a baixa é do livro-razão. Decisão do fundador de
+2026-10-30.
 
 A **publicação da missão do Apoiador** (`RF-02-102` a `RF-02-105`) é requisito do PRD-02 — quem
 publica é a gestão —, mas depende da entidade `MissaoDoApoiador`, cujos atributos o PRD-14 §8

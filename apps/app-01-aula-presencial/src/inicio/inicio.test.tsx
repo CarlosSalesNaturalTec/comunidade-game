@@ -977,12 +977,13 @@ describe("os atos de quem opera fecham o menu (RF-04-71, RF-04-49, RF-04-63)", (
     ).not.toBeInTheDocument();
   });
 
-  it("a abertura da troca é penúltima, e o encerramento continua por último", async () => {
+  it("a chave da troca, as entregas e o encerramento fecham o grupo nesta ordem", async () => {
     renderizar(vi.fn(), { podeAbrirMomentoDeTroca: true });
 
     await screen.findByText(/o que você quer fazer/i);
     const cartoes = Array.from(document.querySelectorAll(".cg-caminho"));
-    expect(cartoes[cartoes.length - 2].textContent).toMatch(/abrir o momento de troca/i);
+    expect(cartoes[cartoes.length - 3].textContent).toMatch(/abrir o momento de troca/i);
+    expect(cartoes[cartoes.length - 2].textContent).toMatch(/entregas pendentes do encontro/i);
     expect(cartoes[cartoes.length - 1].textContent).toMatch(/encerrar a sessão de trabalho/i);
   });
 
@@ -1043,6 +1044,7 @@ describe("a ordem do menu inicial (RF-04-01)", () => {
       "Troca por recompensa avulsa — entregar uma recompensa do encontro",
       "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
       "Fechar o momento de troca",
+      "Entregas pendentes do encontro — confirmar a recompensa conquistada",
       "Encerrar a sessão de trabalho",
     ]);
   });
@@ -1054,7 +1056,12 @@ describe("a ordem do menu inicial (RF-04-01)", () => {
 
     const caminhos = Array.from(document.querySelectorAll(".cg-caminho"))
       .map((cartao) => cartao.textContent?.trim() ?? "")
-      .filter((rotulo) => !rotulo.startsWith("Medição") && !rotulo.startsWith("Encerrar"));
+      .filter(
+        (rotulo) =>
+          !rotulo.startsWith("Medição") &&
+          !rotulo.startsWith("Entregas") &&
+          !rotulo.startsWith("Encerrar"),
+      );
 
     expect(caminhos).toEqual([
       "Onboarding — cadastro do Guerreiro(a) e presença do dia",
@@ -1116,6 +1123,7 @@ describe("a medição do limiar fica com quem opera (RF-04-63, RN-04-33)", () =>
     expect(naOrdem).toEqual([
       "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
       "Abrir o momento de troca",
+      "Entregas pendentes do encontro — confirmar a recompensa conquistada",
       "Encerrar a sessão de trabalho",
     ]);
   });
@@ -1145,6 +1153,7 @@ describe("a medição do limiar fica com quem opera (RF-04-63, RN-04-33)", () =>
 
     expect(naOrdem).toEqual([
       "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
+      "Entregas pendentes do encontro — confirmar a recompensa conquistada",
       "Encerrar a sessão de trabalho",
     ]);
     expect(
