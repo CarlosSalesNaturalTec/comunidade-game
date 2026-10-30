@@ -16,7 +16,9 @@ const ARQUIVO_DO_BADGE = readFileSync(join(AQUI, "BadgeDaFamilia.tsx"), "utf-8")
 
 /** O corpo da regra que abre com o seletor pedido, sem as regras seguintes. */
 function corpoDaRegra(seletor: string): string {
-  const inicio = ESTILOS.indexOf(`${seletor} {`);
+  // Ancorado na abertura de linha: um seletor curto também casa com o
+  // descendente que termina nele, e o descendente pode vir antes no arquivo.
+  const inicio = ESTILOS.indexOf(`\n${seletor} {`);
   expect(inicio).toBeGreaterThan(-1);
   const abre = ESTILOS.indexOf("{", inicio);
   return ESTILOS.slice(abre + 1, ESTILOS.indexOf("}", abre));
@@ -514,5 +516,198 @@ describe("as variantes Mestre e Apoiador da carta (documento 11 §8.2)", () => {
   it("as duas variantes completas se apresentam", () => {
     expect(cartaEstaCompleta(MESTRE)).toBe(true);
     expect(cartaEstaCompleta(APOIADOR)).toBe(true);
+  });
+});
+
+const SALDO_PARA_TROCAR = 40;
+
+/** A mesma carta, como a tela logada a monta: com o saldo que dá para trocar. */
+const GUERREIRA_EM_SESSAO: DadosDaCarta = {
+  ...GUERREIRA_COMPLETA,
+  saldoParaTrocar: SALDO_PARA_TROCAR,
+};
+
+const MESTRE_COMPLETO: DadosDaCarta = {
+  variante: "mestre",
+  avatar: "avatar-do-mestre",
+  identificacao: { valor: "mestra_ana", tipo: "nick" },
+  areasDeHabilidade: ["Artes"],
+  artefatos: [],
+  trilhasDeAutoria: ["Robótica de sucata"],
+  absorcoes: 2,
+};
+
+const APOIADOR_COMPLETO: DadosDaCarta = {
+  variante: "apoiador",
+  avatar: "logo-propria",
+  identificacao: { valor: "apoia_norte", tipo: "nick" },
+  totalEmMoedas: "42.00",
+  avatarPadrao: false,
+  nivelDeSustento: 2,
+  nomeDoNivel: "Quem faz acontecer",
+  selos: [],
+  desafiosPropostos: [],
+  artefatos: [],
+};
+
+/** O bloco `@media` que alcança o seletor pedido. */
+function media(seletor: string): string {
+  const blocos = [...ESTILOS.matchAll(/@media \(min-width: 768px\) \{([\s\S]*?)\n\}/g)].map(
+    (m) => m[1],
+  );
+  const bloco = blocos.find((candidato) => candidato.includes(seletor));
+  expect(bloco).toBeDefined();
+  return bloco as string;
+}
+
+describe("CartaDoPersonagem — a identidade é centralizada (documento 15 §8.1)", () => {
+  it("o avatar da moldura comum se centraliza, como o documento 11 §8.2 exige", () => {
+    // O §8.2 manda "avatar centralizado em proporção fixa" na carta do
+    // Apoiador desde sempre, e o CSS não cumpria: a largura de metade sem
+    // margem automática encostava o avatar à esquerda, nas quatro variantes.
+    expect(corpoDaRegra(".cg-carta__avatar")).toContain("margin-inline: auto;");
+    expect(corpoDaRegra(".cg-carta__identidade")).toContain("text-align: center;");
+    expect(corpoDaRegra(".cg-territorio__desenho")).toContain("margin-inline: auto;");
+  });
+
+  it("as quatro variantes trazem a identidade no mesmo bloco", () => {
+    for (const dados of [
+      GUERREIRA_COMPLETA,
+      COMUNIDADE_COMPLETA,
+      MESTRE_COMPLETO,
+      APOIADOR_COMPLETO,
+    ]) {
+      const { container } = render(<CartaDoPersonagem dados={dados} />);
+      const identidade = container.querySelector(".cg-carta__identidade");
+      expect(identidade).not.toBeNull();
+      expect(identidade?.querySelector(".cg-carta__nick")).not.toBeNull();
+    }
+  });
+
+  it("só a variante Guerreiro(a) ganha colunas", () => {
+    for (const dados of [COMUNIDADE_COMPLETA, MESTRE_COMPLETO, APOIADOR_COMPLETO]) {
+      const { container } = render(<CartaDoPersonagem dados={dados} />);
+      expect(container.querySelector(".cg-carta__colunas")).toBeNull();
+    }
+    const { container } = render(<CartaDoPersonagem dados={GUERREIRA_COMPLETA} />);
+    expect(container.querySelector(".cg-carta__colunas")).not.toBeNull();
+  });
+});
+
+describe("CartaDoPersonagem — as seções em colunas (documento 15 §§4, 8.1)", () => {
+  it("cada coluna traz o símbolo acima do rótulo", () => {
+    const { container } = render(<CartaDoPersonagem dados={GUERREIRA_EM_SESSAO} />);
+    const colunas = [...container.querySelectorAll(".cg-carta__coluna")];
+    expect(colunas).toHaveLength(4);
+
+    for (const coluna of colunas) {
+      // Primeiro o símbolo, depois o rótulo: o desenho encabeça a coluna e
+      // nunca aparece sozinho (documento 15 §5).
+      expect(coluna.children[0]?.tagName.toLowerCase()).toBe("svg");
+      expect(coluna.children[1]?.classList.contains("cg-carta__rotulo")).toBe(true);
+      expect(coluna.children[1]?.textContent?.trim().length).toBeGreaterThan(0);
+    }
+
+    expect(colunas.map((coluna) => coluna.children[1]?.textContent)).toEqual([
+      "Poderes",
+      "Badges",
+      "Criações originais",
+      "Para trocar",
+    ]);
+  });
+
+  it("são duas por linha no celular e todas em linha a partir do marco", () => {
+    const celular = corpoDaRegra(".cg-carta__colunas");
+    expect(celular).toContain("display: grid;");
+    expect(celular).toContain("grid-template-columns: repeat(2, minmax(0, 1fr));");
+    // Alinhadas pelo topo: coluna curta fica curta.
+    expect(celular).toContain("align-items: start;");
+
+    // Na linha larga o CSS não fixa o número de trilhas: o arranjo acompanha
+    // o número de seções, que é três na carta pública.
+    const largo = media(".cg-carta__colunas");
+    expect(largo).toContain("grid-auto-flow: column;");
+    expect(largo).not.toMatch(/grid-template-columns: repeat\(4/);
+  });
+
+  it("sem o saldo, o arranjo se fecha em três colunas", () => {
+    const { container } = render(<CartaDoPersonagem dados={GUERREIRA_COMPLETA} />);
+    const colunas = [...container.querySelectorAll(".cg-carta__coluna")];
+
+    expect(colunas).toHaveLength(3);
+    expect(colunas.map((coluna) => coluna.children[1]?.textContent)).toEqual([
+      "Poderes",
+      "Badges",
+      "Criações originais",
+    ]);
+  });
+});
+
+describe("CartaDoPersonagem — o saldo que dá para trocar (RF-05-82, documento 15 §9)", () => {
+  it("a seção traz o saldo, rotulado como o que dá para trocar", () => {
+    render(<CartaDoPersonagem dados={GUERREIRA_EM_SESSAO} />);
+
+    expect(screen.getByText("Para trocar")).toBeInTheDocument();
+    expect(screen.getByText(String(SALDO_PARA_TROCAR))).toBeInTheDocument();
+    // A unidade diz a grandeza: o §9 proíbe as duas contas do ponto extra
+    // aparecerem sem rótulo que as separe.
+    expect(screen.getByText(/pontos extras/)).toBeInTheDocument();
+  });
+
+  it("o acumulado não entra na seção, e nada é somado", () => {
+    const { container } = render(<CartaDoPersonagem dados={GUERREIRA_EM_SESSAO} />);
+    const coluna = [...container.querySelectorAll(".cg-carta__coluna")].at(-1);
+
+    expect(coluna?.textContent).toContain("Para trocar");
+    expect(coluna?.textContent).not.toContain("Acumulado");
+    expect(coluna?.textContent).not.toContain("acumulado");
+    // E o ponto regular continua só na frase de desempenho, nunca aqui.
+    expect(coluna?.textContent).not.toContain("pontos regulares");
+  });
+
+  it("o numeral do saldo é o da carta: destaque em peso 700 (documento 15 §4)", () => {
+    const numeral = corpoDaRegra(".cg-carta__numeral");
+    expect(numeral).toContain("font-family: var(--fonte-destaque);");
+    expect(numeral).toContain("font-weight: var(--peso-numeral);");
+  });
+
+  it("a falta do saldo não torna a carta incompleta", () => {
+    // O campo é de tela logada, e a superfície pública não tem de onde lê-lo:
+    // ausente, a carta se apresenta sem a seção (invariantes 8, 12 e 23).
+    expect(cartaEstaCompleta(GUERREIRA_COMPLETA)).toBe(true);
+    expect(cartaEstaCompleta(GUERREIRA_EM_SESSAO)).toBe(true);
+
+    const { container } = render(<CartaDoPersonagem dados={GUERREIRA_COMPLETA} />);
+    expect(container.querySelector(".cg-carta")).not.toBeNull();
+    expect(container.textContent).not.toContain("Para trocar");
+  });
+});
+
+describe("CartaDoPersonagem — as duas estrelas da grandeza (documento 15 §9)", () => {
+  it("a frase de desempenho leva a estrela cheia, e a frase diz tudo sozinha", () => {
+    const { container } = render(<CartaDoPersonagem dados={GUERREIRA_EM_SESSAO} />);
+    const desempenho = container.querySelector(".cg-carta__desempenho");
+
+    expect(desempenho?.querySelector(".cg-estrela-de-ponto")).not.toBeNull();
+    // A estrela é escondida do leitor de tela: o significado é do texto (§5).
+    expect(desempenho?.querySelector("svg")?.getAttribute("aria-hidden")).toBe("true");
+    expect(desempenho?.textContent).toBe("12º lugar, com 40 pontos");
+  });
+
+  it("a cheia é peça preenchida e a vazada é glifo do sistema de ícone", () => {
+    const { container } = render(<CartaDoPersonagem dados={GUERREIRA_EM_SESSAO} />);
+    const cheia = container.querySelector(".cg-estrela-de-ponto");
+    const coluna = [...container.querySelectorAll(".cg-carta__coluna")].at(-1);
+    const vazada = coluna?.querySelector("svg");
+
+    // A forma é a mesma; o que as separa é o preenchimento, e a cor sai dos
+    // tokens em um caso e do texto no outro.
+    expect(cheia?.querySelector("path")?.getAttribute("d")).toBe(
+      vazada?.querySelector("path")?.getAttribute("d"),
+    );
+    expect(cheia?.getAttribute("fill")).toBeNull();
+    expect(corpoDaRegra(".cg-estrela-de-ponto")).toContain("fill: var(--cor-ponto);");
+    expect(vazada?.getAttribute("fill")).toBe("none");
+    expect(vazada?.getAttribute("stroke")).toBe("currentColor");
   });
 });

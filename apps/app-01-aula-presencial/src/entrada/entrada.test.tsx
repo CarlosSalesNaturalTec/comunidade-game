@@ -1056,6 +1056,7 @@ describe("a carta domina a tela da Arena (documento 15 §6)", () => {
     vi.spyOn(cartaApi, "obterPortfolioDaCarta").mockResolvedValue([
       { producao: "Mapa das águas do bairro" },
     ]);
+    vi.spyOn(cartaApi, "obterSaldoParaTrocar").mockResolvedValue({ saldo_disponivel: 25 });
     vi.spyOn(trilhaComumApi, "listarPoderesDoCatalogo").mockResolvedValue([]);
   }
 
@@ -1144,6 +1145,21 @@ describe("a carta domina a tela da Arena (documento 15 §6)", () => {
       /a presença de hoje está registrada/gi,
     );
     expect(vezesQueConfirma).toHaveLength(1);
+  });
+
+  it("o desfecho traz a mesma carta da Área, com o saldo que dá para trocar", async () => {
+    // A App 01 monta a **mesma** carta da Área do Guerreiro(a) (`RF-04-67`,
+    // `RF-05-50`), e por isso herda a quarta seção sem nada de próprio
+    // (`RF-05-82`, decisão do fundador de 2026-10-30).
+    const container = await chegarAoDesfecho();
+
+    const carta = await screen.findByRole("article", { name: /carta de zeferina/i });
+    expect(carta.querySelectorAll(".cg-carta__coluna")).toHaveLength(4);
+    expect(carta.textContent).toContain("Para trocar");
+    expect(carta.textContent).toContain("25");
+    // O acumulado não vem: a carta lê só o saldo disponível.
+    expect(carta.textContent).not.toMatch(/acumulado/i);
+    expect(container.querySelector(".cg-palco__personagem")).toContainElement(carta);
   });
 
   it("a carta aparece a quem nunca abriu série de coleta", async () => {

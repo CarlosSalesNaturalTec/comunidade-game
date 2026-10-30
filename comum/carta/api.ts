@@ -55,3 +55,20 @@ export function obterProgressoDaCarta(token: string): Promise<ProgressoDaTrilhaN
 export function obterPortfolioDaCarta(token: string): Promise<ItemDoPortfolioNaCarta[]> {
   return chamarNucleo<ItemDoPortfolioNaCarta[]>("/v1/eu/portfolio", { token });
 }
+
+/** As duas contas de ponto extra do próprio Guerreiro(a). A carta lê **só o
+ * saldo disponível**, que é o que dá para trocar por recompensa avulsa; o
+ * acumulado chega na mesma resposta e não entra na carta (documento 11 §5). */
+interface PontosExtrasNaCarta {
+  saldo_disponivel: number;
+}
+
+/** O saldo disponível de pontos extras (`RF-05-82`).
+ *
+ * A rota só atende o **próprio** Guerreiro(a) em sessão — qualquer outro papel
+ * recebe recusa, e não há identificador de persona no caminho para apontá-la
+ * para outra criança (`RN-01-41`). É por isso que esta leitura mora aqui, nas
+ * leituras da tela logada, e nunca na projeção pública da vitrine. */
+export function obterSaldoParaTrocar(token: string): Promise<PontosExtrasNaCarta> {
+  return chamarNucleo<PontosExtrasNaCarta>("/v1/eu/pontos-extras", { token });
+}

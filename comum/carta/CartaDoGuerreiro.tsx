@@ -18,14 +18,21 @@ import {
   obterMinhaPosicaoNoRanking,
   obterPortfolioDaCarta,
   obterProgressoDaCarta,
+  obterSaldoParaTrocar,
   type ProgressoDaTrilhaNaCarta,
 } from "./api";
 
 // A **carta do próprio Guerreiro(a)** em sessão, na variante Guerreiro(a) do
-// documento 11 §8.2: avatar, nick, badges, poderes com níveis, desempenho e
-// criações originais — e nada de imagem real, nome civil, rede social ou canal
-// de contato, que a carta do `comum` nem tem campo para receber (`RF-05-50`,
-// `RF-05-51`, invariantes 9 e 10).
+// documento 11 §8.2: avatar, nick, badges, poderes com níveis, desempenho,
+// criações originais e o **saldo de pontos extras que dá para trocar** — e nada
+// de imagem real, nome civil, rede social ou canal de contato, que a carta do
+// `comum` nem tem campo para receber (`RF-05-50`, `RF-05-51`, `RF-05-82`,
+// invariantes 9 e 10).
+//
+// O saldo é o **único** campo que a falta não cobra: ele é de tela logada, e a
+// carta pública da vitrine não tem de onde lê-lo. Falhando a leitura dele, a
+// carta se apresenta sem a seção — nunca deixa de se apresentar (decisão do
+// fundador de 2026-10-30).
 //
 // Promovida do App 05 ao `comum` porque as duas aplicações da Arena que
 // apresentam personagem a montam da mesma forma (decisão do fundador de
@@ -110,6 +117,7 @@ export function CartaDoGuerreiro({ aviso }: Props) {
       let poderes: PoderPublico[] = [];
       let progresso: ProgressoDaTrilhaNaCarta[] | undefined;
       let criacoes: string[] | undefined;
+      let saldoParaTrocar: number | undefined;
 
       try {
         const [quemSou, catalogo] = await Promise.all([
@@ -151,6 +159,14 @@ export function CartaDoGuerreiro({ aviso }: Props) {
         criacoes = undefined;
       }
 
+      try {
+        // Só o saldo disponível: o acumulado chega na mesma resposta e **não**
+        // entra na carta (`RF-05-82`, documento 11 §5).
+        saldoParaTrocar = (await obterSaldoParaTrocar(token)).saldo_disponivel;
+      } catch {
+        saldoParaTrocar = undefined;
+      }
+
       if (cancelado) return;
       definirDados({
         variante: "guerreiro",
@@ -160,6 +176,7 @@ export function CartaDoGuerreiro({ aviso }: Props) {
         poderes: progresso && poderesComNivel(progresso, poderes),
         badges: progresso && badgesDoProgresso(progresso, poderes),
         criacoes,
+        saldoParaTrocar,
       });
     }
 

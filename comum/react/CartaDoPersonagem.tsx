@@ -1,7 +1,10 @@
+import type { ReactNode } from "react";
 import { Avatar } from "../avatar/Avatar";
 import type { AvatarDoGuerreiro } from "../avatar/objeto";
 import { BadgeDaFamilia, type FamiliaDeBadge } from "./BadgeDaFamilia";
 import { EmblemaDeNivel } from "./EmblemaDeNivel";
+import { EstrelaDePonto } from "./EstrelaDePonto";
+import { Icone, type NomeDeGlifo } from "./Icone";
 import { type CamadaDoTerritorio, TerritorioDaComunidade } from "./TerritorioDaComunidade";
 
 // A **carta do personagem** — o átomo da interface comum às oito aplicações
@@ -9,6 +12,16 @@ import { type CamadaDoTerritorio, TerritorioDaComunidade } from "./TerritorioDaC
 // `estilos.css`: superfície de carta, borda de 1 px, raio que a aplicação
 // declara — `4` px na Operação e `12` na Arena —, avatar quadrado recortado em
 // círculo ocupando **metade da largura** e nick na família de destaque.
+//
+// **A identidade é centralizada** nas quatro variantes — avatar, identificação
+// e desempenho (decisão do fundador de 2026-10-30). Não é só ênfase: o
+// documento 11 §8.2 já exigia o avatar **centralizado** na carta do Apoiador, e
+// o CSS nunca o centralizou.
+//
+// Na variante **Guerreiro(a)**, as seções viram **colunas com o símbolo acima
+// do rótulo** — duas por linha no celular, todas em linha a partir do marco de
+// `768` px —, e o arranjo acompanha o número de seções: na carta pública são
+// três, porque a quarta é de tela logada.
 //
 // O que cada variante exibe é do documento 11 §8.2, e a carta exibe **só**
 // aquilo: não há aqui campo de imagem real, de nome civil, de rede social nem
@@ -51,6 +64,19 @@ export interface CartaDeGuerreiro {
   /** As criações originais, uma linha por criação. Lista vazia é "ainda
    * nenhuma", que é diferente de `undefined`. */
   criacoes: string[] | undefined;
+  /** O **saldo disponível** de pontos extras — o que dá para trocar por
+   * recompensa avulsa (`RF-05-82`, documento 11 §8.2).
+   *
+   * É o único campo **opcional** da variante, e de propósito: ele é de **tela
+   * logada**, e a superfície pública não tem de onde lê-lo — a rota
+   * `GET /v1/eu/pontos-extras` só atende o próprio Guerreiro(a) em sessão e a
+   * projeção pública não o traz. Por isso ele fica **fora** de
+   * `guerreiroEstaCompleto`: ausente, a carta se apresenta sem a seção, e
+   * jamais deixa de se apresentar (invariantes 8, 12 e 23).
+   *
+   * Nunca é o **acumulado**, que só cresce e é o que as superfícies públicas
+   * leem (documento 11 §5). */
+  saldoParaTrocar?: number;
 }
 
 /** A variante Comunidade Virtual do documento 11 §8.2: nome, território,
@@ -225,7 +251,15 @@ export function CartaDoPersonagem({ dados }: Props) {
   if (dados.variante === "mestre") return <CartaDoMestre dados={dados} />;
   if (dados.variante === "apoiador") return <CartaDoApoiador dados={dados} />;
 
-  const { avatar, nick, badges = [], poderes = [], desempenho, criacoes = [] } = dados;
+  const {
+    avatar,
+    nick,
+    badges = [],
+    poderes = [],
+    desempenho,
+    criacoes = [],
+    saldoParaTrocar,
+  } = dados;
   const badgesNaOrdem = comChave(badges, (badge) => `${badge.familia}-${badge.poder ?? ""}`);
   const criacoesNaOrdem = comChave(criacoes, (criacao) => criacao);
 
@@ -235,50 +269,100 @@ export function CartaDoPersonagem({ dados }: Props) {
       data-variante={dados.variante}
       aria-label={`Carta de ${nick}`}
     >
-      <div className="cg-carta__avatar">
-        <Avatar avatar={avatar ?? null} tamanho={96} />
+      <div className="cg-carta__identidade">
+        <div className="cg-carta__avatar">
+          <Avatar avatar={avatar ?? null} tamanho={96} />
+        </div>
+        <p className="cg-carta__nick">{nick}</p>
+
+        {/* A estrela **cheia** é o glifo da grandeza ponto regular (documento
+            15 §9). Ela acompanha a frase, nunca a substitui: o significado é
+            do texto, e a estrela é `aria-hidden` (§5). */}
+        <p className="cg-carta__desempenho">
+          <EstrelaDePonto tamanho={16} />
+          {desempenho}
+        </p>
       </div>
-      <p className="cg-carta__nick">{nick}</p>
 
-      <p className="cg-carta__desempenho">{desempenho}</p>
+      <div className="cg-carta__colunas">
+        <ColunaDaCarta glifo="poder" rotulo="Poderes">
+          {poderes.length === 0 ? (
+            <p className="cg-carta__vazio">Nenhum poder com nível ainda.</p>
+          ) : (
+            <ul className="cg-carta__poderes">
+              {poderes.map((item) => (
+                <li key={item.poder}>
+                  <EmblemaDeNivel nivel={item.nivel} poder={item.poder} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </ColunaDaCarta>
 
-      <p className="cg-carta__rotulo">Poderes</p>
-      {poderes.length === 0 ? (
-        <p className="cg-carta__vazio">Nenhum poder com nível ainda.</p>
-      ) : (
-        <ul className="cg-carta__poderes">
-          {poderes.map((item) => (
-            <li key={item.poder}>
-              <EmblemaDeNivel nivel={item.nivel} poder={item.poder} />
-            </li>
-          ))}
-        </ul>
-      )}
+        <ColunaDaCarta glifo="medalha" rotulo="Badges">
+          {badges.length === 0 ? (
+            <p className="cg-carta__vazio">Nenhum badge ainda.</p>
+          ) : (
+            <ul className="cg-carta__badges">
+              {badgesNaOrdem.map(({ chave, item }) => (
+                <li key={chave}>
+                  <BadgeDaFamilia familia={item.familia} poder={item.poder} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </ColunaDaCarta>
 
-      <p className="cg-carta__rotulo">Badges</p>
-      {badges.length === 0 ? (
-        <p className="cg-carta__vazio">Nenhum badge ainda.</p>
-      ) : (
-        <ul className="cg-carta__badges">
-          {badgesNaOrdem.map(({ chave, item }) => (
-            <li key={chave}>
-              <BadgeDaFamilia familia={item.familia} poder={item.poder} />
-            </li>
-          ))}
-        </ul>
-      )}
+        <ColunaDaCarta glifo="pincel" rotulo="Criações originais">
+          {criacoes.length === 0 ? (
+            <p className="cg-carta__vazio">Nenhuma criação original validada ainda.</p>
+          ) : (
+            <ul className="cg-carta__criacoes">
+              {criacoesNaOrdem.map(({ chave, item }) => (
+                <li key={chave}>{item}</li>
+              ))}
+            </ul>
+          )}
+        </ColunaDaCarta>
 
-      <p className="cg-carta__rotulo">Criações originais</p>
-      {criacoes.length === 0 ? (
-        <p className="cg-carta__vazio">Nenhuma criação original validada ainda.</p>
-      ) : (
-        <ul className="cg-carta__criacoes">
-          {criacoesNaOrdem.map(({ chave, item }) => (
-            <li key={chave}>{item}</li>
-          ))}
-        </ul>
-      )}
+        {/* A quarta coluna **só existe em tela logada**: ausente o saldo, o
+            arranjo se fecha em três, e isso não é carta incompleta. */}
+        {saldoParaTrocar !== undefined && (
+          <ColunaDaCarta glifo="ponto-extra" rotulo="Para trocar">
+            {/* O rótulo diz que é o **saldo**, e a unidade diz a grandeza: o
+                documento 15 §9 proíbe as duas contas do ponto extra
+                aparecerem sem rótulo que as separe. O acumulado não entra
+                aqui. */}
+            <p className="cg-carta__saldo">
+              <span className="cg-carta__numeral">{saldoParaTrocar}</span> pontos extras
+            </p>
+          </ColunaDaCarta>
+        )}
+      </div>
     </article>
+  );
+}
+
+/** Uma seção da carta do Guerreiro(a): **símbolo acima**, rótulo no meio e
+ * conteúdo abaixo (documento 15 §8.1). O símbolo nunca aparece sozinho — o
+ * rótulo é a via ao conteúdo (§5) —, e nenhum dos quatro é silhueta de família
+ * de badge, o escudo da marca ou o círculo da moeda, formas que no cabeçalho
+ * de uma coluna afirmariam outra coisa (§§8.3, 9, invariante 24). */
+function ColunaDaCarta({
+  glifo,
+  rotulo,
+  children,
+}: {
+  glifo: NomeDeGlifo;
+  rotulo: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="cg-carta__coluna">
+      <Icone glifo={glifo} />
+      <p className="cg-carta__rotulo">{rotulo}</p>
+      {children}
+    </div>
   );
 }
 
@@ -290,15 +374,17 @@ function CartaDeComunidade({ dados }: { dados: CartaDeComunidadeVirtual }) {
       data-variante={dados.variante}
       aria-label={`Carta de ${nome}`}
     >
-      <TerritorioDaComunidade
-        nome={nome ?? ""}
-        bairrosPublicados={dados.bairrosPublicados ?? 0}
-        camadas={camadas}
-        seriesAbertas={seriesAbertas ?? null}
-        seriesAtivas={seriesAtivas ?? null}
-      />
-      <p className="cg-carta__nick">{nome}</p>
-      <p className="cg-carta__desempenho">{territorio}</p>
+      <div className="cg-carta__identidade">
+        <TerritorioDaComunidade
+          nome={nome ?? ""}
+          bairrosPublicados={dados.bairrosPublicados ?? 0}
+          camadas={camadas}
+          seriesAbertas={seriesAbertas ?? null}
+          seriesAtivas={seriesAtivas ?? null}
+        />
+        <p className="cg-carta__nick">{nome}</p>
+        <p className="cg-carta__desempenho">{territorio}</p>
+      </div>
 
       <p className="cg-carta__rotulo">Séries ativas</p>
       <p className="cg-carta__vazio">{seriesAtivas}</p>
@@ -360,12 +446,14 @@ function CartaDoMestre({ dados }: { dados: CartaDeMestre }) {
       data-variante={dados.variante}
       aria-label={`Carta de ${identidade.valor}`}
     >
-      <div className="cg-carta__avatar">
-        {/* Avatar ausente vira o avatar padrão do projeto (documento 15
-            §7.3), e isso não é carta incompleta. */}
-        <Avatar avatar={avatar ?? null} tamanho={96} />
+      <div className="cg-carta__identidade">
+        <div className="cg-carta__avatar">
+          {/* Avatar ausente vira o avatar padrão do projeto (documento 15
+              §7.3), e isso não é carta incompleta. */}
+          <Avatar avatar={avatar ?? null} tamanho={96} />
+        </div>
+        <IdentificacaoNaCarta identificacao={identidade} />
       </div>
-      <IdentificacaoNaCarta identificacao={identidade} />
 
       <p className="cg-carta__rotulo">Áreas de habilidade</p>
       {areasDeHabilidade.length === 0 ? (
@@ -421,13 +509,15 @@ function CartaDoApoiador({ dados }: { dados: CartaDeApoiador }) {
       data-avatar-padrao={avatarPadrao ? "sim" : "nao"}
       aria-label={`Carta de ${identidade.valor}`}
     >
-      <div className="cg-carta__avatar">
-        <Avatar avatar={avatar ?? null} tamanho={96} />
-      </div>
-      <IdentificacaoNaCarta identificacao={identidade} />
+      <div className="cg-carta__identidade">
+        <div className="cg-carta__avatar">
+          <Avatar avatar={avatar ?? null} tamanho={96} />
+        </div>
+        <IdentificacaoNaCarta identificacao={identidade} />
 
-      {/* Sempre em moedas da plataforma, nunca em reais (`RN-03-18`). */}
-      <p className="cg-carta__moedas">{totalEmMoedas} moedas</p>
+        {/* Sempre em moedas da plataforma, nunca em reais (`RN-03-18`). */}
+        <p className="cg-carta__moedas">{totalEmMoedas} moedas</p>
+      </div>
 
       <p className="cg-carta__rotulo">Nível de sustento</p>
       <p className="cg-carta__vazio">

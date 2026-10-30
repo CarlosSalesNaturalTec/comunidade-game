@@ -351,10 +351,19 @@
   background: var(--cor-superficie);
 }
 
+/* A identidade — avatar, identificação e desempenho — é **centralizada** nas
+ * quatro variantes (documento 15 §8.1, decisão do fundador de 2026-10-30). O
+ * documento 11 §8.2 já exigia o avatar centralizado na carta do Apoiador: aqui
+ * a moldura comum passa a cumpri-lo. */
+.cg-carta__identidade {
+  text-align: center;
+}
+
 /* Avatar quadrado, recortado em círculo, ocupando **metade da largura** da
  * carta (documento 15 §8.1). */
 .cg-carta__avatar {
   width: 50%;
+  margin-inline: auto;
   aspect-ratio: 1;
   overflow: hidden;
   border-radius: var(--raio-ficha);
@@ -373,14 +382,72 @@
   font-weight: var(--peso-titulo);
 }
 
+/* A frase de desempenho leva a estrela cheia da grandeza ponto regular ao lado
+ * (documento 15 §9). A estrela não cresce com a frase e nunca a empurra para
+ * outra linha sozinha. */
 .cg-carta__desempenho {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-4);
+  align-items: center;
+  justify-content: center;
   margin: var(--espaco-4) 0 0;
   color: var(--cor-texto-secundario);
+}
+
+/* As seções da variante Guerreiro(a) em **colunas**: duas por linha no celular
+ * e **todas em linha** a partir do marco de `768` px (documento 15 §§4, 8.1).
+ * A linha larga não fixa trilhas de propósito — o arranjo acompanha o número
+ * de seções, que é três na carta pública, onde a quarta não existe. O
+ * alinhamento é pelo topo: coluna curta fica curta. */
+.cg-carta__colunas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espaco-16);
+  align-items: start;
+  margin-top: var(--espaco-16);
+}
+
+@media (min-width: 768px) {
+  .cg-carta__colunas {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+}
+
+/* Símbolo acima, rótulo no meio, conteúdo abaixo. */
+.cg-carta__coluna {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  align-items: center;
+  text-align: center;
+}
+
+/* O numeral de carta do documento 15 §4 — peso `700`, na família de destaque.
+ * É o saldo que dá para trocar, e a unidade ao lado diz a grandeza. */
+.cg-carta__saldo {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+}
+
+.cg-carta__numeral {
+  font-family: var(--fonte-destaque);
+  font-size: var(--escala-1375);
+  font-weight: var(--peso-numeral);
+  color: var(--cor-texto);
 }
 
 .cg-carta__rotulo {
   margin: var(--espaco-16) 0 var(--espaco-4);
   font-weight: var(--peso-rotulo);
+}
+
+/* Dentro da coluna o rótulo não traz o afastamento do fluxo vertical: quem
+ * separa as seções agora é a calha do grid. */
+.cg-carta__coluna .cg-carta__rotulo {
+  margin: 0;
 }
 
 .cg-carta__vazio {
@@ -394,6 +461,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--espaco-8);
+  justify-content: center;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -411,6 +479,7 @@
 .cg-territorio__desenho {
   display: block;
   width: 50%;
+  margin-inline: auto;
   aspect-ratio: 1;
 }
 
@@ -695,7 +764,14 @@
   justify-content: center;
 }
 
-.cg-trio-de-estrelas__estrela {
+/* `EstrelaDePonto` — a peça preenchida da grandeza ponto regular (documento
+ * 15 §§9, 11.1). O preenchimento e o contorno vêm dos tokens da família, nos
+ * dois temas; o arquivo do desenho não guarda cor alguma. */
+.cg-estrela-de-ponto {
+  /* `flex: none` porque as duas peças que a compõem são contêineres flex — o
+   * trio e a frase de desempenho da carta —, e a estrela não encolhe para
+   * acomodar texto. */
+  flex: none;
   fill: var(--cor-ponto);
   stroke: var(--cor-ponto-contorno);
 }

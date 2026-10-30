@@ -15,7 +15,10 @@ import { MinhaCarta } from "./MinhaCarta";
 const CHAVE_DE_SESSAO = "app-05:teste-minha-carta";
 
 function mockarLeituras(
-  opcoes: { posicao?: { posicao: number; pontos_regulares: number } } = {},
+  opcoes: {
+    posicao?: { posicao: number; pontos_regulares: number };
+    saldo?: number | "falha";
+  } = {},
 ) {
   vi.spyOn(trilhaComumApi, "listarPoderesDoCatalogo").mockResolvedValue([
     {
@@ -42,6 +45,13 @@ function mockarLeituras(
   vi.spyOn(cartaApi, "obterPortfolioDaCarta").mockResolvedValue([
     { producao: "Robô de reuso da praça" },
   ]);
+
+  const saldo = vi.spyOn(cartaApi, "obterSaldoParaTrocar");
+  if (opcoes.saldo === "falha") {
+    saldo.mockRejectedValue(new Error("fora do ar"));
+  } else {
+    saldo.mockResolvedValue({ saldo_disponivel: opcoes.saldo ?? 40 });
+  }
 }
 
 async function renderizar(identidade: { nick?: string; avatar?: string } = {}) {
@@ -140,5 +150,41 @@ describe("a carta do próprio Guerreiro(a) (`RF-05-50`, `RF-05-51`)", () => {
     expect(carta).toBeInTheDocument();
     expect(screen.getByText(/7º na comunidade, com 0 pontos/)).toBeInTheDocument();
     expect(cartaApi).not.toHaveProperty("listarMinhasSeriesDaCarta");
+  });
+});
+
+describe("o saldo que dá para trocar, na carta (`RF-05-82`)", () => {
+  it("a carta traz a seção do saldo, rotulada", async () => {
+    mockarLeituras({ saldo: 40 });
+
+    await renderizar();
+
+    const carta = await screen.findByRole("article", { name: /carta de zeferina/i });
+    expect(screen.getByText("Para trocar")).toBeInTheDocument();
+    expect(screen.getByText("40")).toBeInTheDocument();
+    expect(carta.textContent).toContain("pontos extras");
+  });
+
+  it("o acumulado não chega à carta", async () => {
+    // A rota devolve as duas contas; a carta lê **só** o saldo disponível
+    // (documento 11 §5, documento 15 §9).
+    mockarLeituras({ saldo: 40 });
+
+    await renderizar();
+
+    const carta = await screen.findByRole("article", { name: /carta de zeferina/i });
+    expect(carta.textContent).not.toMatch(/acumulado/i);
+  });
+
+  it("falhando a leitura do saldo, a carta aparece sem a seção", async () => {
+    // O saldo é o único campo que a falta não cobra: ele não entra na decisão
+    // de carta completa (decisão do fundador de 2026-10-30).
+    mockarLeituras({ saldo: "falha" });
+
+    await renderizar();
+
+    const carta = await screen.findByRole("article", { name: /carta de zeferina/i });
+    expect(carta).toBeInTheDocument();
+    expect(screen.queryByText("Para trocar")).not.toBeInTheDocument();
   });
 });

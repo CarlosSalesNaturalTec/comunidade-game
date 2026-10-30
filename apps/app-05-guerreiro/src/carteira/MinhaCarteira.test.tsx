@@ -48,11 +48,17 @@ async function renderizarRetornando() {
     acumulado: 40,
     saldo_disponivel: 10,
   });
+  vi.spyOn(cartaApi, "obterSaldoParaTrocar").mockResolvedValue({ saldo_disponivel: 10 });
+  // Com nick e avatar a variante do documento 11 §8.2 fecha, e a carta se
+  // apresenta de fato no palco — sem eles, o que ocupa o primeiro plano é o
+  // aviso de carta incompleta, e nenhuma asserção sobre a carta valeria.
   vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
     persona_id: "guerreiro-1",
     papel: "guerreiro",
     permissoes: {},
     divulgacao_autorizada: true,
+    nick: "Zeferina",
+    avatar: '{"v":1,"tom":"t3"}',
   });
   let renderizado!: ReturnType<typeof render>;
   await act(async () => {
@@ -135,5 +141,28 @@ describe("a carta domina a tela da Arena (documento 15 §6)", () => {
     // nada por isso (documento 15 §6.3).
     expect(container.querySelector(".cg-fundo-de-comunidade")).not.toBeNull();
     expect(container.querySelector("img")).toBeNull();
+  });
+});
+
+describe("o saldo na carta não dispensa a carteira (`RF-05-82`)", () => {
+  it("o saldo aparece nas duas, com rótulo próprio em cada uma", async () => {
+    // Decisão expressa do fundador de 2026-10-30, depois de a duplicação ser
+    // levantada: a carta diz o que dá para trocar, e o apoio mantém as duas
+    // contas com o aviso que explica a diferença.
+    const { container } = await renderizarRetornando();
+
+    const carta = container.querySelector(".cg-palco__personagem");
+    expect(carta?.textContent).toContain("Para trocar");
+
+    const apoio = container.querySelector(".cg-palco__apoio");
+    expect(apoio?.textContent).toMatch(/Acumulado/);
+    expect(apoio?.textContent).toMatch(/Saldo disponível/);
+  });
+
+  it("o acumulado continua só no apoio, nunca na carta", async () => {
+    const { container } = await renderizarRetornando();
+
+    const carta = container.querySelector(".cg-palco__personagem");
+    expect(carta?.textContent).not.toMatch(/Acumulado/i);
   });
 });
