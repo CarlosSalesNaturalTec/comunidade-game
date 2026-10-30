@@ -471,16 +471,22 @@ A marca é **constante da plataforma** — não varia por comunidade —, é **r
 
 ### 13.1 Símbolo, logotipo e submarcas
 
-| Peça          | Construção                                                                                                                                                                                         |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Símbolo**   | Escudo de **topo e base em ponta** — no topo, duas curvas côncavas que se encontram —, contorno fino, com o monograma `CG` dentro. Proporção `1 : 1,172`, mais alto que largo, na grade de `48` px |
-| **Logotipo**  | O símbolo mais "Comunidade Game" em **duas palavras**, numa linha na versão horizontal e em duas na empilhada                                                                                      |
-| **Submarcas** | **Rôbróders** e **Robô Educa**, com a acentuação, **só em palavra** — sem escudo, porque o escudo significa a plataforma                                                                           |
+| Peça          | Construção                                                                                                                                                                               |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Símbolo**   | Escudo de **topo e base em ponta** — no topo, duas curvas côncavas que se encontram —, com o **pássaro Sankofa** dentro. Proporção `1 : 1,172`, mais alto que largo, na grade de `48` px |
+| **Logotipo**  | O símbolo mais "Comunidade Game" em **duas palavras**, numa linha na versão horizontal e em duas na empilhada                                                                            |
+| **Submarcas** | **Rôbróders** e **Robô Educa**, com a acentuação, **só em palavra** — sem escudo, porque o escudo significa a plataforma                                                                 |
 
 O texto é **Archivo convertido em curvas**, peso `700`, eixo de largura `62` no logotipo e `87`
 nas submarcas: a largura equilibra o peso óptico de "Comunidade Game", que tem 15 caracteres,
 com o das submarcas, que têm 9 e 10. A família é a de destaque da §4, já servida pelo próprio
 domínio, e converter glifo em curva é o que impede a marca de quebrar em aparelho sem a fonte.
+
+O **contorno do escudo** guarda razão fixa com a largura dele: `2/42` na colorida e `3/42` na
+monocromática, que é em traço e por isso mais pesada. O teto é `3,28/42` — acima dele a ponta
+sai cortada pela grade. A **figura** é um traçado só, e olho, penas e vazados são **aberturas**,
+nunca segunda cor, porque a monocromática não tem cor para pintá-los. Decisão do fundador de
+2026-10-30.
 
 ### 13.2 Cor e contraste
 
@@ -488,18 +494,18 @@ domínio, e converter glifo em curva é o que impede a marca de quebrar em apare
 | -------------------- | ----------- | ----------- | ------ |
 | Escudo               | `marca-500` | `cal-050`   | —      |
 | Contorno do escudo   | `marca-700` | —           | —      |
-| Monograma            | `tinta-900` | `marca-500` | 5,53:1 |
+| Figura               | `tinta-900` | `marca-500` | 5,53:1 |
 | Logotipo e submarcas | `marca-700` | `cal-050`   | 5,41:1 |
 
 A regra do §3.2 vale aqui como em todo lugar: o degrau 500 é preenchimento **com contorno no
 700**, nunca sozinho contra o fundo. Branco sobre `marca-500` dá **3,33:1** e por isso não é
-usado no monograma.
+usado na figura.
 
 ### 13.3 As duas versões
 
 **Colorida** no modo claro; **monocromática** no escuro e sobre a foto de comunidade (§6.3). A
-monocromática é **em traço** — contorno em `currentColor`, sem preenchimento, com o monograma
-cheio dentro — e por isso é desenho próprio, não derivação da colorida.
+monocromática é **em traço** — contorno em `currentColor`, sem preenchimento, com a figura
+cheia dentro — e por isso é desenho próprio, não derivação da colorida.
 
 ### 13.4 Área de proteção e tamanho mínimo
 

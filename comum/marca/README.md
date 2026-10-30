@@ -38,9 +38,13 @@ usa `currentColor` e herda a cor do texto, então **um arquivo serve o modo escu
 uso sobre foto**. Um par claro/escuro dobraria os arquivos e deixaria o caso da foto sem
 resposta.
 
-A monocromática é **em traço**: contorno em `currentColor` e preenchimento nenhum, com o
-monograma cheio dentro (decisão do fundador de 2026-10-02). Ela é, portanto, **desenho
+A monocromática é **em traço**: contorno em `currentColor` e preenchimento nenhum, com a
+figura cheia dentro (decisão do fundador de 2026-10-02). Ela é, portanto, **desenho
 próprio** — não se deriva da colorida trocando preenchimento.
+
+Por não ter segunda cor, ela também manda na construção da figura: olho, penas e vazados são
+**aberturas** de um traçado só, por `fill-rule="evenodd"`, nunca forma pintada por cima — que
+sob `evenodd` viraria buraco. Vale igual na colorida, para as duas serem a mesma geometria.
 
 **O orçamento da monocromática é igual ao da colorida**, e não menor: as duas carregam as
 mesmas curvas, e o que muda entre elas são alguns bytes de atributo de cor.
@@ -178,10 +182,11 @@ Os nove arquivos da marca do projeto e das submarcas — tudo o que os §§1 e 2
 | | |
 | --- | --- |
 | **Logotipo e submarcas** | **Archivo** convertido em curvas, peso `700`, eixo de largura `62` no logotipo e `87` nas submarcas. A família já é servida pelo projeto e está em `comum/fontes/`, com a licença e a data de cópia ao lado |
-| **Símbolo** | Escudo com o monograma `CG`, desenho original do projeto. O **topo em ponta**, por duas curvas côncavas, entrou em 2026-10-02 a partir de um modelo de referência do fundador, medido e não estimado: ponta a 18,1% da altura, proporção `1 : 1,172`. As cinco peças que carregam o escudo descrevem a **mesma silhueta**, diferindo só pela escala, e `comum/marca.test.ts` o confere |
-| **Cores** | Escudo em `marca-500`, contorno em `marca-700`, monograma em `tinta-900` — os três da paleta do documento 15 §3 |
+| **Símbolo** | Escudo com o **pássaro Sankofa** dentro, desenho original do projeto. O **topo em ponta**, por duas curvas côncavas, entrou em 2026-10-02 a partir de um modelo de referência do fundador, medido e não estimado: ponta a 18,1% da altura, proporção `1 : 1,172`. O pássaro substituiu o monograma `CG` em 2026-10-30, pelo mesmo caminho: a imagem de referência do fundador foi **medida, não traçada**, e o traçado é do projeto. As cinco peças que carregam o escudo descrevem a **mesma silhueta** e trazem a **mesma figura**, diferindo só pela escala, e `comum/marca.test.ts` confere as duas coisas |
+| **Cores** | Escudo em `marca-500`, contorno em `marca-700`, figura em `tinta-900` — os três da paleta do documento 15 §3 |
 | **Licença da fonte** | SIL Open Font License 1.1, em `comum/fontes/OFL-archivo.txt`. Converter glifos em curvas dentro de um logotipo é uso permitido e **não** submete o logotipo à OFL: a cláusula de _Reserved Font Name_ restringe redistribuir a **fonte** modificada, não o desenho que a usa |
 | **Titularidade** | Da pessoa jurídica vinculada ao projeto, como manda a `LICENCA.md`. Não há cessão de terceiro a registrar, porque não houve autor externo |
+| **Alcance da reserva** | O **Sankofa** é patrimônio adinkra akan, e não do projeto. O que a marca reserva (documento 03 §1, princípio 4) é **este desenho, dentro deste escudo** — não o símbolo tradicional, que segue de quem sempre foi |
 
 A construção completa — proporção do escudo, altura de maiúscula, contrastes medidos — está
 no documento 15, que é a fonte única da identidade visual. Aqui fica só a procedência.
