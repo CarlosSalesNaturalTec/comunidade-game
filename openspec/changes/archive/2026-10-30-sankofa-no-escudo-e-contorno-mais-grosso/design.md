@@ -89,14 +89,23 @@ abrindo o leque por dentro — silhueta limpa e leque visível.
 
 ### 5. O caso do teste deixa de falar em monograma
 
-`"%s mantém o monograma dentro do escudo"` passa a conferir a **figura**. A mecânica não muda:
-amostra o contorno do escudo em polígono e pergunta se os cantos da caixa da figura estão
-dentro. Segue rodando só em `simbolo.svg` e `simbolo-mono.svg`, porque nos conjuntos a figura
-reencaixa por `transform`.
+`"%s mantém o monograma dentro do escudo"` passa a conferir a **figura** — e a **mecânica
+precisa mudar junto**, ao contrário do que esta decisão previa. O caso conferia os **quatro
+cantos da caixa envolvente**, o que servia para o monograma, compacto. A figura do Sankofa não
+é: a cauda avança à direita no meio da altura e as pernas descem no centro, de modo que o canto
+inferior direito da caixa (`36,6 · 35,5`) cai **fora** do escudo sem que ponto algum do desenho
+esteja lá. Passa a conferir **ponto a ponto**, o que é mais simples e mais estrito. Segue
+rodando só em `simbolo.svg` e `simbolo-mono.svg`, porque nos conjuntos a figura reencaixa por
+`transform`.
 
-**Lacuna conhecida, não coberta pelo teste:** ele mede contra a **linha de centro** do escudo,
-não contra a borda interna do traço. Figura que passe no teste ainda pode encostar
-visualmente no contorno engrossado. A conferência é de entrada, como o filete do elenco.
+A conferência ponto a ponto só é confiável se **todo número do `d` for coordenada**, então o
+traçado da figura usa só `M`, `C`, `L` e `Z`: um arco (`a rx ry rot laf sf dx dy`) tem sete
+parâmetros e desalinharia os pares **sem falhar ruidosamente**. Um caso novo guarda isso.
+
+**Sobre a folga até o contorno:** o teste mede contra a **linha de centro** do escudo, não
+contra a borda interna do traço, então em tese uma figura aprovada poderia encostar no contorno
+engrossado. Medido no desenho entregue, o ponto mais próximo está a **3,57 un.** do contorno,
+contra **1,37** de borda interna na monocromática — folga de 2,6×. Não há risco a cobrir aqui.
 
 ### 6. A geometria apurada
 
@@ -111,32 +120,42 @@ Figura na grade de 48, caixa `x 13,8–36,2` por `y 9,5–35,5`:
 | Cabeça × pescoço | ~8 un. contra ~4,7 un. de largura |
 | Pernas | 2, largura ~1,5 un., sem pés, base em `y 35,5` |
 
-O traçado corrente (v6 dos esboços), para a implementação partir dele:
+O traçado **entregue** — só `M`, `C`, `L` e `Z`, sem arco, para que todo número seja
+coordenada:
 
 ```text
-M13.8 26C13.6 23.4 14.4 21 15.9 19.8C16.6 18.8 16.3 16.2 16.3 14.6C16.3 12.6 17 10.9 18.8
-10.2C20.6 9.4 22.6 9.8 23.8 11.2C24.8 12.4 24.8 13.2 24.4 14.2C25.6 15 26.9 16.1 28
-17.15C26.9 16.9 25.7 16.4 24.6 16C25.3 16.9 26.1 17.9 26.7 18.95C25.4 18.3 24 17.4 22.95
-16.4C22.4 16.5 21.9 16.6 21.4 16.6C21 18.2 21 19.6 21 20.8C23.4 21.8 26.2 22.4 28.8
-21.8C31 21.2 33 18.8 35.2 15.4C36.6 19.2 36.2 24 34.2 27.6C33 29.8 30.6 31.4 27.8
-32.1L27.6 35.5L26.3 35.5L26.2 32.4C25.2 32.6 24.4 32.6 23.6 32.6L23.4 35.5L22.1 35.5L22
-32.5C20.2 32.3 18.4 31.7 16.9 30.7C15.5 29.8 14.3 28.2 13.8 26ZM19.3 12.9a1.6 1.6 0 1 0
-3.2 0a1.6 1.6 0 1 0-3.2 0ZM27.6 19.25a1.3 1.3 0 1 0 2.6 0a1.3 1.3 0 1 0-2.6 0ZM30.8 23C32
-21.2 33.4 19.2 34.8 17.4C34.1 19.8 32.7 21.9 30.8 23ZM31.4 25.2C32.8 23.9 34 22.8 35.2
-21.8C34.2 23.6 33 24.8 31.4 25.2ZM31.6 27.6C32.6 26.9 33.6 26.2 34.4 25.6C33.7 26.9 32.8
-27.6 31.6 27.6ZM18.4 27.2C20.8 25.4 24 24.2 26.8 24C24.4 25.9 21.2 27.1 18.4 27.2ZM19.6
-29.4C22 27.8 25.2 26.7 28 26.6C25.6 28.4 22.4 29.4 19.6 29.4ZM21.8 31.2C23.8 30 26.2 29.2
-28.2 29.1C26.4 30.4 24 31.2 21.8 31.2Z
+M13.8 26C13.6 23.4 14.4 21 15.9 19.8C16.6 18.8 16.3 16.2 16.3 14.6C16.3 12.6 17 10.9 18.8 10
+.2C20.6 9.4 22.6 9.8 23.8 11.2C24.8 12.4 24.8 13.2 24.4 14.2C25.6 15 26.9 16.1 28 17.15C26.9
+ 16.9 25.7 16.4 24.6 16C25.3 16.9 26.1 17.9 26.7 18.95C25.4 18.3 24 17.4 22.95 16.4C22.4 16.
+5 21.9 16.6 21.4 16.6C21 18.2 21 19.6 21 20.8C23.4 21.8 26.2 22.4 28.8 21.8C31 21.2 33 18.8 
+35.2 15.4C36.6 19.2 36.2 24 34.2 27.6C33 29.8 30.6 31.4 27.8 32.1L27.6 35.5L26.3 35.5L26.2 3
+2.4C25.2 32.6 24.4 32.6 23.6 32.6L23.4 35.5L22.1 35.5L22 32.5C20.2 32.3 18.4 31.7 16.9 30.7C
+15.5 29.8 14.3 28.2 13.8 26ZM19.3 12.9C19.3 12.0163 20.0163 11.3 20.9 11.3C21.7837 11.3 22.5
+ 12.0163 22.5 12.9C22.5 13.7837 21.7837 14.5 20.9 14.5C20.0163 14.5 19.3 13.7837 19.3 12.9ZM
+27.6 19.25C27.6 18.532 28.182 17.95 28.9 17.95C29.618 17.95 30.2 18.532 30.2 19.25C30.2 19.9
+68 29.618 20.55 28.9 20.55C28.182 20.55 27.6 19.968 27.6 19.25ZM30.8 23C32 21.2 33.4 19.2 34
+.8 17.4C34.1 19.8 32.7 21.9 30.8 23ZM31.4 25.2C32.8 23.9 34 22.8 35.2 21.8C34.2 23.6 33 24.8
+ 31.4 25.2ZM31.6 27.6C32.6 26.9 33.6 26.2 34.4 25.6C33.7 26.9 32.8 27.6 31.6 27.6ZM18.4 27.2
+C20.8 25.4 24 24.2 26.8 24C24.4 25.9 21.2 27.1 18.4 27.2ZM19.6 29.4C22 27.8 25.2 26.7 28 26.
+6C25.6 28.4 22.4 29.4 19.6 29.4ZM21.8 31.2C23.8 30 26.2 29.2 28.2 29.1C26.4 30.4 24 31.2 21.
+8 31.2Z
 ```
 
-**O orçamento de peso não é problema:** a figura mede **1.087 B** de atributo `d` contra
-**1.034 B** do monograma. O `simbolo.svg` passa de 1.395 B para ~1.448 B, de 3.072 do teto.
+**O orçamento de peso não é problema:** a figura mede **1.295 B** de atributo `d` contra
+**1.034 B** do monograma — os círculos em cúbicas custam mais que em arco, e pagam por si na
+conferência ponto a ponto. O `simbolo.svg` fica em **1.676 B** de 3.072, e o conjunto mais
+pesado em **9.532 B** de 10.240.
 
 ### 7. Nos conjuntos a figura reencaixa por `transform`
 
 Os três conjuntos levam o escudo em escalas diferentes (38,4 · 25,26 · 35,84 de largura). A
-figura **não é redesenhada** em cada um: entra o mesmo traçado, reposicionado por `transform`,
-como o monograma já fazia. É o que mantém o requisito de a figura ser a mesma em todas.
+figura **não é redesenhada** em cada um: entra o mesmo traçado, reposicionado por `transform`.
+
+**Achado da implementação:** o monograma **não** fazia assim. Os três conjuntos traziam um
+`transform` *e* o `CG` redesenhado em coordenadas próprias — duas fontes para a mesma forma, que
+divergiriam sem ninguém notar. Com a figura única mais o `transform` recalculado a partir da
+caixa do escudo de cada peça, passa a haver **um traçado só** no repositório, e um caso novo
+compara o `d` das cinco.
 
 ## Risks / Trade-offs
 

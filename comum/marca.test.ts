@@ -124,9 +124,11 @@ const COM_ESCUDO = [
   "marca-empilhada.svg",
 ];
 
-/** Razões de contorno do desenho original, preservadas na mudança de forma:
- * a colorida a `1.5/42` da largura do escudo, a monocromática a `2.5/42`. */
-const RAZAO_DE_CONTORNO = { colorida: 1.5 / 42, mono: 2.5 / 42 };
+/** Razões de contorno: a colorida a `2/42` da largura do escudo, a
+ * monocromática a `3/42`. O teto é `3.28/42` — acima dele o caso "não deixa a
+ * ponta sair cortada pela grade" falha no `simbolo.svg`, cujo ápice está a
+ * `1.5` da borda. A mono é mais pesada porque é traço, sem preenchimento. */
+const RAZAO_DE_CONTORNO = { colorida: 2 / 42, mono: 3 / 42 };
 
 /** O escudo é o **primeiro** `<path>` de cada peça. O traçado dele usa só `M`
  * e `C`, então todo número é coordenada e os pares nunca escorregam. */
@@ -142,6 +144,16 @@ function escudo(nome: string) {
     grade: [Number(grade?.[1]), Number(grade?.[2])] as [number, number],
   };
 }
+
+/** A figura do símbolo é o **segundo** `<path>` de cada peça. Nos conjuntos ela
+ * é a mesma do símbolo, reencaixada por `transform`. */
+function figura(nome: string) {
+  const el = conteudo(nome).match(/<path\b[^>]*?\/>/gs)?.[1] ?? "";
+  return { el, d: el.match(/d="([^"]+)"/)?.[1] ?? "" };
+}
+
+const numerosDaFigura = (nome: string) =>
+  [...figura(nome).d.matchAll(/-?\d*\.?\d+/g)].map((achado) => Number(achado[0]));
 
 const eixo = (numeros: number[], resto: number) => numeros.filter((_, i) => i % 2 === resto);
 
@@ -223,31 +235,59 @@ describe("o escudo tem uma forma só, em todas as peças da marca", () => {
     expect(xsNoTopo[0]).toBeCloseTo((Math.min(...xs) + Math.max(...xs)) / 2, 1);
   });
 
-  // O escudo ganhou altura e perdeu largura: o monograma não pode ter ficado
-  // de fora da forma nova. Vale para o **símbolo**, cujo monograma não é
-  // transformado; nos conjuntos ele reencaixa por `transform` (spec: cenário
-  // "O monograma continua dentro do escudo").
+  // A figura do símbolo não pode sair do escudo. Confere **ponto a ponto**, e
+  // não pelos cantos da caixa envolvente: a figura do Sankofa não é compacta —
+  // a cauda avança à direita no meio da altura e as pernas descem no centro —,
+  // de modo que o canto inferior direito da caixa cai fora do escudo sem que
+  // ponto algum do desenho esteja lá. Vale para o **símbolo**, cuja figura não
+  // é transformada; nos conjuntos ela reencaixa por `transform` (spec: cenário
+  // "A figura fica dentro do escudo").
   it.each(["simbolo.svg", "simbolo-mono.svg"])(
-    "%s mantém o monograma dentro do escudo",
+    "%s mantém a figura dentro do escudo",
     (nome) => {
       const contorno = amostrado(escudo(nome).numeros);
-      const monograma = conteudo(nome).match(/<path\b[^>]*?\/>/gs)?.[1] ?? "";
-      const n = [...(monograma.match(/d="([^"]+)"/)?.[1] ?? "").matchAll(/-?\d*\.?\d+/g)].map(
-        (achado) => Number(achado[0]),
-      );
-      const xs = eixo(n, 0);
-      const ys = eixo(n, 1);
-      const cantos: Array<[number, number]> = [
-        [Math.min(...xs), Math.min(...ys)],
-        [Math.max(...xs), Math.min(...ys)],
-        [Math.min(...xs), Math.max(...ys)],
-        [Math.max(...xs), Math.max(...ys)],
-      ];
-      for (const canto of cantos) {
-        expect(dentro(canto, contorno)).toBe(true);
+      const n = numerosDaFigura(nome);
+      expect(n.length).toBeGreaterThan(0);
+      for (let i = 0; i < n.length; i += 2) {
+        expect(dentro([n[i], n[i + 1]], contorno), `ponto ${n[i]},${n[i + 1]}`).toBe(true);
       }
     },
   );
+
+  // A figura é **uma só**, em todas as peças: o mesmo `d`, reencaixado por
+  // `transform` nos conjuntos. Antes desta change cada conjunto trazia o
+  // monograma redesenhado em coordenadas próprias, e divergir era questão de
+  // tempo — o mesmo defeito que o bloco acima impede no escudo
+  // (spec: "A figura é a mesma em todas as peças").
+  it.each(COM_ESCUDO)("%s traz a mesma figura do símbolo", (nome) => {
+    expect(figura(nome).d).toBe(figura("simbolo.svg").d);
+  });
+
+  // Contraforma é **abertura**, nunca segunda cor: a monocromática é traço
+  // vazado e não tem cor disponível para pintar olho, pena ou vazado. Isso
+  // exige que a figura seja um `<path>` só, com `fill-rule="evenodd"`, que é
+  // também o que faz o bloco acima poder ler "a figura" como um elemento
+  // (spec: "As contraformas da figura são vazadas, nunca pintadas").
+  it.each(COM_ESCUDO)("%s desenha a figura num path só, vazada por evenodd", (nome) => {
+    // No símbolo há só escudo e figura; nos conjuntos somam-se os traçados do
+    // logotipo, que são do texto em curvas e não da figura.
+    const elementos = conteudo(nome).match(/<path\b[^>]*?\/>/gs) ?? [];
+    expect(elementos.length).toBeGreaterThanOrEqual(2);
+    if (nome.startsWith("simbolo")) expect(elementos).toHaveLength(2);
+    expect(figura(nome).el).toContain('fill-rule="evenodd"');
+    // Nenhum `<circle>`, `<ellipse>` ou `<rect>` pintado por cima: sob
+    // `evenodd` uma forma sobreposta viraria buraco, e na mono não há cor.
+    expect(conteudo(nome)).not.toMatch(/<(circle|ellipse|rect|polygon)\b/);
+  });
+
+  // O traçado da figura usa só `M`, `C`, `L` e `Z` — nenhum arco. É o que
+  // garante que **todo número é coordenada** e que os pares nunca escorregam,
+  // de que depende a conferência ponto a ponto acima. Um `a1.6 1.6 0 1 0 ...`
+  // tem sete parâmetros e desalinharia a leitura sem falhar ruidosamente.
+  it.each(COM_ESCUDO)("%s descreve a figura só com M, C, L e Z", (nome) => {
+    expect(figura(nome).d).not.toMatch(/[aAhHvVsStTqQ]/);
+    expect(numerosDaFigura(nome).length % 2).toBe(0);
+  });
 
   it.each(COM_ESCUDO)("%s não deixa a ponta sair cortada pela grade", (nome) => {
     const { numeros, contorno, juncao, grade } = escudo(nome);
