@@ -448,12 +448,16 @@ O card é a "carta do personagem" do universo do jogo, e a mesma composição se
 App 04. A tabela abaixo define **o que cada card exibe**; a aparência dele — cor, tipografia,
 moldura e emblema — está no documento 15:
 
-| Card                   | O que exibe                                                                                                                            | O que **nunca** exibe                                             |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| **Guerreiro(a)**       | Avatar, nick, badges, poderes com níveis, desempenho e **criações originais**                                                          | Imagem real, nome civil, redes sociais, qualquer canal de contato |
-| **Mestre**             | **Avatar, nick**, áreas de habilidade, artefatos comprobatórios, trilhas de autoria e **selo de quem sustentou atividade sem recurso** | —                                                                 |
-| **Apoiador**           | **Avatar, nick e total de moedas em destaque**, nível de sustento, selos, desafios propostos e efetividade agregada                    | Dados de contato de Guerreiros e Guerreiras; valores em reais     |
-| **Comunidade Virtual** | Nome, território, representação visual, séries ativas, nº de Guerreiros e Guerreiras vinculados                                        | Granularidade que permita inferir endereço de criança             |
+| Card                   | O que exibe                                                                                                                              | O que **nunca** exibe                                             |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **Guerreiro(a)**       | Avatar, nick, badges, poderes com níveis, desempenho, **criações originais** e, em tela logada, o **saldo de pontos extras** para trocar | Imagem real, nome civil, redes sociais, qualquer canal de contato |
+| **Mestre**             | **Avatar, nick**, áreas de habilidade, artefatos comprobatórios, trilhas de autoria e **selo de quem sustentou atividade sem recurso**   | —                                                                 |
+| **Apoiador**           | **Avatar, nick e total de moedas em destaque**, nível de sustento, selos, desafios propostos e efetividade agregada                      | Dados de contato de Guerreiros e Guerreiras; valores em reais     |
+| **Comunidade Virtual** | Nome, território, representação visual, séries ativas, nº de Guerreiros e Guerreiras vinculados                                          | Granularidade que permita inferir endereço de criança             |
+
+**O saldo de pontos extras é de tela logada.** Ele entra na carta do próprio Guerreiro(a) — a
+da Área dele e a do desfecho da presença —, com rótulo que o identifica como saldo, e **nunca**
+em superfície pública. A falta dele não torna a carta incompleta.
 
 **Definição vigente — a carta mora na página individual.** Em superfície pública a carta não é
 a porta: chega-se à página pela **linha da lista** daquele papel, pela consulta por nick exato

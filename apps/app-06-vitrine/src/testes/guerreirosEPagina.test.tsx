@@ -1,8 +1,10 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { CartaDoPersonagem, cartaEstaCompleta } from "comum/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CriacaoPublica, GuerreiroPublico, ItemDeRankingPublico } from "../api/leituras";
 import * as leituras from "../api/leituras";
+import { cartaDoGuerreiro } from "../guerreiros/carta";
 import App from "./TelaDaVitrine";
 
 // Critérios de aceite do PRD-03 §12 para a seção de Guerreiros e Guerreiras e
@@ -189,5 +191,31 @@ describe("a seção de Guerreiros e Guerreiras", () => {
 
     expect(await screen.findByText(/veio incompleta/i)).toBeVisible();
     expect(document.querySelector(".cg-carta")).toBeNull();
+  });
+});
+
+describe("o saldo de pontos extras nunca chega à superfície pública", () => {
+  // Invariantes 8, 12 e 23: o saldo é de tela logada. A vitrine usa a **mesma**
+  // carta da Área do Guerreiro(a), e a garantia é por construção — a projeção
+  // pública não traz o campo, e a rota que o serve só atende o próprio
+  // Guerreiro(a) em sessão (`RF-03-06`, `RF-01-21`).
+  it("o adaptador da carta pública não carrega o campo do saldo", () => {
+    const dados = cartaDoGuerreiro(guerreiro("zeferina"));
+
+    expect(dados).not.toHaveProperty("saldoParaTrocar");
+    expect("saldoParaTrocar" in dados).toBe(false);
+  });
+
+  it("a carta pública se apresenta em três colunas, sem a do saldo", () => {
+    const dados = cartaDoGuerreiro(guerreiro("zeferina"));
+    // E a falta do saldo não a torna incompleta: a decisão de apresentar carta
+    // segue sendo a do documento 11 §8.2, sem o saldo entre o que ela exige.
+    expect(cartaEstaCompleta(dados)).toBe(true);
+
+    const { container } = render(<CartaDoPersonagem dados={dados} />);
+
+    expect(container.querySelectorAll(".cg-carta__coluna")).toHaveLength(3);
+    expect(container.textContent).not.toContain("Para trocar");
+    expect(container.textContent).not.toContain("pontos extras");
   });
 });

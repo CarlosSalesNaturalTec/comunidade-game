@@ -476,6 +476,7 @@ aparecem aqui apenas quando o ato é do Guerreiro(a).
 | POST   | `/v1/eu/missoes/{id}/producao`        | Guerreiro(a) | Entrega a produção em texto, áudio ou foto e recebe a devolutiva                  |
 | GET    | `/v1/eu/retomadas`                    | Guerreiro(a) | Missões que voltaram para revisão espaçada, com o prazo                           |
 | GET    | `/v1/eu/progresso`                    | Guerreiro(a) | Pontos, nível por trilha ou poder, badges e o que falta                           |
+| GET    | `/v1/eu/pontos-extras`                | Guerreiro(a) | Acumulado e saldo disponível de pontos extras do próprio (PRD-07 §9)              |
 | GET    | `/v1/eu/desafios`                     | Guerreiro(a) | Desafios semanais e extras vigentes e elegíveis                                   |
 | GET    | `/v1/eu/equipes`                      | Guerreiro(a) | Equipes de que participa, com papel e atividades                                  |
 | GET    | `/v1/series-de-coleta/minhas`         | Guerreiro(a) | Séries de coleta, próxima medição, situação e pontos rendidos                     |
@@ -503,6 +504,9 @@ série interrompida sem retomada (409); entrega de criação em trilha sem culmi
 (409); tentativa de lançar resultado, presença ou pontos (403); qualquer rota de crédito de
 pontos a partir do jogo (404, por não existir); consulta a disciplina sem conteúdo cadastrado
 (422); consulta recusada pelos filtros de segurança (422, com a ocorrência registrada).
+
+A rota `GET /v1/eu/pontos-extras` serve a carteira **e** a carta do próprio Guerreiro(a), que
+exibe o saldo disponível para trocar (`RF-05-82`, documento 11 §8.2).
 
 As rotas `GET /v1/eu/acervo`, `POST /v1/sugestoes`, `GET /v1/eu/sugestoes`,
 `GET /v1/apoio-escolar/disciplinas` e `POST /v1/apoio-escolar/consultas` — com os erros de

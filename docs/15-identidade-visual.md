@@ -70,23 +70,28 @@ regra de **ficha** (§7), não de botão.
 
 ### 3.3 Contraste medido
 
-| Par                                    | Razão   | Piso  |
-| -------------------------------------- | ------- | ----- |
-| `tinta-900` sobre `cal-050`            | 16,88:1 | 4,5:1 |
-| `tinta-500` sobre `cal-050`            | 5,11:1  | 4,5:1 |
-| `acao-600` sobre `cal-050`             | 6,90:1  | 4,5:1 |
-| `cal-000` sobre `acao-600`             | 7,51:1  | 4,5:1 |
-| `cal-000` sobre `marca-600`            | 4,76:1  | 4,5:1 |
-| `cal-000` sobre `sucesso-600`          | 5,39:1  | 4,5:1 |
-| `tinta-900` sobre `sucesso-400`        | 8,91:1  | 4,5:1 |
-| `tinta-900` sobre `ponto-500`          | 10,12:1 | 4,5:1 |
-| `cal-000` sobre `moeda-600`            | 5,19:1  | 4,5:1 |
-| `cal-050` sobre `tinta-900`            | 16,88:1 | 4,5:1 |
-| `acao-400` sobre `tinta-900`           | 5,96:1  | 4,5:1 |
-| `tinta-500` sobre `cal-050` (borda)    | 5,11:1  | 3:1   |
-| `ponto-700` sobre `cal-050` (contorno) | 6,16:1  | 3:1   |
-| `moeda-700` sobre `cal-050` (contorno) | 7,09:1  | 3:1   |
-| `tinta-500` sobre `tinta-900` (borda)  | 3,30:1  | 3:1   |
+| Par                                      | Razão   | Piso  |
+| ---------------------------------------- | ------- | ----- |
+| `tinta-900` sobre `cal-050`              | 16,88:1 | 4,5:1 |
+| `tinta-500` sobre `cal-050`              | 5,11:1  | 4,5:1 |
+| `acao-600` sobre `cal-050`               | 6,90:1  | 4,5:1 |
+| `cal-000` sobre `acao-600`               | 7,51:1  | 4,5:1 |
+| `cal-000` sobre `marca-600`              | 4,76:1  | 4,5:1 |
+| `cal-000` sobre `sucesso-600`            | 5,39:1  | 4,5:1 |
+| `tinta-900` sobre `sucesso-400`          | 8,91:1  | 4,5:1 |
+| `tinta-900` sobre `ponto-500`            | 10,12:1 | 4,5:1 |
+| `cal-000` sobre `moeda-600`              | 5,19:1  | 4,5:1 |
+| `cal-050` sobre `tinta-900`              | 16,88:1 | 4,5:1 |
+| `acao-400` sobre `tinta-900`             | 5,96:1  | 4,5:1 |
+| `tinta-500` sobre `cal-050` (borda)      | 5,11:1  | 3:1   |
+| `ponto-700` sobre `cal-050` (contorno)   | 6,16:1  | 3:1   |
+| `ponto-400` sobre `tinta-800` (contorno) | 10,58:1 | 3:1   |
+| `moeda-700` sobre `cal-050` (contorno)   | 7,09:1  | 3:1   |
+| `tinta-500` sobre `tinta-900` (borda)    | 3,30:1  | 3:1   |
+
+O contorno da família ponto vale `ponto-700` no claro e `ponto-400` no escuro: `ponto-700`
+sobre `tinta-800` dá `2,34:1` e não alcança o piso. `ponto-500` **não é cor de traço** — sobre
+`cal-000` dá `1,82:1` —, só de preenchimento de ficha.
 
 ## 4. Tipografia e medida
 
@@ -321,14 +326,16 @@ A carta do personagem é o átomo da interface, nas quatro variantes já normati
 Guerreiro(a), Mestre, Apoiador e Comunidade Virtual. **A composição de cada uma — o que exibe,
 o que nunca exibe e a moldura comum — está no documento 11.** Aqui ficam só os valores:
 
-| Elemento            | Valor                                                                    |
-| ------------------- | ------------------------------------------------------------------------ |
-| Superfície          | `cal-000` no claro, `tinta-800` no escuro                                |
-| Borda               | `tinta-500`, 1 px                                                        |
-| Raio                | `4` px na Operação, `12` px na Arena                                     |
-| Proporção do avatar | Quadrado, recortado em círculo, ocupando metade da largura da carta      |
-| Nick                | Archivo, `1,125` rem                                                     |
-| Rotação             | Onde houver, respeita `reduced-motion` e nunca é a única via ao conteúdo |
+| Elemento                        | Valor                                                                                                      |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Superfície                      | `cal-000` no claro, `tinta-800` no escuro                                                                  |
+| Borda                           | `tinta-500`, 1 px                                                                                          |
+| Raio                            | `4` px na Operação, `12` px na Arena                                                                       |
+| Proporção do avatar             | Quadrado, recortado em círculo, ocupando metade da largura da carta                                        |
+| Nick                            | Archivo, `1,125` rem                                                                                       |
+| Alinhamento                     | Avatar, identificação e desempenho centralizados, nas quatro variantes                                     |
+| Seções da variante Guerreiro(a) | Em colunas, com o símbolo acima do rótulo: duas por linha no celular e todas em linha a partir de `768` px |
+| Rotação                         | Onde houver, respeita `reduced-motion` e nunca é a única via ao conteúdo                                   |
 
 ### 8.2 Emblema de nível — a marca é contável
 
@@ -390,8 +397,11 @@ São três grandezas distintas e **nunca podem ser confundidas na tela**:
   na mesma família `ponto-500`. A grandeza ponto é sempre **uma** estrela, e é a contagem que
   separa as duas — o trio nunca aparece sem o nome do que foi conquistado ao lado. Decisão do
   fundador, 2026-10-19.
-- Do ponto extra, a superfície pública mostra o **acumulado**; a tela de troca mostra o **saldo
-  disponível**, e os dois nunca aparecem sem rótulo que os separe.
+- Do ponto extra, a superfície pública mostra o **acumulado**; a tela de troca e a carta do
+  próprio Guerreiro(a) mostram o **saldo disponível**, e os dois nunca aparecem sem rótulo que
+  os separe.
+- Na carta, a frase de desempenho leva a **estrela cheia** e a seção do saldo a **vazada**, ambas
+  na cor do texto: o amarelo é preenchimento de ficha, não traço (§3.3).
 - **Real não aparece** fora da tela onde se paga, e ali sempre ao lado do equivalente em moedas.
 
 ## 10. Etiqueta de conteúdo gerado por IA

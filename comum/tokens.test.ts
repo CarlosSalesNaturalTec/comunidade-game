@@ -85,3 +85,22 @@ describe("tokens.css — a camada de tema dos dois temperamentos (documento 15 �
     expect(reduzido).toContain("--duracao: 0ms;");
   });
 });
+
+describe("tokens.css — o contorno da família ponto nos dois temas (documento 15 §§3.3, 9)", () => {
+  it("o contorno tem valor próprio no claro e no escuro", () => {
+    const claro = corpoDaRegra(":root");
+    expect(claro).toContain("--cor-ponto-contorno: var(--ponto-700);");
+
+    const escuro = TOKENS.slice(TOKENS.indexOf("@media (prefers-color-scheme: dark)"));
+    expect(escuro).toContain("--cor-ponto-contorno: var(--ponto-400);");
+  });
+
+  it("o contorno nunca repete o preenchimento, que apagaria o limite da ficha", () => {
+    const escuro = TOKENS.slice(TOKENS.indexOf("@media (prefers-color-scheme: dark)"));
+    const preenchimento = escuro.match(/--cor-ponto: var\(--(ponto-\d+)\);/)?.[1];
+    const contorno = escuro.match(/--cor-ponto-contorno: var\(--(ponto-\d+)\);/)?.[1];
+    expect(preenchimento).toBeDefined();
+    expect(contorno).toBeDefined();
+    expect(contorno).not.toBe(preenchimento);
+  });
+});

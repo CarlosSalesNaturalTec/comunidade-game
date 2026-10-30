@@ -116,7 +116,7 @@ como dado faltante.
 | A carta **pública** muda de forma junto, para três colunas | É consequência declarada da decisão de o grid ser da variante Guerreiro(a), e não efeito colateral: a carta pública é dessa variante |
 | Mudar `--cor-ponto-contorno` alcança o **trio de estrelas** de outra tela | É o conserto pretendido — hoje a borda do trio desaparece no escuro. Declarado na `proposal.md` |
 | O saldo passa a aparecer **duas vezes** na carteira da App 05 | Decisão expressa do fundador depois de a duplicação ser levantada. Os rótulos são distintos: "para trocar" na carta, "saldo disponível" na carteira |
-| A carta ganha uma quinta leitura, e a montagem fica mais lenta | Entra no `Promise.all` que já existe, não em leitura em série |
+| A carta ganha uma quarta leitura em série, e a montagem fica mais lenta | Entra no mesmo molde das três que já existem — `progresso`, `portfólio` e ranking também são seriais hoje. Paralelizar as quatro é melhoria própria, e não entra aqui: mudaria a semântica de recusa de sessão, que hoje difere por leitura e está fixada em teste |
 
 ## Migration Plan
 

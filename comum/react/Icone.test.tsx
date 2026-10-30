@@ -3,7 +3,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Icone, type NomeDeGlifo } from "./Icone";
+import { BadgeDaFamilia, type FamiliaDeBadge } from "./BadgeDaFamilia";
+import { CAMINHO_DA_ESTRELA, Icone, type NomeDeGlifo } from "./Icone";
 
 const ARQUIVO = readFileSync(
   join(dirname(fileURLToPath(import.meta.url)), "Icone.tsx"),
@@ -22,6 +23,9 @@ const GLIFOS: NomeDeGlifo[] = [
   "encerrar",
   "momento-de-troca",
   "entregas",
+  "medalha",
+  "pincel",
+  "ponto-extra",
 ];
 
 function desenhar(glifo: NomeDeGlifo): SVGSVGElement {
@@ -133,5 +137,61 @@ describe("Icone — o ícone não aparece sozinho (documento 15 §5)", () => {
     // O rótulo é o nome acessível inteiro: o glifo não acrescenta nem
     // substitui palavra alguma.
     expect(botao.querySelector("svg")).not.toBeNull();
+  });
+});
+
+describe("Icone — os símbolos das colunas da carta (documento 15 §§8.1, 8.3, 9)", () => {
+  /** O desenho de uma silhueta de família, como `BadgeDaFamilia` a apresenta. */
+  function silhueta(familia: FamiliaDeBadge): string {
+    const { container } = render(<BadgeDaFamilia familia={familia} />);
+    const forma = container.querySelector(".cg-badge__forma");
+    expect(forma).not.toBeNull();
+    return (forma as SVGSVGElement).innerHTML;
+  }
+
+  const FAMILIAS: FamiliaDeBadge[] = [
+    "de_nivel",
+    "de_conquista",
+    "de_valores_e_causas",
+    "de_territorio",
+    "de_autoria",
+    "de_protagonismo",
+  ];
+
+  it("medalha e pincel não repetem silhueta de família alguma", () => {
+    // No cabeçalho de uma coluna, a silhueta de família afirmaria família
+    // errada: o losango diria "badge de nível" (documento 15 §8.3).
+    const desenhos = [desenhar("medalha").innerHTML, desenhar("pincel").innerHTML];
+    for (const familia of FAMILIAS) {
+      for (const desenho of desenhos) expect(desenho).not.toBe(silhueta(familia));
+    }
+  });
+
+  it("nenhum símbolo de coluna é o escudo da marca nem o círculo da moeda", () => {
+    // O escudo é a forma da marca (invariante 24) e o círculo é da moeda
+    // (§9): nenhum dos dois pode encabeçar coluna de carta. O escudo vem do
+    // próprio arquivo da marca, para que redesenhá-lo não deixe este teste
+    // afirmando uma forma que a marca já não tem.
+    const simbolo = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), "..", "marca", "simbolo.svg"),
+      "utf-8",
+    );
+    const tracados = [...simbolo.matchAll(/ d="([^"]+)"/g)].map((m) => m[1]);
+    expect(tracados.length).toBeGreaterThan(0);
+
+    for (const glifo of ["medalha", "pincel", "ponto-extra"] as const) {
+      const svg = desenhar(glifo);
+      expect(svg.querySelector("circle")).toBeNull();
+      for (const tracado of tracados) expect(svg.innerHTML).not.toContain(tracado);
+    }
+  });
+
+  it("a estrela do ponto extra é a mesma forma da cheia, e sai vazada", () => {
+    // Documento 15 §9: ponto regular é estrela cheia e ponto extra é vazada.
+    // A forma é uma só — o que separa as duas é o preenchimento, e no sistema
+    // de ícone o vazado é a regra.
+    const svg = desenhar("ponto-extra");
+    expect(svg.getAttribute("fill")).toBe("none");
+    expect(svg.querySelector("path")?.getAttribute("d")).toBe(CAMINHO_DA_ESTRELA);
   });
 });

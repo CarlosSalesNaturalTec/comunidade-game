@@ -20,6 +20,16 @@ export type NomeDeGlifo =
   | "encerrar"
   | "momento-de-troca"
   | "entregas"
+  // Os símbolos das colunas da carta (documento 15 §8.1, decisão do
+  // fundador de 2026-10-30). Nenhum deles é silhueta de família de badge,
+  // que no cabeçalho de uma coluna afirmaria família errada (§8.3), nem o
+  // escudo da marca (invariante 24), nem o círculo da moeda (§9).
+  | "medalha"
+  | "pincel"
+  // A estrela **vazada** da grandeza ponto extra (§9). Aqui o vazado é a
+  // regra do sistema, não exceção: a cheia, do ponto regular, é peça
+  // preenchida e vive em `EstrelaDePonto`.
+  | "ponto-extra"
   // Os glifos de poder do documento 15 §8.4 — um por poder do catálogo do
   // documento 02 §2, mais o genérico. Quem os escolhe pelo nome do poder é
   // `GlifoDePoder`; aqui são glifos como os demais, na mesma grade.
@@ -30,6 +40,14 @@ export type NomeDeGlifo =
   | "poder-da-rima"
   | "poder-das-redes"
   | "poder-da-capoeira";
+
+/** A estrela de cinco pontas da grandeza ponto (documento 15 §9), na grade
+ * de `24` px. Mora aqui porque as duas peças que a usam a querem idêntica: o
+ * glifo **vazado** do ponto extra, abaixo, e a **cheia** do ponto regular, em
+ * `EstrelaDePonto`. Dois desenhos da mesma forma divergiriam na primeira
+ * correção. */
+export const CAMINHO_DA_ESTRELA =
+  "M12 2.6l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6L12 17.7l-5.9 3.1 1.2-6.6-4.9-4.6 6.7-.9z";
 
 // Os glifos, desenhados na grade de `24` px do documento 15 §11.1.
 // Nenhum declara cor: o traço é `currentColor`, herdado do texto que o ícone
@@ -142,6 +160,29 @@ const GLIFOS: Record<NomeDeGlifo, ReactElement> = {
       <path d="m9 13.5 2 2 4-4" />
     </>
   ),
+  // Medalha com fita: o corpo arredondado e as duas caudas. Encabeça a coluna
+  // dos badges sem afirmar família — nenhuma das seis silhuetas da §8.3 é
+  // retângulo.
+  medalha: (
+    <>
+      <rect x="7" y="2.5" width="10" height="10" rx="2.5" />
+      <path d="M9.5 12.5 7 21l5-2.5 5 2.5-2.5-8.5" />
+    </>
+  ),
+  // Pincel: o cabo na diagonal, a virola e as cerdas que pintam. Encabeça a
+  // coluna das criações originais, que também são mapa, música e protótipo —
+  // por isso pincel, e não moldura.
+  pincel: (
+    <>
+      <path d="M20.5 4.5 14 11" />
+      <path d="m12 9 4 4" />
+      <path d="M13 10 6 17l2 2 7-7z" />
+    </>
+  ),
+  // A estrela vazada do ponto extra (§9), encabeçando a coluna do saldo que
+  // dá para trocar. O mesmo traçado da cheia, sem preenchimento: aqui a cor é
+  // a do texto, porque `ponto-500` não é cor de traço (§3.3).
+  "ponto-extra": <path d={CAMINHO_DA_ESTRELA} />,
   // O genérico do documento 15 §8.4 — losango num círculo. Não é estrela nem
   // hexágono de propósito: a estrela é a grandeza ponto do §9 e o hexágono é a
   // silhueta do badge de protagonismo do §8.3, e o genérico não pode se
