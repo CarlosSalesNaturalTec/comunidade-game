@@ -13,6 +13,10 @@ export interface PendenciaDeEntrega {
   missao_titulo: string;
   recompensa_de_marco_id: string;
   tipo_de_recurso_id: string;
+  // O nome e a unidade do tipo, que o núcleo serve junto: sem eles a tela só
+  // tem a quantidade a dizer, sem distinguir o livro da camisa nem do kit.
+  tipo_de_recurso_nome: string;
+  tipo_de_recurso_unidade: string;
   quantidade: string;
   quantidade_esgotada: boolean;
 }
