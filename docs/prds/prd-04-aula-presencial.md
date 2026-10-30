@@ -322,6 +322,23 @@ dentro da mesma sessão de trabalho do aparelho.
 7. A **entrega da produção** não acontece aqui: ela é da equipe, no caminho das equipes.
 8. Sem rede o caminho não abre, como os demais que pedem o Guerreiro(a), e nada fica enfileirado.
 
+### 5.12 Confirmar a entrega da recompensa de marco, no encontro
+
+1. O caminho é de **quem opera o aparelho** e aparece **só quando quem abriu a sessão de
+   trabalho é Mestre** — o Admin nunca confirma entrega.
+2. A fila é a **do encontro**: cada Guerreiro(a) com **presença registrada naquela aula** que
+   alcançou marco com recompensa declarada e ainda não a recebeu. Quem não registrou presença
+   não aparece — a pendência dele segue na App 09.
+3. Cada pendência traz **nick e avatar**, a trilha, a missão que é o marco, o tipo de recurso e
+   a quantidade. Nunca valor em moedas nem em reais.
+4. O Mestre confirma e **entrega o item na hora**. O recurso sai do **ponto de apoio da aula**,
+   sem escolha: a aula já o declara obrigatoriamente.
+5. Confirmada, a pendência **sai da fila**, que é relida do núcleo — a mesma entrega pode ter
+   sido confirmada na App 09 enquanto a tela estava aberta.
+6. Recusa do núcleo — falta de lastro no ponto de apoio da aula, quantidade esgotada, presença
+   ausente — é apresentada **como ela vem**, em linguagem simples.
+7. Encontro **sem pendência alguma** diz que não há, e não apresenta erro.
+
 ## 6. Requisitos funcionais
 
 ### 6.1 Onboarding e presença

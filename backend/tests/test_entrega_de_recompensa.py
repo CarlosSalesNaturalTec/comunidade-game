@@ -558,3 +558,205 @@ def test_mestre_le_entregas_das_duas_comunidades(sessao, cenario, criar_vinculo_
     entregas = listar_entregas(sessao, operador=c1["mestre"])
 
     assert {e.id for e in entregas} == {entrega1.id, entrega2.id}
+
+
+# --- 5.3 A entrega no encontro, pelo ponto de apoio da aula (fatia 31) ---------
+
+
+def test_entrega_por_aula_baixa_do_ponto_de_apoio_dela(
+    sessao, cenario, criar_ponto_de_apoio, criar_lancamento, criar_aula, criar_presenca
+):
+    """O ponto de apoio não é o escolhido: é o que a aula declara
+    (`RF-09-76`, documento 02 §8.1)."""
+    c = cenario()
+    ponto_da_aula = criar_ponto_de_apoio(c["admin"], c["comunidade"], nome="Ponto do Encontro")
+    criar_lancamento(
+        c["admin"],
+        c["tipo"],
+        ponto_da_aula,
+        natureza=NaturezaDoLancamento.credito,
+        quantidade=Decimal("10"),
+    )
+    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=ponto_da_aula)
+    criar_presenca(aula, c["guerreiro"])
+
+    entrega = registrar_entrega(
+        sessao,
+        operador=c["mestre"],
+        recompensa=c["recompensa"],
+        guerreiro=c["guerreiro"],
+        ponto_de_apoio=None,
+        aula=aula,
+    )
+    sessao.commit()
+
+    assert entrega.ponto_de_apoio_id == ponto_da_aula.id
+    assert saldo_de(
+        sessao, tipo_de_recurso_id=c["tipo"].id, ponto_de_apoio_id=ponto_da_aula.id
+    ) == Decimal("9")
+    assert saldo_de(
+        sessao, tipo_de_recurso_id=c["tipo"].id, ponto_de_apoio_id=c["ponto_de_apoio"].id
+    ) == Decimal("10")
+
+
+def test_entrega_por_aula_sem_lastro_no_ponto_dela_e_recusada(
+    sessao, cenario, criar_ponto_de_apoio, criar_aula, criar_presenca
+):
+    c = cenario()
+    ponto_sem_lastro = criar_ponto_de_apoio(c["admin"], c["comunidade"], nome="Ponto Vazio")
+    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=ponto_sem_lastro)
+    criar_presenca(aula, c["guerreiro"])
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_entrega(
+            sessao,
+            operador=c["mestre"],
+            recompensa=c["recompensa"],
+            guerreiro=c["guerreiro"],
+            ponto_de_apoio=None,
+            aula=aula,
+        )
+
+    assert excinfo.value.campo == "ponto_de_apoio_id"
+    assert sessao.query(EntregaDeRecompensa).count() == 0
+
+
+def test_entrega_por_aula_exige_presenca_registrada(sessao, cenario, criar_aula):
+    c = cenario()
+    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=c["ponto_de_apoio"])
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_entrega(
+            sessao,
+            operador=c["mestre"],
+            recompensa=c["recompensa"],
+            guerreiro=c["guerreiro"],
+            ponto_de_apoio=None,
+            aula=aula,
+        )
+
+    assert excinfo.value.campo == "guerreiro_id"
+    assert sessao.query(EntregaDeRecompensa).count() == 0
+
+
+def test_entrega_por_aula_com_presenca_anulada_e_recusada(
+    sessao, cenario, criar_aula, criar_presenca
+):
+    c = cenario()
+    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=c["ponto_de_apoio"])
+    criar_presenca(aula, c["guerreiro"], confirmador=c["mestre"], anulada=True)
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_entrega(
+            sessao,
+            operador=c["mestre"],
+            recompensa=c["recompensa"],
+            guerreiro=c["guerreiro"],
+            ponto_de_apoio=None,
+            aula=aula,
+        )
+
+    assert excinfo.value.campo == "guerreiro_id"
+    assert sessao.query(EntregaDeRecompensa).count() == 0
+
+
+def test_admin_nao_confirma_entrega_no_encontro(sessao, cenario, criar_aula, criar_presenca):
+    c = cenario()
+    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=c["ponto_de_apoio"])
+    criar_presenca(aula, c["guerreiro"])
+
+    with pytest.raises(PermissaoNegada):
+        registrar_entrega(
+            sessao,
+            operador=c["admin"],
+            recompensa=c["recompensa"],
+            guerreiro=c["guerreiro"],
+            ponto_de_apoio=None,
+            aula=aula,
+        )
+
+    assert sessao.query(EntregaDeRecompensa).count() == 0
+
+
+def test_ponto_de_apoio_e_aula_juntos_sao_recusados(sessao, cenario, criar_aula, criar_presenca):
+    c = cenario()
+    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=c["ponto_de_apoio"])
+    criar_presenca(aula, c["guerreiro"])
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_entrega(
+            sessao,
+            operador=c["mestre"],
+            recompensa=c["recompensa"],
+            guerreiro=c["guerreiro"],
+            ponto_de_apoio=c["ponto_de_apoio"],
+            aula=aula,
+        )
+
+    assert excinfo.value.campo == "aula_id"
+    assert sessao.query(EntregaDeRecompensa).count() == 0
+
+
+def test_entrega_sem_ponto_de_apoio_e_sem_aula_e_recusada(sessao, cenario):
+    c = cenario()
+
+    with pytest.raises(ErroDeValidacao) as excinfo:
+        registrar_entrega(
+            sessao,
+            operador=c["mestre"],
+            recompensa=c["recompensa"],
+            guerreiro=c["guerreiro"],
+            ponto_de_apoio=None,
+        )
+
+    assert excinfo.value.campo == "ponto_de_apoio_id"
+
+
+def test_rota_da_entrega_recusa_os_dois_e_recusa_nenhum(
+    sessao, cliente, criar_chave, criar_sessao_de_teste, cenario, criar_aula, criar_presenca
+):
+    """A exclusividade é do contrato, e os dois desvios saem 422
+    (design — decisão 2)."""
+    c = cenario()
+    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=c["ponto_de_apoio"])
+    criar_presenca(aula, c["guerreiro"])
+    chave, _ = criar_chave()
+    token, _ = criar_sessao_de_teste(c["mestre"])
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    caminho = f"/v1/recompensas-de-marco/{c['recompensa'].id}/entregas"
+
+    os_dois = cliente.post(
+        caminho,
+        headers=cabecalhos,
+        json={
+            "guerreiro_id": str(c["guerreiro"].id),
+            "ponto_de_apoio_id": str(c["ponto_de_apoio"].id),
+            "aula_id": str(aula.id),
+        },
+    )
+    nenhum = cliente.post(
+        caminho, headers=cabecalhos, json={"guerreiro_id": str(c["guerreiro"].id)}
+    )
+
+    assert os_dois.status_code == 422
+    assert nenhum.status_code == 422
+    assert sessao.query(EntregaDeRecompensa).count() == 0
+
+
+def test_rota_da_entrega_por_aula_grava_a_baixa_no_ponto_da_aula(
+    sessao, cliente, criar_chave, criar_sessao_de_teste, cenario, criar_aula, criar_presenca
+):
+    c = cenario()
+    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=c["ponto_de_apoio"])
+    criar_presenca(aula, c["guerreiro"])
+    chave, _ = criar_chave()
+    token, _ = criar_sessao_de_teste(c["mestre"])
+
+    resposta = cliente.post(
+        f"/v1/recompensas-de-marco/{c['recompensa'].id}/entregas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+        json={"guerreiro_id": str(c["guerreiro"].id), "aula_id": str(aula.id)},
+    )
+
+    assert resposta.status_code == 201
+    assert resposta.json()["ponto_de_apoio_id"] == str(c["ponto_de_apoio"].id)

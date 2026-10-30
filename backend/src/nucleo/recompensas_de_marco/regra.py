@@ -5,6 +5,8 @@ from decimal import Decimal
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from ..aulas.modelo import Aula, Presenca
+from ..aulas.regra import presenca_vigente
 from ..comunidades.modelo import VinculoJogador
 from ..comunidades.regra import comunidades_do_mestre, filtrar_personas_por_comunidades
 from ..erros import ErroDeValidacao, PermissaoNegada
@@ -185,11 +187,21 @@ def registrar_entrega(
     recompensa: RecompensaDeMarco | None,
     guerreiro: Persona | None,
     ponto_de_apoio: PontoDeApoio | None,
+    aula: Aula | None = None,
 ) -> EntregaDeRecompensa:
     """Restrita ao Mestre — o Admin nunca confirma a entrega (`RF-02-50`,
     `RF-02-51`, `RN-02-17`). Grava a entrega e emite o débito numa operação
-    só, sem aula e sem tocar ponto regular nem extra do Guerreiro(a)
-    (`RF-07-13`, `RN-07-08`, `RN-07-36`, `RN-07-15`)."""
+    só, sem tocar ponto regular nem extra do Guerreiro(a) (`RF-07-13`,
+    `RN-07-08`, `RN-07-36`, `RN-07-15`).
+
+    O ponto de apoio vem **escolhido** (App 09, fora de encontro) **ou** da
+    `aula` declarada (App 01, no encontro), nunca dos dois e nunca de
+    nenhum. Declarada a aula, o recurso sai do ponto de apoio dela — que ela
+    declara obrigatoriamente (`RF-01-71`) —, o lastro é reverificado contra o
+    saldo desse ponto pela mesma conferência de sempre, e a entrega exige
+    presença registrada e não anulada do Guerreiro(a) naquela aula: no
+    encontro entrega-se a quem chegou (`RF-09-76`, documento 02 §8.1,
+    decisão do fundador de 2026-10-30, design — decisão 2)."""
     if operador.papel != Papel.mestre:
         raise PermissaoNegada(mensagem="Só o Mestre confirma a entrega da recompensa de marco.")
     if recompensa is None:
@@ -199,6 +211,20 @@ def registrar_entrega(
         )
     if guerreiro is None:
         raise ErroDeValidacao(mensagem="Entrega exige o Guerreiro(a).", campo="guerreiro_id")
+    if ponto_de_apoio is not None and aula is not None:
+        raise ErroDeValidacao(
+            mensagem="Entrega declara o ponto de apoio ou a aula, nunca os dois: no encontro o "
+            "ponto de apoio é o da aula.",
+            campo="aula_id",
+        )
+    if aula is not None:
+        if presenca_vigente(sessao, aula_id=aula.id, guerreiro_id=guerreiro.id) is None:
+            raise ErroDeValidacao(
+                mensagem="No encontro a entrega é de quem chegou: este Guerreiro(a) não tem "
+                "presença registrada nesta aula.",
+                campo="guerreiro_id",
+            )
+        ponto_de_apoio = sessao.get(PontoDeApoio, aula.ponto_de_apoio_id)
     if ponto_de_apoio is None:
         raise ErroDeValidacao(
             mensagem="Entrega exige o ponto de apoio de onde o recurso sai.",
@@ -417,25 +443,63 @@ class PendenciaDeEntrega:
     missao_titulo: str
     recompensa_de_marco_id: uuid.UUID
     tipo_de_recurso_id: uuid.UUID
+    # O **nome** e a **unidade** do tipo, pelo mesmo motivo de
+    # `RecompensaConquistada`: sem eles a tela só tem "1" a dizer, sem
+    # distinguir o livro da camisa nem do kit. O valor em moedas segue fora
+    # (invariante 16).
+    tipo_de_recurso_nome: str
+    tipo_de_recurso_unidade: str
     quantidade: Decimal
     quantidade_esgotada: bool
 
 
-def listar_entregas_pendentes(sessao: Session, *, operador: Persona) -> list[PendenciaDeEntrega]:
+def _guerreiros_com_presenca_na_aula(sessao: Session, *, aula: Aula) -> list[Persona]:
+    """Quem tem presença **registrada e não anulada** naquela aula — o
+    recorte do encontro: quem o Mestre tem à frente é quem chegou
+    (`RF-09-75`, decisão do fundador de 2026-10-30)."""
+    return (
+        sessao.query(Persona)
+        .join(Presenca, Presenca.guerreiro_id == Persona.id)
+        .filter(
+            Persona.papel == Papel.guerreiro,
+            Presenca.aula_id == aula.id,
+            Presenca.anulada_em.is_(None),
+        )
+        .all()
+    )
+
+
+def listar_entregas_pendentes(
+    sessao: Session, *, operador: Persona, aula_id: uuid.UUID | None = None
+) -> list[PendenciaDeEntrega]:
     """A fila do Mestre em sessão — todo Guerreiro(a) da **comunidade** dele
     (vínculo vigente, não a autoria da trilha) que desbloqueou um marco com
     recompensa declarada e ainda não a recebeu (`RF-09-75`, `RN-09-18`,
     design — decisão 7). Persona que não é Mestre é recusada com 403; Mestre
-    sem vínculo vigente recebe fila vazia, nunca erro."""
+    sem vínculo vigente recebe fila vazia, nunca erro.
+
+    Com `aula_id`, a fila é a do **encontro**: alcança só quem tem presença
+    registrada e não anulada naquela aula, e não a comunidade inteira. A aula
+    precisa ser de uma comunidade do Mestre — a de outra é recusada com 403,
+    e não com fila vazia, porque aí o pedido é que está errado (`RF-09-75`,
+    design — decisão 1)."""
     if operador.papel != Papel.mestre:
         raise PermissaoNegada(mensagem="Só o Mestre lê a fila de entregas pendentes.")
 
     alvos = comunidades_do_mestre(sessao, mestre=operador)
-    if not alvos:
-        return []
 
-    consulta = sessao.query(Persona).filter(Persona.papel == Papel.guerreiro)
-    guerreiros_da_comunidade = filtrar_personas_por_comunidades(consulta, alvos).all()
+    if aula_id is not None:
+        aula = sessao.get(Aula, aula_id)
+        if aula is None or aula.comunidade_virtual_id not in alvos:
+            raise PermissaoNegada(
+                mensagem="Só o Mestre vinculado à comunidade da aula lê a fila do encontro."
+            )
+        guerreiros_da_comunidade = _guerreiros_com_presenca_na_aula(sessao, aula=aula)
+    else:
+        if not alvos:
+            return []
+        consulta = sessao.query(Persona).filter(Persona.papel == Papel.guerreiro)
+        guerreiros_da_comunidade = filtrar_personas_por_comunidades(consulta, alvos).all()
 
     pendencias: list[PendenciaDeEntrega] = []
     for recompensa in sessao.query(RecompensaDeMarco).all():
@@ -465,6 +529,7 @@ def listar_entregas_pendentes(sessao: Session, *, operador: Persona) -> list[Pen
             nick = sessao.query(Nick).filter_by(persona_id=guerreiro.id).first()
             trilha = sessao.get(Trilha, recompensa.trilha_id)
             missao = sessao.get(Missao, recompensa.missao_id)
+            tipo = sessao.get(TipoDeRecurso, recompensa.tipo_de_recurso_id)
             pendencias.append(
                 PendenciaDeEntrega(
                     guerreiro_id=guerreiro.id,
@@ -476,6 +541,8 @@ def listar_entregas_pendentes(sessao: Session, *, operador: Persona) -> list[Pen
                     missao_titulo=missao.titulo if missao is not None else "",
                     recompensa_de_marco_id=recompensa.id,
                     tipo_de_recurso_id=recompensa.tipo_de_recurso_id,
+                    tipo_de_recurso_nome=tipo.nome if tipo is not None else "",
+                    tipo_de_recurso_unidade=tipo.unidade if tipo is not None else "",
                     quantidade=recompensa.quantidade,
                     quantidade_esgotada=quantidade_esgotada,
                 )

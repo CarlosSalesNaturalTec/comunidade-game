@@ -21,6 +21,7 @@ const GLIFOS: NomeDeGlifo[] = [
   "som-desligado",
   "encerrar",
   "momento-de-troca",
+  "entregas",
 ];
 
 function desenhar(glifo: NomeDeGlifo): SVGSVGElement {

@@ -3,12 +3,13 @@ from decimal import Decimal
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 from sqlalchemy.orm import Session
 
+from ..aulas.modelo import Aula
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
-from ..erros import PermissaoNegada
+from ..erros import ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
@@ -132,10 +133,24 @@ def _saida_da_entrega(sessao: Session, entrega: EntregaDeRecompensa) -> EntregaD
 
 
 class RegistrarEntregaEntrada(BaseModel):
+    """`ponto_de_apoio_id` e `aula_id` são **mutuamente exclusivos**: a App 09
+    escolhe o ponto de apoio, como sempre, e a App 01 declara a aula do
+    encontro, de onde o ponto de apoio sai. Vir os dois, ou nenhum, é 422
+    (`RF-09-76`, documento 02 §8.1, design — decisão 2)."""
+
     model_config = ConfigDict(extra="forbid")
 
     guerreiro_id: uuid.UUID
-    ponto_de_apoio_id: uuid.UUID
+    ponto_de_apoio_id: uuid.UUID | None = None
+    aula_id: uuid.UUID | None = None
+
+    @model_validator(mode="after")
+    def _exigir_uma_origem(self) -> "RegistrarEntregaEntrada":
+        if (self.ponto_de_apoio_id is None) == (self.aula_id is None):
+            raise ValueError(
+                "Declare o ponto de apoio ou a aula do encontro, nunca os dois e nunca nenhum."
+            )
+        return self
 
 
 @roteador.post("/recompensas-de-marco/{id_da_recompensa}/entregas", status_code=201)
@@ -147,17 +162,31 @@ def registrar_entrega_rota(
 ) -> EntregaDeRecompensaSaida:
     """Restrita ao Mestre vinculado à comunidade do Guerreiro(a) — o Admin
     nunca confirma a entrega (`RF-07-13`, `RF-02-50`, `RF-02-51`,
-    `RN-02-17`)."""
+    `RN-02-17`). Com a **aula** declarada em lugar do ponto de apoio, o
+    recurso sai do ponto de apoio dela e a entrega exige presença registrada
+    naquela aula (`RF-09-76`, design — decisão 2)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     recompensa = sessao_bd.get(RecompensaDeMarco, id_da_recompensa)
     guerreiro = sessao_bd.get(Persona, entrada.guerreiro_id)
-    ponto_de_apoio = sessao_bd.get(PontoDeApoio, entrada.ponto_de_apoio_id)
+    ponto_de_apoio = (
+        sessao_bd.get(PontoDeApoio, entrada.ponto_de_apoio_id)
+        if entrada.ponto_de_apoio_id is not None
+        else None
+    )
+    aula = None
+    if entrada.aula_id is not None:
+        aula = sessao_bd.get(Aula, entrada.aula_id)
+        if aula is None:
+            raise ErroDeValidacao(
+                mensagem="Entrega no encontro exige uma aula existente.", campo="aula_id"
+            )
     entrega = registrar_entrega(
         sessao_bd,
         operador=operador,
         recompensa=recompensa,
         guerreiro=guerreiro,
         ponto_de_apoio=ponto_de_apoio,
+        aula=aula,
     )
     sessao_bd.commit()
     return _saida_da_entrega(sessao_bd, entrega)
@@ -253,6 +282,11 @@ class PendenciaDeEntregaSaida(BaseModel):
     missao_titulo: str
     recompensa_de_marco_id: uuid.UUID
     tipo_de_recurso_id: uuid.UUID
+    # Nome e unidade do tipo, como em `RecompensaConquistadaSaida`: a fila do
+    # encontro é o que o Mestre tem à mão, e "1" sozinho não diz o que
+    # entregar. Sem moedas e sem reais (invariante 16).
+    tipo_de_recurso_nome: str
+    tipo_de_recurso_unidade: str
     quantidade: Decimal
     quantidade_esgotada: bool
 
@@ -261,12 +295,15 @@ class PendenciaDeEntregaSaida(BaseModel):
 def listar_entregas_pendentes_rota(
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    aula_id: uuid.UUID | None = None,
 ) -> list[PendenciaDeEntregaSaida]:
     """A fila do Mestre em sessão — quem desbloqueou marco com recompensa
     declarada na comunidade dele e ainda não recebeu (`RF-09-75`,
-    `RN-09-18`)."""
+    `RN-09-18`). Com `aula_id`, a fila é a do **encontro**: só quem tem
+    presença registrada naquela aula, que precisa ser de uma comunidade do
+    Mestre (design — decisão 1)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
-    pendencias = listar_entregas_pendentes(sessao_bd, operador=operador)
+    pendencias = listar_entregas_pendentes(sessao_bd, operador=operador, aula_id=aula_id)
     return [
         PendenciaDeEntregaSaida(
             guerreiro_id=pendencia.guerreiro_id,
@@ -278,6 +315,8 @@ def listar_entregas_pendentes_rota(
             missao_titulo=pendencia.missao_titulo,
             recompensa_de_marco_id=pendencia.recompensa_de_marco_id,
             tipo_de_recurso_id=pendencia.tipo_de_recurso_id,
+            tipo_de_recurso_nome=pendencia.tipo_de_recurso_nome,
+            tipo_de_recurso_unidade=pendencia.tipo_de_recurso_unidade,
             quantidade=pendencia.quantidade,
             quantidade_esgotada=pendencia.quantidade_esgotada,
         )

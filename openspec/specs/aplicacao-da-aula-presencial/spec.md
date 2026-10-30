@@ -2126,10 +2126,14 @@ glifo NEVER SHALL substituir o rótulo nem ser a única forma de distinguir um c
 (`RF-04-01`, documento 15 §§5, 11.1, decisão do fundador de 2026-09-25)
 
 Os atos de **quem opera o aparelho** — a **medição do limiar**, abrir e fechar o momento de
-troca, e encerrar a sessão de trabalho — SHALL ser apresentados no **mesmo padrão dos
+troca, as **entregas pendentes do encontro** e encerrar a sessão de trabalho — SHALL ser
+apresentados no **mesmo padrão dos
 caminhos**, ao fim da lista e depois de todos eles, sob um rótulo de grupo que os separe do que
-a criança escolhe. A ordem do grupo SHALL ser **medição do limiar**, momento de troca e
-encerramento, e o **encerramento SHALL ser o último do grupo**. A abertura e o fechamento do
+a criança escolhe. A ordem do grupo SHALL ser **medição do limiar**, momento de troca,
+**entregas pendentes do encontro** e encerramento, e o **encerramento SHALL ser o último
+do grupo**. As entregas pendentes SHALL acompanhar o momento de troca, por serem as duas
+do encontro em curso, e SHALL aparecer **apenas quando quem abriu a sessão de trabalho é
+Mestre** — o Admin nunca confirma entrega (`RF-07-13`, `RN-02-17`). A abertura e o fechamento do
 momento de troca SHALL aparecer ali apenas para o aparelho que pode abri-lo; a medição SHALL
 aparecer em toda sessão de trabalho, guardada pelo PIN do aparelho e não pelo papel. A medição
 NEVER SHALL ser apresentada entre os caminhos que a criança escolhe: ela mede quem opera, nunca
@@ -2233,6 +2237,18 @@ trilha. (`RF-04-01`, decisão do fundador de 2026-10-15)
 - **WHEN** a tela inicial é apresentada
 - **THEN** a medição do limiar aparece dentro do grupo de quem opera o aparelho, nomeado por ele,
   e nenhum caminho que a criança escolhe aparece depois dela
+
+#### Scenario: As entregas pendentes aparecem ao Mestre que abriu o aparelho
+
+- **WHEN** a sessão de trabalho foi aberta por um Mestre
+- **THEN** o grupo de quem opera traz as entregas pendentes do encontro, entre o momento de
+  troca e o encerramento
+
+#### Scenario: O aparelho aberto por Admin não oferece as entregas
+
+- **WHEN** a sessão de trabalho foi aberta por um Admin
+- **THEN** o caminho das entregas pendentes não aparece, e o encerramento segue por último
+
 
 ### Requirement: Os caminhos Equipes, Quiz e Troca só abrem para quem tem presença registrada
 
@@ -2865,3 +2881,54 @@ guardada fora do núcleo arriscaria consumir o aviso sem que a criança o tivess
 
 - **WHEN** se procura no aparelho um caminho de guardar a ciência para sincronizar depois
 - **THEN** nenhum existe: a fila local é da presença, e a ciência só se grava com rede
+
+### Requirement: A App 01 apresenta as entregas pendentes do encontro
+
+A App 01 SHALL apresentar, a quem opera o aparelho, as **entregas pendentes do encontro em
+curso**: cada Guerreiro(a) com **presença registrada naquela aula** que alcançou marco com
+recompensa declarada e ainda não a recebeu. Cada pendência SHALL trazer o Guerreiro(a) por
+**nick e avatar**, a trilha, a missão que é o marco, o tipo de recurso e a quantidade, e
+NEVER SHALL trazer valor em moedas ou em reais. (`RF-09-75`, `RF-04-55`, invariantes 12 e 16)
+
+#### Scenario: Quem chegou e conquistou aparece na fila do encontro
+
+- **WHEN** um Guerreiro(a) com presença registrada naquela aula alcançou marco com recompensa
+  e ainda não a recebeu
+- **THEN** a pendência dele aparece na fila do encontro, com nick, avatar, trilha, marco, tipo
+  de recurso e quantidade
+
+#### Scenario: Quem não registrou presença não aparece
+
+- **WHEN** um Guerreiro(a) da mesma comunidade alcançou o marco, mas não tem presença
+  registrada naquela aula
+- **THEN** a pendência dele não aparece na fila do encontro — ela segue na App 09
+
+#### Scenario: Encontro sem pendência alguma diz que não há
+
+- **WHEN** ninguém com presença registrada tem entrega pendente
+- **THEN** a aplicação diz que não há entrega pendente no encontro, e não apresenta erro
+
+### Requirement: A entrega no encontro sai do ponto de apoio da aula, sob a sessão de trabalho
+
+Confirmada a entrega na App 01, o recurso SHALL sair do **ponto de apoio da aula**, e a
+aplicação NEVER SHALL oferecer seletor de ponto de apoio — a aula já o declara
+obrigatoriamente (`RF-01-71`). A confirmação SHALL ser enviada sob a **sessão de trabalho** do
+aparelho, e a pendência confirmada SHALL **sair** da fila. (`RF-09-76`, `RF-07-13`,
+`RN-02-17`, documento 02 §8.1, decisão do fundador de 2026-10-30)
+
+#### Scenario: A entrega confirmada sai da fila do encontro
+
+- **WHEN** o Mestre confirma a entrega de uma pendência do encontro
+- **THEN** o recurso sai do ponto de apoio da aula, a baixa é lançada e a pendência deixa a
+  fila
+
+#### Scenario: Não há escolha de ponto de apoio no encontro
+
+- **WHEN** o Mestre abre uma pendência do encontro para confirmar
+- **THEN** nenhum seletor de ponto de apoio lhe é oferecido
+
+#### Scenario: A recusa do núcleo é apresentada em linguagem simples
+
+- **WHEN** o núcleo recusa a entrega por falta de lastro no ponto de apoio da aula
+- **THEN** a aplicação apresenta a recusa como ela veio, sem recalcular saldo por conta
+  própria
