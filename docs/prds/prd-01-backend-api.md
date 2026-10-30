@@ -361,8 +361,10 @@ Sessao              Conteudo
 | `Poder`                     | nome, descrição, natureza (de Guerreiro(a) ou derivado do aporte), vigência, papel opcional e a marca de técnico — as duas últimas declaradas por Admin, nunca deduzidas do nome (`RF-01-62`, `RN-01-54`, documento 02 §2)                                                                                                                                                   |
 | `Auditoria`                 | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                                                                                                                                                                                                                    |
 
-A `Aula/Agenda` carrega **comunidade, ponto de apoio, data, horário inicial e final** e a
-**situação** — prevista, pendente de lastro, confirmada, realizada ou cancelada: é dela que o
+A `Aula/Agenda` carrega **comunidade, ponto de apoio, data, horário inicial e final**, os
+**Mestres que a ministram** — um ou mais, obrigatórios, e é a escalação deles que abre o
+vínculo do Mestre com a comunidade — e a **situação** — prevista, pendente de lastro,
+confirmada, realizada ou cancelada: é dela que o
 App 01 tira a comunidade do novo cadastro, e é a existência dela que habilita o onboarding
 naquele momento. Não há parâmetro de liberação separado. O **ponto de apoio** é obrigatório e é
 o que liga a aula ao saldo de recursos do PRD-07 (`RF-01-71`). A aula passa a **realizada** pelo

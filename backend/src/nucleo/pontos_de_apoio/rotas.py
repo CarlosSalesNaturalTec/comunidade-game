@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
+from ..comunidades.regra import escopo_de_comunidade_da_leitura
 from ..erros import ErroDeValidacao
 from ..paginacao import (
     PaginaDeResultado,
@@ -22,7 +23,6 @@ from .regra import (
     cadastrar_ponto_de_apoio,
     desativar_ponto_de_apoio,
     designar_responsavel,
-    escopo_de_comunidade_da_leitura,
     reativar_ponto_de_apoio,
 )
 
@@ -92,17 +92,20 @@ def listar_pontos_de_apoio_rota(
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> PaginaDeResultado[PontoDeApoioSaida]:
     """Restrita à gestão — Admin lê qualquer comunidade, sempre declarada; o
-    Mestre lê só a do seu vínculo vigente, e sem vínculo lê lista vazia
-    (`RF-07-47`, `RF-01-28`, `RF-01-18`)."""
+    Mestre lê **as comunidades a que está vinculado**, e sem vínculo algum lê
+    lista vazia (`RF-07-47`, `RF-01-28`, `RF-01-18`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     comunidade_id = _analisar_comunidade(parametros.filtros.get("comunidade"))
-    alvo_id = escopo_de_comunidade_da_leitura(
-        operador=operador, comunidade_virtual_id=comunidade_id
+    alvos = escopo_de_comunidade_da_leitura(
+        sessao_bd,
+        operador=operador,
+        comunidade_virtual_id=comunidade_id,
+        mensagem_de_recusa="Persona sem pontos de apoio a consultar.",
     )
-    if alvo_id is None:
+    if not alvos:
         return PaginaDeResultado(itens=[], proximo_cursor=None)
 
-    consulta = sessao_bd.query(PontoDeApoio).filter(PontoDeApoio.comunidade_virtual_id == alvo_id)
+    consulta = sessao_bd.query(PontoDeApoio).filter(PontoDeApoio.comunidade_virtual_id.in_(alvos))
 
     if parametros.cursor:
         posicao = decodificar_cursor(parametros.cursor)

@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula, SituacaoDaAula
-from ..comunidades.modelo import ComunidadeVirtual, VinculoJogador
+from ..comunidades.modelo import ComunidadeVirtual
 from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from ..livro_razao.regra import saldos_por_ponto_de_apoio
 from ..personas.modelo import Papel, Persona
@@ -206,25 +206,3 @@ def reativar_ponto_de_apoio(
     return _aplicar_situacao(
         sessao, ponto_de_apoio, operador=operador, motivo=motivo, ativo_alvo=True
     )
-
-
-def escopo_de_comunidade_da_leitura(
-    *, operador: Persona, comunidade_virtual_id: uuid.UUID | None
-) -> uuid.UUID | None:
-    """Resolve a comunidade a que a leitura dos pontos de apoio se
-    restringe, no molde de `listar_acervo` (`patrimonio/regra.py`): Admin
-    declara a comunidade, sempre obrigatória; Mestre herda do vínculo
-    vigente, e sem vínculo não tem o que listar — `None` aqui sinaliza
-    lista vazia, nunca erro. Demais papéis são recusados (`RF-07-47`,
-    `RF-01-28`, `RF-01-18`, `RF-01-16`).
-    """
-    if operador.papel == Papel.admin:
-        if comunidade_virtual_id is None:
-            raise ErroDeValidacao(
-                mensagem="Esta consulta exige o filtro de comunidade.", campo="comunidade"
-            )
-        return comunidade_virtual_id
-    if operador.papel == Papel.mestre:
-        vinculo: VinculoJogador | None = operador.vinculo_vigente
-        return vinculo.comunidade_virtual_id if vinculo is not None else None
-    raise PermissaoNegada(mensagem="Persona sem pontos de apoio a consultar.")

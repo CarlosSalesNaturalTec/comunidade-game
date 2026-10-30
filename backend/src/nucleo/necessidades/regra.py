@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula, RecursoDeclaradoDaAula, SituacaoDaAula
 from ..comunidades.modelo import ComunidadeVirtual
+from ..comunidades.regra import comunidades_do_mestre
 from ..erros import PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
@@ -130,12 +131,12 @@ def consultar_necessidades_do_mestre(
 ) -> list[NecessidadeDeRecurso]:
     """Restrita ao Mestre — a lista alcança só as aulas das comunidades a
     que ele está vinculado, pelo mesmo vínculo que `cancelar_aula` já
-    confere; sem vínculo vigente, a lista sai vazia (`RF-07-27`, `RF-01-72`,
+    confere; sem vínculo algum, a lista sai vazia (`RF-07-27`, `RF-01-72`,
     design — Decisions 6)."""
     if operador.papel != Papel.mestre:
         raise PermissaoNegada(mensagem="Só o Mestre consulta as necessidades das suas comunidades.")
 
-    vinculo = operador.vinculo_vigente
-    if vinculo is None:
+    alvos = comunidades_do_mestre(sessao, mestre=operador)
+    if not alvos:
         return []
-    return derivar_necessidades(sessao, comunidade_ids={vinculo.comunidade_virtual_id})
+    return derivar_necessidades(sessao, comunidade_ids=alvos)

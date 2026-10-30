@@ -474,7 +474,7 @@ def _preparar_troca(
     criar_preco_de_referencia,
     criar_valor_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_item_de_catalogo_avulso,
     criar_ponto_extra,
     criar_aula,
@@ -493,7 +493,7 @@ def _preparar_troca(
         quantidade=Decimal("10.00"),
     )
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     item = criar_item_de_catalogo_avulso(
         admin, tipo, comunidade, ponto_de_apoio, estoque=Decimal("5"), ativo=True
     )
@@ -512,7 +512,7 @@ def test_o_debito_da_troca_nao_declara_aula(
     criar_preco_de_referencia,
     criar_valor_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_item_de_catalogo_avulso,
     criar_ponto_extra,
     criar_aula,
@@ -525,7 +525,7 @@ def test_o_debito_da_troca_nao_declara_aula(
         criar_preco_de_referencia,
         criar_valor_de_referencia,
         criar_lancamento,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         criar_item_de_catalogo_avulso,
         criar_ponto_extra,
         criar_aula,
@@ -556,7 +556,7 @@ def test_a_troca_nao_entra_no_consumo_por_aula(
     criar_preco_de_referencia,
     criar_valor_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_item_de_catalogo_avulso,
     criar_ponto_extra,
     criar_aula,
@@ -569,7 +569,7 @@ def test_a_troca_nao_entra_no_consumo_por_aula(
         criar_preco_de_referencia,
         criar_valor_de_referencia,
         criar_lancamento,
-        criar_vinculo_jogador,
+        criar_vinculo_do_mestre,
         criar_item_de_catalogo_avulso,
         criar_ponto_extra,
         criar_aula,

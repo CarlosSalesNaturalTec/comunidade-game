@@ -4,6 +4,7 @@ from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 
 from ..comunidades.modelo import VinculoJogador
+from ..comunidades.regra import comunidades_do_mestre
 from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from ..paginacao import ParametrosDeListagem, codificar_cursor, decodificar_cursor
 from ..personas.modelo import Nick, Papel, Persona
@@ -91,8 +92,8 @@ def guerreiros_vinculaveis(
     `aulas.regra.escopo_de_comunidade_da_leitura` (`RF-09-62`, `RN-01-20`,
     `RN-09-18`, decisão do fundador, 2026-08-29, documento 09 §1).
     """
-    vinculo: VinculoJogador | None = mestre.vinculo_vigente
-    if vinculo is None:
+    alvos = comunidades_do_mestre(sessao, mestre=mestre)
+    if not alvos:
         return [], None
 
     consulta = (
@@ -103,7 +104,7 @@ def guerreiros_vinculaveis(
         )
         .filter(
             Persona.papel == Papel.guerreiro,
-            VinculoJogador.comunidade_virtual_id == vinculo.comunidade_virtual_id,
+            VinculoJogador.comunidade_virtual_id.in_(alvos),
         )
     )
 
@@ -152,9 +153,9 @@ def responsaveis_visiveis(
     consulta = sessao.query(Persona).filter(Persona.papel == Papel.responsavel)
 
     if operador.papel != Papel.admin:
-        vinculo_do_mestre: VinculoJogador | None = operador.vinculo_vigente
+        alvos = comunidades_do_mestre(sessao, mestre=operador)
         alcance = [Persona.criada_por == operador.id]
-        if vinculo_do_mestre is not None:
+        if alvos:
             da_comunidade = (
                 sessao.query(VinculoResponsavel.responsavel_id)
                 .join(
@@ -166,7 +167,7 @@ def responsaveis_visiveis(
                 )
                 .filter(
                     VinculoResponsavel.fim.is_(None),
-                    VinculoJogador.comunidade_virtual_id == vinculo_do_mestre.comunidade_virtual_id,
+                    VinculoJogador.comunidade_virtual_id.in_(alvos),
                 )
             )
             alcance.append(Persona.id.in_(da_comunidade))

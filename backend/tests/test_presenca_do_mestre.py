@@ -15,14 +15,14 @@ def test_mestre_confirma_a_presenca_que_faltou(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     sessao,
 ):
     chave, _ = criar_chave()
     mestre = criar_persona(Papel.mestre)
     token, _ = criar_sessao_de_teste(mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     aula = criar_aula(mestre, comunidade)
 
@@ -53,14 +53,14 @@ def test_mestre_nao_registra_presenca_por_reconhecimento(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     sessao,
 ):
     chave, _ = criar_chave()
     mestre = criar_persona(Papel.mestre)
     token, _ = criar_sessao_de_teste(mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     aula = criar_aula(mestre, comunidade)
 
@@ -85,14 +85,14 @@ def test_reenvio_da_mesma_presenca_nao_duplica(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     sessao,
 ):
     chave, _ = criar_chave()
     mestre = criar_persona(Papel.mestre)
     token, _ = criar_sessao_de_teste(mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     aula = criar_aula(mestre, comunidade)
 
@@ -273,7 +273,7 @@ def test_mestre_ve_as_proprias_turmas_e_atividades(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_trilha,
     criar_missao,
     criar_atividade,
@@ -282,7 +282,7 @@ def test_mestre_ve_as_proprias_turmas_e_atividades(
     mestre = criar_persona(Papel.mestre)
     token, _ = criar_sessao_de_teste(mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     aula = criar_aula(mestre, comunidade)
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
@@ -307,7 +307,7 @@ def test_atividade_de_outro_mestre_nao_aparece(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_trilha,
     criar_missao,
     criar_atividade,
@@ -317,7 +317,7 @@ def test_atividade_de_outro_mestre_nao_aparece(
     outro_mestre = criar_persona(Papel.mestre)
     token, _ = criar_sessao_de_teste(mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     criar_aula(mestre, comunidade)
     trilha_do_outro = criar_trilha(outro_mestre)
     missao_do_outro = criar_missao(trilha_do_outro, outro_mestre)
@@ -339,7 +339,7 @@ def test_atividades_saem_separadas_por_formato(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_trilha,
     criar_missao,
     criar_atividade,
@@ -348,7 +348,7 @@ def test_atividades_saem_separadas_por_formato(
     mestre = criar_persona(Papel.mestre)
     token, _ = criar_sessao_de_teste(mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     criar_aula(mestre, comunidade)
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
@@ -495,7 +495,7 @@ def test_mestre_nao_anula_presenca(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -503,7 +503,7 @@ def test_mestre_nao_anula_presenca(
     token_do_admin, _ = criar_sessao_de_teste(admin)
     token_do_mestre, _ = criar_sessao_de_teste(mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     aula = criar_aula(admin, comunidade)
 

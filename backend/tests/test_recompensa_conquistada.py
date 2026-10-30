@@ -29,7 +29,7 @@ def cenario(
     criar_tipo_de_recurso,
     criar_valor_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_trilha,
     criar_missao,
     criar_recompensa_de_marco,
@@ -45,7 +45,7 @@ def cenario(
         )
 
         mestre = criar_persona(Papel.mestre)
-        criar_vinculo_jogador(mestre, comunidade)
+        criar_vinculo_do_mestre(mestre, comunidade)
 
         trilha = criar_trilha(mestre)
         missao = criar_missao(trilha, mestre)

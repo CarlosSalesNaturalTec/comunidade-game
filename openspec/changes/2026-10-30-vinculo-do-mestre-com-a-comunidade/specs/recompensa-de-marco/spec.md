@@ -68,3 +68,46 @@ em reais, nem imagem real de Guerreiro(a). (`RF-09-75`, `RF-09-76`, `RN-09-26`, 
 - **WHEN** o Mestre consulta a fila de entregas pendentes
 - **THEN** nenhum campo traz valor em moedas ou em reais, e o Guerreiro(a) aparece por nick e
   avatar
+
+### Requirement: O histórico da entrega é lido sem moedas e sem reais
+
+O núcleo SHALL expor o histórico das entregas filtrado por persona: o Guerreiro(a) lê as
+**próprias**; o **Mestre**, as das **comunidades a que está vinculado**; e o **Admin**, **todas**,
+sem filtro de comunidade. A saída
+SHALL trazer a recompensa, o marco, a trilha, o ponto de apoio, a data, o **tipo de recurso**
+entregue, a **quantidade** e o **identificador do lançamento** da baixa — sem o que a gestão não
+distingue o exemplar da linha Alpha da camisa nem mostra a baixa definitiva —, e NEVER SHALL
+trazer o valor em moedas nem o valor em reais do recurso entregue: o custo segue no lançamento,
+invisível para a criança (`RF-07-13`, `RN-07-05`, `RF-02-50`, `RF-02-51`, `RN-02-17`,
+invariante 16, 02 §8).
+
+O Admin lê sem recorte porque **não tem vínculo de comunidade** — a redação anterior o mandava
+ler "a comunidade a que está vinculado", condição que nenhuma persona de Admin satisfaz, de
+modo que a leitura dele saía sempre vazia. É o mesmo alcance que `troca-de-recompensa-avulsa`
+já dá ao Admin no histórico de trocas (decisão do fundador de 2026-10-30).
+
+#### Scenario: Guerreiro(a) lê as próprias entregas
+
+- **WHEN** um Guerreiro(a) consulta o histórico de entregas
+- **THEN** recebe apenas as suas, com recompensa, marco, trilha, ponto de apoio e data
+
+#### Scenario: O Mestre lê as entregas das comunidades dele
+
+- **WHEN** um Mestre vinculado a duas comunidades consulta o histórico
+- **THEN** recebe as entregas das duas, e nenhuma de comunidade a que não está vinculado
+
+#### Scenario: O Admin lê as entregas de todas as comunidades
+
+- **WHEN** um Admin consulta o histórico de entregas
+- **THEN** recebe as entregas de qualquer comunidade, sem declarar filtro algum
+
+#### Scenario: O histórico não mostra o custo
+
+- **WHEN** qualquer persona consulta o histórico de entregas
+- **THEN** nenhum campo traz valor em moedas nem em reais
+
+#### Scenario: A gestão distingue o recurso entregue e alcança a baixa
+
+- **WHEN** um Admin consulta o histórico de entregas
+- **THEN** cada entrega traz o tipo de recurso, a quantidade e o identificador do lançamento que
+  deu a baixa definitiva

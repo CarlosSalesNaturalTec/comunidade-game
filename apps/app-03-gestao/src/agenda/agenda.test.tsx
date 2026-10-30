@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as comunidadesApi from "../comunidades/api";
+import * as personasApi from "../personas/api";
 import * as pontosDeApoioApi from "../pontos-de-apoio/api";
 import * as recursosApi from "../recursos/api";
 import * as agendaApi from "./api";
@@ -41,6 +42,24 @@ const COMUNIDADE_DOIS = {
   series_ativas: null,
   registros_validos: null,
   continuidade: null,
+};
+
+const MESTRE_UM = {
+  id: "mestre-1",
+  nome: "Dona Zefa",
+  email: "zefa@exemplo.org",
+  whatsapp: null,
+  nick: null,
+  artefatos: [],
+};
+
+const MESTRE_DOIS = {
+  id: "mestre-2",
+  nome: "Seu Antônio",
+  email: "antonio@exemplo.org",
+  whatsapp: null,
+  nick: null,
+  artefatos: [],
 };
 
 const PONTO_DE_APOIO = {
@@ -104,9 +123,19 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+// O seletor de Mestres é obrigatório desde a decisão do fundador de
+// 2026-10-30 (`RF-02-30`): sem este duplo, todo agendamento pararia na
+// recusa "Escolha ao menos um Mestre".
+function configurarCatalogoDeMestres(itens = [MESTRE_UM, MESTRE_DOIS]) {
+  return vi
+    .spyOn(personasApi, "listarMestres")
+    .mockResolvedValue({ itens, proximo_cursor: null });
+}
+
 describe("agenda de aulas", () => {
   it("Admin agenda a aula e ela nasce confirmada, na agenda", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
+    configurarCatalogoDeMestres();
     vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
       itens: [COMUNIDADE_UM],
       proximo_cursor: null,
@@ -159,18 +188,22 @@ describe("agenda de aulas", () => {
     fireEvent.change(campoInicial, { target: { value: "2026-08-10T10:00" } });
     fireEvent.change(campoFinal, { target: { value: "2026-08-10T12:00" } });
 
+    await usuario.click(within(formulario).getByLabelText(MESTRE_UM.nome));
+
     await usuario.click(within(formulario).getByRole("button", { name: /^agendar$/i }));
 
     await waitFor(() => expect(agendaApi.agendarAula).toHaveBeenCalledTimes(1));
     const [entrada] = vi.mocked(agendaApi.agendarAula).mock.calls[0];
     expect(entrada.comunidade_virtual_id).toBe(COMUNIDADE_UM.id);
     expect(entrada.ponto_de_apoio_id).toBe(PONTO_DE_APOIO.id);
+    expect(entrada.mestres).toEqual([MESTRE_UM.id]);
 
     expect(await screen.findByText("Confirmada")).toBeInTheDocument();
   });
 
   it("horário final não posterior ao inicial é apontado no campo, sem agendar nada", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
+    configurarCatalogoDeMestres();
     vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio").mockResolvedValue({
       itens: [PONTO_DE_APOIO],
       proximo_cursor: null,
@@ -193,6 +226,8 @@ describe("agenda de aulas", () => {
     fireEvent.change(campoInicial, { target: { value: "2026-08-10T12:00" } });
     fireEvent.change(campoFinal, { target: { value: "2026-08-10T10:00" } });
 
+    await usuario.click(screen.getByLabelText(MESTRE_UM.nome));
+
     await usuario.click(screen.getByRole("button", { name: /^agendar$/i }));
 
     expect(
@@ -203,6 +238,7 @@ describe("agenda de aulas", () => {
 
   it("o seletor de ponto de apoio é restrito à comunidade escolhida", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
+    configurarCatalogoDeMestres();
     const listarPontosDeApoioEspiado = vi
       .spyOn(pontosDeApoioApi, "listarPontosDeApoio")
       .mockResolvedValue({ itens: [PONTO_DE_APOIO], proximo_cursor: null });
@@ -235,6 +271,7 @@ describe("agenda de aulas", () => {
 
   it("o agendamento declara os recursos que a aula consome", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
+    configurarCatalogoDeMestres();
     vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio").mockResolvedValue({
       itens: [PONTO_DE_APOIO],
       proximo_cursor: null,
@@ -279,6 +316,8 @@ describe("agenda de aulas", () => {
     await usuario.selectOptions(seletoresDeTipo[1], TIPO_DE_RECURSO_DOIS.id);
     await usuario.type(camposDeQuantidade[1], "3");
 
+    await usuario.click(screen.getByLabelText(MESTRE_UM.nome));
+
     await usuario.click(screen.getByRole("button", { name: /^agendar$/i }));
 
     await waitFor(() => expect(agendarEspiado).toHaveBeenCalledTimes(1));
@@ -291,6 +330,7 @@ describe("agenda de aulas", () => {
 
   it("quantidade não positiva é apontada no próprio campo, sem agendar nada", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
+    configurarCatalogoDeMestres();
     vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio").mockResolvedValue({
       itens: [PONTO_DE_APOIO],
       proximo_cursor: null,
@@ -318,6 +358,8 @@ describe("agenda de aulas", () => {
     await usuario.selectOptions(seletorDeTipo, TIPO_DE_RECURSO_UM.id);
     await usuario.type(screen.getByLabelText(/quantidade/i), "0");
 
+    await usuario.click(screen.getByLabelText(MESTRE_UM.nome));
+
     await usuario.click(screen.getByRole("button", { name: /^agendar$/i }));
 
     expect(
@@ -328,6 +370,7 @@ describe("agenda de aulas", () => {
 
   it("a agenda distingue as situações e Mestre lê só as suas comunidades", async () => {
     configurarSessao(SESSAO_DE_MESTRE);
+    configurarCatalogoDeMestres();
     vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
       itens: [COMUNIDADE_UM],
       proximo_cursor: null,
@@ -378,6 +421,7 @@ describe("agenda de aulas", () => {
 
   it("cancelamento com motivo cancela a aula, e sem motivo é recusado no campo", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
+    configurarCatalogoDeMestres();
     vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
       itens: [COMUNIDADE_UM],
       proximo_cursor: null,
@@ -457,6 +501,7 @@ describe("agenda de aulas", () => {
 
   it("a aula cancelada some da lista por padrão e reaparece ao marcar 'Exibir canceladas'", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
+    configurarCatalogoDeMestres();
     vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue({
       itens: [COMUNIDADE_UM],
       proximo_cursor: null,
@@ -506,5 +551,63 @@ describe("agenda de aulas", () => {
     expect(await screen.findByText("Cancelada")).toBeInTheDocument();
     expect(screen.getByText(/motivo: feriado\./i)).toBeInTheDocument();
     expect(screen.getByText("Confirmada")).toBeInTheDocument();
+  });
+
+  it("agendamento sem Mestre é apontado no campo, e nada é agendado", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    configurarCatalogoDeMestres();
+    vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio").mockResolvedValue({
+      itens: [PONTO_DE_APOIO],
+      proximo_cursor: null,
+    });
+    const agendarEspiado = vi.spyOn(agendaApi, "agendarAula");
+
+    render(
+      <FormularioDeAgendamento
+        comunidades={[COMUNIDADE_UM]}
+        onAgendada={vi.fn()}
+        onCancelar={vi.fn()}
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    await screen.findByRole("option", { name: PONTO_DE_APOIO.nome });
+    await usuario.selectOptions(screen.getByLabelText(/ponto de apoio/i), PONTO_DE_APOIO.id);
+    fireEvent.change(screen.getByLabelText(/horário inicial/i), {
+      target: { value: "2026-08-10T10:00" },
+    });
+    fireEvent.change(screen.getByLabelText(/horário final/i), {
+      target: { value: "2026-08-10T12:00" },
+    });
+
+    await usuario.click(screen.getByRole("button", { name: /^agendar$/i }));
+
+    expect(await screen.findByText(/escolha ao menos um mestre/i)).toBeInTheDocument();
+    expect(agendarEspiado).not.toHaveBeenCalled();
+  });
+
+  it("os Mestres oferecidos não são recortados por comunidade", async () => {
+    // É este agendamento que dá comunidade ao Mestre: filtrar os candidatos
+    // por ela deixaria o primeiro agendamento de cada comunidade sem
+    // candidato algum (`RF-02-30`, decisão do fundador de 2026-10-30).
+    configurarSessao(SESSAO_DE_ADMIN);
+    const catalogo = configurarCatalogoDeMestres();
+    vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio").mockResolvedValue({
+      itens: [PONTO_DE_APOIO],
+      proximo_cursor: null,
+    });
+
+    render(
+      <FormularioDeAgendamento
+        comunidades={[COMUNIDADE_UM, COMUNIDADE_DOIS]}
+        onAgendada={vi.fn()}
+        onCancelar={vi.fn()}
+      />,
+    );
+
+    expect(await screen.findByLabelText(MESTRE_UM.nome)).toBeInTheDocument();
+    expect(screen.getByLabelText(MESTRE_DOIS.nome)).toBeInTheDocument();
+    // A chamada não leva comunidade alguma.
+    expect(catalogo).toHaveBeenCalledWith(SESSAO_DE_ADMIN.token);
   });
 });

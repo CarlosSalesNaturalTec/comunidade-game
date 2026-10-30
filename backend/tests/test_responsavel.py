@@ -379,12 +379,12 @@ def test_admin_alcanca_todos_os_responsaveis(sessao, criar_persona, criar_comuni
 
 
 def test_mestre_alcanca_os_responsaveis_da_comunidade_em_que_atua(
-    sessao, criar_persona, criar_comunidade, criar_vinculo_jogador
+    sessao, criar_persona, criar_comunidade, criar_vinculo_do_mestre
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     mestre = criar_persona(Papel.mestre, criada_por=admin)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
 
     # Cadastrado pelo Admin, não pelo Mestre: o alcance vem do vínculo.
@@ -404,13 +404,13 @@ def test_mestre_alcanca_os_responsaveis_da_comunidade_em_que_atua(
 
 
 def test_responsavel_de_outra_comunidade_nao_aparece_ao_mestre(
-    sessao, criar_persona, criar_comunidade, criar_vinculo_jogador
+    sessao, criar_persona, criar_comunidade, criar_vinculo_do_mestre
 ):
     admin = criar_persona(Papel.admin)
     comunidade_do_mestre = criar_comunidade("Comunidade do Mestre")
     outra = criar_comunidade("Outra Comunidade")
     mestre = criar_persona(Papel.mestre, criada_por=admin)
-    criar_vinculo_jogador(mestre, comunidade_do_mestre)
+    criar_vinculo_do_mestre(mestre, comunidade_do_mestre)
     guerreiro_alheio = criar_persona(Papel.guerreiro, comunidade=outra)
 
     alheio = cadastrar_responsavel(sessao, criado_por=admin, nome="mãe")
@@ -429,11 +429,11 @@ def test_responsavel_de_outra_comunidade_nao_aparece_ao_mestre(
 
 
 def test_mestre_reencontra_o_responsavel_que_cadastrou_sem_vincular(
-    sessao, criar_persona, criar_comunidade, criar_vinculo_jogador
+    sessao, criar_persona, criar_comunidade, criar_vinculo_do_mestre
 ):
     admin = criar_persona(Papel.admin)
     mestre = criar_persona(Papel.mestre, criada_por=admin)
-    criar_vinculo_jogador(mestre, criar_comunidade())
+    criar_vinculo_do_mestre(mestre, criar_comunidade())
     interrompido = cadastrar_responsavel(sessao, criado_por=mestre, nome="pai")
     sessao.commit()
 

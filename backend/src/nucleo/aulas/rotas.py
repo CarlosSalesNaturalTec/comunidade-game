@@ -12,6 +12,7 @@ from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from ..comunidades.modelo import ComunidadeVirtual
+from ..comunidades.regra import escopo_de_comunidade_da_leitura
 from ..erros import (
     ConfirmacaoDeGuerreiroRecusada,
     ErroDeValidacao,
@@ -36,14 +37,20 @@ from ..resultados.regra import ResultadoDeclarado
 from ..resultados.regra import lancar_atividade_realizada as _lancar_atividade_realizada
 from ..tempo import DataHoraComFuso
 from ..trilhas.modelo import Atividade, FormatoDeAtividade, Missao, Trilha
-from .modelo import Aula, ModoDeComprovacao, Presenca, RecursoDeclaradoDaAula, SituacaoDaAula
+from .modelo import (
+    Aula,
+    MestreDaAula,
+    ModoDeComprovacao,
+    Presenca,
+    RecursoDeclaradoDaAula,
+    SituacaoDaAula,
+)
 from .regra import (
     RecursoDeclaradoEntrada,
     agendar_aula,
     anular_presenca,
     aulas_vigentes,
     cancelar_aula,
-    escopo_de_comunidade_da_leitura,
     presenca_vigente,
     registrar_presenca,
     tentar_reservar_aula_pendente,
@@ -78,6 +85,9 @@ class AulaSaida(BaseModel):
     fim_em: DataHoraComFuso
     situacao: str
     cancelamento_motivo: str | None
+    # Quem ministra a aula entra na saída porque a gestão precisa conferir o
+    # que escalou, e é a escalação que dá comunidade ao Mestre (`RF-02-30`).
+    mestres: list[uuid.UUID]
     recursos_faltantes: list[RecursoFaltanteSaida]
 
 
@@ -106,6 +116,11 @@ def _recursos_faltantes(sessao: Session, aula: Aula) -> list[RecursoFaltanteSaid
     return faltantes
 
 
+def _mestres_da_aula(sessao: Session, aula: Aula) -> list[uuid.UUID]:
+    linhas = sessao.query(MestreDaAula.mestre_id).filter_by(aula_id=aula.id).all()
+    return [linha[0] for linha in linhas]
+
+
 def _saida(sessao: Session, aula: Aula) -> AulaSaida:
     return AulaSaida(
         id=aula.id,
@@ -115,6 +130,7 @@ def _saida(sessao: Session, aula: Aula) -> AulaSaida:
         fim_em=aula.fim_em,
         situacao=aula.situacao.value,
         cancelamento_motivo=aula.cancelamento_motivo,
+        mestres=_mestres_da_aula(sessao, aula),
         recursos_faltantes=_recursos_faltantes(sessao, aula),
     )
 
@@ -126,6 +142,10 @@ class AgendarAulaEntrada(BaseModel):
     ponto_de_apoio_id: uuid.UUID
     inicio_em: DataHoraComFuso
     fim_em: DataHoraComFuso
+    # Um ou mais, obrigatórios (`RF-02-30`). A lista vazia é recusada pela
+    # regra, com o campo em falta, e não pelo schema: a mensagem simples é a
+    # que a gestão apresenta no próprio campo.
+    mestres: list[uuid.UUID] = Field(default_factory=list)
     recursos_declarados: list[RecursoDeclaradoCorpo] = Field(default_factory=list)
 
 
@@ -155,6 +175,7 @@ def agendar_aula_rota(
         ponto_de_apoio=ponto_de_apoio,
         inicio_em=entrada.inicio_em,
         fim_em=entrada.fim_em,
+        mestres=[sessao_bd.get(Persona, id_do_mestre) for id_do_mestre in entrada.mestres],
         recursos_declarados=recursos_declarados,
     )
     sessao_bd.commit()
@@ -194,18 +215,21 @@ def listar_agenda_rota(
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> PaginaDeResultado[AulaSaida]:
     """Restrita à gestão — Admin lê qualquer comunidade, sempre declarada; o
-    Mestre lê só a do seu vínculo vigente, e sem vínculo lê lista vazia. O
-    filtro de período recorta pelo horário inicial da aula (`RF-02-12`,
-    `RF-01-28`, `RF-01-18`)."""
+    Mestre lê **as comunidades a que está vinculado**, e sem vínculo algum lê
+    lista vazia. O filtro de período recorta pelo horário inicial da aula
+    (`RF-02-12`, `RF-01-28`, `RF-01-18`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     comunidade_id = _analisar_comunidade(parametros.filtros.get("comunidade"))
-    alvo_id = escopo_de_comunidade_da_leitura(
-        operador=operador, comunidade_virtual_id=comunidade_id
+    alvos = escopo_de_comunidade_da_leitura(
+        sessao_bd,
+        operador=operador,
+        comunidade_virtual_id=comunidade_id,
+        mensagem_de_recusa="Persona sem agenda de gestão a consultar.",
     )
-    if alvo_id is None:
+    if not alvos:
         return PaginaDeResultado(itens=[], proximo_cursor=None)
 
-    consulta = sessao_bd.query(Aula).filter(Aula.comunidade_virtual_id == alvo_id)
+    consulta = sessao_bd.query(Aula).filter(Aula.comunidade_virtual_id.in_(alvos))
 
     periodo_inicio = parametros.filtros.get("periodo_inicio")
     if periodo_inicio:
@@ -568,13 +592,16 @@ def listar_minhas_turmas_rota(
     encontros (`RF-09-42`, `RF-09-73`, `RN-09-08`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     comunidade_id = _analisar_comunidade(parametros.filtros.get("comunidade"))
-    alvo_id = escopo_de_comunidade_da_leitura(
-        operador=operador, comunidade_virtual_id=comunidade_id
+    alvos = escopo_de_comunidade_da_leitura(
+        sessao_bd,
+        operador=operador,
+        comunidade_virtual_id=comunidade_id,
+        mensagem_de_recusa="Persona sem agenda de gestão a consultar.",
     )
-    if alvo_id is None:
+    if not alvos:
         return MinhasTurmasSaida(itens=[], proximo_cursor=None)
 
-    consulta = sessao_bd.query(Aula).filter(Aula.comunidade_virtual_id == alvo_id)
+    consulta = sessao_bd.query(Aula).filter(Aula.comunidade_virtual_id.in_(alvos))
     if parametros.cursor:
         posicao = decodificar_cursor(parametros.cursor)
         try:

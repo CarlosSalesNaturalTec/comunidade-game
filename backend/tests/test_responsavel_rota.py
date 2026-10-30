@@ -267,7 +267,7 @@ def test_mestre_lista_os_responsaveis_da_sua_comunidade(
     criar_chave,
     criar_persona,
     criar_comunidade,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_nick,
     criar_sessao_de_teste,
 ):
@@ -275,7 +275,7 @@ def test_mestre_lista_os_responsaveis_da_sua_comunidade(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     mestre = criar_persona(Papel.mestre, criada_por=admin)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     criar_nick(guerreiro, "guerreira-teste")
 

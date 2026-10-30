@@ -9,7 +9,7 @@ from ..coletas.modelo import DesafioDeColeta, SerieDeColeta, TipoDeColeta
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..locais.modelo import Local, NivelDoLocal
 from ..personas.modelo import Papel, Persona
-from .modelo import ComunidadeVirtual, VinculoJogador
+from .modelo import ComunidadeVirtual, VinculoDoMestre, VinculoJogador
 
 
 def criar_comunidade(
@@ -72,6 +72,94 @@ def abrir_vinculo(
     sessao.add(vinculo)
     sessao.flush()
     return vinculo
+
+
+def abrir_vinculo_do_mestre(
+    sessao: Session,
+    *,
+    mestre: Persona,
+    comunidade_id: uuid.UUID,
+) -> VinculoDoMestre | None:
+    """Abre o vínculo do Mestre com a comunidade, no agendamento da aula
+    (`RF-02-30`, decisão do fundador de 2026-10-30). Devolve `None` quando
+    o vínculo já existe: escalar o mesmo Mestre noutra aula da mesma
+    comunidade não abre um segundo.
+
+    Diferente de `abrir_vinculo`, não há vigência a conferir — o vínculo do
+    Mestre não tem `data_fim` e nunca encerra no Ciclo 01.
+    """
+    if mestre.papel != Papel.mestre:
+        raise ErroDeValidacao(
+            mensagem="Só o Mestre tem vínculo de Mestre com comunidade.", campo="mestre_id"
+        )
+
+    existente = (
+        sessao.query(VinculoDoMestre)
+        .filter_by(mestre_id=mestre.id, comunidade_virtual_id=comunidade_id)
+        .first()
+    )
+    if existente is not None:
+        return None
+
+    vinculo = VinculoDoMestre(mestre_id=mestre.id, comunidade_virtual_id=comunidade_id)
+    sessao.add(vinculo)
+    sessao.flush()
+    return vinculo
+
+
+def comunidades_do_mestre(sessao: Session, *, mestre: Persona) -> set[uuid.UUID]:
+    """As comunidades a que o Mestre está vinculado — o plural que as specs
+    de `aula-e-presenca`, `patrimonio`, `necessidade-de-recurso` e
+    `responsavel-e-vinculo` já escreviam e que o núcleo não tinha como
+    servir, porque lia `Persona.vinculo_vigente`, que é do Guerreiro(a) e
+    resolve sempre nulo para Mestre.
+
+    Mestre ainda não escalado em aula alguma devolve conjunto **vazio** —
+    lista vazia nas leituras, nunca erro.
+    """
+    linhas = (
+        sessao.query(VinculoDoMestre.comunidade_virtual_id).filter_by(mestre_id=mestre.id).all()
+    )
+    return {linha[0] for linha in linhas}
+
+
+def escopo_de_comunidade_da_leitura(
+    sessao: Session,
+    *,
+    operador: Persona,
+    comunidade_virtual_id: uuid.UUID | None,
+    mensagem_de_recusa: str,
+) -> set[uuid.UUID]:
+    """O escopo por comunidade de toda leitura de gestão, num lugar só:
+    Admin declara a comunidade, sempre obrigatória, e recebe o conjunto de
+    uma; Mestre recebe as dele; conjunto **vazio** significa lista vazia,
+    nunca erro. Demais papéis são recusados com a mensagem de quem chama.
+
+    Substitui as três cópias que `aulas/regra.py`, `pontos_de_apoio/regra.py`
+    e `patrimonio.listar_acervo` mantinham — as duas primeiras declarando,
+    no próprio docstring, que eram "no molde de `listar_acervo`" (design —
+    decisão 3).
+    """
+    if operador.papel == Papel.admin:
+        if comunidade_virtual_id is None:
+            raise ErroDeValidacao(
+                mensagem="Esta consulta exige o filtro de comunidade.", campo="comunidade"
+            )
+        return {comunidade_virtual_id}
+    if operador.papel == Papel.mestre:
+        return comunidades_do_mestre(sessao, mestre=operador)
+    raise PermissaoNegada(mensagem=mensagem_de_recusa)
+
+
+def filtrar_personas_por_comunidades(consulta: Query, comunidade_ids: set[uuid.UUID]) -> Query:
+    """O irmão plural de `filtrar_personas_por_comunidade`, para quem recorta
+    pelo escopo de um Mestre — que é N comunidades desde 2026-10-30. O
+    singular continua servindo os quatro pontos que recortam por **uma**
+    comunidade declarada (pontuação, vitrine e as duas leituras de ODS).
+    """
+    return unir_vinculo_vigente(consulta).filter(
+        VinculoJogador.comunidade_virtual_id.in_(comunidade_ids)
+    )
 
 
 def resolver_vinculo_na_data(

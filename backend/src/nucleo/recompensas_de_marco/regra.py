@@ -6,7 +6,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..comunidades.modelo import VinculoJogador
-from ..comunidades.regra import filtrar_personas_por_comunidade
+from ..comunidades.regra import comunidades_do_mestre, filtrar_personas_por_comunidades
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..livro_razao.regra import lancar_debito, saldo_de
 from ..personas.modelo import Nick, Papel, Persona
@@ -164,12 +164,11 @@ def _validar_entrega(
             campo="recompensa_de_marco_id",
         )
 
-    vinculo_mestre: VinculoJogador | None = operador.vinculo_vigente
     vinculo_guerreiro: VinculoJogador | None = guerreiro.vinculo_vigente
     if (
-        vinculo_mestre is None
-        or vinculo_guerreiro is None
-        or vinculo_mestre.comunidade_virtual_id != vinculo_guerreiro.comunidade_virtual_id
+        vinculo_guerreiro is None
+        or vinculo_guerreiro.comunidade_virtual_id
+        not in comunidades_do_mestre(sessao, mestre=operador)
     ):
         raise ErroDeValidacao(
             mensagem="Só o Mestre vinculado à comunidade do Guerreiro(a) confirma a entrega.",
@@ -358,9 +357,18 @@ def dar_ciencia_da_recompensa(
 
 
 def listar_entregas(sessao: Session, *, operador: Persona) -> list[EntregaDeRecompensa]:
-    """Guerreiro(a) lê só as próprias; Mestre e Admin, as da comunidade a
-    que estão vinculados — sem moedas nem reais na saída, o custo real fica
-    no livro-razão (`RF-07-13`, `RN-07-05`)."""
+    """Guerreiro(a) lê só as próprias; o Mestre, as das comunidades a que
+    está vinculado; o **Admin lê todas**, sem filtro de comunidade — sem
+    moedas nem reais na saída, o custo real fica no livro-razão
+    (`RF-07-13`, `RN-07-05`).
+
+    O ramo do Admin é decisão do fundador de 2026-10-30: a redação anterior
+    o mandava ler "a comunidade a que está vinculado", e o Admin nunca teve
+    vínculo de comunidade — a leitura dele saía **sempre vazia** em
+    produção, e a tela de entregas confirmadas do Acervo com ela. Aplica o
+    precedente de `trocas.listar_trocas`, que é a leitura irmã: Admin sem
+    recorte.
+    """
     if operador.papel == Papel.guerreiro:
         return (
             sessao.query(EntregaDeRecompensa)
@@ -368,9 +376,15 @@ def listar_entregas(sessao: Session, *, operador: Persona) -> list[EntregaDeReco
             .order_by(EntregaDeRecompensa.registrado_em.desc())
             .all()
         )
-    if operador.papel in (Papel.mestre, Papel.admin):
-        vinculo: VinculoJogador | None = operador.vinculo_vigente
-        if vinculo is None:
+    if operador.papel == Papel.admin:
+        return (
+            sessao.query(EntregaDeRecompensa)
+            .order_by(EntregaDeRecompensa.registrado_em.desc())
+            .all()
+        )
+    if operador.papel == Papel.mestre:
+        alvos = comunidades_do_mestre(sessao, mestre=operador)
+        if not alvos:
             return []
         return (
             sessao.query(EntregaDeRecompensa)
@@ -379,7 +393,7 @@ def listar_entregas(sessao: Session, *, operador: Persona) -> list[EntregaDeReco
                 (VinculoJogador.guerreiro_id == EntregaDeRecompensa.guerreiro_id)
                 & (VinculoJogador.data_fim.is_(None)),
             )
-            .filter(VinculoJogador.comunidade_virtual_id == vinculo.comunidade_virtual_id)
+            .filter(VinculoJogador.comunidade_virtual_id.in_(alvos))
             .order_by(EntregaDeRecompensa.registrado_em.desc())
             .all()
         )
@@ -416,14 +430,12 @@ def listar_entregas_pendentes(sessao: Session, *, operador: Persona) -> list[Pen
     if operador.papel != Papel.mestre:
         raise PermissaoNegada(mensagem="Só o Mestre lê a fila de entregas pendentes.")
 
-    vinculo: VinculoJogador | None = operador.vinculo_vigente
-    if vinculo is None:
+    alvos = comunidades_do_mestre(sessao, mestre=operador)
+    if not alvos:
         return []
 
     consulta = sessao.query(Persona).filter(Persona.papel == Papel.guerreiro)
-    guerreiros_da_comunidade = filtrar_personas_por_comunidade(
-        consulta, vinculo.comunidade_virtual_id
-    ).all()
+    guerreiros_da_comunidade = filtrar_personas_por_comunidades(consulta, alvos).all()
 
     pendencias: list[PendenciaDeEntrega] = []
     for recompensa in sessao.query(RecompensaDeMarco).all():

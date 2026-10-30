@@ -43,7 +43,7 @@ from nucleo.coletas.modelo import (
     SituacaoDoRegistro,
     TipoDeColeta,
 )
-from nucleo.comunidades.modelo import ComunidadeVirtual, VinculoJogador
+from nucleo.comunidades.modelo import ComunidadeVirtual, VinculoDoMestre, VinculoJogador
 from nucleo.configuracao import Configuracao, obter_configuracao
 from nucleo.consentimentos.modelo import (
     Consentimento,
@@ -578,6 +578,28 @@ def criar_vinculo_jogador(sessao):
             data_fim=data_fim,
             admin_responsavel_id=admin_responsavel.id if admin_responsavel is not None else None,
         )
+        sessao.add(vinculo)
+        sessao.commit()
+        sessao.refresh(vinculo)
+        return vinculo
+
+    return _criar
+
+
+@pytest.fixture
+def criar_vinculo_do_mestre(sessao):
+    """O vínculo do **Mestre** com a comunidade — entidade própria, sem
+    `data_fim`, aberta na vida real pelo agendamento da aula (`RF-02-30`).
+
+    Esta fixture substitui o `criar_vinculo_do_mestre(mestre, …)` que a suíte
+    usava antes: aquele gravava `VinculoJogador` com o `guerreiro_id` de um
+    Mestre, por fora de `abrir_vinculo`, que recusa papel diverso de
+    Guerreiro(a) — a suíte provava um estado que o núcleo recusa criar, e
+    por isso ficava verde enquanto a produção saía vazia.
+    """
+
+    def _criar(mestre: Persona, comunidade: ComunidadeVirtual) -> VinculoDoMestre:
+        vinculo = VinculoDoMestre(mestre_id=mestre.id, comunidade_virtual_id=comunidade.id)
         sessao.add(vinculo)
         sessao.commit()
         sessao.refresh(vinculo)

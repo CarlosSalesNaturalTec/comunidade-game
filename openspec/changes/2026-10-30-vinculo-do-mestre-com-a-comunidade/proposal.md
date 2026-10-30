@@ -15,7 +15,7 @@ agendamento"). Correção de defeito preexistente, não fatia de requisito novo.
 
 `operador.vinculo_vigente` é **sempre** nulo para Mestre, em qualquer instalação: a relação
 casa `VinculoJogador.guerreiro_id == Persona.id`, e `abrir_vinculo` recusa papel que não seja
-Guerreiro(a) (`RN-08-02`). O Mestre nunca teve vínculo de comunidade — e dez pontos de leitura
+Guerreiro(a) (`RN-08-02`). O Mestre nunca teve vínculo de comunidade — e **dezesseis** pontos
 do núcleo o consultam.
 
 Em produção, saem **vazias** a fila de entregas pendentes (`RF-09-75`), a agenda do Mestre
@@ -23,6 +23,19 @@ Em produção, saem **vazias** a fila de entregas pendentes (`RF-09-75`), a agen
 necessidades (`RF-07-27`), o painel do dia e as duas leituras de responsáveis (`RF-09-62`,
 `RF-09-122`); e são **recusados** a confirmação da entrega da recompensa de marco
 (`RF-07-13`) e o cancelamento de aula pelo Mestre (`RF-01-72`, `RF-02-95`).
+
+Seis desses pontos só apareceram na implementação, e **ampliam o alcance** do que esta change
+conserta: o histórico de entregas (`RF-07-13`), o registro e o histórico da troca por
+recompensa avulsa (`RF-07-35`, `RF-07-36`) e os três do catálogo avulso — cadastro, operação
+sobre o item e leitura (`RF-07-33`, `RF-09-103`). Nenhum deles muda de enunciado: as specs de
+`troca-de-recompensa-avulsa` e `catalogo-avulso` também já estão no plural.
+
+Um sétimo é de natureza diferente, e não se conserta sozinho: o histórico de entregas manda o
+**Admin** ler "a comunidade a que está vinculado", e o Admin **nunca** teve vínculo de
+comunidade — nem passa a ter com esta change, que vincula só o Mestre. A leitura dele saía
+sempre vazia, e com ela a tela de entregas confirmadas do Acervo na App 03. Decisão do
+fundador de 2026-10-30: o Admin lê **todas**, sem filtro, aplicando o precedente de
+`troca-de-recompensa-avulsa`, onde o Admin já lê o histórico inteiro.
 
 A suíte está verde porque 24 arquivos de teste gravam o vínculo do Mestre à mão, por fora de
 `abrir_vinculo` — provam um estado que o núcleo recusa criar.
@@ -70,23 +83,26 @@ uma Comunidade Virtual.
   `RF-01-20`).
 - `recompensa-de-marco`: a fila de entregas pendentes deixa de alcançar "a Comunidade Virtual
   a que o Mestre está vinculado" e passa a alcançar **as comunidades** a que ele está
-  vinculado (`RF-09-75`, `RF-07-13`).
+  vinculado; e o **histórico** passa a dizer que o Admin lê **todas**, em vez de uma condição
+  que nenhum Admin satisfaz (`RF-09-75`, `RF-07-13`, `RF-02-50`, `RF-02-51`).
 - `painel-do-dia`: o painel do Mestre passa a considerar **as comunidades** dele, e com isso
   torna-se alcançável para o Mestre o caso de mais de uma aula vigente ao mesmo tempo, que o
   requisito já resolve para o Admin (`RF-02-41` a `RF-02-47`).
 - `aplicacao-de-gestao`: a tela de agendamento da App 03 passa a exigir a seleção de um ou
   mais Mestres (`RF-02-30`).
 
-As capacidades `patrimonio`, `necessidade-de-recurso`, `responsavel-e-vinculo` e
-`area-do-mestre` **não entram no delta**: o enunciado delas já está no plural e não muda. O
-que muda ali é implementação, e entra nas tasks.
+As capacidades `patrimonio`, `necessidade-de-recurso`, `responsavel-e-vinculo`,
+`area-do-mestre`, `troca-de-recompensa-avulsa` e `catalogo-avulso` **não entram no delta**: o
+enunciado delas já está no plural e não muda. O que muda ali é implementação, e entra nas
+tasks.
 
 ## Impact
 
 **Núcleo (`backend/`)** — duas tabelas novas e uma migração Alembic; `aulas/regra.py`
 (agendamento e cancelamento), `comunidades/regra.py` (abertura do vínculo e o filtro por
 comunidade), `patrimonio/regra.py`, `pontos_de_apoio/regra.py`, `necessidades/regra.py`,
-`painel_do_dia/regra.py`, `responsaveis/regra.py` e `recompensas_de_marco/regra.py`.
+`painel_do_dia/regra.py`, `responsaveis/regra.py`, `recompensas_de_marco/regra.py`,
+`trocas/regra.py` e `catalogo_avulso/regra.py`.
 
 **Rotas** — `POST /v1/aulas` ganha os Mestres no corpo. Nenhuma rota nova: `GET /v1/mestres`
 já existe e serve o seletor.

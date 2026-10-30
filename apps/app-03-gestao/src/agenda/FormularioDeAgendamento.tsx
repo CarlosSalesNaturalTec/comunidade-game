@@ -3,6 +3,7 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, CampoDeDataHora } from "comum/react";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import type { ComunidadeDaLista } from "../comunidades/api";
+import { type AdultoDaLista, listarMestres } from "../personas/api";
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "../pontos-de-apoio/api";
 import { listarTiposDeRecurso, type TipoDeRecurso } from "../recursos/api";
 import { agendarAula } from "./api";
@@ -30,11 +31,18 @@ export function FormularioDeAgendamento({ comunidades, onAgendada, onCancelar }:
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoCampoDeComunidade = useId();
   const idDoCampoDePontoDeApoio = useId();
+  const idDoCampoDeMestres = useId();
   const [comunidadeId, definirComunidadeId] = useState(comunidades[0]?.id ?? "");
   const [pontosDeApoio, definirPontosDeApoio] = useState<PontoDeApoioDaLista[]>([]);
   const [pontoDeApoioId, definirPontoDeApoioId] = useState("");
   const [inicioEm, definirInicioEm] = useState("");
   const [fimEm, definirFimEm] = useState("");
+  // Os Mestres NÃO são recortados por comunidade: é este agendamento que dá
+  // comunidade ao Mestre, de modo que filtrar por ela deixaria o primeiro
+  // agendamento de cada comunidade sem candidato algum (`RF-02-30`, design —
+  // decisão 4).
+  const [mestres, definirMestres] = useState<AdultoDaLista[]>([]);
+  const [mestresEscolhidos, definirMestresEscolhidos] = useState<string[]>([]);
   const [tiposDeRecurso, definirTiposDeRecurso] = useState<TipoDeRecurso[]>([]);
   const [recursos, definirRecursos] = useState<RecursoDoFormulario[]>([]);
   const proximaChaveDeRecurso = useRef(0);
@@ -47,7 +55,16 @@ export function FormularioDeAgendamento({ comunidades, onAgendada, onCancelar }:
     listarTiposDeRecurso(sessao.token)
       .then(definirTiposDeRecurso)
       .catch(() => definirTiposDeRecurso([]));
+    listarMestres(sessao.token)
+      .then((lista) => definirMestres(lista.itens))
+      .catch(() => definirMestres([]));
   }, [sessao]);
+
+  function alternarMestre(id: string) {
+    definirMestresEscolhidos((atuais) =>
+      atuais.includes(id) ? atuais.filter((outro) => outro !== id) : [...atuais, id],
+    );
+  }
 
   function acrescentarRecurso() {
     proximaChaveDeRecurso.current += 1;
@@ -139,6 +156,13 @@ export function FormularioDeAgendamento({ comunidades, onAgendada, onCancelar }:
       });
       return;
     }
+    if (mestresEscolhidos.length === 0) {
+      definirErroDeCampo({
+        campo: "mestres",
+        mensagem: "Escolha ao menos um Mestre para a aula.",
+      });
+      return;
+    }
     // Quantidade não positiva é apontada no próprio campo, antes de chegar
     // ao núcleo (`RF-02-31`).
     for (const recurso of recursos) {
@@ -168,6 +192,7 @@ export function FormularioDeAgendamento({ comunidades, onAgendada, onCancelar }:
           ponto_de_apoio_id: pontoDeApoioId,
           inicio_em: inicioEm,
           fim_em: fimEm,
+          mestres: mestresEscolhidos,
           recursos_declarados: recursos.map((recurso) => ({
             tipo_de_recurso_id: recurso.tipoDeRecursoId,
             quantidade: recurso.quantidade,
@@ -254,6 +279,29 @@ export function FormularioDeAgendamento({ comunidades, onAgendada, onCancelar }:
           </p>
         )}
       </div>
+
+      <fieldset
+        className="cg-campo"
+        aria-invalid={erroDeCampo?.campo === "mestres" || undefined}
+      >
+        <legend id={idDoCampoDeMestres}>Mestres que ministram a aula</legend>
+        {mestres.length === 0 && <p>Nenhum Mestre cadastrado.</p>}
+        {mestres.map((mestre) => (
+          <label key={mestre.id} className="cg-campo__opcao">
+            <input
+              type="checkbox"
+              checked={mestresEscolhidos.includes(mestre.id)}
+              onChange={() => alternarMestre(mestre.id)}
+            />
+            {mestre.nome}
+          </label>
+        ))}
+        {erroDeCampo?.campo === "mestres" && (
+          <p role="alert" className="cg-campo__erro">
+            {erroDeCampo.mensagem}
+          </p>
+        )}
+      </fieldset>
 
       <fieldset className="cg-campo">
         <legend>Recursos que a aula consome</legend>

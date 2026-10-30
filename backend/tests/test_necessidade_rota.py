@@ -55,7 +55,7 @@ def test_nenhuma_rota_devolve_reais_nem_pessoa(
     criar_aula,
     criar_recurso_declarado_da_aula,
     criar_sessao_de_teste,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -68,7 +68,7 @@ def test_nenhuma_rota_devolve_reais_nem_pessoa(
     _tornar_pendente(sessao, aula)
 
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     token, _ = criar_sessao_de_teste(mestre)
 
     campos_esperados = {
@@ -138,7 +138,7 @@ def test_lista_do_mestre_filtra_pela_comunidade_vinculada(
     criar_aula,
     criar_recurso_declarado_da_aula,
     criar_sessao_de_teste,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -157,7 +157,7 @@ def test_lista_do_mestre_filtra_pela_comunidade_vinculada(
     _tornar_pendente(sessao, aula_alheia)
 
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     token, _ = criar_sessao_de_teste(mestre)
 
     resposta = cliente.get(

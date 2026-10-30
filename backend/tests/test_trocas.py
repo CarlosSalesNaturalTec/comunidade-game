@@ -20,7 +20,7 @@ def _preparar(
     criar_preco_de_referencia,
     criar_valor_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_item_de_catalogo_avulso,
     criar_ponto_extra,
     criar_aula,
@@ -45,7 +45,7 @@ def _preparar(
         quantidade=lastro,
     )
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     item = criar_item_de_catalogo_avulso(
         admin, tipo, comunidade, ponto_de_apoio, estoque=estoque, ativo=True
     )
@@ -76,7 +76,7 @@ _FIXTURES = (
     "criar_preco_de_referencia",
     "criar_valor_de_referencia",
     "criar_lancamento",
-    "criar_vinculo_jogador",
+    "criar_vinculo_do_mestre",
     "criar_item_de_catalogo_avulso",
     "criar_ponto_extra",
     "criar_aula",
@@ -139,12 +139,12 @@ def test_guerreiro_sem_presenca_nao_impede_troca(sessao, cenario):
 
 
 def test_mestre_de_outra_comunidade_nao_registra_troca(
-    sessao, cenario, criar_persona, criar_vinculo_jogador, criar_comunidade
+    sessao, cenario, criar_persona, criar_vinculo_do_mestre, criar_comunidade
 ):
     c = cenario()
     outra_comunidade = criar_comunidade("Outra Comunidade")
     outro_mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(outro_mestre, outra_comunidade)
+    criar_vinculo_do_mestre(outro_mestre, outra_comunidade)
 
     with pytest.raises(PermissaoNegada):
         registrar_troca(
@@ -220,7 +220,7 @@ def test_item_de_tipo_sem_preco_vigente_nao_e_trocado(
     criar_ponto_de_apoio,
     criar_tipo_de_recurso,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_item_de_catalogo_avulso,
     criar_ponto_extra,
     criar_aula,
@@ -233,7 +233,7 @@ def test_item_de_tipo_sem_preco_vigente_nao_e_trocado(
         admin, tipo, ponto_de_apoio, natureza=NaturezaDoLancamento.credito, quantidade=Decimal("10")
     )
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     item = criar_item_de_catalogo_avulso(
         admin, tipo, comunidade, ponto_de_apoio, estoque=Decimal("5"), ativo=True
     )
@@ -445,7 +445,7 @@ def test_mestre_le_trocas_das_suas_comunidades(
     cenario,
     criar_persona,
     criar_comunidade,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_ponto_de_apoio,
     criar_item_de_catalogo_avulso,
     criar_aula,
@@ -474,7 +474,7 @@ def test_mestre_le_trocas_das_suas_comunidades(
     criar_ponto_extra(outro_guerreiro, acumulado=100, saldo_disponivel=100)
     outra_aula = criar_aula(c["admin"], outra_comunidade, ponto_de_apoio=outro_ponto)
     outro_mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(outro_mestre, outra_comunidade)
+    criar_vinculo_do_mestre(outro_mestre, outra_comunidade)
 
     registrar_troca(
         sessao, operador=outro_mestre, aula=outra_aula, item=outro_item, guerreiro=outro_guerreiro
@@ -543,3 +543,40 @@ def test_preco_declarado_no_corpo_e_recusado_pela_rota(
 
     assert resposta.status_code == 422
     assert sessao.query(Troca).count() == 0
+
+
+def test_mestre_registra_troca_na_aula_da_segunda_comunidade(
+    sessao, cenario, criar_vinculo_do_mestre
+):
+    """A guarda de `registrar_troca` passou de igualdade a pertinência: o
+    Mestre registra na aula de **qualquer** comunidade a que esteja
+    vinculado (decisão do fundador, 2026-10-30)."""
+    c1 = cenario()
+    c2 = cenario()
+    criar_vinculo_do_mestre(c1["mestre"], c2["comunidade"])
+
+    troca = registrar_troca(
+        sessao, operador=c1["mestre"], aula=c2["aula"], item=c2["item"], guerreiro=c2["guerreiro"]
+    )
+    sessao.commit()
+
+    assert troca.aula_id == c2["aula"].id
+    assert troca.autor_id == c1["mestre"].id
+
+
+def test_mestre_le_as_trocas_das_duas_comunidades(sessao, cenario, criar_vinculo_do_mestre):
+    c1 = cenario()
+    c2 = cenario()
+    criar_vinculo_do_mestre(c1["mestre"], c2["comunidade"])
+
+    troca1 = registrar_troca(
+        sessao, operador=c1["mestre"], aula=c1["aula"], item=c1["item"], guerreiro=c1["guerreiro"]
+    )
+    troca2 = registrar_troca(
+        sessao, operador=c1["mestre"], aula=c2["aula"], item=c2["item"], guerreiro=c2["guerreiro"]
+    )
+    sessao.commit()
+
+    trocas = listar_trocas(sessao, operador=c1["mestre"])
+
+    assert {t.id for t in trocas} == {troca1.id, troca2.id}

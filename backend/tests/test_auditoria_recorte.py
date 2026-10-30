@@ -13,7 +13,7 @@ def test_escrita_sobre_uma_crianca_fica_ligada_a_ela(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     sessao,
     monkeypatch,
     fabrica_de_auditoria,
@@ -25,7 +25,7 @@ def test_escrita_sobre_uma_crianca_fica_ligada_a_ela(
     mestre = criar_persona(Papel.mestre)
     token, _ = criar_sessao_de_teste(mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     aula = criar_aula(mestre, comunidade)
 
@@ -139,7 +139,7 @@ def test_acesso_de_rotina_do_mestre_aparece_com_data_hora_e_dado(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_vinculo,
     monkeypatch,
     fabrica_de_auditoria,
@@ -150,7 +150,7 @@ def test_acesso_de_rotina_do_mestre_aparece_com_data_hora_e_dado(
     chave, _ = criar_chave()
     mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     responsavel = criar_persona(Papel.responsavel)
     criar_vinculo(responsavel, guerreiro, cadastrado_por=mestre)
@@ -194,7 +194,7 @@ def test_nenhuma_linha_e_de_outra_crianca(
     criar_sessao_de_teste,
     criar_comunidade,
     criar_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_vinculo,
     monkeypatch,
     fabrica_de_auditoria,
@@ -205,7 +205,7 @@ def test_nenhuma_linha_e_de_outra_crianca(
     chave, _ = criar_chave()
     mestre = criar_persona(Papel.mestre)
     comunidade = criar_comunidade()
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     guerreiro_1 = criar_persona(Papel.guerreiro, comunidade=comunidade)
     guerreiro_2 = criar_persona(Papel.guerreiro, comunidade=comunidade)
     responsavel_1 = criar_persona(Papel.responsavel)

@@ -66,7 +66,7 @@ def cenario(
     criar_tipo_de_recurso,
     criar_valor_de_referencia,
     criar_lancamento,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
     criar_trilha,
     criar_missao,
     criar_recompensa_de_marco,
@@ -88,7 +88,7 @@ def cenario(
         )
 
         mestre = criar_persona(Papel.mestre)
-        criar_vinculo_jogador(mestre, comunidade)
+        criar_vinculo_do_mestre(mestre, comunidade)
 
         trilha = criar_trilha(mestre)
         missao = criar_missao(trilha, mestre)
@@ -177,12 +177,12 @@ def test_quantidade_esgotada_recusa_a_entrega(sessao, cenario, criar_persona):
 
 
 def test_mestre_de_outra_comunidade_nao_entrega(
-    sessao, cenario, criar_persona, criar_comunidade, criar_vinculo_jogador
+    sessao, cenario, criar_persona, criar_comunidade, criar_vinculo_do_mestre
 ):
     c = cenario()
     outra_comunidade = criar_comunidade("Outra Comunidade")
     outro_mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(outro_mestre, outra_comunidade)
+    criar_vinculo_do_mestre(outro_mestre, outra_comunidade)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         registrar_entrega(
@@ -435,10 +435,15 @@ def test_mestre_le_entregas_da_sua_comunidade(sessao, cenario):
     assert [e.id for e in entregas_do_mestre1] == [entrega1.id]
 
 
-def test_admin_le_entregas_da_comunidade_vinculada(sessao, cenario, criar_vinculo_jogador):
+def test_admin_le_entregas_de_todas_as_comunidades(sessao, cenario):
+    """O Admin **não tem vínculo de comunidade** — nunca teve, e não passa a
+    ter com o vínculo do Mestre. A redação anterior o mandava ler "a
+    comunidade a que está vinculado", condição que nenhum Admin satisfaz, e
+    a leitura dele saía sempre vazia em produção. Passa a ler todas, pelo
+    precedente de `trocas.listar_trocas` (decisão do fundador, 2026-10-30).
+    """
     c1 = cenario()
     c2 = cenario()
-    criar_vinculo_jogador(c1["admin"], c1["comunidade"])
 
     entrega1 = registrar_entrega(
         sessao,
@@ -447,7 +452,7 @@ def test_admin_le_entregas_da_comunidade_vinculada(sessao, cenario, criar_vincul
         guerreiro=c1["guerreiro"],
         ponto_de_apoio=c1["ponto_de_apoio"],
     )
-    registrar_entrega(
+    entrega2 = registrar_entrega(
         sessao,
         operador=c2["mestre"],
         recompensa=c2["recompensa"],
@@ -458,7 +463,7 @@ def test_admin_le_entregas_da_comunidade_vinculada(sessao, cenario, criar_vincul
 
     entregas_do_admin = listar_entregas(sessao, operador=c1["admin"])
 
-    assert [e.id for e in entregas_do_admin] == [entrega1.id]
+    assert {e.id for e in entregas_do_admin} == {entrega1.id, entrega2.id}
 
 
 def test_leitura_por_rota_nao_traz_moedas_nem_reais(
@@ -497,10 +502,9 @@ def test_leitura_por_rota_nao_traz_moedas_nem_reais(
 
 
 def test_leitura_por_rota_traz_tipo_de_recurso_quantidade_e_lancamento_para_o_admin(
-    sessao, cliente, criar_chave, criar_sessao_de_teste, cenario, criar_vinculo_jogador
+    sessao, cliente, criar_chave, criar_sessao_de_teste, cenario
 ):
     c = cenario()
-    criar_vinculo_jogador(c["admin"], c["comunidade"])
     entrega = registrar_entrega(
         sessao,
         operador=c["mestre"],

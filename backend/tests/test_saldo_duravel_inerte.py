@@ -52,8 +52,11 @@ def test_aporte_duravel_credita_poder_sustentador(sessao, cenario):
     assert poder_sustentador_de(sessao, provedor_id=apoiador.id) == Decimal("5.00")
 
 
-def test_agendamento_com_tipo_duravel_e_recusado_mesmo_com_saldo_de_sobra(sessao, cenario):
+def test_agendamento_com_tipo_duravel_e_recusado_mesmo_com_saldo_de_sobra(
+    sessao, cenario, criar_persona
+):
     admin, apoiador, comunidade, ponto_de_apoio, tipo_duravel = cenario
+    mestre = criar_persona(Papel.mestre)
     registrar_aporte(
         sessao,
         operador=admin,
@@ -73,6 +76,7 @@ def test_agendamento_com_tipo_duravel_e_recusado_mesmo_com_saldo_de_sobra(sessao
             operador=admin,
             comunidade=comunidade,
             ponto_de_apoio=ponto_de_apoio,
+            mestres=[mestre],
             inicio_em=agora + timedelta(days=1),
             fim_em=agora + timedelta(days=1, hours=1),
             recursos_declarados=[
@@ -85,11 +89,11 @@ def test_agendamento_com_tipo_duravel_e_recusado_mesmo_com_saldo_de_sobra(sessao
 
 
 def test_cadastro_de_item_de_catalogo_de_tipo_duravel_e_recusado(
-    sessao, cenario, criar_persona, criar_vinculo_jogador
+    sessao, cenario, criar_persona, criar_vinculo_do_mestre
 ):
     admin, _, comunidade, ponto_de_apoio, tipo_duravel = cenario
     mestre = criar_persona(Papel.mestre, criada_por=admin)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         cadastrar_item(
@@ -106,14 +110,14 @@ def test_cadastro_de_item_de_catalogo_de_tipo_duravel_e_recusado(
 
 
 def test_item_de_catalogo_consumivel_sem_lastro_segue_aceito_e_inativo(
-    sessao, cenario, criar_persona, criar_vinculo_jogador, criar_tipo_de_recurso
+    sessao, cenario, criar_persona, criar_vinculo_do_mestre, criar_tipo_de_recurso
 ):
     admin, _, comunidade, ponto_de_apoio, _ = cenario
     tipo_consumivel = criar_tipo_de_recurso(
         admin, nome="Kit", natureza=NaturezaDoRecurso.consumivel
     )
     mestre = criar_persona(Papel.mestre, criada_por=admin)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
 
     item = cadastrar_item(
         sessao,

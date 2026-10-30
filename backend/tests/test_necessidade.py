@@ -415,13 +415,13 @@ def test_lista_do_mestre_alcanca_as_comunidades_a_que_ele_esta_vinculado(
     criar_tipo_de_recurso,
     criar_aula,
     criar_recurso_declarado_da_aula,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     outra_comunidade = criar_comunidade()
     mestre = criar_persona(Papel.mestre)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
 
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
     ponto_de_apoio_alheio = criar_ponto_de_apoio(admin, outra_comunidade)

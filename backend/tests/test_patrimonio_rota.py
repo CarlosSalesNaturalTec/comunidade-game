@@ -1,3 +1,4 @@
+from nucleo.patrimonio.regra import listar_acervo
 from nucleo.personas.modelo import Papel
 
 
@@ -70,7 +71,7 @@ def test_mestre_le_apenas_o_acervo_da_sua_comunidade(
     criar_comunidade,
     criar_ponto_de_apoio,
     criar_item_patrimonial,
-    criar_vinculo_jogador,
+    criar_vinculo_do_mestre,
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -81,7 +82,7 @@ def test_mestre_le_apenas_o_acervo_da_sua_comunidade(
     criar_item_patrimonial(admin, ponto_de_apoio, numero_de_tombo="0001")
     criar_item_patrimonial(admin, outro_ponto, numero_de_tombo="0001")
     mestre = criar_persona(Papel.mestre, criada_por=admin)
-    criar_vinculo_jogador(mestre, comunidade)
+    criar_vinculo_do_mestre(mestre, comunidade)
     token, _ = criar_sessao_de_teste(mestre)
 
     resposta = cliente.get(
@@ -222,3 +223,32 @@ def test_guerreiro_nao_anota_a_ficha_de_vida_pela_rota(
     )
 
     assert resposta.status_code == 403
+
+
+def test_mestre_le_o_acervo_das_duas_comunidades(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_ponto_de_apoio,
+    criar_item_patrimonial,
+    criar_vinculo_do_mestre,
+):
+    """O enunciado de `patrimonio` já dizia "as comunidades a que está
+    vinculado", no plural; faltava a entidade que o sustentasse — e sem ela
+    o acervo do Mestre saía vazio em produção."""
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre)
+    comunidade_a = criar_comunidade("Comunidade A")
+    comunidade_b = criar_comunidade("Comunidade B")
+    comunidade_de_fora = criar_comunidade("Comunidade de Fora")
+
+    item_a = criar_item_patrimonial(admin, criar_ponto_de_apoio(admin, comunidade_a))
+    item_b = criar_item_patrimonial(admin, criar_ponto_de_apoio(admin, comunidade_b))
+    criar_item_patrimonial(admin, criar_ponto_de_apoio(admin, comunidade_de_fora))
+
+    criar_vinculo_do_mestre(mestre, comunidade_a)
+    criar_vinculo_do_mestre(mestre, comunidade_b)
+
+    acervo = listar_acervo(sessao, operador=mestre, comunidade_virtual_id=None)
+
+    assert {item.id for item in acervo} == {item_a.id, item_b.id}
