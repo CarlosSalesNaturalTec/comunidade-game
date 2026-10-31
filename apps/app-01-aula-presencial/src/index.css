@@ -107,38 +107,6 @@ textarea {
   color: var(--cor-texto);
 }
 
-/* Os dois caminhos da tela inicial — cartões grandes, alvo de toque de ao
- * menos 48 px, Mobile First (PRD-04 §10). */
-.cg-caminhos {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espaco-16);
-  padding: var(--espaco-16);
-}
-
-/* O glifo fica ao lado do rótulo, nunca acima nem no lugar dele (documento 15
- * §§5, 11.1): daí a linha, e não a coluna. O raio continua sendo o do campo —
- * o `12` px do documento 15 §6 é da carta, que o caminho não é — e a altura
- * mínima segue acima do alvo de toque de `48` px. */
-.cg-caminho {
-  display: flex;
-  flex-direction: row;
-  gap: var(--espaco-16);
-  align-items: center;
-  min-height: 6rem;
-  padding: var(--espaco-16);
-  border: 1px solid var(--cor-separador);
-  border-radius: var(--raio-campo);
-  background: none;
-  text-align: left;
-  cursor: pointer;
-}
-
-/* O glifo não encolhe nem é espremido pelo rótulo, que é frase inteira. */
-.cg-caminho > .cg-icone {
-  flex: 0 0 auto;
-}
-
 /* O rótulo do grupo que separa os caminhos da criança das duas ações de quem
  * opera o aparelho. Agrupa sem mudar o cartão: encerrar e abrir a troca ficam
  * no mesmo padrão dos demais, como o fundador pediu em 2026-10-14. O corpo é o
@@ -172,11 +140,6 @@ textarea {
   color: var(--cor-texto-secundario);
   font-size: var(--escala-0875);
   font-weight: var(--peso-rotulo);
-}
-
-.cg-caminho:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
 }
 
 /* O visor da captura: espelho ao vivo da câmera. O módulo de biometria anexa

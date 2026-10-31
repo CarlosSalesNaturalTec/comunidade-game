@@ -26,6 +26,9 @@ const GLIFOS: NomeDeGlifo[] = [
   "medalha",
   "pincel",
   "ponto-extra",
+  "carteira",
+  "desafios",
+  "coleta",
 ];
 
 function desenhar(glifo: NomeDeGlifo): SVGSVGElement {
@@ -193,5 +196,58 @@ describe("Icone — os símbolos das colunas da carta (documento 15 §§8.1, 8.3
     const svg = desenhar("ponto-extra");
     expect(svg.getAttribute("fill")).toBe("none");
     expect(svg.querySelector("path")?.getAttribute("d")).toBe(CAMINHO_DA_ESTRELA);
+  });
+});
+
+describe("Icone — os glifos dos caminhos (documento 15 §§8.3, 9, 11.1)", () => {
+  /** O desenho de uma silhueta de família, como `BadgeDaFamilia` a apresenta. */
+  function silhuetaDaFamilia(familia: FamiliaDeBadge): string {
+    const { container } = render(<BadgeDaFamilia familia={familia} />);
+    return (container.querySelector(".cg-badge__forma") as SVGSVGElement).innerHTML;
+  }
+
+  const CAMINHOS = ["carteira", "desafios", "coleta", "trilhas"] as const;
+
+  it("nenhum glifo de caminho repete silhueta de família de badge", () => {
+    const familias: FamiliaDeBadge[] = [
+      "de_nivel",
+      "de_conquista",
+      "de_valores_e_causas",
+      "de_territorio",
+      "de_autoria",
+      "de_protagonismo",
+    ];
+    for (const glifo of CAMINHOS) {
+      const desenho = desenhar(glifo).innerHTML;
+      for (const familia of familias) {
+        expect(desenho).not.toBe(silhuetaDaFamilia(familia));
+      }
+    }
+  });
+
+  it("nenhum glifo de caminho repete o escudo da marca", () => {
+    const simbolo = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), "..", "marca", "simbolo.svg"),
+      "utf-8",
+    );
+    const tracados = [...simbolo.matchAll(/ d="([^"]+)"/g)].map((m) => m[1]);
+    expect(tracados.length).toBeGreaterThan(0);
+
+    for (const glifo of CAMINHOS) {
+      const desenho = desenhar(glifo).innerHTML;
+      for (const tracado of tracados) expect(desenho).not.toContain(tracado);
+    }
+  });
+
+  it("o glifo da carteira não traz o círculo que a §9 reserva à moeda", () => {
+    // Carteira cheia de moedas afirmaria a grandeza que o caminho só guarda
+    // (design — decisão 6).
+    expect(desenhar("carteira").querySelector("circle")).toBeNull();
+  });
+
+  it("nenhum glifo de caminho é a estrela da grandeza ponto", () => {
+    for (const glifo of CAMINHOS) {
+      expect(desenhar(glifo).innerHTML).not.toContain(CAMINHO_DA_ESTRELA);
+    }
   });
 });

@@ -26,6 +26,14 @@ export type NomeDeGlifo =
   // escudo da marca (invariante 24), nem o círculo da moeda (§9).
   | "medalha"
   | "pincel"
+  // Os caminhos da Área do Guerreiro(a) que ainda não tinham glifo — a
+  // trilha usa `trilhas`, que já existe (decisão do fundador de 2026-10-31).
+  // Nenhum deles repete silhueta de família de badge (§8.3), o escudo da
+  // marca (invariante 24), o círculo da moeda nem a estrela da grandeza
+  // ponto (§9): ali afirmariam família, marca ou grandeza errada.
+  | "carteira"
+  | "desafios"
+  | "coleta"
   // A estrela **vazada** da grandeza ponto extra (§9). Aqui o vazado é a
   // regra do sistema, não exceção: a cheia, do ponto regular, é peça
   // preenchida e vive em `EstrelaDePonto`.
@@ -177,6 +185,33 @@ const GLIFOS: Record<NomeDeGlifo, ReactElement> = {
       <path d="M20.5 4.5 14 11" />
       <path d="m12 9 4 4" />
       <path d="M13 10 6 17l2 2 7-7z" />
+    </>
+  ),
+  // Carteira: a dobra com o fecho na lateral. **Sem moeda dentro** — o
+  // círculo é da moeda (§9), e carteira cheia de moedas afirmaria a grandeza
+  // que o caminho só guarda.
+  carteira: (
+    <>
+      <path d="M3 7.5a2 2 0 0 1 2-2h12.5a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
+      <path d="M19.5 10.5H16a1.5 1.5 0 0 0 0 3h3.5" />
+    </>
+  ),
+  // Desafios e equipes: a bandeira fincada no mastro — o alvo a alcançar.
+  // Não é losango, estrela, coração, hexágono, círculo nem escudo, as seis
+  // silhuetas de família da §8.3.
+  desafios: (
+    <>
+      <path d="M6 21V3.5" />
+      <path d="M6 4.5h11l-2.5 4L17 12.5H6" />
+    </>
+  ),
+  // Coleta do território: a gota medida pela régua ao lado. A gota é o dado
+  // coletado e os traços são a medição — nada de círculo, que é da moeda.
+  coleta: (
+    <>
+      <path d="M10 3.5s4.5 5 4.5 8.5a4.5 4.5 0 0 1-9 0C5.5 8.5 10 3.5 10 3.5Z" />
+      <path d="M19 4.5v15" />
+      <path d="M19 7.5h-2.5M19 12h-2.5M19 16.5h-2.5" />
     </>
   ),
   // A estrela vazada do ponto extra (§9), encabeçando a coluna do saldo que
