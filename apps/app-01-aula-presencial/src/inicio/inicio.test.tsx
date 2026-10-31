@@ -1168,12 +1168,11 @@ describe("a tela inicial usa o cartão do comum, em coluna (documento 15 §§5, 
 
     await screen.findByText(/o que você quer fazer/i);
 
-    // A grade 2×2 é da Área do Guerreiro(a); aqui a lista são 5 a 7 cartões
-    // mais o grupo de operação, e segue em coluna (decisão do fundador de
-    // 2026-10-31, design — Non-Goals).
+    // A lista são 5 a 7 cartões mais o grupo de operação, em coluna — a única
+    // disposição que a camada comum tem desde 2026-10-31 (design —
+    // Non-Goals).
     const lista = document.querySelector(".cg-caminhos");
     expect(lista).not.toBeNull();
-    expect(lista).not.toHaveClass("cg-caminhos--grade");
 
     // O glifo é o primeiro filho do cartão, e o rótulo segue sendo o nome
     // acessível do botão.
@@ -1182,15 +1181,5 @@ describe("a tela inicial usa o cartão do comum, em coluna (documento 15 §§5, 
     screen.getByRole("button", {
       name: "Onboarding — cadastro do Guerreiro(a) e presença do dia",
     });
-  });
-
-  it("nenhum caminho da tela inicial é anunciado como o atual", async () => {
-    renderizar();
-
-    await screen.findByText(/o que você quer fazer/i);
-
-    // A tela inicial da App 01 não tem caminho aberto: ela é o ponto de
-    // partida de cada atendimento, não navegação entre blocos.
-    expect(document.querySelectorAll(".cg-caminho[aria-current]")).toHaveLength(0);
   });
 });

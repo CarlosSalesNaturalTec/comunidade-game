@@ -18,16 +18,16 @@ async function renderizarComSessaoAberta() {
     papel: "guerreiro",
     permissoes: {},
   });
-  // O bloco da coleta carrega as próprias séries assim que a área abre —
-  // isolado aqui, sem série nenhuma, porque este arquivo testa só o
-  // encerramento por inatividade (coberto em `../coleta/*.test.tsx`).
+  // O bloco da coleta carrega as próprias séries quando é aberto — isolado
+  // aqui, sem série nenhuma, porque este arquivo testa só o encerramento por
+  // inatividade (coberto em `../coleta/*.test.tsx`).
   vi.spyOn(coletaApi, "listarMinhasSeries").mockResolvedValue({
     itens: [],
     proximo_cursor: null,
   });
-  // A área abre no bloco da trilha, que lê as trilhas do Guerreiro(a) —
-  // isolado aqui, sem trilha nenhuma, porque este bloco de provas testa só o
-  // encerramento por inatividade.
+  // O cartão da trilha lê as trilhas do Guerreiro(a) — isolado aqui, sem
+  // trilha nenhuma, porque este bloco de provas testa só o encerramento por
+  // inatividade.
   vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([]);
   vi.spyOn(trilhaApi, "listarPoderesDoCatalogo").mockResolvedValue([]);
   await act(async () => {
@@ -98,9 +98,10 @@ describe("encerramento por saída e por inatividade", () => {
   });
 });
 
-// A tela inicial da área: o bloco padrão, a ordem dos cartões, o caminho
-// corrente e a próxima missão no cartão da trilha (`RF-05-08`, `RF-05-17`).
-describe("a tela inicial da Área do Guerreiro(a) (RF-05-08, RF-05-17)", () => {
+// O menu dos caminhos e as telas de conteúdo: o que a área mostra ao abrir, a
+// ordem dos cartões, o Voltar, a saída e a próxima missão no cartão da trilha
+// (`RF-05-05`, `RF-05-08`, `RF-05-17`, `RF-05-71`).
+describe("o menu da Área do Guerreiro(a) (RF-05-08, RF-05-17)", () => {
   const TRILHA_COM_MISSAO: trilhaApi.TrilhaComProximaMissao = {
     id: "trilha-1",
     nome: "Água e território",
@@ -123,6 +124,7 @@ describe("a tela inicial da Área do Guerreiro(a) (RF-05-08, RF-05-17)", () => {
       itens: [],
       proximo_cursor: null,
     });
+    vi.spyOn(trilhaApi, "listarPoderesDoCatalogo").mockResolvedValue([]);
     const listar = vi.spyOn(trilhaApi, "listarMinhasTrilhas");
     if (trilhas instanceof Error) listar.mockRejectedValue(trilhas);
     else listar.mockResolvedValue(trilhas);
@@ -136,24 +138,29 @@ describe("a tela inicial da Área do Guerreiro(a) (RF-05-08, RF-05-17)", () => {
     });
   }
 
+  /** Aciona um cartão do menu e espera o conteúdo do bloco assentar. */
+  async function acionar(nome: RegExp | string) {
+    await act(async () => {
+      screen.getByRole("button", { name: nome }).click();
+    });
+  }
+
   afterEach(() => {
     vi.restoreAllMocks();
     sessionStorage.clear();
   });
 
-  it("abre no bloco da trilha, sem que a criança acione caminho algum", async () => {
+  it("abre no menu, sem conteúdo de bloco algum na tela", async () => {
     await abrirArea();
 
-    // Até 2026-10-31 a área abria na coleta do território, e a missão custava
-    // uma ida ao menu — justo o que a §10 do PRD-05 proíbe.
-    const atual = screen.getByRole("button", { name: /^Trilha —/, current: true });
-    expect(atual).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: /^Coleta do território/, current: true }),
-    ).toBeNull();
+    // Até 2026-10-31 a área abria direto no bloco da trilha. Agora o guia só
+    // aparece depois do toque, e o menu é o que a sessão encontra.
+    screen.getByRole("heading", { name: /minha área/i });
+    expect(screen.queryByRole("button", { name: /^Guia$/ })).toBeNull();
+    expect(screen.queryByText(/não foi possível carregar as suas trilhas/i)).toBeNull();
   });
 
-  it("apresenta os quatro caminhos em cartão, na ordem decidida", async () => {
+  it("apresenta os cinco caminhos em cartão, na ordem decidida", async () => {
     await abrirArea();
 
     const rotulos = Array.from(document.querySelectorAll(".cg-caminho")).map((cartao) =>
@@ -161,35 +168,95 @@ describe("a tela inicial da Área do Guerreiro(a) (RF-05-08, RF-05-17)", () => {
     );
 
     expect(rotulos).toEqual([
-      "Minha carteira — seus pontos, badges e conquistas",
       "Trilha — o seu percurso e a próxima missão",
+      "Minha carteira — seus pontos, badges e conquistas",
       "Desafios e equipes — o que está em aberto e com quem você joga",
       "Coleta do território — medir e registrar o que você vê na sua rua",
+      "Sair",
     ]);
   });
 
-  it("dispõe os cartões em grade, com o glifo acima do rótulo", async () => {
+  it("dispõe os cartões um por linha, com o glifo ao lado do rótulo", async () => {
     await abrirArea();
 
-    const lista = screen.getByRole("navigation", { name: "Área do Guerreiro(a)" });
-    expect(lista).toHaveClass("cg-caminhos--grade");
-    for (const cartao of lista.querySelectorAll(".cg-caminho")) {
+    // Sem marco de navegação: aqui os caminhos **são** a tela, e o cartão de
+    // sair é ação, não destino (design — decisão 4).
+    expect(screen.queryByRole("navigation")).toBeNull();
+    const lista = document.querySelector(".cg-caminhos");
+    expect(lista).not.toBeNull();
+    expect(lista?.className).toBe("cg-caminhos");
+    for (const cartao of document.querySelectorAll(".cg-caminho")) {
       expect(cartao.firstElementChild).toHaveClass("cg-icone");
     }
   });
 
-  it("anuncia o cartão do bloco aberto como o atual, e troca de bloco sem menu", async () => {
+  it("nenhum cartão é anunciado como o atual", async () => {
     await abrirArea();
 
-    await act(async () => {
-      screen.getByRole("button", { name: /^Minha carteira/ }).click();
-    });
+    // O caminho corrente saiu com a grade: menu e conteúdo são telas
+    // separadas, e não há bloco aberto enquanto os cartões estão na tela.
+    expect(document.querySelectorAll("[aria-current]")).toHaveLength(0);
+  });
 
-    // O bloco abre direto, e os cartões continuam na tela: não existe tela
-    // intermediária de menu.
-    screen.getByRole("button", { name: /^Minha carteira/, current: true });
-    expect(screen.queryByRole("button", { name: /^Trilha —/, current: true })).toBeNull();
-    expect(document.querySelectorAll(".cg-caminho")).toHaveLength(4);
+  it("acionado um caminho, o conteúdo ocupa a tela e os cartões somem", async () => {
+    await abrirArea();
+
+    await acionar(/^Minha carteira/);
+
+    screen.getByRole("heading", { name: "Minha carteira" });
+    expect(document.querySelectorAll(".cg-caminho")).toHaveLength(0);
+    expect(screen.queryByRole("heading", { name: /minha área/i })).toBeNull();
+  });
+
+  it("o Voltar salta ao menu de qualquer profundidade do bloco", async () => {
+    await abrirArea();
+
+    await acionar(/^Trilha —/);
+    // Desce um nível dentro do bloco: o guia dá lugar ao progresso.
+    await acionar(/^Progresso$/);
+
+    await acionar("Voltar");
+
+    // Volta ao menu, e não ao guia: o estado interno do bloco é desmontado
+    // junto com ele (design — decisão 2).
+    screen.getByRole("heading", { name: /minha área/i });
+    expect(document.querySelectorAll(".cg-caminho")).toHaveLength(5);
+    expect(screen.queryByRole("button", { name: /^Progresso$/ })).toBeNull();
+  });
+
+  it("trocar de bloco passa pelo menu", async () => {
+    await abrirArea();
+
+    await acionar(/^Trilha —/);
+    await acionar("Voltar");
+    await acionar(/^Coleta do território/);
+
+    screen.getByRole("heading", { name: "Coleta do território" });
+  });
+
+  it("a saída é o último cartão do menu, e encerra a sessão", async () => {
+    const encerrarSessaoDoGuerreiro = vi
+      .spyOn(autenticacaoApi, "encerrarSessao")
+      .mockResolvedValue(undefined);
+    await abrirArea();
+
+    const cartoes = Array.from(document.querySelectorAll(".cg-caminho"));
+    expect(cartoes.at(-1)?.textContent?.trim()).toBe("Sair");
+    // Cartão igual aos demais, sem agrupamento próprio: na App 05 quem sai é
+    // a própria criança, não um adulto que opera o aparelho.
+    expect(screen.queryByRole("group")).toBeNull();
+
+    await acionar("Sair");
+    expect(encerrarSessaoDoGuerreiro).toHaveBeenCalledWith("token-do-guerreiro");
+  });
+
+  it("a tela de conteúdo oferece Voltar e nenhuma saída de sessão", async () => {
+    await abrirArea();
+
+    await acionar(/^Desafios e equipes/);
+
+    screen.getByRole("button", { name: "Voltar" });
+    expect(screen.queryByRole("button", { name: "Sair" })).toBeNull();
   });
 
   it("nomeia a próxima missão no cartão da trilha", async () => {
@@ -213,23 +280,37 @@ describe("a tela inicial da Área do Guerreiro(a) (RF-05-08, RF-05-17)", () => {
     expect(cartao).toHaveAccessibleName("Trilha — o seu percurso e a próxima missão");
   });
 
-  it("falhando a leitura das trilhas, o cartão recua ao rótulo e a tela não mostra erro", async () => {
+  it("falhando a leitura das trilhas, o cartão recua ao rótulo e o menu não mostra erro", async () => {
     await abrirArea(new Error("rede fora"));
 
     const cartao = screen.getByRole("button", { name: /^Trilha —/ });
     expect(cartao.querySelector(".cg-caminho__extra")).toBeNull();
-    // O cartão é silencioso: não acrescenta aviso algum. O erro que aparece é
-    // o do próprio bloco da trilha, que já o tinha antes desta fatia — há
-    // **um** aviso na tela, não dois.
-    expect(screen.getByText(/não foi possível carregar as suas trilhas/i)).toBeInTheDocument();
-    expect(cartao.querySelector("[role='alert']")).toBeNull();
+    // O cartão é silencioso, e o menu não carrega o bloco: o erro da trilha
+    // só aparece quando a criança abre a trilha.
+    expect(screen.queryByText(/não foi possível carregar as suas trilhas/i)).toBeNull();
   });
 
-  it("mantém a saída da sessão no cabeçalho, uma única vez", async () => {
-    await abrirArea();
+  it("o aviso de inatividade aparece dentro de um bloco, e Continuar não tira dali", async () => {
+    vi.useFakeTimers();
+    try {
+      vi.spyOn(autenticacaoApi, "encerrarSessao").mockResolvedValue(undefined);
+      await abrirArea();
+      await acionar(/^Minha carteira/);
 
-    // A App 05 não usa o componente de navegação de áreas: o Sair segue no
-    // cabeçalho, sempre no mesmo lugar (design — decisão 4).
-    expect(screen.getAllByRole("button", { name: "Sair" })).toHaveLength(1);
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(DURACAO_EM_MS - UM_MINUTO_EM_MS);
+      });
+
+      expect(screen.getByText(/sessão vai fechar/i)).toBeInTheDocument();
+      await act(async () => {
+        screen.getByRole("button", { name: /continuar/i }).click();
+      });
+
+      // Segue na mesma tela, e a sessão não fechou.
+      screen.getByRole("heading", { name: "Minha carteira" });
+      expect(screen.queryByText(/sessão vai fechar/i)).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

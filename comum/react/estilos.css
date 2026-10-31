@@ -341,7 +341,9 @@
 /* `ListaDeCaminhos` — os caminhos de uma tela em cartão grande, alvo de toque
  * de ao menos 48 px, Mobile First (PRD-04 §10, PRD-05 §10). Nasceu na tela
  * inicial da App 01 e subiu ao comum quando a Área do Guerreiro(a) passou a
- * querer o mesmo cartão (decisão do fundador de 2026-10-31). */
+ * querer o mesmo cartão (decisão do fundador de 2026-10-31). Há **uma**
+ * disposição, a coluna: nas duas telas que a usam os caminhos são a tela, e é
+ * o que o documento 15 §6.5 manda nesse caso. */
 .cg-caminhos {
   display: flex;
   flex-direction: column;
@@ -349,10 +351,9 @@
   padding: var(--espaco-16);
 }
 
-/* Na **coluna** o glifo fica ao lado do rótulo: daí a linha, e não a coluna. O
- * raio continua sendo o do campo — o `12` px do documento 15 §6 é da carta,
- * que o caminho não é — e a altura mínima segue acima do alvo de toque de
- * `48` px. */
+/* O glifo fica ao lado do rótulo: daí a linha, e não a coluna. O raio continua
+ * sendo o do campo — o `12` px do documento 15 §6 é da carta, que o caminho
+ * não é — e a altura mínima segue acima do alvo de toque de `48` px. */
 .cg-caminho {
   display: flex;
   flex-direction: row;
@@ -375,43 +376,6 @@
 .cg-caminho:disabled {
   cursor: not-allowed;
   opacity: 0.6;
-}
-
-/* O caminho aberto se reconhece pelo **peso da fonte** — sinal de forma, não
- * de cor (documento 15 §5) —, com a borda reforçada por sombra interna, que
- * não desloca o cartão como uma borda mais grossa deslocaria. */
-.cg-caminho[aria-current] {
-  font-weight: var(--peso-rotulo);
-  box-shadow: inset 0 0 0 1px var(--cor-separador);
-}
-
-/* A **grade**: duas colunas no celular e quatro a partir do marco de `768` px,
- * no idioma que a carta em colunas já usa. Quatro cartões com frase em coluna
- * dariam ~24 rem e jogariam o conteúdo da tela abaixo da dobra num aparelho de
- * 360×640, que é o que a §10 do PRD-05 proíbe (decisão do fundador de
- * 2026-10-31). */
-.cg-caminhos--grade {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
-}
-
-@media (min-width: 768px) {
-  .cg-caminhos--grade {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(0, 1fr);
-  }
-}
-
-/* Na grade o glifo fica **acima** do rótulo: é o que cabe em duas colunas de
- * celular, e o documento 15 §11.1 pede o rótulo junto do ícone, não ao lado
- * dele — a carta em colunas já encabeça coluna com o símbolo acima (§8.1). */
-.cg-caminhos--grade .cg-caminho {
-  flex-direction: column;
-  align-items: center;
-  gap: var(--espaco-8);
-  text-align: center;
 }
 
 /* O rótulo e, abaixo dele, o que o cartão precise dizer — a próxima missão, no

@@ -261,20 +261,11 @@ glifo e **rótulo em frase**: a frase é o nome acessível do cartão e o glifo 
 toma o lugar dela (§5). O alvo de toque é o da camada comum, e o raio é o do campo, não o da
 carta.
 
-Há **duas disposições**, e a escolha de uma delas decide também o lugar do glifo:
+A disposição é **uma**: um cartão por linha, com o glifo **ao lado** do rótulo. Os caminhos
+**são** a tela onde aparecem, e o conteúdo de cada um ocupa tela própria, alcançada pelo cartão
+e deixada por um caminho de volta — nunca dividindo a tela com o menu.
 
-| Disposição | Arranjo                                                    | Glifo             |
-| ---------- | ---------------------------------------------------------- | ----------------- |
-| Coluna     | Um cartão por linha                                        | Ao lado do rótulo |
-| Grade      | Duas colunas; todas em linha a partir do marco de `768` px | Acima do rótulo   |
-
-A grade existe porque cartão em coluna ocupa a tela inteira: quatro deles num celular jogam
-abaixo da dobra o conteúdo que a tela veio mostrar. Onde os caminhos convivem com conteúdo na
-mesma tela, a disposição é a grade; onde os caminhos **são** a tela, é a coluna.
-
-Havendo caminho aberto, o cartão dele é anunciado como o atual e se distingue por **peso de
-fonte**, nunca por cor (§5) — ali os cartões são navegação com item corrente, e a tela não tem
-passo de menu antes do conteúdo.
+A **saída da sessão**, onde existir, é um cartão como os demais, na última posição.
 
 Decisão do fundador, 2026-10-31.
 

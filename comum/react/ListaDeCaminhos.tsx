@@ -14,25 +14,12 @@ export interface CaminhoDaTela {
   aoAcionar: () => void;
 }
 
-/** A disposição decide **junto** o arranjo da lista e o lugar do glifo: na
- * coluna ele fica ao lado do rótulo, na grade acima dele. É uma escolha, e
- * não duas, porque grade com glifo ao lado é justo o arranjo que não cabe em
- * duas colunas num celular de 360 px (design — decisão 1). */
-export type DisposicaoDeCaminhos = "coluna" | "grade";
-
 interface Props {
   /** Dado, a lista é um marco de navegação com este nome; omitido, é só o
-   * contêiner dos cartões. A tela inicial da App 01 é a tela inteira e não
-   * declara marco; os caminhos da Área do Guerreiro(a) navegam entre os
-   * blocos dela e declaram. */
+   * contêiner dos cartões. Nenhuma das duas telas iniciais declara marco: ali
+   * os caminhos **são** a tela, e o marco não distinguiria nada. */
   rotulo?: string;
   caminhos: CaminhoDaTela[];
-  disposicao?: DisposicaoDeCaminhos;
-  /** A chave do caminho aberto. Dada, o cartão dela é anunciado como o atual
-   * e se distingue por peso de fonte, não por cor — é o que o
-   * `NavegacaoDeAreas` já faz (documento 15 §5). Omitida, nenhum cartão é o
-   * atual: a tela inicial da App 01 não tem caminho aberto. */
-  caminhoAtual?: string;
   /** Acrescentado ao fim da lista, dentro do contêiner — o `fieldset` "para
    * quem opera o aparelho" da App 01 entra por aqui. */
   children?: ReactNode;
@@ -46,32 +33,27 @@ interface Props {
 // Guerreiro(a) passou a querer o mesmo cartão (decisão do fundador de
 // 2026-10-31). O que **não** subiu é o `fieldset` "para quem opera o
 // aparelho": aquele grupo é só da App 01, e entra por `children`.
-export function ListaDeCaminhos({
-  rotulo,
-  caminhos,
-  disposicao = "coluna",
-  caminhoAtual,
-  children,
-}: Props) {
-  const classe = `cg-caminhos${disposicao === "grade" ? " cg-caminhos--grade" : ""}`;
+//
+// Há **uma** disposição, a coluna, porque é onde os caminhos são a tela
+// (documento 15 §6.5). A grade e o caminho corrente existiram enquanto a Área
+// do Guerreiro(a) misturava menu e conteúdo na mesma tela; separados os dois
+// em telas próprias, ficaram sem objeto e saíram (decisão do fundador de
+// 2026-10-31). Navegação persistente com item corrente é o `NavegacaoDeAreas`.
+export function ListaDeCaminhos({ rotulo, caminhos, children }: Props) {
   const conteudo = (
     <>
       {caminhos.map((caminho) => (
-        <CartaoDeCaminho
-          key={caminho.chave}
-          caminho={caminho}
-          atual={caminho.chave === caminhoAtual}
-        />
+        <CartaoDeCaminho key={caminho.chave} caminho={caminho} />
       ))}
       {children}
     </>
   );
 
   if (rotulo === undefined) {
-    return <div className={classe}>{conteudo}</div>;
+    return <div className="cg-caminhos">{conteudo}</div>;
   }
   return (
-    <nav className={classe} aria-label={rotulo}>
+    <nav className="cg-caminhos" aria-label={rotulo}>
       {conteudo}
     </nav>
   );
@@ -79,17 +61,15 @@ export function ListaDeCaminhos({
 
 interface PropsDoCartao {
   caminho: CaminhoDaTela;
-  atual?: boolean;
 }
 
 // Um cartão de caminho, exposto à parte para quem monta um grupo próprio de
 // caminhos — hoje, o `fieldset` de operação da App 01.
-export function CartaoDeCaminho({ caminho, atual = false }: PropsDoCartao) {
+export function CartaoDeCaminho({ caminho }: PropsDoCartao) {
   return (
     <button
       type="button"
       className="cg-caminho"
-      aria-current={atual ? "true" : undefined}
       disabled={caminho.desabilitado}
       onClick={caminho.aoAcionar}
     >

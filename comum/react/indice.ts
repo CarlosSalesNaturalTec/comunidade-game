@@ -26,7 +26,7 @@ export { FundoDeComunidade } from "./FundoDeComunidade";
 export { GLIFO_GENERICO_DE_PODER, GlifoDePoder, glifoDoPoder } from "./GlifoDePoder";
 export type { NomeDeGlifo, TamanhoDeIcone } from "./Icone";
 export { CAMINHO_DA_ESTRELA, Icone } from "./Icone";
-export type { CaminhoDaTela, DisposicaoDeCaminhos } from "./ListaDeCaminhos";
+export type { CaminhoDaTela } from "./ListaDeCaminhos";
 export { CartaoDeCaminho, ListaDeCaminhos } from "./ListaDeCaminhos";
 export { MarcaDeGravacao } from "./MarcaDeGravacao";
 export { MarcaDoProjeto } from "./MarcaDoProjeto";
