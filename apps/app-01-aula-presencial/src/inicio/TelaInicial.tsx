@@ -5,8 +5,10 @@ import {
   Botao,
   BotaoDeAlternancia,
   Cabecalho,
+  type CaminhoDaTela,
   Campo,
-  Icone,
+  CartaoDeCaminho,
+  ListaDeCaminhos,
   Moldura,
 } from "comum/react";
 import { useState } from "react";
@@ -83,16 +85,10 @@ interface Props {
 // de presença, sem registrar presença alguma (`RF-04-72`, `RN-04-40`,
 // decisão do fundador de 2026-09-25).
 //
-// Cada caminho leva o glifo da camada comum ao lado do rótulo que já tem —
-// nunca no lugar dele: é o que a criança reconhece antes de ler a frase
-// inteira, e o rótulo segue sendo o nome acessível do botão (documento 15
-// §§5, 11.1, decisão do fundador de 2026-09-25).
-//
-// A **ordem** dos caminhos é decisão do fundador de 2026-10-15 e está fixada
-// em spec, não é o acaso de quando cada fatia os acrescentou: onboarding,
-// presença, trilhas e missões, equipes, quiz e, com o momento aberto, a
-// troca. Trilhas e equipes andam lado a lado, por serem o par de trabalhar a
-// trilha (`RF-04-01`).
+// Os cartões vêm da `ListaDeCaminhos` da camada comum, na disposição em
+// **coluna**: o glifo ao lado do rótulo que já tem, nunca no lugar dele
+// (documento 15 §§5, 11.1, decisão do fundador de 2026-09-25). A ordem dos
+// caminhos, que é decisão do fundador, está nas duas listas montadas abaixo.
 export function TelaInicial({
   tokenDeTrabalho,
   personaIdDeTrabalho,
@@ -377,6 +373,104 @@ export function TelaInicial({
     );
   }
 
+  // Os caminhos do atendimento, na **ordem** que o fundador fixou em
+  // 2026-10-15: onboarding, presença, trilhas e missões, equipes, quiz e, com
+  // o momento aberto, a troca. Trilhas e equipes andam lado a lado, por serem
+  // o par de trabalhar a trilha (`RF-04-01`).
+  const caminhosDoAtendimento: CaminhoDaTela[] = [
+    {
+      chave: "onboarding",
+      rotulo: "Onboarding — cadastro do Guerreiro(a) e presença do dia",
+      glifo: "onboarding",
+      aoAcionar: () => definirCaminho("onboarding"),
+    },
+    {
+      chave: "presenca",
+      rotulo: "Presença — entrar com o nick e registrar a presença de hoje",
+      glifo: "presenca",
+      aoAcionar: () => definirCaminho("presenca"),
+    },
+    {
+      chave: "trilhas",
+      rotulo: "Trilhas e missões — ver o seu percurso e as atividades do encontro",
+      glifo: "trilhas",
+      aoAcionar: () => definirCaminho("trilhas"),
+    },
+    {
+      chave: "equipes",
+      rotulo: "Equipes — formar a equipe e trabalhar a trilha",
+      glifo: "equipes",
+      aoAcionar: () => definirCaminho("equipes"),
+    },
+    {
+      chave: "quiz",
+      rotulo: "Quiz ao Vivo — entrar com o nick e responder pela equipe",
+      glifo: "quiz",
+      aoAcionar: () => definirCaminho("quiz"),
+    },
+    ...(momentoDeTrocaAberto
+      ? [
+          {
+            chave: "troca",
+            rotulo: "Troca por recompensa avulsa — entregar uma recompensa do encontro",
+            glifo: "troca" as const,
+            aoAcionar: () => definirCaminho("troca"),
+          },
+        ]
+      : []),
+  ];
+
+  // A medição abre o grupo da operação: é diagnóstico do ponto de apoio, não
+  // caminho da criança — `RF-04-63` a atribui a Mestre ou Admin, ela mede só
+  // quem opera fora do onboarding (`RN-04-33`) e pede o mesmo PIN do aparelho
+  // que o encerramento (`RN-04-41`). Vem antes da chave da troca porque
+  // calibrar é ato de preparo, raríssimo, enquanto a chave é do encontro em
+  // curso (decisão do fundador de 2026-10-15).
+  const caminhosDaOperacao: CaminhoDaTela[] = [
+    {
+      chave: "medicao",
+      rotulo: "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
+      glifo: "medicao",
+      aoAcionar: () => definirCaminho("medicao"),
+    },
+    ...(podeAbrirMomentoDeTroca
+      ? [
+          {
+            chave: "momento-de-troca",
+            rotulo: momentoDeTrocaAberto
+              ? "Fechar o momento de troca"
+              : abrindoMomentoDeTroca
+                ? "Abrindo…"
+                : "Abrir o momento de troca",
+            glifo: "momento-de-troca" as const,
+            desabilitado: abrindoMomentoDeTroca,
+            aoAcionar: momentoDeTrocaAberto ? aoFecharMomentoDeTroca : aoAbrirMomentoDeTroca,
+          },
+        ]
+      : []),
+    // As entregas acompanham a chave do momento de troca, por serem as duas
+    // do encontro em curso, e aparecem **só ao Mestre**: o Admin nunca
+    // confirma entrega, e o núcleo recusaria de todo modo — a guarda é das
+    // duas pontas, como já é na troca (`RF-07-13`, `RN-02-17`, design —
+    // decisão 4).
+    ...(papelDeTrabalho === "mestre"
+      ? [
+          {
+            chave: "entregas",
+            rotulo: "Entregas pendentes do encontro — confirmar a recompensa conquistada",
+            glifo: "entregas" as const,
+            aoAcionar: () => definirCaminho("entregas"),
+          },
+        ]
+      : []),
+    {
+      chave: "encerramento",
+      rotulo: "Encerrar a sessão de trabalho",
+      glifo: "encerrar",
+      aoAcionar: () => definirCaminho("encerramento"),
+    },
+  ];
+
   return (
     <Moldura>
       <Cabecalho
@@ -384,41 +478,7 @@ export function TelaInicial({
         subtitulo="O que você quer fazer?"
         canto={<ControleDaNarracao />}
       />
-      <div className="cg-caminhos">
-        <button
-          type="button"
-          className="cg-caminho"
-          onClick={() => definirCaminho("onboarding")}
-        >
-          <Icone glifo="onboarding" />
-          Onboarding — cadastro do Guerreiro(a) e presença do dia
-        </button>
-        <button
-          type="button"
-          className="cg-caminho"
-          onClick={() => definirCaminho("presenca")}
-        >
-          <Icone glifo="presenca" />
-          Presença — entrar com o nick e registrar a presença de hoje
-        </button>
-        <button type="button" className="cg-caminho" onClick={() => definirCaminho("trilhas")}>
-          <Icone glifo="trilhas" />
-          Trilhas e missões — ver o seu percurso e as atividades do encontro
-        </button>
-        <button type="button" className="cg-caminho" onClick={() => definirCaminho("equipes")}>
-          <Icone glifo="equipes" />
-          Equipes — formar a equipe e trabalhar a trilha
-        </button>
-        <button type="button" className="cg-caminho" onClick={() => definirCaminho("quiz")}>
-          <Icone glifo="quiz" />
-          Quiz ao Vivo — entrar com o nick e responder pela equipe
-        </button>
-        {momentoDeTrocaAberto && (
-          <button type="button" className="cg-caminho" onClick={() => definirCaminho("troca")}>
-            <Icone glifo="troca" />
-            Troca por recompensa avulsa — entregar uma recompensa do encontro
-          </button>
-        )}
+      <ListaDeCaminhos caminhos={caminhosDoAtendimento}>
         {/* Os atos de quem opera o aparelho fecham o menu, no mesmo padrão
             dos caminhos — o fundador pediu o cartão igual, e o que separa é o
             rótulo do grupo (`RF-04-71`, `RF-04-49`, `RF-04-63`, design —
@@ -434,61 +494,11 @@ export function TelaInicial({
             2). */}
         <fieldset className="cg-caminhos__operacao">
           <legend className="cg-caminhos__grupo">Para quem opera o aparelho</legend>
-          {/* A medição abre o grupo: é diagnóstico do ponto de apoio, não
-              caminho da criança — `RF-04-63` a atribui a Mestre ou Admin, ela
-              mede só quem opera fora do onboarding (`RN-04-33`) e pede o mesmo
-              PIN do aparelho que o encerramento (`RN-04-41`). Vem antes da
-              chave da troca porque calibrar é ato de preparo, raríssimo,
-              enquanto a chave é do encontro em curso (decisão do fundador de
-              2026-10-15). */}
-          <button
-            type="button"
-            className="cg-caminho"
-            onClick={() => definirCaminho("medicao")}
-          >
-            <Icone glifo="medicao" />
-            Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio
-          </button>
-          {podeAbrirMomentoDeTroca && (
-            <button
-              type="button"
-              className="cg-caminho"
-              onClick={momentoDeTrocaAberto ? aoFecharMomentoDeTroca : aoAbrirMomentoDeTroca}
-              disabled={abrindoMomentoDeTroca}
-            >
-              <Icone glifo="momento-de-troca" />
-              {momentoDeTrocaAberto
-                ? "Fechar o momento de troca"
-                : abrindoMomentoDeTroca
-                  ? "Abrindo…"
-                  : "Abrir o momento de troca"}
-            </button>
-          )}
-          {/* As entregas acompanham a chave do momento de troca, por serem
-              as duas do encontro em curso, e aparecem **só ao Mestre**: o
-              Admin nunca confirma entrega, e o núcleo recusaria de todo modo
-              — a guarda é das duas pontas, como já é na troca (`RF-07-13`,
-              `RN-02-17`, design — decisão 4). */}
-          {papelDeTrabalho === "mestre" && (
-            <button
-              type="button"
-              className="cg-caminho"
-              onClick={() => definirCaminho("entregas")}
-            >
-              <Icone glifo="entregas" />
-              Entregas pendentes do encontro — confirmar a recompensa conquistada
-            </button>
-          )}
-          <button
-            type="button"
-            className="cg-caminho"
-            onClick={() => definirCaminho("encerramento")}
-          >
-            <Icone glifo="encerrar" />
-            Encerrar a sessão de trabalho
-          </button>
+          {caminhosDaOperacao.map((caminho) => (
+            <CartaoDeCaminho key={caminho.chave} caminho={caminho} />
+          ))}
         </fieldset>
-      </div>
+      </ListaDeCaminhos>
       {erroDeAberturaDaTroca && <Aviso tipo="erro">{erroDeAberturaDaTroca}</Aviso>}
       {(papelDeTrabalho === "mestre" || papelDeTrabalho === "admin") && (
         <FilaDePresencaPendente itens={itensDaFila} aoTentarDeNovo={tentarDeNovo} />

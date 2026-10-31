@@ -78,7 +78,9 @@ alcança. O Sair segue no `Cabecalho`, onde já está, sempre no mesmo lugar.
 `AreaDoGuerreiro` passa a chamar `listarMinhasTrilhas` para compor o rótulo do cartão da Trilha.
 A trilha de referência é a **primeira** da lista — a mesma que `Trilha.tsx` seleciona por
 padrão —, para que cartão e bloco não discordem. Falhando a leitura ou não havendo próxima
-missão, o cartão fica só com o rótulo: nunca espaço vazio, nunca erro na tela inicial.
+missão, o cartão fica só com o rótulo, e nunca espaço vazio. O cartão é **silencioso**: não
+acrescenta aviso algum — o aviso de falha, quando houver, é o do próprio bloco da trilha, que já
+o tem.
 
 - _Descartado:_ rota nova ou endpoint de resumo — o dado já vem.
 - _Descartado:_ içar o estado da trilha para a área — acoplaria os dois e não paga o cartão.
@@ -111,7 +113,7 @@ Arena na App 05, Operação na App 01.
   ("Onboarding — cadastro do Guerreiro(a) e presença do dia") é da coluna, não da grade. O
   `minmax(0, 1fr)` impede o estouro horizontal.
 - **O cartão da Trilha some do ar se a leitura falhar** → o rótulo sozinho é o estado de reserva,
-  e a tela inicial nunca mostra erro de rede por causa de um subtítulo de cartão.
+  e o cartão não acrescenta aviso: quem relata a falha é o bloco da trilha, que já relatava.
 - **Quem entra sem inscrição não tem próxima missão** → o bloco da trilha já leva à escolha do
   poder (requisito vigente), e o cartão fica só com o rótulo.
 - **Duas navegações na tela da Trilha** — os cartões e as abas Guia/Progresso/Retomadas → fica

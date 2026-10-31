@@ -254,6 +254,30 @@ botão de avançar no aparelho da equipe mentiria sobre quem comanda (documento 
 Decisão do fundador, 2026-09-26; a posição que não se declara e o envio só com tudo respondido,
 2026-10-16.
 
+### 6.5 O cartão de caminho
+
+Os caminhos de uma tela — o que a pessoa pode fazer a partir dali — são **cartões grandes** com
+glifo e **rótulo em frase**: a frase é o nome acessível do cartão e o glifo a acompanha, nunca
+toma o lugar dela (§5). O alvo de toque é o da camada comum, e o raio é o do campo, não o da
+carta.
+
+Há **duas disposições**, e a escolha de uma delas decide também o lugar do glifo:
+
+| Disposição | Arranjo                                                    | Glifo             |
+| ---------- | ---------------------------------------------------------- | ----------------- |
+| Coluna     | Um cartão por linha                                        | Ao lado do rótulo |
+| Grade      | Duas colunas; todas em linha a partir do marco de `768` px | Acima do rótulo   |
+
+A grade existe porque cartão em coluna ocupa a tela inteira: quatro deles num celular jogam
+abaixo da dobra o conteúdo que a tela veio mostrar. Onde os caminhos convivem com conteúdo na
+mesma tela, a disposição é a grade; onde os caminhos **são** a tela, é a coluna.
+
+Havendo caminho aberto, o cartão dele é anunciado como o atual e se distingue por **peso de
+fonte**, nunca por cor (§5) — ali os cartões são navegação com item corrente, e a tela não tem
+passo de menu antes do conteúdo.
+
+Decisão do fundador, 2026-10-31.
+
 ## 7. Avatar do Guerreiro(a)
 
 O avatar é o **único retrato público** do Guerreiro(a), e no onboarding ele nasce de
