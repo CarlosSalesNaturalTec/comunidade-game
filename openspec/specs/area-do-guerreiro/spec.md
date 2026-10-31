@@ -533,37 +533,6 @@ vem do vínculo vigente, derivada pelo núcleo. (`RF-05-52`, `RN-05-16`)
 - **WHEN** o ranking é exibido
 - **THEN** nenhuma posição considera ou mostra ponto extra
 
-### Requirement: A App 05 abre na próxima missão do Guerreiro(a)
-
-A aplicação SHALL **abrir no bloco da trilha**, e esse bloco SHALL abrir na **próxima missão**
-do Guerreiro(a) em sessão, dizendo **o que fazer** e **o que ela desbloqueia**, sem que a
-criança precise procurar em menu. NEVER SHALL abrir em outro bloco. O Guerreiro(a) inscrito em
-**mais de uma trilha** SHALL alternar entre elas **preservando o contexto** de cada uma — a
-missão aberta numa trilha continua aberta ao voltar a ela. Sem nenhuma inscrição, a tela SHALL
-levar à escolha do poder, nunca a uma tela vazia sem saída. (`RF-05-08`, `RF-05-17`, PRD-05
-§§5.2, 10, 12)
-
-#### Scenario: A sessão aberta já cai na próxima missão
-
-- **WHEN** o Guerreiro(a) inscrito abre a sessão na Área do Guerreiro(a)
-- **THEN** o bloco da trilha é o que aparece, sem que ele acione caminho algum
-- **AND** vê a próxima missão, o que precisa ser feito nela e o que ela desbloqueia
-
-#### Scenario: A tela inicial já mostra o que fazer agora
-
-- **WHEN** o Guerreiro(a) inscrito abre o bloco da trilha
-- **THEN** vê a próxima missão, o que precisa ser feito nela e o que ela desbloqueia
-
-#### Scenario: Alternar de trilha não perde o contexto
-
-- **WHEN** o Guerreiro(a) inscrito em duas trilhas alterna para a outra e volta
-- **THEN** cada trilha reabre no ponto em que ele a deixou
-
-#### Scenario: Sem inscrição, a tela oferece o caminho
-
-- **WHEN** um Guerreiro(a) sem nenhuma inscrição abre o bloco da trilha
-- **THEN** a tela o leva à escolha do poder, em vez de mostrar tela vazia
-
 ### Requirement: O Guerreiro(a) escolhe o poder e inscreve-se nas trilhas dele
 
 A aplicação SHALL exibir os **poderes do catálogo do ciclo** e, escolhido um, as **trilhas
@@ -1846,40 +1815,23 @@ enquanto ele não julga, o percurso SHALL seguir dizendo que a missão aguarda o
 
 ### Requirement: Os caminhos da Área do Guerreiro(a) aparecem em cartão, na ordem decidida
 
-A Área do Guerreiro(a) SHALL apresentar os quatro caminhos como **cartões em grade**, com o
-glifo acima do rótulo em frase, nesta ordem: **minha carteira**, **Trilha**, **desafios e
-equipes**, **coleta do território**. A ordem é decisão do fundador e NEVER SHALL depender de
-quando cada bloco foi acrescentado. (`RF-05-08`, PRD-05 §§5.2, 10, decisão do fundador de
-2026-10-31)
+A Área do Guerreiro(a) SHALL apresentar os caminhos como **cartões em coluna**, um por linha,
+com o glifo ao lado do rótulo em frase, nesta ordem: **Trilha**, **minha carteira**, **desafios
+e equipes**, **coleta do território** e **sair**. A ordem é decisão do fundador e NEVER SHALL
+depender de quando cada bloco foi acrescentado. (`RF-05-08`, PRD-05 §§5.2, 10, documento 15
+§6.5, decisão do fundador de 2026-10-31)
 
 #### Scenario: Os caminhos aparecem na ordem decidida
 
 - **WHEN** o Guerreiro(a) em sessão vê os caminhos da área
-- **THEN** eles aparecem em cartão, na ordem minha carteira, Trilha, desafios e equipes, coleta
-  do território
+- **THEN** eles aparecem em cartão, um por linha, na ordem Trilha, minha carteira, desafios e
+  equipes, coleta do território e sair
 
 #### Scenario: Cada caminho leva o glifo junto do rótulo
 
 - **WHEN** um caminho da área é apresentado
-- **THEN** ele traz o glifo acima do rótulo em frase, e o rótulo segue sendo o nome acessível do
-  cartão
-
-### Requirement: O caminho corrente da área é anunciado como o atual
-
-O cartão do bloco aberto SHALL ser anunciado como o atual e distinguir-se por outro sinal além
-da cor. Os caminhos SHALL permanecer alcançáveis com o bloco aberto, de modo que a área se
-percorra sem passar por tela de menu. (`RF-05-08`, documento 15 §5)
-
-#### Scenario: O bloco aberto se reconhece no cartão
-
-- **WHEN** o Guerreiro(a) abre um dos quatro blocos
-- **THEN** o cartão daquele bloco é anunciado como o atual e se distingue por outro sinal além
-  da cor
-
-#### Scenario: Trocar de bloco não passa por menu
-
-- **WHEN** o Guerreiro(a) está num bloco e aciona o cartão de outro
-- **THEN** o outro bloco abre direto, sem tela intermediária de menu
+- **THEN** ele traz o glifo ao lado do rótulo em frase, e o rótulo segue sendo o nome acessível
+  do cartão
 
 ### Requirement: O cartão da Trilha nomeia a próxima missão
 
@@ -1897,3 +1849,100 @@ vazio nem rótulo truncado. (`RF-05-08`, `RF-05-17`, PRD-05 §5.2)
 
 - **WHEN** o Guerreiro(a) não tem próxima missão a nomear
 - **THEN** o cartão da Trilha apresenta apenas o rótulo dele, sem espaço vazio
+
+### Requirement: A App 05 abre no menu dos caminhos
+
+A aplicação SHALL **abrir no menu dos caminhos** e NEVER SHALL apresentar o conteúdo de um bloco
+antes de o Guerreiro(a) acionar o caminho dele. O **cartão da Trilha** SHALL dizer o que fazer
+agora, nomeando a próxima missão, para que a primeira tela responda à pergunta sem depender de
+toque. (`RF-05-08`, PRD-05 §§5.2, 10, 12, decisão do fundador de 2026-10-31)
+
+#### Scenario: A sessão aberta cai no menu, sem conteúdo de bloco
+
+- **WHEN** o Guerreiro(a) inscrito abre a sessão na Área do Guerreiro(a)
+- **THEN** vê o menu dos caminhos, e nenhum conteúdo de bloco aparece na tela
+
+#### Scenario: O menu já diz o que fazer agora
+
+- **WHEN** o Guerreiro(a) inscrito com próxima missão vê o menu
+- **THEN** o cartão da Trilha nomeia a próxima missão, sem que ele acione caminho algum
+
+### Requirement: Acionada, a Trilha abre na próxima missão do Guerreiro(a)
+
+Acionado o caminho da Trilha, o bloco SHALL abrir na **próxima missão** do Guerreiro(a) em
+sessão, dizendo **o que fazer** e **o que ela desbloqueia**. O Guerreiro(a) inscrito em **mais
+de uma trilha** SHALL alternar entre elas **preservando o contexto** de cada uma. Sem nenhuma
+inscrição, o bloco SHALL levar à escolha do poder, nunca a uma tela vazia sem saída.
+(`RF-05-08`, `RF-05-17`, PRD-05 §§5.2, 12)
+
+#### Scenario: A tela da trilha mostra o que fazer agora
+
+- **WHEN** o Guerreiro(a) inscrito aciona o caminho da Trilha
+- **THEN** vê a próxima missão, o que precisa ser feito nela e o que ela desbloqueia
+
+#### Scenario: Alternar de trilha não perde o contexto
+
+- **WHEN** o Guerreiro(a) inscrito em duas trilhas alterna para a outra e volta
+- **THEN** cada trilha reabre no ponto em que ele a deixou
+
+#### Scenario: Sem inscrição, a tela oferece o caminho
+
+- **WHEN** um Guerreiro(a) sem nenhuma inscrição aciona o caminho da Trilha
+- **THEN** a tela o leva à escolha do poder, em vez de mostrar tela vazia
+
+### Requirement: Cada caminho da área abre em tela própria, sem o menu
+
+Acionado um caminho, a aplicação SHALL apresentar o conteúdo dele em **tela própria**, e essa
+tela NEVER SHALL repetir os caminhos da área. A tela de conteúdo SHALL oferecer **um caminho de
+volta ao menu**, que SHALL levar ao menu **de qualquer profundidade** alcançada dentro do bloco,
+e não ao passo anterior da navegação interna dele. (`RF-05-08`, PRD-05 §§5.2, 10, decisão do
+fundador de 2026-10-31)
+
+#### Scenario: O conteúdo do bloco ocupa a tela sozinho
+
+- **WHEN** o Guerreiro(a) aciona um dos caminhos da área
+- **THEN** o conteúdo daquele bloco ocupa a tela, e os caminhos da área não aparecem nela
+
+#### Scenario: Voltar salta ao menu de qualquer profundidade
+
+- **WHEN** o Guerreiro(a) desce na navegação interna de um bloco e aciona o caminho de volta
+- **THEN** encontra o menu dos caminhos, e não o passo anterior dentro do bloco
+
+#### Scenario: Trocar de bloco passa pelo menu
+
+- **WHEN** o Guerreiro(a) está num bloco e quer outro
+- **THEN** volta ao menu e aciona o cartão do outro bloco
+
+### Requirement: A saída da sessão é um caminho do menu, e só existe nele
+
+A saída da sessão SHALL ser apresentada como **cartão de caminho**, igual aos demais e na
+**última posição** do menu. Ela SHALL existir **somente no menu**: nenhuma tela de conteúdo
+SHALL oferecer saída da sessão, para que o único comando de navegação ali seja o de voltar.
+(`RF-05-05`, `RF-05-08`, decisão do fundador de 2026-10-31)
+
+#### Scenario: Sair é o último cartão do menu
+
+- **WHEN** o Guerreiro(a) em sessão vê o menu dos caminhos
+- **THEN** a saída da sessão é o último cartão, apresentada como os demais caminhos
+
+#### Scenario: A tela de conteúdo não oferece saída
+
+- **WHEN** o Guerreiro(a) está numa tela de conteúdo de qualquer bloco
+- **THEN** não encontra ali caminho de sair da sessão, apenas o de voltar ao menu
+
+### Requirement: O aviso de inatividade alcança o menu e as telas de conteúdo
+
+O aviso que antecede o encerramento por inatividade e o caminho de continuar a sessão SHALL
+aparecer **em qualquer tela da área** — no menu e nas telas de conteúdo. A sessão NEVER SHALL
+encerrar por inatividade sem que o aviso tenha sido apresentado na tela em que o Guerreiro(a)
+está. (`RF-05-05`, `RF-05-71`, PRD-05 §10)
+
+#### Scenario: O aviso aparece dentro de um bloco
+
+- **WHEN** a inatividade atinge o limite com o Guerreiro(a) numa tela de conteúdo
+- **THEN** ele vê ali o aviso e o caminho de continuar a sessão, sem voltar ao menu
+
+#### Scenario: Continuar a sessão não tira o Guerreiro(a) da tela
+
+- **WHEN** o Guerreiro(a) aciona continuar a partir de uma tela de conteúdo
+- **THEN** a sessão segue aberta e ele permanece na mesma tela

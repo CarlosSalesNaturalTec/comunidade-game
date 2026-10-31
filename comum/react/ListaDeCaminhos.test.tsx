@@ -32,53 +32,43 @@ function caminhos(aoAcionar = vi.fn()): CaminhoDaTela[] {
 }
 
 describe("ListaDeCaminhos", () => {
-  it("na grade, dispõe os cartões em duas colunas e põe o glifo acima do rótulo", () => {
-    const { container } = render(<ListaDeCaminhos caminhos={caminhos()} disposicao="grade" />);
+  it("dispõe os cartões um por linha, com o glifo ao lado do rótulo", () => {
+    const { container } = render(<ListaDeCaminhos caminhos={caminhos()} />);
 
-    const lista = container.querySelector(".cg-caminhos");
-    expect(lista).toHaveClass("cg-caminhos--grade");
-    // O lugar do glifo decorre da disposição: a folha de estilo vira o cartão
-    // em coluna só dentro de `--grade`, e é a presença do modificador que o
-    // teste pode afirmar sem depender de CSS computado.
-    expect(container.querySelectorAll(".cg-caminhos--grade .cg-caminho")).toHaveLength(2);
+    expect(container.querySelectorAll(".cg-caminho")).toHaveLength(2);
+    // Há **uma** disposição: a lista não tem modificador a escolher, e a
+    // folha de estilo empilha os cartões em coluna, com o glifo em linha com
+    // o texto (documento 15 §6.5).
+    expect(corpoDaRegra(".cg-caminhos")).toContain("flex-direction: column");
+    expect(corpoDaRegra(".cg-caminho")).toContain("flex-direction: row");
     for (const cartao of container.querySelectorAll(".cg-caminho")) {
       expect(cartao.firstElementChild).toHaveClass("cg-icone");
     }
   });
 
+  it("não traz disposição em grade nem marca de caminho corrente", () => {
+    // As duas saíram com a decisão do fundador de 2026-10-31: a grade existia
+    // para a tela que misturava menu e conteúdo, e o caminho corrente só tinha
+    // objeto ali. Item corrente de navegação persistente é o `NavegacaoDeAreas`.
+    const { container } = render(<ListaDeCaminhos caminhos={caminhos()} />);
+
+    expect(ESTILOS).not.toContain("cg-caminhos--grade");
+    expect(ESTILOS).not.toContain(".cg-caminho[aria-current]");
+    expect(container.querySelectorAll("[aria-current]")).toHaveLength(0);
+  });
+
   it("o cartão alcança o alvo de toque e a separação do vizinho", () => {
     // O piso da camada comum é `48` px de alvo e `8` px de separação. O cartão
     // fica bem acima dos dois: `6rem` de altura mínima e o intervalo de `16`
-    // px da lista, nas duas disposições.
+    // px da lista.
     expect(corpoDaRegra(".cg-caminho")).toContain("min-height: 6rem");
     expect(corpoDaRegra(".cg-caminhos")).toContain("gap: var(--espaco-16)");
-  });
-
-  it("a grade dobra em quatro colunas a partir do marco de 768 px", () => {
-    // O marco não entra em `@media`, que não lê `var()`: a literal é o que o
-    // repositório já faz, no idioma da carta em colunas.
-    expect(corpoDaRegra(".cg-caminhos--grade")).toContain(
-      "grid-template-columns: repeat(2, minmax(0, 1fr))",
-    );
-    const marco = ESTILOS.indexOf(
-      "@media (min-width: 768px)",
-      ESTILOS.indexOf(".cg-caminhos--grade"),
-    );
-    expect(marco).toBeGreaterThan(-1);
-    expect(ESTILOS.slice(marco, marco + 300)).toContain("grid-auto-flow: column");
-  });
-
-  it("na coluna, mantém o glifo ao lado do rótulo e não aplica a grade", () => {
-    const { container } = render(<ListaDeCaminhos caminhos={caminhos()} />);
-
-    expect(container.querySelector(".cg-caminhos")).not.toHaveClass("cg-caminhos--grade");
-    expect(container.querySelectorAll(".cg-caminho")).toHaveLength(2);
   });
 
   it("entrega cada caminho como botão cujo nome acessível é o rótulo em frase", async () => {
     const usuario = userEvent.setup();
     const aoAcionar = vi.fn();
-    render(<ListaDeCaminhos caminhos={caminhos(aoAcionar)} disposicao="grade" />);
+    render(<ListaDeCaminhos caminhos={caminhos(aoAcionar)} />);
 
     // O glifo é decorativo: o nome do botão é a frase, nunca o desenho
     // (documento 15 §5).
@@ -87,26 +77,6 @@ describe("ListaDeCaminhos", () => {
     });
     await usuario.click(cartao);
     expect(aoAcionar).toHaveBeenCalledOnce();
-  });
-
-  it("anuncia o caminho corrente como o atual e o distingue por peso de fonte", () => {
-    const { container } = render(
-      <ListaDeCaminhos caminhos={caminhos()} disposicao="grade" caminhoAtual="trilha" />,
-    );
-
-    screen.getByRole("button", { name: "Trilha — sua próxima missão", current: true });
-    expect(
-      screen.getByRole("button", { name: "Minha carteira — seus pontos e conquistas" }),
-    ).not.toHaveAttribute("aria-current");
-    // O sinal além da cor mora na folha de estilo, atrelado ao próprio
-    // `aria-current` — não há segunda classe a manter em sincronia.
-    expect(container.querySelectorAll(".cg-caminho[aria-current]")).toHaveLength(1);
-  });
-
-  it("sem caminho corrente declarado, nenhum cartão é o atual", () => {
-    const { container } = render(<ListaDeCaminhos caminhos={caminhos()} />);
-
-    expect(container.querySelectorAll(".cg-caminho[aria-current]")).toHaveLength(0);
   });
 
   it("apresenta o conteúdo extra abaixo do rótulo, sem tirar o rótulo do nome", () => {
@@ -121,7 +91,6 @@ describe("ListaDeCaminhos", () => {
             aoAcionar: vi.fn(),
           },
         ]}
-        disposicao="grade"
       />,
     );
 
@@ -149,13 +118,9 @@ describe("ListaDeCaminhos", () => {
 
   it("declara marco de navegação só quando recebe rótulo", () => {
     const { unmount } = render(
-      <ListaDeCaminhos
-        rotulo="Área do Guerreiro(a)"
-        caminhos={caminhos()}
-        disposicao="grade"
-      />,
+      <ListaDeCaminhos rotulo="Caminhos de uma área" caminhos={caminhos()} />,
     );
-    screen.getByRole("navigation", { name: "Área do Guerreiro(a)" });
+    screen.getByRole("navigation", { name: "Caminhos de uma área" });
     unmount();
 
     render(<ListaDeCaminhos caminhos={caminhos()} />);

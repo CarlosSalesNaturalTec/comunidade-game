@@ -125,8 +125,9 @@ avatar e nick.
 
 ### 5.2 Saber o que fazer agora
 
-1. A tela inicial abre na **próxima missão**: o que é, o que precisa ser feito e o
-   que ele desbloqueia.
+1. A tela inicial é o **menu dos caminhos**, e o cartão da trilha **nomeia a próxima
+   missão**. Acionado, ele abre no que ela é, no que precisa ser feito e no que
+   desbloqueia; o caminho de volta ao menu está sempre na tela.
 2. Abaixo, o que está **em aberto hoje**: desafio semanal da semana, medição do território
    pendente e desafio extra vigente.
 3. O que está **bloqueado** aparece com o motivo — "falta desbloquear a missão 3" —, nunca como
@@ -221,30 +222,30 @@ Mestre no encontro, e quem quer propor uma melhoria também.
 
 ### 6.2 Guia da trilha e progressão
 
-| ID         | Requisito                                                                                                                          | Prioridade |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-05-08` | Tela inicial abre na próxima missão, com o que fazer e o que ela desbloqueia                                                       | essencial  |
-| `RF-05-09` | Guerreiro(a) escolhe o poder entre os do catálogo do ciclo e se inscreve nas trilhas dele                                          | essencial  |
-| `RF-05-10` | Missão bloqueada exibe o motivo do bloqueio e o que falta para abri-la                                                             | essencial  |
-| `RF-05-11` | Guerreiro(a) percorre o conteúdo da missão: texto, imagens, vídeo, arquivos e bibliografia                                         | essencial  |
-| `RF-05-12` | Bibliografia indica título, capítulo e se há exemplar disponível no seu ponto de apoio                                             | essencial  |
-| `RF-05-13` | Guerreiro(a) realiza o desafio de desbloqueio e a missão seguinte abre na hora ao passar                                           | essencial  |
-| `RF-05-14` | Desafio de desbloqueio não passado pode ser repetido, sem eliminar o Guerreiro(a)                                                  | essencial  |
-| `RF-05-89` | Quiz do desbloqueio é submetido com a resposta de todas as perguntas de uma vez, e a devolutiva diz quantas o Guerreiro(a) acertou | essencial  |
-| `RF-05-15` | Progresso exibe o nível na trilha e quantas missões faltam para o próximo nível                                                    | essencial  |
-| `RF-05-16` | Aplicação exibe pontos, badges e recompensas conquistadas, por trilha ou poder                                                     | essencial  |
-| `RF-05-17` | Guerreiro(a) inscrito em mais de uma trilha alterna entre elas preservando o contexto                                              | essencial  |
-| `RF-05-18` | Resultado ainda não lançado pelo Mestre aparece como "aguardando lançamento"                                                       | essencial  |
-| `RF-05-72` | Guerreiro(a) responde à missão de sondagem que abre a trilha, antes da primeira missão                                             | essencial  |
-| `RF-05-73` | Resultado da sondagem não altera nível, e a tela diz que ela serve para o Mestre ajustar                                           | essencial  |
-| `RF-05-74` | Guerreiro(a) entrega a produção da missão por texto, áudio ou foto do manuscrito                                                   | essencial  |
-| `RF-05-75` | Aplicação devolve retorno construtivo da produção, apontando o próximo passo                                                       | essencial  |
-| `RF-05-76` | A foto é descartada na leitura e o áudio nem trafega — a fala é transcrita no aparelho; ficam a transcrição e a devolutiva         | essencial  |
-| `RF-05-77` | Devolutiva automática não credita pontos; o resultado só existe quando o Mestre o lança                                            | essencial  |
-| `RF-05-78` | Quem recusa foto ou áudio entrega ao Mestre no encontro, sem perder a missão                                                       | essencial  |
-| `RF-05-79` | Missão com retomada agendada reaparece na cadência declarada pelo Mestre                                                           | essencial  |
-| `RF-05-80` | Retomada pontua uma vez por agendamento; refazer por conta própria não rende ponto novo                                            | essencial  |
-| `RF-05-81` | Missão opcional aparece marcada como tal e não conta no que falta para o próximo nível                                             | essencial  |
+| ID         | Requisito                                                                                                                                  | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `RF-05-08` | Tela inicial é o menu dos caminhos, e o cartão da trilha nomeia a próxima missão; acionado, ele abre no que fazer e no que ela desbloqueia | essencial  |
+| `RF-05-09` | Guerreiro(a) escolhe o poder entre os do catálogo do ciclo e se inscreve nas trilhas dele                                                  | essencial  |
+| `RF-05-10` | Missão bloqueada exibe o motivo do bloqueio e o que falta para abri-la                                                                     | essencial  |
+| `RF-05-11` | Guerreiro(a) percorre o conteúdo da missão: texto, imagens, vídeo, arquivos e bibliografia                                                 | essencial  |
+| `RF-05-12` | Bibliografia indica título, capítulo e se há exemplar disponível no seu ponto de apoio                                                     | essencial  |
+| `RF-05-13` | Guerreiro(a) realiza o desafio de desbloqueio e a missão seguinte abre na hora ao passar                                                   | essencial  |
+| `RF-05-14` | Desafio de desbloqueio não passado pode ser repetido, sem eliminar o Guerreiro(a)                                                          | essencial  |
+| `RF-05-89` | Quiz do desbloqueio é submetido com a resposta de todas as perguntas de uma vez, e a devolutiva diz quantas o Guerreiro(a) acertou         | essencial  |
+| `RF-05-15` | Progresso exibe o nível na trilha e quantas missões faltam para o próximo nível                                                            | essencial  |
+| `RF-05-16` | Aplicação exibe pontos, badges e recompensas conquistadas, por trilha ou poder                                                             | essencial  |
+| `RF-05-17` | Guerreiro(a) inscrito em mais de uma trilha alterna entre elas preservando o contexto                                                      | essencial  |
+| `RF-05-18` | Resultado ainda não lançado pelo Mestre aparece como "aguardando lançamento"                                                               | essencial  |
+| `RF-05-72` | Guerreiro(a) responde à missão de sondagem que abre a trilha, antes da primeira missão                                                     | essencial  |
+| `RF-05-73` | Resultado da sondagem não altera nível, e a tela diz que ela serve para o Mestre ajustar                                                   | essencial  |
+| `RF-05-74` | Guerreiro(a) entrega a produção da missão por texto, áudio ou foto do manuscrito                                                           | essencial  |
+| `RF-05-75` | Aplicação devolve retorno construtivo da produção, apontando o próximo passo                                                               | essencial  |
+| `RF-05-76` | A foto é descartada na leitura e o áudio nem trafega — a fala é transcrita no aparelho; ficam a transcrição e a devolutiva                 | essencial  |
+| `RF-05-77` | Devolutiva automática não credita pontos; o resultado só existe quando o Mestre o lança                                                    | essencial  |
+| `RF-05-78` | Quem recusa foto ou áudio entrega ao Mestre no encontro, sem perder a missão                                                               | essencial  |
+| `RF-05-79` | Missão com retomada agendada reaparece na cadência declarada pelo Mestre                                                                   | essencial  |
+| `RF-05-80` | Retomada pontua uma vez por agendamento; refazer por conta própria não rende ponto novo                                                    | essencial  |
+| `RF-05-81` | Missão opcional aparece marcada como tal e não conta no que falta para o próximo nível                                                     | essencial  |
 
 ### 6.3 Desafios, atividades e equipes
 
@@ -530,7 +531,8 @@ do Ciclo 02** (§3.2).
 - **Acessibilidade digital** no piso do documento 15 — **WCAG 2.2 AA**: contraste, alvos de
   toque grandes, leitura por voz do conteúdo e operação possível sem digitação — pela mesma
   razão que a sugestão aceita áudio.
-- Desempenho: a tela inicial abre na próxima missão sem exigir navegação por menu.
+- Desempenho: a tela inicial nomeia a próxima missão no cartão da trilha, de modo que o
+  que fazer agora se lê antes de qualquer toque.
 - Escrita idempotente: reenviar o mesmo registro de coleta por falha de rede não duplica.
 - Idioma pt-BR; código aberto.
 
@@ -580,7 +582,7 @@ do Ciclo 02** (§3.2).
   aplicação recusa e explica.
 - Falhando a conferência, o Mestre abre a sessão e o Guerreiro(a) opera normalmente.
 - Encerrada a sessão, a tela seguinte não mostra nenhum dado do Guerreiro(a) anterior.
-- A tela inicial mostra a próxima missão sem que a criança precise procurar em menu.
+- A tela inicial nomeia a próxima missão no cartão da trilha, e um toque abre a missão.
 - Missão bloqueada exibe o que falta; desbloqueada a anterior, a seguinte abre na hora.
 - Progresso mostra o nível e quantas missões faltam para o próximo — e não sobe de
   nível por acúmulo de coleta.
