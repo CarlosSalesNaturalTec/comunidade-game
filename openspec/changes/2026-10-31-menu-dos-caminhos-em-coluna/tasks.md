@@ -71,7 +71,8 @@
       PRD não manda mais a tela inicial abrir na próxima missão sem toque, e o `RF-05-08`
       continua existindo como essencial.
 - [x] 3.4 Marcar a fatia 12 como implementada em `openspec/cronograma-de-fatias.md`.
-      `docs/prds/index.md` não muda — a situação do PRD-05 é a mesma — e o documento 99 não
-      muda, porque nenhuma relação entre documentos e nenhum invariante da §6 é tocado; não
-      nasce arquivo em `docs/`, então a `nav` do `mkdocs.yml` fica como está. Verificação:
+      `docs/prds/index.md` não muda — a situação do PRD-05 é a mesma. No documento 99, a
+      linha do §3 que indexa o cartão de caminho deixa de citar o caminho corrente, que saiu;
+      nenhum invariante da §6 é tocado e nenhuma dependência entre documentos muda. Não nasce
+      arquivo em `docs/`, então a `nav` do `mkdocs.yml` fica como está. Verificação:
       `openspec validate --all` passa.

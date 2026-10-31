@@ -119,7 +119,7 @@ doc 15**.
 | Acessibilidade digital das aplicações (WCAG 2.2 AA)                        | 15 §5                                      | 09, `prds/` §10 de cada um     |
 | Temperamentos Operação e Arena                                             | 15 §6                                      | 03 §2                          |
 | Bloco recolhível e marca de gravação nas telas da Operação                 | 15 §§6.1, 6.2                              | 03 §1.2                        |
-| Cartão de caminho: disposição, lugar do glifo e caminho corrente           | 15 §6.5                                    | 03 §1.2                        |
+| Cartão de caminho, tela própria por caminho e lugar da saída da sessão     | 15 §6.5                                    | 03 §1.2                        |
 | Sistema de avatar do Guerreiro(a) e avatar padrão do projeto               | 15 §7                                      | 02 §1, 03 §3.2, 11 §8.2        |
 | Forma da carta, emblema de nível, silhueta de badge e glifo de poder       | 15 §8                                      | 02 §2, 11 §§7, 8.2             |
 | Desenho da marca: símbolo, logotipo, submarcas, área de proteção e mínimo  | 15 §13                                     | 03 §1, 09                      |
