@@ -197,7 +197,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Atividades e taxonomia                      | 02 §4 + 11 §§2.1, 4       | PRD-09, 01, 02, 05                 |
 | Acompanhamento por nick e favoritos         | 02 §1 + 03 §10            | PRD-14, 03, 01                     |
 | Identidade da persona no cadastro           | 02 §1 + 03 §12            | PRD-01, 02, 09, 14                 |
-| Desafios de desbloqueio                     | 02 §2 + 11 §2.2           | PRD-01, 09, 05, 04                 |
+| Desafios de desbloqueio                     | 02 §2 + 11 §2.2           | PRD-01, 09, 05, 04, 03             |
 | Desafio de coleta (série temporal)          | 02 §1                     | PRD-01, 08, 05, 06                 |
 | Desafios extras (abertos e direcionados)    | 04 §3                     | PRD-01, 02, 07, 09                 |
 | Encontros presenciais (dinâmica assíncrona) | 05 §4                     | PRD-02, 04                         |
@@ -261,7 +261,9 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
 5. **Toda trilha abre com missão de sondagem, tem ao menos um desafio de coleta de dados
    reais** e termina em **criação original** apresentada publicamente, com autoria creditada.
    As três são trava de publicação da trilha, não recomendação; a etiqueta ODS se junta a elas
-   a partir do Ciclo 02, no nível da trilha (§20).
+   a partir do Ciclo 02, no nível da trilha (§20). O **portfólio é o acervo** do Guerreiro(a):
+   reúne as comprovações aprovadas dos desafios práticos e a criação da culminância, exibe
+   **tudo** na área dele e, em público, **só o aprovado e autorizado**.
 6. **A coleta pontua de forma recorrente enquanto a série estiver ativa**; interrompida,
    cessa o cômputo sem perder os pontos já creditados.
 7. **Dados do território: guarda permanente com o coletor identificado**; anonimização
