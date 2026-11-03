@@ -178,8 +178,12 @@ Seis regras fecham o modelo:
 - **O desbloqueio é do Guerreiro(a) na trilha, nunca da equipe.** O quiz tem **quantas
   perguntas o Mestre quiser**, cada uma com quatro alternativas e uma correta, e o núcleo
   afere a submissão sozinho: **passa quem acerta ao menos 60%** delas. No desafio prático,
-  sem critério que o núcleo possa aferir, o Guerreiro(a) declara que cumpriu e o **Mestre
-  autor julga**; enquanto não julga, a missão aguarda, nunca reprovada.
+  sem critério que o núcleo possa aferir, o Mestre autor declara **que forma de comprovação
+  aceita, sob que critério e com que título curto**; o Guerreiro(a) entrega a comprovação ao
+  declarar que cumpriu, e o **Mestre autor julga** em **dois vereditos**: se **cumpriu**, que
+  abre a missão seguinte e credita o ponto (§5), e se a entrega é **publicável**, que a leva
+  ou não à vitrine. Enquanto não julga, a missão aguarda, nunca reprovada; não passando, o
+  Guerreiro(a) refaz sem punição, e o motivo lhe chega em linguagem simples.
 - **Toda tentativa fica registrada**, com o que o Guerreiro(a) respondeu em cada pergunta e
   se acertou — na sondagem como nos desbloqueios. É desse registro que sai a medida do que a
   trilha ensinou, ao fim do ciclo (documento 10).
@@ -277,6 +281,7 @@ Tabela única das fontes de pontos da plataforma:
 | **Mérito extra por auxílio aos colegas**                    | +10 sobre o valor da atividade **e +10 extras**                                | Regular **e Extra**                                                                         | Mestre/gestão                              |
 | **Coleta de dados do território**                           | 5 por registro válido                                                          | **Recorrente** — pontua enquanto a série está ativa, sem teto; interrompeu, parou de render | Automático (registro do Guerreiro(a))      |
 | **Quiz ao Vivo**                                            | 1 por acerto da equipe, +1 à primeira a acertar; teto de 10 por partida        | Regular                                                                                     | Automático (partida)                       |
+| **Comprovação do desafio prático** de desbloqueio           | 5                                                                              | Regular                                                                                     | Mestre autor, ao julgar                    |
 | **Criação original** — culminância da trilha                | 50, integrais a cada integrante                                                | Regular                                                                                     | Mestre autor, ao validar                   |
 | **Batalha**                                                 | 10 por disputar, +10 à equipe vencedora, +5 ao melhor desempenho na telemetria | Regular                                                                                     | Automático (ponte Nexus → API) ou gestão   |
 | Badge de conduta (ex.: Guardião do Acervo)                  | 20 + **20 extras** + badge, uma vez por ciclo                                  | Regular **e Extra**                                                                         | Mestre/gestão                              |
@@ -467,7 +472,7 @@ principais dela —, e a composição da carta não muda com a porta por onde se
 
 | Página individual      | O que detalha                                                                                                                                                                                     |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Guerreiro(a)**       | Trajetória nas trilhas, badges e níveis por poder, portfólio de criações originais com autoria e participação em batalhas                                                                         |
+| **Guerreiro(a)**       | Trajetória nas trilhas, badges e níveis por poder, portfólio de criações originais com **nick e título**, que abre a produção, e participação em batalhas                                         |
 | **Mestre**             | Habilidades, trilhas de autoria, a prova pública — **currículo, portfólios, redes sociais e documentos comprobatórios externos** — e quantas vezes sustentou uma atividade que estava sem recurso |
 | **Poder**              | Trilhas do poder, Mestres responsáveis, níveis e badges possíveis                                                                                                                                 |
 | **Apoiador**           | Aportes em moedas, nível de sustento e selos conquistados, desafios extras propostos com sua efetividade e a prova do apoio: **currículo, portfólios, redes sociais e comprobatórios**            |
