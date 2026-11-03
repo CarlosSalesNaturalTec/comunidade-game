@@ -25,14 +25,5 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/testes/configuracao.ts"],
     css: true,
-    // Os `afterEach` rodam na ordem em que foram registrados, e não em
-    // pilha: assim o `cleanup()` do `setupFiles` desmonta a tela **antes**
-    // do `vi.restoreAllMocks()` de cada arquivo de teste. Em pilha, o
-    // `restore` vinha primeiro e devolvia os espiões à função de verdade
-    // com a árvore ainda montada — medido aqui nas 273 ocorrências desta
-    // aplicação, nenhuma em zero e a maior com 5.082 caracteres no ar.
-    // Qualquer efeito que chegue nessa janela refaz a leitura sem os
-    // espiões, e a rejeição solta derruba a esteira com a suíte verde.
-    sequence: { hooks: "list" },
   },
 });

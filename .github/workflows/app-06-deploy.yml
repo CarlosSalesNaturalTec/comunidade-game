@@ -30,7 +30,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "lts/*"
+          # Fixo, nunca `lts/*`: em 2026-11-03 o runner adotou o Node 26
+          # sozinho, que define `localStorage` como getter devolvendo
+          # `undefined` sem `--localstorage-file`. O Vitest então não
+          # instala o do jsdom, e doze testes da App 09 caíram sem que
+          # uma linha do repositório tivesse mudado. Subir é ato revisado.
+          node-version: "24"
           cache: "npm"
 
       - name: Instalar dependências

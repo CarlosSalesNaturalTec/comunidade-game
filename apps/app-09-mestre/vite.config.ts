@@ -25,13 +25,5 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/testes/configuracao.ts"],
     css: true,
-    // Os `afterEach` rodam na ordem em que foram registrados, e não em
-    // pilha: assim o `cleanup()` do `setupFiles` desmonta a tela **antes**
-    // do `vi.restoreAllMocks()` de cada arquivo de teste. Em pilha, o
-    // `restore` vinha primeiro e devolvia os espiões à função de verdade
-    // com a árvore ainda montada — o efeito do rascunho do
-    // `FormularioDeConteudo` relia `localStorage` nessa janela, já fora do
-    // ambiente, e derrubava a esteira. Mesma correção da App 01.
-    sequence: { hooks: "list" },
   },
 });
