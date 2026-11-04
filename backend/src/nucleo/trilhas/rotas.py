@@ -895,6 +895,10 @@ class ComprovacaoDoPraticoSaida(BaseModel):
     comprovacao: str | None = None
     entrega_presencial: bool = False
     tem_arquivo: bool = False
+    # O tipo real do arquivo enviado: é por ele que a bancada do Mestre decide
+    # se exibe, se toca ou se oferece abrir — sem ele a tela teria de adivinhar
+    # pela forma declarada, que não diz o formato (`RF-09-132`).
+    tipo_do_arquivo: str | None = None
 
 
 def _obter_desbloqueio_do_guerreiro(
@@ -921,6 +925,35 @@ def _saida_da_comprovacao(
         comprovacao=desbloqueio.comprovacao,
         entrega_presencial=bool(desbloqueio.entrega_presencial),
         tem_arquivo=desbloqueio.comprovacao_referencia is not None,
+        tipo_do_arquivo=desbloqueio.comprovacao_tipo_do_arquivo,
+    )
+
+
+class JulgamentoDoPraticoSaida(BaseModel):
+    """O que o Mestre autor decidiu, servido a ele e ao próprio Guerreiro(a) —
+    é dele que o motivo fala, e nada do julgamento fica gravado sem ser servido
+    a ele (`RF-05-94`, `RF-09-133`, `RF-09-134`)."""
+
+    cumpriu: bool
+    publicavel: bool
+    motivo: str | None = None
+    julgado_em: str | None = None
+
+
+def _saida_do_julgamento(
+    desbloqueio: DesbloqueioDaMissao | None,
+) -> JulgamentoDoPraticoSaida | None:
+    """`None` é "ainda não julgado" — dito e não suposto: o veredito em aberto
+    é declaração aguardando o Mestre, nunca recusa (`RF-05-94`)."""
+    if desbloqueio is None or desbloqueio.cumpriu is None:
+        return None
+    return JulgamentoDoPraticoSaida(
+        cumpriu=desbloqueio.cumpriu,
+        publicavel=bool(desbloqueio.publicavel),
+        motivo=desbloqueio.motivo_do_julgamento,
+        julgado_em=desbloqueio.julgado_em.isoformat()
+        if desbloqueio.julgado_em is not None
+        else None,
     )
 
 
@@ -939,6 +972,10 @@ class MissaoNoPercursoSaida(BaseModel):
     # reapresenta o que ele entregou, em vez de um formulário vazio — a lição
     # das quatro linhas de conserto do bloco do PRD-09 (`RF-05-93`).
     comprovacao_entregue: ComprovacaoDoPraticoSaida | None = None
+    # E o que o Mestre autor decidiu sobre ela: o motivo só serve se a criança
+    # o ler, e gravá-lo sem servi-lo seria o defeito *write-only* que este
+    # bloco já consertou quatro vezes (`RF-05-94`).
+    julgamento: JulgamentoDoPraticoSaida | None = None
 
 
 def _saida_do_desafio_de_desbloqueio(
@@ -976,6 +1013,9 @@ def obter_missao_no_percurso_rota(
     item = next((item for item in percurso if item.missao.posicao == ordem), None)
     if item is None:
         raise NaoEncontrado(mensagem="Missão não encontrada nesta posição da trilha.")
+    desbloqueio_do_percurso = _obter_desbloqueio_do_guerreiro(
+        sessao_bd, id_da_missao=item.missao.id, guerreiro_id=contexto.persona_id
+    )
     return MissaoNoPercursoSaida(
         id=item.missao.id,
         titulo=item.missao.titulo,
@@ -987,12 +1027,8 @@ def obter_missao_no_percurso_rota(
         aguardando_mestre=item.aguardando_mestre,
         motivo_do_bloqueio=item.motivo_do_bloqueio,
         desafio_de_desbloqueio=_saida_do_desafio_de_desbloqueio(sessao_bd, item.missao),
-        comprovacao_entregue=_saida_da_comprovacao(
-            item.missao,
-            _obter_desbloqueio_do_guerreiro(
-                sessao_bd, id_da_missao=item.missao.id, guerreiro_id=contexto.persona_id
-            ),
-        ),
+        comprovacao_entregue=_saida_da_comprovacao(item.missao, desbloqueio_do_percurso),
+        julgamento=_saida_do_julgamento(desbloqueio_do_percurso),
     )
 
 
@@ -1437,7 +1473,13 @@ def listar_desbloqueios_pendentes_rota(
 class JulgarDesafioPraticoEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    aprovado: bool
+    # Os **dois vereditos** e o motivo, num ato só (`RF-09-133`, `RF-09-134`):
+    # `cumpriu` abre a missão seguinte e credita os 5 pontos, `publicavel` leva
+    # a entrega à vitrine, e o motivo é exigido em todo veredito negativo
+    # (`RN-09-53`). O julgamento é atômico — a recusa de um não grava o outro.
+    cumpriu: bool
+    publicavel: bool = False
+    motivo: str | None = None
 
 
 @roteador.post("/missoes/{id_da_missao}/desbloqueios/{id_do_guerreiro}/julgamento")
@@ -1447,21 +1489,28 @@ def julgar_desafio_pratico_rota(
     entrada: JulgarDesafioPraticoEntrada,
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
-) -> dict[str, bool]:
-    """`RF-09-117`: o Mestre autor julga a declaração — aprovada, ela vira
-    o desbloqueio de fato e abre a missão seguinte; reprovada, ela é
-    apagada e o Guerreiro(a) declara de novo, sem limite (`RN-05-20`)."""
+) -> JulgamentoDoPraticoSaida:
+    """`RF-09-117`, `RF-09-133` a `RF-09-135`: o Mestre autor julga nos dois
+    vereditos — cumprido, a declaração vira o desbloqueio de fato, abre a
+    missão seguinte e credita os 5 pontos; recusado, ela **permanece** com o
+    veredito e o motivo, e o Guerreiro(a) entrega de novo, sem limite
+    (`RN-05-20`, `RN-09-54`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
-    desbloqueio = (
-        sessao_bd.query(DesbloqueioDaMissao)
-        .filter_by(missao_id=id_da_missao, guerreiro_id=id_do_guerreiro)
-        .first()
+    desbloqueio = _obter_desbloqueio_do_guerreiro(
+        sessao_bd, id_da_missao=id_da_missao, guerreiro_id=id_do_guerreiro
     )
-    julgar_desafio_pratico(
-        sessao_bd, operador=operador, desbloqueio=desbloqueio, aprovado=entrada.aprovado
+    julgado = julgar_desafio_pratico(
+        sessao_bd,
+        operador=operador,
+        desbloqueio=desbloqueio,
+        cumpriu=entrada.cumpriu,
+        publicavel=entrada.publicavel,
+        motivo=entrada.motivo,
     )
     sessao_bd.commit()
-    return {"aprovado": entrada.aprovado}
+    saida = _saida_do_julgamento(julgado)
+    assert saida is not None  # acabou de ser julgada
+    return saida
 
 
 class ProgressoDaTrilhaSaida(BaseModel):

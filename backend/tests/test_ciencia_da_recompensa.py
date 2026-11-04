@@ -16,13 +16,11 @@ from nucleo.recursos.modelo import NaturezaDoRecurso
 from nucleo.trilhas.modelo import DesbloqueioDaMissao
 
 
-def _desbloquear(sessao, *, guerreiro, missao, aprovado=True):
-    """O marco alcançado é o desbloqueio aprovado. `aprovado=None` é o
+def _desbloquear(sessao, *, guerreiro, missao, cumpriu=True):
+    """O marco alcançado é o desbloqueio aprovado. `cumpriu=None` é o
     desafio prático declarado e ainda **não julgado** pelo Mestre autor —
     enquanto ele não julga, a missão aguarda (`RF-05-14`)."""
-    sessao.add(
-        DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=aprovado)
-    )
+    sessao.add(DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, cumpriu=cumpriu))
     sessao.commit()
 
 
@@ -201,7 +199,7 @@ def test_pratico_nao_julgado_nao_admite_ciencia(
     sessao, cliente, chave_da_aplicacao, criar_sessao_de_teste, cenario
 ):
     c = cenario()
-    _desbloquear(sessao, guerreiro=c["guerreiro"], missao=c["missao"], aprovado=None)
+    _desbloquear(sessao, guerreiro=c["guerreiro"], missao=c["missao"], cumpriu=None)
 
     cabecalhos = _autenticar(chave_da_aplicacao, criar_sessao_de_teste, c["guerreiro"])
     resposta = _dar_ciencia(cliente, cabecalhos, c["recompensa"])
@@ -217,7 +215,7 @@ def test_julgado_o_pratico_a_ciencia_e_admitida(
 ):
     c = cenario()
     desbloqueio = DesbloqueioDaMissao(
-        guerreiro_id=c["guerreiro"].id, missao_id=c["missao"].id, aprovado=None
+        guerreiro_id=c["guerreiro"].id, missao_id=c["missao"].id, cumpriu=None
     )
     sessao.add(desbloqueio)
     sessao.commit()
@@ -225,7 +223,7 @@ def test_julgado_o_pratico_a_ciencia_e_admitida(
     cabecalhos = _autenticar(chave_da_aplicacao, criar_sessao_de_teste, c["guerreiro"])
     assert _dar_ciencia(cliente, cabecalhos, c["recompensa"]).status_code == 422
 
-    desbloqueio.aprovado = True
+    desbloqueio.cumpriu = True
     sessao.commit()
 
     # Julgado, a recompensa passa a constar **sem ciência**, e a ciência é

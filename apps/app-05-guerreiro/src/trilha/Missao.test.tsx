@@ -56,6 +56,7 @@ describe("missão no percurso", () => {
       motivo_do_bloqueio: 'Desbloqueie "Primeira Missão" primeiro.',
       desafio_de_desbloqueio: null,
       comprovacao_entregue: null,
+      julgamento: null,
     });
 
     expect(screen.getByText(/Desbloqueie "Primeira Missão" primeiro\./)).toBeInTheDocument();
@@ -114,6 +115,7 @@ describe("missão no percurso", () => {
         aguardando_mestre: false,
         motivo_do_bloqueio: null,
         comprovacao_entregue: null,
+        julgamento: null,
         desafio_de_desbloqueio: {
           tipo: "quiz",
           desafio_pratico_forma_de_comprovacao: null,
@@ -169,6 +171,7 @@ describe("missão no percurso", () => {
         motivo_do_bloqueio: null,
         desafio_de_desbloqueio: null,
         comprovacao_entregue: null,
+        julgamento: null,
       },
       {
         id: "missao-1",
@@ -216,6 +219,7 @@ describe("arquivo do conteúdo da missão", () => {
     motivo_do_bloqueio: null,
     desafio_de_desbloqueio: null,
     comprovacao_entregue: null,
+    julgamento: null,
   };
 
   it("a imagem enviada aparece como imagem, e a referência não chega à tela", async () => {

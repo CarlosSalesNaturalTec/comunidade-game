@@ -287,12 +287,33 @@ class DesbloqueioDaMissao(Base):
     """Fato de que o Guerreiro(a) desbloqueou uma missão na própria trilha —
     nunca da equipe (design — decisão 1, documento 11 §2.2). Uma linha por
     par, com unicidade em (`guerreiro_id`, `missao_id`): no quiz, ela nasce
-    já `aprovado=True`, aferida e gravada na mesma transação da submissão;
-    no desafio prático, ela nasce com `aprovado` em aberto — a declaração
+    já `cumpriu=True`, aferida e gravada na mesma transação da submissão;
+    no desafio prático, ela nasce com `cumpriu` em aberto — a declaração
     do Guerreiro(a) de que cumpriu — e só vira desbloqueio de fato quando o
-    Mestre autor julga (`julgado_por_id`). Julgado que não passou, a linha é
-    apagada para que o Guerreiro(a) declare de novo, sem limite e sem
-    punição (`RN-05-20`) — nada aqui é reprovação persistida.
+    Mestre autor julga (`julgado_por_id`, `julgado_em`).
+
+    O julgamento do prático tem **dois vereditos** (`RF-09-133`): `cumpriu`
+    abre a missão seguinte e credita os 5 pontos regulares do documento 11 §5,
+    e `publicavel` diz se aquela entrega vai à vitrine pública — com um campo
+    só, o Mestre teria de reprovar quem cumpriu e enquadrou mal, ou publicar o
+    rosto da criança. `publicavel` só é aceito junto de `cumpriu` e só sobre
+    declaração com comprovação gravada (`RN-09-52`).
+
+    `motivo_do_julgamento` é o motivo em linguagem simples, exigido em todo
+    veredito negativo e lido **pelo Guerreiro(a)** (`RF-09-134`, `RN-09-53`).
+    É por causa dele que a reprovação **não apaga** a linha: apagá-la
+    destruiria o motivo no mesmo ato em que nasce. Julgado que não cumpriu, a
+    linha permanece com o veredito e o motivo, e entregar de novo **reabre a
+    mesma declaração**, zerando os quatro campos do julgamento (`RN-09-54`,
+    design — decisão 2). Nada aqui é reprovação persistida: o que fica é a
+    devolutiva do Mestre, como `CriacaoOriginal.motivo_da_devolucao`, não uma
+    contagem de fracassos (`RN-05-20`).
+
+    `julgado_em` separa o julgado por esta regra do julgado **antes** dela: a
+    linha antiga tem `cumpriu` verdadeiro com `julgado_em` nulo, e por isso
+    não recebe crédito retroativo nem se rejulga (`RN-09-55`, design —
+    decisão 3). A idempotência do crédito vem desse estado terminal, não de
+    coluna própria.
 
     No prático, a declaração carrega a **comprovação** na forma que o Mestre
     autor aceitou (`RF-05-91`): `comprovacao` guarda o corpo do tipo texto ou
@@ -302,11 +323,12 @@ class DesbloqueioDaMissao(Base):
     espelhando `CriacaoOriginal` (design — decisões 1 e 4). `entrega_presencial`
     é a alternativa de quem não entrega pelo aparelho, e é coluna própria
     justamente para que "não entregou" e "vai entregar no encontro" não fiquem
-    indistinguíveis (`RN-05-51`, design — decisão 3): **exatamente um** entre
+    indistinguíveis (`RN-05-51`): **exatamente um** entre
     a comprovação e ela é preenchido. A comprovação é dado **desta** linha, e
-    por isso o apagamento do julgamento reprovado a leva junto, sem limpeza
-    própria (`RN-05-52`). Coluna anulável e sem *backfill*: o prático declarado
-    antes desta regra segue valendo sem comprovação (design — decisão 7).
+    por isso a entrega nova a substitui sem limpeza própria; julgado que não
+    cumpriu, ela **permanece** guardada, para o Guerreiro(a) rever o que
+    entregou (`RN-05-52`, `RN-09-54`). Coluna anulável e sem *backfill*: o
+    prático declarado antes desta regra segue valendo sem comprovação.
     """
 
     __tablename__ = "desbloqueio_da_missao"
@@ -317,10 +339,13 @@ class DesbloqueioDaMissao(Base):
     momento: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-    aprovado: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    cumpriu: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    publicavel: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    motivo_do_julgamento: Mapped[str | None] = mapped_column(Text, nullable=True)
     julgado_por_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("persona.id"), nullable=True
     )
+    julgado_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     comprovacao: Mapped[str | None] = mapped_column(Text, nullable=True)
     comprovacao_referencia: Mapped[str | None] = mapped_column(String(512), nullable=True)
     comprovacao_tamanho: Mapped[int | None] = mapped_column(Integer, nullable=True)

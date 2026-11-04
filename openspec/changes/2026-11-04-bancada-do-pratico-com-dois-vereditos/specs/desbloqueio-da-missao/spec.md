@@ -146,9 +146,14 @@ limite de vezes. Nada disso é reprovação persistida: o que fica gravado é a 
 Mestre, não uma contagem de fracassos, e NEVER SHALL ser apresentado, exportado ou contado como
 tal (`RN-05-20`).
 
+A declaração reaberta SHALL contar como **entrega nova** também no tempo: o **momento** dela
+SHALL ser o da entrega que a reabriu, nunca o da primeira. É dele que a **cadência de retomada**
+conta os prazos (`RF-05-79`), e guardar o momento da entrega recusada faria o Guerreiro(a) que
+entrega de novo semanas depois receber as retomadas já vencidas no instante da aprovação.
+
 Julgado que **cumpriu**, a entrega SHALL estar encerrada: entregar ou enviar arquivo de novo
 SHALL ser recusado com **422**, e a comprovação gravada SHALL permanecer como está. (`RN-05-52`,
-`RN-05-20`, `RN-09-54`, decisão do fundador de 2026-11-04)
+`RN-05-20`, `RN-09-54`, `RF-05-79`, decisão do fundador de 2026-11-04)
 
 #### Scenario: Entregar de novo antes do julgamento substitui o que estava
 
@@ -167,6 +172,12 @@ SHALL ser recusado com **422**, e a comprovação gravada SHALL permanecer como 
 - **THEN** aquela declaração volta a aguardar o Mestre, com a comprovação nova no lugar da
   anterior, sem veredito e sem motivo, e sem que nasça segundo registro do par
 
+#### Scenario: A reabertura recoloca o momento da entrega
+
+- **WHEN** o Guerreiro(a) é recusado e entrega de novo semanas depois
+- **THEN** o momento da declaração passa a ser o da entrega nova, e as retomadas daquela missão
+  contam dali, não da entrega recusada
+
 #### Scenario: Depois de cumprido, o envio da comprovação é recusado
 
 - **WHEN** o Guerreiro(a) tenta enviar o arquivo da comprovação de um prático já julgado como
@@ -182,6 +193,11 @@ negar algo ao Guerreiro(a) — quando **não cumpriu**, e quando cumpriu mas **n
 —, e julgamento negativo **sem motivo** SHALL ser recusado com **422**, nomeando o campo que
 falta, como a devolução da criação original já é recusada (`RF-09-34`). Quando o julgamento
 **cumpriu e é publicável**, o motivo SHALL ser dispensado, e o que vier SHALL ser guardado.
+
+Não ser publicável só é **negativa** quando publicar **era possível** — quando a declaração tem
+comprovação gravada. Na **entrega presencial**, e na declaração cujo envio de arquivo não
+concluiu, não há o que publicar, e o motivo SHALL ser **dispensado**: cobrar que o Mestre
+explique uma recusa que ele não escolheu seria exigir motivo de um fato estrutural.
 
 O motivo SHALL ser servido ao **Mestre autor** e ao **próprio Guerreiro(a)** daquela declaração.
 Persona que não é nenhum dos dois NEVER SHALL alcançá-lo. (`RF-09-134`, `RN-09-53`, decisão do
@@ -203,6 +219,12 @@ fundador de 2026-11-04)
 - **WHEN** o Mestre autor julga que o Guerreiro(a) cumpriu e que a entrega é publicável, sem
   motivo
 - **THEN** o julgamento é gravado, a missão desbloqueia e nada é recusado
+
+#### Scenario: A entrega presencial cumprida dispensa o motivo
+
+- **WHEN** o Mestre autor confere no encontro e julga que o Guerreiro(a) cumpriu, sem marcar
+  publicável e sem escrever motivo
+- **THEN** o julgamento é gravado e nada é recusado, porque não havia o que publicar
 
 #### Scenario: O motivo não é servido a terceiro
 

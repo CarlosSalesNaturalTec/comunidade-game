@@ -6,7 +6,11 @@ interface Props {
   id: string;
   buscar: (id: string, token: string) => Promise<Blob>;
   token: string | null;
-  tipo: "imagem" | "video";
+  /** O **áudio** entra com a bancada do prático, que recebe comprovação nas
+   * seis formas (`RF-09-132`): tocar bytes do núcleo é o mesmo padrão da
+   * imagem e do vídeo, e reimplementá-lo fora daqui é o que a fatia da moldura
+   * fixa veio corrigir. */
+  tipo: "imagem" | "video" | "audio";
   alt: string;
   textoDeErro: string;
   /** Diz a quem monta se a mídia **da vez** está sendo buscada, para que a
@@ -98,6 +102,15 @@ export function MidiaDoNucleo({
       {daVez?.endereco && tipo === "video" && (
         // biome-ignore lint/a11y/useMediaCaption: legenda do vídeo do Mestre não é declarada no Ciclo 01 — o PRD-09 não a prevê.
         <video
+          src={daVez.endereco}
+          controls
+          aria-label={alt}
+          onError={() => definirResultado({ id, endereco: null, naoAbriu: true })}
+        />
+      )}
+      {daVez?.endereco && tipo === "audio" && (
+        // biome-ignore lint/a11y/useMediaCaption: legenda do áudio do Guerreiro(a) não é declarada no Ciclo 01 — nenhum PRD a prevê.
+        <audio
           src={daVez.endereco}
           controls
           aria-label={alt}

@@ -19,7 +19,11 @@ from ..culminancias.modelo import Culminancia
 from ..erros import ArquivoAcimaDoTeto, ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from ..poderes.modelo import NaturezaDoPoder, Poder
-from ..pontuacao.regra import avaliar_niveis, missoes_concluidas_pelo_guerreiro
+from ..pontuacao.regra import (
+    avaliar_niveis,
+    creditar_pontuacao_do_desbloqueio_pratico,
+    missoes_concluidas_pelo_guerreiro,
+)
 from ..tempo import agora
 from .modelo import (
     PRIMEIRA_ALTERNATIVA_DO_DESBLOQUEIO,
@@ -263,7 +267,7 @@ def missoes_desbloqueadas_pelo_guerreiro(
     alcançado que `recompensas_de_marco.regra` verifica, e não mais a
     existência de `Resultado` numa atividade (`RF-09-84`, documento 03 §11,
     documento 11 §2.2, design — decisão 6). Desafio prático ainda não
-    julgado (`aprovado is None`) não conta: enquanto o Mestre não julga, a
+    julgado (`cumpriu is None`) não conta: enquanto o Mestre não julga, a
     missão aguarda. `missoes_concluidas_pelo_guerreiro` permanece em
     `pontuacao.regra`, a serviço só do motor de níveis, que continua
     contando por `Resultado`."""
@@ -273,7 +277,7 @@ def missoes_desbloqueadas_pelo_guerreiro(
         .filter(
             Missao.trilha_id == trilha_id,
             DesbloqueioDaMissao.guerreiro_id == guerreiro_id,
-            DesbloqueioDaMissao.aprovado.is_(True),
+            DesbloqueioDaMissao.cumpriu.is_(True),
         )
         .distinct()
         .all()
@@ -1429,8 +1433,9 @@ def submeter_desafio_de_desbloqueio(
     aguardando o Mestre autor julgar, e com ela a **comprovação** na forma que
     o Mestre autor aceitou (`RF-05-91`) ou a escolha de **entregar ao Mestre no
     encontro** (`RN-05-51`). **Toda tentativa fica gravada**, a que passa e a
-    que não passa (`RN-05-47`). Em nenhum caso o desbloqueio credita ponto
-    (`RN-05-06`) — quem credita é sempre o Resultado.
+    que não passa (`RN-05-47`). A submissão nunca credita ponto: no quiz não há
+    crédito algum, e no prático quem credita é o **julgamento** do Mestre autor
+    (`RF-09-135`).
     """
     if missao is None:
         raise NaoEncontrado(mensagem="Missão não encontrada.")
@@ -1448,18 +1453,23 @@ def submeter_desafio_de_desbloqueio(
     if existente is not None:
         # Enquanto o Mestre não julgou, entregar de novo **substitui** o que
         # estava, em vez de criar segundo registro — como a criação original já
-        # faz antes da validação (`RN-05-52`). Já julgado, a resposta segue
-        # sendo a situação dele, sem tocar no que está gravado.
+        # faz antes da validação (`RN-05-52`). Julgado que **não cumpriu**,
+        # entregar de novo **reabre a mesma linha**: os quatro campos do
+        # julgamento voltam a nulo e ela torna a aguardar o Mestre, sem limite
+        # de vezes e sem segundo registro do par (`RN-09-54`, design —
+        # decisão 2). Julgado que cumpriu, a resposta segue sendo a situação
+        # dele, sem tocar no que está gravado.
         if (
             missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.pratico
-            and existente.aprovado is None
+            and existente.cumpriu is not True
         ):
             texto, presencial = _conferir_comprovacao_do_pratico(
                 missao, comprovacao=comprovacao, entrega_presencial=entrega_presencial
             )
             _substituir_comprovacao(existente, texto=texto, presencial=presencial)
+            _reabrir_julgamento(existente)
             sessao.flush()
-        return ResultadoDaSubmissaoDoDesbloqueio(aprovado=existente.aprovado, desbloqueio=existente)
+        return ResultadoDaSubmissaoDoDesbloqueio(aprovado=existente.cumpriu, desbloqueio=existente)
 
     if missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.quiz:
         # No quiz o corte de acertos é o critério, e o núcleo o afere sozinho:
@@ -1495,7 +1505,7 @@ def submeter_desafio_de_desbloqueio(
                 aprovado=False, desbloqueio=None, acertos=acertos, total=len(perguntas)
             )
         desbloqueio = DesbloqueioDaMissao(
-            guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=True
+            guerreiro_id=guerreiro.id, missao_id=missao.id, cumpriu=True
         )
         sessao.add(desbloqueio)
         sessao.flush()
@@ -1512,7 +1522,7 @@ def submeter_desafio_de_desbloqueio(
     desbloqueio = DesbloqueioDaMissao(
         guerreiro_id=guerreiro.id,
         missao_id=missao.id,
-        aprovado=None,
+        cumpriu=None,
         comprovacao=texto,
         entrega_presencial=presencial,
     )
@@ -1603,21 +1613,43 @@ def _referencia_da_comprovacao(desbloqueio: DesbloqueioDaMissao) -> str:
     return f"desbloqueios-praticos/{desbloqueio.id}/comprovacao"
 
 
+def _reabrir_julgamento(desbloqueio: DesbloqueioDaMissao) -> None:
+    """A declaração recusada volta a aguardar o Mestre: os quatro campos do
+    julgamento voltam a nulo, de modo que o veredito e o motivo anteriores não
+    sobrevivam à entrega nova — ela é outra entrega, e julgá-la é outro ato
+    (`RN-09-54`).
+
+    `momento` também é refeito, e não por simetria: a **cadência de retomada**
+    conta o prazo dele (`RF-05-79`). Antes desta fatia a linha recusada era
+    apagada e a declaração seguinte nascia com momento novo; mantendo o da
+    primeira entrega, o Guerreiro(a) recusado que entrega de novo semanas
+    depois teria as retomadas de 2, 7 e 21 dias já vencidas no instante em que
+    o Mestre aprova. O prazo corre da entrega que foi aceita."""
+    desbloqueio.cumpriu = None
+    desbloqueio.publicavel = None
+    desbloqueio.motivo_do_julgamento = None
+    desbloqueio.julgado_por_id = None
+    desbloqueio.julgado_em = None
+    desbloqueio.momento = agora()
+
+
 def _conferir_envio_da_comprovacao(
     sessao: Session, desbloqueio: DesbloqueioDaMissao | None, operador: Persona
 ) -> DesbloqueioDaMissao:
-    """Quem envia é quem declarou, e só enquanto o Mestre não julgou: depois do
-    julgamento a entrega está encerrada, e a reprovada nem existe mais
-    (`RF-05-91`, `RN-05-52`)."""
+    """Quem envia é quem declarou, e só enquanto o Mestre não julgou: julgada,
+    a entrega está encerrada, e a recusada só volta a receber arquivo depois de
+    o Guerreiro(a) **entregar de novo**, que é o que reabre a declaração
+    (`RF-05-91`, `RN-05-52`, `RN-09-54`)."""
     if desbloqueio is None:
         raise NaoEncontrado(mensagem="Declaração de desafio prático não encontrada.")
     if desbloqueio.guerreiro_id != operador.id:
         raise PermissaoNegada(
             mensagem="A comprovação é enviada por quem declarou que cumpriu o desafio."
         )
-    if desbloqueio.aprovado is not None:
+    if desbloqueio.cumpriu is not None:
         raise ErroDeValidacao(
-            mensagem="Esta declaração já foi julgada; a comprovação não muda mais.",
+            mensagem="Esta declaração já foi julgada; para trocar a comprovação, declare "
+            "que cumpriu de novo.",
             campo="comprovacao",
         )
     if desbloqueio.entrega_presencial:
@@ -1817,36 +1849,113 @@ def listar_desbloqueios_praticos_pendentes(
         .filter(
             Trilha.autor_id == operador.id,
             Missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.pratico,
-            DesbloqueioDaMissao.aprovado.is_(None),
+            DesbloqueioDaMissao.cumpriu.is_(None),
         )
         .all()
     )
 
 
 def julgar_desafio_pratico(
-    sessao: Session, *, operador: Persona, desbloqueio: DesbloqueioDaMissao | None, aprovado: bool
-) -> DesbloqueioDaMissao | None:
-    """Só o Mestre autor da trilha julga (`RF-09-117`). Aprovado, a linha
-    vira o desbloqueio de fato; reprovado, ela é apagada, para que o
-    Guerreiro(a) declare de novo, sem limite e sem punição (`RN-05-20`) —
-    nunca fica reprovação persistida."""
+    sessao: Session,
+    *,
+    operador: Persona,
+    desbloqueio: DesbloqueioDaMissao | None,
+    cumpriu: bool,
+    publicavel: bool = False,
+    motivo: str | None = None,
+) -> DesbloqueioDaMissao:
+    """Só o Mestre autor da trilha julga (`RF-09-117`), e o julgamento tem
+    **dois vereditos** (`RF-09-133`): `cumpriu` abre a missão seguinte e
+    credita os 5 pontos regulares do documento 11 §5 (`RF-09-135`), e
+    `publicavel` diz se aquela entrega vai à vitrine pública — nenhum deriva
+    do outro, e cumprir sem ser publicável é julgamento válido.
+
+    O **motivo** é exigido em todo veredito negativo (`RN-09-53`), e é por
+    causa dele que a reprovação **não apaga** a linha: ela permanece com o
+    veredito e o motivo, para que o Guerreiro(a) leia por que não passou, e
+    entregar de novo reabre a mesma declaração (`RN-09-54`). Nada aqui é
+    reprovação persistida — é a devolutiva do Mestre, como a criação original
+    devolvida (`RN-05-20`).
+
+    Julgar de novo o que já foi julgado é recusado, o que também é a
+    idempotência do crédito: a linha legada, julgada antes desta regra
+    (`julgado_em` nulo), não se rejulga e não recebe crédito retroativo
+    (`RN-09-55`)."""
     if desbloqueio is None:
         raise NaoEncontrado(mensagem="Declaração de desafio prático não encontrada.")
     missao = sessao.get(Missao, desbloqueio.missao_id)
     trilha = sessao.get(Trilha, missao.trilha_id)
     conferir_posse_da_trilha(trilha, operador)
-    if desbloqueio.aprovado is not None:
-        raise ErroDeValidacao(mensagem="Esta declaração já foi julgada.", campo="aprovado")
+    if desbloqueio.cumpriu is not None:
+        raise ErroDeValidacao(mensagem="Esta declaração já foi julgada.", campo="cumpriu")
 
-    if aprovado:
-        desbloqueio.aprovado = True
-        desbloqueio.julgado_por_id = operador.id
-        sessao.flush()
-        return desbloqueio
+    _conferir_vereditos_do_pratico(desbloqueio, cumpriu=cumpriu, publicavel=publicavel)
+    motivo_limpo = (motivo or "").strip() or None
+    if motivo_limpo is None and _nega_algo_ao_guerreiro(
+        desbloqueio, cumpriu=cumpriu, publicavel=publicavel
+    ):
+        raise ErroDeValidacao(
+            mensagem="Julgamento que nega algo exige o motivo, em linguagem simples: é o que o "
+            "Guerreiro(a) lê.",
+            campo="motivo",
+        )
 
-    sessao.delete(desbloqueio)
+    desbloqueio.cumpriu = cumpriu
+    desbloqueio.publicavel = publicavel
+    desbloqueio.motivo_do_julgamento = motivo_limpo
+    desbloqueio.julgado_por_id = operador.id
+    desbloqueio.julgado_em = agora()
     sessao.flush()
-    return None
+
+    if cumpriu:
+        creditar_pontuacao_do_desbloqueio_pratico(
+            sessao, guerreiro_id=desbloqueio.guerreiro_id, trilha_id=trilha.id
+        )
+    return desbloqueio
+
+
+def _tem_comprovacao_gravada(desbloqueio: DesbloqueioDaMissao) -> bool:
+    """Há o que publicar: o corpo escrito ou o endereço, ou o arquivo cujo
+    envio **concluiu** — a entrega presencial nasce sem mídia, e a declaração em
+    forma de mídia só tem bytes depois do envio (`RN-09-52`)."""
+    return desbloqueio.comprovacao is not None or (
+        desbloqueio.comprovacao_referencia is not None
+        and desbloqueio.comprovacao_tipo_do_arquivo is not None
+    )
+
+
+def _conferir_vereditos_do_pratico(
+    desbloqueio: DesbloqueioDaMissao, *, cumpriu: bool, publicavel: bool
+) -> None:
+    """`publicavel` só é aceito junto de `cumpriu` e só sobre declaração com
+    **comprovação gravada**: o que o Mestre recusou não vai a público, e a
+    entrega presencial nasce sem mídia e não tem o que publicar (`RN-09-52`,
+    `RN-05-51`)."""
+    if not publicavel:
+        return
+    if not cumpriu:
+        raise ErroDeValidacao(
+            mensagem="Só a entrega julgada como cumprida vai à vitrine.", campo="publicavel"
+        )
+    if not _tem_comprovacao_gravada(desbloqueio):
+        raise ErroDeValidacao(
+            mensagem="Esta declaração não tem comprovação a publicar.", campo="publicavel"
+        )
+
+
+def _nega_algo_ao_guerreiro(
+    desbloqueio: DesbloqueioDaMissao, *, cumpriu: bool, publicavel: bool
+) -> bool:
+    """O motivo é exigido quando o julgamento **nega algo ao Guerreiro(a)**
+    (`RN-09-53`): não ter cumprido, ou ter cumprido e não ir à vitrine.
+
+    Não publicar só é negativa quando publicar **era possível** — havia
+    comprovação gravada. Na entrega presencial, e na declaração cujo envio não
+    concluiu, não há o que publicar, e exigir que o Mestre explique uma recusa
+    que ele não escolheu seria cobrar motivo de um fato estrutural."""
+    if not cumpriu:
+        return True
+    return not publicavel and _tem_comprovacao_gravada(desbloqueio)
 
 
 @dataclass
@@ -1880,7 +1989,7 @@ def derivar_percurso(
         (
             missao
             for missao in missoes
-            if desbloqueios.get(missao.id) is None or desbloqueios[missao.id].aprovado is not True
+            if desbloqueios.get(missao.id) is None or desbloqueios[missao.id].cumpriu is not True
         ),
         None,
     )
@@ -1888,8 +1997,8 @@ def derivar_percurso(
     resultado = []
     for missao in missoes:
         desbloqueio = desbloqueios.get(missao.id)
-        desbloqueada = desbloqueio is not None and desbloqueio.aprovado is True
-        aguardando_mestre = desbloqueio is not None and desbloqueio.aprovado is None
+        desbloqueada = desbloqueio is not None and desbloqueio.cumpriu is True
+        aguardando_mestre = desbloqueio is not None and desbloqueio.cumpriu is None
         e_proxima = proxima is not None and missao.id == proxima.id
         motivo = None
         if not desbloqueada and not e_proxima:
@@ -1943,7 +2052,7 @@ def desafios_em_aberto_do_guerreiro(sessao: Session, *, guerreiro_id: uuid.UUID)
         .filter(
             Missao.trilha_id.in_(ids_das_trilhas),
             DesbloqueioDaMissao.guerreiro_id == guerreiro_id,
-            DesbloqueioDaMissao.aprovado.is_(True),
+            DesbloqueioDaMissao.cumpriu.is_(True),
         )
         .distinct()
         .all()
@@ -1993,7 +2102,7 @@ def retomadas_em_aberto_do_guerreiro(
         .join(Missao, Missao.id == DesbloqueioDaMissao.missao_id)
         .filter(
             DesbloqueioDaMissao.guerreiro_id == guerreiro_id,
-            DesbloqueioDaMissao.aprovado.is_(True),
+            DesbloqueioDaMissao.cumpriu.is_(True),
             Missao.cadencia_de_retomada.isnot(None),
         )
         .all()

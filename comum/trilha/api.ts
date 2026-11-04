@@ -94,6 +94,16 @@ export interface ComprovacaoEntregue {
   tem_arquivo: boolean;
 }
 
+/** O que o Mestre autor decidiu sobre a entrega: os **dois vereditos** e o
+ * motivo em linguagem simples. `null` é "ainda não julgado" — dito e não
+ * suposto (`RF-05-94`, `RF-09-133`, `RF-09-134`). */
+export interface JulgamentoDoPratico {
+  cumpriu: boolean;
+  publicavel: boolean;
+  motivo: string | null;
+  julgado_em: string | null;
+}
+
 export interface MissaoNoPercurso {
   id: string;
   titulo: string;
@@ -108,6 +118,9 @@ export interface MissaoNoPercurso {
   // A entrega que o Guerreiro(a) já fez neste prático, para a tela
   // reapresentá-la enquanto o Mestre não julga (`RF-05-93`).
   comprovacao_entregue: ComprovacaoEntregue | null;
+  // E o que o Mestre decidiu sobre ela: é dele que o motivo fala, e sem esta
+  // leitura o motivo nasceria *write-only* (`RF-05-94`).
+  julgamento: JulgamentoDoPratico | null;
 }
 
 // O estado da missão no percurso do Guerreiro(a) — desbloqueada, próxima,

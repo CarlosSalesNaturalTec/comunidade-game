@@ -35,7 +35,7 @@ def _desbloquear_ha(sessao, *, guerreiro, missao, criar_inscricao_na_trilha, dia
     criar_inscricao_na_trilha(guerreiro, trilha)
     from nucleo.trilhas.modelo import DesbloqueioDaMissao
 
-    desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=True)
+    desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, cumpriu=True)
     sessao.add(desbloqueio)
     sessao.flush()
     desbloqueio.momento = datetime.now(UTC) - timedelta(days=dias_atras)
@@ -161,7 +161,7 @@ def test_desbloqueio_pratico_nao_julgado_nao_abre_agendamento(
     criar_inscricao_na_trilha(guerreiro, trilha)
     from nucleo.trilhas.modelo import DesbloqueioDaMissao
 
-    desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=None)
+    desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, cumpriu=None)
     sessao.add(desbloqueio)
     sessao.flush()
     desbloqueio.momento = datetime.now(UTC) - timedelta(days=30)

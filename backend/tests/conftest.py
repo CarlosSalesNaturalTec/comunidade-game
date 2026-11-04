@@ -1968,13 +1968,13 @@ def criar_desbloqueio_da_missao(sessao):
     def _criar(
         guerreiro: Persona,
         missao: Missao,
-        aprovado: bool | None = True,
+        cumpriu: bool | None = True,
         julgado_por: Persona | None = None,
     ) -> DesbloqueioDaMissao:
         desbloqueio = DesbloqueioDaMissao(
             guerreiro_id=guerreiro.id,
             missao_id=missao.id,
-            aprovado=aprovado,
+            cumpriu=cumpriu,
             julgado_por_id=julgado_por.id if julgado_por is not None else None,
         )
         sessao.add(desbloqueio)

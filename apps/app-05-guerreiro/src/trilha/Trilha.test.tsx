@@ -63,6 +63,7 @@ describe("bloco da trilha", () => {
         motivo_do_bloqueio: ordem === 1 ? null : 'Desbloqueie "Primeira Missão" primeiro.',
         desafio_de_desbloqueio: null,
         comprovacao_entregue: null,
+        julgamento: null,
       }),
     );
     vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue({
@@ -105,6 +106,7 @@ describe("bloco da trilha", () => {
       motivo_do_bloqueio: null,
       desafio_de_desbloqueio: null,
       comprovacao_entregue: null,
+      julgamento: null,
     });
     vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue({
       id: "trilha-1",

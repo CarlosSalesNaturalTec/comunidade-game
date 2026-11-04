@@ -38,7 +38,7 @@ def test_atividade_de_missao_desbloqueada_e_devolvida_com_modalidade_e_formato(
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre)
     criar_inscricao_na_trilha(guerreiro, trilha)
-    criar_desbloqueio_da_missao(guerreiro, missao, aprovado=True)
+    criar_desbloqueio_da_missao(guerreiro, missao, cumpriu=True)
     token, _ = criar_sessao_de_teste(guerreiro)
 
     resposta = cliente.get("/v1/eu/desafios", headers=_cabecalhos(chave, token))
@@ -99,7 +99,7 @@ def test_atividade_ja_lancada_pelo_mestre_sai_da_lista(
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre)
     criar_inscricao_na_trilha(guerreiro, trilha)
-    criar_desbloqueio_da_missao(guerreiro, missao, aprovado=True)
+    criar_desbloqueio_da_missao(guerreiro, missao, cumpriu=True)
     aula = criar_aula_para_resultado(sessao, mestre)
     registrar_resultado(
         sessao,
@@ -136,7 +136,7 @@ def test_atividade_de_trilha_nao_inscrita_nao_aparece(
     trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
     missao = criar_missao(trilha, mestre)
     criar_atividade(missao, mestre)
-    criar_desbloqueio_da_missao(guerreiro, missao, aprovado=True)
+    criar_desbloqueio_da_missao(guerreiro, missao, cumpriu=True)
     token, _ = criar_sessao_de_teste(guerreiro)
 
     resposta = cliente.get("/v1/eu/desafios", headers=_cabecalhos(chave, token))
@@ -197,7 +197,7 @@ def test_os_dois_conjuntos_vem_apartados_na_mesma_resposta(
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre)
     criar_inscricao_na_trilha(guerreiro, trilha)
-    criar_desbloqueio_da_missao(guerreiro, missao, aprovado=True)
+    criar_desbloqueio_da_missao(guerreiro, missao, cumpriu=True)
     tipo = criar_tipo_de_recurso(mestre)
     ponto = criar_ponto_de_apoio(mestre, criar_comunidade())
     desafio_extra = criar_desafio_extra(
@@ -313,7 +313,7 @@ def test_atividade_removida_pelo_mestre_sai_dos_semanais(
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre)
     criar_inscricao_na_trilha(guerreiro, trilha)
-    criar_desbloqueio_da_missao(guerreiro, missao, aprovado=True)
+    criar_desbloqueio_da_missao(guerreiro, missao, cumpriu=True)
     token, _ = criar_sessao_de_teste(guerreiro)
 
     remover_atividade(sessao, operador=mestre, atividade=atividade)
