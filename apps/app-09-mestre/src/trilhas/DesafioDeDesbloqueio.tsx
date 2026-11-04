@@ -1,7 +1,7 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo, MarcaDeGravacao, MidiaDoNucleo } from "comum/react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import {
   abrirEnvioDaImagemDaPergunta,
   acrescentarPerguntaDoDesbloqueio,
@@ -11,12 +11,15 @@ import {
   enviarArquivo,
   FORMATOS_DA_IMAGEM_DA_PERGUNTA,
   FORMATOS_DA_IMAGEM_DA_PERGUNTA_EM_PORTUGUES,
+  type FormaDeComprovacao,
   lerImagemDaPergunta,
   type MissaoDaTrilha,
   type PerguntaDoDesbloqueio,
   type PerguntaDoDesbloqueioEntrada,
+  ROTULO_DA_FORMA_DE_COMPROVACAO,
   removerPerguntaDoDesbloqueio,
   TAMANHO_TETO_DA_IMAGEM_DA_PERGUNTA,
+  TETO_DO_TITULO_CURTO,
   type TipoDeDesafioDeDesbloqueio,
 } from "./api";
 
@@ -102,6 +105,19 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
   const [enunciado, definirEnunciado] = useState(
     missao.desafio_de_desbloqueio_enunciado ?? "",
   );
+  // Os três do prático reabrem do que a missão trouxe — prático declarado
+  // antes de 2026-11-04 chega com os três nulos e abre para ser completado
+  // (`RF-09-129` a `RF-09-131`, `RN-09-50`).
+  const [formaDeComprovacao, definirFormaDeComprovacao] = useState<FormaDeComprovacao>(
+    missao.desafio_pratico_forma_de_comprovacao ?? "imagem",
+  );
+  const [criterioDeAceite, definirCriterioDeAceite] = useState(
+    missao.desafio_pratico_criterio_de_aceite ?? "",
+  );
+  const [tituloCurto, definirTituloCurto] = useState(
+    missao.desafio_pratico_titulo_curto ?? "",
+  );
+  const idDaForma = useId();
   const [perguntas, definirPerguntas] = useState<PerguntaEmEdicao[]>(comoEdicao(missao));
   const [erro, definirErro] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
@@ -285,6 +301,11 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
           tipo,
           enunciado: tipo === "pratico" ? enunciado : null,
           perguntas: tipo === "quiz" ? perguntas.map(comoEntrada) : null,
+          // No quiz os três vão nulos: o núcleo os recusa se chegarem
+          // (`RN-09-50`).
+          forma_de_comprovacao: tipo === "pratico" ? formaDeComprovacao : null,
+          criterio_de_aceite: tipo === "pratico" ? criterioDeAceite : null,
+          titulo_curto: tipo === "pratico" ? tituloCurto : null,
         },
         sessao.token,
       );
@@ -352,7 +373,48 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
       )}
 
       {tipo === "pratico" && (
-        <Campo rotulo="Enunciado" valor={enunciado} aoAlterar={definirEnunciado} />
+        <>
+          <Campo rotulo="Enunciado" valor={enunciado} aoAlterar={definirEnunciado} />
+          <div className="cg-campo">
+            <label htmlFor={idDaForma}>Forma de comprovação aceita</label>
+            <select
+              id={idDaForma}
+              value={formaDeComprovacao}
+              onChange={(evento) =>
+                definirFormaDeComprovacao(evento.target.value as FormaDeComprovacao)
+              }
+            >
+              {Object.entries(ROTULO_DA_FORMA_DE_COMPROVACAO).map(([valor, rotulo]) => (
+                <option key={valor} value={valor}>
+                  {rotulo}
+                </option>
+              ))}
+            </select>
+          </div>
+          <p className="desafio-de-desbloqueio__ajuda">
+            É isso que o Guerreiro(a) vai poder entregar como comprovação do que fez.
+          </p>
+          <Campo
+            rotulo="Critério de aceite"
+            valor={criterioDeAceite}
+            aoAlterar={definirCriterioDeAceite}
+          />
+          <p className="desafio-de-desbloqueio__ajuda">
+            O Guerreiro(a) lê esse critério na hora de entregar, e é por ele que você vai
+            julgar. Exemplo: em foto ou vídeo não deve aparecer o rosto da criança, só a
+            produção.
+          </p>
+          <Campo
+            rotulo="Título curto"
+            valor={tituloCurto}
+            aoAlterar={definirTituloCurto}
+            maxLength={TETO_DO_TITULO_CURTO}
+          />
+          <p className="desafio-de-desbloqueio__ajuda">
+            É esse título que a vitrine exibe ao lado do nick do Guerreiro(a). No máximo{" "}
+            {TETO_DO_TITULO_CURTO} caracteres.
+          </p>
+        </>
       )}
 
       {tipo === "quiz" && (

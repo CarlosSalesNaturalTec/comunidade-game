@@ -18,6 +18,7 @@ from ..configuracao import Configuracao, obter_configuracao
 from ..conteudos.modelo import ConteudoDaMissao
 from ..conteudos.regra import consultar_conteudos_da_missao
 from ..conteudos.rotas import ConteudoSaida, saida_do_conteudo
+from ..criacoes_originais.modelo import TipoDeProducaoDaCriacaoOriginal
 from ..culminancias.modelo import Culminancia
 from ..culminancias.rotas import CulminanciaSaida, saida_da_culminancia
 from ..desafios_extras.modelo import DesafioExtra
@@ -342,6 +343,12 @@ class MissaoDoMestreSaida(MissaoSaida):
     tipo_do_desafio_de_desbloqueio: TipoDeDesafioDeDesbloqueio | None = None
     desafio_de_desbloqueio_enunciado: str | None = None
     perguntas_do_desbloqueio: list[PerguntaDoDesbloqueioAoAutorSaida] = Field(default_factory=list)
+    # Os três do prático vêm junto do enunciado: campo gravado e não
+    # devolvido é formulário que renasce vazio (`RF-09-129` a `RF-09-131`,
+    # design — decisão 6).
+    desafio_pratico_forma_de_comprovacao: TipoDeProducaoDaCriacaoOriginal | None = None
+    desafio_pratico_criterio_de_aceite: str | None = None
+    desafio_pratico_titulo_curto: str | None = None
 
 
 class TrilhaDoMestreSaida(TrilhaSaida):
@@ -481,6 +488,11 @@ def listar_minhas_trilhas_rota(
                     desafios_de_coleta=_desafios_de_coleta_da_missao(sessao_bd, missao),
                     tipo_do_desafio_de_desbloqueio=missao.tipo_do_desafio_de_desbloqueio,
                     desafio_de_desbloqueio_enunciado=missao.desafio_de_desbloqueio_enunciado,
+                    desafio_pratico_forma_de_comprovacao=(
+                        missao.desafio_pratico_forma_de_comprovacao
+                    ),
+                    desafio_pratico_criterio_de_aceite=missao.desafio_pratico_criterio_de_aceite,
+                    desafio_pratico_titulo_curto=missao.desafio_pratico_titulo_curto,
                     perguntas_do_desbloqueio=_saida_das_perguntas_ao_autor(
                         perguntas_por_missao.get(missao.id, [])
                     ),
@@ -862,6 +874,13 @@ class DesafioDeDesbloqueioSaida(BaseModel):
     tipo: TipoDeDesafioDeDesbloqueio
     enunciado: str | None = None
     perguntas: list[PerguntaDoDesbloqueioSaida] | None = None
+    # No prático, a forma aceita e o critério são o que o Guerreiro(a) precisa
+    # para entregar; o título curto vem com eles, porque é do mesmo desafio
+    # (`RF-09-129` a `RF-09-131`). A alternativa correta das perguntas segue
+    # fora desta saída, como já estava.
+    forma_de_comprovacao: TipoDeProducaoDaCriacaoOriginal | None = None
+    criterio_de_aceite: str | None = None
+    titulo_curto: str | None = None
 
 
 class MissaoNoPercursoSaida(BaseModel):
@@ -889,6 +908,9 @@ def _saida_do_desafio_de_desbloqueio(
         tipo=missao.tipo_do_desafio_de_desbloqueio,
         enunciado=missao.desafio_de_desbloqueio_enunciado,
         perguntas=perguntas,
+        forma_de_comprovacao=missao.desafio_pratico_forma_de_comprovacao,
+        criterio_de_aceite=missao.desafio_pratico_criterio_de_aceite,
+        titulo_curto=missao.desafio_pratico_titulo_curto,
     )
 
 
@@ -944,6 +966,12 @@ class DeclararDesafioDeDesbloqueioEntrada(BaseModel):
     # regra, não do schema, para que a mensagem chegue ao Mestre por campo.
     enunciado: str | None = None
     perguntas: list[PerguntaDoDesbloqueioEntrada] | None = None
+    # Só do prático, e anuláveis aqui de propósito: é a regra que exige os
+    # três no prático e os recusa no quiz, com a mensagem por campo
+    # (`RF-09-129` a `RF-09-131`, `RN-09-50`).
+    forma_de_comprovacao: str | None = None
+    criterio_de_aceite: str | None = None
+    titulo_curto: str | None = None
 
 
 class MissaoComDesafioDeDesbloqueioSaida(MissaoSaida):
@@ -955,6 +983,9 @@ class MissaoComDesafioDeDesbloqueioSaida(MissaoSaida):
     tipo_do_desafio_de_desbloqueio: TipoDeDesafioDeDesbloqueio
     desafio_de_desbloqueio_enunciado: str | None
     perguntas_do_desbloqueio: list[PerguntaDoDesbloqueioAoAutorSaida]
+    desafio_pratico_forma_de_comprovacao: TipoDeProducaoDaCriacaoOriginal | None = None
+    desafio_pratico_criterio_de_aceite: str | None = None
+    desafio_pratico_titulo_curto: str | None = None
 
 
 @roteador.post("/missoes/{id_da_missao}/desbloqueio")
@@ -980,6 +1011,9 @@ def declarar_desafio_de_desbloqueio_rota(
         perguntas=[pergunta.model_dump() for pergunta in entrada.perguntas]
         if entrada.perguntas is not None
         else None,
+        forma_de_comprovacao=entrada.forma_de_comprovacao,
+        criterio_de_aceite=entrada.criterio_de_aceite,
+        titulo_curto=entrada.titulo_curto,
     )
     sessao_bd.commit()
     perguntas = perguntas_do_desbloqueio(sessao_bd, missao_id=missao.id)
@@ -988,6 +1022,9 @@ def declarar_desafio_de_desbloqueio_rota(
         tipo_do_desafio_de_desbloqueio=missao.tipo_do_desafio_de_desbloqueio,
         desafio_de_desbloqueio_enunciado=missao.desafio_de_desbloqueio_enunciado,
         perguntas_do_desbloqueio=_saida_das_perguntas_ao_autor(perguntas),
+        desafio_pratico_forma_de_comprovacao=missao.desafio_pratico_forma_de_comprovacao,
+        desafio_pratico_criterio_de_aceite=missao.desafio_pratico_criterio_de_aceite,
+        desafio_pratico_titulo_curto=missao.desafio_pratico_titulo_curto,
     )
 
 

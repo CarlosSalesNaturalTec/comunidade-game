@@ -74,6 +74,31 @@ export interface BibliografiaDaMissao {
 
 export type TipoDeDesafioDeDesbloqueio = "quiz" | "pratico";
 
+// As seis formas de entrega do Guerreiro(a) (documento 02 §4) — no desafio
+// prático, o Mestre autor aceita **uma** delas como comprovação
+// (`RF-09-129`).
+export type FormaDeComprovacao =
+  | "texto"
+  | "imagem"
+  | "audio"
+  | "video"
+  | "arquivo"
+  | "link_externo";
+
+export const ROTULO_DA_FORMA_DE_COMPROVACAO: Record<FormaDeComprovacao, string> = {
+  texto: "Texto",
+  imagem: "Imagem",
+  audio: "Áudio",
+  video: "Vídeo",
+  arquivo: "Arquivo",
+  link_externo: "Link externo",
+};
+
+// `RN-09-51`: o título curto é campo próprio e tem teto, porque é ele que a
+// vitrine exibe ao lado do nick — o enunciado é texto livre e estouraria a
+// linha.
+export const TETO_DO_TITULO_CURTO = 60;
+
 // Os seis níveis do território, nessa ordem de contenção (`RF-08-04`,
 // PRD-08 §8) — os mesmos da App 03, aqui só para a granularidade exigida do
 // desafio de coleta.
@@ -125,6 +150,13 @@ export interface MissaoDaTrilha {
   tipo_do_desafio_de_desbloqueio?: TipoDeDesafioDeDesbloqueio | null;
   desafio_de_desbloqueio_enunciado?: string | null;
   perguntas_do_desbloqueio?: PerguntaDoDesbloqueio[];
+  // Só do prático, e nulos no quiz: a forma que o Mestre aceita, o critério
+  // sob o qual vai julgar e o título curto da vitrine (`RF-09-129` a
+  // `RF-09-131`). Prático declarado antes de 2026-11-04 vem com os três
+  // nulos e segue valendo (`RN-09-50`).
+  desafio_pratico_forma_de_comprovacao?: FormaDeComprovacao | null;
+  desafio_pratico_criterio_de_aceite?: string | null;
+  desafio_pratico_titulo_curto?: string | null;
   atividades: AtividadeDaMissao[];
   // As etiquetas **próprias** da missão: a leitura não cai para as da
   // trilha, ainda que a missão sem etiqueta própria responda por elas nos
@@ -429,6 +461,11 @@ export interface DeclararDesafioDeDesbloqueioEntrada {
   // (`RF-09-118`, `RN-09-43`).
   enunciado?: string | null;
   perguntas?: PerguntaDoDesbloqueioEntrada[] | null;
+  // Os três do prático. O núcleo os exige no prático e os recusa no quiz,
+  // com a mensagem por campo (`RN-09-50`).
+  forma_de_comprovacao?: FormaDeComprovacao | null;
+  criterio_de_aceite?: string | null;
+  titulo_curto?: string | null;
 }
 
 // Só o Mestre autor declara — a posse, a exigência de ao menos uma pergunta

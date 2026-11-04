@@ -1,6 +1,10 @@
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, MidiaDoNucleo } from "comum/react";
-import { lerImagemDaPergunta, type MissaoDaTrilha } from "./api";
+import {
+  lerImagemDaPergunta,
+  type MissaoDaTrilha,
+  ROTULO_DA_FORMA_DE_COMPROVACAO,
+} from "./api";
 import { ConteudoExibido } from "./ConteudoExibido";
 
 interface Props {
@@ -87,7 +91,21 @@ export function PreVisualizacaoDaMissao({ missao, autorNome, onFechar }: Props) 
         </p>
       )}
       {missao.tipo_do_desafio_de_desbloqueio === "pratico" && (
-        <p>{missao.desafio_de_desbloqueio_enunciado}</p>
+        <>
+          <p>{missao.desafio_de_desbloqueio_enunciado}</p>
+          {/* A forma aceita e o critério são o que o Guerreiro(a) lê na hora
+              de entregar: sem eles a pré-visualização não é "como ele a
+              verá" (`RF-09-25`, `RF-09-129`, `RF-09-130`). */}
+          {missao.desafio_pratico_forma_de_comprovacao && (
+            <p>
+              Comprovação em{" "}
+              {ROTULO_DA_FORMA_DE_COMPROVACAO[missao.desafio_pratico_forma_de_comprovacao]}.
+            </p>
+          )}
+          {missao.desafio_pratico_criterio_de_aceite && (
+            <p>{missao.desafio_pratico_criterio_de_aceite}</p>
+          )}
+        </>
       )}
       {missao.tipo_do_desafio_de_desbloqueio === "quiz" && (
         // Em leitura: o enunciado e as alternativas como o Guerreiro(a) as

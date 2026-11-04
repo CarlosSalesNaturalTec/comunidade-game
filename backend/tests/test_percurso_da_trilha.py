@@ -205,6 +205,9 @@ def test_aguardando_o_mestre_enquanto_o_pratico_nao_e_julgado(
         missao=missao,
         tipo="pratico",
         enunciado="Mostre o que fez.",
+        forma_de_comprovacao="imagem",
+        criterio_de_aceite="Só a produção na foto, sem o rosto da criança.",
+        titulo_curto="Mostra do que fez",
     )
     inscrever_na_trilha(sessao, guerreiro=guerreiro, trilha=trilha)
     sessao.commit()

@@ -22,6 +22,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
 from ..banco import Base
+from ..criacoes_originais.modelo import TipoDeProducaoDaCriacaoOriginal
 
 
 class SituacaoDaTrilha(enum.StrEnum):
@@ -137,6 +138,21 @@ class Missao(Base, ComAutoria):
         Enum(TipoDeDesafioDeDesbloqueio, native_enum=False, length=16), nullable=True
     )
     desafio_de_desbloqueio_enunciado: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Só o **prático** declara os três abaixo (`RF-09-129` a `RF-09-131`): a
+    # forma de comprovação que o Mestre autor aceita, o critério sob o qual
+    # vai julgar e o título curto que a vitrine exibe ao lado do nick. A
+    # forma reusa o enum da entrega do Guerreiro(a), em vez de uma segunda
+    # lista dos mesmos seis valores (design — decisão 3), e o título é campo
+    # próprio, nunca o enunciado, que é texto livre sem teto (`RN-09-51`).
+    # Anuláveis sem _backfill_: o prático declarado antes desta exigência
+    # segue valendo até ser redeclarado (`RN-09-50`, design — decisão 4).
+    desafio_pratico_forma_de_comprovacao: Mapped[TipoDeProducaoDaCriacaoOriginal | None] = (
+        mapped_column(
+            Enum(TipoDeProducaoDaCriacaoOriginal, native_enum=False, length=16), nullable=True
+        )
+    )
+    desafio_pratico_criterio_de_aceite: Mapped[str | None] = mapped_column(Text, nullable=True)
+    desafio_pratico_titulo_curto: Mapped[str | None] = mapped_column(String(60), nullable=True)
 
     __table_args__ = (
         UniqueConstraint(

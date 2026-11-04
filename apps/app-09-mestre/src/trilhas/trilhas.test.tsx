@@ -3995,3 +3995,236 @@ describe("correção e remoção da atividade (RF-09-127, RF-09-128)", () => {
     expect(screen.getByText(/montagem do robô/i)).toBeInTheDocument();
   });
 });
+
+// ---------------------------------------------------------------------------
+// A declaração do prático: forma de comprovação, critério de aceite e título
+// curto (`RF-09-129` a `RF-09-131`, `RN-09-50`, `RN-09-51`).
+// ---------------------------------------------------------------------------
+
+const CRITERIO_DE_ACEITE =
+  "Em foto ou vídeo não deve aparecer o rosto da criança, só a produção.";
+
+function missaoComPratico(sobrescreve: Partial<MissaoDaTrilha> = {}): MissaoDaTrilha {
+  return missao({
+    tipo_do_desafio_de_desbloqueio: "pratico",
+    desafio_de_desbloqueio_enunciado: "Monte o robô e mostre ao Mestre.",
+    perguntas_do_desbloqueio: [],
+    desafio_pratico_forma_de_comprovacao: "video",
+    desafio_pratico_criterio_de_aceite: CRITERIO_DE_ACEITE,
+    desafio_pratico_titulo_curto: "Robô de sucata",
+    ...sobrescreve,
+  });
+}
+
+async function abrirDesafio(missaoDaBancada: MissaoDaTrilha) {
+  configurarSessao();
+  vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+    trilha({ missoes: [missaoDaBancada] }),
+  ]);
+  vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+    itens: [],
+    proximo_cursor: null,
+  });
+
+  render(<TelaDeAutoria />);
+  const usuario = await abrirMissao();
+  // A sondagem chama o bloco pelo nome dela, nunca "desbloqueio"
+  // (`RN-09-30`).
+  // A sondagem aparece duas vezes na bancada — a etiqueta da linha da missão
+  // e o título do bloco recolhível —, e é o bloco que se abre.
+  const titulosDoBloco = await screen.findAllByText(
+    missaoDaBancada.e_sondagem ? "Sondagem" : "Desafio de desbloqueio",
+  );
+  await usuario.click(titulosDoBloco[titulosDoBloco.length - 1]);
+  return usuario;
+}
+
+describe("declaração do prático (RF-09-129, RF-09-130, RF-09-131, RN-09-50, RN-09-51)", () => {
+  it("os três campos aparecem ao escolher o prático e saem ao escolher o quiz", async () => {
+    const usuario = await abrirDesafio(missao());
+
+    expect(screen.queryByLabelText(/forma de comprovação aceita/i)).not.toBeInTheDocument();
+
+    await usuario.click(await screen.findByRole("radio", { name: /desafio prático/i }));
+
+    expect(screen.getByLabelText(/forma de comprovação aceita/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/critério de aceite/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/título curto/i)).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("radio", { name: /^quiz$/i }));
+
+    expect(screen.queryByLabelText(/forma de comprovação aceita/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/critério de aceite/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/título curto/i)).not.toBeInTheDocument();
+  });
+
+  it("a sondagem não apresenta os campos do prático (RF-09-81)", async () => {
+    await abrirDesafio(missao({ e_sondagem: true }));
+
+    await screen.findByText(/essa sondagem abre a trilha/i);
+    expect(screen.queryByRole("radio", { name: /desafio prático/i })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/forma de comprovação aceita/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/título curto/i)).not.toBeInTheDocument();
+  });
+
+  it("declara o prático com forma, critério e título curto", async () => {
+    const declararEspiado = vi
+      .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
+      .mockResolvedValue(missaoComPratico());
+    const usuario = await abrirDesafio(missao());
+
+    await usuario.click(await screen.findByRole("radio", { name: /desafio prático/i }));
+    await usuario.type(
+      screen.getByLabelText(/^enunciado$/i),
+      "Monte o robô e mostre ao Mestre.",
+    );
+    await usuario.selectOptions(
+      screen.getByLabelText(/forma de comprovação aceita/i),
+      "video",
+    );
+    await usuario.type(screen.getByLabelText(/critério de aceite/i), CRITERIO_DE_ACEITE);
+    await usuario.type(screen.getByLabelText(/título curto/i), "Robô de sucata");
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    await waitFor(() => expect(declararEspiado).toHaveBeenCalled());
+    expect(declararEspiado).toHaveBeenCalledWith(
+      "missao-1",
+      expect.objectContaining({
+        tipo: "pratico",
+        enunciado: "Monte o robô e mostre ao Mestre.",
+        forma_de_comprovacao: "video",
+        criterio_de_aceite: CRITERIO_DE_ACEITE,
+        titulo_curto: "Robô de sucata",
+      }),
+      "token-do-mestre",
+    );
+  });
+
+  it("o quiz é declarado com os três campos nulos", async () => {
+    const declararEspiado = vi
+      .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
+      .mockResolvedValue(missao({ tipo_do_desafio_de_desbloqueio: "quiz" }));
+    const usuario = await abrirDesafio(missao());
+
+    await usuario.type(screen.getByLabelText(/^enunciado da pergunta 1$/i), "Quanto é 1 + 1?");
+    await usuario.type(screen.getByLabelText(/^alternativa 1 da pergunta 1$/i), "1");
+    await usuario.type(screen.getByLabelText(/^alternativa 2 da pergunta 1$/i), "2");
+    await usuario.type(screen.getByLabelText(/^alternativa 3 da pergunta 1$/i), "3");
+    await usuario.type(screen.getByLabelText(/^alternativa 4 da pergunta 1$/i), "4");
+    await usuario.click(
+      screen.getByRole("radio", { name: /alternativa 2 da pergunta 1 é a correta/i }),
+    );
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    await waitFor(() => expect(declararEspiado).toHaveBeenCalled());
+    expect(declararEspiado).toHaveBeenCalledWith(
+      "missao-1",
+      expect.objectContaining({
+        tipo: "quiz",
+        forma_de_comprovacao: null,
+        criterio_de_aceite: null,
+        titulo_curto: null,
+      }),
+      "token-do-mestre",
+    );
+  });
+
+  it("o prático declarado reabre com os três campos preenchidos", async () => {
+    await abrirDesafio(missaoComPratico());
+
+    expect(
+      await screen.findByDisplayValue("Monte o robô e mostre ao Mestre."),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/forma de comprovação aceita/i)).toHaveValue("video");
+    expect(screen.getByLabelText(/critério de aceite/i)).toHaveValue(CRITERIO_DE_ACEITE);
+    expect(screen.getByLabelText(/título curto/i)).toHaveValue("Robô de sucata");
+    expect(
+      screen.queryByText(/ainda não tem desafio de desbloqueio/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("o prático declarado antes da exigência abre para ser completado (RN-09-50)", async () => {
+    await abrirDesafio(
+      missaoComPratico({
+        desafio_pratico_forma_de_comprovacao: null,
+        desafio_pratico_criterio_de_aceite: null,
+        desafio_pratico_titulo_curto: null,
+      }),
+    );
+
+    expect(
+      await screen.findByDisplayValue("Monte o robô e mostre ao Mestre."),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/critério de aceite/i)).toHaveValue("");
+    expect(screen.getByLabelText(/título curto/i)).toHaveValue("");
+    expect(
+      screen.queryByText(/ainda não tem desafio de desbloqueio/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("a tela diz o teto do título curto e o limita (RN-09-51)", async () => {
+    const usuario = await abrirDesafio(missao());
+
+    await usuario.click(await screen.findByRole("radio", { name: /desafio prático/i }));
+
+    expect(screen.getByText(/no máximo 60 caracteres/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/título curto/i)).toHaveAttribute("maxLength", "60");
+    // O título curto é o da vitrine: a tela diz onde ele vai aparecer
+    // (`RF-09-131`).
+    expect(screen.getByText(/vitrine exibe ao lado do nick/i)).toBeInTheDocument();
+  });
+
+  it("a tela oferece as seis formas pelo nome, sem o Mestre digitar nenhuma", async () => {
+    const usuario = await abrirDesafio(missao());
+
+    await usuario.click(await screen.findByRole("radio", { name: /desafio prático/i }));
+
+    const forma = screen.getByLabelText(/forma de comprovação aceita/i);
+    expect(
+      Array.from(forma.querySelectorAll("option")).map((opcao) => opcao.textContent),
+    ).toEqual(["Texto", "Imagem", "Áudio", "Vídeo", "Arquivo", "Link externo"]);
+    // O que o Guerreiro(a) vai poder entregar, dito na tela (`RF-09-129`).
+    expect(screen.getByText(/vai poder entregar como comprovação/i)).toBeInTheDocument();
+  });
+
+  it("a recusa do núcleo chega ao Mestre com o motivo, sem limpar o que ele escreveu", async () => {
+    vi.spyOn(trilhasApi, "declararDesafioDeDesbloqueio").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "Desafio prático exige o critério de aceite.",
+        campo: "criterio_de_aceite",
+      }),
+    );
+    const usuario = await abrirDesafio(missao());
+
+    await usuario.click(await screen.findByRole("radio", { name: /desafio prático/i }));
+    await usuario.type(screen.getByLabelText(/^enunciado$/i), "Monte o robô.");
+    await usuario.type(screen.getByLabelText(/título curto/i), "Robô de sucata");
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    expect(await screen.findByText(/exige o critério de aceite/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^enunciado$/i)).toHaveValue("Monte o robô.");
+    expect(screen.getByLabelText(/título curto/i)).toHaveValue("Robô de sucata");
+  });
+
+  it("a pré-visualização mostra a forma e o critério do prático (RF-09-25)", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missaoComPratico()] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = await abrirMissao();
+    await usuario.click(await screen.findByRole("button", { name: /pré-visualizar missão/i }));
+
+    const preVisualizacao = await screen.findByRole("region", {
+      name: /pré-visualização de primeira missão/i,
+    });
+    expect(within(preVisualizacao).getByText(/comprovação em vídeo/i)).toBeInTheDocument();
+    expect(within(preVisualizacao).getByText(CRITERIO_DE_ACEITE)).toBeInTheDocument();
+  });
+});
