@@ -4,21 +4,23 @@
 
 A produção da missão é o que se entrega depois de trabalhar uma atividade — por texto, fala ou
 foto do manuscrito — e a devolutiva construtiva que a plataforma lê de volta, sem creditar
-ponto algum e sem guardar a foto nem o áudio. Duas portas: a da **equipe**, sobre a atividade
-corrente do encontro, e a **individual** do Guerreiro(a), sobre uma missão do próprio percurso.
+ponto algum. A **mídia é guardada** desde 2026-11-03, e a **transcrição continua**, porque é
+sobre ela que a devolutiva se faz. Duas portas: a da **equipe**, sobre a atividade corrente do
+encontro, e a **individual** do Guerreiro(a), sobre uma missão do próprio percurso.
 
 ## Requirements
 
-### Requirement: A equipe entrega a produção por texto, fala ou foto do manuscrito
+### Requirement: A equipe entrega a produção por texto, fala ou foto, e a mídia fica guardada
 
 O núcleo SHALL aceitar, de uma equipe, a entrega da produção da missão em **uma** destas três
 formas: **texto** digitado, **áudio** da fala ou **foto** do que a equipe fez à mão. A forma da
 entrega SHALL ser **declarada na chamada** e gravada com a produção — é ela que distingue a
 fala do texto digitado, que chegam ambos como texto.
 
-Entrega em **texto** ou em **áudio** SHALL trazer o **texto** e NEVER SHALL trazer arquivo — a
-fala é transcrita no aparelho e o que chega é a transcrição. Entrega em **foto** SHALL trazer o
-**arquivo** e NEVER SHALL trazer texto. Entrega sem o conteúdo da forma declarada, ou com o
+Entrega em **texto** SHALL trazer o **texto** e NEVER SHALL trazer arquivo. Entrega em
+**áudio** SHALL trazer a **transcrição** feita no aparelho **e** o **arquivo** do áudio, que o
+núcleo passa a guardar. Entrega em **foto** SHALL trazer o **arquivo** e NEVER SHALL trazer
+texto. Entrega sem o conteúdo da forma declarada, ou com o
 conteúdo de outra forma junto, SHALL ser recusada com **422**.
 
 A produção SHALL ser ancorada na **atividade corrente** que a equipe declarou na programação
@@ -35,8 +37,8 @@ declarada SHALL ser recusada com **422** — não há missão a que a produção
 #### Scenario: Entrega por fala
 
 - **WHEN** uma equipe entrega a produção falada, já transcrita no aparelho
-- **THEN** o núcleo grava a produção com a forma "áudio" e a transcrição recebida, sem receber
-  áudio algum
+- **THEN** o núcleo grava a produção com a forma "áudio", a transcrição recebida e o arquivo
+  do áudio
 
 #### Scenario: Entrega por foto do manuscrito
 
@@ -53,10 +55,10 @@ declarada SHALL ser recusada com **422** — não há missão a que a produção
 - **WHEN** chega uma entrega com texto e foto juntos
 - **THEN** o núcleo responde 422 e nada é gravado
 
-#### Scenario: Entrega por fala com arquivo é recusada
+#### Scenario: Entrega por fala sem a transcrição é recusada
 
-- **WHEN** chega uma entrega com a forma "áudio" acompanhada de arquivo
-- **THEN** o núcleo responde 422 e nada é gravado
+- **WHEN** chega uma entrega com a forma "áudio" trazendo o arquivo e nenhuma transcrição
+- **THEN** o núcleo responde 422 e nada é gravado, porque a devolutiva se faz sobre o texto
 
 #### Scenario: Equipe sem atividade corrente não entrega
 
@@ -88,13 +90,14 @@ gravada. Decisão do fundador, 2026-08-30. (`RF-04-45`, documento 02 §5, docume
 - **WHEN** o núcleo grava a produção entregue pela equipe
 - **THEN** o registro sai com a equipe declarada e o Guerreiro(a) em branco
 
-### Requirement: O Guerreiro(a) entrega sozinho a produção de uma missão do próprio percurso
+### Requirement: O Guerreiro(a) entrega sozinho a produção da missão, e a mídia fica guardada
 
 O núcleo SHALL aceitar, de um **Guerreiro(a) em sessão**, a entrega da produção de uma missão
 em **uma** destas três formas: **texto** digitado, **áudio** da fala ou **foto** do que ele fez
 à mão. A forma SHALL ser declarada na chamada e gravada com a produção.
 
-Entrega em **texto** ou em **áudio** SHALL trazer o **texto** e NEVER SHALL trazer arquivo;
+Entrega em **texto** SHALL trazer o **texto** e NEVER SHALL trazer arquivo; entrega em
+**áudio** SHALL trazer a **transcrição** e o **arquivo** do áudio;
 entrega em **foto** SHALL trazer o **arquivo** e NEVER SHALL trazer texto. Entrega sem o
 conteúdo da forma declarada, ou com o conteúdo de outra forma junto, SHALL ser recusada com
 **422** — as mesmas recusas da entrega da equipe.
@@ -117,8 +120,8 @@ o percurso é o mesmo que já governa a leitura da missão, e a entrega não o a
 #### Scenario: Entrega individual por fala
 
 - **WHEN** o Guerreiro(a) entrega a produção falada, já transcrita no aparelho
-- **THEN** o núcleo grava a produção com a forma "áudio" e a transcrição recebida, sem receber
-  áudio algum
+- **THEN** o núcleo grava a produção com a forma "áudio", a transcrição recebida e o arquivo
+  do áudio
 
 #### Scenario: Entrega individual por foto do manuscrito
 
@@ -135,9 +138,9 @@ o percurso é o mesmo que já governa a leitura da missão, e a entrega não o a
 - **WHEN** chega uma entrega individual com texto e foto juntos
 - **THEN** o núcleo responde 422 e nada é gravado
 
-#### Scenario: Entrega individual por fala com arquivo é recusada
+#### Scenario: Entrega individual por fala sem a transcrição é recusada
 
-- **WHEN** chega uma entrega individual com a forma "áudio" acompanhada de arquivo
+- **WHEN** chega uma entrega individual com a forma "áudio" sem a transcrição
 - **THEN** o núcleo responde 422 e nada é gravado
 
 #### Scenario: Atividade de outra missão é recusada
@@ -327,49 +330,6 @@ trazer a produção gravada, com a transcrição e a devolutiva. (`RF-04-45` a `
 - **WHEN** chega uma entrega sem credencial de persona
 - **THEN** o núcleo recusa e nada é gravado
 
-### Requirement: A foto é descartada na leitura, e o áudio nunca chega ao núcleo
-
-O núcleo NEVER SHALL receber o **áudio** da produção: a fala é transcrita **no próprio
-aparelho** e o que trafega é a **transcrição**, indistinguível, no contrato, da produção
-digitada. Nenhuma das duas portas SHALL aceitar arquivo de áudio, e o núcleo NEVER SHALL
-transcrever fala.
-
-A **foto** SHALL ser **descartada na leitura**: gravadas ficam apenas a **transcrição** e a
-**devolutiva**. A foto NEVER SHALL ser persistida — nem em banco, nem em armazenamento de
-arquivo, nem em registro de erro — e NEVER SHALL aparecer em resposta alguma. Vale igual nas
-**duas portas**: a da equipe e a individual do Guerreiro(a). (`RF-04-46`, `RF-05-76`,
-`RN-05-32`, `RN-05-36`, documento 03 §§1.12, 12.2, PRD-04 §11)
-
-#### Scenario: O áudio da fala não chega ao núcleo
-
-- **WHEN** uma equipe ou um Guerreiro(a) entrega a produção falada
-- **THEN** o núcleo recebe só a transcrição, e nenhum áudio é recebido, lido ou registrado
-
-#### Scenario: Arquivo de áudio na entrega é recusado
-
-- **WHEN** chega uma entrega que declara a forma "áudio" e manda arquivo
-- **THEN** o núcleo responde 422, nada é gravado e nada do arquivo fica em lugar nenhum
-
-#### Scenario: A foto some depois de lida
-
-- **WHEN** uma equipe entrega a foto do manuscrito e o núcleo a lê
-- **THEN** a fotografia não existe em lugar nenhum e resta a transcrição
-
-#### Scenario: A foto da entrega individual também some
-
-- **WHEN** o Guerreiro(a) entrega sozinho a foto do manuscrito
-- **THEN** a fotografia não existe em lugar nenhum e resta a transcrição
-
-#### Scenario: A resposta da entrega não devolve foto nem áudio
-
-- **WHEN** o núcleo responde à entrega
-- **THEN** a resposta traz a transcrição e a devolutiva, e nenhum campo com foto ou áudio
-
-#### Scenario: A falha na leitura não guarda o que foi enviado
-
-- **WHEN** a leitura da foto falha
-- **THEN** o núcleo responde o erro sem gravar nem registrar em log a foto recebida
-
 ### Requirement: A leitura da foto indisponível não perde o que já está legível
 
 O núcleo SHALL separar a **leitura** — o que transforma a foto em transcrição — da
@@ -424,3 +384,63 @@ missão (`RF-09-90`). A resposta da entrega NEVER SHALL trazer custo, cota ou co
 
 - **WHEN** o núcleo responde à entrega
 - **THEN** nenhum campo da resposta traz custo, cota, contagem de uso ou valor
+
+### Requirement: A mídia da produção da missão é guardada
+
+O núcleo SHALL **guardar** o arquivo entregue na produção da missão — a **foto** do manuscrito
+e o **áudio** da fala —, nas duas portas. O arquivo SHALL chegar na **mesma requisição** da
+entrega, em `multipart/form-data`, como a foto já chega: é dela que o núcleo tira a
+transcrição, e guardar é deixar de descartar o que ele já recebeu. A **transcrição** SHALL
+continuar gravada. (`RF-01-79`, `RN-01-61`, `RF-04-45`, `RF-05-76`)
+
+#### Scenario: A foto entregue fica guardada
+
+- **WHEN** uma equipe entrega a foto do manuscrito
+- **THEN** a produção fica com a mídia guardada, e a transcrição continua gravada com ela
+
+#### Scenario: O áudio entregue fica guardado
+
+- **WHEN** o Guerreiro(a) entrega a produção falada, com a transcrição e o arquivo do áudio
+- **THEN** a produção fica com a mídia guardada, e a transcrição continua gravada com ela
+
+#### Scenario: A entrega em texto não ganha mídia
+
+- **WHEN** chega uma entrega na forma texto
+- **THEN** a produção é gravada sem mídia, e a leitura dela responde 404
+
+#### Scenario: A devolutiva continua a ser feita sobre o texto
+
+- **WHEN** a produção tem transcrição e arquivo
+- **THEN** a devolutiva é construída a partir da transcrição, e nunca a partir do arquivo
+
+### Requirement: A mídia da produção da missão é servida a quem pode ver a produção
+
+O núcleo SHALL servir os **bytes** da mídia de uma produção a quem já pode vê-la: quem a
+entregou ou os **integrantes da equipe** dona dela, o **Mestre** da trilha e o **Admin**. Fora
+desse conjunto SHALL responder **403**; produção sem mídia, **404**. NEVER SHALL haver rota
+pública: a produção da missão não é item de acervo. (`RF-01-80`, `RN-01-62`)
+
+#### Scenario: O integrante da equipe lê a mídia da produção dela
+
+- **WHEN** um integrante da equipe dona da produção pede a mídia dela
+- **THEN** o núcleo devolve os bytes com o tipo MIME gravado no envio
+
+#### Scenario: O Mestre lê a mídia da produção da sua trilha
+
+- **WHEN** o Mestre da trilha pede a mídia de uma produção dela
+- **THEN** o núcleo devolve os bytes com o tipo MIME gravado no envio
+
+#### Scenario: Quem não é da equipe nem Mestre é recusado
+
+- **WHEN** um Guerreiro(a) de fora da equipe pede a mídia da produção dela
+- **THEN** o núcleo responde 403 e nenhum byte é servido
+
+#### Scenario: Produção sem mídia responde 404
+
+- **WHEN** se pede a mídia de uma produção entregue em texto, ou gravada antes desta change
+- **THEN** o núcleo responde 404
+
+#### Scenario: Não há rota pública para a mídia da produção
+
+- **WHEN** se procura a mídia de uma produção da missão sem sessão
+- **THEN** não há rota pública que a sirva, porque a produção não é item de acervo

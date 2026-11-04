@@ -156,24 +156,25 @@ o percurso é o mesmo que já governa a leitura da missão, e a entrega não o a
 ### Requirement: A mídia da produção da missão é guardada
 
 O núcleo SHALL **guardar** o arquivo entregue na produção da missão — a **foto** do manuscrito
-e o **áudio** da fala —, nas duas portas. O arquivo SHALL ser enviado em **ato próprio**,
-depois de criada a produção, que SHALL permanecer sem mídia até o envio concluir. A
-**transcrição** SHALL continuar gravada. (`RF-01-79`, `RN-01-61`, `RF-04-45`, `RF-05-76`)
+e o **áudio** da fala —, nas duas portas. O arquivo SHALL chegar na **mesma requisição** da
+entrega, em `multipart/form-data`, como a foto já chega: é dela que o núcleo tira a
+transcrição, e guardar é deixar de descartar o que ele já recebeu. A **transcrição** SHALL
+continuar gravada. (`RF-01-79`, `RN-01-61`, `RF-04-45`, `RF-05-76`)
 
 #### Scenario: A foto entregue fica guardada
 
-- **WHEN** uma equipe entrega a foto do manuscrito e o envio conclui
-- **THEN** a produção passa a ter mídia, e a transcrição continua gravada com ela
+- **WHEN** uma equipe entrega a foto do manuscrito
+- **THEN** a produção fica com a mídia guardada, e a transcrição continua gravada com ela
 
 #### Scenario: O áudio entregue fica guardado
 
-- **WHEN** o Guerreiro(a) entrega a produção falada e o envio do áudio conclui
-- **THEN** a produção passa a ter mídia, e a transcrição continua gravada com ela
+- **WHEN** o Guerreiro(a) entrega a produção falada, com a transcrição e o arquivo do áudio
+- **THEN** a produção fica com a mídia guardada, e a transcrição continua gravada com ela
 
-#### Scenario: A produção nasce sem mídia e a recebe depois
+#### Scenario: A entrega em texto não ganha mídia
 
-- **WHEN** chega a entrega de uma produção em foto ou em áudio
-- **THEN** o núcleo grava a produção sem mídia, e ela passa a existir quando o envio conclui
+- **WHEN** chega uma entrega na forma texto
+- **THEN** a produção é gravada sem mídia, e a leitura dela responde 404
 
 #### Scenario: A devolutiva continua a ser feita sobre o texto
 

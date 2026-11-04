@@ -178,12 +178,15 @@ def test_503_so_na_foto_quando_leitura_indisponivel(
         assert resposta_da_foto.status_code == 503
         assert sessao.query(ProducaoDaMissao).count() == 0
 
-        # `RF-05-76`: a fala já chega transcrita do aparelho, então a
-        # indisponibilidade do modelo não tem o que impedir — a produção é
-        # gravada com a devolutiva em branco, como a entrega por texto.
+        # `RF-05-76`, `RN-01-61`: a fala já chega transcrita do aparelho,
+        # então a indisponibilidade do modelo não tem o que impedir — a
+        # produção é gravada com a devolutiva em branco, como a entrega por
+        # texto. O áudio viaja junto desde 2026-11-03, e é guardado sem
+        # passar pela leitura.
         resposta_da_fala = cliente.post(
             f"/v1/equipes/{equipe.id}/producao",
             data={"forma": "audio", "texto": "O que a equipe falou."},
+            files={"arquivo": ("fala.mp3", io.BytesIO(b"audio-fake"), "audio/mpeg")},
             headers=_cabecalhos(chave, token),
         )
         assert resposta_da_fala.status_code == 201
@@ -371,6 +374,7 @@ def test_503_so_na_foto_individual_quando_leitura_indisponivel(
                 "atividade_id": str(atividade.id),
                 "texto": "O que eu falei.",
             },
+            files={"arquivo": ("fala.mp3", io.BytesIO(b"audio-fake"), "audio/mpeg")},
             headers=_cabecalhos(chave, token),
         )
         assert resposta_da_fala.status_code == 201
@@ -664,3 +668,71 @@ def test_o_corpo_do_erro_de_http_entra_no_log(monkeypatch, caplog):
     assert "429" in caplog.text
     assert "prepayment credits are depleted" in caplog.text
     assert "chave-secreta" not in caplog.text
+
+
+class _PortaEspia(PortaDaProducaoDaMissao):
+    """Guarda o que recebeu, para afirmar o que **não** chega até ela."""
+
+    def __init__(self):
+        self.chamadas = []
+
+    def ler(self, *, forma, texto, arquivo, producao_esperada):
+        self.chamadas.append({"forma": forma, "texto": texto, "arquivo": arquivo})
+        return None
+
+
+def test_a_devolutiva_se_faz_sobre_o_texto_e_o_audio_nunca_chega_a_leitura(
+    app,
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """`RN-01-61`, decisão 1 de `audio-e-midia-legivel-no-nucleo`: guardar o
+    áudio **não** fez o núcleo transcrever fala. O arquivo é gravado e a
+    porta de leitura nunca o recebe — a devolutiva continua a ser feita
+    sobre a transcrição vinda do aparelho.
+    """
+    espia = _PortaEspia()
+    app.dependency_overrides[dependencia_da_producao_da_missao] = lambda: espia
+    try:
+        chave, _ = criar_chave()
+        guerreiro, equipe = _montar_equipe_com_atividade_corrente(
+            criar_persona=criar_persona,
+            criar_comunidade=criar_comunidade,
+            criar_aula=criar_aula,
+            criar_trilha=criar_trilha,
+            criar_missao=criar_missao,
+            criar_atividade=criar_atividade,
+            criar_equipe=criar_equipe,
+            sessao=sessao,
+        )
+        token, _ = criar_sessao_de_teste(guerreiro)
+
+        resposta = cliente.post(
+            f"/v1/equipes/{equipe.id}/producao",
+            data={"forma": "audio", "texto": "O que a equipe falou."},
+            files={"arquivo": ("fala.mp3", io.BytesIO(b"audio-fake"), "audio/mpeg")},
+            headers=_cabecalhos(chave, token),
+        )
+        assert resposta.status_code == 201
+
+        # A porta foi chamada, e o áudio **não** foi com ela.
+        assert len(espia.chamadas) == 1
+        assert espia.chamadas[0]["forma"] == "audio"
+        assert espia.chamadas[0]["texto"] == "O que a equipe falou."
+        assert espia.chamadas[0]["arquivo"] is None
+
+        # E o arquivo foi guardado de todo modo.
+        producao = sessao.query(ProducaoDaMissao).one()
+        assert producao.referencia is not None
+        assert producao.transcricao == "O que a equipe falou."
+    finally:
+        app.dependency_overrides.pop(dependencia_da_producao_da_missao, None)

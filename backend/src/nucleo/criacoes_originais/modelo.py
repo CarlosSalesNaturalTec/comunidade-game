@@ -27,16 +27,19 @@ class SituacaoDaCriacaoOriginal(enum.StrEnum):
 
 
 class TipoDeProducaoDaCriacaoOriginal(enum.StrEnum):
-    """Os cinco valores que `conteudos.modelo.TipoDeConteudo` já firma,
-    replicados aqui porque a criação original é entrega do Guerreiro(a), não
-    conteúdo do Mestre — os dois nunca compartilham a mesma tabela (design —
-    decisão 4). Texto e link externo trazem o que lhes cabe em `producao`
-    no ato da entrega; imagem, vídeo e arquivo nascem sem bytes e os
-    recebem depois, pela sessão de envio de `criacoes_originais.regra`.
+    """Os **seis** valores da entrega do Guerreiro(a) (`RF-01-77`). Até
+    2026-11-03 eram cinco, iguais aos de `conteudos.modelo.TipoDeConteudo`;
+    o áudio entrou só deste lado, porque a criação original é entrega do
+    Guerreiro(a), não conteúdo do Mestre — os dois nunca compartilharam a
+    mesma tabela (design — decisão 4), e agora nem o mesmo conjunto. Texto e
+    link externo trazem o que lhes cabe em `producao` no ato da entrega;
+    imagem, áudio, vídeo e arquivo nascem sem bytes e os recebem depois,
+    pela sessão de envio de `criacoes_originais.regra`.
     """
 
     texto = "texto"
     imagem = "imagem"
+    audio = "audio"
     link_externo = "link_externo"
     video = "video"
     arquivo = "arquivo"
@@ -79,6 +82,7 @@ class CriacaoOriginal(Base, ComAutoria):
     producao: Mapped[str | None] = mapped_column(Text, nullable=True)
     referencia: Mapped[str | None] = mapped_column(String(512), nullable=True)
     tamanho: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    tipo_do_arquivo: Mapped[str | None] = mapped_column(String(255), nullable=True)
     situacao: Mapped[SituacaoDaCriacaoOriginal] = mapped_column(
         Enum(SituacaoDaCriacaoOriginal, native_enum=False, length=16), nullable=False
     )

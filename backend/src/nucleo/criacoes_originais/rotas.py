@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
@@ -27,6 +27,7 @@ from .regra import (
     consultar_portfolio_do_guerreiro,
     devolver_criacao_original,
     entregar_criacao_original,
+    ler_arquivo_da_criacao,
     validar_criacao_original,
 )
 
@@ -188,6 +189,26 @@ def confirmar_envio_rota(
     )
     sessao_bd.commit()
     return _saida(criacao)
+
+
+@roteador.get("/criacoes/{id_da_criacao}/arquivo")
+def ler_arquivo_da_criacao_rota(
+    id_da_criacao: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> Response:
+    """`RF-01-78`, `RN-01-60`: os bytes da mídia, a quem já pode ver a
+    criação. Até 2026-11-03 o arquivo entrava pelo `POST` e pelo `PATCH`
+    acima e **não havia `GET`** — nem o autor nem a vitrine o alcançavam. A
+    autorização e o 404 da criação sem mídia são de `ler_arquivo_da_criacao`,
+    como em `conteudos`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    criacao = _obter_criacao(sessao_bd, id_da_criacao)
+    arquivo = ler_arquivo_da_criacao(
+        sessao_bd, criacao, operador=operador, armazenamento=armazenamento
+    )
+    return Response(content=arquivo.bytes_do_arquivo, media_type=arquivo.tipo_mime)
 
 
 class CreditadoNoPortfolioSaida(AvatarENickSaida):

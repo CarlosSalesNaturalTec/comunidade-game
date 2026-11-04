@@ -332,3 +332,137 @@ def test_devolucao_pela_rota_exige_motivo(
     assert resposta.status_code == 200
     assert resposta.json()["situacao"] == "devolvida"
     assert resposta.json()["motivo_da_devolucao"] == "Falta explicar como funciona."
+
+
+def _criacao_com_arquivo_enviado(
+    cliente, cabecalhos, culminancia_id, *, tipo="imagem", tipo_mime="image/png", corpo=b"PNG-falso"
+):
+    """Entrega, envia os bytes e confirma — o caminho inteiro por HTTP,
+    como o Guerreiro(a) o percorre."""
+    resposta = cliente.post(
+        f"/v1/culminancias/{culminancia_id}/criacoes",
+        json={"tipo": tipo},
+        headers=cabecalhos,
+    )
+    assert resposta.status_code == 201
+    criacao_id = resposta.json()["id"]
+    resposta_sessao = cliente.post(
+        f"/v1/criacoes/{criacao_id}/arquivo",
+        json={"tipo_mime": tipo_mime, "tamanho_declarado": len(corpo)},
+        headers=cabecalhos,
+    )
+    assert resposta_sessao.status_code == 201
+    cliente.put(
+        resposta_sessao.json()["endereco_da_sessao"],
+        content=corpo,
+        headers={**cabecalhos, "Content-Range": f"bytes 0-{len(corpo) - 1}/{len(corpo)}"},
+    )
+    assert (
+        cliente.patch(f"/v1/criacoes/{criacao_id}/arquivo", headers=cabecalhos).status_code == 200
+    )
+    return criacao_id
+
+
+def test_autor_le_os_bytes_da_propria_criacao(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_culminancia
+):
+    """`RF-01-78`: até 2026-11-03 não havia `GET` — o arquivo entrava e
+    nunca saía."""
+    guerreiro = criar_persona(Papel.guerreiro)
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    culminancia = criar_culminancia(trilha, mestre, modalidade=ModalidadeDaCulminancia.individual)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, guerreiro)
+    criacao_id = _criacao_com_arquivo_enviado(
+        cliente, cabecalhos, culminancia.id, corpo=b"bytes-da-criacao"
+    )
+
+    resposta = cliente.get(f"/v1/criacoes/{criacao_id}/arquivo", headers=cabecalhos)
+
+    assert resposta.status_code == 200
+    assert resposta.content == b"bytes-da-criacao"
+    assert resposta.headers["content-type"].startswith("image/png")
+
+
+def test_mestre_autor_le_os_bytes_da_criacao_que_lhe_cabe_julgar(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_culminancia
+):
+    guerreiro = criar_persona(Papel.guerreiro)
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    culminancia = criar_culminancia(trilha, mestre, modalidade=ModalidadeDaCulminancia.individual)
+    chave, _ = criar_chave()
+    cabecalhos_guerreiro = _cabecalhos(chave, criar_sessao_de_teste, guerreiro)
+    criacao_id = _criacao_com_arquivo_enviado(cliente, cabecalhos_guerreiro, culminancia.id)
+    cabecalhos_mestre = _cabecalhos(chave, criar_sessao_de_teste, mestre)
+
+    resposta = cliente.get(f"/v1/criacoes/{criacao_id}/arquivo", headers=cabecalhos_mestre)
+
+    assert resposta.status_code == 200
+
+
+def test_quem_nao_e_creditado_nem_autor_e_recusado(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_culminancia
+):
+    """`RN-01-60`: 403, e nenhum byte."""
+    guerreiro = criar_persona(Papel.guerreiro)
+    estranho = criar_persona(Papel.guerreiro)
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    culminancia = criar_culminancia(trilha, mestre, modalidade=ModalidadeDaCulminancia.individual)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, guerreiro)
+    criacao_id = _criacao_com_arquivo_enviado(cliente, cabecalhos, culminancia.id)
+    cabecalhos_estranho = _cabecalhos(chave, criar_sessao_de_teste, estranho)
+
+    resposta = cliente.get(f"/v1/criacoes/{criacao_id}/arquivo", headers=cabecalhos_estranho)
+
+    assert resposta.status_code == 403
+    assert resposta.content != b"PNG-falso"
+
+
+def test_criacao_de_texto_e_criacao_sem_envio_respondem_404(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_culminancia
+):
+    guerreiro = criar_persona(Papel.guerreiro)
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    culminancia = criar_culminancia(trilha, mestre, modalidade=ModalidadeDaCulminancia.individual)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, guerreiro)
+
+    id_do_texto = cliente.post(
+        f"/v1/culminancias/{culminancia.id}/criacoes",
+        json={"tipo": "texto", "producao": "Meu diário."},
+        headers=cabecalhos,
+    ).json()["id"]
+    assert cliente.get(f"/v1/criacoes/{id_do_texto}/arquivo", headers=cabecalhos).status_code == 404
+
+
+def test_criacao_com_envio_nao_confirmado_responde_404(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_culminancia
+):
+    outro_mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    culminancia = criar_culminancia(trilha, mestre, modalidade=ModalidadeDaCulminancia.individual)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, guerreiro)
+    assert outro_mestre is not None
+
+    criacao_id = cliente.post(
+        f"/v1/culminancias/{culminancia.id}/criacoes",
+        json={"tipo": "audio"},
+        headers=cabecalhos,
+    ).json()["id"]
+    cliente.post(
+        f"/v1/criacoes/{criacao_id}/arquivo",
+        json={"tipo_mime": "audio/mpeg", "tamanho_declarado": 9},
+        headers=cabecalhos,
+    )
+
+    resposta = cliente.get(f"/v1/criacoes/{criacao_id}/arquivo", headers=cabecalhos)
+
+    assert resposta.status_code == 404

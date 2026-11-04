@@ -82,6 +82,30 @@ roda em transação em versões mais velhas, e o repositório já escolheu não 
 Produção gravada antes desta change não tem arquivo — ele nunca foi gravado. A leitura
 responde **404**, e não há _backfill_ possível. É consequência aceita da regra que vigorava.
 
+### 7. A mídia da produção é guardada do que já chega, sem sessão de envio
+
+Descoberto no apply, e **corrige a spec que eu havia escrito por analogia**: a produção da
+missão não usa sessão retomável. As duas rotas são `multipart/form-data` com `UploadFile`, e a
+foto **precisa** chegar inline, porque é dela que o núcleo tira a transcrição por OCR. Os bytes
+já estão no núcleo no ato do registro.
+
+Guardar passa a ser, literalmente, **não descartar o que já se recebeu** — uma linha de
+`gravar`, não uma máquina de envio nova. O áudio entra pelo mesmo campo `arquivo`, ao lado da
+transcrição em `texto`.
+
+_Alternativa descartada:_ sessão de envio em ato próprio, como a criação original tem. Mudaria
+o contrato das duas rotas da App 01 sem necessidade, e a foto teria de chegar duas vezes — uma
+para o OCR e outra para a guarda. A spec e a tarefa 5.4 foram corrigidas.
+
+### 8. A criação original ganha a coluna do tipo MIME
+
+Descoberto no apply: `CriacaoOriginal` guarda `referencia` e `tamanho`, e **não** o tipo MIME —
+o `tipo_mime` ia só para a sessão de envio. Sem ele, a leitura devolveria sempre
+`application/octet-stream` e nenhum navegador renderizaria a mídia. Entra
+`tipo_do_arquivo`, espelhando `ConteudoDaMissao`, gravada na confirmação a partir do
+`EnvioConsultado.tipo_mime` — que o armazenamento apura, nunca o cliente declara. A migração,
+que já existia para a produção, cobre as duas tabelas.
+
 ## Risks / Trade-offs
 
 - **A mídia da produção da missão nasce sem portão público, mas nasce guardada.** Uma fatia

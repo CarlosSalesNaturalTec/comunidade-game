@@ -6,6 +6,10 @@ import pytest
 
 from nucleo.aportes.modelo import FormaDeAporte
 from nucleo.consentimentos.modelo import DecisaoDeConsentimento, TipoDeConsentimento
+from nucleo.criacoes_originais.modelo import (
+    SituacaoDaCriacaoOriginal,
+    TipoDeProducaoDaCriacaoOriginal,
+)
 from nucleo.desafios_extras.modelo import (
     ConclusaoDeDesafioExtra,
     Modalidade,
@@ -1691,3 +1695,219 @@ def test_poder_traz_os_mestres_responsaveis_e_poder_sem_trilha_sai_com_lista_vaz
     ]
     assert {m["id"] for m in responsaveis} == {str(primeiro.id), str(segundo.id)}
     assert por_id[str(sem_trilhas.id)]["mestres_responsaveis"] == []
+
+
+def _criacao_publica_com_midia(
+    sessao, configuracao, criar_criacao_original, trilha, admin, equipe, corpo=b"bytes-publicos"
+):
+    """A criação validada, com mídia de verdade no armazenamento local do
+    teste — a rota serve bytes, não referência."""
+    from nucleo.armazenamento.fabrica import obter_porta_de_armazenamento
+
+    criacao = criar_criacao_original(
+        trilha, admin, equipe=equipe, tipo=TipoDeProducaoDaCriacaoOriginal.imagem, producao=None
+    )
+    criacao.referencia = f"criacoes-originais/{criacao.id}/arquivo"
+    criacao.tipo_do_arquivo = "image/png"
+    sessao.flush()
+    obter_porta_de_armazenamento(configuracao).gravar(referencia=criacao.referencia, conteudo=corpo)
+    sessao.commit()
+    return criacao
+
+
+def test_midia_da_criacao_publica_e_servida_sem_sessao(
+    sessao,
+    cliente,
+    configuracao,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_equipe,
+    criar_criacao_original,
+    guerreiro_publico,
+):
+    """`RF-01-81`: sem sessão, só a chave de aplicação."""
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    autor, _ = guerreiro_publico(nick="autora-com-midia")
+    equipe = criar_equipe(autor, trilha=trilha, homologada=True)
+    criacao = _criacao_publica_com_midia(
+        sessao, configuracao, criar_criacao_original, trilha, admin, equipe
+    )
+
+    chave, _ = criar_chave()
+    resposta = cliente.get(
+        f"/v1/vitrine/criacoes/{criacao.id}/arquivo", headers={"X-Chave-Aplicacao": chave}
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.content == b"bytes-publicos"
+    assert resposta.headers["content-type"].startswith("image/png")
+
+
+def test_midia_de_criacao_com_creditado_sem_autorizacao_responde_404(
+    sessao,
+    cliente,
+    configuracao,
+    criar_chave,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+    criar_trilha,
+    criar_equipe,
+    criar_criacao_original,
+    adicionar_integrante,
+    guerreiro_publico,
+):
+    """`RN-01-63`: o portão vale para o byte, não só para a listagem."""
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    autor, _ = guerreiro_publico(nick="autora-autorizada")
+    equipe = criar_equipe(autor, trilha=trilha, homologada=True)
+
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+    colega = criar_persona(Papel.guerreiro)
+    criar_nick(colega, "colega-nao-autorizado")
+    criar_vinculo(responsavel, colega, cadastrado_por=admin)
+    criar_consentimento(
+        responsavel,
+        colega,
+        tipo=TipoDeConsentimento.autorizacao_de_divulgacao,
+        decisao=DecisaoDeConsentimento.nega,
+    )
+    adicionar_integrante(equipe, colega)
+
+    criacao = _criacao_publica_com_midia(
+        sessao, configuracao, criar_criacao_original, trilha, admin, equipe
+    )
+
+    chave, _ = criar_chave()
+    resposta = cliente.get(
+        f"/v1/vitrine/criacoes/{criacao.id}/arquivo", headers={"X-Chave-Aplicacao": chave}
+    )
+
+    assert resposta.status_code == 404
+    assert resposta.content != b"bytes-publicos"
+
+
+def test_midia_de_criacao_nao_validada_responde_404(
+    sessao,
+    cliente,
+    configuracao,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_equipe,
+    criar_criacao_original,
+    guerreiro_publico,
+):
+    from nucleo.armazenamento.fabrica import obter_porta_de_armazenamento
+
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    autor, _ = guerreiro_publico(nick="autora-entregue")
+    equipe = criar_equipe(autor, trilha=trilha, homologada=True)
+
+    criacao = criar_criacao_original(
+        trilha,
+        admin,
+        equipe=equipe,
+        tipo=TipoDeProducaoDaCriacaoOriginal.imagem,
+        producao=None,
+        situacao=SituacaoDaCriacaoOriginal.entregue,
+    )
+    criacao.referencia = f"criacoes-originais/{criacao.id}/arquivo"
+    criacao.tipo_do_arquivo = "image/png"
+    sessao.flush()
+    obter_porta_de_armazenamento(configuracao).gravar(
+        referencia=criacao.referencia, conteudo=b"ainda-nao-validada"
+    )
+    sessao.commit()
+
+    chave, _ = criar_chave()
+    resposta = cliente.get(
+        f"/v1/vitrine/criacoes/{criacao.id}/arquivo", headers={"X-Chave-Aplicacao": chave}
+    )
+
+    assert resposta.status_code == 404
+
+
+def test_recusa_da_midia_nao_distingue_inexistente_de_nao_autorizada(
+    sessao,
+    cliente,
+    configuracao,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_equipe,
+    criar_criacao_original,
+):
+    """`RN-01-22`, `RN-01-63`: mesmo corpo e mesmo código, para a rota não
+    virar oráculo sobre quais crianças têm divulgação autorizada."""
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    sem_autorizacao = criar_persona(Papel.guerreiro)
+    equipe = criar_equipe(sem_autorizacao, trilha=trilha, homologada=True)
+    criacao = _criacao_publica_com_midia(
+        sessao, configuracao, criar_criacao_original, trilha, admin, equipe
+    )
+
+    chave, _ = criar_chave()
+    cabecalhos = {"X-Chave-Aplicacao": chave}
+    resposta_existente = cliente.get(
+        f"/v1/vitrine/criacoes/{criacao.id}/arquivo", headers=cabecalhos
+    )
+    resposta_inexistente = cliente.get(
+        f"/v1/vitrine/criacoes/{uuid.uuid4()}/arquivo", headers=cabecalhos
+    )
+
+    assert resposta_existente.status_code == resposta_inexistente.status_code == 404
+    assert resposta_existente.json() == resposta_inexistente.json()
+
+
+def test_autorizacao_revogada_tira_a_midia_do_ar_na_leitura_seguinte(
+    sessao,
+    cliente,
+    configuracao,
+    criar_chave,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+    criar_trilha,
+    criar_equipe,
+    criar_criacao_original,
+):
+    """Sem ato de limpeza: o portão é consultado a cada leitura."""
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+    autor = criar_persona(Papel.guerreiro, avatar="avatar-de-teste")
+    criar_nick(autor, "autora-revogada")
+    criar_vinculo(responsavel, autor, cadastrado_por=admin)
+    criar_consentimento(
+        responsavel,
+        autor,
+        tipo=TipoDeConsentimento.autorizacao_de_divulgacao,
+        decisao=DecisaoDeConsentimento.concede,
+    )
+    equipe = criar_equipe(autor, trilha=trilha, homologada=True)
+    criacao = _criacao_publica_com_midia(
+        sessao, configuracao, criar_criacao_original, trilha, admin, equipe
+    )
+
+    chave, _ = criar_chave()
+    cabecalhos = {"X-Chave-Aplicacao": chave}
+    endereco = f"/v1/vitrine/criacoes/{criacao.id}/arquivo"
+    assert cliente.get(endereco, headers=cabecalhos).status_code == 200
+
+    criar_consentimento(
+        responsavel,
+        autor,
+        tipo=TipoDeConsentimento.autorizacao_de_divulgacao,
+        decisao=DecisaoDeConsentimento.nega,
+    )
+    sessao.commit()
+
+    assert cliente.get(endereco, headers=cabecalhos).status_code == 404

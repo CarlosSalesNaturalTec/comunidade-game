@@ -1,7 +1,7 @@
 import enum
 import uuid
 
-from sqlalchemy import CheckConstraint, Enum, ForeignKey, Text, Uuid
+from sqlalchemy import CheckConstraint, Enum, ForeignKey, Integer, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
@@ -21,12 +21,17 @@ class ProducaoDaMissao(Base, ComAutoria):
     pela equipe do App 01 nesta fatia; `guerreiro_id` fica reservado à porta
     individual da fatia 7 do PRD-05, sem migração nova (design — decisão 2).
 
-    Sem coluna de foto, de áudio nem de custo: a foto é descartada na
-    leitura, o áudio nunca chega — a fala é transcrita no aparelho
-    (`RF-04-46`, `RF-05-76`, `RN-05-32`, documento 03 §§1.12, 12.2) — e o
-    consumo do modelo nunca é medido por ato (`RF-09-90`). `ComAutoria` grava quem
-    entregou de fato — o integrante em sessão —, separado de `equipe_id`,
-    a quem a produção pertence.
+    **A mídia é guardada desde 2026-11-03** (`RF-01-79`): até então a foto
+    era lida e descartada e o áudio nunca chegava ao núcleo. Agora as duas
+    ficam, em `referencia`, `tamanho` e `tipo_do_arquivo` — o mesmo
+    vocabulário de `CriacaoOriginal` e `ConteudoDaMissao` —, e a
+    **transcrição continua**, porque é sobre ela que a devolutiva se faz
+    (`RN-01-61`). Produção gravada antes disso não tem mídia e nunca terá:
+    o arquivo não foi guardado, e não há de onde recuperá-lo.
+
+    Sem coluna de custo: o consumo do modelo nunca é medido por ato
+    (`RF-09-90`). `ComAutoria` grava quem entregou de fato — o integrante em
+    sessão —, separado de `equipe_id`, a quem a produção pertence.
     """
 
     __tablename__ = "producao_da_missao"
@@ -47,6 +52,9 @@ class ProducaoDaMissao(Base, ComAutoria):
     )
     transcricao: Mapped[str] = mapped_column(Text, nullable=False)
     devolutiva: Mapped[str | None] = mapped_column(Text, nullable=True)
+    referencia: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    tamanho: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    tipo_do_arquivo: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     __table_args__ = (
         CheckConstraint(
