@@ -24,7 +24,7 @@ def _marcar_marco_alcancado(sessao, *, mestre, guerreiro, missao):
     """O marco alcançado é o desbloqueio aprovado (`RF-09-84`, design —
     decisão 6) — `mestre` fica no parâmetro por compatibilidade com quem
     chama, mesmo sem ser usado aqui."""
-    desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=True)
+    desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, cumpriu=True)
     sessao.add(desbloqueio)
     sessao.commit()
 
@@ -232,7 +232,7 @@ def test_resultado_sem_desbloqueio_nao_alcanca_o_marco(sessao, cenario):
 def test_desbloqueio_pratico_nao_julgado_nao_alcanca_o_marco(sessao, cenario):
     c = cenario(marco_alcancado=False)
     desbloqueio = DesbloqueioDaMissao(
-        guerreiro_id=c["guerreiro"].id, missao_id=c["missao"].id, aprovado=None
+        guerreiro_id=c["guerreiro"].id, missao_id=c["missao"].id, cumpriu=None
     )
     sessao.add(desbloqueio)
     sessao.commit()

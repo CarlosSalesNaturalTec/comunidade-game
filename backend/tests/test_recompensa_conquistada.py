@@ -15,7 +15,7 @@ MOMENTO_DO_FATO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
 def _marcar_marco_alcancado(sessao, *, mestre, guerreiro, missao):
     """O marco alcançado é o desbloqueio aprovado (`RF-09-84`, design —
     decisão 6)."""
-    desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=True)
+    desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, cumpriu=True)
     sessao.add(desbloqueio)
     sessao.commit()
 

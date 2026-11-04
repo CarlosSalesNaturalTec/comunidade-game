@@ -10,9 +10,9 @@ from nucleo.recursos.modelo import NaturezaDoRecurso
 from nucleo.trilhas.modelo import DesbloqueioDaMissao
 
 
-def _desbloquear(sessao, *, guerreiro, missao, aprovado=True):
+def _desbloquear(sessao, *, guerreiro, missao, cumpriu=True):
     desbloqueio = DesbloqueioDaMissao(
-        guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=aprovado
+        guerreiro_id=guerreiro.id, missao_id=missao.id, cumpriu=cumpriu
     )
     sessao.add(desbloqueio)
     sessao.commit()
@@ -168,7 +168,7 @@ def test_quantidade_esgotada_continua_na_fila_marcada(sessao, cenario, criar_per
 
 def test_desbloqueio_pratico_nao_julgado_nao_entra_na_fila(sessao, cenario):
     c = cenario()
-    _desbloquear(sessao, guerreiro=c["guerreiro"], missao=c["missao"], aprovado=None)
+    _desbloquear(sessao, guerreiro=c["guerreiro"], missao=c["missao"], cumpriu=None)
 
     pendencias = listar_entregas_pendentes(sessao, operador=c["mestre"])
 

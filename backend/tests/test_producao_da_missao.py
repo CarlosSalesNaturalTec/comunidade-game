@@ -31,7 +31,7 @@ def _montar_guerreiro_com_missao_desbloqueada(
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre, producao_esperada="Um texto sobre o tema.")
     criar_inscricao_na_trilha(guerreiro, trilha)
-    criar_desbloqueio_da_missao(guerreiro, missao, aprovado=True)
+    criar_desbloqueio_da_missao(guerreiro, missao, cumpriu=True)
     return guerreiro, trilha, missao, atividade
 
 
@@ -1013,7 +1013,7 @@ def test_producao_individual_nao_alcanca_colega(
     )
     colega = criar_persona(Papel.guerreiro)
     criar_inscricao_na_trilha(colega, trilha)
-    criar_desbloqueio_da_missao(colega, missao, aprovado=True)
+    criar_desbloqueio_da_missao(colega, missao, cumpriu=True)
     token, _ = criar_sessao_de_teste(guerreiro)
 
     cliente.post(

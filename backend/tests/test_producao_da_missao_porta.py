@@ -68,7 +68,7 @@ def _montar_guerreiro_com_missao_desbloqueada(
     missao = criar_missao(trilha, mestre)
     atividade = criar_atividade(missao, mestre, producao_esperada="Um texto sobre o tema.")
     criar_inscricao_na_trilha(guerreiro, trilha)
-    criar_desbloqueio_da_missao(guerreiro, missao, aprovado=True)
+    criar_desbloqueio_da_missao(guerreiro, missao, cumpriu=True)
     return guerreiro, missao, atividade
 
 

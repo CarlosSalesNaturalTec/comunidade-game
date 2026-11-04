@@ -339,6 +339,10 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-129` | No desafio de desbloqueio prático, o Mestre autor declara que forma de comprovação aceita — uma entre as seis formas de entrega do Guerreiro(a)                                                                   | essencial  |
 | `RF-09-130` | No desafio prático, o Mestre autor declara o critério de aceite, em texto livre, que o Guerreiro(a) lê ao entregar e sob o qual é julgado                                                                         | essencial  |
 | `RF-09-131` | No desafio prático, o Mestre autor declara um título curto, que é o que a vitrine exibe ao lado do nick do Guerreiro(a)                                                                                           | essencial  |
+| `RF-09-132` | A bancada dos desafios práticos a julgar exibe a produção entregue e o critério de aceite, ao lado do Guerreiro(a), da missão e do momento da declaração                                                          | essencial  |
+| `RF-09-133` | O julgamento do desafio prático tem dois vereditos: cumpriu, que abre a missão seguinte, e publicável, que leva ou não a entrega à vitrine pública                                                                | essencial  |
+| `RF-09-134` | O Mestre autor registra, no julgamento, o motivo em linguagem simples, que o Guerreiro(a) lê                                                                                                                      | essencial  |
+| `RF-09-135` | Julgar que o Guerreiro(a) cumpriu o desafio prático credita a ele 5 pontos regulares na trilha da missão (documento 11 §5)                                                                                        | essencial  |
 
 ### 6.5 Banco do Quiz ao Vivo
 
@@ -497,6 +501,10 @@ outras duas frentes já entregues — tombamento (PRD-07) e ficha de vida —, s
 | `RN-09-49` | A natureza de uma atividade não se altera: trocá-la é remover a atividade e cadastrar outra                                                                 | —                      | 03 §11         |
 | `RN-09-50` | Declarar desafio prático exige forma de comprovação, critério de aceite e título curto; o declarado antes dessa exigência segue valendo até ser redeclarado | 5                      | 02 §4, 11 §2.2 |
 | `RN-09-51` | O título curto é campo próprio do desafio prático, de no máximo 60 caracteres, e nunca o enunciado dele                                                     | —                      | 11 §8.2        |
+| `RN-09-52` | Publicável só é aceito junto de cumpriu e só sobre declaração com comprovação gravada: na entrega presencial e na reprovação é recusado                     | —                      | 02 §4          |
+| `RN-09-53` | O motivo é exigido em todo veredito negativo — não cumpriu, ou cumpriu e não publicável —, e dispensado em cumpriu e publicável                             | —                      | 02 §4          |
+| `RN-09-54` | O julgamento que diz não cumpriu não apaga a declaração: ela guarda o veredito e o motivo, e entregar de novo reabre a mesma linha                          | —                      | 11 §2.2        |
+| `RN-09-55` | Os 5 pontos do prático creditam uma vez por par Guerreiro(a)–missão, e o julgado antes desta regra não recebe crédito retroativo                            | —                      | 11 §5          |
 
 ## 8. Modelo de dados
 
@@ -517,25 +525,27 @@ BibliografiaDaMissao [entidade nova]    ItemPatrimonial      (PRD-07)
 Culminancia          [entidade nova]    DesafioExtra         (PRD-01)
 RecompensaDeMarco    [entidade nova]    Responsavel          (PRD-01)
 DesafioDeDesbloqueio                    SugestaoOuProposta   (PRD-01)
-PerguntaDeQuiz                          Auditoria            (PRD-01)
+DesbloqueioDaMissao                     Auditoria            (PRD-01)
+PerguntaDeQuiz
 CriacaoOriginal
 EtiquetaODS
 Resultado / Presenca / Lancamento
 ```
 
-| Entidade               | Atributos essenciais                                                                                                                                                                                                                                                        |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Trilha`               | nome, poder, área do conhecimento, Mestre autor, objetivo, situação (rascunho, publicada, despublicada), versão, licença, paginação pelas etapas                                                                                                                            |
-| `EtiquetaODS`          | trilha ou missão, objetivo (1 a 18), meta opcional, declarada por, data — entidade do PRD-01                                                                                                                                                                                |
-| `Missao`               | trilha, ordem, título, nível de dificuldade, **obrigatoriedade** (obrigatória ou opcional), **natureza** (sondagem ou comum), etapa do ciclo, cadência de retomada, desafio de desbloqueio — no prático, com forma de comprovação aceita, critério de aceite e título curto |
-| `Atividade`            | missão, título, descrição, **modalidade** (individual, equipe, equipe com familiar), **formato** (presencial ou on-line), natureza, recursos                                                                                                                                |
-| `RecompensaDeMarco`    | trilha, marco (missão, etapa, batalha ou culminância), tipo de recurso, quantidade — sem ponto de apoio nem situação de entrega própria (PRD-07)                                                                                                                            |
-| `SugestaoDeEstrutura`  | missão, tópico cadastrado pelo Mestre, estrutura proposta, lacunas apontadas, situação (aceita, recusada ou alterada)                                                                                                                                                       |
-| `Conteudo`             | missão, tipo (texto, imagem, link externo, vídeo, arquivo), corpo ou endereço, tamanho, autoria (própria ou de terceiro), fonte e autorização                                                                                                                               |
-| `BibliografiaDaMissao` | missão, título do acervo, capítulo recomendado, Apoiador creditado                                                                                                                                                                                                          |
-| `Culminancia`          | trilha, descrição da criação original esperada, modalidade (individual ou equipe), critério de validação                                                                                                                                                                    |
-| `CriacaoOriginal`      | Guerreiro(a) ou equipe com o papel de cada integrante, trilha, culminância, situação (entregue, validada, devolvida), Mestre validador, data e hora                                                                                                                         |
-| `PerguntaDeQuiz`       | Mestre curador, trilha, missão, enunciado, quatro alternativas, alternativa correta                                                                                                                                                                                         |
+| Entidade               | Atributos essenciais                                                                                                                                                                                                                                                           |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Trilha`               | nome, poder, área do conhecimento, Mestre autor, objetivo, situação (rascunho, publicada, despublicada), versão, licença, paginação pelas etapas                                                                                                                               |
+| `EtiquetaODS`          | trilha ou missão, objetivo (1 a 18), meta opcional, declarada por, data — entidade do PRD-01                                                                                                                                                                                   |
+| `Missao`               | trilha, ordem, título, nível de dificuldade, **obrigatoriedade** (obrigatória ou opcional), **natureza** (sondagem ou comum), etapa do ciclo, cadência de retomada, desafio de desbloqueio — no prático, com forma de comprovação aceita, critério de aceite e título curto    |
+| `Atividade`            | missão, título, descrição, **modalidade** (individual, equipe, equipe com familiar), **formato** (presencial ou on-line), natureza, recursos                                                                                                                                   |
+| `RecompensaDeMarco`    | trilha, marco (missão, etapa, batalha ou culminância), tipo de recurso, quantidade — sem ponto de apoio nem situação de entrega própria (PRD-07)                                                                                                                               |
+| `SugestaoDeEstrutura`  | missão, tópico cadastrado pelo Mestre, estrutura proposta, lacunas apontadas, situação (aceita, recusada ou alterada)                                                                                                                                                          |
+| `Conteudo`             | missão, tipo (texto, imagem, link externo, vídeo, arquivo), corpo ou endereço, tamanho, autoria (própria ou de terceiro), fonte e autorização                                                                                                                                  |
+| `BibliografiaDaMissao` | missão, título do acervo, capítulo recomendado, Apoiador creditado                                                                                                                                                                                                             |
+| `Culminancia`          | trilha, descrição da criação original esperada, modalidade (individual ou equipe), critério de validação                                                                                                                                                                       |
+| `CriacaoOriginal`      | Guerreiro(a) ou equipe com o papel de cada integrante, trilha, culminância, situação (entregue, validada, devolvida), Mestre validador, data e hora                                                                                                                            |
+| `PerguntaDeQuiz`       | Mestre curador, trilha, missão, enunciado, quatro alternativas, alternativa correta                                                                                                                                                                                            |
+| `DesbloqueioDaMissao`  | Guerreiro(a), missão, momento — uma por par. No prático, a comprovação entregue (PRD-05) e o julgamento do Mestre autor: os vereditos **cumpriu** e **publicável**, o **motivo** em linguagem simples, quem julgou e quando. Veredito em aberto é declaração ainda não julgada |
 
 Imutabilidade e versionamento:
 
@@ -550,6 +560,10 @@ Imutabilidade e versionamento:
   recebe: a `RecompensaDeMarco` não guarda situação de entrega, e o ponto de apoio de onde o
   recurso sai é declarado na entrega, não nela — a trilha é bem comum e não tem um.
 - `Atividade` sem missão só existe como atividade avulsa da gestão (App 03).
+- `DesbloqueioDaMissao` julgada como **não cumprida não se apaga**: guarda o veredito e o
+  motivo, para que o Guerreiro(a) leia por que não passou, e entregar de novo
+  **reabre a mesma linha** em vez de criar outra (`RN-09-54`). Não é reprovação persistida — é a
+  devolutiva do Mestre, e não se apresenta nem se conta como fracasso.
 
 ## 9. Contratos de API
 
@@ -559,58 +573,58 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, token de sessã
 PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 `/meus-aportes/ressarciveis`, `/itens-patrimoniais/...`) são do PRD-07 — não se repetem aqui.
 
-| Método | Rota                                                      | Autenticação | Descrição                                                                                           |
-| ------ | --------------------------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------- |
-| POST   | `/v1/trilhas`                                             | Mestre       | Cria trilha em rascunho, vinculada a um poder                                                       |
-| GET    | `/v1/trilhas/minhas`                                      | Mestre       | Trilhas do próprio Mestre, com a situação de cada uma                                               |
-| POST   | `/v1/trilhas/{id}/missoes`                                | Mestre       | Acrescenta missão, com ordem e dificuldade                                                          |
-| POST   | `/v1/missoes/{id}/conteudos`                              | Mestre       | Cria conteúdo de texto, imagem ou link externo                                                      |
-| PATCH  | `/v1/conteudos/{id}`                                      | Mestre       | Corrige corpo, endereço, autoria e fonte do conteúdo já cadastrado                                  |
-| DELETE | `/v1/conteudos/{id}`                                      | Mestre       | Remove o conteúdo, e o arquivo enviado sai do armazenamento com ele                                 |
-| POST   | `/v1/conteudos/{id}/arquivo`                              | Mestre       | Envia vídeo ou arquivo, em upload retomável, dentro do limite                                       |
-| GET    | `/v1/conteudos/{id}/arquivo`                              | Persona      | Serve os bytes do arquivo ao Mestre autor e ao Guerreiro(a) inscrito                                |
-| POST   | `/v1/missoes/{id}/bibliografia`                           | Mestre       | Vincula título e capítulo do acervo à missão                                                        |
-| POST   | `/v1/missoes/{id}/atividades`                             | Mestre       | Cria atividade da missão, com modalidade e formato                                                  |
-| PATCH  | `/v1/atividades/{id}`                                     | Mestre       | Corrige título, descrição, modalidade, formato e produção esperada                                  |
-| DELETE | `/v1/atividades/{id}`                                     | Mestre       | Carimba a atividade; partida de quiz aberta impede a remoção                                        |
-| GET    | `/v1/atividades/{id}/fatos`                               | Mestre       | Quantos fatos já apontam para a atividade, antes de confirmar remoção                               |
-| POST   | `/v1/missoes/{id}/desbloqueio`                            | Mestre       | Define o quiz ou desafio que abre a missão seguinte; no prático, com forma, critério e título curto |
-| POST   | `/v1/missoes/{id}/perguntas-do-desbloqueio`               | Mestre       | Acrescenta uma pergunta ao quiz, sem tocar nas demais                                               |
-| PUT    | `/v1/perguntas-do-desbloqueio/{id}`                       | Mestre       | Corrige uma pergunta do quiz, sem tocar nas demais                                                  |
-| DELETE | `/v1/perguntas-do-desbloqueio/{id}`                       | Mestre       | Tira uma pergunta do quiz; a última é recusada                                                      |
-| POST   | `/v1/perguntas-do-desbloqueio/{id}/imagem`                | Mestre       | Abre o envio retomável da imagem de uma pergunta do quiz                                            |
-| PATCH  | `/v1/perguntas-do-desbloqueio/{id}/imagem`                | Mestre       | Confirma o envio, e só então a pergunta passa a ter imagem                                          |
-| GET    | `/v1/perguntas-do-desbloqueio/{id}/imagem`                | Persona      | Serve os bytes da imagem ao Mestre autor e ao Guerreiro(a) inscrito                                 |
-| GET    | `/v1/missoes/desbloqueios-pendentes`                      | Mestre       | Declarações de desafio prático das próprias trilhas ainda não julgadas                              |
-| POST   | `/v1/missoes/{id}/desbloqueios/{guerreiro_id}/julgamento` | Mestre       | Julga se o Guerreiro(a) passou no desafio prático declarado                                         |
-| POST   | `/v1/trilhas/{id}/ods`                                    | Mestre       | Declara ou altera a etiqueta ODS da trilha                                                          |
-| POST   | `/v1/missoes/{id}/ods`                                    | Mestre       | Declara ou altera a etiqueta ODS de uma missão, se houver                                           |
-| POST   | `/v1/missoes/{id}/retomada`                               | Mestre       | Declara a cadência de revisão espaçada da missão                                                    |
-| POST   | `/v1/missoes/{id}/estrutura`                              | Mestre       | Envia o tópico e recebe a estrutura sugerida e as lacunas                                           |
-| POST   | `/v1/trilhas/{id}/recompensas-de-marco`                   | Mestre       | Declara a recompensa de um marco, com quantidade e lastro                                           |
-| POST   | `/v1/recompensas-de-marco/{id}/entrega`                   | Mestre       | Confirma a entrega e gera a baixa no livro-razão                                                    |
-| POST   | `/v1/trilhas/{id}/culminancia`                            | Mestre       | Declara a criação original esperada e o critério de validação                                       |
-| POST   | `/v1/trilhas/{id}/publicacao`                             | Mestre       | Publica a trilha; recusa sem coleta ou sem culminância                                              |
-| POST   | `/v1/trilhas/{id}/despublicacao`                          | Admin        | Despublica trilha auditada, com motivo registrado                                                   |
-| GET    | `/v1/trilhas/{id}`                                        | pública      | Trilha publicada, com licença e crédito do Mestre autor                                             |
-| POST   | `/v1/perguntas`                                           | Mestre       | Cadastra pergunta com quatro alternativas e uma correta                                             |
-| GET    | `/v1/perguntas/minhas`                                    | Mestre       | Banco do Mestre, filtrável por trilha e missão                                                      |
-| GET    | `/v1/minhas-turmas`                                       | Mestre       | Turmas e atividades do próprio Mestre                                                               |
-| POST   | `/v1/atividades/{id}/lancamentos`                         | Mestre       | Lança a atividade que propôs, com participantes e resultados                                        |
-| POST   | `/v1/aulas/{id}/presencas`                                | Mestre       | Registra e ajusta presença do próprio encontro                                                      |
-| POST   | `/v1/criacoes-originais/{id}/validacao`                   | Mestre       | Valida ou devolve a criação, creditando autoria e badge                                             |
-| POST   | `/v1/desafios-extras/{id}/validacao`                      | Mestre       | Validação pedagógica, com parecer ou motivo da recusa                                               |
-| GET    | `/v1/desafios-extras/a-validar`                           | Mestre       | Fila do que há para validar, das próprias trilhas                                                   |
-| POST   | `/v1/desafios-extras`                                     | Mestre       | Propõe desafio extra à própria trilha ou à de outro Mestre                                          |
-| GET    | `/v1/guerreiros/vinculaveis`                              | Mestre       | Guerreiros e Guerreiras das suas comunidades, por nick e avatar                                     |
-| POST   | `/v1/responsaveis`                                        | Mestre       | Cadastra responsável e vincula Guerreiros e Guerreiras                                              |
-| GET    | `/v1/mestres/{id}/artefatos`                              | Mestre       | Lê os próprios artefatos, com os declarados no cadastro marcados                                    |
-| POST   | `/v1/mestres/{id}/artefatos`                              | Mestre       | Publica currículo, portfólio, redes e artefatos comprobatórios                                      |
-| PATCH  | `/v1/mestres/{id}/artefatos/{artefato_id}`                | Mestre       | Corrige rótulo e endereço, o do cadastro incluído; guarda o original                                |
-| DELETE | `/v1/mestres/{id}/artefatos/{artefato_id}`                | Mestre       | Remove artefato próprio; recusa o declarado no cadastro                                             |
-| PUT    | `/v1/eu/mestre/identidade`                                | Mestre       | Define ou troca o próprio nick e avatar                                                             |
-| GET    | `/v1/eu/mestre/identidade`                                | Mestre       | Lê o próprio nick e avatar vigentes, sem dado de moeda                                              |
-| POST   | `/v1/sugestoes`                                           | Mestre       | Registra proposta de evolução na fila única da gestão                                               |
+| Método | Rota                                                      | Autenticação | Descrição                                                                                                              |
+| ------ | --------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| POST   | `/v1/trilhas`                                             | Mestre       | Cria trilha em rascunho, vinculada a um poder                                                                          |
+| GET    | `/v1/trilhas/minhas`                                      | Mestre       | Trilhas do próprio Mestre, com a situação de cada uma                                                                  |
+| POST   | `/v1/trilhas/{id}/missoes`                                | Mestre       | Acrescenta missão, com ordem e dificuldade                                                                             |
+| POST   | `/v1/missoes/{id}/conteudos`                              | Mestre       | Cria conteúdo de texto, imagem ou link externo                                                                         |
+| PATCH  | `/v1/conteudos/{id}`                                      | Mestre       | Corrige corpo, endereço, autoria e fonte do conteúdo já cadastrado                                                     |
+| DELETE | `/v1/conteudos/{id}`                                      | Mestre       | Remove o conteúdo, e o arquivo enviado sai do armazenamento com ele                                                    |
+| POST   | `/v1/conteudos/{id}/arquivo`                              | Mestre       | Envia vídeo ou arquivo, em upload retomável, dentro do limite                                                          |
+| GET    | `/v1/conteudos/{id}/arquivo`                              | Persona      | Serve os bytes do arquivo ao Mestre autor e ao Guerreiro(a) inscrito                                                   |
+| POST   | `/v1/missoes/{id}/bibliografia`                           | Mestre       | Vincula título e capítulo do acervo à missão                                                                           |
+| POST   | `/v1/missoes/{id}/atividades`                             | Mestre       | Cria atividade da missão, com modalidade e formato                                                                     |
+| PATCH  | `/v1/atividades/{id}`                                     | Mestre       | Corrige título, descrição, modalidade, formato e produção esperada                                                     |
+| DELETE | `/v1/atividades/{id}`                                     | Mestre       | Carimba a atividade; partida de quiz aberta impede a remoção                                                           |
+| GET    | `/v1/atividades/{id}/fatos`                               | Mestre       | Quantos fatos já apontam para a atividade, antes de confirmar remoção                                                  |
+| POST   | `/v1/missoes/{id}/desbloqueio`                            | Mestre       | Define o quiz ou desafio que abre a missão seguinte; no prático, com forma, critério e título curto                    |
+| POST   | `/v1/missoes/{id}/perguntas-do-desbloqueio`               | Mestre       | Acrescenta uma pergunta ao quiz, sem tocar nas demais                                                                  |
+| PUT    | `/v1/perguntas-do-desbloqueio/{id}`                       | Mestre       | Corrige uma pergunta do quiz, sem tocar nas demais                                                                     |
+| DELETE | `/v1/perguntas-do-desbloqueio/{id}`                       | Mestre       | Tira uma pergunta do quiz; a última é recusada                                                                         |
+| POST   | `/v1/perguntas-do-desbloqueio/{id}/imagem`                | Mestre       | Abre o envio retomável da imagem de uma pergunta do quiz                                                               |
+| PATCH  | `/v1/perguntas-do-desbloqueio/{id}/imagem`                | Mestre       | Confirma o envio, e só então a pergunta passa a ter imagem                                                             |
+| GET    | `/v1/perguntas-do-desbloqueio/{id}/imagem`                | Persona      | Serve os bytes da imagem ao Mestre autor e ao Guerreiro(a) inscrito                                                    |
+| GET    | `/v1/missoes/desbloqueios-pendentes`                      | Mestre       | Declarações de desafio prático das próprias trilhas ainda não julgadas, com a produção entregue e o critério de aceite |
+| POST   | `/v1/missoes/{id}/desbloqueios/{guerreiro_id}/julgamento` | Mestre       | Julga o prático nos dois vereditos — cumpriu e publicável —, com o motivo; cumprido, credita os 5 pontos               |
+| POST   | `/v1/trilhas/{id}/ods`                                    | Mestre       | Declara ou altera a etiqueta ODS da trilha                                                                             |
+| POST   | `/v1/missoes/{id}/ods`                                    | Mestre       | Declara ou altera a etiqueta ODS de uma missão, se houver                                                              |
+| POST   | `/v1/missoes/{id}/retomada`                               | Mestre       | Declara a cadência de revisão espaçada da missão                                                                       |
+| POST   | `/v1/missoes/{id}/estrutura`                              | Mestre       | Envia o tópico e recebe a estrutura sugerida e as lacunas                                                              |
+| POST   | `/v1/trilhas/{id}/recompensas-de-marco`                   | Mestre       | Declara a recompensa de um marco, com quantidade e lastro                                                              |
+| POST   | `/v1/recompensas-de-marco/{id}/entrega`                   | Mestre       | Confirma a entrega e gera a baixa no livro-razão                                                                       |
+| POST   | `/v1/trilhas/{id}/culminancia`                            | Mestre       | Declara a criação original esperada e o critério de validação                                                          |
+| POST   | `/v1/trilhas/{id}/publicacao`                             | Mestre       | Publica a trilha; recusa sem coleta ou sem culminância                                                                 |
+| POST   | `/v1/trilhas/{id}/despublicacao`                          | Admin        | Despublica trilha auditada, com motivo registrado                                                                      |
+| GET    | `/v1/trilhas/{id}`                                        | pública      | Trilha publicada, com licença e crédito do Mestre autor                                                                |
+| POST   | `/v1/perguntas`                                           | Mestre       | Cadastra pergunta com quatro alternativas e uma correta                                                                |
+| GET    | `/v1/perguntas/minhas`                                    | Mestre       | Banco do Mestre, filtrável por trilha e missão                                                                         |
+| GET    | `/v1/minhas-turmas`                                       | Mestre       | Turmas e atividades do próprio Mestre                                                                                  |
+| POST   | `/v1/atividades/{id}/lancamentos`                         | Mestre       | Lança a atividade que propôs, com participantes e resultados                                                           |
+| POST   | `/v1/aulas/{id}/presencas`                                | Mestre       | Registra e ajusta presença do próprio encontro                                                                         |
+| POST   | `/v1/criacoes-originais/{id}/validacao`                   | Mestre       | Valida ou devolve a criação, creditando autoria e badge                                                                |
+| POST   | `/v1/desafios-extras/{id}/validacao`                      | Mestre       | Validação pedagógica, com parecer ou motivo da recusa                                                                  |
+| GET    | `/v1/desafios-extras/a-validar`                           | Mestre       | Fila do que há para validar, das próprias trilhas                                                                      |
+| POST   | `/v1/desafios-extras`                                     | Mestre       | Propõe desafio extra à própria trilha ou à de outro Mestre                                                             |
+| GET    | `/v1/guerreiros/vinculaveis`                              | Mestre       | Guerreiros e Guerreiras das suas comunidades, por nick e avatar                                                        |
+| POST   | `/v1/responsaveis`                                        | Mestre       | Cadastra responsável e vincula Guerreiros e Guerreiras                                                                 |
+| GET    | `/v1/mestres/{id}/artefatos`                              | Mestre       | Lê os próprios artefatos, com os declarados no cadastro marcados                                                       |
+| POST   | `/v1/mestres/{id}/artefatos`                              | Mestre       | Publica currículo, portfólio, redes e artefatos comprobatórios                                                         |
+| PATCH  | `/v1/mestres/{id}/artefatos/{artefato_id}`                | Mestre       | Corrige rótulo e endereço, o do cadastro incluído; guarda o original                                                   |
+| DELETE | `/v1/mestres/{id}/artefatos/{artefato_id}`                | Mestre       | Remove artefato próprio; recusa o declarado no cadastro                                                                |
+| PUT    | `/v1/eu/mestre/identidade`                                | Mestre       | Define ou troca o próprio nick e avatar                                                                                |
+| GET    | `/v1/eu/mestre/identidade`                                | Mestre       | Lê o próprio nick e avatar vigentes, sem dado de moeda                                                                 |
+| POST   | `/v1/sugestoes`                                           | Mestre       | Registra proposta de evolução na fila única da gestão                                                                  |
 
 Erros previstos: publicação de trilha sem missão de sondagem (422); atividade de trilha sem
 missão, sem modalidade ou sem formato (422); publicação
@@ -624,7 +638,9 @@ Guerreiro(a) (422); cadastro de Mestre por esta aplicação (403); publicação 
 sem autorização do responsável (409); artefato comprobatório sem endereço ou sem rótulo (422);
 remoção de artefato declarado por Admin no cadastro, ou acesso ao perfil de outro Mestre (403);
 validação ou recusa de desafio extra sem parecer ou sem motivo (422), ou por quem não é o
-Mestre autor da trilha (403).
+Mestre autor da trilha (403); julgamento de desafio prático sem o
+motivo num veredito negativo (422); publicável sobre o que não cumpriu ou sobre entrega
+presencial (422); julgamento de declaração já julgada (422).
 
 ## 10. Requisitos não funcionais
 
@@ -643,14 +659,15 @@ Mestre autor da trilha (403).
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                      | Finalidade                       | Base legal        | Retenção                 | Quem acessa          |
-| ---------------------------------- | -------------------------------- | ----------------- | ------------------------ | -------------------- |
-| Artefatos comprobatórios do Mestre | Provar habilidade                | consentimento     | enquanto durar o vínculo | gestão e visitante   |
-| Conteúdo autoral do Mestre         | Ensinar nas trilhas              | consentimento     | permanente, sob CC BY-SA | público              |
-| Presença e resultado de atividade  | Registro da participação         | consentimento     | enquanto durar o vínculo | gestão e responsável |
-| Pontuação negativa e motivo        | Aplicação do Código de Conduta   | interesse público | enquanto durar o vínculo | gestão e responsável |
-| Criação original do Guerreiro(a)   | Autoria, portfólio e culminância | consentimento     | permanente, com autoria  | gestão e responsável |
-| Contato do responsável             | Canal oficial com a família      | consentimento     | enquanto durar o vínculo | gestão               |
+| Dado coletado                      | Finalidade                                                                       | Base legal        | Retenção                 | Quem acessa                         |
+| ---------------------------------- | -------------------------------------------------------------------------------- | ----------------- | ------------------------ | ----------------------------------- |
+| Artefatos comprobatórios do Mestre | Provar habilidade                                                                | consentimento     | enquanto durar o vínculo | gestão e visitante                  |
+| Conteúdo autoral do Mestre         | Ensinar nas trilhas                                                              | consentimento     | permanente, sob CC BY-SA | público                             |
+| Presença e resultado de atividade  | Registro da participação                                                         | consentimento     | enquanto durar o vínculo | gestão e responsável                |
+| Pontuação negativa e motivo        | Aplicação do Código de Conduta                                                   | interesse público | enquanto durar o vínculo | gestão e responsável                |
+| Criação original do Guerreiro(a)   | Autoria, portfólio e culminância                                                 | consentimento     | permanente, com autoria  | gestão e responsável                |
+| Motivo do julgamento do prático    | Dizer ao Guerreiro(a) por que não passou, ou por que a entrega não vai à vitrine | consentimento     | enquanto durar o vínculo | Guerreiro(a), Mestre autor e gestão |
+| Contato do responsável             | Canal oficial com a família                                                      | consentimento     | enquanto durar o vínculo | gestão                              |
 
 - **O Mestre não vê imagem real de Guerreiro(a)** em nenhuma tela: a identificação é por nick e
   avatar, e a conferência biométrica acontece no núcleo.
@@ -660,6 +677,11 @@ Mestre autor da trilha (403).
   (`RF-09-130`).
 - A **criação original** é do Guerreiro(a): fica guardada com autoria, mas **só vai à vitrine
   com autorização do responsável** — sem autorização, existe na plataforma e não em público.
+- A **comprovação do prático** segue a mesma régua, com uma condição a mais: além da
+  autorização do responsável, vai a público só se o Mestre autor a julgar **publicável**
+  (`RF-09-133`). A comprovação de quem **não passou** fica guardada com o motivo, para o
+  Guerreiro(a) rever o que entregou e entregar de novo — a retenção é a que o PRD-05 §11 já
+  declara, e julgar não a encurta.
 - O registro de **pontuação negativa** é dado sensível de criança: restrito à gestão e ao
   responsável, nunca em rota pública, ranking ou vitrine.
 - Pedido de acesso, correção ou exclusão chega pela App 07 e é tratado pela gestão; **o registro
@@ -797,39 +819,40 @@ a que alguma submissão já respondeu (documento 03 §11).
 
 ## 15. Rastreabilidade
 
-| Requisito                                          | Origem                                                                |
-| -------------------------------------------------- | --------------------------------------------------------------------- |
-| `RF-09-01` a `RF-09-13`                            | 11 §2 (anatomia da trilha) e 03 §11 (publicação e curadoria)          |
-| `RF-09-14` a `RF-09-25`                            | 03 §11 (conteúdo e upload), 05 §3 e 11 §2.1 (bibliografia)            |
-| `RF-09-26` a `RF-09-28`                            | 02 §§1, 3, PRD-08 (desafio de coleta e série temporal)                |
-| `RF-09-29` a `RF-09-34`                            | 02 §4 e 11 §7 (criação original, autoria e badge)                     |
-| `RF-09-35`                                         | PRD-08 (auditoria por amostragem da coleta)                           |
-| `RF-09-36` a `RF-09-41`                            | 05 §5 (Quiz ao Vivo) e PRD-02 (condução da partida)                   |
-| `RF-09-42` a `RF-09-50`                            | 03 §11 e 11 §§4, 5 (lançamentos e motor de pontuação)                 |
-| `RF-09-51` a `RF-09-52`                            | 04 §3 (desafios extras e validação pedagógica)                        |
-| `RF-09-53` a `RF-09-55`                            | PRD-08 (solicitação de local) e 03 §§7, 9, 10, 11 (fila única)        |
-| `RF-09-56` a `RF-09-61`                            | 04 §1 e PRD-07 (necessidades, absorção, ressarcimento e acervo)       |
-| `RF-09-62` a `RF-09-65`                            | 03 §9 e PRD-01 (cadastro do responsável e credencial provisória)      |
-| `RF-09-66` a `RF-09-67`                            | 02 §1 e 03 §11 (prova de habilidade e governança de personas)         |
-| `RF-09-114`                                        | 02 §1 e 11 §8.2 (nick e avatar do Mestre)                             |
-| `RF-09-68`                                         | 03 §12 (aviso visível de coleta e área detalhada)                     |
-| `RF-09-69` e `RF-09-70`                            | 11 §§2.1, 4 (atividade dentro da missão)                              |
-| `RF-09-71` a `RF-09-76`                            | 02 §8.1 e 11 §2.1 (recompensa conquistada no marco)                   |
-| `RF-09-77` a `RF-09-79`                            | 03 §§7, 11 (apoio escolar) — a partir do Ciclo 02                     |
-| `RF-09-80` a `RF-09-84`                            | 11 §2.2 (modelo de missão) e 02 §§3, 8                                |
-| `RF-09-85` a `RF-09-91`                            | 03 §11 (template e auxílio de IA na autoria) e 11 §2.2                |
-| `RF-09-113`                                        | 11 §5 (conservação do bem recebido, ponto extra por item)             |
-| `RF-09-92` a `RF-09-98`                            | 11 §2.1 e 04 §4 (etiqueta ODS da trilha e cobertura)                  |
-| `RF-09-99` a `RF-09-104`                           | 02 §8.2 (recompensa avulsa) e 11 §5 (troca por pontos extras)         |
-| `RF-09-105` a `RF-09-112`                          | 04 §3 (desafio extra: proponente, teto, custeio e validação)          |
-| `RF-09-115`                                        | 03 §11 (lista fechada de formatos do upload)                          |
-| `RF-09-116`                                        | 11 §2.2 (cadência padrão sugerida pelo template)                      |
-| `RF-09-117`                                        | 11 §2.2 (o desbloqueio é fato do Guerreiro(a); julgamento do prático) |
-| `RF-09-118`                                        | 11 §2.2 (quantas perguntas o Mestre quiser, quatro alternativas cada) |
-| `RF-09-119`                                        | 03 §11 (teto de 1 MB por pergunta, formatos da lista fechada)         |
-| `RF-09-121`                                        | 03 §1.1 (PIN de confirmação do adulto)                                |
-| `RF-09-122`                                        | 02 §1 (consulta dos responsáveis cadastrados)                         |
-| `RF-09-120` e `RN-09-44`                           | 03 §11 (a pergunta do quiz se grava uma a uma, completa)              |
-| `RF-09-123` a `RF-09-126`, `RN-09-45` e `RN-09-46` | 03 §11 (o conteúdo se corrige, se remove, se exibe e se reordena)     |
-| `RF-09-127`, `RF-09-128` e `RN-09-47` a `RN-09-49` | 03 §11 (a atividade da missão se corrige e se remove)                 |
-| `RF-09-129` a `RF-09-131`, `RN-09-50` e `RN-09-51` | 02 §4 e 11 §§2.2, 8.2 (o acervo: forma, critério e título do prático) |
+| Requisito                                          | Origem                                                                     |
+| -------------------------------------------------- | -------------------------------------------------------------------------- |
+| `RF-09-01` a `RF-09-13`                            | 11 §2 (anatomia da trilha) e 03 §11 (publicação e curadoria)               |
+| `RF-09-14` a `RF-09-25`                            | 03 §11 (conteúdo e upload), 05 §3 e 11 §2.1 (bibliografia)                 |
+| `RF-09-26` a `RF-09-28`                            | 02 §§1, 3, PRD-08 (desafio de coleta e série temporal)                     |
+| `RF-09-29` a `RF-09-34`                            | 02 §4 e 11 §7 (criação original, autoria e badge)                          |
+| `RF-09-35`                                         | PRD-08 (auditoria por amostragem da coleta)                                |
+| `RF-09-36` a `RF-09-41`                            | 05 §5 (Quiz ao Vivo) e PRD-02 (condução da partida)                        |
+| `RF-09-42` a `RF-09-50`                            | 03 §11 e 11 §§4, 5 (lançamentos e motor de pontuação)                      |
+| `RF-09-51` a `RF-09-52`                            | 04 §3 (desafios extras e validação pedagógica)                             |
+| `RF-09-53` a `RF-09-55`                            | PRD-08 (solicitação de local) e 03 §§7, 9, 10, 11 (fila única)             |
+| `RF-09-56` a `RF-09-61`                            | 04 §1 e PRD-07 (necessidades, absorção, ressarcimento e acervo)            |
+| `RF-09-62` a `RF-09-65`                            | 03 §9 e PRD-01 (cadastro do responsável e credencial provisória)           |
+| `RF-09-66` a `RF-09-67`                            | 02 §1 e 03 §11 (prova de habilidade e governança de personas)              |
+| `RF-09-114`                                        | 02 §1 e 11 §8.2 (nick e avatar do Mestre)                                  |
+| `RF-09-68`                                         | 03 §12 (aviso visível de coleta e área detalhada)                          |
+| `RF-09-69` e `RF-09-70`                            | 11 §§2.1, 4 (atividade dentro da missão)                                   |
+| `RF-09-71` a `RF-09-76`                            | 02 §8.1 e 11 §2.1 (recompensa conquistada no marco)                        |
+| `RF-09-77` a `RF-09-79`                            | 03 §§7, 11 (apoio escolar) — a partir do Ciclo 02                          |
+| `RF-09-80` a `RF-09-84`                            | 11 §2.2 (modelo de missão) e 02 §§3, 8                                     |
+| `RF-09-85` a `RF-09-91`                            | 03 §11 (template e auxílio de IA na autoria) e 11 §2.2                     |
+| `RF-09-113`                                        | 11 §5 (conservação do bem recebido, ponto extra por item)                  |
+| `RF-09-92` a `RF-09-98`                            | 11 §2.1 e 04 §4 (etiqueta ODS da trilha e cobertura)                       |
+| `RF-09-99` a `RF-09-104`                           | 02 §8.2 (recompensa avulsa) e 11 §5 (troca por pontos extras)              |
+| `RF-09-105` a `RF-09-112`                          | 04 §3 (desafio extra: proponente, teto, custeio e validação)               |
+| `RF-09-115`                                        | 03 §11 (lista fechada de formatos do upload)                               |
+| `RF-09-116`                                        | 11 §2.2 (cadência padrão sugerida pelo template)                           |
+| `RF-09-117`                                        | 11 §2.2 (o desbloqueio é fato do Guerreiro(a); julgamento do prático)      |
+| `RF-09-118`                                        | 11 §2.2 (quantas perguntas o Mestre quiser, quatro alternativas cada)      |
+| `RF-09-119`                                        | 03 §11 (teto de 1 MB por pergunta, formatos da lista fechada)              |
+| `RF-09-121`                                        | 03 §1.1 (PIN de confirmação do adulto)                                     |
+| `RF-09-122`                                        | 02 §1 (consulta dos responsáveis cadastrados)                              |
+| `RF-09-120` e `RN-09-44`                           | 03 §11 (a pergunta do quiz se grava uma a uma, completa)                   |
+| `RF-09-123` a `RF-09-126`, `RN-09-45` e `RN-09-46` | 03 §11 (o conteúdo se corrige, se remove, se exibe e se reordena)          |
+| `RF-09-127`, `RF-09-128` e `RN-09-47` a `RN-09-49` | 03 §11 (a atividade da missão se corrige e se remove)                      |
+| `RF-09-129` a `RF-09-131`, `RN-09-50` e `RN-09-51` | 02 §4 e 11 §§2.2, 8.2 (o acervo: forma, critério e título do prático)      |
+| `RF-09-132` a `RF-09-135`, `RN-09-52` a `RN-09-55` | 02 §4 e 11 §§2.2, 5 (os dois vereditos, o motivo e os 5 pontos do prático) |

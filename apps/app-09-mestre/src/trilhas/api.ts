@@ -483,6 +483,17 @@ export function declararDesafioDeDesbloqueio(
   });
 }
 
+/** O que ficou gravado da entrega do Guerreiro(a). `tipo_do_arquivo` é o que
+ * diz à bancada se exibe, se toca ou se oferece abrir — a forma declarada não
+ * diz o formato (`RF-09-132`, `RF-05-93`). */
+export interface ComprovacaoEntregue {
+  forma: FormaDeComprovacao | null;
+  comprovacao: string | null;
+  entrega_presencial: boolean;
+  tem_arquivo: boolean;
+  tipo_do_arquivo: string | null;
+}
+
 export interface DesbloqueioPendente {
   id: string;
   guerreiro_id: string;
@@ -490,6 +501,10 @@ export interface DesbloqueioPendente {
   missao_id: string;
   missao_titulo: string;
   momento: string;
+  // A produção entregue e o critério que o próprio Mestre escreveu para
+  // julgar por ele: sem os dois, ele julga às cegas (`RF-09-132`).
+  criterio_de_aceite: string | null;
+  comprovacao_entregue: ComprovacaoEntregue | null;
 }
 
 // As declarações de desafio prático ainda não julgadas, só das trilhas do
@@ -498,19 +513,42 @@ export function listarDesbloqueiosPendentes(token: string): Promise<DesbloqueioP
   return chamarNucleo<DesbloqueioPendente[]>("/v1/missoes/desbloqueios-pendentes", { token });
 }
 
-// Aprovada, a missão seguinte abre para aquele Guerreiro(a); reprovada, ele
-// pode declarar de novo, sem limite e sem punição (`RF-09-117`, `RN-05-20`).
+/** Os bytes da comprovação, servidos ao Mestre autor porque é quem julga
+ * (`RF-05-93`). */
+export function lerComprovacaoDoPratico(
+  idDaMissao: string,
+  idDoGuerreiro: string,
+  token: string,
+): Promise<Blob> {
+  return lerArquivoDoNucleo(
+    `/v1/missoes/${idDaMissao}/desbloqueios/${idDoGuerreiro}/comprovacao`,
+    { token },
+  );
+}
+
+/** Os **dois vereditos** e o motivo, num ato só (`RF-09-133`, `RF-09-134`). */
+export interface JulgamentoDoPratico {
+  cumpriu: boolean;
+  publicavel: boolean;
+  motivo: string | null;
+  julgado_em: string | null;
+}
+
+// Cumprido, a missão seguinte abre para aquele Guerreiro(a) e os 5 pontos são
+// creditados; recusado, a declaração **permanece** com o motivo e ele entrega
+// de novo, sem limite e sem punição (`RF-09-133` a `RF-09-135`, `RN-09-54`,
+// `RN-05-20`).
 export function julgarDesafioPratico(
   idDaMissao: string,
   idDoGuerreiro: string,
-  aprovado: boolean,
+  veredito: { cumpriu: boolean; publicavel: boolean; motivo: string | null },
   token: string,
-): Promise<{ aprovado: boolean }> {
-  return chamarNucleo<{ aprovado: boolean }>(
+): Promise<JulgamentoDoPratico> {
+  return chamarNucleo<JulgamentoDoPratico>(
     `/v1/missoes/${idDaMissao}/desbloqueios/${idDoGuerreiro}/julgamento`,
     {
       metodo: "POST",
-      corpo: { aprovado },
+      corpo: veredito,
       token,
     },
   );

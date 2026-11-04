@@ -168,6 +168,7 @@ function AtoDaMissao({
       aoDesbloquear={aoDesbloquear}
       submissaoLigada={submissaoDoDesbloqueioLigada}
       comprovacaoEntregue={missao.comprovacao_entregue}
+      julgamento={missao.julgamento}
     />
   );
 }

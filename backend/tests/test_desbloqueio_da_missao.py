@@ -17,6 +17,7 @@ from nucleo.trilhas.regra import (
     acrescentar_pergunta_do_desbloqueio,
     corrigir_pergunta_do_desbloqueio,
     declarar_desafio_de_desbloqueio,
+    derivar_percurso,
     inscrever_na_trilha,
     julgar_desafio_pratico,
     listar_desbloqueios_praticos_pendentes,
@@ -193,7 +194,7 @@ def test_passar_no_quiz_desbloqueia_a_missao_para_quem_submeteu(
         .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
         .one()
     )
-    assert desbloqueio.aprovado is True
+    assert desbloqueio.cumpriu is True
 
 
 def test_desbloqueio_de_um_nao_desbloqueia_os_colegas(
@@ -301,12 +302,10 @@ def test_mestre_autor_julga_o_pratico_e_a_missao_desbloqueia(
         .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
         .one()
     )
-    julgado = julgar_desafio_pratico(
-        sessao, operador=mestre, desbloqueio=desbloqueio, aprovado=True
-    )
+    julgado = julgar_desafio_pratico(sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=True)
     sessao.commit()
 
-    assert julgado.aprovado is True
+    assert julgado.cumpriu is True
     assert julgado.julgado_por_id == mestre.id
 
 
@@ -326,7 +325,7 @@ def test_enquanto_o_mestre_nao_julga_nada_e_reprovado(
 
     pendentes = listar_desbloqueios_praticos_pendentes(sessao, operador=mestre)
     assert len(pendentes) == 1
-    assert pendentes[0].aprovado is None
+    assert pendentes[0].cumpriu is None
 
 
 def test_quem_nao_e_autor_nao_julga(sessao, criar_persona, criar_trilha, criar_missao):
@@ -348,9 +347,7 @@ def test_quem_nao_e_autor_nao_julga(sessao, criar_persona, criar_trilha, criar_m
     )
 
     with pytest.raises(PermissaoNegada):
-        julgar_desafio_pratico(
-            sessao, operador=outro_mestre, desbloqueio=desbloqueio, aprovado=True
-        )
+        julgar_desafio_pratico(sessao, operador=outro_mestre, desbloqueio=desbloqueio, cumpriu=True)
 
 
 def test_julgado_como_nao_passou_o_guerreiro_declara_de_novo(
@@ -373,15 +370,23 @@ def test_julgado_como_nao_passou_o_guerreiro_declara_de_novo(
     )
 
     resultado = julgar_desafio_pratico(
-        sessao, operador=mestre, desbloqueio=desbloqueio, aprovado=False
+        sessao,
+        operador=mestre,
+        desbloqueio=desbloqueio,
+        cumpriu=False,
+        motivo="Faltou mostrar a peça montada.",
     )
     sessao.commit()
-    assert resultado is None
+    # `RN-09-54`: a linha **permanece**, com o veredito e o motivo — apagá-la
+    # destruiria o motivo no mesmo ato em que nasce.
+    assert resultado is not None
+    assert resultado.cumpriu is False
+    assert resultado.motivo_do_julgamento == "Faltou mostrar a peça montada."
     assert (
         sessao.query(DesbloqueioDaMissao)
         .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
-        .first()
-        is None
+        .count()
+        == 1
     )
 
     nova_declaracao = submeter_desafio_de_desbloqueio(sessao, guerreiro=guerreiro, missao=missao)
@@ -392,7 +397,7 @@ def test_julgado_como_nao_passou_o_guerreiro_declara_de_novo(
 def test_julgar_declaracao_inexistente_e_recusado(sessao, criar_persona):
     mestre = criar_persona(Papel.mestre)
     with pytest.raises(NaoEncontrado):
-        julgar_desafio_pratico(sessao, operador=mestre, desbloqueio=None, aprovado=True)
+        julgar_desafio_pratico(sessao, operador=mestre, desbloqueio=None, cumpriu=True)
 
 
 def _quiz_com_corretas(sessao, mestre, missao, corretas):
@@ -1787,7 +1792,7 @@ def test_entrega_presencial_nao_conta_como_tentativa_falha(
     sessao, criar_persona, criar_trilha, criar_missao
 ):
     """`RN-05-51`, `RN-05-20`: a escolha nunca é reprovação — o percurso a
-    exibe como aguardando o Mestre, que é o que `aprovado is None` significa."""
+    exibe como aguardando o Mestre, que é o que `cumpriu is None` significa."""
     _, guerreiro, _, missao = _pratico_inscrito(
         sessao, criar_persona, criar_trilha, criar_missao, "imagem"
     )
@@ -1874,11 +1879,13 @@ def test_entregar_de_novo_apaga_a_midia_da_entrega_anterior(
     assert de_novo.desbloqueio.comprovacao_tipo_do_arquivo is None
 
 
-def test_julgado_que_nao_passou_a_comprovacao_vai_com_a_declaracao(
+def test_julgado_que_nao_cumpriu_a_declaracao_e_o_motivo_permanecem(
     sessao, criar_persona, criar_trilha, criar_missao
 ):
-    """`RN-05-52`, `RN-05-20`: a linha é apagada e a comprovação vai com ela,
-    de modo que a declaração seguinte comece sem resíduo da anterior."""
+    """`RN-09-54`, `RN-05-52`: a linha **não** é apagada — ela guarda o veredito
+    e o motivo, e a comprovação segue lá, para o Guerreiro(a) rever o que
+    entregou. Entregar de novo **reabre a mesma linha**, sem segundo registro
+    do par."""
     mestre, guerreiro, _, missao = _pratico_inscrito(
         sessao, criar_persona, criar_trilha, criar_missao, "texto"
     )
@@ -1887,30 +1894,51 @@ def test_julgado_que_nao_passou_a_comprovacao_vai_com_a_declaracao(
         sessao, guerreiro=guerreiro, missao=missao, comprovacao="Montei assim."
     )
     sessao.commit()
+    id_da_linha = resultado.desbloqueio.id
     julgar_desafio_pratico(
-        sessao, operador=mestre, desbloqueio=resultado.desbloqueio, aprovado=False
+        sessao,
+        operador=mestre,
+        desbloqueio=resultado.desbloqueio,
+        cumpriu=False,
+        motivo="Não deu para ver a peça inteira.",
     )
     sessao.commit()
 
-    assert (
+    guardada = (
         sessao.query(DesbloqueioDaMissao)
         .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
-        .first()
-        is None
+        .one()
     )
+    assert guardada.cumpriu is False
+    assert guardada.motivo_do_julgamento == "Não deu para ver a peça inteira."
+    assert guardada.comprovacao == "Montei assim."
+    assert guardada.julgado_em is not None
 
     de_novo = submeter_desafio_de_desbloqueio(
         sessao, guerreiro=guerreiro, missao=missao, comprovacao="Montei de outro jeito."
     )
     sessao.commit()
+    # A mesma linha, reaberta: o julgamento anterior não sobrevive à entrega
+    # nova, porque ela é outra entrega.
+    assert de_novo.desbloqueio.id == id_da_linha
     assert de_novo.desbloqueio.comprovacao == "Montei de outro jeito."
+    assert de_novo.desbloqueio.cumpriu is None
+    assert de_novo.desbloqueio.motivo_do_julgamento is None
+    assert de_novo.desbloqueio.julgado_em is None
+    assert (
+        sessao.query(DesbloqueioDaMissao)
+        .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
+        .count()
+        == 1
+    )
 
 
 def test_declaracao_repetida_depois_do_julgamento_nao_toca_no_que_esta_gravado(
     sessao, criar_persona, criar_trilha, criar_missao
 ):
-    """`RN-05-52`: julgado que passou, a declaração repetida devolve a situação
-    do julgamento e a comprovação permanece como estava."""
+    """`RN-05-52`: julgado que **cumpriu**, a declaração repetida devolve a
+    situação do julgamento e a comprovação permanece como estava — só a recusada
+    reabre."""
     mestre, guerreiro, _, missao = _pratico_inscrito(
         sessao, criar_persona, criar_trilha, criar_missao, "texto"
     )
@@ -1920,7 +1948,11 @@ def test_declaracao_repetida_depois_do_julgamento_nao_toca_no_que_esta_gravado(
     )
     sessao.commit()
     julgar_desafio_pratico(
-        sessao, operador=mestre, desbloqueio=resultado.desbloqueio, aprovado=True
+        sessao,
+        operador=mestre,
+        desbloqueio=resultado.desbloqueio,
+        cumpriu=True,
+        publicavel=True,
     )
     sessao.commit()
 
@@ -2209,7 +2241,7 @@ def test_envio_depois_do_julgamento_e_recusado(
         .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
         .first()
     )
-    julgar_desafio_pratico(sessao, operador=mestre, desbloqueio=desbloqueio, aprovado=True)
+    julgar_desafio_pratico(sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=True)
     sessao.commit()
 
     resposta = cliente.post(
@@ -2358,3 +2390,354 @@ def test_percurso_devolve_a_comprovacao_entregue_ao_proprio_guerreiro(
     assert corpo["desafio_de_desbloqueio"]["criterio_de_aceite"] == (
         "Em foto ou vídeo não deve aparecer o rosto da criança."
     )
+
+
+# ---------------------------------------------------------------------------
+# Os dois vereditos do julgamento, o motivo e o que para de apagar
+# (`RF-09-133`, `RF-09-134`, `RN-09-52` a `RN-09-54`)
+# ---------------------------------------------------------------------------
+
+
+def _declarado_em_texto(sessao, criar_persona, criar_trilha, criar_missao, corpo="Montei assim."):
+    """Prático em texto, declarado e aguardando julgamento — o caminho mais
+    curto a uma declaração com comprovação gravada."""
+    mestre, guerreiro, trilha, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "texto"
+    )
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, comprovacao=corpo
+    )
+    sessao.commit()
+    return mestre, guerreiro, trilha, missao, resultado.desbloqueio
+
+
+def test_os_dois_vereditos_sao_gravados_num_ato_so(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-09-133`: cumpriu abre a missão seguinte, publicável leva a entrega à
+    vitrine, e os dois vão no mesmo ato."""
+    mestre, _, _, _, desbloqueio = _declarado_em_texto(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+
+    julgado = julgar_desafio_pratico(
+        sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=True, publicavel=True
+    )
+    sessao.commit()
+
+    assert julgado.cumpriu is True
+    assert julgado.publicavel is True
+    assert julgado.julgado_por_id == mestre.id
+    assert julgado.julgado_em is not None
+
+
+def test_cumpriu_sem_ser_publicavel_e_julgamento_valido(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-09-133`: é para isso que os dois campos existem — com um só, o Mestre
+    teria de reprovar quem cumpriu e enquadrou mal."""
+    mestre, _, _, _, desbloqueio = _declarado_em_texto(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+
+    julgado = julgar_desafio_pratico(
+        sessao,
+        operador=mestre,
+        desbloqueio=desbloqueio,
+        cumpriu=True,
+        publicavel=False,
+        motivo="Ficou ótimo, mas aparece o rosto de um colega.",
+    )
+    sessao.commit()
+
+    assert julgado.cumpriu is True
+    assert julgado.publicavel is False
+    assert julgado.motivo_do_julgamento == "Ficou ótimo, mas aparece o rosto de um colega."
+
+
+def test_publicavel_sobre_o_que_nao_cumpriu_e_recusado(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-09-52`: o que o Mestre recusou não vai a público, e nenhum dos dois
+    vereditos é gravado."""
+    mestre, _, _, _, desbloqueio = _declarado_em_texto(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        julgar_desafio_pratico(
+            sessao,
+            operador=mestre,
+            desbloqueio=desbloqueio,
+            cumpriu=False,
+            publicavel=True,
+            motivo="Qualquer motivo.",
+        )
+    assert erro.value.campo == "publicavel"
+    sessao.rollback()
+    assert desbloqueio.cumpriu is None
+    assert desbloqueio.publicavel is None
+
+
+def test_publicavel_sobre_entrega_presencial_e_recusado(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-09-52`: a entrega no encontro nasce sem mídia — não há o que
+    publicar."""
+    mestre, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "video"
+    )
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, entrega_presencial=True
+    )
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        julgar_desafio_pratico(
+            sessao,
+            operador=mestre,
+            desbloqueio=resultado.desbloqueio,
+            cumpriu=True,
+            publicavel=True,
+        )
+    assert erro.value.campo == "publicavel"
+
+
+def test_entrega_presencial_cumprida_dispensa_o_motivo(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-09-53`: não publicar só é negativa quando publicar era possível —
+    aqui não havia o que publicar, e cobrar motivo seria cobrá-lo de um fato
+    estrutural."""
+    mestre, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "video"
+    )
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, entrega_presencial=True
+    )
+    sessao.commit()
+
+    julgado = julgar_desafio_pratico(
+        sessao, operador=mestre, desbloqueio=resultado.desbloqueio, cumpriu=True
+    )
+    sessao.commit()
+
+    assert julgado.cumpriu is True
+    assert julgado.publicavel is False
+    assert julgado.motivo_do_julgamento is None
+
+
+def test_recusar_sem_motivo_e_recusado(sessao, criar_persona, criar_trilha, criar_missao):
+    """`RN-09-53`: julgamento que nega algo exige o motivo, pelo precedente da
+    devolução da criação original."""
+    mestre, _, _, _, desbloqueio = _declarado_em_texto(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        julgar_desafio_pratico(sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=False)
+    assert erro.value.campo == "motivo"
+    sessao.rollback()
+    assert desbloqueio.cumpriu is None
+
+
+def test_negar_a_publicacao_sem_motivo_e_recusado(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-09-53`: o segundo veredito negativo também é um "não" ao
+    Guerreiro(a), e ele tem o direito de saber por quê."""
+    mestre, _, _, _, desbloqueio = _declarado_em_texto(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        julgar_desafio_pratico(
+            sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=True, publicavel=False
+        )
+    assert erro.value.campo == "motivo"
+
+
+def test_motivo_so_de_espaco_conta_como_ausente(sessao, criar_persona, criar_trilha, criar_missao):
+    """O motivo existe para ser lido: espaço em branco não diz nada ao
+    Guerreiro(a) (`RN-09-53`)."""
+    mestre, _, _, _, desbloqueio = _declarado_em_texto(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        julgar_desafio_pratico(
+            sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=False, motivo="   "
+        )
+    assert erro.value.campo == "motivo"
+
+
+def test_julgar_de_novo_o_ja_julgado_e_recusado(sessao, criar_persona, criar_trilha, criar_missao):
+    """`RF-09-133`: o julgamento é único por par enquanto a entrega não for
+    refeita — e é essa recusa que dá a idempotência do crédito."""
+    mestre, _, _, _, desbloqueio = _declarado_em_texto(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+    julgar_desafio_pratico(
+        sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=True, publicavel=True
+    )
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        julgar_desafio_pratico(
+            sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=True, publicavel=True
+        )
+    assert erro.value.campo == "cumpriu"
+
+
+def test_a_linha_legada_nao_se_rejulga(sessao, criar_persona, criar_trilha, criar_missao):
+    """`RN-09-55`: o prático julgado **antes** desta regra tem `cumpriu`
+    verdadeiro com `julgado_em` nulo — não se rejulga, e por isso não recebe
+    crédito retroativo."""
+    mestre, _, _, _, desbloqueio = _declarado_em_texto(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+    # O estado de quem foi julgado antes de os vereditos existirem.
+    desbloqueio.cumpriu = True
+    desbloqueio.julgado_em = None
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao):
+        julgar_desafio_pratico(
+            sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=True, publicavel=True
+        )
+
+
+def test_o_percurso_traz_o_veredito_e_o_motivo_ao_proprio_guerreiro(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-05-94`: nada do julgamento fica gravado sem ser servido ao
+    Guerreiro(a) — é dele que o motivo fala."""
+    mestre, guerreiro, trilha, missao, desbloqueio = _declarado_em_texto(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+    julgar_desafio_pratico(
+        sessao,
+        operador=mestre,
+        desbloqueio=desbloqueio,
+        cumpriu=False,
+        motivo="Faltou mostrar a peça montada.",
+    )
+    sessao.commit()
+
+    guardada = (
+        sessao.query(DesbloqueioDaMissao)
+        .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
+        .one()
+    )
+    assert guardada.cumpriu is False
+    assert guardada.motivo_do_julgamento == "Faltou mostrar a peça montada."
+    # Recusado, a missão volta a ser a próxima dele — nunca reprovada.
+    percurso = derivar_percurso(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id)
+    desta = next(item for item in percurso if item.missao.id == missao.id)
+    assert desta.desbloqueada is False
+    assert desta.aguardando_mestre is False
+    assert desta.e_proxima is True
+
+
+def test_recusado_em_midia_entrega_de_novo_e_envia_outro_arquivo(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RN-09-54`: o caminho realista do prático em mídia — recusado, o
+    Guerreiro(a) declara de novo, o que **reabre** a declaração e limpa o
+    arquivo anterior, e só então o envio volta a ser aceito. Sem a reabertura,
+    o envio seguiria recusado para sempre e a missão ficaria presa."""
+    missao, mestre, guerreiro, cabecalhos, _, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "video",
+    )
+    cliente.post(f"/v1/eu/missoes/{missao.id}/desbloqueio", json={}, headers=cabecalhos)
+    _enviar_comprovacao(cliente, cabecalhos, missao.id)
+    sessao.expire_all()
+    desbloqueio = (
+        sessao.query(DesbloqueioDaMissao)
+        .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
+        .one()
+    )
+    assert desbloqueio.comprovacao_referencia is not None
+
+    julgar_desafio_pratico(
+        sessao,
+        operador=mestre,
+        desbloqueio=desbloqueio,
+        cumpriu=False,
+        motivo="Não deu para ver a peça montada.",
+    )
+    sessao.commit()
+
+    # Antes de declarar de novo, o envio segue recusado: a declaração está
+    # julgada.
+    recusado = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio/comprovacao",
+        json={"tipo_mime": "video/mp4", "tamanho_declarado": 10},
+        headers=cabecalhos,
+    )
+    assert recusado.status_code == 422
+
+    # Declarar de novo reabre a mesma linha e limpa o arquivo anterior.
+    resposta = cliente.post(f"/v1/eu/missoes/{missao.id}/desbloqueio", json={}, headers=cabecalhos)
+    assert resposta.status_code == 201, resposta.text
+    sessao.expire_all()
+    reaberta = (
+        sessao.query(DesbloqueioDaMissao)
+        .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
+        .one()
+    )
+    assert reaberta.id == desbloqueio.id
+    assert reaberta.cumpriu is None
+    assert reaberta.motivo_do_julgamento is None
+    assert reaberta.comprovacao_referencia is None
+
+    # E agora o envio é aceito de novo.
+    _enviar_comprovacao(cliente, cabecalhos, missao.id)
+    sessao.expire_all()
+    com_arquivo_novo = (
+        sessao.query(DesbloqueioDaMissao)
+        .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
+        .one()
+    )
+    assert com_arquivo_novo.comprovacao_referencia is not None
+    assert com_arquivo_novo.cumpriu is None
+
+
+def test_reabrir_a_declaracao_recoloca_o_momento_da_entrega(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-09-54` com `RF-05-79`: a cadência de retomada conta o prazo de
+    `momento`. Antes desta fatia a linha recusada era apagada e a declaração
+    seguinte nascia com momento novo; mantendo o da primeira entrega, as
+    retomadas de 2, 7 e 21 dias chegariam vencidas a quem foi recusado e
+    entregou de novo semanas depois. O prazo corre da entrega aceita."""
+    from datetime import UTC, datetime, timedelta
+
+    mestre, guerreiro, _, missao, desbloqueio = _declarado_em_texto(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+    # O estado de quem declarou há muito tempo e foi recusado.
+    antigo = datetime(2026, 1, 1, tzinfo=UTC)
+    desbloqueio.momento = antigo
+    sessao.commit()
+    julgar_desafio_pratico(
+        sessao,
+        operador=mestre,
+        desbloqueio=desbloqueio,
+        cumpriu=False,
+        motivo="Faltou mostrar a peça montada.",
+    )
+    sessao.commit()
+
+    de_novo = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, comprovacao="Agora mostrei inteira."
+    )
+    sessao.commit()
+
+    assert de_novo.desbloqueio.momento > antigo + timedelta(days=300)

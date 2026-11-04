@@ -68,7 +68,7 @@ def test_copia_nao_traz_percurso_nem_fato_de_pessoa(
     )
     guerreiro = criar_persona(Papel.guerreiro)
     criar_inscricao_na_trilha(guerreiro, trilha)
-    sessao.add(DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=True))
+    sessao.add(DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, cumpriu=True))
     tipo = criar_tipo_de_recurso(autor)
     criar_recompensa_de_marco(autor, trilha, missao, tipo)
     sessao.commit()

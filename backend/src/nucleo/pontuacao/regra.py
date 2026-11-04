@@ -36,6 +36,12 @@ ADICIONAL_DE_MERITO_EXTRA_POR_AUXILIO = 10
 # integrais a cada integrante da equipe da trilha, sem rateio pelo tamanho.
 VALOR_DA_CRIACAO_ORIGINAL = 50
 
+# Documento 11 §5, "Comprovação do desafio prático de desbloqueio": 5 pontos
+# regulares ao Guerreiro(a) que entregou, lançados pelo Mestre autor ao julgar
+# que ele cumpriu. É a **segunda via** de crédito pela mão do Mestre, ao lado
+# do Resultado (`RF-09-135`).
+VALOR_DO_DESBLOQUEIO_PRATICO = 5
+
 # Documento 11 §5: registro de coleta válido credita o mesmo valor, qualquer
 # que seja o tipo medido, sem teto por período — só o desafio limita quantos
 # registros do período pontuam (`RF-08-09`, `RN-08-05`).
@@ -600,3 +606,30 @@ def creditar_pontuacao_da_criacao_original(
         )
         certificar_nivel_5(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha.id)
         conceder_badge_de_autoria(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha.id)
+
+
+def creditar_pontuacao_do_desbloqueio_pratico(
+    sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID
+) -> None:
+    """Ponto de entrada único, chamado por
+    `trilhas.regra.julgar_desafio_pratico`: credita os 5 pontos regulares do
+    documento 11 §5 ao **Guerreiro(a) que entregou**, na **trilha da missão**.
+
+    O desbloqueio é fato dele na trilha e nunca da equipe, e por isso o crédito
+    não se espalha pelos colegas, ao contrário da criação original (`RF-09-135`,
+    documento 11 §2.2).
+
+    NÃO certifica nível nem concede badge, de propósito: o nível é **percurso**
+    e o badge de autoria é **só da culminância** (documento 02 §4). É a
+    diferença deliberada em relação a `creditar_pontuacao_da_criacao_original`
+    — os 5 pontos movem o **ranking**.
+
+    A idempotência é do chamador: `julgar_desafio_pratico` recusa rejulgar a
+    declaração já julgada, de modo que o par Guerreiro(a)–missão credita uma
+    vez só (`RN-09-55`)."""
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro_id,
+        trilha_id=trilha_id,
+        valor=VALOR_DO_DESBLOQUEIO_PRATICO,
+    )

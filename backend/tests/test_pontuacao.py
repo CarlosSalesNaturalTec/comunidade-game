@@ -888,3 +888,218 @@ def test_validar_criacao_original_individual_credita_o_guerreiro_que_entregou(
         .count()
         == 1
     )
+
+
+# ---------------------------------------------------------------------------
+# A quinta fonte de ponto regular: o desafio prático julgado como cumprido
+# (`RF-09-135`, `RN-09-55`)
+# ---------------------------------------------------------------------------
+
+
+def _pratico_declarado_e_entregue(sessao, criar_persona, criar_trilha, criar_missao, corpo="Fiz."):
+    """Mestre autor, trilha publicada, missão com prático em texto e um
+    Guerreiro(a) inscrito que já entregou a comprovação."""
+    from nucleo.trilhas.regra import (
+        declarar_desafio_de_desbloqueio,
+        submeter_desafio_de_desbloqueio,
+    )
+
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    missao = declarar_desafio_de_desbloqueio(
+        sessao,
+        operador=mestre,
+        missao=missao,
+        tipo="pratico",
+        enunciado="Monte o robô e mostre ao Mestre.",
+        forma_de_comprovacao="texto",
+        criterio_de_aceite="Descreva como montou, sem citar nome de colega.",
+        titulo_curto="Robô de sucata",
+    )
+    inscrever_na_trilha(sessao, guerreiro=guerreiro, trilha=trilha)
+    sessao.commit()
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, comprovacao=corpo
+    )
+    sessao.commit()
+    return mestre, guerreiro, trilha, missao, resultado.desbloqueio
+
+
+def _saldo_regular(sessao, guerreiro, trilha):
+    conta = (
+        sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).first()
+    )
+    return 0 if conta is None else conta.total
+
+
+def test_pratico_cumprido_credita_5_na_trilha_da_missao(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-09-135`, documento 11 §5: o crédito é de 5, e na trilha da missão —
+    nunca num poder nem globalmente."""
+    from nucleo.trilhas.regra import julgar_desafio_pratico
+
+    mestre, guerreiro, trilha, _, desbloqueio = _pratico_declarado_e_entregue(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+    assert _saldo_regular(sessao, guerreiro, trilha) == 0
+
+    julgar_desafio_pratico(
+        sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=True, publicavel=True
+    )
+    sessao.commit()
+
+    assert _saldo_regular(sessao, guerreiro, trilha) == 5
+
+
+def test_pratico_cumprido_credita_sem_nenhum_resultado_lancado(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-09-135`: é a **segunda via** de crédito — não depende de Resultado
+    algum na missão."""
+    from nucleo.trilhas.regra import julgar_desafio_pratico
+
+    mestre, guerreiro, trilha, _, desbloqueio = _pratico_declarado_e_entregue(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+    assert sessao.query(Resultado).count() == 0
+
+    julgar_desafio_pratico(
+        sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=True, publicavel=True
+    )
+    sessao.commit()
+
+    assert _saldo_regular(sessao, guerreiro, trilha) == 5
+    assert sessao.query(Resultado).count() == 0
+
+
+def test_pratico_cumprido_credita_so_quem_entregou(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-09-135`: o desbloqueio é fato dele na trilha e nunca da equipe — o
+    crédito não se espalha pelos colegas, ao contrário da criação original."""
+    from nucleo.trilhas.regra import julgar_desafio_pratico
+
+    mestre, guerreiro, trilha, _, desbloqueio = _pratico_declarado_e_entregue(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+    colega = criar_persona(Papel.guerreiro)
+    inscrever_na_trilha(sessao, guerreiro=colega, trilha=trilha)
+    sessao.commit()
+
+    julgar_desafio_pratico(
+        sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=True, publicavel=True
+    )
+    sessao.commit()
+
+    assert _saldo_regular(sessao, guerreiro, trilha) == 5
+    assert _saldo_regular(sessao, colega, trilha) == 0
+
+
+def test_recusado_reaberto_e_cumprido_credita_uma_unica_vez(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-09-55`: a idempotência vem do estado terminal — o par credita 5 uma
+    vez, não dez."""
+    from nucleo.trilhas.regra import julgar_desafio_pratico, submeter_desafio_de_desbloqueio
+
+    mestre, guerreiro, trilha, missao, desbloqueio = _pratico_declarado_e_entregue(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+
+    julgar_desafio_pratico(
+        sessao,
+        operador=mestre,
+        desbloqueio=desbloqueio,
+        cumpriu=False,
+        motivo="Faltou mostrar a peça montada.",
+    )
+    sessao.commit()
+    assert _saldo_regular(sessao, guerreiro, trilha) == 0
+
+    de_novo = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, comprovacao="Agora mostrei inteira."
+    )
+    sessao.commit()
+    julgar_desafio_pratico(
+        sessao, operador=mestre, desbloqueio=de_novo.desbloqueio, cumpriu=True, publicavel=True
+    )
+    sessao.commit()
+
+    assert _saldo_regular(sessao, guerreiro, trilha) == 5
+
+
+def test_pratico_nao_cumprido_nao_credita_nem_debita(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-09-135`: o veredito negativo não credita, e ponto regular só debita
+    por fato desfeito."""
+    from nucleo.trilhas.regra import julgar_desafio_pratico
+
+    mestre, guerreiro, trilha, _, desbloqueio = _pratico_declarado_e_entregue(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=10)
+    sessao.commit()
+
+    julgar_desafio_pratico(
+        sessao,
+        operador=mestre,
+        desbloqueio=desbloqueio,
+        cumpriu=False,
+        motivo="Não deu para ver a peça.",
+    )
+    sessao.commit()
+
+    assert _saldo_regular(sessao, guerreiro, trilha) == 10
+
+
+def test_pratico_cumprido_nao_certifica_nivel_nem_concede_badge(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """Documento 02 §4 e documento 09 §1: os 5 pontos movem o **ranking**; o
+    nível é percurso e o badge de autoria é só da culminância. É a diferença
+    deliberada em relação à criação original validada."""
+    from nucleo.trilhas.regra import julgar_desafio_pratico
+
+    mestre, guerreiro, trilha, _, desbloqueio = _pratico_declarado_e_entregue(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+
+    julgar_desafio_pratico(
+        sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=True, publicavel=True
+    )
+    sessao.commit()
+
+    assert (
+        sessao.query(Nivel).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).count() == 0
+    )
+    assert (
+        sessao.query(Badge).filter_by(guerreiro_id=guerreiro.id, trilha_id=trilha.id).count() == 0
+    )
+
+
+def test_pratico_julgado_antes_da_regra_nao_recebe_credito_retroativo(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-09-55`: a linha legada tem `cumpriu` verdadeiro com `julgado_em`
+    nulo. A migração não credita nada, e rejulgá-la é recusado — o saldo de
+    quem passou antes não muda."""
+    from nucleo.trilhas.regra import julgar_desafio_pratico
+
+    mestre, guerreiro, trilha, _, desbloqueio = _pratico_declarado_e_entregue(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+    desbloqueio.cumpriu = True
+    desbloqueio.julgado_em = None
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao):
+        julgar_desafio_pratico(
+            sessao, operador=mestre, desbloqueio=desbloqueio, cumpriu=True, publicavel=True
+        )
+    sessao.rollback()
+
+    assert _saldo_regular(sessao, guerreiro, trilha) == 0

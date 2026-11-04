@@ -901,6 +901,7 @@ function missaoNoPercurso(
     motivo_do_bloqueio: null,
     desafio_de_desbloqueio: null,
     comprovacao_entregue: null,
+    julgamento: null,
     ...sobrescreve,
   };
 }

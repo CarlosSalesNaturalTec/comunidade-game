@@ -277,3 +277,131 @@ describe("a entrega da comprovação do prático na App 05", () => {
     });
   });
 });
+
+// O veredito do Mestre, dito ao Guerreiro(a): nada do julgamento fica gravado
+// sem ser lido por ele (`RF-05-94`, `RN-05-20`, `RN-09-54`).
+describe("o veredito do Mestre na tela do prático", () => {
+  const PRATICO_EM_TEXTO: trilhaApi.DesafioDeDesbloqueio = {
+    tipo: "pratico",
+    enunciado: "Monte o robô e conte como fez.",
+    perguntas: null,
+    desafio_pratico_forma_de_comprovacao: "texto",
+    desafio_pratico_criterio_de_aceite: "Conte como montou, sem citar nome de colega.",
+    desafio_pratico_titulo_curto: "Robô de sucata",
+  };
+
+  const ENTREGUE: trilhaApi.ComprovacaoEntregue = {
+    forma: "texto",
+    comprovacao: "Montei com sucata do pátio.",
+    entrega_presencial: false,
+    tem_arquivo: false,
+  };
+
+  async function renderizarJulgado(
+    julgamento: trilhaApi.JulgamentoDoPratico | null,
+    entregue: trilhaApi.ComprovacaoEntregue | null = ENTREGUE,
+  ) {
+    sessionStorage.setItem(CHAVE_DE_SESSAO, "token-do-guerreiro");
+    vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    await act(async () => {
+      render(
+        <ProvedorDeSessao chaveDeArmazenamento={CHAVE_DE_SESSAO}>
+          <DesafioDeDesbloqueio
+            missaoId="missao-1"
+            desafio={PRATICO_EM_TEXTO}
+            aoDesbloquear={vi.fn()}
+            submissaoLigada
+            comprovacaoEntregue={entregue}
+            julgamento={julgamento}
+          />
+        </ProvedorDeSessao>,
+      );
+    });
+  }
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    sessionStorage.clear();
+  });
+
+  it("cumprido e publicável, a tela diz as duas coisas", async () => {
+    await renderizarJulgado({
+      cumpriu: true,
+      publicavel: true,
+      motivo: null,
+      julgado_em: "2026-11-04T10:00:00-03:00",
+    });
+
+    expect(screen.getByText(/você cumpriu o desafio/i)).toBeInTheDocument();
+    expect(screen.getByText(/pode aparecer na vitrine/i)).toBeInTheDocument();
+  });
+
+  it("cumprido e não publicável, a tela diz o motivo como o Mestre o escreveu", async () => {
+    await renderizarJulgado({
+      cumpriu: true,
+      publicavel: false,
+      motivo: "Ficou ótimo, mas aparece o rosto de um colega.",
+      julgado_em: "2026-11-04T10:00:00-03:00",
+    });
+
+    expect(screen.getByText(/você cumpriu o desafio/i)).toBeInTheDocument();
+    expect(screen.getByText(/não vai para a vitrine/i)).toBeInTheDocument();
+    expect(
+      screen.getByText("Ficou ótimo, mas aparece o rosto de um colega."),
+    ).toBeInTheDocument();
+  });
+
+  it("não cumprido, traz o motivo na íntegra e o convite a entregar de novo", async () => {
+    await renderizarJulgado({
+      cumpriu: false,
+      publicavel: false,
+      motivo: "Faltou mostrar a peça montada.",
+      julgado_em: "2026-11-04T10:00:00-03:00",
+    });
+
+    expect(screen.getByText(/pediu para você fazer mais uma vez/i)).toBeInTheDocument();
+    expect(screen.getByText("Faltou mostrar a peça montada.")).toBeInTheDocument();
+    // A entrega reabre: o campo volta, com o que ele mandou antes à vista.
+    expect(screen.getByText(/o que você entregou antes/i)).toBeInTheDocument();
+    expect(screen.getByText("Montei com sucata do pátio.")).toBeInTheDocument();
+    expect(screen.getByLabelText(/conte o que você fez/i)).toBeInTheDocument();
+  });
+
+  it("o veredito não vira nota, contagem de tentativas nem comparação", async () => {
+    await renderizarJulgado({
+      cumpriu: false,
+      publicavel: false,
+      motivo: "Faltou mostrar a peça montada.",
+      julgado_em: "2026-11-04T10:00:00-03:00",
+    });
+
+    expect(screen.queryByText(/nota|tentativa|pontos?\b|colegas/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/reprovad|eliminad|falhou/i)).not.toBeInTheDocument();
+  });
+
+  it("antes do julgamento, a tela segue dizendo que aguarda o Mestre", async () => {
+    await renderizarJulgado(null);
+
+    expect(screen.getByText(/esperar o Mestre conferir/i)).toBeInTheDocument();
+    expect(screen.queryByText(/vitrine/i)).not.toBeInTheDocument();
+  });
+
+  it("cumprido, a tela não oferece entregar de novo", async () => {
+    await renderizarJulgado({
+      cumpriu: true,
+      publicavel: true,
+      motivo: null,
+      julgado_em: "2026-11-04T10:00:00-03:00",
+    });
+
+    expect(screen.getByText(/o que você entregou/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/conte o que você fez/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /declarar que cumpri/i }),
+    ).not.toBeInTheDocument();
+  });
+});

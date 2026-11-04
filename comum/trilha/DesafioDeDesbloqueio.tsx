@@ -16,6 +16,7 @@ import {
   enviarComprovacao,
   FORMAS_DE_COMPROVACAO_EM_TEXTO,
   type FormaDeComprovacao,
+  type JulgamentoDoPratico,
   lerImagemDaPergunta,
   submeterDesafioDeDesbloqueio,
 } from "./api";
@@ -32,6 +33,11 @@ interface Props {
    * tela reapresenta a entrega em lugar de um formulário vazio ao voltar à
    * missão (`RF-05-93`). */
   comprovacaoEntregue?: ComprovacaoEntregue | null;
+  /** O que o Mestre autor decidiu, vindo do mesmo percurso: `null` é "ainda
+   * não julgado". Julgado, a tela diz se cumpriu, se vai à vitrine e o
+   * motivo — nada do julgamento fica gravado sem ser lido por ele
+   * (`RF-05-94`). */
+  julgamento?: JulgamentoDoPratico | null;
 }
 
 type Pergunta = NonNullable<Desafio["perguntas"]>[number];
@@ -115,15 +121,53 @@ function AvisoDaMidiaGuardada() {
  * ao lado, a alternativa de entregar ao Mestre no encontro para quem recusa a
  * câmera, não tem aparelho que grave ou não consegue enviar (`RF-05-91`,
  * `RF-05-92`, `RF-05-93`, `RN-05-51`). */
+// O que o Mestre decidiu, dito ao Guerreiro(a) — o motivo **na íntegra**, como
+// o Mestre o escreveu, nunca resumido nem trocado por frase da aplicação. Não
+// tendo cumprido, a linguagem é acolhedora e convida a entregar de novo, sem
+// contagem de fracassos e sem nada que elimine ou classifique a criança: a
+// mesma régua do quiz que não passa (`RF-05-94`, `RN-05-20`).
+function VereditoDoMestre({ julgamento }: { julgamento: JulgamentoDoPratico }) {
+  if (!julgamento.cumpriu) {
+    return (
+      <div className="cg-trilha__veredito">
+        <Aviso tipo="atencao">
+          O Mestre conferiu e pediu para você fazer mais uma vez. Dá para tentar de novo,
+          quantas vezes precisar.
+        </Aviso>
+        {julgamento.motivo !== null && (
+          <p className="cg-trilha__motivo-do-mestre">{julgamento.motivo}</p>
+        )}
+      </div>
+    );
+  }
+  return (
+    <div className="cg-trilha__veredito">
+      <Aviso tipo="sucesso">Você cumpriu o desafio! O Mestre conferiu a sua produção.</Aviso>
+      {julgamento.publicavel ? (
+        <p>A sua produção pode aparecer na vitrine do projeto.</p>
+      ) : (
+        <>
+          <p>Esta produção não vai para a vitrine.</p>
+          {julgamento.motivo !== null && (
+            <p className="cg-trilha__motivo-do-mestre">{julgamento.motivo}</p>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 function EntregaDoPraticoNaTela({
   desafio,
   comprovacaoEntregue,
+  julgamento,
   aoDeclarar,
   enviando,
   erro,
 }: {
   desafio: Desafio;
   comprovacaoEntregue: ComprovacaoEntregue | null;
+  julgamento: JulgamentoDoPratico | null;
   aoDeclarar: (entrega: EntregaDoPratico, arquivo: File | null) => Promise<void>;
   enviando: boolean;
   erro: string | null;
@@ -151,12 +195,13 @@ function EntregaDoPraticoNaTela({
   // dele — o mesmo critério que o envio do quiz já aplica.
   const faltaComprovacao = (ehTexto && !corpo.trim()) || (ehMidia && arquivo === null);
 
+  // O que já foi entregue, sempre à vista. O julgamento decide se a entrega
+  // está **encerrada** (cumpriu) ou **reaberta** (não cumpriu): recusado, o
+  // Guerreiro(a) entrega outra em cima da anterior, sem limite (`RN-09-54`).
+  const recusado = julgamento !== null && !julgamento.cumpriu;
   if (comprovacaoEntregue != null) {
-    return (
-      <div className="cg-trilha__entrega-feita">
-        <Aviso tipo="andamento">
-          Você declarou que cumpriu! Agora é só esperar o Mestre conferir.
-        </Aviso>
+    const oQueEntregou = (
+      <>
         {comprovacaoEntregue.entrega_presencial ? (
           <p>Você vai entregar a sua produção ao Mestre no encontro.</p>
         ) : (
@@ -172,8 +217,29 @@ function EntregaDoPraticoNaTela({
             )}
           </>
         )}
-      </div>
+      </>
     );
+
+    if (julgamento === null) {
+      return (
+        <div className="cg-trilha__entrega-feita">
+          <Aviso tipo="andamento">
+            Você declarou que cumpriu! Agora é só esperar o Mestre conferir.
+          </Aviso>
+          {oQueEntregou}
+        </div>
+      );
+    }
+    if (!recusado) {
+      return (
+        <div className="cg-trilha__entrega-feita">
+          <VereditoDoMestre julgamento={julgamento} />
+          {oQueEntregou}
+        </div>
+      );
+    }
+    // Recusado: o veredito e o motivo acima, o que ele entregou à vista, e o
+    // formulário aberto de novo — cai para o corpo da função.
   }
 
   async function declarar(entrega: EntregaDoPratico, comArquivo: File | null) {
@@ -188,6 +254,20 @@ function EntregaDoPraticoNaTela({
 
   return (
     <div className="cg-trilha__entrega-do-pratico">
+      {/* Recusado, o veredito e o motivo vêm **antes** do formulário, e o que
+          ele entregou segue à vista: ele vê por que não passou e o que
+          mandou, e entrega outra em cima (`RF-05-94`, `RN-09-54`). */}
+      {recusado && julgamento !== null && <VereditoDoMestre julgamento={julgamento} />}
+      {recusado && comprovacaoEntregue?.comprovacao != null && (
+        <div className="cg-trilha__entrega-anterior">
+          <h4>O que você entregou antes</h4>
+          <p className="cg-trilha__comprovacao-entregue">{comprovacaoEntregue.comprovacao}</p>
+        </div>
+      )}
+      {recusado && comprovacaoEntregue?.tem_arquivo && (
+        <p>O arquivo que você mandou antes está guardado.</p>
+      )}
+
       {criterio !== null && (
         <div className="cg-trilha__criterio">
           <h4>O que o seu Mestre combinou</h4>
@@ -278,6 +358,7 @@ export function DesafioDeDesbloqueio({
   aoDesbloquear,
   submissaoLigada = false,
   comprovacaoEntregue = null,
+  julgamento = null,
 }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const { narrar } = useNarracao();
@@ -290,6 +371,12 @@ export function DesafioDeDesbloqueio({
   const [midiaCarregando, definirMidiaCarregando] = useState(false);
   const [entregue, definirEntregue] = useState<ComprovacaoEntregue | null>(
     comprovacaoEntregue ?? null,
+  );
+  // O veredito do Mestre, vindo do percurso. Entregar de novo o **limpa**,
+  // porque a entrega nova reabre a declaração no núcleo e o julgamento
+  // anterior não vale mais para ela (`RN-09-54`).
+  const [vereditoDoMestre, definirVereditoDoMestre] = useState<JulgamentoDoPratico | null>(
+    julgamento ?? null,
   );
   // O que falta enviar depois de a rede cair: o endereço da sessão já aberta,
   // o arquivo e quantos bytes o armazenamento já tem. Com isto a retomada
@@ -360,6 +447,10 @@ export function DesafioDeDesbloqueio({
       }
       if (resultado.aguardando_mestre) {
         definirEntregue(resultado.comprovacao_entregue ?? null);
+        // A entrega nova reabre a declaração no núcleo: o veredito anterior
+        // não vale mais para ela, e deixá-lo na tela diria à criança que ela
+        // foi recusada de novo, sem ninguém ter julgado (`RN-09-54`).
+        definirVereditoDoMestre(null);
         definirAguardandoMestre(true);
         return;
       }
@@ -457,6 +548,7 @@ export function DesafioDeDesbloqueio({
           <EntregaDoPraticoNaTela
             desafio={desafio}
             comprovacaoEntregue={entregue}
+            julgamento={vereditoDoMestre}
             aoDeclarar={submeter}
             enviando={enviando}
             erro={erro}
@@ -552,6 +644,7 @@ export function DesafioDeDesbloqueio({
         <EntregaDoPraticoNaTela
           desafio={desafio}
           comprovacaoEntregue={null}
+          julgamento={null}
           aoDeclarar={submeter}
           enviando={enviando}
           erro={erro}

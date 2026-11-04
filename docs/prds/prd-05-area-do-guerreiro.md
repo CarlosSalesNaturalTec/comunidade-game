@@ -222,33 +222,34 @@ Mestre no encontro, e quem quer propor uma melhoria também.
 
 ### 6.2 Guia da trilha e progressão
 
-| ID         | Requisito                                                                                                                                  | Prioridade |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
-| `RF-05-08` | Tela inicial é o menu dos caminhos, e o cartão da trilha nomeia a próxima missão; acionado, ele abre no que fazer e no que ela desbloqueia | essencial  |
-| `RF-05-09` | Guerreiro(a) escolhe o poder entre os do catálogo do ciclo e se inscreve nas trilhas dele                                                  | essencial  |
-| `RF-05-10` | Missão bloqueada exibe o motivo do bloqueio e o que falta para abri-la                                                                     | essencial  |
-| `RF-05-11` | Guerreiro(a) percorre o conteúdo da missão: texto, imagens, vídeo, arquivos e bibliografia                                                 | essencial  |
-| `RF-05-12` | Bibliografia indica título, capítulo e se há exemplar disponível no seu ponto de apoio                                                     | essencial  |
-| `RF-05-13` | Guerreiro(a) realiza o desafio de desbloqueio e a missão seguinte abre na hora ao passar                                                   | essencial  |
-| `RF-05-14` | Desafio de desbloqueio não passado pode ser repetido, sem eliminar o Guerreiro(a)                                                          | essencial  |
-| `RF-05-89` | Quiz do desbloqueio é submetido com a resposta de todas as perguntas de uma vez, e a devolutiva diz quantas o Guerreiro(a) acertou         | essencial  |
-| `RF-05-91` | Guerreiro(a) entrega a comprovação do desafio prático na forma que o Mestre autor aceitou, no mesmo ato em que declara que cumpriu         | essencial  |
-| `RF-05-92` | Tela do prático exibe o critério de aceite junto do enunciado e avisa que a mídia fica guardada e pode ir à vitrine                        | essencial  |
-| `RF-05-93` | Guerreiro(a) reencontra a comprovação que entregou enquanto o Mestre não julga                                                             | essencial  |
-| `RF-05-15` | Progresso exibe o nível na trilha e quantas missões faltam para o próximo nível                                                            | essencial  |
-| `RF-05-16` | Aplicação exibe pontos, badges e recompensas conquistadas, por trilha ou poder                                                             | essencial  |
-| `RF-05-17` | Guerreiro(a) inscrito em mais de uma trilha alterna entre elas preservando o contexto                                                      | essencial  |
-| `RF-05-18` | Resultado ainda não lançado pelo Mestre aparece como "aguardando lançamento"                                                               | essencial  |
-| `RF-05-72` | Guerreiro(a) responde à missão de sondagem que abre a trilha, antes da primeira missão                                                     | essencial  |
-| `RF-05-73` | Resultado da sondagem não altera nível, e a tela diz que ela serve para o Mestre ajustar                                                   | essencial  |
-| `RF-05-74` | Guerreiro(a) entrega a produção da missão por texto, áudio ou foto do manuscrito                                                           | essencial  |
-| `RF-05-75` | Aplicação devolve retorno construtivo da produção, apontando o próximo passo                                                               | essencial  |
-| `RF-05-76` | A foto é descartada na leitura e o áudio nem trafega — a fala é transcrita no aparelho; ficam a transcrição e a devolutiva                 | essencial  |
-| `RF-05-77` | Devolutiva automática não credita pontos; o resultado só existe quando o Mestre o lança                                                    | essencial  |
-| `RF-05-78` | Quem recusa foto ou áudio entrega ao Mestre no encontro, sem perder a missão                                                               | essencial  |
-| `RF-05-79` | Missão com retomada agendada reaparece na cadência declarada pelo Mestre                                                                   | essencial  |
-| `RF-05-80` | Retomada pontua uma vez por agendamento; refazer por conta própria não rende ponto novo                                                    | essencial  |
-| `RF-05-81` | Missão opcional aparece marcada como tal e não conta no que falta para o próximo nível                                                     | essencial  |
+| ID         | Requisito                                                                                                                                                       | Prioridade |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-05-08` | Tela inicial é o menu dos caminhos, e o cartão da trilha nomeia a próxima missão; acionado, ele abre no que fazer e no que ela desbloqueia                      | essencial  |
+| `RF-05-09` | Guerreiro(a) escolhe o poder entre os do catálogo do ciclo e se inscreve nas trilhas dele                                                                       | essencial  |
+| `RF-05-10` | Missão bloqueada exibe o motivo do bloqueio e o que falta para abri-la                                                                                          | essencial  |
+| `RF-05-11` | Guerreiro(a) percorre o conteúdo da missão: texto, imagens, vídeo, arquivos e bibliografia                                                                      | essencial  |
+| `RF-05-12` | Bibliografia indica título, capítulo e se há exemplar disponível no seu ponto de apoio                                                                          | essencial  |
+| `RF-05-13` | Guerreiro(a) realiza o desafio de desbloqueio e a missão seguinte abre na hora ao passar                                                                        | essencial  |
+| `RF-05-14` | Desafio de desbloqueio não passado pode ser repetido, sem eliminar o Guerreiro(a)                                                                               | essencial  |
+| `RF-05-89` | Quiz do desbloqueio é submetido com a resposta de todas as perguntas de uma vez, e a devolutiva diz quantas o Guerreiro(a) acertou                              | essencial  |
+| `RF-05-91` | Guerreiro(a) entrega a comprovação do desafio prático na forma que o Mestre autor aceitou, no mesmo ato em que declara que cumpriu                              | essencial  |
+| `RF-05-92` | Tela do prático exibe o critério de aceite junto do enunciado e avisa que a mídia fica guardada e pode ir à vitrine                                             | essencial  |
+| `RF-05-93` | Guerreiro(a) reencontra a comprovação que entregou enquanto o Mestre não julga                                                                                  | essencial  |
+| `RF-05-94` | A tela do prático apresenta o veredito do Mestre autor — se cumpriu e se vai à vitrine — e o motivo em linguagem simples, e reabre a entrega quando não cumpriu | essencial  |
+| `RF-05-15` | Progresso exibe o nível na trilha e quantas missões faltam para o próximo nível                                                                                 | essencial  |
+| `RF-05-16` | Aplicação exibe pontos, badges e recompensas conquistadas, por trilha ou poder                                                                                  | essencial  |
+| `RF-05-17` | Guerreiro(a) inscrito em mais de uma trilha alterna entre elas preservando o contexto                                                                           | essencial  |
+| `RF-05-18` | Resultado ainda não lançado pelo Mestre aparece como "aguardando lançamento"                                                                                    | essencial  |
+| `RF-05-72` | Guerreiro(a) responde à missão de sondagem que abre a trilha, antes da primeira missão                                                                          | essencial  |
+| `RF-05-73` | Resultado da sondagem não altera nível, e a tela diz que ela serve para o Mestre ajustar                                                                        | essencial  |
+| `RF-05-74` | Guerreiro(a) entrega a produção da missão por texto, áudio ou foto do manuscrito                                                                                | essencial  |
+| `RF-05-75` | Aplicação devolve retorno construtivo da produção, apontando o próximo passo                                                                                    | essencial  |
+| `RF-05-76` | A foto é descartada na leitura e o áudio nem trafega — a fala é transcrita no aparelho; ficam a transcrição e a devolutiva                                      | essencial  |
+| `RF-05-77` | Devolutiva automática não credita pontos; o resultado só existe quando o Mestre o lança                                                                         | essencial  |
+| `RF-05-78` | Quem recusa foto ou áudio entrega ao Mestre no encontro, sem perder a missão                                                                                    | essencial  |
+| `RF-05-79` | Missão com retomada agendada reaparece na cadência declarada pelo Mestre                                                                                        | essencial  |
+| `RF-05-80` | Retomada pontua uma vez por agendamento; refazer por conta própria não rende ponto novo                                                                         | essencial  |
+| `RF-05-81` | Missão opcional aparece marcada como tal e não conta no que falta para o próximo nível                                                                          | essencial  |
 
 ### 6.3 Desafios, atividades e equipes
 
@@ -348,60 +349,60 @@ aplicação do Ciclo 01 não oferece apoio escolar.
 
 ## 7. Regras de negócio
 
-| ID         | Regra                                                                                                                                                                                    | Invariante (doc 99 §6) | Fonte            |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ---------------- |
-| `RN-05-01` | O Guerreiro(a) entra por nick e imagem em toda sessão; sem câmera, quem abre é o adulto do `RN-05-02`                                                                                    | 12                     | 03 §1.1          |
-| `RN-05-02` | Fora do encontro quem abre a sessão é o **responsável**, e só a dos Guerreiros e Guerreiras sob a responsabilidade dele; no encontro, o Mestre ou um Admin presente                      | 3                      | 03 §1.1          |
-| `RN-05-03` | Nível é percurso da trilha, não volume de pontos, e nível conquistado não regride                                                                                                        | 2                      | 11 §6            |
-| `RN-05-04` | Níveis e badges são por trilha ou poder, nunca globais                                                                                                                                   | —                      | 02 §7, 11 §§6, 7 |
-| `RN-05-05` | Pontos só nascem de atividade realizada proposta por Mestre e da coleta do território                                                                                                    | 8                      | 11 §§1, 5        |
-| `RN-05-06` | A aplicação não lança resultado, presença nem mérito: quem lança é o Mestre ou o Admin                                                                                                   | —                      | 02 §4, 03 §11    |
-| `RN-05-07` | Recompensa é conquistada em marco da trilha, nunca comprada com saldo de pontos                                                                                                          | —                      | 02 §8            |
-| `RN-05-08` | Registro de coleta nasce válido e pontua na hora; valor fora da faixa fica "a conferir"                                                                                                  | 6                      | 02 §1, 11 §5.1   |
-| `RN-05-09` | A invalidação por amostragem estorna apenas o registro invalidado                                                                                                                        | 6                      | 02 §1, 11 §5.1   |
-| `RN-05-10` | Duas cadências seguidas sem registro interrompem a série, sem perder os pontos já creditados                                                                                             | 6                      | 02 §1            |
-| `RN-05-11` | O local do registro é escolhido entre os cadastrados; faltando, o Guerreiro(a) solicita inclusão                                                                                         | —                      | 02 §1            |
-| `RN-05-12` | A equipe é formada no App 01 e vale para aquela aula; aqui ela é apenas consultada                                                                                                       | 15                     | 02 §5            |
-| `RN-05-13` | A criação original carrega a autoria por toda a vida do registro, inclusive quando devolvida                                                                                             | 5                      | 02 §4, 11 §7     |
-| `RN-05-14` | Criação original só é exposta publicamente com autorização do responsável                                                                                                                | 11                     | 03 §12           |
-| `RN-05-15` | O Guerreiro(a) é representado exclusivamente por avatar e nick, nunca por imagem real                                                                                                    | 12                     | 03 §§3.3, 12     |
-| `RN-05-16` | Ranking usa somente pontos regulares e, nesta aplicação logada, alcança a turma inteira                                                                                                  | —                      | 11 §8.1, 03 §12  |
-| `RN-05-17` | Registrar sugestão não pontua; a proposta adotada rende pontos extras e badge                                                                                                            | —                      | 03 §7, 11 §5     |
-| `RN-05-18` | Pontos extras não alimentam níveis: são computados isoladamente                                                                                                                          | —                      | 11 §5            |
-| `RN-05-19` | Dano acidental ao acervo não gera pontuação negativa nem dívida para a família                                                                                                           | —                      | 13 §3            |
-| `RN-05-20` | Dificuldade gradual acessível a toda a faixa de 6 a 16 anos, sem segmentação por idade                                                                                                   | 2                      | 02 §4            |
-| `RN-05-21` | O Guerreiro(a) vê apenas os próprios dados; de terceiros, só avatar, nick e posição pública                                                                                              | 10                     | 03 §12           |
-| `RN-05-22` | Não há canal de conversa entre pessoas nesta aplicação                                                                                                                                   | 10                     | 03 §12           |
-| `RN-05-23` | O App 04 lê o progresso e nada escreve: nem crédito, nem débito, nem resultado                                                                                                           | 8                      | 11 §8.4          |
-| `RN-05-24` | No Ciclo 01 o Guerreiro(a) não muda de comunidade                                                                                                                                        | 4                      | 02 §1            |
-| `RN-05-25` | O apoio escolar responde só a partir do conteúdo que o Mestre cadastrou; fora dele, recusa                                                                                               | —                      | 03 §7            |
-| `RN-05-26` | Filtros de segurança de conteúdo no nível mais restritivo em toda interação com a criança                                                                                                | —                      | 03 §§4, 7        |
-| `RN-05-27` | O assistente não substitui o Mestre: explica e conduz, sem entregar a tarefa pronta                                                                                                      | —                      | 03 §7            |
-| `RN-05-28` | Recusar o assistente não exclui ninguém: a alternativa é perguntar ao Mestre no encontro                                                                                                 | 11                     | 03 §§7, 12       |
-| `RN-05-29` | O consumo do modelo de IA é custo de _cloud_ atribuído no livro-razão                                                                                                                    | 9                      | 04 §1            |
-| `RN-05-31` | No Ciclo 01 o consumo de IA é aportado por absorção pelo Admin e Mestre fundador, sem teto                                                                                               | —                      | 10 §4.3          |
-| `RN-05-32` | O áudio da criança não sai do aparelho: transcreve-se ali e só a transcrição trafega                                                                                                     | —                      | 03 §7            |
-| `RN-05-30` | A plataforma declara o uso de IA, e a tela do apoio escolar diz isso à criança                                                                                                           | —                      | 01 §7, 03 §1     |
-| `RN-05-33` | Só a missão obrigatória conta no percurso do nível; a opcional pontua sem entrar no denominador                                                                                          | 18                     | 11 §§2.2, 6      |
-| `RN-05-34` | Toda trilha abre com missão de sondagem, cujo resultado não define nível                                                                                                                 | 5                      | 11 §2.2          |
-| `RN-05-35` | Toda atividade exige produção do Guerreiro(a), e a leitura automática é hipótese, não resultado                                                                                          | 19                     | 02 §4, 11 §2.2   |
-| `RN-05-36` | Foto e áudio da produção são descartados na leitura; ficam transcrição e devolutiva                                                                                                      | —                      | 03 §12.2         |
-| `RN-05-37` | Quem recusa foto ou áudio tem alternativa equivalente e não perde a missão                                                                                                               | 11                     | 03 §3.3          |
-| `RN-05-38` | A retomada pontua uma vez por agendamento                                                                                                                                                | —                      | 11 §§2.2, 5      |
-| `RN-05-39` | Ponto regular nunca se gasta; só o saldo de pontos extras é trocável                                                                                                                     | 23                     | 11 §5            |
-| `RN-05-40` | O acumulado de pontos extras nunca decresce por troca; quem decresce é o saldo disponível                                                                                                | 23                     | 11 §5            |
-| `RN-05-41` | Recompensa de marco é conquistada, nunca comprada; a troca alcança só a recompensa avulsa                                                                                                | 23                     | 02 §8            |
-| `RN-05-42` | O saldo disponível de pontos extras nunca fica negativo                                                                                                                                  | 23                     | 11 §5            |
-| `RN-05-43` | A inscrição é ato do Guerreiro(a), exige trilha publicada e admite várias trilhas ao mesmo tempo                                                                                         | —                      | 11 §2            |
-| `RN-05-44` | A inscrição não se desfaz e concluir não é obrigatório: a evolução para nas etapas realizadas                                                                                            | 18                     | 11 §§2, 6        |
-| `RN-05-45` | Passa no quiz do desbloqueio quem acerta ao menos 60% das perguntas                                                                                                                      | —                      | 11 §2.2          |
-| `RN-05-46` | A missão de sondagem abre a trilha ao ser respondida, nunca ao ser acertada                                                                                                              | —                      | 11 §2.2          |
-| `RN-05-47` | Toda tentativa de desbloqueio é gravada com a resposta de cada pergunta e se ela acertou                                                                                                 | —                      | 11 §2.2          |
-| `RN-05-48` | Erro que o núcleo declara no corpo único nunca é apresentado como recusa do reconhecimento: falha de rede, de validação, de chave ou de preparo do aparelho aparece como o que é         | 25                     | 03 §1            |
-| `RN-05-49` | A pré-carga dos modelos carrega **apenas os modelos** e nunca abre a câmera do aparelho; falha dela nunca interrompe a entrada nem veste a frase da recusa da conferência                | —                      | 03 §3.3          |
-| `RN-05-50` | A recompensa conquistada é avisada **uma vez**: a ciência é do Guerreiro(a) no núcleo, nunca do aparelho, e no prático só depois do julgamento do Mestre autor                           | —                      | 15 §9            |
-| `RN-05-51` | A comprovação é exigida para declarar que cumpriu o prático, e quem não entrega pelo aparelho **entrega ao Mestre no encontro**: a declaração vale sem mídia e nunca faz perder a missão | —                      | 02 §4            |
-| `RN-05-52` | Entrega nova antes do julgamento substitui a anterior, corpo e mídia; julgada que não passou, a comprovação vai com a declaração apagada                                                 | —                      | 11 §2.2          |
+| ID         | Regra                                                                                                                                                                                         | Invariante (doc 99 §6) | Fonte            |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ---------------- |
+| `RN-05-01` | O Guerreiro(a) entra por nick e imagem em toda sessão; sem câmera, quem abre é o adulto do `RN-05-02`                                                                                         | 12                     | 03 §1.1          |
+| `RN-05-02` | Fora do encontro quem abre a sessão é o **responsável**, e só a dos Guerreiros e Guerreiras sob a responsabilidade dele; no encontro, o Mestre ou um Admin presente                           | 3                      | 03 §1.1          |
+| `RN-05-03` | Nível é percurso da trilha, não volume de pontos, e nível conquistado não regride                                                                                                             | 2                      | 11 §6            |
+| `RN-05-04` | Níveis e badges são por trilha ou poder, nunca globais                                                                                                                                        | —                      | 02 §7, 11 §§6, 7 |
+| `RN-05-05` | Pontos só nascem de atividade realizada proposta por Mestre e da coleta do território                                                                                                         | 8                      | 11 §§1, 5        |
+| `RN-05-06` | A aplicação não lança resultado, presença nem mérito: quem lança é o Mestre ou o Admin                                                                                                        | —                      | 02 §4, 03 §11    |
+| `RN-05-07` | Recompensa é conquistada em marco da trilha, nunca comprada com saldo de pontos                                                                                                               | —                      | 02 §8            |
+| `RN-05-08` | Registro de coleta nasce válido e pontua na hora; valor fora da faixa fica "a conferir"                                                                                                       | 6                      | 02 §1, 11 §5.1   |
+| `RN-05-09` | A invalidação por amostragem estorna apenas o registro invalidado                                                                                                                             | 6                      | 02 §1, 11 §5.1   |
+| `RN-05-10` | Duas cadências seguidas sem registro interrompem a série, sem perder os pontos já creditados                                                                                                  | 6                      | 02 §1            |
+| `RN-05-11` | O local do registro é escolhido entre os cadastrados; faltando, o Guerreiro(a) solicita inclusão                                                                                              | —                      | 02 §1            |
+| `RN-05-12` | A equipe é formada no App 01 e vale para aquela aula; aqui ela é apenas consultada                                                                                                            | 15                     | 02 §5            |
+| `RN-05-13` | A criação original carrega a autoria por toda a vida do registro, inclusive quando devolvida                                                                                                  | 5                      | 02 §4, 11 §7     |
+| `RN-05-14` | Criação original só é exposta publicamente com autorização do responsável                                                                                                                     | 11                     | 03 §12           |
+| `RN-05-15` | O Guerreiro(a) é representado exclusivamente por avatar e nick, nunca por imagem real                                                                                                         | 12                     | 03 §§3.3, 12     |
+| `RN-05-16` | Ranking usa somente pontos regulares e, nesta aplicação logada, alcança a turma inteira                                                                                                       | —                      | 11 §8.1, 03 §12  |
+| `RN-05-17` | Registrar sugestão não pontua; a proposta adotada rende pontos extras e badge                                                                                                                 | —                      | 03 §7, 11 §5     |
+| `RN-05-18` | Pontos extras não alimentam níveis: são computados isoladamente                                                                                                                               | —                      | 11 §5            |
+| `RN-05-19` | Dano acidental ao acervo não gera pontuação negativa nem dívida para a família                                                                                                                | —                      | 13 §3            |
+| `RN-05-20` | Dificuldade gradual acessível a toda a faixa de 6 a 16 anos, sem segmentação por idade                                                                                                        | 2                      | 02 §4            |
+| `RN-05-21` | O Guerreiro(a) vê apenas os próprios dados; de terceiros, só avatar, nick e posição pública                                                                                                   | 10                     | 03 §12           |
+| `RN-05-22` | Não há canal de conversa entre pessoas nesta aplicação                                                                                                                                        | 10                     | 03 §12           |
+| `RN-05-23` | O App 04 lê o progresso e nada escreve: nem crédito, nem débito, nem resultado                                                                                                                | 8                      | 11 §8.4          |
+| `RN-05-24` | No Ciclo 01 o Guerreiro(a) não muda de comunidade                                                                                                                                             | 4                      | 02 §1            |
+| `RN-05-25` | O apoio escolar responde só a partir do conteúdo que o Mestre cadastrou; fora dele, recusa                                                                                                    | —                      | 03 §7            |
+| `RN-05-26` | Filtros de segurança de conteúdo no nível mais restritivo em toda interação com a criança                                                                                                     | —                      | 03 §§4, 7        |
+| `RN-05-27` | O assistente não substitui o Mestre: explica e conduz, sem entregar a tarefa pronta                                                                                                           | —                      | 03 §7            |
+| `RN-05-28` | Recusar o assistente não exclui ninguém: a alternativa é perguntar ao Mestre no encontro                                                                                                      | 11                     | 03 §§7, 12       |
+| `RN-05-29` | O consumo do modelo de IA é custo de _cloud_ atribuído no livro-razão                                                                                                                         | 9                      | 04 §1            |
+| `RN-05-31` | No Ciclo 01 o consumo de IA é aportado por absorção pelo Admin e Mestre fundador, sem teto                                                                                                    | —                      | 10 §4.3          |
+| `RN-05-32` | O áudio da criança não sai do aparelho: transcreve-se ali e só a transcrição trafega                                                                                                          | —                      | 03 §7            |
+| `RN-05-30` | A plataforma declara o uso de IA, e a tela do apoio escolar diz isso à criança                                                                                                                | —                      | 01 §7, 03 §1     |
+| `RN-05-33` | Só a missão obrigatória conta no percurso do nível; a opcional pontua sem entrar no denominador                                                                                               | 18                     | 11 §§2.2, 6      |
+| `RN-05-34` | Toda trilha abre com missão de sondagem, cujo resultado não define nível                                                                                                                      | 5                      | 11 §2.2          |
+| `RN-05-35` | Toda atividade exige produção do Guerreiro(a), e a leitura automática é hipótese, não resultado                                                                                               | 19                     | 02 §4, 11 §2.2   |
+| `RN-05-36` | Foto e áudio da produção são descartados na leitura; ficam transcrição e devolutiva                                                                                                           | —                      | 03 §12.2         |
+| `RN-05-37` | Quem recusa foto ou áudio tem alternativa equivalente e não perde a missão                                                                                                                    | 11                     | 03 §3.3          |
+| `RN-05-38` | A retomada pontua uma vez por agendamento                                                                                                                                                     | —                      | 11 §§2.2, 5      |
+| `RN-05-39` | Ponto regular nunca se gasta; só o saldo de pontos extras é trocável                                                                                                                          | 23                     | 11 §5            |
+| `RN-05-40` | O acumulado de pontos extras nunca decresce por troca; quem decresce é o saldo disponível                                                                                                     | 23                     | 11 §5            |
+| `RN-05-41` | Recompensa de marco é conquistada, nunca comprada; a troca alcança só a recompensa avulsa                                                                                                     | 23                     | 02 §8            |
+| `RN-05-42` | O saldo disponível de pontos extras nunca fica negativo                                                                                                                                       | 23                     | 11 §5            |
+| `RN-05-43` | A inscrição é ato do Guerreiro(a), exige trilha publicada e admite várias trilhas ao mesmo tempo                                                                                              | —                      | 11 §2            |
+| `RN-05-44` | A inscrição não se desfaz e concluir não é obrigatório: a evolução para nas etapas realizadas                                                                                                 | 18                     | 11 §§2, 6        |
+| `RN-05-45` | Passa no quiz do desbloqueio quem acerta ao menos 60% das perguntas                                                                                                                           | —                      | 11 §2.2          |
+| `RN-05-46` | A missão de sondagem abre a trilha ao ser respondida, nunca ao ser acertada                                                                                                                   | —                      | 11 §2.2          |
+| `RN-05-47` | Toda tentativa de desbloqueio é gravada com a resposta de cada pergunta e se ela acertou                                                                                                      | —                      | 11 §2.2          |
+| `RN-05-48` | Erro que o núcleo declara no corpo único nunca é apresentado como recusa do reconhecimento: falha de rede, de validação, de chave ou de preparo do aparelho aparece como o que é              | 25                     | 03 §1            |
+| `RN-05-49` | A pré-carga dos modelos carrega **apenas os modelos** e nunca abre a câmera do aparelho; falha dela nunca interrompe a entrada nem veste a frase da recusa da conferência                     | —                      | 03 §3.3          |
+| `RN-05-50` | A recompensa conquistada é avisada **uma vez**: a ciência é do Guerreiro(a) no núcleo, nunca do aparelho, e no prático só depois do julgamento do Mestre autor                                | —                      | 15 §9            |
+| `RN-05-51` | A comprovação é exigida para declarar que cumpriu o prático, e quem não entrega pelo aparelho **entrega ao Mestre no encontro**: a declaração vale sem mídia e nunca faz perder a missão      | —                      | 02 §4            |
+| `RN-05-52` | Entrega nova antes do julgamento substitui a anterior, corpo e mídia; julgada que não cumpriu, a declaração e a comprovação permanecem, com o motivo, e entregar de novo reabre a mesma linha | —                      | 11 §2.2          |
 
 `RN-05-17` (canal de sugestões) e `RN-05-19` (dano acidental ao acervo) valem **a partir do
 Ciclo 02** (§3.2), junto com os requisitos que as operacionalizam. `RN-05-25` a `RN-05-28` e
@@ -675,29 +676,29 @@ coletores distintos no recorte publicado (documento 02 §1).
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                                                                                            |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `RF-05-01` a `RF-05-07` | 03 §1.1 (entrada por nick e imagem) e PRD-04 (onboarding e fallback)                                              |
-| `RN-05-48`              | 03 §1 (erro declarado pelo núcleo chega como ele é)                                                               |
-| `RF-05-90`              | 03 §3.4 (modelos ao fundo em aparelho modesto) e 15 §5 (estado sem depender de cor)                               |
-| `RN-05-49`              | 03 §3.3 (câmera só no pedido da pessoa), descendo do `RN-05-01`                                                   |
-| `RN-05-50`              | 15 §9 (o trio de estrelas e a exceção da grandeza ponto), servindo o `RF-05-45`                                   |
-| `RF-05-08` a `RF-05-18` | 03 §7 (guia da trilha), 11 §§2, 6 (anatomia e níveis)                                                             |
-| `RF-05-19` a `RF-05-24` | 02 §5 e 11 §§4, 5 (equipes, taxonomia e desafios), 04 §3 (extras)                                                 |
-| `RF-05-30` a `RF-05-38` | 02 §1 e PRD-08 (séries, locais e validade do registro)                                                            |
-| `RF-05-39` a `RF-05-44` | 02 §4, 11 §7 e PRD-09 (culminância, autoria e validação)                                                          |
-| `RF-05-45` a `RF-05-49` | 02 §8.1 (recompensa em marco); `RF-05-47` a `RF-05-49` (acervo e ficha de vida, 05 §3) valem a partir do Ciclo 02 |
-| `RF-05-82` a `RF-05-88` | 02 §8.2 (recompensa avulsa) e 11 §5 (acumulado e saldo disponível)                                                |
-| `RF-05-50` e `RF-05-51` | 03 §12 (adesão em duas etapas), 02 §1 e 15 §7 (avatar)                                                            |
-| `RF-05-52` e `RF-05-53` | 11 §8.1 (rankings com pontos regulares)                                                                           |
-| `RF-05-54` a `RF-05-56` | 03 §7 (canal de sugestões) e 11 §§5, 7 (pontos extras e badge) — a partir do Ciclo 02                             |
-| `RF-05-57`              | 03 §12 (aviso visível de coleta e área detalhada)                                                                 |
-| `RF-05-58` a `RF-05-66` | 03 §7 (apoio escolar com corpus fechado) e 03 §4 (filtros de segurança) — a partir do Ciclo 02                    |
-| `RF-05-67` e `RF-05-68` | 04 §1 (custo de _cloud_ no livro-razão) e 01 §7 (transparência sobre IA) — a partir do Ciclo 02                   |
-| `RF-05-69` e `RF-05-70` | 03 §7 (descarte do áudio e ausência de teto no Ciclo 01) — a partir do Ciclo 02                                   |
-| `RF-05-71`              | 03 §12.2 (sessão em aparelho compartilhado)                                                                       |
-| `RF-05-72` a `RF-05-81` | 11 §2.2 (modelo de missão) e 03 §§7, 12.2 (produção e retenção)                                                   |
-| `RF-05-89`              | 11 §2.2 (aferição do quiz, corte de 60% e registro da tentativa)                                                  |
-| `RF-05-91` a `RF-05-93` | 02 §4 (as seis formas de entrega) e 11 §§2.2, 8.2 (o acervo que cresce na trilha)                                 |
-| `RN-05-51`              | 02 §4 e 03 §12 (aviso visível e alternativa a quem recusa), descendo do `RF-05-78`                                |
-| `RN-05-52`              | 11 §2.2 (nada aqui é reprovação persistida), descendo do `RN-05-20`                                               |
+| Requisito               | Origem                                                                                                                              |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `RF-05-01` a `RF-05-07` | 03 §1.1 (entrada por nick e imagem) e PRD-04 (onboarding e fallback)                                                                |
+| `RN-05-48`              | 03 §1 (erro declarado pelo núcleo chega como ele é)                                                                                 |
+| `RF-05-90`              | 03 §3.4 (modelos ao fundo em aparelho modesto) e 15 §5 (estado sem depender de cor)                                                 |
+| `RN-05-49`              | 03 §3.3 (câmera só no pedido da pessoa), descendo do `RN-05-01`                                                                     |
+| `RN-05-50`              | 15 §9 (o trio de estrelas e a exceção da grandeza ponto), servindo o `RF-05-45`                                                     |
+| `RF-05-08` a `RF-05-18` | 03 §7 (guia da trilha), 11 §§2, 6 (anatomia e níveis)                                                                               |
+| `RF-05-19` a `RF-05-24` | 02 §5 e 11 §§4, 5 (equipes, taxonomia e desafios), 04 §3 (extras)                                                                   |
+| `RF-05-30` a `RF-05-38` | 02 §1 e PRD-08 (séries, locais e validade do registro)                                                                              |
+| `RF-05-39` a `RF-05-44` | 02 §4, 11 §7 e PRD-09 (culminância, autoria e validação)                                                                            |
+| `RF-05-45` a `RF-05-49` | 02 §8.1 (recompensa em marco); `RF-05-47` a `RF-05-49` (acervo e ficha de vida, 05 §3) valem a partir do Ciclo 02                   |
+| `RF-05-82` a `RF-05-88` | 02 §8.2 (recompensa avulsa) e 11 §5 (acumulado e saldo disponível)                                                                  |
+| `RF-05-50` e `RF-05-51` | 03 §12 (adesão em duas etapas), 02 §1 e 15 §7 (avatar)                                                                              |
+| `RF-05-52` e `RF-05-53` | 11 §8.1 (rankings com pontos regulares)                                                                                             |
+| `RF-05-54` a `RF-05-56` | 03 §7 (canal de sugestões) e 11 §§5, 7 (pontos extras e badge) — a partir do Ciclo 02                                               |
+| `RF-05-57`              | 03 §12 (aviso visível de coleta e área detalhada)                                                                                   |
+| `RF-05-58` a `RF-05-66` | 03 §7 (apoio escolar com corpus fechado) e 03 §4 (filtros de segurança) — a partir do Ciclo 02                                      |
+| `RF-05-67` e `RF-05-68` | 04 §1 (custo de _cloud_ no livro-razão) e 01 §7 (transparência sobre IA) — a partir do Ciclo 02                                     |
+| `RF-05-69` e `RF-05-70` | 03 §7 (descarte do áudio e ausência de teto no Ciclo 01) — a partir do Ciclo 02                                                     |
+| `RF-05-71`              | 03 §12.2 (sessão em aparelho compartilhado)                                                                                         |
+| `RF-05-72` a `RF-05-81` | 11 §2.2 (modelo de missão) e 03 §§7, 12.2 (produção e retenção)                                                                     |
+| `RF-05-89`              | 11 §2.2 (aferição do quiz, corte de 60% e registro da tentativa)                                                                    |
+| `RF-05-91` a `RF-05-94` | 02 §4 (as seis formas de entrega) e 11 §§2.2, 8.2 (o acervo que cresce na trilha)                                                   |
+| `RN-05-51`              | 02 §4 e 03 §12 (aviso visível e alternativa a quem recusa), descendo do `RF-05-78`                                                  |
+| `RN-05-52`              | 11 §2.2 (nada aqui é reprovação persistida — o que fica é a devolutiva do Mestre, não contagem de fracasso), descendo do `RN-05-20` |
