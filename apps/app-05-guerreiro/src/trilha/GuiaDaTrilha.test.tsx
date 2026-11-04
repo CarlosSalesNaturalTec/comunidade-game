@@ -27,6 +27,7 @@ const MISSAO_ATUAL: trilhaApi.MissaoNoPercurso = {
   aguardando_mestre: false,
   motivo_do_bloqueio: null,
   desafio_de_desbloqueio: null,
+  comprovacao_entregue: null,
 };
 
 async function renderizar(props: Partial<Parameters<typeof GuiaDaTrilha>[0]> = {}) {

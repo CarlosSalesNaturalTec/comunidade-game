@@ -186,4 +186,7 @@ def test_guerreiro_submete_o_quiz_pela_rota_com_todas_as_respostas(
         "aguardando_mestre": False,
         "acertos": 3,
         "total": 4,
+        # No quiz não há comprovação a entregar: `None` é dito, não suposto
+        # (`RF-05-91`).
+        "comprovacao_entregue": None,
     }

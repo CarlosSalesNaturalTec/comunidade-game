@@ -1636,3 +1636,612 @@ def test_o_pratico_declarado_antes_da_exigencia_segue_valendo(
     _declarar_pratico_cru(sessao, mestre, missao)
     sessao.commit()
     assert missao.desafio_pratico_titulo_curto == "Robô de sucata"
+
+
+# --- A comprovação do desafio prático (fatia 13 do PRD-05) -------------------
+
+
+def _declarar_pratico_com_forma(sessao, mestre, missao, forma):
+    return declarar_desafio_de_desbloqueio(
+        sessao,
+        operador=mestre,
+        missao=missao,
+        tipo="pratico",
+        enunciado="Monte o robô e mostre ao Mestre.",
+        forma_de_comprovacao=forma,
+        criterio_de_aceite="Em foto ou vídeo não deve aparecer o rosto da criança.",
+        titulo_curto="Robô de sucata",
+    )
+
+
+def _pratico_inscrito(sessao, criar_persona, criar_trilha, criar_missao, forma):
+    """O caminho comum: Mestre autor, trilha publicada, missão com prático na
+    forma pedida e um Guerreiro(a) inscrito pronto a declarar."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    missao = _declarar_pratico_com_forma(sessao, mestre, missao, forma)
+    inscrever_na_trilha(sessao, guerreiro=guerreiro, trilha=trilha)
+    sessao.commit()
+    return mestre, guerreiro, trilha, missao
+
+
+def test_comprovacao_em_texto_e_gravada_com_a_declaracao(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-05-91`: a forma aceita é texto, e o corpo escrito vai na própria
+    declaração, gravado como o Guerreiro(a) o escreveu."""
+    _, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "texto"
+    )
+
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, comprovacao="Montei com tampinhas e arame."
+    )
+    sessao.commit()
+
+    assert resultado.aprovado is None
+    assert resultado.desbloqueio.comprovacao == "Montei com tampinhas e arame."
+    assert resultado.desbloqueio.entrega_presencial is False
+
+
+def test_comprovacao_em_link_externo_e_gravada_como_endereco(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-05-91`: no link externo o que se grava é o endereço."""
+    _, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "link_externo"
+    )
+
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, comprovacao="https://exemplo.org/meu-robo"
+    )
+    sessao.commit()
+
+    assert resultado.desbloqueio.comprovacao == "https://exemplo.org/meu-robo"
+
+
+def test_comprovacao_em_midia_nasce_sem_arquivo(sessao, criar_persona, criar_trilha, criar_missao):
+    """`RF-05-91`: nas quatro formas de mídia a declaração nasce sem arquivo e
+    o recebe pela sessão de envio, como a criação original."""
+    _, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "video"
+    )
+
+    resultado = submeter_desafio_de_desbloqueio(sessao, guerreiro=guerreiro, missao=missao)
+    sessao.commit()
+
+    assert resultado.aprovado is None
+    assert resultado.desbloqueio.comprovacao is None
+    assert resultado.desbloqueio.comprovacao_referencia is None
+    assert resultado.desbloqueio.entrega_presencial is False
+
+
+def test_declaracao_em_midia_com_corpo_escrito_e_recusada(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-05-91`: a comprovação em vídeo vai pelo envio do arquivo, não
+    escrita na declaração."""
+    _, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "video"
+    )
+
+    with pytest.raises(ErroDeValidacao):
+        submeter_desafio_de_desbloqueio(
+            sessao, guerreiro=guerreiro, missao=missao, comprovacao="Mandei por fora."
+        )
+
+
+def test_declaracao_sem_o_corpo_e_sem_alternativa_e_recusada(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-05-51`: na forma texto, sem o corpo e sem a entrega no encontro não
+    há o que o Mestre julgue."""
+    _, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "texto"
+    )
+
+    with pytest.raises(ErroDeValidacao):
+        submeter_desafio_de_desbloqueio(sessao, guerreiro=guerreiro, missao=missao)
+
+
+def test_entrega_presencial_grava_a_declaracao_sem_midia(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-05-51`: quem recusa a câmera, não tem aparelho que grave ou não
+    consegue enviar entrega ao Mestre no encontro — e não perde a missão."""
+    _, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "video"
+    )
+
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, entrega_presencial=True
+    )
+    sessao.commit()
+
+    assert resultado.aprovado is None
+    assert resultado.desbloqueio.entrega_presencial is True
+    assert resultado.desbloqueio.comprovacao is None
+
+
+def test_entregar_pelo_aparelho_e_no_encontro_ao_mesmo_tempo_e_recusado(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-05-51`: exatamente um dos dois."""
+    _, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "texto"
+    )
+
+    with pytest.raises(ErroDeValidacao):
+        submeter_desafio_de_desbloqueio(
+            sessao,
+            guerreiro=guerreiro,
+            missao=missao,
+            comprovacao="Montei com tampinhas.",
+            entrega_presencial=True,
+        )
+
+
+def test_entrega_presencial_nao_conta_como_tentativa_falha(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-05-51`, `RN-05-20`: a escolha nunca é reprovação — o percurso a
+    exibe como aguardando o Mestre, que é o que `aprovado is None` significa."""
+    _, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "imagem"
+    )
+
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, entrega_presencial=True
+    )
+    sessao.commit()
+
+    assert resultado.aprovado is not False
+    submissoes = sessao.query(SubmissaoDoDesbloqueio).filter_by(guerreiro_id=guerreiro.id).all()
+    assert len(submissoes) == 1
+    assert submissoes[0].acertos == 0
+
+
+def test_quiz_com_comprovacao_e_recusado(sessao, criar_persona, criar_trilha, criar_missao):
+    """`RF-05-91`: no quiz o corte de acertos é o critério, e o núcleo o afere
+    sozinho — não há comprovação a entregar."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    missao = _declarar_quiz(sessao, mestre, missao)
+    inscrever_na_trilha(sessao, guerreiro=guerreiro, trilha=trilha)
+    sessao.commit()
+
+    with pytest.raises(ErroDeValidacao):
+        submeter_desafio_de_desbloqueio(
+            sessao,
+            guerreiro=guerreiro,
+            missao=missao,
+            respostas=_responder(sessao, missao, [2]),
+            comprovacao="Não é daqui.",
+        )
+
+
+def test_entregar_de_novo_antes_do_julgamento_substitui_a_anterior(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-05-52`: a entrega nova substitui a anterior em vez de criar segundo
+    registro — e segue havendo uma única declaração daquele par."""
+    _, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "texto"
+    )
+
+    submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, comprovacao="Primeira."
+    )
+    sessao.commit()
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, comprovacao="Segunda, melhor."
+    )
+    sessao.commit()
+
+    assert resultado.desbloqueio.comprovacao == "Segunda, melhor."
+    linhas = (
+        sessao.query(DesbloqueioDaMissao)
+        .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
+        .all()
+    )
+    assert len(linhas) == 1
+
+
+def test_entregar_de_novo_apaga_a_midia_da_entrega_anterior(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-05-52`: a substituição apaga a entrega inteira, para que não sobre
+    arquivo de uma entrega que o Mestre não vai mais julgar."""
+    _, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "video"
+    )
+
+    resultado = submeter_desafio_de_desbloqueio(sessao, guerreiro=guerreiro, missao=missao)
+    resultado.desbloqueio.comprovacao_referencia = "desbloqueios-praticos/x/comprovacao"
+    resultado.desbloqueio.comprovacao_tamanho = 10
+    resultado.desbloqueio.comprovacao_tipo_do_arquivo = "video/mp4"
+    sessao.commit()
+
+    de_novo = submeter_desafio_de_desbloqueio(sessao, guerreiro=guerreiro, missao=missao)
+    sessao.commit()
+
+    assert de_novo.desbloqueio.comprovacao_referencia is None
+    assert de_novo.desbloqueio.comprovacao_tamanho is None
+    assert de_novo.desbloqueio.comprovacao_tipo_do_arquivo is None
+
+
+def test_julgado_que_nao_passou_a_comprovacao_vai_com_a_declaracao(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-05-52`, `RN-05-20`: a linha é apagada e a comprovação vai com ela,
+    de modo que a declaração seguinte comece sem resíduo da anterior."""
+    mestre, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "texto"
+    )
+
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, comprovacao="Montei assim."
+    )
+    sessao.commit()
+    julgar_desafio_pratico(
+        sessao, operador=mestre, desbloqueio=resultado.desbloqueio, aprovado=False
+    )
+    sessao.commit()
+
+    assert (
+        sessao.query(DesbloqueioDaMissao)
+        .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
+        .first()
+        is None
+    )
+
+    de_novo = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, comprovacao="Montei de outro jeito."
+    )
+    sessao.commit()
+    assert de_novo.desbloqueio.comprovacao == "Montei de outro jeito."
+
+
+def test_declaracao_repetida_depois_do_julgamento_nao_toca_no_que_esta_gravado(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-05-52`: julgado que passou, a declaração repetida devolve a situação
+    do julgamento e a comprovação permanece como estava."""
+    mestre, guerreiro, _, missao = _pratico_inscrito(
+        sessao, criar_persona, criar_trilha, criar_missao, "texto"
+    )
+
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, comprovacao="Montei assim."
+    )
+    sessao.commit()
+    julgar_desafio_pratico(
+        sessao, operador=mestre, desbloqueio=resultado.desbloqueio, aprovado=True
+    )
+    sessao.commit()
+
+    de_novo = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, comprovacao="Tentando mudar."
+    )
+    sessao.commit()
+
+    assert de_novo.aprovado is True
+    assert de_novo.desbloqueio.comprovacao == "Montei assim."
+
+
+def test_pratico_declarado_antes_da_regra_segue_declaravel(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """Design — decisão 7: prático sem forma aceita declarada segue valendo, e
+    a declaração é aceita sem comprovação, porque não há forma a exigir."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    missao = _declarar_pratico_com_forma(sessao, mestre, missao, "video")
+    # O estado de quem declarou o prático antes de os três campos existirem.
+    missao.desafio_pratico_forma_de_comprovacao = None
+    missao.desafio_pratico_criterio_de_aceite = None
+    missao.desafio_pratico_titulo_curto = None
+    inscrever_na_trilha(sessao, guerreiro=guerreiro, trilha=trilha)
+    sessao.commit()
+
+    resultado = submeter_desafio_de_desbloqueio(sessao, guerreiro=guerreiro, missao=missao)
+    sessao.commit()
+
+    assert resultado.aprovado is None
+    assert resultado.desbloqueio.comprovacao is None
+
+
+# ---------------------------------------------------------------------------
+# A entrega da comprovação pelas rotas (`RF-05-91`, `RF-05-93`, `RN-05-51`).
+# ---------------------------------------------------------------------------
+
+
+def _cenario_do_pratico_por_http(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_chave, criar_sessao_de_teste, forma
+):
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    missao = _declarar_pratico_com_forma(sessao, mestre, missao, forma)
+    inscrever_na_trilha(sessao, guerreiro=guerreiro, trilha=trilha)
+    sessao.commit()
+    chave, _ = criar_chave()
+    return (
+        missao,
+        mestre,
+        guerreiro,
+        _cabecalhos(chave, criar_sessao_de_teste, guerreiro),
+        _cabecalhos(chave, criar_sessao_de_teste, mestre),
+        chave,
+    )
+
+
+def _enviar_comprovacao(cliente, cabecalhos, missao_id, conteudo=b"MP4-de-teste", tipo="video/mp4"):
+    """Abre a sessão, envia os bytes direto ao armazenamento e confirma — o
+    mesmo trajeto que a App 05 percorre (`RF-05-91`)."""
+    resposta_sessao = cliente.post(
+        f"/v1/eu/missoes/{missao_id}/desbloqueio/comprovacao",
+        json={"tipo_mime": tipo, "tamanho_declarado": len(conteudo)},
+        headers=cabecalhos,
+    )
+    assert resposta_sessao.status_code == 201, resposta_sessao.text
+    cliente.put(
+        resposta_sessao.json()["endereco_da_sessao"],
+        content=conteudo,
+        headers={**cabecalhos, "Content-Range": f"bytes 0-{len(conteudo) - 1}/{len(conteudo)}"},
+    )
+    return cliente.patch(f"/v1/eu/missoes/{missao_id}/desbloqueio/comprovacao", headers=cabecalhos)
+
+
+def test_submissao_do_pratico_leva_a_comprovacao_e_a_devolve(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RF-05-91`, `RF-05-93`: o corpo novo da submissão carrega a comprovação,
+    e a saída a devolve, para a tela reencontrá-la sem segunda chamada."""
+    missao, _, _, cabecalhos, _, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "texto",
+    )
+
+    resposta = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio",
+        json={"comprovacao": "Montei com tampinhas e arame."},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 201
+    corpo = resposta.json()
+    assert corpo["aguardando_mestre"] is True
+    assert corpo["comprovacao_entregue"]["comprovacao"] == "Montei com tampinhas e arame."
+    assert corpo["comprovacao_entregue"]["forma"] == "texto"
+    assert corpo["comprovacao_entregue"]["tem_arquivo"] is False
+
+
+def test_submissao_recusa_campo_fora_do_contrato(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """A entrada é `extra="forbid"`: campo inventado é 422, como o id da
+    pergunta no corpo da declaração já era (`RF-05-91`)."""
+    missao, _, _, cabecalhos, _, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "texto",
+    )
+
+    resposta = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio",
+        json={"comprovacao": "Montei.", "forma_de_comprovacao": "texto"},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_entrega_presencial_pela_rota(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RN-05-51`: a alternativa de quem não entrega pelo aparelho chega pela
+    mesma rota, e a saída diz que foi ela."""
+    missao, _, _, cabecalhos, _, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "video",
+    )
+
+    resposta = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio",
+        json={"entrega_presencial": True},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 201
+    assert resposta.json()["comprovacao_entregue"]["entrega_presencial"] is True
+
+
+def test_ciclo_de_envio_da_comprovacao_e_leitura_pelo_proprio_guerreiro(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RF-05-91`, `RF-05-93`: abrir, enviar, confirmar e ler de volta — o
+    ciclo inteiro por HTTP, como a criança o percorre."""
+    missao, _, guerreiro, cabecalhos, _, chave = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "video",
+    )
+    assert (
+        cliente.post(
+            f"/v1/eu/missoes/{missao.id}/desbloqueio", json={}, headers=cabecalhos
+        ).status_code
+        == 201
+    )
+
+    confirmacao = _enviar_comprovacao(cliente, cabecalhos, missao.id)
+    assert confirmacao.status_code == 200
+    assert confirmacao.json()["tem_arquivo"] is True
+
+    leitura = cliente.get(
+        f"/v1/missoes/{missao.id}/desbloqueios/{guerreiro.id}/comprovacao", headers=cabecalhos
+    )
+    assert leitura.status_code == 200
+    assert leitura.content == b"MP4-de-teste"
+    assert leitura.headers["content-type"].startswith("video/mp4")
+
+
+def test_mestre_autor_le_a_comprovacao_que_lhe_cabe_julgar(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RF-05-93`: é ele quem julga, e sem os bytes julgaria às cegas."""
+    missao, _, guerreiro, cabecalhos, cabecalhos_mestre, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "video",
+    )
+    cliente.post(f"/v1/eu/missoes/{missao.id}/desbloqueio", json={}, headers=cabecalhos)
+    _enviar_comprovacao(cliente, cabecalhos, missao.id)
+
+    leitura = cliente.get(
+        f"/v1/missoes/{missao.id}/desbloqueios/{guerreiro.id}/comprovacao",
+        headers=cabecalhos_mestre,
+    )
+
+    assert leitura.status_code == 200
+    assert leitura.content == b"MP4-de-teste"
+
+
+def test_quem_nao_entregou_nem_e_o_autor_e_recusado(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RF-05-93`: 403 para o resto — a comprovação é mídia de criança."""
+    missao, _, guerreiro, cabecalhos, _, chave = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "video",
+    )
+    cliente.post(f"/v1/eu/missoes/{missao.id}/desbloqueio", json={}, headers=cabecalhos)
+    _enviar_comprovacao(cliente, cabecalhos, missao.id)
+    # A chave é uma por aplicação e ambiente: o estranho entra pela mesma, e o
+    # que o separa é a persona da sessão, que é o ponto do teste.
+    cabecalhos_estranho = _cabecalhos(chave, criar_sessao_de_teste, criar_persona(Papel.mestre))
+
+    leitura = cliente.get(
+        f"/v1/missoes/{missao.id}/desbloqueios/{guerreiro.id}/comprovacao",
+        headers=cabecalhos_estranho,
+    )
+
+    assert leitura.status_code == 403
+
+
+def test_comprovacao_sem_midia_responde_404(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RF-05-93`: entrega presencial e envio não concluído não servem bytes."""
+    missao, _, guerreiro, cabecalhos, _, chave = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "video",
+    )
+    cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio",
+        json={"entrega_presencial": True},
+        headers=cabecalhos,
+    )
+
+    leitura = cliente.get(
+        f"/v1/missoes/{missao.id}/desbloqueios/{guerreiro.id}/comprovacao", headers=cabecalhos
+    )
+
+    assert leitura.status_code == 404
+
+
+def test_envio_depois_do_julgamento_e_recusado(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RN-05-52`: julgado, a entrega está encerrada."""
+    missao, mestre, guerreiro, cabecalhos, _, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "video",
+    )
+    cliente.post(f"/v1/eu/missoes/{missao.id}/desbloqueio", json={}, headers=cabecalhos)
+    sessao.expire_all()
+    desbloqueio = (
+        sessao.query(DesbloqueioDaMissao)
+        .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
+        .first()
+    )
+    julgar_desafio_pratico(sessao, operador=mestre, desbloqueio=desbloqueio, aprovado=True)
+    sessao.commit()
+
+    resposta = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio/comprovacao",
+        json={"tipo_mime": "video/mp4", "tamanho_declarado": 10},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_bancada_do_mestre_traz_o_criterio_e_a_entrega(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RF-05-93`: a pendência chega ao Mestre com o critério e a entrega, e é
+    o que deixa a bancada pronta — sem servir bytes na listagem."""
+    missao, _, _, cabecalhos, cabecalhos_mestre, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "video",
+    )
+    cliente.post(f"/v1/eu/missoes/{missao.id}/desbloqueio", json={}, headers=cabecalhos)
+    _enviar_comprovacao(cliente, cabecalhos, missao.id)
+
+    pendentes = cliente.get("/v1/missoes/desbloqueios-pendentes", headers=cabecalhos_mestre)
+
+    assert pendentes.status_code == 200
+    linha = pendentes.json()[0]
+    assert linha["criterio_de_aceite"] == ("Em foto ou vídeo não deve aparecer o rosto da criança.")
+    assert linha["comprovacao_entregue"]["forma"] == "video"
+    assert linha["comprovacao_entregue"]["tem_arquivo"] is True

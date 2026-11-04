@@ -1,4 +1,4 @@
-import { chamarNucleo, lerArquivoDoNucleo } from "../api/cliente";
+import { chamarNucleo, enviarParteComProgresso, lerArquivoDoNucleo } from "../api/cliente";
 
 // A fatia do cliente de trilha que as telas promovidas usam — leitura do
 // percurso, conteúdo da missão, catálogo de poderes e os dois atos de
@@ -59,11 +59,39 @@ export function lerImagemDaPergunta(idDaPergunta: string, token: string): Promis
   return lerArquivoDoNucleo(`/v1/perguntas-do-desbloqueio/${idDaPergunta}/imagem`, { token });
 }
 
+/** Uma das seis formas de entrega do Guerreiro(a) (documento 02 §4). No
+ * prático é **uma** só, declarada pelo Mestre autor (`RF-09-129`). */
+export type FormaDeComprovacao =
+  | "texto"
+  | "imagem"
+  | "audio"
+  | "video"
+  | "arquivo"
+  | "link_externo";
+
+export const FORMAS_DE_COMPROVACAO_EM_TEXTO: FormaDeComprovacao[] = ["texto", "link_externo"];
+
 export interface DesafioDeDesbloqueio {
   tipo: TipoDeDesafioDeDesbloqueio;
   // O quiz traz `perguntas`, uma ou mais; o prático traz `enunciado`.
   enunciado: string | null;
   perguntas: PerguntaDoDesbloqueio[] | null;
+  // Os três do prático, declarados pelo Mestre autor: é deles que a criança
+  // sabe o que entregar e sob que critério será julgada, e por isso nenhum é
+  // segredo dele (`RF-09-129` a `RF-09-131`). No quiz vêm nulos. O título
+  // curto é da vitrine — a tela do desafio não o apresenta.
+  desafio_pratico_forma_de_comprovacao: FormaDeComprovacao | null;
+  desafio_pratico_criterio_de_aceite: string | null;
+  desafio_pratico_titulo_curto: string | null;
+}
+
+/** O que ficou gravado da entrega, para a tela reapresentá-la em lugar de um
+ * formulário vazio ao voltar à missão (`RF-05-93`). */
+export interface ComprovacaoEntregue {
+  forma: FormaDeComprovacao | null;
+  comprovacao: string | null;
+  entrega_presencial: boolean;
+  tem_arquivo: boolean;
 }
 
 export interface MissaoNoPercurso {
@@ -77,6 +105,9 @@ export interface MissaoNoPercurso {
   aguardando_mestre: boolean;
   motivo_do_bloqueio: string | null;
   desafio_de_desbloqueio: DesafioDeDesbloqueio | null;
+  // A entrega que o Guerreiro(a) já fez neste prático, para a tela
+  // reapresentá-la enquanto o Mestre não julga (`RF-05-93`).
+  comprovacao_entregue: ComprovacaoEntregue | null;
 }
 
 // O estado da missão no percurso do Guerreiro(a) — desbloqueada, próxima,
@@ -102,24 +133,118 @@ export interface ResultadoDaSubmissaoDoDesbloqueio {
   aguardando_mestre: boolean;
   acertos: number;
   total: number;
+  comprovacao_entregue: ComprovacaoEntregue | null;
+}
+
+/** O que o prático leva na declaração: o corpo escrito, nas formas texto e
+ * link externo, **ou** a escolha de entregar ao Mestre no encontro. Nas
+ * quatro formas de mídia a declaração nasce sem arquivo e o recebe pelo
+ * envio (`RF-05-91`, `RN-05-51`). */
+export interface EntregaDoPratico {
+  comprovacao?: string;
+  entrega_presencial?: boolean;
 }
 
 // Submete o desafio de desbloqueio — no quiz, a submissão leva a resposta
 // de **todas** as perguntas de uma vez e a devolutiva diz quantas ele
-// acertou; no prático, a chamada é a própria declaração de que cumpriu
-// (`RF-05-13`, `RF-05-14`, `RF-05-89`, `RN-05-20`).
+// acertou; no prático, a chamada é a declaração de que cumpriu, e leva com
+// ela a comprovação na forma que o Mestre autor aceitou
+// (`RF-05-13`, `RF-05-14`, `RF-05-89`, `RF-05-91`, `RN-05-20`, `RN-05-51`).
 export function submeterDesafioDeDesbloqueio(
   missaoId: string,
   respostas: RespostaDoDesbloqueio[] | null,
   token: string,
+  entrega: EntregaDoPratico = {},
 ): Promise<ResultadoDaSubmissaoDoDesbloqueio> {
   return chamarNucleo<ResultadoDaSubmissaoDoDesbloqueio>(
     `/v1/eu/missoes/${missaoId}/desbloqueio`,
     {
       metodo: "POST",
-      corpo: { respostas },
+      corpo: { respostas, ...entrega },
       token,
     },
+  );
+}
+
+// O envio da comprovação em mídia, no mesmo trajeto da criação original:
+// abre a sessão retomável, manda as partes e confirma. Mora no `comum`
+// porque a tela do desbloqueio é uma só para as Apps 01 e 05
+// (`RF-05-91`, design — decisão 5).
+const TAMANHO_DA_PARTE = 5 * 1024 * 1024;
+
+export function abrirEnvioDaComprovacao(
+  missaoId: string,
+  tipoMime: string,
+  tamanhoDoArquivo: number,
+  token: string,
+): Promise<string> {
+  return chamarNucleo<{ endereco_da_sessao: string }>(
+    `/v1/eu/missoes/${missaoId}/desbloqueio/comprovacao`,
+    {
+      metodo: "POST",
+      corpo: { tipo_mime: tipoMime, tamanho_declarado: tamanhoDoArquivo },
+      token,
+    },
+  ).then((saida) => saida.endereco_da_sessao);
+}
+
+export function confirmarEnvioDaComprovacao(
+  missaoId: string,
+  token: string,
+): Promise<ComprovacaoEntregue> {
+  return chamarNucleo<ComprovacaoEntregue>(
+    `/v1/eu/missoes/${missaoId}/desbloqueio/comprovacao`,
+    { metodo: "PATCH", token },
+  );
+}
+
+/** Quantos bytes o armazenamento já tem: é daqui que a retomada depois de
+ * queda de rede sabe de onde continuar (`RF-05-91`). */
+export async function consultarEnvioDaComprovacao(
+  enderecoDaSessao: string,
+  tamanhoDoArquivo: number,
+): Promise<number> {
+  const resultado = await enviarParteComProgresso(
+    enderecoDaSessao,
+    new Blob([]),
+    `bytes */${tamanhoDoArquivo}`,
+    () => {},
+  );
+  return resultado.bytesRecebidos;
+}
+
+// Envia o arquivo em partes, retomando de `posicaoInicial`.
+export async function enviarComprovacao(
+  enderecoDaSessao: string,
+  arquivo: File,
+  aoProgredir: (bytesEnviados: number, total: number) => void,
+  posicaoInicial = 0,
+): Promise<void> {
+  let posicao = posicaoInicial;
+  const total = arquivo.size;
+  while (posicao < total) {
+    const fim = Math.min(posicao + TAMANHO_DA_PARTE, total);
+    const resultado = await enviarParteComProgresso(
+      enderecoDaSessao,
+      arquivo.slice(posicao, fim),
+      `bytes ${posicao}-${fim - 1}/${total}`,
+      (bytesDaParte) => aoProgredir(posicao + bytesDaParte, total),
+    );
+    posicao = resultado.bytesRecebidos;
+    aoProgredir(posicao, total);
+  }
+}
+
+/** Os bytes da comprovação, servidos a quem a entregou e ao Mestre autor
+ * (`RF-05-93`). */
+export function lerComprovacaoDoPratico(
+  missaoId: string,
+  guerreiroId: string,
+  token: string,
+): Promise<Blob> {
+  return lerArquivoDoNucleo(
+    `/v1/missoes/${missaoId}/desbloqueios/${guerreiroId}/comprovacao`,
+    { token },
   );
 }
 

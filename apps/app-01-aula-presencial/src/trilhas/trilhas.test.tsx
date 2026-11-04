@@ -900,12 +900,16 @@ function missaoNoPercurso(
     aguardando_mestre: false,
     motivo_do_bloqueio: null,
     desafio_de_desbloqueio: null,
+    comprovacao_entregue: null,
     ...sobrescreve,
   };
 }
 
 const QUIZ_DO_DESBLOQUEIO: trilhaApi.DesafioDeDesbloqueio = {
   tipo: "quiz",
+  desafio_pratico_forma_de_comprovacao: null,
+  desafio_pratico_criterio_de_aceite: null,
+  desafio_pratico_titulo_curto: null,
   enunciado: null,
   perguntas: [
     {
@@ -1182,6 +1186,7 @@ describe("o percurso do Guerreiro(a) no encontro (RF-04-72)", () => {
         titulo: "Sondagem",
         e_sondagem: true,
         desafio_de_desbloqueio: QUIZ_DO_DESBLOQUEIO,
+        comprovacao_entregue: null,
       }),
     );
     vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
@@ -1253,6 +1258,7 @@ describe("o percurso do Guerreiro(a) no encontro (RF-04-72)", () => {
               titulo: "Sondagem",
               e_sondagem: true,
               desafio_de_desbloqueio: QUIZ_DO_DESBLOQUEIO,
+              comprovacao_entregue: null,
             })
           : missaoNoPercurso({
               id: "missao-2",
@@ -1340,21 +1346,26 @@ describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
       aguardando_mestre: false,
       acertos: 0,
       total: 1,
+      comprovacao_entregue: null,
     });
     const usuario = await abrirMissaoComDesafio({
       id: "sondagem-1",
       titulo: "Sondagem",
       e_sondagem: true,
       desafio_de_desbloqueio: QUIZ_DO_DESBLOQUEIO,
+      comprovacao_entregue: null,
     });
 
     await usuario.click(await screen.findByRole("radio", { name: "1" }));
     await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
 
+    // A entrega vai vazia: a sondagem e o quiz não têm comprovação a entregar
+    // — ela é só do prático (`RF-05-91`).
     expect(submeter).toHaveBeenCalledWith(
       "sondagem-1",
       [{ pergunta_id: "p1", alternativa_escolhida: 1 }],
       "token-do-guerreiro",
+      {},
     );
     // A trilha já reabre no mesmo atendimento: nenhuma entrada nova é pedida.
     expect(screen.queryByLabelText(/nick/i)).not.toBeInTheDocument();
@@ -1367,9 +1378,11 @@ describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
       aguardando_mestre: false,
       acertos: 1,
       total: 2,
+      comprovacao_entregue: null,
     });
     const usuario = await abrirMissaoComDesafio({
       desafio_de_desbloqueio: QUIZ_DO_DESBLOQUEIO,
+      comprovacao_entregue: null,
     });
 
     await usuario.click(await screen.findByRole("radio", { name: "2" }));
@@ -1384,10 +1397,14 @@ describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
       aguardando_mestre: true,
       acertos: 0,
       total: 0,
+      comprovacao_entregue: null,
     });
     const usuario = await abrirMissaoComDesafio({
       desafio_de_desbloqueio: {
         tipo: "pratico",
+        desafio_pratico_forma_de_comprovacao: null,
+        desafio_pratico_criterio_de_aceite: null,
+        desafio_pratico_titulo_curto: null,
         enunciado: "Monte o robô e mostre ao Mestre.",
         perguntas: null,
       },
@@ -1397,6 +1414,84 @@ describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
 
     expect(await screen.findByText(/esperar o mestre conferir/i)).toBeInTheDocument();
     expect(screen.queryByText(/reprovad/i)).not.toBeInTheDocument();
+  });
+
+  // A App 01 entrega a comprovação pela mesma tela do desbloqueio, e o
+  // comportamento NEVER SHALL divergir da App 05 em exigência, aviso ou
+  // alternativa — é o mesmo componente comum (`RF-04-76`).
+  const PRATICO_EM_VIDEO: trilhaApi.DesafioDeDesbloqueio = {
+    tipo: "pratico",
+    enunciado: "Monte o robô e grave um vídeo.",
+    perguntas: null,
+    desafio_pratico_forma_de_comprovacao: "video",
+    desafio_pratico_criterio_de_aceite: "Não deve aparecer o rosto da criança, só a produção.",
+    desafio_pratico_titulo_curto: "Robô de sucata",
+  };
+
+  it("entrega a comprovação pelo aparelho da aula, com o critério e o aviso", async () => {
+    await abrirMissaoComDesafio({
+      id: "missao-1",
+      titulo: "Primeira Missão",
+      desafio_de_desbloqueio: PRATICO_EM_VIDEO,
+      comprovacao_entregue: null,
+    });
+
+    expect(
+      await screen.findByText("Não deve aparecer o rosto da criança, só a produção."),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/fica guardado/i)).toBeInTheDocument();
+    // A exigência não divergiu: sem o arquivo, não se declara que cumpriu.
+    expect(screen.getByRole("button", { name: /já cumpri/i })).toBeDisabled();
+  });
+
+  it("oferece a entrega ao Mestre no encontro, como a App 05", async () => {
+    const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio").mockResolvedValue({
+      aprovado: null,
+      aguardando_mestre: true,
+      acertos: 0,
+      total: 0,
+      comprovacao_entregue: {
+        forma: "video",
+        comprovacao: null,
+        entrega_presencial: true,
+        tem_arquivo: false,
+      },
+    });
+    const usuario = await abrirMissaoComDesafio({
+      id: "missao-1",
+      titulo: "Primeira Missão",
+      desafio_de_desbloqueio: PRATICO_EM_VIDEO,
+      comprovacao_entregue: null,
+    });
+
+    await usuario.click(
+      await screen.findByRole("button", { name: /entregar ao mestre no encontro/i }),
+    );
+
+    expect(submeter).toHaveBeenCalledWith("missao-1", null, expect.any(String), {
+      entrega_presencial: true,
+    });
+    expect(screen.queryByText(/reprovad/i)).not.toBeInTheDocument();
+  });
+
+  it("reapresenta a entrega já feita em lugar de um formulário vazio", async () => {
+    await abrirMissaoComDesafio({
+      id: "missao-1",
+      titulo: "Primeira Missão",
+      aguardando_mestre: true,
+      desafio_de_desbloqueio: PRATICO_EM_VIDEO,
+      comprovacao_entregue: {
+        forma: "video",
+        comprovacao: null,
+        entrega_presencial: false,
+        tem_arquivo: true,
+      },
+    });
+
+    expect(
+      await screen.findByText(/arquivo foi enviado e está guardado/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /já cumpri/i })).not.toBeInTheDocument();
   });
 
   it("a entrega individual da produção não acontece por este caminho", async () => {
@@ -1612,6 +1707,7 @@ describe("a pergunta da sondagem é falada no encontro", () => {
         titulo: "Sondagem",
         e_sondagem: true,
         desafio_de_desbloqueio: QUIZ_DO_DESBLOQUEIO,
+        comprovacao_entregue: null,
       }),
     );
     vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());

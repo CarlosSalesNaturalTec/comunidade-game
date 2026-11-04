@@ -39,18 +39,22 @@ documento 02 §4, documento 11 §2.2)
 
 ### Requirement: A comprovação é exigida, e a entrega no encontro é a alternativa
 
-Declarar que cumpriu o prático SHALL exigir a comprovação: declaração **sem** comprovação e
-**sem** a alternativa SHALL ser recusada com **422**, nomeando o que falta. O Guerreiro(a) SHALL
-poder, em lugar dela, declarar que **entrega ao Mestre no encontro**: a declaração é gravada
-**sem mídia**, marcada como **entrega presencial**, e NEVER SHALL fazer perder a missão, ser
-recusada nem contar como tentativa falha. (`RN-05-51`, `RF-05-78`, `RN-05-20`, PRD-05 §11,
-decisão do fundador de 2026-11-04)
+Declarar que cumpriu o prático SHALL exigir a comprovação, ou, em lugar dela, a declaração de
+que **entrega ao Mestre no encontro** — gravada **sem mídia**, marcada como **entrega
+presencial**, e que NEVER SHALL fazer perder a missão nem contar como tentativa falha. Faltarem
+as duas, ou vierem as duas, SHALL ser recusado com **422**. (`RN-05-51`, `RF-05-78`, `RN-05-20`,
+PRD-05 §11, decisão do fundador de 2026-11-04)
 
-#### Scenario: Declaração sem comprovação e sem alternativa é recusada
+#### Scenario: Declaração sem o corpo e sem alternativa é recusada
 
-- **WHEN** o Guerreiro(a) declara que cumpriu o prático sem entregar a comprovação e sem
-  escolher a entrega no encontro
+- **WHEN** a forma aceita é texto e o Guerreiro(a) declara que cumpriu sem escrever o corpo e
+  sem escolher a entrega no encontro
 - **THEN** o núcleo responde **422** nomeando o que falta, e nada é gravado
+
+#### Scenario: Entregar pelo aparelho e no encontro ao mesmo tempo é recusado
+
+- **WHEN** a declaração traz o corpo da comprovação e também a entrega no encontro
+- **THEN** o núcleo responde **422** dizendo que é uma ou a outra, e nada é gravado
 
 #### Scenario: A entrega no encontro grava a declaração sem mídia
 
@@ -67,16 +71,27 @@ decisão do fundador de 2026-11-04)
 ### Requirement: A mídia da comprovação entra por envio retomável
 
 Comprovação em **imagem**, **áudio**, **vídeo** ou **arquivo** SHALL nascer **sem o arquivo** e
-recebê-lo por **sessão de envio retomável**, e SHALL passar a servir bytes só quando o envio
-**conclui**. O núcleo SHALL aplicar à comprovação a **mesma lista fechada de tipos** e os
-**mesmos tetos de tamanho** da criação original, recusando com **422** o tipo fora da lista e o
-tamanho acima do teto, dizendo o teto. (`RF-05-91`, `RF-01-78`)
+recebê-lo por **sessão de envio retomável**, servindo bytes só quando o envio **conclui**; nessas
+quatro formas a declaração NEVER SHALL carregar o corpo da comprovação. O núcleo SHALL aplicar a
+**mesma lista fechada de tipos** e os **mesmos tetos** da criação original. (`RF-05-91`,
+`RF-01-78`)
 
 #### Scenario: A comprovação em mídia nasce sem arquivo e o recebe depois
 
 - **WHEN** o Guerreiro(a) declara que cumpriu entregando comprovação em vídeo
 - **THEN** o núcleo grava a declaração sem mídia, e ela passa a existir quando o envio do
   arquivo conclui
+
+#### Scenario: A declaração em forma de mídia não carrega o corpo
+
+- **WHEN** a forma aceita é vídeo e a declaração traz o corpo da comprovação escrito
+- **THEN** o núcleo responde **422** dizendo que aquela comprovação vai pelo envio do arquivo
+
+#### Scenario: A declaração repetida depois do julgamento não toca no que está gravado
+
+- **WHEN** o Guerreiro(a) declara de novo um prático já julgado como cumprido
+- **THEN** o núcleo devolve a situação do julgamento, e a comprovação gravada permanece como
+  estava
 
 #### Scenario: Tipo de arquivo fora da lista é recusado
 
@@ -86,15 +101,14 @@ tamanho acima do teto, dizendo o teto. (`RF-05-91`, `RF-01-78`)
 #### Scenario: Tamanho acima do teto é recusado
 
 - **WHEN** o envio da comprovação declara tamanho acima do teto do tipo dela
-- **THEN** o núcleo responde **422** dizendo o teto, e nenhum byte é aceito
+- **THEN** o núcleo responde **413** dizendo o teto, e nenhum byte é aceito
 
 ### Requirement: Entrega nova antes do julgamento substitui a anterior
 
 Enquanto o Mestre autor **não julgou**, o Guerreiro(a) SHALL poder entregar de novo, e a entrega
-nova SHALL **substituir** a anterior em vez de criar segundo registro. Julgado que **não
-passou**, a declaração é apagada e a comprovação SHALL ir com ela, de modo que a declaração
-seguinte comece sem resíduo da anterior. Depois de julgado que **passou**, nova entrega SHALL
-ser recusada com **422**. (`RN-05-52`, `RN-05-20`)
+nova SHALL **substituir** a anterior — o corpo e a mídia — em vez de criar segundo registro.
+Julgado que **não passou**, a declaração é apagada e a comprovação SHALL ir com ela. Depois de
+julgado, a entrega SHALL estar encerrada. (`RN-05-52`, `RN-05-20`)
 
 #### Scenario: Entregar de novo antes do julgamento substitui o que estava
 
@@ -107,9 +121,10 @@ ser recusada com **422**. (`RN-05-52`, `RN-05-20`)
 - **THEN** a declaração e a comprovação dela deixam de existir, e ele pode declarar de novo,
   sem limite e sem punição
 
-#### Scenario: Depois de aprovado, nova entrega é recusada
+#### Scenario: Depois de julgado, o envio da comprovação é recusado
 
-- **WHEN** o Guerreiro(a) tenta entregar comprovação de um prático já julgado como cumprido
+- **WHEN** o Guerreiro(a) tenta enviar o arquivo da comprovação de um prático já julgado como
+  cumprido
 - **THEN** o núcleo responde **422** e a comprovação gravada permanece como estava
 
 ### Requirement: A comprovação é servida a quem pode vê-la

@@ -5,6 +5,12 @@ from datetime import UTC, datetime
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
+from ..armazenamento.limites import (
+    FORMATOS_ACEITOS_EM_TEXTO,
+    FORMATOS_DE_ENVIO_ACEITOS,
+    formatar_mb,
+    teto_do_tipo_de_producao,
+)
 from ..armazenamento.porta import PortaDeArmazenamento
 from ..culminancias.modelo import Culminancia, ModalidadeDaCulminancia
 from ..equipes.modelo import Equipe, IntegranteDaEquipe
@@ -22,23 +28,6 @@ from ..trilhas.modelo import Trilha
 from ..trilhas.regra import conferir_posse_da_trilha
 from .modelo import CriacaoOriginal, SituacaoDaCriacaoOriginal, TipoDeProducaoDaCriacaoOriginal
 
-# O mesmo teto e a mesma lista de formatos que `conteudos.regra` já usa: a
-# criação original espelha a sessão retomável de envio, sem régua própria
-# (design — decisão 4).
-_FORMATOS_DE_ENVIO_ACEITOS = frozenset(
-    {
-        "video/mp4",
-        "video/webm",
-        "image/jpeg",
-        "image/png",
-        "image/webp",
-        "audio/mpeg",
-        "application/pdf",
-    }
-)
-_TAMANHO_TETO_VIDEO = 200 * 1024 * 1024
-_TAMANHO_TETO_ARQUIVO = 20 * 1024 * 1024
-
 _TIPOS_DE_TEXTO_LIVRE = frozenset(
     {TipoDeProducaoDaCriacaoOriginal.texto, TipoDeProducaoDaCriacaoOriginal.link_externo}
 )
@@ -50,18 +39,6 @@ _TIPOS_DE_MIDIA = frozenset(
         TipoDeProducaoDaCriacaoOriginal.arquivo,
     }
 )
-
-
-def _formatar_mb(tamanho_em_bytes: int) -> str:
-    return f"{tamanho_em_bytes / (1024 * 1024):.0f} MB"
-
-
-def _teto_do_tipo(tipo: TipoDeProducaoDaCriacaoOriginal) -> int:
-    return (
-        _TAMANHO_TETO_VIDEO
-        if tipo == TipoDeProducaoDaCriacaoOriginal.video
-        else _TAMANHO_TETO_ARQUIVO
-    )
 
 
 def _referencia_do_arquivo(criacao: CriacaoOriginal) -> str:
@@ -207,11 +184,10 @@ def abrir_envio_da_criacao(
         raise NaoEncontrado(mensagem="Criação original não encontrada.")
     _conferir_autoria_do_envio(criacao, operador)
 
-    if tipo_mime not in _FORMATOS_DE_ENVIO_ACEITOS:
+    if tipo_mime not in FORMATOS_DE_ENVIO_ACEITOS:
         raise ErroDeValidacao(
             mensagem=(
-                f"Formato '{tipo_mime}' não aceito. A lista aceita é MP4, WebM, JPG, PNG, "
-                "WebP, MP3 e PDF."
+                f"Formato '{tipo_mime}' não aceito. A lista aceita é {FORMATOS_ACEITOS_EM_TEXTO}."
             ),
             campo="tipo_mime",
         )
@@ -220,12 +196,12 @@ def abrir_envio_da_criacao(
             mensagem="Envio exige o tamanho declarado do arquivo.", campo="tamanho_declarado"
         )
 
-    teto = _teto_do_tipo(criacao.tipo)
+    teto = teto_do_tipo_de_producao(criacao.tipo)
     if tamanho_declarado > teto:
         raise ArquivoAcimaDoTeto(
             mensagem=(
-                f"O arquivo tem {_formatar_mb(tamanho_declarado)} e o limite para este tipo "
-                f"de produção é {_formatar_mb(teto)}."
+                f"O arquivo tem {formatar_mb(tamanho_declarado)} e o limite para este tipo "
+                f"de produção é {formatar_mb(teto)}."
             )
         )
 
@@ -255,12 +231,12 @@ def confirmar_envio_da_criacao(
     if envio is None:
         raise ErroDeValidacao(mensagem="O envio ainda não foi concluído.", campo="arquivo")
 
-    teto = _teto_do_tipo(criacao.tipo)
+    teto = teto_do_tipo_de_producao(criacao.tipo)
     if envio.tamanho > teto:
         raise ArquivoAcimaDoTeto(
             mensagem=(
-                f"O arquivo enviado tem {_formatar_mb(envio.tamanho)} e o limite para este "
-                f"tipo de produção é {_formatar_mb(teto)}."
+                f"O arquivo enviado tem {formatar_mb(envio.tamanho)} e o limite para este "
+                f"tipo de produção é {formatar_mb(teto)}."
             )
         )
 
