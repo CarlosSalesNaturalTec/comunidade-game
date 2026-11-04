@@ -2,11 +2,13 @@ import uuid
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from pydantic import BaseModel
 from sqlalchemy import tuple_
 from sqlalchemy.orm import Session
 
+from ..armazenamento.fabrica import dependencia_de_armazenamento
+from ..armazenamento.porta import PortaDeArmazenamento
 from ..banco import obter_sessao
 from ..comunidades.modelo import ComunidadeVirtual
 from ..configuracao import Configuracao, obter_configuracao
@@ -265,6 +267,35 @@ class CriacaoPublicaSaida(BaseModel):
     validada_em: datetime
     producao: str
     autores: list[AvatarENickSaida]
+
+
+@roteador.get("/vitrine/criacoes/{id_da_criacao}/arquivo")
+def ler_arquivo_publico_da_criacao(
+    id_da_criacao: uuid.UUID,
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> Response:
+    """Os bytes da mídia da criação pública, sob o **mesmo** portão da
+    listagem — `condicoes_de_criacao_publica`, e não uma segunda cópia da
+    regra que possa divergir dela (`RF-01-81`, `RN-01-63`).
+
+    Até aqui o portão protegia **quem aparece na lista**, não quem serve o
+    arquivo. A recusa é **404 em todos os casos** — criação inexistente,
+    ainda não validada ou com creditado sem autorização —, para a rota não
+    virar oráculo sobre quais crianças têm divulgação autorizada
+    (`RN-01-22`). Sem freio, como a listagem irmã."""
+    criacao = (
+        sessao_bd.query(CriacaoOriginal)
+        .filter(CriacaoOriginal.id == id_da_criacao)
+        .filter(*condicoes_de_criacao_publica(sessao_bd))
+        .first()
+    )
+    if criacao is None or criacao.referencia is None:
+        raise NaoEncontrado(mensagem="Criação original não encontrada.")
+    return Response(
+        content=armazenamento.ler(referencia=criacao.referencia),
+        media_type=criacao.tipo_do_arquivo or "application/octet-stream",
+    )
 
 
 @roteador.get("/vitrine/criacoes", response_model=PaginaDeResultado[CriacaoPublicaSaida])

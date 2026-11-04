@@ -2,10 +2,12 @@ import uuid
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Response, UploadFile
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from ..armazenamento.fabrica import dependencia_de_armazenamento
+from ..armazenamento.porta import PortaDeArmazenamento
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..equipes.modelo import Equipe
@@ -16,7 +18,11 @@ from ..trilhas.modelo import Missao
 from .fabrica import dependencia_da_producao_da_missao
 from .modelo import FormaDeEntregaDaProducao, ProducaoDaMissao
 from .porta import PortaDaProducaoDaMissao
-from .regra import registrar_producao, registrar_producao_individual
+from .regra import (
+    ler_arquivo_da_producao,
+    registrar_producao,
+    registrar_producao_individual,
+)
 
 roteador = APIRouter()
 
@@ -55,6 +61,7 @@ def registrar_producao_rota(
     ],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
     porta: Annotated[PortaDaProducaoDaMissao, Depends(dependencia_da_producao_da_missao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
     forma: Annotated[FormaDeEntregaDaProducao, Form()],
     texto: Annotated[str | None, Form()] = None,
     arquivo: Annotated[UploadFile | None, File()] = None,
@@ -62,16 +69,17 @@ def registrar_producao_rota(
     """`RF-04-45` a `RF-04-47`, PRD-04 §9: a entrega da produção pela
     equipe — a integrância, a atividade corrente, a aula encerrada e o
     desfecho da indisponibilidade já são de `registrar_producao`. `arquivo`
-    é só da **foto**: a fala chega transcrita no aparelho, em `texto`, e o
-    núcleo nunca recebe áudio (`RF-05-76`, `RN-05-32`). O byte da foto é
-    lido em memória e sai de escopo ao fim da chamada, sem tocar
-    `armazenamento`, disco ou log (`RF-04-46`)."""
+    vem na **foto** e, desde 2026-11-03, também no **áudio**, ao lado da
+    transcrição em `texto` (`RF-01-79`, `RN-01-61`). Os bytes passam a ser
+    **guardados** — antes a foto era lida e descartada —, e a leitura de
+    volta é de `GET /v1/producoes/{id}/arquivo`."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     equipe = sessao_bd.get(Equipe, id_da_equipe)
     if equipe is None:
         raise NaoEncontrado(mensagem="Equipe não encontrada.")
 
     conteudo = arquivo.file.read() if arquivo is not None else None
+    tipo_mime = arquivo.content_type if arquivo is not None else None
 
     producao = registrar_producao(
         sessao_bd,
@@ -80,7 +88,9 @@ def registrar_producao_rota(
         forma=forma,
         texto=texto,
         arquivo=conteudo,
+        tipo_mime=tipo_mime,
         porta=porta,
+        armazenamento=armazenamento,
     )
     sessao_bd.commit()
     return _saida_da_producao(producao)
@@ -92,6 +102,7 @@ def registrar_producao_individual_rota(
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
     porta: Annotated[PortaDaProducaoDaMissao, Depends(dependencia_da_producao_da_missao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
     forma: Annotated[FormaDeEntregaDaProducao, Form()],
     atividade_id: Annotated[uuid.UUID, Form()],
     texto: Annotated[str | None, Form()] = None,
@@ -101,8 +112,8 @@ def registrar_producao_individual_rota(
     Guerreiro(a) em sessão, sobre uma missão do próprio percurso — a mesma
     superfície `multipart/form-data` da porta de equipe, que a foto mantém,
     com a atividade declarada no corpo (design — decisão 1). A posse do
-    percurso, a forma única — `arquivo` só na foto, a fala em `texto` — e o
-    desfecho da indisponibilidade já são de
+    percurso, a forma única — `arquivo` na foto e no áudio, a transcrição em
+    `texto` — e o desfecho da indisponibilidade já são de
     `registrar_producao_individual`."""
     if contexto.papel != Papel.guerreiro:
         raise PermissaoNegada(mensagem="Só o Guerreiro(a) entrega a produção da missão.")
@@ -112,6 +123,7 @@ def registrar_producao_individual_rota(
         raise NaoEncontrado(mensagem="Missão não encontrada.")
 
     conteudo = arquivo.file.read() if arquivo is not None else None
+    tipo_mime = arquivo.content_type if arquivo is not None else None
 
     producao = registrar_producao_individual(
         sessao_bd,
@@ -121,7 +133,29 @@ def registrar_producao_individual_rota(
         forma=forma,
         texto=texto,
         arquivo=conteudo,
+        tipo_mime=tipo_mime,
         porta=porta,
+        armazenamento=armazenamento,
     )
     sessao_bd.commit()
     return _saida_da_producao(producao)
+
+
+@roteador.get("/producoes/{id_da_producao}/arquivo")
+def ler_arquivo_da_producao_rota(
+    id_da_producao: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> Response:
+    """`RF-01-80`, `RN-01-62`: os bytes da mídia guardada, a quem já pode ver
+    a produção. **Não há rota pública equivalente**, e não é esquecimento: a
+    produção da missão não é item de acervo, porque não passa por aprovação
+    de ninguém — só a comprovação do desafio e a criação da culminância vão à
+    vitrine."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    producao = sessao_bd.get(ProducaoDaMissao, id_da_producao)
+    arquivo = ler_arquivo_da_producao(
+        sessao_bd, producao, operador=operador, armazenamento=armazenamento
+    )
+    return Response(content=arquivo.bytes_do_arquivo, media_type=arquivo.tipo_mime)

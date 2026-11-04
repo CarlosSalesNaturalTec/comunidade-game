@@ -214,6 +214,11 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-37` | Equipe da aula é criada pelo Guerreiro(a), vinculada a uma aula, e encerra com ela sem ser reaproveitada                                                                                                                 | essencial  |
 | `RF-01-63` | Equipe da trilha é formada pelos Guerreiros e Guerreiras e homologada pelo Mestre em encontro presencial, e a composição fica fixa a partir da homologação                                                               | essencial  |
 | `RF-01-64` | Núcleo credita a criação original a quem a entregou sozinho ou a cada integrante da equipe da trilha, guardando o papel de cada um                                                                                       | essencial  |
+| `RF-01-77` | Núcleo aceita **áudio** como sexto tipo de produção da criação original; o tipo do conteúdo do Mestre segue com cinco                                                                                                    | essencial  |
+| `RF-01-78` | Núcleo serve a mídia da criação original a quem pode ver a criação — creditado, Mestre autor ou Admin                                                                                                                    | essencial  |
+| `RF-01-81` | Núcleo serve em público a mídia da criação original sob o mesmo portão que rege a listagem do portfólio                                                                                                                  | essencial  |
+| `RF-01-79` | Núcleo guarda a foto e o áudio da produção da missão, enviados em ato próprio, sem deixar de gravar a transcrição                                                                                                        | essencial  |
+| `RF-01-80` | Núcleo serve a mídia da produção da missão a quem pode vê-la, e nunca em rota pública                                                                                                                                    | essencial  |
 | `RF-01-38` | Núcleo recusa o sexto integrante e o segundo familiar de 17 anos ou mais na mesma equipe                                                                                                                                 | essencial  |
 | `RF-01-39` | Núcleo aceita o Guerreiro(a) em várias equipes da aula e em uma só por partida de quiz                                                                                                                                   | essencial  |
 | `RF-01-40` | Núcleo mantém a etiqueta ODS da trilha — objetivo de 1 a 18, com meta opcional — declarada pelo Mestre autor                                                                                                             | essencial  |
@@ -296,6 +301,10 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-52` | O motivo da ocorrência de conduta é apagado ao fim do ciclo em que ocorreu; o lançamento negativo permanece, com valor, data e autor                                                                            | —          | 03 §12.2    |
 | `RN-01-53` | A credencial de dispositivo é o próprio registro do aparelho, e entre as ativas há uma por par de identificador e série                                                                                         | —          | 03 §1.1     |
 | `RN-01-54` | O papel do poder, e também a marca de técnico, são declarados no catálogo, nunca deduzidos do nome; a coleta credita o poder marcado como do Território                                                         | —          | 02 §2       |
+| `RN-01-60` | A mídia da criação original só é servida ao creditado, ao Mestre autor da trilha e ao Admin; criação sem mídia responde 404                                                                                     | —          | 02 §4       |
+| `RN-01-61` | A transcrição da fala continua gravada, e é sobre ela que a devolutiva se faz; o áudio guardado nunca a substitui                                                                                               | —          | 03 §1.12    |
+| `RN-01-62` | A mídia da produção da missão nunca tem rota pública: a produção não é item de acervo, porque não passa por aprovação                                                                                           | —          | 02 §4       |
+| `RN-01-63` | A recusa da mídia pública é 404 e indistinguível entre a criação inexistente e a que não passa no portão                                                                                                        | —          | 03 §10      |
 
 ## 8. Modelo de dados
 
@@ -407,39 +416,44 @@ Convenções válidas para todas as rotas:
 | Listagem     | paginada, com filtros de comunidade, período e persona                  |
 | Data e hora  | sempre com fuso, e a data do fato nunca é substituída pela do registro  |
 
-| Método | Rota                                                   | Autenticação    | Descrição                                                                         |
-| ------ | ------------------------------------------------------ | --------------- | --------------------------------------------------------------------------------- |
-| POST   | `/v1/sessoes/guerreiro`                                | pública         | Autentica com nick e imagem e abre sessão curta                                   |
-| POST   | `/v1/sessoes/guerreiro/confirmacao`                    | Mestre ou Admin | Abre a sessão do Guerreiro(a) por confirmação humana, com o PIN de quem confirma  |
-| PUT    | `/v1/eu/pin-de-confirmacao`                            | Mestre ou Admin | Cadastra ou troca o próprio PIN de confirmação                                    |
-| GET    | `/v1/eu/pin-de-confirmacao/verificador`                | Mestre ou Admin | Entrega ao aparelho da sessão de trabalho o verificador do PIN, nunca o PIN       |
-| POST   | `/v1/aulas/{id}/presencas/sem-rede`                    | Mestre ou Admin | Registra a presença confirmada sem rede pelo nick, sem abrir sessão               |
-| POST   | `/v1/sessoes/social`                                   | pública         | Autentica adulto por login social                                                 |
-| POST   | `/v1/sessoes/credencial`                               | pública         | Autentica adulto por usuário e senha                                              |
-| DELETE | `/v1/sessoes/atual`                                    | autenticada     | Encerra a sessão                                                                  |
-| POST   | `/v1/guerreiros/{id}/descritor`                        | Mestre ou Admin | Grava ou recadastra o _template_ a partir do descritor, com registro              |
-| POST   | `/v1/credenciais`                                      | Admin ou Mestre | Cria credencial de usuário e senha provisória                                     |
-| POST   | `/v1/credenciais/senha`                                | autenticada     | Troca a senha; obrigatória no primeiro acesso                                     |
-| POST   | `/v1/credenciais/dispositivo`                          | Admin ou Mestre | Emite a credencial do sensor e devolve o segredo uma única vez                    |
-| DELETE | `/v1/credenciais/dispositivo/{id}`                     | Admin ou Mestre | Revoga a credencial do sensor, com motivo e autoria                               |
-| POST   | `/v1/responsaveis`                                     | Admin ou Mestre | Cadastra responsável, sem criar acesso além dele                                  |
-| POST   | `/v1/responsaveis/{id}/vinculos`                       | Admin ou Mestre | Vincula Guerreiro(a) ao responsável, com grau de parentesco                       |
-| GET    | `/v1/eu`                                               | autenticada     | Persona, papéis e permissões da sessão; do Guerreiro(a), também o nick e o avatar |
-| GET    | `/v1/vitrine/...`                                      | pública         | Consultas públicas de vitrine e rankings                                          |
-| GET    | `/v1/vitrine/guerreiros/{nick}`                        | pública         | Perfil público por nick exato, se houver divulgação autorizada                    |
-| GET    | `/v1/vitrine/ods/cobertura`                            | pública         | Cobertura de ODS agregada por comunidade e ciclo                                  |
-| POST   | `/v1/solicitacoes-de-dados`                            | pública         | Registra pedido do conjunto de dados, sem criar cadastro                          |
-| POST   | `/v1/solicitacoes-de-participacao`                     | pública         | Registra o pedido; do Apoiador, com aporte e comprovante                          |
-| PUT    | `/v1/eu/apoiador/identidade`                           | Apoiador        | Define ou troca o nick e, acima do piso de moedas, o avatar                       |
-| GET    | `/v1/eu/apoiador/identidade`                           | Apoiador        | Nick, avatar, moedas acumuladas e quanto falta para o avatar próprio              |
-| GET    | `/v1/eu/apoiador/documentos`                           | Apoiador        | O que foi declarado, com a marca de publicado ou pendente                         |
-| POST   | `/v1/apoiadores/{id}/artefatos/{artefato_id}/anexacao` | Admin           | Anexa ao cadastro o documento comprobatório, publicando-o                         |
-| GET    | `/v1/auditoria`                                        | Admin           | Trilha de auditoria das ações de gestão                                           |
-| POST   | `/v1/solicitacoes-de-chave`                            | pública         | Registra pedido de chave feito na Área do Apoiador Desenvolvedor                  |
-| POST   | `/v1/chaves`                                           | Admin           | Emite a chave da solicitação aprovada e devolve o segredo uma vez                 |
-| POST   | `/v1/chaves/{id}/url`                                  | pública         | Apresenta a URL do que foi construído, dentro dos 30 dias                         |
-| DELETE | `/v1/chaves/{id}`                                      | Admin           | Revoga a chave, com motivo e autoria                                              |
-| GET    | `/v1/chaves`                                           | Admin           | Chaves emitidas, com prazo, URL apresentada e situação                            |
+| Método | Rota                                                   | Autenticação                     | Descrição                                                                         |
+| ------ | ------------------------------------------------------ | -------------------------------- | --------------------------------------------------------------------------------- |
+| POST   | `/v1/sessoes/guerreiro`                                | pública                          | Autentica com nick e imagem e abre sessão curta                                   |
+| POST   | `/v1/sessoes/guerreiro/confirmacao`                    | Mestre ou Admin                  | Abre a sessão do Guerreiro(a) por confirmação humana, com o PIN de quem confirma  |
+| PUT    | `/v1/eu/pin-de-confirmacao`                            | Mestre ou Admin                  | Cadastra ou troca o próprio PIN de confirmação                                    |
+| GET    | `/v1/eu/pin-de-confirmacao/verificador`                | Mestre ou Admin                  | Entrega ao aparelho da sessão de trabalho o verificador do PIN, nunca o PIN       |
+| POST   | `/v1/aulas/{id}/presencas/sem-rede`                    | Mestre ou Admin                  | Registra a presença confirmada sem rede pelo nick, sem abrir sessão               |
+| POST   | `/v1/sessoes/social`                                   | pública                          | Autentica adulto por login social                                                 |
+| POST   | `/v1/sessoes/credencial`                               | pública                          | Autentica adulto por usuário e senha                                              |
+| DELETE | `/v1/sessoes/atual`                                    | autenticada                      | Encerra a sessão                                                                  |
+| POST   | `/v1/guerreiros/{id}/descritor`                        | Mestre ou Admin                  | Grava ou recadastra o _template_ a partir do descritor, com registro              |
+| POST   | `/v1/credenciais`                                      | Admin ou Mestre                  | Cria credencial de usuário e senha provisória                                     |
+| POST   | `/v1/credenciais/senha`                                | autenticada                      | Troca a senha; obrigatória no primeiro acesso                                     |
+| POST   | `/v1/credenciais/dispositivo`                          | Admin ou Mestre                  | Emite a credencial do sensor e devolve o segredo uma única vez                    |
+| DELETE | `/v1/credenciais/dispositivo/{id}`                     | Admin ou Mestre                  | Revoga a credencial do sensor, com motivo e autoria                               |
+| POST   | `/v1/responsaveis`                                     | Admin ou Mestre                  | Cadastra responsável, sem criar acesso além dele                                  |
+| POST   | `/v1/responsaveis/{id}/vinculos`                       | Admin ou Mestre                  | Vincula Guerreiro(a) ao responsável, com grau de parentesco                       |
+| GET    | `/v1/eu`                                               | autenticada                      | Persona, papéis e permissões da sessão; do Guerreiro(a), também o nick e o avatar |
+| GET    | `/v1/vitrine/...`                                      | pública                          | Consultas públicas de vitrine e rankings                                          |
+| GET    | `/v1/vitrine/guerreiros/{nick}`                        | pública                          | Perfil público por nick exato, se houver divulgação autorizada                    |
+| GET    | `/v1/vitrine/ods/cobertura`                            | pública                          | Cobertura de ODS agregada por comunidade e ciclo                                  |
+| POST   | `/v1/solicitacoes-de-dados`                            | pública                          | Registra pedido do conjunto de dados, sem criar cadastro                          |
+| POST   | `/v1/solicitacoes-de-participacao`                     | pública                          | Registra o pedido; do Apoiador, com aporte e comprovante                          |
+| PUT    | `/v1/eu/apoiador/identidade`                           | Apoiador                         | Define ou troca o nick e, acima do piso de moedas, o avatar                       |
+| GET    | `/v1/eu/apoiador/identidade`                           | Apoiador                         | Nick, avatar, moedas acumuladas e quanto falta para o avatar próprio              |
+| GET    | `/v1/eu/apoiador/documentos`                           | Apoiador                         | O que foi declarado, com a marca de publicado ou pendente                         |
+| POST   | `/v1/apoiadores/{id}/artefatos/{artefato_id}/anexacao` | Admin                            | Anexa ao cadastro o documento comprobatório, publicando-o                         |
+| GET    | `/v1/auditoria`                                        | Admin                            | Trilha de auditoria das ações de gestão                                           |
+| POST   | `/v1/solicitacoes-de-chave`                            | pública                          | Registra pedido de chave feito na Área do Apoiador Desenvolvedor                  |
+| POST   | `/v1/chaves`                                           | Admin                            | Emite a chave da solicitação aprovada e devolve o segredo uma vez                 |
+| POST   | `/v1/chaves/{id}/url`                                  | pública                          | Apresenta a URL do que foi construído, dentro dos 30 dias                         |
+| DELETE | `/v1/chaves/{id}`                                      | Admin                            | Revoga a chave, com motivo e autoria                                              |
+| GET    | `/v1/chaves`                                           | Admin                            | Chaves emitidas, com prazo, URL apresentada e situação                            |
+| GET    | `/v1/criacoes/{id}/arquivo`                            | creditado, Mestre autor ou Admin | Bytes da mídia da criação original, com o tipo MIME do envio                      |
+| GET    | `/v1/vitrine/criacoes/{id}/arquivo`                    | pública                          | Bytes da mídia da criação validada cujos creditados autorizaram; 404 fora disso   |
+| POST   | `/v1/producoes/{id}/arquivo`                           | autor ou equipe                  | Abre a sessão de envio da foto ou do áudio da produção da missão                  |
+| PATCH  | `/v1/producoes/{id}/arquivo`                           | autor ou equipe                  | Confirma o envio; só então a produção serve bytes                                 |
+| GET    | `/v1/producoes/{id}/arquivo`                           | equipe, Mestre ou Admin          | Bytes da mídia da produção da missão; nunca em rota pública                       |
 
 **"Pública" nesta coluna significa "sem credencial de persona"** — a chave da aplicação
 continua obrigatória em todas elas. Nenhuma rota deste PRD responde sem chave válida.
@@ -471,18 +485,19 @@ consultas ou de envios na rota pública (429, com o tempo de espera).
 
 ## 11. LGPD e proteção da criança
 
-| Dado                         | Finalidade                          | Base legal                   | Retenção                 | Quem acessa                      |
-| ---------------------------- | ----------------------------------- | ---------------------------- | ------------------------ | -------------------------------- |
-| Nick do Guerreiro(a)         | Identificação pública               | consentimento                | enquanto durar o vínculo | qualquer visitante               |
-| _Template_ biométrico        | Presença e autenticação             | consentimento do responsável | enquanto durar o vínculo | ninguém: só a comparação interna |
-| Nome e data de nascimento    | Identificação e faixa etária        | consentimento                | enquanto durar o vínculo | gestão e responsável             |
-| Conta social do adulto       | Autenticação                        | consentimento                | enquanto durar o vínculo | gestão e o próprio               |
-| Usuário e senha do adulto    | Autenticação sem conta social       | consentimento                | enquanto durar o vínculo | o próprio; hash na base          |
-| Vínculo e grau de parentesco | Provar quem responde pela criança   | consentimento                | enquanto durar o vínculo | gestão e o próprio               |
-| Motivo da ocorrência         | Aplicar o Código de Conduta         | consentimento                | até o fim do ciclo       | gestão e responsável             |
-| Consentimentos versionados   | Prova do que foi autorizado         | obrigação legal              | permanente               | gestão e responsável             |
-| Auditoria de escrita         | Rastreabilidade das ações           | interesse público            | permanente               | Admin                            |
-| Acesso ao _template_         | Rastreabilidade do uso da biometria | interesse público            | permanente               | Admin                            |
+| Dado                           | Finalidade                                   | Base legal                   | Retenção                 | Quem acessa                                                             |
+| ------------------------------ | -------------------------------------------- | ---------------------------- | ------------------------ | ----------------------------------------------------------------------- |
+| Nick do Guerreiro(a)           | Identificação pública                        | consentimento                | enquanto durar o vínculo | qualquer visitante                                                      |
+| _Template_ biométrico          | Presença e autenticação                      | consentimento do responsável | enquanto durar o vínculo | ninguém: só a comparação interna                                        |
+| Nome e data de nascimento      | Identificação e faixa etária                 | consentimento                | enquanto durar o vínculo | gestão e responsável                                                    |
+| Conta social do adulto         | Autenticação                                 | consentimento                | enquanto durar o vínculo | gestão e o próprio                                                      |
+| Usuário e senha do adulto      | Autenticação sem conta social                | consentimento                | enquanto durar o vínculo | o próprio; hash na base                                                 |
+| Vínculo e grau de parentesco   | Provar quem responde pela criança            | consentimento                | enquanto durar o vínculo | gestão e o próprio                                                      |
+| Motivo da ocorrência           | Aplicar o Código de Conduta                  | consentimento                | até o fim do ciclo       | gestão e responsável                                                    |
+| Consentimentos versionados     | Prova do que foi autorizado                  | obrigação legal              | permanente               | gestão e responsável                                                    |
+| Auditoria de escrita           | Rastreabilidade das ações                    | interesse público            | permanente               | Admin                                                                   |
+| Acesso ao _template_           | Rastreabilidade do uso da biometria          | interesse público            | permanente               | Admin                                                                   |
+| Mídia da produção e da criação | Acervo do Guerreiro(a), julgamento e vitrine | consentimento                | permanente, com autoria  | o próprio, gestão e responsável; em público, só a aprovada e autorizada |
 
 - O _template_ é guardado **cifrado**, a senha com **hash**, e nenhuma rota devolve um nem
   outro. A imagem original não é a credencial: o que autentica é o _template_. Ela tampouco
@@ -632,49 +647,54 @@ antes no documento 09.
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                             |
-| ----------------------- | -------------------------------------------------- |
-| `RF-01-01`, `RF-01-31`  | 03 §1 (API versionada)                             |
-| `RF-01-02` e `RF-01-03` | 03 §1 (consulta sem login, escrita autenticada)    |
-| `RF-01-04` a `RF-01-08` | 03 §§1.1, 3.2 e 3.3 (nick e imagem, alternativa)   |
-| `RF-01-73` e `RN-01-56` | 03 §3.3 (limiar medido por ponto de apoio)         |
-| `RN-01-57`              | 03 §3.3 (limiar emprestado fora do encontro)       |
-| `RF-01-74` e `RN-01-58` | 03 §1.1 (quem abre a sessão fora do encontro)      |
-| `RF-01-75` e `RN-01-59` | 03 §1.1 (PIN de confirmação do adulto)             |
-| `RF-01-76`              | 11 §8.2 (a carta do Guerreiro(a) exige nick)       |
-| `RF-01-09` a `RF-01-12` | 03 §1.1 (como o adulto entra)                      |
-| `RF-01-61`              | 02 §1 (o fundador é o primeiro Admin)              |
-| `RF-01-13` a `RF-01-15` | 02 §1 e 03 §§1.1, 5, 9, 11 (responsável)           |
-| `RF-01-16` e `RF-01-17` | 03 §§5, 11 (fronteira App 03 × App 09)             |
-| `RF-01-18`              | 03 §1 (instância única)                            |
-| `RF-01-19`              | 03 §12 (LGPD e consentimentos)                     |
-| `RF-01-20` e `RF-01-21` | 02 §§3–5 e 11 §§2, 4–7                             |
-| `RF-01-62`, `RN-01-54`  | 02 §2 (catálogo de poderes, com o papel declarado) |
-| `RF-01-22`              | 11 §8.4 (contrato dos jogos)                       |
-| `RF-01-23`              | PRD-08                                             |
-| `RF-01-24`, `RF-01-60`  | PRD-07                                             |
-| `RF-01-56` a `RF-01-59` | 11 §5 (acumulado e saldo disponível de extras)     |
-| `RF-01-69`, `RF-01-70`  | 11 §5 (o débito não desfaz percurso)               |
-| `RN-01-55`              | 11 §5 e 99 §6 (débito por fato desfeito)           |
-| `RF-01-25` e `RF-01-26` | 02 §§1, 4 e 03 §§7, 9–11                           |
-| `RF-01-27` a `RF-01-30` | 03 §1 (princípios de arquitetura)                  |
-| `RF-01-32`              | 03 §§3, 5 (App 01 habilitado pela aula agendada)   |
-| `RF-01-71`              | 05 §2 (a aula acontece num ponto de apoio)         |
-| `RF-01-72`              | 05 §4 (quem cancela o encontro agendado)           |
-| `RF-01-33` e `RF-01-34` | 02 §1 e 03 §10 (acompanhamento por nick)           |
-| `RF-01-35`              | 03 §7 (apoio escolar com corpus fechado)           |
-| `RF-01-36`              | 05 §5 e 11 §5 (resposta e pontuação do quiz)       |
-| `RF-01-37` a `RF-01-39` | 02 §5 e 05 §5 (equipe formada na aula e quiz)      |
-| `RF-01-63`, `RF-01-64`  | 02 §§4, 5 (equipe fixa da trilha e crédito)        |
-| `RN-01-44`              | 02 §5 (uma por trilha, fixa após homologação)      |
-| `RF-01-40` a `RF-01-45` | 11 §2.1 e 04 §4 (etiqueta ODS e cobertura)         |
-| `RF-01-46`, `RF-01-47`  | 03 §12.3 (entrega de dados aprovada por Admin)     |
-| `RF-01-66`              | 03 §12.3 (formato, licença e critério da entrega)  |
-| `RF-01-48`, `RF-01-54`  | 03 §1 (chave obrigatória em toda chamada)          |
-| `RF-01-49` a `RF-01-53` | 03 §8 (solicitação, emissão, prazo e revogação)    |
-| `RN-01-51`              | 03 §8 (ambiente e identidade da chave de terceiro) |
-| `RF-01-55`              | 03 §§1, 8 (cota por faixa de chave)                |
-| `RF-01-65`              | 03 §§1, 8 (freio por origem e sem escala)          |
-| `RN-01-52`              | 03 §12.2 (prazo de guarda do motivo)               |
-| `RF-01-67` e `RF-01-68` | 03 §1.1 (credencial do sensor)                     |
-| `RN-01-53`              | 03 §1.1 (credencial como registro do aparelho)     |
+| Requisito               | Origem                                                 |
+| ----------------------- | ------------------------------------------------------ |
+| `RF-01-01`, `RF-01-31`  | 03 §1 (API versionada)                                 |
+| `RF-01-02` e `RF-01-03` | 03 §1 (consulta sem login, escrita autenticada)        |
+| `RF-01-04` a `RF-01-08` | 03 §§1.1, 3.2 e 3.3 (nick e imagem, alternativa)       |
+| `RF-01-73` e `RN-01-56` | 03 §3.3 (limiar medido por ponto de apoio)             |
+| `RN-01-57`              | 03 §3.3 (limiar emprestado fora do encontro)           |
+| `RF-01-74` e `RN-01-58` | 03 §1.1 (quem abre a sessão fora do encontro)          |
+| `RF-01-75` e `RN-01-59` | 03 §1.1 (PIN de confirmação do adulto)                 |
+| `RF-01-76`              | 11 §8.2 (a carta do Guerreiro(a) exige nick)           |
+| `RF-01-77`              | 02 §4 (a entrega aceita áudio)                         |
+| `RF-01-78` e `RN-01-60` | 02 §4 e 99 §6 (o acervo exibe o que foi criado)        |
+| `RF-01-79` e `RN-01-61` | 02 §4 e 03 §1.12 (mídia guardada, texto na devolutiva) |
+| `RF-01-80` e `RN-01-62` | 02 §4 (a produção da missão não é item de acervo)      |
+| `RF-01-81` e `RN-01-63` | 02 §4 e 03 §10 (portão público e recusa opaca)         |
+| `RF-01-09` a `RF-01-12` | 03 §1.1 (como o adulto entra)                          |
+| `RF-01-61`              | 02 §1 (o fundador é o primeiro Admin)                  |
+| `RF-01-13` a `RF-01-15` | 02 §1 e 03 §§1.1, 5, 9, 11 (responsável)               |
+| `RF-01-16` e `RF-01-17` | 03 §§5, 11 (fronteira App 03 × App 09)                 |
+| `RF-01-18`              | 03 §1 (instância única)                                |
+| `RF-01-19`              | 03 §12 (LGPD e consentimentos)                         |
+| `RF-01-20` e `RF-01-21` | 02 §§3–5 e 11 §§2, 4–7                                 |
+| `RF-01-62`, `RN-01-54`  | 02 §2 (catálogo de poderes, com o papel declarado)     |
+| `RF-01-22`              | 11 §8.4 (contrato dos jogos)                           |
+| `RF-01-23`              | PRD-08                                                 |
+| `RF-01-24`, `RF-01-60`  | PRD-07                                                 |
+| `RF-01-56` a `RF-01-59` | 11 §5 (acumulado e saldo disponível de extras)         |
+| `RF-01-69`, `RF-01-70`  | 11 §5 (o débito não desfaz percurso)                   |
+| `RN-01-55`              | 11 §5 e 99 §6 (débito por fato desfeito)               |
+| `RF-01-25` e `RF-01-26` | 02 §§1, 4 e 03 §§7, 9–11                               |
+| `RF-01-27` a `RF-01-30` | 03 §1 (princípios de arquitetura)                      |
+| `RF-01-32`              | 03 §§3, 5 (App 01 habilitado pela aula agendada)       |
+| `RF-01-71`              | 05 §2 (a aula acontece num ponto de apoio)             |
+| `RF-01-72`              | 05 §4 (quem cancela o encontro agendado)               |
+| `RF-01-33` e `RF-01-34` | 02 §1 e 03 §10 (acompanhamento por nick)               |
+| `RF-01-35`              | 03 §7 (apoio escolar com corpus fechado)               |
+| `RF-01-36`              | 05 §5 e 11 §5 (resposta e pontuação do quiz)           |
+| `RF-01-37` a `RF-01-39` | 02 §5 e 05 §5 (equipe formada na aula e quiz)          |
+| `RF-01-63`, `RF-01-64`  | 02 §§4, 5 (equipe fixa da trilha e crédito)            |
+| `RN-01-44`              | 02 §5 (uma por trilha, fixa após homologação)          |
+| `RF-01-40` a `RF-01-45` | 11 §2.1 e 04 §4 (etiqueta ODS e cobertura)             |
+| `RF-01-46`, `RF-01-47`  | 03 §12.3 (entrega de dados aprovada por Admin)         |
+| `RF-01-66`              | 03 §12.3 (formato, licença e critério da entrega)      |
+| `RF-01-48`, `RF-01-54`  | 03 §1 (chave obrigatória em toda chamada)              |
+| `RF-01-49` a `RF-01-53` | 03 §8 (solicitação, emissão, prazo e revogação)        |
+| `RN-01-51`              | 03 §8 (ambiente e identidade da chave de terceiro)     |
+| `RF-01-55`              | 03 §§1, 8 (cota por faixa de chave)                    |
+| `RF-01-65`              | 03 §§1, 8 (freio por origem e sem escala)              |
+| `RN-01-52`              | 03 §12.2 (prazo de guarda do motivo)                   |
+| `RF-01-67` e `RF-01-68` | 03 §1.1 (credencial do sensor)                         |
+| `RN-01-53`              | 03 §1.1 (credencial como registro do aparelho)         |

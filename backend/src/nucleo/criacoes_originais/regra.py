@@ -1,4 +1,5 @@
 import uuid
+from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from sqlalchemy import or_
@@ -44,6 +45,7 @@ _TIPOS_DE_TEXTO_LIVRE = frozenset(
 _TIPOS_DE_MIDIA = frozenset(
     {
         TipoDeProducaoDaCriacaoOriginal.imagem,
+        TipoDeProducaoDaCriacaoOriginal.audio,
         TipoDeProducaoDaCriacaoOriginal.video,
         TipoDeProducaoDaCriacaoOriginal.arquivo,
     }
@@ -264,6 +266,9 @@ def confirmar_envio_da_criacao(
 
     criacao.referencia = _referencia_do_arquivo(criacao)
     criacao.tamanho = envio.tamanho
+    # O tipo vem do armazenamento, como o tamanho: é ele que serve os bytes
+    # de volta (`RF-01-78`, mesmo desenho de `conteudos.regra`).
+    criacao.tipo_do_arquivo = envio.tipo_mime
     sessao.flush()
     return criacao
 
@@ -378,3 +383,60 @@ def consultar_fila_do_mestre_autor(sessao: Session, *, operador: Persona) -> lis
     if operador.papel != Papel.admin:
         consulta = consulta.filter(Trilha.autor_id == operador.id)
     return consulta.all()
+
+
+@dataclass
+class ArquivoDaCriacao:
+    """Os bytes e o tipo com que eles saem — `application/octet-stream` para
+    criação cuja mídia entrou antes de o tipo passar a ser gravado."""
+
+    bytes_do_arquivo: bytes
+    tipo_mime: str
+
+
+def pode_ver_a_criacao(sessao: Session, criacao: CriacaoOriginal, operador: Persona) -> bool:
+    """Quem já alcança a criação: o **creditado** — o Guerreiro(a) na
+    modalidade individual, cada integrante na de equipe —, o **Mestre
+    autor** da trilha e o **Admin** (`RN-01-60`). Entregar não é a mesma
+    coisa que ser creditado: na equipe, quem entregou é um só e o crédito é
+    de todos, e é o crédito que manda aqui — diferente do envio do arquivo,
+    que é de quem entregou."""
+    if operador.papel == Papel.admin:
+        return True
+    trilha = sessao.get(Trilha, criacao.trilha_id)
+    if trilha is not None and trilha.autor_id == operador.id:
+        return True
+    if criacao.equipe_id is not None:
+        return (
+            sessao.query(IntegranteDaEquipe)
+            .filter_by(equipe_id=criacao.equipe_id, persona_id=operador.id)
+            .first()
+            is not None
+        )
+    return criacao.guerreiro_id == operador.id
+
+
+def ler_arquivo_da_criacao(
+    sessao: Session,
+    criacao: CriacaoOriginal | None,
+    *,
+    operador: Persona,
+    armazenamento: PortaDeArmazenamento,
+) -> ArquivoDaCriacao:
+    """A saída de bytes da criação original, que não existia: o arquivo
+    entrava pela sessão de envio e nunca podia ser lido de volta, nem pelo
+    autor nem pela vitrine (`RF-01-78`, `RN-01-60`). Molde:
+    `conteudos.regra.ler_arquivo_do_conteudo`."""
+    if criacao is None:
+        raise NaoEncontrado(mensagem="Criação original não encontrada.")
+    if not pode_ver_a_criacao(sessao, criacao, operador):
+        raise PermissaoNegada(
+            mensagem="O arquivo da criação original é servido a quem é creditado nela e ao "
+            "Mestre autor da trilha."
+        )
+    if criacao.referencia is None:
+        raise NaoEncontrado(mensagem="Esta criação original não tem arquivo.")
+    return ArquivoDaCriacao(
+        bytes_do_arquivo=armazenamento.ler(referencia=criacao.referencia),
+        tipo_mime=criacao.tipo_do_arquivo or "application/octet-stream",
+    )

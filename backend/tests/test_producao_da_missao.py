@@ -135,6 +135,7 @@ def test_entrega_por_fala(
     resposta = cliente.post(
         f"/v1/equipes/{equipe.id}/producao",
         data={"forma": "audio", "texto": "O que a equipe falou, transcrito no aparelho."},
+        files={"arquivo": ("fala.mp3", io.BytesIO(b"audio-fake"), "audio/mpeg")},
         headers=_cabecalhos(chave, token),
     )
 
@@ -142,6 +143,13 @@ def test_entrega_por_fala(
     corpo = resposta.json()
     assert corpo["forma"] == "audio"
     assert corpo["transcricao"] == "O que a equipe falou, transcrito no aparelho."
+
+    # `RF-01-79`, `RN-01-61`: o áudio passa a ser guardado, e a transcrição
+    # continua — é sobre ela que a devolutiva se faz.
+    producao = sessao.query(ProducaoDaMissao).one()
+    assert producao.referencia is not None
+    assert producao.tipo_do_arquivo == "audio/mpeg"
+    assert producao.tamanho == len(b"audio-fake")
 
 
 def test_entrega_por_foto_do_manuscrito(
@@ -256,7 +264,7 @@ def test_entrega_com_duas_formas_e_recusada(
     assert sessao.query(ProducaoDaMissao).count() == 0
 
 
-def test_entrega_por_fala_com_arquivo_e_recusada(
+def test_entrega_por_fala_sem_a_transcricao_e_recusada(
     cliente,
     criar_chave,
     criar_persona,
@@ -269,9 +277,9 @@ def test_entrega_por_fala_com_arquivo_e_recusada(
     criar_sessao_de_teste,
     sessao,
 ):
-    """`RF-05-76`, `RN-05-32`: o áudio não chega ao núcleo — a fala vem
-    transcrita do aparelho, em `texto`, e arquivo na forma "áudio" é recusa,
-    não mídia ignorada em silêncio."""
+    """`RN-01-61`: desde 2026-11-03 o áudio **é** guardado, mas a fala
+    continua transcrita no aparelho e a transcrição é obrigatória — é sobre
+    ela que a devolutiva se faz. Áudio sem texto é recusa, não mídia órfã."""
     chave, _ = criar_chave()
     guerreiro, equipe, _, _ = _montar_equipe_com_atividade_corrente(
         criar_persona=criar_persona,
@@ -696,6 +704,7 @@ def test_entrega_individual_por_fala(
             "atividade_id": str(atividade.id),
             "texto": "O que eu falei, transcrito no aparelho.",
         },
+        files={"arquivo": ("fala.mp3", io.BytesIO(b"audio-fake"), "audio/mpeg")},
         headers=_cabecalhos(chave, token),
     )
 
@@ -703,6 +712,10 @@ def test_entrega_individual_por_fala(
     corpo = resposta.json()
     assert corpo["forma"] == "audio"
     assert corpo["transcricao"] == "O que eu falei, transcrito no aparelho."
+
+    producao = sessao.query(ProducaoDaMissao).one()
+    assert producao.referencia is not None
+    assert producao.tipo_do_arquivo == "audio/mpeg"
 
 
 def test_entrega_individual_por_foto_do_manuscrito(
@@ -808,7 +821,7 @@ def test_entrega_individual_com_duas_formas_e_recusada(
     assert sessao.query(ProducaoDaMissao).count() == 0
 
 
-def test_entrega_individual_por_fala_com_arquivo_e_recusada(
+def test_entrega_individual_por_fala_sem_a_transcricao_e_recusada(
     cliente,
     criar_chave,
     criar_persona,
@@ -1191,3 +1204,342 @@ def test_entrega_sobre_atividade_carimbada_e_recusada(
 
     assert resposta.status_code == 422
     assert sessao.query(ProducaoDaMissao).count() == 0
+
+
+def _equipe_pronta(**fx):
+    return _montar_equipe_com_atividade_corrente(**fx)
+
+
+def test_foto_do_manuscrito_fica_guardada(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """`RF-01-79`: até 2026-11-03 a foto era lida e **descartada**."""
+    chave, _ = criar_chave()
+    guerreiro, equipe, _, _ = _equipe_pronta(
+        criar_persona=criar_persona,
+        criar_comunidade=criar_comunidade,
+        criar_aula=criar_aula,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_equipe=criar_equipe,
+        sessao=sessao,
+    )
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.post(
+        f"/v1/equipes/{equipe.id}/producao",
+        data={"forma": "foto"},
+        files={"arquivo": ("manuscrito.jpg", io.BytesIO(b"foto-fake"), "image/jpeg")},
+        headers=_cabecalhos(chave, token),
+    )
+    assert resposta.status_code == 201
+
+    producao = sessao.query(ProducaoDaMissao).one()
+    assert producao.referencia is not None
+    assert producao.tipo_do_arquivo == "image/jpeg"
+    assert producao.tamanho == len(b"foto-fake")
+    # A transcrição continua, e é sobre ela que a devolutiva se faz
+    # (`RN-01-61`): guardar a mídia não substituiu a leitura.
+    assert producao.transcricao
+
+
+def test_entrega_em_texto_nao_ganha_midia(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
+):
+    chave, _ = criar_chave()
+    guerreiro, equipe, _, _ = _equipe_pronta(
+        criar_persona=criar_persona,
+        criar_comunidade=criar_comunidade,
+        criar_aula=criar_aula,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_equipe=criar_equipe,
+        sessao=sessao,
+    )
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    cliente.post(
+        f"/v1/equipes/{equipe.id}/producao",
+        data={"forma": "texto", "texto": "O que a equipe escreveu."},
+        headers=_cabecalhos(chave, token),
+    )
+
+    producao = sessao.query(ProducaoDaMissao).one()
+    assert producao.referencia is None
+    assert producao.tipo_do_arquivo is None
+    resposta = cliente.get(
+        f"/v1/producoes/{producao.id}/arquivo", headers=_cabecalhos(chave, token)
+    )
+    assert resposta.status_code == 404
+
+
+def test_formato_fora_da_lista_e_recusado_na_entrega(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """A mídia guardada é servida de volta: servir o tipo que o cliente
+    declarou abriria XSS por `text/html`. Mesma lista fechada que a criação
+    original já usa."""
+    chave, _ = criar_chave()
+    guerreiro, equipe, _, _ = _equipe_pronta(
+        criar_persona=criar_persona,
+        criar_comunidade=criar_comunidade,
+        criar_aula=criar_aula,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_equipe=criar_equipe,
+        sessao=sessao,
+    )
+    token, _ = criar_sessao_de_teste(guerreiro)
+
+    resposta = cliente.post(
+        f"/v1/equipes/{equipe.id}/producao",
+        data={"forma": "foto"},
+        files={"arquivo": ("x.html", io.BytesIO(b"<script>"), "text/html")},
+        headers=_cabecalhos(chave, token),
+    )
+
+    assert resposta.status_code == 422
+    assert resposta.json()["campo"] == "arquivo"
+
+
+def _producao_com_foto(cliente, chave, token, equipe_id, corpo=b"foto-guardada"):
+    resposta = cliente.post(
+        f"/v1/equipes/{equipe_id}/producao",
+        data={"forma": "foto"},
+        files={"arquivo": ("m.jpg", io.BytesIO(corpo), "image/jpeg")},
+        headers=_cabecalhos(chave, token),
+    )
+    assert resposta.status_code == 201
+    return resposta.json()["id"]
+
+
+def test_integrante_da_equipe_le_a_midia_da_producao(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """`RF-01-80`."""
+    chave, _ = criar_chave()
+    guerreiro, equipe, _, _ = _equipe_pronta(
+        criar_persona=criar_persona,
+        criar_comunidade=criar_comunidade,
+        criar_aula=criar_aula,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_equipe=criar_equipe,
+        sessao=sessao,
+    )
+    token, _ = criar_sessao_de_teste(guerreiro)
+    producao_id = _producao_com_foto(cliente, chave, token, equipe.id)
+
+    resposta = cliente.get(
+        f"/v1/producoes/{producao_id}/arquivo", headers=_cabecalhos(chave, token)
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.content == b"foto-guardada"
+    assert resposta.headers["content-type"].startswith("image/jpeg")
+
+
+def test_mestre_autor_da_trilha_le_a_midia_da_producao(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
+):
+    from nucleo.trilhas.modelo import Trilha
+
+    chave, _ = criar_chave()
+    guerreiro, equipe, missao, _ = _equipe_pronta(
+        criar_persona=criar_persona,
+        criar_comunidade=criar_comunidade,
+        criar_aula=criar_aula,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_equipe=criar_equipe,
+        sessao=sessao,
+    )
+    token, _ = criar_sessao_de_teste(guerreiro)
+    producao_id = _producao_com_foto(cliente, chave, token, equipe.id)
+
+    autor = sessao.get(Persona, sessao.get(Trilha, missao.trilha_id).autor_id)
+    token_mestre, _ = criar_sessao_de_teste(autor)
+
+    resposta = cliente.get(
+        f"/v1/producoes/{producao_id}/arquivo", headers=_cabecalhos(chave, token_mestre)
+    )
+
+    assert resposta.status_code == 200
+
+
+def test_quem_nao_e_da_equipe_nem_mestre_e_recusado(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """`RN-01-62`."""
+    chave, _ = criar_chave()
+    guerreiro, equipe, _, _ = _equipe_pronta(
+        criar_persona=criar_persona,
+        criar_comunidade=criar_comunidade,
+        criar_aula=criar_aula,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_equipe=criar_equipe,
+        sessao=sessao,
+    )
+    token, _ = criar_sessao_de_teste(guerreiro)
+    producao_id = _producao_com_foto(cliente, chave, token, equipe.id)
+
+    estranho = criar_persona(Papel.guerreiro)
+    token_estranho, _ = criar_sessao_de_teste(estranho)
+
+    resposta = cliente.get(
+        f"/v1/producoes/{producao_id}/arquivo", headers=_cabecalhos(chave, token_estranho)
+    )
+
+    assert resposta.status_code == 403
+    assert resposta.content != b"foto-guardada"
+
+
+def test_nao_ha_rota_publica_para_a_midia_da_producao(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """`RN-01-62`: a trava que impede a produção da missão de virar item de
+    acervo por um `GET` a mais. Afirma a **ausência**, não só a presença da
+    rota autenticada — diferente da criação original, que tem rota pública."""
+    chave, _ = criar_chave()
+    guerreiro, equipe, _, _ = _equipe_pronta(
+        criar_persona=criar_persona,
+        criar_comunidade=criar_comunidade,
+        criar_aula=criar_aula,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_equipe=criar_equipe,
+        sessao=sessao,
+    )
+    token, _ = criar_sessao_de_teste(guerreiro)
+    producao_id = _producao_com_foto(cliente, chave, token, equipe.id)
+
+    rotas = {getattr(rota, "path", "") for rota in cliente.app.routes}
+    assert not any("producoes" in rota and "vitrine" in rota for rota in rotas)
+
+    # Sem sessão, a rota autenticada recusa — nunca serve bytes.
+    sem_sessao = cliente.get(
+        f"/v1/producoes/{producao_id}/arquivo", headers={"X-Chave-Aplicacao": chave}
+    )
+    assert sem_sessao.status_code in (401, 403)
+    assert sem_sessao.content != b"foto-guardada"
+
+
+def test_producao_gravada_antes_desta_change_responde_404(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_comunidade,
+    criar_aula,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    criar_equipe,
+    criar_sessao_de_teste,
+    sessao,
+):
+    """Sem _backfill_: o arquivo nunca foi gravado, e não há de onde
+    recuperá-lo (decisão 6 do `design.md`)."""
+    chave, _ = criar_chave()
+    guerreiro, equipe, _, _ = _equipe_pronta(
+        criar_persona=criar_persona,
+        criar_comunidade=criar_comunidade,
+        criar_aula=criar_aula,
+        criar_trilha=criar_trilha,
+        criar_missao=criar_missao,
+        criar_atividade=criar_atividade,
+        criar_equipe=criar_equipe,
+        sessao=sessao,
+    )
+    token, _ = criar_sessao_de_teste(guerreiro)
+    producao_id = _producao_com_foto(cliente, chave, token, equipe.id)
+
+    # Simula o registro antigo: mídia nenhuma, como a regra anterior deixava.
+    producao = sessao.query(ProducaoDaMissao).one()
+    producao.referencia = None
+    producao.tipo_do_arquivo = None
+    producao.tamanho = None
+    sessao.commit()
+
+    resposta = cliente.get(
+        f"/v1/producoes/{producao_id}/arquivo", headers=_cabecalhos(chave, token)
+    )
+
+    assert resposta.status_code == 404

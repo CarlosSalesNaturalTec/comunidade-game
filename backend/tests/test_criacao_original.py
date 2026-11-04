@@ -124,7 +124,7 @@ def test_entrega_sem_producao_e_recusada(
     assert sessao.query(CriacaoOriginal).count() == 0
 
 
-def test_tipo_fora_dos_cinco_valores_e_recusado(
+def test_tipo_fora_dos_seis_valores_e_recusado(
     sessao, criar_persona, criar_trilha, criar_culminancia, criar_equipe
 ):
     mestre = criar_persona(Papel.mestre)
@@ -537,3 +537,41 @@ def test_reenvio_preserva_a_autoria(
     assert reenviada.autor_id == guerreiro.id
     assert reenviada.situacao == SituacaoDaCriacaoOriginal.entregue
     assert reenviada.producao == "Produção ajustada."
+
+
+def test_entrega_em_audio_e_aceita_e_nasce_sem_midia(
+    sessao, criar_persona, criar_trilha, criar_culminancia
+):
+    """`RF-01-77`: áudio é o sexto tipo, e é tipo de mídia — nasce sem bytes."""
+    mestre = criar_persona(Papel.mestre)
+    guerreiro = criar_persona(Papel.guerreiro)
+    trilha = criar_trilha(mestre)
+    criar_culminancia(trilha, mestre, modalidade=ModalidadeDaCulminancia.individual)
+
+    criacao = entregar_criacao_original(
+        sessao,
+        guerreiro=guerreiro,
+        trilha=trilha,
+        equipe=None,
+        tipo=TipoDeProducaoDaCriacaoOriginal.audio,
+        producao=None,
+    )
+    sessao.commit()
+
+    assert criacao.tipo == TipoDeProducaoDaCriacaoOriginal.audio
+    assert criacao.situacao == SituacaoDaCriacaoOriginal.entregue
+    assert criacao.referencia is None
+    assert criacao.tamanho is None
+
+
+def test_o_conteudo_do_mestre_nao_ganhou_o_tipo_audio():
+    """`RF-01-77`: o áudio entrou só do lado do aluno. Os dois enums eram
+    iguais em valor e deixaram de ser — é a divergência que a decisão quis."""
+    from nucleo.conteudos.modelo import TipoDeConteudo
+
+    do_aluno = {t.value for t in TipoDeProducaoDaCriacaoOriginal}
+    do_mestre = {t.value for t in TipoDeConteudo}
+
+    assert "audio" in do_aluno
+    assert "audio" not in do_mestre
+    assert do_aluno - do_mestre == {"audio"}
