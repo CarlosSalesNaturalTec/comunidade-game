@@ -9,22 +9,25 @@ Guerreiro(a).
 ### Requirement: Ponto regular é creditado por trilha ou poder e nunca debitado
 
 O núcleo SHALL creditar **ponto regular** por **trilha ou poder** — nunca globalmente — a partir
-de um Resultado, de uma **Criação Original validada**, de uma **partida de quiz encerrada** ou de
-um **registro de coleta válido**, conforme a fonte e o valor da tabela do documento 11 §5. Na
-criação original **em equipe**, o valor SHALL ser creditado **integral a cada integrante** da
-equipe da trilha que a entregou, sem divisão; na criação original **individual**, ao
-**Guerreiro(a)** que a entregou, no mesmo valor — a modalidade NEVER SHALL alterar o valor
-creditado a cada pessoa. Na partida de quiz, o crédito SHALL seguir a régua própria dela e
-alcançar **cada integrante** da equipe. No registro de coleta, o crédito SHALL seguir a régua
-própria dele e alcançar apenas o **coletor** da série.
+de um Resultado, de uma **Criação Original validada**, de uma **partida de quiz encerrada**, de
+um **registro de coleta válido** ou de um **desafio prático de desbloqueio julgado como
+cumprido**, conforme a fonte e o valor da tabela do documento 11 §5. Na criação original **em
+equipe**, o valor SHALL ser creditado **integral a cada integrante** da equipe da trilha que a
+entregou, sem divisão; na criação original **individual**, ao **Guerreiro(a)** que a entregou, no
+mesmo valor — a modalidade NEVER SHALL alterar o valor creditado a cada pessoa. Na partida de
+quiz, o crédito SHALL seguir a régua própria dela e alcançar **cada integrante** da equipe. No
+registro de coleta, o crédito SHALL seguir a régua própria dele e alcançar apenas o **coletor**
+da série. No **desafio prático**, o crédito SHALL alcançar apenas o **Guerreiro(a) que
+entregou**, na **trilha da missão**, porque o desbloqueio é fato dele na trilha e nunca da
+equipe.
 
 O ponto regular NEVER SHALL ser **trocado por recompensa**: a troca alcança só o saldo de pontos
 extras. Ele SHALL debitar **apenas por fato desfeito** — o **estorno de registro de coleta
 invalidado** e a **ocorrência de conduta lançada**, ambos exercitáveis. O saldo NEVER
 SHALL ficar negativo: débito maior que o saldo da trilha ou do poder SHALL pará-lo em **zero**.
 O registro de ponto regular NEVER SHALL ser removido. (`RF-01-21`, `RF-01-57`, `RF-01-64`,
-`RF-01-69`, `RF-08-09`, `RF-09-31`, `RN-01-38`, `RN-01-55`, invariante 23 do documento 99 §6,
-11 §5)
+`RF-01-69`, `RF-08-09`, `RF-09-31`, `RF-09-135`, `RN-01-38`, `RN-01-55`, invariante 23 do
+documento 99 §6, 11 §5)
 
 #### Scenario: Resultado "realizada" credita o valor da atividade
 
@@ -96,6 +99,12 @@ O registro de ponto regular NEVER SHALL ser removido. (`RF-01-21`, `RF-01-57`, `
 - **WHEN** um registro de coleta válido é gravado numa série
 - **THEN** o núcleo credita o ponto regular ao coletor daquela série, e a nenhum outro
   Guerreiro(a)
+
+#### Scenario: Desafio prático julgado como cumprido credita apenas quem entregou
+
+- **WHEN** o Mestre autor julga que um Guerreiro(a) cumpriu o desafio prático de uma missão da
+  trilha 1
+- **THEN** o núcleo credita o ponto regular dele na trilha 1, e a nenhum colega de equipe
 
 ### Requirement: A partida de quiz credita 1 por acerto, 1 de bônus à primeira e no máximo 10
 
@@ -416,3 +425,39 @@ ele continua alcançando só quem autorizou a divulgação.
 
 - **WHEN** a mesma comunidade é consultada na rota pública da vitrine
 - **THEN** só aparecem os Guerreiros e Guerreiras com autorização de divulgação vigente
+
+### Requirement: O desafio prático julgado como cumprido credita 5 pontos regulares
+
+O **desafio prático de desbloqueio** julgado pelo Mestre autor como **cumprido** SHALL creditar
+**5 pontos regulares** ao Guerreiro(a) que entregou, na **trilha da missão** (documento 11 §5).
+É a **segunda via** de crédito de ponto regular pela mão do Mestre, ao lado do **Resultado** que
+ele lança, e NEVER SHALL depender de Resultado algum: a missão cujo prático foi cumprido credita
+ainda que nenhuma atividade dela tenha Resultado.
+
+O crédito SHALL ser **idempotente** por par Guerreiro(a)–missão: julgar de novo, ou julgar como
+cumprido uma declaração reaberta depois de recusa, NEVER SHALL creditar segunda vez. O
+julgamento que diz **não cumpriu** NEVER SHALL creditar. O crédito NEVER SHALL certificar nível
+nem conceder badge — os 5 pontos movem o **ranking**, e o nível é percurso (documento 09 §1).
+(`RF-09-135`, `RN-09-55`, documento 11 §5, decisão do fundador de 2026-11-03)
+
+#### Scenario: O crédito do prático vale 5
+
+- **WHEN** o Mestre autor julga que o Guerreiro(a) cumpriu o desafio prático
+- **THEN** o saldo de ponto regular dele naquela trilha cresce em exatamente 5
+
+#### Scenario: O crédito do prático não espera Resultado
+
+- **WHEN** nenhuma atividade da missão tem Resultado lançado e o prático dela é julgado como
+  cumprido
+- **THEN** os 5 pontos são creditados de todo modo
+
+#### Scenario: Julgar duas vezes não credita duas vezes
+
+- **WHEN** a mesma declaração é levada ao julgamento mais de uma vez, ou é reaberta e julgada
+  como cumprida depois de uma recusa
+- **THEN** o saldo cresce em 5 uma única vez por par Guerreiro(a)–missão
+
+#### Scenario: Os 5 pontos entram no ranking e não no nível
+
+- **WHEN** o Guerreiro(a) recebe os 5 pontos do prático cumprido
+- **THEN** o total dele no ranking da trilha cresce, e o nível dele permanece o do percurso
