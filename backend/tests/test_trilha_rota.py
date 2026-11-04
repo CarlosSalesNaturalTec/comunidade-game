@@ -1208,7 +1208,13 @@ def test_minhas_trilhas_devolvem_o_enunciado_do_desafio_pratico(
     cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
     resposta = cliente.post(
         f"/v1/missoes/{missao.id}/desbloqueio",
-        json={"tipo": "pratico", "enunciado": "Monte o robô e mostre ao Mestre."},
+        json={
+            "tipo": "pratico",
+            "enunciado": "Monte o robô e mostre ao Mestre.",
+            "forma_de_comprovacao": "video",
+            "criterio_de_aceite": "No vídeo aparece só o robô, nunca o rosto da criança.",
+            "titulo_curto": "Robô de sucata",
+        },
         headers=cabecalhos,
     )
     assert resposta.status_code == 200
@@ -1218,6 +1224,124 @@ def test_minhas_trilhas_devolvem_o_enunciado_do_desafio_pratico(
     assert lida["tipo_do_desafio_de_desbloqueio"] == "pratico"
     assert lida["desafio_de_desbloqueio_enunciado"] == "Monte o robô e mostre ao Mestre."
     assert lida["perguntas_do_desbloqueio"] == []
+    # Os três do prático voltam ao Mestre autor pela mesma leitura, senão o
+    # formulário renasce vazio (`RF-09-129` a `RF-09-131`).
+    assert lida["desafio_pratico_forma_de_comprovacao"] == "video"
+    assert (
+        lida["desafio_pratico_criterio_de_aceite"]
+        == "No vídeo aparece só o robô, nunca o rosto da criança."
+    )
+    assert lida["desafio_pratico_titulo_curto"] == "Robô de sucata"
+
+
+def test_o_pratico_sem_os_tres_campos_e_recusado_pela_rota(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RN-09-50`: a recusa é por campo e vem da regra, não do schema — é ela
+    que a App 09 mostra ao Mestre no bloco do desafio."""
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    resposta = cliente.post(
+        f"/v1/missoes/{missao.id}/desbloqueio",
+        json={"tipo": "pratico", "enunciado": "Monte o robô."},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 422
+    assert resposta.json()["campo"] == "forma_de_comprovacao"
+    assert (
+        _missao_das_minhas_trilhas(cliente, cabecalhos, trilha.id, missao.id)[
+            "tipo_do_desafio_de_desbloqueio"
+        ]
+        is None
+    )
+
+
+def test_o_quiz_devolve_os_tres_campos_do_pratico_nulos(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    _declarar_quiz(
+        cliente,
+        cabecalhos,
+        missao.id,
+        [{"enunciado": "Qual?", "alternativas": ["a", "b", "c", "d"], "alternativa_correta": 1}],
+    )
+
+    lida = _missao_das_minhas_trilhas(cliente, cabecalhos, trilha.id, missao.id)
+
+    assert lida["desafio_pratico_forma_de_comprovacao"] is None
+    assert lida["desafio_pratico_criterio_de_aceite"] is None
+    assert lida["desafio_pratico_titulo_curto"] is None
+
+
+def test_o_guerreiro_inscrito_le_a_forma_e_o_criterio_do_pratico(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    """É da leitura do percurso que o Guerreiro(a) sabe o que entregar e sob
+    que critério será julgado (`RF-09-129`, `RF-09-130`)."""
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    token_do_mestre, _ = criar_sessao_de_teste(mestre)
+    cabecalhos_do_mestre = {
+        "X-Chave-Aplicacao": chave,
+        "Authorization": f"Bearer {token_do_mestre}",
+    }
+    assert (
+        cliente.post(
+            f"/v1/missoes/{missao.id}/desbloqueio",
+            json={
+                "tipo": "pratico",
+                "enunciado": "Monte o robô e mostre ao Mestre.",
+                "forma_de_comprovacao": "imagem",
+                "criterio_de_aceite": "Na foto aparece só o robô, nunca o rosto da criança.",
+                "titulo_curto": "Robô de sucata",
+            },
+            headers=cabecalhos_do_mestre,
+        ).status_code
+        == 200
+    )
+
+    guerreiro = criar_persona(Papel.guerreiro)
+    token_do_guerreiro, _ = criar_sessao_de_teste(guerreiro)
+    cabecalhos_do_guerreiro = {
+        "X-Chave-Aplicacao": chave,
+        "Authorization": f"Bearer {token_do_guerreiro}",
+    }
+    assert (
+        cliente.post(
+            f"/v1/eu/trilhas/{trilha.id}/inscricao", headers=cabecalhos_do_guerreiro
+        ).status_code
+        == 201
+    )
+
+    resposta = cliente.get(
+        f"/v1/eu/trilhas/{trilha.id}/missoes/{missao.posicao}",
+        headers=cabecalhos_do_guerreiro,
+    )
+
+    assert resposta.status_code == 200
+    desafio = resposta.json()["desafio_de_desbloqueio"]
+    assert desafio["forma_de_comprovacao"] == "imagem"
+    assert desafio["criterio_de_aceite"] == ("Na foto aparece só o robô, nunca o rosto da criança.")
+    assert desafio["titulo_curto"] == "Robô de sucata"
 
 
 def test_minhas_trilhas_distinguem_missao_sem_desafio(

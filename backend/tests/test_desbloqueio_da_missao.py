@@ -2,6 +2,7 @@ import uuid
 
 import pytest
 
+from nucleo.criacoes_originais.modelo import TipoDeProducaoDaCriacaoOriginal
 from nucleo.erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from nucleo.personas.modelo import Papel
 from nucleo.trilhas.modelo import (
@@ -61,6 +62,9 @@ def _declarar_pratico(sessao, mestre, missao):
         missao=missao,
         tipo="pratico",
         enunciado="Monte o robô e mostre ao Mestre.",
+        forma_de_comprovacao="video",
+        criterio_de_aceite="Em foto ou vídeo não deve aparecer o rosto da criança, só a produção.",
+        titulo_curto="Robô de sucata",
     )
 
 
@@ -1481,3 +1485,154 @@ def test_a_declaracao_recusa_o_identificador_da_pergunta_no_corpo(
     )
 
     assert resposta.status_code == 422
+
+
+# ---------------------------------------------------------------------------
+# A declaração do prático: forma de comprovação, critério de aceite e título
+# curto (`RF-09-129` a `RF-09-131`, `RN-09-50`, `RN-09-51`).
+# ---------------------------------------------------------------------------
+
+CRITERIO = "Em foto ou vídeo não deve aparecer o rosto da criança, só a produção."
+
+
+def _declarar_pratico_cru(sessao, mestre, missao, **campos):
+    """A declaração do prático com os três campos sob controle do teste — o
+    `_declarar_pratico` acima já os passa completos."""
+    argumentos = {
+        "tipo": "pratico",
+        "enunciado": "Monte o robô e mostre ao Mestre.",
+        "forma_de_comprovacao": "video",
+        "criterio_de_aceite": CRITERIO,
+        "titulo_curto": "Robô de sucata",
+    }
+    argumentos.update(campos)
+    return declarar_desafio_de_desbloqueio(sessao, operador=mestre, missao=missao, **argumentos)
+
+
+def test_o_pratico_declarado_guarda_forma_criterio_e_titulo(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    declarada = _declarar_pratico_cru(sessao, mestre, missao)
+    sessao.commit()
+
+    assert declarada.desafio_pratico_forma_de_comprovacao == (TipoDeProducaoDaCriacaoOriginal.video)
+    assert declarada.desafio_pratico_criterio_de_aceite == CRITERIO
+    assert declarada.desafio_pratico_titulo_curto == "Robô de sucata"
+    # O título é campo próprio, nunca derivado do enunciado (`RN-09-51`).
+    assert declarada.desafio_de_desbloqueio_enunciado == "Monte o robô e mostre ao Mestre."
+
+
+@pytest.mark.parametrize(
+    ("campos", "campo_recusado"),
+    [
+        ({"forma_de_comprovacao": None}, "forma_de_comprovacao"),
+        ({"forma_de_comprovacao": "escultura"}, "forma_de_comprovacao"),
+        ({"criterio_de_aceite": None}, "criterio_de_aceite"),
+        ({"criterio_de_aceite": "   "}, "criterio_de_aceite"),
+        ({"titulo_curto": None}, "titulo_curto"),
+        ({"titulo_curto": "   "}, "titulo_curto"),
+        ({"titulo_curto": "T" * 80}, "titulo_curto"),
+    ],
+)
+def test_o_pratico_incompleto_ou_fora_do_conjunto_e_recusado_por_campo(
+    sessao, criar_persona, criar_trilha, criar_missao, campos, campo_recusado
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        _declarar_pratico_cru(sessao, mestre, missao, **campos)
+
+    assert erro.value.campo == campo_recusado
+    sessao.rollback()
+    assert missao.tipo_do_desafio_de_desbloqueio is None
+
+
+def test_a_recusa_do_titulo_longo_diz_o_teto(sessao, criar_persona, criar_trilha, criar_missao):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        _declarar_pratico_cru(sessao, mestre, missao, titulo_curto="T" * 80)
+
+    assert "60" in erro.value.mensagem and "80" in erro.value.mensagem
+
+
+@pytest.mark.parametrize("campo", ["forma_de_comprovacao", "criterio_de_aceite", "titulo_curto"])
+def test_o_quiz_nao_declara_nenhum_dos_tres_campos_do_pratico(
+    sessao, criar_persona, criar_trilha, criar_missao, campo
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        declarar_desafio_de_desbloqueio(
+            sessao,
+            operador=mestre,
+            missao=missao,
+            tipo="quiz",
+            perguntas=[
+                {
+                    "enunciado": "Pergunta",
+                    "alternativas": ALTERNATIVAS,
+                    "alternativa_correta": 1,
+                }
+            ],
+            **{campo: "video" if campo == "forma_de_comprovacao" else "Texto qualquer"},
+        )
+
+    assert erro.value.campo == campo
+    sessao.rollback()
+    assert missao.tipo_do_desafio_de_desbloqueio is None
+
+
+def test_o_quiz_declarado_deixa_os_tres_campos_nulos(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    _declarar_pratico_cru(sessao, mestre, missao)
+    sessao.commit()
+    declarada = _declarar_quiz(sessao, mestre, missao)
+    sessao.commit()
+
+    assert declarada.desafio_pratico_forma_de_comprovacao is None
+    assert declarada.desafio_pratico_criterio_de_aceite is None
+    assert declarada.desafio_pratico_titulo_curto is None
+
+
+def test_o_pratico_declarado_antes_da_exigencia_segue_valendo(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """O prático gravado sem os três campos — como todo prático anterior a
+    2026-11-04 — continua sendo o desafio da missão, e a leitura o serve com os
+    três nulos (`RN-09-50`)."""
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    missao.tipo_do_desafio_de_desbloqueio = TipoDeDesafioDeDesbloqueio.pratico
+    missao.desafio_de_desbloqueio_enunciado = "Monte o robô."
+    sessao.commit()
+
+    assert missao.desafio_pratico_forma_de_comprovacao is None
+    assert missao.desafio_pratico_criterio_de_aceite is None
+    assert missao.desafio_pratico_titulo_curto is None
+
+    # Redeclarar exige os três, como qualquer declaração nova.
+    with pytest.raises(ErroDeValidacao):
+        _declarar_pratico_cru(sessao, mestre, missao, criterio_de_aceite=None)
+    sessao.rollback()
+    assert missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.pratico
+
+    _declarar_pratico_cru(sessao, mestre, missao)
+    sessao.commit()
+    assert missao.desafio_pratico_titulo_curto == "Robô de sucata"

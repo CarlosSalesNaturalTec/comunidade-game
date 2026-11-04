@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from ..armazenamento.porta import PortaDeArmazenamento
 from ..aulas.modelo import Aula
 from ..coletas.modelo import DesafioDeColeta
+from ..criacoes_originais.modelo import TipoDeProducaoDaCriacaoOriginal
 from ..culminancias.modelo import Culminancia
 from ..erros import ArquivoAcimaDoTeto, ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from ..personas.modelo import Papel, Persona
@@ -837,6 +838,9 @@ def _conferir_inscricao(sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: 
         )
 
 
+TETO_DO_TITULO_CURTO_DO_PRATICO = 60
+
+
 def declarar_desafio_de_desbloqueio(
     sessao: Session,
     *,
@@ -845,14 +849,19 @@ def declarar_desafio_de_desbloqueio(
     tipo: str | None,
     enunciado: str | None = None,
     perguntas: list[dict] | None = None,
+    forma_de_comprovacao: str | None = None,
+    criterio_de_aceite: str | None = None,
+    titulo_curto: str | None = None,
 ) -> Missao:
     """Só o Mestre autor da trilha declara — declarar de novo substitui o
     anterior, com as perguntas dele, como `declarar_cadencia_de_retomada` já
     faz (`RF-09-26`, `RF-09-117`, `RF-09-118`). O **quiz** traz uma ou mais
     perguntas, cada uma com enunciado, quatro alternativas e a correta entre
     elas; quiz sem nenhuma pergunta é recusado (`RN-09-43`). O **prático**
-    usa só o enunciado, como a descrição do que o Guerreiro(a) precisa
-    cumprir. Missão sem desafio segue publicável — esta declaração nunca é
+    traz o enunciado do que o Guerreiro(a) precisa cumprir e, desde
+    2026-11-04, a **forma de comprovação** que o Mestre aceita, o **critério
+    de aceite** e o **título curto** da vitrine (`RF-09-129` a `RF-09-131`,
+    `RN-09-50`). Missão sem desafio segue publicável — esta declaração nunca é
     trava de publicação.
     """
     if missao is None:
@@ -869,8 +878,17 @@ def declarar_desafio_de_desbloqueio(
 
     if tipo_valido == TipoDeDesafioDeDesbloqueio.quiz:
         perguntas_validas = _conferir_perguntas_do_quiz(perguntas)
-    elif not enunciado or not enunciado.strip():
-        raise ErroDeValidacao(mensagem="Desafio prático exige um enunciado.", campo="enunciado")
+        _recusar_campos_do_pratico_no_quiz(
+            forma_de_comprovacao=forma_de_comprovacao,
+            criterio_de_aceite=criterio_de_aceite,
+            titulo_curto=titulo_curto,
+        )
+    else:
+        if not enunciado or not enunciado.strip():
+            raise ErroDeValidacao(mensagem="Desafio prático exige um enunciado.", campo="enunciado")
+        forma_valida = _conferir_forma_de_comprovacao(forma_de_comprovacao)
+        criterio_valido = _conferir_criterio_de_aceite(criterio_de_aceite)
+        titulo_valido = _conferir_titulo_curto(titulo_curto)
 
     vigentes = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
     imagens = _conferir_imagens_declaradas(
@@ -890,6 +908,9 @@ def declarar_desafio_de_desbloqueio(
     missao.tipo_do_desafio_de_desbloqueio = tipo_valido
     if tipo_valido == TipoDeDesafioDeDesbloqueio.quiz:
         missao.desafio_de_desbloqueio_enunciado = None
+        missao.desafio_pratico_forma_de_comprovacao = None
+        missao.desafio_pratico_criterio_de_aceite = None
+        missao.desafio_pratico_titulo_curto = None
         for ordem, (pergunta, imagem) in enumerate(
             zip(perguntas_validas, imagens, strict=True), start=1
         ):
@@ -910,9 +931,87 @@ def declarar_desafio_de_desbloqueio(
             )
     else:
         missao.desafio_de_desbloqueio_enunciado = enunciado
+        missao.desafio_pratico_forma_de_comprovacao = forma_valida
+        missao.desafio_pratico_criterio_de_aceite = criterio_valido
+        missao.desafio_pratico_titulo_curto = titulo_valido
 
     sessao.flush()
     return missao
+
+
+# Os três campos do prático: a recusa é **por campo**, para que a tela do
+# Mestre diga o que falta em vez de uma falha genérica (`RN-09-50`).
+_CAMPOS_SO_DO_PRATICO = (
+    ("forma_de_comprovacao", "a forma de comprovação"),
+    ("criterio_de_aceite", "o critério de aceite"),
+    ("titulo_curto", "o título curto"),
+)
+
+
+def _recusar_campos_do_pratico_no_quiz(
+    *, forma_de_comprovacao: str | None, criterio_de_aceite: str | None, titulo_curto: str | None
+) -> None:
+    """No quiz os três não se aplicam: o critério é o corte de acertos, que o
+    núcleo afere sozinho, e não há comprovação a enquadrar nem entrega a
+    intitular. Recusar é melhor que ignorar em silêncio, que deixaria o Mestre
+    achar que declarou o que não declarou (design — decisão 5)."""
+    recebidos = {
+        "forma_de_comprovacao": forma_de_comprovacao,
+        "criterio_de_aceite": criterio_de_aceite,
+        "titulo_curto": titulo_curto,
+    }
+    for campo, nome in _CAMPOS_SO_DO_PRATICO:
+        if recebidos[campo] is not None:
+            raise ErroDeValidacao(
+                mensagem=f"O quiz não declara {nome}: ela é só do desafio prático.",
+                campo=campo,
+            )
+
+
+def _conferir_forma_de_comprovacao(valor: str | None) -> TipoDeProducaoDaCriacaoOriginal:
+    """Uma das **seis** formas de entrega do Guerreiro(a) (`RF-09-129`,
+    documento 02 §4) — o mesmo conjunto fechado da criação original, não uma
+    segunda lista dele (design — decisão 3)."""
+    if valor is None:
+        raise ErroDeValidacao(
+            mensagem="Desafio prático exige a forma de comprovação aceita.",
+            campo="forma_de_comprovacao",
+        )
+    try:
+        return TipoDeProducaoDaCriacaoOriginal(valor)
+    except (ValueError, TypeError) as exc:
+        raise ErroDeValidacao(
+            mensagem="Forma de comprovação fora das seis formas de entrega.",
+            campo="forma_de_comprovacao",
+        ) from exc
+
+
+def _conferir_criterio_de_aceite(valor: str | None) -> str:
+    """Texto livre do Mestre autor, que o núcleo guarda e nunca afere
+    (`RF-09-130`)."""
+    if valor is None or not valor.strip():
+        raise ErroDeValidacao(
+            mensagem="Desafio prático exige o critério de aceite.", campo="criterio_de_aceite"
+        )
+    return valor
+
+
+def _conferir_titulo_curto(valor: str | None) -> str:
+    """Campo próprio, nunca o enunciado: é ele que a vitrine exibe ao lado do
+    nick, e por isso tem teto (`RF-09-131`, `RN-09-51`)."""
+    if valor is None or not valor.strip():
+        raise ErroDeValidacao(
+            mensagem="Desafio prático exige o título curto.", campo="titulo_curto"
+        )
+    if len(valor) > TETO_DO_TITULO_CURTO_DO_PRATICO:
+        raise ErroDeValidacao(
+            mensagem=(
+                "O título curto tem no máximo "
+                f"{TETO_DO_TITULO_CURTO_DO_PRATICO} caracteres, e chegou com {len(valor)}."
+            ),
+            campo="titulo_curto",
+        )
+    return valor
 
 
 @dataclass(frozen=True)
