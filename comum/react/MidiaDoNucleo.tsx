@@ -19,6 +19,12 @@ interface Props {
    * mídia que não abre — ou o item seguinte que não tem mídia alguma —
    * deixaria a trava armada para sempre (design — decisão 7). */
   aoMudarCarregamento?: (carregando: boolean) => void;
+  /** A chamada **não leva credencial de persona**: é o caso da vitrine, que
+   * serve visitante anônimo (`RN-03-33`). Sem isto, `token` nulo significa
+   * "a sessão ainda não chegou" e a busca espera para sempre — correto nas
+   * Apps 05 e 09, onde o token chega depois, e trava na App 06, que nunca
+   * terá um. */
+  semSessao?: boolean;
 }
 
 // Busca a mídia do núcleo em bytes: nenhuma rota sob `/v1` aceita
@@ -46,6 +52,7 @@ export function MidiaDoNucleo({
   alt,
   textoDeErro,
   aoMudarCarregamento,
+  semSessao = false,
 }: Props) {
   const [resultado, definirResultado] = useState<{
     id: string;
@@ -59,11 +66,11 @@ export function MidiaDoNucleo({
   avisar.current = aoMudarCarregamento;
 
   useEffect(() => {
-    if (!token) return;
+    if (!token && !semSessao) return;
     let local: string | null = null;
     let descartado = false;
     avisar.current?.(true);
-    buscar(id, token)
+    buscar(id, token ?? "")
       .then((bytes) => {
         if (descartado) return;
         local = URL.createObjectURL(bytes);
@@ -82,7 +89,7 @@ export function MidiaDoNucleo({
       avisar.current?.(false);
       if (local) URL.revokeObjectURL(local);
     };
-  }, [id, token, buscar]);
+  }, [id, token, buscar, semSessao]);
 
   // Resultado de outro `id` não vale para este item: nem a mídia, nem a falha.
   const daVez = resultado?.id === id ? resultado : null;

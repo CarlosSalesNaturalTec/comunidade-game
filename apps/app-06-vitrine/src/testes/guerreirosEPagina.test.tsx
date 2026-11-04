@@ -31,6 +31,12 @@ function noRanking(nick: string, posicao = 1): ItemDeRankingPublico {
 
 function noPortfolio(nick: string): CriacaoPublica {
   return {
+    id: `c-${nick}`,
+    fonte: "criacao_original",
+    // Na criação da culminância o título **é** o nome da trilha
+    // (`RN-03-43`).
+    titulo: "Trilha da Água",
+    tipo: "texto",
     trilha_id: "t-1",
     trilha: "Trilha da Água",
     validada_em: "2026-08-01T10:00:00Z",

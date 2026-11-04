@@ -602,7 +602,7 @@ def test_criacao_com_todos_autorizados_aparece_com_autoria_creditada(
     assert itens[0]["autores"] == [{"avatar": "avatar-de-teste", "nick": nick}]
 
 
-def test_criacao_publica_traz_trilha_e_data_e_nao_traz_titulo(
+def test_criacao_publica_traz_titulo_igual_a_trilha_mais_data_e_autoria(
     cliente,
     criar_chave,
     criar_persona,
@@ -610,9 +610,9 @@ def test_criacao_publica_traz_trilha_e_data_e_nao_traz_titulo(
     criar_criacao_original,
     guerreiro_publico,
 ):
-    """`RF-03-08`: o portfólio exibe trilha, data e autoria por nick. Título
-    não existe no modelo da criação original (decisão do fundador,
-    2026-09-28)."""
+    """`RF-03-08`, `RN-03-43`: o acervo exibe título, trilha, data e autoria
+    por nick, e o título da criação da culminância **é** o nome da trilha —
+    o modelo não tem campo de título (decisão do fundador, 2026-11-04)."""
     admin = criar_persona(Papel.admin)
     trilha = criar_trilha(admin, nome="Trilha do Portfólio", situacao=SituacaoDaTrilha.publicada)
     guerreiro, nick = guerreiro_publico(nick="autora-do-portfolio")
@@ -626,7 +626,11 @@ def test_criacao_publica_traz_trilha_e_data_e_nao_traz_titulo(
     assert item["trilha"] == "Trilha do Portfólio"
     assert datetime.fromisoformat(item["validada_em"]) == criacao.validado_em
     assert [autor["nick"] for autor in item["autores"]] == [nick]
-    assert "titulo" not in item
+    assert item["titulo"] == "Trilha do Portfólio"
+    assert item["fonte"] == "criacao_original"
+    assert item["tipo"] == "texto"
+    assert item["producao"] == "Produção de teste."
+    assert item["id"] == str(criacao.id)
 
 
 def test_criacao_individual_aparece_creditando_quem_entregou(
@@ -1911,3 +1915,426 @@ def test_autorizacao_revogada_tira_a_midia_do_ar_na_leitura_seguinte(
     sessao.commit()
 
     assert cliente.get(endereco, headers=cabecalhos).status_code == 404
+
+
+# --- O acervo público: a segunda fonte, o portão e a abertura da produção ---
+# Fatia 12 do PRD-03: `RF-03-84`, `RF-03-85`, `RN-03-41` a `RN-03-43`.
+
+
+@pytest.fixture
+def comprovacao_aprovada(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_desbloqueio_da_missao
+):
+    """Uma declaração de desafio prático com comprovação gravada e julgada
+    pelos **dois vereditos** — cumpriu e publicável —, que é o portão do
+    acervo (`RN-03-41`)."""
+
+    def _criar(
+        guerreiro,
+        *,
+        titulo_curto="Horta na laje",
+        nome_da_trilha="Trilha da Comprovação",
+        forma=TipoDeProducaoDaCriacaoOriginal.texto,
+        comprovacao="Plantei três canteiros.",
+        comprovacao_referencia=None,
+        comprovacao_tipo_do_arquivo=None,
+        entrega_presencial=None,
+        cumpriu=True,
+        publicavel=True,
+        julgado_em=None,
+    ):
+        mestre = criar_persona(Papel.mestre)
+        trilha = criar_trilha(mestre, nome=nome_da_trilha, situacao=SituacaoDaTrilha.publicada)
+        missao = criar_missao(
+            trilha,
+            mestre,
+            desafio_pratico_forma_de_comprovacao=forma,
+            desafio_pratico_criterio_de_aceite="Só a produção, nunca o rosto.",
+            desafio_pratico_titulo_curto=titulo_curto,
+        )
+        return criar_desbloqueio_da_missao(
+            guerreiro,
+            missao,
+            cumpriu=cumpriu,
+            julgado_por=mestre,
+            publicavel=publicavel,
+            julgado_em=julgado_em or datetime.now(UTC),
+            comprovacao=comprovacao,
+            comprovacao_referencia=comprovacao_referencia,
+            comprovacao_tipo_do_arquivo=comprovacao_tipo_do_arquivo,
+            entrega_presencial=entrega_presencial,
+        )
+
+    return _criar
+
+
+def _acervo(cliente, chave, cursor=None):
+    endereco = "/v1/vitrine/criacoes" + (f"?cursor={cursor}" if cursor else "")
+    resposta = cliente.get(endereco, headers={"X-Chave-Aplicacao": chave})
+    assert resposta.status_code == 200, resposta.text
+    return resposta.json()
+
+
+def test_comprovacao_aprovada_aparece_no_acervo(
+    cliente, criar_chave, comprovacao_aprovada, guerreiro_publico
+):
+    """`RF-03-84`: a comprovação julgada cumprida e publicável entra no acervo
+    com o título curto do Mestre, a trilha da missão, a data do julgamento e a
+    autoria por nick."""
+    guerreiro, nick = guerreiro_publico(nick="horteira")
+    comprovacao = comprovacao_aprovada(guerreiro)
+
+    chave, _ = criar_chave()
+    (item,) = _acervo(cliente, chave)["itens"]
+
+    assert item["id"] == str(comprovacao.id)
+    assert item["fonte"] == "comprovacao_do_pratico"
+    assert item["titulo"] == "Horta na laje"
+    assert item["trilha"] == "Trilha da Comprovação"
+    assert item["tipo"] == "texto"
+    assert item["producao"] == "Plantei três canteiros."
+    assert datetime.fromisoformat(item["validada_em"]) == comprovacao.julgado_em
+    assert [autor["nick"] for autor in item["autores"]] == [nick]
+
+
+def test_link_externo_vem_no_proprio_item_do_acervo(
+    cliente, criar_chave, comprovacao_aprovada, guerreiro_publico
+):
+    """`RF-03-85`: texto e link externo vêm no próprio item, sem segunda
+    leitura — só os quatro tipos de mídia saem pela rota de bytes."""
+    guerreiro, _ = guerreiro_publico(nick="mapeou-a-horta")
+    comprovacao_aprovada(
+        guerreiro,
+        titulo_curto="Mapa da horta",
+        forma=TipoDeProducaoDaCriacaoOriginal.link_externo,
+        comprovacao="https://exemplo.org/mapa",
+    )
+
+    chave, _ = criar_chave()
+    (item,) = _acervo(cliente, chave)["itens"]
+
+    assert item["tipo"] == "link_externo"
+    assert item["producao"] == "https://exemplo.org/mapa"
+
+
+def test_as_duas_fontes_saem_na_mesma_lista_ordenadas_entre_si(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_criacao_original,
+    comprovacao_aprovada,
+    guerreiro_publico,
+):
+    """`RF-03-84`, `RF-03-83`: uma lista só, decrescente pela data em que o
+    Mestre aprovou o item, com as duas fontes intercaladas."""
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(admin, nome="Trilha da Culminância", situacao=SituacaoDaTrilha.publicada)
+    guerreiro, _ = guerreiro_publico(nick="acervista")
+
+    agora = datetime.now(UTC)
+    comprovacao_aprovada(
+        guerreiro, titulo_curto="Mais antiga", julgado_em=agora - timedelta(days=3)
+    )
+    criar_criacao_original(
+        trilha, admin, guerreiro=guerreiro, validado_em=agora - timedelta(days=2)
+    )
+    comprovacao_aprovada(guerreiro, titulo_curto="Mais nova", julgado_em=agora - timedelta(days=1))
+
+    chave, _ = criar_chave()
+    itens = _acervo(cliente, chave)["itens"]
+
+    assert [item["titulo"] for item in itens] == [
+        "Mais nova",
+        "Trilha da Culminância",
+        "Mais antiga",
+    ]
+    assert [item["fonte"] for item in itens] == [
+        "comprovacao_do_pratico",
+        "criacao_original",
+        "comprovacao_do_pratico",
+    ]
+
+
+def test_cursor_do_acervo_percorre_as_duas_fontes_sem_pular_nem_repetir(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_criacao_original,
+    comprovacao_aprovada,
+    guerreiro_publico,
+):
+    """`RF-03-84`, `RF-03-83`: a travessia por cursor cobre a união das duas
+    fontes — nenhum item pulado, nenhum repetido."""
+    admin = criar_persona(Papel.admin)
+    guerreiro, _ = guerreiro_publico(nick="peregrina")
+    agora = datetime.now(UTC)
+
+    esperados = []
+    for passo in range(6):
+        momento = agora - timedelta(hours=passo)
+        if passo % 2 == 0:
+            trilha = criar_trilha(
+                admin, nome=f"Trilha {passo}", situacao=SituacaoDaTrilha.publicada
+            )
+            criar_criacao_original(trilha, admin, guerreiro=guerreiro, validado_em=momento)
+            esperados.append(f"Trilha {passo}")
+        else:
+            comprovacao_aprovada(guerreiro, titulo_curto=f"Prático {passo}", julgado_em=momento)
+            esperados.append(f"Prático {passo}")
+
+    chave, _ = criar_chave()
+    vistos, ids, cursor = [], [], None
+    while True:
+        pagina = _acervo(cliente, chave, cursor)
+        vistos.extend(item["titulo"] for item in pagina["itens"])
+        ids.extend(item["id"] for item in pagina["itens"])
+        cursor = pagina["proximo_cursor"]
+        if cursor is None:
+            break
+
+    assert vistos == esperados
+    assert len(ids) == len(set(ids))
+
+
+def test_declaracao_do_pratico_nao_julgada_nao_aparece_no_acervo(
+    cliente, criar_chave, comprovacao_aprovada, guerreiro_publico
+):
+    """`RN-03-41`: sem o veredito do Mestre não há item público."""
+    guerreiro, _ = guerreiro_publico(nick="aguardando")
+    comprovacao_aprovada(guerreiro, cumpriu=None, publicavel=None, julgado_em=None)
+
+    chave, _ = criar_chave()
+    assert _acervo(cliente, chave)["itens"] == []
+
+
+def test_comprovacao_cumprida_e_nao_publicavel_nao_aparece_no_acervo(
+    cliente, criar_chave, comprovacao_aprovada, guerreiro_publico
+):
+    """`RN-03-41`: cumprir abre a missão seguinte; publicar é o outro
+    veredito, e sem ele nada vai à vitrine."""
+    guerreiro, _ = guerreiro_publico(nick="cumpriu-so")
+    comprovacao_aprovada(guerreiro, cumpriu=True, publicavel=False)
+
+    chave, _ = criar_chave()
+    assert _acervo(cliente, chave)["itens"] == []
+
+
+def test_entrega_presencial_nao_aparece_no_acervo(
+    cliente, criar_chave, comprovacao_aprovada, guerreiro_publico
+):
+    """`RN-03-41`: sem comprovação gravada não há produção a exibir, mesmo
+    com o Mestre julgando que cumpriu."""
+    guerreiro, _ = guerreiro_publico(nick="presencial")
+    comprovacao_aprovada(
+        guerreiro,
+        comprovacao=None,
+        entrega_presencial=True,
+        cumpriu=True,
+        publicavel=True,
+    )
+
+    chave, _ = criar_chave()
+    assert _acervo(cliente, chave)["itens"] == []
+
+
+def test_comprovacao_aprovada_de_quem_nao_autorizou_nao_aparece(
+    sessao,
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+    comprovacao_aprovada,
+):
+    """`RN-03-41`, `RN-03-02`: a aprovação do Mestre não substitui a
+    autorização do responsável."""
+    admin = criar_persona(Papel.admin)
+    responsavel = criar_persona(Papel.responsavel)
+    guerreiro = criar_persona(Papel.guerreiro)
+    criar_nick(guerreiro, "sem-autorizacao-no-acervo")
+    criar_vinculo(responsavel, guerreiro, cadastrado_por=admin)
+    criar_consentimento(
+        responsavel,
+        guerreiro,
+        tipo=TIPO,
+        decisao=DecisaoDeConsentimento.nega,
+    )
+    comprovacao_aprovada(guerreiro)
+
+    chave, _ = criar_chave()
+    assert _acervo(cliente, chave)["itens"] == []
+
+
+def test_revogacao_retira_a_comprovacao_do_acervo_na_leitura_seguinte(
+    sessao,
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_consentimento,
+    comprovacao_aprovada,
+    guerreiro_publico,
+):
+    """`RN-03-41`, `RN-03-03`: revogada a autorização, a leitura seguinte não
+    traz o item."""
+    guerreiro, _ = guerreiro_publico(nick="revogada-do-acervo")
+    comprovacao_aprovada(guerreiro)
+    chave, _ = criar_chave()
+    assert len(_acervo(cliente, chave)["itens"]) == 1
+
+    responsavel = criar_persona(Papel.responsavel)
+    criar_consentimento(
+        responsavel,
+        guerreiro,
+        tipo=TIPO,
+        decisao=DecisaoDeConsentimento.nega,
+    )
+    sessao.commit()
+
+    assert _acervo(cliente, chave)["itens"] == []
+
+
+def test_producao_de_atividade_da_missao_nao_entra_no_acervo(
+    sessao,
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_atividade,
+    guerreiro_publico,
+):
+    """`RN-03-42`: a produção das atividades é guardada e nunca é item de
+    acervo — não tem ato de aprovação do Mestre."""
+    from nucleo.producoes.modelo import FormaDeEntregaDaProducao, ProducaoDaMissao
+
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    missao = criar_missao(trilha, mestre)
+    atividade = criar_atividade(missao, mestre)
+    guerreiro, _ = guerreiro_publico(nick="produziu-na-atividade")
+
+    producao = ProducaoDaMissao(
+        guerreiro_id=guerreiro.id,
+        missao_id=missao.id,
+        atividade_id=atividade.id,
+        forma=FormaDeEntregaDaProducao.texto,
+        transcricao="O que a criança escreveu na atividade.",
+        referencia=f"producoes/{uuid.uuid4()}/arquivo",
+        tipo_do_arquivo="image/png",
+        autor_id=guerreiro.id,
+        papel_do_autor=guerreiro.papel.value,
+    )
+    sessao.add(producao)
+    sessao.commit()
+
+    chave, _ = criar_chave()
+    assert _acervo(cliente, chave)["itens"] == []
+    assert (
+        cliente.get(
+            f"/v1/vitrine/comprovacoes/{producao.id}/arquivo",
+            headers={"X-Chave-Aplicacao": chave},
+        ).status_code
+        == 404
+    )
+
+
+def _comprovacao_com_midia(sessao, configuracao, comprovacao, corpo=b"bytes-da-comprovacao"):
+    """A comprovação com mídia de verdade no armazenamento local do teste — a
+    rota serve bytes, não referência."""
+    from nucleo.armazenamento.fabrica import obter_porta_de_armazenamento
+
+    comprovacao.comprovacao = None
+    comprovacao.comprovacao_referencia = f"comprovacoes/{comprovacao.id}/arquivo"
+    comprovacao.comprovacao_tipo_do_arquivo = "image/png"
+    sessao.flush()
+    obter_porta_de_armazenamento(configuracao).gravar(
+        referencia=comprovacao.comprovacao_referencia, conteudo=corpo
+    )
+    sessao.commit()
+    return comprovacao
+
+
+def test_midia_da_comprovacao_publica_e_servida_sem_sessao(
+    sessao, cliente, configuracao, criar_chave, comprovacao_aprovada, guerreiro_publico
+):
+    """`RF-03-85`: sem sessão, só a chave de aplicação."""
+    guerreiro, _ = guerreiro_publico(nick="comprovou-em-imagem")
+    comprovacao = _comprovacao_com_midia(
+        sessao,
+        configuracao,
+        comprovacao_aprovada(guerreiro, forma=TipoDeProducaoDaCriacaoOriginal.imagem),
+    )
+
+    chave, _ = criar_chave()
+    resposta = cliente.get(
+        f"/v1/vitrine/comprovacoes/{comprovacao.id}/arquivo",
+        headers={"X-Chave-Aplicacao": chave},
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.content == b"bytes-da-comprovacao"
+    assert resposta.headers["content-type"] == "image/png"
+
+
+def test_midia_da_comprovacao_nao_publicavel_responde_404(
+    sessao, cliente, configuracao, criar_chave, comprovacao_aprovada, guerreiro_publico
+):
+    """`RF-03-85`, `RN-03-41`: o mesmo portão da listagem, e a recusa é 404 em
+    todos os casos — nunca 403, que viraria oráculo."""
+    guerreiro, _ = guerreiro_publico(nick="nao-publicavel")
+    comprovacao = _comprovacao_com_midia(
+        sessao,
+        configuracao,
+        comprovacao_aprovada(
+            guerreiro, forma=TipoDeProducaoDaCriacaoOriginal.imagem, publicavel=False
+        ),
+    )
+
+    chave, _ = criar_chave()
+    resposta = cliente.get(
+        f"/v1/vitrine/comprovacoes/{comprovacao.id}/arquivo",
+        headers={"X-Chave-Aplicacao": chave},
+    )
+
+    assert resposta.status_code == 404
+
+
+def test_midia_da_comprovacao_de_quem_nao_autorizou_responde_404(
+    sessao,
+    cliente,
+    configuracao,
+    criar_chave,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+    comprovacao_aprovada,
+):
+    """`RF-03-85`, `RN-03-02`: sem autorização vigente, 404."""
+    admin = criar_persona(Papel.admin)
+    responsavel = criar_persona(Papel.responsavel)
+    guerreiro = criar_persona(Papel.guerreiro)
+    criar_nick(guerreiro, "sem-autorizacao-na-midia")
+    criar_vinculo(responsavel, guerreiro, cadastrado_por=admin)
+    criar_consentimento(
+        responsavel,
+        guerreiro,
+        tipo=TIPO,
+        decisao=DecisaoDeConsentimento.nega,
+    )
+    comprovacao = _comprovacao_com_midia(
+        sessao,
+        configuracao,
+        comprovacao_aprovada(guerreiro, forma=TipoDeProducaoDaCriacaoOriginal.imagem),
+    )
+
+    chave, _ = criar_chave()
+    resposta = cliente.get(
+        f"/v1/vitrine/comprovacoes/{comprovacao.id}/arquivo",
+        headers={"X-Chave-Aplicacao": chave},
+    )
+
+    assert resposta.status_code == 404

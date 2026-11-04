@@ -2,15 +2,20 @@ import uuid
 from collections.abc import Iterable
 from datetime import date, datetime
 from decimal import Decimal
+from typing import NamedTuple
 
 from pydantic import BaseModel
-from sqlalchemy import and_, collate, func, tuple_
+from sqlalchemy import and_, collate, func, or_, tuple_
 from sqlalchemy.orm import Session, aliased
 
 from ..aportes.modelo import Aporte
 from ..comunidades.regra import filtrar_personas_por_comunidade
 from ..consentimentos.regra import condicao_de_autorizacao_vigente
-from ..criacoes_originais.modelo import CriacaoOriginal, SituacaoDaCriacaoOriginal
+from ..criacoes_originais.modelo import (
+    CriacaoOriginal,
+    SituacaoDaCriacaoOriginal,
+    TipoDeProducaoDaCriacaoOriginal,
+)
 from ..desafios_extras.modelo import (
     ConclusaoDeDesafioExtra,
     DesafioExtra,
@@ -27,7 +32,7 @@ from ..poderes.modelo import Poder
 from ..pontuacao.modelo import Badge, Nivel
 from ..pontuacao.regra import consulta_de_ranking
 from ..selos_do_apoiador.regra import derivar_sustento, listar_selos
-from ..trilhas.modelo import SituacaoDaTrilha, Trilha
+from ..trilhas.modelo import DesbloqueioDaMissao, Missao, SituacaoDaTrilha, Trilha
 
 
 class AvatarENickSaida(BaseModel):
@@ -215,6 +220,73 @@ def nomes_de_trilha(sessao: Session, trilha_ids: Iterable[uuid.UUID]) -> dict[uu
     if not ids:
         return {}
     return dict(sessao.query(Trilha.id, Trilha.nome).filter(Trilha.id.in_(ids)).all())
+
+
+def condicoes_de_comprovacao_publica(sessao: Session):
+    """O portão da comprovação do desafio prático em público: os **dois
+    vereditos** do Mestre autor — `cumpriu` e `publicavel` —, comprovação
+    gravada e autorização de divulgação vigente do Guerreiro(a)
+    (`RN-03-41`, `RN-09-52`).
+
+    Uma função só, usada pela listagem do acervo e pela rota de bytes da
+    comprovação, e não uma segunda cópia da regra que possa divergir dela —
+    o precedente de `condicoes_de_criacao_publica` (`RN-01-63`, design —
+    decisão 5).
+
+    `entrega_presencial` não aparece aqui por exclusão própria: ela e a
+    comprovação são mutuamente exclusivas (`RN-05-51`), e exigir comprovação
+    gravada já a deixa fora. A declaração não julgada tem os vereditos nulos,
+    e nulo não satisfaz `is_(True)`.
+    """
+    return (
+        DesbloqueioDaMissao.cumpriu.is_(True),
+        DesbloqueioDaMissao.publicavel.is_(True),
+        or_(
+            DesbloqueioDaMissao.comprovacao.is_not(None),
+            DesbloqueioDaMissao.comprovacao_referencia.is_not(None),
+        ),
+        condicao_de_autorizacao_vigente(sessao, DesbloqueioDaMissao.guerreiro_id),
+    )
+
+
+class DesafioPraticoDaMissao(NamedTuple):
+    """O que a missão empresta à linha do acervo: o **título curto** e a
+    **forma de comprovação** que o Mestre autor declarou no desafio prático, e
+    a trilha de que a missão é parte (`RN-03-43`)."""
+
+    titulo: str | None
+    tipo: TipoDeProducaoDaCriacaoOriginal | None
+    trilha_id: uuid.UUID
+    trilha: str
+
+
+def desafios_praticos_das_missoes(
+    sessao: Session, missao_ids: Iterable[uuid.UUID]
+) -> dict[uuid.UUID, DesafioPraticoDaMissao]:
+    """Um só round-trip para o título curto, a forma aceita e a trilha de um
+    conjunto de missões — evita N+1 ao montar a linha do acervo (design —
+    decisão 3)."""
+    ids = list(missao_ids)
+    if not ids:
+        return {}
+    linhas = (
+        sessao.query(
+            Missao.id,
+            Missao.desafio_pratico_titulo_curto,
+            Missao.desafio_pratico_forma_de_comprovacao,
+            Trilha.id,
+            Trilha.nome,
+        )
+        .join(Trilha, Trilha.id == Missao.trilha_id)
+        .filter(Missao.id.in_(ids))
+        .all()
+    )
+    return {
+        missao_id: DesafioPraticoDaMissao(
+            titulo=titulo, tipo=forma, trilha_id=trilha_id, trilha=nome
+        )
+        for missao_id, titulo, forma, trilha_id, nome in linhas
+    }
 
 
 def _nomes_de_poder(

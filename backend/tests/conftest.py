@@ -952,6 +952,9 @@ def criar_missao(sessao):
         etapa_do_ciclo: EtapaDoCiclo = EtapaDoCiclo.desenvolvimento,
         e_sondagem: bool = False,
         cadencia_de_retomada: list[int] | None = None,
+        desafio_pratico_forma_de_comprovacao: TipoDeProducaoDaCriacaoOriginal | None = None,
+        desafio_pratico_criterio_de_aceite: str | None = None,
+        desafio_pratico_titulo_curto: str | None = None,
     ) -> Missao:
         missao = Missao(
             trilha_id=trilha.id,
@@ -962,6 +965,9 @@ def criar_missao(sessao):
             etapa_do_ciclo=etapa_do_ciclo,
             e_sondagem=e_sondagem,
             cadencia_de_retomada=cadencia_de_retomada,
+            desafio_pratico_forma_de_comprovacao=desafio_pratico_forma_de_comprovacao,
+            desafio_pratico_criterio_de_aceite=desafio_pratico_criterio_de_aceite,
+            desafio_pratico_titulo_curto=desafio_pratico_titulo_curto,
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
         )
@@ -1970,12 +1976,24 @@ def criar_desbloqueio_da_missao(sessao):
         missao: Missao,
         cumpriu: bool | None = True,
         julgado_por: Persona | None = None,
+        publicavel: bool | None = None,
+        julgado_em: datetime | None = None,
+        comprovacao: str | None = None,
+        comprovacao_referencia: str | None = None,
+        comprovacao_tipo_do_arquivo: str | None = None,
+        entrega_presencial: bool | None = None,
     ) -> DesbloqueioDaMissao:
         desbloqueio = DesbloqueioDaMissao(
             guerreiro_id=guerreiro.id,
             missao_id=missao.id,
             cumpriu=cumpriu,
             julgado_por_id=julgado_por.id if julgado_por is not None else None,
+            publicavel=publicavel,
+            julgado_em=julgado_em,
+            comprovacao=comprovacao,
+            comprovacao_referencia=comprovacao_referencia,
+            comprovacao_tipo_do_arquivo=comprovacao_tipo_do_arquivo,
+            entrega_presencial=entrega_presencial,
         )
         sessao.add(desbloqueio)
         sessao.commit()
